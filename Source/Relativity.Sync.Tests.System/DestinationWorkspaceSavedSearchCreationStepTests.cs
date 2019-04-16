@@ -1,14 +1,13 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Autofac;
 using FluentAssertions;
 using NUnit.Framework;
 using Relativity.Services.Search;
 using Relativity.Services.Workspace;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Logging;
+using Relativity.Sync.Executors;
 using Relativity.Sync.Tests.Common;
-using Relativity.Sync.Tests.Integration.Stubs;
+using Relativity.Sync.Tests.System.Helpers;
 
 namespace Relativity.Sync.Tests.System
 {
@@ -16,7 +15,7 @@ namespace Relativity.Sync.Tests.System
 	public class DestinationWorkspaceSavedSearchCreationStepTests : SystemTest
 	{
 		private WorkspaceRef _destinationWorkspace;
-		private const int _USER_ID = 9;
+		private const string _LOCAL_INSTANCE_NAME = "This Instance";
 
 		[SetUp]
 		public async Task SetUp()
@@ -28,32 +27,64 @@ namespace Relativity.Sync.Tests.System
 		public async Task ItShouldCreateSavedSearch()
 		{
 			// ARRANGE
-			const int sourceCaseTagArtifactId = 456;
-			const int sourceJobTagArtifactId = 789;
 			const int sourceWorkspaceArtifactId = 123;
+			const int jobHistoryArtifactId = 456;
+			const int userId = 9;
+			string jobHistoryName = "Job History Tag Name";
+			string sourceWorkspaceName = "Source Workspace";
 			string sourceWorkspaceTagName = "Source Workspace Tag Name";
 			string sourceJobTagName = "Source Job Tag Name";
-			
+
+			int sourceCaseTagArtifactId = await CreateRelativitySourceCaseTag(sourceWorkspaceTagName, sourceWorkspaceArtifactId, sourceWorkspaceName).ConfigureAwait(false);
+			int sourceJobTagArtifactId = await CreateSourceJobTag(jobHistoryArtifactId, jobHistoryName, sourceCaseTagArtifactId, sourceJobTagName).ConfigureAwait(false);
+
 			ConfigurationStub configuration = new ConfigurationStub
 			{
 				CreateSavedSearchForTags = true,
 				DestinationWorkspaceArtifactId = _destinationWorkspace.ArtifactID,
 				SourceWorkspaceArtifactId = sourceWorkspaceArtifactId,
-				SourceWorkspaceTagArtifactId = sourceCaseTagArtifactId,
-				SourceWorkspaceTagName = sourceWorkspaceTagName,
 				SourceJobTagArtifactId = sourceJobTagArtifactId,
 				SourceJobTagName = sourceJobTagName,
-				ExecutingUserId = _USER_ID
+				ExecutingUserId = userId
 			};
-
+			
+			ISyncJob syncJob = SyncJobHelper.CreateWithStepsMockedExcept<IDestinationWorkspaceSavedSearchCreationConfiguration>(configuration);
+			
 			// ACT
-			ISyncJob syncJob = CreateSyncJob(configuration);
 			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
 			bool savedSearchExists = await DoesSavedSearchExist(sourceJobTagName).ConfigureAwait(false);
 
 			savedSearchExists.Should().BeTrue();
+		}
+
+		private async Task<int> CreateRelativitySourceCaseTag(string sourceWorkspaceTagName, int sourceWorkspaceArtifactId, string sourceWorkspaceName)
+		{
+			RelativitySourceCaseTag sourceCaseTag = new RelativitySourceCaseTag
+			{
+				Name = sourceWorkspaceTagName,
+				SourceWorkspaceArtifactId = sourceWorkspaceArtifactId,
+				SourceWorkspaceName = sourceWorkspaceName,
+				SourceInstanceName = _LOCAL_INSTANCE_NAME
+			};
+
+			int sourceCaseTagArtifactId = await Rdos.CreateRelativitySourceCaseInstance(ServiceFactory, _destinationWorkspace.ArtifactID, sourceCaseTag).ConfigureAwait(false);
+			return sourceCaseTagArtifactId;
+		}
+
+		private async Task<int> CreateSourceJobTag(int jobHistoryArtifactId, string jobHistoryName, int sourceCaseTagArtifactId, string sourceJobTagName)
+		{
+			RelativitySourceJobTag sourceJobTag = new RelativitySourceJobTag
+			{
+				JobHistoryArtifactId = jobHistoryArtifactId,
+				JobHistoryName = jobHistoryName,
+				SourceCaseTagArtifactId = sourceCaseTagArtifactId,
+				Name = sourceJobTagName
+			};
+
+			int sourceJobTagArtifactId = await Rdos.CreateRelativitySourceJobInstance(ServiceFactory, _destinationWorkspace.ArtifactID, sourceJobTag).ConfigureAwait(false);
+			return sourceJobTagArtifactId;
 		}
 
 		private async Task<bool> DoesSavedSearchExist(string sourceJobTagName)
@@ -67,24 +98,6 @@ namespace Relativity.Sync.Tests.System
 				KeywordSearchQueryResultSet result = await savedSearchManager.QueryAsync(_destinationWorkspace.ArtifactID, query).ConfigureAwait(false);
 				return result.Results[0].Artifact != null;
 			}
-		}
-
-		private ISyncJob CreateSyncJob(ConfigurationStub configuration)
-		{
-			ContainerBuilder containerBuilder = new ContainerBuilder();
-
-			ContainerFactory factory = new ContainerFactory();
-			SyncJobParameters syncParameters = new SyncJobParameters(configuration.JobArtifactId, configuration.SourceWorkspaceArtifactId);
-			factory.RegisterSyncDependencies(containerBuilder, syncParameters, new SyncJobExecutionConfiguration(), new EmptyLogger());
-
-			new SystemTestsInstaller().Install(containerBuilder);
-
-			IntegrationTestsContainerBuilder.RegisterExternalDependenciesAsMocks(containerBuilder);
-			IntegrationTestsContainerBuilder.MockStepsExcept<IDestinationWorkspaceSavedSearchCreationConfiguration>(containerBuilder);
-
-			containerBuilder.RegisterInstance(configuration).AsImplementedInterfaces();
-
-			return containerBuilder.Build().Resolve<ISyncJob>();
 		}
 	}
 }

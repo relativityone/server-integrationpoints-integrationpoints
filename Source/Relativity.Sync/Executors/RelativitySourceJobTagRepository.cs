@@ -60,7 +60,6 @@ namespace Relativity.Sync.Executors
 				RelativitySourceJobTag createdTag = new RelativitySourceJobTag()
 				{
 					ArtifactId = result.Object.ArtifactID,
-					ArtifactTypeId = sourceJobTag.ArtifactTypeId,
 					Name = sourceJobTag.Name,
 					SourceCaseTagArtifactId = sourceJobTag.SourceCaseTagArtifactId,
 					JobHistoryArtifactId = sourceJobTag.JobHistoryArtifactId,

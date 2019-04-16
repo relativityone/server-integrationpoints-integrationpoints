@@ -38,7 +38,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			const int destinationWorkspaceArtifactId = 5;
 
 			const int tagArtifactId = 1;
-			const int artifactTypeId = 2;
 			const int jobHistoryArtifactId = 3;
 			const string sourceJobName = "source job name";
 			const int sourceCaseTagArtifactId = 4;
@@ -70,7 +69,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			RelativitySourceJobTag tagToCreate = new RelativitySourceJobTag
 			{
 				Name = sourceJobTagName,
-				ArtifactTypeId = artifactTypeId,
 				JobHistoryArtifactId = jobHistoryArtifactId,
 				JobHistoryName = sourceJobName,
 				SourceCaseTagArtifactId = sourceCaseTagArtifactId
@@ -81,7 +79,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			// assert
 			Assert.AreEqual(tagArtifactId, createdTag.ArtifactId);
-			Assert.AreEqual(artifactTypeId, createdTag.ArtifactTypeId);
 			Assert.AreEqual(jobHistoryArtifactId, createdTag.JobHistoryArtifactId);
 			Assert.AreEqual(sourceJobName, createdTag.JobHistoryName);
 			Assert.AreEqual(sourceJobTagName, createdTag.Name);

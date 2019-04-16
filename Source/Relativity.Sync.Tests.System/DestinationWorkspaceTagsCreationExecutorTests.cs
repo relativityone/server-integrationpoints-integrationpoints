@@ -2,17 +2,14 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Autofac;
 using NUnit.Framework;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Workspace;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Logging;
+using Relativity.Sync.Executors;
 using Relativity.Sync.Tests.Common;
-using Relativity.Sync.Tests.Integration.Stubs;
 using Relativity.Sync.Tests.System.Helpers;
-using Relativity.Sync.Tests.System.Stubs;
 
 namespace Relativity.Sync.Tests.System
 {
@@ -63,7 +60,7 @@ namespace Relativity.Sync.Tests.System
 			};
 
 			// ACT
-			ISyncJob syncJob = CreateSyncJob(configuration);
+			ISyncJob syncJob = SyncJobHelper.CreateWithStepsMockedExcept<IDestinationWorkspaceTagsCreationConfiguration>(configuration);
 
 			// ASSERT
 			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
@@ -93,9 +90,16 @@ namespace Relativity.Sync.Tests.System
 			string expectedSourceCaseTagName = $"{_LOCAL_INSTANCE_NAME} - {expectedSourceWorkspaceName} - {expectedSourceWorkspaceArtifactId}";
 
 			int expectedJobHistoryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, expectedSourceWorkspaceArtifactId, _JOB_HISTORY_NAME).ConfigureAwait(false);
-			int expectedSourceCaseTagArtifactId =
-				await CreateRelativitySourceCaseInstance(_destinationWorkspace.ArtifactID, wrongSourceTagName, expectedSourceWorkspaceArtifactId, wrongSourceWorkspaceName, _LOCAL_INSTANCE_NAME)
-					.ConfigureAwait(false);
+
+			RelativitySourceCaseTag wrongSourceCaseTag = new RelativitySourceCaseTag
+			{
+				Name = wrongSourceTagName,
+				SourceWorkspaceArtifactId = expectedSourceWorkspaceArtifactId,
+				SourceWorkspaceName = wrongSourceWorkspaceName,
+				SourceInstanceName = _LOCAL_INSTANCE_NAME
+			};
+
+			int expectedSourceCaseTagArtifactId = await Rdos.CreateRelativitySourceCaseInstance(ServiceFactory, _destinationWorkspace.ArtifactID, wrongSourceCaseTag).ConfigureAwait(false);
 			string expectedSourceJobTagName = $"{_JOB_HISTORY_NAME} - {expectedJobHistoryArtifactId}";
 
 			ConfigurationStub configuration = new ConfigurationStub
@@ -106,13 +110,12 @@ namespace Relativity.Sync.Tests.System
 				ExecutingUserId = _USER_ID
 			};
 
+			ISyncJob syncJob = SyncJobHelper.CreateWithStepsMockedExcept<IDestinationWorkspaceTagsCreationConfiguration>(configuration);
+
 			// ACT
-			ISyncJob syncJob = CreateSyncJob(configuration);
-
-
-			// ASSERT
 			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
-
+			
+			// ASSERT
 			RelativityObject sourceCaseTag = await QueryForCreatedSourceCaseTag(configuration.SourceWorkspaceTagArtifactId).ConfigureAwait(false);
 			RelativityObject sourceJobTag = await QueryForCreatedSourceJobTag(configuration.SourceJobTagArtifactId).ConfigureAwait(false);
 
@@ -126,62 +129,6 @@ namespace Relativity.Sync.Tests.System
 			Assert.AreEqual(_JOB_HISTORY_NAME, sourceJobTag.FieldValues.First(x => x.Field.Guids.Contains(_RELATIVITY_SOURCE_JOB_JOB_HISTORY_NAME_FIELD_GUID)).Value);
 			Assert.AreEqual(expectedSourceJobTagName, sourceJobTag.Name);
 			Assert.AreEqual(sourceCaseTag.ArtifactID, sourceJobTag.ParentObject.ArtifactID);
-		}
-
-		private async Task<int> CreateRelativitySourceCaseInstance(int workspaceId, string sourceTagName, int sourceWorkspaceArtifactId, string sourceWorkspaceName, string instanceName)
-		{
-			using (var objectManager = ServiceFactory.CreateProxy<IObjectManager>())
-			{
-				CreateRequest request = new CreateRequest
-				{
-					FieldValues = new[]
-					{
-						new FieldRefValuePair
-						{
-							Field = new FieldRef { Name = "Name"},
-							Value = sourceTagName
-						},new FieldRefValuePair
-						{
-							Field = new FieldRef { Guid = _RELATIVITY_SOURCE_CASE_ID_FIELD_GUID},
-							Value = sourceWorkspaceArtifactId
-						},
-						new FieldRefValuePair
-						{
-							Field = new FieldRef { Guid = _RELATIVITY_SOURCE_CASE_NAME_FIELD_GUID },
-							Value = sourceWorkspaceName
-						},
-						new FieldRefValuePair
-						{
-							Field = new FieldRef { Guid = _RELATIVITY_SOURCE_CASE_INSTANCE_NAME_FIELD_GUID },
-							Value = instanceName
-						}
-					},
-					ObjectType = new ObjectTypeRef
-					{
-						Guid = _RELATIVITY_SOURCE_CASE_OBJECT_TYPE_GUID
-					}
-				};
-				CreateResult result = await objectManager.CreateAsync(workspaceId, request).ConfigureAwait(false);
-				return result.Object.ArtifactID;
-			}
-		}
-
-		private ISyncJob CreateSyncJob(ConfigurationStub configuration)
-		{
-			ContainerBuilder containerBuilder = new ContainerBuilder();
-
-			ContainerFactory factory = new ContainerFactory();
-			SyncJobParameters syncParameters = new SyncJobParameters(configuration.JobArtifactId, configuration.SourceWorkspaceArtifactId);
-			factory.RegisterSyncDependencies(containerBuilder, syncParameters, new SyncJobExecutionConfiguration(), new EmptyLogger());
-
-			new SystemTestsInstaller().Install(containerBuilder);
-
-			IntegrationTestsContainerBuilder.RegisterExternalDependenciesAsMocks(containerBuilder);
-			IntegrationTestsContainerBuilder.MockStepsExcept<IDestinationWorkspaceTagsCreationConfiguration>(containerBuilder);
-
-			containerBuilder.RegisterInstance(configuration).AsImplementedInterfaces();
-
-			return containerBuilder.Build().Resolve<ISyncJob>();
 		}
 
 		private async Task<RelativityObject> QueryForCreatedSourceCaseTag(int sourceWorkspaceTagArtifactId)

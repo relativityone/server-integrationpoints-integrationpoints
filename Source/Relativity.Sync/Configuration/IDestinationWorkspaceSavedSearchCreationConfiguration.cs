@@ -10,10 +10,6 @@ namespace Relativity.Sync.Configuration
 
 		int SourceJobTagArtifactId { get; }
 
-		int SourceWorkspaceTagArtifactId { get; }
-
-		string SourceWorkspaceTagName { get; }
-
 		bool CreateSavedSearchForTags { get; }
 
 		bool IsSavedSearchArtifactIdSet { get; }
