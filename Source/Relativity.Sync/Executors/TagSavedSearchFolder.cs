@@ -19,19 +19,19 @@ namespace Relativity.Sync.Executors
 			_logger = logger;
 		}
 
-		public async Task<int> GetFolderId(int workspaceArtifactId)
+		public async Task<int> GetFolderIdAsync(int workspaceArtifactId)
 		{
 			_logger.LogVerbose("Getting Saved Search Folder Id for workspace {workspaceArtifactId}", workspaceArtifactId);
 			try
 			{
-				SearchContainer existingFolder = await QuerySearchContainer(workspaceArtifactId, _DESTINATION_WORKSPACE_SAVED_SEARCH_FOLDER_NAME).ConfigureAwait(false);
+				SearchContainer existingFolder = await QuerySearchContainerAsync(workspaceArtifactId, _DESTINATION_WORKSPACE_SAVED_SEARCH_FOLDER_NAME).ConfigureAwait(false);
 
 				if (existingFolder != null)
 				{
 					return existingFolder.ArtifactID;
 				}
 
-				return await CreateSearchContainerInRoot(workspaceArtifactId, _DESTINATION_WORKSPACE_SAVED_SEARCH_FOLDER_NAME).ConfigureAwait(false);
+				return await CreateSearchContainerInRootAsync(workspaceArtifactId, _DESTINATION_WORKSPACE_SAVED_SEARCH_FOLDER_NAME).ConfigureAwait(false);
 			}
 			catch (Exception ex)
 			{
@@ -40,7 +40,7 @@ namespace Relativity.Sync.Executors
 			}
 		}
 
-		private async Task<SearchContainer> QuerySearchContainer(int workspaceId, string name)
+		private async Task<SearchContainer> QuerySearchContainerAsync(int workspaceId, string name)
 		{
 			_logger.LogVerbose("Querying for Saved Search Folder named {name} in {workspaceId}", name, workspaceId);
 			Condition condition = new TextCondition(ClientFieldNames.Name, TextConditionEnum.EqualTo, name);
@@ -69,7 +69,7 @@ namespace Relativity.Sync.Executors
 			return null;
 		}
 
-		private async Task<int> CreateSearchContainerInRoot(int workspaceId, string name)
+		private async Task<int> CreateSearchContainerInRootAsync(int workspaceId, string name)
 		{
 			_logger.LogVerbose("Creating Saved Search Folder named {name} in {workspaceId}", name, workspaceId);
 			try
