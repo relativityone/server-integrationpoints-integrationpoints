@@ -126,7 +126,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			_searchContainerManager
 				.Setup(x => x.CreateSingleAsync(It.Is<int>(y => y == _WORKSPACE_ARTIFACT_ID), It.IsAny<SearchContainer>()))
-				.Throws<Exception>();
+				.Throws<InvalidOperationException>();
 
 			// ACT & ASSERT
 			Assert.ThrowsAsync<SyncException>(async () => await _instance.GetFolderIdAsync(_WORKSPACE_ARTIFACT_ID).ConfigureAwait(false));
@@ -138,10 +138,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			// ARRANGE
 			_searchContainerManager
 				.Setup(x => x.QueryAsync(It.Is<int>(y => y == _WORKSPACE_ARTIFACT_ID), It.IsAny<Services.Query>()))
-				.Throws<Exception>();
+				.Throws<InvalidOperationException>();
 
 			// ACT & ASSERT
-			Assert.ThrowsAsync<Exception>(async () => await _instance.GetFolderIdAsync(_WORKSPACE_ARTIFACT_ID).ConfigureAwait(false));
+			Assert.ThrowsAsync<InvalidOperationException>(async () => await _instance.GetFolderIdAsync(_WORKSPACE_ARTIFACT_ID).ConfigureAwait(false));
 
 			_searchContainerManager.Verify(x => x.CreateSingleAsync(It.IsAny<int>(), It.IsAny<SearchContainer>()), Times.Never);
 		}
@@ -152,10 +152,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			// ARRANGE
 			_serviceFactoryForUser
 				.Setup(x => x.CreateProxyAsync<ISearchContainerManager>())
-				.Throws<Exception>();
+				.Throws<InvalidOperationException>();
 
 			// ACT & ASSERT
-			Assert.ThrowsAsync<Exception>(async () => await _instance.GetFolderIdAsync(_WORKSPACE_ARTIFACT_ID).ConfigureAwait(false));
+			Assert.ThrowsAsync<InvalidOperationException>(async () => await _instance.GetFolderIdAsync(_WORKSPACE_ARTIFACT_ID).ConfigureAwait(false));
 		}
 	}
 }
