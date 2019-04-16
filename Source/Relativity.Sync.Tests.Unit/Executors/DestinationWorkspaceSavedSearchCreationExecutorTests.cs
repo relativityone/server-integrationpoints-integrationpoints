@@ -32,7 +32,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		{
 			const int folderId = 1;
 			const int savedSearchId = 2;
-			_tagSavedSearchFolder.Setup(x => x.GetFolderId(It.IsAny<int>())).ReturnsAsync(folderId);
+			_tagSavedSearchFolder.Setup(x => x.GetFolderIdAsync(It.IsAny<int>())).ReturnsAsync(folderId);
 			_tagSavedSearch.Setup(x => x.CreateTagSavedSearchAsync(It.IsAny<IDestinationWorkspaceSavedSearchCreationConfiguration>(), It.IsAny<int>(), CancellationToken.None))
 				.ReturnsAsync(savedSearchId);
 
@@ -47,7 +47,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[Test]
 		public async Task ItShouldReturnFailedExecutionStatus()
 		{
-			_tagSavedSearchFolder.Setup(x => x.GetFolderId(It.IsAny<int>())).Throws<InvalidOperationException>();
+			_tagSavedSearchFolder.Setup(x => x.GetFolderIdAsync(It.IsAny<int>())).Throws<InvalidOperationException>();
 
 			// act
 			ExecutionResult executionResult = await _instance.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
