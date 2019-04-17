@@ -7,11 +7,21 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Search;
 using Relativity.Services.ServiceProxy;
+using Relativity.Sync.Executors;
 
 namespace Relativity.Sync.Tests.System.Helpers
 {
 	internal static class Rdos
 	{
+		private static readonly Guid _RELATIVITY_SOURCE_CASE_OBJECT_TYPE_GUID = new Guid("7E03308C-0B58-48CB-AFA4-BB718C3F5CAC");
+		private static readonly Guid _RELATIVITY_SOURCE_JOB_OBJECT_TYPE_GUID = new Guid("6f4dd346-d398-4e76-8174-f0cd8236cbe7");
+		
+		private static readonly Guid _RELATIVITY_SOURCE_CASE_ID_FIELD_GUID = new Guid("90c3472c-3592-4c5a-af01-51e23e7f89a5");
+		private static readonly Guid _RELATIVITY_SOURCE_CASE_NAME_FIELD_GUID = new Guid("a16f7beb-b3b0-4658-bb52-1c801ba920f0");
+		private static readonly Guid _RELATIVITY_SOURCE_CASE_INSTANCE_NAME_FIELD_GUID = new Guid("C5212F20-BEC4-426C-AD5C-8EBE2697CB19");
+		private static readonly Guid _RELATIVITY_SOURCE_JOB_JOB_HISTORY_ID_FIELD_GUID = new Guid("2bf54e79-7f75-4a51-a99a-e4d68f40a231");
+		private static readonly Guid _RELATIVITY_SOURCE_JOB_JOB_HISTORY_NAME_FIELD_GUID = new Guid("0b8fcebf-4149-4f1b-a8bc-d88ff5917169");
+
 		public static async Task<int> CreateJobHistoryInstance(ServiceFactory serviceFactory, int workspaceId, string name = "Name")
 		{
 			using (var objectManager = serviceFactory.CreateProxy<IObjectManager>())
@@ -55,6 +65,79 @@ namespace Relativity.Sync.Tests.System.Helpers
 					}
 				};
 				CreateResult result = await objectManager.CreateAsync(workspaceId, request).ConfigureAwait(false);
+				return result.Object.ArtifactID;
+			}
+		}
+
+		public static async Task<int> CreateRelativitySourceCaseInstance(ServiceFactory serviceFactory, int destinationWorkspaceArtifactId, RelativitySourceCaseTag tag)
+		{
+			using (var objectManager = serviceFactory.CreateProxy<IObjectManager>())
+			{
+				CreateRequest request = new CreateRequest
+				{
+					FieldValues = new[]
+					{
+						new FieldRefValuePair
+						{
+							Field = new FieldRef { Name = "Name"},
+							Value = tag.Name
+						},new FieldRefValuePair
+						{
+							Field = new FieldRef { Guid = _RELATIVITY_SOURCE_CASE_ID_FIELD_GUID},
+							Value = tag.SourceWorkspaceArtifactId
+						},
+						new FieldRefValuePair
+						{
+							Field = new FieldRef { Guid = _RELATIVITY_SOURCE_CASE_NAME_FIELD_GUID },
+							Value = tag.SourceWorkspaceName
+						},
+						new FieldRefValuePair
+						{
+							Field = new FieldRef { Guid = _RELATIVITY_SOURCE_CASE_INSTANCE_NAME_FIELD_GUID },
+							Value = tag.SourceInstanceName
+						}
+					},
+					ObjectType = new ObjectTypeRef
+					{
+						Guid = _RELATIVITY_SOURCE_CASE_OBJECT_TYPE_GUID
+					}
+				};
+				CreateResult result = await objectManager.CreateAsync(destinationWorkspaceArtifactId, request).ConfigureAwait(false);
+				return result.Object.ArtifactID;
+			}
+		}
+
+		public static async Task<int> CreateRelativitySourceJobInstance(ServiceFactory serviceFactory, int destinationWorkspaceArtifactId, RelativitySourceJobTag tag)
+		{
+			using (var objectManager = serviceFactory.CreateProxy<IObjectManager>())
+			{
+				CreateRequest request = new CreateRequest
+				{
+					FieldValues = new[]
+					{
+						new FieldRefValuePair
+						{
+							Field = new FieldRef {Name = "Name"},
+							Value = tag.Name
+						},
+						new FieldRefValuePair
+						{
+							Field = new FieldRef {Guid = _RELATIVITY_SOURCE_JOB_JOB_HISTORY_ID_FIELD_GUID},
+							Value = tag.JobHistoryArtifactId
+						},
+						new FieldRefValuePair
+						{
+							Field = new FieldRef {Guid = _RELATIVITY_SOURCE_JOB_JOB_HISTORY_NAME_FIELD_GUID},
+							Value = tag.JobHistoryName
+						},
+					},
+					ParentObject = new RelativityObjectRef {ArtifactID = tag.SourceCaseTagArtifactId},
+					ObjectType = new ObjectTypeRef
+					{
+						Guid = _RELATIVITY_SOURCE_JOB_OBJECT_TYPE_GUID
+					}
+				};
+				CreateResult result = await objectManager.CreateAsync(destinationWorkspaceArtifactId, request).ConfigureAwait(false);
 				return result.Object.ArtifactID;
 			}
 		}

@@ -2,8 +2,6 @@
 {
 	internal sealed class RelativitySourceJobTag
 	{
-		public int ArtifactTypeId { get; set; }
-
 		public int ArtifactId { get; set; }
 
 		public string Name { get; set; }

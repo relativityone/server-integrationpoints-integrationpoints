@@ -25,7 +25,6 @@ namespace Relativity.Sync.Executors
 			RelativitySourceJobTag sourceJobTag = new RelativitySourceJobTag
 			{
 				Name = sourceJobTagName,
-				ArtifactTypeId = configuration.SourceJobArtifactTypeId,
 				JobHistoryArtifactId = configuration.JobArtifactId,
 				JobHistoryName = sourceJobHistoryName,
 				SourceCaseTagArtifactId = sourceCaseTagArtifactId
