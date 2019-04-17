@@ -22,6 +22,7 @@ namespace Relativity.Sync.Storage
 		private static readonly Guid TransferredItemsCountGuid = new Guid("B2D112CA-E81E-42C7-A6B2-C0E89F32F567");
 		private static readonly Guid ProgressGuid = new Guid("8C6DAF67-9428-4F5F-98D7-3C71A1FF3AE8");
 		private static readonly Guid LockedByGuid = new Guid("BEFC75D3-5825-4479-B499-58C6EF719DDB");
+		private static readonly Guid SyncConfigurationRelationGuid = new Guid("F673E67F-E606-4155-8E15-CA1C83931E16");
 
 		private Batch(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int syncConfigurationArtifactId, int totalItemsCount, int startingIndex)
 		{
@@ -226,7 +227,7 @@ namespace Relativity.Sync.Storage
 					{
 						Guid = BatchObjectTypeGuid
 					},
-					Condition = $"'SyncConfiguration' == OBJECT {syncConfigurationArtifactId}"
+					Condition = $"'{SyncConfigurationRelationGuid}' == OBJECT {syncConfigurationArtifactId}"
 				};
 				QueryResult result = await objectManager.QueryAsync(workspaceArtifactId, request, 1, 1).ConfigureAwait(false);
 				return result.TotalCount != 0;
