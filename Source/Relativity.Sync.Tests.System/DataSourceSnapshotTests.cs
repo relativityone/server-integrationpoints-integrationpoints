@@ -66,7 +66,7 @@ namespace Relativity.Sync.Tests.System
 
 			// ASSERT
 			configuration.ExportRunId.Should().NotBeEmpty();
-			configuration.ExportRunId.ToString().Should().NotBe(new Guid().ToString());
+			configuration.ExportRunId.Should().NotBe(Guid.Empty);
 		}
 
 		private ISyncJob CreateSyncJob(ConfigurationStub configuration)
