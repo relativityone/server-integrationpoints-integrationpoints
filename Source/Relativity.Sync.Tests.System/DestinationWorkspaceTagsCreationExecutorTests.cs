@@ -60,7 +60,7 @@ namespace Relativity.Sync.Tests.System
 			};
 
 			// ACT
-			ISyncJob syncJob = SyncJobHelper.CreateWithStepsMockedExcept<IDestinationWorkspaceTagsCreationConfiguration>(configuration);
+			ISyncJob syncJob = SyncJobHelper.CreateWithMockedContainerExceptProvidedType<IDestinationWorkspaceTagsCreationConfiguration>(configuration);
 
 			// ASSERT
 			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
@@ -110,7 +110,7 @@ namespace Relativity.Sync.Tests.System
 				ExecutingUserId = _USER_ID
 			};
 
-			ISyncJob syncJob = SyncJobHelper.CreateWithStepsMockedExcept<IDestinationWorkspaceTagsCreationConfiguration>(configuration);
+			ISyncJob syncJob = SyncJobHelper.CreateWithMockedContainerExceptProvidedType<IDestinationWorkspaceTagsCreationConfiguration>(configuration);
 
 			// ACT
 			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);

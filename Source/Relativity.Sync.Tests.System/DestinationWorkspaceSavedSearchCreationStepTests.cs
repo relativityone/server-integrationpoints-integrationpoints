@@ -48,7 +48,7 @@ namespace Relativity.Sync.Tests.System
 				ExecutingUserId = userId
 			};
 			
-			ISyncJob syncJob = SyncJobHelper.CreateWithStepsMockedExcept<IDestinationWorkspaceSavedSearchCreationConfiguration>(configuration);
+			ISyncJob syncJob = SyncJobHelper.CreateWithMockedContainerExceptProvidedType<IDestinationWorkspaceSavedSearchCreationConfiguration>(configuration);
 			
 			// ACT
 			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);

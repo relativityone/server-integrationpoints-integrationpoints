@@ -7,7 +7,7 @@ namespace Relativity.Sync.Tests.System.Helpers
 {
 	internal static class SyncJobHelper
 	{
-		public static ISyncJob CreateWithStepsMockedExcept<TStepConfiguration>(ConfigurationStub configuration)
+		public static ISyncJob CreateWithMockedContainerExceptProvidedType<TStepConfiguration>(ConfigurationStub configuration)
 		{
 			ContainerBuilder containerBuilder = new ContainerBuilder();
 
