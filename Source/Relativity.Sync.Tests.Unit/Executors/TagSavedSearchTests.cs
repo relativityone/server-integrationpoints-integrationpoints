@@ -116,7 +116,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_destinationServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IKeywordSearchManager>()).Throws<IOException>();
 
 			// Act & Assert
-			Assert.ThrowsAsync<DestinationWorkspaceTagRepositoryException>(
+			Assert.ThrowsAsync<SyncException>(
 				async () => await _instance.CreateTagSavedSearchAsync(_destinationWorkspaceSavedSearchCreationConfiguration.Object, _TEST_SAVED_SEARCH_FOLDER_ARTIFACT_ID, _token).ConfigureAwait(false),
 				$"Failed to create Saved Search for promoted documents in destination workspace {_TEST_DEST_WORKSPACE_ARTIFACT_ID}.");
 
@@ -131,7 +131,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_keywordSearchManager.Setup(x => x.CreateSingleAsync(It.IsAny<int>(), It.IsAny<KeywordSearch>())).Throws<IOException>().Verifiable();
 
 			// Act & Assert
-			Assert.ThrowsAsync<DestinationWorkspaceTagRepositoryException>(
+			Assert.ThrowsAsync<SyncException>(
 				async () => await _instance.CreateTagSavedSearchAsync(_destinationWorkspaceSavedSearchCreationConfiguration.Object, _TEST_SAVED_SEARCH_FOLDER_ARTIFACT_ID, _token).ConfigureAwait(false),
 				$"Failed to create Saved Search for promoted documents in destination workspace {_TEST_DEST_WORKSPACE_ARTIFACT_ID}.");
 
