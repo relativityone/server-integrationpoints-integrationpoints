@@ -90,11 +90,11 @@ namespace kCura.IntegrationPoints.PerformanceTestingFramework.TestCases
 				else
 				{
 					JobHistory jobHistoryObject = resultSet.Items.First();
+					Console.WriteLine($"Job status: {jobHistoryObject.JobStatus.Name}");
 					if (jobHistoryObject.JobStatus.Name != JobStatusChoices.JobHistoryCompleted.Name)
 					{
 						elapsedTime = -1;
 					}
-					Console.WriteLine($"Job status: {jobHistoryObject.JobStatus.Name}");
 				}
 			}
 			catch (Exception ex)
