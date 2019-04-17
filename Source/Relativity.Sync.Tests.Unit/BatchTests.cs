@@ -31,6 +31,7 @@ namespace Relativity.Sync.Tests.Unit
 		private static readonly Guid TransferredItemsCountGuid = new Guid("B2D112CA-E81E-42C7-A6B2-C0E89F32F567");
 		private static readonly Guid ProgressGuid = new Guid("8C6DAF67-9428-4F5F-98D7-3C71A1FF3AE8");
 		private static readonly Guid LockedByGuid = new Guid("BEFC75D3-5825-4479-B499-58C6EF719DDB");
+		private static readonly Guid SyncConfigurationRelationGuid = new Guid("F673E67F-E606-4155-8E15-CA1C83931E16");
 
 		[SetUp]
 		public void SetUp()
@@ -453,6 +454,36 @@ namespace Relativity.Sync.Tests.Unit
 			updateRequest.FieldValues.Count().Should().Be(1);
 			updateRequest.FieldValues.Should().Contain(x => x.Field.Guid == fieldGuid);
 			updateRequest.FieldValues.Should().Contain(x => ((T) x.Value).Equals(value));
+			return true;
+		}
+
+		[Test]
+		[TestCase(0, false)]
+		[TestCase(1, true)]
+		[TestCase(100, true)]
+		public async Task ItShouldCheckIfBatchesAreCreated(int numberOfBatches, bool areCreated)
+		{
+			const int syncConfigurationArtifactId = 748512;
+
+			QueryResult queryResult = new QueryResult
+			{
+				TotalCount = numberOfBatches
+			};
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, 1)).ReturnsAsync(queryResult);
+
+			// ACT
+			bool actualResult = await _batchRepository.AreBatchesCreated(_WORKSPACE_ID, syncConfigurationArtifactId).ConfigureAwait(false);
+
+			// ASSERT
+			actualResult.Should().Be(areCreated);
+
+			_objectManager.Verify(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(qr => AssertQueryRequest(qr, syncConfigurationArtifactId)), 1, 1), Times.Once);
+		}
+
+		private bool AssertQueryRequest(QueryRequest queryRequest, int syncConfigurationArtifactId)
+		{
+			queryRequest.ObjectType.Guid.Should().Be(BatchObjectTypeGuid);
+			queryRequest.Condition.Should().Be($"'{SyncConfigurationRelationGuid}' == OBJECT {syncConfigurationArtifactId}");
 			return true;
 		}
 	}

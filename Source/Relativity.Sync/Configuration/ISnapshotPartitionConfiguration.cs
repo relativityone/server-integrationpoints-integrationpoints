@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Relativity.Sync.Configuration
 {
@@ -9,8 +8,8 @@ namespace Relativity.Sync.Configuration
 
 		Guid ExportRunId { get; }
 
-		bool IsSnapshotPartitioned { get; }
+		int SourceWorkspaceArtifactId { get; }
 
-		void SetSnapshotPartitions(List<int> batchesIds);
+		int SyncConfigurationArtifactId { get; }
 	}
 }
