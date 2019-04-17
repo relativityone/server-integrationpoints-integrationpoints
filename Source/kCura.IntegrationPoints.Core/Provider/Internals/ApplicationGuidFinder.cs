@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using kCura.IntegrationPoints.Data;
 using LanguageExt;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Provider.Internals
 {
     public class ApplicationGuidFinder : IApplicationGuidFinder
     {
-        private readonly IDBContext _caseDBcontext;
+        private readonly IWorkspaceDBContext _caseDBcontext;
 
-        public ApplicationGuidFinder(IDBContext caseDBcontext)
+        public ApplicationGuidFinder(IWorkspaceDBContext caseDBcontext)
         {
             _caseDBcontext = caseDBcontext;
         }

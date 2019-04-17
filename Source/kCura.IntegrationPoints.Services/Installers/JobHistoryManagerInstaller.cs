@@ -3,15 +3,15 @@ using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Core.Installers;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Installers;
-using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Services.JobHistory;
 using kCura.IntegrationPoints.Services.Repositories;
 using kCura.IntegrationPoints.Services.Repositories.Implementations;
 using Relativity.API;
 using System.Collections.Generic;
+using kCura.IntegrationPoints.Services.Installers.Authentication;
+using kCura.IntegrationPoints.Services.Installers.Context;
 
 namespace kCura.IntegrationPoints.Services.Installers
 {
@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.Services.Installers
 
 		protected override IList<IWindsorInstaller> Dependencies => _dependencies;
 
-		protected override void RegisterComponents(IWindsorContainer container, IConfigurationStore store, int workspaceId)
+		protected override void RegisterComponents(IWindsorContainer container, IConfigurationStore store, int workspaceID)
 		{
 			container.Register(Component.For<IDestinationParser>().ImplementedBy<DestinationParser>().LifestyleTransient());
 			container.Register(Component.For<IJobHistoryAccess>().ImplementedBy<JobHistoryAccess>().LifestyleTransient());
@@ -41,20 +41,16 @@ namespace kCura.IntegrationPoints.Services.Installers
 			container.Register(Component.For<RelativityIntegrationPointsRepositoryAdminAccess>().ImplementedBy<RelativityIntegrationPointsRepositoryAdminAccess>().LifestyleTransient());
 			container.Register(
 				Component.For<IRelativityIntegrationPointsRepository>()
-					.UsingFactoryMethod(k => k.Resolve<RelativityIntegrationPointsRepositoryAdminAccess>(new RSAPIServiceAdminAccess(k.Resolve<IHelper>(), workspaceId)))
+					.UsingFactoryMethod(k => k.Resolve<RelativityIntegrationPointsRepositoryAdminAccess>(new RSAPIServiceAdminAccess(k.Resolve<IHelper>(), workspaceID)))
 					.LifestyleTransient());
 			container.Register(Component.For<ICompletedJobsHistoryRepository>().ImplementedBy<CompletedJobsHistoryRepository>().LifestyleTransient());
-			container.Register(Component.For<IRSAPIService>().UsingFactoryMethod(k => ServiceContextFactory.CreateRSAPIService(k.Resolve<IHelper>(), workspaceId), true));
-			container.Register(Component.For<IAuthTokenGenerator>().ImplementedBy<ClaimsTokenGenerator>().LifestyleTransient());
+
 
 			container.Register(Component.For<IRsapiClientWithWorkspaceFactory>().ImplementedBy<RsapiClientWithWorkspaceFactory>());
 
-			container.Register(Component.For<IServiceContextHelper>()
-				.UsingFactoryMethod(k =>
-				{
-					IServiceHelper helper = k.Resolve<IServiceHelper>();
-					return new ServiceContextHelperForKeplerService(helper, workspaceId);
-				}));
+		    container
+		        .AddWorkspaceContext(workspaceID)
+		        .AddAuthTokenGenerator();
 		}
 	}
 }

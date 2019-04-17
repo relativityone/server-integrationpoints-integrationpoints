@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Core.Provider;
 using kCura.IntegrationPoints.Core.Provider.Internals;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.SourceProviderInstaller.Internals;
 using LanguageExt;
 using Relativity.API;
 using static LanguageExt.Prelude;
+using SourceProvider = kCura.IntegrationPoints.Contracts.SourceProvider;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations
 {
@@ -97,7 +98,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
         private IApplicationGuidFinder CreateApplicationGuidFinder(int workspaceID)
         {
             IDBContext workspaceDbContext = _helper.GetDBContext(workspaceID);
-            return new ApplicationGuidFinder(workspaceDbContext);
+            var workspaceDbContextAsWorkspaceContext = new WorkspaceContext(workspaceDbContext);
+            return new ApplicationGuidFinder(workspaceDbContextAsWorkspaceContext);
         }
 
         private IDataProviderFactoryFactory CreateDataProviderFactoryFactory()

@@ -66,8 +66,11 @@
     <Compile Include="Helpers\PermissionRepositoryFactory.cs" />
     <Compile Include="Helpers\RelativityManagerSoapFactory.cs" />
     <Compile Include="HealthChecks\IHealthCheck.cs" />
+    <Compile Include="Installers\Authentication\AuthTokenRegistration.cs" />
+    <Compile Include="Installers\Context\WorkspaceContextRegistration.cs" />
     <Compile Include="Installers\DocumentManagerInstaller.cs" />
     <Compile Include="Installers\HealthCheckInstaller.cs" />
+    <Compile Include="Installers\ProviderManager\ProviderInstallerAndUninstallerRegistration.cs" />
     <Compile Include="Installers\StatisticsManagerInstaller.cs" />
     <Compile Include="Installers\Installer.cs" />
     <Compile Include="Installers\IntegrationPointTypeManagerInstaller.cs" />

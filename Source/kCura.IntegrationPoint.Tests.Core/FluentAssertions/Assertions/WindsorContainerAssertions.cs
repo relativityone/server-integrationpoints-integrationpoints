@@ -54,6 +54,41 @@ namespace kCura.IntegrationPoint.Tests.Core.FluentAssertions.Assertions
             return new AndConstraint<WindsorContainerAssertions>(this);
         }
 
+        public AndConstraint<WindsorContainerAssertions> ResolveImplementationWithoutThrowing<TInterface, TImplementation>(
+            string because = "",
+            params object[] becauseArgs
+        ) where TInterface : class
+        {
+            bool isProperTypeResolved = false;
+            Exception thrownException = null;
+
+            try
+            {
+                TInterface resolved = Subject.Resolve<TInterface>();
+                isProperTypeResolved = resolved is TImplementation;
+            }
+            catch (Exception ex)
+            {
+                thrownException = ex;
+            }
+
+            Execute.Assertion
+                .BecauseOf(because, becauseArgs)
+                .ForCondition(thrownException == null)
+                .FailWith("Expected {context:IWindsorContainer} to resolve {0} without throwing{reason}, but exception was thrown: {1}",
+                    typeof(TInterface).Name,
+                    thrownException
+                )
+                .Then
+                .ForCondition(isProperTypeResolved)
+                .FailWith("Expected {context:IWindsorContainer} to resolve type {0} value for {1}{reason}, but it was null",
+                    typeof(TImplementation).Name,
+                    typeof(TInterface).Name
+                );
+
+            return new AndConstraint<WindsorContainerAssertions>(this);
+        }
+
         public AndWhichConstraint<WindsorContainerAssertions, ComponentModel> HaveRegisteredSingleComponent<T>(
             string because = "",
             params object[] becauseArgs

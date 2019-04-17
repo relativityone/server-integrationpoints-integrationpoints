@@ -2,16 +2,13 @@
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Core.Installers;
-using kCura.IntegrationPoints.Core.Provider;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Installers;
-using kCura.IntegrationPoints.Domain.Authentication;
+using kCura.IntegrationPoints.Services.Installers.Context;
+using kCura.IntegrationPoints.Services.Installers.ProviderManager;
 using kCura.IntegrationPoints.Services.Repositories;
 using kCura.IntegrationPoints.Services.Repositories.Implementations;
-using Relativity.API;
 using System.Collections.Generic;
-using kCura.IntegrationPoints.Core.Provider.Internals;
+using kCura.IntegrationPoints.Services.Installers.Authentication;
 
 namespace kCura.IntegrationPoints.Services.Installers
 {
@@ -31,54 +28,14 @@ namespace kCura.IntegrationPoints.Services.Installers
 
         protected override IList<IWindsorInstaller> Dependencies => _dependencies;
 
-        protected override void RegisterComponents(IWindsorContainer container, IConfigurationStore store, int workspaceId)
+        protected override void RegisterComponents(IWindsorContainer container, IConfigurationStore store, int workspaceID)
         {
-            container.Register(Component.For<IRSAPIService>().UsingFactoryMethod(k => new RSAPIService(k.Resolve<IHelper>(), workspaceId), true));
             container.Register(Component.For<IProviderRepository>().ImplementedBy<ProviderRepository>().LifestyleTransient());
-            container.Register(Component.For<IAuthTokenGenerator>().ImplementedBy<ClaimsTokenGenerator>().LifestyleTransient());
 
-            container.Register(Component
-                .For<IServiceContextHelper>()
-                .UsingFactoryMethod(k =>
-                {
-                    IServiceHelper helper = k.Resolve<IServiceHelper>();
-                    return new ServiceContextHelperForKeplerService(helper, workspaceId);
-                })
-            );
-            container.Register(Component
-                .For<IDBContext>()
-                .UsingFactoryMethod(k =>
-                {
-                    IServiceHelper helper = k.Resolve<IServiceHelper>();
-                    return helper.GetDBContext(workspaceId);
-                })
-            );
-
-            container.Register(Component
-                .For<IIntegrationPointsRemover>()
-                .ImplementedBy<IntegrationPointsRemover>()
-                .LifestyleTransient()
-            );
-            container.Register(Component
-                .For<IApplicationGuidFinder>()
-                .ImplementedBy<ApplicationGuidFinder>()
-                .LifestyleTransient()
-            );
-            container.Register(Component
-                .For<IDataProviderFactoryFactory>()
-                .ImplementedBy<DataProviderFactoryFactory>()
-                .LifestyleTransient()
-            );
-            container.Register(Component
-                .For<IRipProviderInstaller>()
-                .ImplementedBy<RipProviderInstaller>()
-                .LifestyleTransient()
-            );
-            container.Register(Component
-                .For<IRipProviderUninstaller>()
-                .ImplementedBy<RipProviderUninstaller>()
-                .LifestyleTransient()
-            );
+            container
+                .AddWorkspaceContext(workspaceID)
+                .AddAuthTokenGenerator()
+                .AddProviderInstallerAndUninstaller();
         }
     }
 }

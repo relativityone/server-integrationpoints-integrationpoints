@@ -41,6 +41,9 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Installers\Authentication\AuthTokenRegistrationTests.cs" />
+    <Compile Include="Installers\Context\WorkspaceContextRegistrationTests.cs" />
+    <Compile Include="Installers\ProviderManager\ProviderInstallerAndUninstallerRegistrationTests.cs" />
     <Compile Include="JobHistory\JobHistoryAccessTests.cs" />
     <Compile Include="JobHistory\JobHistorySummaryModelBuilderTests.cs" />
     <Compile Include="Managers\DocumentManagerTests.cs" />
