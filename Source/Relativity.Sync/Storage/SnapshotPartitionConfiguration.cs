@@ -34,7 +34,7 @@ namespace Relativity.Sync.Storage
 				}
 
 				_syncLog.LogError("Unable to parse export run ID {runId}.", runId);
-				return Guid.Empty;
+				throw new ArgumentException($"Run ID needs to be valid GUID, but {runId} found.");
 			}
 		}
 

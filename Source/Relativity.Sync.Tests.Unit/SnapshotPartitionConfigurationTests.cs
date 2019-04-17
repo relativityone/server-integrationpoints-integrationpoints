@@ -75,10 +75,13 @@ namespace Relativity.Sync.Tests.Unit
 			_cache.Setup(x => x.GetFieldValue<string>(SnapshotIdGuid)).Returns(runId);
 
 			// ACT
-			Guid actualRunId = _instance.ExportRunId;
+			Action action = () =>
+			{
+				Guid guid = _instance.ExportRunId;
+			};
 
 			// ASSERT
-			actualRunId.Should().Be(Guid.Empty);
+			action.Should().Throw<ArgumentException>();
 		}
 	}
 }
