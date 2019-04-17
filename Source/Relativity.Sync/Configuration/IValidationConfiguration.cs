@@ -1,4 +1,6 @@
-﻿using Relativity.Sync.Executors.Validation;
+﻿using System.Collections.Generic;
+using Relativity.Sync.Executors.Validation;
+using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Configuration
 {
@@ -10,7 +12,7 @@ namespace Relativity.Sync.Configuration
 		int DestinationWorkspaceArtifactId { get; }
 		int SavedSearchArtifactId { get; }
 		int DestinationFolderArtifactId { get; }
-		string FieldMappings { get; }
+		IList<FieldMap> FieldMappings { get; }
 		int FolderPathSourceFieldArtifactId { get; }
 		ImportOverwriteMode ImportOverwriteMode { get; }
 		FieldOverlayBehavior FieldOverlayBehavior { get; }

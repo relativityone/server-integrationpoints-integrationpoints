@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using kCura.Apps.Common.Utils.Serializers;
 using Relativity.Services.DataContracts.DTOs;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Executors.Validation
 {
@@ -17,14 +16,12 @@ namespace Relativity.Sync.Executors.Validation
 	{
 		private readonly ISourceServiceFactoryForUser _sourceServiceFactoryForUser;
 		private readonly IDestinationServiceFactoryForUser _destinationServiceFactoryForUser;
-		private readonly ISerializer _serializer;
 		private readonly ISyncLog _logger;
 
-		public FieldMappingsValidator(ISourceServiceFactoryForUser sourceServiceFactoryForUser, IDestinationServiceFactoryForUser destinationServiceFactoryForUser, ISerializer serializer, ISyncLog logger)
+		public FieldMappingsValidator(ISourceServiceFactoryForUser sourceServiceFactoryForUser, IDestinationServiceFactoryForUser destinationServiceFactoryForUser, ISyncLog logger)
 		{
 			_sourceServiceFactoryForUser = sourceServiceFactoryForUser;
 			_destinationServiceFactoryForUser = destinationServiceFactoryForUser;
-			_serializer = serializer;
 			_logger = logger;
 		}
 
@@ -34,7 +31,7 @@ namespace Relativity.Sync.Executors.Validation
 
 			try
 			{
-				List<FieldMap> fieldMaps = _serializer.Deserialize<List<FieldMap>>(configuration.FieldMappings);
+				IList<FieldMap> fieldMaps = configuration.FieldMappings;
 				Task<ValidationMessage> validateDestinationFieldsTask = ValidateDestinationFields(configuration, fieldMaps, token);
 				Task<ValidationMessage> validateSourceFieldsTask = ValidateSourceFields(configuration, fieldMaps, token);
 
@@ -106,12 +103,12 @@ namespace Relativity.Sync.Executors.Validation
 
 			ValidationMessage validationMessage = null;
 
-			List<int> fieldIds = fieldMaps.Select(x => int.Parse(x.DestinationField.FieldIdentifier, CultureInfo.InvariantCulture)).ToList();
+			List<int> fieldIds = fieldMaps.Select(x => x.DestinationField.FieldIdentifier).ToList();
 			IList<int> missingFields = await GetMissingFieldsAsync(_destinationServiceFactoryForUser, fieldIds, configuration.DestinationWorkspaceArtifactId, token).ConfigureAwait(false);
 			if (missingFields.Count > 0)
 			{
 				IEnumerable<string> fieldNames =
-					fieldMaps.Where(fm => missingFields.Contains(int.Parse(fm.DestinationField.FieldIdentifier, CultureInfo.InvariantCulture))).Select(fm => $"'{fm.DestinationField.DisplayName}'");
+					fieldMaps.Where(fm => missingFields.Contains(fm.DestinationField.FieldIdentifier)).Select(fm => $"'{fm.DestinationField.DisplayName}'");
 				validationMessage =
 					new ValidationMessage("20.005", $"Destination field(s) mapped may no longer be available or has been renamed. Review the mapping for the following field(s): {string.Join(",", fieldNames)}.");
 			}
@@ -125,12 +122,12 @@ namespace Relativity.Sync.Executors.Validation
 
 			ValidationMessage validationMessage = null;
 
-			List<int> fieldIds = fieldMaps.Select(x => int.Parse(x.SourceField.FieldIdentifier, CultureInfo.InvariantCulture)).ToList();
+			List<int> fieldIds = fieldMaps.Select(x => x.SourceField.FieldIdentifier).ToList();
 			IList<int> missingFields = await GetMissingFieldsAsync(_sourceServiceFactoryForUser, fieldIds, configuration.SourceWorkspaceArtifactId, token).ConfigureAwait(false);
 			if (missingFields.Count > 0)
 			{
 				IEnumerable<string> fieldNames =
-					fieldMaps.Where(fm => missingFields.Contains(int.Parse(fm.SourceField.FieldIdentifier, CultureInfo.InvariantCulture))).Select(fm => $"'{fm.SourceField.DisplayName}'");
+					fieldMaps.Where(fm => missingFields.Contains(fm.SourceField.FieldIdentifier)).Select(fm => $"'{fm.SourceField.DisplayName}'");
 				validationMessage =
 					new ValidationMessage($"Source field(s) mapped may no longer be available or has been renamed. Review the mapping for the following field(s): {string.Join(",", fieldNames)}.");
 			}

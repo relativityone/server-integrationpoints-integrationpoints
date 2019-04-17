@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -15,6 +16,7 @@ namespace Relativity.Sync.Tests.Unit
 	{
 		private ValidationConfiguration _configuration;
 		private Mock<IConfiguration> _cache;
+		private Mock<IFieldMappings> _fieldMappings;
 		private const int _WORKSPACE_ID = 111;
 
 		private static readonly Guid DestinationFolderStructureBehaviorGuid = new Guid("A1593105-BD99-4A15-A51A-3AA8D4195908");
@@ -22,7 +24,6 @@ namespace Relativity.Sync.Tests.Unit
 		private static readonly Guid DataDestinationArtifactIdGuid = new Guid("0E9D7B8E-4643-41CC-9B07-3A66C98248A1");
 		private static readonly Guid DataSourceArtifactIdGuid = new Guid("6D8631F9-0EA1-4EB9-B7B2-C552F43959D0");
 		private static readonly Guid EmailNotificationRecipientsGuid = new Guid("4F03914D-9E86-4B72-B75C-EE48FEEBB583");
-		private static readonly Guid FieldMappingsGuid = new Guid("E3CB5C64-C726-47F8-9CB0-1391C5911628");
 		private static readonly Guid FieldOverlayBehaviorGuid = new Guid("34ECB263-1370-4D6C-AC11-558447504EC4");
 		private static readonly Guid FolderPathSourceFieldArtifactIdGuid = new Guid("BF5F07A3-6349-47EE-9618-1DD32C9FD998");
 		private static readonly Guid ImportOverwriteModeGuid = new Guid("1914D2A3-A1FF-480B-81DC-7A2AA563047A");
@@ -32,8 +33,9 @@ namespace Relativity.Sync.Tests.Unit
 		public void SetUp()
 		{
 			_cache = new Mock<IConfiguration>();
+			_fieldMappings = new Mock<IFieldMappings>();
 			SyncJobParameters jobParameters = new SyncJobParameters(1, _WORKSPACE_ID);
-			_configuration = new ValidationConfiguration(_cache.Object, jobParameters);
+			_configuration = new ValidationConfiguration(_cache.Object, _fieldMappings.Object, jobParameters);
 		}
 
 		[Test]
@@ -77,9 +79,9 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public void ItShouldRetrieveFieldMappings()
 		{
-			const string expected = "{}";
-			_cache.Setup(x => x.GetFieldValue<string>(FieldMappingsGuid)).Returns(expected);
-			_configuration.FieldMappings.Should().Be(expected);
+			List<FieldMap> fieldMappings = new List<FieldMap>();
+			_fieldMappings.Setup(x => x.GetFieldMappings()).Returns(fieldMappings);
+			_configuration.FieldMappings.Should().BeSameAs(fieldMappings);
 		}
 
 		[Test]
@@ -118,7 +120,7 @@ namespace Relativity.Sync.Tests.Unit
 		public void ItShouldRetrieveJobHistory()
 		{
 			const string jobName = "Job name";
-			_cache.Setup(x => x.GetFieldValue<RelativityObjectValue>(JobHistoryGuid)).Returns(new RelativityObjectValue() {Name = jobName});
+			_cache.Setup(x => x.GetFieldValue<RelativityObjectValue>(JobHistoryGuid)).Returns(new RelativityObjectValue {Name = jobName});
 			_configuration.JobName.Should().Be(jobName);
 		}
 	}

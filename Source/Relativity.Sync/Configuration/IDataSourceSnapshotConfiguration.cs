@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Configuration
 {
@@ -9,13 +11,14 @@ namespace Relativity.Sync.Configuration
 
 		int DataSourceArtifactId { get; }
 
-		/// <summary>
-		///     Change from string to list of objects
-		/// </summary>
-		string FieldMappings { get; }
+		IList<FieldMap> FieldMappings { get; }
+
+		DestinationFolderStructureBehavior DestinationFolderStructureBehavior { get; }
+
+		int FolderPathSourceFieldArtifactId { get; }
 
 		bool IsSnapshotCreated { get; }
 
-		Task SetSnapshotDataAsync(Guid runId, int totalRecordsCount);
+		Task SetSnapshotDataAsync(Guid runId, long totalRecordsCount);
 	}
 }
