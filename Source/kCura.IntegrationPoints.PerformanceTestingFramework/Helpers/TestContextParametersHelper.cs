@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.PerformanceTestingFramework.Helpers
 			_parameters = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
 		}
 
-		public static string GetParameterFromTestContextOrAuxilaryFile(string parameterName)
+		public static string GetParameterFromTestContextOrAuxiliaryFile(string parameterName)
 		{
 			string value = TestContext.Parameters[parameterName];
 			if (value == null)

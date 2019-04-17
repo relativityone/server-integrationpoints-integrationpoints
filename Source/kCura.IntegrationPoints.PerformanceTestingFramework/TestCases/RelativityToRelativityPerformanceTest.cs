@@ -27,12 +27,12 @@ namespace kCura.IntegrationPoints.PerformanceTestingFramework.TestCases
 		private readonly bool _enableDataGrid;
 
 		public RelativityToRelativityPerformanceTest() : base(
-			Convert.ToInt32(TestContextParametersHelper.GetParameterFromTestContextOrAuxilaryFile("SourceWorkspaceArtifactID")),
-			TestContextParametersHelper.GetParameterFromTestContextOrAuxilaryFile("TargetWorkspaceName"),
-			TestContextParametersHelper.GetParameterFromTestContextOrAuxilaryFile("TemplateWorkspaceName"))
+			Convert.ToInt32(TestContextParametersHelper.GetParameterFromTestContextOrAuxiliaryFile("SourceWorkspaceArtifactID")),
+			TestContextParametersHelper.GetParameterFromTestContextOrAuxiliaryFile("TargetWorkspaceName"),
+			TestContextParametersHelper.GetParameterFromTestContextOrAuxiliaryFile("TemplateWorkspaceName"))
 		{
-			_enableDataGrid = Convert.ToBoolean(TestContextParametersHelper.GetParameterFromTestContextOrAuxilaryFile("EnableDataGrid"));
-			_fieldMappingsJson = File.ReadAllText(TestContextParametersHelper.GetParameterFromTestContextOrAuxilaryFile("FieldMappingsJSONPath"));
+			_enableDataGrid = Convert.ToBoolean(TestContextParametersHelper.GetParameterFromTestContextOrAuxiliaryFile("EnableDataGrid"));
+			_fieldMappingsJson = File.ReadAllText(TestContextParametersHelper.GetParameterFromTestContextOrAuxiliaryFile("FieldMappingsJSONPath"));
 		}
 
 		public override void SuiteSetup()
@@ -77,6 +77,7 @@ namespace kCura.IntegrationPoints.PerformanceTestingFramework.TestCases
 
 				elapsedTime = testDurationStopWatch.Elapsed.TotalSeconds;
 
+				//Assert
 				var queryRequest = new QueryRequest
 				{
 					Sorts = new[] { new Sort() { Direction = SortEnum.Descending, FieldIdentifier = new FieldRef { Name = "ArtifactID" } } }
@@ -100,7 +101,7 @@ namespace kCura.IntegrationPoints.PerformanceTestingFramework.TestCases
 			catch (Exception ex)
 			{
 				elapsedTime = -1;
-				Console.WriteLine($"Exception occured ({ex.GetType()}) {ex.Message}: {ex.StackTrace}");
+				Console.WriteLine($"Exception occurred ({ex.GetType()}) {ex.Message}: {ex.StackTrace}");
 				throw;
 			}
 			finally
@@ -144,13 +145,13 @@ namespace kCura.IntegrationPoints.PerformanceTestingFramework.TestCases
 		private string DestinationConfiguration(int targetWorkspaceId)
 		{
 			ImportNativeFileCopyModeEnum importNativeFileCopyMode;
-			Enum.TryParse(TestContextParametersHelper.GetParameterFromTestContextOrAuxilaryFile("ImportNativeFileCopyModeEnum"), out importNativeFileCopyMode);
+			Enum.TryParse(TestContextParametersHelper.GetParameterFromTestContextOrAuxiliaryFile("ImportNativeFileCopyModeEnum"), out importNativeFileCopyMode);
 
 			bool imageImport;
-			bool.TryParse(TestContextParametersHelper.GetParameterFromTestContextOrAuxilaryFile("ImageImport"), out imageImport);
+			bool.TryParse(TestContextParametersHelper.GetParameterFromTestContextOrAuxiliaryFile("ImageImport"), out imageImport);
 
 			bool importNativeFile;
-			bool.TryParse(TestContextParametersHelper.GetParameterFromTestContextOrAuxilaryFile("ImportNativeFile"), out importNativeFile);
+			bool.TryParse(TestContextParametersHelper.GetParameterFromTestContextOrAuxiliaryFile("ImportNativeFile"), out importNativeFile);
 
 			var destinationConfiguration = new ImportSettings()
 			{
@@ -186,7 +187,7 @@ namespace kCura.IntegrationPoints.PerformanceTestingFramework.TestCases
 		private string SourceConfiguration(int targetWorkspaceId, int savedSearchArtifactId)
 		{
 			int sourceWorkspaceId;
-			int.TryParse(TestContextParametersHelper.GetParameterFromTestContextOrAuxilaryFile("SourceWorkspaceArtifactID"), out sourceWorkspaceId);
+			int.TryParse(TestContextParametersHelper.GetParameterFromTestContextOrAuxiliaryFile("SourceWorkspaceArtifactID"), out sourceWorkspaceId);
 
 			var sourceConfiguration = new SourceConfiguration()
 			{
