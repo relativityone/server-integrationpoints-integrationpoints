@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
@@ -71,9 +72,14 @@ namespace Relativity.Sync.Executors.Validation
 		public override string ToString()
 		{
 			StringBuilder messages = new StringBuilder();
-			foreach (ValidationMessage validationMessage in ValidationResult.Messages)
+			List<ValidationMessage> validationMessages = ValidationResult.Messages.ToList();
+
+			for (int i = 0; i < validationMessages.Count; i++)
 			{
-				messages.AppendLine($"Error code: {validationMessage.ErrorCode}{Environment.NewLine}Message: {validationMessage.ShortMessage}");
+				ValidationMessage message = validationMessages[i];
+				string errorCode = string.IsNullOrEmpty(message.ErrorCode) ? string.Empty : $"(Error code: {message.ErrorCode}) ";
+
+				messages.AppendLine($"{i+1}. {errorCode}{message.ShortMessage}");
 			}
 
 			return $"Is valid: {ValidationResult.IsValid}{Environment.NewLine}{messages}";
