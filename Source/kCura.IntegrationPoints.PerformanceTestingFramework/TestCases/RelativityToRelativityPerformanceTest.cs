@@ -24,9 +24,14 @@ namespace kCura.IntegrationPoints.PerformanceTestingFramework.TestCases
 		private const int _ADMIN_USER_ID = 9;
 
 		private readonly string _fieldMappingsJson;
+		private readonly bool _enableDataGrid;
 
-		public RelativityToRelativityPerformanceTest() : base(Convert.ToInt32(TestContextParametersHelper.GetParameterFromTestContextOrAuxilaryFile("SourceWorkspaceArtifactID")), "")
+		public RelativityToRelativityPerformanceTest() : base(
+			Convert.ToInt32(TestContextParametersHelper.GetParameterFromTestContextOrAuxilaryFile("SourceWorkspaceArtifactID")),
+			TestContextParametersHelper.GetParameterFromTestContextOrAuxilaryFile("TargetWorkspaceName"),
+			TestContextParametersHelper.GetParameterFromTestContextOrAuxilaryFile("TemplateWorkspaceName"))
 		{
+			_enableDataGrid = Convert.ToBoolean(TestContextParametersHelper.GetParameterFromTestContextOrAuxilaryFile("EnableDataGrid"));
 			_fieldMappingsJson = File.ReadAllText(TestContextParametersHelper.GetParameterFromTestContextOrAuxilaryFile("FieldMappingsJSONPath"));
 		}
 
@@ -48,54 +53,70 @@ namespace kCura.IntegrationPoints.PerformanceTestingFramework.TestCases
 		[Test]
 		public void PerformanceTest()
 		{
-			//Arrange
-			IntegrationPointModel integrationPointModel = PrepareIntegrationPointsModel(TargetWorkspaceArtifactId);
-			IntegrationPointModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationPointModel);
-			var testDurationStopWatch = new Stopwatch();
-
-			//Act
-			_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, integrationPoint.ArtifactID, _ADMIN_USER_ID);
-			Status.WaitForIntegrationPointToLeavePendingState(Container, SourceWorkspaceArtifactId, integrationPoint.ArtifactID);
-
-			//start the timer only after the job is picked up by an agent
-			testDurationStopWatch.Start();
-			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactId, integrationPoint.ArtifactID);
-			testDurationStopWatch.Stop();
-
-			double elapsedTime = testDurationStopWatch.Elapsed.TotalSeconds;
-
-			var queryRequest = new QueryRequest
+			double elapsedTime = -1;
+			try
 			{
-				Sorts = new[] { new Sort() { Direction = SortEnum.Descending, FieldIdentifier = new FieldRef { Name = "ArtifactID" } } },
+				//Arrange
+				if (_enableDataGrid)
+				{
+					Workspace.EnableDataGrid(TargetWorkspaceArtifactId);
+				}
 
-			};
-			ResultSet<JobHistory> resultSet = ObjectManager.Query<JobHistory>(queryRequest, 0, 1);
+				IntegrationPointModel integrationPointModel = PrepareIntegrationPointsModel(TargetWorkspaceArtifactId);
+				IntegrationPointModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationPointModel);
+				var testDurationStopWatch = new Stopwatch();
 
-			if (resultSet.ResultCount == 0)
-			{
-				elapsedTime = -1;
-			}
-			else
-			{
-				JobHistory jobHistoryObject = resultSet.Items.First();
-				if (jobHistoryObject.JobStatus != JobStatusChoices.JobHistoryCompleted)
+				//Act
+				_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, integrationPoint.ArtifactID, _ADMIN_USER_ID);
+				Status.WaitForIntegrationPointToLeavePendingState(Container, SourceWorkspaceArtifactId, integrationPoint.ArtifactID);
+
+				//start the timer only after the job is picked up by an agent
+				testDurationStopWatch.Start();
+				Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactId, integrationPoint.ArtifactID);
+				testDurationStopWatch.Stop();
+
+				elapsedTime = testDurationStopWatch.Elapsed.TotalSeconds;
+
+				var queryRequest = new QueryRequest
+				{
+					Sorts = new[] { new Sort() { Direction = SortEnum.Descending, FieldIdentifier = new FieldRef { Name = "ArtifactID" } } }
+				};
+				ResultSet<JobHistory> resultSet = ObjectManager.Query<JobHistory>(queryRequest, 0, 1);
+
+				if (resultSet.ResultCount == 0)
 				{
 					elapsedTime = -1;
 				}
-				Console.WriteLine($"Job status: {jobHistoryObject.JobStatus.Name}");
+				else
+				{
+					JobHistory jobHistoryObject = resultSet.Items.First();
+					if (jobHistoryObject.JobStatus.Name != JobStatusChoices.JobHistoryCompleted.Name)
+					{
+						elapsedTime = -1;
+					}
+					Console.WriteLine($"Job status: {jobHistoryObject.JobStatus.Name}");
+				}
 			}
+			catch (Exception ex)
+			{
+				elapsedTime = -1;
+				Console.WriteLine($"Exception occured ({ex.GetType()}) {ex.Message}: {ex.StackTrace}");
+				throw;
+			}
+			finally
+			{
+				Console.WriteLine($"PerformanceTest - RIP job duration -> {Math.Round(elapsedTime, 2)}s");
 
-			Console.WriteLine($"PerformanceTest - RIP job duration -> {Math.Round(elapsedTime, 2)}s");
-
-			/* <<== IMPORTANT ==>>
-			 * This is the place, where we write the result in seconds to stdout.
-			 * Grazyna then reads this output and looks for number between '<<<<\t' '\t>>>>' tags.
-			 * The code lies in `Grazyna.Core.Utilities.OutputParser.ConsoleRunnerOutputResultsParser`.
-			 * The exact regex that the output is matched against is: "<<<<\t([\d\.+-]+)\t>>>>".
-			 * Please consider that when changing the code.
-			 */
-			Console.WriteLine($"<<<<\t{elapsedTime}\t>>>>");
-			/* <<==    END    ==>> */
+				/* <<== IMPORTANT ==>>
+				 * This is the place, where we write the result in seconds to stdout.
+				 * Grazyna then reads this output and looks for number between '<<<<\t' '\t>>>>' tags.
+				 * The code lies in `Grazyna.Core.Utilities.OutputParser.ConsoleRunnerOutputResultsParser`.
+				 * The exact regex that the output is matched against is: "<<<<\t([\d\.+-]+)\t>>>>".
+				 * Please consider that when changing the code.
+				 */
+				Console.WriteLine($"<<<<\t{elapsedTime}\t>>>>");
+				/* <<==    END    ==>> */
+			}
 		}
 
 		private IntegrationPointModel PrepareIntegrationPointsModel(int targetWorkspaceId)
