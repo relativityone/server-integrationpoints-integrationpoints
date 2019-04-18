@@ -265,7 +265,7 @@ namespace Rip.SystemTests.IntegrationPointServices
 
 		private IntegrationPointModel RetrieveIntegrationPoint(int artifactID)
 		{
-			return _integrationPointService.ReadIntegrationPoint(artifactID);
+			return _integrationPointService.ReadIntegrationPointModel(artifactID);
 		}
 	}
 }

@@ -5,7 +5,6 @@ using System.Data;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.Attributes;
-using kCura.IntegrationPoints.Agent.Validation;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core;
@@ -228,7 +227,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				throw new ArgumentNullException("Job must have a Related Object ArtifactID");
 			}
 
-			IntegrationPoint = IntegrationPointService.GetRdo(job.RelatedObjectArtifactID);
+			IntegrationPoint = IntegrationPointService.ReadIntegrationPoint(job.RelatedObjectArtifactID);
 			if (IntegrationPoint.SourceProvider == 0)
 			{
 				LogUnknownSourceProvider(job);
