@@ -17,11 +17,22 @@ namespace Relativity.Sync.ExecutionConstrains
 			_logger = logger;
 		}
 
-		public Task<bool> CanExecuteAsync(ISnapshotPartitionConfiguration configuration, CancellationToken token)
+		public async Task<bool> CanExecuteAsync(ISnapshotPartitionConfiguration configuration, CancellationToken token)
 		{
 			try
 			{
-				return Task.FromResult(true);
+				IBatch batch = await _batchRepository.GetLastAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId).ConfigureAwait(false);
+
+				if (batch == null)
+				{
+					// no batches created yet
+					return true;
+				}
+
+				int numberOfRecordsIncludedInBatches = batch.StartingIndex + batch.TotalItemsCount;
+
+				// we should execute if number of records included in batches in lower than total number of records
+				return numberOfRecordsIncludedInBatches < configuration.TotalRecordsCount;
 			}
 			catch (Exception e)
 			{
