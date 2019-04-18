@@ -17,6 +17,8 @@ namespace Relativity.Sync.Tests.Unit
 		private const int _WORKSPACE_ID = 987432;
 		private const int _JOB_ID = 9687413;
 
+		private const int _BATCH_SIZE = 985632;
+
 		private static readonly Guid SnapshotIdGuid = new Guid("D1210A1B-C461-46CB-9B73-9D22D05880C5");
 		private static readonly Guid SnapshotRecordsCountGuid = new Guid("57B93F20-2648-4ACF-973B-BCBA8A08E2BD");
 
@@ -25,8 +27,12 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			_cache = new Mock<IConfiguration>();
 			SyncJobParameters syncJobParameters = new SyncJobParameters(_JOB_ID, _WORKSPACE_ID);
+			SyncJobExecutionConfiguration configuration = new SyncJobExecutionConfiguration
+			{
+				BatchSize = _BATCH_SIZE
+			};
 
-			_instance = new SnapshotPartitionConfiguration(_cache.Object, syncJobParameters, new EmptyLogger());
+			_instance = new SnapshotPartitionConfiguration(_cache.Object, syncJobParameters, configuration, new EmptyLogger());
 		}
 
 		[Test]
@@ -39,6 +45,12 @@ namespace Relativity.Sync.Tests.Unit
 		public void SyncConfigurationIdShouldMatch()
 		{
 			_instance.SyncConfigurationArtifactId.Should().Be(_JOB_ID);
+		}
+
+		[Test]
+		public void BatchSizeShouldMatch()
+		{
+			_instance.BatchSize.Should().Be(_BATCH_SIZE);
 		}
 
 		[Test]

@@ -7,10 +7,10 @@ namespace Relativity.Sync.Executors
 	{
 		private List<SnapshotPart> _parts;
 
-		public Snapshot(int totalRecordsCount, SyncJobExecutionConfiguration configuration)
+		public Snapshot(int totalRecordsCount, int batchSize)
 		{
 			TotalRecordsCount = totalRecordsCount;
-			BatchSize = configuration.BatchSize;
+			BatchSize = batchSize;
 		}
 
 		public int TotalRecordsCount { get; }

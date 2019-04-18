@@ -14,7 +14,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			const int total = 852369;
 
-			Snapshot snapshot = new Snapshot(total, new SyncJobExecutionConfiguration());
+			Snapshot snapshot = new Snapshot(total, 1);
 
 			snapshot.TotalRecordsCount.Should().Be(total);
 		}
@@ -24,10 +24,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			const int batchSize = 784596;
 
-			Snapshot snapshot = new Snapshot(1, new SyncJobExecutionConfiguration
-			{
-				BatchSize = batchSize
-			});
+			Snapshot snapshot = new Snapshot(1, batchSize);
 
 			snapshot.BatchSize.Should().Be(batchSize);
 		}
@@ -41,10 +38,7 @@ namespace Relativity.Sync.Tests.Unit
 		[TestCase(100, 1000, 1)]
 		public static void ItShouldCalculateNumberOfBatches(int recordsCount, int batchSize, int expectedNumberOfBatches)
 		{
-			Snapshot snapshot = new Snapshot(recordsCount, new SyncJobExecutionConfiguration
-			{
-				BatchSize = batchSize
-			});
+			Snapshot snapshot = new Snapshot(recordsCount, batchSize);
 
 			snapshot.TotalNumberOfBatches.Should().Be(expectedNumberOfBatches);
 			snapshot.GetSnapshotParts().Count.Should().Be(expectedNumberOfBatches);
@@ -53,10 +47,7 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public static void ItShouldHandleEdgeCaseWhenCalculatingNumberOfBatches()
 		{
-			Snapshot snapshot = new Snapshot(int.MaxValue, new SyncJobExecutionConfiguration
-			{
-				BatchSize = int.MaxValue
-			});
+			Snapshot snapshot = new Snapshot(int.MaxValue, int.MaxValue);
 
 			snapshot.TotalNumberOfBatches.Should().Be(1);
 		}
@@ -67,10 +58,7 @@ namespace Relativity.Sync.Tests.Unit
 			const int batchSize = 10;
 			const int total = 25;
 
-			Snapshot snapshot = new Snapshot(total, new SyncJobExecutionConfiguration
-			{
-				BatchSize = batchSize
-			});
+			Snapshot snapshot = new Snapshot(total, batchSize);
 
 			List<SnapshotPart> parts = snapshot.GetSnapshotParts();
 
@@ -94,7 +82,7 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public static void ItShouldCacheParts()
 		{
-			Snapshot snapshot = new Snapshot(1, new SyncJobExecutionConfiguration());
+			Snapshot snapshot = new Snapshot(1, 1);
 
 			List<SnapshotPart> parts1 = snapshot.GetSnapshotParts();
 			List<SnapshotPart> parts2 = snapshot.GetSnapshotParts();
