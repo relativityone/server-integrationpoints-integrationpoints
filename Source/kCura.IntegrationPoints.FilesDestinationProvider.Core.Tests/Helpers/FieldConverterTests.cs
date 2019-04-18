@@ -132,15 +132,15 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Helpers
 				Assert.AreEqual(sourceField.DisplayValueTrue, field.DisplayValueTrue);
 				Assert.AreEqual(sourceField.EnableDataGrid, field.EnableDataGrid);
 				Assert.AreEqual(sourceField.FieldArtifactTypeID, field.FieldArtifactTypeID);
-				Assert.AreEqual(sourceField.FieldCategory, field.FieldCategory);
+				AssertEqualEnums(sourceField.FieldCategory, field.FieldCategory);
 				Assert.AreEqual(sourceField.FieldDisplayTypeID, field.FieldDisplayTypeID);
 				Assert.AreEqual(sourceField.FieldTreeView, field.FieldTreeView);
-				Assert.AreEqual(sourceField.FieldType, field.FieldType);
+				AssertEqualEnums(sourceField.FieldType, field.FieldType);
 				Assert.AreEqual(sourceField.FilterType, field.FilterType);
 				Assert.AreEqual(sourceField.FormatString, field.FormatString);
 				Assert.AreEqual(sourceField.FriendlyName, field.FriendlyName);
 				CollectionAssert.AreEqual(sourceField.Guids, field.Guids);
-				Assert.AreEqual(sourceField.ImportBehavior, field.ImportBehavior);
+				AssertEqualEnums(sourceField.ImportBehavior, field.ImportBehavior);
 				Assert.AreEqual(sourceField.IsArtifactBaseField, field.IsArtifactBaseField);
 				Assert.AreEqual(sourceField.IsAvailableInChoiceTree, field.IsAvailableInChoiceTree);
 				Assert.AreEqual(sourceField.IsAvailableToAssociativeObjects, field.IsAvailableToAssociativeObjects);
@@ -152,7 +152,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Helpers
 				Assert.AreEqual(sourceField.IsRequired, field.IsRequired);
 				Assert.AreEqual(field.IsSortable, field.IsSortable);
 				Assert.AreEqual(sourceField.IsVisible, field.IsVisible);
-				Assert.IsTrue(AreKeyboardShortcutsEqual(_keyboardShortcutConverted, field.KeyboardShortcut));
+				Assert.IsTrue(AreKeyboardShortcutsEqual(sourceField.KeyboardShortcut, field.KeyboardShortcut));
 				Assert.AreEqual(sourceField.Keywords, field.Keywords);
 				Assert.AreEqual(sourceField.LastModifiedBy, field.LastModifiedBy);
 				Assert.AreEqual(sourceField.LastModifiedOn, field.LastModifiedOn);
@@ -170,6 +170,19 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Helpers
 				Assert.AreEqual(sourceField.Value, field.Value);
 				Assert.AreEqual(sourceField.Width, field.Width);
 				Assert.AreEqual(sourceField.Wrapping, field.Wrapping);
+			}
+
+			private static void AssertEqualEnums(object enum1, object enum2)
+			{
+				if (enum1 != null && enum2 != null)
+				{
+					Assert.AreEqual(enum1.ToString(), enum2.ToString());
+					Assert.AreEqual((int)enum1, (int)enum2);
+				}
+				else if ((enum1 == null && enum2 != null) || (enum2 == null && enum1 != null))
+				{
+					Assert.Fail($"Enum values are not equal expected {enum1} actual {enum2}");
+				}
 			}
 
 			internal static Mock<IField> CreateBasicFieldMock()
@@ -233,13 +246,26 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Helpers
 				return fieldMock;
 			}
 
-			private static bool AreKeyboardShortcutsEqual(KeyboardShortcut keyboardShortcut1, KeyboardShortcut keyboardShortcut2)
+			private static bool AreKeyboardShortcutsEqual(IKeyboardShortcut keyboardShortcut1, KeyboardShortcut keyboardShortcut2)
 			{
-				return keyboardShortcut1.Alt == keyboardShortcut2.Alt &&
-					   keyboardShortcut1.Ctrl == keyboardShortcut2.Ctrl &&
-					   keyboardShortcut1.Shift == keyboardShortcut2.Shift &&
-					   keyboardShortcut1.Id == keyboardShortcut2.Id &&
-					   keyboardShortcut1.Key == keyboardShortcut2.Key;
+				if ((keyboardShortcut1 != null || keyboardShortcut2 == null) &&
+				    (keyboardShortcut2 != null || keyboardShortcut1 == null))
+				{
+					if (keyboardShortcut1 != null && keyboardShortcut2 != null)
+					{
+						return keyboardShortcut1.Alt == keyboardShortcut2.Alt &&
+						       keyboardShortcut1.Ctrl == keyboardShortcut2.Ctrl &&
+						       keyboardShortcut1.Shift == keyboardShortcut2.Shift &&
+						       keyboardShortcut1.ID == keyboardShortcut2.Id &&
+						       keyboardShortcut1.Key == keyboardShortcut2.Key;
+					}
+					else
+					{
+						return true;
+					}
+				}
+
+				return false;
 			}
 
 			private static readonly KeyboardShortcut _keyboardShortcutConverted = CreateKeyboardShortcutConverted();
