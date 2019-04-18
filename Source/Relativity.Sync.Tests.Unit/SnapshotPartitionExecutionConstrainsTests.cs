@@ -39,8 +39,6 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public async Task ItShouldExecuteWhenBatchesAreMissing()
 		{
-			_batchRepository.Setup(x => x.AreBatchesCreated(_WORKSPACE_ID, _SYNC_CONF_ID)).ReturnsAsync(false);
-
 			// ACT
 			bool shouldExecute = await _instance.CanExecuteAsync(_configuration, CancellationToken.None).ConfigureAwait(false);
 
@@ -51,8 +49,6 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public async Task ItShouldPreventExecutionWhenBatchesExist()
 		{
-			_batchRepository.Setup(x => x.AreBatchesCreated(_WORKSPACE_ID, _SYNC_CONF_ID)).ReturnsAsync(true);
-
 			// ACT
 			bool shouldExecute = await _instance.CanExecuteAsync(_configuration, CancellationToken.None).ConfigureAwait(false);
 
@@ -63,8 +59,6 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public void ItShouldNotHideException()
 		{
-			_batchRepository.Setup(x => x.AreBatchesCreated(_WORKSPACE_ID, _SYNC_CONF_ID)).Throws<InvalidOperationException>();
-
 			// ACT
 			Func<Task> action = async () => await _instance.CanExecuteAsync(_configuration, CancellationToken.None).ConfigureAwait(false);
 

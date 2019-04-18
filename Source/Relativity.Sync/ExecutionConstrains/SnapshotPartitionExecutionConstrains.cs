@@ -17,12 +17,11 @@ namespace Relativity.Sync.ExecutionConstrains
 			_logger = logger;
 		}
 
-		public async Task<bool> CanExecuteAsync(ISnapshotPartitionConfiguration configuration, CancellationToken token)
+		public Task<bool> CanExecuteAsync(ISnapshotPartitionConfiguration configuration, CancellationToken token)
 		{
 			try
 			{
-				bool batchesCreated = await _batchRepository.AreBatchesCreated(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId).ConfigureAwait(false);
-				return !batchesCreated;
+				return Task.FromResult(true);
 			}
 			catch (Exception e)
 			{

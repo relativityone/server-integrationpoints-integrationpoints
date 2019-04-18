@@ -5,7 +5,6 @@ using Relativity.Services.Workspace;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Helpers;
-using Relativity.Sync.Tests.System.Stubs;
 
 namespace Relativity.Sync.Tests.System
 {
