@@ -8,7 +8,10 @@
 		/// <summary>
 		///     Defines size of a single batch
 		/// </summary>
-		public int BatchSize { get; set; } = 1000;
+		/// <remarks>
+		///     Set to <see cref="int.MaxValue" /> to ensure only one batch
+		/// </remarks>
+		public int BatchSize { get; set; } = int.MaxValue;
 
 		/// <summary>
 		///     Defines how many batches can be run in parallel
