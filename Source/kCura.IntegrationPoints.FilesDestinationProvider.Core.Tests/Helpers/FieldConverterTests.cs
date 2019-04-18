@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Helpers
 			Field result = converter.ConvertToField(field);
 
 			// Assert
-			ValidateConvertedFieldValues(result, field);
+			TestFields.ValidateConvertedFieldValues(result, field);
 		}
 
 		[Test]
@@ -40,98 +40,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Helpers
 			Field result = converter.ConvertToField(field);
 
 			// Assert
-			ValidateConvertedFieldValues(result, field);
+			TestFields.ValidateConvertedFieldValues(result, field);
 		}
 
-		private void ValidateConvertedFieldValues(Field field, IField sourceField)
-		{
-			Assert.AreEqual(sourceField.AllowGroupBy, field.AllowGroupBy);
-			Assert.AreEqual(sourceField.AllowHtml, field.AllowHtml);
-			Assert.AreEqual(sourceField.AllowPivot, field.AllowPivot);
-			Assert.AreEqual(sourceField.ArtifactID, field.ArtifactID);
-			Assert.AreEqual(sourceField.ArtifactTypeID, field.ArtifactTypeID);
-			Assert.AreEqual(sourceField.ViewFieldID, field.ArtifactViewFieldID);
-			Assert.AreEqual(sourceField.AssociativeArtifactTypeID, field.AssociativeArtifactTypeID);
-			Assert.AreEqual(sourceField.AutoAddChoices, field.AutoAddChoices);
-			Assert.AreEqual(sourceField.AvailableInViewer, field.AvailableInViewer);
-			Assert.AreEqual(sourceField.CodeTypeID, field.CodeTypeID);
-			Assert.AreEqual(sourceField.ColumnName, field.ColumnName);
-			Assert.AreEqual(sourceField.CreatedBy, field.CreatedBy);
-			Assert.AreEqual(sourceField.CreatedOn, field.CreatedOn);
-			Assert.AreEqual(sourceField.DeleteFlag, field.DeleteFlag);
-			Assert.AreEqual(sourceField.DisplayValueFalse, field.DisplayValueFalse);
-			Assert.AreEqual(sourceField.DisplayValueTrue, field.DisplayValueTrue);
-			Assert.AreEqual(sourceField.EnableDataGrid, field.EnableDataGrid);
-			Assert.AreEqual(sourceField.FieldArtifactTypeID, field.FieldArtifactTypeID);
-			Assert.AreEqual(sourceField.FieldCategory, field.FieldCategory);
-			Assert.AreEqual(sourceField.FieldDisplayTypeID, field.FieldDisplayTypeID);
-			Assert.AreEqual(sourceField.FieldTreeView, field.FieldTreeView);
-			Assert.AreEqual(sourceField.FieldType, field.FieldType);
-			Assert.AreEqual(sourceField.FilterType, field.FilterType);
-			Assert.AreEqual(sourceField.FormatString, field.FormatString);
-			Assert.AreEqual(sourceField.FriendlyName, field.FriendlyName);
-			CollectionAssert.AreEqual(sourceField.Guids, field.Guids);
-			Assert.AreEqual(sourceField.ImportBehavior, field.ImportBehavior);
-			Assert.AreEqual(sourceField.IsArtifactBaseField, field.IsArtifactBaseField);
-			Assert.AreEqual(sourceField.IsAvailableInChoiceTree, field.IsAvailableInChoiceTree);
-			Assert.AreEqual(sourceField.IsAvailableToAssociativeObjects, field.IsAvailableToAssociativeObjects);
-			Assert.AreEqual(sourceField.IsEditable, field.IsEditable);
-			Assert.AreEqual(sourceField.IsGroupByEnabled, field.IsGroupByEnabled);
-			Assert.AreEqual(sourceField.IsIndexEnabled, field.IsIndexEnabled);
-			Assert.AreEqual(sourceField.IsLinked, field.IsLinked);
-			Assert.AreEqual(sourceField.IsRemovable, field.IsRemovable);
-			Assert.AreEqual(sourceField.IsRequired, field.IsRequired);
-			Assert.AreEqual(field.IsSortable, field.IsSortable);
-			Assert.AreEqual(sourceField.IsVisible, field.IsVisible);
-			Assert.IsTrue(AreKeyboardShortcutsEqual(_keyboardShortcutConverted, field.KeyboardShortcut));
-			Assert.AreEqual(sourceField.Keywords, field.Keywords);
-			Assert.AreEqual(sourceField.LastModifiedBy, field.LastModifiedBy);
-			Assert.AreEqual(sourceField.LastModifiedOn, field.LastModifiedOn);
-			Assert.AreEqual(sourceField.LinkLayoutArtifactID, field.LinkLayoutArtifactID);
-			Assert.AreEqual(sourceField.MaxLength, field.MaxLength);
-			Assert.AreEqual(sourceField.Name, field.NameValue);
-			Assert.AreEqual(sourceField.Name, field.DisplayName);
-			Assert.AreEqual(sourceField.Notes, field.Notes);
-			Assert.AreEqual(sourceField.OverlayBehavior, field.OverlayBehavior);
-			Assert.AreEqual(sourceField.ParentArtifactID, field.ParentArtifactID);
-			Assert.AreEqual(sourceField.PopupPickerView, field.PopupPickerView);
-			Assert.AreEqual(sourceField.RelationalIndexViewArtifactID, field.RelationalIndexViewArtifactID);
-			Assert.AreEqual(sourceField.TextIdentifier, field.TextIdentifier);
-			Assert.AreEqual(_USE_UNICODE_ENCODING, field.UseUnicodeEncoding);
-			Assert.AreEqual(sourceField.Value, field.Value);
-			Assert.AreEqual(sourceField.Width, field.Width);
-			Assert.AreEqual(sourceField.Wrapping, field.Wrapping);
-		}
-		private static bool AreKeyboardShortcutsEqual(KeyboardShortcut keyboardShortcut1, KeyboardShortcut keyboardShortcut2)
-		{
-			return keyboardShortcut1.Alt == keyboardShortcut2.Alt &&
-				   keyboardShortcut1.Ctrl == keyboardShortcut2.Ctrl &&
-				   keyboardShortcut1.Shift == keyboardShortcut2.Shift &&
-				   keyboardShortcut1.Id == keyboardShortcut2.Id &&
-				   keyboardShortcut1.Key == keyboardShortcut2.Key;
-		}
-
-		private readonly KeyboardShortcut _keyboardShortcutConverted = CreateKeyboardShortcutConverted();
-
-		private static KeyboardShortcut CreateKeyboardShortcutConverted()
-		{
-			return new KeyboardShortcut
-			{
-				Alt = _KEYBOARD_SHORTCUT_ALT,
-				Ctrl = _KEYBOARD_SHORTCUT_CTRL,
-				Id = _KEYBOARD_SHORTCUT_ID,
-				Key = _KEYBOARD_SHORTCUT_KEY,
-				Shift = _KEYBOARD_SHORTCUT_SHIFT
-			};
-		}
-
-
-		private const bool _KEYBOARD_SHORTCUT_ALT = false;
-		private const bool _KEYBOARD_SHORTCUT_CTRL = false;
-		private const bool _KEYBOARD_SHORTCUT_SHIFT = true;
-		private const bool _USE_UNICODE_ENCODING = true;
-		private const int _KEYBOARD_SHORTCUT_ID = 1048234;
-		private const int _KEYBOARD_SHORTCUT_KEY = 14;
 
 
 		public static class TestFields
@@ -196,6 +107,71 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Helpers
 			private static readonly int? _relationalIndexViewArtifactID = 1084387;
 			private static readonly Mock<IKeyboardShortcut> _keyboardShortcut = CreateKeyboardShortcutMock();
 
+			private const bool _KEYBOARD_SHORTCUT_ALT = false;
+			private const bool _KEYBOARD_SHORTCUT_CTRL = false;
+			private const bool _KEYBOARD_SHORTCUT_SHIFT = true;
+			private const bool _USE_UNICODE_ENCODING = true;
+
+			internal static void ValidateConvertedFieldValues(Field field, IField sourceField)
+			{
+				Assert.AreEqual(sourceField.AllowGroupBy, field.AllowGroupBy);
+				Assert.AreEqual(sourceField.AllowHtml, field.AllowHtml);
+				Assert.AreEqual(sourceField.AllowPivot, field.AllowPivot);
+				Assert.AreEqual(sourceField.ArtifactID, field.ArtifactID);
+				Assert.AreEqual(sourceField.ArtifactTypeID, field.ArtifactTypeID);
+				Assert.AreEqual(sourceField.ViewFieldID, field.ArtifactViewFieldID);
+				Assert.AreEqual(sourceField.AssociativeArtifactTypeID, field.AssociativeArtifactTypeID);
+				Assert.AreEqual(sourceField.AutoAddChoices, field.AutoAddChoices);
+				Assert.AreEqual(sourceField.AvailableInViewer, field.AvailableInViewer);
+				Assert.AreEqual(sourceField.CodeTypeID, field.CodeTypeID);
+				Assert.AreEqual(sourceField.ColumnName, field.ColumnName);
+				Assert.AreEqual(sourceField.CreatedBy, field.CreatedBy);
+				Assert.AreEqual(sourceField.CreatedOn, field.CreatedOn);
+				Assert.AreEqual(sourceField.DeleteFlag, field.DeleteFlag);
+				Assert.AreEqual(sourceField.DisplayValueFalse, field.DisplayValueFalse);
+				Assert.AreEqual(sourceField.DisplayValueTrue, field.DisplayValueTrue);
+				Assert.AreEqual(sourceField.EnableDataGrid, field.EnableDataGrid);
+				Assert.AreEqual(sourceField.FieldArtifactTypeID, field.FieldArtifactTypeID);
+				Assert.AreEqual(sourceField.FieldCategory, field.FieldCategory);
+				Assert.AreEqual(sourceField.FieldDisplayTypeID, field.FieldDisplayTypeID);
+				Assert.AreEqual(sourceField.FieldTreeView, field.FieldTreeView);
+				Assert.AreEqual(sourceField.FieldType, field.FieldType);
+				Assert.AreEqual(sourceField.FilterType, field.FilterType);
+				Assert.AreEqual(sourceField.FormatString, field.FormatString);
+				Assert.AreEqual(sourceField.FriendlyName, field.FriendlyName);
+				CollectionAssert.AreEqual(sourceField.Guids, field.Guids);
+				Assert.AreEqual(sourceField.ImportBehavior, field.ImportBehavior);
+				Assert.AreEqual(sourceField.IsArtifactBaseField, field.IsArtifactBaseField);
+				Assert.AreEqual(sourceField.IsAvailableInChoiceTree, field.IsAvailableInChoiceTree);
+				Assert.AreEqual(sourceField.IsAvailableToAssociativeObjects, field.IsAvailableToAssociativeObjects);
+				Assert.AreEqual(sourceField.IsEditable, field.IsEditable);
+				Assert.AreEqual(sourceField.IsGroupByEnabled, field.IsGroupByEnabled);
+				Assert.AreEqual(sourceField.IsIndexEnabled, field.IsIndexEnabled);
+				Assert.AreEqual(sourceField.IsLinked, field.IsLinked);
+				Assert.AreEqual(sourceField.IsRemovable, field.IsRemovable);
+				Assert.AreEqual(sourceField.IsRequired, field.IsRequired);
+				Assert.AreEqual(field.IsSortable, field.IsSortable);
+				Assert.AreEqual(sourceField.IsVisible, field.IsVisible);
+				Assert.IsTrue(AreKeyboardShortcutsEqual(_keyboardShortcutConverted, field.KeyboardShortcut));
+				Assert.AreEqual(sourceField.Keywords, field.Keywords);
+				Assert.AreEqual(sourceField.LastModifiedBy, field.LastModifiedBy);
+				Assert.AreEqual(sourceField.LastModifiedOn, field.LastModifiedOn);
+				Assert.AreEqual(sourceField.LinkLayoutArtifactID, field.LinkLayoutArtifactID);
+				Assert.AreEqual(sourceField.MaxLength, field.MaxLength);
+				Assert.AreEqual(sourceField.Name, field.NameValue);
+				Assert.AreEqual(sourceField.Name, field.DisplayName);
+				Assert.AreEqual(sourceField.Notes, field.Notes);
+				Assert.AreEqual(sourceField.OverlayBehavior, field.OverlayBehavior);
+				Assert.AreEqual(sourceField.ParentArtifactID, field.ParentArtifactID);
+				Assert.AreEqual(sourceField.PopupPickerView, field.PopupPickerView);
+				Assert.AreEqual(sourceField.RelationalIndexViewArtifactID, field.RelationalIndexViewArtifactID);
+				Assert.AreEqual(sourceField.TextIdentifier, field.TextIdentifier);
+				Assert.AreEqual(_USE_UNICODE_ENCODING, field.UseUnicodeEncoding);
+				Assert.AreEqual(sourceField.Value, field.Value);
+				Assert.AreEqual(sourceField.Width, field.Width);
+				Assert.AreEqual(sourceField.Wrapping, field.Wrapping);
+			}
+
 			internal static Mock<IField> CreateBasicFieldMock()
 			{
 				var fieldMock = new Mock<IField>();
@@ -256,6 +232,35 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Helpers
 				fieldMock.Setup(x => x.Wrapping).Returns(_WRAPPING);
 				return fieldMock;
 			}
+
+			private static bool AreKeyboardShortcutsEqual(KeyboardShortcut keyboardShortcut1, KeyboardShortcut keyboardShortcut2)
+			{
+				return keyboardShortcut1.Alt == keyboardShortcut2.Alt &&
+					   keyboardShortcut1.Ctrl == keyboardShortcut2.Ctrl &&
+					   keyboardShortcut1.Shift == keyboardShortcut2.Shift &&
+					   keyboardShortcut1.Id == keyboardShortcut2.Id &&
+					   keyboardShortcut1.Key == keyboardShortcut2.Key;
+			}
+
+			private static readonly KeyboardShortcut _keyboardShortcutConverted = CreateKeyboardShortcutConverted();
+
+
+			private static KeyboardShortcut CreateKeyboardShortcutConverted()
+			{
+				return new KeyboardShortcut
+				{
+					Alt = _KEYBOARD_SHORTCUT_ALT,
+					Ctrl = _KEYBOARD_SHORTCUT_CTRL,
+					Id = _KEYBOARD_SHORTCUT_ID,
+					Key = _KEYBOARD_SHORTCUT_KEY,
+					Shift = _KEYBOARD_SHORTCUT_SHIFT
+				};
+			}
+
+
+			private const int _KEYBOARD_SHORTCUT_ID = 1048234;
+
+			private const int _KEYBOARD_SHORTCUT_KEY = 14;
 
 			internal static Mock<IField> CreateFieldMockWithNulls()
 			{
