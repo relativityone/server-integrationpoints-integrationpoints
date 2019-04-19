@@ -21,7 +21,6 @@ namespace Relativity.Sync.Tests.System
 
 		private const string _JOB_HISTORY_NAME = "Test Job Name";
 		private const string _LOCAL_INSTANCE_NAME = "This Instance";
-		private const int _USER_ID = 9;
 		private static readonly Guid _RELATIVITY_SOURCE_CASE_OBJECT_TYPE_GUID = new Guid("7E03308C-0B58-48CB-AFA4-BB718C3F5CAC");
 		private static readonly Guid _RELATIVITY_SOURCE_JOB_OBJECT_TYPE_GUID = new Guid("6f4dd346-d398-4e76-8174-f0cd8236cbe7");
 
@@ -55,8 +54,7 @@ namespace Relativity.Sync.Tests.System
 			{
 				DestinationWorkspaceArtifactId = _destinationWorkspace.ArtifactID,
 				SourceWorkspaceArtifactId = expectedSourceWorkspaceArtifactId,
-				JobArtifactId = expectedJobHistoryArtifactId,
-				ExecutingUserId = _USER_ID
+				JobArtifactId = expectedJobHistoryArtifactId
 			};
 
 			// ACT
@@ -106,8 +104,7 @@ namespace Relativity.Sync.Tests.System
 			{
 				DestinationWorkspaceArtifactId = _destinationWorkspace.ArtifactID,
 				SourceWorkspaceArtifactId = expectedSourceWorkspaceArtifactId,
-				JobArtifactId = expectedJobHistoryArtifactId,
-				ExecutingUserId = _USER_ID
+				JobArtifactId = expectedJobHistoryArtifactId
 			};
 
 			ISyncJob syncJob = SyncJobHelper.CreateWithMockedContainerExceptProvidedType<IDestinationWorkspaceTagsCreationConfiguration>(configuration);

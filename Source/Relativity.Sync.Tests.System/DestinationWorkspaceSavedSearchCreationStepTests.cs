@@ -29,7 +29,6 @@ namespace Relativity.Sync.Tests.System
 			// ARRANGE
 			const int sourceWorkspaceArtifactId = 123;
 			const int jobHistoryArtifactId = 456;
-			const int userId = 9;
 			string jobHistoryName = "Job History Tag Name";
 			string sourceWorkspaceName = "Source Workspace";
 			string sourceWorkspaceTagName = "Source Workspace Tag Name";
@@ -44,8 +43,7 @@ namespace Relativity.Sync.Tests.System
 				DestinationWorkspaceArtifactId = _destinationWorkspace.ArtifactID,
 				SourceWorkspaceArtifactId = sourceWorkspaceArtifactId,
 				SourceJobTagArtifactId = sourceJobTagArtifactId,
-				SourceJobTagName = sourceJobTagName,
-				ExecutingUserId = userId
+				SourceJobTagName = sourceJobTagName
 			};
 			
 			ISyncJob syncJob = SyncJobHelper.CreateWithMockedContainerExceptProvidedType<IDestinationWorkspaceSavedSearchCreationConfiguration>(configuration);
