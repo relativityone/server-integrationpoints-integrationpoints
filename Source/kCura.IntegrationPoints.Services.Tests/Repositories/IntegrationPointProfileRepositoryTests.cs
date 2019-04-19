@@ -211,13 +211,13 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 				DestinationProvider = 443
 			};
 
-			_integrationPointService.GetRdo(integrationPointArtifactId).Returns(integrationPoint);
+			_integrationPointService.ReadIntegrationPoint(integrationPointArtifactId).Returns(integrationPoint);
 			_integrationPointProfileService.SaveIntegration(Arg.Any<IntegrationPointProfileModel>()).Returns(artifactId);
 			_integrationPointProfileService.GetRdo(artifactId).Returns(integrationPointProfile);
 
 			_integrationPointProfileRepository.CreateIntegrationPointProfileFromIntegrationPoint(integrationPointArtifactId, profileName);
 
-			_integrationPointService.Received(1).GetRdo(integrationPointArtifactId);
+			_integrationPointService.Received(1).ReadIntegrationPoint(integrationPointArtifactId);
 			_integrationPointProfileService.Received(1).SaveIntegration(Arg.Is<IntegrationPointProfileModel>(x => x.Name == profileName && x.ArtifactID == 0));
 			_integrationPointProfileService.Received(1).GetRdo(artifactId);
 		}

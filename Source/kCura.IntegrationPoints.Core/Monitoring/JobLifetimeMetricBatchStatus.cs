@@ -135,7 +135,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.JobLifetime
 
 		private ProviderType GetProviderType(Job job)
 		{
-			IntegrationPoint integrationPoint = _integrationPointService.GetRdo(job.RelatedObjectArtifactID);
+			IntegrationPoint integrationPoint = _integrationPointService.ReadIntegrationPoint(job.RelatedObjectArtifactID);
 			ProviderType providerType = integrationPoint.GetProviderType(_providerTypeService);
 			return providerType;
 		}

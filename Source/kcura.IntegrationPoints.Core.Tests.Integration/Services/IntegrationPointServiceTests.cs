@@ -492,7 +492,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Assert.Throws<IntegrationPointValidationException>(() => _integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, integrationPointModel.ArtifactID, _ADMIN_USER_ID));
 
 			// Assert
-			Data.IntegrationPoint ip = _integrationPointService.GetRdo(integrationPointModel.ArtifactID);
+			Data.IntegrationPoint ip = _integrationPointService.ReadIntegrationPoint(integrationPointModel.ArtifactID);
 			var jobHistory = _jobHistoryService.GetJobHistory(ip.JobHistory);
 			Assert.NotNull(ip.JobHistory);
 			Assert.AreEqual(JobStatusChoices.JobHistoryValidationFailed.Name, jobHistory[0].JobStatus.Name);

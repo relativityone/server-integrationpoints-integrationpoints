@@ -95,7 +95,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			IContextContainer contextContainerMock = Substitute.For<IContextContainer>();
 
-			_integrationPointService.GetRdo(_job.RelatedObjectArtifactID).Returns(integrationPoint);
+			_integrationPointService.ReadIntegrationPoint(_job.RelatedObjectArtifactID).Returns(integrationPoint);
 			_exportInitProcessService.CalculateDocumentCountToTransfer(sourceConfiguration, artifactTypeId).Returns(totalSavedSearchCount);
 
 			_contextContainerFactoryMock.CreateContextContainer(_helperMock).Returns(contextContainerMock);

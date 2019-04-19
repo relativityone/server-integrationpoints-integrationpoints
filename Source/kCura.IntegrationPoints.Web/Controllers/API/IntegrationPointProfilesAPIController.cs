@@ -140,7 +140,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 						using (metricManager.LogDuration(Core.Constants.IntegrationPoints.Telemetry.BUCKET_INTEGRATION_POINT_PROFILE_SAVE_AS_PROFILE_DURATION_METRIC_COLLECTOR,
 							Guid.Empty, profileName))
 						{
-							var ip = _integrationPointService.GetRdo(integrationPointArtifactId);
+							var ip = _integrationPointService.ReadIntegrationPoint(integrationPointArtifactId);
 							var model = IntegrationPointProfileModel.FromIntegrationPoint(ip, profileName);
 
 							int createdId = _profileService.SaveIntegration(model);

@@ -55,7 +55,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 
 			IIntegrationPointService service = Container.Resolve<IIntegrationPointService>();
 			int integrationPointArtifactId = service.SaveIntegration(integrationPointModel);
-			Data.IntegrationPoint integrationPoint = service.GetRdo(integrationPointArtifactId);
+			Data.IntegrationPoint integrationPoint = service.ReadIntegrationPoint(integrationPointArtifactId);
 
 			_extendedJobMock.SetupGet(x => x.IntegrationPointModel).Returns(integrationPoint);
 

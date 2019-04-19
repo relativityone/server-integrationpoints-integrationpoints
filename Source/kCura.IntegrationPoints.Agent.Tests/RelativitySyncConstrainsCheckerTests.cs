@@ -60,7 +60,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 
 
 			_integrationPointService = new Mock<IIntegrationPointService>();
-			_integrationPointService.Setup(s => s.GetRdo(_integrationPointId)).Returns(integrationPoint);
+			_integrationPointService.Setup(s => s.ReadIntegrationPoint(_integrationPointId)).Returns(integrationPoint);
 
 
 			_configurationDeserializer = new Mock<IConfigurationDeserializer>();
@@ -138,7 +138,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 		[Test]
 		public void ItShouldNotAllowUsingSyncWorkflowWhenIntegrationPointServiceThrows()
 		{
-			_integrationPointService.Setup(s => s.GetRdo(_integrationPointId)).Throws<Exception>();
+			_integrationPointService.Setup(s => s.ReadIntegrationPoint(_integrationPointId)).Throws<Exception>();
 
 			bool result = _instance.ShouldUseRelativitySync(_job);
 

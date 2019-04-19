@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 			_integrationPoint.SourceProvider.Returns(0);
 			_integrationPoint.DestinationProvider.Returns(0);
 
-			_integrationPointService.GetRdo(Arg.Any<int>()).Returns(_integrationPoint);
+			_integrationPointService.ReadIntegrationPoint(Arg.Any<int>()).Returns(_integrationPoint);
 
 			_taskParameters = Substitute.For<TaskParameters>();
 			_taskParameters.BatchInstance = Guid.Empty;
