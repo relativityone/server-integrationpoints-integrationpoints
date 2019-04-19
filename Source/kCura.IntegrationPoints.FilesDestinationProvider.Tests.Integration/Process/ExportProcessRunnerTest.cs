@@ -79,7 +79,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 
 			_configSettings.DocumentsTestData = DocumentTestDataBuilder.BuildTestData();
 
-			_workspaceService.ImportData(_configSettings.WorkspaceId, _configSettings.DocumentsTestData);
+			_workspaceService.TryImportData(_configSettings.WorkspaceId, _configSettings.DocumentsTestData);
 
 			_configSettings.ViewId = _workspaceService.GetView(_configSettings.WorkspaceId, _configSettings.ViewName);
 

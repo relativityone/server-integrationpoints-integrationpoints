@@ -32,6 +32,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
@@ -42,7 +43,10 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="RelativityServices\Arrangers\DocumentTestCaseArranger.cs" />
     <Compile Include="RelativityServices\CoreSearchManagerTests.cs" />
+    <Compile Include="RelativityServices\TestCases\DocumentTestCase.cs" />
+    <Compile Include="RelativityServices\TestCases\ImageTestCase.cs" />
     <Compile Include="SystemTestsFixture.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -59,6 +63,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Common\kCura.IntegrationPoints.Common.csproj">
       <Project>{32bcb03b-4980-4434-9392-f72334e6e348}</Project>
       <Name>kCura.IntegrationPoints.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
+      <Project>{0CEDB7AF-DB89-47DE-9587-8CCD58621F2F}</Project>
+      <Name>kCura.IntegrationPoints.Contracts</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
       <Project>{599D771D-2AE7-4321-9BAC-BE06F827CE0A}</Project>
@@ -400,6 +408,22 @@
         </Reference>
         <Reference Include="Relativity.OAuth2Client.Interfaces">
           <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces\lib\net462\Relativity.OAuth2Client.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Productions.Services.Interfaces">
+          <HintPath>..\..\packages\Relativity.Productions.Services.Interfaces\lib\net45\Relativity.Productions.Services.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.Productions.Services.Interfaces.Private">
+          <HintPath>..\..\packages\Relativity.Productions.Services.Interfaces\lib\net45\Relativity.Productions.Services.Interfaces.Private.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

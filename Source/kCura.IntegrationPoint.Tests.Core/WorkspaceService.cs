@@ -3,12 +3,16 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.Relativity.Client;
 using NUnit.Framework;
 using Relativity.Productions.Services;
-using Relativity.Services.Field;
 using Relativity.Services.Search;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using kCura.WinEDDS.Exceptions;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
+using FieldRef = Relativity.Services.Field.FieldRef;
+using QueryResult = Relativity.Services.Objects.DataContracts.QueryResult;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
@@ -17,6 +21,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 		private const string _TEMPLATE_WORKSPACE_NAME = "Relativity Starter Template";
 		private const string _LEGACY_TEMPLATE_WORKSPACE_NAME = "kCura Starter Template";
 		private const string _SAVED_SEARCH_FOLDER = "Testing Folder";
+
+		internal const int _PRODUCTION_PLACEHOLDER_ARTIFACT_TYPE_ID = 1000035;
 
 		private readonly ImportHelper _importHelper;
 
@@ -35,9 +41,18 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return Workspace.CreateWorkspace(name, templateName);
 		}
 
-		public bool ImportData(int workspaceArtifactId, DocumentsTestData documentsTestData)
+		public bool TryImportData(int workspaceArtifactId, DocumentsTestData documentsTestData)
 		{
 			return _importHelper.ImportData(workspaceArtifactId, documentsTestData);
+		}
+
+		public void ImportData(int workspaceId, DocumentsTestData documentsTestData)
+		{
+			bool importSucceeded = TryImportData(workspaceId, documentsTestData);
+			if (!importSucceeded)
+			{
+				throw new ImportIOException();
+			}
 		}
 
 		public bool ImportSingleExtractedText(int workspaceArtifactId, string controlNumber, string extractedTextFilePath)
@@ -141,6 +156,28 @@ namespace kCura.IntegrationPoint.Tests.Core
 			).ConfigureAwait(false);
 
 			return productionId;
+		}
+
+		public async Task<int> GetProductionPlaceholderArtifactIDAsync(
+			int workspaceArtifactID,
+			IObjectManager objectManager)
+		{
+			QueryResult result = await objectManager.QueryAsync(workspaceArtifactID, new QueryRequest
+				{
+					ObjectType = new ObjectTypeRef
+					{
+						ArtifactTypeID = _PRODUCTION_PLACEHOLDER_ARTIFACT_TYPE_ID
+					},
+					Fields = new[]
+					{
+						new global::Relativity.Services.Objects.DataContracts.FieldRef
+						{
+							Name = "Default"
+						}
+					}
+				}, 1, 1)
+				.ConfigureAwait(false);
+			return result.Objects.Single().ArtifactID;
 		}
 
 		public int GetView(int workspaceId, string viewName)
