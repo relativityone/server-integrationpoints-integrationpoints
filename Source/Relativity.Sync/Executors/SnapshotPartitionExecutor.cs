@@ -2,10 +2,9 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Executors;
 using Relativity.Sync.Storage;
 
-namespace Relativity.Sync.Tests.Unit.Executors
+namespace Relativity.Sync.Executors
 {
 	internal sealed class SnapshotPartitionExecutor : IExecutor<ISnapshotPartitionConfiguration>
 	{
