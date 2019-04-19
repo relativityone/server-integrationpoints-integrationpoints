@@ -1,22 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.DTO;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Data.UtilityDTO;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.Relativity.Client;
 using NSubstitute;
 using NUnit.Framework;
-using NUnit.Framework.Internal;
 using Relativity.Services.Objects.DataContracts;
 using Field = Relativity.Services.Objects.DataContracts.Field;
 
-namespace kCura.IntegrationPoints.Data.Tests.Repositories
+namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 {
 	[TestFixture]
 	public class SavedSearchQueryRepositoryTests : TestBase

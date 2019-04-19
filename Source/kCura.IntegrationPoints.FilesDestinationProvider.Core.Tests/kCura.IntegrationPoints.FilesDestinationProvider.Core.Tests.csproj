@@ -72,6 +72,7 @@
     <Compile Include="Process\ExportProcessRunnerTests.cs" />
     <Compile Include="Process\VolumeInfoBuilderTests.cs" />
     <Compile Include="Logging\ExportUserNotificationTests.cs" />
+    <Compile Include="Repositories\FileFieldRepositoryTests.cs" />
     <Compile Include="Repositories\ViewFieldRepositoryTests.cs" />
     <Compile Include="Services\ArtifactTreeServiceTests.cs" />
     <Compile Include="Services\ExportInitProcessServiceTests.cs" />
@@ -80,6 +81,7 @@
     <Compile Include="SharedLibrary\ExtendedFieldNameProviderTests.cs" />
     <Compile Include="SharedLibrary\FactoryConfigBuilderTests.cs" />
     <Compile Include="SharedLibrary\StoppableExporterTests.cs" />
+    <Compile Include="Utilities\CommaSeparatedNumbersToArrayConverterTests.cs" />
     <Compile Include="Validation\Parts\DocumentExportSettingsValidatorTests.cs" />
     <Compile Include="Validation\Parts\ExportFileValidatorTests.cs" />
     <Compile Include="Validation\Parts\ExportNativeSettingsValidatorTests.cs" />

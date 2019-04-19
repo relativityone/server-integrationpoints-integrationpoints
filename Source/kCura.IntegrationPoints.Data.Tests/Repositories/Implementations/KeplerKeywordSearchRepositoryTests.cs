@@ -8,7 +8,7 @@ using Relativity.API;
 using Relativity.Services;
 using Relativity.Services.Search;
 
-namespace kCura.IntegrationPoints.Data.Tests.Repositories
+namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 {
 	public class KeplerKeywordSearchRepositoryTests : TestBase
 	{

@@ -10,7 +10,7 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
 
-namespace kCura.IntegrationPoints.Data.Tests.Repositories
+namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 {
 	public class SourceWorkspaceRepositoryTests : TestBase
 	{

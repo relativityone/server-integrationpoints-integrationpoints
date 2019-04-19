@@ -55,6 +55,7 @@
     <Compile Include="Authentication\OAuth2ClientFactoryTests.cs" />
     <Compile Include="Authentication\OAuth2TokenGeneratorTests.cs" />
     <Compile Include="Authentication\TokenCredentialProviderTests.cs" />
+    <Compile Include="Extensions\StringExtensionsTests.cs" />
     <Compile Include="Factories\HelperFactoryTests.cs" />
     <Compile Include="FederatedInstanceRsapiHandlerTests.cs" />
     <Compile Include="FederatedInstanceKeplerHandlerTests.cs" />

@@ -1,15 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.Data.Repositories;
 using NSubstitute;
 using NUnit.Framework;
-using Relativity;
 using Relativity.API;
 using Relativity.Services.Workspace;
 
-namespace kCura.IntegrationPoints.Data.Tests.Repositories
+namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 {
 	[TestFixture]
 	public class KeplerWorkspacesRepositoryTests

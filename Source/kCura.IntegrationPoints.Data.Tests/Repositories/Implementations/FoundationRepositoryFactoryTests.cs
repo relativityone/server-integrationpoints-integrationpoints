@@ -10,7 +10,7 @@ using Relativity.API;
 using Relativity.API.Foundation;
 using Relativity.API.Foundation.Repositories;
 
-namespace kCura.IntegrationPoints.Data.Tests.Repositories
+namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 {
 	[TestFixture]
 	[Ignore("Waiting for making IWorkspaceGateway public or applying [assembly: InternalsVisibleTo('DynamicProxyGenAssembly2')] in Relativity.API project")]

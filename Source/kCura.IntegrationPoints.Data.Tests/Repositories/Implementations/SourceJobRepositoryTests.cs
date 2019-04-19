@@ -7,7 +7,7 @@ using NSubstitute;
 using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
 
-namespace kCura.IntegrationPoints.Data.Tests.Repositories
+namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 {
 	public class SourceJobRepositoryTests : TestBase
 	{
