@@ -59,12 +59,11 @@ namespace Rip.SystemTests.RelativityServices
 		private const string _OBJECT_ARTIFACT_ID_COLUMN_NAME = "ObjectArtifactID";
 
 		[OneTimeSetUp]
-		public void OneTimeSetup()
+		public async Task OneTimeSetup()
 		{
 			_workspaceID = SystemTestsFixture.WorkspaceID;
-			_workspaceService = new WorkspaceService(new ImportHelper(true));
+			_workspaceService = new WorkspaceService(new ImportHelper(withNatives: true));
 			_testHelperLazy = new Lazy<ITestHelper>(() => new TestHelper());
-			IRelativityObjectManagerFactory objectManagerFactory = new RelativityObjectManagerFactory(_testHelperLazy.Value);
 			_objectManager = _testHelperLazy.Value.CreateUserProxy<IObjectManager>();
 			_viewManager = _testHelperLazy.Value.CreateUserProxy<IViewManager>();
 
@@ -74,14 +73,11 @@ namespace Rip.SystemTests.RelativityServices
 			);
 			_documentTestCases = DocumentTestCaseArranger.CreateTestCases(_documentsTestData);
 			_workspaceService.ImportData(_workspaceID, _documentsTestData);
-			DocumentTestCaseArranger
-				.FillTestCasesWithDocumentArtifactIDsAsync(
-					_workspaceID,
-					_documentTestCases, 
-					_objectManager
-				)
-				.GetAwaiter()
-				.GetResult();
+			await DocumentTestCaseArranger.FillTestCasesWithDocumentArtifactIDsAsync(
+				_workspaceID,
+				_documentTestCases,
+				_objectManager
+			).ConfigureAwait(false);
 
 			_sut = CreateCoreSearchManager();
 			_productionID = CreateAndRunProduction(_workspaceService);
@@ -139,7 +135,7 @@ namespace Rip.SystemTests.RelativityServices
 			int placeholderFieldArtifactID = await GetPlaceholderFieldArtifactIDAsync()
 				.ConfigureAwait(false);
 			int productionPlaceholderArtifactID =
-				await _workspaceService.GetProductionPlaceholderArtifactIDAsync(
+				await _workspaceService.GetDefaultProductionPlaceholderArtifactIDAsync(
 					_workspaceID,
 					_objectManager
 				).ConfigureAwait(false);
@@ -261,10 +257,10 @@ namespace Rip.SystemTests.RelativityServices
 		}
 
 		[Test]
-		public void RetrieveAllExportableViewFields_ShouldRetrieveAllViewFieldsForDocument()
+		public async Task RetrieveAllExportableViewFields_ShouldRetrieveAllViewFieldsForDocument()
 		{
 			// arrange
-			IList<int> exportableFieldIDs = RetrieveExportableFieldIDs();
+			IList<int> exportableFieldIDs = await RetrieveExportableFieldIDsAsync();
 
 			// act
 			ViewFieldInfo[] result = _sut.RetrieveAllExportableViewFields(
@@ -298,7 +294,7 @@ namespace Rip.SystemTests.RelativityServices
 			result.Should().Contain(expectedViewFieldIDs);
 		}
 
-		private IList<int> RetrieveExportableFieldIDs()
+		private async Task<IList<int>> RetrieveExportableFieldIDsAsync()
 		{
 			var fieldQuery = new QueryRequest
 			{
@@ -312,10 +308,9 @@ namespace Rip.SystemTests.RelativityServices
 				Condition = $"'{TestConstants.FieldNames.OBJECT_TYPE_ARTIFACT_TYPE_ID}' == OBJECT {_DOCUMENT_ARTIFACT_TYPE_ID}"
 			};
 
-			 QueryResult queryResult = _objectManager
-				 .QueryAsync(_workspaceID, fieldQuery, 0, 1000)
-				 .GetAwaiter()
-				 .GetResult();
+			QueryResult queryResult = await _objectManager
+				.QueryAsync(_workspaceID, fieldQuery, 0, 1000)
+				.ConfigureAwait(false);
 
 			IList<int> fields = queryResult
 				.Objects

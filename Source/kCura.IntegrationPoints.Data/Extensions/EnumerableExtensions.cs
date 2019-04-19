@@ -36,6 +36,12 @@ namespace kCura.IntegrationPoints.Data.Extensions
 			return dataSet;
 		}
 
+		/// <summary>
+		/// Creates DataTable object from model containing simple type properties
+		/// </summary>
+		/// <typeparam name="T">Model with simple type properties</typeparam>
+		/// <param name="collection">Collection of models</param>
+		/// <returns>Converted DataTable object</returns>
 		public static DataTable ToDataTable<T>(this IEnumerable<T> collection) where T : class
 		{
 			DataTable dataTable = new DataTable();

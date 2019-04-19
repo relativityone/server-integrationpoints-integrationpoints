@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoint.Tests.Core.Exceptions;
 using kCura.WinEDDS.Exceptions;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -51,7 +52,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			bool importSucceeded = TryImportData(workspaceId, documentsTestData);
 			if (!importSucceeded)
 			{
-				throw new ImportIOException();
+				throw new TestException("Importing documents does not succeeded.");
 			}
 		}
 
@@ -158,7 +159,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return productionId;
 		}
 
-		public async Task<int> GetProductionPlaceholderArtifactIDAsync(
+		public async Task<int> GetDefaultProductionPlaceholderArtifactIDAsync(
 			int workspaceArtifactID,
 			IObjectManager objectManager)
 		{
