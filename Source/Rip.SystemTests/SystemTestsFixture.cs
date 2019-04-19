@@ -31,13 +31,13 @@ namespace Rip.SystemTests
 		public static int DestinationWorkspaceID { get; private set; }
 
 		[OneTimeSetUp]
-		public void InitializeFixture()
+		public async Task InitializeFixtureAsync()
 		{
 			Container = new WindsorContainer();
 			ConfigurationStore = new DefaultConfigurationStore();
 			TestHelper = new TestHelper();
 
-			CreateAndConfigureWorkspaces().GetAwaiter().GetResult();
+			await CreateAndConfigureWorkspaces();
 			InitializeContainer();
 		}
 
