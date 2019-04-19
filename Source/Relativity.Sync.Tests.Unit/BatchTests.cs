@@ -256,8 +256,8 @@ namespace Relativity.Sync.Tests.Unit
 
 		private static void AssertReadFields(IList<FieldRef> fields)
 		{
-			const int seven = 7;
-			fields.Count().Should().Be(seven);
+			const int expectedNumberOfFields = 7;
+			fields.Count().Should().Be(expectedNumberOfFields);
 			fields.Should().Contain(x => x.Guid == TotalItemsCountGuid);
 			fields.Should().Contain(x => x.Guid == StartingIndexGuid);
 			fields.Should().Contain(x => x.Guid == StatusGuid);
