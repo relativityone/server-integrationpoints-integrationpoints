@@ -11,7 +11,6 @@ using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Tests.Unit.Executors
 {
-#pragma warning disable RG2009 // Hardcoded Numeric Value
 	[TestFixture]
 	internal sealed class SnapshotPartitionExecutorTests
 	{
@@ -50,8 +49,9 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[Test]
 		public async Task ItShouldReturnFailureWhenUnableToCreateBatch()
 		{
+			const int ten = 10;
 			_configuration.Setup(x => x.BatchSize).Returns(1);
-			_configuration.Setup(x => x.TotalRecordsCount).Returns(10);
+			_configuration.Setup(x => x.TotalRecordsCount).Returns(ten);
 
 			_batchRepository.SetupSequence(x => x.CreateAsync(_WORKSPACE_ID, _SYNC_CONF_ID, It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(null).Throws<InvalidOperationException>();
 			// ACT
@@ -120,14 +120,15 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[Test]
 		public async Task ItShouldSucceedWhenNoMoreBatchesIsRequired()
 		{
+			const int ten = 10;
 			Mock<IBatch> lastBatch = new Mock<IBatch>();
-			lastBatch.Setup(x => x.StartingIndex).Returns(10);
-			lastBatch.Setup(x => x.TotalItemsCount).Returns(10);
+			lastBatch.Setup(x => x.StartingIndex).Returns(ten);
+			lastBatch.Setup(x => x.TotalItemsCount).Returns(ten);
 
 			_batchRepository.Setup(x => x.GetLastAsync(_WORKSPACE_ID, _SYNC_CONF_ID)).ReturnsAsync(lastBatch.Object);
 
-			_configuration.Setup(x => x.BatchSize).Returns(10);
-			_configuration.Setup(x => x.TotalRecordsCount).Returns(10);
+			_configuration.Setup(x => x.BatchSize).Returns(ten);
+			_configuration.Setup(x => x.TotalRecordsCount).Returns(ten);
 
 			_batchRepository.Setup(x => x.CreateAsync(_WORKSPACE_ID, _SYNC_CONF_ID, It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync((IBatch) null);
 
@@ -140,5 +141,4 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_batchRepository.Verify(x => x.CreateAsync(_WORKSPACE_ID, _SYNC_CONF_ID, It.IsAny<int>(), It.IsAny<int>()), Times.Never);
 		}
 	}
-#pragma warning restore RG2009 // Hardcoded Numeric Value
 }
