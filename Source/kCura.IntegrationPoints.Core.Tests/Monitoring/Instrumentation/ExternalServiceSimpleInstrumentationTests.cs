@@ -113,8 +113,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring.Instrumentation
 		[Test]
 		public async Task ItShouldCallStartedBeforeAsyncFunctionWasExecuted()
 		{
+			//arrange
+			Func<int> func = ValidateFunctionExecution;
+
 			// act & assert
-			await _sut.ExecuteAsync(() => Task.Run(ValidateFunctionExecution));
+			await _sut.ExecuteAsync(() => Task.Run(func));
 		}
 
 		[Test]
