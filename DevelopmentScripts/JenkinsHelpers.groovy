@@ -504,6 +504,12 @@ def reporting()
 
 def downloadAndSetUpBrowser()
 {
+    if(params.skipUITests)
+    {
+        echo "SkipUITests is set to true - Skipping browser installation"
+        return
+    }
+
     echo "Downloading browser for UI tests. Selected browser: ${params.UITestsBrowser}"
 
     switch(params.UITestsBrowser) {
