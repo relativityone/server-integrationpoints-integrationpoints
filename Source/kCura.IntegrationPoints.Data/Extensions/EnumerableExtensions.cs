@@ -14,12 +14,18 @@ namespace kCura.IntegrationPoints.Data.Extensions
 
 			foreach (var i in ints)
 			{
-				var dataRow = dataTable.NewRow();
+				DataRow dataRow = dataTable.NewRow();
 				dataRow[0] = i;
 				dataTable.Rows.Add(dataRow);
 			}
 
 			return dataTable;
+		}
+
+		public static kCura.Data.DataView ToDataView<T>(this IEnumerable<T> collection) where T : class
+		{
+			DataSet dataSet = collection.ToDataSet();
+			return new kCura.Data.DataView(dataSet);
 		}
 
 		public static DataSet ToDataSet<T>(this IEnumerable<T> collection) where T : class
@@ -32,37 +38,51 @@ namespace kCura.IntegrationPoints.Data.Extensions
 
 		public static DataTable ToDataTable<T>(this IEnumerable<T> collection) where T : class
 		{
-			DataTable dt = new DataTable();
-			Type t = typeof(T);
-			PropertyInfo[] pia = t.GetProperties();
+			DataTable dataTable = new DataTable();
+			Type type = typeof(T);
+			PropertyInfo[] properties = type.GetProperties();
 
-			//Inspect the properties and create the columns in the DataTable
-			foreach (PropertyInfo pi in pia)
+			CreateColumns(properties, dataTable);
+			PopulateRows(collection, dataTable, properties);
+
+			return dataTable;
+		}
+
+		private static void PopulateRows<T>(
+			IEnumerable<T> collection, 
+			DataTable dataTable, 
+			PropertyInfo[] properties)
+				where T : class
+		{
+			foreach (T item in collection)
 			{
-				Type columnType = pi.PropertyType;
+				DataRow dataRow = dataTable.NewRow();
+				dataRow.BeginEdit();
+				foreach (PropertyInfo property in properties)
+				{
+					if (property.GetValue(item, index: null) != null)
+					{
+						dataRow[property.Name] = property.GetValue(item, index: null);
+					}
+				}
+
+				dataRow.EndEdit();
+				dataTable.Rows.Add(dataRow);
+			}
+		}
+
+		private static void CreateColumns(PropertyInfo[] properties, DataTable dataTable)
+		{
+			foreach (PropertyInfo property in properties)
+			{
+				Type columnType = property.PropertyType;
 				if (columnType.IsGenericType)
 				{
 					columnType = columnType.GetGenericArguments()[0];
 				}
-				dt.Columns.Add(pi.Name, columnType);
-			}
 
-			//Populate the data table
-			foreach (T item in collection)
-			{
-				DataRow dr = dt.NewRow();
-				dr.BeginEdit();
-				foreach (PropertyInfo pi in pia)
-				{
-					if (pi.GetValue(item, null) != null)
-					{
-						dr[pi.Name] = pi.GetValue(item, null);
-					}
-				}
-				dr.EndEdit();
-				dt.Rows.Add(dr);
+				dataTable.Columns.Add(property.Name, columnType);
 			}
-			return dt;
 		}
 	}
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using kCura.IntegrationPoints.Common.Constants;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using Relativity.Services.Interfaces.File;
@@ -34,11 +33,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				operationName: nameof(IFileManager.GetNativesForSearchAsync)
 			);
 
-			return instrumentation.Execute(
+			return instrumentation.ExecuteAsync(
 				() => _fileManager.GetNativesForSearchAsync(workspaceID, documentIDs)
-					.GetAwaiter()
-					.GetResult()
-			);
+			)
+			.GetAwaiter()
+			.GetResult();
 		}
 
 		public FileResponse[] GetNativesForProduction(
@@ -57,11 +56,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			IExternalServiceSimpleInstrumentation instrumentation = CreateInstrumentation(
 				operationName: nameof(IFileManager.GetNativesForProductionAsync)
 			);
-			return instrumentation.Execute(
+			return instrumentation.ExecuteAsync(
 				() => _fileManager.GetNativesForProductionAsync(workspaceID, productionID, documentIDs)
-					.GetAwaiter()
-					.GetResult()
-			);
+			)
+			.GetAwaiter()
+			.GetResult();
 		}
 
 		public ProductionDocumentImageResponse[] GetImagesForProductionDocuments(
@@ -80,11 +79,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				operationName: nameof(IFileManager.GetImagesForProductionDocumentsAsync)
 			);
 
-			return instrumentation.Execute(
+			return instrumentation.ExecuteAsync(
 				() => _fileManager.GetImagesForProductionDocumentsAsync(workspaceID, productionID, documentIDs)
-					.GetAwaiter()
-					.GetResult()
-			);
+			)
+			.GetAwaiter()
+			.GetResult();
 		}
 
 		public DocumentImageResponse[] GetImagesForDocuments(int workspaceID, int[] documentIDs)
@@ -100,11 +99,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				operationName: nameof(IFileManager.GetImagesForDocumentsAsync)
 			);
 
-			return instrumentation.Execute(
+			return instrumentation.ExecuteAsync(
 				() => _fileManager.GetImagesForDocumentsAsync(workspaceID, documentIDs)
-					.GetAwaiter()
-					.GetResult()
-			);
+			)
+			.GetAwaiter()
+			.GetResult();
 		}
 
 		public FileResponse[] GetProducedImagesForDocument(int workspaceID, int documentID)
@@ -113,11 +112,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				operationName: nameof(IFileManager.GetProducedImagesForDocumentAsync)
 			);
 
-			return instrumentation.Execute(
+			return instrumentation.ExecuteAsync(
 				() => _fileManager.GetProducedImagesForDocumentAsync(workspaceID, documentID)
-					.GetAwaiter()
-					.GetResult()
-			);
+			)
+			.GetAwaiter()
+			.GetResult();
 		}
 
 		public ExportProductionDocumentImageResponse[] GetImagesForExport(int workspaceID, int[] productionIDs, int[] documentIDs)
@@ -134,11 +133,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				operationName: nameof(IFileManager.GetImagesForExportAsync)
 			);
 
-			return instrumentation.Execute(
+			return instrumentation.ExecuteAsync(
 				() => _fileManager.GetImagesForExportAsync(workspaceID, productionIDs, documentIDs)
-					.GetAwaiter()
-					.GetResult()
-			);
+			)
+			.GetAwaiter()
+			.GetResult();
 		}
 
 		private void ThrowWhenNullArgument<T>(T argument, string argumentName)

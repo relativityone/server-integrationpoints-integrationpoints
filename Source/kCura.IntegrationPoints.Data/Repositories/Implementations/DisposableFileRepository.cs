@@ -14,20 +14,28 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 	{
 		private readonly IServicesMgr _servicesMgr;
 		private readonly IExternalServiceInstrumentationProvider _instrumentationProvider;
+		private readonly CreateFileRepositoryDelegate _createFileRepositoryDelegate;
+
+		public delegate IFileRepository CreateFileRepositoryDelegate(
+			IFileManager fileManager,
+			IExternalServiceInstrumentationProvider instrumentationProvider
+		);
 
 		public DisposableFileRepository(
 			IServicesMgr servicesMgr,
-			IExternalServiceInstrumentationProvider instrumentationProvider)
+			IExternalServiceInstrumentationProvider instrumentationProvider,
+			CreateFileRepositoryDelegate createFileRepositoryDelegate)
 		{
 			_servicesMgr = servicesMgr;
 			_instrumentationProvider = instrumentationProvider;
+			_createFileRepositoryDelegate = createFileRepositoryDelegate;
 		}
 
 		public FileResponse[] GetNativesForSearch(int workspaceID, int[] documentIDs)
 		{
 			using (IFileManager fileManager = CreateFileManagerProxy())
 			{
-				return CreateFileRepository(fileManager)
+				return _createFileRepositoryDelegate(fileManager, _instrumentationProvider)
 					.GetNativesForSearch(workspaceID, documentIDs);
 			}
 		}
@@ -36,7 +44,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			using (IFileManager fileManager = CreateFileManagerProxy())
 			{
-				return CreateFileRepository(fileManager)
+				return _createFileRepositoryDelegate(fileManager, _instrumentationProvider)
 					.GetNativesForProduction(workspaceID, productionID, documentIDs);
 			}
 		}
@@ -45,7 +53,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			using (IFileManager fileManager = CreateFileManagerProxy())
 			{
-				return CreateFileRepository(fileManager)
+				return _createFileRepositoryDelegate(fileManager, _instrumentationProvider)
 					.GetImagesForProductionDocuments(workspaceID, productionID, documentIDs);
 			}
 		}
@@ -54,7 +62,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			using (IFileManager fileManager = CreateFileManagerProxy())
 			{
-				return CreateFileRepository(fileManager)
+				return _createFileRepositoryDelegate(fileManager, _instrumentationProvider)
 					.GetImagesForDocuments(workspaceID, documentIDs);
 			}
 		}
@@ -63,7 +71,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			using (IFileManager fileManager = CreateFileManagerProxy())
 			{
-				return CreateFileRepository(fileManager)
+				return _createFileRepositoryDelegate(fileManager, _instrumentationProvider)
 					.GetProducedImagesForDocument(workspaceID, documentID);
 			}
 		}
@@ -72,7 +80,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			using (IFileManager fileManager = CreateFileManagerProxy())
 			{
-				return CreateFileRepository(fileManager)
+				return _createFileRepositoryDelegate(fileManager, _instrumentationProvider)
 					.GetImagesForExport(workspaceID, productionIDs, documentIDs);
 			}
 		}
@@ -80,11 +88,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private IFileManager CreateFileManagerProxy()
 		{
 			return _servicesMgr.CreateProxy<IFileManager>(ExecutionIdentity.CurrentUser);
-		}
-
-		private IFileRepository CreateFileRepository(IFileManager fileManager)
-		{
-			return new FileRepository(fileManager, _instrumentationProvider);
 		}
 	}
 }

@@ -190,8 +190,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			//arrange
 			int[] documentIDs = _testFileResponses.Select(x => x.DocumentArtifactID).ToArray();
 			_instrumentationSimpleProviderMock
-				.Setup(x => x.Execute(It.IsAny<Func<FileResponse[]>>()))
-				.Returns(_testFileResponses);
+				.Setup(x => x.ExecuteAsync(It.IsAny<Func<Task<FileResponse[]>>>()))
+				.Returns(Task.FromResult(_testFileResponses));
 
 			//act
 			FileResponse[] result = _sut.GetNativesForSearch(
@@ -239,14 +239,33 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		}
 
 		[Test]
+		public void GetNativesForSearch_ShouldRethrowWhenCallToServiceThrows()
+		{
+			//arrange
+			int[] documentIDs = { 1001, 2002, 3003 };
+			_instrumentationSimpleProviderMock
+				.Setup(x => x.ExecuteAsync(It.IsAny<Func<Task<FileResponse[]>>>()))
+				.Throws<InvalidOperationException>();
+
+			//act
+			Action action = () => _sut.GetNativesForSearch(
+				_WORKSPACE_ID,
+				documentIDs
+			);
+
+			//assert
+			action.ShouldThrow<InvalidOperationException>();
+		}
+
+		[Test]
 		public void GetNativesForProduction_ShouldReturnResponsesWhenCorrectDocumentIDsPassed()
 		{
 			//arrange
 			const int productionID = 1111;
 			int[] documentIDs = _testFileResponses.Select(x => x.DocumentArtifactID).ToArray();
 			_instrumentationSimpleProviderMock
-				.Setup(x => x.Execute(It.IsAny<Func<FileResponse[]>>()))
-				.Returns(_testFileResponses);
+				.Setup(x => x.ExecuteAsync(It.IsAny<Func<Task<FileResponse[]>>>()))
+				.Returns(Task.FromResult(_testFileResponses));
 
 			//act
 			FileResponse[] result = _sut.GetNativesForProduction(
@@ -303,14 +322,35 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		}
 
 		[Test]
+		public void GetNativesForProduction_ShouldRethrowWhenCallToServiceThrows()
+		{
+			//arrange
+			int productionID = 1001;
+			int[] documentIDs = { 1001, 2002, 3003 };
+			_instrumentationSimpleProviderMock
+				.Setup(x => x.ExecuteAsync(It.IsAny<Func<Task<FileResponse[]>>>()))
+				.Throws<InvalidOperationException>();
+
+			//act
+			Action action = () => _sut.GetNativesForProduction(
+				_WORKSPACE_ID,
+				productionID,
+				documentIDs
+			);
+
+			//assert
+			action.ShouldThrow<InvalidOperationException>();
+		}
+
+		[Test]
 		public void GetImagesForProductionDocuments_ShouldReturnResponsesWhenCorrectDocumentIDsPassed()
 		{
 			//arrange
 			const int productionID = 1111;
 			int[] documentIDs = _testFileResponses.Select(x => x.DocumentArtifactID).ToArray();
 			_instrumentationSimpleProviderMock
-				.Setup(x => x.Execute(It.IsAny<Func<ProductionDocumentImageResponse[]>>()))
-				.Returns(_testProductionDocumentImageResponses);
+				.Setup(x => x.ExecuteAsync(It.IsAny<Func<Task<ProductionDocumentImageResponse[]>>>()))
+				.Returns(Task.FromResult(_testProductionDocumentImageResponses));
 
 			//act
 			ProductionDocumentImageResponse[] result = _sut.GetImagesForProductionDocuments(
@@ -324,7 +364,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				operationName: nameof(IFileManager.GetImagesForProductionDocumentsAsync)
 			);
 			AssertIfResponsesAreSameAsExpected(
-				_testProductionDocumentImageResponses, 
+				_testProductionDocumentImageResponses,
 				result
 			);
 		}
@@ -370,13 +410,34 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		}
 
 		[Test]
+		public void GetImagesForProductionDocuments_ShouldRethrowWhenCallToServiceThrows()
+		{
+			//arrange
+			int productionID = 1001;
+			int[] documentIDs = { 1001, 2002, 3003 };
+			_instrumentationSimpleProviderMock
+				.Setup(x => x.ExecuteAsync(It.IsAny<Func<Task<ProductionDocumentImageResponse[]>>>()))
+				.Throws<InvalidOperationException>();
+
+			//act
+			Action action = () => _sut.GetImagesForProductionDocuments(
+				_WORKSPACE_ID,
+				productionID,
+				documentIDs
+			);
+
+			//assert
+			action.ShouldThrow<InvalidOperationException>();
+		}
+
+		[Test]
 		public void GetImagesForDocuments_ShouldReturnResponsesWhenCorrectDocumentIDsPassed()
 		{
 			//arrange
 			int[] documentIDs = _testFileResponses.Select(x => x.DocumentArtifactID).ToArray();
 			_instrumentationSimpleProviderMock
-				.Setup(x => x.Execute(It.IsAny<Func<DocumentImageResponse[]>>()))
-				.Returns(_testDocumentImageResponses);
+				.Setup(x => x.ExecuteAsync(It.IsAny<Func<Task<DocumentImageResponse[]>>>()))
+				.Returns(Task.FromResult(_testDocumentImageResponses));
 
 			//act
 			DocumentImageResponse[] result = _sut.GetImagesForDocuments(
@@ -427,6 +488,25 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		}
 
 		[Test]
+		public void GetImagesForDocuments_ShouldRethrowWhenCallToServiceThrows()
+		{
+			//arrange
+			int[] documentIDs = { 1001, 2002, 3003 };
+			_instrumentationSimpleProviderMock
+				.Setup(x => x.ExecuteAsync(It.IsAny<Func<Task<DocumentImageResponse[]>>>()))
+				.Throws<InvalidOperationException>();
+
+			//act
+			Action action = () => _sut.GetImagesForDocuments(
+				_WORKSPACE_ID,
+				documentIDs
+			);
+
+			//assert
+			action.ShouldThrow<InvalidOperationException>();
+		}
+
+		[Test]
 		public void GetProducedImagesForDocument_ShouldReturnCorrectResponses()
 		{
 			//arrange
@@ -435,8 +515,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				.Where(x => x.DocumentArtifactID == documentID)
 				.ToArray();
 			_instrumentationSimpleProviderMock
-				.Setup(x => x.Execute(It.IsAny<Func<FileResponse[]>>()))
-				.Returns(fileResponses);
+				.Setup(x => x.ExecuteAsync(It.IsAny<Func<Task<FileResponse[]>>>()))
+				.Returns(Task.FromResult(fileResponses));
 
 			//act
 			FileResponse[] result = _sut.GetProducedImagesForDocument(
@@ -455,6 +535,25 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		}
 
 		[Test]
+		public void GetProducedImagesForDocument_ShouldRethrowWhenCallToServiceThrows()
+		{
+			//arrange
+			int documentID = 1001;
+			_instrumentationSimpleProviderMock
+				.Setup(x => x.ExecuteAsync(It.IsAny<Func<Task<FileResponse[]>>>()))
+				.Throws<InvalidOperationException>();
+
+			//act
+			Action action = () => _sut.GetProducedImagesForDocument(
+				_WORKSPACE_ID,
+				documentID
+			);
+
+			//assert
+			action.ShouldThrow<InvalidOperationException>();
+		}
+
+		[Test]
 		public void GetImagesForExport_ShouldReturnResponsesWhenCorrectDocumentIDsAndProductionIDsPassed()
 		{
 			//arrange
@@ -465,8 +564,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				.Select(x => x.ProductionArtifactID)
 				.ToArray();
 			_instrumentationSimpleProviderMock
-				.Setup(x => x.Execute(It.IsAny<Func<ExportProductionDocumentImageResponse[]>>()))
-				.Returns(_testExportProductionDocumentImageResponses);
+				.Setup(x => x.ExecuteAsync(It.IsAny<Func<Task<ExportProductionDocumentImageResponse[]>>>()))
+				.Returns(Task.FromResult(_testExportProductionDocumentImageResponses));
 
 			//act
 			ExportProductionDocumentImageResponse[] result = _sut.GetImagesForExport(
@@ -562,7 +661,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			//act
 			ExportProductionDocumentImageResponse[] result = _sut.GetImagesForExport(
 				_WORKSPACE_ID,
-				productionIDs: new int[] {}, 
+				productionIDs: new int[] { },
 				documentIDs: documentIDs
 			);
 
@@ -571,6 +670,27 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			VerifyIfInstrumentationHasNeverBeenCalled<ExportProductionDocumentImageResponse[]>(
 				operationName: nameof(IFileManager.GetImagesForExportAsync)
 			);
+		}
+
+		[Test]
+		public void GetImagesForExport_ShouldRethrowWhenCallToServiceThrows()
+		{
+			//arrange
+			int[] documentIDs = { 1001, 2002, 3003 };
+			int[] productionIDs = { 1011, 2022, 3033 };
+			_instrumentationSimpleProviderMock
+				.Setup(x => x.ExecuteAsync(It.IsAny<Func<Task<ExportProductionDocumentImageResponse[]>>>()))
+				.Throws<InvalidOperationException>();
+
+			//act
+			Action action = () => _sut.GetImagesForExport(
+				_WORKSPACE_ID,
+				productionIDs,
+				documentIDs
+			);
+
+			//assert
+			action.ShouldThrow<InvalidOperationException>();
 		}
 
 		private void AssertIfResponsesAreSameAsExpected(FileResponse[] expectedResponses, FileResponse[] currentResponses)
@@ -604,7 +724,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		}
 
 		private void AssertIfResponsesAreSameAsExpected(
-			ProductionDocumentImageResponse[] expectedResponses, 
+			ProductionDocumentImageResponse[] expectedResponses,
 			ProductionDocumentImageResponse[] currentResponses)
 		{
 			expectedResponses.Length.Should().Be(currentResponses.Length);
@@ -709,7 +829,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				Times.Once
 			);
 			_instrumentationSimpleProviderMock.Verify(
-				x => x.Execute(It.IsAny<Func<T>>()),
+				x => x.ExecuteAsync(It.IsAny<Func<Task<T>>>()),
 				Times.Once
 			);
 		}
@@ -725,7 +845,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				Times.Never
 			);
 			_instrumentationSimpleProviderMock.Verify(
-				x => x.Execute(It.IsAny<Func<T>>()),
+				x => x.ExecuteAsync(It.IsAny<Func<Task<T>>>()),
 				Times.Never
 			);
 		}

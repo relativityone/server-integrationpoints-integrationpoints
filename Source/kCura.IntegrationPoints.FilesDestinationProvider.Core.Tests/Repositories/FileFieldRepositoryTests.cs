@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories.Implementations;
@@ -66,8 +67,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Repositori
 			const int fileFieldID = 1002;
 			int[] objectIDs = _testDynamicFileResponses.Select(x => x.ObjectArtifactID).ToArray();
 			_instrumentationSimpleProviderMock
-				.Setup(x => x.Execute(It.IsAny<Func<DynamicFileResponse[]>>()))
-				.Returns(_testDynamicFileResponses);
+				.Setup(x => x.ExecuteAsync(It.IsAny<Func<Task<DynamicFileResponse[]>>>()))
+				.Returns(Task.FromResult(_testDynamicFileResponses));
 
 			//act
 			DynamicFileResponse[] result = _sut.GetFilesForDynamicObjects(
@@ -160,7 +161,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Repositori
 				Times.Once
 			);
 			_instrumentationSimpleProviderMock.Verify(
-				x => x.Execute(It.IsAny<Func<T>>()),
+				x => x.ExecuteAsync(It.IsAny<Func<Task<T>>>()),
 				Times.Once
 			);
 		}
@@ -176,7 +177,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Repositori
 				Times.Never
 			);
 			_instrumentationSimpleProviderMock.Verify(
-				x => x.Execute(It.IsAny<Func<T>>()),
+				x => x.ExecuteAsync(It.IsAny<Func<Task<T>>>()),
 				Times.Never
 			);
 		}

@@ -116,12 +116,11 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 			int artifactType, 
 			List<ArtifactDTO> result)
 		{
-			DataSet imagesDataSet= _fileRepository
+			DataView imagesDataView = _fileRepository
 				.GetImagesForDocuments(
 					SourceConfiguration.SourceWorkspaceArtifactId, 
 					documentIDs: new[] { documentArtifactId })
-				.ToDataSet();
-			DataView imagesDataView = new DataView(imagesDataSet);
+				.ToDataView();
 			if (imagesDataView.Count > 0)
 			{
 				CreateImageArtifactDtos(imagesDataView, documentArtifactId, fields, fieldsValue, artifactType, result);
@@ -150,19 +149,17 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 			List<ArtifactDTO> result, 
 			int productionArtifactId)
 		{
-			DataSet producedImagesDataSet = _fileRepository
+			DataView producedImagesDataView = _fileRepository
 				.GetImagesForProductionDocuments(
 					SourceConfiguration.SourceWorkspaceArtifactId,
 					productionArtifactId, 
 					documentIDs: new[] { documentArtifactId })
-				.ToDataSet();
-			DataView producedImagesDataView = new DataView(producedImagesDataSet);
+				.ToDataView();
 			if (producedImagesDataView.Count > 0)
 			{
 				CreateImageArtifactDtos(producedImagesDataView, documentArtifactId, fields, fieldsValue, artifactType, result);
-				return producedImagesDataView.Count;
 			}
-			return 0;
+			return producedImagesDataView.Count;
 		}
 
 		private void CreateImageArtifactDtos(kCura.Data.DataView dataView, int documentArtifactId, List<ArtifactFieldDTO> fields, object[] fieldsValue, int artifactType,

@@ -122,7 +122,7 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Extensions\StringExtensionsTests.cs" />
+    <Compile Include="Extensions\EnumerableExtensionsTests.cs" />
     <Compile Include="Facades\Implementations\ObjectManagerFacadeDiscoverHeavyRequestDecoratorTests.cs" />
     <Compile Include="Facades\Implementations\ObjectManagerFacadeFactoryTests.cs" />
     <Compile Include="Facades\Implementations\ObjectManagerFacadeInstrumentationDecoratorTests.cs" />
@@ -134,6 +134,7 @@
     <Compile Include="Installers\RepositoryRegistrationTests.cs" />
     <Compile Include="Repositories\Implementations\AuditRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\CaseRepositoryTests.cs" />
+    <Compile Include="Repositories\Implementations\DisposableFileRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\FieldRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\FileRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\FoundationRepositoryFactoryTests.cs" />

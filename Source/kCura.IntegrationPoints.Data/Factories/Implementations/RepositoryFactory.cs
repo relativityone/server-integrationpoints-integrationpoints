@@ -302,7 +302,8 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		{
 			return new DisposableFileRepository(
 				_sourceServiceMgr, 
-				InstrumentationProvider
+				InstrumentationProvider,
+				(fileManager, instrumentationProvider) => new FileRepository(fileManager, instrumentationProvider)
 			);
 		}
 

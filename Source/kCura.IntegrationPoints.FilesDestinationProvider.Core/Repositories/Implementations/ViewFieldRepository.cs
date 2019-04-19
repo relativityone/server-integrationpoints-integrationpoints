@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using kCura.IntegrationPoints.Common.Constants;
+﻿using kCura.IntegrationPoints.Common.Constants;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using Relativity.Services.Interfaces.ViewField;
 using Relativity.Services.Interfaces.ViewField.Models;
@@ -24,11 +23,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories.Imp
 			IExternalServiceSimpleInstrumentation instrumentation = CreateInstrumentation(
 				operationName: nameof(IViewFieldManager.ReadExportableViewFieldsAsync)
 			);
-			return instrumentation.Execute(
+			return instrumentation.ExecuteAsync(
 				() => _viewFieldManager.ReadExportableViewFieldsAsync(workspaceID, artifactTypeID)
-					.GetAwaiter()
-					.GetResult()
-			);
+			)
+			.GetAwaiter()
+			.GetResult();
 		}
 
 		public ViewFieldIDResponse[] ReadViewFieldIDsFromSearch(int workspaceID, int artifactTypeID, int viewArtifactID)
@@ -36,11 +35,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories.Imp
 			IExternalServiceSimpleInstrumentation instrumentation = CreateInstrumentation(
 				operationName: nameof(IViewFieldManager.ReadViewFieldIDsFromSearchAsync)
 			);
-			return instrumentation.Execute(
+			return instrumentation.ExecuteAsync(
 				() => _viewFieldManager.ReadViewFieldIDsFromSearchAsync(workspaceID, artifactTypeID, viewArtifactID)
-					.GetAwaiter()
-					.GetResult()
-			);
+			)
+			.GetAwaiter()
+			.GetResult();
 		}
 
 		public ViewFieldIDResponse[] ReadViewFieldIDsFromProduction(int workspaceID, int artifactTypeID, int viewArtifactID)
@@ -48,11 +47,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories.Imp
 			IExternalServiceSimpleInstrumentation instrumentation = CreateInstrumentation(
 				operationName: nameof(IViewFieldManager.ReadViewFieldIDsFromProductionAsync)
 			);
-			return instrumentation.Execute(
+			return instrumentation.ExecuteAsync(
 				() =>_viewFieldManager.ReadViewFieldIDsFromProductionAsync(workspaceID, artifactTypeID, viewArtifactID)
-					.GetAwaiter()
-					.GetResult()
-			);
+			)
+			.GetAwaiter()
+			.GetResult();
 		}
 
 		private IExternalServiceSimpleInstrumentation CreateInstrumentation(string operationName)

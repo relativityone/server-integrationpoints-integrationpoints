@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using kCura.IntegrationPoints.Common.Constants;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using Relativity.Services.FileField;
@@ -37,11 +36,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories.Imp
 				operationName: nameof(IFileFieldManager.GetFilesForDynamicObjectsAsync)
 			);
 
-			return instrumentation.Execute(() =>
+			return instrumentation.ExecuteAsync(() =>
 				_fileFieldManager.GetFilesForDynamicObjectsAsync(workspaceID, fileFieldArtifactID, objectIDs)
-					.GetAwaiter()
-					.GetResult()
-			);
+			)
+			.GetAwaiter()
+			.GetResult();
 		}
 
 		private IExternalServiceSimpleInstrumentation CreateInstrumentation(string operationName)
