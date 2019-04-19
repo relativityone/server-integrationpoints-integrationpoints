@@ -36,6 +36,11 @@ namespace kCura.IntegrationPoints.Core.Provider
 
         public async Task<Either<string, Unit>> InstallProvidersAsync(IEnumerable<ContractsSourceProvider> providersToInstall)
         {
+            if (providersToInstall == null)
+            {
+                return $"Argument '{nameof(providersToInstall)}' cannot be null";
+            }
+
             try
             {
                 return await InstallProvidersInternalAsync(providersToInstall).ConfigureAwait(false);

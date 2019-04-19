@@ -128,6 +128,19 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Tests.Internals
             installAction.ShouldThrow<InvalidSourceProviderException>().WithMessage(expectedError);
         }
 
+        [Test]
+        public void ShouldThrowArgumentExceptionForNullSourceProviders()
+        {
+            // arrange
+            SourceProvider[] sourceProvidersToInstall = null;
+
+            // act
+            Func<Task> installSourceProvidersAction = () => _sut.InstallSourceProvidersAsync(_WORKSPACE_ID, sourceProvidersToInstall);
+
+            // arrange
+            installSourceProvidersAction.ShouldThrow<ArgumentException>("because source providers list was null");
+        }
+
         private bool AssertInstallProviderRequestIsValid(
             InstallProviderRequest request,
             IEnumerable<SourceProvider> expectedSourceProviders)

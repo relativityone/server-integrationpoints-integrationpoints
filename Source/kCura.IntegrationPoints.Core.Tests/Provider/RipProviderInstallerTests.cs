@@ -185,6 +185,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider
             result.Should().BeLeft(expectedErrorMessage, "because cannot retrieve installed providers");
         }
 
+        [Test]
+        public async Task ShouldReturnErrorWhenSourceProvidersAreNull()
+        {
+            // act
+            Either<string, Unit> result = await _sut.InstallProvidersAsync(null);
+
+            // assert
+            result.Should().BeLeft("Argument 'providersToInstall' cannot be null", "because providers were null");
+        }
+
         private void SetupDataProviderFactoryFactory(Exception exceptionToThrow = null)
         {
             var providerFactoryVendorMock = new Mock<ProviderFactoryVendor>();

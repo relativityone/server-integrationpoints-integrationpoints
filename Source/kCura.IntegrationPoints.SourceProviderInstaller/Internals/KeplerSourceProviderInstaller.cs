@@ -1,6 +1,7 @@
 ﻿using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Services;
 using kCura.IntegrationPoints.SourceProviderInstaller.Internals.Converters;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,6 +19,8 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Internals
 
         public async Task InstallSourceProvidersAsync(int workspaceID, IEnumerable<SourceProvider> sourceProviders)
         {
+            ValidateParameterIsNotNull(sourceProviders, nameof(sourceProviders));
+
             var request = new InstallProviderRequest
             {
                 WorkspaceID = workspaceID,
@@ -30,7 +33,15 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Internals
                 throw new InvalidSourceProviderException($"An error occured while installing source providers: {response.ErrorMessage}");
             }
         }
-        
+
+        private void ValidateParameterIsNotNull(object parameterValue, string parameterName)
+        {
+            if (parameterValue == null)
+            {
+                throw new ArgumentNullException(parameterName);
+            }
+        }
+
         private Task<InstallProviderResponse> SendInstallProviderRequestWithRetriesAsync(InstallProviderRequest request)
         {
             return _keplerRetryHelper.ExecuteWithRetriesAsync<IProviderManager, InstallProviderRequest, InstallProviderResponse>(
