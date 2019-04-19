@@ -14,6 +14,8 @@ namespace Relativity.Sync.Tests.Common
 		IJobStatusConsolidationConfiguration, INotificationConfiguration, IPermissionsCheckConfiguration, ISnapshotPartitionConfiguration,
 		ISourceWorkspaceTagsCreationConfiguration, ISynchronizationConfiguration, IValidationConfiguration, IUserContextConfiguration
 	{
+		private const int _ADMIN_ID = 9;
+
 		public string DataDestinationName { get; set; }
 		public bool IsDataDestinationArtifactIdSet { get; set; }
 		public int DataDestinationArtifactId { get; set; }
@@ -24,6 +26,8 @@ namespace Relativity.Sync.Tests.Common
 		public async Task SetSnapshotDataAsync(Guid runId, long totalRecordsCount)
 		{
 			await Task.Yield();
+			ExportRunId = runId;
+			TotalRecordsCount = (int) totalRecordsCount;
 		}
 
 		public string SourceWorkspaceTagName { get; set; }
@@ -75,7 +79,7 @@ namespace Relativity.Sync.Tests.Common
 		}
 
 
-		public int ExecutingUserId { get; set; }
+		public int ExecutingUserId => _ADMIN_ID;
 		public string JobStatus { get; set; }
 		public bool SendEmails { get; set; }
 		public IEnumerable<string> EmailRecipients { get; } = new List<string>();

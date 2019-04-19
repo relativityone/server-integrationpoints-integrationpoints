@@ -24,7 +24,6 @@ namespace Relativity.Sync.Tests.System
 		private JSONSerializer _serializer;
 
 		private const string _JOB_HISTORY_NAME = "Test Job Name";
-		private const int _USER_ID = 9;
 
 		[SetUp]
 		public async Task SetUp()
@@ -58,7 +57,6 @@ namespace Relativity.Sync.Tests.System
 				SourceWorkspaceArtifactId = expectedSourceWorkspaceArtifactId,
 				JobArtifactId = expectedJobHistoryArtifactId,
 				JobName = _JOB_HISTORY_NAME,
-				ExecutingUserId = _USER_ID,
 				NotificationEmails = string.Empty,
 				SavedSearchArtifactId = savedSearchArtifactId,
 				DestinationFolderArtifactId = destinationFolderArtifactId,
