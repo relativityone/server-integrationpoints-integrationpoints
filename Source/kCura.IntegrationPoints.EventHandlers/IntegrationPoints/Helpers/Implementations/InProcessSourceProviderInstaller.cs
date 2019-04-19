@@ -27,12 +27,12 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
             IEHHelper helper,
             IRipProviderInstaller ripProviderInstaller)
         {
-            _logger = logger;
+            _logger = logger.ForContext<InProcessSourceProviderInstaller>();
             _helper = helper;
             _ripProviderInstaller = ripProviderInstaller;
         }
 
-        public Task InstallSourceProviders(int workspaceID, IEnumerable<SourceProvider> sourceProviders)
+        public Task InstallSourceProvidersAsync(int workspaceID, IEnumerable<SourceProvider> sourceProviders)
         {
             _logger.LogInformation("Installing internal RIP source providers, providers: {@sourceProviders}", sourceProviders);
 

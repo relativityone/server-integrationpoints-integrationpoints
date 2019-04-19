@@ -112,7 +112,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Internals
                 Configuration = x.Value.Configuration
             });
 
-            _sourceProviderInstaller.InstallSourceProviders(workspaceID, sourceProviders).GetAwaiter().GetResult();
+            _sourceProviderInstaller.InstallSourceProvidersAsync(workspaceID, sourceProviders).GetAwaiter().GetResult();
         }
 
         private static string GetFailureMessage(IDictionary<Guid, SourceProvider> sourceProviders)

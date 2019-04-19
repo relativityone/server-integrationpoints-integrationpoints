@@ -9,7 +9,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
     [Guid("AE453CBD-2B18-4EEE-A66C-A92E1A91C641")]
     [EventHandler.CustomAttributes.Description("This is an event handler to register back destination providers after creating workspace using the template that has integration point installed.")]
-    public class DestinationProvidersMigrationEventHandler : IntegrationPointMigrationEventHandlerBase
+    public sealed class DestinationProvidersMigrationEventHandler : IntegrationPointMigrationEventHandlerBase
     {
         protected override string SuccessMessage => "RIP Destination Providers registered successfully";
 

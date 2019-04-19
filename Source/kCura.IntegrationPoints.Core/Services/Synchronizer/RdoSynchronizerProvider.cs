@@ -46,24 +46,32 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
             DestinationProvider destinationProvider = _destinationProviderRepository.ReadByProviderGuid(providerGuid);
             if (destinationProvider == null)
             {
-                LogCreatingProvider(name, providerGuid);
-                destinationProvider = new DestinationProvider
-                {
-                    Name = name,
-                    Identifier = providerGuid,
-                    ApplicationIdentifier = Constants.IntegrationPoints.APPLICATION_GUID_STRING
-                };
-                _destinationProviderRepository.Create(destinationProvider);
+                CreateDestinationProvider(name, providerGuid);
             }
             else
             {
-                LogUpdatingProvider(name, providerGuid);
-                destinationProvider.Name = name;
-                _destinationProviderRepository.Update(destinationProvider);
+                UpdateDestinationProviderName(name, providerGuid, destinationProvider);
             }
         }
 
+        private void UpdateDestinationProviderName(string name, string providerGuid, DestinationProvider destinationProvider)
+        {
+            LogUpdatingProvider(name, providerGuid);
+            destinationProvider.Name = name;
+            _destinationProviderRepository.Update(destinationProvider);
+        }
 
+        private void CreateDestinationProvider(string name, string providerGuid)
+        {
+            LogCreatingProvider(name, providerGuid);
+            var destinationProvider = new DestinationProvider
+            {
+                Name = name,
+                Identifier = providerGuid,
+                ApplicationIdentifier = Constants.IntegrationPoints.APPLICATION_GUID_STRING
+            };
+            _destinationProviderRepository.Create(destinationProvider);
+        }
 
         #region Logging
 

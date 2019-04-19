@@ -6,6 +6,6 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Internals
 {
     internal interface ISourceProviderInstaller
     {
-        Task InstallSourceProviders(int workspaceID, IEnumerable<SourceProvider> sourceProviders);
+        Task InstallSourceProvidersAsync(int workspaceID, IEnumerable<SourceProvider> sourceProviders);
     }
 }

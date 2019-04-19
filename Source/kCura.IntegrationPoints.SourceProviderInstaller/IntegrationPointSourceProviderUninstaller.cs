@@ -86,7 +86,12 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
         internal virtual IKeplerRequestHelper CreateKeplerRequestHelper()
         {
             IServicesMgr servicesManager = Helper.GetServicesManager();
-            return new KeplerRequestHelper(Logger, servicesManager, _SEND_INSTALL_REQUEST_MAX_RETRIES_NUMBER, _SEND_INSTALL_REQUEST_DELAY_BETWEEN_RETRIES_IN_MS);
+            return new KeplerRequestHelper(
+                Logger,
+                servicesManager,
+                _SEND_INSTALL_REQUEST_MAX_RETRIES_NUMBER,
+                _SEND_INSTALL_REQUEST_DELAY_BETWEEN_RETRIES_IN_MS
+            );
         }
     }
 }

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
-    public class SourceProviderRepository : GenericRepository<SourceProvider>, ISourceProviderRepository
+    public class SourceProviderRepository : Repository<SourceProvider>, ISourceProviderRepository
     {
         private readonly ISourceProviderArtifactIdByGuidQueryBuilder _artifactIdByGuid = new SourceProviderArtifactIdByGuidQueryBuilder();
         private readonly IRelativityObjectManager _relativityObjectManager;

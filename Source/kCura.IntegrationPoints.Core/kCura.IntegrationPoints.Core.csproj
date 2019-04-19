@@ -80,6 +80,7 @@
     <Compile Include="Provider\IRipProviderUninstaller.cs" />
     <Compile Include="Provider\RipProviderInstaller.cs" />
     <Compile Include="Provider\RipProviderUninstaller.cs" />
+    <Compile Include="Services\SourceTypes\SourceType.cs" />
     <Compile Include="Validation\IAgentValidator.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="ContextContainer.cs" />

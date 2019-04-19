@@ -4,6 +4,6 @@ namespace kCura.IntegrationPoints.Core.Provider.Internals
 {
     public interface IIntegrationPointsRemover
     {
-        void DeleteIntegrationPointsBySourceProvider(List<int> sourceProvidersIds);
+        void DeleteIntegrationPointsBySourceProvider(List<int> sourceProvidersIDs);
     }
 }

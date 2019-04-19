@@ -1,10 +1,10 @@
 ﻿namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
-    public class GenericRepository<T> : IGenericRepository<T> where T : BaseRdo, new()
+    public class Repository<T> : IRepository<T> where T : BaseRdo, new()
     {
         private readonly IRelativityObjectManager _objectManager;
 
-        protected GenericRepository(IRelativityObjectManager objectManager)
+        protected Repository(IRelativityObjectManager objectManager)
         {
             _objectManager = objectManager;
         }

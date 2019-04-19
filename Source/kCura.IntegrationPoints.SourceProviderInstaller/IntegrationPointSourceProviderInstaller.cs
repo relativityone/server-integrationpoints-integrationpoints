@@ -88,7 +88,6 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
         {
             ISourceProviderInstaller sourceProviderInstaller = CreateSourceProviderInstaller();
             var internalInstaller = new IntegrationPointSourceProviderInstallerInternal(
-
                 Logger,
                 sourceProviderInstaller,
                 GetSourceProviders,
@@ -101,7 +100,12 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
         internal virtual ISourceProviderInstaller CreateSourceProviderInstaller()
         {
             IServicesMgr servicesManager = Helper.GetServicesManager();
-            var retryHelper = new KeplerRequestHelper(Logger, servicesManager, _SEND_INSTALL_REQUEST_MAX_RETRIES_NUMBER, _SEND_INSTALL_REQUEST_DELAY_BETWEEN_RETRIES_IN_MS);
+            var retryHelper = new KeplerRequestHelper(
+                Logger, 
+                servicesManager, 
+                _SEND_INSTALL_REQUEST_MAX_RETRIES_NUMBER, 
+                _SEND_INSTALL_REQUEST_DELAY_BETWEEN_RETRIES_IN_MS
+            );
             return new KeplerSourceProviderInstaller(retryHelper);
         }
     }

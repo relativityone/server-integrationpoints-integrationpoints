@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Provider.Internals;
 using kCura.IntegrationPoints.Core.Services;
@@ -8,132 +6,141 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using NSubstitute;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace kCura.IntegrationPoints.Core.Tests.Provider.Internals
 {
-	[TestFixture]
-	public class IntegrationPointsRemoverTests : TestBase
-	{
-		private IIntegrationPointQuery _integrationPointQuery;
-		private IDeleteHistoryService _deleteHistoryService;
-		private IRelativityObjectManager _relativityObjectManager;
+    [TestFixture]
+    public class IntegrationPointsRemoverTests : TestBase
+    {
+        private IIntegrationPointQuery _integrationPointQuery;
+        private IDeleteHistoryService _deleteHistoryService;
+        private IRelativityObjectManager _relativityObjectManager;
 
-		[SetUp]
-		public override void SetUp()
-		{
-			_relativityObjectManager = Substitute.For<IRelativityObjectManager>();
+        [SetUp]
+        public override void SetUp()
+        {
+            _relativityObjectManager = Substitute.For<IRelativityObjectManager>();
 
-			_deleteHistoryService = Substitute.For<IDeleteHistoryService>();
-			_integrationPointQuery = Substitute.For<IIntegrationPointQuery>();
-		}
+            _deleteHistoryService = Substitute.For<IDeleteHistoryService>();
+            _integrationPointQuery = Substitute.For<IIntegrationPointQuery>();
+        }
 
-		[Test]
-		public void ItShouldThrowExceptionWhenIntegrationPointQueryIsNullTest()
-		{
-			// arrange
-			var deleteIntegrationPoints = new IntegrationPointsRemover(null, _deleteHistoryService, _relativityObjectManager);
-			var ids = new List<int> { 1, 2, 3 };
+        [Test]
+        public void ShouldThrowExceptionWhenIntegrationPointQueryIsNullTest()
+        {
+            // arrange
+            var sut = new IntegrationPointsRemover(null, _deleteHistoryService, _relativityObjectManager);
+            var ids = new List<int> { 1, 2, 3 };
 
-			// act & assert
-			Assert.Throws<NullReferenceException>(() => deleteIntegrationPoints.DeleteIntegrationPointsBySourceProvider(ids));
-		}
+            // act
+            Action deleteAction = () => sut.DeleteIntegrationPointsBySourceProvider(ids);
 
-		[Test]
-		public void ItShouldThrowExceptionWhenDeleteHistoryServiceIsNullTest()
-		{
-			// arrange
-			var deleteIntegrationPoints = new IntegrationPointsRemover(_integrationPointQuery, null, _relativityObjectManager);
-			var ids = new List<int> { 1, 2, 3 };
+            // assert
+            deleteAction.ShouldThrow<NullReferenceException>();
+        }
 
-			// act & assert
-			Assert.Throws<NullReferenceException>(() => deleteIntegrationPoints.DeleteIntegrationPointsBySourceProvider(ids));
-		}
+        [Test]
+        public void ShouldThrowExceptionWhenDeleteHistoryServiceIsNullTest()
+        {
+            // arrange
+            var sut = new IntegrationPointsRemover(_integrationPointQuery, null, _relativityObjectManager);
+            var ids = new List<int> { 1, 2, 3 };
 
-		[TestCase(new int[] { })]
-		[TestCase(new[] { 1 })]
-		[TestCase(new[] { 1, 6, 3 })]
-		public void ItShouldCallWithProperArgumentIntegrationPointQueryTest(int[] sourceProvider)
-		{
-			// arrange
-			var deleteIntegrationPoints = new IntegrationPointsRemover(_integrationPointQuery, _deleteHistoryService, _relativityObjectManager);
+            // act
+            Action deleteAction = () => sut.DeleteIntegrationPointsBySourceProvider(ids);
 
-			// act
-			deleteIntegrationPoints.DeleteIntegrationPointsBySourceProvider(sourceProvider.ToList());
+            // assert
+            deleteAction.ShouldThrow<NullReferenceException>();
+        }
 
-			// assert
-			_integrationPointQuery.Received(1).GetIntegrationPoints(Arg.Is<List<int>>(x => x.SequenceEqual(sourceProvider)));
-		}
+        [TestCase(new int[] { })]
+        [TestCase(new[] { 1 })]
+        [TestCase(new[] { 1, 6, 3 })]
+        public void ShouldCallWithProperArgumentIntegrationPointQueryTest(int[] sourceProvider)
+        {
+            // arrange
+            var sut = new IntegrationPointsRemover(_integrationPointQuery, _deleteHistoryService, _relativityObjectManager);
 
-		[TestCase(new int[0], new int[0])]
-		[TestCase(new[] { 1, 2, 3 }, new[] { 5, 7, 6 })]
-		public void ItShouldCallWithProperArgumentsDeleteHistoryServiceTest(int[] sourceProvider, int[] artifactIds)
-		{
-			// arrange
-			var integrationPoints = GetMockIntegrationsPoints(artifactIds).ToList();
-			_integrationPointQuery.GetIntegrationPoints(Arg.Any<List<int>>()).Returns(integrationPoints);
-			var deleteIntegrationPoints = new IntegrationPointsRemover(_integrationPointQuery, _deleteHistoryService, _relativityObjectManager);
+            // act
+            sut.DeleteIntegrationPointsBySourceProvider(sourceProvider.ToList());
 
-			// act
-			deleteIntegrationPoints.DeleteIntegrationPointsBySourceProvider(sourceProvider.ToList());
+            // assert
+            _integrationPointQuery.Received(1).GetIntegrationPoints(Arg.Is<List<int>>(x => x.SequenceEqual(sourceProvider)));
+        }
 
-			// assert
-			_deleteHistoryService.Received(1).DeleteHistoriesAssociatedWithIPs(Arg.Is<List<int>>(x => x.SequenceEqual(artifactIds)), _relativityObjectManager);
-		}
+        [TestCase(new int[0], new int[0])]
+        [TestCase(new[] { 1, 2, 3 }, new[] { 5, 7, 6 })]
+        public void ShouldCallWithProperArgumentsDeleteHistoryServiceTest(int[] sourceProvider, int[] artifactIds)
+        {
+            // arrange
+            List<Data.IntegrationPoint> integrationPoints = GetMockIntegrationsPoints(artifactIds).ToList();
+            _integrationPointQuery.GetIntegrationPoints(Arg.Any<List<int>>()).Returns(integrationPoints);
+            var sut = new IntegrationPointsRemover(_integrationPointQuery, _deleteHistoryService, _relativityObjectManager);
 
-		[TestCase(new int[0], new int[0])]
-		[TestCase(new[] { 1, 2, 3 }, new[] { 5, 7, 6 })]
-		public void ItShouldCallWithProperArgumentsIntegrationPointLibraryTest(int[] sourceProvider, int[] artifactIds)
-		{
-			// arrange
-			var integrationPoints = GetMockIntegrationsPoints(artifactIds).ToList();
-			_integrationPointQuery.GetIntegrationPoints(Arg.Any<List<int>>()).Returns(integrationPoints);
-			var deleteIntegrationPoints = new IntegrationPointsRemover(_integrationPointQuery, _deleteHistoryService, _relativityObjectManager);
+            // act
+            sut.DeleteIntegrationPointsBySourceProvider(sourceProvider.ToList());
 
-			// act
-			deleteIntegrationPoints.DeleteIntegrationPointsBySourceProvider(sourceProvider.ToList());
+            // assert
+            _deleteHistoryService.Received(1).DeleteHistoriesAssociatedWithIPs(Arg.Is<List<int>>(x => x.SequenceEqual(artifactIds)), _relativityObjectManager);
+        }
 
-			// assert
-			foreach (var ip in integrationPoints)
-			{
-				_relativityObjectManager.Received(1)
-					.Delete<Data.IntegrationPoint>(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == ip.ArtifactId));
-			}
-		}
+        [TestCase(new int[0], new int[0])]
+        [TestCase(new[] { 1, 2, 3 }, new[] { 5, 7, 6 })]
+        public void ShouldCallWithProperArgumentsIntegrationPointLibraryTest(int[] sourceProvider, int[] artifactIds)
+        {
+            // arrange
+            List<Data.IntegrationPoint> integrationPoints = GetMockIntegrationsPoints(artifactIds).ToList();
+            _integrationPointQuery.GetIntegrationPoints(Arg.Any<List<int>>()).Returns(integrationPoints);
+            var sut = new IntegrationPointsRemover(_integrationPointQuery, _deleteHistoryService, _relativityObjectManager);
 
-		[Test]
-		public void ItShouldCallWithProperArgumentsIntegrationPointLibraryWhenCalledTwoTimesTest()
-		{
-			// arrange
-			var sourceProvider = new List<int> { 1 };
-			var deleteIntegrationPoints = new IntegrationPointsRemover(_integrationPointQuery, _deleteHistoryService, _relativityObjectManager);
+            // act
+            sut.DeleteIntegrationPointsBySourceProvider(sourceProvider.ToList());
 
-			var artifactIds = new[] { 7 };
-			var integrationPoints = GetMockIntegrationsPoints(artifactIds).ToList();
-			_integrationPointQuery.GetIntegrationPoints(Arg.Any<List<int>>()).Returns(integrationPoints);
+            // assert
+            foreach (Data.IntegrationPoint ip in integrationPoints)
+            {
+                _relativityObjectManager.Received(1)
+                    .Delete(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == ip.ArtifactId));
+            }
+        }
 
-			deleteIntegrationPoints.DeleteIntegrationPointsBySourceProvider(sourceProvider);
+        [Test]
+        public void ShouldCallWithProperArgumentsIntegrationPointLibraryWhenCalledTwoTimesTest()
+        {
+            // arrange
+            var sourceProvider = new List<int> { 1 };
+            var sut = new IntegrationPointsRemover(_integrationPointQuery, _deleteHistoryService, _relativityObjectManager);
 
-			var secondArtifactIds = new[] { 8 };
-			var secondintegrationPoints = GetMockIntegrationsPoints(secondArtifactIds).ToList();
-			_integrationPointQuery.GetIntegrationPoints(Arg.Any<List<int>>()).Returns(secondintegrationPoints);
+            int[] artifactIds = { 7 };
+            List<Data.IntegrationPoint> integrationPoints = GetMockIntegrationsPoints(artifactIds).ToList();
+            _integrationPointQuery.GetIntegrationPoints(Arg.Any<List<int>>()).Returns(integrationPoints);
 
-			// act
-			deleteIntegrationPoints.DeleteIntegrationPointsBySourceProvider(sourceProvider);
+            sut.DeleteIntegrationPointsBySourceProvider(sourceProvider);
 
-			// assert
-			foreach (var ip in integrationPoints)
-			{
-				_relativityObjectManager.Received(1).Delete<Data.IntegrationPoint>(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == ip.ArtifactId));
-			}
-			foreach (var ip in secondintegrationPoints)
-			{
-				_relativityObjectManager.Received(1).Delete<Data.IntegrationPoint>(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == ip.ArtifactId));
-			}
-		}
+            int[] secondArtifactIds = { 8 };
+            List<Data.IntegrationPoint> secondintegrationPoints = GetMockIntegrationsPoints(secondArtifactIds).ToList();
+            _integrationPointQuery.GetIntegrationPoints(Arg.Any<List<int>>()).Returns(secondintegrationPoints);
 
-		private IEnumerable<Data.IntegrationPoint> GetMockIntegrationsPoints(IEnumerable<int> artifactIds)
-		{
-			return artifactIds.Select(artifactId => new Data.IntegrationPoint { ArtifactId = artifactId });
-		}
-	}
+            // act
+            sut.DeleteIntegrationPointsBySourceProvider(sourceProvider);
+
+            // assert
+            foreach (Data.IntegrationPoint ip in integrationPoints)
+            {
+                _relativityObjectManager.Received(1).Delete(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == ip.ArtifactId));
+            }
+            foreach (Data.IntegrationPoint ip in secondintegrationPoints)
+            {
+                _relativityObjectManager.Received(1).Delete(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == ip.ArtifactId));
+            }
+        }
+
+        private IEnumerable<Data.IntegrationPoint> GetMockIntegrationsPoints(IEnumerable<int> artifactIds)
+        {
+            return artifactIds.Select(artifactId => new Data.IntegrationPoint { ArtifactId = artifactId });
+        }
+    }
 }

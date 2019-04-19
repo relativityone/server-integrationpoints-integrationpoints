@@ -1,6 +1,6 @@
 ﻿namespace kCura.IntegrationPoints.Data.Repositories
 {
-    public interface IGenericRepository<T> where T : BaseRdo, new()
+    public interface IRepository<T> where T : BaseRdo, new()
     {
         int Create(T rdo);
 

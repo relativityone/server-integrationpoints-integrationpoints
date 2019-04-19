@@ -19,7 +19,9 @@ namespace kCura.IntegrationPoints.Services.Installers.Context
             container.Register(
                 Component
                     .For<IRSAPIService>()
-                    .UsingFactoryMethod(k => new RSAPIService(k.Resolve<IHelper>(), workspaceID), true),
+                    .UsingFactoryMethod(
+                        k => new RSAPIService(k.Resolve<IHelper>(), workspaceID),
+                        managedExternally: true),
                 Component
                     .For<IServiceContextHelper>()
                     .UsingFactoryMethod(k => new ServiceContextHelperForKeplerService(k.Resolve<IServiceHelper>(), workspaceID)

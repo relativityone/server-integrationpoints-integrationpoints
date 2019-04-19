@@ -15,21 +15,21 @@ namespace kCura.IntegrationPoints.Core.Services
 			_objectManagerFactory = objectManagerFactory;
 		}
 
-		public void DeleteHistoriesAssociatedWithIP(int workspaceId, int integrationPointId)
+		public void DeleteHistoriesAssociatedWithIP(int workspaceID, int integrationPointID)
 		{
-			DeleteHistoriesAssociatedWithIPs(new List<int> {integrationPointId}, _objectManagerFactory.CreateRelativityObjectManager(workspaceId));
+			DeleteHistoriesAssociatedWithIPs(new List<int> {integrationPointID}, _objectManagerFactory.CreateRelativityObjectManager(workspaceID));
 		}
 
-		public void DeleteHistoriesAssociatedWithIPs(List<int> integrationPointsId, IRelativityObjectManager objectManager)
+		public void DeleteHistoriesAssociatedWithIPs(List<int> integrationPointsIDs, IRelativityObjectManager objectManager)
 		{
-		    if (!integrationPointsId.Any())
+		    if (!integrationPointsIDs.Any())
 		    {
 		        return;
 		    }
 
 			var request = new QueryRequest
 			{
-				Condition = $"'ArtifactId' in [{string.Join(",", integrationPointsId)}]"
+				Condition = $"'ArtifactId' in [{string.Join(",", integrationPointsIDs)}]"
 
 			};
 			IList<Data.IntegrationPoint> integrationPoints = objectManager.Query<Data.IntegrationPoint>(request);

@@ -58,7 +58,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Tests.Internals
             SetInstallProviderResponse(isSuccess: true);
 
             // act
-            await _sut.InstallSourceProviders(_WORKSPACE_ID, sourceProvidersToInstall).ConfigureAwait(false);
+            await _sut.InstallSourceProvidersAsync(_WORKSPACE_ID, sourceProvidersToInstall).ConfigureAwait(false);
 
             // assert
             _providerManager.Verify(x =>
@@ -79,7 +79,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Tests.Internals
             SetInstallProviderResponse(isSuccess: false);
 
             // act
-            Func<Task> installAction = () => _sut.InstallSourceProviders(_WORKSPACE_ID, sourceProvidersToInstall);
+            Func<Task> installAction = () => _sut.InstallSourceProvidersAsync(_WORKSPACE_ID, sourceProvidersToInstall);
 
             // assert
             string expectedError = $"An error occured while installing source providers: {_ERROR_MESSAGE}";
@@ -99,7 +99,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Tests.Internals
             SetInstallProviderToThrowInFirstCallAndReturnSuccessInSecond();
 
             // act
-            await _sut.InstallSourceProviders(_WORKSPACE_ID, sourceProvidersToInstall).ConfigureAwait(false);
+            await _sut.InstallSourceProvidersAsync(_WORKSPACE_ID, sourceProvidersToInstall).ConfigureAwait(false);
 
             // assert
             _providerManager.Verify(x =>
@@ -121,7 +121,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Tests.Internals
             SetInstallProviderToThrow();
 
             // act
-            Func<Task> installAction = () => _sut.InstallSourceProviders(_WORKSPACE_ID, sourceProvidersToInstall);
+            Func<Task> installAction = () => _sut.InstallSourceProvidersAsync(_WORKSPACE_ID, sourceProvidersToInstall);
 
             // assert
             string expectedError = $"Error occured while sending request to {nameof(IProviderManager)}";

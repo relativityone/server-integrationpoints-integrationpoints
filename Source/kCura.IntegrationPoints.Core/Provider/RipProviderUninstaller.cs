@@ -44,7 +44,8 @@ namespace kCura.IntegrationPoints.Core.Provider
                     .GetSourceProviderRdoByApplicationIdentifierAsync(applicationGuid)
                     .ConfigureAwait(false);
 
-                _integrationPointsRemover.DeleteIntegrationPointsBySourceProvider(installedRdoProviders.Select(x => x.ArtifactId).ToList());
+                List<int> installedRdoProvidersArtifactIDs = installedRdoProviders.Select(x => x.ArtifactId).ToList();
+                _integrationPointsRemover.DeleteIntegrationPointsBySourceProvider(installedRdoProvidersArtifactIDs);
                 RemoveSourceProviders(installedRdoProviders);
             }
             catch (Exception ex)

@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Internals
             _keplerRetryHelper = keplerRetryHelper;
         }
 
-        public async Task InstallSourceProviders(int workspaceID, IEnumerable<SourceProvider> sourceProviders)
+        public async Task InstallSourceProvidersAsync(int workspaceID, IEnumerable<SourceProvider> sourceProviders)
         {
             var request = new InstallProviderRequest
             {

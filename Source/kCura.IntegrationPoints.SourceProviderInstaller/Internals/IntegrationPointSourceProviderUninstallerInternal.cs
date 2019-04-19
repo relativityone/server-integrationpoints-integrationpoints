@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Internals
             try
             {
                 _preExecuteAction?.Invoke();
-                UninstallProviderResponse uninstallProviderResponse = UninstallSourceProvider(workspaceID, applicationArtifactID)
+                UninstallProviderResponse uninstallProviderResponse = UninstallSourceProviderAsync(workspaceID, applicationArtifactID)
                     .GetAwaiter()
                     .GetResult();
 
@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Internals
             return responseToReturn;
         }
 
-        private async Task<UninstallProviderResponse> UninstallSourceProvider(int workspaceID, int applicationArtifactID)
+        private Task<UninstallProviderResponse> UninstallSourceProviderAsync(int workspaceID, int applicationArtifactID)
         {
             var request = new UninstallProviderRequest
             {
@@ -69,7 +69,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Internals
                 WorkspaceID = workspaceID
             };
 
-            return await SendUninstallProviderRequestWithRetriesAsync(request).ConfigureAwait(false);
+            return SendUninstallProviderRequestWithRetriesAsync(request);
         }
 
         private Task<UninstallProviderResponse> SendUninstallProviderRequestWithRetriesAsync(UninstallProviderRequest request)

@@ -68,7 +68,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
         public async Task ShouldDirectlyCallRipProviderInstaller()
         {
             // act
-            await _sut.InstallSourceProviders(_WORKSPACE_ID, _sourceProviders).ConfigureAwait(false);
+            await _sut.InstallSourceProvidersAsync(_WORKSPACE_ID, _sourceProviders).ConfigureAwait(false);
 
             // assert
             _ripProviderInstallerMock.Verify(x =>
@@ -86,7 +86,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
                 .Returns(Task.FromResult(Right<string, Unit>(Unit.Default)));
 
             // act
-            await _sut.InstallSourceProviders(_WORKSPACE_ID, _sourceProviders).ConfigureAwait(false);
+            await _sut.InstallSourceProvidersAsync(_WORKSPACE_ID, _sourceProviders).ConfigureAwait(false);
         }
 
         [Test]
@@ -98,7 +98,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
                 .Returns(Task.FromResult(Left<string, Unit>(expectedError)));
 
             // act
-            Func<Task> installSourceProviderAction = () => _sut.InstallSourceProviders(_WORKSPACE_ID, _sourceProviders);
+            Func<Task> installSourceProviderAction = () => _sut.InstallSourceProvidersAsync(_WORKSPACE_ID, _sourceProviders);
 
             // assert
             installSourceProviderAction.ShouldThrow<InvalidSourceProviderException>().WithMessage(expectedError);
@@ -119,7 +119,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
             );
 
             // act
-            Func<Task> installSourceProviderAction = () => sut.InstallSourceProviders(_WORKSPACE_ID, _sourceProviders);
+            Func<Task> installSourceProviderAction = () => sut.InstallSourceProvidersAsync(_WORKSPACE_ID, _sourceProviders);
 
             // assert
             string expectedMessage = $"Error occured while creating instance of {nameof(IRipProviderInstaller)}.";

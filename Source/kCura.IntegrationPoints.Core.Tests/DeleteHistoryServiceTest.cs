@@ -34,9 +34,9 @@ namespace kCura.IntegrationPoints.Core.Tests
 		public void ItShouldSetJobHistoryNull()
 		{
 		    // arrange
-            var integrationPointsId = new List<int> {1, 2};
+            var integrationPointsIDs = new List<int> {1, 2};
 
-			var integrationPoint = new List<Data.IntegrationPoint>
+			var integrationPoints = new List<Data.IntegrationPoint>
 			{
 				new Data.IntegrationPoint
 				{
@@ -48,10 +48,10 @@ namespace kCura.IntegrationPoints.Core.Tests
 				}
 			};
 
-			_objectManager.Query<Data.IntegrationPoint>(Arg.Any<QueryRequest>()).Returns(integrationPoint);
+			_objectManager.Query<Data.IntegrationPoint>(Arg.Any<QueryRequest>()).Returns(integrationPoints);
 
 			// act
-			_instance.DeleteHistoriesAssociatedWithIPs(integrationPointsId, _objectManager);
+			_instance.DeleteHistoriesAssociatedWithIPs(integrationPointsIDs, _objectManager);
 
 			// assert
 			_objectManager.Received(2).Update(Arg.Is<Data.IntegrationPoint>( x => !x.JobHistory.Any()));
@@ -61,10 +61,10 @@ namespace kCura.IntegrationPoints.Core.Tests
 	    public void ItShouldNotQueryForIntegrationPointsWhenIdsListIsEmpty()
 	    {
 	        // arrange
-	        var integrationPointsId = new List<int>();
+	        var integrationPointsIDs = new List<int>();
 
             // act
-	        _instance.DeleteHistoriesAssociatedWithIPs(integrationPointsId, _objectManager);
+	        _instance.DeleteHistoriesAssociatedWithIPs(integrationPointsIDs, _objectManager);
 
             // assert
 	        _objectManager.DidNotReceiveWithAnyArgs()

@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Synchronizer
         }
 
         [Test]
-        public void ShouldCreateDestinationProvidersIfNotExists()
+        public void ShouldCreateDestinationProvidersIfTheyNotExist()
         {
             // arrange
             _destinationProviderRepositoryMock
@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Synchronizer
         }
 
         [Test]
-        public void ShouldUpdateDestinationProviderNameIfExists()
+        public void ShouldUpdateDestinationProviderNameIfTheyExist()
         {
             // arrange
             _destinationProviderRepositoryMock
@@ -74,7 +74,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Synchronizer
         }
 
         [Test]
-        public void ShouldCreateAndUpdateDestinationProvidersIfPartiallyExists()
+        public void ShouldCreateAndUpdateDestinationProvidersIfTheyPartiallyExist()
         {
             // arrange
             _destinationProviderRepositoryMock
@@ -129,7 +129,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Synchronizer
         {
             return new DestinationProvider
             {
-                Name = "",
+                Name = string.Empty,
                 Identifier = identifier
             };
         }

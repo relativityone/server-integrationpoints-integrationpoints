@@ -176,8 +176,8 @@ namespace kCura.IntegrationPoints.Core.Provider
 
             try
             {
-                int sourceProviderArtifactId = _sourceProviderRepository.Create(providerDto);
-                _logger.LogInformation("Created new {object} - {artifactID}", nameof(SourceProvider), sourceProviderArtifactId);
+                int sourceProviderArtifactID = _sourceProviderRepository.Create(providerDto);
+                _logger.LogInformation("Created new {object} - {artifactID}", nameof(SourceProvider), sourceProviderArtifactID);
                 return Unit.Default;
             }
             catch (Exception ex)

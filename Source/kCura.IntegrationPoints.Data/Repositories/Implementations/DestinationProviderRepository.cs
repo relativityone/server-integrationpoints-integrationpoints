@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
-    public class DestinationProviderRepository : GenericRepository<DestinationProvider>, IDestinationProviderRepository
+    public class DestinationProviderRepository : Repository<DestinationProvider>, IDestinationProviderRepository
     {
         private readonly IAPILog _logger;
         private readonly IRelativityObjectManager _relativityObjectManager;
@@ -57,7 +57,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             {
                 LogMoreThanOneProviderFoundWarning(providerGuid);
             }
-            return destinationProviders.SingleOrDefault(); //there should only be one!
+            return destinationProviders.SingleOrDefault();
         }
 
         private void LogMoreThanOneProviderFoundWarning(string providerGuid)

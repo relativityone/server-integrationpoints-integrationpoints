@@ -3,7 +3,7 @@
     /// <summary>
     /// Repository responsible for Destination Provider object
     /// </summary>
-    public interface IDestinationProviderRepository : IGenericRepository<DestinationProvider>
+    public interface IDestinationProviderRepository : IRepository<DestinationProvider>
     {
         /// <summary>
         /// Gets the Destination Provider artifact id given a guid identifier
