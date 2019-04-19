@@ -11799,28 +11799,28 @@
       <ApplicationVersion>9.7.0.4</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
-    <InstallEventHandler> <!-- TODO tt-img-app -->
-      <ArtifactId>1038593</ArtifactId>
-      <AssemblyArtifactId>1016717</AssemblyArtifactId>
+    <InstallEventHandler>
+      <ArtifactId>1042003</ArtifactId>
+      <AssemblyArtifactId>1016759</AssemblyArtifactId>
       <Name>kCura.IntegrationPoints.EventHandlers.Installers.RegisterDestinationProviders</Name>
       <Guid>4e058cf3-9c3e-41aa-8d3d-2ca8f1e06e08</Guid>
-      <Guids>221acba3-d26f-4e67-9f03-245f0bd3df95</Guids>
+      <Guids>e673c307-a5c0-4246-bd67-c7a32ffbf9f6</Guids>
       <ExecutionType>8</ExecutionType>
       <Order>15</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>10.2.30.106</ApplicationVersion>
+      <ApplicationVersion>9.7.0.16</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
-      <ArtifactId>1046769</ArtifactId>
-      <AssemblyArtifactId>1016717</AssemblyArtifactId>
+      <ArtifactId>1042004</ArtifactId>
+      <AssemblyArtifactId>1016759</AssemblyArtifactId>
       <Name>kCura.IntegrationPoints.EventHandlers.IntegrationPoints.DestinationProvidersMigrationEventHandler</Name>
       <Guid>ae453cbd-2b18-4eee-a66c-a92e1a91c641</Guid>
-      <Guids>cf6f946e-afa1-4250-bc85-0cbb93e8b709</Guids>
+      <Guids>cdcb4240-f23b-4dcb-b69c-57f49f6f2216</Guids>
       <ExecutionType>14</ExecutionType>
       <Order>65</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>10.2.30.108</ApplicationVersion>
+      <ApplicationVersion>9.7.0.16</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
   </InstallEventHandlers>
