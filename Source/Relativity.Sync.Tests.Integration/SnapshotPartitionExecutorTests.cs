@@ -6,7 +6,7 @@ using Relativity.Sync.Configuration;
 namespace Relativity.Sync.Tests.Integration
 {
 	[TestFixture]
-	internal sealed class SnapshotPartitionStepTests : FailingStepsBase<ISnapshotPartitionConfiguration>
+	internal sealed class SnapshotPartitionExecutorTests : FailingStepsBase<ISnapshotPartitionConfiguration>
 	{
 		protected override void AssertExecutedSteps(List<Type> executorTypes)
 		{
