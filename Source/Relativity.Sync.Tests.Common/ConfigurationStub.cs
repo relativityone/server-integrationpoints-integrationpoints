@@ -26,6 +26,8 @@ namespace Relativity.Sync.Tests.Common
 		public async Task SetSnapshotDataAsync(Guid runId, long totalRecordsCount)
 		{
 			await Task.Yield();
+			ExportRunId = runId;
+			TotalRecordsCount = (int) totalRecordsCount;
 		}
 
 		public string SourceWorkspaceTagName { get; set; }
