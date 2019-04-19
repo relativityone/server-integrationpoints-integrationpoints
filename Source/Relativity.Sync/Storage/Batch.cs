@@ -248,11 +248,6 @@ namespace Relativity.Sync.Storage
 
 		public static async Task<IBatch> CreateAsync(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int syncConfigurationArtifactId, int totalItemsCount, int startingIndex)
 		{
-			if (startingIndex > totalItemsCount)
-			{
-				throw new ArgumentException($"Starting index cannot be greater than total items count ({startingIndex} > {totalItemsCount}).");
-			}
-
 			Batch batch = new Batch(serviceFactory);
 			await batch.CreateAsync(workspaceArtifactId, syncConfigurationArtifactId, totalItemsCount, startingIndex).ConfigureAwait(false);
 			return batch;
