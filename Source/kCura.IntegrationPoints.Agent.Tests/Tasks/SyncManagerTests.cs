@@ -5,7 +5,6 @@ using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Agent.Tasks;
-using kCura.IntegrationPoints.Agent.Validation;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core;
@@ -541,7 +540,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private void PreJobExecutionGoldFlowSetup()
 		{
 			_job.JobDetails = "something something here";
-			_integrationPointService.GetRdo(_job.RelatedObjectArtifactID).Returns(_integrationPoint);
+			_integrationPointService.ReadIntegrationPoint(_job.RelatedObjectArtifactID).Returns(_integrationPoint);
 			_jobHistoryService.GetOrCreateScheduledRunHistoryRdo(_integrationPoint, _batchInstance, Arg.Any<DateTime>())
 				.Returns(_jobHistory);
 			_jobHistory.StartTimeUTC = null;
