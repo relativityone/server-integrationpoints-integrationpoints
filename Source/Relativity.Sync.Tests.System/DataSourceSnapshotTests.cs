@@ -56,7 +56,7 @@ namespace Relativity.Sync.Tests.System
 				FieldMappings = new List<FieldMap>(),
 				DataSourceArtifactId = _savedSearchArtifactId,
 				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.None,
-				SourceWorkspaceArtifactId = _workspace.ArtifactID
+				SourceWorkspaceArtifactId = _workspace.ArtifactID,
 			};
 
 			ISyncJob syncJob = CreateSyncJob(configuration);

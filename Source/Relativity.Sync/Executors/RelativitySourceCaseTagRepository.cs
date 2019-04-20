@@ -93,10 +93,9 @@ namespace Relativity.Sync.Executors
 			}
 		}
 
-		public async Task<RelativitySourceCaseTag> CreateAsync(int destinationWorkspaceArtifactId, int sourceWorkspaceArtifactTypeId, RelativitySourceCaseTag sourceCaseTag)
+		public async Task<RelativitySourceCaseTag> CreateAsync(int destinationWorkspaceArtifactId, RelativitySourceCaseTag sourceCaseTag)
 		{
-			_logger.LogVerbose($"Creating {nameof(RelativitySourceCaseTag)} in destination workspace artifact ID: {{destinationWorkspaceArtifactId}} " +
-				"Source workspace artifact ID: {sourceWorkspaceArtifactTypeId}", destinationWorkspaceArtifactId, sourceWorkspaceArtifactTypeId);
+			_logger.LogVerbose($"Creating {nameof(RelativitySourceCaseTag)} in destination workspace artifact ID: {{destinationWorkspaceArtifactId}}", destinationWorkspaceArtifactId);
 			using (IObjectManager objectManager = await _serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				CreateRequest request = new CreateRequest

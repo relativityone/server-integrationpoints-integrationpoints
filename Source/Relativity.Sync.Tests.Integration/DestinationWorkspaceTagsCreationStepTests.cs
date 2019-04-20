@@ -76,8 +76,6 @@ namespace Relativity.Sync.Tests.Integration
 			const int sourceWorkspaceArtifactId = 1014853;
 			const int destinationWorkspaceArtifactId = 1014854;
 			const int jobArtifactId = 101000;
-			const int sourceWorkspaceArtifactTypeId = 102001;
-			const int sourceJobArtifactTypeId = 102002;
 			const int newSourceWorkspaceTagArtifactId = 103000;
 			const int newSourceJobTagArtifactId = 103000;
 			string sourceWorkspaceName = "Cool Workspace";
@@ -89,9 +87,6 @@ namespace Relativity.Sync.Tests.Integration
 				SourceWorkspaceArtifactId = sourceWorkspaceArtifactId,
 				DestinationWorkspaceArtifactId = destinationWorkspaceArtifactId,
 				JobArtifactId = jobArtifactId,
-				SourceWorkspaceArtifactTypeId = sourceWorkspaceArtifactTypeId,
-				SourceJobArtifactTypeId = sourceJobArtifactTypeId
-
 			};
 
 			_objectManagerMock.Setup(x => x.QueryAsync(
@@ -159,8 +154,6 @@ namespace Relativity.Sync.Tests.Integration
 			const int sourceWorkspaceArtifactId = 1014853;
 			const int destinationWorkspaceArtifactId = 1014854;
 			const int jobArtifactId = 101000;
-			const int sourceWorkspaceArtifactTypeId = 102001;
-			const int sourceJobArtifactTypeId = 102002;
 			const int sourceWorkspaceTagArtifactId = 103000;
 			const int newSourceJobTagArtifactId = 103001;
 			string oldSourceWorkspaceName = "Not Cool Workspace";
@@ -174,9 +167,6 @@ namespace Relativity.Sync.Tests.Integration
 				SourceWorkspaceArtifactId = sourceWorkspaceArtifactId,
 				DestinationWorkspaceArtifactId = destinationWorkspaceArtifactId,
 				JobArtifactId = jobArtifactId,
-				SourceWorkspaceArtifactTypeId = sourceWorkspaceArtifactTypeId,
-				SourceJobArtifactTypeId = sourceJobArtifactTypeId
-
 			};
 
 			_objectManagerMock.Setup(x => x.QueryAsync(
@@ -281,8 +271,6 @@ namespace Relativity.Sync.Tests.Integration
 			const int sourceWorkspaceArtifactId = 1014853;
 			const int destinationWorkspaceArtifactId = 1014854;
 			const int jobArtifactId = 101000;
-			const int sourceWorkspaceArtifactTypeId = 102001;
-			const int sourceJobArtifactTypeId = 102002;
 			const int sourceWorkspaceTagArtifactId = 103000;
 			const int sourceJobTagArtifactId = 103001;
 			string sourceWorkspaceName = "Not Cool Workspace";
@@ -295,9 +283,6 @@ namespace Relativity.Sync.Tests.Integration
 				SourceWorkspaceArtifactId = sourceWorkspaceArtifactId,
 				DestinationWorkspaceArtifactId = destinationWorkspaceArtifactId,
 				JobArtifactId = jobArtifactId,
-				SourceWorkspaceArtifactTypeId = sourceWorkspaceArtifactTypeId,
-				SourceJobArtifactTypeId = sourceJobArtifactTypeId
-
 			};
 
 			_objectManagerMock.Setup(x => x.QueryAsync(
@@ -407,16 +392,12 @@ namespace Relativity.Sync.Tests.Integration
 			const int sourceWorkspaceArtifactId = 1014853;
 			const int destinationWorkspaceArtifactId = 1014854;
 			const int jobArtifactId = 101000;
-			const int sourceWorkspaceArtifactTypeId = 102001;
-			const int sourceJobArtifactTypeId = 102002;
 
 			var configuration = new ConfigurationStub
 			{
 				SourceWorkspaceArtifactId = sourceWorkspaceArtifactId,
 				DestinationWorkspaceArtifactId = destinationWorkspaceArtifactId,
 				JobArtifactId = jobArtifactId,
-				SourceWorkspaceArtifactTypeId = sourceWorkspaceArtifactTypeId,
-				SourceJobArtifactTypeId = sourceJobArtifactTypeId
 			};
 
 			_objectManagerMock.Setup(x => x.QueryAsync(
@@ -443,8 +424,6 @@ namespace Relativity.Sync.Tests.Integration
 			const int sourceWorkspaceArtifactId = 1014853;
 			const int destinationWorkspaceArtifactId = 1014854;
 			const int jobArtifactId = 101000;
-			const int sourceWorkspaceArtifactTypeId = 102001;
-			const int sourceJobArtifactTypeId = 102002;
 			string sourceWorkspaceName = "Cool Workspace";
 
 			var configuration = new ConfigurationStub
@@ -452,8 +431,6 @@ namespace Relativity.Sync.Tests.Integration
 				SourceWorkspaceArtifactId = sourceWorkspaceArtifactId,
 				DestinationWorkspaceArtifactId = destinationWorkspaceArtifactId,
 				JobArtifactId = jobArtifactId,
-				SourceWorkspaceArtifactTypeId = sourceWorkspaceArtifactTypeId,
-				SourceJobArtifactTypeId = sourceJobArtifactTypeId
 			};
 
 			_objectManagerMock.Setup(x => x.QueryAsync(
@@ -494,8 +471,6 @@ namespace Relativity.Sync.Tests.Integration
 			const int sourceWorkspaceArtifactId = 1014853;
 			const int destinationWorkspaceArtifactId = 1014854;
 			const int jobArtifactId = 101000;
-			const int sourceWorkspaceArtifactTypeId = 102001;
-			const int sourceJobArtifactTypeId = 102002;
 			string sourceWorkspaceName = "Cool Workspace";
 
 			var configuration = new ConfigurationStub
@@ -503,8 +478,6 @@ namespace Relativity.Sync.Tests.Integration
 				SourceWorkspaceArtifactId = sourceWorkspaceArtifactId,
 				DestinationWorkspaceArtifactId = destinationWorkspaceArtifactId,
 				JobArtifactId = jobArtifactId,
-				SourceWorkspaceArtifactTypeId = sourceWorkspaceArtifactTypeId,
-				SourceJobArtifactTypeId = sourceJobArtifactTypeId
 			};
 
 			_objectManagerMock.Setup(x => x.QueryAsync(
@@ -550,8 +523,6 @@ namespace Relativity.Sync.Tests.Integration
 			const int sourceWorkspaceArtifactId = 1014853;
 			const int destinationWorkspaceArtifactId = 1014854;
 			const int jobArtifactId = 101000;
-			const int sourceWorkspaceArtifactTypeId = 102001;
-			const int sourceJobArtifactTypeId = 102002;
 			const int newSourceWorkspaceTagArtifactId = 103000;
 			string sourceWorkspaceName = "Cool Workspace";
 
@@ -560,8 +531,6 @@ namespace Relativity.Sync.Tests.Integration
 				SourceWorkspaceArtifactId = sourceWorkspaceArtifactId,
 				DestinationWorkspaceArtifactId = destinationWorkspaceArtifactId,
 				JobArtifactId = jobArtifactId,
-				SourceWorkspaceArtifactTypeId = sourceWorkspaceArtifactTypeId,
-				SourceJobArtifactTypeId = sourceJobArtifactTypeId
 			};
 
 			_objectManagerMock.Setup(x => x.QueryAsync(
@@ -615,8 +584,6 @@ namespace Relativity.Sync.Tests.Integration
 			const int sourceWorkspaceArtifactId = 1014853;
 			const int destinationWorkspaceArtifactId = 1014854;
 			const int jobArtifactId = 101000;
-			const int sourceWorkspaceArtifactTypeId = 102001;
-			const int sourceJobArtifactTypeId = 102002;
 			const int newSourceWorkspaceTagArtifactId = 103000;
 			string sourceWorkspaceName = "Cool Workspace";
 			string jobHistoryName = "Cool Job";
@@ -626,8 +593,6 @@ namespace Relativity.Sync.Tests.Integration
 				SourceWorkspaceArtifactId = sourceWorkspaceArtifactId,
 				DestinationWorkspaceArtifactId = destinationWorkspaceArtifactId,
 				JobArtifactId = jobArtifactId,
-				SourceWorkspaceArtifactTypeId = sourceWorkspaceArtifactTypeId,
-				SourceJobArtifactTypeId = sourceJobArtifactTypeId
 			};
 
 			_objectManagerMock.Setup(x => x.QueryAsync(
