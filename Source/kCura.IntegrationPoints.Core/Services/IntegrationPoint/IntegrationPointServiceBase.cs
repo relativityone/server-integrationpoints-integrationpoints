@@ -85,18 +85,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			return new RelativityObjectManagerFactory(_helper).CreateRelativityObjectManager(Context.WorkspaceID);
 		}
 
-		public T GetRdo(int artifactId)
-		{
-			try
-			{
-				return Context.RsapiService.RelativityObjectManager.Read<T>(artifactId);
-			}
-			catch (Exception ex)
-			{
-				throw new Exception(Constants.IntegrationPoints.UNABLE_TO_RETRIEVE_INTEGRATION_POINT, ex);
-			}
-		}
-
 		protected abstract IntegrationPointModelBase GetModel(int artifactId);
 
 		public string GetSourceOptions(int artifactId)

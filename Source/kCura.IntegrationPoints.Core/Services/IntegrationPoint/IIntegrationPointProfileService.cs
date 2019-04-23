@@ -7,12 +7,12 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 {
 	public interface IIntegrationPointProfileService
 	{
-		IntegrationPointProfile GetRdo(int artifactId);
 		IList<IntegrationPointProfile> GetAllRDOs();
 		IList<IntegrationPointProfile> GetAllRDOsWithAllFields();
 		string GetSourceOptions(int artifactId);
 		FieldEntry GetIdentifierFieldEntry(int artifactId);
-		IntegrationPointProfileModel ReadIntegrationPointProfile(int artifactId);
+		IntegrationPointProfile ReadIntegrationPointProfile(int artifactId);
+		IntegrationPointProfileModel ReadIntegrationPointProfileModel(int artifactId);
 		IList<IntegrationPointProfileModel> ReadIntegrationPointProfiles();
 		IEnumerable<string> GetRecipientEmails(int artifactId);
 		int SaveIntegration(IntegrationPointProfileModel model);

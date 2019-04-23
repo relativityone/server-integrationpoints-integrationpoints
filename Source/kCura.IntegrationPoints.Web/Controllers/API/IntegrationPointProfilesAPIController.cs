@@ -65,7 +65,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			IntegrationPointProfileModel model;
 			if (artifactId > 0)
 			{
-				model = _profileService.ReadIntegrationPointProfile(artifactId);
+				model = _profileService.ReadIntegrationPointProfileModel(artifactId);
 			}
 			else
 			{
@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		{
 			if (artifactId > 0)
 			{
-				IntegrationPointProfileModel model = _profileService.ReadIntegrationPointProfile(artifactId);
+				IntegrationPointProfileModel model = _profileService.ReadIntegrationPointProfileModel(artifactId);
 				ValidationResultDTO validationResult = ValidateIntegrationPointProfile(model);
 				
 				var output = new ValidatedProfileDTO(model, validationResult);

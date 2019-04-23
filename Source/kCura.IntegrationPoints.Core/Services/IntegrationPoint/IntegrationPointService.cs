@@ -69,14 +69,14 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			return ReadIntegrationPointModel(artifactID);
 		}
 
-		public virtual IntegrationPointModel ReadIntegrationPointModel(int artifactID)
+		public IntegrationPointModel ReadIntegrationPointModel(int artifactID)
 		{
 			Data.IntegrationPoint integrationPoint = _integrationPointRepository.ReadAsync(artifactID).GetAwaiter().GetResult();
 			IntegrationPointModel integrationModel = IntegrationPointModel.FromIntegrationPoint(integrationPoint);
 			return integrationModel;
 		}
 
-		public virtual Data.IntegrationPoint ReadIntegrationPoint(int artifactID)
+		public Data.IntegrationPoint ReadIntegrationPoint(int artifactID)
 		{
 			return _integrationPointRepository.ReadAsync(artifactID).GetAwaiter().GetResult();
 		}

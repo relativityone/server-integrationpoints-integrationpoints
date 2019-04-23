@@ -165,7 +165,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 			int integrationPointArtifactId = service.SaveIntegration(model);
 
-			IntegrationPointProfile rdo = service.GetRdo(integrationPointArtifactId);
+			IntegrationPointProfile rdo = service.ReadIntegrationPointProfile(integrationPointArtifactId);
 			IntegrationPointProfileModel newModel = IntegrationPointProfileModel.FromIntegrationPointProfile(rdo);
 			return newModel;
 		}

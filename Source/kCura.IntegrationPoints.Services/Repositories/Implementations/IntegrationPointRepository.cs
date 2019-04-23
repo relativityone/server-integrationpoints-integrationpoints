@@ -97,7 +97,7 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 
 		public IntegrationPointModel CreateIntegrationPointFromProfile(int profileArtifactId, string integrationPointName)
 		{
-			var profile = _integrationPointProfileService.GetRdo(profileArtifactId);
+			var profile = _integrationPointProfileService.ReadIntegrationPointProfile(profileArtifactId);
 			var integrationPointModel = Core.Models.IntegrationPointModel.FromIntegrationPointProfile(profile, integrationPointName);
 			var integrationPointRuntimeService = _serviceFactory.CreateIntegrationPointRuntimeService(integrationPointModel);
 			var artifactId = integrationPointRuntimeService.SaveIntegration(integrationPointModel);

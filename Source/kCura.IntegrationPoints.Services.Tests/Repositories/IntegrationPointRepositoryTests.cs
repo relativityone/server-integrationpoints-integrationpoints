@@ -329,13 +329,13 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 				PromoteEligible = true
 			};
 
-			_integrationPointProfileService.GetRdo(profileArtifactId).Returns(profile);
+			_integrationPointProfileService.ReadIntegrationPointProfile(profileArtifactId).Returns(profile);
 			_integrationPointService.SaveIntegration(Arg.Any<Core.Models.IntegrationPointModel>()).Returns(artifactId);
 			_integrationPointLocalService.ReadIntegrationPoint(artifactId).Returns(integrationPoint);
 
 			_integrationPointRepository.CreateIntegrationPointFromProfile(profileArtifactId, integrationPointName);
 
-			_integrationPointProfileService.Received(1).GetRdo(profileArtifactId);
+			_integrationPointProfileService.Received(1).ReadIntegrationPointProfile(profileArtifactId);
 			_integrationPointService.Received(1).SaveIntegration(Arg.Is<Core.Models.IntegrationPointModel>(x => x.Name == integrationPointName && x.ArtifactID == 0));
 			_integrationPointLocalService.Received(1).ReadIntegrationPoint(artifactId);
 		}

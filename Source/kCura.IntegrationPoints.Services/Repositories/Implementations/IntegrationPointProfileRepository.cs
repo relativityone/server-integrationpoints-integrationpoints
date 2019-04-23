@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 
 		public IntegrationPointModel GetIntegrationPointProfile(int integrationPointProfileArtifactId)
 		{
-			IntegrationPointProfile integrationPointProfile = _integrationPointProfileService.GetRdo(integrationPointProfileArtifactId);
+			IntegrationPointProfile integrationPointProfile = _integrationPointProfileService.ReadIntegrationPointProfile(integrationPointProfileArtifactId);
 			return integrationPointProfile.ToIntegrationPointModel();
 		}
 
