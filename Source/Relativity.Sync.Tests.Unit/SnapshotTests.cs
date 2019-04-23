@@ -14,8 +14,10 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			const int total = 852369;
 
-			Snapshot snapshot = new Snapshot(total, 1);
+			// ACT
+			Snapshot snapshot = new Snapshot(total, 1, 0);
 
+			// ASSERT
 			snapshot.TotalRecordsCount.Should().Be(total);
 		}
 
@@ -24,8 +26,10 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			const int batchSize = 784596;
 
-			Snapshot snapshot = new Snapshot(1, batchSize);
+			// ACT
+			Snapshot snapshot = new Snapshot(1, batchSize, 0);
 
+			// ASSERT
 			snapshot.BatchSize.Should().Be(batchSize);
 		}
 
@@ -36,20 +40,44 @@ namespace Relativity.Sync.Tests.Unit
 		[TestCase(99, 10, 10)]
 		[TestCase(91, 10, 10)]
 		[TestCase(100, 1000, 1)]
-		public static void ItShouldCalculateNumberOfBatches(int recordsCount, int batchSize, int expectedNumberOfBatches)
+		public static void ItShouldCalculateNumberOfBatchesToCreate(int recordsCount, int batchSize, int expectedNumberOfBatches)
 		{
-			Snapshot snapshot = new Snapshot(recordsCount, batchSize);
+			// ACT
+			Snapshot snapshot = new Snapshot(recordsCount, batchSize, 0);
 
-			snapshot.TotalNumberOfBatches.Should().Be(expectedNumberOfBatches);
+			// ASSERT
+			snapshot.TotalNumberOfBatchesToCreate.Should().Be(expectedNumberOfBatches);
+			snapshot.GetSnapshotParts().Count.Should().Be(expectedNumberOfBatches);
+		}
+
+		[Test]
+		[TestCase(1000, 0)]
+		[TestCase(1001, 0)]
+		[TestCase(999, 1)]
+		[TestCase(900, 1)]
+		[TestCase(899, 2)]
+		[TestCase(555, 5)]
+		public static void ItShouldCalculateNumberOfBatchesToCreateIncorporatingNumberOfRecords(int numberOfRecordsIncludedInBatch, int expectedNumberOfBatches)
+		{
+			const int recordsCount = 1000;
+			const int batchSize = 100;
+
+			// ACT
+			Snapshot snapshot = new Snapshot(recordsCount, batchSize, numberOfRecordsIncludedInBatch);
+
+			// ASSERT
+			snapshot.TotalNumberOfBatchesToCreate.Should().Be(expectedNumberOfBatches);
 			snapshot.GetSnapshotParts().Count.Should().Be(expectedNumberOfBatches);
 		}
 
 		[Test]
 		public static void ItShouldHandleEdgeCaseWhenCalculatingNumberOfBatches()
 		{
-			Snapshot snapshot = new Snapshot(int.MaxValue, int.MaxValue);
+			// ACT
+			Snapshot snapshot = new Snapshot(int.MaxValue, int.MaxValue, 0);
 
-			snapshot.TotalNumberOfBatches.Should().Be(1);
+			// ASSERT
+			snapshot.TotalNumberOfBatchesToCreate.Should().Be(1);
 		}
 
 		[Test]
@@ -58,10 +86,12 @@ namespace Relativity.Sync.Tests.Unit
 			const int batchSize = 10;
 			const int total = 25;
 
-			Snapshot snapshot = new Snapshot(total, batchSize);
+			Snapshot snapshot = new Snapshot(total, batchSize, 0);
 
+			// ACT
 			List<SnapshotPart> parts = snapshot.GetSnapshotParts();
 
+			// ASSERT
 			const int expectedNumberOfParts = 3;
 			parts.Count.Should().Be(expectedNumberOfParts);
 
@@ -80,13 +110,41 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
+		public static void ItShouldCreateSnapshotPartsIncorporatingNumberOfRecords()
+		{
+			const int batchSize = 10;
+			const int total = 25;
+			const int numberOfRecords = 12;
+
+			Snapshot snapshot = new Snapshot(total, batchSize, numberOfRecords);
+
+			// ACT
+			List<SnapshotPart> parts = snapshot.GetSnapshotParts();
+
+			// ASSERT
+			const int expectedNumberOfParts = 2;
+			parts.Count.Should().Be(expectedNumberOfParts);
+
+			// first batch
+			parts[0].StartingIndex.Should().Be(numberOfRecords);
+			parts[0].NumberOfRecords.Should().Be(batchSize);
+
+			// second batch
+			parts[1].StartingIndex.Should().Be(numberOfRecords + batchSize);
+			const int recordsLeftInLastBatch = 3;
+			parts[1].NumberOfRecords.Should().Be(recordsLeftInLastBatch);
+		}
+
+		[Test]
 		public static void ItShouldCacheParts()
 		{
-			Snapshot snapshot = new Snapshot(1, 1);
+			Snapshot snapshot = new Snapshot(1, 1, 0);
 
+			// ACT
 			List<SnapshotPart> parts1 = snapshot.GetSnapshotParts();
 			List<SnapshotPart> parts2 = snapshot.GetSnapshotParts();
 
+			// ASSERT
 			parts1.Should().BeSameAs(parts2);
 		}
 	}
