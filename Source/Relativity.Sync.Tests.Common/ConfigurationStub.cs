@@ -78,6 +78,7 @@ namespace Relativity.Sync.Tests.Common
 		public bool SendEmails { get; set; }
 		public IEnumerable<string> EmailRecipients { get; } = new List<string>();
 		public int TotalRecordsCount { get; set; }
+		public int BatchSize { get; set; }
 		public Guid ExportRunId { get; set; }
 	}
 }

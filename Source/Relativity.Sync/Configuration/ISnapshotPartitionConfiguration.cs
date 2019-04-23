@@ -6,6 +6,8 @@ namespace Relativity.Sync.Configuration
 	{
 		int TotalRecordsCount { get; }
 
+		int BatchSize { get; }
+
 		Guid ExportRunId { get; }
 
 		int SourceWorkspaceArtifactId { get; }

@@ -21,8 +21,18 @@ namespace Relativity.Sync.ExecutionConstrains
 		{
 			try
 			{
-				bool batchesCreated = await _batchRepository.AreBatchesCreated(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId).ConfigureAwait(false);
-				return !batchesCreated;
+				IBatch batch = await _batchRepository.GetLastAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId).ConfigureAwait(false);
+
+				if (batch == null)
+				{
+					// no batches created yet
+					return true;
+				}
+
+				int numberOfRecordsIncludedInBatches = batch.StartingIndex + batch.TotalItemsCount;
+
+				// we should execute if number of records included in batches in lower than total number of records
+				return numberOfRecordsIncludedInBatches < configuration.TotalRecordsCount;
 			}
 			catch (Exception e)
 			{
