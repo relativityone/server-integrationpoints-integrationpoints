@@ -98,11 +98,8 @@ namespace Relativity.Sync.Tests.Integration
 			// Arrange
 			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), 1, 1)).Throws<NotAuthorizedException>().Verifiable();
 
-			// Act
-			Func<Task> actualResult = async () => await _instance.CanExecuteAsync(_snapshotPartitionConfiguration.Object, _token).ConfigureAwait(false);
-
-			// Assert
-			actualResult.Should().Throw<NotAuthorizedException>();
+			// Act & Assert
+			Assert.ThrowsAsync<NotAuthorizedException>(async () => await _instance.CanExecuteAsync(_snapshotPartitionConfiguration.Object, _token).ConfigureAwait(false));
 
 			Mock.Verify(_objectManager);
 			_syncLog.Verify(x => x.LogError(It.IsAny<NotAuthorizedException>(), It.Is<string>(y => y == "Exception occurred when looking for created batches.")));
