@@ -72,8 +72,8 @@ namespace Relativity.Sync.Tests.Integration
 		{
 			// Arrange
 			const int batchSize = 100;
-			const int totalRecords = 200;
-			int expectedNumberOfBatches = totalRecords / batchSize;
+			const int totalRecords = 165;
+			int expectedNumberOfBatches = (totalRecords + batchSize - 1) / batchSize;
 
 			var testBatchResult = new QueryResult
 			{
