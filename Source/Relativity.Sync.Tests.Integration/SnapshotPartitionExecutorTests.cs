@@ -104,6 +104,29 @@ namespace Relativity.Sync.Tests.Integration
 		}
 
 		[Test]
+		public async Task ExecuteAsyncCreatesNoNewBatchesTest()
+		{
+			// Arrange
+			const int numberOfItems = 100;
+			const int batchSize = 100;
+
+			QueryResult testBatchResult = GetBatchQueryResult(0, numberOfItems);
+
+			_snapshotPartitionConfiguration.SetupGet(x => x.BatchSize).Returns(batchSize);
+			_snapshotPartitionConfiguration.SetupGet(x => x.TotalRecordsCount).Returns(numberOfItems);
+			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), 1, 1)).ReturnsAsync(testBatchResult).Verifiable();
+
+			// Act
+			ExecutionResult actualResult = await _instance.ExecuteAsync(_snapshotPartitionConfiguration.Object, _token).ConfigureAwait(false);
+
+			// Assert
+			Assert.AreEqual(ExecutionStatus.Completed, actualResult.Status);
+
+			Mock.Verify(_objectManager);
+			_objectManager.Verify(x => x.CreateAsync(It.IsAny<int>(), It.IsAny<CreateRequest>()), Times.Never());
+		}
+
+		[Test]
 		public async Task ExecuteAsyncReadBatchQueryThrowsErrorTest()
 		{
 			// Arrange
