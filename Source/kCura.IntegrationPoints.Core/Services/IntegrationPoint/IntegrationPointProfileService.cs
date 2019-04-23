@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			}
 		}
 
-		public IntegrationPointProfileModel ReadIntegrationPointProfileModel(int artifactId)
+		public virtual IntegrationPointProfileModel ReadIntegrationPointProfileModel(int artifactId)
 		{
 			IntegrationPointProfile integrationPoint = ReadIntegrationPointProfile(artifactId);
 			IntegrationPointProfileModel integrationPointProfileModel = IntegrationPointProfileModel.FromIntegrationPointProfile(integrationPoint);
