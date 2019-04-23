@@ -167,7 +167,7 @@ namespace Relativity.Sync.Storage
 				}
 
 				ArtifactId = result.Objects[0].ArtifactID;
-				Fill(result.Objects[0]);
+				PopulateBatchProperties(result.Objects[0]);
 				return true;
 			}
 		}
@@ -187,7 +187,7 @@ namespace Relativity.Sync.Storage
 					Fields = GetFieldsToRead()
 				};
 				ReadResult readResult = await objectManager.ReadAsync(_workspaceArtifactId, request).ConfigureAwait(false);
-				Fill(readResult.Object);
+				PopulateBatchProperties(readResult.Object);
 			}
 		}
 
@@ -226,7 +226,7 @@ namespace Relativity.Sync.Storage
 			};
 		}
 
-		private void Fill(RelativityObject relativityObject)
+		private void PopulateBatchProperties(RelativityObject relativityObject)
 		{
 			TotalItemsCount = (int) relativityObject[TotalItemsCountGuid].Value;
 			StartingIndex = (int) relativityObject[StartingIndexGuid].Value;
@@ -248,11 +248,6 @@ namespace Relativity.Sync.Storage
 
 		public static async Task<IBatch> CreateAsync(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int syncConfigurationArtifactId, int totalItemsCount, int startingIndex)
 		{
-			if (startingIndex > totalItemsCount)
-			{
-				throw new ArgumentException($"Starting index cannot be greater than total items count ({startingIndex} > {totalItemsCount}).");
-			}
-
 			Batch batch = new Batch(serviceFactory);
 			await batch.CreateAsync(workspaceArtifactId, syncConfigurationArtifactId, totalItemsCount, startingIndex).ConfigureAwait(false);
 			return batch;

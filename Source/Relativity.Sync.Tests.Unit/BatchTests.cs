@@ -45,19 +45,6 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public void ItShouldPreventCreatingRecordWithStartingIndexGreaterThanTotal()
-		{
-			const int startingIndex = 200;
-			const int totalRecordCount = 100;
-
-			// ACT
-			Func<Task> action = async () => await _batchRepository.CreateAsync(_WORKSPACE_ID, 0, totalRecordCount, startingIndex).ConfigureAwait(false);
-
-			// ASSERT
-			action.Should().Throw<ArgumentException>();
-		}
-
-		[Test]
 		public async Task ItShouldCreateBatch()
 		{
 			const int syncConfigurationArtifactId = 634;
@@ -256,8 +243,8 @@ namespace Relativity.Sync.Tests.Unit
 
 		private static void AssertReadFields(IList<FieldRef> fields)
 		{
-			const int seven = 7;
-			fields.Count().Should().Be(seven);
+			const int expectedNumberOfFields = 7;
+			fields.Count().Should().Be(expectedNumberOfFields);
 			fields.Should().Contain(x => x.Guid == TotalItemsCountGuid);
 			fields.Should().Contain(x => x.Guid == StartingIndexGuid);
 			fields.Should().Contain(x => x.Guid == StatusGuid);

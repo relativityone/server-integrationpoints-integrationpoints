@@ -4,7 +4,14 @@ namespace Relativity.Sync.Storage
 {
 	internal interface IBatchRepository
 	{
+		/// <summary>
+		///     Creates batch for given sync configuration
+		/// </summary>
 		Task<IBatch> CreateAsync(int workspaceArtifactId, int syncConfigurationArtifactId, int totalItemsCount, int startingIndex);
+
+		/// <summary>
+		///     Gets batch based on artifact ID
+		/// </summary>
 		Task<IBatch> GetAsync(int workspaceArtifactId, int artifactId);
 
 		/// <summary>
