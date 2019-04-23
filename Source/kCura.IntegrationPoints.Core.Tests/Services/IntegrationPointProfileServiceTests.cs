@@ -254,5 +254,40 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			// Act
 			Assert.Throws<Exception>(() => _instance.SaveIntegration(model), "Unable to save Integration Point: Unable to retrieve Integration Point");
 		}
+
+		[Test]
+		public void ReadIntegrationPointProfile_ShouldReturnIntegrationPointProfile_WhenRepositoryReturnsIntegrationPoint()
+		{
+			// arrange
+			_caseServiceContext.RsapiService.RelativityObjectManager
+				.Read<IntegrationPointProfile>(_integrationPointProfileArtifactId)
+				.Returns(_integrationPointProfile);
+
+			// act
+			IntegrationPointProfile result = _instance.ReadIntegrationPointProfile(_integrationPointProfileArtifactId);
+
+			// assert
+			_caseServiceContext.RsapiService.RelativityObjectManager
+				.Received(1)
+				.Read<IntegrationPointProfile>(_integrationPointProfileArtifactId);
+			Assert.AreEqual(_integrationPointProfile, result);
+		}
+
+		[Test]
+		public void ReadIntegrationPointProfile_ShouldThrowException_WhenRepositoryThrowsException()
+		{
+			// arrange
+			_caseServiceContext.RsapiService.RelativityObjectManager
+				.Read<IntegrationPointProfile>(_integrationPointProfileArtifactId)
+				.Throws<Exception>();
+
+			// act
+			Assert.Throws<Exception>(() => _instance.ReadIntegrationPointProfile(_integrationPointProfileArtifactId));
+
+			// assert
+			_caseServiceContext.RsapiService.RelativityObjectManager
+				.Received(1)
+				.Read<IntegrationPointProfile>(_integrationPointProfileArtifactId);
+		}
 	}
 }

@@ -1432,7 +1432,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		}
 
 		[Test]
-		public void ReadIntegrationPoint_ShouldReturnIntegrationPoint()
+		public void ReadIntegrationPoint_ShouldReturnIntegrationPoint_WhenRepositoryReturnsIntegrationPoint()
 		{
 			// arrange
 			_integrationPointRepository.ReadAsync(_integrationPointArtifactId).Returns(Task.FromResult(_integrationPoint));
@@ -1443,6 +1443,19 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			// assert
 			_integrationPointRepository.Received(1).ReadAsync(_integrationPointArtifactId);
 			MatchHelper.Matches(_integrationPoint, result);
+		}
+
+		[Test]
+		public void ReadIntegrationPoint_ShouldThrowException_WhenRepositoryThrowsException()
+		{
+			// arrange
+			_integrationPointRepository.ReadAsync(_integrationPointArtifactId).Throws<Exception>();
+
+			// act
+			Assert.Throws<Exception>(() =>_instance.ReadIntegrationPoint(_integrationPointArtifactId));
+
+			// assert
+			_integrationPointRepository.Received(1).ReadAsync(_integrationPointArtifactId);
 		}
 	}
 }
