@@ -43,6 +43,7 @@ namespace Relativity.Sync.Tests.Common
 		public string JobName { get; set; }
 		public string NotificationEmails { get; set; }
 		public int SourceWorkspaceArtifactId { get; set; }
+		public int SyncConfigurationArtifactId { get; set; }
 		public int DestinationWorkspaceArtifactId { get; set; }
 		public int SavedSearchArtifactId { get; set; }
 		public int DestinationFolderArtifactId { get; set; }
@@ -82,11 +83,7 @@ namespace Relativity.Sync.Tests.Common
 		public bool SendEmails { get; set; }
 		public IEnumerable<string> EmailRecipients { get; } = new List<string>();
 		public int TotalRecordsCount { get; set; }
+		public int BatchSize { get; set; }
 		public Guid ExportRunId { get; set; }
-		public bool IsSnapshotPartitioned { get; set; }
-		public void SetSnapshotPartitions(List<int> batchesIds)
-		{
-			// Method intentionally left empty.
-		}
 	}
 }

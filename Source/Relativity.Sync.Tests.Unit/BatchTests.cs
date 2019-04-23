@@ -30,7 +30,9 @@ namespace Relativity.Sync.Tests.Unit
 		private static readonly Guid FailedItemsCountGuid = new Guid("DC3228E4-2765-4C3B-B3B1-A0F054E280F6");
 		private static readonly Guid TransferredItemsCountGuid = new Guid("B2D112CA-E81E-42C7-A6B2-C0E89F32F567");
 		private static readonly Guid ProgressGuid = new Guid("8C6DAF67-9428-4F5F-98D7-3C71A1FF3AE8");
+
 		private static readonly Guid LockedByGuid = new Guid("BEFC75D3-5825-4479-B499-58C6EF719DDB");
+		private static readonly Guid SyncConfigurationRelationGuid = new Guid("F673E67F-E606-4155-8E15-CA1C83931E16");
 
 		[SetUp]
 		public void SetUp()
@@ -40,19 +42,6 @@ namespace Relativity.Sync.Tests.Unit
 
 			_objectManager = new Mock<IObjectManager>();
 			serviceFactoryMock.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
-		}
-
-		[Test]
-		public void ItShouldPreventCreatingRecordWithStartingIndexGreaterThanTotal()
-		{
-			const int startingIndex = 200;
-			const int totalRecordCount = 100;
-
-			// ACT
-			Func<Task> action = async () => await _batchRepository.CreateAsync(_WORKSPACE_ID, 0, totalRecordCount, startingIndex).ConfigureAwait(false);
-
-			// ASSERT
-			action.Should().Throw<ArgumentException>();
 		}
 
 		[Test]
@@ -156,90 +145,113 @@ namespace Relativity.Sync.Tests.Unit
 #pragma warning disable RG2011 // Method Argument Count Analyzer
 		private static ReadResult PrepareReadResult(int totalItemsCount = 1, int startingIndex = 1, string status = "status", int? failedItemsCount = 1, int? transferredItemsCount = 1,
 			decimal? progress = 1, string lockedBy = "id")
-#pragma warning restore RG2011 // Method Argument Count Analyzer
 		{
 			ReadResult readResult = new ReadResult
 			{
-				Object = new RelativityObject
+				Object = PrepareObject(totalItemsCount, startingIndex, status, failedItemsCount, transferredItemsCount, progress, lockedBy)
+			};
+			return readResult;
+		}
+
+		private static QueryResult PrepareQueryResult()
+		{
+			return new QueryResult
+			{
+				Objects = new List<RelativityObject>
 				{
-					ArtifactID = _ARTIFACT_ID,
-					FieldValues = new List<FieldValuePair>
+					PrepareObject()
+				}
+			};
+		}
+
+		private static RelativityObject PrepareObject(int totalItemsCount = 1, int startingIndex = 1, string status = "status", int? failedItemsCount = 1, int? transferredItemsCount = 1,
+			decimal? progress = 1, string lockedBy = "id")
+#pragma warning restore RG2011 // Method Argument Count Analyzer
+		{
+			return new RelativityObject
+			{
+				ArtifactID = _ARTIFACT_ID,
+				FieldValues = new List<FieldValuePair>
+				{
+					new FieldValuePair
 					{
-						new FieldValuePair
+						Field = new Field
 						{
-							Field = new Field
-							{
-								Guids = new List<Guid> {TotalItemsCountGuid}
-							},
-							Value = totalItemsCount
+							Guids = new List<Guid> {TotalItemsCountGuid}
 						},
-						new FieldValuePair
+						Value = totalItemsCount
+					},
+					new FieldValuePair
+					{
+						Field = new Field
 						{
-							Field = new Field
-							{
-								Guids = new List<Guid> {StartingIndexGuid}
-							},
-							Value = startingIndex
+							Guids = new List<Guid> {StartingIndexGuid}
 						},
-						new FieldValuePair
+						Value = startingIndex
+					},
+					new FieldValuePair
+					{
+						Field = new Field
 						{
-							Field = new Field
-							{
-								Guids = new List<Guid> {StatusGuid}
-							},
-							Value = status
+							Guids = new List<Guid> {StatusGuid}
 						},
-						new FieldValuePair
+						Value = status
+					},
+					new FieldValuePair
+					{
+						Field = new Field
 						{
-							Field = new Field
-							{
-								Guids = new List<Guid> {FailedItemsCountGuid}
-							},
-							Value = failedItemsCount
+							Guids = new List<Guid> {FailedItemsCountGuid}
 						},
-						new FieldValuePair
+						Value = failedItemsCount
+					},
+					new FieldValuePair
+					{
+						Field = new Field
 						{
-							Field = new Field
-							{
-								Guids = new List<Guid> {TransferredItemsCountGuid}
-							},
-							Value = transferredItemsCount
+							Guids = new List<Guid> {TransferredItemsCountGuid}
 						},
-						new FieldValuePair
+						Value = transferredItemsCount
+					},
+					new FieldValuePair
+					{
+						Field = new Field
 						{
-							Field = new Field
-							{
-								Guids = new List<Guid> {ProgressGuid}
-							},
-							Value = progress
+							Guids = new List<Guid> {ProgressGuid}
 						},
-						new FieldValuePair
+						Value = progress
+					},
+					new FieldValuePair
+					{
+						Field = new Field
 						{
-							Field = new Field
-							{
-								Guids = new List<Guid> {LockedByGuid}
-							},
-							Value = lockedBy
-						}
+							Guids = new List<Guid> {LockedByGuid}
+						},
+						Value = lockedBy
 					}
 				}
 			};
-			return readResult;
 		}
 
 		private bool AssertReadRequest(ReadRequest readRequest)
 		{
 			readRequest.Object.ArtifactID.Should().Be(_ARTIFACT_ID);
-			const int seven = 7;
-			readRequest.Fields.Count().Should().Be(seven);
-			readRequest.Fields.Should().Contain(x => x.Guid == TotalItemsCountGuid);
-			readRequest.Fields.Should().Contain(x => x.Guid == StartingIndexGuid);
-			readRequest.Fields.Should().Contain(x => x.Guid == StatusGuid);
-			readRequest.Fields.Should().Contain(x => x.Guid == FailedItemsCountGuid);
-			readRequest.Fields.Should().Contain(x => x.Guid == TransferredItemsCountGuid);
-			readRequest.Fields.Should().Contain(x => x.Guid == ProgressGuid);
-			readRequest.Fields.Should().Contain(x => x.Guid == LockedByGuid);
+			IList<FieldRef> fields = readRequest.Fields.ToList();
+			AssertReadFields(fields);
 			return true;
+		}
+
+		private static void AssertReadFields(IList<FieldRef> fields)
+		{
+			const int expectedNumberOfFields = 7;
+			fields.Count().Should().Be(expectedNumberOfFields);
+			fields.Should().Contain(x => x.Guid == TotalItemsCountGuid);
+			fields.Should().Contain(x => x.Guid == StartingIndexGuid);
+			fields.Should().Contain(x => x.Guid == StatusGuid);
+			fields.Should().Contain(x => x.Guid == FailedItemsCountGuid);
+			fields.Should().Contain(x => x.Guid == TransferredItemsCountGuid);
+			fields.Should().Contain(x => x.Guid == ProgressGuid);
+			fields.Should().Contain(x => x.Guid == LockedByGuid);
 		}
 
 		[Test]
@@ -453,6 +465,48 @@ namespace Relativity.Sync.Tests.Unit
 			updateRequest.FieldValues.Count().Should().Be(1);
 			updateRequest.FieldValues.Should().Contain(x => x.Field.Guid == fieldGuid);
 			updateRequest.FieldValues.Should().Contain(x => ((T) x.Value).Equals(value));
+			return true;
+		}
+
+		[Test]
+		public async Task ItShouldReturnNullWhenNoBatchesFound()
+		{
+			const int syncConfigurationArtifactId = 845967;
+
+			QueryResult queryResult = new QueryResult();
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, 1)).ReturnsAsync(queryResult);
+
+			// ACT
+			IBatch batch = await _batchRepository.GetLastAsync(_WORKSPACE_ID, syncConfigurationArtifactId).ConfigureAwait(false);
+
+			// ASSERT
+			batch.Should().BeNull();
+		}
+
+		[Test]
+		public async Task ItShouldReturnLastBatch()
+		{
+			const int syncConfigurationArtifactId = 845967;
+
+			QueryResult queryResult = PrepareQueryResult();
+			queryResult.TotalCount = 1;
+
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, 1)).ReturnsAsync(queryResult);
+
+			// ACT
+			IBatch batch = await _batchRepository.GetLastAsync(_WORKSPACE_ID, syncConfigurationArtifactId).ConfigureAwait(false);
+
+			// ASSERT
+			batch.Should().NotBeNull();
+			_objectManager.Verify(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(qr => AssertQueryRequest(qr, syncConfigurationArtifactId)), 1, 1), Times.Once);
+		}
+
+		private bool AssertQueryRequest(QueryRequest queryRequest, int syncConfigurationArtifactId)
+		{
+			queryRequest.ObjectType.Guid.Should().Be(BatchObjectTypeGuid);
+			queryRequest.Condition.Should().Be($"'{SyncConfigurationRelationGuid}' == OBJECT {syncConfigurationArtifactId}");
+			IList<FieldRef> fields = queryRequest.Fields.ToList();
+			AssertReadFields(fields);
 			return true;
 		}
 	}
