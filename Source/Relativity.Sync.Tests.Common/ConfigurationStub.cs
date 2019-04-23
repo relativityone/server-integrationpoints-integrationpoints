@@ -61,8 +61,6 @@ namespace Relativity.Sync.Tests.Common
 		}
 		public int DestinationWorkspaceTagArtifactId { get; set; }
 
-		public int SourceWorkspaceArtifactTypeId { get; set; }
-		public int SourceJobArtifactTypeId { get; set; }
 		public bool IsSourceJobTagSet { get; set; }
 
 		public void SetSourceJobTag(int artifactId, string name)

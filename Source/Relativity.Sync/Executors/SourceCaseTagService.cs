@@ -41,7 +41,7 @@ namespace Relativity.Sync.Executors
 					SourceInstanceName = federatedInstanceName,
 					Name = sourceCaseTagName
 				};
-				sourceCaseTag = await _relativitySourceCaseTagRepository.CreateAsync(configuration.DestinationWorkspaceArtifactId, configuration.SourceWorkspaceArtifactTypeId, newSourceCaseTag).ConfigureAwait(false);
+				sourceCaseTag = await _relativitySourceCaseTagRepository.CreateAsync(configuration.DestinationWorkspaceArtifactId, newSourceCaseTag).ConfigureAwait(false);
 			}
 			else if (sourceCaseTag.RequiresUpdate(sourceCaseTagName, federatedInstanceName, sourceWorkspaceName))
 			{

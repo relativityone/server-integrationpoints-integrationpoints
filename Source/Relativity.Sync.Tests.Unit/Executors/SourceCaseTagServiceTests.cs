@@ -36,15 +36,13 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			const string instanceName = "instance name";
 			const string sourceWorkspaceName = "workspace name";
 			const int sourceWorkspaceArtifactId = 1;
-			const int sourceWorkspaceArtifactTypeId = 2;
-			const int destinationWorkspaceArtifactId = 3;
+			const int destinationWorkspaceArtifactId = 2;
 			_federatedInstance.Setup(x => x.GetInstanceNameAsync()).ReturnsAsync(instanceName);
 			_workspaceNameQuery.Setup(x => x.GetWorkspaceNameAsync(_serviceFactory.Object, It.IsAny<int>(), CancellationToken.None)).ReturnsAsync(sourceWorkspaceName);
 
 			Mock<IDestinationWorkspaceTagsCreationConfiguration> configuration = new Mock<IDestinationWorkspaceTagsCreationConfiguration>();
 			configuration.Setup(x => x.SourceWorkspaceArtifactId).Returns(sourceWorkspaceArtifactId);
 			configuration.Setup(x => x.DestinationWorkspaceArtifactId).Returns(destinationWorkspaceArtifactId);
-			configuration.Setup(x => x.SourceWorkspaceArtifactTypeId).Returns(sourceWorkspaceArtifactTypeId);
 
 			const int tagArtifactId = 4;
 			const string tagName = "tagname";
@@ -56,7 +54,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				SourceWorkspaceArtifactId = sourceWorkspaceArtifactId,
 				SourceWorkspaceName = sourceWorkspaceName
 			};
-			_relativitySourceCaseTagRepository.Setup(x => x.CreateAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<RelativitySourceCaseTag>())).ReturnsAsync(sourceCaseTag);
+			_relativitySourceCaseTagRepository.Setup(x => x.CreateAsync(It.IsAny<int>(), It.IsAny<RelativitySourceCaseTag>())).ReturnsAsync(sourceCaseTag);
 
 			// act
 			RelativitySourceCaseTag createdSourceCaseTag = await _sut.CreateOrUpdateSourceCaseTagAsync(configuration.Object, CancellationToken.None).ConfigureAwait(false);
@@ -74,8 +72,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		{
 			const string instanceName = "instance name";
 			const int sourceWorkspaceArtifactId = 1;
-			const int sourceWorkspaceArtifactTypeId = 2;
-			const int destinationWorkspaceArtifactId = 3;
+			const int destinationWorkspaceArtifactId = 2;
 			const string newWorkspaceName = "workspace name";
 			_federatedInstance.Setup(x => x.GetInstanceNameAsync()).ReturnsAsync(instanceName);
 			_workspaceNameQuery.Setup(x => x.GetWorkspaceNameAsync(_serviceFactory.Object, It.IsAny<int>(), CancellationToken.None)).ReturnsAsync(newWorkspaceName);
@@ -83,7 +80,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Mock<IDestinationWorkspaceTagsCreationConfiguration> configuration = new Mock<IDestinationWorkspaceTagsCreationConfiguration>();
 			configuration.Setup(x => x.SourceWorkspaceArtifactId).Returns(sourceWorkspaceArtifactId);
 			configuration.Setup(x => x.DestinationWorkspaceArtifactId).Returns(destinationWorkspaceArtifactId);
-			configuration.Setup(x => x.SourceWorkspaceArtifactTypeId).Returns(sourceWorkspaceArtifactTypeId);
 
 			const int tagArtifactId = 4;
 			const string oldTagName = "old tagname";

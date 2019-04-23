@@ -8,8 +8,6 @@
 
 		int JobArtifactId { get; }
 
-		int SourceWorkspaceArtifactTypeId { get; }
-
 		bool IsSourceJobTagSet { get; }
 
 		void SetSourceJobTag(int artifactId, string name);
