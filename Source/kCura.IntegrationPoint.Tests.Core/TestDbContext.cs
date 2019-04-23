@@ -30,6 +30,11 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return _context.GetConnection();
 		}
 
+		public T ExecuteSqlStatementAsObject<T>(string sqlStatement, Func<SqlDataReader, T> converter, IEnumerable<SqlParameter> parameters, int timeoutValue)
+		{
+			throw new NotImplementedException();
+		}
+
 		/// <summary>
 		/// Gets a database name.
 		/// </summary>
@@ -417,6 +422,11 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return result;
 		}
 
+		public IEnumerable<T> ExecuteSqlStatementAsEnumerable<T>(string sqlStatement, Func<SqlDataReader, T> converter, IEnumerable<SqlParameter> parameters)
+		{
+			throw new NotImplementedException();
+		}
+
 		#region Procedures
 		/// <summary>
 		/// Executes a stored procedure against the connection and builds a DbDataReader.
@@ -506,5 +516,19 @@ namespace kCura.IntegrationPoint.Tests.Core
 			throw new NotImplementedException();
 		}
 
+		public T ExecuteSqlStatementAsObject<T>(string sqlStatement, Func<SqlDataReader, T> converter)
+		{
+			return _context.ExecuteSqlStatementAsObject(sqlStatement, converter);
+		}
+
+		public T ExecuteSqlStatementAsObject<T>(string sqlStatement, Func<SqlDataReader, T> convertor, int timeout = -1)
+		{
+			return _context.ExecuteSqlStatementAsObject(sqlStatement, convertor, timeout);
+		}
+
+		public T ExecuteSqlStatementAsObject<T>(string sqlStatement, Func<SqlDataReader, T> converter, IEnumerable<SqlParameter> parameters)
+		{
+			return _context.ExecuteSqlStatementAsObject(sqlStatement, converter, parameters);
+		}
 	}
 }

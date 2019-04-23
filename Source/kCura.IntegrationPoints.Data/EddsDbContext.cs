@@ -175,12 +175,17 @@ namespace kCura.IntegrationPoints.Data
 			return _context.ExecuteSQLStatementAsReader(sqlStatement, timeout);
 		}
 
-	    public IEnumerable<T> ExecuteSQLStatementAsEnumerable<T>(string sqlStatement, Func<SqlDataReader, T> converter, int timeout = -1)
-	    {
-	        return _context.ExecuteSQLStatementAsEnumerable(sqlStatement, converter, timeout);
-        }
+		public IEnumerable<T> ExecuteSQLStatementAsEnumerable<T>(string sqlStatement, Func<SqlDataReader, T> converter, int timeout = -1)
+		{
+			return _context.ExecuteSQLStatementAsEnumerable(sqlStatement, converter, timeout);
+		}
 
-	    public DbDataReader ExecuteProcedureAsReader(string procedureName, IEnumerable<SqlParameter> parameters)
+		public IEnumerable<T> ExecuteSqlStatementAsEnumerable<T>(string sqlStatement, Func<SqlDataReader, T> converter, IEnumerable<SqlParameter> parameters)
+		{
+			return _context.ExecuteSqlStatementAsEnumerable(sqlStatement, converter, parameters);
+		}
+
+		public DbDataReader ExecuteProcedureAsReader(string procedureName, IEnumerable<SqlParameter> parameters)
 		{
 			return _context.ExecuteProcedureAsReader(procedureName, parameters);
 		}
@@ -221,8 +226,29 @@ namespace kCura.IntegrationPoints.Data
 			_context.ExecuteSqlBulkCopy(dataReader, bulkCopyParameters);
 		}
 
-		public string Database { get { return _context.Database; } }
-		public string ServerName { get { return _context.ServerName; } }
-		public bool IsMasterDatabase { get { return _context.IsMasterDatabase; } }
+		public T ExecuteSqlStatementAsObject<T>(string sqlStatement, Func<SqlDataReader, T> converter)
+		{
+			return _context.ExecuteSqlStatementAsObject(sqlStatement, converter);
+		}
+
+		public T ExecuteSqlStatementAsObject<T>(string sqlStatement, Func<SqlDataReader, T> converter, int timeout = -1)
+		{
+			return _context.ExecuteSqlStatementAsObject(sqlStatement, converter, timeout);
+		}
+
+		public T ExecuteSqlStatementAsObject<T>(string sqlStatement, Func<SqlDataReader, T> converter, IEnumerable<SqlParameter> parameters)
+		{
+			return _context.ExecuteSqlStatementAsObject(sqlStatement, converter, parameters);
+
+		}
+
+		public T ExecuteSqlStatementAsObject<T>(string sqlStatement, Func<SqlDataReader, T> converter, IEnumerable<SqlParameter> parameters, int timeoutValue)
+		{
+			return _context.ExecuteSqlStatementAsObject(sqlStatement, converter, parameters, timeoutValue);
+		}
+
+		public string Database => _context.Database;
+		public string ServerName => _context.ServerName;
+		public bool IsMasterDatabase => _context.IsMasterDatabase;
 	}
 }
