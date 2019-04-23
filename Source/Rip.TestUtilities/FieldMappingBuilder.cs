@@ -6,7 +6,7 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
 
-namespace Rip.SystemTests.Utilities
+namespace Rip.TestUtilities
 {
 	public class FieldMappingBuilder
 	{

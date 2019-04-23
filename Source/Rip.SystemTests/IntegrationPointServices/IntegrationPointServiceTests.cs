@@ -18,7 +18,7 @@ using Relativity.Services.Folder;
 using Relativity.Services.Interfaces.Field;
 using Relativity.Services.Interfaces.Field.Models;
 using Relativity.Services.Interfaces.Shared.Models;
-using Rip.SystemTests.Utilities;
+using Rip.TestUtilities;
 using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace Rip.SystemTests.IntegrationPointServices

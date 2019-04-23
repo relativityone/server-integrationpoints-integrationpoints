@@ -41,8 +41,6 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Utilities\FieldMappingBuilder.cs" />
-    <Compile Include="Utilities\IntegrationPointModelBuilder.cs" />
     <Content Include="LICENSE.txt">
       <Paket>True</Paket>
     </Content>
@@ -97,6 +95,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
       <Project>{b91cc4ed-abf3-4409-8df3-46a3c26eb4aa}</Project>
       <Name>kCura.IntegrationPoints.Synchronizers.RDO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Rip.TestUtilities\Rip.TestUtilities.csproj">
+      <Project>{88f9b589-2aa4-4609-af61-e0badb5de82e}</Project>
+      <Name>Rip.TestUtilities</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -10,7 +10,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.Services.Objects.DataContracts;
 
-namespace Rip.SystemTests.Utilities
+namespace Rip.TestUtilities
 {
 	public class IntegrationPointModelBuilder
 	{
@@ -135,5 +135,4 @@ namespace Rip.SystemTests.Utilities
 			return _objectManager.Query<DestinationProvider>(queryRequest);
 		}
 	}
-
 }
