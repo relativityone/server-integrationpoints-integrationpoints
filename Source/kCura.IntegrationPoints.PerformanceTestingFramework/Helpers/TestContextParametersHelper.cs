@@ -25,16 +25,15 @@ namespace kCura.IntegrationPoints.PerformanceTestingFramework.Helpers
 			_parameters = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
 		}
 
-		public static string GetParameterFromTestContextOrAuxilaryFile(string parameterName)
+		public static string GetParameterFromTestContextOrAuxiliaryFile(string parameterName)
 		{
 			string value = TestContext.Parameters[parameterName];
 			if (value == null)
 			{
 				EnsureParametersAreLoaded();
-				value = _parameters[parameterName];
-				if (value == null)
+				if (!_parameters.TryGetValue(parameterName, out value))
 				{
-					throw new TestContextParametersHelperException("Value of the parameter could not be obtained!");
+					throw new TestContextParametersHelperException($"Value of the parameter {parameterName} could not be obtained! It's not present neither in test context nor in runsettings json");
 				}
 			}
 
