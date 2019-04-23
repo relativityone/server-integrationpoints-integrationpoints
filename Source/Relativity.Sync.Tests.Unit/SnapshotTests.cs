@@ -7,7 +7,7 @@ namespace Relativity.Sync.Tests.Unit
 {
 #pragma warning disable RG2009 // Hardcoded Numeric Value
 	[TestFixture]
-	internal sealed class SnapshotTests
+	internal static class SnapshotTests
 	{
 		[Test]
 		public static void ItShouldReturnTotalNumberOfRecords()
