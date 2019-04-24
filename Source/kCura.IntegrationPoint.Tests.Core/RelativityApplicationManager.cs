@@ -27,17 +27,24 @@ namespace kCura.IntegrationPoint.Tests.Core
 			_libraryManager = helper.CreateAdminProxy<ILibraryApplicationsManager>();
 		}
 		
-		public async Task ImportApplicationToLibrary()
+		public async Task ImportRipToLibraryAsync()
 		{
-			string applicationFilePath = SharedVariables.UseLocalRap ? GetLocalRapPath() : GetBuildPackagesRapPath();
-			using (FileStream fileStream = File.OpenRead(applicationFilePath))
-			{
-				var keplerStream = new KeplerStream(fileStream);
-				await _libraryManager.EnsureApplication(_TESTING_RAP_NAME, keplerStream, true, true);
-			}
+			string applicationFilePath = SharedVariables.UseLocalRap 
+			    ? GetLocalRipRapPath() 
+			    : GetBuildPackagesRipRapPath();
+		    await ImportApplicationToLibraryAsync(_TESTING_RAP_NAME, applicationFilePath).ConfigureAwait(false);
 		}
 
-		public void InstallApplicationFromLibrary(int workspaceArtifactId, string appGuidString = _RIP_GUID_STRING)
+	    public async Task ImportApplicationToLibraryAsync(string name, string applicationFilePath)
+	    {
+	        using (FileStream fileStream = File.OpenRead(applicationFilePath))
+	        {
+	            var keplerStream = new KeplerStream(fileStream);
+	            await _libraryManager.EnsureApplication(_TESTING_RAP_NAME, keplerStream, true, true).ConfigureAwait(false);
+	        }
+        }
+
+        public void InstallApplicationFromLibrary(int workspaceArtifactId, string appGuidString = _RIP_GUID_STRING)
 		{
 			using (var applicationInstallManager = _helper.CreateAdminProxy<IApplicationInstallManager>())
 			{
@@ -54,14 +61,14 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		private string GetLocalRapPath()
+		private string GetLocalRipRapPath()
 		{
-			return SharedVariables.RapFileLocation;
+			return SharedVariables.RipRapFilePath;
 		}
 
-		private string GetBuildPackagesRapPath()
+		private string GetBuildPackagesRipRapPath()
 		{
-			return Path.Combine(SharedVariables.LatestRapLocationFromBuildPackages, SharedVariables.ApplicationPath, SharedVariables.ApplicationRapFileName);
+			return Path.Combine(SharedVariables.LatestRapLocationFromBuildPackages, SharedVariables.ApplicationPath, SharedVariables.RipRapFilePath);
 		}
 	}
 }

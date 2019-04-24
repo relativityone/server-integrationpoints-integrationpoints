@@ -286,8 +286,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static string ApplicationPath => AppSettingString("applicationPath");
 
-		public static string ApplicationRapFileName => AppSettingString("applicationRapFileName");
-
 		public static string BuildPackagesBranchPath => Path.Combine(AppSettingString("buildPackages"), AppSettingString("branch"));
 
 		public static string LatestRapLocationFromBuildPackages => Path.Combine(BuildPackagesBranchPath, LatestRapVersionFromBuildPackages);
@@ -296,7 +294,13 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static bool UseLocalRap => bool.Parse(AppSettingString("UseLocalRAP"));
 
-		public static string RapFileLocation => AppSettingString("LocalRAPFileLocation");
+        public static string LocalApplicationsRapFilesLocation => AppSettingString("LocalApplicationsRAPFilesLocation");
+
+        public static string RipRapFilePath => GetRapFilePath(AppSettingString("RipRapFileName"));
+
+		public static string MyFirstProviderRapFilePath => GetRapFilePath(AppSettingString("MyFirstProviderRapFileName"));
+
+		public static string JsonLoaderRapFilePath => GetRapFilePath(AppSettingString("JsonLoaderRapFileName"));
 
 		#endregion RAP File Settings
 
@@ -387,5 +391,10 @@ namespace kCura.IntegrationPoint.Tests.Core
 				? value
 				: defaultValueProvider();
 		}
-	}
+
+	    private static string GetRapFilePath(string rapFileName)
+	    {
+	        return Path.Combine(LocalApplicationsRapFilesLocation, rapFileName);
+	    }
+    }
 }

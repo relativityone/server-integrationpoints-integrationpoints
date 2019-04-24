@@ -1,4 +1,7 @@
-﻿namespace kCura.IntegrationPoints.Data.Repositories.Implementations
+﻿using Relativity.Services.Objects.DataContracts;
+using System.Collections.Generic;
+
+namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
     public class Repository<T> : IRepository<T> where T : BaseRdo, new()
     {
@@ -7,6 +10,11 @@
         protected Repository(IRelativityObjectManager objectManager)
         {
             _objectManager = objectManager;
+        }
+
+        public IEnumerable<T> GetAll()
+        {
+            return _objectManager.Query<T>(new QueryRequest());
         }
 
         public int Create(T rdo)

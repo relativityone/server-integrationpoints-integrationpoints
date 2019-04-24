@@ -1,1 +1,8 @@
-﻿NUnit
+﻿FluentAssertions
+Moq
+NUnit
+Polly
+Relativity.API
+Relativity.Kepler
+Relativity.Kepler.Client
+Serilog
