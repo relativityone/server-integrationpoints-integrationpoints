@@ -36,6 +36,6 @@ namespace kCura.IntegrationPoints.Services.Installers
 
 		protected abstract IList<IWindsorInstaller> Dependencies { get; }
 
-		protected abstract void RegisterComponents(IWindsorContainer container, IConfigurationStore store, int workspaceId);
+		protected abstract void RegisterComponents(IWindsorContainer container, IConfigurationStore store, int workspaceID);
 	}
 }

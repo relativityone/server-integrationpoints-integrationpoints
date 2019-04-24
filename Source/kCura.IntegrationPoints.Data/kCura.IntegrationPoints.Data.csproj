@@ -124,11 +124,13 @@
     <Compile Include="Repositories\ICaseRepository.cs" />
     <Compile Include="Repositories\IFileRepository.cs" />
     <Compile Include="Repositories\IFoundationRepositoryFactory.cs" />
+    <Compile Include="Repositories\IRepository.cs" />
     <Compile Include="Repositories\IIntegrationPointRepository.cs" />
     <Compile Include="Repositories\Implementations\AuditRepository.cs" />
     <Compile Include="Repositories\Implementations\CaseRepository.cs" />
     <Compile Include="Repositories\Implementations\DisposableFileRepository.cs" />
     <Compile Include="Repositories\Implementations\DTO\CaseInfoDto.cs" />
+    <Compile Include="Repositories\Implementations\Repository.cs" />
     <Compile Include="Repositories\Implementations\FileRepository.cs" />
     <Compile Include="Repositories\Implementations\IntegrationPointRepository.cs" />
     <Compile Include="Repositories\Implementations\ViewFieldInfoFieldTypeExtender.cs" />
@@ -240,7 +242,6 @@
     <Compile Include="IEddsDBContext.cs" />
     <Compile Include="WorkspaceContext.cs" />
     <Compile Include="Extensions\DBContextExtensions.cs" />
-    <Compile Include="GetObjectBase.cs" />
     <Compile Include="IntegrationPointQuery.cs" />
     <Compile Include="IWorkspaceDBContext.cs" />
     <Compile Include="IObjectTypeQuery.cs" />
@@ -254,7 +255,6 @@
     <Compile Include="Queries\GetJobEntityManagerLinks.cs" />
     <Compile Include="Queries\CreateEntityManagerResourceTable.cs" />
     <Compile Include="Queries\GetApplicationBinaries.cs" />
-    <Compile Include="Queries\GetApplicationGuid.cs" />
     <Compile Include="Queries\JobHistoryErrorQuery.cs" />
     <Compile Include="Queries\JobStatisticsQuery.cs" />
     <Compile Include="RdoHelper.cs" />

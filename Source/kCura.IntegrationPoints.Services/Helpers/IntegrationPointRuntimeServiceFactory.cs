@@ -2,7 +2,6 @@
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Services.Interfaces.Private.Helpers;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Services.Helpers

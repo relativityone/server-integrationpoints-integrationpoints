@@ -83,8 +83,10 @@
     <Compile Include="Fields.cs" />
     <Compile Include="FluentAssertions\Assertions\ComponentModelAssertions.cs" />
     <Compile Include="FluentAssertions\Assertions\ComponentsModelAssertions.cs" />
+    <Compile Include="FluentAssertions\Assertions\EitherAssertions.cs" />
     <Compile Include="FluentAssertions\Assertions\WindsorContainerAssertions.cs" />
     <Compile Include="FluentAssertions\ComponentModelExtensions.cs" />
+    <Compile Include="FluentAssertions\EitherExtensions.cs" />
     <Compile Include="FluentAssertions\WindsorContainerExtensions.cs" />
     <Compile Include="FolderService.cs" />
     <Compile Include="ImportHelper.cs" />
@@ -7912,6 +7914,17 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="LanguageExt.Core">
+          <HintPath>..\..\packages\LanguageExt.Core\lib\net45\LanguageExt.Core.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="Sodium">
           <HintPath>..\..\packages\libsodium-net\lib\Net40\Sodium.dll</HintPath>
           <Private>True</Private>
@@ -8884,6 +8897,17 @@
       <ItemGroup>
         <Reference Include="System.IdentityModel.Tokens.Jwt">
           <HintPath>..\..\packages\System.IdentityModel.Tokens.Jwt\lib\net45\System.IdentityModel.Tokens.Jwt.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="System.ValueTuple">
+          <HintPath>..\..\packages\System.ValueTuple\lib\net461\System.ValueTuple.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

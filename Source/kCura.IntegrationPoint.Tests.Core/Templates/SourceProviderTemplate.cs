@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 			InitializeIocContainer();
 
-			Task.Run(async () => await SetupAsync()).Wait();
+			Task.Run(async () => await SetupAsync().ConfigureAwait(false)).Wait();
 
 			CaseContext = Container.Resolve<ICaseServiceContext>();
 			ObjectManager = CaseContext.RsapiService.RelativityObjectManager;
@@ -308,11 +308,11 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		{
 			var applicationManagerLazy = new Lazy<RelativityApplicationManager>(() => new RelativityApplicationManager(Helper));
 
-			await AddAgentServerToResourcePool();
+			await AddAgentServerToResourcePool().ConfigureAwait(false);
 
 			if (SharedVariables.UseIpRapFile())
 			{
-				await applicationManagerLazy.Value.ImportApplicationToLibrary();
+				await applicationManagerLazy.Value.ImportRipToLibraryAsync().ConfigureAwait(false);
 			}
 
 			if (CreatingWorkspaceEnabled)
@@ -322,7 +322,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 			if (CreatingAgentEnabled)
 			{
-				Result agentCreatedResult = await Task.Run(() => Agent.CreateIntegrationPointAgent());
+				Result agentCreatedResult = await Task.Run(() => Agent.CreateIntegrationPointAgent()).ConfigureAwait(false);
 				AgentArtifactId = agentCreatedResult.ArtifactID;
 				_wasAgentCreated = agentCreatedResult.Success;
 			}
@@ -331,8 +331,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		private async Task AddAgentServerToResourcePool()
 		{
 			ICoreContext coreContext = GetBaseServiceContext(-1);
-			ResourceServer agentServer = await ResourceServerHelper.GetAgentServer(coreContext);
-			await ResourcePoolHelper.AddAgentServerToResourcePool(agentServer, "Default");
+			ResourceServer agentServer = await ResourceServerHelper.GetAgentServer(coreContext).ConfigureAwait(false);
+			await ResourcePoolHelper.AddAgentServerToResourcePool(agentServer, "Default").ConfigureAwait(false);
 		}
 
 		private static ICoreContext GetBaseServiceContext(int workspaceId)

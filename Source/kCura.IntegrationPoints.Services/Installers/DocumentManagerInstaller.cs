@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Services.Installers
 
 		protected override IList<IWindsorInstaller> Dependencies { get; }
 
-		protected override void RegisterComponents(IWindsorContainer container, IConfigurationStore store, int workspaceId)
+		protected override void RegisterComponents(IWindsorContainer container, IConfigurationStore store, int workspaceID)
 		{
 			container.Register(Component.For<ISecretCatalogFactory>().ImplementedBy<DefaultSecretCatalogFactory>().LifestyleTransient());
 			container.Register(Component.For<ISecretManagerFactory>().ImplementedBy<SecretManagerFactory>().LifestyleTransient());

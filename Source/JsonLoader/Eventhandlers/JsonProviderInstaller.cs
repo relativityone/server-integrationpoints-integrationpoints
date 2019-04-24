@@ -11,7 +11,7 @@ namespace JsonLoader.Eventhandlers
 	[Guid("64110733-03F8-4DAC-958D-31E9DFDA6071")]
 	public class JsonProviderInstaller : IntegrationPointSourceProviderInstaller
 	{
-		public override IDictionary<System.Guid, SourceProvider> GetSourceProviders()
+		public override IDictionary<Guid, SourceProvider> GetSourceProviders()
 		{
 			return new Dictionary<Guid, SourceProvider>()
 			{

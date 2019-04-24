@@ -41,6 +41,9 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Installers\Authentication\AuthTokenRegistrationTests.cs" />
+    <Compile Include="Installers\Context\WorkspaceContextRegistrationTests.cs" />
+    <Compile Include="Installers\ProviderManager\ProviderInstallerAndUninstallerRegistrationTests.cs" />
     <Compile Include="JobHistory\JobHistoryAccessTests.cs" />
     <Compile Include="JobHistory\JobHistorySummaryModelBuilderTests.cs" />
     <Compile Include="Managers\DocumentManagerTests.cs" />
@@ -60,6 +63,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">
       <Project>{AD3E5540-FA39-4983-8A23-FCC756D51A32}</Project>
       <Name>kCura.IntegrationPoint.Tests.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
+      <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>
+      <Name>kCura.IntegrationPoints.Contracts</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Core.Contracts\kCura.IntegrationPoints.Core.Contracts.csproj">
       <Project>{30503682-e18d-49df-a308-fe7996c4108e}</Project>
@@ -139,8 +146,46 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="FluentAssertions">
+          <HintPath>..\..\packages\FluentAssertions\lib\net45\FluentAssertions.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="FluentAssertions.Core">
+          <HintPath>..\..\packages\FluentAssertions\lib\net45\FluentAssertions.Core.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="kCura.Relativity.Client">
           <HintPath>..\..\packages\kCura.Relativity.Client\lib\net462\kCura.Relativity.Client.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="LanguageExt.Core">
+          <HintPath>..\..\packages\LanguageExt.Core\lib\net45\LanguageExt.Core.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Moq">
+          <HintPath>..\..\packages\Moq\lib\net45\Moq.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -240,6 +285,20 @@
       <ItemGroup>
         <Reference Include="Relativity.Telemetry.APM">
           <HintPath>..\..\packages\Relativity.Telemetry.APM\lib\net462\Relativity.Telemetry.APM.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="mscorlib">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.ValueTuple">
+          <HintPath>..\..\packages\System.ValueTuple\lib\net461\System.ValueTuple.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

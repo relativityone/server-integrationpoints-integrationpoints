@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using kCura.EventHandler;
 using kCura.EventHandler.CustomAttributes;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.SourceProviderInstaller;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers.Installers

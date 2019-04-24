@@ -19,13 +19,13 @@ namespace kCura.IntegrationPoints.Data.Installers
 		{
 			container.Register(Component.For<CreateEntityManagerResourceTable>().ImplementedBy<CreateEntityManagerResourceTable>().LifestyleTransient());
 			container.Register(Component.For<CreateErrorRdoQuery>().ImplementedBy<CreateErrorRdoQuery>().LifestyleTransient());
-			container.Register(Component.For<GetApplicationGuid>().ImplementedBy<GetApplicationGuid>().LifestyleTransient());
 			container.Register(Component.For<GetJobEntityManagerLinks>().ImplementedBy<GetJobEntityManagerLinks>().LifestyleTransient());
 			container.Register(Component.For<GetJobsCount>().ImplementedBy<GetJobsCount>().LifestyleTransient());
 			container.Register(Component.For<IJobResourceTracker>().ImplementedBy<JobResourceTracker>().LifestyleTransient());
 			container.Register(Component.For<JobStatistics>().ImplementedBy<JobStatistics>().LifestyleTransient());
 			container.Register(Component.For<JobStatisticsQuery>().ImplementedBy<JobStatisticsQuery>().LifestyleTransient());
 			container.Register(Component.For<JobHistoryErrorQuery>().ImplementedBy<JobHistoryErrorQuery>().LifestyleTransient());
+			container.Register(Component.For<IIntegrationPointQuery>().ImplementedBy<IntegrationPointQuery>().LifestyleTransient());
 
 			container.Register(Component.For<IObjectTypeQuery>().ImplementedBy<SqlObjectTypeQuery>().LifestyleTransient());
 			container.Register(Component.For<IChoiceQuery>().ImplementedBy<ChoiceQuery>().LifestyleTransient());

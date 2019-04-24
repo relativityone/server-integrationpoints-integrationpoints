@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using kCura.EventHandler;
-using kCura.EventHandler.CustomAttributes;
-using kCura.IntegrationPoints.Core.Services;
+﻿using kCura.EventHandler.CustomAttributes;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
-using kCura.IntegrationPoints.SourceProviderInstaller;
 using Relativity.API;
+using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.EventHandlers.Installers
@@ -21,16 +18,14 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 	{
 		private IIntegrationPointTypeInstaller _integrationPointTypeInstaller;
 
-
 		internal IIntegrationPointTypeInstaller IntegrationPointTypeInstaller
 		{
 			get
 			{
-				var caseServiceContext = ServiceContextFactory.CreateCaseServiceContext(Helper, Helper.GetActiveCaseID());
+				ICaseServiceContext caseServiceContext = ServiceContextFactory.CreateCaseServiceContext(Helper, Helper.GetActiveCaseID());
 				var typeService = new IntegrationPointTypeService(Helper, caseServiceContext);
 				return _integrationPointTypeInstaller ?? (_integrationPointTypeInstaller = new IntegrationPointTypeInstaller(caseServiceContext, typeService, Logger));
 			}
-			set { _integrationPointTypeInstaller = value; }
 		}
 
 		protected override IAPILog CreateLogger()
@@ -48,10 +43,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 		protected override void Run()
 		{
 			var types = new Dictionary<Guid, string>
-				{
-					{Constants.IntegrationPoints.IntegrationPointTypes.ImportGuid, Constants.IntegrationPoints.IntegrationPointTypes.ImportName},
-					{Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid, Constants.IntegrationPoints.IntegrationPointTypes.ExportName}
-				};
+			{
+				[Constants.IntegrationPoints.IntegrationPointTypes.ImportGuid] = Constants.IntegrationPoints.IntegrationPointTypes.ImportName,
+				[Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid] = Constants.IntegrationPoints.IntegrationPointTypes.ExportName
+			};
 			IntegrationPointTypeInstaller.Install(types);
 		}
 	}

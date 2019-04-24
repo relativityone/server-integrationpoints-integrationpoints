@@ -3,12 +3,11 @@ using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Core.Installers;
-using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Installers;
-using kCura.IntegrationPoints.Domain.Authentication;
+using kCura.IntegrationPoints.Services.Installers.Authentication;
+using kCura.IntegrationPoints.Services.Installers.Context;
 using kCura.IntegrationPoints.Services.Repositories;
 using kCura.IntegrationPoints.Services.Repositories.Implementations;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Services.Installers
 {
@@ -28,11 +27,13 @@ namespace kCura.IntegrationPoints.Services.Installers
 
 		protected override IList<IWindsorInstaller> Dependencies => _dependencies;
 
-		protected override void RegisterComponents(IWindsorContainer container, IConfigurationStore store, int workspaceId)
+		protected override void RegisterComponents(IWindsorContainer container, IConfigurationStore store, int workspaceID)
 		{
-			container.Register(Component.For<IRSAPIService>().UsingFactoryMethod(k => new RSAPIService(k.Resolve<IHelper>(), workspaceId), true));
-			container.Register(Component.For<IAuthTokenGenerator>().ImplementedBy<ClaimsTokenGenerator>().LifestyleTransient());
 			container.Register(Component.For<IIntegrationPointTypeRepository>().ImplementedBy<IntegrationPointTypeRepository>().LifestyleTransient());
+
+		    container
+		        .AddWorkspaceContext(workspaceID)
+		        .AddAuthTokenGenerator();
 		}
 	}
 }

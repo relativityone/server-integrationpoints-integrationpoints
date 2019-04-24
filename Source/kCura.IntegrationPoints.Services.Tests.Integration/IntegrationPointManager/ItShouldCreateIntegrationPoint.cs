@@ -66,7 +66,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 				SavedSearchArtifactId = SavedSearchArtifactId
 			};
 
-			var destinationConfiguration = new LoadFileExportDestinationConfiguration
+			var destinationConfiguration = new
 			{
 				ArtifactTypeId = (int) ArtifactType.Document,
 				AppendOriginalFileName = false,
@@ -215,5 +215,5 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 				expectedIntegrationPointModel,
 				new IntegrationPointFieldGuidsConstants());
 		}
-	}
+    }
 }

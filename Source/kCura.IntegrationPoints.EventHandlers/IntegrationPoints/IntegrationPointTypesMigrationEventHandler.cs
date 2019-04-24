@@ -8,7 +8,6 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
-using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
@@ -18,20 +17,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 	public class IntegrationPointTypesMigrationEventHandler : IntegrationPointMigrationEventHandlerBase
 	{
 		private IIntegrationPointTypeInstaller _integrationPointTypeInstaller;
-		private IAPILog _logger;
-
-		private IAPILog Logger
-		{
-			get
-			{
-				if (_logger == null)
-				{
-					_logger = Helper.GetLoggerFactory().GetLogger().ForContext<DataTransferLocationMigrationEventHandler>();
-				}
-
-				return _logger;
-			}
-		}
 
 		internal IIntegrationPointTypeInstaller IntegrationPointTypeInstaller
 		{

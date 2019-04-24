@@ -1,6 +1,9 @@
 Castle.Windsor
 CSharpGuidelineAnalyzer
+FluentAssertions
 kCura.Relativity.Client
+LanguageExt.Core
+Moq
 NSubstitute
 NUnit
 Relativity.API

@@ -120,6 +120,7 @@
     <Compile Include="Installers\Helpers\Implementations\SecretStoreCleanUp.cs" />
     <Compile Include="Installers\Helpers\SecretStoreCleanUpEventHandlerWrapper.cs" />
     <Compile Include="Installers\RegisterDataTransferLocationInstaller.cs" />
+    <Compile Include="Installers\RegisterDestinationProviders.cs" />
     <Compile Include="Installers\RegisterImportProvider.cs" />
     <Compile Include="Installers\RegisterIntegrationPointTypeInstaller.cs" />
     <Compile Include="Installers\RemoveAgentJobLogTableEventHandler.cs" />
@@ -139,6 +140,7 @@
     <Compile Include="Installers\UpdateLdapSecuredConfiguration.cs" />
     <Compile Include="Installers\UpdateRelativitySecuredConfiguration.cs" />
     <Compile Include="IntegrationPoints\DataTransferLocationMigrationEventHandler.cs" />
+    <Compile Include="IntegrationPoints\DestinationProvidersMigrationEventHandler.cs" />
     <Compile Include="IntegrationPoints\Helpers\Factories\CorrespondingJobDeleteFactory.cs" />
     <Compile Include="IntegrationPoints\Helpers\Factories\IntegrationPointSecretDeleteFactory.cs" />
     <Compile Include="IntegrationPoints\Helpers\Factories\IntegrationPointViewPreLoadFactory.cs" />
@@ -152,6 +154,7 @@
     <Compile Include="IntegrationPoints\Helpers\Implementations\ConsoleBuilder.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\DataTransferLocationMigration.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\DataTransferLocationMigrationHelper.cs" />
+    <Compile Include="IntegrationPoints\Helpers\Implementations\InProcessSourceProviderInstaller.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\FolderPathInformation.cs" />
     <Compile Include="IntegrationPoints\Helpers\IIntegrationPointViewPreLoad.cs" />
     <Compile Include="IntegrationPoints\Helpers\IFolderPathInformation.cs" />
@@ -181,6 +184,7 @@
     <Compile Include="IntegrationPoints\IntegrationPointProfilePageInteractionEventHandler.cs" />
     <Compile Include="IntegrationPoints\IntegrationPointProfilePreLoadEventHandler.cs" />
     <Compile Include="IntegrationPoints\IntegrationPointTypesMigrationEventHandler.cs" />
+    <Compile Include="IntegrationPoints\InternalSourceProviderInstaller.cs" />
     <Compile Include="IntegrationPoints\Validators\IPreCascadeDeleteEventHandlerValidator.cs" />
     <Compile Include="Installers\RegisterDocumentTransferProvider.cs" />
     <Compile Include="Installers\RegisterFtpProvider.cs" />
@@ -198,11 +202,12 @@
     <Compile Include="IntegrationPoints\PreLoadEventHandler.cs" />
     <Compile Include="IntegrationPoints\IntegrationPointMigrationEventHandlerBase.cs" />
     <Compile Include="PageInteractionHelper.cs" />
+    <Compile Include="PostInstallEventHandlerBase.cs" />
     <Compile Include="TagBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
-      <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>
+      <Project>{0CEDB7AF-DB89-47DE-9587-8CCD58621F2F}</Project>
       <Name>kCura.IntegrationPoints.Contracts</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Core.Contracts\kCura.IntegrationPoints.Core.Contracts.csproj">
@@ -327,6 +332,17 @@
       <ItemGroup>
         <Reference Include="kCura.Relativity.Client">
           <HintPath>..\..\packages\kCura.Relativity.Client\lib\net462\kCura.Relativity.Client.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="LanguageExt.Core">
+          <HintPath>..\..\packages\LanguageExt.Core\lib\net45\LanguageExt.Core.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -470,6 +486,20 @@
       <ItemGroup>
         <Reference Include="Relativity.Telemetry.Services.Interface">
           <HintPath>..\..\packages\Relativity.Telemetry.Services.Interface\lib\net462\Relativity.Telemetry.Services.Interface.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="mscorlib">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.ValueTuple">
+          <HintPath>..\..\packages\System.ValueTuple\lib\net461\System.ValueTuple.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
