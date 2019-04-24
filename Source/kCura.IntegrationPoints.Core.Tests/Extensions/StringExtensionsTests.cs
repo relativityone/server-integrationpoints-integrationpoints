@@ -1,8 +1,7 @@
 ﻿using kCura.IntegrationPoints.Core.Extensions;
-using kCura.IntegrationPoints.Data.Extensions;
 using NUnit.Framework;
 
-namespace kCura.IntegrationPoints.Data.Tests.Extensions
+namespace kCura.IntegrationPoints.Core.Tests.Extensions
 {
 	[TestFixture]
 	public class StringExtensionsTest

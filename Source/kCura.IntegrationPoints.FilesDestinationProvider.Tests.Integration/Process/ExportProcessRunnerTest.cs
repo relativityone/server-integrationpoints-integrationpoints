@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 	[TestFixture]
 	public class ExportProcessRunnerTest
 	{
-	    #region Fields
+		#region Fields
 
 		private static readonly ConfigSettings _configSettings = new ConfigSettings {WorkspaceName = DateTime.UtcNow.ToString("yyyyMMdd_HHmmss")};
 
@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 
 		private static WindsorContainer _windsorContainer;
 
-	    #endregion //Fields
+		#endregion //Fields
 
 		[OneTimeSetUp]
 		public void Init()
@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			// TODO: ConfigSettings and WorkspaceService have some unhealthy coupling going on...
 
 			_workspaceService = new WorkspaceService(new ImportHelper());
-		    _configSettings.WorkspaceId = _workspaceService.CreateWorkspace(_configSettings.WorkspaceName);
+			_configSettings.WorkspaceId = _workspaceService.CreateWorkspace(_configSettings.WorkspaceName);
 
 			var fieldsService = _windsorContainer.Resolve<IExportFieldsService>();
 			FieldEntry[] fields = fieldsService.GetAllExportableFields(_configSettings.WorkspaceId, (int) ArtifactType.Document);
@@ -71,15 +71,15 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			_configSettings.LongTextField = fields.FirstOrDefault(x => x.DisplayName == _configSettings.LongTextFieldName);
 
 			_configSettings.AdditionalFields = new FieldEntry[] {};
-		    _configSettings.ExportedObjArtifactId = _workspaceService.CreateSavedSearch(
-			    _configSettings.DefaultFields, 
+			_configSettings.ExportedObjArtifactId = _workspaceService.CreateSavedSearch(
+				_configSettings.DefaultFields, 
 				_configSettings.WorkspaceId, 
-			    _configSettings.SavedSearchArtifactName);
+				_configSettings.SavedSearchArtifactName);
 
 
 			_configSettings.DocumentsTestData = DocumentTestDataBuilder.BuildTestData();
 
-			_workspaceService.ImportData(_configSettings.WorkspaceId, _configSettings.DocumentsTestData);
+			_workspaceService.TryImportData(_configSettings.WorkspaceId, _configSettings.DocumentsTestData);
 
 			_configSettings.ViewId = _workspaceService.GetView(_configSettings.WorkspaceId, _configSettings.ViewName);
 
@@ -101,11 +101,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 
 			IRepositoryFactory repositoryFactory = _windsorContainer.Resolve<IRepositoryFactory>();
 			IViewFieldRepository viewFieldRepository = _windsorContainer.Resolve<IViewFieldRepository>();
+			IFileRepository fileRepository = _windsorContainer.Resolve<IFileRepository>();
+			IFileFieldRepository fileFieldRepository = _windsorContainer.Resolve<IFileFieldRepository>();
 			IInstanceSettingRepository instanceSettingRepository =
 				_windsorContainer.Resolve<IInstanceSettingRepository>();
 			var user = new CurrentUser() {ID = 9};
 			IAPILog logger = helper.GetLoggerFactory().GetLogger();
-			var exportServiceFactory = new ExportServiceFactory(logger, instanceSettingRepository, repositoryFactory, viewFieldRepository, user);
+			var exportServiceFactory = new ExportServiceFactory(logger, instanceSettingRepository, repositoryFactory, fileRepository, fileFieldRepository, viewFieldRepository, user);
 			
 			var exportProcessBuilder = new ExportProcessBuilder(
 				configFactoryMock,
@@ -141,7 +143,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			}
 		}
 
-        [Test]
+		[Test]
 		[SmokeTest]
 		[TestCaseSource(nameof(ExportTestCaseSource))]
 		public void RunStableTestCase(IExportTestCase testCase)
@@ -149,7 +151,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			RunTestCase(testCase);
 		}
 
-        [Test]
+		[Test]
 		[SmokeTest]
 		[TestInQuarantine(TestQuarantineState.FailsContinuously,
 			@"REL-307438 - for all failing continuously,
@@ -176,9 +178,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			testCase.Verify(directory, _configSettings.DocumentsTestData);
 		}
 
-        [Test]
-        [SmokeTest]
-        [TestCaseSource(nameof(InvalidFileshareExportTestCaseSource))]
+		[Test]
+		[SmokeTest]
+		[TestCaseSource(nameof(InvalidFileshareExportTestCaseSource))]
 		public void RunInvalidFileshareTestCase(IInvalidFileshareExportTestCase testCase)
 		{
 			// Arrange
@@ -291,16 +293,16 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		private static bool IsFlakyTest(IExportTestCase testCase)
 		{
 			return testCase is ItShouldExportFilesStartingFromGivenRecord
-			       || testCase is ItShouldExportFolderAndSubfoldersWithNatives
-			       || testCase is ItShouldExportFolderWithNatives
-			       || testCase is ItShouldExportImagesAsMultiplePages
-			       || testCase is ItShouldExportImagesAsPdfs
-			       || testCase is ItShouldExportImagesAsSinglePages
-			       || testCase is ItShouldExportOriginalImagesPrecendence
-			       || testCase is ItShouldExportProducedImagesPrecedence
-			       || testCase is ItShouldExportProductionSetWithImages
-			       || testCase is ItShouldExportProductionSetWithNatives
-			       || testCase is ItShouldExportSavedSearch
+				   || testCase is ItShouldExportFolderAndSubfoldersWithNatives
+				   || testCase is ItShouldExportFolderWithNatives
+				   || testCase is ItShouldExportImagesAsMultiplePages
+				   || testCase is ItShouldExportImagesAsPdfs
+				   || testCase is ItShouldExportImagesAsSinglePages
+				   || testCase is ItShouldExportOriginalImagesPrecendence
+				   || testCase is ItShouldExportProducedImagesPrecedence
+				   || testCase is ItShouldExportProductionSetWithImages
+				   || testCase is ItShouldExportProductionSetWithNatives
+				   || testCase is ItShouldExportSavedSearch
 				   || testCase is ItShouldLogJobErrorForNegativeVolumeStartNumber
 				   || testCase is ItShouldLogJobErrorForNegativeSubdirectoryStartNumber
 				;

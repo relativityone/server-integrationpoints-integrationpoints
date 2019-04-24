@@ -20,6 +20,7 @@ using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers.FileNaming;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories;
@@ -29,6 +30,8 @@ using kCura.WinEDDS;
 using kCura.WinEDDS.Exporters;
 using NSubstitute;
 using Relativity.API;
+using Relativity.Services.FileField;
+using Relativity.Services.Interfaces.File;
 using Relativity.Services.Interfaces.ViewField;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers
@@ -82,9 +85,19 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 			windsorContainer.Register(Component.For<ITokenProvider>().Instance(Substitute.For<ITokenProvider>()).LifestyleTransient());
 			windsorContainer.Register(Component.For<IFileNameProvidersDictionaryBuilder>().ImplementedBy<FileNameProvidersDictionaryBuilder>().LifestyleTransient());
 			windsorContainer.Register(Component.For<IRepositoryFactory>().ImplementedBy<RepositoryFactory>());
+
+
 			windsorContainer.Register(Component.For<IViewFieldManager>().UsingFactoryMethod(f =>
 				f.Resolve<IServicesMgr>().CreateProxy<IViewFieldManager>(ExecutionIdentity.CurrentUser)));
 			windsorContainer.Register(Component.For<IViewFieldRepository>().ImplementedBy<ViewFieldRepository>());
+
+			windsorContainer.Register(Component.For<IFileManager>().UsingFactoryMethod(f =>
+				f.Resolve<IServicesMgr>().CreateProxy<IFileManager>(ExecutionIdentity.CurrentUser)));
+			windsorContainer.Register(Component.For<IFileRepository>().ImplementedBy<FileRepository>());
+
+			windsorContainer.Register(Component.For<IFileFieldManager>().UsingFactoryMethod(f =>
+				f.Resolve<IServicesMgr>().CreateProxy<IFileFieldManager>(ExecutionIdentity.CurrentUser)));
+			windsorContainer.Register(Component.For<IFileFieldRepository>().ImplementedBy<FileFieldRepository>());
 			return windsorContainer;
 		}
 

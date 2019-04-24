@@ -12,7 +12,7 @@ using Relativity.API;
 using Relativity.Services;
 using Relativity.Services.Permission;
 
-namespace kCura.IntegrationPoints.Data.Tests.Repositories
+namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 {
 	[TestFixture]
 	public class PermissionRepositoryTests : TestBase

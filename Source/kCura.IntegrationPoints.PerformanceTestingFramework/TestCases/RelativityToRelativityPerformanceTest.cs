@@ -1,15 +1,19 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.UtilityDTO;
 using kCura.IntegrationPoints.PerformanceTestingFramework.Helpers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using NUnit.Framework;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.PerformanceTestingFramework.TestCases
 {
@@ -20,13 +24,16 @@ namespace kCura.IntegrationPoints.PerformanceTestingFramework.TestCases
 		private const int _ADMIN_USER_ID = 9;
 
 		private readonly string _fieldMappingsJson;
-		
+		private readonly bool _enableDataGrid;
+
 		public RelativityToRelativityPerformanceTest() : base(
-			Convert.ToInt32(TestContextParametersHelper.GetParameterFromTestContextOrAuxilaryFile("SourceWorkspaceArtifactID")),
-			$"RipPushPerfTest {DateTime.Now:yyyy-MM-dd HH-mm}")
+			Convert.ToInt32(TestContextParametersHelper.GetParameterFromTestContextOrAuxiliaryFile("SourceWorkspaceArtifactID")),
+			TestContextParametersHelper.GetParameterFromTestContextOrAuxiliaryFile("TargetWorkspaceName"),
+			TestContextParametersHelper.GetParameterFromTestContextOrAuxiliaryFile("TemplateWorkspaceName"))
 		{
-			_fieldMappingsJson = File.ReadAllText(TestContextParametersHelper.GetParameterFromTestContextOrAuxilaryFile("FieldMappingsJSONPath"));
-		}	
+			_enableDataGrid = Convert.ToBoolean(TestContextParametersHelper.GetParameterFromTestContextOrAuxiliaryFile("EnableDataGrid"));
+			_fieldMappingsJson = File.ReadAllText(TestContextParametersHelper.GetParameterFromTestContextOrAuxiliaryFile("FieldMappingsJSONPath"));
+		}
 
 		public override void SuiteSetup()
 		{
@@ -46,31 +53,71 @@ namespace kCura.IntegrationPoints.PerformanceTestingFramework.TestCases
 		[Test]
 		public void PerformanceTest()
 		{
-			//Arrange
-			IntegrationPointModel integrationPointModel = PrepareIntegrationPointsModel(TargetWorkspaceArtifactId);
-			IntegrationPointModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationPointModel);
-			var testDurationStopWatch = new Stopwatch();
+			double elapsedTime = -1;
+			try
+			{
+				//Arrange
+				if (_enableDataGrid)
+				{
+					Workspace.EnableDataGrid(TargetWorkspaceArtifactId);
+				}
 
-			//Act
-			_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, integrationPoint.ArtifactID, _ADMIN_USER_ID);
-			Status.WaitForIntegrationPointToLeavePendingState(Container, SourceWorkspaceArtifactId, integrationPoint.ArtifactID);
+				IntegrationPointModel integrationPointModel = PrepareIntegrationPointsModel(TargetWorkspaceArtifactId);
+				IntegrationPointModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationPointModel);
+				var testDurationStopWatch = new Stopwatch();
 
-			//start the timer only after the job is picked up by an agent
-			testDurationStopWatch.Start();
-			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactId, integrationPoint.ArtifactID);
-			testDurationStopWatch.Stop();
+				//Act
+				_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, integrationPoint.ArtifactID, _ADMIN_USER_ID);
+				Status.WaitForIntegrationPointToLeavePendingState(Container, SourceWorkspaceArtifactId, integrationPoint.ArtifactID);
 
-			Console.WriteLine($"PerformanceTest - RIP job duration -> {Math.Round(testDurationStopWatch.Elapsed.TotalSeconds, 2)}s");
+				//start the timer only after the job is picked up by an agent
+				testDurationStopWatch.Start();
+				Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactId, integrationPoint.ArtifactID);
+				testDurationStopWatch.Stop();
 
-			/* <<== IMPORTANT ==>>
-			 * This is the place, where we write the result in seconds to stdout.
-			 * Grazyna then reads this output and looks for number between '<<<<\t' '\t>>>>' tags.
-			 * The code lies in `Grazyna.Core.Utilities.OutputParser.ConsoleRunnerOutputResultsParser`.
-			 * The exact regex that the output is matched against is: "<<<<\t([\d\.+-]+)\t>>>>".
-			 * Please consider that when changing the code.
-			 */
-			Console.WriteLine($"<<<<\t{testDurationStopWatch.Elapsed.TotalSeconds}\t>>>>");
-			/* <<==    END    ==>> */
+				elapsedTime = testDurationStopWatch.Elapsed.TotalSeconds;
+
+				//Assert
+				var queryRequest = new QueryRequest
+				{
+					Sorts = new[] { new Sort() { Direction = SortEnum.Descending, FieldIdentifier = new FieldRef { Name = "ArtifactID" } } }
+				};
+				ResultSet<JobHistory> resultSet = ObjectManager.Query<JobHistory>(queryRequest, 0, 1);
+
+				if (resultSet.ResultCount == 0)
+				{
+					elapsedTime = -1;
+				}
+				else
+				{
+					JobHistory jobHistoryObject = resultSet.Items.First();
+					Console.WriteLine($"Job status: {jobHistoryObject.JobStatus.Name}");
+					if (jobHistoryObject.JobStatus.Name != JobStatusChoices.JobHistoryCompleted.Name)
+					{
+						elapsedTime = -1;
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				elapsedTime = -1;
+				Console.WriteLine($"Exception occurred ({ex.GetType()}) {ex.Message}: {ex.StackTrace}");
+				throw;
+			}
+			finally
+			{
+				Console.WriteLine($"PerformanceTest - RIP job duration -> {Math.Round(elapsedTime, 2)}s");
+
+				/* <<== IMPORTANT ==>>
+				 * This is the place, where we write the result in seconds to stdout.
+				 * Grazyna then reads this output and looks for number between '<<<<\t' '\t>>>>' tags.
+				 * The code lies in `Grazyna.Core.Utilities.OutputParser.ConsoleRunnerOutputResultsParser`.
+				 * The exact regex that the output is matched against is: "<<<<\t([\d\.+-]+)\t>>>>".
+				 * Please consider that when changing the code.
+				 */
+				Console.WriteLine($"<<<<\t{elapsedTime}\t>>>>");
+				/* <<==    END    ==>> */
+			}
 		}
 
 		private IntegrationPointModel PrepareIntegrationPointsModel(int targetWorkspaceId)
@@ -98,13 +145,13 @@ namespace kCura.IntegrationPoints.PerformanceTestingFramework.TestCases
 		private string DestinationConfiguration(int targetWorkspaceId)
 		{
 			ImportNativeFileCopyModeEnum importNativeFileCopyMode;
-			Enum.TryParse(TestContextParametersHelper.GetParameterFromTestContextOrAuxilaryFile("ImportNativeFileCopyModeEnum"), out importNativeFileCopyMode);
+			Enum.TryParse(TestContextParametersHelper.GetParameterFromTestContextOrAuxiliaryFile("ImportNativeFileCopyModeEnum"), out importNativeFileCopyMode);
 
 			bool imageImport;
-			bool.TryParse(TestContextParametersHelper.GetParameterFromTestContextOrAuxilaryFile("ImageImport"), out imageImport);
+			bool.TryParse(TestContextParametersHelper.GetParameterFromTestContextOrAuxiliaryFile("ImageImport"), out imageImport);
 
 			bool importNativeFile;
-			bool.TryParse(TestContextParametersHelper.GetParameterFromTestContextOrAuxilaryFile("ImportNativeFile"), out importNativeFile);
+			bool.TryParse(TestContextParametersHelper.GetParameterFromTestContextOrAuxiliaryFile("ImportNativeFile"), out importNativeFile);
 
 			var destinationConfiguration = new ImportSettings()
 			{
@@ -140,7 +187,7 @@ namespace kCura.IntegrationPoints.PerformanceTestingFramework.TestCases
 		private string SourceConfiguration(int targetWorkspaceId, int savedSearchArtifactId)
 		{
 			int sourceWorkspaceId;
-			int.TryParse(TestContextParametersHelper.GetParameterFromTestContextOrAuxilaryFile("SourceWorkspaceArtifactID"), out sourceWorkspaceId);
+			int.TryParse(TestContextParametersHelper.GetParameterFromTestContextOrAuxiliaryFile("SourceWorkspaceArtifactID"), out sourceWorkspaceId);
 
 			var sourceConfiguration = new SourceConfiguration()
 			{

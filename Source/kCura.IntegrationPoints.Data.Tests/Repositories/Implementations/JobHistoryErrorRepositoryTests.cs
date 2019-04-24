@@ -12,7 +12,7 @@ using Relativity.Services;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Search;
 
-namespace kCura.IntegrationPoints.Data.Tests.Repositories
+namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 {
 	[TestFixture]
 	public class JobHistoryErrorRepositoryTests : TestBase

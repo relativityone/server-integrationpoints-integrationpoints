@@ -1,4 +1,6 @@
-﻿using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
+﻿using System;
+using System.Threading.Tasks;
+using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using kCura.IntegrationPoints.Data.Repositories.DTO;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain.Exceptions;
@@ -6,10 +8,8 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.Services.ResourceServer;
-using System;
-using System.Threading.Tasks;
 
-namespace kCura.IntegrationPoints.Data.Tests.Repositories
+namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 {
 	[TestFixture]
 	public class CaseRepositoryTests

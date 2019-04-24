@@ -9,4 +9,5 @@ Relativity.Core
 Relativity.ImportExport
 Relativity.Services.DataContracts
 Relativity.Services.Interfaces
+Relativity.Productions.Services.Interfaces
 Serilog

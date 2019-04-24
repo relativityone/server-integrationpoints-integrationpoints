@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
 			DocumentsTestData data = DocumentTestDataBuilder.BuildTestData(testDir, withNatives, testDataType);
 			var importHelper = new ImportHelper();
 			var workspaceService = new WorkspaceService(importHelper);
-			bool importSucceded = workspaceService.ImportData(_testContext.GetWorkspaceId(), data);
+			bool importSucceded = workspaceService.TryImportData(_testContext.GetWorkspaceId(), data);
 			if (!importSucceded)
 			{
 				string suffix = importHelper.ErrorMessages.Any()

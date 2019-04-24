@@ -36,8 +36,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Repositori
 		public void ReadExportableViewFields_ReturnsProperResult_WhenCallIsSuccessful()
 		{
 			// arrange
-			_instrumentationMock.Setup(x => x.Execute(It.IsAny<Func<ViewFieldResponse[]>>()))
-				.Returns<Func<ViewFieldResponse[]>>(y => y.Invoke());
+			_instrumentationMock
+				.Setup(x => x.ExecuteAsync(It.IsAny<Func<Task<ViewFieldResponse[]>>>()))
+				.Returns<Func<Task<ViewFieldResponse[]>>>(y => y.Invoke());
 
 			var viewFieldResponse = new ViewFieldResponse();
 			ViewFieldResponse[] expectedResult = { viewFieldResponse };
@@ -59,7 +60,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Repositori
 					nameof(IViewFieldManager),
 					nameof(IViewFieldManager.ReadExportableViewFieldsAsync)),
 				Times.Once);
-			_instrumentationMock.Verify(x => x.Execute(It.IsAny<Func<ViewFieldResponse[]>>()), Times.Once);
+			_instrumentationMock.Verify(x => x.ExecuteAsync(It.IsAny<Func<Task<ViewFieldResponse[]>>>()), Times.Once);
 			actualResult.Length.Should().Be(1);
 			actualResult[0].Should().Be(expectedResult[0]);
 		}
@@ -68,8 +69,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Repositori
 		public void ReadExportableViewFields_IsInstrumentedProperly_WhenCallThrowsException()
 		{
 			// arrange
-			_instrumentationMock.Setup(x => x.Execute(It.IsAny<Func<ViewFieldResponse[]>>()))
-				.Returns<Func<ViewFieldResponse[]>>(y => y.Invoke());
+			_instrumentationMock
+				.Setup(x => x.ExecuteAsync(It.IsAny<Func<Task<ViewFieldResponse[]>>>()))
+				.Returns<Func<Task<ViewFieldResponse[]>>>(y => y.Invoke());
 
 			_viewFieldManagerMock.Setup(x => x.ReadExportableViewFieldsAsync(_WORKSPACE_ID, _ARTIFACT_TYPE_ID))
 				.Throws<Exception>();
@@ -88,15 +90,16 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Repositori
 					nameof(IViewFieldManager),
 					nameof(IViewFieldManager.ReadExportableViewFieldsAsync)),
 				Times.Once);
-			_instrumentationMock.Verify(x => x.Execute(It.IsAny<Func<ViewFieldResponse[]>>()), Times.Once);
+			_instrumentationMock.Verify(x => x.ExecuteAsync(It.IsAny<Func<Task<ViewFieldResponse[]>>>()), Times.Once);
 		}
 
 		[Test]
 		public void ReadViewFieldIDsFromSearch_ReturnsProperResult_WhenCallIsSuccessful()
 		{
 			// arrange
-			_instrumentationMock.Setup(x => x.Execute(It.IsAny<Func<ViewFieldIDResponse[]>>()))
-				.Returns<Func<ViewFieldIDResponse[]>>(y => y.Invoke());
+			_instrumentationMock
+				.Setup(x => x.ExecuteAsync(It.IsAny<Func<Task<ViewFieldIDResponse[]>>>()))
+				.Returns<Func<Task<ViewFieldIDResponse[]>>>(y => y.Invoke());
 
 			var viewFieldIDResponse = new ViewFieldIDResponse();
 			ViewFieldIDResponse[] expectedResult = { viewFieldIDResponse };
@@ -119,7 +122,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Repositori
 					nameof(IViewFieldManager),
 					nameof(IViewFieldManager.ReadViewFieldIDsFromSearchAsync)),
 				Times.Once);
-			_instrumentationMock.Verify(x => x.Execute(It.IsAny<Func<ViewFieldIDResponse[]>>()), Times.Once);
+			_instrumentationMock.Verify(x => x.ExecuteAsync(It.IsAny<Func<Task<ViewFieldIDResponse[]>>>()), Times.Once);
 			actualResult.Length.Should().Be(1);
 			actualResult[0].Should().Be(expectedResult[0]);
 		}
@@ -128,8 +131,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Repositori
 		public void ReadViewFieldIDsFromSearch_IsInstrumentedProperly_WhenCallThrowsException()
 		{
 			// arrange
-			_instrumentationMock.Setup(x => x.Execute(It.IsAny<Func<ViewFieldIDResponse[]>>()))
-				.Returns<Func<ViewFieldIDResponse[]>>(y => y.Invoke());
+			_instrumentationMock
+				.Setup(x => x.ExecuteAsync(It.IsAny<Func<Task<ViewFieldIDResponse[]>>>()))
+				.Returns<Func<Task<ViewFieldIDResponse[]>>>(y => y.Invoke());
 
 			_viewFieldManagerMock
 				.Setup(x => x.ReadViewFieldIDsFromSearchAsync(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, _VIEW_ARTIFACT_ID))
@@ -150,15 +154,16 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Repositori
 					nameof(IViewFieldManager),
 					nameof(IViewFieldManager.ReadViewFieldIDsFromSearchAsync)),
 				Times.Once);
-			_instrumentationMock.Verify(x => x.Execute(It.IsAny<Func<ViewFieldIDResponse[]>>()), Times.Once);
+			_instrumentationMock.Verify(x => x.ExecuteAsync(It.IsAny<Func<Task<ViewFieldIDResponse[]>>>()), Times.Once);
 		}
 
 		[Test]
 		public void ReadViewFieldIDsFromProduction_ReturnsProperResult_WhenCallIsSuccessful()
 		{
 			// arrange
-			_instrumentationMock.Setup(x => x.Execute(It.IsAny<Func<ViewFieldIDResponse[]>>()))
-				.Returns<Func<ViewFieldIDResponse[]>>(y => y.Invoke());
+			_instrumentationMock
+				.Setup(x => x.ExecuteAsync(It.IsAny<Func<Task<ViewFieldIDResponse[]>>>()))
+				.Returns<Func<Task<ViewFieldIDResponse[]>>>(y => y.Invoke());
 
 			var viewFieldIDResponse = new ViewFieldIDResponse();
 			ViewFieldIDResponse[] expectedResult = { viewFieldIDResponse };
@@ -181,7 +186,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Repositori
 					nameof(IViewFieldManager),
 					nameof(IViewFieldManager.ReadViewFieldIDsFromProductionAsync)),
 				Times.Once);
-			_instrumentationMock.Verify(x => x.Execute(It.IsAny<Func<ViewFieldIDResponse[]>>()), Times.Once);
+			_instrumentationMock.Verify(x => x.ExecuteAsync(It.IsAny<Func<Task<ViewFieldIDResponse[]>>>()), Times.Once);
 			actualResult.Length.Should().Be(1);
 			actualResult[0].Should().Be(expectedResult[0]);
 		}
@@ -190,8 +195,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Repositori
 		public void ReadViewFieldIDsFromProduction_IsInstrumentedProperly_WhenCallThrowsException()
 		{
 			// arrange
-			_instrumentationMock.Setup(x => x.Execute(It.IsAny<Func<ViewFieldIDResponse[]>>()))
-				.Returns<Func<ViewFieldIDResponse[]>>(y => y.Invoke());
+			_instrumentationMock
+				.Setup(x => x.ExecuteAsync(It.IsAny<Func<Task<ViewFieldIDResponse[]>>>()))
+				.Returns<Func<Task<ViewFieldIDResponse[]>>>(y => y.Invoke());
 
 			_viewFieldManagerMock
 				.Setup(x => x.ReadViewFieldIDsFromProductionAsync(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, _VIEW_ARTIFACT_ID))
@@ -212,7 +218,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Repositori
 					nameof(IViewFieldManager),
 					nameof(IViewFieldManager.ReadViewFieldIDsFromProductionAsync)),
 				Times.Once);
-			_instrumentationMock.Verify(x => x.Execute(It.IsAny<Func<ViewFieldIDResponse[]>>()), Times.Once);
+			_instrumentationMock.Verify(x => x.ExecuteAsync(It.IsAny<Func<Task<ViewFieldIDResponse[]>>>()), Times.Once);
 		}
 	}
 }

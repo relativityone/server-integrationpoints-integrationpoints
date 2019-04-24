@@ -50,7 +50,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.StatisticsManager
 
 			_testCaseSettings.DocumentsTestData = DocumentTestDataBuilder.BuildTestData();
 
-			workspaceService.ImportData(WorkspaceArtifactId, _testCaseSettings.DocumentsTestData);
+			workspaceService.TryImportData(WorkspaceArtifactId, _testCaseSettings.DocumentsTestData);
 
 			_testCaseSettings.SavedSearchId = SavedSearch.CreateSavedSearch(WorkspaceArtifactId, "All documents");
 			_testCaseSettings.ViewId = workspaceService.GetView(WorkspaceArtifactId, "Documents");

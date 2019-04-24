@@ -10,7 +10,7 @@ using Relativity.Services.Exceptions;
 using Relativity.Services.InstanceSetting;
 using InstanceSetting = Relativity.Services.InstanceSetting.InstanceSetting;
 
-namespace kCura.IntegrationPoints.Data.Tests.Repositories
+namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 {
 	public class KeplerInstanceSettingRepositoryTests : TestBase
 	{

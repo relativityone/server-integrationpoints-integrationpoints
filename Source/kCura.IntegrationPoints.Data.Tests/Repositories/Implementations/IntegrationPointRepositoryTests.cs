@@ -15,7 +15,7 @@ using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
 using FieldType = kCura.IntegrationPoints.Contracts.Models.FieldType;
 
-namespace kCura.IntegrationPoints.Data.Tests.Repositories
+namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 {
 	[TestFixture]
 	public class IntegrationPointRepositoryTests

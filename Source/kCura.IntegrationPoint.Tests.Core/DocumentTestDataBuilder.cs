@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 					break;
 				case TestDataType.SmallWithoutFolderStructure:
 					foldersWithDocuments = GetDocumentsIntoRootFolder(Path.Combine(testDirectory, TestDataNativesPath), withNatives);
-					images = GetImageDataTableForAllNativesInGivenFolder(testDirectory, TestDataExtendedPath);
+					images = GetImageDataTableForAllNativesInGivenFolder(testDirectory, TestDataPath);
 					break;
 				case TestDataType.ModerateWithFoldersStructure:
 					foldersWithDocuments = GetFoldersWithDocumentsBasedOnDirectoryStructureOfNatives(Path.Combine(testDirectory, TestDataExtendedNativesPath), withNatives);
