@@ -202,7 +202,7 @@ timestamps
 					}
 					stage ('UI Tests')
 					{
-						updateChromeToLatestVersion()
+						updateChromeToLatestVersion(params.skipUITests)
 						timeout(time: 8, unit: 'HOURS')
 						{
 							runTests(params.skipUITests, "-ui", "UI", nightlyJobName)
@@ -476,8 +476,14 @@ def checkRelativityArtifacts(branch, version, type)
     return isTrue(powershell(returnStdout: true, script: "([System.IO.FileInfo]\"//bld-pkgs/Packages/Relativity/$branch/$version/MasterPackage/$type $version Relativity.exe\").Exists"))
 }
 
-def updateChromeToLatestVersion()
+def updateChromeToLatestVersion(Boolean skipTests)
 {
+	if(skipTests) 
+    { 
+        echo "SkipUITests is set to true - Skipping browser installation" 
+        return 
+    } 
+
 	try
     {
 		powershell """
