@@ -110,7 +110,6 @@
     <Compile Include="SharedLibrary\CaseManagerFactory.cs" />
     <Compile Include="ExportManagers\CoreAuditManager.cs" />
     <Compile Include="ExportManagers\CoreExportManager.cs" />
-    <Compile Include="ExportManagers\CoreProductionManager.cs" />
     <Compile Include="ExportManagers\CoreServiceFactory.cs" />
     <Compile Include="SharedLibrary\FactoryConfigBuilder.cs" />
     <Compile Include="SharedLibrary\ExportDataContext.cs" />

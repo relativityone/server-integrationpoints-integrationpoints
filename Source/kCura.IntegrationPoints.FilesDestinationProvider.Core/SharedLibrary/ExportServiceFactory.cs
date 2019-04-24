@@ -45,7 +45,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 					_viewFieldRepository, 
 					_fileFieldRepository, 
 					_fileRepository, 
-					exportDataContext.ExportFile, 
+					exportDataContext.ExportFile,
+					new WebApiServiceFactory(exportDataContext.ExportFile), 
 					_contextUser.ID
 				);
 			}

@@ -17,6 +17,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 		private readonly IFileFieldRepository _fileFieldRepository;
 		private readonly IFileRepository _fileRepository;
 		private readonly ExportFile _exportFile;
+		private readonly IServiceFactory _webApiServiceFactory;
 		private readonly int _contextUserId;
 
 		public CoreServiceFactory(
@@ -25,6 +26,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 			IFileFieldRepository fileFieldRepository, 
 			IFileRepository fileRepository, 
 			ExportFile exportFile,
+			IServiceFactory webApiServiceFactory,
 			int contextUserId)
 		{
 			_repositoryFactory = repositoryFactory;
@@ -33,6 +35,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 			_fileRepository = fileRepository;
 			_exportFile = exportFile;
 			_contextUserId = contextUserId;
+			_webApiServiceFactory = webApiServiceFactory;
 		}
 
 		public IAuditManager CreateAuditManager() => new CoreAuditManager(_repositoryFactory, _contextUserId);
@@ -48,7 +51,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 			_viewFieldRepository
 		);
 
-		public IProductionManager CreateProductionManager() => new CoreProductionManager(GetBaseServiceContext(_exportFile.CaseArtifactID));
+		public IProductionManager CreateProductionManager()
+		{
+			return _webApiServiceFactory.CreateProductionManager();
+		}
 
 		public IExportFileDownloader CreateExportFileDownloader()
 		{
