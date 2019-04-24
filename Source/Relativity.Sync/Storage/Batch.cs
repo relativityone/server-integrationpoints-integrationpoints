@@ -8,7 +8,6 @@ namespace Relativity.Sync.Storage
 {
 	internal sealed class Batch : IBatch
 	{
-		private int _syncConfigurationArtifactId;
 		private int _workspaceArtifactId;
 
 		private readonly ISourceServiceFactoryForAdmin _serviceFactory;
@@ -79,7 +78,6 @@ namespace Relativity.Sync.Storage
 
 		private async Task CreateAsync(int workspaceArtifactId, int syncConfigurationArtifactId, int totalItemsCount, int startingIndex)
 		{
-			_syncConfigurationArtifactId = syncConfigurationArtifactId;
 			_workspaceArtifactId = workspaceArtifactId;
 			TotalItemsCount = totalItemsCount;
 			StartingIndex = startingIndex;
@@ -94,7 +92,7 @@ namespace Relativity.Sync.Storage
 					},
 					ParentObject = new RelativityObjectRef
 					{
-						ArtifactID = _syncConfigurationArtifactId
+						ArtifactID = syncConfigurationArtifactId
 					},
 					FieldValues = new[]
 					{
@@ -134,7 +132,6 @@ namespace Relativity.Sync.Storage
 		private async Task<bool> ReadLastAsync(int workspaceArtifactId, int syncConfigurationArtifactId)
 		{
 			_workspaceArtifactId = workspaceArtifactId;
-			_syncConfigurationArtifactId = syncConfigurationArtifactId;
 
 			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
