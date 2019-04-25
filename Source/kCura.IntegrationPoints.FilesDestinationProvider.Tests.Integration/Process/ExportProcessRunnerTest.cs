@@ -155,8 +155,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		[SmokeTest]
 		[TestInQuarantine(TestQuarantineState.FailsContinuously,
 			@"REL-307438 - for all failing continuously,
-			  REL-307464 - instability of ItShouldExportImagesAsPdfs,
-			  REL-307466 - instability of ItShouldLogJobErrorForNegativeVolumeStartNumber")]
+			REL-307464 - instability of ItShouldExportImagesAsPdfs,
+			REL-307466 - instability of ItShouldLogJobErrorForNegativeVolumeStartNumber")]
 		[TestCaseSource(nameof(FlakyExportTestCaseSource))]
 		public void RunFlakyTestCase(IExportTestCase testCase)
 		{

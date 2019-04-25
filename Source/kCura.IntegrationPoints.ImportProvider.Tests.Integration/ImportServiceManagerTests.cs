@@ -207,8 +207,10 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 
         [Test]
 		[SmokeTest]
-		[TestInQuarantine(TestQuarantineState.FailsContinuously,
-						@"REL-307470 TODO: Broken test needs to be fixed!
+		[TestInQuarantine(TestQuarantineState.SeemsToBeStable,
+						@"Review 04.24 SeemsToBeStable,
+						Before: FailsContinuously 
+						REL-307470 TODO: Broken test needs to be fixed!
 						Ignore tests until verification mechanism will be fixed.
 						DocumentService.GetNativeMD5String(workspaceId, docResult)
 						needs to be reimplemented.")]
