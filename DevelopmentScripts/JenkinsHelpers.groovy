@@ -20,6 +20,7 @@ interface Constants
     final String ARTIFACTS_PATH = 'Artifacts'
     final String QUARANTINED_TESTS_CATEGORY = 'InQuarantine'
     final String INTEGRATION_TESTS_RESULTS_REPORT_PATH = "$ARTIFACTS_PATH/IntegrationTestsResults.xml"
+    final String UI_TESTS_RESULTS_REPORT_PATH = "$ARTIFACTS_PATH/UITestsResults.xml"
     final String INTEGRATION_TESTS_IN_QUARANTINE_RESULTS_REPORT_PATH = "$ARTIFACTS_PATH/QuarantineIntegrationTestsResults.xml"
     final String JEEVES_KNIFE_PATH = 'C:\\Python27\\Lib\\site-packages\\jeeves\\knife.rb'
 
@@ -346,13 +347,27 @@ def gatherTestStats()
             storeIntegrationTestsInQuarantineResults()
         }
 
+        ripPipelineState.numberOfFailedTests = 0
+        ripPipelineState.numberOfPassedTests = 0
+        ripPipelineState.numberOfSkippedTests = 0
+
         if (!params.skipIntegrationTests)
         {
-            ripPipelineState.numberOfFailedTests = getTestsStatistic('failed')
-            ripPipelineState.numberOfPassedTests = getTestsStatistic('passed')
-            ripPipelineState.numberOfSkippedTests = getTestsStatistic('skipped')
+            updateTestsNumbers(Constants.INTEGRATION_TESTS_RESULTS_REPORT_PATH)
+        }
+
+        if (!params.skipUITests)
+        {
+            updateTestsNumbers(Constants.UI_TESTS_RESULTS_REPORT_PATH)
         }
     }
+}
+
+def updateTestsNumbers(String reportPath)
+{
+    ripPipelineState.numberOfFailedTests += getTestsStatistic(reportPath, 'failed')
+    ripPipelineState.numberOfPassedTests += getTestsStatistic(reportPath, 'passed')
+    ripPipelineState.numberOfSkippedTests += getTestsStatistic(reportPath, 'skipped')
 }
 
 def publishToNuget()
@@ -869,15 +884,15 @@ private isQuarantine(testType)
 	return testType == TestType.integrationInQuarantine
 }
 
-private getTestsStatistic(String prop)
+private getTestsStatistic(String reportPath, String testResult)
 {
 	try
 	{
 		def cmd = ('''
 			[xml]$testResults = Get-Content '''
-			+ Constants.INTEGRATION_TESTS_RESULTS_REPORT_PATH
+			+ reportPath
 			+ '''; $testResults.'test-run'.'''
-			+ "'$prop'")
+			+ "'$testResult'")
 
 		echo "getTestsStatistic cmd: $cmd"
 		def stdout = powershell returnStdout: true, script: cmd
