@@ -1,15 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.Data.SqlClient;
 using NSubstitute;
+using NSubstitute.Extensions;
 using Relativity.API;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
-	public class DBContextMockBuilder
+	public static class DBContextMockBuilder
 	{
 		public static IDBContext Build(kCura.Data.RowDataGateway.BaseContext baseContext)
 		{
 			IDBContext context = Substitute.For<IDBContext>();
+			context.ServerName
+				.Returns(x => 
+					baseContext.ServerName
+				);
+
 
 			context
 				.When(x => x.BeginTransaction())
@@ -17,7 +23,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 					.BeginTransaction()
 				);
 
-			context.When(x => x.CommitTransaction())
+			context
+				.When(x => x.CommitTransaction())
 				.Do(x => baseContext
 					.CommitTransaction()
 				);
@@ -50,6 +57,21 @@ namespace kCura.IntegrationPoint.Tests.Core
 			context.ExecuteSqlStatementAsDataTable(Arg.Any<string>(), Arg.Any<IEnumerable<SqlParameter>>())
 				.Returns(x => baseContext
 					.ExecuteSqlStatementAsDataTable(
+						x.ArgAt<string>(0),
+						x.ArgAt<IEnumerable<SqlParameter>>(1)
+					)
+				);
+
+			context.ExecuteSQLStatementAsReader(Arg.Any<string>())
+				.Returns(x => baseContext
+					.ExecuteSQLStatementAsReader(
+						x.Arg<string>()
+					)
+				);
+
+			context.ExecuteSqlStatementAsScalar<int>(Arg.Any<string>(), Arg.Any<IEnumerable<SqlParameter>>())
+				.Returns(x => (int)baseContext
+					.ExecuteSqlStatementAsScalar(
 						x.ArgAt<string>(0),
 						x.ArgAt<IEnumerable<SqlParameter>>(1)
 					)
