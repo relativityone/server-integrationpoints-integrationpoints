@@ -72,14 +72,17 @@
     <Compile Include="Process\ExportProcessRunnerTests.cs" />
     <Compile Include="Process\VolumeInfoBuilderTests.cs" />
     <Compile Include="Logging\ExportUserNotificationTests.cs" />
+    <Compile Include="Repositories\FileFieldRepositoryTests.cs" />
     <Compile Include="Repositories\ViewFieldRepositoryTests.cs" />
     <Compile Include="Services\ArtifactTreeServiceTests.cs" />
     <Compile Include="Services\ExportInitProcessServiceTests.cs" />
     <Compile Include="Services\ViewServiceTests.cs" />
+    <Compile Include="SharedLibrary\CoreServiceFactoryTests.cs" />
     <Compile Include="SharedLibrary\ExportServiceFactoryTests.cs" />
     <Compile Include="SharedLibrary\ExtendedFieldNameProviderTests.cs" />
     <Compile Include="SharedLibrary\FactoryConfigBuilderTests.cs" />
     <Compile Include="SharedLibrary\StoppableExporterTests.cs" />
+    <Compile Include="Utilities\CommaSeparatedNumbersToArrayConverterTests.cs" />
     <Compile Include="Validation\Parts\DocumentExportSettingsValidatorTests.cs" />
     <Compile Include="Validation\Parts\ExportFileValidatorTests.cs" />
     <Compile Include="Validation\Parts\ExportNativeSettingsValidatorTests.cs" />
@@ -243,6 +246,17 @@
       <ItemGroup>
         <Reference Include="kCura.Relativity.Client">
           <HintPath>..\..\packages\kCura.Relativity.Client\lib\net462\kCura.Relativity.Client.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="LanguageExt.Core">
+          <HintPath>..\..\packages\LanguageExt.Core\lib\net45\LanguageExt.Core.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -602,6 +616,20 @@
       <ItemGroup>
         <Reference Include="Renci.SshNet">
           <HintPath>..\..\packages\SSH.NET\lib\net40\Renci.SshNet.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="mscorlib">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.ValueTuple">
+          <HintPath>..\..\packages\System.ValueTuple\lib\net461\System.ValueTuple.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

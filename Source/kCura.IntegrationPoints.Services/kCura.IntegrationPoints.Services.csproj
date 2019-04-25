@@ -51,20 +51,26 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Compile>
+    <Compile Include="Converters\InstallProviderDtoExtensions.cs" />
     <Compile Include="DocumentManager.cs" />
     <Compile Include="Extensions\IntegrationPointExtensions.cs" />
     <Compile Include="Extensions\IntegrationPointModelExtensions.cs" />
     <Compile Include="HealthChecks\SuccessHealthCheck.cs" />
     <Compile Include="Helpers\BackwardCompatibility.cs" />
     <Compile Include="Helpers\IBackwardCompatibility.cs" />
+    <Compile Include="Helpers\IIntegrationPointRuntimeServiceFactory.cs" />
     <Compile Include="Helpers\IntegrationPointRuntimeServiceFactory.cs" />
+    <Compile Include="Helpers\IPermissionRepositoryFactory.cs" />
     <Compile Include="Helpers\IRelativityManagerSoapFactory.cs" />
     <Compile Include="Helpers\PermissionModel.cs" />
     <Compile Include="Helpers\PermissionRepositoryFactory.cs" />
     <Compile Include="Helpers\RelativityManagerSoapFactory.cs" />
     <Compile Include="HealthChecks\IHealthCheck.cs" />
+    <Compile Include="Installers\Authentication\AuthTokenRegistration.cs" />
+    <Compile Include="Installers\Context\WorkspaceContextRegistration.cs" />
     <Compile Include="Installers\DocumentManagerInstaller.cs" />
     <Compile Include="Installers\HealthCheckInstaller.cs" />
+    <Compile Include="Installers\ProviderManager\ProviderInstallerAndUninstallerRegistration.cs" />
     <Compile Include="Installers\StatisticsManagerInstaller.cs" />
     <Compile Include="Installers\Installer.cs" />
     <Compile Include="Installers\IntegrationPointTypeManagerInstaller.cs" />
@@ -225,6 +231,17 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="LanguageExt.Core">
+          <HintPath>..\..\packages\LanguageExt.Core\lib\net45\LanguageExt.Core.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="Newtonsoft.Json">
           <HintPath>..\..\packages\Newtonsoft.Json\lib\net45\Newtonsoft.Json.dll</HintPath>
           <Private>True</Private>
@@ -304,6 +321,17 @@
       <ItemGroup>
         <Reference Include="Relativity.Toggles">
           <HintPath>..\..\packages\Relativity.Toggles\lib\net462\Relativity.Toggles.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="System.ValueTuple">
+          <HintPath>..\..\packages\System.ValueTuple\lib\net461\System.ValueTuple.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

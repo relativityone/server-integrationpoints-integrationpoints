@@ -4,7 +4,6 @@ using Castle.Windsor;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Services.Helpers;
 using kCura.IntegrationPoints.Services.Installers;
-using kCura.IntegrationPoints.Services.Interfaces.Private.Helpers;
 using kCura.IntegrationPoints.Services.Repositories;
 using Relativity.Logging;
 

@@ -86,7 +86,8 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		{
 			IRelativityObjectManager relativityObjectManager =
 				CreateRelativityObjectManager(workspaceArtifactId);
-			return new DestinationProviderRepository(relativityObjectManager);
+		    IAPILog logger = _helper.GetLoggerFactory().GetLogger();
+            return new DestinationProviderRepository(logger, relativityObjectManager);
 		}
 
 		public IDestinationWorkspaceRepository GetDestinationWorkspaceRepository(int sourceWorkspaceArtifactId)
@@ -298,12 +299,13 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return queryFieldLookupRepository;
 		}
 
-		public IFileRepository GetFileRepository(int workspaceArtifactId)
+		public IFileRepository GetFileRepository()
 		{
-			BaseServiceContext baseServiceContext = GetBaseServiceContextForWorkspace(workspaceArtifactId);
-
-			IFileRepository fileRepository = new FileRepository(baseServiceContext);
-			return fileRepository;
+			return new DisposableFileRepository(
+				_sourceServiceMgr, 
+				InstrumentationProvider,
+				(fileManager, instrumentationProvider) => new FileRepository(fileManager, instrumentationProvider)
+			);
 		}
 
 		public IAuditRepository GetAuditRepository(int workspaceArtifactId)

@@ -1,7 +1,9 @@
 CSharpGuidelineAnalyzer
+FluentAssertions
 kCura.Apps.Common.Utils
 kCura.EventHandler
 kCura.Relativity.Client
+LanguageExt.Core
 Moq
 NSubstitute
 NUnit

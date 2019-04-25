@@ -36,8 +36,8 @@ nuget Relativity.Telemetry.MetricsCollection ~> 2018.12.2 	//RelativityCore
 nuget Relativity.Vfs.IO ~> 1.0.24 							//RelativityCore
 nuget Relativity.Toggles ~> 1.0.0.100 						//RelativityCore
 nuget SystemWrapper.Wrappers ~> 0.25.0.186 					//RelativityCore
-nuget Relativity.Logging 2018.11.8	 						//RelativityCore
-nuget Relativity.Logging.Interfaces 2018.11.8
+nuget Relativity.Logging 2019.4.0	 						//RelativityCore
+nuget Relativity.Logging.Interfaces 2019.4.0
 nuget Relativity.Kepler ~> 1.0.1.609						
 nuget Relativity.Kepler.Client ~> 1.0.1.609
 nuget Castle.Windsor ~> 3.3.0						
@@ -59,7 +59,7 @@ nuget NUnit 3.4.1
 nuget Selenium.Support 3.141.0
 nuget DotNetSeleniumExtras.PageObjects 3.11.0
 nuget DotNetSeleniumExtras.WaitHelpers 3.11.0
-nuget Selenium.WebDriver.ChromeDriver 73.0.3683.68
+nuget Selenium.WebDriver.ChromeDriver 74.0.3729.6
 nuget Selenium.WebDriver.GeckoDriver 0.24.0
 
 //Analyzers

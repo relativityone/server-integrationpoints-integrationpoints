@@ -66,8 +66,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.RelatvityO
 
 		[Test]
 		[StressTest]
-		[TestInQuarantine(TestQuarantineState.ShowsInstability,
-			"REL-307474 - It randomly throws System.IO.IOException and System.InvalidOperationException from LINQ")]
+		[TestInQuarantine(TestQuarantineState.FailsContinuously,
+			@"Review: develop (07/04/2019 - 21/04/2019)
+			Status changed to: FailsContinuously from: ShowsInstability
+			REL-307474 - It randomly throws System.IO.IOException and System.InvalidOperationException from LINQ")]
 		public void ItShouldFetchDocumentWith1500MBExtractedText()
 		{
 			int bytes = GetBytesFromMB(1500);

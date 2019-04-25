@@ -49,13 +49,13 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="AssemblyExtension.cs" />
     <Compile Include="DataSourceProviderAttribute.cs" />
     <Compile Include="ImportSettingVisibility.cs" />
     <Compile Include="IProviderFactory.cs" />
     <Compile Include="IStartUp.cs" />
     <Compile Include="Models\FieldEntry.cs" />
     <Compile Include="Models\DataSourceProviderConfiguration.cs" />
+    <Compile Include="Properties\LocalAssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -64,6 +64,7 @@
     <Compile Include="Provider\IDataSourceProvider.cs" />
     <Compile Include="Provider\IFieldProvider.cs" />
     <Compile Include="Provider\ProviderReadDataException.cs" />
+    <Compile Include="SourceProvider.cs" />
     <Compile Include="SourceProviderConfiguration.cs" />
   </ItemGroup>
   <ItemGroup>

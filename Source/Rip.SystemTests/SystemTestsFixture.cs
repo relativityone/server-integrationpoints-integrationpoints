@@ -51,7 +51,7 @@ namespace Rip.SystemTests
 			var applicationManager = new RelativityApplicationManager(TestHelper);
 			if (SharedVariables.UseIpRapFile())
 			{
-				await applicationManager.ImportApplicationToLibrary();
+				await applicationManager.ImportRipToLibraryAsync();
 			}
 
 			applicationManager.InstallApplicationFromLibrary(WorkspaceID);

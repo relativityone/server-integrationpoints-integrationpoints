@@ -2,6 +2,7 @@
 using NSubstitute;
 using NUnit.Framework;
 using System;
+using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.Core.Tests.Monitoring.Instrumentation
 {
@@ -108,6 +109,62 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring.Instrumentation
 			// assert
 			_startedInstrumentation.Received(1).Failed(expectedException);
 		}
+
+		[Test]
+		public async Task ItShouldCallStartedBeforeAsyncFunctionWasExecuted()
+		{
+			//arrange
+			Func<int> func = ValidateFunctionExecution;
+
+			// act & assert
+			await _sut.ExecuteAsync(() => Task.Run(func));
+		}
+
+		[Test]
+		public async Task ItShouldCallCompletedWhenAsyncFunctionWasExecutedWithoutException()
+		{
+			// act
+			await _sut.ExecuteAsync(
+				() => Task.Run(() =>_EXPECTED_RETURN_VALUE)
+			);
+
+			// assert
+			_startedInstrumentation.Received(1).Completed();
+		}
+
+		[Test]
+		public async Task ItShouldReturnValueWhenAsyncFunctionWasExecutedWithoutException()
+		{
+			// act
+			int result = await _sut.ExecuteAsync(
+				() => Task.Run(() => _EXPECTED_RETURN_VALUE)
+			);
+
+			// assert
+			Assert.AreEqual(_EXPECTED_RETURN_VALUE, result);
+		}
+
+		[Test]
+		public async Task ItShouldCallFailedAndRethrowExceptionWhenAsyncFunctionThrowsException()
+		{
+			// arrange
+			var expectedException = new ArgumentException();
+			Func<string> throwExceptionFunc = () => throw expectedException;
+			// act
+			try
+			{
+				await _sut.ExecuteAsync(() => Task.Run(throwExceptionFunc));
+			}
+			catch (Exception ex)
+			{
+				// assert
+				Assert.AreEqual(expectedException, ex);
+			}
+
+			// assert
+			_startedInstrumentation.Received(1).Failed(expectedException);
+		}
+
 
 		private int ValidateFunctionExecution()
 		{

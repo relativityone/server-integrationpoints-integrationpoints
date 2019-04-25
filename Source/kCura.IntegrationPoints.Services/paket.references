@@ -2,6 +2,7 @@ AutoMapper
 Castle.Windsor
 CSharpGuidelineAnalyzer
 kCura.Relativity.Client
+LanguageExt.Core
 Newtonsoft.Json
 Relativity.API
 Relativity.Kepler

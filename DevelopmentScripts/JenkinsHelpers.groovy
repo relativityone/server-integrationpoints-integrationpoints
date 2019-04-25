@@ -951,7 +951,7 @@ private stashTestsOnlyArtifacts()
 {
 	stash includes: 'lib/UnitTests/**', name: 'testdlls'
     stash includes: 'DynamicallyLoadedDLLs/Search-Standard/*', name: 'dynamicallyLoadedDLLs'
-    stash includes: 'Applications/RelativityIntegrationPoints.Auto.rap', name: 'integrationPointsRap'
+    stash includes: 'Applications/*.rap', name: 'applicationRaps'
     stash includes: 'DevelopmentScripts/IntegrationPointsTests.*', name: 'nunitProjectFiles'
     stash includes: 'DevelopmentScripts/NUnit.ConsoleRunner/tools/*', name: 'nunitConsoleRunner'
     stash includes: 'DevelopmentScripts/NUnit.Extension.NUnitProjectLoader/tools/*', name: 'nunitProjectLoader'
@@ -961,7 +961,7 @@ private unstashTestsOnlyArtifacts()
 {
 	unstash 'testdlls'
     unstash 'dynamicallyLoadedDLLs'
-    unstash 'integrationPointsRap'
+    unstash 'applicationRaps'
     unstash 'nunitProjectFiles'
     unstash 'nunitConsoleRunner'
     unstash 'nunitProjectLoader'

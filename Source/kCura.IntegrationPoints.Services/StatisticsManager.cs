@@ -2,8 +2,8 @@
 using System.Threading.Tasks;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Data.Statistics;
+using kCura.IntegrationPoints.Services.Helpers;
 using kCura.IntegrationPoints.Services.Installers;
-using kCura.IntegrationPoints.Services.Interfaces.Private.Helpers;
 using Relativity.Logging;
 
 namespace kCura.IntegrationPoints.Services

@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Service.Export;
@@ -11,17 +12,30 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 {
 	public class CoreServiceFactory : IServiceFactory
 	{
-		private readonly ExportFile _exportFile;
-		private readonly int _contextUserId;
 		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly IViewFieldRepository _viewFieldRepository;
+		private readonly IFileFieldRepository _fileFieldRepository;
+		private readonly IFileRepository _fileRepository;
+		private readonly ExportFile _exportFile;
+		private readonly IServiceFactory _webApiServiceFactory;
+		private readonly int _contextUserId;
 
-		public CoreServiceFactory(IRepositoryFactory repositoryFactory, IViewFieldRepository viewFieldRepository, ExportFile exportFile, int contextUserId)
+		public CoreServiceFactory(
+			IRepositoryFactory repositoryFactory, 
+			IViewFieldRepository viewFieldRepository,
+			IFileFieldRepository fileFieldRepository, 
+			IFileRepository fileRepository, 
+			ExportFile exportFile,
+			IServiceFactory webApiServiceFactory,
+			int contextUserId)
 		{
 			_repositoryFactory = repositoryFactory;
 			_viewFieldRepository = viewFieldRepository;
+			_fileFieldRepository = fileFieldRepository;
+			_fileRepository = fileRepository;
 			_exportFile = exportFile;
 			_contextUserId = contextUserId;
+			_webApiServiceFactory = webApiServiceFactory;
 		}
 
 		public IAuditManager CreateAuditManager() => new CoreAuditManager(_repositoryFactory, _contextUserId);
@@ -30,9 +44,17 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 
 		public IFieldManager CreateFieldManager() => new CoreFieldManager(_repositoryFactory);
 
-		public ISearchManager CreateSearchManager() => new CoreSearchManager(GetBaseServiceContext(_exportFile.CaseArtifactID), _viewFieldRepository);
+		public ISearchManager CreateSearchManager() => new CoreSearchManager(
+			GetBaseServiceContext(_exportFile.CaseArtifactID), 
+			_fileRepository, 
+			_fileFieldRepository, 
+			_viewFieldRepository
+		);
 
-		public IProductionManager CreateProductionManager() => new CoreProductionManager(GetBaseServiceContext(_exportFile.CaseArtifactID));
+		public IProductionManager CreateProductionManager()
+		{
+			return _webApiServiceFactory.CreateProductionManager();
+		}
 
 		public IExportFileDownloader CreateExportFileDownloader()
 		{

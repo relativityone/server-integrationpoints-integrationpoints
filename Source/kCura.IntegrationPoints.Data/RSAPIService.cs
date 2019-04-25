@@ -15,7 +15,6 @@ namespace kCura.IntegrationPoints.Data
 		private readonly int _workspaceArtifactId;
 		private readonly IHelper _helper;
 
-		public virtual IGenericLibrary<SourceProvider> SourceProviderLibrary => GetGenericLibrary<SourceProvider>(ExecutionIdentity);
 		public virtual IGenericLibrary<JobHistoryError> JobHistoryErrorLibrary => GetGenericLibrary<JobHistoryError>(ExecutionIdentity);
 		public virtual IRelativityObjectManager RelativityObjectManager => GetRelativityObjectManager();
 

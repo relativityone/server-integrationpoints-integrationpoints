@@ -53,8 +53,10 @@
     <Compile Include="Helpers\FieldConverter.cs" />
     <Compile Include="Helpers\CoreViewFieldInfo.cs" />
     <Compile Include="Installer\ExportRepositoryRegistration.cs" />
+    <Compile Include="Repositories\Implementations\FileFieldRepository.cs" />
     <Compile Include="Repositories\Implementations\ViewFieldRepository.cs" />
     <Compile Include="Repositories\IViewFieldRepository.cs" />
+    <Compile Include="Repositories\IFileFieldRepository.cs" />
     <Compile Include="SharedLibrary\ExportServiceFactory.cs" />
     <Compile Include="SharedLibrary\IExportServiceFactory.cs" />
     <Compile Include="Extensions\ExportFileExtension.cs" />
@@ -108,7 +110,6 @@
     <Compile Include="SharedLibrary\CaseManagerFactory.cs" />
     <Compile Include="ExportManagers\CoreAuditManager.cs" />
     <Compile Include="ExportManagers\CoreExportManager.cs" />
-    <Compile Include="ExportManagers\CoreProductionManager.cs" />
     <Compile Include="ExportManagers\CoreServiceFactory.cs" />
     <Compile Include="SharedLibrary\FactoryConfigBuilder.cs" />
     <Compile Include="SharedLibrary\ExportDataContext.cs" />
@@ -119,6 +120,7 @@
     <Compile Include="SharedLibrary\IFactoryConfigBuilder.cs" />
     <Compile Include="SharedLibrary\ExporterFactoryConfig.cs" />
     <Compile Include="SharedLibrary\LoadFileExportConfig.cs" />
+    <Compile Include="Utilities\CommaSeparatedNumbersToArrayConverter.cs" />
     <Compile Include="Validation\Parts\DocumentExportSettingsValidator.cs" />
     <Compile Include="Validation\Parts\ExportFileValidator.cs" />
     <Compile Include="Validation\Parts\ExportFileValidatorBase.cs" />
@@ -142,7 +144,9 @@
     <Compile Include="Validation\FileDestinationProviderValidatorsFactory.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>

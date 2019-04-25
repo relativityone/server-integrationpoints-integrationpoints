@@ -28,13 +28,13 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		public static async Task<int> CreateViewAsync(int workspaceID, string viewName, int objectTypeId, IEnumerable<Guid> fieldsGuids)
+		public static async Task<int> CreateViewAsync(int workspaceID, string viewName, int objectTypeID, IEnumerable<Guid> fieldsGuids)
 		{
-			List<FieldRef> viewFields = await GetViewFieldsReferences(workspaceID, objectTypeId, fieldsGuids).ConfigureAwait(false);
+			List<FieldRef> viewFields = await GetViewFieldsReferences(workspaceID, objectTypeID, fieldsGuids).ConfigureAwait(false);
 
 			var viewToCreate = new global::Relativity.Services.View.View
 			{
-				ArtifactTypeID = objectTypeId,
+				ArtifactTypeID = objectTypeID,
 				Name = viewName,
 				Fields = viewFields,
 				VisibleInDropdown = true,

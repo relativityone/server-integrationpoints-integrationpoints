@@ -1,8 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Runtime.InteropServices;
-using kCura.EventHandler;
-using kCura.IntegrationPoints.Core.Extensions;
+﻿using kCura.EventHandler;
 using kCura.IntegrationPoints.Core.Helpers.Logging;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
@@ -13,15 +9,19 @@ using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Logging;
 using Relativity.API;
+using System;
+using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
 	public abstract class IntegrationPointMigrationEventHandlerBase : PostWorkspaceCreateEventHandlerBase
 	{
+		private ICaseServiceContext _workspaceTemplateServiceContext;
+		private IAPILog _loggerValue;
+
 		private const string _ACTION_NAME = "Post Workspace Create";
 		private readonly Lazy<IErrorService> _errorService;
-		private ICaseServiceContext _workspaceTemplateServiceContext;
-		private IAPILog _logger;
 
 		protected IntegrationPointMigrationEventHandlerBase()
 		{
@@ -33,30 +33,14 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		{
 			_errorService = new Lazy<IErrorService>(() => errorService);
 		}
-		private IAPILog Logger
-		{
-			get
-			{
-				if (_logger == null)
-				{
-					_logger = Helper.GetLoggerFactory().GetLogger().ForContext<DataTransferLocationMigrationEventHandler>();
-				}
 
-				return _logger;
-			}
-		}
+		protected IAPILog Logger =>
+			_loggerValue
+			?? (_loggerValue = Helper.GetLoggerFactory().GetLogger().ForContext<DataTransferLocationMigrationEventHandler>());
 
-		protected ICaseServiceContext WorkspaceTemplateServiceContext
-		{
-			get
-			{
-				if (_workspaceTemplateServiceContext == null)
-				{
-					_workspaceTemplateServiceContext = ServiceContextFactory.CreateCaseServiceContext(Helper, TemplateWorkspaceID);
-				}
-				return _workspaceTemplateServiceContext;
-			}
-		}
+		protected ICaseServiceContext WorkspaceTemplateServiceContext =>
+			_workspaceTemplateServiceContext
+			?? (_workspaceTemplateServiceContext = ServiceContextFactory.CreateCaseServiceContext(Helper, TemplateWorkspaceID));
 
 		public sealed override Response Execute()
 		{

@@ -122,7 +122,7 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Extensions\StringExtensionsTests.cs" />
+    <Compile Include="Extensions\EnumerableExtensionsTests.cs" />
     <Compile Include="Facades\Implementations\ObjectManagerFacadeDiscoverHeavyRequestDecoratorTests.cs" />
     <Compile Include="Facades\Implementations\ObjectManagerFacadeFactoryTests.cs" />
     <Compile Include="Facades\Implementations\ObjectManagerFacadeInstrumentationDecoratorTests.cs" />
@@ -132,24 +132,29 @@
     <Compile Include="Facades\Implementations\TestCases\CollectionFieldValueTestCases.cs" />
     <Compile Include="Helpers\MatchHelper.cs" />
     <Compile Include="Installers\RepositoryRegistrationTests.cs" />
-    <Compile Include="Repositories\AuditRepositoryTests.cs" />
-    <Compile Include="Repositories\CaseRepositoryTests.cs" />
-    <Compile Include="Repositories\FieldRepositoryTests.cs" />
-    <Compile Include="Repositories\FoundationRepositoryFactoryTests.cs" />
+    <Compile Include="Repositories\Implementations\AuditRepositoryTests.cs" />
+    <Compile Include="Repositories\Implementations\CaseRepositoryTests.cs" />
+    <Compile Include="Repositories\Implementations\DisposableFileRepositoryTests.cs" />
+    <Compile Include="Repositories\Implementations\FieldRepositoryTests.cs" />
+    <Compile Include="Repositories\Implementations\FileRepositoryTests.cs" />
+    <Compile Include="Repositories\Implementations\FoundationRepositoryFactoryTests.cs" />
+    <Compile Include="Repositories\Implementations\JobHistoryErrorRepositoryTests.cs" />
+    <Compile Include="Repositories\Implementations\KeplerArtifactGuidRepositoryTests.cs" />
+    <Compile Include="Repositories\Implementations\PermissionRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\RelativityObjectManagerTests.cs" />
-    <Compile Include="Repositories\IntegrationPointRepositoryTests.cs" />
-    <Compile Include="Repositories\KeplerInstanceSettingRepositoryTests.cs" />
-    <Compile Include="Repositories\ProductionRepositoryTests.cs" />
-    <Compile Include="Repositories\KeplerKeywordSearchRepositoryTests.cs" />
-    <Compile Include="Repositories\QueryFieldLookupRepositoryTests.cs" />
-    <Compile Include="Repositories\SavedSearchQueryRepositoryTests.cs" />
-    <Compile Include="Repositories\SourceJobRepositoryTests.cs" />
-    <Compile Include="Repositories\SourceWorkspaceRepositoryTests.cs" />
+    <Compile Include="Repositories\Implementations\IntegrationPointRepositoryTests.cs" />
+    <Compile Include="Repositories\Implementations\KeplerInstanceSettingRepositoryTests.cs" />
+    <Compile Include="Repositories\Implementations\ProductionRepositoryTests.cs" />
+    <Compile Include="Repositories\Implementations\KeplerKeywordSearchRepositoryTests.cs" />
+    <Compile Include="Repositories\Implementations\QueryFieldLookupRepositoryTests.cs" />
+    <Compile Include="Repositories\Implementations\SavedSearchQueryRepositoryTests.cs" />
+    <Compile Include="Repositories\Implementations\SourceJobRepositoryTests.cs" />
+    <Compile Include="Repositories\Implementations\SourceWorkspaceRepositoryTests.cs" />
     <Compile Include="RetryHandlerFactoryTests.cs" />
     <Compile Include="RetryHandlerTests.cs" />
     <Compile Include="RSAPIClient\RsapiClientWrapperWithLoggingTests.cs" />
     <Compile Include="SecretStore\SecretManagerTests.cs" />
-    <Compile Include="Repositories\KeplerWorkspaceRepositoryTests.cs" />
+    <Compile Include="Repositories\Implementations\KeplerWorkspaceRepositoryTests.cs" />
     <Compile Include="Statistics\DocumentTotalStatisticsTests.cs" />
     <Compile Include="Statistics\ImageFileSizeStatisticsTests.cs" />
     <Compile Include="Statistics\ImageTotalStatisticsTests.cs" />
@@ -159,9 +164,6 @@
     <Compile Include="BaseRdoTests.cs" />
     <Compile Include="PermissionServiceTest.cs" />
     <Compile Include="RelativityReaderBaseTests.cs" />
-    <Compile Include="Repositories\JobHistoryErrorRepositoryTests.cs" />
-    <Compile Include="Repositories\PermissionRepositoryTests.cs" />
-    <Compile Include="Repositories\KeplerArtifactGuidRepositoryTests.cs" />
     <Compile Include="StreamWrappers\AsciiToUnicodeStreamTests.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -231,6 +233,26 @@
         <Reference Include="kCura.Relativity.Client">
           <HintPath>..\..\packages\kCura.Relativity.Client\lib\net462\kCura.Relativity.Client.dll</HintPath>
           <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="LanguageExt.Core">
+          <HintPath>..\..\packages\LanguageExt.Core\lib\net45\LanguageExt.Core.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Microsoft.CSharp">
           <Paket>True</Paket>
         </Reference>
       </ItemGroup>
@@ -405,6 +427,20 @@
       <ItemGroup>
         <Reference Include="Relativity.Telemetry.DataContracts.Shared">
           <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="mscorlib">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.ValueTuple">
+          <HintPath>..\..\packages\System.ValueTuple\lib\net461\System.ValueTuple.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
