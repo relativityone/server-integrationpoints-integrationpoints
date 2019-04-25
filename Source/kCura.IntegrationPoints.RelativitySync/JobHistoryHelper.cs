@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data;
 using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.Executors.Validation;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
@@ -47,6 +49,15 @@ namespace kCura.IntegrationPoints.RelativitySync
 					}
 				};
 				await manager.UpdateAsync(job.WorkspaceId, updateRequest).ConfigureAwait(false);
+			}
+		}
+
+		public async Task MarkJobAsValidationFailedAsync(ValidationException ex, IExtendedJob job, IHelper helper)
+		{
+			using (IObjectManager manager = helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
+			{
+				await UpdateFinishedJobAsync(job, JobValidationFailedRef(), manager).ConfigureAwait(false);
+				await AddJobHistoryErrorAsync(job, manager, ex).ConfigureAwait(false);
 			}
 		}
 
@@ -137,7 +148,8 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 		private static async Task UpdateFinishedJobAsync(IExtendedJob job, ChoiceRef status, IObjectManager manager)
 		{
-			UpdateRequest updateRequest = new UpdateRequest
+			var currentTimeUtc = DateTime.UtcNow;
+			UpdateRequest jobHistoryUpdateRequest = new UpdateRequest
 			{
 				Object = JobHistoryRef(job),
 				FieldValues = new[]
@@ -150,11 +162,29 @@ namespace kCura.IntegrationPoints.RelativitySync
 					new FieldRefValuePair
 					{
 						Field = EndTimeRef(),
-						Value = DateTime.UtcNow
+						Value = currentTimeUtc
 					}
 				}
 			};
-			await manager.UpdateAsync(job.WorkspaceId, updateRequest).ConfigureAwait(false);
+			await manager.UpdateAsync(job.WorkspaceId, jobHistoryUpdateRequest).ConfigureAwait(false);
+			await UpdateIntegrationPointLastRuntimeUtc(job, manager, currentTimeUtc).ConfigureAwait(false);
+		}
+
+		private static async Task UpdateIntegrationPointLastRuntimeUtc(IExtendedJob job, IObjectManager manager, DateTime currentTimeUtc)
+		{
+			UpdateRequest integrationPointUpdateRequest = new UpdateRequest
+			{
+				Object = IntegrationPointRef(job),
+				FieldValues = new[]
+				{
+					new FieldRefValuePair
+					{
+						Field = LastRuntimeUtcRef(),
+						Value = currentTimeUtc
+					},
+				}
+			};
+			await manager.UpdateAsync(job.WorkspaceId, integrationPointUpdateRequest).ConfigureAwait(false);
 		}
 
 		private static FieldRef JobIdRef()
@@ -181,6 +211,22 @@ namespace kCura.IntegrationPoints.RelativitySync
 			};
 		}
 
+		private static RelativityObjectRef IntegrationPointRef(IExtendedJob job)
+		{
+			return new RelativityObjectRef
+			{
+				ArtifactID = job.IntegrationPointId
+			};
+		}
+
+		private static FieldRef LastRuntimeUtcRef()
+		{
+			return new FieldRef
+			{
+				Guid = Guid.Parse(IntegrationPointFieldGuids.LastRuntimeUTC)
+			};
+		}
+
 		private static FieldRef JobStatusRef()
 		{
 			return new FieldRef
@@ -194,6 +240,14 @@ namespace kCura.IntegrationPoints.RelativitySync
 			return new FieldRef
 			{
 				Guid = Guid.Parse(JobHistoryFieldGuids.StartTimeUTC)
+			};
+		}
+
+		private static ChoiceRef JobValidationFailedRef()
+		{
+			return new ChoiceRef()
+			{
+				Guid = JobStatusChoices.JobHistoryValidationFailed.Guids[0]
 			};
 		}
 

@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Adapters
 			return Task.FromResult(true);
 		}
 
-		public async Task ExecuteAsync(IValidationConfiguration configuration, CancellationToken token)
+		public async Task<ExecutionResult> ExecuteAsync(IValidationConfiguration configuration, CancellationToken token)
 		{
 			_logger.LogDebug("Validating IntegrationPoint");
 
@@ -39,6 +39,8 @@ namespace kCura.IntegrationPoints.RelativitySync.Adapters
 			ValidateIntegrationPoint();
 
 			_logger.LogDebug("Validation successful");
+
+			return ExecutionResult.Success();
 		}
 
 		private void ValidateIntegrationPoint()

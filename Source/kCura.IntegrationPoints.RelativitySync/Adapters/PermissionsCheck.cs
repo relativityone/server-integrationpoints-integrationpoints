@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Adapters
 			return Task.FromResult(true);
 		}
 
-		public async Task ExecuteAsync(IPermissionsCheckConfiguration configuration, CancellationToken token)
+		public async Task<ExecutionResult> ExecuteAsync(IPermissionsCheckConfiguration configuration, CancellationToken token)
 		{
 			_logger.LogDebug("Validating permissions");
 
@@ -39,6 +39,8 @@ namespace kCura.IntegrationPoints.RelativitySync.Adapters
 			ValidatePermissions(configuration);
 
 			_logger.LogDebug("Validation successful");
+			
+			return ExecutionResult.Success();
 		}
 
 		private void ValidatePermissions(IPermissionsCheckConfiguration configuration)

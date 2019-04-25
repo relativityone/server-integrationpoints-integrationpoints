@@ -18,8 +18,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			_repositoryFactory = repositoryFactory;
 		}
 
-		public SourceWorkspaceDTO CreateSourceWorkspaceDto(int destinationWorkspaceArtifactId, int sourceWorkspaceArtifactId, int? federatedInstanceArtifactId,
-			int sourceWorkspaceDescriptorArtifactTypeId)
+		public SourceWorkspaceDTO CreateSourceWorkspaceDto(int destinationWorkspaceArtifactId, int sourceWorkspaceArtifactId, int? federatedInstanceArtifactId)
 		{
 			_sourceWorkspaceRepository = _repositoryFactory.GetSourceWorkspaceRepository(destinationWorkspaceArtifactId);
 			IWorkspaceRepository workspaceRepository = _repositoryFactory.GetSourceWorkspaceRepository();
@@ -37,9 +36,9 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 			if (sourceWorkspaceDto == null)
 			{
-				return CreateSourceWorkspaceDto(sourceWorkspaceArtifactId, sourceWorkspaceDescriptorArtifactTypeId, sourceWorkspaceName, workspaceDto.Name, currentInstanceName);
+				return CreateSourceWorkspaceDto(sourceWorkspaceArtifactId, sourceWorkspaceName, workspaceDto.Name, currentInstanceName);
 			}
-			return UpdateSourceWorkspaceDto(sourceWorkspaceDto, sourceWorkspaceDescriptorArtifactTypeId, workspaceDto.Name, sourceWorkspaceName, currentInstanceName);
+			return UpdateSourceWorkspaceDto(sourceWorkspaceDto, workspaceDto.Name, sourceWorkspaceName, currentInstanceName);
 		}
 
 		private string GenerateSourceWorkspaceName(string instanceName, string workspaceName, int workspaceArtifactId)
@@ -56,13 +55,12 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			return name;
 		}
 
-		private SourceWorkspaceDTO CreateSourceWorkspaceDto(int sourceWorkspaceArtifactId, int sourceWorkspaceDescriptorArtifactTypeId, string sourceWorkspaceName,
+		private SourceWorkspaceDTO CreateSourceWorkspaceDto(int sourceWorkspaceArtifactId, string sourceWorkspaceName,
 			string workspaceName, string currentInstanceName)
 		{
 			var sourceWorkspaceDto = new SourceWorkspaceDTO
 			{
 				ArtifactId = -1,
-				ArtifactTypeId = sourceWorkspaceDescriptorArtifactTypeId,
 				Name = sourceWorkspaceName,
 				SourceCaseArtifactId = sourceWorkspaceArtifactId,
 				SourceCaseName = workspaceName,
@@ -74,10 +72,8 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			return sourceWorkspaceDto;
 		}
 
-		private SourceWorkspaceDTO UpdateSourceWorkspaceDto(SourceWorkspaceDTO sourceWorkspaceDto, int sourceWorkspaceDescriptorArtifactTypeId, string workspaceName,
-			string sourceWorkspaceName, string currentInstanceName)
+		private SourceWorkspaceDTO UpdateSourceWorkspaceDto(SourceWorkspaceDTO sourceWorkspaceDto, string workspaceName, string sourceWorkspaceName, string currentInstanceName)
 		{
-			sourceWorkspaceDto.ArtifactTypeId = sourceWorkspaceDescriptorArtifactTypeId;
 			// Check to see if instance should be updated
 			if (sourceWorkspaceDto.SourceCaseName != workspaceName || sourceWorkspaceDto.SourceInstanceName != currentInstanceName)
 			{

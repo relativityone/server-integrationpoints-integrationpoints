@@ -17,9 +17,9 @@ namespace kCura.IntegrationPoints.RelativitySync.Adapters
 			return Task.FromResult(false);
 		}
 
-		public Task ExecuteAsync(IDataDestinationFinalizationConfiguration configuration, CancellationToken token)
+		public Task<ExecutionResult> ExecuteAsync(IDataDestinationFinalizationConfiguration configuration, CancellationToken token)
 		{
-			return Task.CompletedTask;
+			return Task.FromResult(ExecutionResult.Success());
 		}
 	}
 }
