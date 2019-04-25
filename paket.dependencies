@@ -3,7 +3,7 @@ framework: auto-detect
 source https://proget.kcura.corp/nuget/NuGet
 
 nuget Relativity ~> 10.2.0
-nuget Relativity.ImportExport 10.2.0
+nuget Relativity.ImportExport 10.2.69.1
 nuget Relativity.API ~> 10.2.0
 nuget Relativity.Kepler ~> 1.0.0
 nuget Relativity.OAuth2Client ~> 1.0.0
