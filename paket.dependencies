@@ -4,6 +4,7 @@ source https://proget.kcura.corp/nuget/NuGet
 
 nuget Relativity.API ~> 10.2
 nuget Relativity.Kepler ~> 1.0.1.589
+nuget Relativity.ImportExport ~> 10.2
 nuget Relativity.OAuth2Client 1.0.27
 nuget Relativity.Platform.Keywords ~> 10.2
 nuget Relativity.Services.Interfaces ~> 10.2
