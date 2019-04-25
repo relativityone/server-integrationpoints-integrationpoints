@@ -237,6 +237,9 @@
     <Compile Include="Extensions\ChoiceExtensions.cs" />
     <Compile Include="GetArtifactForMassAction.cs" />
     <Compile Include="IEddsDBContext.cs" />
+    <Compile Include="StreamWrappers\AsciiToUnicodeStream.cs" />
+    <Compile Include="StreamWrappers\SelfDisposingStream.cs" />
+    <Compile Include="StreamWrappers\SelfRecreatingStream.cs" />
     <Compile Include="WorkspaceContext.cs" />
     <Compile Include="Extensions\DBContextExtensions.cs" />
     <Compile Include="GetObjectBase.cs" />

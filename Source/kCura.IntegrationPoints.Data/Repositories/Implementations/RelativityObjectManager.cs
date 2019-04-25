@@ -6,9 +6,11 @@ using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Data.StreamWrappers;
 using Relativity.Kepler.Transport;
 using FieldRef = Relativity.Services.Objects.DataContracts.FieldRef;
 using QueryResult = Relativity.Services.Objects.DataContracts.QueryResult;
@@ -343,24 +345,27 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				executionIdentity: executionIdentity);
 		}
 
-		public Task<System.IO.Stream> StreamLongTextAsync(
+		public Stream StreamLongText(
 			int relativityObjectArtifactId,
 			FieldRef longTextFieldRef,
+			bool isUnicode,
 			ExecutionIdentity executionIdentity)
 		{
 			try
 			{
-				using (IObjectManagerFacade client = _objectManagerFacadeFactory.Create(executionIdentity))
+				Stream innerStream =
+					new SelfRecreatingStream(
+						() => GetLongTextStreamAsync(relativityObjectArtifactId, longTextFieldRef, executionIdentity).GetAwaiter().GetResult(), 
+						_logger);
+				if (isUnicode)
 				{
-					var exportObject = new RelativityObjectRef() {ArtifactID = relativityObjectArtifactId};
-					IKeplerStream keplerStream = client.StreamLongTextAsync(
-							_workspaceArtifactId,
-							exportObject,
-							longTextFieldRef)
-						.GetAwaiter()
-						.GetResult();
-					return keplerStream.GetStreamAsync();
+					innerStream = new AsciiToUnicodeStream(innerStream);
 				}
+				var selfDisposingStream = 
+					new SelfDisposingStream(
+						innerStream,
+						_logger);
+				return selfDisposingStream;
 			}
 			catch (IntegrationPointsException)
 			{
@@ -368,7 +373,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 			catch (Exception ex)
 			{
-				string message = GetStreamLongTextAsyncErrorMessage(
+				string message = GetStreamLongTextErrorMessage(
 					_workspaceArtifactId,
 					relativityObjectArtifactId,
 					longTextFieldRef,
@@ -378,14 +383,32 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		private string GetStreamLongTextAsyncErrorMessage(
+		private Task<Stream> GetLongTextStreamAsync(
+			int relativityObjectArtifactId,
+			FieldRef longTextFieldRef,
+			ExecutionIdentity executionIdentity)
+		{
+			using (IObjectManagerFacade client = _objectManagerFacadeFactory.Create(executionIdentity))
+			{
+				var exportObject = new RelativityObjectRef() { ArtifactID = relativityObjectArtifactId };
+				IKeplerStream keplerStream = client.StreamLongTextAsync(
+						_workspaceArtifactId,
+						exportObject,
+						longTextFieldRef)
+					.GetAwaiter()
+					.GetResult();
+				return keplerStream.GetStreamAsync();
+			}
+		}
+
+		private string GetStreamLongTextErrorMessage(
 			int workspaceArtifactID,
 			int relativityObjectArtifactId,
 			FieldRef longTextFieldRef,
 			ExecutionIdentity executionIdentity)
 		{
 			var msgBuilder = new StringBuilder();
-			msgBuilder.Append($"Error occurred when calling {nameof(StreamLongTextAsync)} method. ");
+			msgBuilder.Append($"Error occurred when calling {nameof(StreamLongText)} method. ");
 			msgBuilder.Append($"Workspace: ({workspaceArtifactID}) ");
 			msgBuilder.Append($"ExportObject artifact id: ({relativityObjectArtifactId}) ");
 			msgBuilder.Append($"Long text field ({longTextFieldRef?.Name}) artifact id: ({longTextFieldRef?.ArtifactID}) ");
