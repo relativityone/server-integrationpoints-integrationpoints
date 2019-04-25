@@ -135,7 +135,7 @@ namespace Relativity.Sync.Executors.Validation
 			return validationMessage;
 		}
 
-		private async Task<IList<int>> GetMissingFieldsAsync(IProxyFactory proxyFactory, IList<int> fieldIds, int workspaceArtifactId, CancellationToken token)
+		private static async Task<IList<int>> GetMissingFieldsAsync(IProxyFactory proxyFactory, IList<int> fieldIds, int workspaceArtifactId, CancellationToken token)
 		{
 			string fieldArtifactIds = string.Join(",", fieldIds);
 			using (IObjectManager objectManager = await proxyFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))

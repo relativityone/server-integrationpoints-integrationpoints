@@ -188,7 +188,7 @@ namespace Relativity.Sync.Storage
 			}
 		}
 
-		private FieldRef[] GetFieldsToRead()
+		private static FieldRef[] GetFieldsToRead()
 		{
 			return new[]
 			{
