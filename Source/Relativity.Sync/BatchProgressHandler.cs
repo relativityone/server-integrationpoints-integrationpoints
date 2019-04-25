@@ -16,12 +16,14 @@ namespace Relativity.Sync
 
 		private void HandleProcessProgress(FullStatus status)
 		{
-			int totalProcessedRecords = (int)status.TotalRecordsProcessed;
+			int totalProcessedRecords = (int)status.TotalRecordsProcessed; // completed + failed records
+			int recordsWithErrors = (int)status.TotalRecordsProcessedWithErrors;
+			int completedRecords = _batch.TotalItemsCount - recordsWithErrors;
 			const int percentage = 100;
 			double progress = (double)totalProcessedRecords / _batch.TotalItemsCount * percentage;
 
-			Task setCompletedItems = _batch.SetTransferredItemsCountAsync(totalProcessedRecords);
-			Task setFailedItems = _batch.SetFailedItemsCountAsync((int)status.TotalRecordsProcessedWithErrors);
+			Task setCompletedItems = _batch.SetTransferredItemsCountAsync(completedRecords);
+			Task setFailedItems = _batch.SetFailedItemsCountAsync(recordsWithErrors);
 			Task setProgress = _batch.SetProgressAsync(progress);
 
 			Task.WaitAll(setCompletedItems, setFailedItems, setProgress);
