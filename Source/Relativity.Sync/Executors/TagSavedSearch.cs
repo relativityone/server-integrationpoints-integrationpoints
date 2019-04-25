@@ -77,7 +77,7 @@ namespace Relativity.Sync.Executors
 			return conditionCollection;
 		}
 
-		private CriteriaBase CreateConditionForMultiObject(Guid fieldGuid, int fieldArtifactId)
+		private static CriteriaBase CreateConditionForMultiObject(Guid fieldGuid, int fieldArtifactId)
 		{
 			var fieldIdentifier = new FieldRef(new List<Guid> { fieldGuid });
 
