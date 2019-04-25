@@ -16,6 +16,9 @@ namespace Relativity.Sync
 
 		private void HandleProcessProgress(FullStatus status)
 		{
+			// Currently IAPI reports wrong number of records processed, records with errors, and total number of records. 
+			// Related Jira item: REL-286003
+
 			int totalRecordsProcessed = (int)status.TotalRecordsProcessed; // completed + failed records
 			int recordsWithErrors = (int)status.TotalRecordsProcessedWithErrors;
 			int completedRecords = totalRecordsProcessed - recordsWithErrors;
