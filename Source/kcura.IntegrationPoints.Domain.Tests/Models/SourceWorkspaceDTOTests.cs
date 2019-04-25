@@ -88,9 +88,7 @@ namespace kCura.IntegrationPoints.Domain.Tests.Models
 		[TestCase]
 		public void ItShouldReturn_CorrectObjectTypeRef()
 		{
-			int artifactTypeId = 463;
 			var dto = new SourceWorkspaceDTO();
-			dto.ArtifactTypeId = artifactTypeId;
 
 			ObjectTypeRef objectType = dto.ObjectTypeRef;
 			Assert.AreEqual(SourceWorkspaceDTO.ObjectTypeGuid, objectType.Guid);
