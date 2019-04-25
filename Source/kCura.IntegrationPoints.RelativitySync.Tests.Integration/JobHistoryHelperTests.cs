@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.Executors.Validation;
 
 namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 {
@@ -50,7 +51,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			await _instance.UpdateJobStatusAsync(status, job.Object, Helper).ConfigureAwait(false);
 
 			// ASSERT
-			IList<JobHistory> jobHistories = Container.Resolve<IJobHistoryService>().GetJobHistory(new[] {_jobHistory.ArtifactId});
+			IList<JobHistory> jobHistories = Container.Resolve<IJobHistoryService>().GetJobHistory(new[] { _jobHistory.ArtifactId });
 			Assert.AreEqual(jobHistories.Count, 1);
 			Assert.AreEqual(jobHistories[0].JobStatus.Name, JobStatusChoices.JobHistoryProcessing.Name);
 		}
@@ -68,7 +69,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			await _instance.UpdateJobStatusAsync(status, job.Object, Helper).ConfigureAwait(false);
 
 			// ASSERT
-			IList<JobHistory> jobHistories = Container.Resolve<IJobHistoryService>().GetJobHistory(new[] {_jobHistory.ArtifactId});
+			IList<JobHistory> jobHistories = Container.Resolve<IJobHistoryService>().GetJobHistory(new[] { _jobHistory.ArtifactId });
 			Assert.AreEqual(jobHistories.Count, 1);
 			Assert.AreEqual(jobHistories[0].JobStatus.Name, JobStatusChoices.JobHistoryValidating.Name);
 		}
@@ -78,16 +79,36 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 		{
 			Mock<IExtendedJob> job = new Mock<IExtendedJob>();
 			job.Setup(x => x.JobHistoryId).Returns(_jobHistory.ArtifactId);
+			job.Setup(x => x.IntegrationPointId).Returns(_jobHistory.IntegrationPoint[0]);
 			job.Setup(x => x.WorkspaceId).Returns(WorkspaceArtifactId);
 
 			// ACT
 			await _instance.MarkJobAsStoppedAsync(job.Object, Helper).ConfigureAwait(false);
 
 			// ASSERT
-			IList<JobHistory> jobHistories = Container.Resolve<IJobHistoryService>().GetJobHistory(new[] {_jobHistory.ArtifactId});
+			IList<JobHistory> jobHistories = Container.Resolve<IJobHistoryService>().GetJobHistory(new[] { _jobHistory.ArtifactId });
 			Assert.AreEqual(jobHistories.Count, 1);
 			Assert.IsTrue(jobHistories[0].EndTimeUTC.HasValue);
 			Assert.AreEqual(jobHistories[0].JobStatus.Name, JobStatusChoices.JobHistoryStopped.Name);
+		}
+
+		[Test]
+		public async Task ItShouldMarkJobAsValidationFailed()
+		{
+			Mock<IExtendedJob> job = new Mock<IExtendedJob>();
+			job.Setup(x => x.JobHistoryId).Returns(_jobHistory.ArtifactId);
+			job.Setup(x => x.IntegrationPointId).Returns(_jobHistory.IntegrationPoint[0]);
+			job.Setup(x => x.WorkspaceId).Returns(WorkspaceArtifactId);
+			ValidationException exception = new ValidationException(new ValidationResult() { IsValid = false });
+
+			// ACT
+			await _instance.MarkJobAsValidationFailedAsync(exception, job.Object, Helper).ConfigureAwait(false);
+
+			// ASSERT
+			IList<JobHistory> jobHistories = Container.Resolve<IJobHistoryService>().GetJobHistory(new[] { _jobHistory.ArtifactId });
+			Assert.AreEqual(jobHistories.Count, 1);
+			Assert.IsTrue(jobHistories[0].EndTimeUTC.HasValue);
+			Assert.AreEqual(jobHistories[0].JobStatus.Name, JobStatusChoices.JobHistoryValidationFailed.Name);
 		}
 
 		[Test]
@@ -104,7 +125,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			await _instance.MarkJobAsStartedAsync(job.Object, Helper).ConfigureAwait(false);
 
 			// ASSERT
-			IList<JobHistory> jobHistories = Container.Resolve<IJobHistoryService>().GetJobHistory(new[] {_jobHistory.ArtifactId});
+			IList<JobHistory> jobHistories = Container.Resolve<IJobHistoryService>().GetJobHistory(new[] { _jobHistory.ArtifactId });
 			Assert.AreEqual(jobHistories.Count, 1);
 			Assert.IsTrue(jobHistories[0].StartTimeUTC.HasValue);
 			Assert.AreEqual(jobHistories[0].JobID, jobId.ToString());
@@ -115,13 +136,14 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 		{
 			Mock<IExtendedJob> job = new Mock<IExtendedJob>();
 			job.Setup(x => x.JobHistoryId).Returns(_jobHistory.ArtifactId);
+			job.Setup(x => x.IntegrationPointId).Returns(_jobHistory.IntegrationPoint[0]);
 			job.Setup(x => x.WorkspaceId).Returns(WorkspaceArtifactId);
 
 			// ACT
 			await _instance.MarkJobAsCompletedAsync(job.Object, Helper).ConfigureAwait(false);
 
 			// ASSERT
-			IList<JobHistory> jobHistories = Container.Resolve<IJobHistoryService>().GetJobHistory(new[] {_jobHistory.ArtifactId});
+			IList<JobHistory> jobHistories = Container.Resolve<IJobHistoryService>().GetJobHistory(new[] { _jobHistory.ArtifactId });
 			Assert.AreEqual(jobHistories.Count, 1);
 			Assert.IsTrue(jobHistories[0].EndTimeUTC.HasValue);
 			Assert.AreEqual(jobHistories[0].JobStatus.Name, JobStatusChoices.JobHistoryCompleted.Name);
@@ -132,6 +154,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 		{
 			Mock<IExtendedJob> job = new Mock<IExtendedJob>();
 			job.Setup(x => x.JobHistoryId).Returns(_jobHistory.ArtifactId);
+			job.Setup(x => x.IntegrationPointId).Returns(_jobHistory.IntegrationPoint[0]);
 			job.Setup(x => x.WorkspaceId).Returns(WorkspaceArtifactId);
 
 			CreateJobHistoryError(_jobHistory.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew, ErrorTypeChoices.JobHistoryErrorItem);
@@ -140,7 +163,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			await _instance.MarkJobAsCompletedAsync(job.Object, Helper).ConfigureAwait(false);
 
 			// ASSERT
-			IList<JobHistory> jobHistories = Container.Resolve<IJobHistoryService>().GetJobHistory(new[] {_jobHistory.ArtifactId});
+			IList<JobHistory> jobHistories = Container.Resolve<IJobHistoryService>().GetJobHistory(new[] { _jobHistory.ArtifactId });
 			Assert.AreEqual(jobHistories.Count, 1);
 			Assert.IsTrue(jobHistories[0].EndTimeUTC.HasValue);
 			Assert.AreEqual(jobHistories[0].JobStatus.Name, JobStatusChoices.JobHistoryCompletedWithErrors.Name);
@@ -151,6 +174,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 		{
 			Mock<IExtendedJob> job = new Mock<IExtendedJob>();
 			job.Setup(x => x.JobHistoryId).Returns(_jobHistory.ArtifactId);
+			job.Setup(x => x.IntegrationPointId).Returns(_jobHistory.IntegrationPoint[0]);
 			job.Setup(x => x.WorkspaceId).Returns(WorkspaceArtifactId);
 
 
@@ -160,7 +184,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			await _instance.MarkJobAsFailedAsync(job.Object, exception, Helper).ConfigureAwait(false);
 
 			// ASSERT
-			IList<JobHistory> jobHistories = Container.Resolve<IJobHistoryService>().GetJobHistory(new[] {_jobHistory.ArtifactId});
+			IList<JobHistory> jobHistories = Container.Resolve<IJobHistoryService>().GetJobHistory(new[] { _jobHistory.ArtifactId });
 			Assert.AreEqual(jobHistories.Count, 1);
 			Assert.IsTrue(jobHistories[0].EndTimeUTC.HasValue);
 			Assert.AreEqual(jobHistories[0].JobStatus.Name, JobStatusChoices.JobHistoryErrorJobFailed.Name);
@@ -203,7 +227,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 						Guid = Guid.Parse(JobHistoryErrorFieldGuids.Error)
 					}
 				},
-				Condition = CreateCondition(new[] {jobHistoryArtifactId})
+				Condition = CreateCondition(new[] { jobHistoryArtifactId })
 			};
 			return relativityObjectManager.Query<JobHistoryError>(queryRequest);
 		}

@@ -172,6 +172,8 @@
           <Assembly>lib\UnitTests\Relativity.Productions.Services.Interfaces.dll</Assembly>
           <Assembly>lib\UnitTests\LanguageExt.Core.dll</Assembly>
           <Assembly>lib\UnitTests\System.ValueTuple.dll</Assembly>
+          <Assembly>lib\UnitTests\SexyProxy.dll</Assembly>
+          <Assembly>lib\UnitTests\SexyProxy.Emit.dll</Assembly>
         </Assemblies>
         <ResourceFiles />
         <CustomPages>

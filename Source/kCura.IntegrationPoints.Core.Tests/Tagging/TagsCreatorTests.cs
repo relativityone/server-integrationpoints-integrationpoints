@@ -41,22 +41,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 			int sourceWorkspaceDescriptorArtifactTypeId = 625549;
 			int sourceJobDescriptorArtifactTypeId = 801242;
 
-			var sourceWorkspaceDto = new SourceWorkspaceDTO
-			{
-				ArtifactTypeId = 10,
-				ArtifactId = 831219
-			};
-
+			var sourceWorkspaceDto = new SourceWorkspaceDTO { ArtifactId = 831219 };
 			var sourceJobDto = new SourceJobDTO();
 
 			_sourceWorkspaceRdoInitializer.InitializeWorkspaceWithSourceWorkspaceRdo(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId)
 				.Returns(sourceWorkspaceDescriptorArtifactTypeId);
-			_sourceWorkspaceManager.CreateSourceWorkspaceDto(destinationWorkspaceArtifactId, sourceWorkspaceArtifactId, federatedInstanceArtifactId, sourceWorkspaceDescriptorArtifactTypeId)
+			_sourceWorkspaceManager.CreateSourceWorkspaceDto(destinationWorkspaceArtifactId, sourceWorkspaceArtifactId, federatedInstanceArtifactId)
 				.Returns(sourceWorkspaceDto);
 
 			_sourceJobRdoInitializer.InitializeWorkspaceWithSourceJobRdo(destinationWorkspaceArtifactId, sourceWorkspaceDto.ArtifactTypeId).Returns(sourceJobDescriptorArtifactTypeId);
-			_sourceJobManager.CreateSourceJobDto(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, jobHistoryArtifactId, sourceWorkspaceDto.ArtifactId,
-					sourceJobDescriptorArtifactTypeId)
+			_sourceJobManager.CreateSourceJobDto(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, jobHistoryArtifactId, sourceWorkspaceDto.ArtifactId)
 				.Returns(sourceJobDto);
 
 			// ACT
@@ -68,11 +62,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 
 			_sourceWorkspaceRdoInitializer.Received(1).InitializeWorkspaceWithSourceWorkspaceRdo(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId);
 			_sourceWorkspaceManager.Received(1)
-				.CreateSourceWorkspaceDto(destinationWorkspaceArtifactId, sourceWorkspaceArtifactId, federatedInstanceArtifactId, sourceWorkspaceDescriptorArtifactTypeId);
+				.CreateSourceWorkspaceDto(destinationWorkspaceArtifactId, sourceWorkspaceArtifactId, federatedInstanceArtifactId);
 
 			_sourceJobRdoInitializer.Received(1).InitializeWorkspaceWithSourceJobRdo(destinationWorkspaceArtifactId, sourceWorkspaceDto.ArtifactTypeId);
 			_sourceJobManager.Received(1)
-				.CreateSourceJobDto(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, jobHistoryArtifactId, sourceWorkspaceDto.ArtifactId, sourceJobDescriptorArtifactTypeId);
+				.CreateSourceJobDto(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, jobHistoryArtifactId, sourceWorkspaceDto.ArtifactId);
 		}
 	}
 }

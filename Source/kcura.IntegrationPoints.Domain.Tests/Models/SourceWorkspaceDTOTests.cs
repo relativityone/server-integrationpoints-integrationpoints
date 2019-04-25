@@ -93,7 +93,7 @@ namespace kCura.IntegrationPoints.Domain.Tests.Models
 			dto.ArtifactTypeId = artifactTypeId;
 
 			ObjectTypeRef objectType = dto.ObjectTypeRef;
-			Assert.AreEqual(artifactTypeId, objectType.ArtifactTypeID);
+			Assert.AreEqual(SourceWorkspaceDTO.ObjectTypeGuid, objectType.Guid);
 		}
 
 		[TestCase]

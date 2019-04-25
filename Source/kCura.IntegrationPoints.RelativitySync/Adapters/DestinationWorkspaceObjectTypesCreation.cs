@@ -22,11 +22,10 @@ namespace kCura.IntegrationPoints.RelativitySync.Adapters
 
 		public Task<bool> CanExecuteAsync(IDestinationWorkspaceObjectTypesCreationConfiguration configuration, CancellationToken token)
 		{
-			bool shouldExecute = !configuration.IsSourceJobArtifactTypeIdSet || !configuration.IsSourceWorkspaceArtifactTypeIdSet;
-			return Task.FromResult(shouldExecute);
+			return Task.FromResult(true);
 		}
 
-		public async Task ExecuteAsync(IDestinationWorkspaceObjectTypesCreationConfiguration configuration, CancellationToken token)
+		public async Task<ExecutionResult> ExecuteAsync(IDestinationWorkspaceObjectTypesCreationConfiguration configuration, CancellationToken token)
 		{
 			await Task.Yield();
 
@@ -37,10 +36,9 @@ namespace kCura.IntegrationPoints.RelativitySync.Adapters
 			IRelativitySourceWorkspaceRdoInitializer sourceWorkspaceRdoInitializer = new RelativitySourceWorkspaceRdoInitializer(helper, repositoryFactory, relativitySourceRdoHelpersFactory);
 
 			int sourceWorkspaceArtifactTypeId = sourceWorkspaceRdoInitializer.InitializeWorkspaceWithSourceWorkspaceRdo(configuration.DestinationWorkspaceArtifactId);
-			configuration.SetSourceWorkspaceArtifactTypeId(sourceWorkspaceArtifactTypeId);
+			sourceJobRdoInitializer.InitializeWorkspaceWithSourceJobRdo(configuration.DestinationWorkspaceArtifactId, sourceWorkspaceArtifactTypeId);
 
-			int sourceJobArtifactTypeId = sourceJobRdoInitializer.InitializeWorkspaceWithSourceJobRdo(configuration.DestinationWorkspaceArtifactId, sourceWorkspaceArtifactTypeId);
-			configuration.SetSourceJobArtifactTypeId(sourceJobArtifactTypeId);
+			return ExecutionResult.Success();
 		}
 	}
 }

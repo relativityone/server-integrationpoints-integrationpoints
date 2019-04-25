@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoints.Domain.Models
 
 		public ObjectTypeRef ObjectTypeRef => new ObjectTypeRef
 		{
-			ArtifactTypeID = ArtifactTypeId
+			Guid = ObjectTypeGuid
 		};
 
 		private List<FieldRefValuePair> CreateFieldRefValuePairs()

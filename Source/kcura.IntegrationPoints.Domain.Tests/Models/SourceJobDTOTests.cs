@@ -12,15 +12,11 @@ namespace kCura.IntegrationPoints.Domain.Tests.Models
 		[TestCase]
 		public void ItShouldReturn_CorrectObjectTypeRef()
 		{
-			int artifactTypeId = 543;
-			var dto = new SourceJobDTO
-			{
-				ArtifactTypeId = artifactTypeId
-			};
+			var dto = new SourceJobDTO();
 
-			var objectType = dto.ObjectTypeRef;
+			ObjectTypeRef objectType = dto.ObjectTypeRef;
 
-			Assert.AreEqual(artifactTypeId, objectType.ArtifactTypeID);
+			Assert.AreEqual(SourceJobDTO.ObjectTypeGuid, objectType.Guid);
 		}
 
 		[TestCase]
