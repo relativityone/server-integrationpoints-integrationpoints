@@ -70,7 +70,7 @@ elseif ($branchName -match "^REL-\d{6}") {
     }    
     $suffix = "dev"
 } 
-elseif ($branchName -match "^release-(\d+)-") {
+elseif ($branchName -match "^release-") {
     if ($buildType -ne "GOLD") {
         $suffix = "rc"
     }
