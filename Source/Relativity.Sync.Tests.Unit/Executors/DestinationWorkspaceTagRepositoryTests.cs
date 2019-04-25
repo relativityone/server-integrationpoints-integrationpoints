@@ -314,16 +314,21 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		}
 
 		[Test]
-		public async Task ItShouldReturnWhenThereAreNoDocumentsToTag()
+		public async Task ItShouldReturnSuccessWhenThereAreNoDocumentsToTag()
 		{
 			// Arrange
 			var synchronizationConfiguration = new Mock<ISynchronizationConfiguration>(MockBehavior.Loose);
 			int[] testArtifactIds = Array.Empty<int>();
 
 			// Act
-			await _sut.TagDocumentsAsync(synchronizationConfiguration.Object, testArtifactIds, _token).ConfigureAwait(false);
+			MassUpdateResult actualResult = await _sut.TagDocumentsAsync(synchronizationConfiguration.Object, testArtifactIds, _token).ConfigureAwait(false);
 
 			// Assert
+			Assert.IsNotNull(actualResult);
+			Assert.IsTrue(actualResult.Success);
+			Assert.AreEqual(testArtifactIds.Length, actualResult.TotalObjectsUpdated);
+			Assert.AreEqual("A call to the Mass Update API was not made as there are no objects to update.", actualResult.Message);
+
 			_objectManager.Verify(x => x.UpdateAsync(
 				It.IsAny<int>(),
 				It.IsAny<MassUpdateByObjectIdentifiersRequest>(),
@@ -346,10 +351,25 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			synchronizationConfiguration.SetupGet(x => x.JobHistoryTagArtifactId).Returns(testJobHistoryTagArtifactId);
 			synchronizationConfiguration.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(testSourceWorkspaceArtifactId);
 
+			_objectManager.Setup(x => x.UpdateAsync(It.IsAny<int>(), It.IsAny<MassUpdateByObjectIdentifiersRequest>(), It.IsAny<MassUpdateOptions>(), It.IsAny<CancellationToken>()))
+				.ReturnsAsync((int workspace, MassUpdateByObjectIdentifiersRequest request, MassUpdateOptions options, CancellationToken token) =>
+			{
+				var massUpdateResult = new MassUpdateResult
+				{
+					TotalObjectsUpdated = request.Objects.Count,
+					Success = true
+				};
+				return massUpdateResult;
+			});
+
 			// Act
-			await _sut.TagDocumentsAsync(synchronizationConfiguration.Object, testArtifactIds, _token).ConfigureAwait(false);
+			MassUpdateResult actualResult = await _sut.TagDocumentsAsync(synchronizationConfiguration.Object, testArtifactIds, _token).ConfigureAwait(false);
 
 			// Assert
+			Assert.IsNotNull(actualResult);
+			Assert.IsTrue(actualResult.Success);
+			Assert.AreEqual(testArtifactIds.Length, actualResult.TotalObjectsUpdated);
+
 			_objectManager.Verify(x => x.UpdateAsync(
 				It.Is<int>(w => w == testSourceWorkspaceArtifactId),
 				It.Is<MassUpdateByObjectIdentifiersRequest>(m => VerifyTagUpdateRequest(m, testArtifactIds, testDestinationWorkspaceTagArtifactId, testJobHistoryTagArtifactId)),

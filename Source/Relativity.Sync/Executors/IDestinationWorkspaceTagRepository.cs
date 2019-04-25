@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Executors
@@ -13,6 +14,6 @@ namespace Relativity.Sync.Executors
 
 		Task UpdateAsync(int sourceWorkspaceArtifactId, DestinationWorkspaceTag destinationWorkspaceTag);
 
-		Task TagDocumentsAsync(ISynchronizationConfiguration synchronizationConfiguration, IList<int> documentArtifactIds, CancellationToken token);
+		Task<MassUpdateResult> TagDocumentsAsync(ISynchronizationConfiguration synchronizationConfiguration, IList<int> documentArtifactIds, CancellationToken token);
 	}
 }

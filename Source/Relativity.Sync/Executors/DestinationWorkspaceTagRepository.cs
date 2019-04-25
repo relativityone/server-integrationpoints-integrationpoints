@@ -194,11 +194,16 @@ namespace Relativity.Sync.Executors
 			}
 		}
 
-		public async Task TagDocumentsAsync(ISynchronizationConfiguration synchronizationConfiguration, IList<int> documentArtifactIds, CancellationToken token)
+		public async Task<MassUpdateResult> TagDocumentsAsync(ISynchronizationConfiguration synchronizationConfiguration, IList<int> documentArtifactIds, CancellationToken token)
 		{
 			if (documentArtifactIds.Count == 0)
 			{
-				return;
+				return new MassUpdateResult
+				{
+					Success = true,
+					TotalObjectsUpdated = documentArtifactIds.Count,
+					Message = "A call to the Mass Update API was not made as there are no objects to update."
+				};
 			}
 
 			var updateByIdentifiersRequest = new MassUpdateByObjectIdentifiersRequest
@@ -215,7 +220,8 @@ namespace Relativity.Sync.Executors
 			{
 				using (var objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 				{
-					await objectManager.UpdateAsync(synchronizationConfiguration.SourceWorkspaceArtifactId, updateByIdentifiersRequest, updateOptions, token).ConfigureAwait(false);
+					MassUpdateResult updateResult = await objectManager.UpdateAsync(synchronizationConfiguration.SourceWorkspaceArtifactId, updateByIdentifiersRequest, updateOptions, token).ConfigureAwait(false);
+					return updateResult;
 				}
 			}
 			catch (Exception updateException)
