@@ -1,29 +1,29 @@
-framework: auto-detect
-
-source https://proget.kcura.corp/nuget/NuGet
-
-nuget Relativity.API ~> 10.2
-nuget Relativity.Kepler ~> 1.0.1.589
-nuget Relativity.ImportExport ~> 10.2
-nuget Relativity.OAuth2Client 1.0.27
-nuget Relativity.Platform.Keywords ~> 10.2
-nuget Relativity.Services.Interfaces ~> 10.2
-nuget Relativity.Services.Interfaces.Private ~> 10.2
-nuget kCura.Apps.Common.Utils ~> 2.1.8
-nuget kCura.Relativity.Client ~> 10.2
-nuget Relativity.Kepler.Client ~> 1.0
-nuget Relativity.Telemetry.APM ~> 2019.1.0
-
-nuget Microsoft.CodeAnalysis.FxCopAnalyzers ~> 2.6
-nuget CSharpGuidelineAnalyzer ~> 2.3
-nuget Autofac ~> 4.9 redirects: force
-nuget Polly ~> 5.3.1
-nuget Banzai ~> 3.0
-nuget Banzai.AUtofac ~> 3.0
-nuget Newtonsoft.Json ~> 6.0
-nuget SexyProxy.Emit 2.0.97
-
-// Tests
-nuget NUnit ~> 3.11
-nuget FluentAssertions ~> 5.4
-nuget Moq ~> 4.10
+framework: auto-detect 
+ 
+source https://proget.kcura.corp/nuget/NuGet 
+ 
+nuget Relativity.API 10.2.69.1
+nuget Relativity.ImportExport 10.2.69.1
+nuget Relativity.Kepler ~> 1.0.1.589 
+nuget Relativity.OAuth2Client 1.0.27 
+nuget Relativity.Platform.Keywords 10.2.69.1
+nuget Relativity.Services.Interfaces 10.2.69.1
+nuget Relativity.Services.Interfaces.Private 10.2.69.1
+nuget kCura.Apps.Common.Utils ~> 2.1.8 
+nuget kCura.Relativity.Client 10.2.69.1
+nuget Relativity.Kepler.Client ~> 1.0 
+nuget Relativity.Telemetry.APM ~> 2019.1.0 
+ 
+nuget Microsoft.CodeAnalysis.FxCopAnalyzers ~> 2.6 
+nuget CSharpGuidelineAnalyzer ~> 2.3 
+nuget Autofac ~> 4.9 redirects: force 
+nuget Polly ~> 5.3.1 
+nuget Banzai ~> 3.0 
+nuget Banzai.AUtofac ~> 3.0 
+nuget Newtonsoft.Json ~> 6.0 
+nuget SexyProxy.Emit 2.0.97 
+ 
+// Tests 
+nuget NUnit ~> 3.11 
+nuget FluentAssertions ~> 5.4 
+nuget Moq ~> 4.10 
