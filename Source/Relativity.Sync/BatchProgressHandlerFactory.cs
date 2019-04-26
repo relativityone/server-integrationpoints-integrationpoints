@@ -14,7 +14,7 @@ namespace Relativity.Sync
 
 		public IBatchProgressHandler CreateBatchProgressHandler(IBatch batch, IImportNotifier importNotifier)
 		{
-			return new BatchProgressHandler(batch, importNotifier, _logger);
+			return new BatchProgressHandler(importNotifier, new BatchProgressUpdater(batch, _logger));
 		}
 	}
 }

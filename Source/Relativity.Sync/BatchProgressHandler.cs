@@ -1,53 +1,50 @@
 ﻿using System;
 using kCura.Relativity.DataReaderClient;
-using Relativity.Sync.Storage;
 
 namespace Relativity.Sync
 {
 	internal sealed class BatchProgressHandler : IBatchProgressHandler
 	{
-		private readonly IBatch _batch;
-		private readonly ISyncLog _logger;
+		private DateTime _lastProgressEventTimestamp = DateTime.Now;
+		private int _completedRecordsCount;
+		private int _failedRecordsCount;
 
-		public BatchProgressHandler(IBatch batch, IImportNotifier importNotifier, ISyncLog logger)
+		private readonly IBatchProgressUpdater _progressUpdater;
+
+		internal TimeSpan Throttle { get; set; } = TimeSpan.FromSeconds(1);
+
+		public BatchProgressHandler(IImportNotifier importNotifier, IBatchProgressUpdater progressUpdater)
 		{
-			_batch = batch;
-			_logger = logger;
+			_progressUpdater = progressUpdater;
 			importNotifier.OnProcessProgress += HandleProcessProgress;
+			importNotifier.OnComplete += HandleProcessComplete;
 		}
 
 		private void HandleProcessProgress(FullStatus status)
 		{
-			// Currently IAPI reports wrong number of records processed, records with errors, and total number of records. 
-			// Related Jira item: REL-286003
+			_completedRecordsCount = (int)status.TotalRecordsProcessed - (int)status.TotalRecordsProcessedWithErrors;
+			_failedRecordsCount = (int)status.TotalRecordsProcessedWithErrors;
 
-			try
+			if (CanUpdateProgress())
 			{
-				int totalRecordsProcessed = (int)status.TotalRecordsProcessed; // completed + failed records
-				int recordsWithErrors = (int)status.TotalRecordsProcessedWithErrors;
-				int completedRecords = totalRecordsProcessed - recordsWithErrors;
-
-				_batch.SetTransferredItemsCountAsync(completedRecords).ConfigureAwait(false).GetAwaiter().GetResult();
-				_batch.SetFailedItemsCountAsync(recordsWithErrors).ConfigureAwait(false).GetAwaiter().GetResult();
-				double progress = CalculateProgress(totalRecordsProcessed, _batch.TotalItemsCount);
-				_batch.SetProgressAsync(progress).ConfigureAwait(false).GetAwaiter().GetResult();
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "Exception occurred while updating import job progress.");
+				UpdateProgress();
+				_lastProgressEventTimestamp = DateTime.Now;
 			}
 		}
 
-		private static double CalculateProgress(int processedRecordsCount, int totalRecordsCount)
+		private bool CanUpdateProgress()
 		{
-			if (totalRecordsCount == 0)
-			{
-				return 0;
-			}
-			
-			const int percentage = 100;
-			double progress = (double)processedRecordsCount / totalRecordsCount * percentage;
-			return progress;
+			return DateTime.Now > _lastProgressEventTimestamp + Throttle;
+		}
+
+		private void HandleProcessComplete(JobReport jobreport)
+		{
+			UpdateProgress();
+		}
+
+		private void UpdateProgress()
+		{
+			_progressUpdater.UpdateProgressAsync(_completedRecordsCount, _failedRecordsCount).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 	}
 }
