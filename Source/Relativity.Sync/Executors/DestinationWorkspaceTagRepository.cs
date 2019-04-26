@@ -196,55 +196,61 @@ namespace Relativity.Sync.Executors
 			}
 		}
 
-		public async Task<IList<MassUpdateResult>> TagDocumentsAsync(ISynchronizationConfiguration synchronizationConfiguration, IList<int> documentArtifactIds, CancellationToken token)
+		public async Task<IList<TagDocumentsResult>> TagDocumentsAsync(ISynchronizationConfiguration synchronizationConfiguration, IList<int> documentArtifactIds, CancellationToken token)
 		{
-			var updateResults = new List<MassUpdateResult>();
+			var updateResults = new List<TagDocumentsResult>();
 			if (documentArtifactIds.Count == 0)
 			{
-				updateResults.Add(new MassUpdateResult
-				{
-					Success = true,
-					TotalObjectsUpdated = documentArtifactIds.Count,
-					Message = "A call to the Mass Update API was not made as there are no objects to update."
-				});
+				const string noUpdateMessage = "A call to the Mass Update API was not made as there are no objects to update.";
+				var result = new TagDocumentsResult(documentArtifactIds, noUpdateMessage, true, documentArtifactIds.Count);
+				updateResults.Add(result);
 				return updateResults;
 			}
 
 			IEnumerable<FieldRefValuePair> fieldValues = GetDocumentFieldTags(synchronizationConfiguration);
-			var updateOptions = new MassUpdateOptions
+			var massUpdateOptions = new MassUpdateOptions
 			{
 				UpdateBehavior = FieldUpdateBehavior.Merge
 			};
 			IEnumerable<IList<int>> batches = CollectionExtensions.SplitList(documentArtifactIds, _MAX_OBJECT_QUERY_BATCH_SIZE);
 			foreach (IList<int> batch in batches)
 			{
-				var updateByIdentifiersRequest = new MassUpdateByObjectIdentifiersRequest
-				{
-					Objects = ConvertArtifactIdsToObjectRefs(batch),
-					FieldValues = fieldValues
-				};
-
-				try
-				{
-					using (var objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
-					{
-						MassUpdateResult updateResult = await objectManager.UpdateAsync(synchronizationConfiguration.SourceWorkspaceArtifactId, updateByIdentifiersRequest, updateOptions, token).ConfigureAwait(false);
-						updateResults.Add(updateResult);
-					}
-				}
-				catch (Exception updateException)
-				{
-					const string exceptionMessage = "Mass tagging Documents with Destination Workspace and Job History fields failed.";
-					const string exceptionTemplate =
-						"Mass tagging documents in source workspace {SourceWorkspace} with destination workspace field {DestinationWorkspaceField} and job history field {JobHistoryField} failed.";
-
-					_logger.LogError(updateException, exceptionTemplate,
-						synchronizationConfiguration.SourceWorkspaceArtifactId, synchronizationConfiguration.DestinationWorkspaceTagArtifactId, synchronizationConfiguration.JobHistoryTagArtifactId);
-					throw new SyncException(exceptionMessage, updateException);
-				}
+				TagDocumentsResult batchResult = await TagDocumentsBatchAsync(synchronizationConfiguration, batch, fieldValues, massUpdateOptions, token).ConfigureAwait(false);
+				updateResults.Add(batchResult);
 			}
 
 			return updateResults;
+		}
+
+		private async Task<TagDocumentsResult> TagDocumentsBatchAsync(
+			ISynchronizationConfiguration synchronizationConfiguration, IList<int> batch, IEnumerable<FieldRefValuePair> fieldValues, MassUpdateOptions massUpdateOptions, CancellationToken token)
+		{
+			var updateByIdentifiersRequest = new MassUpdateByObjectIdentifiersRequest
+			{
+				Objects = ConvertArtifactIdsToObjectRefs(batch),
+				FieldValues = fieldValues
+			};
+
+			TagDocumentsResult result;
+			try
+			{
+				using (var objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+				{
+					MassUpdateResult updateResult = await objectManager.UpdateAsync(synchronizationConfiguration.SourceWorkspaceArtifactId, updateByIdentifiersRequest, massUpdateOptions, token).ConfigureAwait(false);
+					result = GenerateTagDocumentsResult(updateResult, batch);
+				}
+			}
+			catch (Exception updateException)
+			{
+				const string exceptionMessage = "Mass tagging Documents with Destination Workspace and Job History fields failed.";
+				const string exceptionTemplate =
+					"Mass tagging documents in source workspace {SourceWorkspace} with destination workspace field {DestinationWorkspaceField} and job history field {JobHistoryField} failed.";
+
+				_logger.LogError(updateException, exceptionTemplate,
+					synchronizationConfiguration.SourceWorkspaceArtifactId, synchronizationConfiguration.DestinationWorkspaceTagArtifactId, synchronizationConfiguration.JobHistoryTagArtifactId);
+				result = new TagDocumentsResult(batch, exceptionMessage, false, 0);
+			}
+			return result;
 		}
 
 		private IReadOnlyList<RelativityObjectRef> ConvertArtifactIdsToObjectRefs(IList<int> artifactIds)
@@ -278,6 +284,22 @@ namespace Relativity.Sync.Executors
 				}
 			};
 			return fieldRefValuePairs;
+		}
+
+		private static TagDocumentsResult GenerateTagDocumentsResult(MassUpdateResult updateResult, IList<int> batch)
+		{
+			IEnumerable<int> failedDocumentArtifactIds;
+			if (!updateResult.Success)
+			{
+				int elementsToCapture = batch.Count - updateResult.TotalObjectsUpdated;
+				failedDocumentArtifactIds = batch.ToList().GetRange(updateResult.TotalObjectsUpdated, elementsToCapture);
+			}
+			else
+			{
+				failedDocumentArtifactIds = Array.Empty<int>();
+			}
+			var result = new TagDocumentsResult(failedDocumentArtifactIds, updateResult.Message, updateResult.Success, updateResult.TotalObjectsUpdated);
+			return result;
 		}
 
 		private IEnumerable<FieldRefValuePair> CreateFieldValues(int destinationWorkspaceArtifactId, string destinationWorkspaceName, string federatedInstanceName, int? federatedInstanceId)

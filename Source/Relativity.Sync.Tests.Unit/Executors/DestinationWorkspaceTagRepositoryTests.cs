@@ -297,7 +297,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		};
 
 		[Test]
-		public void ItShouldThrowExceptionWhenTryingToTagDocuments()
+		public async Task ItShouldReportFailureWhenExceptionThrownTryingToTagDocuments()
 		{
 			// Arrange
 			var synchronizationConfiguration = new Mock<ISynchronizationConfiguration>(MockBehavior.Loose);
@@ -307,10 +307,39 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				.Throws<NotAuthorizedException>();
 
 			// Act
-			Action actualResult = () => _sut.TagDocumentsAsync(synchronizationConfiguration.Object, testArtifactIds, _token).ConfigureAwait(false).GetAwaiter().GetResult();
+			IList<TagDocumentsResult> actualResult = await _sut.TagDocumentsAsync(synchronizationConfiguration.Object, testArtifactIds, _token).ConfigureAwait(false);
 
 			// Assert
-			actualResult.Should().Throw<SyncException>().WithInnerException<NotAuthorizedException>();
+			CollectionAssert.IsNotEmpty(actualResult);
+			Assert.IsFalse(actualResult[0].Success);
+			Assert.AreEqual(0, actualResult[0].TotalObjectsUpdated);
+			CollectionAssert.AreEqual(testArtifactIds, actualResult[0].FailedDocumentArtifactIds);
+		}
+
+		[Test]
+		public async Task ItShouldReportFailureWhenSomeDocumentsAreTagged()
+		{
+			// Arrange
+			var synchronizationConfiguration = new Mock<ISynchronizationConfiguration>(MockBehavior.Loose);
+			int[] testArtifactIds = { 1, 0 };
+			var testMassUpdateResult = new MassUpdateResult
+			{
+				Message = "Failed completing update query.",
+				Success = false,
+				TotalObjectsUpdated = 1
+			};
+
+			_objectManager.Setup(x => x.UpdateAsync(It.IsAny<int>(), It.IsAny<MassUpdateByObjectIdentifiersRequest>(), It.IsAny<MassUpdateOptions>(), It.IsAny<CancellationToken>()))
+				.ReturnsAsync(testMassUpdateResult);
+
+			// Act
+			IList<TagDocumentsResult> actualResult = await _sut.TagDocumentsAsync(synchronizationConfiguration.Object, testArtifactIds, _token).ConfigureAwait(false);
+
+			// Assert
+			CollectionAssert.IsNotEmpty(actualResult);
+			Assert.IsFalse(actualResult[0].Success);
+			Assert.AreEqual(1, actualResult[0].TotalObjectsUpdated);
+			CollectionAssert.AreEqual(new[] { 0 }, actualResult[0].FailedDocumentArtifactIds);
 		}
 
 		[Test]
@@ -321,13 +350,14 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			int[] testArtifactIds = Array.Empty<int>();
 
 			// Act
-			IList<MassUpdateResult> actualResult = await _sut.TagDocumentsAsync(synchronizationConfiguration.Object, testArtifactIds, _token).ConfigureAwait(false);
+			IList<TagDocumentsResult> actualResult = await _sut.TagDocumentsAsync(synchronizationConfiguration.Object, testArtifactIds, _token).ConfigureAwait(false);
 
 			// Assert
 			CollectionAssert.IsNotEmpty(actualResult);
 			Assert.IsTrue(actualResult[0].Success);
 			Assert.AreEqual(testArtifactIds.Length, actualResult[0].TotalObjectsUpdated);
 			Assert.AreEqual("A call to the Mass Update API was not made as there are no objects to update.", actualResult[0].Message);
+			CollectionAssert.IsEmpty(actualResult[0].FailedDocumentArtifactIds);
 
 			_objectManager.Verify(x => x.UpdateAsync(
 				It.IsAny<int>(),
@@ -363,12 +393,13 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			});
 
 			// Act
-			IList<MassUpdateResult> actualResult = await _sut.TagDocumentsAsync(synchronizationConfiguration.Object, testArtifactIds, _token).ConfigureAwait(false);
+			IList<TagDocumentsResult> actualResult = await _sut.TagDocumentsAsync(synchronizationConfiguration.Object, testArtifactIds, _token).ConfigureAwait(false);
 
 			// Assert
 			Assert.IsNotNull(actualResult);
 			Assert.IsTrue(actualResult[0].Success);
 			Assert.AreEqual(testArtifactIds.Length, actualResult[0].TotalObjectsUpdated);
+			CollectionAssert.IsEmpty(actualResult[0].FailedDocumentArtifactIds);
 
 			_objectManager.Verify(x => x.UpdateAsync(
 				It.Is<int>(w => w == testSourceWorkspaceArtifactId),
