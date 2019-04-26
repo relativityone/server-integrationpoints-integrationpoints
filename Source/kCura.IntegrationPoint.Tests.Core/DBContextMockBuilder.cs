@@ -16,7 +16,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 					baseContext.ServerName
 				);
 
-
 			context
 				.When(x => x.BeginTransaction())
 				.Do(x => baseContext
@@ -69,6 +68,13 @@ namespace kCura.IntegrationPoint.Tests.Core
 					)
 				);
 
+			context.ExecuteSqlStatementAsScalar<int>(Arg.Any<string>())
+				.Returns(x => baseContext
+					.ExecuteSqlStatementAsScalar<int>(
+						x.Arg<string>()
+					)
+				);
+
 			context.ExecuteSqlStatementAsScalar<int>(Arg.Any<string>(), Arg.Any<IEnumerable<SqlParameter>>())
 				.Returns(x => (int)baseContext
 					.ExecuteSqlStatementAsScalar(
@@ -76,6 +82,23 @@ namespace kCura.IntegrationPoint.Tests.Core
 						x.ArgAt<IEnumerable<SqlParameter>>(1)
 					)
 				);
+
+			context.ExecuteSqlStatementAsScalar<bool>(Arg.Any<string>())
+				.Returns(x => baseContext
+					.ExecuteSqlStatementAsScalar<bool>(
+						x.Arg<string>()
+					)
+				);
+
+			context.ExecuteSqlStatementAsScalar<bool>(Arg.Any<string>(), Arg.Any<IEnumerable<SqlParameter>>())
+				.Returns(x => (bool)baseContext
+					.ExecuteSqlStatementAsScalar(
+						x.ArgAt<string>(0),
+						x.ArgAt<IEnumerable<SqlParameter>>(1)
+					)
+				);
+
+
 
 			return context;
 		}
