@@ -49,7 +49,6 @@ namespace Relativity.Sync.Tests.System
 		}
 
 		[Test]
-		[Ignore("Data Source Snapshot step is not used on Foxglove release and it hasn't been registered in container")]
 		public async Task ItShouldCreateSnapshot()
 		{
 			ConfigurationStub configuration = new ConfigurationStub
