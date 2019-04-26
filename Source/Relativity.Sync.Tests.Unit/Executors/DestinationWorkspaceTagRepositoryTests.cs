@@ -321,13 +321,13 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			int[] testArtifactIds = Array.Empty<int>();
 
 			// Act
-			MassUpdateResult actualResult = await _sut.TagDocumentsAsync(synchronizationConfiguration.Object, testArtifactIds, _token).ConfigureAwait(false);
+			IList<MassUpdateResult> actualResult = await _sut.TagDocumentsAsync(synchronizationConfiguration.Object, testArtifactIds, _token).ConfigureAwait(false);
 
 			// Assert
-			Assert.IsNotNull(actualResult);
-			Assert.IsTrue(actualResult.Success);
-			Assert.AreEqual(testArtifactIds.Length, actualResult.TotalObjectsUpdated);
-			Assert.AreEqual("A call to the Mass Update API was not made as there are no objects to update.", actualResult.Message);
+			CollectionAssert.IsNotEmpty(actualResult);
+			Assert.IsTrue(actualResult[0].Success);
+			Assert.AreEqual(testArtifactIds.Length, actualResult[0].TotalObjectsUpdated);
+			Assert.AreEqual("A call to the Mass Update API was not made as there are no objects to update.", actualResult[0].Message);
 
 			_objectManager.Verify(x => x.UpdateAsync(
 				It.IsAny<int>(),
@@ -363,12 +363,12 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			});
 
 			// Act
-			MassUpdateResult actualResult = await _sut.TagDocumentsAsync(synchronizationConfiguration.Object, testArtifactIds, _token).ConfigureAwait(false);
+			IList<MassUpdateResult> actualResult = await _sut.TagDocumentsAsync(synchronizationConfiguration.Object, testArtifactIds, _token).ConfigureAwait(false);
 
 			// Assert
 			Assert.IsNotNull(actualResult);
-			Assert.IsTrue(actualResult.Success);
-			Assert.AreEqual(testArtifactIds.Length, actualResult.TotalObjectsUpdated);
+			Assert.IsTrue(actualResult[0].Success);
+			Assert.AreEqual(testArtifactIds.Length, actualResult[0].TotalObjectsUpdated);
 
 			_objectManager.Verify(x => x.UpdateAsync(
 				It.Is<int>(w => w == testSourceWorkspaceArtifactId),

@@ -14,6 +14,6 @@ namespace Relativity.Sync.Executors
 
 		Task UpdateAsync(int sourceWorkspaceArtifactId, DestinationWorkspaceTag destinationWorkspaceTag);
 
-		Task<MassUpdateResult> TagDocumentsAsync(ISynchronizationConfiguration synchronizationConfiguration, IList<int> documentArtifactIds, CancellationToken token);
+		Task<IList<MassUpdateResult>> TagDocumentsAsync(ISynchronizationConfiguration synchronizationConfiguration, IList<int> documentArtifactIds, CancellationToken token);
 	}
 }
