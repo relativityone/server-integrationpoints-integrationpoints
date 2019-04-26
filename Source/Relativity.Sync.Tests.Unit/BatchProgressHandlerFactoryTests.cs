@@ -2,6 +2,7 @@
 using kCura.Relativity.DataReaderClient;
 using Moq;
 using NUnit.Framework;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Tests.Unit
@@ -12,7 +13,7 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public void ItShouldCreateBatchProgressHandler()
 		{
-			BatchProgressHandlerFactory factory = new BatchProgressHandlerFactory();
+			BatchProgressHandlerFactory factory = new BatchProgressHandlerFactory(new EmptyLogger());
 
 			// act
 			IBatchProgressHandler batchProgressHandler = factory.CreateBatchProgressHandler(Mock.Of<IBatch>(),

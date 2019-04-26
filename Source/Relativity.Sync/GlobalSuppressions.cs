@@ -36,13 +36,6 @@
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "member", Target = "~M:Relativity.Sync.SyncJobInLifetimeScope.CreateSyncJob(Autofac.ILifetimeScope)~Relativity.Sync.ISyncJob")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "member", Target = "~M:Relativity.Sync.SyncJobProgress.ReportAsync(Relativity.Sync.SyncJobState)~System.Threading.Tasks.Task")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "member", Target = "~M:Relativity.Sync.Telemetry.EnvironmentPropertyProvider.CreateAsync(Relativity.API.IServicesMgr,Relativity.Sync.ISyncLog)~System.Threading.Tasks.Task{Relativity.Sync.Telemetry.IEnvironmentPropertyProvider}")]
-
-
-
-
-
-
-
-
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "member", Target = "~M:Relativity.Sync.BatchProgressHandler.HandleProcessProgress(kCura.Relativity.DataReaderClient.FullStatus)")]
 
 #pragma warning restore RG2001 // Character Per Line
