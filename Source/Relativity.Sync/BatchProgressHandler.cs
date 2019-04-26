@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Threading.Tasks;
 using kCura.Relativity.DataReaderClient;
-using Relativity.Services.Exceptions;
 using Relativity.Sync.Storage;
 
 namespace Relativity.Sync

@@ -1,6 +1,5 @@
 ﻿using System;
 using FluentAssertions;
-using kCura.Config;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Logging;
