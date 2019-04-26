@@ -76,8 +76,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 				);
 
 			context.ExecuteSqlStatementAsScalar<int>(Arg.Any<string>(), Arg.Any<IEnumerable<SqlParameter>>())
-				.Returns(x => (int)baseContext
-					.ExecuteSqlStatementAsScalar(
+				.Returns(x => baseContext
+					.ExecuteSqlStatementAsScalar<int>(
 						x.ArgAt<string>(0),
 						x.ArgAt<IEnumerable<SqlParameter>>(1)
 					)
@@ -91,14 +91,19 @@ namespace kCura.IntegrationPoint.Tests.Core
 				);
 
 			context.ExecuteSqlStatementAsScalar<bool>(Arg.Any<string>(), Arg.Any<IEnumerable<SqlParameter>>())
-				.Returns(x => (bool)baseContext
-					.ExecuteSqlStatementAsScalar(
+				.Returns(x => baseContext
+					.ExecuteSqlStatementAsScalar<bool>(
 						x.ArgAt<string>(0),
 						x.ArgAt<IEnumerable<SqlParameter>>(1)
 					)
 				);
 
-
+			context.GetConnection(Arg.Any<bool>())
+				.Returns(x => baseContext
+					.GetConnection(
+						x.Arg<bool>()
+					)
+				);
 
 			return context;
 		}
