@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
-using System.Threading;
-using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.API.Context;
 
@@ -182,6 +180,11 @@ namespace kCura.IntegrationPoints.Data
 	        return _context.ExecuteSQLStatementAsEnumerable(sqlStatement, converter, timeout);
         }
 
+		public IEnumerable<T> ExecuteSqlStatementAsEnumerable<T>(string sqlStatement, Func<SqlDataReader, T> converter, IEnumerable<SqlParameter> parameters)
+		{
+			return _context.ExecuteSqlStatementAsEnumerable(sqlStatement, converter, parameters);
+		}
+
 		public DbDataReader ExecuteProcedureAsReader(string procedureName, IEnumerable<SqlParameter> parameters)
 		{
 			return _context.ExecuteProcedureAsReader(procedureName, parameters);
@@ -223,49 +226,25 @@ namespace kCura.IntegrationPoints.Data
 			_context.ExecuteSqlBulkCopy(dataReader, bulkCopyParameters);
 		}
 
-		public Task<IDbConnection> GetConnectionAsync(CancellationToken cancelToken)
+		public T ExecuteSqlStatementAsObject<T>(string sqlStatement, Func<SqlDataReader, T> converter)
 		{
-			return _context.GetConnectionAsync(cancelToken);
+			return _context.ExecuteSqlStatementAsObject(sqlStatement, converter);
 		}
 
-		public Task BeginTransactionAsync(CancellationToken cancelToken)
+		public T ExecuteSqlStatementAsObject<T>(string sqlStatement, Func<SqlDataReader, T> converter, int timeout = -1)
 		{
-			return _context.BeginTransactionAsync(cancelToken);
+			return _context.ExecuteSqlStatementAsObject(sqlStatement, converter, timeout);
 		}
 
-		public Task ExecuteBulkCopyAsync(IDataReader source, ISqlBulkCopyParameters parameters, CancellationToken cancelToken)
+		public T ExecuteSqlStatementAsObject<T>(string sqlStatement, Func<SqlDataReader, T> converter, IEnumerable<SqlParameter> parameters)
 		{
-			return _context.ExecuteBulkCopyAsync(source, parameters, cancelToken);
+			return _context.ExecuteSqlStatementAsObject(sqlStatement, converter, parameters);
+
 		}
 
-		public Task<DataTable> ExecuteDataTableAsync(IQuery query)
+		public T ExecuteSqlStatementAsObject<T>(string sqlStatement, Func<SqlDataReader, T> converter, IEnumerable<SqlParameter> parameters, int timeoutValue)
 		{
-			return _context.ExecuteDataTableAsync(query);
-		}
-
-		public Task<IDataReader> ExecuteReaderAsync(IQuery query)
-		{
-			return _context.ExecuteReaderAsync(query);
-		}
-
-		public Task<int> ExecuteNonQueryAsync(IQuery query)
-		{
-			return _context.ExecuteNonQueryAsync(query);
-		}
-
-		public Task<T> ExecuteObjectAsync<T>(IQuery query, Func<IDataReader, CancellationToken, Task<T>> converter)
-		{
-			return _context.ExecuteObjectAsync<T>(query, converter);
-		}
-
-		public Task<T> ExecuteScalarAsync<T>(IQuery query)
-		{
-			return _context.ExecuteScalarAsync<T>(query);
-		}
-
-		public Task<IEnumerable<T>> ExecuteEnumerableAsync<T>(IQuery query, Func<IDataRecord, CancellationToken, Task<T>> converter)
-		{
-			return _context.ExecuteEnumerableAsync<T>(query, converter);
+			return _context.ExecuteSqlStatementAsObject(sqlStatement, converter, parameters, timeoutValue);
 		}
 
 		public string Database => _context.Database;

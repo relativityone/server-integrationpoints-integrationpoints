@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Threading;
-using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.API.Context;
 
@@ -33,11 +31,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 		}
 
 		public T ExecuteSqlStatementAsObject<T>(string sqlStatement, Func<SqlDataReader, T> converter, IEnumerable<SqlParameter> parameters, int timeoutValue)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Task<IEnumerable<T>> ExecuteEnumerableAsync<T>(IQuery query, Func<IDataRecord, CancellationToken, Task<T>> converter)
 		{
 			throw new NotImplementedException();
 		}
@@ -429,6 +422,11 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return result;
 		}
 
+		public IEnumerable<T> ExecuteSqlStatementAsEnumerable<T>(string sqlStatement, Func<SqlDataReader, T> converter, IEnumerable<SqlParameter> parameters)
+		{
+			throw new NotImplementedException();
+		}
+
 		#region Procedures
 		/// <summary>
 		/// Executes a stored procedure against the connection and builds a DbDataReader.
@@ -518,44 +516,19 @@ namespace kCura.IntegrationPoint.Tests.Core
 			throw new NotImplementedException();
 		}
 
-		public Task<IDbConnection> GetConnectionAsync(CancellationToken cancelToken)
+		public T ExecuteSqlStatementAsObject<T>(string sqlStatement, Func<SqlDataReader, T> converter)
 		{
-			throw new NotImplementedException();
+			return _context.ExecuteSqlStatementAsObject(sqlStatement, converter);
 		}
 
-		public Task BeginTransactionAsync(CancellationToken cancelToken)
+		public T ExecuteSqlStatementAsObject<T>(string sqlStatement, Func<SqlDataReader, T> convertor, int timeout = -1)
 		{
-			throw new NotImplementedException();
+			return _context.ExecuteSqlStatementAsObject(sqlStatement, convertor, timeout);
 		}
 
-		public Task ExecuteBulkCopyAsync(IDataReader source, ISqlBulkCopyParameters parameters, CancellationToken cancelToken)
+		public T ExecuteSqlStatementAsObject<T>(string sqlStatement, Func<SqlDataReader, T> converter, IEnumerable<SqlParameter> parameters)
 		{
-			throw new NotImplementedException();
-		}
-
-		public Task<DataTable> ExecuteDataTableAsync(IQuery query)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Task<IDataReader> ExecuteReaderAsync(IQuery query)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Task<int> ExecuteNonQueryAsync(IQuery query)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Task<T> ExecuteObjectAsync<T>(IQuery query, Func<IDataReader, CancellationToken, Task<T>> converter)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Task<T> ExecuteScalarAsync<T>(IQuery query)
-		{
-			throw new NotImplementedException();
+			return _context.ExecuteSqlStatementAsObject(sqlStatement, converter, parameters);
 		}
 	}
 }
