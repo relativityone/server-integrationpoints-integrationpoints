@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data.SqlClient;
+using kCura.Data.RowDataGateway;
 using NSubstitute;
 using NSubstitute.Extensions;
 using Relativity.API;
@@ -68,36 +69,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 					)
 				);
 
-			context.ExecuteSqlStatementAsScalar<int>(Arg.Any<string>())
-				.Returns(x => baseContext
-					.ExecuteSqlStatementAsScalar<int>(
-						x.Arg<string>()
-					)
-				);
-
-			context.ExecuteSqlStatementAsScalar<int>(Arg.Any<string>(), Arg.Any<IEnumerable<SqlParameter>>())
-				.Returns(x => baseContext
-					.ExecuteSqlStatementAsScalar<int>(
-						x.ArgAt<string>(0),
-						x.ArgAt<IEnumerable<SqlParameter>>(1)
-					)
-				);
-
-			context.ExecuteSqlStatementAsScalar<bool>(Arg.Any<string>())
-				.Returns(x => baseContext
-					.ExecuteSqlStatementAsScalar<bool>(
-						x.Arg<string>()
-					)
-				);
-
-			context.ExecuteSqlStatementAsScalar<bool>(Arg.Any<string>(), Arg.Any<IEnumerable<SqlParameter>>())
-				.Returns(x => baseContext
-					.ExecuteSqlStatementAsScalar<bool>(
-						x.ArgAt<string>(0),
-						x.ArgAt<IEnumerable<SqlParameter>>(1)
-					)
-				);
-
 			context.GetConnection(Arg.Any<bool>())
 				.Returns(x => baseContext
 					.GetConnection(
@@ -105,7 +76,28 @@ namespace kCura.IntegrationPoint.Tests.Core
 					)
 				);
 
+			SetupExecuteSqlStatementAsScalar<int>(context, baseContext);
+			SetupExecuteSqlStatementAsScalar<bool>(context, baseContext);
+
 			return context;
+		}
+
+		private static void SetupExecuteSqlStatementAsScalar<T>(IDBContext context, BaseContext baseContext)
+		{
+			context.ExecuteSqlStatementAsScalar<T>(Arg.Any<string>())
+				.Returns(x => baseContext
+					.ExecuteSqlStatementAsScalar<T>(
+						x.Arg<string>()
+					)
+				);
+
+			context.ExecuteSqlStatementAsScalar<T>(Arg.Any<string>(), Arg.Any<IEnumerable<SqlParameter>>())
+				.Returns(x => baseContext
+					.ExecuteSqlStatementAsScalar<T>(
+						x.ArgAt<string>(0),
+						x.ArgAt<IEnumerable<SqlParameter>>(1)
+					)
+				);
 		}
 	}
 }
