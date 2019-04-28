@@ -1,42 +1,53 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 
-namespace Relativity.Sync.Tests.Integration
+namespace Relativity.Sync.Tests.Unit
 {
 	[TestFixture]
 	public class BatchProgressHandlerTests
 	{
 		private Mock<IBatch> _batch;
+		private Mock<IDateTime> _dateTime;
 		private FakeImportNotifier _importNotifier;
 		private BatchProgressHandler _batchProgressHandler;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_importNotifier = new FakeImportNotifier();
 			_batch = new Mock<IBatch>();
+			_dateTime = new Mock<IDateTime>();
+			_importNotifier = new FakeImportNotifier();
 			BatchProgressUpdater batchProgressUpdater = new BatchProgressUpdater(_batch.Object, new EmptyLogger());
-			_batchProgressHandler = new BatchProgressHandler(_importNotifier, batchProgressUpdater);
+			_batchProgressHandler = new BatchProgressHandler(_importNotifier, batchProgressUpdater, _dateTime.Object);
 		}
 
-		[Test]
-		public async Task ItShouldThrottleProgressEvents()
+		[TestCase(0, 0, 0)]
+		[TestCase(0, 123, 0)]
+		[TestCase(1, 0, 1)]
+		[TestCase(1, 500, 1)]
+		[TestCase(2, 500, 1)]
+		[TestCase(2, 1000, 2)]
+		[TestCase(3, 500, 2)]
+		[TestCase(4, 500, 2)]
+		[TestCase(4, 1000, 4)]
+		[TestCase(5, 500, 3)]
+		[TestCase(20, 500, 10)]
+		public void ItShouldThrottleProgressEvents(int numberOfEvents, int delayBetweenEvents, int expectedNumberOfProgressUpdates)
 		{
-			const int throttleMilliseconds = 100;
-			const int numberOfEvents = 5;
-			const int delayBetweenEvents = 50;
-			const int expectedNumberOfProgressUpdates = 2;
-			_batchProgressHandler.Throttle = TimeSpan.FromMilliseconds(throttleMilliseconds);
-			
+#pragma warning disable RG2009 // Hardcoded Numeric Value
+			DateTime now = new DateTime(2020, 1, 1);
+#pragma warning restore RG2009 // Hardcoded Numeric Value
+
 			// act
 			for (int i = 0; i < numberOfEvents; i++)
 			{
+				now += TimeSpan.FromMilliseconds(delayBetweenEvents);
+				_dateTime.SetupGet(x => x.Now).Returns(now);
+
 				_importNotifier.RaiseOnProcessProgress(0, 0);
-				await Task.Delay(delayBetweenEvents).ConfigureAwait(false);
 			}
 
 			// assert
@@ -46,14 +57,11 @@ namespace Relativity.Sync.Tests.Integration
 		[Test]
 		public void ItShouldUpdateProgressWhenCompleted()
 		{
-			const int throttleMilliseconds = 100;
-			_batchProgressHandler.Throttle = TimeSpan.FromMilliseconds(throttleMilliseconds);
 			const int failedItems = 1;
 			const int totalItemsProcessed = 2;
 
 			// act
-			_importNotifier.RaiseOnProcessProgress(failedItems, totalItemsProcessed);
-			_importNotifier.RaiseOnProcessComplete();
+			_importNotifier.RaiseOnProcessComplete(failedItems, totalItemsProcessed);
 
 			// assert
 			_batch.Verify(x => x.SetFailedItemsCountAsync(failedItems));

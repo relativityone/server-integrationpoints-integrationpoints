@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Globalization;
+using System.Linq;
+using System.Reflection;
 using kCura.Relativity.DataReaderClient;
 
 namespace Relativity.Sync.Tests.Unit
@@ -16,6 +19,22 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			OnProcessProgress?.Invoke(new FullStatus(0, totalItemsProcessed, 0, failedItems, DateTime.MinValue, 
 				DateTime.MinValue, string.Empty, string.Empty, 0, 0, Guid.Empty, null));
+		}
+
+		public void RaiseOnProcessComplete(int failedItems, int totalItemsProcessed)
+		{
+			var jobReport = (JobReport)Activator.CreateInstance(typeof(JobReport), true);
+
+			System.Reflection.FieldInfo errorRowsField = jobReport.GetType()
+				.GetField("_errorRows", BindingFlags.Instance | BindingFlags.NonPublic);
+			errorRowsField?.SetValue(jobReport, new JobReport.RowError[failedItems].ToList());
+
+			PropertyInfo totalRows = jobReport.GetType()
+				.GetProperty(nameof(jobReport.TotalRows));
+			totalRows?.SetValue(jobReport, Convert.ChangeType(totalItemsProcessed, totalRows.PropertyType, CultureInfo.InvariantCulture),
+				BindingFlags.NonPublic | BindingFlags.Instance, null, null, CultureInfo.InvariantCulture);
+
+			OnComplete?.Invoke(jobReport);
 		}
 	}
 }

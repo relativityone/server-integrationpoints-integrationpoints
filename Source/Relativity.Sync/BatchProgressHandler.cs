@@ -5,17 +5,18 @@ namespace Relativity.Sync
 {
 	internal sealed class BatchProgressHandler : IBatchProgressHandler
 	{
-		private DateTime _lastProgressEventTimestamp = DateTime.Now;
+		private DateTime _lastProgressEventTimestamp;
 		private int _completedRecordsCount;
 		private int _failedRecordsCount;
-
+		
 		private readonly IBatchProgressUpdater _progressUpdater;
+		private readonly IDateTime _dateTime;
+		private readonly TimeSpan _throttle = TimeSpan.FromSeconds(1);
 
-		internal TimeSpan Throttle { get; set; } = TimeSpan.FromSeconds(1);
-
-		public BatchProgressHandler(IImportNotifier importNotifier, IBatchProgressUpdater progressUpdater)
+		public BatchProgressHandler(IImportNotifier importNotifier, IBatchProgressUpdater progressUpdater, IDateTime dateTime)
 		{
 			_progressUpdater = progressUpdater;
+			_dateTime = dateTime;
 			importNotifier.OnProcessProgress += HandleProcessProgress;
 			importNotifier.OnComplete += HandleProcessComplete;
 		}
@@ -28,23 +29,25 @@ namespace Relativity.Sync
 			if (CanUpdateProgress())
 			{
 				UpdateProgress();
-				_lastProgressEventTimestamp = DateTime.Now;
 			}
 		}
 
 		private bool CanUpdateProgress()
 		{
-			return DateTime.Now > _lastProgressEventTimestamp + Throttle;
+			return _dateTime.Now >= _lastProgressEventTimestamp + _throttle;
 		}
 
 		private void HandleProcessComplete(JobReport jobreport)
 		{
+			_failedRecordsCount = jobreport.ErrorRowCount;
+			_completedRecordsCount = jobreport.TotalRows - jobreport.ErrorRowCount;
 			UpdateProgress();
 		}
 
 		private void UpdateProgress()
 		{
 			_progressUpdater.UpdateProgressAsync(_completedRecordsCount, _failedRecordsCount).ConfigureAwait(false).GetAwaiter().GetResult();
+			_lastProgressEventTimestamp = _dateTime.Now;
 		}
 	}
 }

@@ -13,7 +13,7 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public void ItShouldCreateBatchProgressHandler()
 		{
-			BatchProgressHandlerFactory factory = new BatchProgressHandlerFactory(new EmptyLogger());
+			BatchProgressHandlerFactory factory = new BatchProgressHandlerFactory(new EmptyLogger(), Mock.Of<IDateTime>());
 
 			// act
 			IBatchProgressHandler batchProgressHandler = factory.CreateBatchProgressHandler(Mock.Of<IBatch>(),

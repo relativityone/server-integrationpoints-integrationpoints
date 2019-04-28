@@ -28,6 +28,7 @@ namespace Relativity.Sync
 			containerBuilder.RegisterInstance(configuration).As<SyncJobExecutionConfiguration>();
 			containerBuilder.RegisterType<SyncExecutionContextFactory>().As<ISyncExecutionContextFactory>();
 			containerBuilder.RegisterType<AppDomainWrapper>().As<IAppDomain>();
+			containerBuilder.RegisterType<DateTimeWrapper>().As<IDateTime>();
 			containerBuilder.RegisterType<JSONSerializer>().As<ISerializer>();
 			containerBuilder.RegisterType<ProgressStateCounter>().As<IProgressStateCounter>();
 			containerBuilder.RegisterType<SyncJobProgress>().As<IProgress<SyncJobState>>();
