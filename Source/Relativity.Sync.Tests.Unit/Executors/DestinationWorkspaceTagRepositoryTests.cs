@@ -368,6 +368,50 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		}
 
 		[Test]
+		public async Task ItShouldCreateTwoBatchesAndTagDocuments()
+		{
+			// Arrange
+
+			const int maxBatchSize = 10000;
+			const int expectedNumberOfBatches = 2;
+			int firstBatchSize = maxBatchSize;
+			int secondBatchSize = maxBatchSize / expectedNumberOfBatches - 1;
+			int testBatchSize = firstBatchSize + secondBatchSize;
+			int[] testArtifactIds = Enumerable.Repeat(0, testBatchSize).ToArray();
+
+			var synchronizationConfiguration = new Mock<ISynchronizationConfiguration>(MockBehavior.Loose);
+
+			_objectManager.Setup(x => x.UpdateAsync(It.IsAny<int>(), It.IsAny<MassUpdateByObjectIdentifiersRequest>(), It.IsAny<MassUpdateOptions>(), It.IsAny<CancellationToken>()))
+				.ReturnsAsync((int workspace, MassUpdateByObjectIdentifiersRequest request, MassUpdateOptions options, CancellationToken token) =>
+			{
+				var massUpdateResult = new MassUpdateResult
+				{
+					TotalObjectsUpdated = request.Objects.Count,
+					Success = true
+				};
+				return massUpdateResult;
+			});
+
+			// Act
+			IList<TagDocumentsResult> actualResult = await _sut.TagDocumentsAsync(synchronizationConfiguration.Object, testArtifactIds, _token).ConfigureAwait(false);
+
+			// Assert
+			Assert.IsNotNull(actualResult);
+			Assert.AreEqual(expectedNumberOfBatches, actualResult.Count);
+
+			Assert.IsTrue(actualResult[0].Success);
+			Assert.AreEqual(firstBatchSize, actualResult[0].TotalObjectsUpdated);
+			CollectionAssert.IsEmpty(actualResult[0].FailedDocumentArtifactIds);
+
+			Assert.IsTrue(actualResult[1].Success);
+			Assert.AreEqual(secondBatchSize, actualResult[1].TotalObjectsUpdated);
+			CollectionAssert.IsEmpty(actualResult[1].FailedDocumentArtifactIds);
+
+			_objectManager.Verify(x => x.UpdateAsync(It.IsAny<int>(), It.IsAny<MassUpdateByObjectIdentifiersRequest>(), It.IsAny<MassUpdateOptions>(), It.IsAny<CancellationToken>()),
+				Times.Exactly(expectedNumberOfBatches));
+		}
+
+		[Test]
 		public async Task ItShouldTagDocumentsWithCorrectFields()
 		{
 			// Arrange
