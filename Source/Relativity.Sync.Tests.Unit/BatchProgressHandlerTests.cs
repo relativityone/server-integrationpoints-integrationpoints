@@ -20,8 +20,10 @@ namespace Relativity.Sync.Tests.Unit
 			_batch = new Mock<IBatch>();
 			_dateTime = new Mock<IDateTime>();
 			_importNotifier = new FakeImportNotifier();
-			BatchProgressUpdater batchProgressUpdater = new BatchProgressUpdater(_batch.Object, new EmptyLogger());
-			_batchProgressHandler = new BatchProgressHandler(_importNotifier, batchProgressUpdater, _dateTime.Object);
+			BatchProgressUpdater batchProgressUpdater = new BatchProgressUpdater(new EmptyLogger());
+			_batchProgressHandler = new BatchProgressHandler(_batch.Object, batchProgressUpdater, _dateTime.Object);
+			_importNotifier.OnComplete += _batchProgressHandler.HandleProcessComplete;
+			_importNotifier.OnProcessProgress += _batchProgressHandler.HandleProcessProgress;
 		}
 
 		[TestCase(0, 0, 0)]
@@ -37,9 +39,7 @@ namespace Relativity.Sync.Tests.Unit
 		[TestCase(20, 500, 10)]
 		public void ItShouldThrottleProgressEvents(int numberOfEvents, int delayBetweenEvents, int expectedNumberOfProgressUpdates)
 		{
-#pragma warning disable RG2009 // Hardcoded Numeric Value
-			DateTime now = new DateTime(2020, 1, 1);
-#pragma warning restore RG2009 // Hardcoded Numeric Value
+			DateTime now = DateTime.Now;
 
 			// act
 			for (int i = 0; i < numberOfEvents; i++)

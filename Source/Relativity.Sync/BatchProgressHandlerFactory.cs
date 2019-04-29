@@ -5,18 +5,21 @@ namespace Relativity.Sync
 {
 	internal sealed class BatchProgressHandlerFactory : IBatchProgressHandlerFactory
 	{
-		private readonly ISyncLog _logger;
+		private readonly IBatchProgressUpdater _batchProgressUpdater;
 		private readonly IDateTime _dateTime;
 
-		public BatchProgressHandlerFactory(ISyncLog logger, IDateTime dateTime)
+		public BatchProgressHandlerFactory(IBatchProgressUpdater batchProgressUpdater, IDateTime dateTime)
 		{
-			_logger = logger;
+			_batchProgressUpdater = batchProgressUpdater;
 			_dateTime = dateTime;
 		}
 
 		public IBatchProgressHandler CreateBatchProgressHandler(IBatch batch, IImportNotifier importNotifier)
 		{
-			return new BatchProgressHandler(importNotifier, new BatchProgressUpdater(batch, _logger), _dateTime);
+			var handler = new BatchProgressHandler(batch, _batchProgressUpdater, _dateTime);
+			importNotifier.OnProcessProgress += handler.HandleProcessProgress;
+			importNotifier.OnComplete += handler.HandleProcessComplete;
+			return handler;
 		}
 	}
 }

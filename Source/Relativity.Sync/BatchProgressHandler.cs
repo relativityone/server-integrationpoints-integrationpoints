@@ -1,35 +1,41 @@
 ﻿using System;
 using kCura.Relativity.DataReaderClient;
+using Relativity.Sync.Storage;
 
 namespace Relativity.Sync
 {
 	internal sealed class BatchProgressHandler : IBatchProgressHandler
 	{
-		private DateTime _lastProgressEventTimestamp;
-		private int _completedRecordsCount;
-		private int _failedRecordsCount;
-		
+		private DateTime _lastProgressEventTimestamp = DateTime.MinValue;
+
+		private readonly IBatch _batch;
 		private readonly IBatchProgressUpdater _progressUpdater;
 		private readonly IDateTime _dateTime;
 		private readonly TimeSpan _throttle = TimeSpan.FromSeconds(1);
 
-		public BatchProgressHandler(IImportNotifier importNotifier, IBatchProgressUpdater progressUpdater, IDateTime dateTime)
+		public BatchProgressHandler(IBatch batch, IBatchProgressUpdater progressUpdater, IDateTime dateTime)
 		{
+			_batch = batch;
 			_progressUpdater = progressUpdater;
 			_dateTime = dateTime;
-			importNotifier.OnProcessProgress += HandleProcessProgress;
-			importNotifier.OnComplete += HandleProcessComplete;
 		}
 
-		private void HandleProcessProgress(FullStatus status)
+		public void HandleProcessProgress(FullStatus status)
 		{
-			_completedRecordsCount = (int)status.TotalRecordsProcessed - (int)status.TotalRecordsProcessedWithErrors;
-			_failedRecordsCount = (int)status.TotalRecordsProcessedWithErrors;
-
-			if (CanUpdateProgress())
+			bool canUpdate = CanUpdateProgress();
+			if (canUpdate)
 			{
-				UpdateProgress();
+				int completedRecordsCount = (int)status.TotalRecordsProcessed - (int)status.TotalRecordsProcessedWithErrors;
+				int failedRecordsCount = (int)status.TotalRecordsProcessedWithErrors;
+				UpdateProgress(completedRecordsCount, failedRecordsCount);
 			}
+		}
+
+		public void HandleProcessComplete(JobReport jobReport)
+		{
+			int failedRecordsCount = jobReport.ErrorRowCount;
+			int completedRecordsCount = jobReport.TotalRows - jobReport.ErrorRowCount;
+			UpdateProgress(completedRecordsCount, failedRecordsCount);
 		}
 
 		private bool CanUpdateProgress()
@@ -37,16 +43,9 @@ namespace Relativity.Sync
 			return _dateTime.Now >= _lastProgressEventTimestamp + _throttle;
 		}
 
-		private void HandleProcessComplete(JobReport jobreport)
+		private void UpdateProgress(int completedRecordsCount, int failedRecordsCount)
 		{
-			_failedRecordsCount = jobreport.ErrorRowCount;
-			_completedRecordsCount = jobreport.TotalRows - jobreport.ErrorRowCount;
-			UpdateProgress();
-		}
-
-		private void UpdateProgress()
-		{
-			_progressUpdater.UpdateProgressAsync(_completedRecordsCount, _failedRecordsCount).ConfigureAwait(false).GetAwaiter().GetResult();
+			_progressUpdater.UpdateProgressAsync(_batch, completedRecordsCount, failedRecordsCount).ConfigureAwait(false).GetAwaiter().GetResult();
 			_lastProgressEventTimestamp = _dateTime.Now;
 		}
 	}
