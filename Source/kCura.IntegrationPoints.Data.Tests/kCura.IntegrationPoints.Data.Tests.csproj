@@ -165,6 +165,8 @@
     <Compile Include="PermissionServiceTest.cs" />
     <Compile Include="RelativityReaderBaseTests.cs" />
     <Compile Include="StreamWrappers\AsciiToUnicodeStreamTests.cs" />
+    <Compile Include="StreamWrappers\SelfDisposingStreamTests.cs" />
+    <Compile Include="StreamWrappers\SelfRecreatingStreamTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

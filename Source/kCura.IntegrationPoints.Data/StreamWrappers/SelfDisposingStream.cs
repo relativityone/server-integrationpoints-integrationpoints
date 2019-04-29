@@ -59,7 +59,6 @@ namespace kCura.IntegrationPoints.Data.StreamWrappers
 				_logger.LogError(ex, "Failed reading {0} bytes from {1} at index: {2}", count, nameof(SelfDisposingStream), offset);
 				throw;
 			}
-
 		}
 
 		public override void Write(byte[] buffer, int offset, int count)
