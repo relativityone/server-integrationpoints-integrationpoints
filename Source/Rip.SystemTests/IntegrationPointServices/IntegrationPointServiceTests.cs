@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Castle.Windsor;
 using FluentAssertions;
 using kCura.Apps.Common.Utils.Serializers;
@@ -57,16 +58,18 @@ namespace Rip.SystemTests.IntegrationPointServices
 			_typeService = _container.Resolve<IIntegrationPointTypeService>();
 
 			_savedSearchArtifactID = SavedSearch.CreateSavedSearch(_sourceWorkspaceID, _ALL_DOCUMENTS_SAVED_SEARCH_NAME);
-			_integrationPointExportType = _typeService.GetIntegrationPointType(Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId;
+			_integrationPointExportType = _typeService
+				.GetIntegrationPointType(Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid)
+				.ArtifactId;
 		}
 
 		[Test]
-		public void IntegrationPointShouldBeSavedAndRetrievedProperly_WhenFieldMappingJsonIsLongerThan10000()
+		public async Task IntegrationPointShouldBeSavedAndRetrievedProperly_WhenFieldMappingJsonIsLongerThan10000()
 		{
 			// arrange
 			string integrationPointName = $"DAFFB7F6-363A-470A-B0E8-213CADA59963-{DateTime.UtcNow.Ticks}";
-			IList<FieldEntry> sourceFields = CreateVeryLongNameFields(_sourceWorkspaceID);
-			IList<FieldEntry> destinationFields = CreateVeryLongNameFields(_destinationWorkspaceID);
+			IList<FieldEntry> sourceFields = await CreateNameFields(_sourceWorkspaceID, _VERY_LONG_FIELD_NAME_COUNT).ConfigureAwait(false);
+			IList<FieldEntry> destinationFields = await CreateNameFields(_destinationWorkspaceID, _VERY_LONG_FIELD_NAME_COUNT).ConfigureAwait(false);
 
 			var fieldMappingBuilder = new FieldMappingBuilder(_repositoryFactory);
 			FieldMap[] fieldMapping = fieldMappingBuilder
@@ -78,20 +81,20 @@ namespace Rip.SystemTests.IntegrationPointServices
 
 			// act
 			int integrationPointArtifactID = CreateRelativityProviderIntegrationPoint(integrationPointName, fieldMapping);
-			IntegrationPointModel retrievedIntegrationPoint = RetrieveIntegrationPoint(integrationPointArtifactID);
+			IntegrationPointModel retrievedIntegrationPoint = _integrationPointService.ReadIntegrationPointModel(integrationPointArtifactID);
 
 			// assert
 			string expectedFieldMapping = _serializer.Serialize(fieldMapping);
 			retrievedIntegrationPoint.Map.Should().Be(expectedFieldMapping);
 		}
 
-		private IList<FieldEntry> CreateVeryLongNameFields(int workspaceID)
+		private async Task<IList<FieldEntry>> CreateNameFields(int workspaceID, int numberOfFields)
 		{
-			var fieldEntries = new List<FieldEntry>(_VERY_LONG_FIELD_NAME_COUNT);
+			var fieldEntries = new List<FieldEntry>(numberOfFields);
 
-			for (int i = 0; i < _VERY_LONG_FIELD_NAME_COUNT; i++)
+			for (int i = 0; i < numberOfFields; i++)
 			{
-				string fieldName = CreateVeryLongFieldName(i);
+				string fieldName = CreateFieldNameLongerThan45Characters(i);
 				var fixedLengthFieldRequest = new FixedLengthFieldRequest
 				{
 					ObjectType = new ObjectTypeIdentifier {ArtifactTypeID = kCura.IntegrationPoint.Tests.Core.Constants.DOCUMENT_ARTIFACT_TYPE_ID },
@@ -104,8 +107,7 @@ namespace Rip.SystemTests.IntegrationPointServices
 					OpenToAssociations = false
 				};
 
-				int fieldArtifactID = _fieldManager.CreateFixedLengthFieldAsync(workspaceID, fixedLengthFieldRequest)
-						.GetAwaiter().GetResult();
+				int fieldArtifactID = await _fieldManager.CreateFixedLengthFieldAsync(workspaceID, fixedLengthFieldRequest).ConfigureAwait(false);
 
 				var fieldEntry = new FieldEntry
 				{
@@ -120,7 +122,7 @@ namespace Rip.SystemTests.IntegrationPointServices
 			return fieldEntries;
 		}
 
-		private static string CreateVeryLongFieldName(int id)
+		private static string CreateFieldNameLongerThan45Characters(int id)
 		{
 			return $"{_VERY_LONG_FIELD_NAME_PREFIX}{id}";
 		}
@@ -139,7 +141,7 @@ namespace Rip.SystemTests.IntegrationPointServices
 				.WithOverwriteMode(ImportOverwriteModeEnum.AppendOnly)
 				.Build();
 
-			return SaveIntegrationPoint(integrationPointModel);
+			return _integrationPointService.SaveIntegration(integrationPointModel);
 		}
 
 		private SourceConfiguration CreateRelativityProviderSavedSearchSourceConfiguration()
@@ -169,26 +171,17 @@ namespace Rip.SystemTests.IntegrationPointServices
 				RelativityUsername = SharedVariables.RelativityUserName,
 				RelativityPassword = SharedVariables.RelativityPassword,
 				DestinationProviderType = Constants.IntegrationPoints.DestinationProviders.RELATIVITY,
-				DestinationFolderArtifactId = GetDestinationWorkspaceRootFolderID(),
+				DestinationFolderArtifactId = GetDestinationWorkspaceRootFolderID().GetAwaiter().GetResult(),
 				FederatedInstanceArtifactId = null
 			};
 
 			return configuration;
 		}
 
-		private int GetDestinationWorkspaceRootFolderID()
+		private async Task<int> GetDestinationWorkspaceRootFolderID()
 		{
-			return _folderManager.GetWorkspaceRootAsync(_destinationWorkspaceID).Result.ArtifactID;
-		}
-
-		private int SaveIntegrationPoint(IntegrationPointModel integrationPointModel)
-		{
-			return _integrationPointService.SaveIntegration(integrationPointModel);
-		}
-
-		private IntegrationPointModel RetrieveIntegrationPoint(int artifactID)
-		{
-			return _integrationPointService.ReadIntegrationPointModel(artifactID);
+			Folder workspaceRoot = await _folderManager.GetWorkspaceRootAsync(_destinationWorkspaceID).ConfigureAwait(false);
+			return workspaceRoot.ArtifactID;
 		}
 	}
 }

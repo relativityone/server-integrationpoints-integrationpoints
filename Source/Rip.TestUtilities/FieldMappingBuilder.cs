@@ -12,10 +12,10 @@ namespace Rip.TestUtilities
 	{
 		private readonly IRepositoryFactory _repositoryFactory;
 
-		private int _sourceWorkspaceID;
-		private int _destinationWorkspaceID;
 		private IList<FieldEntry> _sourceFields;
 		private IList<FieldEntry> _destinationFields;
+		private IFieldQueryRepository _sourceWorkspaceFieldQueryRepository;
+		private IFieldQueryRepository _destinationWorkspaceFieldQueryRepository;
 
 		public FieldMappingBuilder(IRepositoryFactory repositoryFactory)
 		{
@@ -24,13 +24,13 @@ namespace Rip.TestUtilities
 
 		public FieldMappingBuilder WithSourceWorkspaceID(int sourceWorkspaceID)
 		{
-			_sourceWorkspaceID = sourceWorkspaceID;
+			_sourceWorkspaceFieldQueryRepository = CreateFieldQueryRepository(sourceWorkspaceID);
 			return this;
 		}
 
 		public FieldMappingBuilder WithDestinationWorkspaceID(int destinationWorkspaceID)
 		{
-			_destinationWorkspaceID = destinationWorkspaceID;
+			_destinationWorkspaceFieldQueryRepository = CreateFieldQueryRepository(destinationWorkspaceID);
 			return this;
 		}
 
@@ -69,8 +69,8 @@ namespace Rip.TestUtilities
 
 		private FieldMap CreateIdentifierFieldMap()
 		{
-			var sourceDto = RetrieveIdentifierField(_sourceWorkspaceID);
-			var destinationDto = RetrieveIdentifierField(_destinationWorkspaceID);
+			var sourceDto = RetrieveIdentifierField(_sourceWorkspaceFieldQueryRepository);
+			var destinationDto = RetrieveIdentifierField(_destinationWorkspaceFieldQueryRepository);
 
 			var fieldMap = new FieldMap()
 			{
@@ -82,9 +82,8 @@ namespace Rip.TestUtilities
 			return fieldMap;
 		}
 
-		private ArtifactDTO RetrieveIdentifierField(int workspaceID)
+		private ArtifactDTO RetrieveIdentifierField(IFieldQueryRepository fieldQueryRepository)
 		{
-			IFieldQueryRepository fieldQueryRepository = _repositoryFactory.GetFieldQueryRepository(workspaceID);
 			return fieldQueryRepository.RetrieveTheIdentifierField((int) ArtifactType.Document);
 		}
 
@@ -93,9 +92,15 @@ namespace Rip.TestUtilities
 			return new FieldEntry
 			{
 				FieldIdentifier = fieldDto.ArtifactId.ToString(),
-				DisplayName = fieldDto.Fields.First(field => field.Name == "Name").Value as string + " [Object Identifier]",
+				DisplayName = $"{fieldDto.Fields.First(field => field.Name == "Name")} [Object Identifier]",
 				IsIdentifier = true
 			};
+		}
+
+		private IFieldQueryRepository CreateFieldQueryRepository(int workspaceID)
+		{
+			IFieldQueryRepository fieldQueryRepository = _repositoryFactory.GetFieldQueryRepository(workspaceID);
+			return fieldQueryRepository;
 		}
 	}
 }

@@ -5,6 +5,13 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data.StreamWrappers
 {
+	/// <summary>
+	/// This stream wraps a function that retrieves inner stream and
+	/// attempts to retrieve an inner stream again if it is unreadable
+	/// or if an inner stream retrieval method throws an exception.
+	/// Is is required due to the Object Manager GetLongTextStream method,
+	/// which sometimes returns an unreadable stream.
+	/// </summary>
 	internal sealed class SelfRecreatingStream : Stream
 	{
 		private const int _MAX_RETRY_ATTEMPTS = 3;
@@ -41,14 +48,6 @@ namespace kCura.IntegrationPoints.Data.StreamWrappers
 			InnerStream.SetLength(value);
 		}
 
-		protected override void Dispose(bool disposing)
-		{
-			if (!disposing)
-			{
-				DisposeInnerStream();
-			}
-		}
-
 		public override int Read(byte[] buffer, int offset, int count)
 		{
 			return InnerStream.Read(buffer, offset, count);
@@ -82,6 +81,14 @@ namespace kCura.IntegrationPoints.Data.StreamWrappers
 		{
 			get { return InnerStream.Position; }
 			set { InnerStream.Position = value; }
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (!disposing)
+			{
+				DisposeInnerStream();
+			}
 		}
 
 		private Stream GetInnerStream()

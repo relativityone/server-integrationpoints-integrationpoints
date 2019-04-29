@@ -5,7 +5,6 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.ScheduleQueue.Core.Helpers;
@@ -21,7 +20,8 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 {
 	public abstract class IntegrationPointServiceBase<T> where T : BaseRdo, new()
 	{
-		private readonly Lazy<IRelativityObjectManager> _objectManager;
+		protected IRelativityObjectManager ObjectManager;
+
 		protected IIntegrationPointSerializer Serializer;
 		protected ICaseServiceContext Context;
 		protected IContextContainer SourceContextContainer;
@@ -43,7 +43,8 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			IIntegrationPointSerializer serializer,
 			IManagerFactory managerFactory,
 			IContextContainerFactory contextContainerFactory,
-			IValidationExecutor validationExecutor)
+			IValidationExecutor validationExecutor,
+			IRelativityObjectManager objectManager)
 		{
 			Serializer = serializer;
 			Context = context;
@@ -52,37 +53,32 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			_validationExecutor = validationExecutor;
 			_helper = helper;
 			SourceContextContainer = contextContainerFactory.CreateContextContainer(helper);
-			_objectManager = new Lazy<IRelativityObjectManager>(CreateObjectManager);
+			ObjectManager = objectManager;
 		}
 
 		public IList<T> GetAllRDOs()
 		{
-			var query = new IntegrationPointBaseQuery<T>(_objectManager.Value);
+			var query = new IntegrationPointBaseQuery<T>(ObjectManager);
 			return query.GetAllIntegrationPoints();
 		}
 
 		public IList<T> GetAllRDOsWithAllFields()
 		{
-			var query = new IntegrationPointBaseQuery<T>(_objectManager.Value);
+			var query = new IntegrationPointBaseQuery<T>(ObjectManager);
 			return query.GetIntegrationPointsWithAllFields();
 		}
 
 		public IList<T> GetAllRDOsForSourceProvider(List<int> sourceProviderIds)
 		{
-			var query = new IntegrationPointBaseQuery<T>(_objectManager.Value);
+			var query = new IntegrationPointBaseQuery<T>(ObjectManager);
 			return query.GetIntegrationPointsWithAllFields(sourceProviderIds);
 		}
 
 		protected IList<T> GetAllRDOsWithBasicProfileColumns()
 		{
-			var query = new IntegrationPointBaseQuery<T>(_objectManager.Value);
+			var query = new IntegrationPointBaseQuery<T>(ObjectManager);
 			return query.GetAllIntegrationPointsProfileWithBasicColumns();
 
-		}
-
-		private IRelativityObjectManager CreateObjectManager()
-		{
-			return new RelativityObjectManagerFactory(_helper).CreateRelativityObjectManager(Context.WorkspaceID);
 		}
 
 		protected abstract IntegrationPointModelBase GetModel(int artifactId);
@@ -176,7 +172,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			SourceProvider sourceProvider = null;
 			try
 			{
-				sourceProvider = Context.RsapiService.RelativityObjectManager.Read<SourceProvider>(sourceProviderArtifactId.Value);
+				sourceProvider = ObjectManager.Read<SourceProvider>(sourceProviderArtifactId.Value);
 			}
 			catch (Exception e)
 			{
@@ -196,7 +192,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			DestinationProvider destinationProvider = null;
 			try
 			{
-				destinationProvider = Context.RsapiService.RelativityObjectManager.Read<DestinationProvider>(destinationProviderArtifactId.Value);
+				destinationProvider = ObjectManager.Read<DestinationProvider>(destinationProviderArtifactId.Value);
 			}
 			catch (Exception e)
 			{
@@ -216,7 +212,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			IntegrationPointType integrationPointType = null;
 			try
 			{
-				integrationPointType = Context.RsapiService.RelativityObjectManager.Read<Data.IntegrationPointType>(integrationPointTypeArtifactId.Value);
+				integrationPointType = ObjectManager.Read<Data.IntegrationPointType>(integrationPointTypeArtifactId.Value);
 			}
 			catch (Exception e)
 			{
@@ -260,7 +256,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			// needs to be here because custom page is the only place that has user context
 			try
 			{
-				Context.RsapiService.RelativityObjectManager.Read<SourceProvider>(model.SourceProvider);
+				ObjectManager.Read<SourceProvider>(model.SourceProvider);
 			}
 			catch (Exception e)
 			{

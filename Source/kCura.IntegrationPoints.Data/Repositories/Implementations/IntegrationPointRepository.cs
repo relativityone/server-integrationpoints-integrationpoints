@@ -74,7 +74,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private async Task<string> GetFieldMappingJsonAsync(int integrationPointArtifactID)
 		{
 			var field = new FieldRef { Guid = Guid.Parse(IntegrationPointFieldGuids.FieldMappings) };
-			Stream fieldMapStream = _objectManager.StreamLongText(integrationPointArtifactID, field, false);
+			Stream fieldMapStream = _objectManager.StreamLongText(integrationPointArtifactID, field, isUnicode: false);
 			var fieldMapStreamReader = new StreamReader(fieldMapStream);
 			return await fieldMapStreamReader.ReadToEndAsync().ConfigureAwait(false);
 		}

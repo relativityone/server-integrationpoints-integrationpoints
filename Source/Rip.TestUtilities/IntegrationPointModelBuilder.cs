@@ -54,13 +54,13 @@ namespace Rip.TestUtilities
 
 		public IntegrationPointModelBuilder WithSourceProvider(string sourceProviderName)
 		{
-			_sourceProvider = _sourceProviders.First(provider => provider.Name == sourceProviderName).ArtifactId;
+			_sourceProvider = _sourceProviders.Single(provider => provider.Name == sourceProviderName).ArtifactId;
 			return this;
 		}
 
 		public IntegrationPointModelBuilder WithDestinationProvider(string destinationProviderName)
 		{
-			_destinationProvider = _destinationProviders.First(provider => provider.Name == destinationProviderName).ArtifactId;
+			_destinationProvider = _destinationProviders.Single(provider => provider.Name == destinationProviderName).ArtifactId;
 			return this;
 		}
 

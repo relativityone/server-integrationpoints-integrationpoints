@@ -98,10 +98,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 				logger);
 			IIntegrationPointService integrationPointService = new IntegrationPointService(helper, caseServiceContext,
 				contextContainerFactory, integrationPointSerializer, choiceQuery, jobManager, jobHistoryService,
-				jobHistoryErrorService, managerFactory, validationExecutor, providerTypeService, messageService, integrationPointRepository);
+				jobHistoryErrorService, managerFactory, validationExecutor, providerTypeService, messageService, integrationPointRepository,
+				caseServiceContext.RsapiService.RelativityObjectManager);
 
 			IIntegrationPointProfileService integrationPointProfileService = new IntegrationPointProfileService(helper,
-				caseServiceContext, contextContainerFactory, integrationPointSerializer, choiceQuery, managerFactory, validationExecutor);
+				caseServiceContext, contextContainerFactory, integrationPointSerializer, choiceQuery, managerFactory, validationExecutor, objectManager);
 
 			ISourceConfigurationTypeOfExportUpdater sourceConfigurationTypeOfExpertUpdater = new SourceConfigurationTypeOfExportUpdater(providerTypeService);
 

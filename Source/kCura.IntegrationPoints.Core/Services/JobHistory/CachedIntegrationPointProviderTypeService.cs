@@ -65,11 +65,11 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		}
 
 		
-		private ProviderType GetProviderTypeFromService(int integrationPointArtifactId, Data.IntegrationPoint integrationPoint)
+		private ProviderType GetProviderTypeFromService(int integrationPointArtifactID, Data.IntegrationPoint integrationPoint)
 		{
 			if (integrationPoint == null)
 			{
-				integrationPoint = _integrationPointService.ReadIntegrationPoint(integrationPointArtifactId);
+				integrationPoint = _integrationPointService.ReadIntegrationPoint(integrationPointArtifactID);
 			}
 
 			ProviderType providerType = integrationPoint.GetProviderType(_providerTypeService);

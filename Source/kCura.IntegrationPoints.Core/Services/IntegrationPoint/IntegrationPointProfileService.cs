@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
@@ -21,8 +22,9 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			IIntegrationPointSerializer serializer,
 			IChoiceQuery choiceQuery,
 			IManagerFactory managerFactory,
-			IValidationExecutor validationExecutor)
-			: base(helper, context, choiceQuery, serializer, managerFactory, contextContainerFactory, validationExecutor)
+			IValidationExecutor validationExecutor,
+			IRelativityObjectManager objectManager)
+			: base(helper, context, choiceQuery, serializer, managerFactory, contextContainerFactory, validationExecutor, objectManager)
 		{
 		}
 
@@ -32,7 +34,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 		{
 			try
 			{
-				return Context.RsapiService.RelativityObjectManager.Read<IntegrationPointProfile>(artifactId);
+				return ObjectManager.Read<IntegrationPointProfile>(artifactId);
 			}
 			catch (Exception ex)
 			{
@@ -82,11 +84,11 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 				//save RDO
 				if (profile.ArtifactId > 0)
 				{
-					Context.RsapiService.RelativityObjectManager.Update(profile);
+					ObjectManager.Update(profile);
 				}
 				else
 				{
-					profile.ArtifactId = Context.RsapiService.RelativityObjectManager.Create(profile);
+					profile.ArtifactId = ObjectManager.Create(profile);
 				}
 			}
 			catch (PermissionException)

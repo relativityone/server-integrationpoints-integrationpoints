@@ -40,6 +40,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		private Data.JobHistory _previousJobHistory;
 		private DestinationProvider _destinationProvider;
 		private ICaseServiceContext _caseServiceContext;
+		private IRelativityObjectManager _objectManager;
 		private IChoiceQuery _choiceQuery;
 		private IContextContainer _contextContainer;
 		private IContextContainerFactory _contextContainerFactory;
@@ -81,6 +82,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		{
 			_helper = Substitute.For<IHelper>();
 			_caseServiceContext = Substitute.For<ICaseServiceContext>();
+			_objectManager = Substitute.For<IRelativityObjectManager>();
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
 			_sourcePermissionRepository = Substitute.For<IPermissionRepository>();
 			_targetPermissionRepository = Substitute.For<IPermissionRepository>();
@@ -115,11 +117,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				_validationExecutor,
 				_providerTypeService,
 				_messageService,
-				_integrationPointRepository
+				_integrationPointRepository,
+				_objectManager
 			);
 
 			_caseServiceContext.RsapiService = Substitute.For<IRSAPIService>();
-			_caseServiceContext.RsapiService.RelativityObjectManager.Returns(Substitute.For<IRelativityObjectManager>());
 			_caseServiceContext.WorkspaceID = _sourceWorkspaceArtifactId;
 
 			_repositoryFactory.GetPermissionRepository(_sourceWorkspaceArtifactId).Returns(_sourcePermissionRepository);
@@ -172,13 +174,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			_jobHistoryManager.GetLastJobHistoryArtifactId(_sourceWorkspaceArtifactId, _integrationPointArtifactId)
 				.Returns(_previousJobHistoryArtifactId);
-			_caseServiceContext.RsapiService.RelativityObjectManager.Read<Data.JobHistory>(_previousJobHistoryArtifactId).Returns(_previousJobHistory);
+			_objectManager.Read<Data.JobHistory>(_previousJobHistoryArtifactId).Returns(_previousJobHistory);
 
 			_integrationPointRepository.ReadAsync(_integrationPointArtifactId).Returns(_integrationPoint);
-			_caseServiceContext.RsapiService.RelativityObjectManager.Read<SourceProvider>(_sourceProviderId).Returns(_sourceProvider);
-			_caseServiceContext.RsapiService.RelativityObjectManager.Read<DestinationProvider>(_destinationProviderId).Returns(_destinationProvider);
-			_caseServiceContext.RsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(_integrationPointArtifactId).Returns(_integrationPoint);
-			_caseServiceContext.RsapiService.RelativityObjectManager.Read<IntegrationPointType>(_integrationPointTypeArtifactId).Returns(_integrationPointType);
+			_objectManager.Read<SourceProvider>(_sourceProviderId).Returns(_sourceProvider);
+			_objectManager.Read<DestinationProvider>(_destinationProviderId).Returns(_destinationProvider);
+			_objectManager.Read<Data.IntegrationPoint>(_integrationPointArtifactId).Returns(_integrationPoint);
+			_objectManager.Read<IntegrationPointType>(_integrationPointTypeArtifactId).Returns(_integrationPointType);
 		}
 
 		[Test]
@@ -644,7 +646,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			// Check if Job status changed to Validation Failed
 			_jobHistoryService.Received().UpdateRdo(Arg.Is<Data.JobHistory>(x => x.JobStatus.Name == JobStatusChoices.JobHistoryValidationFailed.Name));
 			// Check If Integration Points objest has been set HasErrors flag to YES
-			_caseServiceContext.RsapiService.RelativityObjectManager.Received()
+			_objectManager.Received()
 				.Update(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == _integrationPointArtifactId && x.HasErrors == true));
 		}
 
@@ -695,8 +697,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				Constants.IntegrationPoints.RETRY_NO_EXISTING_ERRORS);
 
 			// Assert
-			_caseServiceContext.RsapiService.RelativityObjectManager.Received(1).Read<SourceProvider>(_integrationPoint.SourceProvider.Value);
-			_caseServiceContext.RsapiService.RelativityObjectManager.Received(1).Read<DestinationProvider>(_integrationPoint.DestinationProvider.Value);
+			_objectManager.Received(1).Read<SourceProvider>(_integrationPoint.SourceProvider.Value);
+			_objectManager.Received(1).Read<DestinationProvider>(_integrationPoint.DestinationProvider.Value);
 
 			_validationExecutor.Received(1).ValidateOnRun(Arg.Is<ValidationContext>(x =>
 				x.IntegrationPointType == _integrationPointType &&
@@ -739,8 +741,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				String.Join("<br/>", Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS_REL_ERROR_MESSAGE));
 
 			// Assert
-			_caseServiceContext.RsapiService.RelativityObjectManager.Received(1).Read<SourceProvider>(_integrationPoint.SourceProvider.Value);
-			_caseServiceContext.RsapiService.RelativityObjectManager.Received(1).Read<DestinationProvider>(_integrationPoint.DestinationProvider.Value);
+			_objectManager.Received(1).Read<SourceProvider>(_integrationPoint.SourceProvider.Value);
+			_objectManager.Received(1).Read<DestinationProvider>(_integrationPoint.DestinationProvider.Value);
 
 			_validationExecutor.Received(1).ValidateOnRun(Arg.Is<ValidationContext>(x =>
 				x.IntegrationPointType == _integrationPointType &&
@@ -756,7 +758,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			_jobManager.DidNotReceive().CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), Arg.Any<TaskType>(), _sourceWorkspaceArtifactId, _integrationPoint.ArtifactId, _userId);
 
-			_caseServiceContext.RsapiService.RelativityObjectManager.Received()
+			_objectManager.Received()
 					.Update(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == _integrationPointArtifactId && x.HasErrors == true));
 		}
 
@@ -772,7 +774,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				Constants.IntegrationPoints.RETRY_IS_NOT_RELATIVITY_PROVIDER);
 
 			// Assert
-			_caseServiceContext.RsapiService.RelativityObjectManager.Received(1).Read<SourceProvider>(_integrationPoint.SourceProvider.Value);
+			_objectManager.Received(1).Read<SourceProvider>(_integrationPoint.SourceProvider.Value);
 
 			_validationExecutor.DidNotReceiveWithAnyArgs().ValidateOnRun(Arg.Any<ValidationContext>());
 
@@ -787,7 +789,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_destinationProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID;
 
 			_integrationPoint.HasErrors = true;
-			_caseServiceContext.RsapiService.RelativityObjectManager.Read<Data.JobHistory>(_previousJobHistoryArtifactId).Returns((Data.JobHistory)null);
+			_objectManager.Read<Data.JobHistory>(_previousJobHistoryArtifactId).Returns((Data.JobHistory)null);
 
 			// Act
 			Exception exception = Assert.Throws<Exception>(() => _instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId));
@@ -804,7 +806,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_destinationProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID;
 
 			_integrationPoint.HasErrors = true;
-			_caseServiceContext.RsapiService.RelativityObjectManager.Read<Data.JobHistory>(_previousJobHistoryArtifactId).Throws<Exception>();
+			_objectManager.Read<Data.JobHistory>(_previousJobHistoryArtifactId).Throws<Exception>();
 
 			// Act
 			Exception exception = Assert.Throws<Exception>(() => _instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId));
@@ -843,7 +845,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId);
 
 			// Assert
-			_caseServiceContext.RsapiService.RelativityObjectManager.Received(1).Read<SourceProvider>(_integrationPoint.SourceProvider.Value);
+			_objectManager.Received(1).Read<SourceProvider>(_integrationPoint.SourceProvider.Value);
 
 			_validationExecutor.Received(1).ValidateOnRun(Arg.Is<ValidationContext>(x =>
 				x.IntegrationPointType == _integrationPointType &&
@@ -870,7 +872,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				Constants.IntegrationPoints.NO_SOURCE_PROVIDER_SPECIFIED);
 
 			// Assert
-			_caseServiceContext.RsapiService.RelativityObjectManager.DidNotReceiveWithAnyArgs().Read<SourceProvider>(Arg.Any<int>());
+			_objectManager.DidNotReceiveWithAnyArgs().Read<SourceProvider>(Arg.Any<int>());
 			_targetPermissionRepository.DidNotReceive().UserCanImport();
 			_sourcePermissionRepository.DidNotReceive().UserCanEditDocuments();
 			_jobHistoryService.DidNotReceive().CreateRdo(_integrationPoint, Arg.Any<Guid>(), JobTypeChoices.JobHistoryRun, null);
@@ -902,7 +904,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_instance.ReadIntegrationPointModel(Arg.Is(model.ArtifactID)).Returns(existingModel);
 
 			const string exceptionMessage = "UH OH!";
-			_caseServiceContext.RsapiService.RelativityObjectManager
+			_objectManager
 					.Read<SourceProvider>(Arg.Is(model.SourceProvider))
 					.Throws(new Exception(exceptionMessage));
 
@@ -911,7 +913,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			// Assert
 			_instance.Received(1).ReadIntegrationPointModel(Arg.Is(model.ArtifactID));
-			_caseServiceContext.RsapiService.RelativityObjectManager
+			_objectManager
 				.Received(1)
 				.Read<SourceProvider>(Arg.Is(model.SourceProvider));
 		}
@@ -1019,9 +1021,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 						: System.Guid.NewGuid().ToString()
 			};
 
-			_caseServiceContext.RsapiService.RelativityObjectManager.Read<SourceProvider>(Arg.Is(model.SourceProvider)).Returns(sourceProvider);
-			_caseServiceContext.RsapiService.RelativityObjectManager.Read<DestinationProvider>(Arg.Is(model.DestinationProvider)).Returns(destinationProvider);
-			_caseServiceContext.RsapiService.RelativityObjectManager.Read<IntegrationPointType>(Arg.Is(model.Type)).Returns(integrationPointType);
+			_objectManager.Read<SourceProvider>(Arg.Is(model.SourceProvider)).Returns(sourceProvider);
+			_objectManager.Read<DestinationProvider>(Arg.Is(model.DestinationProvider)).Returns(destinationProvider);
+			_objectManager.Read<IntegrationPointType>(Arg.Is(model.Type)).Returns(integrationPointType);
 
 			string[] errorMessages = { "Oh", "no" };
 
@@ -1054,10 +1056,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			// Assert
 			_instance.Received(1).ReadIntegrationPointModel(Arg.Is(model.ArtifactID));
-			_caseServiceContext.RsapiService.RelativityObjectManager
+			_objectManager
 				.Received(1)
 				.Read<SourceProvider>(Arg.Is(model.SourceProvider));
-			_caseServiceContext.RsapiService.RelativityObjectManager
+			_objectManager
 				.Received(1)
 				.Read<DestinationProvider>(Arg.Is(model.DestinationProvider));
 
@@ -1133,9 +1135,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 						: System.Guid.NewGuid().ToString()
 			};
 
-			_caseServiceContext.RsapiService.RelativityObjectManager.Read<SourceProvider>(Arg.Is(model.SourceProvider)).Returns(sourceProvider);
-			_caseServiceContext.RsapiService.RelativityObjectManager.Read<DestinationProvider>(Arg.Is(model.DestinationProvider)).Returns(destinationProvider);
-			_caseServiceContext.RsapiService.RelativityObjectManager.Read<IntegrationPointType>(Arg.Is(model.Type)).Returns(integrationPointType);
+			_objectManager.Read<SourceProvider>(Arg.Is(model.SourceProvider)).Returns(sourceProvider);
+			_objectManager.Read<DestinationProvider>(Arg.Is(model.DestinationProvider)).Returns(destinationProvider);
+			_objectManager.Read<IntegrationPointType>(Arg.Is(model.Type)).Returns(integrationPointType);
 
 			_caseServiceContext.EddsUserID = _userId;
 
@@ -1145,10 +1147,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			// Assert
 			Assert.AreEqual(model.ArtifactID, result, "The resulting artifact id should match.");
 			_instance.Received(1).ReadIntegrationPointModel(Arg.Is(model.ArtifactID));
-			_caseServiceContext.RsapiService.RelativityObjectManager
+			_objectManager
 				.Received(1)
 				.Read<SourceProvider>(Arg.Is(model.SourceProvider));
-			_caseServiceContext.RsapiService.RelativityObjectManager
+			_objectManager
 				.Received(1)
 				.Read<DestinationProvider>(Arg.Is(model.DestinationProvider));
 
@@ -1162,7 +1164,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			));
 
 
-			_caseServiceContext.RsapiService.RelativityObjectManager.Received(1).Update(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == model.ArtifactID));
+			_objectManager.Received(1).Update(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == model.ArtifactID));
 			_jobManager.Received(1).GetJob(
 				_sourceWorkspaceArtifactId,
 				model.ArtifactID,
@@ -1217,13 +1219,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 						: System.Guid.NewGuid().ToString()
 			};
 
-			_caseServiceContext.RsapiService.RelativityObjectManager.Read<SourceProvider>(Arg.Is(model.SourceProvider)).Returns(sourceProvider);
-			_caseServiceContext.RsapiService.RelativityObjectManager.Read<DestinationProvider>(Arg.Is(model.DestinationProvider)).Returns(destinationProvider);
-			_caseServiceContext.RsapiService.RelativityObjectManager.Read<IntegrationPointType>(Arg.Is(model.Type)).Returns(integrationPointType);
+			_objectManager.Read<SourceProvider>(Arg.Is(model.SourceProvider)).Returns(sourceProvider);
+			_objectManager.Read<DestinationProvider>(Arg.Is(model.DestinationProvider)).Returns(destinationProvider);
+			_objectManager.Read<IntegrationPointType>(Arg.Is(model.Type)).Returns(integrationPointType);
 
 
 			const int newIntegrationPoinId = 389234;
-			_caseServiceContext.RsapiService.RelativityObjectManager.Create(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == 0))
+			_objectManager.Create(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == 0))
 				.Returns(newIntegrationPoinId);
 
 			_caseServiceContext.EddsUserID = _userId;
@@ -1233,10 +1235,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			// Assert
 			Assert.AreEqual(newIntegrationPoinId, result, "The resulting artifact id should match.");
-			_caseServiceContext.RsapiService.RelativityObjectManager
+			_objectManager
 				.Received(1)
 				.Read<SourceProvider>(Arg.Is(model.SourceProvider));
-			_caseServiceContext.RsapiService.RelativityObjectManager
+			_objectManager
 				.Received(1)
 				.Read<DestinationProvider>(Arg.Is(model.DestinationProvider));
 
@@ -1249,7 +1251,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				x.ObjectTypeGuid == _objectTypeGuid
 			));
 
-			_caseServiceContext.RsapiService.RelativityObjectManager.Received(1).Create(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == newIntegrationPoinId));
+			_objectManager.Received(1).Create(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == newIntegrationPoinId));
 			_jobManager.Received(1).GetJob(
 				_sourceWorkspaceArtifactId,
 				newIntegrationPoinId,
@@ -1302,7 +1304,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				LastRun = null,
 				Destination = JsonConvert.SerializeObject(new { DestinationProviderType = "" })
 			};
-			_caseServiceContext.RsapiService.RelativityObjectManager.Create(Arg.Any<Data.IntegrationPoint>())
+			_objectManager.Create(Arg.Any<Data.IntegrationPoint>())
 				.Returns(integrationPointArtifactId);
 
 			_choiceQuery.GetChoicesOnField(Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<Choice>()
@@ -1323,8 +1325,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				Identifier = Core.Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID
 			};
 
-			_caseServiceContext.RsapiService.RelativityObjectManager.Read<SourceProvider>(Arg.Is(model.SourceProvider)).Returns(sourceProvider);
-			_caseServiceContext.RsapiService.RelativityObjectManager.Read<DestinationProvider>(Arg.Is(model.DestinationProvider)).Returns(destinationProvider);
+			_objectManager.Read<SourceProvider>(Arg.Is(model.SourceProvider)).Returns(sourceProvider);
+			_objectManager.Read<DestinationProvider>(Arg.Is(model.DestinationProvider)).Returns(destinationProvider);
 
 			// Act
 			int ipArtifactId = _instance.SaveIntegration(model);
@@ -1398,7 +1400,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 						? Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID
 						: "YODUDE"
 				};
-				_caseServiceContext.RsapiService.RelativityObjectManager
+				_objectManager
 					.Read<SourceProvider>(Arg.Is(model.SourceProvider))
 					.Returns(sourceProvider);
 			}
@@ -1411,7 +1413,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			// Assert
 			_instance.Received(1).ReadIntegrationPointModel(Arg.Is(model.ArtifactID));
-			_caseServiceContext.RsapiService.RelativityObjectManager
+			_objectManager
 				.Received(!propertyNameHashSet.Contains("Source Provider") ? 1 : 0)
 				.Read<SourceProvider>(Arg.Is(model.SourceProvider));
 		}

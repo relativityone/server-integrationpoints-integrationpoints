@@ -102,7 +102,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.RelatvityO
 					_relativityObjectManager.StreamLongText(
 						documentArtifactID,
 						new FieldRef {Name = _EXTRACTED_TEXT_FIELD_NAME},
-						false);
+						isUnicode: false);
 				var actualExtractedTextStreamReader = new StreamReader(actualExtractedTextStream, Encoding.UTF8);
 				string actualExtractedTextString = actualExtractedTextStreamReader.ReadToEnd();
 

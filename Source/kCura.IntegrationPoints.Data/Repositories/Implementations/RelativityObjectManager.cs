@@ -383,7 +383,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		private Task<Stream> GetLongTextStreamAsync(
+		private async Task<Stream> GetLongTextStreamAsync(
 			int relativityObjectArtifactId,
 			FieldRef longTextFieldRef,
 			ExecutionIdentity executionIdentity)
@@ -397,7 +397,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 						longTextFieldRef)
 					.GetAwaiter()
 					.GetResult();
-				return keplerStream.GetStreamAsync();
+				return await keplerStream.GetStreamAsync().ConfigureAwait(false);
 			}
 		}
 

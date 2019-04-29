@@ -129,6 +129,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		[Test]
 		public void StreamLongText_ItShouldReturnIOStreamGivenKeplerStreamFromRelativityObjectManagerFacade_WhenFieldIsUnicode()
 		{
+			// arrange
 			Stream expectedStream = new Mock<Stream>().Object;
 			var keplerStreamMock = new Mock<IKeplerStream>();
 			keplerStreamMock.Setup(x => x.GetStreamAsync()).ReturnsAsync(expectedStream);
@@ -144,14 +145,16 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				.Setup(x => x.Create(It.IsAny<ExecutionIdentity>()))
 				.Returns(_objectManagerFacadeMock.Object);
 
+			// act
 			Stream result = _sut.StreamLongText(
 				_REL_OBJECT_ARTIFACT_ID,
 				new FieldRef() { ArtifactID = _FIELD_ARTIFACT_ID },
-				true,
-				ExecutionIdentity.System);
+				isUnicode: true,
+				executionIdentity: ExecutionIdentity.System);
 
+			// assert
 			result.Should().BeOfType<SelfDisposingStream>();
-			var selfDisposingStream = (SelfDisposingStream)result;
+			var selfDisposingStream = (SelfDisposingStream) result;
 			Stream innerStream1 = selfDisposingStream.InnerStream;
 			innerStream1.Should().BeOfType<AsciiToUnicodeStream>();
 			var asciiToUnicodeStream = (AsciiToUnicodeStream) innerStream1;

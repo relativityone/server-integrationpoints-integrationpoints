@@ -65,10 +65,10 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 
 		public IntegrationPointModel CreateIntegrationPointProfileFromIntegrationPoint(int integrationPointArtifactId, string profileName)
 		{
-			var integrationPoint = _integrationPointService.ReadIntegrationPoint(integrationPointArtifactId);
-			var integrationPointProfileModel = IntegrationPointProfileModel.FromIntegrationPoint(integrationPoint, profileName);
+			IntegrationPoint integrationPoint = _integrationPointService.ReadIntegrationPoint(integrationPointArtifactId);
+			IntegrationPointProfileModel integrationPointProfileModel = IntegrationPointProfileModel.FromIntegrationPoint(integrationPoint, profileName);
 
-			var artifactId = _integrationPointProfileService.SaveIntegration(integrationPointProfileModel);
+			int artifactId = _integrationPointProfileService.SaveIntegration(integrationPointProfileModel);
 			return GetIntegrationPointProfile(artifactId);
 		}
 	}
