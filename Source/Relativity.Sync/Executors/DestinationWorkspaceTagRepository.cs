@@ -198,13 +198,13 @@ namespace Relativity.Sync.Executors
 
 		public async Task<IList<TagDocumentsResult>> TagDocumentsAsync(ISynchronizationConfiguration synchronizationConfiguration, IList<int> documentArtifactIds, CancellationToken token)
 		{
-			var updateResults = new List<TagDocumentsResult>();
+			var tagResults = new List<TagDocumentsResult>();
 			if (documentArtifactIds.Count == 0)
 			{
 				const string noUpdateMessage = "A call to the Mass Update API was not made as there are no objects to update.";
 				var result = new TagDocumentsResult(documentArtifactIds, noUpdateMessage, true, documentArtifactIds.Count);
-				updateResults.Add(result);
-				return updateResults;
+				tagResults.Add(result);
+				return tagResults;
 			}
 
 			IEnumerable<FieldRefValuePair> fieldValues = GetDocumentFieldTags(synchronizationConfiguration);
@@ -212,14 +212,14 @@ namespace Relativity.Sync.Executors
 			{
 				UpdateBehavior = FieldUpdateBehavior.Merge
 			};
-			IEnumerable<IList<int>> batches = CollectionExtensions.SplitList(documentArtifactIds, _MAX_OBJECT_QUERY_BATCH_SIZE);
-			foreach (IList<int> batch in batches)
+			IEnumerable<IList<int>> documentArtifactIdBatches = CollectionExtensions.SplitList(documentArtifactIds, _MAX_OBJECT_QUERY_BATCH_SIZE);
+			foreach (IList<int> documentArtifactIdBatch in documentArtifactIdBatches)
 			{
-				TagDocumentsResult batchResult = await TagDocumentsBatchAsync(synchronizationConfiguration, batch, fieldValues, massUpdateOptions, token).ConfigureAwait(false);
-				updateResults.Add(batchResult);
+				TagDocumentsResult tagResult = await TagDocumentsBatchAsync(synchronizationConfiguration, documentArtifactIdBatch, fieldValues, massUpdateOptions, token).ConfigureAwait(false);
+				tagResults.Add(tagResult);
 			}
 
-			return updateResults;
+			return tagResults;
 		}
 
 		private async Task<TagDocumentsResult> TagDocumentsBatchAsync(
