@@ -22,12 +22,12 @@ namespace Relativity.Sync.Tests.Common
 		public int DataSourceArtifactId { get; set; }
 		public IList<FieldMap> FieldMappings { get; set; }
 		public bool IsSnapshotCreated { get; set; }
-		
+
 		public async Task SetSnapshotDataAsync(Guid runId, long totalRecordsCount)
 		{
 			await Task.Yield();
 			ExportRunId = runId;
-			TotalRecordsCount = (int) totalRecordsCount;
+			TotalRecordsCount = (int)totalRecordsCount;
 		}
 
 		public string SourceWorkspaceTagName { get; set; }
@@ -61,6 +61,7 @@ namespace Relativity.Sync.Tests.Common
 			DestinationWorkspaceTagArtifactId = artifactId;
 		}
 		public int DestinationWorkspaceTagArtifactId { get; set; }
+		public int JobHistoryTagArtifactId { get; set; }
 
 		public bool IsSourceJobTagSet { get; set; }
 

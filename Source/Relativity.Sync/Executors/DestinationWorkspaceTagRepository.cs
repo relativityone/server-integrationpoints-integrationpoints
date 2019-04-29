@@ -8,23 +8,28 @@ using Relativity.Services.DataContracts.DTOs;
 using Relativity.Services.Exceptions;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync.Executors
 {
 	internal sealed class DestinationWorkspaceTagRepository : IDestinationWorkspaceTagRepository
 	{
-		private readonly ISourceServiceFactoryForUser _sourceServiceFactoryForUser;
-		private readonly IFederatedInstance _federatedInstance;
-		private readonly ITagNameFormatter _tagNameFormatter;
-		private readonly ISyncLog _logger;
+		private const int _MAX_OBJECT_QUERY_BATCH_SIZE = 10000;
 
-		private static readonly Guid ObjectTypeGuid = new Guid("3F45E490-B4CF-4C7D-8BB6-9CA891C0C198");
-		private static readonly Guid DestinationWorkspaceNameGuid = new Guid("348d7394-2658-4da4-87d0-8183824adf98");
-		private static readonly Guid DestinationInstanceNameGuid = new Guid("909adc7c-2bb9-46ca-9f85-da32901d6554");
-		private static readonly Guid DestinationInstanceArtifactidGuid = new Guid("323458db-8a06-464b-9402-af2516cf47e0");
-		private static readonly Guid NameGuid = new Guid("155649c0-db15-4ee7-b449-bfdf2a54b7b5");
-		private static readonly Guid DestinationWorkspaceArtifactidGuid = new Guid("207e6836-2961-466b-a0d2-29974a4fad36");
+		private readonly IFederatedInstance _federatedInstance;
+		private readonly ISourceServiceFactoryForUser _sourceServiceFactoryForUser;
+		private readonly ISyncLog _logger;
+		private readonly ITagNameFormatter _tagNameFormatter;
+
+		private readonly Guid _destinationInstanceArtifactIdGuid = new Guid("323458db-8a06-464b-9402-af2516cf47e0");
+		private readonly Guid _destinationInstanceNameGuid = new Guid("909adc7c-2bb9-46ca-9f85-da32901d6554");
+		private readonly Guid _destinationWorkspaceArtifactIdGuid = new Guid("207e6836-2961-466b-a0d2-29974a4fad36");
+		private readonly Guid _destinationWorkspaceFieldMultiObject = new Guid("8980C2FA-0D33-4686-9A97-EA9D6F0B4196");
+		private readonly Guid _destinationWorkspaceNameGuid = new Guid("348d7394-2658-4da4-87d0-8183824adf98");
+		private readonly Guid _jobHistoryFieldMultiObject = new Guid("97BC12FA-509B-4C75-8413-6889387D8EF6");
+		private readonly Guid _nameGuid = new Guid("155649c0-db15-4ee7-b449-bfdf2a54b7b5");
+		private readonly Guid _objectTypeGuid = new Guid("3F45E490-B4CF-4C7D-8BB6-9CA891C0C198");
 
 		public DestinationWorkspaceTagRepository(ISourceServiceFactoryForUser sourceServiceFactoryForUser, IFederatedInstance federatedInstance, ITagNameFormatter tagNameFormatter,
 			ISyncLog logger)
@@ -47,9 +52,9 @@ namespace Relativity.Sync.Executors
 				DestinationWorkspaceTag destinationWorkspaceTag = new DestinationWorkspaceTag
 				{
 					ArtifactId = tag.ArtifactID,
-					DestinationWorkspaceName = tag[DestinationWorkspaceNameGuid].Value.ToString(),
-					DestinationInstanceName = tag[DestinationInstanceNameGuid].Value.ToString(),
-					DestinationWorkspaceArtifactId = Convert.ToInt32(tag[DestinationWorkspaceArtifactidGuid].Value, CultureInfo.InvariantCulture)
+					DestinationWorkspaceName = tag[_destinationWorkspaceNameGuid].Value.ToString(),
+					DestinationInstanceName = tag[_destinationInstanceNameGuid].Value.ToString(),
+					DestinationWorkspaceArtifactId = Convert.ToInt32(tag[_destinationWorkspaceArtifactIdGuid].Value, CultureInfo.InvariantCulture)
 				};
 				return destinationWorkspaceTag;
 			}
@@ -68,21 +73,21 @@ namespace Relativity.Sync.Executors
 				// TODO REL-304544: Once the Sync code is entirely in this project, this should be changed to just use -1.
 #pragma warning restore S1135 // Track uses of "TODO" tags
 				string federatedInstanceIdSearchTerm = federatedInstanceId == -1
-					? $"NOT '{DestinationInstanceArtifactidGuid}' ISSET"
-					: $"'{DestinationInstanceArtifactidGuid}' == {federatedInstanceId}";
+					? $"NOT '{_destinationInstanceArtifactIdGuid}' ISSET"
+					: $"'{_destinationInstanceArtifactIdGuid}' == {federatedInstanceId}";
 
 				QueryRequest request = new QueryRequest
 				{
-					ObjectType = new ObjectTypeRef { Guid = ObjectTypeGuid },
-					Condition = $"'{DestinationWorkspaceArtifactidGuid}' == {destinationWorkspaceArtifactId} AND ({federatedInstanceIdSearchTerm})",
+					ObjectType = new ObjectTypeRef { Guid = _objectTypeGuid },
+					Condition = $"'{_destinationWorkspaceArtifactIdGuid}' == {destinationWorkspaceArtifactId} AND ({federatedInstanceIdSearchTerm})",
 					Fields = new List<FieldRef>
 					{
 						new FieldRef { Name = "ArtifactId" },
-						new FieldRef { Guid = DestinationWorkspaceNameGuid},
-						new FieldRef { Guid = DestinationInstanceNameGuid },
-						new FieldRef { Guid = DestinationWorkspaceArtifactidGuid },
-						new FieldRef { Guid = DestinationInstanceArtifactidGuid },
-						new FieldRef { Guid = NameGuid }
+						new FieldRef { Guid = _destinationWorkspaceNameGuid},
+						new FieldRef { Guid = _destinationInstanceNameGuid },
+						new FieldRef { Guid = _destinationWorkspaceArtifactIdGuid },
+						new FieldRef { Guid = _destinationInstanceArtifactIdGuid },
+						new FieldRef { Guid = _nameGuid }
 					}
 				};
 				QueryResult queryResult;
@@ -120,13 +125,13 @@ namespace Relativity.Sync.Executors
 			// TODO REL-304544: Once the Sync code is entirely in this project, this should be changed to just use -1.
 #pragma warning restore S1135 // Track uses of "TODO" tags
 			int rawFederatedInstanceId = await _federatedInstance.GetInstanceIdAsync().ConfigureAwait(false);
-			int? federatedInstanceId = rawFederatedInstanceId == -1 ? null : (int?) rawFederatedInstanceId;
+			int? federatedInstanceId = rawFederatedInstanceId == -1 ? null : (int?)rawFederatedInstanceId;
 
 			using (IObjectManager objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				CreateRequest request = new CreateRequest
 				{
-					ObjectType = new ObjectTypeRef { Guid = ObjectTypeGuid },
+					ObjectType = new ObjectTypeRef { Guid = _objectTypeGuid },
 					FieldValues = CreateFieldValues(destinationWorkspaceArtifactId, destinationWorkspaceName, federatedInstanceName, federatedInstanceId)
 				};
 
@@ -143,7 +148,7 @@ namespace Relativity.Sync.Executors
 				catch (Exception ex)
 				{
 					_logger.LogError(ex, $"Failed to create {nameof(DestinationWorkspaceTag)}: {{request}}", request);
-					string tagName = request.FieldValues.First(x => x.Field.Guid == NameGuid).Value.ToString();
+					string tagName = request.FieldValues.First(x => x.Field.Guid == _nameGuid).Value.ToString();
 					throw new DestinationWorkspaceTagRepositoryException(
 						$"Failed to create {nameof(DestinationWorkspaceTag)} '{tagName}' in workspace {sourceWorkspaceArtifactId}",
 						ex);
@@ -168,7 +173,7 @@ namespace Relativity.Sync.Executors
 
 			UpdateRequest request = new UpdateRequest
 			{
-				Object = new RelativityObjectRef { ArtifactID =  destinationWorkspaceTag.ArtifactId },
+				Object = new RelativityObjectRef { ArtifactID = destinationWorkspaceTag.ArtifactId },
 				FieldValues = CreateFieldValues(destinationWorkspaceTag.DestinationWorkspaceArtifactId, destinationWorkspaceTag.DestinationWorkspaceName, federatedInstanceName, federatedInstanceId),
 			};
 
@@ -191,6 +196,112 @@ namespace Relativity.Sync.Executors
 			}
 		}
 
+		public async Task<IList<TagDocumentsResult>> TagDocumentsAsync(ISynchronizationConfiguration synchronizationConfiguration, IList<int> documentArtifactIds, CancellationToken token)
+		{
+			var tagResults = new List<TagDocumentsResult>();
+			if (documentArtifactIds.Count == 0)
+			{
+				const string noUpdateMessage = "A call to the Mass Update API was not made as there are no objects to update.";
+				var result = new TagDocumentsResult(documentArtifactIds, noUpdateMessage, true, documentArtifactIds.Count);
+				tagResults.Add(result);
+				return tagResults;
+			}
+
+			IEnumerable<FieldRefValuePair> fieldValues = GetDocumentFieldTags(synchronizationConfiguration);
+			var massUpdateOptions = new MassUpdateOptions
+			{
+				UpdateBehavior = FieldUpdateBehavior.Merge
+			};
+			IEnumerable<IList<int>> documentArtifactIdBatches = CollectionExtensions.SplitList(documentArtifactIds, _MAX_OBJECT_QUERY_BATCH_SIZE);
+			foreach (IList<int> documentArtifactIdBatch in documentArtifactIdBatches)
+			{
+				TagDocumentsResult tagResult = await TagDocumentsBatchAsync(synchronizationConfiguration, documentArtifactIdBatch, fieldValues, massUpdateOptions, token).ConfigureAwait(false);
+				tagResults.Add(tagResult);
+			}
+
+			return tagResults;
+		}
+
+		private async Task<TagDocumentsResult> TagDocumentsBatchAsync(
+			ISynchronizationConfiguration synchronizationConfiguration, IList<int> batch, IEnumerable<FieldRefValuePair> fieldValues, MassUpdateOptions massUpdateOptions, CancellationToken token)
+		{
+			var updateByIdentifiersRequest = new MassUpdateByObjectIdentifiersRequest
+			{
+				Objects = ConvertArtifactIdsToObjectRefs(batch),
+				FieldValues = fieldValues
+			};
+
+			TagDocumentsResult result;
+			try
+			{
+				using (var objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+				{
+					MassUpdateResult updateResult = await objectManager.UpdateAsync(synchronizationConfiguration.SourceWorkspaceArtifactId, updateByIdentifiersRequest, massUpdateOptions, token).ConfigureAwait(false);
+					result = GenerateTagDocumentsResult(updateResult, batch);
+				}
+			}
+			catch (Exception updateException)
+			{
+				const string exceptionMessage = "Mass tagging Documents with Destination Workspace and Job History fields failed.";
+				const string exceptionTemplate =
+					"Mass tagging documents in source workspace {SourceWorkspace} with destination workspace field {DestinationWorkspaceField} and job history field {JobHistoryField} failed.";
+
+				_logger.LogError(updateException, exceptionTemplate,
+					synchronizationConfiguration.SourceWorkspaceArtifactId, synchronizationConfiguration.DestinationWorkspaceTagArtifactId, synchronizationConfiguration.JobHistoryTagArtifactId);
+				result = new TagDocumentsResult(batch, exceptionMessage, false, 0);
+			}
+			return result;
+		}
+
+		private IReadOnlyList<RelativityObjectRef> ConvertArtifactIdsToObjectRefs(IList<int> artifactIds)
+		{
+			var objectRefs = new RelativityObjectRef[artifactIds.Count];
+
+			for (int i = 0; i < artifactIds.Count; i++)
+			{
+				var objectRef = new RelativityObjectRef
+				{
+					ArtifactID = artifactIds[i]
+				};
+				objectRefs[i] = objectRef;
+			}
+			return objectRefs;
+		}
+
+		private FieldRefValuePair[] GetDocumentFieldTags(ISynchronizationConfiguration synchronizationConfiguration)
+		{
+			FieldRefValuePair[] fieldRefValuePairs =
+			{
+				new FieldRefValuePair
+				{
+					Field = new FieldRef { Guid = _destinationWorkspaceFieldMultiObject },
+					Value = synchronizationConfiguration.DestinationWorkspaceTagArtifactId
+				},
+				new FieldRefValuePair
+				{
+					Field = new FieldRef { Guid = _jobHistoryFieldMultiObject },
+					Value = synchronizationConfiguration.JobHistoryTagArtifactId
+				}
+			};
+			return fieldRefValuePairs;
+		}
+
+		private static TagDocumentsResult GenerateTagDocumentsResult(MassUpdateResult updateResult, IList<int> batch)
+		{
+			IEnumerable<int> failedDocumentArtifactIds;
+			if (!updateResult.Success)
+			{
+				int elementsToCapture = batch.Count - updateResult.TotalObjectsUpdated;
+				failedDocumentArtifactIds = batch.ToList().GetRange(updateResult.TotalObjectsUpdated, elementsToCapture);
+			}
+			else
+			{
+				failedDocumentArtifactIds = Array.Empty<int>();
+			}
+			var result = new TagDocumentsResult(failedDocumentArtifactIds, updateResult.Message, updateResult.Success, updateResult.TotalObjectsUpdated);
+			return result;
+		}
+
 		private IEnumerable<FieldRefValuePair> CreateFieldValues(int destinationWorkspaceArtifactId, string destinationWorkspaceName, string federatedInstanceName, int? federatedInstanceId)
 		{
 			string destinationTagName = _tagNameFormatter.FormatWorkspaceDestinationTagName(federatedInstanceName, destinationWorkspaceName, destinationWorkspaceArtifactId);
@@ -198,27 +309,27 @@ namespace Relativity.Sync.Executors
 			{
 				new FieldRefValuePair
 				{
-					Field = new FieldRef {Guid = NameGuid},
+					Field = new FieldRef { Guid = _nameGuid },
 					Value = destinationTagName
 				},
 				new FieldRefValuePair
 				{
-					Field = new FieldRef {Guid = DestinationWorkspaceNameGuid},
+					Field = new FieldRef { Guid = _destinationWorkspaceNameGuid },
 					Value = destinationWorkspaceName
 				},
 				new FieldRefValuePair
 				{
-					Field = new FieldRef {Guid = DestinationWorkspaceArtifactidGuid},
+					Field = new FieldRef { Guid = _destinationWorkspaceArtifactIdGuid },
 					Value = destinationWorkspaceArtifactId
 				},
 				new FieldRefValuePair
 				{
-					Field = new FieldRef {Guid = DestinationInstanceNameGuid},
+					Field = new FieldRef { Guid = _destinationInstanceNameGuid },
 					Value = federatedInstanceName
 				},
 				new FieldRefValuePair
 				{
-					Field = new FieldRef {Guid = DestinationInstanceArtifactidGuid},
+					Field = new FieldRef { Guid = _destinationInstanceArtifactIdGuid },
 					Value = federatedInstanceId
 				}
 			};
