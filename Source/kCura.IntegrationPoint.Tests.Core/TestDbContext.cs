@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.SqlClient;
 using Relativity.API;
 using Relativity.API.Context;
+using Relativity.Data;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
@@ -508,8 +509,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 			return _context.ExecuteSqlStatementAsDataSet(sqlStatement, parameters, timeoutValue);
 		}
-		#endregion
-		#endregion
 
 		public void ExecuteSqlBulkCopy(IDataReader dataReader, ISqlBulkCopyParameters bulkCopyParameters)
 		{
@@ -524,6 +523,26 @@ namespace kCura.IntegrationPoint.Tests.Core
 		public T ExecuteSqlStatementAsObject<T>(string sqlStatement, Func<SqlDataReader, T> convertor, int timeout = -1)
 		{
 			return _context.ExecuteSqlStatementAsObject(sqlStatement, convertor, timeout);
+		}
+
+		public T ExecuteSqlStatementAsObject<T>(string sqlStatement, Func<SqlDataReader, T> converter, IEnumerable<SqlParameter> parameters)
+		{
+			return _context.ExecuteSqlStatementAsObject(sqlStatement, converter, parameters);
+		}
+
+		#endregion
+		#endregion
+
+		
+
+		public T ExecuteSqlStatementAsObject<T>(string sqlStatement, Func<SqlDataReader, T> converter)
+		{
+			return _context.ExecuteSqlStatementAsObject(sqlStatement, converter);
+		}
+
+		public T ExecuteSqlStatementAsObject<T>(string sqlStatement, Func<SqlDataReader, T> converter, int timeout = -1)
+		{
+			return _context.ExecuteSqlStatementAsObject(sqlStatement, converter, timeout);
 		}
 
 		public T ExecuteSqlStatementAsObject<T>(string sqlStatement, Func<SqlDataReader, T> converter, IEnumerable<SqlParameter> parameters)

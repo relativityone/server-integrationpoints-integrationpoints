@@ -99,6 +99,7 @@
     <Compile Include="IResourceDbProvider.cs" />
     <Compile Include="IResourcePoolContext.cs" />
     <Compile Include="Interfaces\IRetryHandler.cs" />
+    <Compile Include="IRipDBContext.cs" />
     <Compile Include="IRsapiClientWithWorkspaceFactory.cs" />
     <Compile Include="Logging\ISystemEventLoggingService.cs" />
     <Compile Include="Migrations\Migration.cs" />

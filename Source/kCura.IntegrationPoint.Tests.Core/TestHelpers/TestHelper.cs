@@ -113,8 +113,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 				string connectionString = string.Format(SharedVariables.WorkspaceConnectionStringFormat, caseID);
 				baseContext = new Data.RowDataGateway.Context(connectionString);
 			}
-			TestDbContext context = new TestDbContext(baseContext);
-			return context;
+			return DBContextMockBuilder.Build(baseContext);
 		}
 
 		public IUrlHelper GetUrlHelper()

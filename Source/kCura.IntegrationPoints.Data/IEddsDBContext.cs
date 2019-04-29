@@ -1,8 +1,6 @@
-﻿using Relativity.API;
-
-namespace kCura.IntegrationPoints.Data
+﻿namespace kCura.IntegrationPoints.Data
 {
-	public interface IEddsDBContext : IDBContext
+	public interface IEddsDBContext : IRipDBContext
 	{
 	}
 }
