@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using kCura.Data.RowDataGateway;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Data;
@@ -21,18 +20,20 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 		private IAgentService _agentService;
 		private IHelper _helper;
 		private JobService _instance;
-	    private JobServiceDataProvider _jobServiceDataProvider;
+		private JobServiceDataProvider _jobServiceDataProvider;
 
-	    [SetUp]
+		[SetUp]
 		public void SetUp()
 		{
 			kCura.Data.RowDataGateway.Config.SetConnectionString(SharedVariables.EddsConnectionString);
 			
 			_helper = Substitute.For<IHelper>();
 			_agentService = new AgentService(_helper, Guid.Parse(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
-			_helper.GetDBContext(-1).Returns(new TestDbContext(new Context(SharedVariables.EddsConnectionString)));
-		    _jobServiceDataProvider = new JobServiceDataProvider(_agentService, _helper);
-            _instance = new JobService(_agentService, _jobServiceDataProvider, _helper);
+			Context baseContext = new Context(SharedVariables.EddsConnectionString);
+			IDBContext dBContext = DBContextMockBuilder.Build(baseContext);
+			_helper.GetDBContext(-1).Returns(dBContext);
+			_jobServiceDataProvider = new JobServiceDataProvider(_agentService, _helper);
+			_instance = new JobService(_agentService, _jobServiceDataProvider, _helper);
 		}
 
 		[TearDown]
@@ -76,7 +77,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 			AssertJobStopState(job, state);
 		}
 
-        [Test]
+		[Test]
 		[SmokeTest]
 		[TestCase(StopState.None)]
 		[TestCase(StopState.Stopping)]

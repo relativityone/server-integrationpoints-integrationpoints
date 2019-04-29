@@ -70,6 +70,7 @@
     <Compile Include="AuditHelper.cs" />
     <Compile Include="ClaimsPrincipalFactory.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="DBContextMockBuilder.cs" />
     <Compile Include="DocumentService.cs" />
     <Compile Include="DocumentTestDataBuilder.cs" />
     <Compile Include="EHHelper.cs" />
@@ -150,7 +151,6 @@
     <Compile Include="TestCategories\Attributes\SmokeTestAttribute.cs" />
     <Compile Include="TestCategories\TestCategories.cs" />
     <Compile Include="TestCategories\Attributes\TestInQuarantineAttribute.cs" />
-    <Compile Include="TestDbContext.cs" />
     <Compile Include="Exceptions\TestException.cs" />
     <Compile Include="Permission.cs" />
     <Compile Include="Import.cs" />
