@@ -28,7 +28,7 @@ namespace Relativity.Sync.Tests.Unit
 		[TestCase(2, 3, 10, 50)]
 		[TestCase(5, 0, 10, 50)]
 		[TestCase(5, 0, 5, 100)]
-		[TestCase(1, 5, 13, 46.153)]
+		[TestCase(1, 5, 13, 46.153846153846153)]
 		public async Task ItShouldReportProgress(int failedRecords, int completedRecords, int totalRecords, double expectedProgress)
 		{
 			_batch.SetupGet(x => x.TotalItemsCount).Returns(totalRecords);
@@ -39,8 +39,7 @@ namespace Relativity.Sync.Tests.Unit
 			// assert
 			_batch.Verify(x => x.SetTransferredItemsCountAsync(completedRecords));
 			_batch.Verify(x => x.SetFailedItemsCountAsync(failedRecords));
-			const double allowedError = 0.001;
-			_batch.Verify(x => x.SetProgressAsync(It.Is<double>(d => d.EqualsWithinError(expectedProgress, allowedError))));
+			_batch.Verify(x => x.SetProgressAsync(expectedProgress));
 		}
 
 		[Test]
