@@ -48,5 +48,10 @@ namespace kCura.IntegrationPoints.Data
 		{
 			return _context.ExecuteSqlStatementAsScalar<T>(sqlStatement, parameters);
 		}
+
+		public object ExecuteSqlStatementAsScalar(string sqlStatement, params SqlParameter[] parameters)
+		{
+			return _context.ExecuteSqlStatementAsScalar(sqlStatement, parameters);
+		}
 	}
 }
