@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 			_serializer = Substitute.For<ISerializer>();
 			_directoryHelper = Substitute.For<IDirectory>();
 
-			_integrationPointReader.GetRdo(Arg.Any<int>()).ReturnsForAnyArgs(_ip);
+			_integrationPointReader.ReadIntegrationPoint(Arg.Any<int>()).ReturnsForAnyArgs(_ip);
 			_serializer.Deserialize<ImportProviderSettings>(Arg.Any<string>()).ReturnsForAnyArgs(_providerSettings);
 			_serializer.Deserialize<ImportSettings>(Arg.Any<string>()).ReturnsForAnyArgs(_importApiSettings);
 			_locationService.GetWorkspaceFileLocationRootPath(Arg.Any<int>()).ReturnsForAnyArgs(_WORKSPACE_ROOT_LOCATION);

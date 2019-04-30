@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 			_integrationPointProfileRepository.CreateIntegrationPointProfile(createRequest);
 
 			_backwardCompatibility.Received(1).FixIncompatibilities(createRequest.IntegrationPoint, overwriteFieldsChoiceName);
-			_integrationPointProfileService.Received(1).GetRdo(integrationPointProfileArtifactId);
+			_integrationPointProfileService.Received(1).ReadIntegrationPointProfile(integrationPointProfileArtifactId);
 		}
 
 		[Test]
@@ -64,7 +64,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 			_integrationPointProfileRepository.CreateIntegrationPointProfile(createRequest);
 
 			_backwardCompatibility.Received(1).FixIncompatibilities(createRequest.IntegrationPoint, overwriteFieldsChoiceName);
-			_integrationPointProfileService.Received(1).GetRdo(integrationPointProfileArtifactId);
+			_integrationPointProfileService.Received(1).ReadIntegrationPointProfile(integrationPointProfileArtifactId);
 		}
 
 		private UpdateIntegrationPointRequest SetUpCreateOrUpdateTest(int overwriteFieldsChoiceId, string overwriteFieldsChoiceName, int integrationPointProfileArtifactId)
@@ -90,7 +90,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 					Name = overwriteFieldsChoiceName
 				}
 			});
-			_integrationPointProfileService.GetRdo(integrationPointProfileArtifactId).Returns(new IntegrationPointProfile
+			_integrationPointProfileService.ReadIntegrationPointProfile(integrationPointProfileArtifactId).Returns(new IntegrationPointProfile
 			{
 				ArtifactId = integrationPointProfileArtifactId,
 				Name = "name_982",
@@ -112,11 +112,11 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 				DestinationProvider = 817
 			};
 
-			_integrationPointProfileService.GetRdo(artifactId).Returns(integrationPointProfile);
+			_integrationPointProfileService.ReadIntegrationPointProfile(artifactId).Returns(integrationPointProfile);
 
 			var result = _integrationPointProfileRepository.GetIntegrationPointProfile(artifactId);
 
-			_integrationPointProfileService.Received(1).GetRdo(artifactId);
+			_integrationPointProfileService.Received(1).ReadIntegrationPointProfile(artifactId);
 
 			Assert.That(result.SourceProvider, Is.EqualTo(integrationPointProfile.SourceProvider));
 			Assert.That(result.DestinationProvider, Is.EqualTo(integrationPointProfile.DestinationProvider));
@@ -211,15 +211,15 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 				DestinationProvider = 443
 			};
 
-			_integrationPointService.GetRdo(integrationPointArtifactId).Returns(integrationPoint);
+			_integrationPointService.ReadIntegrationPoint(integrationPointArtifactId).Returns(integrationPoint);
 			_integrationPointProfileService.SaveIntegration(Arg.Any<IntegrationPointProfileModel>()).Returns(artifactId);
-			_integrationPointProfileService.GetRdo(artifactId).Returns(integrationPointProfile);
+			_integrationPointProfileService.ReadIntegrationPointProfile(artifactId).Returns(integrationPointProfile);
 
 			_integrationPointProfileRepository.CreateIntegrationPointProfileFromIntegrationPoint(integrationPointArtifactId, profileName);
 
-			_integrationPointService.Received(1).GetRdo(integrationPointArtifactId);
+			_integrationPointService.Received(1).ReadIntegrationPoint(integrationPointArtifactId);
 			_integrationPointProfileService.Received(1).SaveIntegration(Arg.Is<IntegrationPointProfileModel>(x => x.Name == profileName && x.ArtifactID == 0));
-			_integrationPointProfileService.Received(1).GetRdo(artifactId);
+			_integrationPointProfileService.Received(1).ReadIntegrationPointProfile(artifactId);
 		}
 	}
 }

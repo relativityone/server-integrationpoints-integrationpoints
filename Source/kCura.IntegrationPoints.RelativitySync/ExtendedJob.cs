@@ -57,7 +57,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 				{
 					try
 					{
-						_integrationPoint = _integrationPointService.GetRdo(IntegrationPointId);
+						_integrationPoint = _integrationPointService.ReadIntegrationPoint(IntegrationPointId);
 					}
 					catch (Exception e)
 					{

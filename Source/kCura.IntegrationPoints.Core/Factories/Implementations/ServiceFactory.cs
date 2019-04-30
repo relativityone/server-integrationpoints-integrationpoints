@@ -66,7 +66,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				_validationExecutor,
 				_providerTypeService,
 				_messageService,
-				integrationPointRepository);
+				integrationPointRepository,
+				_caseServiceContext.RsapiService.RelativityObjectManager);
 		}
 
 		public IFieldCatalogService CreateFieldCatalogService(IHelper targetHelper)

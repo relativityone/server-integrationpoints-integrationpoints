@@ -29,6 +29,7 @@ namespace kCura.IntegrationPoints.Core
 			public const string FAILED_TO_RETRIEVE_JOB_HISTORY = "Unable to retrieve the previous job history.";
 			public const string RETRY_NO_EXISTING_ERRORS = "The integration point cannot be retried as there are no errors to be retried.";
 			public const string UNABLE_TO_RETRIEVE_INTEGRATION_POINT = "Unable to retrieve Integration Point.";
+			public const string UNABLE_TO_RETRIEVE_INTEGRATION_POINT_PROFILE = "Unable to retrieve Integration Point Profile.";
 			public const string UNABLE_TO_RETRIEVE_SOURCE_PROVIDER = "Unable to retrieve Source Provider.";
 			public const string UNABLE_TO_RETRIEVE_DESTINATION_PROVIDER_ARTIFACT_ID = "Unable to retrieve Destination Provider by Artifact ID {0}";
 			public const string UNABLE_TO_RETRIEVE_DESTINATION_PROVIDER_GUID = "Unable to retrieve Destination Provider by GUID {0}";

@@ -93,7 +93,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         public override long BatchTask(Job job, IEnumerable<string> batchIDs)
 		{
 		    LogBatchTaskStart(job, batchIDs);
-            var integrationPoint = IntegrationPointService.GetRdo(job.RelatedObjectArtifactID);
+            var integrationPoint = IntegrationPointService.ReadIntegrationPoint(job.RelatedObjectArtifactID);
 
 			if (integrationPoint == null)
 			{

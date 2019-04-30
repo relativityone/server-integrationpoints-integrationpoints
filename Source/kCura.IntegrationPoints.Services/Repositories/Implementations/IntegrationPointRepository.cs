@@ -54,13 +54,13 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 
 		public IntegrationPointModel GetIntegrationPoint(int integrationPointArtifactId)
 		{
-			IntegrationPoint integrationPoint = _integrationPointLocalService.GetRdo(integrationPointArtifactId);
+			IntegrationPoint integrationPoint = _integrationPointLocalService.ReadIntegrationPoint(integrationPointArtifactId);
 			return integrationPoint.ToIntegrationPointModel();
 		}
 
 		public object RunIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId)
 		{
-			IntegrationPoint integrationPoint = _integrationPointLocalService.GetRdo(integrationPointArtifactId);
+			IntegrationPoint integrationPoint = _integrationPointLocalService.ReadIntegrationPoint(integrationPointArtifactId);
 			var integrationPointRuntimeService = _serviceFactory.CreateIntegrationPointRuntimeService(Core.Models.IntegrationPointModel.FromIntegrationPoint(integrationPoint));
 			integrationPointRuntimeService.RunIntegrationPoint(workspaceArtifactId, integrationPointArtifactId, _userInfo.ArtifactID);
 			return null;
@@ -89,13 +89,13 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 			return choices.Select(Mapper.Map<OverwriteFieldsModel>).ToList();
 		}
 
-		public IntegrationPointModel CreateIntegrationPointFromProfile(int profileArtifactId, string integrationPointName)
+		public IntegrationPointModel CreateIntegrationPointFromProfile(int profileArtifactID, string integrationPointName)
 		{
-			var profile = _integrationPointProfileService.GetRdo(profileArtifactId);
-			var integrationPointModel = Core.Models.IntegrationPointModel.FromIntegrationPointProfile(profile, integrationPointName);
-			var integrationPointRuntimeService = _serviceFactory.CreateIntegrationPointRuntimeService(integrationPointModel);
-			var artifactId = integrationPointRuntimeService.SaveIntegration(integrationPointModel);
-			return GetIntegrationPoint(artifactId);
+			IntegrationPointProfile integrationPointProfile = _integrationPointProfileService.ReadIntegrationPointProfile(profileArtifactID);
+			Core.Models.IntegrationPointModel integrationPointModel = Core.Models.IntegrationPointModel.FromIntegrationPointProfile(integrationPointProfile, integrationPointName);
+			IIntegrationPointService integrationPointRuntimeService = _serviceFactory.CreateIntegrationPointRuntimeService(integrationPointModel);
+			int artifactID = integrationPointRuntimeService.SaveIntegration(integrationPointModel);
+			return GetIntegrationPoint(artifactID);
 		}
 	}
 }

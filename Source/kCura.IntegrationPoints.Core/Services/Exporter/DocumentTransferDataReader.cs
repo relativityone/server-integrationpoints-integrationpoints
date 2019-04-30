@@ -3,7 +3,6 @@ using Stream = System.IO.Stream;
 using System.Collections.Generic;
 using System.Data;
 using kCura.IntegrationPoints.Core.Services.Exporter.Base;
-using kCura.IntegrationPoints.Core.Utils;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
@@ -156,21 +155,12 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			}
 		}
 
-		private SelfDisposingStream GetLongTextStreamFromField(int fieldArtifactId)
+		private Stream GetLongTextStreamFromField(int fieldArtifactId)
 		{
-			var fieldRef = new FieldRef {ArtifactID = fieldArtifactId};
-			Stream stream =
-				_relativityObjectManager.StreamLongTextAsync(CurrentArtifact.ArtifactId, fieldRef)
-					.GetAwaiter()
-					.GetResult();
-
+			var fieldRef = new FieldRef { ArtifactID = fieldArtifactId };
 			ViewFieldInfo field = _fieldLookupRepository.GetFieldByArtifactId(fieldArtifactId);
-			if (!field.IsUnicodeEnabled)
-			{
-				stream = new AsciiToUnicodeStream(stream);
-			}
 
-			return new SelfDisposingStream(stream);
+			return _relativityObjectManager.StreamLongText(CurrentArtifact.ArtifactId, fieldRef, field.IsUnicodeEnabled);
 		}
 
 		private IntegrationPointsException LogGetValueError(

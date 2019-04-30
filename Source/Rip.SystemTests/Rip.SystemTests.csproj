@@ -32,6 +32,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Castle.Windsor, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc" />
+    <Reference Include="kCura.Apps.Common.Utils, Version=2.1.8.2, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\kCura.Apps.Common.Utils\lib\net462\kCura.Apps.Common.Utils.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -44,6 +49,7 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="IntegrationPointServices\IntegrationPointServiceTests.cs" />
     <Compile Include="RelativityServices\Arrangers\DocumentTestCaseArranger.cs" />
     <Compile Include="RelativityServices\CoreSearchManagerTests.cs" />
     <Compile Include="RelativityServices\TestCases\DocumentTestCase.cs" />
@@ -51,7 +57,9 @@
     <Compile Include="SystemTestsFixture.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />
+    <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="paket.references" />
@@ -66,16 +74,36 @@
       <Name>kCura.IntegrationPoints.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
-      <Project>{0CEDB7AF-DB89-47DE-9587-8CCD58621F2F}</Project>
+      <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>
       <Name>kCura.IntegrationPoints.Contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Core.Contracts\kCura.IntegrationPoints.Core.Contracts.csproj">
+      <Project>{30503682-e18d-49df-a308-fe7996c4108e}</Project>
+      <Name>kCura.IntegrationPoints.Core.Contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Core\kCura.IntegrationPoints.Core.csproj">
+      <Project>{A1AE667B-1B6E-4BB9-AF1D-912620292283}</Project>
+      <Name>kCura.IntegrationPoints.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
       <Project>{599D771D-2AE7-4321-9BAC-BE06F827CE0A}</Project>
       <Name>kCura.IntegrationPoints.Data</Name>
     </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
+      <Project>{5D5B52B4-8769-431A-9743-B96F15FED5FD}</Project>
+      <Name>kCura.IntegrationPoints.Domain</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.FilesDestinationProvider.Core\kCura.IntegrationPoints.FilesDestinationProvider.Core.csproj">
       <Project>{1fc70536-a8ef-48ce-b20a-e5c5c6723f23}</Project>
       <Name>kCura.IntegrationPoints.FilesDestinationProvider.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
+      <Project>{b91cc4ed-abf3-4409-8df3-46a3c26eb4aa}</Project>
+      <Name>kCura.IntegrationPoints.Synchronizers.RDO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Rip.TestUtilities\Rip.TestUtilities.csproj">
+      <Project>{88f9b589-2aa4-4609-af61-e0badb5de82e}</Project>
+      <Name>Rip.TestUtilities</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

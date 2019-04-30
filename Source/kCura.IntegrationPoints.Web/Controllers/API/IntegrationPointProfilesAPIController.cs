@@ -7,7 +7,6 @@ using System.Web.Http;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Validation;
-using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
@@ -65,7 +64,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			IntegrationPointProfileModel model;
 			if (artifactId > 0)
 			{
-				model = _profileService.ReadIntegrationPointProfile(artifactId);
+				model = _profileService.ReadIntegrationPointProfileModel(artifactId);
 			}
 			else
 			{
@@ -80,7 +79,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		{
 			if (artifactId > 0)
 			{
-				IntegrationPointProfileModel model = _profileService.ReadIntegrationPointProfile(artifactId);
+				IntegrationPointProfileModel model = _profileService.ReadIntegrationPointProfileModel(artifactId);
 				ValidationResultDTO validationResult = ValidateIntegrationPointProfile(model);
 				
 				var output = new ValidatedProfileDTO(model, validationResult);
@@ -140,8 +139,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 						using (metricManager.LogDuration(Core.Constants.IntegrationPoints.Telemetry.BUCKET_INTEGRATION_POINT_PROFILE_SAVE_AS_PROFILE_DURATION_METRIC_COLLECTOR,
 							Guid.Empty, profileName))
 						{
-							var ip = _integrationPointService.GetRdo(integrationPointArtifactId);
-							var model = IntegrationPointProfileModel.FromIntegrationPoint(ip, profileName);
+							IntegrationPoint integrationPoint = _integrationPointService.ReadIntegrationPoint(integrationPointArtifactId);
+							IntegrationPointProfileModel model = IntegrationPointProfileModel.FromIntegrationPoint(integrationPoint, profileName);
 
 							int createdId = _profileService.SaveIntegration(model);
 							string result = _urlHelper.GetRelativityViewUrl(workspaceID, createdId, ObjectTypes.IntegrationPointProfile);

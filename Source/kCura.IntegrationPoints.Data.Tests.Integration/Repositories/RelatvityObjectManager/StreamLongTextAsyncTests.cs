@@ -1,10 +1,10 @@
-﻿using FluentAssertions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using Castle.Core.Internal;
+using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestCategories;
@@ -18,7 +18,7 @@ using Relativity.Services.Objects.DataContracts;
 using ArtifactType = Relativity.ArtifactType;
 using Workspace = kCura.IntegrationPoint.Tests.Core.Workspace;
 
-namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.RelativityObjectManager
+namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.RelatvityObjectManager
 {
 	[TestFixture]
 	public class StreamLongTextAsyncTests
@@ -99,11 +99,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.Relativity
 
 				// Act
 				Stream actualExtractedTextStream =
-					_relativityObjectManager.StreamLongTextAsync(
+					_relativityObjectManager.StreamLongText(
 						documentArtifactID,
-						new FieldRef {Name = _EXTRACTED_TEXT_FIELD_NAME})
-					.GetAwaiter()
-					.GetResult();
+						new FieldRef {Name = _EXTRACTED_TEXT_FIELD_NAME},
+						isUnicode: false);
 				var actualExtractedTextStreamReader = new StreamReader(actualExtractedTextStream, Encoding.UTF8);
 				string actualExtractedTextString = actualExtractedTextStreamReader.ReadToEnd();
 

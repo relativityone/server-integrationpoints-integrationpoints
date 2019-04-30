@@ -8,13 +8,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 	public interface IIntegrationPointService
 	{
 		/// <summary>
-		/// Retrieves an integration point given the artifact id.
-		/// </summary>
-		/// <param name="artifactId">Artifact id of the integration point.</param>
-		/// <returns>The integration point object.</returns>
-		Data.IntegrationPoint GetRdo(int artifactId);
-
-		/// <summary>
 		/// Retrieves all the integration points in the workspace.
 		/// </summary>
 		/// <returns>A list of integration point objects.</returns>
@@ -57,9 +50,16 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 		/// <summary>
 		/// Retrieves an integration model of the integration point given the integration point artifact id.
 		/// </summary>
-		/// <param name="artifactId">Artifact id of the integration point.</param>
+		/// <param name="artifactID">Artifact id of the integration point.</param>
 		/// <returns>The integration model object of the integration point.</returns>
-		IntegrationPointModel ReadIntegrationPoint(int artifactId);
+		IntegrationPointModel ReadIntegrationPointModel(int artifactID);
+
+		/// <summary>
+		/// Retrieves an integration point given the integration point artifact id.
+		/// </summary>
+		/// <param name="artifactID">Artifact id of the integration point.</param>
+		/// <returns>The integration point object.</returns>
+		Data.IntegrationPoint ReadIntegrationPoint(int artifactID);
 
 		/// <summary>
 		/// Retrieves the field mapping for the integration point given the artifact id.

@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 
 		public IntegrationPointModel GetIntegrationPointProfile(int integrationPointProfileArtifactId)
 		{
-			IntegrationPointProfile integrationPointProfile = _integrationPointProfileService.GetRdo(integrationPointProfileArtifactId);
+			IntegrationPointProfile integrationPointProfile = _integrationPointProfileService.ReadIntegrationPointProfile(integrationPointProfileArtifactId);
 			return integrationPointProfile.ToIntegrationPointModel();
 		}
 
@@ -65,10 +65,10 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 
 		public IntegrationPointModel CreateIntegrationPointProfileFromIntegrationPoint(int integrationPointArtifactId, string profileName)
 		{
-			var integrationPoint = _integrationPointService.GetRdo(integrationPointArtifactId);
-			var integrationPointProfileModel = IntegrationPointProfileModel.FromIntegrationPoint(integrationPoint, profileName);
+			IntegrationPoint integrationPoint = _integrationPointService.ReadIntegrationPoint(integrationPointArtifactId);
+			IntegrationPointProfileModel integrationPointProfileModel = IntegrationPointProfileModel.FromIntegrationPoint(integrationPoint, profileName);
 
-			var artifactId = _integrationPointProfileService.SaveIntegration(integrationPointProfileModel);
+			int artifactId = _integrationPointProfileService.SaveIntegration(integrationPointProfileModel);
 			return GetIntegrationPointProfile(artifactId);
 		}
 	}

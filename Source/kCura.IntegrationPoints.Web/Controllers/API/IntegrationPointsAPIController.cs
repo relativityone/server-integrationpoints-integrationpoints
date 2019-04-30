@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				if (id > 0)
 				{
 					IIntegrationPointService integrationPointService =  _serviceFactory.CreateIntegrationPointService(_cpHelper, _cpHelper);
-					model = integrationPointService.ReadIntegrationPoint(id);
+					model = integrationPointService.ReadIntegrationPointModel(id);
 				}
 				if (model.DestinationProvider == 0)
 				{

@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
@@ -21,17 +22,30 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			IIntegrationPointSerializer serializer,
 			IChoiceQuery choiceQuery,
 			IManagerFactory managerFactory,
-			IValidationExecutor validationExecutor)
-			: base(helper, context, choiceQuery, serializer, managerFactory, contextContainerFactory, validationExecutor)
+			IValidationExecutor validationExecutor,
+			IRelativityObjectManager objectManager)
+			: base(helper, context, choiceQuery, serializer, managerFactory, contextContainerFactory, validationExecutor, objectManager)
 		{
 		}
 
 		protected override string UnableToSaveFormat => "Unable to save Integration Point Profile:{0} cannot be changed once the Integration Point Profile has been saved";
 
-		public virtual IntegrationPointProfileModel ReadIntegrationPointProfile(int artifactId)
+		public IntegrationPointProfile ReadIntegrationPointProfile(int artifactId)
 		{
-			IntegrationPointProfile integrationPoint = GetRdo(artifactId);
-			var integrationPointProfileModel = IntegrationPointProfileModel.FromIntegrationPointProfile(integrationPoint);
+			try
+			{
+				return ObjectManager.Read<IntegrationPointProfile>(artifactId);
+			}
+			catch (Exception ex)
+			{
+				throw new Exception(Constants.IntegrationPoints.UNABLE_TO_RETRIEVE_INTEGRATION_POINT_PROFILE, ex);
+			}
+		}
+
+		public virtual IntegrationPointProfileModel ReadIntegrationPointProfileModel(int artifactId)
+		{
+			IntegrationPointProfile integrationPoint = ReadIntegrationPointProfile(artifactId);
+			IntegrationPointProfileModel integrationPointProfileModel = IntegrationPointProfileModel.FromIntegrationPointProfile(integrationPoint);
 			return integrationPointProfileModel;
 		}
 
@@ -70,11 +84,11 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 				//save RDO
 				if (profile.ArtifactId > 0)
 				{
-					Context.RsapiService.RelativityObjectManager.Update(profile);
+					ObjectManager.Update(profile);
 				}
 				else
 				{
-					profile.ArtifactId = Context.RsapiService.RelativityObjectManager.Create(profile);
+					profile.ArtifactId = ObjectManager.Create(profile);
 				}
 			}
 			catch (PermissionException)
@@ -94,7 +108,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 		protected override IntegrationPointModelBase GetModel(int artifactId)
 		{
-			return ReadIntegrationPointProfile(artifactId);
+			return ReadIntegrationPointProfileModel(artifactId);
 		}
 	}
 }

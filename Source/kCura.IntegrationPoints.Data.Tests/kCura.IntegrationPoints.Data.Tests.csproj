@@ -139,6 +139,9 @@
     <Compile Include="Repositories\Implementations\FieldRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\FileRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\FoundationRepositoryFactoryTests.cs" />
+    <Compile Include="Repositories\Implementations\JobHistoryErrorRepositoryTests.cs" />
+    <Compile Include="Repositories\Implementations\KeplerArtifactGuidRepositoryTests.cs" />
+    <Compile Include="Repositories\Implementations\PermissionRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\RelativityObjectManagerTests.cs" />
     <Compile Include="Repositories\Implementations\IntegrationPointRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\KeplerInstanceSettingRepositoryTests.cs" />
@@ -162,9 +165,9 @@
     <Compile Include="BaseRdoTests.cs" />
     <Compile Include="PermissionServiceTest.cs" />
     <Compile Include="RelativityReaderBaseTests.cs" />
-    <Compile Include="Repositories\Implementations\JobHistoryErrorRepositoryTests.cs" />
-    <Compile Include="Repositories\Implementations\PermissionRepositoryTests.cs" />
-    <Compile Include="Repositories\Implementations\KeplerArtifactGuidRepositoryTests.cs" />
+    <Compile Include="StreamWrappers\AsciiToUnicodeStreamTests.cs" />
+    <Compile Include="StreamWrappers\SelfDisposingStreamTests.cs" />
+    <Compile Include="StreamWrappers\SelfRecreatingStreamTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

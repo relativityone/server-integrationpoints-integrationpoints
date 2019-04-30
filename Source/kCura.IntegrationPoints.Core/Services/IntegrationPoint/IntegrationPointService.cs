@@ -51,8 +51,9 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			IValidationExecutor validationExecutor, 
 			IProviderTypeService providerTypeService, 
 			IMessageService messageService,
-			IIntegrationPointRepository integrationPointRepository)
-			: base(helper, context, choiceQuery, serializer, managerFactory, contextContainerFactory, validationExecutor)
+			IIntegrationPointRepository integrationPointRepository,
+			IRelativityObjectManager objectManager)
+			: base(helper, context, choiceQuery, serializer, managerFactory, contextContainerFactory, validationExecutor, objectManager)
 		{
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<IntegrationPointService>();
 			_jobService = jobService;
@@ -66,14 +67,19 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 		protected override IntegrationPointModelBase GetModel(int artifactID)
 		{
-			return ReadIntegrationPoint(artifactID);
+			return ReadIntegrationPointModel(artifactID);
 		}
 
-		public virtual IntegrationPointModel ReadIntegrationPoint(int artifactID)
+		public virtual IntegrationPointModel ReadIntegrationPointModel(int artifactID)
 		{
-			Data.IntegrationPoint integrationPoint = _integrationPointRepository.ReadAsync(artifactID).GetAwaiter().GetResult();
+			Data.IntegrationPoint integrationPoint = ReadIntegrationPoint(artifactID);
 			IntegrationPointModel integrationModel = IntegrationPointModel.FromIntegrationPoint(integrationPoint);
 			return integrationModel;
+		}
+
+		public Data.IntegrationPoint ReadIntegrationPoint(int artifactID)
+		{
+			return _integrationPointRepository.ReadAsync(artifactID).GetAwaiter().GetResult();
 		}
 
 		public int SaveIntegration(IntegrationPointModel model)
@@ -85,7 +91,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 					IntegrationPointModel existingModel;
 					try
 					{
-						existingModel = ReadIntegrationPoint(model.ArtifactID);
+						existingModel = ReadIntegrationPointModel(model.ArtifactID);
 					}
 					catch (Exception e)
 					{
@@ -117,11 +123,11 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 				//save RDO
 				if (integrationPoint.ArtifactId > 0)
 				{
-					Context.RsapiService.RelativityObjectManager.Update(integrationPoint);
+					ObjectManager.Update(integrationPoint);
 				}
 				else
 				{
-					integrationPoint.ArtifactId = Context.RsapiService.RelativityObjectManager.Create(integrationPoint);
+					integrationPoint.ArtifactId = ObjectManager.Create(integrationPoint);
 				}
 
 				TaskType task = GetJobTaskType(sourceProvider, destinationProvider);
@@ -241,7 +247,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			{
 				IJobHistoryManager jobHistoryManager = ManagerFactory.CreateJobHistoryManager(SourceContextContainer);
 				int lastJobHistoryArtifactId = jobHistoryManager.GetLastJobHistoryArtifactId(workspaceArtifactId, integrationPointArtifactId);
-				lastJobHistory = Context.RsapiService.RelativityObjectManager.Read<Data.JobHistory>(lastJobHistoryArtifactId);
+				lastJobHistory = ObjectManager.Read<Data.JobHistory>(lastJobHistoryArtifactId);
 			}
 			catch (Exception exception)
 			{
@@ -471,7 +477,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			Data.IntegrationPoint integrationPoint =
 				_integrationPointRepository.ReadAsync(integrationPointArtifactId).GetAwaiter().GetResult();
 			integrationPoint.HasErrors = true;
-			Context.RsapiService.RelativityObjectManager.Update(integrationPoint);
+			ObjectManager.Update(integrationPoint);
 		}
 
 		public IEnumerable<FieldMap> GetFieldMap(int artifactID)

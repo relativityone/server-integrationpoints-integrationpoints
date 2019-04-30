@@ -26,7 +26,6 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Authentication;
-using kCura.IntegrationPoints.SourceProviderInstaller;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
@@ -148,7 +147,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 
 			_integrationPointService = new IntegrationPointService(Helper, caseServiceContext, contextContainerFactory,
 				integrationPointSerializer, choiceQuery, jobManager, _jobHistoryService, jobHistoryErrorService, managerFactory,
-				validationExecutor, providerTypeService, messageService, integrationPointRepository);
+				validationExecutor, providerTypeService, messageService, integrationPointRepository,
+				caseServiceContext.RsapiService.RelativityObjectManager);
 		}
 
 		private IRelativityObjectManager CreateObjectManager(IEHHelper helper, int workspaceID)
