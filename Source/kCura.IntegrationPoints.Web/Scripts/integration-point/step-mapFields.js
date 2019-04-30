@@ -702,10 +702,11 @@ ko.validation.insertValidationMessage = function (element) {
 				}
 
 				mapping = $.map(mapping, function (value) {
-					if (value.fieldMapType !== mapTypes.parent && (value.fieldMapType !== mapTypes.native || value.destinationField.fieldIdentifier !== undefined)) {
-						return value;
+					// Drop auxiliary mapping entries that don't have destination field specified (such as FolderPathInformation or NativeFilePath) as they shouldn't be displayed in the UI
+					if (value.destinationField.fieldIdentifier === undefined && (value.fieldMapType === mapTypes.parent || value.fieldMapType === mapTypes.native)) {
+						return null;
 					}
-					return null;
+					return value;
 				});
 
 
