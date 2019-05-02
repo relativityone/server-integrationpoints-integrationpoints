@@ -35,7 +35,7 @@ def relativityBranch = params.relativityBranch ?: env.BRANCH_NAME
 // *********
 // Set variable below to the branch name, when you create new release branch!!!
 // This should be changed on the release branch
-def relativityBranchFallback = "release-10.1-blazingstar1"
+def relativityBranchFallback = "release-10.1-blazingstar2"
 
 def chef_attributes = 'fluidOn:1,cdonprem:1'
 def ripCookbooks = getCookbooks()
