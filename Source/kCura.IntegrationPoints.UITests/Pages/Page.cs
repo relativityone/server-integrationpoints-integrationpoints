@@ -91,6 +91,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		protected void SetInputText(IWebElement element, string text)
 		{
+			element.ClickEx();
 			element.SendKeys(Keys.Control + "a");
 			element.SetText(text);
 		}
