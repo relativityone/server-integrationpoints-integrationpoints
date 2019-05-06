@@ -253,7 +253,7 @@ namespace Relativity.Sync.Executors
 			return result;
 		}
 
-		private IReadOnlyList<RelativityObjectRef> ConvertArtifactIdsToObjectRefs(IList<int> artifactIds)
+		private static IReadOnlyList<RelativityObjectRef> ConvertArtifactIdsToObjectRefs(IList<int> artifactIds)
 		{
 			var objectRefs = new RelativityObjectRef[artifactIds.Count];
 
