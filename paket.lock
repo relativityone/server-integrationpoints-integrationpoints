@@ -89,7 +89,7 @@ NUGET
     Relativity.Telemetry.APM (2019.1.1)
     Relativity.Telemetry.DataContracts.Shared (2019.1.1)
     Relativity.Telemetry.Services.Interface (2019.1.1)
-    relativity.transfer.client (6.0.14)
+    relativity.transfer.client (5.0.6)
       Newtonsoft.Json (>= 6.0.8)
       Polly (>= 5.3.1)
       relativity.faspmanager (3.7.2)
