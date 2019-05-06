@@ -5,11 +5,11 @@ using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync.Tests.Common
 {
-	internal sealed class SourceServiceFactoryForAdminStub : ISourceServiceFactoryForAdmin, ISourceServiceFactoryForUser
+	internal sealed class SourceServiceFactoryStub : ISourceServiceFactoryForAdmin, ISourceServiceFactoryForUser
 	{
 		private readonly ServiceFactory _serviceFactory;
 
-		public SourceServiceFactoryForAdminStub(ServiceFactory serviceFactory)
+		public SourceServiceFactoryStub(ServiceFactory serviceFactory)
 		{
 			_serviceFactory = serviceFactory;
 		}

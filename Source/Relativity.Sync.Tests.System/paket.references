@@ -3,6 +3,7 @@ Relativity.Kepler
 Relativity.Platform.Keywords
 Relativity.Services.Interfaces
 kCura.Relativity.Client
+Relativity.ImportExport
 
 Microsoft.CodeAnalysis.FxCopAnalyzers
 CSharpGuidelineAnalyzer
