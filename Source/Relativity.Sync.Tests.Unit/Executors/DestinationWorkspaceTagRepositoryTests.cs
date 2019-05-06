@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -303,6 +303,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		public async Task ItShouldReportFailureWhenExceptionThrownTryingToTagDocuments()
 		{
 			// Arrange
+			const int expectedTotalObjectsUpdated = 0;
 			var synchronizationConfiguration = new Mock<ISynchronizationConfiguration>(MockBehavior.Loose);
 			int[] testArtifactIds = { 1 };
 
@@ -315,21 +316,26 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			// Assert
 			CollectionAssert.IsNotEmpty(actualResult);
 			Assert.IsFalse(actualResult[0].Success);
-			Assert.AreEqual(0, actualResult[0].TotalObjectsUpdated);
+			Assert.AreEqual(expectedTotalObjectsUpdated, actualResult[0].TotalObjectsUpdated);
 			CollectionAssert.AreEqual(testArtifactIds, actualResult[0].FailedDocumentArtifactIds);
+
+			_apmClient.Verify(x => x.GaugeOperation(It.IsAny<string>(), It.IsAny<string>(), It.Is<Func<int>>(func => func.Invoke() == expectedTotalObjectsUpdated), It.IsAny<string>(),
+				It.IsAny<Dictionary<string, object>>()));
+			_apmClient.Verify(x => x.TimedOperation(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, object>>()), Times.Once);
 		}
 
 		[Test]
 		public async Task ItShouldReportFailureWhenSomeDocumentsAreTagged()
 		{
 			// Arrange
+			const int expectedTotalObjectsUpdated = 1;
 			var synchronizationConfiguration = new Mock<ISynchronizationConfiguration>(MockBehavior.Loose);
 			int[] testArtifactIds = { 1, 0 };
 			var testMassUpdateResult = new MassUpdateResult
 			{
 				Message = "Failed completing update query.",
 				Success = false,
-				TotalObjectsUpdated = 1
+				TotalObjectsUpdated = expectedTotalObjectsUpdated
 			};
 
 			_objectManager.Setup(x => x.UpdateAsync(It.IsAny<int>(), It.IsAny<MassUpdateByObjectIdentifiersRequest>(), It.IsAny<MassUpdateOptions>(), It.IsAny<CancellationToken>()))
@@ -341,8 +347,12 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			// Assert
 			CollectionAssert.IsNotEmpty(actualResult);
 			Assert.IsFalse(actualResult[0].Success);
-			Assert.AreEqual(1, actualResult[0].TotalObjectsUpdated);
+			Assert.AreEqual(expectedTotalObjectsUpdated, actualResult[0].TotalObjectsUpdated);
 			CollectionAssert.AreEqual(new[] { 0 }, actualResult[0].FailedDocumentArtifactIds);
+
+			_apmClient.Verify(x => x.GaugeOperation(It.IsAny<string>(), It.IsAny<string>(), It.Is<Func<int>>(func => func.Invoke() == expectedTotalObjectsUpdated), It.IsAny<string>(),
+				It.IsAny<Dictionary<string, object>>()));
+			_apmClient.Verify(x => x.TimedOperation(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, object>>()), Times.Once);
 		}
 
 		[Test]
@@ -361,6 +371,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Assert.AreEqual(testArtifactIds.Length, actualResult[0].TotalObjectsUpdated);
 			Assert.AreEqual("A call to the Mass Update API was not made as there are no objects to update.", actualResult[0].Message);
 			CollectionAssert.IsEmpty(actualResult[0].FailedDocumentArtifactIds);
+
+			_apmClient.Verify(x => x.GaugeOperation(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Func<int>>(), It.IsAny<string>(),
+				It.IsAny<Dictionary<string, object>>()), Times.Never);
+			_apmClient.Verify(x => x.TimedOperation(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, object>>()), Times.Never);
 
 			_objectManager.Verify(x => x.UpdateAsync(
 				It.IsAny<int>(),
@@ -406,9 +420,18 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Assert.AreEqual(firstBatchSize, actualResult[0].TotalObjectsUpdated);
 			CollectionAssert.IsEmpty(actualResult[0].FailedDocumentArtifactIds);
 
+			_apmClient.Verify(x => x.GaugeOperation(It.IsAny<string>(), It.IsAny<string>(), It.Is<Func<int>>(func => func.Invoke() == firstBatchSize), It.IsAny<string>(),
+				It.IsAny<Dictionary<string, object>>()));
+
 			Assert.IsTrue(actualResult[1].Success);
 			Assert.AreEqual(secondBatchSize, actualResult[1].TotalObjectsUpdated);
 			CollectionAssert.IsEmpty(actualResult[1].FailedDocumentArtifactIds);
+
+			_apmClient.Verify(x => x.GaugeOperation(It.IsAny<string>(), It.IsAny<string>(), It.Is<Func<int>>(func => func.Invoke() == secondBatchSize), It.IsAny<string>(),
+				It.IsAny<Dictionary<string, object>>()));
+
+			const int apmTimedOperationCallCount = 2;
+			_apmClient.Verify(x => x.TimedOperation(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, object>>()), Times.Exactly(apmTimedOperationCallCount));
 
 			_objectManager.Verify(x => x.UpdateAsync(It.IsAny<int>(), It.IsAny<MassUpdateByObjectIdentifiersRequest>(), It.IsAny<MassUpdateOptions>(), It.IsAny<CancellationToken>()),
 				Times.Exactly(expectedNumberOfBatches));
@@ -447,6 +470,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Assert.IsTrue(actualResult[0].Success);
 			Assert.AreEqual(testArtifactIds.Length, actualResult[0].TotalObjectsUpdated);
 			CollectionAssert.IsEmpty(actualResult[0].FailedDocumentArtifactIds);
+
+			_apmClient.Verify(x => x.GaugeOperation(It.IsAny<string>(), It.IsAny<string>(), It.Is<Func<int>>(func => func.Invoke().Equals(testArtifactIds.Length)), It.IsAny<string>(),
+				It.IsAny<Dictionary<string, object>>()));
+			_apmClient.Verify(x => x.TimedOperation(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, object>>()), Times.Once);
 
 			_objectManager.Verify(x => x.UpdateAsync(
 				It.Is<int>(w => w == testSourceWorkspaceArtifactId),
