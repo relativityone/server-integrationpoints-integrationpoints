@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -14,6 +14,7 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
+using Relativity.Sync.Telemetry;
 
 namespace Relativity.Sync.Tests.Unit.Executors
 {
@@ -23,6 +24,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private Mock<IFederatedInstance> _federatedInstance;
 		private Mock<ITagNameFormatter> _tagNameFormatter;
 		private Mock<IObjectManager> _objectManager;
+		private Mock<IAPMClient> _apmClient;
 
 		private ISyncLog _syncLog;
 		private CancellationToken _token;
@@ -52,8 +54,9 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_tagNameFormatter = new Mock<ITagNameFormatter>();
 			_tagNameFormatter.Setup(x => x.FormatWorkspaceDestinationTagName(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>())).Returns("foo bar");
 			serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
+			_apmClient = new Mock<IAPMClient>();
 
-			_sut = new DestinationWorkspaceTagRepository(serviceFactory.Object, _federatedInstance.Object, _tagNameFormatter.Object, _syncLog);
+			_sut = new DestinationWorkspaceTagRepository(serviceFactory.Object, _federatedInstance.Object, _tagNameFormatter.Object, _syncLog, _apmClient.Object);
 		}
 
 		[Test]
