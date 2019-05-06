@@ -66,14 +66,19 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 		protected override IntegrationPointModelBase GetModel(int artifactID)
 		{
-			return ReadIntegrationPoint(artifactID);
+			return ReadIntegrationPointModel(artifactID);
 		}
 
-		public virtual IntegrationPointModel ReadIntegrationPoint(int artifactID)
+		public virtual IntegrationPointModel ReadIntegrationPointModel(int artifactID)
 		{
-			Data.IntegrationPoint integrationPoint = _integrationPointRepository.ReadAsync(artifactID).GetAwaiter().GetResult();
+			Data.IntegrationPoint integrationPoint = ReadIntegrationPoint(artifactID);
 			IntegrationPointModel integrationModel = IntegrationPointModel.FromIntegrationPoint(integrationPoint);
 			return integrationModel;
+		}
+
+		public virtual Data.IntegrationPoint ReadIntegrationPoint(int artifactID)
+		{
+			return _integrationPointRepository.ReadAsync(artifactID).GetAwaiter().GetResult();
 		}
 
 		public int SaveIntegration(IntegrationPointModel model)
@@ -85,7 +90,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 					IntegrationPointModel existingModel;
 					try
 					{
-						existingModel = ReadIntegrationPoint(model.ArtifactID);
+						existingModel = ReadIntegrationPointModel(model.ArtifactID);
 					}
 					catch (Exception e)
 					{

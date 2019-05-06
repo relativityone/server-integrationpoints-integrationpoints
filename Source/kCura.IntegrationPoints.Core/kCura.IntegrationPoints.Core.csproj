@@ -168,8 +168,6 @@
     <Compile Include="Services\Domain\ProviderFactoryVendor.cs" />
     <Compile Include="Services\EhErrorService.cs" />
     <Compile Include="Services\ErrorServiceBase.cs" />
-    <Compile Include="Utils\AsciiToUnicodeStream.cs" />
-    <Compile Include="Services\Exporter\SelfDisposingStream.cs" />
     <Compile Include="Services\Exporter\Validators\DestinationFieldsValidator.cs" />
     <Compile Include="Services\Exporter\Validators\NestedAndMultiValuesFieldValidator.cs" />
     <Compile Include="Services\FieldService.cs" />

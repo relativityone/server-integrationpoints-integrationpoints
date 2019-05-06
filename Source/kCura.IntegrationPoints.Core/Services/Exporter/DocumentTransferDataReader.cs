@@ -74,8 +74,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 					retrievedField = CurrentArtifact.GetFieldForIdentifier(fieldArtifactId);
 					if (ShouldUseLongTextStream(retrievedField))
 					{
-						return new SelfDisposingStream(CurrentArtifact.ArtifactId, fieldArtifactId,
-							_relativityObjectManager, _fieldLookupRepository, _logger);
+						return GetLongTextStreamFromField(fieldArtifactId);
 					}
 
 					return retrievedField.Value;
@@ -156,7 +155,14 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				throw LogGetValueError(e, i, isFieldIdentifierNumeric, retrievedField, fieldIdentifier, fieldArtifactId, result);
 			}
 		}
-		
+
+		private Stream GetLongTextStreamFromField(int fieldArtifactId)
+		{
+			var fieldRef = new FieldRef { ArtifactID = fieldArtifactId };
+			ViewFieldInfo field = _fieldLookupRepository.GetFieldByArtifactId(fieldArtifactId);
+
+			return _relativityObjectManager.StreamLongText(CurrentArtifact.ArtifactId, fieldRef, field.IsUnicodeEnabled);
+		}
 
 		private IntegrationPointsException LogGetValueError(
 			Exception e, 

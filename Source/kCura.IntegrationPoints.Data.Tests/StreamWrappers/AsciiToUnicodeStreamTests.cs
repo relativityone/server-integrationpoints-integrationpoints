@@ -2,11 +2,11 @@
 using System.IO;
 using System.Linq;
 using System.Text;
-using kCura.IntegrationPoints.Core.Utils;
+using kCura.IntegrationPoints.Data.StreamWrappers;
 using Moq;
 using NUnit.Framework;
 
-namespace kCura.IntegrationPoints.Core.Tests.Utils
+namespace kCura.IntegrationPoints.Data.Tests.StreamWrappers
 {
 	[TestFixture]
 	public class AsciiToUnicodeStreamTests
@@ -60,7 +60,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Utils
 		[Test]
 		public void ReadShouldProperlyDecodeAllAsciiCharacters()
 		{
-			string asciiTableString = string.Concat(Enumerable.Range(1, 127).Select(i => (char) i));
+			string asciiTableString = string.Concat(Enumerable.Range(1, 127).Select(i => (char)i));
 			AsciiToUnicodeStream stream = CreateAsciiToUnicodeStream(asciiTableString);
 			var outputBuffer = new byte[_DEFAULT_BUFFER_LENGTH];
 
@@ -108,7 +108,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Utils
 		public void LengthIsTwiceTheAsciiContent()
 		{
 			AsciiToUnicodeStream stream = CreateAsciiToUnicodeStream(_SOME_TEXT);
-			
+
 			long result = stream.Length;
 
 			Assert.That(result, Is.EqualTo(_SOME_TEXT.Length * 2));
@@ -120,7 +120,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Utils
 			const int numberOfBytesToRead = 8;
 
 			AsciiToUnicodeStream stream = CreateAsciiToUnicodeStream(_SOME_TEXT);
-			var outputBuffer = new byte[_DEFAULT_BUFFER_LENGTH];			
+			var outputBuffer = new byte[_DEFAULT_BUFFER_LENGTH];
 
 			stream.Read(outputBuffer, 0, numberOfBytesToRead);
 

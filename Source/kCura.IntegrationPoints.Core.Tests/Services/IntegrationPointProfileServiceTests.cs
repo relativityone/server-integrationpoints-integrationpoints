@@ -183,7 +183,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				Destination = JsonConvert.SerializeObject(new { DestinationProviderType = "" })
 			};
 
-			_instance.ReadIntegrationPointProfile(Arg.Is(model.ArtifactID)).Returns(existingModel);
+			_instance.ReadIntegrationPointProfileModel(Arg.Is(model.ArtifactID)).Returns(existingModel);
 			_choiceQuery.GetChoicesOnField(Guid.Parse(IntegrationPointProfileFieldGuids.OverwriteFields))
 				.Returns(new List<Choice>()
 				{
@@ -221,7 +221,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		public void GetRdo_ArtifactIdExists_ReturnsRdo_Test()
 		{
 			//Act
-			IntegrationPointProfile integrationPointProfile = _instance.GetRdo(_integrationPointProfileArtifactId);
+			IntegrationPointProfile integrationPointProfile = _instance.ReadIntegrationPointProfile(_integrationPointProfileArtifactId);
 
 			//Assert
 			_caseServiceContext.RsapiService.RelativityObjectManager.Received(1).Read<IntegrationPointProfile>(_integrationPointProfileArtifactId);
@@ -235,7 +235,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_caseServiceContext.RsapiService.RelativityObjectManager.Read<IntegrationPointProfile>(_integrationPointProfileArtifactId).Throws<Exception>();
 
 			//Act
-			Assert.Throws<Exception>(() => _instance.GetRdo(_integrationPointProfileArtifactId), "Unable to retrieve Integration Point.");
+			Assert.Throws<Exception>(() => _instance.ReadIntegrationPointProfile(_integrationPointProfileArtifactId), "Unable to retrieve Integration Point.");
 		}
 
 		[Test]
@@ -254,6 +254,41 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			// Act
 			Assert.Throws<Exception>(() => _instance.SaveIntegration(model), "Unable to save Integration Point: Unable to retrieve Integration Point");
+		}
+
+		[Test]
+		public void ReadIntegrationPointProfile_ShouldReturnIntegrationPointProfile_WhenRepositoryReturnsIntegrationPoint()
+		{
+			// arrange
+			_caseServiceContext.RsapiService.RelativityObjectManager
+				.Read<IntegrationPointProfile>(_integrationPointProfileArtifactId)
+				.Returns(_integrationPointProfile);
+
+			// act
+			IntegrationPointProfile result = _instance.ReadIntegrationPointProfile(_integrationPointProfileArtifactId);
+
+			// assert
+			_caseServiceContext.RsapiService.RelativityObjectManager
+				.Received(1)
+				.Read<IntegrationPointProfile>(_integrationPointProfileArtifactId);
+			Assert.AreEqual(_integrationPointProfile, result);
+		}
+
+		[Test]
+		public void ReadIntegrationPointProfile_ShouldThrowException_WhenRepositoryThrowsException()
+		{
+			// arrange
+			_caseServiceContext.RsapiService.RelativityObjectManager
+				.Read<IntegrationPointProfile>(_integrationPointProfileArtifactId)
+				.Throws<Exception>();
+
+			// act
+			Assert.Throws<Exception>(() => _instance.ReadIntegrationPointProfile(_integrationPointProfileArtifactId));
+
+			// assert
+			_caseServiceContext.RsapiService.RelativityObjectManager
+				.Received(1)
+				.Read<IntegrationPointProfile>(_integrationPointProfileArtifactId);
 		}
 	}
 }

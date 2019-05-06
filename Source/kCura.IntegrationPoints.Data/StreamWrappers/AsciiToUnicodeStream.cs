@@ -1,26 +1,26 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Text;
 
-namespace kCura.IntegrationPoints.Core.Utils
-{	
+namespace kCura.IntegrationPoints.Data.StreamWrappers
+{
 	public class AsciiToUnicodeStream : Stream
 	{
-		private Stream _asciiStream;
-
 		private const int _BYTES_PER_UNICODE_CHARACTER = 2;
 
-		public override bool CanRead => _asciiStream.CanRead;
+		internal Stream AsciiStream { get; private set; }
+
+		public override bool CanRead => AsciiStream.CanRead;
 
 		public override bool CanSeek => false;
 
 		public override bool CanWrite => false;
 
-		public override long Length => _asciiStream.Length * _BYTES_PER_UNICODE_CHARACTER;
+		public override long Length => AsciiStream.Length * _BYTES_PER_UNICODE_CHARACTER;
 
 		public override long Position
 		{
-			get { return _asciiStream.Position * _BYTES_PER_UNICODE_CHARACTER; }
+			get { return AsciiStream.Position * _BYTES_PER_UNICODE_CHARACTER; }
 			set { SetLength(value); }
 		}
 
@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.Core.Utils
 		/// </summary>
 		public AsciiToUnicodeStream(Stream asciiStream, bool leaveOpen = false)
 		{
-			_asciiStream = asciiStream;
+			AsciiStream = asciiStream;
 			LeaveOpen = leaveOpen;
 		}
 
@@ -72,15 +72,15 @@ namespace kCura.IntegrationPoints.Core.Utils
 				throw new ArgumentException($"The size of ${nameof(offset)} and ${nameof(count)} is greater than the size of ${nameof(buffer)}");
 			}
 
-			if (_asciiStream == null)
+			if (AsciiStream == null)
 			{
 				throw new ObjectDisposedException("The stream is already closed");
 			}
 
 			int bytesToReadFromAsciiStream = count / _BYTES_PER_UNICODE_CHARACTER;
-			
+
 			var asciiBuffer = new byte[bytesToReadFromAsciiStream];
-			int asciiReadBytes = _asciiStream.Read(asciiBuffer, 0, asciiBuffer.Length);
+			int asciiReadBytes = AsciiStream.Read(asciiBuffer, 0, asciiBuffer.Length);
 
 			byte[] bytesInUnicode = Encoding.Convert(Encoding.ASCII, Encoding.Unicode, asciiBuffer, 0, asciiReadBytes);
 
@@ -98,16 +98,16 @@ namespace kCura.IntegrationPoints.Core.Utils
 		{
 			try
 			{
-				if (LeaveOpen || !disposing || this._asciiStream == null)
+				if (LeaveOpen || !disposing || AsciiStream == null)
 				{
 					return;
 				}
 
-				_asciiStream.Close();
+				AsciiStream.Close();
 			}
 			finally
 			{
-				this._asciiStream = null;
+				AsciiStream = null;
 
 				base.Dispose(disposing);
 			}

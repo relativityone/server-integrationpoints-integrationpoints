@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 
 		public string ErrorFilePath(int integrationPointArtifactId)
 		{
-			IntegrationPoint ip = _integrationPointReader.GetRdo(integrationPointArtifactId);
+			IntegrationPoint ip = _integrationPointReader.ReadIntegrationPoint(integrationPointArtifactId);
 			ImportProviderSettings settings = _serializer.Deserialize<ImportProviderSettings>(ip.SourceConfiguration);
 			ImportSettings destinationConfig = _serializer.Deserialize<ImportSettings>(ip.DestinationConfiguration);
 			string loadFileBasePath = Path.GetDirectoryName(settings.LoadFile);
@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 
 		public string LoadFileFullPath(int integrationPointArtifactId)
 		{
-			IntegrationPoint ip = _integrationPointReader.GetRdo(integrationPointArtifactId);
+			IntegrationPoint ip = _integrationPointReader.ReadIntegrationPoint(integrationPointArtifactId);
 			ImportProviderSettings settings = _serializer.Deserialize<ImportProviderSettings>(ip.SourceConfiguration);
 			ImportSettings destinationConfig = _serializer.Deserialize<ImportSettings>(ip.DestinationConfiguration);
 

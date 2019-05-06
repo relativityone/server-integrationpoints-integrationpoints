@@ -105,7 +105,7 @@ namespace kCura.IntegrationPoints.Agent
 
 			try
 			{
-				IntegrationPoint integrationPoint = _integrationPointService.GetRdo(integrationPointId);
+				IntegrationPoint integrationPoint = _integrationPointService.ReadIntegrationPoint(integrationPointId);
 				_logger.LogInformation("Integration Point with id: {integrationPointId} retrieved successfully.", integrationPointId);
 				return integrationPoint;
 			}

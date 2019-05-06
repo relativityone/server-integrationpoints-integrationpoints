@@ -73,11 +73,12 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 			// Arrange
 			_integrationPoint = CreateTestIntegrationPoint();
 			_objectManagerMock.Setup(x => x.Read<IntegrationPoint>(_ARTIFACT_ID, ExecutionIdentity.CurrentUser)).Returns(_integrationPoint);
-			_objectManagerMock.Setup(x => x.StreamLongTextAsync(
+			_objectManagerMock.Setup(x => x.StreamLongText(
 					_ARTIFACT_ID,
 					It.Is<FieldRef>(f => f.Guid.ToString() == _guid.ToString()),
+					false,
 					ExecutionIdentity.CurrentUser))
-				.Returns(Task.FromResult(_fieldMappingStream));
+				.Returns(_fieldMappingStream);
 			IntegrationPoint expectedResult = CreateTestIntegrationPoint();
 			expectedResult.FieldMappings = _FIELD_MAPPING_LONG;
 
@@ -87,15 +88,16 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 			// Assert
 			_objectManagerMock.Verify(x => x.Read<IntegrationPoint>(_ARTIFACT_ID, ExecutionIdentity.CurrentUser), Times.Once);
 			_objectManagerMock.Verify(
-				x => x.StreamLongTextAsync(
+				x => x.StreamLongText(
 					_ARTIFACT_ID,
 					It.Is<FieldRef>(f => f.Guid.ToString() == _guid.ToString()),
+					false,
 					ExecutionIdentity.CurrentUser),
 				Times.Once());
 			_internalLoggerMock.Verify(
 				x => x.LogError(
-					It.IsAny<Exception>(), 
-					It.IsAny<string>(), 
+					It.IsAny<Exception>(),
+					It.IsAny<string>(),
 					It.IsAny<object[]>()),
 				Times.Never);
 			AreIntegrationPointsEqual(expectedResult, actualResult).Should().BeTrue();
@@ -114,9 +116,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 			action.ShouldThrow<Exception>();
 			_objectManagerMock.Verify(x => x.Read<IntegrationPoint>(_ARTIFACT_ID, ExecutionIdentity.CurrentUser), Times.Once);
 			_objectManagerMock.Verify(
-				x => x.StreamLongTextAsync(
+				x => x.StreamLongText(
 					It.IsAny<int>(),
 					It.IsAny<FieldRef>(),
+					It.IsAny<bool>(),
 					It.IsAny<ExecutionIdentity>()),
 				Times.Never);
 			_internalLoggerMock.Verify(
@@ -133,9 +136,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 			// Arrange
 			_integrationPoint = CreateTestIntegrationPoint();
 			_objectManagerMock.Setup(x => x.Read<IntegrationPoint>(_ARTIFACT_ID, ExecutionIdentity.CurrentUser)).Returns(_integrationPoint);
-			_objectManagerMock.Setup(x => x.StreamLongTextAsync(
+			_objectManagerMock.Setup(x => x.StreamLongText(
 					_ARTIFACT_ID,
 					It.Is<FieldRef>(f => f.Guid.ToString() == _guid.ToString()),
+					It.IsAny<bool>(),
 					ExecutionIdentity.CurrentUser))
 				.Throws<Exception>();
 
@@ -146,9 +150,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 			action.ShouldThrow<Exception>();
 			_objectManagerMock.Verify(x => x.Read<IntegrationPoint>(_ARTIFACT_ID, ExecutionIdentity.CurrentUser), Times.Once);
 			_objectManagerMock.Verify(
-				x => x.StreamLongTextAsync(
+				x => x.StreamLongText(
 					It.IsAny<int>(),
 					It.IsAny<FieldRef>(),
+					It.IsAny<bool>(),
 					It.IsAny<ExecutionIdentity>()),
 				Times.Once);
 			_internalLoggerMock.Verify(
@@ -177,20 +182,22 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 		{
 			// Arrange
 			_integrationPoint = CreateTestIntegrationPoint();
-			_objectManagerMock.Setup(x => x.StreamLongTextAsync(
+			_objectManagerMock.Setup(x => x.StreamLongText(
 					_ARTIFACT_ID,
 					It.Is<FieldRef>(f => f.Guid.ToString() == _guid.ToString()),
+					false,
 					ExecutionIdentity.CurrentUser))
-				.Returns(Task.FromResult(_fieldMappingStream));
+				.Returns(_fieldMappingStream);
 
 			// Act
 			IEnumerable<FieldMap> actualResult = _sut.GetFieldMappingAsync(_ARTIFACT_ID).GetAwaiter().GetResult();
 
 			// Assert
 			_objectManagerMock.Verify(
-				x => x.StreamLongTextAsync(
+				x => x.StreamLongText(
 					_ARTIFACT_ID,
 					It.Is<FieldRef>(f => f.Guid.ToString() == _guid.ToString()),
+					false,
 					ExecutionIdentity.CurrentUser),
 				Times.Once());
 			_serializerMock.Verify(x => x.Deserialize<IEnumerable<FieldMap>>(_FIELD_MAPPING_LONG), Times.Once);
@@ -214,9 +221,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 
 			// Assert
 			_objectManagerMock.Verify(
-				x => x.StreamLongTextAsync(
+				x => x.StreamLongText(
 					It.IsAny<int>(),
 					It.IsAny<FieldRef>(),
+					It.IsAny<bool>(),
 					It.IsAny<ExecutionIdentity>()),
 				Times.Never);
 			_serializerMock.Verify(x => x.Deserialize<IEnumerable<FieldMap>>(It.IsAny<string>()), Times.Never);
@@ -234,20 +242,22 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 		{
 			// Arrange
 			_integrationPoint = CreateTestIntegrationPoint();
-			_objectManagerMock.Setup(x => x.StreamLongTextAsync(
+			_objectManagerMock.Setup(x => x.StreamLongText(
 					_ARTIFACT_ID,
 					It.Is<FieldRef>(f => f.Guid.ToString() == _guid.ToString()),
+					false,
 					ExecutionIdentity.CurrentUser))
-				.Returns(Task.FromResult(_fieldMappingEmptyStream));
+				.Returns(_fieldMappingEmptyStream);
 
 			// Act
 			IEnumerable<FieldMap> actualResult = _sut.GetFieldMappingAsync(_ARTIFACT_ID).GetAwaiter().GetResult();
 
 			// Assert
 			_objectManagerMock.Verify(
-				x => x.StreamLongTextAsync(
+				x => x.StreamLongText(
 					_ARTIFACT_ID,
 					It.Is<FieldRef>(f => f.Guid.ToString() == _guid.ToString()),
+					false,
 					ExecutionIdentity.CurrentUser),
 				Times.Once());
 			_serializerMock.Verify(x => x.Deserialize<IEnumerable<FieldMap>>(It.IsAny<string>()), Times.Never);
@@ -264,9 +274,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 		public void GetFieldMapJsonAsync_ShouldThrowException_WhenObjectManagerStreamLongTextAsyncThrowsException()
 		{
 			// Arrange
-			_objectManagerMock.Setup(x => x.StreamLongTextAsync(
+			_objectManagerMock.Setup(x => x.StreamLongText(
 					_ARTIFACT_ID,
 					It.Is<FieldRef>(f => f.Guid.ToString() == _guid.ToString()),
+					false,
 					ExecutionIdentity.CurrentUser))
 				.Throws<Exception>();
 
@@ -276,9 +287,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 			// Assert
 			action.ShouldThrow<Exception>();
 			_objectManagerMock.Verify(
-				x => x.StreamLongTextAsync(
+				x => x.StreamLongText(
 					_ARTIFACT_ID,
 					It.Is<FieldRef>(f => f.Guid.ToString() == _guid.ToString()),
+					false,
 					ExecutionIdentity.CurrentUser),
 				Times.Once());
 			_serializerMock.Verify(x => x.Deserialize<IEnumerable<FieldMap>>(_FIELD_MAPPING_LONG), Times.Never);
@@ -295,11 +307,12 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 		{
 			// Arrange
 			_integrationPoint = CreateTestIntegrationPoint();
-			_objectManagerMock.Setup(x => x.StreamLongTextAsync(
+			_objectManagerMock.Setup(x => x.StreamLongText(
 					_ARTIFACT_ID,
 					It.Is<FieldRef>(f => f.Guid.ToString() == _guid.ToString()),
+					false,
 					ExecutionIdentity.CurrentUser))
-				.Returns(Task.FromResult(_fieldMappingInvalidStream));
+				.Returns(_fieldMappingInvalidStream);
 
 			// Act
 			Action action = () => _sut.GetFieldMappingAsync(_ARTIFACT_ID).GetAwaiter().GetResult();
@@ -307,9 +320,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 			// Assert
 			action.ShouldThrow<SerializationException>();
 			_objectManagerMock.Verify(
-				x => x.StreamLongTextAsync(
+				x => x.StreamLongText(
 					_ARTIFACT_ID,
 					It.Is<FieldRef>(f => f.Guid.ToString() == _guid.ToString()),
+					false,
 					ExecutionIdentity.CurrentUser),
 				Times.Once());
 			_serializerMock.Verify(x => x.Deserialize<IEnumerable<FieldMap>>(_FIELD_MAPPING_INVALID), Times.Once);

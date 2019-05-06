@@ -541,7 +541,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private void PreJobExecutionGoldFlowSetup()
 		{
 			_job.JobDetails = "something something here";
-			_integrationPointService.GetRdo(_job.RelatedObjectArtifactID).Returns(_integrationPoint);
+			_integrationPointService.ReadIntegrationPoint(_job.RelatedObjectArtifactID).Returns(_integrationPoint);
 			_jobHistoryService.GetOrCreateScheduledRunHistoryRdo(_integrationPoint, _batchInstance, Arg.Any<DateTime>())
 				.Returns(_jobHistory);
 			_jobHistory.StartTimeUTC = null;

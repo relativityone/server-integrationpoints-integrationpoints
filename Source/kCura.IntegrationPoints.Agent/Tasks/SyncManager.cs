@@ -228,7 +228,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				throw new ArgumentNullException("Job must have a Related Object ArtifactID");
 			}
 
-			IntegrationPoint = IntegrationPointService.GetRdo(job.RelatedObjectArtifactID);
+			IntegrationPoint = IntegrationPointService.ReadIntegrationPoint(job.RelatedObjectArtifactID);
 			if (IntegrationPoint.SourceProvider == 0)
 			{
 				LogUnknownSourceProvider(job);

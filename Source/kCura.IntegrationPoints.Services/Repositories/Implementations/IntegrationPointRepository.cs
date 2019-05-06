@@ -54,13 +54,13 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 
 		public IntegrationPointModel GetIntegrationPoint(int integrationPointArtifactId)
 		{
-			IntegrationPoint integrationPoint = _integrationPointLocalService.GetRdo(integrationPointArtifactId);
+			IntegrationPoint integrationPoint = _integrationPointLocalService.ReadIntegrationPoint(integrationPointArtifactId);
 			return integrationPoint.ToIntegrationPointModel();
 		}
 
 		public object RunIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId)
 		{
-			IntegrationPoint integrationPoint = _integrationPointLocalService.GetRdo(integrationPointArtifactId);
+			IntegrationPoint integrationPoint = _integrationPointLocalService.ReadIntegrationPoint(integrationPointArtifactId);
 			var integrationPointRuntimeService = _serviceFactory.CreateIntegrationPointRuntimeService(Core.Models.IntegrationPointModel.FromIntegrationPoint(integrationPoint));
 			integrationPointRuntimeService.RunIntegrationPoint(workspaceArtifactId, integrationPointArtifactId, _userInfo.ArtifactID);
 			return null;
@@ -91,7 +91,7 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 
 		public IntegrationPointModel CreateIntegrationPointFromProfile(int profileArtifactId, string integrationPointName)
 		{
-			var profile = _integrationPointProfileService.GetRdo(profileArtifactId);
+			var profile = _integrationPointProfileService.ReadIntegrationPointProfile(profileArtifactId);
 			var integrationPointModel = Core.Models.IntegrationPointModel.FromIntegrationPointProfile(profile, integrationPointName);
 			var integrationPointRuntimeService = _serviceFactory.CreateIntegrationPointRuntimeService(integrationPointModel);
 			var artifactId = integrationPointRuntimeService.SaveIntegration(integrationPointModel);

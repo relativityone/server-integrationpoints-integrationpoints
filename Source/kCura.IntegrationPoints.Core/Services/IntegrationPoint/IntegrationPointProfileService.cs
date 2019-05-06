@@ -28,10 +28,22 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 		protected override string UnableToSaveFormat => "Unable to save Integration Point Profile:{0} cannot be changed once the Integration Point Profile has been saved";
 
-		public virtual IntegrationPointProfileModel ReadIntegrationPointProfile(int artifactId)
+		public IntegrationPointProfile ReadIntegrationPointProfile(int artifactId)
 		{
-			IntegrationPointProfile integrationPoint = GetRdo(artifactId);
-			var integrationPointProfileModel = IntegrationPointProfileModel.FromIntegrationPointProfile(integrationPoint);
+			try
+			{
+				return Context.RsapiService.RelativityObjectManager.Read<IntegrationPointProfile>(artifactId);
+			}
+			catch (Exception ex)
+			{
+				throw new Exception(Constants.IntegrationPoints.UNABLE_TO_RETRIEVE_INTEGRATION_POINT_PROFILE, ex);
+			}
+		}
+
+		public virtual IntegrationPointProfileModel ReadIntegrationPointProfileModel(int artifactId)
+		{
+			IntegrationPointProfile integrationPoint = ReadIntegrationPointProfile(artifactId);
+			IntegrationPointProfileModel integrationPointProfileModel = IntegrationPointProfileModel.FromIntegrationPointProfile(integrationPoint);
 			return integrationPointProfileModel;
 		}
 
@@ -94,7 +106,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 		protected override IntegrationPointModelBase GetModel(int artifactId)
 		{
-			return ReadIntegrationPointProfile(artifactId);
+			return ReadIntegrationPointProfileModel(artifactId);
 		}
 	}
 }

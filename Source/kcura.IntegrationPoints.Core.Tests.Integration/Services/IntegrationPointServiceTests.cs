@@ -236,7 +236,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			//Act
 			_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, integrationPoint.ArtifactID, _ADMIN_USER_ID);
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactId, integrationPoint.ArtifactID);
-			IntegrationPointModel integrationPointPostJob = _integrationPointService.ReadIntegrationPoint(integrationPoint.ArtifactID);
+			IntegrationPointModel integrationPointPostJob = _integrationPointService.ReadIntegrationPointModel(integrationPoint.ArtifactID);
 			IJobHistoryRepository jobHistoryRepository = _repositoryFactory.GetJobHistoryRepository(SourceWorkspaceArtifactId);
 			IList<int> jobHistoryArtifactIds = new List<int> { jobHistoryRepository.GetLastJobHistoryArtifactId(integrationPointPostJob.ArtifactID) };
 			Data.JobHistory jobHistory = _jobHistoryService.GetJobHistory(jobHistoryArtifactIds)[0];
@@ -292,7 +292,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			IList<Audit> postRunAudits = this.GetLastAuditsForIntegrationPoint(integrationModel.Name, 4);
 
 			//Update Integration Point's SelectedOverWrite to "Overlay Only"
-			IntegrationPointModel integrationPointPostRun = _integrationPointService.ReadIntegrationPoint(integrationPoint.ArtifactID);
+			IntegrationPointModel integrationPointPostRun = _integrationPointService.ReadIntegrationPointModel(integrationPoint.ArtifactID);
 			integrationPointPostRun.SelectedOverwrite = "Overlay Only";
 			integrationPointPostRun.Destination = CreateDestinationConfig(ImportOverwriteModeEnum.OverlayOnly);
 			CreateOrUpdateIntegrationPoint(integrationPointPostRun);
@@ -300,7 +300,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			//Retry Errors
 			_integrationPointService.RetryIntegrationPoint(SourceWorkspaceArtifactId, integrationPointPostRun.ArtifactID, _ADMIN_USER_ID);
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactId, integrationPointPostRun.ArtifactID);
-			IntegrationPointModel integrationPointPostRetry = _integrationPointService.ReadIntegrationPoint(integrationPointPostRun.ArtifactID);
+			IntegrationPointModel integrationPointPostRetry = _integrationPointService.ReadIntegrationPointModel(integrationPointPostRun.ArtifactID);
 
 			IJobHistoryRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryRepository(SourceWorkspaceArtifactId);
 			IList<int> jobHistoryArtifactIds = new List<int> { jobHistoryErrorRepository.GetLastJobHistoryArtifactId(integrationPointPostRetry.ArtifactID) };
@@ -363,7 +363,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 
 			//Create Errors by using Append Only
 			Status.WaitForScheduledJobToComplete(Container, SourceWorkspaceArtifactId, integrationPointPreJobExecution.ArtifactID, timeoutInSeconds: 600);
-			IntegrationPointModel integrationPointPostRun = _integrationPointService.ReadIntegrationPoint(integrationPointPreJobExecution.ArtifactID);
+			IntegrationPointModel integrationPointPostRun = _integrationPointService.ReadIntegrationPointModel(integrationPointPreJobExecution.ArtifactID);
 
 			//Assert
 			Assert.AreEqual(null, integrationPointPreJobExecution.LastRun);
@@ -498,7 +498,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Assert.Throws<IntegrationPointValidationException>(() => _integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, integrationPointModel.ArtifactID, _ADMIN_USER_ID));
 
 			// Assert
-			Data.IntegrationPoint ip = _integrationPointService.GetRdo(integrationPointModel.ArtifactID);
+			Data.IntegrationPoint ip = _integrationPointService.ReadIntegrationPoint(integrationPointModel.ArtifactID);
 			var jobHistory = _jobHistoryService.GetJobHistory(ip.JobHistory);
 			Assert.NotNull(ip.JobHistory);
 			Assert.AreEqual(JobStatusChoices.JobHistoryValidationFailed.Name, jobHistory[0].JobStatus.Name);

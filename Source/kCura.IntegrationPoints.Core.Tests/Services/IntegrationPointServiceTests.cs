@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
@@ -897,8 +898,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				LastRun = model.LastRun
 			};
 
-			_instance.When(instance => instance.ReadIntegrationPoint(Arg.Any<int>())).DoNotCallBase();
-			_instance.ReadIntegrationPoint(Arg.Is(model.ArtifactID)).Returns(existingModel);
+			_instance.When(instance => instance.ReadIntegrationPointModel(Arg.Any<int>())).DoNotCallBase();
+			_instance.ReadIntegrationPointModel(Arg.Is(model.ArtifactID)).Returns(existingModel);
 
 			const string exceptionMessage = "UH OH!";
 			_caseServiceContext.RsapiService.RelativityObjectManager
@@ -909,7 +910,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			Assert.Throws<Exception>(() => _instance.SaveIntegration(model), "Unable to save Integration Point: Unable to retrieve source provider");
 
 			// Assert
-			_instance.Received(1).ReadIntegrationPoint(Arg.Is(model.ArtifactID));
+			_instance.Received(1).ReadIntegrationPointModel(Arg.Is(model.ArtifactID));
 			_caseServiceContext.RsapiService.RelativityObjectManager
 				.Received(1)
 				.Read<SourceProvider>(Arg.Is(model.SourceProvider));
@@ -987,7 +988,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				LastRun = null
 			};
 
-			_instance.ReadIntegrationPoint(Arg.Is(model.ArtifactID)).Returns(existingModel);
+			_instance.ReadIntegrationPointModel(Arg.Is(model.ArtifactID)).Returns(existingModel);
 			_choiceQuery.GetChoicesOnField(Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<Choice>()
 			{
 				new Choice(2343)
@@ -1052,7 +1053,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			Assert.Throws<PermissionException>(() => _instance.SaveIntegration(model), Core.Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_USER_MESSAGE);
 
 			// Assert
-			_instance.Received(1).ReadIntegrationPoint(Arg.Is(model.ArtifactID));
+			_instance.Received(1).ReadIntegrationPointModel(Arg.Is(model.ArtifactID));
 			_caseServiceContext.RsapiService.RelativityObjectManager
 				.Received(1)
 				.Read<SourceProvider>(Arg.Is(model.SourceProvider));
@@ -1101,7 +1102,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				LastRun = null
 			};
 
-			_instance.ReadIntegrationPoint(Arg.Is(model.ArtifactID)).Returns(existingModel);
+			_instance.ReadIntegrationPointModel(Arg.Is(model.ArtifactID)).Returns(existingModel);
 			_choiceQuery.GetChoicesOnField(Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<Choice>()
 			{
 				new Choice(2343)
@@ -1143,7 +1144,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			// Assert
 			Assert.AreEqual(model.ArtifactID, result, "The resulting artifact id should match.");
-			_instance.Received(1).ReadIntegrationPoint(Arg.Is(model.ArtifactID));
+			_instance.Received(1).ReadIntegrationPointModel(Arg.Is(model.ArtifactID));
 			_caseServiceContext.RsapiService.RelativityObjectManager
 				.Received(1)
 				.Read<SourceProvider>(Arg.Is(model.SourceProvider));
@@ -1267,13 +1268,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			};
 
 			const string exceptionMessage = "UH OH!";
-			_instance.ReadIntegrationPoint(Arg.Is(model.ArtifactID))
+			_instance.ReadIntegrationPointModel(Arg.Is(model.ArtifactID))
 				.Throws(new Exception(exceptionMessage));
 
 			// Act
 			Assert.Throws<Exception>(() => _instance.SaveIntegration(model), "Unable to save Integration Point: Unable to retrieve Integration Point");
 
-			_instance.Received(1).ReadIntegrationPoint(Arg.Is(model.ArtifactID));
+			_instance.Received(1).ReadIntegrationPointModel(Arg.Is(model.ArtifactID));
 		}
 
 		[Test]
@@ -1385,7 +1386,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				})
 			};
 
-			_instance.ReadIntegrationPoint(Arg.Is(model.ArtifactID))
+			_instance.ReadIntegrationPointModel(Arg.Is(model.ArtifactID))
 				.Returns(existingModel);
 
 			// Source Provider is special, if this changes we except earlier
@@ -1409,31 +1410,37 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			Assert.Throws<Exception>(() => _instance.SaveIntegration(model), expectedErrorString);
 
 			// Assert
-			_instance.Received(1).ReadIntegrationPoint(Arg.Is(model.ArtifactID));
+			_instance.Received(1).ReadIntegrationPointModel(Arg.Is(model.ArtifactID));
 			_caseServiceContext.RsapiService.RelativityObjectManager
 				.Received(!propertyNameHashSet.Contains("Source Provider") ? 1 : 0)
 				.Read<SourceProvider>(Arg.Is(model.SourceProvider));
 		}
 
 		[Test]
-		public void GetRdo_ArtifactIdExists_ReturnsRdo_Test()
+		public void ReadIntegrationPoint_ShouldReturnIntegrationPoint_WhenRepositoryReturnsIntegrationPoint()
 		{
-			//Act
-			Data.IntegrationPoint integrationPoint = _instance.GetRdo(_integrationPointArtifactId);
+			// arrange
+			_integrationPointRepository.ReadAsync(_integrationPointArtifactId).Returns(Task.FromResult(_integrationPoint));
 
-			//Assert
-			_caseServiceContext.RsapiService.RelativityObjectManager.Received(1).Read<Data.IntegrationPoint>(_integrationPointArtifactId);
-			Assert.IsNotNull(integrationPoint);
+			// act
+			Data.IntegrationPoint result = _instance.ReadIntegrationPoint(_integrationPointArtifactId);
+
+			// assert
+			_integrationPointRepository.Received(1).ReadAsync(_integrationPointArtifactId);
+			MatchHelper.Matches(_integrationPoint, result);
 		}
 
 		[Test]
-		public void GetRdo_ArtifactIdDoesNotExist_ExceptionThrown_Test()
+		public void ReadIntegrationPoint_ShouldThrowException_WhenRepositoryThrowsException()
 		{
-			//Arrange
-			_caseServiceContext.RsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(_integrationPointArtifactId).Throws<Exception>();
+			// arrange
+			_integrationPointRepository.ReadAsync(_integrationPointArtifactId).Throws<Exception>();
 
-			//Act
-			Assert.Throws<Exception>(() => _instance.GetRdo(_integrationPointArtifactId), "Unable to retrieve Integration Point.");
+			// act
+			Assert.Throws<Exception>(() => _instance.ReadIntegrationPoint(_integrationPointArtifactId));
+
+			// assert
+			_integrationPointRepository.Received(1).ReadAsync(_integrationPointArtifactId);
 		}
 	}
 }

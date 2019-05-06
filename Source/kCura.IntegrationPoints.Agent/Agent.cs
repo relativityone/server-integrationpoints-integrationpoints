@@ -126,7 +126,7 @@ namespace kCura.IntegrationPoints.Agent
 			IMessageService messageService = _agentLevelContainer.Value.Resolve<IMessageService>();
 
 			Guid batchInstanceId = taskParameterHelper.GetBatchInstance(job);
-			IntegrationPoint integrationPoint = integrationPointService.GetRdo(job.RelatedObjectArtifactID);
+			IntegrationPoint integrationPoint = integrationPointService.ReadIntegrationPoint(job.RelatedObjectArtifactID);
 			var message = new JobStartedMessage
 			{
 				Provider = integrationPoint.GetProviderType(providerTypeService).ToString(),

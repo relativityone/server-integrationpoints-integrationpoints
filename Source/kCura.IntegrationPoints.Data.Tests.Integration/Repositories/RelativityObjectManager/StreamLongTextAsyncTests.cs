@@ -98,11 +98,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.Relativity
 
 				// Act
 				Stream actualExtractedTextStream =
-					_relativityObjectManager.StreamLongTextAsync(
+					_relativityObjectManager.StreamLongText(
 						documentArtifactID,
-						new FieldRef {Name = _EXTRACTED_TEXT_FIELD_NAME})
-					.GetAwaiter()
-					.GetResult();
+						new FieldRef { Name = _EXTRACTED_TEXT_FIELD_NAME },
+						false);
 				var actualExtractedTextStreamReader = new StreamReader(actualExtractedTextStream, Encoding.UTF8);
 				string actualExtractedTextString = actualExtractedTextStreamReader.ReadToEnd();
 
