@@ -20,7 +20,7 @@ using Relativity.Sync.Tests.Common;
 namespace Relativity.Sync.Tests.Integration
 {
 	[TestFixture]
-	public class SourceWorkspaceTagsCreationExecutorTests
+	internal sealed class SourceWorkspaceTagsCreationExecutorTests
 	{
 		private CancellationToken _token;
 		private ISyncLog _logger;

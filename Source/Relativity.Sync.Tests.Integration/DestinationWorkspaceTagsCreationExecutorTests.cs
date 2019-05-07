@@ -20,7 +20,7 @@ using Relativity.Sync.Tests.Common;
 namespace Relativity.Sync.Tests.Integration
 {
 	[TestFixture]
-	public class DestinationWorkspaceTagsCreationExecutorTests
+	internal sealed class DestinationWorkspaceTagsCreationExecutorTests
 	{
 		private IExecutor<IDestinationWorkspaceTagsCreationConfiguration> _executor;
 		private Mock<IObjectManager> _objectManagerMock;
