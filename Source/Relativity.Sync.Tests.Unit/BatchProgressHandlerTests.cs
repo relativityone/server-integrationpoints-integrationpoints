@@ -12,7 +12,6 @@ namespace Relativity.Sync.Tests.Unit
 		private Mock<IBatch> _batch;
 		private Mock<IDateTime> _dateTime;
 		private FakeImportNotifier _importNotifier;
-		private BatchProgressHandler _batchProgressHandler;
 
 		[SetUp]
 		public void SetUp()
@@ -21,9 +20,9 @@ namespace Relativity.Sync.Tests.Unit
 			_dateTime = new Mock<IDateTime>();
 			_importNotifier = new FakeImportNotifier();
 			BatchProgressUpdater batchProgressUpdater = new BatchProgressUpdater(new EmptyLogger());
-			_batchProgressHandler = new BatchProgressHandler(_batch.Object, batchProgressUpdater, _dateTime.Object);
-			_importNotifier.OnComplete += _batchProgressHandler.HandleProcessComplete;
-			_importNotifier.OnProcessProgress += _batchProgressHandler.HandleProcessProgress;
+			BatchProgressHandler batchProgressHandler = new BatchProgressHandler(_batch.Object, batchProgressUpdater, _dateTime.Object);
+			_importNotifier.OnComplete += batchProgressHandler.HandleProcessComplete;
+			_importNotifier.OnProcessProgress += batchProgressHandler.HandleProcessProgress;
 		}
 
 		[TestCase(0, 0, 0)]
