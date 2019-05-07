@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
 
 namespace Relativity.Sync.Telemetry
 {
