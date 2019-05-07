@@ -63,7 +63,7 @@ namespace Relativity.Sync.Telemetry
 			return new DisposableStopwatch(timeSpan => TimedOperation(name, timeSpan, executionStatus, customData));
 		}
 
-		/// <inheritdoc />>
+		/// <inheritdoc />
 		public IDisposable TimedOperation(string name, ExecutionStatus executionStatus)
 		{
 			return new DisposableStopwatch(timeSpan => TimedOperation(name, timeSpan, executionStatus));
