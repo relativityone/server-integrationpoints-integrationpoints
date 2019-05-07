@@ -33,7 +33,7 @@ namespace Relativity.Sync.Telemetry
 		void CountOperation(string name, ExecutionStatus status);
 
 		/// <summary>
-		///		Log time elapsed with the given data.
+		///	Log time elapsed with the given data.
 		/// </summary>
 		/// <param name="name">Name of the metric.</param>
 		/// <param name="executionStatus">Execution status.</param>
@@ -42,7 +42,7 @@ namespace Relativity.Sync.Telemetry
 		IDisposable TimedOperation(string name, ExecutionStatus executionStatus, Dictionary<string, object> customData);
 
 		/// <summary>
-		///		Logs a single gauge metric with the given data.
+		///	Logs a single gauge metric with the given data.
 		/// </summary>
 		/// <param name="name">Name of the metric.</param>
 		/// <param name="executionStatus">Execution status.</param>
