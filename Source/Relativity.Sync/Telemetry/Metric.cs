@@ -117,12 +117,12 @@ namespace Relativity.Sync.Telemetry
 		/// <param name="name">Name or bucket for the metric</param>
 		/// <param name="executionStatus">Result of the operation</param>
 		/// <param name="correlationId">ID which correlates all metrics across a job</param>
-		/// <param name="value">Gauge value</param>
+		/// <param name="value">GaugeOperation value</param>
 		/// <param name="unitOfMeasure">Unit of measure describing a value (e.g. "document(s)")</param>
 		/// <returns></returns>
 		public static Metric GaugeOperation(string name, ExecutionStatus executionStatus, string correlationId, long value, string unitOfMeasure)
 		{
-			return new Metric(name, MetricType.Gauge, correlationId)
+			return new Metric(name, MetricType.GaugeOperation, correlationId)
 			{
 				ExecutionStatus = executionStatus,
 				Value = value,

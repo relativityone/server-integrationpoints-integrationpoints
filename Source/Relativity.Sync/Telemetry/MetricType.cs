@@ -7,6 +7,6 @@
 	{
 		TimedOperation,
 		Counter,
-		Gauge
+		GaugeOperation
 	}
 }

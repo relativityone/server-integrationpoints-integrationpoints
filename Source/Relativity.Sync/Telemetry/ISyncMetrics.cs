@@ -42,6 +42,14 @@ namespace Relativity.Sync.Telemetry
 		IDisposable TimedOperation(string name, ExecutionStatus executionStatus, Dictionary<string, object> customData);
 
 		/// <summary>
+		/// Log time elapsed with the given data.
+		/// </summary>
+		/// <param name="name">Name of the metric.</param>
+		/// <param name="executionStatus">Execution status.</param>
+		/// <returns>A disposable object. Wrap this inside a using block so the dispose can be called to stop the timing.</returns>
+		IDisposable TimedOperation(string name, ExecutionStatus executionStatus);
+
+		/// <summary>
 		/// Logs a single gauge metric with the given data.
 		/// </summary>
 		/// <param name="name">Name of the metric.</param>
