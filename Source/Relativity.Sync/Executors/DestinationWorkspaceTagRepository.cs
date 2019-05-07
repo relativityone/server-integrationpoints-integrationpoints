@@ -286,15 +286,20 @@ namespace Relativity.Sync.Executors
 				new FieldRefValuePair
 				{
 					Field = new FieldRef { Guid = _destinationWorkspaceFieldMultiObject },
-					Value = synchronizationConfiguration.DestinationWorkspaceTagArtifactId
+					Value = ToMultiObjectValue(synchronizationConfiguration.DestinationWorkspaceTagArtifactId)
 				},
 				new FieldRefValuePair
 				{
 					Field = new FieldRef { Guid = _jobHistoryFieldMultiObject },
-					Value = synchronizationConfiguration.JobHistoryTagArtifactId
+					Value = ToMultiObjectValue(synchronizationConfiguration.JobHistoryTagArtifactId)
 				}
 			};
 			return fieldRefValuePairs;
+		}
+
+		private static IEnumerable<RelativityObjectRef> ToMultiObjectValue(params int[] artifactIds)
+		{
+			return artifactIds.Select(x => new RelativityObjectRef { ArtifactID = x });
 		}
 
 		private static TagDocumentsResult GenerateTagDocumentsResult(MassUpdateResult updateResult, IList<int> batch)

@@ -506,13 +506,20 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			FieldRefValuePair actualDestinationTagField = actualFields[0];
 			Assert.AreEqual(expectedDestinationWorkspaceFieldMultiObject, actualDestinationTagField.Field.Guid);
-			Assert.AreEqual(expectedDestinationWorkspaceTagArtifactId, actualDestinationTagField.Value);
+			AssertMultiObjectValueContainsId(expectedDestinationWorkspaceTagArtifactId, actualDestinationTagField.Value);
 
 			FieldRefValuePair actualJobHistoryTagField = actualFields[1];
 			Assert.AreEqual(expectedJobHistoryFieldMultiObject, actualJobHistoryTagField.Field.Guid);
-			Assert.AreEqual(expectedJobHistoryTagArtifactId, actualJobHistoryTagField.Value);
+			AssertMultiObjectValueContainsId(expectedJobHistoryTagArtifactId, actualJobHistoryTagField.Value);
 
 			return true;
+		}
+
+		private static void AssertMultiObjectValueContainsId(int expectedId, object value)
+		{
+			Assert.IsInstanceOf<IEnumerable<RelativityObjectRef>>(value);
+			List<int> valueList = ((IEnumerable<RelativityObjectRef>)value).Select(x => x.ArtifactID).ToList();
+			Assert.Contains(expectedId, valueList);
 		}
 	}
 }

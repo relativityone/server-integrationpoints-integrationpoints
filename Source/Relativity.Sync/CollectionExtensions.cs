@@ -8,15 +8,16 @@ namespace Relativity.Sync
 	{
 		internal static IEnumerable<IList<T>> SplitList<T>(IEnumerable<T> fullCollection, int batchSize)
 		{
-			if (batchSize <= 0)
+			int actualBatchSize = batchSize;
+			if (actualBatchSize <= 0)
 			{
-				batchSize = int.MaxValue;
+				actualBatchSize = int.MaxValue;
 			}
 			List<T> fullList = fullCollection.ToList();
 
-			for (int i = 0; i < fullList.Count; i += batchSize)
+			for (int i = 0; i < fullList.Count; i += actualBatchSize)
 			{
-				int endRange = Math.Min(batchSize, fullList.Count - i);
+				int endRange = Math.Min(actualBatchSize, fullList.Count - i);
 				yield return fullList.GetRange(i, endRange);
 			}
 		}
