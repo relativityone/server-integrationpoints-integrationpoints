@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
 
 namespace Relativity.Sync.Telemetry
 {
@@ -112,6 +113,25 @@ namespace Relativity.Sync.Telemetry
 		}
 
 		/// <summary>
+		///		Creates a <see cref="Metric" /> representing the result of a gauge operation.
+		/// </summary>
+		/// <param name="name">Name or bucket for the metric</param>
+		/// <param name="executionStatus">Result of the operation</param>
+		/// <param name="correlationId">ID which correlates all metrics across a job</param>
+		/// <param name="value">Gauge value</param>
+		/// <param name="unitOfMeasure">Unit of measure describing a value (e.g. "document(s)")</param>
+		/// <returns></returns>
+		public static Metric GaugeOperation(string name, ExecutionStatus executionStatus, string correlationId, long value, string unitOfMeasure)
+		{
+			return new Metric(name, MetricType.Gauge, correlationId)
+			{
+				ExecutionStatus = executionStatus,
+				Value = value,
+				CustomData = new Dictionary<string, object>() { { "unitOfMeasure", unitOfMeasure } }
+			};
+		}
+
+		/// <summary>
 		///     Creates a Dictionary out of the given <see cref="Metric" />'s public readable properties.
 		/// </summary>
 		public Dictionary<string, object> ToDictionary()
@@ -124,7 +144,7 @@ namespace Relativity.Sync.Telemetry
 		/// </summary>
 		public object[] ToPropertyArray()
 		{
-			return _PUBLIC_READABLE_PROPERTIES.Select(p => (object) new KeyValuePair<string, object>(p.Name, p.GetValue(this))).ToArray();
+			return _PUBLIC_READABLE_PROPERTIES.Select(p => (object)new KeyValuePair<string, object>(p.Name, p.GetValue(this))).ToArray();
 		}
 	}
 }

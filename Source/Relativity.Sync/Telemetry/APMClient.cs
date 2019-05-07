@@ -25,19 +25,5 @@ namespace Relativity.Sync.Telemetry
 		{
 			_apm.CountOperation(name, customData: data).Write();
 		}
-
-		/// <inheritdoc />>
-		public IDisposable TimedOperation(string name, string correlationId, Dictionary<string, object> data)
-		{
-			return _apm.TimedOperation(name: name, correlationID: correlationId, customData: data);
-		}
-
-		/// <inheritdoc />>
-		public void GaugeOperation<T>(string name, string correlationId, Func<T> operation, string unitOfMeasure,
-			Dictionary<string, object> customData)
-		{
-			_apm.GaugeOperation(name: name, correlationID: correlationId, operation: operation,
-				customData: customData, unitOfMeasure: unitOfMeasure).Write();
-		}
 	}
 }

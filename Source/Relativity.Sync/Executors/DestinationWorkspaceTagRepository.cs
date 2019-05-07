@@ -22,7 +22,7 @@ namespace Relativity.Sync.Executors
 		private readonly ISourceServiceFactoryForUser _sourceServiceFactoryForUser;
 		private readonly ISyncLog _logger;
 		private readonly ITagNameFormatter _tagNameFormatter;
-		private readonly IAPMClient _apmClient;
+		private readonly ISyncMetrics _syncMetrics;
 
 		private readonly Guid _destinationInstanceArtifactIdGuid = new Guid("323458db-8a06-464b-9402-af2516cf47e0");
 		private readonly Guid _destinationInstanceNameGuid = new Guid("909adc7c-2bb9-46ca-9f85-da32901d6554");
@@ -34,12 +34,12 @@ namespace Relativity.Sync.Executors
 		private readonly Guid _objectTypeGuid = new Guid("3F45E490-B4CF-4C7D-8BB6-9CA891C0C198");
 
 		public DestinationWorkspaceTagRepository(ISourceServiceFactoryForUser sourceServiceFactoryForUser, IFederatedInstance federatedInstance, ITagNameFormatter tagNameFormatter,
-			ISyncLog logger, IAPMClient apmClient)
+			ISyncLog logger, ISyncMetrics syncMetrics)
 		{
 			_sourceServiceFactoryForUser = sourceServiceFactoryForUser;
 			_federatedInstance = federatedInstance;
 			_logger = logger;
-			_apmClient = apmClient;
+			_syncMetrics = syncMetrics;
 			_tagNameFormatter = tagNameFormatter;
 		}
 
@@ -228,8 +228,7 @@ namespace Relativity.Sync.Executors
 		private async Task<TagDocumentsResult> TagDocumentsBatchAsync(
 			ISynchronizationConfiguration synchronizationConfiguration, IList<int> batch, IEnumerable<FieldRefValuePair> fieldValues, MassUpdateOptions massUpdateOptions, CancellationToken token)
 		{
-			string correlationId = synchronizationConfiguration.JobHistoryTagArtifactId.ToString(CultureInfo.InvariantCulture);
-			var apmCustomData = new Dictionary<string, object>() { { "batchSize", batch.Count } };
+			var metricsCustomData = new Dictionary<string, object>() { { "batchSize", batch.Count } };
 
 			var updateByIdentifiersRequest = new MassUpdateByObjectIdentifiersRequest
 			{
@@ -240,7 +239,7 @@ namespace Relativity.Sync.Executors
 			TagDocumentsResult result;
 			try
 			{
-				using (_apmClient.TimedOperation("Relativity.Sync.TagDocuments.SourceUpdate.Time", correlationId, apmCustomData))
+				using (_syncMetrics.TimedOperation("Relativity.Sync.TagDocuments.SourceUpdate.Time", ExecutionStatus.None, metricsCustomData))
 				using (var objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 				{
 					MassUpdateResult updateResult = await objectManager
@@ -260,7 +259,7 @@ namespace Relativity.Sync.Executors
 				result = new TagDocumentsResult(batch, exceptionMessage, false, 0);
 			}
 
-			_apmClient.GaugeOperation("Relativity.Sync.TagDocuments.SourceUpdate.Count", correlationId, () => result.TotalObjectsUpdated, "document(s)", apmCustomData);
+			_syncMetrics.GaugeOperation("Relativity.Sync.TagDocuments.SourceUpdate.Count", ExecutionStatus.None, result.TotalObjectsUpdated, "document(s)", metricsCustomData);
 
 			return result;
 		}
