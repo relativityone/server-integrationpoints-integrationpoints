@@ -15,7 +15,6 @@ namespace Relativity.Sync.Storage
 		private readonly Guid _errorMessageField = new Guid("4112B894-35B0-4E53-AB99-C9036D08269D");
 		private readonly Guid _errorStatusField = new Guid("DE1A46D2-D615-427A-B9F2-C10769BC2678");
 		private readonly Guid _errorTypeField = new Guid("EEFFA5D3-82E3-46F8-9762-B4053D73F973");
-		private readonly Guid _jobHistoryField = new Guid("8B747B91-0627-4130-8E53-2931FFC4135F");
 		private readonly Guid _nameField = new Guid("84E757CC-9DA2-435D-B288-0C21EC589E66");
 		private readonly Guid _sourceUniqueIdField = new Guid("5519435E-EE82-4820-9546-F1AF46121901");
 		private readonly Guid _stackTraceField = new Guid("0353DBDE-9E00-4227-8A8F-4380A8891CFF");
@@ -41,8 +40,6 @@ namespace Relativity.Sync.Storage
 
 		public string Name { get; private set; }
 
-		public int ParentArtifactId { get; private set; }
-
 		public string SourceUniqueId { get; private set; }
 
 		public string StackTrace { get; private set; }
@@ -60,7 +57,6 @@ namespace Relativity.Sync.Storage
 			ErrorStatus = ErrorStatus.New;
 			ErrorType = createJobHistoryErrorDto.ErrorType;
 			JobHistoryArtifactId = createJobHistoryErrorDto.JobHistoryArtifactId;
-			ParentArtifactId = createJobHistoryErrorDto.JobHistoryArtifactId;
 			Name = Guid.NewGuid().ToString();
 			SourceUniqueId = createJobHistoryErrorDto.SourceUniqueId;
 			StackTrace = createJobHistoryErrorDto.StackTrace;
@@ -71,7 +67,7 @@ namespace Relativity.Sync.Storage
 				var request = new CreateRequest
 				{
 					ObjectType = new ObjectTypeRef { Guid = _jobHistoryErrorObject },
-					ParentObject = new RelativityObjectRef { ArtifactID = ParentArtifactId },
+					ParentObject = new RelativityObjectRef { ArtifactID = JobHistoryArtifactId },
 					FieldValues = GetFieldValueRefs()
 				};
 
@@ -107,14 +103,6 @@ namespace Relativity.Sync.Storage
 						Guid = _errorTypeField
 					},
 					Value = GetErrorTypeChoice()
-				},
-				new FieldRefValuePair
-				{
-					Field = new FieldRef
-					{
-						Guid = _jobHistoryField
-					},
-					Value = JobHistoryArtifactId
 				},
 				new FieldRefValuePair
 				{

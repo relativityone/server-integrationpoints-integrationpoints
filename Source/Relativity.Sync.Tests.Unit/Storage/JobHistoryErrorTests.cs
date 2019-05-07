@@ -31,7 +31,6 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		private readonly Guid _expectedErrorMessageField = new Guid("4112B894-35B0-4E53-AB99-C9036D08269D");
 		private readonly Guid _expectedErrorStatusField = new Guid("DE1A46D2-D615-427A-B9F2-C10769BC2678");
 		private readonly Guid _expectedErrorTypeField = new Guid("EEFFA5D3-82E3-46F8-9762-B4053D73F973");
-		private readonly Guid _expectedJobHistoryField = new Guid("8B747B91-0627-4130-8E53-2931FFC4135F");
 		private readonly Guid _expectedNameField = new Guid("84E757CC-9DA2-435D-B288-0C21EC589E66");
 		private readonly Guid _expectedSourceUniqueIdField = new Guid("5519435E-EE82-4820-9546-F1AF46121901");
 		private readonly Guid _expectedStackTraceField = new Guid("0353DBDE-9E00-4227-8A8F-4380A8891CFF");
@@ -109,7 +108,6 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			Assert.AreEqual(expectedCreateJobHistoryErrorDto.ErrorType, actualResult.ErrorType);
 			Assert.AreEqual(expectedCreateJobHistoryErrorDto.JobHistoryArtifactId, actualResult.JobHistoryArtifactId);
 			Assert.IsInstanceOf<Guid>(Guid.Parse(actualResult.Name));
-			Assert.AreEqual(expectedCreateJobHistoryErrorDto.JobHistoryArtifactId, actualResult.ParentArtifactId);
 			Assert.AreEqual(expectedCreateJobHistoryErrorDto.SourceUniqueId, actualResult.SourceUniqueId);
 			Assert.AreEqual(expectedCreateJobHistoryErrorDto.StackTrace, actualResult.StackTrace);
 			Assert.IsNotNull(actualResult.TimestampUtc);
@@ -122,7 +120,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			Assert.AreEqual(_expectedJobHistoryErrorObject, actualRequest.ObjectType.Guid);
 			Assert.AreEqual(expectedCreateJobHistoryErrorDto.JobHistoryArtifactId, actualRequest.ParentObject.ArtifactID);
 
-			const int expectedNumberOfFields = 8;
+			const int expectedNumberOfFields = 7;
 			CollectionAssert.IsNotEmpty(actualRequest.FieldValues);
 
 			IList<FieldRefValuePair> actualFieldValues = actualRequest.FieldValues.ToList();
@@ -134,9 +132,6 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			FieldRefValuePair actualErrorStatus = actualFieldValues.Single(x => x.Field.Guid == _expectedErrorStatusField);
 			Assert.IsInstanceOf<ChoiceRef>(actualErrorStatus.Value);
 			Assert.AreEqual(_expectedErrorStatusNew, ((ChoiceRef)actualErrorStatus.Value).Guid);
-
-			FieldRefValuePair actualJobHistory = actualFieldValues.Single(x => x.Field.Guid == _expectedJobHistoryField);
-			Assert.AreEqual(expectedCreateJobHistoryErrorDto.JobHistoryArtifactId, actualJobHistory.Value);
 
 			FieldRefValuePair actualName = actualFieldValues.Single(x => x.Field.Guid == _expectedNameField);
 			Assert.IsInstanceOf<Guid>(Guid.Parse(actualName.Value.ToString()));

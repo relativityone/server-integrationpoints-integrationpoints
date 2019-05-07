@@ -16,8 +16,6 @@ namespace Relativity.Sync.Storage
 
 		string Name { get; }
 
-		int ParentArtifactId { get; }
-
 		string SourceUniqueId { get; }
 
 		string StackTrace { get; }
