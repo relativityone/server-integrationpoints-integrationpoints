@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Relativity.Telemetry.APM;
+﻿using System.Collections.Generic;
 
 namespace Relativity.Sync.Telemetry
 {
