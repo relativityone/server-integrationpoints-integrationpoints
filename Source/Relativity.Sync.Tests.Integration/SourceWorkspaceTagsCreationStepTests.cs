@@ -15,6 +15,7 @@ using Moq;
 using Relativity.Services.DataContracts.DTOs;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
+using Relativity.Sync.Telemetry;
 using Relativity.Sync.Tests.Common;
 
 namespace Relativity.Sync.Tests.Integration
@@ -68,6 +69,9 @@ namespace Relativity.Sync.Tests.Integration
 
 			containerBuilder.RegisterInstance(new EmptyLogger()).As<ISyncLog>();
 			containerBuilder.RegisterInstance(correlationId).As<CorrelationId>();
+
+			var syncMetrics = new Mock<ISyncMetrics>();
+			containerBuilder.RegisterInstance(syncMetrics.Object).As<ISyncMetrics>();
 
 			IContainer container = containerBuilder.Build();
 			_executor = container.Resolve<IExecutor<ISourceWorkspaceTagsCreationConfiguration>>();
