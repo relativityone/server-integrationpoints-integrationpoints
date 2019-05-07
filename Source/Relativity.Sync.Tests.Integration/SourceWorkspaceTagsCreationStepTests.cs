@@ -23,6 +23,8 @@ namespace Relativity.Sync.Tests.Integration
 	internal sealed class SourceWorkspaceTagsCreationStepTests : FailingStepsBase<ISourceWorkspaceTagsCreationConfiguration>
 	{
 		private CancellationToken _token;
+		private ISyncLog _logger;
+		private string _correlationId;
 
 		private IExecutor<ISourceWorkspaceTagsCreationConfiguration> _executor;
 		private Mock<IObjectManager> _destinationObjectManagerMock;
@@ -60,6 +62,8 @@ namespace Relativity.Sync.Tests.Integration
 		public void OneTimeSetUp()
 		{
 			_token = CancellationToken.None;
+			_correlationId = Guid.NewGuid().ToString();
+			_logger = new EmptyLogger();
 		}
 
 		[SetUp]
@@ -80,10 +84,9 @@ namespace Relativity.Sync.Tests.Integration
 			containerBuilder.RegisterInstance(destinationServiceFactoryMock.Object).As<IDestinationServiceFactoryForUser>();
 			containerBuilder.RegisterType<SourceWorkspaceTagsCreationExecutor>().As<IExecutor<ISourceWorkspaceTagsCreationConfiguration>>();
 
-			var correlationId = new CorrelationId(Guid.NewGuid().ToString());
-
-			containerBuilder.RegisterInstance(new EmptyLogger()).As<ISyncLog>();
+			var correlationId = new CorrelationId(_correlationId);
 			containerBuilder.RegisterInstance(correlationId).As<CorrelationId>();
+			containerBuilder.RegisterInstance(_logger).As<ISyncLog>();
 
 			IContainer container = containerBuilder.Build();
 			_executor = container.Resolve<IExecutor<ISourceWorkspaceTagsCreationConfiguration>>();
@@ -176,7 +179,7 @@ namespace Relativity.Sync.Tests.Integration
 					new RelativityObject
 					{
 						ArtifactID = _TEST_DEST_CASE_TAG_ARTIFACT_ID,
-						FieldValues = BuildFieldValuePairs(_TEST_DEST_CASE_NAME)
+						FieldValues = BuildFieldValuePairs(_TEST_DEST_CASE_NAME, _TEST_INSTANCE_NAME)
 					}
 				}
 			});
@@ -236,34 +239,7 @@ namespace Relativity.Sync.Tests.Integration
 					new RelativityObject
 					{
 						ArtifactID = _TEST_DEST_CASE_TAG_ARTIFACT_ID,
-						FieldValues = new List<FieldValuePair>
-						{
-							new FieldValuePair
-							{
-								Field = new Field { Guids = new List<Guid> { _destinationWorkspaceNameFieldGuid } },
-								Value = _TEST_DEST_CASE_NAME
-							},
-							new FieldValuePair
-							{
-								Field = new Field { Guids = new List<Guid> { _destinationInstanceNameFieldGuid } },
-								Value = "Some Other Weird Instance"
-							},
-							new FieldValuePair
-							{
-								Field = new Field { Guids = new List<Guid> { _destinationInstanceArtifactIdFieldGuid } },
-								Value = _TEST_INSTANCE_ARTIFACT_ID
-							},
-							new FieldValuePair
-							{
-								Field = new Field { Guids = new List<Guid> { _destinationWorkspaceArtifactIdFieldGuid } },
-								Value = _TEST_DEST_CASE_ARTIFACT_ID
-							},
-							new FieldValuePair
-							{
-								Field = new Field { Guids = new List<Guid> { _nameFieldGuid } },
-								Value = _TEST_DEST_CASE_TAG_NAME
-							}
-						}
+						FieldValues = BuildFieldValuePairs(_TEST_DEST_CASE_NAME, "Some Other Weird Instance")
 					}
 				}
 			}
@@ -324,34 +300,7 @@ namespace Relativity.Sync.Tests.Integration
 					new RelativityObject()
 					{
 						ArtifactID = _TEST_DEST_CASE_TAG_ARTIFACT_ID,
-						FieldValues = new List<FieldValuePair>
-						{
-							new FieldValuePair
-							{
-								Field = new Field { Guids = new List<Guid> { _destinationWorkspaceNameFieldGuid } },
-								Value = _TEST_DEST_CASE_NAME
-							},
-							new FieldValuePair
-							{
-								Field = new Field { Guids = new List<Guid> { _destinationInstanceNameFieldGuid } },
-								Value = _TEST_INSTANCE_NAME
-							},
-							new FieldValuePair
-							{
-								Field = new Field { Guids = new List<Guid> { _destinationInstanceArtifactIdFieldGuid } },
-								Value = _TEST_INSTANCE_ARTIFACT_ID
-							},
-							new FieldValuePair
-							{
-								Field = new Field { Guids = new List<Guid> { _destinationWorkspaceArtifactIdFieldGuid } },
-								Value = _TEST_DEST_CASE_ARTIFACT_ID
-							},
-							new FieldValuePair
-							{
-								Field = new Field { Guids = new List<Guid> { _nameFieldGuid } },
-								Value = _TEST_DEST_CASE_TAG_NAME
-							}
-						}
+						FieldValues = BuildFieldValuePairs(_TEST_DEST_CASE_NAME, _TEST_INSTANCE_NAME)
 					}
 				}
 			}
@@ -480,34 +429,7 @@ namespace Relativity.Sync.Tests.Integration
 					new RelativityObject()
 					{
 						ArtifactID = _TEST_DEST_CASE_TAG_ARTIFACT_ID,
-						FieldValues = new List<FieldValuePair>
-						{
-							new FieldValuePair
-							{
-								Field = new Field { Guids = new List<Guid> { _destinationWorkspaceNameFieldGuid } },
-								Value = "Some Other Workspace"
-							},
-							new FieldValuePair
-							{
-								Field = new Field { Guids = new List<Guid> { _destinationInstanceNameFieldGuid } },
-								Value = _TEST_INSTANCE_NAME
-							},
-							new FieldValuePair
-							{
-								Field = new Field { Guids = new List<Guid> { _destinationInstanceArtifactIdFieldGuid } },
-								Value = _TEST_INSTANCE_ARTIFACT_ID
-							},
-							new FieldValuePair
-							{
-								Field = new Field { Guids = new List<Guid> { _destinationWorkspaceArtifactIdFieldGuid } },
-								Value = _TEST_DEST_CASE_ARTIFACT_ID
-							},
-							new FieldValuePair
-							{
-								Field = new Field { Guids = new List<Guid> { _nameFieldGuid } },
-								Value = _TEST_DEST_CASE_TAG_NAME
-							}
-						}
+						FieldValues = BuildFieldValuePairs("Some Other Workspace", _TEST_INSTANCE_NAME)
 					}
 				}
 			});
@@ -524,9 +446,7 @@ namespace Relativity.Sync.Tests.Integration
 			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
 			Assert.IsNotNull(result.Exception);
 			Assert.IsInstanceOf<DestinationWorkspaceTagRepositoryException>(result.Exception);
-			Assert.AreEqual(
-				$"Failed to update {nameof(DestinationWorkspaceTag)} with id {_TEST_DEST_CASE_TAG_ARTIFACT_ID} in workspace {_TEST_SOURCE_CASE_ARTIFACT_ID}",
-				result.Exception.Message);
+			Assert.AreEqual($"Failed to update {nameof(DestinationWorkspaceTag)} with id {_TEST_DEST_CASE_TAG_ARTIFACT_ID} in workspace {_TEST_SOURCE_CASE_ARTIFACT_ID}", result.Exception.Message);
 		}
 
 		[Test]
@@ -574,9 +494,7 @@ namespace Relativity.Sync.Tests.Integration
 			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
 			Assert.IsNotNull(result.Exception);
 			Assert.IsInstanceOf<DestinationWorkspaceTagsLinkerException>(result.Exception);
-			Assert.AreEqual(
-				$"Failed to link {nameof(DestinationWorkspaceTag)} to Job History",
-				result.Exception.Message);
+			Assert.AreEqual($"Failed to link {nameof(DestinationWorkspaceTag)} to Job History", result.Exception.Message);
 		}
 
 		[Test]
@@ -614,18 +532,16 @@ namespace Relativity.Sync.Tests.Integration
 			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
 			Assert.IsNotNull(result.Exception);
 			Assert.IsInstanceOf<DestinationWorkspaceTagRepositoryException>(result.Exception);
-			Assert.AreEqual(
-				$"Failed to query {nameof(DestinationWorkspaceTag)} in workspace {_TEST_SOURCE_CASE_ARTIFACT_ID}",
-				result.Exception.Message);
+			Assert.AreEqual($"Failed to query {nameof(DestinationWorkspaceTag)} in workspace {_TEST_SOURCE_CASE_ARTIFACT_ID}", result.Exception.Message);
 		}
 
-		private List<FieldValuePair> BuildFieldValuePairs(string testDestinationCaseName)
+		private List<FieldValuePair> BuildFieldValuePairs(string testDestinationCaseName, string testDestinationInstanceName)
 		{
 			var fieldValues = new Dictionary<Guid, object>
 			{
 				{_nameFieldGuid, _TEST_DEST_CASE_TAG_NAME},
 				{_destinationWorkspaceNameFieldGuid, testDestinationCaseName},
-				{_destinationInstanceNameFieldGuid, _TEST_INSTANCE_NAME},
+				{_destinationInstanceNameFieldGuid, testDestinationInstanceName},
 				{_destinationInstanceArtifactIdFieldGuid, _TEST_INSTANCE_ARTIFACT_ID},
 				{_destinationWorkspaceArtifactIdFieldGuid, _TEST_DEST_CASE_ARTIFACT_ID}
 			};
