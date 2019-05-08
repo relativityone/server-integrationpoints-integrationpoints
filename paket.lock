@@ -488,7 +488,7 @@ NUGET
     Relativity.Services.Layout.Interfaces (10.1.5)
       Relativity.Kepler (>= 1.0.1.297)
       Relativity.Services.DataContracts (>= 9.4.346.73)
-    Relativity.Sync (0.0.1-rc639)
+    Relativity.Sync (0.0.1)
       Autofac (>= 4.9 < 5.0)
       Banzai (>= 3.0 < 4.0)
       Banzai.Autofac (>= 3.0 < 4.0)
