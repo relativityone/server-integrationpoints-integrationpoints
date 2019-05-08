@@ -2,7 +2,6 @@
 using kCura.Vendor.Castle.Core.Internal;
 using Moq;
 using NUnit.Framework;
-using NUnit.Framework.Internal;
 using Relativity.API;
 using Relativity.Sync.Telemetry;
 using Relativity.Telemetry.Services.Metrics;
