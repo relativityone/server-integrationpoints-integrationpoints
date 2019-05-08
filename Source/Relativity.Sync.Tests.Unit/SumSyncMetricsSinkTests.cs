@@ -125,7 +125,7 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public void ItIsDisposingMetricsManager()
+		public void ItDisposesMetricsManager()
 		{
 			// ARRANGE
 			SumSyncMetricsSink instance = CreateInstance();
