@@ -80,8 +80,8 @@ group Sync
 	framework: auto-detect
 	strategy: max
 	source https://proget.kcura.corp/nuget/NuGet
-	nuget Relativity.Sync 0.0.1-dev611
+	nuget Relativity.Sync 0.1.0-beta0
 	nuget Autofac ~> 4.9
-	nuget Relativity.API 10.2.101.1-DEV
-	nuget Relativity.Services.DataContracts 10.2.101.1-DEV
-	nuget Relativity.Services.Interfaces 10.2.101.1-DEV
+	nuget Relativity.API 10.3.22.4-DEV
+	nuget Relativity.Services.DataContracts 10.3.22.4-DEV
+	nuget Relativity.Services.Interfaces 10.3.22.4-DEV
