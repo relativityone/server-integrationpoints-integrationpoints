@@ -4,7 +4,6 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Telemetry;
-using Relativity.Telemetry.Services.Metrics;
 
 namespace Relativity.Sync.Tests.Unit
 {
