@@ -8,18 +8,20 @@ namespace Relativity.Sync
 {
 	internal abstract class TelemetryMetricProviderBase : ITelemetryMetricProvider
 	{
-		private readonly IServicesMgr _servicesMgr;
+		private readonly IServicesMgr _servicesManager;
+		private readonly ISyncLog _logger;
 
-		protected TelemetryMetricProviderBase(IServicesMgr servicesMgr)
+		protected TelemetryMetricProviderBase(IServicesMgr servicesManager, ISyncLog logger)
 		{
-			_servicesMgr = servicesMgr;
+			_servicesManager = servicesManager;
+			_logger = logger;
 		}
 
 		public async Task AddMetricsForCategory(CategoryRef category)
 		{
 			try
 			{
-				using (var manager = _servicesMgr.CreateProxy<IInternalMetricsCollectionManager>(ExecutionIdentity.System))
+				using (var manager = _servicesManager.CreateProxy<IInternalMetricsCollectionManager>(ExecutionIdentity.System))
 				{
 					foreach (MetricIdentifier metricIdentifier in GetMetricIdentifiers())
 					{

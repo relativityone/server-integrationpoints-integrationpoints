@@ -12,10 +12,12 @@ namespace Relativity.Sync
 		private const string _MY_NEW_CATEGORY_NAME = "Relativity.Sync";
 
 		private readonly IServicesMgr _servicesManager;
+		private readonly ISyncLog _logger;
 		private readonly List<ITelemetryMetricProvider> _metricProviders;
-		public TelemetryManager(IServicesMgr servicesManager)
+		public TelemetryManager(IServicesMgr servicesManager, ISyncLog logger)
 		{
 			_servicesManager = servicesManager;
+			_logger = logger;
 			_metricProviders = new List<ITelemetryMetricProvider>();
 		}
 
