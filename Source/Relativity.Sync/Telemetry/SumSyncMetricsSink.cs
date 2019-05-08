@@ -7,12 +7,18 @@ namespace Relativity.Sync.Telemetry
 {
 	internal sealed class SumSyncMetricsSink : ISyncMetricsSink, IDisposable
 	{
-		private bool _disposed;
+		// See comment in Dispose(bool).
+		private bool _disposed = false;
 
 		private readonly IMetricsManager _metricsManager;
 		private readonly List<Metric> _metrics;
 		private readonly ISyncLog _logger;
 
+		/// <summary>
+		///		Creates a new instance of <see cref="NewRelicSyncMetricsSink"/>.
+		/// </summary>
+		/// <param name="servicesManager">Service manager, that is used to get <see cref="IMetricsManager"/></param>
+		/// <param name="logger">Logger</param>
 		public SumSyncMetricsSink(IServicesMgr servicesManager, ISyncLog logger)
 		{
 			_logger = logger;
@@ -20,16 +26,22 @@ namespace Relativity.Sync.Telemetry
 			_metrics = new List<Metric>();
 		}
 
+		/// <inheritdoc />
 		public void Log(Metric metric)
 		{
 			_metrics.Add(metric);
 		}
 
+		/// <inheritdoc />
 		public void Dispose()
 		{
 			Dispose(true);
 		}
 
+		/// <summary>
+		///     Sends accumulated <see cref="Metric"/>s to SUM.
+		/// </summary>
+		/// <param name="disposing">Indicates whether this method is being called from <see cref="Dispose()"/> (true) or from the finalizer (false).</param>
 		private void Dispose(bool disposing)
 		{
 			if (!_disposed)
