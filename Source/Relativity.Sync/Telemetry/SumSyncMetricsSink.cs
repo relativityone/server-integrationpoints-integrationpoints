@@ -20,15 +20,10 @@ namespace Relativity.Sync.Telemetry
 			_servicesManager = servicesManager;
 		}
 
-		private IMetricsManager CreateMetricsManager()
-		{
-			return _servicesManager.CreateProxy<IMetricsManager>(ExecutionIdentity.System);
-		}
-
 		/// <inheritdoc />
 		public void Log(Metric metric)
 		{
-			using (IMetricsManager metricManager = CreateMetricsManager())
+			using (IMetricsManager metricManager = _servicesManager.CreateProxy<IMetricsManager>(ExecutionIdentity.System))
 			{
 				LogSumMetric(metricManager, metric);
 			}
