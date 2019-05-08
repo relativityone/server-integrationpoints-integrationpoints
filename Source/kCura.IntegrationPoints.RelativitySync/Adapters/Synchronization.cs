@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Adapters
 			return Task.FromResult(true);
 		}
 
-		public async Task ExecuteAsync(ISynchronizationConfiguration configuration, CancellationToken token)
+		public async Task<ExecutionResult> ExecuteAsync(ISynchronizationConfiguration configuration, CancellationToken token)
 		{
 			await Task.Yield();
 
@@ -47,6 +47,8 @@ namespace kCura.IntegrationPoints.RelativitySync.Adapters
 			IExtendedJob extendedJob = _container.Resolve<IExtendedJob>();
 
 			exportServiceManager.Execute(extendedJob.Job);
+			
+			return ExecutionResult.Success();
 		}
 	}
 }

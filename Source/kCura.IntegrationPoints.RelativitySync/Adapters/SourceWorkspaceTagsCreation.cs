@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Adapters
 			return Task.FromResult(!configuration.IsDestinationWorkspaceTagArtifactIdSet);
 		}
 
-		public async Task ExecuteAsync(ISourceWorkspaceTagsCreationConfiguration configuration, CancellationToken token)
+		public async Task<ExecutionResult> ExecuteAsync(ISourceWorkspaceTagsCreationConfiguration configuration, CancellationToken token)
 		{
 			await Task.Yield();
 
@@ -43,6 +43,8 @@ namespace kCura.IntegrationPoints.RelativitySync.Adapters
 			int destinationWorkspaceTagArtifactId = sourceWorkspaceTagCreator.CreateDestinationWorkspaceTag(configuration.DestinationWorkspaceArtifactId, configuration.JobArtifactId, null);
 
 			configuration.SetDestinationWorkspaceTagArtifactId(destinationWorkspaceTagArtifactId);
+
+			return ExecutionResult.Success();
 		}
 	}
 }
