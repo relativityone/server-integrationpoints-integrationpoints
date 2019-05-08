@@ -23,7 +23,7 @@ nuget Autofac ~> 4.9 redirects: force
 nuget Polly ~> 5.3.1
 nuget Banzai ~> 3.0
 nuget Banzai.AUtofac ~> 3.0
-nuget Newtonsoft.Json ~> 6.0
+nuget Newtonsoft.Json ~> 6.0 redirects: force
 nuget SexyProxy.Emit 2.0.97
 
 // Tests
