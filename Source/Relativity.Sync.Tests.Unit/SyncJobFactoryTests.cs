@@ -3,7 +3,9 @@ using Autofac;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Sync.Logging;
+using Relativity.Telemetry.APM;
 
 namespace Relativity.Sync.Tests.Unit
 {
@@ -23,7 +25,7 @@ namespace Relativity.Sync.Tests.Unit
 			_container = new Mock<IContainer>();
 
 			_syncJobParameters = new SyncJobParameters(1, 1);
-			_relativityServices = new RelativityServices();
+			_relativityServices = new RelativityServices(Mock.Of<IAPM>(), Mock.Of<IServicesMgr>(), new Uri("localhost"));
 			_configuration = new SyncJobExecutionConfiguration();
 			_logger = new EmptyLogger();
 			_instance = new SyncJobFactory(new Mock<IContainerFactory>().Object);

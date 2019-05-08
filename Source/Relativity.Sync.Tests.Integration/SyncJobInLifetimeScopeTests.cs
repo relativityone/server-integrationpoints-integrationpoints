@@ -31,7 +31,7 @@ namespace Relativity.Sync.Tests.Integration
 
 			_containerFactory = new Mock<IContainerFactory>();
 			_syncJobParameters = new SyncJobParameters(1, 1);
-			_relativityServices = new RelativityServices();
+			_relativityServices = ContainerHelper.CreateMockedRelativityServices();
 			_configuration = new SyncJobExecutionConfiguration();
 			_logger = new EmptyLogger();
 		}

@@ -53,12 +53,20 @@ namespace Relativity.Sync.Tests.Integration
 		{
 			ContainerBuilder containerBuilder = new ContainerBuilder();
 			ContainerFactory containerFactory = new ContainerFactory();
+			RelativityServices relativityServices = CreateMockedRelativityServices();
+			containerFactory.RegisterSyncDependencies(containerBuilder, new SyncJobParameters(1, 1), relativityServices, new SyncJobExecutionConfiguration(), new EmptyLogger());
+			return containerBuilder;
+		}
+
+		/// <summary>
+		///     Creates Relativity Services with mocked dependencies
+		/// </summary>
+		public static RelativityServices CreateMockedRelativityServices()
+		{
 			IAPM apm = Mock.Of<IAPM>();
 			IServicesMgr servicesMgr = Mock.Of<IServicesMgr>();
 			Uri authenticationUri = new Uri("https://localhost", UriKind.RelativeOrAbsolute);
-			RelativityServices relativityServices = new RelativityServices(apm, servicesMgr, authenticationUri);
-			containerFactory.RegisterSyncDependencies(containerBuilder, new SyncJobParameters(1, 1), relativityServices, new SyncJobExecutionConfiguration(), new EmptyLogger());
-			return containerBuilder;
+			return new RelativityServices(apm, servicesMgr, authenticationUri);
 		}
 	}
 }

@@ -10,13 +10,6 @@ namespace Relativity.Sync
 	public sealed class RelativityServices
 	{
 		/// <summary>
-		///     For testing purposes only
-		/// </summary>
-		internal RelativityServices()
-		{
-		}
-
-		/// <summary>
 		///     Constructor
 		/// </summary>
 		public RelativityServices(IAPM apm, IServicesMgr servicesMgr, Uri authenticationUri)
