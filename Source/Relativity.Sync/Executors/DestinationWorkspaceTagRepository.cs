@@ -24,13 +24,13 @@ namespace Relativity.Sync.Executors
 		private readonly ITagNameFormatter _tagNameFormatter;
 		private readonly ISyncMetrics _syncMetrics;
 
-		private readonly Guid _destinationInstanceArtifactIdGuid = new Guid("323458db-8a06-464b-9402-af2516cf47e0");
-		private readonly Guid _destinationInstanceNameGuid = new Guid("909adc7c-2bb9-46ca-9f85-da32901d6554");
-		private readonly Guid _destinationWorkspaceArtifactIdGuid = new Guid("207e6836-2961-466b-a0d2-29974a4fad36");
+		private readonly Guid _destinationInstanceArtifactIdGuid = new Guid("323458DB-8A06-464B-9402-AF2516CF47E0");
+		private readonly Guid _destinationInstanceNameGuid = new Guid("909ADC7C-2BB9-46CA-9F85-DA32901D6554");
+		private readonly Guid _destinationWorkspaceArtifactIdGuid = new Guid("207E6836-2961-466B-A0D2-29974A4FAD36");
 		private readonly Guid _destinationWorkspaceFieldMultiObject = new Guid("8980C2FA-0D33-4686-9A97-EA9D6F0B4196");
-		private readonly Guid _destinationWorkspaceNameGuid = new Guid("348d7394-2658-4da4-87d0-8183824adf98");
+		private readonly Guid _destinationWorkspaceNameGuid = new Guid("348D7394-2658-4DA4-87D0-8183824ADF98");
 		private readonly Guid _jobHistoryFieldMultiObject = new Guid("97BC12FA-509B-4C75-8413-6889387D8EF6");
-		private readonly Guid _nameGuid = new Guid("155649c0-db15-4ee7-b449-bfdf2a54b7b5");
+		private readonly Guid _nameGuid = new Guid("155649C0-DB15-4EE7-B449-BFDF2A54B7B5");
 		private readonly Guid _objectTypeGuid = new Guid("3F45E490-B4CF-4C7D-8BB6-9CA891C0C198");
 
 		public DestinationWorkspaceTagRepository(ISourceServiceFactoryForUser sourceServiceFactoryForUser, IFederatedInstance federatedInstance, ITagNameFormatter tagNameFormatter,
@@ -50,36 +50,31 @@ namespace Relativity.Sync.Executors
 				sourceWorkspaceArtifactId, destinationWorkspaceArtifactId);
 			RelativityObject tag = await QueryRelativityObjectTagAsync(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, token).ConfigureAwait(false);
 
+			DestinationWorkspaceTag destinationWorkspaceTag = null;
 			if (tag != null)
 			{
-				DestinationWorkspaceTag destinationWorkspaceTag = new DestinationWorkspaceTag
+				destinationWorkspaceTag = new DestinationWorkspaceTag
 				{
 					ArtifactId = tag.ArtifactID,
 					DestinationWorkspaceName = tag[_destinationWorkspaceNameGuid].Value.ToString(),
 					DestinationInstanceName = tag[_destinationInstanceNameGuid].Value.ToString(),
 					DestinationWorkspaceArtifactId = Convert.ToInt32(tag[_destinationWorkspaceArtifactIdGuid].Value, CultureInfo.InvariantCulture)
 				};
-				return destinationWorkspaceTag;
 			}
-
-			return null;
+			return destinationWorkspaceTag;
 		}
 
 		private async Task<RelativityObject> QueryRelativityObjectTagAsync(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId, CancellationToken token)
 		{
-			using (IObjectManager objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			using (var objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				int federatedInstanceId = await _federatedInstance.GetInstanceIdAsync().ConfigureAwait(false);
 
-#pragma warning disable S1135 // Track uses of "TODO" tags
-				// TODO REL-304544: We use -1 as the instance ID for the local instance, but RIP uses NULL, so we have to use NULL instead in that case.
-				// TODO REL-304544: Once the Sync code is entirely in this project, this should be changed to just use -1.
-#pragma warning restore S1135 // Track uses of "TODO" tags
 				string federatedInstanceIdSearchTerm = federatedInstanceId == -1
 					? $"NOT '{_destinationInstanceArtifactIdGuid}' ISSET"
 					: $"'{_destinationInstanceArtifactIdGuid}' == {federatedInstanceId}";
 
-				QueryRequest request = new QueryRequest
+				var request = new QueryRequest
 				{
 					ObjectType = new ObjectTypeRef { Guid = _objectTypeGuid },
 					Condition = $"'{_destinationWorkspaceArtifactIdGuid}' == {destinationWorkspaceArtifactId} AND ({federatedInstanceIdSearchTerm})",
@@ -123,16 +118,11 @@ namespace Relativity.Sync.Executors
 					sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, destinationWorkspaceName);
 			string federatedInstanceName = await _federatedInstance.GetInstanceNameAsync().ConfigureAwait(false);
 
-#pragma warning disable S1135 // Track uses of "TODO" tags
-			// TODO REL-304544: We use -1 as the instance ID for the local instance, but RIP uses NULL, so we have to use NULL instead in that case.
-			// TODO REL-304544: Once the Sync code is entirely in this project, this should be changed to just use -1.
-#pragma warning restore S1135 // Track uses of "TODO" tags
-			int rawFederatedInstanceId = await _federatedInstance.GetInstanceIdAsync().ConfigureAwait(false);
-			int? federatedInstanceId = rawFederatedInstanceId == -1 ? null : (int?)rawFederatedInstanceId;
+			int federatedInstanceId = await _federatedInstance.GetInstanceIdAsync().ConfigureAwait(false);
 
-			using (IObjectManager objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			using (var objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
-				CreateRequest request = new CreateRequest
+				var request = new CreateRequest
 				{
 					ObjectType = new ObjectTypeRef { Guid = _objectTypeGuid },
 					FieldValues = CreateFieldValues(destinationWorkspaceArtifactId, destinationWorkspaceName, federatedInstanceName, federatedInstanceId)
@@ -157,7 +147,7 @@ namespace Relativity.Sync.Executors
 						ex);
 				}
 
-				DestinationWorkspaceTag createdTag = new DestinationWorkspaceTag
+				var createdTag = new DestinationWorkspaceTag
 				{
 					ArtifactId = result.Object.ArtifactID,
 					DestinationWorkspaceName = destinationWorkspaceName,
@@ -174,13 +164,13 @@ namespace Relativity.Sync.Executors
 			string federatedInstanceName = await _federatedInstance.GetInstanceNameAsync().ConfigureAwait(false);
 			int federatedInstanceId = await _federatedInstance.GetInstanceIdAsync().ConfigureAwait(false);
 
-			UpdateRequest request = new UpdateRequest
+			var request = new UpdateRequest
 			{
 				Object = new RelativityObjectRef { ArtifactID = destinationWorkspaceTag.ArtifactId },
 				FieldValues = CreateFieldValues(destinationWorkspaceTag.DestinationWorkspaceArtifactId, destinationWorkspaceTag.DestinationWorkspaceName, federatedInstanceName, federatedInstanceId),
 			};
 
-			using (IObjectManager objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			using (var objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				try
 				{
@@ -318,7 +308,7 @@ namespace Relativity.Sync.Executors
 			return result;
 		}
 
-		private IEnumerable<FieldRefValuePair> CreateFieldValues(int destinationWorkspaceArtifactId, string destinationWorkspaceName, string federatedInstanceName, int? federatedInstanceId)
+		private IEnumerable<FieldRefValuePair> CreateFieldValues(int destinationWorkspaceArtifactId, string destinationWorkspaceName, string federatedInstanceName, int federatedInstanceId)
 		{
 			string destinationTagName = _tagNameFormatter.FormatWorkspaceDestinationTagName(federatedInstanceName, destinationWorkspaceName, destinationWorkspaceArtifactId);
 			FieldRefValuePair[] pairs =

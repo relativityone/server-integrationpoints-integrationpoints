@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using kCura.Relativity.DataReaderClient;
 using NUnit.Framework;
 using Relativity.Services.Workspace;
 using Relativity.Sync.Executors;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Helpers;
-using kCura.Relativity.DataReaderClient;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Tests.System.Stubs;
 
