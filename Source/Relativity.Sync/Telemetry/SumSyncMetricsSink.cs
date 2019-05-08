@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Relativity.API;
 using Relativity.Telemetry.Services.Metrics;
 
@@ -11,7 +10,6 @@ namespace Relativity.Sync.Telemetry
 		private bool _disposed = false;
 
 		private readonly IMetricsManager _metricsManager;
-		private readonly List<Metric> _metrics;
 		private readonly ISyncLog _logger;
 
 		/// <summary>
@@ -23,13 +21,12 @@ namespace Relativity.Sync.Telemetry
 		{
 			_logger = logger;
 			_metricsManager = servicesManager.CreateProxy<IMetricsManager>(ExecutionIdentity.System);
-			_metrics = new List<Metric>();
 		}
 
 		/// <inheritdoc />
 		public void Log(Metric metric)
 		{
-			_metrics.Add(metric);
+			LogSumMetric(metric);
 		}
 
 		/// <inheritdoc />
@@ -48,7 +45,6 @@ namespace Relativity.Sync.Telemetry
 			{
 				if (disposing)
 				{
-					_metrics.ForEach(LogSumMetric);
 					_metricsManager.Dispose();
 				}
 
