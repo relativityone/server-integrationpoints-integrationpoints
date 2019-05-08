@@ -69,7 +69,7 @@ namespace Relativity.Sync.Telemetry
 			return new DisposableStopwatch(timeSpan => TimedOperation(name, timeSpan, executionStatus));
 		}
 
-		/// <inheritdoc />>
+		/// <inheritdoc />
 		public void GaugeOperation(string name, ExecutionStatus status, long value, string unitOfMeasure, Dictionary<string, object> customData)
 		{
 			foreach (ISyncMetricsSink sink in _sinks)
