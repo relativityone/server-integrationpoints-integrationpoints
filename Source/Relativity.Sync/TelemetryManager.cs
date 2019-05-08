@@ -7,7 +7,7 @@ using Relativity.Services.InternalMetricsCollection;
 
 namespace Relativity.Sync
 {
-	internal sealed class TelemetryManager
+	internal sealed class TelemetryManager : ITelemetryManager
 	{
 		private const string _MY_NEW_CATEGORY_NAME = "Relativity.Sync";
 
