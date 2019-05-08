@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Autofac;
 using Moq;
 using Relativity.Sync.Tests.Common;
@@ -26,33 +25,17 @@ namespace Relativity.Sync.Tests.System.Helpers
 
 			ContainerFactory factory = new ContainerFactory();
 			SyncJobParameters syncParameters = new SyncJobParameters(configuration.JobArtifactId, configuration.SourceWorkspaceArtifactId);
-			
-			IAPM apm = CreateMockedAPM();
+
+			IAPM apm = Mock.Of<IAPM>();
 			RelativityServices relativityServices = new RelativityServices(apm, new ServicesManagerStub(), AppSettings.RelativityUrl);
 
 			factory.RegisterSyncDependencies(containerBuilder, syncParameters, relativityServices, new SyncJobExecutionConfiguration(), new ConsoleLogger());
-			
+
 			mockSteps.Invoke(containerBuilder);
 
 			containerBuilder.RegisterInstance(configuration).AsImplementedInterfaces();
 
 			return containerBuilder.Build().Resolve<ISyncJob>();
-		}
-
-		private static IAPM CreateMockedAPM()
-		{
-			Mock<IAPM> apmMock = new Mock<IAPM>();
-			Mock<ICounterMeasure> counterMock = new Mock<ICounterMeasure>();
-			apmMock.Setup(a => a.CountOperation(It.IsAny<string>(),
-				It.IsAny<Guid>(),
-				It.IsAny<string>(),
-				It.IsAny<string>(),
-				It.IsAny<bool>(),
-				It.IsAny<int?>(),
-				It.IsAny<Dictionary<string, object>>(),
-				It.IsAny<IEnumerable<ISink>>())
-			).Returns(counterMock.Object);
-			return apmMock.Object;
 		}
 	}
 }
