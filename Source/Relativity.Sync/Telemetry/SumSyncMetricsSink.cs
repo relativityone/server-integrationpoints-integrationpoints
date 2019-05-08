@@ -26,7 +26,22 @@ namespace Relativity.Sync.Telemetry
 		/// <inheritdoc />
 		public void Log(Metric metric)
 		{
-			LogSumMetric(metric);
+			MetricType metricType = metric.Type;
+			switch (metricType)
+			{
+				case MetricType.TimedOperation:
+					LogTimedOperation(metric);
+					break;
+				case MetricType.Counter:
+					LogCounterOperation(metric);
+					break;
+				case MetricType.GaugeOperation:
+					LogGaugeOperation(metric);
+					break;
+				default:
+					_logger.LogDebug("Logging metric type '{type}' to SUM is not implemented", metricType);
+					break;
+			}
 		}
 
 		/// <inheritdoc />
@@ -51,26 +66,6 @@ namespace Relativity.Sync.Telemetry
 				// This isn't meant to ensure thread-safety, just safety from repeated calls to Dispose.
 				// If this _should_ be thread-safe, consider locking or marking the field `volatile`.
 				_disposed = true;
-			}
-		}
-
-		private void LogSumMetric(Metric metric)
-		{
-			MetricType metricType = metric.Type;
-			switch (metricType)
-			{
-				case MetricType.TimedOperation:
-					LogTimedOperation(metric);
-					break;
-				case MetricType.Counter:
-					LogCounterOperation(metric);
-					break;
-				case MetricType.GaugeOperation:
-					LogGaugeOperation(metric);
-					break;
-				default:
-					_logger.LogDebug("Logging metric type '{type}' to SUM is not implemented", metricType);
-					break;
 			}
 		}
 
