@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Autofac;
 using FluentAssertions;
 using NUnit.Framework;
 using Relativity.Services.Objects;
@@ -12,9 +11,7 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Workspace;
 using Relativity.Sync.Nodes;
 using Relativity.Sync.Tests.Common;
-using Relativity.Sync.Tests.Integration.Stubs;
 using Relativity.Sync.Tests.System.Helpers;
-using Relativity.Sync.Tests.System.Stubs;
 
 namespace Relativity.Sync.Tests.System
 {
@@ -51,7 +48,7 @@ namespace Relativity.Sync.Tests.System
 				SourceWorkspaceArtifactId = workspaceArtifactId,
 				JobArtifactId = syncConfigurationArtifactId
 			};
-			ISyncJob syncJob = CreateSyncJob(configuration);
+			ISyncJob syncJob = SyncJobHelper.CreateWithMockedAllSteps(configuration);
 
 			// ACT
 			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
@@ -62,24 +59,6 @@ namespace Relativity.Sync.Tests.System
 			const int nonNodeProgressSteps = 2; // MultiNode + Notification
 			int minimumExpectedProgressRdos = GetSyncNodes().Count + nonNodeProgressSteps;
 			progressRdos.Count.Should().Be(minimumExpectedProgressRdos);
-		}
-
-		private ISyncJob CreateSyncJob(ConfigurationStub configuration)
-		{
-			ContainerBuilder containerBuilder = new ContainerBuilder();
-
-			ContainerFactory factory = new ContainerFactory();
-			SyncJobParameters syncParameters = new SyncJobParameters(configuration.JobArtifactId, configuration.SourceWorkspaceArtifactId);
-			factory.RegisterSyncDependencies(containerBuilder, syncParameters, new SyncJobExecutionConfiguration(), new ConsoleLogger());
-
-			new SystemTestsInstaller().Install(containerBuilder);
-
-			IntegrationTestsContainerBuilder.RegisterExternalDependenciesAsMocks(containerBuilder);
-			IntegrationTestsContainerBuilder.MockAllSteps(containerBuilder);
-
-			containerBuilder.RegisterInstance(configuration).AsImplementedInterfaces();
-
-			return containerBuilder.Build().Resolve<ISyncJob>();
 		}
 
 		private async Task<List<RelativityObject>> QueryForProgressRdosAsync(int workspaceId, int syncConfigurationId)

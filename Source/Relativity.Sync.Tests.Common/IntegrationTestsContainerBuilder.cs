@@ -6,29 +6,11 @@ using Autofac;
 using Moq;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Telemetry;
-using Relativity.Telemetry.APM;
 
 namespace Relativity.Sync.Tests.Common
 {
 	public static class IntegrationTestsContainerBuilder
 	{
-		public static void RegisterExternalDependenciesAsMocks(ContainerBuilder containerBuilder)
-		{
-			// Relativity.Telemetry.APM
-			Mock<IAPM> apmMock = new Mock<IAPM>();
-			Mock<ICounterMeasure> counterMock = new Mock<ICounterMeasure>();
-			apmMock.Setup(a => a.CountOperation(It.IsAny<string>(),
-				It.IsAny<Guid>(),
-				It.IsAny<string>(),
-				It.IsAny<string>(),
-				It.IsAny<bool>(),
-				It.IsAny<int?>(),
-				It.IsAny<Dictionary<string, object>>(),
-				It.IsAny<IEnumerable<ISink>>())
-			).Returns(counterMock.Object);
-			containerBuilder.RegisterInstance(apmMock.Object).As<IAPM>();
-		}
-
 		public static void MockReporting(ContainerBuilder containerBuilder)
 		{
 			containerBuilder.RegisterInstance(Mock.Of<ISyncMetrics>()).As<ISyncMetrics>();

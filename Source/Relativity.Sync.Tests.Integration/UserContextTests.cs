@@ -14,6 +14,7 @@ using Relativity.Sync.Authentication;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Tests.Common;
+using Relativity.Telemetry.APM;
 
 namespace Relativity.Sync.Tests.Integration
 {
@@ -80,10 +81,11 @@ namespace Relativity.Sync.Tests.Integration
 
 		private void MockProvideServiceUrisToProvideValidUris()
 		{
-			Mock<IProvideServiceUris> provideServiceUris = new Mock<IProvideServiceUris>();
-			provideServiceUris.Setup(x => x.AuthenticationUri()).Returns(new Uri(_INSTANCE_URL));
-
-			_containerBuilder.RegisterInstance(provideServiceUris.Object).As<IProvideServiceUris>();
+			IAPM apm = Mock.Of<IAPM>();
+			IServicesMgr servicesMgr = Mock.Of<IServicesMgr>();
+			Uri authenticationUri = new Uri(_INSTANCE_URL);
+			RelativityServices relativityServices = new RelativityServices(apm, servicesMgr, authenticationUri);
+			_containerBuilder.RegisterInstance(relativityServices).As<RelativityServices>();
 		}
 
 		private void MockTokenProviderToProvideGivenToken()

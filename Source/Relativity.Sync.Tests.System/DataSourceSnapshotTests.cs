@@ -2,17 +2,15 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Autofac;
 using FluentAssertions;
 using NUnit.Framework;
 using Relativity.Services.Field;
 using Relativity.Services.Search;
 using Relativity.Services.Workspace;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
-using Relativity.Sync.Tests.Integration.Stubs;
+using Relativity.Sync.Tests.System.Helpers;
 
 namespace Relativity.Sync.Tests.System
 {
@@ -59,7 +57,7 @@ namespace Relativity.Sync.Tests.System
 				SourceWorkspaceArtifactId = _workspace.ArtifactID
 			};
 
-			ISyncJob syncJob = CreateSyncJob(configuration);
+			ISyncJob syncJob = SyncJobHelper.CreateWithMockedContainerExceptProvidedType<IDataSourceSnapshotConfiguration>(configuration);
 
 			// ACT
 			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
@@ -67,24 +65,6 @@ namespace Relativity.Sync.Tests.System
 			// ASSERT
 			configuration.ExportRunId.Should().NotBeEmpty();
 			configuration.ExportRunId.Should().NotBe(Guid.Empty);
-		}
-
-		private ISyncJob CreateSyncJob(ConfigurationStub configuration)
-		{
-			ContainerBuilder containerBuilder = new ContainerBuilder();
-
-			ContainerFactory factory = new ContainerFactory();
-			SyncJobParameters syncParameters = new SyncJobParameters(configuration.JobArtifactId, configuration.SourceWorkspaceArtifactId);
-			factory.RegisterSyncDependencies(containerBuilder, syncParameters, new SyncJobExecutionConfiguration(), new EmptyLogger());
-
-			new SystemTestsInstaller().Install(containerBuilder);
-
-			IntegrationTestsContainerBuilder.RegisterExternalDependenciesAsMocks(containerBuilder);
-			IntegrationTestsContainerBuilder.MockStepsExcept<IDataSourceSnapshotConfiguration>(containerBuilder);
-
-			containerBuilder.RegisterInstance(configuration).AsImplementedInterfaces();
-
-			return containerBuilder.Build().Resolve<ISyncJob>();
 		}
 	}
 }

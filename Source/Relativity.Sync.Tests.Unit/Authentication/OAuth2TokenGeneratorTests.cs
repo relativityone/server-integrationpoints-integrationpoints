@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Relativity.API;
 using Relativity.OAuth2Client.Interfaces;
 using Relativity.Sync.Authentication;
 using Relativity.Sync.Logging;
@@ -23,9 +22,8 @@ namespace Relativity.Sync.Tests.Unit.Authentication
 		{
 			_oAuth2ClientFactory = new Mock<IOAuth2ClientFactory>();
 			_tokenProviderFactoryFactory = new Mock<ITokenProviderFactoryFactory>();
-			Mock<IProvideServiceUris> provideServiceUris = new Mock<IProvideServiceUris>();
-			provideServiceUris.Setup(x => x.AuthenticationUri()).Returns(new Uri("https://fakeaddress"));
-			_sut = new OAuth2TokenGenerator(_oAuth2ClientFactory.Object, _tokenProviderFactoryFactory.Object, provideServiceUris.Object, new EmptyLogger());
+			Uri uri = new Uri("https://fakeaddress");
+			_sut = new OAuth2TokenGenerator(_oAuth2ClientFactory.Object, _tokenProviderFactoryFactory.Object, uri, new EmptyLogger());
 		}
 
 		[Test]
@@ -33,7 +31,7 @@ namespace Relativity.Sync.Tests.Unit.Authentication
 		{
 			const string authToken = "auth_token";
 			const int userId = 1;
-			Services.Security.Models.OAuth2Client client = new Services.Security.Models.OAuth2Client()
+			Services.Security.Models.OAuth2Client client = new Services.Security.Models.OAuth2Client
 			{
 				Id = "id",
 				Secret = "secret"
@@ -70,7 +68,7 @@ namespace Relativity.Sync.Tests.Unit.Authentication
 		public void ItShouldRethrowExceptionWhenTokenProviderCallFails()
 		{
 			const int userId = 1;
-			Services.Security.Models.OAuth2Client client = new Services.Security.Models.OAuth2Client()
+			Services.Security.Models.OAuth2Client client = new Services.Security.Models.OAuth2Client
 			{
 				Id = "id",
 				Secret = "secret"
@@ -96,7 +94,7 @@ namespace Relativity.Sync.Tests.Unit.Authentication
 		{
 			const string authToken = "auth_token";
 			const int userId = 1;
-			Services.Security.Models.OAuth2Client client = new Services.Security.Models.OAuth2Client()
+			Services.Security.Models.OAuth2Client client = new Services.Security.Models.OAuth2Client
 			{
 				Id = "id",
 				Secret = "secret"
@@ -122,7 +120,7 @@ namespace Relativity.Sync.Tests.Unit.Authentication
 		{
 			const string authToken = "auth_token";
 			const int userId = 1;
-			Services.Security.Models.OAuth2Client client = new Services.Security.Models.OAuth2Client()
+			Services.Security.Models.OAuth2Client client = new Services.Security.Models.OAuth2Client
 			{
 				Id = "id",
 				Secret = "secret"

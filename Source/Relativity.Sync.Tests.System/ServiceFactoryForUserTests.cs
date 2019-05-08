@@ -23,14 +23,12 @@ namespace Relativity.Sync.Tests.System
 	public sealed class ServiceFactoryForUserTests : SystemTest
 	{
 		private ServicesManagerStub _servicesManager;
-		private ProvideServiceUrisStub _provideServiceUris;
 		private WorkspaceRef _workspace;
 
 		[SetUp]
 		public async Task SetUp()
 		{
 			_servicesManager = new ServicesManagerStub();
-			_provideServiceUris = new ProvideServiceUrisStub();
 			_workspace = await Environment.CreateWorkspaceAsync().ConfigureAwait(false);
 		}
 
@@ -95,7 +93,7 @@ namespace Relativity.Sync.Tests.System
 			userContextConfiguration.SetupGet(x => x.ExecutingUserId).Returns(UserHelpers.FindUserArtifactID(Client, userName));
 
 			IAuthTokenGenerator authTokenGenerator = new OAuth2TokenGenerator(new OAuth2ClientFactory(_servicesManager, new EmptyLogger()),
-				new TokenProviderFactoryFactory(), _provideServiceUris, new EmptyLogger());
+				new TokenProviderFactoryFactory(), AppSettings.RelativityUrl, new EmptyLogger());
 			PermissionRef permissionRef = new PermissionRef
 			{
 				ArtifactType = new ArtifactTypeIdentifier((int)ArtifactType.Batch),

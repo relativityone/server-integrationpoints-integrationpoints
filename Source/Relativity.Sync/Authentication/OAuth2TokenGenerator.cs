@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Relativity.API;
 using Relativity.OAuth2Client.Interfaces;
 
 namespace Relativity.Sync.Authentication
@@ -12,14 +11,14 @@ namespace Relativity.Sync.Authentication
 		private const string _RELATIVITY_AUTH_ENDPOINT = "Identity/connect/token";
 		private readonly IOAuth2ClientFactory _oAuth2ClientFactory;
 		private readonly ITokenProviderFactoryFactory _tokenProviderFactoryFactory;
-		private readonly IProvideServiceUris _provideServiceUris;
+		private readonly Uri _authenticationUri;
 		private readonly ISyncLog _logger;
 
-		public OAuth2TokenGenerator(IOAuth2ClientFactory oAuth2ClientFactory, ITokenProviderFactoryFactory tokenProviderFactoryFactory, IProvideServiceUris provideServiceUris, ISyncLog logger)
+		public OAuth2TokenGenerator(IOAuth2ClientFactory oAuth2ClientFactory, ITokenProviderFactoryFactory tokenProviderFactoryFactory, Uri authenticationUri, ISyncLog logger)
 		{
 			_oAuth2ClientFactory = oAuth2ClientFactory;
 			_tokenProviderFactoryFactory = tokenProviderFactoryFactory;
-			_provideServiceUris = provideServiceUris;
+			_authenticationUri = authenticationUri;
 			_logger = logger;
 		}
 
@@ -48,7 +47,7 @@ namespace Relativity.Sync.Authentication
 
 		private Uri GetRelativityStsUri()
 		{
-			string relativityInstance = _provideServiceUris.AuthenticationUri().ToString();
+			string relativityInstance = _authenticationUri.ToString();
 			var relativityStsUri = new Uri(Path.Combine(relativityInstance, _RELATIVITY_AUTH_ENDPOINT));
 			return relativityStsUri;
 		}
