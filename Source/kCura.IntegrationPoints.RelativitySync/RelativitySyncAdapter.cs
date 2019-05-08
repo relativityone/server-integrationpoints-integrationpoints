@@ -181,8 +181,9 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 			SyncJobFactory jobFactory = new SyncJobFactory();
 			SyncJobParameters parameters = new SyncJobParameters(syncConfigurationArtifactId, _job.WorkspaceId, _correlationId.ToString());
+			RelativityServices relativityServices = new RelativityServices(_apmMetrics, _ripContainer.Resolve<IHelper>().GetServicesManager(), ExtensionPointServiceFinder.ServiceUriProvider.AuthenticationUri());
 			ISyncLog syncLog = new SyncLog(_logger);
-			ISyncJob syncJob = jobFactory.Create(container, parameters, syncLog);
+			ISyncJob syncJob = jobFactory.Create(container, parameters, relativityServices, syncLog);
 			return syncJob;
 		}
 
@@ -197,7 +198,6 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 			_ripContainer.Register(Component.For<SyncConfiguration>().Instance(syncConfiguration));
 
-			containerBuilder.RegisterInstance(_apmMetrics).As<IAPM>();
 			containerBuilder.RegisterInstance(syncConfiguration).AsImplementedInterfaces().SingleInstance();
 
 			containerBuilder.RegisterInstance(new DestinationWorkspaceObjectTypesCreation(_ripContainer))
@@ -214,7 +214,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 				.As<IExecutor<ISynchronizationConfiguration>>()
 				.As<IExecutionConstrains<ISynchronizationConfiguration>>();
 
-			containerBuilder.RegisterInstance(new Notification(_ripContainer))
+			containerBuilder.RegisterInstance(new Adapters.Notification(_ripContainer))
 				.As<IExecutor<INotificationConfiguration>>()
 				.As<IExecutionConstrains<INotificationConfiguration>>();
 
@@ -241,9 +241,6 @@ namespace kCura.IntegrationPoints.RelativitySync
 			containerBuilder.RegisterType<DataSourceSnapshot>()
 				.As<IExecutor<IDataSourceSnapshotConfiguration>>()
 				.As<IExecutionConstrains<IDataSourceSnapshotConfiguration>>();
-
-			containerBuilder.Register(context => ExtensionPointServiceFinder.ServiceUriProvider).As<IProvideServiceUris>();
-			containerBuilder.Register(context => _ripContainer.Resolve<IHelper>().GetServicesManager()).As<IServicesMgr>();
 
 			IContainer container = containerBuilder.Build();
 			return container;
