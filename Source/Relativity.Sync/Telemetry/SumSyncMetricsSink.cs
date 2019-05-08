@@ -4,13 +4,10 @@ using Relativity.Telemetry.Services.Metrics;
 
 namespace Relativity.Sync.Telemetry
 {
-	internal sealed class SumSyncMetricsSink : ISyncMetricsSink, IDisposable
+	internal sealed class SumSyncMetricsSink : ISyncMetricsSink
 	{
-		// See comment in Dispose(bool).
-		private bool _disposed = false;
-
-		private readonly IMetricsManager _metricsManager;
 		private readonly ISyncLog _logger;
+		private readonly IServicesMgr _servicesManager;
 
 		/// <summary>
 		///		Creates a new instance of <see cref="NewRelicSyncMetricsSink"/>.
@@ -20,23 +17,36 @@ namespace Relativity.Sync.Telemetry
 		public SumSyncMetricsSink(IServicesMgr servicesManager, ISyncLog logger)
 		{
 			_logger = logger;
-			_metricsManager = servicesManager.CreateProxy<IMetricsManager>(ExecutionIdentity.System);
+			_servicesManager = servicesManager;
+		}
+
+		private IMetricsManager CreateMetricsManager()
+		{
+			return _servicesManager.CreateProxy<IMetricsManager>(ExecutionIdentity.System);
 		}
 
 		/// <inheritdoc />
 		public void Log(Metric metric)
 		{
+			using (IMetricsManager metricManager = CreateMetricsManager())
+			{
+				LogSumMetric(metricManager, metric);
+			}
+		}
+
+		private void LogSumMetric(IMetricsManager metricsManager, Metric metric)
+		{
 			MetricType metricType = metric.Type;
 			switch (metricType)
 			{
 				case MetricType.TimedOperation:
-					LogTimedOperation(metric);
+					LogTimedOperation(metricsManager, metric);
 					break;
 				case MetricType.Counter:
-					LogCounterOperation(metric);
+					LogCounterOperation(metricsManager, metric);
 					break;
 				case MetricType.GaugeOperation:
-					LogGaugeOperation(metric);
+					LogGaugeOperation(metricsManager, metric);
 					break;
 				default:
 					_logger.LogDebug("Logging metric type '{type}' to SUM is not implemented", metricType);
@@ -44,44 +54,19 @@ namespace Relativity.Sync.Telemetry
 			}
 		}
 
-		/// <inheritdoc />
-		public void Dispose()
+		private static void LogGaugeOperation(IMetricsManager metricsManager, Metric metric)
 		{
-			Dispose(true);
+			metricsManager.LogGaugeAsync(metric.Name, Guid.Empty, metric.CorrelationId, (long)metric.Value);
 		}
 
-		/// <summary>
-		///     Sends accumulated <see cref="Metric"/>s to SUM.
-		/// </summary>
-		/// <param name="disposing">Indicates whether this method is being called from <see cref="Dispose()"/> (true) or from the finalizer (false).</param>
-		private void Dispose(bool disposing)
+		private static void LogCounterOperation(IMetricsManager metricsManager, Metric metric)
 		{
-			if (!_disposed)
-			{
-				if (disposing)
-				{
-					_metricsManager.Dispose();
-				}
-
-				// This isn't meant to ensure thread-safety, just safety from repeated calls to Dispose.
-				// If this _should_ be thread-safe, consider locking or marking the field `volatile`.
-				_disposed = true;
-			}
+			metricsManager.LogCountAsync(metric.Name, Guid.Empty, metric.CorrelationId, 1);
 		}
 
-		private void LogGaugeOperation(Metric metric)
+		private static void LogTimedOperation(IMetricsManager metricsManager, Metric metric)
 		{
-			_metricsManager.LogGaugeAsync(metric.Name, Guid.Empty, metric.CorrelationId, (long)metric.Value);
-		}
-
-		private void LogCounterOperation(Metric metric)
-		{
-			_metricsManager.LogCountAsync(metric.Name, Guid.Empty, metric.CorrelationId, 1);
-		}
-
-		private void LogTimedOperation(Metric metric)
-		{
-			_metricsManager.LogTimerAsDoubleAsync(metric.Name, Guid.Empty, metric.CorrelationId, (double)metric.Value);
+			metricsManager.LogTimerAsDoubleAsync(metric.Name, Guid.Empty, metric.CorrelationId, (double)metric.Value);
 		}
 	}
 }

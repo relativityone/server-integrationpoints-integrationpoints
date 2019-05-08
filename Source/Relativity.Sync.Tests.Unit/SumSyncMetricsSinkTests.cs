@@ -49,7 +49,6 @@ namespace Relativity.Sync.Tests.Unit
 
 			// ACT
 			expectedMetrics.ForEach(x => instance.Log(x));
-			instance.Dispose();
 
 			// ASSERT
 			_metricsManager.Verify(x => x.LogTimerAsDoubleAsync(
@@ -74,21 +73,6 @@ namespace Relativity.Sync.Tests.Unit
 				));
 
 			_logger.Verify(x => x.LogDebug(It.IsAny<string>(), It.IsAny<object[]>()), Times.Never);
-
-			_metricsManager.Verify(x => x.Dispose(), Times.Once);
-		}
-
-		[Test]
-		public void ItDisposesMetricsManagerOnDispose()
-		{
-			// ARRANGE
-			SumSyncMetricsSink instance = CreateInstance();
-
-			// ACT
-			instance.Dispose();
-			
-			// ASSERT
-			_metricsManager.Verify(x => x.Dispose(), Times.Once);
 		}
 	}
 }
