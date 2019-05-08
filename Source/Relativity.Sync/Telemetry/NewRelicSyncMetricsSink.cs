@@ -48,7 +48,7 @@ namespace Relativity.Sync.Telemetry
 					_apmClient.Log(_METRIC_NAME, payload);
 				}
 
-				// This isn't meant to ensure thread-safety, just safety from repeated calls to Dipose.
+				// This isn't meant to ensure thread-safety, just safety from repeated calls to Dispose.
 				// If this _should_ be thread-safe, consider locking or marking the field `volatile`.
 				_disposed = true;
 			}
