@@ -91,7 +91,7 @@ namespace Relativity.Sync.Tests.Unit
 			_objectManager.Setup(x => x.QueryAsync(_TEST_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, 1)).ReturnsAsync(result);
 
 			// ACT
-			IConfiguration cache = await Storage.Configuration.GetAsync(_sourceServiceFactoryForAdmin.Object, _syncJobParameters, _syncLog, _semaphoreSlim.Object).ConfigureAwait(false);
+			IConfiguration cache = await Sync.Storage.Configuration.GetAsync(_sourceServiceFactoryForAdmin.Object, _syncJobParameters, _syncLog, _semaphoreSlim.Object).ConfigureAwait(false);
 
 			// ASSERT
 			cache.GetFieldValue<int>(field1Guid).Should().Be(field1);
@@ -111,7 +111,7 @@ namespace Relativity.Sync.Tests.Unit
 			_objectManager.Setup(x => x.QueryAsync(_TEST_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, 1)).ReturnsAsync(result);
 
 			// ACT
-			IConfiguration cache = await Storage.Configuration.GetAsync(_sourceServiceFactoryForAdmin.Object, _syncJobParameters, _syncLog, _semaphoreSlim.Object).ConfigureAwait(false);
+			IConfiguration cache = await Sync.Storage.Configuration.GetAsync(_sourceServiceFactoryForAdmin.Object, _syncJobParameters, _syncLog, _semaphoreSlim.Object).ConfigureAwait(false);
 
 			// ASSERT
 			cache.GetFieldValue<string>(_testFieldGuid).Should().Be(testText);
@@ -148,7 +148,7 @@ namespace Relativity.Sync.Tests.Unit
 			try
 			{
 				// ACT
-				IConfiguration cache = await Storage.Configuration.GetAsync(_sourceServiceFactoryForAdmin.Object, _syncJobParameters, _syncLog, _semaphoreSlim.Object).ConfigureAwait(false);
+				IConfiguration cache = await Sync.Storage.Configuration.GetAsync(_sourceServiceFactoryForAdmin.Object, _syncJobParameters, _syncLog, _semaphoreSlim.Object).ConfigureAwait(false);
 
 				// ASSERT
 				Assert.IsNotEmpty(concreteStreamList);
@@ -193,7 +193,7 @@ namespace Relativity.Sync.Tests.Unit
 
 			// ACT
 			Assert.ThrowsAsync<IOException>(async () =>
-				await Storage.Configuration.GetAsync(_sourceServiceFactoryForAdmin.Object, _syncJobParameters, _syncLog, _semaphoreSlim.Object).ConfigureAwait(false));
+				await Sync.Storage.Configuration.GetAsync(_sourceServiceFactoryForAdmin.Object, _syncJobParameters, _syncLog, _semaphoreSlim.Object).ConfigureAwait(false));
 
 			// ASSERT
 			Mock.Verify(_objectManager, testKeplerStream);
@@ -272,7 +272,7 @@ namespace Relativity.Sync.Tests.Unit
 			_objectManager.Setup(x => x.QueryAsync(_TEST_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, 1)).ReturnsAsync(result);
 
 			// ACT
-			Func<Task> action = async () => await Storage.Configuration.GetAsync(_sourceServiceFactoryForAdmin.Object, _syncJobParameters, _syncLog, _semaphoreSlim.Object).ConfigureAwait(false);
+			Func<Task> action = async () => await Sync.Storage.Configuration.GetAsync(_sourceServiceFactoryForAdmin.Object, _syncJobParameters, _syncLog, _semaphoreSlim.Object).ConfigureAwait(false);
 
 			// ASSERT
 			action.Should().Throw<SyncException>();
@@ -285,7 +285,7 @@ namespace Relativity.Sync.Tests.Unit
 			QueryResult result = PrepareQueryResult(_testFieldGuid, _TEST_FIELD_VALUE);
 			_objectManager.Setup(x => x.QueryAsync(_TEST_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, 1)).ReturnsAsync(result);
 
-			IConfiguration cache = await Storage.Configuration.GetAsync(_sourceServiceFactoryForAdmin.Object, _syncJobParameters, _syncLog, _semaphoreSlim.Object).ConfigureAwait(false);
+			IConfiguration cache = await Sync.Storage.Configuration.GetAsync(_sourceServiceFactoryForAdmin.Object, _syncJobParameters, _syncLog, _semaphoreSlim.Object).ConfigureAwait(false);
 
 			// ACT
 			Action action = () => cache.GetFieldValue<int>(Guid.NewGuid());
@@ -301,7 +301,7 @@ namespace Relativity.Sync.Tests.Unit
 			QueryResult result = PrepareQueryResult(_testFieldGuid, _TEST_FIELD_VALUE);
 			_objectManager.Setup(x => x.QueryAsync(_TEST_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, 1)).ReturnsAsync(result);
 
-			IConfiguration cache = await Storage.Configuration.GetAsync(_sourceServiceFactoryForAdmin.Object, _syncJobParameters, _syncLog, _semaphoreSlim.Object).ConfigureAwait(false);
+			IConfiguration cache = await Sync.Storage.Configuration.GetAsync(_sourceServiceFactoryForAdmin.Object, _syncJobParameters, _syncLog, _semaphoreSlim.Object).ConfigureAwait(false);
 
 			// ACT
 			Func<Task> action = async () => await cache.UpdateFieldValueAsync(Guid.NewGuid(), 0).ConfigureAwait(false);
@@ -318,7 +318,7 @@ namespace Relativity.Sync.Tests.Unit
 			QueryResult result = PrepareQueryResult(_testFieldGuid, _TEST_FIELD_VALUE);
 			_objectManager.Setup(x => x.QueryAsync(_TEST_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, 1)).ReturnsAsync(result);
 
-			IConfiguration cache = await Storage.Configuration.GetAsync(_sourceServiceFactoryForAdmin.Object, _syncJobParameters, _syncLog, _semaphoreSlim.Object).ConfigureAwait(false);
+			IConfiguration cache = await Sync.Storage.Configuration.GetAsync(_sourceServiceFactoryForAdmin.Object, _syncJobParameters, _syncLog, _semaphoreSlim.Object).ConfigureAwait(false);
 
 			// ACT
 			await cache.UpdateFieldValueAsync(_testFieldGuid, newValue).ConfigureAwait(false);
@@ -348,7 +348,7 @@ namespace Relativity.Sync.Tests.Unit
 			_objectManager.Setup(x => x.QueryAsync(_TEST_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, 1)).ReturnsAsync(result);
 			_objectManager.Setup(x => x.UpdateAsync(_TEST_WORKSPACE_ID, It.IsAny<UpdateRequest>())).Throws<InvalidOperationException>();
 
-			IConfiguration cache = await Storage.Configuration.GetAsync(_sourceServiceFactoryForAdmin.Object, _syncJobParameters, _syncLog, _semaphoreSlim.Object).ConfigureAwait(false);
+			IConfiguration cache = await Sync.Storage.Configuration.GetAsync(_sourceServiceFactoryForAdmin.Object, _syncJobParameters, _syncLog, _semaphoreSlim.Object).ConfigureAwait(false);
 
 			// ACT
 			Func<Task> action = async () => await cache.UpdateFieldValueAsync(_testFieldGuid, newValue).ConfigureAwait(false);
@@ -366,7 +366,7 @@ namespace Relativity.Sync.Tests.Unit
 			QueryResult result = PrepareQueryResult(_testFieldGuid, _TEST_FIELD_VALUE);
 			_objectManager.Setup(x => x.QueryAsync(_TEST_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, 1)).ReturnsAsync(result);
 
-			IConfiguration cache = await Storage.Configuration.GetAsync(_sourceServiceFactoryForAdmin.Object, _syncJobParameters, _syncLog, _semaphoreSlim.Object).ConfigureAwait(false);
+			IConfiguration cache = await Sync.Storage.Configuration.GetAsync(_sourceServiceFactoryForAdmin.Object, _syncJobParameters, _syncLog, _semaphoreSlim.Object).ConfigureAwait(false);
 
 			// ACT
 			cache.Dispose();

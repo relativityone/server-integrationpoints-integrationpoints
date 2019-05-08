@@ -15,6 +15,7 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
+using Relativity.Sync.Telemetry;
 using Relativity.Sync.Tests.Common;
 
 namespace Relativity.Sync.Tests.Integration
@@ -94,6 +95,9 @@ namespace Relativity.Sync.Tests.Integration
 			var correlationId = new CorrelationId(_correlationId);
 			containerBuilder.RegisterInstance(correlationId).As<CorrelationId>();
 			containerBuilder.RegisterInstance(_logger).As<ISyncLog>();
+
+			var syncMetrics = new Mock<ISyncMetrics>();
+			containerBuilder.RegisterInstance(syncMetrics.Object).As<ISyncMetrics>();
 
 			IContainer container = containerBuilder.Build();
 			_executor = container.Resolve<IExecutor<ISourceWorkspaceTagsCreationConfiguration>>();

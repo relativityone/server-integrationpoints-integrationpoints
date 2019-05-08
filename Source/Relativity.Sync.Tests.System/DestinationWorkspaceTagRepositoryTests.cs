@@ -10,6 +10,7 @@ using Relativity.Sync.Executors;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Helpers;
+using Relativity.Sync.Telemetry;
 using Relativity.Sync.Tests.System.Stubs;
 
 namespace Relativity.Sync.Tests.System
@@ -51,7 +52,8 @@ namespace Relativity.Sync.Tests.System
 			var repository = new DestinationWorkspaceTagRepository(new SourceServiceFactoryStub(ServiceFactory),
 				new FederatedInstance(),
 				new TagNameFormatter(new EmptyLogger()),
-				new EmptyLogger());
+				new EmptyLogger(),
+				new SyncMetrics(Enumerable.Empty<ISyncMetricsSink>(), new CorrelationId("SystemTests")));
 
 			IList<TagDocumentsResult> results = await repository.TagDocumentsAsync(configuration, documentsToTag, CancellationToken.None).ConfigureAwait(false);
 
