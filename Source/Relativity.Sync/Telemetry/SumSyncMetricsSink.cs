@@ -1,5 +1,6 @@
 ﻿using System;
 using Relativity.API;
+using Relativity.Services.Exceptions;
 using Relativity.Telemetry.Services.Metrics;
 
 namespace Relativity.Sync.Telemetry
@@ -23,10 +24,19 @@ namespace Relativity.Sync.Telemetry
 		/// <inheritdoc />
 		public void Log(Metric metric)
 		{
-			using (IMetricsManager metricManager = _servicesManager.CreateProxy<IMetricsManager>(ExecutionIdentity.System))
+			try
 			{
-				LogSumMetric(metricManager, metric);
+				using (IMetricsManager metricManager = _servicesManager.CreateProxy<IMetricsManager>(ExecutionIdentity.System))
+				{
+					LogSumMetric(metricManager, metric);
+				}
 			}
+#pragma warning disable CA1031 // Modify 'Log' to catch a more specific exception type, or rethrow the exception.
+			catch (Exception e)
+			{
+				_logger.LogDebug(e, "Logging to SUM failed");
+			}
+#pragma warning disable CA1031
 		}
 
 		private void LogSumMetric(IMetricsManager metricsManager, Metric metric)
