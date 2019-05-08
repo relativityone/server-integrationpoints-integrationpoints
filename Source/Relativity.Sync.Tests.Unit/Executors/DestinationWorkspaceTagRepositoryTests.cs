@@ -14,6 +14,7 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
+using Relativity.Sync.Telemetry;
 
 namespace Relativity.Sync.Tests.Unit.Executors
 {
@@ -23,6 +24,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private Mock<IFederatedInstance> _federatedInstance;
 		private Mock<ITagNameFormatter> _tagNameFormatter;
 		private Mock<IObjectManager> _objectManager;
+		private Mock<ISyncMetrics> _syncMetrics;
 
 		private ISyncLog _syncLog;
 		private CancellationToken _token;
@@ -52,8 +54,9 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_tagNameFormatter = new Mock<ITagNameFormatter>();
 			_tagNameFormatter.Setup(x => x.FormatWorkspaceDestinationTagName(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>())).Returns("foo bar");
 			serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
+			_syncMetrics = new Mock<ISyncMetrics>();
 
-			_sut = new DestinationWorkspaceTagRepository(serviceFactory.Object, _federatedInstance.Object, _tagNameFormatter.Object, _syncLog);
+			_sut = new DestinationWorkspaceTagRepository(serviceFactory.Object, _federatedInstance.Object, _tagNameFormatter.Object, _syncLog, _syncMetrics.Object);
 		}
 
 		[Test]
@@ -300,6 +303,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		public async Task ItShouldReportFailureWhenExceptionThrownTryingToTagDocuments()
 		{
 			// Arrange
+			const int expectedTotalObjectsUpdated = 0;
 			var synchronizationConfiguration = new Mock<ISynchronizationConfiguration>(MockBehavior.Loose);
 			int[] testArtifactIds = { 1 };
 
@@ -312,21 +316,26 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			// Assert
 			CollectionAssert.IsNotEmpty(actualResult);
 			Assert.IsFalse(actualResult[0].Success);
-			Assert.AreEqual(0, actualResult[0].TotalObjectsUpdated);
+			Assert.AreEqual(expectedTotalObjectsUpdated, actualResult[0].TotalObjectsUpdated);
 			CollectionAssert.AreEqual(testArtifactIds, actualResult[0].FailedDocumentArtifactIds);
+
+			_syncMetrics.Verify(x => x.GaugeOperation(It.IsAny<string>(), It.Is<ExecutionStatus>(y => y == ExecutionStatus.None), It.Is<long>(y => y == expectedTotalObjectsUpdated), It.IsAny<string>(),
+				It.IsAny<Dictionary<string, object>>()));
+			_syncMetrics.Verify(x => x.TimedOperation(It.IsAny<string>(), It.Is<ExecutionStatus>(y => y == ExecutionStatus.None), It.IsAny<Dictionary<string, object>>()), Times.Once);
 		}
 
 		[Test]
 		public async Task ItShouldReportFailureWhenSomeDocumentsAreTagged()
 		{
 			// Arrange
+			const int expectedTotalObjectsUpdated = 1;
 			var synchronizationConfiguration = new Mock<ISynchronizationConfiguration>(MockBehavior.Loose);
 			int[] testArtifactIds = { 1, 0 };
 			var testMassUpdateResult = new MassUpdateResult
 			{
 				Message = "Failed completing update query.",
 				Success = false,
-				TotalObjectsUpdated = 1
+				TotalObjectsUpdated = expectedTotalObjectsUpdated
 			};
 
 			_objectManager.Setup(x => x.UpdateAsync(It.IsAny<int>(), It.IsAny<MassUpdateByObjectIdentifiersRequest>(), It.IsAny<MassUpdateOptions>(), It.IsAny<CancellationToken>()))
@@ -338,8 +347,12 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			// Assert
 			CollectionAssert.IsNotEmpty(actualResult);
 			Assert.IsFalse(actualResult[0].Success);
-			Assert.AreEqual(1, actualResult[0].TotalObjectsUpdated);
+			Assert.AreEqual(expectedTotalObjectsUpdated, actualResult[0].TotalObjectsUpdated);
 			CollectionAssert.AreEqual(new[] { 0 }, actualResult[0].FailedDocumentArtifactIds);
+
+			_syncMetrics.Verify(x => x.GaugeOperation(It.IsAny<string>(), It.Is<ExecutionStatus>(y => y == ExecutionStatus.None), It.Is<long>(y => y == expectedTotalObjectsUpdated), It.IsAny<string>(),
+				It.IsAny<Dictionary<string, object>>()));
+			_syncMetrics.Verify(x => x.TimedOperation(It.IsAny<string>(), It.Is<ExecutionStatus>(y => y == ExecutionStatus.None), It.IsAny<Dictionary<string, object>>()), Times.Once);
 		}
 
 		[Test]
@@ -358,6 +371,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Assert.AreEqual(testArtifactIds.Length, actualResult[0].TotalObjectsUpdated);
 			Assert.AreEqual("A call to the Mass Update API was not made as there are no objects to update.", actualResult[0].Message);
 			CollectionAssert.IsEmpty(actualResult[0].FailedDocumentArtifactIds);
+
+			_syncMetrics.Verify(x => x.GaugeOperation(It.IsAny<string>(), It.Is<ExecutionStatus>(y => y == ExecutionStatus.None), It.IsAny<int>(), It.IsAny<string>(),
+				It.IsAny<Dictionary<string, object>>()), Times.Never);
+			_syncMetrics.Verify(x => x.TimedOperation(It.IsAny<string>(), It.Is<ExecutionStatus>(y => y == ExecutionStatus.None), It.IsAny<Dictionary<string, object>>()), Times.Never);
 
 			_objectManager.Verify(x => x.UpdateAsync(
 				It.IsAny<int>(),
@@ -403,9 +420,18 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Assert.AreEqual(firstBatchSize, actualResult[0].TotalObjectsUpdated);
 			CollectionAssert.IsEmpty(actualResult[0].FailedDocumentArtifactIds);
 
+			_syncMetrics.Verify(x => x.GaugeOperation(It.IsAny<string>(), It.Is<ExecutionStatus>(y => y == ExecutionStatus.None), It.Is<long>(y => y == firstBatchSize), It.IsAny<string>(),
+				It.IsAny<Dictionary<string, object>>()));
+
 			Assert.IsTrue(actualResult[1].Success);
 			Assert.AreEqual(secondBatchSize, actualResult[1].TotalObjectsUpdated);
 			CollectionAssert.IsEmpty(actualResult[1].FailedDocumentArtifactIds);
+
+			_syncMetrics.Verify(x => x.GaugeOperation(It.IsAny<string>(), It.Is<ExecutionStatus>(y => y == ExecutionStatus.None), It.Is<long>(y => y == secondBatchSize), It.IsAny<string>(),
+				It.IsAny<Dictionary<string, object>>()));
+
+			_syncMetrics.Verify(x => x.TimedOperation(It.IsAny<string>(), It.Is<ExecutionStatus>(y => y == ExecutionStatus.None), It.IsAny<Dictionary<string, object>>()),
+				Times.Exactly(expectedNumberOfBatches));
 
 			_objectManager.Verify(x => x.UpdateAsync(It.IsAny<int>(), It.IsAny<MassUpdateByObjectIdentifiersRequest>(), It.IsAny<MassUpdateOptions>(), It.IsAny<CancellationToken>()),
 				Times.Exactly(expectedNumberOfBatches));
@@ -444,6 +470,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Assert.IsTrue(actualResult[0].Success);
 			Assert.AreEqual(testArtifactIds.Length, actualResult[0].TotalObjectsUpdated);
 			CollectionAssert.IsEmpty(actualResult[0].FailedDocumentArtifactIds);
+
+			_syncMetrics.Verify(x => x.GaugeOperation(It.IsAny<string>(), It.Is<ExecutionStatus>(y => y == ExecutionStatus.None), It.Is<long>(y => y == testArtifactIds.Length), It.IsAny<string>(),
+				It.IsAny<Dictionary<string, object>>()));
+			_syncMetrics.Verify(x => x.TimedOperation(It.IsAny<string>(), It.Is<ExecutionStatus>(y => y == ExecutionStatus.None), It.IsAny<Dictionary<string, object>>()), Times.Once);
 
 			_objectManager.Verify(x => x.UpdateAsync(
 				It.Is<int>(w => w == testSourceWorkspaceArtifactId),

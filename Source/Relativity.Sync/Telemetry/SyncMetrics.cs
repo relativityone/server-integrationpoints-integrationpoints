@@ -56,5 +56,32 @@ namespace Relativity.Sync.Telemetry
 				sink.Log(metric);
 			}
 		}
+
+		/// <inheritdoc />
+		public IDisposable TimedOperation(string name, ExecutionStatus executionStatus, Dictionary<string, object> customData)
+		{
+			return new DisposableStopwatch(timeSpan => TimedOperation(name, timeSpan, executionStatus, customData));
+		}
+
+		/// <inheritdoc />
+		public IDisposable TimedOperation(string name, ExecutionStatus executionStatus)
+		{
+			return new DisposableStopwatch(timeSpan => TimedOperation(name, timeSpan, executionStatus));
+		}
+
+		/// <inheritdoc />
+		public void GaugeOperation(string name, ExecutionStatus status, long value, string unitOfMeasure, Dictionary<string, object> customData)
+		{
+			foreach (ISyncMetricsSink sink in _sinks)
+			{
+				Metric metric = Metric.GaugeOperation(name, status, _correlationId.Value, value, unitOfMeasure);
+				foreach (KeyValuePair<string, object> keyValuePair in customData)
+				{
+					metric.CustomData.Add(keyValuePair);
+				}
+
+				sink.Log(metric);
+			}
+		}
 	}
 }

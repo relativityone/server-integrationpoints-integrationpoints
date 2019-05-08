@@ -10,6 +10,7 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Telemetry;
 
 namespace Relativity.Sync.Executors
 {
@@ -21,6 +22,7 @@ namespace Relativity.Sync.Executors
 		private readonly ISourceServiceFactoryForUser _sourceServiceFactoryForUser;
 		private readonly ISyncLog _logger;
 		private readonly ITagNameFormatter _tagNameFormatter;
+		private readonly ISyncMetrics _syncMetrics;
 
 		private readonly Guid _destinationInstanceArtifactIdGuid = new Guid("323458DB-8A06-464B-9402-AF2516CF47E0");
 		private readonly Guid _destinationInstanceNameGuid = new Guid("909ADC7C-2BB9-46CA-9F85-DA32901D6554");
@@ -31,11 +33,13 @@ namespace Relativity.Sync.Executors
 		private readonly Guid _nameGuid = new Guid("155649C0-DB15-4EE7-B449-BFDF2A54B7B5");
 		private readonly Guid _objectTypeGuid = new Guid("3F45E490-B4CF-4C7D-8BB6-9CA891C0C198");
 
-		public DestinationWorkspaceTagRepository(ISourceServiceFactoryForUser sourceServiceFactoryForUser, IFederatedInstance federatedInstance, ITagNameFormatter tagNameFormatter, ISyncLog logger)
+		public DestinationWorkspaceTagRepository(ISourceServiceFactoryForUser sourceServiceFactoryForUser, IFederatedInstance federatedInstance, ITagNameFormatter tagNameFormatter,
+			ISyncLog logger, ISyncMetrics syncMetrics)
 		{
 			_sourceServiceFactoryForUser = sourceServiceFactoryForUser;
 			_federatedInstance = federatedInstance;
 			_logger = logger;
+			_syncMetrics = syncMetrics;
 			_tagNameFormatter = tagNameFormatter;
 		}
 
@@ -214,6 +218,8 @@ namespace Relativity.Sync.Executors
 		private async Task<TagDocumentsResult> TagDocumentsBatchAsync(
 			ISynchronizationConfiguration synchronizationConfiguration, IList<int> batch, IEnumerable<FieldRefValuePair> fieldValues, MassUpdateOptions massUpdateOptions, CancellationToken token)
 		{
+			var metricsCustomData = new Dictionary<string, object>() { { "batchSize", batch.Count } };
+
 			var updateByIdentifiersRequest = new MassUpdateByObjectIdentifiersRequest
 			{
 				Objects = ConvertArtifactIdsToObjectRefs(batch),
@@ -223,9 +229,12 @@ namespace Relativity.Sync.Executors
 			TagDocumentsResult result;
 			try
 			{
+				using (_syncMetrics.TimedOperation("Relativity.Sync.TagDocuments.SourceUpdate.Time", ExecutionStatus.None, metricsCustomData))
 				using (var objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 				{
-					MassUpdateResult updateResult = await objectManager.UpdateAsync(synchronizationConfiguration.SourceWorkspaceArtifactId, updateByIdentifiersRequest, massUpdateOptions, token).ConfigureAwait(false);
+					MassUpdateResult updateResult = await objectManager
+						.UpdateAsync(synchronizationConfiguration.SourceWorkspaceArtifactId, updateByIdentifiersRequest,
+							massUpdateOptions, token).ConfigureAwait(false);
 					result = GenerateTagDocumentsResult(updateResult, batch);
 				}
 			}
@@ -239,6 +248,9 @@ namespace Relativity.Sync.Executors
 					synchronizationConfiguration.SourceWorkspaceArtifactId, synchronizationConfiguration.DestinationWorkspaceTagArtifactId, synchronizationConfiguration.JobHistoryTagArtifactId);
 				result = new TagDocumentsResult(batch, exceptionMessage, false, 0);
 			}
+
+			_syncMetrics.GaugeOperation("Relativity.Sync.TagDocuments.SourceUpdate.Count", ExecutionStatus.None, result.TotalObjectsUpdated, "document(s)", metricsCustomData);
+
 			return result;
 		}
 
