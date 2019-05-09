@@ -30,7 +30,6 @@
 		/// </summary>
 		public int WorkspaceArtifactId { get; }
 
-
 		/// <inheritdoc />
 		public CreateProgressDto(string name, int order, SyncJobStatus status, int syncConfigurationArtifactId, int workspaceArtifactId)
 		{
