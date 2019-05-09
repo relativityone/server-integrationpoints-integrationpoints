@@ -13,7 +13,7 @@ namespace Relativity.Sync.Tests.Common
 	{
 		public List<ProgressStub> ProgressObjects { get; } = new List<ProgressStub>();
 
-		public Task<IProgress> CreateAsync(int workspaceArtifactId, int syncConfigurationArtifactId, string name, int order, string status)
+		public Task<IProgress> CreateAsync(int workspaceArtifactId, int syncConfigurationArtifactId, string name, int order, SyncJobStatus status)
 		{
 			var newProgressObject = new ProgressStub(name)
 			{
