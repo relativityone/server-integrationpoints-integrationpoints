@@ -7,7 +7,6 @@ namespace Relativity.Sync
 	/// </summary>
 	public enum SyncJobStatus
 	{
-
 		/// <summary>
 		/// The sync job is in a newly created state with no work executed.
 		/// </summary>
