@@ -87,6 +87,7 @@ namespace Relativity.Sync.Tests.Unit
 			// ACT
 			using (_instance.TimedOperation(_NAME, executionStatus))
 			{
+				// nothing to do here, testing dispose method
 			}
 
 			// ASSERT
