@@ -63,12 +63,12 @@ namespace Relativity.Sync.Executors
 			importJob.Settings.SendEmailOnLoadCompletion = configuration.SendEmails;
 			importJob.Settings.OverwriteMode = _overwriteModeDictionary[configuration.ImportOverwriteMode];
 			importJob.Settings.OverlayBehavior = _overlayBehaviorDictionary[configuration.FieldOverlayBehavior];
-			importJob.Settings.CaseArtifactId = configuration.SourceWorkspaceArtifactId; // ?
-			importJob.Settings.NativeFileCopyMode = NativeFileCopyModeEnum.CopyFiles; // ?
-			importJob.Settings.ArtifactTypeId = (int)ArtifactType.Document; // ?
-			importJob.Settings.FileSizeMapped = true; // ?
-			importJob.Settings.DisableNativeValidation = true;
+			importJob.Settings.CaseArtifactId = configuration.SourceWorkspaceArtifactId;
 			importJob.Settings.DestinationFolderArtifactID = configuration.DestinationFolderArtifactId;
+			importJob.Settings.NativeFileCopyMode = NativeFileCopyModeEnum.CopyFiles;
+			importJob.Settings.ArtifactTypeId = (int)ArtifactType.Document;
+			importJob.Settings.FileSizeMapped = true;
+			importJob.Settings.DisableNativeValidation = true;
 
 			importJob.Settings.BulkLoadFileFieldDelimiter = "";
 			importJob.Settings.NativeFilePathSourceFieldName = "";
@@ -78,6 +78,8 @@ namespace Relativity.Sync.Executors
 			importJob.Settings.FolderPathSourceFieldName = "";
 			importJob.Settings.OIFileIdColumnName = "";
 			importJob.Settings.OIFileTypeColumnName = "";
+			importJob.Settings.ParentObjectIdSourceFieldName = "";
+			importJob.Settings.SelectedIdentifierFieldName = "";
 			importJob.Settings.OIFileIdMapped = true;
 			importJob.Settings.DisableExtractedTextFileLocationValidation = true;
 
@@ -86,7 +88,6 @@ namespace Relativity.Sync.Executors
 			importJob.Settings.DisableNativeLocationValidation = true;
 			importJob.Settings.DisableControlNumberCompatibilityMode = false;
 			importJob.Settings.Billable = true;
-			importJob.Settings.ParentObjectIdSourceFieldName = "";
 			importJob.Settings.ObjectFieldIdListContainsArtifactId = null;
 			importJob.Settings.IdentityFieldId = 0;
 			importJob.Settings.ExtractedTextFieldContainsFilePath = false;
@@ -94,6 +95,7 @@ namespace Relativity.Sync.Executors
 			importJob.Settings.DisableExtractedTextFileLocationValidation = true;
 			importJob.Settings.AuditLevel = kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel.FullAudit;
 			importJob.Settings.CopyFilesToDocumentRepository = false;
+			importJob.Settings.LoadImportedFullTextFromServer = false;
 
 			bool extractedTextFieldContainsFilePath = false;
 			if (extractedTextFieldContainsFilePath)
@@ -101,10 +103,7 @@ namespace Relativity.Sync.Executors
 				importJob.Settings.ExtractedTextEncoding = Encoding.Unicode;
 				importJob.Settings.LongTextColumnThatContainsPathToFullText = "";
 			}
-
-			importJob.Settings.LoadImportedFullTextFromServer = false;
-			importJob.Settings.SelectedIdentifierFieldName = "";
-
+			
 			return importJob;
 		}
 	}

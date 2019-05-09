@@ -44,7 +44,7 @@ namespace Relativity.Sync.Executors
 		public async Task RunAsync(CancellationToken token)
 		{
 			// TODO how to cancel IAPI job?
-			_importBulkArtifactJob.Execute();
+			await Task.Run(_importBulkArtifactJob.Execute, token).ConfigureAwait(false);
 			await _semaphoreSlim.WaitAsync(token).ConfigureAwait(false);
 
 			if (!_jobCompletedSuccessfully)
