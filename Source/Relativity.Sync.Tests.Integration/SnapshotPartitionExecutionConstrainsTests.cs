@@ -129,7 +129,8 @@ namespace Relativity.Sync.Tests.Integration
 							},
 							new FieldValuePair
 							{
-								Field = new Field{ Guids = new List<Guid>{_statusGuid}}
+								Field = new Field{ Guids = new List<Guid>{_statusGuid}},
+								Value = "New"
 							},
 							new FieldValuePair
 							{

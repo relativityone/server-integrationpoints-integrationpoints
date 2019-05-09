@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using kCura.Utility;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
@@ -68,11 +69,12 @@ namespace Relativity.Sync.Storage
 			Progress = progress;
 		}
 
-		public string Status { get; private set; }
+		public BatchStatus Status { get; private set; }
 
-		public async Task SetStatusAsync(string status)
+		public async Task SetStatusAsync(BatchStatus status)
 		{
-			await UpdateFieldValue(StatusGuid, status).ConfigureAwait(false);
+			string statusDescription = status.GetDescription();
+			await UpdateFieldValue(StatusGuid, statusDescription).ConfigureAwait(false);
 			Status = status;
 		}
 
@@ -227,7 +229,7 @@ namespace Relativity.Sync.Storage
 		{
 			TotalItemsCount = (int) relativityObject[TotalItemsCountGuid].Value;
 			StartingIndex = (int) relativityObject[StartingIndexGuid].Value;
-			Status = (string) relativityObject[StatusGuid].Value;
+			Status = ((string) relativityObject[StatusGuid].Value).GetEnumFromDescription<BatchStatus>();
 			FailedItemsCount = (int) (relativityObject[FailedItemsCountGuid].Value ?? default(int));
 			TransferredItemsCount = (int) (relativityObject[TransferredItemsCountGuid].Value ?? default(int));
 			Progress = decimal.ToDouble((decimal?) relativityObject[ProgressGuid].Value ?? default(decimal));
