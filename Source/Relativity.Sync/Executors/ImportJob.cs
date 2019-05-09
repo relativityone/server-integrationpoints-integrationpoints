@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Storage;
@@ -22,8 +23,14 @@ namespace Relativity.Sync.Executors
 
 			_importBulkArtifactJob.OnComplete += HandleComplete;
 			_importBulkArtifactJob.OnFatalException += HandleFatalException;
+			_importBulkArtifactJob.OnError += HandleItemLevelError;
 
 			batchProgressHandlerFactory.CreateBatchProgressHandler(batch, _importBulkArtifactJob);
+		}
+
+		private void HandleItemLevelError(IDictionary row)
+		{
+			// TODO
 		}
 
 		private void HandleFatalException(JobReport jobReport)
@@ -43,7 +50,8 @@ namespace Relativity.Sync.Executors
 
 		public async Task RunAsync(CancellationToken token)
 		{
-			// TODO how to cancel IAPI job?
+			token.ThrowIfCancellationRequested();
+
 			await Task.Run(_importBulkArtifactJob.Execute, token).ConfigureAwait(false);
 			await _semaphoreSlim.WaitAsync(token).ConfigureAwait(false);
 
