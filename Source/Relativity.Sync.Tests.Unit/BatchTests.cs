@@ -91,13 +91,14 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			const int totalItemsCount = 1123;
 			const int startingIndex = 532;
-			const string status = "status 2";
+			const string statusDescription = "Completed With Errors";
+			const BatchStatus status = BatchStatus.CompletedWithErrors;
 			const int failedItemsCount = 111;
 			const int transferredItemsCount = 222;
 			const double progress = 3.1;
 			const string lockedBy = "id 2";
 
-			ReadResult readResult = PrepareReadResult(totalItemsCount, startingIndex, status, failedItemsCount, transferredItemsCount, new decimal(progress), lockedBy);
+			ReadResult readResult = PrepareReadResult(totalItemsCount, startingIndex, statusDescription, failedItemsCount, transferredItemsCount, new decimal(progress), lockedBy);
 
 			_objectManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<ReadRequest>())).ReturnsAsync(readResult);
 
@@ -121,13 +122,13 @@ namespace Relativity.Sync.Tests.Unit
 		public async Task ItShouldHandleNullValues()
 		{
 			// total items count and starting index are set during creation and cannot be modified
-			const string status = null;
+			const BatchStatus status = BatchStatus.Started;
 			int? failedItemsCount = null;
 			int? transferredItemsCount = null;
 			decimal? progress = null;
 			const string lockedBy = null;
 
-			ReadResult readResult = PrepareReadResult(status: status, failedItemsCount: failedItemsCount, transferredItemsCount: transferredItemsCount, progress: progress, lockedBy: lockedBy);
+			ReadResult readResult = PrepareReadResult(failedItemsCount: failedItemsCount, transferredItemsCount: transferredItemsCount, progress: progress, lockedBy: lockedBy);
 
 			_objectManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<ReadRequest>())).ReturnsAsync(readResult);
 
@@ -143,7 +144,7 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 #pragma warning disable RG2011 // Method Argument Count Analyzer
-		private static ReadResult PrepareReadResult(int totalItemsCount = 1, int startingIndex = 1, string status = "status", int? failedItemsCount = 1, int? transferredItemsCount = 1,
+		private static ReadResult PrepareReadResult(int totalItemsCount = 1, int startingIndex = 1, string status = "Started", int? failedItemsCount = 1, int? transferredItemsCount = 1,
 			decimal? progress = 1, string lockedBy = "id")
 		{
 			ReadResult readResult = new ReadResult
@@ -164,7 +165,7 @@ namespace Relativity.Sync.Tests.Unit
 			};
 		}
 
-		private static RelativityObject PrepareObject(int totalItemsCount = 1, int startingIndex = 1, string status = "status", int? failedItemsCount = 1, int? transferredItemsCount = 1,
+		private static RelativityObject PrepareObject(int totalItemsCount = 1, int startingIndex = 1, string status = "New", int? failedItemsCount = 1, int? transferredItemsCount = 1,
 			decimal? progress = 1, string lockedBy = "id")
 #pragma warning restore RG2011 // Method Argument Count Analyzer
 		{
@@ -333,7 +334,8 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public async Task ItShouldUpdateStatus()
 		{
-			const string status = "in progress";
+			const BatchStatus status = BatchStatus.InProgress;
+			const string expectedStatusDescription = "In Progress";
 
 			ReadResult readResult = PrepareReadResult();
 			_objectManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<ReadRequest>())).ReturnsAsync(readResult);
@@ -346,7 +348,7 @@ namespace Relativity.Sync.Tests.Unit
 			// ASSERT
 			batch.Status.Should().Be(status);
 
-			_objectManager.Verify(x => x.UpdateAsync(_WORKSPACE_ID, It.Is<UpdateRequest>(up => AssertUpdateRequest(up, StatusGuid, status))));
+			_objectManager.Verify(x => x.UpdateAsync(_WORKSPACE_ID, It.Is<UpdateRequest>(up => AssertUpdateRequest(up, StatusGuid, expectedStatusDescription))));
 		}
 
 		[Test]
@@ -418,7 +420,7 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public async Task ItShouldNotSetStatusWhenUpdateFails()
 		{
-			const string newValue = "completed";
+			const BatchStatus newValue = BatchStatus.Completed;
 
 			ReadResult readResult = PrepareReadResult();
 			_objectManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<ReadRequest>())).ReturnsAsync(readResult);
@@ -426,7 +428,7 @@ namespace Relativity.Sync.Tests.Unit
 
 			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
 
-			string oldValue = batch.Status;
+			BatchStatus oldValue = batch.Status;
 
 			// ACT
 			Func<Task> action = async () => await batch.SetStatusAsync(newValue).ConfigureAwait(false);
