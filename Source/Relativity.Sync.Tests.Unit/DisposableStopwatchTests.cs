@@ -1,5 +1,4 @@
 ﻿using System;
-using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Telemetry;
 
@@ -33,6 +32,7 @@ namespace Relativity.Sync.Tests.Unit
 			// ACT
 			using (new DisposableStopwatch(action))
 			{
+				// nothing to do, testing dispose method
 			}
 
 			// ASSERT

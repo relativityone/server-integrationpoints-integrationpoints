@@ -18,8 +18,6 @@ namespace Relativity.Sync.Tests.System
 	public class JobHistoryErrorRepositoryTests : SystemTest
 	{
 		private WorkspaceRef _workspace;
-		private ServicesManagerStub _servicesMgr;
-		private DynamicProxyFactoryStub _dynamicProxyFactoryStub;
 		private ISourceServiceFactoryForAdmin _sourceServiceFactoryForAdmin;
 
 		private readonly Guid _jobHistoryErrorObject = new Guid("17E7912D-4F57-4890-9A37-ABC2B8A37BDB");
@@ -33,9 +31,7 @@ namespace Relativity.Sync.Tests.System
 		public async Task SetUp()
 		{
 			_workspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
-			_servicesMgr = new ServicesManagerStub();
-			_dynamicProxyFactoryStub = new DynamicProxyFactoryStub();
-			_sourceServiceFactoryForAdmin = new ServiceFactoryForAdmin(_servicesMgr, _dynamicProxyFactoryStub);
+			_sourceServiceFactoryForAdmin = new ServiceFactoryForAdmin(new ServicesManagerStub(), new DynamicProxyFactoryStub());
 		}
 
 		[Test]
