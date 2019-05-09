@@ -26,7 +26,7 @@ namespace Relativity.Sync.Transfer
 			_folderPathRetriever = folderPathRetriever;
 		}
 
-		public async Task<DataTable> BuildAsync(RelativityObjectSlim[] batch)
+		public async Task<DataTable> BuildAsync(int workspaceArtifactId, RelativityObjectSlim[] batch)
 		{
 			DataTable data = new DataTable();
 
@@ -37,10 +37,7 @@ namespace Relativity.Sync.Transfer
 
 			if (_metadataMapping.DestinationFolderStructureBehavior == DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure)
 			{
-				IEnumerable<string> folderPaths = await _folderPathRetriever.GetFolderPathsAsync(batch.Select(x => x.ArtifactID)).ConfigureAwait(false);
-				artifactIdToFolderPath = batch.Select(x => x.ArtifactID)
-					.Zip(folderPaths, (id, path) => new KeyValuePair<int,string>(id, path))
-					.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+				artifactIdToFolderPath = await _folderPathRetriever.GetFolderPathsAsync(workspaceArtifactId, batch.Select(x => x.ArtifactID).ToList()).ConfigureAwait(false);
 			}
 			else
 			{

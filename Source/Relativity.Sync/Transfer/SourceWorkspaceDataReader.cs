@@ -58,7 +58,7 @@ namespace Relativity.Sync.Transfer
 				RelativityObjectSlim[] block = await objectManager.RetrieveResultsBlockFromExportAsync(_workspaceId, _runId, _resultsBlockSize, _currentIndex).ConfigureAwait(false);
 				_currentIndex += block.Length;
 
-				DataTable dt = await _tableBuilder.BuildAsync(block).ConfigureAwait(false);
+				DataTable dt = await _tableBuilder.BuildAsync(_workspaceId, block).ConfigureAwait(false);
 				_currentBatch = dt.CreateDataReader();
 			}
 		}
