@@ -31,11 +31,11 @@ namespace Relativity.Sync.Executors
 		public async Task<ExecutionResult> ExecuteAsync(IDataSourceSnapshotConfiguration configuration, CancellationToken token)
 		{
 			_logger.LogVerbose("Initializing export in workspace {workspaceId} with saved search {savedSearchId} and fields {fields}.", configuration.SourceWorkspaceArtifactId,
-				configuration.DataSourceArtifactId, configuration.FieldMappings);
+				configuration.DataSourceArtifactId);//, configuration.MetadataMapping.FieldMappings);
 
 			_logger.LogVerbose("Including following system fields to export {supportedByViewer}, {nativeType}.", _SUPPORTED_BY_VIEWER_FIELD_NAME, _RELATIVITY_NATIVE_TYPE_FIELD_NAME);
 
-			IEnumerable<FieldRef> fields = PrepareFieldsList(configuration);
+			IEnumerable<FieldRef> fields = null;// configuration.MetadataMapping.AsFieldRefs();
 
 			QueryRequest queryRequest = new QueryRequest
 			{
@@ -65,34 +65,6 @@ namespace Relativity.Sync.Executors
 			//however, order is the same as order of fields in QueryRequest when they are provided explicitly
 			await configuration.SetSnapshotDataAsync(results.RunID, results.RecordCount).ConfigureAwait(false);
 			return ExecutionResult.Success();
-		}
-
-		private IEnumerable<FieldRef> PrepareFieldsList(IDataSourceSnapshotConfiguration configuration)
-		{
-			foreach (FieldMap fieldMap in configuration.FieldMappings)
-			{
-				yield return new FieldRef
-				{
-					ArtifactID = fieldMap.SourceField.FieldIdentifier
-				};
-			}
-
-			yield return new FieldRef
-			{
-				Name = _SUPPORTED_BY_VIEWER_FIELD_NAME
-			};
-			yield return new FieldRef
-			{
-				Name = _RELATIVITY_NATIVE_TYPE_FIELD_NAME
-			};
-			if (configuration.DestinationFolderStructureBehavior == DestinationFolderStructureBehavior.ReadFromField)
-			{
-				_logger.LogVerbose("Including field {artifactId} used to retrieving destination folder structure.", configuration.FolderPathSourceFieldArtifactId);
-				yield return new FieldRef
-				{
-					ArtifactID = configuration.FolderPathSourceFieldArtifactId
-				};
-			}
 		}
 	}
 }

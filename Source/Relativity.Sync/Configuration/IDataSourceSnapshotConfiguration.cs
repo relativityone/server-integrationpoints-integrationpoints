@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Configuration
 {
@@ -12,6 +13,7 @@ namespace Relativity.Sync.Configuration
 		int DataSourceArtifactId { get; }
 
 		IList<FieldMap> FieldMappings { get; }
+		//MetadataMapping MetadataMapping { get; }
 
 		DestinationFolderStructureBehavior DestinationFolderStructureBehavior { get; }
 
