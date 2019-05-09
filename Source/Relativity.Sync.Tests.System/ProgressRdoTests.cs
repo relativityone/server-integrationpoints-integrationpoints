@@ -6,7 +6,6 @@ using Relativity.Services.Workspace;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Helpers;
-using Relativity.Sync.Tests.System.Stubs;
 
 namespace Relativity.Sync.Tests.System
 {
@@ -37,7 +36,7 @@ namespace Relativity.Sync.Tests.System
 		{
 			const string name = "name 1";
 			const int order = 5;
-			const string status = "status 1";
+			const SyncJobStatus status = SyncJobStatus.New;
 
 			// ACT
 			IProgress createdProgress = await _repository.CreateAsync(_workspaceId, _syncConfigurationArtifactId, name, order, status).ConfigureAwait(false);
@@ -54,11 +53,11 @@ namespace Relativity.Sync.Tests.System
 		{
 			const string name = "name 2";
 			const int order = 6;
-			const string status = "status 2";
+			const SyncJobStatus status = SyncJobStatus.InProgress;
 
 			const string message = "message";
 			Exception exception = new InvalidOperationException();
-			const string newStatus = "status 4";
+			const SyncJobStatus newStatus = SyncJobStatus.Cancelled;
 
 			IProgress createdProgress = await _repository.CreateAsync(_workspaceId, _syncConfigurationArtifactId, name, order, status).ConfigureAwait(false);
 

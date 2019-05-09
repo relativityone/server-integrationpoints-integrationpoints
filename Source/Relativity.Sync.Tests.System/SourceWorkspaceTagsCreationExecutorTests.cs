@@ -3,15 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Autofac;
 using NUnit.Framework;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Workspace;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.Common;
-using Relativity.Sync.Tests.Integration.Stubs;
 using Relativity.Sync.Tests.System.Helpers;
 
 namespace Relativity.Sync.Tests.System
@@ -51,7 +48,7 @@ namespace Relativity.Sync.Tests.System
 				JobArtifactId = jobHistoryArtifactId
 			};
 
-			ISyncJob syncJob = CreateSyncJob(configuration);
+			ISyncJob syncJob = SyncJobHelper.CreateWithMockedContainerExceptProvidedType<ISourceWorkspaceTagsCreationConfiguration>(configuration);
 
 			// ACT
 			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
@@ -81,7 +78,7 @@ namespace Relativity.Sync.Tests.System
 				JobArtifactId = jobHistoryArtifactId
 			};
 
-			ISyncJob syncJob = CreateSyncJob(configuration);
+			ISyncJob syncJob = SyncJobHelper.CreateWithMockedContainerExceptProvidedType<ISourceWorkspaceTagsCreationConfiguration>(configuration);
 
 			int destinationWorkspaceTagArtifactId =
 				await CreateDestinationWorkspaceTag(_sourceWorkspace.ArtifactID, "whatever", "Wrong Workspace Name", _destinationWorkspace.ArtifactID).ConfigureAwait(false);
@@ -102,24 +99,6 @@ namespace Relativity.Sync.Tests.System
 				.First(x => x.Field.Guids.Contains(_DESTINATION_WORKSPACE_JOB_HISTORY_FIELD_GUID)).Value;
 			Assert.AreEqual(1, relativityObjectValues.Count);
 			Assert.AreEqual(jobHistoryArtifactId, relativityObjectValues.First().ArtifactID);
-		}
-
-		private ISyncJob CreateSyncJob(ConfigurationStub configuration)
-		{
-			ContainerBuilder containerBuilder = new ContainerBuilder();
-
-			ContainerFactory factory = new ContainerFactory();
-			SyncJobParameters syncParameters = new SyncJobParameters(configuration.JobArtifactId, configuration.SourceWorkspaceArtifactId);
-			factory.RegisterSyncDependencies(containerBuilder, syncParameters, new SyncJobExecutionConfiguration(), new EmptyLogger());
-
-			new SystemTestsInstaller().Install(containerBuilder);
-
-			IntegrationTestsContainerBuilder.RegisterExternalDependenciesAsMocks(containerBuilder);
-			IntegrationTestsContainerBuilder.MockStepsExcept<ISourceWorkspaceTagsCreationConfiguration>(containerBuilder);
-
-			containerBuilder.RegisterInstance(configuration).AsImplementedInterfaces();
-
-			return containerBuilder.Build().Resolve<ISyncJob>();
 		}
 
 		private async Task<RelativityObject> QueryForCreatedTag(int destinationWorkspaceTagArtifactId)
