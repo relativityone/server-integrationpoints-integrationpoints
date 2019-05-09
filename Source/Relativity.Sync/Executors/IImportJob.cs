@@ -1,0 +1,10 @@
+﻿using System.Threading;
+using System.Threading.Tasks;
+
+namespace Relativity.Sync.Executors
+{
+	internal interface IImportJob
+	{
+		Task RunAsync(CancellationToken token);
+	}
+}

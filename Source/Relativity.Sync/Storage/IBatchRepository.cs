@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Relativity.Sync.Storage
 {
@@ -18,5 +19,10 @@ namespace Relativity.Sync.Storage
 		///     Returns batch with highest starting index. Null if no batches found
 		/// </summary>
 		Task<IBatch> GetLastAsync(int workspaceArtifactId, int syncConfigurationId);
+
+		/// <summary>
+		/// Returns all batches that has not been started yet.
+		/// </summary>
+		Task<IEnumerable<int>> GetAllNewBatchesIdsAsync(int workspaceArtifactId);
 	}
 }
