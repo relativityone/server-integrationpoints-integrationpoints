@@ -30,7 +30,6 @@ namespace Relativity.Sync.Tests.Common
 			TotalRecordsCount = (int)totalRecordsCount;
 		}
 
-		public string SourceWorkspaceTagName { get; set; }
 		public bool CreateSavedSearchForTags { get; set; }
 		public bool IsSavedSearchArtifactIdSet { get; set; }
 		public async Task SetSavedSearchInDestinationArtifactIdAsync(int artifactId)
