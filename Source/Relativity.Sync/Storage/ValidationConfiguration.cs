@@ -37,7 +37,7 @@ namespace Relativity.Sync.Storage
 		public IList<FieldMap> FieldMappings => _fieldMappings.GetFieldMappings();
 		public int FolderPathSourceFieldArtifactId => _cache.GetFieldValue<int>(FolderPathSourceFieldArtifactIdGuid);
 		public ImportOverwriteMode ImportOverwriteMode => (ImportOverwriteMode)(Enum.Parse(typeof(ImportOverwriteMode), _cache.GetFieldValue<string>(ImportOverwriteModeGuid)));
-		public FieldOverlayBehavior FieldOverlayBehavior => EnumExtensions.GetEnumFromDescription<FieldOverlayBehavior>(_cache.GetFieldValue<string>(FieldOverlayBehaviorGuid));
+		public FieldOverlayBehavior FieldOverlayBehavior => _cache.GetFieldValue<string>(FieldOverlayBehaviorGuid).GetEnumFromDescription<FieldOverlayBehavior>();
 		public DestinationFolderStructureBehavior DestinationFolderStructureBehavior =>
 			(DestinationFolderStructureBehavior)(Enum.Parse(typeof(DestinationFolderStructureBehavior), _cache.GetFieldValue<string>(DestinationFolderStructureBehaviorGuid)));
 	}

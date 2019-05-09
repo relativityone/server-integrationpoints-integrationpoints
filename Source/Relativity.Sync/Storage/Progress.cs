@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using kCura.Utility;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
@@ -21,16 +22,11 @@ namespace Relativity.Sync.Storage
 		private static readonly Guid MessageGuid = new Guid("2E296F79-1B81-4BF6-98AD-68DA13F8DA44");
 		private static readonly Guid ParentArtifactGuid = new Guid("E0188DD7-4B1B-454D-AFA4-3CCC7F9DC001");
 
-		private Progress(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int syncConfigurationArtifactId, string name, int order, string status)
+		private Progress(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int syncConfigurationArtifactId, string name, int order, SyncJobStatus status)
 		{
 			if (string.IsNullOrWhiteSpace(name))
 			{
 				throw new ArgumentNullException(nameof(name));
-			}
-
-			if (string.IsNullOrWhiteSpace(status))
-			{
-				throw new ArgumentNullException(nameof(status));
 			}
 
 			_serviceFactory = serviceFactory;
@@ -65,11 +61,12 @@ namespace Relativity.Sync.Storage
 
 		public int Order { get; private set; }
 
-		public string Status { get; private set; }
+		public SyncJobStatus Status { get; private set; }
 
-		public async Task SetStatusAsync(string status)
+		public async Task SetStatusAsync(SyncJobStatus status)
 		{
-			await UpdateFieldValue(StatusGuid, status).ConfigureAwait(false);
+			string description = status.GetDescription();
+			await UpdateFieldValue(StatusGuid, description).ConfigureAwait(false);
 			Status = status;
 		}
 
@@ -128,7 +125,7 @@ namespace Relativity.Sync.Storage
 							{
 								Guid = StatusGuid
 							},
-							Value = Status
+							Value = Status.GetDescription()
 						}
 					}
 				};
@@ -178,7 +175,7 @@ namespace Relativity.Sync.Storage
 
 				Name = (string) result.Object[NameGuid].Value;
 				Order = (int) result.Object[OrderGuid].Value;
-				Status = (string) result.Object[StatusGuid].Value;
+				Status = ((string) result.Object[StatusGuid].Value).GetEnumFromDescription<SyncJobStatus>();
 				Exception = (string) result.Object[ExceptionGuid].Value;
 				Message = (string) result.Object[MessageGuid].Value;
 			}
@@ -223,7 +220,7 @@ namespace Relativity.Sync.Storage
 					RelativityObject resultObject = result.Objects[0];
 					ArtifactId = resultObject.ArtifactID;
 					Order = (int) resultObject[OrderGuid].Value;
-					Status = (string) resultObject[StatusGuid].Value;
+					Status = ((string) resultObject[StatusGuid].Value).GetEnumFromDescription<SyncJobStatus>();
 					Exception = (string) resultObject[ExceptionGuid].Value;
 					Message = (string) resultObject[MessageGuid].Value;
 
@@ -243,11 +240,10 @@ namespace Relativity.Sync.Storage
 			}
 		}
 
-#pragma warning disable RG2011 // Method Argument Count Analyzer
-		public static async Task<IProgress> CreateAsync(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int syncConfigurationArtifactId, string name, int order, string status)
-#pragma warning restore RG2011 // Method Argument Count Analyzer
+		public static async Task<IProgress> CreateAsync(ISourceServiceFactoryForAdmin serviceFactory, CreateProgressDto createProgressDto)
 		{
-			Progress progress = new Progress(serviceFactory, workspaceArtifactId, syncConfigurationArtifactId, name, order, status);
+			Progress progress = new Progress(serviceFactory,
+				createProgressDto.WorkspaceArtifactId, createProgressDto.SyncConfigurationArtifactId, createProgressDto.Name, createProgressDto.Order, createProgressDto.Status);
 			await progress.CreateAsync().ConfigureAwait(false);
 			return progress;
 		}

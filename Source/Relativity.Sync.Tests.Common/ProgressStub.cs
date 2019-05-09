@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using IProgress = Relativity.Sync.Storage.IProgress;
+using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Tests.Common
 {
@@ -16,12 +16,12 @@ namespace Relativity.Sync.Tests.Common
 		public int ArtifactId { get; set; }
 		public string Name { get; set; }
 		public int Order { get; set; }
-		public string Status { get; set; }
+		public SyncJobStatus Status { get; set; }
 		public string Exception { get; set; }
 		public Exception ActualException { get; set; }
 		public string Message { get; set; }
 		public int SyncConfigurationArtifactId { get; set; }
-		public Task SetStatusAsync(string status)
+		public Task SetStatusAsync(SyncJobStatus status)
 		{
 			Status = status;
 			return Task.CompletedTask;
