@@ -2,10 +2,12 @@
 {
 	internal interface ISynchronizationConfiguration : IConfiguration
 	{
-		int SourceWorkspaceArtifactId { get; }
-
 		int DestinationWorkspaceTagArtifactId { get; }
 
 		int JobHistoryTagArtifactId { get; }
+
+		int SourceWorkspaceArtifactId { get; }
+
+		int SyncConfigurationArtifactId { get; }
 	}
 }
