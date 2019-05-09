@@ -5,7 +5,6 @@ using Moq;
 using Relativity.Services.Exceptions;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Unit.Stubs;
-using IProgress = Relativity.Sync.Storage.IProgress;
 
 namespace Relativity.Sync.Tests.Unit
 {
@@ -35,12 +34,12 @@ namespace Relativity.Sync.Tests.Unit
 			_progressRepository.ForCreate.Add(progress);
 
 			// ACT
-			SyncJobState state = new SyncJobState("FooBar", "It's happening!", null, null);
+			SyncJobState state = new SyncJobState("FooBar", SyncJobStatus.New, null, null);
 			_instance.Report(state);
 
 			// ASSERT
 			progress.Name.Should().Be("FooBar");
-			progress.Status.Should().Be("It's happening!");
+			progress.Status.Should().Be(SyncJobStatus.New);
 		}
 
 		[Test]
@@ -50,11 +49,11 @@ namespace Relativity.Sync.Tests.Unit
 			_progressRepository.ForQuery.Add(progress);
 			 
 			// ACT
-			SyncJobState state = new SyncJobState("FooBar", "It's happening!", "A problem happened", new InvalidOperationException());
+			SyncJobState state = new SyncJobState("FooBar", SyncJobStatus.Failed, "A problem happened", new InvalidOperationException());
 			_instance.Report(state);
 
 			// ASSERT
-			progress.Status.Should().Be("It's happening!");
+			progress.Status.Should().Be(SyncJobStatus.Failed);
 			progress.Message.Should().Be("A problem happened");
 			progress.ActualException.Should().BeOfType<InvalidOperationException>();
 		}
@@ -106,7 +105,7 @@ namespace Relativity.Sync.Tests.Unit
 				It.IsAny<int>(),
 				It.IsAny<string>(),
 				It.IsAny<int>(),
-				It.IsAny<string>())).Throws<ServiceException>();
+				It.IsAny<SyncJobStatus>())).Throws<ServiceException>();
 
 			// ACT
 			SyncJobState state = SyncJobState.Start("FooBar");
@@ -125,7 +124,7 @@ namespace Relativity.Sync.Tests.Unit
 			progressRepositoryMock.Setup(x => x.QueryAsync(It.IsAny<int>(),
 				It.IsAny<int>(),
 				It.IsAny<string>())).ReturnsAsync(progress.Object);
-			progress.Setup(x => x.SetStatusAsync(It.IsAny<string>())).Throws<ServiceException>();
+			progress.Setup(x => x.SetStatusAsync(It.IsAny<SyncJobStatus>())).Throws<ServiceException>();
 
 			// ACT
 			SyncJobState state = SyncJobState.Start("FooBar");
