@@ -16,7 +16,7 @@ namespace Relativity.Sync.Tests.Unit.Stubs
 		public List<ProgressStub> ForGet { get; } = new List<ProgressStub>();
 		public List<ProgressStub> ForQuery { get; } = new List<ProgressStub>();
 
-		public Task<IProgress> CreateAsync(int workspaceArtifactId, int syncConfigurationArtifactId, string name, int order, string status)
+		public Task<IProgress> CreateAsync(int workspaceArtifactId, int syncConfigurationArtifactId, string name, int order, SyncJobStatus status)
 		{
 			ProgressStub progress = ForCreate.First();
 			ForCreate.RemoveAt(0);
