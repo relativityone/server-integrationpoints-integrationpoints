@@ -18,6 +18,7 @@ namespace Relativity.Sync.Executors
 		private readonly IImportAPI _importApi;
 		private readonly IDataReader _dataReader;
 		private readonly IBatchProgressHandlerFactory _batchProgressHandlerFactory;
+		private readonly IJobHistoryErrorRepository _jobHistoryErrorRepository;
 		private readonly ISemaphoreSlim _semaphoreSlim;
 		private readonly ISyncLog _logger;
 		
@@ -35,11 +36,13 @@ namespace Relativity.Sync.Executors
 			{ ImportOverwriteMode.OverlayOnly, OverwriteModeEnum.Overlay }
 		};
 
-		public ImportJobFactory(IImportAPI importApi, IDataReader dataReader, IBatchProgressHandlerFactory batchProgressHandlerFactory, ISemaphoreSlim semaphoreSlim, ISyncLog logger)
+		public ImportJobFactory(IImportAPI importApi, IDataReader dataReader, IBatchProgressHandlerFactory batchProgressHandlerFactory, 
+			IJobHistoryErrorRepository jobHistoryErrorRepository, ISemaphoreSlim semaphoreSlim, ISyncLog logger)
 		{
 			_importApi = importApi;
 			_dataReader = dataReader;
 			_batchProgressHandlerFactory = batchProgressHandlerFactory;
+			_jobHistoryErrorRepository = jobHistoryErrorRepository;
 			_semaphoreSlim = semaphoreSlim;
 			_logger = logger;
 		}
@@ -48,7 +51,11 @@ namespace Relativity.Sync.Executors
 		{
 			ImportBulkArtifactJob importBulkArtifactJob = CreateImportJob(configuration, batch.StartingIndex);
 			ImportBulkArtifactJobWrapper importBulkArtifactJobWrapper = new ImportBulkArtifactJobWrapper(importBulkArtifactJob);
-			return new ImportJob(batch, _batchProgressHandlerFactory, importBulkArtifactJobWrapper, _semaphoreSlim, _logger);
+
+			_batchProgressHandlerFactory.CreateBatchProgressHandler(batch, importBulkArtifactJob);
+
+			return new ImportJob(importBulkArtifactJobWrapper, _semaphoreSlim, _jobHistoryErrorRepository,
+				configuration.SourceWorkspaceArtifactId, configuration.JobHistoryTagArtifactId, _logger);
 		}
 
 		// TODO !!!
