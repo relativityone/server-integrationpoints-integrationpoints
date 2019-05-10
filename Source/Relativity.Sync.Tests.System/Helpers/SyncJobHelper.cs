@@ -19,6 +19,9 @@ namespace Relativity.Sync.Tests.System.Helpers
 			return Create(configuration, IntegrationTestsContainerBuilder.MockAllSteps, true);
 		}
 
+		/// <summary>
+		///     Use only in case you need to verify progress reporting
+		/// </summary>
 		public static ISyncJob CreateWithMockedAllSteps(ConfigurationStub configuration)
 		{
 			return Create(configuration, IntegrationTestsContainerBuilder.MockAllSteps, false);
