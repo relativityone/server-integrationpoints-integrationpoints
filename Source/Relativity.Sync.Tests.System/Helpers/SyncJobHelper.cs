@@ -9,17 +9,22 @@ namespace Relativity.Sync.Tests.System.Helpers
 {
 	internal static class SyncJobHelper
 	{
-		public static ISyncJob CreateWithMockedContainerExceptProvidedType<TStepConfiguration>(ConfigurationStub configuration)
+		public static ISyncJob CreateWithMockedProgressAndContainerExceptProvidedType<TStepConfiguration>(ConfigurationStub configuration)
 		{
-			return Create(configuration, IntegrationTestsContainerBuilder.MockStepsExcept<TStepConfiguration>);
+			return Create(configuration, IntegrationTestsContainerBuilder.MockStepsExcept<TStepConfiguration>, true);
+		}
+
+		public static ISyncJob CreateWithMockedProgressAndAllSteps(ConfigurationStub configuration)
+		{
+			return Create(configuration, IntegrationTestsContainerBuilder.MockAllSteps, true);
 		}
 
 		public static ISyncJob CreateWithMockedAllSteps(ConfigurationStub configuration)
 		{
-			return Create(configuration, IntegrationTestsContainerBuilder.MockAllSteps);
+			return Create(configuration, IntegrationTestsContainerBuilder.MockAllSteps, false);
 		}
 
-		private static ISyncJob Create(ConfigurationStub configuration, Action<ContainerBuilder> mockSteps)
+		private static ISyncJob Create(ConfigurationStub configuration, Action<ContainerBuilder> mockSteps, bool mockProgress)
 		{
 			ContainerBuilder containerBuilder = new ContainerBuilder();
 
@@ -34,6 +39,10 @@ namespace Relativity.Sync.Tests.System.Helpers
 			mockSteps.Invoke(containerBuilder);
 
 			containerBuilder.RegisterInstance(configuration).AsImplementedInterfaces();
+			if (mockProgress)
+			{
+				containerBuilder.RegisterInstance(Mock.Of<IProgress<SyncJobState>>()).As<IProgress<SyncJobState>>();
+			}
 
 			return containerBuilder.Build().Resolve<ISyncJob>();
 		}
