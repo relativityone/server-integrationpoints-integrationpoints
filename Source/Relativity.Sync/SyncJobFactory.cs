@@ -81,7 +81,7 @@ namespace Relativity.Sync
 
 			//telemetryManager.AddMetricProviders(new DefaultTelemetryMetricsProvider(servicesMgr, logger));
 
-			telemetryManager.InstallMetrics().GetAwaiter().GetResult();
+			telemetryManager.InstallMetrics().ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 	}
 }
