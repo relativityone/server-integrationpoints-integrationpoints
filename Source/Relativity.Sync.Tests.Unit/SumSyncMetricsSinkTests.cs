@@ -61,8 +61,7 @@ namespace Relativity.Sync.Tests.Unit
 			// ASSERT
 			VerifyEachExpectedMetricLogIsCalled(Times.Once());
 
-			const int callCount = 3;
-			VerifyMetricsManagerWasDisposed(Times.Exactly(callCount));
+			VerifyMetricsManagerWasDisposed(Times.Exactly(_expectedMetrics.Length));
 			VerifyLogErrorIsCalled(Times.Never());
 		}
 
@@ -80,9 +79,8 @@ namespace Relativity.Sync.Tests.Unit
 
 			// ASSERT
 			VerifyEachExpectedMetricLogIsCalled(Times.Never());
-
-			const int callCount = 3;
-			VerifyLogErrorIsCalled(Times.Exactly(callCount));
+			
+			VerifyLogErrorIsCalled(Times.Exactly(_expectedMetrics.Length));
 			VerifyMetricsManagerWasDisposed(Times.Never());
 		}
 
@@ -105,7 +103,7 @@ namespace Relativity.Sync.Tests.Unit
 			// ASSERT
 			VerifyEachExpectedMetricLogIsCalled(Times.Once());
 
-			const int callCount = 3;
+			int callCount = _expectedMetrics.Length;
 			VerifyMetricsManagerWasDisposed(Times.Exactly(callCount));
 			VerifyLogErrorIsCalled(Times.Exactly(callCount));
 			VerifyMetricsManagerWasDisposed(Times.Exactly(callCount));
