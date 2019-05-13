@@ -33,9 +33,16 @@ namespace Relativity.Sync
 
 		public async Task InstallMetrics()
 		{
-			CategoryRef category = await CreateAndEnableMetricCategoryIfNotExistAsync(_MY_NEW_CATEGORY_NAME).ConfigureAwait(false);
+			try
+			{
+				CategoryRef category = await CreateAndEnableMetricCategoryIfNotExistAsync(_MY_NEW_CATEGORY_NAME).ConfigureAwait(false);
 
-			_metricProviders.ForEach(item => item.AddMetricsForCategory(category));
+				_metricProviders.ForEach(item => item.AddMetricsForCategory(category));
+			}
+			catch (Exception e)
+			{
+				_logger.LogError(e, "Error occured when installing SUM metrics. SUM metrics might not be logged.");
+			}
 		}
 
 		private async Task<CategoryRef> CreateAndEnableMetricCategoryIfNotExistAsync(string categoryName)
