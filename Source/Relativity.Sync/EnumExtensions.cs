@@ -1,11 +1,11 @@
 ﻿using System;
 using System.ComponentModel;
 
-namespace Relativity.Sync.Executors.Validation
+namespace Relativity.Sync
 {
 	internal static class EnumExtensions
 	{
-		internal static T GetEnumFromDescription<T>(string description)
+		internal static T GetEnumFromDescription<T>(this string description)
 		{
 			Type type = typeof(T);
 			if (!type.IsEnum)

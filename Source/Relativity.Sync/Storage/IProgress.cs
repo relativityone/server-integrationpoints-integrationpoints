@@ -6,13 +6,14 @@ namespace Relativity.Sync.Storage
 	internal interface IProgress
 	{
 		int ArtifactId { get; }
-		string Name { get; }
-		int Order { get; }
-		string Status { get; }
 		string Exception { get; }
 		string Message { get; }
-		Task SetStatusAsync(string status);
+		string Name { get; }
+		int Order { get; }
+		SyncJobStatus Status { get; }
+
 		Task SetExceptionAsync(Exception exception);
 		Task SetMessageAsync(string message);
+		Task SetStatusAsync(SyncJobStatus status);
 	}
 }

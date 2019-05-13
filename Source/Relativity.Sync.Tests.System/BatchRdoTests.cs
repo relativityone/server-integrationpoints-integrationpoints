@@ -51,7 +51,7 @@ namespace Relativity.Sync.Tests.System
 			const int startingIndex = 5;
 			const int totalRecords = 10;
 
-			const string status = "status 1";
+			const BatchStatus status = BatchStatus.InProgress;
 			const int failedItemsCount = 8;
 			const string lockedBy = "locked by";
 			const double progress = 2.1;

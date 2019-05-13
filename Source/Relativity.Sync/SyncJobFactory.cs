@@ -21,25 +21,25 @@ namespace Relativity.Sync
 		}
 
 		/// <inheritdoc />
-		public ISyncJob Create(IContainer container, SyncJobParameters syncJobParameters)
+		public ISyncJob Create(IContainer container, SyncJobParameters syncJobParameters, RelativityServices relativityServices)
 		{
-			return Create(container, syncJobParameters, new SyncJobExecutionConfiguration(), new EmptyLogger());
+			return Create(container, syncJobParameters, relativityServices, new SyncJobExecutionConfiguration(), new EmptyLogger());
 		}
 
 		/// <inheritdoc />
-		public ISyncJob Create(IContainer container, SyncJobParameters syncJobParameters, ISyncLog logger)
+		public ISyncJob Create(IContainer container, SyncJobParameters syncJobParameters, RelativityServices relativityServices, ISyncLog logger)
 		{
-			return Create(container, syncJobParameters, new SyncJobExecutionConfiguration(), logger);
+			return Create(container, syncJobParameters, relativityServices, new SyncJobExecutionConfiguration(), logger);
 		}
 
 		/// <inheritdoc />
-		public ISyncJob Create(IContainer container, SyncJobParameters syncJobParameters, SyncJobExecutionConfiguration configuration)
+		public ISyncJob Create(IContainer container, SyncJobParameters syncJobParameters, RelativityServices relativityServices, SyncJobExecutionConfiguration configuration)
 		{
-			return Create(container, syncJobParameters, configuration, new EmptyLogger());
+			return Create(container, syncJobParameters, relativityServices, configuration, new EmptyLogger());
 		}
 
 		/// <inheritdoc />
-		public ISyncJob Create(IContainer container, SyncJobParameters syncJobParameters, SyncJobExecutionConfiguration configuration, ISyncLog logger)
+		public ISyncJob Create(IContainer container, SyncJobParameters syncJobParameters, RelativityServices relativityServices, SyncJobExecutionConfiguration configuration, ISyncLog logger)
 		{
 			if (container == null)
 			{
@@ -49,6 +49,11 @@ namespace Relativity.Sync
 			if (syncJobParameters == null)
 			{
 				throw new ArgumentNullException(nameof(syncJobParameters));
+			}
+
+			if (relativityServices == null)
+			{
+				throw new ArgumentNullException(nameof(relativityServices));
 			}
 
 			if (configuration == null)
@@ -63,7 +68,7 @@ namespace Relativity.Sync
 
 			LogWriter.SetFactory(new SyncLogWriterFactory(logger));
 
-			return new SyncJobInLifetimeScope(_containerFactory, container, syncJobParameters, configuration, logger);
+			return new SyncJobInLifetimeScope(_containerFactory, container, syncJobParameters, relativityServices, configuration, logger);
 		}
 	}
 }

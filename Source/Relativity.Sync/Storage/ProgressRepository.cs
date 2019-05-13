@@ -12,9 +12,10 @@ namespace Relativity.Sync.Storage
 			_serviceFactory = serviceFactory;
 		}
 
-		public async Task<IProgress> CreateAsync(int workspaceArtifactId, int syncConfigurationArtifactId, string name, int order, string status)
+		public async Task<IProgress> CreateAsync(int workspaceArtifactId, int syncConfigurationArtifactId, string name, int order, SyncJobStatus status)
 		{
-			return await Progress.CreateAsync(_serviceFactory, workspaceArtifactId, syncConfigurationArtifactId, name, order, status).ConfigureAwait(false);
+			var createProgressDto = new CreateProgressDto(name, order, status, syncConfigurationArtifactId, workspaceArtifactId);
+			return await Progress.CreateAsync(_serviceFactory, createProgressDto).ConfigureAwait(false);
 		}
 
 		public async Task<IProgress> GetAsync(int workspaceArtifactId, int artifactId)

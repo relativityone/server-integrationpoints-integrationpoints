@@ -157,6 +157,9 @@ namespace Relativity.Sync.Tests.Unit.Storage
 				case ErrorType.Item:
 					Assert.AreEqual(_expectedErrorTypeItem, actualErrorTypeChoice.Guid);
 					break;
+				default:
+					Assert.Fail();
+					break;
 			}
 
 			return true;

@@ -158,6 +158,8 @@ namespace Relativity.Sync.Storage
 				case ErrorStatus.Retried:
 					errorStatusChoice.Guid = _errorStatusRetried;
 					break;
+				default:
+					throw new ArgumentException($"Invalid Error Status {ErrorStatus}");
 			}
 
 			return errorStatusChoice;
@@ -175,6 +177,8 @@ namespace Relativity.Sync.Storage
 				case ErrorType.Item:
 					errorTypeChoice.Guid = _errorTypeItem;
 					break;
+				default:
+					throw new ArgumentException($"Invalid Error Type {ErrorType}");
 			}
 
 			return errorTypeChoice;

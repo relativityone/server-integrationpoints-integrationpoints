@@ -295,7 +295,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 		private static IEnumerable<TestCaseData> _queryTestCases => new[]
 		{
-			new TestCaseData(-1, $"NOT '{_DESTINATION_INSTANCE_ARTIFACT_ID_GUID}' ISSET").SetName($"{nameof(ItShouldBuildProperQueryForInstances)}_Local"),
+			new TestCaseData(-1, $"'{_DESTINATION_INSTANCE_ARTIFACT_ID_GUID}' == -1").SetName($"{nameof(ItShouldBuildProperQueryForInstances)}_Local"),
 			new TestCaseData(456, $"'{_DESTINATION_INSTANCE_ARTIFACT_ID_GUID}' == {456}").SetName($"{nameof(ItShouldBuildProperQueryForInstances)}_Federated"),
 		};
 
