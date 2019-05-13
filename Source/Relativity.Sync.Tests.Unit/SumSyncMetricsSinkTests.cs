@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using kCura.Vendor.Castle.Core.Internal;
 using Moq;
 using NUnit.Framework;
@@ -72,7 +72,7 @@ namespace Relativity.Sync.Tests.Unit
 					It.Is<long>(y => y.Equals(gaugeValue))
 				));
 
-			_logger.Verify(x => x.LogDebug(It.IsAny<string>(), It.IsAny<object[]>()), Times.Never);
+			_logger.Verify(x => x.LogError(It.IsAny<string>(), It.IsAny<object[]>()), Times.Never);
 		}
 	}
 }
