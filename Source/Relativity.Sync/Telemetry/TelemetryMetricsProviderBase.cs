@@ -46,6 +46,6 @@ namespace Relativity.Sync.Telemetry
 			}
 		}
 
-		protected abstract List<MetricIdentifier> GetMetricIdentifiers();
+		protected abstract IEnumerable<MetricIdentifier> GetMetricIdentifiers();
 	}
 }

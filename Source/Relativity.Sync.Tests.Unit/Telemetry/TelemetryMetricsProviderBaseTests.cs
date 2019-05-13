@@ -56,7 +56,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 			_metricIdentifierList = metricIdentifierList;
 
 			_telemetryMetricsProvider.Protected()
-				.Setup<List<MetricIdentifier>>("GetMetricIdentifiers")
+				.Setup<IEnumerable<MetricIdentifier>>("GetMetricIdentifiers")
 				.Returns(_metricIdentifierList);
 		}
 
