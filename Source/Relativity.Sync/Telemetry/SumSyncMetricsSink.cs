@@ -31,12 +31,10 @@ namespace Relativity.Sync.Telemetry
 					LogSumMetric(metricManager, metric);
 				}
 			}
-#pragma warning disable CA1031 // Modify 'Log' to catch a more specific exception type, or rethrow the exception.
 			catch (Exception e)
 			{
 				_logger.LogDebug(e, "Logging to SUM failed");
 			}
-#pragma warning disable CA1031
 		}
 
 		private void LogSumMetric(IMetricsManager metricsManager, Metric metric)
