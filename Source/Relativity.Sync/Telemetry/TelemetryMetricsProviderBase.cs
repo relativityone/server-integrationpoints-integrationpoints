@@ -11,6 +11,8 @@ namespace Relativity.Sync.Telemetry
 		private readonly IServicesMgr _servicesManager;
 		private readonly ISyncLog _logger;
 
+		protected abstract string ProviderName { get; }
+
 		protected TelemetryMetricsProviderBase(IServicesMgr servicesManager, ISyncLog logger)
 		{
 			_servicesManager = servicesManager;
@@ -38,10 +40,9 @@ namespace Relativity.Sync.Telemetry
 					}
 				}
 			}
-			catch (AggregateException ex)
+			catch (Exception e)
 			{
-				_logger.LogError(ex, "Exception occured when adding metrics to category");
-				//throw new AggregateException($"Failed to add telemetry metric identifiers for {ProviderName}!", ex.InnerException);
+				_logger.LogError(e, "Exception occured when adding metrics to category {categoryName} by provider {providerName}", category.Name, ProviderName);
 			}
 		}
 
