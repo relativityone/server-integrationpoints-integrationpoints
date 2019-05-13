@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Relativity.Sync
+namespace Relativity.Sync.Telemetry
 {
 	internal interface ITelemetryManager
 	{

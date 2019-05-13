@@ -2,7 +2,7 @@
 using Relativity.API;
 using Relativity.Services.InternalMetricsCollection;
 
-namespace Relativity.Sync
+namespace Relativity.Sync.Telemetry
 {
 	internal class DefaultTelemetryMetricsProvider : TelemetryMetricsProviderBase
 	{

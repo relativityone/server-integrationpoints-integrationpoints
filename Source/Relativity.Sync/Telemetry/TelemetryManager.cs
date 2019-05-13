@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Services.InternalMetricsCollection;
 
-namespace Relativity.Sync
+namespace Relativity.Sync.Telemetry
 {
 	internal sealed class TelemetryManager : ITelemetryManager
 	{
