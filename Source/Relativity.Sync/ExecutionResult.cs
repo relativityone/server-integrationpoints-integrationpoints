@@ -41,6 +41,15 @@ namespace Relativity.Sync
 		}
 
 		/// <summary>
+		/// Creates a <see cref="ExecutionResult"/> for a cancelled operation.
+		/// </summary>
+		/// <returns></returns>
+		public static ExecutionResult Canceled()
+		{
+			return new ExecutionResult(ExecutionStatus.Canceled, string.Empty, null);
+		}
+
+		/// <summary>
 		///     Status of the execution. <see cref="Exception"/> and <see cref="Message"/> will only have meaningful
 		///     values when this property is not <see cref="ExecutionStatus.Completed"/>.
 		/// </summary>

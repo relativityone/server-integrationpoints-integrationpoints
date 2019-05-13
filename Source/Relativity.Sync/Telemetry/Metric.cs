@@ -66,15 +66,7 @@ namespace Relativity.Sync.Telemetry
 		/// </summary>
 		public IDictionary<string, object> CustomData
 		{
-			get
-			{
-				if (_customData == null)
-				{
-					_customData = new Dictionary<string, object>();
-				}
-
-				return _customData;
-			}
+			get => _customData ?? (_customData = new Dictionary<string, object>());
 
 			set => _customData = value;
 		}

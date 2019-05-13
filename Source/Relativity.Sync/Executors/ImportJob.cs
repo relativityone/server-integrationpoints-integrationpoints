@@ -80,7 +80,7 @@ namespace Relativity.Sync.Executors
 			_jobHistoryErrorRepository.CreateAsync(_sourceWorkspaceArtifactId, jobError).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
-		private string GetValueOrNull(IDictionary row, string key)
+		private static string GetValueOrNull(IDictionary row, string key)
 		{
 			return row.Contains(key) ? row[key].ToString() : null;
 		}
@@ -94,8 +94,13 @@ namespace Relativity.Sync.Executors
 
 			if (!_jobCompletedSuccessfully)
 			{
-				throw new SyncException("Import job did not completed successfully.", _importApiException);
+				throw new SyncException("Fatal exception occurred in Import API.", _importApiException);
 			}
+		}
+
+		public void Dispose()
+		{
+			_semaphoreSlim?.Dispose();
 		}
 	}
 }
