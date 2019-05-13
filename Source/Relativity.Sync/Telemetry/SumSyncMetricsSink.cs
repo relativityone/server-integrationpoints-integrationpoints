@@ -1,6 +1,5 @@
 ﻿using System;
 using Relativity.API;
-using Relativity.Services.Exceptions;
 using Relativity.Telemetry.Services.Metrics;
 
 namespace Relativity.Sync.Telemetry
