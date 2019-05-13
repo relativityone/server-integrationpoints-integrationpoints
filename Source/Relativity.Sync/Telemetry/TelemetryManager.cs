@@ -9,8 +9,6 @@ namespace Relativity.Sync.Telemetry
 {
 	internal sealed class TelemetryManager : ITelemetryManager
 	{
-		private const string _MY_NEW_CATEGORY_NAME = "Relativity.Sync";
-
 		private readonly IServicesMgr _servicesManager;
 		private readonly ISyncLog _logger;
 		private readonly List<ITelemetryMetricProvider> _metricProviders;
@@ -35,7 +33,7 @@ namespace Relativity.Sync.Telemetry
 		{
 			try
 			{
-				CategoryRef category = await CreateAndEnableMetricCategoryIfNotExistAsync(_MY_NEW_CATEGORY_NAME).ConfigureAwait(false);
+				CategoryRef category = await CreateAndEnableMetricCategoryIfNotExistAsync(TelemetryConstants.TELEMETRY_CATEGORY).ConfigureAwait(false);
 
 				_metricProviders.ForEach(item => item.AddMetricsForCategory(category));
 			}
@@ -50,7 +48,7 @@ namespace Relativity.Sync.Telemetry
 			using (var manager = _servicesManager.CreateProxy<IInternalMetricsCollectionManager>(ExecutionIdentity.System))
 			{
 				List<CategoryTarget> categories = await manager.GetCategoryTargetsAsync().ConfigureAwait(false);
-				CategoryTarget newCategory = categories.FirstOrDefault(categoryTarget => categoryTarget.Category.Name.Equals(_MY_NEW_CATEGORY_NAME, StringComparison.OrdinalIgnoreCase));
+				CategoryTarget newCategory = categories.FirstOrDefault(categoryTarget => categoryTarget.Category.Name.Equals(TelemetryConstants.TELEMETRY_CATEGORY, StringComparison.OrdinalIgnoreCase));
 				CategoryRef categoryRef = newCategory?.Category;
 
 				if (categoryRef == null)
