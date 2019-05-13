@@ -20,17 +20,19 @@ namespace Relativity.Sync.Telemetry
 			_servicesManager = servicesManager;
 		}
 
-		private IMetricsManager CreateMetricsManager()
-		{
-			return _servicesManager.CreateProxy<IMetricsManager>(ExecutionIdentity.System);
-		}
-
 		/// <inheritdoc />
 		public void Log(Metric metric)
 		{
-			using (IMetricsManager metricManager = CreateMetricsManager())
+			try
 			{
-				LogSumMetric(metricManager, metric);
+				using (IMetricsManager metricsManager = _servicesManager.CreateProxy<IMetricsManager>(ExecutionIdentity.System))
+				{
+					LogSumMetric(metricsManager, metric);
+				}
+			}
+			catch (Exception e)
+			{
+				_logger.LogError(e, "Logging to SUM failed");
 			}
 		}
 
