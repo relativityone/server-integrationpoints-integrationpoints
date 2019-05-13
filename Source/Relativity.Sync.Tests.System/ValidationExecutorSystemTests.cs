@@ -65,7 +65,7 @@ namespace Relativity.Sync.Tests.System
 			};
 
 			// act
-			ISyncJob syncJob = SyncJobHelper.CreateWithMockedContainerExceptProvidedType<IValidationConfiguration>(configuration);
+			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IValidationConfiguration>(configuration);
 
 			// assert
 			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);

@@ -48,7 +48,7 @@ namespace Relativity.Sync.Tests.System
 				JobArtifactId = jobHistoryArtifactId
 			};
 
-			ISyncJob syncJob = SyncJobHelper.CreateWithMockedContainerExceptProvidedType<ISourceWorkspaceTagsCreationConfiguration>(configuration);
+			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<ISourceWorkspaceTagsCreationConfiguration>(configuration);
 
 			// ACT
 			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
@@ -78,7 +78,7 @@ namespace Relativity.Sync.Tests.System
 				JobArtifactId = jobHistoryArtifactId
 			};
 
-			ISyncJob syncJob = SyncJobHelper.CreateWithMockedContainerExceptProvidedType<ISourceWorkspaceTagsCreationConfiguration>(configuration);
+			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<ISourceWorkspaceTagsCreationConfiguration>(configuration);
 
 			int destinationWorkspaceTagArtifactId =
 				await CreateDestinationWorkspaceTag(_sourceWorkspace.ArtifactID, "whatever", "Wrong Workspace Name", _destinationWorkspace.ArtifactID).ConfigureAwait(false);
