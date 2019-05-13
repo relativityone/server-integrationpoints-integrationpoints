@@ -40,16 +40,11 @@ namespace Relativity.Sync
 			}
 			catch (AggregateException ex)
 			{
-				LogAddingMetricsError(ex);
-				//throw new Exception($"Failed to add telemetry metric identifiers for {ProviderName}!", ex.InnerException);
+				_logger.LogError(ex, "Exception occured when adding metrics to category");
+				//throw new AggregateException($"Failed to add telemetry metric identifiers for {ProviderName}!", ex.InnerException);
 			}
 		}
 
 		protected abstract List<MetricIdentifier> GetMetricIdentifiers();
-
-		private void LogAddingMetricsError(AggregateException aggregateException)
-		{
-			throw new NotImplementedException();
-		}
 	}
 }
