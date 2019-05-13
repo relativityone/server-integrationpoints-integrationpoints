@@ -6,12 +6,12 @@ using Relativity.Services.InternalMetricsCollection;
 
 namespace Relativity.Sync
 {
-	internal abstract class TelemetryMetricProviderBase : ITelemetryMetricProvider
+	internal abstract class TelemetryMetricsProviderBase : ITelemetryMetricProvider
 	{
 		private readonly IServicesMgr _servicesManager;
 		private readonly ISyncLog _logger;
 
-		protected TelemetryMetricProviderBase(IServicesMgr servicesManager, ISyncLog logger)
+		protected TelemetryMetricsProviderBase(IServicesMgr servicesManager, ISyncLog logger)
 		{
 			_servicesManager = servicesManager;
 			_logger = logger;
