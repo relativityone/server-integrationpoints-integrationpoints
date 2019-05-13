@@ -26,9 +26,9 @@ namespace Relativity.Sync.Telemetry
 		{
 			try
 			{
-				using (IMetricsManager metricManager = _servicesManager.CreateProxy<IMetricsManager>(ExecutionIdentity.System))
+				using (IMetricsManager metricsManager = _servicesManager.CreateProxy<IMetricsManager>(ExecutionIdentity.System))
 				{
-					LogSumMetric(metricManager, metric);
+					LogSumMetric(metricsManager, metric);
 				}
 			}
 			catch (Exception e)
