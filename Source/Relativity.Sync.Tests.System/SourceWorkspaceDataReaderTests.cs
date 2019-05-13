@@ -5,8 +5,10 @@ using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.System
 {
@@ -26,14 +28,6 @@ namespace Relativity.Sync.Tests.System
 		[Test]
 		public async Task ItShouldWork()
 		{
-			//const int numDocs = 2;
-			//int folderId = await Rdos.GetRootFolderInstance(ServiceFactory, _sourceWorkspaceArtifactId).ConfigureAwait(false);
-			//DocumentData data = DocumentData.GenerateDocumentsWithoutNatives(numDocs);
-			//ImportBulkArtifactJob job = ImportJobFactory.CreateNonNativesDocumentImportJob(_sourceWorkspaceArtifactId, folderId, data);
-			//ImportJobResult jobResult = await ImportJobExecutor.ExecuteAsync(job).ConfigureAwait(false);
-
-			//Assert.IsTrue(jobResult.Success);
-
 			const int sourceWorkspaceArtifactId = 1017928;
 			const int dataSourceArtifactId = 1038052;
 			var sourceServiceFactory = new SourceServiceFactoryStub(ServiceFactory);
@@ -71,13 +65,32 @@ namespace Relativity.Sync.Tests.System
 
 			Assert.AreEqual(ExecutionStatus.Completed, result.Status);
 
-			SourceWorkspaceDataReader dataReader = new SourceWorkspaceDataReader(sourceServiceFactory, sourceWorkspaceArtifactId, configuration.ExportRunId, 1, configuration.FieldMappings, new EmptyLogger());
+			const int resultsBlockSize = 100;
+			SourceWorkspaceDataReader dataReader = new SourceWorkspaceDataReader(sourceServiceFactory,
+				new BatchRepository(sourceServiceFactory), 
+				sourceWorkspaceArtifactId,
+				configuration.ExportRunId,
+				resultsBlockSize,
+				new MetadataMapping(configuration.DestinationFolderStructureBehavior, configuration.FolderPathSourceFieldArtifactId, configuration.FieldMappings.ToList()),
+				new FolderPathRetriever(sourceServiceFactory, new EmptyLogger()),
+				new NativeFileRepository(sourceServiceFactory),
+				new EmptyLogger());
 
-
+			ConsoleLogger logger = new ConsoleLogger();
 			while (dataReader.Read())
 			{
-				string controlNumber = (string)dataReader["Control Number"];
+				string controlNumber = (string) dataReader["Control Number"];
+				logger.LogInformation($"Control Number: {controlNumber}");
 				string extractedText = (string)dataReader["Extracted Text"];
+				logger.LogInformation($"Extracted Text: {extractedText}");
+				string nativeFileLocation = dataReader["NativeFileLocation"].ToString();
+				logger.LogInformation($"NativeFileLocation: {nativeFileLocation}");
+				long nativeFileSize = (long) dataReader["NativeFileSize"];
+				logger.LogInformation($"NativeFileSize: {nativeFileSize}");
+				string folderPath = (string) dataReader["FolderPath"];
+				logger.LogInformation($"FolderPath: {folderPath}");
+
+				logger.LogInformation("");
 			}
 		}
 	}

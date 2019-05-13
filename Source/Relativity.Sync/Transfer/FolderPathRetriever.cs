@@ -26,6 +26,11 @@ namespace Relativity.Sync.Transfer
 
 		public async Task<IDictionary<int, string>> GetFolderPathsAsync(int workspaceArtifactId, ICollection<int> documentArtifactIds)
 		{
+			if (documentArtifactIds == null || !documentArtifactIds.Any())
+			{
+				return new Dictionary<int, string>();
+			}
+
 			IDictionary<int, int> documentIdToFolderMap = await GetFolderIdsAsync(workspaceArtifactId, documentArtifactIds).ConfigureAwait(false);
 			IDictionary<int, string> folderIdToFolderNameMap = await GetFolderNamesAsync(workspaceArtifactId, documentIdToFolderMap.Values.Distinct()).ConfigureAwait(false);
 
@@ -39,13 +44,13 @@ namespace Relativity.Sync.Transfer
 				QueryRequest request = new QueryRequest
 				{
 					ObjectType = new ObjectTypeRef {ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID},
-					Condition = $"\"Artifact Id\" IN [{string.Join(" ,", documentArtifactIds)}]"
+					Condition = $"\"ArtifactID\" IN [{string.Join(" ,", documentArtifactIds)}]"
 				};
 				QueryResult result;
 				try
 				{
 					const int start = 0;
-					result = await objectManager.QueryAsync(workspaceArtifactId, request, start, documentArtifactIds.Count, new EmptyProgress<ProgressReport>()).ConfigureAwait(false);
+					result = await objectManager.QueryAsync(workspaceArtifactId, request, start, documentArtifactIds.Count).ConfigureAwait(false);
 				}
 				catch (ServiceException ex)
 				{

@@ -27,55 +27,101 @@ namespace Relativity.Sync.Transfer
 			DestinationFolderStructureBehavior = destinationFolderStructureBehavior;
 			_folderPathSourceFieldArtifactId = folderPathSourceFieldArtifactId;
 			FieldMappings = fieldMappings.AsReadOnly();
+
+			FolderPathFieldName = "FolderPath";
+			NativeFileLocationFieldName = "NativeFileLocation";
+			NativeFileSizeFieldName = "NativeFileSize";
+			NativeFileFilenameFieldName = "NativeFileFilename";
 		}
 
 		public IReadOnlyList<FieldMap> FieldMappings { get; }
 		public string FolderPathFieldName { get; }
-		public string NativeFilePathFieldName { get; }
+		public string NativeFileLocationFieldName { get; }
+		public string NativeFileSizeFieldName { get; }
+		public string NativeFileFilenameFieldName { get; }
 		public DestinationFolderStructureBehavior DestinationFolderStructureBehavior { get; }
-		// + other derived field names (native file type, etc.)?
 
 		/// <summary>
 		/// Field refs mapping to actual fields on the object type.
 		/// </summary>
-		public IEnumerable<FieldRef> GetFieldRefs()
+		public IEnumerable<FieldRef> GetDocumentFieldRefs()
 		{
-			foreach (FieldMap fieldMap in FieldMappings)
-			{
-				yield return new FieldRef { ArtifactID = fieldMap.SourceField.FieldIdentifier };
-			}
-
-			yield return new FieldRef { Name = _SUPPORTED_BY_VIEWER_FIELD_NAME };
-			yield return new FieldRef { Name = _RELATIVITY_NATIVE_TYPE_FIELD_NAME };
-
-			if (DestinationFolderStructureBehavior == DestinationFolderStructureBehavior.ReadFromField)
-			{
-				//_logger.LogVerbose("Including field {artifactId} used to retrieving destination folder structure.", _folderPathSourceFieldArtifactId);
-				yield return new FieldRef { ArtifactID = _folderPathSourceFieldArtifactId };
-			}
+			return GetDocumentFields().Select(FieldEntryToFieldRef);
 		}
 
 		/// <summary>
 		/// Columns for the DataTable to be passed to IAPI. This includes "real" fields (i.e. those mapping to an actual Field in Relativity)
 		/// and derived fields (e.g. native information, folder path (in some cases), etc.).
 		/// </summary>
-		public DataColumn[] GetColumnsForDataTable()
+		public DataColumn[] CreateDataTableColumns()
 		{
-			IEnumerable<DataColumn> fieldMappings = FieldMappings.Select(x => new DataColumn(x.SourceField.DisplayName));
-			IEnumerable<DataColumn> specialFieldMappings = GetSpecialFields();
-			return fieldMappings.Concat(specialFieldMappings).ToArray();
+			IEnumerable<FieldEntry> documentFields = GetDocumentFields();
+			IEnumerable<DataColumn> documentFieldColumns = documentFields.Select(x => new DataColumn(x.DisplayName));
+
+			IEnumerable<DataColumn> specialFieldColumns = GetSpecialFieldDataColumns();
+
+			return documentFieldColumns.Concat(specialFieldColumns).ToArray();
 		}
 
-		private IEnumerable<DataColumn> GetSpecialFields()
+		/// <summary>
+		/// Creates an object array out of a document's literal field values plus its special values.
+		/// </summary>
+		/// <param name="documentFieldValues">Values of a document's fields returned from an earlier read</param>
+		/// <param name="sourceWorkspaceFolderPath">Folder path of the document in its source workspace; will be used only if source folder path is being retained</param>
+		/// <param name="nativeFileInfo">Metadata about this object's native file. If it does not have a native, use <see cref="NativeFile.Empty"/>.</param>
+		/// <returns></returns>
+		public object[] CreateDataTableRow(IEnumerable<object> documentFieldValues, string sourceWorkspaceFolderPath, INativeFile nativeFileInfo)
 		{
-			yield return new DataColumn(_SUPPORTED_BY_VIEWER_FIELD_NAME); // ImportSettings.SupportedByViewerColumn
-			yield return new DataColumn(_RELATIVITY_NATIVE_TYPE_FIELD_NAME); // 
+			IEnumerable<object> specialFieldValues = GetSpecialFieldDataValues(sourceWorkspaceFolderPath, nativeFileInfo);
+
+			return documentFieldValues.Concat(specialFieldValues).ToArray();
+		}
+		
+		private static FieldRef FieldEntryToFieldRef(FieldEntry field)
+		{
+			return field.FieldIdentifier > 0
+				? new FieldRef { ArtifactID = field.FieldIdentifier }
+				: new FieldRef { Name = field.DisplayName };
+		}
+
+		private IEnumerable<DataColumn> GetSpecialFieldDataColumns()
+		{
+			if (DestinationFolderStructureBehavior == DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure)
+			{
+				yield return new DataColumn(FolderPathFieldName, typeof(string));
+			}
+
+			yield return new DataColumn(NativeFileLocationFieldName, typeof(string));
+			yield return new DataColumn(NativeFileSizeFieldName, typeof(long));
+			yield return new DataColumn(NativeFileFilenameFieldName, typeof(string));
+		}
+
+		private IEnumerable<FieldEntry> GetDocumentFields()
+		{
+			foreach (FieldMap fieldMap in FieldMappings)
+			{
+				yield return fieldMap.SourceField;
+			}
+
+			yield return new FieldEntry { DisplayName = _SUPPORTED_BY_VIEWER_FIELD_NAME, IsIdentifier = false };
+			yield return new FieldEntry { DisplayName = _RELATIVITY_NATIVE_TYPE_FIELD_NAME, IsIdentifier = false };
 
 			if (DestinationFolderStructureBehavior == DestinationFolderStructureBehavior.ReadFromField)
 			{
-				//_logger.LogVerbose("Including field {artifactId} used to retrieving destination folder structure.", _folderPathSourceFieldArtifactId);
-				yield return new DataColumn(FolderPathFieldName);
+				yield return new FieldEntry { FieldIdentifier = _folderPathSourceFieldArtifactId };
 			}
+		}
+		
+		private IEnumerable<object> GetSpecialFieldDataValues(string folderPath, INativeFile nativeFile)
+		{
+			if (DestinationFolderStructureBehavior == DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure)
+			{
+				yield return folderPath;
+			}
+
+			yield return nativeFile.Filename;
+			yield return nativeFile.Size;
+			yield return nativeFile.Location;
 		}
 	}
 }

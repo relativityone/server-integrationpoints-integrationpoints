@@ -9,6 +9,7 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Executors
 {
@@ -31,11 +32,12 @@ namespace Relativity.Sync.Executors
 		public async Task<ExecutionResult> ExecuteAsync(IDataSourceSnapshotConfiguration configuration, CancellationToken token)
 		{
 			_logger.LogVerbose("Initializing export in workspace {workspaceId} with saved search {savedSearchId} and fields {fields}.", configuration.SourceWorkspaceArtifactId,
-				configuration.DataSourceArtifactId);//, configuration.MetadataMapping.FieldMappings);
+				configuration.DataSourceArtifactId, configuration.FieldMappings);
 
 			_logger.LogVerbose("Including following system fields to export {supportedByViewer}, {nativeType}.", _SUPPORTED_BY_VIEWER_FIELD_NAME, _RELATIVITY_NATIVE_TYPE_FIELD_NAME);
 
-			IEnumerable<FieldRef> fields = null;// configuration.MetadataMapping.AsFieldRefs();
+			MetadataMapping mapping = new MetadataMapping(configuration.DestinationFolderStructureBehavior, configuration.FolderPathSourceFieldArtifactId, configuration.FieldMappings.ToList());
+			IEnumerable<FieldRef> fields = mapping.GetDocumentFieldRefs();
 
 			QueryRequest queryRequest = new QueryRequest
 			{

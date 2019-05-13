@@ -37,6 +37,7 @@ namespace Relativity.Sync.Transfer
 			int resultsBlockSize,
 			MetadataMapping metadataMapping,
 			IFolderPathRetriever folderPathRetriever,
+			INativeFileRepository nativeFileRepository,
 			ISyncLog logger)
 		{
 			_workspaceId = workspaceId;
@@ -45,13 +46,32 @@ namespace Relativity.Sync.Transfer
 			_serviceFactory = serviceFactory;
 			_batchRepository = batchRepository;
 			_logger = logger;
-			_tableBuilder = new SourceWorkspaceDataTableBuilder(metadataMapping, folderPathRetriever);
-			_currentBatch = new DataTableReader(new DataTable());
+			_tableBuilder = new SourceWorkspaceDataTableBuilder(metadataMapping, folderPathRetriever, nativeFileRepository);
+			_currentBatch = new DataTable().CreateDataReader();
 
 			_currentIndex = 0;
 		}
 
-		public async Task ReadNextBlockAsync()
+		public bool IsClosed { get; } = false;
+
+		public bool Read()
+		{
+			bool dataRead = _currentBatch.Read();
+			if (!dataRead)
+			{
+				ReadNextBatchAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+				dataRead = _currentBatch.Read();
+			}
+
+			return dataRead;
+		}
+
+		public void Dispose()
+		{
+			Dispose(true);
+		}
+
+		private async Task ReadNextBatchAsync()
 		{
 			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
@@ -63,13 +83,6 @@ namespace Relativity.Sync.Transfer
 			}
 		}
 
-		public bool IsClosed { get; } = false;
-		
-		public void Dispose()
-		{
-			Dispose(true);
-		}
-
 		private void Dispose(bool disposing)
 		{
 			if (disposing && _currentBatch != null)
@@ -79,19 +92,7 @@ namespace Relativity.Sync.Transfer
 			}
 		}
 
-		public bool Read()
-		{
-			bool dataRead = _currentBatch.Read();
-			if (!dataRead)
-			{
-				ReadNextBlockAsync().ConfigureAwait(false).GetAwaiter().GetResult();
-				dataRead = _currentBatch.Read();
-			}
-
-			return dataRead;
-		}
-
-		#region Pass-thrus to _currentBlock
+		#region Pass-thrus to _currentBatch
 
 		public string GetName(int i)
 		{
