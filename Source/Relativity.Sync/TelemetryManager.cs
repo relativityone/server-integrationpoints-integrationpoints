@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,8 +25,8 @@ namespace Relativity.Sync
 		{
 			if (metricProvider == null)
 			{
-				LogEmptyMetricProvider();
-				throw new ArgumentNullException(nameof(metricProvider));
+				var exception = new ArgumentNullException(nameof(metricProvider));
+				_logger.LogDebug(exception, "Metric provider shouldn't be null!");
 			}
 			_metricProviders.Add(metricProvider);
 		}
@@ -76,11 +76,6 @@ namespace Relativity.Sync
 			};
 
 			await manager.UpdateCategoryTargetSingleAsync(categoryTarget).ConfigureAwait(false);
-		}
-
-		private void LogEmptyMetricProvider()
-		{
-			throw new NotImplementedException();
 		}
 	}
 }
