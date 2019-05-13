@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using kCura.Vendor.Castle.Components.DictionaryAdapter;
@@ -10,6 +11,7 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.RestApi;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
+using Enum = Google.Protobuf.WellKnownTypes.Enum;
 using IConfiguration = Relativity.Sync.Configuration.IConfiguration;
 
 namespace Relativity.Sync.Transfer
@@ -20,17 +22,23 @@ namespace Relativity.Sync.Transfer
 	internal sealed class SourceWorkspaceDataTableBuilder
 	{
 		private readonly MetadataMapping _metadataMapping;
+		private readonly int _sourceJobArtifactId;
+		private readonly int _sourceWorkspaceArtifactId;
+		private readonly DestinationFolderStructureBehavior _destinationFolderStructureBehavior;
 		private readonly IFolderPathRetriever _folderPathRetriever;
 		private readonly INativeFileRepository _nativeFileRepository;
 
-		public SourceWorkspaceDataTableBuilder(MetadataMapping mapping, IFolderPathRetriever folderPathRetriever, INativeFileRepository nativeFileRepository)
+		public SourceWorkspaceDataTableBuilder(SourceWorkspaceDataReaderConfiguration configuration, IFolderPathRetriever folderPathRetriever, INativeFileRepository nativeFileRepository)
 		{
-			_metadataMapping = mapping;
+			_metadataMapping = configuration.MetadataMapping;
+			_sourceJobArtifactId = configuration.SourceJobId;
+			_sourceWorkspaceArtifactId = configuration.SourceWorkspaceId;
+			_destinationFolderStructureBehavior = configuration.DestinationFolderStructureBehavior;
 			_folderPathRetriever = folderPathRetriever;
 			_nativeFileRepository = nativeFileRepository;
 		}
 
-		public async Task<DataTable> BuildAsync(int workspaceArtifactId, RelativityObjectSlim[] batch)
+		public async Task<DataTable> BuildAsync(RelativityObjectSlim[] batch)
 		{
 			if (batch == null || !batch.Any())
 			{
@@ -38,50 +46,109 @@ namespace Relativity.Sync.Transfer
 			}
 
 			DataTable data = new DataTable();
-			DataColumn[] columns = _metadataMapping.CreateDataTableColumns();
+
+			DataColumn[] columns = BuildColumns();
 			data.Columns.AddRange(columns);
 
-			ICollection<int> artifactIdsInBatch = batch.Select(x => x.ArtifactID).ToList();
-
-			// NOTE: This call is not technically needed if we're using DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure,
-			// NOTE: but doing it either way greatly simplifies the logic.
-			IDictionary<int, string> artifactIdToFolderPath = await _folderPathRetriever
-				.GetFolderPathsAsync(workspaceArtifactId, artifactIdsInBatch)
-				.ConfigureAwait(false);
-
-			IEnumerable<INativeFile> nativeFileInfo = await _nativeFileRepository
-				.QueryAsync(workspaceArtifactId, artifactIdsInBatch)
-				.ConfigureAwait(false);
-			IDictionary<int, INativeFile> artifactIdToNativeFile = CreateNativeFileMap(artifactIdsInBatch, nativeFileInfo);
+			IDictionary<int, string> artifactIdToFolderPath = await CreateFolderPathMapAsync(batch).ConfigureAwait(false);
+			IDictionary<int, INativeFile> artifactIdToNativeFile = await CreateNativeFileMapAsync(batch).ConfigureAwait(false);
 
 			foreach (RelativityObjectSlim obj in batch)
 			{
-				object[] row = BuildRow(obj, artifactIdToFolderPath, artifactIdToNativeFile);
+				string folderPath = artifactIdToFolderPath[obj.ArtifactID];
+				INativeFile nativeFileInfo = artifactIdToNativeFile[obj.ArtifactID];
+				object[] row = BuildRow(obj, folderPath, nativeFileInfo);
 				data.Rows.Add(row);
 			}
 
 			return data;
 		}
 
-		private static IDictionary<int, INativeFile> CreateNativeFileMap(IEnumerable<int> artifactIdsInBatch, IEnumerable<INativeFile> nativeFileInfo)
+		private DataColumn[] BuildColumns()
 		{
+			IEnumerable<FieldEntry> documentFields = _metadataMapping.GetDocumentFields();
+			IEnumerable<FieldEntry> specialFields = _metadataMapping.GetSpecialFields();
+
+			DataColumn[] columns = documentFields.Concat(specialFields)
+				.Select(x => new DataColumn(x.DisplayName, x.ValueType))
+				.ToArray();
+			return columns;
+		}
+
+		private async Task<IDictionary<int, string>> CreateFolderPathMapAsync(RelativityObjectSlim[] batch)
+		{
+			List<int> artifactIds = batch.Select(x => x.ArtifactID).ToList();
+			IDictionary<int, string> folderPathsMap;
+			switch (_destinationFolderStructureBehavior)
+			{
+				case DestinationFolderStructureBehavior.ReadFromField:
+					List<FieldEntry> documentFields = _metadataMapping.GetDocumentFields().ToList();
+					int folderPathSourceFieldIndex = documentFields.FindIndex(f => f.SpecialFieldType == SpecialFieldType.ReadFromFieldFolderPath);
+					IEnumerable<string> folderPaths = batch.Select(x => (string) x.Values[folderPathSourceFieldIndex]);
+					folderPathsMap = artifactIds.MapOnto(folderPaths);
+					break;
+				case DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure:
+					folderPathsMap = await _folderPathRetriever
+						.GetFolderPathsAsync(_sourceWorkspaceArtifactId, artifactIds)
+						.ConfigureAwait(false);
+					break;
+				default:
+					folderPathsMap = artifactIds.MapOnto(Enumerable.Repeat(string.Empty, artifactIds.Count));
+					break;
+			}
+
+			return folderPathsMap;
+		}
+
+		private async Task<IDictionary<int, INativeFile>> CreateNativeFileMapAsync(RelativityObjectSlim[] batch)
+		{
+			List<int> batchArtifactIds = batch.Select(x => x.ArtifactID).ToList();
+
+			IEnumerable<INativeFile> nativeFileInfo = await _nativeFileRepository
+				.QueryAsync(_sourceWorkspaceArtifactId, batchArtifactIds)
+				.ConfigureAwait(false);
+
 			List<INativeFile> nativeFileInfoList = nativeFileInfo.ToList();
 			HashSet<int> documentsWithNatives = new HashSet<int>(nativeFileInfoList.Select(x => x.DocumentArtifactId));
 
 			IDictionary<int, INativeFile> artifactIdToNativeFile = nativeFileInfoList.ToDictionary(n => n.DocumentArtifactId);
-			List<int> documentsWithoutNatives = artifactIdsInBatch.Where(x => !documentsWithNatives.Contains(x)).ToList();
+			List<int> documentsWithoutNatives = batchArtifactIds.Where(x => !documentsWithNatives.Contains(x)).ToList();
 
 			artifactIdToNativeFile.Extend(documentsWithoutNatives, Enumerable.Repeat(NativeFile.Empty, documentsWithoutNatives.Count));
 
 			return artifactIdToNativeFile;
 		}
 
-		private object[] BuildRow(RelativityObjectSlim obj, IDictionary<int, string> artifactIdToFolderPath, IDictionary<int, INativeFile> artifactIdToNativeFile)
+		private object[] BuildRow(RelativityObjectSlim obj, string folderPath, INativeFile nativeFileInfo)
 		{
-			string folderPath = artifactIdToFolderPath[obj.ArtifactID];
-			INativeFile nativeFileInfo = artifactIdToNativeFile[obj.ArtifactID];
-			object[] values = _metadataMapping.CreateDataTableRow(obj.Values, folderPath, nativeFileInfo);
-			return values;
+			List<object> documentFieldValues = obj.Values.ToList();
+
+			IEnumerable<FieldEntry> specialFields = _metadataMapping.GetSpecialFields();
+			IEnumerable<object> specialFieldValues = specialFields.Select<FieldEntry, object>(x =>
+			{
+				switch (x.SpecialFieldType)
+				{
+
+					case SpecialFieldType.FolderPath:
+						return folderPath;
+					case SpecialFieldType.NativeFileSize:
+						return nativeFileInfo.Size;
+					case SpecialFieldType.NativeFileLocation:
+						return nativeFileInfo.Location;
+					case SpecialFieldType.NativeFileFilename:
+						return nativeFileInfo.Filename;
+					case SpecialFieldType.SourceJob:
+						return _sourceJobArtifactId;
+					case SpecialFieldType.SourceWorkspace:
+						return _sourceWorkspaceArtifactId;
+					default:
+						// TODO: Should throw here; we should fail ASAP if we encounter a field we can't map
+						return null;
+				}
+			});
+
+			IEnumerable<object> values = documentFieldValues.Concat(specialFieldValues);
+			return values.ToArray();
 		}
 	}
 }

@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using kCura.EDDS.WebAPI.DocumentManagerBase;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
@@ -21,7 +22,7 @@ namespace Relativity.Sync.Transfer
 
 		// TODO: Get rid of me; you should be using something like IBatchRepository.
 		private int _currentIndex;
-		
+
 		private readonly ISourceServiceFactoryForUser _serviceFactory;
 		private readonly IBatchRepository _batchRepository;
 		private readonly ISyncLog _logger;
@@ -30,23 +31,21 @@ namespace Relativity.Sync.Transfer
 		private readonly Guid _runId;
 		private readonly int _resultsBlockSize;
 
-		public SourceWorkspaceDataReader(ISourceServiceFactoryForUser serviceFactory,
+		public SourceWorkspaceDataReader(SourceWorkspaceDataReaderConfiguration configuration,
+			ISourceServiceFactoryForUser serviceFactory,
 			IBatchRepository batchRepository,
-			int workspaceId,
-			Guid runId,
-			int resultsBlockSize,
-			MetadataMapping metadataMapping,
 			IFolderPathRetriever folderPathRetriever,
 			INativeFileRepository nativeFileRepository,
-			ISyncLog logger)
+			ISyncLog logger,
+			int resultsBlockSize)
 		{
-			_workspaceId = workspaceId;
-			_runId = runId;
+			_workspaceId = configuration.SourceWorkspaceId;
+			_runId = configuration.RunId;
 			_resultsBlockSize = resultsBlockSize;
 			_serviceFactory = serviceFactory;
 			_batchRepository = batchRepository;
 			_logger = logger;
-			_tableBuilder = new SourceWorkspaceDataTableBuilder(metadataMapping, folderPathRetriever, nativeFileRepository);
+			_tableBuilder = new SourceWorkspaceDataTableBuilder(configuration, folderPathRetriever, nativeFileRepository);
 			_currentBatch = new DataTable().CreateDataReader();
 
 			_currentIndex = 0;
@@ -78,7 +77,7 @@ namespace Relativity.Sync.Transfer
 				RelativityObjectSlim[] block = await objectManager.RetrieveResultsBlockFromExportAsync(_workspaceId, _runId, _resultsBlockSize, _currentIndex).ConfigureAwait(false);
 				_currentIndex += block.Length;
 
-				DataTable dt = await _tableBuilder.BuildAsync(_workspaceId, block).ConfigureAwait(false);
+				DataTable dt = await _tableBuilder.BuildAsync(block).ConfigureAwait(false);
 				_currentBatch = dt.CreateDataReader();
 			}
 		}

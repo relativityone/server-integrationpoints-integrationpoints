@@ -24,18 +24,25 @@ namespace Relativity.Sync.Transfer
 			int folderPathSourceFieldArtifactId,
 			List<FieldMap> fieldMappings)
 		{
-			DestinationFolderStructureBehavior = destinationFolderStructureBehavior;
 			_folderPathSourceFieldArtifactId = folderPathSourceFieldArtifactId;
+
+			DestinationFolderStructureBehavior = destinationFolderStructureBehavior;
 			FieldMappings = fieldMappings.AsReadOnly();
 
 			FolderPathFieldName = "FolderPath";
+
 			NativeFileLocationFieldName = "NativeFileLocation";
 			NativeFileSizeFieldName = "NativeFileSize";
 			NativeFileFilenameFieldName = "NativeFileFilename";
+
+			SourceWorkspaceFieldName = "Relativity Source Case";
+			SourceJobFieldName = "Relativity Source Job";
 		}
 
 		public IReadOnlyList<FieldMap> FieldMappings { get; }
 		public string FolderPathFieldName { get; }
+		public string SourceWorkspaceFieldName { get; }
+		public string SourceJobFieldName { get; }
 		public string NativeFileLocationFieldName { get; }
 		public string NativeFileSizeFieldName { get; }
 		public string NativeFileFilenameFieldName { get; }
@@ -49,34 +56,6 @@ namespace Relativity.Sync.Transfer
 			return GetDocumentFields().Select(FieldEntryToFieldRef);
 		}
 
-		/// <summary>
-		/// Columns for the DataTable to be passed to IAPI. This includes "real" fields (i.e. those mapping to an actual Field in Relativity)
-		/// and derived fields (e.g. native information, folder path (in some cases), etc.).
-		/// </summary>
-		public DataColumn[] CreateDataTableColumns()
-		{
-			IEnumerable<FieldEntry> documentFields = GetDocumentFields();
-			IEnumerable<DataColumn> documentFieldColumns = documentFields.Select(x => new DataColumn(x.DisplayName));
-
-			IEnumerable<DataColumn> specialFieldColumns = GetSpecialFieldDataColumns();
-
-			return documentFieldColumns.Concat(specialFieldColumns).ToArray();
-		}
-
-		/// <summary>
-		/// Creates an object array out of a document's literal field values plus its special values.
-		/// </summary>
-		/// <param name="documentFieldValues">Values of a document's fields returned from an earlier read</param>
-		/// <param name="sourceWorkspaceFolderPath">Folder path of the document in its source workspace; will be used only if source folder path is being retained</param>
-		/// <param name="nativeFileInfo">Metadata about this object's native file. If it does not have a native, use <see cref="NativeFile.Empty"/>.</param>
-		/// <returns></returns>
-		public object[] CreateDataTableRow(IEnumerable<object> documentFieldValues, string sourceWorkspaceFolderPath, INativeFile nativeFileInfo)
-		{
-			IEnumerable<object> specialFieldValues = GetSpecialFieldDataValues(sourceWorkspaceFolderPath, nativeFileInfo);
-
-			return documentFieldValues.Concat(specialFieldValues).ToArray();
-		}
-		
 		private static FieldRef FieldEntryToFieldRef(FieldEntry field)
 		{
 			return field.FieldIdentifier > 0
@@ -84,19 +63,21 @@ namespace Relativity.Sync.Transfer
 				: new FieldRef { Name = field.DisplayName };
 		}
 
-		private IEnumerable<DataColumn> GetSpecialFieldDataColumns()
+		public IEnumerable<FieldEntry> GetSpecialFields()
 		{
-			if (DestinationFolderStructureBehavior == DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure)
-			{
-				yield return new DataColumn(FolderPathFieldName, typeof(string));
-			}
+			//if (DestinationFolderStructureBehavior == DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure)
+			//{
+			yield return new FieldEntry { SpecialFieldType = SpecialFieldType.FolderPath, DisplayName = FolderPathFieldName, ValueType = typeof(string) };
+			//}
 
-			yield return new DataColumn(NativeFileLocationFieldName, typeof(string));
-			yield return new DataColumn(NativeFileSizeFieldName, typeof(long));
-			yield return new DataColumn(NativeFileFilenameFieldName, typeof(string));
+			yield return new FieldEntry { SpecialFieldType = SpecialFieldType.NativeFileFilename, DisplayName = NativeFileFilenameFieldName, ValueType = typeof(string) };
+			yield return new FieldEntry { SpecialFieldType = SpecialFieldType.NativeFileSize, DisplayName = NativeFileSizeFieldName, ValueType = typeof(long) };
+			yield return new FieldEntry { SpecialFieldType = SpecialFieldType.NativeFileLocation, DisplayName = NativeFileLocationFieldName, ValueType = typeof(string) };
+			yield return new FieldEntry { SpecialFieldType = SpecialFieldType.SourceWorkspace, DisplayName = SourceWorkspaceFieldName, ValueType = typeof(int) };
+			yield return new FieldEntry { SpecialFieldType = SpecialFieldType.SourceJob, DisplayName = SourceJobFieldName, ValueType = typeof(int) };
 		}
 
-		private IEnumerable<FieldEntry> GetDocumentFields()
+		public IEnumerable<FieldEntry> GetDocumentFields()
 		{
 			foreach (FieldMap fieldMap in FieldMappings)
 			{
@@ -108,20 +89,8 @@ namespace Relativity.Sync.Transfer
 
 			if (DestinationFolderStructureBehavior == DestinationFolderStructureBehavior.ReadFromField)
 			{
-				yield return new FieldEntry { FieldIdentifier = _folderPathSourceFieldArtifactId };
+				yield return new FieldEntry { SpecialFieldType = SpecialFieldType.ReadFromFieldFolderPath, FieldIdentifier = _folderPathSourceFieldArtifactId };
 			}
-		}
-		
-		private IEnumerable<object> GetSpecialFieldDataValues(string folderPath, INativeFile nativeFile)
-		{
-			if (DestinationFolderStructureBehavior == DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure)
-			{
-				yield return folderPath;
-			}
-
-			yield return nativeFile.Filename;
-			yield return nativeFile.Size;
-			yield return nativeFile.Location;
 		}
 	}
 }

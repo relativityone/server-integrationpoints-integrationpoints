@@ -65,16 +65,24 @@ namespace Relativity.Sync.Tests.System
 
 			Assert.AreEqual(ExecutionStatus.Completed, result.Status);
 
+			SourceWorkspaceDataReaderConfiguration readerConfiguration = new SourceWorkspaceDataReaderConfiguration
+			{
+				DestinationFolderStructureBehavior = configuration.DestinationFolderStructureBehavior,
+				MetadataMapping = new MetadataMapping(configuration.DestinationFolderStructureBehavior,
+					configuration.FolderPathSourceFieldArtifactId, configuration.FieldMappings.ToList()),
+				RunId = configuration.ExportRunId,
+				SourceJobId = 0,
+				SourceWorkspaceId = sourceWorkspaceArtifactId
+			};
+
 			const int resultsBlockSize = 100;
-			SourceWorkspaceDataReader dataReader = new SourceWorkspaceDataReader(sourceServiceFactory,
+			SourceWorkspaceDataReader dataReader = new SourceWorkspaceDataReader(readerConfiguration,
+				sourceServiceFactory,
 				new BatchRepository(sourceServiceFactory), 
-				sourceWorkspaceArtifactId,
-				configuration.ExportRunId,
-				resultsBlockSize,
-				new MetadataMapping(configuration.DestinationFolderStructureBehavior, configuration.FolderPathSourceFieldArtifactId, configuration.FieldMappings.ToList()),
 				new FolderPathRetriever(sourceServiceFactory, new EmptyLogger()),
 				new NativeFileRepository(sourceServiceFactory),
-				new EmptyLogger());
+				new EmptyLogger(),
+				resultsBlockSize);
 
 			ConsoleLogger logger = new ConsoleLogger();
 			while (dataReader.Read())
@@ -89,6 +97,10 @@ namespace Relativity.Sync.Tests.System
 				logger.LogInformation($"NativeFileSize: {nativeFileSize}");
 				string folderPath = (string) dataReader["FolderPath"];
 				logger.LogInformation($"FolderPath: {folderPath}");
+				int sourceWorkspace = (int)dataReader["Relativity Source Case"];
+				logger.LogInformation($"Relativity Source Case: {sourceWorkspace}");
+				int sourceJob = (int)dataReader["Relativity Source Job"];
+				logger.LogInformation($"Relativity Source Job: {sourceJob}");
 
 				logger.LogInformation("");
 			}
