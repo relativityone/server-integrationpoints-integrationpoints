@@ -42,7 +42,7 @@ namespace Relativity.Sync.Telemetry
 			}
 			catch (Exception e)
 			{
-				_logger.LogError(e, "Exception occured when adding metrics to category {categoryName} by provider {providerName}", category.Name, ProviderName);
+				_logger.LogError(e, "Exception occurred when adding metrics to category {categoryName} by provider {providerName}", category.Name, ProviderName);
 			}
 		}
 
