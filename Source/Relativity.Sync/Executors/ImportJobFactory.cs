@@ -1,39 +1,23 @@
 ﻿using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Text;
 using kCura.EDDS.WebAPI.BulkImportManagerBase;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
+using kCura.Relativity.ImportAPI.Data;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Executors
 {
 	internal sealed class ImportJobFactory : IImportJobFactory
 	{
-		private const int _ASCII_GROUP_SEPARATOR = 29;
-		private const int _ASCII_RECORD_SEPARATOR = 30;
-
 		private readonly IImportAPI _importApi;
 		private readonly IDataReader _dataReader;
 		private readonly IBatchProgressHandlerFactory _batchProgressHandlerFactory;
 		private readonly ISemaphoreSlim _semaphoreSlim;
 		private readonly ISyncLog _logger;
-		
-		private readonly Dictionary<FieldOverlayBehavior, OverlayBehavior> _overlayBehaviorDictionary = new Dictionary<FieldOverlayBehavior, OverlayBehavior>()
-		{
-			{ FieldOverlayBehavior.MergeValues, OverlayBehavior.MergeAll },
-			{ FieldOverlayBehavior.ReplaceValues, OverlayBehavior.ReplaceAll },
-			{ FieldOverlayBehavior.UseFieldSettings, OverlayBehavior.UseRelativityDefaults }
-		};
-
-		private readonly Dictionary<ImportOverwriteMode, OverwriteModeEnum> _overwriteModeDictionary = new Dictionary<ImportOverwriteMode, OverwriteModeEnum>()
-		{
-			{ ImportOverwriteMode.AppendOnly, OverwriteModeEnum.Append },
-			{ ImportOverwriteMode.AppendOverlay, OverwriteModeEnum.AppendOverlay },
-			{ ImportOverwriteMode.OverlayOnly, OverwriteModeEnum.Overlay }
-		};
 
 		public ImportJobFactory(IImportAPI importApi, IDataReader dataReader, IBatchProgressHandlerFactory batchProgressHandlerFactory, ISemaphoreSlim semaphoreSlim, ISyncLog logger)
 		{
@@ -56,56 +40,87 @@ namespace Relativity.Sync.Executors
 		{
 			ImportBulkArtifactJob importJob = _importApi.NewNativeDocumentImportJob();
 			importJob.SourceData.SourceData = _dataReader;
+
+			// Default values
+			importJob.Settings.ArtifactTypeId = configuration.ImportSettings.ArtifactTypeId;
+			importJob.Settings.AuditLevel = configuration.ImportSettings.AuditLevel;
+			importJob.Settings.MaximumErrorCount = configuration.ImportSettings.MaximumErrorCount;
+			importJob.Settings.MultiValueDelimiter = configuration.ImportSettings.MultiValueDelimiter;
+			importJob.Settings.NestedValueDelimiter = configuration.ImportSettings.NestedValueDelimiter;
+
+			// Base values
+			importJob.Settings.CaseArtifactId = configuration.ImportSettings.CaseArtifactId;
+
+			importJob.Settings.Billable = configuration.ImportSettings.Billable;
+			importJob.Settings.CopyFilesToDocumentRepository = configuration.ImportSettings.CopyFilesToDocumentRepository;
+
+			importJob.Settings.DisableExtractedTextEncodingCheck = configuration.ImportSettings.DisableExtractedTextEncodingCheck;
+			importJob.Settings.DisableUserSecurityCheck = configuration.ImportSettings.DisableUserSecurityCheck;
+			importJob.Settings.ExtractedTextFieldContainsFilePath = configuration.ImportSettings.ExtractedTextFieldContainsFilePath;
+			importJob.Settings.IdentityFieldId = configuration.ImportSettings.IdentityFieldId;
+			importJob.Settings.NativeFileCopyMode = (NativeFileCopyModeEnum)configuration.ImportSettings.ImportNativeFileCopyMode;
+			importJob.Settings.ObjectFieldIdListContainsArtifactId = configuration.ImportSettings.ObjectFieldIdListContainsArtifactId;
+			importJob.Settings.OverlayBehavior = (OverlayBehavior)configuration.ImportSettings.FieldOverlayBehavior;
+			importJob.Settings.OverwriteMode = (OverwriteModeEnum)configuration.ImportSettings.ImportOverwriteMode;
+			importJob.Settings.ParentObjectIdSourceFieldName = configuration.ImportSettings.ParentObjectIdSourceFieldName;
+			importJob.Settings.SendEmailOnLoadCompletion = configuration.ImportSettings.SendEmailOnLoadCompletion;
 			importJob.Settings.StartRecordNumber = startingIndex;
-			importJob.Settings.MultiValueDelimiter = (char)_ASCII_RECORD_SEPARATOR;
-			importJob.Settings.NestedValueDelimiter = (char)_ASCII_GROUP_SEPARATOR;
-			importJob.Settings.MaximumErrorCount = int.MaxValue - 1;
-			importJob.Settings.SendEmailOnLoadCompletion = configuration.SendEmails;
-			importJob.Settings.OverwriteMode = _overwriteModeDictionary[configuration.ImportOverwriteMode];
-			importJob.Settings.OverlayBehavior = _overlayBehaviorDictionary[configuration.FieldOverlayBehavior];
-			importJob.Settings.CaseArtifactId = configuration.SourceWorkspaceArtifactId; // ?
-			importJob.Settings.NativeFileCopyMode = NativeFileCopyModeEnum.CopyFiles; // ?
-			importJob.Settings.ArtifactTypeId = (int)ArtifactType.Document; // ?
-			importJob.Settings.FileSizeMapped = true; // ?
-			importJob.Settings.DisableNativeValidation = true;
-			importJob.Settings.DestinationFolderArtifactID = configuration.DestinationFolderArtifactId;
 
-			importJob.Settings.BulkLoadFileFieldDelimiter = "";
-			importJob.Settings.NativeFilePathSourceFieldName = "";
-			importJob.Settings.SupportedByViewerColumn = "";
-			importJob.Settings.FileNameColumn = "";
-			importJob.Settings.FileSizeColumn = "";
-			importJob.Settings.FolderPathSourceFieldName = "";
-			importJob.Settings.OIFileIdColumnName = "";
-			importJob.Settings.OIFileTypeColumnName = "";
-			importJob.Settings.OIFileIdMapped = true;
-			importJob.Settings.DisableExtractedTextFileLocationValidation = true;
+			// Configured values
+			importJob.Settings.BulkLoadFileFieldDelimiter = configuration.ImportSettings.BulkLoadFileFieldDelimiter;
+			importJob.Settings.DisableControlNumberCompatibilityMode = configuration.ImportSettings.DisableControlNumberCompatibilityMode;
+			importJob.Settings.DisableExtractedTextFileLocationValidation = configuration.ImportSettings.DisableExtractedTextFileLocationValidation;
+			importJob.Settings.DisableNativeLocationValidation = configuration.ImportSettings.DisableNativeLocationValidation;
+			importJob.Settings.DisableNativeValidation = configuration.ImportSettings.DisableNativeValidation;
+			importJob.Settings.FileNameColumn = configuration.ImportSettings.FileNameColumn;
+			importJob.Settings.FileSizeColumn = configuration.ImportSettings.FileSizeColumn;
+			importJob.Settings.FileSizeMapped = configuration.ImportSettings.FileSizeMapped;
+			importJob.Settings.FolderPathSourceFieldName = configuration.ImportSettings.FolderPathSourceFieldName;
+			importJob.Settings.LoadImportedFullTextFromServer = configuration.ImportSettings.LoadImportedFullTextFromServer;
+			importJob.Settings.MoveDocumentsInAppendOverlayMode = configuration.ImportSettings.MoveDocumentsInAnyOverlayMode;
+			importJob.Settings.NativeFilePathSourceFieldName = configuration.ImportSettings.NativeFilePathSourceFieldName;
+			importJob.Settings.OIFileIdColumnName = configuration.ImportSettings.OiFileIdColumnName;
+			importJob.Settings.OIFileIdMapped = configuration.ImportSettings.OiFileIdMapped;
+			importJob.Settings.OIFileTypeColumnName = configuration.ImportSettings.OiFileTypeColumnName;
+			importJob.Settings.SupportedByViewerColumn = configuration.ImportSettings.SupportedByViewerColumn;
 
-			// TODO
-			importJob.Settings.MoveDocumentsInAppendOverlayMode = false;
-			importJob.Settings.DisableNativeLocationValidation = true;
-			importJob.Settings.DisableControlNumberCompatibilityMode = false;
-			importJob.Settings.Billable = true;
-			importJob.Settings.ParentObjectIdSourceFieldName = "";
-			importJob.Settings.ObjectFieldIdListContainsArtifactId = null;
-			importJob.Settings.IdentityFieldId = 0;
-			importJob.Settings.ExtractedTextFieldContainsFilePath = false;
-			importJob.Settings.DisableUserSecurityCheck = true;
-			importJob.Settings.DisableExtractedTextFileLocationValidation = true;
-			importJob.Settings.AuditLevel = kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel.FullAudit;
-			importJob.Settings.CopyFilesToDocumentRepository = false;
-
-			bool extractedTextFieldContainsFilePath = false;
-			if (extractedTextFieldContainsFilePath)
+			// Extended configurations
+			if (importJob.Settings.ExtractedTextFieldContainsFilePath)
 			{
-				importJob.Settings.ExtractedTextEncoding = Encoding.Unicode;
-				importJob.Settings.LongTextColumnThatContainsPathToFullText = "";
+				importJob.Settings.ExtractedTextEncoding = GetTextEncoding(configuration.ImportSettings.ExtractedTextFileEncoding);
+				importJob.Settings.LongTextColumnThatContainsPathToFullText = configuration.ImportSettings.LongTextColumnThatContainsPathToFullText;
 			}
-
-			importJob.Settings.LoadImportedFullTextFromServer = false;
-			importJob.Settings.SelectedIdentifierFieldName = "";
+			importJob.Settings.DestinationFolderArtifactID = GetDestinationFolderArtifactId(
+				configuration.ImportSettings.CaseArtifactId, configuration.ImportSettings.ArtifactTypeId, configuration.ImportSettings.DestinationFolderArtifactId);
+			importJob.Settings.SelectedIdentifierFieldName = GetSelectedIdentifierFieldName(
+				configuration.ImportSettings.CaseArtifactId, configuration.ImportSettings.ArtifactTypeId, configuration.ImportSettings.IdentityFieldId);
 
 			return importJob;
+		}
+
+		private static Encoding GetTextEncoding(string textEncoding)
+		{
+			Encoding encoding = Encoding.GetEncoding(textEncoding);
+			return encoding;
+		}
+
+		private int GetDestinationFolderArtifactId(int workspaceArtifactId, int artifactTypeId, int destinationFolderArtifactId)
+		{
+			IEnumerable<Workspace> workspaces = _importApi.Workspaces();
+			Workspace currentWorkspace = workspaces.First(x => x.ArtifactID == workspaceArtifactId);
+			int folderArtifactId = destinationFolderArtifactId;
+			if (currentWorkspace != null && folderArtifactId == 0)
+			{
+				folderArtifactId = artifactTypeId == (int)ArtifactType.Document ? currentWorkspace.RootFolderID : currentWorkspace.RootArtifactID;
+			}
+			return folderArtifactId;
+		}
+
+		private string GetSelectedIdentifierFieldName(int workspaceArtifactId, int artifactTypeId, int identityFieldArtifactId)
+		{
+			IEnumerable<Field> workspaceFields = _importApi.GetWorkspaceFields(workspaceArtifactId, artifactTypeId);
+			Field identityField = workspaceFields.First(x => x.ArtifactID == identityFieldArtifactId);
+			return identityField.Name;
 		}
 	}
 }

@@ -12,12 +12,6 @@ namespace Relativity.Sync.Configuration
 
 		int JobHistoryTagArtifactId { get; }
 
-		ImportOverwriteMode ImportOverwriteMode { get; }
-
-		FieldOverlayBehavior FieldOverlayBehavior { get; }
-
-		bool SendEmails { get; }
-
-		int DestinationFolderArtifactId { get; }
+		ImportSettingsDto ImportSettings { get; }
 	}
 }

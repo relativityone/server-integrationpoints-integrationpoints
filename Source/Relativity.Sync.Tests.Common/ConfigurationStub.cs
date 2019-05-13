@@ -61,6 +61,7 @@ namespace Relativity.Sync.Tests.Common
 		}
 		public int DestinationWorkspaceTagArtifactId { get; set; }
 		public int JobHistoryTagArtifactId { get; set; }
+		public ImportSettingsDto ImportSettings { get; }
 
 		public bool IsSourceJobTagSet { get; set; }
 
