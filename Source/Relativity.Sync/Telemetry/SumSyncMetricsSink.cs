@@ -10,7 +10,7 @@ namespace Relativity.Sync.Telemetry
 		private readonly IServicesMgr _servicesManager;
 
 		/// <summary>
-		///		Creates a new instance of <see cref="NewRelicSyncMetricsSink"/>.
+		///		Creates a new instance of <see cref="SumSyncMetricsSink"/>.
 		/// </summary>
 		/// <param name="servicesManager">Service manager, that is used to get <see cref="IMetricsManager"/></param>
 		/// <param name="logger">Logger</param>

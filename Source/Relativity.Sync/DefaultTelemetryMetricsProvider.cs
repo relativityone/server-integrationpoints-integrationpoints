@@ -4,7 +4,7 @@ using Relativity.Services.InternalMetricsCollection;
 
 namespace Relativity.Sync
 {
-	internal class TelemetryMetricsProvider : TelemetryMetricsProviderBase
+	internal class DefaultTelemetryMetricsProvider : TelemetryMetricsProviderBase
 	{
 		public static readonly List<MetricIdentifier> MetricIdentifiers = new List<MetricIdentifier>()
 		{
@@ -49,7 +49,7 @@ namespace Relativity.Sync
 
 		public static string BUCKET_INTEGRATION_POINT_REC_SAVE_DURATION_METRIC_COLLECTOR { get; } = "ABC";
 
-		public TelemetryMetricsProvider(IServicesMgr servicesManager, ISyncLog logger) : base(servicesManager, logger)
+		public DefaultTelemetryMetricsProvider(IServicesMgr servicesManager, ISyncLog logger) : base(servicesManager, logger)
 		{
 		}
 
