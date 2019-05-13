@@ -37,7 +37,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[TestCase(0)]
 		[TestCase(1)]
 		[TestCase(5)]
-		public async Task ItShouldRunImportApiJob(int numberOfBatches)
+		public async Task ItShouldRunImportApiJobForEachBatch(int numberOfBatches)
 		{
 			SetupImportJobFactory(numberOfBatches);
 

@@ -89,8 +89,21 @@ namespace Relativity.Sync.Executors
 		{
 			token.ThrowIfCancellationRequested();
 
-			await Task.Run(_importBulkArtifactJob.Execute, token).ConfigureAwait(false);
-			await _semaphoreSlim.WaitAsync(token).ConfigureAwait(false);
+			try
+			{
+				await Task.Run(_importBulkArtifactJob.Execute, token).ConfigureAwait(false);
+				await _semaphoreSlim.WaitAsync(token).ConfigureAwait(false);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Failed to execute import job.");
+				throw;
+			}
+
+			if (token.IsCancellationRequested)
+			{
+				throw new OperationCanceledException(token);
+			}
 
 			if (!_jobCompletedSuccessfully)
 			{

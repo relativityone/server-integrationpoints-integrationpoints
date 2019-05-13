@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 using System.Text;
+using System.Threading;
 using kCura.EDDS.WebAPI.BulkImportManagerBase;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
@@ -19,7 +20,6 @@ namespace Relativity.Sync.Executors
 		private readonly IDataReader _dataReader;
 		private readonly IBatchProgressHandlerFactory _batchProgressHandlerFactory;
 		private readonly IJobHistoryErrorRepository _jobHistoryErrorRepository;
-		private readonly ISemaphoreSlim _semaphoreSlim;
 		private readonly ISyncLog _logger;
 		
 		private readonly Dictionary<FieldOverlayBehavior, OverlayBehavior> _overlayBehaviorDictionary = new Dictionary<FieldOverlayBehavior, OverlayBehavior>()
@@ -37,13 +37,12 @@ namespace Relativity.Sync.Executors
 		};
 
 		public ImportJobFactory(IImportAPI importApi, IDataReader dataReader, IBatchProgressHandlerFactory batchProgressHandlerFactory, 
-			IJobHistoryErrorRepository jobHistoryErrorRepository, ISemaphoreSlim semaphoreSlim, ISyncLog logger)
+			IJobHistoryErrorRepository jobHistoryErrorRepository, ISyncLog logger)
 		{
 			_importApi = importApi;
 			_dataReader = dataReader;
 			_batchProgressHandlerFactory = batchProgressHandlerFactory;
 			_jobHistoryErrorRepository = jobHistoryErrorRepository;
-			_semaphoreSlim = semaphoreSlim;
 			_logger = logger;
 		}
 
@@ -54,7 +53,7 @@ namespace Relativity.Sync.Executors
 
 			_batchProgressHandlerFactory.CreateBatchProgressHandler(batch, importBulkArtifactJob);
 
-			return new ImportJob(importBulkArtifactJobWrapper, _semaphoreSlim, _jobHistoryErrorRepository,
+			return new ImportJob(importBulkArtifactJobWrapper, new SemaphoreSlimWrapper(new SemaphoreSlim(0, 1)), _jobHistoryErrorRepository,
 				configuration.SourceWorkspaceArtifactId, configuration.JobHistoryTagArtifactId, _logger);
 		}
 
