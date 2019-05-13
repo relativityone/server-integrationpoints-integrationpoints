@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Telemetry;
 
 namespace Relativity.Sync.Executors
 {
@@ -11,37 +13,71 @@ namespace Relativity.Sync.Executors
 	{
 		private readonly IImportJobFactory _importJobFactory;
 		private readonly IBatchRepository _batchRepository;
+		private readonly ISyncMetrics _syncMetrics;
+		private readonly IDateTime _dateTime;
 		private readonly ISyncLog _logger;
 
-		public SynchronizationExecutor(IImportJobFactory importJobFactory, IBatchRepository batchRepository, ISyncLog logger)
+		public SynchronizationExecutor(IImportJobFactory importJobFactory, IBatchRepository batchRepository, ISyncMetrics syncMetrics, IDateTime dateTime, ISyncLog logger)
 		{
 			_importJobFactory = importJobFactory;
 			_batchRepository = batchRepository;
+			_syncMetrics = syncMetrics;
+			_dateTime = dateTime;
 			_logger = logger;
 		}
 
 		public async Task<ExecutionResult> ExecuteAsync(ISynchronizationConfiguration configuration, CancellationToken token)
 		{
-			_logger.LogInformation("Starting import job");
+			ExecutionResult result = ExecutionResult.Success();
+			DateTime startTime = _dateTime.Now;
 
 			try
 			{
+				_logger.LogVerbose("Gathering batches to execute.");
+
 				List<int> batchesIds = (await _batchRepository.GetAllNewBatchesIdsAsync(configuration.SourceWorkspaceArtifactId).ConfigureAwait(false)).ToList();
 
 				foreach (int batchId in batchesIds)
 				{
 					IBatch batch = await _batchRepository.GetAsync(configuration.SourceWorkspaceArtifactId, batchId).ConfigureAwait(false);
-					IImportJob importJob = _importJobFactory.CreateImportJob(configuration, batch);
-					await importJob.RunAsync(token).ConfigureAwait(false);
+					_logger.LogVerbose("Processing batch ID: {batchId}", batchId);
+					using (IImportJob importJob = _importJobFactory.CreateImportJob(configuration, batch))
+					{
+						await importJob.RunAsync(token).ConfigureAwait(false);
+					}
 				}
+
+				_logger.LogVerbose("All batches processed successfully.");
+			}
+			catch (OperationCanceledException)
+			{
+				_logger.LogInformation("Import job has been canceled.");
+				result = ExecutionResult.Canceled();
 			}
 			catch (SyncException ex)
 			{
-				_logger.LogError(ex, "Exception occurred while executing import job.");
-				return ExecutionResult.Failure("Import job failed.", ex);
+				const string message = "Fatal exception occurred while executing import job.";
+				_logger.LogError(ex, message);
+				result = ExecutionResult.Failure(message, ex);
+			}
+			catch (Exception ex)
+			{
+				const string message = "Unexpected exception occurred while executing import job.";
+				_logger.LogError(ex, message);
+				result = ExecutionResult.Failure(message, ex);
+			}
+			finally
+			{
+				// TODO metrics
+				DateTime endTime = _dateTime.Now;
+				TimeSpan jobDuration = endTime - startTime;
+				_syncMetrics.CountOperation("ImportJobStatus", result.Status);
+				_syncMetrics.TimedOperation("ImportJob", jobDuration, result.Status);
+				_syncMetrics.GaugeOperation("ImportJobStart", result.Status, startTime.Ticks, "Ticks", null);
+				_syncMetrics.GaugeOperation("ImportJobEnd", result.Status, endTime.Ticks, "Ticks", null);
 			}
 
-			return ExecutionResult.Success();
+			return result;
 		}
 	}
 }

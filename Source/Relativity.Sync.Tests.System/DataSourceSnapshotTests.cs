@@ -57,7 +57,7 @@ namespace Relativity.Sync.Tests.System
 				SourceWorkspaceArtifactId = _workspace.ArtifactID
 			};
 
-			ISyncJob syncJob = SyncJobHelper.CreateWithMockedContainerExceptProvidedType<IDataSourceSnapshotConfiguration>(configuration);
+			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IDataSourceSnapshotConfiguration>(configuration);
 
 			// ACT
 			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);

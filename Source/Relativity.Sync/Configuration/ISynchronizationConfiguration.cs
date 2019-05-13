@@ -4,8 +4,6 @@ namespace Relativity.Sync.Configuration
 {
 	internal interface ISynchronizationConfiguration : IConfiguration
 	{
-		int SyncConfigurationArtifactId { get; }
-
 		int SourceWorkspaceArtifactId { get; }
 
 		int DestinationWorkspaceTagArtifactId { get; }

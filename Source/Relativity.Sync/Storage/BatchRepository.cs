@@ -45,7 +45,7 @@ namespace Relativity.Sync.Storage
 					{
 						Guid = BatchObjectTypeGuid
 					},
-					Condition = $"'{StatusGuid}' == 'New'"
+					Condition = $"'{StatusGuid}' == '{BatchStatus.New}'"
 				};
 
 				QueryResult result = await objectManager.QueryAsync(workspaceArtifactId, queryRequest, 1, 1).ConfigureAwait(false);

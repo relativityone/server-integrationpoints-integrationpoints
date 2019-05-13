@@ -35,6 +35,12 @@ namespace Relativity.Sync.Executors
 			remove => _importBulkArtifactJob.OnProcessProgress -= value;
 		}
 
+		public event ImportBulkArtifactJob.OnErrorEventHandler OnError
+		{
+			add => _importBulkArtifactJob.OnError += value;
+			remove => _importBulkArtifactJob.OnError -= value;
+		}
+
 		public void Execute()
 		{
 			_importBulkArtifactJob.Execute();

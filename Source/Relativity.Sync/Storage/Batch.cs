@@ -121,6 +121,14 @@ namespace Relativity.Sync.Storage
 								Guid = StartingIndexGuid
 							},
 							Value = StartingIndex
+						},
+						new FieldRefValuePair
+						{
+							Field = new FieldRef
+							{
+								Guid = StatusGuid
+							},
+							Value = BatchStatus.New.GetDescription()
 						}
 					}
 				};
