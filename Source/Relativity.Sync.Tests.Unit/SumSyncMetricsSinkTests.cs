@@ -31,7 +31,7 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public void ItSendsMetricsOnDispose()
+		public void ItSendsMetricsOnLog()
 		{
 			// ARRANGE
 			SumSyncMetricsSink instance = CreateInstance();
