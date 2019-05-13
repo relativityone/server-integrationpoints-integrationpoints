@@ -33,7 +33,7 @@ namespace Relativity.Sync.Telemetry
 			}
 			catch (Exception e)
 			{
-				_logger.LogDebug(e, "Logging to SUM failed");
+				_logger.LogError(e, "Logging to SUM failed");
 			}
 		}
 
