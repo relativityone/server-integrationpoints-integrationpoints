@@ -22,8 +22,8 @@ namespace Relativity.Sync.Tests.Unit
 
 		private readonly TimeSpan _timeSpan = TimeSpan.FromDays(1);
 
-		[SetUp]
-		public void SetUp()
+		[OneTimeSetUp]
+		public void OneTimeSetup()
 		{
 			_expectedMetrics = new[]
 			{
@@ -31,7 +31,11 @@ namespace Relativity.Sync.Tests.Unit
 				Metric.CountOperation("Test2", ExecutionStatus.Completed, _CORRELATION_ID),
 				Metric.GaugeOperation("Test3", ExecutionStatus.Failed, _CORRELATION_ID, _GAUGE_VALUE, _UNIT_OF_MEASURE)
 			};
+		}
 
+		[SetUp]
+		public void SetUp()
+		{
 			_logger = new Mock<ISyncLog>();
 			_metricsManager = new Mock<IMetricsManager>();
 			_servicesManager = new Mock<IServicesMgr>();
