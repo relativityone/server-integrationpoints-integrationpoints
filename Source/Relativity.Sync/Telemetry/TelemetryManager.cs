@@ -61,7 +61,7 @@ namespace Relativity.Sync.Telemetry
 			}
 		}
 
-		private async Task<CategoryRef> AddCategoryAsync(string categoryName, IInternalMetricsCollectionManager manager)
+		private static async Task<CategoryRef> AddCategoryAsync(string categoryName, IInternalMetricsCollectionManager manager)
 		{
 			var category = new Category
 			{
@@ -72,7 +72,7 @@ namespace Relativity.Sync.Telemetry
 			return category;
 		}
 
-		private async Task EnableMetricsForCategoryAsync(CategoryRef category, IInternalMetricsCollectionManager manager)
+		private static async Task EnableMetricsForCategoryAsync(CategoryRef category, IInternalMetricsCollectionManager manager)
 		{
 			CategoryTarget categoryTarget = new CategoryTarget
 			{
