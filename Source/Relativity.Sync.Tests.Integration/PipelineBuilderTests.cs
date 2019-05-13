@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
@@ -238,7 +237,7 @@ namespace Relativity.Sync.Tests.Integration
 		private static bool Equals(SyncJobState me, SyncJobState you)
 		{
 			return string.Equals(me.Id, you.Id, StringComparison.InvariantCulture) &&
-				string.Equals(me.Status, you.Status, StringComparison.InvariantCulture) &&
+				me.Status == you.Status &&
 				string.Equals(me.Message, you.Message, StringComparison.InvariantCulture) &&
 				me.Exception?.GetType() == you.Exception?.GetType() &&
 				string.Equals(me.Exception?.Message, you.Exception?.Message, StringComparison.InvariantCulture);

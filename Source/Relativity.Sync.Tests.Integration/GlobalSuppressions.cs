@@ -22,6 +22,8 @@
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "<Pending>", Scope = "type", Target = "~T:Relativity.Sync.Tests.Integration.DataSourceSnapshotStepTests")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "<Pending>", Scope = "type", Target = "~T:Relativity.Sync.Tests.Integration.JobStatusConsolidationStepTests")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "<Pending>", Scope = "type", Target = "~T:Relativity.Sync.Tests.Integration.JobCleanupStepTests")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Instantiated by NUnit", Scope = "type", Target = "~T:Relativity.Sync.Tests.Integration.SourceWorkspaceTagsCreationExecutorTests")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Instantiated by NUnit", Scope = "type", Target = "~T:Relativity.Sync.Tests.Integration.DestinationWorkspaceTagsCreationExecutorTests")]
 
 
 
