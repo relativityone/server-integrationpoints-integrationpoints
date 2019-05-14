@@ -9,6 +9,7 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Executors
 {
@@ -35,7 +36,8 @@ namespace Relativity.Sync.Executors
 
 			_logger.LogVerbose("Including following system fields to export {supportedByViewer}, {nativeType}.", _SUPPORTED_BY_VIEWER_FIELD_NAME, _RELATIVITY_NATIVE_TYPE_FIELD_NAME);
 
-			IEnumerable<FieldRef> fields = PrepareFieldsList(configuration);
+			MetadataMapping mapping = new MetadataMapping(configuration.DestinationFolderStructureBehavior, configuration.FolderPathSourceFieldArtifactId, configuration.FieldMappings.ToList());
+			IEnumerable<FieldRef> fields = mapping.GetDocumentFieldRefs();
 
 			QueryRequest queryRequest = new QueryRequest
 			{
@@ -65,34 +67,6 @@ namespace Relativity.Sync.Executors
 			//however, order is the same as order of fields in QueryRequest when they are provided explicitly
 			await configuration.SetSnapshotDataAsync(results.RunID, results.RecordCount).ConfigureAwait(false);
 			return ExecutionResult.Success();
-		}
-
-		private IEnumerable<FieldRef> PrepareFieldsList(IDataSourceSnapshotConfiguration configuration)
-		{
-			foreach (FieldMap fieldMap in configuration.FieldMappings)
-			{
-				yield return new FieldRef
-				{
-					ArtifactID = fieldMap.SourceField.FieldIdentifier
-				};
-			}
-
-			yield return new FieldRef
-			{
-				Name = _SUPPORTED_BY_VIEWER_FIELD_NAME
-			};
-			yield return new FieldRef
-			{
-				Name = _RELATIVITY_NATIVE_TYPE_FIELD_NAME
-			};
-			if (configuration.DestinationFolderStructureBehavior == DestinationFolderStructureBehavior.ReadFromField)
-			{
-				_logger.LogVerbose("Including field {artifactId} used to retrieving destination folder structure.", configuration.FolderPathSourceFieldArtifactId);
-				yield return new FieldRef
-				{
-					ArtifactID = configuration.FolderPathSourceFieldArtifactId
-				};
-			}
 		}
 	}
 }

@@ -8,8 +8,8 @@ namespace Relativity.Sync.Executors
 {
 	internal sealed class ImportJob : IImportJob
 	{
-		private bool _jobCompletedSuccessfully;
-		private Exception _importApiException;
+		private bool _jobCompletedSuccessfully = false;
+		private Exception _importApiException = null;
 
 		private const string _IDENTIFIER_COLUMN = "Identifier";
 		private const string _MESSAGE_COLUMN = "Message";
@@ -45,15 +45,14 @@ namespace Relativity.Sync.Executors
 
 		private void HandleFatalException(JobReport jobReport)
 		{
-			const string errorMessage = "Fatal exception occurred in ImportAPI during import job";
-			_logger.LogError(jobReport.FatalException, errorMessage);
+			_logger.LogError(jobReport.FatalException, jobReport.FatalException?.Message);
 			_jobCompletedSuccessfully = false;
 			_importApiException = jobReport.FatalException;
 
 			CreateJobHistoryErrorDto jobError = new CreateJobHistoryErrorDto(_jobHistoryArtifactId, ErrorType.Job)
 			{
-				ErrorMessage = errorMessage,
-				StackTrace = jobReport.FatalException.StackTrace
+				ErrorMessage = jobReport.FatalException?.Message,
+				StackTrace = jobReport.FatalException?.StackTrace
 			};
 			CreateJobHistoryError(jobError);
 
@@ -87,10 +86,21 @@ namespace Relativity.Sync.Executors
 
 		public async Task RunAsync(CancellationToken token)
 		{
-			token.ThrowIfCancellationRequested();
+			if (token.IsCancellationRequested)
+			{
+				return;
+			}
 
-			await Task.Run(_importBulkArtifactJob.Execute, token).ConfigureAwait(false);
-			await _semaphoreSlim.WaitAsync(token).ConfigureAwait(false);
+			try
+			{
+				await Task.Run(() => _importBulkArtifactJob.Execute(), token).ConfigureAwait(false);
+				await _semaphoreSlim.WaitAsync().ConfigureAwait(false); // we don't want to cancel waiting for the import job to finish
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Failed to start executing import job.");
+				throw;
+			}
 
 			if (!_jobCompletedSuccessfully)
 			{
