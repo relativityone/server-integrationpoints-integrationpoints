@@ -42,7 +42,6 @@ namespace Relativity.Sync.Executors
 				configuration.SourceWorkspaceArtifactId, configuration.JobHistoryTagArtifactId, _logger);
 		}
 
-		// TODO !!!
 		private ImportBulkArtifactJob CreateImportJob(ISynchronizationConfiguration configuration, int startingIndex)
 		{
 			ImportBulkArtifactJob importJob = _importApi.NewNativeDocumentImportJob();
@@ -75,6 +74,7 @@ namespace Relativity.Sync.Executors
 
 			// Configured values
 			importJob.Settings.BulkLoadFileFieldDelimiter = configuration.ImportSettings.BulkLoadFileFieldDelimiter;
+			importJob.Settings.DestinationFolderArtifactID = configuration.ImportSettings.DestinationFolderArtifactId;
 			importJob.Settings.DisableControlNumberCompatibilityMode = configuration.ImportSettings.DisableControlNumberCompatibilityMode;
 			importJob.Settings.DisableExtractedTextFileLocationValidation = configuration.ImportSettings.DisableExtractedTextFileLocationValidation;
 			importJob.Settings.DisableNativeLocationValidation = configuration.ImportSettings.DisableNativeLocationValidation;
@@ -97,8 +97,7 @@ namespace Relativity.Sync.Executors
 				importJob.Settings.ExtractedTextEncoding = GetTextEncoding(configuration.ImportSettings.ExtractedTextFileEncoding);
 				importJob.Settings.LongTextColumnThatContainsPathToFullText = configuration.ImportSettings.LongTextColumnThatContainsPathToFullText;
 			}
-			importJob.Settings.DestinationFolderArtifactID = GetDestinationFolderArtifactId(
-				configuration.ImportSettings.CaseArtifactId, configuration.ImportSettings.ArtifactTypeId, configuration.ImportSettings.DestinationFolderArtifactId);
+
 			importJob.Settings.SelectedIdentifierFieldName = GetSelectedIdentifierFieldName(
 				configuration.ImportSettings.CaseArtifactId, configuration.ImportSettings.ArtifactTypeId, configuration.ImportSettings.IdentityFieldId);
 
@@ -109,18 +108,6 @@ namespace Relativity.Sync.Executors
 		{
 			Encoding encoding = Encoding.GetEncoding(textEncoding);
 			return encoding;
-		}
-
-		private int GetDestinationFolderArtifactId(int workspaceArtifactId, int artifactTypeId, int destinationFolderArtifactId)
-		{
-			IEnumerable<Workspace> workspaces = _importApi.Workspaces();
-			Workspace currentWorkspace = workspaces.First(x => x.ArtifactID == workspaceArtifactId);
-			int folderArtifactId = destinationFolderArtifactId;
-			if (currentWorkspace != null && folderArtifactId == 0)
-			{
-				folderArtifactId = artifactTypeId == (int)ArtifactType.Document ? currentWorkspace.RootFolderID : currentWorkspace.RootArtifactID;
-			}
-			return folderArtifactId;
 		}
 
 		private string GetSelectedIdentifierFieldName(int workspaceArtifactId, int artifactTypeId, int identityFieldArtifactId)

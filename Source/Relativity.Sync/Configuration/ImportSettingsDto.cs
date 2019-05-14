@@ -21,7 +21,7 @@ namespace Relativity.Sync.Configuration
 		public bool? DisableExtractedTextEncodingCheck => null;
 		public bool DisableUserSecurityCheck => false;
 		public string ErrorFilePath { get; set; }
-		public bool ExtractedTextFieldContainsFilePath => false;
+		public bool ExtractedTextFieldContainsFilePath { get; set; }
 		public FieldOverlayBehavior FieldOverlayBehavior { get; set; }
 		public int IdentityFieldId { get; set; }
 		public ImportNativeFileCopyMode ImportNativeFileCopyMode { get; set; }
@@ -49,7 +49,7 @@ namespace Relativity.Sync.Configuration
 
 		// Extended configurations
 		public int DestinationFolderArtifactId { get; set; }
-		public string ExtractedTextFileEncoding => string.Empty;
+		public string ExtractedTextFileEncoding { get; set; }
 		public string LongTextColumnThatContainsPathToFullText => string.Empty;
 
 		/// <summary>
@@ -68,6 +68,7 @@ namespace Relativity.Sync.Configuration
 
 			DisableNativeLocationValidation = null;
 			DisableNativeValidation = null;
+			ExtractedTextFileEncoding = string.Empty;
 			FileNameColumn = string.Empty;
 			FileSizeColumn = string.Empty;
 			FileSizeMapped = false;
