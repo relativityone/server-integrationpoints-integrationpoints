@@ -122,7 +122,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 			ViewFieldIDResponse[] viewFieldIDResponseArray = isProduction
 				? _viewFieldRepository.ReadViewFieldIDsFromProduction(
 					caseContextArtifactID, 
-					artifactTypeID,
 					viewArtifactID
 				  )
 				: _viewFieldRepository.ReadViewFieldIDsFromSearch(
