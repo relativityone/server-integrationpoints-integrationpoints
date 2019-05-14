@@ -4,7 +4,6 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Telemetry;
-using Relativity.Telemetry.Services.Metrics;
 
 namespace Relativity.Sync.Tests.Unit
 {
@@ -87,6 +86,7 @@ namespace Relativity.Sync.Tests.Unit
 			// ACT
 			using (_instance.TimedOperation(_NAME, executionStatus))
 			{
+				// nothing to do here, testing dispose method
 			}
 
 			// ASSERT

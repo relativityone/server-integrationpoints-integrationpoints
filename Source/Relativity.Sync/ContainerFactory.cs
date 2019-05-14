@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Autofac;
-using Relativity.Sync.Configuration;
-using Relativity.Sync.ExecutionConstrains;
-using Relativity.Sync.Executors;
-using Relativity.Sync.Logging;
-using Relativity.Sync.Telemetry;using kCura.Apps.Common.Utils.Serializers;
+using kCura.Apps.Common.Utils.Serializers;
+using Relativity.API;
 using Relativity.Sync.Executors.Validation;
+using Relativity.Sync.Logging;
+using Relativity.Sync.Telemetry;
+using Relativity.Telemetry.APM;
 
 namespace Relativity.Sync
 {
 	internal sealed class ContainerFactory : IContainerFactory
 	{
-		public void RegisterSyncDependencies(ContainerBuilder containerBuilder, SyncJobParameters syncJobParameters, SyncJobExecutionConfiguration configuration, ISyncLog logger)
+		public void RegisterSyncDependencies(ContainerBuilder containerBuilder, SyncJobParameters syncJobParameters, RelativityServices relativityServices, SyncJobExecutionConfiguration configuration,
+			ISyncLog logger)
 		{
 			CorrelationId correlationId = new CorrelationId(syncJobParameters.CorrelationId);
 
@@ -26,13 +27,16 @@ namespace Relativity.Sync
 			containerBuilder.RegisterInstance(syncJobParameters).As<SyncJobParameters>();
 			containerBuilder.RegisterInstance(correlationId).As<CorrelationId>();
 			containerBuilder.RegisterInstance(configuration).As<SyncJobExecutionConfiguration>();
+			containerBuilder.RegisterInstance(relativityServices).As<RelativityServices>();
+			containerBuilder.RegisterInstance(relativityServices.ServicesMgr).As<IServicesMgr>();
+			containerBuilder.RegisterInstance(relativityServices.APM).As<IAPM>();
 			containerBuilder.RegisterType<SyncExecutionContextFactory>().As<ISyncExecutionContextFactory>();
 			containerBuilder.RegisterType<AppDomainWrapper>().As<IAppDomain>();
 			containerBuilder.RegisterType<DateTimeWrapper>().As<IDateTime>();
 			containerBuilder.RegisterType<JSONSerializer>().As<ISerializer>();
 			containerBuilder.RegisterType<ProgressStateCounter>().As<IProgressStateCounter>();
 			containerBuilder.RegisterType<SyncJobProgress>().As<IProgress<SyncJobState>>();
-			
+
 			IPipelineBuilder pipelineBuilder = new PipelineBuilder();
 			pipelineBuilder.RegisterFlow(containerBuilder);
 
@@ -51,21 +55,20 @@ namespace Relativity.Sync
 			{
 				string decoratorName = validatorType.FullName;
 				containerBuilder.RegisterType(validatorType).Named(decoratorName, typeof(IValidator));
-				containerBuilder.RegisterDecorator<IValidator>((context, validator) => 
+				containerBuilder.RegisterDecorator<IValidator>((context, validator) =>
 					new ValidatorWithMetrics(validator, context.Resolve<ISyncMetrics>(), context.Resolve<IStopwatch>()), decoratorName);
 			}
-
 		}
 
 		private static Type[] GetValidatorTypesExcept<T>()
 		{
-			return 
+			return
 				typeof(IValidator).Assembly
-				.GetTypes()
-				.Where(t => !t.IsAbstract && 
-				            t.IsAssignableTo<IValidator>() &&
-				            !t.IsAssignableTo<T>())
-				.ToArray();
+					.GetTypes()
+					.Where(t => !t.IsAbstract &&
+					            t.IsAssignableTo<IValidator>() &&
+					            !t.IsAssignableTo<T>())
+					.ToArray();
 		}
 
 		private static IEnumerable<IInstaller> GetInstallersInCurrentAssembly()

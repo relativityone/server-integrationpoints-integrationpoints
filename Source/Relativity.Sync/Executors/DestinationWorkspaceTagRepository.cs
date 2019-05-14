@@ -70,14 +70,10 @@ namespace Relativity.Sync.Executors
 			{
 				int federatedInstanceId = await _federatedInstance.GetInstanceIdAsync().ConfigureAwait(false);
 
-				string federatedInstanceIdSearchTerm = federatedInstanceId == -1
-					? $"NOT '{_destinationInstanceArtifactIdGuid}' ISSET"
-					: $"'{_destinationInstanceArtifactIdGuid}' == {federatedInstanceId}";
-
 				var request = new QueryRequest
 				{
 					ObjectType = new ObjectTypeRef { Guid = _objectTypeGuid },
-					Condition = $"'{_destinationWorkspaceArtifactIdGuid}' == {destinationWorkspaceArtifactId} AND ({federatedInstanceIdSearchTerm})",
+					Condition = $"'{_destinationWorkspaceArtifactIdGuid}' == {destinationWorkspaceArtifactId} AND ('{_destinationInstanceArtifactIdGuid}' == {federatedInstanceId})",
 					Fields = new List<FieldRef>
 					{
 						new FieldRef { Name = "ArtifactId" },

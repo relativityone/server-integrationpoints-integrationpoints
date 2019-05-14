@@ -3,7 +3,7 @@
 	/// <summary>
 	/// Used to carry the necessary parameters required for creating a new Progress RDO for a sync job.
 	/// </summary>
-	public sealed class CreateProgressDto
+	internal sealed class CreateProgressDto
 	{
 		/// <summary>
 		/// The name of the step for which progress is being reported.

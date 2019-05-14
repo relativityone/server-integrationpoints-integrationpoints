@@ -10,14 +10,17 @@ namespace Relativity.Sync
 		private readonly IContainerFactory _containerFactory;
 		private readonly IContainer _container;
 		private readonly SyncJobParameters _syncJobParameters;
+		private readonly RelativityServices _relativityServices;
 		private readonly SyncJobExecutionConfiguration _configuration;
 		private readonly ISyncLog _logger;
 
-		public SyncJobInLifetimeScope(IContainerFactory containerFactory, IContainer container, SyncJobParameters syncJobParameters, SyncJobExecutionConfiguration configuration, ISyncLog logger)
+		public SyncJobInLifetimeScope(IContainerFactory containerFactory, IContainer container, SyncJobParameters syncJobParameters, RelativityServices relativityServices,
+			SyncJobExecutionConfiguration configuration, ISyncLog logger)
 		{
 			_containerFactory = containerFactory;
 			_container = container;
 			_syncJobParameters = syncJobParameters;
+			_relativityServices = relativityServices;
 			_configuration = configuration;
 			_logger = logger;
 		}
@@ -60,7 +63,7 @@ namespace Relativity.Sync
 
 		private ILifetimeScope BeginLifetimeScope()
 		{
-			return _container.BeginLifetimeScope(builder => _containerFactory.RegisterSyncDependencies(builder, _syncJobParameters, _configuration, _logger));
+			return _container.BeginLifetimeScope(builder => _containerFactory.RegisterSyncDependencies(builder, _syncJobParameters, _relativityServices, _configuration, _logger));
 		}
 
 		private ISyncJob CreateSyncJob(ILifetimeScope scope)

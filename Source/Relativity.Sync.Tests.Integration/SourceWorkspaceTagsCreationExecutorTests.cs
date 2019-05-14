@@ -93,7 +93,7 @@ namespace Relativity.Sync.Tests.Integration
 		[Test]
 		public async Task ItShouldBuildProperQueryForLocalInstance()
 		{
-			string expectedInstanceCondition = $"NOT '{_destinationInstanceArtifactIdFieldGuid}' ISSET";
+			string expectedInstanceCondition = $"'{_destinationWorkspaceArtifactIdFieldGuid}' == {_TEST_DEST_CASE_ARTIFACT_ID} AND ('{_destinationInstanceArtifactIdFieldGuid}' == -1)";
 
 			_destinationObjectManagerMock.Setup(x => x.QueryAsync(
 					-1,
@@ -112,7 +112,7 @@ namespace Relativity.Sync.Tests.Integration
 
 			_sourceObjectManagerMock.Setup(x => x.QueryAsync(
 					_TEST_SOURCE_CASE_ARTIFACT_ID,
-					It.Is<QueryRequest>(request => request.Condition.Contains(expectedInstanceCondition)),
+					It.Is<QueryRequest>(request => request.Condition == expectedInstanceCondition),
 					It.IsAny<int>(),
 					It.IsAny<int>(),
 					_token,

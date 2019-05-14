@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using kCura.Utility;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.Objects;
@@ -50,6 +51,7 @@ namespace Relativity.Sync.Tests.Unit
 			const int syncConfigurationArtifactId = 634;
 			const int totalItemsCount = 10000;
 			const int startingIndex = 5000;
+			string defaultStatus = BatchStatus.New.GetDescription();
 
 			CreateResult result = new CreateResult
 			{
@@ -68,21 +70,23 @@ namespace Relativity.Sync.Tests.Unit
 			batch.StartingIndex.Should().Be(startingIndex);
 			batch.ArtifactId.Should().Be(_ARTIFACT_ID);
 
-			_objectManager.Verify(x => x.CreateAsync(_WORKSPACE_ID, It.Is<CreateRequest>(cr => AssertCreateRequest(cr, totalItemsCount, startingIndex, syncConfigurationArtifactId))), Times.Once);
+			_objectManager.Verify(x => x.CreateAsync(_WORKSPACE_ID, It.Is<CreateRequest>(cr => AssertCreateRequest(cr, totalItemsCount, startingIndex, syncConfigurationArtifactId, defaultStatus))), Times.Once);
 		}
 
-		private bool AssertCreateRequest(CreateRequest createRequest, int totalItemsCount, int startingIndex, int syncConfigurationArtifactId)
+		private bool AssertCreateRequest(CreateRequest createRequest, int totalItemsCount, int startingIndex, int syncConfigurationArtifactId, string batchStatus)
 		{
 			createRequest.ObjectType.Guid.Should().Be(BatchObjectTypeGuid);
 			createRequest.ParentObject.ArtifactID.Should().Be(syncConfigurationArtifactId);
-			const int three = 3;
-			createRequest.FieldValues.Count().Should().Be(three);
+			const int expectedNumberOfFields = 4;
+			createRequest.FieldValues.Count().Should().Be(expectedNumberOfFields);
 			createRequest.FieldValues.Should().Contain(x => x.Field.Guid == NameGuid);
 			createRequest.FieldValues.First(x => x.Field.Guid == NameGuid).Value.ToString().Should().NotBeNullOrWhiteSpace();
 			createRequest.FieldValues.Should().Contain(x => x.Field.Guid == TotalItemsCountGuid);
 			createRequest.FieldValues.First(x => x.Field.Guid == TotalItemsCountGuid).Value.Should().Be(totalItemsCount);
 			createRequest.FieldValues.Should().Contain(x => x.Field.Guid == StartingIndexGuid);
 			createRequest.FieldValues.First(x => x.Field.Guid == StartingIndexGuid).Value.Should().Be(startingIndex);
+			createRequest.FieldValues.Should().Contain(x => x.Field.Guid == StatusGuid);
+			createRequest.FieldValues.First(x => x.Field.Guid == StatusGuid).Value.Should().Be(batchStatus);
 			return true;
 		}
 
