@@ -22,32 +22,26 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 
 	public class TestHelper : ITestHelper
 	{
-		private string _relativityUserName;
-		private string _relativityPassword;
-
 		private readonly IServicesMgr _serviceManager;
 		private readonly ILogFactory _logFactory;
 		private readonly IInstanceSettingsBundle _instanceSettingsBundleMock;
+
+		public string RelativityUserName { get; }
+
+		public string RelativityPassword { get; }
 		
-		public string RelativityUserName {
-			get { return _relativityUserName ?? SharedVariables.RelativityUserName; }
-			set { _relativityUserName = value; }
-		}
-
-		public string RelativityPassword
-		{
-			get { return _relativityPassword ?? SharedVariables.RelativityPassword; }
-			set { _relativityPassword = value; }
-		}
-
-		public IPermissionRepository PermissionManager { get; }
-
 		public TestHelper()
+			: this(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword)
+		{ }
+
+		public TestHelper(string userName, string password)
 		{
-			PermissionManager = Substitute.For<IPermissionRepository>();
-			_serviceManager = Substitute.For<IServicesMgr>();
+			RelativityUserName = userName;
+			RelativityPassword = password;
+
 			_logFactory = Substitute.For<ILogFactory>();
 			_instanceSettingsBundleMock = Substitute.For<IInstanceSettingsBundle>();
+			_serviceManager = Substitute.For<IServicesMgr>();
 			_serviceManager.CreateProxy<IRSAPIClient>(Arg.Any<ExecutionIdentity>()).Returns(new ExtendedIRSAPIClient());
 			_serviceManager.CreateProxy<IPermissionManager>(ExecutionIdentity.CurrentUser).Returns(new ExtendedIPermissionManager(this, ExecutionIdentity.CurrentUser));
 			_serviceManager.CreateProxy<IPermissionManager>(ExecutionIdentity.System).Returns(new ExtendedIPermissionManager(this, ExecutionIdentity.System));
@@ -60,7 +54,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			_serviceManager.CreateProxy<IFieldManager>(ExecutionIdentity.System).Returns(new ExtendedIFieldManager(this, ExecutionIdentity.System));
 			_serviceManager.CreateProxy<IInstanceSettingManager>(ExecutionIdentity.CurrentUser).Returns(new ExtendedInstanceSettingManager(this, ExecutionIdentity.CurrentUser));
 			_serviceManager.CreateProxy<ISearchContainerManager>(ExecutionIdentity.CurrentUser).Returns(new ExtendedSearchContainerManager(this));
-		    _serviceManager.CreateProxy<IOAuth2ClientManager>(ExecutionIdentity.System).Returns(_ => CreateAdminProxy<IOAuth2ClientManager>());
+			_serviceManager.CreateProxy<IOAuth2ClientManager>(ExecutionIdentity.System).Returns(_ => CreateAdminProxy<IOAuth2ClientManager>());
 			_serviceManager.CreateProxy<IObjectManager>(ExecutionIdentity.System).Returns(_ => CreateAdminProxy<IObjectManager>());
 			_serviceManager.CreateProxy<IObjectManager>(ExecutionIdentity.CurrentUser).Returns(_ => CreateUserProxy<IObjectManager>());
 			_serviceManager.CreateProxy<IResourceServerManager>(ExecutionIdentity.CurrentUser).Returns(_ => CreateUserProxy<IResourceServerManager>());
@@ -94,6 +88,11 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			ICredentials credentials = new NetworkCredential(RelativityUserName, RelativityPassword);
 
 			return new WinEDDS.Service.SearchManager(credentials, new CookieContainer());
+		}
+
+		public ITestHelper CreateHelperForUser(string userName, string password)
+		{
+			return new TestHelper(userName, password);
 		}
 
 		public void Dispose()

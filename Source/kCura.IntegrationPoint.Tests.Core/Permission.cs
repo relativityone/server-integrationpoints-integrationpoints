@@ -12,22 +12,32 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static GroupPermissions GetGroupPermissions(int workspaceId, int groupId)
 		{
+			return GetGroupPermissionsAsync(workspaceId, groupId).GetAwaiter().GetResult();
+		}
+
+		public static async Task<GroupPermissions> GetGroupPermissionsAsync(int workspaceId, int groupId)
+		{
 			var groupRef = new GroupRef(groupId);
 			using (var proxy = Helper.CreateAdminProxy<IPermissionManager>())
 			{
-				return proxy.GetWorkspaceGroupPermissionsAsync(workspaceId, groupRef).GetResultsWithoutContextSync();
+				return await proxy.GetWorkspaceGroupPermissionsAsync(workspaceId, groupRef).ConfigureAwait(false);
 			}
 		}
 
 		public static void SavePermission(int workspaceId, GroupPermissions permissions)
 		{
+			SavePermissionAsync(workspaceId, permissions).GetAwaiter().GetResult();
+		}
+
+		public static async Task SavePermissionAsync(int workspaceId, GroupPermissions permissions)
+		{
 			using (var proxy = Helper.CreateAdminProxy<IPermissionManager>())
 			{
-				Task.Run(async () => await proxy.SetWorkspaceGroupPermissionsAsync(workspaceId, permissions)).Wait();
+				await proxy.SetWorkspaceGroupPermissionsAsync(workspaceId, permissions).ConfigureAwait(false);
 			}
 		}
 
-		public static void RemoveAddWorkspaceGroup(int workspaceId, GroupSelector groupSelector)
+		public static async Task RemoveAddWorkspaceGroupAsync(int workspaceId, GroupSelector groupSelector)
 		{
 			using (var proxy = Helper.CreateAdminProxy<IPermissionManager>())
 			{
@@ -37,7 +47,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				originalGroupSelector.EnabledGroups = groupSelector.EnabledGroups;
 				originalGroupSelector.LastModified = workspaceGroupSelector.LastModified;
 
-				proxy.AddRemoveWorkspaceGroupsAsync(workspaceId, originalGroupSelector).GetAwaiter().GetResult();
+				await proxy.AddRemoveWorkspaceGroupsAsync(workspaceId, originalGroupSelector).ConfigureAwait(false);
 			}
 		}
 	}

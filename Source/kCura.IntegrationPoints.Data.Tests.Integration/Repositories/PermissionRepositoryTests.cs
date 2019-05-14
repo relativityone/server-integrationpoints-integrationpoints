@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -14,6 +17,7 @@ using NUnit.Framework;
 using Relativity.Services.Group;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Permission;
+using Permission = kCura.IntegrationPoint.Tests.Core.Permission;
 using User = kCura.IntegrationPoint.Tests.Core.User;
 
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
@@ -21,19 +25,15 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 	[TestFixture]
 	public class PermissionRepositoryTests : RelativityProviderTemplate
 	{
-		private PermissionRepository _permissionRepo;
+		private PermissionRepository _userPermissionRepository;
+		private PermissionRepository _adminPermissionRepository;
 		private int _groupId;
 		private UserModel _user;
 		private GroupPermissions _groupPermission;
-		private IObjectTypeRepository _typeRepo;
-		private string _originalHelperUsername;
-		private string _originalHelperPassword;
-		private readonly Random _rand;
+		private IObjectTypeRepository _objectTypeRepository;
 
 		public PermissionRepositoryTests() : base("PermissionRepositoryTests", null)
-		{
-			_rand = new Random();
-		}
+		{ }
 
 		public override void SuiteSetup()
 		{
@@ -41,45 +41,40 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			InstanceSetting.UpsertAndReturnOldValueIfExists("Relativity.Authentication", "AdminsCanSetPasswords", "True");
 		}
 
-		public override void TestSetup()
+		[SetUp]
+		public async Task SetupAsync()
 		{
-			_typeRepo = Container.Resolve<IObjectTypeRepository>();
-			_permissionRepo = new PermissionRepository(Helper, SourceWorkspaceArtifactId);
-			_groupId = Group.CreateGroup("krowten");
-			_user = User.CreateUser("Gerron", "BadMan", $"gbadman{_rand.Next(int.MaxValue)}@relativity.com", new[] { _groupId });
+			await CreateTestUserAndGroupAsync().ConfigureAwait(false);
 
-			_originalHelperUsername = Helper.RelativityUserName;
-			_originalHelperPassword = Helper.RelativityPassword;
-
-			Helper.RelativityUserName = _user.EmailAddress;
-			Helper.RelativityPassword = _user.Password;
-
-			Group.AddGroupToWorkspace(SourceWorkspaceArtifactId, _groupId);
-			_groupPermission = kCura.IntegrationPoint.Tests.Core.Permission.GetGroupPermissions(SourceWorkspaceArtifactId, _groupId);
+			_objectTypeRepository = Container.Resolve<IObjectTypeRepository>();
+			_adminPermissionRepository = new PermissionRepository(Helper, SourceWorkspaceArtifactId);
+			ITestHelper helperForUser = Helper.CreateHelperForUser(_user.EmailAddress, _user.Password);
+			_userPermissionRepository = new PermissionRepository(helperForUser, SourceWorkspaceArtifactId);
 		}
 
 		public override void TestTeardown()
 		{
 			User.DeleteUser(_user.ArtifactID);
 			Group.DeleteGroup(_groupId);
-
-			Helper.RelativityUserName = _originalHelperUsername;
-			Helper.RelativityPassword = _originalHelperPassword;
 		}
 
 		[TestCase(true, true, true)]
 		[TestCase(true, false, false)]
 		[TestCase(false, false, false)]
 		[TestCase(false, true, true)]
-		public void UserCanExport(bool isEditable, bool isSelected, bool expectedResult)
+		public async Task UserCanExport(bool isEditable, bool isSelected, bool expectedResult)
 		{
 			// arrange
 			GenericPermission permission = _groupPermission.AdminPermissions.FindPermission("Allow Export");
 			permission.Editable = isEditable;
 			permission.Selected = isSelected;
-			kCura.IntegrationPoint.Tests.Core.Permission.SavePermission(SourceWorkspaceArtifactId, _groupPermission);
 
-			bool result = _permissionRepo.UserCanExport();
+			await Permission.SavePermissionAsync(SourceWorkspaceArtifactId, _groupPermission).ConfigureAwait(false);
+
+			// act
+			bool result = _userPermissionRepository.UserCanExport();
+
+			// assert
 			Assert.AreEqual(expectedResult, result);
 		}
 
@@ -87,15 +82,20 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		[TestCase(true, false, false)]
 		[TestCase(false, false, false)]
 		[TestCase(false, true, true)]
-		public void UserCanImport(bool isEditable, bool isSelected, bool expectedResult)
+		public async Task UserCanImport(bool isEditable, bool isSelected, bool expectedResult)
 		{
+			// arrange
 			GenericPermission permission = _groupPermission.AdminPermissions.FindPermission("Allow Import");
 			permission.Editable = isEditable;
 			permission.Selected = isSelected;
-			kCura.IntegrationPoint.Tests.Core.Permission.SavePermission(SourceWorkspaceArtifactId, _groupPermission);
 
-			bool result = _permissionRepo.UserCanImport();
-			Assert.AreEqual(expectedResult, result);
+			await Permission.SavePermissionAsync(SourceWorkspaceArtifactId, _groupPermission).ConfigureAwait(false);
+
+			// act
+			bool result = _userPermissionRepository.UserCanImport();
+
+			// assert
+			result.Should().Be(expectedResult);
 		}
 
 		// NOTE : ObjectPermissions Document must have View permissions when adding Add permissions.
@@ -108,27 +108,36 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		[TestCase(true, false, true, true, true)]
 		[TestCase(false, true, true, true, true)]
 		[TestCase(true, true, true, true, true)]
-		public void UserCanEditDocuments(bool addSelected, bool deleteSelected, bool editSelected, bool viewSelected, bool expectedResult)
+		public async Task UserCanEditDocuments(bool addSelected, bool deleteSelected, bool editSelected, bool viewSelected, bool expectedResult)
 		{
-			ObjectPermission permission = _groupPermission.ObjectPermissions.FindPermission("Document");
+			// arrange
+			ObjectPermission permission = _groupPermission.ObjectPermissions.FindPermission(ObjectTypes.Document);
 			permission.AddSelected = addSelected;
 			permission.DeleteSelected = deleteSelected;
 			permission.EditSelected = editSelected;
 			permission.ViewSelected = viewSelected;
-			kCura.IntegrationPoint.Tests.Core.Permission.SavePermission(SourceWorkspaceArtifactId, _groupPermission);
 
-			bool result = _permissionRepo.UserCanEditDocuments();
-			Assert.AreEqual(expectedResult, result);
+			await Permission.SavePermissionAsync(SourceWorkspaceArtifactId, _groupPermission).ConfigureAwait(false);
+
+			// act
+			bool result = _userPermissionRepository.UserCanEditDocuments();
+
+			// assert
+			result.Should().Be(expectedResult);
 		}
 
 		[Test]
 		public void UserHasPermissionToAccessWorkspace_DoHavePermission()
 		{
-			Assert.IsTrue(_permissionRepo.UserHasPermissionToAccessWorkspace());
+			// act
+			bool result = _userPermissionRepository.UserHasPermissionToAccessWorkspace();
+
+			// assert
+			result.Should().BeTrue();
 		}
 
 		[Test]
-		public void UserHasPermissionToAccessWorkspace_DoNotHavePermission()
+		public async Task UserHasPermissionToAccessWorkspace_DoNotHavePermission()
 		{
 			// arrange
 			var selector = new GroupSelector()
@@ -139,94 +148,126 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 					new GroupRef(_groupId)
 				}
 			};
-			kCura.IntegrationPoint.Tests.Core.Permission.RemoveAddWorkspaceGroup(SourceWorkspaceArtifactId, selector);
+			await Permission.RemoveAddWorkspaceGroupAsync(SourceWorkspaceArtifactId, selector).ConfigureAwait(false);
 
-			Assert.IsFalse(_permissionRepo.UserHasPermissionToAccessWorkspace());
+			// act
+			bool result = _userPermissionRepository.UserHasPermissionToAccessWorkspace();
+
+			// assert
+			result.Should().BeFalse();
 		}
 
 		[TestCase(true, true)]
 		[TestCase(false, false)]
-		public void UserHasArtifactTypePermission_Add(bool addSelected, bool expectedResult)
+		public async Task UserHasArtifactTypePermission_Add(bool addSelected, bool expectedResult)
 		{
-			ObjectPermission permission = _groupPermission.ObjectPermissions.FindPermission("Integration Point");
+			// arrange
+			ObjectPermission permission = _groupPermission.ObjectPermissions.FindPermission(ObjectTypes.IntegrationPoint);
 			permission.AddSelected = addSelected;
 			permission.ViewSelected = true;
-			kCura.IntegrationPoint.Tests.Core.Permission.SavePermission(SourceWorkspaceArtifactId, _groupPermission);
 
-			bool result = _permissionRepo.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.IntegrationPoint), ArtifactPermission.Create);
-			Assert.AreEqual(expectedResult, result);
+			await Permission.SavePermissionAsync(SourceWorkspaceArtifactId, _groupPermission).ConfigureAwait(false);
+
+			// act
+			bool result = _userPermissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.IntegrationPoint), ArtifactPermission.Create);
+
+			// assert
+			result.Should().Be(expectedResult);
 		}
 
 		[TestCase(true, true)]
 		[TestCase(false, false)]
-		public void UserHasArtifactTypePermission_Edit(bool editSelected, bool expectedResult)
+		public async Task UserHasArtifactTypePermission_Edit(bool editSelected, bool expectedResult)
 		{
+			// arrange
 			ObjectPermission permission = _groupPermission.ObjectPermissions.FindPermission("Job History");
 			permission.EditSelected = editSelected;
 			permission.ViewSelected = true;
-			kCura.IntegrationPoint.Tests.Core.Permission.SavePermission(SourceWorkspaceArtifactId, _groupPermission);
 
-			bool result = _permissionRepo.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.JobHistory), ArtifactPermission.Edit);
-			Assert.AreEqual(expectedResult, result);
+			await Permission.SavePermissionAsync(SourceWorkspaceArtifactId, _groupPermission).ConfigureAwait(false);
+
+			// act
+			bool result = _userPermissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.JobHistory), ArtifactPermission.Edit);
+
+			// assert
+			result.Should().Be(expectedResult);
 		}
 
 		[TestCase(true, true)]
 		[TestCase(false, false)]
-		public void UserHasArtifactTypePermission_View(bool viewSelected, bool expectedResult)
+		public async Task UserHasArtifactTypePermission_View(bool viewSelected, bool expectedResult)
 		{
-			ObjectPermission permission = _groupPermission.ObjectPermissions.FindPermission("Job History");
+			// arrange
+			ObjectPermission permission = _groupPermission.ObjectPermissions.FindPermission(ObjectTypes.JobHistory);
 			permission.ViewSelected = viewSelected;
-			kCura.IntegrationPoint.Tests.Core.Permission.SavePermission(SourceWorkspaceArtifactId, _groupPermission);
-			bool result = _permissionRepo.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.JobHistory), ArtifactPermission.View);
 
-			Assert.AreEqual(result, expectedResult);
+			await Permission.SavePermissionAsync(SourceWorkspaceArtifactId, _groupPermission).ConfigureAwait(false);
+
+			// act
+			bool result = _userPermissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.JobHistory), ArtifactPermission.View);
+
+			// assert
+			result.Should().Be(expectedResult);
 		}
 
 		[TestCase(true, true)]
 		[TestCase(false, false)]
-		public void UserHasArtifactTypePermissions_ArtifactId_OnePermission(bool viewSelected, bool expectedResult)
+		public async Task UserHasArtifactTypePermissions_ArtifactId_OnePermission(bool viewSelected, bool expectedResult)
 		{
-			ObjectPermission permission = _groupPermission.ObjectPermissions.FindPermission("Job History");
+			// arrange
+			ObjectPermission permission = _groupPermission.ObjectPermissions.FindPermission(ObjectTypes.JobHistory);
 			permission.ViewSelected = viewSelected;
-			kCura.IntegrationPoint.Tests.Core.Permission.SavePermission(SourceWorkspaceArtifactId, _groupPermission);
-			int jobHistoryErrorTypeId = _typeRepo.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.JobHistory));
 
-			bool result = _permissionRepo.UserHasArtifactTypePermissions(jobHistoryErrorTypeId, new[] { ArtifactPermission.View });
-			Assert.AreEqual(expectedResult, result);
+			await Permission.SavePermissionAsync(SourceWorkspaceArtifactId, _groupPermission).ConfigureAwait(false);
+			int jobHistoryErrorTypeId = _objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.JobHistory));
+
+			// act
+			bool result = _userPermissionRepository.UserHasArtifactTypePermissions(jobHistoryErrorTypeId, new[] { ArtifactPermission.View });
+
+			// assert
+			result.Should().Be(expectedResult);
 		}
 
 		[TestCase(true, false, false)]
 		[TestCase(true, true, true)]
 		[TestCase(false, false, false)]
-		public void UserHasArtifactTypePermissions_ArtifactId_MultiplePermission(bool viewSelected, bool editSelected, bool expectedResult)
+		public async Task UserHasArtifactTypePermissions_ArtifactId_MultiplePermission(bool viewSelected, bool editSelected, bool expectedResult)
 		{
-			ObjectPermission permission = _groupPermission.ObjectPermissions.FindPermission("Job History");
+			// arrange
+			ObjectPermission permission = _groupPermission.ObjectPermissions.FindPermission(ObjectTypes.JobHistory);
 			permission.ViewSelected = viewSelected;
 			permission.EditSelected = editSelected;
 
-			kCura.IntegrationPoint.Tests.Core.Permission.SavePermission(SourceWorkspaceArtifactId, _groupPermission);
-			int jobHistoryErrorTypeId = _typeRepo.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.JobHistory));
+			await Permission.SavePermissionAsync(SourceWorkspaceArtifactId, _groupPermission).ConfigureAwait(false);
+			int jobHistoryErrorTypeId = _objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.JobHistory));
 
-			bool result = _permissionRepo.UserHasArtifactTypePermissions(jobHistoryErrorTypeId, new[] { ArtifactPermission.View, ArtifactPermission.Edit });
-			Assert.AreEqual(expectedResult, result);
+			// act
+			bool result = _userPermissionRepository.UserHasArtifactTypePermissions(jobHistoryErrorTypeId, new[] { ArtifactPermission.View, ArtifactPermission.Edit });
+
+			// assert
+			result.Should().Be(expectedResult);
 		}
 
 		[TestCase(true, false, false)]
 		[TestCase(false, true, false)]
 		[TestCase(true, true, true)]
 		[TestCase(false, false, false)]
-		public void UserHasArtifactTypePermissions_ArtifactId_CheckSubSetOfThePermissions(bool addSelected, bool editSelected, bool expectedResult)
+		public async Task UserHasArtifactTypePermissions_ArtifactId_CheckSubSetOfThePermissions(bool hasAddPermission, bool hasEditPermission, bool expectedResult)
 		{
-			ObjectPermission permission = _groupPermission.ObjectPermissions.FindPermission("Job History");
-			permission.AddSelected = addSelected;
-			permission.EditSelected = editSelected;
+			// arrange
+			ObjectPermission permission = _groupPermission.ObjectPermissions.FindPermission(ObjectTypes.JobHistory);
+			permission.AddSelected = hasAddPermission;
+			permission.EditSelected = hasEditPermission;
 			permission.ViewSelected = true;
 
-			kCura.IntegrationPoint.Tests.Core.Permission.SavePermission(SourceWorkspaceArtifactId, _groupPermission);
-			int jobHistoryErrorTypeId = _typeRepo.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.JobHistory));
+			await Permission.SavePermissionAsync(SourceWorkspaceArtifactId, _groupPermission).ConfigureAwait(false);
+			int jobHistoryErrorTypeId = _objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.JobHistory));
 
-			bool result = _permissionRepo.UserHasArtifactTypePermissions(jobHistoryErrorTypeId, new[] { ArtifactPermission.Edit, ArtifactPermission.Create });
-			Assert.AreEqual(expectedResult, result);
+			// act
+			bool result = _userPermissionRepository.UserHasArtifactTypePermissions(jobHistoryErrorTypeId, new[] { ArtifactPermission.Edit, ArtifactPermission.Create });
+
+			// assert
+			result.Should().Be(expectedResult);
 		}
 
 		[TestCase(true)]
@@ -234,9 +275,26 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		public void UserHasArtifactInstancePermission_UsingAdmin(bool useAdmin)
 		{
 			// arrange
-			Helper.RelativityUserName = SharedVariables.RelativityUserName;
-			Helper.RelativityPassword = SharedVariables.RelativityPassword;
+			IntegrationPointModel model = CreateNewIntegrationPoint();
 
+			if (useAdmin == false)
+			{
+				Group.RemoveGroupFromWorkspace(SourceWorkspaceArtifactId, _groupId);
+			}
+			IPermissionRepository sut = useAdmin ? _adminPermissionRepository : _userPermissionRepository;
+
+			// act
+			bool result = sut.UserHasArtifactInstancePermission(
+				Core.Constants.ObjectTypeArtifactTypesGuid.IntegrationPoint,
+				model.ArtifactID,
+				ArtifactPermission.View);
+
+			// assert
+			result.Should().Be(useAdmin);
+		}
+
+		private IntegrationPointModel CreateNewIntegrationPoint()
+		{
 			var model = new IntegrationPointModel()
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
@@ -251,14 +309,30 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
 			};
 			model = CreateOrUpdateIntegrationPoint(model);
+			return model;
+		}
 
-			if (useAdmin == false)
-			{
-				Group.RemoveGroupFromWorkspace(SourceWorkspaceArtifactId, _groupId);
-				Helper.RelativityUserName = _user.EmailAddress;
-				Helper.RelativityPassword = _user.Password;
-			}
-			Assert.AreEqual(useAdmin, _permissionRepo.UserHasArtifactInstancePermission(Core.Constants.ObjectTypeArtifactTypesGuid.IntegrationPoint, model.ArtifactID, ArtifactPermission.View));
+		private async Task CreateTestUserAndGroupAsync()
+		{
+			await CreateTestGroupAsync();
+			CreateTestUser();
+		}
+
+		private async Task CreateTestGroupAsync()
+		{
+			_groupId = Group.CreateGroup("krowten");
+			Group.AddGroupToWorkspace(SourceWorkspaceArtifactId, _groupId);
+			_groupPermission = await Permission.GetGroupPermissionsAsync(SourceWorkspaceArtifactId, _groupId);
+		}
+
+		private void CreateTestUser()
+		{
+			var randomNumbersGenerator = new Random();
+			string firstName = "Gerron";
+			string lastName = "BadMan";
+			string emailAddress = $"gbadman{randomNumbersGenerator.Next(int.MaxValue)}@relativity.com";
+
+			_user = User.CreateUser(firstName, lastName, emailAddress, new[] { _groupId });
 		}
 	}
 }
