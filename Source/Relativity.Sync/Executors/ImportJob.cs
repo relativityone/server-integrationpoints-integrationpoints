@@ -45,15 +45,14 @@ namespace Relativity.Sync.Executors
 
 		private void HandleFatalException(JobReport jobReport)
 		{
-			const string errorMessage = "Fatal exception occurred in ImportAPI during import job";
-			_logger.LogError(jobReport.FatalException, errorMessage);
+			_logger.LogError(jobReport.FatalException, jobReport.FatalException?.Message);
 			_jobCompletedSuccessfully = false;
 			_importApiException = jobReport.FatalException;
 
 			CreateJobHistoryErrorDto jobError = new CreateJobHistoryErrorDto(_jobHistoryArtifactId, ErrorType.Job)
 			{
-				ErrorMessage = errorMessage,
-				StackTrace = jobReport.FatalException.StackTrace
+				ErrorMessage = jobReport.FatalException?.Message,
+				StackTrace = jobReport.FatalException?.StackTrace
 			};
 			CreateJobHistoryError(jobError);
 
