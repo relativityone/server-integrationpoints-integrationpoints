@@ -1,5 +1,6 @@
 using System;
 using System.Security.Claims;
+using kCura.IntegrationPoints.Common.Monitoring.Constants;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data.Contexts;
@@ -9,6 +10,7 @@ using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
+using Relativity.Telemetry.MetricsCollection;
 
 namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 {
@@ -65,9 +67,22 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 				{
 					int documentCount = ScratchTableRepository.Count;
 					LogTaggingDocumentsStarted(documentCount);
-					_destinationWorkspaceRepository.TagDocsWithDestinationWorkspaceAndJobHistory(_claimsPrincipal, documentCount,
-						_destinationWorkspaceRdoId, _jobHistoryInstanceId,
-						ScratchTableRepository.GetTempTableName(), _sourceWorkspaceId);
+					using (Client.MetricsClient.LogDuration(
+						TelemetryMetricsBucketNames.BUCKET_SYNC_SOURCE_DOCUMENTS_TAGGING_DURATION,
+						Guid.Empty,
+						_jobHistoryInstanceId.ToString())
+						)
+					{
+						_destinationWorkspaceRepository.TagDocsWithDestinationWorkspaceAndJobHistory(
+							_claimsPrincipal,
+							documentCount,
+							_destinationWorkspaceRdoId,
+							_jobHistoryInstanceId,
+							ScratchTableRepository.GetTempTableName(), 
+							_sourceWorkspaceId
+						);
+					}
+
 				}
 			}
 			catch (Exception e)
