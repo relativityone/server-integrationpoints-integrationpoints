@@ -303,8 +303,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 				   || testCase is ItShouldExportProductionSetWithImages
 				   || testCase is ItShouldExportProductionSetWithNatives
 				   || testCase is ItShouldExportSavedSearch
-				   || testCase is ItShouldLogJobErrorForNegativeVolumeStartNumber
-				   || testCase is ItShouldLogJobErrorForNegativeSubdirectoryStartNumber
 				;
 		}
 	}

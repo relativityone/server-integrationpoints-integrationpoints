@@ -88,8 +88,6 @@
     <Compile Include="TestCases\ItShouldLogItemErrorForTooSmallVolumeDigitPadding.cs" />
     <Compile Include="TestCases\ItShouldLogJobErrorForInvalidFilesharePathFormat.cs" />
     <Compile Include="TestCases\ItShouldLogJobErrorForInvalidStartExportAtRecordValue.cs" />
-    <Compile Include="TestCases\ItShouldLogJobErrorForNegativeSubdirectoryStartNumber.cs" />
-    <Compile Include="TestCases\ItShouldLogJobErrorForNegativeVolumeStartNumber.cs" />
     <Compile Include="TestCases\ItShouldLogJobErrorForNotExistingFileshare.cs" />
     <Compile Include="TestCases\ItShouldLogJobErrorWhenNotOverwritingExistingFiles.cs" />
     <Compile Include="TestCases\ItShouldNotExportExtractedText.cs" />
