@@ -26,14 +26,6 @@ namespace kCura.IntegrationPoints.Data
 			_retryPolicy = CreateRetryPolicy();
 		}
 
-		public T ExecuteWithRetries<T>(Func<Task<T>> function, [CallerMemberName] string callerName = "")
-		{
-			return ExecuteWithRetriesAsync(function, callerName)
-				.ConfigureAwait(false)
-				.GetAwaiter()
-				.GetResult();
-		}
-
 		public Task<T> ExecuteWithRetriesAsync<T>(Func<Task<T>> function, [CallerMemberName] string callerName = "")
 		{
 			var contextData = new Dictionary<string, object>
