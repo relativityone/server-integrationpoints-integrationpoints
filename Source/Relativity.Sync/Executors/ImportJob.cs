@@ -8,8 +8,8 @@ namespace Relativity.Sync.Executors
 {
 	internal sealed class ImportJob : IImportJob
 	{
-		private bool _jobCompletedSuccessfully;
-		private Exception _importApiException;
+		private bool _jobCompletedSuccessfully = false;
+		private Exception _importApiException = null;
 
 		private const string _IDENTIFIER_COLUMN = "Identifier";
 		private const string _MESSAGE_COLUMN = "Message";
@@ -87,22 +87,20 @@ namespace Relativity.Sync.Executors
 
 		public async Task RunAsync(CancellationToken token)
 		{
-			token.ThrowIfCancellationRequested();
+			if (token.IsCancellationRequested)
+			{
+				return;
+			}
 
 			try
 			{
-				await Task.Run(_importBulkArtifactJob.Execute, token).ConfigureAwait(false);
-				await _semaphoreSlim.WaitAsync(token).ConfigureAwait(false);
+				await Task.Run(() => _importBulkArtifactJob.Execute(), token).ConfigureAwait(false);
+				await _semaphoreSlim.WaitAsync().ConfigureAwait(false); // we don't want to cancel waiting for the import job to finish
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, "Failed to execute import job.");
+				_logger.LogError(ex, "Failed to start executing import job.");
 				throw;
-			}
-
-			if (token.IsCancellationRequested)
-			{
-				throw new OperationCanceledException(token);
 			}
 
 			if (!_jobCompletedSuccessfully)

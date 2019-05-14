@@ -87,12 +87,6 @@ namespace Relativity.Sync.Tests.Unit
 				dto.ErrorMessage == errorMessage && dto.ErrorType == ErrorType.Job)));
 		}
 
-		private static JobReport CreateJobReport()
-		{
-			JobReport jobReport = (JobReport) Activator.CreateInstance(typeof(JobReport), true);
-			return jobReport;
-		}
-
 		[Test]
 		public void ItShouldHandleOnComplete()
 		{
@@ -106,28 +100,38 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public void ItShouldThrowExceptionWhenCanceled()
+		public void ItShouldNotThrowExceptionWhenCanceled()
 		{
-			Mock<IImportBulkArtifactJob> importBulkArtifactJob = new Mock<IImportBulkArtifactJob>();
-			const int executionDurationMillisecods = 10;
-			importBulkArtifactJob.Setup(x => x.Execute()).Callback(() => Task.Delay(executionDurationMillisecods).ConfigureAwait(false).GetAwaiter().GetResult());
 			CancellationTokenSource token = new CancellationTokenSource();
-			const int cancellationDelay = 5;
-			token.CancelAfter(cancellationDelay);
-
-			ImportJob importJob = new ImportJob(importBulkArtifactJob.Object, _semaphore.Object, _jobHistoryErrorRepository.Object,
-				_SOURCE_WORKSPACE_ARTIFACT_ID, _JOB_HISTORY_ARTIFACT_ID, new EmptyLogger());
-
+			token.Cancel();
+			
 			// act
-			Func<Task> action = async () => await importJob.RunAsync(token.Token).ConfigureAwait(false);
+			Func<Task> action = async () => await _importJob.RunAsync(token.Token).ConfigureAwait(false);
 
 			// assert
-			action.Should().Throw<OperationCanceledException>();
+			action.Should().NotThrow<OperationCanceledException>();
+		}
+
+		[Test]
+		public void ItShouldDisposeSemaphoreSlim()
+		{
+			// act
+			_importJob.Dispose();
+
+			// assert
+			_semaphore.Verify(x => x.Dispose());
 		}
 
 		public void Dispose()
 		{
 			_importJob?.Dispose();
 		}
+
+		private static JobReport CreateJobReport()
+		{
+			JobReport jobReport = (JobReport)Activator.CreateInstance(typeof(JobReport), true);
+			return jobReport;
+		}
+
 	}
 }

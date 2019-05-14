@@ -39,20 +39,21 @@ namespace Relativity.Sync.Executors
 
 				foreach (int batchId in batchesIds)
 				{
+					if (token.IsCancellationRequested)
+					{
+						_logger.LogInformation("Import job has been canceled.");
+						result = ExecutionResult.Canceled();
+						break;
+					}
+
 					IBatch batch = await _batchRepository.GetAsync(configuration.SourceWorkspaceArtifactId, batchId).ConfigureAwait(false);
 					_logger.LogVerbose("Processing batch ID: {batchId}", batchId);
 					using (IImportJob importJob = _importJobFactory.CreateImportJob(configuration, batch))
 					{
 						await importJob.RunAsync(token).ConfigureAwait(false);
 					}
+					_logger.LogInformation("Batch ID: {batchId} processed successfully.", batchId);
 				}
-
-				_logger.LogVerbose("All batches processed successfully.");
-			}
-			catch (OperationCanceledException)
-			{
-				_logger.LogInformation("Import job has been canceled.");
-				result = ExecutionResult.Canceled();
 			}
 			catch (SyncException ex)
 			{

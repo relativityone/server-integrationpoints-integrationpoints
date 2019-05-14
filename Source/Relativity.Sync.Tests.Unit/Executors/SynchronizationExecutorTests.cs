@@ -33,7 +33,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_dateTime = new Mock<IDateTime>();
 			_synchronizationExecutor = new SynchronizationExecutor(_importJobFactory.Object, _batchRepository.Object, _syncMetrics.Object, _dateTime.Object, new EmptyLogger());
 		}
-
+		
 		[TestCase(0)]
 		[TestCase(1)]
 		[TestCase(5)]
@@ -51,15 +51,16 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		}
 
 		[Test]
-		public async Task ItShouldCancelImportJobByThrowingException()
+		public async Task ItShouldCancelImportJob()
 		{
 			const int numberOfBatches = 1;
 			SetupImportJobFactory(numberOfBatches);
 
-			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).Throws<OperationCanceledException>();
+			CancellationTokenSource tokenSource = new CancellationTokenSource();
+			tokenSource.Cancel();
 
 			// act
-			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(Mock.Of<ISynchronizationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(Mock.Of<ISynchronizationConfiguration>(), tokenSource.Token).ConfigureAwait(false);
 
 			// assert
 			result.Status.Should().Be(ExecutionStatus.Canceled);

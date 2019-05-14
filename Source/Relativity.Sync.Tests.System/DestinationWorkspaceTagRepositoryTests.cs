@@ -12,6 +12,7 @@ using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Helpers;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Tests.System.Stubs;
+using ImportJobFactory = Relativity.Sync.Tests.System.Helpers.ImportJobFactory;
 
 namespace Relativity.Sync.Tests.System
 {
