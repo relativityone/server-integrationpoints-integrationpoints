@@ -33,6 +33,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 			IViewFieldRepository viewFieldRepository = Substitute.For<IViewFieldRepository>();
 			IFileRepository fileRepository = Substitute.For<IFileRepository>();
 			IFileFieldRepository fileFieldRepository = Substitute.For<IFileFieldRepository>();
+			IViewRepository viewRepository = Substitute.For<IViewRepository>();
 			var contextUser = new CurrentUser
 			{
 				ID = 9
@@ -48,7 +49,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 				repositoryFactory, 
 				fileRepository, 
 				fileFieldRepository, 
-				viewFieldRepository, 
+				viewFieldRepository,
+				viewRepository,
 				contextUser
 			);
 		}

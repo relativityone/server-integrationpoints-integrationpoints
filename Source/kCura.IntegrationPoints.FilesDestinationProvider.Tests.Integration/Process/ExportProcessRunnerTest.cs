@@ -103,11 +103,21 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			IViewFieldRepository viewFieldRepository = _windsorContainer.Resolve<IViewFieldRepository>();
 			IFileRepository fileRepository = _windsorContainer.Resolve<IFileRepository>();
 			IFileFieldRepository fileFieldRepository = _windsorContainer.Resolve<IFileFieldRepository>();
+			IViewRepository viewRepository = _windsorContainer.Resolve<IViewRepository>();
 			IInstanceSettingRepository instanceSettingRepository =
 				_windsorContainer.Resolve<IInstanceSettingRepository>();
 			var user = new CurrentUser() {ID = 9};
 			IAPILog logger = helper.GetLoggerFactory().GetLogger();
-			var exportServiceFactory = new ExportServiceFactory(logger, instanceSettingRepository, repositoryFactory, fileRepository, fileFieldRepository, viewFieldRepository, user);
+			var exportServiceFactory = new ExportServiceFactory(
+				logger, 
+				instanceSettingRepository, 
+				repositoryFactory, 
+				fileRepository, 
+				fileFieldRepository, 
+				viewFieldRepository,
+				viewRepository, 
+				user
+			);
 			
 			var exportProcessBuilder = new ExportProcessBuilder(
 				configFactoryMock,

@@ -95,7 +95,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				try
 				{
 					Task<List<PermissionValue>> permissionValuesTask = proxy.GetPermissionSelectedAsync(_workspaceArtifactId, permissionRefs, artifactId);
-					List<PermissionValue> permissionValues = permissionValuesTask.GetResultsWithoutContextSync();
+					List<PermissionValue> permissionValues = permissionValuesTask.GetAwaiter().GetResult();
 
 					if (permissionValues != null && permissionValues.Any())
 					{
@@ -126,7 +126,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				try
 				{
 					Task<List<PermissionValue>> permissionValuesTask = proxy.GetPermissionSelectedAsync(_workspaceArtifactId, permissionRefs);
-					List<PermissionValue> permissionValues = permissionValuesTask.GetResultsWithoutContextSync();
+					List<PermissionValue> permissionValues = permissionValuesTask.GetAwaiter().GetResult();
 
 					if (permissionValues != null && permissionValues.Any())
 					{
@@ -172,7 +172,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				try
 				{
 					Task<List<PermissionValue>> permissionValuesTask = proxy.GetPermissionSelectedAsync(_workspaceArtifactId, permissionRefs);
-					List<PermissionValue> permissionValues = permissionValuesTask.GetResultsWithoutContextSync();
+					List<PermissionValue> permissionValues = permissionValuesTask.GetAwaiter().GetResult();
 
 					if (permissionValues != null && permissionValues.Any())
 					{
@@ -219,7 +219,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				{
 					Task<List<PermissionValue>> permissionValuesTask = proxy.GetPermissionSelectedAsync(workspaceId,
 						new List<PermissionRef>() { permission });
-					List<PermissionValue> permissionValues = permissionValuesTask.GetResultsWithoutContextSync();
+					List<PermissionValue> permissionValues = permissionValuesTask.GetAwaiter().GetResult();
 
 					if (permissionValues == null || !permissionValues.Any())
 					{

@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			var groupRef = new GroupRef(groupId);
 			using (var proxy = Helper.CreateAdminProxy<IPermissionManager>())
 			{
-				return proxy.GetWorkspaceGroupPermissionsAsync(workspaceId, groupRef).GetResultsWithoutContextSync();
+				return proxy.GetWorkspaceGroupPermissionsAsync(workspaceId, groupRef).GetAwaiter().GetResult();
 			}
 		}
 
@@ -31,8 +31,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 			using (var proxy = Helper.CreateAdminProxy<IPermissionManager>())
 			{
-				GroupSelector workspaceGroupSelector = proxy.GetWorkspaceGroupSelectorAsync(workspaceId).GetResultsWithoutContextSync();
-				GroupSelector originalGroupSelector = proxy.GetAdminGroupSelectorAsync().GetResultsWithoutContextSync();
+				GroupSelector workspaceGroupSelector = proxy.GetWorkspaceGroupSelectorAsync(workspaceId).GetAwaiter().GetResult();
+				GroupSelector originalGroupSelector = proxy.GetAdminGroupSelectorAsync().GetAwaiter().GetResult();
 				originalGroupSelector.DisabledGroups = groupSelector.DisabledGroups;
 				originalGroupSelector.EnabledGroups = groupSelector.EnabledGroups;
 				originalGroupSelector.LastModified = workspaceGroupSelector.LastModified;

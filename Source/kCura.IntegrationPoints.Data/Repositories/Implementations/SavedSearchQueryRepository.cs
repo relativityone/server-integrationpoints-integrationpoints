@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			QueryRequest query = CreateQueryRequest(condition);
 
-			ArtifactDTO[] results = this.RetrieveAllArtifactsAsync(query).GetResultsWithoutContextSync();
+			ArtifactDTO[] results = this.RetrieveAllArtifactsAsync(query).GetAwaiter().GetResult();
 
 			IEnumerable<SavedSearchDTO> savedSearches = results.Select(ConvertArtifactDTOToSavedSearchDTO);
 

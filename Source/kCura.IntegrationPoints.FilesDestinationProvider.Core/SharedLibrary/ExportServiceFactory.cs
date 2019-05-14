@@ -16,6 +16,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 		private readonly IViewFieldRepository _viewFieldRepository;
 		private readonly IFileRepository _fileRepository;
 		private readonly IFileFieldRepository _fileFieldRepository;
+		private readonly IViewRepository _viewRepository;
 		private readonly IAPILog _logger;
 
 		public ExportServiceFactory(IAPILog logger,
@@ -24,6 +25,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 			IFileRepository fileRepository,
 			IFileFieldRepository fileFieldRepository, 
 			IViewFieldRepository viewFieldRepository,
+			IViewRepository viewRepository,
 			CurrentUser contextUser)
 		{
 			_logger = logger.ForContext<ExportServiceFactory>();
@@ -32,6 +34,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 			_fileRepository = fileRepository;
 			_fileFieldRepository = fileFieldRepository;
 			_viewFieldRepository = viewFieldRepository;
+			_viewRepository = viewRepository;
 			_contextUser = contextUser;
 		}
 
@@ -41,10 +44,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 			{
 				LogUsingRelativityCore();
 				return new CoreServiceFactory(
-					_repositoryFactory, 
-					_viewFieldRepository, 
-					_fileFieldRepository, 
-					_fileRepository, 
+					_repositoryFactory,
+					_viewFieldRepository,
+					_fileFieldRepository,
+					_fileRepository,
+					_viewRepository,
 					exportDataContext.ExportFile,
 					new WebApiServiceFactory(exportDataContext.ExportFile), 
 					_contextUser.ID

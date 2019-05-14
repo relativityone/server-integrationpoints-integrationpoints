@@ -67,7 +67,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			if (documents.Count > 0)
 			{
 				artifacts = _documentRepository.RetrieveDocumentsAsync(documents,
-					new HashSet<int>(new[] { _identifierFieldId })).GetResultsWithoutContextSync();
+					new HashSet<int>(new[] { _identifierFieldId })).GetAwaiter().GetResult();
 			}
 			else
 			{

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
@@ -55,7 +56,15 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 			using (var proxy = Helper.CreateAdminProxy<IKeywordSearchManager>())
 			{
-				return proxy.CreateSingleAsync(workspaceArtifactId, search).GetResultsWithoutContextSync();
+				return proxy.CreateSingleAsync(workspaceArtifactId, search).GetAwaiter().GetResult();
+			}
+		}
+
+		public static async Task<KeywordSearch> ReadAsync(int workspaceArtifactID, int searchArtifactID)
+		{
+			using (var proxy = Helper.CreateAdminProxy<IKeywordSearchManager>())
+			{
+				return await proxy.ReadSingleAsync(workspaceArtifactID, searchArtifactID).ConfigureAwait(false);
 			}
 		}
 
@@ -63,7 +72,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 			using (var proxy = Helper.CreateAdminProxy<ISearchContainerManager>())
 			{
-				return proxy.CreateSingleAsync(workspaceArtifactId, searchContainer).GetResultsWithoutContextSync();
+				return proxy.CreateSingleAsync(workspaceArtifactId, searchContainer).GetAwaiter().GetResult();
 			}
 		}
 

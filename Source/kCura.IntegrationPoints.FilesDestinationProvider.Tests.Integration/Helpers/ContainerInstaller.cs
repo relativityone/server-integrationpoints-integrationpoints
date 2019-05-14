@@ -33,6 +33,7 @@ using Relativity.API;
 using Relativity.Services.FileField;
 using Relativity.Services.Interfaces.File;
 using Relativity.Services.Interfaces.ViewField;
+using Relativity.Services.View;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers
 {
@@ -98,6 +99,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 			windsorContainer.Register(Component.For<IFileFieldManager>().UsingFactoryMethod(f =>
 				f.Resolve<IServicesMgr>().CreateProxy<IFileFieldManager>(ExecutionIdentity.CurrentUser)));
 			windsorContainer.Register(Component.For<IFileFieldRepository>().ImplementedBy<FileFieldRepository>());
+
+			windsorContainer.Register(Component.For<IViewManager>().UsingFactoryMethod(f =>
+				f.Resolve<IServicesMgr>().CreateProxy<IViewManager>(ExecutionIdentity.CurrentUser)));
+			windsorContainer.Register(Component.For<IViewRepository>().ImplementedBy<ViewRepository>());
 			return windsorContainer;
 		}
 

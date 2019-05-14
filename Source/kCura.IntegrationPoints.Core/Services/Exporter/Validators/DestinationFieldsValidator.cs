@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Validators
 				.RetrieveFieldsAsync(
 					(int)Relativity.Client.ArtifactType.Document,
 					new HashSet<string>(new string[0]))
-				.GetResultsWithoutContextSync()
+				.GetAwaiter().GetResult()
 				.ToDictionary(k => k.ArtifactId, v => v.TextIdentifier);
 		}
 

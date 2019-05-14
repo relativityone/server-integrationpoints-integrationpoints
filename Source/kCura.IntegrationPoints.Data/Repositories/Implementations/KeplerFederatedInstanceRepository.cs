@@ -71,7 +71,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			ArtifactDTO[] artifactDtos = null;
 
-			artifactDtos = this.RetrieveAllArtifactsAsync(query).GetResultsWithoutContextSync();
+			artifactDtos = this.RetrieveAllArtifactsAsync(query).GetAwaiter().GetResult();
 
 			return Convert(artifactDtos);
 		}

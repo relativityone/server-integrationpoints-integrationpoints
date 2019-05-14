@@ -17,6 +17,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 		private Mock<IViewFieldRepository> _viewFieldRepository;
 		private Mock<IFileFieldRepository> _fileFieldRepository;
 		private Mock<IFileRepository> _fileRepository;
+		private Mock<IViewRepository> _viewRepository;
 		private ExportFile _exportFile;
 		private Mock<IServiceFactory> _webApiServiceFactory;
 		private const int _CONTEXT_USER_ID = 41231;
@@ -26,6 +27,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 			_repositoryFactory = new Mock<IRepositoryFactory>();
 			_viewFieldRepository = new Mock<IViewFieldRepository>();
 			_fileFieldRepository = new Mock<IFileFieldRepository>();
+			_viewRepository = new Mock<IViewRepository>();
 			_fileRepository = new Mock<IFileRepository>();
 			_exportFile = new ExportFile(123);
 			_webApiServiceFactory = new Mock<IServiceFactory>();
@@ -50,6 +52,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 				_viewFieldRepository.Object,
 				_fileFieldRepository.Object,
 				_fileRepository.Object,
+				_viewRepository.Object,
 				_exportFile,
 				_webApiServiceFactory.Object,
 				_CONTEXT_USER_ID);

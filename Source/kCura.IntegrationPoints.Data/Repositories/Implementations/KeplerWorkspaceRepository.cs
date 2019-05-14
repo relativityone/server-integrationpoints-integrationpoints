@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			try
 			{
-				workspaces = RetrieveAllArtifactsAsync(query, executionIdentity).GetResultsWithoutContextSync();
+				workspaces = RetrieveAllArtifactsAsync(query, executionIdentity).GetAwaiter().GetResult();
 			}
 			catch (Exception e)
 			{
@@ -57,7 +57,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			ArtifactDTO[] artifactDtos;
 			try
 			{
-				artifactDtos = RetrieveAllArtifactsAsync(query).GetResultsWithoutContextSync();
+				artifactDtos = RetrieveAllArtifactsAsync(query).GetAwaiter().GetResult();
 			}
 			catch (Exception e)
 			{

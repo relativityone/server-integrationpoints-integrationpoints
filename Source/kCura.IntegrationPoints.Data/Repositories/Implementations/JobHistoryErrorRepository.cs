@@ -171,12 +171,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			using (IKeywordSearchManager searchManager = _helper.GetServicesManager().CreateProxy<IKeywordSearchManager>(ExecutionIdentity.System))
 			{
 				SearchResultViewFields fields = searchManager.GetFieldsForSearchResultViewAsync(_workspaceArtifactId, (int)Relativity.Client.ArtifactType.Document)
-					.GetResultsWithoutContextSync();
+					.GetAwaiter().GetResult();
 
 				FieldRef field = fields.FieldsNotIncluded.First(x => x.Name == "Artifact ID");
 				itemLevelSearch.Fields = new List<FieldRef>(1) { field };
 
-				int itemLevelSearchArtifactId = searchManager.CreateSingleAsync(_workspaceArtifactId, itemLevelSearch).GetResultsWithoutContextSync();
+				int itemLevelSearchArtifactId = searchManager.CreateSingleAsync(_workspaceArtifactId, itemLevelSearch).GetAwaiter().GetResult();
 
 				return itemLevelSearchArtifactId;
 			}
