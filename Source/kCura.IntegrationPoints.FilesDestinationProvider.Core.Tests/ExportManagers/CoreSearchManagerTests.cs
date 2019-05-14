@@ -337,16 +337,16 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 		{
 			// arrange
 			const int artifactTypeID = 12;
-			int viewID = _testViewFieldIDResponses.First().ArtifactID;
+			int productionID = _testViewFieldIDResponses.First().ArtifactID;
 			int viewFieldID = _testViewFieldIDResponses.First().ArtifactViewFieldID;
 			_viewFieldRepositoryMock
-				.Setup(x => x.ReadViewFieldIDsFromProduction(_WORKSPACE_ID, artifactTypeID, viewID))
+				.Setup(x => x.ReadViewFieldIDsFromProduction(_WORKSPACE_ID, productionID))
 				.Returns(_testViewFieldIDResponses);
 
 			// act
 			int[] result = _sut.RetrieveDefaultViewFieldIds(
 				_WORKSPACE_ID,
-				viewID,
+				productionID,
 				artifactTypeID, 
 				isProduction: true
 			);
@@ -355,8 +355,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 			_viewFieldRepositoryMock.Verify(
 				x => x.ReadViewFieldIDsFromProduction(
 					_WORKSPACE_ID,
-					artifactTypeID,
-					viewID
+					productionID
 				), Times.Once);
 			result.Length.Should().Be(1);
 			result[0].Should().Be(viewFieldID);
