@@ -1,7 +1,9 @@
-﻿using kCura.Relativity.DataReaderClient;
+﻿using System.Diagnostics.CodeAnalysis;
+using kCura.Relativity.DataReaderClient;
 
 namespace Relativity.Sync.Executors
 {
+	[ExcludeFromCodeCoverage]
 	internal sealed class ImportBulkArtifactJobWrapper : IImportBulkArtifactJob
 	{
 		private readonly ImportBulkArtifactJob _importBulkArtifactJob;
