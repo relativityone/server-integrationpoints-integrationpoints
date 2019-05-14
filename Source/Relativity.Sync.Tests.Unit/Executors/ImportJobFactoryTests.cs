@@ -19,7 +19,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private Mock<IBatchProgressHandlerFactory> _batchProgressHandlerFactory;
 		private Mock<IDataReader> _dataReader;
 		private Mock<IJobHistoryErrorRepository> _jobHistoryErrorRepository;
-		private Mock<ISemaphoreSlim> _semaphoreSlim;
 
 		private Mock<IBatch> _batch;
 
@@ -31,7 +30,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_batchProgressHandlerFactory = new Mock<IBatchProgressHandlerFactory>();
 			_dataReader = new Mock<IDataReader>();
 			_jobHistoryErrorRepository = new Mock<IJobHistoryErrorRepository>();
-			_semaphoreSlim = new Mock<ISemaphoreSlim>();
 
 			_logger = new EmptyLogger();
 
@@ -54,8 +52,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			// Assert
 			Assert.IsNotNull(result);
-
-			_semaphoreSlim.Verify(x => x.Dispose(), Times.AtLeastOnce);
 		}
 
 		[Test]
@@ -80,8 +76,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			// Assert
 			Assert.IsNotNull(result);
-
-			_semaphoreSlim.Verify(x => x.Dispose(), Times.AtLeastOnce);
 		}
 
 		private Mock<IImportAPI> GetImportApiMock()
@@ -98,7 +92,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private ImportJobFactory GetTestInstance(Mock<IImportAPI> importApi)
 		{
 			var instance = new ImportJobFactory(importApi.Object, _dataReader.Object,
-				_batchProgressHandlerFactory.Object, _jobHistoryErrorRepository.Object, _semaphoreSlim.Object, _logger);
+				_batchProgressHandlerFactory.Object, _jobHistoryErrorRepository.Object, _logger);
 			return instance;
 		}
 	}
