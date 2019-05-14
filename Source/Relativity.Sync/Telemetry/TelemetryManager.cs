@@ -12,6 +12,7 @@ namespace Relativity.Sync.Telemetry
 		private readonly IServicesMgr _servicesManager;
 		private readonly ISyncLog _logger;
 		private readonly List<ITelemetryMetricProvider> _metricProviders;
+
 		public TelemetryManager(IServicesMgr servicesManager, ISyncLog logger)
 		{
 			_servicesManager = servicesManager;
