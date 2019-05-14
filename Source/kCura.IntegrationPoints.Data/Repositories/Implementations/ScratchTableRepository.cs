@@ -23,7 +23,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private IDataReader _reader;
 		private string _tempTableName;
 		private string _docIdentifierFieldName;
-		private int _count;
 
 		public ScratchTableRepository(IHelper helper, IDocumentRepository documentRepository,
 			IFieldQueryRepository fieldQueryRepository, IResourceDbProvider resourceDbProvider, string tablePrefix, string tableSuffix, int workspaceId) :
@@ -48,17 +47,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public bool IgnoreErrorDocuments { get; set; }
 
-		public int Count
-		{
-			get
-			{
-				return _count;
-			}
-		}
+		public int Count { get; private set; }
 
 		public void RemoveErrorDocuments(ICollection<string> docIdentifiers)
 		{
-			_count -= docIdentifiers.Count;
+			Count -= docIdentifiers.Count;
 
 			ICollection<int> docIds = GetErroredDocumentId(docIdentifiers);
 
@@ -78,11 +71,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			if (_reader == null)
 			{
-				string fullTableName = GetTempTableName();
-
-				var sql = String.Format(@"IF EXISTS (SELECT * FROM {1}.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{0}') SELECT [ArtifactID] FROM {2}.[{0}]", fullTableName, GetSchemalessResourceDataBasePrepend(), GetResourceDBPrepend());
-
-				_reader = _caseContext.ExecuteSQLStatementAsReader(sql);
+				_reader = CreateDocumentIdReader();
 			}
 			return _reader;
 		}
@@ -108,7 +97,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			if (!artifactIds.IsNullOrEmpty())
 			{
-				_count += artifactIds.Count;
+				Count += artifactIds.Count;
 
 				string fullTableName = GetTempTableName();
 
@@ -149,7 +138,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			_caseContext.ExecuteNonQuerySQLStatement(sql);
 
-			copiedScratchTableRepository._count = _count;
+			copiedScratchTableRepository.Count = Count;
 
 			return copiedScratchTableRepository;
 		}
@@ -161,6 +150,17 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				fullTableName, GetSchemalessResourceDataBasePrepend(), GetResourceDBPrepend());
 
 			_caseContext.ExecuteNonQuerySQLStatement(sql);
+		}
+
+		public IEnumerable<int> GetDocumentIdsFromTable(int offset, int size)
+		{
+			using (IDataReader reader = CreateBatchOfDocumentIdReader(offset, size))
+			{
+				while (reader.Read())
+				{
+					yield return reader.GetInt32(0);
+				}
+			}
 		}
 
 		public string GetTempTableName()
@@ -260,6 +260,29 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 
 			return documents;
+		}
+
+		private IDataReader CreateDocumentIdReader()
+		{
+			string fullTableName = GetTempTableName();
+
+			string sql = String.Format(
+				@"IF EXISTS (SELECT * FROM {1}.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{0}') SELECT [ArtifactID] FROM {2}.[{0}]",
+				fullTableName, GetSchemalessResourceDataBasePrepend(), GetResourceDBPrepend());
+
+			return _caseContext.ExecuteSQLStatementAsReader(sql);
+
+		}
+
+		private IDataReader CreateBatchOfDocumentIdReader(int offset, int size)
+		{
+			string fullTableName = GetTempTableName();
+
+			string sql = string.Format(
+				@"IF EXISTS (SELECT * FROM {1}.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{0}') SELECT [ArtifactID] FROM {2}.[{0}] ORDER BY [ArtifactID] OFFSET {3} ROWS FETCH NEXT {4} ROWS ONLY",
+				fullTableName, GetSchemalessResourceDataBasePrepend(), GetResourceDBPrepend(), offset, size);
+
+			return _caseContext.ExecuteSQLStatementAsReader(sql);
 		}
 
 		internal static class Fields //MNG: similar to class used in DocumentTransferProvider, probably find a better way to reference these
