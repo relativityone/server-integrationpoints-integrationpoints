@@ -26,17 +26,17 @@ namespace Relativity.Sync.Tests.Unit
 		private const string _IDENTIFIER_COLUMN = "Identifier";
 		private const string _MESSAGE_COLUMN = "Message";
 		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 1;
-		private const int _JOB_HISTORY_ARTIFACT_ID = 2;
 
 		[SetUp]
 		public void SetUp()
 		{
+			const int jobHistoryArtifactId = 2;
 			_importBulkArtifactJobMock = new Mock<IImportBulkArtifactJob>();
 			_jobHistoryErrorRepository = new Mock<IJobHistoryErrorRepository>();
 			_semaphore = new Mock<ISemaphoreSlim>();
 
 			_importJob = new ImportJob(_importBulkArtifactJobMock.Object, _semaphore.Object, _jobHistoryErrorRepository.Object,
-				_SOURCE_WORKSPACE_ARTIFACT_ID, _JOB_HISTORY_ARTIFACT_ID, new EmptyLogger());
+				_SOURCE_WORKSPACE_ARTIFACT_ID, jobHistoryArtifactId, new EmptyLogger());
 		}
 
 		[Test]
@@ -59,7 +59,7 @@ namespace Relativity.Sync.Tests.Unit
 			await _importJob.RunAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// assert
-			_jobHistoryErrorRepository.Verify(x => x.CreateAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.Is<CreateJobHistoryErrorDto>(dto => 
+			_jobHistoryErrorRepository.Verify(x => x.CreateAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.Is<CreateJobHistoryErrorDto>(dto =>
 				dto.SourceUniqueId == identifier && dto.ErrorMessage == message && dto.ErrorType == ErrorType.Item)));
 		}
 
@@ -104,7 +104,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			CancellationTokenSource token = new CancellationTokenSource();
 			token.Cancel();
-			
+
 			// act
 			Func<Task> action = async () => await _importJob.RunAsync(token.Token).ConfigureAwait(false);
 
