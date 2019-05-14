@@ -71,9 +71,9 @@ namespace kCura.IntegrationPoints.Data.Facades.Implementations
 
 		public Task<UpdateResult> UpdateAsync(int workspaceArtifactID, UpdateRequest request)
 		{
-			Func<string> getMessage = 
+			Func<string> getMessage =
 				() => GetWarningMessage<UpdateRequest>(
-					workspaceArtifactID, 
+					workspaceArtifactID,
 					request.Object.ArtifactID.ToString(),
 					rdoType: _UNKNOWN);
 
@@ -83,6 +83,23 @@ namespace kCura.IntegrationPoints.Data.Facades.Implementations
 			AnalyzeFields(fieldValues, getMessage);
 
 			return _objectManager.UpdateAsync(workspaceArtifactID, request);
+		}
+
+		public Task<MassUpdateResult> UpdateAsync(
+			int workspaceArtifactID,
+			MassUpdateByObjectIdentifiersRequest request,
+			MassUpdateOptions updateOptions)
+		{
+			Func<string> getWarningMessage =
+				() => GetWarningMessage<UpdateRequest>(
+					workspaceArtifactID,
+					rdoArtifactId: _UNKNOWN,
+					rdoType: _UNKNOWN);
+
+			AnalyzeMassUpdateObjectsCollection(getWarningMessage, request);
+			AnalyzeMassUpdateFields(getWarningMessage, workspaceArtifactID, request);
+
+			return _objectManager.UpdateAsync(workspaceArtifactID, request, updateOptions);
 		}
 
 		public Task<DeleteResult> DeleteAsync(int workspaceArtifactID, DeleteRequest request)
@@ -117,8 +134,32 @@ namespace kCura.IntegrationPoints.Data.Facades.Implementations
 			return _objectManager.StreamLongTextAsync(workspaceArtifactID, exportObject, longTextField);
 		}
 
+		private void AnalyzeMassUpdateObjectsCollection(
+			Func<string> getWarningMessage,
+			MassUpdateByObjectIdentifiersRequest request)
+		{
+			if (request.Objects.Count > _MAX_COUNT_OF_COLLECTION_IN_REQUEST)
+			{
+				string warningMessage = "Requested mass update operation exceeded max collection count" +
+										$" - {request.Objects.Count}, when allowed is {_MAX_COUNT_OF_COLLECTION_IN_REQUEST}";
+				_logger.LogWarning(getWarningMessage());
+				_logger.LogWarning(warningMessage);
+			}
+		}
+
+		private void AnalyzeMassUpdateFields(
+			Func<string> getWarningMessage,
+			int workspaceArtifactID,
+			MassUpdateByObjectIdentifiersRequest request)
+		{
+			IEnumerable<FieldValueMap> fieldValues = request.FieldValues
+				.Select(x => new FieldValueMap(x));
+
+			AnalyzeFields(fieldValues, getWarningMessage);
+		}
+
 		private void AnalyzeFields(
-			IEnumerable<FieldValueMap> fieldValues, 
+			IEnumerable<FieldValueMap> fieldValues,
 			Func<string> getMessage)
 		{
 			IList<string> warnings = DiscoverFieldsCollectionsWhichExceedMaxCountValue(fieldValues);
@@ -159,8 +200,8 @@ namespace kCura.IntegrationPoints.Data.Facades.Implementations
 			string rdoType)
 		{
 			string operationName = GetOperationNameForRequestType<T>();
-			return $"Heavy request discovered when executing {operationName}" 
-			 + $" on object of type [{rdoType}], id {rdoArtifactId} with ObjectManager" 
+			return $"Heavy request discovered when executing {operationName}"
+			 + $" on object of type [{rdoType}], id {rdoArtifactId} with ObjectManager"
 			 + $" (Workspace: {workspaceArtifactId})";
 		}
 
