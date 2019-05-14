@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using kCura.EDDS.WebAPI.DocumentManagerBase;
-using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Sync.KeplerFactory;
-using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Transfer
 {
@@ -18,48 +12,43 @@ namespace Relativity.Sync.Transfer
 	/// </summary>
 	internal sealed class SourceWorkspaceDataReader : IDataReader
 	{
-		private IDataReader _currentBatch;
+		private IDataReader _currentReader;
+		private string _batchToken;
 
-		// TODO: Get rid of me; you should be using something like IBatchRepository.
-		private int _currentIndex;
-
-		private readonly ISourceServiceFactoryForUser _serviceFactory;
-		private readonly IBatchRepository _batchRepository;
+		private readonly IRelativityExportBatcher _exportBatcher;
+		private readonly IBatchDataTableBuilder _tableBuilder;
 		private readonly ISyncLog _logger;
-		private readonly SourceWorkspaceDataTableBuilder _tableBuilder;
 		private readonly int _workspaceId;
+		private readonly int _syncConfigurationId;
 		private readonly Guid _runId;
-		private readonly int _resultsBlockSize;
 
-		public SourceWorkspaceDataReader(SourceWorkspaceDataReaderConfiguration configuration,
-			ISourceServiceFactoryForUser serviceFactory,
-			IBatchRepository batchRepository,
-			IFolderPathRetriever folderPathRetriever,
-			INativeFileRepository nativeFileRepository,
-			ISyncLog logger,
-			int resultsBlockSize)
+		public SourceWorkspaceDataReader(SourceDataReaderConfiguration configuration,
+			IBatchDataTableBuilderFactory batchBuilderFactory,
+			IRelativityExportBatcher exportBatcher,
+			ISyncLog logger)
 		{
 			_workspaceId = configuration.SourceWorkspaceId;
+			_syncConfigurationId = configuration.SyncConfigurationId;
 			_runId = configuration.RunId;
-			_resultsBlockSize = resultsBlockSize;
-			_serviceFactory = serviceFactory;
-			_batchRepository = batchRepository;
-			_logger = logger;
-			_tableBuilder = new SourceWorkspaceDataTableBuilder(configuration, folderPathRetriever, nativeFileRepository);
-			_currentBatch = new DataTable().CreateDataReader();
 
-			_currentIndex = 0;
+			_tableBuilder = batchBuilderFactory.Create(configuration);
+			_exportBatcher = exportBatcher;
+			_logger = logger;
+
+			_currentReader = EmptyDataReader();
+			_batchToken = null;
 		}
 
 		public bool IsClosed { get; } = false;
 
 		public bool Read()
 		{
-			bool dataRead = _currentBatch.Read();
+			bool dataRead = _currentReader.Read();
 			if (!dataRead)
 			{
-				ReadNextBatchAsync().ConfigureAwait(false).GetAwaiter().GetResult();
-				dataRead = _currentBatch.Read();
+				_currentReader.Dispose();
+				_currentReader = NextBatchReaderAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+				dataRead = _currentReader.Read();
 			}
 
 			return dataRead;
@@ -70,24 +59,53 @@ namespace Relativity.Sync.Transfer
 			Dispose(true);
 		}
 
-		private async Task ReadNextBatchAsync()
-		{
-			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
-			{
-				RelativityObjectSlim[] block = await objectManager.RetrieveResultsBlockFromExportAsync(_workspaceId, _runId, _resultsBlockSize, _currentIndex).ConfigureAwait(false);
-				_currentIndex += block.Length;
+		private static IDataReader EmptyDataReader() => new DataTable().CreateDataReader();
 
-				DataTable dt = await _tableBuilder.BuildAsync(block).ConfigureAwait(false);
-				_currentBatch = dt.CreateDataReader();
+		private async Task<IDataReader> NextBatchReaderAsync()
+		{
+			if (_batchToken == null)
+			{
+				_batchToken = _exportBatcher.Start(_runId, _workspaceId, _syncConfigurationId);
 			}
+
+			RelativityObjectSlim[] batch;
+			try
+			{
+				batch = await _exportBatcher.GetNextAsync(_batchToken).ConfigureAwait(false);
+			}
+			catch (Exception ex)
+			{
+				throw new SourceDataReaderException("Failed to get next batch from exporter", ex);
+			}
+
+			IDataReader nextBatchReader;
+			if (batch == null || !batch.Any())
+			{
+				nextBatchReader = EmptyDataReader();
+			}
+			else
+			{
+				DataTable dt;
+				try
+				{
+					dt = await _tableBuilder.BuildAsync(batch).ConfigureAwait(false);
+				}
+				catch (Exception ex)
+				{
+					throw new SourceDataReaderException("Failed to transform exported batch for import", ex);
+				}
+				nextBatchReader = dt.CreateDataReader();
+			}
+
+			return nextBatchReader;
 		}
 
 		private void Dispose(bool disposing)
 		{
-			if (disposing && _currentBatch != null)
+			if (disposing && _currentReader != null)
 			{
-				_currentBatch?.Dispose();
-				_currentBatch = null;
+				_currentReader?.Dispose();
+				_currentReader = null;
 			}
 		}
 
@@ -95,138 +113,138 @@ namespace Relativity.Sync.Transfer
 
 		public string GetName(int i)
 		{
-			return _currentBatch.GetName(i);
+			return _currentReader.GetName(i);
 		}
 
 		public string GetDataTypeName(int i)
 		{
-			return _currentBatch.GetDataTypeName(i);
+			return _currentReader.GetDataTypeName(i);
 		}
 
 		public Type GetFieldType(int i)
 		{
-			return _currentBatch.GetFieldType(i);
+			return _currentReader.GetFieldType(i);
 		}
 
 		public object GetValue(int i)
 		{
-			return _currentBatch.GetValue(i);
+			return _currentReader.GetValue(i);
 		}
 
 		public int GetValues(object[] values)
 		{
-			return _currentBatch.GetValues(values);
+			return _currentReader.GetValues(values);
 		}
 
 		public int GetOrdinal(string name)
 		{
-			return _currentBatch.GetOrdinal(name);
+			return _currentReader.GetOrdinal(name);
 		}
 
 		public bool GetBoolean(int i)
 		{
-			return _currentBatch.GetBoolean(i);
+			return _currentReader.GetBoolean(i);
 		}
 
 		public byte GetByte(int i)
 		{
-			return _currentBatch.GetByte(i);
+			return _currentReader.GetByte(i);
 		}
 
 		public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length)
 		{
-			return _currentBatch.GetBytes(i, fieldOffset, buffer, bufferoffset, length);
+			return _currentReader.GetBytes(i, fieldOffset, buffer, bufferoffset, length);
 		}
 
 		public char GetChar(int i)
 		{
-			return _currentBatch.GetChar(i);
+			return _currentReader.GetChar(i);
 		}
 
 		public long GetChars(int i, long fieldoffset, char[] buffer, int bufferoffset, int length)
 		{
-			return _currentBatch.GetChars(i, fieldoffset, buffer, bufferoffset, length);
+			return _currentReader.GetChars(i, fieldoffset, buffer, bufferoffset, length);
 		}
 
 		public Guid GetGuid(int i)
 		{
-			return _currentBatch.GetGuid(i);
+			return _currentReader.GetGuid(i);
 		}
 
 		public short GetInt16(int i)
 		{
-			return _currentBatch.GetInt16(i);
+			return _currentReader.GetInt16(i);
 		}
 
 		public int GetInt32(int i)
 		{
-			return _currentBatch.GetInt32(i);
+			return _currentReader.GetInt32(i);
 		}
 
 		public long GetInt64(int i)
 		{
-			return _currentBatch.GetInt64(i);
+			return _currentReader.GetInt64(i);
 		}
 
 		public float GetFloat(int i)
 		{
-			return _currentBatch.GetFloat(i);
+			return _currentReader.GetFloat(i);
 		}
 
 		public double GetDouble(int i)
 		{
-			return _currentBatch.GetDouble(i);
+			return _currentReader.GetDouble(i);
 		}
 
 		public string GetString(int i)
 		{
-			return _currentBatch.GetString(i);
+			return _currentReader.GetString(i);
 		}
 
 		public decimal GetDecimal(int i)
 		{
-			return _currentBatch.GetDecimal(i);
+			return _currentReader.GetDecimal(i);
 		}
 
 		public DateTime GetDateTime(int i)
 		{
-			return _currentBatch.GetDateTime(i);
+			return _currentReader.GetDateTime(i);
 		}
 
 		public IDataReader GetData(int i)
 		{
-			return _currentBatch.GetData(i);
+			return _currentReader.GetData(i);
 		}
 
 		public bool IsDBNull(int i)
 		{
-			return _currentBatch.IsDBNull(i);
+			return _currentReader.IsDBNull(i);
 		}
 
-		public int FieldCount => _currentBatch.FieldCount;
+		public int FieldCount => _currentReader.FieldCount;
 
-		public object this[int i] => _currentBatch[i];
+		public object this[int i] => _currentReader[i];
 
-		public object this[string name] => _currentBatch[name];
+		public object this[string name] => _currentReader[name];
 
 		public void Close()
 		{
-			_currentBatch.Close();
+			_currentReader.Close();
 		}
 
 		public DataTable GetSchemaTable()
 		{
-			return _currentBatch.GetSchemaTable();
+			return _currentReader.GetSchemaTable();
 		}
 
 		public bool NextResult()
 		{
-			return _currentBatch.NextResult();
+			return _currentReader.NextResult();
 		}
 
-		public int Depth => _currentBatch.Depth;
+		public int Depth => _currentReader.Depth;
 
-		public int RecordsAffected => _currentBatch.RecordsAffected;
+		public int RecordsAffected => _currentReader.RecordsAffected;
 
 		#endregion
 	}

@@ -2,24 +2,17 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
-using kCura.Vendor.Castle.Components.DictionaryAdapter;
-using Relativity.Services.Interfaces.Shared.Models;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Services.RestApi;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
-using Enum = Google.Protobuf.WellKnownTypes.Enum;
-using IConfiguration = Relativity.Sync.Configuration.IConfiguration;
 
 namespace Relativity.Sync.Transfer
 {
 	/// <summary>
 	/// Creates a single <see cref="DataTable"/> out of several sources of information based on the given schema.
 	/// </summary>
-	internal sealed class SourceWorkspaceDataTableBuilder
+	internal sealed class BatchDataTableBuilder : IBatchDataTableBuilder
 	{
 		private readonly MetadataMapping _metadataMapping;
 		private readonly int _sourceJobArtifactId;
@@ -28,7 +21,7 @@ namespace Relativity.Sync.Transfer
 		private readonly IFolderPathRetriever _folderPathRetriever;
 		private readonly INativeFileRepository _nativeFileRepository;
 
-		public SourceWorkspaceDataTableBuilder(SourceWorkspaceDataReaderConfiguration configuration, IFolderPathRetriever folderPathRetriever, INativeFileRepository nativeFileRepository)
+		public BatchDataTableBuilder(SourceDataReaderConfiguration configuration, IFolderPathRetriever folderPathRetriever, INativeFileRepository nativeFileRepository)
 		{
 			_metadataMapping = configuration.MetadataMapping;
 			_sourceJobArtifactId = configuration.SourceJobId;
@@ -70,7 +63,7 @@ namespace Relativity.Sync.Transfer
 			IEnumerable<FieldEntry> specialFields = _metadataMapping.GetSpecialFields();
 
 			DataColumn[] columns = documentFields.Concat(specialFields)
-				.Select(x => new DataColumn(x.DisplayName, x.ValueType))
+				.Select(x => new DataColumn(x.DisplayName))
 				.ToArray();
 			return columns;
 		}
