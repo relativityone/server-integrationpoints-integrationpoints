@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -105,6 +106,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			VerifyErroredDocumentRemoval(tableName, docArtifactIdToRemove, documentIds.Count - numDocsWithErrors);
 		}
 
+		[Test]
 		public void CreateScratchTableAndErroredDocumentDoesntExist()
 		{
 			//ARRANGE
@@ -131,6 +133,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			}
 		}
 
+		[Test]
 		public void CreateScratchTableAndInsertDuplicateEntries()
 		{
 			//ARRANGE
@@ -157,6 +160,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			}
 		}
 
+		[Test]
 		public void DeletionOfScratchTable()
 		{
 			//ARRANGE
@@ -176,6 +180,38 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 
 			//ASSERT
 			VerifyTableDisposal(tableName);
+		}
+
+		[Test]
+		public void GetDocumentIdsFromTable_ShouldRetrieveDocumentIDsFromScratchTable()
+		{
+			//arrange
+			const int numOfDocumentsToImport = 5;
+			DataTable documentsToImportTable = GetImportTable(1, numOfDocumentsToImport);
+			Import.ImportNewDocuments(SourceWorkspaceArtifactId, documentsToImportTable);
+			string tablePrefix = "RKO";
+			string tableSuffix = Guid.NewGuid().ToString();
+			Dictionary<int, string> controlNumbersByDocumentIDs = GetDocumentIdToControlNumberMapping();
+			List<int> documentIDs = controlNumbersByDocumentIDs.Keys.ToList();
+
+			var sut = new ScratchTableRepository(
+				Helper,
+				_documentRepository, 
+				_fieldQueryRepository,
+				_resourceDbProvider, 
+				tablePrefix, 
+				tableSuffix, 
+				SourceWorkspaceArtifactId
+			);
+
+			_currentScratchTableRepository = sut;
+			sut.AddArtifactIdsIntoTempTable(documentIDs);
+
+			//act
+			IEnumerable<int> result = sut.GetDocumentIdsFromTable(0, numOfDocumentsToImport);
+
+			//assert
+			result.ShouldBeEquivalentTo(documentIDs);
 		}
 
 		private DataTable GetTempTable(string tempTableName)
