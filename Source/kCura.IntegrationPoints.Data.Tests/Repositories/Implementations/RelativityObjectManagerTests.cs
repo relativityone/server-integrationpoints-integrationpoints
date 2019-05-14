@@ -95,7 +95,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		}
 
 		[Test]
-		public void StreamLongText_ItShouldReturnIOStreamGivenKeplerStreamFromRelativityObjectManagerFacade_WhenFieldIsNotUnicode()
+		public void StreamLongText_ItShouldReturnIOStreamGivenKeplerStreamFromRelativityObjectManagerFacade_WhenFieldIsUnicode()
 		{
 			Stream expectedStream = new Mock<Stream>().Object;
 			var keplerStreamMock = new Mock<IKeplerStream>();
@@ -115,7 +115,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			Stream result = _sut.StreamLongText(
 					_REL_OBJECT_ARTIFACT_ID,
 					new FieldRef() {ArtifactID = _FIELD_ARTIFACT_ID},
-					false,
+					true,
 					ExecutionIdentity.System);
 
 			result.Should().BeOfType<SelfDisposingStream>();
@@ -127,7 +127,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		}
 
 		[Test]
-		public void StreamLongText_ItShouldReturnIOStreamGivenKeplerStreamFromRelativityObjectManagerFacade_WhenFieldIsUnicode()
+		public void StreamLongText_ItShouldReturnIOStreamGivenKeplerStreamFromRelativityObjectManagerFacade_WhenFieldIsNotUnicode()
 		{
 			// arrange
 			Stream expectedStream = new Mock<Stream>().Object;
@@ -149,7 +149,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			Stream result = _sut.StreamLongText(
 				_REL_OBJECT_ARTIFACT_ID,
 				new FieldRef() { ArtifactID = _FIELD_ARTIFACT_ID },
-				isUnicode: true,
+				isUnicode: false,
 				executionIdentity: ExecutionIdentity.System);
 
 			// assert

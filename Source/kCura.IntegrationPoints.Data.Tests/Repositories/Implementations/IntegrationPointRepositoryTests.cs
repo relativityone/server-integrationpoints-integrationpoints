@@ -75,7 +75,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			_objectManagerMock.Setup(x => x.StreamLongText(
 					_ARTIFACT_ID,
 					It.Is<FieldRef>(f => f.Guid.ToString() == _guid.ToString()),
-					false,
+					true,
 					ExecutionIdentity.CurrentUser))
 				.Returns(_fieldMappingStream);
 			IntegrationPoint expectedResult = CreateTestIntegrationPoint();
@@ -90,7 +90,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				x => x.StreamLongText(
 					_ARTIFACT_ID,
 					It.Is<FieldRef>(f => f.Guid.ToString() == _guid.ToString()),
-					false,
+					true,
 					ExecutionIdentity.CurrentUser),
 				Times.Once());
 			_internalLoggerMock.Verify(
@@ -184,7 +184,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			_objectManagerMock.Setup(x => x.StreamLongText(
 					_ARTIFACT_ID,
 					It.Is<FieldRef>(f => f.Guid.ToString() == _guid.ToString()),
-					false,
+					true,
 					ExecutionIdentity.CurrentUser))
 				.Returns(_fieldMappingStream);
 
@@ -196,7 +196,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				x => x.StreamLongText(
 					_ARTIFACT_ID,
 					It.Is<FieldRef>(f => f.Guid.ToString() == _guid.ToString()),
-					false,
+					true,
 					ExecutionIdentity.CurrentUser),
 				Times.Once());
 			_serializerMock.Verify(x => x.Deserialize<IEnumerable<FieldMap>>(_FIELD_MAPPING_LONG), Times.Once);
@@ -244,7 +244,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			_objectManagerMock.Setup(x => x.StreamLongText(
 					_ARTIFACT_ID,
 					It.Is<FieldRef>(f => f.Guid.ToString() == _guid.ToString()),
-					false,
+					true,
 					ExecutionIdentity.CurrentUser))
 				.Returns(_fieldMappingEmptyStream);
 
@@ -256,7 +256,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				x => x.StreamLongText(
 					_ARTIFACT_ID,
 					It.Is<FieldRef>(f => f.Guid.ToString() == _guid.ToString()),
-					false,
+					true,
 					ExecutionIdentity.CurrentUser),
 				Times.Once());
 			_serializerMock.Verify(x => x.Deserialize<IEnumerable<FieldMap>>(It.IsAny<string>()), Times.Never);
@@ -276,7 +276,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			_objectManagerMock.Setup(x => x.StreamLongText(
 					_ARTIFACT_ID,
 					It.Is<FieldRef>(f => f.Guid.ToString() == _guid.ToString()),
-					false,
+					true,
 					ExecutionIdentity.CurrentUser))
 				.Throws<Exception>();
 
@@ -289,7 +289,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				x => x.StreamLongText(
 					_ARTIFACT_ID,
 					It.Is<FieldRef>(f => f.Guid.ToString() == _guid.ToString()),
-					false,
+					true,
 					ExecutionIdentity.CurrentUser),
 				Times.Once());
 			_serializerMock.Verify(x => x.Deserialize<IEnumerable<FieldMap>>(_FIELD_MAPPING_LONG), Times.Never);
@@ -309,7 +309,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			_objectManagerMock.Setup(x => x.StreamLongText(
 					_ARTIFACT_ID,
 					It.Is<FieldRef>(f => f.Guid.ToString() == _guid.ToString()),
-					false,
+					true,
 					ExecutionIdentity.CurrentUser))
 				.Returns(_fieldMappingInvalidStream);
 
@@ -322,7 +322,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				x => x.StreamLongText(
 					_ARTIFACT_ID,
 					It.Is<FieldRef>(f => f.Guid.ToString() == _guid.ToString()),
-					false,
+					true,
 					ExecutionIdentity.CurrentUser),
 				Times.Once());
 			_serializerMock.Verify(x => x.Deserialize<IEnumerable<FieldMap>>(_FIELD_MAPPING_INVALID), Times.Once);
