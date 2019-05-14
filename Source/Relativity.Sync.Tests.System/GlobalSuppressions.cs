@@ -9,6 +9,7 @@
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Instantiated via container", Scope = "type", Target = "~T:Relativity.Sync.Tests.System.Stubs.ExecutorStub`1")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Used for debugging", Scope = "type", Target = "~T:Relativity.Sync.Tests.System.ConsoleLogger")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA5359:Do Not Disable Certificate Validation", Justification = "<Pending>", Scope = "member", Target = "~M:Relativity.Sync.Tests.System.SystemTestsSetup.SuppressCertificateCheckingIfConfigured")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "<Pending>", Scope = "type", Target = "~T:Relativity.Sync.Tests.System.SourceWorkspaceDataReaderTests")]
 
 
 
