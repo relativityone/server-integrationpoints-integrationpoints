@@ -14,6 +14,6 @@ namespace Relativity.Sync.Transfer
 	internal interface ISpecialFieldRowValuesBuilder
 	{
 		IEnumerable<SpecialFieldType> AllowedSpecialFieldTypes { get; }
-		IEnumerable<object> BuildRowValues(FieldInfo fieldInfo, RelativityObjectSlim document, object initialValue);
+		object BuildRowValue(FieldInfo fieldInfo, RelativityObjectSlim document, object initialValue);
 	}
 }

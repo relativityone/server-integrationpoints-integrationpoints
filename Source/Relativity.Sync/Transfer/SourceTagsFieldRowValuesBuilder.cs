@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.Sync.Transfer
@@ -7,14 +8,15 @@ namespace Relativity.Sync.Transfer
 	{
 		public IEnumerable<SpecialFieldType> AllowedSpecialFieldTypes => new[] {SpecialFieldType.SourceJob, SpecialFieldType.SourceWorkspace};
 
-		public IEnumerable<object> BuildRowValues(FieldInfo fieldInfo, RelativityObjectSlim document, object initialValue)
+		public object BuildRowValue(FieldInfo fieldInfo, RelativityObjectSlim document, object initialValue)
 		{
 			switch (fieldInfo.SpecialFieldType)
 			{
 				case SpecialFieldType.SourceJob:
 				case SpecialFieldType.SourceWorkspace:
-					yield return initialValue;
-					break;
+					return initialValue;
+				default:
+					throw new ArgumentException($"Cannot build value for {nameof(SpecialFieldType)}.{fieldInfo.SpecialFieldType.ToString()}.", nameof(fieldInfo));
 			}
 		}
 	}

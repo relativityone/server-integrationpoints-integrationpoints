@@ -38,8 +38,7 @@ namespace Relativity.Sync.Executors
 
 			_logger.LogVerbose("Including following system fields to export {supportedByViewer}, {nativeType}.", _SUPPORTED_BY_VIEWER_FIELD_NAME, _RELATIVITY_NATIVE_TYPE_FIELD_NAME);
 
-			IEnumerable<FieldRef> fields = _fieldManager.GetDocumentFields(configuration.FieldMappings).OrderBy(f => f.DocumentFieldIndex)
-				.Select(f => new FieldRef {Name = f.DisplayName});
+			IEnumerable<FieldRef> fields = (await _fieldManager.GetDocumentFields().ConfigureAwait(false)).Select(f => new FieldRef {Name = f.DisplayName});
 
 			QueryRequest queryRequest = new QueryRequest
 			{

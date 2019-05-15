@@ -20,7 +20,6 @@ namespace Relativity.Sync.Tests.Common
 		public bool IsDataDestinationArtifactIdSet { get; set; }
 		public int DataDestinationArtifactId { get; set; }
 		public int DataSourceArtifactId { get; set; }
-		public Guid SnapshotId { get; set; }
 		public IList<FieldMap> FieldMappings { get; set; }
 		public bool IsSnapshotCreated { get; set; }
 

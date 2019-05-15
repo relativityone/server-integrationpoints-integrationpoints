@@ -12,7 +12,7 @@ namespace Relativity.Sync.Configuration
 
 		int JobHistoryTagArtifactId { get; }
 
-		Guid SnapshotId { get; }
+		Guid ExportRunId { get; }
 
 		IList<FieldMap> FieldMappings { get; }
 	}

@@ -5,6 +5,7 @@ using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -61,7 +62,7 @@ namespace Relativity.Sync.Tests.System
 			};
 
 			var sourceServiceFactory = new SourceServiceFactoryStub(ServiceFactory);
-			var fieldManager = new FieldManager(new List<ISpecialFieldBuilder>
+			var fieldManager = new FieldManager(configuration, sourceServiceFactory, new List<ISpecialFieldBuilder>
 			{
 				new FileInfoFieldsBuilder(new NativeFileRepository(sourceServiceFactory)),
 				new FolderPathFieldBuilder(sourceServiceFactory, new FolderPathRetriever(sourceServiceFactory, new EmptyLogger()), configuration), new SourceTagsFieldBuilder()
@@ -76,22 +77,13 @@ namespace Relativity.Sync.Tests.System
 			SourceWorkspaceDataReader dataReader = new SourceWorkspaceDataReader(sourceServiceFactory, new SourceWorkspaceDataTableBuilder(fieldManager), new EmptyLogger(), configuration, resultsBlockSize);
 
 			ConsoleLogger logger = new ConsoleLogger();
+			object[] tmpTable = new object[resultsBlockSize];
 			while (dataReader.Read())
 			{
-				string controlNumber = (string) dataReader["Control Number"];
-				logger.LogInformation($"Control Number: {controlNumber}");
-				string extractedText = (string)dataReader["Extracted Text"];
-				logger.LogInformation($"Extracted Text: {extractedText}");
-				string nativeFileLocation = dataReader["NativeFileLocation"].ToString();
-				logger.LogInformation($"NativeFileLocation: {nativeFileLocation}");
-				long nativeFileSize = (long) dataReader["NativeFileSize"];
-				logger.LogInformation($"NativeFileSize: {nativeFileSize}");
-				string folderPath = (string) dataReader["FolderPath"];
-				logger.LogInformation($"FolderPath: {folderPath}");
-				int sourceWorkspace = (int)dataReader["Relativity Source Case"];
-				logger.LogInformation($"Relativity Source Case: {sourceWorkspace}");
-				int sourceJob = (int)dataReader["Relativity Source Job"];
-				logger.LogInformation($"Relativity Source Job: {sourceJob}");
+				for (int i = 0; i<dataReader.GetValues(tmpTable); i++)
+				{
+					logger.LogInformation($"{dataReader.GetName(i)} [{(tmpTable[i] == null ? "null" : tmpTable[i].GetType().Name)}]: {tmpTable[i]}");
+				}
 
 				logger.LogInformation("");
 			}

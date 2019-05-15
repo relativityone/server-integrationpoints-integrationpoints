@@ -7,11 +7,6 @@
 		/// </summary>
 		public string DisplayName { get; set; }
 
-		/// <summary>
-		/// Gets or sets a field identifier used when mapping data source fields to workspace fields.
-		/// </summary>
-		public int FieldIdentifier { get; set; }
-
 		public SpecialFieldType SpecialFieldType { get; set; } = SpecialFieldType.None;
 
 		public RelativityDataType RelativityDataType { get; set; }

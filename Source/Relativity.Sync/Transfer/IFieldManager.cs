@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
-using Relativity.Sync.Storage;
+using System.Threading.Tasks;
 
 namespace Relativity.Sync.Transfer
 {
 	internal interface IFieldManager
 	{
 		IList<ISpecialFieldBuilder> SpecialFieldBuilders { get; }
-		IEnumerable<FieldInfo> GetAllFields(IEnumerable<FieldMap> fieldMappings);
-		IEnumerable<FieldInfo> GetDocumentFields(IEnumerable<FieldMap> fieldMappings);
-		IEnumerable<FieldInfo> GetSpecialFields(IEnumerable<FieldMap> fieldMappings);
+		Task<List<FieldInfo>> GetAllFields();
+		Task<List<FieldInfo>> GetDocumentFields();
+		IEnumerable<FieldInfo> GetSpecialFields();
 	}
 }

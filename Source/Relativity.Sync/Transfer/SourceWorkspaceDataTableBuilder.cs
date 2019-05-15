@@ -12,6 +12,7 @@ namespace Relativity.Sync.Transfer
 	/// </summary>
 	internal sealed class SourceWorkspaceDataTableBuilder : ISourceWorkspaceDataTableBuilder
 	{
+		private DataTable _dataTable;
 		private readonly IFieldManager _fieldManager;
 
 		public SourceWorkspaceDataTableBuilder(IFieldManager fieldManager)
@@ -26,9 +27,9 @@ namespace Relativity.Sync.Transfer
 				return new DataTable();
 			}
 
-			List<FieldInfo> allFields = _fieldManager.GetAllFields(fieldMaps).ToList();
+			List<FieldInfo> allFields = await _fieldManager.GetAllFields().ConfigureAwait(false);
 
-			DataTable dataTable = CreateDataTable(allFields);
+			DataTable dataTable = GetEmptyDataTable(allFields);
 
 			Dictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> specialFieldBuildersDictionary = await CreateSpecialFieldRowValuesBuilders(sourceWorkspaceArtifactId, batch).ConfigureAwait(false);
 
@@ -52,25 +53,34 @@ namespace Relativity.Sync.Transfer
 			{
 				foreach (var specialFieldType in builder.AllowedSpecialFieldTypes)
 				{
-					specialFieldBuildersDictionary[specialFieldType] = builder;
+					specialFieldBuildersDictionary.Add(specialFieldType, builder);
 				}
 			}
 
 			return specialFieldBuildersDictionary;
 		}
 
-		private DataTable CreateDataTable(List<FieldInfo> allFields)
+		private DataTable GetEmptyDataTable(List<FieldInfo> allFields)
 		{
-			DataTable data = new DataTable();
+			if (_dataTable != null)
+			{
+				return _dataTable.Clone();
+			}
+			return _dataTable = CreateDataTable(allFields);
+		}
+
+		private static DataTable CreateDataTable(List<FieldInfo> allFields)
+		{
+			var dataTable = new DataTable();
 
 			DataColumn[] columns = BuildColumns(allFields);
-			data.Columns.AddRange(columns);
-			return data;
+			dataTable.Columns.AddRange(columns);
+			return dataTable;
 		}
 
 		private static DataColumn[] BuildColumns(IEnumerable<FieldInfo> fields)
 		{
-			DataColumn[] columns = fields.Select(x => new DataColumn(x.DisplayName)).ToArray();
+			DataColumn[] columns = fields.Select(x => new DataColumn(x.DisplayName, typeof(object))).ToArray();
 			return columns;
 		}
 
@@ -84,7 +94,7 @@ namespace Relativity.Sync.Transfer
 				if (field.SpecialFieldType != SpecialFieldType.None)
 				{
 					object initialFieldValue = field.IsDocumentField ? obj.Values[field.DocumentFieldIndex] : null;
-					result[i] = specialFieldBuilders[field.SpecialFieldType].BuildRowValues(field, obj, initialFieldValue);
+					result[i] = specialFieldBuilders[field.SpecialFieldType].BuildRowValue(field, obj, initialFieldValue);
 				}
 				else
 				{

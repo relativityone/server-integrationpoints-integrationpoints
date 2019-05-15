@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
@@ -18,19 +19,17 @@ namespace Relativity.Sync.Transfer
 
 		public IEnumerable<SpecialFieldType> AllowedSpecialFieldTypes => new[] {SpecialFieldType.FolderPath};
 
-		public IEnumerable<object> BuildRowValues(FieldInfo fieldInfo, RelativityObjectSlim document, object initialValue)
+		public object BuildRowValue(FieldInfo fieldInfo, RelativityObjectSlim document, object initialValue)
 		{
 			if (fieldInfo.SpecialFieldType == SpecialFieldType.FolderPath)
 			{
 				if (_destinationFolderStructureBehavior == DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure)
 				{
-					yield return _folderPathsMap[document.ArtifactID];
+					return _folderPathsMap[document.ArtifactID];
 				}
-				else
-				{
-					yield return initialValue;
-				}
+				return initialValue;
 			}
+			throw new ArgumentException($"Cannot build value for {nameof(SpecialFieldType)}.{fieldInfo.SpecialFieldType.ToString()}.", nameof(fieldInfo));
 		}
 	}
 }

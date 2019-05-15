@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.Sync.Transfer
@@ -12,21 +13,20 @@ namespace Relativity.Sync.Transfer
 			_artifactIdToNativeFile = artifactIdToNativeFile;
 		}
 
-		public IEnumerable<SpecialFieldType> AllowedSpecialFieldTypes => new[] {SpecialFieldType.NativeFileFilename, SpecialFieldType.NativeFileFilename, SpecialFieldType.NativeFileFilename};
+		public IEnumerable<SpecialFieldType> AllowedSpecialFieldTypes => new[] {SpecialFieldType.NativeFileFilename, SpecialFieldType.NativeFileLocation, SpecialFieldType.NativeFileSize};
 
-		public IEnumerable<object> BuildRowValues(FieldInfo fieldInfo, RelativityObjectSlim document, object initialValue)
+		public object BuildRowValue(FieldInfo fieldInfo, RelativityObjectSlim document, object initialValue)
 		{
 			switch (fieldInfo.SpecialFieldType)
 			{
 				case SpecialFieldType.NativeFileSize:
-					yield return _artifactIdToNativeFile[document.ArtifactID].Size;
-					break;
+					return _artifactIdToNativeFile[document.ArtifactID].Size;
 				case SpecialFieldType.NativeFileLocation:
-					yield return _artifactIdToNativeFile[document.ArtifactID].Location;
-					break;
+					return _artifactIdToNativeFile[document.ArtifactID].Location;
 				case SpecialFieldType.NativeFileFilename:
-					yield return _artifactIdToNativeFile[document.ArtifactID].Filename;
-					break;
+					return _artifactIdToNativeFile[document.ArtifactID].Filename;
+				default:
+					throw new ArgumentException($"Cannot build value for {nameof(SpecialFieldType)}.{fieldInfo.SpecialFieldType.ToString()}.", nameof(fieldInfo));
 			}
 		}
 	}

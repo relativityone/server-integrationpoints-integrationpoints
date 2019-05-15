@@ -62,15 +62,24 @@ namespace Relativity.Sync.Transfer
 
 		private async Task ReadNextBatchAsync()
 		{
+			RelativityObjectSlim[] block = await RetrieveDataBlock().ConfigureAwait(false);
+
+			_currentIndex += block.Length;
+
+			DataTable dt = await _tableBuilder.BuildAsync(_configuration.SourceWorkspaceArtifactId, _configuration.FieldMappings, block).ConfigureAwait(false);
+			_currentBatch = dt.CreateDataReader();
+		}
+
+		private async Task<RelativityObjectSlim[]> RetrieveDataBlock()
+		{
+			RelativityObjectSlim[] block;
 			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
-				RelativityObjectSlim[] block = await objectManager
-					.RetrieveResultsBlockFromExportAsync(_configuration.SourceWorkspaceArtifactId, _configuration.SnapshotId, _resultsBlockSize, _currentIndex).ConfigureAwait(false);
-				_currentIndex += block.Length;
-
-				DataTable dt = await _tableBuilder.BuildAsync(_configuration.SourceWorkspaceArtifactId, _configuration.FieldMappings, block).ConfigureAwait(false);
-				_currentBatch = dt.CreateDataReader();
+				block = await objectManager
+					.RetrieveResultsBlockFromExportAsync(_configuration.SourceWorkspaceArtifactId, _configuration.ExportRunId, _resultsBlockSize, _currentIndex).ConfigureAwait(false);
 			}
+
+			return block;
 		}
 
 		private void Dispose(bool disposing)
