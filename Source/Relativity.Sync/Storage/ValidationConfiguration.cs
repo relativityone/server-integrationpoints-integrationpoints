@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Executors.Validation;
 
 namespace Relativity.Sync.Storage
 {

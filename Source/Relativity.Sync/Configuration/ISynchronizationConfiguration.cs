@@ -1,6 +1,4 @@
-﻿using Relativity.Sync.Executors.Validation;
-
-namespace Relativity.Sync.Configuration
+﻿namespace Relativity.Sync.Configuration
 {
 	internal interface ISynchronizationConfiguration : IConfiguration
 	{

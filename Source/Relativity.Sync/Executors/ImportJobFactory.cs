@@ -32,7 +32,7 @@ namespace Relativity.Sync.Executors
 
 		public IImportJob CreateImportJob(ISynchronizationConfiguration configuration, IBatch batch)
 		{
-			ImportBulkArtifactJob importBulkArtifactJob = CreateImportJob(configuration, batch.StartingIndex);
+			ImportBulkArtifactJob importBulkArtifactJob = CreateImportBulkArtifactJob(configuration, batch.StartingIndex);
 			ImportBulkArtifactJobWrapper importBulkArtifactJobWrapper = new ImportBulkArtifactJobWrapper(importBulkArtifactJob);
 
 			_batchProgressHandlerFactory.CreateBatchProgressHandler(batch, importBulkArtifactJob);
@@ -41,7 +41,7 @@ namespace Relativity.Sync.Executors
 				configuration.SourceWorkspaceArtifactId, configuration.JobHistoryTagArtifactId, _logger);
 		}
 
-		private ImportBulkArtifactJob CreateImportJob(ISynchronizationConfiguration configuration, int startingIndex)
+		private ImportBulkArtifactJob CreateImportBulkArtifactJob(ISynchronizationConfiguration configuration, int startingIndex)
 		{
 			ImportBulkArtifactJob importJob = _importApi.NewNativeDocumentImportJob();
 			importJob.SourceData.SourceData = _dataReader;
