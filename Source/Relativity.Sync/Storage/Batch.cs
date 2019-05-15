@@ -216,7 +216,7 @@ namespace Relativity.Sync.Storage
 					Condition = $"'{SyncConfigurationRelationGuid}' == OBJECT {syncConfigurationArtifactId} AND '{StatusGuid}' == '{BatchStatus.New.GetDescription()}'"
 				};
 
-				QueryResult result = await objectManager.QueryAsync(_workspaceArtifactId, queryRequest, 1, 1).ConfigureAwait(false);
+				QueryResult result = await objectManager.QueryAsync(_workspaceArtifactId, queryRequest, 1, int.MaxValue).ConfigureAwait(false);
 				if (result.TotalCount > 0)
 				{
 					batchIds = result.Objects.Select(x => x.ArtifactID);

@@ -523,7 +523,7 @@ namespace Relativity.Sync.Tests.Unit
 			// Arrange
 			QueryResult queryResult = PrepareQueryResult();
 			queryResult.TotalCount = 1;
-			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, 1)).ReturnsAsync(queryResult);
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, int.MaxValue)).ReturnsAsync(queryResult);
 
 			// Act
 			IEnumerable<int> batchIds = await _batchRepository.GetAllNewBatchesIdsAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
@@ -532,7 +532,7 @@ namespace Relativity.Sync.Tests.Unit
 			batchIds.Should().NotBeNullOrEmpty();
 			batchIds.Any().Should().BeTrue();
 
-			_objectManager.Verify(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(rr => AssertQueryAllNewRequest(rr)), 1, 1), Times.Once);
+			_objectManager.Verify(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(rr => AssertQueryAllNewRequest(rr)), 1, int.MaxValue), Times.Once);
 		}
 
 		[Test]
@@ -540,7 +540,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			// Arrange
 			var queryResult = new QueryResult();
-			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, 1)).ReturnsAsync(queryResult);
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, int.MaxValue)).ReturnsAsync(queryResult);
 
 			// Act
 			IEnumerable<int> batchIds = await _batchRepository.GetAllNewBatchesIdsAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
@@ -550,19 +550,19 @@ namespace Relativity.Sync.Tests.Unit
 			batchIds.Should().BeEmpty();
 			batchIds.Any().Should().BeFalse();
 
-			_objectManager.Verify(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(rr => AssertQueryAllNewRequest(rr)), 1, 1), Times.Once);
+			_objectManager.Verify(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(rr => AssertQueryAllNewRequest(rr)), 1, int.MaxValue), Times.Once);
 		}
 
 		[Test]
 		public void ItShouldThrowWhenItFailsToQueryForNewBatches()
 		{
 			// Arrange
-			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, 1)).Throws<NotAuthorizedException>();
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, int.MaxValue)).Throws<NotAuthorizedException>();
 
 			// Act & Assert
 			Assert.ThrowsAsync<NotAuthorizedException>(async () => await _batchRepository.GetAllNewBatchesIdsAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false));
 
-			_objectManager.Verify(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(rr => AssertQueryAllNewRequest(rr)), 1, 1), Times.Once);
+			_objectManager.Verify(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(rr => AssertQueryAllNewRequest(rr)), 1, int.MaxValue), Times.Once);
 		}
 
 		private bool AssertQueryAllNewRequest(QueryRequest queryRequest)
