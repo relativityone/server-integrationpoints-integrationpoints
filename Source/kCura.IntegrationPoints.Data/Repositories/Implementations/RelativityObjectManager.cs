@@ -142,7 +142,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				using (IObjectManagerFacade client = _objectManagerFacadeFactory.Create(executionIdentity))
 				{
-					MassUpdateResult result = await client.UpdateAsync(_workspaceArtifactId, request, updateOptions).ConfigureAwait(false);
+					MassUpdateResult result = await client
+						.UpdateAsync(_workspaceArtifactId, request, updateOptions)
+						.ConfigureAwait(false);
 					return result.Success;
 				}
 			}
