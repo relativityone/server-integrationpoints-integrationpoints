@@ -345,25 +345,20 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				executionIdentity: executionIdentity);
 		}
 
-		public Stream StreamLongText(
+		public Stream StreamUnicodeLongText(
 			int relativityObjectArtifactId,
 			FieldRef longTextFieldRef,
-			bool isUnicode,
 			ExecutionIdentity executionIdentity)
 		{
 			try
 			{
-				Stream innerStream =
+				Stream selfRecreatingStream =
 					new SelfRecreatingStream(
-						() => GetLongTextStreamAsync(relativityObjectArtifactId, longTextFieldRef, executionIdentity).GetAwaiter().GetResult(), 
+						() => GetLongTextStreamAsync(relativityObjectArtifactId, longTextFieldRef, executionIdentity).GetAwaiter().GetResult(),
 						_logger);
-				if (!isUnicode)
-				{
-					innerStream = new AsciiToUnicodeStream(innerStream);
-				}
-				var selfDisposingStream = 
+				var selfDisposingStream =
 					new SelfDisposingStream(
-						innerStream,
+						selfRecreatingStream,
 						_logger);
 				return selfDisposingStream;
 			}
@@ -374,6 +369,42 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			catch (Exception ex)
 			{
 				string message = GetStreamLongTextErrorMessage(
+					nameof(StreamUnicodeLongText),
+					_workspaceArtifactId,
+					relativityObjectArtifactId,
+					longTextFieldRef,
+					executionIdentity);
+				HandleObjectManagerException(ex, message);
+				throw;
+			}
+		}
+
+		public Stream StreamNonUnicodeLongText(
+			int relativityObjectArtifactId,
+			FieldRef longTextFieldRef,
+			ExecutionIdentity executionIdentity)
+		{
+			try
+			{
+				Stream selfRecreatingStream =
+					new SelfRecreatingStream(
+						() => GetLongTextStreamAsync(relativityObjectArtifactId, longTextFieldRef, executionIdentity).GetAwaiter().GetResult(),
+						_logger);
+				Stream asciiToUnicodeStream = new AsciiToUnicodeStream(selfRecreatingStream);
+				var selfDisposingStream =
+					new SelfDisposingStream(
+						asciiToUnicodeStream,
+						_logger);
+				return selfDisposingStream;
+			}
+			catch (IntegrationPointsException)
+			{
+				throw;
+			}
+			catch (Exception ex)
+			{
+				string message = GetStreamLongTextErrorMessage(
+					nameof(StreamNonUnicodeLongText),
 					_workspaceArtifactId,
 					relativityObjectArtifactId,
 					longTextFieldRef,
@@ -402,13 +433,14 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		}
 
 		private string GetStreamLongTextErrorMessage(
+			string methodName,
 			int workspaceArtifactID,
 			int relativityObjectArtifactId,
 			FieldRef longTextFieldRef,
 			ExecutionIdentity executionIdentity)
 		{
 			var msgBuilder = new StringBuilder();
-			msgBuilder.Append($"Error occurred when calling {nameof(StreamLongText)} method. ");
+			msgBuilder.Append($"Error occurred when calling {methodName} method. ");
 			msgBuilder.Append($"Workspace: ({workspaceArtifactID}) ");
 			msgBuilder.Append($"ExportObject artifact id: ({relativityObjectArtifactId}) ");
 			msgBuilder.Append($"Long text field ({longTextFieldRef?.Name}) artifact id: ({longTextFieldRef?.ArtifactID}) ");
