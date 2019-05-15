@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Storage
 {
-	internal sealed class DataSourceSnapshotConfiguration : IDataSourceSnapshotConfiguration
+	internal sealed class DataSourceSnapshotConfiguration : IDataSourceSnapshotConfiguration, IFieldConfiguration
 	{
 		private readonly IConfiguration _cache;
 		private readonly IFieldMappings _fieldMappings;

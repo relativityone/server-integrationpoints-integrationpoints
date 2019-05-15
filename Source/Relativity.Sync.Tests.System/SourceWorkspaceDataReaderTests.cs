@@ -28,18 +28,17 @@ namespace Relativity.Sync.Tests.System
 		[Test]
 		public async Task ItShouldWork()
 		{
-			const int sourceWorkspaceArtifactId = 1017928;
+			const int sourceWorkspaceArtifactId = 1215252;
 			const int dataSourceArtifactId = 1038052;
-			var sourceServiceFactory = new SourceServiceFactoryStub(ServiceFactory);
-
-			var executor = new DataSourceSnapshotExecutor(sourceServiceFactory, new EmptyLogger());
 			const int controlNumberFieldId = 1003667;
 			const int extractedTextFieldId = 1003668;
+			const int folderInfoFieldId = 1035366;
 			ConfigurationStub configuration = new ConfigurationStub
 			{
 				SourceWorkspaceArtifactId = sourceWorkspaceArtifactId,
 				DataSourceArtifactId = dataSourceArtifactId,
-				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure,
+				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.ReadFromField,
+				FolderPathSourceFieldArtifactId = folderInfoFieldId,
 				FieldMappings = new List<FieldMap>
 				{
 					new FieldMap
@@ -61,28 +60,20 @@ namespace Relativity.Sync.Tests.System
 				}
 			};
 
+			var sourceServiceFactory = new SourceServiceFactoryStub(ServiceFactory);
+			var fieldManager = new FieldManager(new List<ISpecialFieldBuilder>
+			{
+				new FileInfoFieldsBuilder(new NativeFileRepository(sourceServiceFactory)),
+				new FolderPathFieldBuilder(sourceServiceFactory, new FolderPathRetriever(sourceServiceFactory, new EmptyLogger()), configuration), new SourceTagsFieldBuilder()
+			});
+			var executor = new DataSourceSnapshotExecutor(sourceServiceFactory, fieldManager, new EmptyLogger());
+
 			ExecutionResult result = await executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
 
 			Assert.AreEqual(ExecutionStatus.Completed, result.Status);
 
-			SourceWorkspaceDataReaderConfiguration readerConfiguration = new SourceWorkspaceDataReaderConfiguration
-			{
-				DestinationFolderStructureBehavior = configuration.DestinationFolderStructureBehavior,
-				MetadataMapping = new MetadataMapping(configuration.DestinationFolderStructureBehavior,
-					configuration.FolderPathSourceFieldArtifactId, configuration.FieldMappings.ToList()),
-				RunId = configuration.ExportRunId,
-				SourceJobId = 0,
-				SourceWorkspaceId = sourceWorkspaceArtifactId
-			};
-
 			const int resultsBlockSize = 100;
-			SourceWorkspaceDataReader dataReader = new SourceWorkspaceDataReader(readerConfiguration,
-				sourceServiceFactory,
-				new BatchRepository(sourceServiceFactory), 
-				new FolderPathRetriever(sourceServiceFactory, new EmptyLogger()),
-				new NativeFileRepository(sourceServiceFactory),
-				new EmptyLogger(),
-				resultsBlockSize);
+			SourceWorkspaceDataReader dataReader = new SourceWorkspaceDataReader(sourceServiceFactory, new SourceWorkspaceDataTableBuilder(fieldManager), new EmptyLogger(), configuration, resultsBlockSize);
 
 			ConsoleLogger logger = new ConsoleLogger();
 			while (dataReader.Read())

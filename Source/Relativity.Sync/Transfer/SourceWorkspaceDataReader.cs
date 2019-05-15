@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using kCura.EDDS.WebAPI.DocumentManagerBase;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
-using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Transfer
 {
@@ -24,28 +20,22 @@ namespace Relativity.Sync.Transfer
 		private int _currentIndex;
 
 		private readonly ISourceServiceFactoryForUser _serviceFactory;
-		private readonly IBatchRepository _batchRepository;
 		private readonly ISyncLog _logger;
-		private readonly SourceWorkspaceDataTableBuilder _tableBuilder;
-		private readonly int _workspaceId;
-		private readonly Guid _runId;
+		private readonly ISynchronizationConfiguration _configuration;
+		private readonly ISourceWorkspaceDataTableBuilder _tableBuilder;
 		private readonly int _resultsBlockSize;
 
-		public SourceWorkspaceDataReader(SourceWorkspaceDataReaderConfiguration configuration,
-			ISourceServiceFactoryForUser serviceFactory,
-			IBatchRepository batchRepository,
-			IFolderPathRetriever folderPathRetriever,
-			INativeFileRepository nativeFileRepository,
+		public SourceWorkspaceDataReader(ISourceServiceFactoryForUser serviceFactory,
+			ISourceWorkspaceDataTableBuilder tableBuilder,
 			ISyncLog logger,
+			ISynchronizationConfiguration configuration,
 			int resultsBlockSize)
 		{
-			_workspaceId = configuration.SourceWorkspaceId;
-			_runId = configuration.RunId;
 			_resultsBlockSize = resultsBlockSize;
 			_serviceFactory = serviceFactory;
-			_batchRepository = batchRepository;
+			_tableBuilder = tableBuilder;
 			_logger = logger;
-			_tableBuilder = new SourceWorkspaceDataTableBuilder(configuration, folderPathRetriever, nativeFileRepository);
+			_configuration = configuration;
 			_currentBatch = new DataTable().CreateDataReader();
 
 			_currentIndex = 0;
@@ -74,10 +64,11 @@ namespace Relativity.Sync.Transfer
 		{
 			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
-				RelativityObjectSlim[] block = await objectManager.RetrieveResultsBlockFromExportAsync(_workspaceId, _runId, _resultsBlockSize, _currentIndex).ConfigureAwait(false);
+				RelativityObjectSlim[] block = await objectManager
+					.RetrieveResultsBlockFromExportAsync(_configuration.SourceWorkspaceArtifactId, _configuration.SnapshotId, _resultsBlockSize, _currentIndex).ConfigureAwait(false);
 				_currentIndex += block.Length;
 
-				DataTable dt = await _tableBuilder.BuildAsync(block).ConfigureAwait(false);
+				DataTable dt = await _tableBuilder.BuildAsync(_configuration.SourceWorkspaceArtifactId, _configuration.FieldMappings, block).ConfigureAwait(false);
 				_currentBatch = dt.CreateDataReader();
 			}
 		}

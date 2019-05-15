@@ -6,6 +6,7 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.DataContracts.DTOs.Results;
+using Relativity.Services.FieldManager;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
@@ -23,6 +24,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 		private Mock<IObjectManager> _objectManager;
 		private Mock<IDataSourceSnapshotConfiguration> _configuration;
+		private Mock<Transfer.IFieldManager> _fieldManager;
 
 		private const int _WORKSPACE_ID = 458712;
 		private const int _DATA_SOURCE_ID = 485219;
@@ -35,12 +37,14 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Mock<ISourceServiceFactoryForUser> serviceFactory = new Mock<ISourceServiceFactoryForUser>();
 			serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
 
+			_fieldManager = new Mock<Transfer.IFieldManager>();
+
 			_configuration = new Mock<IDataSourceSnapshotConfiguration>();
 			_configuration.Setup(x => x.SourceWorkspaceArtifactId).Returns(_WORKSPACE_ID);
 			_configuration.Setup(x => x.DataSourceArtifactId).Returns(_DATA_SOURCE_ID);
 			_configuration.Setup(x => x.FieldMappings).Returns(new List<FieldMap>());
 
-			_instance = new DataSourceSnapshotExecutor(serviceFactory.Object, new EmptyLogger());
+			_instance = new DataSourceSnapshotExecutor(serviceFactory.Object, _fieldManager.Object, new EmptyLogger());
 		}
 
 		[Test]
