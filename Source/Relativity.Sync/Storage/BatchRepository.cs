@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync.Storage
@@ -25,6 +26,11 @@ namespace Relativity.Sync.Storage
 		public async Task<IBatch> GetLastAsync(int workspaceArtifactId, int syncConfigurationId)
 		{
 			return await Batch.GetLastAsync(_serviceFactory, workspaceArtifactId, syncConfigurationId).ConfigureAwait(false);
+		}
+
+		public async Task<IEnumerable<int>> GetAllNewBatchesIdsAsync(int workspaceArtifactId, int syncConfigurationId)
+		{
+			return await Batch.GetAllNewBatchIdsAsync(_serviceFactory, workspaceArtifactId, syncConfigurationId).ConfigureAwait(false);
 		}
 	}
 }
