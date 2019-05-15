@@ -23,6 +23,6 @@ namespace Relativity.Sync.Storage
 		/// <summary>
 		/// Returns all batches that has not been started yet (have status New).
 		/// </summary>
-		Task<IEnumerable<int>> GetAllNewBatchesIdsAsync(int workspaceArtifactId);
+		Task<IEnumerable<int>> GetAllNewBatchesIdsAsync(int workspaceArtifactId, int syncConfigurationId);
 	}
 }

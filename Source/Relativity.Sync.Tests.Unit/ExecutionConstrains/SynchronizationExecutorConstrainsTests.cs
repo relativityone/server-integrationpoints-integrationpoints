@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Moq;
@@ -29,20 +30,13 @@ namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
 		}
 
 		[Test]
-		[TestCase(BatchStatus.New, ExpectedResult = true)]
-		[TestCase(BatchStatus.Cancelled, ExpectedResult = false)]
-		[TestCase(BatchStatus.Completed, ExpectedResult = false)]
-		[TestCase(BatchStatus.CompletedWithErrors, ExpectedResult = false)]
-		[TestCase(BatchStatus.Failed, ExpectedResult = false)]
-		[TestCase(BatchStatus.InProgress, ExpectedResult = false)]
-		[TestCase(BatchStatus.Started, ExpectedResult = false)]
-		public async Task<bool> CanExecuteAsyncGoldFlowTests(BatchStatus testStatus)
+		[TestCase(new []{1}, ExpectedResult = true)]
+		[TestCase(new int[0], ExpectedResult = false)]
+		public async Task<bool> CanExecuteAsyncGoldFlowTests(IEnumerable<int> batchIds)
 		{
 			// Arrange
-			var lastBatch = new Mock<IBatch>();
-			lastBatch.SetupGet(x => x.Status).Returns(testStatus);
 			var batchRepository = new Mock<IBatchRepository>();
-			batchRepository.Setup(x => x.GetLastAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(lastBatch.Object);
+			batchRepository.Setup(x => x.GetAllNewBatchesIdsAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(batchIds);
 
 			var synchronizationExecutorConstrains = new SynchronizationExecutorConstrains(batchRepository.Object, _syncLog);
 
@@ -54,27 +48,11 @@ namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
 		}
 
 		[Test]
-		public async Task CanExecuteAsyncReturnsFalseWhenNoBatchesExistTest()
+		public void CanExecuteAsyncThrowsWhenGettingBatchIdsTest()
 		{
 			// Arrange
 			var batchRepository = new Mock<IBatchRepository>();
-			batchRepository.Setup(x => x.GetLastAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(() => null);
-
-			var synchronizationExecutorConstrains = new SynchronizationExecutorConstrains(batchRepository.Object, _syncLog);
-
-			// Act
-			bool actualResult = await synchronizationExecutorConstrains.CanExecuteAsync(_synchronizationConfiguration.Object, _token).ConfigureAwait(false);
-
-			// Assert
-			Assert.IsFalse(actualResult);
-		}
-
-		[Test]
-		public void CanExecuteAsyncThrowsWhenGettingLastBatchTest()
-		{
-			// Arrange
-			var batchRepository = new Mock<IBatchRepository>();
-			batchRepository.Setup(x => x.GetLastAsync(It.IsAny<int>(), It.IsAny<int>())).Throws<OutOfMemoryException>();
+			batchRepository.Setup(x => x.GetAllNewBatchesIdsAsync(It.IsAny<int>(), It.IsAny<int>())).Throws<OutOfMemoryException>();
 
 			var synchronizationExecutorConstrains = new SynchronizationExecutorConstrains(batchRepository.Object, _syncLog);
 

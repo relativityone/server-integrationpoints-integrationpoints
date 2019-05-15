@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
@@ -22,8 +24,8 @@ namespace Relativity.Sync.ExecutionConstrains
 			bool canExecute = true;
 			try
 			{
-				IBatch lastBatch = await _batchRepository.GetLastAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId).ConfigureAwait(false);
-				if (lastBatch == null || lastBatch.Status != BatchStatus.New)
+				IEnumerable<int> batchIds = await _batchRepository.GetAllNewBatchesIdsAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId).ConfigureAwait(false);
+				if (batchIds == null || !batchIds.Any())
 				{
 					canExecute = false;
 				}
