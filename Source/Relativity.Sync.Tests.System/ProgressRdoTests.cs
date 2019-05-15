@@ -6,6 +6,7 @@ using Relativity.Services.Workspace;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Helpers;
+using Relativity.Testing.Identification;
 
 namespace Relativity.Sync.Tests.System
 {
@@ -31,7 +32,7 @@ namespace Relativity.Sync.Tests.System
 			_syncConfigurationArtifactId = await Rdos.CreateSyncConfigurationInstance(ServiceFactory, _workspaceId, jobHistoryArtifactId).ConfigureAwait(false);
 		}
 
-		[Test]
+		[IdentifiedTest("48bc9b70-5341-4605-83e9-c96ac301457d")]
 		public async Task ItShouldCreateAndReadProgress()
 		{
 			const string name = "name 1";
@@ -48,7 +49,7 @@ namespace Relativity.Sync.Tests.System
 			readProgress.Status.Should().Be(status);
 		}
 
-		[Test]
+		[IdentifiedTest("0e58e92f-fd40-45ef-9b4c-fd45f27e7453")]
 		public async Task ItShouldUpdateValues()
 		{
 			const string name = "name 2";
