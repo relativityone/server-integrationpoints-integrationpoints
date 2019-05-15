@@ -6,6 +6,7 @@ using FluentAssertions;
 using kCura.Utility;
 using Moq;
 using NUnit.Framework;
+using Relativity.Services.Exceptions;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
@@ -513,6 +514,61 @@ namespace Relativity.Sync.Tests.Unit
 			queryRequest.Condition.Should().Be($"'{SyncConfigurationRelationGuid}' == OBJECT {syncConfigurationArtifactId}");
 			IList<FieldRef> fields = queryRequest.Fields.ToList();
 			AssertReadFields(fields);
+			return true;
+		}
+
+		[Test]
+		public async Task ItShouldReturnAnyNewBatchIds()
+		{
+			// Arrange
+			QueryResult queryResult = PrepareQueryResult();
+			queryResult.TotalCount = 1;
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, 1)).ReturnsAsync(queryResult);
+
+			// Act
+			IEnumerable<int> batchIds = await _batchRepository.GetAllNewBatchesIdsAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
+
+			// Assert
+			batchIds.Should().NotBeNullOrEmpty();
+			batchIds.Any().Should().BeTrue();
+
+			_objectManager.Verify(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(rr => AssertQueryAllNewRequest(rr)), 1, 1), Times.Once);
+		}
+
+		[Test]
+		public async Task ItShouldReturnNoBatchIdsWhenNoNewBatchesExist()
+		{
+			// Arrange
+			var queryResult = new QueryResult();
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, 1)).ReturnsAsync(queryResult);
+
+			// Act
+			IEnumerable<int> batchIds = await _batchRepository.GetAllNewBatchesIdsAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
+
+			// Assert
+			batchIds.Should().NotBeNull();
+			batchIds.Should().BeEmpty();
+			batchIds.Any().Should().BeFalse();
+
+			_objectManager.Verify(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(rr => AssertQueryAllNewRequest(rr)), 1, 1), Times.Once);
+		}
+
+		[Test]
+		public void ItShouldThrowWhenItFailsToQueryForNewBatches()
+		{
+			// Arrange
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, 1)).Throws<NotAuthorizedException>();
+
+			// Act & Assert
+			Assert.ThrowsAsync<NotAuthorizedException>(async () => await _batchRepository.GetAllNewBatchesIdsAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false));
+
+			_objectManager.Verify(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(rr => AssertQueryAllNewRequest(rr)), 1, 1), Times.Once);
+		}
+
+		private bool AssertQueryAllNewRequest(QueryRequest queryRequest)
+		{
+			queryRequest.ObjectType.Guid.Should().Be(BatchObjectTypeGuid);
+			queryRequest.Condition.Should().Be($"'{SyncConfigurationRelationGuid}' == OBJECT {_ARTIFACT_ID} AND '{StatusGuid}' == 'New'");
 			return true;
 		}
 	}
