@@ -16,8 +16,8 @@ namespace Relativity.Sync.Transfer
 		private string _batchToken;
 
 		private readonly IRelativityExportBatcher _exportBatcher;
-		private readonly IBatchDataTableBuilder _tableBuilder;
 		private readonly ISyncLog _logger;
+		private readonly IBatchDataTableBuilder _tableBuilder;
 		private readonly int _workspaceId;
 		private readonly int _syncConfigurationId;
 		private readonly Guid _runId;
@@ -92,7 +92,7 @@ namespace Relativity.Sync.Transfer
 				}
 				catch (Exception ex)
 				{
-					throw new SourceDataReaderException("Failed to transform exported batch for import", ex);
+					throw new SourceDataReaderException("Failed to prepare exported batch for import", ex);
 				}
 				nextBatchReader = dt.CreateDataReader();
 			}
