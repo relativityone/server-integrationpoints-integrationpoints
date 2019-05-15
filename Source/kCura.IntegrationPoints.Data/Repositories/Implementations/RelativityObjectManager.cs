@@ -357,7 +357,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					new SelfRecreatingStream(
 						() => GetLongTextStreamAsync(relativityObjectArtifactId, longTextFieldRef, executionIdentity).GetAwaiter().GetResult(),
 						_logger);
-				if (isUnicode)
+				if (!isUnicode)
 				{
 					innerStream = new AsciiToUnicodeStream(innerStream);
 				}
