@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 	public class RelativityObjectManager : IRelativityObjectManager
 	{
 		private const int _BATCH_SIZE = 1000;
-
+		private const string _UNKNOWN_OBJECT_TYPE = "[UnknownObjectType]";
 		private readonly int _workspaceArtifactId;
 		private readonly IAPILog _logger;
 		private readonly ISecretStoreHelper _secretStoreHelper;
@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_objectManagerFacadeFactory = objectManagerFacadeFactory;
 		}
 
-		public int Create<T>(T rdo, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) 
+		public int Create<T>(T rdo, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
 			where T : BaseRdo, new()
 		{
 			var createRequest = new CreateRequest
@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		}
 
 		public int Create(ObjectTypeRef objectType,
-			List<FieldRefValuePair> fieldValues, 
+			List<FieldRefValuePair> fieldValues,
 			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
 		{
 			var createRequest = new CreateRequest
@@ -64,9 +64,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return SendCreateRequest(createRequest, executionIdentity);
 		}
 
-		public int Create(ObjectTypeRef objectType, 
-			RelativityObjectRef parentObject, 
-			List<FieldRefValuePair> fieldValues, 
+		public int Create(ObjectTypeRef objectType,
+			RelativityObjectRef parentObject,
+			List<FieldRefValuePair> fieldValues,
 			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
 		{
 			var createRequest = new CreateRequest
@@ -78,7 +78,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return SendCreateRequest(createRequest, executionIdentity);
 		}
 
-		public T Read<T>(int artifactId, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) 
+		public T Read<T>(int artifactId, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
 			where T : BaseRdo, new()
 		{
 			var request = new ReadRequest
@@ -91,9 +91,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				executionIdentity: executionIdentity);
 		}
 
-		public T Read<T>(int artifactId, 
-			IEnumerable<Guid> fieldsGuids, 
-			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) 
+		public T Read<T>(int artifactId,
+			IEnumerable<Guid> fieldsGuids,
+			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
 			where T : BaseRdo, new()
 		{
 			var request = new ReadRequest
@@ -106,8 +106,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				executionIdentity: executionIdentity);
 		}
 
-		public bool Update(int artifactId, 
-			IList<FieldRefValuePair> fieldsValues, 
+		public bool Update(int artifactId,
+			IList<FieldRefValuePair> fieldsValues,
 			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
 		{
 			var request = new UpdateRequest
@@ -120,7 +120,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return SendUpdateRequest(request, executionIdentity, rdoType);
 		}
 
-		public bool Update<T>(T rdo, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) 
+		public bool Update<T>(T rdo, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
 			where T : BaseRdo, new()
 		{
 			var request = new UpdateRequest
@@ -133,7 +133,33 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return SendUpdateRequest(request, executionIdentity, GetRdoType(rdo));
 		}
 
-		public bool Delete<T>(T rdo, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) 
+		public async Task<bool> MassUpdateAsync(
+			MassUpdateByObjectIdentifiersRequest request,
+			MassUpdateOptions updateOptions,
+			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
+		{
+			try
+			{
+				using (IObjectManagerFacade client = _objectManagerFacadeFactory.Create(executionIdentity))
+				{
+					MassUpdateResult result = await client
+						.UpdateAsync(_workspaceArtifactId, request, updateOptions)
+						.ConfigureAwait(false);
+					return result.Success;
+				}
+			}
+			catch (IntegrationPointsException)
+			{
+				throw;
+			}
+			catch (Exception ex)
+			{
+				HandleObjectManagerException(ex, message: GetErrorMessage<UpdateRequest>(_UNKNOWN_OBJECT_TYPE));
+				throw;
+			}
+		}
+
+		public bool Delete<T>(T rdo, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
 			where T : BaseRdo, new()
 		{
 			var request = new DeleteRequest
@@ -152,11 +178,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return SendDeleteRequest(request, executionIdentity, rdoType: null);
 		}
 
-		public ResultSet<T> Query<T>(QueryRequest q, 
-			int start, 
-			int length, 
+		public ResultSet<T> Query<T>(QueryRequest q,
+			int start,
+			int length,
 			bool noFields = false,
-			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) 
+			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
 			where T : BaseRdo, new()
 		{
 			return QueryAsync<T>(q, start, length, noFields, executionIdentity)
@@ -164,11 +190,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				.GetResult();
 		}
 
-		public Task<ResultSet<T>> QueryAsync<T>(QueryRequest q, 
-			int start, 
-			int length, 
+		public Task<ResultSet<T>> QueryAsync<T>(QueryRequest q,
+			int start,
+			int length,
 			bool noFields = false,
-			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) 
+			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
 			where T : BaseRdo, new()
 		{
 			Func<IObjectManagerFacade, Task<ResultSet<T>>> func = async (client) =>
@@ -199,9 +225,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				.GetResult();
 		}
 
-		public Task<List<T>> QueryAsync<T>(QueryRequest q, 
-			bool noFields = false, 
-			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) 
+		public Task<List<T>> QueryAsync<T>(QueryRequest q,
+			bool noFields = false,
+			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
 			where T : BaseRdo, new()
 		{
 			Func<IObjectManagerFacade, Task<List<T>>> func = async (client) =>
@@ -284,9 +310,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			};
 
 			return SendQueryRequestAsync(
-				func, 
-				q, 
-				rdo: null, 
+				func,
+				q,
+				rdo: null,
 				executionIdentity: executionIdentity);
 		}
 
@@ -298,9 +324,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				.GetResult();
 		}
 
-		public Task<ResultSet<RelativityObject>> QueryAsync(QueryRequest q, 
-			int start, 
-			int length, 
+		public Task<ResultSet<RelativityObject>> QueryAsync(QueryRequest q,
+			int start,
+			int length,
 			bool noFields = false,
 			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
 		{
@@ -318,9 +344,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			};
 
 			return SendQueryRequestAsync(
-				func, 
-				q, 
-				rdo: null, 
+				func,
+				q,
+				rdo: null,
 				executionIdentity: executionIdentity);
 		}
 
@@ -355,13 +381,13 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				Stream innerStream =
 					new SelfRecreatingStream(
-						() => GetLongTextStreamAsync(relativityObjectArtifactId, longTextFieldRef, executionIdentity).GetAwaiter().GetResult(), 
+						() => GetLongTextStreamAsync(relativityObjectArtifactId, longTextFieldRef, executionIdentity).GetAwaiter().GetResult(),
 						_logger);
 				if (isUnicode)
 				{
 					innerStream = new AsciiToUnicodeStream(innerStream);
 				}
-				var selfDisposingStream = 
+				var selfDisposingStream =
 					new SelfDisposingStream(
 						innerStream,
 						_logger);
@@ -440,9 +466,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		private T SendReadRequest<T>(ReadRequest request, 
-			bool decryptSecuredConfiguration, 
-			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) 
+		private T SendReadRequest<T>(ReadRequest request,
+			bool decryptSecuredConfiguration,
+			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
 			where T : BaseRdo, new()
 		{
 			try
@@ -453,8 +479,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 						.GetAwaiter()
 						.GetResult();
 					T rdo = result.Object.ToRDO<T>();
-					return decryptSecuredConfiguration 
-						? SetDecryptedSecuredConfiguration(rdo) 
+					return decryptSecuredConfiguration
+						? SetDecryptedSecuredConfiguration(rdo)
 						: rdo;
 				}
 			}
@@ -646,14 +672,14 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private string ConvertFieldsToStringRepresentation(QueryRequest queryRequest)
 		{
 			IEnumerable<string> fieldsAsString = queryRequest?.Fields?.Select(x => $"({x.Name}: {x.Guid})");
-			return fieldsAsString != null 
-				? string.Join(", ", fieldsAsString) 
+			return fieldsAsString != null
+				? string.Join(", ", fieldsAsString)
 				: string.Empty;
 		}
 
 		private string GetRdoType(IBaseRdo rdo)
 		{
-			return rdo?.GetType().Name ?? "[UnknownObjectType]";
+			return rdo?.GetType().Name ?? _UNKNOWN_OBJECT_TYPE;
 		}
 	}
 }

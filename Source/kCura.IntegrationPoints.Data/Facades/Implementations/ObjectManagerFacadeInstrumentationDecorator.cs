@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Data.Facades.Implementations
 
 		public ObjectManagerFacadeInstrumentationDecorator(
 			IObjectManagerFacade objectManager,
-			IExternalServiceInstrumentationProvider instrumentationProvider, 
+			IExternalServiceInstrumentationProvider instrumentationProvider,
 			IAPILog logger)
 		{
 			_objectManager = objectManager;
@@ -81,12 +81,33 @@ namespace kCura.IntegrationPoints.Data.Facades.Implementations
 			return result;
 		}
 
+		public async Task<MassUpdateResult> UpdateAsync(
+			int workspaceArtifactID,
+			MassUpdateByObjectIdentifiersRequest request,
+			MassUpdateOptions updateOptions)
+		{
+			IExternalServiceInstrumentationStarted startedInstrumentation = StartInstrumentation();
+			MassUpdateResult result =
+				await Execute(x => x.UpdateAsync(workspaceArtifactID, request, updateOptions), startedInstrumentation)
+					.ConfigureAwait(false);
+
+			if (result.Success)
+			{
+				startedInstrumentation.Completed();
+			}
+			else
+			{
+				startedInstrumentation.Failed(result.Message);
+			}
+			return result;
+		}
+
 		public async Task<IKeplerStream> StreamLongTextAsync(int workspaceArtifactID, RelativityObjectRef exportObject, FieldRef fieldRef)
 		{
 			IExternalServiceInstrumentationStarted startedInstrumentation = StartInstrumentation();
-			IKeplerStream result = 
-				await Execute(x => 
-					x.StreamLongTextAsync(workspaceArtifactID, exportObject, fieldRef), 
+			IKeplerStream result =
+				await Execute(x =>
+					x.StreamLongTextAsync(workspaceArtifactID, exportObject, fieldRef),
 					startedInstrumentation)
 				.ConfigureAwait(false);
 			startedInstrumentation.Completed();
