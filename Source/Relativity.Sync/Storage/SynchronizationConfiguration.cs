@@ -10,9 +10,10 @@ namespace Relativity.Sync.Storage
 		public int SourceWorkspaceArtifactId { get; }
 		public int DestinationWorkspaceTagArtifactId { get; }
 		public int JobHistoryTagArtifactId { get; }
+		public int SyncConfigurationArtifactId { get; }
 		public ImportSettingsDto ImportSettings { get; }
 
-		public SynchronizationConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters, IFieldMappings fieldMappings, int jobHistoryTagArtifactId)
+		public SynchronizationConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters, int jobHistoryTagArtifactId)
 		{
 			SourceWorkspaceArtifactId = syncJobParameters.WorkspaceId;
 			DestinationWorkspaceTagArtifactId = cache.GetFieldValue<int>(DestinationWorkspaceTagArtifactIdGuid);

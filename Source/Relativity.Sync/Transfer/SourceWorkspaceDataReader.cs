@@ -52,7 +52,7 @@ namespace Relativity.Sync.Transfer
 			_currentIndex = 0;
 		}
 
-		public bool IsClosed { get; } = false;
+		public bool IsClosed => _currentBatch.IsClosed;
 
 		public bool Read()
 		{

@@ -33,7 +33,7 @@ namespace Relativity.Sync.Storage
 			SyncJobParameters syncJobParameters = context.Resolve<SyncJobParameters>();
 			IFieldMappings fieldMappings = context.Resolve<IFieldMappings>();
 			int jobHistoryTagArtifactId = context.Resolve<ISynchronizationConfiguration>().JobHistoryTagArtifactId;
-			return new SynchronizationConfiguration(configuration, syncJobParameters, fieldMappings, jobHistoryTagArtifactId);
+			return new SynchronizationConfiguration(configuration, syncJobParameters, jobHistoryTagArtifactId);
 		}
 	}
 }

@@ -35,7 +35,7 @@ namespace Relativity.Sync.Executors
 			{
 				_logger.LogVerbose("Gathering batches to execute.");
 
-				List<int> batchesIds = (await _batchRepository.GetAllNewBatchesIdsAsync(configuration.SourceWorkspaceArtifactId).ConfigureAwait(false)).ToList();
+				List<int> batchesIds = (await _batchRepository.GetAllNewBatchesIdsAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId).ConfigureAwait(false)).ToList();
 
 				foreach (int batchId in batchesIds)
 				{

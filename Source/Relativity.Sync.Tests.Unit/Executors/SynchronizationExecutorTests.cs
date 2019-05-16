@@ -114,7 +114,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 		private void SetupImportJobFactory(int numberOfBatches)
 		{
-			_batchRepository.Setup(x => x.GetAllNewBatchesIdsAsync(It.IsAny<int>())).ReturnsAsync(new int[numberOfBatches].ToList());
+			_batchRepository.Setup(x => x.GetAllNewBatchesIdsAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(new int[numberOfBatches].ToList());
 			_importJob = new Mock<Sync.Executors.IImportJob>();
 			_importJobFactory.Setup(x => x.CreateImportJob(It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IBatch>())).Returns(_importJob.Object);
 		}
