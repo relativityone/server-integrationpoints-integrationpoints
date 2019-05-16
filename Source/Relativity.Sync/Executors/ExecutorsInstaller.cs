@@ -1,11 +1,8 @@
-﻿using System.Linq;
-using System.Reflection;
-using Autofac;
+﻿using Autofac;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.ExecutionConstrains;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.Storage;
-using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Executors
 {
@@ -28,13 +25,7 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<TagSavedSearchFolder>().As<ITagSavedSearchFolder>();
 			builder.RegisterType<BatchProgressHandlerFactory>().As<IBatchProgressHandlerFactory>();
 			builder.RegisterType<BatchProgressUpdater>().As<IBatchProgressUpdater>();
-			builder.RegisterType<NativeFileRepository>().As<INativeFileRepository>();
-			builder.RegisterType<FieldManager>().As<IFieldManager>();
-			builder.RegisterType<FolderPathRetriever>().As<IFolderPathRetriever>();
-			builder.RegisterTypes(Assembly.GetExecutingAssembly().GetTypes()
-				.Where(t => !t.IsAbstract && t.IsAssignableTo<ISpecialFieldBuilder>())
-				.ToArray()).As<ISpecialFieldBuilder>();
-
+			
 			builder.RegisterType<SourceWorkspaceTagsCreationExecutionConstrains>().As<IExecutionConstrains<ISourceWorkspaceTagsCreationConfiguration>>();
 			builder.RegisterType<SourceWorkspaceTagsCreationExecutor>().As<IExecutor<ISourceWorkspaceTagsCreationConfiguration>>();
 			builder.RegisterType<DestinationWorkspaceTagsCreationExecutionConstrains>().As<IExecutionConstrains<IDestinationWorkspaceTagsCreationConfiguration>>();
