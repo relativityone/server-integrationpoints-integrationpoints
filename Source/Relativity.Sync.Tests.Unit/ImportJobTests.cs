@@ -66,8 +66,6 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public void ItShouldHandleJobLevelError()
 		{
-			const string errorMessage = "Fatal exception occurred in ImportAPI during import job";
-
 			_importBulkArtifactJobMock.Setup(x => x.Execute()).Callback(() =>
 			{
 				JobReport jobReport = CreateJobReport();
@@ -84,7 +82,7 @@ namespace Relativity.Sync.Tests.Unit
 			// assert
 			action.Should().Throw<SyncException>().Which.InnerException.Should().BeOfType<InvalidOperationException>();
 			_jobHistoryErrorRepository.Verify(x => x.CreateAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.Is<CreateJobHistoryErrorDto>(dto =>
-				dto.ErrorMessage == errorMessage && dto.ErrorType == ErrorType.Job)));
+				dto.ErrorType == ErrorType.Job)));
 		}
 
 		[Test]
