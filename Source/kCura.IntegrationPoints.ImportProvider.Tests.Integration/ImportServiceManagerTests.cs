@@ -205,21 +205,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 			RunTestCase(testCase);
 		}
 
-        [Test]
-		[SmokeTest]
-		[TestInQuarantine(TestQuarantineState.SeemsToBeStable,
-						@"Review 04.24 SeemsToBeStable,
-						Before: FailsContinuously 
-						REL-307470 TODO: Broken test needs to be fixed!
-						Ignore tests until verification mechanism will be fixed.
-						DocumentService.GetNativeMD5String(workspaceId, docResult)
-						needs to be reimplemented.")]
-		[TestCaseSource(nameof(ImportFlakyTestCaseSource))]
-		public void RunFlakyTestCase(IImportTestCase testCase)
-		{
-			RunTestCase(testCase);
-		}
-
 		private void RunTestCase(IImportTestCase testCase)
 		{
 			SettingsObjects settingsObjects = testCase.Prepare(_workspaceId);
@@ -241,21 +226,9 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 		{
 			InitContainer();
 			return _windsorContainer
-				.ResolveAll<IImportTestCase>()
-				.Where(x => x.GetType() != typeof(ItShouldLoadNativesFromPaths));
+				.ResolveAll<IImportTestCase>();
 		}
-
-		private static IEnumerable<IImportTestCase> ImportFlakyTestCaseSource()
-		{
-			InitContainer();
-			return new[]
-			{
-				_windsorContainer
-					.ResolveAll<IImportTestCase>()
-					.First(x => x.GetType() == typeof(ItShouldLoadNativesFromPaths))
-			};
-		}
-
+		
 		private static void InitContainer()
 		{
 			if (_windsorContainer == null)
