@@ -1,5 +1,4 @@
-﻿using kCura.IntegrationPoints.Data.Extensions;
-using kCura.IntegrationPoints.Data.Repositories;
+﻿using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using System.Collections.Generic;

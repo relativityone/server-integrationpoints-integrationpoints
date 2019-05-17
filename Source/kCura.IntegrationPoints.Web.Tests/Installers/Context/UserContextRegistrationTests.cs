@@ -6,12 +6,12 @@ using kCura.IntegrationPoint.Tests.Core.FluentAssertions;
 using kCura.IntegrationPoints.Web.Context.UserContext;
 using kCura.IntegrationPoints.Web.Infrastructure.Session;
 using kCura.IntegrationPoints.Web.Installers.Context;
-using Moq;
 using NUnit.Framework;
 using System.Web;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using Relativity.API;
+using static kCura.IntegrationPoint.Tests.Core.TestHelpers.WindsorContainerTestHelpers;
 
 namespace kCura.IntegrationPoints.Web.Tests.Installers.Context
 {
@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Installers.Context
 				.Which.Should()
 				.BeRegisteredWithLifestyle(LifestyleType.PerWebRequest);
 		}
-		
+
 		[Test]
 		public void NotFoundUserContextService_ShouldBeRegisteredWithProperLifestyle()
 		{
@@ -101,14 +101,14 @@ namespace kCura.IntegrationPoints.Web.Tests.Installers.Context
 				.Should()
 				.BeTrue("because {0} depends on {1}", nameof(SessionUserContextService), nameof(NotFoundUserContextService));
 		}
-		
+
 		private static void RegisterDependencies(IWindsorContainer container)
 		{
 			IRegistration[] dependencies =
 			{
-				Component.For<HttpRequestBase>().Instance(new Mock<HttpRequestBase>().Object),
-				Component.For<ISessionService>().Instance(new Mock<ISessionService>().Object),
-				Component.For<IAPILog>().Instance(new Mock<IAPILog>().Object)
+				CreateDummyObjectRegistration<HttpRequestBase>(),
+				CreateDummyObjectRegistration<ISessionService>(),
+				CreateDummyObjectRegistration<IAPILog>()
 			};
 
 			container.Register(dependencies);

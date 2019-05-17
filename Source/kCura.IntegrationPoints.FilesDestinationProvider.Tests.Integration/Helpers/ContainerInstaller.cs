@@ -1,10 +1,8 @@
-﻿using kCura.IntegrationPoint.Tests.Core;
+﻿using Castle.Facilities.TypedFactory;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Config;
-using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.Services;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Abstract;
 using kCura.Relativity.Client;
 using Castle.MicroKernel.Registration;
@@ -20,20 +18,14 @@ using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers.FileNaming;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories.Implementations;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer;
+using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Process.Internals;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Exporters;
 using NSubstitute;
 using Relativity.API;
-using Relativity.Services.FileField;
-using Relativity.Services.Interfaces.File;
-using Relativity.Services.Interfaces.ViewField;
-using Relativity.Services.View;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers
 {
@@ -49,28 +41,27 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 		private const int _EXPORT_LOADFILE_IO_ERROR_WAIT_TIME = 1;
 		private const int _EXPORT_LOADFILE_IO_ERROR_RETRIES_NUMBER = 1;
 
-		public static WindsorContainer CreateContainer(ConfigSettings configSettings)
+		public static WindsorContainer CreateContainer(ExportTestConfiguration testConfiguration, ExportTestContext testContext)
 		{
 			var windsorContainer = new WindsorContainer();
 			windsorContainer.Kernel.Resolver.AddSubResolver(new CollectionResolver(windsorContainer.Kernel));
+			windsorContainer.Kernel.AddFacility<TypedFactoryFacility>();
 
 			RegisterExportTestCases(windsorContainer);
 			RegisterInvalidExportTestCases(windsorContainer);
+			RegisterTestHelpers(windsorContainer);
 			RegisterLoggingClasses(windsorContainer);
 			RegisterMetrics(windsorContainer);
 			RegisterJobManagers(windsorContainer);
-			RegisterConfig(configSettings, windsorContainer);
+			RegisterConfig(testConfiguration, testContext, windsorContainer);
 			RegisterRSAPIClient(windsorContainer);
 
 			windsorContainer.Register(Component.For<ICredentialProvider>().ImplementedBy<UserPasswordCredentialProvider>());
-			windsorContainer.Register(Component.For<IExportFieldsService>().ImplementedBy<ExportFieldsService>().LifestyleTransient());
 			windsorContainer.Register(Component.For<ISqlServiceFactory>().ImplementedBy<HelperConfigSqlServiceFactory>().LifestyleSingleton());
 			windsorContainer.Register(Component.For<IServiceManagerProvider>().ImplementedBy<ServiceManagerProvider>().LifestyleTransient());
 			windsorContainer.Register(Component.For<IHelper>().Instance(new TestHelper()).LifestyleTransient());
 
 			windsorContainer.Register(Component.For<IServicesMgr>().UsingFactoryMethod(f => f.Resolve<IHelper>().GetServicesManager()));
-
-			windsorContainer.Register(Component.For<IFactoryConfigBuilder>().ImplementedBy<FactoryConfigBuilder>().LifestyleTransient());
 
 			_instanceSettings = Substitute.For<IInstanceSettingRepository>();
 			_instanceSettings.GetConfigurationValue(Domain.Constants.INTEGRATION_POINT_INSTANCE_SETTING_SECTION,
@@ -79,30 +70,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 			windsorContainer.Register(Component.For<IInstanceSettingRepository>()
 				.Instance(_instanceSettings)
 				.LifestyleTransient());
-			windsorContainer.Register(Component.For<IExtendedExporterFactory>().ImplementedBy<ExtendedExporterFactory>().LifestyleTransient());
-			windsorContainer.Register(Component.For<IJobInfoFactory>().Instance(Substitute.For<IJobInfoFactory>()).LifestyleTransient());
-			windsorContainer.Register(Component.For<IJobInfo>().Instance(Substitute.For<IJobInfo>()).LifestyleTransient());
+
 			windsorContainer.Register(Component.For<ISerializer>().Instance(Substitute.For<ISerializer>()).LifestyleTransient());
 			windsorContainer.Register(Component.For<ITokenProvider>().Instance(Substitute.For<ITokenProvider>()).LifestyleTransient());
 			windsorContainer.Register(Component.For<IFileNameProvidersDictionaryBuilder>().ImplementedBy<FileNameProvidersDictionaryBuilder>().LifestyleTransient());
 			windsorContainer.Register(Component.For<IRepositoryFactory>().ImplementedBy<RepositoryFactory>());
 
+			windsorContainer.Install(new ExportInstaller());
 
-			windsorContainer.Register(Component.For<IViewFieldManager>().UsingFactoryMethod(f =>
-				f.Resolve<IServicesMgr>().CreateProxy<IViewFieldManager>(ExecutionIdentity.CurrentUser)));
-			windsorContainer.Register(Component.For<IViewFieldRepository>().ImplementedBy<ViewFieldRepository>());
-
-			windsorContainer.Register(Component.For<IFileManager>().UsingFactoryMethod(f =>
-				f.Resolve<IServicesMgr>().CreateProxy<IFileManager>(ExecutionIdentity.CurrentUser)));
-			windsorContainer.Register(Component.For<IFileRepository>().ImplementedBy<FileRepository>());
-
-			windsorContainer.Register(Component.For<IFileFieldManager>().UsingFactoryMethod(f =>
-				f.Resolve<IServicesMgr>().CreateProxy<IFileFieldManager>(ExecutionIdentity.CurrentUser)));
-			windsorContainer.Register(Component.For<IFileFieldRepository>().ImplementedBy<FileFieldRepository>());
-
-			windsorContainer.Register(Component.For<IViewManager>().UsingFactoryMethod(f =>
-				f.Resolve<IServicesMgr>().CreateProxy<IViewManager>(ExecutionIdentity.CurrentUser)));
-			windsorContainer.Register(Component.For<IViewRepository>().ImplementedBy<ViewRepository>());
 			return windsorContainer;
 		}
 
@@ -121,9 +96,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 			}));
 		}
 
-		private static void RegisterConfig(ConfigSettings configSettings, WindsorContainer windsorContainer)
+		private static void RegisterConfig(
+			ExportTestConfiguration testConfiguration,
+			ExportTestContext configSettings,
+			WindsorContainer windsorContainer)
 		{
-			windsorContainer.Register(Component.For<ConfigSettings>().Instance(configSettings).LifestyleTransient());
+			windsorContainer.Register(Component.For<ExportTestConfiguration>().Instance(testConfiguration));
+			windsorContainer.Register(Component.For<ExportTestContext>().Instance(configSettings));
 			IExportConfig exportConfig = GetMockExportLoadFileConfig();
 			windsorContainer.Register(Component.For<IExportConfig>().Instance(exportConfig).LifestyleTransient());
 
@@ -171,7 +150,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 			windsorContainer.Register(Component.For<IUserNotification, IUserMessageNotification>().Instance(exportUserNotification).LifestyleSingleton());
 
 			windsorContainer.Register(Component.For<LoggingMediatorForTestsFactory>().ImplementedBy<LoggingMediatorForTestsFactory>().LifestyleSingleton());
-			windsorContainer.Register(Component.For<ICompositeLoggingMediator>().UsingFactory((LoggingMediatorForTestsFactory f) => f.Create()).LifestyleSingleton());
 		}
 
 		private static void RegisterExportTestCases(WindsorContainer windsorContainer)
@@ -192,6 +170,15 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 					.BasedOn<IInvalidFileshareExportTestCase>()
 					.WithServiceAllInterfaces()
 					.AllowMultipleMatches());
+		}
+
+		private static void RegisterTestHelpers(WindsorContainer windsorContainer)
+		{
+			windsorContainer.Register(
+				Component.For<ExportTestContextProvider>(),
+				Component.For<ImportHelper>().LifestyleTransient(),
+				Component.For<WorkspaceService>().LifestyleTransient()
+				);
 		}
 	}
 }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.RSAPIClient;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
@@ -11,7 +10,6 @@ using Relativity.API;
 using Relativity.Services.FieldManager;
 using Relativity.Services.Objects.DataContracts;
 using Field = kCura.Relativity.Client.DTOs.Field;
-using Query = Relativity.Services.ObjectQuery.Query;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {

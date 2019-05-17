@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.Models;
-using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core;
-using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers;
+using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Process.Internals;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases.Base;
 using kCura.Utility.Extensions;
 using NUnit.Framework;
@@ -16,16 +12,18 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 {
 	class ItShouldExportProductionSetWithImages : ExportTestCaseBase
 	{
-		private readonly ConfigSettings _configSettings;
+		private readonly ExportTestConfiguration _testConfiguration;
+		private readonly ExportTestContext _testContext;
 
-		public ItShouldExportProductionSetWithImages(ConfigSettings configSettings)
+		public ItShouldExportProductionSetWithImages(ExportTestContext testContext, ExportTestConfiguration testConfiguration)
 		{
-			_configSettings = configSettings;
+			_testConfiguration = testConfiguration;
+			_testContext = testContext;
 		}
 
 		public override ExportSettings Prepare(ExportSettings settings)
 		{
-			settings.ProductionId = _configSettings.ProductionArtifactId;
+			settings.ProductionId = _testContext.ProductionArtifactID;
 			settings.TypeOfExport = ExportSettings.ExportType.ProductionSet;
 			settings.ImageType = ExportSettings.ImageFileType.SinglePage;
 			settings.ExportNativesToFileNamedFrom = ExportSettings.NativeFilenameFromType.Identifier;
@@ -39,21 +37,21 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 
 		public override void Verify(DirectoryInfo directory, DocumentsTestData documentsTestData)
 		{
-			var expectedDataFileName = $"{_configSettings.ProductionArtifactName}_export.opt";
-			var dataFiles = directory.EnumerateFiles(expectedDataFileName);
+			string expectedDataFileName = $"{_testConfiguration.ProductionArtifactName}_export.opt";
+			IEnumerable<FileInfo> dataFiles = directory.EnumerateFiles(expectedDataFileName);
 			Assert.That(dataFiles.Any());
 
-			var nativesRootDirectory = directory.EnumerateDirectories("NATIVES", SearchOption.AllDirectories);
-			var imagesRootDirectory = directory.EnumerateDirectories("IMAGES", SearchOption.AllDirectories);
+			IEnumerable<DirectoryInfo> nativesRootDirectory = directory.EnumerateDirectories("NATIVES", SearchOption.AllDirectories);
+			IEnumerable<DirectoryInfo> imagesRootDirectory = directory.EnumerateDirectories("IMAGES", SearchOption.AllDirectories).ToList();
 
 			Assert.That(!imagesRootDirectory.IsNullOrEmpty());
-			// we don expect any natives generted for this case
+			// we don expect any natives generated for this case
 			Assert.That(nativesRootDirectory.IsNullOrEmpty());
 
-			var actualFileCount = Directory.EnumerateFiles(imagesRootDirectory.First().FullName, "*", SearchOption.AllDirectories).Count();
+			int actualFileCount = Directory.EnumerateFiles(imagesRootDirectory.First().FullName, "*", SearchOption.AllDirectories).Count();
 
-			// Production should generate additioanl image for AZIPPER_0011318
-			var expectedFilesCount = documentsTestData.Images.Rows.Count + 1;
+			// Production should generate additional image for AZIPPER_0011318
+			int expectedFilesCount = documentsTestData.Images.Rows.Count + 1;
 
 			Assert.That(expectedFilesCount, Is.EqualTo(actualFileCount));
 		}

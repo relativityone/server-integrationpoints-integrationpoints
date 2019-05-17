@@ -1,4 +1,4 @@
-﻿using Relativity.Services.ViewManager.Models;
+using Relativity.Services.ViewManager.Models;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories
 {

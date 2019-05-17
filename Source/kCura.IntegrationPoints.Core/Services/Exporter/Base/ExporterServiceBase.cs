@@ -6,7 +6,6 @@ using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter.Validators;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;

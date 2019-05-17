@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity;
 using Relativity.API;

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using kCura.IntegrationPoints.Data.Extensions;
 using Relativity.API;
 using Relativity.Services.ArtifactGuid;
 

@@ -22,9 +22,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 	public class CoreSearchManagerTests
 	{
 		private CoreSearchManager _sut;
-		private Mock<IFileFieldRepository> _fileFieldRepositoryMock;
-		private Mock<IFileRepository> _fileRepositoryMock;
 		private Mock<IViewFieldRepository> _viewFieldRepositoryMock;
+		private Mock<IFileRepository> _fileRepositoryMock;
+		private Mock<IFileFieldRepository> _fileFieldRepositoryMock;
 		private Mock<IViewRepository> _viewRepositoryMock;
 
 		private const int _PRODUCTION_ID = 1710;

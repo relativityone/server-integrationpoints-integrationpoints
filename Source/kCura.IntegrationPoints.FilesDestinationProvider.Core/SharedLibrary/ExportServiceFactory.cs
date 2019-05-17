@@ -1,76 +1,61 @@
-﻿using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.Repositories;
+﻿using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories;
+using kCura.WinEDDS;
 using kCura.WinEDDS.Service.Export;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 {
-	public class ExportServiceFactory : IExportServiceFactory
+	internal class ExportServiceFactory : IExportServiceFactory
 	{
-		private readonly CurrentUser _contextUser;
 		private readonly IInstanceSettingRepository _instanceSettingRepository;
-		private readonly IRepositoryFactory _repositoryFactory;
-		private readonly IViewFieldRepository _viewFieldRepository;
-		private readonly IFileRepository _fileRepository;
-		private readonly IFileFieldRepository _fileFieldRepository;
-		private readonly IViewRepository _viewRepository;
+
+		private readonly CreateWebApiServiceFactoryDelegate _createWebApiServiceFactoryDelegate;
+		private readonly CreateCoreServiceFactoryDelegate _createCoreServiceFactoryDelegate;
+
 		private readonly IAPILog _logger;
 
-		public ExportServiceFactory(IAPILog logger,
+		internal delegate WebApiServiceFactory CreateWebApiServiceFactoryDelegate(ExportFile exportFile);
+		internal delegate CoreServiceFactory CreateCoreServiceFactoryDelegate(ExportFile exportFile, IServiceFactory webApiServiceFactory);
+
+		public ExportServiceFactory(
+			IAPILog logger,
 			IInstanceSettingRepository instanceSettingRepository,
-			IRepositoryFactory repositoryFactory,
-			IFileRepository fileRepository,
-			IFileFieldRepository fileFieldRepository, 
-			IViewFieldRepository viewFieldRepository,
-			IViewRepository viewRepository,
-			CurrentUser contextUser)
+			CreateWebApiServiceFactoryDelegate createWebApiServiceFactoryDelegate,
+			CreateCoreServiceFactoryDelegate createCoreServiceFactoryDelegate)
 		{
 			_logger = logger.ForContext<ExportServiceFactory>();
 			_instanceSettingRepository = instanceSettingRepository;
-			_repositoryFactory = repositoryFactory;
-			_fileRepository = fileRepository;
-			_fileFieldRepository = fileFieldRepository;
-			_viewFieldRepository = viewFieldRepository;
-			_viewRepository = viewRepository;
-			_contextUser = contextUser;
+
+			_createWebApiServiceFactoryDelegate = createWebApiServiceFactoryDelegate;
+			_createCoreServiceFactoryDelegate = createCoreServiceFactoryDelegate;
 		}
 
 		public IServiceFactory Create(ExportDataContext exportDataContext)
 		{
+			WebApiServiceFactory webApiServiceFactory = _createWebApiServiceFactoryDelegate(exportDataContext.ExportFile);
 			if (UseCoreApi())
 			{
 				LogUsingRelativityCore();
-				return new CoreServiceFactory(
-					_repositoryFactory,
-					_viewFieldRepository,
-					_fileFieldRepository,
-					_fileRepository,
-					_viewRepository,
-					exportDataContext.ExportFile,
-					new WebApiServiceFactory(exportDataContext.ExportFile), 
-					_contextUser.ID
-				);
+				return _createCoreServiceFactoryDelegate(exportDataContext.ExportFile, webApiServiceFactory);
 			}
 
 			LogUsingWebApi();
-			return new WebApiServiceFactory(exportDataContext.ExportFile);
+			return webApiServiceFactory;
 		}
 
 		private bool UseCoreApi()
 		{
-			string value = _instanceSettingRepository.GetConfigurationValue(Constants.INTEGRATION_POINT_INSTANCE_SETTING_SECTION,
-				Constants.REPLACE_WEB_API_WITH_EXPORT_CORE);
+			string value = _instanceSettingRepository.GetConfigurationValue(
+				section: Constants.INTEGRATION_POINT_INSTANCE_SETTING_SECTION,
+				name: Constants.REPLACE_WEB_API_WITH_EXPORT_CORE);
 
 			bool useCoreApi;
 			bool.TryParse(value, out useCoreApi);
 
 			return useCoreApi;
 		}
-
-		#region Logging
 
 		private void LogUsingWebApi()
 		{
@@ -81,7 +66,5 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 		{
 			_logger.LogInformation("Exporter will be using Relativity.Core instead of WebAPI.");
 		}
-
-		#endregion
 	}
 }

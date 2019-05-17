@@ -1,4 +1,4 @@
-﻿using kCura.IntegrationPoints.Common.Constants;
+using kCura.IntegrationPoints.Common.Constants;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using Relativity.Services.View;
 using Relativity.Services.ViewManager.Models;
@@ -11,7 +11,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories.Imp
 		private readonly IExternalServiceInstrumentationProvider _instrumentationProvider;
 
 		public ViewRepository(
-			IViewManager viewManager, 
+			IViewManager viewManager,
 			IExternalServiceInstrumentationProvider instrumentationProvider)
 		{
 			_viewManager = viewManager;
