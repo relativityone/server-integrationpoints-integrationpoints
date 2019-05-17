@@ -53,7 +53,7 @@ namespace Relativity.Sync.Transfer
 		/// </summary>
 		public IEnumerable<FieldRef> GetDocumentFieldRefs()
 		{
-			return GetDocumentFields().Select(FieldEntryToFieldRef);
+			return GetSourceDocumentFields().Select(FieldEntryToFieldRef);
 		}
 
 		private static FieldRef FieldEntryToFieldRef(FieldEntry field)
@@ -77,7 +77,7 @@ namespace Relativity.Sync.Transfer
 			yield return new FieldEntry { SpecialFieldType = SpecialFieldType.SourceJob, DisplayName = SourceJobFieldName, ValueType = typeof(int) };
 		}
 
-		public IEnumerable<FieldEntry> GetDocumentFields()
+		public IEnumerable<FieldEntry> GetSourceDocumentFields()
 		{
 			foreach (FieldMap fieldMap in FieldMappings)
 			{
@@ -91,6 +91,17 @@ namespace Relativity.Sync.Transfer
 			{
 				yield return new FieldEntry { SpecialFieldType = SpecialFieldType.ReadFromFieldFolderPath, FieldIdentifier = _folderPathSourceFieldArtifactId };
 			}
+		}
+
+		public IEnumerable<FieldEntry> GetDestinationDocumentFields()
+		{
+			foreach (FieldMap fieldMap in FieldMappings)
+			{
+				yield return fieldMap.DestinationField;
+			}
+
+			yield return new FieldEntry { DisplayName = _SUPPORTED_BY_VIEWER_FIELD_NAME, IsIdentifier = false };
+			yield return new FieldEntry { DisplayName = _RELATIVITY_NATIVE_TYPE_FIELD_NAME, IsIdentifier = false };
 		}
 	}
 }

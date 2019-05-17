@@ -39,15 +39,13 @@ namespace Relativity.Sync.Transfer
 			_batchToken = null;
 		}
 
-		public bool IsClosed { get; } = false;
-
 		public bool Read()
 		{
 			bool dataRead = _currentReader.Read();
 			if (!dataRead)
 			{
 				_currentReader.Dispose();
-				_currentReader = NextBatchReaderAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+				_currentReader = GetReaderForNextBatchAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 				dataRead = _currentReader.Read();
 			}
 
@@ -61,7 +59,7 @@ namespace Relativity.Sync.Transfer
 
 		private static IDataReader EmptyDataReader() => new DataTable().CreateDataReader();
 
-		private async Task<IDataReader> NextBatchReaderAsync()
+		private async Task<IDataReader> GetReaderForNextBatchAsync()
 		{
 			if (_batchToken == null)
 			{
@@ -226,6 +224,8 @@ namespace Relativity.Sync.Transfer
 		public object this[int i] => _currentReader[i];
 
 		public object this[string name] => _currentReader[name];
+
+		public bool IsClosed => _currentReader.IsClosed;
 
 		public void Close()
 		{

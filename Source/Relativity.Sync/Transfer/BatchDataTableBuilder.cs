@@ -59,7 +59,7 @@ namespace Relativity.Sync.Transfer
 
 		private DataColumn[] BuildColumns()
 		{
-			IEnumerable<FieldEntry> documentFields = _metadataMapping.GetDocumentFields();
+			IEnumerable<FieldEntry> documentFields = _metadataMapping.GetDestinationDocumentFields();
 			IEnumerable<FieldEntry> specialFields = _metadataMapping.GetSpecialFields();
 
 			DataColumn[] columns = documentFields.Concat(specialFields)
@@ -75,7 +75,7 @@ namespace Relativity.Sync.Transfer
 			switch (_destinationFolderStructureBehavior)
 			{
 				case DestinationFolderStructureBehavior.ReadFromField:
-					List<FieldEntry> documentFields = _metadataMapping.GetDocumentFields().ToList();
+					List<FieldEntry> documentFields = _metadataMapping.GetSourceDocumentFields().ToList();
 					int folderPathSourceFieldIndex = documentFields.FindIndex(f => f.SpecialFieldType == SpecialFieldType.ReadFromFieldFolderPath);
 					IEnumerable<string> folderPaths = batch.Select(x => (string) x.Values[folderPathSourceFieldIndex]);
 					folderPathsMap = artifactIds.MapOnto(folderPaths);

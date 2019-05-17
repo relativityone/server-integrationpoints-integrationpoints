@@ -1,67 +1,48 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.Integration
 {
 	internal sealed partial class SourceWorkspaceDataReaderTests
 	{
-		private static Func<string, object>[] _converters =
-		{
-			x => x,
-			x => Int32.Parse(x, CultureInfo.InvariantCulture),
-			x => x,
-			x => x,
-			x => Int32.Parse(x, CultureInfo.InvariantCulture),
-			x => Int32.Parse(x, CultureInfo.InvariantCulture),
-			x => x
-		};
+		private static readonly Document[] MultipleBatchesTestData = Enumerable.Range(1, 1000).Select(CreateGenericDocument).ToArray();
 
-		private static List<Dictionary<string, object>> GenerateMultipleBatchesTestCase(int workspaceArtifactId, int jobArtifactId)
+		private static Document CreateGenericDocument(int i)
 		{
-			const string template = @"
-Control Number|NativeFileSize|NativeFileFilename|NativeFileLocation|SourceWorkspace|SourceJob|FolderPath
-TST0001|100|foo.txt|\\test\foo\foo.txt|{0}|{1}|
-TST0002|101|bat.txt|\\test\foo\bat.txt|{0}|{1}|
-TST0003|102|bar.txt|\\test\foo\bar.txt|{0}|{1}|
-TST0004|103|ban.txt|\\test\foo\ban.txt|{0}|{1}|
-TST0005|104|baz.txt|\\test\boo\baz.txt|{0}|{1}|
-";
-			string data = string.Format(CultureInfo.InvariantCulture, template, workspaceArtifactId, jobArtifactId);
-			return FromTestData(data);
+			int artifactId = i;
+			string nativeFileLocation = $"\\\\test\\foo\\foo{i}.htm";
+			string nativeFileFilename = $"foo{i}.htm";
+			long nativeFileSize = 100 + i;
+			string workspaceFolderPath = "";
+			FieldValue[] fieldValues =
+			{
+				ControlNumber($"TST{i.ToString("D4", CultureInfo.InvariantCulture)}"),
+				RelativityNativeType("Internet HTML"),
+				SupportedByViewer(true)
+			};
+
+			return Document.Create(artifactId, nativeFileLocation, nativeFileFilename, nativeFileSize, workspaceFolderPath, fieldValues);
 		}
 
-		private static List<Dictionary<string, object>> FromTestData(string data)
+		private static FieldValue ControlNumber(string value)
 		{
-			string[] lines = data.Split('\r', '\n');
-			string[] columnNames = lines[0].Split('|');
-			List<Dictionary<string, object>> rows = new List<Dictionary<string, object>>();
-			for (int i = 1; i < lines.Length; i++)
-			{
-				string line = lines[i].Trim();
-				if (!string.IsNullOrEmpty(line))
-				{
-					string[] rowData = line.Split('|');
-					if (_converters.Length != rowData.Length)
-					{
-						throw new ArgumentException($"Invalid number of rows (expected {_converters.Length}, got {rowData.Length}");
-					}
+			return new FieldValue("Control Number", value);
+		}
 
-					Dictionary<string, object> row = new Dictionary<string, object>();
-					for (int j = 0; j < rowData.Length; j++)
-					{
-						object datum = _converters[j](rowData[j]);
-						row.Add(columnNames[j], datum);
-					}
+		private static FieldValue RelativityNativeType(string value)
+		{
+			return new FieldValue("RelativityNativeType", value);
+		}
 
-					rows.Add(row);
-				}
-			}
-
-			return rows;
+		private static FieldValue SupportedByViewer(bool value)
+		{
+			return new FieldValue("SupportedByViewer", value);
 		}
 	}
 }
