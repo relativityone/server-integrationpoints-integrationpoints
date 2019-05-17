@@ -8,6 +8,8 @@ namespace Relativity.Sync.Transfer
 	{
 		public void Install(ContainerBuilder builder)
 		{
+			builder.RegisterType<SourceWorkspaceDataTableBuilderFactory>().As<ISourceWorkspaceDataTableBuilderFactory>();
+			builder.RegisterType<RelativityExportBatcher>().As<IRelativityExportBatcher>();
 			builder.RegisterType<NativeFileRepository>().As<INativeFileRepository>();
 			builder.RegisterType<FieldManager>().As<IFieldManager>();
 			builder.RegisterType<FolderPathRetriever>().As<IFolderPathRetriever>();

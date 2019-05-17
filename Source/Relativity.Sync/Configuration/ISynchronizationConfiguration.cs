@@ -15,5 +15,7 @@ namespace Relativity.Sync.Configuration
 		Guid ExportRunId { get; }
 
 		IList<FieldMap> FieldMappings { get; }
+
+		int SyncConfigurationId { get; }
 	}
 }

@@ -8,6 +8,6 @@ namespace Relativity.Sync.Transfer
 {
 	internal interface ISourceWorkspaceDataTableBuilder
 	{
-		Task<DataTable> BuildAsync(int sourceWorkspaceArtifactId, IEnumerable<FieldMap> fieldMaps, RelativityObjectSlim[] batch);
+		Task<DataTable> BuildAsync(int sourceWorkspaceArtifactId, RelativityObjectSlim[] batch);
 	}
 }

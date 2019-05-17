@@ -20,7 +20,7 @@ namespace Relativity.Sync.Transfer
 			_fieldManager = fieldManager;
 		}
 
-		public async Task<DataTable> BuildAsync(int sourceWorkspaceArtifactId, IEnumerable<FieldMap> fieldMaps, RelativityObjectSlim[] batch)
+		public async Task<DataTable> BuildAsync(int sourceWorkspaceArtifactId, RelativityObjectSlim[] batch)
 		{
 			if (batch == null || !batch.Any())
 			{
