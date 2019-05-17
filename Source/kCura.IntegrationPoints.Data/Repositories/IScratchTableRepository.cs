@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		void DeleteTable();
 
 		/// <summary>
-		/// 
+		/// Retrieve document IDs from scratch table with offset. The documents are in descending order
 		/// </summary>
 		/// <param name="offset"></param>
 		/// <param name="size"></param>

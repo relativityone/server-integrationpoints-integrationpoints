@@ -10,18 +10,19 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class ScratchTableRepository : IScratchTableRepository
 	{
+		private IDataReader _reader;
+		private string _docIdentifierFieldName;
+		private string _tempTableName;
 		private const int _SCRATCH_TABLE_NAME_LENGTH_LIMIT = 128;
-
-		private readonly IWorkspaceDBContext _caseContext;
+		private const string _DOCUMENT_ARTIFACT_ID_COLUMN_NAME = "ArtifactID";
 		private readonly IDocumentRepository _documentRepository;
 		private readonly IFieldQueryRepository _fieldQueryRepository;
+		private readonly int _workspaceId;
 		private readonly IResourceDbProvider _resourceDbProvider;
+
+		private readonly IWorkspaceDBContext _caseContext;
 		private readonly string _tablePrefix;
 		private readonly string _tableSuffix;
-		private readonly int _workspaceId;
-		private IDataReader _reader;
-		private string _tempTableName;
-		private string _docIdentifierFieldName;
 
 		public ScratchTableRepository(
 			IWorkspaceDBContext caseContext, 
@@ -61,7 +62,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			string fullTableName = GetTempTableName();
 			string schemalessResourceDataBasePrepend = GetSchemalessResourceDataBasePrepend();
 			string resourceDBPrepend = GetResourceDBPrepend();
-			string sql = $@"DELETE FROM {resourceDBPrepend}.[{fullTableName}] WHERE [ArtifactID] in {schemalessResourceDataBasePrepend}";
+			string sql = $@"DELETE FROM {resourceDBPrepend}.[{fullTableName}] WHERE [{_DOCUMENT_ARTIFACT_ID_COLUMN_NAME}] in {schemalessResourceDataBasePrepend}";
 
 			_caseContext.ExecuteNonQuerySQLStatement(sql);
 		}
@@ -120,7 +121,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				$@"
 				IF NOT EXISTS (SELECT * FROM {schemalessResourceDataBasePrepend}.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{fullTableName}')
 				BEGIN
-					CREATE TABLE {resourceDBPrepend}.[{fullTableName}] ([ArtifactID] INT PRIMARY KEY CLUSTERED)
+					CREATE TABLE {resourceDBPrepend}.[{fullTableName}] ([{_DOCUMENT_ARTIFACT_ID_COLUMN_NAME}] INT PRIMARY KEY CLUSTERED)
 				END";
 				
 				_caseContext.ExecuteNonQuerySQLStatement(sql);
@@ -288,20 +289,19 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		private IDataReader CreateDocumentIDsReader()
 		{
-			string fullTableName = GetTempTableName();
-			string schemalessResourceDataBasePrepend = GetSchemalessResourceDataBasePrepend();
-			string resourceDBPrepend = GetResourceDBPrepend();
-			string sql =
-			$@"
-			IF EXISTS (SELECT * FROM {schemalessResourceDataBasePrepend}.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{fullTableName}') 
-			SELECT [ArtifactID] FROM {resourceDBPrepend}.[{fullTableName}]
-			";
-
+			string sql = CreateSQLForGettingDocumentIDsReader();
 			return _caseContext.ExecuteSQLStatementAsReader(sql);
 
 		}
 
 		private IDataReader CreateBatchOfDocumentIdReader(int offset, int size)
+		{
+			string sql = CreateSQLForGettingDocumentIDsReader() + $"ORDER BY [{_DOCUMENT_ARTIFACT_ID_COLUMN_NAME}] OFFSET {offset} ROWS FETCH NEXT {size} ROWS ONLY";
+
+			return _caseContext.ExecuteSQLStatementAsReader(sql);
+		}
+
+		private string CreateSQLForGettingDocumentIDsReader()
 		{
 			string fullTableName = GetTempTableName();
 			string schemalessResourceDataBasePrepend = GetSchemalessResourceDataBasePrepend();
@@ -309,10 +309,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			string sql = 
 			$@"
 			IF EXISTS (SELECT * FROM {schemalessResourceDataBasePrepend}.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{fullTableName}') 
-			SELECT [ArtifactID] FROM {resourceDBPrepend}.[{fullTableName}] ORDER BY [ArtifactID] OFFSET {offset} ROWS FETCH NEXT {size} ROWS ONLY
+			SELECT [{_DOCUMENT_ARTIFACT_ID_COLUMN_NAME}] FROM {resourceDBPrepend}.[{fullTableName}]
 			";
-
-			return _caseContext.ExecuteSQLStatementAsReader(sql);
+			return sql;
 		}
 
 		private static class Fields //MNG: similar to class used in DocumentTransferProvider, probably find a better way to reference these

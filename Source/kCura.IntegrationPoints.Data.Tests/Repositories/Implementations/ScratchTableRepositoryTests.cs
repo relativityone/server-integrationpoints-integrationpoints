@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		}
 
 		[Test]
-		public void CreateBatchOfDocumentIdReader_ShouldExecuteProperSqlQuery()
+		public void ReadDocumentIDs_ShouldExecuteProperSqlQuery()
 		{
 			// arrange
 			Mock<IDataReader> dataReaderMock = new Mock<IDataReader>();
@@ -93,8 +93,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			string expectedQuery =
 				$@"
 			IF EXISTS (SELECT * FROM {_SCHEMALESS_RESOURCE_DATABASE_PREPEND}.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{_TABLE_NAME}') 
-			SELECT [ArtifactID] FROM {_RESOURCE_DB_PREPEND}.[{_TABLE_NAME}] ORDER BY [ArtifactID] OFFSET {offset} ROWS FETCH NEXT {size} ROWS ONLY
-			";
+			SELECT [ArtifactID] FROM {_RESOURCE_DB_PREPEND}.[{_TABLE_NAME}]
+			ORDER BY [ArtifactID] OFFSET {offset} ROWS FETCH NEXT {size} ROWS ONLY";
 
 			// act
 			_sut.ReadDocumentIDs(offset, size).ToList();
