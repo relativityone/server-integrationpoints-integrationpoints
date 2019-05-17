@@ -4,8 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using kCura.Relativity.ImportAPI;
-using kCura.WinEDDS;
-using kCura.WinEDDS.ImportExtension;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
@@ -30,23 +28,30 @@ namespace Relativity.Sync.Tests.System
 		}
 
 		[Test]
-		public async Task ItShouldWorkSimpleScenario()
+		public async Task ItShouldPassGoldFlow()
 		{
-			const int batchSize = 1000;
 			const int sourceWorkspaceArtifactId = 1018393;
-			
 			const int destinationWorkspaceArtifactId = 1018394;
+			const string destinationWorkspaceName = "Sync 2";
+
+			const int batchSize = 1000;
 			const int allDocumentsSavedSearchArtifactId = 1038052;
 			const int controlNumberFieldId = 1003667;
+			const int totalRecordsCount = 1;
 			string jobHistoryName = $"SysTest_{Guid.NewGuid()}";
+
 			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, sourceWorkspaceArtifactId, jobHistoryName).ConfigureAwait(false);
 			int destinationFolderArtifactId = await Rdos.GetRootFolderInstance(ServiceFactory, destinationWorkspaceArtifactId).ConfigureAwait(false);
 			int syncConfigurationArtifactId = await Rdos.CreateSyncConfigurationInstance(ServiceFactory, sourceWorkspaceArtifactId, jobHistoryArtifactId).ConfigureAwait(false);
-			const int totalRecordsCount = 1;
-
+			
 			ISyncLog logger = new EmptyLogger();
 			IDateTime dateTime = new DateTimeWrapper();
+			ISyncMetrics syncMetrics = new SyncMetrics(Enumerable.Empty<ISyncMetricsSink>(), new CorrelationId("SystemTests"));
 			IBatchRepository batchRepository = new BatchRepository(_sourceServiceFactoryStub);
+			IDestinationWorkspaceTagRepository destinationWorkspaceTagRepository = new DestinationWorkspaceTagRepository(_sourceServiceFactoryStub,
+				new FederatedInstance(), new TagNameFormatter(logger), logger, syncMetrics);
+			DestinationWorkspaceTag destinationWorkspaceTag = await destinationWorkspaceTagRepository.CreateAsync(sourceWorkspaceArtifactId, 
+				destinationWorkspaceArtifactId, destinationWorkspaceName).ConfigureAwait(false);
 
 			ConfigurationStub configuration = new ConfigurationStub
 			{
@@ -67,6 +72,7 @@ namespace Relativity.Sync.Tests.System
 
 				JobHistoryTagArtifactId = jobHistoryArtifactId,
 				DestinationFolderArtifactId = destinationFolderArtifactId,
+				DestinationWorkspaceTagArtifactId = destinationWorkspaceTag.ArtifactId,
 				SendEmails = false,
 
 				TotalRecordsCount = totalRecordsCount,
@@ -83,20 +89,17 @@ namespace Relativity.Sync.Tests.System
 				}
 			};
 
-			// DataSourceSnapshotExecutor
-
+			// Data source snapshot creation
 			DataSourceSnapshotExecutor dataSourceSnapshotExecutor = new DataSourceSnapshotExecutor(_sourceServiceFactoryStub, logger);
 			ExecutionResult dataSourceExecutorResult = await dataSourceSnapshotExecutor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
 			Assert.AreEqual(ExecutionStatus.Completed, dataSourceExecutorResult.Status);
 
-			// SnapshotPartitionExecutor
-
+			// Data partitioning
 			SnapshotPartitionExecutor snapshotPartitionExecutor = new SnapshotPartitionExecutor(batchRepository, logger);
 			ExecutionResult snapshotPartitionExecutorResult = await snapshotPartitionExecutor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
 			Assert.AreEqual(ExecutionStatus.Completed, snapshotPartitionExecutorResult.Status);
 
-			// SourceWorkspaceDataReader
-
+			// Data reader setup
 			SourceWorkspaceDataReader dataReader = new SourceWorkspaceDataReader(_sourceServiceFactoryStub,
 				batchRepository,
 				sourceWorkspaceArtifactId,
@@ -107,8 +110,7 @@ namespace Relativity.Sync.Tests.System
 				new NativeFileRepository(_sourceServiceFactoryStub),
 				logger);
 
-			// SynchronizationExecutor
-
+			// ImportAPI setup
 			IImportAPI importApi = new ImportAPI(AppSettings.RelativityUserName, AppSettings.RelativityUserPassword, AppSettings.RelativityWebApiUrl.AbsoluteUri);
 			IImportJobFactory importJobFactory = new Executors.ImportJobFactory(
 				importApi,
@@ -116,9 +118,12 @@ namespace Relativity.Sync.Tests.System
 				new BatchProgressHandlerFactory(new BatchProgressUpdater(logger), dateTime),
 				new JobHistoryErrorRepository(_sourceServiceFactoryStub),
 				logger);
-			ISyncMetrics syncMetrics = new SyncMetrics(Enumerable.Empty<ISyncMetricsSink>(), new CorrelationId("SystemTests"));
-			SynchronizationExecutor syncExecutor = new SynchronizationExecutor(importJobFactory, batchRepository, syncMetrics, dateTime, logger);
+			SynchronizationExecutor syncExecutor = new SynchronizationExecutor(batchRepository, dateTime, destinationWorkspaceTagRepository, importJobFactory, logger, syncMetrics);
+
+			// ACT
 			ExecutionResult syncResult = await syncExecutor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+
+			// ASSERT
 			Assert.AreEqual(ExecutionStatus.Completed, syncResult.Status);
 		}
 	}

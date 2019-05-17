@@ -9,7 +9,6 @@ namespace Relativity.Sync.Storage
 
 		public int DestinationWorkspaceTagArtifactId { get; }
 		public int JobHistoryTagArtifactId { get; }
-		public int SyncConfigurationArtifactId { get; }
 		public ImportSettingsDto ImportSettings { get; }
 		public Guid ExportRunId { get; }
 		public int SourceWorkspaceArtifactId { get; }
