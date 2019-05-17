@@ -84,7 +84,26 @@ namespace Relativity.Sync.Executors
 				_syncMetrics.GaugeOperation("ImportJobEnd", result.Status, endTime.Ticks, "Ticks", null);
 			}
 
-			await TagDocuments(batches, configuration, token).ConfigureAwait(false);
+			try
+			{
+				await TagDocuments(batches, configuration, token).ConfigureAwait(false);
+			}
+			catch (Exception ex)
+			{
+				const string message = "Unexpected exception occurred while tagging synchronized documents in source workspace.";
+				_logger.LogError(ex, message);
+
+				if (result.Status == ExecutionStatus.Failed)
+				{
+					string aggregateMessage = result.Message + " " + message;
+					var combinedException = new AggregateException(aggregateMessage, result.Exception, ex);
+					result = ExecutionResult.Failure(aggregateMessage, combinedException);
+				}
+				else
+				{
+					result = ExecutionResult.Failure(message, ex);
+				}
+			}
 
 			return result;
 		}
