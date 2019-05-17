@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,7 +19,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 	{
 		private Mock<IBatchRepository> _batchRepository;
 		private Mock<IDateTime> _dateTime;
-
+		private Mock<IDestinationWorkspaceTagRepository> _destinationWorkspaceTagRepository;
 		private Mock<IImportJobFactory> _importJobFactory;
 		private Mock<ISyncMetrics> _syncMetrics;
 		private Mock<Sync.Executors.IImportJob> _importJob;
@@ -30,9 +31,11 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		{
 			_importJobFactory = new Mock<IImportJobFactory>();
 			_batchRepository = new Mock<IBatchRepository>();
+			_destinationWorkspaceTagRepository = new Mock<IDestinationWorkspaceTagRepository>();
 			_syncMetrics = new Mock<ISyncMetrics>();
 			_dateTime = new Mock<IDateTime>();
-			_synchronizationExecutor = new SynchronizationExecutor(_importJobFactory.Object, _batchRepository.Object, _syncMetrics.Object, _dateTime.Object, new EmptyLogger());
+			_synchronizationExecutor = new SynchronizationExecutor(_batchRepository.Object, _dateTime.Object, _destinationWorkspaceTagRepository.Object,
+				_importJobFactory.Object, new EmptyLogger(), _syncMetrics.Object);
 		}
 		
 		[TestCase(0)]
@@ -115,7 +118,13 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 		private void SetupImportJobFactory(int numberOfBatches)
 		{
-			_batchRepository.Setup(x => x.GetAllNewBatchesIdsAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(new int[numberOfBatches].ToList());
+			IEnumerable<int> batches = Enumerable.Repeat(1, numberOfBatches);
+			var batch = new Mock<IBatch>();
+			batch.Setup(x => x.GetItemArtifactIds(It.IsAny<Guid>())).ReturnsAsync(batches);
+
+			_batchRepository.Setup(x => x.GetAllNewBatchesIdsAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(batches);
+			_batchRepository.Setup(x => x.GetAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync((new Mock<IBatch>()).Object);
+
 			_importJob = new Mock<Sync.Executors.IImportJob>();
 			_importJobFactory.Setup(x => x.CreateImportJob(It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IBatch>())).Returns(_importJob.Object);
 		}
