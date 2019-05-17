@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.Services.Exceptions;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
 using Relativity.Sync.Logging;
@@ -84,7 +86,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		}
 
 		[Test]
-		public async Task ItShouldProperlyHandleSyncException()
+		public async Task ItShouldProperlyHandleImportSyncException()
 		{
 			const int numberOfBatches = 1;
 			SetupImportJobFactory(numberOfBatches);
@@ -101,7 +103,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		}
 
 		[Test]
-		public async Task ItShouldProperlyHandleAnyException()
+		public async Task ItShouldProperlyHandleAnyImportException()
 		{
 			const int numberOfBatches = 1;
 			SetupImportJobFactory(numberOfBatches);
@@ -113,6 +115,47 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			result.Message.Should().Be("Unexpected exception occurred while executing import job.");
 			result.Exception.Should().BeOfType<InvalidOperationException>();
+			result.Status.Should().Be(ExecutionStatus.Failed);
+		}
+
+		[Test]
+		public async Task ItShouldProperlyHandleTagDocumentException()
+		{
+			const int numberOfBatches = 1;
+			SetupImportJobFactory(numberOfBatches);
+
+			_destinationWorkspaceTagRepository.Setup(x => x.TagDocumentsAsync(
+				It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IList<int>>(), It.IsAny<CancellationToken>())).Throws<InvalidOperationException>();
+
+			// act
+			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(Mock.Of<ISynchronizationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+
+			result.Message.Should().Be("Unexpected exception occurred while tagging synchronized documents in source workspace.");
+			result.Exception.Should().BeOfType<InvalidOperationException>();
+			result.Status.Should().Be(ExecutionStatus.Failed);
+		}
+
+		[Test]
+		public async Task ItShouldProperlyHandleImportAndTagDocumentExceptions()
+		{
+			const int numberOfBatches = 1;
+			SetupImportJobFactory(numberOfBatches);
+
+			const int numberOfExceptions = 2;
+			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).Throws<InvalidOperationException>();
+			_destinationWorkspaceTagRepository.Setup(x => x.TagDocumentsAsync(
+				It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IList<int>>(), It.IsAny<CancellationToken>())).Throws<NotAuthorizedException>();
+
+			// act
+			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(Mock.Of<ISynchronizationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+
+			result.Message.Should().Be("Unexpected exception occurred while executing import job. Unexpected exception occurred while tagging synchronized documents in source workspace.");
+			result.Exception.Should().BeOfType<AggregateException>();
+			ReadOnlyCollection<Exception> exceptions = ((AggregateException) result.Exception).InnerExceptions;
+			exceptions.Should().NotBeNullOrEmpty();
+			exceptions.Should().HaveCount(numberOfExceptions);
+			exceptions[0].Should().BeOfType<InvalidOperationException>();
+			exceptions[1].Should().BeOfType<NotAuthorizedException>();
 			result.Status.Should().Be(ExecutionStatus.Failed);
 		}
 
