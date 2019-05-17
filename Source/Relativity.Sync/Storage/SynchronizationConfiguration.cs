@@ -8,7 +8,6 @@ namespace Relativity.Sync.Storage
 		private static readonly Guid DestinationWorkspaceTagArtifactIdGuid = new Guid("E2100C10-B53B-43FA-BB1B-51E43DCE8208");
 
 		public int SourceWorkspaceArtifactId { get; }
-		public int SyncConfigurationArtifactId { get; }
 		public int DestinationWorkspaceTagArtifactId { get; }
 		public int JobHistoryTagArtifactId { get; }
 		public int SyncConfigurationArtifactId { get; }
