@@ -59,8 +59,9 @@ namespace Relativity.Sync.Tests.Unit
 			await _importJob.RunAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// assert
+			string expectedErrorMessage = $"IAPI {message}";
 			_jobHistoryErrorRepository.Verify(x => x.CreateAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.Is<CreateJobHistoryErrorDto>(dto =>
-				dto.SourceUniqueId == identifier && dto.ErrorMessage == message && dto.ErrorType == ErrorType.Item)));
+				dto.SourceUniqueId == identifier && dto.ErrorMessage == expectedErrorMessage && dto.ErrorType == ErrorType.Item)));
 		}
 
 		[Test]
