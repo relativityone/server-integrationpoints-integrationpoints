@@ -5,10 +5,12 @@ using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Transfer;
+using Relativity.Sync.Tests.System.Stubs;
 
 namespace Relativity.Sync.Tests.System
 {
@@ -65,33 +67,48 @@ namespace Relativity.Sync.Tests.System
 
 			Assert.AreEqual(ExecutionStatus.Completed, result.Status);
 
-			const int resultsBlockSize = 100;
-			SourceWorkspaceDataReader dataReader = new SourceWorkspaceDataReader(sourceServiceFactory,
-				new BatchRepository(sourceServiceFactory), 
-				sourceWorkspaceArtifactId,
-				configuration.ExportRunId,
-				resultsBlockSize,
-				new MetadataMapping(configuration.DestinationFolderStructureBehavior, configuration.FolderPathSourceFieldArtifactId, configuration.FieldMappings.ToList()),
-				new FolderPathRetriever(sourceServiceFactory, new EmptyLogger()),
-				new NativeFileRepository(sourceServiceFactory),
+			SourceDataReaderConfiguration readerConfiguration = new SourceDataReaderConfiguration
+			{
+				DestinationFolderStructureBehavior = configuration.DestinationFolderStructureBehavior,
+				MetadataMapping = new MetadataMapping(configuration.DestinationFolderStructureBehavior,
+					configuration.FolderPathSourceFieldArtifactId, configuration.FieldMappings.ToList()),
+				RunId = configuration.ExportRunId,
+				SourceJobId = 0,
+				SourceWorkspaceId = sourceWorkspaceArtifactId
+			};
+
+			const int totalItemCount = 229;
+			const int batchSize = 30;
+			IBatchRepository batchRepository = BatchRepositoryStub.Create(totalItemCount, batchSize);
+
+			SourceWorkspaceDataReader dataReader = new SourceWorkspaceDataReader(readerConfiguration,
+				new SourceWorkspaceDataTableBuilderFactory(new FolderPathRetriever(sourceServiceFactory, new EmptyLogger()), new NativeFileRepository(sourceServiceFactory)), 
+				new RelativityExportBatcher(sourceServiceFactory, batchRepository),
 				new EmptyLogger());
 
+			int rowCount = 0;
 			ConsoleLogger logger = new ConsoleLogger();
 			while (dataReader.Read())
 			{
-				string controlNumber = (string) dataReader["Control Number"];
-				logger.LogInformation($"Control Number: {controlNumber}");
-				string extractedText = (string)dataReader["Extracted Text"];
-				logger.LogInformation($"Extracted Text: {extractedText}");
-				string nativeFileLocation = dataReader["NativeFileLocation"].ToString();
-				logger.LogInformation($"NativeFileLocation: {nativeFileLocation}");
-				long nativeFileSize = (long) dataReader["NativeFileSize"];
-				logger.LogInformation($"NativeFileSize: {nativeFileSize}");
-				string folderPath = (string) dataReader["FolderPath"];
-				logger.LogInformation($"FolderPath: {folderPath}");
-
+				rowCount += 1;
+				LogValue("Control Number", dataReader, logger);
+				LogValue("Extracted Text", dataReader, logger);
+				LogValue("NativeFileFilename", dataReader, logger);
+				LogValue("NativeFileLocation", dataReader, logger);
+				LogValue("NativeFileSize", dataReader, logger);
+				LogValue("FolderPath", dataReader, logger);
+				LogValue("Relativity Source Case", dataReader, logger);
+				LogValue("Relativity Source Job", dataReader, logger);
 				logger.LogInformation("");
 			}
+
+			logger.LogInformation($"Row count: {rowCount}");
+		}
+
+		private static void LogValue(string name, IDataReader dataReader, ISyncLog logger)
+		{
+			object value = dataReader[name];
+			logger.LogInformation($"[{value.GetType()}] {name}: {value}");
 		}
 	}
 }

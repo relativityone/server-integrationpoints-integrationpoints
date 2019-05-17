@@ -23,5 +23,20 @@ namespace Relativity.Sync.Storage
 		/// </summary>
 		public bool IsIdentifier { get; set; }
 
+		public SpecialFieldType SpecialFieldType { get; set; } = SpecialFieldType.None;
+
+		public Type ValueType { get; set; }
+	}
+
+	internal enum SpecialFieldType
+	{
+		None,
+		FolderPath,
+		ReadFromFieldFolderPath,
+		NativeFileSize,
+		NativeFileLocation,
+		NativeFileFilename,
+		SourceWorkspace,
+		SourceJob
 	}
 }
