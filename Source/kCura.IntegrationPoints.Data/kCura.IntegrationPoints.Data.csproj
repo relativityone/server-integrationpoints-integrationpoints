@@ -237,7 +237,7 @@
     <Compile Include="Repositories\ISavedSearchRepository.cs" />
     <Compile Include="RelativityVersion.cs" />
     <Compile Include="Constants.cs" />
-    <Compile Include="EddsDbContext.cs" />
+    <Compile Include="EddsContext.cs" />
     <Compile Include="Extensions\ChoiceExtensions.cs" />
     <Compile Include="GetArtifactForMassAction.cs" />
     <Compile Include="IEddsDBContext.cs" />

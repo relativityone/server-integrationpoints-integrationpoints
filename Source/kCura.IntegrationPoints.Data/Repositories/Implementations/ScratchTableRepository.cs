@@ -5,7 +5,6 @@ using Castle.Core.Internal;
 using kCura.Data.RowDataGateway;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {

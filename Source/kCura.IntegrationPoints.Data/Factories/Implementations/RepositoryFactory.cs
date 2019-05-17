@@ -12,7 +12,6 @@ using Relativity.API.Foundation.Repositories;
 using Relativity.Services.ResourceServer;
 using ArtifactType = Relativity.ArtifactType;
 using Context = kCura.Data.RowDataGateway.Context;
-using Helper = Relativity.Core.Helper;
 using IAuditRepository = kCura.IntegrationPoints.Data.Repositories.IAuditRepository;
 using IErrorRepository = kCura.IntegrationPoints.Data.Repositories.IErrorRepository;
 using IFieldRepository = kCura.IntegrationPoints.Data.Repositories.IFieldRepository;
@@ -87,8 +86,8 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		{
 			IRelativityObjectManager relativityObjectManager =
 				CreateRelativityObjectManager(workspaceArtifactId);
-		    IAPILog logger = _helper.GetLoggerFactory().GetLogger();
-            return new DestinationProviderRepository(logger, relativityObjectManager);
+			IAPILog logger = _helper.GetLoggerFactory().GetLogger();
+			return new DestinationProviderRepository(logger, relativityObjectManager);
 		}
 
 		public IDestinationWorkspaceRepository GetDestinationWorkspaceRepository(int sourceWorkspaceArtifactId)
