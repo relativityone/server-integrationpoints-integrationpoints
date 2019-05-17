@@ -13,7 +13,7 @@ using Relativity.Sync.Executors;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
-using Field = kCura.Relativity.ImportAPI.Data.Field;
+using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.Unit.Executors
 {
@@ -24,7 +24,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 		private Mock<IObjectManager> _objectManager;
 		private Mock<IDataSourceSnapshotConfiguration> _configuration;
-		private Mock<Transfer.IFieldManager> _fieldManager;
+		private Mock<IFieldManager> _fieldManager;
 
 		private const int _WORKSPACE_ID = 458712;
 		private const int _DATA_SOURCE_ID = 485219;
@@ -37,8 +37,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Mock<ISourceServiceFactoryForUser> serviceFactory = new Mock<ISourceServiceFactoryForUser>();
 			serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
 
-			_fieldManager = new Mock<Transfer.IFieldManager>();
-			_fieldManager.Setup(fm => fm.GetDocumentFields()).ReturnsAsync(Mock.Of<List<Transfer.FieldInfo>>());
+			_fieldManager = new Mock<IFieldManager>();
+			_fieldManager.Setup(fm => fm.GetDocumentFields()).ReturnsAsync(Mock.Of<List<Sync.Transfer.FieldInfo>>());
 
 			_configuration = new Mock<IDataSourceSnapshotConfiguration>();
 			_configuration.Setup(x => x.SourceWorkspaceArtifactId).Returns(_WORKSPACE_ID);
@@ -128,13 +128,13 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			const string field1Id = "741258";
 			const string field2Id = "985632";
 
-			List<Transfer.FieldInfo> fieldInfos = new List<Transfer.FieldInfo>
+			List<Sync.Transfer.FieldInfo> fieldInfos = new List<Sync.Transfer.FieldInfo>
 			{
-				new Transfer.FieldInfo
+				new Sync.Transfer.FieldInfo
 				{
 					DisplayName = field1Id
 				},
-				new Transfer.FieldInfo
+				new Sync.Transfer.FieldInfo
 				{
 					DisplayName = field2Id
 				}
