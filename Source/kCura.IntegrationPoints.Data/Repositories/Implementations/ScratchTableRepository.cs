@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 	{
 		private const int _SCRATCH_TABLE_NAME_LENGTH_LIMIT = 128;
 
-		private readonly IDBContext _caseContext;
+		private readonly IRipDBContext _caseContext;
 		private readonly IDocumentRepository _documentRepository;
 		private readonly IFieldQueryRepository _fieldQueryRepository;
 		private readonly IResourceDbProvider _resourceDbProvider;
@@ -24,15 +24,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private string _tempTableName;
 		private string _docIdentifierFieldName;
 
-		public ScratchTableRepository(IHelper helper, IDocumentRepository documentRepository,
-			IFieldQueryRepository fieldQueryRepository, IResourceDbProvider resourceDbProvider, string tablePrefix, string tableSuffix, int workspaceId) :
-				this(helper.GetDBContext(workspaceId), documentRepository, fieldQueryRepository, resourceDbProvider,
-					tablePrefix, tableSuffix, workspaceId)
-		{
-
-		}
-
-		private ScratchTableRepository(IDBContext caseContext, IDocumentRepository documentRepository, IFieldQueryRepository fieldQueryRepository, IResourceDbProvider resourceDbProvider,
+		public ScratchTableRepository(IRipDBContext caseContext, IDocumentRepository documentRepository, IFieldQueryRepository fieldQueryRepository, IResourceDbProvider resourceDbProvider,
 			string tablePrefix, string tableSuffix, int workspaceId)
 		{
 			_caseContext = caseContext;
@@ -274,7 +266,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		}
 
-		private IDataReader CreateBatchOfDocumentIdReader(int offset, int size)
+		internal IDataReader CreateBatchOfDocumentIdReader(int offset, int size)
 		{
 			string fullTableName = GetTempTableName();
 

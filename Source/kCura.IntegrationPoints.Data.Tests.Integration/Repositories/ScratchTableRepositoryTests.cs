@@ -21,8 +21,11 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		private IDocumentRepository _documentRepository;
 		private IFieldQueryRepository _fieldQueryRepository;
 		private IResourceDbProvider _resourceDbProvider;
-		private ScratchTableRepository _currentScratchTableRepository;
+		private ScratchTableRepository _sut;
+		private string _tableName;
 		private const string _DOC_IDENTIFIER = "SCRATCH_";
+		private const string _TABLE_PREFIX = "RKO";
+		private const int _DEFAULT_NUMBER_OF_DOCS_TO_CREATE = 100;
 
 		public ScratchTableRepositoryTests() : base("Scratch table", null)
 		{
@@ -40,35 +43,45 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 
 		public override void TestTeardown()
 		{
-			_currentScratchTableRepository.Dispose();
+			_sut.Dispose();
+		}
+
+		[SetUp]
+		public void SetUp()
+		{
+			string tableSuffix =  Guid.NewGuid().ToString();
+			_tableName =  $"{_TABLE_PREFIX}_{tableSuffix}";
+			_sut = new ScratchTableRepository(
+				new WorkspaceContext(
+					Helper.GetDBContext(SourceWorkspaceArtifactId)
+				), 
+				_documentRepository, 
+				_fieldQueryRepository, 
+				_resourceDbProvider,
+				_TABLE_PREFIX, 
+				tableSuffix, 
+				SourceWorkspaceArtifactId);
 		}
 
 		[TestCase(2001)]
 		[TestCase(999)]
 		[TestCase(1000)]
-		[TestCase(0)]
 		public void CreateScratchTableAndVerifyEntries(int numberOfDocuments)
 		{
-			//ARRANGE
-			if (numberOfDocuments > 0)
-			{
-				Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable(1, numberOfDocuments));
-			}
-			string tablePrefix = "RKO";
-			string tableSuffix = Guid.NewGuid().ToString();
-			Dictionary<int, string> controlNumbersByDocumentIds = GetDocumentIdToControlNumberMapping();
-			List<int> documentIds = controlNumbersByDocumentIds.Keys.ToList();
-
-			var scratchTableRepository = new ScratchTableRepository(Helper, _documentRepository, _fieldQueryRepository, _resourceDbProvider, tablePrefix, tableSuffix, SourceWorkspaceArtifactId);
-			_currentScratchTableRepository = scratchTableRepository;
+			List<int> documentIDs = Enumerable.Range(0, numberOfDocuments).ToList(); //controlNumbersByDocumentIds.Keys.ToList();
 
 			//ACT
-			scratchTableRepository.AddArtifactIdsIntoTempTable(documentIds);
-			string tableName = $"{tablePrefix}_{tableSuffix}";
-			DataTable tempTable = GetTempTable(tableName);
+			_sut.AddArtifactIdsIntoTempTable(documentIDs);
+			DataTable tempTable = GetTempTable(_tableName);
 
 			//ASSERT
-			VerifyTempTableCountAndEntries(tempTable, tableName, documentIds);
+			VerifyTempTableCountAndEntries(tempTable, _tableName, documentIDs);
+		}
+
+		[Test]
+		public void GetTempTable_ShouldThrowIfNoDocumentsInScratchTable()
+		{
+			Assert.Throws<Exception>(() => GetTempTable(_tableName));
 		}
 
 		[TestCase(5, 1)]
@@ -77,55 +90,42 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		{
 			//ARRANGE
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable(1, numDocs));
-			string tablePrefix = "RKO";
-			string tableSuffix = Guid.NewGuid().ToString();
 			Dictionary<int, string> controlNumbersByDocumentIds = GetDocumentIdToControlNumberMapping();
-			List<int> documentIds = controlNumbersByDocumentIds.Keys.ToList();
-
-			var scratchTableRepository = new ScratchTableRepository(Helper, _documentRepository, _fieldQueryRepository, _resourceDbProvider, tablePrefix, tableSuffix, SourceWorkspaceArtifactId);
-			_currentScratchTableRepository = scratchTableRepository;
+			List<int> documentIDs = controlNumbersByDocumentIds.Keys.ToList();
 
 			//ACT
-			scratchTableRepository.AddArtifactIdsIntoTempTable(documentIds);
+			_sut.AddArtifactIdsIntoTempTable(documentIDs);
 
-			string tableName = $"{tablePrefix}_{tableSuffix}";
 			int docArtifactIdToRemove = controlNumbersByDocumentIds.Keys.ElementAt(2);
 
 			if (numDocsWithErrors == 1)
 			{
 				string docIdentifierToRemove = controlNumbersByDocumentIds[docArtifactIdToRemove];
-				scratchTableRepository.RemoveErrorDocuments(new List<string> { docIdentifierToRemove });
+				_sut.RemoveErrorDocuments(new List<string> { docIdentifierToRemove });
 			}
 			else //all docs have errors
 			{
 				List<string> docIdentifiers = controlNumbersByDocumentIds.Values.ToList();
-				scratchTableRepository.RemoveErrorDocuments(docIdentifiers);
+				_sut.RemoveErrorDocuments(docIdentifiers);
 			}
 
 			//ASSERT
-			VerifyErroredDocumentRemoval(tableName, docArtifactIdToRemove, documentIds.Count - numDocsWithErrors);
+			VerifyErroredDocumentRemoval(_tableName, docArtifactIdToRemove, documentIDs.Count - numDocsWithErrors);
 		}
 
 		[Test]
 		public void CreateScratchTableAndErroredDocumentDoesntExist()
 		{
 			//ARRANGE
-			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable(1, 5));
-			string tablePrefix = "RKO";
-			string tableSuffix = Guid.NewGuid().ToString();
-			Dictionary<int, string> controlNumbersByDocumentIds = GetDocumentIdToControlNumberMapping();
-			List<int> documentIds = controlNumbersByDocumentIds.Keys.ToList();
-
-			var scratchTableRepository = new ScratchTableRepository(Helper, _documentRepository, _fieldQueryRepository, _resourceDbProvider, tablePrefix, tableSuffix, SourceWorkspaceArtifactId);
-			_currentScratchTableRepository = scratchTableRepository;
+			List<int> documentIDs = Enumerable.Range(0, _DEFAULT_NUMBER_OF_DOCS_TO_CREATE).ToList(); 
 
 			//ACT
-			scratchTableRepository.AddArtifactIdsIntoTempTable(documentIds);
+			_sut.AddArtifactIdsIntoTempTable(documentIDs);
 
 			//ASSERT
 			try
 			{
-				scratchTableRepository.RemoveErrorDocuments(new List<string> { "Doesn't Exist" });
+				_sut.RemoveErrorDocuments(new List<string> { "Doesn't Exist" });
 			}
 			catch (Exception ex)
 			{
@@ -137,22 +137,15 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		public void CreateScratchTableAndInsertDuplicateEntries()
 		{
 			//ARRANGE
-			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable(1, 5));
-			string tablePrefix = "RKO";
-			string tableSuffix = Guid.NewGuid().ToString();
-			Dictionary<int, string> controlNumbersByDocumentIds = GetDocumentIdToControlNumberMapping();
-			List<int> documentIds = controlNumbersByDocumentIds.Keys.ToList();
-
-			var scratchTableRepository = new ScratchTableRepository(Helper, _documentRepository, _fieldQueryRepository, _resourceDbProvider, tablePrefix, tableSuffix, SourceWorkspaceArtifactId);
-			_currentScratchTableRepository = scratchTableRepository;
+			List<int> documentIDs = Enumerable.Range(0, _DEFAULT_NUMBER_OF_DOCS_TO_CREATE).ToList();
 
 			//ACT
-			scratchTableRepository.AddArtifactIdsIntoTempTable(documentIds);
+			_sut.AddArtifactIdsIntoTempTable(documentIDs);
 
 			//ASSERT
 			try
 			{
-				scratchTableRepository.AddArtifactIdsIntoTempTable(documentIds);
+				_sut.AddArtifactIdsIntoTempTable(documentIDs);
 			}
 			catch (Exception ex)
 			{
@@ -164,54 +157,48 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		public void DeletionOfScratchTable()
 		{
 			//ARRANGE
-			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable(1, 5));
-			string tablePrefix = "RKO";
-			string tableSuffix = Guid.NewGuid().ToString();
-			Dictionary<int, string> controlNumbersByDocumentIds = GetDocumentIdToControlNumberMapping();
-			List<int> documentIds = controlNumbersByDocumentIds.Keys.ToList();
-
-			var scratchTableRepository = new ScratchTableRepository(Helper, _documentRepository, _fieldQueryRepository, _resourceDbProvider, tablePrefix, tableSuffix, SourceWorkspaceArtifactId);
-			_currentScratchTableRepository = scratchTableRepository;
-			string tableName = $"{tablePrefix}_{tableSuffix}";
+			List<int> documentIDs = Enumerable.Range(0, _DEFAULT_NUMBER_OF_DOCS_TO_CREATE).ToList();
 
 			//ACT
-			scratchTableRepository.AddArtifactIdsIntoTempTable(documentIds);
-			scratchTableRepository.Dispose();
+			_sut.AddArtifactIdsIntoTempTable(documentIDs);
+			_sut.Dispose();
 
 			//ASSERT
-			VerifyTableDisposal(tableName);
+			VerifyTableDisposal(_tableName);
 		}
 
 		[Test]
 		public void GetDocumentIdsFromTable_ShouldRetrieveDocumentIDsFromScratchTable()
 		{
 			//arrange
-			const int numOfDocumentsToImport = 5;
-			DataTable documentsToImportTable = GetImportTable(1, numOfDocumentsToImport);
-			Import.ImportNewDocuments(SourceWorkspaceArtifactId, documentsToImportTable);
-			string tablePrefix = "RKO";
-			string tableSuffix = Guid.NewGuid().ToString();
-			Dictionary<int, string> controlNumbersByDocumentIDs = GetDocumentIdToControlNumberMapping();
-			List<int> documentIDs = controlNumbersByDocumentIDs.Keys.ToList();
+			List<int> documentIDs = Enumerable.Range(0, _DEFAULT_NUMBER_OF_DOCS_TO_CREATE).ToList();
 
-			var sut = new ScratchTableRepository(
-				Helper,
-				_documentRepository, 
-				_fieldQueryRepository,
-				_resourceDbProvider, 
-				tablePrefix, 
-				tableSuffix, 
-				SourceWorkspaceArtifactId
-			);
-
-			_currentScratchTableRepository = sut;
-			sut.AddArtifactIdsIntoTempTable(documentIDs);
+			_sut.AddArtifactIdsIntoTempTable(documentIDs);
 
 			//act
-			IEnumerable<int> result = sut.GetDocumentIdsFromTable(0, numOfDocumentsToImport);
+			IEnumerable<int> result = _sut.GetDocumentIdsFromTable(0, _DEFAULT_NUMBER_OF_DOCS_TO_CREATE);
 
 			//assert
 			result.ShouldBeEquivalentTo(documentIDs);
+		}
+
+		[Test]
+		public void GetDocumentIdsFromTable_ShouldRetrieveDocumentIDsFromScratchTableWithOffset()
+		{
+			//arrange
+			int numDocs = 100;
+			int offset = 30;
+			List<int> documentIDs = Enumerable.Range(0, _DEFAULT_NUMBER_OF_DOCS_TO_CREATE).ToList();
+			documentIDs.Sort();
+			List<int> documentsAfterOffseting = documentIDs.Skip(offset).ToList();
+
+			_sut.AddArtifactIdsIntoTempTable(documentIDs);
+
+			//act
+			IEnumerable<int> result = _sut.GetDocumentIdsFromTable(offset, numDocs);
+
+			//assert
+			result.ShouldBeEquivalentTo(documentsAfterOffseting);
 		}
 
 		private DataTable GetTempTable(string tempTableName)

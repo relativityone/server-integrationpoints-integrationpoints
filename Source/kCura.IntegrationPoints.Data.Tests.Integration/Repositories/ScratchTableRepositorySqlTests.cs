@@ -1,34 +1,30 @@
-﻿using System.Collections.Generic;
-using kCura.IntegrationPoint.Tests.Core.Templates;
-using kCura.IntegrationPoints.Data.Repositories;
+﻿using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using NSubstitute;
 using NUnit.Framework;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 {
 	[TestFixture]
-	public class ScratchTableRepositorySqlTests : RelativityProviderTemplate
+	public class ScratchTableRepositorySqlTests
 	{
-		private IHelper _helper;
 		private IDocumentRepository _documentsRepo;
 		private IFieldQueryRepository _fileRepo;
-		private IDBContext _dbContext;
+		private IRipDBContext _dbContext;
+		private IResourceDbProvider _resourceDbProvider;
+
 		private const string _PREFIX = "prefix";
 		private const string _SUFFIX = "_suffix";
-
-		public ScratchTableRepositorySqlTests() : base("Scratch table", null)
+		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 1234321;
+		[SetUp]
+		public void SetUp()
 		{
-		}
-
-		public override void TestSetup()
-		{
-			_dbContext = Substitute.For<IDBContext>();
-			_helper = Substitute.For<IHelper>();
-			_helper.GetDBContext(SourceWorkspaceArtifactId).Returns(_dbContext);
+			_dbContext = Substitute.For<IRipDBContext>();
 			_documentsRepo = Substitute.For<IDocumentRepository>();
 			_fileRepo = Substitute.For<IFieldQueryRepository>();
+			_resourceDbProvider = Substitute.For<IResourceDbProvider>();
+			_resourceDbProvider.GetSchemalessResourceDataBasePrepend(Arg.Any<int>()).Returns($"EDDS{_SOURCE_WORKSPACE_ARTIFACT_ID}");
+			_resourceDbProvider.GetResourceDbPrepend(Arg.Any<int>()).Returns("[Resource]");
 		}
 
 		#region SqlGeneration
@@ -36,11 +32,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		public void DeleteTable_WorkspaceScratchTable()
 		{
 			// arrange
-			string expectedQuery = $"IF EXISTS (SELECT * FROM EDDS{SourceWorkspaceArtifactId}.INFORMATION_SCHEMA.TABLES where TABLE_NAME = 'prefix__suffix') DROP TABLE [Resource].[prefix__suffix]";
+			string expectedQuery = $"IF EXISTS (SELECT * FROM EDDS{_SOURCE_WORKSPACE_ARTIFACT_ID}.INFORMATION_SCHEMA.TABLES where TABLE_NAME = 'prefix__suffix') DROP TABLE [Resource].[prefix__suffix]";
 
-			var resourceDbProvider = new ResourceDbProvider();
-
-			var instance = new ScratchTableRepository(_helper, _documentsRepo, _fileRepo, resourceDbProvider, _PREFIX, _SUFFIX, SourceWorkspaceArtifactId);
+			var instance = new ScratchTableRepository(_dbContext, _documentsRepo, _fileRepo, _resourceDbProvider, _PREFIX, _SUFFIX, _SOURCE_WORKSPACE_ARTIFACT_ID);
 
 			// act
 			instance.DeleteTable();
@@ -50,31 +44,32 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		}
 
 		[Test]
-		public void AddArtifactIdsIntoScratchTable_WorkspaceScratchTable()
-		{
-			// arrange
-			var resourceDbProvider = new ResourceDbProvider();
-			
-			using (var instance = new ScratchTableRepository(Helper,  _documentsRepo, _fileRepo, resourceDbProvider, _PREFIX, _SUFFIX, SourceWorkspaceArtifactId))
-			{
-				var list = new List<int>() {1, 2};
-				// act & assert
-				Assert.DoesNotThrow(() => instance.AddArtifactIdsIntoTempTable(list));
-			}
-		}
-
-		[Test]
 		public void GetDocumentIdsDataReaderFromTable_WorkspaceScratchTable()
 		{
 			// arrange
-			string expectedQuery = $"IF EXISTS (SELECT * FROM EDDS{SourceWorkspaceArtifactId}.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'prefix__suffix') SELECT [ArtifactID] FROM [Resource].[prefix__suffix]";
+			string expectedQuery = $"IF EXISTS (SELECT * FROM EDDS{_SOURCE_WORKSPACE_ARTIFACT_ID}.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'prefix__suffix') SELECT [ArtifactID] FROM [Resource].[prefix__suffix]";
 
-			var resourceDbProvider = new ResourceDbProvider();
-
-			var instance = new ScratchTableRepository(_helper, _documentsRepo, _fileRepo, resourceDbProvider, _PREFIX, _SUFFIX, SourceWorkspaceArtifactId);
+			var instance = new ScratchTableRepository(_dbContext, _documentsRepo, _fileRepo, _resourceDbProvider, _PREFIX, _SUFFIX, _SOURCE_WORKSPACE_ARTIFACT_ID);
 
 			// act
 			instance.GetDocumentIdsDataReaderFromTable();
+
+			// assert
+			_dbContext.Received(1).ExecuteSQLStatementAsReader(expectedQuery);
+		}
+
+		[Test]
+		public void CreateBatchOfDocumentIdReader_ShouldExecuteProperSqlQuery()
+		{
+			// arrange
+			int offset = 0;
+			int size = 5;
+			string expectedQuery = $@"IF EXISTS (SELECT * FROM EDDS{_SOURCE_WORKSPACE_ARTIFACT_ID}.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'prefix__suffix') SELECT [ArtifactID] FROM [Resource].[prefix__suffix] ORDER BY [ArtifactID] OFFSET {offset} ROWS FETCH NEXT {size} ROWS ONLY";
+
+			var instance = new ScratchTableRepository(_dbContext, _documentsRepo, _fileRepo, _resourceDbProvider, _PREFIX, _SUFFIX, _SOURCE_WORKSPACE_ARTIFACT_ID);
+
+			// act
+			instance.CreateBatchOfDocumentIdReader(offset, size);
 
 			// assert
 			_dbContext.Received(1).ExecuteSQLStatementAsReader(expectedQuery);

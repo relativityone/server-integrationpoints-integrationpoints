@@ -53,5 +53,15 @@ namespace kCura.IntegrationPoints.Data
 		{
 			return _context.ExecuteSqlStatementAsScalar(sqlStatement, parameters);
 		}
+
+		public IDataReader ExecuteSQLStatementAsReader(string sql)
+		{
+			return _context.ExecuteSQLStatementAsReader(sql);
+		}
+
+		public string ServerName
+		{
+			get { return _context.ServerName; }
+		}
 	}
 }

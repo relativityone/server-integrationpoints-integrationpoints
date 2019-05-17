@@ -12,6 +12,7 @@ using Relativity.API.Foundation.Repositories;
 using Relativity.Services.ResourceServer;
 using ArtifactType = Relativity.ArtifactType;
 using Context = kCura.Data.RowDataGateway.Context;
+using Helper = Relativity.Core.Helper;
 using IAuditRepository = kCura.IntegrationPoints.Data.Repositories.IAuditRepository;
 using IErrorRepository = kCura.IntegrationPoints.Data.Repositories.IErrorRepository;
 using IFieldRepository = kCura.IntegrationPoints.Data.Repositories.IFieldRepository;
@@ -170,7 +171,9 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IScratchTableRepository GetScratchTableRepository(int workspaceArtifactId, string tablePrefix, string tableSuffix)
 		{
-			return new ScratchTableRepository(_helper, GetDocumentRepository(workspaceArtifactId), GetFieldQueryRepository(workspaceArtifactId), new ResourceDbProvider(), tablePrefix, tableSuffix, workspaceArtifactId);
+			//todo: think how to inject ripdbcontext to here
+			var dbContext = _helper.GetDBContext(workspaceArtifactId);
+			return new ScratchTableRepository(new WorkspaceContext(dbContext), GetDocumentRepository(workspaceArtifactId), GetFieldQueryRepository(workspaceArtifactId), new ResourceDbProvider(), tablePrefix, tableSuffix, workspaceArtifactId);
 		}
 
 		public ISourceJobRepository GetSourceJobRepository(int workspaceArtifactId)

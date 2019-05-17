@@ -14,5 +14,7 @@ namespace kCura.IntegrationPoints.Data
 		DataTable ExecuteSqlStatementAsDataTable(string sqlStatement, IEnumerable<SqlParameter> parameters);
 		T ExecuteSqlStatementAsScalar<T>(string sqlStatement, IEnumerable<SqlParameter> parameters);
 		object ExecuteSqlStatementAsScalar(string sqlStatement, params SqlParameter[] parameters);
+		IDataReader ExecuteSQLStatementAsReader(string sql);
+		string ServerName { get; }
 	}
 }
