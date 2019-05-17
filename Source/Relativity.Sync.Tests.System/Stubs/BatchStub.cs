@@ -6,6 +6,8 @@ namespace Relativity.Sync.Tests.System.Stubs
 {
 	internal sealed class BatchStub : IBatch
 	{
+		private BatchStatus _status;
+
 		public BatchStub(int artifactId, int totalItemsCount, int startingIndex)
 		{
 			ArtifactId = artifactId;
@@ -19,6 +21,8 @@ namespace Relativity.Sync.Tests.System.Stubs
 
 		public int StartingIndex { get; }
 
+		public BatchStatus Status => _status;
+
 		public int FailedItemsCount { get; private set; }
 
 		public int TransferredItemsCount { get; private set; }
@@ -26,8 +30,6 @@ namespace Relativity.Sync.Tests.System.Stubs
 		public string LockedBy { get; private set; }
 
 		public double Progress { get; private set; }
-
-		public string Status { get; private set; }
 
 		public Task SetFailedItemsCountAsync(int failedItemsCount)
 		{
@@ -47,9 +49,9 @@ namespace Relativity.Sync.Tests.System.Stubs
 			return Task.CompletedTask;
 		}
 
-		public Task SetStatusAsync(string status)
+		public Task SetStatusAsync(BatchStatus status)
 		{
-			Status = status;
+			_status = status;
 			return Task.CompletedTask;
 		}
 

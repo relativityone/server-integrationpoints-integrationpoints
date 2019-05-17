@@ -31,6 +31,11 @@ namespace Relativity.Sync.Tests.System.Stubs
 			return Task.FromResult(_batches.Last());
 		}
 
+		public Task<IEnumerable<int>> GetAllNewBatchesIdsAsync(int workspaceArtifactId, int syncConfigurationId)
+		{
+			throw new NotImplementedException();
+		}
+
 		public Task<IBatch> GetFirstAsync(int workspaceArtifactId, int syncConfigurationId)
 		{
 			return Task.FromResult(_batches.First());
