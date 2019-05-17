@@ -5,15 +5,36 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Relativity.Sync.Storage;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.Integration
 {
 	internal sealed partial class SourceWorkspaceDataReaderTests
 	{
-		private static readonly Document[] MultipleBatchesTestData = Enumerable.Range(1, 1000).Select(CreateGenericDocument).ToArray();
+		private static readonly Dictionary<string, RelativityDataType> StandardSchema = new Dictionary<string, RelativityDataType>
+		{
+			{ "Control Number", RelativityDataType.FixedLengthText },
+			{ "RelativityNativeType", RelativityDataType.FixedLengthText },
+			{ "SupportedByViewer", RelativityDataType.YesNo },
+		};
 
-		private static Document CreateGenericDocument(int i)
+		private static readonly IList<FieldMap> StandardFieldMappings = new List<FieldMap>
+		{
+			new FieldMap
+			{
+				FieldMapType = FieldMapType.None,
+				DestinationField = new FieldEntry { DisplayName = "Control Number" },
+				SourceField = new FieldEntry { DisplayName = "Control Number" }
+			}
+		};
+
+		private static readonly DocumentImportJob MultipleBatchesImportJob = DocumentImportJob.Create(
+			StandardSchema,
+			StandardFieldMappings,
+			Enumerable.Range(1, 1000).Select(CreateDocumentForStandardSchema).ToArray());
+
+		private static Document CreateDocumentForStandardSchema(int i)
 		{
 			int artifactId = i;
 			string nativeFileLocation = $"\\\\test\\foo\\foo{i}.htm";

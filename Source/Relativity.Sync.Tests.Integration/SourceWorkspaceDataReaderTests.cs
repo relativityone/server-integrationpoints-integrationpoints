@@ -6,6 +6,7 @@ using Autofac;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Transfer;
@@ -17,35 +18,30 @@ namespace Relativity.Sync.Tests.Integration
 	{
 		private SourceWorkspaceDataReader _instance;
 		private DocumentTransferServicesMocker _documentTransferServicesMocker;
-		private Mock<IDocumentFieldRepository> _documentFieldRepository;
 		private ConfigurationStub _configuration;
 
 		[SetUp]
 		public void SetUp()
 		{
-			List<FieldMap> fieldMap = new List<FieldMap>
+			_configuration = new ConfigurationStub
 			{
-				new FieldMap
-				{
-					FieldMapType = FieldMapType.None,
-					DestinationField = new FieldEntry { DisplayName = "Control Number 2" },
-					SourceField = new FieldEntry { DisplayName = "Control Number" }
-				}
+				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.None,
+				FieldMappings = StandardFieldMappings
 			};
-
-			_configuration = new ConfigurationStub();
 			
-			_documentFieldRepository = new Mock<IDocumentFieldRepository>();
-
-			IFieldManager fieldManager = new FieldManager(_configuration, _documentFieldRepository.Object, Enumerable.Empty<ISpecialFieldBuilder>());
-			_documentTransferServicesMocker = new DocumentTransferServicesMocker(fieldManager);
+			_documentTransferServicesMocker = new DocumentTransferServicesMocker();
 
 			ContainerBuilder containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
 			IntegrationTestsContainerBuilder.MockReporting(containerBuilder);
-			_documentTransferServicesMocker.RegisterMocks(containerBuilder);
+			_documentTransferServicesMocker.RegisterServiceMocks(containerBuilder);
+			containerBuilder.RegisterInstance(_configuration).AsImplementedInterfaces();
 			IContainer container = containerBuilder.Build();
 
-			_instance = new SourceWorkspaceDataReader(container.Resolve<ISourceWorkspaceDataTableBuilder>(), _configuration,
+			IFieldManager fieldManager = container.Resolve<IFieldManager>();
+			_documentTransferServicesMocker.SetFieldManager(fieldManager);
+
+			_instance = new SourceWorkspaceDataReader(container.Resolve<ISourceWorkspaceDataTableBuilder>(),
+				_configuration,
 				container.Resolve<IRelativityExportBatcher>(),
 				Mock.Of<ISyncLog>());
 		}
@@ -59,12 +55,12 @@ namespace Relativity.Sync.Tests.Integration
 		public async Task ItShouldReadAcrossMultipleBatches()
 		{
 			// Arrange
-			Document[] testData = MultipleBatchesTestData;
+			DocumentImportJob importData = MultipleBatchesImportJob;
 			const int batchSize = 100;
-			await _documentTransferServicesMocker.SetupServicesWithTestData(testData, batchSize).ConfigureAwait(false);
+			await _documentTransferServicesMocker.SetupServicesWithTestData(importData, batchSize).ConfigureAwait(false);
 
 			// Act/Assert
-			foreach (Document document in testData)
+			foreach (Document document in importData.Documents)
 			{
 				bool hasMoreData = _instance.Read();
 				hasMoreData.Should().Be(true);
@@ -72,15 +68,14 @@ namespace Relativity.Sync.Tests.Integration
 				_instance["NativeFileFilename"].ConvertTo<string>().Should().Be(document.NativeFile.Filename);
 				_instance["NativeFileLocation"].ConvertTo<string>().Should().Be(document.NativeFile.Location);
 				_instance["NativeFileSize"].ConvertTo<long>().Should().Be(document.NativeFile.Size);
-				_instance["FolderPath"].ConvertTo<string>().Should().Be("");
+				//_instance["76B270CB-7CA9-4121-B9A1-BC0D655E5B2D"].ConvertTo<string>().Should().Be("");
 				_instance["Relativity Source Case"].ConvertTo<string>().Should().Be(_configuration.SourceWorkspaceTagName);
 				_instance["Relativity Source Job"].ConvertTo<string>().Should().Be(_configuration.SourceJobTagName);
 
-				foreach (FieldValue fieldValue in document.Values)
+				foreach (FieldValue fieldValue in document.FieldValues)
 				{
-					string destinationFieldName = GetDestinationFieldName(fieldValue.Field);
 					Type valueType = fieldValue.Value.GetType();
-					_instance[destinationFieldName].ConvertTo(valueType).Should().Be(fieldValue.Value);
+					_instance[fieldValue.Field].ConvertTo(valueType).Should().Be(fieldValue.Value);
 				}
 			}
 

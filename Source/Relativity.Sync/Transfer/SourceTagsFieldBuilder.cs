@@ -11,8 +11,8 @@ namespace Relativity.Sync.Transfer
 
 		public IEnumerable<FieldInfo> BuildColumns()
 		{
-			yield return new FieldInfo {SpecialFieldType = SpecialFieldType.SourceWorkspace, DisplayName = _SOURCE_WORKSPACE_FIELD_NAME, IsDocumentField = true};
-			yield return new FieldInfo {SpecialFieldType = SpecialFieldType.SourceJob, DisplayName = _SOURCE_JOB_FIELD_NAME, IsDocumentField = true};
+			yield return new FieldInfo {SpecialFieldType = SpecialFieldType.SourceWorkspace, DisplayName = _SOURCE_WORKSPACE_FIELD_NAME, IsDocumentField = false};
+			yield return new FieldInfo {SpecialFieldType = SpecialFieldType.SourceJob, DisplayName = _SOURCE_JOB_FIELD_NAME, IsDocumentField = false};
 		}
 
 		public async Task<ISpecialFieldRowValuesBuilder> GetRowValuesBuilderAsync(int sourceWorkspaceArtifactId, RelativityObjectSlim[] documents)

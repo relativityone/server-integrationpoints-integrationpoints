@@ -35,7 +35,7 @@ namespace Relativity.Sync.Transfer
 
 			if (_fieldConfiguration.DestinationFolderStructureBehavior != DestinationFolderStructureBehavior.None)
 			{
-				yield return new FieldInfo {SpecialFieldType = SpecialFieldType.FolderPath, DisplayName = folderFieldName, IsDocumentField = true}; //todo!!!!
+				yield return new FieldInfo { SpecialFieldType = SpecialFieldType.FolderPath, DisplayName = folderFieldName, IsDocumentField = false }; //todo!!!!
 			}
 		}
 
@@ -45,9 +45,9 @@ namespace Relativity.Sync.Transfer
 			{
 				QueryRequest request = new QueryRequest
 				{
-					ObjectType = new ObjectTypeRef {Name = "Field"},
+					ObjectType = new ObjectTypeRef { Name = "Field" },
 					Condition = $"'ArtifactId' == {_fieldConfiguration.FolderPathSourceFieldArtifactId}",
-					Fields = new[] {new FieldRef {Name = "Name"}}
+					Fields = new[] { new FieldRef { Name = "Name" } }
 				};
 				QueryResultSlim result = await objectManager.QuerySlimAsync(_fieldConfiguration.SourceWorkspaceArtifactId, request, 0, 1).ConfigureAwait(false);
 				return result.Objects[0].Values[0].ToString();

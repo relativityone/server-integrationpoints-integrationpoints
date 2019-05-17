@@ -61,7 +61,7 @@ namespace Relativity.Sync.Transfer
 			if (_batchToken == null)
 			{
 
-				_batchToken = _exportBatcher.Start(_configuration.ExportRunId, _configuration.SourceWorkspaceArtifactId, _configuration.SyncConfigurationId);
+				_batchToken = _exportBatcher.Start(_configuration.ExportRunId, _configuration.SourceWorkspaceArtifactId, _configuration.SyncConfigurationArtifactId);
 			}
 
 			RelativityObjectSlim[] batch;

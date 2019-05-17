@@ -93,6 +93,11 @@ namespace Relativity.Sync.Transfer
 				FieldInfo field = fields[i];
 				if (field.SpecialFieldType != SpecialFieldType.None)
 				{
+					if (!specialFieldBuilders.ContainsKey(field.SpecialFieldType))
+					{
+						throw new SourceDataReaderException($"No special field row value builder found for special field type {nameof(SpecialFieldType)}.{field.SpecialFieldType}");
+					}
+
 					object initialFieldValue = field.IsDocumentField ? obj.Values[field.DocumentFieldIndex] : null;
 					result[i] = specialFieldBuilders[field.SpecialFieldType].BuildRowValue(field, obj, initialFieldValue);
 				}

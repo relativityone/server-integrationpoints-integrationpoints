@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using kCura.Config;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
-using Relativity.Sync.Logging;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.Unit.Transfer
@@ -29,7 +27,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			_serviceFactory = new Mock<ISourceServiceFactoryForUser>();
 			_serviceFactory.Setup(f => f.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
-			_instance = new DocumentFieldRepository(_serviceFactory.Object, new EmptyLogger());
+			_instance = new DocumentFieldRepository(_serviceFactory.Object);
 		}
 
 		[Test]
@@ -59,7 +57,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			// Act
 			Dictionary<string, RelativityDataType> result = await _instance
-				.GetRelativityDataTypesForFieldsByFieldNameAsync(_sourceWorkspaceArtifactId, fieldNames, CancellationToken.None).ConfigureAwait(false);
+				.GetRelativityDataTypesForFieldsByFieldName(_sourceWorkspaceArtifactId, fieldNames).ConfigureAwait(false);
 
 			// Assert
 			result.Count.Should().Be(fieldNames.Count);
@@ -75,7 +73,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			// Act
 			Func<Task<Dictionary<string, RelativityDataType>>> action = () =>
-				_instance.GetRelativityDataTypesForFieldsByFieldNameAsync(_sourceWorkspaceArtifactId, emptyFieldNamesList, CancellationToken.None);
+				_instance.GetRelativityDataTypesForFieldsByFieldName(_sourceWorkspaceArtifactId, emptyFieldNamesList);
 
 			// Assert
 			await action.Should().NotThrowAsync().ConfigureAwait(false);

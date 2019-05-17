@@ -13,7 +13,7 @@ namespace Relativity.Sync.Tests.Unit.Stubs
 	/// </summary>
 	internal sealed class SimpleSourceWorkspaceDataTableBuilder : ISourceWorkspaceDataTableBuilder
 	{
-		public Task<DataTable> BuildAsync(RelativityObjectSlim[] batch)
+		public Task<DataTable> BuildAsync(int workspaceArtifactId, RelativityObjectSlim[] batch)
 		{
 			DataTable dt = new DataTable();
 			DataColumn[] columns = batch.First().Values.Select(_ => new DataColumn(Guid.NewGuid().ToString())).ToArray();

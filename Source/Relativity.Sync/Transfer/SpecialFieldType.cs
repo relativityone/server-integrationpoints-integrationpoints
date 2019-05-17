@@ -7,6 +7,8 @@
 		NativeFileSize,
 		NativeFileLocation,
 		NativeFileFilename,
+		RelativityNativeType,
+		SupportedByViewer,
 		SourceWorkspace,
 		SourceJob
 	}

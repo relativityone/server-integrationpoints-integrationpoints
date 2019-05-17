@@ -62,19 +62,21 @@ namespace Relativity.Sync.Tests.System
 			};
 
 			var sourceServiceFactory = new SourceServiceFactoryStub(ServiceFactory);
-			var fieldManager = new FieldManager(configuration, sourceServiceFactory, new List<ISpecialFieldBuilder>
+			var documentFieldRepository = new DocumentFieldRepository(sourceServiceFactory);
+			var fieldManager = new FieldManager(configuration, documentFieldRepository, new List<ISpecialFieldBuilder>
 			{
 				new FileInfoFieldsBuilder(new NativeFileRepository(sourceServiceFactory)),
 				new FolderPathFieldBuilder(sourceServiceFactory, new FolderPathRetriever(sourceServiceFactory, new EmptyLogger()), configuration), new SourceTagsFieldBuilder()
 			});
 			var executor = new DataSourceSnapshotExecutor(sourceServiceFactory, fieldManager, new EmptyLogger());
+			var exportBatcher = new RelativityExportBatcher(sourceServiceFactory, new BatchRepository(sourceServiceFactory));
 
 			ExecutionResult result = await executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
 
 			Assert.AreEqual(ExecutionStatus.Completed, result.Status);
 
 			const int resultsBlockSize = 100;
-			SourceWorkspaceDataReader dataReader = new SourceWorkspaceDataReader(sourceServiceFactory, new SourceWorkspaceDataTableBuilder(fieldManager), new EmptyLogger(), configuration, resultsBlockSize);
+			SourceWorkspaceDataReader dataReader = new SourceWorkspaceDataReader(new SourceWorkspaceDataTableBuilder(fieldManager), configuration, exportBatcher, new EmptyLogger());
 
 			ConsoleLogger logger = new ConsoleLogger();
 			object[] tmpTable = new object[resultsBlockSize];
