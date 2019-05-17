@@ -17,7 +17,7 @@ namespace Relativity.Sync.Tests.Unit
 	internal sealed class SourceWorkspaceDataReaderTests : IDisposable
 	{
 		private Mock<IRelativityExportBatcher> _exportBatcher;
-		private Mock<IBatchDataTableBuilderFactory> _batchBuilderFactory;
+		private Mock<ISourceWorkspaceDataTableBuilderFactory> _batchBuilderFactory;
 		private SourceWorkspaceDataReader _instance;
 
 		[SetUp]
@@ -27,9 +27,9 @@ namespace Relativity.Sync.Tests.Unit
 			_exportBatcher.Setup(x => x.Start(It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<int>()))
 				.Returns("foo");
 
-			_batchBuilderFactory = new Mock<IBatchDataTableBuilderFactory>();
+			_batchBuilderFactory = new Mock<ISourceWorkspaceDataTableBuilderFactory>();
 			_batchBuilderFactory.Setup(x => x.Create(It.IsAny<SourceDataReaderConfiguration>()))
-				.Returns(new SimpleBatchDataTableBuilder());
+				.Returns(new SimpleSourceWorkspaceDataTableBuilder());
 
 			_instance = new SourceWorkspaceDataReader(new SourceDataReaderConfiguration(),
 				_batchBuilderFactory.Object,
@@ -283,7 +283,7 @@ namespace Relativity.Sync.Tests.Unit
 			const int batchSize = 1;
 			ExportBatcherReturnsBatches(GenerateBatch(batchSize), EmptyBatch());
 
-			Mock<IBatchDataTableBuilder> builder = new Mock<IBatchDataTableBuilder>();
+			Mock<ISourceWorkspaceDataTableBuilder> builder = new Mock<ISourceWorkspaceDataTableBuilder>();
 			builder.Setup(x => x.BuildAsync(It.IsAny<RelativityObjectSlim[]>()))
 				.Throws(new ServiceException());
 

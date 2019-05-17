@@ -4,7 +4,7 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.Sync.Transfer
 {
-	internal interface IBatchDataTableBuilder
+	internal interface ISourceWorkspaceDataTableBuilder
 	{
 		Task<DataTable> BuildAsync(RelativityObjectSlim[] batch);
 	}

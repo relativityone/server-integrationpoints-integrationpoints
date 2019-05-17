@@ -6,7 +6,7 @@ namespace Relativity.Sync.Transfer
 	{
 		public void Install(ContainerBuilder builder)
 		{
-			builder.RegisterType<BatchDataTableBuilderFactory>().As<IBatchDataTableBuilderFactory>();
+			builder.RegisterType<SourceWorkspaceDataTableBuilderFactory>().As<ISourceWorkspaceDataTableBuilderFactory>();
 			builder.RegisterType<NativeFileRepository>().As<INativeFileRepository>();
 			builder.RegisterType<RelativityExportBatcher>().As<IRelativityExportBatcher>();
 			builder.RegisterType<FolderPathRetriever>().As<IFolderPathRetriever>();

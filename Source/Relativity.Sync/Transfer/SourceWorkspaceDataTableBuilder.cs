@@ -12,7 +12,7 @@ namespace Relativity.Sync.Transfer
 	/// <summary>
 	/// Creates a single <see cref="DataTable"/> out of several sources of information based on the given schema.
 	/// </summary>
-	internal sealed class BatchDataTableBuilder : IBatchDataTableBuilder
+	internal sealed class SourceWorkspaceDataTableBuilder : ISourceWorkspaceDataTableBuilder
 	{
 		private readonly MetadataMapping _metadataMapping;
 		private readonly int _sourceJobArtifactId;
@@ -21,7 +21,7 @@ namespace Relativity.Sync.Transfer
 		private readonly IFolderPathRetriever _folderPathRetriever;
 		private readonly INativeFileRepository _nativeFileRepository;
 
-		public BatchDataTableBuilder(SourceDataReaderConfiguration configuration, IFolderPathRetriever folderPathRetriever, INativeFileRepository nativeFileRepository)
+		public SourceWorkspaceDataTableBuilder(SourceDataReaderConfiguration configuration, IFolderPathRetriever folderPathRetriever, INativeFileRepository nativeFileRepository)
 		{
 			_metadataMapping = configuration.MetadataMapping;
 			_sourceJobArtifactId = configuration.SourceJobId;

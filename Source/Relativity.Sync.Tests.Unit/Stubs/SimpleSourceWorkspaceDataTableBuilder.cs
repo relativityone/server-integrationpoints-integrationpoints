@@ -11,7 +11,7 @@ namespace Relativity.Sync.Tests.Unit.Stubs
 	///     Wraps the given batch in a DataTable - the column names
 	///     are random strings and each row is the Values property of each object.
 	/// </summary>
-	internal sealed class SimpleBatchDataTableBuilder : IBatchDataTableBuilder
+	internal sealed class SimpleSourceWorkspaceDataTableBuilder : ISourceWorkspaceDataTableBuilder
 	{
 		public Task<DataTable> BuildAsync(RelativityObjectSlim[] batch)
 		{

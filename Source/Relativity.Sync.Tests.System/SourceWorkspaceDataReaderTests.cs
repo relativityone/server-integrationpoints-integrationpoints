@@ -82,7 +82,7 @@ namespace Relativity.Sync.Tests.System
 			IBatchRepository batchRepository = BatchRepositoryStub.Create(totalItemCount, batchSize);
 
 			SourceWorkspaceDataReader dataReader = new SourceWorkspaceDataReader(readerConfiguration,
-				new BatchDataTableBuilderFactory(new FolderPathRetriever(sourceServiceFactory, new EmptyLogger()), new NativeFileRepository(sourceServiceFactory)), 
+				new SourceWorkspaceDataTableBuilderFactory(new FolderPathRetriever(sourceServiceFactory, new EmptyLogger()), new NativeFileRepository(sourceServiceFactory)), 
 				new RelativityExportBatcher(sourceServiceFactory, batchRepository),
 				new EmptyLogger());
 

@@ -17,13 +17,13 @@ namespace Relativity.Sync.Transfer
 
 		private readonly IRelativityExportBatcher _exportBatcher;
 		private readonly ISyncLog _logger;
-		private readonly IBatchDataTableBuilder _tableBuilder;
+		private readonly ISourceWorkspaceDataTableBuilder _tableBuilder;
 		private readonly int _workspaceId;
 		private readonly int _syncConfigurationId;
 		private readonly Guid _runId;
 
 		public SourceWorkspaceDataReader(SourceDataReaderConfiguration configuration,
-			IBatchDataTableBuilderFactory batchBuilderFactory,
+			ISourceWorkspaceDataTableBuilderFactory sourceWorkspaceBuilderFactory,
 			IRelativityExportBatcher exportBatcher,
 			ISyncLog logger)
 		{
@@ -31,7 +31,7 @@ namespace Relativity.Sync.Transfer
 			_syncConfigurationId = configuration.SyncConfigurationId;
 			_runId = configuration.RunId;
 
-			_tableBuilder = batchBuilderFactory.Create(configuration);
+			_tableBuilder = sourceWorkspaceBuilderFactory.Create(configuration);
 			_exportBatcher = exportBatcher;
 			_logger = logger;
 

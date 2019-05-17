@@ -59,7 +59,7 @@ namespace Relativity.Sync.Tests.Integration
 			IContainer container = containerBuilder.Build();
 
 			_instance = new SourceWorkspaceDataReader(_configuration,
-				container.Resolve<IBatchDataTableBuilderFactory>(),
+				container.Resolve<ISourceWorkspaceDataTableBuilderFactory>(),
 				container.Resolve<IRelativityExportBatcher>(),
 				Mock.Of<ISyncLog>());
 		}
