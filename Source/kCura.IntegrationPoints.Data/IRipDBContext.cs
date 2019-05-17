@@ -6,6 +6,7 @@ namespace kCura.IntegrationPoints.Data
 {
 	public interface IRipDBContext
 	{
+		string ServerName { get; }
 		void BeginTransaction();
 		void CommitTransaction();
 		int ExecuteNonQuerySQLStatement(string sqlStatement);
@@ -15,6 +16,5 @@ namespace kCura.IntegrationPoints.Data
 		T ExecuteSqlStatementAsScalar<T>(string sqlStatement, IEnumerable<SqlParameter> parameters);
 		object ExecuteSqlStatementAsScalar(string sqlStatement, params SqlParameter[] parameters);
 		IDataReader ExecuteSQLStatementAsReader(string sql);
-		string ServerName { get; }
 	}
 }

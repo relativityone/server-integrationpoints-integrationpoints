@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			string tableSuffix =  Guid.NewGuid().ToString();
 			_tableName =  $"{_TABLE_PREFIX}_{tableSuffix}";
 			_sut = new ScratchTableRepository(
-				new WorkspaceContext(
+				new WorkspaceDBContext(
 					Helper.GetDBContext(SourceWorkspaceArtifactId)
 				), 
 				_documentRepository, 
@@ -176,7 +176,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			_sut.AddArtifactIdsIntoTempTable(documentIDs);
 
 			//act
-			IEnumerable<int> result = _sut.GetDocumentIdsFromTable(0, _DEFAULT_NUMBER_OF_DOCS_TO_CREATE);
+			IEnumerable<int> result = _sut.ReadDocumentIDs(0, _DEFAULT_NUMBER_OF_DOCS_TO_CREATE);
 
 			//assert
 			result.ShouldBeEquivalentTo(documentIDs);
@@ -195,7 +195,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			_sut.AddArtifactIdsIntoTempTable(documentIDs);
 
 			//act
-			IEnumerable<int> result = _sut.GetDocumentIdsFromTable(offset, numDocs);
+			IEnumerable<int> result = _sut.ReadDocumentIDs(offset, numDocs);
 
 			//assert
 			result.ShouldBeEquivalentTo(documentsAfterOffseting);

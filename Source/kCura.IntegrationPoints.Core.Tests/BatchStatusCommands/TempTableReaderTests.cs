@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 			_scratchTable = Substitute.For<IScratchTableRepository>();
 			_identifierFieldId = 100;
 
-			_scratchTable.GetDocumentIdsDataReaderFromTable().Returns(_reader);
+			_scratchTable.GetDocumentIDsDataReaderFromTable().Returns(_reader);
 
 			_columns = new[] { new DataColumn("Identifier"), new DataColumnWithValue("someValue", ConstValue) };
 

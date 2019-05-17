@@ -168,11 +168,19 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return new QueueRepository(_helper);
 		}
 
-		public IScratchTableRepository GetScratchTableRepository(int workspaceArtifactId, string tablePrefix, string tableSuffix)
+		public IScratchTableRepository GetScratchTableRepository(int workspaceArtifactID, string tablePrefix, string tableSuffix)
 		{
 			//todo: think how to inject ripdbcontext to here
-			var dbContext = _helper.GetDBContext(workspaceArtifactId);
-			return new ScratchTableRepository(new WorkspaceContext(dbContext), GetDocumentRepository(workspaceArtifactId), GetFieldQueryRepository(workspaceArtifactId), new ResourceDbProvider(), tablePrefix, tableSuffix, workspaceArtifactId);
+			IDBContext dbContext = _helper.GetDBContext(workspaceArtifactID);
+			return new ScratchTableRepository(
+				new WorkspaceDBContext(dbContext), 
+				GetDocumentRepository(workspaceArtifactID),
+				GetFieldQueryRepository(workspaceArtifactID),
+				new ResourceDbProvider(), 
+				tablePrefix,
+				tableSuffix,
+				workspaceArtifactID
+			);
 		}
 
 		public ISourceJobRepository GetSourceJobRepository(int workspaceArtifactId)

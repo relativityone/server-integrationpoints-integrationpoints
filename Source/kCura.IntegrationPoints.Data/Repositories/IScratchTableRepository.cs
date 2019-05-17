@@ -32,14 +32,14 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <summary>
 		/// Removes error documents from temp table list (goes in line with ignoring errored documents)
 		/// </summary>
-		/// <param name="docIdentifiers">Identifiers for the documents being removed from the scratch table</param>
-		void RemoveErrorDocuments(ICollection<string> docIdentifiers);
+		/// <param name="documentIDs">Identifiers for the documents being removed from the scratch table</param>
+		void RemoveErrorDocuments(ICollection<string> documentIDs);
 
 		/// <summary>
 		/// Retrieve a datareader for reading from the temp table
 		/// </summary>
 		/// <returns></returns>
-		IDataReader GetDocumentIdsDataReaderFromTable();
+		IDataReader GetDocumentIDsDataReaderFromTable();
 
 		/// <summary>
 		/// Delete the temp table
@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <param name="offset"></param>
 		/// <param name="size"></param>
 		/// <returns>Document IDs from scratch table</returns>
-		IEnumerable<int> GetDocumentIdsFromTable(int offset, int size);
+		IEnumerable<int> ReadDocumentIDs(int offset, int size);
 
 		/// <summary>
 		/// Retrieve the temp table name for the ScratchTableRepository instance

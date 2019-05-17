@@ -303,8 +303,8 @@ namespace kCura.IntegrationPoints.UITests.Tests
 				}));
 			Container.Register(
 				Component.For<IWorkspaceDBContext>()
-					.ImplementedBy<WorkspaceContext>()
-					.UsingFactoryMethod(k => new WorkspaceContext(k.Resolve<IHelper>().GetDBContext(workspaceArtifactId)))
+					.ImplementedBy<WorkspaceDBContext>()
+					.UsingFactoryMethod(k => new WorkspaceDBContext(k.Resolve<IHelper>().GetDBContext(workspaceArtifactId)))
 					.LifeStyle.Transient);
 			Container.Register(
 				Component.For<IRSAPIClient>()

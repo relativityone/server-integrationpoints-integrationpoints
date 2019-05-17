@@ -12,7 +12,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 	{
 		private const int _SCRATCH_TABLE_NAME_LENGTH_LIMIT = 128;
 
-		private readonly IRipDBContext _caseContext;
+		private readonly IWorkspaceDBContext _caseContext;
 		private readonly IDocumentRepository _documentRepository;
 		private readonly IFieldQueryRepository _fieldQueryRepository;
 		private readonly IResourceDbProvider _resourceDbProvider;
@@ -23,8 +23,14 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private string _tempTableName;
 		private string _docIdentifierFieldName;
 
-		public ScratchTableRepository(IRipDBContext caseContext, IDocumentRepository documentRepository, IFieldQueryRepository fieldQueryRepository, IResourceDbProvider resourceDbProvider,
-			string tablePrefix, string tableSuffix, int workspaceId)
+		public ScratchTableRepository(
+			IWorkspaceDBContext caseContext, 
+			IDocumentRepository documentRepository, 
+			IFieldQueryRepository fieldQueryRepository, 
+			IResourceDbProvider resourceDbProvider,
+			string tablePrefix, 
+			string tableSuffix, 
+			int workspaceId)
 		{
 			_caseContext = caseContext;
 			_documentRepository = documentRepository;
@@ -40,11 +46,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public int Count { get; private set; }
 
-		public void RemoveErrorDocuments(ICollection<string> docIdentifiers)
+		public void RemoveErrorDocuments(ICollection<string> documentIDs)
 		{
-			Count -= docIdentifiers.Count;
+			Count -= documentIDs.Count;
 
-			ICollection<int> docIds = GetErroredDocumentId(docIdentifiers);
+			ICollection<int> docIds = GetErroredDocumentId(documentIDs);
 
 			if (docIds.Count == 0)
 			{
@@ -53,16 +59,18 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			string documentList = "(" + String.Join(",", docIds) + ")";
 
 			string fullTableName = GetTempTableName();
-			string sql = String.Format(@"DELETE FROM {2}.[{0}] WHERE [ArtifactID] in {1}", fullTableName, documentList, GetResourceDBPrepend());
+			string schemalessResourceDataBasePrepend = GetSchemalessResourceDataBasePrepend();
+			string resourceDBPrepend = GetResourceDBPrepend();
+			string sql = $@"DELETE FROM {resourceDBPrepend}.[{fullTableName}] WHERE [ArtifactID] in {schemalessResourceDataBasePrepend}";
 
 			_caseContext.ExecuteNonQuerySQLStatement(sql);
 		}
 
-		public IDataReader GetDocumentIdsDataReaderFromTable()
+		public IDataReader GetDocumentIDsDataReaderFromTable()
 		{
 			if (_reader == null)
 			{
-				_reader = CreateDocumentIdReader();
+				_reader = CreateDocumentIDsReader();
 			}
 			return _reader;
 		}
@@ -91,15 +99,30 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				Count += artifactIds.Count;
 
 				string fullTableName = GetTempTableName();
+				string schemalessResourceDataBasePrepend = GetSchemalessResourceDataBasePrepend();
+				string resourceDBPrepend = GetResourceDBPrepend();
 
 				ConnectionData connectionData = ConnectionData.GetConnectionDataWithCurrentCredentials(_caseContext.ServerName, GetSchemalessResourceDataBasePrepend());
-				string connectionString = $"data source={connectionData.Server};initial catalog={connectionData.Database};persist security info=False;user id={connectionData.Username};password={connectionData.Password}; workstation id=localhost;packet size=4096;connect timeout=30;";
+				string connectionString = 
+				$@"
+				data source={connectionData.Server};
+				initial catalog={connectionData.Database};
+				persist security info=False;
+				user id={connectionData.Username};
+				password={connectionData.Password};
+				workstation id=localhost;
+				packet size=4096;
+				connect timeout=30;
+				";
 				Context context = new Context(connectionString);
 
-				string sql = String.Format(@"IF NOT EXISTS (SELECT * FROM {1}.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{0}')
-											BEGIN
-												CREATE TABLE {2}.[{0}] ([ArtifactID] INT PRIMARY KEY CLUSTERED)
-											END", fullTableName, GetSchemalessResourceDataBasePrepend(), GetResourceDBPrepend());
+				string sql = 
+				$@"
+				IF NOT EXISTS (SELECT * FROM {schemalessResourceDataBasePrepend}.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{fullTableName}')
+				BEGIN
+					CREATE TABLE {resourceDBPrepend}.[{fullTableName}] ([ArtifactID] INT PRIMARY KEY CLUSTERED)
+				END";
+				
 				_caseContext.ExecuteNonQuerySQLStatement(sql);
 
 				using (DataTable artifactIdTable = new DataTable())
@@ -124,8 +147,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			ScratchTableRepository copiedScratchTableRepository = new ScratchTableRepository(_caseContext, _documentRepository, _fieldQueryRepository, _resourceDbProvider, newTempTablePrefix, _tableSuffix, _workspaceId);
 			string sourceTableName = GetTempTableName();
 			string newTableName = copiedScratchTableRepository.GetTempTableName();
+			string resourceDBPrepend = GetResourceDBPrepend();
 
-			string sql = String.Format(@"SELECT * INTO {2}.[{0}] FROM {2}.[{1}]", newTableName, sourceTableName, GetResourceDBPrepend());
+			string sql = $"SELECT * INTO {resourceDBPrepend}.[{newTableName}] FROM {resourceDBPrepend}.[{sourceTableName}]";
 
 			_caseContext.ExecuteNonQuerySQLStatement(sql);
 
@@ -137,13 +161,18 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		public void DeleteTable()
 		{
 			string fullTableName = GetTempTableName();
-			string sql = String.Format(@"IF EXISTS (SELECT * FROM {1}.INFORMATION_SCHEMA.TABLES where TABLE_NAME = '{0}') DROP TABLE {2}.[{0}]",
-				fullTableName, GetSchemalessResourceDataBasePrepend(), GetResourceDBPrepend());
+			string schemalessResourceDataBasePrepend = GetSchemalessResourceDataBasePrepend();
+			string resourceDBPrepend = GetResourceDBPrepend();
+			string sql = 
+			$@"
+			IF EXISTS (SELECT * FROM {schemalessResourceDataBasePrepend}.INFORMATION_SCHEMA.TABLES where TABLE_NAME = '{fullTableName}') 
+			DROP TABLE {resourceDBPrepend}.[{fullTableName}]
+			";
 
 			_caseContext.ExecuteNonQuerySQLStatement(sql);
 		}
 
-		public IEnumerable<int> GetDocumentIdsFromTable(int offset, int size)
+		public IEnumerable<int> ReadDocumentIDs(int offset, int size)
 		{
 			using (IDataReader reader = CreateBatchOfDocumentIdReader(offset, size))
 			{
@@ -188,15 +217,20 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return documentIds;
 		}
 
-		internal string GetDocumentIdentifierField()
+		private string GetDocumentIdentifierField()
 		{
 			ArtifactDTO[] fieldArtifacts = _fieldQueryRepository.RetrieveFieldsAsync(
-				10,
-				new HashSet<string>(new[]
-				{
-					Fields.Name,
-					Fields.IsIdentifier
-				})).ConfigureAwait(false).GetAwaiter().GetResult();
+				rdoTypeId: 10, 
+				fieldNames: new HashSet<string>(
+					new[]
+					{
+						Fields.Name,
+						Fields.IsIdentifier
+					}
+				)
+			)
+			.GetAwaiter()
+			.GetResult();
 
 			string fieldName = String.Empty;
 			foreach (ArtifactDTO fieldArtifact in fieldArtifacts)
@@ -228,7 +262,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return fieldName;
 		}
 
-		internal int[] QueryForDocumentArtifactId(ICollection<string> docIdentifiers)
+		private int[] QueryForDocumentArtifactId(ICollection<string> docIdentifiers)
 		{
 			string queryFailureMessage = "Unable to retrieve Document Artifact ID. Object Query failed.";
 
@@ -236,7 +270,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			try
 			{
 				documents = _documentRepository.RetrieveDocumentsAsync(_docIdentifierFieldName, docIdentifiers)
-					.ConfigureAwait(false)
 					.GetAwaiter()
 					.GetResult();
 			}
@@ -253,30 +286,36 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return documents;
 		}
 
-		private IDataReader CreateDocumentIdReader()
+		private IDataReader CreateDocumentIDsReader()
 		{
 			string fullTableName = GetTempTableName();
-
-			string sql = String.Format(
-				@"IF EXISTS (SELECT * FROM {1}.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{0}') SELECT [ArtifactID] FROM {2}.[{0}]",
-				fullTableName, GetSchemalessResourceDataBasePrepend(), GetResourceDBPrepend());
+			string schemalessResourceDataBasePrepend = GetSchemalessResourceDataBasePrepend();
+			string resourceDBPrepend = GetResourceDBPrepend();
+			string sql =
+			$@"
+			IF EXISTS (SELECT * FROM {schemalessResourceDataBasePrepend}.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{fullTableName}') 
+			SELECT [ArtifactID] FROM {resourceDBPrepend}.[{fullTableName}]
+			";
 
 			return _caseContext.ExecuteSQLStatementAsReader(sql);
 
 		}
 
-		internal IDataReader CreateBatchOfDocumentIdReader(int offset, int size)
+		private IDataReader CreateBatchOfDocumentIdReader(int offset, int size)
 		{
 			string fullTableName = GetTempTableName();
-
-			string sql = string.Format(
-				@"IF EXISTS (SELECT * FROM {1}.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{0}') SELECT [ArtifactID] FROM {2}.[{0}] ORDER BY [ArtifactID] OFFSET {3} ROWS FETCH NEXT {4} ROWS ONLY",
-				fullTableName, GetSchemalessResourceDataBasePrepend(), GetResourceDBPrepend(), offset, size);
+			string schemalessResourceDataBasePrepend = GetSchemalessResourceDataBasePrepend();
+			string resourceDBPrepend = GetResourceDBPrepend();
+			string sql = 
+			$@"
+			IF EXISTS (SELECT * FROM {schemalessResourceDataBasePrepend}.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{fullTableName}') 
+			SELECT [ArtifactID] FROM {resourceDBPrepend}.[{fullTableName}] ORDER BY [ArtifactID] OFFSET {offset} ROWS FETCH NEXT {size} ROWS ONLY
+			";
 
 			return _caseContext.ExecuteSQLStatementAsReader(sql);
 		}
 
-		internal static class Fields //MNG: similar to class used in DocumentTransferProvider, probably find a better way to reference these
+		private static class Fields //MNG: similar to class used in DocumentTransferProvider, probably find a better way to reference these
 		{
 			internal static readonly string Name = "Name";
 			internal static readonly string IsIdentifier = "Is Identifier";
