@@ -16,14 +16,15 @@ namespace Relativity.Sync.Tests.Unit.Executors
 	[TestFixture]
 	public class SynchronizationExecutorTests
 	{
-		private Mock<IImportJobFactory> _importJobFactory;
 		private Mock<IBatchRepository> _batchRepository;
-		private Mock<ISyncMetrics> _syncMetrics;
 		private Mock<IDateTime> _dateTime;
-		private Mock<Relativity.Sync.Executors.IImportJob> _importJob;
+
+		private Mock<IImportJobFactory> _importJobFactory;
+		private Mock<ISyncMetrics> _syncMetrics;
+		private Mock<Sync.Executors.IImportJob> _importJob;
 
 		private SynchronizationExecutor _synchronizationExecutor;
-
+		
 		[SetUp]
 		public void SetUp()
 		{

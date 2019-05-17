@@ -8,8 +8,10 @@
 
 		int JobHistoryTagArtifactId { get; }
 
-		int SyncConfigurationArtifactId { get; }
-
 		ImportSettingsDto ImportSettings { get; }
+
+		int SourceWorkspaceArtifactId { get; }
+
+		int SyncConfigurationArtifactId { get; }
 	}
 }
