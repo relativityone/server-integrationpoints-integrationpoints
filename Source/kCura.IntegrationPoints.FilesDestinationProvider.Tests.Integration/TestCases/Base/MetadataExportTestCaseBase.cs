@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers;
-using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases.Base;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases.Base
 {

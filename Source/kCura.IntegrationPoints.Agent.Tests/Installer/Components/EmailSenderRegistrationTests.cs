@@ -4,9 +4,9 @@ using Castle.Windsor;
 using kCura.IntegrationPoint.Tests.Core.FluentAssertions;
 using kCura.IntegrationPoints.Agent.Installer.Components;
 using kCura.IntegrationPoints.Email;
-using Moq;
 using NUnit.Framework;
 using Relativity.API;
+using static kCura.IntegrationPoint.Tests.Core.TestHelpers.WindsorContainerTestHelpers;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Installer.Components
 {
@@ -101,8 +101,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Installer.Components
 		{
 			IRegistration[] dependencies =
 			{
-				Component.For<IAPILog>().Instance(new Mock<IAPILog>().Object),
-				Component.For<IInstanceSettingsBundle>().Instance(new Mock<IInstanceSettingsBundle>().Object)
+				CreateDummyObjectRegistration<IAPILog>(),
+				CreateDummyObjectRegistration<IInstanceSettingsBundle>()
 			};
 
 			container.Register(dependencies);

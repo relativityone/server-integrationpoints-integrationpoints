@@ -1,5 +1,6 @@
 ﻿using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers;
 using NSubstitute;
 using NUnit.Framework;
@@ -13,6 +14,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 		private IAuditRepository _auditRepository;
 		private IRepositoryFactory _repositoryFactory;
 
+		private CurrentUser _currentUser;
+
 		private const int _APP_ID = 123;
 		private const int _USER_ID = 9;
 
@@ -22,6 +25,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 			_auditRepository = Substitute.For<IAuditRepository>();
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
 			_repositoryFactory.GetAuditRepository(_APP_ID).Returns(_auditRepository);
+
+			_currentUser = new CurrentUser(_USER_ID);
+
 		}
 
 		[Test]
@@ -29,7 +35,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 			[Values(true, false)] bool isFatalError,
 			[Values(true, false)] bool expectedResult)
 		{
-			var auditManager = new CoreAuditManager(_repositoryFactory, _USER_ID);
+			var auditManager = new CoreAuditManager(_repositoryFactory, _currentUser);
 			var exportStats = new EDDS.WebAPI.AuditManagerBase.ExportStatistics();
 			_auditRepository.AuditExport(Arg.Any<ExportStatistics>(), _USER_ID).Returns(expectedResult);
 

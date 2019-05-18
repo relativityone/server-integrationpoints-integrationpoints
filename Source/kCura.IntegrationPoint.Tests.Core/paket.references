@@ -5,6 +5,7 @@ FluentAssertions
 kCura.Apps.Common.Config
 kCura.Relativity.Client
 LanguageExt.Core
+Moq
 NSubstitute
 NUnit
 Relativity

@@ -40,12 +40,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Authentication
 			_oAuth2ClientFactory = Substitute.For<IOAuth2ClientFactory>();
 			_tokenProvider = Substitute.For<ITokenProvider>();
 			_tokenProviderFactory = Substitute.For<ITokenProviderFactoryFactory>();
-			_currentUser = new CurrentUser() {ID = 1234};
+			_currentUser = new CurrentUser(userID: 1234);
 			_uriProvider = Substitute.For<IProvideServiceUris>();
 			_uriProvider.AuthenticationUri().Returns(uri);
 			ExtensionPointServiceFinder.ServiceUriProvider = _uriProvider;
 
-			_instance = new OAuth2TokenGenerator(_helper, _oAuth2ClientFactory, _tokenProviderFactory, _currentUser);	
+			_instance = new OAuth2TokenGenerator(_helper, _oAuth2ClientFactory, _tokenProviderFactory, _currentUser);
 		}
 
 		[Test]
@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Authentication
 			var expectedToken = "ExpectedTokenString_1234";
 			_tokenProvider.GetAccessTokenAsync(Arg.Any<CancellationToken>()).Returns(Task.FromResult(expectedToken));
 			_oAuth2ClientFactory.GetOauth2Client(_currentUser.ID)
-				.Returns(new OAuth2Client() { ContextUser = _currentUser.ID, Secret = _CLIENTSECRETSTRING, Id = _CLIENTID});
+				.Returns(new OAuth2Client() { ContextUser = _currentUser.ID, Secret = _CLIENTSECRETSTRING, Id = _CLIENTID });
 			_tokenProviderFactory.Create(Arg.Any<Uri>(), _CLIENTID, _CLIENTSECRETSTRING)
 				.GetTokenProvider(Arg.Any<string>(), Arg.Any<IEnumerable<string>>()).Returns(_tokenProvider);
 

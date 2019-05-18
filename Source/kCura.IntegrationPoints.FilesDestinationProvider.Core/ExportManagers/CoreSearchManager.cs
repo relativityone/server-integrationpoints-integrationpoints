@@ -9,30 +9,29 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Utilities;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Service.Export;
-using Relativity.Core;
-using Relativity.Core.Service;
 using Relativity.Services.Interfaces.ViewField.Models;
+using Relativity.Services.ViewManager.Models;
 using RelativityViewFieldInfo = Relativity.ViewFieldInfo;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 {
 	public class CoreSearchManager : ISearchManager
 	{
-		private readonly BaseServiceContext _baseServiceContext;
-		private readonly IFileRepository _fileRepository;
 		private readonly IFileFieldRepository _fileFieldRepository;
+		private readonly IFileRepository _fileRepository;
 		private readonly IViewFieldRepository _viewFieldRepository;
+		private readonly IViewRepository _viewRepository;
 
 		public CoreSearchManager(
-			BaseServiceContext baseServiceContext, 
 			IFileRepository fileRepository, 
 			IFileFieldRepository fileFieldRepository, 
-			IViewFieldRepository viewFieldRepository)
+			IViewFieldRepository viewFieldRepository,
+			IViewRepository viewRepository)
 		{
-			_baseServiceContext = baseServiceContext;
 			_fileRepository = fileRepository;
 			_fileFieldRepository = fileFieldRepository;
 			_viewFieldRepository = viewFieldRepository;
+			_viewRepository = viewRepository;
 		}
 
 		public DataSet RetrieveNativesForSearch(int caseContextArtifactID, string documentArtifactIDs)
@@ -122,7 +121,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 			ViewFieldIDResponse[] viewFieldIDResponseArray = isProduction
 				? _viewFieldRepository.ReadViewFieldIDsFromProduction(
 					caseContextArtifactID, 
-					artifactTypeID,
 					viewArtifactID
 				  )
 				: _viewFieldRepository.ReadViewFieldIDsFromSearch(
@@ -139,23 +137,30 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 
 		public DataSet RetrieveViewsByContextArtifactID(int caseContextArtifactID, int artifactTypeID, bool isSearch)
 		{
-			return InitViewManager(caseContextArtifactID)
-				.ExternalRetrieveViews(_baseServiceContext, artifactTypeID, isSearch);
+			DataSet dataSet;
+
+			if (isSearch)
+			{
+				SearchViewResponse[] responses =
+					_viewRepository.RetrieveViewsByContextArtifactIDForSearch(
+						caseContextArtifactID
+					);
+				dataSet = responses.ToDataSet();
+			}
+			else
+			{
+				ViewResponse[] responses =
+					_viewRepository.RetrieveViewsByContextArtifactID(
+						caseContextArtifactID,
+						artifactTypeID
+					);
+				dataSet = responses.ToDataSet();
+			}
+			return dataSet;
 		}
 
 		public void Dispose()
 		{
-		}
-
-		private ViewManager InitViewManager(int appArtifactId)
-		{
-			Init(appArtifactId);
-			return new ViewManager();
-		}
-
-		private void Init(int appArtifactId)
-		{
-			_baseServiceContext.AppArtifactID = appArtifactId;
 		}
 
 		private static ViewFieldInfo ToViewFieldInfo(ViewFieldResponse viewFieldResponse)

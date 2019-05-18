@@ -8,11 +8,11 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories;
 using Moq;
 using NUnit.Framework;
 using Relativity;
-using Relativity.Core;
 using Relativity.Services.FileField.Models;
 using Relativity.Services.Interfaces.File.Models;
 using Relativity.Services.Interfaces.Shared.Models;
 using Relativity.Services.Interfaces.ViewField.Models;
+using Relativity.Services.ViewManager.Models;
 using Action = System.Action;
 using ViewFieldInfo = kCura.WinEDDS.ViewFieldInfo;
 
@@ -21,12 +21,107 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 	[TestFixture]
 	public class CoreSearchManagerTests
 	{
-		private Mock<BaseServiceContext> _baseServiceContextMock;
+		private CoreSearchManager _sut;
 		private Mock<IViewFieldRepository> _viewFieldRepositoryMock;
 		private Mock<IFileRepository> _fileRepositoryMock;
 		private Mock<IFileFieldRepository> _fileFieldRepositoryMock;
+		private Mock<IViewRepository> _viewRepositoryMock;
 
-		private CoreSearchManager _sut;
+		private const int _PRODUCTION_ID = 1710;
+		private const int _PRODUCTION_ID_2 = 1711;
+		private const int _WORKSPACE_ID = 1001000;
+
+		private readonly DocumentImageResponse[] _testDocumentImageResponses =
+		{
+			new DocumentImageResponse
+			{
+				DocumentArtifactID = 1700,
+				FileID = 12,
+				FileName = "FileName123",
+				Guid = "12644DB3-3865-4B99-9DB4-61CE40401BD1",
+				Identifier = "Identifier234",
+				Location = "Location22",
+				Order = 1,
+				Rotation = -1,
+				Type = 2,
+				InRepository = true,
+				Size = 12344,
+				Details = "Details999",
+				Billable = true,
+				PageID = 11,
+				ByteRange = 4555
+			},
+			new DocumentImageResponse
+			{
+				DocumentArtifactID = 1701,
+				FileID = 122,
+				FileName = "FileName121",
+				Guid = "11644DB3-3865-4B99-9DB4-61CE40401BD1",
+				Identifier = "Identifier2341",
+				Location = "Location221",
+				Order = 12,
+				Rotation = 0,
+				Type = 3,
+				InRepository = false,
+				Size = 123441,
+				Details = "Details9991",
+				Billable = false,
+				PageID = 121,
+				ByteRange = 45155
+			},
+		};
+
+		private readonly DynamicFileResponse[] _testDynamicFileResponses =
+		{
+			new DynamicFileResponse
+			{
+				FileID = 123,
+				ObjectArtifactID = 12,
+				FileName = "TestFileName1",
+				Location = "Location11",
+				Size = 23455,
+			},
+			new DynamicFileResponse
+			{
+				FileID = 321,
+				ObjectArtifactID = 121,
+				FileName = "TestFileName12",
+				Location = "Location112",
+				Size = 234551,
+			}
+		};
+
+		private readonly ExportProductionDocumentImageResponse[] _testExportProductionDocumentImageResponses =
+		{
+			new ExportProductionDocumentImageResponse
+			{
+				DocumentArtifactID = 1700,
+				ProductionArtifactID = _PRODUCTION_ID,
+				BatesNumber = "Bates123",
+				Location = "Location33",
+				ByteRange = 2,
+				ImageFileName = "FileName1234",
+				ImageGuid = "82644DB3-3865-4B99-9DB4-60CE40401BD1",
+				ImageSize = 1234,
+				PageID = 123,
+				SourceGuid = "32644DB3-3865-4B99-9DB4-60CE40401BD1",
+				Order = 1
+			},
+			new ExportProductionDocumentImageResponse
+			{
+				DocumentArtifactID = 1702,
+				ProductionArtifactID = _PRODUCTION_ID_2,
+				BatesNumber = "Bates1233",
+				Location = "Location313",
+				ByteRange = 23,
+				ImageFileName = "FileName12134",
+				ImageGuid = "82644DB3-3865-4B99-9DB4-61CE40401BD1",
+				ImageSize = 12234,
+				PageID = 1123,
+				SourceGuid = "32644DB2-3865-4B99-9DB4-60CE40401BD1",
+				Order = 2
+			},
+		};
 
 		private readonly FileResponse[] _testFileResponses =
 		{
@@ -90,98 +185,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 				PageID = 1123,
 				SourceGuid = "32644DB2-3865-4B99-9DB4-60CE40401BD1"
 			},
-		};
-
-		private readonly DocumentImageResponse[] _testDocumentImageResponses =
-		{
-			new DocumentImageResponse
-			{
-				DocumentArtifactID = 1700,
-				FileID = 12,
-				FileName = "FileName123",
-				Guid = "12644DB3-3865-4B99-9DB4-61CE40401BD1",
-				Identifier = "Identifier234",
-				Location = "Location22",
-				Order = 1,
-				Rotation = -1,
-				Type = 2,
-				InRepository = true,
-				Size = 12344,
-				Details = "Details999",
-				Billable = true,
-				PageID = 11,
-				ByteRange = 4555
-			},
-			new DocumentImageResponse
-			{
-				DocumentArtifactID = 1701,
-				FileID = 122,
-				FileName = "FileName121",
-				Guid = "11644DB3-3865-4B99-9DB4-61CE40401BD1",
-				Identifier = "Identifier2341",
-				Location = "Location221",
-				Order = 12,
-				Rotation = 0,
-				Type = 3,
-				InRepository = false,
-				Size = 123441,
-				Details = "Details9991",
-				Billable = false,
-				PageID = 121,
-				ByteRange = 45155
-			},
-		};
-
-		private readonly ExportProductionDocumentImageResponse[] _testExportProductionDocumentImageResponses =
-		{
-			new ExportProductionDocumentImageResponse
-			{
-				DocumentArtifactID = 1700,
-				ProductionArtifactID = _PRODUCTION_ID,
-				BatesNumber = "Bates123",
-				Location = "Location33",
-				ByteRange = 2,
-				ImageFileName = "FileName1234",
-				ImageGuid = "82644DB3-3865-4B99-9DB4-60CE40401BD1",
-				ImageSize = 1234,
-				PageID = 123,
-				SourceGuid = "32644DB3-3865-4B99-9DB4-60CE40401BD1",
-				Order = 1
-			},
-			new ExportProductionDocumentImageResponse
-			{
-				DocumentArtifactID = 1702,
-				ProductionArtifactID = _PRODUCTION_ID_2,
-				BatesNumber = "Bates1233",
-				Location = "Location313",
-				ByteRange = 23,
-				ImageFileName = "FileName12134",
-				ImageGuid = "82644DB3-3865-4B99-9DB4-61CE40401BD1",
-				ImageSize = 12234,
-				PageID = 1123,
-				SourceGuid = "32644DB2-3865-4B99-9DB4-60CE40401BD1",
-				Order = 2
-			},
-		};
-
-		private readonly DynamicFileResponse[] _testDynamicFileResponses =
-		{
-			new DynamicFileResponse
-			{
-				FileID = 123,
-				ObjectArtifactID = 12,
-				FileName = "TestFileName1",
-				Location = "Location11",
-				Size = 23455,
-			},
-			new DynamicFileResponse
-			{
-				FileID = 321,
-				ObjectArtifactID = 121,
-				FileName = "TestFileName12",
-				Location = "Location112",
-				Size = 234551,
-			}
 		};
 
 		private readonly ViewFieldIDResponse[] _testViewFieldIDResponses =
@@ -284,23 +287,121 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 			}
 		};
 
-		private const int _WORKSPACE_ID = 1001000;
-		private const int _PRODUCTION_ID = 1710;
-		private const int _PRODUCTION_ID_2 = 1711;
+		private readonly ViewResponse[] _testViewResponses =
+		{
+			new ViewResponse
+			{
+				ArtifactID = 10100,
+				Name = "ViewResponseName1",
+				ArtifactTypeID = 3213,
+				IsVisible = false,
+				RenderLinks = false,
+				Type = "ViewResponseType1",
+				Order = 9999,
+				IsReport = false,
+				ViewByFamily = 1,
+				QueryHint = "ViewResponseQueryHint1",
+				SearchText = "ViewResponseSearchText1",
+				SearchProviderID = 3,
+				AvailableInObjectTab = false,
+				VisualizationType = 3,
+				ThreadMethod = 9,
+				PayloadFieldArtifactID = 8,
+				DisplayFieldArtifactID = 7,
+				GroupDefinitionFieldArtifactID = 5,
+				IsManualRerun = false,
+				DashboardArtifactID = 9,
+			},
+			new ViewResponse
+			{
+				ArtifactID = 10100,
+				Name = "ViewResponseName2",
+				ArtifactTypeID = 3213,
+				IsVisible = true,
+				RenderLinks = true,
+				Type = "ViewResponseType2",
+				Order = 9999,
+				IsReport = true,
+				ViewByFamily = 1,
+				QueryHint = "ViewResponseQueryHint2",
+				SearchText = "ViewResponseSearchText2",
+				SearchProviderID = 3,
+				AvailableInObjectTab = true,
+				VisualizationType = 3,
+				ThreadMethod = 9,
+				PayloadFieldArtifactID = 8,
+				DisplayFieldArtifactID = 7,
+				GroupDefinitionFieldArtifactID = 5,
+				IsManualRerun = true,
+				DashboardArtifactID = 9,
+			}
+		};
+
+		private readonly SearchViewResponse[] _testSearchViewResponses =
+		{
+			new SearchViewResponse
+			{
+				ArtifactID = 1243,
+				Name = "ViewResponseName5",
+				ArtifactTypeID = 31431,
+				IsVisible = false,
+				RenderLinks = false,
+				Type = "ViewResponseType12",
+				Order = 9898,
+				IsReport = false,
+				ViewByFamily = 2,
+				QueryHint = "ViewResponseQueryHint14",
+				SearchText = "ViewResponseSearchText32",
+				SearchProviderID = 3,
+				AvailableInObjectTab = false,
+				VisualizationType = 3,
+				ThreadMethod = 9,
+				PayloadFieldArtifactID = 8,
+				DisplayFieldArtifactID = 7,
+				GroupDefinitionFieldArtifactID = 5,
+				IsManualRerun = false,
+				DashboardArtifactID = 9,
+				ArtifactType = "ViewResponseArtifactType1"
+			},
+			new SearchViewResponse
+			{
+				ArtifactID = 10100,
+				Name = "ViewResponseName2",
+				ArtifactTypeID = 3213,
+				IsVisible = true,
+				RenderLinks = true,
+				Type = "ViewResponseType2",
+				Order = 9999,
+				IsReport = true,
+				ViewByFamily = 1,
+				QueryHint = "ViewResponseQueryHint2",
+				SearchText = "ViewResponseSearchText2",
+				SearchProviderID = 3,
+				AvailableInObjectTab = true,
+				VisualizationType = 3,
+				ThreadMethod = 9,
+				PayloadFieldArtifactID = 8,
+				DisplayFieldArtifactID = 7,
+				GroupDefinitionFieldArtifactID = 5,
+				IsManualRerun = true,
+				DashboardArtifactID = 9,
+				ArtifactType = "ViewResponseArtifactType2"
+			}
+		};
 
 		[SetUp]
 		public void SetUp()
 		{
-			_baseServiceContextMock = new Mock<BaseServiceContext>();
 			_viewFieldRepositoryMock = new Mock<IViewFieldRepository>();
 			_fileFieldRepositoryMock = new Mock<IFileFieldRepository>();
 			_fileRepositoryMock = new Mock<IFileRepository>();
+			_viewRepositoryMock = new Mock<IViewRepository>();
 
 			_sut = new CoreSearchManager(
-				_baseServiceContextMock.Object,
 				_fileRepositoryMock.Object,
 				_fileFieldRepositoryMock.Object,
-				_viewFieldRepositoryMock.Object
+				_viewFieldRepositoryMock.Object,
+				_viewRepositoryMock.Object
 			);
 		}
 
@@ -337,16 +438,16 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 		{
 			// arrange
 			const int artifactTypeID = 12;
-			int viewID = _testViewFieldIDResponses.First().ArtifactID;
+			int productionID = _testViewFieldIDResponses.First().ArtifactID;
 			int viewFieldID = _testViewFieldIDResponses.First().ArtifactViewFieldID;
 			_viewFieldRepositoryMock
-				.Setup(x => x.ReadViewFieldIDsFromProduction(_WORKSPACE_ID, artifactTypeID, viewID))
+				.Setup(x => x.ReadViewFieldIDsFromProduction(_WORKSPACE_ID, productionID))
 				.Returns(_testViewFieldIDResponses);
 
 			// act
 			int[] result = _sut.RetrieveDefaultViewFieldIds(
 				_WORKSPACE_ID,
-				viewID,
+				productionID,
 				artifactTypeID, 
 				isProduction: true
 			);
@@ -355,8 +456,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 			_viewFieldRepositoryMock.Verify(
 				x => x.ReadViewFieldIDsFromProduction(
 					_WORKSPACE_ID,
-					artifactTypeID,
-					viewID
+					productionID
 				), Times.Once);
 			result.Length.Should().Be(1);
 			result[0].Should().Be(viewFieldID);
@@ -725,7 +825,59 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 				Times.Once);
 		}
 
+		[Test]
+		public void RetrieveViewsByContextArtifactID_ShouldReturnResponsesWhenCorrectIDIsPassed()
+		{
+			//arrange
+			const int artifactTypeID = 111;
+			_viewRepositoryMock
+				.Setup(x => x.RetrieveViewsByContextArtifactID(_WORKSPACE_ID, artifactTypeID))
+				.Returns(_testViewResponses);
 
+			//act
+			DataSet result = _sut.RetrieveViewsByContextArtifactID(
+				_WORKSPACE_ID,
+				artifactTypeID,
+				isSearch: false
+			);
+
+			//assert
+			_viewRepositoryMock.Verify(
+				x => x.RetrieveViewsByContextArtifactID(_WORKSPACE_ID, artifactTypeID),
+				Times.Once
+			);
+			AssertViewResponsesAreSameAsExpected(
+				result,
+				_testViewResponses
+			);
+		}
+
+		[Test]
+		public void RetrieveViewsByContextArtifactIDForSearch_ShouldReturnResponsesWhenCorrectIDIsPassed()
+		{
+			//arrange
+			const int artifactTypeID = 111;
+			_viewRepositoryMock
+				.Setup(x => x.RetrieveViewsByContextArtifactIDForSearch(_WORKSPACE_ID))
+				.Returns(_testSearchViewResponses);
+
+			//act
+			DataSet result = _sut.RetrieveViewsByContextArtifactID(
+				_WORKSPACE_ID,
+				artifactTypeID,
+				isSearch: true
+			);
+
+			//assert
+			_viewRepositoryMock.Verify(
+				x => x.RetrieveViewsByContextArtifactIDForSearch(_WORKSPACE_ID),
+				Times.Once
+			);
+			AssertSearchViewResponsesAreSameAsExpected(
+				result,
+				_testSearchViewResponses
+			);
+		}
 
 		private static void AssertViewFieldInfosAreSameAsExpected(ViewFieldResponse[] expectedInfos, ViewFieldInfo[] currentInfos)
 		{
@@ -985,6 +1137,92 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 				actual[nameof(DynamicFileResponse.Size)]
 					.Should().Be(expected.Size);
 			}
+		}
+
+		private void AssertViewResponsesAreSameAsExpected(
+			DataSet dataSet, 
+			ViewResponse[] responses)
+		{
+			DataRow[] rows = dataSet.Tables[0].Rows.Cast<DataRow>().ToArray();
+
+			rows.Length.Should().Be(responses.Length);
+
+			var asserts = responses.Zip(rows, (response, actual) => new
+			{
+				Expected = response,
+				Actual = actual
+			});
+
+			foreach (var assert in asserts)
+			{
+				DataRow actual = assert.Actual;
+				ViewResponse expected = assert.Expected;
+
+				actual[nameof(ViewResponse.ArtifactID)].Should().Be(expected.ArtifactID);
+				actual[nameof(ViewResponse.Name)].Should().Be(expected.Name);
+				actual[nameof(ViewResponse.ArtifactTypeID)].Should().Be(expected.ArtifactTypeID);
+				actual[nameof(ViewResponse.IsVisible)].Should().Be(expected.IsVisible);
+				actual[nameof(ViewResponse.RenderLinks)].Should().Be(expected.RenderLinks);
+				actual[nameof(ViewResponse.Type)].Should().Be(expected.Type);
+				actual[nameof(ViewResponse.Order)].Should().Be(expected.Order);
+				actual[nameof(ViewResponse.IsReport)].Should().Be(expected.IsReport);
+				actual[nameof(ViewResponse.ViewByFamily)].Should().Be(expected.ViewByFamily);
+				actual[nameof(ViewResponse.QueryHint)].Should().Be(expected.QueryHint);
+				actual[nameof(ViewResponse.SearchText)].Should().Be(expected.SearchText);
+				actual[nameof(ViewResponse.SearchProviderID)].Should().Be(expected.SearchProviderID);
+				actual[nameof(ViewResponse.AvailableInObjectTab)].Should().Be(expected.AvailableInObjectTab);
+				actual[nameof(ViewResponse.VisualizationType)].Should().Be(expected.VisualizationType);
+				actual[nameof(ViewResponse.ThreadMethod)].Should().Be(expected.ThreadMethod);
+				actual[nameof(ViewResponse.PayloadFieldArtifactID)].Should().Be(expected.PayloadFieldArtifactID);
+				actual[nameof(ViewResponse.DisplayFieldArtifactID)].Should().Be(expected.DisplayFieldArtifactID);
+				actual[nameof(ViewResponse.GroupDefinitionFieldArtifactID)].Should().Be(expected.GroupDefinitionFieldArtifactID);
+				actual[nameof(ViewResponse.IsManualRerun)].Should().Be(expected.IsManualRerun);
+				actual[nameof(ViewResponse.DashboardArtifactID)].Should().Be(expected.DashboardArtifactID);
+			}
+		}
+
+		private void AssertSearchViewResponsesAreSameAsExpected(
+			DataSet dataSet, 
+			SearchViewResponse[] responses)
+		{
+			DataRow[] rows = dataSet.Tables[0].Rows.Cast<DataRow>().ToArray();
+
+			rows.Length.Should().Be(responses.Length);
+
+			var asserts = responses.Zip(rows, (response, actual) => new
+			{
+				Expected = response,
+				Actual = actual
+			});
+
+			foreach (var assert in asserts)
+			{
+				DataRow actual = assert.Actual;
+				SearchViewResponse expected = assert.Expected;
+
+				actual[nameof(SearchViewResponse.ArtifactID)].Should().Be(expected.ArtifactID);
+				actual[nameof(SearchViewResponse.Name)].Should().Be(expected.Name);
+				actual[nameof(SearchViewResponse.ArtifactTypeID)].Should().Be(expected.ArtifactTypeID);
+				actual[nameof(SearchViewResponse.IsVisible)].Should().Be(expected.IsVisible);
+				actual[nameof(SearchViewResponse.RenderLinks)].Should().Be(expected.RenderLinks);
+				actual[nameof(SearchViewResponse.Type)].Should().Be(expected.Type);
+				actual[nameof(SearchViewResponse.Order)].Should().Be(expected.Order);
+				actual[nameof(SearchViewResponse.IsReport)].Should().Be(expected.IsReport);
+				actual[nameof(SearchViewResponse.ViewByFamily)].Should().Be(expected.ViewByFamily);
+				actual[nameof(SearchViewResponse.QueryHint)].Should().Be(expected.QueryHint);
+				actual[nameof(SearchViewResponse.SearchText)].Should().Be(expected.SearchText);
+				actual[nameof(SearchViewResponse.SearchProviderID)].Should().Be(expected.SearchProviderID);
+				actual[nameof(SearchViewResponse.AvailableInObjectTab)].Should().Be(expected.AvailableInObjectTab);
+				actual[nameof(SearchViewResponse.VisualizationType)].Should().Be(expected.VisualizationType);
+				actual[nameof(SearchViewResponse.ThreadMethod)].Should().Be(expected.ThreadMethod);
+				actual[nameof(SearchViewResponse.PayloadFieldArtifactID)].Should().Be(expected.PayloadFieldArtifactID);
+				actual[nameof(SearchViewResponse.DisplayFieldArtifactID)].Should().Be(expected.DisplayFieldArtifactID);
+				actual[nameof(SearchViewResponse.GroupDefinitionFieldArtifactID)].Should().Be(expected.GroupDefinitionFieldArtifactID);
+				actual[nameof(SearchViewResponse.IsManualRerun)].Should().Be(expected.IsManualRerun);
+				actual[nameof(SearchViewResponse.DashboardArtifactID)].Should().Be(expected.DashboardArtifactID);
+				actual[nameof(SearchViewResponse.ArtifactType)].Should().Be(expected.ArtifactType);
+			}
+
 		}
 
 		private static string ConvertToCommaSeparatedString(int[] values) => string.Join(",", values);

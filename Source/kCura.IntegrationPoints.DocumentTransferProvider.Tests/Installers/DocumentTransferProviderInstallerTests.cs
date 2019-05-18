@@ -6,10 +6,10 @@ using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.DocumentTransferProvider.Installers;
-using Moq;
 using NUnit.Framework;
 using Relativity.API;
 using System;
+using static kCura.IntegrationPoint.Tests.Core.TestHelpers.WindsorContainerTestHelpers;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Installers
 {
@@ -118,9 +118,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Installers
 		{
 			IRegistration[] dependencies =
 			{
-				Component.For<IWebApiConfig>().Instance(new Mock<IWebApiConfig>().Object),
-				Component.For<IAPILog>().Instance(new Mock<IAPILog>().Object),
-				Component.For<IRepositoryFactory>().Instance(new Mock<IRepositoryFactory>().Object)
+				CreateDummyObjectRegistration<IWebApiConfig>(),
+				CreateDummyObjectRegistration<IAPILog>(),
+				CreateDummyObjectRegistration<IRepositoryFactory>()
 			};
 
 			container.Register(dependencies);

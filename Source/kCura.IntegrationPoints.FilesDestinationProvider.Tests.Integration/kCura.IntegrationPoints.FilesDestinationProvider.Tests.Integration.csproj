@@ -57,14 +57,17 @@
     </Compile>
     <Compile Include="Abstract\IExportTestCase.cs" />
     <Compile Include="Abstract\IInvalidFileshareExportTestCase.cs" />
-    <Compile Include="Helpers\ConfigSettings.cs" />
+    <Compile Include="Process\Internals\ExportTestContextProvider.cs" />
+    <Compile Include="Process\Internals\ExportTestSettingsBuilder.cs" />
+    <Compile Include="Process\Internals\ExportTestContext.cs" />
     <Compile Include="Helpers\ContainerInstaller.cs" />
     <Compile Include="Helpers\DataFileFormatHelper.cs" />
     <Compile Include="Helpers\FileComparer.cs" />
     <Compile Include="Helpers\FileEncodingDetectionHelper.cs" />
     <Compile Include="Helpers\LoggingMediatorForTestsFactory.cs" />
     <Compile Include="Helpers\TestLoggingMediator.cs" />
-    <Compile Include="Process\ExportProcessRunnerTest.cs" />
+    <Compile Include="Process\ExportTestsRunner.cs" />
+    <Compile Include="Process\Internals\ExportTestConfiguration.cs" />
     <Compile Include="TestCases\Base\DataFileEncodingTestCaseBase.cs" />
     <Compile Include="TestCases\Base\ExportTestCaseBase.cs" />
     <Compile Include="TestCases\Base\MetadataExportTestCaseBase.cs" />
@@ -88,8 +91,6 @@
     <Compile Include="TestCases\ItShouldLogItemErrorForTooSmallVolumeDigitPadding.cs" />
     <Compile Include="TestCases\ItShouldLogJobErrorForInvalidFilesharePathFormat.cs" />
     <Compile Include="TestCases\ItShouldLogJobErrorForInvalidStartExportAtRecordValue.cs" />
-    <Compile Include="TestCases\ItShouldLogJobErrorForNegativeSubdirectoryStartNumber.cs" />
-    <Compile Include="TestCases\ItShouldLogJobErrorForNegativeVolumeStartNumber.cs" />
     <Compile Include="TestCases\ItShouldLogJobErrorForNotExistingFileshare.cs" />
     <Compile Include="TestCases\ItShouldLogJobErrorWhenNotOverwritingExistingFiles.cs" />
     <Compile Include="TestCases\ItShouldNotExportExtractedText.cs" />

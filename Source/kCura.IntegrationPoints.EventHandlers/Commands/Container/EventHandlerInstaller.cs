@@ -75,7 +75,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
 				IEHContext context = kernel.Resolve<IEHContext>();
 				IOAuth2ClientFactory oauth2ClientFactory = kernel.Resolve<IOAuth2ClientFactory>();
 				ITokenProviderFactoryFactory tokenProviderFactory = kernel.Resolve<ITokenProviderFactoryFactory>();
-				CurrentUser contextUser = new CurrentUser { ID = context.Helper.GetAuthenticationManager().UserInfo.ArtifactID };
+				int userID = context.Helper.GetAuthenticationManager().UserInfo.ArtifactID;
+				var contextUser = new CurrentUser(userID);
 
 				return new OAuth2TokenGenerator(context.Helper, oauth2ClientFactory, tokenProviderFactory, contextUser);
 			}).LifestyleTransient());

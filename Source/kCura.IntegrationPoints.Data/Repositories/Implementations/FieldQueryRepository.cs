@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.RSAPIClient;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
@@ -11,7 +10,6 @@ using Relativity.API;
 using Relativity.Services.FieldManager;
 using Relativity.Services.Objects.DataContracts;
 using Field = kCura.Relativity.Client.DTOs.Field;
-using Query = Relativity.Services.ObjectQuery.Query;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
@@ -110,12 +108,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public ArtifactDTO[] RetrieveFields(int rdoTypeId, HashSet<string> fieldNames)
 		{
-			return Task.Run(() => RetrieveFieldsAsync(rdoTypeId, fieldNames)).GetResultsWithoutContextSync();
+			return RetrieveFieldsAsync(rdoTypeId, fieldNames).GetAwaiter().GetResult();
 		}
 
 		public ArtifactDTO RetrieveField(int rdoTypeId, string displayName, string fieldType, HashSet<string> fieldNames)
 		{
-			ArtifactDTO[] fieldsDtos = Task.Run(() => RetrieveFieldsAsync(rdoTypeId, displayName, fieldType, fieldNames)).GetResultsWithoutContextSync();
+			ArtifactDTO[] fieldsDtos = RetrieveFieldsAsync(rdoTypeId, displayName, fieldType, fieldNames).GetAwaiter().GetResult();
 
 			return fieldsDtos.FirstOrDefault();
 		}
@@ -144,7 +142,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		public ArtifactDTO RetrieveTheIdentifierField(int rdoTypeId)
 		{
 			HashSet<string> fieldsToRetrieveWhenQueryFields = new HashSet<string> {"Name", "Is Identifier"};
-			ArtifactDTO[] fieldsDtos = RetrieveFieldsAsync(rdoTypeId, fieldsToRetrieveWhenQueryFields).GetResultsWithoutContextSync();
+			ArtifactDTO[] fieldsDtos = RetrieveFieldsAsync(rdoTypeId, fieldsToRetrieveWhenQueryFields).GetAwaiter().GetResult();
 			ArtifactDTO identifierField = fieldsDtos.First(field => Convert.ToBoolean(field.Fields[1].Value));
 			return identifierField;
 		}

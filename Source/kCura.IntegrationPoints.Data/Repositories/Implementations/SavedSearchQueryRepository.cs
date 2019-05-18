@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Data.DTO;
-using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.UtilityDTO;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
@@ -54,7 +53,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			QueryRequest query = CreateQueryRequest(condition);
 
-			ArtifactDTO[] results = this.RetrieveAllArtifactsAsync(query).GetResultsWithoutContextSync();
+			ArtifactDTO[] results = this.RetrieveAllArtifactsAsync(query).GetAwaiter().GetResult();
 
 			IEnumerable<SavedSearchDTO> savedSearches = results.Select(ConvertArtifactDTOToSavedSearchDTO);
 

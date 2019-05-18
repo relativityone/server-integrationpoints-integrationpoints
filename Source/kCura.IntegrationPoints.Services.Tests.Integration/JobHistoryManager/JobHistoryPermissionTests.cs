@@ -76,7 +76,8 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 		}
 
         [Test]
-		[TestInQuarantine(TestQuarantineState.SeemsToBeStable)]
+		[TestInQuarantine(TestQuarantineState.UnderObservation, 
+			"Moved back to quarantine cause it failed when pulled into standard tests pool.")]
 		public void MissingTargetWorkspacePermission()
 		{
 			Group.AddGroupToWorkspace(SourceWorkspaceArtifactId, _groupId);
