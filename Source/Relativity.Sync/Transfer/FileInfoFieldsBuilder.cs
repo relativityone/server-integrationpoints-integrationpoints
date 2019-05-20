@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.Sync.Transfer
 {
@@ -28,21 +27,19 @@ namespace Relativity.Sync.Transfer
 			yield return new FieldInfoDto {SpecialFieldType = SpecialFieldType.RelativityNativeType, DisplayName = _RELATIVITY_NATIVE_TYPE_FIELD_NAME, IsDocumentField = true};
 		}
 
-		public async Task<ISpecialFieldRowValuesBuilder> GetRowValuesBuilderAsync(int sourceWorkspaceArtifactId, IEnumerable<int> documentArtifactIds)
+		public async Task<ISpecialFieldRowValuesBuilder> GetRowValuesBuilderAsync(int sourceWorkspaceArtifactId, ICollection<int> documentArtifactIds)
 		{
-			List<int> documentArtifactIdsList = documentArtifactIds.ToList();
-
 			IEnumerable<INativeFile> nativeFileInfo = await _nativeFileRepository
-				.QueryAsync(sourceWorkspaceArtifactId, documentArtifactIdsList)
+				.QueryAsync(sourceWorkspaceArtifactId, documentArtifactIds)
 				.ConfigureAwait(false);
 
 			List<INativeFile> nativeFileInfoList = nativeFileInfo.ToList();
 			HashSet<int> documentsWithNatives = new HashSet<int>(nativeFileInfoList.Select(x => x.DocumentArtifactId));
 
 			IDictionary<int, INativeFile> artifactIdToNativeFile = nativeFileInfoList.ToDictionary(n => n.DocumentArtifactId);
-			List<int> documentsWithoutNatives = documentArtifactIdsList.Where(x => !documentsWithNatives.Contains(x)).ToList();
+			List<int> documentsWithoutNatives = documentArtifactIds.Where(x => !documentsWithNatives.Contains(x)).ToList();
 
-			artifactIdToNativeFile.Extend(documentsWithoutNatives, Enumerable.Repeat(NativeFile.Empty, documentsWithoutNatives.Count));
+			artifactIdToNativeFile.Extend(documentsWithoutNatives, NativeFile.Empty.Repeat());
 
 			return new FileInfoRowValuesBuilder(artifactIdToNativeFile);
 		}

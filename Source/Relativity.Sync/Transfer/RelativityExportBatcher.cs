@@ -68,11 +68,11 @@ namespace Relativity.Sync.Transfer
 
 			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
+				int resultsBlockSize = nextBatch.TotalItemsCount;
+				int startingIndex = nextBatch.StartingIndex;
 				RelativityObjectSlim[] block = await objectManager
-					.RetrieveResultsBlockFromExportAsync(workspaceArtifactId,
-						runId,
-						nextBatch.TotalItemsCount,
-						nextBatch.StartingIndex).ConfigureAwait(false);
+					.RetrieveResultsBlockFromExportAsync(workspaceArtifactId, runId, resultsBlockSize, startingIndex)
+					.ConfigureAwait(false);
 				return block;
 			}
 		}

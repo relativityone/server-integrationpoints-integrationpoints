@@ -105,7 +105,7 @@ namespace Relativity.Sync.Tests.Integration
 				.Select(x => x.Trim('"').Trim('\''));
 
 			List<RelativityObjectSlim> objects = fieldNames
-				.Select(f => new RelativityObjectSlim { Values = new List<object> { f, fieldNameToDataType[f].ToRelativityTypeDisplayName()} })
+				.Select(f => new RelativityObjectSlim { Values = new List<object> { f, fieldNameToDataType[f].GetDescription() } })
 				.ToList();
 
 			QueryResultSlim retVal = new QueryResultSlim { Objects = objects };
