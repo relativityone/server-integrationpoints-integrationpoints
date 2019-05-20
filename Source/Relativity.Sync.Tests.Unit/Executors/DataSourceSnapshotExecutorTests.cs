@@ -38,7 +38,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
 
 			_fieldManager = new Mock<IFieldManager>();
-			_fieldManager.Setup(fm => fm.GetDocumentFields()).ReturnsAsync(Mock.Of<List<Sync.Transfer.FieldInfo>>());
+			_fieldManager.Setup(fm => fm.GetDocumentFieldsAsync(CancellationToken.None)).ReturnsAsync(Mock.Of<List<Sync.Transfer.FieldInfo>>());
 
 			_configuration = new Mock<IDataSourceSnapshotConfiguration>();
 			_configuration.Setup(x => x.SourceWorkspaceArtifactId).Returns(_WORKSPACE_ID);
@@ -140,7 +140,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				}
 			};
 
-			_fieldManager.Setup(fm => fm.GetDocumentFields()).ReturnsAsync(fieldInfos);
+			_fieldManager.Setup(fm => fm.GetDocumentFieldsAsync(CancellationToken.None)).ReturnsAsync(fieldInfos);
 
 			
 			ExportInitializationResults exportInitializationResults = new ExportInitializationResults

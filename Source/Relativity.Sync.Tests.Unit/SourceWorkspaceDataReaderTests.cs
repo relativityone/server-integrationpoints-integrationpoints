@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -263,7 +264,7 @@ namespace Relativity.Sync.Tests.Unit
 			ExportBatcherReturnsBatches(GenerateBatch(batchSize), EmptyBatch());
 
 			Mock<ISourceWorkspaceDataTableBuilder> builder = new Mock<ISourceWorkspaceDataTableBuilder>();
-			builder.Setup(x => x.BuildAsync(It.IsAny<int>(), It.IsAny<RelativityObjectSlim[]>()))
+			builder.Setup(x => x.BuildAsync(It.IsAny<int>(), It.IsAny<RelativityObjectSlim[]>(), CancellationToken.None))
 				.Throws(new ServiceException());
 
 			_instance = new SourceWorkspaceDataReader(builder.Object,

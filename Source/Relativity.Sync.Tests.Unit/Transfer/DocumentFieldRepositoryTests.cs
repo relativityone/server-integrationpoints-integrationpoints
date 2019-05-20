@@ -5,9 +5,12 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.Services.Exceptions;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.Executors;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.Unit.Transfer
@@ -27,7 +30,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			_serviceFactory = new Mock<ISourceServiceFactoryForUser>();
 			_serviceFactory.Setup(f => f.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
-			_instance = new DocumentFieldRepository(_serviceFactory.Object);
+			_instance = new DocumentFieldRepository(_serviceFactory.Object, new EmptyLogger());
 		}
 
 		[Test]
@@ -57,7 +60,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			// Act
 			Dictionary<string, RelativityDataType> result = await _instance
-				.GetRelativityDataTypesForFieldsByFieldName(_sourceWorkspaceArtifactId, fieldNames).ConfigureAwait(false);
+				.GetRelativityDataTypesForFieldsByFieldNameAsync(_sourceWorkspaceArtifactId, fieldNames, CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			result.Count.Should().Be(fieldNames.Count);
@@ -66,18 +69,33 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		}
 
 		[Test]
-		public async Task ItShouldNotCallObjectManagerWhenFieldListIsEmpty()
+		public async Task ItShouldThrowArgumentExceptionWhenFieldNamesAreEmpty()
 		{
 			// Arrange
 			List<string> emptyFieldNamesList = new List<string>();
 
 			// Act
 			Func<Task<Dictionary<string, RelativityDataType>>> action = () =>
-				_instance.GetRelativityDataTypesForFieldsByFieldName(_sourceWorkspaceArtifactId, emptyFieldNamesList);
+				_instance.GetRelativityDataTypesForFieldsByFieldNameAsync(_sourceWorkspaceArtifactId, emptyFieldNamesList, CancellationToken.None);
 
 			// Assert
-			await action.Should().NotThrowAsync().ConfigureAwait(false);
+			await action.Should().ThrowAsync<ArgumentException>().ConfigureAwait(false);
 			_objectManager.Verify(om => om.QuerySlimAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), CancellationToken.None), Times.Never);
+		}
+
+		[Test]
+		public async Task ItShouldThrowKeplerServiceExceptionWhenObjectManagerThrows()
+		{
+			//Arrange
+			List<string> fieldNames = new List<string> {"test"};
+			_objectManager.Setup(om => om.QuerySlimAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), CancellationToken.None)).Throws<ServiceException>();
+			
+			// Act
+			Func<Task<Dictionary<string, RelativityDataType>>> action = () =>
+				_instance.GetRelativityDataTypesForFieldsByFieldNameAsync(_sourceWorkspaceArtifactId, fieldNames, CancellationToken.None);
+
+			// Assert
+			await action.Should().ThrowAsync<KeplerServiceException>().ConfigureAwait(false);
 		}
 	}
 }

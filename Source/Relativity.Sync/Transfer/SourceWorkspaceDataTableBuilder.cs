@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Storage;
@@ -20,14 +21,14 @@ namespace Relativity.Sync.Transfer
 			_fieldManager = fieldManager;
 		}
 
-		public async Task<DataTable> BuildAsync(int sourceWorkspaceArtifactId, RelativityObjectSlim[] batch)
+		public async Task<DataTable> BuildAsync(int sourceWorkspaceArtifactId, RelativityObjectSlim[] batch, CancellationToken token)
 		{
 			if (batch == null || !batch.Any())
 			{
 				return new DataTable();
 			}
 
-			List<FieldInfo> allFields = await _fieldManager.GetAllFields().ConfigureAwait(false);
+			List<FieldInfo> allFields = await _fieldManager.GetAllFieldsAsync(token).ConfigureAwait(false);
 
 			DataTable dataTable = GetEmptyDataTable(allFields);
 
@@ -62,11 +63,11 @@ namespace Relativity.Sync.Transfer
 
 		private DataTable GetEmptyDataTable(List<FieldInfo> allFields)
 		{
-			if (_dataTable != null)
+			if (_dataTable == null)
 			{
-				return _dataTable.Clone();
+				_dataTable = CreateDataTable(allFields);
 			}
-			return _dataTable = CreateDataTable(allFields);
+			return _dataTable.Clone();
 		}
 
 		private static DataTable CreateDataTable(List<FieldInfo> allFields)

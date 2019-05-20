@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -51,8 +52,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_configuration.Setup(c => c.FieldMappings).Returns(new[] { _mappedField1, _mappedField2 });
 			_configuration.Setup(c => c.SourceWorkspaceArtifactId).Returns(_SOURCE_WORKSPACE_ARTIFACT_ID);
 			_documentFieldRepository = new Mock<IDocumentFieldRepository>();
-			_documentFieldRepository.Setup(r => r.GetRelativityDataTypesForFieldsByFieldName(_SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<ICollection<string>>()))
-				.Returns<int, ICollection<string>>((workspaceId, fieldNames) => Task.FromResult(fieldNames.ToDictionary(f => f, _ => _NON_SPECIAL_DOCUMENT_FIELD_RELATIVITY_DATA_TYPE)));
+			_documentFieldRepository.Setup(r => r.GetRelativityDataTypesForFieldsByFieldNameAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<ICollection<string>>(), CancellationToken.None))
+				.Returns<int, ICollection<string>, CancellationToken>((workspaceId, fieldNames, token) => Task.FromResult(fieldNames.ToDictionary(f => f, _ => _NON_SPECIAL_DOCUMENT_FIELD_RELATIVITY_DATA_TYPE)));
 
 			_instance = new FieldManager(_configuration.Object, _documentFieldRepository.Object, new[] {_builder1.Object, _builder2.Object});
 		}
@@ -72,7 +73,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		[Test]
 		public async Task ItShouldReturnDocumentFields()
 		{
-			IList<Sync.Transfer.FieldInfo> result = await _instance.GetDocumentFields().ConfigureAwait(false);
+			IList<Sync.Transfer.FieldInfo> result = await _instance.GetDocumentFieldsAsync(CancellationToken.None).ConfigureAwait(false);
 
 			result.Should().Contain(f => f.DisplayName == _DOCUMENT_SPECIAL_FIELD_NAME).Which.DocumentFieldIndex.Should().BeGreaterOrEqualTo(0);
 			result.Should().Contain(f => f.DisplayName == _MAPPED_FIELD_1_NAME).Which.DocumentFieldIndex.Should().BeGreaterOrEqualTo(0);
@@ -86,7 +87,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public async Task ItShouldReturnAllFields()
 		{
 			// Act
-			IList<Sync.Transfer.FieldInfo> result = await _instance.GetAllFields().ConfigureAwait(false);
+			IList<Sync.Transfer.FieldInfo> result = await _instance.GetAllFieldsAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			result.Should().Contain(f => f.DisplayName == _DOCUMENT_SPECIAL_FIELD_NAME).Which.DocumentFieldIndex.Should().BeGreaterOrEqualTo(0);
@@ -116,7 +117,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		{
 			_instance = new FieldManager(_configuration.Object, _documentFieldRepository.Object, Enumerable.Empty<ISpecialFieldBuilder>());
 
-			Func<Task<List<Sync.Transfer.FieldInfo>>> action = () => _instance.GetAllFields();
+			Func<Task<List<Sync.Transfer.FieldInfo>>> action = () => _instance.GetAllFieldsAsync(CancellationToken.None);
 
 			await action.Should().NotThrowAsync().ConfigureAwait(false);
 		}
@@ -136,7 +137,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		{
 			_instance = new FieldManager(_configuration.Object, _documentFieldRepository.Object, Enumerable.Empty<ISpecialFieldBuilder>());
 
-			Func<Task<List<Sync.Transfer.FieldInfo>>> action = () => _instance.GetDocumentFields();
+			Func<Task<List<Sync.Transfer.FieldInfo>>> action = () => _instance.GetDocumentFieldsAsync(CancellationToken.None);
 
 			await action.Should().NotThrowAsync().ConfigureAwait(false);
 		}

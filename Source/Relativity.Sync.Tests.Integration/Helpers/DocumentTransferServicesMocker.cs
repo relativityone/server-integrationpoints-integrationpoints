@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using Moq;
@@ -79,13 +80,13 @@ namespace Relativity.Sync.Tests.Integration
 		private void SetupFields(IReadOnlyDictionary<string, RelativityDataType> fieldSchema)
 		{
 			SetupQuerySlimForFields()
-				.ReturnsAsync<int, QueryRequest, int, int, IObjectManager, QueryResultSlim>((ws, req, s, l) => SelectFieldResults(req.Condition, fieldSchema));
+				.ReturnsAsync<int, QueryRequest, int, int, CancellationToken, IObjectManager, QueryResultSlim>((ws, req, s, l, c) => SelectFieldResults(req.Condition, fieldSchema));
 		}
 
 		private ISetup<IObjectManager, Task<QueryResultSlim>> SetupQuerySlimForFields()
 		{
 			return ObjectManager.Setup(x =>
-				x.QuerySlimAsync(It.IsAny<int>(), It.Is<QueryRequest>(r => r.ObjectType.Name == "Field"), It.IsAny<int>(), It.IsAny<int>()));
+				x.QuerySlimAsync(It.IsAny<int>(), It.Is<QueryRequest>(r => r.ObjectType.Name == "Field"), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()));
 		}
 
 		// NOTE: Successful operation of this method depends on implementation details in DocumentFieldRepository.
@@ -104,7 +105,7 @@ namespace Relativity.Sync.Tests.Integration
 				.Select(x => x.Trim('"').Trim('\''));
 
 			List<RelativityObjectSlim> objects = fieldNames
-				.Select(f => new RelativityObjectSlim { Values = new List<object> { fieldNameToDataType[f].ToRelativityTypeDisplayName(), f } })
+				.Select(f => new RelativityObjectSlim { Values = new List<object> { f, fieldNameToDataType[f].ToRelativityTypeDisplayName()} })
 				.ToList();
 
 			QueryResultSlim retVal = new QueryResultSlim { Objects = objects };
@@ -146,7 +147,7 @@ namespace Relativity.Sync.Tests.Integration
 
 		private async Task SetupExportResultBlocks(IFieldManager fieldManager, Document[] documents, int batchSize)
 		{
-			List<Transfer.FieldInfo> sourceDocumentFields = await fieldManager.GetDocumentFields().ConfigureAwait(false);
+			List<Transfer.FieldInfo> sourceDocumentFields = await fieldManager.GetDocumentFieldsAsync(CancellationToken.None).ConfigureAwait(false);
 			for (int i = 0; i < documents.Length; i += batchSize)
 			{
 				int resultsBlockSize = Math.Min(batchSize, documents.Length - i);

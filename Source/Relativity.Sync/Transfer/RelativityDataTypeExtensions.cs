@@ -33,7 +33,7 @@ namespace Relativity.Sync.Transfer
 			{"Currency", RelativityDataType.Currency},
 			{"Multiple Choice", RelativityDataType.MultipleChoice},
 			{"File", RelativityDataType.File},
-			{ "Single Object", RelativityDataType.SingleObject},
+			{"Single Object", RelativityDataType.SingleObject},
 			{"User", RelativityDataType.User},
 			{"Multiple Object", RelativityDataType.MultipleObject}
 		};

@@ -5,8 +5,6 @@ using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using System.Collections.Generic;
-using System.Data;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Transfer;
@@ -62,21 +60,20 @@ namespace Relativity.Sync.Tests.System
 			};
 
 			var sourceServiceFactory = new SourceServiceFactoryStub(ServiceFactory);
-			var documentFieldRepository = new DocumentFieldRepository(sourceServiceFactory);
+			var documentFieldRepository = new DocumentFieldRepository(sourceServiceFactory, new EmptyLogger());
 			var fieldManager = new FieldManager(configuration, documentFieldRepository, new List<ISpecialFieldBuilder>
 			{
 				new FileInfoFieldsBuilder(new NativeFileRepository(sourceServiceFactory)),
 				new FolderPathFieldBuilder(sourceServiceFactory, new FolderPathRetriever(sourceServiceFactory, new EmptyLogger()), configuration), new SourceTagsFieldBuilder()
 			});
 			var executor = new DataSourceSnapshotExecutor(sourceServiceFactory, fieldManager, new EmptyLogger());
-			var exportBatcher = new RelativityExportBatcher(sourceServiceFactory, new BatchRepository(sourceServiceFactory));
 
 			ExecutionResult result = await executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
 
 			Assert.AreEqual(ExecutionStatus.Completed, result.Status);
-
+			RelativityExportBatcher batcher = new RelativityExportBatcher(sourceServiceFactory, new BatchRepository(sourceServiceFactory));
 			const int resultsBlockSize = 100;
-			SourceWorkspaceDataReader dataReader = new SourceWorkspaceDataReader(new SourceWorkspaceDataTableBuilder(fieldManager), configuration, exportBatcher, new EmptyLogger());
+			SourceWorkspaceDataReader dataReader = new SourceWorkspaceDataReader(new SourceWorkspaceDataTableBuilder(fieldManager), configuration, batcher, new EmptyLogger());
 
 			ConsoleLogger logger = new ConsoleLogger();
 			object[] tmpTable = new object[resultsBlockSize];

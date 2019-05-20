@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Threading;
 using System.Linq;
 using System.Threading.Tasks;
 using Relativity.Services.Objects;
@@ -84,7 +85,7 @@ namespace Relativity.Sync.Transfer
 				DataTable dt;
 				try
 				{
-					dt = await _tableBuilder.BuildAsync(_configuration.SourceWorkspaceArtifactId, batch).ConfigureAwait(false);
+					dt = await _tableBuilder.BuildAsync(_configuration.SourceWorkspaceArtifactId, batch, CancellationToken.None).ConfigureAwait(false);
 				}
 				catch (Exception ex)
 				{

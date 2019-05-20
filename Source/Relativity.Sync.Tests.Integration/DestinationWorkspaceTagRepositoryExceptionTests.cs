@@ -17,7 +17,7 @@ namespace Relativity.Sync.Tests.Integration
 			const int bufferSize = 4096;
 
 			Exception innerEx = new Exception("foo");
-			DestinationWorkspaceTagRepositoryException originalException = new DestinationWorkspaceTagRepositoryException("message", innerEx);
+			KeplerServiceException originalException = new KeplerServiceException("message", innerEx);
 			byte[] buffer = new byte[bufferSize];
 			MemoryStream ms = new MemoryStream(buffer);
 			MemoryStream ms2 = new MemoryStream(buffer);
@@ -25,7 +25,7 @@ namespace Relativity.Sync.Tests.Integration
 
 			// ACT
 			formatter.Serialize(ms, originalException);
-			DestinationWorkspaceTagRepositoryException deserializedException = (DestinationWorkspaceTagRepositoryException)formatter.Deserialize(ms2);
+			KeplerServiceException deserializedException = (KeplerServiceException)formatter.Deserialize(ms2);
 
 			// ASSERT
 			deserializedException.InnerException.Should().NotBeNull();
@@ -37,11 +37,11 @@ namespace Relativity.Sync.Tests.Integration
 		public void ItShouldSerializeToJson()
 		{
 			Exception innerEx = new Exception("foo");
-			DestinationWorkspaceTagRepositoryException originalException = new DestinationWorkspaceTagRepositoryException("message", innerEx);
+			KeplerServiceException originalException = new KeplerServiceException("message", innerEx);
 
 			// ACT
 			string json = JsonConvert.SerializeObject(originalException);
-			DestinationWorkspaceTagRepositoryException deserializedException = JsonConvert.DeserializeObject<DestinationWorkspaceTagRepositoryException>(json);
+			KeplerServiceException deserializedException = JsonConvert.DeserializeObject<KeplerServiceException>(json);
 
 			// ASSERT
 			deserializedException.InnerException.Should().NotBeNull();

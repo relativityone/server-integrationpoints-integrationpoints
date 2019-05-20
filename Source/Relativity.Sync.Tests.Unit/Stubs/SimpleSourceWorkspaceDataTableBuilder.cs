@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Transfer;
@@ -13,7 +14,7 @@ namespace Relativity.Sync.Tests.Unit.Stubs
 	/// </summary>
 	internal sealed class SimpleSourceWorkspaceDataTableBuilder : ISourceWorkspaceDataTableBuilder
 	{
-		public Task<DataTable> BuildAsync(int workspaceArtifactId, RelativityObjectSlim[] batch)
+		public Task<DataTable> BuildAsync(int workspaceArtifactId, RelativityObjectSlim[] batch, CancellationToken token)
 		{
 			DataTable dt = new DataTable();
 			DataColumn[] columns = batch.First().Values.Select(_ => new DataColumn(Guid.NewGuid().ToString())).ToArray();
