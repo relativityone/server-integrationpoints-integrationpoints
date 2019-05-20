@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 		public string RelativityUserName { get; }
 
 		public string RelativityPassword { get; }
-		
+
 		public TestHelper()
 			: this(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword)
 		{ }
@@ -90,10 +90,8 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			return new WinEDDS.Service.SearchManager(credentials, new CookieContainer());
 		}
 
-		public ITestHelper CreateHelperForUser(string userName, string password)
-		{
-			return new TestHelper(userName, password);
-		}
+		public ITestHelper CreateHelperForUser(string userName, string password) =>
+			new TestHelper(userName, password);
 
 		public void Dispose()
 		{

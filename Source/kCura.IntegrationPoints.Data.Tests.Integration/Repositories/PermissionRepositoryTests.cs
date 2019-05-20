@@ -38,7 +38,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		public override void SuiteSetup()
 		{
 			base.SuiteSetup();
-			InstanceSetting.UpsertAndReturnOldValueIfExists("Relativity.Authentication", "AdminsCanSetPasswords", "True");
+			InstanceSetting.UpsertAndReturnOldValueIfExists(
+				section: "Relativity.Authentication",
+				name: "AdminsCanSetPasswords",
+				value: "True");
 		}
 
 		[SetUp]
@@ -108,7 +111,12 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		[TestCase(true, false, true, true, true)]
 		[TestCase(false, true, true, true, true)]
 		[TestCase(true, true, true, true, true)]
-		public async Task UserCanEditDocuments(bool addSelected, bool deleteSelected, bool editSelected, bool viewSelected, bool expectedResult)
+		public async Task UserCanEditDocuments(
+			bool addSelected,
+			bool deleteSelected,
+			bool editSelected,
+			bool viewSelected,
+			bool expectedResult)
 		{
 			// arrange
 			ObjectPermission permission = _groupPermission.ObjectPermissions.FindPermission(ObjectTypes.Document);
@@ -169,7 +177,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			await Permission.SavePermissionAsync(SourceWorkspaceArtifactId, _groupPermission).ConfigureAwait(false);
 
 			// act
-			bool result = _userPermissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.IntegrationPoint), ArtifactPermission.Create);
+			bool result = _userPermissionRepository.UserHasArtifactTypePermission(
+				new Guid(ObjectTypeGuids.IntegrationPoint),
+				ArtifactPermission.Create);
 
 			// assert
 			result.Should().Be(expectedResult);
@@ -187,7 +197,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			await Permission.SavePermissionAsync(SourceWorkspaceArtifactId, _groupPermission).ConfigureAwait(false);
 
 			// act
-			bool result = _userPermissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.JobHistory), ArtifactPermission.Edit);
+			bool result = _userPermissionRepository.UserHasArtifactTypePermission(
+				new Guid(ObjectTypeGuids.JobHistory),
+				ArtifactPermission.Edit);
 
 			// assert
 			result.Should().Be(expectedResult);
@@ -204,7 +216,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			await Permission.SavePermissionAsync(SourceWorkspaceArtifactId, _groupPermission).ConfigureAwait(false);
 
 			// act
-			bool result = _userPermissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.JobHistory), ArtifactPermission.View);
+			bool result = _userPermissionRepository.UserHasArtifactTypePermission(
+				new Guid(ObjectTypeGuids.JobHistory),
+				ArtifactPermission.View);
 
 			// assert
 			result.Should().Be(expectedResult);
@@ -222,7 +236,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			int jobHistoryErrorTypeId = _objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.JobHistory));
 
 			// act
-			bool result = _userPermissionRepository.UserHasArtifactTypePermissions(jobHistoryErrorTypeId, new[] { ArtifactPermission.View });
+			bool result = _userPermissionRepository.UserHasArtifactTypePermissions(
+				jobHistoryErrorTypeId,
+				new[] { ArtifactPermission.View });
 
 			// assert
 			result.Should().Be(expectedResult);
@@ -242,7 +258,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			int jobHistoryErrorTypeId = _objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.JobHistory));
 
 			// act
-			bool result = _userPermissionRepository.UserHasArtifactTypePermissions(jobHistoryErrorTypeId, new[] { ArtifactPermission.View, ArtifactPermission.Edit });
+			bool result = _userPermissionRepository.UserHasArtifactTypePermissions(
+				jobHistoryErrorTypeId,
+				new[] { ArtifactPermission.View, ArtifactPermission.Edit });
 
 			// assert
 			result.Should().Be(expectedResult);
@@ -264,7 +282,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			int jobHistoryErrorTypeId = _objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.JobHistory));
 
 			// act
-			bool result = _userPermissionRepository.UserHasArtifactTypePermissions(jobHistoryErrorTypeId, new[] { ArtifactPermission.Edit, ArtifactPermission.Create });
+			bool result = _userPermissionRepository.UserHasArtifactTypePermissions(
+				jobHistoryErrorTypeId,
+				new[] { ArtifactPermission.Edit, ArtifactPermission.Create });
 
 			// assert
 			result.Should().Be(expectedResult);
@@ -277,7 +297,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			// arrange
 			IntegrationPointModel model = CreateNewIntegrationPoint();
 
-			if (useAdmin == false)
+			if (!useAdmin)
 			{
 				Group.RemoveGroupFromWorkspace(SourceWorkspaceArtifactId, _groupId);
 			}
@@ -295,10 +315,14 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 
 		private IntegrationPointModel CreateNewIntegrationPoint()
 		{
-			var model = new IntegrationPointModel()
+			IIntegrationPointTypeService integrationPointTypeService = Container.Resolve<IIntegrationPointTypeService>();
+			IntegrationPointType integrationPointType = integrationPointTypeService.GetIntegrationPointType(
+				Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid);
+
+			var model = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
-				DestinationProvider = CaseContext.RsapiService.RelativityObjectManager.Query<DestinationProvider>(new QueryRequest()).First().ArtifactId,
+				DestinationProvider = ObjectManager.Query<DestinationProvider>(new QueryRequest()).First().ArtifactId,
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
 				LogErrors = true,
@@ -306,7 +330,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 				Map = CreateDefaultFieldMap(),
 				SelectedOverwrite = "Append Only",
 				Scheduler = new Scheduler(),
-				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
+				Type = integrationPointType.ArtifactId
 			};
 			model = CreateOrUpdateIntegrationPoint(model);
 			return model;
@@ -314,7 +338,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 
 		private async Task CreateTestUserAndGroupAsync()
 		{
-			await CreateTestGroupAsync();
+			await CreateTestGroupAsync().ConfigureAwait(false);
 			CreateTestUser();
 		}
 
@@ -322,7 +346,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		{
 			_groupId = Group.CreateGroup("krowten");
 			Group.AddGroupToWorkspace(SourceWorkspaceArtifactId, _groupId);
-			_groupPermission = await Permission.GetGroupPermissionsAsync(SourceWorkspaceArtifactId, _groupId);
+			_groupPermission = await Permission
+				.GetGroupPermissionsAsync(SourceWorkspaceArtifactId, _groupId)
+				.ConfigureAwait(false);
 		}
 
 		private void CreateTestUser()
