@@ -13,6 +13,7 @@ using Relativity.Sync.Executors;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Helpers;
+using Relativity.Testing.Identification;
 
 namespace Relativity.Sync.Tests.System
 {
@@ -63,7 +64,7 @@ namespace Relativity.Sync.Tests.System
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("e89da746-1af7-4f19-8aef-bc65c9fbe795")]
 		public async Task ItShouldCreateAllBatches()
 		{
 			// Arrange
@@ -92,7 +93,7 @@ namespace Relativity.Sync.Tests.System
 			AssertBatchesInOrder(batches);
 		}
 
-		[Test]
+		[IdentifiedTest("bd3bb990-6ce4-40f5-af37-b2dc918d0afc")]
 		public async Task ItShouldCreateRemainingBatches()
 		{
 			// Arrange
@@ -128,7 +129,7 @@ namespace Relativity.Sync.Tests.System
 			AssertBatchesInOrder(batches);
 		}
 
-		[Test]
+		[IdentifiedTest("5ece6376-9717-461b-9f7d-095e678920ab")]
 		public async Task ItShouldCreateRemainingBatchesWithNewBatchSize()
 		{
 			// Arrange

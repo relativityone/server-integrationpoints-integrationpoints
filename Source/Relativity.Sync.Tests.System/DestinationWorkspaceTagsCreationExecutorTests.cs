@@ -10,6 +10,7 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Helpers;
+using Relativity.Testing.Identification;
 
 namespace Relativity.Sync.Tests.System
 {
@@ -41,7 +42,7 @@ namespace Relativity.Sync.Tests.System
 			_destinationWorkspace = destinationWorkspaceCreationTask.Result;
 		}
 
-		[Test]
+		[IdentifiedTest("98d0dd99-85cf-40df-8cfb-b037a9089a1f")]
 		public async Task ItShouldCreateTagsIfTheyDoesNotExist()
 		{
 			int expectedSourceWorkspaceArtifactId = _sourceWorkspace.ArtifactID;
@@ -77,7 +78,7 @@ namespace Relativity.Sync.Tests.System
 			Assert.AreEqual(expectedSourceJobTagName, sourceJobTag.Name);
 		}
 
-		[Test]
+		[IdentifiedTest("bd967cff-fa7f-4810-a4a8-9e4a90cca593")]
 		public async Task ItShouldUpdateSourceCaseTagAndCreateJobTag()
 		{
 			string wrongSourceTagName = "Definitely not a correct name";

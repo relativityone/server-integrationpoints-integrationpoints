@@ -12,6 +12,7 @@ using Relativity.Services.Workspace;
 using Relativity.Sync.Nodes;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Helpers;
+using Relativity.Testing.Identification;
 
 namespace Relativity.Sync.Tests.System
 {
@@ -36,7 +37,7 @@ namespace Relativity.Sync.Tests.System
 			_sourceWorkspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
 		}
 
-		[Test]
+		[IdentifiedTest("1be9ae3e-c78f-408c-a06e-1d9359114d41")]
 		public async Task ItShouldLogProgressForEachStep()
 		{
 			int workspaceArtifactId = _sourceWorkspace.ArtifactID;
@@ -99,7 +100,7 @@ namespace Relativity.Sync.Tests.System
 			}
 		}
 
-		private List<Type> GetSyncNodes()
+		private static List<Type> GetSyncNodes()
 		{
 			return Assembly.GetAssembly(typeof(SyncNode<>))
 				.GetTypes()
