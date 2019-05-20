@@ -37,7 +37,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 			var servicesManager = new Mock<IServicesMgr>();
 			_logger = new Mock<ISyncLog>();
 
-			_metricsCollectionManager.Setup(x => x.CreateMetricIdentifierAsync(It.IsAny<MetricIdentifier>(), It.Is<bool>(y => !y)))
+			_metricsCollectionManager.Setup(x => x.CreateMetricIdentifierAsync(It.IsAny<MetricIdentifier>(), It.Is<bool>(y => y == false)))
 				.Returns(Task.FromResult(1));
 
 			servicesManager.Setup(x => x.CreateProxy<IInternalMetricsCollectionManager>(It.IsAny<ExecutionIdentity>()))
