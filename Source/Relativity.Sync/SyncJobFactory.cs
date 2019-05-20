@@ -1,7 +1,9 @@
 ﻿using System;
 using Autofac;
 using Banzai.Logging;
+using Relativity.API;
 using Relativity.Sync.Logging;
+using Relativity.Sync.Telemetry;
 
 namespace Relativity.Sync
 {
@@ -68,7 +70,18 @@ namespace Relativity.Sync
 
 			LogWriter.SetFactory(new SyncLogWriterFactory(logger));
 
+			InstallSumMetrics(relativityServices.ServicesMgr, logger);
+
 			return new SyncJobInLifetimeScope(_containerFactory, container, syncJobParameters, relativityServices, configuration, logger);
+		}
+
+		private void InstallSumMetrics(IServicesMgr servicesMgr, ISyncLog logger)
+		{
+			ITelemetryManager telemetryManager = new TelemetryManager(servicesMgr, logger);
+
+			//telemetryManager.AddMetricProviders(new DefaultTelemetryMetricsProvider(servicesMgr, logger));
+
+			telemetryManager.InstallMetrics().ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 	}
 }

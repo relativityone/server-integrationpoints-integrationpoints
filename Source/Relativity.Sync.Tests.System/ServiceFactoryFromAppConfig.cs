@@ -1,4 +1,4 @@
-﻿namespace Relativity.Sync.Tests.System.Stubs
+﻿namespace Relativity.Sync.Tests.System
 {
 	internal class ServiceFactoryFromAppConfig : ServiceFactoryByBasicCredentials
 	{
