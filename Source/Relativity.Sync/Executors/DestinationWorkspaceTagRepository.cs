@@ -100,12 +100,12 @@ namespace Relativity.Sync.Executors
 				catch (ServiceException ex)
 				{
 					_logger.LogError(ex, $"Service call failed while querying {nameof(DestinationWorkspaceTag)} object: {{request}}", request);
-					throw new DestinationWorkspaceTagRepositoryException($"Service call failed while querying {nameof(DestinationWorkspaceTag)} in workspace {sourceWorkspaceArtifactId}", ex);
+					throw new SyncKeplerException($"Service call failed while querying {nameof(DestinationWorkspaceTag)} in workspace {sourceWorkspaceArtifactId}", ex);
 				}
 				catch (Exception ex)
 				{
 					_logger.LogError(ex, $"Failed to query {nameof(DestinationWorkspaceTag)} object: {{request}}", request);
-					throw new DestinationWorkspaceTagRepositoryException($"Failed to query {nameof(DestinationWorkspaceTag)} in workspace {sourceWorkspaceArtifactId}", ex);
+					throw new SyncKeplerException($"Failed to query {nameof(DestinationWorkspaceTag)} in workspace {sourceWorkspaceArtifactId}", ex);
 				}
 
 				return queryResult.Objects.FirstOrDefault();
@@ -143,13 +143,13 @@ namespace Relativity.Sync.Executors
 				catch (ServiceException ex)
 				{
 					_logger.LogError(ex, $"Service call failed while creating {nameof(DestinationWorkspaceTag)}: {{request}}", request);
-					throw new DestinationWorkspaceTagRepositoryException($"Service call failed while creating {nameof(DestinationWorkspaceTag)}: {request}", ex);
+					throw new SyncKeplerException($"Service call failed while creating {nameof(DestinationWorkspaceTag)}: {request}", ex);
 				}
 				catch (Exception ex)
 				{
 					_logger.LogError(ex, $"Failed to create {nameof(DestinationWorkspaceTag)}: {{request}}", request);
 					string tagName = request.FieldValues.First(x => x.Field.Guid == _nameGuid).Value.ToString();
-					throw new DestinationWorkspaceTagRepositoryException(
+					throw new SyncKeplerException(
 						$"Failed to create {nameof(DestinationWorkspaceTag)} '{tagName}' in workspace {sourceWorkspaceArtifactId}",
 						ex);
 				}
@@ -186,12 +186,12 @@ namespace Relativity.Sync.Executors
 				catch (ServiceException ex)
 				{
 					_logger.LogError(ex, $"Service call failed while updating {nameof(DestinationWorkspaceTag)}: {{request}}", request);
-					throw new DestinationWorkspaceTagRepositoryException($"Failed to update {nameof(DestinationWorkspaceTag)} with id {destinationWorkspaceTag.ArtifactId} in workspace {sourceWorkspaceArtifactId}", ex);
+					throw new SyncKeplerException($"Failed to update {nameof(DestinationWorkspaceTag)} with id {destinationWorkspaceTag.ArtifactId} in workspace {sourceWorkspaceArtifactId}", ex);
 				}
 				catch (Exception ex)
 				{
 					_logger.LogError(ex, $"Failed to update {nameof(DestinationWorkspaceTag)}: {{request}}", request);
-					throw new DestinationWorkspaceTagRepositoryException($"Failed to update {nameof(DestinationWorkspaceTag)} with id {destinationWorkspaceTag.ArtifactId} in workspace {sourceWorkspaceArtifactId}", ex);
+					throw new SyncKeplerException($"Failed to update {nameof(DestinationWorkspaceTag)} with id {destinationWorkspaceTag.ArtifactId} in workspace {sourceWorkspaceArtifactId}", ex);
 				}
 			}
 		}

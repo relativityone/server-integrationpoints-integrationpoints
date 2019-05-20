@@ -21,11 +21,13 @@ namespace Relativity.Sync.Executors
 		private const string _RELATIVITY_NATIVE_TYPE_FIELD_NAME = "RelativityNativeType";
 
 		private readonly ISourceServiceFactoryForUser _serviceFactory;
+		private readonly IFieldManager _fieldManager;
 		private readonly ISyncLog _logger;
 
-		public DataSourceSnapshotExecutor(ISourceServiceFactoryForUser serviceFactory, ISyncLog logger)
+		public DataSourceSnapshotExecutor(ISourceServiceFactoryForUser serviceFactory, IFieldManager fieldManager, ISyncLog logger)
 		{
 			_serviceFactory = serviceFactory;
+			_fieldManager = fieldManager;
 			_logger = logger;
 		}
 
@@ -36,8 +38,7 @@ namespace Relativity.Sync.Executors
 
 			_logger.LogVerbose("Including following system fields to export {supportedByViewer}, {nativeType}.", _SUPPORTED_BY_VIEWER_FIELD_NAME, _RELATIVITY_NATIVE_TYPE_FIELD_NAME);
 
-			MetadataMapping mapping = new MetadataMapping(configuration.DestinationFolderStructureBehavior, configuration.FolderPathSourceFieldArtifactId, configuration.FieldMappings.ToList());
-			IEnumerable<FieldRef> fields = mapping.GetDocumentFieldRefs();
+			IEnumerable<FieldRef> fields = (await _fieldManager.GetDocumentFieldsAsync(token).ConfigureAwait(false)).Select(f => new FieldRef {Name = f.DisplayName});
 
 			QueryRequest queryRequest = new QueryRequest
 			{

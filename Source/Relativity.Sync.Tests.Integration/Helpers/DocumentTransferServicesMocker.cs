@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using Moq;
 using Moq.Language;
+using Moq.Language.Flow;
 using Relativity.Services.Interfaces.File;
 using Relativity.Services.Interfaces.File.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
-using Relativity.Sync.Storage;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.Integration
@@ -21,7 +22,7 @@ namespace Relativity.Sync.Tests.Integration
 	/// </summary>
 	internal sealed class DocumentTransferServicesMocker
 	{
-		private readonly MetadataMapping _metadataMapping;
+		private IFieldManager _fieldManager;
 
 		private static readonly Guid BatchObjectTypeGuid = new Guid("18C766EB-EB71-49E4-983E-FFDE29B1A44E");
 		private static readonly Guid TotalItemsCountGuid = new Guid("F84589FE-A583-4EB3-BA8A-4A2EEE085C81");
@@ -37,30 +38,35 @@ namespace Relativity.Sync.Tests.Integration
 		public Mock<IObjectManager> ObjectManager { get; }
 		public Mock<IFileManager> FileManager { get; }
 
-		public DocumentTransferServicesMocker(MetadataMapping metadataMapping)
+		public DocumentTransferServicesMocker()
 		{
-			_metadataMapping = metadataMapping;
-
 			SourceServiceFactoryForAdmin = new Mock<ISourceServiceFactoryForAdmin>();
 			SourceServiceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
 			ObjectManager = new Mock<IObjectManager>();
 			FileManager = new Mock<IFileManager>();
 		}
 
-		public void SetupServicesWithTestData(Document[] documents, int batchSize)
+		public async Task SetupServicesWithTestData(DocumentImportJob job, int batchSize)
 		{
 			SetupServiceCreation(ObjectManager, SourceServiceFactoryForUser, SourceServiceFactoryForAdmin);
 			SetupServiceCreation(FileManager, SourceServiceFactoryForUser, SourceServiceFactoryForAdmin);
 
-			SetupBatches(batchSize, documents.Length);
-			SetupExportResultBlocks(documents, batchSize);
-			SetupNatives(documents);
+			SetupFields(job.Schema);
+			SetupBatches(batchSize, job.Documents.Length);
+			await SetupExportResultBlocks(_fieldManager, job.Documents, batchSize).ConfigureAwait(false);
+			SetupNatives(job.Documents);
+			//SetupFolderPaths(job.Documents);
 		}
 
-		public void RegisterMocks(ContainerBuilder containerBuilder)
+		public void RegisterServiceMocks(ContainerBuilder containerBuilder)
 		{
 			containerBuilder.RegisterInstance(SourceServiceFactoryForUser.Object).As<ISourceServiceFactoryForUser>();
 			containerBuilder.RegisterInstance(SourceServiceFactoryForAdmin.Object).As<ISourceServiceFactoryForAdmin>();
+		}
+
+		public void SetFieldManager(IFieldManager fieldManager)
+		{
+			_fieldManager = fieldManager;
 		}
 
 		private void SetupServiceCreation<T>(Mock<T> serviceMock,
@@ -69,6 +75,41 @@ namespace Relativity.Sync.Tests.Integration
 		{
 			userServiceFactory.Setup(x => x.CreateProxyAsync<T>()).ReturnsAsync(serviceMock.Object);
 			adminServiceFactory.Setup(x => x.CreateProxyAsync<T>()).ReturnsAsync(serviceMock.Object);
+		}
+
+		private void SetupFields(IReadOnlyDictionary<string, RelativityDataType> fieldSchema)
+		{
+			SetupQuerySlimForFields()
+				.ReturnsAsync<int, QueryRequest, int, int, CancellationToken, IObjectManager, QueryResultSlim>((ws, req, s, l, c) => SelectFieldResults(req.Condition, fieldSchema));
+		}
+
+		private ISetup<IObjectManager, Task<QueryResultSlim>> SetupQuerySlimForFields()
+		{
+			return ObjectManager.Setup(x =>
+				x.QuerySlimAsync(It.IsAny<int>(), It.Is<QueryRequest>(r => r.ObjectType.Name == "Field"), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()));
+		}
+
+		// NOTE: Successful operation of this method depends on implementation details in DocumentFieldRepository.
+		// NOTE: If the condition or result parsing logic changes, this method will need to be updated.
+		private static QueryResultSlim SelectFieldResults(string condition, IReadOnlyDictionary<string, RelativityDataType> fieldNameToDataType)
+		{
+			System.Text.RegularExpressions.Match match = Regex.Match(condition, @"^'Name' IN \[([^]]+)\]", RegexOptions.IgnoreCase);
+			if (match == null)
+			{
+				throw new ArgumentException($"Could not find field name pattern in field name query's condition: {condition}", nameof(condition));
+			}
+
+			string fieldNamesArrayRaw = match.Groups[1].Captures[0].Value;
+			IEnumerable<string> fieldNames = fieldNamesArrayRaw
+				.Split(new[] { ", " }, StringSplitOptions.None)
+				.Select(x => x.Trim('"').Trim('\''));
+
+			List<RelativityObjectSlim> objects = fieldNames
+				.Select(f => new RelativityObjectSlim { Values = new List<object> { f, fieldNameToDataType[f].ToRelativityTypeDisplayName()} })
+				.ToList();
+
+			QueryResultSlim retVal = new QueryResultSlim { Objects = objects };
+			return retVal;
 		}
 
 		private void SetupBatches(int batchSize, int totalItemCount)
@@ -104,24 +145,17 @@ namespace Relativity.Sync.Tests.Integration
 			setupAssertion.ReturnsAsync(new QueryResult());
 		}
 
-		private void SetupExportResultBlocks(Document[] documents, int batchSize)
+		private async Task SetupExportResultBlocks(IFieldManager fieldManager, Document[] documents, int batchSize)
 		{
+			IList<Transfer.FieldInfoDto> sourceDocumentFields = await fieldManager.GetDocumentFieldsAsync(CancellationToken.None).ConfigureAwait(false);
 			for (int i = 0; i < documents.Length; i += batchSize)
 			{
 				int resultsBlockSize = Math.Min(batchSize, documents.Length - i);
 				int exportIndexId = i;
-				RelativityObjectSlim[] block = GetBlock(documents, resultsBlockSize, exportIndexId);
+				RelativityObjectSlim[] block = GetBlock(sourceDocumentFields, documents, resultsBlockSize, exportIndexId);
 
 				SetupExportResultBlock(resultsBlockSize, exportIndexId, block);
 			}
-		}
-
-		private RelativityObjectSlim[] GetBlock(Document[] documents, int resultsBlockSize, int startingIndex)
-		{
-			IEnumerable<FieldEntry> sourceDocumentFields = _metadataMapping.GetSourceDocumentFields();
-			return documents.Skip(startingIndex)
-				.Take(resultsBlockSize)
-				.Select(x => ToRelativityObjectSlim(x, sourceDocumentFields)).ToArray();
 		}
 
 		private void SetupExportResultBlock(int resultsBlockSize, int exportIndexId, RelativityObjectSlim[] block)
@@ -137,9 +171,31 @@ namespace Relativity.Sync.Tests.Integration
 				.ReturnsAsync<int, int[], IFileManager, FileResponse[]>((_, ids) => DocumentsForArtifactIds(ids, documents));
 		}
 
-		private static RelativityObjectSlim ToRelativityObjectSlim(Document document, IEnumerable<FieldEntry> sourceDocumentFields)
+		// TODO: Make this folder path stuff for something other than DestinationFolderPathBehavior.None.
+
+		//private void SetupFolderPaths(Document[] documents)
+		//{
+		//	ObjectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.Is<QueryRequest>(req => req.ObjectType.ArtifactTypeID == 10), It.IsAny<int>(), It.IsAny<int>()))
+		//		.ReturnsAsync<int, QueryRequest, int, int, IObjectManager, QueryResult>((ws, req, s, l) => SelectFolderPathResults(req.Condition, documents));
+		//}
+
+		//private static bool Select
+
+		//private static QueryResult SelectFolderPathResults(string condition, Document[] documents)
+		//{
+
+		//}
+
+		private static RelativityObjectSlim[] GetBlock(IList<Transfer.FieldInfoDto> sourceDocumentFields, Document[] documents, int resultsBlockSize, int startingIndex)
 		{
-			Dictionary<string, object> fieldToValue = document.Values.ToDictionary(fv => fv.Field, fv => fv.Value);
+			return documents.Skip(startingIndex)
+				.Take(resultsBlockSize)
+				.Select(x => ToRelativityObjectSlim(x, sourceDocumentFields)).ToArray();
+		}
+
+		private static RelativityObjectSlim ToRelativityObjectSlim(Document document, IEnumerable<Transfer.FieldInfoDto> sourceDocumentFields)
+		{
+			Dictionary<string, object> fieldToValue = document.FieldValues.ToDictionary(fv => fv.Field, fv => fv.Value);
 			List<object> orderedValues = sourceDocumentFields.Select(x => fieldToValue[x.DisplayName]).ToList();
 
 			return new RelativityObjectSlim

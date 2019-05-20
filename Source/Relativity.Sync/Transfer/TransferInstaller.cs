@@ -1,4 +1,6 @@
-﻿using Autofac;
+﻿using System.Linq;
+using System.Reflection;
+using Autofac;
 
 namespace Relativity.Sync.Transfer
 {
@@ -6,10 +8,15 @@ namespace Relativity.Sync.Transfer
 	{
 		public void Install(ContainerBuilder builder)
 		{
-			builder.RegisterType<SourceWorkspaceDataTableBuilderFactory>().As<ISourceWorkspaceDataTableBuilderFactory>();
-			builder.RegisterType<NativeFileRepository>().As<INativeFileRepository>();
+			builder.RegisterType<DocumentFieldRepository>().As<IDocumentFieldRepository>();
+			builder.RegisterType<SourceWorkspaceDataTableBuilder>().As<ISourceWorkspaceDataTableBuilder>();
 			builder.RegisterType<RelativityExportBatcher>().As<IRelativityExportBatcher>();
+			builder.RegisterType<NativeFileRepository>().As<INativeFileRepository>();
+			builder.RegisterType<FieldManager>().As<IFieldManager>();
 			builder.RegisterType<FolderPathRetriever>().As<IFolderPathRetriever>();
+			builder.RegisterTypes(Assembly.GetExecutingAssembly().GetTypes()
+				.Where(t => !t.IsAbstract && t.IsAssignableTo<ISpecialFieldBuilder>())
+				.ToArray()).As<ISpecialFieldBuilder>();
 		}
 	}
 }

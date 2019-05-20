@@ -13,6 +13,7 @@ using Relativity.Sync.Executors;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.Unit.Executors
 {
@@ -23,6 +24,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 		private Mock<IObjectManager> _objectManager;
 		private Mock<IDataSourceSnapshotConfiguration> _configuration;
+		private Mock<IFieldManager> _fieldManager;
 
 		private const int _WORKSPACE_ID = 458712;
 		private const int _DATA_SOURCE_ID = 485219;
@@ -35,12 +37,15 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Mock<ISourceServiceFactoryForUser> serviceFactory = new Mock<ISourceServiceFactoryForUser>();
 			serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
 
+			_fieldManager = new Mock<IFieldManager>();
+			_fieldManager.Setup(fm => fm.GetDocumentFieldsAsync(CancellationToken.None)).ReturnsAsync(Mock.Of<List<Sync.Transfer.FieldInfoDto>>());
+
 			_configuration = new Mock<IDataSourceSnapshotConfiguration>();
 			_configuration.Setup(x => x.SourceWorkspaceArtifactId).Returns(_WORKSPACE_ID);
 			_configuration.Setup(x => x.DataSourceArtifactId).Returns(_DATA_SOURCE_ID);
 			_configuration.Setup(x => x.FieldMappings).Returns(new List<FieldMap>());
 
-			_instance = new DataSourceSnapshotExecutor(serviceFactory.Object, new EmptyLogger());
+			_instance = new DataSourceSnapshotExecutor(serviceFactory.Object, _fieldManager.Object, new EmptyLogger());
 		}
 
 		[Test]
@@ -88,61 +93,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		}
 
 		[Test]
-		public async Task ItShouldIncludeSystemFields()
-		{
-			ExportInitializationResults exportInitializationResults = new ExportInitializationResults
-			{
-				RecordCount = 1L,
-				RunID = Guid.NewGuid()
-			};
-			_objectManager.Setup(x => x.InitializeExportAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1)).ReturnsAsync(exportInitializationResults);
-
-			// ACT
-			await _instance.ExecuteAsync(_configuration.Object, CancellationToken.None).ConfigureAwait(false);
-
-			// ASSERT
-			_objectManager.Verify(x => x.InitializeExportAsync(_WORKSPACE_ID, It.Is<QueryRequest>(qr => AssertSystemFields(qr)), 1));
-		}
-
-		private bool AssertSystemFields(QueryRequest queryRequest)
-		{
-			const string supportedByViewerFieldName = "SupportedByViewer";
-			const string relativityNativeTypeFieldName = "RelativityNativeType";
-
-			queryRequest.Fields.Should().Contain(x => x.Name == supportedByViewerFieldName);
-			queryRequest.Fields.Should().Contain(x => x.Name == relativityNativeTypeFieldName);
-			return true;
-		}
-
-		[Test]
-		public async Task ItShouldIncludeFolderPathSourceField()
-		{
-			const int folderPathSourceFieldId = 589632;
-
-			ExportInitializationResults exportInitializationResults = new ExportInitializationResults
-			{
-				RecordCount = 1L,
-				RunID = Guid.NewGuid()
-			};
-			_objectManager.Setup(x => x.InitializeExportAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1)).ReturnsAsync(exportInitializationResults);
-
-			_configuration.Setup(x => x.DestinationFolderStructureBehavior).Returns(DestinationFolderStructureBehavior.ReadFromField);
-			_configuration.Setup(x => x.FolderPathSourceFieldArtifactId).Returns(folderPathSourceFieldId);
-
-			// ACT
-			await _instance.ExecuteAsync(_configuration.Object, CancellationToken.None).ConfigureAwait(false);
-
-			// ASSERT
-			_objectManager.Verify(x => x.InitializeExportAsync(_WORKSPACE_ID, It.Is<QueryRequest>(qr => AssertFolderPathSourceField(qr, folderPathSourceFieldId)), 1));
-		}
-
-		private bool AssertFolderPathSourceField(QueryRequest queryRequest, int folderPathSourceFieldId)
-		{
-			queryRequest.Fields.Should().Contain(x => x.ArtifactID == folderPathSourceFieldId);
-			return true;
-		}
-
-		[Test]
 		[TestCase(DestinationFolderStructureBehavior.None)]
 		[TestCase(DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure)]
 		public async Task ItShouldNotIncludeFolderPathSourceField(DestinationFolderStructureBehavior destinationFolderStructureBehavior)
@@ -175,28 +125,23 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[Test]
 		public async Task ItShouldIncludeFieldsFromFieldMapping()
 		{
-			const int field1Id = 741258;
-			const int field2Id = 985632;
+			const string field1Id = "741258";
+			const string field2Id = "985632";
 
-			List<FieldMap> fieldMap = new List<FieldMap>
+			List<Sync.Transfer.FieldInfoDto> fieldInfos = new List<Sync.Transfer.FieldInfoDto>
 			{
-				new FieldMap
+				new Sync.Transfer.FieldInfoDto
 				{
-					SourceField = new FieldEntry
-					{
-						FieldIdentifier = field1Id
-					}
+					DisplayName = field1Id
 				},
-				new FieldMap
+				new Sync.Transfer.FieldInfoDto
 				{
-					SourceField = new FieldEntry
-					{
-						FieldIdentifier = field2Id
-					}
+					DisplayName = field2Id
 				}
 			};
 
-			_configuration.Setup(x => x.FieldMappings).Returns(fieldMap);
+			_fieldManager.Setup(fm => fm.GetDocumentFieldsAsync(CancellationToken.None)).ReturnsAsync(fieldInfos);
+
 			
 			ExportInitializationResults exportInitializationResults = new ExportInitializationResults
 			{
@@ -212,10 +157,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_objectManager.Verify(x => x.InitializeExportAsync(_WORKSPACE_ID, It.Is<QueryRequest>(qr => AssertFieldMapping(qr, field1Id, field2Id)), 1));
 		}
 
-		private bool AssertFieldMapping(QueryRequest queryRequest, int field1Id, int field2Id)
+		private bool AssertFieldMapping(QueryRequest queryRequest, string field1Name, string field2Name)
 		{
-			queryRequest.Fields.Should().Contain(x => x.ArtifactID == field1Id);
-			queryRequest.Fields.Should().Contain(x => x.ArtifactID == field2Id);
+			queryRequest.Fields.Should().Contain(x => x.Name == field1Name);
+			queryRequest.Fields.Should().Contain(x => x.Name == field2Name);
 			return true;
 		}
 	}

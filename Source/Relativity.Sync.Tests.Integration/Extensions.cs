@@ -34,7 +34,7 @@ namespace Relativity.Sync.Tests.Integration
 			}
 			if (target == typeof(string))
 			{
-				return Convert.ToString(value, CultureInfo.InvariantCulture);
+				return value is DBNull ? null : Convert.ToString(value, CultureInfo.InvariantCulture);
 			}
 
 			throw new ArgumentException($"Method does not know how to convert to type {target}");
