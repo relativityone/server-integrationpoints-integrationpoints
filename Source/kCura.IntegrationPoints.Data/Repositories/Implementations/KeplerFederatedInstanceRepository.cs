@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity;
 using Relativity.API;
@@ -71,7 +70,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			ArtifactDTO[] artifactDtos = null;
 
-			artifactDtos = this.RetrieveAllArtifactsAsync(query).GetResultsWithoutContextSync();
+			artifactDtos = this.RetrieveAllArtifactsAsync(query).GetAwaiter().GetResult();
 
 			return Convert(artifactDtos);
 		}

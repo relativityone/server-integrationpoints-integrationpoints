@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using kCura.IntegrationPoints.Data.Extensions;
 using Relativity.API;
 using Relativity.Services.ArtifactGuid;
 
@@ -43,7 +42,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				foreach (var guid in guids)
 				{
-					result[guid] = artifactGuidManager.GuidExistsAsync(_workspaceArtifactId, guid).GetResultsWithoutContextSync();
+					result[guid] = artifactGuidManager.GuidExistsAsync(_workspaceArtifactId, guid).GetAwaiter().GetResult();
 				}
 			}
 			return result;
@@ -53,7 +52,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			using (var artifactGuidManager = _servicesMgr.CreateProxy<IArtifactGuidManager>(ExecutionIdentity.System))
 			{
-				return artifactGuidManager.GuidExistsAsync(_workspaceArtifactId, guid).GetResultsWithoutContextSync();
+				return artifactGuidManager.GuidExistsAsync(_workspaceArtifactId, guid).GetAwaiter().GetResult();
 			}
 		}
 
@@ -64,7 +63,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				foreach (var artifactId in artifactIds)
 				{
-					var guids = artifactGuidManager.ReadSingleGuidsAsync(_workspaceArtifactId, artifactId).GetResultsWithoutContextSync();
+					var guids = artifactGuidManager.ReadSingleGuidsAsync(_workspaceArtifactId, artifactId).GetAwaiter().GetResult();
 					if (guids.Count != 0)
 					{
 						result[artifactId] = guids[0];
@@ -81,7 +80,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				foreach (var guid in guids)
 				{
-					result[guid] = artifactGuidManager.ReadSingleArtifactIdAsync(_workspaceArtifactId, guid).GetResultsWithoutContextSync();
+					result[guid] = artifactGuidManager.ReadSingleArtifactIdAsync(_workspaceArtifactId, guid).GetAwaiter().GetResult();
 				}
 			}
 			return result;

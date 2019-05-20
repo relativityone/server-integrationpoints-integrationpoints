@@ -72,7 +72,6 @@
     <Compile Include="Extensions\FieldExtensions.cs" />
     <Compile Include="Extensions\ObjectQueryResultSetExtensions.cs" />
     <Compile Include="Extensions\ResultSetExtensions.cs" />
-    <Compile Include="Extensions\TaskExtension.cs" />
     <Compile Include="Facades\Implementations\FieldValueMap.cs" />
     <Compile Include="Facades\Implementations\ObjectManagerFacade.cs" />
     <Compile Include="Facades\Implementations\ObjectManagerFacadeDiscoverHeavyRequestDecorator.cs" />

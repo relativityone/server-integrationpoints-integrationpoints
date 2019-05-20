@@ -6,7 +6,6 @@ using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter.Validators;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
@@ -136,7 +135,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 						ArtifactDTO identifierField = fieldQueryRepository.RetrieveTheIdentifierField(fieldInfo.AssociativeArtifactTypeID);
 						string identifierFieldName = (string)identifierField.Fields.First(field => field.Name == "Name").Value;
 						IObjectRepository objectRepository = sourceRepositoryFactory.GetObjectRepository(SourceConfiguration.SourceWorkspaceArtifactId, fieldInfo.AssociativeArtifactTypeID);
-						ArtifactDTO[] objects = objectRepository.GetFieldsFromObjects(new[] { identifierFieldName }).GetResultsWithoutContextSync();
+						ArtifactDTO[] objects = objectRepository.GetFieldsFromObjects(new[] { identifierFieldName }).GetAwaiter().GetResult();
 						nestedAndMultiValuesValidator.VerifyObjectField(fieldInfo.DisplayName, objects);
 						break;
 
@@ -150,7 +149,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 
 					case FieldTypeHelper.FieldType.MultiCode:
 						ICodeRepository codeRepository = sourceRepositoryFactory.GetCodeRepository(SourceConfiguration.SourceWorkspaceArtifactId);
-						ArtifactDTO[] codes = codeRepository.RetrieveCodeAsync(fieldInfo.DisplayName).GetResultsWithoutContextSync();
+						ArtifactDTO[] codes = codeRepository.RetrieveCodeAsync(fieldInfo.DisplayName).GetAwaiter().GetResult();
 						nestedAndMultiValuesValidator.VerifyChoiceField(fieldInfo.DisplayName, codes);
 						break;
 				}

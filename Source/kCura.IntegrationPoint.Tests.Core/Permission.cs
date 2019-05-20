@@ -41,8 +41,12 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 			using (var proxy = Helper.CreateAdminProxy<IPermissionManager>())
 			{
-				GroupSelector workspaceGroupSelector = proxy.GetWorkspaceGroupSelectorAsync(workspaceID).GetResultsWithoutContextSync();
-				GroupSelector originalGroupSelector = proxy.GetAdminGroupSelectorAsync().GetResultsWithoutContextSync();
+				GroupSelector workspaceGroupSelector = await proxy
+					.GetWorkspaceGroupSelectorAsync(workspaceID)
+					.ConfigureAwait(false);
+				GroupSelector originalGroupSelector = await proxy
+					.GetAdminGroupSelectorAsync()
+					.ConfigureAwait(false);
 				originalGroupSelector.DisabledGroups = groupSelector.DisabledGroups;
 				originalGroupSelector.EnabledGroups = groupSelector.EnabledGroups;
 				originalGroupSelector.LastModified = workspaceGroupSelector.LastModified;

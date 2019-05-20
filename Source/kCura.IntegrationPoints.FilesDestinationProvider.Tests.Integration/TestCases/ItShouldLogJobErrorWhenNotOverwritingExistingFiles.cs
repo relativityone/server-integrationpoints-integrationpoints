@@ -1,6 +1,6 @@
 ﻿using System.IO;
+using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.Models;
-using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core;
@@ -26,10 +26,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 			settings.OverwriteFiles = false;
 			settings = base.Prepare(settings);
 
-			if (!Directory.Instance.Exists(settings.ExportFilesLocation, false))
-			{
-				Directory.Instance.CreateDirectory(settings.ExportFilesLocation);
-			}
+			Directory.Instance.CreateDirectoryIfNotExist(settings.ExportFilesLocation);
 			File.Create(Path.Combine(settings.ExportFilesLocation, "All Documents_export.dat")).Dispose();
 
 			return settings;

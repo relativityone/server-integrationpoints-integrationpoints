@@ -76,6 +76,7 @@
     <Compile Include="EHHelper.cs" />
     <Compile Include="Exceptions\TestSetupException.cs" />
     <Compile Include="Extensions\DefaultValueAttributeExtension.cs" />
+    <Compile Include="Extensions\DirectoryExtensions.cs" />
     <Compile Include="Extensions\GenericPermissionListExtension.cs" />
     <Compile Include="Extensions\JobExtensions.cs" />
     <Compile Include="Extensions\ObjectExtensions.cs" />
@@ -200,6 +201,7 @@
     <Compile Include="TestBase.cs" />
     <Compile Include="TestHelpers\UserPasswordCredentialProvider.cs" />
     <Compile Include="TestHelpers\Utils.cs" />
+    <Compile Include="TestHelpers\WindsorContainerTestHelpers.cs" />
     <Compile Include="TestHelpers\WindsorDependenciesGraphRecorder.cs" />
     <Compile Include="User.cs" />
     <Compile Include="TestServiceContextHelper.cs" />
@@ -8060,6 +8062,17 @@
       <ItemGroup>
         <Reference Include="Microsoft.WindowsAzure.Configuration">
           <HintPath>..\..\packages\Microsoft.WindowsAzure.ConfigurationManager\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Moq">
+          <HintPath>..\..\packages\Moq\lib\net45\Moq.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

@@ -8,6 +8,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories
 
 		ViewFieldIDResponse[] ReadViewFieldIDsFromSearch(int workspaceID, int artifactTypeID, int viewArtifactID);
 
-		ViewFieldIDResponse[] ReadViewFieldIDsFromProduction(int workspaceID, int artifactTypeID, int viewArtifactID);
+		ViewFieldIDResponse[] ReadViewFieldIDsFromProduction(int workspaceID, int productionArtifactID);
 	}
 }
