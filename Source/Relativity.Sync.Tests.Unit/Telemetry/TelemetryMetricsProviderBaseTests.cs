@@ -86,7 +86,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 		}
 
 		[Test]
-		public async Task ItShouldCreateDictionaryWithAddedCategoryIfDictionaryDoesNotExist()
+		public async Task ItShouldCreateListWithAddedCategoryIfListDoesNotExist()
 		{
 			// ARRANGE
 			var metricIdentifiers = new List<MetricIdentifier>
@@ -110,7 +110,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 		}
 
 		[Test]
-		public async Task ItShouldAddCategoryToDictionaryIfDictionaryExists()
+		public async Task ItShouldAddCategoryToListIfListExists()
 		{
 			// ARRANGE
 			var secondCategory = new CategoryRef()
