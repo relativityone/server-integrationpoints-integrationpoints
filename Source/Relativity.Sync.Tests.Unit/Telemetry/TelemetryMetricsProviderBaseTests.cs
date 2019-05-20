@@ -13,7 +13,6 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 {
 	public class TelemetryMetricsProviderBaseTests
 	{
-		private Mock<IServicesMgr> _servicesManager;
 		private Mock<ISyncLog> _logger;
 		private Mock<TelemetryMetricsProviderBase> _telemetryMetricsProvider;
 		private Mock<IInternalMetricsCollectionManager> _metricsCollectionManager;
@@ -35,16 +34,16 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 		public void SetUp()
 		{
 			_metricsCollectionManager = new Mock<IInternalMetricsCollectionManager>();
-			_servicesManager = new Mock<IServicesMgr>();
+			var servicesManager = new Mock<IServicesMgr>();
 			_logger = new Mock<ISyncLog>();
 
-			_metricsCollectionManager.Setup(x => x.CreateMetricIdentifierAsync(It.IsAny<MetricIdentifier>(), It.Is<bool>(y => y == false)))
+			_metricsCollectionManager.Setup(x => x.CreateMetricIdentifierAsync(It.IsAny<MetricIdentifier>(), It.Is<bool>(y => !y)))
 				.Returns(Task.FromResult(1));
 
-			_servicesManager.Setup(x => x.CreateProxy<IInternalMetricsCollectionManager>(It.IsAny<ExecutionIdentity>()))
+			servicesManager.Setup(x => x.CreateProxy<IInternalMetricsCollectionManager>(It.IsAny<ExecutionIdentity>()))
 				.Returns(_metricsCollectionManager.Object);
 
-			_telemetryMetricsProvider = new Mock<TelemetryMetricsProviderBase>(_servicesManager.Object, _logger.Object);
+			_telemetryMetricsProvider = new Mock<TelemetryMetricsProviderBase>(servicesManager.Object, _logger.Object);
 
 			_telemetryMetricsProvider.Protected()
 				.SetupGet<string>("ProviderName")
