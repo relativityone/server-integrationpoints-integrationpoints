@@ -24,19 +24,27 @@ namespace Relativity.Sync.Transfer
 			_fieldConfiguration = fieldConfiguration;
 		}
 
-		public IEnumerable<FieldInfo> BuildColumns()
+		public IEnumerable<FieldInfoDto> BuildColumns()
 		{
-			string folderFieldName = _FOLDER_PATH_FIELD_NAME;
+			string folderFieldName;
+			bool isDocumentField;
 			if (_fieldConfiguration.DestinationFolderStructureBehavior == DestinationFolderStructureBehavior.ReadFromField)
 			{
-				// GetAwaiter().GetResult() has to be used until we use filed name instead of field id to get folder field
+				// GetAwaiter().GetResult() has to be used until we use field name instead of field id to get folder field
 				folderFieldName = GetFolderFieldNameAsync().GetAwaiter().GetResult();
+				isDocumentField = false;
+			}
+			else if (_fieldConfiguration.DestinationFolderStructureBehavior == DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure)
+			{
+				folderFieldName = _FOLDER_PATH_FIELD_NAME;
+				isDocumentField = true;
+			}
+			else
+			{
+				yield break;
 			}
 
-			if (_fieldConfiguration.DestinationFolderStructureBehavior != DestinationFolderStructureBehavior.None)
-			{
-				yield return new FieldInfo { SpecialFieldType = SpecialFieldType.FolderPath, DisplayName = folderFieldName, IsDocumentField = false }; //todo!!!!
-			}
+			yield return new FieldInfoDto { SpecialFieldType = SpecialFieldType.FolderPath, DisplayName = folderFieldName, IsDocumentField = isDocumentField };
 		}
 
 		private async Task<string> GetFolderFieldNameAsync()
@@ -54,18 +62,18 @@ namespace Relativity.Sync.Transfer
 			}
 		}
 
-		public async Task<ISpecialFieldRowValuesBuilder> GetRowValuesBuilderAsync(int sourceWorkspaceArtifactId, RelativityObjectSlim[] documents)
+		public async Task<ISpecialFieldRowValuesBuilder> GetRowValuesBuilderAsync(int sourceWorkspaceArtifactId, IEnumerable<int> documentArtifactIds)
 		{
-			IDictionary<int, string> folderPathsMap = await BuildFolderPathsMap(sourceWorkspaceArtifactId, documents).ConfigureAwait(false);
+			IDictionary<int, string> folderPathsMap = await BuildFolderPathsMap(sourceWorkspaceArtifactId, documentArtifactIds).ConfigureAwait(false);
 			return new FolderPathRowValueBuilder(_fieldConfiguration.DestinationFolderStructureBehavior, folderPathsMap);
 		}
 
-		private async Task<IDictionary<int, string>> BuildFolderPathsMap(int sourceWorkspaceArtifactId, RelativityObjectSlim[] documents)
+		private async Task<IDictionary<int, string>> BuildFolderPathsMap(int sourceWorkspaceArtifactId, IEnumerable<int> documentArtifactIds)
 		{
 			IDictionary<int, string> folderPathsMap = null;
 			if (_fieldConfiguration.DestinationFolderStructureBehavior == DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure)
 			{
-				folderPathsMap = await _folderPathRetriever.GetFolderPathsAsync(sourceWorkspaceArtifactId, documents.Select(doc => doc.ArtifactID).ToList()).ConfigureAwait(false);
+				folderPathsMap = await _folderPathRetriever.GetFolderPathsAsync(sourceWorkspaceArtifactId, documentArtifactIds.ToList()).ConfigureAwait(false);
 			}
 			return folderPathsMap;
 		}

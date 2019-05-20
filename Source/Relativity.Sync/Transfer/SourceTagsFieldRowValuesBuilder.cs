@@ -8,15 +8,15 @@ namespace Relativity.Sync.Transfer
 	{
 		public IEnumerable<SpecialFieldType> AllowedSpecialFieldTypes => new[] {SpecialFieldType.SourceJob, SpecialFieldType.SourceWorkspace};
 
-		public object BuildRowValue(FieldInfo fieldInfo, RelativityObjectSlim document, object initialValue)
+		public object BuildRowValue(FieldInfoDto fieldInfoDto, RelativityObjectSlim document, object initialValue)
 		{
-			switch (fieldInfo.SpecialFieldType)
+			switch (fieldInfoDto.SpecialFieldType)
 			{
 				case SpecialFieldType.SourceJob:
 				case SpecialFieldType.SourceWorkspace:
 					return initialValue;
 				default:
-					throw new ArgumentException($"Cannot build value for {nameof(SpecialFieldType)}.{fieldInfo.SpecialFieldType.ToString()}.", nameof(fieldInfo));
+					throw new ArgumentException($"Cannot build value for {nameof(SpecialFieldType)}.{fieldInfoDto.SpecialFieldType.ToString()}.", nameof(fieldInfoDto));
 			}
 		}
 	}

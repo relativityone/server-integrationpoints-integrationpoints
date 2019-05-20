@@ -23,7 +23,8 @@ namespace Relativity.Sync.Transfer
 			_logger = logger;
 		}
 
-		public async Task<Dictionary<string, RelativityDataType>> GetRelativityDataTypesForFieldsByFieldNameAsync(int sourceWorkspaceArtifactId, ICollection<string> fieldNames, CancellationToken token)
+		public async Task<IDictionary<string, RelativityDataType>> GetRelativityDataTypesForFieldsByFieldNameAsync(int sourceWorkspaceArtifactId, ICollection<string> fieldNames,
+			CancellationToken token)
 		{
 			if (fieldNames.Count == 0)
 			{
@@ -49,12 +50,12 @@ namespace Relativity.Sync.Transfer
 				catch (ServiceException ex)
 				{
 					_logger.LogError(ex, "Service call failed while querying document field object: {request}", request);
-					throw new KeplerServiceException($"Service call failed while querying document fields in workspace {sourceWorkspaceArtifactId}", ex);
+					throw new SyncKeplerException($"Service call failed while querying document fields in workspace {sourceWorkspaceArtifactId}", ex);
 				}
 				catch (Exception ex)
 				{
 					_logger.LogError(ex, "Failed to query document field object: {request}", request);
-					throw new KeplerServiceException($"Failed to query document fields in workspace {sourceWorkspaceArtifactId}", ex);
+					throw new SyncKeplerException($"Failed to query document fields in workspace {sourceWorkspaceArtifactId}", ex);
 				}
 			}
 

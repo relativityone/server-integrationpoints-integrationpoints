@@ -30,7 +30,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		{
 			const int expectedFieldCount = 5;
 
-			List<Sync.Transfer.FieldInfo> result = _instance.BuildColumns().ToList();
+			List<Sync.Transfer.FieldInfoDto> result = _instance.BuildColumns().ToList();
 
 			result.Count.Should().Be(expectedFieldCount);
 			result.Should().Contain(info => info.SpecialFieldType == SpecialFieldType.NativeFileLocation).Which.DisplayName.Should().Be("NativeFileLocation");
@@ -43,7 +43,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		[Test]
 		public async Task ItShouldReturnFileInfoRowValuesBuilder()
 		{
-			ISpecialFieldRowValuesBuilder result = await _instance.GetRowValuesBuilderAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, Array.Empty<RelativityObjectSlim>()).ConfigureAwait(false);
+			ISpecialFieldRowValuesBuilder result = await _instance.GetRowValuesBuilderAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, Enumerable.Empty<int>()).ConfigureAwait(false);
 
 			result.Should().BeOfType<FileInfoRowValuesBuilder>();
 			_nativeFileRepository.Verify(r => r.QueryAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<ICollection<int>>()), Times.Once);

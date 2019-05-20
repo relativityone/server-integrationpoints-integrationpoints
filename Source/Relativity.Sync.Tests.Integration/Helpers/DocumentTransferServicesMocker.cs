@@ -147,7 +147,7 @@ namespace Relativity.Sync.Tests.Integration
 
 		private async Task SetupExportResultBlocks(IFieldManager fieldManager, Document[] documents, int batchSize)
 		{
-			List<Transfer.FieldInfo> sourceDocumentFields = await fieldManager.GetDocumentFieldsAsync(CancellationToken.None).ConfigureAwait(false);
+			IList<Transfer.FieldInfoDto> sourceDocumentFields = await fieldManager.GetDocumentFieldsAsync(CancellationToken.None).ConfigureAwait(false);
 			for (int i = 0; i < documents.Length; i += batchSize)
 			{
 				int resultsBlockSize = Math.Min(batchSize, documents.Length - i);
@@ -186,14 +186,14 @@ namespace Relativity.Sync.Tests.Integration
 
 		//}
 
-		private static RelativityObjectSlim[] GetBlock(List<Transfer.FieldInfo> sourceDocumentFields, Document[] documents, int resultsBlockSize, int startingIndex)
+		private static RelativityObjectSlim[] GetBlock(IList<Transfer.FieldInfoDto> sourceDocumentFields, Document[] documents, int resultsBlockSize, int startingIndex)
 		{
 			return documents.Skip(startingIndex)
 				.Take(resultsBlockSize)
 				.Select(x => ToRelativityObjectSlim(x, sourceDocumentFields)).ToArray();
 		}
 
-		private static RelativityObjectSlim ToRelativityObjectSlim(Document document, IEnumerable<Transfer.FieldInfo> sourceDocumentFields)
+		private static RelativityObjectSlim ToRelativityObjectSlim(Document document, IEnumerable<Transfer.FieldInfoDto> sourceDocumentFields)
 		{
 			Dictionary<string, object> fieldToValue = document.FieldValues.ToDictionary(fv => fv.Field, fv => fv.Value);
 			List<object> orderedValues = sourceDocumentFields.Select(x => fieldToValue[x.DisplayName]).ToList();

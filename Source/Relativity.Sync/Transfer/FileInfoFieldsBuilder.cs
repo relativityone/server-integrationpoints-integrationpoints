@@ -19,28 +19,28 @@ namespace Relativity.Sync.Transfer
 			_nativeFileRepository = nativeFileRepository;
 		}
 
-		public IEnumerable<FieldInfo> BuildColumns()
+		public IEnumerable<FieldInfoDto> BuildColumns()
 		{
-			yield return new FieldInfo {SpecialFieldType = SpecialFieldType.NativeFileFilename, DisplayName = _NATIVE_FILE_FILENAME_FIELD_NAME, IsDocumentField = false};
-			yield return new FieldInfo {SpecialFieldType = SpecialFieldType.NativeFileSize, DisplayName = _NATIVE_FILE_SIZE_FIELD_NAME, IsDocumentField = false};
-			yield return new FieldInfo {SpecialFieldType = SpecialFieldType.NativeFileLocation, DisplayName = _NATIVE_FILE_LOCATION_FIELD_NAME, IsDocumentField = false};
-			yield return new FieldInfo {SpecialFieldType = SpecialFieldType.SupportedByViewer, DisplayName = _SUPPORTED_BY_VIEWER_FIELD_NAME, IsDocumentField = true};
-			yield return new FieldInfo {SpecialFieldType = SpecialFieldType.RelativityNativeType, DisplayName = _RELATIVITY_NATIVE_TYPE_FIELD_NAME, IsDocumentField = true};
+			yield return new FieldInfoDto {SpecialFieldType = SpecialFieldType.NativeFileFilename, DisplayName = _NATIVE_FILE_FILENAME_FIELD_NAME, IsDocumentField = false};
+			yield return new FieldInfoDto {SpecialFieldType = SpecialFieldType.NativeFileSize, DisplayName = _NATIVE_FILE_SIZE_FIELD_NAME, IsDocumentField = false};
+			yield return new FieldInfoDto {SpecialFieldType = SpecialFieldType.NativeFileLocation, DisplayName = _NATIVE_FILE_LOCATION_FIELD_NAME, IsDocumentField = false};
+			yield return new FieldInfoDto {SpecialFieldType = SpecialFieldType.SupportedByViewer, DisplayName = _SUPPORTED_BY_VIEWER_FIELD_NAME, IsDocumentField = true};
+			yield return new FieldInfoDto {SpecialFieldType = SpecialFieldType.RelativityNativeType, DisplayName = _RELATIVITY_NATIVE_TYPE_FIELD_NAME, IsDocumentField = true};
 		}
 
-		public async Task<ISpecialFieldRowValuesBuilder> GetRowValuesBuilderAsync(int sourceWorkspaceArtifactId, RelativityObjectSlim[] documents)
+		public async Task<ISpecialFieldRowValuesBuilder> GetRowValuesBuilderAsync(int sourceWorkspaceArtifactId, IEnumerable<int> documentArtifactIds)
 		{
-			List<int> batchArtifactIds = documents.Select(x => x.ArtifactID).ToList();
+			List<int> documentArtifactIdsList = documentArtifactIds.ToList();
 
 			IEnumerable<INativeFile> nativeFileInfo = await _nativeFileRepository
-				.QueryAsync(sourceWorkspaceArtifactId, batchArtifactIds)
+				.QueryAsync(sourceWorkspaceArtifactId, documentArtifactIdsList)
 				.ConfigureAwait(false);
 
 			List<INativeFile> nativeFileInfoList = nativeFileInfo.ToList();
 			HashSet<int> documentsWithNatives = new HashSet<int>(nativeFileInfoList.Select(x => x.DocumentArtifactId));
 
 			IDictionary<int, INativeFile> artifactIdToNativeFile = nativeFileInfoList.ToDictionary(n => n.DocumentArtifactId);
-			List<int> documentsWithoutNatives = batchArtifactIds.Where(x => !documentsWithNatives.Contains(x)).ToList();
+			List<int> documentsWithoutNatives = documentArtifactIdsList.Where(x => !documentsWithNatives.Contains(x)).ToList();
 
 			artifactIdToNativeFile.Extend(documentsWithoutNatives, Enumerable.Repeat(NativeFile.Empty, documentsWithoutNatives.Count));
 

@@ -22,15 +22,15 @@ namespace Relativity.Sync.Transfer
 			SpecialFieldType.RelativityNativeType
 		};
 
-		public object BuildRowValue(FieldInfo fieldInfo, RelativityObjectSlim document, object initialValue)
+		public object BuildRowValue(FieldInfoDto fieldInfoDto, RelativityObjectSlim document, object initialValue)
 		{
-			if (fieldInfo.IsDocumentField)
+			if (fieldInfoDto.IsDocumentField)
 			{
 				// This will apply to "special" file fields that are also normal fields on Document, e.g. native file type
 				return initialValue;
 			}
 
-			switch (fieldInfo.SpecialFieldType)
+			switch (fieldInfoDto.SpecialFieldType)
 			{
 				case SpecialFieldType.NativeFileSize:
 					return _artifactIdToNativeFile[document.ArtifactID].Size;
@@ -39,7 +39,7 @@ namespace Relativity.Sync.Transfer
 				case SpecialFieldType.NativeFileFilename:
 					return _artifactIdToNativeFile[document.ArtifactID].Filename;
 				default:
-					throw new ArgumentException($"Cannot build value for {nameof(SpecialFieldType)}.{fieldInfo.SpecialFieldType.ToString()}.", nameof(fieldInfo));
+					throw new ArgumentException($"Cannot build value for {nameof(SpecialFieldType)}.{fieldInfoDto.SpecialFieldType.ToString()}.", nameof(fieldInfoDto));
 			}
 		}
 	}

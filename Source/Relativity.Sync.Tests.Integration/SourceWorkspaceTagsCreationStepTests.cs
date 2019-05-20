@@ -465,7 +465,7 @@ namespace Relativity.Sync.Tests.Integration
 			// Assert
 			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
 			Assert.IsNotNull(result.Exception);
-			Assert.IsInstanceOf<KeplerServiceException>(result.Exception);
+			Assert.IsInstanceOf<SyncKeplerException>(result.Exception);
 			Assert.AreEqual(
 				$"Failed to create {nameof(DestinationWorkspaceTag)} '{destInstanceName} - {destWorkspaceName} - {destWorkspaceArtifactId}' in workspace {srcWorkspaceArtifactId}",
 				result.Exception.Message);
@@ -553,7 +553,7 @@ namespace Relativity.Sync.Tests.Integration
 			// Assert
 			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
 			Assert.IsNotNull(result.Exception);
-			Assert.IsInstanceOf<KeplerServiceException>(result.Exception);
+			Assert.IsInstanceOf<SyncKeplerException>(result.Exception);
 			Assert.AreEqual(
 				$"Failed to update {nameof(DestinationWorkspaceTag)} with id {destinationWorkspaceTagArtifactId} in workspace {sourceWorkspaceArtifactID}",
 				result.Exception.Message);
@@ -652,7 +652,7 @@ namespace Relativity.Sync.Tests.Integration
 			// Assert
 			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
 			Assert.IsNotNull(result.Exception);
-			Assert.IsInstanceOf<KeplerServiceException>(result.Exception);
+			Assert.IsInstanceOf<SyncKeplerException>(result.Exception);
 			Assert.AreEqual(
 				$"Failed to query {nameof(DestinationWorkspaceTag)} in workspace {sourceWorkspaceArtifactID}",
 				result.Exception.Message);

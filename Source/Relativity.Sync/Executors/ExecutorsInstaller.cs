@@ -25,7 +25,7 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<TagSavedSearchFolder>().As<ITagSavedSearchFolder>();
 			builder.RegisterType<BatchProgressHandlerFactory>().As<IBatchProgressHandlerFactory>();
 			builder.RegisterType<BatchProgressUpdater>().As<IBatchProgressUpdater>();
-			
+
 			builder.RegisterType<SourceWorkspaceTagsCreationExecutionConstrains>().As<IExecutionConstrains<ISourceWorkspaceTagsCreationConfiguration>>();
 			builder.RegisterType<SourceWorkspaceTagsCreationExecutor>().As<IExecutor<ISourceWorkspaceTagsCreationConfiguration>>();
 			builder.RegisterType<DestinationWorkspaceTagsCreationExecutionConstrains>().As<IExecutionConstrains<IDestinationWorkspaceTagsCreationConfiguration>>();

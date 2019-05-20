@@ -2,7 +2,7 @@
 
 namespace Relativity.Sync.Transfer
 {
-	internal sealed class FieldInfo
+	internal sealed class FieldInfoDto
 	{
 		public string DisplayName { get; set; }
 

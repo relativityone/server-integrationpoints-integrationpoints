@@ -28,11 +28,11 @@ namespace Relativity.Sync.Transfer
 				return new DataTable();
 			}
 
-			List<FieldInfo> allFields = await _fieldManager.GetAllFieldsAsync(token).ConfigureAwait(false);
+			IList<FieldInfoDto> allFields = await _fieldManager.GetAllFieldsAsync(token).ConfigureAwait(false);
 
 			DataTable dataTable = GetEmptyDataTable(allFields);
 
-			Dictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> specialFieldBuildersDictionary = await CreateSpecialFieldRowValuesBuilders(sourceWorkspaceArtifactId, batch).ConfigureAwait(false);
+			IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> specialFieldBuildersDictionary = await CreateSpecialFieldRowValuesBuilders(sourceWorkspaceArtifactId, batch).ConfigureAwait(false);
 
 			foreach (RelativityObjectSlim obj in batch)
 			{
@@ -43,25 +43,14 @@ namespace Relativity.Sync.Transfer
 			return dataTable;
 		}
 
-		private async Task<Dictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder>> CreateSpecialFieldRowValuesBuilders(int sourceWorkspaceArtifactId, RelativityObjectSlim[] batch)
+		private async Task<IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder>> CreateSpecialFieldRowValuesBuilders(int sourceWorkspaceArtifactId, RelativityObjectSlim[] batch)
 		{
-			IEnumerable<Task<ISpecialFieldRowValuesBuilder>> specialFieldRowValueBuilderTasks =
-				_fieldManager.SpecialFieldBuilders.Select(async b => await b.GetRowValuesBuilderAsync(sourceWorkspaceArtifactId, batch).ConfigureAwait(false));
+			IEnumerable<int> documentArtifactIds = batch.Select(obj => obj.ArtifactID);
 
-			ISpecialFieldRowValuesBuilder[] specialFieldRowValueBuilders = await Task.WhenAll(specialFieldRowValueBuilderTasks).ConfigureAwait(false);
-			Dictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> specialFieldBuildersDictionary = new Dictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder>();
-			foreach (var builder in specialFieldRowValueBuilders)
-			{
-				foreach (var specialFieldType in builder.AllowedSpecialFieldTypes)
-				{
-					specialFieldBuildersDictionary.Add(specialFieldType, builder);
-				}
-			}
-
-			return specialFieldBuildersDictionary;
+			return await _fieldManager.CreateSpecialFieldRowValueBuildersAsync(sourceWorkspaceArtifactId, documentArtifactIds).ConfigureAwait(false);
 		}
 
-		private DataTable GetEmptyDataTable(List<FieldInfo> allFields)
+		private DataTable GetEmptyDataTable(IEnumerable<FieldInfoDto> allFields)
 		{
 			if (_dataTable == null)
 			{
@@ -70,7 +59,7 @@ namespace Relativity.Sync.Transfer
 			return _dataTable.Clone();
 		}
 
-		private static DataTable CreateDataTable(List<FieldInfo> allFields)
+		private static DataTable CreateDataTable(IEnumerable<FieldInfoDto> allFields)
 		{
 			var dataTable = new DataTable();
 
@@ -79,19 +68,19 @@ namespace Relativity.Sync.Transfer
 			return dataTable;
 		}
 
-		private static DataColumn[] BuildColumns(IEnumerable<FieldInfo> fields)
+		private static DataColumn[] BuildColumns(IEnumerable<FieldInfoDto> fields)
 		{
 			DataColumn[] columns = fields.Select(x => new DataColumn(x.DisplayName, typeof(object))).ToArray();
 			return columns;
 		}
 
-		private object[] BuildRow(IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> specialFieldBuilders, IList<FieldInfo> fields, RelativityObjectSlim obj)
+		private object[] BuildRow(IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> specialFieldBuilders, IList<FieldInfoDto> fields, RelativityObjectSlim obj)
 		{
 			object[] result = new object[fields.Count];
 
 			for (int i = 0; i < fields.Count; i++)
 			{
-				FieldInfo field = fields[i];
+				FieldInfoDto field = fields[i];
 				if (field.SpecialFieldType != SpecialFieldType.None)
 				{
 					if (!specialFieldBuilders.ContainsKey(field.SpecialFieldType))

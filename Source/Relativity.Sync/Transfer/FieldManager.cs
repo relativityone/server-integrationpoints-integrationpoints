@@ -14,45 +14,65 @@ namespace Relativity.Sync.Transfer
 	/// </summary>
 	internal sealed class FieldManager : IFieldManager
 	{
-		private List<FieldInfo> _specialFields;
-		private List<FieldInfo> _mappedDocumentFields;
-		private List<FieldInfo> _allFields;
+		private List<FieldInfoDto> _specialFields;
+		private List<FieldInfoDto> _mappedDocumentFields;
+		private List<FieldInfoDto> _allFields;
 		private readonly ISynchronizationConfiguration _configuration;
 		private readonly IDocumentFieldRepository _documentFieldRepository;
 
-		public IList<ISpecialFieldBuilder> SpecialFieldBuilders { get; }
+		private readonly IList<ISpecialFieldBuilder> _specialFieldBuilders;
 
 		public FieldManager(ISynchronizationConfiguration configuration, IDocumentFieldRepository documentFieldRepository, IEnumerable<ISpecialFieldBuilder> specialFieldBuilders)
 		{
 			_configuration = configuration;
 			_documentFieldRepository = documentFieldRepository;
-			SpecialFieldBuilders = specialFieldBuilders.OrderBy(b => b.GetType().FullName).ToList();
+			_specialFieldBuilders = specialFieldBuilders.OrderBy(b => b.GetType().FullName).ToList();
 		}
 
-		public IEnumerable<FieldInfo> GetSpecialFields()
+		public IEnumerable<FieldInfoDto> GetSpecialFields()
 		{
-			return _specialFields ?? (_specialFields = SpecialFieldBuilders.SelectMany(b => b.BuildColumns()).ToList());
+			return _specialFields ?? (_specialFields = _specialFieldBuilders.SelectMany(b => b.BuildColumns()).ToList());
 		}
 
-		public async Task<List<FieldInfo>> GetDocumentFieldsAsync(CancellationToken token)
+		public async Task<IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder>> CreateSpecialFieldRowValueBuildersAsync(int sourceWorkspaceArtifactId, IEnumerable<int> documentArtifactIds)
 		{
-			return (await GetAllFieldsAsync(token).ConfigureAwait(false)).Where(f => f.IsDocumentField).OrderBy(f => f.DocumentFieldIndex).ToList();
+			IEnumerable<Task<ISpecialFieldRowValuesBuilder>> specialFieldRowValueBuilderTasks =
+				_specialFieldBuilders.Select(async b => await b.GetRowValuesBuilderAsync(sourceWorkspaceArtifactId, documentArtifactIds).ConfigureAwait(false));
+			ISpecialFieldRowValuesBuilder[] specialFieldRowValueBuilders = await Task.WhenAll(specialFieldRowValueBuilderTasks).ConfigureAwait(false);
+
+			Dictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> specialFieldBuildersDictionary = new Dictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder>();
+			foreach (var builder in specialFieldRowValueBuilders)
+			{
+				foreach (var specialFieldType in builder.AllowedSpecialFieldTypes)
+				{
+					specialFieldBuildersDictionary.Add(specialFieldType, builder);
+				}
+			}
+
+			return specialFieldBuildersDictionary;
 		}
 
-		public async Task<List<FieldInfo>> GetAllFieldsAsync(CancellationToken token)
+		public async Task<IList<FieldInfoDto>> GetDocumentFieldsAsync(CancellationToken token)
+		{
+			IList<FieldInfoDto> fields = await GetAllFieldsAsync(token).ConfigureAwait(false);
+			List<FieldInfoDto> documentFields = fields.Where(f => f.IsDocumentField).OrderBy(f => f.DocumentFieldIndex).ToList();
+			return documentFields;
+		}
+
+		public async Task<IList<FieldInfoDto>> GetAllFieldsAsync(CancellationToken token)
 		{
 			if (_allFields == null)
 			{
-				IEnumerable<FieldInfo> specialFields = GetSpecialFields();
-				List<FieldInfo> allFields = (await GetMappedDocumentFieldsAsync(token).ConfigureAwait(false)).Concat(specialFields).ToList();
+				IEnumerable<FieldInfoDto> specialFields = GetSpecialFields();
+				IEnumerable<FieldInfoDto> mappedDocumentFields = await GetMappedDocumentFieldsAsync(token).ConfigureAwait(false);
+				List<FieldInfoDto> allFields = mappedDocumentFields.Concat(specialFields).ToList();
 				_allFields = EnrichDocumentFieldsWithIndex(allFields);
-				return _allFields;
 			}
 
 			return _allFields;
 		}
 
-		private List<FieldInfo> EnrichDocumentFieldsWithIndex(List<FieldInfo> fields)
+		private List<FieldInfoDto> EnrichDocumentFieldsWithIndex(List<FieldInfoDto> fields)
 		{
 			int currentIndex = 0;
 			foreach (var field in fields)
@@ -67,23 +87,24 @@ namespace Relativity.Sync.Transfer
 			return fields;
 		}
 
-		private async Task<IEnumerable<FieldInfo>> GetMappedDocumentFieldsAsync(CancellationToken token)
+		private async Task<IEnumerable<FieldInfoDto>> GetMappedDocumentFieldsAsync(CancellationToken token)
 		{
 			if (_mappedDocumentFields == null)
 			{
-				_mappedDocumentFields = await EnrichDocumentFieldsWithRelativityDataTypesAsync(_configuration.FieldMappings.Select(CreateFieldInfoFromFieldMap).ToList(), token).ConfigureAwait(false);
+				List<FieldInfoDto> fieldInfos = _configuration.FieldMappings.Select(CreateFieldInfoFromFieldMap).ToList();
+				_mappedDocumentFields = await EnrichDocumentFieldsWithRelativityDataTypesAsync(fieldInfos, token).ConfigureAwait(false);
 			}
 			return _mappedDocumentFields;
 		}
 
-		private async Task<List<FieldInfo>> EnrichDocumentFieldsWithRelativityDataTypesAsync(List<FieldInfo> fields, CancellationToken token)
+		private async Task<List<FieldInfoDto>> EnrichDocumentFieldsWithRelativityDataTypesAsync(List<FieldInfoDto> fields, CancellationToken token)
 		{
 			if (fields.Count == 0)
 			{
 				return fields;
 			}
 
-			Dictionary<string, RelativityDataType> parsedResult = await GetRelativityDataTypesForFieldsAsync(fields, token).ConfigureAwait(false);
+			IDictionary<string, RelativityDataType> parsedResult = await GetRelativityDataTypesForFieldsAsync(fields, token).ConfigureAwait(false);
 			foreach (var field in fields)
 			{
 				field.RelativityDataType = parsedResult[field.DisplayName];
@@ -92,15 +113,16 @@ namespace Relativity.Sync.Transfer
 			return fields;
 		}
 		
-		private async Task<Dictionary<string, RelativityDataType>> GetRelativityDataTypesForFieldsAsync(List<FieldInfo> fields, CancellationToken token)
+		private async Task<IDictionary<string, RelativityDataType>> GetRelativityDataTypesForFieldsAsync(IEnumerable<FieldInfoDto> fields, CancellationToken token)
 		{
-			return await _documentFieldRepository.GetRelativityDataTypesForFieldsByFieldNameAsync(_configuration.SourceWorkspaceArtifactId, fields.Select(f => f.DisplayName).ToArray(), token)
+			ICollection<string> fieldNames = fields.Select(f => f.DisplayName).ToArray();
+			return await _documentFieldRepository.GetRelativityDataTypesForFieldsByFieldNameAsync(_configuration.SourceWorkspaceArtifactId, fieldNames, token)
 				.ConfigureAwait(false);
 		}
 
-		private FieldInfo CreateFieldInfoFromFieldMap(FieldMap fieldMap)
+		private FieldInfoDto CreateFieldInfoFromFieldMap(FieldMap fieldMap)
 		{
-			return new FieldInfo {DisplayName = fieldMap.SourceField.DisplayName, IsDocumentField = true};
+			return new FieldInfoDto {DisplayName = fieldMap.SourceField.DisplayName, IsDocumentField = true};
 		}
 	}
 }

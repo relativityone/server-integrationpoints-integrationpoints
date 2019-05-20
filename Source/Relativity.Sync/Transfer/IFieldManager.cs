@@ -6,9 +6,9 @@ namespace Relativity.Sync.Transfer
 {
 	internal interface IFieldManager
 	{
-		IList<ISpecialFieldBuilder> SpecialFieldBuilders { get; }
-		Task<List<FieldInfo>> GetAllFieldsAsync(CancellationToken token);
-		Task<List<FieldInfo>> GetDocumentFieldsAsync(CancellationToken token);
-		IEnumerable<FieldInfo> GetSpecialFields();
+		Task<IList<FieldInfoDto>> GetAllFieldsAsync(CancellationToken token);
+		Task<IList<FieldInfoDto>> GetDocumentFieldsAsync(CancellationToken token);
+		IEnumerable<FieldInfoDto> GetSpecialFields();
+		Task<IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder>> CreateSpecialFieldRowValueBuildersAsync(int sourceWorkspaceArtifactId, IEnumerable<int> documentArtifactIds);
 	}
 }

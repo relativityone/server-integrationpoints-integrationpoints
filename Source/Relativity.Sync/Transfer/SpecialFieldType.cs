@@ -2,7 +2,7 @@
 {
 	internal enum SpecialFieldType
 	{
-		None,
+		None = 0,
 		FolderPath,
 		NativeFileSize,
 		NativeFileLocation,

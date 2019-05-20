@@ -18,10 +18,10 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 	[TestFixture]
 	public class DocumentFieldRepositoryTests
 	{
-		private int _sourceWorkspaceArtifactId = 1234;
 		private Mock<ISourceServiceFactoryForUser> _serviceFactory;
 		private DocumentFieldRepository _instance;
 		private Mock<IObjectManager> _objectManager;
+		private readonly int _sourceWorkspaceArtifactId = 1234;
 
 		[SetUp]
 		public void SetUp()
@@ -59,7 +59,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_objectManager.Setup(om => om.QuerySlimAsync(_sourceWorkspaceArtifactId, It.IsAny<QueryRequest>(), start, fieldNames.Count, CancellationToken.None)).ReturnsAsync(queryResult);
 
 			// Act
-			Dictionary<string, RelativityDataType> result = await _instance
+			IDictionary<string, RelativityDataType> result = await _instance
 				.GetRelativityDataTypesForFieldsByFieldNameAsync(_sourceWorkspaceArtifactId, fieldNames, CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
@@ -75,7 +75,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			List<string> emptyFieldNamesList = new List<string>();
 
 			// Act
-			Func<Task<Dictionary<string, RelativityDataType>>> action = () =>
+			Func<Task<IDictionary<string, RelativityDataType>>> action = () =>
 				_instance.GetRelativityDataTypesForFieldsByFieldNameAsync(_sourceWorkspaceArtifactId, emptyFieldNamesList, CancellationToken.None);
 
 			// Assert
@@ -91,11 +91,11 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_objectManager.Setup(om => om.QuerySlimAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), CancellationToken.None)).Throws<ServiceException>();
 			
 			// Act
-			Func<Task<Dictionary<string, RelativityDataType>>> action = () =>
+			Func<Task<IDictionary<string, RelativityDataType>>> action = () =>
 				_instance.GetRelativityDataTypesForFieldsByFieldNameAsync(_sourceWorkspaceArtifactId, fieldNames, CancellationToken.None);
 
 			// Assert
-			await action.Should().ThrowAsync<KeplerServiceException>().ConfigureAwait(false);
+			await action.Should().ThrowAsync<SyncKeplerException>().ConfigureAwait(false);
 		}
 	}
 }
