@@ -27,7 +27,10 @@ namespace Relativity.Sync.Telemetry
 				var exception = new ArgumentNullException(nameof(metricProvider));
 				_logger.LogDebug(exception, "Metric provider shouldn't be null.");
 			}
-			_metricProviders.Add(metricProvider);
+			else
+			{
+				_metricProviders.Add(metricProvider);
+			}
 		}
 
 		public async Task InstallMetrics()
