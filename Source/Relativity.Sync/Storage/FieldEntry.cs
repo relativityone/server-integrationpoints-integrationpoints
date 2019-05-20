@@ -22,6 +22,5 @@ namespace Relativity.Sync.Storage
 		/// Gets or sets a flag indicating whether the field contains a unique identifier for the data.
 		/// </summary>
 		public bool IsIdentifier { get; set; }
-
 	}
 }

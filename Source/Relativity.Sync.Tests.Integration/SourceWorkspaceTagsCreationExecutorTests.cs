@@ -374,7 +374,7 @@ namespace Relativity.Sync.Tests.Integration
 			// Assert 
 			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
 			Assert.IsNotNull(result.Exception);
-			Assert.IsInstanceOf<DestinationWorkspaceTagRepositoryException>(result.Exception);
+			Assert.IsInstanceOf<SyncKeplerException>(result.Exception);
 			Assert.AreEqual(
 				$"Failed to create {nameof(DestinationWorkspaceTag)} '{_TEST_INSTANCE_NAME} - {_TEST_DEST_CASE_NAME} - {_TEST_DEST_CASE_ARTIFACT_ID}' in workspace {_TEST_SOURCE_CASE_ARTIFACT_ID}",
 				result.Exception.Message);
@@ -415,7 +415,7 @@ namespace Relativity.Sync.Tests.Integration
 			// Assert 
 			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
 			Assert.IsNotNull(result.Exception);
-			Assert.IsInstanceOf<DestinationWorkspaceTagRepositoryException>(result.Exception);
+			Assert.IsInstanceOf<SyncKeplerException>(result.Exception);
 			Assert.AreEqual($"Failed to update {nameof(DestinationWorkspaceTag)} with id {_TEST_DEST_CASE_TAG_ARTIFACT_ID} in workspace {_TEST_SOURCE_CASE_ARTIFACT_ID}", result.Exception.Message);
 		}
 
@@ -473,7 +473,7 @@ namespace Relativity.Sync.Tests.Integration
 			// Assert 
 			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
 			Assert.IsNotNull(result.Exception);
-			Assert.IsInstanceOf<DestinationWorkspaceTagRepositoryException>(result.Exception);
+			Assert.IsInstanceOf<SyncKeplerException>(result.Exception);
 			Assert.AreEqual($"Failed to query {nameof(DestinationWorkspaceTag)} in workspace {_TEST_SOURCE_CASE_ARTIFACT_ID}", result.Exception.Message);
 		}
 
