@@ -37,8 +37,6 @@ namespace Relativity.Sync.Transfer
 			_batchToken = null;
 		}
 
-		public bool IsClosed => _currentBatch.IsClosed;
-
 		public bool Read()
 		{
 			bool dataRead = _currentReader.Read();

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Storage
@@ -10,6 +11,7 @@ namespace Relativity.Sync.Storage
 		public int DestinationWorkspaceTagArtifactId { get; }
 		public int JobHistoryTagArtifactId { get; }
 		public ImportSettingsDto ImportSettings { get; }
+		public IList<FieldMap> FieldMappings { get; }
 		public Guid ExportRunId { get; }
 		public int SourceWorkspaceArtifactId { get; }
 		public int SyncConfigurationArtifactId { get; }

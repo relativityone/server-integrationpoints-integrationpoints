@@ -89,8 +89,10 @@ namespace Relativity.Sync.Tests.System
 				}
 			};
 
+			IFieldManager fieldManager = new FieldManager(configuration, new DocumentFieldRepository(_sourceServiceFactoryStub, logger), new List<ISpecialFieldBuilder>());
+
 			// Data source snapshot creation
-			DataSourceSnapshotExecutor dataSourceSnapshotExecutor = new DataSourceSnapshotExecutor(_sourceServiceFactoryStub, logger);
+			DataSourceSnapshotExecutor dataSourceSnapshotExecutor = new DataSourceSnapshotExecutor(_sourceServiceFactoryStub, fieldManager, logger);
 			ExecutionResult dataSourceExecutorResult = await dataSourceSnapshotExecutor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
 			Assert.AreEqual(ExecutionStatus.Completed, dataSourceExecutorResult.Status);
 
@@ -100,14 +102,10 @@ namespace Relativity.Sync.Tests.System
 			Assert.AreEqual(ExecutionStatus.Completed, snapshotPartitionExecutorResult.Status);
 
 			// Data reader setup
-			SourceWorkspaceDataReader dataReader = new SourceWorkspaceDataReader(_sourceServiceFactoryStub,
-				batchRepository,
-				sourceWorkspaceArtifactId,
-				configuration.ExportRunId,
-				batchSize,
-				new MetadataMapping(configuration.DestinationFolderStructureBehavior, configuration.FolderPathSourceFieldArtifactId, configuration.FieldMappings.ToList()),
-				new FolderPathRetriever(_sourceServiceFactoryStub, logger),
-				new NativeFileRepository(_sourceServiceFactoryStub),
+			SourceWorkspaceDataReader dataReader = new SourceWorkspaceDataReader(
+				new SourceWorkspaceDataTableBuilder(fieldManager),
+				configuration,
+				new RelativityExportBatcher(_sourceServiceFactoryStub, new BatchRepository(_sourceServiceFactoryStub)),
 				logger);
 
 			// ImportAPI setup
@@ -125,6 +123,7 @@ namespace Relativity.Sync.Tests.System
 
 			// ASSERT
 			Assert.AreEqual(ExecutionStatus.Completed, syncResult.Status);
+
 		}
 	}
 }
