@@ -19,6 +19,8 @@ namespace Relativity.Sync.Transfer
 		private string _batchToken;
 
 		private readonly IRelativityExportBatcher _exportBatcher;
+		private readonly IFieldManager _fieldManager;
+		private readonly IItemStatusMonitor _itemStatusMonitor;
 		private readonly ISyncLog _logger;
 		private readonly ISynchronizationConfiguration _configuration;
 		private readonly ISourceWorkspaceDataTableBuilder _tableBuilder;
@@ -26,10 +28,14 @@ namespace Relativity.Sync.Transfer
 		public SourceWorkspaceDataReader(ISourceWorkspaceDataTableBuilder tableBuilder,
 			ISynchronizationConfiguration configuration,
 			IRelativityExportBatcher exportBatcher,
+			IFieldManager fieldManager,
+			IItemStatusMonitor itemStatusMonitor,
 			ISyncLog logger)
 		{
 			_tableBuilder = tableBuilder;
 			_exportBatcher = exportBatcher;
+			_fieldManager = fieldManager;
+			_itemStatusMonitor = itemStatusMonitor;
 			_logger = logger;
 			_configuration = configuration;
 
@@ -47,6 +53,12 @@ namespace Relativity.Sync.Transfer
 				dataRead = _currentReader.Read();
 			}
 
+			if (dataRead)
+			{
+				string identifierFieldName = _fieldManager.GetObjectIdentifierFieldAsync(CancellationToken.None).GetAwaiter().GetResult().DisplayName;
+				string itemIdentifier = _currentReader[identifierFieldName].ToString();
+				_itemStatusMonitor.MarkItemAsSuccessful(itemIdentifier);
+			}
 			return dataRead;
 		}
 
@@ -61,7 +73,6 @@ namespace Relativity.Sync.Transfer
 		{
 			if (_batchToken == null)
 			{
-
 				_batchToken = _exportBatcher.Start(_configuration.ExportRunId, _configuration.SourceWorkspaceArtifactId, _configuration.SyncConfigurationArtifactId);
 			}
 
@@ -82,6 +93,7 @@ namespace Relativity.Sync.Transfer
 			}
 			else
 			{
+				await CreateItemStatusRecords(batch).ConfigureAwait(false);
 				DataTable dt;
 				try
 				{
@@ -95,6 +107,17 @@ namespace Relativity.Sync.Transfer
 			}
 
 			return nextBatchReader;
+		}
+
+		private async Task CreateItemStatusRecords(RelativityObjectSlim[] batch)
+		{
+			foreach (var item in batch)
+			{
+				int documentFieldIndex = (await _fieldManager.GetObjectIdentifierFieldAsync(CancellationToken.None).ConfigureAwait(false)).DocumentFieldIndex;
+				string itemIdentifier = item.Values[documentFieldIndex].ToString();
+				int itemArtifactId = item.ArtifactID;
+				_itemStatusMonitor.AddItem(itemIdentifier, itemArtifactId);
+			}
 		}
 
 		private void Dispose(bool disposing)

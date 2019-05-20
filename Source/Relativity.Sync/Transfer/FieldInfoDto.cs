@@ -12,6 +12,8 @@ namespace Relativity.Sync.Transfer
 
 		public bool IsDocumentField { get; set; }
 
+		public bool IsIdentifier { get; set; }
+
 		public int DocumentFieldIndex { get; set; } = -1;
 	}
 }
