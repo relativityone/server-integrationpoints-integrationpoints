@@ -49,7 +49,7 @@ namespace Relativity.Sync.Telemetry
 			using (var manager = _servicesManager.CreateProxy<IInternalMetricsCollectionManager>(ExecutionIdentity.System))
 			{
 				List<CategoryTarget> categories = await manager.GetCategoryTargetsAsync().ConfigureAwait(false);
-				CategoryTarget newCategory = categories.FirstOrDefault(categoryTarget => categoryTarget.Category.Name.Equals(TelemetryConstants.TELEMETRY_CATEGORY, StringComparison.OrdinalIgnoreCase));
+				CategoryTarget newCategory = categories.FirstOrDefault(categoryTarget => categoryTarget.Category.Name.Equals(categoryName, StringComparison.OrdinalIgnoreCase));
 				CategoryRef categoryRef = newCategory?.Category;
 
 				if (categoryRef == null)
