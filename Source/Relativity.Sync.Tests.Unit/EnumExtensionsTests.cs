@@ -2,7 +2,7 @@
 using NUnit.Framework;
 using Relativity.Sync.Executors.Validation;
 
-namespace Relativity.Sync.Tests.Unit.Executors.Validation
+namespace Relativity.Sync.Tests.Unit
 {
 	[TestFixture]
 	public class EnumExtensionsTests
@@ -13,7 +13,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		public void GetEnumFromDescriptionGoldFlowTests<T>(T expectedResult, string testDescription)
 		{
 			// Act
-			T actualResult = EnumExtensions.GetEnumFromDescription<T>(testDescription);
+			T actualResult = testDescription.GetEnumFromDescription<T>();
 
 			// Assert
 			Assert.AreEqual(expectedResult, actualResult);
@@ -23,7 +23,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		public void GetEnumFromDescriptionThrowsWhenNotEnumTypeTest()
 		{
 			// Act & Assert
-			Assert.Throws<InvalidOperationException>(() => EnumExtensions.GetEnumFromDescription<Type>(string.Empty),
+			Assert.Throws<InvalidOperationException>(() => string.Empty.GetEnumFromDescription<Type>(),
 				$"The type specified is not an enum type: {nameof(Type)}.");
 		}
 
@@ -34,7 +34,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			string testDescription = "Append Only";
 
 			// Act & Assert
-			Assert.Throws<InvalidOperationException>(() => EnumExtensions.GetEnumFromDescription<ImportOverwriteMode>(testDescription),
+			Assert.Throws<InvalidOperationException>(() => testDescription.GetEnumFromDescription<ImportOverwriteMode>(),
 				$"The description could not be converted to the proper enum value: {testDescription}.");
 		}
 
@@ -45,7 +45,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			string testDescription = string.Empty;
 
 			// Act & Assert
-			Assert.Throws<InvalidOperationException>(() => EnumExtensions.GetEnumFromDescription<FieldOverlayBehavior>(testDescription),
+			Assert.Throws<InvalidOperationException>(() => testDescription.GetEnumFromDescription<FieldOverlayBehavior>(),
 				$"The description could not be converted to the proper enum value: {testDescription}.");
 		}
 	}

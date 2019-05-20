@@ -1,6 +1,6 @@
 ﻿using Relativity.Services.ServiceProxy;
 
-namespace Relativity.Sync.Tests.System.Stubs
+namespace Relativity.Sync.Tests.System
 {
 	internal class ServiceFactoryByBasicCredentials
 	{

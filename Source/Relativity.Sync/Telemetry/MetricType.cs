@@ -6,6 +6,7 @@
 	internal enum MetricType
 	{
 		TimedOperation,
-		Counter
+		Counter,
+		GaugeOperation
 	}
 }

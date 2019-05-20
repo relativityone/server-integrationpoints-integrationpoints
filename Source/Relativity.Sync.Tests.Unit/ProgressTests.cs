@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using kCura.Utility;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.Objects;
@@ -46,7 +47,7 @@ namespace Relativity.Sync.Tests.Unit
 			const int syncConfigurationArtifactId = 713;
 			const string name = "name 1";
 			const int order = 5;
-			const string status = "pending";
+			const SyncJobStatus status = SyncJobStatus.New;
 
 			CreateResult result = new CreateResult
 			{
@@ -69,7 +70,7 @@ namespace Relativity.Sync.Tests.Unit
 			_objectManager.Verify(x => x.CreateAsync(_WORKSPACE_ID, It.Is<CreateRequest>(cr => AssertCreateRequest(cr, name, order, status, syncConfigurationArtifactId))), Times.Once);
 		}
 
-		private bool AssertCreateRequest(CreateRequest createRequest, string name, int order, string status, int syncConfigurationArtifactId)
+		private bool AssertCreateRequest(CreateRequest createRequest, string name, int order, SyncJobStatus status, int syncConfigurationArtifactId)
 		{
 			createRequest.ObjectType.Guid.Should().Be(ProgressObjectTypeGuid);
 			createRequest.ParentObject.ArtifactID.Should().Be(syncConfigurationArtifactId);
@@ -79,8 +80,10 @@ namespace Relativity.Sync.Tests.Unit
 			createRequest.FieldValues.First(x => x.Field.Guid == NameGuid).Value.Should().Be(name);
 			createRequest.FieldValues.Should().Contain(x => x.Field.Guid == OrderGuid);
 			createRequest.FieldValues.First(x => x.Field.Guid == OrderGuid).Value.Should().Be(order);
+
+			string statusDescription = status.GetDescription();
 			createRequest.FieldValues.Should().Contain(x => x.Field.Guid == StatusGuid);
-			createRequest.FieldValues.First(x => x.Field.Guid == StatusGuid).Value.Should().Be(status);
+			createRequest.FieldValues.First(x => x.Field.Guid == StatusGuid).Value.Should().Be(statusDescription);
 			return true;
 		}
 
@@ -89,11 +92,12 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			const string name = "progress name";
 			const int order = 2;
-			const string status = "status 1";
+			const string statusDescription = "In Progress";
+			const SyncJobStatus expectedStatus = SyncJobStatus.InProgress;
 			const string exception = "exception 1";
 			const string message = "message 1";
 
-			ReadResult result = PrepareReadResult(name, order, status, exception, message);
+			ReadResult result = PrepareReadResult(name, order, statusDescription, exception, message);
 
 			_objectManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<ReadRequest>())).ReturnsAsync(result);
 
@@ -104,7 +108,7 @@ namespace Relativity.Sync.Tests.Unit
 			progress.ArtifactId.Should().Be(_ARTIFACT_ID);
 			progress.Name.Should().Be(name);
 			progress.Order.Should().Be(order);
-			progress.Status.Should().Be(status);
+			progress.Status.Should().Be(expectedStatus);
 			progress.Exception.Should().Be(exception);
 			progress.Message.Should().Be(message);
 
@@ -116,12 +120,13 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			const string name = "progress name 1";
 			const int order = 3;
-			const string status = "status 3";
+			const string statusDescription = "In Progress";
+			const SyncJobStatus expectedStatus = SyncJobStatus.InProgress;
 			const string exception = "exception 5";
 			const string message = "message 9";
 			const int syncConfigurationArtifactId = 854796;
 
-			QueryResult result = PrepareQueryResult(order, status, exception, message);
+			QueryResult result = PrepareQueryResult(order, statusDescription, exception, message);
 
 			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, 1)).ReturnsAsync(result);
 
@@ -132,7 +137,7 @@ namespace Relativity.Sync.Tests.Unit
 			progress.ArtifactId.Should().Be(_ARTIFACT_ID);
 			progress.Name.Should().Be(name);
 			progress.Order.Should().Be(order);
-			progress.Status.Should().Be(status);
+			progress.Status.Should().Be(expectedStatus);
 			progress.Exception.Should().Be(exception);
 			progress.Message.Should().Be(message);
 
@@ -205,12 +210,13 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public async Task ItShouldHandleNullValues()
 		{
-			// only status, exception and message can be null - name and order are set during creation and cannot be modified
-			const string status = null;
+			// only exception and message can be null
+			// name and order are set during creation and cannot be modified
+			// status is an enum and cannot be null
 			const string exception = null;
 			const string message = null;
 
-			ReadResult result = PrepareReadResult(status: status, exception: exception, message: message);
+			ReadResult result = PrepareReadResult(exception: exception, message: message);
 
 			_objectManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<ReadRequest>())).ReturnsAsync(result);
 
@@ -222,7 +228,7 @@ namespace Relativity.Sync.Tests.Unit
 			progress.Message.Should().Be(message);
 		}
 
-		private static ReadResult PrepareReadResult(string name = "name", int order = 1, string status = "status", string exception = "exception", string message = "message")
+		private static ReadResult PrepareReadResult(string name = "name", int order = 1, string status = "Completed With Errors", string exception = "exception", string message = "message")
 		{
 			ReadResult readResult = new ReadResult
 			{
@@ -293,7 +299,8 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public async Task ItShouldUpdateStatus()
 		{
-			const string status = "status 2";
+			const string statusDescription = "In Progress";
+			const SyncJobStatus status = SyncJobStatus.InProgress;
 
 			ReadResult readResult = PrepareReadResult();
 			_objectManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<ReadRequest>())).ReturnsAsync(readResult);
@@ -306,13 +313,13 @@ namespace Relativity.Sync.Tests.Unit
 			// ASSERT
 			progress.Status.Should().Be(status);
 
-			_objectManager.Verify(x => x.UpdateAsync(_WORKSPACE_ID, It.Is<UpdateRequest>(up => AssertUpdateRequest(up, StatusGuid, status))));
+			_objectManager.Verify(x => x.UpdateAsync(_WORKSPACE_ID, It.Is<UpdateRequest>(up => AssertUpdateRequest(up, StatusGuid, statusDescription))));
 		}
 
 		[Test]
 		public async Task ItShouldNotSetStatusWhenUpdateFails()
 		{
-			const string newValue = "status 3";
+			const SyncJobStatus newValue = SyncJobStatus.CompletedWithErrors;
 
 			ReadResult readResult = PrepareReadResult();
 			_objectManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<ReadRequest>())).ReturnsAsync(readResult);
@@ -320,7 +327,7 @@ namespace Relativity.Sync.Tests.Unit
 
 			IProgress progress = await _progressRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
 
-			string oldValue = progress.Status;
+			SyncJobStatus oldValue = progress.Status;
 
 			// ACT
 			Func<Task> action = async () => await progress.SetStatusAsync(newValue).ConfigureAwait(false);
@@ -428,22 +435,7 @@ namespace Relativity.Sync.Tests.Unit
 		public void ItShouldThrowOnEmptyName(string name)
 		{
 			const int order = 1;
-			const string status = "status";
-
-			// ACT
-			Func<Task> action = async () => await _progressRepository.CreateAsync(_WORKSPACE_ID, 1, name, order, status).ConfigureAwait(false);
-
-			// ASSERT
-			action.Should().Throw<ArgumentNullException>();
-		}
-
-		[Test]
-		[TestCase(null)]
-		[TestCase("")]
-		public void ItShouldThrowOnEmptyStatus(string status)
-		{
-			const int order = 1;
-			const string name = "name";
+			const SyncJobStatus status = SyncJobStatus.New;
 
 			// ACT
 			Func<Task> action = async () => await _progressRepository.CreateAsync(_WORKSPACE_ID, 1, name, order, status).ConfigureAwait(false);

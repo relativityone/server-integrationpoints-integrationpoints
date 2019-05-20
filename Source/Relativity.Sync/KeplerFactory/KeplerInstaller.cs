@@ -1,4 +1,6 @@
-﻿using Autofac;
+﻿using System;
+using Autofac;
+using Autofac.Core;
 using Relativity.Sync.Authentication;
 
 namespace Relativity.Sync.KeplerFactory
@@ -8,7 +10,8 @@ namespace Relativity.Sync.KeplerFactory
 		public void Install(ContainerBuilder builder)
 		{
 			builder.RegisterType<OAuth2ClientFactory>().As<IOAuth2ClientFactory>();
-			builder.RegisterType<OAuth2TokenGenerator>().As<IAuthTokenGenerator>();
+			builder.RegisterType<OAuth2TokenGenerator>().As<IAuthTokenGenerator>()
+				.WithParameter(new ResolvedParameter((pi, ctx) => pi.ParameterType == typeof(Uri), (pi, ctx) => ctx.Resolve<RelativityServices>().AuthenticationUri));
 
 			builder.RegisterType<TokenProviderFactoryFactory>().As<ITokenProviderFactoryFactory>();
 			builder.RegisterType<ServiceFactoryForUser>()
