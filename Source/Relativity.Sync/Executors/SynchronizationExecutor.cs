@@ -15,8 +15,8 @@ namespace Relativity.Sync.Executors
 		private readonly IDateTime _dateTime;
 		private readonly IDestinationWorkspaceTagRepository _destinationWorkspaceTagRepository;
 		private readonly IImportJobFactory _importJobFactory;
-		private readonly ISyncMetrics _syncMetrics;
 		private readonly ISyncLog _logger;
+		private readonly ISyncMetrics _syncMetrics;
 
 		public SynchronizationExecutor(IBatchRepository batchRepository, IDateTime dateTime, IDestinationWorkspaceTagRepository destinationWorkspaceTagRepository,
 			IImportJobFactory importJobFactory, ISyncLog syncLogger, ISyncMetrics syncMetrics)
@@ -34,13 +34,14 @@ namespace Relativity.Sync.Executors
 			ExecutionResult result = ExecutionResult.Success();
 			DateTime startTime = _dateTime.Now;
 
-			IList<IBatch> batches = null;
+			IList<List<int>> batchArtifactIds = new List<List<int>>();
+
 			try
 			{
 				_logger.LogVerbose("Gathering batches to execute.");
 
 				IList<int> batchIds = (await _batchRepository.GetAllNewBatchesIdsAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId).ConfigureAwait(false)).ToList();
-				batches = new List<IBatch>(batchIds.Count);
+
 				foreach (int batchId in batchIds)
 				{
 					if (token.IsCancellationRequested)
@@ -51,7 +52,7 @@ namespace Relativity.Sync.Executors
 					}
 
 					IBatch batch = await _batchRepository.GetAsync(configuration.SourceWorkspaceArtifactId, batchId).ConfigureAwait(false);
-					batches.Add(batch);
+					batchArtifactIds.Add((await batch.GetItemArtifactIds(configuration.ExportRunId).ConfigureAwait(false)).ToList());
 
 					_logger.LogVerbose("Processing batch ID: {batchId}", batchId);
 					using (IImportJob importJob = _importJobFactory.CreateImportJob(configuration, batch))
@@ -86,7 +87,7 @@ namespace Relativity.Sync.Executors
 
 			try
 			{
-				await TagDocuments(batches, configuration, token).ConfigureAwait(false);
+				await TagDocumentsAsync(configuration, batchArtifactIds, token).ConfigureAwait(false);
 			}
 			catch (Exception ex)
 			{
@@ -108,18 +109,19 @@ namespace Relativity.Sync.Executors
 			return result;
 		}
 
-		private async Task TagDocuments(IList<IBatch> batches, ISynchronizationConfiguration configuration, CancellationToken token)
+		private async Task TagDocumentsAsync(ISynchronizationConfiguration configuration, IList<List<int>> artifactIds, CancellationToken token)
 		{
-			if (batches != null && batches.Any())
+			if (artifactIds.Any())
 			{
-				var tasks = new Task<IList<TagDocumentsResult>>[batches.Count];
-				for (int i = 0; i < batches.Count; i++)
+				var tasks = new Task<IList<TagDocumentsResult>>[artifactIds.Count];
+
+				for (int i = 0; i < artifactIds.Count; i++)
 				{
-					IList<int> artifactIds = (await batches[i].GetItemArtifactIds(configuration.ExportRunId).ConfigureAwait(false)).ToList();
-					Task<IList<TagDocumentsResult>> tagTask = _destinationWorkspaceTagRepository.TagDocumentsAsync(configuration, artifactIds, token);
+					Task<IList<TagDocumentsResult>> tagTask = _destinationWorkspaceTagRepository.TagDocumentsAsync(configuration, artifactIds[i], token);
 					tasks[i] = tagTask;
 				}
-				Task.WaitAll(tasks, token);
+
+				await Task.WhenAll(tasks).ConfigureAwait(false);
 			}
 		}
 	}

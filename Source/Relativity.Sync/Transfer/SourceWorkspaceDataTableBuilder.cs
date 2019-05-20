@@ -1,87 +1,103 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-using kCura.Vendor.Castle.Components.DictionaryAdapter;
-using Relativity.Services.Interfaces.Shared.Models;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Services.RestApi;
-using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
-using IConfiguration = Relativity.Sync.Configuration.IConfiguration;
 
 namespace Relativity.Sync.Transfer
 {
 	/// <summary>
 	/// Creates a single <see cref="DataTable"/> out of several sources of information based on the given schema.
 	/// </summary>
-	internal sealed class SourceWorkspaceDataTableBuilder
+	internal sealed class SourceWorkspaceDataTableBuilder : ISourceWorkspaceDataTableBuilder
 	{
-		private readonly MetadataMapping _metadataMapping;
-		private readonly IFolderPathRetriever _folderPathRetriever;
-		private readonly INativeFileRepository _nativeFileRepository;
+		private DataTable _dataTable;
+		private readonly IFieldManager _fieldManager;
 
-		public SourceWorkspaceDataTableBuilder(MetadataMapping mapping, IFolderPathRetriever folderPathRetriever, INativeFileRepository nativeFileRepository)
+		public SourceWorkspaceDataTableBuilder(IFieldManager fieldManager)
 		{
-			_metadataMapping = mapping;
-			_folderPathRetriever = folderPathRetriever;
-			_nativeFileRepository = nativeFileRepository;
+			_fieldManager = fieldManager;
 		}
 
-		public async Task<DataTable> BuildAsync(int workspaceArtifactId, RelativityObjectSlim[] batch)
+		public async Task<DataTable> BuildAsync(int sourceWorkspaceArtifactId, RelativityObjectSlim[] batch, CancellationToken token)
 		{
 			if (batch == null || !batch.Any())
 			{
 				return new DataTable();
 			}
 
-			DataTable data = new DataTable();
-			DataColumn[] columns = _metadataMapping.CreateDataTableColumns();
-			data.Columns.AddRange(columns);
+			IList<FieldInfoDto> allFields = await _fieldManager.GetAllFieldsAsync(token).ConfigureAwait(false);
 
-			ICollection<int> artifactIdsInBatch = batch.Select(x => x.ArtifactID).ToList();
+			DataTable dataTable = GetEmptyDataTable(allFields);
 
-			// NOTE: This call is not technically needed if we're using DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure,
-			// NOTE: but doing it either way greatly simplifies the logic.
-			IDictionary<int, string> artifactIdToFolderPath = await _folderPathRetriever
-				.GetFolderPathsAsync(workspaceArtifactId, artifactIdsInBatch)
-				.ConfigureAwait(false);
-
-			IEnumerable<INativeFile> nativeFileInfo = await _nativeFileRepository
-				.QueryAsync(workspaceArtifactId, artifactIdsInBatch)
-				.ConfigureAwait(false);
-			IDictionary<int, INativeFile> artifactIdToNativeFile = CreateNativeFileMap(artifactIdsInBatch, nativeFileInfo);
+			IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> specialFieldBuildersDictionary = await CreateSpecialFieldRowValuesBuilders(sourceWorkspaceArtifactId, batch).ConfigureAwait(false);
 
 			foreach (RelativityObjectSlim obj in batch)
 			{
-				object[] row = BuildRow(obj, artifactIdToFolderPath, artifactIdToNativeFile);
-				data.Rows.Add(row);
+				object[] row = BuildRow(specialFieldBuildersDictionary, allFields, obj);
+				dataTable.Rows.Add(row);
 			}
 
-			return data;
+			return dataTable;
 		}
 
-		private static IDictionary<int, INativeFile> CreateNativeFileMap(IEnumerable<int> artifactIdsInBatch, IEnumerable<INativeFile> nativeFileInfo)
+		private async Task<IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder>> CreateSpecialFieldRowValuesBuilders(int sourceWorkspaceArtifactId, RelativityObjectSlim[] batch)
 		{
-			List<INativeFile> nativeFileInfoList = nativeFileInfo.ToList();
-			HashSet<int> documentsWithNatives = new HashSet<int>(nativeFileInfoList.Select(x => x.DocumentArtifactId));
+			IEnumerable<int> documentArtifactIds = batch.Select(obj => obj.ArtifactID);
 
-			IDictionary<int, INativeFile> artifactIdToNativeFile = nativeFileInfoList.ToDictionary(n => n.DocumentArtifactId);
-			List<int> documentsWithoutNatives = artifactIdsInBatch.Where(x => !documentsWithNatives.Contains(x)).ToList();
-
-			artifactIdToNativeFile.Extend(documentsWithoutNatives, Enumerable.Repeat(NativeFile.Empty, documentsWithoutNatives.Count));
-
-			return artifactIdToNativeFile;
+			return await _fieldManager.CreateSpecialFieldRowValueBuildersAsync(sourceWorkspaceArtifactId, documentArtifactIds).ConfigureAwait(false);
 		}
 
-		private object[] BuildRow(RelativityObjectSlim obj, IDictionary<int, string> artifactIdToFolderPath, IDictionary<int, INativeFile> artifactIdToNativeFile)
+		private DataTable GetEmptyDataTable(IEnumerable<FieldInfoDto> allFields)
 		{
-			string folderPath = artifactIdToFolderPath[obj.ArtifactID];
-			INativeFile nativeFileInfo = artifactIdToNativeFile[obj.ArtifactID];
-			object[] values = _metadataMapping.CreateDataTableRow(obj.Values, folderPath, nativeFileInfo);
-			return values;
+			if (_dataTable == null)
+			{
+				_dataTable = CreateDataTable(allFields);
+			}
+			return _dataTable.Clone();
+		}
+
+		private static DataTable CreateDataTable(IEnumerable<FieldInfoDto> allFields)
+		{
+			var dataTable = new DataTable();
+
+			DataColumn[] columns = BuildColumns(allFields);
+			dataTable.Columns.AddRange(columns);
+			return dataTable;
+		}
+
+		private static DataColumn[] BuildColumns(IEnumerable<FieldInfoDto> fields)
+		{
+			DataColumn[] columns = fields.Select(x => new DataColumn(x.DisplayName, typeof(object))).ToArray();
+			return columns;
+		}
+
+		private object[] BuildRow(IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> specialFieldBuilders, IList<FieldInfoDto> fields, RelativityObjectSlim obj)
+		{
+			object[] result = new object[fields.Count];
+
+			for (int i = 0; i < fields.Count; i++)
+			{
+				FieldInfoDto field = fields[i];
+				if (field.SpecialFieldType != SpecialFieldType.None)
+				{
+					if (!specialFieldBuilders.ContainsKey(field.SpecialFieldType))
+					{
+						throw new SourceDataReaderException($"No special field row value builder found for special field type {nameof(SpecialFieldType)}.{field.SpecialFieldType}");
+					}
+
+					object initialFieldValue = field.IsDocumentField ? obj.Values[field.DocumentFieldIndex] : null;
+					result[i] = specialFieldBuilders[field.SpecialFieldType].BuildRowValue(field, obj, initialFieldValue);
+				}
+				else
+				{
+					result[i] = obj.Values[field.DocumentFieldIndex];
+				}
+			}
+
+			return result;
 		}
 	}
 }

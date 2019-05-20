@@ -151,7 +151,17 @@ namespace Relativity.Sync.Storage
 			}
 		}
 
-		private async Task<bool> ReadLastAsync(int workspaceArtifactId, int syncConfigurationArtifactId)
+		private Task<bool> ReadFirstAsync(int workspaceArtifactId, int syncConfigurationArtifactId)
+		{
+			return ReadFirstUsingSortAsync(workspaceArtifactId, syncConfigurationArtifactId, SortEnum.Ascending);
+		}
+
+		private Task<bool> ReadLastAsync(int workspaceArtifactId, int syncConfigurationArtifactId)
+		{
+			return ReadFirstUsingSortAsync(workspaceArtifactId, syncConfigurationArtifactId, SortEnum.Descending);
+		}
+
+		private async Task<bool> ReadFirstUsingSortAsync(int workspaceArtifactId, int syncConfigurationArtifactId, SortEnum sort)
 		{
 			_workspaceArtifactId = workspaceArtifactId;
 
@@ -173,7 +183,47 @@ namespace Relativity.Sync.Storage
 							{
 								Guid = StartingIndexGuid
 							},
-							Direction = SortEnum.Descending
+							Direction = sort
+						}
+					}
+				};
+
+				QueryResult result = await objectManager.QueryAsync(_workspaceArtifactId, queryRequest, 1, 1).ConfigureAwait(false);
+
+				if (result.TotalCount == 0)
+				{
+					return false;
+				}
+
+				ArtifactId = result.Objects[0].ArtifactID;
+				PopulateBatchProperties(result.Objects[0]);
+				return true;
+			}
+		}
+
+		private async Task<bool> ReadNextAsync(int workspaceArtifactId, int syncConfigurationArtifactId, int startingIndex)
+		{
+			_workspaceArtifactId = workspaceArtifactId;
+
+			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			{
+				QueryRequest queryRequest = new QueryRequest
+				{
+					ObjectType = new ObjectTypeRef
+					{
+						Guid = BatchObjectTypeGuid
+					},
+					Fields = GetFieldsToRead(),
+					Condition = $"('{SyncConfigurationRelationGuid}' == OBJECT {syncConfigurationArtifactId}) AND ('{StartingIndexGuid}' > {startingIndex})",
+					Sorts = new[]
+					{
+						new Sort
+						{
+							FieldIdentifier = new FieldRef
+							{
+								Guid = StartingIndexGuid
+							},
+							Direction = SortEnum.Ascending
 						}
 					}
 				};
@@ -272,13 +322,13 @@ namespace Relativity.Sync.Storage
 
 		private void PopulateBatchProperties(RelativityObject relativityObject)
 		{
-			TotalItemsCount = (int)relativityObject[TotalItemsCountGuid].Value;
-			StartingIndex = (int)relativityObject[StartingIndexGuid].Value;
+			TotalItemsCount = (int) relativityObject[TotalItemsCountGuid].Value;
+			StartingIndex = (int) relativityObject[StartingIndexGuid].Value;
 			Status = ((string)relativityObject[StatusGuid].Value).GetEnumFromDescription<BatchStatus>();
-			FailedItemsCount = (int)(relativityObject[FailedItemsCountGuid].Value ?? default(int));
-			TransferredItemsCount = (int)(relativityObject[TransferredItemsCountGuid].Value ?? default(int));
-			Progress = decimal.ToDouble((decimal?)relativityObject[ProgressGuid].Value ?? default(decimal));
-			LockedBy = (string)relativityObject[LockedByGuid].Value;
+			FailedItemsCount = (int) (relativityObject[FailedItemsCountGuid].Value ?? default(int));
+			TransferredItemsCount = (int) (relativityObject[TransferredItemsCountGuid].Value ?? default(int));
+			Progress = decimal.ToDouble((decimal?) relativityObject[ProgressGuid].Value ?? default(decimal));
+			LockedBy = (string) relativityObject[LockedByGuid].Value;
 		}
 
 		private async Task UpdateFieldValue<T>(Guid fieldGuid, T value)
@@ -316,6 +366,19 @@ namespace Relativity.Sync.Storage
 			var batch = new Batch(serviceFactory);
 			IEnumerable<int> batchIds = await batch.ReadAllNewIdsAsync(workspaceArtifactId, syncConfigurationId).ConfigureAwait(false);
 			return batchIds;
+		}
+		public static async Task<IBatch> GetFirstAsync(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int syncConfigurationArtifactId)
+		{
+			Batch batch = new Batch(serviceFactory);
+			bool batchFound = await batch.ReadFirstAsync(workspaceArtifactId, syncConfigurationArtifactId).ConfigureAwait(false);
+			return batchFound ? batch : null;
+		}
+
+		public static async Task<IBatch> GetNextAsync(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int syncConfigurationArtifactId, int startingIndex)
+		{
+			Batch batch = new Batch(serviceFactory);
+			bool batchFound = await batch.ReadNextAsync(workspaceArtifactId, syncConfigurationArtifactId, startingIndex).ConfigureAwait(false);
+			return batchFound ? batch : null;
 		}
 	}
 }

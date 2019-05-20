@@ -12,7 +12,7 @@ namespace Relativity.Sync.Tests.Common
 	internal sealed class ConfigurationStub : IDataDestinationFinalizationConfiguration, IDataDestinationInitializationConfiguration, IDataSourceSnapshotConfiguration,
 		IDestinationWorkspaceObjectTypesCreationConfiguration, IDestinationWorkspaceSavedSearchCreationConfiguration, IDestinationWorkspaceTagsCreationConfiguration, IJobCleanupConfiguration,
 		IJobStatusConsolidationConfiguration, INotificationConfiguration, IPermissionsCheckConfiguration, ISnapshotPartitionConfiguration,
-		ISourceWorkspaceTagsCreationConfiguration, ISynchronizationConfiguration, IValidationConfiguration, IUserContextConfiguration
+		ISourceWorkspaceTagsCreationConfiguration, ISynchronizationConfiguration, IValidationConfiguration, IUserContextConfiguration, IFieldConfiguration
 	{
 		private const int _ADMIN_ID = 9;
 
@@ -61,7 +61,7 @@ namespace Relativity.Sync.Tests.Common
 		}
 		public int DestinationWorkspaceTagArtifactId { get; set; }
 		public int JobHistoryTagArtifactId { get; set; }
-		public ImportSettingsDto ImportSettings { get; }
+		public ImportSettingsDto ImportSettings { get; set; }
 
 		public bool IsSourceJobTagSet { get; set; }
 
@@ -86,5 +86,6 @@ namespace Relativity.Sync.Tests.Common
 		public int TotalRecordsCount { get; set; }
 		public int BatchSize { get; set; }
 		public Guid ExportRunId { get; set; }
+		public string SourceWorkspaceTagName { get; set; }
 	}
 }

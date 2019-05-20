@@ -17,7 +17,7 @@ namespace Relativity.Sync.Tests.Integration
 			const int bufferSize = 4096;
 
 			Exception innerEx = new Exception("foo");
-			DestinationWorkspaceTagRepositoryException originalException = new DestinationWorkspaceTagRepositoryException("message", innerEx);
+			SyncKeplerException originalException = new SyncKeplerException("message", innerEx);
 			byte[] buffer = new byte[bufferSize];
 			MemoryStream ms = new MemoryStream(buffer);
 			MemoryStream ms2 = new MemoryStream(buffer);
@@ -25,7 +25,7 @@ namespace Relativity.Sync.Tests.Integration
 
 			// ACT
 			formatter.Serialize(ms, originalException);
-			DestinationWorkspaceTagRepositoryException deserializedException = (DestinationWorkspaceTagRepositoryException)formatter.Deserialize(ms2);
+			SyncKeplerException deserializedException = (SyncKeplerException)formatter.Deserialize(ms2);
 
 			// ASSERT
 			deserializedException.InnerException.Should().NotBeNull();
@@ -37,11 +37,11 @@ namespace Relativity.Sync.Tests.Integration
 		public void ItShouldSerializeToJson()
 		{
 			Exception innerEx = new Exception("foo");
-			DestinationWorkspaceTagRepositoryException originalException = new DestinationWorkspaceTagRepositoryException("message", innerEx);
+			SyncKeplerException originalException = new SyncKeplerException("message", innerEx);
 
 			// ACT
 			string json = JsonConvert.SerializeObject(originalException);
-			DestinationWorkspaceTagRepositoryException deserializedException = JsonConvert.DeserializeObject<DestinationWorkspaceTagRepositoryException>(json);
+			SyncKeplerException deserializedException = JsonConvert.DeserializeObject<SyncKeplerException>(json);
 
 			// ASSERT
 			deserializedException.InnerException.Should().NotBeNull();

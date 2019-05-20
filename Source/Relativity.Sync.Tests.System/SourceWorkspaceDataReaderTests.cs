@@ -5,7 +5,6 @@ using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Transfer;
@@ -28,18 +27,17 @@ namespace Relativity.Sync.Tests.System
 		[Test]
 		public async Task ItShouldWork()
 		{
-			const int sourceWorkspaceArtifactId = 1017928;
+			const int sourceWorkspaceArtifactId = 1215252;
 			const int dataSourceArtifactId = 1038052;
-			var sourceServiceFactory = new SourceServiceFactoryStub(ServiceFactory);
-
-			var executor = new DataSourceSnapshotExecutor(sourceServiceFactory, new EmptyLogger());
 			const int controlNumberFieldId = 1003667;
 			const int extractedTextFieldId = 1003668;
+			const int folderInfoFieldId = 1035366;
 			ConfigurationStub configuration = new ConfigurationStub
 			{
 				SourceWorkspaceArtifactId = sourceWorkspaceArtifactId,
 				DataSourceArtifactId = dataSourceArtifactId,
-				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure,
+				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.ReadFromField,
+				FolderPathSourceFieldArtifactId = folderInfoFieldId,
 				FieldMappings = new List<FieldMap>
 				{
 					new FieldMap
@@ -61,34 +59,30 @@ namespace Relativity.Sync.Tests.System
 				}
 			};
 
+			var sourceServiceFactory = new SourceServiceFactoryStub(ServiceFactory);
+			var documentFieldRepository = new DocumentFieldRepository(sourceServiceFactory, new EmptyLogger());
+			var fieldManager = new FieldManager(configuration, documentFieldRepository, new List<ISpecialFieldBuilder>
+			{
+				new FileInfoFieldsBuilder(new NativeFileRepository(sourceServiceFactory)),
+				new FolderPathFieldBuilder(sourceServiceFactory, new FolderPathRetriever(sourceServiceFactory, new EmptyLogger()), configuration), new SourceTagsFieldBuilder()
+			});
+			var executor = new DataSourceSnapshotExecutor(sourceServiceFactory, fieldManager, new EmptyLogger());
+
 			ExecutionResult result = await executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
 
 			Assert.AreEqual(ExecutionStatus.Completed, result.Status);
-
+			RelativityExportBatcher batcher = new RelativityExportBatcher(sourceServiceFactory, new BatchRepository(sourceServiceFactory));
 			const int resultsBlockSize = 100;
-			SourceWorkspaceDataReader dataReader = new SourceWorkspaceDataReader(sourceServiceFactory,
-				new BatchRepository(sourceServiceFactory), 
-				sourceWorkspaceArtifactId,
-				configuration.ExportRunId,
-				resultsBlockSize,
-				new MetadataMapping(configuration.DestinationFolderStructureBehavior, configuration.FolderPathSourceFieldArtifactId, configuration.FieldMappings.ToList()),
-				new FolderPathRetriever(sourceServiceFactory, new EmptyLogger()),
-				new NativeFileRepository(sourceServiceFactory),
-				new EmptyLogger());
+			SourceWorkspaceDataReader dataReader = new SourceWorkspaceDataReader(new SourceWorkspaceDataTableBuilder(fieldManager), configuration, batcher, new EmptyLogger());
 
 			ConsoleLogger logger = new ConsoleLogger();
+			object[] tmpTable = new object[resultsBlockSize];
 			while (dataReader.Read())
 			{
-				string controlNumber = (string) dataReader["Control Number"];
-				logger.LogInformation($"Control Number: {controlNumber}");
-				string extractedText = (string)dataReader["Extracted Text"];
-				logger.LogInformation($"Extracted Text: {extractedText}");
-				string nativeFileLocation = dataReader["NativeFileLocation"].ToString();
-				logger.LogInformation($"NativeFileLocation: {nativeFileLocation}");
-				long nativeFileSize = (long) dataReader["NativeFileSize"];
-				logger.LogInformation($"NativeFileSize: {nativeFileSize}");
-				string folderPath = (string) dataReader["FolderPath"];
-				logger.LogInformation($"FolderPath: {folderPath}");
+				for (int i = 0; i<dataReader.GetValues(tmpTable); i++)
+				{
+					logger.LogInformation($"{dataReader.GetName(i)} [{(tmpTable[i] == null ? "null" : tmpTable[i].GetType().Name)}]: {tmpTable[i]}");
+				}
 
 				logger.LogInformation("");
 			}

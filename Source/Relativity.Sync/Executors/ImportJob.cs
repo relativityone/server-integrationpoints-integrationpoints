@@ -8,7 +8,6 @@ namespace Relativity.Sync.Executors
 {
 	internal sealed class ImportJob : IImportJob
 	{
-		private bool _jobCompletedSuccessfully = false;
 		private Exception _importApiException = null;
 
 		private const string _IDENTIFIER_COLUMN = "Identifier";
@@ -38,15 +37,16 @@ namespace Relativity.Sync.Executors
 
 		private void HandleComplete(JobReport jobReport)
 		{
-			_logger.LogInformation("Batch completed.");
-			_jobCompletedSuccessfully = true;
-			_semaphoreSlim.Release();
+			if (_importApiException == null)
+			{
+				_logger.LogInformation("Batch completed.");
+				_semaphoreSlim.Release();
+			}
 		}
 
 		private void HandleFatalException(JobReport jobReport)
 		{
 			_logger.LogError(jobReport.FatalException, jobReport.FatalException?.Message);
-			_jobCompletedSuccessfully = false;
 			_importApiException = jobReport.FatalException;
 
 			CreateJobHistoryErrorDto jobError = new CreateJobHistoryErrorDto(_jobHistoryArtifactId, ErrorType.Job)
@@ -61,7 +61,7 @@ namespace Relativity.Sync.Executors
 
 		private void HandleItemLevelError(IDictionary row)
 		{
-			string errorMessage = GetValueOrNull(row, _MESSAGE_COLUMN);
+			string errorMessage = $"IAPI {GetValueOrNull(row, _MESSAGE_COLUMN)}";
 			string sourceUniqueId = GetValueOrNull(row, _IDENTIFIER_COLUMN);
 
 			_logger.LogError("Item level error occurred. Source: {sourceUniqueId} Message: {errorMessage}", sourceUniqueId, errorMessage);
@@ -102,7 +102,7 @@ namespace Relativity.Sync.Executors
 				throw;
 			}
 
-			if (!_jobCompletedSuccessfully)
+			if (_importApiException != null)
 			{
 				throw new SyncException("Fatal exception occurred in Import API.", _importApiException);
 			}
