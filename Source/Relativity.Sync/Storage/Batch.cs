@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using kCura.Utility;
 using Relativity.Services.Objects;
@@ -198,6 +200,31 @@ namespace Relativity.Sync.Storage
 			}
 		}
 
+		private async Task<IEnumerable<int>> ReadAllNewIdsAsync(int workspaceArtifactId, int syncConfigurationArtifactId)
+		{
+			_workspaceArtifactId = workspaceArtifactId;
+
+			IEnumerable<int> batchIds = System.Array.Empty<int>();
+			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			{
+				QueryRequest queryRequest = new QueryRequest
+				{
+					ObjectType = new ObjectTypeRef
+					{
+						Guid = BatchObjectTypeGuid
+					},
+					Condition = $"'{SyncConfigurationRelationGuid}' == OBJECT {syncConfigurationArtifactId} AND '{StatusGuid}' == '{BatchStatus.New.GetDescription()}'"
+				};
+
+				QueryResult result = await objectManager.QueryAsync(_workspaceArtifactId, queryRequest, 1, int.MaxValue).ConfigureAwait(false);
+				if (result.TotalCount > 0)
+				{
+					batchIds = result.Objects.Select(x => x.ArtifactID);
+				}
+			}
+			return batchIds;
+		}
+
 		private static FieldRef[] GetFieldsToRead()
 		{
 			return new[]
@@ -235,13 +262,13 @@ namespace Relativity.Sync.Storage
 
 		private void PopulateBatchProperties(RelativityObject relativityObject)
 		{
-			TotalItemsCount = (int) relativityObject[TotalItemsCountGuid].Value;
-			StartingIndex = (int) relativityObject[StartingIndexGuid].Value;
-			Status = ((string) relativityObject[StatusGuid].Value).GetEnumFromDescription<BatchStatus>();
-			FailedItemsCount = (int) (relativityObject[FailedItemsCountGuid].Value ?? default(int));
-			TransferredItemsCount = (int) (relativityObject[TransferredItemsCountGuid].Value ?? default(int));
-			Progress = decimal.ToDouble((decimal?) relativityObject[ProgressGuid].Value ?? default(decimal));
-			LockedBy = (string) relativityObject[LockedByGuid].Value;
+			TotalItemsCount = (int)relativityObject[TotalItemsCountGuid].Value;
+			StartingIndex = (int)relativityObject[StartingIndexGuid].Value;
+			Status = ((string)relativityObject[StatusGuid].Value).GetEnumFromDescription<BatchStatus>();
+			FailedItemsCount = (int)(relativityObject[FailedItemsCountGuid].Value ?? default(int));
+			TransferredItemsCount = (int)(relativityObject[TransferredItemsCountGuid].Value ?? default(int));
+			Progress = decimal.ToDouble((decimal?)relativityObject[ProgressGuid].Value ?? default(decimal));
+			LockedBy = (string)relativityObject[LockedByGuid].Value;
 		}
 
 		private async Task UpdateFieldValue<T>(Guid fieldGuid, T value)
@@ -272,6 +299,13 @@ namespace Relativity.Sync.Storage
 			Batch batch = new Batch(serviceFactory);
 			bool batchFound = await batch.ReadLastAsync(workspaceArtifactId, syncConfigurationArtifactId).ConfigureAwait(false);
 			return batchFound ? batch : null;
+		}
+
+		public static async Task<IEnumerable<int>> GetAllNewBatchIdsAsync(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int syncConfigurationId)
+		{
+			var batch = new Batch(serviceFactory);
+			IEnumerable<int> batchIds = await batch.ReadAllNewIdsAsync(workspaceArtifactId, syncConfigurationId).ConfigureAwait(false);
+			return batchIds;
 		}
 	}
 }
