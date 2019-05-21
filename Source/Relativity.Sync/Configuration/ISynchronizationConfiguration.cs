@@ -14,7 +14,6 @@ namespace Relativity.Sync.Configuration
 
 		ImportSettingsDto ImportSettings { get; }
 
-		int SourceWorkspaceArtifactId { get; }
 		Guid ExportRunId { get; }
 
 		IList<FieldMap> FieldMappings { get; }
