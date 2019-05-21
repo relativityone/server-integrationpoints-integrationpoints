@@ -38,7 +38,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
 
 			_fieldManager = new Mock<IFieldManager>();
-			_fieldManager.Setup(fm => fm.GetDocumentFieldsAsync(CancellationToken.None)).ReturnsAsync(Mock.Of<List<Sync.Transfer.FieldInfoDto>>());
+			_fieldManager.Setup(fm => fm.GetDocumentFieldsAsync(CancellationToken.None)).ReturnsAsync(Mock.Of<List<FieldInfoDto>>());
 
 			_configuration = new Mock<IDataSourceSnapshotConfiguration>();
 			_configuration.Setup(x => x.SourceWorkspaceArtifactId).Returns(_WORKSPACE_ID);
@@ -128,21 +128,14 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			const string field1Id = "741258";
 			const string field2Id = "985632";
 
-			List<Sync.Transfer.FieldInfoDto> fieldInfos = new List<Sync.Transfer.FieldInfoDto>
+			List<FieldInfoDto> fieldInfos = new List<FieldInfoDto>
 			{
-				new Sync.Transfer.FieldInfoDto
-				{
-					DisplayName = field1Id
-				},
-				new Sync.Transfer.FieldInfoDto
-				{
-					DisplayName = field2Id
-				}
+				FieldInfoDto.DocumentField(field1Id),
+				FieldInfoDto.DocumentField(field2Id)
 			};
 
 			_fieldManager.Setup(fm => fm.GetDocumentFieldsAsync(CancellationToken.None)).ReturnsAsync(fieldInfos);
 
-			
 			ExportInitializationResults exportInitializationResults = new ExportInitializationResults
 			{
 				RecordCount = 1L,
