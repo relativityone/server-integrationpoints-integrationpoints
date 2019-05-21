@@ -34,7 +34,7 @@ namespace Relativity.Sync.Transfer
 			IDictionary<int, INativeFile> artifactIdToNativeFile = nativeFileInfoList.ToDictionary(n => n.DocumentArtifactId);
 			List<int> documentsWithoutNatives = documentArtifactIds.Where(x => !documentsWithNatives.Contains(x)).ToList();
 
-			artifactIdToNativeFile.Extend(documentsWithoutNatives, NativeFile.Empty.Repeat());
+			artifactIdToNativeFile.AddMany(documentsWithoutNatives, NativeFile.Empty.Repeat());
 
 			return new FileInfoRowValuesBuilder(artifactIdToNativeFile);
 		}

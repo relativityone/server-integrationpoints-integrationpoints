@@ -32,15 +32,15 @@ namespace Relativity.Sync
 		}
 
 		/// <summary>
-		/// Iterates over the given <see cref="IEnumerable{T}"/>s of keys and values in parallel,
-		/// adding each key/value pair to the given dictionary. Iteration stops once either sequence ends.
+		/// Iterates over the given sequences of keys and values, adding each key/value pair
+		/// to the given dictionary. Iteration stops once either sequence ends.
 		/// </summary>
 		/// <typeparam name="TKey">Type of the dictionary's keys</typeparam>
 		/// <typeparam name="TValue">Type of the dictionary's values</typeparam>
 		/// <param name="src">Dictionary to which pairs will be added. A copy will not be returned; this reference will be mutated.</param>
-		/// <param name="keys">Sequence of keys to add. If any key in the sequence is null, a <see cref="ArgumentException"/> will be thrown.</param>
+		/// <param name="keys">Sequence of keys to add. If any key in the sequence is null, an <see cref="ArgumentException"/> will be thrown.</param>
 		/// <param name="values">Sequence of values to add.</param>
-		internal static void Extend<TKey, TValue>(
+		internal static void AddMany<TKey, TValue>(
 			this IDictionary<TKey, TValue> src,
 			IEnumerable<TKey> keys,
 			IEnumerable<TValue> values)
