@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Relativity.Sync.Storage;
-using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Configuration
 {

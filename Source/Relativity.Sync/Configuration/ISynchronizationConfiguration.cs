@@ -14,10 +14,12 @@ namespace Relativity.Sync.Configuration
 
 		ImportSettingsDto ImportSettings { get; }
 
+		Guid ExportRunId { get; }
+
 		IList<FieldMap> FieldMappings { get; }
 
 		int SyncConfigurationArtifactId { get; }
 
-		Guid ExportRunId { get; }
+		void SetImportSettings(ImportSettingsDto importSettings);
 	}
 }

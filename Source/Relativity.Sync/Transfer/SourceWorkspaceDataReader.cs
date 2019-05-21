@@ -61,7 +61,6 @@ namespace Relativity.Sync.Transfer
 		{
 			if (_batchToken == null)
 			{
-
 				_batchToken = _exportBatcher.Start(_configuration.ExportRunId, _configuration.SourceWorkspaceArtifactId, _configuration.SyncConfigurationArtifactId);
 			}
 
@@ -101,7 +100,7 @@ namespace Relativity.Sync.Transfer
 		{
 			if (disposing && _currentReader != null)
 			{
-				_currentReader?.Dispose();
+				_currentReader.Dispose();
 				_currentReader = null;
 			}
 		}

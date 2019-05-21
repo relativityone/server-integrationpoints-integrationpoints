@@ -8,7 +8,6 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
-using Relativity.Sync.Storage;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Executors
@@ -38,7 +37,8 @@ namespace Relativity.Sync.Executors
 
 			_logger.LogVerbose("Including following system fields to export {supportedByViewer}, {nativeType}.", _SUPPORTED_BY_VIEWER_FIELD_NAME, _RELATIVITY_NATIVE_TYPE_FIELD_NAME);
 
-			IEnumerable<FieldRef> fields = (await _fieldManager.GetDocumentFieldsAsync(token).ConfigureAwait(false)).Select(f => new FieldRef {Name = f.DisplayName});
+			IEnumerable<FieldInfoDto> documentFields = await _fieldManager.GetDocumentFieldsAsync(token).ConfigureAwait(false);
+			IEnumerable<FieldRef> documentFieldRefs = documentFields.Select(f => new FieldRef {Name = f.DisplayName});
 
 			QueryRequest queryRequest = new QueryRequest
 			{
@@ -47,7 +47,7 @@ namespace Relativity.Sync.Executors
 					ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID
 				},
 				Condition = $"(('ArtifactId' IN SAVEDSEARCH {configuration.DataSourceArtifactId}))",
-				Fields = fields.ToList()
+				Fields = documentFieldRefs.ToList()
 			};
 
 			ExportInitializationResults results;
@@ -67,6 +67,7 @@ namespace Relativity.Sync.Executors
 			//ExportInitializationResult provide list of fields with order they will be returned when retrieving metadata
 			//however, order is the same as order of fields in QueryRequest when they are provided explicitly
 			await configuration.SetSnapshotDataAsync(results.RunID, results.RecordCount).ConfigureAwait(false);
+			
 			return ExecutionResult.Success();
 		}
 	}

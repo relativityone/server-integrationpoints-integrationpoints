@@ -30,6 +30,7 @@ namespace Relativity.Sync.Tests.Common
 			TotalRecordsCount = (int)totalRecordsCount;
 		}
 
+		public string SourceWorkspaceTagName { get; set; }
 		public bool CreateSavedSearchForTags { get; set; }
 		public bool IsSavedSearchArtifactIdSet { get; set; }
 		public async Task SetSavedSearchInDestinationArtifactIdAsync(int artifactId)
@@ -43,6 +44,12 @@ namespace Relativity.Sync.Tests.Common
 		public string NotificationEmails { get; set; }
 		public int SourceWorkspaceArtifactId { get; set; }
 		public int SyncConfigurationArtifactId { get; set; }
+
+		public void SetImportSettings(ImportSettingsDto importSettings)
+		{
+			ImportSettings = importSettings;
+		}
+
 		public int DestinationWorkspaceArtifactId { get; set; }
 		public int SavedSearchArtifactId { get; set; }
 		public int DestinationFolderArtifactId { get; set; }

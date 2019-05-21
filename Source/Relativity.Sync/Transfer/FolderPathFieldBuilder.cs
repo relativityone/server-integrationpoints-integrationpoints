@@ -62,18 +62,18 @@ namespace Relativity.Sync.Transfer
 			}
 		}
 
-		public async Task<ISpecialFieldRowValuesBuilder> GetRowValuesBuilderAsync(int sourceWorkspaceArtifactId, IEnumerable<int> documentArtifactIds)
+		public async Task<ISpecialFieldRowValuesBuilder> GetRowValuesBuilderAsync(int sourceWorkspaceArtifactId, ICollection<int> documentArtifactIds)
 		{
 			IDictionary<int, string> folderPathsMap = await BuildFolderPathsMap(sourceWorkspaceArtifactId, documentArtifactIds).ConfigureAwait(false);
 			return new FolderPathRowValueBuilder(_fieldConfiguration.DestinationFolderStructureBehavior, folderPathsMap);
 		}
 
-		private async Task<IDictionary<int, string>> BuildFolderPathsMap(int sourceWorkspaceArtifactId, IEnumerable<int> documentArtifactIds)
+		private async Task<IDictionary<int, string>> BuildFolderPathsMap(int sourceWorkspaceArtifactId, ICollection<int> documentArtifactIds)
 		{
 			IDictionary<int, string> folderPathsMap = null;
 			if (_fieldConfiguration.DestinationFolderStructureBehavior == DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure)
 			{
-				folderPathsMap = await _folderPathRetriever.GetFolderPathsAsync(sourceWorkspaceArtifactId, documentArtifactIds.ToList()).ConfigureAwait(false);
+				folderPathsMap = await _folderPathRetriever.GetFolderPathsAsync(sourceWorkspaceArtifactId, documentArtifactIds).ConfigureAwait(false);
 			}
 			return folderPathsMap;
 		}
