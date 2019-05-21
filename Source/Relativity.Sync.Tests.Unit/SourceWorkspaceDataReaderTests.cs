@@ -28,7 +28,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			_exportBatcher = new Mock<IRelativityExportBatcher>();
 			_exportBatcher.Setup(x => x.Start(It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<int>()))
-				.Returns("foo");
+				.Returns(Guid.NewGuid());
 
 			_configuration = new Mock<ISynchronizationConfiguration>();
 			_configuration.SetupGet(x => x.SyncConfigurationArtifactId).Returns(0);
@@ -87,14 +87,14 @@ namespace Relativity.Sync.Tests.Unit
 			_instance.Read();
 
 			// Assert
-			_exportBatcher.Verify(x => x.GetNextAsync(It.IsAny<string>()));
+			_exportBatcher.Verify(x => x.GetNextAsync(It.IsAny<Guid>()));
 		}
 
 		[Test]
 		public void ItShouldStartBatchingBeforeGettingNextBatch()
 		{
 			// Arrange
-			string token = "foo";
+			Guid token = Guid.NewGuid();
 			_exportBatcher.Setup(x => x.Start(It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<int>()))
 				.Returns(token);
 
@@ -102,7 +102,7 @@ namespace Relativity.Sync.Tests.Unit
 			_instance.Read();
 
 			// Assert
-			_exportBatcher.Verify(x => x.GetNextAsync(It.Is<string>(t => t == token)));
+			_exportBatcher.Verify(x => x.GetNextAsync(It.Is<Guid>(t => t == token)));
 		}
 
 		[Test]
@@ -146,7 +146,7 @@ namespace Relativity.Sync.Tests.Unit
 			_instance.Read();
 
 			// Assert
-			_exportBatcher.Verify(x => x.GetNextAsync(It.IsAny<string>()), Times.Exactly(1));
+			_exportBatcher.Verify(x => x.GetNextAsync(It.IsAny<Guid>()), Times.Exactly(1));
 		}
 
 		[Test]
@@ -246,7 +246,7 @@ namespace Relativity.Sync.Tests.Unit
 		public void ItShouldThrowProperExceptionWhenExportBatcherThrows()
 		{
 			// Arrange
-			_exportBatcher.Setup(x => x.GetNextAsync(It.IsAny<string>()))
+			_exportBatcher.Setup(x => x.GetNextAsync(It.IsAny<Guid>()))
 				.Throws(new ServiceException("Foo"));
 
 			// Act
@@ -281,7 +281,7 @@ namespace Relativity.Sync.Tests.Unit
 
 		private void ExportBatcherReturnsBatches(params RelativityObjectSlim[][] batches)
 		{
-			ISetupSequentialResult<Task<RelativityObjectSlim[]>> setupAssertion = _exportBatcher.SetupSequence(x => x.GetNextAsync(It.IsAny<string>()));
+			ISetupSequentialResult<Task<RelativityObjectSlim[]>> setupAssertion = _exportBatcher.SetupSequence(x => x.GetNextAsync(It.IsAny<Guid>()));
 			foreach (RelativityObjectSlim[] batch in batches)
 			{
 				setupAssertion.ReturnsAsync(batch);
