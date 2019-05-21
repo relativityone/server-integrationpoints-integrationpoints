@@ -116,7 +116,7 @@ namespace Relativity.Sync.Tests.System
 				new BatchProgressHandlerFactory(new BatchProgressUpdater(logger), dateTime),
 				new JobHistoryErrorRepository(_sourceServiceFactoryStub),
 				logger);
-			SynchronizationExecutor syncExecutor = new SynchronizationExecutor(batchRepository, dateTime, destinationWorkspaceTagRepository, importJobFactory, logger, syncMetrics);
+			SynchronizationExecutor syncExecutor = new SynchronizationExecutor(importJobFactory, batchRepository, destinationWorkspaceTagRepository, syncMetrics, dateTime, fieldManager, logger);
 
 			// ACT
 			ExecutionResult syncResult = await syncExecutor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);

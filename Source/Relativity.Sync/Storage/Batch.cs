@@ -367,6 +367,7 @@ namespace Relativity.Sync.Storage
 			IEnumerable<int> batchIds = await batch.ReadAllNewIdsAsync(workspaceArtifactId, syncConfigurationId).ConfigureAwait(false);
 			return batchIds;
 		}
+
 		public static async Task<IBatch> GetFirstAsync(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int syncConfigurationArtifactId)
 		{
 			Batch batch = new Batch(serviceFactory);

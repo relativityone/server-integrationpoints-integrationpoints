@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using Relativity.Sync.Storage;
-
-namespace Relativity.Sync.Configuration
+﻿namespace Relativity.Sync.Configuration
 {
 	internal interface IFieldConfiguration
 	{

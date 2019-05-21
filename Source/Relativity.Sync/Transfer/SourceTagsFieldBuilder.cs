@@ -15,7 +15,7 @@ namespace Relativity.Sync.Transfer
 			yield return new FieldInfoDto {SpecialFieldType = SpecialFieldType.SourceJob, DisplayName = _SOURCE_JOB_FIELD_NAME, IsDocumentField = false};
 		}
 
-		public async Task<ISpecialFieldRowValuesBuilder> GetRowValuesBuilderAsync(int sourceWorkspaceArtifactId, IEnumerable<int> documentArtifactIds)
+		public async Task<ISpecialFieldRowValuesBuilder> GetRowValuesBuilderAsync(int sourceWorkspaceArtifactId, ICollection<int> documentArtifactIds)
 		{
 			await Task.Yield();
 			return new SourceTagsFieldRowValuesBuilder();

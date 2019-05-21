@@ -11,7 +11,6 @@ namespace Relativity.Sync.Transfer
 		FixedLengthText = 0,
 
 		[Description("Whole Number")]
-
 		WholeNumber = 1,
 		
 		[Description("Date")]

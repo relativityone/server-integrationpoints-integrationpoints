@@ -38,19 +38,17 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		{
 			// Arrange
 			string field1Name = "Field 1";
-			string field1RelativityDataTypeName = "Date";
 			RelativityDataType field1RelativityDataType = RelativityDataType.Date;
 
 			string field2Name = "Field 2";
-			string field2RelativityDataTypeName = "Long Text";
 			RelativityDataType field2RelativityDataType = RelativityDataType.LongText;
 
 			List<string> fieldNames = new List<string> {field1Name, field2Name};
 			
 			List<RelativityObjectSlim> returnObjects = new List<RelativityObjectSlim>
 			{
-				new RelativityObjectSlim {Values = new List<object> {field1Name, field1RelativityDataTypeName}},
-				new RelativityObjectSlim {Values = new List<object> {field2Name, field2RelativityDataTypeName}}
+				new RelativityObjectSlim {Values = new List<object> { field1Name, field1RelativityDataType.GetDescription() }},
+				new RelativityObjectSlim {Values = new List<object> { field2Name, field2RelativityDataType.GetDescription() }}
 			};
 
 			QueryResultSlim queryResult = new QueryResultSlim {Objects = returnObjects};

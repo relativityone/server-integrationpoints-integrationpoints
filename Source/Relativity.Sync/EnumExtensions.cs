@@ -1,5 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Linq;
+using System.Reflection;
 
 namespace Relativity.Sync
 {
@@ -33,6 +35,32 @@ namespace Relativity.Sync
 			}
 
 			throw new InvalidOperationException($"The description could not be converted to the proper enum value: {description}.");
+		}
+
+		internal static string GetDescription<T>(this T value)
+		{
+			Type type = typeof(T);
+			if (!type.IsEnum)
+			{
+				throw new InvalidOperationException($"The type specified is not an enum type: {type}.");
+			}
+
+			string enumName = type.GetEnumName(value);
+
+			System.Reflection.FieldInfo field = type.GetField(enumName);
+			Attribute customAttribute = field.GetCustomAttribute(typeof(DescriptionAttribute));
+
+			string description;
+			if (customAttribute is DescriptionAttribute attribute)
+			{
+				description = attribute.Description;
+			}
+			else
+			{
+				description = enumName;
+			}
+
+			return description;
 		}
 	}
 }
