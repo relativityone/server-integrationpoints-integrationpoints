@@ -14,7 +14,7 @@ namespace Relativity.Sync.Tests.System.Helpers
 {
 	internal static class Rdos
 	{
-		private const int _DOCUMENT_ARTIFACT_TYPE_ID = 10;
+		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int) ArtifactType.Document;
 
 		private static readonly Guid _RELATIVITY_SOURCE_CASE_OBJECT_TYPE_GUID = new Guid("7E03308C-0B58-48CB-AFA4-BB718C3F5CAC");
 		private static readonly Guid _RELATIVITY_SOURCE_JOB_OBJECT_TYPE_GUID = new Guid("6f4dd346-d398-4e76-8174-f0cd8236cbe7");

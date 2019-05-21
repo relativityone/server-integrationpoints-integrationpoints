@@ -72,7 +72,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 		private bool AssertQueryRequest(QueryRequest queryRequest)
 		{
-			const int documentArtifactTypeId = 10;
+			const int documentArtifactTypeId = (int) ArtifactType.Document;
 			queryRequest.ObjectType.ArtifactTypeID.Should().Be(documentArtifactTypeId);
 
 			queryRequest.Condition.Should().Be($"(('ArtifactId' IN SAVEDSEARCH {_DATA_SOURCE_ID}))");

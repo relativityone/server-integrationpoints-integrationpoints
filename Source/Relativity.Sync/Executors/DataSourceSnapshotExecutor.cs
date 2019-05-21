@@ -15,7 +15,7 @@ namespace Relativity.Sync.Executors
 {
 	internal sealed class DataSourceSnapshotExecutor : IExecutor<IDataSourceSnapshotConfiguration>
 	{
-		private const int _DOCUMENT_ARTIFACT_TYPE_ID = 10;
+		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int) ArtifactType.Document;
 
 		private const string _SUPPORTED_BY_VIEWER_FIELD_NAME = "SupportedByViewer";
 		private const string _RELATIVITY_NATIVE_TYPE_FIELD_NAME = "RelativityNativeType";
