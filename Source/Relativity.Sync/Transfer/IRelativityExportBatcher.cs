@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Transfer
 {

@@ -1,21 +1,12 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Autofac;
 using FluentAssertions;
 using Moq;
-using Moq.Language;
 using NUnit.Framework;
-using Relativity.Services.Interfaces.File;
-using Relativity.Services.Interfaces.File.Models;
-using Relativity.Services.Objects;
-using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Transfer;
@@ -25,41 +16,32 @@ namespace Relativity.Sync.Tests.Integration
 	[TestFixture]
 	internal sealed partial class SourceWorkspaceDataReaderTests : IDisposable
 	{
-		private SourceDataReaderConfiguration _configuration;
 		private SourceWorkspaceDataReader _instance;
 		private DocumentTransferServicesMocker _documentTransferServicesMocker;
+		private ConfigurationStub _configuration;
 
 		[SetUp]
 		public void SetUp()
 		{
-			List<FieldMap> fieldMap = new List<FieldMap>
-			{
-				new FieldMap
-				{
-					FieldMapType = FieldMapType.None,
-					DestinationField = new FieldEntry { DisplayName = "Control Number 2" },
-					SourceField = new FieldEntry { DisplayName = "Control Number" }
-				}
-			};
-			_configuration = new SourceDataReaderConfiguration
+			_configuration = new ConfigurationStub
 			{
 				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.None,
-				MetadataMapping = new MetadataMapping(DestinationFolderStructureBehavior.None, 0, fieldMap),
-				RunId = Guid.NewGuid(),
-				SourceJobId = 0,
-				SourceWorkspaceId = 0,
-				SyncConfigurationId = 0
+				FieldMappings = StandardFieldMappings
 			};
-
-			_documentTransferServicesMocker = new DocumentTransferServicesMocker(_configuration.MetadataMapping);
+			
+			_documentTransferServicesMocker = new DocumentTransferServicesMocker();
 
 			ContainerBuilder containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
 			IntegrationTestsContainerBuilder.MockReporting(containerBuilder);
-			_documentTransferServicesMocker.RegisterMocks(containerBuilder);
+			_documentTransferServicesMocker.RegisterServiceMocks(containerBuilder);
+			containerBuilder.RegisterInstance(_configuration).AsImplementedInterfaces();
 			IContainer container = containerBuilder.Build();
 
-			_instance = new SourceWorkspaceDataReader(_configuration,
-				container.Resolve<ISourceWorkspaceDataTableBuilderFactory>(),
+			IFieldManager fieldManager = container.Resolve<IFieldManager>();
+			_documentTransferServicesMocker.SetFieldManager(fieldManager);
+
+			_instance = new SourceWorkspaceDataReader(container.Resolve<ISourceWorkspaceDataTableBuilder>(),
+				_configuration,
 				container.Resolve<IRelativityExportBatcher>(),
 				Mock.Of<ISyncLog>());
 		}
@@ -70,15 +52,15 @@ namespace Relativity.Sync.Tests.Integration
 		}
 
 		[Test]
-		public void ItShouldReadAcrossMultipleBatches()
+		public async Task ItShouldReadAcrossMultipleBatches()
 		{
 			// Arrange
-			Document[] testData = MultipleBatchesTestData;
+			DocumentImportJob importData = MultipleBatchesImportJob;
 			const int batchSize = 100;
-			_documentTransferServicesMocker.SetupServicesWithTestData(testData, batchSize);
+			await _documentTransferServicesMocker.SetupServicesWithTestData(importData, batchSize).ConfigureAwait(false);
 
 			// Act/Assert
-			foreach (Document document in testData)
+			foreach (Document document in importData.Documents)
 			{
 				bool hasMoreData = _instance.Read();
 				hasMoreData.Should().Be(true);
@@ -86,15 +68,14 @@ namespace Relativity.Sync.Tests.Integration
 				_instance["NativeFileFilename"].ConvertTo<string>().Should().Be(document.NativeFile.Filename);
 				_instance["NativeFileLocation"].ConvertTo<string>().Should().Be(document.NativeFile.Location);
 				_instance["NativeFileSize"].ConvertTo<long>().Should().Be(document.NativeFile.Size);
-				_instance["FolderPath"].ConvertTo<string>().Should().Be("");
-				_instance["Relativity Source Case"].ConvertTo<int>().Should().Be(_configuration.SourceWorkspaceId);
-				_instance["Relativity Source Job"].ConvertTo<int>().Should().Be(_configuration.SourceJobId);
+				//_instance["76B270CB-7CA9-4121-B9A1-BC0D655E5B2D"].ConvertTo<string>().Should().Be("");
+				_instance["Relativity Source Case"].ConvertTo<string>().Should().Be(_configuration.SourceWorkspaceTagName);
+				_instance["Relativity Source Job"].ConvertTo<string>().Should().Be(_configuration.SourceJobTagName);
 
-				foreach (FieldValue fieldValue in document.Values)
+				foreach (FieldValue fieldValue in document.FieldValues)
 				{
-					string destinationFieldName = GetDestinationFieldName(fieldValue.Field);
 					Type valueType = fieldValue.Value.GetType();
-					_instance[destinationFieldName].ConvertTo(valueType).Should().Be(fieldValue.Value);
+					_instance[fieldValue.Field].ConvertTo(valueType).Should().Be(fieldValue.Value);
 				}
 			}
 
@@ -129,7 +110,7 @@ namespace Relativity.Sync.Tests.Integration
 
 		private string GetDestinationFieldName(string sourceFieldName)
 		{
-			IReadOnlyList<FieldMap> fieldMap = _configuration.MetadataMapping.FieldMappings;
+			IList<FieldMap> fieldMap = _configuration.FieldMappings;
 			FieldEntry potentialDestinationField = fieldMap.FirstOrDefault(x => x.SourceField.DisplayName == sourceFieldName)?.DestinationField;
 			if (potentialDestinationField == null)
 			{

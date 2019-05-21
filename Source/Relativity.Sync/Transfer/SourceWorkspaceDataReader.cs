@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Data;
+using System.Threading;
 using System.Linq;
 using System.Threading.Tasks;
+using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Transfer
 {
@@ -17,23 +20,18 @@ namespace Relativity.Sync.Transfer
 
 		private readonly IRelativityExportBatcher _exportBatcher;
 		private readonly ISyncLog _logger;
+		private readonly ISynchronizationConfiguration _configuration;
 		private readonly ISourceWorkspaceDataTableBuilder _tableBuilder;
-		private readonly int _workspaceId;
-		private readonly int _syncConfigurationId;
-		private readonly Guid _runId;
 
-		public SourceWorkspaceDataReader(SourceDataReaderConfiguration configuration,
-			ISourceWorkspaceDataTableBuilderFactory sourceWorkspaceBuilderFactory,
+		public SourceWorkspaceDataReader(ISourceWorkspaceDataTableBuilder tableBuilder,
+			ISynchronizationConfiguration configuration,
 			IRelativityExportBatcher exportBatcher,
 			ISyncLog logger)
 		{
-			_workspaceId = configuration.SourceWorkspaceId;
-			_syncConfigurationId = configuration.SyncConfigurationId;
-			_runId = configuration.RunId;
-
-			_tableBuilder = sourceWorkspaceBuilderFactory.Create(configuration);
+			_tableBuilder = tableBuilder;
 			_exportBatcher = exportBatcher;
 			_logger = logger;
+			_configuration = configuration;
 
 			_currentReader = EmptyDataReader();
 			_batchToken = null;
@@ -63,7 +61,7 @@ namespace Relativity.Sync.Transfer
 		{
 			if (_batchToken == null)
 			{
-				_batchToken = _exportBatcher.Start(_runId, _workspaceId, _syncConfigurationId);
+				_batchToken = _exportBatcher.Start(_configuration.ExportRunId, _configuration.SourceWorkspaceArtifactId, _configuration.SyncConfigurationArtifactId);
 			}
 
 			RelativityObjectSlim[] batch;
@@ -86,7 +84,7 @@ namespace Relativity.Sync.Transfer
 				DataTable dt;
 				try
 				{
-					dt = await _tableBuilder.BuildAsync(batch).ConfigureAwait(false);
+					dt = await _tableBuilder.BuildAsync(_configuration.SourceWorkspaceArtifactId, batch, CancellationToken.None).ConfigureAwait(false);
 				}
 				catch (Exception ex)
 				{
@@ -102,7 +100,7 @@ namespace Relativity.Sync.Transfer
 		{
 			if (disposing && _currentReader != null)
 			{
-				_currentReader?.Dispose();
+				_currentReader.Dispose();
 				_currentReader = null;
 			}
 		}

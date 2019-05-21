@@ -31,6 +31,8 @@ namespace Relativity.Sync.Tests.System.Stubs
 
 		public double Progress { get; private set; }
 
+		public BatchStatus Status { get; private set; }
+
 		public Task SetFailedItemsCountAsync(int failedItemsCount)
 		{
 			FailedItemsCount = failedItemsCount;

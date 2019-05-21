@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -8,6 +9,8 @@ using Moq.Language;
 using NUnit.Framework;
 using Relativity.Services.Exceptions;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.Configuration;
+using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Unit.Stubs;
 using Relativity.Sync.Transfer;
 
@@ -17,8 +20,8 @@ namespace Relativity.Sync.Tests.Unit
 	internal sealed class SourceWorkspaceDataReaderTests : IDisposable
 	{
 		private Mock<IRelativityExportBatcher> _exportBatcher;
-		private Mock<ISourceWorkspaceDataTableBuilderFactory> _batchBuilderFactory;
 		private SourceWorkspaceDataReader _instance;
+		private Mock<ISynchronizationConfiguration> _configuration;
 
 		[SetUp]
 		public void SetUp()
@@ -27,12 +30,16 @@ namespace Relativity.Sync.Tests.Unit
 			_exportBatcher.Setup(x => x.Start(It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<int>()))
 				.Returns("foo");
 
-			_batchBuilderFactory = new Mock<ISourceWorkspaceDataTableBuilderFactory>();
-			_batchBuilderFactory.Setup(x => x.Create(It.IsAny<SourceDataReaderConfiguration>()))
-				.Returns(new SimpleSourceWorkspaceDataTableBuilder());
+			_configuration = new Mock<ISynchronizationConfiguration>();
+			_configuration.SetupGet(x => x.SyncConfigurationArtifactId).Returns(0);
+			_configuration.SetupGet(x => x.DestinationWorkspaceTagArtifactId).Returns(0);
+			_configuration.SetupGet(x => x.ExportRunId).Returns(Guid.Empty);
+			_configuration.SetupGet(x => x.FieldMappings).Returns(new List<FieldMap>());
+			_configuration.SetupGet(x => x.JobHistoryTagArtifactId).Returns(0);
+			_configuration.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(0);
 
-			_instance = new SourceWorkspaceDataReader(new SourceDataReaderConfiguration(),
-				_batchBuilderFactory.Object,
+			_instance = new SourceWorkspaceDataReader(new SimpleSourceWorkspaceDataTableBuilder(),
+				_configuration.Object,
 				_exportBatcher.Object,
 				Mock.Of<ISyncLog>());
 		}
@@ -56,15 +63,13 @@ namespace Relativity.Sync.Tests.Unit
 			const int sourceWorkspaceId = 123;
 			const int syncConfigurationId = 456;
 			Guid runId = Guid.NewGuid();
-			SourceDataReaderConfiguration configuration = new SourceDataReaderConfiguration
-			{
-				SourceWorkspaceId = sourceWorkspaceId,
-				SyncConfigurationId = syncConfigurationId,
-				RunId = runId
-			};
 
-			_instance = new SourceWorkspaceDataReader(configuration,
-				_batchBuilderFactory.Object,
+			_configuration.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(sourceWorkspaceId);
+			_configuration.SetupGet(x => x.SyncConfigurationArtifactId).Returns(syncConfigurationId);
+			_configuration.SetupGet(x => x.ExportRunId).Returns(runId);
+
+			_instance = new SourceWorkspaceDataReader(new SimpleSourceWorkspaceDataTableBuilder(),
+				_configuration.Object,
 				_exportBatcher.Object,
 				Mock.Of<ISyncLog>());
 
@@ -73,31 +78,6 @@ namespace Relativity.Sync.Tests.Unit
 
 			// Assert
 			_exportBatcher.Verify(x => x.Start(runId, sourceWorkspaceId, syncConfigurationId), Times.AtLeastOnce);
-		}
-
-		[Test]
-		public void ItShouldInstantiateDataTableBuilderUsingFactory()
-		{
-			// Arrange
-			const int sourceWorkspaceId = 123;
-			const int syncConfigurationId = 456;
-			Guid runId = Guid.NewGuid();
-			SourceDataReaderConfiguration configuration = new SourceDataReaderConfiguration
-			{
-				SourceWorkspaceId = sourceWorkspaceId,
-				SyncConfigurationId = syncConfigurationId,
-				RunId = runId
-			};
-
-			// Act
-			_instance = new SourceWorkspaceDataReader(configuration,
-				_batchBuilderFactory.Object,
-				_exportBatcher.Object,
-				Mock.Of<ISyncLog>());
-
-			// Assert
-			_batchBuilderFactory.Verify(x => x.Create(It.Is<SourceDataReaderConfiguration>(c => c.Equals(configuration))),
-				Times.Exactly(1));
 		}
 
 		[Test]
@@ -284,14 +264,11 @@ namespace Relativity.Sync.Tests.Unit
 			ExportBatcherReturnsBatches(GenerateBatch(batchSize), EmptyBatch());
 
 			Mock<ISourceWorkspaceDataTableBuilder> builder = new Mock<ISourceWorkspaceDataTableBuilder>();
-			builder.Setup(x => x.BuildAsync(It.IsAny<RelativityObjectSlim[]>()))
+			builder.Setup(x => x.BuildAsync(It.IsAny<int>(), It.IsAny<RelativityObjectSlim[]>(), CancellationToken.None))
 				.Throws(new ServiceException());
 
-			_batchBuilderFactory.Setup(x => x.Create(It.IsAny<SourceDataReaderConfiguration>()))
-				.Returns(builder.Object);
-
-			_instance = new SourceWorkspaceDataReader(new SourceDataReaderConfiguration(), 
-				_batchBuilderFactory.Object,
+			_instance = new SourceWorkspaceDataReader(builder.Object,
+				_configuration.Object,
 				_exportBatcher.Object,
 				Mock.Of<ISyncLog>());
 

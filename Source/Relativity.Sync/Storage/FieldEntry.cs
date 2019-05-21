@@ -22,21 +22,5 @@ namespace Relativity.Sync.Storage
 		/// Gets or sets a flag indicating whether the field contains a unique identifier for the data.
 		/// </summary>
 		public bool IsIdentifier { get; set; }
-
-		public SpecialFieldType SpecialFieldType { get; set; } = SpecialFieldType.None;
-
-		public Type ValueType { get; set; }
-	}
-
-	internal enum SpecialFieldType
-	{
-		None,
-		FolderPath,
-		ReadFromFieldFolderPath,
-		NativeFileSize,
-		NativeFileLocation,
-		NativeFileFilename,
-		SourceWorkspace,
-		SourceJob
 	}
 }

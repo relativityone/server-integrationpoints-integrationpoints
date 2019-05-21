@@ -312,13 +312,13 @@ namespace Relativity.Sync.Storage
 
 		private void PopulateBatchProperties(RelativityObject relativityObject)
 		{
-			TotalItemsCount = (int)relativityObject[TotalItemsCountGuid].Value;
-			StartingIndex = (int)relativityObject[StartingIndexGuid].Value;
+			TotalItemsCount = (int) relativityObject[TotalItemsCountGuid].Value;
+			StartingIndex = (int) relativityObject[StartingIndexGuid].Value;
 			Status = ((string)relativityObject[StatusGuid].Value).GetEnumFromDescription<BatchStatus>();
-			FailedItemsCount = (int)(relativityObject[FailedItemsCountGuid].Value ?? default(int));
-			TransferredItemsCount = (int)(relativityObject[TransferredItemsCountGuid].Value ?? default(int));
-			Progress = decimal.ToDouble((decimal?)relativityObject[ProgressGuid].Value ?? default(decimal));
-			LockedBy = (string)relativityObject[LockedByGuid].Value;
+			FailedItemsCount = (int) (relativityObject[FailedItemsCountGuid].Value ?? default(int));
+			TransferredItemsCount = (int) (relativityObject[TransferredItemsCountGuid].Value ?? default(int));
+			Progress = decimal.ToDouble((decimal?) relativityObject[ProgressGuid].Value ?? default(decimal));
+			LockedBy = (string) relativityObject[LockedByGuid].Value;
 		}
 
 		private async Task UpdateFieldValue<T>(Guid fieldGuid, T value)

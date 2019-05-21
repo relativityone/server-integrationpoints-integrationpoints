@@ -5,7 +5,7 @@ using NUnit.Framework;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.ExecutionConstrains;
 
-namespace Relativity.Sync.Tests.Unit
+namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
 {
 	[TestFixture]
 	public sealed class SourceWorkspaceTagsCreationExecutionConstrainsTests
