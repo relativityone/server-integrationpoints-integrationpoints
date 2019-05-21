@@ -27,5 +27,7 @@
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Instantiated by NUnit", Scope = "type", Target = "~T:Relativity.Sync.Tests.Integration.DestinationWorkspaceTagsCreationExecutorTests")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "<Pending>", Scope = "type", Target = "~T:Relativity.Sync.Tests.Integration.SourceWorkspaceDataReaderTests")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "RG2009:With the exception of zero and one, never hard-code a numeric value; always declare a constant instead", Justification = "Class contains test data, which requires several literal ints", Scope = "type", Target = "~T:Relativity.Sync.Tests.Integration.SourceWorkspaceDataReaderTests")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Instantiated by NUnit", Scope = "type", Target = "~T:Relativity.Sync.Tests.Integration.SynchronizationExecutorTests")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Instantiated by NUnit", Scope = "type", Target = "~T:Relativity.Sync.Tests.Integration.FakeImportJobFactory")]
 
 #pragma warning restore RG2001 // Character Per Line

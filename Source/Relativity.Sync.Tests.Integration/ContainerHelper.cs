@@ -6,15 +6,20 @@ using Autofac;
 using Banzai;
 using Moq;
 using Relativity.API;
+using Relativity.Services;
+using Relativity.Services.InstanceSetting;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Nodes;
+using Relativity.Sync.Telemetry;
 using Relativity.Telemetry.APM;
 
 namespace Relativity.Sync.Tests.Integration
 {
 	internal static class ContainerHelper
 	{
+		private const string _INSTANCE_NAME = "This Instance";
+
 		/// <summary>
 		///     Given type T : <see cref="IConfiguration" /> and assuming type FooNode : <see cref="SyncNode{T}" /> exists,
 		///     returns registered implementation of FooNode.
@@ -64,9 +69,25 @@ namespace Relativity.Sync.Tests.Integration
 		public static RelativityServices CreateMockedRelativityServices()
 		{
 			IAPM apm = Mock.Of<IAPM>();
-			IServicesMgr servicesMgr = Mock.Of<IServicesMgr>();
+			Mock<IInstanceSettingManager> instanceSettingManager = new Mock<IInstanceSettingManager>();
+			InstanceSettingQueryResultSet resultSet = new InstanceSettingQueryResultSet
+			{
+				Success = true
+			};
+			resultSet.Results.Add(new Result<Services.InstanceSetting.InstanceSetting>()
+			{
+				Artifact = new Services.InstanceSetting.InstanceSetting()
+				{
+					Value = _INSTANCE_NAME
+				}
+			});
+			instanceSettingManager.Setup(x => x.QueryAsync(It.IsAny<Services.Query>())).ReturnsAsync(resultSet);
+			
+			Mock<IServicesMgr> servicesMgr = new Mock<IServicesMgr>();
+			servicesMgr.Setup(x => x.CreateProxy<IInstanceSettingManager>(It.IsAny<ExecutionIdentity>())).Returns(instanceSettingManager.Object);
+
 			Uri authenticationUri = new Uri("https://localhost", UriKind.RelativeOrAbsolute);
-			return new RelativityServices(apm, servicesMgr, authenticationUri);
+			return new RelativityServices(apm, servicesMgr.Object, authenticationUri);
 		}
 	}
 }
