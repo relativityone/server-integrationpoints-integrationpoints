@@ -19,5 +19,7 @@ namespace Relativity.Sync.Configuration
 		IList<FieldMap> FieldMappings { get; }
 
 		int SyncConfigurationArtifactId { get; }
+
+		void SetImportSettings(ImportSettingsDto importSettings);
 	}
 }

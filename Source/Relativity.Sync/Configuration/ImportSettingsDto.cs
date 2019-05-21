@@ -39,7 +39,7 @@ namespace Relativity.Sync.Configuration
 		public string FileNameColumn { get; set; }
 		public string FileSizeColumn { get; set; }
 		public bool FileSizeMapped { get; set; }
-		public string FolderPathSourceFieldName => string.Empty;
+		public string FolderPathSourceFieldName { get; set; }
 		public bool LoadImportedFullTextFromServer { get; set; }
 		public string NativeFilePathSourceFieldName { get; set; }
 		public string OiFileIdColumnName => string.Empty;
