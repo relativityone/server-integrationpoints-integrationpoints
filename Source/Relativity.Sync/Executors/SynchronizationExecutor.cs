@@ -16,16 +16,17 @@ namespace Relativity.Sync.Executors
 		private readonly IDateTime _dateTime;
 		private readonly IDestinationWorkspaceTagRepository _destinationWorkspaceTagRepository;
 		private readonly IImportJobFactory _importJobFactory;
+		private readonly IFieldManager _fieldManager;
 		private readonly ISyncLog _logger;
 		private readonly ISyncMetrics _syncMetrics;
 
-		public SynchronizationExecutor(IImportJobFactory importJobFactory, IBatchRepository batchRepository, ISyncMetrics syncMetrics, IDateTime dateTime, IFieldManager fieldManager, ISyncLog logger)
+		public SynchronizationExecutor(IImportJobFactory importJobFactory, IBatchRepository batchRepository,
+			IDestinationWorkspaceTagRepository destinationWorkspaceTagRepository, ISyncMetrics syncMetrics, IDateTime dateTime, IFieldManager fieldManager, ISyncLog logger)
 		{
 			_batchRepository = batchRepository;
 			_dateTime = dateTime;
 			_destinationWorkspaceTagRepository = destinationWorkspaceTagRepository;
 			_importJobFactory = importJobFactory;
-			_logger = syncLogger;
 			_syncMetrics = syncMetrics;
 			_dateTime = dateTime;
 			_fieldManager = fieldManager;

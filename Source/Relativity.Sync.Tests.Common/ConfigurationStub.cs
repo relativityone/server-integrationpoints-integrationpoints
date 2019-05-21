@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Tests.Common
@@ -93,6 +92,5 @@ namespace Relativity.Sync.Tests.Common
 		public int TotalRecordsCount { get; set; }
 		public int BatchSize { get; set; }
 		public Guid ExportRunId { get; set; }
-		public string SourceWorkspaceTagName { get; set; }
 	}
 }

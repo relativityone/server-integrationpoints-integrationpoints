@@ -63,8 +63,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			
 			_fieldManager.Setup(x => x.GetSpecialFields()).Returns(_specialFields);
 
-			_synchronizationExecutor = new SynchronizationExecutor(_importJobFactory.Object, _batchRepository.Object, _syncMetrics.Object,
-				_dateTime.Object, _fieldManager.Object, new EmptyLogger());
+			_synchronizationExecutor = new SynchronizationExecutor(_importJobFactory.Object, _batchRepository.Object, _destinationWorkspaceTagRepository.Object,
+				_syncMetrics.Object, _dateTime.Object, _fieldManager.Object, new EmptyLogger());
 		}
 
 		[Test]
@@ -186,7 +186,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		public async Task ItShouldProperlyHandleTagDocumentException()
 		{
 			const int numberOfBatches = 1;
-			SetupImportJobFactory(numberOfBatches);
+			SetupBatchRepository(numberOfBatches);
 
 			_destinationWorkspaceTagRepository.Setup(x => x.TagDocumentsAsync(
 				It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IList<int>>(), It.IsAny<CancellationToken>())).Throws<InvalidOperationException>();
@@ -203,7 +203,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		public async Task ItShouldProperlyHandleImportAndTagDocumentExceptions()
 		{
 			const int numberOfBatches = 1;
-			SetupImportJobFactory(numberOfBatches);
+			SetupBatchRepository(numberOfBatches);
 
 			const int numberOfExceptions = 2;
 			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).Throws<InvalidOperationException>();
@@ -223,7 +223,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			result.Status.Should().Be(ExecutionStatus.Failed);
 		}
 
-		private void SetupImportJobFactory(int numberOfBatches)
 		private void SetupBatchRepository(int numberOfBatches)
 		{
 			IEnumerable<int> batches = Enumerable.Repeat(1, numberOfBatches);
@@ -232,7 +231,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			_batchRepository.Setup(x => x.GetAllNewBatchesIdsAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(batches);
 			_batchRepository.Setup(x => x.GetAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync((new Mock<IBatch>()).Object);
-
 		}
 	}
 }
