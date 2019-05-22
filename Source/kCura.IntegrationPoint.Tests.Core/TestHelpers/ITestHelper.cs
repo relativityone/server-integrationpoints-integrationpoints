@@ -8,11 +8,9 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 
 	public interface ITestHelper : ICPHelper
 	{
-		string RelativityUserName { get; set; }
+		string RelativityUserName { get; }
 
-		string RelativityPassword { get; set; }
-
-		IPermissionRepository PermissionManager { get; }
+		string RelativityPassword { get; }
 
 		T CreateUserProxy<T>() where T : IDisposable;
 
@@ -21,5 +19,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 		T CreateUserProxy<T>(string username) where T : IDisposable;
 
 		ISearchManager CreateSearchManager();
+
+		ITestHelper CreateHelperForUser(string userName, string password);
 	}
 }

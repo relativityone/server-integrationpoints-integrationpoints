@@ -4,7 +4,6 @@ using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
-using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Web.Controllers.API;
@@ -43,7 +42,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Controllers
 
 		public override void TestTeardown()
 		{
-			Helper.RelativityUserName = SharedVariables.RelativityUserName;
 			foreach (var artifactId in _savedSearchesArtifactIds)
 			{
 				SavedSearch.Delete(WorkspaceArtifactId, artifactId);
@@ -58,7 +56,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Controllers
 			}
 		}
 
-        [Test]
+		[Test]
 		[SmokeTest]
 		public void Query_SavedSearchesWithController_Success()
 		{
@@ -72,7 +70,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Controllers
 			SavedSearchFinderController savedSearchFinderController = new SavedSearchFinderController(repoFactory) { Request = new HttpRequestMessage() };
 			savedSearchFinderController.Request.SetConfiguration(new HttpConfiguration());
 			httpResponseMessage = savedSearchFinderController.Get(WorkspaceArtifactId);
-			
+
 			string content = httpResponseMessage.Content.ReadAsStringAsync().Result;
 
 			//Assert
