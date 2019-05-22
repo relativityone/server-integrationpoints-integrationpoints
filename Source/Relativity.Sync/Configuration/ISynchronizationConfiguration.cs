@@ -6,19 +6,19 @@ namespace Relativity.Sync.Configuration
 {
 	internal interface ISynchronizationConfiguration : IConfiguration
 	{
-		int SourceWorkspaceArtifactId { get; }
-
 		int DestinationWorkspaceArtifactId { get; }
 
 		int DestinationWorkspaceTagArtifactId { get; }
 
-		int JobHistoryTagArtifactId { get; }
-
-		ImportSettingsDto ImportSettings { get; }
-
 		Guid ExportRunId { get; }
 
 		IList<FieldMap> FieldMappings { get; }
+
+		ImportSettingsDto ImportSettings { get; }
+
+		int JobHistoryTagArtifactId { get; }
+
+		int SourceWorkspaceArtifactId { get; }
 
 		int SyncConfigurationArtifactId { get; }
 
