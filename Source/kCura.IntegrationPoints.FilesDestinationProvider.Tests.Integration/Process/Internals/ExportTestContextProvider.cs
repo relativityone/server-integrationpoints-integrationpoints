@@ -3,8 +3,8 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers;
 using kCura.Utility;
-using Relativity;
 using Relativity.DataExchange.Service;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Process.Internals
@@ -17,17 +17,22 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		private readonly ExportTestContext _testContext;
 		private readonly ExportTestConfiguration _testConfiguration;
 
+		private readonly FolderWithDocumentsIDRetriever _folderIDRetriever;
+
 		public ExportTestContextProvider(
 			WorkspaceService workspaceService,
 			IExportFieldsService fieldsService,
 			ExportTestContext testContext,
-			ExportTestConfiguration testConfiguration)
+			ExportTestConfiguration testConfiguration,
+			FolderWithDocumentsIDRetriever folderIDRetriever)
 		{
 			_workspaceService = workspaceService;
 			_fieldsService = fieldsService;
 
 			_testContext = testContext;
 			_testConfiguration = testConfiguration;
+
+			_folderIDRetriever = folderIDRetriever;
 		}
 
 		public void InitializeContext()
@@ -65,6 +70,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		{
 			_testContext.DocumentsTestData = DocumentTestDataBuilder.BuildTestData();
 			_workspaceService.TryImportData(_testContext.WorkspaceID, _testContext.DocumentsTestData);
+			_folderIDRetriever.RetrieveFolderIDs(_testContext.WorkspaceID, _testContext.DocumentsTestData.Documents);
 		}
 
 		private void AddWorkspaceFieldsToContext()

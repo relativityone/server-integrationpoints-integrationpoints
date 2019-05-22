@@ -22,7 +22,6 @@ using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Process.Internals;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases;
-
 using kCura.WinEDDS.Exporters;
 using NSubstitute;
 using NUnit.Framework;
@@ -72,10 +71,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 
 		[Test]
 		[SmokeTest]
-		[TestInQuarantine(TestQuarantineState.FailsContinuously,
-			@"REL-307438 - for all failing continuously,
-			REL-307464 - instability of ItShouldExportImagesAsPdfs,
-			REL-307466 - FailsContinuously of ItShouldLogJobErrorForNegativeVolumeStartNumber")]
+		[TestInQuarantine(TestQuarantineState.SeemsToBeStable)]
 		[TestCaseSource(nameof(FlakyExportTestCaseSource))]
 		public void RunFlakyTestCase(IExportTestCase testCase)
 		{
