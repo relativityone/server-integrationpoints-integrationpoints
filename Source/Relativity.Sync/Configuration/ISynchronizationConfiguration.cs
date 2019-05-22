@@ -25,7 +25,5 @@ namespace Relativity.Sync.Configuration
 		string SourceWorkspaceTagName { get; }
 
 		int SyncConfigurationArtifactId { get; }
-
-		void SetImportSettings(ImportSettingsDto importSettings);
 	}
 }
