@@ -20,14 +20,17 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 		[Test]
 		public void ItShouldHandleEmptyMapping()
 		{
+			// ACT
 			string result = FieldMapHelper.FixControlNumberFieldName(string.Empty, _serializer);
 
+			// ASSERT
 			Assert.That(result, Is.EqualTo(string.Empty));
 		}
 
 		[Test]
 		public void ItShouldHandleMappingWithoutIdentifier()
 		{
+			// ARRANGE
 			List<FieldMap> fieldMap = new List<FieldMap>
 			{
 				new FieldMap
@@ -46,14 +49,17 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 
 			string fieldMapping = _serializer.Serialize(fieldMap);
 
+			// ACT
 			string result = FieldMapHelper.FixControlNumberFieldName(fieldMapping, _serializer);
 
+			// ASSERT
 			Assert.That(result, Is.EqualTo(fieldMapping));
 		}
 
 		[Test]
 		public void ItShouldRemoveSuffixFromIdentifierMapping()
 		{
+			// ARRANGE
 			List<FieldMap> fieldMap = new List<FieldMap>
 			{
 				new FieldMap
@@ -72,10 +78,12 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 
 			string fieldMapping = _serializer.Serialize(fieldMap);
 
+			// ACT
 			string result = FieldMapHelper.FixControlNumberFieldName(fieldMapping, _serializer);
 
 			List<FieldMap> modifiedMap = _serializer.Deserialize<List<FieldMap>>(result);
 
+			// ASSERT
 			Assert.That(modifiedMap[0].SourceField.DisplayName, Is.EqualTo("abc"));
 			Assert.That(modifiedMap[0].DestinationField.DisplayName, Is.EqualTo("abc"));
 		}

@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
-using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.RelativitySync.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
@@ -218,7 +215,5 @@ namespace kCura.IntegrationPoints.RelativitySync
 				}
 			};
 		}
-
-		
 	}
 }
