@@ -10,18 +10,18 @@ namespace Relativity.Sync.Transfer
 	/// <summary>
 	/// Creates a single <see cref="DataTable"/> out of several sources of information based on the given schema.
 	/// </summary>
-	internal sealed class SourceWorkspaceDataTableBuilder : ISourceWorkspaceDataTableBuilder
+	internal sealed class BatchDataReaderBuilder : IBatchDataReaderBuilder
 	{
 		private DataTable _templateDataTable;
 		private IList<FieldInfoDto> _allFields;
 		private readonly IFieldManager _fieldManager;
 
-		public SourceWorkspaceDataTableBuilder(IFieldManager fieldManager)
+		public BatchDataReaderBuilder(IFieldManager fieldManager)
 		{
 			_fieldManager = fieldManager;
 		}
 
-		public async Task<DataTable> BuildAsync(int sourceWorkspaceArtifactId, RelativityObjectSlim[] batch, CancellationToken token)
+		public async Task<IDataReader> BuildAsync(int sourceWorkspaceArtifactId, RelativityObjectSlim[] batch, CancellationToken token)
 		{
 			if (_allFields == null)
 			{
@@ -29,19 +29,18 @@ namespace Relativity.Sync.Transfer
 			}
 
 			DataTable dataTable = CreateEmptyDataTable(_allFields);
-			if (batch == null || !batch.Any())
+			if (batch != null && !batch.Any())
 			{
-				return dataTable;
-			}
 
-			IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> specialFieldBuildersDictionary = await CreateSpecialFieldRowValuesBuildersAsync(sourceWorkspaceArtifactId, batch).ConfigureAwait(false);
-			foreach (RelativityObjectSlim obj in batch)
-			{
-				object[] row = BuildRow(specialFieldBuildersDictionary, _allFields, obj);
-				dataTable.Rows.Add(row);
+				IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> specialFieldBuildersDictionary =
+					await CreateSpecialFieldRowValuesBuildersAsync(sourceWorkspaceArtifactId, batch).ConfigureAwait(false);
+				foreach (RelativityObjectSlim obj in batch)
+				{
+					object[] row = BuildRow(specialFieldBuildersDictionary, _allFields, obj);
+					dataTable.Rows.Add(row);
+				}
 			}
-
-			return dataTable;
+			return dataTable.CreateDataReader();
 		}
 
 		private async Task<IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder>> CreateSpecialFieldRowValuesBuildersAsync(int sourceWorkspaceArtifactId, RelativityObjectSlim[] batch)

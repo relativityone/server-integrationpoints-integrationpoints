@@ -38,7 +38,7 @@ namespace Relativity.Sync.Tests.Unit
 			_configuration.SetupGet(x => x.JobHistoryTagArtifactId).Returns(0);
 			_configuration.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(0);
 
-			_instance = new SourceWorkspaceDataReader(new SimpleSourceWorkspaceDataTableBuilder(),
+			_instance = new SourceWorkspaceDataReader(new SimpleBatchDataReaderBuilder(),
 				_configuration.Object,
 				_exportBatcher.Object,
 				Mock.Of<ISyncLog>());
@@ -68,7 +68,7 @@ namespace Relativity.Sync.Tests.Unit
 			_configuration.SetupGet(x => x.SyncConfigurationArtifactId).Returns(syncConfigurationId);
 			_configuration.SetupGet(x => x.ExportRunId).Returns(runId);
 
-			_instance = new SourceWorkspaceDataReader(new SimpleSourceWorkspaceDataTableBuilder(),
+			_instance = new SourceWorkspaceDataReader(new SimpleBatchDataReaderBuilder(),
 				_configuration.Object,
 				_exportBatcher.Object,
 				Mock.Of<ISyncLog>());
@@ -263,7 +263,7 @@ namespace Relativity.Sync.Tests.Unit
 			const int batchSize = 1;
 			ExportBatcherReturnsBatches(GenerateBatch(batchSize), EmptyBatch());
 
-			Mock<ISourceWorkspaceDataTableBuilder> builder = new Mock<ISourceWorkspaceDataTableBuilder>();
+			Mock<IBatchDataReaderBuilder> builder = new Mock<IBatchDataReaderBuilder>();
 			builder.Setup(x => x.BuildAsync(It.IsAny<int>(), It.IsAny<RelativityObjectSlim[]>(), CancellationToken.None))
 				.Throws(new ServiceException());
 
