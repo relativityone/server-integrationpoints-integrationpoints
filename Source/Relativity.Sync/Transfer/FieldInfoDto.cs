@@ -9,7 +9,7 @@ namespace Relativity.Sync.Transfer
 		private const string _RELATIVITY_SOURCE_CASE_DISPLAY_NAME = "Relativity Source Case";
 		private const string _RELATIVITY_SOURCE_JOB_DISPLAY_NAME = "Relativity Source Job";
 		private const string _FOLDER_PATH_FROM_WORKSPACE_DISPLAY_NAME = "76B270CB-7CA9-4121-B9A1-BC0D655E5B2D";
-		private const string _NATIVE_FILE_FILENAME_DISPLAY_NAME = "NativeFileFilename";
+		private const string _NATIVE_FILE_FILENAME_DISPLAY_NAME = "kcuramarkerfilename";
 		private const string _NATIVE_FILE_SIZE_DISPLAY_NAME = "NativeFileSize";
 		private const string _NATIVE_FILE_LOCATION_DISPLAY_NAME = "NativeFileLocation";
 		private const string _SUPPORTED_BY_VIEWER_DISPLAY_NAME = "SupportedByViewer";
