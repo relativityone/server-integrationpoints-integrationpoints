@@ -1838,6 +1838,18 @@
       <Notes />
     </Assembly>
     <Assembly>
+      <ArtifactId>4702007</ArtifactId>
+      <Keywords />
+      <Name>SexyProxy.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>4702008</ArtifactId>
+      <Keywords />
+      <Name>SexyProxy.Emit.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
       <ArtifactId>4702137</ArtifactId>
       <Keywords />
       <Name>Relativity.DataExchange.Client.SDK.dll</Name>
@@ -1846,7 +1858,7 @@
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
-  <ExtractionDate>2019-05-16T08:47:14.92541Z</ExtractionDate>
+  <ExtractionDate>2019-05-22T11:28:19.0146323Z</ExtractionDate>
   <Guid>dcf6e9d1-22b6-4da3-98f6-41381e93c30c</Guid>
   <Name>Integration Points</Name>
   <Objects>
