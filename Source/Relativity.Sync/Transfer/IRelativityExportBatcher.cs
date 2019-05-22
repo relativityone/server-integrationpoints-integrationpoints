@@ -10,7 +10,7 @@ namespace Relativity.Sync.Transfer
 {
 	internal interface IRelativityExportBatcher
 	{
-		string Start(Guid runId, int workspaceArtifactId, int syncConfigurationArtifactId);
-		Task<RelativityObjectSlim[]> GetNextAsync(string token);
+		Guid Start(Guid runId, int workspaceArtifactId, int syncConfigurationArtifactId);
+		Task<RelativityObjectSlim[]> GetNextAsync(Guid token);
 	}
 }

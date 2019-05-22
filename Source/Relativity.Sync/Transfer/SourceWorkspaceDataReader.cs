@@ -3,7 +3,6 @@ using System.Data;
 using System.Threading;
 using System.Linq;
 using System.Threading.Tasks;
-using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 
@@ -16,7 +15,7 @@ namespace Relativity.Sync.Transfer
 	internal sealed class SourceWorkspaceDataReader : IDataReader
 	{
 		private IDataReader _currentReader;
-		private string _batchToken;
+		private Guid? _batchToken;
 
 		private readonly IRelativityExportBatcher _exportBatcher;
 		private readonly ISyncLog _logger;
@@ -59,7 +58,7 @@ namespace Relativity.Sync.Transfer
 
 		private async Task<IDataReader> GetReaderForNextBatchAsync()
 		{
-			if (_batchToken == null)
+			if (!_batchToken.HasValue)
 			{
 				_batchToken = _exportBatcher.Start(_configuration.ExportRunId, _configuration.SourceWorkspaceArtifactId, _configuration.SyncConfigurationArtifactId);
 			}
@@ -67,7 +66,7 @@ namespace Relativity.Sync.Transfer
 			RelativityObjectSlim[] batch;
 			try
 			{
-				batch = await _exportBatcher.GetNextAsync(_batchToken).ConfigureAwait(false);
+				batch = await _exportBatcher.GetNextAsync(_batchToken.Value).ConfigureAwait(false);
 			}
 			catch (Exception ex)
 			{

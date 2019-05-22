@@ -13,7 +13,7 @@ namespace Relativity.Sync.Transfer
 {
 	internal sealed class FolderPathRetriever : IFolderPathRetriever
 	{
-		private const int _DOCUMENT_ARTIFACT_TYPE_ID = 10;
+		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int) ArtifactType.Document;
 
 		private readonly ISourceServiceFactoryForUser _serviceFactory;
 		private readonly ISyncLog _logger;

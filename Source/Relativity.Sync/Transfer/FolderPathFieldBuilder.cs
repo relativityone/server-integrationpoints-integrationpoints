@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -10,8 +9,6 @@ namespace Relativity.Sync.Transfer
 {
 	internal sealed class FolderPathFieldBuilder : ISpecialFieldBuilder
 	{
-		private const string _FOLDER_PATH_FIELD_NAME = "76B270CB-7CA9-4121-B9A1-BC0D655E5B2D";
-
 		private readonly IFolderPathRetriever _folderPathRetriever;
 		private readonly ISourceServiceFactoryForUser _serviceFactory;
 		private readonly IFieldConfiguration _fieldConfiguration;
@@ -26,25 +23,16 @@ namespace Relativity.Sync.Transfer
 
 		public IEnumerable<FieldInfoDto> BuildColumns()
 		{
-			string folderFieldName;
-			bool isDocumentField;
 			if (_fieldConfiguration.DestinationFolderStructureBehavior == DestinationFolderStructureBehavior.ReadFromField)
 			{
 				// GetAwaiter().GetResult() has to be used until we use field name instead of field id to get folder field
-				folderFieldName = GetFolderFieldNameAsync().GetAwaiter().GetResult();
-				isDocumentField = false;
+				string folderPathFieldName = GetFolderFieldNameAsync().GetAwaiter().GetResult();
+				yield return FieldInfoDto.FolderPathFieldFromDocumentField(folderPathFieldName);
 			}
 			else if (_fieldConfiguration.DestinationFolderStructureBehavior == DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure)
 			{
-				folderFieldName = _FOLDER_PATH_FIELD_NAME;
-				isDocumentField = true;
+				yield return FieldInfoDto.FolderPathFieldFromSourceWorkspaceStructure();
 			}
-			else
-			{
-				yield break;
-			}
-
-			yield return new FieldInfoDto { SpecialFieldType = SpecialFieldType.FolderPath, DisplayName = folderFieldName, IsDocumentField = isDocumentField };
 		}
 
 		private async Task<string> GetFolderFieldNameAsync()
