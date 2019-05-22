@@ -22,6 +22,9 @@ namespace Relativity.Sync.Tests.Unit
 		private Mock<IRelativityExportBatcher> _exportBatcher;
 		private SourceWorkspaceDataReader _instance;
 		private Mock<ISynchronizationConfiguration> _configuration;
+		private Mock<IFieldManager> _fieldManager;
+		private Mock<IItemStatusMonitor> _itemStatusMonitor;
+		private FieldInfoDto _identifierField;
 
 		[SetUp]
 		public void SetUp()
@@ -29,6 +32,12 @@ namespace Relativity.Sync.Tests.Unit
 			_exportBatcher = new Mock<IRelativityExportBatcher>();
 			_exportBatcher.Setup(x => x.Start(It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<int>()))
 				.Returns(Guid.NewGuid());
+
+			_identifierField = FieldInfoDto.DocumentField("IdentifierField", true);
+			_identifierField.DocumentFieldIndex = 0;
+			_fieldManager = new Mock<IFieldManager>();
+			_fieldManager.Setup(m => m.GetObjectIdentifierFieldAsync(It.IsAny<CancellationToken>())).ReturnsAsync(_identifierField);
+			_itemStatusMonitor = new Mock<IItemStatusMonitor>();
 
 			_configuration = new Mock<ISynchronizationConfiguration>();
 			_configuration.SetupGet(x => x.SyncConfigurationArtifactId).Returns(0);
@@ -38,9 +47,11 @@ namespace Relativity.Sync.Tests.Unit
 			_configuration.SetupGet(x => x.JobHistoryTagArtifactId).Returns(0);
 			_configuration.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(0);
 
-			_instance = new SourceWorkspaceDataReader(new SimpleSourceWorkspaceDataTableBuilder(),
+			_instance = new SourceWorkspaceDataReader(new SimpleSourceWorkspaceDataTableBuilder(_identifierField),
 				_configuration.Object,
 				_exportBatcher.Object,
+				_fieldManager.Object,
+				_itemStatusMonitor.Object,
 				Mock.Of<ISyncLog>());
 		}
 
@@ -68,9 +79,11 @@ namespace Relativity.Sync.Tests.Unit
 			_configuration.SetupGet(x => x.SyncConfigurationArtifactId).Returns(syncConfigurationId);
 			_configuration.SetupGet(x => x.ExportRunId).Returns(runId);
 
-			_instance = new SourceWorkspaceDataReader(new SimpleSourceWorkspaceDataTableBuilder(),
+			_instance = new SourceWorkspaceDataReader(new SimpleSourceWorkspaceDataTableBuilder(_identifierField),
 				_configuration.Object,
 				_exportBatcher.Object,
+				_fieldManager.Object,
+				_itemStatusMonitor.Object,
 				Mock.Of<ISyncLog>());
 
 			// Act
@@ -217,12 +230,11 @@ namespace Relativity.Sync.Tests.Unit
 				CreateObjectWithValues("ban", 2, false)
 			};
 			ExportBatcherReturnsBatches(batch, EmptyBatch());
-
 			// Act
 			List<List<object>> results = new List<List<object>>();
 			while (_instance.Read())
 			{
-				results.Add(new List<object> { _instance[0], _instance[1], _instance[2] });
+				results.Add(new List<object> {_instance[0], _instance[1], _instance[2]});
 			}
 
 			// Assert
@@ -230,14 +242,14 @@ namespace Relativity.Sync.Tests.Unit
 			results.Count.Should().Be(expectedCount);
 
 			results[0][0].Should().Be("foo");
-			results[0][1].Should().Be("1");
-			results[0][2].Should().Be("True");
+			results[0][1].Should().Be(1);
+			results[0][2].Should().Be(true);
 			results[1][0].Should().Be("baz");
-			results[1][1].Should().Be("0");
-			results[1][2].Should().Be("True");
+			results[1][1].Should().Be(0);
+			results[1][2].Should().Be(true);
 			results[2][0].Should().Be("ban");
-			results[2][1].Should().Be("2");
-			results[2][2].Should().Be("False");
+			results[2][1].Should().Be(2);
+			results[2][2].Should().Be(false);
 
 #pragma warning restore RG2009 // need to use a lot of literal indices here, and making them consts is absurd
 		}
@@ -270,6 +282,8 @@ namespace Relativity.Sync.Tests.Unit
 			_instance = new SourceWorkspaceDataReader(builder.Object,
 				_configuration.Object,
 				_exportBatcher.Object,
+				_fieldManager.Object,
+				_itemStatusMonitor.Object,
 				Mock.Of<ISyncLog>());
 
 			// Act

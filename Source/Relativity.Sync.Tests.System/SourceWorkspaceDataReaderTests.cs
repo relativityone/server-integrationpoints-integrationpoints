@@ -72,8 +72,9 @@ namespace Relativity.Sync.Tests.System
 
 			Assert.AreEqual(ExecutionStatus.Completed, result.Status);
 			RelativityExportBatcher batcher = new RelativityExportBatcher(sourceServiceFactory, new BatchRepository(sourceServiceFactory));
+			ItemStatusMonitor monitor = new ItemStatusMonitor();
 			const int resultsBlockSize = 100;
-			SourceWorkspaceDataReader dataReader = new SourceWorkspaceDataReader(new SourceWorkspaceDataTableBuilder(fieldManager), configuration, batcher, new EmptyLogger());
+			SourceWorkspaceDataReader dataReader = new SourceWorkspaceDataReader(new SourceWorkspaceDataTableBuilder(fieldManager), configuration, batcher, fieldManager, monitor, new EmptyLogger());
 
 			ConsoleLogger logger = new ConsoleLogger();
 			object[] tmpTable = new object[resultsBlockSize];
