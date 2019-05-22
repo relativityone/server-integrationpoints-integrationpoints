@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.Unit.Transfer
@@ -28,10 +27,13 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		[Test]
 		public void ItShouldReturnBuiltColumns()
 		{
+			// Arrange
 			const int expectedFieldCount = 5;
 
+			// Act
 			List<FieldInfoDto> result = _instance.BuildColumns().ToList();
 
+			// Assert
 			result.Count.Should().Be(expectedFieldCount);
 			result.Should().Contain(info => info.SpecialFieldType == SpecialFieldType.NativeFileLocation).Which.DisplayName.Should().Be("NativeFileLocation");
 			result.Should().Contain(info => info.SpecialFieldType == SpecialFieldType.NativeFileSize).Which.DisplayName.Should().Be("NativeFileSize");
@@ -43,8 +45,10 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		[Test]
 		public async Task ItShouldReturnFileInfoRowValuesBuilder()
 		{
+			// Act
 			ISpecialFieldRowValuesBuilder result = await _instance.GetRowValuesBuilderAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, Array.Empty<int>()).ConfigureAwait(false);
 
+			// Assert
 			result.Should().BeOfType<FileInfoRowValuesBuilder>();
 			_nativeFileRepository.Verify(r => r.QueryAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<ICollection<int>>()), Times.Once);
 		}

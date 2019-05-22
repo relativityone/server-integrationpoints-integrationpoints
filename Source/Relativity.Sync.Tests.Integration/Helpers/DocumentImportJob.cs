@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Relativity.Sync.Storage;
-using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.Integration
@@ -21,14 +20,6 @@ namespace Relativity.Sync.Tests.Integration
 			FieldMappings = fieldMappings;
 			Documents = documents;
 		}
-
-		//public IFieldManager CreateFieldManager()
-		//{
-		//	IDocumentFieldRepository documentFieldRepository = new LiteralDocumentFieldRepository(Schema);
-		//	ConfigurationStub configuration = new ConfigurationStub { FieldMappings = FieldMappings };
-		//	IFieldManager fieldManager = new FieldManager(configuration, documentFieldRepository, Enumerable.Empty<ISpecialFieldBuilder>());
-		//	return fieldManager;
-		//}
 
 		public static DocumentImportJob Create(Dictionary<string, RelativityDataType> schema, IList<FieldMap> fieldMaps, Document[] documents)
 		{
