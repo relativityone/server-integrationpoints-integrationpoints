@@ -57,9 +57,10 @@ namespace Relativity.Sync.Executors
 						break;
 					}
 
-					_logger.LogVerbose("Processing batch ID: {batchId}", batchId);
-
 					IBatch batch = await _batchRepository.GetAsync(configuration.SourceWorkspaceArtifactId, batchId).ConfigureAwait(false);
+					batchArtifactIds.Add((await batch.GetItemArtifactIds(configuration.ExportRunId).ConfigureAwait(false)).ToList());
+
+					_logger.LogVerbose("Processing batch ID: {batchId}", batchId);
 					using (IImportJob importJob = _importJobFactory.CreateImportJob(configuration, batch))
 					{
 						await importJob.RunAsync(token).ConfigureAwait(false);
