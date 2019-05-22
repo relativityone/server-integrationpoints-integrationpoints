@@ -112,7 +112,8 @@ namespace Relativity.Sync.Transfer
 		{
 			foreach (var item in batch)
 			{
-				int documentFieldIndex = (await _fieldManager.GetObjectIdentifierFieldAsync(CancellationToken.None).ConfigureAwait(false)).DocumentFieldIndex;
+				FieldInfoDto identifierField = await _fieldManager.GetObjectIdentifierFieldAsync(CancellationToken.None).ConfigureAwait(false);
+				int documentFieldIndex = identifierField.DocumentFieldIndex;
 				string itemIdentifier = item.Values[documentFieldIndex].ToString();
 				int itemArtifactId = item.ArtifactID;
 				_itemStatusMonitor.AddItem(itemIdentifier, itemArtifactId);
