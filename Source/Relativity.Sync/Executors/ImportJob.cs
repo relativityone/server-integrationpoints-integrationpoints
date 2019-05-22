@@ -14,26 +14,26 @@ namespace Relativity.Sync.Executors
 		private const string _IDENTIFIER_COLUMN = "Identifier";
 		private const string _MESSAGE_COLUMN = "Message";
 
-		private readonly IImportBulkArtifactJob _importBulkArtifactJob;
+		private readonly ISyncImportBulkArtifactJob _syncImportBulkArtifactJob;
 		private readonly IJobHistoryErrorRepository _jobHistoryErrorRepository;
 		private readonly int _jobHistoryArtifactId;
 		private readonly int _sourceWorkspaceArtifactId;
 		private readonly ISemaphoreSlim _semaphoreSlim;
 		private readonly ISyncLog _logger;
 
-		public ImportJob(IImportBulkArtifactJob importBulkArtifactJob, ISemaphoreSlim semaphoreSlim, IJobHistoryErrorRepository jobHistoryErrorRepository,
+		public ImportJob(ISyncImportBulkArtifactJob syncImportBulkArtifactJob, ISemaphoreSlim semaphoreSlim, IJobHistoryErrorRepository jobHistoryErrorRepository,
 			int sourceWorkspaceArtifactId, int jobHistoryArtifactId, ISyncLog syncLog)
 		{
-			_importBulkArtifactJob = importBulkArtifactJob;
+			_syncImportBulkArtifactJob = syncImportBulkArtifactJob;
 			_semaphoreSlim = semaphoreSlim;
 			_jobHistoryErrorRepository = jobHistoryErrorRepository;
 			_sourceWorkspaceArtifactId = sourceWorkspaceArtifactId;
 			_jobHistoryArtifactId = jobHistoryArtifactId;
 			_logger = syncLog;
 
-			_importBulkArtifactJob.OnComplete += HandleComplete;
-			_importBulkArtifactJob.OnFatalException += HandleFatalException;
-			_importBulkArtifactJob.OnError += HandleItemLevelError;
+			_syncImportBulkArtifactJob.OnComplete += HandleComplete;
+			_syncImportBulkArtifactJob.OnFatalException += HandleFatalException;
+			_syncImportBulkArtifactJob.OnError += HandleItemLevelError;
 		}
 
 		private void HandleComplete(JobReport jobReport)
@@ -93,7 +93,7 @@ namespace Relativity.Sync.Executors
 
 			try
 			{
-				await Task.Run(() => _importBulkArtifactJob.Execute(), token).ConfigureAwait(false);
+				await Task.Run(() => _syncImportBulkArtifactJob.Execute(), token).ConfigureAwait(false);
 				await _semaphoreSlim.WaitAsync().ConfigureAwait(false); // we don't want to cancel waiting for the import job to finish
 			}
 			catch (Exception ex)

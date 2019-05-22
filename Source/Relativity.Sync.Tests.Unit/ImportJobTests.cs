@@ -10,14 +10,13 @@ using NUnit.Framework;
 using Relativity.Sync.Executors;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
-using IImportBulkArtifactJob = Relativity.Sync.Executors.IImportBulkArtifactJob;
 
 namespace Relativity.Sync.Tests.Unit
 {
 	[TestFixture]
 	internal class ImportJobTests : IDisposable
 	{
-		private Mock<IImportBulkArtifactJob> _importBulkArtifactJobMock;
+		private Mock<ISyncImportBulkArtifactJob> _importBulkArtifactJobMock;
 		private Mock<IJobHistoryErrorRepository> _jobHistoryErrorRepository;
 		private Mock<ISemaphoreSlim> _semaphore;
 
@@ -31,7 +30,7 @@ namespace Relativity.Sync.Tests.Unit
 		public void SetUp()
 		{
 			const int jobHistoryArtifactId = 2;
-			_importBulkArtifactJobMock = new Mock<IImportBulkArtifactJob>();
+			_importBulkArtifactJobMock = new Mock<ISyncImportBulkArtifactJob>();
 			_jobHistoryErrorRepository = new Mock<IJobHistoryErrorRepository>();
 			_semaphore = new Mock<ISemaphoreSlim>();
 
