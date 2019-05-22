@@ -60,7 +60,7 @@ namespace Relativity.Sync.Transfer
 			QueryRequest request = new QueryRequest
 			{
 				ObjectType = new ObjectTypeRef { ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID },
-				Condition = $"\"ArtifactID\" IN [{string.Join(" ,", documentArtifactIds)}]"
+				Condition = $"\"ArtifactID\" IN [{string.Join(",", documentArtifactIds)}]"
 			};
 			QueryResult result;
 			try
