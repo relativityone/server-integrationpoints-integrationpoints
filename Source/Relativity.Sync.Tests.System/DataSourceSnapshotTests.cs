@@ -26,9 +26,9 @@ namespace Relativity.Sync.Tests.System
 		{
 			await base.ChildSuiteSetup().ConfigureAwait(false);
 
-			_workspace = await Environment.CreateWorkspaceAsync().ConfigureAwait(false);
+			_workspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
 
-			const int documentArtifactTypeId = 10;
+			const int documentArtifactTypeId = (int) ArtifactType.Document;
 			using (IKeywordSearchManager keywordSearchManager = ServiceFactory.CreateProxy<IKeywordSearchManager>())
 			{
 				KeywordSearch search = new KeywordSearch

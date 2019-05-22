@@ -127,7 +127,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Func<Task> action = async () => await _sut.ReadAsync(0, 0, _token).ConfigureAwait(false);
 
 			// assert
-			action.Should().Throw<DestinationWorkspaceTagRepositoryException>().WithInnerException<ServiceException>();
+			action.Should().Throw<SyncKeplerException>().WithInnerException<ServiceException>();
 		}
 
 		[Test]
@@ -140,7 +140,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Func<Task> action = async () => await _sut.ReadAsync(0, 0, _token).ConfigureAwait(false);
 
 			// assert
-			action.Should().Throw<DestinationWorkspaceTagRepositoryException>().WithInnerException<InvalidOperationException>();
+			action.Should().Throw<SyncKeplerException>().WithInnerException<InvalidOperationException>();
 		}
 
 		[Test]
@@ -181,7 +181,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Func<Task> action = async () => await _sut.CreateAsync(0, 0, string.Empty).ConfigureAwait(false);
 
 			// assert
-			action.Should().Throw<DestinationWorkspaceTagRepositoryException>().WithInnerException<ServiceException>();
+			action.Should().Throw<SyncKeplerException>().WithInnerException<ServiceException>();
 		}
 
 		[Test]
@@ -193,7 +193,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Func<Task> action = async () => await _sut.CreateAsync(0, 0, string.Empty).ConfigureAwait(false);
 
 			// assert
-			action.Should().Throw<DestinationWorkspaceTagRepositoryException>().WithInnerException<InvalidOperationException>();
+			action.Should().Throw<SyncKeplerException>().WithInnerException<InvalidOperationException>();
 		}
 
 		[Test]
@@ -256,7 +256,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Func<Task> action = async () => await _sut.UpdateAsync(0, new DestinationWorkspaceTag()).ConfigureAwait(false);
 
 			// assert
-			action.Should().Throw<DestinationWorkspaceTagRepositoryException>().WithInnerException<ServiceException>();
+			action.Should().Throw<SyncKeplerException>().WithInnerException<ServiceException>();
 		}
 
 		[Test]
@@ -268,11 +268,11 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Func<Task> action = async () => await _sut.UpdateAsync(0, new DestinationWorkspaceTag()).ConfigureAwait(false);
 
 			// assert
-			action.Should().Throw<DestinationWorkspaceTagRepositoryException>().WithInnerException<InvalidOperationException>();
+			action.Should().Throw<SyncKeplerException>().WithInnerException<InvalidOperationException>();
 		}
 
 		[Test]
-		[TestCaseSource(nameof(_queryTestCases))]
+		[TestCaseSource(nameof(QueryTestCases))]
 		public async Task ItShouldBuildProperQueryForInstances(int testInstanceId, string expectedQueryFragment)
 		{
 			// ARRANGE
@@ -293,7 +293,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				Times.Once);
 		}
 
-		private static IEnumerable<TestCaseData> _queryTestCases => new[]
+		private static IEnumerable<TestCaseData> QueryTestCases => new[]
 		{
 			new TestCaseData(-1, $"'{_DESTINATION_INSTANCE_ARTIFACT_ID_GUID}' == -1").SetName($"{nameof(ItShouldBuildProperQueryForInstances)}_Local"),
 			new TestCaseData(456, $"'{_DESTINATION_INSTANCE_ARTIFACT_ID_GUID}' == {456}").SetName($"{nameof(ItShouldBuildProperQueryForInstances)}_Federated"),

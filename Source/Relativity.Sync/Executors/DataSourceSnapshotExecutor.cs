@@ -9,22 +9,25 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Executors
 {
 	internal sealed class DataSourceSnapshotExecutor : IExecutor<IDataSourceSnapshotConfiguration>
 	{
-		private const int _DOCUMENT_ARTIFACT_TYPE_ID = 10;
+		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int) ArtifactType.Document;
 
 		private const string _SUPPORTED_BY_VIEWER_FIELD_NAME = "SupportedByViewer";
 		private const string _RELATIVITY_NATIVE_TYPE_FIELD_NAME = "RelativityNativeType";
 
 		private readonly ISourceServiceFactoryForUser _serviceFactory;
+		private readonly IFieldManager _fieldManager;
 		private readonly ISyncLog _logger;
 
-		public DataSourceSnapshotExecutor(ISourceServiceFactoryForUser serviceFactory, ISyncLog logger)
+		public DataSourceSnapshotExecutor(ISourceServiceFactoryForUser serviceFactory, IFieldManager fieldManager, ISyncLog logger)
 		{
 			_serviceFactory = serviceFactory;
+			_fieldManager = fieldManager;
 			_logger = logger;
 		}
 
@@ -35,7 +38,8 @@ namespace Relativity.Sync.Executors
 
 			_logger.LogVerbose("Including following system fields to export {supportedByViewer}, {nativeType}.", _SUPPORTED_BY_VIEWER_FIELD_NAME, _RELATIVITY_NATIVE_TYPE_FIELD_NAME);
 
-			IEnumerable<FieldRef> fields = PrepareFieldsList(configuration);
+			IEnumerable<FieldInfoDto> documentFields = await _fieldManager.GetDocumentFieldsAsync(token).ConfigureAwait(false);
+			IEnumerable<FieldRef> documentFieldRefs = documentFields.Select(f => new FieldRef {Name = f.DisplayName});
 
 			QueryRequest queryRequest = new QueryRequest
 			{
@@ -44,7 +48,7 @@ namespace Relativity.Sync.Executors
 					ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID
 				},
 				Condition = $"(('ArtifactId' IN SAVEDSEARCH {configuration.DataSourceArtifactId}))",
-				Fields = fields.ToList()
+				Fields = documentFieldRefs.ToList()
 			};
 
 			ExportInitializationResults results;
@@ -65,34 +69,6 @@ namespace Relativity.Sync.Executors
 			//however, order is the same as order of fields in QueryRequest when they are provided explicitly
 			await configuration.SetSnapshotDataAsync(results.RunID, results.RecordCount).ConfigureAwait(false);
 			return ExecutionResult.Success();
-		}
-
-		private IEnumerable<FieldRef> PrepareFieldsList(IDataSourceSnapshotConfiguration configuration)
-		{
-			foreach (FieldMap fieldMap in configuration.FieldMappings)
-			{
-				yield return new FieldRef
-				{
-					ArtifactID = fieldMap.SourceField.FieldIdentifier
-				};
-			}
-
-			yield return new FieldRef
-			{
-				Name = _SUPPORTED_BY_VIEWER_FIELD_NAME
-			};
-			yield return new FieldRef
-			{
-				Name = _RELATIVITY_NATIVE_TYPE_FIELD_NAME
-			};
-			if (configuration.DestinationFolderStructureBehavior == DestinationFolderStructureBehavior.ReadFromField)
-			{
-				_logger.LogVerbose("Including field {artifactId} used to retrieving destination folder structure.", configuration.FolderPathSourceFieldArtifactId);
-				yield return new FieldRef
-				{
-					ArtifactID = configuration.FolderPathSourceFieldArtifactId
-				};
-			}
 		}
 	}
 }
