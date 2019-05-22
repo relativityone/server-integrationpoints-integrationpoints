@@ -14,6 +14,7 @@ using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Helpers;
 using Relativity.Sync.Tests.System.Stubs;
+using Relativity.Testing.Identification;
 
 namespace Relativity.Sync.Tests.System
 {
@@ -62,7 +63,7 @@ namespace Relativity.Sync.Tests.System
 			_jobHistoryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, _workspaceId).ConfigureAwait(false);
 		}
 
-		[Test]
+		[IdentifiedTest("e5a86b87-b1e8-4de3-b4fa-5f3e3878be49")]
 		public async Task ItShouldContainAllFields()
 		{
 			CreateRequest request = new CreateRequest
@@ -116,7 +117,7 @@ namespace Relativity.Sync.Tests.System
 			configuration.GetFieldValue<string>(SourceWorkspaceTagNameGuid);
 		}
 
-		[Test]
+		[IdentifiedTest("3a5a8647-86e5-4a01-9cac-90bdd84e7a62")]
 		public async Task ItShouldHandleLongTextFromStream()
 		{
 			const string fieldMapping = "in theory, very long text, but we check for ellipsis really...";
@@ -150,7 +151,7 @@ namespace Relativity.Sync.Tests.System
 			configuration.GetFieldValue<string>(FieldMappingsGuid).Should().Be(fieldMapping);
 		}
 
-		[Test]
+		[IdentifiedTest("108661af-82bf-41ca-8799-4c83cc0ef976")]
 		public async Task FieldsShouldBeOfValidTypes()
 		{
 			CreateRequest request = new CreateRequest
@@ -172,7 +173,7 @@ namespace Relativity.Sync.Tests.System
 			}
 		}
 
-		private IEnumerable<FieldRefValuePair> PrepareFields()
+		private static IEnumerable<FieldRefValuePair> PrepareFields()
 		{
 #pragma warning disable RG2009 // Hardcoded Numeric Value
 			yield return new FieldRefValuePair

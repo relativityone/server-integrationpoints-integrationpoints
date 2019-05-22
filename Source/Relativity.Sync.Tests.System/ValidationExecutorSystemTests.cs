@@ -9,6 +9,7 @@ using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Helpers;
+using Relativity.Testing.Identification;
 
 namespace Relativity.Sync.Tests.System
 {
@@ -33,7 +34,7 @@ namespace Relativity.Sync.Tests.System
 			_destinationWorkspace = destinationWorkspaceCreationTask.Result;
 		}
 
-		[Test]
+		[IdentifiedTest("96d83692-044d-40f0-b335-84bc5a413478")]
 		public async Task ItShouldSuccessfulyValidateJob()
 		{
 			int expectedSourceWorkspaceArtifactId = _sourceWorkspace.ArtifactID;

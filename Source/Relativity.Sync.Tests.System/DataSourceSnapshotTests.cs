@@ -11,6 +11,7 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Helpers;
+using Relativity.Testing.Identification;
 
 namespace Relativity.Sync.Tests.System
 {
@@ -46,7 +47,7 @@ namespace Relativity.Sync.Tests.System
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("237f44ed-e319-473f-9ac0-8dbc8d5d8aaa")]
 		public async Task ItShouldCreateSnapshot()
 		{
 			ConfigurationStub configuration = new ConfigurationStub
