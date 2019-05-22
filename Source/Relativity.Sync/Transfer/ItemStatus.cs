@@ -3,7 +3,7 @@
 	internal sealed class ItemStatus
 	{
 		public int ArtifactId { get; }
-		public bool IsSuccessful { get; set; }
+		public bool? IsSuccessful { get; set; }
 
 		public ItemStatus(int artifactId)
 		{

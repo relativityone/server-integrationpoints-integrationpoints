@@ -22,6 +22,8 @@ namespace Relativity.Sync.Tests.Unit
 		private Mock<IRelativityExportBatcher> _exportBatcher;
 		private SourceWorkspaceDataReader _instance;
 		private Mock<ISynchronizationConfiguration> _configuration;
+		private Mock<IFieldManager> _fieldManager;
+		private Mock<IItemStatusMonitor> _itemStatusMonitor;
 
 		[SetUp]
 		public void SetUp()
@@ -29,6 +31,8 @@ namespace Relativity.Sync.Tests.Unit
 			_exportBatcher = new Mock<IRelativityExportBatcher>();
 			_exportBatcher.Setup(x => x.Start(It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<int>()))
 				.Returns("foo");
+			_fieldManager = new Mock<IFieldManager>();
+			_itemStatusMonitor = new Mock<IItemStatusMonitor>();
 
 			_configuration = new Mock<ISynchronizationConfiguration>();
 			_configuration.SetupGet(x => x.SyncConfigurationArtifactId).Returns(0);
@@ -41,6 +45,8 @@ namespace Relativity.Sync.Tests.Unit
 			_instance = new SourceWorkspaceDataReader(new SimpleSourceWorkspaceDataTableBuilder(),
 				_configuration.Object,
 				_exportBatcher.Object,
+				_fieldManager.Object,
+				_itemStatusMonitor.Object,
 				Mock.Of<ISyncLog>());
 		}
 
@@ -71,6 +77,8 @@ namespace Relativity.Sync.Tests.Unit
 			_instance = new SourceWorkspaceDataReader(new SimpleSourceWorkspaceDataTableBuilder(),
 				_configuration.Object,
 				_exportBatcher.Object,
+				_fieldManager.Object,
+				_itemStatusMonitor.Object,
 				Mock.Of<ISyncLog>());
 
 			// Act
@@ -217,7 +225,8 @@ namespace Relativity.Sync.Tests.Unit
 				CreateObjectWithValues("ban", 2, false)
 			};
 			ExportBatcherReturnsBatches(batch, EmptyBatch());
-
+			FieldInfoDto identifierFieldInfo = new FieldInfoDto {DocumentFieldIndex = 0, DisplayName = "foo"};
+			_fieldManager.Setup(fm => fm.GetObjectIdentifierFieldAsync(CancellationToken.None)).ReturnsAsync(identifierFieldInfo);
 			// Act
 			List<List<object>> results = new List<List<object>>();
 			while (_instance.Read())
@@ -270,6 +279,8 @@ namespace Relativity.Sync.Tests.Unit
 			_instance = new SourceWorkspaceDataReader(builder.Object,
 				_configuration.Object,
 				_exportBatcher.Object,
+				_fieldManager.Object,
+				_itemStatusMonitor.Object,
 				Mock.Of<ISyncLog>());
 
 			// Act

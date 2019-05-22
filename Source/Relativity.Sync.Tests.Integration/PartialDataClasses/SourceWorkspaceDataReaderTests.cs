@@ -25,7 +25,7 @@ namespace Relativity.Sync.Tests.Integration
 			{
 				FieldMapType = FieldMapType.None,
 				DestinationField = new FieldEntry { DisplayName = "Control Number" },
-				SourceField = new FieldEntry { DisplayName = "Control Number" }
+				SourceField = new FieldEntry { DisplayName = "Control Number", IsIdentifier = true }
 			}
 		};
 

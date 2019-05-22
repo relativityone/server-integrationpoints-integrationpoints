@@ -61,7 +61,7 @@ namespace Relativity.Sync.Transfer
 
 		public async Task<FieldInfoDto> GetObjectIdentifierFieldAsync(CancellationToken token)
 		{
-			IEnumerable<FieldInfoDto> mappedFields = await GetMappedDocumentFieldsAsync(token).ConfigureAwait(false);
+			IEnumerable<FieldInfoDto> mappedFields = await GetDocumentFieldsAsync(token).ConfigureAwait(false);
 			return mappedFields.First(f => f.IsIdentifier);
 		}
 

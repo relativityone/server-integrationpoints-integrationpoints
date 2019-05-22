@@ -13,28 +13,35 @@ namespace Relativity.Sync.Transfer
 			_items[itemIdentifier] = new ItemStatus(artifactId);
 		}
 
-		public void MarkItemAsSuccessful(string itemIdentifier)
+		public void MarkItemAsRead(string itemIdentifier)
 		{
-			MarkItem(itemIdentifier, true);
+		}
+
+		public void MarkReadSoFarAsSuccessful()
+		{
+			IEnumerable<ItemStatus> itemsWithUndefinedStatuses = _items.Values.Where(s => s.IsSuccessful == null);
+			foreach (var item in itemsWithUndefinedStatuses)
+			{
+				item.IsSuccessful = true;
+			}
+		}
+
+		public void MarkReadSoFarAsFailed()
+		{
 		}
 
 		public void MarkItemAsFailed(string itemIdentifier)
 		{
-			MarkItem(itemIdentifier, false);
-		}
-
-		private void MarkItem(string itemIdentifier, bool isSuccessful)
-		{
 			ItemStatus itemStatus;
 			if (_items.TryGetValue(itemIdentifier, out itemStatus))
 			{
-				itemStatus.IsSuccessful = isSuccessful;
+				itemStatus.IsSuccessful = false;
 			}
 		}
 
 		public IEnumerable<int> GetSuccessfulItemArtifactIds()
 		{
-			IEnumerable<ItemStatus> successfulItems = _items.Values.Where(status => status.IsSuccessful);
+			IEnumerable<ItemStatus> successfulItems = _items.Values.Where(status => status.IsSuccessful == true);
 			return successfulItems.Select(status => status.ArtifactId);
 		}
 	}
