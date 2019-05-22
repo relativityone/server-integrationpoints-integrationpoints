@@ -136,6 +136,8 @@ namespace Relativity.Sync.Tests.System
 				new SourceWorkspaceDataTableBuilder(fieldManager),
 				configuration,
 				new RelativityExportBatcher(_serviceFactoryStub, new BatchRepository(_serviceFactoryStub)),
+				fieldManager,
+				null,
 				logger);
 
 			// ImportAPI setup
