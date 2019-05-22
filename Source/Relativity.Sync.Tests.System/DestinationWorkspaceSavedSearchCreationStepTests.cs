@@ -8,6 +8,7 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Helpers;
+using Relativity.Testing.Identification;
 
 namespace Relativity.Sync.Tests.System
 {
@@ -23,7 +24,7 @@ namespace Relativity.Sync.Tests.System
 			_destinationWorkspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
 		}
 
-		[Test]
+		[IdentifiedTest("2db7474f-3032-49cb-92f3-3047c7604fd9")]
 		public async Task ItShouldCreateSavedSearch()
 		{
 			// ARRANGE

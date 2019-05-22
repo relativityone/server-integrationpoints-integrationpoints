@@ -79,7 +79,7 @@ namespace Relativity.Sync
 		{
 			ITelemetryManager telemetryManager = new TelemetryManager(servicesMgr, logger);
 
-			//telemetryManager.AddMetricProviders(new DefaultTelemetryMetricsProvider(servicesMgr, logger));
+			// Telemetry providers should be added here using this method: `void ITelemetryManager.AddMetricProviders(ITelemetryMetricProvider metricProvider)`
 
 			telemetryManager.InstallMetrics().ConfigureAwait(false).GetAwaiter().GetResult();
 		}

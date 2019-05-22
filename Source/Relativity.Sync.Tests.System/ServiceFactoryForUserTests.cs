@@ -16,6 +16,7 @@ using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Stubs;
+using Relativity.Testing.Identification;
 
 namespace Relativity.Sync.Tests.System
 {
@@ -79,7 +80,7 @@ namespace Relativity.Sync.Tests.System
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("219adc9a-e1e4-4de8-bb46-c27fc05239e3")]
 		public async Task UserShouldNotHavePermissionToWorkspace()
 		{
 			const string groupName = "Test Group";

@@ -12,7 +12,7 @@ using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Helpers;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Tests.System.Stubs;
-using ImportJobFactory = Relativity.Sync.Tests.System.Helpers.ImportJobFactory;
+using Relativity.Testing.Identification;
 
 namespace Relativity.Sync.Tests.System
 {
@@ -30,7 +30,7 @@ namespace Relativity.Sync.Tests.System
 			_sourceWorkspaceArtifactId = workspace.ArtifactID;
 		}
 
-		[Test]
+		[IdentifiedTest("c5c953ed-0f70-4340-b44d-f3dfdda03b49")]
 		public async Task ItShouldTagGivenDocumentsWithTheCorrectTag()
 		{
 			// Arrange
