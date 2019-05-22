@@ -15,31 +15,31 @@ namespace Relativity.Sync.Transfer
 	{
 		private readonly ISourceServiceFactoryForUser _serviceFactory;
 		private readonly IBatchRepository _batchRepository;
-		private readonly IDictionary<string, Job> _tokenMap;
+		private readonly IDictionary<Guid, Job> _tokenMap;
 
 		public RelativityExportBatcher(ISourceServiceFactoryForUser serviceFactory, IBatchRepository batchRepository)
 		{
 			_serviceFactory = serviceFactory;
 			_batchRepository = batchRepository;
-			_tokenMap = new Dictionary<string, Job>();
+			_tokenMap = new Dictionary<Guid, Job>();
 		}
 
-		public string Start(Guid runId, int workspaceArtifactId, int syncConfigurationArtifactId)
+		public Guid Start(Guid runId, int workspaceArtifactId, int syncConfigurationArtifactId)
 		{
-			KeyValuePair<string, Job> existing = _tokenMap.FirstOrDefault(kv =>
+			KeyValuePair<Guid, Job> existing = _tokenMap.FirstOrDefault(kv =>
 				kv.Value.WorkspaceArtifactId == workspaceArtifactId && kv.Value.SyncConfigurationArtifactId == syncConfigurationArtifactId);
-			if (!existing.Equals(default(KeyValuePair<string, Job>)))
+			if (!existing.Equals(default(KeyValuePair<Guid, Job>)))
 			{
 				return existing.Key;
 			}
 
-			string newToken = Guid.NewGuid().ToString();
+			Guid newToken = Guid.NewGuid();
 			_tokenMap.Add(newToken, new Job(runId, workspaceArtifactId, syncConfigurationArtifactId));
 
 			return newToken;
 		}
 
-		public async Task<RelativityObjectSlim[]> GetNextAsync(string token)
+		public async Task<RelativityObjectSlim[]> GetNextAsync(Guid token)
 		{
 			if (!_tokenMap.ContainsKey(token))
 			{
@@ -68,11 +68,11 @@ namespace Relativity.Sync.Transfer
 
 			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
+				int resultsBlockSize = nextBatch.TotalItemsCount;
+				int startingIndex = nextBatch.StartingIndex;
 				RelativityObjectSlim[] block = await objectManager
-					.RetrieveResultsBlockFromExportAsync(workspaceArtifactId,
-						runId,
-						nextBatch.TotalItemsCount,
-						nextBatch.StartingIndex).ConfigureAwait(false);
+					.RetrieveResultsBlockFromExportAsync(workspaceArtifactId, runId, resultsBlockSize, startingIndex)
+					.ConfigureAwait(false);
 				return block;
 			}
 		}

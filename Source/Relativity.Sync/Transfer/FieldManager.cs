@@ -34,7 +34,7 @@ namespace Relativity.Sync.Transfer
 			return _specialFields ?? (_specialFields = _specialFieldBuilders.SelectMany(b => b.BuildColumns()).ToList());
 		}
 
-		public async Task<IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder>> CreateSpecialFieldRowValueBuildersAsync(int sourceWorkspaceArtifactId, IEnumerable<int> documentArtifactIds)
+		public async Task<IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder>> CreateSpecialFieldRowValueBuildersAsync(int sourceWorkspaceArtifactId, ICollection<int> documentArtifactIds)
 		{
 			IEnumerable<Task<ISpecialFieldRowValuesBuilder>> specialFieldRowValueBuilderTasks =
 				_specialFieldBuilders.Select(async b => await b.GetRowValuesBuilderAsync(sourceWorkspaceArtifactId, documentArtifactIds).ConfigureAwait(false));
@@ -110,10 +110,10 @@ namespace Relativity.Sync.Transfer
 				return fields;
 			}
 
-			IDictionary<string, RelativityDataType> parsedResult = await GetRelativityDataTypesForFieldsAsync(fields, token).ConfigureAwait(false);
+			IDictionary<string, RelativityDataType> fieldNameToFieldType = await GetRelativityDataTypesForFieldsAsync(fields, token).ConfigureAwait(false);
 			foreach (var field in fields)
 			{
-				field.RelativityDataType = parsedResult[field.DisplayName];
+				field.RelativityDataType = fieldNameToFieldType[field.DisplayName];
 			}
 
 			return fields;
@@ -128,8 +128,7 @@ namespace Relativity.Sync.Transfer
 
 		private FieldInfoDto CreateFieldInfoFromFieldMap(FieldMap fieldMap)
 		{
-			FieldEntry sourceField = fieldMap.SourceField;
-			return new FieldInfoDto {DisplayName = sourceField.DisplayName, IsIdentifier = sourceField.IsIdentifier, IsDocumentField = true};
+			return FieldInfoDto.DocumentField(fieldMap.SourceField.DisplayName, fieldMap.SourceField.IsIdentifier);
 		}
 	}
 }

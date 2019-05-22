@@ -30,7 +30,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			_exportBatcher = new Mock<IRelativityExportBatcher>();
 			_exportBatcher.Setup(x => x.Start(It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<int>()))
-				.Returns("foo");
+				.Returns(Guid.NewGuid());
 			_fieldManager = new Mock<IFieldManager>();
 			_itemStatusMonitor = new Mock<IItemStatusMonitor>();
 
@@ -95,14 +95,14 @@ namespace Relativity.Sync.Tests.Unit
 			_instance.Read();
 
 			// Assert
-			_exportBatcher.Verify(x => x.GetNextAsync(It.IsAny<string>()));
+			_exportBatcher.Verify(x => x.GetNextAsync(It.IsAny<Guid>()));
 		}
 
 		[Test]
 		public void ItShouldStartBatchingBeforeGettingNextBatch()
 		{
 			// Arrange
-			string token = "foo";
+			Guid token = Guid.NewGuid();
 			_exportBatcher.Setup(x => x.Start(It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<int>()))
 				.Returns(token);
 
@@ -110,7 +110,7 @@ namespace Relativity.Sync.Tests.Unit
 			_instance.Read();
 
 			// Assert
-			_exportBatcher.Verify(x => x.GetNextAsync(It.Is<string>(t => t == token)));
+			_exportBatcher.Verify(x => x.GetNextAsync(It.Is<Guid>(t => t == token)));
 		}
 
 		[Test]
@@ -154,7 +154,7 @@ namespace Relativity.Sync.Tests.Unit
 			_instance.Read();
 
 			// Assert
-			_exportBatcher.Verify(x => x.GetNextAsync(It.IsAny<string>()), Times.Exactly(1));
+			_exportBatcher.Verify(x => x.GetNextAsync(It.IsAny<Guid>()), Times.Exactly(1));
 		}
 
 		[Test]
@@ -225,7 +225,8 @@ namespace Relativity.Sync.Tests.Unit
 				CreateObjectWithValues("ban", 2, false)
 			};
 			ExportBatcherReturnsBatches(batch, EmptyBatch());
-			FieldInfoDto identifierFieldInfo = new FieldInfoDto {DocumentFieldIndex = 0, DisplayName = "foo"};
+			FieldInfoDto identifierFieldInfo = FieldInfoDto.DocumentField("foo", false);
+			identifierFieldInfo.DocumentFieldIndex = 0;
 			_fieldManager.Setup(fm => fm.GetObjectIdentifierFieldAsync(CancellationToken.None)).ReturnsAsync(identifierFieldInfo);
 			// Act
 			List<List<object>> results = new List<List<object>>();
@@ -255,7 +256,7 @@ namespace Relativity.Sync.Tests.Unit
 		public void ItShouldThrowProperExceptionWhenExportBatcherThrows()
 		{
 			// Arrange
-			_exportBatcher.Setup(x => x.GetNextAsync(It.IsAny<string>()))
+			_exportBatcher.Setup(x => x.GetNextAsync(It.IsAny<Guid>()))
 				.Throws(new ServiceException("Foo"));
 
 			// Act
@@ -292,7 +293,7 @@ namespace Relativity.Sync.Tests.Unit
 
 		private void ExportBatcherReturnsBatches(params RelativityObjectSlim[][] batches)
 		{
-			ISetupSequentialResult<Task<RelativityObjectSlim[]>> setupAssertion = _exportBatcher.SetupSequence(x => x.GetNextAsync(It.IsAny<string>()));
+			ISetupSequentialResult<Task<RelativityObjectSlim[]>> setupAssertion = _exportBatcher.SetupSequence(x => x.GetNextAsync(It.IsAny<Guid>()));
 			foreach (RelativityObjectSlim[] batch in batches)
 			{
 				setupAssertion.ReturnsAsync(batch);

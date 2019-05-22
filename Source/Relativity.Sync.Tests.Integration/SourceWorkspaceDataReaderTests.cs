@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Autofac;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Transfer;
 
@@ -70,7 +67,6 @@ namespace Relativity.Sync.Tests.Integration
 				_instance["NativeFileFilename"].ConvertTo<string>().Should().Be(document.NativeFile.Filename);
 				_instance["NativeFileLocation"].ConvertTo<string>().Should().Be(document.NativeFile.Location);
 				_instance["NativeFileSize"].ConvertTo<long>().Should().Be(document.NativeFile.Size);
-				//_instance["76B270CB-7CA9-4121-B9A1-BC0D655E5B2D"].ConvertTo<string>().Should().Be("");
 				_instance["Relativity Source Case"].ConvertTo<string>().Should().Be(_configuration.SourceWorkspaceTagName);
 				_instance["Relativity Source Job"].ConvertTo<string>().Should().Be(_configuration.SourceJobTagName);
 
@@ -108,17 +104,6 @@ namespace Relativity.Sync.Tests.Integration
 		public void ItShouldHandleDestinationFolderStructureBehavior()
 		{
 
-		}
-
-		private string GetDestinationFieldName(string sourceFieldName)
-		{
-			IList<FieldMap> fieldMap = _configuration.FieldMappings;
-			FieldEntry potentialDestinationField = fieldMap.FirstOrDefault(x => x.SourceField.DisplayName == sourceFieldName)?.DestinationField;
-			if (potentialDestinationField == null)
-			{
-				return sourceFieldName;
-			}
-			return potentialDestinationField.DisplayName;
 		}
 	}
 }

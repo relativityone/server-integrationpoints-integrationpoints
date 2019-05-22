@@ -13,7 +13,7 @@ namespace Relativity.Sync.Transfer
 {
 	internal sealed class DocumentFieldRepository : IDocumentFieldRepository
 	{
-		private const int _DOCUMENT_ARTIFACT_TYPE_ID = 10;
+		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int) ArtifactType.Document;
 		private readonly ISourceServiceFactoryForUser _serviceFactory;
 		private readonly ISyncLog _logger;
 
@@ -34,9 +34,13 @@ namespace Relativity.Sync.Transfer
 			string concatenatedFieldNames = string.Join(", ", fieldNames.Select(f => $"'{f}'"));
 			QueryRequest request = new QueryRequest
 			{
-				ObjectType = new ObjectTypeRef {Name = "Field"},
+				ObjectType = new ObjectTypeRef { Name = "Field" },
 				Condition = $"'Name' IN [{concatenatedFieldNames}] AND 'Object Type Artifact Type ID' == {_DOCUMENT_ARTIFACT_TYPE_ID}",
-				Fields = new[] { new FieldRef {Name = "Name"}, new FieldRef {Name = "Field Type"}}
+				Fields = new[]
+				{
+					new FieldRef { Name = "Name" },
+					new FieldRef { Name = "Field Type" }
+				}
 			};
 
 			QueryResultSlim result;
@@ -59,8 +63,16 @@ namespace Relativity.Sync.Transfer
 				}
 			}
 
-			Dictionary<string, RelativityDataType> parsedResult = result.Objects.ToDictionary(obj => (string) obj.Values[0], obj => ((string) obj.Values[1]).ToRelativityDataType());
-			return parsedResult;
+			Dictionary<string, RelativityDataType> fieldNameToFieldType = result.Objects.ToDictionary(GetFieldName, GetFieldType);
+			return fieldNameToFieldType;
+		}
+
+		private static string GetFieldName(RelativityObjectSlim obj) => obj.Values[0].ToString();
+
+		private static RelativityDataType GetFieldType(RelativityObjectSlim obj)
+		{
+			string rawValue = obj.Values[1].ToString();
+			return rawValue.GetEnumFromDescription<RelativityDataType>();
 		}
 	}
 }

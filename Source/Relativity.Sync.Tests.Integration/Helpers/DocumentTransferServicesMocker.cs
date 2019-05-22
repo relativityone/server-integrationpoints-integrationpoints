@@ -55,7 +55,9 @@ namespace Relativity.Sync.Tests.Integration
 			SetupBatches(batchSize, job.Documents.Length);
 			await SetupExportResultBlocks(_fieldManager, job.Documents, batchSize).ConfigureAwait(false);
 			SetupNatives(job.Documents);
-			//SetupFolderPaths(job.Documents);
+
+			// We should also setup folder paths here. That should be done once we are able to reliably
+			// mock out workflows other than those using DestinationFolderPathBehavior.None.
 		}
 
 		public void RegisterServiceMocks(ContainerBuilder containerBuilder)
@@ -105,7 +107,7 @@ namespace Relativity.Sync.Tests.Integration
 				.Select(x => x.Trim('"').Trim('\''));
 
 			List<RelativityObjectSlim> objects = fieldNames
-				.Select(f => new RelativityObjectSlim { Values = new List<object> { f, fieldNameToDataType[f].ToRelativityTypeDisplayName()} })
+				.Select(f => new RelativityObjectSlim { Values = new List<object> { f, fieldNameToDataType[f].GetDescription() } })
 				.ToList();
 
 			QueryResultSlim retVal = new QueryResultSlim { Objects = objects };
@@ -170,21 +172,6 @@ namespace Relativity.Sync.Tests.Integration
 				.Setup(x => x.GetNativesForSearchAsync(It.IsAny<int>(), It.IsAny<int[]>()))
 				.ReturnsAsync<int, int[], IFileManager, FileResponse[]>((_, ids) => DocumentsForArtifactIds(ids, documents));
 		}
-
-		// TODO: Make this folder path stuff for something other than DestinationFolderPathBehavior.None.
-
-		//private void SetupFolderPaths(Document[] documents)
-		//{
-		//	ObjectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.Is<QueryRequest>(req => req.ObjectType.ArtifactTypeID == 10), It.IsAny<int>(), It.IsAny<int>()))
-		//		.ReturnsAsync<int, QueryRequest, int, int, IObjectManager, QueryResult>((ws, req, s, l) => SelectFolderPathResults(req.Condition, documents));
-		//}
-
-		//private static bool Select
-
-		//private static QueryResult SelectFolderPathResults(string condition, Document[] documents)
-		//{
-
-		//}
 
 		private static RelativityObjectSlim[] GetBlock(IList<Transfer.FieldInfoDto> sourceDocumentFields, Document[] documents, int resultsBlockSize, int startingIndex)
 		{

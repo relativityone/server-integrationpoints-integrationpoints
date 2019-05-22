@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Transfer
 {
@@ -13,7 +12,8 @@ namespace Relativity.Sync.Transfer
 	/// </summary>
 	internal sealed class SourceWorkspaceDataTableBuilder : ISourceWorkspaceDataTableBuilder
 	{
-		private DataTable _dataTable;
+		private DataTable _templateDataTable;
+		private IList<FieldInfoDto> _allFields;
 		private readonly IFieldManager _fieldManager;
 
 		public SourceWorkspaceDataTableBuilder(IFieldManager fieldManager)
@@ -23,43 +23,44 @@ namespace Relativity.Sync.Transfer
 
 		public async Task<DataTable> BuildAsync(int sourceWorkspaceArtifactId, RelativityObjectSlim[] batch, CancellationToken token)
 		{
-			if (batch == null || !batch.Any())
+			if (_allFields == null)
 			{
-				return new DataTable();
+				_allFields = await _fieldManager.GetAllFieldsAsync(token).ConfigureAwait(false);
 			}
 
-			IList<FieldInfoDto> allFields = await _fieldManager.GetAllFieldsAsync(token).ConfigureAwait(false);
+			DataTable dataTable = CreateEmptyDataTable(_allFields);
+			if (batch == null || !batch.Any())
+			{
+				return dataTable;
+			}
 
-			DataTable dataTable = GetEmptyDataTable(allFields);
-
-			IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> specialFieldBuildersDictionary = await CreateSpecialFieldRowValuesBuilders(sourceWorkspaceArtifactId, batch).ConfigureAwait(false);
-
+			IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> specialFieldBuildersDictionary = await CreateSpecialFieldRowValuesBuildersAsync(sourceWorkspaceArtifactId, batch).ConfigureAwait(false);
 			foreach (RelativityObjectSlim obj in batch)
 			{
-				object[] row = BuildRow(specialFieldBuildersDictionary, allFields, obj);
+				object[] row = BuildRow(specialFieldBuildersDictionary, _allFields, obj);
 				dataTable.Rows.Add(row);
 			}
 
 			return dataTable;
 		}
 
-		private async Task<IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder>> CreateSpecialFieldRowValuesBuilders(int sourceWorkspaceArtifactId, RelativityObjectSlim[] batch)
+		private async Task<IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder>> CreateSpecialFieldRowValuesBuildersAsync(int sourceWorkspaceArtifactId, RelativityObjectSlim[] batch)
 		{
-			IEnumerable<int> documentArtifactIds = batch.Select(obj => obj.ArtifactID);
+			ICollection<int> documentArtifactIds = batch.Select(obj => obj.ArtifactID).ToList();
 
 			return await _fieldManager.CreateSpecialFieldRowValueBuildersAsync(sourceWorkspaceArtifactId, documentArtifactIds).ConfigureAwait(false);
 		}
 
-		private DataTable GetEmptyDataTable(IEnumerable<FieldInfoDto> allFields)
+		private DataTable CreateEmptyDataTable(IList<FieldInfoDto> allFields)
 		{
-			if (_dataTable == null)
+			if (_templateDataTable == null)
 			{
-				_dataTable = CreateDataTable(allFields);
+				_templateDataTable = CreateTemplateDataTable(allFields);
 			}
-			return _dataTable.Clone();
+			return _templateDataTable.Clone();
 		}
 
-		private static DataTable CreateDataTable(IEnumerable<FieldInfoDto> allFields)
+		private static DataTable CreateTemplateDataTable(IList<FieldInfoDto> allFields)
 		{
 			var dataTable = new DataTable();
 
@@ -74,13 +75,13 @@ namespace Relativity.Sync.Transfer
 			return columns;
 		}
 
-		private object[] BuildRow(IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> specialFieldBuilders, IList<FieldInfoDto> fields, RelativityObjectSlim obj)
+		private static object[] BuildRow(IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> specialFieldBuilders, IList<FieldInfoDto> allFields, RelativityObjectSlim obj)
 		{
-			object[] result = new object[fields.Count];
+			object[] result = new object[allFields.Count];
 
-			for (int i = 0; i < fields.Count; i++)
+			for (int i = 0; i < allFields.Count; i++)
 			{
-				FieldInfoDto field = fields[i];
+				FieldInfoDto field = allFields[i];
 				if (field.SpecialFieldType != SpecialFieldType.None)
 				{
 					if (!specialFieldBuilders.ContainsKey(field.SpecialFieldType))
