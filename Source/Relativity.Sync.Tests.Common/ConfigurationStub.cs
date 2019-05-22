@@ -44,11 +44,6 @@ namespace Relativity.Sync.Tests.Common
 		public int SourceWorkspaceArtifactId { get; set; }
 		public int SyncConfigurationArtifactId { get; set; }
 
-		public void SetImportSettings(ImportSettingsDto importSettings)
-		{
-			ImportSettings = importSettings;
-		}
-
 		public int DestinationWorkspaceArtifactId { get; set; }
 		public int SavedSearchArtifactId { get; set; }
 		public int DestinationFolderArtifactId { get; set; }
