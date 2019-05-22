@@ -2,11 +2,11 @@ using System.Collections.Generic;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Extensions;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers.FileNaming;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
-using kCura.Windows.Process;
 using kCura.WinEDDS;
-using kCura.WinEDDS.Core.Export;
-using kCura.WinEDDS.Core.Export.Natives.Name.Factories;
 using kCura.WinEDDS.Service.Export;
+using Relativity.DataExchange.Export;
+using Relativity.DataExchange.Export.Natives.Name.Factories;
+using Relativity.DataExchange.Process;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 {
@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 			var config = new ExporterFactoryConfig
 			{
 				JobStopManager = _jobHistoryErrorServiceProvider?.JobHistoryErrorService.JobStopManager,
-				Controller = new Controller(),
+				Controller = new ProcessContext(),
 				ServiceFactory = serviceFactory,
 				LoadFileFormatterFactory = new ExportFileFormatterFactory(new ExtendedFieldNameProvider(exportDataContext.Settings)),
 				NameTextAndNativesAfterBegBates = exportDataContext.ExportFile.AreSettingsApplicableForProdBegBatesNameCheck(),

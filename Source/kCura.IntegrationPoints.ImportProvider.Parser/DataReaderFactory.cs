@@ -7,7 +7,7 @@ using kCura.WinEDDS.Api;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
-
+using Relativity.DataExchange.Service;
 using RAPI = Relativity;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser
@@ -67,7 +67,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 			foreach (string col in fieldParser.GetFields())
 			{
 				int fieldCat = (! string.IsNullOrEmpty(fieldIdentifierColumnName) && col == fieldIdentifierColumnName)
-					? (int)RAPI.FieldCategory.Identifier
+					? (int)FieldCategory.Identifier
 					: -1;
 
 				DocumentField newDocField = new DocumentField(col, colIdx, 4, fieldCat, -1, -1, -1, false,

@@ -6,7 +6,7 @@ Moq
 NSubstitute
 NUnit
 Relativity.API
-Relativity.ImportExport
+Relativity.DataExchange.Client.SDK
 Relativity.OAuth2Client.Interfaces
 Relativity.Productions.Services.Interfaces
 Relativity.Telemetry.APM

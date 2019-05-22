@@ -2,18 +2,19 @@
 
 using System;
 using System.IO;
+using Relativity.DataExchange.Io;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers
 {
 	public class DestinationFolderHelper : IDestinationFolderHelper
 	{
 		private readonly IJobInfo _jobInfo;
-		private readonly IDirectoryHelper _dirHelper;
+		private readonly IDirectory _directoryWrap;
 
-		public DestinationFolderHelper(IJobInfo jobInfo, IDirectoryHelper dirHelper)
+		public DestinationFolderHelper(IJobInfo jobInfo, IDirectory directoryWrap)
 		{
 			_jobInfo = jobInfo;
-			_dirHelper = dirHelper;
+			_directoryWrap = directoryWrap;
 		}
 
 		public string GetFolder(ExportSettings exportSettings)
@@ -35,7 +36,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers
 		{
 			if (exportSettings.IsAutomaticFolderCreationEnabled)
 			{
-				_dirHelper.CreateDirectory(path);
+				_directoryWrap.CreateDirectory(path);
 			}
 		}
 	}

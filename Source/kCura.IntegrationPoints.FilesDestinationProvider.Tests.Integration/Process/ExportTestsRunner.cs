@@ -22,11 +22,12 @@ using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Process.Internals;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases;
-using kCura.WinEDDS.Core.IO;
+
 using kCura.WinEDDS.Exporters;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.DataExchange.Io;
 using DateTime = System.DateTime;
 using Directory = kCura.Utility.Directory;
 using ExportSettings = kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportSettings;

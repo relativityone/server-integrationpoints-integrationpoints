@@ -6,10 +6,10 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
-using kCura.Windows.Process;
 using kCura.WinEDDS;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.DataExchange.Process;
 using Relativity.DataTransfer.MessageService;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
@@ -75,7 +75,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 			const int totalRecordCount = 12345, exportedRecordCount = 2000;
 			int registeredImportedCount = -1, registeredErrorCount = -1;
 
-			ExportEventArgs reisedEventArgs = new ExportEventArgs(exportedRecordCount, totalRecordCount, "", EventType.Progress,
+			ExportEventArgs reisedEventArgs = new ExportEventArgs(exportedRecordCount, totalRecordCount, "", EventType2.Progress,
 				null, null);
 
 
@@ -93,22 +93,22 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 		}
 
 		[Test]
-		[TestCase(EventType.Count, 1000)]
-		[TestCase(EventType.End, 1000)]
-		[TestCase(EventType.Error, 1000)]
-		[TestCase(EventType.ResetStartTime, 1000)]
-		[TestCase(EventType.Status, 1000)]
-		[TestCase(EventType.Warning, 1000)]
-		[TestCase(EventType.Progress, 1001)]
-		[TestCase(EventType.Progress, 100)]
-		public void ItShouldNotFireStatusUpdateEvent(EventType eventType, int exportedRecordCount)
+		[TestCase(EventType2.Count, 1000)]
+		[TestCase(EventType2.End, 1000)]
+		[TestCase(EventType2.Error, 1000)]
+		[TestCase(EventType2.ResetStartTime, 1000)]
+		[TestCase(EventType2.Status, 1000)]
+		[TestCase(EventType2.Warning, 1000)]
+		[TestCase(EventType2.Progress, 1001)]
+		[TestCase(EventType2.Progress, 100)]
+		public void ItShouldNotFireStatusUpdateEvent(EventType2 EventType2, int exportedRecordCount)
 		{
 			const int totalRecordCount = 12345;
 
 			int expectedValue = -1;
 			int registeredImportedCount = expectedValue, registeredErrorCount = expectedValue;
 
-			ExportEventArgs reisedEventArgs = new ExportEventArgs(exportedRecordCount, totalRecordCount, "", eventType, new object(), new Statistics());
+			ExportEventArgs reisedEventArgs = new ExportEventArgs(exportedRecordCount, totalRecordCount, "", EventType2, new object(), new Statistics());
 
 			_subjectUnderTest.OnStatusUpdate += (importedCount, errorCount) =>
 			{
@@ -130,7 +130,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 			string expectedMessage = "Some message";
 			string registeredDocumentIdentifier = "", registeredErrorMessage = "";
 
-			ExportEventArgs reisedEventArgs = new ExportEventArgs(exportedRecordCount, totalRecordCount, expectedMessage, EventType.Error, new object(), new Statistics());
+			ExportEventArgs reisedEventArgs = new ExportEventArgs(exportedRecordCount, totalRecordCount, expectedMessage, EventType2.Error, new object(), new Statistics());
 
 			_subjectUnderTest.OnDocumentError += (documentIdentifier, errorMessage) =>
 			{
@@ -145,19 +145,19 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 		}
 
 		[Test]
-		[TestCase(EventType.Count)]
-		[TestCase(EventType.End)]
-		[TestCase(EventType.ResetStartTime)]
-		[TestCase(EventType.Status)]
-		[TestCase(EventType.Warning)]
-		[TestCase(EventType.Progress)]
-		public void ItShouldNotFireErrorMessageEvent(EventType eventType)
+		[TestCase(EventType2.Count)]
+		[TestCase(EventType2.End)]
+		[TestCase(EventType2.ResetStartTime)]
+		[TestCase(EventType2.Status)]
+		[TestCase(EventType2.Warning)]
+		[TestCase(EventType2.Progress)]
+		public void ItShouldNotFireErrorMessageEvent(EventType2 EventType2)
 		{
 			string registeredDocumentIdentifier = "", registeredErrorMessage = "";
 			const int totalRecordCount = 12345, exportedRecordCount = 2000;
 			string expectedMessage = "Some message";
 
-			ExportEventArgs reisedEventArgs = new ExportEventArgs(exportedRecordCount, totalRecordCount, expectedMessage, eventType, new object(), new Statistics());
+			ExportEventArgs reisedEventArgs = new ExportEventArgs(exportedRecordCount, totalRecordCount, expectedMessage, EventType2, new object(), new Statistics());
 
 			_subjectUnderTest.OnDocumentError += (documentIdentifier, errorMessage) =>
 			{

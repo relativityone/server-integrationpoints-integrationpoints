@@ -6,7 +6,7 @@ kCura.Apps.Common.Data
 kCura.Apps.Common.Utils
 kCura.Relativity.Client
 Relativity.Authentication
-Relativity.ImportExport
+Relativity.DataExchange.Client.SDK
 Relativity.Telemetry.APM
 Relativity.Telemetry.MetricsCollection
 Relativity.Vfs.IO

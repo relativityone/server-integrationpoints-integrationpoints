@@ -24,6 +24,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using kCura.WinEDDS;
+using Relativity.DataExchange.Io;
+using Relativity.DataExchange.Service;
 using IExporter = kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary.IExporter;
 using IServiceFactory = kCura.WinEDDS.Service.Export.IServiceFactory;
 using ViewFieldInfo = kCura.WinEDDS.ViewFieldInfo;
@@ -68,7 +70,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		private JobStatisticsService _jobStatisticsService;
 		private IJobInfoFactory _jobInfoFactoryMock;
 		private IJobInfo _jobInfoMock;
-		private IDirectoryHelper _directoryHelper;
+		private IDirectory _directoryWrap;
 		private IExportServiceFactory _exportServiceFactory;
 		private WinEDDS.Service.Export.IServiceFactory _serviceFactory;
 		private IRepositoryFactory _repositoryFactory;
@@ -104,7 +106,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 
 			_jobInfoFactoryMock = Substitute.For<IJobInfoFactory>();
 			_jobInfoMock = Substitute.For<IJobInfo>();
-			_directoryHelper = Substitute.For<IDirectoryHelper>();
+			_directoryWrap = Substitute.For<IDirectory>();
 
 			_jobInfoFactoryMock.Create(Arg.Any<Job>()).Returns(_jobInfoMock);
 
@@ -134,7 +136,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 				helper,
 				_jobStatisticsService,
 				_jobInfoFactoryMock,
-				_directoryHelper,
+				_directoryWrap,
 				_exportServiceFactory,
 				_repositoryFactory
 			);
