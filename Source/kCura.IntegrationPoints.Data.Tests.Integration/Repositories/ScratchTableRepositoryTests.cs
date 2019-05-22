@@ -9,7 +9,9 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
+using kCura.Utility.Extensions;
 using NUnit.Framework;
+using Enumerable = System.Linq.Enumerable;
 
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 {
@@ -81,43 +83,45 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		[Test]
 		public void GetTempTable_ShouldThrowIfNoDocumentsInScratchTable()
 		{
-			Assert.Throws<Exception>(() => GetTempTable(_tableName));
+			//ARRANGE
+			Action action = () => GetTempTable(_tableName);
+
+			//ACT && ASSERT
+			action.ShouldThrow<Exception>();
 		}
 
 		[TestCase(5, 1)]
-		[TestCase(1500, 1500)]
+		[TestCase(10, 4)]
+		[TestCase(3, 3)]
 		public void CreateScratchTableAndDeleteErroredDocuments(int numDocs, int numDocsWithErrors)
 		{
 			//ARRANGE
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable(1, numDocs));
 			Dictionary<int, string> controlNumbersByDocumentIds = GetDocumentIdToControlNumberMapping();
 			List<int> documentIDs = controlNumbersByDocumentIds.Keys.ToList();
-
+			int expectedNumberOfDocuments = documentIDs.Count - numDocsWithErrors;
 			//ACT
 			_sut.AddArtifactIdsIntoTempTable(documentIDs);
 
-			int docArtifactIdToRemove = controlNumbersByDocumentIds.Keys.ElementAt(2);
-
-			if (numDocsWithErrors == 1)
-			{
-				string docIdentifierToRemove = controlNumbersByDocumentIds[docArtifactIdToRemove];
-				_sut.RemoveErrorDocuments(new List<string> { docIdentifierToRemove });
-			}
-			else //all docs have errors
-			{
-				List<string> docIdentifiers = controlNumbersByDocumentIds.Values.ToList();
-				_sut.RemoveErrorDocuments(docIdentifiers);
-			}
+			IList<int> documentsToRemoveArtifactIDs = documentIDs.Take(numDocsWithErrors).ToList();
+			IList<string> documentsToRemoveControlNumbers =
+				controlNumbersByDocumentIds
+					.Where(x => x.Key.In(documentsToRemoveArtifactIDs.ToArray()))
+					.Select(y => y.Value)
+					.ToList();
+			_sut.RemoveErrorDocuments(documentsToRemoveControlNumbers);
+			
 
 			//ASSERT
-			VerifyErroredDocumentRemoval(_tableName, docArtifactIdToRemove, documentIDs.Count - numDocsWithErrors);
+			AssertErroredDocumentRemoval(_tableName, documentsToRemoveArtifactIDs, expectedNumberOfDocuments);
 		}
 
 		[Test]
 		public void CreateScratchTableAndErroredDocumentDoesntExist()
 		{
 			//ARRANGE
-			List<int> documentIDs = Enumerable.Range(0, _DEFAULT_NUMBER_OF_DOCS_TO_CREATE).ToList(); 
+			List<int> documentIDs = Enumerable.Range(0, _DEFAULT_NUMBER_OF_DOCS_TO_CREATE).ToList();
+			List<string> nonExistingDocumentsIdentifiers = new List<string> {"Non Existing Identifier"};
 
 			//ACT
 			_sut.AddArtifactIdsIntoTempTable(documentIDs);
@@ -125,7 +129,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			//ASSERT
 			try
 			{
-				_sut.RemoveErrorDocuments(new List<string> { "Doesn't Exist" });
+				_sut.RemoveErrorDocuments(nonExistingDocumentsIdentifiers);
 			}
 			catch (Exception ex)
 			{
@@ -263,14 +267,15 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			}
 		}
 
-		private void VerifyErroredDocumentRemoval(string tableName, int erroredDocumentArtifactId, int expectedNewCount)
+		private void AssertErroredDocumentRemoval(string tableName, IEnumerable<int> erroredDocumentArtifactId, int expectedNewCount)
 		{
 			string targetDatabaseFormat = _resourceDbProvider.GetResourceDbPrepend(SourceWorkspaceArtifactId);
 
 			if (expectedNewCount != 0)
 			{
+				string erroredDocumentsListAsString = "(" + String.Join(",", erroredDocumentArtifactId) + ")";
 				string getErroredDocumentQuery =
-				$"SELECT COUNT(*) FROM {targetDatabaseFormat}.[{tableName}] WHERE [ArtifactID] = {erroredDocumentArtifactId}";
+				$"SELECT COUNT(*) FROM {targetDatabaseFormat}.[{tableName}] WHERE [ArtifactID] in {erroredDocumentsListAsString}";
 
 				bool entryExists = _caseServiceContext.SqlContext.ExecuteSqlStatementAsScalar<bool>(getErroredDocumentQuery);
 				if (entryExists)

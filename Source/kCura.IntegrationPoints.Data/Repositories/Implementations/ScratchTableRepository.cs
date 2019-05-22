@@ -47,11 +47,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public int Count { get; private set; }
 
-		public void RemoveErrorDocuments(ICollection<string> documentIDs)
+		public void RemoveErrorDocuments(ICollection<string> documentControlNumbers)
 		{
-			Count -= documentIDs.Count;
+			Count -= documentControlNumbers.Count;
 
-			ICollection<int> docIds = GetErroredDocumentId(documentIDs);
+			ICollection<int> docIds = GetErroredDocumentId(documentControlNumbers);
 
 			if (docIds.Count == 0)
 			{
@@ -60,9 +60,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			string documentList = "(" + String.Join(",", docIds) + ")";
 
 			string fullTableName = GetTempTableName();
-			string schemalessResourceDataBasePrepend = GetSchemalessResourceDataBasePrepend();
 			string resourceDBPrepend = GetResourceDBPrepend();
-			string sql = $@"DELETE FROM {resourceDBPrepend}.[{fullTableName}] WHERE [{_DOCUMENT_ARTIFACT_ID_COLUMN_NAME}] in {schemalessResourceDataBasePrepend}";
+			string sql = $@"DELETE FROM {resourceDBPrepend}.[{fullTableName}] WHERE [{_DOCUMENT_ARTIFACT_ID_COLUMN_NAME}] in {documentList}";
 
 			_caseContext.ExecuteNonQuerySQLStatement(sql);
 		}
@@ -207,14 +206,14 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return _resourceDbProvider.GetResourceDbPrepend(_workspaceId);
 		}
 
-		private ICollection<int> GetErroredDocumentId(ICollection<string> docIdentifiers)
+		private ICollection<int> GetErroredDocumentId(ICollection<string> documentControlNumbers)
 		{
 			if (String.IsNullOrEmpty(_docIdentifierFieldName))
 			{
 				_docIdentifierFieldName = GetDocumentIdentifierField();
 			}
 
-			ICollection<int> documentIds = QueryForDocumentArtifactId(docIdentifiers);
+			ICollection<int> documentIds = QueryForDocumentArtifactId(documentControlNumbers);
 			return documentIds;
 		}
 
