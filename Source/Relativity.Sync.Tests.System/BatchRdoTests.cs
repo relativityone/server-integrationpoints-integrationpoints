@@ -5,6 +5,7 @@ using Relativity.Services.Workspace;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Helpers;
+using Relativity.Testing.Identification;
 
 namespace Relativity.Sync.Tests.System
 {
@@ -30,7 +31,7 @@ namespace Relativity.Sync.Tests.System
 			_syncConfigurationArtifactId = await Rdos.CreateSyncConfigurationInstance(ServiceFactory, _workspaceId, jobHistoryArtifactId).ConfigureAwait(false);
 		}
 
-		[Test]
+		[IdentifiedTest("d15a4f9e-a56c-4991-bb0f-017cd0e34ecd")]
 		public async Task ItShouldCreateAndReadBatch()
 		{
 			const int startingIndex = 55;
@@ -45,7 +46,7 @@ namespace Relativity.Sync.Tests.System
 			readBatch.TotalItemsCount.Should().Be(totalRecords);
 		}
 
-		[Test]
+		[IdentifiedTest("5a0341fc-43ee-4d66-a0fe-f8a7bfd220c2")]
 		public async Task ItShouldUpdateValues()
 		{
 			const int startingIndex = 5;

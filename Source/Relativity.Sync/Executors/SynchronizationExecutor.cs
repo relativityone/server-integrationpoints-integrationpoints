@@ -38,7 +38,7 @@ namespace Relativity.Sync.Executors
 			_logger.LogVerbose("Creating settings for ImportAPI.");
 			ImportSettingsDto importSettings = GetImportSettingsAsync(configuration);
 			configuration.SetImportSettings(importSettings);
-
+			
 			ExecutionResult result = ExecutionResult.Success();
 			DateTime startTime = _dateTime.Now;
 
@@ -129,7 +129,7 @@ namespace Relativity.Sync.Executors
 				FileNameColumn = GetSpecialFieldColumnName(specialFields, SpecialFieldType.NativeFileFilename),
 				OiFileTypeColumnName = GetSpecialFieldColumnName(specialFields, SpecialFieldType.RelativityNativeType),
 				SupportedByViewerColumn = GetSpecialFieldColumnName(specialFields, SpecialFieldType.SupportedByViewer),
-
+				
 				CaseArtifactId = configuration.DestinationWorkspaceArtifactId,
 				IdentityFieldId = destinationIdentityFieldId,
 
