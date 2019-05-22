@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using kCura.WinEDDS.Exceptions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
@@ -62,7 +61,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			{
 				new FieldMap()
 				{
-					DestinationField = new FieldEntry()
+					DestinationField = new FieldEntry
 					{
 						IsIdentifier = true,
 					}
