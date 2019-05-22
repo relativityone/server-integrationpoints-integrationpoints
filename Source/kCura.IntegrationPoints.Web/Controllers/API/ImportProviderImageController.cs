@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Authentication;
 using Relativity.API;
+using Relativity.DataExchange.Service;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
@@ -53,7 +54,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			CookieContainer cookieContainer = new CookieContainer();
 			ICaseManager caseManager = _caseManagerFactory.Create(_credential.Authenticate(cookieContainer), cookieContainer);
 			
-			global::Relativity.CaseInfo caseInfo = caseManager.Read(workspaceArtifactId);
+			CaseInfo caseInfo = caseManager.Read(workspaceArtifactId);
 			string[] fileRepos = caseManager.GetAllDocumentFolderPathsForCase(caseInfo.ArtifactID).OrderBy(x => x).ToArray(); ;
 
 			return Json(fileRepos);
@@ -66,7 +67,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			CookieContainer cookieContainer = new CookieContainer();
 			ICaseManager caseManager = _caseManagerFactory.Create(_credential.Authenticate(cookieContainer), cookieContainer);
 
-			global::Relativity.CaseInfo caseInfo = caseManager.Read(workspaceArtifactId);
+			CaseInfo caseInfo = caseManager.Read(workspaceArtifactId);
 
 			return Json(caseInfo.DocumentPath);
 		}

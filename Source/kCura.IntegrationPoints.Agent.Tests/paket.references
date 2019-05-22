@@ -11,7 +11,7 @@ NUnit
 Moq
 Relativity.Authentication
 Relativity.Data
-Relativity.ImportExport
+Relativity.DataExchange.Client.SDK
 Relativity.Telemetry.APM
 Relativity.Telemetry.MetricsCollection
 Relativity.Services.Interfaces

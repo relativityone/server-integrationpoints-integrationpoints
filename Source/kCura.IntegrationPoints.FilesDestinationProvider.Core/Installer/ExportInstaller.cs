@@ -10,6 +10,7 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Exporters;
+using Relativity.DataExchange.Io;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
 {
@@ -42,7 +43,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
 			container.Register(Component.For<IIntegrationPointValidationService>().ImplementedBy<FileDestinationProviderConfigurationValidator>().Named($"{nameof(FileDestinationProviderConfigurationValidator)}+{nameof(IIntegrationPointValidationService)}").LifestyleTransient());
 
 			container.Register(Component.For<IJobInfoFactory>().ImplementedBy<JobInfoFactory>().LifestyleTransient());
-			container.Register(Component.For<IDirectoryHelper>().ImplementedBy<WinEDDS.Core.IO.LongPathDirectoryHelper>().LifestyleTransient());
+			container.Register(Component.For<IDirectory>().ImplementedBy<global::Relativity.DataExchange.Io.LongPathDirectoryHelper>().LifestyleTransient());
 			container.Register(Component.For<IExportConfig>().ImplementedBy<LoadFileExportConfig>().LifestyleTransient());
 			container.Register(Component.For<IExportServiceFactory>().ImplementedBy<ExportServiceFactory>().LifestyleTransient());
 

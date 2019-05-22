@@ -2,9 +2,9 @@
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
-using kCura.Windows.Process;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.DataExchange.Process;
 using Relativity.Telemetry.MetricsCollection;
 using IExporter = kCura.WinEDDS.IExporter;
 
@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 	[TestFixture]
 	public class StoppableExporterTests : TestBase
 	{
-		private Controller _controller;
+		private ProcessContext _context;
 		private IExporter _exporter;
 		private IJobStopManager _jobStopManager;
 		private StoppableExporter _stoppableExporter;
@@ -23,9 +23,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 		{
 			Client.LazyMetricsClient = new Lazy<IMetricsCollector>(() => Substitute.For<IMetricsCollector>());
 			_exporter = Substitute.For<IExporter>();
-			_controller = new Controller();
+			_context = new ProcessContext();
 			_jobStopManager = Substitute.For<IJobStopManager>();
-			_stoppableExporter = new StoppableExporter(_exporter, _controller, _jobStopManager);
+			_stoppableExporter = new StoppableExporter(_exporter, _context, _jobStopManager);
 		}
 
 		[Test]
@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 		public void ItShouldHaltProcessOnStopRequested()
 		{
 			var wasCalled = false;
-			_controller.HaltProcessEvent += id => wasCalled = true;
+			_context.CancellationRequest += (sender, args) => wasCalled = true;
 
 			_exporter.When(x => x.ExportSearch()).Do(info => _jobStopManager.StopRequestedEvent += Raise.Event<EventHandler<EventArgs>>(EventArgs.Empty));
 
@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 		public void ItShouldNotHaltProcessAfterJobCompletion()
 		{
 			var wasCalled = false;
-			_controller.HaltProcessEvent += id => wasCalled = true;
+			_context.CancellationRequest += (sender, args) => wasCalled = true;
 
 			_stoppableExporter.ExportSearch();
 

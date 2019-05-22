@@ -5,7 +5,7 @@ kCura.Relativity.Client
 LanguageExt.Core
 Mono.TextTransform
 Relativity.API
-Relativity.ImportExport
+Relativity.DataExchange.Client.SDK
 Relativity.OAuth2Client
 Relativity.Productions.Services.Interfaces
 Relativity.Telemetry.APM

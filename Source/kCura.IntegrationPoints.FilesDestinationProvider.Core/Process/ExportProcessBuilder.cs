@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using FileNaming.CustomFileNaming;
+using Relativity.DataExchange.Io;
 using IExporter = kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary.IExporter;
 using IServiceFactory = kCura.WinEDDS.Service.Export.IServiceFactory;
 using ViewFieldInfo = kCura.WinEDDS.ViewFieldInfo;
@@ -34,7 +35,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 		private readonly IExportFileBuilder _exportFileBuilder;
 		private readonly JobStatisticsService _jobStatisticsService;
 		private readonly IJobInfoFactory _jobHistoryFactory;
-		private readonly IDirectoryHelper _dirHelper;
+		private readonly IDirectory _directory;
 		private readonly IAPILog _logger;
 		private readonly ICompositeLoggingMediator _loggingMediator;
 		private readonly IUserMessageNotification _userMessageNotification;
@@ -52,8 +53,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			IExportFileBuilder exportFileBuilder, 
 			IHelper helper, 
 			JobStatisticsService jobStatisticsService,
-			IJobInfoFactory jobHistoryFactory, 
-			IDirectoryHelper dirHelper, 
+			IJobInfoFactory jobHistoryFactory,
+			IDirectory directoryWrap,
 			IExportServiceFactory exportServiceFactory,
 			IRepositoryFactory repositoryFactory)
 		{
@@ -66,7 +67,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			_exportFileBuilder = exportFileBuilder;
 			_jobStatisticsService = jobStatisticsService;
 			_jobHistoryFactory = jobHistoryFactory;
-			_dirHelper = dirHelper;
+			_directory = directoryWrap;
 			_exportServiceFactory = exportServiceFactory;
 			_repositoryFactory = repositoryFactory;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ExportProcessBuilder>();
@@ -106,7 +107,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 		{
 			// TODO: move this to WinEDDS
 			IJobInfo jobInfo = _jobHistoryFactory.Create(job);
-			IDestinationFolderHelper destinationFolderHelper = new DestinationFolderHelper(jobInfo, _dirHelper);
+			IDestinationFolderHelper destinationFolderHelper = new DestinationFolderHelper(jobInfo, _directory);
 
 			exportFile.FolderPath = destinationFolderHelper.GetFolder(settings);
 			destinationFolderHelper.CreateDestinationSubFolderIfNeeded(settings, exportFile.FolderPath);
@@ -184,11 +185,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			}
 		}
 
-		private static CaseInfo ConvertToDto(ICaseInfoDto caseInfo)
+		private static global::Relativity.DataExchange.Service.CaseInfo ConvertToDto(ICaseInfoDto caseInfo)
 		{
 			return caseInfo == null 
 				? null 
-				: new CaseInfo
+				: new global::Relativity.DataExchange.Service.CaseInfo
 				  {
 					Name = caseInfo.Name,
 					ArtifactID = caseInfo.ArtifactID,
@@ -208,9 +209,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 		{
 			exportFile.SelectedViewFields = FilterFields(exportFile, selectedViewFieldIds);
 
-			exportFile.IdentifierColumnName = exportFile.SelectedViewFields.FirstOrDefault(field => field.Category == FieldCategory.Identifier)?.DisplayName;
+			exportFile.IdentifierColumnName = exportFile.SelectedViewFields.FirstOrDefault(field => field.Category == global::Relativity.DataExchange.Service.FieldCategory.Identifier)?.DisplayName;
 
-			var fileTypeField = exportFile.AllExportableFields.FirstOrDefault(field => field.FieldType == FieldTypeHelper.FieldType.File);
+			var fileTypeField = exportFile.AllExportableFields.FirstOrDefault(field => field.FieldType == global::Relativity.DataExchange.Service.FieldType.File);
 			if (fileTypeField != null)
 			{
 				exportFile.FileField = new DocumentField(fileTypeField.DisplayName, fileTypeField.FieldArtifactId, (int)fileTypeField.FieldType,

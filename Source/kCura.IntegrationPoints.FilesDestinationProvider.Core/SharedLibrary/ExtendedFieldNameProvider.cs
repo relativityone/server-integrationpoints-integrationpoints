@@ -1,10 +1,9 @@
 ﻿using System.Linq;
 using kCura.WinEDDS;
-using kCura.WinEDDS.Core.Export;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 {
-	public class ExtendedFieldNameProvider : FieldNameProvider
+	public class ExtendedFieldNameProvider : global::Relativity.DataExchange.Export.FieldNameProvider
 	{
 		private readonly ExportSettings _settings;
 

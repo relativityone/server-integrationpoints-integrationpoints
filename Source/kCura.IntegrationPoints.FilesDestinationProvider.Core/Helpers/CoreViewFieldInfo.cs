@@ -4,7 +4,7 @@ using Relativity.Services.Interfaces.ViewField.Models;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers
 {
-	internal class CoreViewFieldInfo : ViewFieldInfo
+	internal class CoreViewFieldInfo : global::Relativity.DataExchange.Service.ViewFieldInfo
 	{
 		public CoreViewFieldInfo(ViewFieldResponse viewFieldResponse)
 		{
@@ -15,12 +15,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers
 		{
 			FieldArtifactId = viewFieldResponse.ArtifactID;
 			AvfId = viewFieldResponse.ArtifactViewFieldID;
-			Category = ConvertEnum<FieldCategory>(viewFieldResponse.Category);
+			Category = ConvertEnum<global::Relativity.DataExchange.Service.FieldCategory>(viewFieldResponse.Category);
 			DisplayName = viewFieldResponse.DisplayName;
 			AvfColumnName = viewFieldResponse.ArtifactViewFieldColumnName;
 			AvfHeaderName = viewFieldResponse.ArtifactViewFieldHeaderName;
 			AllowFieldName = viewFieldResponse.AllowFieldName;
-			ColumnSource = ConvertEnum<ColumnSourceType>(viewFieldResponse.ColumnSourceType);
+			ColumnSource = ConvertEnum<global::Relativity.DataExchange.Service.ColumnSourceType>(viewFieldResponse.ColumnSourceType);
 			DataSource = viewFieldResponse.DataSource;
 			SourceFieldName = viewFieldResponse.SourceFieldName;
 			SourceFieldArtifactTypeID = viewFieldResponse.SourceFieldArtifactTypeID;
@@ -28,8 +28,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers
 			ConnectorFieldArtifactID = viewFieldResponse.ConnectorFieldArtifactID;
 			_sourceFieldArtifactTypeTableName = viewFieldResponse.SourceFieldArtifactTypeTableName;
 			ConnectorFieldName = viewFieldResponse.ConnectorFieldName;
-			_connectorFieldCategory = ConvertEnum<FieldCategory>(viewFieldResponse.ConnectorFieldCategory);
-			FieldType = ConvertEnum<FieldTypeHelper.FieldType>(viewFieldResponse.FieldType);
+			_connectorFieldCategory = ConvertEnum<global::Relativity.DataExchange.Service.FieldCategory>(viewFieldResponse.ConnectorFieldCategory);
+			FieldType = ConvertEnum<global::Relativity.DataExchange.Service.FieldType>(viewFieldResponse.FieldType);
 			IsLinked = viewFieldResponse.IsLinked;
 			FieldCodeTypeID = viewFieldResponse.FieldCodeTypeID;
 			ArtifactTypeID = viewFieldResponse.ArtifactTypeID;
@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers
 			RelationalTableName = viewFieldResponse.RelationalTableName;
 			RelationalTableColumnName = viewFieldResponse.RelationalTableColumnName;
 			RelationalTableColumnName2 = viewFieldResponse.RelationalTableColumnName2;
-			ParentReflectionType = ConvertEnum<ParentReflectionType>(viewFieldResponse.ParentReflectionType);
+			ParentReflectionType = ConvertEnum<global::Relativity.DataExchange.Service.ParentReflectionType>(viewFieldResponse.ParentReflectionType);
 			ReflectedFieldArtifactTypeTableName = viewFieldResponse.ReflectedFieldArtifactTypeTableName;
 			ReflectedFieldIdentifierColumnName = viewFieldResponse.ReflectedFieldIdentifierColumnName;
 			ReflectedFieldConnectorFieldName = viewFieldResponse.ReflectedFieldConnectorFieldName;

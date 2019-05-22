@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers.F
 				exportFile.CookieContainer);
 		}
 
-		internal static string GetDestinationFolderPath(CaseInfo caseInfo)
+		internal static string GetDestinationFolderPath(global::Relativity.DataExchange.Service.CaseInfo caseInfo)
 		{
 			string documentPath = GetDocumentPath(caseInfo);
 			string workspaceDirectoryName = $"EDDS{caseInfo.ArtifactID}";
@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers.F
 			return Path.Combine(documentPath, workspaceDirectoryName);
 		}
 
-		private static string GetDocumentPath(CaseInfo caseInfo)
+		private static string GetDocumentPath(global::Relativity.DataExchange.Service.CaseInfo caseInfo)
 		{
 			return caseInfo?.DocumentPath
 				   ?? throw new ArgumentException($"{nameof(caseInfo.DocumentPath)} cannot be null");
@@ -45,6 +45,5 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers.F
 			{
 				throw new ArgumentException($"{nameof(exportFile.CaseInfo)} cannot be null");
 			}
-		}
-	}
+		}}
 }

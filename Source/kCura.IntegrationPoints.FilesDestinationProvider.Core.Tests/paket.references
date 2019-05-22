@@ -1,12 +1,14 @@
+Castle.Windsor
 CSharpGuidelineAnalyzer
 FluentAssertions
+kCura
 kCura.Apps.Common.Utils
 kCura.Relativity.Client
 LanguageExt.Core
 NSubstitute
 NUnit
 Relativity.API
-Relativity.ImportExport
 Relativity.Productions.Services.Interfaces
 Relativity.Services.Interfaces
 Relativity.Telemetry.MetricsCollection
+Relativity.DataExchange.Client.SDK

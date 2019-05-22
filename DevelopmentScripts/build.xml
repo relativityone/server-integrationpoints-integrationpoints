@@ -151,10 +151,7 @@
           <Assembly>lib\UnitTests\Banzai.Autofac.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.LongPath.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.Relativity.Client.dll</Assembly>
-          <Assembly>lib\UnitTests\kCura.Relativity.DataReaderClient.dll</Assembly>
-          <Assembly>lib\UnitTests\kCura.WinEDDS.dll</Assembly>
-          <Assembly>lib\UnitTests\kCura.WinEDDS.TApi.dll</Assembly>
-          <Assembly>lib\UnitTests\kCura.WinEDDS.Core.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.DataExchange.Client.SDK.dll</Assembly>
           <Assembly>lib\UnitTests\Relativity.DataTransfer.MessageService.dll</Assembly>
           <Assembly>lib\UnitTests\Relativity.Transfer.Client.Aspera.dll</Assembly>
           <Assembly>lib\UnitTests\Relativity.Transfer.Client.dll</Assembly>

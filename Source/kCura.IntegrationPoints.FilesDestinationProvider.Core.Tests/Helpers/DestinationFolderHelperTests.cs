@@ -4,6 +4,7 @@ using System.IO;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.DataExchange.Io;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Helpers
 {
@@ -16,14 +17,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Helpers
 		private DestinationFolderHelper _instnaceUnderTest;
 
 		private ExportSettings _exportSettings;
-		private IDirectoryHelper _driHelperMock;
+		private IDirectory _driHelperMock;
 		private IJobInfo _jobInfoMock;
 
 		[SetUp]
 		public void Init()
 		{
 			_jobInfoMock = Substitute.For<IJobInfo>();
-			_driHelperMock = Substitute.For<IDirectoryHelper>();
+			_driHelperMock = Substitute.For<IDirectory>();
 
 			_instnaceUnderTest = new DestinationFolderHelper(_jobInfoMock, _driHelperMock);
 
