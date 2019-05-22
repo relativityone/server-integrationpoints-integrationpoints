@@ -23,7 +23,7 @@ namespace Relativity.Sync.Tests.System
 		{
 			await base.ChildSuiteSetup().ConfigureAwait(false);
 
-			_repository = new ProgressRepository(new SourceServiceFactoryStub(ServiceFactory));
+			_repository = new ProgressRepository(new ServiceFactoryStub(ServiceFactory));
 
 			WorkspaceRef workspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
 			_workspaceId = workspace.ArtifactID;
