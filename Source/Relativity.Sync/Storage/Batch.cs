@@ -151,14 +151,16 @@ namespace Relativity.Sync.Storage
 			}
 		}
 
-		private Task<bool> ReadFirstAsync(int workspaceArtifactId, int syncConfigurationArtifactId)
+		private async Task<bool> ReadFirstAsync(int workspaceArtifactId, int syncConfigurationArtifactId)
 		{
-			return ReadFirstUsingSortAsync(workspaceArtifactId, syncConfigurationArtifactId, SortEnum.Ascending);
+			return await ReadFirstUsingSortAsync(workspaceArtifactId, syncConfigurationArtifactId, SortEnum.Ascending)
+				.ConfigureAwait(false);
 		}
 
-		private Task<bool> ReadLastAsync(int workspaceArtifactId, int syncConfigurationArtifactId)
+		private async Task<bool> ReadLastAsync(int workspaceArtifactId, int syncConfigurationArtifactId)
 		{
-			return ReadFirstUsingSortAsync(workspaceArtifactId, syncConfigurationArtifactId, SortEnum.Descending);
+			return await ReadFirstUsingSortAsync(workspaceArtifactId, syncConfigurationArtifactId, SortEnum.Descending)
+				.ConfigureAwait(false);
 		}
 
 		private async Task<bool> ReadFirstUsingSortAsync(int workspaceArtifactId, int syncConfigurationArtifactId, SortEnum sort)
