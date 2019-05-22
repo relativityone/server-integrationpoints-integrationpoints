@@ -28,7 +28,7 @@ namespace Relativity.Sync.Tests.System
 			_serviceFactoryStub = new ServiceFactoryStub(ServiceFactory);
 		}
 
-		[Test]
+		[Ignore("This test is not automatic yet.")]
 		public async Task ItShouldPassGoldFlow()
 		{
 			const int sourceWorkspaceArtifactId = 1018393;
