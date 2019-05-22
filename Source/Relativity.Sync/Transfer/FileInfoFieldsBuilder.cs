@@ -6,11 +6,6 @@ namespace Relativity.Sync.Transfer
 {
 	internal sealed class FileInfoFieldsBuilder : ISpecialFieldBuilder
 	{
-		private const string _NATIVE_FILE_LOCATION_FIELD_NAME = "NativeFileLocation";
-		private const string _NATIVE_FILE_SIZE_FIELD_NAME = "NativeFileSize";
-		private const string _NATIVE_FILE_FILENAME_FIELD_NAME = "NativeFileFilename";
-		private const string _SUPPORTED_BY_VIEWER_FIELD_NAME = "SupportedByViewer";
-		private const string _RELATIVITY_NATIVE_TYPE_FIELD_NAME = "RelativityNativeType";
 		private readonly INativeFileRepository _nativeFileRepository;
 
 		public FileInfoFieldsBuilder(INativeFileRepository nativeFileRepository)
@@ -20,11 +15,11 @@ namespace Relativity.Sync.Transfer
 
 		public IEnumerable<FieldInfoDto> BuildColumns()
 		{
-			yield return new FieldInfoDto {SpecialFieldType = SpecialFieldType.NativeFileFilename, DisplayName = _NATIVE_FILE_FILENAME_FIELD_NAME, IsDocumentField = false};
-			yield return new FieldInfoDto {SpecialFieldType = SpecialFieldType.NativeFileSize, DisplayName = _NATIVE_FILE_SIZE_FIELD_NAME, IsDocumentField = false};
-			yield return new FieldInfoDto {SpecialFieldType = SpecialFieldType.NativeFileLocation, DisplayName = _NATIVE_FILE_LOCATION_FIELD_NAME, IsDocumentField = false};
-			yield return new FieldInfoDto {SpecialFieldType = SpecialFieldType.SupportedByViewer, DisplayName = _SUPPORTED_BY_VIEWER_FIELD_NAME, IsDocumentField = true};
-			yield return new FieldInfoDto {SpecialFieldType = SpecialFieldType.RelativityNativeType, DisplayName = _RELATIVITY_NATIVE_TYPE_FIELD_NAME, IsDocumentField = true};
+			yield return FieldInfoDto.NativeFileFilenameField();
+			yield return FieldInfoDto.NativeFileSizeField();
+			yield return FieldInfoDto.NativeFileLocationField();
+			yield return FieldInfoDto.SupportedByViewerField();
+			yield return FieldInfoDto.RelativityNativeTypeField();
 		}
 
 		public async Task<ISpecialFieldRowValuesBuilder> GetRowValuesBuilderAsync(int sourceWorkspaceArtifactId, ICollection<int> documentArtifactIds)
@@ -39,7 +34,7 @@ namespace Relativity.Sync.Transfer
 			IDictionary<int, INativeFile> artifactIdToNativeFile = nativeFileInfoList.ToDictionary(n => n.DocumentArtifactId);
 			List<int> documentsWithoutNatives = documentArtifactIds.Where(x => !documentsWithNatives.Contains(x)).ToList();
 
-			artifactIdToNativeFile.Extend(documentsWithoutNatives, NativeFile.Empty.Repeat());
+			artifactIdToNativeFile.AddMany(documentsWithoutNatives, NativeFile.Empty.Repeat());
 
 			return new FileInfoRowValuesBuilder(artifactIdToNativeFile);
 		}

@@ -8,6 +8,8 @@ namespace Relativity.Sync.Configuration
 	{
 		int SourceWorkspaceArtifactId { get; }
 
+		int DestinationWorkspaceArtifactId { get; }
+
 		int DestinationWorkspaceTagArtifactId { get; }
 
 		int JobHistoryTagArtifactId { get; }

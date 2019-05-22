@@ -61,11 +61,7 @@ namespace Relativity.Sync.Configuration
 
 		public ImportSettingsDto()
 		{
-			CopyFilesToDocumentRepository = true;
 			ErrorFilePath = string.Empty;
-			ImportNativeFileCopyMode = ImportNativeFileCopyMode.DoNotImportNativeFiles;
-			ImportOverwriteMode = ImportOverwriteMode.AppendOnly;
-
 			DisableNativeLocationValidation = true;
 			DisableNativeValidation = true;
 			ExtractedTextFileEncoding = string.Empty;

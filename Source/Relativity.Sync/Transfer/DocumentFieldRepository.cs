@@ -13,7 +13,7 @@ namespace Relativity.Sync.Transfer
 {
 	internal sealed class DocumentFieldRepository : IDocumentFieldRepository
 	{
-		private const int _DOCUMENT_ARTIFACT_TYPE_ID = 10;
+		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int) ArtifactType.Document;
 		private readonly ISourceServiceFactoryForUser _serviceFactory;
 		private readonly ISyncLog _logger;
 
@@ -67,11 +67,11 @@ namespace Relativity.Sync.Transfer
 			return fieldNameToFieldType;
 		}
 
-		private static string GetFieldName(RelativityObjectSlim obj) => (string)obj.Values[0];
+		private static string GetFieldName(RelativityObjectSlim obj) => obj.Values[0].ToString();
 
 		private static RelativityDataType GetFieldType(RelativityObjectSlim obj)
 		{
-			string rawValue = (string)obj.Values[1];
+			string rawValue = obj.Values[1].ToString();
 			return rawValue.GetEnumFromDescription<RelativityDataType>();
 		}
 	}

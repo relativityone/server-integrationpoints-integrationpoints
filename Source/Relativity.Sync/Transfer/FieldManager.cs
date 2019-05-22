@@ -122,7 +122,7 @@ namespace Relativity.Sync.Transfer
 
 		private FieldInfoDto CreateFieldInfoFromFieldMap(FieldMap fieldMap)
 		{
-			return new FieldInfoDto {DisplayName = fieldMap.SourceField.DisplayName, IsDocumentField = true};
+			return FieldInfoDto.DocumentField(fieldMap.SourceField.DisplayName);
 		}
 	}
 }

@@ -14,6 +14,8 @@ namespace Relativity.Sync.Executors.Validation
 {
 	internal sealed class FieldMappingsValidator : IValidator
 	{
+		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int) ArtifactType.Document;
+
 		private readonly ISourceServiceFactoryForUser _sourceServiceFactoryForUser;
 		private readonly IDestinationServiceFactoryForUser _destinationServiceFactoryForUser;
 		private readonly ISyncLog _logger;
@@ -142,7 +144,7 @@ namespace Relativity.Sync.Executors.Validation
 			{
 				QueryRequest request = new QueryRequest()
 				{
-					Condition = $"(('FieldArtifactTypeID' == 10 AND 'ArtifactID' IN [{fieldArtifactIds}]))",
+					Condition = $"(('FieldArtifactTypeID' == {_DOCUMENT_ARTIFACT_TYPE_ID} AND 'ArtifactID' IN [{fieldArtifactIds}]))",
 					ObjectType = new ObjectTypeRef()
 					{
 						Name = "Field"

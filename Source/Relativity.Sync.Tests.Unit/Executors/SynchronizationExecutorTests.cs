@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
+using kCura.WinEDDS.Exceptions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.Exceptions;
@@ -28,24 +29,25 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private Mock<IImportJobFactory> _importJobFactory;
 		private Mock<ISyncMetrics> _syncMetrics;
 		private Mock<Sync.Executors.IImportJob> _importJob;
+		private Mock<ISynchronizationConfiguration> _config;
 
 		private SynchronizationExecutor _synchronizationExecutor;
 
-		private const string _FOLDER_PATH_COLUMN = "folder path";
-		private const string _NATIVE_FILENAME_COLUMN = "native file name";
-		private const string _NATIVE_FILESIZE_COLUMN = "native file size";
-		private const string _NATIVE_LOCATION_COLUMN = "native location";
-		private const string _NATIVE_TYPE_COLUMN = "native type";
-		private const string _SUPPORTED_BY_VIEWER_COLUMN = "supported by viewer";
+		private const string _FOLDER_PATH_FROM_WORKSPACE_DISPLAY_NAME = "76B270CB-7CA9-4121-B9A1-BC0D655E5B2D";
+		private const string _NATIVE_FILE_FILENAME_DISPLAY_NAME = "NativeFileFilename";
+		private const string _NATIVE_FILE_SIZE_DISPLAY_NAME = "NativeFileSize";
+		private const string _NATIVE_FILE_LOCATION_DISPLAY_NAME = "NativeFileLocation";
+		private const string _SUPPORTED_BY_VIEWER_DISPLAY_NAME = "SupportedByViewer";
+		private const string _RELATIVITY_NATIVE_TYPE_DISPLAY_NAME = "RelativityNativeType";
 
 		private readonly List<FieldInfoDto> _specialFields = new List<FieldInfoDto>()
 		{
-			new FieldInfoDto(){SpecialFieldType = SpecialFieldType.FolderPath, DisplayName = _FOLDER_PATH_COLUMN},
-			new FieldInfoDto(){SpecialFieldType = SpecialFieldType.NativeFileSize, DisplayName = _NATIVE_FILESIZE_COLUMN},
-			new FieldInfoDto(){SpecialFieldType = SpecialFieldType.NativeFileLocation, DisplayName = _NATIVE_LOCATION_COLUMN},
-			new FieldInfoDto(){SpecialFieldType = SpecialFieldType.NativeFileFilename, DisplayName = _NATIVE_FILENAME_COLUMN},
-			new FieldInfoDto(){SpecialFieldType = SpecialFieldType.RelativityNativeType, DisplayName = _NATIVE_TYPE_COLUMN},
-			new FieldInfoDto(){SpecialFieldType = SpecialFieldType.SupportedByViewer, DisplayName = _SUPPORTED_BY_VIEWER_COLUMN}
+			FieldInfoDto.FolderPathFieldFromDocumentField(_FOLDER_PATH_FROM_WORKSPACE_DISPLAY_NAME),
+			FieldInfoDto.NativeFileSizeField(),
+			FieldInfoDto.NativeFileLocationField(),
+			FieldInfoDto.NativeFileFilenameField(),
+			FieldInfoDto.RelativityNativeTypeField(),
+			FieldInfoDto.SupportedByViewerField()
 		};
 		
 		[SetUp]
@@ -57,6 +59,18 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_syncMetrics = new Mock<ISyncMetrics>();
 			_dateTime = new Mock<IDateTime>();
 			_fieldManager = new Mock<IFieldManager>();
+			_config = new Mock<ISynchronizationConfiguration>();
+			_config.SetupGet(x => x.ImportSettings).Returns(new ImportSettingsDto());
+			_config.SetupGet(x => x.FieldMappings).Returns(new List<FieldMap>()
+			{
+				new FieldMap()
+				{
+					DestinationField = new FieldEntry()
+					{
+						IsIdentifier = true,
+					}
+				}
+			});
 
 			_importJob = new Mock<Sync.Executors.IImportJob>();
 			_importJobFactory.Setup(x => x.CreateImportJob(It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IBatch>())).Returns(_importJob.Object);
@@ -72,20 +86,32 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		{
 			SetupBatchRepository(1);
 			
-			Mock<ISynchronizationConfiguration> syncConfig = new Mock<ISynchronizationConfiguration>();
-
 			// act
-			await _synchronizationExecutor.ExecuteAsync(syncConfig.Object, CancellationToken.None).ConfigureAwait(false);
+			await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
 
 			// assert
-			syncConfig.Verify(x => x.SetImportSettings(It.Is<ImportSettingsDto>(settings => 
-				settings.FolderPathSourceFieldName == _FOLDER_PATH_COLUMN &&
-				settings.FileSizeColumn == _NATIVE_FILESIZE_COLUMN &&
-				settings.NativeFilePathSourceFieldName == _NATIVE_LOCATION_COLUMN &&
-				settings.FileNameColumn == _NATIVE_FILENAME_COLUMN &&
-				settings.OiFileTypeColumnName == _NATIVE_TYPE_COLUMN &&
-				settings.SupportedByViewerColumn == _SUPPORTED_BY_VIEWER_COLUMN
+			_config.Verify(x => x.SetImportSettings(It.Is<ImportSettingsDto>(settings => 
+				settings.FolderPathSourceFieldName == _FOLDER_PATH_FROM_WORKSPACE_DISPLAY_NAME &&
+				settings.FileSizeColumn == _NATIVE_FILE_SIZE_DISPLAY_NAME &&
+				settings.NativeFilePathSourceFieldName == _NATIVE_FILE_LOCATION_DISPLAY_NAME &&
+				settings.FileNameColumn == _NATIVE_FILE_FILENAME_DISPLAY_NAME &&
+				settings.OiFileTypeColumnName == _RELATIVITY_NATIVE_TYPE_DISPLAY_NAME &&
+				settings.SupportedByViewerColumn == _SUPPORTED_BY_VIEWER_DISPLAY_NAME
 				)));
+		}
+
+		[Test]
+		public void ItShouldThrowExceptionWhenDestinationIdentityFieldNotExistsInFieldMappings()
+		{
+			SetupBatchRepository(1);
+			_config.SetupGet(x => x.FieldMappings).Returns(new List<FieldMap>());
+			
+			// act
+			Func<Task> action = async () => await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
+
+			// assert
+			string errorMessage = "Cannot find destination identifier field in field mappings.";
+			action.Should().Throw<SyncException>().Which.Message.Should().Be(errorMessage);
 		}
 
 		[Test]
@@ -94,7 +120,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			SpecialFieldType missingSpecialField = SpecialFieldType.NativeFileSize;
 			List<FieldInfoDto> specialFields = _specialFields.Where(x => x.SpecialFieldType != missingSpecialField).ToList();
 			_fieldManager.Setup(x => x.GetSpecialFields()).Returns(specialFields);
-			Func<Task> action = async () => await _synchronizationExecutor.ExecuteAsync(Mock.Of<ISynchronizationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+			Func<Task> action = async () => await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
 
 			// act
 			action();
@@ -112,7 +138,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			SetupBatchRepository(numberOfBatches);
 
 			// act
-			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(Mock.Of<ISynchronizationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			_batchRepository.Verify(x => x.GetAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Exactly(numberOfBatches));
@@ -130,7 +156,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			tokenSource.Cancel();
 
 			// act
-			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(Mock.Of<ISynchronizationConfiguration>(), tokenSource.Token).ConfigureAwait(false);
+			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(_config.Object, tokenSource.Token).ConfigureAwait(false);
 
 			// assert
 			result.Status.Should().Be(ExecutionStatus.Canceled);
@@ -143,7 +169,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			SetupBatchRepository(numberOfBatches);
 			
 			// act
-			await _synchronizationExecutor.ExecuteAsync(Mock.Of<ISynchronizationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+			await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			_importJob.Verify(x => x.Dispose(), Times.Exactly(numberOfBatches));
@@ -159,7 +185,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).Throws(syncException);
 
 			// act
-			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(Mock.Of<ISynchronizationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
 
 			result.Message.Should().Be("Fatal exception occurred while executing import job.");
 			result.Exception.Should().BeOfType<SyncException>().Which.InnerException.Should().BeOfType<InvalidOperationException>();
@@ -175,7 +201,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).Throws<InvalidOperationException>();
 
 			// act
-			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(Mock.Of<ISynchronizationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
 
 			result.Message.Should().Be("Unexpected exception occurred while executing import job.");
 			result.Exception.Should().BeOfType<InvalidOperationException>();
