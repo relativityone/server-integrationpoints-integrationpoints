@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
 using Relativity.Sync.Logging;
@@ -60,12 +61,13 @@ namespace Relativity.Sync.Tests.System
 			ExecutionResult result = await executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
 
 			Assert.AreEqual(ExecutionStatus.Completed, result.Status);
-			RelativityExportBatcher batcher = new RelativityExportBatcher(sourceServiceFactory, new BatchRepository(sourceServiceFactory));
-			const int resultsBlockSize = 100;
-			SourceWorkspaceDataReader dataReader = new SourceWorkspaceDataReader(new BatchDataReaderBuilder(fieldManager), configuration, batcher, new EmptyLogger());
 
+			SourceWorkspaceDataReader dataReader = BuildDataReader(fieldManager, configuration, sourceServiceFactory);
 			ConsoleLogger logger = new ConsoleLogger();
+
+			const int resultsBlockSize = 100;
 			object[] tmpTable = new object[resultsBlockSize];
+
 			while (dataReader.Read())
 			{
 				for (int i = 0; i<dataReader.GetValues(tmpTable); i++)
@@ -75,6 +77,17 @@ namespace Relativity.Sync.Tests.System
 
 				logger.LogInformation("");
 			}
+		}
+
+		private static SourceWorkspaceDataReader BuildDataReader(IFieldManager fieldManager, ISynchronizationConfiguration configuration, SourceServiceFactoryStub sourceServiceFactory)
+		{
+			IRelativityExportBatcher ExportBatcherFactory(Guid runId, int workspaceArtifactId, int syncConfigurationArtifactId)
+			{
+				return new RelativityExportBatcher(sourceServiceFactory, new BatchRepository(sourceServiceFactory), runId, workspaceArtifactId, syncConfigurationArtifactId);
+			}
+
+			SourceWorkspaceDataReader dataReader = new SourceWorkspaceDataReader(new BatchDataReaderBuilder(fieldManager), configuration, ExportBatcherFactory, new EmptyLogger());
+			return dataReader;
 		}
 	}
 }

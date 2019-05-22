@@ -15,7 +15,6 @@ namespace Relativity.Sync.Transfer
 	internal sealed class SourceWorkspaceDataReader : IDataReader
 	{
 		private IDataReader _currentReader;
-		private Guid? _batchToken;
 
 		private readonly IRelativityExportBatcher _exportBatcher;
 		private readonly ISyncLog _logger;
@@ -24,16 +23,15 @@ namespace Relativity.Sync.Transfer
 
 		public SourceWorkspaceDataReader(IBatchDataReaderBuilder readerBuilder,
 			ISynchronizationConfiguration configuration,
-			IRelativityExportBatcher exportBatcher,
+			RelativityExportBatcherFactory exportBatcherFactory,
 			ISyncLog logger)
 		{
 			_readerBuilder = readerBuilder;
-			_exportBatcher = exportBatcher;
+			_exportBatcher = exportBatcherFactory(configuration.ExportRunId, configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId);
 			_logger = logger;
 			_configuration = configuration;
 
 			_currentReader = EmptyDataReader();
-			_batchToken = null;
 		}
 
 		public bool Read()
@@ -58,15 +56,10 @@ namespace Relativity.Sync.Transfer
 
 		private async Task<IDataReader> GetReaderForNextBatchAsync()
 		{
-			if (!_batchToken.HasValue)
-			{
-				_batchToken = _exportBatcher.Start(_configuration.ExportRunId, _configuration.SourceWorkspaceArtifactId, _configuration.SyncConfigurationArtifactId);
-			}
-
 			RelativityObjectSlim[] batch;
 			try
 			{
-				batch = await _exportBatcher.GetNextAsync(_batchToken.Value).ConfigureAwait(false);
+				batch = await _exportBatcher.GetNextBatchAsync().ConfigureAwait(false);
 			}
 			catch (Exception ex)
 			{
