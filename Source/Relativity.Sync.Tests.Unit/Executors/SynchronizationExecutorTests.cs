@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using kCura.WinEDDS.Exceptions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.Exceptions;
@@ -218,7 +217,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IList<int>>(), It.IsAny<CancellationToken>())).Throws<InvalidOperationException>();
 
 			// act
-			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(Mock.Of<ISynchronizationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
 
 			result.Message.Should().Be("Unexpected exception occurred while tagging synchronized documents in source workspace.");
 			result.Exception.Should().BeOfType<InvalidOperationException>();
@@ -233,11 +232,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			const int numberOfExceptions = 2;
 			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).Throws<InvalidOperationException>();
-			_destinationWorkspaceTagRepository.Setup(x => x.TagDocumentsAsync(
-				It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IList<int>>(), It.IsAny<CancellationToken>())).Throws<NotAuthorizedException>();
+			_destinationWorkspaceTagRepository.Setup(x => x.TagDocumentsAsync(It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IList<int>>(), It.IsAny<CancellationToken>())).Throws<NotAuthorizedException>();
 
 			// act
-			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(Mock.Of<ISynchronizationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
 
 			result.Message.Should().Be("Unexpected exception occurred while executing import job. Unexpected exception occurred while tagging synchronized documents in source workspace.");
 			result.Exception.Should().BeOfType<AggregateException>();
