@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using NUnit.Framework;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 {
@@ -28,7 +29,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			_auditManager = factory.CreateAuditManager(contextContainer, WorkspaceArtifactId);
 		}
 
-		[Test]
+		[IdentifiedTest("ee83c2e2-8d78-472d-be47-a29fe34cf9f5")]
 		public void CreateAuditRecord()
 		{
 			// arrange

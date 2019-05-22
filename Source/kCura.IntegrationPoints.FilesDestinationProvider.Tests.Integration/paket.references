@@ -12,3 +12,4 @@ Relativity.Services.DataContracts
 Relativity.Services.Interfaces
 Relativity.Telemetry.MetricsCollection
 Relativity.Productions.Services.Interfaces
+relativity.testing.identification

@@ -1,4 +1,5 @@
-﻿CSharpGuidelineAnalyzer
+CSharpGuidelineAnalyzer
 FluentAssertions
 Moq
 NUnit
+relativity.testing.identification

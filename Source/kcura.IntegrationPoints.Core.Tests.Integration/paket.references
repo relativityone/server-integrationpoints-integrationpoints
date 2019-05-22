@@ -11,3 +11,4 @@ Relativity.OAuth2Client
 Moq
 FluentAssertions
 kCura.OutsideIn.FI.Win32
+relativity.testing.identification

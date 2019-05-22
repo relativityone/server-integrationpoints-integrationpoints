@@ -4,12 +4,13 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Services.Tests.Integration.Helpers;
 using kCura.IntegrationPoints.Services.Tests.Integration.Permissions;
 using NUnit.Framework;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointManager
 {
 	public class IntegrationPointPermissionTests : KeplerServicePermissionsTestsBase
 	{
-		[Test]
+		[IdentifiedTest("8fa4103c-1fa3-4538-acd5-d292072d4f46")]
 		public void MissingWorkspacePermission()
 		{
 			var client = Helper.CreateUserProxy<IIntegrationPointManager>(UserModel.EmailAddress);
@@ -29,7 +30,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 			PermissionsHelper.AssertPermissionErrorMessage(() => client.RunIntegrationPointAsync(WorkspaceArtifactId, 906221).Result);
 		}
 
-		[Test]
+		[IdentifiedTest("5822db45-4288-4e8e-b5aa-f2d67b91fc89")]
 		public void MissingIntegrationPointViewPermission()
 		{
 			Group.AddGroupToWorkspace(WorkspaceArtifactId, GroupId);
@@ -46,7 +47,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetIntegrationPointArtifactTypeIdAsync(WorkspaceArtifactId).Result);
 		}
 
-		[Test]
+		[IdentifiedTest("166f35ef-ceaa-452c-b0e7-f14e7a5bf935")]
 		public void MissingIntegrationPointCreatePermission()
 		{
 			Group.AddGroupToWorkspace(WorkspaceArtifactId, GroupId);
@@ -64,7 +65,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 			PermissionsHelper.AssertPermissionErrorMessage(() => client.CreateIntegrationPointFromProfileAsync(WorkspaceArtifactId, 209703, "ip_665").Result);
 		}
 
-		[Test]
+		[IdentifiedTest("afb4873b-6a42-42ca-8897-ce6271b83944")]
 		public void MissingIntegrationPointEditPermission()
 		{
 			Group.AddGroupToWorkspace(WorkspaceArtifactId, GroupId);
@@ -82,7 +83,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 			PermissionsHelper.AssertPermissionErrorMessage(() => client.RunIntegrationPointAsync(WorkspaceArtifactId, 896501).Result);
 		}
 
-		[Test]
+		[IdentifiedTest("41328403-16a7-4048-a851-863abf306c72")]
 		public void MissingIntegrationPointProfileViewPermission()
 		{
 			Group.AddGroupToWorkspace(WorkspaceArtifactId, GroupId);

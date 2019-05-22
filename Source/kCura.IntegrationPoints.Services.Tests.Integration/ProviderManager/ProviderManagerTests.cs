@@ -5,6 +5,7 @@ using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Services.Tests.Integration.Helpers;
 using NUnit.Framework;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.Services.Tests.Integration.ProviderManager
 {
@@ -29,7 +30,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.ProviderManager
 			_client?.Dispose();
 		}
 
-		[Test]
+		[IdentifiedTest("1dc24aa4-b2d2-4def-9f7d-eea0adcfe686")]
 		public void ItShouldRetrieveSourceProvidersGuids()
 		{
 			IDictionary<string, int> providers = GetAllProvidersByGuids("SourceProvider");
@@ -41,7 +42,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.ProviderManager
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("2ee21137-6a20-49a9-a7d7-ed380a70e91d")]
 		public void ItShouldRetrieveDestinationProvidersGuids()
 		{
 			IDictionary<string, int> providers = GetAllProvidersByGuids("DestinationProvider");
@@ -53,7 +54,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.ProviderManager
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("aef37eb9-f1aa-408a-8d1b-9baf28ab6c67")]
 		public void ItShouldRetrieveAllSourceProviders()
 		{
 			IDictionary<string, int> providers = GetAllProvidersByName("SourceProvider");
@@ -71,7 +72,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.ProviderManager
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("30d039e8-aad9-481f-b64c-a50b260675e3")]
 		public void ItShouldRetrieveAllDestinationProviders()
 		{
 			IDictionary<string, int> providers = GetAllProvidersByName("DestinationProvider");

@@ -10,6 +10,7 @@ using kCura.IntegrationPoints.Web.Controllers.API;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.Core.Service;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.Web.Tests.Integration.Controllers
 {
@@ -56,7 +57,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Controllers
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("141453e2-6363-4e1d-b476-268a73027fa5")]
 		[SmokeTest]
 		public void Query_SavedSearchesWithController_Success()
 		{

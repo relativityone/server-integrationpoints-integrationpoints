@@ -24,6 +24,7 @@ using kCura.ScheduleQueue.Core;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 {
@@ -56,8 +57,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			_serializer = Container.Resolve<ISerializer>();
 			_helper = Container.Resolve<IHelper>();
-		    var serviceManagerProvider = Container.Resolve<IServiceManagerProvider>();
-            var managerFactory = new ManagerFactory(_helper, serviceManagerProvider);
+			var serviceManagerProvider = Container.Resolve<IServiceManagerProvider>();
+			var managerFactory = new ManagerFactory(_helper, serviceManagerProvider);
 			_tagsCreator = managerFactory.CreateTagsCreator(new ContextContainer(_helper));
 			_tagSavedSearchManager = new TagSavedSearchManager(new TagSavedSearch(_repositoryFactory, new MultiObjectSavedSearchCondition(), _helper), new TagSavedSearchFolder(_repositoryFactory, _helper));
 			_synchronizerFactory = Container.Resolve<ISynchronizerFactory>();
@@ -66,11 +67,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 			_fieldMaps = GetDefaultFieldMap();
 		}
 
-        [Test]
 		[SmokeTest]
-		[TestCase(499, "UnderBatch")]
-		[TestCase(500, "EqualBatch")]
-		[TestCase(502, "OverBatch")]
+		[IdentifiedTestCase("50d501dd-cc30-4882-8149-75bb0e8752f8", 499, "UnderBatch")]
+		[IdentifiedTestCase("360e1c73-0bf2-4066-ba2d-01a9f81f2888", 500, "EqualBatch")]
+		[IdentifiedTestCase("8b2f6597-11e9-4a23-b0a2-a8fea31b3d63", 502, "OverBatch")]
 		public void TargetWorkspaceDocumentTagging_GoldFlow(int numberOfDocuments, string documentIdentifier)
 		{
 			//Act

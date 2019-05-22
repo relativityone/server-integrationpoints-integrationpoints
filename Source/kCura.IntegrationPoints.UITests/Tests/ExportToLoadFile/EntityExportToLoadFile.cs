@@ -12,6 +12,7 @@ using Relativity.Services.Objects.DataContracts;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 {
@@ -44,7 +45,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			_integrationPointsAction = new IntegrationPointsAction(Driver, Context);
 		}
 
-		[Test]
+		[IdentifiedTest("a244081a-1ead-4a55-a504-1842e89784c8")]
 		[RetryOnError]
 		public void EntityExportToLoadFile_TC_ELF_CUST_1()
 		{

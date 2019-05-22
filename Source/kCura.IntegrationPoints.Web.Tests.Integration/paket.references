@@ -16,3 +16,4 @@ Relativity.Kepler.Client
 Relativity.Telemetry.APM
 Relativity.Toggles
 Relativity.DataExchange.Client.SDK
+relativity.testing.identification

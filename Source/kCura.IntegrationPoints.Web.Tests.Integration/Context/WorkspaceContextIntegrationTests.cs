@@ -14,6 +14,7 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.Web.Tests.Integration.Context
 {
@@ -34,7 +35,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Context
 			_container = CreateIoCContainer();
 		}
 
-		[Test]
+		[IdentifiedTest("12512dc1-e99d-4585-84e0-a547dfb34df5")]
 		[SmokeTest]
 		public void ShouldReturnCorrectWorkspaceIdWhenRequestContextContainsData()
 		{
@@ -55,7 +56,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Context
 			actualWorkspaceID.Should().Be(requestContextWorkspaceID, "because workspaceId was present in RequestContext");
 		}
 
-		[Test]
+		[IdentifiedTest("4708e9c8-7e28-414c-815a-db16ffb2e8d2")]
 		[SmokeTest]
 		public void ShouldReturnCorrectWorkspaceIdWhenRequestContextIsEmptyAndSessionReturnsData()
 		{
@@ -74,7 +75,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Context
 			actualWorkspaceID.Should().Be(sessionWorkspaceID, "because session contains this value and RequestContext was empty.");
 		}
 
-		[Test]
+		[IdentifiedTest("afe02d71-d42b-4db7-96d8-e5f084aa16e7")]
 		[SmokeTest]
 		public void ShouldThrowExceptionWhenNoWorkspaceContextIsPresent()
 		{

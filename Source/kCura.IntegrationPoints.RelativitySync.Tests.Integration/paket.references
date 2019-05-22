@@ -4,7 +4,7 @@ Relativity.API
 Relativity.Services.Interfaces
 kCura.Relativity.Client
 Polly
-
 Moq
 NUnit
 Serilog
+relativity.testing.identification

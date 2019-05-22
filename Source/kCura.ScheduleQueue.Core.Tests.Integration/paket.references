@@ -3,3 +3,4 @@ NSubstitute
 NUnit
 Relativity.API
 kCura
+relativity.testing.identification

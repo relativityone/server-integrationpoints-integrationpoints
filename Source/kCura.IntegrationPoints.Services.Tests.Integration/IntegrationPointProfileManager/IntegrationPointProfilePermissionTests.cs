@@ -4,12 +4,13 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Services.Tests.Integration.Helpers;
 using kCura.IntegrationPoints.Services.Tests.Integration.Permissions;
 using NUnit.Framework;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointProfileManager
 {
 	public class IntegrationPointProfilePermissionTests : KeplerServicePermissionsTestsBase
 	{
-		[Test]
+		[IdentifiedTest("fadbee98-d1ba-4228-bd02-6e9ff1d2dca1")]
 		public void MissingWorkspacePermission()
 		{
 			var client = Helper.CreateUserProxy<IIntegrationPointProfileManager>(UserModel.EmailAddress);
@@ -27,7 +28,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointPro
 			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetOverwriteFieldsChoicesAsync(WorkspaceArtifactId).Result);
 		}
 
-		[Test]
+		[IdentifiedTest("181eef7c-bc01-491f-9254-6b643f004db3")]
 		public void MissingIntegrationPointViewPermission()
 		{
 			Group.AddGroupToWorkspace(WorkspaceArtifactId, GroupId);
@@ -43,7 +44,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointPro
 			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetOverwriteFieldsChoicesAsync(WorkspaceArtifactId).Result);
 		}
 
-		[Test]
+		[IdentifiedTest("b0f551b2-b904-4d43-b26f-3908dfbe9beb")]
 		public void MissingIntegrationPointCreatePermission()
 		{
 			Group.AddGroupToWorkspace(WorkspaceArtifactId, GroupId);
@@ -61,7 +62,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointPro
 			PermissionsHelper.AssertPermissionErrorMessage(() => client.CreateIntegrationPointProfileFromIntegrationPointAsync(WorkspaceArtifactId, 414974, "ip_266").Result);
 		}
 
-		[Test]
+		[IdentifiedTest("c3a43f0f-a541-4cf8-bb76-3d2af7487d89")]
 		public void MissingIntegrationPointEditPermission()
 		{
 			Group.AddGroupToWorkspace(WorkspaceArtifactId, GroupId);
@@ -78,7 +79,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointPro
 			}).Result);
 		}
 
-		[Test]
+		[IdentifiedTest("ad9f25e0-0468-420c-9d0e-df8f1aac1f89")]
 		public void MissingIntegrationPointProfileViewPermission()
 		{
 			Group.AddGroupToWorkspace(WorkspaceArtifactId, GroupId);

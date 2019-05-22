@@ -13,3 +13,4 @@ RelativityCore
 Relativity.OAuth2Client
 FluentAssertions
 kCura.OutsideIn.FI.Win32
+relativity.testing.identification

@@ -7,12 +7,13 @@ using kCura.IntegrationPoints.UITests.Pages;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 {
 	[TestFixture]
 	[Category(TestCategory.EXPORT_TO_RELATIVITY)]
-    public class MetadataSavedSearchToFolderTest: RelativityProviderTestsBase
+	public class MetadataSavedSearchToFolderTest: RelativityProviderTestsBase
 	{
 
 		private static readonly List<Tuple<string, string>> DefaultFieldsMapping = new List<Tuple<string, string>>
@@ -36,7 +37,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			return model;
 		}
 
-		[Test]
+		[IdentifiedTest("15c8dd5a-d7c0-43ea-b603-028e012719a7")]
 		[RetryOnError]
 		[Category(TestCategory.SMOKE)]
 		public void RelativityProvider_TC_RTR_MDO_01()
@@ -61,7 +62,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 		
 
-		[Test]
+		[IdentifiedTest("10840b4a-c9cd-4a2e-ad8a-dff5ad0f33e7")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_MDO_02()
 		{
@@ -85,7 +86,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 		
 
-		[Test]
+		[IdentifiedTest("dc20032a-64c8-41f4-8d54-0f85ac8e27de")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_MDO_03()
 		{
@@ -108,7 +109,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 
-		[Test]
+		[IdentifiedTest("5ba1e955-0935-4a75-a5c6-260182a30a07")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_MDO_04()
 		{
@@ -132,7 +133,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateDocumentsForRootWithFolderName();
 		}
 
-		[Test]
+		[IdentifiedTest("b7e86860-781d-4275-9410-639e82e3e9a0")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_MDO_05()
 		{
@@ -157,7 +158,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateDocumentsForRootWithFolderName();
 		}
 
-		[Test]
+		[IdentifiedTest("4defb91e-ff9d-44c1-91a5-120d6c295ae6")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_MDO_06()
 		{
@@ -182,7 +183,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateDocumentsForRootWithFolderName();
 		}
 
-		[Test]
+		[IdentifiedTest("0fa57f39-5965-48b7-8ee4-49028f7ae554")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_MDO_07()
 		{
@@ -207,7 +208,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateDocumentsForField();
 		}
 
-		[Test]
+		[IdentifiedTest("a61974bf-0f48-4a07-aaec-d8290630a81b")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_MDO_08()
 		{
@@ -232,7 +233,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateDocumentsForFolderTree();
 		}
 
-		[Test]
+		[IdentifiedTest("46d4dd08-25ea-40a0-8f8d-65257099d1c7")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_MDO_09()
 		{
@@ -257,7 +258,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 
-		[Test]
+		[IdentifiedTest("4b81d3a4-2a2e-4c92-b8f5-76837bf919b1")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_MDO_10()
 		{
@@ -282,7 +283,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateDocumentsForRootWithFolderName();
 		}
 
-		[Test]
+		[IdentifiedTest("19fed8aa-a783-4959-86b2-0ce6ee604cdc")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_MDO_11()
 		{
@@ -307,7 +308,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateDocumentsForRootWithFolderName();
 		}
 
-		[Test]
+		[IdentifiedTest("d2a5b123-2903-4d7e-8790-c5396b061aaf")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_MDO_12()
 		{
@@ -333,7 +334,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 
-		[Test]
+		[IdentifiedTest("75f17490-36a3-4e18-9504-33c0c66af0b2")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_MDO_13()
 		{

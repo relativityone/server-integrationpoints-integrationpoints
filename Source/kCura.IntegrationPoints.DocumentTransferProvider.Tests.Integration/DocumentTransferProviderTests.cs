@@ -11,6 +11,7 @@ using NUnit.Framework;
 using Relativity.API;
 using System.Collections.Generic;
 using System.Linq;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration
 {
@@ -44,7 +45,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration
 			_documentTransferProvider = new DocumentTransferProvider(importApiFacade, Container.Resolve<IRepositoryFactory>(), logger);
 		}
 
-        [Test]
+		[IdentifiedTest("b50ab228-a7aa-4ecb-97c1-e51125906b1d")]
 		[SmokeTest]
 		public void Get_RelativityFieldsFromSourceWorkspace_Success()
 		{

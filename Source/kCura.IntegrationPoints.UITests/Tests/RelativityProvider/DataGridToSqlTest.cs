@@ -5,13 +5,14 @@ using kCura.IntegrationPoints.UITests.NUnitExtensions;
 using kCura.IntegrationPoints.UITests.Pages;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Relativity.Testing.Identification;
 
 
 namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 {
 	[TestFixture]
 	[Category(TestCategory.DATA_GRID_RELATED)]
-    public class DataGridToSqlTest : RelativityProviderTestsBase
+	public class DataGridToSqlTest : RelativityProviderTestsBase
 	{
 		private RelativityProviderModel CreateRelativityProviderModelWithNatives()
 		{
@@ -36,7 +37,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			await Context.ImportDocumentsWithLargeTextAsync();
 		}
 
-		[Test]
+		[IdentifiedTest("950ec6af-46a5-42de-9602-685367407032")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_NF_01_with_DG()
 		{
