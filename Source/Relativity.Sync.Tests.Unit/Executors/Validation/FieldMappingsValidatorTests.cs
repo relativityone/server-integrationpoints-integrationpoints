@@ -245,7 +245,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 
 		private void VerifyObjectManagerQueryRequest()
 		{
-			const int expectedFieldArtifactTypeId = 10;
+			const int expectedFieldArtifactTypeId = (int) ArtifactType.Document;
 			const string expectedObjectTypeName = "Field";
 
 			string expectedDestQueryCondition = $"(('FieldArtifactTypeID' == {expectedFieldArtifactTypeId} AND 'ArtifactID' IN [{_TEST_DEST_FIELD_ARTIFACT_ID}]))";
