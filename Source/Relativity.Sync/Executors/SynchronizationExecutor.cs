@@ -36,7 +36,7 @@ namespace Relativity.Sync.Executors
 		public async Task<ExecutionResult> ExecuteAsync(ISynchronizationConfiguration configuration, CancellationToken token)
 		{
 			_logger.LogVerbose("Creating settings for ImportAPI.");
-			ImportSettingsDto importSettings = GetImportSettings();
+			ImportSettingsDto importSettings = GetImportSettingsAsync(configuration);
 			configuration.SetImportSettings(importSettings);
 
 			ExecutionResult result = ExecutionResult.Success();
@@ -116,9 +116,10 @@ namespace Relativity.Sync.Executors
 			return result;
 		}
 		
-		private ImportSettingsDto GetImportSettings()
+		private ImportSettingsDto GetImportSettingsAsync(ISynchronizationConfiguration configuration)
 		{
-			List<FieldInfoDto> specialFields = _fieldManager.GetSpecialFields().ToList();
+			int destinationIdentityFieldId = GetDestinationIdentityFieldId(configuration.FieldMappings);
+			IList<FieldInfoDto> specialFields = _fieldManager.GetSpecialFields().ToList();
 
 			ImportSettingsDto importSettings = new ImportSettingsDto
 			{
@@ -127,9 +128,30 @@ namespace Relativity.Sync.Executors
 				NativeFilePathSourceFieldName = GetSpecialFieldColumnName(specialFields, SpecialFieldType.NativeFileLocation),
 				FileNameColumn = GetSpecialFieldColumnName(specialFields, SpecialFieldType.NativeFileFilename),
 				OiFileTypeColumnName = GetSpecialFieldColumnName(specialFields, SpecialFieldType.RelativityNativeType),
-				SupportedByViewerColumn = GetSpecialFieldColumnName(specialFields, SpecialFieldType.SupportedByViewer)
+				SupportedByViewerColumn = GetSpecialFieldColumnName(specialFields, SpecialFieldType.SupportedByViewer),
+
+				CaseArtifactId = configuration.DestinationWorkspaceArtifactId,
+				IdentityFieldId = destinationIdentityFieldId,
+
+				ImportOverwriteMode = configuration.ImportSettings.ImportOverwriteMode,
+				FieldOverlayBehavior = configuration.ImportSettings.FieldOverlayBehavior,
+				ImportNativeFileCopyMode = configuration.ImportSettings.ImportNativeFileCopyMode,
+				CopyFilesToDocumentRepository = true
 			};
 			return importSettings;
+		}
+
+		private int GetDestinationIdentityFieldId(IList<FieldMap> fieldMappings)
+		{
+			FieldMap destinationIdentityField = fieldMappings.FirstOrDefault(x => x.DestinationField.IsIdentifier);
+			if (destinationIdentityField == null)
+			{
+				const string message = "Cannot find destination identifier field in field mappings.";
+				_logger.LogError(message);
+				throw new SyncException(message);
+			}
+
+			return destinationIdentityField.DestinationField.FieldIdentifier;
 		}
 
 		private string GetSpecialFieldColumnName(IList<FieldInfoDto> specialFields, SpecialFieldType specialFieldType)
