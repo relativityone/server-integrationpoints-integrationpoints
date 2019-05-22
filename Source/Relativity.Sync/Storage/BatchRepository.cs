@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Relativity.Services.Objects;
-using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync.Storage

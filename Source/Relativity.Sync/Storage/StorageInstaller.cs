@@ -10,9 +10,11 @@ namespace Relativity.Sync.Storage
 		public void Install(ContainerBuilder builder)
 		{
 			builder.RegisterType<ProgressRepository>().As<IProgressRepository>();
+
 			builder.RegisterType<ValidationConfiguration>().As<IValidationConfiguration>();
 			builder.RegisterType<DataSourceSnapshotConfiguration>().As<IDataSourceSnapshotConfiguration>();
 			builder.RegisterType<FieldMappings>().As<IFieldMappings>();
+
 			builder.Register(CreateConfiguration).As<IConfiguration>();
 		}
 
