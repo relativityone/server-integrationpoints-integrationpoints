@@ -36,8 +36,7 @@ namespace Relativity.Sync.Executors
 		public async Task<ExecutionResult> ExecuteAsync(ISynchronizationConfiguration configuration, CancellationToken token)
 		{
 			_logger.LogVerbose("Creating settings for ImportAPI.");
-			ImportSettingsDto importSettings = GetImportSettingsAsync(configuration);
-			configuration.SetImportSettings(importSettings);
+			UpdateImportSettings(configuration);
 			
 			ExecutionResult result = ExecutionResult.Success();
 			DateTime startTime = _dateTime.Now;
@@ -47,7 +46,7 @@ namespace Relativity.Sync.Executors
 			try
 			{
 				_logger.LogVerbose("Gathering batches to execute.");
-				IList<int> batchIds = (await _batchRepository.GetAllNewBatchesIdsAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId).ConfigureAwait(false)).ToList();
+				IEnumerable<int> batchesIds = await _batchRepository.GetAllNewBatchesIdsAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId).ConfigureAwait(false);
 
 				foreach (int batchId in batchIds)
 				{
@@ -58,10 +57,9 @@ namespace Relativity.Sync.Executors
 						break;
 					}
 
-					IBatch batch = await _batchRepository.GetAsync(configuration.SourceWorkspaceArtifactId, batchId).ConfigureAwait(false);
-					batchArtifactIds.Add((await batch.GetItemArtifactIds(configuration.ExportRunId).ConfigureAwait(false)).ToList());
-
 					_logger.LogVerbose("Processing batch ID: {batchId}", batchId);
+
+					IBatch batch = await _batchRepository.GetAsync(configuration.SourceWorkspaceArtifactId, batchId).ConfigureAwait(false);
 					using (IImportJob importJob = _importJobFactory.CreateImportJob(configuration, batch))
 					{
 						await importJob.RunAsync(token).ConfigureAwait(false);
@@ -83,7 +81,6 @@ namespace Relativity.Sync.Executors
 			}
 			finally
 			{
-				// TODO metrics
 				DateTime endTime = _dateTime.Now;
 				TimeSpan jobDuration = endTime - startTime;
 				_syncMetrics.CountOperation("ImportJobStatus", result.Status);
@@ -116,29 +113,18 @@ namespace Relativity.Sync.Executors
 			return result;
 		}
 		
-		private ImportSettingsDto GetImportSettingsAsync(ISynchronizationConfiguration configuration)
+		private void UpdateImportSettings(ISynchronizationConfiguration configuration)
 		{
 			int destinationIdentityFieldId = GetDestinationIdentityFieldId(configuration.FieldMappings);
 			IList<FieldInfoDto> specialFields = _fieldManager.GetSpecialFields().ToList();
 
-			ImportSettingsDto importSettings = new ImportSettingsDto
-			{
-				FolderPathSourceFieldName = GetSpecialFieldColumnName(specialFields, SpecialFieldType.FolderPath),
-				FileSizeColumn = GetSpecialFieldColumnName(specialFields, SpecialFieldType.NativeFileSize),
-				NativeFilePathSourceFieldName = GetSpecialFieldColumnName(specialFields, SpecialFieldType.NativeFileLocation),
-				FileNameColumn = GetSpecialFieldColumnName(specialFields, SpecialFieldType.NativeFileFilename),
-				OiFileTypeColumnName = GetSpecialFieldColumnName(specialFields, SpecialFieldType.RelativityNativeType),
-				SupportedByViewerColumn = GetSpecialFieldColumnName(specialFields, SpecialFieldType.SupportedByViewer),
-				
-				CaseArtifactId = configuration.DestinationWorkspaceArtifactId,
-				IdentityFieldId = destinationIdentityFieldId,
-
-				ImportOverwriteMode = configuration.ImportSettings.ImportOverwriteMode,
-				FieldOverlayBehavior = configuration.ImportSettings.FieldOverlayBehavior,
-				ImportNativeFileCopyMode = configuration.ImportSettings.ImportNativeFileCopyMode,
-				CopyFilesToDocumentRepository = true
-			};
-			return importSettings;
+			configuration.ImportSettings.IdentityFieldId = destinationIdentityFieldId;
+			configuration.ImportSettings.FolderPathSourceFieldName = GetSpecialFieldColumnName(specialFields, SpecialFieldType.FolderPath);
+			configuration.ImportSettings.FileSizeColumn = GetSpecialFieldColumnName(specialFields, SpecialFieldType.NativeFileSize);
+			configuration.ImportSettings.NativeFilePathSourceFieldName = GetSpecialFieldColumnName(specialFields, SpecialFieldType.NativeFileLocation);
+			configuration.ImportSettings.FileNameColumn = GetSpecialFieldColumnName(specialFields, SpecialFieldType.NativeFileFilename);
+			configuration.ImportSettings.OiFileTypeColumnName = GetSpecialFieldColumnName(specialFields, SpecialFieldType.RelativityNativeType);
+			configuration.ImportSettings.SupportedByViewerColumn = GetSpecialFieldColumnName(specialFields, SpecialFieldType.SupportedByViewer);
 		}
 
 		private int GetDestinationIdentityFieldId(IList<FieldMap> fieldMappings)
@@ -150,7 +136,6 @@ namespace Relativity.Sync.Executors
 				_logger.LogError(message);
 				throw new SyncException(message);
 			}
-
 			return destinationIdentityField.DestinationField.FieldIdentifier;
 		}
 
@@ -164,7 +149,6 @@ namespace Relativity.Sync.Executors
 				_logger.LogError(message);
 				throw new SyncException(message);
 			}
-
 			return specialField.DisplayName;
 		}
 

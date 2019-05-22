@@ -18,14 +18,12 @@ namespace Relativity.Sync.Configuration
 
 		int JobHistoryTagArtifactId { get; }
 
-		int SourceWorkspaceArtifactId { get; }
-
-		int SyncConfigurationArtifactId { get; }
-
-		void SetImportSettings(ImportSettingsDto importSettings);
-
 		string SourceJobTagName { get; }
 
+		int SourceWorkspaceArtifactId { get; }
+
 		string SourceWorkspaceTagName { get; }
+
+		int SyncConfigurationArtifactId { get; }
 	}
 }
