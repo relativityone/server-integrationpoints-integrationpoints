@@ -48,7 +48,7 @@ namespace Relativity.Sync.Executors
 				_logger.LogVerbose("Gathering batches to execute.");
 				IEnumerable<int> batchesIds = await _batchRepository.GetAllNewBatchesIdsAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId).ConfigureAwait(false);
 
-				foreach (int batchId in batchIds)
+				foreach (int batchId in batchesIds)
 				{
 					if (token.IsCancellationRequested)
 					{

@@ -92,7 +92,7 @@ namespace Relativity.Sync.Tests.System
 
 				ImportSettings = new ImportSettingsDto()
 				{
-					// TODO
+					CaseArtifactId = destinationWorkspaceArtifactId,
 					ImportOverwriteMode = ImportOverwriteMode.AppendOverlay,
 					FieldOverlayBehavior = FieldOverlayBehavior.UseFieldSettings,
 					ImportNativeFileCopyMode = ImportNativeFileCopyMode.CopyFiles
