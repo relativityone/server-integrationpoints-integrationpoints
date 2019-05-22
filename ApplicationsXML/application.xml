@@ -1682,18 +1682,6 @@
       <Notes />
     </Assembly>
     <Assembly>
-      <ArtifactId>1016770</ArtifactId>
-      <Keywords />
-      <Name>kCura.WinEDDS.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>1016771</ArtifactId>
-      <Keywords />
-      <Name>kCura.WinEDDS.Core.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
       <ArtifactId>1016772</ArtifactId>
       <Keywords />
       <Name>kCura.LongPath.dll</Name>
@@ -1727,12 +1715,6 @@
       <ArtifactId>1016777</ArtifactId>
       <Keywords />
       <Name>kCura.Relativity.Client.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>1016778</ArtifactId>
-      <Keywords />
-      <Name>kCura.Relativity.DataReaderClient.dll</Name>
       <Notes />
     </Assembly>
     <Assembly>
@@ -1781,12 +1763,6 @@
       <ArtifactId>1016786</ArtifactId>
       <Keywords />
       <Name>Relativity.Transfer.Client.Http.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>1016787</ArtifactId>
-      <Keywords />
-      <Name>kCura.WinEDDS.TApi.dll</Name>
       <Notes />
     </Assembly>
     <Assembly>
@@ -1873,10 +1849,16 @@
       <Name>SexyProxy.Emit.dll</Name>
       <Notes />
     </Assembly>
+    <Assembly>
+      <ArtifactId>4702137</ArtifactId>
+      <Keywords />
+      <Name>Relativity.DataExchange.Client.SDK.dll</Name>
+      <Notes />
+    </Assembly>
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
-  <ExtractionDate>2019-04-07T11:10:39.6517966Z</ExtractionDate>
+  <ExtractionDate>2019-05-22T11:28:19.0146323Z</ExtractionDate>
   <Guid>dcf6e9d1-22b6-4da3-98f6-41381e93c30c</Guid>
   <Name>Integration Points</Name>
   <Objects>
@@ -13210,7 +13192,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.7.0.15</ApplicationVersion>
+          <ApplicationVersion>9.7.0.17</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -13262,7 +13244,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.7.0.15</ApplicationVersion>
+          <ApplicationVersion>9.7.0.17</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -13314,7 +13296,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.7.0.15</ApplicationVersion>
+          <ApplicationVersion>9.7.0.17</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -13366,7 +13348,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.7.0.15</ApplicationVersion>
+          <ApplicationVersion>9.7.0.17</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -13418,7 +13400,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.7.0.15</ApplicationVersion>
+          <ApplicationVersion>9.7.0.17</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -13470,7 +13452,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.7.0.15</ApplicationVersion>
+          <ApplicationVersion>9.7.0.17</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -13522,7 +13504,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.7.0.15</ApplicationVersion>
+          <ApplicationVersion>9.7.0.17</ApplicationVersion>
         </SystemField>
       </SystemFields>
       <SystemLayouts />
@@ -14080,7 +14062,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.7.0.15</ApplicationVersion>
+          <ApplicationVersion>9.7.0.17</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -14132,7 +14114,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.7.0.15</ApplicationVersion>
+          <ApplicationVersion>9.7.0.17</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -14184,7 +14166,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.7.0.15</ApplicationVersion>
+          <ApplicationVersion>9.7.0.17</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -14236,7 +14218,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.7.0.15</ApplicationVersion>
+          <ApplicationVersion>9.7.0.17</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -14288,7 +14270,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.7.0.15</ApplicationVersion>
+          <ApplicationVersion>9.7.0.17</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -14340,7 +14322,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.7.0.15</ApplicationVersion>
+          <ApplicationVersion>9.7.0.17</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -14392,7 +14374,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.7.0.15</ApplicationVersion>
+          <ApplicationVersion>9.7.0.17</ApplicationVersion>
         </SystemField>
       </SystemFields>
       <SystemLayouts />
@@ -14794,7 +14776,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.7.0.15</ApplicationVersion>
+          <ApplicationVersion>9.7.0.17</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -14846,7 +14828,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.7.0.15</ApplicationVersion>
+          <ApplicationVersion>9.7.0.17</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -14898,7 +14880,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.7.0.15</ApplicationVersion>
+          <ApplicationVersion>9.7.0.17</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -14950,7 +14932,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.7.0.15</ApplicationVersion>
+          <ApplicationVersion>9.7.0.17</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -15002,7 +14984,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.7.0.15</ApplicationVersion>
+          <ApplicationVersion>9.7.0.17</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -15054,7 +15036,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.7.0.15</ApplicationVersion>
+          <ApplicationVersion>9.7.0.17</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -15106,7 +15088,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.7.0.15</ApplicationVersion>
+          <ApplicationVersion>9.7.0.17</ApplicationVersion>
         </SystemField>
       </SystemFields>
       <SystemLayouts />
@@ -15157,7 +15139,7 @@
   </Objects>
   <ParentTabs />
   <RelativityVersion>10.2.78.89</RelativityVersion>
-  <Version>9.7.0.15</Version>
+  <Version>9.7.0.17</Version>
   <TabDisplay>true</TabDisplay>
   <OriginSignature>5e8b02a8-6e33-4426-a0f0-3594d83725d0</OriginSignature>
   <MasterScripts />
@@ -15228,7 +15210,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>90</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.15</ApplicationVersion>
+      <ApplicationVersion>9.7.0.17</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15240,7 +15222,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>30</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.15</ApplicationVersion>
+      <ApplicationVersion>9.7.0.17</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15252,7 +15234,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>130</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.15</ApplicationVersion>
+      <ApplicationVersion>9.7.0.17</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15264,7 +15246,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>7</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.15</ApplicationVersion>
+      <ApplicationVersion>9.7.0.17</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15276,7 +15258,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>120</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.15</ApplicationVersion>
+      <ApplicationVersion>9.7.0.17</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15288,7 +15270,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>110</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.15</ApplicationVersion>
+      <ApplicationVersion>9.7.0.17</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15300,7 +15282,7 @@
       <ExecutionType>18</ExecutionType>
       <Order>25</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.15</ApplicationVersion>
+      <ApplicationVersion>9.7.0.17</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15312,7 +15294,7 @@
       <ExecutionType>14</ExecutionType>
       <Order>80</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.15</ApplicationVersion>
+      <ApplicationVersion>9.7.0.17</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15324,7 +15306,7 @@
       <ExecutionType>14</ExecutionType>
       <Order>70</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.15</ApplicationVersion>
+      <ApplicationVersion>9.7.0.17</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15336,7 +15318,7 @@
       <ExecutionType>14</ExecutionType>
       <Order>60</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.15</ApplicationVersion>
+      <ApplicationVersion>9.7.0.17</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15348,7 +15330,7 @@
       <ExecutionType>14</ExecutionType>
       <Order>95</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.15</ApplicationVersion>
+      <ApplicationVersion>9.7.0.17</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15360,7 +15342,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>20</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.15</ApplicationVersion>
+      <ApplicationVersion>9.7.0.17</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15372,7 +15354,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>4</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.15</ApplicationVersion>
+      <ApplicationVersion>9.7.0.17</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15384,7 +15366,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>6</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.15</ApplicationVersion>
+      <ApplicationVersion>9.7.0.17</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15396,7 +15378,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>8</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.15</ApplicationVersion>
+      <ApplicationVersion>9.7.0.17</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15408,7 +15390,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>5</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.15</ApplicationVersion>
+      <ApplicationVersion>9.7.0.17</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15420,7 +15402,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>3</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.15</ApplicationVersion>
+      <ApplicationVersion>9.7.0.17</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15432,7 +15414,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>10</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.15</ApplicationVersion>
+      <ApplicationVersion>9.7.0.17</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15444,7 +15426,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>1</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.15</ApplicationVersion>
+      <ApplicationVersion>9.7.0.17</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15456,7 +15438,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>80</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.15</ApplicationVersion>
+      <ApplicationVersion>9.7.0.17</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15468,7 +15450,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>140</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.15</ApplicationVersion>
+      <ApplicationVersion>9.7.0.17</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15480,7 +15462,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>150</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.15</ApplicationVersion>
+      <ApplicationVersion>9.7.0.17</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15492,7 +15474,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>160</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.15</ApplicationVersion>
+      <ApplicationVersion>9.7.0.17</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15504,7 +15486,7 @@
       <ExecutionType>12</ExecutionType>
       <Order>26</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.15</ApplicationVersion>
+      <ApplicationVersion>9.7.0.17</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15516,7 +15498,7 @@
       <ExecutionType>12</ExecutionType>
       <Order>20</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.15</ApplicationVersion>
+      <ApplicationVersion>9.7.0.17</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15528,7 +15510,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>180</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.15</ApplicationVersion>
+      <ApplicationVersion>9.7.0.17</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15540,7 +15522,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>190</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.15</ApplicationVersion>
+      <ApplicationVersion>9.7.0.17</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15552,7 +15534,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>200</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.15</ApplicationVersion>
+      <ApplicationVersion>9.7.0.17</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15564,7 +15546,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>15</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.16</ApplicationVersion>
+      <ApplicationVersion>9.7.0.17</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15576,7 +15558,7 @@
       <ExecutionType>14</ExecutionType>
       <Order>65</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.16</ApplicationVersion>
+      <ApplicationVersion>9.7.0.17</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
   </InstallEventHandlers>

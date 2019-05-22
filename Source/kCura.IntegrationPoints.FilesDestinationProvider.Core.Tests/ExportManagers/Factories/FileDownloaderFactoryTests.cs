@@ -4,7 +4,7 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers.Facto
 using kCura.WinEDDS;
 using kCura.WinEDDS.Service.Export;
 using NUnit.Framework;
-using Relativity;
+using Relativity.DataExchange.Service;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportManagers.Factories
 {

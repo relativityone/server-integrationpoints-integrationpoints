@@ -5,11 +5,11 @@ using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
-using kCura.Windows.Process;
 using kCura.WinEDDS;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.DataExchange.Process;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 {
@@ -61,10 +61,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 		}
 
 		[Test]
-		[TestCase(EventType.Count)]
-		[TestCase(EventType.End)]
-		[TestCase(EventType.ResetStartTime)]
-		public void ItShouldHandleStatusMessageWithGivenTypeAsUnexpectedEvent(EventType givenType)
+		[TestCase(EventType2.Count)]
+		[TestCase(EventType2.End)]
+		[TestCase(EventType2.ResetStartTime)]
+		public void ItShouldHandleStatusMessageWithGivenTypeAsUnexpectedEvent(EventType2 givenType)
 		{
 			var exportEventArgs = CreateExportEventArgs(givenType);
 
@@ -76,7 +76,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 		[Test]
 		public void ItShouldLogStatusMessageWithErrorAsError()
 		{
-			var exportEventArgs = CreateExportEventArgs(EventType.Error);
+			var exportEventArgs = CreateExportEventArgs(EventType2.Error);
 
 			RaiseStatusMessage(exportEventArgs);
 
@@ -86,7 +86,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 		[Test]
 		public void ItShouldLogStatusMessageWithWarningAsWarning()
 		{
-			var exportEventArgs = CreateExportEventArgs(EventType.Warning);
+			var exportEventArgs = CreateExportEventArgs(EventType2.Warning);
 
 			RaiseStatusMessage(exportEventArgs);
 
@@ -96,7 +96,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 		[Test]
 		public void ItShouldLogStatusMessageWithStatusAsVerbose()
 		{
-			var exportEventArgs = CreateExportEventArgs(EventType.Status);
+			var exportEventArgs = CreateExportEventArgs(EventType2.Status);
 
 			RaiseStatusMessage(exportEventArgs);
 
@@ -106,7 +106,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 		[Test]
 		public void ItShouldLogStatusMessageWithProgressAsVerbose()
 		{
-			var exportEventArgs = CreateExportEventArgs(EventType.Progress);
+			var exportEventArgs = CreateExportEventArgs(EventType2.Progress);
 
 			RaiseStatusMessage(exportEventArgs);
 
@@ -134,13 +134,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 		[Test]
 		public void ItShouldThrowExceptionForUnknownEventType()
 		{
-			var correctValues = Enum.GetValues(typeof(EventType)).Cast<int>().ToList();
+			var correctValues = Enum.GetValues(typeof(EventType2)).Cast<int>().ToList();
 			var incorrectValue = 1;
 			while (correctValues.Contains(incorrectValue))
 			{
 				++incorrectValue;
 			}
-			var exportEventArgs = CreateExportEventArgs((EventType)incorrectValue);
+			var exportEventArgs = CreateExportEventArgs((EventType2)incorrectValue);
 
 			Assert.That(() => RaiseStatusMessage(exportEventArgs),
 				Throws.TypeOf<InvalidEnumArgumentException>().With.Message.EqualTo($"Unknown EventType ({incorrectValue})"));
@@ -151,7 +151,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 			_exporterStatusNotification.StatusMessage += Raise.Event<IExporterStatusNotification.StatusMessageEventHandler>(exportEventArgs);
 		}
 
-		private ExportEventArgs CreateExportEventArgs(EventType eventType)
+		private ExportEventArgs CreateExportEventArgs(EventType2 eventType)
 		{
 			const string expectedMessage = "expected_event_message";
 			var additionalInfo = new Dictionary<string, string>

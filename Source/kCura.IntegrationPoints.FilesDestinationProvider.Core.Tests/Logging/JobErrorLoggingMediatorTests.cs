@@ -4,10 +4,10 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
-using kCura.Windows.Process;
 using kCura.WinEDDS;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.DataExchange.Process;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 {
@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 		[Test]
 		public void ItShouldAddErrorOnStatusMessageWithError()
 		{
-			var exportEventArgs = new ExportEventArgs(0, 0, "status_message", EventType.Error, null, null);
+			var exportEventArgs = new ExportEventArgs(0, 0, "status_message", EventType2.Error, null, null);
 			_exporterStatusNotification.StatusMessage +=
 				Raise.Event<IExporterStatusNotification.StatusMessageEventHandler>(exportEventArgs);
 
@@ -70,13 +70,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 		}
 
 		[Test]
-		[TestCase(EventType.Warning)]
-		[TestCase(EventType.Count)]
-		[TestCase(EventType.End)]
-		[TestCase(EventType.Progress)]
-		[TestCase(EventType.ResetStartTime)]
-		[TestCase(EventType.Status)]
-		public void ItShouldSkipLoggingOnStatusMessageWithoutError(EventType eventType)
+		[TestCase(EventType2.Warning)]
+		[TestCase(EventType2.Count)]
+		[TestCase(EventType2.End)]
+		[TestCase(EventType2.Progress)]
+		[TestCase(EventType2.ResetStartTime)]
+		[TestCase(EventType2.Status)]
+		public void ItShouldSkipLoggingOnStatusMessageWithoutError(EventType2 eventType)
 		{
 			var exportEventArgs = new ExportEventArgs(0, 0, "status_message", eventType, null, null);
 			_exporterStatusNotification.StatusMessage +=

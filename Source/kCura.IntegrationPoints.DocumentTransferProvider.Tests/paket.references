@@ -4,7 +4,7 @@ LanguageExt.Core
 NSubstitute
 NUnit
 Relativity.API
-Relativity.ImportExport
+Relativity.DataExchange.Client.SDK
 RelativityCore
 Moq
 FluentAssertions

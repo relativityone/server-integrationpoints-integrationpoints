@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories;
 using Moq;
 using NUnit.Framework;
 using Relativity;
+using Relativity.DataExchange.Service;
 using Relativity.Services.FileField.Models;
 using Relativity.Services.Interfaces.File.Models;
 using Relativity.Services.Interfaces.Shared.Models;
@@ -901,7 +902,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 				actual.AvfColumnName.Should().Be(expected.ArtifactViewFieldColumnName);
 				actual.AvfHeaderName.Should().Be(expected.ArtifactViewFieldHeaderName);
 				actual.AllowFieldName.Should().Be(expected.AllowFieldName);
-				actual.ColumnSource.Should().Be(ConvertEnum<global::Relativity.ViewFieldInfo.ColumnSourceType>(expected.ColumnSourceType));
+				actual.ColumnSource.Should().Be(ConvertEnum<ColumnSourceType>(expected.ColumnSourceType));
 				actual.DataSource.Should().Be(expected.DataSource);
 				actual.SourceFieldName.Should().Be(expected.SourceFieldName);
 				actual.SourceFieldArtifactTypeID.Should().Be(expected.SourceFieldArtifactTypeID);
@@ -910,7 +911,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 				actual.SourceFieldArtifactTypeTableName.Should().Be(expected.SourceFieldArtifactTypeTableName);
 				actual.ConnectorFieldName.Should().Be(expected.ConnectorFieldName);
 				actual.ConnectorFieldCategory.Should().Be(ConvertEnum<FieldCategory>(expected.ConnectorFieldCategory));
-				actual.FieldType.Should().Be(ConvertEnum<FieldTypeHelper.FieldType>(expected.FieldType));
+				actual.FieldType.Should().Be(ConvertEnum< FieldType >(expected.FieldType));
 				actual.IsLinked.Should().Be(expected.IsLinked);
 				actual.FieldCodeTypeID.Should().Be(expected.FieldCodeTypeID);
 				actual.ArtifactTypeID.Should().Be(expected.ArtifactTypeID);

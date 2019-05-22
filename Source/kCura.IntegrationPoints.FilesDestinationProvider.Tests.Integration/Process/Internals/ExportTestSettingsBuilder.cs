@@ -6,6 +6,7 @@ using System.Text;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity;
+using Relativity.DataExchange.Service;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Process.Internals
 {

@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 					DisplayName = x.DisplayName,
 					FieldIdentifier = x.AvfId.ToString(),
 					FieldType = ConvertFromExFieldType(x.FieldType),
-					IsIdentifier = x.Category == FieldCategory.Identifier,
+					IsIdentifier = x.Category == global::Relativity.DataExchange.Service.FieldCategory.Identifier,
 					IsRequired = false
 				}).ToArray();
 		}
@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 					DisplayName = x.DisplayName,
 					FieldIdentifier = x.AvfId.ToString(),
 					FieldType = ConvertFromExFieldType(x.FieldType),
-					IsIdentifier = x.Category == FieldCategory.Identifier,
+					IsIdentifier = x.Category == global::Relativity.DataExchange.Service.FieldCategory.Identifier,
 					IsRequired = false
 				}).ToArray();
 		}
@@ -60,22 +60,21 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 		public FieldEntry[] GetAllExportableLongTextFields(int workspaceArtifactID, int artifactTypeID)
 		{
 			ISearchManager searchManager = _serviceManagerProvider.Create<ISearchManager, SearchManagerFactory>();
-
 			return searchManager.RetrieveAllExportableViewFields(workspaceArtifactID, artifactTypeID)
-				.Where(x => x.FieldType == FieldTypeHelper.FieldType.Text || x.FieldType == FieldTypeHelper.FieldType.OffTableText)
+				.Where(x => x.FieldType == global::Relativity.DataExchange.Service.FieldType.Text || x.FieldType == global::Relativity.DataExchange.Service.FieldType.OffTableText)
 				.Select(x => new FieldEntry
 				{
 					DisplayName = x.DisplayName,
 					FieldIdentifier = x.AvfId.ToString(),
 					FieldType = FieldType.String,
-					IsIdentifier = x.Category == FieldCategory.Identifier,
+					IsIdentifier = x.Category == global::Relativity.DataExchange.Service.FieldCategory.Identifier,
 					IsRequired = false
 				}).ToArray();
 		}
 
-		private FieldType ConvertFromExFieldType(FieldTypeHelper.FieldType fieldType)
+		private FieldType ConvertFromExFieldType(global::Relativity.DataExchange.Service.FieldType fieldType)
 		{
-			return fieldType == FieldTypeHelper.FieldType.File ? FieldType.File : FieldType.String;
+			return fieldType == global::Relativity.DataExchange.Service.FieldType.File ? FieldType.File : FieldType.String;
 		}
 	}
 }

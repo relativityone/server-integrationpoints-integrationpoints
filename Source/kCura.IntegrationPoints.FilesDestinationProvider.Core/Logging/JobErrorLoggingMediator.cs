@@ -2,8 +2,8 @@
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
-using kCura.Windows.Process;
 using kCura.WinEDDS;
+using Relativity.DataExchange.Process;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 {
@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 
 		private void OnStatusMessage(ExportEventArgs exportArgs)
 		{
-			if (exportArgs.EventType == EventType.Error)
+			if (exportArgs.EventType == EventType2.Error)
 			{
 				_historyErrorService.AddError(ErrorTypeChoices.JobHistoryErrorItem, string.Empty, exportArgs.Message,
 					string.Empty);

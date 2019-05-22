@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 				row["AvfId"] = i;
 				if (addFileField && elemIndex++ == 0)
 				{
-					row["FieldTypeID"] = FieldTypeHelper.FieldType.File;
+					row["FieldTypeID"] = global::Relativity.DataExchange.Service.FieldType.File;
 					row["FieldArtifactID"] = fileFieldId;
 				}
 				viewFieldInfo.Add(new ViewFieldInfo(row));
@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			dataTable.Columns["AvfID"].DefaultValue = 1;
 
 			dataTable.Columns.Add("FieldCategoryID", typeof(int));
-			dataTable.Columns["FieldCategoryID"].DefaultValue = FieldCategory.Identifier;
+			dataTable.Columns["FieldCategoryID"].DefaultValue = global::Relativity.DataExchange.Service.FieldCategory.Identifier;
 
 			dataTable.Columns.Add("ColumnSource", typeof(string));
 			dataTable.Columns["ColumnSource"].DefaultValue = "Computed";
@@ -50,7 +50,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			dataTable.Columns["ConnectorFieldArtifactID"].DefaultValue = 1;
 
 			dataTable.Columns.Add("FieldTypeID", typeof(int));
-			dataTable.Columns["FieldTypeID"].DefaultValue = FieldTypeHelper.FieldType.Empty;
+			dataTable.Columns["FieldTypeID"].DefaultValue = global::Relativity.DataExchange.Service.FieldType.Empty;
 
 			dataTable.Columns.Add("ConnectorFieldCategoryID", typeof(int));
 			dataTable.Columns["ConnectorFieldCategoryID"].DefaultValue = 1;

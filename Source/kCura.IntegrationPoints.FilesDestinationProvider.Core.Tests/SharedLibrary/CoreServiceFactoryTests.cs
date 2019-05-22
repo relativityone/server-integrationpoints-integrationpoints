@@ -1,6 +1,5 @@
 ﻿using System;
 using FluentAssertions;
-using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers.Factories;
 using kCura.WinEDDS;
@@ -19,16 +18,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 		private Mock<Func<IFieldManager>> _fieldManagerFactoryMock;
 		private Mock<Func<ISearchManager>> _searchManagerFactoryMock;
 		private Mock<IExportFileDownloaderFactory> _exportFileDownloaderFactoryMock;
-		private CurrentUser _currentUser;
 
 		private const int _EXPORT_ARTIFACT_TYPE_ID = 123;
-		private const int _CONTEXT_USER_ID = 41231;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_exportFile = new ExportFile(_EXPORT_ARTIFACT_TYPE_ID);
-			_currentUser = new CurrentUser(userID: _CONTEXT_USER_ID);
 
 			_webApiServiceFactoryMock = new Mock<IServiceFactory>();
 			_auditManagerFactoryMock = new Mock<Func<IAuditManager>>();
@@ -130,6 +126,41 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 		}
 
 		[Test]
+		public void CreateExportManager_ShouldReturnProperImplementation()
+		{
+			//arrange
+			var exportManagerMock = new Mock<IExportManager>();
+			_webApiServiceFactoryMock
+				.Setup(x => x.CreateExportManager())
+				.Returns(exportManagerMock.Object);
+
+			//act & assert
+			IExportManager actualExportManager = _sut.CreateExportManager();
+
+			// assert
+			actualExportManager.Should().Be(exportManagerMock.Object);
+		}
+
+		[Test]
+		public void CreateExportManager_ShouldCallFactoryForEachCall()
+		{
+			// arrange
+			int numberOfCalls = 2;
+
+			// act
+			for (int i = 0; i < numberOfCalls; i++)
+			{
+				_sut.CreateExportManager();
+			}
+
+			// assert
+			_webApiServiceFactoryMock.Verify(
+				x => x.CreateExportManager(), 
+				Times.Exactly(numberOfCalls)
+			);
+		}
+
+		[Test]
 		public void CreateProductionManager_ShouldReturnProperImplementation()
 		{
 			//arrange
@@ -201,8 +232,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 				_searchManagerFactoryMock.Object,
 				_exportFileDownloaderFactoryMock.Object,
 				_exportFile,
-				_webApiServiceFactoryMock.Object,
-				_currentUser);
+				_webApiServiceFactoryMock.Object);
 		}
 	}
 }

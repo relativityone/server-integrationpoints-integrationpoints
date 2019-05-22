@@ -2,24 +2,23 @@
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Managers;
-using kCura.Windows.Process;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Exporters;
-using Relativity.Services.DataContracts.DTOs.MetricsCollection;
+using Relativity.DataExchange.Process;
 using Relativity.Telemetry.MetricsCollection;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 {
 	public class StoppableExporter : IExporter
 	{
-		private readonly Controller _controller;
+		private readonly ProcessContext _context;
 		private readonly WinEDDS.IExporter _exporter;
 		private readonly IJobStopManager _jobStopManager;
 
-		public StoppableExporter(WinEDDS.IExporter exporter, Controller controller, IJobStopManager jobStopManager)
+		public StoppableExporter(WinEDDS.IExporter exporter, ProcessContext context, IJobStopManager jobStopManager)
 		{
 			_exporter = exporter;
-			_controller = controller;
+			_context = context;
 			_jobStopManager = jobStopManager;
 		}
 
@@ -86,7 +85,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 
 		private void OnStopRequested(object sender, EventArgs eventArgs)
 		{
-			_controller.HaltProcess(Guid.Empty);
+			_context.PublishCancellationRequest(Guid.Empty);
 		}
 
 		private void CompleteExportJob(ExportJobStats exportJobStats)

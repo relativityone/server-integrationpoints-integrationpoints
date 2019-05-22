@@ -165,7 +165,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 
 		private static ViewFieldInfo ToViewFieldInfo(ViewFieldResponse viewFieldResponse)
 		{
-			RelativityViewFieldInfo coreViewFieldInfo = new CoreViewFieldInfo(viewFieldResponse);
+			global::Relativity.DataExchange.Service.ViewFieldInfo coreViewFieldInfo = new CoreViewFieldInfo(viewFieldResponse);
 			return new ViewFieldInfo(coreViewFieldInfo);
 		}
 

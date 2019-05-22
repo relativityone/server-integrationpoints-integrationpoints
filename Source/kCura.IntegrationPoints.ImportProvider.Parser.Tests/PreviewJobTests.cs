@@ -4,6 +4,7 @@ using System.Web;
 using NUnit.Framework;
 using NSubstitute;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
+using Relativity.DataExchange.Service;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 {
@@ -101,17 +102,17 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 
 		private void MockPreviewTable()
 		{
-			global::Relativity.FieldCategory fieldCat;
+			FieldCategory fieldCat;
 			WinEDDS.Api.ArtifactField field;
 			List<WinEDDS.Api.ArtifactField> fieldList = new List<WinEDDS.Api.ArtifactField>();
 			for (int i = 1; i <= ColumnCount; i++)
 			{
-				fieldCat = global::Relativity.FieldCategory.Generic;
+				fieldCat = FieldCategory.Generic;
 				if (i == 1)
 				{
-					fieldCat = global::Relativity.FieldCategory.Identifier;
+					fieldCat = FieldCategory.Identifier;
 				}
-				field = new WinEDDS.Api.ArtifactField(String.Format("Field{0}", i), i, global::Relativity.FieldTypeHelper.FieldType.Text, fieldCat, -1, -1, -1, false);
+				field = new WinEDDS.Api.ArtifactField(String.Format("Field{0}", i), i, FieldType.Text, fieldCat, -1, -1, -1, false);
 				field.Value = String.Format("Value{0}",i);
 
 				//Give one of these columns a value that contains a script
@@ -126,17 +127,17 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 
 		private void MockPreviewTableErrorColumn()
 		{
-			global::Relativity.FieldCategory fieldCat;
+			FieldCategory fieldCat;
 			WinEDDS.Api.ArtifactField field;
 			List<WinEDDS.Api.ArtifactField> fieldList = new List<WinEDDS.Api.ArtifactField>();
 			for (int i = 1; i <= ColumnCount; i++)
 			{
-				fieldCat = global::Relativity.FieldCategory.Generic;
+				fieldCat = FieldCategory.Generic;
 				if (i == 1)
 				{
-					fieldCat = global::Relativity.FieldCategory.Identifier;
+					fieldCat = FieldCategory.Identifier;
 				}
-				field = new WinEDDS.Api.ArtifactField(String.Format("Field{0}", i), i, global::Relativity.FieldTypeHelper.FieldType.Text, fieldCat, -1, -1, -1, false);
+				field = new WinEDDS.Api.ArtifactField(String.Format("Field{0}", i), i, FieldType.Text, fieldCat, -1, -1, -1, false);
 				//insert value with the error keyword that the LoadFilePreviewer will put on columns that contain an error
 				field.Value = String.Format("Error: {0}", i);
 				fieldList.Add(field);

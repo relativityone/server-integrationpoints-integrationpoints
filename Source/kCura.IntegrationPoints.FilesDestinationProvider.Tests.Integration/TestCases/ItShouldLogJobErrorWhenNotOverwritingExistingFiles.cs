@@ -6,7 +6,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases.Base;
 using NSubstitute;
-using Directory = kCura.Utility.Directory;
+using Relativity.DataExchange.Io;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases
 {
@@ -26,7 +26,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 			settings.OverwriteFiles = false;
 			settings = base.Prepare(settings);
 
-			Directory.Instance.CreateDirectoryIfNotExist(settings.ExportFilesLocation);
+			if (!FileSystem.Instance.Directory.Exists(settings.ExportFilesLocation, false))
+			{
+				FileSystem.Instance.Directory.CreateDirectory(settings.ExportFilesLocation);
+			}
+
 			File.Create(Path.Combine(settings.ExportFilesLocation, "All Documents_export.dat")).Dispose();
 
 			return settings;

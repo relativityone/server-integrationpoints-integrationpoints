@@ -1,4 +1,6 @@
+Castle.Windsor
 CSharpGuidelineAnalyzer
+kCura
 Newtonsoft.Json
 NUnit
 Relativity
@@ -17,7 +19,7 @@ Relativity.Productions.Services.Interfaces
 kCura.Relativity.Client
 Relativity.Telemetry.APM
 Polly
-Relativity.ImportExport
+Relativity.DataExchange.Client.SDK
 FluentAssertions
 
 group TestPackages

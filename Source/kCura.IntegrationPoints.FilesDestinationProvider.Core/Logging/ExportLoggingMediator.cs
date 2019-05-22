@@ -1,9 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
-using kCura.Windows.Process;
 using kCura.WinEDDS;
 using Relativity.API;
+using Relativity.DataExchange.Process;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 {
@@ -50,24 +50,24 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 		{
 			switch (exportEventArgs.EventType)
 			{
-				case EventType.Status:
+				case EventType2.Status:
 					LogStatus(exportEventArgs);
 					return;
-				case EventType.Progress:
+				case EventType2.Progress:
 					LogProgress(exportEventArgs);
 					return;
-				case EventType.Warning:
+				case EventType2.Warning:
 					LogWarning(exportEventArgs);
 					return;
-				case EventType.Error:
+				case EventType2.Error:
 					LogError(exportEventArgs);
 					return;
-				case EventType.ResetStartTime:
-				case EventType.Count:
-				case EventType.End:
+				case EventType2.ResetStartTime:
+				case EventType2.Count:
+				case EventType2.End:
 					LogDebug(exportEventArgs);
 					return;
-				case EventType.Statistics:
+				case EventType2.Statistics:
 					LogStatitstics(exportEventArgs);
 					return;
 				default:
