@@ -58,7 +58,7 @@ namespace Relativity.Sync.Executors.Validation
 					{
 						Name = "Field"
 					},
-					Condition = $"(('ArtifactID' == {configuration.FolderPathSourceFieldArtifactId}))",
+					Condition = $"(('Name' == '{configuration.FolderPathSourceFieldName}'))",
 					Fields = new[]
 					{
 						new FieldRef() {Name = fieldType},
@@ -78,7 +78,7 @@ namespace Relativity.Sync.Executors.Validation
 				}
 				else
 				{
-					result.Add($"Field Artifact ID: {configuration.FolderPathSourceFieldArtifactId} not found.");
+					result.Add($"Field Name: {configuration.FolderPathSourceFieldName} not found.");
 				}
 			}
 

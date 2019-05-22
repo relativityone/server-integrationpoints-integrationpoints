@@ -31,13 +31,13 @@ namespace Relativity.Sync.Tests.System
 			const int dataSourceArtifactId = 1038052;
 			const int controlNumberFieldId = 1003667;
 			const int extractedTextFieldId = 1003668;
-			const int folderInfoFieldId = 1035366;
+			const string folderInfoFieldName = "field name";
 			ConfigurationStub configuration = new ConfigurationStub
 			{
 				SourceWorkspaceArtifactId = sourceWorkspaceArtifactId,
 				DataSourceArtifactId = dataSourceArtifactId,
 				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.ReadFromField,
-				FolderPathSourceFieldArtifactId = folderInfoFieldId,
+				FolderPathSourceFieldName = folderInfoFieldName,
 				FieldMappings = new List<FieldMap>
 				{
 					new FieldMap

@@ -226,7 +226,7 @@ namespace Relativity.Sync.Tests.System.Helpers
 			}
 		}
 
-		public static async Task<int> GetFolderPathSourceField(ServiceFactory serviceFactory, int workspaceId)
+		public static async Task<string> GetFolderPathSourceFieldName(ServiceFactory serviceFactory, int workspaceId)
 		{
 			using (IObjectManager objectManager = serviceFactory.CreateProxy<IObjectManager>())
 			{
@@ -243,10 +243,11 @@ namespace Relativity.Sync.Tests.System.Helpers
 						{
 							Name = "Field Type"
 						}
-					}
+					},
+					IncludeNameInQueryResult = true
 				};
 				QueryResult result = await objectManager.QueryAsync(workspaceId, request, 0, 1).ConfigureAwait(false);
-				return result.Objects.First().ArtifactID;
+				return result.Objects.First().Name;
 			}
 		}
 

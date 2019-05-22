@@ -97,7 +97,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[TestCase(DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure)]
 		public async Task ItShouldNotIncludeFolderPathSourceField(DestinationFolderStructureBehavior destinationFolderStructureBehavior)
 		{
-			const int folderPathSourceFieldId = 589632;
+			const string folderPathSourceFieldName = "folder path";
 
 			ExportInitializationResults exportInitializationResults = new ExportInitializationResults
 			{
@@ -107,18 +107,18 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_objectManager.Setup(x => x.InitializeExportAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1)).ReturnsAsync(exportInitializationResults);
 
 			_configuration.Setup(x => x.DestinationFolderStructureBehavior).Returns(destinationFolderStructureBehavior);
-			_configuration.Setup(x => x.FolderPathSourceFieldArtifactId).Returns(folderPathSourceFieldId);
+			_configuration.Setup(x => x.FolderPathSourceFieldName).Returns(folderPathSourceFieldName);
 
 			// ACT
 			await _instance.ExecuteAsync(_configuration.Object, CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			_objectManager.Verify(x => x.InitializeExportAsync(_WORKSPACE_ID, It.Is<QueryRequest>(qr => AssertNotIncludingFolderPathSourceField(qr, folderPathSourceFieldId)), 1));
+			_objectManager.Verify(x => x.InitializeExportAsync(_WORKSPACE_ID, It.Is<QueryRequest>(qr => AssertNotIncludingFolderPathSourceField(qr, folderPathSourceFieldName)), 1));
 		}
 
-		private bool AssertNotIncludingFolderPathSourceField(QueryRequest queryRequest, int folderPathSourceFieldId)
+		private bool AssertNotIncludingFolderPathSourceField(QueryRequest queryRequest, string folderPathSourceFieldName)
 		{
-			queryRequest.Fields.Should().NotContain(x => x.ArtifactID == folderPathSourceFieldId);
+			queryRequest.Fields.Should().NotContain(x => x.Name == folderPathSourceFieldName);
 			return true;
 		}
 
