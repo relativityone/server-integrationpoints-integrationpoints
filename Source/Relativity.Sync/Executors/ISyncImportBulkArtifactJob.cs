@@ -2,7 +2,7 @@
 
 namespace Relativity.Sync.Executors
 {
-	internal interface IImportBulkArtifactJob : IImportNotifier
+	internal interface ISyncImportBulkArtifactJob : IImportNotifier
 	{
 		event ImportBulkArtifactJob.OnErrorEventHandler OnError;
 		void Execute();

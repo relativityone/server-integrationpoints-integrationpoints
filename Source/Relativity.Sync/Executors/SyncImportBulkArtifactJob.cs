@@ -4,11 +4,11 @@ using kCura.Relativity.DataReaderClient;
 namespace Relativity.Sync.Executors
 {
 	[ExcludeFromCodeCoverage]
-	internal sealed class ImportBulkArtifactJobWrapper : IImportBulkArtifactJob
+	internal sealed class SyncImportBulkArtifactJob : ISyncImportBulkArtifactJob
 	{
 		private readonly ImportBulkArtifactJob _importBulkArtifactJob;
 
-		public ImportBulkArtifactJobWrapper(ImportBulkArtifactJob importBulkArtifactJob)
+		public SyncImportBulkArtifactJob(ImportBulkArtifactJob importBulkArtifactJob)
 		{
 			_importBulkArtifactJob = importBulkArtifactJob;
 		}

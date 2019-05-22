@@ -59,12 +59,12 @@ namespace Relativity.Sync.Tests.System
 				}
 			};
 
-			var sourceServiceFactory = new SourceServiceFactoryStub(ServiceFactory);
+			var sourceServiceFactory = new ServiceFactoryStub(ServiceFactory);
 			var documentFieldRepository = new DocumentFieldRepository(sourceServiceFactory, new EmptyLogger());
 			var fieldManager = new FieldManager(configuration, documentFieldRepository, new List<ISpecialFieldBuilder>
 			{
 				new FileInfoFieldsBuilder(new NativeFileRepository(sourceServiceFactory)),
-				new FolderPathFieldBuilder(sourceServiceFactory, new FolderPathRetriever(sourceServiceFactory, new EmptyLogger()), configuration), new SourceTagsFieldBuilder()
+				new FolderPathFieldBuilder(sourceServiceFactory, new FolderPathRetriever(sourceServiceFactory, new EmptyLogger()), configuration), new SourceTagsFieldBuilder(configuration)
 			});
 			var executor = new DataSourceSnapshotExecutor(sourceServiceFactory, fieldManager, new EmptyLogger());
 

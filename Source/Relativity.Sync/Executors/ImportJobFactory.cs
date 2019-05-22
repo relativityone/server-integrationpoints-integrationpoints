@@ -33,11 +33,11 @@ namespace Relativity.Sync.Executors
 		public IImportJob CreateImportJob(ISynchronizationConfiguration configuration, IBatch batch)
 		{
 			ImportBulkArtifactJob importBulkArtifactJob = CreateImportBulkArtifactJob(configuration, batch.StartingIndex);
-			ImportBulkArtifactJobWrapper importBulkArtifactJobWrapper = new ImportBulkArtifactJobWrapper(importBulkArtifactJob);
+			SyncImportBulkArtifactJob syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importBulkArtifactJob);
 
 			_batchProgressHandlerFactory.CreateBatchProgressHandler(batch, importBulkArtifactJob);
 
-			return new ImportJob(importBulkArtifactJobWrapper, new SemaphoreSlimWrapper(new SemaphoreSlim(0, 1)), _jobHistoryErrorRepository,
+			return new ImportJob(syncImportBulkArtifactJob, new SemaphoreSlimWrapper(new SemaphoreSlim(0, 1)), _jobHistoryErrorRepository,
 				configuration.SourceWorkspaceArtifactId, configuration.JobHistoryTagArtifactId, _logger);
 		}
 

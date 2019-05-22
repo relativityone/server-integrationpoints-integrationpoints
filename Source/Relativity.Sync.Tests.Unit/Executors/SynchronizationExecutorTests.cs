@@ -48,7 +48,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			FieldInfoDto.RelativityNativeTypeField(),
 			FieldInfoDto.SupportedByViewerField()
 		};
-		
+
 		[SetUp]
 		public void SetUp()
 		{
@@ -64,7 +64,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			{
 				new FieldMap()
 				{
-					DestinationField = new FieldEntry()
+					DestinationField = new FieldEntry
 					{
 						IsIdentifier = true,
 					}
@@ -73,7 +73,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			_importJob = new Mock<Sync.Executors.IImportJob>();
 			_importJobFactory.Setup(x => x.CreateImportJob(It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IBatch>())).Returns(_importJob.Object);
-			
+
 			_fieldManager.Setup(x => x.GetSpecialFields()).Returns(_specialFields);
 
 			_synchronizationExecutor = new SynchronizationExecutor(_importJobFactory.Object, _batchRepository.Object, _destinationWorkspaceTagRepository.Object,
@@ -84,19 +84,17 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		public async Task ItShouldSetImportApiSettings()
 		{
 			SetupBatchRepository(1);
-			
+
 			// act
 			await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
 
 			// assert
-			_config.Verify(x => x.SetImportSettings(It.Is<ImportSettingsDto>(settings => 
-				settings.FolderPathSourceFieldName == _FOLDER_PATH_FROM_WORKSPACE_DISPLAY_NAME &&
-				settings.FileSizeColumn == _NATIVE_FILE_SIZE_DISPLAY_NAME &&
-				settings.NativeFilePathSourceFieldName == _NATIVE_FILE_LOCATION_DISPLAY_NAME &&
-				settings.FileNameColumn == _NATIVE_FILE_FILENAME_DISPLAY_NAME &&
-				settings.OiFileTypeColumnName == _RELATIVITY_NATIVE_TYPE_DISPLAY_NAME &&
-				settings.SupportedByViewerColumn == _SUPPORTED_BY_VIEWER_DISPLAY_NAME
-				)));
+			Assert.AreEqual(_FOLDER_PATH_FROM_WORKSPACE_DISPLAY_NAME, _config.Object.ImportSettings.FolderPathSourceFieldName);
+			Assert.AreEqual(_NATIVE_FILE_SIZE_DISPLAY_NAME, _config.Object.ImportSettings.FileSizeColumn);
+			Assert.AreEqual(_NATIVE_FILE_LOCATION_DISPLAY_NAME, _config.Object.ImportSettings.NativeFilePathSourceFieldName);
+			Assert.AreEqual(_NATIVE_FILE_FILENAME_DISPLAY_NAME, _config.Object.ImportSettings.FileNameColumn);
+			Assert.AreEqual(_RELATIVITY_NATIVE_TYPE_DISPLAY_NAME, _config.Object.ImportSettings.OiFileTypeColumnName);
+			Assert.AreEqual(_SUPPORTED_BY_VIEWER_DISPLAY_NAME, _config.Object.ImportSettings.SupportedByViewerColumn);
 		}
 
 		[Test]
@@ -104,7 +102,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		{
 			SetupBatchRepository(1);
 			_config.SetupGet(x => x.FieldMappings).Returns(new List<FieldMap>());
-			
+
 			// act
 			Func<Task> action = async () => await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
 
@@ -128,7 +126,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			string expectedMessage = $"Cannot find special field name: {missingSpecialField}";
 			action.Should().Throw<SyncException>().Which.Message.Should().Be(expectedMessage);
 		}
-		
+
 		[TestCase(0)]
 		[TestCase(1)]
 		[TestCase(5)]
@@ -166,7 +164,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		{
 			const int numberOfBatches = 1;
 			SetupBatchRepository(numberOfBatches);
-			
+
 			// act
 			await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
 

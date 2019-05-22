@@ -44,11 +44,6 @@ namespace Relativity.Sync.Tests.Common
 		public int SourceWorkspaceArtifactId { get; set; }
 		public int SyncConfigurationArtifactId { get; set; }
 
-		public void SetImportSettings(ImportSettingsDto importSettings)
-		{
-			ImportSettings = importSettings;
-		}
-
 		public int DestinationWorkspaceArtifactId { get; set; }
 		public int SavedSearchArtifactId { get; set; }
 		public int DestinationFolderArtifactId { get; set; }
@@ -82,9 +77,9 @@ namespace Relativity.Sync.Tests.Common
 		public void SetSourceWorkspaceTag(int artifactId, string name)
 		{
 			SourceWorkspaceTagArtifactId = artifactId;
+			SourceWorkspaceTagName = name;
 		}
-
-
+		
 		public int ExecutingUserId => _ADMIN_ID;
 		public string JobStatus { get; set; }
 		public bool SendEmails { get; set; }

@@ -10,6 +10,7 @@ using Relativity.Services.Workspace;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Helpers;
+using Relativity.Testing.Identification;
 
 namespace Relativity.Sync.Tests.System
 {
@@ -36,7 +37,7 @@ namespace Relativity.Sync.Tests.System
 			_destinationWorkspace = destinationWorkspaceCreationTask.Result;
 		}
 
-		[Test]
+		[IdentifiedTest("c74612fc-2216-4ecb-af58-23e28826bdc0")]
 		public async Task ItShouldCreateTagIfItDoesNotExist()
 		{
 			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, _sourceWorkspace.ArtifactID).ConfigureAwait(false);
@@ -66,7 +67,7 @@ namespace Relativity.Sync.Tests.System
 			Assert.AreEqual(jobHistoryArtifactId, relativityObjectValues.First().ArtifactID);
 		}
 
-		[Test]
+		[IdentifiedTest("c70961bc-dbdf-4dce-a59d-a017c92b3282")]
 		public async Task ItShouldUpdateTagIfItDoesExist()
 		{
 			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, _sourceWorkspace.ArtifactID).ConfigureAwait(false);
