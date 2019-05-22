@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Relativity.Sync
 {
@@ -15,7 +16,7 @@ namespace Relativity.Sync
 		/// <param name="batchSize">Maximum size of each partition</param>
 		/// <returns>A sequence of partitions, each of which will contains <paramref name="batchSize"/>
 		/// elements. The last partition may contain less than <paramref name="batchSize"/> elements.</returns>
-		internal static IEnumerable<IList<T>> SplitList<T>(IEnumerable<T> fullCollection, int batchSize)
+		internal static IEnumerable<IList<T>> SplitList<T>(this IEnumerable<T> fullCollection, int batchSize)
 		{
 			int actualBatchSize = batchSize;
 			if (actualBatchSize <= 0)
@@ -62,6 +63,13 @@ namespace Relativity.Sync
 				}
 			}
 		}
+
+		internal static async Task<IEnumerable<TResult>> SelectAsync<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, Task<TResult>> selector)
+		{
+			IEnumerable<Task<TResult>> results = source.Select(selector);
+			return await Task.WhenAll(results).ConfigureAwait(false);
+		}
+
 
 		/// <summary>
 		/// Yields an infinite sequence composed of the given value.
