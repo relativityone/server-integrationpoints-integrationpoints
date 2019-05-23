@@ -28,6 +28,6 @@ nuget Newtonsoft.Json ~> 6.0 redirects: force
 nuget SexyProxy.Emit 2.0.97
 
 // Tests
-nuget NUnit ~> 3.11
+nuget NUnit 3.11
 nuget FluentAssertions ~> 5.4
 nuget Moq ~> 4.10
