@@ -208,11 +208,11 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			result.ShouldBeEquivalentTo(documentsAfterOffseting);
 		}
 
-		[TestCase(200)]
-		[TestCase(22222)]
-		public void ReadDocumentIDs_ShouldRetrieveNotOrderedData(int numDocs)
+		[Test]
+		public void ReadDocumentIDs_ShouldRetrieveNotOrderedData()
 		{
 			//ARRANGE
+			int numDocs = 200;
 			int offset = 0;
 			var randomNumberGenerator = new Random();
 			List<int> documentIDs = Enumerable.Range(0, numDocs).OrderBy(x => randomNumberGenerator.Next()).ToList();
