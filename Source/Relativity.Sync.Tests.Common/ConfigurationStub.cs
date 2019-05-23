@@ -47,7 +47,7 @@ namespace Relativity.Sync.Tests.Common
 		public int DestinationWorkspaceArtifactId { get; set; }
 		public int SavedSearchArtifactId { get; set; }
 		public int DestinationFolderArtifactId { get; set; }
-		public int FolderPathSourceFieldArtifactId { get; set; }
+		public string FolderPathSourceFieldName { get; set; }
 		public ImportOverwriteMode ImportOverwriteMode { get; set; }
 		public FieldOverlayBehavior FieldOverlayBehavior { get; set; }
 		public DestinationFolderStructureBehavior DestinationFolderStructureBehavior { get; set; }
