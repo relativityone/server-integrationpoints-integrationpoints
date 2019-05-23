@@ -8,7 +8,7 @@ namespace Relativity.Sync.Executors
 {
 	internal sealed class ImportJob : IImportJob
 	{
-		private bool _jobCompletedSuccessfully = false;
+		private bool _importApiFatalExceptionOccurred = false;
 		private Exception _importApiException = null;
 
 		private const string _IDENTIFIER_COLUMN = "Identifier";
@@ -38,15 +38,19 @@ namespace Relativity.Sync.Executors
 
 		private void HandleComplete(JobReport jobReport)
 		{
-			_logger.LogInformation("Batch completed.");
-			_jobCompletedSuccessfully = true;
+			// IAPI always fires OnComplete event - even when fatal exception has occurred before, so we need to check that.
+			if (!_importApiFatalExceptionOccurred)
+			{
+				_logger.LogInformation("Batch completed.");
+			}
+
 			_semaphoreSlim.Release();
 		}
 
 		private void HandleFatalException(JobReport jobReport)
 		{
 			_logger.LogError(jobReport.FatalException, jobReport.FatalException?.Message);
-			_jobCompletedSuccessfully = false;
+			_importApiFatalExceptionOccurred = true;
 			_importApiException = jobReport.FatalException;
 
 			CreateJobHistoryErrorDto jobError = new CreateJobHistoryErrorDto(_jobHistoryArtifactId, ErrorType.Job)
@@ -55,8 +59,6 @@ namespace Relativity.Sync.Executors
 				StackTrace = jobReport.FatalException?.StackTrace
 			};
 			CreateJobHistoryError(jobError);
-
-			_semaphoreSlim.Release();
 		}
 
 		private void HandleItemLevelError(IDictionary row)
@@ -104,7 +106,7 @@ namespace Relativity.Sync.Executors
 			// Since the import job doesn't support cancellation, we also don't want to cancel waiting for the job to finish. If it's started, we have to wait.
 			await _semaphoreSlim.WaitAsync().ConfigureAwait(false);
 
-			if (!_jobCompletedSuccessfully)
+			if (_importApiFatalExceptionOccurred)
 			{
 				throw new SyncException("Fatal exception occurred in Import API.", _importApiException);
 			}
