@@ -1,27 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Security.Claims;
-using kCura.IntegrationPoints.Data.Commands.MassEdit;
-using kCura.IntegrationPoints.Data.Extensions;
-using kCura.IntegrationPoints.Data.Models;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Utils;
-using Relativity.Core;
-using Relativity.Data;
 using Relativity.Services.Objects.DataContracts;
-using ArtifactType = Relativity.Query.ArtifactType;
-using Field = Relativity.Core.DTO.Field;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
-	public class DestinationWorkspaceRepository : RelativityMassEditBase, IDestinationWorkspaceRepository
+	public class DestinationWorkspaceRepository : IDestinationWorkspaceRepository
 	{
-		private readonly IRSAPIService _rsapiService;
+		private readonly IRelativityObjectManager _objectManager;
 
-		public DestinationWorkspaceRepository(IRSAPIService rsapiService)
+		public DestinationWorkspaceRepository(IRelativityObjectManager objectManager)
 		{
-			_rsapiService = rsapiService;
+			_objectManager = objectManager;
 		}
 
 		public DestinationWorkspace Query(int targetWorkspaceArtifactId, int? federatedInstanceArtifactId)
@@ -35,34 +26,24 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				instanceCondition = $"(NOT '{DestinationWorkspaceFields.DestinationInstanceArtifactID}' ISSET)";
 			}
-			
-			try
-			{
-				var rdos = _rsapiService.RelativityObjectManager.Query<DestinationWorkspace>(new QueryRequest()
-				{
-					Condition = $"'{DestinationWorkspaceFields.DestinationWorkspaceArtifactID}' == {targetWorkspaceArtifactId} AND {instanceCondition}",
-					Fields = new List<FieldRef>
-					{
-						new FieldRef { Name = "ArtifactId" },
-						new FieldRef { Guid = new Guid(DestinationWorkspaceFieldGuids.DestinationWorkspaceName)},
-						new FieldRef { Guid = new Guid(DestinationWorkspaceFieldGuids.DestinationInstanceName) },
-						new FieldRef { Guid = new Guid(DestinationWorkspaceFieldGuids.DestinationWorkspaceArtifactID) },
-						new FieldRef { Guid = new Guid(DestinationWorkspaceFieldGuids.DestinationInstanceArtifactID) },
-						new FieldRef { Guid = new Guid(DestinationWorkspaceFieldGuids.Name) }
-					}
-				});
 
-				if (rdos.Count == 0)
+
+			var queryRequest = new QueryRequest
+			{
+				Condition = $"'{DestinationWorkspaceFields.DestinationWorkspaceArtifactID}' == {targetWorkspaceArtifactId} AND {instanceCondition}",
+				Fields = new List<FieldRef>
 				{
-					return null;
+					new FieldRef {Name = "ArtifactId"},
+					new FieldRef {Guid = new Guid(DestinationWorkspaceFieldGuids.DestinationWorkspaceName)},
+					new FieldRef {Guid = new Guid(DestinationWorkspaceFieldGuids.DestinationInstanceName)},
+					new FieldRef {Guid = new Guid(DestinationWorkspaceFieldGuids.DestinationWorkspaceArtifactID)},
+					new FieldRef {Guid = new Guid(DestinationWorkspaceFieldGuids.DestinationInstanceArtifactID)},
+					new FieldRef {Guid = new Guid(DestinationWorkspaceFieldGuids.Name)}
 				}
+			};
+			List<DestinationWorkspace> destinationWorkspaces = _objectManager.Query<DestinationWorkspace>(queryRequest);
 
-				return rdos[0];
-			}
-			catch (Exception e)
-			{
-				throw new Exception(RSAPIErrors.QUERY_DEST_WORKSPACE_ERROR, e);
-			}
+			return destinationWorkspaces.Count == 0 ? null : destinationWorkspaces[0];
 		}
 
 		public DestinationWorkspace Create(int targetWorkspaceArtifactId, string targetWorkspaceName, int? federatedInstanceArtifactId, string federatedInstanceName)
@@ -78,16 +59,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				Name = instanceName
 			};
 
-			try
-			{
-				int artifactId = _rsapiService.RelativityObjectManager.Create(destinationWorkspace);
-				destinationWorkspace.ArtifactId = artifactId;
-				return destinationWorkspace;
-			}
-			catch (Exception e) when (!(e is IntegrationPointsException))
-			{
-				throw new Exception(RSAPIErrors.CREATE_DEST_WORKSPACE_ERROR, e);
-			}
+			int artifactId = _objectManager.Create(destinationWorkspace);
+			destinationWorkspace.ArtifactId = artifactId;
+			return destinationWorkspace;
 		}
 
 		public void Update(DestinationWorkspace destinationWorkspace)
@@ -96,16 +70,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				destinationWorkspace.DestinationWorkspaceArtifactID);
 			destinationWorkspace.Name = instanceName;
 
-			try
-			{
-				_rsapiService.RelativityObjectManager.Update(destinationWorkspace);
-			}
-			catch (Exception e)
-			{
-				throw new Exception($"{RSAPIErrors.UPDATE_DEST_WORKSPACE_ERROR}: Unable to retrieve Destination Workspace instance", e);
-			}
+			_objectManager.Update(destinationWorkspace);
 		}
-
 
 		public void LinkDestinationWorkspaceToJobHistory(int destinationWorkspaceInstanceId, int jobHistoryInstanceId)
 		{
@@ -128,83 +94,17 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			bool isUpdated;
 			try
 			{
-				isUpdated = _rsapiService.RelativityObjectManager.Update(jobHistoryInstanceId, fieldsToUpdate);
+				isUpdated = _objectManager.Update(jobHistoryInstanceId, fieldsToUpdate);
 			}
 			catch (Exception e)
 			{
-				throw new IntegrationPointsException(RSAPIErrors.LINK_OBJECT_INSTANCE_ERROR, e);
+				throw new IntegrationPointsException(TaggingErrors.LINK_OBJECT_INSTANCE_ERROR, e);
 			}
 
 			if (!isUpdated)
 			{
-				throw new Exception(RSAPIErrors.LINK_OBJECT_INSTANCE_ERROR);
+				throw new IntegrationPointsException(TaggingErrors.LINK_OBJECT_INSTANCE_ERROR);
 			}
-		}
-
-		public void TagDocsWithDestinationWorkspaceAndJobHistory(ClaimsPrincipal claimsPrincipal, int numberOfDocs, int destinationWorkspaceInstanceId, int jobHistoryInstanceId,
-			string tableName, int sourceWorkspaceId)
-		{
-			ArtifactType artifactType = new ArtifactType(global::Relativity.ArtifactType.Document);
-
-			if (numberOfDocs <= 0)
-			{
-				return;
-			}
-
-			BaseServiceContext baseService = claimsPrincipal.GetUnversionContext(sourceWorkspaceId);
-
-			Field destinationWorkspaceField = GetFieldToEdit(baseService, DocumentMultiObjectFields.DESTINATION_WORKSPACE_FIELD);
-			Field jobHistoryField = GetFieldToEdit(baseService, DocumentMultiObjectFields.JOB_HISTORY_FIELD);
-
-			List<MassEditObject> massEditObjects = new List<MassEditObject>
-			{
-				new MassEditObject
-				{
-					FieldGuid = DocumentMultiObjectFields.DESTINATION_WORKSPACE_FIELD,
-					FieldToUpdate = destinationWorkspaceField,
-					ObjectToLinkTo = destinationWorkspaceInstanceId
-				},
-				new MassEditObject
-				{
-					FieldGuid = DocumentMultiObjectFields.JOB_HISTORY_FIELD,
-					FieldToUpdate = jobHistoryField,
-					ObjectToLinkTo = jobHistoryInstanceId
-				}
-			};
-
-			try
-			{
-				TagFieldsWithRdo(baseService, massEditObjects, numberOfDocs, artifactType, tableName);
-			}
-			catch (Exception e)
-			{
-				throw new Exception(MassEditErrors.SOURCE_OBJECT_MASS_EDIT_FAILURE, e);
-			}
-		}
-
-		private Field GetFieldToEdit(BaseServiceContext baseServiceContext, string fieldGuid)
-		{
-			Guid[] guids =
-			{
-				new Guid(fieldGuid)
-			};
-
-			DataRowCollection fieldRows;
-			try
-			{
-				fieldRows = FieldQuery.RetrieveAllByGuids(baseServiceContext.ChicagoContext.DBContext, guids).Table.Rows;
-			}
-			catch (Exception ex)
-			{
-				throw new Exception(MassEditErrors.SOURCE_OBJECT_MO_QUERY_ERROR, ex);
-			}
-
-			if (fieldRows.Count == 0)
-			{
-				throw new Exception(MassEditErrors.SOURCE_OBJECT_MO_EXISTENCE_ERROR);
-			}
-
-			return new Field(baseServiceContext, fieldRows[0]);
 		}
 	}
 }

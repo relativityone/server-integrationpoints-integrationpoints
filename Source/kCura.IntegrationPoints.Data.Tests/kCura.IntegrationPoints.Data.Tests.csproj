@@ -133,6 +133,7 @@
     <Compile Include="Facades\Implementations\TestCases\CollectionFieldValueTestCases.cs" />
     <Compile Include="Helpers\MatchHelper.cs" />
     <Compile Include="Installers\RepositoryRegistrationTests.cs" />
+    <Compile Include="Repositories\DTO\MultiObjectReferenceDtoTests.cs" />
     <Compile Include="Repositories\Implementations\AuditRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\CaseRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\DisposableFileRepositoryTests.cs" />
@@ -141,6 +142,7 @@
     <Compile Include="Repositories\Implementations\FoundationRepositoryFactoryTests.cs" />
     <Compile Include="Repositories\Implementations\JobHistoryErrorRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\KeplerArtifactGuidRepositoryTests.cs" />
+    <Compile Include="Repositories\Implementations\KeplerDocumentRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\PermissionRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\RelativityObjectManagerTests.cs" />
     <Compile Include="Repositories\Implementations\IntegrationPointRepositoryTests.cs" />

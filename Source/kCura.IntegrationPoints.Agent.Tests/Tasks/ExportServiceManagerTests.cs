@@ -152,7 +152,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_exporterFactory.InitializeExportServiceJobObservers(Arg.Any<Job>(), _tagsCreator, _tagSavedSearchManager,
 				_synchronizerFactory, _serializer, _jobHistoryErrorManager, _jobStopManager, sourceWorkspaceTagsCreator,
 				Arg.Any<FieldMap[]>(), Arg.Any<SourceConfiguration>(), Arg.Any<JobHistoryErrorDTO.UpdateStatusType>(),
-				Arg.Any<Data.IntegrationPoint>(), Arg.Any<JobHistory>(), Arg.Any<string>(), Arg.Any<string>())
+				Arg.Any<JobHistory>(), Arg.Any<string>(), Arg.Any<string>())
 				.Returns(new List<IBatchStatus>() { _exportServiceObserver });
 
 			_lock = new object();

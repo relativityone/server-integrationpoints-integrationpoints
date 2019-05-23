@@ -163,6 +163,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_caseContext.ExecuteNonQuerySQLStatement(sql);
 		}
 
+		public IEnumerable<int> ReadDocumentIDs(int offset, int size)
+		{
+			throw new NotImplementedException(); // TODO REL-320600 BW work
+		}
+
 		public string GetTempTableName()
 		{
 			if (_tempTableName == null)

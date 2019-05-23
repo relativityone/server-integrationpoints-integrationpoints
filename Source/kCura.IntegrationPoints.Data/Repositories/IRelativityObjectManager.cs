@@ -20,7 +20,11 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		bool Update(int artifactId, IList<FieldRefValuePair> fieldsValues, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser);
 		bool Update<T>(T relativityObject, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new();
 
-		Task<bool> MassUpdateAsync(MassUpdateByObjectIdentifiersRequest request, MassUpdateOptions updateOptions, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser);
+		Task<bool> MassUpdateAsync(
+			IEnumerable<int> objectsIDs,
+			IEnumerable<FieldRefValuePair> fieldsToUpdate,
+			FieldUpdateBehavior fieldUpdateBehavior,
+			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser);
 
 		bool Delete<T>(T relativityObject, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new();
 		bool Delete(int artifactId, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser);

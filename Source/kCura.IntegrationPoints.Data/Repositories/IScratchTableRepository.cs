@@ -46,11 +46,13 @@ namespace kCura.IntegrationPoints.Data.Repositories
         /// </summary>
         void DeleteTable();
 
-        /// <summary>
-        /// Retrieve the temp table name for the ScratchTableRepository instance
-        /// </summary>
-        /// <returns></returns>
-        string GetTempTableName();
+        IEnumerable<int> ReadDocumentIDs(int offset, int size); // TODO REL-320600 BW work
+
+		/// <summary>
+		/// Retrieve the temp table name for the ScratchTableRepository instance
+		/// </summary>
+		/// <returns></returns>
+		string GetTempTableName();
 
         /// <summary>
         /// Returns schemaless resource database prepend string

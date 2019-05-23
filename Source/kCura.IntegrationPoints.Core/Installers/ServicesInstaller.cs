@@ -55,6 +55,7 @@ using Relativity.Toggles.Providers;
 using System;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data.Installers;
 using IFederatedInstanceManager = kCura.IntegrationPoints.Domain.Managers.IFederatedInstanceManager;
 
@@ -215,6 +216,11 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IMetricsManagerFactory>().ImplementedBy<MetricsManagerFactory>().LifestyleSingleton());
 			container.Register(Component.For<IConfig>().Instance(Config.Config.Instance).LifestyleSingleton());
 			container.Register(Component.For<IMessageService>().ImplementedBy<IntegrationPointsMessageService>().LifestyleSingleton());
+
+			container.Register(Component
+				.For<ISourceDocumentsTagger>()
+				.ImplementedBy<SourceDocumentsTagger>()
+				.LifestyleTransient());
 
 			container.AddRepositories();
 		}

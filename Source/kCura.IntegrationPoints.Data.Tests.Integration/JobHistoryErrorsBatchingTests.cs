@@ -471,7 +471,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 
 		private void ResolveServices()
 		{
-			RepositoryFactory = Container.Resolve<IRepositoryFactory>();
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
 			_jobHistoryService = Container.Resolve<IJobHistoryService>();
 			_jobHistoryErrorRepository = RepositoryFactory.GetJobHistoryErrorRepository(SourceWorkspaceArtifactId);

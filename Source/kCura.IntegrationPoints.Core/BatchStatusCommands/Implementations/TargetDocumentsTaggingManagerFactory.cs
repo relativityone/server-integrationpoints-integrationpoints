@@ -13,14 +13,14 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 {
 	public class TargetDocumentsTaggingManagerFactory
 	{
-		private readonly string _destinationConfig;
+		private readonly ImportSettings _destinationConfig;
 		private readonly IDocumentRepository _documentRepository;
 		private readonly FieldMap[] _fields;
 		private readonly IHelper _helper;
 		private readonly int _jobHistoryArtifactId;
 		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly ISerializer _serializer;
-		private readonly string _sourceConfig;
+		private readonly SourceConfiguration _sourceConfig;
 		private readonly ITagsCreator _tagsCreator;
 		private readonly ISynchronizerFactory _synchronizerFactory;
 		private readonly ITagSavedSearchManager _tagSavedSearchManager;
@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			IHelper helper,
 			ISerializer serializer,
 			FieldMap[] fields,
-			string sourceConfig,
+			SourceConfiguration sourceConfig,
 			string destinationConfig,
 			int jobHistoryArtifactId,
 			string uniqueJobId)
@@ -57,10 +57,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 
 		public IConsumeScratchTableBatchStatus BuildDocumentsTagger()
 		{
-			var settings = _serializer.Deserialize<SourceConfiguration>(_sourceConfig);
-			Tagger tagger = CreateTagger(settings);
-
-			var importSettings = _serializer.Deserialize<ImportSettings>(_destinationConfig);
+			Tagger tagger = CreateTagger(_sourceConfig);
 
 			IConsumeScratchTableBatchStatus taggingManager = new TargetDocumentsTaggingManager(
 				_repositoryFactory,
@@ -68,10 +65,10 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 				tagger,
 				_tagSavedSearchManager,
 				_helper,
-				importSettings,
-				settings.SourceWorkspaceArtifactId,
-				settings.TargetWorkspaceArtifactId,
-				settings.FederatedInstanceArtifactId,
+				_destinationConfig,
+				_sourceConfig.SourceWorkspaceArtifactId,
+				_sourceConfig.TargetWorkspaceArtifactId,
+				_sourceConfig.FederatedInstanceArtifactId,
 				_jobHistoryArtifactId,
 				_uniqueJobId);
 
@@ -80,14 +77,16 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 
 		private Tagger CreateTagger(SourceConfiguration settings)
 		{
-			IDataSynchronizer synchronizer = _synchronizerFactory.CreateSynchronizer(Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID, _destinationConfig);
+			string serializedDestinationConfig = _serializer.Serialize(_destinationConfig); // TODO REL-322556
+
+			IDataSynchronizer synchronizer = _synchronizerFactory.CreateSynchronizer(Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID, serializedDestinationConfig);
 			var tagsSynchronizer = new TagsSynchronizer(_helper, synchronizer);
 
-			var tagger = new Tagger(_documentRepository, tagsSynchronizer, _helper, _fields, _destinationConfig, settings.SourceWorkspaceArtifactId);
+			var tagger = new Tagger(_documentRepository, tagsSynchronizer, _helper, _fields, serializedDestinationConfig);
 			return tagger;
 		}
 
-		private string CreateDestinationConfig(ISerializer serializer, string destinationConfig)
+		private ImportSettings CreateDestinationConfig(ISerializer serializer, string destinationConfig)
 		{
 			// specify settings to tag
 			ImportSettings importSettings = serializer.Deserialize<ImportSettings>(destinationConfig);
@@ -99,7 +98,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			importSettings.FolderPathSourceFieldName = null;
 			importSettings.Provider = string.Empty;
 			importSettings.ImportNativeFile = false;
-			return _serializer.Serialize(importSettings);
+			return importSettings;
 		}
 	}
 }

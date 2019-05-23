@@ -26,18 +26,19 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		private readonly string _targetWorkspaceName;
 		private readonly string _targetWorkspaceTemplate;
 		private string _destinationConfig;
-		protected SourceProvider RelativityProvider;
-		protected SourceProvider LdapProvider;
-		protected IRepositoryFactory RepositoryFactory;
 
-		public int SourceWorkspaceArtifactId { get; protected set; }
-		public int TargetWorkspaceArtifactId { get; protected set; }
+		protected SourceProvider RelativityProvider { get; private set; }
+		protected SourceProvider LdapProvider { get; private set; }
+		protected IRepositoryFactory RepositoryFactory { get; private set; }
+
+		public int SourceWorkspaceArtifactId { get; private set; }
+		public int TargetWorkspaceArtifactId { get; private set; }
 		public int SavedSearchArtifactId { get; set; }
 		public int TypeOfExport { get; set; }
 		public int FolderArtifactId { get; set; }
 
 		public RelativityProviderTemplate(
-			string sourceWorkspaceName, 
+			string sourceWorkspaceName,
 			string targetWorkspaceName,
 			string sourceWorkspaceTemplate = WorkspaceTemplates.NEW_CASE_TEMPLATE,
 			string targetWorkspaceTemplate = WorkspaceTemplates.NEW_CASE_TEMPLATE)
@@ -48,8 +49,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		}
 
 		protected RelativityProviderTemplate(
-			int sourceWorkspaceArtifactId, 
-			string targetWorkspaceName, 
+			int sourceWorkspaceArtifactId,
+			string targetWorkspaceName,
 			string targetWorkspaceTemplate = WorkspaceTemplates.NEW_CASE_TEMPLATE)
 			: base(sourceWorkspaceArtifactId)
 		{
@@ -60,14 +61,14 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		public override void SuiteSetup()
 		{
 			base.SuiteSetup();
-			
+
 			SourceWorkspaceArtifactId = WorkspaceArtifactId;
 
 			Task.Run(async () => await SetupAsync()).Wait();
 
 			RelativityProvider = SourceProviders.First(provider => provider.Name == "Relativity");
 			LdapProvider = SourceProviders.First(provider => provider.Name == "LDAP");
-			
+
 			RepositoryFactory = Container.Resolve<IRepositoryFactory>();
 
 			IToggleProvider toggleProviderMock = Substitute.For<IToggleProvider>();
@@ -93,12 +94,20 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		protected string CreateSourceConfigWithTargetWorkspace(int targetWorkspaceId)
 		{
-			return CreateSourceConfigWithCustomParameters(targetWorkspaceId, SavedSearchArtifactId, SourceWorkspaceArtifactId,
+			return CreateSourceConfigWithCustomParameters(
+				targetWorkspaceId,
+				SavedSearchArtifactId,
+				SourceWorkspaceArtifactId,
 				SourceConfiguration.ExportType.SavedSearch);
 		}
-		protected string CreateSourceConfigWithCustomParameters(int targetWorkspaceId, int savedSearchArtifactId, int sourceWorkspaceArtifactId, SourceConfiguration.ExportType exportType)
+
+		protected string CreateSourceConfigWithCustomParameters(
+			int targetWorkspaceId,
+			int savedSearchArtifactId,
+			int sourceWorkspaceArtifactId,
+			SourceConfiguration.ExportType exportType)
 		{
-			var sourceConfiguration = new SourceConfiguration()
+			var sourceConfiguration = new SourceConfiguration
 			{
 				SavedSearchArtifactId = savedSearchArtifactId,
 				SourceWorkspaceArtifactId = sourceWorkspaceArtifactId,

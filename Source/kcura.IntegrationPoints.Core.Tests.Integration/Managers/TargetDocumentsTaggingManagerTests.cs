@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
+using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Core.Models;
@@ -51,13 +53,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 		public override void SuiteSetup()
 		{
 			base.SuiteSetup();
-			
+
 			_jobHistoryService = Container.Resolve<IJobHistoryService>();
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			_serializer = Container.Resolve<ISerializer>();
 			_helper = Container.Resolve<IHelper>();
-		    var serviceManagerProvider = Container.Resolve<IServiceManagerProvider>();
-            var managerFactory = new ManagerFactory(_helper, serviceManagerProvider);
+			var serviceManagerProvider = Container.Resolve<IServiceManagerProvider>();
+			var managerFactory = new ManagerFactory(_helper, serviceManagerProvider);
 			_tagsCreator = managerFactory.CreateTagsCreator(new ContextContainer(_helper));
 			_tagSavedSearchManager = new TagSavedSearchManager(new TagSavedSearch(_repositoryFactory, new MultiObjectSavedSearchCondition(), _helper), new TagSavedSearchFolder(_repositoryFactory, _helper));
 			_synchronizerFactory = Container.Resolve<ISynchronizerFactory>();
@@ -66,25 +68,28 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 			_fieldMaps = GetDefaultFieldMap();
 		}
 
-        [Test]
+		[Test]
 		[SmokeTest]
 		[TestCase(499, "UnderBatch")]
 		[TestCase(500, "EqualBatch")]
 		[TestCase(502, "OverBatch")]
-		public void TargetWorkspaceDocumentTagging_GoldFlow(int numberOfDocuments, string documentIdentifier)
+		public async Task TargetWorkspaceDocumentTagging_GoldFlow(int numberOfDocuments, string documentIdentifier)
 		{
 			//Act
 			string expectedRelativitySourceCase = $"TargetDocumentsTaggingManagerSource - {SourceWorkspaceArtifactId}";
 			DataTable dataTable = Import.GetImportTable(documentIdentifier, numberOfDocuments);
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, dataTable);
-			int[] documentArtifactIds = _documentRepository.RetrieveDocumentByIdentifierPrefixAsync(Fields.GetDocumentIdentifierFieldName(_fieldQueryRepository), documentIdentifier).ConfigureAwait(false).GetAwaiter().GetResult();
-
+			int[] documentArtifactIds = await _documentRepository
+				.RetrieveDocumentByIdentifierPrefixAsync(Fields.GetDocumentIdentifierFieldName(_fieldQueryRepository), documentIdentifier)
+				.ConfigureAwait(false);
+			string serializedSourceConfig = CreateDefaultSourceConfig();
+			SourceConfiguration sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(serializedSourceConfig);
 			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = RelativityDestinationProviderArtifactId,
 				SourceProvider = RelativityProvider.ArtifactId,
-				SourceConfiguration = CreateDefaultSourceConfig(),
+				SourceConfiguration = serializedSourceConfig,
 				LogErrors = true,
 				Name = $"IntegrationPointServiceTest{DateTime.Now:yy-MM-dd HH-mm-ss}",
 				SelectedOverwrite = "Overlay Only",
@@ -100,7 +105,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 			JobHistory jobHistory = _jobHistoryService.GetOrCreateScheduledRunHistoryRdo(integrationPoint, Guid.NewGuid(), DateTime.Now);
 
 			string destinationConfig = AppendWebAPIPathToImportSettings(integrationModelCreated.Destination);
-			TargetDocumentsTaggingManagerFactory targetDocumentsTaggingManagerFactory = new TargetDocumentsTaggingManagerFactory(_repositoryFactory, _tagsCreator, _tagSavedSearchManager, _documentRepository, _synchronizerFactory, _helper, _serializer, _fieldMaps, integrationModelCreated.SourceConfiguration, destinationConfig, jobHistory.ArtifactId, jobHistory.BatchInstance);
+			TargetDocumentsTaggingManagerFactory targetDocumentsTaggingManagerFactory = new TargetDocumentsTaggingManagerFactory(_repositoryFactory, _tagsCreator, _tagSavedSearchManager, _documentRepository, _synchronizerFactory, _helper, _serializer, _fieldMaps, sourceConfiguration, destinationConfig, jobHistory.ArtifactId, jobHistory.BatchInstance);
 			IConsumeScratchTableBatchStatus targetDocumentsTaggingManager = targetDocumentsTaggingManagerFactory.BuildDocumentsTagger();
 			targetDocumentsTaggingManager.ScratchTableRepository.AddArtifactIdsIntoTempTable(documentArtifactIds);
 
@@ -154,7 +159,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 		}
 
 		#region "Registration helpers"
-		
+
 		private string AppendWebAPIPathToImportSettings(string importSettings)
 		{
 			var options = _serializer.Deserialize<ImportSettings>(importSettings);
