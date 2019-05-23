@@ -14,17 +14,6 @@ namespace Relativity.Sync.Tests.System
 	[TestFixture]
 	internal sealed class SourceWorkspaceDataReaderTests : SystemTest
 	{
-		//private int _sourceWorkspaceArtifactId;
-		//private int _dataSourceArtifactId;
-
-		protected override Task ChildSuiteSetup()
-		{
-			//_sourceWorkspaceArtifactId = 0;
-			//_dataSourceArtifactId = 0;
-			return Task.CompletedTask;
-		}
-
-		[Test]
 		public async Task ItShouldWork()
 		{
 			const int sourceWorkspaceArtifactId = 1215252;
