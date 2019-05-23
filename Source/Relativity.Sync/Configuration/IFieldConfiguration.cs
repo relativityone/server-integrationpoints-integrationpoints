@@ -3,7 +3,7 @@
 	internal interface IFieldConfiguration
 	{
 		DestinationFolderStructureBehavior DestinationFolderStructureBehavior { get; } 
-		int FolderPathSourceFieldArtifactId { get; }
+		string FolderPathSourceFieldName { get; }
 		int SourceWorkspaceArtifactId { get; }
 	}
 }

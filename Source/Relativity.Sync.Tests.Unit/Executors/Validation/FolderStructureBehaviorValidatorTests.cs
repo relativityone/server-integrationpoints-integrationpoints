@@ -27,7 +27,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 
 		private FolderStructureBehaviorValidator _instance;
 
-		private const int _TEST_FOLDER_ARTIFACT_ID = 101234;
+		private const string _TEST_FOLDER_NAME = "folder name";
 		private const int _TEST_WORKSPACE_ARTIFACT_ID = 101202;
 		private const string _EXPECTED_QUERY_FIELD_TYPE = "Field Type";
 
@@ -40,7 +40,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			_objectManager = new Mock<IObjectManager>();
 			_validationConfiguration = new Mock<IValidationConfiguration>();
 
-			_validationConfiguration.SetupGet(x => x.FolderPathSourceFieldArtifactId).Returns(_TEST_FOLDER_ARTIFACT_ID);
+			_validationConfiguration.SetupGet(x => x.FolderPathSourceFieldName).Returns(_TEST_FOLDER_NAME);
 			_validationConfiguration.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(_TEST_WORKSPACE_ARTIFACT_ID);
 			_validationConfiguration.SetupGet(x => x.DestinationFolderStructureBehavior).Returns(DestinationFolderStructureBehavior.ReadFromField);
 
@@ -208,7 +208,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 
 		private void VerifyObjectManagerQueryRequest()
 		{
-			string expectedQueryCondition = $"(('ArtifactID' == {_TEST_FOLDER_ARTIFACT_ID}))";
+			string expectedQueryCondition = $"(('Name' == '{_TEST_FOLDER_NAME}'))";
 
 			_objectManager.Verify(x => x.QueryAsync(It.Is<int>(y => y == _TEST_WORKSPACE_ARTIFACT_ID),
 					It.Is<QueryRequest>(y => y.ObjectType.Name == "Field" && y.Condition == expectedQueryCondition && y.Fields.First().Name == _EXPECTED_QUERY_FIELD_TYPE),

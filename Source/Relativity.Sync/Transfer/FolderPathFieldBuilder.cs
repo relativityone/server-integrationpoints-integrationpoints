@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Relativity.Services.Objects;
-using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 
@@ -25,28 +23,12 @@ namespace Relativity.Sync.Transfer
 		{
 			if (_fieldConfiguration.DestinationFolderStructureBehavior == DestinationFolderStructureBehavior.ReadFromField)
 			{
-				// GetAwaiter().GetResult() has to be used until we use field name instead of field id to get folder field
-				string folderPathFieldName = GetFolderFieldNameAsync().GetAwaiter().GetResult();
+				string folderPathFieldName = _fieldConfiguration.FolderPathSourceFieldName;
 				yield return FieldInfoDto.FolderPathFieldFromDocumentField(folderPathFieldName);
 			}
 			else if (_fieldConfiguration.DestinationFolderStructureBehavior == DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure)
 			{
 				yield return FieldInfoDto.FolderPathFieldFromSourceWorkspaceStructure();
-			}
-		}
-
-		private async Task<string> GetFolderFieldNameAsync()
-		{
-			using (var objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
-			{
-				QueryRequest request = new QueryRequest
-				{
-					ObjectType = new ObjectTypeRef { Name = "Field" },
-					Condition = $"'ArtifactId' == {_fieldConfiguration.FolderPathSourceFieldArtifactId}",
-					Fields = new[] { new FieldRef { Name = "Name" } }
-				};
-				QueryResultSlim result = await objectManager.QuerySlimAsync(_fieldConfiguration.SourceWorkspaceArtifactId, request, 0, 1).ConfigureAwait(false);
-				return result.Objects[0].Values[0].ToString();
 			}
 		}
 

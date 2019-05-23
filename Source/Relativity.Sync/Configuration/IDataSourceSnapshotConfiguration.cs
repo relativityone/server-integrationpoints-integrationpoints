@@ -14,8 +14,8 @@ namespace Relativity.Sync.Configuration
 		IList<FieldMap> FieldMappings { get; }
 
 		DestinationFolderStructureBehavior DestinationFolderStructureBehavior { get; }
-
-		int FolderPathSourceFieldArtifactId { get; }
+		
+		string FolderPathSourceFieldName { get; }
 
 		bool IsSnapshotCreated { get; }
 
