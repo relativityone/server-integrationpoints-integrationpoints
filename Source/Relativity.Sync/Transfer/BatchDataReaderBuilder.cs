@@ -29,7 +29,7 @@ namespace Relativity.Sync.Transfer
 			}
 
 			DataTable dataTable = CreateEmptyDataTable(_allFields);
-			if (batch != null && !batch.Any())
+			if (batch != null && batch.Any())
 			{
 
 				IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> specialFieldBuildersDictionary =
