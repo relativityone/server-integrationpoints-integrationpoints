@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
         /// <summary>
         /// Temp table row count
         /// </summary>
-        int Count { get; }
+        int GetCount();
 
         /// <summary>
         /// Allows you to add artifact ids into temp tables

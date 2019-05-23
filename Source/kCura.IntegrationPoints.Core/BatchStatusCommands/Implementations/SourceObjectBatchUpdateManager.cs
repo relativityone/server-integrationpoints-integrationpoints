@@ -63,7 +63,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			{
 				if (!_errorOccurDuringJobStart)
 				{
-					int documentCount = ScratchTableRepository.Count;
+					int documentCount = ScratchTableRepository.GetCount();
 					LogTaggingDocumentsStarted(documentCount);
 					_destinationWorkspaceRepository.TagDocsWithDestinationWorkspaceAndJobHistory(_claimsPrincipal, documentCount,
 						_destinationWorkspaceRdoId, _jobHistoryInstanceId,

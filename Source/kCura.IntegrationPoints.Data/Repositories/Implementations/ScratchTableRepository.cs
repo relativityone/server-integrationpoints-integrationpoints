@@ -23,7 +23,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private IDataReader _reader;
 		private string _tempTableName;
 		private string _docIdentifierFieldName;
-		private int _count;
 
 		public ScratchTableRepository(IHelper helper, IDocumentRepository documentRepository,
 			IFieldQueryRepository fieldQueryRepository, IResourceDbProvider resourceDbProvider, string tablePrefix, string tableSuffix, int workspaceId) :
@@ -48,17 +47,16 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public bool IgnoreErrorDocuments { get; set; }
 
-		public int Count
+		public int GetCount()
 		{
-			get
-			{
-				return _count;
-			}
+			string fullTableName = GetTempTableName();
+
+			string sql = $@"SELECT * FROM {GetResourceDBPrepend()}.[{fullTableName}]";
+			return _caseContext.ExecuteNonQuerySQLStatement(sql);
 		}
 
 		public void RemoveErrorDocuments(ICollection<string> docIdentifiers)
 		{
-			_count -= docIdentifiers.Count;
 
 			ICollection<int> docIds = GetErroredDocumentId(docIdentifiers);
 
@@ -108,8 +106,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			if (!artifactIds.IsNullOrEmpty())
 			{
-				_count += artifactIds.Count;
-
 				string fullTableName = GetTempTableName();
 
 				ConnectionData connectionData = ConnectionData.GetConnectionDataWithCurrentCredentials(_caseContext.ServerName, GetSchemalessResourceDataBasePrepend());
@@ -148,8 +144,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			string sql = String.Format(@"SELECT * INTO {2}.[{0}] FROM {2}.[{1}]", newTableName, sourceTableName, GetResourceDBPrepend());
 
 			_caseContext.ExecuteNonQuerySQLStatement(sql);
-
-			copiedScratchTableRepository._count = _count;
 
 			return copiedScratchTableRepository;
 		}

@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.Core.Tagging
 				{
 					FieldMap[] fieldsToPush = { identifierField };
 					var documentTransferContext = new DefaultTransferContext(reader);
-					if (scratchTableRepository.Count > 0)
+					if (scratchTableRepository.GetCount() > 0)
 					{
 						_synchronizer.SyncData(documentTransferContext, fieldsToPush, _importConfig);
 					}
