@@ -13,7 +13,7 @@ namespace Relativity.Sync.Transfer
 	internal sealed class BatchDataReaderBuilder : IBatchDataReaderBuilder
 	{
 		private DataTable _templateDataTable;
-		private IList<FieldInfoDto> _allFields;
+		private IReadOnlyList<FieldInfoDto> _allFields;
 		private readonly IFieldManager _fieldManager;
 
 		public BatchDataReaderBuilder(IFieldManager fieldManager)
@@ -50,7 +50,7 @@ namespace Relativity.Sync.Transfer
 			return await _fieldManager.CreateSpecialFieldRowValueBuildersAsync(sourceWorkspaceArtifactId, documentArtifactIds).ConfigureAwait(false);
 		}
 
-		private DataTable CreateEmptyDataTable(IList<FieldInfoDto> allFields)
+		private DataTable CreateEmptyDataTable(IEnumerable<FieldInfoDto> allFields)
 		{
 			if (_templateDataTable == null)
 			{
@@ -59,7 +59,7 @@ namespace Relativity.Sync.Transfer
 			return _templateDataTable.Clone();
 		}
 
-		private static DataTable CreateTemplateDataTable(IList<FieldInfoDto> allFields)
+		private static DataTable CreateTemplateDataTable(IEnumerable<FieldInfoDto> allFields)
 		{
 			var dataTable = new DataTable();
 
@@ -74,7 +74,7 @@ namespace Relativity.Sync.Transfer
 			return columns;
 		}
 
-		private static object[] BuildRow(IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> specialFieldBuilders, IList<FieldInfoDto> allFields, RelativityObjectSlim obj)
+		private static object[] BuildRow(IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> specialFieldBuilders, IReadOnlyList<FieldInfoDto> allFields, RelativityObjectSlim obj)
 		{
 			object[] result = new object[allFields.Count];
 
