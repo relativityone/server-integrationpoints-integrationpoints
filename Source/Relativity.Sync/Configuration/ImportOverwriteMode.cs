@@ -2,10 +2,24 @@
 
 namespace Relativity.Sync.Configuration
 {
-	internal enum ImportOverwriteMode
+	/// <summary>
+	/// Import overwrite mode.
+	/// </summary>
+	public enum ImportOverwriteMode
 	{
+		/// <summary>
+		/// Append only.
+		/// </summary>
 		AppendOnly = OverwriteModeEnum.Append,
+
+		/// <summary>
+		/// Overlay only,
+		/// </summary>
 		OverlayOnly = OverwriteModeEnum.Overlay,
+
+		/// <summary>
+		/// Append/overlay.
+		/// </summary>
 		AppendOverlay = OverwriteModeEnum.AppendOverlay,
 	}
 }
