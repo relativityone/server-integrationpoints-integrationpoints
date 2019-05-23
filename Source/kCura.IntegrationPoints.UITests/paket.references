@@ -21,7 +21,7 @@ Relativity.Telemetry.APM
 Polly
 Relativity.DataExchange.Client.SDK
 FluentAssertions
-
+relativity.testing.identification
 group TestPackages
 	Serilog
 	Serilog.Sinks.Seq

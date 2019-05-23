@@ -15,6 +15,7 @@ using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Relativity.Testing.Identification;
 using InstanceSetting = Relativity.Services.InstanceSetting.InstanceSetting;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
@@ -55,7 +56,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		/// and verifies that agent sends email using configured SMTP server.
 		/// </summary>
 		/// <returns></returns>
-		[Test]
+		[IdentifiedTest("034276d0-b7a3-4d79-903c-271a0c19f3a0")]
 		[ConnectivityToTestRunnerRequiredTest]
 		public async Task ShouldSendEmailToSmtpServer()
 		{

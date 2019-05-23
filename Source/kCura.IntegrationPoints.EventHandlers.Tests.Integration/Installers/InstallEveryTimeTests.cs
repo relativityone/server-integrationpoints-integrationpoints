@@ -4,6 +4,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 {
@@ -45,7 +46,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("44cc2ec9-22d6-4dab-8601-d33a48753fe5")]
 		public void Test()
 		{
 			var service = new RSAPIClient(new Uri("http://localhost/Relativity.Services"), new IntegratedAuthCredentials());

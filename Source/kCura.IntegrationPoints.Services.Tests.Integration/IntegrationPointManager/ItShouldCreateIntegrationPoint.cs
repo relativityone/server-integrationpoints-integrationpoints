@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using Relativity;
 using Relativity.API;
+using Relativity.Testing.Identification;
 using Constants = kCura.IntegrationPoints.Core.Constants;
 using APIHelper_SecretStoreFactory = Relativity.APIHelper.SecretStore.SecretStoreFactory;
 
@@ -48,7 +49,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 			public string Username { get; set; }
 			public string Password { get; set; }
 		}
-		[Test]
+		[IdentifiedTest("3a9a3545-a6d3-4cff-82b6-7cc9694f5884")]
 		public void ItShouldCreateExportToLoadFileIntegrationPoint()
 		{
 			var overwriteFieldsModel = _client.GetOverwriteFieldsChoicesAsync(SourceWorkspaceArtifactId).Result.First(x => x.Name == "Append/Overlay");
@@ -130,7 +131,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 			Assert.That(expectedIntegrationPointModel.LogErrors, Is.EqualTo(actualIntegrationPoint.LogErrors));
 		}
 
-		[Test]
+		[IdentifiedTest("238baa40-e640-4db3-88ba-f496ec624e60")]
 		public void ItShouldCreateIntegrationPointBasedOnProfile()
 		{
 			const string integrationPointName = "ip_name_234";
@@ -157,7 +158,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 			Assert.That(actualIntegrationPoint.PromoteEligible, Is.EqualTo(profile.PromoteEligible));
 		}
 
-		[Test]
+		[IdentifiedTest("09d2a68e-879e-431a-889e-5059b2f76b82")]
 		public void ItShouldCreateIntegrationPointWithEncryptedCredentials()
 		{
 			var username = "username_933";
@@ -184,11 +185,10 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 			Assert.That(actualSecret, Is.EqualTo(expectedSecret));
 		}
 
-		[Test]
-		[TestCase(false, false, false, "a421248620@relativity.com", "Use Field Settings", "Overlay Only", true)]
-		[TestCase(true, true, true, "", "Use Field Settings", "Append Only", false)]
-		[TestCase(false, false, false, null, "Replace Values", "Append/Overlay", false)]
-		[TestCase(false, false, false, "a937467@relativity.com", "Merge Values", "Append/Overlay", false)]
+		[IdentifiedTestCase("68b4d5e2-5b3c-4d3d-ab88-5a0e8ab62f92", false, false, false, "a421248620@relativity.com", "Use Field Settings", "Overlay Only", true)]
+		[IdentifiedTestCase("ca67dbfb-8272-4010-b084-d9ba689b28dc", true, true, true, "", "Use Field Settings", "Append Only", false)]
+		[IdentifiedTestCase("0e1847bd-e140-42f8-adb4-ee6d7ed46f8c", false, false, false, null, "Replace Values", "Append/Overlay", false)]
+		[IdentifiedTestCase("596cf427-9fb2-499b-b5fa-d00469c26df6", false, false, false, "a937467@relativity.com", "Merge Values", "Append/Overlay", false)]
 		public void ItShouldCreateRelativityIntegrationPoint(bool importNativeFile, bool logErrors, bool useFolderPathInformation, string emailNotificationRecipients,
 			string fieldOverlayBehavior, string overwriteFieldsChoices, bool promoteEligible)
 		{
@@ -208,5 +208,5 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 				expectedIntegrationPointModel,
 				new IntegrationPointFieldGuidsConstants());
 		}
-    }
+	}
 }

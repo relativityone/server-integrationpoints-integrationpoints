@@ -24,6 +24,7 @@ using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Testing.Identification;
 using Workspace = kCura.IntegrationPoint.Tests.Core.Workspace;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
@@ -121,15 +122,14 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			FolderService.DeleteUnusedFolders(TargetWorkspaceArtifactId);
 		}
 
-        [Test]
-		[TestCase(ImportNativeFileCopyModeEnum.CopyFiles)]
-		[TestCase(ImportNativeFileCopyModeEnum.SetFileLinks)]
+		[IdentifiedTestCase("7256fb90-5742-4458-978d-94349eb287ef", ImportNativeFileCopyModeEnum.CopyFiles)]
+		[IdentifiedTestCase("1f31ef1c-9917-4712-98c4-4a97a067169d", ImportNativeFileCopyModeEnum.SetFileLinks)]
 		public void NativesShouldBeDeletedInTargetWorkspace_InImportNativesModes(ImportNativeFileCopyModeEnum importNativeFileCopyMode)
 		{
 			TestNativeFilesImport(false, true, true, importNativeFileCopyMode, false);
 		}
 
-        [Test]
+		[IdentifiedTest("8a5590f2-31e8-4ec9-9ddc-a4e3b7b9621e")]
 		[SmokeTest]
 		public void NativesShouldNotBeDeletedInTargetWorkspace_InDoNotImportNativesMode()
 		{

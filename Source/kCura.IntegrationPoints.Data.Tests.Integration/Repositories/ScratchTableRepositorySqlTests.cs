@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 {
@@ -32,7 +33,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		}
 
 		#region SqlGeneration
-		[Test]
+		[IdentifiedTest("0f866222-e833-4c5a-9075-240e8252d09a")]
 		public void DeleteTable_WorkspaceScratchTable()
 		{
 			// arrange
@@ -49,7 +50,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			_dbContext.Received(1).ExecuteNonQuerySQLStatement(expectedQuery);
 		}
 
-		[Test]
+		[IdentifiedTest("bade174d-9423-4487-b68a-e4d357e22c00")]
 		public void AddArtifactIdsIntoScratchTable_WorkspaceScratchTable()
 		{
 			// arrange
@@ -63,7 +64,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("bedf4388-f309-4559-885e-bb352ebc25fd")]
 		public void GetDocumentIdsDataReaderFromTable_WorkspaceScratchTable()
 		{
 			// arrange

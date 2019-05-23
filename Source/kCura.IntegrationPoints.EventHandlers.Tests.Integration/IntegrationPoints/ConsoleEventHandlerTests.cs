@@ -18,6 +18,7 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Testing.Identification;
 using Console = kCura.EventHandler.Console;
 using Constants = kCura.IntegrationPoints.Core.Constants;
 
@@ -92,19 +93,19 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 
 		private ConsoleEventHandler _instance;
 
-		[TestCase(false, true, false, false, true)]
-		[TestCase(false, true, true, false, true)]
-		[TestCase(true, true, true, false, true)]
-		[TestCase(false, false, false, false, true)]
-		[TestCase(false, false, true, false, true)]
-		[TestCase(true, false, true, false, true)]
-		[TestCase(true, true, false, true, true)]
-		[TestCase(true, true, true, true, true)]
-		[TestCase(true, true, true, true, true)]
-		[TestCase(true, false, false, true, true)]
-		[TestCase(true, false, true, true, true)]
-		[TestCase(true, false, true, true, true)]
-		[TestCase(true, false, true, true, false)]
+		[IdentifiedTestCase("46fdea0d-fa60-4d1c-9c14-00c6cb2aef83", false, true, false, false, true)]
+		[IdentifiedTestCase("25b453c0-0db7-4b48-9dad-2332b7c118df", false, true, true, false, true)]
+		[IdentifiedTestCase("7a69b913-3ed5-4318-b34d-bfca01742c85", true, true, true, false, true)]
+		[IdentifiedTestCase("3c3766ab-d802-4f3f-8c11-d27e1f6c143c", false, false, false, false, true)]
+		[IdentifiedTestCase("59dfc6b1-3a55-4a6b-a9e1-47d81bebb5df", false, false, true, false, true)]
+		[IdentifiedTestCase("1ad0c7f0-cc37-40ef-bf2b-eca09f30f760", true, false, true, false, true)]
+		[IdentifiedTestCase("3fce1a1d-8acd-4bf1-810f-273ba5591bb9", true, true, false, true, true)]
+		[IdentifiedTestCase("30d700e2-41cd-4976-8cb6-2aa5710b7928", true, true, true, true, true)]
+		[IdentifiedTestCase("7700d508-ac18-4c71-985d-1c92e771e3c5", true, true, true, true, true)]
+		[IdentifiedTestCase("afeccd33-9585-4308-8811-b11679ef5581", true, false, false, true, true)]
+		[IdentifiedTestCase("613e7afd-2866-4f0b-9ff0-b3d1acf568e6", true, false, true, true, true)]
+		[IdentifiedTestCase("de27f6e3-90e8-4cce-82b3-343320508f0e", true, false, true, true, true)]
+		[IdentifiedTestCase("70d79854-3194-4bff-9a23-02ffe7167aa7", true, false, true, true, false)]
 		public void GetConsole_RelativityProvider_GoldFlow(bool hasJobsExecutingOrInQueue, bool hasRunPermissions, bool hasViewErrorsPermissions, bool hasStoppableJobs,
 			bool hasProfileAddPermission)
 		{
@@ -273,20 +274,19 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 			}
 		}
 
-        [Test]
 		[SmokeTest]
-		[TestCase(true, true, ProviderType.FTP)]
-		[TestCase(true, true, ProviderType.LDAP)]
-		[TestCase(true, true, ProviderType.LoadFile)]
-		[TestCase(true, true, ProviderType.Other)]
-		[TestCase(true, false, ProviderType.FTP)]
-		[TestCase(true, false, ProviderType.LDAP)]
-		[TestCase(true, false, ProviderType.LoadFile)]
-		[TestCase(true, false, ProviderType.Other)]
-		[TestCase(false, false, ProviderType.FTP)]
-		[TestCase(false, false, ProviderType.LDAP)]
-		[TestCase(false, false, ProviderType.LoadFile)]
-		[TestCase(false, false, ProviderType.Other)]
+		[IdentifiedTestCase("4f3c01c6-e3bd-4e43-9295-0a0fb7cdaa70", true, true, ProviderType.FTP)]
+		[IdentifiedTestCase("2610629f-3df2-4567-8cd0-ad892b5382c6", true, true, ProviderType.LDAP)]
+		[IdentifiedTestCase("2e409a1b-3a3f-428a-88c6-97e56ca600ba", true, true, ProviderType.LoadFile)]
+		[IdentifiedTestCase("751f865c-1468-4f96-83e6-f42553d16f5c", true, true, ProviderType.Other)]
+		[IdentifiedTestCase("75328608-278d-4e5c-b8f8-e918fac9e301", true, false, ProviderType.FTP)]
+		[IdentifiedTestCase("d703ff11-8577-4073-b511-28acd839febd", true, false, ProviderType.LDAP)]
+		[IdentifiedTestCase("2e2a5eeb-74e7-4f01-85ea-c0dbabf33705", true, false, ProviderType.LoadFile)]
+		[IdentifiedTestCase("6fd60aa8-7ff1-418d-82c1-d523b0791906", true, false, ProviderType.Other)]
+		[IdentifiedTestCase("3c78d3ab-77eb-4aa0-bebd-9829c69337f2", false, false, ProviderType.FTP)]
+		[IdentifiedTestCase("57d50bcf-f60e-4300-a54c-2549236ca4af", false, false, ProviderType.LDAP)]
+		[IdentifiedTestCase("d78e80fc-3677-4a93-900f-128f0b0bc92f", false, false, ProviderType.LoadFile)]
+		[IdentifiedTestCase("70cb002f-dbe5-499f-a578-34fad96a2f4b", false, false, ProviderType.Other)]
 		public void GetConsole_NonRelativityProvider_GoldFlow(bool hasJobsExecutingOrInQueue, bool hasStoppableJobs, ProviderType providerType)
 		{
 			// ARRANGE

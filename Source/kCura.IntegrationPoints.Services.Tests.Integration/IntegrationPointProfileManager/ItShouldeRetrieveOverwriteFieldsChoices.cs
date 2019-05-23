@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Models;
 using kCura.IntegrationPoints.Services.Tests.Integration.Helpers;
 using NUnit.Framework;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointProfileManager
 {
@@ -29,7 +30,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointPro
 			_client.Dispose();
 		}
 
-		[Test]
+		[IdentifiedTest("d32ae21d-35f7-49d3-b9a7-1937588b8752")]
 		public void Execute()
 		{
 			var expectedChoices = ChoicesHelper.GetAllChoiceUsingFieldGuid(IntegrationPointProfileFieldGuids.OverwriteFields, WorkspaceArtifactId, Helper);

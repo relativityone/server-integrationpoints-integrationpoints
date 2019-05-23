@@ -5,6 +5,7 @@ using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Services.Tests.Integration.Helpers;
 using NUnit.Framework;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointTypeManager
 {
@@ -29,7 +30,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointTyp
 			_client?.Dispose();
 		}
 
-		[Test]
+		[IdentifiedTest("0a6b1938-ae47-4420-9019-1a203ecb47b4")]
 		public void ItShouldRetrieveAllIntegrationPointTypes()
 		{
 			var expected = GetAllTypes();

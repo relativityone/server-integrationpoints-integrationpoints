@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 {
@@ -42,7 +43,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 
 		#region GetNumberOfJobsExecutingOrInQueue
 
-		[Test]
+		[IdentifiedTest("c575a5d3-f997-4be5-8568-84b17c277588")]
 		public void OnePendingJobInTheQueue_ExpectOneCount()
 		{
 			Job job = null;
@@ -64,7 +65,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("485aca91-8dba-4392-bab8-e9acf0c05ac1")]
 		public void OnePendingJobInTheQueue_DontIncludeOtherRipJobs()
 		{
 			Job job = null;
@@ -86,7 +87,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("4df832eb-0738-4e22-ae97-ed2aac8c2fc0")]
 		public void OnePendingJobInTheQueue_DontIncludeJobsFromOtherWorkspaces()
 		{
 			Job job = null;
@@ -108,7 +109,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("092e75e0-0fe8-416a-b0f3-cd3bad5c9ad7")]
 		public void MultiplePendingJobsInTheQueue_ExpectCorrectCount()
 		{
 			const int length = 1500;
@@ -139,7 +140,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("14587f2a-9812-4618-9728-826375bf4598")]
 		public void OneScheduledJobInTheQueue_ScheduledJobGetExcluded()
 		{
 			Job job = null;
@@ -166,7 +167,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("05fa55a2-9f10-4909-a462-db5865db4a5c")]
 		public void OneScheduledJobAndOnePendingJob_ScheduledJobGetExcluded()
 		{
 			Job schedualedJob = null;
@@ -199,7 +200,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			}
 		}
 
-		[Test, Timeout(300000)]
+		[IdentifiedTest("c5eca681-6859-441e-84b0-634c41570f12"), Timeout(300000)]
 		[Description("This test takes sometime to process. It requires the IP agent to be running.")]
 		public void OneExecutedScheduledJobInTheQueue_ExpectCountZero()
 		{
@@ -251,7 +252,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("046454d4-1d10-45fa-9c1a-148d259192c5")]
 		public void OneExcecutingScheduledJobInTheQueue_ExpectOne()
 		{
 			const int agentId = 123456;
@@ -281,7 +282,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("9dc7c0ca-3408-43ed-ba23-bbccf4ec2146")]
 		public void TwoScheduledJobsExecutingAtTheSameTimeOnDifferentAgents()
 		{
 			const int agentId = 123456;
@@ -325,7 +326,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("b1d02711-f078-4ff7-a652-f0d099b4c3ff")]
 		public void TryingToCreateTheSameJobTwice_ExpectAnError()
 		{
 			const int agentId = 123456;
@@ -363,7 +364,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("6b4b7ef2-0416-4e23-8c64-b625f075c706")]
 		public void OneExecutingJob_ExpectCount()
 		{
 			Job job = null;
@@ -387,7 +388,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("1a881168-4924-48e6-b4b8-7b00e8d35601")]
 		public void MultipleRegularJob_ExpectCount()
 		{
 			Job job = null;
@@ -415,7 +416,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("866217ab-bb29-4a3e-b068-5e2a05e26177")]
 		public void OneExecutingScheduledJobAndOneRegularJob_ExpectCountBoth()
 		{
 			const int agentId = 789456;
@@ -452,7 +453,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("2277df26-7eb1-4ac4-86a9-de36ab381829")]
 		public void GetNumberOfJobsExecutingOrInQueue_NoJobInTheQueue()
 		{
 			// act
@@ -466,7 +467,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 
 		#region GetNumberOfJobsExecuting
 
-		[Test]
+		[IdentifiedTest("49c4552b-fd4f-4161-a311-04a7f6ae286a")]
 		public void GetNumberOfJobsExecuting_NoJobInTheQueue()
 		{
 			// act
@@ -476,7 +477,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			Assert.AreEqual(0, count);
 		}
 
-		[Test]
+		[IdentifiedTest("9bde7c7e-7850-4508-b116-658357e36af2")]
 		public void GetNumberOfJobsExecuting_OnePendingJobInTheQueue()
 		{
 			// arrange
@@ -499,7 +500,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("379a08ac-52e3-43ff-9659-6032b6ab1fe8")]
 		public void GetNumberOfJobsExecuting_OneExecutingJobInQueue_TryToQueryOnAnotherJob()
 		{
 			const int agentId = 123456;
@@ -524,7 +525,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("6dd2505c-33ff-49ca-8f08-db2a4ec354ca")]
 		public void GetNumberOfJobsExecuting_OneExecutingJobInQueue_TheJobGetExcluded()
 		{
 			const int agentId = 123456;
@@ -549,7 +550,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("e3cb1fab-57d8-4b51-b91e-b0cb68a4125c")]
 		public void GetNumberOfJobsExecuting_ExpiredScheduledJobInQueue_TheJobGetExcluded()
 		{
 			// arrange
@@ -577,7 +578,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("d5db3182-a04b-46cd-bc0b-c5b2907e8acb")]
 		public void GetNumberOfJobsExecuting_ActiveScheduledJobInQueue()
 		{
 			Job schedualedJob = null;
@@ -605,7 +606,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("0fa7650c-bef7-40c9-b93e-fb5525988b1b")]
 		public void GetNumberOfJobsExecuting_ActiveAndExecutingScheduledJobInQueue()
 		{
 			const int agentId = 789456;

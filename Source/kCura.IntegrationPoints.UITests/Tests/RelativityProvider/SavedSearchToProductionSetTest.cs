@@ -10,12 +10,13 @@ using kCura.IntegrationPoints.UITests.Pages;
 using kCura.IntegrationPoints.UITests.Validation.RelativityProviderValidation;
 using NUnit.Framework;
 using System;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 {
 	[TestFixture]
 	[Category(TestCategory.EXPORT_TO_RELATIVITY)]
-    public class SavedSearchToProductionSetTest : RelativityProviderTestsBase
+	public class SavedSearchToProductionSetTest : RelativityProviderTestsBase
 	{
 		private RelativityProviderModel CreateModel()
 		{
@@ -33,7 +34,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			return model;
 		}
 
-		[Test]
+		[IdentifiedTest("e5125237-605b-4519-9ba0-3fbfcb1e2ab7")]
 		[RetryOnError]
 		[Ignore("REL-291041")]
 		public void RelativityProvider_TC_RTR_IPS_01()
@@ -56,7 +57,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateOriginalImages(model.GetValueOrDefault(x => x.CopyFilesToRepository), model);
 		}
 
-		[Test]
+		[IdentifiedTest("d781e140-c939-4d1d-a421-24263d7de424")]
 		[RetryOnError]
 		[Ignore("REL-291041")]
 		public void RelativityProvider_TC_RTR_IPS_02()
@@ -79,7 +80,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateOriginalImages(model.GetValueOrDefault(x => x.CopyFilesToRepository), model);
 		}
 
-		[Test]
+		[IdentifiedTest("4d2fe595-6924-46c7-aa64-e9ffa593765f")]
 		[RetryOnError]
 		[Ignore("REL-291041")]
 		public void RelativityProvider_TC_RTR_IPS_03()
@@ -104,7 +105,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateOriginalImages(model.GetValueOrDefault(x => x.CopyFilesToRepository), model);
 		}
 
-		[Test]
+		[IdentifiedTest("4d9b57e7-1a1e-4029-a04e-4dc651227211")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_IPS_04()
 		{
@@ -129,7 +130,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateOriginalImages(model.GetValueOrDefault(x => x.CopyFilesToRepository), model);
 		}
 
-		[Test]
+		[IdentifiedTest("aa778fbc-17fd-4b35-a12e-5818dc650623")]
 		[RetryOnError]
 		[Ignore("REL-291041")]
 		public void RelativityProvider_TC_RTR_IPS_05()
@@ -153,7 +154,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateOriginalImages(model.GetValueOrDefault(x => x.CopyFilesToRepository), model);
 		}
 
-		[Test]
+		[IdentifiedTest("2c710c86-2341-4107-9dae-431989faa52c")]
 		[RetryOnError]
 		[Ignore("REL-291041")]
 		public void RelativityProvider_TC_RTR_IPS_06()
@@ -177,7 +178,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateOriginalImages(model.GetValueOrDefault(x => x.CopyFilesToRepository), model);
 		}
 
-		[Test]
+		[IdentifiedTest("80ae784e-7a5c-436e-9e61-735e39a61e2b")]
 		[RetryOnError]
 		[Ignore("REL-291041")]
 		public void RelativityProvider_TC_RTR_IPS_07()
@@ -203,7 +204,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateProductionImages(model.GetValueOrDefault(x => x.CopyFilesToRepository), model);
 		}
 
-		[Test]
+		[IdentifiedTest("8aac9cf3-022e-4343-a822-9d3b4f033f68")]
 		[RetryOnError]
 		[Ignore("REL-291041")]
 		public void RelativityProvider_TC_RTR_IPS_08()
@@ -229,7 +230,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateProductionImages(model.GetValueOrDefault(x => x.CopyFilesToRepository), model);
 		}
 
-		[Test]
+		[IdentifiedTest("95ad301b-d50b-4760-8152-a4ed63a52bc4")]
 		[RetryOnError]
 		[Ignore("REL-291041")]
 		public void RelativityProvider_TC_RTR_IPS_09()
@@ -256,7 +257,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateProductionImages(model.GetValueOrDefault(x => x.CopyFilesToRepository), model);
 		}
 
-		[Test]
+		[IdentifiedTest("01b5cadb-eb8d-4abb-8398-f69d8779a7aa")]
 		[RetryOnError]
 		[Ignore("REL-291041")]
 		public void RelativityProvider_TC_RTR_IPS_10()
@@ -284,7 +285,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateProductionImages(model.GetValueOrDefault(x => x.CopyFilesToRepository), model);
 		}
 
-		[Test]
+		[IdentifiedTest("f73d2ddd-b8a8-4e14-b596-e8174d3b6b01")]
 		[RetryOnError]
 		[Ignore("REL-291041")]
 		public void RelativityProvider_TC_RTR_IPS_11()
@@ -310,7 +311,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateProductionImages(model.GetValueOrDefault(x => x.CopyFilesToRepository), model);
 		}
 
-		[Test]
+		[IdentifiedTest("0ed74f14-e9a1-4f2b-a231-8b0a33124ab2")]
 		[RetryOnError]
 		[Ignore("REL-291041")]
 		public void RelativityProvider_TC_RTR_IPS_12()
@@ -336,7 +337,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateProductionImages(model.GetValueOrDefault(x => x.CopyFilesToRepository), model);
 		}
 
-		[Test]
+		[IdentifiedTest("7e9533e9-c6b9-4c02-8bac-c49fceb70515")]
 		[RetryOnError]
 		[Ignore("REL-291041")]
 		public void RelativityProvider_TC_RTR_IPS_13()

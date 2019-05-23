@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.RelativitySync.Adapters;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Moq;
 using NUnit.Framework;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 {
@@ -35,7 +36,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			_config = new ValidationConfigurationStub();
 		}
 
-		[Test]
+		[IdentifiedTest("4a97b756-a5ff-45c2-8f3c-8c267a156fb6")]
 		public async Task ItShouldAlwaysReturnTrueForCanExecute()
 		{
 			Mock<IValidationExecutorFactory> factory = new Mock<IValidationExecutorFactory>();
@@ -46,7 +47,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			Assert.IsTrue(canExecute);
 		}
 
-		[Test]
+		[IdentifiedTest("bd98ed86-4b74-437d-8a00-eebb53797314")]
 		public async Task ItShouldPassValidationOnValidIntegrationPointModel()
 		{
 			IntegrationPointModel integrationPointModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOverlay, "SomeName", "Append Only");

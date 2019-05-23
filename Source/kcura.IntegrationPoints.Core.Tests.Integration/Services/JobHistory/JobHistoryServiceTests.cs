@@ -14,6 +14,7 @@ using kCura.Relativity.Client;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
+using Relativity.Testing.Identification;
 using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Services.JobHistory
@@ -84,7 +85,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services.JobHistory
 			_jobHistoryArtifactId = jobHistory.ArtifactId;
 		}
 
-		[Test]
+		[IdentifiedTest("6a122eac-efd9-4853-ab17-46cbfb2ae228")]
 		public void GetRdoWithoutDocuments_ShouldReturnRdoWithoutDocumentsField()
 		{
 			//arrange
@@ -140,7 +141,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services.JobHistory
 			result.Overwrite.Should().Be(jobHistoryWithAllFieldsFetched.Overwrite);
 		}
 
-		[Test]
+		[IdentifiedTest("3600c246-cb01-490b-8146-1f7e10ad7e44")]
 		public void UpdateRdoWithoutDocuments_ShouldUpdateRdoWithoutDocumentsField()
 		{
 			//arrange

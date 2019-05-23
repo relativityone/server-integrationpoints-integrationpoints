@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using NUnit.Framework;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 {
@@ -42,10 +43,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			_currentScratchTableRepository.Dispose();
 		}
 
-		[TestCase(2001)]
-		[TestCase(999)]
-		[TestCase(1000)]
-		[TestCase(0)]
+		[IdentifiedTestCase("ba093aef-6cbb-4211-a1fb-5407a31126e6", 2001)]
+		[IdentifiedTestCase("604a3327-f219-4cfe-8d7e-86cb84140d22", 999)]
+		[IdentifiedTestCase("49110dcb-d94c-4453-ab90-118354531903", 1000)]
+		[IdentifiedTestCase("b8409631-850b-4f14-96b8-91b793536e65", 0)]
 		public void CreateScratchTableAndVerifyEntries(int numberOfDocuments)
 		{
 			//ARRANGE
@@ -70,8 +71,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			VerifyTempTableCountAndEntries(tempTable, tableName, documentIds);
 		}
 
-		[TestCase(5, 1)]
-		[TestCase(1500, 1500)]
+		[IdentifiedTestCase("fb180ba6-65ef-4d9f-b8aa-f5e11812a2e3", 5, 1)]
+		[IdentifiedTestCase("54bb84de-fe82-4ea6-b432-c48d38431f23", 1500, 1500)]
 		public void CreateScratchTableAndDeleteErroredDocuments(int numDocs, int numDocsWithErrors)
 		{
 			//ARRANGE

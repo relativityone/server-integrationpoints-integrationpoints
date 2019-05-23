@@ -4,13 +4,14 @@ using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.EventHandlers.Installers;
 using NUnit.Framework;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 {
 	[TestFixture]
 	internal class RegisterDocumentTransferProviderTests
 	{
-        [Test]
+		[IdentifiedTest("043d24ae-57bc-4716-a941-f8ce4e3d2849")]
 		[SmokeTest]
 		public void RegisterDocumentTransferProvider_ReturnCorrectInstallationDetail()
 		{

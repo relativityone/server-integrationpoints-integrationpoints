@@ -14,6 +14,7 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Testing.Identification;
 using Constants = kCura.IntegrationPoints.Domain.Constants;
 
 namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
@@ -49,19 +50,24 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("141b0223-1c4a-4dd8-a261-918e695f7f28")]
 		public async Task ItShouldCreateObjectTypes()
 		{
 			// ACT
 			await _instance.ExecuteAsync(_configuration, CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
+			Assert.AreNotEqual(_configuration.SourceJobArtifactTypeId, 0);
+			Assert.AreNotEqual(_configuration.SourceWorkspaceArtifactTypeId, 0);
+
 			await AssertSourceWorkspaceFields().ConfigureAwait(false);
+
 			await AssertSourceJobFields().ConfigureAwait(false);
+
 			await AssertDocumentFields().ConfigureAwait(false);
 		}
 
-		[Test]
+		[IdentifiedTest("1b73724f-a09b-4b6a-8d90-13cb0192bd7e")]
 		public async Task ItShouldBeAbleToExecuteMultipleTimesOnTheSameWorkspace()
 		{
 			// ACT
@@ -75,7 +81,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 		// NOTE: We aren't using [TestCase] here b/c that would require creating a workspace for each test case.
 		// These tests are otherwise very quick and we don't really expect them to fail. Change these to
 		// TestCases if they get any more complicated.
-		[Test]
+		[IdentifiedTest("c804cbf0-0aee-4ed2-aab9-4f5239c9d3e7")]
 		public async Task ItShouldAlwaysExecute()
 		{
 			foreach (bool isSourceJobArtifactTypeIdSet in TrueFalse())

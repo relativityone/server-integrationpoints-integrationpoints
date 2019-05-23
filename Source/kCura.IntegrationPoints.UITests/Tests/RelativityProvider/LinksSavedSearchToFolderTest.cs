@@ -6,12 +6,13 @@ using kCura.IntegrationPoints.UITests.NUnitExtensions;
 using kCura.IntegrationPoints.UITests.Pages;
 using kCura.IntegrationPoints.UITests.Validation.RelativityProviderValidation;
 using NUnit.Framework;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 {
 	[TestFixture]
 	[Category(TestCategory.EXPORT_TO_RELATIVITY)]
-    public class LinksSavedSearchToFolderTest: RelativityProviderTestsBase
+	public class LinksSavedSearchToFolderTest: RelativityProviderTestsBase
 	{
 		private RelativityProviderModel CreateRelativityProviderModelWithLinks()
 		{
@@ -23,7 +24,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			return model;
 		}
 
-		[Test]
+		[IdentifiedTest("5e6097ba-76ae-488a-a60a-47d2eaa12f31")]
 		[RetryOnError]
 		[Category(TestCategory.SMOKE)]
 		public void RelativityProvider_TC_RTR_LO_01()
@@ -47,7 +48,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateDocumentsForRoot();
 		}
 
-		[Test]
+		[IdentifiedTest("4b2768a9-b44b-431e-bd26-cdb6d604bb47")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_LO_02()
 		{
@@ -70,7 +71,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateDocumentsForField();
 		}
 
-		[Test]
+		[IdentifiedTest("09a3fe30-360b-40d1-867d-c56e5751c452")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_LO_03()
 		{
@@ -93,7 +94,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateDocumentsForFolderTree();
 		}
 
-		[Test]
+		[IdentifiedTest("32e2afff-cef3-4592-a079-f7f8d49090e9")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_LO_04()
 		{
@@ -118,7 +119,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateDocumentsForRootWithFolderName();
 		}
 
-		[Test]
+		[IdentifiedTest("9137f4ad-8f73-4a7c-9099-35c386dc11c9")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_LO_05()
 		{
@@ -144,7 +145,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateDocumentsForRootWithFolderName();
 		}
 
-		[Test]
+		[IdentifiedTest("f9d043f0-c826-4f22-83b1-bae372fb1c51")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_LO_06()
 		{
@@ -170,7 +171,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateDocumentsForRootWithFolderName();
 		}
 
-		[Test]
+		[IdentifiedTest("29fa8085-768d-4e0b-a862-e66d5b30cc89")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_LO_07()
 		{
@@ -196,7 +197,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateDocumentsForField();
 		}
 
-		[Test]
+		[IdentifiedTest("cf864914-f6ff-437a-99a3-c2db2658851a")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_LO_08()
 		{
@@ -223,7 +224,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateDocumentsForFolderTree();
 		}
 
-		[Test]
+		[IdentifiedTest("b688c8fb-9924-42de-8429-f6b1855e9efb")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_LO_09()
 		{
@@ -249,7 +250,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateDocumentsForRootWithFolderName();
 		}
 
-		[Test]
+		[IdentifiedTest("f1e1a5ad-8365-4f4d-b010-e94e5d0a031d")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_LO_10()
 		{
@@ -276,7 +277,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateDocumentsForRootWithFolderName();
 		}
 
-		[Test]
+		[IdentifiedTest("8fab3365-e97d-42ad-be82-892db2774f32")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_LO_11()
 		{
@@ -303,7 +304,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateDocumentsForRootWithFolderName();
 		}
 
-		[Test]
+		[IdentifiedTest("00b7c027-df10-4918-8ee1-a07f45634540")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_LO_12()
 		{
@@ -330,7 +331,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateDocumentsForField();
 		}
 
-		[Test]
+		[IdentifiedTest("49213ab2-54ce-4a91-b1a6-71acd963684e")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_LO_13()
 		{

@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Services.Tests.Integration.Helpers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using NUnit.Framework;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointManager
 {
@@ -48,7 +49,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 			_client.Dispose();
 		}
 
-		[Test]
+		[IdentifiedTest("ba528b02-8658-4085-8aef-4cb47d0f81be")]
 		public void ItShouldRetrieveAllIntegrationPointsAtOnce()
 		{
 			var integrationPointModels = _client.GetAllIntegrationPointsAsync(WorkspaceArtifactId).Result;
@@ -60,7 +61,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("50657dd7-a487-499d-8a47-033ab9dc3171")]
 		public void ItShouldRetrieveIntegrationPointsOneByOne()
 		{
 			foreach (var expectedIntegrationPoint in _expectedIntegrationPoints)

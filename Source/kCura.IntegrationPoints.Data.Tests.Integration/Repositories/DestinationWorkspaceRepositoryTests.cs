@@ -18,6 +18,7 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 {
@@ -67,7 +68,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			base.SuiteTeardown();
 		}
 
-		[Test]
+		[IdentifiedTest("83e65d4c-39e4-4753-8427-2fb73af3f875")]
 		public void Query_DestinationWorkspaceDto_Success()
 		{
 			//Act
@@ -78,7 +79,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			Assert.AreEqual(_destinationWorkspaceDto.DestinationWorkspaceName, queriedDestinationWorkspaceDto.DestinationWorkspaceName);
 		}
 
-		[Test]
+		[IdentifiedTest("148c3ec2-7a40-4674-b25f-cb2da3eb4864")]
 		public void Query_DestinationWorkspaceDto_ReturnsNull()
 		{
 			//Act
@@ -88,7 +89,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			Assert.IsNull(queriedDestinationWorkspaceDto);
 		}
 
-		[Test]
+		[IdentifiedTest("f6a801bb-f793-44b2-adcb-11f432ba019b")]
 		public void Update_DestinationWorkspaceDto_Success()
 		{
 			//Arrange
@@ -111,9 +112,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			Assert.AreEqual(expectedWorkspaceName, updatedDestinationWorkspaceDto.DestinationWorkspaceName);
 		}
 
-		[Test]
-		[TestCase(null)]
-		[TestCase(1000)]
+		[IdentifiedTestCase("78ae6365-1ea7-420b-bb82-42d1e59c6b40", null)]
+		[IdentifiedTestCase("1556dd98-4abf-424e-8a20-e9b1301422d8", 1000)]
 		public void Link_JobHistoryErrorToDestinationWorkspace_Success(int? federatedInstanceArtifactId)
 		{
 			//Arrange
@@ -150,7 +150,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			CollectionAssert.Contains(linkedJobHistory.DestinationWorkspaceInformation, _destinationWorkspaceDto.ArtifactId);
 		}
 
-		[Test]
+		[IdentifiedTest("528f7d6d-6b29-4b86-a3a8-80e23333312b")]
 		public void Tag_DocumentsWithDestinationWorkspaceAndJobHistory_Success()
 		{
 			//Arrange
@@ -199,7 +199,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			VerifyDocumentTagging(documentArtifactIds, jobHistory.Name);
 		}
 
-		[Test]
+		[IdentifiedTest("466c92e1-accc-4996-b62a-7b8e4e6b9b48")]
 		public void Create_DestinationWorkspaceDTOWithInvalidWorkspaceId_EmptyArtifactId()
 		{
 			//Arrange
@@ -212,7 +212,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			Assert.AreEqual(destinationWorkspace.ArtifactId, 0);
 		}
 
-		[Test]
+		[IdentifiedTest("3bb291b1-43d2-4775-a71e-c1dfcb53cd8e")]
 		public void Link_DestinationWorkspaceDTOWithInvalidWorkspaceId_ThrowsException()
 		{
 			//Act & Assert
@@ -220,7 +220,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			Assert.Throws<IntegrationPointsException>(() => _destinationWorkspaceRepository.LinkDestinationWorkspaceToJobHistory(_destinationWorkspaceDto.DestinationWorkspaceArtifactID.Value, -1), "Unable to link Destination Workspace object to Job History object");
 		}
 
-		[Test]
+		[IdentifiedTest("13c501b8-62cc-45c7-8c8f-38af044f331e")]
 		public void Update_DestinationWorkspaceDtoWithInvalidArtifactId_ThrowsError()
 		{
 			//Arrange
@@ -236,7 +236,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			Assert.Throws<Exception>(() => _destinationWorkspaceRepository.Update(destinationWorkspaceDto), "Unable to update instance of Destination Workspace object: Unable to retrieve Destination Workspace instance");
 		}
 
-		[Test]
+		[IdentifiedTest("dbe75edd-3e9e-4b41-93ea-ac5fe491e085")]
 		public void Tag_DocumentWithInvalidArtifactId_ThrowsError()
 		{
 			//Act & Assert

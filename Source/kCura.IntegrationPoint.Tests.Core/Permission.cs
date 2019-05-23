@@ -10,34 +10,48 @@ namespace kCura.IntegrationPoint.Tests.Core
 	{
 		private static ITestHelper Helper => new TestHelper();
 
-		public static GroupPermissions GetGroupPermissions(int workspaceId, int groupId)
+		public static GroupPermissions GetGroupPermissions(int workspaceID, int groupID)
 		{
-			var groupRef = new GroupRef(groupId);
+			return GetGroupPermissionsAsync(workspaceID, groupID).GetAwaiter().GetResult();
+		}
+
+		public static async Task<GroupPermissions> GetGroupPermissionsAsync(int workspaceID, int groupID)
+		{
+			var groupRef = new GroupRef(groupID);
 			using (var proxy = Helper.CreateAdminProxy<IPermissionManager>())
 			{
-				return proxy.GetWorkspaceGroupPermissionsAsync(workspaceId, groupRef).GetAwaiter().GetResult();
+				return await proxy.GetWorkspaceGroupPermissionsAsync(workspaceID, groupRef).ConfigureAwait(false);
 			}
 		}
 
-		public static void SavePermission(int workspaceId, GroupPermissions permissions)
+		public static void SavePermission(int workspaceID, GroupPermissions permissions)
+		{
+			SavePermissionAsync(workspaceID, permissions).GetAwaiter().GetResult();
+		}
+
+		public static async Task SavePermissionAsync(int workspaceID, GroupPermissions permissions)
 		{
 			using (var proxy = Helper.CreateAdminProxy<IPermissionManager>())
 			{
-				Task.Run(async () => await proxy.SetWorkspaceGroupPermissionsAsync(workspaceId, permissions)).Wait();
+				await proxy.SetWorkspaceGroupPermissionsAsync(workspaceID, permissions).ConfigureAwait(false);
 			}
 		}
 
-		public static void RemoveAddWorkspaceGroup(int workspaceId, GroupSelector groupSelector)
+		public static async Task RemoveAddWorkspaceGroupAsync(int workspaceID, GroupSelector groupSelector)
 		{
 			using (var proxy = Helper.CreateAdminProxy<IPermissionManager>())
 			{
-				GroupSelector workspaceGroupSelector = proxy.GetWorkspaceGroupSelectorAsync(workspaceId).GetAwaiter().GetResult();
-				GroupSelector originalGroupSelector = proxy.GetAdminGroupSelectorAsync().GetAwaiter().GetResult();
+				GroupSelector workspaceGroupSelector = await proxy
+					.GetWorkspaceGroupSelectorAsync(workspaceID)
+					.ConfigureAwait(false);
+				GroupSelector originalGroupSelector = await proxy
+					.GetAdminGroupSelectorAsync()
+					.ConfigureAwait(false);
 				originalGroupSelector.DisabledGroups = groupSelector.DisabledGroups;
 				originalGroupSelector.EnabledGroups = groupSelector.EnabledGroups;
 				originalGroupSelector.LastModified = workspaceGroupSelector.LastModified;
 
-				proxy.AddRemoveWorkspaceGroupsAsync(workspaceId, originalGroupSelector).GetAwaiter().GetResult();
+				await proxy.AddRemoveWorkspaceGroupsAsync(workspaceID, originalGroupSelector).ConfigureAwait(false);
 			}
 		}
 	}

@@ -7,12 +7,13 @@ using kCura.IntegrationPoints.UITests.NUnitExtensions;
 using kCura.IntegrationPoints.UITests.Pages;
 using NUnit.Framework;
 using System;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 {
 	[TestFixture]
 	[Category(TestCategory.EXPORT_TO_RELATIVITY)]
-    public class ImagesProductionToProductionSetTests : RelativityProviderTestsBase
+	public class ImagesProductionToProductionSetTests : RelativityProviderTestsBase
 	{
 
 		private RelativityProviderModel CreateModel()
@@ -33,7 +34,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			return model;
 		}
 
-		[Test]
+		[IdentifiedTest("23c8242c-20cb-4c89-ad24-1f50bf84cb0c")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_PTP_01()
 		{
@@ -55,7 +56,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateProductionImages(model.GetValueOrDefault(x => x.CopyFilesToRepository), model);
 		}
 
-		[Test]
+		[IdentifiedTest("38e8e0fc-5315-4102-9964-5c901c564f3d")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_PTP_02()
 		{
@@ -77,7 +78,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateProductionImages(model.GetValueOrDefault(x => x.CopyFilesToRepository), model);
 		}
 
-		[Test]
+		[IdentifiedTest("8aa51998-dbff-4c5f-a2af-88de58b287a6")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_PTP_03()
 		{
@@ -101,7 +102,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateOverlayProductionImages(model.GetValueOrDefault(x => x.CopyFilesToRepository), model);
 		}
 
-		[Test]
+		[IdentifiedTest("a313623e-0c79-4caf-bfb0-7029682d9d1d")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_PTP_04()
 		{
@@ -125,7 +126,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateOverlayProductionImages(model.GetValueOrDefault(x => x.CopyFilesToRepository), model);
 		}
 
-		[Test]
+		[IdentifiedTest("185de8df-cf4f-4286-975f-ed929c387eea")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_PTP_05()
 		{
@@ -147,7 +148,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateProductionImages(model.GetValueOrDefault(x => x.CopyFilesToRepository), model);
 		}
 
-		[Test]
+		[IdentifiedTest("b3e2c155-ac41-43ee-b45d-69d43d6af685")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_PTP_06()
 		{

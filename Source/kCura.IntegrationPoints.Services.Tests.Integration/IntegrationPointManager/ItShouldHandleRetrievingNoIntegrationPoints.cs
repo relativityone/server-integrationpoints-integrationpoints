@@ -3,6 +3,7 @@ using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Services.Tests.Integration.Helpers;
 using NUnit.Framework;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointManager
 {
@@ -27,14 +28,14 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 			_client.Dispose();
 		}
 
-		[Test]
+		[IdentifiedTest("c93e45f0-a992-4226-82c0-2c927dffc3cc")]
 		public void ItShouldHandleEmptyList()
 		{
 			var result = _client.GetAllIntegrationPointsAsync(WorkspaceArtifactId).Result;
 			Assert.That(result.Count, Is.EqualTo(0));
 		}
 
-		[Test]
+		[IdentifiedTest("40bb60e9-37c9-498e-bc9a-9aa37d8b65e7")]
 		public void ItShouldThrowExceptionForNonExistingIntegrationPoint()
 		{
 			int integrationPointId = 142123;

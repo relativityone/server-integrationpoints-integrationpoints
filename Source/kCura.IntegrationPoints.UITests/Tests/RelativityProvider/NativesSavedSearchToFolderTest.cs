@@ -5,12 +5,13 @@ using kCura.IntegrationPoints.UITests.Components;
 using kCura.IntegrationPoints.UITests.NUnitExtensions;
 using kCura.IntegrationPoints.UITests.Pages;
 using NUnit.Framework;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 {
 	[TestFixture]
 	[Category(TestCategory.EXPORT_TO_RELATIVITY)]
-    public class NativesSavedSearchToFolderTest : RelativityProviderTestsBase
+	public class NativesSavedSearchToFolderTest : RelativityProviderTestsBase
 	{
 		private RelativityProviderModel CreateRelativityProviderModelWithNatives()
 		{
@@ -22,7 +23,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			return model;
 		}
 
-		[Test]
+		[IdentifiedTest("b9cf5d44-9597-4566-9f87-32b1c601df1d")]
 		[RetryOnError]
 		[Category(TestCategory.SMOKE)]
 		public void RelativityProvider_TC_RTR_NF_01()
@@ -45,7 +46,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateDocumentsForRoot();
 		}
 
-		[Test]
+		[IdentifiedTest("ac605017-d041-441e-8349-4b283c1aca2c")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_NF_02()
 		{
@@ -68,7 +69,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateDocumentsForField();
 		}
 
-		[Test]
+		[IdentifiedTest("4e91b8f4-1560-4580-928b-1fda7f25a497")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_NF_03()
 		{
@@ -90,7 +91,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateDocumentsForFolderTree();
 		}
 
-		[Test]
+		[IdentifiedTest("ed9dd678-45f0-426f-900b-f94177f46e77")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_NF_04()
 		{
@@ -114,7 +115,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateDocumentsForRootWithFolderName();
 		}
 
-		[Test]
+		[IdentifiedTest("34c420f0-2ce4-4d76-aabc-7431897fd02d")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_NF_05()
 		{
@@ -139,7 +140,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateDocumentsForRootWithFolderName();
 		}
 
-		[Test]
+		[IdentifiedTest("ee1f11dd-afa0-45bf-beeb-aeafa489766f")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_NF_06()
 		{
@@ -164,7 +165,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateDocumentsForRootWithFolderName();
 		}
 
-		[Test]
+		[IdentifiedTest("a0f1718e-a016-4312-827f-ce84967a4ad4")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_NF_07()
 		{
@@ -189,7 +190,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateDocumentsForField();
 		}
 
-		[Test]
+		[IdentifiedTest("9166f5c5-a66f-496a-9bac-6263b4d1934d")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_NF_08()
 		{
@@ -214,7 +215,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateDocumentsForFolderTree();
 		}
 
-		[Test]
+		[IdentifiedTest("cb25ba1e-7301-45dc-87e8-b2ccd2f126fe")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_NF_09()
 		{
@@ -239,7 +240,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 
-		[Test]
+		[IdentifiedTest("151412cc-8843-4637-8e87-781dda3fadfa")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_NF_10()
 		{
@@ -264,7 +265,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateDocumentsForRootWithFolderName();
 		}
 
-		[Test]
+		[IdentifiedTest("39383c5d-79c1-44c1-9391-9e433de88574")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_NF_11()
 		{
@@ -289,7 +290,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateDocumentsForRootWithFolderName();
 		}
 
-		[Test]
+		[IdentifiedTest("d0dcf3c8-cf82-4644-8871-a6e5b7d67af0")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_NF_12()
 		{
@@ -315,7 +316,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 
-		[Test]
+		[IdentifiedTest("38032017-5701-4fd3-9294-f1507589c20f")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_NF_13()
 		{

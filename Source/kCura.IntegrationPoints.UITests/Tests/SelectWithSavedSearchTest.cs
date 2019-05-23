@@ -4,16 +4,17 @@ using kCura.IntegrationPoints.UITests.NUnitExtensions;
 using kCura.IntegrationPoints.UITests.Pages;
 using NUnit.Framework;
 using System.Threading;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.UITests.Tests
 {
 	[TestFixture]
 	[Category(TestCategory.MISCELLANEOUS)]
-    public class SelectWithSavedSearchTest : UiTest
+	public class SelectWithSavedSearchTest : UiTest
 	{
 		private const int _MILLISECONDSTIMEOUT = 1000;
 
-		[Test]
+		[IdentifiedTest("36b70022-060d-4ae1-994b-6619b67f02a2")]
 		[RetryOnError]
 		[Order(10)]
 		[Ignore("REL-299432")]

@@ -20,11 +20,12 @@ using System;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration.Monitoring
 {
 	[SmokeTest]
-    [TestFixture]
+	[TestFixture]
 	public class ExternalServiceInstrumentationProviderWithJobContextTests
 	{
 		private Mock<IConfig> _configMock;
@@ -65,7 +66,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration.Monitoring
 			_sut = new ExternalServiceInstrumentationProviderWithJobContext(_jobContextProvider, _messageService, logger.Object, new JSONSerializer(), _configMock.Object);
 		}
 
-		[Test]
+		[IdentifiedTest("483fcd51-1815-4c3a-b4eb-7f892950a308")]
 		public async Task ItShouldSendMetricToApm_WhenItIsEnabled_SuccessfulMessage()
 		{
 			// arrange
@@ -90,7 +91,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration.Monitoring
 			));
 		}
 
-		[Test]
+		[IdentifiedTest("5c8d8691-9749-46c8-95ee-b19a9b1c419b")]
 		public async Task ItShouldSendMetricToApm_WhenItIsEnabled_FailedMessage()
 		{
 			// arrange
@@ -116,9 +117,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration.Monitoring
 			));
 		}
 
-		[TestCase(false, false)]
-		[TestCase(false, true)]
-		[TestCase(true, false)]
+		[IdentifiedTestCase("4b7fcc29-4224-4022-b798-0587e7e47a0c", false, false)]
+		[IdentifiedTestCase("395c1936-f0e6-4d8f-9388-6837adb8720a", false, true)]
+		[IdentifiedTestCase("0049b0c5-b698-45a7-ba50-5a1e90ded116", true, false)]
 		public async Task ItShouldNotSendMetricToApm_WhenItIsDisabled(bool measureOfExternalCall, bool sendLiveApmMetrics)
 		{
 			// arrange
@@ -139,7 +140,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration.Monitoring
 			_metricManagerMock.Verify(x => x.LogCount(_BUCKET_EXTERNALL_CALL, It.IsAny<long>(), It.IsAny<IMetricMetadata>()), Times.Never);
 		}
 
-		[Test]
+		[IdentifiedTest("52982f20-9946-4cb0-9c96-c5e9fe547ce0")]
 		public async Task ItShouldSendAggregatedMetricsWhenJobCompletes()
 		{
 			// arrange
