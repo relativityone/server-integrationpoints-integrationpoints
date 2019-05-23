@@ -8,6 +8,7 @@ namespace Relativity.Sync.Executors
 {
 	internal sealed class ImportJob : IImportJob
 	{
+		private bool _importApiFatalExceptionOccurred = false;
 		private Exception _importApiException = null;
 
 		private const string _IDENTIFIER_COLUMN = "Identifier";
@@ -37,16 +38,19 @@ namespace Relativity.Sync.Executors
 
 		private void HandleComplete(JobReport jobReport)
 		{
-			if (_importApiException == null)
+			// IAPI always fires OnComplete event - even when fatal exception has occurred before, so we need to check that.
+			if (!_importApiFatalExceptionOccurred)
 			{
 				_logger.LogInformation("Batch completed.");
-				_semaphoreSlim.Release();
 			}
+
+			_semaphoreSlim.Release();
 		}
 
 		private void HandleFatalException(JobReport jobReport)
 		{
 			_logger.LogError(jobReport.FatalException, jobReport.FatalException?.Message);
+			_importApiFatalExceptionOccurred = true;
 			_importApiException = jobReport.FatalException;
 
 			CreateJobHistoryErrorDto jobError = new CreateJobHistoryErrorDto(_jobHistoryArtifactId, ErrorType.Job)
@@ -55,8 +59,6 @@ namespace Relativity.Sync.Executors
 				StackTrace = jobReport.FatalException?.StackTrace
 			};
 			CreateJobHistoryError(jobError);
-
-			_semaphoreSlim.Release();
 		}
 
 		private void HandleItemLevelError(IDictionary row)
@@ -94,7 +96,6 @@ namespace Relativity.Sync.Executors
 			try
 			{
 				await Task.Run(() => _syncImportBulkArtifactJob.Execute(), token).ConfigureAwait(false);
-				await _semaphoreSlim.WaitAsync().ConfigureAwait(false); // we don't want to cancel waiting for the import job to finish
 			}
 			catch (Exception ex)
 			{
@@ -102,7 +103,10 @@ namespace Relativity.Sync.Executors
 				throw;
 			}
 
-			if (_importApiException != null)
+			// Since the import job doesn't support cancellation, we also don't want to cancel waiting for the job to finish. If it's started, we have to wait.
+			await _semaphoreSlim.WaitAsync().ConfigureAwait(false);
+
+			if (_importApiFatalExceptionOccurred)
 			{
 				throw new SyncException("Fatal exception occurred in Import API.", _importApiException);
 			}
