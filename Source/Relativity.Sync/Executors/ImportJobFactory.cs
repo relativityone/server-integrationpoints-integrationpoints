@@ -3,6 +3,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using kCura.EDDS.WebAPI.BulkImportManagerBase;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
@@ -30,9 +31,9 @@ namespace Relativity.Sync.Executors
 			_logger = logger;
 		}
 
-		public IImportJob CreateImportJob(ISynchronizationConfiguration configuration, IBatch batch)
+		public async Task<IImportJob> CreateImportJobAsync(ISynchronizationConfiguration configuration, IBatch batch)
 		{
-			ImportBulkArtifactJob importBulkArtifactJob = CreateImportBulkArtifactJob(configuration, batch.StartingIndex);
+			ImportBulkArtifactJob importBulkArtifactJob = await CreateImportBulkArtifactJobAsync(configuration, batch.StartingIndex).ConfigureAwait(false);
 			SyncImportBulkArtifactJob syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importBulkArtifactJob);
 
 			_batchProgressHandlerFactory.CreateBatchProgressHandler(batch, importBulkArtifactJob);
@@ -41,9 +42,9 @@ namespace Relativity.Sync.Executors
 				configuration.SourceWorkspaceArtifactId, configuration.JobHistoryTagArtifactId, _logger);
 		}
 
-		private ImportBulkArtifactJob CreateImportBulkArtifactJob(ISynchronizationConfiguration configuration, int startingIndex)
+		private async Task<ImportBulkArtifactJob> CreateImportBulkArtifactJobAsync(ISynchronizationConfiguration configuration, int startingIndex)
 		{
-			ImportBulkArtifactJob importJob = _importApi.NewNativeDocumentImportJob();
+			ImportBulkArtifactJob importJob = await Task.Run(() => _importApi.NewNativeDocumentImportJob()).ConfigureAwait(false);
 			importJob.SourceData.SourceData = _dataReader;
 
 			// Default values
@@ -97,8 +98,8 @@ namespace Relativity.Sync.Executors
 				importJob.Settings.LongTextColumnThatContainsPathToFullText = configuration.ImportSettings.LongTextColumnThatContainsPathToFullText;
 			}
 
-			importJob.Settings.SelectedIdentifierFieldName = GetSelectedIdentifierFieldName(
-				configuration.ImportSettings.CaseArtifactId, configuration.ImportSettings.ArtifactTypeId, configuration.ImportSettings.IdentityFieldId);
+			importJob.Settings.SelectedIdentifierFieldName = await GetSelectedIdentifierFieldNameAsync(
+				configuration.ImportSettings.CaseArtifactId, configuration.ImportSettings.ArtifactTypeId, configuration.ImportSettings.IdentityFieldId).ConfigureAwait(false);
 
 			return importJob;
 		}
@@ -109,9 +110,9 @@ namespace Relativity.Sync.Executors
 			return encoding;
 		}
 
-		private string GetSelectedIdentifierFieldName(int workspaceArtifactId, int artifactTypeId, int identityFieldArtifactId)
+		private async Task<string> GetSelectedIdentifierFieldNameAsync(int workspaceArtifactId, int artifactTypeId, int identityFieldArtifactId)
 		{
-			IEnumerable<Field> workspaceFields = _importApi.GetWorkspaceFields(workspaceArtifactId, artifactTypeId);
+			IEnumerable<Field> workspaceFields = await Task.Run(() => _importApi.GetWorkspaceFields(workspaceArtifactId, artifactTypeId)).ConfigureAwait(false);
 			Field identityField = workspaceFields.First(x => x.ArtifactID == identityFieldArtifactId);
 			return identityField.Name;
 		}
