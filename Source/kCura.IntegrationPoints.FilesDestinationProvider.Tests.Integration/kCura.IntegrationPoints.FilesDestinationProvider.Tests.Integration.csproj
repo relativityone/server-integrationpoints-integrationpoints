@@ -60,7 +60,7 @@
     </Compile>
     <Compile Include="Abstract\IExportTestCase.cs" />
     <Compile Include="Abstract\IInvalidFileshareExportTestCase.cs" />
-    <Compile Include="Helpers\FolderWithDocumentsIDRetriever.cs" />
+    <Compile Include="Helpers\FolderWithDocumentsIdRetriever.cs" />
     <Compile Include="Process\Internals\ExportTestContextProvider.cs" />
     <Compile Include="Process\Internals\ExportTestSettingsBuilder.cs" />
     <Compile Include="Process\Internals\ExportTestContext.cs" />

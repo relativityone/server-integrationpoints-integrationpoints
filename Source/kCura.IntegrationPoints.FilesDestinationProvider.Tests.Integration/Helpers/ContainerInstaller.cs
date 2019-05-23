@@ -73,7 +73,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 			windsorContainer.Register(Component.For<IServicesMgr>().UsingFactoryMethod(f => f.Resolve<IHelper>().GetServicesManager()));
 			windsorContainer.Register(Component.For<IFolderManager>().UsingFactoryMethod(f =>
 				f.Resolve<IServicesMgr>().CreateProxy<IFolderManager>(ExecutionIdentity.CurrentUser)));
-			windsorContainer.Register(Component.For<FolderWithDocumentsIDRetriever>().ImplementedBy<FolderWithDocumentsIDRetriever>());
+			windsorContainer.Register(Component.For<FolderWithDocumentsIdRetriever>().ImplementedBy<FolderWithDocumentsIdRetriever>());
 
 			_instanceSettings = Substitute.For<IInstanceSettingRepository>();
 			_instanceSettings.GetConfigurationValue(Domain.Constants.INTEGRATION_POINT_INSTANCE_SETTING_SECTION,
