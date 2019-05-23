@@ -94,13 +94,15 @@ namespace Relativity.Sync.Executors
 			try
 			{
 				await Task.Run(() => _syncImportBulkArtifactJob.Execute(), token).ConfigureAwait(false);
-				await _semaphoreSlim.WaitAsync().ConfigureAwait(false); // we don't want to cancel waiting for the import job to finish
 			}
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "Failed to start executing import job.");
 				throw;
 			}
+
+			// Since the import job doesn't support cancellation, we also don't want to cancel waiting for the job to finish. If it's started, we have to wait.
+			await _semaphoreSlim.WaitAsync().ConfigureAwait(false);
 
 			if (!_jobCompletedSuccessfully)
 			{
