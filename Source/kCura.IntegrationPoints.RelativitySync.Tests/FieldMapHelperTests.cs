@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Domain.Models;
@@ -21,7 +22,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 		public void ItShouldHandleEmptyMapping()
 		{
 			// ACT
-			string result = FieldMapHelper.FixControlNumberFieldName(string.Empty, _serializer);
+			string result = FieldMapHelper.FixMappings(string.Empty, _serializer);
 
 			// ASSERT
 			Assert.That(result, Is.EqualTo(string.Empty));
@@ -50,7 +51,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 			string fieldMapping = _serializer.Serialize(fieldMap);
 
 			// ACT
-			string result = FieldMapHelper.FixControlNumberFieldName(fieldMapping, _serializer);
+			string result = FieldMapHelper.FixMappings(fieldMapping, _serializer);
 
 			// ASSERT
 			Assert.That(result, Is.EqualTo(fieldMapping));
@@ -79,13 +80,74 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 			string fieldMapping = _serializer.Serialize(fieldMap);
 
 			// ACT
-			string result = FieldMapHelper.FixControlNumberFieldName(fieldMapping, _serializer);
+			string result = FieldMapHelper.FixMappings(fieldMapping, _serializer);
 
 			List<FieldMap> modifiedMap = _serializer.Deserialize<List<FieldMap>>(result);
 
 			// ASSERT
 			Assert.That(modifiedMap[0].SourceField.DisplayName, Is.EqualTo("abc"));
 			Assert.That(modifiedMap[0].DestinationField.DisplayName, Is.EqualTo("abc"));
+		}
+
+		[Test]
+		public void ItShouldRemoveSpecialFields()
+		{
+			// ARRANGE
+			const FieldMapTypeEnum firstFieldMapTypeEnumToRemove = FieldMapTypeEnum.FolderPathInformation;
+			const FieldMapTypeEnum secondFieldMapTypeEnumToRemove = FieldMapTypeEnum.NativeFilePath;
+			const FieldMapTypeEnum fieldMapTypeNotToBeRemoved = FieldMapTypeEnum.Identifier;
+			List<FieldMap> fieldMap = new List<FieldMap>
+			{
+				new FieldMap
+				{
+					DestinationField = new FieldEntry
+					{
+						DisplayName = "field"
+					},
+					SourceField = new FieldEntry
+					{
+						DisplayName = "Field"
+					},
+					FieldMapType = firstFieldMapTypeEnumToRemove
+				},
+				new FieldMap
+				{
+					DestinationField = new FieldEntry
+					{
+						DisplayName = "field"
+					},
+					SourceField = new FieldEntry
+					{
+						DisplayName = "Field"
+					},
+					FieldMapType = secondFieldMapTypeEnumToRemove
+				},
+				new FieldMap
+				{
+					DestinationField = new FieldEntry
+					{
+						DisplayName = "field"
+					},
+					SourceField = new FieldEntry
+					{
+						DisplayName = "Field"
+					},
+					FieldMapType = fieldMapTypeNotToBeRemoved
+				}
+			};
+
+			string fieldMapping = _serializer.Serialize(fieldMap);
+
+			// ACT
+			string result = FieldMapHelper.FixMappings(fieldMapping, _serializer);
+
+			List<FieldMap> modifiedMap = _serializer.Deserialize<List<FieldMap>>(result);
+
+			// ASSERT
+			Assert.That(modifiedMap.All(m => m.FieldMapType != firstFieldMapTypeEnumToRemove));
+			Assert.That(modifiedMap.All(m => m.FieldMapType != secondFieldMapTypeEnumToRemove));
+			
+			Assert.That(modifiedMap.Any(m => m.FieldMapType == fieldMapTypeNotToBeRemoved));
 		}
 	}
 }
