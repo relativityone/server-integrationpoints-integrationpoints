@@ -68,7 +68,7 @@ namespace Relativity.Sync.Executors
 					_logger.LogInformation("Batch ID: {batchId} processed successfully.", batchId);
 				}
 			}
-			catch (SyncException ex)
+			catch (ImportFailedException ex)
 			{
 				const string message = "Fatal exception occurred while executing import job.";
 				_logger.LogError(ex, message);
@@ -76,7 +76,7 @@ namespace Relativity.Sync.Executors
 			}
 			catch (Exception ex)
 			{
-				const string message = "Unexpected exception occurred while executing import job.";
+				const string message = "Unexpected exception occurred while executing synchronization.";
 				_logger.LogError(ex, message);
 				result = ExecutionResult.Failure(message, ex);
 			}

@@ -184,7 +184,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			// act
 			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
 
-			result.Message.Should().Be("Fatal exception occurred while executing import job.");
+			result.Message.Should().Be("Unexpected exception occurred while executing synchronization.");
 			result.Exception.Should().BeOfType<SyncException>().Which.InnerException.Should().BeOfType<InvalidOperationException>();
 			result.Status.Should().Be(ExecutionStatus.Failed);
 		}
@@ -200,7 +200,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			// act
 			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
 
-			result.Message.Should().Be("Unexpected exception occurred while executing import job.");
+			result.Message.Should().Be("Unexpected exception occurred while executing synchronization.");
 			result.Exception.Should().BeOfType<InvalidOperationException>();
 			result.Status.Should().Be(ExecutionStatus.Failed);
 		}

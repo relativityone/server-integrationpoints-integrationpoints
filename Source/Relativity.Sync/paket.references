@@ -1,5 +1,5 @@
 Relativity.API
-Relativity.ImportExport
+Relativity.DataExchange.Client.SDK
 Relativity.OAuth2Client
 Relativity.Services.Interfaces
 Relativity.Services.Interfaces.Private
