@@ -79,7 +79,7 @@ namespace Relativity.Sync.Tests.Unit
 			Func<Task> action = async () => await _importJob.RunAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// assert
-			action.Should().Throw<SyncException>().Which.InnerException.Should().BeOfType<InvalidOperationException>();
+			action.Should().Throw<ImportFailedException>().Which.InnerException.Should().BeOfType<InvalidOperationException>();
 			_jobHistoryErrorRepository.Verify(x => x.CreateAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.Is<CreateJobHistoryErrorDto>(dto =>
 				dto.ErrorType == ErrorType.Job)));
 		}

@@ -99,8 +99,9 @@ namespace Relativity.Sync.Executors
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, "Failed to start executing import job.");
-				throw;
+				const string message = "Failed to start executing import job.";
+				_logger.LogError(ex, message);
+				throw new ImportFailedException(message, ex);
 			}
 
 			// Since the import job doesn't support cancellation, we also don't want to cancel waiting for the job to finish. If it's started, we have to wait.
@@ -108,7 +109,7 @@ namespace Relativity.Sync.Executors
 
 			if (_importApiFatalExceptionOccurred)
 			{
-				throw new SyncException("Fatal exception occurred in Import API.", _importApiException);
+				throw new ImportFailedException("Fatal exception occurred in Import API.", _importApiException);
 			}
 		}
 
