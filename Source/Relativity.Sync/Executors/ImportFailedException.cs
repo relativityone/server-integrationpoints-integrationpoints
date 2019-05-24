@@ -8,7 +8,7 @@ namespace Relativity.Sync.Executors
 	public sealed class ImportFailedException : Exception
 	{
 		/// <inheritdoc />
-		public ImportFailedException() : base()
+		public ImportFailedException()
 		{
 		}
 
