@@ -140,7 +140,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			const SpecialFieldType differentSpecialFieldType = SpecialFieldType.FolderPath;
 			const SpecialFieldType specialFieldType = SpecialFieldType.SourceWorkspace;
 			const string specialFieldName = "Special field";
-			Guid specialFieldValue = new Guid("56C1128A-64B7-4F67-A57F-0932CBAE1747");
 			FieldInfoDto specialFieldDto = FieldInfoDto.GenericSpecialField(specialFieldType, specialFieldName);
 			
 			_getAllFieldsResult.Add(specialFieldDto);
