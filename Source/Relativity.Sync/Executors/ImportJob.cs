@@ -123,7 +123,6 @@ namespace Relativity.Sync.Executors
 			await _semaphoreSlim.WaitAsync().ConfigureAwait(false);
 
 			if (_importApiFatalExceptionOccurred)
-
 			{
 				const string fatalExceptionMessage = "Fatal exception occurred in Import API.";
 				_logger.LogError(_importApiException, fatalExceptionMessage);
