@@ -69,6 +69,39 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		}
 
 		[Test]
+		public async Task ItShouldCorrectlyEncodeFieldNamesInRequest()
+		{
+			// Arrange
+			List<string> requestedFieldNames = new List<string>
+			{
+				"Cool Field Name",     // spaces
+				"Commas, Hello",       // comma
+				"Colon: A True Story", // colon
+				"Sync's Cool Field",   // single quote - should escape
+				"Nice \\ Field"        // backslash - should escape
+			};
+			IEnumerable<string> returnedFieldNames = requestedFieldNames;
+
+			List<RelativityObjectSlim> returnedObjects = returnedFieldNames.Select(GenerateObjectSlimFromFieldName).ToList();
+			QueryResultSlim queryResult = new QueryResultSlim { Objects = returnedObjects };
+			SetupAnyQuerySlimAsync()
+				.ReturnsAsync(queryResult);
+
+			// Act
+			await _instance.GetRelativityDataTypesForFieldsByFieldNameAsync(_sourceWorkspaceArtifactId, requestedFieldNames, CancellationToken.None)
+				.ConfigureAwait(false);
+
+			// Assert
+			const string expectedFieldNameArray =
+				"'Cool Field Name', 'Commas, Hello', 'Colon: A True Story', 'Sync\\'s Cool Field', 'Nice \\\\ Field'";
+			_objectManager.Verify(x => x.QuerySlimAsync(It.IsAny<int>(),
+				It.Is<QueryRequest>(q => ConditionContainsFieldNameArray(q, expectedFieldNameArray)),
+				It.IsAny<int>(),
+				It.IsAny<int>(),
+				CancellationToken.None), Times.AtLeastOnce);
+		}
+
+		[Test]
 		public async Task ItShouldThrowArgumentExceptionWhenFieldNamesAreEmpty()
 		{
 			// Arrange
@@ -148,14 +181,14 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			// Assert
 			(await action.Should().ThrowAsync<FieldNotFoundException>().ConfigureAwait(false))
-				.Which.Message.Should().ContainAll(requestedFieldNames);
+				.Which.Message.Should().MatchRegex(": Cool Field Name, Slick Field Name, Dope Field Name$");
 		}
 
 		[Test]
 		public async Task ItShouldThrowFieldNotFoundExceptionWhenFewerObjectsAreReturnedThanExpected()
 		{
 			// Arrange
-			List<string> requestedFieldNames = new List<string> { "Cool Field Name", "Slick Field Name", "Dope Field Name" };
+			List<string> requestedFieldNames = new List<string> { "Cool Field Name", "Slick Field Name", "Dope Field Name", "Jazzy Field Name" };
 			List<string> returnedFieldNames = new List<string> { "Cool Field Name", "Dope Field Name" };
 
 			List<RelativityObjectSlim> returnedObjects = returnedFieldNames.Select(GenerateObjectSlimFromFieldName).ToList();
@@ -169,7 +202,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			// Assert
 			(await action.Should().ThrowAsync<FieldNotFoundException>().ConfigureAwait(false))
-				.Which.Message.Should().ContainAll("Slick Field Name");
+				.Which.Message.Should().MatchRegex(": Slick Field Name, Jazzy Field Name$");
 		}
 
 		[Test]
@@ -205,6 +238,14 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		private static RelativityObjectSlim GenerateObjectSlimFromFieldName(string fieldName)
 		{
 			return new RelativityObjectSlim { Values = new List<object> { fieldName, RelativityDataType.Currency.GetDescription() } };
+		}
+
+		// Performing assertions & then returning true makes any failure easier to locate.
+		// This should be changed if we would verify over more than one invocation.
+		private static bool ConditionContainsFieldNameArray(QueryRequest queryRequest, string fieldNames)
+		{
+			queryRequest.Condition.Should().Contain($"'Name' IN [{fieldNames}]");
+			return true;
 		}
 
 		// Performing assertions & then returning true makes any failure easier to locate.

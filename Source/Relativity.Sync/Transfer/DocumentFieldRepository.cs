@@ -36,7 +36,7 @@ namespace Relativity.Sync.Transfer
 
 			ICollection<string> requestedFieldNames = new HashSet<string>(fieldNames);
 
-			IEnumerable<string> formattedFieldNames = requestedFieldNames.Select(f => $"'{f}'");
+			IEnumerable<string> formattedFieldNames = requestedFieldNames.Select(QueryHelpers.EscapeForSingleQuotes).Select(f => $"'{f}'");
 			string concatenatedFieldNames = string.Join(", ", formattedFieldNames);
 			QueryRequest request = new QueryRequest
 			{
