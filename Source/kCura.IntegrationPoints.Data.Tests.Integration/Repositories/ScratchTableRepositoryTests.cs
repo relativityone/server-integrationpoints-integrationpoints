@@ -105,8 +105,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			_sut.AddArtifactIdsIntoTempTable(documentIDs);
 
 			IEnumerable<KeyValuePair<int, string>> controlNumbersByDocumentIDsToRemove = controlNumbersByDocumentIDs.Take(numDocsWithErrors);
-			List<string> documentsControlNumbersToRemove = controlNumbersByDocumentIDsToRemove.Select(x => x.Value).ToList();
-			IEnumerable<int> documentsIDsToRemove = controlNumbersByDocumentIDsToRemove.Select(x => x.Key);
+			IList<string> documentsControlNumbersToRemove = controlNumbersByDocumentIDsToRemove.Select(x => x.Value).ToList();
+			IList<int> documentsIDsToRemove = controlNumbersByDocumentIDsToRemove.Select(x => x.Key).ToList();
 
 			//ACT
 			_sut.RemoveErrorDocuments(documentsControlNumbersToRemove);
@@ -161,25 +161,26 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		{
 			//ARRANGE
 			List<int> documentIDs = Enumerable.Range(0, _DEFAULT_NUMBER_OF_DOCS_TO_CREATE).ToList();
+			_sut.AddArtifactIdsIntoTempTable(documentIDs);
 
 			//ACT
-			_sut.AddArtifactIdsIntoTempTable(documentIDs);
 			_sut.Dispose();
 
 			//ASSERT
 			VerifyTableDisposal(_tableName);
 		}
 
-		[TestCase(10)]
-		public void ReadDocumentIDs_ShouldRetrieveDocumentIDsFromScratchTable(int numDocs)
+		[Test]
+		public void ReadDocumentIDs_ShouldRetrieveDocumentIDsFromScratchTable()
 		{
 			//ARRANGE
+			const int numDocs = 10;
 			List<int> documentIDs = Enumerable.Range(0, numDocs).ToList();
 
 			_sut.AddArtifactIdsIntoTempTable(documentIDs);
 
 			//ACT
-			IEnumerable<int> result = _sut.ReadDocumentIDs(offset: 0, size: numDocs);
+			IEnumerable<int> result = _sut.ReadDocumentIDs(offset: 0, size: numDocs).ToList();
 
 			//ASSERT
 			result.Should().Equal(documentIDs);
@@ -197,7 +198,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			_sut.AddArtifactIdsIntoTempTable(documentIDs);
 
 			//ACT
-			IEnumerable<int> result = _sut.ReadDocumentIDs(offset, numDocs);
+			IEnumerable<int> result = _sut.ReadDocumentIDs(offset, numDocs).ToList();
 
 			//ASSERT
 			result.Should().Equal(documentsAfterOffseting);
@@ -213,41 +214,31 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			List<int> documentIDs = Enumerable.Range(0, numDocs).OrderBy(x => randomNumberGenerator.Next()).ToList();
 
 			_sut.AddArtifactIdsIntoTempTable(documentIDs);
-
+			documentIDs.Sort();
 			//ACT
-			IEnumerable<int> result = _sut.ReadDocumentIDs(offset, numDocs);
-
-			//ASSERT
-			result.Should().BeEquivalentTo(documentIDs);
-		}
-
-		[Test]
-		public void ReadDocumentIDs_ShouldRetrieveAllDocumentsInBatches()
-		{
-			//ARRANGE
-			const int numDocs = 100;
-			const int offset = 30;
-
-			List<int> documentIDs = Enumerable.Range(0, numDocs).ToList();
-
-			_sut.AddArtifactIdsIntoTempTable(documentIDs);
-			int numberOfBatchIterations = (int) Math.Ceiling((double)numDocs / offset);
-
-			//ACT
-			List<int> result = Enumerable.Range(0, numberOfBatchIterations)
-				.SelectMany(batchNumber => _sut.ReadDocumentIDs(offset * batchNumber, offset))
-				.ToList();
+			IEnumerable<int> result = _sut.ReadDocumentIDs(offset, numDocs).ToList();
 
 			//ASSERT
 			result.Should().Equal(documentIDs);
 		}
 
-		[Test]
-		[StressTest]
-		public void ReadDocumentIDs_StressTest()
+		[TestCase(100, 30)]
+		[TestCase(2000000, 3000), StressTest]
+		public void ReadDocumentIDs_ShouldRetrieveAllDocumentsInBatches(int numDocs, int batchSize)
 		{
-			const int numDocs = 200000;
-			ReadDocumentIDs_ShouldRetrieveDocumentIDsFromScratchTable(numDocs);
+			//ARRANGE
+			List<int> documentIDs = Enumerable.Range(0, numDocs).ToList();
+
+			_sut.AddArtifactIdsIntoTempTable(documentIDs);
+			int numberOfBatchIterations = (int) Math.Ceiling((double)numDocs / batchSize);
+
+			//ACT
+			List<int> result = Enumerable.Range(0, numberOfBatchIterations)
+				.SelectMany(batchNumber => _sut.ReadDocumentIDs(batchSize * batchNumber, batchSize))
+				.ToList();
+
+			//ASSERT
+			result.Should().Equal(documentIDs);
 		}
 
 		private DataTable GetTempTable(string tempTableName)

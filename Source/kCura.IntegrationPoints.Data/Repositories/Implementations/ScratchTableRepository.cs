@@ -49,6 +49,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public void RemoveErrorDocuments(ICollection<string> documentControlNumbers)
 		{
+			if (documentControlNumbers.IsNullOrEmpty())
+			{
+				return;
+			}
 			Count -= documentControlNumbers.Count;
 
 			ICollection<int> docIds = GetErroredDocumentId(documentControlNumbers);

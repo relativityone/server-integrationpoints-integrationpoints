@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using FluentAssertions;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using Moq;
@@ -50,7 +51,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		}
 
 		[Test]
-		public void DeleteTable_ShouldExecuteProperSqlQuery()
+		public void DeleteTable_ShouldPassProperSqlQueryToContext()
 		{
 			//ARRANGE
 			string expectedQuery =
@@ -67,7 +68,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		}
 
 		[Test]
-		public void GetDocumentIDsDataReaderFromTable_ShouldExecuteProperSqlQuery()
+		public void GetDocumentIDsDataReaderFromTable_ShouldPassProperSqlQueryToContext()
 		{
 			//ARRANGE
 			string expectedQuery =
@@ -84,7 +85,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		}
 
 		[Test]
-		public void ReadDocumentIDs_ShouldExecuteProperSqlQuery()
+		public void ReadDocumentIDs_ShouldPassProperSqlQueryToContext()
 		{
 			//ARRANGE
 			Mock<IDataReader> dataReaderMock = new Mock<IDataReader>();
@@ -108,7 +109,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		}
 
 		[Test]
-		public void RemoveErrorDocuments_ShouldExecuteProperSqlQuery()
+		public void RemoveErrorDocuments_ShouldPassProperSqlQueryToContext()
 		{
 			//ARRANGE
 			string[] documentControlNumbers = { "CN1", "CN2", "CN3" };
@@ -129,6 +130,27 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 
 			//ASSERT
 			_workspaceDbContextMock.Verify(x => x.ExecuteNonQuerySQLStatement(expectedQuery), Times.Once);
+		}
+
+		[Test]
+		public void RemoveErrorDocuments_ShouldNotThrowIfParameterIsNull()
+		{
+			//ARRANGE
+			Action action = () => _sut.RemoveErrorDocuments(documentControlNumbers: null);
+
+			//ACT & ASSERT
+			action.ShouldNotThrow();
+		}
+
+		[Test]
+		public void RemoveErrorDocuments_ShouldNotThrowIfParameterIsEmptyArray()
+		{
+			//ARRANGE
+			string[] emptyArray = {};
+			Action action = () => _sut.RemoveErrorDocuments(documentControlNumbers: emptyArray);
+
+			//ACT & ASSERT
+			action.ShouldNotThrow();
 		}
 	}
 }
