@@ -46,8 +46,8 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 
 			_configuration = new SourceWorkspaceTagsCreationConfigurationStub
 			{
-				DestinationWorkspaceArtifactId = TargetWorkspaceArtifactId,
-				SourceWorkspaceArtifactId = SourceWorkspaceArtifactId,
+				DestinationWorkspaceArtifactId = TargetWorkspaceArtifactID,
+				SourceWorkspaceArtifactId = SourceWorkspaceArtifactID,
 				JobArtifactId = _jobHistory.ArtifactId
 			};
 		}
@@ -83,7 +83,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 					}
 				};
 
-				ReadResult result = await objectManager.ReadAsync(SourceWorkspaceArtifactId, request).ConfigureAwait(false);
+				ReadResult result = await objectManager.ReadAsync(SourceWorkspaceArtifactID, request).ConfigureAwait(false);
 				Assert.IsNotNull(result);
 
 				IList<RelativityObjectValue> jobHistory = (IList<RelativityObjectValue>) result.Object["Job History"].Value;
@@ -96,8 +96,8 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 		{
 			var configuration = new SourceWorkspaceTagsCreationConfigurationStub
 			{
-				DestinationWorkspaceArtifactId = TargetWorkspaceArtifactId,
-				SourceWorkspaceArtifactId = SourceWorkspaceArtifactId,
+				DestinationWorkspaceArtifactId = TargetWorkspaceArtifactID,
+				SourceWorkspaceArtifactId = SourceWorkspaceArtifactID,
 				JobArtifactId = _jobHistory.ArtifactId
 			};
 			await _instance.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);

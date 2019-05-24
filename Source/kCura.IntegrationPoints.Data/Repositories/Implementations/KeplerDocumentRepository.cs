@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data.Repositories.DTO;
-using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
 using Relativity.Services.Objects.DataContracts;
@@ -30,18 +29,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				Condition = $@"'{docIdentifierField}' in ['{string.Join("','", docIdentifierValues)}']"
 			};
 
-			try
-			{
-				List<RelativityObject> documents = await _relativityObjectManager.QueryAsync(qr).ConfigureAwait(false);
-				return documents.Select(x => x.ArtifactID).ToArray();
-			}
-			catch (Exception e)
-			{
-				throw new IntegrationPointsException("Unable to retrieve documents ArtifactIDs", e)
-				{
-					ExceptionSource = IntegrationPointsExceptionSource.KEPLER
-				};
-			}
+			List<RelativityObject> documents = await _relativityObjectManager.QueryAsync(qr).ConfigureAwait(false);
+			return documents.Select(x => x.ArtifactID).ToArray();
 		}
 
 		public async Task<ArtifactDTO[]> RetrieveDocumentsAsync(IEnumerable<int> documentIds, HashSet<int> fieldIds)
@@ -53,18 +42,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				Fields = fieldIds.Select(x => new FieldRef { ArtifactID = x }).ToArray()
 			};
 
-			try
-			{
-				List<RelativityObject> documents = await _relativityObjectManager.QueryAsync(qr).ConfigureAwait(false);
-				return documents.Select(ConvertDocumentToArtifactDTO).ToArray();
-			}
-			catch (Exception e)
-			{
-				throw new IntegrationPointsException("Unable to retrieve documents ArtifactDTOs", e)
-				{
-					ExceptionSource = IntegrationPointsExceptionSource.KEPLER
-				};
-			}
+			List<RelativityObject> documents = await _relativityObjectManager.QueryAsync(qr).ConfigureAwait(false);
+			return documents.Select(ConvertDocumentToArtifactDTO).ToArray();
 		}
 
 		public async Task<int[]> RetrieveDocumentByIdentifierPrefixAsync(string documentIdentifierFieldName, string identifierPrefix)
@@ -74,24 +53,14 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				Condition = $"'{EscapeSingleQuote(documentIdentifierFieldName)}' like '{EscapeSingleQuote(identifierPrefix)}%'",
 			};
 
-			try
-			{
-				List<Document> documents = await _relativityObjectManager.QueryAsync<Document>(queryRequest, noFields: true).ConfigureAwait(false);
-
-				return documents.Select(x => x.ArtifactId).ToArray();
-			}
-			catch (Exception e)
-			{
-				throw new IntegrationPointsException("Unable to retrieve documents", e)
-				{
-					ExceptionSource = IntegrationPointsExceptionSource.KEPLER
-				};
-			}
+			List<Document> documents = await _relativityObjectManager
+				.QueryAsync<Document>(queryRequest, noFields: true)
+				.ConfigureAwait(false);
+			return documents.Select(x => x.ArtifactId).ToArray();
 		}
 
 		public Task<bool> MassUpdateDocumentsAsync(IEnumerable<int> documentsToUpdate, IEnumerable<FieldUpdateRequestDto> fieldsToUpdate)
 		{
-
 			IEnumerable<FieldRefValuePair> convertedFieldstoUpdate = fieldsToUpdate.Select(ConvertToFieldRefValuePair);
 			return _relativityObjectManager.MassUpdateAsync(documentsToUpdate, convertedFieldstoUpdate, FieldUpdateBehavior.Merge);
 		}

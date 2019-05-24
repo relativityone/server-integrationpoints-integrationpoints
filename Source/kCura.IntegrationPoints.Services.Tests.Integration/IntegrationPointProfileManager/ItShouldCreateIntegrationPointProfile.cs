@@ -38,10 +38,10 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointPro
 		public void ItShouldCreateRelativityIntegrationPoint(bool importNativeFile, bool logErrors, bool useFolderPathInformation, string emailNotificationRecipients,
 			string fieldOverlayBehavior, string overwriteFieldsChoices, bool promoteEligible)
 		{
-			OverwriteFieldsModel overwriteFieldsModel = _client.GetOverwriteFieldsChoicesAsync(SourceWorkspaceArtifactId).Result.First(x => x.Name == overwriteFieldsChoices);
+			OverwriteFieldsModel overwriteFieldsModel = _client.GetOverwriteFieldsChoicesAsync(SourceWorkspaceArtifactID).Result.First(x => x.Name == overwriteFieldsChoices);
 
-			CreateIntegrationPointRequest createRequest = IntegrationPointBaseHelper.CreateCreateIntegrationPointRequest(Helper, RepositoryFactory, SourceWorkspaceArtifactId, SavedSearchArtifactId, TypeOfExport,
-				TargetWorkspaceArtifactId, importNativeFile, logErrors, useFolderPathInformation, emailNotificationRecipients, fieldOverlayBehavior, overwriteFieldsModel, GetDefaultFieldMap().ToList(),
+			CreateIntegrationPointRequest createRequest = IntegrationPointBaseHelper.CreateCreateIntegrationPointRequest(Helper, RepositoryFactory, SourceWorkspaceArtifactID, SavedSearchArtifactID, TypeOfExport,
+				TargetWorkspaceArtifactID, importNativeFile, logErrors, useFolderPathInformation, emailNotificationRecipients, fieldOverlayBehavior, overwriteFieldsModel, GetDefaultFieldMap().ToList(),
 				promoteEligible);
 
 			IntegrationPointModel createdIntegrationPointProfile = _client.CreateIntegrationPointProfileAsync(createRequest).Result;
@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointPro
 			var integrationPoint = CreateOrUpdateIntegrationPoint(CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, "ip_name", "Append Only"));
 
 			var integrationPointProfileModel =
-				_client.CreateIntegrationPointProfileFromIntegrationPointAsync(SourceWorkspaceArtifactId, integrationPoint.ArtifactID, profileName).Result;
+				_client.CreateIntegrationPointProfileFromIntegrationPointAsync(SourceWorkspaceArtifactID, integrationPoint.ArtifactID, profileName).Result;
 
 			var actualIntegrationPointProfile = CaseContext.RsapiService.RelativityObjectManager.Read<IntegrationPointProfile>(integrationPointProfileModel.ArtifactId);
 

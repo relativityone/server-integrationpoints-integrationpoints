@@ -32,8 +32,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		{
 			base.SuiteSetup();
 			var repositoryFactory = Container.Resolve<IRepositoryFactory>();
-			_destinationWorkspaceRepository = repositoryFactory.GetDestinationWorkspaceRepository(SourceWorkspaceArtifactId);
-			_destinationWorkspaceDto = _destinationWorkspaceRepository.Create(SourceWorkspaceArtifactId, "DestinationWorkspaceRepositoryTests", -1, "This Instance");
+			_destinationWorkspaceRepository = repositoryFactory.GetDestinationWorkspaceRepository(SourceWorkspaceArtifactID);
+			_destinationWorkspaceDto = _destinationWorkspaceRepository.Create(SourceWorkspaceArtifactID, "DestinationWorkspaceRepositoryTests", -1, "This Instance");
 			var federatedInstanceManager = Substitute.For<IFederatedInstanceManager>();
 			var federatedInstanceDto = new FederatedInstanceDto()
 			{
@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(null).Returns(thisInstanceDto);
 			Container.Register(Component.For<IFederatedInstanceManager>().Instance(federatedInstanceManager).IsDefault());
 			_jobHistoryService = Container.Resolve<IJobHistoryService>();
-			_scratchTableRepository = repositoryFactory.GetScratchTableRepository(SourceWorkspaceArtifactId, "Documents2Tag", "LikeASir");
+			_scratchTableRepository = repositoryFactory.GetScratchTableRepository(SourceWorkspaceArtifactID, "Documents2Tag", "LikeASir");
 		}
 
 		public override void SuiteTeardown()
@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		public void Query_DestinationWorkspaceDto_Success()
 		{
 			//Act
-			var queriedDestinationWorkspaceDto = _destinationWorkspaceRepository.Query(SourceWorkspaceArtifactId, -1);
+			var queriedDestinationWorkspaceDto = _destinationWorkspaceRepository.Query(SourceWorkspaceArtifactID, -1);
 
 			//Assert
 			Assert.AreEqual(_destinationWorkspaceDto.ArtifactId, queriedDestinationWorkspaceDto.ArtifactId);
@@ -95,7 +95,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 
 			//Act
 			_destinationWorkspaceRepository.Update(destinationWorkspaceDto);
-			var updatedDestinationWorkspaceDto = _destinationWorkspaceRepository.Query(SourceWorkspaceArtifactId, -1);
+			var updatedDestinationWorkspaceDto = _destinationWorkspaceRepository.Query(SourceWorkspaceArtifactID, -1);
 
 			//Assert
 			Assert.AreEqual(_destinationWorkspaceDto.ArtifactId, updatedDestinationWorkspaceDto.ArtifactId);
@@ -137,7 +137,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			JobHistory linkedJobHistory = _jobHistoryService.GetRdo(batchInstance);
 
 			//Assert
-			Assert.AreEqual($"DestinationWorkspaceRepositoryTests - {SourceWorkspaceArtifactId}", linkedJobHistory.DestinationWorkspace);
+			Assert.AreEqual($"DestinationWorkspaceRepositoryTests - {SourceWorkspaceArtifactID}", linkedJobHistory.DestinationWorkspace);
 			CollectionAssert.Contains(linkedJobHistory.DestinationWorkspaceInformation, _destinationWorkspaceDto.ArtifactId);
 		}
 		

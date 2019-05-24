@@ -45,8 +45,8 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 
 			_configuration = new DestinationWorkspaceTagsCreationConfigurationStub
 			{
-				DestinationWorkspaceArtifactId = TargetWorkspaceArtifactId,
-				SourceWorkspaceArtifactId = SourceWorkspaceArtifactId,
+				DestinationWorkspaceArtifactId = TargetWorkspaceArtifactID,
+				SourceWorkspaceArtifactId = SourceWorkspaceArtifactID,
 				JobArtifactId = _jobHistory.ArtifactId,
 				SourceWorkspaceArtifactTypeId = _sourceWorkspaceArtifactTypeId,
 				SourceJobArtifactTypeId = _sourceJobArtifactTypeId
@@ -66,7 +66,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			DestinationWorkspaceObjectTypesCreation objectTypesCreation = new DestinationWorkspaceObjectTypesCreation(container);
 			DestinationWorkspaceObjectTypesCreationConfigurationStub configuration = new DestinationWorkspaceObjectTypesCreationConfigurationStub
 			{
-				DestinationWorkspaceArtifactId = TargetWorkspaceArtifactId
+				DestinationWorkspaceArtifactId = TargetWorkspaceArtifactID
 			};
 			await objectTypesCreation.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
 
@@ -98,7 +98,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 						ArtifactID = sourceWorkspaceTag
 					}
 				};
-				ReadResult sourceWorkspaceTagResult = await objectManager.ReadAsync(TargetWorkspaceArtifactId, sourceWorkspaceTagRequest).ConfigureAwait(false);
+				ReadResult sourceWorkspaceTagResult = await objectManager.ReadAsync(TargetWorkspaceArtifactID, sourceWorkspaceTagRequest).ConfigureAwait(false);
 				Assert.IsNotNull(sourceWorkspaceTagResult);
 
 				ReadRequest sourceJobTagRequest = new ReadRequest
@@ -108,7 +108,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 						ArtifactID = sourceJobTag
 					}
 				};
-				ReadResult sourceJobTagResult = await objectManager.ReadAsync(TargetWorkspaceArtifactId, sourceJobTagRequest).ConfigureAwait(false);
+				ReadResult sourceJobTagResult = await objectManager.ReadAsync(TargetWorkspaceArtifactID, sourceJobTagRequest).ConfigureAwait(false);
 				Assert.IsNotNull(sourceJobTagResult);
 			}
 		}
@@ -118,8 +118,8 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 		{
 			var configuration = new DestinationWorkspaceTagsCreationConfigurationStub
 			{
-				DestinationWorkspaceArtifactId = TargetWorkspaceArtifactId,
-				SourceWorkspaceArtifactId = SourceWorkspaceArtifactId,
+				DestinationWorkspaceArtifactId = TargetWorkspaceArtifactID,
+				SourceWorkspaceArtifactId = SourceWorkspaceArtifactID,
 				JobArtifactId = _jobHistory.ArtifactId,
 				SourceWorkspaceArtifactTypeId = _sourceWorkspaceArtifactTypeId,
 				SourceJobArtifactTypeId = _sourceJobArtifactTypeId

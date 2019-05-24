@@ -79,10 +79,17 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		{
 			string serializedDestinationConfig = _serializer.Serialize(_destinationConfig); // TODO REL-322556
 
-			IDataSynchronizer synchronizer = _synchronizerFactory.CreateSynchronizer(Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID, serializedDestinationConfig);
+			IDataSynchronizer synchronizer = _synchronizerFactory.CreateSynchronizer(
+				Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID,
+				serializedDestinationConfig);
 			var tagsSynchronizer = new TagsSynchronizer(_helper, synchronizer);
 
-			var tagger = new Tagger(_documentRepository, tagsSynchronizer, _helper, _fields, serializedDestinationConfig);
+			var tagger = new Tagger(
+				_documentRepository,
+				tagsSynchronizer,
+				_helper,
+				_fields,
+				serializedDestinationConfig);
 			return tagger;
 		}
 

@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.Core.Tagging
 				return;
 			}
 
-			int batchSize = ReadBatchSizeFromConfig();
+			int batchSize = ReadBatchSizeFromConfigAndValidateValue();
 
 			LogTaggingStarted(numberOfDocuments, batchSize);
 			FieldUpdateRequestDto[] documentTagsInSourceWorkspace = GetTagsValues(
@@ -50,15 +50,17 @@ namespace kCura.IntegrationPoints.Core.Tagging
 
 			for (int processedCount = 0; processedCount < numberOfDocuments; processedCount += batchSize)
 			{
-				await TagBatchOfDocuments(
-					documentsToTagRepository,
-					batchSize,
-					processedCount,
-					documentTagsInSourceWorkspace);
+				await
+					TagBatchOfDocumentsAsync(
+						documentsToTagRepository,
+						batchSize,
+						processedCount,
+						documentTagsInSourceWorkspace)
+					.ConfigureAwait(false);
 			}
 		}
 
-		private int ReadBatchSizeFromConfig()
+		private int ReadBatchSizeFromConfigAndValidateValue()
 		{
 			int batchSize = _config.SourceWorkspaceTaggerBatchSize;
 			ValidateBatchSize(batchSize);
@@ -79,7 +81,7 @@ namespace kCura.IntegrationPoints.Core.Tagging
 			return documentTagsInSourceWorkspace;
 		}
 
-		private async Task TagBatchOfDocuments(
+		private async Task TagBatchOfDocumentsAsync(
 			IScratchTableRepository scratchTableRepository,
 			int batchSize,
 			int documentsOffset,
@@ -88,7 +90,7 @@ namespace kCura.IntegrationPoints.Core.Tagging
 			try
 			{
 				IEnumerable<int> currentBatch = scratchTableRepository.ReadDocumentIDs(documentsOffset, batchSize).ToList();
-				await MassUpdateDocuments(documentTagsInSourceWorkspace, currentBatch);
+				await MassUpdateDocumentsAsync(documentTagsInSourceWorkspace, currentBatch).ConfigureAwait(false);
 			}
 			catch (Exception ex)
 			{
@@ -99,7 +101,7 @@ namespace kCura.IntegrationPoints.Core.Tagging
 			}
 		}
 
-		private async Task MassUpdateDocuments(IEnumerable<FieldUpdateRequestDto> documentTagsInSourceWorkspace, IEnumerable<int> currentBatch)
+		private async Task MassUpdateDocumentsAsync(IEnumerable<FieldUpdateRequestDto> documentTagsInSourceWorkspace, IEnumerable<int> currentBatch)
 		{
 			bool updateResult = await _documentRepository.MassUpdateDocumentsAsync(currentBatch, documentTagsInSourceWorkspace).ConfigureAwait(false);
 

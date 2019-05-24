@@ -7,6 +7,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.DTO
 	{
 		public IReadOnlyCollection<int> ObjectReferences { get; }
 
+		public object Value => ObjectReferences.ToArray();
+
 		public MultiObjectReferenceDto(int objectReference) : this(new[] { objectReference })
 		{ }
 
@@ -14,7 +16,5 @@ namespace kCura.IntegrationPoints.Data.Repositories.DTO
 		{
 			ObjectReferences = objectReferences.ToArray();
 		}
-
-		public object Value => ObjectReferences.ToArray();
 	}
 }

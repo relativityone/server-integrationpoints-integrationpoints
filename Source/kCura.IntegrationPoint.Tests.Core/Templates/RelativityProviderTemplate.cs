@@ -23,19 +23,20 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 	[TestFixture]
 	public abstract class RelativityProviderTemplate : SourceProviderTemplate
 	{
+		private string _destinationConfig;
+
 		private readonly string _targetWorkspaceName;
 		private readonly string _targetWorkspaceTemplate;
-		private string _destinationConfig;
 
 		protected SourceProvider RelativityProvider { get; private set; }
 		protected SourceProvider LdapProvider { get; private set; }
 		protected IRepositoryFactory RepositoryFactory { get; private set; }
 
-		public int SourceWorkspaceArtifactId { get; private set; }
-		public int TargetWorkspaceArtifactId { get; private set; }
-		public int SavedSearchArtifactId { get; set; }
+		public int SourceWorkspaceArtifactID { get; private set; }
+		public int TargetWorkspaceArtifactID { get; private set; }
+		public int SavedSearchArtifactID { get; set; }
 		public int TypeOfExport { get; set; }
-		public int FolderArtifactId { get; set; }
+		public int FolderArtifactID { get; set; }
 
 		public RelativityProviderTemplate(
 			string sourceWorkspaceName,
@@ -49,10 +50,10 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		}
 
 		protected RelativityProviderTemplate(
-			int sourceWorkspaceArtifactId,
+			int sourceWorkspaceArtifactID,
 			string targetWorkspaceName,
 			string targetWorkspaceTemplate = WorkspaceTemplates.NEW_CASE_TEMPLATE)
-			: base(sourceWorkspaceArtifactId)
+			: base(sourceWorkspaceArtifactID)
 		{
 			_targetWorkspaceName = targetWorkspaceName;
 			_targetWorkspaceTemplate = targetWorkspaceTemplate;
@@ -62,9 +63,9 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		{
 			base.SuiteSetup();
 
-			SourceWorkspaceArtifactId = WorkspaceArtifactId;
+			SourceWorkspaceArtifactID = WorkspaceArtifactId;
 
-			Task.Run(async () => await SetupAsync()).Wait();
+			Task.Run(async () => await SetupAsync().ConfigureAwait(false)).Wait();
 
 			RelativityProvider = SourceProviders.First(provider => provider.Name == "Relativity");
 			LdapProvider = SourceProviders.First(provider => provider.Name == "LDAP");
@@ -77,7 +78,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		public override void SuiteTeardown()
 		{
-			Workspace.DeleteWorkspace(TargetWorkspaceArtifactId);
+			Workspace.DeleteWorkspace(TargetWorkspaceArtifactID);
 			base.SuiteTeardown();
 		}
 
@@ -87,7 +88,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		{
 			if (_destinationConfig == null)
 			{
-				_destinationConfig = CreateSourceConfigWithTargetWorkspace(TargetWorkspaceArtifactId);
+				_destinationConfig = CreateSourceConfigWithTargetWorkspace(TargetWorkspaceArtifactID);
 			}
 			return _destinationConfig;
 		}
@@ -96,8 +97,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		{
 			return CreateSourceConfigWithCustomParameters(
 				targetWorkspaceId,
-				SavedSearchArtifactId,
-				SourceWorkspaceArtifactId,
+				SavedSearchArtifactID,
+				SourceWorkspaceArtifactID,
 				SourceConfiguration.ExportType.SavedSearch);
 		}
 
@@ -119,7 +120,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		protected string CreateDestinationConfig(ImportOverwriteModeEnum overwriteMode, int? federatedInstanceArtifactId = null)
 		{
-			return CreateSerializedDestinationConfigWithTargetWorkspace(overwriteMode, SourceWorkspaceArtifactId, federatedInstanceArtifactId);
+			return CreateSerializedDestinationConfigWithTargetWorkspace(overwriteMode, SourceWorkspaceArtifactID, federatedInstanceArtifactId);
 		}
 
 		protected string CreateSerializedDestinationConfigWithTargetWorkspace(ImportOverwriteModeEnum overwriteMode, int targetWorkspaceId, int? federatedInstanceArtifactId = null)
@@ -156,8 +157,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		protected FieldMap[] GetDefaultFieldMap()
 		{
 			IRepositoryFactory repositoryFactory = Container.Resolve<IRepositoryFactory>();
-			IFieldQueryRepository sourceFieldQueryRepository = repositoryFactory.GetFieldQueryRepository(SourceWorkspaceArtifactId);
-			IFieldQueryRepository destinationFieldQueryRepository = repositoryFactory.GetFieldQueryRepository(TargetWorkspaceArtifactId);
+			IFieldQueryRepository sourceFieldQueryRepository = repositoryFactory.GetFieldQueryRepository(SourceWorkspaceArtifactID);
+			IFieldQueryRepository destinationFieldQueryRepository = repositoryFactory.GetFieldQueryRepository(TargetWorkspaceArtifactID);
 
 			ArtifactDTO sourceDto = sourceFieldQueryRepository.RetrieveTheIdentifierField((int)global::kCura.Relativity.Client.ArtifactType.Document);
 			ArtifactDTO targetDto = destinationFieldQueryRepository.RetrieveTheIdentifierField((int)global::kCura.Relativity.Client.ArtifactType.Document);
@@ -186,11 +187,11 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		private async Task SetupAsync()
 		{
-			TargetWorkspaceArtifactId = string.IsNullOrEmpty(_targetWorkspaceName)
-				? SourceWorkspaceArtifactId
-				: await Task.Run(() => Workspace.CreateWorkspace(_targetWorkspaceName, _targetWorkspaceTemplate));
+			TargetWorkspaceArtifactID = string.IsNullOrEmpty(_targetWorkspaceName)
+				? SourceWorkspaceArtifactID
+				: await Task.Run(() => Workspace.CreateWorkspace(_targetWorkspaceName, _targetWorkspaceTemplate)).ConfigureAwait(false);
 
-			SavedSearchArtifactId = await Task.Run(() => SavedSearch.CreateSavedSearch(SourceWorkspaceArtifactId, "All documents"));
+			SavedSearchArtifactID = await Task.Run(() => SavedSearch.CreateSavedSearch(SourceWorkspaceArtifactID, "All documents")).ConfigureAwait(false);
 			TypeOfExport = (int)SourceConfiguration.ExportType.SavedSearch;
 		}
 

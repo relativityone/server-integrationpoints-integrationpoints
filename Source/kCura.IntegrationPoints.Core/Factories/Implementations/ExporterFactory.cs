@@ -85,7 +85,12 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			return batchStatusCommands;
 		}
 
-		public IExporterService BuildExporter(IJobStopManager jobStopManager, FieldMap[] mappedFields, string config, int savedSearchArtifactId, int onBehalfOfUser,
+		public IExporterService BuildExporter(
+			IJobStopManager jobStopManager,
+			FieldMap[] mappedFields,
+			string config,
+			int savedSearchArtifactId,
+			int onBehalfOfUser,
 			string userImportApiSettings)
 		{
 			LogBuildExporterExecutionWithParameters(mappedFields, config, savedSearchArtifactId, onBehalfOfUser, userImportApiSettings);
@@ -97,8 +102,24 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			BaseServiceContext baseServiceContext = claimsPrincipal.GetUnversionContext(sourceConfiguration.SourceWorkspaceArtifactId);
 
 			IExporterService exporter = settings.ImageImport ?
-				CreateImageExporterService(jobStopManager, mappedFields, config, savedSearchArtifactId, baseServiceContextProvider, settings, sourceConfiguration, baseServiceContext) :
-				CreateRelativityExporterService(jobStopManager, mappedFields, config, savedSearchArtifactId, claimsPrincipal, baseServiceContextProvider, settings, baseServiceContext);
+				CreateImageExporterService(
+					jobStopManager,
+					mappedFields,
+					config,
+					savedSearchArtifactId,
+					baseServiceContextProvider,
+					settings,
+					sourceConfiguration,
+					baseServiceContext) :
+				CreateRelativityExporterService(
+					jobStopManager,
+					mappedFields,
+					config,
+					savedSearchArtifactId,
+					claimsPrincipal,
+					baseServiceContextProvider,
+					settings,
+					baseServiceContext);
 			return exporter;
 		}
 
@@ -149,26 +170,62 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				uniqueJobId);
 		}
 
-		private IBatchStatus CreateJobHistoryErrorUpdater(Job job, IJobHistoryErrorManager jobHistoryErrorManager, IJobStopManager jobStopManager,
-			SourceConfiguration configuration, JobHistoryErrorDTO.UpdateStatusType updateStatusType)
+		private IBatchStatus CreateJobHistoryErrorUpdater(
+			Job job,
+			IJobHistoryErrorManager jobHistoryErrorManager,
+			IJobStopManager jobStopManager,
+			SourceConfiguration configuration,
+			JobHistoryErrorDTO.UpdateStatusType updateStatusType)
 		{
-			return new JobHistoryErrorBatchUpdateManager(jobHistoryErrorManager, _helper, _sourceRepositoryFactory, _claimsPrincipalFactory, jobStopManager,
-				configuration.SourceWorkspaceArtifactId, job.SubmittedBy, updateStatusType);
+			return new JobHistoryErrorBatchUpdateManager(
+				jobHistoryErrorManager,
+				_helper,
+				_sourceRepositoryFactory,
+				_claimsPrincipalFactory,
+				jobStopManager,
+				configuration.SourceWorkspaceArtifactId,
+				job.SubmittedBy,
+				updateStatusType);
 		}
 
-		private IExporterService CreateRelativityExporterService(IJobStopManager jobStopManager, FieldMap[] mappedFields, string config, int savedSearchArtifactId,
-			ClaimsPrincipal claimsPrincipal, IBaseServiceContextProvider baseServiceContextProvider, ImportSettings settings, BaseServiceContext baseServiceContext)
+		private IExporterService CreateRelativityExporterService(
+			IJobStopManager jobStopManager,
+			FieldMap[] mappedFields,
+			string config,
+			int savedSearchArtifactId,
+			ClaimsPrincipal claimsPrincipal,
+			IBaseServiceContextProvider baseServiceContextProvider,
+			ImportSettings settings,
+			BaseServiceContext baseServiceContext)
 		{
 			IExporter exporter = BuildSavedSearchExporter(baseServiceContext, settings.LoadImportedFullTextFromServer);
-
 			IFolderPathReader folderPathReader = _folderPathReaderFactory.Create(claimsPrincipal, settings, config);
-			var exporterService = new RelativityExporterService(exporter, _relativityObjectManager, _sourceRepositoryFactory, _targetRepositoryFactory, jobStopManager, _helper,
-				folderPathReader, baseServiceContextProvider, mappedFields, 0, config, savedSearchArtifactId);
-			return exporterService;
+			const int startAtRecord = 0;
+
+			return new RelativityExporterService(
+				exporter,
+				_relativityObjectManager,
+				_sourceRepositoryFactory,
+				_targetRepositoryFactory,
+				jobStopManager,
+				_helper,
+				folderPathReader,
+				baseServiceContextProvider,
+				mappedFields,
+				startAtRecord,
+				config,
+				savedSearchArtifactId);
 		}
 
-		private IExporterService CreateImageExporterService(IJobStopManager jobStopManager, FieldMap[] mappedFiles, string config, int savedSearchArtifactId,
-			IBaseServiceContextProvider baseServiceContextProvider, ImportSettings settings, SourceConfiguration sourceConfiguration, BaseServiceContext baseServiceContext)
+		private IExporterService CreateImageExporterService(
+			IJobStopManager jobStopManager,
+			FieldMap[] mappedFiles,
+			string config,
+			int savedSearchArtifactId,
+			IBaseServiceContextProvider baseServiceContextProvider,
+			ImportSettings settings,
+			SourceConfiguration sourceConfiguration,
+			BaseServiceContext baseServiceContext)
 		{
 			IExporter exporter;
 			int searchArtifactId;
@@ -183,9 +240,20 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				searchArtifactId = sourceConfiguration.SourceProductionId;
 			}
 
-			var exporterService = new ImageExporterService(exporter, _relativityObjectManager, _sourceRepositoryFactory, _targetRepositoryFactory, jobStopManager, _helper,
-				baseServiceContextProvider, mappedFiles, 0, config, searchArtifactId, settings);
-			return exporterService;
+			const int startAtRecord = 0;
+			return new ImageExporterService(
+				exporter,
+				_relativityObjectManager,
+				_sourceRepositoryFactory,
+				_targetRepositoryFactory,
+				jobStopManager,
+				_helper,
+				baseServiceContextProvider,
+				mappedFiles,
+				startAtRecord,
+				config,
+				searchArtifactId,
+				settings);
 		}
 
 		private ClaimsPrincipal GetClaimsPrincipal(int onBehalfOfUser)
@@ -200,33 +268,34 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 
 		private IExporter BuildSavedSearchExporter(BaseServiceContext baseService, bool shouldUseDgPaths)
 		{
-			return new SavedSearchExporter
-				(
+			return new SavedSearchExporter(
 				baseService,
 				new UserPermissionsMatrix(baseService),
 				global::Relativity.ArtifactType.Document,
 				Domain.Constants.MULTI_VALUE_DELIMITER,
 				Domain.Constants.NESTED_VALUE_DELIMITER,
 				global::Relativity.Core.Api.Settings.RSAPI.Config.DynamicallyLoadedDllPaths,
-				shouldUseDgPaths
-				);
+				shouldUseDgPaths);
 		}
 
 		private IExporter BuildProductionExporter(BaseServiceContext baseService, bool shouldUseDgPaths)
 		{
-			return new ProductionExporter
-				(
+			return new ProductionExporter(
 				baseService,
 				new UserPermissionsMatrix(baseService),
 				global::Relativity.ArtifactType.Document,
 				Domain.Constants.MULTI_VALUE_DELIMITER,
 				Domain.Constants.NESTED_VALUE_DELIMITER,
 				global::Relativity.Core.Api.Settings.RSAPI.Config.DynamicallyLoadedDllPaths,
-				shouldUseDgPaths
-				);
+				shouldUseDgPaths);
 		}
 
-		private void LogBuildExporterExecutionWithParameters(FieldMap[] mappedFields, string config, int savedSearchArtifactId, int onBehalfOfUser, string userImportApiSettings)
+		private void LogBuildExporterExecutionWithParameters(
+			FieldMap[] mappedFields,
+			string config,
+			int savedSearchArtifactId,
+			int onBehalfOfUser,
+			string userImportApiSettings)
 		{
 			var msgBuilder = new StringBuilder("Building Exporter with parameters: \n");
 			msgBuilder.AppendLine("mappedFields {@mappedFields} ");

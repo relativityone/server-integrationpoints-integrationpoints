@@ -43,7 +43,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			_instance = new DestinationWorkspaceSavedSearchCreation(container);
 			_configuration = new DestinationWorkspaceSavedSearchCreationConfigurationStub
 			{
-				DestinationWorkspaceArtifactId = TargetWorkspaceArtifactId,
+				DestinationWorkspaceArtifactId = TargetWorkspaceArtifactID,
 				SourceJobTagArtifactId = _jobTagArtifactId,
 				SourceJobTagName = _jobTagName,
 				SourceWorkspaceTagArtifactId = _workspaceTagArtifactId,
@@ -61,15 +61,15 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			DestinationWorkspaceObjectTypesCreation objectTypesCreation = new DestinationWorkspaceObjectTypesCreation(container);
 			DestinationWorkspaceObjectTypesCreationConfigurationStub objectTypesConfiguration = new DestinationWorkspaceObjectTypesCreationConfigurationStub
 			{
-				DestinationWorkspaceArtifactId = TargetWorkspaceArtifactId
+				DestinationWorkspaceArtifactId = TargetWorkspaceArtifactID
 			};
 			await objectTypesCreation.ExecuteAsync(objectTypesConfiguration, CancellationToken.None).ConfigureAwait(false);
 
 			DestinationWorkspaceTagsCreation tagsCreation = new DestinationWorkspaceTagsCreation(container);
 			DestinationWorkspaceTagsCreationConfigurationStub tagsConfiguration = new DestinationWorkspaceTagsCreationConfigurationStub
 			{
-				SourceWorkspaceArtifactId = SourceWorkspaceArtifactId,
-				DestinationWorkspaceArtifactId = TargetWorkspaceArtifactId,
+				SourceWorkspaceArtifactId = SourceWorkspaceArtifactID,
+				DestinationWorkspaceArtifactId = TargetWorkspaceArtifactID,
 				SourceWorkspaceArtifactTypeId = objectTypesConfiguration.SourceWorkspaceArtifactTypeId,
 				SourceJobArtifactTypeId = objectTypesConfiguration.SourceJobArtifactTypeId,
 				JobArtifactId = jobHistory.ArtifactId
@@ -92,7 +92,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 
 			using (IKeywordSearchManager searchManager = Helper.GetServicesManager().CreateProxy<IKeywordSearchManager>(ExecutionIdentity.System))
 			{
-				KeywordSearch result = await searchManager.ReadSingleAsync(TargetWorkspaceArtifactId, _configuration.SavedSearchArtifactId).ConfigureAwait(false);
+				KeywordSearch result = await searchManager.ReadSingleAsync(TargetWorkspaceArtifactID, _configuration.SavedSearchArtifactId).ConfigureAwait(false);
 
 				Assert.NotNull(result);
 			}

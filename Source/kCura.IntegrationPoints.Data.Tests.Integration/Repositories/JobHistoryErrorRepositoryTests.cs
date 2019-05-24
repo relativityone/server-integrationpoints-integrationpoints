@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		public override void TestSetup()
 		{
 			var repositoryFactory = Container.Resolve<IRepositoryFactory>();
-			_instance = repositoryFactory.GetJobHistoryErrorRepository(SourceWorkspaceArtifactId);
+			_instance = repositoryFactory.GetJobHistoryErrorRepository(SourceWorkspaceArtifactID);
 			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),

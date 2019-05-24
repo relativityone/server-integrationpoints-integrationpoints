@@ -25,12 +25,10 @@ using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.Data.RowDataGateway;
-using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoints.Agent.Validation;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using Relativity.API;
@@ -120,7 +118,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				integrationPointRepository);
 
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
-			_sourceWorkspaceDto = Workspace.GetWorkspaceDto(SourceWorkspaceArtifactId);
+			_sourceWorkspaceDto = Workspace.GetWorkspaceDto(SourceWorkspaceArtifactID);
 		}
 
 		[Test]
@@ -146,7 +144,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			};
 			model = CreateOrUpdateIntegrationPoint(model); // create integration point
 				
-			_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, model.ArtifactID, 9); // run now
+			_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactID, model.ArtifactID, 9); // run now
 			Job job = null;
 			try
 			{
@@ -186,13 +184,13 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			try
 			{
 				DataTable dataTable = Import.GetImportTable("DocId", 5);
-				Import.ImportNewDocuments(SourceWorkspaceArtifactId, dataTable);
+				Import.ImportNewDocuments(SourceWorkspaceArtifactID, dataTable);
 
 				IntegrationPointModel model = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOverlay,
 					"StopStateCannotBeUpdatedWhileFinalizingExportServiceObservers", "Append/Overlay");
 				model = CreateOrUpdateIntegrationPoint(model); // create integration point
 
-				_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, model.ArtifactID, 9); // run now
+				_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactID, model.ArtifactID, 9); // run now
 				string query = $"SELECT * FROM [{GlobalConst.SCHEDULE_AGENT_QUEUE_TABLE_NAME}]";
 				var context = new QueueDBContext(Helper, GlobalConst.SCHEDULE_AGENT_QUEUE_TABLE_NAME);
 				DataTable result = context.EddsDBContext.ExecuteSqlStatementAsDataTable(query);
@@ -210,7 +208,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				string jobDetails = $@"{{""BatchInstance"":""{batchInstance}"",""BatchParameters"":null}}";
 				job = JobExtensions.Execute(
 					qDBContext: _queueContext,
-					workspaceID: SourceWorkspaceArtifactId,
+					workspaceID: SourceWorkspaceArtifactID,
 					relatedObjectArtifactID: model.ArtifactID,
 					taskType: TaskType.ExportService.ToString(),
 					nextRunTime: DateTime.MaxValue,

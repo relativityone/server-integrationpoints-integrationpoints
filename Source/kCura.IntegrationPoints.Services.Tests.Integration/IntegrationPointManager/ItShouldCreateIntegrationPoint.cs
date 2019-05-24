@@ -58,12 +58,12 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 		[Test]
 		public void ItShouldCreateExportToLoadFileIntegrationPoint()
 		{
-			var overwriteFieldsModel = _client.GetOverwriteFieldsChoicesAsync(SourceWorkspaceArtifactId).Result.First(x => x.Name == "Append/Overlay");
+			var overwriteFieldsModel = _client.GetOverwriteFieldsChoicesAsync(SourceWorkspaceArtifactID).Result.First(x => x.Name == "Append/Overlay");
 
 			var sourceConfiguration = new RelativityProviderSourceConfiguration
 			{
-				SourceWorkspaceArtifactId = SourceWorkspaceArtifactId,
-				SavedSearchArtifactId = SavedSearchArtifactId
+				SourceWorkspaceArtifactId = SourceWorkspaceArtifactID,
+				SavedSearchArtifactId = SavedSearchArtifactID
 			};
 
 			var destinationConfiguration = new
@@ -103,9 +103,9 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 			{
 				Name = "export_lf_ip",
 				DestinationProvider =
-					IntegrationPointBaseHelper.GetDestinationProviderArtifactId(Constants.IntegrationPoints.DestinationProviders.LOADFILE, SourceWorkspaceArtifactId, Helper),
-				SourceProvider = IntegrationPointBaseHelper.GetSourceProviderArtifactId(Constants.IntegrationPoints.SourceProviders.RELATIVITY, SourceWorkspaceArtifactId, Helper),
-				Type = IntegrationPointBaseHelper.GetTypeArtifactId(Helper, SourceWorkspaceArtifactId, "Export"),
+					IntegrationPointBaseHelper.GetDestinationProviderArtifactId(Constants.IntegrationPoints.DestinationProviders.LOADFILE, SourceWorkspaceArtifactID, Helper),
+				SourceProvider = IntegrationPointBaseHelper.GetSourceProviderArtifactId(Constants.IntegrationPoints.SourceProviders.RELATIVITY, SourceWorkspaceArtifactID, Helper),
+				Type = IntegrationPointBaseHelper.GetTypeArtifactId(Helper, SourceWorkspaceArtifactID, "Export"),
 				DestinationConfiguration = destinationConfiguration,
 				SourceConfiguration = sourceConfiguration,
 				EmailNotificationRecipients = string.Empty,
@@ -120,7 +120,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 			};
 			var createRequest = new CreateIntegrationPointRequest
 			{
-				WorkspaceArtifactId = SourceWorkspaceArtifactId,
+				WorkspaceArtifactId = SourceWorkspaceArtifactID,
 				IntegrationPoint = integrationPointModel
 			};
 
@@ -146,7 +146,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 				CreateDefaultIntegrationPointProfileModel(ImportOverwriteModeEnum.AppendOnly, "profile_name", "Append Only", true));
 
 			IntegrationPointModel integrationPointModel = _client
-				.CreateIntegrationPointFromProfileAsync(SourceWorkspaceArtifactId, profile.ArtifactID, integrationPointName).Result;
+				.CreateIntegrationPointFromProfileAsync(SourceWorkspaceArtifactID, profile.ArtifactID, integrationPointName).Result;
 
 			Data.IntegrationPoint actualIntegrationPoint =
 				IntegrationPointRepository.ReadAsync(integrationPointModel.ArtifactId).GetAwaiter().GetResult();
@@ -170,10 +170,10 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 			var username = "username_933";
 			var password = "password_729";
 
-			OverwriteFieldsModel overwriteFieldsModel = _client.GetOverwriteFieldsChoicesAsync(SourceWorkspaceArtifactId).Result.First(x => x.Name == "Append/Overlay");
+			OverwriteFieldsModel overwriteFieldsModel = _client.GetOverwriteFieldsChoicesAsync(SourceWorkspaceArtifactID).Result.First(x => x.Name == "Append/Overlay");
 
-			CreateIntegrationPointRequest createRequest = IntegrationPointBaseHelper.CreateCreateIntegrationPointRequest(Helper, RepositoryFactory, SourceWorkspaceArtifactId, SavedSearchArtifactId, TypeOfExport,
-				TargetWorkspaceArtifactId, false, true, false, string.Empty, "Use Field Settings", overwriteFieldsModel,
+			CreateIntegrationPointRequest createRequest = IntegrationPointBaseHelper.CreateCreateIntegrationPointRequest(Helper, RepositoryFactory, SourceWorkspaceArtifactID, SavedSearchArtifactID, TypeOfExport,
+				TargetWorkspaceArtifactID, false, true, false, string.Empty, "Use Field Settings", overwriteFieldsModel,
 				GetDefaultFieldMap().ToList(), false);
 
 			createRequest.IntegrationPoint.SecuredConfiguration = new Credentials
@@ -199,10 +199,10 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 		public void ItShouldCreateRelativityIntegrationPoint(bool importNativeFile, bool logErrors, bool useFolderPathInformation, string emailNotificationRecipients,
 			string fieldOverlayBehavior, string overwriteFieldsChoices, bool promoteEligible)
 		{
-			OverwriteFieldsModel overwriteFieldsModel = _client.GetOverwriteFieldsChoicesAsync(SourceWorkspaceArtifactId).Result.First(x => x.Name == overwriteFieldsChoices);
+			OverwriteFieldsModel overwriteFieldsModel = _client.GetOverwriteFieldsChoicesAsync(SourceWorkspaceArtifactID).Result.First(x => x.Name == overwriteFieldsChoices);
 
-			CreateIntegrationPointRequest createRequest = IntegrationPointBaseHelper.CreateCreateIntegrationPointRequest(Helper, RepositoryFactory, SourceWorkspaceArtifactId, SavedSearchArtifactId, TypeOfExport,
-				TargetWorkspaceArtifactId, importNativeFile, logErrors, useFolderPathInformation, emailNotificationRecipients, fieldOverlayBehavior, overwriteFieldsModel, 
+			CreateIntegrationPointRequest createRequest = IntegrationPointBaseHelper.CreateCreateIntegrationPointRequest(Helper, RepositoryFactory, SourceWorkspaceArtifactID, SavedSearchArtifactID, TypeOfExport,
+				TargetWorkspaceArtifactID, importNativeFile, logErrors, useFolderPathInformation, emailNotificationRecipients, fieldOverlayBehavior, overwriteFieldsModel, 
 				GetDefaultFieldMap().ToList(), promoteEligible);
 
 			IntegrationPointModel createdIntegrationPoint = _client.CreateIntegrationPointAsync(createRequest).Result;

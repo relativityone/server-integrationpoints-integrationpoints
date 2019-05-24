@@ -91,14 +91,15 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		}
 
 		[Test]
-		public void RetrieveDocumentsArtifactIDsAsync_ShouldThrowExceptionWhenObjectManagerFailed()
+		public void RetrieveDocumentsArtifactIDsAsync_ShouldRethrowObjectManagerException()
 		{
 			// arrange
+			var exceptionToThrow = new Exception();
 			_objectManagerMock
 				.Setup(x => x.QueryAsync(
 					It.IsAny<QueryRequest>(),
 					It.IsAny<ExecutionIdentity>()))
-				.Throws<Exception>();
+				.Throws(exceptionToThrow);
 
 			// act
 			Func<Task> retrieveAction = () => _sut
@@ -107,7 +108,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 					docIdentifierValues: new[] { string.Empty });
 
 			// assert
-			retrieveAction.ShouldThrow<IntegrationPointsException>();
+			retrieveAction.ShouldThrow<Exception>()
+				.Which.Should().Be(exceptionToThrow);
 		}
 
 		[Test]
@@ -216,21 +218,23 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		}
 
 		[Test]
-		public void RetrieveDocumentsAsync_ShouldThrowExceptionWhenObjectManagerFailed()
+		public void RetrieveDocumentsAsync_ShouldRethrowObjectManagerException()
 		{
 			// arrange
+			var exceptionToThrow = new Exception();
 			_objectManagerMock
 				.Setup(x => x.QueryAsync(
 					It.IsAny<QueryRequest>(),
 					It.IsAny<ExecutionIdentity>()))
-				.Throws<Exception>();
+				.Throws(exceptionToThrow);
 
 			// act
 			Func<Task> retrieveDocumentsAction = () => _sut
 				.RetrieveDocumentsAsync(Enumerable.Empty<int>(), new HashSet<int>());
 
 			// assert
-			retrieveDocumentsAction.ShouldThrow<IntegrationPointsException>();
+			retrieveDocumentsAction.ShouldThrow<Exception>()
+				.Which.Should().Be(exceptionToThrow);
 		}
 
 		[Test]
@@ -294,22 +298,24 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		}
 
 		[Test]
-		public void RetrieveDocumentByIdentifierPrefixAsync_ShouldThrowExceptionWhenObjectManagerFailed()
+		public void RetrieveDocumentByIdentifierPrefixAsync_ShouldRethrowObjectManagerException()
 		{
 			// arrange
+			var exceptionToThrow = new Exception();
 			_objectManagerMock
 				.Setup(x => x.QueryAsync<Document>(
 					It.IsAny<QueryRequest>(),
 					It.IsAny<bool>(),
 					It.IsAny<ExecutionIdentity>()))
-				.Throws<Exception>();
+				.Throws(exceptionToThrow);
 
 			// act
 			Func<Task> retrieveDocumentsAction = () => _sut
 				.RetrieveDocumentByIdentifierPrefixAsync(string.Empty, string.Empty);
 
 			// assert
-			retrieveDocumentsAction.ShouldThrow<IntegrationPointsException>();
+			retrieveDocumentsAction.ShouldThrow<Exception>()
+				.Which.Should().Be(exceptionToThrow);
 		}
 
 		[Test]

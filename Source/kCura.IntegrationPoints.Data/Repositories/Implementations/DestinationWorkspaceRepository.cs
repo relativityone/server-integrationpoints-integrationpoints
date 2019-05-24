@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Utils;
 using Relativity.Services.Objects.DataContracts;
@@ -17,16 +18,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public DestinationWorkspace Query(int targetWorkspaceArtifactId, int? federatedInstanceArtifactId)
 		{
-			string instanceCondition;
-			if (federatedInstanceArtifactId.HasValue)
-			{
-				instanceCondition = $"'{DestinationWorkspaceFields.DestinationInstanceArtifactID}' == {federatedInstanceArtifactId}";
-			}
-			else
-			{
-				instanceCondition = $"(NOT '{DestinationWorkspaceFields.DestinationInstanceArtifactID}' ISSET)";
-			}
-
+			string instanceCondition = federatedInstanceArtifactId.HasValue
+				? $"'{DestinationWorkspaceFields.DestinationInstanceArtifactID}' == {federatedInstanceArtifactId}"
+				: $"(NOT '{DestinationWorkspaceFields.DestinationInstanceArtifactID}' ISSET)";
 
 			var queryRequest = new QueryRequest
 			{
@@ -41,9 +35,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					new FieldRef {Guid = new Guid(DestinationWorkspaceFieldGuids.Name)}
 				}
 			};
-			List<DestinationWorkspace> destinationWorkspaces = _objectManager.Query<DestinationWorkspace>(queryRequest);
 
-			return destinationWorkspaces.Count == 0 ? null : destinationWorkspaces[0];
+			return _objectManager
+				.Query<DestinationWorkspace>(queryRequest)
+				.FirstOrDefault();
 		}
 
 		public DestinationWorkspace Create(int targetWorkspaceArtifactId, string targetWorkspaceName, int? federatedInstanceArtifactId, string federatedInstanceName)

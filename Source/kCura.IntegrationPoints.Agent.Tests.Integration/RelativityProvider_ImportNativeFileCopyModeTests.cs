@@ -3,7 +3,6 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
-using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Agent.Tasks;
@@ -109,16 +108,16 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			);
 
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
-			_sourceWorkspaceDto = Workspace.GetWorkspaceDto(SourceWorkspaceArtifactId);
+			_sourceWorkspaceDto = Workspace.GetWorkspaceDto(SourceWorkspaceArtifactID);
 		}
 
 		[TearDown]
 		public void TearDown()
 		{
-			DocumentService.DeleteAllDocuments(SourceWorkspaceArtifactId);
-			DocumentService.DeleteAllDocuments(TargetWorkspaceArtifactId);
-			FolderService.DeleteUnusedFolders(SourceWorkspaceArtifactId);
-			FolderService.DeleteUnusedFolders(TargetWorkspaceArtifactId);
+			DocumentService.DeleteAllDocuments(SourceWorkspaceArtifactID);
+			DocumentService.DeleteAllDocuments(TargetWorkspaceArtifactID);
+			FolderService.DeleteUnusedFolders(SourceWorkspaceArtifactID);
+			FolderService.DeleteUnusedFolders(TargetWorkspaceArtifactID);
 		}
 
         [Test]
@@ -139,8 +138,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		private void TestNativeFilesImport(bool areNativesPresentInSource, bool areNativesPresentInTarget,
 			bool importNativeFile, ImportNativeFileCopyModeEnum importNativeFileCopyMode, bool shouldBeNativePresentAfterPushInTarget)
 		{
-			ImportDocumentsToWorkspace(SourceWorkspaceArtifactId, areNativesPresentInSource);
-			ImportDocumentsToWorkspace(TargetWorkspaceArtifactId, areNativesPresentInTarget);
+			ImportDocumentsToWorkspace(SourceWorkspaceArtifactID, areNativesPresentInSource);
+			ImportDocumentsToWorkspace(TargetWorkspaceArtifactID, areNativesPresentInTarget);
 
 			// arrange
 			IntegrationPointModel integrationPointModel = CreateIntegrationPointModel(
@@ -149,7 +148,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				importNativeFile, 
 				importNativeFileCopyMode);
 
-			_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, integrationPointModel.ArtifactID, _ADMIN_USER_ID); // run now
+			_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactID, integrationPointModel.ArtifactID, _ADMIN_USER_ID); // run now
 			Job job = null;
 			try
 			{
@@ -158,7 +157,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				_exportManager.Execute(job); // run the job
 
 				// assert
-				VerifyHasNativeForAllDocuments(TargetWorkspaceArtifactId, shouldBeNativePresentAfterPushInTarget);
+				VerifyHasNativeForAllDocuments(TargetWorkspaceArtifactID, shouldBeNativePresentAfterPushInTarget);
 			}
 			finally
 			{
@@ -199,7 +198,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		private string CreateDestinationConfig(bool importNativeFile, ImportNativeFileCopyModeEnum importNativeFileCopyMode)
 		{
 			ImportSettings destinationConfig =
-				CreateDestinationConfigWithTargetWorkspace(ImportOverwriteModeEnum.OverlayOnly, TargetWorkspaceArtifactId);
+				CreateDestinationConfigWithTargetWorkspace(ImportOverwriteModeEnum.OverlayOnly, TargetWorkspaceArtifactID);
 			destinationConfig.ImportNativeFileCopyMode = importNativeFileCopyMode;
 			destinationConfig.ImportNativeFile = importNativeFile;
 

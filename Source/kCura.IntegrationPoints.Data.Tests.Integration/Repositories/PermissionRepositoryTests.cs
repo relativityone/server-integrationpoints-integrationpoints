@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		public override void TestSetup()
 		{
 			_typeRepo = Container.Resolve<IObjectTypeRepository>();
-			_permissionRepo = new PermissionRepository(Helper, SourceWorkspaceArtifactId);
+			_permissionRepo = new PermissionRepository(Helper, SourceWorkspaceArtifactID);
 			_groupId = Group.CreateGroup("krowten");
 			_user = User.CreateUser("Gerron", "BadMan", $"gbadman{_rand.Next(int.MaxValue)}@relativity.com", new[] { _groupId });
 
@@ -54,8 +54,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			Helper.RelativityUserName = _user.EmailAddress;
 			Helper.RelativityPassword = _user.Password;
 
-			Group.AddGroupToWorkspace(SourceWorkspaceArtifactId, _groupId);
-			_groupPermission = kCura.IntegrationPoint.Tests.Core.Permission.GetGroupPermissions(SourceWorkspaceArtifactId, _groupId);
+			Group.AddGroupToWorkspace(SourceWorkspaceArtifactID, _groupId);
+			_groupPermission = kCura.IntegrationPoint.Tests.Core.Permission.GetGroupPermissions(SourceWorkspaceArtifactID, _groupId);
 		}
 
 		public override void TestTeardown()
@@ -77,7 +77,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			GenericPermission permission = _groupPermission.AdminPermissions.FindPermission("Allow Export");
 			permission.Editable = isEditable;
 			permission.Selected = isSelected;
-			kCura.IntegrationPoint.Tests.Core.Permission.SavePermission(SourceWorkspaceArtifactId, _groupPermission);
+			kCura.IntegrationPoint.Tests.Core.Permission.SavePermission(SourceWorkspaceArtifactID, _groupPermission);
 
 			bool result = _permissionRepo.UserCanExport();
 			Assert.AreEqual(expectedResult, result);
@@ -92,7 +92,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			GenericPermission permission = _groupPermission.AdminPermissions.FindPermission("Allow Import");
 			permission.Editable = isEditable;
 			permission.Selected = isSelected;
-			kCura.IntegrationPoint.Tests.Core.Permission.SavePermission(SourceWorkspaceArtifactId, _groupPermission);
+			kCura.IntegrationPoint.Tests.Core.Permission.SavePermission(SourceWorkspaceArtifactID, _groupPermission);
 
 			bool result = _permissionRepo.UserCanImport();
 			Assert.AreEqual(expectedResult, result);
@@ -115,7 +115,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			permission.DeleteSelected = deleteSelected;
 			permission.EditSelected = editSelected;
 			permission.ViewSelected = viewSelected;
-			kCura.IntegrationPoint.Tests.Core.Permission.SavePermission(SourceWorkspaceArtifactId, _groupPermission);
+			kCura.IntegrationPoint.Tests.Core.Permission.SavePermission(SourceWorkspaceArtifactID, _groupPermission);
 
 			bool result = _permissionRepo.UserCanEditDocuments();
 			Assert.AreEqual(expectedResult, result);
@@ -139,7 +139,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 					new GroupRef(_groupId)
 				}
 			};
-			kCura.IntegrationPoint.Tests.Core.Permission.RemoveAddWorkspaceGroup(SourceWorkspaceArtifactId, selector);
+			kCura.IntegrationPoint.Tests.Core.Permission.RemoveAddWorkspaceGroup(SourceWorkspaceArtifactID, selector);
 
 			Assert.IsFalse(_permissionRepo.UserHasPermissionToAccessWorkspace());
 		}
@@ -151,7 +151,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			ObjectPermission permission = _groupPermission.ObjectPermissions.FindPermission("Integration Point");
 			permission.AddSelected = addSelected;
 			permission.ViewSelected = true;
-			kCura.IntegrationPoint.Tests.Core.Permission.SavePermission(SourceWorkspaceArtifactId, _groupPermission);
+			kCura.IntegrationPoint.Tests.Core.Permission.SavePermission(SourceWorkspaceArtifactID, _groupPermission);
 
 			bool result = _permissionRepo.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.IntegrationPoint), ArtifactPermission.Create);
 			Assert.AreEqual(expectedResult, result);
@@ -164,7 +164,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			ObjectPermission permission = _groupPermission.ObjectPermissions.FindPermission("Job History");
 			permission.EditSelected = editSelected;
 			permission.ViewSelected = true;
-			kCura.IntegrationPoint.Tests.Core.Permission.SavePermission(SourceWorkspaceArtifactId, _groupPermission);
+			kCura.IntegrationPoint.Tests.Core.Permission.SavePermission(SourceWorkspaceArtifactID, _groupPermission);
 
 			bool result = _permissionRepo.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.JobHistory), ArtifactPermission.Edit);
 			Assert.AreEqual(expectedResult, result);
@@ -176,7 +176,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		{
 			ObjectPermission permission = _groupPermission.ObjectPermissions.FindPermission("Job History");
 			permission.ViewSelected = viewSelected;
-			kCura.IntegrationPoint.Tests.Core.Permission.SavePermission(SourceWorkspaceArtifactId, _groupPermission);
+			kCura.IntegrationPoint.Tests.Core.Permission.SavePermission(SourceWorkspaceArtifactID, _groupPermission);
 			bool result = _permissionRepo.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.JobHistory), ArtifactPermission.View);
 
 			Assert.AreEqual(result, expectedResult);
@@ -188,7 +188,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		{
 			ObjectPermission permission = _groupPermission.ObjectPermissions.FindPermission("Job History");
 			permission.ViewSelected = viewSelected;
-			kCura.IntegrationPoint.Tests.Core.Permission.SavePermission(SourceWorkspaceArtifactId, _groupPermission);
+			kCura.IntegrationPoint.Tests.Core.Permission.SavePermission(SourceWorkspaceArtifactID, _groupPermission);
 			int jobHistoryErrorTypeId = _typeRepo.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.JobHistory));
 
 			bool result = _permissionRepo.UserHasArtifactTypePermissions(jobHistoryErrorTypeId, new[] { ArtifactPermission.View });
@@ -204,7 +204,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			permission.ViewSelected = viewSelected;
 			permission.EditSelected = editSelected;
 
-			kCura.IntegrationPoint.Tests.Core.Permission.SavePermission(SourceWorkspaceArtifactId, _groupPermission);
+			kCura.IntegrationPoint.Tests.Core.Permission.SavePermission(SourceWorkspaceArtifactID, _groupPermission);
 			int jobHistoryErrorTypeId = _typeRepo.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.JobHistory));
 
 			bool result = _permissionRepo.UserHasArtifactTypePermissions(jobHistoryErrorTypeId, new[] { ArtifactPermission.View, ArtifactPermission.Edit });
@@ -222,7 +222,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			permission.EditSelected = editSelected;
 			permission.ViewSelected = true;
 
-			kCura.IntegrationPoint.Tests.Core.Permission.SavePermission(SourceWorkspaceArtifactId, _groupPermission);
+			kCura.IntegrationPoint.Tests.Core.Permission.SavePermission(SourceWorkspaceArtifactID, _groupPermission);
 			int jobHistoryErrorTypeId = _typeRepo.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.JobHistory));
 
 			bool result = _permissionRepo.UserHasArtifactTypePermissions(jobHistoryErrorTypeId, new[] { ArtifactPermission.Edit, ArtifactPermission.Create });
@@ -254,7 +254,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 
 			if (useAdmin == false)
 			{
-				Group.RemoveGroupFromWorkspace(SourceWorkspaceArtifactId, _groupId);
+				Group.RemoveGroupFromWorkspace(SourceWorkspaceArtifactID, _groupId);
 				Helper.RelativityUserName = _user.EmailAddress;
 				Helper.RelativityPassword = _user.Password;
 			}
