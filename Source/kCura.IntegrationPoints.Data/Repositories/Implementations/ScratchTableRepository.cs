@@ -53,7 +53,14 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			string resourceDBPrepend = GetResourceDBPrepend();
 			string schemalessResourceDataBasePrepend = GetSchemalessResourceDataBasePrepend();
 			string sql = 
-			$@"IF EXISTS (SELECT * FROM {schemalessResourceDataBasePrepend}.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{fullTableName}') SELECT COUNT(*) FROM {resourceDBPrepend}.[{fullTableName}]";
+			$@"
+			IF EXISTS
+				(SELECT *
+				FROM {schemalessResourceDataBasePrepend}.INFORMATION_SCHEMA.TABLES
+				WHERE TABLE_NAME = '{fullTableName}')
+			SELECT COUNT(*)
+			FROM {resourceDBPrepend}.[{fullTableName}]
+			";
 			return _caseContext.ExecuteSqlStatementAsScalar<int>(sql);
 		}
 
