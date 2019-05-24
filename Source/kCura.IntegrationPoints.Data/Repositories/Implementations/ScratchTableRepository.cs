@@ -51,8 +51,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			string fullTableName = GetTempTableName();
 
-			string sql = $@"SELECT * FROM {GetResourceDBPrepend()}.[{fullTableName}]";
-			return _caseContext.ExecuteNonQuerySQLStatement(sql);
+			string sql = $@"SELECT COUNT(*) FROM {GetResourceDBPrepend()}.[{fullTableName}]";
+			return _caseContext.ExecuteSqlStatementAsScalar<int>(sql);
 		}
 
 		public void RemoveErrorDocuments(ICollection<string> docIdentifiers)
