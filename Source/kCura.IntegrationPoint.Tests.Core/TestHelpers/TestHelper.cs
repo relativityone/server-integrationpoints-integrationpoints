@@ -4,6 +4,7 @@ using kCura.Relativity.Client;
 using NSubstitute;
 using Relativity.API;
 using Relativity.Services.ArtifactGuid;
+using Relativity.Services.Folder;
 using Relativity.Services.InstanceSetting;
 using Relativity.Services.ObjectQuery;
 using Relativity.Services.Objects;
@@ -59,6 +60,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			_serviceManager.CreateProxy<IObjectManager>(ExecutionIdentity.CurrentUser).Returns(_ => CreateUserProxy<IObjectManager>());
 			_serviceManager.CreateProxy<IResourceServerManager>(ExecutionIdentity.CurrentUser).Returns(_ => CreateUserProxy<IResourceServerManager>());
 			_serviceManager.CreateProxy<IResourceServerManager>(ExecutionIdentity.System).Returns(_ => CreateAdminProxy<IResourceServerManager>());
+			_serviceManager.CreateProxy<IFolderManager>(ExecutionIdentity.CurrentUser).Returns(_ => CreateUserProxy<IFolderManager>());
 			_serviceManager.GetServicesURL().Returns(SharedVariables.RelativityRestUri);
 		}
 
