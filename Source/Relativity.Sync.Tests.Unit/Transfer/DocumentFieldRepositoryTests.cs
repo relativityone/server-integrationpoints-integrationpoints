@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.Exceptions;
@@ -12,6 +8,12 @@ using Relativity.Sync.Executors;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Transfer;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Moq.Language.Flow;
 
 namespace Relativity.Sync.Tests.Unit.Transfer
 {
@@ -43,15 +45,15 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			string field2Name = "Field 2";
 			RelativityDataType field2RelativityDataType = RelativityDataType.LongText;
 
-			List<string> fieldNames = new List<string> {field1Name, field2Name};
-			
+			List<string> fieldNames = new List<string> { field1Name, field2Name };
+
 			List<RelativityObjectSlim> returnObjects = new List<RelativityObjectSlim>
 			{
 				new RelativityObjectSlim {Values = new List<object> { field1Name, field1RelativityDataType.GetDescription() }},
 				new RelativityObjectSlim {Values = new List<object> { field2Name, field2RelativityDataType.GetDescription() }}
 			};
 
-			QueryResultSlim queryResult = new QueryResultSlim {Objects = returnObjects};
+			QueryResultSlim queryResult = new QueryResultSlim { Objects = returnObjects };
 
 			const int start = 0;
 			_objectManager.Setup(om => om.QuerySlimAsync(_sourceWorkspaceArtifactId, It.IsAny<QueryRequest>(), start, fieldNames.Count, CancellationToken.None)).ReturnsAsync(queryResult);
@@ -82,18 +84,142 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		}
 
 		[Test]
+		public async Task ItShouldThrowArgumentExceptionWhenFieldNamesIsNull()
+		{
+			// Act
+			Func<Task<IDictionary<string, RelativityDataType>>> action = () =>
+				_instance.GetRelativityDataTypesForFieldsByFieldNameAsync(_sourceWorkspaceArtifactId, null, CancellationToken.None);
+
+			// Assert
+			await action.Should().ThrowAsync<ArgumentNullException>().ConfigureAwait(false);
+			_objectManager.Verify(om => om.QuerySlimAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), CancellationToken.None), Times.Never);
+		}
+
+		[Test]
 		public async Task ItShouldThrowKeplerServiceExceptionWhenObjectManagerThrows()
 		{
-			//Arrange
-			List<string> fieldNames = new List<string> {"test"};
-			_objectManager.Setup(om => om.QuerySlimAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), CancellationToken.None)).Throws<ServiceException>();
-			
+			// Arrange
+			List<string> fieldNames = new List<string> { "test" };
+			SetupAnyQuerySlimAsync()
+				.Throws<ServiceException>();
+
 			// Act
 			Func<Task<IDictionary<string, RelativityDataType>>> action = () =>
 				_instance.GetRelativityDataTypesForFieldsByFieldNameAsync(_sourceWorkspaceArtifactId, fieldNames, CancellationToken.None);
 
 			// Assert
 			await action.Should().ThrowAsync<SyncKeplerException>().ConfigureAwait(false);
+		}
+
+		[Test]
+		public async Task ItShouldThrowFieldNotFoundExceptionWhenReturnedObjectsListIsNull()
+		{
+			// Arrange
+			List<string> requestedFieldNames = new List<string> { "Cool Field Name", "Slick Field Name", "Dope Field Name" };
+
+			List<RelativityObjectSlim> returnedObjects = null;
+			QueryResultSlim queryResult = new QueryResultSlim { Objects = returnedObjects };
+			SetupAnyQuerySlimAsync()
+				.ReturnsAsync(queryResult);
+
+			// Act
+			Func<Task<IDictionary<string, RelativityDataType>>> action = () =>
+				_instance.GetRelativityDataTypesForFieldsByFieldNameAsync(_sourceWorkspaceArtifactId, requestedFieldNames, CancellationToken.None);
+
+			// Assert
+			(await action.Should().ThrowAsync<FieldNotFoundException>().ConfigureAwait(false))
+				.Which.Message.Should().ContainAll(requestedFieldNames);
+		}
+
+		[Test]
+		public async Task ItShouldThrowFieldNotFoundExceptionWhenReturnedObjectsListIsEmpty()
+		{
+			// Arrange
+			List<string> requestedFieldNames = new List<string> { "Cool Field Name", "Slick Field Name", "Dope Field Name" };
+
+			List<RelativityObjectSlim> returnedObjects = new List<RelativityObjectSlim>();
+			QueryResultSlim queryResult = new QueryResultSlim { Objects = returnedObjects };
+			SetupAnyQuerySlimAsync()
+				.ReturnsAsync(queryResult);
+
+			// Act
+			Func<Task<IDictionary<string, RelativityDataType>>> action = () =>
+				_instance.GetRelativityDataTypesForFieldsByFieldNameAsync(_sourceWorkspaceArtifactId, requestedFieldNames, CancellationToken.None);
+
+			// Assert
+			(await action.Should().ThrowAsync<FieldNotFoundException>().ConfigureAwait(false))
+				.Which.Message.Should().ContainAll(requestedFieldNames);
+		}
+
+		[Test]
+		public async Task ItShouldThrowFieldNotFoundExceptionWhenFewerObjectsAreReturnedThanExpected()
+		{
+			// Arrange
+			List<string> requestedFieldNames = new List<string> { "Cool Field Name", "Slick Field Name", "Dope Field Name" };
+			List<string> returnedFieldNames = new List<string> { "Cool Field Name", "Dope Field Name" };
+
+			List<RelativityObjectSlim> returnedObjects = returnedFieldNames.Select(GenerateObjectSlimFromFieldName).ToList();
+			QueryResultSlim queryResult = new QueryResultSlim { Objects = returnedObjects };
+			SetupAnyQuerySlimAsync()
+				.ReturnsAsync(queryResult);
+
+			// Act
+			Func<Task<IDictionary<string, RelativityDataType>>> action = () =>
+				_instance.GetRelativityDataTypesForFieldsByFieldNameAsync(_sourceWorkspaceArtifactId, requestedFieldNames, CancellationToken.None);
+
+			// Assert
+			(await action.Should().ThrowAsync<FieldNotFoundException>().ConfigureAwait(false))
+				.Which.Message.Should().ContainAll("Slick Field Name");
+		}
+
+		[Test]
+		public async Task ItShouldRequestUniqueInputFieldNames()
+		{
+			// Arrange
+			List<string> requestedFieldNames = new List<string> { "Cool Field Name", "Slick Field Name", "Dope Field Name", "Slick Field Name", "Dope Field Name" };
+			IEnumerable<string> returnedFieldNames = requestedFieldNames.Distinct();
+
+			List<RelativityObjectSlim> returnedObjects = returnedFieldNames.Select(GenerateObjectSlimFromFieldName).ToList();
+			QueryResultSlim queryResult = new QueryResultSlim { Objects = returnedObjects };
+			SetupAnyQuerySlimAsync()
+				.ReturnsAsync(queryResult);
+
+			// Act
+			await _instance.GetRelativityDataTypesForFieldsByFieldNameAsync(_sourceWorkspaceArtifactId, requestedFieldNames, CancellationToken.None)
+				.ConfigureAwait(false);
+
+			// Assert
+			_objectManager.Verify(x => x.QuerySlimAsync(It.IsAny<int>(),
+				It.Is<QueryRequest>(q => ConditionContainsExactFields(q, requestedFieldNames.Distinct())),
+				It.IsAny<int>(),
+				requestedFieldNames.Distinct().Count(),
+				CancellationToken.None), Times.AtLeastOnce);
+		}
+
+		private ISetup<IObjectManager, Task<QueryResultSlim>> SetupAnyQuerySlimAsync()
+		{
+			return _objectManager.Setup(om => om.QuerySlimAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(),
+				It.IsAny<int>(), It.IsAny<int>(), CancellationToken.None));
+		}
+
+		private static RelativityObjectSlim GenerateObjectSlimFromFieldName(string fieldName)
+		{
+			return new RelativityObjectSlim { Values = new List<object> { fieldName, RelativityDataType.Currency.GetDescription() } };
+		}
+
+		// Performing assertions & then returning true makes any failure easier to locate.
+		// This should be changed if we would verify over more than one invocation.
+		private static bool ConditionContainsExactFields(QueryRequest queryRequest, IEnumerable<string> fieldNames)
+		{
+			string condition = queryRequest.Condition;
+			foreach (string field in fieldNames)
+			{
+				condition.Should()
+					.Contain(field).And
+					.Match(c => c.IndexOf(field, StringComparison.InvariantCulture) == c.LastIndexOf(field, StringComparison.InvariantCulture));
+			}
+
+			return true;
 		}
 	}
 }
