@@ -38,42 +38,21 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 	public class SyncEntityManagerWorkerTests : TestBase
 	{
 		private Data.IntegrationPoint _integrationPoint;
-		private DestinationProvider _destinationProvider;
-		private ICaseServiceContext _caseServiceContext;
-		private IContextContainerFactory _contextContainerFactory;
-		private IDataProviderFactory _dataProviderFactory;
 		private IDataSynchronizer _dataSynchronizer;
-		private IFieldQueryRepository _fieldQueryRepository;
 		private IHelper _helper;
 		private IJobHistoryErrorService _jobHistoryErrorService;
-		private IJobHistoryService _jobHistoryService;
-		private IJobManager _jobManager;
 		private IJobService _jobService;
 		private IJobStopManager _jobStopManager;
-		private IManagerFactory _managerFactory;
-		private IManagerQueueService _managerQueueService;
-		private int _workspaceArtifactId;
-		private IProviderTypeService _providerTypeService;
 		private IIntegrationPointRepository _integrationPointRepository;
-		private IRelativityObjectManager _relativityObjectManager;
-		private IRepositoryFactory _repositoryFactory;
-
 		private ISerializer _jsonSerializer;
-		private ISerializer _serializer;
-		private ISynchronizerFactory _appDomainRdoSynchronizerFactory;
 		private Job _job;
 		private JobHistory _jobHistory;
-		private JobStatisticsService _statisticsService;
-		private List<FieldMap> _fieldsMap;
-		private List<Job> _associatedJobs;
-		private SourceProvider _sourceProvider;
 		private SyncEntityManagerWorker _instance;
-		private TaskParameters _taskParams;
 
-		private readonly string jsonParam1 =
+		private readonly string _jsonParam1 =
 			"{\"BatchInstance\":\"2b7bda1b-11c9-4349-b446-ae5c8ca2c408\",\"BatchParameters\":{\"EntityManagerMap\":{\"9E6D57BEE28D8D4CA9A64765AE9510FB\":\"CN=Middle Manager,OU=Nested,OU=Testing - Users,DC=testing,DC=corp\",\"779561316F4CE44191B150453DE9A745\":\"CN=Top Manager,OU=Testing - Users,DC=testing,DC=corp\",\"2845DA5813991740BA2D6CC6C9765799\":\"CN=Bottom Manager,OU=NestedAgain,OU=Nested,OU=Testing - Users,DC=testing,DC=corp\"},\"EntityManagerFieldMap\":[{\"SourceField\":{\"DisplayName\":\"CustodianIdentifier\",\"FieldIdentifier\":\"objectguid\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"DestinationField\":{\"DisplayName\":\"ManagerIdentidier\",\"FieldIdentifier\":\"distinguishedname\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"FieldMapType\":1}],\"ManagerFieldIdIsBinary\":false,\"ManagerFieldMap\":[{\"SourceField\":{\"DisplayName\":\"mail\",\"FieldIdentifier\":\"mail\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"DestinationField\":{\"DisplayName\":\"Email\",\"FieldIdentifier\":\"1040539\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"FieldMapType\":0},{\"SourceField\":{\"DisplayName\":\"givenname\",\"FieldIdentifier\":\"givenname\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"DestinationField\":{\"DisplayName\":\"First Name\",\"FieldIdentifier\":\"1040546\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":true},\"FieldMapType\":0},{\"SourceField\":{\"DisplayName\":\"sn\",\"FieldIdentifier\":\"sn\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"DestinationField\":{\"DisplayName\":\"Last Name\",\"FieldIdentifier\":\"1040547\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":true},\"FieldMapType\":0},{\"SourceField\":{\"DisplayName\":\"manager\",\"FieldIdentifier\":\"manager\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"DestinationField\":{\"DisplayName\":\"Manager\",\"FieldIdentifier\":\"1040548\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"FieldMapType\":0},{\"SourceField\":{\"DisplayName\":\"objectguid\",\"FieldIdentifier\":\"objectguid\",\"FieldType\":0,\"IsIdentifier\":true,\"IsRequired\":false},\"DestinationField\":{\"DisplayName\":\"UniqueID\",\"FieldIdentifier\":\"1040555\",\"FieldType\":0,\"IsIdentifier\":true,\"IsRequired\":false},\"FieldMapType\":1}]}}";
 
-		private readonly string jsonParam2 =
+		private readonly string _jsonParam2 =
 			"{\"artifactTypeID\":1000051,\"ImportOverwriteMode\":\"AppendOverlay\",\"CaseArtifactId\":1019127,\"EntityManagerFieldContainsLink\":\"true\"}";
 
 		[OneTimeSetUp]
@@ -86,50 +65,50 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		[SetUp]
 		public override void SetUp()
 		{
-			_repositoryFactory = Substitute.For<IRepositoryFactory>();
-			_caseServiceContext = Substitute.For<ICaseServiceContext>();
-			_dataProviderFactory = Substitute.For<IDataProviderFactory>();
+			IRepositoryFactory repositoryFactory = Substitute.For<IRepositoryFactory>();
+			ICaseServiceContext caseServiceContext = Substitute.For<ICaseServiceContext>();
+			IDataProviderFactory dataProviderFactory = Substitute.For<IDataProviderFactory>();
 			_helper = Substitute.For<IHelper>();
-			_serializer = Substitute.For<ISerializer>();
-			_appDomainRdoSynchronizerFactory = Substitute.For<ISynchronizerFactory>();
-			_jobHistoryService = Substitute.For<IJobHistoryService>();
+			ISerializer serializer = Substitute.For<ISerializer>();
+			ISynchronizerFactory appDomainRdoSynchronizerFactory = Substitute.For<ISynchronizerFactory>();
+			IJobHistoryService jobHistoryService = Substitute.For<IJobHistoryService>();
 			_jobHistoryErrorService = Substitute.For<IJobHistoryErrorService>();
-			_jobManager = Substitute.For<IJobManager>();
-			_managerQueueService = Substitute.For<IManagerQueueService>();
-			_statisticsService = Substitute.For<JobStatisticsService>();
-			_managerFactory = Substitute.For<IManagerFactory>();
-			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
+			IJobManager jobManager = Substitute.For<IJobManager>();
+			IManagerQueueService managerQueueService = Substitute.For<IManagerQueueService>();
+			JobStatisticsService statisticsService = Substitute.For<JobStatisticsService>();
+			IManagerFactory managerFactory = Substitute.For<IManagerFactory>();
+			IContextContainerFactory contextContainerFactory = Substitute.For<IContextContainerFactory>();
 			_jobService = Substitute.For<IJobService>();
-			_providerTypeService = Substitute.For<IProviderTypeService>();
+			IProviderTypeService providerTypeService = Substitute.For<IProviderTypeService>();
 			_integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
 
 			_jobStopManager = Substitute.For<IJobStopManager>();
 			_dataSynchronizer = Substitute.For<IDataSynchronizer>();
 
-			_fieldQueryRepository = Substitute.For<IFieldQueryRepository>();
+			IFieldQueryRepository fieldQueryRepository = Substitute.For<IFieldQueryRepository>();
 
 			var helperFactory = Substitute.For<IHelperFactory>();
-			_relativityObjectManager = Substitute.For<IRelativityObjectManager>();
+			IRelativityObjectManager relativityObjectManager = Substitute.For<IRelativityObjectManager>();
 
-			_workspaceArtifactId = 12345;
+			int workspaceArtifactId = 12345;
 
-			_instance = new SyncEntityManagerWorker(_caseServiceContext,
-				_dataProviderFactory,
+			_instance = new SyncEntityManagerWorker(caseServiceContext,
+				dataProviderFactory,
 				_helper,
-				_serializer,
-				_appDomainRdoSynchronizerFactory,
-				_jobHistoryService,
+				serializer,
+				appDomainRdoSynchronizerFactory,
+				jobHistoryService,
 				_jobHistoryErrorService,
-				_jobManager,
-				_managerQueueService,
-				_statisticsService,
-				_managerFactory,
-				_contextContainerFactory,
+				jobManager,
+				managerQueueService,
+				statisticsService,
+				managerFactory,
+				contextContainerFactory,
 				_jobService,
-				_repositoryFactory,
+				repositoryFactory,
 				helperFactory,
-				_relativityObjectManager,
-				_providerTypeService,
+				relativityObjectManager,
+				providerTypeService,
 				_integrationPointRepository);
 
 			_job = JobHelper.GetJob(
@@ -138,7 +117,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				null,
 				1,
 				1,
-				_workspaceArtifactId,
+				workspaceArtifactId,
 				222,
 				TaskType.SyncEntityManagerWorker,
 				new DateTime(),
@@ -158,12 +137,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				DestinationConfiguration = "{ \"artifactTypeID\": 1000036 }",
 				SecuredConfiguration = "sec conf"
 			};
-			_sourceProvider = new SourceProvider
+			SourceProvider sourceProvider = new SourceProvider
 			{
 				Identifier = Guid.NewGuid().ToString(),
 				ApplicationIdentifier = Guid.NewGuid().ToString()
 			};
-			_destinationProvider = new DestinationProvider
+			DestinationProvider destinationProvider = new DestinationProvider
 			{
 				Identifier = Guid.NewGuid().ToString()
 			};
@@ -171,7 +150,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			{
 				ArtifactId = 9876546
 			};
-			_taskParams = new TaskParameters
+			TaskParameters taskParams = new TaskParameters
 			{
 				BatchInstance = Guid.NewGuid(),
 				BatchParameters = new EntityManagerJobParameters
@@ -241,31 +220,31 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 					}
 				}
 			};
-			
-			_associatedJobs = new List<Job> { _job };
-			_fieldsMap = new List<FieldMap>();
+
+			List<Job> associatedJobs = new List<Job> { _job };
+			List<FieldMap> fieldsMap = new List<FieldMap>();
 			_integrationPointRepository.ReadAsync(_job.RelatedObjectArtifactID).Returns(_integrationPoint);
 			_integrationPointRepository.GetSecuredConfiguration(_job.RelatedObjectArtifactID).Returns(_integrationPoint.SecuredConfiguration);
-			_caseServiceContext.RsapiService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider.Value).Returns(_sourceProvider);
-			_caseServiceContext.RsapiService.RelativityObjectManager.Read<DestinationProvider>(_integrationPoint.DestinationProvider.Value).Returns(_destinationProvider);
-			_serializer.Deserialize<TaskParameters>(_job.JobDetails).Returns(_taskParams);
-			_jobHistoryService.CreateRdo(_integrationPoint, _taskParams.BatchInstance,
+			caseServiceContext.RsapiService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider.Value).Returns(sourceProvider);
+			caseServiceContext.RsapiService.RelativityObjectManager.Read<DestinationProvider>(_integrationPoint.DestinationProvider.Value).Returns(destinationProvider);
+			serializer.Deserialize<TaskParameters>(_job.JobDetails).Returns(taskParams);
+			jobHistoryService.CreateRdo(_integrationPoint, taskParams.BatchInstance,
 				JobTypeChoices.JobHistoryRun, Arg.Any<DateTime>()).Returns(_jobHistory);
-			_managerQueueService.AreAllTasksOfTheBatchDone(_job, Arg.Any<string[]>()).Returns(true);
-			_managerQueueService.GetEntityManagerLinksToProcess(_job, Arg.Any<Guid>(), Arg.Any<List<EntityManagerMap>>())
+			managerQueueService.AreAllTasksOfTheBatchDone(_job, Arg.Any<string[]>()).Returns(true);
+			managerQueueService.GetEntityManagerLinksToProcess(_job, Arg.Any<Guid>(), Arg.Any<List<EntityManagerMap>>())
 				.Returns(custodianManagerMaps);
-			_managerFactory.CreateJobStopManager(_jobService, _jobHistoryService, _taskParams.BatchInstance, _job.JobId, true)
+			managerFactory.CreateJobStopManager(_jobService, jobHistoryService, taskParams.BatchInstance, _job.JobId, true)
 				.Returns(_jobStopManager);
-			_serializer.Deserialize<List<FieldMap>>(_integrationPoint.FieldMappings).Returns(_fieldsMap);
+			serializer.Deserialize<List<FieldMap>>(_integrationPoint.FieldMappings).Returns(fieldsMap);
 
-			_relativityObjectManager.Query(Arg.Any<QueryRequest>()).Returns(new List<RelativityObject>());
-			_repositoryFactory.GetFieldQueryRepository(_workspaceArtifactId).Returns(_fieldQueryRepository);
-			_fieldQueryRepository.Read(Arg.Any<Field>()).Returns(fieldResultSet);
-			_appDomainRdoSynchronizerFactory.CreateSynchronizer(new Guid(_destinationProvider.Identifier),
+			relativityObjectManager.Query(Arg.Any<QueryRequest>()).Returns(new List<RelativityObject>());
+			repositoryFactory.GetFieldQueryRepository(workspaceArtifactId).Returns(fieldQueryRepository);
+			fieldQueryRepository.Read(Arg.Any<Field>()).Returns(fieldResultSet);
+			appDomainRdoSynchronizerFactory.CreateSynchronizer(new Guid(destinationProvider.Identifier),
 				Arg.Any<string>(), _integrationPoint.SecuredConfiguration).Returns(_dataSynchronizer);
-			_jobManager.CheckBatchOnJobComplete(_job, _taskParams.BatchInstance.ToString()).Returns(true);
-			_jobManager.GetJobsByBatchInstanceId(_integrationPoint.ArtifactId, _taskParams.BatchInstance)
-				.Returns(_associatedJobs);
+			jobManager.CheckBatchOnJobComplete(_job, taskParams.BatchInstance.ToString()).Returns(true);
+			jobManager.GetJobsByBatchInstanceId(_integrationPoint.ArtifactId, taskParams.BatchInstance)
+				.Returns(associatedJobs);
 		}
 
 		[Test]
@@ -307,7 +286,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		public void GetParameters_Param1_CorrectValues()
 		{
 			//ARRANGE
-			Job job = GetJob(jsonParam1);
+			Job job = GetJob(_jsonParam1);
 			SyncEntityManagerWorker task =
 				new SyncEntityManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 
@@ -319,22 +298,22 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			//ASSERT
 			Assert.AreEqual(new Guid("2b7bda1b-11c9-4349-b446-ae5c8ca2c408"), task.GetType().GetProperty("BatchInstance", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).GetValue(task));
 
-			List<EntityManagerMap> _custodianManagerMap = (List<EntityManagerMap>)task.GetType().GetField("_entityManagerMap", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).GetValue(task);
-			Assert.AreEqual(3, _custodianManagerMap.Count);
-			Assert.AreEqual("779561316F4CE44191B150453DE9A745", _custodianManagerMap[1].EntityID);
-			Assert.AreEqual("CN=Bottom Manager,OU=NestedAgain,OU=Nested,OU=Testing - Users,DC=testing,DC=corp", _custodianManagerMap[2].OldManagerID);
+			List<EntityManagerMap> custodianManagerMap = (List<EntityManagerMap>)task.GetType().GetField("_entityManagerMap", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).GetValue(task);
+			Assert.AreEqual(3, custodianManagerMap.Count);
+			Assert.AreEqual("779561316F4CE44191B150453DE9A745", custodianManagerMap[1].EntityID);
+			Assert.AreEqual("CN=Bottom Manager,OU=NestedAgain,OU=Nested,OU=Testing - Users,DC=testing,DC=corp", custodianManagerMap[2].OldManagerID);
 
-			List<FieldMap> _custodianManagerFieldMap = (List<FieldMap>)task.GetType().GetField("_entityManagerFieldMap", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).GetValue(task);
-			Assert.AreEqual(1, _custodianManagerFieldMap.Count);
-			Assert.AreEqual(FieldMapTypeEnum.Identifier, _custodianManagerFieldMap[0].FieldMapType);
-			Assert.AreEqual("objectguid", _custodianManagerFieldMap[0].SourceField.FieldIdentifier);
-			Assert.AreEqual("distinguishedname", _custodianManagerFieldMap[0].DestinationField.FieldIdentifier);
+			List<FieldMap> custodianManagerFieldMap = (List<FieldMap>)task.GetType().GetField("_entityManagerFieldMap", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).GetValue(task);
+			Assert.AreEqual(1, custodianManagerFieldMap.Count);
+			Assert.AreEqual(FieldMapTypeEnum.Identifier, custodianManagerFieldMap[0].FieldMapType);
+			Assert.AreEqual("objectguid", custodianManagerFieldMap[0].SourceField.FieldIdentifier);
+			Assert.AreEqual("distinguishedname", custodianManagerFieldMap[0].DestinationField.FieldIdentifier);
 
-			List<FieldMap> _managerFieldMap = (List<FieldMap>)task.GetType().GetField("_managerFieldMap", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).GetValue(task);
-			Assert.AreEqual(5, _managerFieldMap.Count);
+			List<FieldMap> managerFieldMap = (List<FieldMap>)task.GetType().GetField("_managerFieldMap", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).GetValue(task);
+			Assert.AreEqual(5, managerFieldMap.Count);
 
-			bool _managerFieldIdIsBinary = (bool)task.GetType().GetField("_managerFieldIdIsBinary", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).GetValue(task);
-			Assert.AreEqual(false, _managerFieldIdIsBinary);
+			bool managerFieldIdIsBinary = (bool)task.GetType().GetField("_managerFieldIdIsBinary", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).GetValue(task);
+			Assert.AreEqual(false, managerFieldIdIsBinary);
 		}
 
 		[Test]
@@ -343,7 +322,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			//ARRANGE
 			SyncEntityManagerWorker task =
 				new SyncEntityManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-			_integrationPoint.DestinationConfiguration = jsonParam2;
+			_integrationPoint.DestinationConfiguration = _jsonParam2;
 			task.GetType().GetProperty("IntegrationPoint", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).SetValue(task, _integrationPoint);
 			
 			//ACT

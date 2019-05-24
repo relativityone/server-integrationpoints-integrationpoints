@@ -42,7 +42,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly IHelperFactory _helperFactory;
 		private readonly IRelativityObjectManager _relativityObjectManager;
-		private IEnumerable<FieldMap> _entityManagerFieldMap;
 		private List<EntityManagerMap> _entityManagerMap;
 		private bool _managerFieldIdIsBinary;
 		private IEnumerable<FieldMap> _managerFieldMap;
@@ -104,8 +103,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				_workspaceArtifactId = job.WorkspaceID;
 				
 				//check if all tasks are done for this batch yet
-				bool IsPrimaryBatchWorkComplete = _managerQueueService.AreAllTasksOfTheBatchDone(job, new[] { TaskType.SyncEntityManagerWorker.ToString() });
-				if (!IsPrimaryBatchWorkComplete)
+				bool isPrimaryBatchWorkComplete = _managerQueueService.AreAllTasksOfTheBatchDone(job, new[] { TaskType.SyncEntityManagerWorker.ToString() });
+				if (!isPrimaryBatchWorkComplete)
 				{
 					new TaskJobSubmitter(JobManager, job, TaskType.SyncEntityManagerWorker, BatchInstance).SubmitJob(jobParameters);
 					return;
@@ -215,11 +214,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_entityManagerMap = jobParameters.EntityManagerMap.Select(
 				x => new EntityManagerMap { EntityID = x.Key, OldManagerID = x.Value }).ToList();
 
-			_entityManagerFieldMap = jobParameters.EntityManagerFieldMap;
+			IEnumerable<FieldMap>  entityManagerFieldMap = jobParameters.EntityManagerFieldMap;
 			_managerFieldMap = jobParameters.ManagerFieldMap;
 			_managerFieldIdIsBinary = jobParameters.ManagerFieldIdIsBinary;
 
-			SetManagerFieldIDs(_entityManagerFieldMap, _managerFieldMap);
+			SetManagerFieldIDs(entityManagerFieldMap, _managerFieldMap);
 
 			return jobParameters;
 		}

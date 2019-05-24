@@ -4,7 +4,6 @@ using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Agent.Tasks;
-using kCura.IntegrationPoints.Agent.Validation;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
@@ -32,14 +31,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private ExportManager _instanceToTest;
 
 		private IJobManager _jobManagerMock;
-		private ICaseServiceContext _caseServiceContextMock;
 		private IContextContainerFactory _contextContainerFactoryMock;
 		private IHelper _helperMock;
-		private IManagerFactory _managerFactoryMock;
 		private ISerializer _serializerMock;
 		private IExportInitProcessService _exportInitProcessService;
 		private IIntegrationPointService _integrationPointService;
-		private IAgentValidator _agentValidator;
+
 
 		private readonly Job _job = JobHelper.GetJob(1, 2, 3, 4, 5, 6, 7, TaskType.ExportWorker,
 				DateTime.MinValue, DateTime.MinValue, null, 1, DateTime.MinValue, 2, "", null);
@@ -51,12 +48,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		{
 			_contextContainerFactoryMock = Substitute.For<IContextContainerFactory>();
 			_jobManagerMock = Substitute.For<IJobManager>();
-			_caseServiceContextMock = Substitute.For<ICaseServiceContext>();
+			ICaseServiceContext caseServiceContextMock = Substitute.For<ICaseServiceContext>();
 			_helperMock = Substitute.For<IHelper>();
-			_managerFactoryMock = Substitute.For<IManagerFactory>();
+			IManagerFactory managerFactoryMock = Substitute.For<IManagerFactory>();
 			_serializerMock = Substitute.For<ISerializer>();
 			_exportInitProcessService = Substitute.For<IExportInitProcessService>();
-			_agentValidator = Substitute.For<IAgentValidator>();
+			IAgentValidator agentValidator = Substitute.For<IAgentValidator>();
 			_integrationPointService = Substitute.For<IIntegrationPointService>();
 
 			_instanceToTest = new ExportManager(Substitute.For<ICaseServiceContext>(),
@@ -68,13 +65,13 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				_serializerMock,
 				Substitute.For<IGuidService>(),
 				Substitute.For<IJobHistoryService>(),
-				Substitute.For<JobHistoryErrorService>(_caseServiceContextMock, _helperMock),
+				Substitute.For<JobHistoryErrorService>(caseServiceContextMock, _helperMock),
 				Substitute.For<IScheduleRuleFactory>(),
-				_managerFactoryMock,
+				managerFactoryMock,
 				_contextContainerFactoryMock,
 				new List<IBatchStatus>(),
 				_exportInitProcessService,
-				_agentValidator);
+				agentValidator);
 		}
 
 		[TestCase(10)]
@@ -128,20 +125,3 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		}
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

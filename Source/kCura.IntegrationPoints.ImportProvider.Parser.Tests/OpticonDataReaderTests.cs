@@ -1,19 +1,9 @@
 ﻿using System.Data;
 using System.IO;
-using System.Reflection;
-
-using System.Linq;
-using kCura.Apps.Common.Utils.Serializers;
-using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core;
 using NUnit.Framework;
 using NSubstitute;
-using kCura.IntegrationPoints.ImportProvider.Parser.Services;
-using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Domain.Models;
-
-using kCura.WinEDDS;
 using kCura.WinEDDS.Api;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
@@ -29,14 +19,11 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 		OpticonDataReader _instance;
 		IImageReader _opticonFileReader;
 		ImageRecord _imageRecord;
-		ImageLoadFile _imageLoadFile;
-		ImportProviderSettings _providerSettings;
 
 		[SetUp]
 		public override void SetUp()
 		{
-			_providerSettings = new ImportProviderSettings();
-			_imageLoadFile = new ImageLoadFile();
+			ImportProviderSettings _providerSettings = new ImportProviderSettings();
 			_imageRecord = new ImageRecord
 			{
 				BatesNumber = _BATES_NUMBER,
@@ -51,7 +38,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 			_opticonFileReader.HasMoreRecords.Returns(true);
 			_opticonFileReader.CountRecords().Returns(_RECORD_COUNT);
 
-			_instance = new OpticonDataReader(_providerSettings, _imageLoadFile, _opticonFileReader);
+			_instance = new OpticonDataReader(_providerSettings, _opticonFileReader);
 		}
 
 		[Test]

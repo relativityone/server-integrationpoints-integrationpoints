@@ -1,15 +1,8 @@
-﻿using System.Data;
-using System.IO;
-
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using NSubstitute;
-
-using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Api;
-using NSubstitute.Core;
-using NSubstitute.ExceptionExtensions;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 {

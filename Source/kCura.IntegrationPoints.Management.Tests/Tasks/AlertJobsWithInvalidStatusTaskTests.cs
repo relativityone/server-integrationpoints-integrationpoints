@@ -8,7 +8,6 @@ using kCura.IntegrationPoints.Management.Tasks.Helpers;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.Telemetry.APM;
-using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.Management.Tests.Tasks
 {
@@ -24,7 +23,7 @@ namespace kCura.IntegrationPoints.Management.Tests.Tasks
 			_jobsWithInvalidStatus = Substitute.For<IJobsWithInvalidStatus>();
 			_apm = Substitute.For<IAPM>();
 
-			_instance = new AlertJobsWithInvalidStatusTask(_jobsWithInvalidStatus, _apm);
+			_instance = new AlertJobsWithInvalidStatusTask(_apm);
 		}
 
 		[Test]

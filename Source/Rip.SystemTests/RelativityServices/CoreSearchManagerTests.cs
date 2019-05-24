@@ -42,7 +42,6 @@ namespace Rip.SystemTests.RelativityServices
 		private Lazy<ITestHelper> _testHelperLazy;
 		private IObjectManager _objectManager;
 		private IViewManager _viewManager;
-		private DocumentsTestData _documentsTestData;
 		private DocumentTestCase[] _documentTestCases;
 		private WorkspaceService _workspaceService;
 
@@ -68,12 +67,12 @@ namespace Rip.SystemTests.RelativityServices
 			_objectManager = _testHelperLazy.Value.CreateUserProxy<IObjectManager>();
 			_viewManager = _testHelperLazy.Value.CreateUserProxy<IViewManager>();
 
-			_documentsTestData = DocumentTestDataBuilder.BuildTestData(
+			DocumentsTestData documentsTestData = DocumentTestDataBuilder.BuildTestData(
 				withNatives: true, 
 				testDataType: DocumentTestDataBuilder.TestDataType.SmallWithoutFolderStructure
 			);
-			_documentTestCases = DocumentTestCaseArranger.CreateTestCases(_documentsTestData);
-			_workspaceService.ImportData(_workspaceID, _documentsTestData);
+			_documentTestCases = DocumentTestCaseArranger.CreateTestCases(documentsTestData);
+			_workspaceService.ImportData(_workspaceID, documentsTestData);
 			await DocumentTestCaseArranger.FillTestCasesWithDocumentArtifactIDsAsync(
 				_workspaceID,
 				_documentTestCases,

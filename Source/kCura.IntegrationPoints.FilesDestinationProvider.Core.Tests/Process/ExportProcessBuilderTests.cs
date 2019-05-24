@@ -17,7 +17,6 @@ using kCura.WinEDDS.Exporters;
 using kCura.WinEDDS.Service.Export;
 using NSubstitute;
 using NUnit.Framework;
-using Relativity;
 using Relativity.API;
 using System;
 using System.Collections.Generic;
@@ -36,7 +35,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 	public class ExportProcessBuilderTests : TestBase
 	{
 		private readonly string JobName = "Name";
-		private readonly DateTime JobStart = new DateTime(2020, 1, 1, 10, 30, 30);
+		private readonly DateTime _jobStart = new DateTime(2020, 1, 1, 10, 30, 30);
 
 		private class BatchReporterMock : IBatchReporter, ILoggingMediator
 		{
@@ -66,13 +65,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		private ICompositeLoggingMediator _loggingMediator;
 		private IUserMessageNotification _userMessageNotification;
 		private IUserNotification _userNotification;
-		private IConfigFactory _configFactory;
 		private JobStatisticsService _jobStatisticsService;
-		private IJobInfoFactory _jobInfoFactoryMock;
-		private IJobInfo _jobInfoMock;
-		private IDirectory _directoryWrap;
-		private IExportServiceFactory _exportServiceFactory;
-		private WinEDDS.Service.Export.IServiceFactory _serviceFactory;
+		private IServiceFactory _serviceFactory;
 		private IRepositoryFactory _repositoryFactory;
 
 		private Job _job;
@@ -100,21 +94,21 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			_loggingMediator = Substitute.For<ICompositeLoggingMediator>();
 			_userMessageNotification = Substitute.For<IUserMessageNotification>();
 			_userNotification = Substitute.For<IUserNotification>();
-			_configFactory = Substitute.For<IConfigFactory>();
+			IConfigFactory configFactory = Substitute.For<IConfigFactory>();
 
 			_jobStatisticsService = Substitute.For<JobStatisticsService>();
 
-			_jobInfoFactoryMock = Substitute.For<IJobInfoFactory>();
-			_jobInfoMock = Substitute.For<IJobInfo>();
-			_directoryWrap = Substitute.For<IDirectory>();
+			IJobInfoFactory jobInfoFactoryMock = Substitute.For<IJobInfoFactory>();
+			IJobInfo jobInfoMock = Substitute.For<IJobInfo>();
+			IDirectory directoryWrap = Substitute.For<IDirectory>();
 
-			_jobInfoFactoryMock.Create(Arg.Any<Job>()).Returns(_jobInfoMock);
+			jobInfoFactoryMock.Create(Arg.Any<Job>()).Returns(jobInfoMock);
 
-			_jobInfoMock.GetStartTimeUtc().Returns(JobStart);
-			_jobInfoMock.GetName().Returns(JobName);
+			jobInfoMock.GetStartTimeUtc().Returns(_jobStart);
+			jobInfoMock.GetName().Returns(JobName);
 			_serviceFactory = Substitute.For<IServiceFactory>();
-			_exportServiceFactory = Substitute.For<IExportServiceFactory>();
-			_exportServiceFactory.Create(Arg.Any<ExportDataContext>()).Returns(_serviceFactory);
+			IExportServiceFactory exportServiceFactory = Substitute.For<IExportServiceFactory>();
+			exportServiceFactory.Create(Arg.Any<ExportDataContext>()).Returns(_serviceFactory);
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
 
 			var helper = Substitute.For<IHelper>();
@@ -126,7 +120,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			MockSearchManagerReturnValue(ViewFieldInfoMockFactory.CreateMockedViewFieldInfoArray(AllExportableAvfIds.Keys.ToList()));
 
 			_exportProcessBuilder = new ExportProcessBuilder(
-				_configFactory,
+				configFactory,
 				_loggingMediator,
 				_userMessageNotification,
 				_userNotification,
@@ -135,9 +129,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 				_exportFileBuilder,
 				helper,
 				_jobStatisticsService,
-				_jobInfoFactoryMock,
-				_directoryWrap,
-				_exportServiceFactory,
+				jobInfoFactoryMock,
+				directoryWrap,
+				exportServiceFactory,
 				_repositoryFactory
 			);
 
@@ -435,7 +429,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		{
 			const int fieldArtifactId = 123456;
 
-			ViewFieldInfo[] fieldInfos = ViewFieldInfoMockFactory.CreateMockedViewFieldInfoArray(AllExportableAvfIds.Keys.ToList(), true, fieldArtifactId);
+			ViewFieldInfoMockFactory.CreateMockedViewFieldInfoArray(AllExportableAvfIds.Keys.ToList(), true, fieldArtifactId);
 
 		}
 
