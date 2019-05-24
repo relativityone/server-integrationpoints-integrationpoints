@@ -57,7 +57,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				return;
 			}
-			string documentList = "(" + String.Join(",", docIds) + ")";
+			string documentList = $"({string.Join(",", docIds)})";
 
 			string fullTableName = GetTempTableName();
 			string resourceDBPrepend = GetResourceDBPrepend();

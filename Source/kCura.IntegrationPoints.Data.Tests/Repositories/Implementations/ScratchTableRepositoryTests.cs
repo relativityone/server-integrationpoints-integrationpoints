@@ -111,9 +111,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		public void RemoveErrorDocuments_ShouldExecuteProperSqlQuery()
 		{
 			//ARRANGE
-			ICollection<string> documentControlNumbers = new[] { "CN1", "CN2", "CN3" };
-			ICollection<int> documentArtifactIDs = new[] { 1, 2, 3 };
-			string documentArtifactIDsAsString = "(" + String.Join(",", documentArtifactIDs) + ")";
+			string[] documentControlNumbers = { "CN1", "CN2", "CN3" };
+			int[] documentArtifactIDs = { 1, 2, 3 };
+			string documentArtifactIDsAsString = $"({string.Join(",", documentArtifactIDs)})";
 
 			_documentRepositoryMock.Setup(x =>
 				x.RetrieveDocumentsAsync(

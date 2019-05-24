@@ -10,7 +10,6 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
-using kCura.Utility.Extensions;
 using NUnit.Framework;
 using Enumerable = System.Linq.Enumerable;
 
@@ -83,13 +82,13 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		}
 
 		[Test]
-		public void GetTempTable_ShouldThrowIfNoDocumentsInScratchTable()
+		public void GetTempTableShouldThrowIfNoDocumentsInScratchTable()
 		{
 			//ARRANGE
 			Action action = () => GetTempTable(_tableName);
-
+			string expectedErrorMessage = $"An error occurred trying to query Temp Table:{ _tableName }. Exception: SQL Statement Failed";
 			//ACT && ASSERT
-			action.ShouldThrow<Exception>();
+			action.ShouldThrow<Exception>().Which.Message.Should().Be(expectedErrorMessage);
 		}
 
 		[TestCase(5, 1)]
@@ -99,25 +98,21 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		{
 			//ARRANGE
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable(1, numDocs));
-			Dictionary<int, string> controlNumbersByDocumentIds = GetDocumentIDToControlNumberMapping();
-			List<int> documentIDs = controlNumbersByDocumentIds.Keys.ToList();
+			Dictionary<int, string> controlNumbersByDocumentIDs = GetDocumentIDToControlNumberMapping();
+			List<int> documentIDs = controlNumbersByDocumentIDs.Keys.ToList();
 			int expectedNumberOfDocuments = documentIDs.Count - numDocsWithErrors;
 
 			_sut.AddArtifactIdsIntoTempTable(documentIDs);
 
-			IList<int> documentsToRemoveArtifactIDs = documentIDs.Take(numDocsWithErrors).ToList();
-			IList<string> documentsToRemoveControlNumbers =
-				controlNumbersByDocumentIds
-					.Where(x => x.Key.In(documentsToRemoveArtifactIDs.ToArray()))
-					.Select(y => y.Value)
-					.ToList();
+			IEnumerable<KeyValuePair<int, string>> controlNumbersByDocumentIDsToRemove = controlNumbersByDocumentIDs.Take(numDocsWithErrors);
+			List<string> documentsControlNumbersToRemove = controlNumbersByDocumentIDsToRemove.Select(x => x.Value).ToList();
+			IEnumerable<int> documentsIDsToRemove = controlNumbersByDocumentIDsToRemove.Select(x => x.Key);
 
 			//ACT
-			_sut.RemoveErrorDocuments(documentsToRemoveControlNumbers);
-			
+			_sut.RemoveErrorDocuments(documentsControlNumbersToRemove);
 
 			//ASSERT
-			AssertErroredDocumentRemoval(_tableName, documentsToRemoveArtifactIDs, expectedNumberOfDocuments);
+			AssertErroredDocumentRemoval(_tableName, documentsIDsToRemove, expectedNumberOfDocuments);
 		}
 
 		[Test]
@@ -125,7 +120,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		{
 			//ARRANGE
 			List<int> documentIDs = Enumerable.Range(0, _DEFAULT_NUMBER_OF_DOCS_TO_CREATE).ToList();
-			List<string> nonExistingDocumentsIdentifiers = new List<string> {"Non Existing Identifier"};
+			var nonExistingDocumentsIdentifiers = new List<string> {"Non Existing Identifier"};
 
 			//ACT
 			_sut.AddArtifactIdsIntoTempTable(documentIDs);
@@ -175,7 +170,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			VerifyTableDisposal(_tableName);
 		}
 
-		[TestCase(100)]
+		[TestCase(10)]
 		public void ReadDocumentIDs_ShouldRetrieveDocumentIDsFromScratchTable(int numDocs)
 		{
 			//ARRANGE
@@ -184,10 +179,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			_sut.AddArtifactIdsIntoTempTable(documentIDs);
 
 			//ACT
-			IEnumerable<int> result = _sut.ReadDocumentIDs(0, numDocs);
+			IEnumerable<int> result = _sut.ReadDocumentIDs(offset: 0, numDocs);
 
 			//ASSERT
-			result.ShouldBeEquivalentTo(documentIDs);
+			result.Should().Equal(documentIDs);
 		}
 
 		[TestCase(100, 30)]
@@ -205,15 +200,15 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			IEnumerable<int> result = _sut.ReadDocumentIDs(offset, numDocs);
 
 			//ASSERT
-			result.ShouldBeEquivalentTo(documentsAfterOffseting);
+			result.Should().Equal(documentsAfterOffseting);
 		}
 
 		[Test]
 		public void ReadDocumentIDs_ShouldRetrieveNotOrderedData()
 		{
 			//ARRANGE
-			int numDocs = 200;
-			int offset = 0;
+			const int numDocs = 200;
+			const int offset = 0;
 			var randomNumberGenerator = new Random();
 			List<int> documentIDs = Enumerable.Range(0, numDocs).OrderBy(x => randomNumberGenerator.Next()).ToList();
 
@@ -223,37 +218,35 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			IEnumerable<int> result = _sut.ReadDocumentIDs(offset, numDocs);
 
 			//ASSERT
-			result.ShouldBeEquivalentTo(documentIDs);
+			result.Should().BeEquivalentTo(documentIDs);
 		}
 
 		[Test]
 		public void ReadDocumentIDs_ShouldRetrieveAllDocumentsInBatches()
 		{
 			//ARRANGE
-			int numDocs = 100;
-			int offset = 30;
+			const int numDocs = 100;
+			const int offset = 30;
 
 			List<int> documentIDs = Enumerable.Range(0, numDocs).ToList();
 
 			_sut.AddArtifactIdsIntoTempTable(documentIDs);
 			int numberOfBatchIterations = (int) Math.Ceiling((double)numDocs / offset);
+
 			//ACT
-			List<int> result = new List<int>();
-			for (int i = 0; i < numberOfBatchIterations; i++)
-			{
-				IEnumerable<int> batchInts = _sut.ReadDocumentIDs(offset*i , offset);
-				result.AddRange(batchInts);
-			}
+			List<int> result = Enumerable.Range(0, numberOfBatchIterations)
+				.SelectMany(batchNumber => _sut.ReadDocumentIDs(offset * batchNumber, offset))
+				.ToList();
 
 			//ASSERT
-			result.ShouldBeEquivalentTo(documentIDs);
+			result.Should().Equal(documentIDs);
 		}
 
 		[Test]
 		[StressTest]
 		public void ReadDocumentIDs_StressTest()
 		{
-			int numDocs = 200000;
+			const int numDocs = 200000;
 			ReadDocumentIDs_ShouldRetrieveDocumentIDsFromScratchTable(numDocs);
 		}
 
@@ -319,13 +312,13 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			}
 		}
 
-		private void AssertErroredDocumentRemoval(string tableName, IEnumerable<int> erroredDocumentArtifactID, int expectedNewCount)
+		private void AssertErroredDocumentRemoval(string tableName, IEnumerable<int> erroredDocumentArtifactIDs, int expectedNewCount)
 		{
 			string targetDatabaseFormat = _resourceDbProvider.GetResourceDbPrepend(SourceWorkspaceArtifactId);
 
 			if (expectedNewCount != 0)
 			{
-				string erroredDocumentsListAsString = "(" + String.Join(",", erroredDocumentArtifactID) + ")";
+				string erroredDocumentsListAsString = $"({string.Join(",", erroredDocumentArtifactIDs)})";
 				string getErroredDocumentQuery =
 				$"SELECT COUNT(*) FROM {targetDatabaseFormat}.[{tableName}] WHERE [ArtifactID] in {erroredDocumentsListAsString}";
 
@@ -333,7 +326,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 				if (entryExists)
 				{
 					throw new Exception(
-						$"Error: {tableName} still contains Document ArtifactID {erroredDocumentArtifactID}, it should have been removed.");
+						$"Error: {tableName} still contains Document ArtifactID {erroredDocumentsListAsString}, it should have been removed.");
 				}
 			}
 
