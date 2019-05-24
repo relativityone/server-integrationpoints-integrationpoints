@@ -50,8 +50,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		public int GetCount()
 		{
 			string fullTableName = GetTempTableName();
-
-			string sql = $@"SELECT COUNT(*) FROM {GetResourceDBPrepend()}.[{fullTableName}]";
+			string resourceDBPrepend = GetResourceDBPrepend();
+			string schemalessResourceDataBasePrepend = GetSchemalessResourceDataBasePrepend();
+			string sql = 
+			$@"IF EXISTS (SELECT * FROM {schemalessResourceDataBasePrepend}.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{fullTableName}') SELECT COUNT(*) FROM {resourceDBPrepend}.[{fullTableName}]";
 			return _caseContext.ExecuteSqlStatementAsScalar<int>(sql);
 		}
 
