@@ -105,7 +105,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public async Task ItShouldReturnAllFields()
 		{
 			// Act
-			IList<FieldInfoDto> result = await _instance.GetAllFieldsAsync(CancellationToken.None).ConfigureAwait(false);
+			IReadOnlyList<FieldInfoDto> result = await _instance.GetAllFieldsAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			result.Should().Contain(f => f.DisplayName == _DOCUMENT_SPECIAL_FIELD_NAME).Which.DocumentFieldIndex.Should().BeGreaterOrEqualTo(0);
@@ -165,7 +165,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_instance = new FieldManager(_configuration.Object, _documentFieldRepository.Object, Enumerable.Empty<ISpecialFieldBuilder>());
 
 			// Act
-			Func<Task<IList<FieldInfoDto>>> action = () => _instance.GetAllFieldsAsync(CancellationToken.None);
+			Func<Task<IReadOnlyList<FieldInfoDto>>> action = () => _instance.GetAllFieldsAsync(CancellationToken.None);
 
 			// Assert
 			await action.Should().NotThrowAsync().ConfigureAwait(false);

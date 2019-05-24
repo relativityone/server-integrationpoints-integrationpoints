@@ -263,7 +263,7 @@ namespace Relativity.Sync.Tests.Unit
 			const int batchSize = 1;
 			ExportBatcherReturnsBatches(GenerateBatch(batchSize), EmptyBatch());
 
-			Mock<ISourceWorkspaceDataTableBuilder> builder = new Mock<ISourceWorkspaceDataTableBuilder>();
+			Mock<IBatchDataReaderBuilder> builder = new Mock<IBatchDataReaderBuilder>();
 			builder.Setup(x => x.BuildAsync(It.IsAny<int>(), It.IsAny<RelativityObjectSlim[]>(), CancellationToken.None))
 				.Throws(new ServiceException());
 
@@ -282,13 +282,13 @@ namespace Relativity.Sync.Tests.Unit
 
 		private SourceWorkspaceDataReader BuildInstanceUnderTest()
 		{
-			return new SourceWorkspaceDataReader(new SimpleSourceWorkspaceDataTableBuilder(),
+			return new SourceWorkspaceDataReader(new SimpleBatchDataReaderBuilder(), 
 				_configuration.Object,
 				_exportBatcher.Object,
 				Mock.Of<ISyncLog>());
 		}
 
-		private SourceWorkspaceDataReader BuildInstanceUnderTest(ISourceWorkspaceDataTableBuilder dataTableBuilder)
+		private SourceWorkspaceDataReader BuildInstanceUnderTest(IBatchDataReaderBuilder dataTableBuilder)
 		{
 			return new SourceWorkspaceDataReader(dataTableBuilder,
 				_configuration.Object,
