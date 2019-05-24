@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Threading.Tasks;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
@@ -37,7 +38,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		}
 
 		[Test]
-		public void CreateImportJobGoldFlowTest()
+		public async Task CreateImportJobGoldFlowTest()
 		{
 			// Arrange
 			var configuration = new Mock<ISynchronizationConfiguration>(MockBehavior.Loose);
@@ -47,7 +48,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			ImportJobFactory instance = GetTestInstance(importApi);
 
 			// Act
-			Sync.Executors.IImportJob result = instance.CreateImportJob(configuration.Object, _batch.Object);
+			Sync.Executors.IImportJob result = await instance.CreateImportJobAsync(configuration.Object, _batch.Object).ConfigureAwait(false);
 			result.Dispose();
 
 			// Assert
@@ -55,7 +56,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		}
 
 		[Test]
-		public void CreateImportJobHasExtractedFieldPathTest()
+		public async Task CreateImportJobHasExtractedFieldPathTest()
 		{
 			// Arrange
 			var importSettingsDto = new ImportSettingsDto
@@ -71,7 +72,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			ImportJobFactory instance = GetTestInstance(importApi);
 
 			// Act
-			Sync.Executors.IImportJob result = instance.CreateImportJob(configuration.Object, _batch.Object);
+			Sync.Executors.IImportJob result = await instance.CreateImportJobAsync(configuration.Object, _batch.Object).ConfigureAwait(false);
 			result.Dispose();
 
 			// Assert

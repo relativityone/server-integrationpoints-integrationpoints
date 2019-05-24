@@ -62,7 +62,7 @@ namespace Relativity.Sync.Executors
 					IBatch batch = await _batchRepository.GetAsync(configuration.SourceWorkspaceArtifactId, batchId).ConfigureAwait(false);
 
 					_logger.LogVerbose("Processing batch ID: {batchId}", batchId);
-					using (IImportJob importJob = _importJobFactory.CreateImportJob(configuration, batch))
+					using (IImportJob importJob = await _importJobFactory.CreateImportJobAsync(configuration, batch).ConfigureAwait(false))
 					{
 						await importJob.RunAsync(token).ConfigureAwait(false);
 						IEnumerable<int> pushedDocumentArtifactIds = await importJob.GetPushedDocumentArtifactIds().ConfigureAwait(false);
@@ -72,7 +72,7 @@ namespace Relativity.Sync.Executors
 					_logger.LogInformation("Batch ID: {batchId} processed successfully.", batchId);
 				}
 			}
-			catch (SyncException ex)
+			catch (ImportFailedException ex)
 			{
 				const string message = "Fatal exception occurred while executing import job.";
 				_logger.LogError(ex, message);
@@ -80,7 +80,7 @@ namespace Relativity.Sync.Executors
 			}
 			catch (Exception ex)
 			{
-				const string message = "Unexpected exception occurred while executing import job.";
+				const string message = "Unexpected exception occurred while executing synchronization.";
 				_logger.LogError(ex, message);
 				result = ExecutionResult.Failure(message, ex);
 			}

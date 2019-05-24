@@ -72,7 +72,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			});
 
 			_importJob = new Mock<Sync.Executors.IImportJob>();
-			_importJobFactory.Setup(x => x.CreateImportJob(It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IBatch>())).Returns(_importJob.Object);
+			_importJobFactory.Setup(x => x.CreateImportJobAsync(It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IBatch>())).ReturnsAsync(_importJob.Object);
 
 			_fieldManager.Setup(x => x.GetSpecialFields()).Returns(_specialFields);
 
@@ -178,14 +178,13 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			const int numberOfBatches = 1;
 			SetupBatchRepository(numberOfBatches);
 
-			SyncException syncException = new SyncException(string.Empty, new InvalidOperationException());
-			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).Throws(syncException);
+			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).Throws<ImportFailedException>();
 
 			// act
 			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
 
 			result.Message.Should().Be("Fatal exception occurred while executing import job.");
-			result.Exception.Should().BeOfType<SyncException>().Which.InnerException.Should().BeOfType<InvalidOperationException>();
+			result.Exception.Should().BeOfType<ImportFailedException>();
 			result.Status.Should().Be(ExecutionStatus.Failed);
 		}
 
@@ -200,7 +199,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			// act
 			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
 
-			result.Message.Should().Be("Unexpected exception occurred while executing import job.");
+			result.Message.Should().Be("Unexpected exception occurred while executing synchronization.");
 			result.Exception.Should().BeOfType<InvalidOperationException>();
 			result.Status.Should().Be(ExecutionStatus.Failed);
 		}
@@ -234,7 +233,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			// act
 			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
 
-			result.Message.Should().Be("Unexpected exception occurred while executing import job.");
+			result.Message.Should().Be("Unexpected exception occurred while executing synchronization.");
 			result.Exception.Should().BeOfType<InvalidOperationException>();
 			result.Status.Should().Be(ExecutionStatus.Failed);
 		}

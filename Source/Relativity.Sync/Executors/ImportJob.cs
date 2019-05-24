@@ -9,6 +9,7 @@ namespace Relativity.Sync.Executors
 {
 	internal sealed class ImportJob : IImportJob
 	{
+		private bool _importApiFatalExceptionOccurred;
 		private bool _itemLevelErrorExists;
 		private Exception _importApiException;
 
@@ -26,6 +27,7 @@ namespace Relativity.Sync.Executors
 		public ImportJob(ISyncImportBulkArtifactJob syncImportBulkArtifactJob, ISemaphoreSlim semaphoreSlim, IJobHistoryErrorRepository jobHistoryErrorRepository,
 			int sourceWorkspaceArtifactId, int jobHistoryArtifactId, ISyncLog syncLog)
 		{
+			_importApiFatalExceptionOccurred = false;
 			_itemLevelErrorExists = false;
 			_importApiException = null;
 
@@ -43,17 +45,20 @@ namespace Relativity.Sync.Executors
 
 		private void HandleComplete(JobReport jobReport)
 		{
-			if (_importApiException == null)
+			// IAPI always fires OnComplete event - even when fatal exception has occurred before, so we need to check that.
+			if (!_importApiFatalExceptionOccurred)
 			{
 				_syncImportBulkArtifactJob.ItemStatusMonitor.MarkReadSoFarAsSuccessful();
 				_logger.LogInformation("Batch completed.");
-				_semaphoreSlim.Release();
 			}
+
+			_semaphoreSlim.Release();
 		}
 
 		private void HandleFatalException(JobReport jobReport)
 		{
 			_logger.LogError(jobReport.FatalException, jobReport.FatalException?.Message);
+			_importApiFatalExceptionOccurred = true;
 			_importApiException = jobReport.FatalException;
 
 			_syncImportBulkArtifactJob.ItemStatusMonitor.MarkReadSoFarAsFailed();
@@ -63,8 +68,6 @@ namespace Relativity.Sync.Executors
 				StackTrace = jobReport.FatalException?.StackTrace
 			};
 			CreateJobHistoryError(jobError);
-
-			_semaphoreSlim.Release();
 		}
 
 		private void HandleItemLevelError(IDictionary row)
@@ -110,21 +113,22 @@ namespace Relativity.Sync.Executors
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, "Failed to start executing import job.");
-				throw;
+				const string message = "Failed to start executing import job.";
+				_logger.LogError(ex, message);
+				throw new ImportFailedException(message, ex);
 			}
 
-			// we don't want to cancel waiting for the import job to finish
-			// we instead periodically check the token in the IAPI events
-			// and release the semaphore as needed
+			// Since the import job doesn't support cancellation, we also don't want to cancel waiting for the job to finish.
+			// If it's started, we have to wait and release the semaphore as needed in the IAPI events.
 			await _semaphoreSlim.WaitAsync().ConfigureAwait(false);
 
-			if (_importApiException != null)
+			if (_importApiFatalExceptionOccurred)
+
 			{
 				const string fatalExceptionMessage = "Fatal exception occurred in Import API.";
 				_logger.LogError(_importApiException, fatalExceptionMessage);
 
-				var syncException = new SyncException(fatalExceptionMessage, _importApiException);
+				var syncException = new ImportFailedException(fatalExceptionMessage, _importApiException);
 				executionResult = ExecutionResult.Failure(fatalExceptionMessage, syncException);
 			}
 			else if (_itemLevelErrorExists)
