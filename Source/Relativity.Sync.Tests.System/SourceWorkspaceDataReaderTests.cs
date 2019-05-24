@@ -15,6 +15,8 @@ namespace Relativity.Sync.Tests.System
 	[TestFixture]
 	internal sealed class SourceWorkspaceDataReaderTests : SystemTest
 	{
+		[Test]
+		[Ignore("Depends on an already-created workspace plus specific pre-loaded data")]
 		public async Task ItShouldWork()
 		{
 			const int sourceWorkspaceArtifactId = 1215252;
