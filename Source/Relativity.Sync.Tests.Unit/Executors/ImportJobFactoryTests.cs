@@ -1,5 +1,4 @@
-﻿using System.Data;
-using System.Text;
+﻿using System.Text;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
@@ -9,6 +8,7 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.Unit.Executors
 {
@@ -17,7 +17,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 	public class ImportJobFactoryTests
 	{
 		private Mock<IBatchProgressHandlerFactory> _batchProgressHandlerFactory;
-		private Mock<IDataReader> _dataReader;
+		private Mock<ISourceWorkspaceDataReader> _dataReader;
 		private Mock<IJobHistoryErrorRepository> _jobHistoryErrorRepository;
 
 		private Mock<IBatch> _batch;
@@ -28,7 +28,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		public void OneTimeSetUp()
 		{
 			_batchProgressHandlerFactory = new Mock<IBatchProgressHandlerFactory>();
-			_dataReader = new Mock<IDataReader>();
+			_dataReader = new Mock<ISourceWorkspaceDataReader>();
 			_jobHistoryErrorRepository = new Mock<IJobHistoryErrorRepository>();
 
 			_logger = new EmptyLogger();

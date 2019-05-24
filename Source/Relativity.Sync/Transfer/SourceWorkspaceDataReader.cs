@@ -12,14 +12,13 @@ namespace Relativity.Sync.Transfer
 	/// Reads data from multiple feeds in source workspace in batches, presenting it as if
 	/// it were in one data layer in one batch.
 	/// </summary>
-	internal sealed class SourceWorkspaceDataReader : IDataReader
+	internal sealed class SourceWorkspaceDataReader : ISourceWorkspaceDataReader
 	{
 		private IDataReader _currentReader;
 		private Guid? _batchToken;
 
 		private readonly IRelativityExportBatcher _exportBatcher;
 		private readonly IFieldManager _fieldManager;
-		private readonly IItemStatusMonitor _itemStatusMonitor;
 		private readonly ISyncLog _logger;
 		private readonly ISynchronizationConfiguration _configuration;
 		private readonly ISourceWorkspaceDataTableBuilder _tableBuilder;
@@ -34,13 +33,16 @@ namespace Relativity.Sync.Transfer
 			_tableBuilder = tableBuilder;
 			_exportBatcher = exportBatcher;
 			_fieldManager = fieldManager;
-			_itemStatusMonitor = itemStatusMonitor;
 			_logger = logger;
 			_configuration = configuration;
+
+			ItemStatusMonitor = itemStatusMonitor;
 
 			_currentReader = EmptyDataReader();
 			_batchToken = null;
 		}
+
+		public IItemStatusMonitor ItemStatusMonitor { get; }
 
 		public bool Read()
 		{
@@ -56,7 +58,7 @@ namespace Relativity.Sync.Transfer
 			{
 				string identifierFieldName = _fieldManager.GetObjectIdentifierFieldAsync(CancellationToken.None).GetAwaiter().GetResult().DisplayName;
 				string itemIdentifier = _currentReader[identifierFieldName].ToString();
-				_itemStatusMonitor.MarkItemAsRead(itemIdentifier);
+				ItemStatusMonitor.MarkItemAsRead(itemIdentifier);
 			}
 			return dataRead;
 		}
@@ -116,7 +118,7 @@ namespace Relativity.Sync.Transfer
 				int documentFieldIndex = identifierField.DocumentFieldIndex;
 				string itemIdentifier = item.Values[documentFieldIndex].ToString();
 				int itemArtifactId = item.ArtifactID;
-				_itemStatusMonitor.AddItem(itemIdentifier, itemArtifactId);
+				ItemStatusMonitor.AddItem(itemIdentifier, itemArtifactId);
 			}
 		}
 

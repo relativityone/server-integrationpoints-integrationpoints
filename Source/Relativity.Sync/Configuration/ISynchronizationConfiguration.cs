@@ -16,6 +16,8 @@ namespace Relativity.Sync.Configuration
 
 		ImportSettingsDto ImportSettings { get; }
 
+		int JobHistoryArtifactId { get; }
+
 		int JobHistoryTagArtifactId { get; }
 
 		string SourceJobTagName { get; }
