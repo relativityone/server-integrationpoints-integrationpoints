@@ -170,7 +170,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 						{
 							Guid = FieldMappingsGuid
 						},
-						Value = job.IntegrationPointModel.FieldMappings
+						Value = FieldMapHelper.FixMappings(job.IntegrationPointModel.FieldMappings, _serializer)
 					},
 					new FieldRefValuePair
 					{
