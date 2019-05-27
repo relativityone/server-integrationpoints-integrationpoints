@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -10,7 +9,6 @@ using NUnit.Framework;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Transfer;
-using Enumerable = System.Linq.Enumerable;
 
 namespace Relativity.Sync.Tests.Unit.Transfer
 {
@@ -68,8 +66,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_configuration.Setup(c => c.SourceWorkspaceArtifactId).Returns(_SOURCE_WORKSPACE_ARTIFACT_ID);
 			_documentFieldRepository = new Mock<IDocumentFieldRepository>();
 			_documentFieldRepository.Setup(r => r.GetRelativityDataTypesForFieldsByFieldNameAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<ICollection<string>>(), CancellationToken.None))
-				.Returns<int, ICollection<string>, CancellationToken>((workspaceId, fieldNames, token) =>
-					Task.FromResult((IDictionary<string, RelativityDataType>) fieldNames.ToDictionary(f => f, _ => _NON_SPECIAL_DOCUMENT_FIELD_RELATIVITY_DATA_TYPE)));
+				.ReturnsAsync<int, ICollection<string>, CancellationToken, IDocumentFieldRepository, IDictionary<string, RelativityDataType>>(
+					(workspaceId, fieldNames, token) => fieldNames.ToDictionary(f => f, _ => _NON_SPECIAL_DOCUMENT_FIELD_RELATIVITY_DATA_TYPE));
 
 			_instance = new FieldManager(_configuration.Object, _documentFieldRepository.Object, new[] {_builder1.Object, _builder2.Object});
 		}
@@ -77,8 +75,10 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		[Test]
 		public void ItShouldReturnSpecialFields()
 		{
+			// Act
 			IList<FieldInfoDto> result = _instance.GetSpecialFields().ToList();
 
+			// Assert
 			result.Should().Contain(f => f.DisplayName == _DOCUMENT_SPECIAL_FIELD_NAME);
 			result.Should().Contain(f => f.DisplayName == _NON_DOCUMENT_SPECIAL_FIELD_1_NAME);
 			result.Should().Contain(f => f.DisplayName == _NON_DOCUMENT_SPECIAL_FIELD_2_NAME);
@@ -89,8 +89,10 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		[Test]
 		public async Task ItShouldReturnDocumentFields()
 		{
+			// Act
 			IList<FieldInfoDto> result = await _instance.GetDocumentFieldsAsync(CancellationToken.None).ConfigureAwait(false);
 
+			// Assert
 			result.Should().Contain(f => f.DisplayName == _DOCUMENT_SPECIAL_FIELD_NAME).Which.DocumentFieldIndex.Should().BeGreaterOrEqualTo(0);
 			result.Should().Contain(f => f.DisplayName == _MAPPED_FIELD_1_NAME).Which.DocumentFieldIndex.Should().BeGreaterOrEqualTo(0);
 			result.Should().Contain(f => f.DisplayName == _MAPPED_FIELD_2_NAME).Which.DocumentFieldIndex.Should().BeGreaterOrEqualTo(0);
@@ -103,7 +105,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public async Task ItShouldReturnAllFields()
 		{
 			// Act
-			IList<FieldInfoDto> result = await _instance.GetAllFieldsAsync(CancellationToken.None).ConfigureAwait(false);
+			IReadOnlyList<FieldInfoDto> result = await _instance.GetAllFieldsAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			result.Should().Contain(f => f.DisplayName == _DOCUMENT_SPECIAL_FIELD_NAME).Which.DocumentFieldIndex.Should().BeGreaterOrEqualTo(0);
@@ -159,30 +161,39 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		[Test]
 		public async Task ItShouldNotThrowOnGetAllFieldsWhenNoSpecialFieldBuildersFound()
 		{
+			// Arrange
 			_instance = new FieldManager(_configuration.Object, _documentFieldRepository.Object, Enumerable.Empty<ISpecialFieldBuilder>());
 
-			Func<Task<IList<FieldInfoDto>>> action = () => _instance.GetAllFieldsAsync(CancellationToken.None);
+			// Act
+			Func<Task<IReadOnlyList<FieldInfoDto>>> action = () => _instance.GetAllFieldsAsync(CancellationToken.None);
 
+			// Assert
 			await action.Should().NotThrowAsync().ConfigureAwait(false);
 		}
 
 		[Test]
 		public void ItShouldNotThrowOnGetSpecialFieldsWhenNoSpecialFieldBuildersFound()
 		{
+			// Arrange
 			_instance = new FieldManager(_configuration.Object, _documentFieldRepository.Object, Enumerable.Empty<ISpecialFieldBuilder>());
 
+			// Act
 			Func<IEnumerable<FieldInfoDto>> action = () => _instance.GetSpecialFields();
 
+			// Assert
 			action.Should().NotThrow();
 		}
 
 		[Test]
 		public async Task ItShouldNotThrowOnGetDocumentFieldsWhenNoSpecialFieldBuildersFound()
 		{
+			// Arrange
 			_instance = new FieldManager(_configuration.Object, _documentFieldRepository.Object, Enumerable.Empty<ISpecialFieldBuilder>());
 
+			// Act
 			Func<Task<IList<FieldInfoDto>>> action = () => _instance.GetDocumentFieldsAsync(CancellationToken.None);
 
+			// Assert
 			await action.Should().NotThrowAsync().ConfigureAwait(false);
 		}
 	}

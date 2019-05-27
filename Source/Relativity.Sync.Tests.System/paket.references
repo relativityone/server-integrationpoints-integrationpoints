@@ -3,15 +3,13 @@ Relativity.Kepler
 Relativity.Platform.Keywords
 Relativity.Services.Interfaces
 kCura.Relativity.Client
-Relativity.ImportExport
-
+Relativity.DataExchange.Client.SDK
 Microsoft.CodeAnalysis.FxCopAnalyzers
 CSharpGuidelineAnalyzer
-
 Polly
 Autofac
 Newtonsoft.Json
-
 NUnit
 FluentAssertions
 Moq
+relativity.testing.identification

@@ -22,16 +22,16 @@ namespace Relativity.Sync.Transfer
 		private readonly IItemStatusMonitor _itemStatusMonitor;
 		private readonly ISyncLog _logger;
 		private readonly ISynchronizationConfiguration _configuration;
-		private readonly ISourceWorkspaceDataTableBuilder _tableBuilder;
+		private readonly IBatchDataReaderBuilder _readerBuilder;
 
-		public SourceWorkspaceDataReader(ISourceWorkspaceDataTableBuilder tableBuilder,
+		public SourceWorkspaceDataReader(IBatchDataReaderBuilder readerBuilder,
 			ISynchronizationConfiguration configuration,
 			IRelativityExportBatcher exportBatcher,
 			IFieldManager fieldManager,
 			IItemStatusMonitor itemStatusMonitor,
 			ISyncLog logger)
 		{
-			_tableBuilder = tableBuilder;
+			_readerBuilder = readerBuilder;
 			_exportBatcher = exportBatcher;
 			_fieldManager = fieldManager;
 			_itemStatusMonitor = itemStatusMonitor;
@@ -93,16 +93,14 @@ namespace Relativity.Sync.Transfer
 			else
 			{
 				await CreateItemStatusRecords(batch).ConfigureAwait(false);
-				DataTable dt;
 				try
 				{
-					dt = await _tableBuilder.BuildAsync(_configuration.SourceWorkspaceArtifactId, batch, CancellationToken.None).ConfigureAwait(false);
+					nextBatchReader = await _readerBuilder.BuildAsync(_configuration.SourceWorkspaceArtifactId, batch, CancellationToken.None).ConfigureAwait(false);
 				}
 				catch (Exception ex)
 				{
 					throw new SourceDataReaderException("Failed to prepare exported batch for import", ex);
 				}
-				nextBatchReader = dt.CreateDataReader();
 			}
 
 			return nextBatchReader;

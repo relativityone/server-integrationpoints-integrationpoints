@@ -12,6 +12,7 @@ using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Helpers;
 using Relativity.Sync.Tests.System.Stubs;
+using Relativity.Testing.Identification;
 
 namespace Relativity.Sync.Tests.System
 {
@@ -34,7 +35,7 @@ namespace Relativity.Sync.Tests.System
 			_sourceServiceFactoryForAdmin = new ServiceFactoryForAdmin(new ServicesManagerStub(), new DynamicProxyFactoryStub());
 		}
 
-		[Test]
+		[IdentifiedTest("125edbf4-7c69-4be4-8b7d-535571e75abe")]
 		public async Task ItShouldCreateJobHistoryError()
 		{
 			// Arrange

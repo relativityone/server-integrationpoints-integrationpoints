@@ -14,30 +14,19 @@ namespace Relativity.Sync.Tests.System
 	[TestFixture]
 	internal sealed class SourceWorkspaceDataReaderTests : SystemTest
 	{
-		//private int _sourceWorkspaceArtifactId;
-		//private int _dataSourceArtifactId;
-
-		protected override Task ChildSuiteSetup()
-		{
-			//_sourceWorkspaceArtifactId = 0;
-			//_dataSourceArtifactId = 0;
-			return Task.CompletedTask;
-		}
-
-		[Test]
 		public async Task ItShouldWork()
 		{
 			const int sourceWorkspaceArtifactId = 1215252;
 			const int dataSourceArtifactId = 1038052;
 			const int controlNumberFieldId = 1003667;
 			const int extractedTextFieldId = 1003668;
-			const int folderInfoFieldId = 1035366;
+			const string folderInfoFieldName = "field name";
 			ConfigurationStub configuration = new ConfigurationStub
 			{
 				SourceWorkspaceArtifactId = sourceWorkspaceArtifactId,
 				DataSourceArtifactId = dataSourceArtifactId,
 				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.ReadFromField,
-				FolderPathSourceFieldArtifactId = folderInfoFieldId,
+				FolderPathSourceFieldName = folderInfoFieldName,
 				FieldMappings = new List<FieldMap>
 				{
 					new FieldMap
@@ -64,7 +53,7 @@ namespace Relativity.Sync.Tests.System
 			var fieldManager = new FieldManager(configuration, documentFieldRepository, new List<ISpecialFieldBuilder>
 			{
 				new FileInfoFieldsBuilder(new NativeFileRepository(sourceServiceFactory)),
-				new FolderPathFieldBuilder(sourceServiceFactory, new FolderPathRetriever(sourceServiceFactory, new EmptyLogger()), configuration), new SourceTagsFieldBuilder()
+				new FolderPathFieldBuilder(sourceServiceFactory, new FolderPathRetriever(sourceServiceFactory, new EmptyLogger()), configuration), new SourceTagsFieldBuilder(configuration)
 			});
 			var executor = new DataSourceSnapshotExecutor(sourceServiceFactory, fieldManager, new EmptyLogger());
 
@@ -74,7 +63,7 @@ namespace Relativity.Sync.Tests.System
 			RelativityExportBatcher batcher = new RelativityExportBatcher(sourceServiceFactory, new BatchRepository(sourceServiceFactory));
 			ItemStatusMonitor monitor = new ItemStatusMonitor();
 			const int resultsBlockSize = 100;
-			SourceWorkspaceDataReader dataReader = new SourceWorkspaceDataReader(new SourceWorkspaceDataTableBuilder(fieldManager), configuration, batcher, fieldManager, monitor, new EmptyLogger());
+			SourceWorkspaceDataReader dataReader = new SourceWorkspaceDataReader(new BatchDataReaderBuilder(fieldManager), configuration, batcher, fieldManager, monitor, new EmptyLogger());
 
 			ConsoleLogger logger = new ConsoleLogger();
 			object[] tmpTable = new object[resultsBlockSize];

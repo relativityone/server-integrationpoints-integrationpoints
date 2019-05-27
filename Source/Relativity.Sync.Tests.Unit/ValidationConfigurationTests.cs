@@ -25,7 +25,7 @@ namespace Relativity.Sync.Tests.Unit
 		private static readonly Guid DataSourceArtifactIdGuid = new Guid("6D8631F9-0EA1-4EB9-B7B2-C552F43959D0");
 		private static readonly Guid EmailNotificationRecipientsGuid = new Guid("4F03914D-9E86-4B72-B75C-EE48FEEBB583");
 		private static readonly Guid FieldOverlayBehaviorGuid = new Guid("34ECB263-1370-4D6C-AC11-558447504EC4");
-		private static readonly Guid FolderPathSourceFieldArtifactIdGuid = new Guid("BF5F07A3-6349-47EE-9618-1DD32C9FD998");
+		private static readonly Guid FolderPathSourceFieldNameGuid = new Guid("66A37443-EF92-47ED-BEEA-392464C853D3");
 		private static readonly Guid ImportOverwriteModeGuid = new Guid("1914D2A3-A1FF-480B-81DC-7A2AA563047A");
 		private static readonly Guid JobHistoryGuid = new Guid("5D8F7F01-25CF-4246-B2E2-C05882539BB2");
 
@@ -95,9 +95,9 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public void ItShouldRetrieveFolderPathSourceFieldArtifactId()
 		{
-			const int expected = 1;
-			_cache.Setup(x => x.GetFieldValue<int>(FolderPathSourceFieldArtifactIdGuid)).Returns(expected);
-			_configuration.FolderPathSourceFieldArtifactId.Should().Be(expected);
+			const string expected = "name";
+			_cache.Setup(x => x.GetFieldValue<string>(FolderPathSourceFieldNameGuid)).Returns(expected);
+			_configuration.FolderPathSourceFieldName.Should().Be(expected);
 		}
 
 		[Test]
