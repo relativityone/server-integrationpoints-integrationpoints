@@ -53,7 +53,7 @@ namespace Relativity.Sync.Tests.System
 			var fieldManager = new FieldManager(configuration, documentFieldRepository, new List<ISpecialFieldBuilder>
 			{
 				new FileInfoFieldsBuilder(new NativeFileRepository(sourceServiceFactory)),
-				new FolderPathFieldBuilder(sourceServiceFactory, new FolderPathRetriever(sourceServiceFactory, new EmptyLogger()), configuration), new SourceTagsFieldBuilder()
+				new FolderPathFieldBuilder(sourceServiceFactory, new FolderPathRetriever(sourceServiceFactory, new EmptyLogger()), configuration), new SourceTagsFieldBuilder(configuration)
 			});
 			var executor = new DataSourceSnapshotExecutor(sourceServiceFactory, fieldManager, new EmptyLogger());
 
