@@ -151,9 +151,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests
 
 			// Act
 			bool readResult1 = _instance.Read();
-			object accessorResult1 = _instance[_ARTIFACT_ID_FIELD_NAME];
 			bool readResult2 = _instance.Read();
-			object accessorResult2 = _instance[_ARTIFACT_ID_FIELD_NAME];
 			bool readResult3 = _instance.Read();
 
 			// Assert
