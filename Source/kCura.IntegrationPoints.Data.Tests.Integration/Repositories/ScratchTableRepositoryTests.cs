@@ -223,7 +223,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		}
 
 		[TestCase(100, 30)]
-		[TestCase(2000000, 3000, Category = TestCategories.STRESS_TEST)]
+		[TestCase(2000000, 3000, Category = TestCategories.STRESS_TEST, Ignore = "REL-324355 Stress tests should not be run on 'daily' pipeline")]
 		public void ReadDocumentIDs_ShouldRetrieveAllDocumentsInBatches(int numDocs, int batchSize)
 		{
 			//ARRANGE
