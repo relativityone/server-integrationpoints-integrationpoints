@@ -77,9 +77,9 @@ namespace Relativity.Sync.Tests.Common
 		public void SetSourceWorkspaceTag(int artifactId, string name)
 		{
 			SourceWorkspaceTagArtifactId = artifactId;
+			SourceWorkspaceTagName = name;
 		}
-
-
+		
 		public int ExecutingUserId => _ADMIN_ID;
 		public string JobStatus { get; set; }
 		public bool SendEmails { get; set; }

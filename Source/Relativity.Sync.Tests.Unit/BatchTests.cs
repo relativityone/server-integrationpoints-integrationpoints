@@ -39,7 +39,7 @@ namespace Relativity.Sync.Tests.Unit
 		[SetUp]
 		public void SetUp()
 		{
-			Mock<ISourceServiceFactoryForAdmin> serviceFactoryMock = new Mock<ISourceServiceFactoryForAdmin>();
+			var serviceFactoryMock = new Mock<ISourceServiceFactoryForAdmin>();
 			_batchRepository = new BatchRepository(serviceFactoryMock.Object);
 
 			_objectManager = new Mock<IObjectManager>();
@@ -471,7 +471,7 @@ namespace Relativity.Sync.Tests.Unit
 			updateRequest.Object.ArtifactID.Should().Be(_ARTIFACT_ID);
 			updateRequest.FieldValues.Count().Should().Be(1);
 			updateRequest.FieldValues.Should().Contain(x => x.Field.Guid == fieldGuid);
-			updateRequest.FieldValues.Should().Contain(x => ((T) x.Value).Equals(value));
+			updateRequest.FieldValues.Should().Contain(x => ((T)x.Value).Equals(value));
 			return true;
 		}
 
@@ -570,6 +570,53 @@ namespace Relativity.Sync.Tests.Unit
 			queryRequest.ObjectType.Guid.Should().Be(BatchObjectTypeGuid);
 			queryRequest.Condition.Should().Be($"'{SyncConfigurationRelationGuid}' == OBJECT {_ARTIFACT_ID} AND '{StatusGuid}' == 'New'");
 			return true;
+		}
+
+		[Test]
+		[TestCase(new []{0,1})]
+		[TestCase(new int[]{})]
+		public async Task ItShouldGetItemArtifactIds(int[] expectedArtifactIds)
+		{
+			// Arrange
+			const int testStartIndex = 275;
+			const int testTotalItemsCount = 550;
+
+			ReadResult readResult = PrepareReadResult(testTotalItemsCount, testStartIndex);
+			_objectManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<ReadRequest>())).ReturnsAsync(readResult);
+
+			Guid testRunId = Guid.NewGuid();
+			_objectManager.Setup(x => x.RetrieveResultsBlockFromExportAsync(_WORKSPACE_ID, testRunId, testTotalItemsCount, testStartIndex)).ReturnsAsync(() =>
+			{
+				RelativityObjectSlim[] slims = expectedArtifactIds.Select(x => new RelativityObjectSlim {ArtifactID = x}).ToArray();
+				return slims;
+			}).Verifiable();
+
+			// Act
+			IBatch testBatch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
+			IEnumerable<int> actualArtifactIds =  await testBatch.GetItemArtifactIds(testRunId).ConfigureAwait(false);
+
+			// Assert
+			actualArtifactIds.Should().NotBeNull();
+			actualArtifactIds.Should().BeEquivalentTo(expectedArtifactIds);
+
+			Mock.Verify(_objectManager);
+		}
+
+		[Test]
+		public async Task ItShouldThrowExceptionWhenReadingItemArtifactIds()
+		{
+			// Arrange
+			ReadResult readResult = PrepareReadResult();
+			_objectManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<ReadRequest>())).ReturnsAsync(readResult);
+
+			_objectManager.Setup(x => x.RetrieveResultsBlockFromExportAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<int>())).Throws<NotAuthorizedException>().Verifiable();
+
+			// Act
+			IBatch testBatch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
+			Assert.ThrowsAsync<NotAuthorizedException>(async () => await testBatch.GetItemArtifactIds(Guid.Empty).ConfigureAwait(false));
+
+			// Assert
+			Mock.Verify(_objectManager);
 		}
 	}
 }

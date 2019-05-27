@@ -48,7 +48,7 @@ namespace Relativity.Sync.Tests.System
 				}
 			};
 
-			var sourceServiceFactory = new SourceServiceFactoryStub(ServiceFactory);
+			var sourceServiceFactory = new ServiceFactoryStub(ServiceFactory);
 			var documentFieldRepository = new DocumentFieldRepository(sourceServiceFactory, new EmptyLogger());
 			var fieldManager = new FieldManager(configuration, documentFieldRepository, new List<ISpecialFieldBuilder>
 			{

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.Services.Exceptions;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
 using Relativity.Sync.Logging;
@@ -20,7 +22,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 	{
 		private Mock<IBatchRepository> _batchRepository;
 		private Mock<IDateTime> _dateTime;
-
+		private Mock<IDestinationWorkspaceTagRepository> _destinationWorkspaceTagRepository;
 		private Mock<IFieldManager> _fieldManager;
 
 		private Mock<IImportJobFactory> _importJobFactory;
@@ -52,6 +54,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		{
 			_importJobFactory = new Mock<IImportJobFactory>();
 			_batchRepository = new Mock<IBatchRepository>();
+			_destinationWorkspaceTagRepository = new Mock<IDestinationWorkspaceTagRepository>();
 			_syncMetrics = new Mock<ISyncMetrics>();
 			_dateTime = new Mock<IDateTime>();
 			_fieldManager = new Mock<IFieldManager>();
@@ -73,8 +76,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			_fieldManager.Setup(x => x.GetSpecialFields()).Returns(_specialFields);
 
-			_synchronizationExecutor = new SynchronizationExecutor(_importJobFactory.Object, _batchRepository.Object, _syncMetrics.Object,
-				_dateTime.Object, _fieldManager.Object, new EmptyLogger());
+			_synchronizationExecutor = new SynchronizationExecutor(_importJobFactory.Object, _batchRepository.Object, _destinationWorkspaceTagRepository.Object,
+				_syncMetrics.Object, _dateTime.Object, _fieldManager.Object, new EmptyLogger());
 		}
 
 		[Test]
@@ -170,7 +173,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		}
 
 		[Test]
-		public async Task ItShouldProperlyHandleSyncException()
+		public async Task ItShouldProperlyHandleImportSyncException()
 		{
 			const int numberOfBatches = 1;
 			SetupBatchRepository(numberOfBatches);
@@ -187,7 +190,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		}
 
 		[Test]
-		public async Task ItShouldProperlyHandleAnyException()
+		public async Task ItShouldProperlyHandleAnyImportException()
 		{
 			const int numberOfBatches = 1;
 			SetupBatchRepository(numberOfBatches);
@@ -202,9 +205,54 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			result.Status.Should().Be(ExecutionStatus.Failed);
 		}
 
+		[Test]
+		public async Task ItShouldProperlyHandleTagDocumentException()
+		{
+			const int numberOfBatches = 1;
+			SetupBatchRepository(numberOfBatches);
+
+			_destinationWorkspaceTagRepository.Setup(x => x.TagDocumentsAsync(
+				It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IList<int>>(), It.IsAny<CancellationToken>())).Throws<InvalidOperationException>();
+
+			// act
+			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
+
+			result.Message.Should().Be("Unexpected exception occurred while tagging synchronized documents in source workspace.");
+			result.Exception.Should().BeOfType<InvalidOperationException>();
+			result.Status.Should().Be(ExecutionStatus.Failed);
+		}
+
+		[Test]
+		public async Task ItShouldProperlyHandleImportAndTagDocumentExceptions()
+		{
+			const int numberOfBatches = 1;
+			SetupBatchRepository(numberOfBatches);
+
+			const int numberOfExceptions = 2;
+			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).Throws<InvalidOperationException>();
+			_destinationWorkspaceTagRepository.Setup(x => x.TagDocumentsAsync(It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IList<int>>(), It.IsAny<CancellationToken>())).Throws<NotAuthorizedException>();
+
+			// act
+			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
+
+			result.Message.Should().Be("Unexpected exception occurred while executing synchronization. Unexpected exception occurred while tagging synchronized documents in source workspace.");
+			result.Exception.Should().BeOfType<AggregateException>();
+			ReadOnlyCollection<Exception> exceptions = ((AggregateException) result.Exception).InnerExceptions;
+			exceptions.Should().NotBeNullOrEmpty();
+			exceptions.Should().HaveCount(numberOfExceptions);
+			exceptions[0].Should().BeOfType<InvalidOperationException>();
+			exceptions[1].Should().BeOfType<NotAuthorizedException>();
+			result.Status.Should().Be(ExecutionStatus.Failed);
+		}
+
 		private void SetupBatchRepository(int numberOfBatches)
 		{
-			_batchRepository.Setup(x => x.GetAllNewBatchesIdsAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(new int[numberOfBatches].ToList());
+			IEnumerable<int> batches = Enumerable.Repeat(1, numberOfBatches);
+			var batch = new Mock<IBatch>();
+			batch.Setup(x => x.GetItemArtifactIds(It.IsAny<Guid>())).ReturnsAsync(batches);
+
+			_batchRepository.Setup(x => x.GetAllNewBatchesIdsAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(batches);
+			_batchRepository.Setup(x => x.GetAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync((new Mock<IBatch>()).Object);
 		}
 	}
 }

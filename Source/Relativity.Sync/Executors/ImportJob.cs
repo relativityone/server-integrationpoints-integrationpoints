@@ -63,7 +63,7 @@ namespace Relativity.Sync.Executors
 
 		private void HandleItemLevelError(IDictionary row)
 		{
-			string errorMessage = GetValueOrNull(row, _MESSAGE_COLUMN);
+			string errorMessage = $"IAPI {GetValueOrNull(row, _MESSAGE_COLUMN)}";
 			string sourceUniqueId = GetValueOrNull(row, _IDENTIFIER_COLUMN);
 
 			_logger.LogError("Item level error occurred. Source: {sourceUniqueId} Message: {errorMessage}", sourceUniqueId, errorMessage);

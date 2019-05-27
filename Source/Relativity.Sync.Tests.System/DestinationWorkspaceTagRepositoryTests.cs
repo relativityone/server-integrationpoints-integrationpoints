@@ -50,7 +50,7 @@ namespace Relativity.Sync.Tests.System
 			};
 
 			// Act
-			var repository = new DestinationWorkspaceTagRepository(new SourceServiceFactoryStub(ServiceFactory),
+			var repository = new DestinationWorkspaceTagRepository(new ServiceFactoryStub(ServiceFactory),
 				new FederatedInstance(),
 				new TagNameFormatter(new EmptyLogger()),
 				new EmptyLogger(),
