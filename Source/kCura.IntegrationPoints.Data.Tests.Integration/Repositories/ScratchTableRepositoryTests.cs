@@ -5,7 +5,7 @@ using System.Linq;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
-using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
+using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -223,7 +223,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		}
 
 		[TestCase(100, 30)]
-		[TestCase(2000000, 3000), StressTest]
+		[TestCase(2000000, 3000, Category = TestCategories.STRESS_TEST)]
 		public void ReadDocumentIDs_ShouldRetrieveAllDocumentsInBatches(int numDocs, int batchSize)
 		{
 			//ARRANGE
