@@ -17,11 +17,13 @@ using Relativity.Sync.Transfer;
 namespace Relativity.Sync.Tests.Unit
 {
 	[TestFixture]
-	internal sealed class SourceWorkspaceDataReaderTests : IDisposable
+	internal sealed class SourceWorkspaceDataReaderTests
 	{
 		private Mock<IRelativityExportBatcher> _exportBatcher;
-		private SourceWorkspaceDataReader _instance;
 		private Mock<ISynchronizationConfiguration> _configuration;
+		private Mock<IFieldManager> _fieldManager;
+		private Mock<IItemStatusMonitor> _itemStatusMonitor;
+		private FieldInfoDto _identifierField;
 
 		[SetUp]
 		public void SetUp()
@@ -30,6 +32,12 @@ namespace Relativity.Sync.Tests.Unit
 			_exportBatcher.Setup(x => x.Start(It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<int>()))
 				.Returns(Guid.NewGuid());
 
+			_identifierField = FieldInfoDto.DocumentField("IdentifierField", true);
+			_identifierField.DocumentFieldIndex = 0;
+			_fieldManager = new Mock<IFieldManager>();
+			_fieldManager.Setup(m => m.GetObjectIdentifierFieldAsync(It.IsAny<CancellationToken>())).ReturnsAsync(_identifierField);
+			_itemStatusMonitor = new Mock<IItemStatusMonitor>();
+
 			_configuration = new Mock<ISynchronizationConfiguration>();
 			_configuration.SetupGet(x => x.SyncConfigurationArtifactId).Returns(0);
 			_configuration.SetupGet(x => x.DestinationWorkspaceTagArtifactId).Returns(0);
@@ -37,23 +45,6 @@ namespace Relativity.Sync.Tests.Unit
 			_configuration.SetupGet(x => x.FieldMappings).Returns(new List<FieldMap>());
 			_configuration.SetupGet(x => x.JobHistoryTagArtifactId).Returns(0);
 			_configuration.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(0);
-
-			_instance = new SourceWorkspaceDataReader(new SimpleSourceWorkspaceDataTableBuilder(),
-				_configuration.Object,
-				_exportBatcher.Object,
-				Mock.Of<ISyncLog>());
-		}
-
-		[TearDown]
-		public void TearDown()
-		{
-			_instance?.Dispose();
-			_instance = null;
-		}
-
-		public void Dispose()
-		{
-			TearDown();
 		}
 
 		[Test]
@@ -68,13 +59,10 @@ namespace Relativity.Sync.Tests.Unit
 			_configuration.SetupGet(x => x.SyncConfigurationArtifactId).Returns(syncConfigurationId);
 			_configuration.SetupGet(x => x.ExportRunId).Returns(runId);
 
-			_instance = new SourceWorkspaceDataReader(new SimpleSourceWorkspaceDataTableBuilder(),
-				_configuration.Object,
-				_exportBatcher.Object,
-				Mock.Of<ISyncLog>());
+			SourceWorkspaceDataReader instance = BuildInstanceUnderTest();
 
 			// Act
-			_instance.Read();
+			instance.Read();
 
 			// Assert
 			_exportBatcher.Verify(x => x.Start(runId, sourceWorkspaceId, syncConfigurationId), Times.AtLeastOnce);
@@ -83,8 +71,11 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public void ItShouldGetNextBatchWhenCurrentIsEmpty()
 		{
+			// Arrange
+			SourceWorkspaceDataReader instance = BuildInstanceUnderTest();
+
 			// Act
-			_instance.Read();
+			instance.Read();
 
 			// Assert
 			_exportBatcher.Verify(x => x.GetNextAsync(It.IsAny<Guid>()));
@@ -97,9 +88,10 @@ namespace Relativity.Sync.Tests.Unit
 			Guid token = Guid.NewGuid();
 			_exportBatcher.Setup(x => x.Start(It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<int>()))
 				.Returns(token);
+			SourceWorkspaceDataReader instance = BuildInstanceUnderTest();
 
 			// Act
-			_instance.Read();
+			instance.Read();
 
 			// Assert
 			_exportBatcher.Verify(x => x.GetNextAsync(It.Is<Guid>(t => t == token)));
@@ -111,9 +103,10 @@ namespace Relativity.Sync.Tests.Unit
 			// Arrange
 			const int batchSize = 1;
 			ExportBatcherReturnsBatches(GenerateBatch(batchSize), EmptyBatch());
+			SourceWorkspaceDataReader instance = BuildInstanceUnderTest();
 
 			// Act
-			bool result = _instance.Read();
+			bool result = instance.Read();
 
 			// Assert
 			result.Should().Be(true);
@@ -125,10 +118,11 @@ namespace Relativity.Sync.Tests.Unit
 			// Arrange
 			const int batchSize = 2;
 			ExportBatcherReturnsBatches(GenerateBatch(batchSize), EmptyBatch());
+			SourceWorkspaceDataReader instance = BuildInstanceUnderTest();
 
 			// Act
-			_instance.Read();
-			bool result = _instance.Read();
+			instance.Read();
+			bool result = instance.Read();
 
 			// Assert
 			result.Should().Be(true);
@@ -140,10 +134,11 @@ namespace Relativity.Sync.Tests.Unit
 			// Arrange
 			const int batchSize = 2;
 			ExportBatcherReturnsBatches(GenerateBatch(batchSize), EmptyBatch());
+			SourceWorkspaceDataReader instance = BuildInstanceUnderTest();
 
 			// Act
-			_instance.Read();
-			_instance.Read();
+			instance.Read();
+			instance.Read();
 
 			// Assert
 			_exportBatcher.Verify(x => x.GetNextAsync(It.IsAny<Guid>()), Times.Exactly(1));
@@ -155,10 +150,11 @@ namespace Relativity.Sync.Tests.Unit
 			// Arrange
 			const int batchSize = 1;
 			ExportBatcherReturnsBatches(GenerateBatch(batchSize), null);
+			SourceWorkspaceDataReader instance = BuildInstanceUnderTest();
 
 			// Act
-			_instance.Read();
-			bool result = _instance.Read();
+			instance.Read();
+			bool result = instance.Read();
 
 			// Assert
 			result.Should().Be(false);
@@ -170,10 +166,11 @@ namespace Relativity.Sync.Tests.Unit
 			// Arrange
 			const int batchSize = 1;
 			ExportBatcherReturnsBatches(GenerateBatch(batchSize), EmptyBatch());
+			SourceWorkspaceDataReader instance = BuildInstanceUnderTest();
 
 			// Act
-			_instance.Read();
-			bool result = _instance.Read();
+			instance.Read();
+			bool result = instance.Read();
 
 			// Assert
 			result.Should().Be(false);
@@ -186,10 +183,11 @@ namespace Relativity.Sync.Tests.Unit
 			const int batchSize = 5;
 			const int numBatches = 3;
 			ExportBatcherReturnsBatches(GenerateBatch(batchSize), GenerateBatch(batchSize), GenerateBatch(batchSize), EmptyBatch());
+			SourceWorkspaceDataReader instance = BuildInstanceUnderTest();
 
 			// Act
-			bool allObjectReads = Enumerable.Range(0, batchSize * numBatches).All(_ => _instance.Read());
-			bool finalEmptyRead = _instance.Read();
+			bool allObjectReads = Enumerable.Range(0, batchSize * numBatches).All(_ => instance.Read());
+			bool finalEmptyRead = instance.Read();
 
 			// Assert
 			allObjectReads.Should().Be(true);
@@ -199,9 +197,18 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public void ItShouldNotThrowOnMultipleDisposeCalls()
 		{
-			// Act/Assert
-			_instance.Dispose();
-			_instance.Dispose();
+			// Arrange
+			SourceWorkspaceDataReader instance = BuildInstanceUnderTest();
+
+			// Act
+			Action action = () =>
+			{
+				instance.Dispose();
+				instance.Dispose();
+			};
+
+			// Assert
+			action.Should().NotThrow();
 		}
 
 		[Test]
@@ -217,12 +224,13 @@ namespace Relativity.Sync.Tests.Unit
 				CreateObjectWithValues("ban", 2, false)
 			};
 			ExportBatcherReturnsBatches(batch, EmptyBatch());
+			SourceWorkspaceDataReader instance = BuildInstanceUnderTest();
 
 			// Act
 			List<List<object>> results = new List<List<object>>();
-			while (_instance.Read())
+			while (instance.Read())
 			{
-				results.Add(new List<object> { _instance[0], _instance[1], _instance[2] });
+				results.Add(new List<object> { instance[0], instance[1], instance[2] });
 			}
 
 			// Assert
@@ -230,14 +238,14 @@ namespace Relativity.Sync.Tests.Unit
 			results.Count.Should().Be(expectedCount);
 
 			results[0][0].Should().Be("foo");
-			results[0][1].Should().Be("1");
-			results[0][2].Should().Be("True");
+			results[0][1].Should().Be(1);
+			results[0][2].Should().Be(true);
 			results[1][0].Should().Be("baz");
-			results[1][1].Should().Be("0");
-			results[1][2].Should().Be("True");
+			results[1][1].Should().Be(0);
+			results[1][2].Should().Be(true);
 			results[2][0].Should().Be("ban");
-			results[2][1].Should().Be("2");
-			results[2][2].Should().Be("False");
+			results[2][1].Should().Be(2);
+			results[2][2].Should().Be(false);
 
 #pragma warning restore RG2009 // need to use a lot of literal indices here, and making them consts is absurd
 		}
@@ -248,9 +256,10 @@ namespace Relativity.Sync.Tests.Unit
 			// Arrange
 			_exportBatcher.Setup(x => x.GetNextAsync(It.IsAny<Guid>()))
 				.Throws(new ServiceException("Foo"));
+			SourceWorkspaceDataReader instance = BuildInstanceUnderTest();
 
 			// Act
-			SourceDataReaderException thrownException = Assert.Throws<SourceDataReaderException>(() => _instance.Read());
+			SourceDataReaderException thrownException = Assert.Throws<SourceDataReaderException>(() => instance.Read());
 
 			// Assert
 			thrownException.InnerException.Should().BeOfType<ServiceException>();
@@ -263,20 +272,41 @@ namespace Relativity.Sync.Tests.Unit
 			const int batchSize = 1;
 			ExportBatcherReturnsBatches(GenerateBatch(batchSize), EmptyBatch());
 
-			Mock<ISourceWorkspaceDataTableBuilder> builder = new Mock<ISourceWorkspaceDataTableBuilder>();
+			Mock<IBatchDataReaderBuilder> builder = new Mock<IBatchDataReaderBuilder>();
 			builder.Setup(x => x.BuildAsync(It.IsAny<int>(), It.IsAny<RelativityObjectSlim[]>(), CancellationToken.None))
 				.Throws(new ServiceException());
 
-			_instance = new SourceWorkspaceDataReader(builder.Object,
-				_configuration.Object,
-				_exportBatcher.Object,
-				Mock.Of<ISyncLog>());
+			SourceWorkspaceDataReader instance = BuildInstanceUnderTest(builder.Object);
 
 			// Act
-			SourceDataReaderException thrownException = Assert.Throws<SourceDataReaderException>(() => _instance.Read());
+			SourceDataReaderException thrownException = Assert.Throws<SourceDataReaderException>(() => instance.Read());
 
 			// Assert
 			thrownException.InnerException.Should().BeOfType<ServiceException>();
+		}
+
+		// We use these builder methods instead of a dedicated instance variable b/c the data reader
+		// implements IDisposable, so we would have to make the entire test fixture IDisposable if we
+		// kept around a reference.
+
+		private SourceWorkspaceDataReader BuildInstanceUnderTest()
+		{
+			return new SourceWorkspaceDataReader(new SimpleBatchDataReaderBuilder(_identifierField), 
+				_configuration.Object,
+				_exportBatcher.Object,
+				_fieldManager.Object,
+				_itemStatusMonitor.Object,
+				Mock.Of<ISyncLog>());
+		}
+
+		private SourceWorkspaceDataReader BuildInstanceUnderTest(IBatchDataReaderBuilder dataTableBuilder)
+		{
+			return new SourceWorkspaceDataReader(dataTableBuilder,
+				_configuration.Object,
+				_exportBatcher.Object,
+				_fieldManager.Object,
+				_itemStatusMonitor.Object,
+				Mock.Of<ISyncLog>());
 		}
 
 		private void ExportBatcherReturnsBatches(params RelativityObjectSlim[][] batches)

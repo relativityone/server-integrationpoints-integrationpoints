@@ -1,6 +1,6 @@
 ﻿using System;
 using NUnit.Framework;
-using Relativity.Sync.Executors.Validation;
+using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Tests.Unit
 {

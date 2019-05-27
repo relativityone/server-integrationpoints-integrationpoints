@@ -9,6 +9,7 @@ using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Helpers;
+using Relativity.Testing.Identification;
 
 namespace Relativity.Sync.Tests.System
 {
@@ -33,14 +34,14 @@ namespace Relativity.Sync.Tests.System
 			_destinationWorkspace = destinationWorkspaceCreationTask.Result;
 		}
 
-		[Test]
-		public async Task ItShouldSuccessfulyValidateJob()
+		[IdentifiedTest("96d83692-044d-40f0-b335-84bc5a413478")]
+		public async Task ItShouldSuccessfullyValidateJob()
 		{
 			int expectedSourceWorkspaceArtifactId = _sourceWorkspace.ArtifactID;
 			int expectedJobHistoryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, expectedSourceWorkspaceArtifactId, _JOB_HISTORY_NAME).ConfigureAwait(false);
 			int savedSearchArtifactId = await Rdos.GetSavedSearchInstance(ServiceFactory, expectedSourceWorkspaceArtifactId).ConfigureAwait(false);
 			int destinationFolderArtifactId = await Rdos.GetRootFolderInstance(ServiceFactory, _destinationWorkspace.ArtifactID).ConfigureAwait(false);
-			int folderPathSourceFieldArtifactId = await Rdos.GetFolderPathSourceField(ServiceFactory, expectedSourceWorkspaceArtifactId).ConfigureAwait(false);
+			string folderPathSourceFieldName = await Rdos.GetFolderPathSourceFieldName(ServiceFactory, expectedSourceWorkspaceArtifactId).ConfigureAwait(false);
 
 			const string fieldsMap =
 				"[{\"sourceField\":{\"displayName\":\"Control Number [Object Identifier]\",\"isIdentifier\":true," +
@@ -58,7 +59,7 @@ namespace Relativity.Sync.Tests.System
 				SavedSearchArtifactId = savedSearchArtifactId,
 				DestinationFolderArtifactId = destinationFolderArtifactId,
 				FieldMappings = _serializer.Deserialize<List<FieldMap>>(fieldsMap),
-				FolderPathSourceFieldArtifactId = folderPathSourceFieldArtifactId,
+				FolderPathSourceFieldName = folderPathSourceFieldName,
 				ImportOverwriteMode = ImportOverwriteMode.AppendOverlay,
 				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.ReadFromField,
 				FieldOverlayBehavior = FieldOverlayBehavior.UseFieldSettings

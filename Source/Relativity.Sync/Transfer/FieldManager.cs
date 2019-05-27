@@ -54,12 +54,18 @@ namespace Relativity.Sync.Transfer
 
 		public async Task<IList<FieldInfoDto>> GetDocumentFieldsAsync(CancellationToken token)
 		{
-			IList<FieldInfoDto> fields = await GetAllFieldsAsync(token).ConfigureAwait(false);
+			IReadOnlyList<FieldInfoDto> fields = await GetAllFieldsAsync(token).ConfigureAwait(false);
 			List<FieldInfoDto> documentFields = fields.Where(f => f.IsDocumentField).OrderBy(f => f.DocumentFieldIndex).ToList();
 			return documentFields;
 		}
 
-		public async Task<IList<FieldInfoDto>> GetAllFieldsAsync(CancellationToken token)
+		public async Task<FieldInfoDto> GetObjectIdentifierFieldAsync(CancellationToken token)
+		{
+			IEnumerable<FieldInfoDto> mappedFields = await GetDocumentFieldsAsync(token).ConfigureAwait(false);
+			return mappedFields.First(f => f.IsIdentifier);
+		}
+
+		public async Task<IReadOnlyList<FieldInfoDto>> GetAllFieldsAsync(CancellationToken token)
 		{
 			if (_allFields == null)
 			{
@@ -122,7 +128,7 @@ namespace Relativity.Sync.Transfer
 
 		private FieldInfoDto CreateFieldInfoFromFieldMap(FieldMap fieldMap)
 		{
-			return FieldInfoDto.DocumentField(fieldMap.SourceField.DisplayName);
+			return FieldInfoDto.DocumentField(fieldMap.SourceField.DisplayName, fieldMap.SourceField.IsIdentifier);
 		}
 	}
 }

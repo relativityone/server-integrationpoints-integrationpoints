@@ -12,6 +12,7 @@ using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Helpers;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Tests.System.Stubs;
+using Relativity.Testing.Identification;
 
 namespace Relativity.Sync.Tests.System
 {
@@ -29,7 +30,7 @@ namespace Relativity.Sync.Tests.System
 			_sourceWorkspaceArtifactId = workspace.ArtifactID;
 		}
 
-		[Test]
+		[IdentifiedTest("c5c953ed-0f70-4340-b44d-f3dfdda03b49")]
 		public async Task ItShouldTagGivenDocumentsWithTheCorrectTag()
 		{
 			// Arrange
@@ -49,7 +50,7 @@ namespace Relativity.Sync.Tests.System
 			};
 
 			// Act
-			var repository = new DestinationWorkspaceTagRepository(new SourceServiceFactoryStub(ServiceFactory),
+			var repository = new DestinationWorkspaceTagRepository(new ServiceFactoryStub(ServiceFactory),
 				new FederatedInstance(),
 				new TagNameFormatter(new EmptyLogger()),
 				new EmptyLogger(),
@@ -78,7 +79,7 @@ namespace Relativity.Sync.Tests.System
 			int destinationFolderId = await Rdos.GetRootFolderInstance(ServiceFactory, _sourceWorkspaceArtifactId).ConfigureAwait(false);
 			DocumentData documentData = DocumentData.GenerateDocumentsWithoutNatives(numDocuments);
 
-			ImportBulkArtifactJob documentImportJob = ImportJobFactory.CreateNonNativesDocumentImportJob(_sourceWorkspaceArtifactId, destinationFolderId, documentData);
+			ImportBulkArtifactJob documentImportJob = Helpers.ImportJobFactory.CreateNonNativesDocumentImportJob(_sourceWorkspaceArtifactId, destinationFolderId, documentData);
 
 			ImportJobResult importResult = await ImportJobExecutor.ExecuteAsync(documentImportJob).ConfigureAwait(false);
 			Assert.IsTrue(importResult.Success, $"{importResult.Errors.Count} errors occurred during document upload: {importResult}");

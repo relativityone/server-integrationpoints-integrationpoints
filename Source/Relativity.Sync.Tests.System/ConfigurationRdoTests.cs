@@ -14,6 +14,7 @@ using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Helpers;
 using Relativity.Sync.Tests.System.Stubs;
+using Relativity.Testing.Identification;
 
 namespace Relativity.Sync.Tests.System
 {
@@ -36,7 +37,7 @@ namespace Relativity.Sync.Tests.System
 		private static readonly Guid EmailNotificationRecipientsGuid = new Guid("4F03914D-9E86-4B72-B75C-EE48FEEBB583");
 		private static readonly Guid FieldMappingsGuid = new Guid("E3CB5C64-C726-47F8-9CB0-1391C5911628");
 		private static readonly Guid FieldOverlayBehaviorGuid = new Guid("34ECB263-1370-4D6C-AC11-558447504EC4");
-		private static readonly Guid FolderPathSourceFieldArtifactIdGuid = new Guid("BF5F07A3-6349-47EE-9618-1DD32C9FD998");
+		private static readonly Guid FolderPathSourceFieldNameGuid = new Guid("66A37443-EF92-47ED-BEEA-392464C853D3");
 		private static readonly Guid ImportOverwriteModeGuid = new Guid("1914D2A3-A1FF-480B-81DC-7A2AA563047A");
 		private static readonly Guid JobHistoryGuid = new Guid("5D8F7F01-25CF-4246-B2E2-C05882539BB2");
 		private static readonly Guid MoveExistingDocumentsGuid = new Guid("26F9BF88-420D-4EFF-914B-C47BA36E10BF");
@@ -54,7 +55,7 @@ namespace Relativity.Sync.Tests.System
 		{
 			await base.ChildSuiteSetup().ConfigureAwait(false);
 
-			_serviceFactory = new SourceServiceFactoryStub(ServiceFactory);
+			_serviceFactory = new ServiceFactoryStub(ServiceFactory);
 
 			WorkspaceRef workspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
 			_workspaceId = workspace.ArtifactID;
@@ -62,7 +63,7 @@ namespace Relativity.Sync.Tests.System
 			_jobHistoryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, _workspaceId).ConfigureAwait(false);
 		}
 
-		[Test]
+		[IdentifiedTest("e5a86b87-b1e8-4de3-b4fa-5f3e3878be49")]
 		public async Task ItShouldContainAllFields()
 		{
 			CreateRequest request = new CreateRequest
@@ -101,7 +102,7 @@ namespace Relativity.Sync.Tests.System
 			configuration.GetFieldValue<string>(EmailNotificationRecipientsGuid);
 			configuration.GetFieldValue<string>(FieldMappingsGuid);
 			configuration.GetFieldValue<string>(FieldOverlayBehaviorGuid);
-			configuration.GetFieldValue<int>(FolderPathSourceFieldArtifactIdGuid);
+			configuration.GetFieldValue<string>(FolderPathSourceFieldNameGuid);
 			configuration.GetFieldValue<string>(ImportOverwriteModeGuid);
 			configuration.GetFieldValue<RelativityObjectValue>(JobHistoryGuid);
 			configuration.GetFieldValue<bool>(MoveExistingDocumentsGuid);
@@ -116,7 +117,7 @@ namespace Relativity.Sync.Tests.System
 			configuration.GetFieldValue<string>(SourceWorkspaceTagNameGuid);
 		}
 
-		[Test]
+		[IdentifiedTest("3a5a8647-86e5-4a01-9cac-90bdd84e7a62")]
 		public async Task ItShouldHandleLongTextFromStream()
 		{
 			const string fieldMapping = "in theory, very long text, but we check for ellipsis really...";
@@ -150,7 +151,7 @@ namespace Relativity.Sync.Tests.System
 			configuration.GetFieldValue<string>(FieldMappingsGuid).Should().Be(fieldMapping);
 		}
 
-		[Test]
+		[IdentifiedTest("108661af-82bf-41ca-8799-4c83cc0ef976")]
 		public async Task FieldsShouldBeOfValidTypes()
 		{
 			CreateRequest request = new CreateRequest
@@ -172,7 +173,7 @@ namespace Relativity.Sync.Tests.System
 			}
 		}
 
-		private IEnumerable<FieldRefValuePair> PrepareFields()
+		private static IEnumerable<FieldRefValuePair> PrepareFields()
 		{
 #pragma warning disable RG2009 // Hardcoded Numeric Value
 			yield return new FieldRefValuePair
@@ -267,9 +268,9 @@ namespace Relativity.Sync.Tests.System
 			{
 				Field = new FieldRef
 				{
-					Guid = FolderPathSourceFieldArtifactIdGuid
+					Guid = FolderPathSourceFieldNameGuid
 				},
-				Value = 748521
+				Value = "folder path"
 			};
 			yield return new FieldRefValuePair
 			{
