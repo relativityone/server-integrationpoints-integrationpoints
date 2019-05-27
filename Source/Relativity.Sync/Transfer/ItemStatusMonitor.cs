@@ -3,7 +3,6 @@ using System.Linq;
 
 namespace Relativity.Sync.Transfer
 {
-#pragma warning disable RG2002 // Class Count
 	internal class ItemStatusMonitor : IItemStatusMonitor
 	{
 		private readonly Dictionary<string, ItemInfo> _items = new Dictionary<string, ItemInfo>();
@@ -15,9 +14,9 @@ namespace Relativity.Sync.Transfer
 
 		public void MarkItemAsRead(string itemIdentifier)
 		{
-			MarkItemWithStatus(itemIdentifier, ItemStatus.Read);	
+			MarkItemWithStatus(itemIdentifier, ItemStatus.Read);
 		}
-		
+
 		public void MarkItemAsFailed(string itemIdentifier)
 		{
 			MarkItemWithStatus(itemIdentifier, ItemStatus.Failed);
@@ -56,12 +55,11 @@ namespace Relativity.Sync.Transfer
 			IEnumerable<ItemInfo> successfulItems = _items.Values.Where(item => item.Status == ItemStatus.Succeed);
 			return successfulItems.Select(status => status.ArtifactId);
 		}
-		
-#pragma warning disable RG0001 // Class Matching File Name
+
 		private class ItemInfo
 		{
 			public int ArtifactId { get; }
-			public ItemStatus Status {get; set; }
+			public ItemStatus Status { get; set; }
 
 			public ItemInfo(int artifactId)
 			{
@@ -77,7 +75,5 @@ namespace Relativity.Sync.Transfer
 			Succeed,
 			Failed
 		}
-#pragma warning restore RG0001 // Class Matching File Name
-#pragma warning restore RG2002 // Class Count
 	}
 }
