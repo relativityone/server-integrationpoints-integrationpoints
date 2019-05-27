@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using FluentAssertions;
-using kCura.Config;
 using kCura.Vendor.Castle.Core.Internal;
 using Moq;
 using NUnit.Framework;
@@ -29,8 +26,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		private FolderPathRetriever _instance;
 		private Mock<IObjectManager> _objectManager;
 		private Mock<IFolderManager> _folderManager;
-
-		private static string _conditionPattern = "\"ArtifactID\" IN \\[([\\d,]+)\\]";
 
 		private const int _WORKSPACE_ARTIFACT_ID = 123456;
 		private const int _DIVISOR = 13;
@@ -90,7 +85,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		}
 
 		[Test]
-		public async Task ItShouldGetDocumentIdToFolderIdMapInBatches([Random(1, 1_000_000, 10, Distinct = true)]int documentCount)
+		public async Task ItShouldGetDocumentIdToFolderIdMapInBatches([Random(1, 1_000_000, 5, Distinct = true)]int documentCount)
 		{
 			// ARRANGE
 			int batchCount = GetBatchCount(documentCount);
@@ -277,7 +272,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 		private static List<int> ExtractArtifactIdsFromCondition(string condition)
 		{
-			MatchCollection matches = Regex.Matches(condition, _conditionPattern);
+			const string conditionPattern = "\"ArtifactID\" IN \\[([\\d,]+)\\]";
+			MatchCollection matches = Regex.Matches(condition, conditionPattern);
 			if (matches.Count > 0 && matches[0].Groups.Count > 1)
 			{
 				string artifactIdsSeparatedByComma = matches[0].Groups[1].Value;
