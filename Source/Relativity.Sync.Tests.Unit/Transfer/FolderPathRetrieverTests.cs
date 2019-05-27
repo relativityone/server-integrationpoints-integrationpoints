@@ -221,7 +221,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_logger.Verify(x => x.LogError(It.IsAny<Exception>(), It.IsAny<string>(), It.Is<int>(y => y == _WORKSPACE_ARTIFACT_ID)), Times.Once);
 		}
 
-		// NOTE: Auxiliary methods and their tests below
+		#region Auxiliary methods
 
 		private int GetBatchCount(int documentCount)
 		{
@@ -255,21 +255,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			return queryResult;
 		}
 
-		[Test]
-		public void ExtractArtifactIdsFromConditionTest()
-		{
-			const int rangeStart = 1000;
-			const int rangeEnd = 2000;
-			List<int> intList = Enumerable.Range(rangeStart, rangeEnd).ToList();
-
-			string condition = $"\"ArtifactID\" IN [{string.Join(",", intList)}]";
-			List<int> artifactIds = ExtractArtifactIdsFromCondition(condition);
-
-			intList.ForEach(x => Assert.Contains(x, artifactIds));
-
-			Assert.AreEqual(intList.Count, artifactIds.Count);
-		}
-
 		private static List<int> ExtractArtifactIdsFromCondition(string condition)
 		{
 			const string conditionPattern = "\"ArtifactID\" IN \\[([\\d,]+)\\]";
@@ -296,10 +281,31 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			return folderId - 1;
 		}
 
+		#region Auxiliary methods' tests
+
+		[Test]
+		public void ExtractArtifactIdsFromConditionTest()
+		{
+			const int rangeStart = 1000;
+			const int rangeEnd = 2000;
+			List<int> intList = Enumerable.Range(rangeStart, rangeEnd).ToList();
+
+			string condition = $"\"ArtifactID\" IN [{string.Join(",", intList)}]";
+			List<int> artifactIds = ExtractArtifactIdsFromCondition(condition);
+
+			intList.ForEach(x => Assert.Contains(x, artifactIds));
+
+			Assert.AreEqual(intList.Count, artifactIds.Count);
+		}
+
 		[Test]
 		public void ConversionBetweenFolderIdAndDocumentIdTest([Random(0, 100_000, 100, Distinct = true)] int documentId)
 		{
 			FolderIdToDocumentId(DocumentIdToFolderId(documentId)).Should().Be(documentId);
 		}
+
+		#endregion
+
+		#endregion
 	}
 }
