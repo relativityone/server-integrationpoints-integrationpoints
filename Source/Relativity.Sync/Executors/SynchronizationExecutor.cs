@@ -62,7 +62,7 @@ namespace Relativity.Sync.Executors
 					IBatch batch = await _batchRepository.GetAsync(configuration.SourceWorkspaceArtifactId, batchId).ConfigureAwait(false);
 					using (IImportJob importJob = await _importJobFactory.CreateImportJobAsync(configuration, batch).ConfigureAwait(false))
 					{
-						await importJob.RunAsync(token).ConfigureAwait(false);
+						importResult = await importJob.RunAsync(token).ConfigureAwait(false);
 
 						IEnumerable<int> pushedDocumentArtifactIds = await importJob.GetPushedDocumentArtifactIds().ConfigureAwait(false);
 						Task<IEnumerable<int>> taggingTask = TagDocumentsAsync(configuration, pushedDocumentArtifactIds, token);
