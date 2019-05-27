@@ -9,6 +9,7 @@ using Relativity.Sync.Transfer;
 namespace Relativity.Sync.Tests.Integration
 {
 	[TestFixture]
+	[Parallelizable(ParallelScope.All)]
 	public sealed class FieldNotFoundExceptionTests
 	{
 		[Test]
