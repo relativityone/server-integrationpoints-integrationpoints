@@ -370,11 +370,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			SetJobStateAsUnstoppable(job);
 
 			var exceptions = new ConcurrentQueue<Exception>();
-			Parallel.ForEach(_exportServiceJobObservers, batch =>
+			Parallel.ForEach(_exportServiceJobObservers, jobObserver =>
 			{
 				try
 				{
-					batch.OnJobComplete(job);
+					jobObserver.OnJobComplete(job);
 				}
 				catch (Exception exception)
 				{
