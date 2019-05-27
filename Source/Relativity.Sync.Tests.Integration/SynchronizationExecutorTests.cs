@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
@@ -15,6 +16,7 @@ using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Tests.Common;
+using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.Integration
 {
@@ -25,6 +27,7 @@ namespace Relativity.Sync.Tests.Integration
 		private IExecutor<ISynchronizationConfiguration> _executor;
 		private Mock<IObjectManager> _objectManagerMock;
 		private Mock<ISyncImportBulkArtifactJob> _importBulkArtifactJob;
+		private Mock<IItemStatusMonitor> _itemStatusMonitor;
 
 		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 123;
 
@@ -46,7 +49,9 @@ namespace Relativity.Sync.Tests.Integration
 			IntegrationTestsContainerBuilder.MockStepsExcept<ISynchronizationConfiguration>(containerBuilder);
 			containerBuilder.RegisterType<ImportJobFactoryStub>().As<IImportJobFactory>();
 
+			_itemStatusMonitor = new Mock<IItemStatusMonitor>();
 			_importBulkArtifactJob = new Mock<ISyncImportBulkArtifactJob>();
+			_importBulkArtifactJob.SetupGet(x => x.ItemStatusMonitor).Returns(_itemStatusMonitor.Object);
 			containerBuilder.RegisterInstance(_importBulkArtifactJob.Object).As<ISyncImportBulkArtifactJob>();
 
 			Mock<ISyncMetrics> syncMetrics = new Mock<ISyncMetrics>();
@@ -137,10 +142,9 @@ namespace Relativity.Sync.Tests.Integration
 			_objectManagerMock.Setup(x => x.ReadAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.Is<ReadRequest>(r => r.Object.ArtifactID == newBatchArtifactId)))
 				.ReturnsAsync(readResultForBatch)
 				.Verifiable();
-			
-			_objectManagerMock.Setup(x => x.RetrieveResultsBlockFromExportAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<int>()))
-				.ReturnsAsync(GetDocumentsToTag(totalItemsCount))
-				.Verifiable();
+
+			RelativityObjectSlim[] documentsToTag = GetDocumentsToTag(totalItemsCount);
+			_itemStatusMonitor.Setup(x => x.GetSuccessfulItemArtifactIds()).Returns(documentsToTag.Select(x => x.ArtifactID).ToList());
 
 			MassUpdateResult massUpdateResult = new MassUpdateResult()
 			{
