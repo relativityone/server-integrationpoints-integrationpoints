@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Management.Tasks;
@@ -53,13 +52,6 @@ namespace kCura.IntegrationPoints.Management.Tests.Tasks
 			_apm.DidNotReceive().HealthCheckOperation(Arg.Any<string>(), Arg.Any<Func<HealthCheckOperationResult>>());
 			// _apm.Received(1).HealthCheckOperation(Constants.IntegrationPoints.Telemetry.APM_HEALTHCHECK,
 			//	Arg.Is<Func<HealthCheckOperationResult>>(x => ValidateHealthCheckResult(x(), invalidJobs)));
-		}
-
-		private bool ValidateHealthCheckResult(HealthCheckOperationResult healthCheckOperationResult, Dictionary<int, IList<JobHistory>> invalidJobs)
-		{
-			return !healthCheckOperationResult.IsHealthy
-					&& healthCheckOperationResult.CustomData.Keys.SequenceEqual(invalidJobs.Keys.Select(x => $"Workspace {x}"))
-					&& healthCheckOperationResult.Message == "Jobs with invalid status found.";
 		}
 
 		[Test]
