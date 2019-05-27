@@ -20,7 +20,5 @@ namespace Relativity.Sync.Storage
 		Task SetProgressAsync(double progress);
 		Task SetStatusAsync(BatchStatus status);
 		Task SetTransferredItemsCountAsync(int transferredItemsCount);
-
-		Task<IEnumerable<int>> GetItemArtifactIds(Guid runId);
 	}
 }

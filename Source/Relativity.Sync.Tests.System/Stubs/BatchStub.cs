@@ -59,11 +59,5 @@ namespace Relativity.Sync.Tests.System.Stubs
 			TransferredItemsCount = transferredItemsCount;
 			return Task.CompletedTask;
 		}
-
-		public Task<IEnumerable<int>> GetItemArtifactIds(Guid runId)
-		{
-			IEnumerable<int> artifactIds = new List<int>();
-			return Task.FromResult(artifactIds);
-		}
 	}
 }

@@ -80,16 +80,6 @@ namespace Relativity.Sync.Storage
 			Status = status;
 		}
 
-		public async Task<IEnumerable<int>> GetItemArtifactIds(Guid runId)
-		{
-			using (var objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
-			{
-				RelativityObjectSlim[] block = await objectManager.RetrieveResultsBlockFromExportAsync(_workspaceArtifactId, runId, TotalItemsCount, StartingIndex).ConfigureAwait(false);
-				IEnumerable<int> artifactIds = block.Select(x => x.ArtifactID);
-				return artifactIds;
-			}
-		}
-
 		private async Task CreateAsync(int workspaceArtifactId, int syncConfigurationArtifactId, int totalItemsCount, int startingIndex)
 		{
 			_workspaceArtifactId = workspaceArtifactId;
