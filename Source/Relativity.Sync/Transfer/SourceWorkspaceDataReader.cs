@@ -92,7 +92,7 @@ namespace Relativity.Sync.Transfer
 			}
 			else
 			{
-				await CreateItemStatusRecords(batch).ConfigureAwait(false);
+				await CreateItemStatusRecordsAsync(batch).ConfigureAwait(false);
 				try
 				{
 					nextBatchReader = await _readerBuilder.BuildAsync(_configuration.SourceWorkspaceArtifactId, batch, CancellationToken.None).ConfigureAwait(false);
@@ -106,7 +106,7 @@ namespace Relativity.Sync.Transfer
 			return nextBatchReader;
 		}
 
-		private async Task CreateItemStatusRecords(RelativityObjectSlim[] batch)
+		private async Task CreateItemStatusRecordsAsync(RelativityObjectSlim[] batch)
 		{
 			foreach (var item in batch)
 			{
