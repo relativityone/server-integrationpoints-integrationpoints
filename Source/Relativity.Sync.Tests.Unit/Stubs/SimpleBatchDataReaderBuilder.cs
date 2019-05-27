@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading;
@@ -14,12 +15,30 @@ namespace Relativity.Sync.Tests.Unit.Stubs
 	/// </summary>
 	internal sealed class SimpleBatchDataReaderBuilder : IBatchDataReaderBuilder
 	{
+		private readonly FieldInfoDto _identifierField;
+
+		public SimpleBatchDataReaderBuilder(FieldInfoDto identifierField)
+		{
+			_identifierField = identifierField;
+		}
+
 		public async Task<IDataReader> BuildAsync(int workspaceArtifactId, RelativityObjectSlim[] batch, CancellationToken token)
 		{
 			await Task.Yield();
 			DataTable dt = new DataTable();
-			DataColumn[] columns = batch.First().Values.Select(_ => new DataColumn(Guid.NewGuid().ToString())).ToArray();
-			dt.Columns.AddRange(columns);
+			List<DataColumn> columns = new List<DataColumn>();
+			for (int i = 0; i < batch.First().Values.Count; i++)
+			{
+				if (i == _identifierField.DocumentFieldIndex)
+				{
+					columns.Add(new DataColumn(_identifierField.DisplayName, typeof(object)));
+				}
+				else
+				{
+					columns.Add(new DataColumn(Guid.NewGuid().ToString(), typeof(object)));
+				}
+			}
+			dt.Columns.AddRange(columns.ToArray());
 			foreach (RelativityObjectSlim obj in batch)
 			{
 				dt.Rows.Add(obj.Values.ToArray());

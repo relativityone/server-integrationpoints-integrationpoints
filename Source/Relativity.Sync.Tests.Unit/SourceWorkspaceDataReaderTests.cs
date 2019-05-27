@@ -22,6 +22,9 @@ namespace Relativity.Sync.Tests.Unit
 		private Mock<RelativityExportBatcherFactory> _exportBatcherFactory;
 		private Mock<IRelativityExportBatcher> _exportBatcher;
 		private Mock<ISynchronizationConfiguration> _configuration;
+		private Mock<IFieldManager> _fieldManager;
+		private Mock<IItemStatusMonitor> _itemStatusMonitor;
+		private FieldInfoDto _identifierField;
 
 		[SetUp]
 		public void SetUp()
@@ -30,6 +33,12 @@ namespace Relativity.Sync.Tests.Unit
 			_exportBatcherFactory = new Mock<RelativityExportBatcherFactory>();
 			_exportBatcherFactory.Setup(x => x(It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<int>()))
 				.Returns(_exportBatcher.Object);
+
+			_identifierField = FieldInfoDto.DocumentField("IdentifierField", true);
+			_identifierField.DocumentFieldIndex = 0;
+			_fieldManager = new Mock<IFieldManager>();
+			_fieldManager.Setup(m => m.GetObjectIdentifierFieldAsync(It.IsAny<CancellationToken>())).ReturnsAsync(_identifierField);
+			_itemStatusMonitor = new Mock<IItemStatusMonitor>();
 
 			_configuration = new Mock<ISynchronizationConfiguration>();
 			_configuration.SetupGet(x => x.SyncConfigurationArtifactId).Returns(0);
@@ -213,14 +222,14 @@ namespace Relativity.Sync.Tests.Unit
 			results.Count.Should().Be(expectedCount);
 
 			results[0][0].Should().Be("foo");
-			results[0][1].Should().Be("1");
-			results[0][2].Should().Be("True");
+			results[0][1].Should().Be(1);
+			results[0][2].Should().Be(true);
 			results[1][0].Should().Be("baz");
-			results[1][1].Should().Be("0");
-			results[1][2].Should().Be("True");
+			results[1][1].Should().Be(0);
+			results[1][2].Should().Be(true);
 			results[2][0].Should().Be("ban");
-			results[2][1].Should().Be("2");
-			results[2][2].Should().Be("False");
+			results[2][1].Should().Be(2);
+			results[2][2].Should().Be(false);
 
 #pragma warning restore RG2009 // need to use a lot of literal indices here, and making them consts is absurd
 		}
@@ -266,9 +275,11 @@ namespace Relativity.Sync.Tests.Unit
 
 		private SourceWorkspaceDataReader BuildInstanceUnderTest()
 		{
-			return new SourceWorkspaceDataReader(new SimpleBatchDataReaderBuilder(), 
+			return new SourceWorkspaceDataReader(new SimpleBatchDataReaderBuilder(_identifierField), 
 				_configuration.Object,
 				_exportBatcherFactory.Object,
+				_fieldManager.Object,
+				_itemStatusMonitor.Object,
 				Mock.Of<ISyncLog>());
 		}
 
@@ -277,6 +288,8 @@ namespace Relativity.Sync.Tests.Unit
 			return new SourceWorkspaceDataReader(dataTableBuilder,
 				_configuration.Object,
 				_exportBatcherFactory.Object,
+				_fieldManager.Object,
+				_itemStatusMonitor.Object,
 				Mock.Of<ISyncLog>());
 		}
 

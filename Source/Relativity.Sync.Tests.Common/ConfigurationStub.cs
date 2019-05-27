@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Tests.Common
@@ -44,6 +43,7 @@ namespace Relativity.Sync.Tests.Common
 		public string NotificationEmails { get; set; }
 		public int SourceWorkspaceArtifactId { get; set; }
 		public int SyncConfigurationArtifactId { get; set; }
+
 		public int DestinationWorkspaceArtifactId { get; set; }
 		public int SavedSearchArtifactId { get; set; }
 		public int DestinationFolderArtifactId { get; set; }
@@ -62,6 +62,7 @@ namespace Relativity.Sync.Tests.Common
 		}
 		public int DestinationWorkspaceTagArtifactId { get; set; }
 		public int JobHistoryTagArtifactId { get; set; }
+		public ImportSettingsDto ImportSettings { get; set; }
 
 		public bool IsSourceJobTagSet { get; set; }
 

@@ -10,6 +10,7 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.ServiceProxy;
 using Relativity.Services.Workspace;
 using Relativity.Sync.Executors;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Helpers;
@@ -44,7 +45,7 @@ namespace Relativity.Sync.Tests.System
 			_syncConfigurationId = await Rdos.CreateSyncConfigurationInstance(ServiceFactory, _workspaceId, jobHistoryId).ConfigureAwait(false);
 
 			_batchRepository = new BatchRepository(new SourceServiceFactoryStub(ServiceFactory));
-			_instance = new SnapshotPartitionExecutor(_batchRepository, Mock.Of<ISyncLog>());
+			_instance = new SnapshotPartitionExecutor(_batchRepository, new EmptyLogger());
 		}
 
 		[SetUp]

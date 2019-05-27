@@ -19,6 +19,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		private Mock<IDocumentFieldRepository> _documentFieldRepository;
 		private Mock<ISpecialFieldBuilder> _builder1;
 		private Mock<ISpecialFieldBuilder> _builder2;
+		private FieldInfoDto _documentIdentifierField;
 		private FieldInfoDto _documentSpecialField;
 		private FieldInfoDto _nonDocumentSpecialField1;
 		private FieldInfoDto _nonDocumentSpecialField2;
@@ -30,6 +31,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		private Mock<ISpecialFieldRowValuesBuilder> _rowValueBuilder2;
 		private const RelativityDataType _NON_SPECIAL_DOCUMENT_FIELD_RELATIVITY_DATA_TYPE = RelativityDataType.WholeNumber;
 		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 123;
+		private const string _DOCUMENT_IDENTIFIER_FIELD_NAME = "Control Number [Identifier]";
 		private const string _DOCUMENT_SPECIAL_FIELD_NAME = "DocumentSpecialField";
 		private const string _NON_DOCUMENT_SPECIAL_FIELD_1_NAME = "NonDocumentSpecialField1";
 		private const string _NON_DOCUMENT_SPECIAL_FIELD_2_NAME = "NonDocumentSpecialField2";
@@ -43,8 +45,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public void SetUp()
 		{
 			_documentArtifactIds = new[] {_FIRST_DOCUMENT, _SECOND_DOCUMENT, _THIRD_DOCUMENT};
-			
-			_documentSpecialField = FieldInfoDto.DocumentField(_DOCUMENT_SPECIAL_FIELD_NAME);
+
+			_documentIdentifierField = FieldInfoDto.DocumentField(_DOCUMENT_IDENTIFIER_FIELD_NAME, true);
+			_documentSpecialField = FieldInfoDto.DocumentField(_DOCUMENT_SPECIAL_FIELD_NAME, false);
 			_nonDocumentSpecialField1 = FieldInfoDto.GenericSpecialField(SpecialFieldType.None, _NON_DOCUMENT_SPECIAL_FIELD_1_NAME);
 			_nonDocumentSpecialField2 = FieldInfoDto.GenericSpecialField(SpecialFieldType.None, _NON_DOCUMENT_SPECIAL_FIELD_2_NAME);
 			_mappedField1 = new FieldMap {SourceField = new FieldEntry {DisplayName = _MAPPED_FIELD_1_NAME}};
@@ -53,7 +56,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_rowValueBuilder1 = new Mock<ISpecialFieldRowValuesBuilder>();
 			_builder1 = new Mock<ISpecialFieldBuilder>();
 			_builder1.Setup(b => b.GetRowValuesBuilderAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _documentArtifactIds)).ReturnsAsync(_rowValueBuilder1.Object);
-			_builder1.Setup(b => b.BuildColumns()).Returns(new[] {_nonDocumentSpecialField1, _documentSpecialField});
+			_builder1.Setup(b => b.BuildColumns()).Returns(new[] {_nonDocumentSpecialField1, _documentSpecialField, _documentIdentifierField});
 
 
 			_rowValueBuilder2 = new Mock<ISpecialFieldRowValuesBuilder>();
@@ -70,6 +73,19 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 					(workspaceId, fieldNames, token) => fieldNames.ToDictionary(f => f, _ => _NON_SPECIAL_DOCUMENT_FIELD_RELATIVITY_DATA_TYPE));
 
 			_instance = new FieldManager(_configuration.Object, _documentFieldRepository.Object, new[] {_builder1.Object, _builder2.Object});
+		}
+
+		[Test]
+		public async Task ItShouldReturnDocumentIdentifierField()
+		{
+			// Act
+			FieldInfoDto result = await _instance.GetObjectIdentifierFieldAsync(CancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			result.Should().NotBeNull();
+			result.IsIdentifier.Should().BeTrue();
+			result.IsDocumentField.Should().BeTrue();
+			result.DisplayName.Should().Be(_DOCUMENT_IDENTIFIER_FIELD_NAME);
 		}
 
 		[Test]

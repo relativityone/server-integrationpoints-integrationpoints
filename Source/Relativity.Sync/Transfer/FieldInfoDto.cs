@@ -17,11 +17,12 @@ namespace Relativity.Sync.Transfer
 
 		#endregion
 
-		private FieldInfoDto(SpecialFieldType specialFieldType, string displayName, bool isDocumentField)
+		private FieldInfoDto(SpecialFieldType specialFieldType, string displayName, bool isIdentifier, bool isDocumentField)
 		{
 			SpecialFieldType = specialFieldType;
 			DisplayName = displayName;
 			IsDocumentField = isDocumentField;
+			IsIdentifier = isIdentifier;
 		}
 
 		public SpecialFieldType SpecialFieldType { get; }
@@ -32,63 +33,65 @@ namespace Relativity.Sync.Transfer
 
 		public RelativityDataType RelativityDataType { get; set; }
 
+		public bool IsIdentifier { get; set; }
+
 		public int DocumentFieldIndex { get; set; } = -1;
 
 		#region Factory methods
 
 		public static FieldInfoDto GenericSpecialField(SpecialFieldType specialFieldType, string displayName)
 		{
-			return new FieldInfoDto(specialFieldType, displayName, false);
+			return new FieldInfoDto(specialFieldType, displayName, false, false);
 		}
 
-		public static FieldInfoDto DocumentField(string displayName)
+		public static FieldInfoDto DocumentField(string displayName, bool isIdentifier)
 		{
-			return new FieldInfoDto(SpecialFieldType.None, displayName, true);
+			return new FieldInfoDto(SpecialFieldType.None, displayName, isIdentifier, true);
 		}
 
 		public static FieldInfoDto SourceWorkspaceField()
 		{
-			return new FieldInfoDto(SpecialFieldType.SourceWorkspace, _RELATIVITY_SOURCE_CASE_DISPLAY_NAME, false);
+			return new FieldInfoDto(SpecialFieldType.SourceWorkspace, _RELATIVITY_SOURCE_CASE_DISPLAY_NAME, false, false);
 		}
 
 		public static FieldInfoDto SourceJobField()
 		{
-			return new FieldInfoDto(SpecialFieldType.SourceJob, _RELATIVITY_SOURCE_JOB_DISPLAY_NAME, false);
+			return new FieldInfoDto(SpecialFieldType.SourceJob, _RELATIVITY_SOURCE_JOB_DISPLAY_NAME, false, false);
 		}
 
 		public static FieldInfoDto FolderPathFieldFromDocumentField(string displayName)
 		{
-			return new FieldInfoDto(SpecialFieldType.FolderPath, displayName, true);
+			return new FieldInfoDto(SpecialFieldType.FolderPath, displayName, false, true);
 		}
 
 		public static FieldInfoDto FolderPathFieldFromSourceWorkspaceStructure()
 		{
-			return new FieldInfoDto(SpecialFieldType.FolderPath, _FOLDER_PATH_FROM_WORKSPACE_DISPLAY_NAME, false);
+			return new FieldInfoDto(SpecialFieldType.FolderPath, _FOLDER_PATH_FROM_WORKSPACE_DISPLAY_NAME, false, false);
 		}
 
 		public static FieldInfoDto NativeFileFilenameField()
 		{
-			return new FieldInfoDto(SpecialFieldType.NativeFileFilename, _NATIVE_FILE_FILENAME_DISPLAY_NAME, false);
+			return new FieldInfoDto(SpecialFieldType.NativeFileFilename, _NATIVE_FILE_FILENAME_DISPLAY_NAME, false, false);
 		}
 
 		public static FieldInfoDto NativeFileSizeField()
 		{
-			return new FieldInfoDto(SpecialFieldType.NativeFileSize, _NATIVE_FILE_SIZE_DISPLAY_NAME, false);
+			return new FieldInfoDto(SpecialFieldType.NativeFileSize, _NATIVE_FILE_SIZE_DISPLAY_NAME, false, false);
 		}
 
 		public static FieldInfoDto NativeFileLocationField()
 		{
-			return new FieldInfoDto(SpecialFieldType.NativeFileLocation, _NATIVE_FILE_LOCATION_DISPLAY_NAME, false);
+			return new FieldInfoDto(SpecialFieldType.NativeFileLocation, _NATIVE_FILE_LOCATION_DISPLAY_NAME, false, false);
 		}
 
 		public static FieldInfoDto SupportedByViewerField()
 		{
-			return new FieldInfoDto(SpecialFieldType.SupportedByViewer, _SUPPORTED_BY_VIEWER_DISPLAY_NAME, true);
+			return new FieldInfoDto(SpecialFieldType.SupportedByViewer, _SUPPORTED_BY_VIEWER_DISPLAY_NAME, false, true);
 		}
 
 		public static FieldInfoDto RelativityNativeTypeField()
 		{
-			return new FieldInfoDto(SpecialFieldType.RelativityNativeType, _RELATIVITY_NATIVE_TYPE_DISPLAY_NAME, true);
+			return new FieldInfoDto(SpecialFieldType.RelativityNativeType, _RELATIVITY_NATIVE_TYPE_DISPLAY_NAME, false, true);
 		}
 
 		#endregion
