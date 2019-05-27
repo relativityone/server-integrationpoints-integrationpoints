@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using kCura.Utility.Extensions;
+using kCura.Vendor.Castle.Core.Internal;
 using Relativity.Services.Exceptions;
 using Relativity.Services.Folder;
 using Relativity.Services.Objects;
