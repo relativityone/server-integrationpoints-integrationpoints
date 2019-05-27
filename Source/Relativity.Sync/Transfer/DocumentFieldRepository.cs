@@ -25,13 +25,9 @@ namespace Relativity.Sync.Transfer
 
 		public async Task<IDictionary<string, RelativityDataType>> GetRelativityDataTypesForFieldsByFieldNameAsync(int sourceWorkspaceArtifactId, ICollection<string> fieldNames, CancellationToken token)
 		{
-			if (fieldNames == null)
+			if (fieldNames == null || fieldNames.Count == 0)
 			{
-				throw new ArgumentNullException(nameof(fieldNames), "Field names list is null.");
-			}
-			if (fieldNames.Count == 0)
-			{
-				throw new ArgumentException("Field names list is empty.", nameof(fieldNames));
+				throw new ArgumentException("Field names list is null or empty.", nameof(fieldNames));
 			}
 
 			ICollection<string> requestedFieldNames = new HashSet<string>(fieldNames);

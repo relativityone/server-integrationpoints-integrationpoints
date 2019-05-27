@@ -1,5 +1,11 @@
-﻿using FluentAssertions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using FluentAssertions;
 using Moq;
+using Moq.Language.Flow;
 using NUnit.Framework;
 using Relativity.Services.Exceptions;
 using Relativity.Services.Objects;
@@ -8,12 +14,6 @@ using Relativity.Sync.Executors;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Transfer;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Moq.Language.Flow;
 
 namespace Relativity.Sync.Tests.Unit.Transfer
 {
@@ -101,30 +101,24 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				CancellationToken.None), Times.AtLeastOnce);
 		}
 
-		[Test]
-		public async Task ItShouldThrowArgumentExceptionWhenFieldNamesAreEmpty()
+		private static IEnumerable<TestCaseData> EmptyFieldNamesListTestCases
 		{
-			// Arrange
-			List<string> emptyFieldNamesList = new List<string>();
+			get
+			{
+				yield return new TestCaseData((object) null);
+				yield return new TestCaseData((object) Array.Empty<string>());
+			}
+		}
 
+		[TestCaseSource(nameof(EmptyFieldNamesListTestCases))]
+		public async Task ItShouldThrowArgumentExceptionWhenFieldNamesListIsNullOrEmpty(ICollection<string> fieldNames)
+		{
 			// Act
 			Func<Task<IDictionary<string, RelativityDataType>>> action = () =>
-				_instance.GetRelativityDataTypesForFieldsByFieldNameAsync(_sourceWorkspaceArtifactId, emptyFieldNamesList, CancellationToken.None);
+				_instance.GetRelativityDataTypesForFieldsByFieldNameAsync(_sourceWorkspaceArtifactId, fieldNames, CancellationToken.None);
 
 			// Assert
 			await action.Should().ThrowAsync<ArgumentException>().ConfigureAwait(false);
-			_objectManager.Verify(om => om.QuerySlimAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), CancellationToken.None), Times.Never);
-		}
-
-		[Test]
-		public async Task ItShouldThrowArgumentExceptionWhenFieldNamesIsNull()
-		{
-			// Act
-			Func<Task<IDictionary<string, RelativityDataType>>> action = () =>
-				_instance.GetRelativityDataTypesForFieldsByFieldNameAsync(_sourceWorkspaceArtifactId, null, CancellationToken.None);
-
-			// Assert
-			await action.Should().ThrowAsync<ArgumentNullException>().ConfigureAwait(false);
 			_objectManager.Verify(om => om.QuerySlimAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), CancellationToken.None), Times.Never);
 		}
 
