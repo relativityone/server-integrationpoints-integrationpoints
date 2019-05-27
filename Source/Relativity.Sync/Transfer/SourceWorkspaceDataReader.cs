@@ -12,12 +12,13 @@ namespace Relativity.Sync.Transfer
 	/// Reads data from multiple feeds in source workspace in batches, presenting it as if
 	/// it were in one data layer in one batch.
 	/// </summary>
-	internal sealed class SourceWorkspaceDataReader : IDataReader
+	internal sealed class SourceWorkspaceDataReader : ISourceWorkspaceDataReader
 	{
 		private IDataReader _currentReader;
 		private Guid? _batchToken;
 
 		private readonly IRelativityExportBatcher _exportBatcher;
+		private readonly IFieldManager _fieldManager;
 		private readonly ISyncLog _logger;
 		private readonly ISynchronizationConfiguration _configuration;
 		private readonly ISourceWorkspaceDataTableBuilder _tableBuilder;
@@ -25,16 +26,23 @@ namespace Relativity.Sync.Transfer
 		public SourceWorkspaceDataReader(ISourceWorkspaceDataTableBuilder tableBuilder,
 			ISynchronizationConfiguration configuration,
 			IRelativityExportBatcher exportBatcher,
+			IFieldManager fieldManager,
+			IItemStatusMonitor itemStatusMonitor,
 			ISyncLog logger)
 		{
 			_tableBuilder = tableBuilder;
 			_exportBatcher = exportBatcher;
+			_fieldManager = fieldManager;
 			_logger = logger;
 			_configuration = configuration;
+
+			ItemStatusMonitor = itemStatusMonitor;
 
 			_currentReader = EmptyDataReader();
 			_batchToken = null;
 		}
+
+		public IItemStatusMonitor ItemStatusMonitor { get; }
 
 		public bool Read()
 		{
@@ -46,6 +54,12 @@ namespace Relativity.Sync.Transfer
 				dataRead = _currentReader.Read();
 			}
 
+			if (dataRead)
+			{
+				string identifierFieldName = _fieldManager.GetObjectIdentifierFieldAsync(CancellationToken.None).GetAwaiter().GetResult().DisplayName;
+				string itemIdentifier = _currentReader[identifierFieldName].ToString();
+				ItemStatusMonitor.MarkItemAsRead(itemIdentifier);
+			}
 			return dataRead;
 		}
 
@@ -80,6 +94,7 @@ namespace Relativity.Sync.Transfer
 			}
 			else
 			{
+				await CreateItemStatusRecords(batch).ConfigureAwait(false);
 				DataTable dt;
 				try
 				{
@@ -93,6 +108,18 @@ namespace Relativity.Sync.Transfer
 			}
 
 			return nextBatchReader;
+		}
+
+		private async Task CreateItemStatusRecords(RelativityObjectSlim[] batch)
+		{
+			foreach (var item in batch)
+			{
+				FieldInfoDto identifierField = await _fieldManager.GetObjectIdentifierFieldAsync(CancellationToken.None).ConfigureAwait(false);
+				int documentFieldIndex = identifierField.DocumentFieldIndex;
+				string itemIdentifier = item.Values[documentFieldIndex].ToString();
+				int itemArtifactId = item.ArtifactID;
+				ItemStatusMonitor.AddItem(itemIdentifier, itemArtifactId);
+			}
 		}
 
 		private void Dispose(bool disposing)

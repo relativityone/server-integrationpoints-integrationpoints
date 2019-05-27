@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,11 +18,12 @@ namespace Relativity.Sync.Executors
 		private readonly IDestinationWorkspaceTagRepository _destinationWorkspaceTagRepository;
 		private readonly IImportJobFactory _importJobFactory;
 		private readonly IFieldManager _fieldManager;
+		private readonly IJobHistoryErrorRepository _jobHistoryErrorRepository;
 		private readonly ISyncLog _logger;
 		private readonly ISyncMetrics _syncMetrics;
 
-		public SynchronizationExecutor(IImportJobFactory importJobFactory, IBatchRepository batchRepository,
-			IDestinationWorkspaceTagRepository destinationWorkspaceTagRepository, ISyncMetrics syncMetrics, IDateTime dateTime, IFieldManager fieldManager, ISyncLog logger)
+		public SynchronizationExecutor(IImportJobFactory importJobFactory, IBatchRepository batchRepository, IDestinationWorkspaceTagRepository destinationWorkspaceTagRepository,
+			ISyncMetrics syncMetrics, IDateTime dateTime, IFieldManager fieldManager, IJobHistoryErrorRepository jobHistoryErrorRepository, ISyncLog logger)
 		{
 			_batchRepository = batchRepository;
 			_dateTime = dateTime;
@@ -30,6 +32,7 @@ namespace Relativity.Sync.Executors
 			_syncMetrics = syncMetrics;
 			_dateTime = dateTime;
 			_fieldManager = fieldManager;
+			_jobHistoryErrorRepository = jobHistoryErrorRepository;
 			_logger = logger;
 		}
 
@@ -37,12 +40,10 @@ namespace Relativity.Sync.Executors
 		{
 			_logger.LogVerbose("Creating settings for ImportAPI.");
 			UpdateImportSettings(configuration);
-			
-			ExecutionResult result = ExecutionResult.Success();
+
+			ExecutionResult importResult = ExecutionResult.Success();
 			DateTime startTime = _dateTime.Now;
-
-			IList<List<int>> batchArtifactIds = new List<List<int>>();
-
+			var taggingTasks = new List<Task<IEnumerable<int>>>();
 			try
 			{
 				_logger.LogVerbose("Gathering batches to execute.");
@@ -53,17 +54,19 @@ namespace Relativity.Sync.Executors
 					if (token.IsCancellationRequested)
 					{
 						_logger.LogInformation("Import job has been canceled.");
-						result = ExecutionResult.Canceled();
+						importResult = ExecutionResult.Canceled();
 						break;
 					}
 
-					IBatch batch = await _batchRepository.GetAsync(configuration.SourceWorkspaceArtifactId, batchId).ConfigureAwait(false);
-					batchArtifactIds.Add((await batch.GetItemArtifactIds(configuration.ExportRunId).ConfigureAwait(false)).ToList());
-
 					_logger.LogVerbose("Processing batch ID: {batchId}", batchId);
+					IBatch batch = await _batchRepository.GetAsync(configuration.SourceWorkspaceArtifactId, batchId).ConfigureAwait(false);
 					using (IImportJob importJob = await _importJobFactory.CreateImportJobAsync(configuration, batch).ConfigureAwait(false))
 					{
 						await importJob.RunAsync(token).ConfigureAwait(false);
+
+						IEnumerable<int> pushedDocumentArtifactIds = await importJob.GetPushedDocumentArtifactIds().ConfigureAwait(false);
+						Task<IEnumerable<int>> taggingTask = TagDocumentsAsync(configuration, pushedDocumentArtifactIds, token);
+						taggingTasks.Add(taggingTask);
 					}
 					_logger.LogInformation("Batch ID: {batchId} processed successfully.", batchId);
 				}
@@ -72,48 +75,45 @@ namespace Relativity.Sync.Executors
 			{
 				const string message = "Fatal exception occurred while executing import job.";
 				_logger.LogError(ex, message);
-				result = ExecutionResult.Failure(message, ex);
+				importResult = ExecutionResult.Failure(message, ex);
 			}
 			catch (Exception ex)
 			{
 				const string message = "Unexpected exception occurred while executing synchronization.";
 				_logger.LogError(ex, message);
-				result = ExecutionResult.Failure(message, ex);
+				importResult = ExecutionResult.Failure(message, ex);
 			}
 			finally
 			{
 				DateTime endTime = _dateTime.Now;
 				TimeSpan jobDuration = endTime - startTime;
-				_syncMetrics.CountOperation("ImportJobStatus", result.Status);
-				_syncMetrics.TimedOperation("ImportJob", jobDuration, result.Status);
-				_syncMetrics.GaugeOperation("ImportJobStart", result.Status, startTime.Ticks, "Ticks", null);
-				_syncMetrics.GaugeOperation("ImportJobEnd", result.Status, endTime.Ticks, "Ticks", null);
+				_syncMetrics.CountOperation("ImportJobStatus", importResult.Status);
+				_syncMetrics.TimedOperation("ImportJob", jobDuration, importResult.Status);
+				_syncMetrics.GaugeOperation("ImportJobStart", importResult.Status, startTime.Ticks, "Ticks", null);
+				_syncMetrics.GaugeOperation("ImportJobEnd", importResult.Status, endTime.Ticks, "Ticks", null);
 			}
 
-			try
+			ExecutionResult taggingResult = GetTaggingResults(taggingTasks, configuration.JobHistoryArtifactId, token);
+			if (taggingResult.Status == ExecutionStatus.Failed)
 			{
-				await TagDocumentsAsync(configuration, batchArtifactIds, token).ConfigureAwait(false);
+				var jobHistoryError = new CreateJobHistoryErrorDto(configuration.JobHistoryArtifactId, ErrorType.Job)
+				{
+					ErrorMessage = taggingResult.Message,
+					StackTrace = taggingResult.Exception?.StackTrace
+				};
+				await _jobHistoryErrorRepository.CreateAsync(configuration.SourceWorkspaceArtifactId, jobHistoryError).ConfigureAwait(false);
 			}
-			catch (Exception ex)
+
+			ExecutionResult executionResult = importResult;
+			if (taggingResult.Status == ExecutionStatus.Failed || taggingResult.Status == ExecutionStatus.Canceled)
 			{
-				const string message = "Unexpected exception occurred while tagging synchronized documents in source workspace.";
-				_logger.LogError(ex, message);
-
-				if (result.Status == ExecutionStatus.Failed)
-				{
-					string aggregateMessage = result.Message + " " + message;
-					var combinedException = new AggregateException(aggregateMessage, result.Exception, ex);
-					result = ExecutionResult.Failure(aggregateMessage, combinedException);
-				}
-				else
-				{
-					result = ExecutionResult.Failure(message, ex);
-				}
+				string resultMessage = string.IsNullOrEmpty(executionResult.Message) ? taggingResult.Message : string.Join(" ", executionResult.Message, taggingResult.Message);
+				Exception resultException = executionResult.Exception == null ? taggingResult.Exception : new AggregateException(executionResult.Exception, taggingResult.Exception);
+				executionResult = new ExecutionResult(taggingResult.Status, resultMessage, resultException);
 			}
-
-			return result;
+			return executionResult;
 		}
-		
+
 		private void UpdateImportSettings(ISynchronizationConfiguration configuration)
 		{
 			int destinationIdentityFieldId = GetDestinationIdentityFieldId(configuration.FieldMappings);
@@ -153,20 +153,60 @@ namespace Relativity.Sync.Executors
 			return specialField.DisplayName;
 		}
 
-		private async Task TagDocumentsAsync(ISynchronizationConfiguration configuration, IList<List<int>> artifactIds, CancellationToken token)
+		private async Task<IEnumerable<int>> TagDocumentsAsync(ISynchronizationConfiguration configuration, IEnumerable<int> artifactIds, CancellationToken token)
 		{
-			if (artifactIds.Any())
+			var failedArtifactIds = new List<int>();
+			IList<int> artifactIdsList = artifactIds.ToList();
+			if (artifactIdsList.Count > 0)
 			{
-				var tasks = new Task<IList<TagDocumentsResult>>[artifactIds.Count];
-
-				for (int i = 0; i < artifactIds.Count; i++)
+				IList<TagDocumentsResult> taggingResults = await _destinationWorkspaceTagRepository.TagDocumentsAsync(configuration, artifactIdsList, token).ConfigureAwait(false);
+				foreach (TagDocumentsResult taggingResult in taggingResults)
 				{
-					Task<IList<TagDocumentsResult>> tagTask = _destinationWorkspaceTagRepository.TagDocumentsAsync(configuration, artifactIds[i], token);
-					tasks[i] = tagTask;
+					if (taggingResult.FailedDocumentArtifactIds.Any())
+					{
+						failedArtifactIds.AddRange(taggingResult.FailedDocumentArtifactIds);
+					}
+				}
+			}
+			return failedArtifactIds;
+		}
+
+		private ExecutionResult GetTaggingResults(IList<Task<IEnumerable<int>>> taggingTasks, int jobHistoryArtifactId, CancellationToken token)
+		{
+			ExecutionResult taggingResult = ExecutionResult.Success();
+			var failedTagArtifactIds = new List<int>();
+			try
+			{
+				Task.WaitAll(taggingTasks.ToArray(), token);
+				foreach (Task<IEnumerable<int>> task in taggingTasks)
+				{
+					failedTagArtifactIds.AddRange(task.Result);
 				}
 
-				await Task.WhenAll(tasks).ConfigureAwait(false);
+				if (failedTagArtifactIds.Any())
+				{
+					const int maxSubset = 50;
+					int subsetCount = failedTagArtifactIds.Count < maxSubset ? failedTagArtifactIds.Count : maxSubset;
+					string subsetArtifactIds = string.Join(",", failedTagArtifactIds, 0, subsetCount);
+
+					string errorMessage = $"Failed to tag synchronized documents in source workspace. The first {maxSubset} are: {subsetArtifactIds}.";
+					var failedTaggingException = new SyncException(errorMessage, jobHistoryArtifactId.ToString(CultureInfo.InvariantCulture));
+					taggingResult = ExecutionResult.Failure(errorMessage, failedTaggingException);
+				}
 			}
+			catch (OperationCanceledException oce)
+			{
+				const string taggingCanceledMessage = "Tagging synchronized documents in source workspace was interrupted due to the job being canceled.";
+				_logger.LogInformation(oce, taggingCanceledMessage);
+				taggingResult = new ExecutionResult(ExecutionStatus.Canceled, taggingCanceledMessage, oce);
+			}
+			catch (Exception ex)
+			{
+				const string message = "Unexpected exception occurred while tagging synchronized documents in source workspace.";
+				_logger.LogError(ex, message);
+				taggingResult = ExecutionResult.Failure(message, ex);
+			}
+			return taggingResult;
 		}
 	}
 }

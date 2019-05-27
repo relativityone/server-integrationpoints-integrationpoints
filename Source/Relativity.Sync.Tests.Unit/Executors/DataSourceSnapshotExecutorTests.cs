@@ -130,8 +130,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			List<FieldInfoDto> fieldInfos = new List<FieldInfoDto>
 			{
-				FieldInfoDto.DocumentField(field1Id),
-				FieldInfoDto.DocumentField(field2Id)
+				FieldInfoDto.DocumentField(field1Id, false),
+				FieldInfoDto.DocumentField(field2Id, false)
 			};
 
 			_fieldManager.Setup(fm => fm.GetDocumentFieldsAsync(CancellationToken.None)).ReturnsAsync(fieldInfos);

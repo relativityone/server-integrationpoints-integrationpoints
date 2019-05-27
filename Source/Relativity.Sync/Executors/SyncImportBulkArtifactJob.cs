@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using kCura.Relativity.DataReaderClient;
+using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Executors
 {
@@ -8,10 +9,13 @@ namespace Relativity.Sync.Executors
 	{
 		private readonly ImportBulkArtifactJob _importBulkArtifactJob;
 
-		public SyncImportBulkArtifactJob(ImportBulkArtifactJob importBulkArtifactJob)
+		public SyncImportBulkArtifactJob(ImportBulkArtifactJob importBulkArtifactJob, IItemStatusMonitor itemStatusMonitor)
 		{
 			_importBulkArtifactJob = importBulkArtifactJob;
+			ItemStatusMonitor = itemStatusMonitor;
 		}
+
+		public IItemStatusMonitor ItemStatusMonitor { get; }
 
 		public event IImportNotifier.OnCompleteEventHandler OnComplete
 		{

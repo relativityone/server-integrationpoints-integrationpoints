@@ -108,6 +108,8 @@ namespace Relativity.Sync.Tests.System
 				new SourceTagsFieldBuilder(configuration)
 			});
 
+			var jobHistoryErrorRepository = new JobHistoryErrorRepository(_serviceFactoryStub);
+
 			// Source tags creation in destination workspace
 			DestinationWorkspaceTagsCreationExecutor destinationWorkspaceTagsCreationExecutor = new DestinationWorkspaceTagsCreationExecutor(
 				new SourceCaseTagService(
@@ -132,10 +134,12 @@ namespace Relativity.Sync.Tests.System
 			Assert.AreEqual(ExecutionStatus.Completed, snapshotPartitionExecutorResult.Status);
 
 			// Data reader setup
-			SourceWorkspaceDataReader dataReader = new SourceWorkspaceDataReader(
+			var dataReader = new SourceWorkspaceDataReader(
 				new SourceWorkspaceDataTableBuilder(fieldManager),
 				configuration,
 				new RelativityExportBatcher(_serviceFactoryStub, new BatchRepository(_serviceFactoryStub)),
+				fieldManager,
+				null,
 				logger);
 
 			// ImportAPI setup
@@ -146,7 +150,8 @@ namespace Relativity.Sync.Tests.System
 				new BatchProgressHandlerFactory(new BatchProgressUpdater(logger), dateTime),
 				new JobHistoryErrorRepository(_serviceFactoryStub),
 				logger);
-			SynchronizationExecutor syncExecutor = new SynchronizationExecutor(importJobFactory, batchRepository, destinationWorkspaceTagRepository, syncMetrics, dateTime, fieldManager, logger);
+			SynchronizationExecutor syncExecutor = new SynchronizationExecutor(importJobFactory, batchRepository, destinationWorkspaceTagRepository, syncMetrics, dateTime, fieldManager,
+				jobHistoryErrorRepository, logger);
 
 			// ACT
 			ExecutionResult syncResult = await syncExecutor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
