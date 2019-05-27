@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using kCura.Utility;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
@@ -141,19 +140,7 @@ namespace Relativity.Sync.Storage
 			}
 		}
 
-		private async Task<bool> ReadFirstAsync(int workspaceArtifactId, int syncConfigurationArtifactId)
-		{
-			return await ReadFirstUsingSortAsync(workspaceArtifactId, syncConfigurationArtifactId, SortEnum.Ascending)
-				.ConfigureAwait(false);
-		}
-
 		private async Task<bool> ReadLastAsync(int workspaceArtifactId, int syncConfigurationArtifactId)
-		{
-			return await ReadFirstUsingSortAsync(workspaceArtifactId, syncConfigurationArtifactId, SortEnum.Descending)
-				.ConfigureAwait(false);
-		}
-
-		private async Task<bool> ReadFirstUsingSortAsync(int workspaceArtifactId, int syncConfigurationArtifactId, SortEnum sort)
 		{
 			_workspaceArtifactId = workspaceArtifactId;
 
@@ -175,7 +162,7 @@ namespace Relativity.Sync.Storage
 							{
 								Guid = StartingIndexGuid
 							},
-							Direction = sort
+							Direction = SortEnum.Descending
 						}
 					}
 				};
@@ -358,12 +345,6 @@ namespace Relativity.Sync.Storage
 			var batch = new Batch(serviceFactory);
 			IEnumerable<int> batchIds = await batch.ReadAllNewIdsAsync(workspaceArtifactId, syncConfigurationId).ConfigureAwait(false);
 			return batchIds;
-		}
-		public static async Task<IBatch> GetFirstAsync(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int syncConfigurationArtifactId)
-		{
-			Batch batch = new Batch(serviceFactory);
-			bool batchFound = await batch.ReadFirstAsync(workspaceArtifactId, syncConfigurationArtifactId).ConfigureAwait(false);
-			return batchFound ? batch : null;
 		}
 
 		public static async Task<IBatch> GetNextAsync(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int syncConfigurationArtifactId, int startingIndex)

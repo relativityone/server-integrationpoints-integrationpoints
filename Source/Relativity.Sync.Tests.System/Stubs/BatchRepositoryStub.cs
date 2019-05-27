@@ -35,11 +35,6 @@ namespace Relativity.Sync.Tests.System.Stubs
 			throw new NotImplementedException();
 		}
 
-		public Task<IBatch> GetFirstAsync(int workspaceArtifactId, int syncConfigurationId)
-		{
-			return Task.FromResult(_batches.First());
-		}
-
 		public Task<IBatch> GetNextAsync(int workspaceArtifactId, int syncConfigurationArtifactId, int startingIndex)
 		{
 			IBatch nextBatch = _batches.FirstOrDefault(b => b.StartingIndex > startingIndex);

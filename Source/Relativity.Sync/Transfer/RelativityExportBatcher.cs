@@ -11,7 +11,7 @@ namespace Relativity.Sync.Transfer
 
 	internal sealed class RelativityExportBatcher : IRelativityExportBatcher
 	{
-		private IBatch _currentBatch;
+		private int _lastStartingIndex;
 
 		private readonly ISourceServiceFactoryForUser _serviceFactory;
 		private readonly IBatchRepository _batchRepository;
@@ -27,26 +27,28 @@ namespace Relativity.Sync.Transfer
 			_sourceWorkspaceArtifactId = sourceWorkspaceArtifactId;
 			_syncConfigurationArtifactId = syncConfigurationArtifactId;
 
-			_currentBatch = null;
+			_lastStartingIndex = -1;
 		}
 
 		public async Task<RelativityObjectSlim[]> GetNextBatchAsync()
 		{
-			IBatch nextBatch = _currentBatch == null
-				? await _batchRepository.GetFirstAsync(_sourceWorkspaceArtifactId, _syncConfigurationArtifactId).ConfigureAwait(false)
-				: await _batchRepository.GetNextAsync(_sourceWorkspaceArtifactId, _syncConfigurationArtifactId, _currentBatch.StartingIndex).ConfigureAwait(false);
+			IBatch nextBatch = await _batchRepository.GetNextAsync(_sourceWorkspaceArtifactId, _syncConfigurationArtifactId, _lastStartingIndex).ConfigureAwait(false);
 
 			if (nextBatch == null)
 			{
+				// Since we don't update _lastStartingIndex if nextBatch is null, every invocation of this method will return empty after
+				// the first one returns empty: we'll use the same index each time we call GetNextAsync, which will return null each time.
+
 				return Array.Empty<RelativityObjectSlim>();
 			}
 
-			_currentBatch = nextBatch;
+			_lastStartingIndex = nextBatch.StartingIndex;
 
 			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				int resultsBlockSize = nextBatch.TotalItemsCount;
 				int startingIndex = nextBatch.StartingIndex;
+
 				RelativityObjectSlim[] block = await objectManager
 					.RetrieveResultsBlockFromExportAsync(_sourceWorkspaceArtifactId, _runId, resultsBlockSize, startingIndex)
 					.ConfigureAwait(false);
