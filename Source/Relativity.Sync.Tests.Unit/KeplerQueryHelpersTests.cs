@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace Relativity.Sync.Tests.Unit
 {
 	[TestFixture]
-	internal sealed class QueryHelpersTests
+	internal sealed class KeplerQueryHelpersTests
 	{
 		[TestCase(@"test", @"test")]
 		[TestCase(@"test \ field", @"test \\ field")]
@@ -15,7 +15,7 @@ namespace Relativity.Sync.Tests.Unit
 		[TestCase(@"""my"" [test] () field", @"""my"" [test] () field")]
 		public void EscapeForSingleQuotesTests(string input, string expected)
 		{
-			string actual = QueryHelpers.EscapeForSingleQuotes(input);
+			string actual = KeplerQueryHelpers.EscapeForSingleQuotes(input);
 			actual.Should().Be(expected);
 		}
 	}

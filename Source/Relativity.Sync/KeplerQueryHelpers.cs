@@ -1,6 +1,6 @@
 ﻿namespace Relativity.Sync
 {
-	internal static class QueryHelpers
+	internal static class KeplerQueryHelpers
 	{
 		/// <summary>
 		/// Escapes characters that may cause parsing errors when surrounded by single quotes.
