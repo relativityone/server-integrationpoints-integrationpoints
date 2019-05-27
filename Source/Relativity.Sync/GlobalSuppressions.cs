@@ -57,5 +57,4 @@
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "RG0001: Class names should match the name of the file they are in", Justification = "Private class scope", Scope = "type", Target = "~T:Relativity.Sync.Transfer.ItemStatusMonitor")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "RG2002: Avoid putting multiple classes in a single file", Justification = "Private class scope", Scope = "type", Target = "~T:Relativity.Sync.Transfer.ItemStatusMonitor")]
 
-
 #pragma warning restore RG2001 // Character Per Line
