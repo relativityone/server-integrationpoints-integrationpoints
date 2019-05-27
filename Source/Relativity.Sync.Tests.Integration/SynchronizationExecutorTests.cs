@@ -82,9 +82,9 @@ namespace Relativity.Sync.Tests.Integration
 			var sourceServiceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
 			var sourceServiceFactoryForAdmin = new Mock<ISourceServiceFactoryForAdmin>();
 
-			destinationServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).Returns(Task.FromResult(_objectManagerMock.Object));
-			sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).Returns(Task.FromResult(_objectManagerMock.Object));
-			sourceServiceFactoryForAdmin.Setup(x => x.CreateProxyAsync<IObjectManager>()).Returns(Task.FromResult(_objectManagerMock.Object));
+			destinationServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManagerMock.Object);
+			sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManagerMock.Object);
+			sourceServiceFactoryForAdmin.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManagerMock.Object);
 
 			containerBuilder.RegisterInstance(destinationServiceFactoryForUser.Object).As<IDestinationServiceFactoryForUser>();
 			containerBuilder.RegisterInstance(sourceServiceFactoryForUser.Object).As<ISourceServiceFactoryForUser>();
@@ -143,7 +143,7 @@ namespace Relativity.Sync.Tests.Integration
 				.ReturnsAsync(readResultForBatch)
 				.Verifiable();
 
-			RelativityObjectSlim[] documentsToTag = GetDocumentsToTag(totalItemsCount);
+			IEnumerable<RelativityObjectSlim> documentsToTag = GetDocumentsToTag(totalItemsCount);
 			_itemStatusMonitor.Setup(x => x.GetSuccessfulItemArtifactIds()).Returns(documentsToTag.Select(x => x.ArtifactID).ToList());
 
 			MassUpdateResult massUpdateResult = new MassUpdateResult()
@@ -165,7 +165,7 @@ namespace Relativity.Sync.Tests.Integration
 			_importBulkArtifactJob.Verify(x => x.Execute(), Times.Once);
 		}
 
-		private RelativityObjectSlim[] GetDocumentsToTag(int totalItemsCount)
+		private IEnumerable<RelativityObjectSlim> GetDocumentsToTag(int totalItemsCount)
 		{
 			RelativityObjectSlim[] documentsToTag = new RelativityObjectSlim[totalItemsCount];
 			for (int i = 0; i < documentsToTag.Length; i++)
