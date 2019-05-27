@@ -37,9 +37,11 @@ namespace Relativity.Sync.Tests.Integration
 			IFieldManager fieldManager = container.Resolve<IFieldManager>();
 			_documentTransferServicesMocker.SetFieldManager(fieldManager);
 
-			_instance = new SourceWorkspaceDataReader(container.Resolve<ISourceWorkspaceDataTableBuilder>(),
+			_instance = new SourceWorkspaceDataReader(container.Resolve<IBatchDataReaderBuilder>(),
 				_configuration,
 				container.Resolve<IRelativityExportBatcher>(),
+				container.Resolve<IFieldManager>(),
+				container.Resolve<IItemStatusMonitor>(),
 				Mock.Of<ISyncLog>());
 		}
 

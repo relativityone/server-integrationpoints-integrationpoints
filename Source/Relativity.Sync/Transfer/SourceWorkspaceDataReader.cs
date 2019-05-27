@@ -18,17 +18,23 @@ namespace Relativity.Sync.Transfer
 		private Guid? _batchToken;
 
 		private readonly IRelativityExportBatcher _exportBatcher;
+		private readonly IFieldManager _fieldManager;
+		private readonly IItemStatusMonitor _itemStatusMonitor;
 		private readonly ISyncLog _logger;
 		private readonly ISynchronizationConfiguration _configuration;
-		private readonly ISourceWorkspaceDataTableBuilder _tableBuilder;
+		private readonly IBatchDataReaderBuilder _readerBuilder;
 
-		public SourceWorkspaceDataReader(ISourceWorkspaceDataTableBuilder tableBuilder,
+		public SourceWorkspaceDataReader(IBatchDataReaderBuilder readerBuilder,
 			ISynchronizationConfiguration configuration,
 			IRelativityExportBatcher exportBatcher,
+			IFieldManager fieldManager,
+			IItemStatusMonitor itemStatusMonitor,
 			ISyncLog logger)
 		{
-			_tableBuilder = tableBuilder;
+			_readerBuilder = readerBuilder;
 			_exportBatcher = exportBatcher;
+			_fieldManager = fieldManager;
+			_itemStatusMonitor = itemStatusMonitor;
 			_logger = logger;
 			_configuration = configuration;
 
@@ -46,6 +52,12 @@ namespace Relativity.Sync.Transfer
 				dataRead = _currentReader.Read();
 			}
 
+			if (dataRead)
+			{
+				string identifierFieldName = _fieldManager.GetObjectIdentifierFieldAsync(CancellationToken.None).GetAwaiter().GetResult().DisplayName;
+				string itemIdentifier = _currentReader[identifierFieldName].ToString();
+				_itemStatusMonitor.MarkItemAsRead(itemIdentifier);
+			}
 			return dataRead;
 		}
 
@@ -80,19 +92,30 @@ namespace Relativity.Sync.Transfer
 			}
 			else
 			{
-				DataTable dt;
+				await CreateItemStatusRecordsAsync(batch).ConfigureAwait(false);
 				try
 				{
-					dt = await _tableBuilder.BuildAsync(_configuration.SourceWorkspaceArtifactId, batch, CancellationToken.None).ConfigureAwait(false);
+					nextBatchReader = await _readerBuilder.BuildAsync(_configuration.SourceWorkspaceArtifactId, batch, CancellationToken.None).ConfigureAwait(false);
 				}
 				catch (Exception ex)
 				{
 					throw new SourceDataReaderException("Failed to prepare exported batch for import", ex);
 				}
-				nextBatchReader = dt.CreateDataReader();
 			}
 
 			return nextBatchReader;
+		}
+
+		private async Task CreateItemStatusRecordsAsync(RelativityObjectSlim[] batch)
+		{
+			foreach (var item in batch)
+			{
+				FieldInfoDto identifierField = await _fieldManager.GetObjectIdentifierFieldAsync(CancellationToken.None).ConfigureAwait(false);
+				int documentFieldIndex = identifierField.DocumentFieldIndex;
+				string itemIdentifier = item.Values[documentFieldIndex].ToString();
+				int itemArtifactId = item.ArtifactID;
+				_itemStatusMonitor.AddItem(itemIdentifier, itemArtifactId);
+			}
 		}
 
 		private void Dispose(bool disposing)
