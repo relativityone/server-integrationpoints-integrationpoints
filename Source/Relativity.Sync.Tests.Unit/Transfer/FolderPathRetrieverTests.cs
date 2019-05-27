@@ -61,7 +61,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		}
 
 		[TestCaseSource(nameof(EmptyAndNullDocumentArtifactIds))]
-		[Test]
 		public async Task ItShouldGetEmptyDocumentIdToFolderIdMapWhenDocumentCountIsZero(ICollection<int> documentArtifactIds)
 		{
 			// ARRANGE
