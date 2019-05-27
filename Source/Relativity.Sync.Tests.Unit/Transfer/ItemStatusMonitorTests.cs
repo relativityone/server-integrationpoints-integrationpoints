@@ -10,6 +10,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 	public sealed class ItemStatusMonitorTests
 	{
 		private ItemStatusMonitor _instance;
+
 		private const string _FIRST_ITEM_IDENTIFIER = "first";
 		private const int _FIRST_ITEM_ARTIFACT_ID = 1;
 		private const string _SECOND_ITEM_IDENTIFIER = "second";
@@ -46,7 +47,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			// Act
 			IEnumerable<int> result = _instance.GetSuccessfulItemArtifactIds();
-			
+
 			// Assert
 			result.Should().BeEmpty();
 		}
@@ -63,7 +64,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			// Act
 			IEnumerable<int> result = _instance.GetSuccessfulItemArtifactIds();
-			
+
 			// Assert
 			result.Should().BeEmpty();
 		}
@@ -82,7 +83,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			// Act
 			List<int> result = _instance.GetSuccessfulItemArtifactIds().ToList();
-			
+
 			// Assert
 			result.Should().Contain(successfulItemArtifactId);
 			result.Should().NotContain(notReadItemArtifactId);
@@ -100,7 +101,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			// Act
 			List<int> result = _instance.GetSuccessfulItemArtifactIds().ToList();
-			
+
 			// Assert
 			result.Should().Contain(_FIRST_ITEM_ARTIFACT_ID);
 			result.Should().Contain(_SECOND_ITEM_ARTIFACT_ID);
@@ -119,10 +120,10 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_instance.MarkReadSoFarAsFailed();
 			_instance.MarkItemAsRead(_SECOND_ITEM_IDENTIFIER);
 			_instance.MarkReadSoFarAsSuccessful();
-			
+
 			// Act
 			List<int> result = _instance.GetSuccessfulItemArtifactIds().ToList();
-			
+
 			// Assert
 			result.Should().NotContain(failedItemArtifactId);
 			result.Should().Contain(successfulItemArtifactId);
@@ -141,10 +142,10 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_instance.MarkItemAsRead(_SECOND_ITEM_IDENTIFIER);
 			_instance.MarkItemAsFailed(_FIRST_ITEM_IDENTIFIER);
 			_instance.MarkReadSoFarAsSuccessful();
-			
+
 			// Act
 			List<int> result = _instance.GetSuccessfulItemArtifactIds().ToList();
-			
+
 			// Assert
 			result.Should().NotContain(failedItemArtifactId);
 			result.Should().Contain(successfulItemArtifactId);

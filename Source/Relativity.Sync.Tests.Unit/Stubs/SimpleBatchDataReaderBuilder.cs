@@ -13,17 +13,18 @@ namespace Relativity.Sync.Tests.Unit.Stubs
 	///     Wraps the given batch in a DataTable - the column names
 	///     are random strings and each row is the Values property of each object.
 	/// </summary>
-	internal sealed class SimpleSourceWorkspaceDataTableBuilder : ISourceWorkspaceDataTableBuilder
+	internal sealed class SimpleBatchDataReaderBuilder : IBatchDataReaderBuilder
 	{
 		private readonly FieldInfoDto _identifierField;
 
-		public SimpleSourceWorkspaceDataTableBuilder(FieldInfoDto identifierField)
+		public SimpleBatchDataReaderBuilder(FieldInfoDto identifierField)
 		{
 			_identifierField = identifierField;
 		}
 
-		public Task<DataTable> BuildAsync(int workspaceArtifactId, RelativityObjectSlim[] batch, CancellationToken token)
+		public async Task<IDataReader> BuildAsync(int workspaceArtifactId, RelativityObjectSlim[] batch, CancellationToken token)
 		{
+			await Task.Yield();
 			DataTable dt = new DataTable();
 			List<DataColumn> columns = new List<DataColumn>();
 			for (int i = 0; i < batch.First().Values.Count; i++)
@@ -42,8 +43,8 @@ namespace Relativity.Sync.Tests.Unit.Stubs
 			{
 				dt.Rows.Add(obj.Values.ToArray());
 			}
-
-			return Task.FromResult(dt);
+			DataTableReader dataReader = dt.CreateDataReader();
+			return dataReader;
 		}
 	}
 }

@@ -7,7 +7,6 @@ using kCura.Relativity.ImportAPI;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
-using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
@@ -135,11 +134,11 @@ namespace Relativity.Sync.Tests.System
 
 			// Data reader setup
 			var dataReader = new SourceWorkspaceDataReader(
-				new SourceWorkspaceDataTableBuilder(fieldManager),
+				new BatchDataReaderBuilder(fieldManager), 
 				configuration,
 				new RelativityExportBatcher(_serviceFactoryStub, new BatchRepository(_serviceFactoryStub)),
 				fieldManager,
-				null,
+				new ItemStatusMonitor(),
 				logger);
 
 			// ImportAPI setup
