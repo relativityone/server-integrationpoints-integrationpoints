@@ -133,7 +133,7 @@ namespace Relativity.Sync.Tests.System
 			Assert.AreEqual(ExecutionStatus.Completed, snapshotPartitionExecutorResult.Status);
 
 			// Data reader setup
-			SourceWorkspaceDataReader dataReader = new SourceWorkspaceDataReader(
+			var dataReader = new SourceWorkspaceDataReader(
 				new BatchDataReaderBuilder(fieldManager), 
 				configuration,
 				new RelativityExportBatcher(_serviceFactoryStub, new BatchRepository(_serviceFactoryStub)),
