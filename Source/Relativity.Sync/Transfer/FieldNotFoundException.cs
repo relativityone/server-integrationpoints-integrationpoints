@@ -9,7 +9,7 @@ namespace Relativity.Sync.Transfer
 	public sealed class FieldNotFoundException : Exception
 	{
 		/// <inheritdoc />
-		public FieldNotFoundException() : base()
+		public FieldNotFoundException()
 		{
 		}
 
