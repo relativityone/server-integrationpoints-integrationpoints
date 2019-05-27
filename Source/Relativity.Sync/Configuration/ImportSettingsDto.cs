@@ -217,8 +217,8 @@ namespace Relativity.Sync.Configuration
 		public ImportSettingsDto()
 		{
 			ErrorFilePath = string.Empty;
-			DisableNativeLocationValidation = true;
-			DisableNativeValidation = true;
+			DisableNativeLocationValidation = null;
+			DisableNativeValidation = null;
 			ExtractedTextFileEncoding = string.Empty;
 			FileNameColumn = string.Empty;
 			FileSizeColumn = string.Empty;
