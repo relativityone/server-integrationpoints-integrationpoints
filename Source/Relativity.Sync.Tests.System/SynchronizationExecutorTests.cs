@@ -133,9 +133,11 @@ namespace Relativity.Sync.Tests.System
 
 			// Data reader setup
 			SourceWorkspaceDataReader dataReader = new SourceWorkspaceDataReader(
-				new SourceWorkspaceDataTableBuilder(fieldManager),
+				new BatchDataReaderBuilder(fieldManager), 
 				configuration,
 				new RelativityExportBatcher(_serviceFactoryStub, new BatchRepository(_serviceFactoryStub)),
+				fieldManager,
+				new ItemStatusMonitor(),
 				logger);
 
 			// ImportAPI setup
