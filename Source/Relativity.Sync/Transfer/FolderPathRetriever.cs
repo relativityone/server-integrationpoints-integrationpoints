@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using kCura.Vendor.Castle.Core.Internal;
 using Relativity.Services.Exceptions;
 using Relativity.Services.Folder;
 using Relativity.Services.Objects;
@@ -28,7 +27,7 @@ namespace Relativity.Sync.Transfer
 
 		public async Task<IDictionary<int, string>> GetFolderPathsAsync(int workspaceArtifactId, ICollection<int> documentArtifactIds)
 		{
-			if (documentArtifactIds.IsNullOrEmpty())
+			if (documentArtifactIds == null || !documentArtifactIds.Any())
 			{
 				return new Dictionary<int, string>();
 			}
