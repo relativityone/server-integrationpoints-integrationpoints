@@ -442,13 +442,13 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		{
 			// Arrange
 			const int testDestinationWorkspaceTagArtifactId = 102678;
-			const int testJobHistoryTagArtifactId = 101789;
+			const int testJobHistoryArtifactId = 101789;
 			const int testSourceWorkspaceArtifactId = 101456;
 			int[] testArtifactIds = { 0, 1 };
 
 			var synchronizationConfiguration = new Mock<ISynchronizationConfiguration>();
 			synchronizationConfiguration.SetupGet(x => x.DestinationWorkspaceTagArtifactId).Returns(testDestinationWorkspaceTagArtifactId);
-			synchronizationConfiguration.SetupGet(x => x.JobHistoryTagArtifactId).Returns(testJobHistoryTagArtifactId);
+			synchronizationConfiguration.SetupGet(x => x.JobHistoryArtifactId).Returns(testJobHistoryArtifactId);
 			synchronizationConfiguration.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(testSourceWorkspaceArtifactId);
 
 			_objectManager.Setup(x => x.UpdateAsync(It.IsAny<int>(), It.IsAny<MassUpdateByObjectIdentifiersRequest>(), It.IsAny<MassUpdateOptions>(), It.IsAny<CancellationToken>()))
@@ -477,13 +477,13 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			_objectManager.Verify(x => x.UpdateAsync(
 				It.Is<int>(w => w == testSourceWorkspaceArtifactId),
-				It.Is<MassUpdateByObjectIdentifiersRequest>(m => VerifyTagUpdateRequest(m, testArtifactIds, testDestinationWorkspaceTagArtifactId, testJobHistoryTagArtifactId)),
+				It.Is<MassUpdateByObjectIdentifiersRequest>(m => VerifyTagUpdateRequest(m, testArtifactIds, testDestinationWorkspaceTagArtifactId, testJobHistoryArtifactId)),
 				It.Is<MassUpdateOptions>(u => u.UpdateBehavior == FieldUpdateBehavior.Merge),
 				It.IsAny<CancellationToken>()), Times.Once);
 		}
 
 		private bool VerifyTagUpdateRequest(MassUpdateByObjectIdentifiersRequest actualUpdateRequest,
-			int[] expectedArtifactIds, int expectedDestinationWorkspaceTagArtifactId, int expectedJobHistoryTagArtifactId)
+			int[] expectedArtifactIds, int expectedDestinationWorkspaceTagArtifactId, int expectedJobHistoryArtifactId)
 		{
 			const int expectedNumberOfFields = 2;
 			var expectedDestinationWorkspaceFieldMultiObject = new Guid("8980C2FA-0D33-4686-9A97-EA9D6F0B4196");
@@ -510,7 +510,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			FieldRefValuePair actualJobHistoryTagField = actualFields[1];
 			Assert.AreEqual(expectedJobHistoryFieldMultiObject, actualJobHistoryTagField.Field.Guid);
-			AssertMultiObjectValueContainsId(expectedJobHistoryTagArtifactId, actualJobHistoryTagField.Value);
+			AssertMultiObjectValueContainsId(expectedJobHistoryArtifactId, actualJobHistoryTagField.Value);
 
 			return true;
 		}

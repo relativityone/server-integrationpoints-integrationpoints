@@ -81,7 +81,7 @@ namespace Relativity.Sync.Tests.System
 				},
 
 				JobArtifactId = jobHistoryArtifactId,
-				JobHistoryTagArtifactId = jobHistoryArtifactId,
+				JobHistoryArtifactId = jobHistoryArtifactId,
 				DestinationFolderArtifactId = destinationFolderArtifactId,
 				DestinationWorkspaceTagArtifactId = destinationWorkspaceTag.ArtifactId,
 				SendEmails = false,
@@ -107,6 +107,8 @@ namespace Relativity.Sync.Tests.System
 				new FolderPathFieldBuilder(_serviceFactoryStub, new FolderPathRetriever(_serviceFactoryStub, logger), configuration),
 				new SourceTagsFieldBuilder(configuration)
 			});
+
+			var jobHistoryErrorRepository = new JobHistoryErrorRepository(_serviceFactoryStub);
 
 			// Source tags creation in destination workspace
 			DestinationWorkspaceTagsCreationExecutor destinationWorkspaceTagsCreationExecutor = new DestinationWorkspaceTagsCreationExecutor(
@@ -135,7 +137,7 @@ namespace Relativity.Sync.Tests.System
 			IRelativityExportBatcher BatcherFactory(Guid runId, int wsId, int syncConfigId) =>
 				new RelativityExportBatcher(_serviceFactoryStub, new BatchRepository(_serviceFactoryStub), runId, wsId, syncConfigId);
 
-			SourceWorkspaceDataReader dataReader = new SourceWorkspaceDataReader(
+			var dataReader = new SourceWorkspaceDataReader(
 				new BatchDataReaderBuilder(fieldManager), 
 				configuration,
 				BatcherFactory,
@@ -151,7 +153,7 @@ namespace Relativity.Sync.Tests.System
 				new BatchProgressHandlerFactory(new BatchProgressUpdater(logger), dateTime),
 				new JobHistoryErrorRepository(_serviceFactoryStub),
 				logger);
-			SynchronizationExecutor syncExecutor = new SynchronizationExecutor(importJobFactory, batchRepository, destinationWorkspaceTagRepository, syncMetrics, dateTime, fieldManager, logger);
+			var syncExecutor = new SynchronizationExecutor(importJobFactory, batchRepository, destinationWorkspaceTagRepository, syncMetrics, dateTime, fieldManager, jobHistoryErrorRepository, logger);
 
 			// ACT
 			ExecutionResult syncResult = await syncExecutor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);

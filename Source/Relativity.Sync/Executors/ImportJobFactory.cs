@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -10,18 +9,19 @@ using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Executors
 {
 	internal sealed class ImportJobFactory : IImportJobFactory
 	{
 		private readonly IImportAPI _importApi;
-		private readonly IDataReader _dataReader;
+		private readonly ISourceWorkspaceDataReader _dataReader;
 		private readonly IBatchProgressHandlerFactory _batchProgressHandlerFactory;
 		private readonly IJobHistoryErrorRepository _jobHistoryErrorRepository;
 		private readonly ISyncLog _logger;
 
-		public ImportJobFactory(IImportAPI importApi, IDataReader dataReader, IBatchProgressHandlerFactory batchProgressHandlerFactory, 
+		public ImportJobFactory(IImportAPI importApi, ISourceWorkspaceDataReader dataReader, IBatchProgressHandlerFactory batchProgressHandlerFactory, 
 			IJobHistoryErrorRepository jobHistoryErrorRepository, ISyncLog logger)
 		{
 			_importApi = importApi;
@@ -34,12 +34,12 @@ namespace Relativity.Sync.Executors
 		public async Task<IImportJob> CreateImportJobAsync(ISynchronizationConfiguration configuration, IBatch batch)
 		{
 			ImportBulkArtifactJob importBulkArtifactJob = await CreateImportBulkArtifactJobAsync(configuration, batch.StartingIndex).ConfigureAwait(false);
-			SyncImportBulkArtifactJob syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importBulkArtifactJob);
+			var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importBulkArtifactJob, _dataReader.ItemStatusMonitor);
 
 			_batchProgressHandlerFactory.CreateBatchProgressHandler(batch, importBulkArtifactJob);
 
 			return new ImportJob(syncImportBulkArtifactJob, new SemaphoreSlimWrapper(new SemaphoreSlim(0, 1)), _jobHistoryErrorRepository,
-				configuration.SourceWorkspaceArtifactId, configuration.JobHistoryTagArtifactId, _logger);
+				configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, _logger);
 		}
 
 		private async Task<ImportBulkArtifactJob> CreateImportBulkArtifactJobAsync(ISynchronizationConfiguration configuration, int startingIndex)

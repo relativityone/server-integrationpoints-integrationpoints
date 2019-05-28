@@ -10,6 +10,7 @@ using NUnit.Framework;
 using Relativity.Services.Exceptions;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Unit.Stubs;
 using Relativity.Sync.Transfer;
@@ -45,7 +46,7 @@ namespace Relativity.Sync.Tests.Unit
 			_configuration.SetupGet(x => x.DestinationWorkspaceTagArtifactId).Returns(0);
 			_configuration.SetupGet(x => x.ExportRunId).Returns(Guid.Empty);
 			_configuration.SetupGet(x => x.FieldMappings).Returns(new List<FieldMap>());
-			_configuration.SetupGet(x => x.JobHistoryTagArtifactId).Returns(0);
+			_configuration.SetupGet(x => x.JobHistoryArtifactId).Returns(0);
 			_configuration.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(0);
 		}
 
@@ -275,12 +276,7 @@ namespace Relativity.Sync.Tests.Unit
 
 		private SourceWorkspaceDataReader BuildInstanceUnderTest()
 		{
-			return new SourceWorkspaceDataReader(new SimpleBatchDataReaderBuilder(_identifierField), 
-				_configuration.Object,
-				_exportBatcherFactory.Object,
-				_fieldManager.Object,
-				_itemStatusMonitor.Object,
-				Mock.Of<ISyncLog>());
+			return BuildInstanceUnderTest(new SimpleBatchDataReaderBuilder(_identifierField));
 		}
 
 		private SourceWorkspaceDataReader BuildInstanceUnderTest(IBatchDataReaderBuilder dataTableBuilder)
@@ -290,7 +286,7 @@ namespace Relativity.Sync.Tests.Unit
 				_exportBatcherFactory.Object,
 				_fieldManager.Object,
 				_itemStatusMonitor.Object,
-				Mock.Of<ISyncLog>());
+				new EmptyLogger());
 		}
 
 		private void ExportBatcherReturnsBatches(params RelativityObjectSlim[][] batches)
