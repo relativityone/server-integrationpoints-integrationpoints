@@ -27,7 +27,7 @@ namespace Relativity.Sync.Transfer
 		{
 			if (fieldNames == null || fieldNames.Count == 0)
 			{
-				throw new ArgumentException("Field names list is null or empty.", nameof(fieldNames));
+				return new Dictionary<string, RelativityDataType>();
 			}
 
 			ICollection<string> requestedFieldNames = new HashSet<string>(fieldNames);
