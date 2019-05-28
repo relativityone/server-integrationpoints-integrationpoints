@@ -139,8 +139,11 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			Container.Register(Component.For<IExporterFactory>().ImplementedBy<ExporterFactory>());
 			Container.Register(Component.For<IAuthTokenGenerator>().ImplementedBy<ClaimsTokenGenerator>().LifestyleTransient());
 
-			Container.Register(Component.For<IFolderManager>().UsingFactoryMethod(f =>
-				f.Resolve<IServicesMgr>().CreateProxy<IFolderManager>(ExecutionIdentity.CurrentUser)));
+			Container.Register(
+				Component.For<IFolderManager>().UsingFactoryMethod(f =>
+					f.Resolve<IServicesMgr>().CreateProxy<IFolderManager>(ExecutionIdentity.CurrentUser)
+				)
+			);
 			Container.Register(Component.For<FolderWithDocumentsIdRetriever>().ImplementedBy<FolderWithDocumentsIdRetriever>());
 
 #pragma warning disable 618

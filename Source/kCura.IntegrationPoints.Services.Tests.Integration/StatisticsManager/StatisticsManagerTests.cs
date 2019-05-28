@@ -54,7 +54,8 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.StatisticsManager
 			workspaceService.TryImportData(WorkspaceArtifactId, _testCaseSettings.DocumentsTestData);
 
 			folderWithDocumentsIdRetriever.UpdateFolderIdsAsync(WorkspaceArtifactId, _testCaseSettings.DocumentsTestData.Documents)
-				.GetAwaiter().GetResult();
+				.GetAwaiter()
+				.GetResult();
 
 			_testCaseSettings.SavedSearchId = SavedSearch.CreateSavedSearch(WorkspaceArtifactId, "All documents");
 			_testCaseSettings.ViewId = workspaceService.GetView(WorkspaceArtifactId, "Documents");
