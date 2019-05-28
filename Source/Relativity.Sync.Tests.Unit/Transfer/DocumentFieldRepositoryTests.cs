@@ -119,7 +119,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			// Assert
 			await action.Should().ThrowAsync<ArgumentException>().ConfigureAwait(false);
-			_objectManager.Verify(om => om.QuerySlimAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), CancellationToken.None), Times.Never);
+			_objectManager.Verify(om => om.QuerySlimAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Never);
 		}
 
 		[Test]
