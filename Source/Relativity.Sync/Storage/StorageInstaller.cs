@@ -14,6 +14,7 @@ namespace Relativity.Sync.Storage
 			builder.RegisterType<ValidationConfiguration>().As<IValidationConfiguration>();
 			builder.RegisterType<DataSourceSnapshotConfiguration>().As<IDataSourceSnapshotConfiguration>();
 			builder.RegisterType<FieldMappings>().As<IFieldMappings>();
+			builder.RegisterType<JobHistoryErrorRepository>().As<IJobHistoryErrorRepository>();
 
 			builder.Register(CreateConfiguration).As<IConfiguration>();
 		}
