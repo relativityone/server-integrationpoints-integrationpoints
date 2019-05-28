@@ -16,56 +16,51 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 {
 	public class JobHistoryRepositoryTests : TestBase
 	{
-		private IHelper _helper;
-		private IHelper _targetHelper;
-		private IHelperFactory _helperFactory;
 		private IRelativityIntegrationPointsRepository _relativityIntegrationPointsRepository;
 		private ICompletedJobsHistoryRepository _completedJobsHistoryRepository;
-		private IManagerFactory _managerFactory;
-		private IContextContainerFactory _contextContainerFactory;
 		private IJobHistoryAccess _jobHistoryAccess;
 		private IJobHistorySummaryModelBuilder _summaryModelBuilder;
 		private JobHistoryRepository _jobHistoryRepository;
-		private IDestinationParser _destinationParser;
+
 		private IFederatedInstanceManager _federatedInstanceManager;
 		private IWorkspaceManager _workspaceManager;
 		private IWorkspaceManager _targetWorkspaceManager;
 
 		public override void SetUp()
 		{
-			_helper = Substitute.For<IHelper>();
-			_targetHelper = Substitute.For<IHelper>();
-			_helperFactory = Substitute.For<IHelperFactory>();
+			IHelper helper = Substitute.For<IHelper>();
+			IHelper targetHelper = Substitute.For<IHelper>();
+			IHelperFactory helperFactory = Substitute.For<IHelperFactory>();
 			_relativityIntegrationPointsRepository = Substitute.For<IRelativityIntegrationPointsRepository>();
 			_completedJobsHistoryRepository = Substitute.For<ICompletedJobsHistoryRepository>();
-			_managerFactory = Substitute.For<IManagerFactory>();
-			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
+			IManagerFactory managerFactory = Substitute.For<IManagerFactory>();
+			IContextContainerFactory contextContainerFactory = Substitute.For<IContextContainerFactory>();
 			_workspaceManager = Substitute.For<IWorkspaceManager>();
 			_targetWorkspaceManager = Substitute.For<IWorkspaceManager>();
 
 			_jobHistoryAccess = Substitute.For<IJobHistoryAccess>();
 			_summaryModelBuilder = Substitute.For<IJobHistorySummaryModelBuilder>();
-			_destinationParser = new DestinationParser();
+			IDestinationParser destinationParser = new DestinationParser();
 			_federatedInstanceManager = Substitute.For<IFederatedInstanceManager>();
 
-			_helperFactory.CreateTargetHelper(_helper, null, Arg.Any<string>()).Returns(_helper);
-			_helperFactory.CreateTargetHelper(_helper, Arg.Any<int>(), Arg.Any<string>()).Returns(_targetHelper);
+			helperFactory.CreateTargetHelper(helper, null, Arg.Any<string>()).Returns(helper);
+			helperFactory.CreateTargetHelper(helper, Arg.Any<int>(), Arg.Any<string>()).Returns(targetHelper);
 
-			_jobHistoryRepository = new JobHistoryRepository(_helper, _helperFactory, _relativityIntegrationPointsRepository, _completedJobsHistoryRepository,
-				_managerFactory, _contextContainerFactory, _jobHistoryAccess, _summaryModelBuilder, _destinationParser);
+			_jobHistoryRepository = new JobHistoryRepository(helper, helperFactory, _relativityIntegrationPointsRepository, _completedJobsHistoryRepository,
+				managerFactory, contextContainerFactory, _jobHistoryAccess, _summaryModelBuilder, destinationParser);
 
-			var contextContainer = Substitute.For<IContextContainer>();
-			var targetContextContainer = Substitute.For<IContextContainer>();
+			IContextContainer contextContainer = Substitute.For<IContextContainer>();
+			IContextContainer targetContextContainer = Substitute.For<IContextContainer>();
 
-			_contextContainerFactory.CreateContextContainer(_helper).Returns(contextContainer);
-			_contextContainerFactory.CreateContextContainer(_helper, _helper.GetServicesManager()).Returns(contextContainer);
-			_contextContainerFactory.CreateContextContainer(_helper, _targetHelper.GetServicesManager())
+			contextContainerFactory.CreateContextContainer(helper).Returns(contextContainer);
+			contextContainerFactory.CreateContextContainer(helper, helper.GetServicesManager()).Returns(contextContainer);
+			contextContainerFactory.CreateContextContainer(helper, targetHelper.GetServicesManager())
 				.Returns(targetContextContainer);
 
-			_managerFactory.CreateFederatedInstanceManager(contextContainer).Returns(_federatedInstanceManager);
+			managerFactory.CreateFederatedInstanceManager(contextContainer).Returns(_federatedInstanceManager);
 
-			_managerFactory.CreateWorkspaceManager(contextContainer).Returns(_workspaceManager);
-			_managerFactory.CreateWorkspaceManager(targetContextContainer).Returns(_targetWorkspaceManager);
+			managerFactory.CreateWorkspaceManager(contextContainer).Returns(_workspaceManager);
+			managerFactory.CreateWorkspaceManager(targetContextContainer).Returns(_targetWorkspaceManager);
 		}
 
 		[Test]

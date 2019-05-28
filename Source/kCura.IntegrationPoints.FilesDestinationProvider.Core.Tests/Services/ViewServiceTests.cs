@@ -1,11 +1,9 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Services;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.Utility.Extensions;
@@ -20,7 +18,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 	public class ViewServiceTests : TestBase
 	{
 		private ViewService _subjectUnderTest;
-		private IServiceManagerProvider _serviceManagerProviderMock;
 		private ISearchManager _searchManagerMock;
 
 		private const int _WORKSPACE_ID = 12345;
@@ -59,13 +56,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 		[SetUp]
 		public override void SetUp()
 		{
-			var helper = Substitute.For<IHelper>();
+			IHelper helper = Substitute.For<IHelper>();
 			_searchManagerMock = Substitute.For<ISearchManager>();
 
-			_serviceManagerProviderMock = Substitute.For<IServiceManagerProvider>();
-			_serviceManagerProviderMock.Create<ISearchManager, SearchManagerFactory>().Returns(_searchManagerMock);
+			IServiceManagerProvider serviceManagerProviderMock = Substitute.For<IServiceManagerProvider>();
+			serviceManagerProviderMock.Create<ISearchManager, SearchManagerFactory>().Returns(_searchManagerMock);
 
-			_subjectUnderTest = new ViewService(_serviceManagerProviderMock, helper);
+			_subjectUnderTest = new ViewService(serviceManagerProviderMock, helper);
 		}
 
 		[Test]
@@ -76,31 +73,31 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 				.Returns(CreateDataSet());
 
 			// Act
-			List<ViewDTO> _views = _subjectUnderTest.GetViewsByWorkspaceAndArtifactType(_WORKSPACE_ID, _ARTIFACT_TYPE_ID);
+			List<ViewDTO> views = _subjectUnderTest.GetViewsByWorkspaceAndArtifactType(_WORKSPACE_ID, _ARTIFACT_TYPE_ID);
 
 			// Assert
-			Assert.That(_views.IsNullOrEmpty(), Is.Not.Null);
-			Assert.That(_views.Count, Is.EqualTo(4));
+			Assert.That(views.IsNullOrEmpty(), Is.Not.Null);
+			Assert.That(views.Count, Is.EqualTo(4));
 
-			Assert.That(_views[0].ArtifactId, Is.EqualTo(_VIEW_2_ARTIFACT_ID));
-			Assert.That(_views[0].Name, Is.EqualTo(_VIEW_2_NAME));
-			Assert.That(_views[0].IsAvailableInObjectTab, Is.EqualTo(_VIEW_2_AVAILABLE));
-			Assert.That(_views[0].Order, Is.EqualTo(_VIEW_2_ORDER));
+			Assert.That(views[0].ArtifactId, Is.EqualTo(_VIEW_2_ARTIFACT_ID));
+			Assert.That(views[0].Name, Is.EqualTo(_VIEW_2_NAME));
+			Assert.That(views[0].IsAvailableInObjectTab, Is.EqualTo(_VIEW_2_AVAILABLE));
+			Assert.That(views[0].Order, Is.EqualTo(_VIEW_2_ORDER));
 
-			Assert.That(_views[1].ArtifactId, Is.EqualTo(_VIEW_4_ARTIFACT_ID));
-			Assert.That(_views[1].Name, Is.EqualTo(_VIEW_4_NAME));
-			Assert.That(_views[1].IsAvailableInObjectTab, Is.EqualTo(_VIEW_4_AVAILABLE));
-			Assert.That(_views[1].Order, Is.EqualTo(_VIEW_4_ORDER));
+			Assert.That(views[1].ArtifactId, Is.EqualTo(_VIEW_4_ARTIFACT_ID));
+			Assert.That(views[1].Name, Is.EqualTo(_VIEW_4_NAME));
+			Assert.That(views[1].IsAvailableInObjectTab, Is.EqualTo(_VIEW_4_AVAILABLE));
+			Assert.That(views[1].Order, Is.EqualTo(_VIEW_4_ORDER));
 
-			Assert.That(_views[2].ArtifactId, Is.EqualTo(_VIEW_3_ARTIFACT_ID));
-			Assert.That(_views[2].Name, Is.EqualTo(_VIEW_3_NAME));
-			Assert.That(_views[2].IsAvailableInObjectTab, Is.EqualTo(_VIEW_3_AVAILABLE));
-			Assert.That(_views[2].Order, Is.EqualTo(_VIEW_3_ORDER));
+			Assert.That(views[2].ArtifactId, Is.EqualTo(_VIEW_3_ARTIFACT_ID));
+			Assert.That(views[2].Name, Is.EqualTo(_VIEW_3_NAME));
+			Assert.That(views[2].IsAvailableInObjectTab, Is.EqualTo(_VIEW_3_AVAILABLE));
+			Assert.That(views[2].Order, Is.EqualTo(_VIEW_3_ORDER));
 
-			Assert.That(_views[3].ArtifactId, Is.EqualTo(_VIEW_1_ARTIFACT_ID));
-			Assert.That(_views[3].Name, Is.EqualTo(_VIEW_1_NAME));
-			Assert.That(_views[3].IsAvailableInObjectTab, Is.EqualTo(_VIEW_1_AVAILABLE));
-			Assert.That(_views[3].Order, Is.EqualTo(_VIEW_1_ORDER));
+			Assert.That(views[3].ArtifactId, Is.EqualTo(_VIEW_1_ARTIFACT_ID));
+			Assert.That(views[3].Name, Is.EqualTo(_VIEW_1_NAME));
+			Assert.That(views[3].IsAvailableInObjectTab, Is.EqualTo(_VIEW_1_AVAILABLE));
+			Assert.That(views[3].Order, Is.EqualTo(_VIEW_1_ORDER));
 		}
 
 		[Test]

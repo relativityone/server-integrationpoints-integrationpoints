@@ -1,5 +1,4 @@
-﻿using System;
-using System.Data;
+﻿using System.Data;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.WinEDDS;
@@ -8,7 +7,6 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using Relativity.DataExchange.Service;
-using RAPI = Relativity;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
@@ -50,7 +48,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 		{
 			ImageLoadFile config = _winEddsLoadFileFactory.GetImageLoadFile(settings);
 			IImageReader reader = _winEddsFileReaderFactory.GetOpticonFileReader(config);
-			OpticonDataReader rv = new OpticonDataReader(settings, config, reader);
+			OpticonDataReader rv = new OpticonDataReader(settings, reader);
 			rv.Init();
 			return rv;
 		}

@@ -267,23 +267,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Helpers
 
 				return false;
 			}
-
-			private static readonly KeyboardShortcut _keyboardShortcutConverted = CreateKeyboardShortcutConverted();
-
-
-			private static KeyboardShortcut CreateKeyboardShortcutConverted()
-			{
-				return new KeyboardShortcut
-				{
-					Alt = _KEYBOARD_SHORTCUT_ALT,
-					Ctrl = _KEYBOARD_SHORTCUT_CTRL,
-					Id = _KEYBOARD_SHORTCUT_ID,
-					Key = _KEYBOARD_SHORTCUT_KEY,
-					Shift = _KEYBOARD_SHORTCUT_SHIFT
-				};
-			}
-
-
+			
 			private const int _KEYBOARD_SHORTCUT_ID = 1048234;
 
 			private const int _KEYBOARD_SHORTCUT_KEY = 14;

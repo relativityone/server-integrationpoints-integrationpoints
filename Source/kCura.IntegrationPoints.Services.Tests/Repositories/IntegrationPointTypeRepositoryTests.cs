@@ -42,8 +42,6 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 				}
 			};
 
-			var expectedQuery = new AllIntegrationPointTypesQueryBuilder().Create();
-
 			_objectManager.Query<IntegrationPointType>(Arg.Any<QueryRequest>()).Returns(expectedResult);
 
 			var actualResult = _integrationPointTypeRepository.GetIntegrationPointTypes();

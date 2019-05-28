@@ -1,34 +1,32 @@
 ﻿using System.Data;
 using System.IO;
-
 using NUnit.Framework;
 using NSubstitute;
-
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Api;
-using NSubstitute.Core;
 using NSubstitute.ExceptionExtensions;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 {
 	public class LoadFileDataReaderTests : TestBase
 	{
-		private const string _LOAD_FILE_FULL_PATH = @"C:\LoadFileDirectory\ExampleLoadFile.csv";
-		private const string _ROOTED_PATH = @"C:\Images\Example.txt";
-		private const string _UN_ROOTED_PATH = @"Example.txt";
-		private const string _ERROR_FILE_PATH = @"ExampleErrorFile.csv";
+		private int _currentArtifactIndex;
+		private const int _EXTRACTED_TEXT_PATH_LOAD_FILE_INDEX = 1;
 
 		private const int _IDENTIFIER_FIELD_TYPE = 2;
-		private const int _NONE_FIELD_TYPE = -1;
 
-		private const int _CONTROL_NUMBER_LOAD_FILE_INDEX = 0;
+
 		private const int _NATIVE_PATH_LOAD_FILE_INDEX = 1;
-		private const int _EXTRACTED_TEXT_PATH_LOAD_FILE_INDEX = 1;
+		private const int _NONE_FIELD_TYPE = -1;
 
 		private const int _ROOTED_PATH_ARTIFACT_INDEX = 0;
 		private const int _UN_ROOTED_PATH_ARTIFACT_INDEX = 1;
+		private const string _ERROR_FILE_PATH = @"ExampleErrorFile.csv";
+		private const string _LOAD_FILE_FULL_PATH = @"C:\LoadFileDirectory\ExampleLoadFile.csv";
+		private const string _ROOTED_PATH = @"C:\Images\Example.txt";
+		private const string _UN_ROOTED_PATH = @"Example.txt";
 
 		private readonly string[] _HEADERS = new string[] { "Control Number", "Native File Path", "Extracted Text" };
 		private readonly string[][] _RECORDS = new string[][]
@@ -41,22 +39,20 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 		IArtifactReader _loadFileReader;
 		LoadFile _loadFile;
 		ImportProviderSettings _providerSettings;
-		ArtifactFieldCollection _artifact;
-		private int _currentArtifactIndex;
 
 		private void LoadArtifact(int recordIndex)
 		{
 			_currentArtifactIndex = recordIndex;
-			_artifact = new ArtifactFieldCollection();
+			ArtifactFieldCollection artifact = new ArtifactFieldCollection();
 			for (int k = 0; k < _RECORDS[recordIndex].Length; k++)
 			{
 				ArtifactField cur = new ArtifactField(new DocumentField(_HEADERS[k], k,
 					k == 0 ? _IDENTIFIER_FIELD_TYPE : _NONE_FIELD_TYPE, -1, -1, -1, -1, false,
 					kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.LeaveBlankValuesUnchanged, false));
 				cur.Value = _RECORDS[recordIndex][k];
-				_artifact.Add(cur);
+				artifact.Add(cur);
 			}
-			_loadFileReader.ReadArtifact().Returns(_artifact);
+			_loadFileReader.ReadArtifact().Returns(artifact);
 		}
 
 		[SetUp]

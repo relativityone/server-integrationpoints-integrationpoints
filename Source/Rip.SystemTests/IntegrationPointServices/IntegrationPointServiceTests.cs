@@ -44,7 +44,6 @@ namespace Rip.SystemTests.IntegrationPointServices
 		private IRelativityObjectManager _objectManager;
 		private IFolderManager _folderManager;
 		private ISerializer _serializer;
-		private IIntegrationPointTypeService _typeService;
 
 		[OneTimeSetUp]
 		public void OneTimeSetup()
@@ -55,10 +54,11 @@ namespace Rip.SystemTests.IntegrationPointServices
 			_objectManager = _container.Resolve<IRelativityObjectManager>();
 			_folderManager = _testHelper.CreateAdminProxy<IFolderManager>();
 			_serializer = _container.Resolve<ISerializer>();
-			_typeService = _container.Resolve<IIntegrationPointTypeService>();
 
 			_savedSearchArtifactID = SavedSearch.CreateSavedSearch(_sourceWorkspaceID, _ALL_DOCUMENTS_SAVED_SEARCH_NAME);
-			_integrationPointExportType = _typeService
+
+			IIntegrationPointTypeService typeService = _container.Resolve<IIntegrationPointTypeService>();
+			_integrationPointExportType = typeService
 				.GetIntegrationPointType(Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid)
 				.ArtifactId;
 		}

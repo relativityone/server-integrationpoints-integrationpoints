@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using NUnit.Framework;
 using NSubstitute;
-using kCura.IntegrationPoints.Core.Factories;
-using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.ImportProvider.Parser;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 
 namespace kCura.IntegrationPoints.ImportProvider.Tests
@@ -17,25 +13,17 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests
 	[TestFixture]
 	public class ImportProviderTests : TestBase
 	{
-		private readonly int MAX_COLS = 100;
 
 		private IFieldParser _fieldParser;
 		private IFieldParserFactory _fieldParserFactory;
-		private IDataReaderFactory _dataReaderFactory;
-		private IEnumerableParserFactory _enumerableParserFactory;
-		private IDataTransferLocationServiceFactory _dataTransferLocationServiceFactory;
-		private IDataTransferLocationService _dataTransferLocationService;
 		private ISerializer _serializer;
+		private readonly int MAX_COLS = 100;
 
 		[SetUp]
 		public override void SetUp()
 		{
 			_fieldParser = Substitute.For<IFieldParser>();
-			_fieldParserFactory = Substitute.For<IFieldParserFactory>();;
-			_dataReaderFactory = Substitute.For<IDataReaderFactory>();;
-			_enumerableParserFactory = Substitute.For<IEnumerableParserFactory>();
-			_dataTransferLocationServiceFactory = Substitute.For<IDataTransferLocationServiceFactory>();
-			_dataTransferLocationService = Substitute.For<IDataTransferLocationService>();
+			_fieldParserFactory = Substitute.For<IFieldParserFactory>();
 			_serializer = new JSONSerializer();
 		}
 

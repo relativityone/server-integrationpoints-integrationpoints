@@ -8,7 +8,6 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts;
 using NSubstitute;
 using NUnit.Framework;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 {
@@ -33,8 +32,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 				.Returns(validatorMock);
 
 			var exportSettingsBuilderMock = Substitute.For<IExportSettingsBuilder>();
-			var logger = Substitute.For<IAPILog>();
-			var validator = new FileDestinationProviderConfigurationValidator(serializerMock, validatorsFactoryMock, exportSettingsBuilderMock, logger);
+			var validator = new FileDestinationProviderConfigurationValidator(serializerMock, validatorsFactoryMock, exportSettingsBuilderMock);
 
 			// act
 			var actual = validator.Prevalidate(new IntegrationPointProviderValidationModel());

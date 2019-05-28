@@ -20,23 +20,18 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 		private FactoryConfigBuilder _factory;
 		private ExportDataContext _exportDataContext;
 		private JobHistoryErrorServiceProvider _jobHistoryErrorServiceProvider;
-		private IHelper _helper;
-		private ICaseServiceContext _context;
-		private IJobHistoryErrorService _jobHistoryErrorService;
-		private IFileNameProvidersDictionaryBuilder _fileNameProvidersDictionaryBuilder;
-		private IExportConfig _exportConfig;
 		private IServiceFactory _serviceFactory;
 
 		[SetUp]
 		public override void SetUp()
 		{
-			_helper = Substitute.For<IHelper>();
-			_exportConfig = Substitute.For<IExportConfig>();
-			_context = Substitute.For<ICaseServiceContext>();
-			_jobHistoryErrorService = new JobHistoryErrorService(_context, _helper);
-			_jobHistoryErrorServiceProvider = new JobHistoryErrorServiceProvider(_jobHistoryErrorService);
+			IHelper helper = Substitute.For<IHelper>();
+			IExportConfig exportConfig = Substitute.For<IExportConfig>();
+			ICaseServiceContext context = Substitute.For<ICaseServiceContext>();
+			IJobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(context, helper);
+			_jobHistoryErrorServiceProvider = new JobHistoryErrorServiceProvider(jobHistoryErrorService);
 
-			_fileNameProvidersDictionaryBuilder = new FileNameProvidersDictionaryBuilder();
+			IFileNameProvidersDictionaryBuilder fileNameProvidersDictionaryBuilder = new FileNameProvidersDictionaryBuilder();
 			_serviceFactory = Substitute.For<IServiceFactory>();
 
 			_exportDataContext = new ExportDataContext
@@ -51,7 +46,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 				}
 			};
 
-			_factory = new FactoryConfigBuilder(_jobHistoryErrorServiceProvider,_fileNameProvidersDictionaryBuilder, _exportConfig);
+			_factory = new FactoryConfigBuilder(_jobHistoryErrorServiceProvider,fileNameProvidersDictionaryBuilder, exportConfig);
 		}
 
 		[Test]

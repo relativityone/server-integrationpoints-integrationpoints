@@ -10,28 +10,22 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 {
 	public class ImportTransferDataContextTests : TestBase
 	{
-		private IDataReaderFactory _dataReaderFactory;
 		private IDataReader _dataReader;
-
 		private ImportTransferDataContext _instance;
 
 		[SetUp]
 		public override void SetUp()
 		{
 			_dataReader = Substitute.For<IDataReader>();
-			_dataReaderFactory = Substitute.For<IDataReaderFactory>();
-			_dataReaderFactory.GetDataReader(Arg.Any<FieldMap[]>(), Arg.Any<string>()).Returns(_dataReader);
+			IDataReaderFactory dataReaderFactory = Substitute.For<IDataReaderFactory>();
+			dataReaderFactory.GetDataReader(Arg.Any<FieldMap[]>(), Arg.Any<string>()).Returns(_dataReader);
 
-			_instance = new ImportTransferDataContext(_dataReaderFactory, string.Empty, new List<FieldMap>());
+			_instance = new ImportTransferDataContext(dataReaderFactory, string.Empty, new List<FieldMap>());
 		}
 
 		[Test]
 		public void ItShouldReturnDataReaderAssignedInConstructor()
 		{
-			//Arrange
-
-			//Act
-
 			//Assert
 			Assert.AreSame(_dataReader, _instance.DataReader);
 		}

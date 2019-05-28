@@ -41,21 +41,17 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private IManagerFactory _managerFactory;
 		private IContextContainerFactory _contextContainerFactory;
 		private ICaseServiceContext _caseServiceContext;
-		private IDataProviderFactory _dataProviderFactory;
 		private IJobManager _jobManager;
 		private IJobService _jobService;
 		private IHelper _helper;
 		private IIntegrationPointService _integrationPointService;
 		private ISerializer _serializer;
-		private IGuidService _guidService;
 		private IJobHistoryService _jobHistoryService;
-		private IScheduleRuleFactory _scheduleRuleFactory;
 		private IBatchStatus _batchStatus;
 		private SyncManager _instance;
 		private Job _job;
 		private SourceProvider _sourceProvider;
 		private Data.IntegrationPoint _integrationPoint;
-		private IDataSourceProvider _dataSourceProvider;
 		private IDataReader _dataReader;
 		private string _data;
 		private IJobHistoryErrorService _jobHistoryErrorService;
@@ -63,9 +59,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private JobHistory _jobHistory;
 		private IJobStopManager _jobStopManager;
 		private Guid _batchInstance;
-		private List<IBatchStatus> _batchStatuses;
 		private TaskResult _taskResult;
-		private IContextContainer _contextContainer;
 		private IJobHistoryManager _jobHistoryManager;
 		private IAgentValidator _agentValidator;
 
@@ -73,24 +67,24 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		public override void SetUp()
 		{
 			_caseServiceContext = Substitute.For<ICaseServiceContext>();
-			_dataProviderFactory = Substitute.For<IDataProviderFactory>();
+			IDataProviderFactory dataProviderFactory = Substitute.For<IDataProviderFactory>();
 			_jobManager = Substitute.For<IJobManager>();
 			_jobService = Substitute.For<IJobService>();
 			_helper = Substitute.For<IHelper>();
 			_integrationPointService = Substitute.For<IIntegrationPointService>();
 			_serializer = Substitute.For<ISerializer>();
-			_guidService = Substitute.For<IGuidService>();
+			IGuidService guidService = Substitute.For<IGuidService>();
 			_jobHistoryService = Substitute.For<IJobHistoryService>();
-			_scheduleRuleFactory = Substitute.For<IScheduleRuleFactory>();
+			IScheduleRuleFactory scheduleRuleFactory = Substitute.For<IScheduleRuleFactory>();
 			_managerFactory = Substitute.For<IManagerFactory>();
 			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
 			_batchStatus = Substitute.For<IBatchStatus>();
-			_batchStatuses = new List<IBatchStatus>() { _batchStatus };
-			_dataSourceProvider = Substitute.For<IDataSourceProvider>();
+			List<IBatchStatus> batchStatuses = new List<IBatchStatus>() { _batchStatus };
+			IDataSourceProvider dataSourceProvider = Substitute.For<IDataSourceProvider>();
 			_jobHistoryErrorService = Substitute.For<IJobHistoryErrorService>();
 			_dataReader = Substitute.For<IDataReader>();
 			_jobStopManager = Substitute.For<IJobStopManager>();
-			_contextContainer = Substitute.For<IContextContainer>();
+			IContextContainer contextContainer = Substitute.For<IContextContainer>();
 			_jobHistoryManager = Substitute.For<IJobHistoryManager>();
 			_agentValidator = Substitute.For<IAgentValidator>();
 
@@ -116,34 +110,34 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_taskResult = new TaskResult();
 
 			_batchInstance = Guid.NewGuid();
-			_instance = new SyncManager(_caseServiceContext, _dataProviderFactory, _jobManager, _jobService, _helper,
-				_integrationPointService, _serializer, _guidService, _jobHistoryService,
-				_jobHistoryErrorService, _scheduleRuleFactory, _managerFactory,
-				_contextContainerFactory, _batchStatuses, _agentValidator)
+			_instance = new SyncManager(_caseServiceContext, dataProviderFactory, _jobManager, _jobService, _helper,
+				_integrationPointService, _serializer, guidService, _jobHistoryService,
+				_jobHistoryErrorService, scheduleRuleFactory, _managerFactory,
+				_contextContainerFactory, batchStatuses, _agentValidator)
 			{
 				BatchInstance = _batchInstance,
 				IntegrationPoint = _integrationPoint
 			};
 
-			_syncManagerEventHelper = new TestSyncManager(_caseServiceContext, _dataProviderFactory, _jobManager, _jobService, _helper,
-			   _integrationPointService, _serializer, _guidService, _jobHistoryService,
-			   _jobHistoryErrorService, _scheduleRuleFactory, _managerFactory,
-			   _contextContainerFactory, _batchStatuses, _agentValidator);
+			_syncManagerEventHelper = new TestSyncManager(_caseServiceContext, dataProviderFactory, _jobManager, _jobService, _helper,
+			   _integrationPointService, _serializer, guidService, _jobHistoryService,
+			   _jobHistoryErrorService, scheduleRuleFactory, _managerFactory,
+			   _contextContainerFactory, batchStatuses, _agentValidator);
 
 			_data = "data";
 			_caseServiceContext.RsapiService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider.Value).Returns(_sourceProvider);
-			_dataProviderFactory.GetDataProvider(
+			dataProviderFactory.GetDataProvider(
 					Arg.Is<Guid>(appGuid => appGuid == new Guid(_sourceProvider.ApplicationIdentifier)),
-					Arg.Is<Guid>(providerGuid => providerGuid == new Guid(_sourceProvider.Identifier))).Returns(_dataSourceProvider);
-			_dataSourceProvider.GetBatchableIds(Arg.Any<FieldEntry>(), Arg.Is<DataSourceProviderConfiguration>(
+					Arg.Is<Guid>(providerGuid => providerGuid == new Guid(_sourceProvider.Identifier))).Returns(dataSourceProvider);
+			dataSourceProvider.GetBatchableIds(Arg.Any<FieldEntry>(), Arg.Is<DataSourceProviderConfiguration>(
 				x => x.Configuration.Equals(_integrationPoint.SourceConfiguration) && x.SecuredConfiguration.Equals(_integrationPoint.SecuredConfiguration))).Returns(_dataReader);
 			_dataReader.Read().Returns(true, false);
 			_dataReader.GetString(0).Returns(_data);
 			_managerFactory.CreateJobStopManager(_jobService, _jobHistoryService, _batchInstance, _job.JobId, true)
 				.Returns(_jobStopManager);
-			_jobService.GetJobNextUtcRunDateTime(_job, _scheduleRuleFactory, Arg.Any<TaskResult>()).Returns(DateTime.Now);
-			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
-			_managerFactory.CreateJobHistoryManager(_contextContainer).Returns(_jobHistoryManager);
+			_jobService.GetJobNextUtcRunDateTime(_job, scheduleRuleFactory, Arg.Any<TaskResult>()).Returns(DateTime.Now);
+			_contextContainerFactory.CreateContextContainer(_helper).Returns(contextContainer);
+			_managerFactory.CreateJobHistoryManager(contextContainer).Returns(_jobHistoryManager);
 		}
 
 		[Test]

@@ -32,8 +32,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 {
 	internal static class ContainerInstaller
 	{
-		private static IInstanceSettingRepository _instanceSettings;
-
 		private const int _EXPORT_BATCH_SIZE = 1000;
 		private const int _EXPORT_THREAD_COUNT = 4;
 
@@ -75,12 +73,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 				f.Resolve<IServicesMgr>().CreateProxy<IFolderManager>(ExecutionIdentity.CurrentUser)));
 			windsorContainer.Register(Component.For<FolderWithDocumentsIdRetriever>().ImplementedBy<FolderWithDocumentsIdRetriever>());
 
-			_instanceSettings = Substitute.For<IInstanceSettingRepository>();
-			_instanceSettings.GetConfigurationValue(Domain.Constants.INTEGRATION_POINT_INSTANCE_SETTING_SECTION,
+			IInstanceSettingRepository instanceSettings = Substitute.For<IInstanceSettingRepository>();
+			instanceSettings.GetConfigurationValue(Domain.Constants.INTEGRATION_POINT_INSTANCE_SETTING_SECTION,
 				Domain.Constants.REPLACE_WEB_API_WITH_EXPORT_CORE).Returns("False");
 
 			windsorContainer.Register(Component.For<IInstanceSettingRepository>()
-				.Instance(_instanceSettings)
+				.Instance(instanceSettings)
 				.LifestyleTransient());
 
 			windsorContainer.Register(Component.For<ISerializer>().Instance(Substitute.For<ISerializer>()).LifestyleTransient());

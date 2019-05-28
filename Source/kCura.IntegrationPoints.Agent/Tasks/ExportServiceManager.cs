@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Agent.Validation;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
@@ -43,7 +42,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 {
 	public class ExportServiceManager : ServiceManagerBase, IExportServiceManager
 	{
-		private ExportJobErrorService _exportJobErrorService;
 		private int _savedSearchArtifactId;
 		private List<IBatchStatus> _exportServiceJobObservers;
 		private readonly IContextContainerFactory _contextContainerFactory;
@@ -232,8 +230,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					.Where(observer => observer.ScratchTableRepository.IgnoreErrorDocuments == false)
 					.Select(observer => observer.ScratchTableRepository).ToArray();
 
-			_exportJobErrorService = new ExportJobErrorService(scratchTableToMonitorItemLevelError, _repositoryFactory);
-			_exportJobErrorService.SubscribeToBatchReporterEvents(synchronizer);
+			ExportJobErrorService exportJobErrorService = new ExportJobErrorService(scratchTableToMonitorItemLevelError, _repositoryFactory);
+			exportJobErrorService.SubscribeToBatchReporterEvents(synchronizer);
 		}
 
 		protected string GetImportApiSettingsForUser(Job job, string originalImportApiSettings)
@@ -558,16 +556,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private void LogFinalizeExportServiceStart(Job job)
 		{
 			Logger.LogInformation("Finalizing export service for job: {Job}", job);
-		}
-
-		private void LogFinalizeInProgressErrorsDone(Job job)
-		{
-			Logger.LogInformation("Finished Finalizing job level errors for job: {JobId}", job.JobId);
-		}
-
-		private void LogFinalizeInProgressErrors(Job job)
-		{
-			Logger.LogInformation("Finalizing job level errors for job: {JobId}", job.JobId);
 		}
 
 		#endregion
