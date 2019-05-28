@@ -23,15 +23,17 @@ namespace Relativity.Sync.Transfer
 			_logger = logger;
 		}
 
-		public async Task<IDictionary<string, RelativityDataType>> GetRelativityDataTypesForFieldsByFieldNameAsync(int sourceWorkspaceArtifactId, ICollection<string> fieldNames,
-			CancellationToken token)
+		public async Task<IDictionary<string, RelativityDataType>> GetRelativityDataTypesForFieldsByFieldNameAsync(int sourceWorkspaceArtifactId, ICollection<string> fieldNames, CancellationToken token)
 		{
-			if (fieldNames.Count == 0)
+			if (fieldNames == null || fieldNames.Count == 0)
 			{
-				throw new ArgumentException("Field names list is empty.", nameof(fieldNames));
+				throw new ArgumentException("Field names list is null or empty.", nameof(fieldNames));
 			}
 
-			string concatenatedFieldNames = string.Join(", ", fieldNames.Select(f => $"'{f}'"));
+			ICollection<string> requestedFieldNames = new HashSet<string>(fieldNames);
+
+			IEnumerable<string> formattedFieldNames = requestedFieldNames.Select(KeplerQueryHelpers.EscapeForSingleQuotes).Select(f => $"'{f}'");
+			string concatenatedFieldNames = string.Join(", ", formattedFieldNames);
 			QueryRequest request = new QueryRequest
 			{
 				ObjectType = new ObjectTypeRef { Name = "Field" },
@@ -49,7 +51,7 @@ namespace Relativity.Sync.Transfer
 				try
 				{
 					const int start = 0;
-					result = await objectManager.QuerySlimAsync(sourceWorkspaceArtifactId, request, start, fieldNames.Count, token).ConfigureAwait(false);
+					result = await objectManager.QuerySlimAsync(sourceWorkspaceArtifactId, request, start, requestedFieldNames.Count, token).ConfigureAwait(false);
 				}
 				catch (ServiceException ex)
 				{
@@ -63,7 +65,19 @@ namespace Relativity.Sync.Transfer
 				}
 			}
 
-			Dictionary<string, RelativityDataType> fieldNameToFieldType = result.Objects.ToDictionary(GetFieldName, GetFieldType);
+			IEnumerable<RelativityObjectSlim> returnedObjects = result.Objects ?? Enumerable.Empty<RelativityObjectSlim>();
+			Dictionary<string, RelativityDataType> fieldNameToFieldType = returnedObjects.ToDictionary(GetFieldName, GetFieldType);
+
+			ICollection<string> returnedFieldNames = fieldNameToFieldType.Keys;
+
+			if (returnedFieldNames.Count < requestedFieldNames.Count)
+			{
+				IEnumerable<string> missingFieldNames = requestedFieldNames.Except(returnedFieldNames);
+				throw new FieldNotFoundException(
+					$"Could not get information on the following fields for artifact type {_DOCUMENT_ARTIFACT_TYPE_ID} in workspace {sourceWorkspaceArtifactId}. " +
+					$"Make sure that they are present in the workspace and that the user running the job has access to them: {string.Join(", ", missingFieldNames)}");
+			}
+
 			return fieldNameToFieldType;
 		}
 
