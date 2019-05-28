@@ -132,7 +132,8 @@ namespace Relativity.Sync.Executors
 			}
 			else if (_itemLevelErrorExists)
 			{
-				executionResult = ExecutionResult.SuccessWithErrors(null);
+				const string completedWithErrors = "Import completed with item level errors.";
+				executionResult = new ExecutionResult(ExecutionStatus.CompletedWithErrors, completedWithErrors, null);
 			}
 			return executionResult;
 		}
