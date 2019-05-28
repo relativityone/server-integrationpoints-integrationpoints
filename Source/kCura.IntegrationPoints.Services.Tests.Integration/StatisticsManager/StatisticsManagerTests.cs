@@ -46,11 +46,15 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.StatisticsManager
 			base.SuiteSetup();
 
 			var workspaceService = new WorkspaceService(new ImportHelper());
+			FolderWithDocumentsIdRetriever folderWithDocumentsIdRetriever = Container.Resolve<FolderWithDocumentsIdRetriever>();
 			_testCaseSettings = new TestCaseSettings();
 
 			_testCaseSettings.DocumentsTestData = DocumentTestDataBuilder.BuildTestData();
 
 			workspaceService.TryImportData(WorkspaceArtifactId, _testCaseSettings.DocumentsTestData);
+
+			folderWithDocumentsIdRetriever.UpdateFolderIdsAsync(WorkspaceArtifactId, _testCaseSettings.DocumentsTestData.Documents)
+				.GetAwaiter().GetResult();
 
 			_testCaseSettings.SavedSearchId = SavedSearch.CreateSavedSearch(WorkspaceArtifactId, "All documents");
 			_testCaseSettings.ViewId = workspaceService.GetView(WorkspaceArtifactId, "Documents");
@@ -67,8 +71,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.StatisticsManager
 		}
 
 		[TestCaseSource(nameof(_quarantinedBrokenTestCases))]
-		[TestInQuarantine(TestQuarantineState.FailsContinuously,
-			"REL-307479 - Correct these test cases. They're checking non-existent folder with ID = 0")]
+		[TestInQuarantine(TestQuarantineState.SeemsToBeStable)]
 		public void ItShouldGetDocumentTotalQuarantinedBrokentests(IStatisticsTestCase statisticsTestCase)
 		{
 			statisticsTestCase.Execute(Helper, WorkspaceArtifactId, _testCaseSettings);
