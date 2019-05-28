@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -11,95 +7,52 @@ using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Transfer
 {
+	internal delegate IRelativityExportBatcher RelativityExportBatcherFactory(Guid runId, int sourceWorkspaceArtifactId, int syncConfigurationArtifactId);
+
 	internal sealed class RelativityExportBatcher : IRelativityExportBatcher
 	{
+		private int _previousStartingIndex;
+
 		private readonly ISourceServiceFactoryForUser _serviceFactory;
 		private readonly IBatchRepository _batchRepository;
-		private readonly IDictionary<Guid, Job> _tokenMap;
+		private readonly Guid _runId;
+		private readonly int _sourceWorkspaceArtifactId;
+		private readonly int _syncConfigurationArtifactId;
 
-		public RelativityExportBatcher(ISourceServiceFactoryForUser serviceFactory, IBatchRepository batchRepository)
+		public RelativityExportBatcher(ISourceServiceFactoryForUser serviceFactory, IBatchRepository batchRepository, Guid runId, int sourceWorkspaceArtifactId, int syncConfigurationArtifactId)
 		{
 			_serviceFactory = serviceFactory;
 			_batchRepository = batchRepository;
-			_tokenMap = new Dictionary<Guid, Job>();
+			_runId = runId;
+			_sourceWorkspaceArtifactId = sourceWorkspaceArtifactId;
+			_syncConfigurationArtifactId = syncConfigurationArtifactId;
+
+			_previousStartingIndex = -1;
 		}
 
-		public Guid Start(Guid runId, int workspaceArtifactId, int syncConfigurationArtifactId)
+		public async Task<RelativityObjectSlim[]> GetNextBatchAsync()
 		{
-			KeyValuePair<Guid, Job> existing = _tokenMap.FirstOrDefault(kv =>
-				kv.Value.WorkspaceArtifactId == workspaceArtifactId && kv.Value.SyncConfigurationArtifactId == syncConfigurationArtifactId);
-			if (!existing.Equals(default(KeyValuePair<Guid, Job>)))
-			{
-				return existing.Key;
-			}
-
-			Guid newToken = Guid.NewGuid();
-			_tokenMap.Add(newToken, new Job(runId, workspaceArtifactId, syncConfigurationArtifactId));
-
-			return newToken;
-		}
-
-		public async Task<RelativityObjectSlim[]> GetNextAsync(Guid token)
-		{
-			if (!_tokenMap.ContainsKey(token))
-			{
-				throw new ArgumentException(
-					$"No batch job has been started with token '{token}'. Call {nameof(Start)} to start a batch job.",
-					nameof(token));
-			}
-
-			Job job = _tokenMap[token];
-			Guid runId = job.RunId;
-			int workspaceArtifactId = job.WorkspaceArtifactId;
-			int syncConfigurationArtifactId = job.SyncConfigurationArtifactId;
-			IBatch currentBatch = job.CurrentBatch;
-
-			IBatch nextBatch = currentBatch == null
-				? await _batchRepository.GetFirstAsync(workspaceArtifactId, syncConfigurationArtifactId).ConfigureAwait(false)
-				: await _batchRepository.GetNextAsync(workspaceArtifactId, syncConfigurationArtifactId, currentBatch.StartingIndex).ConfigureAwait(false);
+			IBatch nextBatch = await _batchRepository.GetNextAsync(_sourceWorkspaceArtifactId, _syncConfigurationArtifactId, _previousStartingIndex).ConfigureAwait(false);
 
 			if (nextBatch == null)
 			{
-				_tokenMap.Remove(token);
+				// Since we don't update _previousStartingIndex if nextBatch is null, every invocation of this method will return empty after
+				// the first one returns empty: we'll use the same index each time we call GetNextAsync, which will return null each time.
+
 				return Array.Empty<RelativityObjectSlim>();
 			}
 
-			_tokenMap[token] = job.WithBatch(nextBatch);
+			_previousStartingIndex = nextBatch.StartingIndex;
 
 			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				int resultsBlockSize = nextBatch.TotalItemsCount;
 				int startingIndex = nextBatch.StartingIndex;
+
 				RelativityObjectSlim[] block = await objectManager
-					.RetrieveResultsBlockFromExportAsync(workspaceArtifactId, runId, resultsBlockSize, startingIndex)
+					.RetrieveResultsBlockFromExportAsync(_sourceWorkspaceArtifactId, _runId, resultsBlockSize, startingIndex)
 					.ConfigureAwait(false);
 				return block;
-			}
-		}
-
-		private class Job
-		{
-			public Job(Guid runId, int workspaceArtifactId, int syncConfigurationArtifactId)
-				: this(runId, workspaceArtifactId, syncConfigurationArtifactId, null)
-			{
-			}
-
-			private Job(Guid runId, int workspaceArtifactId, int syncConfigurationArtifactId, IBatch currentBatch)
-			{
-				RunId = runId;
-				WorkspaceArtifactId = workspaceArtifactId;
-				SyncConfigurationArtifactId = syncConfigurationArtifactId;
-				CurrentBatch = currentBatch;
-			}
-
-			public Guid RunId { get; }
-			public int WorkspaceArtifactId { get; }
-			public int SyncConfigurationArtifactId { get; }
-			public IBatch CurrentBatch { get; }
-
-			public Job WithBatch(IBatch nextBatch)
-			{
-				return new Job(RunId, WorkspaceArtifactId, SyncConfigurationArtifactId, nextBatch);
 			}
 		}
 	}
