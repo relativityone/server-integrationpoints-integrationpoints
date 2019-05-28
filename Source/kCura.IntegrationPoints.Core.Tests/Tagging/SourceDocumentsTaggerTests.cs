@@ -287,7 +287,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 		private void SetupNumberOfDocuments(int totalNumberOfDocuments)
 		{
 			_scratchTableRepositoryMock
-				.Setup(x => x.Count)
+				.Setup(x => x.GetCount())
 				.Returns(totalNumberOfDocuments);
 		}
 

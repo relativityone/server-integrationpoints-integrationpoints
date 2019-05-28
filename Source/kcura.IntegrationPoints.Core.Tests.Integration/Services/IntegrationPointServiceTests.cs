@@ -25,6 +25,7 @@ using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 {
@@ -66,7 +67,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 
 		#region UpdateProperties
 
-		[Test]
+		[IdentifiedTest("8a8a2bf4-7fbf-4da8-a7d2-4e9eaa2cb55c")]
 		public void SaveIntegration_UpdateNothing()
 		{
 			const string name = "Resaved Rip";
@@ -77,7 +78,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			ValidateModel(originalModel, newModel, new string[0]);
 		}
 
-		[Test]
+		[IdentifiedTest("be866088-3e84-4b04-9ac5-d7a68f1b021c")]
 		public void SaveIntegration_UpdateName_OnRanIp_ErrorCase()
 		{
 			const string name = "Update Name - OnRanIp";
@@ -89,7 +90,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Assert.Throws<Exception>(() => CreateOrUpdateIntegrationPoint(defaultModel));
 		}
 
-		[Test]
+		[IdentifiedTest("a7e8ce95-14a3-4754-89fd-d629f1ef1f9c")]
 		public void SaveIntegration_UpdateMap_OnRanIp()
 		{
 			const string name = "Update Map - OnRanIp";
@@ -106,7 +107,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Assert.AreEqual("Update", audit.AuditAction, "The audit action should be correct.");
 		}
 
-		[Test]
+		[IdentifiedTest("042b5825-71a0-47cc-b7dc-1fd203fd9d35")]
 		public void SaveIntegration_UpdateConfig_OnNewRip()
 		{
 			//Arrange
@@ -121,7 +122,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Assert.DoesNotThrow(() => CreateOrUpdateIntegrationPoint(defaultModel));
 		}
 
-		[Test]
+		[IdentifiedTest("cb18aa30-f3b7-4585-b080-bda80c22f5dd")]
 		public void SaveIntegration_UpdateName_OnNewRip()
 		{
 			//Arrange
@@ -135,7 +136,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Assert.Throws<Exception>(() => CreateOrUpdateIntegrationPoint(defaultModel), "Unable to save Integration Point: Name cannot be changed once the Integration Point has been run");
 		}
 
-		[Test]
+		[IdentifiedTest("eebfc6d4-1e9e-4edc-b097-ea3e17df2c8b")]
 		public void SaveIntegration_UpdateMap_OnNewRip()
 		{
 			//Arrange
@@ -156,7 +157,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Assert.AreEqual("Update", audit.AuditAction, "The audit action should be correct.");
 		}
 
-		[Test]
+		[IdentifiedTest("c25b58f3-f049-4b61-adda-7dbf3c8e6be3")]
 		public void SaveIntegration_IntegrationPointWithNoSchedulerAndUpdateWithScheduler()
 		{
 			//Arrange
@@ -207,7 +208,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 
 		#endregion UpdateProperties
 
-        [Test]
+		[IdentifiedTest("69e67a17-8b23-41a8-b120-9a4441171d16")]
 		[SmokeTest]
 		public void CreateAndRunIntegrationPoint_GoldFlow()
 		{
@@ -255,7 +256,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			AssertThatAuditDetailsChanged(postRunAudits.First(), new HashSet<string>() { "Last Runtime (UTC)" });
 		}
 
-        [Test]
+		[IdentifiedTest("8a1efb36-117e-4c96-814d-537209d04314")]
 		public void RetryIntegrationPoint_GoldFlow()
 		{
 			//Arrange
@@ -321,7 +322,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			AssertThatAuditDetailsChanged(postRetryAudits.First(), new HashSet<string>() { "Last Runtime (UTC)", "Has Errors" });
 		}
 
-        [Test]
+		[IdentifiedTest("7d479f10-b1fc-4a52-a081-18332ed91fc0")]
 		public void CreateAndRunIntegrationPoint_ScheduledIntegrationPoint_GoldFlow()
 		{
 			//Arrange
@@ -378,14 +379,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			CleanScheduleAgentQueueFromAllRipJobs(integrationPointPreJobExecution.ArtifactID);
 		}
 
-		[Test]
-		[TestCase("")]
-		[TestCase(null)]
-		[TestCase("02/31/3000")]
-		[TestCase("01-31-3000")]
-		[TestCase("abcdefg")]
-		[TestCase("12345")]
-		[TestCase("-01/31/3000")]
+		[IdentifiedTestCase("f5a2acfe-df93-4ff8-93c9-39da403ba068", "")]
+		[IdentifiedTestCase("2834dde8-69f5-46e3-8abf-9cd5ac2b207e", null)]
+		[IdentifiedTestCase("3b26bad4-22d9-4221-9088-37d8bcc3040e", "02/31/3000")]
+		[IdentifiedTestCase("105257b1-ec45-4621-8d6a-724847f749e5", "01-31-3000")]
+		[IdentifiedTestCase("caafb3a0-0019-4c83-bf5c-b3ee93d45b7b", "abcdefg")]
+		[IdentifiedTestCase("9ce111e3-887b-4571-8836-eda4a4017a81", "12345")]
+		[IdentifiedTestCase("3fef2ba4-b866-4a00-bb9e-f7fae35a7140", "-01/31/3000")]
 		public void CreateScheduledIntegrationPoint_WithInvalidStartDate_ExpectError(string startDate)
 		{
 			//Arrange
@@ -418,14 +418,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 				_INTEGRATION_POINT_PROVIDER_VALIDATION_EXCEPTION_MESSAGE);
 		}
 
-		[Test]
-		[TestCase("")]
-		[TestCase(null)]
-		[TestCase("15/31/3000")]
-		[TestCase("31-01-3000")]
-		[TestCase("abcdefg")]
-		[TestCase("12345")]
-		[TestCase("-01/31/3000")]
+		[IdentifiedTestCase("41567d7a-0d3c-4695-8138-4d01a0bd01a8", "")]
+		[IdentifiedTestCase("c2942f7c-6817-4ea0-b862-97ebca44ba19", null)]
+		[IdentifiedTestCase("c32007b1-1ac0-4a84-a0c7-2f81b4be5937", "15/31/3000")]
+		[IdentifiedTestCase("3b92dc98-ecd0-413a-92de-7ba34b650f88", "31-01-3000")]
+		[IdentifiedTestCase("6ac17062-fc4d-4fa4-9e23-1483e550bc1a", "abcdefg")]
+		[IdentifiedTestCase("15828d94-39f6-4f8a-97bf-8e94befdf8b8", "12345")]
+		[IdentifiedTestCase("0cc2bdac-b0d6-4968-af02-da1b614789a1", "-01/31/3000")]
 		public void CreateScheduledIntegrationPoint_WithInvalidEndDate_ExpectError(string endDate)
 		{
 			//Arrange
@@ -462,7 +461,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Assert.IsNull(integrationPointModel.Scheduler.EndDate);
 		}
 
-		[Test]
+		[IdentifiedTest("0b87716a-5712-41a1-ab79-c98b4a07461a")]
 		public void RunJobWithFailingValidation_ExpectError_SaveJobHistory()
 		{
 			// Arrange 

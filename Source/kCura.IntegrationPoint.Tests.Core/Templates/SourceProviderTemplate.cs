@@ -122,8 +122,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				}));
 			Container.Register(
 				Component.For<IWorkspaceDBContext>()
-					.ImplementedBy<WorkspaceContext>()
-					.UsingFactoryMethod(k => new WorkspaceContext(k.Resolve<IHelper>().GetDBContext(WorkspaceArtifactId)))
+					.ImplementedBy<WorkspaceDBContext>()
+					.UsingFactoryMethod(k => new WorkspaceDBContext(k.Resolve<IHelper>().GetDBContext(WorkspaceArtifactId)))
 					.LifeStyle.Transient);
 			Container.Register(
 				Component.For<IRSAPIClient>()
@@ -330,23 +330,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		private async Task AddAgentServerToResourcePool()
 		{
-			ICoreContext coreContext = GetBaseServiceContext(-1);
-			ResourceServer agentServer = await ResourceServerHelper.GetAgentServer(coreContext).ConfigureAwait(false);
+			ResourceServer agentServer = await ResourceServerHelper.GetAgentServerAsync().ConfigureAwait(false);
 			await ResourcePoolHelper.AddAgentServerToResourcePool(agentServer, "Default").ConfigureAwait(false);
-		}
-
-		private static ICoreContext GetBaseServiceContext(int workspaceId)
-		{
-			try
-			{
-				var loginManager = new LoginManager();
-				Identity identity = loginManager.GetLoginIdentity(9);
-				return new ServiceContext(identity, "<auditElement><RequestOrigination><IP /><Page /></RequestOrigination></auditElement>", workspaceId);
-			}
-			catch (Exception exception)
-			{
-				throw new TestException("Unable to initialize the user context.", exception);
-			}
 		}
 
 		private IEnumerable<SourceProvider> GetSourceProviders()

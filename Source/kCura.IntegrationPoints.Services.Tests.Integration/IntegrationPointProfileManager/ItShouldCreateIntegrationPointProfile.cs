@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Services.Interfaces.Private.Models;
 using kCura.IntegrationPoints.Services.Tests.Integration.Helpers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using NUnit.Framework;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointProfileManager
 {
@@ -30,11 +31,10 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointPro
 			_client.Dispose();
 		}
 
-		[Test]
-		[TestCase(false, false, false, "a421248620@relativity.com", "Use Field Settings", "Overlay Only", true)]
-		[TestCase(true, true, true, "", "Use Field Settings", "Append Only", false)]
-		[TestCase(false, false, false, null, "Replace Values", "Append/Overlay", false)]
-		[TestCase(false, false, false, "a937467@relativity.com", "Merge Values", "Append/Overlay", false)]
+		[IdentifiedTestCase("610db4ea-7c8f-4eda-9abf-d6c1242eef48", false, false, false, "a421248620@relativity.com", "Use Field Settings", "Overlay Only", true)]
+		[IdentifiedTestCase("7b63f04a-d8dd-413b-ba6e-ef45bf696977", true, true, true, "", "Use Field Settings", "Append Only", false)]
+		[IdentifiedTestCase("c844e131-e72f-45cb-b4aa-fa0f5688cd13", false, false, false, null, "Replace Values", "Append/Overlay", false)]
+		[IdentifiedTestCase("4fac46a5-2f24-48e2-b2e7-a33356077cf9", false, false, false, "a937467@relativity.com", "Merge Values", "Append/Overlay", false)]
 		public void ItShouldCreateRelativityIntegrationPoint(bool importNativeFile, bool logErrors, bool useFolderPathInformation, string emailNotificationRecipients,
 			string fieldOverlayBehavior, string overwriteFieldsChoices, bool promoteEligible)
 		{
@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointPro
 				new IntegrationPointProfileFieldGuidsConstants());
 		}
 
-		[Test]
+		[IdentifiedTest("9f7f07d9-9a22-4aed-b3db-52222915926f")]
 		public void ItShouldCreateProfileBasedOnIntegrationPoint()
 		{
 			string profileName = "profile_name_507";

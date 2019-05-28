@@ -13,8 +13,6 @@ namespace kCura.IntegrationPoints.Agent.Tests
 	public class JobExecutorTests
 	{
 		private IAPILog _logger;
-		private ITaskProvider _taskProvider;
-		private IAgentNotifier _agentNotifier;
 		private IJobExecutor _subjectUnderTest;
 		private const string _RIP_PREFIX = "RIP.";
 
@@ -23,10 +21,10 @@ namespace kCura.IntegrationPoints.Agent.Tests
 		public void SetUp()
 		{
 			_logger = Substitute.For<IAPILog>();
-			_taskProvider = Substitute.For<ITaskProvider>();
-			_agentNotifier = Substitute.For<IAgentNotifier>();
+			ITaskProvider taskProvider = Substitute.For<ITaskProvider>();
+			IAgentNotifier agentNotifier = Substitute.For<IAgentNotifier>();
 
-			_subjectUnderTest = new JobExecutor(_taskProvider, _agentNotifier, _logger);
+			_subjectUnderTest = new JobExecutor(taskProvider, agentNotifier, _logger);
 		}
 
 		[Test]

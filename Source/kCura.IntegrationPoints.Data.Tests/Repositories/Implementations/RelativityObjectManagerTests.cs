@@ -48,9 +48,31 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				_objectManagerFacadeFactoryMock.Object);
 		}
 
-		[TestCase(true)]
-		[TestCase(false)]
-		public void StreamLongText_ShouldRethrowIntegrationPointException(bool isUnicode)
+		[Test]
+		public void StreamUnicodeLongText_ItShouldRethrowIntegrationPointException()
+		{
+			// arrange
+			_objectManagerFacadeMock
+				.Setup(x => 
+					x.StreamLongTextAsync(
+						It.IsAny<int>(), 
+						It.IsAny<RelativityObjectRef>(), 
+						It.IsAny<FieldRef>()))
+				.Throws<IntegrationPointsException>();
+
+			//act
+			Action action = () => 
+				_sut.StreamUnicodeLongText(
+					_REL_OBJECT_ARTIFACT_ID,
+					new FieldRef {ArtifactID = _FIELD_ARTIFACT_ID},
+					ExecutionIdentity.System);
+
+			// assert
+			action.ShouldThrow<IntegrationPointsException>();
+		}
+
+		[Test]
+		public void StreamNonUnicodeLongText_ItShouldRethrowIntegrationPointException()
 		{
 			// arrange
 			_objectManagerFacadeMock
@@ -61,21 +83,19 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 						It.IsAny<FieldRef>()))
 				.Throws<IntegrationPointsException>();
 
-			// action
+			// act
 			Action action = () =>
-				_sut.StreamLongText(
+				_sut.StreamNonUnicodeLongText(
 					_REL_OBJECT_ARTIFACT_ID,
-					new FieldRef() { ArtifactID = _FIELD_ARTIFACT_ID },
-					isUnicode,
+					new FieldRef { ArtifactID = _FIELD_ARTIFACT_ID },
 					ExecutionIdentity.System);
 
 			// assert
 			action.ShouldThrow<IntegrationPointsException>();
 		}
 
-		[TestCase(true)]
-		[TestCase(false)]
-		public void StreamLongText_ShouldThrowExceptionWrappedInIntegrationPointException(bool isUnicode)
+		[Test]
+		public void StreamUnicodeLongText_ItShouldThrowExceptionWrappedInIntegrationPointException()
 		{
 			// arrange
 			_objectManagerFacadeMock
@@ -86,12 +106,11 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 						It.IsAny<FieldRef>()))
 				.Throws<Exception>();
 
-			// action
-			Action action = () =>
-				_sut.StreamLongText(
+			// act
+			Action action = () => 
+				_sut.StreamUnicodeLongText(
 					_REL_OBJECT_ARTIFACT_ID,
-					new FieldRef() { ArtifactID = _FIELD_ARTIFACT_ID },
-					isUnicode,
+					new FieldRef() {ArtifactID = _FIELD_ARTIFACT_ID},
 					ExecutionIdentity.System);
 
 			// assert
@@ -99,38 +118,30 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		}
 
 		[Test]
-		public void StreamLongText_ShouldReturnIOStreamGivenKeplerStreamFromRelativityObjectManagerFacade_WhenFieldIsNotUnicode()
+		public void StreamNonUnicodeLongText_ItShouldThrowExceptionWrappedInIntegrationPointException()
 		{
 			// arrange
-			Stream expectedStream = new Mock<Stream>().Object;
-			var keplerStreamMock = new Mock<IKeplerStream>();
-			keplerStreamMock.Setup(x => x.GetStreamAsync()).ReturnsAsync(expectedStream);
 			_objectManagerFacadeMock
 				.Setup(x =>
 					x.StreamLongTextAsync(
 						It.IsAny<int>(),
 						It.IsAny<RelativityObjectRef>(),
 						It.IsAny<FieldRef>()))
-				.ReturnsAsync(keplerStreamMock.Object);
+				.Throws<Exception>();
 
-			// action
-			Stream result = _sut.StreamLongText(
+			// act
+			Action action = () =>
+				_sut.StreamNonUnicodeLongText(
 					_REL_OBJECT_ARTIFACT_ID,
 					new FieldRef() { ArtifactID = _FIELD_ARTIFACT_ID },
-					false,
 					ExecutionIdentity.System);
 
 			// assert
-			result.Should().BeOfType<SelfDisposingStream>();
-			var selfDisposingStream = (SelfDisposingStream)result;
-			Stream innerStream = selfDisposingStream.InnerStream;
-			innerStream.Should().BeOfType<SelfRecreatingStream>();
-			var selfRecreatingStream = (SelfRecreatingStream)innerStream;
-			selfRecreatingStream.InnerStream.Should().Be(expectedStream);
+			action.ShouldThrow<IntegrationPointsException>();
 		}
 
 		[Test]
-		public void StreamLongText_ShouldReturnIOStreamGivenKeplerStreamFromRelativityObjectManagerFacade_WhenFieldIsUnicode()
+		public void StreamUnicodeLongText_ItShouldReturnIOStreamGivenKeplerStreamFromRelativityObjectManagerFacade()
 		{
 			// arrange
 			Stream expectedStream = new Mock<Stream>().Object;
@@ -145,21 +156,50 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				.ReturnsAsync(keplerStreamMock.Object);
 
 			// act
-			Stream result = _sut.StreamLongText(
-				_REL_OBJECT_ARTIFACT_ID,
-				new FieldRef() { ArtifactID = _FIELD_ARTIFACT_ID },
-				isUnicode: true,
-				executionIdentity: ExecutionIdentity.System);
+			Stream result = _sut.StreamUnicodeLongText(
+					_REL_OBJECT_ARTIFACT_ID,
+					new FieldRef() {ArtifactID = _FIELD_ARTIFACT_ID},
+					ExecutionIdentity.System);
 
 			// assert
 			result.Should().BeOfType<SelfDisposingStream>();
-			var selfDisposingStream = (SelfDisposingStream)result;
+			var selfDisposingStream = (SelfDisposingStream) result;
+			Stream innerStream = selfDisposingStream.InnerStream;
+			innerStream.Should().BeOfType<SelfRecreatingStream>();
+			var selfRecreatingStream = (SelfRecreatingStream) innerStream;
+			selfRecreatingStream.InnerStream.Should().Be(expectedStream);
+		}
+
+		[Test]
+		public void StreamNonUnicodeLongText_ItShouldReturnIOStreamGivenKeplerStreamFromRelativityObjectManagerFacade()
+		{
+			// arrange
+			Stream expectedStream = new Mock<Stream>().Object;
+			var keplerStreamMock = new Mock<IKeplerStream>();
+			keplerStreamMock.Setup(x => x.GetStreamAsync()).ReturnsAsync(expectedStream);
+			_objectManagerFacadeMock
+				.Setup(x =>
+					x.StreamLongTextAsync(
+						It.IsAny<int>(),
+						It.IsAny<RelativityObjectRef>(),
+						It.IsAny<FieldRef>()))
+				.ReturnsAsync(keplerStreamMock.Object);
+
+			// act
+			Stream result = _sut.StreamNonUnicodeLongText(
+				_REL_OBJECT_ARTIFACT_ID,
+				new FieldRef() { ArtifactID = _FIELD_ARTIFACT_ID },
+				ExecutionIdentity.System);
+
+			// assert
+			result.Should().BeOfType<SelfDisposingStream>();
+			var selfDisposingStream = (SelfDisposingStream) result;
 			Stream innerStream1 = selfDisposingStream.InnerStream;
 			innerStream1.Should().BeOfType<AsciiToUnicodeStream>();
-			var asciiToUnicodeStream = (AsciiToUnicodeStream)innerStream1;
+			var asciiToUnicodeStream = (AsciiToUnicodeStream) innerStream1;
 			Stream innerStream2 = asciiToUnicodeStream.AsciiStream;
 			innerStream2.Should().BeOfType<SelfRecreatingStream>();
-			var selfRecreatingStream = (SelfRecreatingStream)innerStream2;
+			var selfRecreatingStream = (SelfRecreatingStream) innerStream2;
 			selfRecreatingStream.InnerStream.Should().Be(expectedStream);
 		}
 
@@ -176,7 +216,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 						It.IsAny<MassUpdateOptions>()))
 				.Throws(expectedException);
 
-			// action
+			// act
 			Func<Task> massUpdateAction = () =>
 				_sut.MassUpdateAsync(
 					Enumerable.Empty<int>(),
@@ -202,7 +242,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 						It.IsAny<MassUpdateOptions>()))
 				.Throws(expectedInnerException);
 
-			// action
+			// act
 			Func<Task> massUpdateAction = () =>
 				_sut.MassUpdateAsync(
 					Enumerable.Empty<int>(),
@@ -232,7 +272,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 						It.IsAny<MassUpdateOptions>()))
 				.ReturnsAsync(massUpdateResult);
 
-			// action
+			// act
 			bool actualResult = await _sut.MassUpdateAsync(
 					Enumerable.Empty<int>(),
 					It.IsAny<IEnumerable<FieldRefValuePair>>(),
@@ -285,7 +325,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 						It.IsAny<MassUpdateOptions>()))
 				.ReturnsAsync(massUpdateResult);
 
-			// action
+			// act
 			await _sut.MassUpdateAsync(
 					objectIDs,
 					fields,

@@ -13,6 +13,7 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using Relativity.API;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.DataExchange.Service;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
@@ -29,7 +30,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		private ICredentialProvider _credentialProvider;
 		private ICaseManagerFactory _caseManagerFactory;
 		private WinEDDS.Service.Export.ICaseManager _caseManager;
-		private global::Relativity.CaseInfo _caseInfo;
+		private CaseInfo _caseInfo;
 		private string[] _fileRepos = new string[] { "defPath", "ghiPath", "abcPath" };
 
 		private ArtifactFieldDTO[] _fieldArray;
@@ -114,7 +115,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 
 		private void SetUpCaseInfo()
 		{
-			_caseInfo = new global::Relativity.CaseInfo();
+			_caseInfo = new CaseInfo();
 			_caseInfo.ArtifactID = 12345;
 			_caseInfo.DocumentPath = "defaultPath";
 		}

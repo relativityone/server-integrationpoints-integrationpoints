@@ -23,6 +23,7 @@ using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Testing.Identification;
 using Choice = kCura.Relativity.Client.DTOs.Choice;
 using Constants = kCura.IntegrationPoints.Core.Constants;
 
@@ -87,7 +88,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 			_relativityObjectManager.Delete(_savedIntegrationPointId);
 		}
 
-		[Test]
+		[IdentifiedTest("7932a346-7bce-4601-84b6-bfc40ce59486")]
 		public void ItShouldMigrateIntegrationPoint()
 		{
 			Data.IntegrationPoint integrationPoint = CreateIntegrationPoint();
@@ -106,7 +107,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 			Assert.That(deserializedSourceConfigurationAfterMigration["Fileshare"], Is.EqualTo(expectedPath));
 		}
 
-		[Test]
+		[IdentifiedTest("fd50762c-c863-43b9-80d0-477b1fb07fc2")]
 		public void InvalidSourceConfigurationThrowsException()
 		{
 			Data.IntegrationPoint integrationPoint = CreateIntegrationPoint();
@@ -119,7 +120,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 			_logger.Received(1).LogError(Arg.Any<Exception>(), expectedMessage);
 		}
 
-		[Test]
+		[IdentifiedTest("4b2d895e-ddfe-4425-bd4e-855da0c33249")]
 		public void MissingRelativitySourceProviderThrowsException()
 		{
 			Data.IntegrationPoint integrationPoint = CreateIntegrationPoint();
@@ -137,7 +138,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 			_logger.Received(1).LogError(Arg.Any<Exception>() ,"Failed to retrieve Relativity Source Provider ArtifactId");
 		}
 
-		[Test]
+		[IdentifiedTest("beff870d-236e-43c5-a069-e2a1007b2d97")]
 		public void MissingLoadFileDestinationProviderThrowsException()
 		{
 			Data.IntegrationPoint integrationPoint = CreateIntegrationPoint();
@@ -156,7 +157,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 			_logger.Received(1).LogError(Arg.Any<Exception>(), "Failed to retrieve LoadFile Destination Provider ArtifactId");
 		}
 
-		[Test]
+		[IdentifiedTest("2dd66bbf-fd52-4767-b676-b5b2bce562f4")]
 		public void ErrorWithRetrievingIntegrationPointsThrowsException()
 		{
 			Data.IntegrationPoint integrationPoint = CreateIntegrationPoint();

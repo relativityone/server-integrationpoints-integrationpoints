@@ -8,6 +8,7 @@ using Relativity.API;
 using Relativity.Services.FileField;
 using Relativity.Services.Interfaces.File;
 using Relativity.Services.Interfaces.ViewField;
+using Relativity.Services.View;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
 {
@@ -48,6 +49,16 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
 					.LifestyleTransient()
 			);
 
+			container.Register(
+				Component.For<IViewManager>().UsingFactoryMethod(f =>
+					f.Resolve<IServicesMgr>().CreateProxy<IViewManager>(ExecutionIdentity.CurrentUser)
+				)
+			);
+			container.Register(
+				Component.For<IViewRepository>()
+					.ImplementedBy<ViewRepository>()
+					.LifestyleTransient()
+			);
 			return container;
 		}
 	}

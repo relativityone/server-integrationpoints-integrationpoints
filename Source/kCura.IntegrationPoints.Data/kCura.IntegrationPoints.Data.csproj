@@ -72,7 +72,6 @@
     <Compile Include="Extensions\FieldExtensions.cs" />
     <Compile Include="Extensions\ObjectQueryResultSetExtensions.cs" />
     <Compile Include="Extensions\ResultSetExtensions.cs" />
-    <Compile Include="Extensions\TaskExtension.cs" />
     <Compile Include="Facades\Implementations\FieldValueMap.cs" />
     <Compile Include="Facades\Implementations\ObjectManagerFacade.cs" />
     <Compile Include="Facades\Implementations\ObjectManagerFacadeDiscoverHeavyRequestDecorator.cs" />
@@ -239,14 +238,14 @@
     <Compile Include="Repositories\ISavedSearchRepository.cs" />
     <Compile Include="RelativityVersion.cs" />
     <Compile Include="Constants.cs" />
-    <Compile Include="EddsDbContext.cs" />
+    <Compile Include="EddsDBContext.cs" />
     <Compile Include="Extensions\ChoiceExtensions.cs" />
     <Compile Include="GetArtifactForMassAction.cs" />
     <Compile Include="IEddsDBContext.cs" />
     <Compile Include="StreamWrappers\AsciiToUnicodeStream.cs" />
     <Compile Include="StreamWrappers\SelfDisposingStream.cs" />
     <Compile Include="StreamWrappers\SelfRecreatingStream.cs" />
-    <Compile Include="WorkspaceContext.cs" />
+    <Compile Include="WorkspaceDBContext.cs" />
     <Compile Include="Extensions\DBContextExtensions.cs" />
     <Compile Include="IntegrationPointQuery.cs" />
     <Compile Include="IWorkspaceDBContext.cs" />

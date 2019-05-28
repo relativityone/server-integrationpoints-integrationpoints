@@ -10,12 +10,13 @@ using kCura.IntegrationPoints.UITests.Pages;
 using kCura.IntegrationPoints.UITests.Validation.RelativityProviderValidation;
 using NUnit.Framework;
 using System;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 {
 	[TestFixture]
 	[Category(TestCategory.EXPORT_TO_RELATIVITY)]
-    public class ImagesSavedSearchToFolderTest : RelativityProviderTestsBase
+	public class ImagesSavedSearchToFolderTest : RelativityProviderTestsBase
 	{
 		private RelativityProviderModel CreateRelativityProviderModelWithImages()
 		{
@@ -37,7 +38,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			return model;
 		}
 
-		[Test]
+		[IdentifiedTest("3c74b1de-c6ca-41e8-81a8-944bf856c0ff")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_IMG_01()
 		{
@@ -59,7 +60,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateOriginalImages(model.GetValueOrDefault(x => x.CopyFilesToRepository));
 		}
 
-		[Test]
+		[IdentifiedTest("b2764d2b-d107-4b7a-98e4-238e8ff9f12a")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_IMG_02()
 		{
@@ -81,7 +82,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateOriginalImages(model.GetValueOrDefault(x => x.CopyFilesToRepository));
 		}
 
-		[Test]
+		[IdentifiedTest("1f72fd1f-1109-4733-8859-4d431619a6f6")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_IMG_03()
 		{
@@ -106,7 +107,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 
-		[Test]
+		[IdentifiedTest("661e5706-e658-4483-bf1b-4924e471c260")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_IMG_04()
 		{
@@ -130,7 +131,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateOriginalImages(model.GetValueOrDefault(x => x.CopyFilesToRepository));
 		}
 
-		[Test]
+		[IdentifiedTest("9b2f2880-d329-4b7c-a1c1-5a09cf888072")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_IMG_05()
 		{
@@ -152,7 +153,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateOriginalImages(model.GetValueOrDefault(x => x.CopyFilesToRepository));
 		}
 
-		[Test]
+		[IdentifiedTest("8ae832f6-830f-4380-b2f9-32974003dac3")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_IMG_06()
 		{
@@ -174,7 +175,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateOriginalImages(model.GetValueOrDefault(x => x.CopyFilesToRepository));
 		}
 
-		[Test]
+		[IdentifiedTest("83c8d913-3943-4821-94f6-6d3ad07117e0")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_IMG_07()
 		{
@@ -200,7 +201,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateProductionImages(false);
 		}
 
-		[Test]
+		[IdentifiedTest("2214a1fb-9654-4982-af54-654c4d1350d4")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_IMG_08()
 		{
@@ -227,7 +228,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateProductionImages(true);
 		}
 
-		[Test]
+		[IdentifiedTest("d07d4d84-291f-4896-ae31-3cdab325a111")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_IMG_09()
 		{
@@ -257,7 +258,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 
-		[Test]
+		[IdentifiedTest("839d516a-5dab-4ff0-92de-af53fc9ac414")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_IMG_10()
 		{
@@ -286,7 +287,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateProductionImages(true);
 		}
 
-		[Test]
+		[IdentifiedTest("1a6075b6-7949-4bbc-a14c-f1acbadb3b4c")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_IMG_11()
 		{
@@ -311,7 +312,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateProductionImages(false);
 		}
 
-		[Test]
+		[IdentifiedTest("68331cd1-a2a6-4dca-a86b-45889f3ae8e8")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_IMG_12()
 		{
@@ -338,7 +339,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 
-		[Test]
+		[IdentifiedTest("89d4dcae-bec8-4fe1-85a2-04d356326b30")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_IMG_13()
 		{

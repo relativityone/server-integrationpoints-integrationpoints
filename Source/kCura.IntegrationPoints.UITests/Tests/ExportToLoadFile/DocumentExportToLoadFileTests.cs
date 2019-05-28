@@ -8,13 +8,14 @@ using kCura.IntegrationPoints.UITests.NUnitExtensions;
 using kCura.IntegrationPoints.UITests.Pages;
 using kCura.IntegrationPoints.UITests.Validation;
 using NUnit.Framework;
+using Relativity.Testing.Identification;
 using IntegrationPointType = kCura.IntegrationPoint.Tests.Core.Models.IntegrationPointType;
 
 namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 {
 	[TestFixture]
 	[Category(TestCategory.EXPORT_TO_LOAD_FILE)]
-    public class DocumentExportToLoadFileTests : ExportToLoadFileTests
+	public class DocumentExportToLoadFileTests : ExportToLoadFileTests
 	{
 		private IntegrationPointsAction _integrationPointsAction;
 
@@ -24,7 +25,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			_integrationPointsAction = new IntegrationPointsAction(Driver, Context);
 		}
 
-		[Test]
+		[IdentifiedTest("d6ab4a52-9fce-4053-a46a-3abf5e8ca488")]
 		[RetryOnError]
 		[Order(1)]
 		[Category(TestCategory.SMOKE)]
@@ -88,7 +89,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
 		}
 		
-		[Test]
+		[IdentifiedTest("9a7ab644-df2d-43ba-9aa4-e2056c98d1c7")]
 		[RetryOnError]
 		[Order(2)]
 		public void DocumentExportToLoadFile_TC_ELF_DOC_3()
@@ -134,7 +135,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
 		}
 
-		[Test]
+		[IdentifiedTest("b766eaa1-7343-417d-a87c-cda67d9a6cad")]
 		[RetryOnError]
 		[Order(3)]
 		public void DocumentExportToLoadFile_TC_ELF_DOC_5()
@@ -178,7 +179,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
 		}
 
-		[Test]
+		[IdentifiedTest("5b081d40-136a-45b9-9504-c75a2d895800")]
 		[RetryOnError]
 		[Order(4)]
 		public void DocumentExportToLoadFile_TC_ELF_DOC_2()
@@ -240,7 +241,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
 		}
 
-		[Test]
+		[IdentifiedTest("a3a76e7f-0bd4-4403-b675-99567645d755")]
 		[RetryOnError]
 		[Order(5)]
 		public void DocumentExportToLoadFile_TC_ELF_DOC_4()

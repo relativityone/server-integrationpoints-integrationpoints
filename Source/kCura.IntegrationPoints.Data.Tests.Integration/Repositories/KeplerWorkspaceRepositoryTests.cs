@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using NUnit.Framework;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 {
@@ -32,7 +33,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			Workspace.DeleteWorkspace(_workspaceId);
 		}
 
-		[Test]
+		[IdentifiedTest("3b791349-9028-4126-9835-0dba48f55112")]
 		public void Active_Workspace_Returned()
 		{
 			//Arrange

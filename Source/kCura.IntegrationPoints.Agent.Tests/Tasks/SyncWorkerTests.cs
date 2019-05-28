@@ -33,14 +33,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 	public class SyncWorkerTests : TestBase
 	{
 		private ICaseServiceContext _caseServiceContext;
-		private IHelper _helper;
-		private IDataProviderFactory _dataProviderFactory;
-		private ISerializer _serializer;
-		private ISynchronizerFactory _appDomainRdoSynchronizerFactory;
-		private IJobHistoryService _jobHistoryService;
 		private IJobHistoryErrorService _jobHistoryErrorService;
-		private IManagerFactory _managerFactory;
-		private IContextContainerFactory _contextContainerFactory;
 		private IJobService _jobService;
 		private IJobManager _jobManager;
 		private IBatchStatus _batchStatus;
@@ -50,47 +43,37 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private TaskParameters _taskParams;
 		private JobHistory _jobHistory;
 		private IJobStopManager _jobStopManager;
-		private List<FieldMap> _fieldsMap;
-		private SourceProvider _sourceProvider;
-		private IDataSourceProvider _dataSourceProvider;
-		private IDataReader _sourceDataReader;
-		private DestinationProvider _destinationProvider;
 		private IDataSynchronizer _dataSynchronizer;
-		private List<Job> _associatedJobs;
-		private IContextContainer _contextContainer;
 		private IJobHistoryManager _jobHistoryManager;
-		private IProviderTypeService _providerTypeService;
-		private JobStatisticsService _statisticsService;
-		private IIntegrationPointRepository _integrationPointRepository;
 
 		[SetUp]
 		public override void SetUp()
 		{
 			_caseServiceContext = Substitute.For<ICaseServiceContext>();
-			_helper = Substitute.For<IHelper>();
-			_dataProviderFactory = Substitute.For<IDataProviderFactory>();
-			_serializer = Substitute.For<ISerializer>();
-			_appDomainRdoSynchronizerFactory = Substitute.For<ISynchronizerFactory>();
-			_jobHistoryService = Substitute.For<IJobHistoryService>();
+			IHelper helper = Substitute.For<IHelper>();
+			IDataProviderFactory dataProviderFactory = Substitute.For<IDataProviderFactory>();
+			ISerializer serializer = Substitute.For<ISerializer>();
+			ISynchronizerFactory appDomainRdoSynchronizerFactory = Substitute.For<ISynchronizerFactory>();
+			IJobHistoryService jobHistoryService = Substitute.For<IJobHistoryService>();
 			_jobHistoryErrorService = Substitute.For<IJobHistoryErrorService>();
 			_jobManager = Substitute.For<IJobManager>();
 			_batchStatus = Substitute.For<IBatchStatus>();
-			_statisticsService = Substitute.For<JobStatisticsService>();
-			_managerFactory = Substitute.For<IManagerFactory>();
-			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
+			JobStatisticsService statisticsService = Substitute.For<JobStatisticsService>();
+			IManagerFactory managerFactory = Substitute.For<IManagerFactory>();
+			IContextContainerFactory contextContainerFactory = Substitute.For<IContextContainerFactory>();
 			_jobService = Substitute.For<IJobService>();
 			_jobStopManager = Substitute.For<IJobStopManager>();
-			_dataSourceProvider = Substitute.For<IDataSourceProvider>();
-			_sourceDataReader = Substitute.For<IDataReader>();
+			IDataSourceProvider dataSourceProvider = Substitute.For<IDataSourceProvider>();
+			IDataReader sourceDataReader = Substitute.For<IDataReader>();
 			_dataSynchronizer = Substitute.For<IDataSynchronizer>();
-			_contextContainer = Substitute.For<IContextContainer>();
+			IContextContainer contextContainer = Substitute.For<IContextContainer>();
 			_jobHistoryManager = Substitute.For<IJobHistoryManager>();
-			_providerTypeService = Substitute.For<IProviderTypeService>();
-			_integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
+			IProviderTypeService providerTypeService = Substitute.For<IProviderTypeService>();
+			IIntegrationPointRepository integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
 
-			_instance = new SyncWorker(_caseServiceContext, _helper, _dataProviderFactory, _serializer, 
-				_appDomainRdoSynchronizerFactory, _jobHistoryService, _jobHistoryErrorService, _jobManager, new IBatchStatus[] { _batchStatus },
-				_statisticsService, _managerFactory, _contextContainerFactory, _jobService, _providerTypeService, _integrationPointRepository);
+			_instance = new SyncWorker(_caseServiceContext, helper, dataProviderFactory, serializer, 
+				appDomainRdoSynchronizerFactory, jobHistoryService, _jobHistoryErrorService, _jobManager, new IBatchStatus[] { _batchStatus },
+				statisticsService, managerFactory, contextContainerFactory, _jobService, providerTypeService, integrationPointRepository);
 
 			_job = JobHelper.GetJob(1, null, null, 1, 1, 111, 222, TaskType.SyncEntityManagerWorker, new DateTime(), null, "detail",
 				0, new DateTime(), 1, null, null);
@@ -103,35 +86,35 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				DestinationConfiguration = "dest config",
 				SecuredConfiguration = "sec config"
 			};
-			_sourceProvider = new SourceProvider() {Identifier = Guid.NewGuid().ToString(), ApplicationIdentifier = Guid.NewGuid().ToString() };
-			_destinationProvider = new DestinationProvider() {Identifier = Guid.NewGuid().ToString()};
+			SourceProvider sourceProvider = new SourceProvider() {Identifier = Guid.NewGuid().ToString(), ApplicationIdentifier = Guid.NewGuid().ToString() };
+			DestinationProvider destinationProvider = new DestinationProvider() {Identifier = Guid.NewGuid().ToString()};
 			_jobHistory = new JobHistory() {ArtifactId = 9876546};
 			_taskParams = new TaskParameters()
 			{
 				BatchInstance = Guid.NewGuid(),
 				BatchParameters = new List<String>() { "1", "2" }
 			};
-			_associatedJobs = new List<Job>() {_job};
-			_fieldsMap = new List<FieldMap>();
-			_integrationPointRepository.ReadAsync(_job.RelatedObjectArtifactID).Returns(_integrationPoint);
-			_integrationPointRepository.GetSecuredConfiguration(_job.RelatedObjectArtifactID).Returns(_integrationPoint.SecuredConfiguration);
-			_caseServiceContext.RsapiService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider.Value).Returns(_sourceProvider);
-			_caseServiceContext.RsapiService.RelativityObjectManager.Read<DestinationProvider>(_integrationPoint.DestinationProvider.Value).Returns(_destinationProvider);
-			_serializer.Deserialize<TaskParameters>(_job.JobDetails).Returns(_taskParams);
-			_jobHistoryService.CreateRdo(_integrationPoint, _taskParams.BatchInstance, 
+			List<Job> associatedJobs = new List<Job>() {_job};
+			List<FieldMap> fieldsMap = new List<FieldMap>();
+			integrationPointRepository.ReadAsync(_job.RelatedObjectArtifactID).Returns(_integrationPoint);
+			integrationPointRepository.GetSecuredConfiguration(_job.RelatedObjectArtifactID).Returns(_integrationPoint.SecuredConfiguration);
+			_caseServiceContext.RsapiService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider.Value).Returns(sourceProvider);
+			_caseServiceContext.RsapiService.RelativityObjectManager.Read<DestinationProvider>(_integrationPoint.DestinationProvider.Value).Returns(destinationProvider);
+			serializer.Deserialize<TaskParameters>(_job.JobDetails).Returns(_taskParams);
+			jobHistoryService.CreateRdo(_integrationPoint, _taskParams.BatchInstance, 
 				JobTypeChoices.JobHistoryRun, Arg.Any<DateTime>()).Returns(_jobHistory);
-			_managerFactory.CreateJobStopManager(_jobService, _jobHistoryService, _taskParams.BatchInstance, _job.JobId, true)
+			managerFactory.CreateJobStopManager(_jobService, jobHistoryService, _taskParams.BatchInstance, _job.JobId, true)
 				.Returns(_jobStopManager);
-			_serializer.Deserialize<List<FieldMap>>(_integrationPoint.FieldMappings).Returns(_fieldsMap);
-			_dataProviderFactory.GetDataProvider(new Guid(_sourceProvider.ApplicationIdentifier),
-				new Guid(_sourceProvider.Identifier)).Returns(_dataSourceProvider);
-			_dataSourceProvider.GetData(Arg.Any<List<FieldEntry>>(), (List<string>) _taskParams.BatchParameters, new DataSourceProviderConfiguration(_integrationPoint.SourceConfiguration, _integrationPoint.SecuredConfiguration)).Returns(_sourceDataReader);
-			_appDomainRdoSynchronizerFactory.CreateSynchronizer(new Guid(_destinationProvider.Identifier),
+			serializer.Deserialize<List<FieldMap>>(_integrationPoint.FieldMappings).Returns(fieldsMap);
+			dataProviderFactory.GetDataProvider(new Guid(sourceProvider.ApplicationIdentifier),
+				new Guid(sourceProvider.Identifier)).Returns(dataSourceProvider);
+			dataSourceProvider.GetData(Arg.Any<List<FieldEntry>>(), (List<string>) _taskParams.BatchParameters, new DataSourceProviderConfiguration(_integrationPoint.SourceConfiguration, _integrationPoint.SecuredConfiguration)).Returns(sourceDataReader);
+			appDomainRdoSynchronizerFactory.CreateSynchronizer(new Guid(destinationProvider.Identifier),
 				_integrationPoint.DestinationConfiguration, _integrationPoint.SecuredConfiguration).Returns(_dataSynchronizer);
 			_jobManager.CheckBatchOnJobComplete(_job, _taskParams.BatchInstance.ToString()).Returns(true);
 			_jobManager.GetJobsByBatchInstanceId(_integrationPoint.ArtifactId, _taskParams.BatchInstance)
-				.Returns(_associatedJobs);
-			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
+				.Returns(associatedJobs);
+			contextContainerFactory.CreateContextContainer(helper).Returns(contextContainer);
 		}
 
 		[Test]

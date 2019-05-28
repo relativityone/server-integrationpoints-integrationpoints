@@ -1,14 +1,9 @@
-﻿using System;
-using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Data.Factories;
+﻿using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Service.Export;
-using NSubstitute;
+using Moq;
 using NUnit.Framework;
 using Relativity.API;
 using Constants = kCura.IntegrationPoints.Domain.Constants;
@@ -18,53 +13,65 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 	[TestFixture]
 	public class ExportServiceFactoryTests : TestBase
 	{
-		private ExportServiceFactory _instance;
-		private IInstanceSettingRepository _instanceSettingRepository;
+		private ExportServiceFactory _sut;
+		private Mock<ExportServiceFactory.CreateWebApiServiceFactoryDelegate> _createWebApiServiceFactoryDelegateMock;
+		private Mock<ExportServiceFactory.CreateCoreServiceFactoryDelegate> _createCoreServiceFactoryDelegate;
+		private Mock<IInstanceSettingRepository> _instanceSettingRepository;
 		private ExportDataContext _exportDataContext;
+
+		private const int _exportTypeArtifactID = 1234;
 
 		[SetUp]
 		public override void SetUp()
 		{
-			_instanceSettingRepository = Substitute.For<IInstanceSettingRepository>();
+			_instanceSettingRepository = new Mock<IInstanceSettingRepository>();
 
-			IAPILog logger = Substitute.For<IAPILog>();
-			logger.ForContext<ExportServiceFactory>().Returns(logger);
-			IRepositoryFactory repositoryFactory = Substitute.For<IRepositoryFactory>();
-			IViewFieldRepository viewFieldRepository = Substitute.For<IViewFieldRepository>();
-			IFileRepository fileRepository = Substitute.For<IFileRepository>();
-			IFileFieldRepository fileFieldRepository = Substitute.For<IFileFieldRepository>();
-			var contextUser = new CurrentUser
+			Mock<IAPILog> logger = new Mock<IAPILog>
 			{
-				ID = 9
+				DefaultValue = DefaultValue.Mock
 			};
 			_exportDataContext = new ExportDataContext
 			{
-				ExportFile = new ExtendedExportFile(1234)
+				ExportFile = new ExtendedExportFile(_exportTypeArtifactID)
 			};
-			
-			_instance = new ExportServiceFactory(
-				logger, 
-				_instanceSettingRepository, 
-				repositoryFactory, 
-				fileRepository, 
-				fileFieldRepository, 
-				viewFieldRepository, 
-				contextUser
+
+			_createWebApiServiceFactoryDelegateMock = new Mock<ExportServiceFactory.CreateWebApiServiceFactoryDelegate>();
+			_createCoreServiceFactoryDelegate = new Mock<ExportServiceFactory.CreateCoreServiceFactoryDelegate>();
+
+			_sut = new ExportServiceFactory(
+				logger.Object,
+				_instanceSettingRepository.Object,
+				_createWebApiServiceFactoryDelegateMock.Object,
+				_createCoreServiceFactoryDelegate.Object
 			);
 		}
 
 		[Test]
-		[TestCase("True", typeof(CoreServiceFactory))]
-		[TestCase("False", typeof(WebApiServiceFactory))]
-		[TestCase("invalid boolean string", typeof(WebApiServiceFactory))]
-		[TestCase("", typeof(WebApiServiceFactory))]
-		public void ShouldCreateServiceFactoryBasedOnInstanceSettingValue(string useCoreApiConfig, Type type)
+		[TestCase("True", true)]
+		[TestCase("False", false)]
+		[TestCase("invalid boolean string", false)]
+		[TestCase("", false)]
+		[TestCase(null, false)]
+		public void ShouldCreateServiceFactoryBasedOnInstanceSettingValue(string useCoreApiConfig, bool isCoreServiceFactoryExpected)
 		{
-			_instanceSettingRepository.GetConfigurationValue(Constants.INTEGRATION_POINT_INSTANCE_SETTING_SECTION,
-				Constants.REPLACE_WEB_API_WITH_EXPORT_CORE).Returns(useCoreApiConfig);
+			// arrange
+			_instanceSettingRepository
+				.Setup(x => x.GetConfigurationValue(
+					Constants.INTEGRATION_POINT_INSTANCE_SETTING_SECTION,
+					Constants.REPLACE_WEB_API_WITH_EXPORT_CORE))
+				.Returns(useCoreApiConfig);
 
-			IServiceFactory result = _instance.Create(_exportDataContext);
-			Assert.IsInstanceOf(type, result);
+			// act
+			_sut.Create(_exportDataContext);
+
+			// assert
+			_createWebApiServiceFactoryDelegateMock.Verify(x => x(It.IsAny<ExportFile>()), Times.Once);
+			Times expectedNumberOfCallsToCreateCoreServiceFactoryDelegate = isCoreServiceFactoryExpected
+				? Times.Once()
+				: Times.Never();
+			_createCoreServiceFactoryDelegate.Verify(
+				x => x(It.IsAny<ExportFile>(), It.IsAny<IServiceFactory>()),
+				expectedNumberOfCallsToCreateCoreServiceFactoryDelegate);
 		}
 	}
 }

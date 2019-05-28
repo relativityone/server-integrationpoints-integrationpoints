@@ -14,7 +14,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Repositori
 	[TestFixture]
 	public class FileFieldRepositoryTests
 	{
-		private Mock<IFileFieldManager> _fileFieldManagerMock;
 		private Mock<IExternalServiceInstrumentationProvider> _instrumentationProviderMock;
 		private Mock<IExternalServiceSimpleInstrumentation> _instrumentationSimpleProviderMock;
 
@@ -47,7 +46,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Repositori
 		[SetUp]
 		public void SetUp()
 		{
-			_fileFieldManagerMock = new Mock<IFileFieldManager>();
+			Mock<IFileFieldManager>  fileFieldManagerMock = new Mock<IFileFieldManager>();
 			_instrumentationProviderMock = new Mock<IExternalServiceInstrumentationProvider>();
 			_instrumentationSimpleProviderMock = new Mock<IExternalServiceSimpleInstrumentation>();
 			_instrumentationProviderMock
@@ -57,7 +56,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Repositori
 					It.IsAny<string>()))
 				.Returns(_instrumentationSimpleProviderMock.Object);
 
-			_sut = new FileFieldRepository(_fileFieldManagerMock.Object, _instrumentationProviderMock.Object);
+			_sut = new FileFieldRepository(fileFieldManagerMock.Object, _instrumentationProviderMock.Object);
 		}
 
 		[Test]

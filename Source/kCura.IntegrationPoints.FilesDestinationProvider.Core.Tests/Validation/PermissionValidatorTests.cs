@@ -7,6 +7,7 @@ using NUnit.Framework;
 using Relativity;
 using System;
 using Relativity.API;
+using Relativity.DataExchange.Service;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 {

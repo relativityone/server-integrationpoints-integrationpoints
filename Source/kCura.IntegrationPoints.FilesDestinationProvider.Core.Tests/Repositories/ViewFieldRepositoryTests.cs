@@ -21,6 +21,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Repositori
 		private const int _WORKSPACE_ID = 1002345;
 		private const int _ARTIFACT_TYPE_ID = 10;
 		private const int _VIEW_ARTIFACT_ID = 1006789;
+		private const int _PRODUCTION_ARTIFACT_ID = 1001234;
 
 		[SetUp]
 		public void SetUp()
@@ -169,17 +170,17 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Repositori
 			ViewFieldIDResponse[] expectedResult = { viewFieldIDResponse };
 			Task<ViewFieldIDResponse[]> expectedResultTask = Task.FromResult(expectedResult);
 			_viewFieldManagerMock
-				.Setup(x => x.ReadViewFieldIDsFromProductionAsync(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, _VIEW_ARTIFACT_ID))
+				.Setup(x => x.ReadViewFieldIDsFromProductionAsync(_WORKSPACE_ID, _PRODUCTION_ARTIFACT_ID))
 				.Returns(expectedResultTask);
 			var viewFieldRepository = new ViewFieldRepository(_viewFieldManagerMock.Object, _instrumentationProviderMock.Object);
 
 			// act
 			ViewFieldIDResponse[] actualResult =
-				viewFieldRepository.ReadViewFieldIDsFromProduction(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, _VIEW_ARTIFACT_ID);
+				viewFieldRepository.ReadViewFieldIDsFromProduction(_WORKSPACE_ID, _PRODUCTION_ARTIFACT_ID);
 
 			// assert
 			_viewFieldManagerMock.Verify(
-				x => x.ReadViewFieldIDsFromProductionAsync(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, _VIEW_ARTIFACT_ID), Times.Once);
+				x => x.ReadViewFieldIDsFromProductionAsync(_WORKSPACE_ID, _PRODUCTION_ARTIFACT_ID), Times.Once);
 			_instrumentationProviderMock.Verify(
 				x => x.CreateSimple(
 					ExternalServiceTypes.KEPLER,
@@ -200,18 +201,18 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Repositori
 				.Returns<Func<Task<ViewFieldIDResponse[]>>>(y => y.Invoke());
 
 			_viewFieldManagerMock
-				.Setup(x => x.ReadViewFieldIDsFromProductionAsync(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, _VIEW_ARTIFACT_ID))
+				.Setup(x => x.ReadViewFieldIDsFromProductionAsync(_WORKSPACE_ID, _PRODUCTION_ARTIFACT_ID))
 				.Throws<Exception>();
 			var viewFieldRepository = new ViewFieldRepository(_viewFieldManagerMock.Object, _instrumentationProviderMock.Object);
 
 			// act
 			Action action = () =>
-				viewFieldRepository.ReadViewFieldIDsFromProduction(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, _VIEW_ARTIFACT_ID);
+				viewFieldRepository.ReadViewFieldIDsFromProduction(_WORKSPACE_ID, _PRODUCTION_ARTIFACT_ID);
 
 			// assert
 			action.ShouldThrow<Exception>();
 			_viewFieldManagerMock.Verify(
-				x => x.ReadViewFieldIDsFromProductionAsync(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, _VIEW_ARTIFACT_ID), Times.Once);
+				x => x.ReadViewFieldIDsFromProductionAsync(_WORKSPACE_ID, _PRODUCTION_ARTIFACT_ID), Times.Once);
 			_instrumentationProviderMock.Verify(
 				x => x.CreateSimple(
 					ExternalServiceTypes.KEPLER,

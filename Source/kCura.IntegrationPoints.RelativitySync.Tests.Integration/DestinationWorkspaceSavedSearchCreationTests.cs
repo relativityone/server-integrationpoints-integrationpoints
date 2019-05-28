@@ -13,6 +13,7 @@ using Moq;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Search;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 {
@@ -81,7 +82,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			_jobTagName = tagsConfiguration.SourceJobTagName;
 		}
 
-		[Test]
+		[IdentifiedTest("021e8fd2-0eda-45cc-bca1-86387dea63ae")]
 		public async Task ItShouldCreateSavedSearch()
 		{
 			// ACT
@@ -98,7 +99,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("dbad434f-c37e-4ea1-8103-c6d7ab1fb37a")]
 		public async Task ItShouldNotExecuteIfNotCreatingSavedSearch()
 		{
 			_configuration.CreateSavedSearchForTags = false;
@@ -111,7 +112,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			Assert.IsFalse(result);
 		}
 
-		[Test]
+		[IdentifiedTest("719adaf1-ea49-4c2f-bdb8-5513f26d2663")]
 		public async Task ItShouldNotExecuteIfSavedSearchAlreadyCreated()
 		{
 			_configuration.SetSavedSearchArtifactId(1);
@@ -123,7 +124,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			Assert.IsFalse(result);
 		}
 
-		[Test]
+		[IdentifiedTest("8bf2a0a9-63a8-4e4a-8eb7-5f406738c7e8")]
 		public async Task ItShouldExecuteIfCreatingSavedSearchAndItDoesNotExist()
 		{
 			// ACT

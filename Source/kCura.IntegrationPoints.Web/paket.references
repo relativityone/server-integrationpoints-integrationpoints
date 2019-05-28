@@ -8,7 +8,7 @@ Microsoft.AspNet.WebApi.WebHost
 Relativity.API
 Relativity.Core
 Relativity.CustomPages
-Relativity.ImportExport
+Relativity.DataExchange.Client.SDK
 Relativity.Productions.Services.Interfaces
 Relativity.Telemetry.Services.Interface
 RelativityCore

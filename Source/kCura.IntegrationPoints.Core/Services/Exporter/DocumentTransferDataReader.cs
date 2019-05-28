@@ -160,7 +160,9 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			var fieldRef = new FieldRef { ArtifactID = fieldArtifactId };
 			ViewFieldInfo field = _fieldLookupRepository.GetFieldByArtifactId(fieldArtifactId);
 
-			return _relativityObjectManager.StreamLongText(CurrentArtifact.ArtifactId, fieldRef, field.IsUnicodeEnabled);
+			return field.IsUnicodeEnabled
+				? _relativityObjectManager.StreamUnicodeLongText(CurrentArtifact.ArtifactId, fieldRef)
+				: _relativityObjectManager.StreamNonUnicodeLongText(CurrentArtifact.ArtifactId, fieldRef);
 		}
 
 		private IntegrationPointsException LogGetValueError(

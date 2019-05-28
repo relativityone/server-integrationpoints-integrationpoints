@@ -1,25 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Relativity.API;
 using Relativity.Services.Field;
 using Relativity.Services.FieldManager;
 
 namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 {
-    using global::Relativity.Services.DataContracts.DTOs.Results;
+	using global::Relativity.Services.DataContracts.DTOs.Results;
 
-    class ExtendedIFieldManager : IFieldManager
+	class ExtendedIFieldManager : IFieldManager
 	{
 		private readonly ITestHelper _helper;
-		private readonly ExecutionIdentity _identity;
 		private Lazy<IFieldManager> _managerWrapper;
 		private IFieldManager Manager => _managerWrapper.Value;
 
-		public ExtendedIFieldManager(ITestHelper helper, ExecutionIdentity identity)
+		public ExtendedIFieldManager(ITestHelper helper)
 		{
 			_helper = helper;
-			_identity = identity;
 			_managerWrapper = new Lazy<IFieldManager>(helper.CreateUserProxy<IFieldManager>);
 		}
 
@@ -59,9 +56,9 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			await Manager.SetPropagateToAsync(workspaceArtifactId, fieldArtifactId, relationalFieldArtifactIDs);
 		}
 
-	    public Task<UniqueFieldValuesResult> RetrieveUniqueFieldValuesAsync(int workspaceId, int artifactTypeId, string fieldName)
-	    {
-	        throw new NotImplementedException();
-	    }
+		public Task<UniqueFieldValuesResult> RetrieveUniqueFieldValuesAsync(int workspaceId, int artifactTypeId, string fieldName)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

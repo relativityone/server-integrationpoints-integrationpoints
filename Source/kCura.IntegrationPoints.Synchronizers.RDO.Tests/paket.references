@@ -6,6 +6,6 @@ NUnit
 Relativity.API
 Relativity.Core
 Relativity.Data
-Relativity.ImportExport
+Relativity.DataExchange.Client.SDK
 Relativity.Kepler.Client
 Relativity.Telemetry.APM

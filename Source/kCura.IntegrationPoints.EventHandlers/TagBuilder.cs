@@ -151,40 +151,6 @@ namespace kCura.IntegrationPoints.EventHandlers
 			}
 			return sb.ToString();
 		}
-
-		// Valid IDs are defined in http://www.w3.org/TR/html401/types.html#type-id
-		private static class Html401IdUtil
-		{
-			private static bool IsAllowableSpecialCharacter(char c)
-			{
-				switch (c)
-				{
-					case '-':
-					case '_':
-					case ':':
-						// note that we're specifically excluding the '.' character
-						return true;
-
-					default:
-						return false;
-				}
-			}
-
-			private static bool IsDigit(char c)
-			{
-				return ('0' <= c && c <= '9');
-			}
-
-			public static bool IsLetter(char c)
-			{
-				return (('A' <= c && c <= 'Z') || ('a' <= c && c <= 'z'));
-			}
-
-			public static bool IsValidIdCharacter(char c)
-			{
-				return (IsLetter(c) || IsDigit(c) || IsAllowableSpecialCharacter(c));
-			}
-		}
 	}
 }
 

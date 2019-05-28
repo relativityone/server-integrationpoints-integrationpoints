@@ -11,8 +11,6 @@ namespace kCura.IntegrationPoints.Data
 {
 	public abstract class BaseRdo : IBaseRdo
 	{
-		private static System.Text.UnicodeEncoding _enc = new System.Text.UnicodeEncoding();
-
 		private RDO _rdo;
 
 		internal RDO Rdo

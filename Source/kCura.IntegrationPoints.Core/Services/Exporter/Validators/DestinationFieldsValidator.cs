@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
@@ -44,7 +43,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Validators
 				.RetrieveFieldsAsync(
 					(int)Relativity.Client.ArtifactType.Document,
 					new HashSet<string>(new string[0]))
-				.GetResultsWithoutContextSync()
+				.GetAwaiter().GetResult()
 				.ToDictionary(k => k.ArtifactId, v => v.TextIdentifier);
 		}
 

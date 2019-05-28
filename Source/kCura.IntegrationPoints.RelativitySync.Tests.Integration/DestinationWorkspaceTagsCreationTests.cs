@@ -15,6 +15,7 @@ using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 {
@@ -74,7 +75,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			_sourceJobArtifactTypeId = configuration.SourceJobArtifactTypeId;
 		}
 
-		[Test]
+		[IdentifiedTest("48e59cc6-2f87-424e-9c9c-b2cf00548a0e")]
 		public async Task ItShouldCreateWorkspaceAndJobTags()
 		{
 			// ACT
@@ -113,7 +114,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("178d12f4-65e2-4fdd-9a05-e2151d095c20")]
 		public async Task ItShouldUpdateWorkspaceTagAndCreateJobTagIfTagsExist()
 		{
 			var configuration = new DestinationWorkspaceTagsCreationConfigurationStub
@@ -134,7 +135,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			Assert.AreNotEqual(_configuration.SourceJobTagArtifactId, configuration.SourceJobTagArtifactId);
 		}
 
-		[Test]
+		[IdentifiedTest("7b15806f-3b4f-40ad-a3e2-31a463bdad19")]
 		public async Task ItShouldNotExecuteIfObjectTypesAreSet()
 		{
 			Mock<IDestinationWorkspaceTagsCreationConfiguration> configuration = new Mock<IDestinationWorkspaceTagsCreationConfiguration>();
@@ -148,10 +149,9 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			Assert.IsFalse(result);
 		}
 
-		[Test]
-		[TestCase(true, false)]
-		[TestCase(false, true)]
-		[TestCase(false, false)]
+		[IdentifiedTestCase("f0570202-cbe5-4a20-b99f-800ee6fdb681", true, false)]
+		[IdentifiedTestCase("3c8a17b0-44a8-4ea6-a368-928761cb1586", false, true)]
+		[IdentifiedTestCase("c125122e-2f2b-4d95-886e-c52bab52c049", false, false)]
 		public async Task ItShouldExecuteIfObjectTypesAreMissing(bool isSourceJobTagSet, bool isSourceWorkspaceTagSet)
 		{
 			Mock<IDestinationWorkspaceTagsCreationConfiguration> configuration = new Mock<IDestinationWorkspaceTagsCreationConfiguration>();

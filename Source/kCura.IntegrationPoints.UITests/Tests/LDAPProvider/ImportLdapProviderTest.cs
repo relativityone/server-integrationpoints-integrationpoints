@@ -13,6 +13,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Security;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 {
@@ -39,7 +40,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 			_integrationPointsAction = new IntegrationPointsImportLdapAction(Driver, Context);
 		}
 
-		[Test]
+		[IdentifiedTest("ebfc56e6-5ac7-4694-9fde-7e474163f87e")]
 		[RetryOnError]
 		[Order(1)]
 		[Category(TestCategory.SMOKE)]

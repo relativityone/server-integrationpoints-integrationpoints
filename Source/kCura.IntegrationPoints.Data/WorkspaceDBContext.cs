@@ -5,14 +5,16 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data
 {
-	public class WorkspaceContext : IWorkspaceDBContext
+	public class WorkspaceDBContext : IWorkspaceDBContext
 	{
 		private readonly IDBContext _context;
 
-		public WorkspaceContext(IDBContext context)
+		public WorkspaceDBContext(IDBContext context)
 		{
 			_context = context;
 		}
+
+		public string ServerName => _context.ServerName;
 
 		public void BeginTransaction()
 		{
@@ -52,6 +54,11 @@ namespace kCura.IntegrationPoints.Data
 		public object ExecuteSqlStatementAsScalar(string sqlStatement, params SqlParameter[] parameters)
 		{
 			return _context.ExecuteSqlStatementAsScalar(sqlStatement, parameters);
+		}
+
+		public IDataReader ExecuteSQLStatementAsReader(string sql)
+		{
+			return _context.ExecuteSQLStatementAsReader(sql);
 		}
 	}
 }

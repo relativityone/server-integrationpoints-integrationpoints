@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client.DTOs;
 using NUnit.Framework;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 {
@@ -55,8 +56,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 				true);
 		}
 
-		[TestCase(JobHistoryErrorDTO.Choices.ErrorType.Values.Item)]
-		[TestCase(JobHistoryErrorDTO.Choices.ErrorType.Values.Job)]
+		[IdentifiedTestCase("d725c6a3-f721-41ed-9759-32076e4776dd", JobHistoryErrorDTO.Choices.ErrorType.Values.Item)]
+		[IdentifiedTestCase("8c585500-9e75-49fb-aeb3-d2c0d7875e76", JobHistoryErrorDTO.Choices.ErrorType.Values.Job)]
 		public void RetrieveJobHistoryErrorArtifactIds_NoError(JobHistoryErrorDTO.Choices.ErrorType.Values errorType)
 		{
 			//act
@@ -68,20 +69,19 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		}
 
 
-		private static readonly object[] RetrieveJobHistoryErrorSources = new []
+		private static readonly TestCaseData[] RetrieveJobHistoryErrorSources = new TestCaseData[]
 		{
-			new object[] {ErrorStatusChoices.JobHistoryErrorNew, ErrorTypeChoices.JobHistoryErrorItem},
-			new object[] {ErrorStatusChoices.JobHistoryErrorInProgress, ErrorTypeChoices.JobHistoryErrorItem},
-			new object[] {ErrorStatusChoices.JobHistoryErrorRetried, ErrorTypeChoices.JobHistoryErrorItem},
-			new object[] {ErrorStatusChoices.JobHistoryErrorExpired, ErrorTypeChoices.JobHistoryErrorItem},
-			new object[] {ErrorStatusChoices.JobHistoryErrorNew, ErrorTypeChoices.JobHistoryErrorJob},
-			new object[] {ErrorStatusChoices.JobHistoryErrorInProgress, ErrorTypeChoices.JobHistoryErrorJob},
-			new object[] {ErrorStatusChoices.JobHistoryErrorRetried, ErrorTypeChoices.JobHistoryErrorJob},
-			new object[] {ErrorStatusChoices.JobHistoryErrorExpired, ErrorTypeChoices.JobHistoryErrorJob},
+			new TestCaseData(new object[] {ErrorStatusChoices.JobHistoryErrorNew, ErrorTypeChoices.JobHistoryErrorItem}).WithId("70BDFBD8-36A4-4CD3-9AA6-DFB16BE6A965"),
+			new TestCaseData(new object[] {ErrorStatusChoices.JobHistoryErrorInProgress, ErrorTypeChoices.JobHistoryErrorItem}).WithId("3AF3DFFB-9A5B-4B20-A454-8E8794996D7F"),
+			new TestCaseData(new object[] {ErrorStatusChoices.JobHistoryErrorRetried, ErrorTypeChoices.JobHistoryErrorItem}).WithId("10177CE1-700C-4100-935A-16EB2F6E77F6"),
+			new TestCaseData(new object[] {ErrorStatusChoices.JobHistoryErrorExpired, ErrorTypeChoices.JobHistoryErrorItem}).WithId("64DC8730-1880-422D-9F0F-7718BA15DEFF"),
+			new TestCaseData(new object[] {ErrorStatusChoices.JobHistoryErrorNew, ErrorTypeChoices.JobHistoryErrorJob}).WithId("DE3845C3-B73C-4147-8C43-9CDADF93AC88"),
+			new TestCaseData(new object[] {ErrorStatusChoices.JobHistoryErrorInProgress, ErrorTypeChoices.JobHistoryErrorJob}).WithId("B8BACFF1-E44A-4FBC-BD69-AE8CE664EA33"),
+			new TestCaseData(new object[] {ErrorStatusChoices.JobHistoryErrorRetried, ErrorTypeChoices.JobHistoryErrorJob}).WithId("56BAFD0F-7C07-40C3-8C66-82FEA13056F8"),
+			new TestCaseData(new object[] {ErrorStatusChoices.JobHistoryErrorExpired, ErrorTypeChoices.JobHistoryErrorJob}).WithId("BCBDD258-0A31-4046-A936-C34057B9880E"),
 		};
 
-		[Test]
-		[TestCaseSource(nameof(RetrieveJobHistoryErrorSources))]
+		[IdentifiedTestCaseSource("B1BC4D8A",nameof(RetrieveJobHistoryErrorSources))]
 		public void RetrieveJobHistoryErrorArtifactIds(Choice errorStatus, Choice errorType)
 		{
 			// arrange
@@ -98,8 +98,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			CollectionAssert.AreEqual(jobHistoryArtifactId, result);
 		}
 
-		[TestCase(JobHistoryErrorDTO.Choices.ErrorType.Values.Item)]
-		[TestCase(JobHistoryErrorDTO.Choices.ErrorType.Values.Job)]
+		[IdentifiedTestCase("690a39d4-f28e-43c7-9e40-bf53016242dd", JobHistoryErrorDTO.Choices.ErrorType.Values.Item)]
+		[IdentifiedTestCase("db971f8e-d398-4291-b4cd-4209f54da0c3", JobHistoryErrorDTO.Choices.ErrorType.Values.Job)]
 		public void RetrieveJobHistoryErrorIdsAndSourceUniqueIds_NoError(JobHistoryErrorDTO.Choices.ErrorType.Values errorType)
 		{
 			//act
@@ -110,8 +110,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			Assert.AreEqual(0, result.Count);
 		}
 
-		[Test]
-		[TestCaseSource(nameof(RetrieveJobHistoryErrorSources))]
+		[IdentifiedTestCaseSource("6F08B843",nameof(RetrieveJobHistoryErrorSources))]
 		public void RetrieveJobHistoryErrorIdsAndSourceUniqueIds(Choice errorStatus, Choice errorType)
 		{
 			// arrange

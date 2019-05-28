@@ -18,7 +18,6 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 {
 	public class IntegrationPointRepositoryTests : TestBase
 	{
-		private IIntegrationPointRuntimeServiceFactory _serviceFactory;
 		private IIntegrationPointSerializer _serializer;
 		private IObjectTypeRepository _objectTypeRepository;
 		private IUserInfo _userInfo;
@@ -35,7 +34,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 
 		public override void SetUp()
 		{
-			_serviceFactory = Substitute.For<IIntegrationPointRuntimeServiceFactory>();
+			IIntegrationPointRuntimeServiceFactory serviceFactory = Substitute.For<IIntegrationPointRuntimeServiceFactory>();
 			_serializer = Substitute.For<IIntegrationPointSerializer>();
 			_integrationPointLocalService = Substitute.For<IIntegrationPointService>();
 			_integrationPointProfileService = Substitute.For<IIntegrationPointProfileService>();
@@ -44,12 +43,12 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 			_choiceQuery = Substitute.For<IChoiceQuery>();
 			_backwardCompatibility = Substitute.For<IBackwardCompatibility>();
 
-			_integrationPointRepository = new IntegrationPointRepository(_serviceFactory, _objectTypeRepository, _userInfo, _choiceQuery,
+			_integrationPointRepository = new IntegrationPointRepository(serviceFactory, _objectTypeRepository, _userInfo, _choiceQuery,
 				_backwardCompatibility, _integrationPointLocalService, _integrationPointProfileService);
 
 			_integrationPointService = Substitute.For<IIntegrationPointService>();
 
-			_serviceFactory.CreateIntegrationPointRuntimeService(Arg.Any<Core.Models.IntegrationPointModel>()).Returns(_integrationPointService);
+			serviceFactory.CreateIntegrationPointRuntimeService(Arg.Any<Core.Models.IntegrationPointModel>()).Returns(_integrationPointService);
 		}
 
 		[Test]

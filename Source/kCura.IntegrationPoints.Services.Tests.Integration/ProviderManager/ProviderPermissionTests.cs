@@ -5,12 +5,13 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Services.Tests.Integration.Helpers;
 using kCura.IntegrationPoints.Services.Tests.Integration.Permissions;
 using NUnit.Framework;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.Services.Tests.Integration.ProviderManager
 {
 	public class ProviderPermissionTests : KeplerServicePermissionsTestsBase
 	{
-		[Test]
+		[IdentifiedTest("8cd41525-6175-4c0e-a8bf-2a5030c8d34b")]
 		public void MissingWorkspacePermission()
 		{
 			var client = Helper.CreateUserProxy<IProviderManager>(UserModel.EmailAddress);
@@ -21,7 +22,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.ProviderManager
 			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetSourceProviderArtifactIdAsync(WorkspaceArtifactId, Guid.NewGuid().ToString()).Result);
 		}
 
-		[Test]
+		[IdentifiedTest("ac39ed62-53f0-4c84-96ae-292d76e173a0")]
 		public void MissingSourceProviderViewPermission()
 		{
 			Group.AddGroupToWorkspace(WorkspaceArtifactId, GroupId);
@@ -36,7 +37,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.ProviderManager
 			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetSourceProviderArtifactIdAsync(WorkspaceArtifactId, Guid.NewGuid().ToString()).Result);
 		}
 
-		[Test]
+		[IdentifiedTest("d0249a07-67b7-4633-bfd7-00cd8365f128")]
 		public void MissingDestinationProviderViewPermission()
 		{
 			Group.AddGroupToWorkspace(WorkspaceArtifactId, GroupId);

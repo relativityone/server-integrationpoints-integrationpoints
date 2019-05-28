@@ -15,15 +15,14 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories.Implementations;
 using kCura.Relativity.Client;
 using kCura.WinEDDS;
-using Moq;
 using NUnit.Framework;
 using Relativity.API.Foundation;
-using Relativity.Core;
 using Relativity.Services.FileField;
 using Relativity.Services.Interfaces.File;
 using Relativity.Services.Interfaces.ViewField;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Services.Search;
 using Relativity.Services.User;
 using Rip.SystemTests.RelativityServices.Arrangers;
 using Rip.SystemTests.RelativityServices.TestCases;
@@ -43,7 +42,6 @@ namespace Rip.SystemTests.RelativityServices
 		private Lazy<ITestHelper> _testHelperLazy;
 		private IObjectManager _objectManager;
 		private IViewManager _viewManager;
-		private DocumentsTestData _documentsTestData;
 		private DocumentTestCase[] _documentTestCases;
 		private WorkspaceService _workspaceService;
 
@@ -55,6 +53,10 @@ namespace Rip.SystemTests.RelativityServices
 		private const string _IMAGE_FILENAME_COLUMN_NAME = "ImageFileName";
 		private const string _PRODUCTION_ARTIFACT_ID_COLUMN_NAME = "ProductionArtifactID";
 		private const string _OBJECT_ARTIFACT_ID_COLUMN_NAME = "ObjectArtifactID";
+		private const string _ARTIFACT_ID_COLUMN_NAME = "ArtifactID";
+		private const string _NAME_COLUMN_NAME = "Name";
+		private const string _ARTIFACT_TYPE_ID_COLUMN_NAME = "ArtifactTypeID";
+		private const string _ARTIFACT_TYPE_COLUMN_NAME = "ArtifactType";
 
 		[OneTimeSetUp]
 		public async Task OneTimeSetup()
@@ -65,12 +67,12 @@ namespace Rip.SystemTests.RelativityServices
 			_objectManager = _testHelperLazy.Value.CreateUserProxy<IObjectManager>();
 			_viewManager = _testHelperLazy.Value.CreateUserProxy<IViewManager>();
 
-			_documentsTestData = DocumentTestDataBuilder.BuildTestData(
+			DocumentsTestData documentsTestData = DocumentTestDataBuilder.BuildTestData(
 				withNatives: true, 
 				testDataType: DocumentTestDataBuilder.TestDataType.SmallWithoutFolderStructure
 			);
-			_documentTestCases = DocumentTestCaseArranger.CreateTestCases(_documentsTestData);
-			_workspaceService.ImportData(_workspaceID, _documentsTestData);
+			_documentTestCases = DocumentTestCaseArranger.CreateTestCases(documentsTestData);
+			_workspaceService.ImportData(_workspaceID, documentsTestData);
 			await DocumentTestCaseArranger.FillTestCasesWithDocumentArtifactIDsAsync(
 				_workspaceID,
 				_documentTestCases,
@@ -292,9 +294,38 @@ namespace Rip.SystemTests.RelativityServices
 			result.Should().Contain(expectedViewFieldIDs);
 		}
 
+		[Test]
+		public void RetrieveViewsByContextArtifactID_ShouldRetrieveViews()
+		{
+			//arrange
+			View view = CreateTestView();
+
+			//act
+			DataSet result =
+				_sut.RetrieveViewsByContextArtifactID(_workspaceID, _DOCUMENT_ARTIFACT_TYPE_ID, isSearch: false);
+
+			//assert
+			AssertViewResponseContainsExpectedView(view, result);
+		}
+
+		[Test]
+		public async Task RetrieveViewsByContextArtifactIDForSearch_ShouldRetrieveViews()
+		{
+			//arrange
+			int searchArtifactID = SavedSearch.CreateSavedSearch(_workspaceID, name: "CoreSearchManagerTestSavedSearch");
+			KeywordSearch savedSearch = await SavedSearch.ReadAsync(_workspaceID, searchArtifactID).ConfigureAwait(false);
+
+			//act
+			DataSet result =
+				_sut.RetrieveViewsByContextArtifactID(_workspaceID, _DOCUMENT_ARTIFACT_TYPE_ID, isSearch: true);
+
+			//assert
+			AssertSearchViewResponseContainsExpectedSearch(savedSearch, result);
+		}
+
 		private async Task<IList<int>> RetrieveExportableFieldIDsAsync()
 		{
-			var fieldQuery = new QueryRequest
+			QueryRequest fieldQuery = new QueryRequest
 			{
 				ObjectType = new ObjectTypeRef { ArtifactTypeID = (int) ArtifactType.Field },
 				Fields = new[]
@@ -335,7 +366,7 @@ namespace Rip.SystemTests.RelativityServices
 			if (fieldCategoryID == (int)FieldCategory.MultiReflected)
 			{
 				if (fieldType == TestConstants.FieldTypeNames.LONG_TEXT ||
-				    fieldType == TestConstants.FieldTypeNames.MULTIPLE_CHOICE)
+					fieldType == TestConstants.FieldTypeNames.MULTIPLE_CHOICE)
 				{
 					return false;
 				}
@@ -367,20 +398,21 @@ namespace Rip.SystemTests.RelativityServices
 
 		private CoreSearchManager CreateCoreSearchManager()
 		{
-			var baseServiceContextMock = new Mock<BaseServiceContext>();
 			IViewFieldManager viewFieldManager = _testHelperLazy.Value.CreateUserProxy<IViewFieldManager>();
 			IFileManager fileManager = _testHelperLazy.Value.CreateUserProxy<IFileManager>();
 			IFileFieldManager fileFieldManager = _testHelperLazy.Value.CreateUserProxy<IFileFieldManager>();
-			IExternalServiceInstrumentationProvider instrumentationProvider =
+			IViewManager viewManager = _testHelperLazy.Value.CreateUserProxy<IViewManager>();
+			IExternalServiceInstrumentationProvider instrumentationProvider = 
 				new ExternalServiceInstrumentationProviderWithoutJobContext(_testHelperLazy.Value.GetLoggerFactory().GetLogger());
 			IViewFieldRepository viewFieldRepository = new ViewFieldRepository(viewFieldManager, instrumentationProvider);
 			IFileRepository fileRepository = new FileRepository(fileManager, instrumentationProvider);
 			IFileFieldRepository fileFieldRepository = new FileFieldRepository(fileFieldManager, instrumentationProvider);
+			IViewRepository viewRepository = new ViewRepository(viewManager, instrumentationProvider);
 			var coreSearchManager = new CoreSearchManager(
-				baseServiceContextMock.Object,
 				fileRepository,
 				fileFieldRepository,
-				viewFieldRepository
+				viewFieldRepository,
+				viewRepository
 			);
 			return coreSearchManager;
 		}
@@ -486,6 +518,25 @@ namespace Rip.SystemTests.RelativityServices
 
 			return result.Objects.Single().ArtifactID;
 		}
+
+		private void AssertViewResponseContainsExpectedView(View view, DataSet dataSet)
+		{
+			DataRow[] rows = GetRowsFromFirstTable(dataSet);
+			DataRow row = rows.Single(x => (int)x[_ARTIFACT_ID_COLUMN_NAME] == view.ArtifactID);
+			row[_NAME_COLUMN_NAME].Should().Be(view.Name);
+			row[_ARTIFACT_TYPE_ID_COLUMN_NAME].Should().Be(view.ArtifactTypeID);
+			row.Table.Columns.Contains(_ARTIFACT_TYPE_COLUMN_NAME).Should().BeFalse();
+		}
+
+		private void AssertSearchViewResponseContainsExpectedSearch(KeywordSearch savedSearch, DataSet dataSet)
+		{
+			DataRow[] rows = GetRowsFromFirstTable(dataSet);
+			DataRow row = rows.Single(x => (int)x[_ARTIFACT_ID_COLUMN_NAME] == savedSearch.ArtifactID);
+			row[_NAME_COLUMN_NAME].Should().Be(savedSearch.Name);
+			row[_ARTIFACT_TYPE_ID_COLUMN_NAME].Should().Be(savedSearch.ArtifactTypeID);
+			row.Table.Columns.Contains(_ARTIFACT_TYPE_COLUMN_NAME).Should().BeTrue();
+		}
+
 	}
 
 	internal class ArtifactRef : IArtifactRef

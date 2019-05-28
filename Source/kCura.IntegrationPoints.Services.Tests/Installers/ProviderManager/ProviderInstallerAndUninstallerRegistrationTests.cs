@@ -8,203 +8,198 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Services.Installers.ProviderManager;
-using Moq;
 using NUnit.Framework;
 using Relativity.API;
+using static kCura.IntegrationPoint.Tests.Core.TestHelpers.WindsorContainerTestHelpers;
 
 namespace kCura.IntegrationPoints.Services.Tests.Installers.ProviderManager
 {
-    [TestFixture]
-    public class ProviderInstallerAndUninstallerRegistrationTests
-    {
-        private IWindsorContainer _container;
+	[TestFixture]
+	public class ProviderInstallerAndUninstallerRegistrationTests
+	{
+		private IWindsorContainer _container;
 
-        [SetUp]
-        public void SetUp()
-        {
-            _container = new WindsorContainer();
-            _container.AddProviderInstallerAndUninstaller();
-        }
+		[SetUp]
+		public void SetUp()
+		{
+			_container = new WindsorContainer();
+			_container.AddProviderInstallerAndUninstaller();
+		}
 
-        [Test]
-        public void IIntegrationPointsRemover_ShouldBeRegisteredWithProperLifestyle()
-        {
-            // arrange
-            RegisterInstallerDependencies(_container);
+		[Test]
+		public void IIntegrationPointsRemover_ShouldBeRegisteredWithProperLifestyle()
+		{
+			// arrange
+			RegisterInstallerDependencies(_container);
 
-            // assert
-            _container.Should().HaveRegisteredSingleComponent<IIntegrationPointsRemover>()
-                .Which.Should()
-                .BeRegisteredWithLifestyle(LifestyleType.Transient);
-        }
+			// assert
+			_container.Should().HaveRegisteredSingleComponent<IIntegrationPointsRemover>()
+				.Which.Should()
+				.BeRegisteredWithLifestyle(LifestyleType.Transient);
+		}
 
-        [Test]
-        public void IIntegrationPointsRemover_ShouldBeRegisteredWithProperImplementation()
-        {
-            // arrange
-            RegisterInstallerDependencies(_container);
+		[Test]
+		public void IIntegrationPointsRemover_ShouldBeRegisteredWithProperImplementation()
+		{
+			// arrange
+			RegisterInstallerDependencies(_container);
 
-            // assert
-            _container.Should().HaveRegisteredProperImplementation<IIntegrationPointsRemover, IntegrationPointsRemover>();
-        }
+			// assert
+			_container.Should().HaveRegisteredProperImplementation<IIntegrationPointsRemover, IntegrationPointsRemover>();
+		}
 
-        [Test]
-        public void IIntegrationPointsRemover_ShouldBeResolvedAndNotThrow()
-        {
-            // arrange
-            RegisterInstallerDependencies(_container);
+		[Test]
+		public void IIntegrationPointsRemover_ShouldBeResolvedAndNotThrow()
+		{
+			// arrange
+			RegisterInstallerDependencies(_container);
 
-            // assert
-            _container.Should().ResolveWithoutThrowing<IIntegrationPointsRemover>();
-        }
+			// assert
+			_container.Should().ResolveWithoutThrowing<IIntegrationPointsRemover>();
+		}
 
-        [Test]
-        public void IApplicationGuidFinder_ShouldBeRegisteredWithProperLifestyle()
-        {
-            // arrange
-            RegisterInstallerDependencies(_container);
+		[Test]
+		public void IApplicationGuidFinder_ShouldBeRegisteredWithProperLifestyle()
+		{
+			// arrange
+			RegisterInstallerDependencies(_container);
 
-            // assert
-            _container.Should().HaveRegisteredSingleComponent<IApplicationGuidFinder>()
-                .Which.Should()
-                .BeRegisteredWithLifestyle(LifestyleType.Transient);
-        }
+			// assert
+			_container.Should().HaveRegisteredSingleComponent<IApplicationGuidFinder>()
+				.Which.Should()
+				.BeRegisteredWithLifestyle(LifestyleType.Transient);
+		}
 
-        [Test]
-        public void IApplicationGuidFinder_ShouldBeRegisteredWithProperImplementation()
-        {
-            // arrange
-            RegisterInstallerDependencies(_container);
+		[Test]
+		public void IApplicationGuidFinder_ShouldBeRegisteredWithProperImplementation()
+		{
+			// arrange
+			RegisterInstallerDependencies(_container);
 
-            // assert
-            _container.Should().HaveRegisteredProperImplementation<IApplicationGuidFinder, ApplicationGuidFinder>();
-        }
+			// assert
+			_container.Should().HaveRegisteredProperImplementation<IApplicationGuidFinder, ApplicationGuidFinder>();
+		}
 
-        [Test]
-        public void IApplicationGuidFinder_ShouldBeResolvedAndNotThrow()
-        {
-            // arrange
-            RegisterInstallerDependencies(_container);
+		[Test]
+		public void IApplicationGuidFinder_ShouldBeResolvedAndNotThrow()
+		{
+			// arrange
+			RegisterInstallerDependencies(_container);
 
-            // assert
-            _container.Should().ResolveWithoutThrowing<IApplicationGuidFinder>();
-        }
+			// assert
+			_container.Should().ResolveWithoutThrowing<IApplicationGuidFinder>();
+		}
 
-        [Test]
-        public void IDataProviderFactoryFactory_ShouldBeRegisteredWithProperLifestyle()
-        {
-            // arrange
-            RegisterInstallerDependencies(_container);
+		[Test]
+		public void IDataProviderFactoryFactory_ShouldBeRegisteredWithProperLifestyle()
+		{
+			// arrange
+			RegisterInstallerDependencies(_container);
 
-            // assert
-            _container.Should().HaveRegisteredSingleComponent<IDataProviderFactoryFactory>()
-                .Which.Should()
-                .BeRegisteredWithLifestyle(LifestyleType.Transient);
-        }
+			// assert
+			_container.Should().HaveRegisteredSingleComponent<IDataProviderFactoryFactory>()
+				.Which.Should()
+				.BeRegisteredWithLifestyle(LifestyleType.Transient);
+		}
 
-        [Test]
-        public void IDataProviderFactoryFactory_ShouldBeRegisteredWithProperImplementation()
-        {
-            // arrange
-            RegisterInstallerDependencies(_container);
+		[Test]
+		public void IDataProviderFactoryFactory_ShouldBeRegisteredWithProperImplementation()
+		{
+			// arrange
+			RegisterInstallerDependencies(_container);
 
-            // assert
-            _container.Should().HaveRegisteredProperImplementation<IDataProviderFactoryFactory, DataProviderFactoryFactory>();
-        }
+			// assert
+			_container.Should().HaveRegisteredProperImplementation<IDataProviderFactoryFactory, DataProviderFactoryFactory>();
+		}
 
-        [Test]
-        public void IDataProviderFactoryFactory_ShouldBeResolvedAndNotThrow()
-        {
-            // arrange
-            RegisterInstallerDependencies(_container);
+		[Test]
+		public void IDataProviderFactoryFactory_ShouldBeResolvedAndNotThrow()
+		{
+			// arrange
+			RegisterInstallerDependencies(_container);
 
-            // assert
-            _container.Should().ResolveWithoutThrowing<IDataProviderFactoryFactory>();
-        }
+			// assert
+			_container.Should().ResolveWithoutThrowing<IDataProviderFactoryFactory>();
+		}
 
-        [Test]
-        public void IRipProviderInstaller_ShouldBeRegisteredWithProperLifestyle()
-        {
-            // arrange
-            RegisterInstallerDependencies(_container);
+		[Test]
+		public void IRipProviderInstaller_ShouldBeRegisteredWithProperLifestyle()
+		{
+			// arrange
+			RegisterInstallerDependencies(_container);
 
-            // assert
-            _container.Should().HaveRegisteredSingleComponent<IRipProviderInstaller>()
-                .Which.Should()
-                .BeRegisteredWithLifestyle(LifestyleType.Transient);
-        }
+			// assert
+			_container.Should().HaveRegisteredSingleComponent<IRipProviderInstaller>()
+				.Which.Should()
+				.BeRegisteredWithLifestyle(LifestyleType.Transient);
+		}
 
-        [Test]
-        public void IRipProviderInstaller_ShouldBeRegisteredWithProperImplementation()
-        {
-            // arrange
-            RegisterInstallerDependencies(_container);
+		[Test]
+		public void IRipProviderInstaller_ShouldBeRegisteredWithProperImplementation()
+		{
+			// arrange
+			RegisterInstallerDependencies(_container);
 
-            // assert
-            _container.Should().HaveRegisteredProperImplementation<IRipProviderInstaller, RipProviderInstaller>();
-        }
+			// assert
+			_container.Should().HaveRegisteredProperImplementation<IRipProviderInstaller, RipProviderInstaller>();
+		}
 
-        [Test]
-        public void IRipProviderInstaller_ShouldBeResolvedAndNotThrow()
-        {
-            // arrange
-            RegisterInstallerDependencies(_container);
+		[Test]
+		public void IRipProviderInstaller_ShouldBeResolvedAndNotThrow()
+		{
+			// arrange
+			RegisterInstallerDependencies(_container);
 
-            // assert
-            _container.Should().ResolveWithoutThrowing<IRipProviderInstaller>();
-        }
+			// assert
+			_container.Should().ResolveWithoutThrowing<IRipProviderInstaller>();
+		}
 
-        [Test]
-        public void IRipProviderUninstaller_ShouldBeRegisteredWithProperLifestyle()
-        {
-            // arrange
-            RegisterInstallerDependencies(_container);
+		[Test]
+		public void IRipProviderUninstaller_ShouldBeRegisteredWithProperLifestyle()
+		{
+			// arrange
+			RegisterInstallerDependencies(_container);
 
-            // assert
-            _container.Should().HaveRegisteredSingleComponent<IRipProviderUninstaller>()
-                .Which.Should()
-                .BeRegisteredWithLifestyle(LifestyleType.Transient);
-        }
+			// assert
+			_container.Should().HaveRegisteredSingleComponent<IRipProviderUninstaller>()
+				.Which.Should()
+				.BeRegisteredWithLifestyle(LifestyleType.Transient);
+		}
 
-        [Test]
-        public void IRipProviderUninstaller_ShouldBeRegisteredWithProperImplementation()
-        {
-            // arrange
-            RegisterInstallerDependencies(_container);
+		[Test]
+		public void IRipProviderUninstaller_ShouldBeRegisteredWithProperImplementation()
+		{
+			// arrange
+			RegisterInstallerDependencies(_container);
 
-            // assert
-            _container.Should().HaveRegisteredProperImplementation<IRipProviderUninstaller, RipProviderUninstaller>();
-        }
+			// assert
+			_container.Should().HaveRegisteredProperImplementation<IRipProviderUninstaller, RipProviderUninstaller>();
+		}
 
-        [Test]
-        public void IRipProviderUninstaller_ShouldBeResolvedAndNotThrow()
-        {
-            // arrange
-            RegisterInstallerDependencies(_container);
+		[Test]
+		public void IRipProviderUninstaller_ShouldBeResolvedAndNotThrow()
+		{
+			// arrange
+			RegisterInstallerDependencies(_container);
 
-            // assert
-            _container.Should().ResolveWithoutThrowing<IRipProviderUninstaller>();
-        }
+			// assert
+			_container.Should().ResolveWithoutThrowing<IRipProviderUninstaller>();
+		}
 
-        private void RegisterInstallerDependencies(IWindsorContainer container)
-        {
-            IRegistration[] dependencies =
-            {
-                RegisterMockComponent<IIntegrationPointQuery>(),
-                RegisterMockComponent<IDeleteHistoryService>(),
-                RegisterMockComponent<IRelativityObjectManager>(),
-                RegisterMockComponent<IWorkspaceDBContext>(),
-                RegisterMockComponent<IAPILog>(),
-                RegisterMockComponent<IHelper>(),
-                RegisterMockComponent<ISourceProviderRepository>()
-            };
+		private void RegisterInstallerDependencies(IWindsorContainer container)
+		{
+			IRegistration[] dependencies =
+			{
+				CreateDummyObjectRegistration<IIntegrationPointQuery>(),
+				CreateDummyObjectRegistration<IDeleteHistoryService>(),
+				CreateDummyObjectRegistration<IRelativityObjectManager>(),
+				CreateDummyObjectRegistration<IWorkspaceDBContext>(),
+				CreateDummyObjectRegistration<IAPILog>(),
+				CreateDummyObjectRegistration<IHelper>(),
+				CreateDummyObjectRegistration<ISourceProviderRepository>()
+			};
 
-            container.Register(dependencies);
-        }
-
-        private ComponentRegistration<T> RegisterMockComponent<T>() where T : class
-        {
-            return Component.For<T>().UsingFactoryMethod(k => new Mock<T>().Object);
-        }
-    }
+			container.Register(dependencies);
+		}
+	}
 }

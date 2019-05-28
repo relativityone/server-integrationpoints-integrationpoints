@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.Core.Tagging
 				throw new ArgumentNullException(nameof(documentsToTagRepository));
 			}
 
-			int numberOfDocuments = documentsToTagRepository.Count;
+			int numberOfDocuments = documentsToTagRepository.GetCount();
 			if (numberOfDocuments <= 0)
 			{
 				LogNoDocumentsToTag();

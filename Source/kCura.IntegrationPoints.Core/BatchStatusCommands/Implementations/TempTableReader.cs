@@ -1,5 +1,4 @@
-﻿using kCura.IntegrationPoints.Data.Extensions;
-using kCura.IntegrationPoints.Data.Repositories;
+﻿using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using System.Collections.Generic;
@@ -25,7 +24,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			: base(columns)
 		{
 			_documentRepository = documentRepository;
-			_scratchTableReader = scratchTable.GetDocumentIdsDataReaderFromTable();
+			_scratchTableReader = scratchTable.GetDocumentIDsDataReaderFromTable();
 			_columns = columns;
 			_identifierFieldId = identifierFieldId;
 			_containsData = true;
@@ -67,7 +66,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			if (documents.Count > 0)
 			{
 				artifacts = _documentRepository.RetrieveDocumentsAsync(documents,
-					new HashSet<int>(new[] { _identifierFieldId })).GetResultsWithoutContextSync();
+					new HashSet<int>(new[] { _identifierFieldId })).GetAwaiter().GetResult();
 			}
 			else
 			{

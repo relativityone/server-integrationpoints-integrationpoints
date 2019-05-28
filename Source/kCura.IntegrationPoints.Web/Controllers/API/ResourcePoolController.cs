@@ -3,18 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Security;
 using System.Web.Http;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Attributes;
-using kCura.IntegrationPoints.Web.Toggles;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
@@ -22,8 +18,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 	public class ResourcePoolController : ApiController
 	{
 		#region Fields
-	    private const string _TOGGLE_PROCESSING_SOURCE_LOCATION_ENABLED = "kCura.IntegrationPoints.Web.Toggles.ProcessingSourceLocationEnabled";
-
 		private readonly IResourcePoolManager _resourcePoolManager;
 		private readonly IRepositoryFactory _respositoryFactory;
 		private readonly IDirectoryTreeCreator<JsTreeItemDTO> _directoryTreeCreator;

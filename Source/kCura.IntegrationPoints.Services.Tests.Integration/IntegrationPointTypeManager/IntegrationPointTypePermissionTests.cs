@@ -4,19 +4,20 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Services.Tests.Integration.Helpers;
 using kCura.IntegrationPoints.Services.Tests.Integration.Permissions;
 using NUnit.Framework;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointTypeManager
 {
 	public class IntegrationPointTypePermissionTests : KeplerServicePermissionsTestsBase
 	{
-		[Test]
+		[IdentifiedTest("b24092e3-255a-4dea-bb9f-610721eb65f3")]
 		public void MissingWorkspacePermission()
 		{
 			var client = Helper.CreateUserProxy<IIntegrationPointTypeManager>(UserModel.EmailAddress);
 			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetIntegrationPointTypes(WorkspaceArtifactId).Result);
 		}
 
-		[Test]
+		[IdentifiedTest("1ceaec25-751b-4ea6-a795-0390d745a14d")]
 		public void MissingJobHistoryViewPermission()
 		{
 			Group.AddGroupToWorkspace(WorkspaceArtifactId, GroupId);

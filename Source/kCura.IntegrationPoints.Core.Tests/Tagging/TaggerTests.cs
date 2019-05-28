@@ -67,7 +67,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 			};
 
 			var scratchTableRepository = Substitute.For<IScratchTableRepository>();
-			scratchTableRepository.Count.Returns(1);
+			scratchTableRepository.GetCount().Returns(1);
 
 			TagsContainer tagsContainer = new TagsContainer(job, workspace);
 
@@ -92,7 +92,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 			};
 
 			var scratchTableRepository = Substitute.For<IScratchTableRepository>();
-			scratchTableRepository.Count.Returns(0);
+			scratchTableRepository.GetCount().Returns(0);
 
 			TagsContainer tagsContainer = new TagsContainer(job, workspace);
 

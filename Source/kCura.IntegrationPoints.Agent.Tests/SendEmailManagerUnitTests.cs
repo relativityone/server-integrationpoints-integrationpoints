@@ -20,15 +20,18 @@ namespace kCura.IntegrationPoints.Agent.Tests
 		private ISerializer _serializer;
 		private IJobManager _jobManager;
 		private SendEmailManager _sendEmailManager;
-		private IJobService _jobService;
 		private EmailMessage _emailMessage;
 		private string _serializedEmailMessage;
-
+		private static object[] _emailLists = new object[]
+		{
+			new List<string>() {"abc@relativity.com", "email2@relativity.com"},
+			new List<string>() {"abc@relativity.com"},
+			new List<string>() {""}
+		};
 
 		[SetUp]
 		public override void SetUp()
 		{
-			_jobService = Substitute.For<IJobService>();
 			_serializer = Substitute.For<ISerializer>();
 			_jobManager = Substitute.For<IJobManager>();
 			IHelper helper = Substitute.For<IHelper>();
@@ -49,14 +52,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 			Assert.DoesNotThrow(() => this._sendEmailManager.GetUnbatchedIDs(null));
 		}
 
-		private static object[] emailLists = new object[]
-		{
-			new List<string>() {"abc@relativity.com", "email2@relativity.com"},
-			new List<string>() {"abc@relativity.com"},
-			new List<string>() {""}
-		};
-
-		[Test, TestCaseSource(nameof(emailLists))]
+		[Test, TestCaseSource(nameof(_emailLists))]
 		public void CreateBatchJob_GoldFlow(List<string> list)
 		{
 			// arrange

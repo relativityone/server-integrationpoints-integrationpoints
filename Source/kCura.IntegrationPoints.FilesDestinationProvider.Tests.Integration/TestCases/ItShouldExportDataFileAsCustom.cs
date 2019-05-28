@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core.Models;
-using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases.Base;
 using NUnit.Framework;
@@ -13,9 +12,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 	{
 		private int _columnCount;
 		private char _columnSeparator;
-		private char _multiValueSeparator;
-		private char _nestedValueSeparator;
-		private char _newLineSeparator;
 		private char _quoteSeparator;
 
 		public override string MetadataFormat => "txt";
@@ -26,9 +22,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 
 			settings.ColumnSeparator = _columnSeparator = Convert.ToChar(200);
 			settings.QuoteSeparator = _quoteSeparator = Convert.ToChar(201);
-			settings.NewlineSeparator = _newLineSeparator = Convert.ToChar(202);
-			settings.MultiValueSeparator = _multiValueSeparator = Convert.ToChar(203);
-			settings.NestedValueSeparator = _nestedValueSeparator = Convert.ToChar(204);
 
 			_columnCount = settings.SelViewFieldIds.Count;
 

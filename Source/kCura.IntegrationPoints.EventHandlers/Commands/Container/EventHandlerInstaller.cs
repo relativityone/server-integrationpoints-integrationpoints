@@ -59,7 +59,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
 			container.Register(Component.For<IWorkspaceDBContext>().UsingFactoryMethod(k =>
 			{
 				IEHContext context = k.Resolve<IEHContext>();
-				return new WorkspaceContext(context.Helper.GetDBContext(context.Helper.GetActiveCaseID()));
+				return new WorkspaceDBContext(context.Helper.GetDBContext(context.Helper.GetActiveCaseID()));
 			}).LifestyleTransient());
 			container.Register(Component.For<IIntegrationPointProviderValidator>().UsingFactoryMethod(k =>
 					new IntegrationPointProviderValidator(Enumerable.Empty<IValidator>(), k.Resolve<IIntegrationPointSerializer>()))
@@ -75,7 +75,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
 				IEHContext context = kernel.Resolve<IEHContext>();
 				IOAuth2ClientFactory oauth2ClientFactory = kernel.Resolve<IOAuth2ClientFactory>();
 				ITokenProviderFactoryFactory tokenProviderFactory = kernel.Resolve<ITokenProviderFactoryFactory>();
-				CurrentUser contextUser = new CurrentUser { ID = context.Helper.GetAuthenticationManager().UserInfo.ArtifactID };
+				int userID = context.Helper.GetAuthenticationManager().UserInfo.ArtifactID;
+				var contextUser = new CurrentUser(userID);
 
 				return new OAuth2TokenGenerator(context.Helper, oauth2ClientFactory, tokenProviderFactory, contextUser);
 			}).LifestyleTransient());

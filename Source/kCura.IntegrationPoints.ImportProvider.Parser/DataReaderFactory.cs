@@ -1,5 +1,4 @@
-﻿using System;
-using System.Data;
+﻿using System.Data;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.WinEDDS;
@@ -7,8 +6,7 @@ using kCura.WinEDDS.Api;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
-
-using RAPI = Relativity;
+using Relativity.DataExchange.Service;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
@@ -50,7 +48,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 		{
 			ImageLoadFile config = _winEddsLoadFileFactory.GetImageLoadFile(settings);
 			IImageReader reader = _winEddsFileReaderFactory.GetOpticonFileReader(config);
-			OpticonDataReader rv = new OpticonDataReader(settings, config, reader);
+			OpticonDataReader rv = new OpticonDataReader(settings, reader);
 			rv.Init();
 			return rv;
 		}
@@ -67,7 +65,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 			foreach (string col in fieldParser.GetFields())
 			{
 				int fieldCat = (! string.IsNullOrEmpty(fieldIdentifierColumnName) && col == fieldIdentifierColumnName)
-					? (int)RAPI.FieldCategory.Identifier
+					? (int)FieldCategory.Identifier
 					: -1;
 
 				DocumentField newDocField = new DocumentField(col, colIdx, 4, fieldCat, -1, -1, -1, false,

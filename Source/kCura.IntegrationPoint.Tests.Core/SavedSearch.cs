@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
-using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.Relativity.Client;
@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 	{
 		private static ITestHelper Helper => new TestHelper();
 
-		public static int CreateSavedSearch(int workspaceId, string name)
+		public static int CreateSavedSearch(int workspaceID, string name)
 		{
 			var keywordSearch = new KeywordSearch
 			{
@@ -25,57 +25,65 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			using (var proxy = Helper.CreateAdminProxy<IKeywordSearchManager>())
 			{
-				return proxy.CreateSingleAsync(workspaceId, keywordSearch).GetAwaiter().GetResult();
+				return proxy.CreateSingleAsync(workspaceID, keywordSearch).GetAwaiter().GetResult();
 			}
 		}
 
-		public static void UpdateSavedSearchCriteria(int workspaceArtifactId, int searchArtifactId, CriteriaCollection searchCriteria)
+		public static void UpdateSavedSearchCriteria(int workspaceArtifactID, int searchArtifactID, CriteriaCollection searchCriteria)
 		{
 			using (var proxy = Helper.CreateAdminProxy<IKeywordSearchManager>())
 			{
-				KeywordSearch keywordSearch = proxy.ReadSingleAsync(workspaceArtifactId, searchArtifactId).Result;
+				KeywordSearch keywordSearch = proxy.ReadSingleAsync(workspaceArtifactID, searchArtifactID).Result;
 				keywordSearch.SearchCriteria = searchCriteria;
-				proxy.UpdateSingleAsync(workspaceArtifactId, keywordSearch).GetAwaiter().GetResult();
+				proxy.UpdateSingleAsync(workspaceArtifactID, keywordSearch).GetAwaiter().GetResult();
 			}
 		}
 
-		public static void Delete(int workspaceArtifactId, int savedSearchArtifactId)
+		public static void Delete(int workspaceArtifactID, int savedSearchArtifactID)
 		{
-			if (savedSearchArtifactId == 0)
+			if (savedSearchArtifactID == 0)
 			{
 				return;
 			}
 			using (var proxy = Helper.CreateAdminProxy<IKeywordSearchManager>())
 			{
-				proxy.DeleteSingleAsync(workspaceArtifactId, savedSearchArtifactId).GetAwaiter().GetResult();
+				proxy.DeleteSingleAsync(workspaceArtifactID, savedSearchArtifactID).GetAwaiter().GetResult();
 			}
 		}
 
-		public static int Create(int workspaceArtifactId, KeywordSearch search)
+		public static int Create(int workspaceArtifactID, KeywordSearch search)
 		{
 			using (var proxy = Helper.CreateAdminProxy<IKeywordSearchManager>())
 			{
-				return proxy.CreateSingleAsync(workspaceArtifactId, search).GetResultsWithoutContextSync();
+				return proxy.CreateSingleAsync(workspaceArtifactID, search).GetAwaiter().GetResult();
 			}
 		}
 
-		public static int CreateSearchFolder(int workspaceArtifactId, SearchContainer searchContainer)
+		public static async Task<KeywordSearch> ReadAsync(int workspaceArtifactID, int searchArtifactID)
+		{
+			using (var proxy = Helper.CreateAdminProxy<IKeywordSearchManager>())
+			{
+				return await proxy.ReadSingleAsync(workspaceArtifactID, searchArtifactID).ConfigureAwait(false);
+			}
+		}
+		
+		public static int CreateSearchFolder(int workspaceArtifactID, SearchContainer searchContainer)
 		{
 			using (var proxy = Helper.CreateAdminProxy<ISearchContainerManager>())
 			{
-				return proxy.CreateSingleAsync(workspaceArtifactId, searchContainer).GetResultsWithoutContextSync();
+				return proxy.CreateSingleAsync(workspaceArtifactID, searchContainer).GetAwaiter().GetResult();
 			}
 		}
 
-		public static void ModifySavedSearchByAddingPrefix(IRepositoryFactory repositoryFactory, int workspaceId, int savedSearchId, string documentPrefix, bool excludeExpDocs)
+		public static void ModifySavedSearchByAddingPrefix(IRepositoryFactory repositoryFactory, int workspaceID, int savedSearchID, string documentPrefix, bool excludeExpDocs)
 		{
-			IFieldQueryRepository sourceFieldQueryRepository = repositoryFactory.GetFieldQueryRepository(workspaceId);
-			int controlNumberFieldArtifactId = sourceFieldQueryRepository.RetrieveTheIdentifierField((int) ArtifactType.Document).ArtifactId;
+			IFieldQueryRepository sourceFieldQueryRepository = repositoryFactory.GetFieldQueryRepository(workspaceID);
+			int controlNumberFieldArtifactID = sourceFieldQueryRepository.RetrieveTheIdentifierField((int)ArtifactType.Document).ArtifactId;
 
-			var fieldRef = new FieldRef(controlNumberFieldArtifactId)
+			var fieldRef = new FieldRef(controlNumberFieldArtifactID)
 			{
 				Name = "Control Number",
-				Guids = new List<Guid> {new Guid("2a3f1212-c8ca-4fa9-ad6b-f76c97f05438")}
+				Guids = new List<Guid> { new Guid("2a3f1212-c8ca-4fa9-ad6b-f76c97f05438") }
 			};
 
 			var searchCriteria = new CriteriaCollection();
@@ -90,7 +98,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 				searchCriteria.Conditions.Add(criteria);
 			}
-			UpdateSavedSearchCriteria(workspaceId, savedSearchId, searchCriteria);
+			UpdateSavedSearchCriteria(workspaceID, savedSearchID, searchCriteria);
 		}
 	}
 }

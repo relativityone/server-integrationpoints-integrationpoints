@@ -23,6 +23,7 @@ using kCura.ScheduleQueue.Core;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Search;
+using Relativity.Testing.Identification;
 using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Data.Tests.Integration
@@ -53,7 +54,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			ResolveServices();
 		}
 
-		[Test]
+		[IdentifiedTest("607ec5bd-e284-4672-9c3e-80437ba492de")]
 		public void ExpectItemLevelJobHistoryErrorsUpdatedWithErrorsMatchingBatchSize()
 		{
 			var docPrefix = "EqualBatchDoc";
@@ -61,7 +62,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			ExpectJobHistoryErrorsUpdatedWithBatchingOnRetry(1, 100, docPrefix, expDocPrefix);
 		}
 
-		[Test]
+		[IdentifiedTest("c04f6783-82e3-4082-87ce-9fb016388bb3")]
 		public void ExpectItemLevelJobHistoryErrorsUpdatedWithErrorsUnderBatchSize()
 		{
 			var docPrefix = "LessThanBatchDoc";
@@ -69,7 +70,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			ExpectJobHistoryErrorsUpdatedWithBatchingOnRetry(300, 98, docPrefix, expDocPrefix);
 		}
 
-		[Test]
+		[IdentifiedTest("96f15237-1a4f-4e46-a648-57b9ae95b9b2")]
 		public void ExpectItemLevelJobHistoryErrorsUpdatedWithErrorsOverBatchSize()
 		{
 			var docPrefix = "MoreThanBatchDoc";
@@ -77,7 +78,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			ExpectJobHistoryErrorsUpdatedWithBatchingOnRetry(500, 102, docPrefix, expDocPrefix);
 		}
 
-		[Test]
+		[IdentifiedTest("1570663c-553b-48ab-9308-de2b517247aa")]
 		public void ExpectErrorWhenRetryingErrorsOnIpWithoutAJobHistory()
 		{
 			//Arrange
@@ -123,7 +124,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("dbc5b0a9-b82d-4c21-aae7-b1bf2da766b0")]
 		public void ExpectErrorWhenRetryingErrorsOnIpWithoutJobHistoryErrors()
 		{
 			//Arrange
@@ -174,7 +175,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("2ae1e65b-ab28-4dc6-b19e-cfa26e8569be")]
 		public void ExpectJobLevelJobHistoryErrorUpdatedForJobLevelErrorWhenBatching()
 		{
 			//Arrange
@@ -239,7 +240,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			VerifyTempTableCountAndEntries(completedTempTable, completeTempTableName, expectedJobHistoryErrorArtifactIds);
 		}
 
-		[Test]
+		[IdentifiedTest("353b4db3-4457-4f88-8eec-ca0c846c3ecf")]
 		public void ExpectJobandItemLevelJobHistoryErrorsUpdatedWhenBatching()
 		{
 			//Arrange
@@ -320,7 +321,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			VerifyTempTableCountAndEntries(otherTempTable, otherTempTableName, expectedJobHistoryErrorExpired);
 		}
 
-		[Test]
+		[IdentifiedTest("a69813c2-a1f4-4165-9d3d-efe28398bb4e")]
 		public void ExpectTempSavedSearchCreatedAndDeleted()
 		{
 			//Arrange

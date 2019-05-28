@@ -2,6 +2,7 @@
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Services.Tests.Integration.Helpers;
 using NUnit.Framework;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointManager
 {
@@ -26,7 +27,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 			_client?.Dispose();
 		}
 
-		[Test]
+		[IdentifiedTest("d8813b03-466b-486b-902f-6301c89e74b8")]
 		public void Execute()
 		{
 			string sqlStatement = "SELECT [ArtifactTypeID] FROM [ArtifactType] WHERE [ArtifactType] LIKE 'IntegrationPoint'";

@@ -5,14 +5,15 @@ FluentAssertions
 kCura.Apps.Common.Config
 kCura.Relativity.Client
 LanguageExt.Core
+Moq
 NSubstitute
 NUnit
 Relativity
 Relativity.API
 Relativity.Core
 Relativity.Data
-Relativity.ImportExport
-kCura.OutsideIn.FI.Win32 content: none
+Relativity.DataExchange.Client.SDK
+kCura.OutsideIn.FI.Win32
 Relativity.Kepler.Client
 Relativity.Productions.Services.Interfaces
 Relativity.Services.Interfaces.Private

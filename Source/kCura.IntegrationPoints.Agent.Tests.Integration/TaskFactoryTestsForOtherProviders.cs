@@ -14,6 +14,7 @@ using NUnit.Framework;
 using System;
 using System.Data;
 using System.Globalization;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
@@ -54,7 +55,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			};
 		}
 
-		[Test]
+		[IdentifiedTest("932edc63-2e14-4565-98ca-e459aa308b53")]
 		[SmokeTest]
 		public void Ldap_MultipleJobs_AgentDropsJob_RunJob()
 		{
@@ -126,7 +127,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("8b8f296a-d5e7-420d-b801-b8a7c30f0c42")]
 		public void Ldap_MultipleJobs_AgentDropsJob_ScheduledJob()
 		{
 			Job job1 = null;
@@ -190,7 +191,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("94b2d615-f1e8-44be-bfbf-ab3ef83c67ac")]
 		[SmokeTest]
 		public void ItShouldSetJobIdOnJobHistory()
 		{

@@ -11,6 +11,7 @@ using kCura.ScheduleQueue.Core.Services;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Testing.Identification;
 
 namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 {
@@ -43,7 +44,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 			_helper.GetDBContext(-1).ExecuteNonQuerySQLStatement(query);
 		}
 
-		[Test]
+		[IdentifiedTest("0da98dae-1bdc-490c-86b5-016ac098b24c")]
 		public void CreateJob_NoneStoppingState()
 		{
 			// act
@@ -53,7 +54,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 			Assert.AreEqual(job.StopState, StopState.None);
 		}
 
-		[Test]
+		[IdentifiedTest("d0e209a3-362c-429b-a7b6-4cc83bf4aefa")]
 		[Description("When we update the stop state, there is a possibility that the job is already removed from the queue. This scenario will occur when the job is finished before we get to update the job.")]
 		public void UpdateStopState_JobDoesNotExist()
 		{
@@ -61,9 +62,9 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 		}
 
 
-		[TestCase(StopState.None)]
-		[TestCase(StopState.Stopping)]
-		[TestCase(StopState.Unstoppable)]
+		[IdentifiedTestCase("009766e9-c334-4628-9b6a-e681404b7aa8", StopState.None)]
+		[IdentifiedTestCase("0fb6d2f7-9779-494b-bef9-045f5ec36f95", StopState.Stopping)]
+		[IdentifiedTestCase("dd30600a-568c-4818-9dbd-15c2a76519ad", StopState.Unstoppable)]
 		[Description("This scenario will occur when the some sub-jobs finishes before we get to update the job. We do not expect any error as the job should be stopped still.")]
 		public void UpdateStopState_SomeJobsDoNotExist(StopState state)
 		{
@@ -77,11 +78,10 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 			AssertJobStopState(job, state);
 		}
 
-		[Test]
 		[SmokeTest]
-		[TestCase(StopState.None)]
-		[TestCase(StopState.Stopping)]
-		[TestCase(StopState.Unstoppable)]
+		[IdentifiedTestCase("588db8b9-fd75-48ba-ab57-81b18dd4cb00", StopState.None)]
+		[IdentifiedTestCase("c5f760a1-383c-4d9e-b4c6-0bead45b54d7", StopState.Stopping)]
+		[IdentifiedTestCase("a8c31ae3-ae96-4533-b23b-7a49aeebfff5", StopState.Unstoppable)]
 		public void UpdateStopState_GoldFlow(StopState state)
 		{
 			// arrange
@@ -94,9 +94,9 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 			AssertJobStopState(job, state);
 		}
 
-		[TestCase(StopState.None)]
-		[TestCase(StopState.Stopping)]
-		[TestCase(StopState.Unstoppable)]
+		[IdentifiedTestCase("dfc55e47-ef67-4631-b85f-37e9a078e69d", StopState.None)]
+		[IdentifiedTestCase("bd8cb0c2-3002-43d8-ac1b-fabc2a68c587", StopState.Stopping)]
+		[IdentifiedTestCase("c89eb355-009b-4214-bcfe-98eed875ea81", StopState.Unstoppable)]
 		public void UpdateStopState_MultipleJobIds(StopState state)
 		{
 			// arrange
@@ -113,9 +113,9 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 			AssertJobStopState(job3, state);
 		}
 
-		[TestCase(StopState.None)]
-		[TestCase(StopState.Stopping)]
-		[TestCase(StopState.Unstoppable)]
+		[IdentifiedTestCase("be695a7f-e5f7-4f7e-b3ba-06c90c016802", StopState.None)]
+		[IdentifiedTestCase("4e2cad47-ea14-4c35-a408-acc3b1485368", StopState.Stopping)]
+		[IdentifiedTestCase("f6d14e54-9ba1-45a4-8439-b7549ce294ce", StopState.Unstoppable)]
 		public void UpdateStopState_DuplicateJobIds(StopState state)
 		{
 			// arrange
@@ -128,7 +128,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 			AssertJobStopState(job, state);
 		}
 
-		[Test]
+		[IdentifiedTest("8125db7a-a054-4cc3-930b-c7bdcabfe87c")]
 		[Description("This case will occur when a user click on stop right before the agent set the unstoppable flag.")]
 		public void UpdateStopState_SetUnstoppableAfterStopping()
 		{
@@ -140,7 +140,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 			Assert.Throws<ExecuteSQLStatementFailedException>(() => _instance.UpdateStopState(ids, StopState.Unstoppable));
 		}
 
-		[Test]
+		[IdentifiedTest("cf0f4cae-59c1-4148-89d7-93dd91585084")]
 		public void UpdateStopState_DoNotAllowStopOnAnUnstoppableJob()
 		{
 			// arrange
@@ -152,7 +152,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 			Assert.Throws<ExecuteSQLStatementFailedException>(() => _instance.UpdateStopState(ids, StopState.Stopping));
 		}
 
-		[Test]
+		[IdentifiedTest("d8710768-a29d-4a97-a3b6-2299adf54f2e")]
 		public void GetJobs_NoJobsEmptyTable()
 		{
 			// act
@@ -163,7 +163,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 			Assert.IsEmpty(jobs);
 		}
 
-		[Test]
+		[IdentifiedTest("614f4038-4bb8-4b5e-a178-43f6a7c1f865")]
 		public void GetJobs_NoJobs()
 		{
 			// arrange
@@ -179,7 +179,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 			Assert.IsEmpty(jobs);
 		}
 
-		[Test]
+		[IdentifiedTest("fdb44d2b-2136-4235-bbb5-6975595b0cbb")]
 		public void GetJobs_FoundMatches()
 		{
 			// arrange
@@ -196,9 +196,9 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 			// TODO : add more verifications
 		}
 
-		[TestCase(StopState.None)]
-		[TestCase(StopState.Stopping)]
-		[TestCase(StopState.Unstoppable)]
+		[IdentifiedTestCase("20242fa5-38cc-48a5-8b2e-b14ce5bfdee8", StopState.None)]
+		[IdentifiedTestCase("d711fbea-9b4e-4562-8842-b558ef3a7fab", StopState.Stopping)]
+		[IdentifiedTestCase("0f24d035-6bad-42cc-b7a2-23e3dc355702", StopState.Unstoppable)]
 		public void CreateJob_ChildJobGetParentStopState(StopState state)
 		{
 			// arrange

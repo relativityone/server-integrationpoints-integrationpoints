@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Services.Tests.Integration.Helpers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using NUnit.Framework;
 using Relativity.Services.Permission;
+using Relativity.Testing.Identification;
 using Permission = kCura.IntegrationPoint.Tests.Core.Permission;
 
 namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
@@ -46,7 +47,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			User.DeleteUser(_userModel.ArtifactID);
 		}
 
-		[Test]
+		[IdentifiedTest("3e87490e-458c-4501-a6d2-443e45270628")]
 		public void MissingSourceWorkspacePermission()
 		{
 			var jobHistoryRequest = new JobHistoryRequest
@@ -57,7 +58,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetJobHistoryAsync(jobHistoryRequest).Result);
 		}
 
-		[Test]
+		[IdentifiedTest("051c7ce7-3bf6-4d80-affd-aeabd353a47d")]
 		public void MissingJobHistoryViewPermission()
 		{
 			Group.AddGroupToWorkspace(WorkspaceArtifactId, _groupId);
@@ -75,8 +76,10 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetJobHistoryAsync(jobHistoryRequest).Result);
 		}
 
-        [Test]
-		[TestInQuarantine(TestQuarantineState.SeemsToBeStable)]
+		[IdentifiedTest("47249b2c-dce4-4d7c-a772-07fe5c0cdb01")]
+		[TestInQuarantine(TestQuarantineState.UnderObservation, 
+			"Moved back to quarantine cause it failed when pulled into standard tests pool.")]
+		
 		public void MissingTargetWorkspacePermission()
 		{
 			Group.AddGroupToWorkspace(SourceWorkspaceArtifactID, _groupId);
@@ -94,7 +97,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			Assert.That(jobHistory.Data.Length, Is.EqualTo(0));
 		}
 
-		[Test]
+		[IdentifiedTest("a18e2360-2a58-41e3-8b69-663f6f0d6c80")]
 		public void MissingIntegrationPointPermissionsInSourceWorkspace()
 		{
 			//Arrange

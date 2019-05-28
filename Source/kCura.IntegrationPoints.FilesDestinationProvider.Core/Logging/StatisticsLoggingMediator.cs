@@ -2,12 +2,11 @@
 using kCura.IntegrationPoints.Common.Monitoring;
 using kCura.IntegrationPoints.Common.Monitoring.Messages;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
-using kCura.IntegrationPoints.Core.Monitoring;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
-using kCura.Windows.Process;
 using kCura.WinEDDS;
+using Relativity.DataExchange.Process;
 using Relativity.DataTransfer.MessageService;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
@@ -74,7 +73,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 		private void OnDocumentErrorChnaged(ExportEventArgs exportArgs)
 		{
 			// Here we track document error level
-			if (exportArgs.EventType == EventType.Error)
+			if (exportArgs.EventType == EventType2.Error)
 			{
 				OnDocumentError?.Invoke(exportArgs.Message, exportArgs.Message);
 			}
@@ -162,19 +161,19 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 
 		private bool CanUpdateJobStatus(ExportEventArgs exportArgs)
 		{
-			return exportArgs.EventType == EventType.Progress
+			return exportArgs.EventType == EventType2.Progress
 				&& (exportArgs.DocumentsExported % _EXPORTED_ITEMS_UPDATE_THRESHOLD) == 0
 				&& exportArgs.DocumentsExported != _currentExportedItemChunkCount;
 		}
 
 		private bool CanSendLiveStatistics(ExportEventArgs e)
 		{
-			return e.EventType == EventType.Statistics;
+			return e.EventType == EventType2.Statistics;
 		}
 
 		private bool CanSendEndStatistics(ExportEventArgs e)
 		{
-			return e.EventType == EventType.End;
+			return e.EventType == EventType2.End;
 		}
 
 		private void OnOnBatchCompleteChanged(DateTime startTime, DateTime endTime, int totalRows, int errorRowCount)

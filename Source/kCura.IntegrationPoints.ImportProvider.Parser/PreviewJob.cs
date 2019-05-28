@@ -15,6 +15,7 @@ using kCura.WinEDDS.Api;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using System.Runtime.CompilerServices;
 using kCura.IntegrationPoints.ImportProvider.Parser.Helpers;
+using Relativity.DataExchange.Service;
 using Relativity.Logging;
 
 
@@ -227,13 +228,13 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 			//set as an identifier
 			if (currentField.SourceField.IsIdentifier)
 			{
-				fieldCat = (int)global::Relativity.FieldCategory.Identifier;
+				fieldCat = (int)FieldCategory.Identifier;
 			}
 			else if (currentField.FieldMapType == FieldMapTypeEnum.FolderPathInformation)
 			{
 				if (_foldersAndChoices)
 				{
-					fieldCat = (int)global::Relativity.FieldCategory.ParentArtifact;
+					fieldCat = (int)FieldCategory.ParentArtifact;
 					_loadFile.CreateFolderStructure = true;
 				}
 			}
@@ -243,11 +244,11 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 
 		private int GetFieldTypeId(FieldMap currentField, List<string> choiceFields)
 		{
-			int fieldTypeId = (int)global::Relativity.FieldTypeHelper.FieldType.Text;
+			int fieldTypeId = (int)FieldType.Text;
 
 			if (choiceFields.Contains(currentField.DestinationField.DisplayName))
 			{
-				fieldTypeId = (int)global::Relativity.FieldTypeHelper.FieldType.Code;
+				fieldTypeId = (int)FieldType.Code;
 			}
 
 			return fieldTypeId;
@@ -256,7 +257,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 		private int GetDocFieldId(int fieldCategory, FieldMap currentField)
 		{
 			int docFieldIdentifier;
-			if (fieldCategory == (int)global::Relativity.FieldCategory.ParentArtifact)
+			if (fieldCategory == (int)FieldCategory.ParentArtifact)
 			{
 				//fieldIdentifier needs to be -2 for a folderInformation field
 				docFieldIdentifier = -2;

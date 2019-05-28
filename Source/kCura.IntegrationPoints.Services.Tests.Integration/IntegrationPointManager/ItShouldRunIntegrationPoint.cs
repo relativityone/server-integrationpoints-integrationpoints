@@ -4,6 +4,7 @@ using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using NUnit.Framework;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointManager
 {
@@ -14,7 +15,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 		{
 		}
 
-        [Test]
+		[IdentifiedTest("9368f623-024a-4795-bfb5-49bd7999165e")]
 		[SmokeTest]
 		public void Execute()
 		{

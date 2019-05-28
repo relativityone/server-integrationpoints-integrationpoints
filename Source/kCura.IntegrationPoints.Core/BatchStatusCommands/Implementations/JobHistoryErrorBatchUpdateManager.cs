@@ -151,7 +151,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		{
 			try
 			{
-				int numberOfErrors = scratchTable.Count;
+				int numberOfErrors = scratchTable.GetCount();
 				IArtifactGuidRepository artifactGuidRepository = _repositoryFactory.GetArtifactGuidRepository(_sourceWorkspaceArtifactId);
 				int errorStatusChoiceArtifactId = artifactGuidRepository.GetArtifactIdsForGuids(errorStatus.Guids)[errorStatus.Guids[0]];
 

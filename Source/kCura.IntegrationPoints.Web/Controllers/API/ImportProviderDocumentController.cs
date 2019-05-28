@@ -29,7 +29,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly IImportFileLocationService _importFileLocationService;
 		private readonly IFile _fileIo;
 		private readonly IStreamFactory _streamFactory;
-		private readonly ICPHelper _helper;
 		private readonly IAPILog _logger;
 
 		public ImportProviderDocumentController(IFieldParserFactory fieldParserFactory,
@@ -48,9 +47,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			_importFileLocationService = importFileLocationService;
 			_fileIo = fileIo;
 			_streamFactory = streamFactory;
-			_helper = helper;
 
-			_logger = _helper.GetLoggerFactory().GetLogger();
+			_logger = helper.GetLoggerFactory().GetLogger();
 		}
 
 		[HttpGet]

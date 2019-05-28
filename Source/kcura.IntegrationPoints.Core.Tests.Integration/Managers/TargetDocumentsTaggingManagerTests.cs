@@ -26,6 +26,7 @@ using kCura.ScheduleQueue.Core;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 {
@@ -74,9 +75,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 
 		[Test]
 		[SmokeTest]
-		[TestCase(499, "UnderBatch")]
-		[TestCase(500, "EqualBatch")]
-		[TestCase(502, "OverBatch")]
+		[IdentifiedTestCase("50d501dd-cc30-4882-8149-75bb0e8752f8", 499, "UnderBatch")]
+		[IdentifiedTestCase("360e1c73-0bf2-4066-ba2d-01a9f81f2888", 500, "EqualBatch")]
+		[IdentifiedTestCase("8b2f6597-11e9-4a23-b0a2-a8fea31b3d63", 502, "OverBatch")]
 		public async Task TargetWorkspaceDocumentTagging_GoldFlow(int numberOfDocuments, string documentIdentifier)
 		{
 			//Act
