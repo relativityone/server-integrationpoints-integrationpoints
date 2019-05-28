@@ -143,8 +143,8 @@ namespace Relativity.Sync.Tests.Integration
 				.ReturnsAsync(readResultForBatch)
 				.Verifiable();
 
-			IEnumerable<RelativityObjectSlim> documentsToTag = GetDocumentsToTag(totalItemsCount);
-			_itemStatusMonitor.Setup(x => x.GetSuccessfulItemArtifactIds()).Returns(documentsToTag.Select(x => x.ArtifactID).ToList());
+			IEnumerable<int> documentsToTag = GetDocumentsToTag(totalItemsCount);
+			_itemStatusMonitor.Setup(x => x.GetSuccessfulItemArtifactIds()).Returns(documentsToTag.ToList());
 
 			MassUpdateResult massUpdateResult = new MassUpdateResult()
 			{
@@ -165,16 +165,13 @@ namespace Relativity.Sync.Tests.Integration
 			_importBulkArtifactJob.Verify(x => x.Execute(), Times.Once);
 		}
 
-		private IEnumerable<RelativityObjectSlim> GetDocumentsToTag(int totalItemsCount)
+		private IEnumerable<int> GetDocumentsToTag(int totalItemsCount)
 		{
-			RelativityObjectSlim[] documentsToTag = new RelativityObjectSlim[totalItemsCount];
+			int[] documentsToTag = new int[totalItemsCount];
 			for (int i = 0; i < documentsToTag.Length; i++)
 			{
 				const int someNumber = 100;
-				documentsToTag[i] = new RelativityObjectSlim()
-				{
-					ArtifactID = someNumber + i
-				};
+				documentsToTag[i] = someNumber + i;
 			}
 
 			return documentsToTag;
