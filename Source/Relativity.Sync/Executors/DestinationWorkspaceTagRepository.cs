@@ -241,7 +241,7 @@ namespace Relativity.Sync.Executors
 					"Mass tagging documents in source workspace {SourceWorkspace} with destination workspace field {DestinationWorkspaceField} and job history field {JobHistoryField} failed.";
 
 				_logger.LogError(updateException, exceptionTemplate,
-					synchronizationConfiguration.SourceWorkspaceArtifactId, synchronizationConfiguration.DestinationWorkspaceTagArtifactId, synchronizationConfiguration.JobHistoryTagArtifactId);
+					synchronizationConfiguration.SourceWorkspaceArtifactId, synchronizationConfiguration.DestinationWorkspaceTagArtifactId, synchronizationConfiguration.JobHistoryArtifactId);
 				result = new TagDocumentsResult(batch, exceptionMessage, false, 0);
 			}
 
@@ -277,7 +277,7 @@ namespace Relativity.Sync.Executors
 				new FieldRefValuePair
 				{
 					Field = new FieldRef { Guid = _jobHistoryFieldMultiObject },
-					Value = ToMultiObjectValue(synchronizationConfiguration.JobHistoryTagArtifactId)
+					Value = ToMultiObjectValue(synchronizationConfiguration.JobHistoryArtifactId)
 				}
 			};
 			return fieldRefValuePairs;

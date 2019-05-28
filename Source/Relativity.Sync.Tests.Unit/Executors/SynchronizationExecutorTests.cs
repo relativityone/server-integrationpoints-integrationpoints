@@ -84,6 +84,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		public async Task ItShouldSetImportApiSettings()
 		{
 			SetupBatchRepository(1);
+			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(ExecutionResult.Success);
 
 			// act
 			await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
@@ -133,6 +134,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		public async Task ItShouldRunImportApiJobForEachBatch(int numberOfBatches)
 		{
 			SetupBatchRepository(numberOfBatches);
+			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(ExecutionResult.Success);
 
 			// act
 			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
@@ -164,6 +166,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		{
 			const int numberOfBatches = 1;
 			SetupBatchRepository(numberOfBatches);
+			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(ExecutionResult.Success);
 
 			// act
 			await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
@@ -209,6 +212,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		{
 			const int numberOfBatches = 1;
 			SetupBatchRepository(numberOfBatches);
+			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(ExecutionResult.Success);
 
 			_importJob.Setup(x => x.GetPushedDocumentArtifactIds()).ReturnsAsync(new[] { 1 });
 			_destinationWorkspaceTagRepository.Setup(x => x.TagDocumentsAsync(

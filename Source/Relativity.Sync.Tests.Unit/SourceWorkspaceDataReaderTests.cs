@@ -44,7 +44,7 @@ namespace Relativity.Sync.Tests.Unit
 			_configuration.SetupGet(x => x.DestinationWorkspaceTagArtifactId).Returns(0);
 			_configuration.SetupGet(x => x.ExportRunId).Returns(Guid.Empty);
 			_configuration.SetupGet(x => x.FieldMappings).Returns(new List<FieldMap>());
-			_configuration.SetupGet(x => x.JobHistoryTagArtifactId).Returns(0);
+			_configuration.SetupGet(x => x.JobHistoryArtifactId).Returns(0);
 			_configuration.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(0);
 		}
 

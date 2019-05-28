@@ -16,8 +16,6 @@ namespace Relativity.Sync.Configuration
 
 		int JobHistoryArtifactId { get; }
 
-		int JobHistoryTagArtifactId { get; }
-
 		string SourceJobTagName { get; }
 
 		int SourceWorkspaceArtifactId { get; }

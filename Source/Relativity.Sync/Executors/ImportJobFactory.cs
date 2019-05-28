@@ -39,7 +39,7 @@ namespace Relativity.Sync.Executors
 			_batchProgressHandlerFactory.CreateBatchProgressHandler(batch, importBulkArtifactJob);
 
 			return new ImportJob(syncImportBulkArtifactJob, new SemaphoreSlimWrapper(new SemaphoreSlim(0, 1)), _jobHistoryErrorRepository,
-				configuration.SourceWorkspaceArtifactId, configuration.JobHistoryTagArtifactId, _logger);
+				configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, _logger);
 		}
 
 		private async Task<ImportBulkArtifactJob> CreateImportBulkArtifactJobAsync(ISynchronizationConfiguration configuration, int startingIndex)
