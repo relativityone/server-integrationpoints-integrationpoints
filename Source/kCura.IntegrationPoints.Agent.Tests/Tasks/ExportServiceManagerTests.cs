@@ -146,7 +146,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				Arg.Any<Data.IntegrationPoint>(), Arg.Any<JobHistory>(), Arg.Any<string>(), Arg.Any<string>())
 				.Returns(new List<IBatchStatus>() { _exportServiceObserver });
 
-			object _lock = new object();
+			object syncRootLock = new object();
 			_integrationPoint = new Data.IntegrationPoint()
 			{
 				SourceConfiguration = "source config",
@@ -165,7 +165,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_taskParameters = new TaskParameters() { BatchInstance = Guid.NewGuid() };
 			_jobHistory = new JobHistory() { JobType = JobTypeChoices.JobHistoryRun, TotalItems = 0 };
 			_sourceProvider = new SourceProvider();
-			List<FieldMap>  mappings = new List<FieldMap>();
+			List<FieldMap> mappings = new List<FieldMap>();
 			_updateStatusType = new JobHistoryErrorDTO.UpdateStatusType();
 
 			_integrationPointRepository.ReadAsync(job.RelatedObjectArtifactID).Returns(_integrationPoint);
@@ -193,7 +193,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				_configuration.SavedSearchArtifactId, job.SubmittedBy, _IMPORTSETTINGS_WITH_USERID).Returns(_exporterService);
 
 			_exporterService.TotalRecordsFound.Returns(_EXPORT_DOC_COUNT);
-			_jobStopManager.SyncRoot.Returns(_lock);
+			_jobStopManager.SyncRoot.Returns(syncRootLock);
 			_serializer.Deserialize<TaskParameters>(job.JobDetails)
 				.Returns(_taskParameters);
 			_jobHistoryService.GetRdo(Arg.Is<Guid>(guid => guid == _taskParameters.BatchInstance)).Returns(_jobHistory);

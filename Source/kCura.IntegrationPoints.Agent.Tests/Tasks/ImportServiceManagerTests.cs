@@ -101,7 +101,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			importFileLocationService.LoadFileFullPath(Arg.Any<int>()).Returns(_LOAD_FILE_PATH);
 			importFileLocationService.ErrorFilePath(Arg.Any<int>()).Returns(_ERROR_FILE_PATH);
 
-			object _lock = new object();
+			object syncRootLock = new object();
 			_integrationPoint = new Data.IntegrationPoint()
 			{
 				SourceConfiguration = "source config",
@@ -147,7 +147,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			serializer.Deserialize<ImportProviderSettings>(_IMPORT_PROVIDER_SETTINGS_FOR_IMAGE).Returns(providerSettingsForImage);
 			serializer.Serialize(providerSettingsForImage).Returns(_IMPORT_PROVIDER_SETTINGS_FOR_IMAGE);
 
-			jobStopManager.SyncRoot.Returns(_lock);
+			jobStopManager.SyncRoot.Returns(syncRootLock);
 			serializer.Deserialize<TaskParameters>(job.JobDetails)
 				.Returns(_taskParameters);
 			jobHistoryService.GetRdo(Arg.Is<Guid>( guid => guid == _taskParameters.BatchInstance)).Returns(jobHistory);
