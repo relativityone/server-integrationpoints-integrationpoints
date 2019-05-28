@@ -46,7 +46,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				.ReturnsAsync(_folderManager.Object);
 
 			_logger = new Mock<ISyncLog>();
-			_logger.Setup(x => x.LogError(It.IsAny<Exception>(), It.IsAny<string>(), It.IsAny<object[]>()));
 
 			_instance = new FolderPathRetriever(_serviceFactory.Object, _logger.Object);
 		}
