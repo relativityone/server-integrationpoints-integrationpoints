@@ -5,7 +5,7 @@ using kCura.IntegrationPoint.Tests.Core.Models;
 using Relativity.Services;
 using Relativity.Services.Folder;
 
-namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers
+namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 {
 	public class FolderWithDocumentsIdRetriever
 	{

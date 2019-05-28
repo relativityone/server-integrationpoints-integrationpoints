@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers;
 using kCura.Utility;
 using Relativity.DataExchange.Service;
 
