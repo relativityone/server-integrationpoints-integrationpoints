@@ -10,6 +10,7 @@ using Relativity.Sync.Transfer;
 namespace Relativity.Sync.Tests.Unit.Transfer
 {
 	[TestFixture]
+	[Parallelizable(ParallelScope.All)]
 	internal sealed class SourceTagsFieldRowValueBuilderTests
 	{
 		[TestCase(SpecialFieldType.SourceJob)]
