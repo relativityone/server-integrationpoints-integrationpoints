@@ -31,11 +31,46 @@ namespace Relativity.Sync.Transfer
 
 		public bool IsDocumentField { get; }
 
+		public bool IsIdentifier { get; }
+
 		public RelativityDataType RelativityDataType { get; set; }
 
-		public bool IsIdentifier { get; set; }
-
 		public int DocumentFieldIndex { get; set; } = -1;
+
+		public bool Equals(FieldInfoDto other)
+		{
+			return
+				ReferenceEquals(this, other) ||
+					SpecialFieldType == other.SpecialFieldType &&
+					DisplayName.Equals(other.DisplayName, StringComparison.InvariantCulture) &&
+					IsDocumentField == other.IsDocumentField &&
+					RelativityDataType == other.RelativityDataType &&
+					IsIdentifier == other.IsIdentifier &&
+					DocumentFieldIndex == other.DocumentFieldIndex;
+		}
+
+		public override bool Equals(object obj)
+		{
+			if (obj is FieldInfoDto other)
+			{
+				return Equals(other);
+			}
+
+			return false;
+		}
+
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				const int hashFactor = 397;
+				var hashCode = (int) SpecialFieldType;
+				hashCode = (hashCode * hashFactor) ^ (DisplayName != null ? DisplayName.GetHashCode() : 0);
+				hashCode = (hashCode * hashFactor) ^ IsDocumentField.GetHashCode();
+				hashCode = (hashCode * hashFactor) ^ IsIdentifier.GetHashCode();
+				return hashCode;
+			}
+		}
 
 		#region Factory methods
 
