@@ -1,17 +1,10 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Relativity.Services.Interfaces.File.Models;
-using Relativity.Services.Objects.DataContracts;
 
-namespace Relativity.Sync.Tests.Integration
+namespace Relativity.Sync.Tests.Integration.Helpers
 {
-	internal static class Extensions
+	internal static class ConversionExtensions
 	{
 		public static object ConvertTo<T>(this object value)
 		{

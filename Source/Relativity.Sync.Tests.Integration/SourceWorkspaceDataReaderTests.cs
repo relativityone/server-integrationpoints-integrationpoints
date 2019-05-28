@@ -6,6 +6,7 @@ using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Tests.Common;
+using Relativity.Sync.Tests.Integration.Helpers;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.Integration
