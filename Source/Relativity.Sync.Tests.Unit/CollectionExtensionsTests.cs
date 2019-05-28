@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace Relativity.Sync.Tests.Unit
@@ -63,6 +65,21 @@ namespace Relativity.Sync.Tests.Unit
 			Assert.AreEqual(expectedNumberOfBatches, actualResult.Count);
 			CollectionAssert.AreEqual(expectedFirstBatch, actualResult[0]);
 			CollectionAssert.AreEqual(expectedSecondBatch, actualResult[1]);
+		}
+
+		[Test]
+		[TestCase(new[] { 0, 1, 2, 3, 4, 5, 6 })]
+		[TestCase(new[] { 0, 1, 2, 3 })]
+		[TestCase(new[] { 0, 1, 3 })]
+		public async Task SelectAsyncTest(int[] input)
+		{
+			IEnumerable<int> selected = await input
+				.SelectAsync(async x => await Task.FromResult(x + 1).ConfigureAwait(false))
+				.ConfigureAwait(false);
+
+			IEnumerable<int> expected = input.Select(x => x + 1);
+
+			selected.Should().BeEquivalentTo(expected);
 		}
 	}
 }
