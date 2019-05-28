@@ -143,8 +143,9 @@ namespace Relativity.Sync.Tests.Integration
 				.ReturnsAsync(readResultForBatch)
 				.Verifiable();
 
-			IEnumerable<int> documentsToTag = GetDocumentsToTag(totalItemsCount);
-			_itemStatusMonitor.Setup(x => x.GetSuccessfulItemArtifactIds()).Returns(documentsToTag.ToList());
+			const int startIndex = 100;
+			IEnumerable<int> documentIdsToTag = Enumerable.Range(startIndex, totalItemsCount);
+			_itemStatusMonitor.Setup(x => x.GetSuccessfulItemArtifactIds()).Returns(documentIdsToTag);
 
 			MassUpdateResult massUpdateResult = new MassUpdateResult()
 			{
@@ -163,18 +164,6 @@ namespace Relativity.Sync.Tests.Integration
 			result.Status.Should().Be(ExecutionStatus.Completed);
 			_objectManagerMock.Verify();
 			_importBulkArtifactJob.Verify(x => x.Execute(), Times.Once);
-		}
-
-		private IEnumerable<int> GetDocumentsToTag(int totalItemsCount)
-		{
-			int[] documentsToTag = new int[totalItemsCount];
-			for (int i = 0; i < documentsToTag.Length; i++)
-			{
-				const int someNumber = 100;
-				documentsToTag[i] = someNumber + i;
-			}
-
-			return documentsToTag;
 		}
 
 		private FieldValuePair CreateFieldValuePair(Guid guid, object value)
