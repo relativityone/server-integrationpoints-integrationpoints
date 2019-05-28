@@ -83,7 +83,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		}
 
 		[Test]
-		public async Task ItShouldGetDocumentIdToFolderIdMapInBatches([Random(1, 1_000_000, 5, Distinct = true)] int documentCount)
+		public async Task ItShouldGetDocumentIdToFolderIdMapInBatches([Random(50_000, 300_000, 3, Distinct = true)] int documentCount)
 		{
 			// ARRANGE
 			int batchCount = GetBatchCount(documentCount);
