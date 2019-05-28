@@ -70,7 +70,6 @@ namespace Relativity.Sync
 			return await Task.WhenAll(results).ConfigureAwait(false);
 		}
 
-
 		/// <summary>
 		/// Yields an infinite sequence composed of the given value.
 		/// </summary>
