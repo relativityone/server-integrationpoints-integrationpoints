@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using NUnit.Framework;
 using Enumerable = System.Linq.Enumerable;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 {
@@ -65,9 +66,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 				SourceWorkspaceArtifactId);
 		}
 
-		[TestCase(2001)]
-		[TestCase(999)]
-		[TestCase(1000)]
+		[IdentifiedTestCase("ba093aef-6cbb-4211-a1fb-5407a31126e6", 2001)]
+		[IdentifiedTestCase("604a3327-f219-4cfe-8d7e-86cb84140d22", 999)]
+		[IdentifiedTestCase("49110dcb-d94c-4453-ab90-118354531903", 1000)]
+		[IdentifiedTestCase("b8409631-850b-4f14-96b8-91b793536e65", 0)]
 		public void CreateScratchTableAndVerifyEntries(int numberOfDocuments)
 		{
 			//ARRANGE
@@ -91,9 +93,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			action.ShouldThrow<Exception>().Which.Message.Should().Be(expectedErrorMessage);
 		}
 
-		[TestCase(5, 1)]
-		[TestCase(10, 4)]
-		[TestCase(3, 3)]
+		[IdentifiedTestCase("fb180ba6-65ef-4d9f-b8aa-f5e11812a2e3", 5, 1)]
+		[IdentifiedTestCase("9C725CBD-4E5C-45E2-97FF-85C12EAC8CD0", 10, 4)]
+		[IdentifiedTestCase("54bb84de-fe82-4ea6-b432-c48d38431f23", 3, 3)]
 		public void CreateScratchTableAndDeleteErroredDocuments(int numDocs, int numDocsWithErrors)
 		{
 			//ARRANGE

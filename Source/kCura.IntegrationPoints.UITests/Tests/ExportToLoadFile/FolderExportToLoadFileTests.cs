@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.UITests.Validation;
 using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
+using Relativity.Testing.Identification;
 using Constants = kCura.IntegrationPoint.Tests.Core.Constants;
 using IntegrationPointType = kCura.IntegrationPoint.Tests.Core.Models.IntegrationPointType;
 
@@ -37,7 +38,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			_integrationPointsAction = new IntegrationPointsAction(Driver, Context);
 		}
 
-		[Test]
+		[IdentifiedTest("9968a2a9-148f-48b9-b5c0-71b6269c8d8b")]
 		[RetryOnError]
 		[Order(1)]
 		public void FolderExportToLoadFile_TC_ELF_DIR_1()
@@ -104,7 +105,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
 		}
 
-		[Test]
+		[IdentifiedTest("235a4648-4a32-4acb-afaa-6208b7514601")]
 		[RetryOnError]
 		[Order(2)]
 		public void FolderExportToLoadFile_TC_ELF_DIR_2()

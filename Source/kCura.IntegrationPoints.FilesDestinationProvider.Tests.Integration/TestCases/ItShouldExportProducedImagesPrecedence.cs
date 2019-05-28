@@ -1,8 +1,8 @@
-﻿using System.Data;
+﻿using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core.Models;
-using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases.Base;
@@ -12,8 +12,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 {
 	public class ItShouldExportProducedImagesPrecedence : ExportTestCaseBase
 	{
-		private readonly string _defaultPlaceholderPath = Path.Combine(TestContext.CurrentContext.TestDirectory,
-			@"TestData\DefaultPlaceholder.tif");
+		private const string _PRODUCTION_BATES_PREFIX = "PRE";
+		private const string _PRODUCTION_BATES_SUFFIX = "SUF";
 
 		public override ExportSettings Prepare(ExportSettings settings)
 		{
@@ -27,51 +27,54 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 
 		public override void Verify(DirectoryInfo directory, DocumentsTestData documentsTestData)
 		{
-			var defaultPlaceholderFile = new FileInfo(_defaultPlaceholderPath);
+			DirectoryInfo imagesDirectory = directory.GetDirectories("IMAGES", SearchOption.AllDirectories).First();
+			FileInfo[] allExportedImages = imagesDirectory.GetFiles("*.*", SearchOption.AllDirectories);
+			int totalExportedImagesCount = allExportedImages.Length;
 
-			var imagesDirectory = directory.GetDirectories("IMAGES", SearchOption.AllDirectories).First();
-			var allExportedImages = imagesDirectory.GetFiles("*.*", SearchOption.AllDirectories);
-			var totalExportedImagesCount = allExportedImages.Length;
+			int expectedFilesWithImagesCount = documentsTestData.Images.Rows.Count;
 
-			var expectedFilesWithImagesCount = documentsTestData.Images.Rows.Count;
-
-			var documentsWithImages = documentsTestData.AllDocumentsDataTable.Select($"[Has Images] = '{true}'");
-			var documentsWithoutImages = documentsTestData.AllDocumentsDataTable.Select($"[Has Images] = '{false}'");
-			var numberofDocumentsWithoutImages = documentsWithoutImages.Length;
+			DataRow[] documentsWithImages = documentsTestData.AllDocumentsDataTable.Select($"[Has Images] = '{true}'");
+			DataRow[] documentsWithoutImages = documentsTestData.AllDocumentsDataTable.Select($"[Has Images] = '{false}'");
+			int numberofDocumentsWithoutImages = documentsWithoutImages.Length;
 
 			Assert.AreEqual(totalExportedImagesCount, numberofDocumentsWithoutImages + expectedFilesWithImagesCount);
 
 			AssertExportedImagesAreSameAsInputImages(documentsWithImages, documentsTestData.Images.Select(), allExportedImages);
-			AssertExportedFilesWithoutImagesAreSameAsPlaceholder(documentsWithoutImages, allExportedImages,
-				defaultPlaceholderFile);
+			AssertExportedFilesWithoutImagesAreSameAsPlaceholder(documentsWithoutImages, allExportedImages);
 		}
 
 		private void AssertExportedFilesWithoutImagesAreSameAsPlaceholder(DataRow[] documentsWithoutImages,
-			FileInfo[] exportedImages, FileInfo defaultPlaceholderFile)
-		{
-			foreach (var document in documentsWithoutImages)
-			{
-				var file =
-					exportedImages.SingleOrDefault(f => Path.GetFileNameWithoutExtension(f.Name) == document.ItemArray[0].ToString());
-
-				Assert.IsTrue(File.Exists(file.FullName));
-			}
-		}
-
-		private void AssertExportedImagesAreSameAsInputImages(DataRow[] documentsWithoutImages, DataRow[] inputImages,
 			FileInfo[] exportedImages)
 		{
 			foreach (var document in documentsWithoutImages)
 			{
-				var imagesWithSameControlNumber =
+				FileInfo file =
+					exportedImages.SingleOrDefault(f => Path.GetFileNameWithoutExtension(f.Name) == GetProducedImageName(document.ItemArray[0].ToString()));
+
+				Assert.IsNotNull(file);
+				Assert.IsTrue(File.Exists(file.FullName));
+			}
+		}
+
+		private static string GetProducedImageName(string controlNumber)
+		{
+			return $"{_PRODUCTION_BATES_PREFIX}{controlNumber}{_PRODUCTION_BATES_SUFFIX}";
+		}
+
+		private static void AssertExportedImagesAreSameAsInputImages(DataRow[] documentsWithoutImages, DataRow[] inputImages,
+			FileInfo[] exportedImages)
+		{
+			foreach (var document in documentsWithoutImages)
+			{
+				IList<DataRow> imagesWithSameControlNumber =
 					inputImages.Where(x => x.ItemArray[0].ToString() == document.ItemArray[0].ToString()).ToList();
 
-				var exportedImagesWithSameControlNumber =
+				IList<FileInfo> exportedImagesWithSameControlNumber =
 					exportedImages.Where(f => f.Name.Contains(document.ItemArray[0].ToString())).ToList();
 				
-				for (var i = 0; i < imagesWithSameControlNumber.Count(); i++)
+				for (var i = 0; i < imagesWithSameControlNumber.Count; i++)
 				{
-					var file1 = exportedImagesWithSameControlNumber[i];
+					FileInfo file1 = exportedImagesWithSameControlNumber[i];
 					var file2 = new FileInfo((string) imagesWithSameControlNumber[i].ItemArray[2]);
 
 					Assert.IsTrue(FileComparer.Compare(file1, file2));

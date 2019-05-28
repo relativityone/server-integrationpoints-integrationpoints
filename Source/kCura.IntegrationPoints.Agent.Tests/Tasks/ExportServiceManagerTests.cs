@@ -57,11 +57,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private IHelperFactory _helperFactory;
 		private ICaseServiceContext _caseContext;
 		private IContextContainerFactory _contextContainerFactory;
-		private ISynchronizerFactory _synchronizerFactory;
+
 		private IExporterFactory _exporterFactory;
 		private IOnBehalfOfUserClaimsPrincipalFactory _claimPrincipleFactory;
-		private ITagsCreator _tagsCreator;
-		private ITagSavedSearchManager _tagSavedSearchManager;
 		private IRepositoryFactory _repositoryFactory;
 		private IManagerFactory _managerFactory;
 		private IEnumerable<IBatchStatus> _batchStatuses;
@@ -70,13 +68,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private IScheduleRuleFactory _scheduleRuleFactory;
 		private IJobHistoryService _jobHistoryService;
 		private IJobHistoryErrorService _jobHistoryErrorService;
-		private IJobHistoryManager _jobHistoryManager;
-		private IContextContainer _contextContainer;
 		private IJobHistoryErrorManager _jobHistoryErrorManager;
 		private ISavedSearchQueryRepository _savedSearchQueryRepository;
 		private IJobStopManager _jobStopManager;
-		private IDocumentRepository _documentRepository;
-		private IWorkspaceRepository _workspaceRepository;
 		private IExporterService _exporterService;
 		private IIntegrationPointRepository _integrationPointRepository;
 
@@ -86,10 +80,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private TaskParameters _taskParameters;
 		private JobHistory _jobHistory;
 		private SourceProvider _sourceProvider;
-		private List<FieldMap> _mappings;
 		private JobHistoryErrorDTO.UpdateStatusType _updateStatusType;
 		private JobStatisticsService _jobStatisticsService;
-		private object _lock;
 		private IBatchStatus _exportServiceObserver;
 		private IJobHistoryErrorRepository _jobHistoryErrorRepository;
 		private IBatchStatus _updateJobHistoryStatus;
@@ -113,11 +105,11 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_helperFactory = Substitute.For<IHelperFactory>();
 			_caseContext = Substitute.For<ICaseServiceContext>();
 			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
-			_synchronizerFactory = Substitute.For<ISynchronizerFactory>();
+			ISynchronizerFactory synchronizerFactory = Substitute.For<ISynchronizerFactory>();
 			_exporterFactory = Substitute.For<IExporterFactory>();
 			_claimPrincipleFactory = Substitute.For<IOnBehalfOfUserClaimsPrincipalFactory>();
-			_tagsCreator = Substitute.For<ITagsCreator>();
-			_tagSavedSearchManager = Substitute.For<ITagSavedSearchManager>();
+			ITagsCreator tagsCreator = Substitute.For<ITagsCreator>();
+			ITagSavedSearchManager tagSavedSearchManager = Substitute.For<ITagSavedSearchManager>();
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
 			_managerFactory = Substitute.For<IManagerFactory>();
 			_integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
@@ -131,16 +123,15 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_jobHistoryService = Substitute.For<IJobHistoryService>();
 			_jobHistoryErrorService = Substitute.For<IJobHistoryErrorService>();
 
-			_jobHistoryManager = Substitute.For<IJobHistoryManager>();
 			_jobHistoryErrorManager = Substitute.For<IJobHistoryErrorManager>();
-			_contextContainer = Substitute.For<IContextContainer>();
+			IContextContainer contextContainer = Substitute.For<IContextContainer>();
 			_savedSearchQueryRepository = Substitute.For<ISavedSearchQueryRepository>();
 			_jobStopManager = Substitute.For<IJobStopManager>();
-			_documentRepository = Substitute.For<IDocumentRepository>();
-			_workspaceRepository = Substitute.For<IWorkspaceRepository>();
-			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
+			IDocumentRepository documentRepository = Substitute.For<IDocumentRepository>();
+			IWorkspaceRepository workspaceRepository = Substitute.For<IWorkspaceRepository>();
+			_contextContainerFactory.CreateContextContainer(_helper).Returns(contextContainer);
 			_exporterService = Substitute.For<IExporterService>();
-			_repositoryFactory.GetWorkspaceRepository().Returns(_workspaceRepository);
+			_repositoryFactory.GetWorkspaceRepository().Returns(workspaceRepository);
 			_jobHistoryErrorRepository = Substitute.For<IJobHistoryErrorRepository>();
 			_exportServiceObserver = Substitute.For<IBatchStatus>();
 			_synchornizer = Substitute.For<IDataSynchronizer>();
@@ -149,13 +140,13 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_jobStatisticsService = Substitute.For<JobStatisticsService>();
 			var sourceWorkspaceTagsCreator = Substitute.For<ISourceWorkspaceTagCreator>();
 
-			_exporterFactory.InitializeExportServiceJobObservers(Arg.Any<Job>(), _tagsCreator, _tagSavedSearchManager,
-				_synchronizerFactory, _serializer, _jobHistoryErrorManager, _jobStopManager, sourceWorkspaceTagsCreator,
+			_exporterFactory.InitializeExportServiceJobObservers(Arg.Any<Job>(), tagsCreator, tagSavedSearchManager,
+				synchronizerFactory, _serializer, _jobHistoryErrorManager, _jobStopManager, sourceWorkspaceTagsCreator,
 				Arg.Any<FieldMap[]>(), Arg.Any<SourceConfiguration>(), Arg.Any<JobHistoryErrorDTO.UpdateStatusType>(),
 				Arg.Any<Data.IntegrationPoint>(), Arg.Any<JobHistory>(), Arg.Any<string>(), Arg.Any<string>())
 				.Returns(new List<IBatchStatus>() { _exportServiceObserver });
 
-			_lock = new object();
+			object syncRootLock = new object();
 			_integrationPoint = new Data.IntegrationPoint()
 			{
 				SourceConfiguration = "source config",
@@ -174,7 +165,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_taskParameters = new TaskParameters() { BatchInstance = Guid.NewGuid() };
 			_jobHistory = new JobHistory() { JobType = JobTypeChoices.JobHistoryRun, TotalItems = 0 };
 			_sourceProvider = new SourceProvider();
-			_mappings = new List<FieldMap>();
+			List<FieldMap> mappings = new List<FieldMap>();
 			_updateStatusType = new JobHistoryErrorDTO.UpdateStatusType();
 
 			_integrationPointRepository.ReadAsync(job.RelatedObjectArtifactID).Returns(_integrationPoint);
@@ -182,38 +173,38 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_serializer.Deserialize<TaskParameters>(job.JobDetails).Returns(_taskParameters);
 			_jobHistoryService.GetOrCreateScheduledRunHistoryRdo(_integrationPoint, _taskParameters.BatchInstance, Arg.Any<DateTime>()).Returns(_jobHistory);
 			_caseContext.RsapiService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider.Value).Returns(_sourceProvider);
-			_serializer.Deserialize<List<FieldMap>>(_integrationPoint.FieldMappings).Returns(_mappings);
-			_managerFactory.CreateJobHistoryErrorManager(_contextContainer, _configuration.SourceWorkspaceArtifactId, GetUniqueJobId(job, _taskParameters.BatchInstance)).Returns(_jobHistoryErrorManager);
+			_serializer.Deserialize<List<FieldMap>>(_integrationPoint.FieldMappings).Returns(mappings);
+			_managerFactory.CreateJobHistoryErrorManager(contextContainer, _configuration.SourceWorkspaceArtifactId, GetUniqueJobId(job, _taskParameters.BatchInstance)).Returns(_jobHistoryErrorManager);
 			_jobHistoryErrorManager.StageForUpdatingErrors(job, Arg.Is<Choice>(obj => obj.EqualsToChoice(JobTypeChoices.JobHistoryRun))).Returns(_updateStatusType);
 			_repositoryFactory.GetSavedSearchQueryRepository(_configuration.SourceWorkspaceArtifactId).Returns(_savedSearchQueryRepository);
 			_savedSearchQueryRepository.RetrieveSavedSearch(_configuration.SavedSearchArtifactId).Returns(new SavedSearchDTO());
 			_repositoryFactory.GetJobHistoryErrorRepository(_configuration.SourceWorkspaceArtifactId).Returns(_jobHistoryErrorRepository);
 			_jobHistoryErrorManager.CreateItemLevelErrorsSavedSearch(job, _configuration.SavedSearchArtifactId).Returns(_RETRY_SAVEDSEARCHID);
-			_synchronizerFactory.CreateSynchronizer(Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID, _integrationPoint.DestinationConfiguration, _integrationPoint.SecuredConfiguration).Returns(_synchornizer);
+			synchronizerFactory.CreateSynchronizer(Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID, _integrationPoint.DestinationConfiguration, _integrationPoint.SecuredConfiguration).Returns(_synchornizer);
 			_managerFactory.CreateJobStopManager(_jobService, _jobHistoryService, _taskParameters.BatchInstance, job.JobId, true).Returns(_jobStopManager);
 
 			ImportSettings settings = new ImportSettings();
 			_serializer.Deserialize<ImportSettings>(_integrationPoint.DestinationConfiguration).Returns(settings);
 			_serializer.Serialize(settings).Returns(_IMPORTSETTINGS_WITH_USERID);
 
-			_repositoryFactory.GetDocumentRepository(_configuration.SourceWorkspaceArtifactId).Returns(_documentRepository);
+			_repositoryFactory.GetDocumentRepository(_configuration.SourceWorkspaceArtifactId).Returns(documentRepository);
 
 			_exporterFactory.BuildExporter(_jobStopManager, Arg.Any<FieldMap[]>(), _integrationPoint.SourceConfiguration,
 				_configuration.SavedSearchArtifactId, job.SubmittedBy, _IMPORTSETTINGS_WITH_USERID).Returns(_exporterService);
 
 			_exporterService.TotalRecordsFound.Returns(_EXPORT_DOC_COUNT);
-			_jobStopManager.SyncRoot.Returns(_lock);
+			_jobStopManager.SyncRoot.Returns(syncRootLock);
 			_serializer.Deserialize<TaskParameters>(job.JobDetails)
 				.Returns(_taskParameters);
 			_jobHistoryService.GetRdo(Arg.Is<Guid>(guid => guid == _taskParameters.BatchInstance)).Returns(_jobHistory);
 
-			_managerFactory.CreateTagsCreator(Arg.Any<IContextContainer>()).Returns(_tagsCreator);
-			_managerFactory.CreateTaggingSavedSearchManager(Arg.Any<IContextContainer>()).Returns(_tagSavedSearchManager);
+			_managerFactory.CreateTagsCreator(Arg.Any<IContextContainer>()).Returns(tagsCreator);
+			_managerFactory.CreateTaggingSavedSearchManager(Arg.Any<IContextContainer>()).Returns(tagSavedSearchManager);
 			_managerFactory.CreateSourceWorkspaceTagsCreator(Arg.Any<IContextContainer>(), Arg.Any<IHelper>(), Arg.Any<SourceConfiguration>()).Returns(sourceWorkspaceTagsCreator);
 
 			_instance = new ExportServiceManager(_helper, _helperFactory,
 				_caseContext, _contextContainerFactory,
-				_synchronizerFactory, _exporterFactory,
+				synchronizerFactory, _exporterFactory,
 				_claimPrincipleFactory, _repositoryFactory,
 				_managerFactory, _batchStatuses, _serializer, _jobService, _scheduleRuleFactory, _jobHistoryService,
 				_jobHistoryErrorService,
@@ -221,7 +212,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				null,
 				_agentValidator,
 				_integrationPointRepository);
-			_managerFactory.CreateJobHistoryManager(_contextContainer).Returns(_historyManager);
+			_managerFactory.CreateJobHistoryManager(contextContainer).Returns(_historyManager);
 		}
 
 		[Test]
@@ -423,12 +414,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			IWindsorContainer windsorContainer = Substitute.For<IWindsorContainer>();
 			IObjectTypeRepository objectTypeRepository = Substitute.For<IObjectTypeRepository>();
 			IRsapiClientFactory rsapiClientFactory = Substitute.For<IRsapiClientFactory>();
-			_synchronizerFactory = Substitute.For<GeneralWithEntityRdoSynchronizerFactory>(windsorContainer, objectTypeRepository, rsapiClientFactory);
+			ISynchronizerFactory synchronizerFactory = Substitute.For<GeneralWithEntityRdoSynchronizerFactory>(windsorContainer, objectTypeRepository, rsapiClientFactory);
 
 			// ACT
 			ExportServiceManager instance = new ExportServiceManager(_helper, _helperFactory,
 				_caseContext, _contextContainerFactory,
-				_synchronizerFactory, _exporterFactory,
+				synchronizerFactory, _exporterFactory,
 				_claimPrincipleFactory, _repositoryFactory,
 				_managerFactory, _batchStatuses, _serializer, _jobService, _scheduleRuleFactory, _jobHistoryService,
 				_jobHistoryErrorService,
@@ -446,7 +437,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			}
 
 			// ASSERT
-			var factory = _synchronizerFactory as GeneralWithEntityRdoSynchronizerFactory;
+			var factory = synchronizerFactory as GeneralWithEntityRdoSynchronizerFactory;
 			Assert.IsNotNull(factory);
 			Assert.AreSame(factory.SourceProvider, _sourceProvider);
 		}

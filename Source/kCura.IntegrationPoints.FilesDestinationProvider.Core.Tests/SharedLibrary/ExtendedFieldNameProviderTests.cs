@@ -5,7 +5,8 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.WinEDDS;
 using NUnit.Framework;
-using Relativity;
+using Relativity.DataExchange.Service;
+using FieldType = kCura.IntegrationPoints.Contracts.Models.FieldType;
 using ViewFieldInfo = kCura.WinEDDS.ViewFieldInfo;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibrary
@@ -31,7 +32,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 			InsertColumnWithValue(dt, _dr, "AvfColumnName", "AvfTestColumnName");
 			InsertColumnWithValue(dt, _dr, "AvfHeaderName", "AvfTestHeaderName");
 			InsertColumnWithValue(dt, _dr, "AllowFieldName", "TestAllowFieldName");
-			InsertColumnWithValue(dt, _dr, "ColumnSource", global::Relativity.ViewFieldInfo.ColumnSourceType.Artifact);
+			InsertColumnWithValue(dt, _dr, "ColumnSource", ColumnSourceType.Artifact);
 			InsertColumnWithValue(dt, _dr, "DataSource", "TestDataSource");
 			InsertColumnWithValue(dt, _dr, "SourceFieldDisplayName", "TestSourceFieldDisplayName");
 			InsertColumnWithValue(dt, _dr, "SourceFieldArtifactTypeID", 666);

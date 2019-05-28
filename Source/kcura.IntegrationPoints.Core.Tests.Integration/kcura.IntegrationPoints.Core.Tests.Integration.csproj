@@ -272,6 +272,17 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="oi">
+          <HintPath>..\..\packages\kCura.OutsideIn.FI.Win32\lib\net40\oi.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="Sodium">
           <HintPath>..\..\packages\libsodium-net\lib\Net40\Sodium.dll</HintPath>
           <Private>True</Private>
@@ -450,6 +461,17 @@
       <ItemGroup>
         <Reference Include="nunit.framework">
           <HintPath>..\..\packages\NUnit\lib\net45\nunit.framework.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="NUnitExtras.HierarchicalCategories">
+          <HintPath>..\..\packages\NUnitExtras.HierarchicalCategories\lib\net45\NUnitExtras.HierarchicalCategories.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -673,6 +695,17 @@
       <ItemGroup>
         <Reference Include="Relativity.Telemetry.MetricsCollection">
           <HintPath>..\..\packages\Relativity.Telemetry.MetricsCollection\lib\net462\Relativity.Telemetry.MetricsCollection.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Testing.Identification">
+          <HintPath>..\..\packages\Relativity.Testing.Identification\lib\net462\Relativity.Testing.Identification.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -1120,5 +1153,6 @@
     </When>
   </Choose>
   <Import Project="..\..\packages\kCura\build\kCura.targets" Condition="Exists('..\..\packages\kCura\build\kCura.targets')" Label="Paket" />
+  <Import Project="..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets')" Label="Paket" />
   <Import Project="..\..\packages\RelativityCore\build\RelativityCore.targets" Condition="Exists('..\..\packages\RelativityCore\build\RelativityCore.targets')" Label="Paket" />
 </Project>

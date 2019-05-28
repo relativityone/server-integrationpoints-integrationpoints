@@ -10,19 +10,17 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 {
 	public class LdapController : ApiController
 	{
-		private readonly ICPHelper _cpHelper;
-	    private readonly ILDAPSettingsReader _settingsReader;
-	    private readonly ISerializer _serializer;
+		private readonly ILDAPSettingsReader _settingsReader;
+		private readonly ISerializer _serializer;
 		private readonly ILDAPServiceFactory _ldapServiceFactory;
 		private readonly IAPILog _apiLog;
 
 		public LdapController(ICPHelper helper, ILDAPSettingsReader settingsReader, ISerializer serializer, ILDAPServiceFactory ldapServiceFactory)
 		{
-			_cpHelper = helper;
 			_settingsReader = settingsReader;
-		    _serializer = serializer;
+			_serializer = serializer;
 			_ldapServiceFactory = ldapServiceFactory;
-			_apiLog = _cpHelper.GetLoggerFactory().GetLogger().ForContext<LdapController>();
+			_apiLog = helper.GetLoggerFactory().GetLogger().ForContext<LdapController>();
 		}
 
 		[HttpPost]

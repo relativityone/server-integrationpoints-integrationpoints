@@ -1,73 +1,47 @@
-﻿using System.Security.Claims;
-using kCura.IntegrationPoints.Data.Extensions;
-using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories;
+﻿using System;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers.Factories;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Service.Export;
-using Relativity.Core;
-using Relativity.Core.Service;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 {
-	public class CoreServiceFactory : IServiceFactory
+	internal class CoreServiceFactory : IServiceFactory
 	{
-		private readonly IRepositoryFactory _repositoryFactory;
-		private readonly IViewFieldRepository _viewFieldRepository;
-		private readonly IFileFieldRepository _fileFieldRepository;
-		private readonly IFileRepository _fileRepository;
+		private readonly Func<IAuditManager> _auditManagerFactory;
+		private readonly Func<IFieldManager> _fieldManagerFactory;
+		private readonly Func<ISearchManager> _searchManagerFactory;
+		private readonly IExportFileDownloaderFactory _exportFileDownloaderFactory;
+
 		private readonly ExportFile _exportFile;
 		private readonly IServiceFactory _webApiServiceFactory;
-		private readonly int _contextUserId;
 
 		public CoreServiceFactory(
-			IRepositoryFactory repositoryFactory, 
-			IViewFieldRepository viewFieldRepository,
-			IFileFieldRepository fileFieldRepository, 
-			IFileRepository fileRepository, 
+			Func<IAuditManager> auditManagerFactory,
+			Func<IFieldManager> fieldManagerFactory,
+			Func<ISearchManager> searchManagerFactory,
+			IExportFileDownloaderFactory exportFileDownloaderFactory,
 			ExportFile exportFile,
-			IServiceFactory webApiServiceFactory,
-			int contextUserId)
+			IServiceFactory webApiServiceFactory)
 		{
-			_repositoryFactory = repositoryFactory;
-			_viewFieldRepository = viewFieldRepository;
-			_fileFieldRepository = fileFieldRepository;
-			_fileRepository = fileRepository;
+			_auditManagerFactory = auditManagerFactory;
+			_fieldManagerFactory = fieldManagerFactory;
+			_searchManagerFactory = searchManagerFactory;
+			_exportFileDownloaderFactory = exportFileDownloaderFactory;
+
 			_exportFile = exportFile;
-			_contextUserId = contextUserId;
 			_webApiServiceFactory = webApiServiceFactory;
 		}
 
-		public IAuditManager CreateAuditManager() => new CoreAuditManager(_repositoryFactory, _contextUserId);
+		public IAuditManager CreateAuditManager() => _auditManagerFactory();
 
-		public IExportManager CreateExportManager() => new CoreExportManager(GetBaseServiceContext(_exportFile.CaseArtifactID));
+		public IExportManager CreateExportManager() => _webApiServiceFactory.CreateExportManager();
 
-		public IFieldManager CreateFieldManager() => new CoreFieldManager(_repositoryFactory);
+		public IFieldManager CreateFieldManager() => _fieldManagerFactory();
 
-		public ISearchManager CreateSearchManager() => new CoreSearchManager(
-			GetBaseServiceContext(_exportFile.CaseArtifactID), 
-			_fileRepository, 
-			_fileFieldRepository, 
-			_viewFieldRepository
-		);
+		public ISearchManager CreateSearchManager() => _searchManagerFactory();
 
-		public IProductionManager CreateProductionManager()
-		{
-			return _webApiServiceFactory.CreateProductionManager();
-		}
+		public IProductionManager CreateProductionManager() => _webApiServiceFactory.CreateProductionManager();
 
-		public IExportFileDownloader CreateExportFileDownloader()
-		{
-			string destinationFolderPath = $"{_exportFile.CaseInfo.DocumentPath}\\EDDS{_exportFile.CaseInfo.ArtifactID}";
-			return new FileDownloader(_exportFile.Credential, destinationFolderPath, _exportFile.CaseInfo.DownloadHandlerURL, _exportFile.CookieContainer);
-		}
-		
-		private BaseServiceContext GetBaseServiceContext(int workspaceArtifactId)
-		{
-			BaseServiceContext bsc = ClaimsPrincipal.Current.GetUnversionContext(workspaceArtifactId);
-			var loginManager = new LoginManager();
-			
-			return new ServiceContext(loginManager.GetLoginIdentity(_contextUserId), bsc.RequestOrigination, workspaceArtifactId);
-		}
+		public IExportFileDownloader CreateExportFileDownloader() => _exportFileDownloaderFactory.Create(_exportFile);
 	}
 }

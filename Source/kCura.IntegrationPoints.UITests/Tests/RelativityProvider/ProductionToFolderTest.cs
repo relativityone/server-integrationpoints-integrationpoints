@@ -6,12 +6,13 @@ using kCura.IntegrationPoints.UITests.NUnitExtensions;
 using kCura.IntegrationPoints.UITests.Pages;
 using NUnit.Framework;
 using System;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 {
 	[TestFixture]
 	[Category(TestCategory.EXPORT_TO_RELATIVITY)]
-    public class ProductionToFolderTest : RelativityProviderTestsBase
+	public class ProductionToFolderTest : RelativityProviderTestsBase
 	{
 		private RelativityProviderModel CreateRelativityProviderModelWithProduction()
 		{
@@ -28,7 +29,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			return model;
 		}
 
-		[Test]
+		[IdentifiedTest("d76ebfc3-cfc6-4afa-be16-bf3154775bb5")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_PTF_1()
 		{
@@ -49,7 +50,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateProductionImagesAndDocumentSource(false, model);
 		}
 
-		[Test]
+		[IdentifiedTest("c932c915-890e-4b32-b859-46415a56bb2e")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_PTF_2()
 		{
@@ -70,7 +71,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateProductionImagesAndDocumentSource(true, model);
 		}
 
-		[Test]
+		[IdentifiedTest("1fbc8f0c-39d3-437c-b4b0-433add7f6a0d")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_PTF_3()
 		{
@@ -95,7 +96,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateProductionImagesAndDocumentSource(false, model);
 		}
 
-		[Test]
+		[IdentifiedTest("fbb5be58-1c53-4cac-aa0a-69e9e2f4222a")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_PTF_4()
 		{
@@ -120,7 +121,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateProductionImagesAndDocumentSource(true, model);
 		}
 
-		[Test]
+		[IdentifiedTest("9cf1416f-8698-4f1d-b127-f119722a8877")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_PTF_5()
 		{
@@ -142,7 +143,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ValidateProductionImagesAndDocumentSource(false, model);
 		}
 
-		[Test]
+		[IdentifiedTest("4fca11e2-dd5c-442c-b890-3db3204c06ca")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_PTF_6()
 		{

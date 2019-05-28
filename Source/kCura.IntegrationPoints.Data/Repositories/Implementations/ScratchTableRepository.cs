@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
+using System.Linq;
 using Castle.Core.Internal;
 using kCura.Data.RowDataGateway;
 using kCura.IntegrationPoints.Domain.Exceptions;
@@ -25,12 +27,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private readonly string _tableSuffix;
 
 		public ScratchTableRepository(
-			IWorkspaceDBContext caseContext, 
-			IDocumentRepository documentRepository, 
-			IFieldQueryRepository fieldQueryRepository, 
+			IWorkspaceDBContext caseContext,
+			IDocumentRepository documentRepository,
+			IFieldQueryRepository fieldQueryRepository,
 			IResourceDbProvider resourceDbProvider,
-			string tablePrefix, 
-			string tableSuffix, 
+			string tablePrefix,
+			string tableSuffix,
 			int workspaceId)
 		{
 			_caseContext = caseContext;
@@ -45,16 +47,25 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public bool IgnoreErrorDocuments { get; set; }
 
-		public int Count { get; private set; }
+		public int GetCount()
+		{
+			string fullTableName = GetTempTableName();
+			string resourceDBPrepend = GetResourceDBPrepend();
+			string schemalessResourceDataBasePrepend = GetSchemalessResourceDataBasePrepend();
+			string sql =
+			$@"
+			IF EXISTS
+				(SELECT *
+				FROM {schemalessResourceDataBasePrepend}.INFORMATION_SCHEMA.TABLES
+				WHERE TABLE_NAME = '{fullTableName}')
+			SELECT COUNT(*)
+			FROM {resourceDBPrepend}.[{fullTableName}]
+			";
+			return _caseContext.ExecuteSqlStatementAsScalar<int>(sql, Enumerable.Empty<SqlParameter>());
+		}
 
 		public void RemoveErrorDocuments(ICollection<string> documentControlNumbers)
 		{
-			if (documentControlNumbers.IsNullOrEmpty())
-			{
-				return;
-			}
-			Count -= documentControlNumbers.Count;
-
 			ICollection<int> docIds = GetErroredDocumentId(documentControlNumbers);
 
 			if (docIds.Count == 0)
@@ -98,16 +109,14 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public void AddArtifactIdsIntoTempTable(ICollection<int> artifactIds)
 		{
-			if (!artifactIds.IsNullOrEmpty())
+			if (!CollectionExtensions.IsNullOrEmpty(artifactIds))
 			{
-				Count += artifactIds.Count;
-
 				string fullTableName = GetTempTableName();
 				string schemalessResourceDataBasePrepend = GetSchemalessResourceDataBasePrepend();
 				string resourceDBPrepend = GetResourceDBPrepend();
 
 				ConnectionData connectionData = ConnectionData.GetConnectionDataWithCurrentCredentials(_caseContext.ServerName, GetSchemalessResourceDataBasePrepend());
-				string connectionString = 
+				string connectionString =
 				$@"
 				data source={connectionData.Server};
 				initial catalog={connectionData.Database};
@@ -120,13 +129,13 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				";
 				Context context = new Context(connectionString);
 
-				string sql = 
+				string sql =
 				$@"
 				IF NOT EXISTS (SELECT * FROM {schemalessResourceDataBasePrepend}.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{fullTableName}')
 				BEGIN
 					CREATE TABLE {resourceDBPrepend}.[{fullTableName}] ([{_DOCUMENT_ARTIFACT_ID_COLUMN_NAME}] INT PRIMARY KEY CLUSTERED)
 				END";
-				
+
 				_caseContext.ExecuteNonQuerySQLStatement(sql);
 
 				using (DataTable artifactIdTable = new DataTable())
@@ -157,8 +166,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			_caseContext.ExecuteNonQuerySQLStatement(sql);
 
-			copiedScratchTableRepository.Count = Count;
-
 			return copiedScratchTableRepository;
 		}
 
@@ -167,7 +174,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			string fullTableName = GetTempTableName();
 			string schemalessResourceDataBasePrepend = GetSchemalessResourceDataBasePrepend();
 			string resourceDBPrepend = GetResourceDBPrepend();
-			string sql = 
+			string sql =
 			$@"
 			IF EXISTS (SELECT * FROM {schemalessResourceDataBasePrepend}.INFORMATION_SCHEMA.TABLES where TABLE_NAME = '{fullTableName}') 
 			DROP TABLE {resourceDBPrepend}.[{fullTableName}]
@@ -224,7 +231,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private string GetDocumentIdentifierField()
 		{
 			ArtifactDTO[] fieldArtifacts = _fieldQueryRepository.RetrieveFieldsAsync(
-				rdoTypeId: 10, 
+				rdoTypeId: 10,
 				fieldNames: new HashSet<string>(
 					new[]
 					{
@@ -309,7 +316,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			string fullTableName = GetTempTableName();
 			string schemalessResourceDataBasePrepend = GetSchemalessResourceDataBasePrepend();
 			string resourceDBPrepend = GetResourceDBPrepend();
-			string sql = 
+			string sql =
 			$@"
 			IF EXISTS (SELECT * FROM {schemalessResourceDataBasePrepend}.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{fullTableName}') 
 			SELECT [{_DOCUMENT_ARTIFACT_ID_COLUMN_NAME}] FROM {resourceDBPrepend}.[{fullTableName}]

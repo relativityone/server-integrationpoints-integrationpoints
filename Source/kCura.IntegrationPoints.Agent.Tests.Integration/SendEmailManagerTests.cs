@@ -14,6 +14,7 @@ using System.Data;
 using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using Relativity.API;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
@@ -49,7 +50,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			_queueContext = new QueueDBContext(Helper, GlobalConst.SCHEDULE_AGENT_QUEUE_TABLE_NAME);
 		}
 
-        [Test]
+		[IdentifiedTest("f1d6a37b-5ffc-46bd-9acb-9871698c5750")]
 		[SmokeTest]
 		public void VerifyGetUnbatchedId()
 		{

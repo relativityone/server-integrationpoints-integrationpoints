@@ -65,7 +65,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			{
 				if (!_errorOccurDuringJobStart)
 				{
-					int documentCount = ScratchTableRepository.Count;
+					int documentCount = ScratchTableRepository.GetCount();
 					LogTaggingDocumentsStarted(documentCount);
 					using (Client.MetricsClient.LogDuration(
 						TelemetryMetricsBucketNames.BUCKET_SYNC_SOURCE_DOCUMENTS_TAGGING_DURATION,

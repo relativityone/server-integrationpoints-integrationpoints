@@ -14,6 +14,7 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Testing.Identification;
 using Constants = kCura.IntegrationPoints.Domain.Constants;
 
 namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
@@ -49,7 +50,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("141b0223-1c4a-4dd8-a261-918e695f7f28")]
 		public async Task ItShouldCreateObjectTypes()
 		{
 			// ACT
@@ -66,7 +67,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			await AssertDocumentFields().ConfigureAwait(false);
 		}
 
-		[Test]
+		[IdentifiedTest("1b73724f-a09b-4b6a-8d90-13cb0192bd7e")]
 		public async Task ItShouldBeAbleToExecuteMultipleTimesOnTheSameWorkspace()
 		{
 			// ACT
@@ -77,7 +78,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			Assert.Pass();
 		}
 
-		[Test]
+		[IdentifiedTest("c804cbf0-0aee-4ed2-aab9-4f5239c9d3e7")]
 		public async Task ItShouldNotExecuteIfObjectTypesAreSet()
 		{
 			_configuration.IsSourceJobArtifactTypeIdSet = true;
@@ -90,10 +91,9 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			Assert.IsFalse(result);
 		}
 
-		[Test]
-		[TestCase(true, false)]
-		[TestCase(false, true)]
-		[TestCase(false, false)]
+		[IdentifiedTestCase("d465485d-af12-47bb-b0eb-6e6579745745", true, false)]
+		[IdentifiedTestCase("c5df66cb-8346-4d43-9a15-ec3e83d68ff9", false, true)]
+		[IdentifiedTestCase("13269a81-6900-43d2-941c-b0a41471961f", false, false)]
 		public async Task ItShouldExecuteIfObjectTypesAreMissing(bool isSourceJobArtifactTypeIdSet, bool isSourceWorkspaceArtifactTypeIdSet)
 		{
 			_configuration.IsSourceJobArtifactTypeIdSet = isSourceJobArtifactTypeIdSet;

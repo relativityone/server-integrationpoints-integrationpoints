@@ -14,6 +14,7 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 {
@@ -62,7 +63,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 
 		}
 
-		[Test]
+		[IdentifiedTest("2fb60219-c275-4f77-b4fd-fd1467a33158")]
 		public void VerifyCheckBatchOnCompleteNull()
 		{
 			//Arrange
@@ -80,7 +81,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Assert.IsFalse(result);
 		}
 
-        [Test]
+		[IdentifiedTest("ef786e0e-59b0-417e-b563-8a8687c159e8")]
 		[SmokeTest]
 		public void VerifyCheckBatchOnCompleteTrue()
 		{
@@ -111,7 +112,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Assert.IsTrue(result);
 		}
 
-		[Test]
+		[IdentifiedTest("9bd5cbf9-ecd0-45af-bd58-288a4139c688")]
 		public void VerifyCheckBatchOnCompleteFalse()
 		{
 			//Arrange
@@ -142,7 +143,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Assert.IsFalse(result);
 		}
 
-		[Test]
+		[IdentifiedTest("441c4be7-42ac-4812-bb4e-fef40e7b62bf")]
 		public void VerifyDeleteJob()
 		{
 			//Arrange

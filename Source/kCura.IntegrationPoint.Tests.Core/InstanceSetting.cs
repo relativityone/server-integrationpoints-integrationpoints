@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 				try
 				{
-					InstanceSettingQueryResultSet instanceSettingQueryResultSet = instanceSettingManager.QueryAsync(query).GetResultsWithoutContextSync();
+					InstanceSettingQueryResultSet instanceSettingQueryResultSet = instanceSettingManager.QueryAsync(query).GetAwaiter().GetResult();
 					global::Relativity.Services.InstanceSetting.InstanceSetting instanceSetting = instanceSettingQueryResultSet.Results.FirstOrDefault()?.Artifact;
 					return instanceSetting;
 				}

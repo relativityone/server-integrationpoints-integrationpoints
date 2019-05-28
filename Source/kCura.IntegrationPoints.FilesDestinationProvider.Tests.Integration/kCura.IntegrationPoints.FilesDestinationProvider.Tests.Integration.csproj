@@ -52,19 +52,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="LICENSE.txt">
+      <Paket>True</Paket>
+    </Content>
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Abstract\IExportTestCase.cs" />
     <Compile Include="Abstract\IInvalidFileshareExportTestCase.cs" />
-    <Compile Include="Helpers\ConfigSettings.cs" />
+    <Compile Include="Helpers\FolderWithDocumentsIdRetriever.cs" />
+    <Compile Include="Process\Internals\ExportTestContextProvider.cs" />
+    <Compile Include="Process\Internals\ExportTestSettingsBuilder.cs" />
+    <Compile Include="Process\Internals\ExportTestContext.cs" />
     <Compile Include="Helpers\ContainerInstaller.cs" />
     <Compile Include="Helpers\DataFileFormatHelper.cs" />
     <Compile Include="Helpers\FileComparer.cs" />
     <Compile Include="Helpers\FileEncodingDetectionHelper.cs" />
     <Compile Include="Helpers\LoggingMediatorForTestsFactory.cs" />
     <Compile Include="Helpers\TestLoggingMediator.cs" />
-    <Compile Include="Process\ExportProcessRunnerTest.cs" />
+    <Compile Include="Process\ExportTestsRunner.cs" />
+    <Compile Include="Process\Internals\ExportTestConfiguration.cs" />
     <Compile Include="TestCases\Base\DataFileEncodingTestCaseBase.cs" />
     <Compile Include="TestCases\Base\ExportTestCaseBase.cs" />
     <Compile Include="TestCases\Base\MetadataExportTestCaseBase.cs" />
@@ -88,8 +95,6 @@
     <Compile Include="TestCases\ItShouldLogItemErrorForTooSmallVolumeDigitPadding.cs" />
     <Compile Include="TestCases\ItShouldLogJobErrorForInvalidFilesharePathFormat.cs" />
     <Compile Include="TestCases\ItShouldLogJobErrorForInvalidStartExportAtRecordValue.cs" />
-    <Compile Include="TestCases\ItShouldLogJobErrorForNegativeSubdirectoryStartNumber.cs" />
-    <Compile Include="TestCases\ItShouldLogJobErrorForNegativeVolumeStartNumber.cs" />
     <Compile Include="TestCases\ItShouldLogJobErrorForNotExistingFileshare.cs" />
     <Compile Include="TestCases\ItShouldLogJobErrorWhenNotOverwritingExistingFiles.cs" />
     <Compile Include="TestCases\ItShouldNotExportExtractedText.cs" />
@@ -165,11 +170,6 @@
       <Project>{C831C856-E74F-48B4-AEBC-1CF15576E082}</Project>
       <Name>kCura.ScheduleQueue.Core</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="LICENSE.txt">
-      <Paket>True</Paket>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
@@ -341,6 +341,17 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="NUnitExtras.HierarchicalCategories">
+          <HintPath>..\..\packages\NUnitExtras.HierarchicalCategories\lib\net45\NUnitExtras.HierarchicalCategories.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="Polly">
           <HintPath>..\..\packages\Polly\lib\net45\Polly.dll</HintPath>
           <Private>True</Private>
@@ -352,8 +363,8 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="Relativity">
-          <HintPath>..\..\packages\Relativity\lib\net462\Relativity.dll</HintPath>
+        <Reference Include="Relativity.API">
+          <HintPath>..\..\packages\Relativity.API\lib\net462\Relativity.API.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -363,8 +374,13 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="Relativity.API">
-          <HintPath>..\..\packages\Relativity.API\lib\net462\Relativity.API.dll</HintPath>
+        <Reference Include="FreeImageNET">
+          <HintPath>..\..\packages\Relativity.DataExchange.Client.SDK\lib\net462\FreeImageNET.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.DataExchange.Client.SDK">
+          <HintPath>..\..\packages\Relativity.DataExchange.Client.SDK\lib\net462\Relativity.DataExchange.Client.SDK.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -387,77 +403,6 @@
       <ItemGroup>
         <Reference Include="FaspManager">
           <HintPath>..\..\packages\relativity.faspmanager\lib\net40\FaspManager.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="FreeImageNET">
-          <HintPath>..\..\packages\Relativity.ImportExport\lib\net462\FreeImageNET.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Ionic.Zip">
-          <HintPath>..\..\packages\Relativity.ImportExport\lib\net462\Ionic.Zip.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="kCura.ImageValidator">
-          <HintPath>..\..\packages\Relativity.ImportExport\lib\net462\kCura.ImageValidator.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="kCura.OI.FileID">
-          <HintPath>..\..\packages\Relativity.ImportExport\lib\net462\kCura.OI.FileID.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="kCura.Relativity.DataReaderClient">
-          <HintPath>..\..\packages\Relativity.ImportExport\lib\net462\kCura.Relativity.DataReaderClient.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="kCura.Relativity.ImportAPI">
-          <HintPath>..\..\packages\Relativity.ImportExport\lib\net462\kCura.Relativity.ImportAPI.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="kCura.Relativity.ImportAPI.Extension">
-          <HintPath>..\..\packages\Relativity.ImportExport\lib\net462\kCura.Relativity.ImportAPI.Extension.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="kCura.WinEDDS">
-          <HintPath>..\..\packages\Relativity.ImportExport\lib\net462\kCura.WinEDDS.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="kCura.WinEDDS.Core">
-          <HintPath>..\..\packages\Relativity.ImportExport\lib\net462\kCura.WinEDDS.Core.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="kCura.WinEDDS.ImportExtension">
-          <HintPath>..\..\packages\Relativity.ImportExport\lib\net462\kCura.WinEDDS.ImportExtension.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="kCura.WinEDDS.TApi">
-          <HintPath>..\..\packages\Relativity.ImportExport\lib\net462\kCura.WinEDDS.TApi.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="kCura.Windows.Forms">
-          <HintPath>..\..\packages\Relativity.ImportExport\lib\net462\kCura.Windows.Forms.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="kCura.Windows.Process">
-          <HintPath>..\..\packages\Relativity.ImportExport\lib\net462\kCura.Windows.Process.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -625,6 +570,17 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="Relativity.Testing.Identification">
+          <HintPath>..\..\packages\Relativity.Testing.Identification\lib\net462\Relativity.Testing.Identification.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="Relativity.Transfer.Client">
           <HintPath>..\..\packages\relativity.transfer.client\lib\net462\Relativity.Transfer.Client.dll</HintPath>
           <Private>True</Private>
@@ -677,5 +633,5 @@
   </Choose>
   <Import Project="..\..\packages\kCura\build\kCura.targets" Condition="Exists('..\..\packages\kCura\build\kCura.targets')" Label="Paket" />
   <Import Project="..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets')" Label="Paket" />
-  <Import Project="..\..\packages\Relativity.ImportExport\build\Relativity.ImportExport.targets" Condition="Exists('..\..\packages\Relativity.ImportExport\build\Relativity.ImportExport.targets')" Label="Paket" />
+  <Import Project="..\..\packages\Relativity.DataExchange.Client.SDK\build\Relativity.DataExchange.Client.SDK.targets" Condition="Exists('..\..\packages\Relativity.DataExchange.Client.SDK\build\Relativity.DataExchange.Client.SDK.targets')" Label="Paket" />
 </Project>

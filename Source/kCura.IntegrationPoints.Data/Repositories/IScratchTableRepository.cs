@@ -11,10 +11,10 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// </summary>
 		bool IgnoreErrorDocuments { get; set; }
 
-		/// <summary>
-		/// Temp table row count
-		/// </summary>
-		int Count { get; }
+        /// <summary>
+        /// Temp table row count
+        /// </summary>
+        int GetCount();
 
 		/// <summary>
 		/// Allows you to add artifact ids into temp tables

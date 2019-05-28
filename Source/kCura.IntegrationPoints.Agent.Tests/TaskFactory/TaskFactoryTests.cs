@@ -22,12 +22,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 	public class TaskFactoryTests : TestBase
 	{
 		private IAPILog _logger;
-		private IAgentHelper _helper;
-		private ITaskExceptionMediator _taskExceptionMediator;
 		private IJobSynchronizationChecker _jobSynchronizationChecker;
 		private ITaskFactoryJobHistoryService _jobHistoryService;
-		private ITaskFactoryJobHistoryServiceFactory _jobHistoryServiceFactory;
-		private IIntegrationPointRepository _integrationPointRepository;
 		private ITaskFactory _instance;
 
 		[SetUp]
@@ -39,23 +35,23 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 			ILogFactory loggerFactory = Substitute.For<ILogFactory>();
 			loggerFactory.GetLogger().Returns(_logger);
 
-			_helper = Substitute.For<IAgentHelper>();
-			_helper.GetLoggerFactory().Returns(loggerFactory);
+			IAgentHelper helper = Substitute.For<IAgentHelper>();
+			helper.GetLoggerFactory().Returns(loggerFactory);
 
 
-			_integrationPointRepository = CreateIntegrationPointRepositoryMock();
-			_taskExceptionMediator = Substitute.For<ITaskExceptionMediator>();
+			IIntegrationPointRepository integrationPointRepository = CreateIntegrationPointRepositoryMock();
+			ITaskExceptionMediator taskExceptionMediator = Substitute.For<ITaskExceptionMediator>();
 
 
 			_jobSynchronizationChecker = Substitute.For<IJobSynchronizationChecker>();
 			_jobHistoryService = Substitute.For<ITaskFactoryJobHistoryService>();
-			_jobHistoryServiceFactory = Substitute.For<ITaskFactoryJobHistoryServiceFactory>();
-			_jobHistoryServiceFactory.CreateJobHistoryService(Arg.Any<Data.IntegrationPoint>()).Returns(_jobHistoryService);
+			ITaskFactoryJobHistoryServiceFactory jobHistoryServiceFactory = Substitute.For<ITaskFactoryJobHistoryServiceFactory>();
+			jobHistoryServiceFactory.CreateJobHistoryService(Arg.Any<Data.IntegrationPoint>()).Returns(_jobHistoryService);
 
 			IWindsorContainer container = Substitute.For<IWindsorContainer>();
 
-			_instance = new IntegrationPoints.Agent.TaskFactory.TaskFactory(_helper, _taskExceptionMediator,
-				_jobSynchronizationChecker, _jobHistoryServiceFactory, container, _integrationPointRepository);
+			_instance = new IntegrationPoints.Agent.TaskFactory.TaskFactory(helper, taskExceptionMediator,
+				_jobSynchronizationChecker, jobHistoryServiceFactory, container, integrationPointRepository);
 		}
 
 		[Test]

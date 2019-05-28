@@ -4,10 +4,8 @@ using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoint.Tests.Core;
-
 using NUnit.Framework;
 using NSubstitute;
-
 using System;
 using SystemInterface.IO;
 
@@ -30,22 +28,20 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 		IDataTransferLocationService _locationService;
 		ISerializer _serializer;
 		IDirectory _directoryHelper;
-
-		Data.IntegrationPoint _ip;
 		ImportProviderSettings _providerSettings;
-		ImportSettings _importApiSettings;
+
 
 		[SetUp]
 		public override void SetUp()
 		{
-			_ip = new Data.IntegrationPoint();
+			Data.IntegrationPoint ip = new Data.IntegrationPoint();
 			_providerSettings = new ImportProviderSettings();
-			_importApiSettings = new ImportSettings();
+			ImportSettings importApiSettings = new ImportSettings();
 
-			_ip.Name = _IP_NAME;
-			_ip.SourceConfiguration = string.Empty;
-			_ip.DestinationConfiguration = string.Empty;
-			_importApiSettings.CaseArtifactId = -1;
+			ip.Name = _IP_NAME;
+			ip.SourceConfiguration = string.Empty;
+			ip.DestinationConfiguration = string.Empty;
+			importApiSettings.CaseArtifactId = -1;
 			_providerSettings.LoadFile = _LOAD_FILE_PATH;
 
 			_integrationPointReader = Substitute.For<IIntegrationPointService>();
@@ -53,9 +49,9 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 			_serializer = Substitute.For<ISerializer>();
 			_directoryHelper = Substitute.For<IDirectory>();
 
-			_integrationPointReader.ReadIntegrationPoint(Arg.Any<int>()).ReturnsForAnyArgs(_ip);
+			_integrationPointReader.ReadIntegrationPoint(Arg.Any<int>()).ReturnsForAnyArgs(ip);
 			_serializer.Deserialize<ImportProviderSettings>(Arg.Any<string>()).ReturnsForAnyArgs(_providerSettings);
-			_serializer.Deserialize<ImportSettings>(Arg.Any<string>()).ReturnsForAnyArgs(_importApiSettings);
+			_serializer.Deserialize<ImportSettings>(Arg.Any<string>()).ReturnsForAnyArgs(importApiSettings);
 			_locationService.GetWorkspaceFileLocationRootPath(Arg.Any<int>()).ReturnsForAnyArgs(_WORKSPACE_ROOT_LOCATION);
 			_locationService.GetDefaultRelativeLocationFor(Core.Constants.IntegrationPoints.IntegrationPointTypes.ImportGuid).Returns(_DATA_TRANSFER_IMPORT_LOCATION);
 		}

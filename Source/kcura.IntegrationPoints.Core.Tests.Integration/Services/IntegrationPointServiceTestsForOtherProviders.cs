@@ -8,6 +8,7 @@ using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.Data.Queries;
 using NUnit.Framework;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 {
@@ -30,7 +31,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			_queueContext = new QueueDBContext(Helper, GlobalConst.SCHEDULE_AGENT_QUEUE_TABLE_NAME);
 		}
 		
-		[Test]
+		[IdentifiedTest("a623e9b8-dd04-4f0e-9359-ce7afdad1d5c")]
 		public void Ldap_MultipleJobsInQueue_ThrowsJobsAlreadyRunning()
 		{
 			Job fakeJob = null;

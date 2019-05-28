@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Relativity.API;
 using Relativity.Services.Group;
 using Relativity.Services.Permission;
 using Relativity.Services.User;
@@ -11,14 +10,12 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 	public class ExtendedIPermissionManager : IPermissionManager
 	{
 		private readonly ITestHelper _helper;
-		private readonly ExecutionIdentity _identity;
 		private Lazy<IPermissionManager> _managerWrapper;
 		private IPermissionManager Manager => _managerWrapper.Value;
 
-		public ExtendedIPermissionManager(ITestHelper helper, ExecutionIdentity identity)
+		public ExtendedIPermissionManager(ITestHelper helper)
 		{
 			_helper = helper;
-			_identity = identity;
 			_managerWrapper = new Lazy<IPermissionManager>(helper.CreateUserProxy<IPermissionManager>);
 		}
 

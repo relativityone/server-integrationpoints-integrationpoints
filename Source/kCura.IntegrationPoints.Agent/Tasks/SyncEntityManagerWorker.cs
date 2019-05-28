@@ -104,8 +104,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				_workspaceArtifactId = job.WorkspaceID;
 				
 				//check if all tasks are done for this batch yet
-				bool IsPrimaryBatchWorkComplete = _managerQueueService.AreAllTasksOfTheBatchDone(job, new[] { TaskType.SyncEntityManagerWorker.ToString() });
-				if (!IsPrimaryBatchWorkComplete)
+				bool isPrimaryBatchWorkComplete = _managerQueueService.AreAllTasksOfTheBatchDone(job, new[] { TaskType.SyncEntityManagerWorker.ToString() });
+				if (!isPrimaryBatchWorkComplete)
 				{
 					new TaskJobSubmitter(JobManager, job, TaskType.SyncEntityManagerWorker, BatchInstance).SubmitJob(jobParameters);
 					return;

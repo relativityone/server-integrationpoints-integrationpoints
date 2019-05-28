@@ -12,6 +12,7 @@ using kCura.WinEDDS;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity;
+using Relativity.DataExchange.Service;
 using ArtifactType = kCura.Relativity.Client.ArtifactType;
 using FieldType = kCura.IntegrationPoints.Contracts.Models.FieldType;
 

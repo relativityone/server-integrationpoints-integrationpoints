@@ -100,7 +100,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 
 		private static void SetCaseInfo(ExportSettings exportSettings, ExportFile exportFile)
 		{
-			exportFile.CaseInfo = new CaseInfo {ArtifactID = exportSettings.WorkspaceId};
+			exportFile.CaseInfo = new global::Relativity.DataExchange.Service.CaseInfo {ArtifactID = exportSettings.WorkspaceId};
 		}
 
 		private static void SetMetadataFileSettings(ExportSettings exportSettings, ExportFile exportFile)

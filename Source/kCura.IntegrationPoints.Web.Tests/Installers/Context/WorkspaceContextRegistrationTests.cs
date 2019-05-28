@@ -9,9 +9,9 @@ using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Web.Context.WorkspaceContext;
 using kCura.IntegrationPoints.Web.Infrastructure.Session;
 using kCura.IntegrationPoints.Web.Installers.Context;
-using Moq;
 using NUnit.Framework;
 using Relativity.API;
+using static kCura.IntegrationPoint.Tests.Core.TestHelpers.WindsorContainerTestHelpers;
 
 namespace kCura.IntegrationPoints.Web.Tests.Installers.Context
 {
@@ -106,9 +106,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Installers.Context
 		{
 			IRegistration[] dependencies =
 			{
-				Component.For<HttpRequestBase>().Instance(new Mock<HttpRequestBase>().Object),
-				Component.For<ISessionService>().Instance(new Mock<ISessionService>().Object),
-				Component.For<IAPILog>().Instance(new Mock<IAPILog>().Object)
+				CreateDummyObjectRegistration<HttpRequestBase>(),
+				CreateDummyObjectRegistration<ISessionService>(),
+				CreateDummyObjectRegistration<IAPILog>()
 			};
 
 			container.Register(dependencies);

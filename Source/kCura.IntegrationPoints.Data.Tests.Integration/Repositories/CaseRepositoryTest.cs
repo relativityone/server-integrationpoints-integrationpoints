@@ -11,6 +11,7 @@ using System;
 using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using Relativity.API;
+using Relativity.Testing.Identification;
 using CaseInfo = Relativity.CaseInfo;
 using TestCategories = kCura.IntegrationPoint.Tests.Core.Constants;
 
@@ -52,7 +53,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			_sut = new CaseRepository(resourceServerManager, instrumentationProvider);
 		}
 
-        [Test]
+		[IdentifiedTest("a7b270f4-f423-461d-bb56-58fb84475969")]
 		[SmokeTest]
 		public void ItShouldReturnWorkspaceInfo()
 		{

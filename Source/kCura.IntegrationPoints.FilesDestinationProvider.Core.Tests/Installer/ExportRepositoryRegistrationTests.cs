@@ -14,6 +14,8 @@ using Relativity.API;
 using Relativity.Services.FileField;
 using Relativity.Services.Interfaces.File;
 using Relativity.Services.Interfaces.ViewField;
+using Relativity.Services.View;
+using static kCura.IntegrationPoint.Tests.Core.TestHelpers.WindsorContainerTestHelpers;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Installer
 {
@@ -130,12 +132,48 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Installer
 			sut.Should().ResolveWithoutThrowing<IFileFieldRepository>();
 		}
 
+		[Test]
+		public void ViewRepository_ShouldBeRegisteredWithProperLifestyle()
+		{
+			//arrange
+			IWindsorContainer sut = new WindsorContainer();
+			sut.AddExportRepositories();
+
+			//assert
+			sut.Should()
+				.HaveRegisteredSingleComponent<IViewRepository>()
+				.Which.Should().BeRegisteredWithLifestyle(LifestyleType.Transient);
+		}
+
+		[Test]
+		public void ViewRepository_ShouldBeRegisteredWithProperImplementation()
+		{
+			//arrange
+			IWindsorContainer sut = new WindsorContainer();
+			sut.AddExportRepositories();
+
+			//assert
+			sut.Should().HaveRegisteredProperImplementation<IViewRepository, ViewRepository>();
+		}
+
+		[Test]
+		public void ViewRepository_ShouldBeResolvedWithoutThrowing()
+		{
+			//arrange
+			IWindsorContainer sut = new WindsorContainer();
+			sut.AddExportRepositories();
+			RegisterDependencies(sut);
+
+			//assert
+			sut.Should().ResolveWithoutThrowing<IViewRepository>();
+		}
 
 		private static void RegisterDependencies(IWindsorContainer container)
 		{
 			var viewFieldManagerMock = new Mock<IViewFieldManager>();
 			var fileManagerMock = new Mock<IFileManager>();
 			var fileFieldManagerMock = new Mock<IFileFieldManager>();
+			var viewManagerMock = new Mock<IViewManager>();
 			var servicesMgrMock = new Mock<IServicesMgr>();
 			servicesMgrMock.Setup(x => x.CreateProxy<IViewFieldManager>(ExecutionIdentity.CurrentUser))
 				.Returns(viewFieldManagerMock.Object);
@@ -143,15 +181,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Installer
 				.Returns(fileManagerMock.Object);
 			servicesMgrMock.Setup(x => x.CreateProxy<IFileFieldManager>(ExecutionIdentity.CurrentUser))
 				.Returns(fileFieldManagerMock.Object);
+			servicesMgrMock.Setup(x => x.CreateProxy<IViewManager>(ExecutionIdentity.CurrentUser))
+				.Returns(viewManagerMock.Object);
 
 			IRegistration[] dependencies =
 			{
 				Component.For<IServicesMgr>().Instance(servicesMgrMock.Object),
-				Component.For<IViewFieldManager>().Instance(viewFieldManagerMock.Object),
-				Component.For<IFileManager>().Instance(fileManagerMock.Object),
-				Component.For<IFileFieldManager>().Instance(fileFieldManagerMock.Object),
-				Component.For<IExternalServiceInstrumentationProvider>()
-					.Instance(new Mock<IExternalServiceInstrumentationProvider>().Object)
+				CreateDummyObjectRegistration<IExternalServiceInstrumentationProvider>()
 			};
 
 			container.Register(dependencies);

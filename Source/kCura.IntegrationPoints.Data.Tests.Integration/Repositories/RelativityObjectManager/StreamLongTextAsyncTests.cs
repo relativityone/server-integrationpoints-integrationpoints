@@ -15,10 +15,11 @@ using kCura.IntegrationPoints.Data.Repositories;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Testing.Identification;
 using ArtifactType = Relativity.ArtifactType;
 using Workspace = kCura.IntegrationPoint.Tests.Core.Workspace;
 
-namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.RelatvityObjectManager
+namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.RelativityObjectManager
 {
 	[TestFixture]
 	public class StreamLongTextAsyncTests
@@ -56,7 +57,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.RelatvityO
 			Workspace.DeleteWorkspace(_workspaceId);
 		}
 
-		[Test]
+		[IdentifiedTest("be26fb26-a1c5-401d-84ba-57122d8c6e75")]
 		public void ItShouldFetchDocumentWith15MBExtractedText()
 		{
 			int bytes = GetBytesFromMB(15);
@@ -64,7 +65,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.RelatvityO
 			ExecuteTest(bytes, controlNumber);
 		}
 
-		[Test]
+		[IdentifiedTest("d1e9a3e4-943a-42aa-993e-9d8933883a1e")]
 		[StressTest]
 		[TestInQuarantine(TestQuarantineState.FailsContinuously,
 			@"Review: develop (07/04/2019 - 21/04/2019)
@@ -99,10 +100,13 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.RelatvityO
 
 				// Act
 				Stream actualExtractedTextStream =
-					_relativityObjectManager.StreamLongText(
+					_relativityObjectManager.StreamUnicodeLongText(
 						documentArtifactID,
-						new FieldRef {Name = _EXTRACTED_TEXT_FIELD_NAME},
-						isUnicode: false);
+						new FieldRef
+						{
+							Name = _EXTRACTED_TEXT_FIELD_NAME
+						}
+					);
 				var actualExtractedTextStreamReader = new StreamReader(actualExtractedTextStream, Encoding.UTF8);
 				string actualExtractedTextString = actualExtractedTextStreamReader.ReadToEnd();
 

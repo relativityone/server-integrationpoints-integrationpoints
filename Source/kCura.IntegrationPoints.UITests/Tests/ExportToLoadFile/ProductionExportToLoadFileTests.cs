@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.UITests.NUnitExtensions;
 using kCura.IntegrationPoints.UITests.Pages;
 using kCura.IntegrationPoints.UITests.Validation;
 using NUnit.Framework;
+using Relativity.Testing.Identification;
 using IntegrationPointType = kCura.IntegrationPoint.Tests.Core.Models.IntegrationPointType;
 
 namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
@@ -33,7 +34,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			_integrationPointsAction = new IntegrationPointsAction(Driver, Context);
 		}
 
-		[Test]
+		[IdentifiedTest("a2decb84-72e3-484a-b966-846d6db24b91")]
 		[RetryOnError]
 		public void ProductionExportToLoadFile_TC_ELF_PROD_1()
 		{
@@ -96,7 +97,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
 		}
 
-		[Test]
+		[IdentifiedTest("7b41768c-d671-42c7-8d10-3fb12c2e946a")]
 		[RetryOnError]
 		public void ProductionExportToLoadFile_TC_ELF_PROD_2()
 		{
@@ -143,7 +144,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
 		}
 
-		[Test]
+		[IdentifiedTest("0e0fe734-fbda-449a-8a32-44c0361d3d52")]
 		[RetryOnError]
 		public void ProductionExportToLoadFile_TC_ELF_PROD_3()
 		{
@@ -189,7 +190,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
 		}
 
-		[Test]
+		[IdentifiedTest("07007cdb-fc54-4f29-8297-cdcaf370d56c")]
 		[RetryOnError]
 		public void ProductionExportToLoadFile_TC_ELF_PROD_4()
 		{
@@ -247,7 +248,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
 		}
 
-		[Test]
+		[IdentifiedTest("bda07a40-31f1-40cc-9230-24311d6fa974")]
 		[RetryOnError]
 		public void ProductionExportToLoadFile_TC_ELF_PROD_5()
 		{

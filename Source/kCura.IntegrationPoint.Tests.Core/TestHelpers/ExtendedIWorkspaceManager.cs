@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Relativity.API;
 using Relativity.Services.Credential;
 using Relativity.Services.ResourceServer;
 using Relativity.Services.Workspace;
@@ -11,16 +10,14 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 	public class ExtendedIWorkspaceManager : IWorkspaceManager
 	{
 		private Lazy<IWorkspaceManager> _managerWrapper;
-		private readonly ExecutionIdentity _identity;
 		private readonly ITestHelper _helper;
 
 		private readonly object _lock = new object();
 		private IWorkspaceManager Manager => _managerWrapper.Value;
 
-		public ExtendedIWorkspaceManager(ITestHelper helper, ExecutionIdentity identity)
+		public ExtendedIWorkspaceManager(ITestHelper helper)
 		{
 			_helper = helper;
-			_identity = identity;
 			_managerWrapper = new Lazy<IWorkspaceManager>(helper.CreateUserProxy<IWorkspaceManager>);
 		}
 

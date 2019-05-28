@@ -11,6 +11,7 @@ using kCura.IntegrationPoints.UITests.NUnitExtensions;
 using kCura.IntegrationPoints.UITests.Pages;
 using kCura.IntegrationPoints.UITests.Validation;
 using NUnit.Framework;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.UITests.Tests.FTPProvider
 {
@@ -30,7 +31,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FTPProvider
 			_service = Container.Resolve<IRSAPIService>();
 		}
 
-		[Test]
+		[IdentifiedTest("780e987a-a791-4048-a2c6-780c191a9998")]
 		[RetryOnError]
 		[Order(10)]
 		public void ImportDocumentsFromFtp()

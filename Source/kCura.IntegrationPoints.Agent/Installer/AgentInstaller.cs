@@ -110,7 +110,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 			container.Register(Component.For<CurrentUser>().UsingFactoryMethod(k =>
 			{
 				JobContextProvider jobContextProvider = k.Resolve<JobContextProvider>();
-				return new CurrentUser { ID = jobContextProvider.Job.SubmittedBy };
+				return new CurrentUser(userID:jobContextProvider.Job.SubmittedBy);
 			}).LifestyleTransient());
 
 			container.Register(Component.For<IScheduleRuleFactory>().UsingFactoryMethod(k => _scheduleRuleFactory, true).LifestyleTransient());

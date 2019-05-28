@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Data.SecretStore;
 using kCura.IntegrationPoints.EventHandlers.Commands.Context;
 using kCura.IntegrationPoints.EventHandlers.Commands.Helpers;
 using NUnit.Framework;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 {
@@ -14,7 +15,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 		{
 		}
 
-		[Test(Description = "This test is to verify that Tenant ID is created during installation")]
+		[IdentifiedTest("564b97fa-f994-42cc-b26c-720dbe793519", Description = "This test is to verify that Tenant ID is created during installation")]
 		public void ItShouldCreatedTenantIDDuringInstallation()
 		{
 			IEHContext context = new EHContext

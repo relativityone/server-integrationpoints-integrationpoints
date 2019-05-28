@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client.DTOs;
 using NUnit.Framework;
+using Relativity.Testing.Identification;
 using Group = kCura.IntegrationPoint.Tests.Core.Group;
 using User = kCura.IntegrationPoint.Tests.Core.User;
 using Workspace = kCura.IntegrationPoint.Tests.Core.Workspace;
@@ -112,7 +113,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			ExceptionHelper.IgnoreExceptions(() => User.DeleteUser(_user.ArtifactID));
 		}
 
-		[Test]
+		[IdentifiedTest("5d55e45e-e4bd-407e-9daf-bc5ce33879ab")]
 		public void ItShouldRetrieveHistory()
 		{
 			var client = Helper.CreateAdminProxy<IJobHistoryManager>();
@@ -134,7 +135,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("700c2132-4dd5-4e98-a630-06618849935f")]
 		public void ItShouldRetrieveHistoryUsingPaging()
 		{
 			var client = Helper.CreateAdminProxy<IJobHistoryManager>();
@@ -156,7 +157,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			Assert.That(jobHistory.Data[0].ItemsTransferred, Is.EqualTo(expectedTestData.DocsTransfered));
 		}
 
-		[Test]
+		[IdentifiedTest("c736309c-1f09-4a69-a436-ebd109610b0d")]
 		public void ItShouldHandleRetrievingHistoryFromOutsideTheRange()
 		{
 			var client = Helper.CreateAdminProxy<IJobHistoryManager>();
@@ -174,7 +175,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			Assert.That(jobHistory.Data.Length, Is.EqualTo(0));
 		}
 
-		[Test]
+		[IdentifiedTest("6db36b99-49d6-49c6-a16c-7113fe0e26f1")]
 		public void ItShouldRetrieveHistoryRespectingPermission()
 		{
 			var client = Helper.CreateUserProxy<IJobHistoryManager>(_user.EmailAddress);
@@ -199,13 +200,12 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			}
 		}
 
-		[Test]
-		[TestCase(nameof(JobHistoryModel.DestinationWorkspace), true)]
-		[TestCase(nameof(JobHistoryModel.DestinationWorkspace), false)]
-		[TestCase(nameof(JobHistoryModel.EndTimeUTC), true)]
-		[TestCase(nameof(JobHistoryModel.EndTimeUTC), false)]
-		[TestCase(nameof(JobHistoryModel.ItemsTransferred), true)]
-		[TestCase(nameof(JobHistoryModel.ItemsTransferred), false)]
+		[IdentifiedTestCase("17983c3a-db58-4de1-8f7d-420eddbb7759", nameof(JobHistoryModel.DestinationWorkspace), true)]
+		[IdentifiedTestCase("c7bbe0ae-af5e-489f-97d0-27a5cf3bb7e0", nameof(JobHistoryModel.DestinationWorkspace), false)]
+		[IdentifiedTestCase("b4a0f92f-b434-4aa3-bd2d-4d4164f4cce2", nameof(JobHistoryModel.EndTimeUTC), true)]
+		[IdentifiedTestCase("6aee68f4-5690-4c1a-9981-d034a5aa6056", nameof(JobHistoryModel.EndTimeUTC), false)]
+		[IdentifiedTestCase("5469bc44-b4df-4808-900b-35384a09d89f", nameof(JobHistoryModel.ItemsTransferred), true)]
+		[IdentifiedTestCase("994a6e18-3aa0-4c1c-b5bf-388b9f467d42", nameof(JobHistoryModel.ItemsTransferred), false)]
 		public void ItShouldSortResult(string propertyName, bool sortDescending)
 		{
 			var client = Helper.CreateAdminProxy<IJobHistoryManager>();

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
-using System.Linq;
 using Microsoft.VisualBasic.Devices;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
@@ -11,7 +10,6 @@ using NUnit.Framework;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
-using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Core;
@@ -28,7 +26,6 @@ using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.IntegrationPoints.ImportProvider.Tests.Integration.Abstract;
 using kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers;
-using kCura.IntegrationPoints.ImportProvider.Tests.Integration.TestCases;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
@@ -42,33 +39,17 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 	[TestFixture]
 	public class ImportServiceManagerTests
 	{
-		private const string _TEST_DATA_PATH = "TestDataForImport";
-		private const string _INPUT_FOLDER_KEY = "InputFolder";
-
-		private int _workspaceId;
-		private string _testDataDirectory;
-
-		private static WindsorContainer _windsorContainer;
-
+		private Data.IntegrationPoint _ip;
+		private IImportFileLocationService _importFileLocationService;
 		private ImportServiceManager _instanceUnderTest;
 
-		private Data.IntegrationPoint _ip;
-		private IHelper _helper;
-		private ICaseServiceContext _caseServiceContext;
-		private IContextContainerFactory _contextContainerFactory;
-		private ISynchronizerFactory _synchronizerFactory;
-		private IOnBehalfOfUserClaimsPrincipalFactory _onBehalfOfUserClaimsPrincipalFactory;
-		private IManagerFactory _managerFactory;
-		private IEnumerable<IBatchStatus> _statuses;
+		private int _workspaceId;
 		private ISerializer _serializer;
-		private IJobService _jobService;
-		private IScheduleRuleFactory _scheduleRuleFactory;
-		private IJobHistoryService _jobHistoryService;
-		private IJobHistoryErrorService _jobHistoryErrorService;
-		private IDataReaderFactory _dataReaderFactory;
-		private IImportFileLocationService _importFileLocationService;
-		private IAgentValidator _agentValidator;
-		private IIntegrationPointRepository _integrationPointRepository;
+		private string _testDataDirectory;
+		private static WindsorContainer _windsorContainer;
+		private const string _INPUT_FOLDER_KEY = "InputFolder";
+		private const string _TEST_DATA_PATH = "TestDataForImport";
+
 
 		[OneTimeSetUp]
 		public void Init()
@@ -77,22 +58,22 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 
 			_workspaceId = WorkspaceService.CreateWorkspace(DateTime.UtcNow.ToString("yyyyMMdd_HHmmss"));
 
-			//Subsitutes
+			//Substitutes
 
-			_helper = Substitute.For<IHelper>();
-			_caseServiceContext = Substitute.For<ICaseServiceContext>();
-			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
-			_synchronizerFactory = Substitute.For<ISynchronizerFactory>();
-			_onBehalfOfUserClaimsPrincipalFactory = Substitute.For<IOnBehalfOfUserClaimsPrincipalFactory>();
-			_managerFactory = Substitute.For<IManagerFactory>();
-			_statuses = Substitute.For<IEnumerable<IBatchStatus>>();
-			_jobService = Substitute.For<IJobService>();
-			_scheduleRuleFactory = Substitute.For<IScheduleRuleFactory>();
-			_jobHistoryService = Substitute.For<IJobHistoryService>();
-			_jobHistoryErrorService = Substitute.For<IJobHistoryErrorService>();
+			IHelper helper = Substitute.For<IHelper>();
+			ICaseServiceContext caseServiceContext = Substitute.For<ICaseServiceContext>();
+			IContextContainerFactory contextContainerFactory = Substitute.For<IContextContainerFactory>();
+			ISynchronizerFactory synchronizerFactory = Substitute.For<ISynchronizerFactory>();
+			IOnBehalfOfUserClaimsPrincipalFactory onBehalfOfUserClaimsPrincipalFactory = Substitute.For<IOnBehalfOfUserClaimsPrincipalFactory>();
+			IManagerFactory managerFactory = Substitute.For<IManagerFactory>();
+			IEnumerable<IBatchStatus> statuses = Substitute.For<IEnumerable<IBatchStatus>>();
+			IJobService jobService = Substitute.For<IJobService>();
+			IScheduleRuleFactory scheduleRuleFactory = Substitute.For<IScheduleRuleFactory>();
+			IJobHistoryService jobHistoryService = Substitute.For<IJobHistoryService>();
+			IJobHistoryErrorService jobHistoryErrorService = Substitute.For<IJobHistoryErrorService>();
 			_importFileLocationService = Substitute.For<IImportFileLocationService>();
-			_agentValidator = Substitute.For<IAgentValidator>();
-			_integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
+			IAgentValidator agentValidator = Substitute.For<IAgentValidator>();
+			IIntegrationPointRepository integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
 
 			//Data Transfer Location
 
@@ -107,18 +88,18 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 			TestRdoSynchronizer synchronizer = new TestRdoSynchronizer(_windsorContainer.Resolve<IRelativityFieldQuery>(),
 				_windsorContainer.Resolve<IImportApiFactory>(),
 				_windsorContainer.Resolve<IImportJobFactory>(),
-				_helper, SharedVariables.RelativityWebApiUrl, true, true);
-			_synchronizerFactory.CreateSynchronizer(Arg.Any<Guid>(), Arg.Any<string>(), Arg.Any<string>()).Returns(synchronizer);
+				helper, SharedVariables.RelativityWebApiUrl, true, true);
+			synchronizerFactory.CreateSynchronizer(Arg.Any<Guid>(), Arg.Any<string>(), Arg.Any<string>()).Returns(synchronizer);
 
 			//RSAPI
 
 			IRSAPIService rsapiServiceMock = Substitute.For<IRSAPIService>();
-			_caseServiceContext.RsapiService.Returns(rsapiServiceMock);
+			caseServiceContext.RsapiService.Returns(rsapiServiceMock);
 
 			//Source library
 
-			IRelativityObjectManager _objectManager = Substitute.For<IRelativityObjectManager>();
-			rsapiServiceMock.RelativityObjectManager.Returns(_objectManager);
+			IRelativityObjectManager objectManager = Substitute.For<IRelativityObjectManager>();
+			rsapiServiceMock.RelativityObjectManager.Returns(objectManager);
 
 
 			SourceProvider p = new SourceProvider();
@@ -127,7 +108,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 			p.Config.AlwaysImportNativeFileNames = true;
 			p.Config.OnlyMapIdentifierToIdentifier = true;
 
-			_objectManager.Read<SourceProvider>(Arg.Any<int>()).Returns(p);
+			objectManager.Read<SourceProvider>(Arg.Any<int>()).Returns(p);
 
 			//IpLibrary
 
@@ -136,53 +117,53 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 			_ip.SecuredConfiguration = "";
 			_ip.SourceProvider = -1;
 
-			_integrationPointRepository.ReadAsync(Arg.Any<int>()).Returns(_ip);
+			integrationPointRepository.ReadAsync(Arg.Any<int>()).Returns(_ip);
 
 			//JobStopManager
 
 			IJobStopManager stopManager = Substitute.For<IJobStopManager>();
 			object syncRoot = new object();
 			stopManager.SyncRoot.Returns(syncRoot);
-			_managerFactory.CreateJobStopManager(Arg.Any<IJobService>(),
+			managerFactory.CreateJobStopManager(Arg.Any<IJobService>(),
 				Arg.Any<IJobHistoryService>(), Arg.Any<Guid>(), Arg.Any<long>(), Arg.Any<bool>()).Returns(stopManager);
 
 			//Job History Service
 
 			JobHistory jobHistoryDto = new JobHistory();
-			_jobHistoryService.GetOrCreateScheduledRunHistoryRdo(Arg.Any<Data.IntegrationPoint>(), Arg.Any<Guid>(), Arg.Any<DateTime>())
+			jobHistoryService.GetOrCreateScheduledRunHistoryRdo(Arg.Any<Data.IntegrationPoint>(), Arg.Any<Guid>(), Arg.Any<DateTime>())
 				.Returns(jobHistoryDto);
-			_jobHistoryService.GetRdo(Arg.Any<Guid>()).Returns(jobHistoryDto);
+			jobHistoryService.GetRdo(Arg.Any<Guid>()).Returns(jobHistoryDto);
 
 			//Logging
 
 			IAPILog logger = Substitute.For<IAPILog>();
 			ILogFactory loggerFactory = Substitute.For<ILogFactory>();
-			_helper.GetLoggerFactory().Returns(loggerFactory);
+			helper.GetLoggerFactory().Returns(loggerFactory);
 			loggerFactory.GetLogger().Returns(logger);
 			logger.ForContext<ImportService>().Returns(logger);
 
 			//Resolve concrete implementations
 
 			_serializer = _windsorContainer.Resolve<ISerializer>();
-			_dataReaderFactory = _windsorContainer.Resolve<IDataReaderFactory>();
+			IDataReaderFactory dataReaderFactory = _windsorContainer.Resolve<IDataReaderFactory>();
 
-			_instanceUnderTest = new ImportServiceManager(_helper,
-				_caseServiceContext,
-				_contextContainerFactory,
-				_synchronizerFactory,
-				_onBehalfOfUserClaimsPrincipalFactory,
-				_managerFactory,
-				_statuses,
+			_instanceUnderTest = new ImportServiceManager(helper,
+				caseServiceContext,
+				contextContainerFactory,
+				synchronizerFactory,
+				onBehalfOfUserClaimsPrincipalFactory,
+				managerFactory,
+				statuses,
 				_serializer,
-				_jobService,
-				_scheduleRuleFactory,
-				_jobHistoryService,
-				_jobHistoryErrorService,
+				jobService,
+				scheduleRuleFactory,
+				jobHistoryService,
+				jobHistoryErrorService,
 				null,
-				_dataReaderFactory,
+				dataReaderFactory,
 				_importFileLocationService,
-				_agentValidator,
-				_integrationPointRepository);
+				agentValidator,
+				integrationPointRepository);
 		}
 
 		[OneTimeTearDown]
@@ -197,25 +178,10 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 			DocumentService.DeleteAllDocuments(_workspaceId);
 		}
 
-        [Test]
+		[Test]
 		[SmokeTest]
 		[TestCaseSource(nameof(ImportTestCaseSource))]
 		public void RunStableTestCase(IImportTestCase testCase)
-		{
-			RunTestCase(testCase);
-		}
-
-        [Test]
-		[SmokeTest]
-		[TestInQuarantine(TestQuarantineState.SeemsToBeStable,
-						@"Review 04.24 SeemsToBeStable,
-						Before: FailsContinuously 
-						REL-307470 TODO: Broken test needs to be fixed!
-						Ignore tests until verification mechanism will be fixed.
-						DocumentService.GetNativeMD5String(workspaceId, docResult)
-						needs to be reimplemented.")]
-		[TestCaseSource(nameof(ImportFlakyTestCaseSource))]
-		public void RunFlakyTestCase(IImportTestCase testCase)
 		{
 			RunTestCase(testCase);
 		}
@@ -241,21 +207,9 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 		{
 			InitContainer();
 			return _windsorContainer
-				.ResolveAll<IImportTestCase>()
-				.Where(x => x.GetType() != typeof(ItShouldLoadNativesFromPaths));
+				.ResolveAll<IImportTestCase>();
 		}
-
-		private static IEnumerable<IImportTestCase> ImportFlakyTestCaseSource()
-		{
-			InitContainer();
-			return new[]
-			{
-				_windsorContainer
-					.ResolveAll<IImportTestCase>()
-					.First(x => x.GetType() == typeof(ItShouldLoadNativesFromPaths))
-			};
-		}
-
+		
 		private static void InitContainer()
 		{
 			if (_windsorContainer == null)

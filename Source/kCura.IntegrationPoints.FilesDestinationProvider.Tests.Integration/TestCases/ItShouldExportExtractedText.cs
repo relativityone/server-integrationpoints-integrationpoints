@@ -3,6 +3,7 @@ using System.Text;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers;
+using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Process.Internals;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases.Base;
 using NUnit.Framework;
 
@@ -15,9 +16,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 	/// </summary>
 	internal class ItShouldExportExtractedText : MetadataExportTestCaseBase
 	{
-		public ItShouldExportExtractedText(ConfigSettings configSettings)
+		private readonly ExportTestConfiguration _testConfiguration;
+
+		public ItShouldExportExtractedText(ExportTestConfiguration testConfiguration)
 		{
-			_configSettings = configSettings;
+			_testConfiguration = testConfiguration;
 		}
 
 		public override ExportSettings Prepare(ExportSettings settings)
@@ -33,7 +36,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 		public override void Verify(DirectoryInfo directory, DocumentsTestData documentsTestData)
 		{
 			var fileInfo = GetFileInfo(directory);
-			foreach (var item in DataFileFormatHelper.GetMetadataFileColumnValues<string>(_configSettings.LongTextFieldName, fileInfo))
+			foreach (var item in DataFileFormatHelper.GetMetadataFileColumnValues<string>(_testConfiguration.LongTextFieldName, fileInfo))
 			{
 				Assert.That(File.Exists(item));
 				var datFileInfo = new FileInfo(item);
@@ -41,12 +44,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 				Assert.That(FileEncodingDetectionHelper.GetFileEncoding(datFileInfo.FullName), Is.EqualTo(Encoding.UTF8));
 			}
 		}
-
-		#region Properties
-
+		
 		public override string MetadataFormat => "csv";
-		private readonly ConfigSettings _configSettings;
-
-		#endregion Properties
 	}
 }

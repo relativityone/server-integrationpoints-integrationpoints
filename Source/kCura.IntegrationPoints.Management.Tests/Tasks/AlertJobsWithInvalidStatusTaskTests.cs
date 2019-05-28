@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Management.Tasks;
@@ -8,7 +7,6 @@ using kCura.IntegrationPoints.Management.Tasks.Helpers;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.Telemetry.APM;
-using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.Management.Tests.Tasks
 {
@@ -24,7 +22,7 @@ namespace kCura.IntegrationPoints.Management.Tests.Tasks
 			_jobsWithInvalidStatus = Substitute.For<IJobsWithInvalidStatus>();
 			_apm = Substitute.For<IAPM>();
 
-			_instance = new AlertJobsWithInvalidStatusTask(_jobsWithInvalidStatus, _apm);
+			_instance = new AlertJobsWithInvalidStatusTask(_apm);
 		}
 
 		[Test]
@@ -54,13 +52,6 @@ namespace kCura.IntegrationPoints.Management.Tests.Tasks
 			_apm.DidNotReceive().HealthCheckOperation(Arg.Any<string>(), Arg.Any<Func<HealthCheckOperationResult>>());
 			// _apm.Received(1).HealthCheckOperation(Constants.IntegrationPoints.Telemetry.APM_HEALTHCHECK,
 			//	Arg.Is<Func<HealthCheckOperationResult>>(x => ValidateHealthCheckResult(x(), invalidJobs)));
-		}
-
-		private bool ValidateHealthCheckResult(HealthCheckOperationResult healthCheckOperationResult, Dictionary<int, IList<JobHistory>> invalidJobs)
-		{
-			return !healthCheckOperationResult.IsHealthy
-					&& healthCheckOperationResult.CustomData.Keys.SequenceEqual(invalidJobs.Keys.Select(x => $"Workspace {x}"))
-					&& healthCheckOperationResult.Message == "Jobs with invalid status found.";
 		}
 
 		[Test]

@@ -14,6 +14,7 @@ using kCura.Relativity.Client.DTOs;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Testing.Identification;
 using Assert = NUnit.Framework.Assert;
 using Document = kCura.Relativity.Client.DTOs.Document;
 using FieldType = kCura.IntegrationPoints.Contracts.Models.FieldType;
@@ -48,7 +49,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 			_helper = Container.Resolve<IHelper>();
 		}
 
-        [Test]
+		[IdentifiedTest("750ec1e6-7446-44bd-9dbd-641d04e5b8a4")]
 		[SmokeTest]
 		public void ItShouldReturnSourceWorkspaceFields()
 		{
@@ -67,7 +68,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 			Assert.NotNull(fields.FirstOrDefault(field => field.IsRequired));
 		}
 
-        [Test]
+		[IdentifiedTest("26241015-fc5b-4443-bdf1-1545fd40cdd9")]
 		[SmokeTest]
 		public void ItShouldSyncDataToWorkspace()
 		{
@@ -81,7 +82,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 			if (fieldIdentifierEntry != null)
 			{
 				importSettings.IdentityFieldId = int.Parse(fieldIdentifierEntry.FieldIdentifier);
-		    }
+			}
 			
 			string settings = JsonConvert.SerializeObject(importSettings);
 			IEnumerable<FieldMap> sourceFields = CreateDefaultSourceFieldMap(rdoSynchronizer.GetFields(new DataSourceProviderConfiguration(settings)).ToList());

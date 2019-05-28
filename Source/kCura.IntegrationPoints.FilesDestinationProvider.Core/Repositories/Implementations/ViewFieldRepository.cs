@@ -42,13 +42,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories.Imp
 			.GetResult();
 		}
 
-		public ViewFieldIDResponse[] ReadViewFieldIDsFromProduction(int workspaceID, int artifactTypeID, int viewArtifactID)
+		public ViewFieldIDResponse[] ReadViewFieldIDsFromProduction(int workspaceID, int productionArtifactID)
 		{
 			IExternalServiceSimpleInstrumentation instrumentation = CreateInstrumentation(
 				operationName: nameof(IViewFieldManager.ReadViewFieldIDsFromProductionAsync)
 			);
 			return instrumentation.ExecuteAsync(
-				() =>_viewFieldManager.ReadViewFieldIDsFromProductionAsync(workspaceID, artifactTypeID, viewArtifactID)
+				() =>_viewFieldManager.ReadViewFieldIDsFromProductionAsync(workspaceID, productionArtifactID)
 			)
 			.GetAwaiter()
 			.GetResult();

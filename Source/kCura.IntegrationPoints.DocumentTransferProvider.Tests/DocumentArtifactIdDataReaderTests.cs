@@ -5,8 +5,6 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.DocumentTransferProvider.DataReaders;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
@@ -19,19 +17,11 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests
 		private const string _ARTIFACT_ID_FIELD_NAME = "ArtifactId";
 		private ISavedSearchRepository _savedSearchRepository;
 		private IDataReader _instance;
-		private const int SAVED_SEARCH_ID = 123;
-		private Query<kCura.Relativity.Client.DTOs.Document> _expectedQuery;
 
 		[SetUp]
 		public override void SetUp()
 		{
 			_savedSearchRepository = NSubstitute.Substitute.For<ISavedSearchRepository>();
-
-			_expectedQuery = new Query<kCura.Relativity.Client.DTOs.Document>
-			{
-				Condition = new SavedSearchCondition(SAVED_SEARCH_ID),
-				Fields = FieldValue.NoFields // we only want the ArtifactId
-			};
 
 			_instance = new DocumentArtifactIdDataReader(_savedSearchRepository);
 		}
@@ -161,9 +151,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests
 
 			// Act
 			bool readResult1 = _instance.Read();
-			object accessorResult1 = _instance[_ARTIFACT_ID_FIELD_NAME];
 			bool readResult2 = _instance.Read();
-			object accessorResult2 = _instance[_ARTIFACT_ID_FIELD_NAME];
 			bool readResult3 = _instance.Read();
 
 			// Assert

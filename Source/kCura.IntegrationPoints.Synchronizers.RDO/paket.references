@@ -3,4 +3,4 @@ kCura.Apps.Common.Utils
 kCura.Relativity.Client
 Relativity.API
 Relativity.Core
-Relativity.ImportExport
+Relativity.DataExchange.Client.SDK

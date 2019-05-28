@@ -33,7 +33,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 				formType = 2;
 			}
 
-			List<object> result = new List<object>();
 			ArrayList arrs = (ArrayList)_loadFilePreviewer.ReadFile(String.Empty, formType);
 
 			return arrs.Cast<object>().ToList();

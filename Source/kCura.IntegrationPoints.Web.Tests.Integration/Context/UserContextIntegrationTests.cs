@@ -14,6 +14,7 @@ using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoints.Web.Context.UserContext;
 using kCura.IntegrationPoints.Web.Context.UserContext.Exceptions;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.Web.Tests.Integration.Context
 {
@@ -34,7 +35,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Context
 			_container = CreateIoCContainer();
 		}
 
-		[Test]
+		[IdentifiedTest("e0b4f1a1-1d3a-4a81-9a6a-ec9b6466f488")]
 		[SmokeTest]
 		public void GetUserID_ShouldReturnCorrectValueWhenRequestContextContainsData()
 		{
@@ -54,7 +55,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Context
 			actualUserID.Should().Be(requestContextUserID, "because userId was present in headers");
 		}
 
-		[Test]
+		[IdentifiedTest("9172e58f-b9cb-49ea-a206-f93dcdc7cb44")]
 		[SmokeTest]
 		public void GetUserID_ShouldReturnCorrectValueWhenRequestContextIsEmptyAndSessionReturnsData()
 		{
@@ -73,7 +74,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Context
 			actualUserID.Should().Be(sessionUserID, "because session contains this value and RequestContext was empty.");
 		}
 
-		[Test]
+		[IdentifiedTest("ae5c0763-1401-456c-8754-3b87286aae71")]
 		[SmokeTest]
 		public void GetUserID_ShouldThrowExceptionWhenNoWorkspaceContextIsPresent()
 		{
@@ -91,7 +92,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Context
 				"because user context is not present");
 		}
 
-		[Test]
+		[IdentifiedTest("af81317c-0af7-4951-881c-13627415f2ec")]
 		[SmokeTest]
 		public void GetWorkspaceUserID_ShouldReturnCorrectValueWhenRequestContextContainsData()
 		{
@@ -111,7 +112,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Context
 			actualWorkspaceUserID.Should().Be(requestContextWorkspaceUserID, "because workspaceUserId was present in headers");
 		}
 
-		[Test]
+		[IdentifiedTest("84ce667a-407e-4417-a646-4bb49172d6e3")]
 		[SmokeTest]
 		public void GetWorkspaceUserID_ShouldReturnCorrectValueWhenRequestContextIsEmptyAndSessionReturnsData()
 		{
@@ -130,7 +131,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Context
 			actualWorkspaceUserID.Should().Be(sessionWorkspaceUserID, "because session contains this value and RequestContext was empty.");
 		}
 
-		[Test]
+		[IdentifiedTest("e872e124-1030-4028-902b-1dbde41b1a29")]
 		[SmokeTest]
 		public void GetWorkspaceUserID_ShouldThrowExceptionWhenNoWorkspaceContextIsPresent()
 		{

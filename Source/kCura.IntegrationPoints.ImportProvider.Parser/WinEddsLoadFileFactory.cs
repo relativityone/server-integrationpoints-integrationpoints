@@ -15,7 +15,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 	{
 		private ICredentialProvider _credentialProvider;
 		private IDataTransferLocationServiceFactory _locationServiceFactory;
-		private IDataTransferLocationService _locationService;
 		private IWebApiConfig _webApiConfig;
 
 		public WinEddsLoadFileFactory(ICredentialProvider credentialProvider, IDataTransferLocationServiceFactory locationServiceFactory, IWebApiConfig webApiConfig)
@@ -33,14 +32,14 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 			NativeSettingsFactory factory = new NativeSettingsFactory(cred, settings.WorkspaceId);
 			LoadFile loadFile = factory.ToLoadFile();
 
-			_locationService = _locationServiceFactory.CreateService(settings.WorkspaceId);
+			IDataTransferLocationService locationService = _locationServiceFactory.CreateService(settings.WorkspaceId);
 
 			loadFile.RecordDelimiter = (char)settings.AsciiColumn;
 			loadFile.QuoteDelimiter = (char)settings.AsciiQuote;
 			loadFile.NewlineDelimiter = (char)settings.AsciiNewLine;
 			loadFile.MultiRecordDelimiter = (char)settings.AsciiMultiLine;
 			loadFile.HierarchicalValueDelimiter = (char)settings.AsciiMultiLine;
-			loadFile.FilePath = Path.Combine(_locationService.GetWorkspaceFileLocationRootPath(settings.WorkspaceId), settings.LoadFile);
+			loadFile.FilePath = Path.Combine(locationService.GetWorkspaceFileLocationRootPath(settings.WorkspaceId), settings.LoadFile);
 			loadFile.SourceFileEncoding = Encoding.GetEncoding(settings.EncodingType);
 			loadFile.StartLineNumber = long.Parse(settings.LineNumber);
 
@@ -54,9 +53,9 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 
 		public ImageLoadFile GetImageLoadFile(ImportSettingsBase settings)
 		{
-			_locationService = _locationServiceFactory.CreateService(settings.WorkspaceId);
+			IDataTransferLocationService locationService = _locationServiceFactory.CreateService(settings.WorkspaceId);
 
-			string loadFilePath = Path.Combine(_locationService.GetWorkspaceFileLocationRootPath(settings.WorkspaceId), settings.LoadFile);
+			string loadFilePath = Path.Combine(locationService.GetWorkspaceFileLocationRootPath(settings.WorkspaceId), settings.LoadFile);
 			return new ImageLoadFile {
 				FileName = loadFilePath,
 				StartLineNumber = long.Parse(settings.LineNumber)

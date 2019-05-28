@@ -15,6 +15,7 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 {
@@ -52,7 +53,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			};
 		}
 
-		[Test]
+		[IdentifiedTest("b86d1588-605c-4adc-8c7e-4548fc198637")]
 		public async Task ItShouldCreateWorkspaceTag()
 		{
 			// ACT
@@ -91,7 +92,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("dca59505-f96e-4dce-bea9-369b9447f67a")]
 		public async Task ItShouldUpdateExistingTag()
 		{
 			var configuration = new SourceWorkspaceTagsCreationConfigurationStub

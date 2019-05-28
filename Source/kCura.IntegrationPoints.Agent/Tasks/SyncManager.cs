@@ -479,11 +479,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_logger.LogInformation(e, "Job {JobId} has been stopped.", job.JobId);
 		}
 
-		private void LogJobPreExecuteError(Job job, Exception ex)
-		{
-			_logger.LogError(ex, "JobPreExecute failed for job {JobId}.", job.JobId);
-		}
-
 		private void LogUnknownSourceProvider(Job job)
 		{
 			_logger.LogError("Missing source provider for Job {JobId}.", job.JobId);

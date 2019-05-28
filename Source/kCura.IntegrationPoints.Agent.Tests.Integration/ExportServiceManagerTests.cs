@@ -34,6 +34,7 @@ using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
@@ -123,7 +124,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			_sourceWorkspaceDto = Workspace.GetWorkspaceDto(SourceWorkspaceArtifactId);
 		}
 
-		[Test]
+		[IdentifiedTest("b09c8436-23e8-45d7-a57c-bbe214335433")]
 		[SmokeTest]
 		public void RunRelativityProviderAlone()
 		{
@@ -178,7 +179,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			}
 		}
 
-        [Test]
+		[IdentifiedTest("6a5a30fb-ffd1-40b2-bab5-876c215eca09")]
 		[SmokeTest]
 		public void StopStateCannotBeUpdatedWhileExportServiceObservers()
 		{

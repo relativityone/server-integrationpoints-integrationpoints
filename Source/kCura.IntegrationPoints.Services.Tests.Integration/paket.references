@@ -12,3 +12,4 @@ Relativity.Telemetry.APM
 relativity.transfer.client
 RelativityCore
 Relativity.OAuth2Client
+relativity.testing.identification

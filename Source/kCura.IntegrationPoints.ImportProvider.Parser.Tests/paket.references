@@ -1,7 +1,7 @@
 CSharpGuidelineAnalyzer
 kCura.Apps.Common.Utils
 Relativity.Data
-Relativity.ImportExport
+Relativity.DataExchange.Client.SDK
 NUnit
 NSubstitute
 SystemWrapper.Interfaces

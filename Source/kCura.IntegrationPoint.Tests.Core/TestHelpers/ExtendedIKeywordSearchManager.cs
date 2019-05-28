@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Relativity.API;
 using Relativity.Services;
 using Relativity.Services.Field;
 using Relativity.Services.Search;
@@ -13,14 +12,12 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 	public class ExtendedIKeywordSearchManager : IKeywordSearchManager
 	{
 		private readonly ITestHelper _helper;
-		private readonly ExecutionIdentity _identity;
 		private Lazy<IKeywordSearchManager> _managerWrapper;
 		private IKeywordSearchManager Manager => _managerWrapper.Value;
 
-		public ExtendedIKeywordSearchManager(ITestHelper helper, ExecutionIdentity identity)
+		public ExtendedIKeywordSearchManager(ITestHelper helper)
 		{
 			_helper = helper;
-			_identity = identity;
 			_managerWrapper = new Lazy<IKeywordSearchManager>(helper.CreateUserProxy<IKeywordSearchManager>);
 		}
 
