@@ -23,7 +23,7 @@ namespace Relativity.Sync.Tests.Integration
 		public Task<Executors.IImportJob> CreateImportJobAsync(ISynchronizationConfiguration configuration, IBatch batch)
 		{
 			Executors.IImportJob importJob = new ImportJob(_importBulkArtifactJob, _semaphoreSlim, _jobHistoryErrorRepository,
-				configuration.SourceWorkspaceArtifactId, configuration.JobHistoryTagArtifactId, _logger);
+				configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, _logger);
 			return Task.FromResult(importJob);
 		}
 	}
