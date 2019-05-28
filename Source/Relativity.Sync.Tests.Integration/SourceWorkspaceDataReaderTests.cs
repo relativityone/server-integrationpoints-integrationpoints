@@ -6,6 +6,7 @@ using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Tests.Common;
+using Relativity.Sync.Tests.Integration.Helpers;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.Integration
@@ -39,7 +40,7 @@ namespace Relativity.Sync.Tests.Integration
 
 			_instance = new SourceWorkspaceDataReader(container.Resolve<IBatchDataReaderBuilder>(),
 				_configuration,
-				container.Resolve<IRelativityExportBatcher>(),
+				container.Resolve<RelativityExportBatcherFactory>(),
 				container.Resolve<IFieldManager>(),
 				container.Resolve<IItemStatusMonitor>(),
 				Mock.Of<ISyncLog>());

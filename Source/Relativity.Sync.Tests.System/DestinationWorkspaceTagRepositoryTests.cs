@@ -46,7 +46,7 @@ namespace Relativity.Sync.Tests.System
 			{
 				SourceWorkspaceArtifactId = _sourceWorkspaceArtifactId,
 				DestinationWorkspaceTagArtifactId = destinationWorkspaceTagId,
-				JobHistoryTagArtifactId = jobHistoryId
+				JobHistoryArtifactId = jobHistoryId
 			};
 
 			// Act

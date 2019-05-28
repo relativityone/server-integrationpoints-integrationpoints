@@ -62,7 +62,7 @@ namespace Relativity.Sync.Executors
 					IBatch batch = await _batchRepository.GetAsync(configuration.SourceWorkspaceArtifactId, batchId).ConfigureAwait(false);
 					using (IImportJob importJob = await _importJobFactory.CreateImportJobAsync(configuration, batch).ConfigureAwait(false))
 					{
-						await importJob.RunAsync(token).ConfigureAwait(false);
+						importResult = await importJob.RunAsync(token).ConfigureAwait(false);
 
 						IEnumerable<int> pushedDocumentArtifactIds = await importJob.GetPushedDocumentArtifactIds().ConfigureAwait(false);
 						Task<IEnumerable<int>> taggingTask = TagDocumentsAsync(configuration, pushedDocumentArtifactIds, token);
@@ -189,7 +189,7 @@ namespace Relativity.Sync.Executors
 					int subsetCount = failedTagArtifactIds.Count < maxSubset ? failedTagArtifactIds.Count : maxSubset;
 					string subsetArtifactIds = string.Join(",", failedTagArtifactIds, 0, subsetCount);
 
-					string errorMessage = $"Failed to tag synchronized documents in source workspace. The first {maxSubset} are: {subsetArtifactIds}.";
+					string errorMessage = $"Failed to tag synchronized documents in source workspace. The first {maxSubset} out of {failedTagArtifactIds.Count} are: {subsetArtifactIds}.";
 					var failedTaggingException = new SyncException(errorMessage, jobHistoryArtifactId.ToString(CultureInfo.InvariantCulture));
 					taggingResult = ExecutionResult.Failure(errorMessage, failedTaggingException);
 				}

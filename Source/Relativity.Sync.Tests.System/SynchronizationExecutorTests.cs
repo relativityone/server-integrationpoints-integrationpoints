@@ -27,6 +27,7 @@ namespace Relativity.Sync.Tests.System
 			_serviceFactoryStub = new ServiceFactoryStub(ServiceFactory);
 		}
 
+		[Test]
 		[Ignore("This test is not automatic yet.")]
 		public async Task ItShouldPassGoldFlow()
 		{
@@ -80,7 +81,7 @@ namespace Relativity.Sync.Tests.System
 				},
 
 				JobArtifactId = jobHistoryArtifactId,
-				JobHistoryTagArtifactId = jobHistoryArtifactId,
+				JobHistoryArtifactId = jobHistoryArtifactId,
 				DestinationFolderArtifactId = destinationFolderArtifactId,
 				DestinationWorkspaceTagArtifactId = destinationWorkspaceTag.ArtifactId,
 				SendEmails = false,
@@ -133,10 +134,13 @@ namespace Relativity.Sync.Tests.System
 			Assert.AreEqual(ExecutionStatus.Completed, snapshotPartitionExecutorResult.Status);
 
 			// Data reader setup
+			IRelativityExportBatcher BatcherFactory(Guid runId, int wsId, int syncConfigId) =>
+				new RelativityExportBatcher(_serviceFactoryStub, new BatchRepository(_serviceFactoryStub), runId, wsId, syncConfigId);
+
 			var dataReader = new SourceWorkspaceDataReader(
 				new BatchDataReaderBuilder(fieldManager), 
 				configuration,
-				new RelativityExportBatcher(_serviceFactoryStub, new BatchRepository(_serviceFactoryStub)),
+				BatcherFactory,
 				fieldManager,
 				new ItemStatusMonitor(),
 				logger);
@@ -149,8 +153,7 @@ namespace Relativity.Sync.Tests.System
 				new BatchProgressHandlerFactory(new BatchProgressUpdater(logger), dateTime),
 				new JobHistoryErrorRepository(_serviceFactoryStub),
 				logger);
-			SynchronizationExecutor syncExecutor = new SynchronizationExecutor(importJobFactory, batchRepository, destinationWorkspaceTagRepository, syncMetrics, dateTime, fieldManager,
-				jobHistoryErrorRepository, logger);
+			var syncExecutor = new SynchronizationExecutor(importJobFactory, batchRepository, destinationWorkspaceTagRepository, syncMetrics, dateTime, fieldManager, jobHistoryErrorRepository, logger);
 
 			// ACT
 			ExecutionResult syncResult = await syncExecutor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
