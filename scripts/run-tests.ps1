@@ -8,7 +8,7 @@
     Project name
 
 .PARAMETER testsType
-    Tests type - integration or performance
+    Tests type - integration, performance, or system
 
 .PARAMETER sourceDir
     Path to source directory

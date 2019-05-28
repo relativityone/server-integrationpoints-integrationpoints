@@ -13,6 +13,7 @@ using Relativity.Services.Interfaces.File.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Tests.Integration.Helpers;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.Integration
