@@ -7,7 +7,6 @@ using kCura.Relativity.ImportAPI;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
-using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
@@ -28,6 +27,7 @@ namespace Relativity.Sync.Tests.System
 			_serviceFactoryStub = new ServiceFactoryStub(ServiceFactory);
 		}
 
+		[Test]
 		[Ignore("This test is not automatic yet.")]
 		public async Task ItShouldPassGoldFlow()
 		{
@@ -132,10 +132,13 @@ namespace Relativity.Sync.Tests.System
 			Assert.AreEqual(ExecutionStatus.Completed, snapshotPartitionExecutorResult.Status);
 
 			// Data reader setup
+			IRelativityExportBatcher BatcherFactory(Guid runId, int wsId, int syncConfigId) =>
+				new RelativityExportBatcher(_serviceFactoryStub, new BatchRepository(_serviceFactoryStub), runId, wsId, syncConfigId);
+
 			SourceWorkspaceDataReader dataReader = new SourceWorkspaceDataReader(
 				new BatchDataReaderBuilder(fieldManager), 
 				configuration,
-				new RelativityExportBatcher(_serviceFactoryStub, new BatchRepository(_serviceFactoryStub)),
+				BatcherFactory,
 				fieldManager,
 				new ItemStatusMonitor(),
 				logger);

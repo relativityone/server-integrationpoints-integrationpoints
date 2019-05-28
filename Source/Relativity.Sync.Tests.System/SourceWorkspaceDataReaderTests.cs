@@ -81,7 +81,7 @@ namespace Relativity.Sync.Tests.System
 			}
 		}
 
-		private static SourceWorkspaceDataReader BuildDataReader(IFieldManager fieldManager, ISynchronizationConfiguration configuration, SourceServiceFactoryStub sourceServiceFactory)
+		private static SourceWorkspaceDataReader BuildDataReader(IFieldManager fieldManager, ISynchronizationConfiguration configuration, ServiceFactoryStub sourceServiceFactory)
 		{
 			IRelativityExportBatcher ExportBatcherFactory(Guid runId, int workspaceArtifactId, int syncConfigurationArtifactId)
 			{
