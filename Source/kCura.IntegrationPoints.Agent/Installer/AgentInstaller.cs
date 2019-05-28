@@ -86,7 +86,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 			container.Register(Component.For<IWorkspaceDBContext>().UsingFactoryMethod(k =>
 			{
 				JobContextProvider jobContextProvider = k.Resolve<JobContextProvider>();
-				return new WorkspaceContext(_agentHelper.GetDBContext(jobContextProvider.Job.WorkspaceID));
+				return new WorkspaceDBContext(_agentHelper.GetDBContext(jobContextProvider.Job.WorkspaceID));
 			}).LifestyleTransient());
 
 			container.Register(Component.For<Job>().UsingFactoryMethod(k =>

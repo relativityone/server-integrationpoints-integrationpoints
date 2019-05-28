@@ -103,7 +103,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			IJobServiceDataProvider jobServiceDataProvider = new JobServiceDataProvider(agentService, Helper);
 			IJobService jobService = new JobService(agentService, jobServiceDataProvider, Helper);
 			IDBContext dbContext = Helper.GetDBContext(Helper.GetActiveCaseID());
-			IWorkspaceDBContext workspaceDbContext = new WorkspaceContext(dbContext);
+			IWorkspaceDBContext workspaceDbContext = new WorkspaceDBContext(dbContext);
 			IJobResourceTracker jobResourceTracker = new JobResourceTracker(repositoryFactory, workspaceDbContext);
 			IJobTracker jobTracker = new JobTracker(jobResourceTracker);
 			IIntegrationPointSerializer integrationPointSerializer = new IntegrationPointSerializer(Logger);

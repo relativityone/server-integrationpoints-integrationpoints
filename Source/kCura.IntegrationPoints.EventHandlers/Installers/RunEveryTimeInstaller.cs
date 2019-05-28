@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 
 		protected override void Run()
 		{
-			new MigrationRunner(new EddsContext(Helper.GetDBContext(-1)), new WorkspaceContext(Helper.GetDBContext(Helper.GetActiveCaseID()))).Run();
+			new MigrationRunner(new EddsDBContext(Helper.GetDBContext(-1)), new WorkspaceDBContext(Helper.GetDBContext(Helper.GetActiveCaseID()))).Run();
 
 			var telemetryManger = new TelemetryManager(Helper);
 			telemetryManger.AddMetricProviders(new TelemetryMetricProvider(Helper));

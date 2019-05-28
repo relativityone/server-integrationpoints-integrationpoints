@@ -104,11 +104,11 @@ namespace kCura.IntegrationPoints.Data.Factories
 		/// <summary>
 		/// Returns a class implementing the IScratchTableRepository interface.
 		/// </summary>
-		/// <param name="workspaceArtifactId">Artifact Id of the source workspace.</param>
+		/// <param name="workspaceArtifactID">Artifact Id of the source workspace.</param>
 		/// <param name="tablePrefix">Prefix for any temp table that will be handled by this repository</param>
 		/// <param name="tableSuffix">Suffix for any temp table that will be handled by this repository</param>
 		/// <returns>A class implementing the IScratchTableRepository interface</returns>
-		IScratchTableRepository GetScratchTableRepository(int workspaceArtifactId, string tablePrefix, string tableSuffix);
+		IScratchTableRepository GetScratchTableRepository(int workspaceArtifactID, string tablePrefix, string tableSuffix);
 
 		/// <summary>
 		/// Returns a class implementing the ISourceJobRepository interface.
