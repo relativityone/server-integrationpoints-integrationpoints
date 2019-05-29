@@ -50,7 +50,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			builder1.Setup(b => b.GetRowValuesBuilderAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _documentArtifactIds)).ReturnsAsync(_rowValueBuilder1.Object);
 			builder1.Setup(b => b.BuildColumns()).Returns(new[] {nonDocumentSpecialField1, documentSpecialField, documentIdentifierField});
 
-
 			_rowValueBuilder2 = new Mock<ISpecialFieldRowValuesBuilder>();
 			var builder2 = new Mock<ISpecialFieldBuilder>();
 			builder2.Setup(b => b.GetRowValuesBuilderAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _documentArtifactIds)).ReturnsAsync(_rowValueBuilder2.Object);
@@ -177,6 +176,23 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			// Assert
 			await action.Should().NotThrowAsync().ConfigureAwait(false);
+		}
+
+		[Test]
+		public async Task ItShouldNoFieldsIfThereAreNoSpecialFieldsAndNoMappedDocumentFields()
+		{
+			// Arrange
+			_configuration = new Mock<ISynchronizationConfiguration>();
+			_configuration.Setup(c => c.FieldMappings).Returns(new List<FieldMap>(0));
+			_configuration.Setup(c => c.SourceWorkspaceArtifactId).Returns(_SOURCE_WORKSPACE_ARTIFACT_ID);
+
+			_instance = new FieldManager(_configuration.Object, _documentFieldRepository.Object, Enumerable.Empty<ISpecialFieldBuilder>());
+
+			// Act
+			IReadOnlyList<FieldInfoDto> result = await _instance.GetAllFieldsAsync(CancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			result.Should().BeEmpty();
 		}
 
 		[Test]
