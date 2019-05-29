@@ -111,14 +111,14 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		}
 
 		[TestCaseSource(nameof(EmptyFieldNamesListTestCases))]
-		public async Task ItShouldThrowArgumentExceptionWhenFieldNamesListIsNullOrEmpty(ICollection<string> fieldNames)
+		public async Task ItShouldReturnEmptyDictionaryWhenFieldNamesListIsNullOrEmpty(ICollection<string> fieldNames)
 		{
 			// Act
-			Func<Task<IDictionary<string, RelativityDataType>>> action = () =>
-				_instance.GetRelativityDataTypesForFieldsByFieldNameAsync(_sourceWorkspaceArtifactId, fieldNames, CancellationToken.None);
+			IDictionary<string, RelativityDataType> result =
+				await _instance.GetRelativityDataTypesForFieldsByFieldNameAsync(_sourceWorkspaceArtifactId, fieldNames, CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
-			await action.Should().ThrowAsync<ArgumentException>().ConfigureAwait(false);
+			result.Should().BeEmpty();
 			_objectManager.Verify(om => om.QuerySlimAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), CancellationToken.None), Times.Never);
 		}
 

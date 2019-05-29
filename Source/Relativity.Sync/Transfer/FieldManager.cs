@@ -105,15 +105,13 @@ namespace Relativity.Sync.Transfer
 
 		private async Task<List<FieldInfoDto>> EnrichDocumentFieldsWithRelativityDataTypesAsync(List<FieldInfoDto> fields, CancellationToken token)
 		{
-			if (fields.Count == 0)
+			if (fields.Count != 0)
 			{
-				return fields;
-			}
-
-			IDictionary<string, RelativityDataType> fieldNameToFieldType = await GetRelativityDataTypesForFieldsAsync(fields, token).ConfigureAwait(false);
-			foreach (var field in fields)
-			{
-				field.RelativityDataType = fieldNameToFieldType[field.DisplayName];
+				IDictionary<string, RelativityDataType> fieldNameToFieldType = await GetRelativityDataTypesForFieldsAsync(fields, token).ConfigureAwait(false);
+				foreach (var field in fields)
+				{
+					field.RelativityDataType = fieldNameToFieldType[field.DisplayName];
+				}
 			}
 
 			return fields;

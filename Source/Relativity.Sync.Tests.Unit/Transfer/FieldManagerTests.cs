@@ -44,25 +44,24 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		[SetUp]
 		public void SetUp()
 		{
-			_documentArtifactIds = new[] {_FIRST_DOCUMENT, _SECOND_DOCUMENT, _THIRD_DOCUMENT};
+			_documentArtifactIds = new[] { _FIRST_DOCUMENT, _SECOND_DOCUMENT, _THIRD_DOCUMENT };
 
 			_documentIdentifierField = FieldInfoDto.DocumentField(_DOCUMENT_IDENTIFIER_FIELD_NAME, true);
 			_documentSpecialField = FieldInfoDto.DocumentField(_DOCUMENT_SPECIAL_FIELD_NAME, false);
 			_nonDocumentSpecialField1 = FieldInfoDto.GenericSpecialField(SpecialFieldType.None, _NON_DOCUMENT_SPECIAL_FIELD_1_NAME);
 			_nonDocumentSpecialField2 = FieldInfoDto.GenericSpecialField(SpecialFieldType.None, _NON_DOCUMENT_SPECIAL_FIELD_2_NAME);
-			_mappedField1 = new FieldMap {SourceField = new FieldEntry {DisplayName = _MAPPED_FIELD_1_NAME}};
-			_mappedField2 = new FieldMap {SourceField = new FieldEntry {DisplayName = _MAPPED_FIELD_2_NAME}};
-			
+			_mappedField1 = new FieldMap { SourceField = new FieldEntry { DisplayName = _MAPPED_FIELD_1_NAME } };
+			_mappedField2 = new FieldMap { SourceField = new FieldEntry { DisplayName = _MAPPED_FIELD_2_NAME } };
+
 			_rowValueBuilder1 = new Mock<ISpecialFieldRowValuesBuilder>();
 			_builder1 = new Mock<ISpecialFieldBuilder>();
 			_builder1.Setup(b => b.GetRowValuesBuilderAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _documentArtifactIds)).ReturnsAsync(_rowValueBuilder1.Object);
-			_builder1.Setup(b => b.BuildColumns()).Returns(new[] {_nonDocumentSpecialField1, _documentSpecialField, _documentIdentifierField});
-
+			_builder1.Setup(b => b.BuildColumns()).Returns(new[] { _nonDocumentSpecialField1, _documentSpecialField, _documentIdentifierField });
 
 			_rowValueBuilder2 = new Mock<ISpecialFieldRowValuesBuilder>();
 			_builder2 = new Mock<ISpecialFieldBuilder>();
 			_builder2.Setup(b => b.GetRowValuesBuilderAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _documentArtifactIds)).ReturnsAsync(_rowValueBuilder2.Object);
-			_builder2.Setup(b => b.BuildColumns()).Returns(new[] {_nonDocumentSpecialField2});
+			_builder2.Setup(b => b.BuildColumns()).Returns(new[] { _nonDocumentSpecialField2 });
 
 			_configuration = new Mock<ISynchronizationConfiguration>();
 			_configuration.Setup(c => c.FieldMappings).Returns(new[] { _mappedField1, _mappedField2 });
@@ -72,7 +71,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				.ReturnsAsync<int, ICollection<string>, CancellationToken, IDocumentFieldRepository, IDictionary<string, RelativityDataType>>(
 					(workspaceId, fieldNames, token) => fieldNames.ToDictionary(f => f, _ => _NON_SPECIAL_DOCUMENT_FIELD_RELATIVITY_DATA_TYPE));
 
-			_instance = new FieldManager(_configuration.Object, _documentFieldRepository.Object, new[] {_builder1.Object, _builder2.Object});
+			_instance = new FieldManager(_configuration.Object, _documentFieldRepository.Object, new[] { _builder1.Object, _builder2.Object });
 		}
 
 		[Test]
@@ -128,7 +127,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			result.Should().Contain(f => f.DisplayName == _MAPPED_FIELD_1_NAME).Which.DocumentFieldIndex.Should().BeGreaterOrEqualTo(0);
 			result.Should().Contain(f => f.DisplayName == _MAPPED_FIELD_1_NAME).Which.RelativityDataType.Should().Be(_NON_SPECIAL_DOCUMENT_FIELD_RELATIVITY_DATA_TYPE);
-			
+
 			result.Should().Contain(f => f.DisplayName == _MAPPED_FIELD_2_NAME).Which.DocumentFieldIndex.Should().BeGreaterOrEqualTo(0);
 			result.Should().Contain(f => f.DisplayName == _MAPPED_FIELD_2_NAME).Which.RelativityDataType.Should().Be(_NON_SPECIAL_DOCUMENT_FIELD_RELATIVITY_DATA_TYPE);
 
@@ -144,9 +143,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			const SpecialFieldType rowValueBuilder1FieldType = SpecialFieldType.FolderPath;
 			const SpecialFieldType rowValueBuilder2FieldType = SpecialFieldType.SourceWorkspace;
 
-			_rowValueBuilder1.Setup(rb => rb.AllowedSpecialFieldTypes).Returns(new[] {rowValueBuilder1FieldType});
-			_rowValueBuilder2.Setup(rb => rb.AllowedSpecialFieldTypes).Returns(new[] {rowValueBuilder2FieldType});
-			
+			_rowValueBuilder1.Setup(rb => rb.AllowedSpecialFieldTypes).Returns(new[] { rowValueBuilder1FieldType });
+			_rowValueBuilder2.Setup(rb => rb.AllowedSpecialFieldTypes).Returns(new[] { rowValueBuilder2FieldType });
+
 			// Act
 			IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> result = await _instance.CreateSpecialFieldRowValueBuildersAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _documentArtifactIds)
 				.ConfigureAwait(false);
@@ -163,9 +162,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			const SpecialFieldType rowValueBuilder1FieldType = SpecialFieldType.NativeFileSize;
 			const SpecialFieldType rowValueBuilder2FieldType = SpecialFieldType.NativeFileSize;
 
-			_rowValueBuilder1.Setup(rb => rb.AllowedSpecialFieldTypes).Returns(new[] {rowValueBuilder1FieldType});
-			_rowValueBuilder2.Setup(rb => rb.AllowedSpecialFieldTypes).Returns(new[] {rowValueBuilder2FieldType});
-			
+			_rowValueBuilder1.Setup(rb => rb.AllowedSpecialFieldTypes).Returns(new[] { rowValueBuilder1FieldType });
+			_rowValueBuilder2.Setup(rb => rb.AllowedSpecialFieldTypes).Returns(new[] { rowValueBuilder2FieldType });
+
 			// Act
 			Func<Task<IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder>>> action =
 				() => _instance.CreateSpecialFieldRowValueBuildersAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _documentArtifactIds);
@@ -185,6 +184,23 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			// Assert
 			await action.Should().NotThrowAsync().ConfigureAwait(false);
+		}
+
+		[Test]
+		public async Task ItShouldNoFieldsIfThereAreNoSpecialFieldsAndNoMappedDocumentFields()
+		{
+			// Arrange
+			_configuration = new Mock<ISynchronizationConfiguration>();
+			_configuration.Setup(c => c.FieldMappings).Returns(new List<FieldMap>(0));
+			_configuration.Setup(c => c.SourceWorkspaceArtifactId).Returns(_SOURCE_WORKSPACE_ARTIFACT_ID);
+
+			_instance = new FieldManager(_configuration.Object, _documentFieldRepository.Object, Enumerable.Empty<ISpecialFieldBuilder>());
+
+			// Act
+			IReadOnlyList<FieldInfoDto> result = await _instance.GetAllFieldsAsync(CancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			result.Should().BeEmpty();
 		}
 
 		[Test]
