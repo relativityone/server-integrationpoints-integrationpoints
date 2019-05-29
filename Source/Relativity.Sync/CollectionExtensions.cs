@@ -54,7 +54,7 @@ namespace Relativity.Sync
 					TKey key = keysEnumerator.Current;
 					TValue value = valuesEnumerator.Current;
 
-					if (key == null)
+					if (key == null || object.Equals(key, default(TKey)))
 					{
 						throw new ArgumentException("Collection of keys should not contain null values", nameof(keys));
 					}
