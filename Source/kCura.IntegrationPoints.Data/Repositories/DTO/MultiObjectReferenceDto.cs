@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Repositories.DTO
 {
@@ -7,7 +8,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.DTO
 	{
 		public IReadOnlyCollection<int> ObjectReferences { get; }
 
-		public object Value => ObjectReferences.ToArray();
+		public object Value => ObjectReferences.Select(x => new RelativityObjectRef { ArtifactID = x }) .ToArray();
 
 		public MultiObjectReferenceDto(int objectReference) : this(new[] { objectReference })
 		{ }

@@ -3,6 +3,7 @@ using System.Linq;
 using FluentAssertions;
 using kCura.IntegrationPoints.Data.Repositories.DTO;
 using NUnit.Framework;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Tests.Repositories.DTO
 {
@@ -52,9 +53,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.DTO
 			object result = sut.Value;
 
 			// assert
-			result.Should().BeAssignableTo<int[]>();
-			var resultAsArray = result as int[];
-			resultAsArray.Should().BeEquivalentTo(expectedResult);
+			result.Should().BeAssignableTo<RelativityObjectRef[]>();
+			var resultAsArray = result as RelativityObjectRef[];
+			resultAsArray.Select(x => x.ArtifactID).Should().BeEquivalentTo(expectedResult);
 		}
 
 		[TestCase(new int[0])]
@@ -70,9 +71,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.DTO
 			object result = sut.Value;
 
 			// assert
-			result.Should().BeAssignableTo<int[]>();
-			var resultAsArray = result as int[];
-			resultAsArray.Should().BeEquivalentTo(identifiers);
+			result.Should().BeAssignableTo<RelativityObjectRef[]>();
+			var resultAsArray = result as RelativityObjectRef[];
+			resultAsArray.Select(x => x.ArtifactID).Should().BeEquivalentTo(identifiers);
 		}
 
 		[Test]
@@ -84,18 +85,18 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.DTO
 
 			var sut = new MultiObjectReferenceDto(identifiersArray);
 
-			int[] valueArrayToModify = sut.Value as int[];
+			var valueArrayToModify = sut.Value as RelativityObjectRef[];
 
 			// act
-			valueArrayToModify[0] = 1;
-			valueArrayToModify[1] = 2;
-			valueArrayToModify[2] = 3;
+			valueArrayToModify[0].ArtifactID = 1;
+			valueArrayToModify[1].ArtifactID = 2;
+			valueArrayToModify[2].ArtifactID = 3;
 
 			// assert
 			identifiersArray.Should().BeEquivalentTo(identifiers);
 			sut.ObjectReferences.Should().BeEquivalentTo(identifiers);
-			int[] valueAsArray = sut.Value as int[];
-			valueAsArray.Should().BeEquivalentTo(identifiers);
+			var valueAsArray = sut.Value as RelativityObjectRef[];
+			valueAsArray.Select(x => x.ArtifactID).Should().BeEquivalentTo(identifiers);
 		}
 	}
 }
