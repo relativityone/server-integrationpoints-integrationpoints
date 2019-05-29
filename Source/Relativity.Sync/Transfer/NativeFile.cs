@@ -28,9 +28,18 @@ namespace Relativity.Sync.Transfer
 
 		public static async Task<IEnumerable<INativeFile>> QueryAsync(ISourceServiceFactoryForUser serviceFactory, int workspaceId, ICollection<int> documentIds)
 		{
+			if (documentIds == null || !documentIds.Any())
+			{
+				return Enumerable.Empty<INativeFile>();
+			}
+
 			using (IFileManager fileManager = await serviceFactory.CreateProxyAsync<IFileManager>().ConfigureAwait(false))
 			{
 				FileResponse[] responses = await fileManager.GetNativesForSearchAsync(workspaceId, documentIds.ToArray()).ConfigureAwait(false);
+				if (responses == null)
+				{
+					return Enumerable.Empty<INativeFile>();
+				}
 				return responses.Select(x => new NativeFile(x.DocumentArtifactID, x.Location, x.Filename, x.Size));
 			}
 		}
