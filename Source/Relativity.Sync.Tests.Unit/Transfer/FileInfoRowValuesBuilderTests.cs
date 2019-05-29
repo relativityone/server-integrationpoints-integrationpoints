@@ -71,5 +71,22 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			// ASSERT
 			action.Should().Throw<ArgumentException>();
 		}
+
+		[Test]
+		public void ItShouldThrowSyncExceptionOnDocumentArtifactIdNotPresentInDictionary()
+		{
+			// ARRANGE
+			FieldInfoDto fieldInfoDto = FieldInfoDto.NativeFileSizeField();
+			RelativityObjectSlim document = new RelativityObjectSlim() { ArtifactID = _DOCUMENT_ARTIFACT_ID };
+			IDictionary<int, INativeFile> artifactIdToNativeFileMap = new Dictionary<int, INativeFile>();
+
+			FileInfoRowValuesBuilder instance = new FileInfoRowValuesBuilder(artifactIdToNativeFileMap);
+
+			// ACT
+			Action action = () => instance.BuildRowValue(fieldInfoDto, document, _INITIAL_VALUE);
+
+			// ASSERT
+			action.Should().Throw<SyncException>();
+		}
 	}
 }
