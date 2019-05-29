@@ -105,6 +105,34 @@ namespace kCura.IntegrationPoints.Data.Tests.Installers
 				.ResolveWithoutThrowing<IDestinationProviderRepository>();
 		}
 
+		[Test]
+		public void DocumentRepository_ShouldBeRegisteredWithProperLifestyle()
+		{
+			// assert
+			_sut.Should()
+				.HaveRegisteredSingleComponent<IDocumentRepository>()
+				.Which.Should().BeRegisteredWithLifestyle(LifestyleType.Transient);
+		}
+
+		[Test]
+		public void DocumentRepository_ShouldBeRegisteredWithProperImplementation()
+		{
+			// assert
+			_sut.Should()
+				.HaveRegisteredProperImplementation<IDocumentRepository, KeplerDocumentRepository>();
+		}
+
+		[Test]
+		public void DocumentRepository_ShouldBeResolvedWithoutThrowing()
+		{
+			// arrange
+			RegisterDependencies(_sut);
+
+			// assert
+			_sut.Should()
+				.ResolveWithoutThrowing<IDocumentRepository>();
+		}
+
 		private static void RegisterDependencies(IWindsorContainer container)
 		{
 			IRegistration[] dependencies =
