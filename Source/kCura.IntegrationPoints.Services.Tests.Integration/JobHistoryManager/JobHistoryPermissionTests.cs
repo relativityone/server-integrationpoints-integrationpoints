@@ -3,14 +3,13 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
-using kCura.IntegrationPoint.Tests.Core.TestCategories;
-using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Exceptions;
 using kCura.IntegrationPoints.Services.Tests.Integration.Helpers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Services.Permission;
 using Relativity.Testing.Identification;
 using Permission = kCura.IntegrationPoint.Tests.Core.Permission;
@@ -54,8 +53,8 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			{
 				WorkspaceArtifactId = WorkspaceArtifactId
 			};
-			var client = Helper.CreateUserProxy<IJobHistoryManager>(_userModel.EmailAddress);
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetJobHistoryAsync(jobHistoryRequest).Result);
+			IJobHistoryManager jobHistoryManager = Helper.CreateUserProxy<IJobHistoryManager>(_userModel.EmailAddress);
+			PermissionsHelper.AssertPermissionErrorMessage(() => jobHistoryManager.GetJobHistoryAsync(jobHistoryRequest).Result);
 		}
 
 		[IdentifiedTest("051c7ce7-3bf6-4d80-affd-aeabd353a47d")]
@@ -63,8 +62,8 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 		{
 			Group.AddGroupToWorkspace(WorkspaceArtifactId, _groupId);
 
-			var permissions = Permission.GetGroupPermissions(WorkspaceArtifactId, _groupId);
-			var permissionsForJobHistory = permissions.ObjectPermissions.FindPermission(ObjectTypes.JobHistory);
+			GroupPermissions permissions = Permission.GetGroupPermissions(WorkspaceArtifactId, _groupId);
+			ObjectPermission permissionsForJobHistory = permissions.ObjectPermissions.FindPermission(ObjectTypes.JobHistory);
 			permissionsForJobHistory.ViewSelected = false;
 			Permission.SavePermission(WorkspaceArtifactId, permissions);
 
@@ -72,26 +71,19 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			{
 				WorkspaceArtifactId = WorkspaceArtifactId
 			};
-			var client = Helper.CreateUserProxy<IJobHistoryManager>(_userModel.EmailAddress);
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetJobHistoryAsync(jobHistoryRequest).Result);
+			IJobHistoryManager jobHistoryManager = Helper.CreateUserProxy<IJobHistoryManager>(_userModel.EmailAddress);
+			PermissionsHelper.AssertPermissionErrorMessage(() => jobHistoryManager.GetJobHistoryAsync(jobHistoryRequest).Result);
 		}
 
 		[IdentifiedTest("47249b2c-dce4-4d7c-a772-07fe5c0cdb01")]
 		public void MissingTargetWorkspacePermission()
 		{
-			Group.AddGroupToWorkspace(SourceWorkspaceArtifactId, _groupId);
-
 			var jobHistoryRequest = new JobHistoryRequest
 			{
-				WorkspaceArtifactId = SourceWorkspaceArtifactId,
-				Page = 0,
-				PageSize = 10
+				WorkspaceArtifactId = TargetWorkspaceArtifactId
 			};
-
-			var jobHistoryClient = Helper.CreateUserProxy<IJobHistoryManager>(_userModel.EmailAddress);
-			JobHistorySummaryModel jobHistory = jobHistoryClient.GetJobHistoryAsync(jobHistoryRequest).Result;
-
-			Assert.That(jobHistory.Data.Length, Is.EqualTo(0));
+			IJobHistoryManager jobHistoryManager = Helper.CreateUserProxy<IJobHistoryManager>(_userModel.EmailAddress);
+			PermissionsHelper.AssertPermissionErrorMessage(() => jobHistoryManager.GetJobHistoryAsync(jobHistoryRequest).Result);
 		}
 
 		[IdentifiedTest("a18e2360-2a58-41e3-8b69-663f6f0d6c80")]
@@ -110,10 +102,10 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 				PageSize = 10
 			};
 
-			var jobHistoryClient = Helper.CreateUserProxy<IJobHistoryManager>(_userModel.EmailAddress);
+			IJobHistoryManager jobHistoryManager = Helper.CreateUserProxy<IJobHistoryManager>(_userModel.EmailAddress);
 
 			//Act & Assert
-			Assert.That(() => jobHistoryClient.GetJobHistoryAsync(jobHistoryRequest).Result,
+			Assert.That(() => jobHistoryManager.GetJobHistoryAsync(jobHistoryRequest).Result,
 				Throws.Exception.With.InnerException.TypeOf<InternalServerErrorException>()
 					.And.With.InnerException.Message.EqualTo("Error occurred during request processing. Please contact your administrator."));
 		}
@@ -134,7 +126,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 
 		private void RemoveViewPermission(GroupPermissions permissions, string objectType)
 		{
-			var permissionsForIntegrationPoint = permissions.ObjectPermissions.FindPermission(objectType);
+			ObjectPermission permissionsForIntegrationPoint = permissions.ObjectPermissions.FindPermission(objectType);
 			permissionsForIntegrationPoint.ViewSelected = false;
 		}
 
@@ -144,8 +136,8 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			ipModel.Destination = CreateSerializedDestinationConfigWithTargetWorkspace(ImportOverwriteModeEnum.AppendOnly, TargetWorkspaceArtifactId);
 			Core.Models.IntegrationPointModel ip = CreateOrUpdateIntegrationPoint(ipModel);
 
-			var client = Helper.CreateAdminProxy<IIntegrationPointManager>();
-			client.RunIntegrationPointAsync(SourceWorkspaceArtifactId, ip.ArtifactID).Wait();
+			IIntegrationPointManager integrationPointManager = Helper.CreateAdminProxy<IIntegrationPointManager>();
+			integrationPointManager.RunIntegrationPointAsync(SourceWorkspaceArtifactId, ip.ArtifactID).Wait();
 
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactId, ip.ArtifactID);
 		}
@@ -153,7 +145,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 		private void ModifyJobHistoryItem()
 		{
 			//This is needed, as Integration Point, which has been run, doesn't contain any documents
-			var dbContext = Helper.GetDBContext(SourceWorkspaceArtifactId);
+			IDBContext dbContext = Helper.GetDBContext(SourceWorkspaceArtifactId);
 			dbContext.ExecuteNonQuerySQLStatement(@"UPDATE [JobHistory] SET [ItemsTransferred] = 1, [TotalItems] = 1");
 		}
 	}
