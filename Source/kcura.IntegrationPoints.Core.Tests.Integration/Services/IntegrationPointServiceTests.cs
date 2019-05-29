@@ -52,11 +52,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public override void SuiteSetup()
 		{
 			base.SuiteSetup();
-			QueryRequest request = new QueryRequest()
+
+			IntegrationPoint.Tests.Core.Agent.EnableAllIntegrationPointsAgents();
+
+			var request = new QueryRequest
 			{
 				Fields = new DestinationProvider().ToFieldList(),
 			};
-			_destinationProvider = CaseContext.RsapiService.RelativityObjectManager.Query<DestinationProvider>(request).First();
+			_destinationProvider = ObjectManager.Query<DestinationProvider>(request).First();
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			_jobHistoryService = Container.Resolve<IJobHistoryService>();

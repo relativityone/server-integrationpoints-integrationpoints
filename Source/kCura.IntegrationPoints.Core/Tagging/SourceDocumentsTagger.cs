@@ -89,10 +89,10 @@ namespace kCura.IntegrationPoints.Core.Tagging
 		{
 			try
 			{
-				IEnumerable<int> currentBatch = scratchTableRepository.ReadDocumentIDs(documentsOffset, batchSize).ToList();
+				IEnumerable<int> currentBatch = ReadCurrentDocumentsIDsForBatch(scratchTableRepository, batchSize, documentsOffset);
 				await MassUpdateDocumentsAsync(documentTagsInSourceWorkspace, currentBatch).ConfigureAwait(false);
 			}
-			catch (Exception ex)
+			catch (IntegrationPointsException ex)
 			{
 				_logger?.LogError(ex,
 					"Error occured while tagging documents in source workspace. Number of processed items: {processedCount}",
@@ -101,13 +101,38 @@ namespace kCura.IntegrationPoints.Core.Tagging
 			}
 		}
 
+		private static IEnumerable<int> ReadCurrentDocumentsIDsForBatch(IScratchTableRepository scratchTableRepository, int batchSize, int documentsOffset)
+		{
+			try
+			{
+				return scratchTableRepository.ReadDocumentIDs(documentsOffset, batchSize).ToList();
+			}
+			catch (Exception ex)
+			{
+				throw new IntegrationPointsException(TaggingErrors.SOURCE_OBJECT_SCRATCH_TABLE_READ_ERROR, ex);
+			}
+		}
+
 		private async Task MassUpdateDocumentsAsync(IEnumerable<FieldUpdateRequestDto> documentTagsInSourceWorkspace, IEnumerable<int> currentBatch)
 		{
-			bool updateResult = await _documentRepository.MassUpdateDocumentsAsync(currentBatch, documentTagsInSourceWorkspace).ConfigureAwait(false);
-
-			if (!updateResult)
+			bool isUpdated;
+			try
 			{
-				throw new IntegrationPointsException(MassEditErrors.SOURCE_OBJECT_MASS_EDIT_FAILURE)
+				isUpdated = await _documentRepository
+					.MassUpdateDocumentsAsync(currentBatch, documentTagsInSourceWorkspace)
+					.ConfigureAwait(false);
+			}
+			catch (Exception ex)
+			{
+				throw new IntegrationPointsException(TaggingErrors.SOURCE_OBJECT_MASS_EDIT_FAILURE, ex)
+				{
+					ExceptionSource = IntegrationPointsExceptionSource.KEPLER
+				};
+			}
+
+			if (!isUpdated)
+			{
+				throw new IntegrationPointsException(TaggingErrors.SOURCE_OBJECT_MASS_EDIT_FAILURE)
 				{
 					ExceptionSource = IntegrationPointsExceptionSource.KEPLER
 				};

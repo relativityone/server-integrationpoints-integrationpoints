@@ -1,8 +1,6 @@
 ﻿using kCura.Data.RowDataGateway;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
-using kCura.IntegrationPoint.Tests.Core.TestCategories;
-using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
@@ -23,12 +21,15 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 	[TestFixture]
 	public class QueueRepositoryTests : RelativityProviderTemplate
 	{
-		private readonly int _RipObjectArtifactId = 666;
 		private ITestHelper _helper;
 		private IQueueRepository _queueRepo;
 		private IJobService _jobService;
 
-		public QueueRepositoryTests() : base("QueueRepositoryTests", null)
+		private readonly int _RipObjectArtifactId = 666;
+
+		public QueueRepositoryTests() : base(
+			sourceWorkspaceName: "QueueRepositoryTests",
+			targetWorkspaceName: null)
 		{
 		}
 
@@ -39,9 +40,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			_queueRepo = new QueueRepository(_helper);
 
 			Agent.DisableAllAgents();
+			ClearScheduleQueue();
 		}
-
-		#region GetNumberOfJobsExecutingOrInQueue
 
 		[IdentifiedTest("c575a5d3-f997-4be5-8568-84b17c277588")]
 		public void OnePendingJobInTheQueue_ExpectOneCount()
@@ -204,7 +204,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		[Description("This test takes sometime to process. It requires the IP agent to be running.")]
 		public void OneExecutedScheduledJobInTheQueue_ExpectCountZero()
 		{
-			Agent.EnableAllAgents();
+			Agent.EnableAllIntegrationPointsAgents();
 			try
 			{
 				// arrange
@@ -462,11 +462,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			// assert
 			Assert.AreEqual(0, count);
 		}
-
-		#endregion GetNumberOfJobsExecutingOrInQueue
-
-		#region GetNumberOfJobsExecuting
-
+		
 		[IdentifiedTest("49c4552b-fd4f-4161-a311-04a7f6ae286a")]
 		public void GetNumberOfJobsExecuting_NoJobInTheQueue()
 		{
@@ -636,7 +632,13 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			}
 		}
 
-		#endregion GetNumberOfJobsExecuting
+		private void ClearScheduleQueue()
+		{
+			foreach (Job job in _jobService.GetAllScheduledJobs())
+			{
+				RemoveJobFromTheQueue(job);
+			}
+		}
 
 		private void RemoveJobFromTheQueue(Job job)
 		{

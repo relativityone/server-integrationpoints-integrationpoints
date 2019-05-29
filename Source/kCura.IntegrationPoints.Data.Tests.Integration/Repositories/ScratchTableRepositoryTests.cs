@@ -69,7 +69,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		[IdentifiedTestCase("ba093aef-6cbb-4211-a1fb-5407a31126e6", 2001)]
 		[IdentifiedTestCase("604a3327-f219-4cfe-8d7e-86cb84140d22", 999)]
 		[IdentifiedTestCase("49110dcb-d94c-4453-ab90-118354531903", 1000)]
-		[IdentifiedTestCase("b8409631-850b-4f14-96b8-91b793536e65", 0)]
 		public void CreateScratchTableAndVerifyEntries(int numberOfDocuments)
 		{
 			//ARRANGE

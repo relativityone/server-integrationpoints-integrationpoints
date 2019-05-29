@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		private IQueueDBContext _queueContext;
 		private Relativity.Client.DTOs.Workspace _sourceWorkspaceDto;
 
-		public ExportServiceManagerTests() 
+		public ExportServiceManagerTests()
 			: base("ExportServiceManagerTests", "ExportServiceManagerTests_Destination")
 		{ }
 
@@ -66,7 +66,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 		public override void SuiteTeardown()
 		{
-			IntegrationPoint.Tests.Core.Agent.EnableAllAgents();
+			IntegrationPoint.Tests.Core.Agent.EnableAllIntegrationPointsAgents();
 			base.SuiteTeardown();
 		}
 
@@ -92,13 +92,13 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			IDateTimeHelper dateTimeHelper = Container.Resolve<IDateTimeHelper>();
 			IIntegrationPointRepository integrationPointRepository = Container.Resolve<IIntegrationPointRepository>();
 			var jobHistoryUpdater = new JobHistoryBatchUpdateStatus(
-				jobStatusUpdater, 
-				jobHistoryService, 
-				_jobService, 
-				serializer, 
+				jobStatusUpdater,
+				jobHistoryService,
+				_jobService,
+				serializer,
 				logger,
 				dateTimeHelper);
-			
+
 
 			_exportManager = new ExportServiceManager(Helper, helperFactory,
 				_caseContext, contextContainerFactory,
@@ -144,19 +144,20 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
 			};
 			model = CreateOrUpdateIntegrationPoint(model); // create integration point
-				
-			_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactID, model.ArtifactID, 9); // run now
+
+			_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactID, model.ArtifactID, 9); // add job to schedule queue
 			Job job = null;
 			try
 			{
-				job = GetNextJobInScheduleQueue(new[] { _sourceWorkspaceDto.ResourcePoolID.Value }, model.ArtifactID); // pick up job
+				int[] resourcePoolsIDs = { _sourceWorkspaceDto.ResourcePoolID.Value };
+				job = GetNextJobInScheduleQueue(resourcePoolsIDs, model.ArtifactID, SourceWorkspaceArtifactID);
 
 				TaskParameters parameters = serializer.Deserialize<TaskParameters>(job.JobDetails);
 
 				// act
 				Assert.IsNotNull(job, "There is no job to execute");
 				_exportManager.Execute(job); // run the job
-				
+
 				// assert
 				model = RefreshIntegrationModel(model);
 				IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
@@ -203,7 +204,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				Console.WriteLine($"Resource pool ID: {_sourceWorkspaceDto.ResourcePoolID.Value}");
 				Console.WriteLine($"IntegrationPointModel: {JsonConvert.SerializeObject(model)}");
 				Console.WriteLine();
-				job = GetNextJobInScheduleQueue(new[] { _sourceWorkspaceDto.ResourcePoolID.Value }, model.ArtifactID); // pick up job
+				int[] resourcePoolsIDs = { _sourceWorkspaceDto.ResourcePoolID.Value };
+				job = GetNextJobInScheduleQueue(resourcePoolsIDs, model.ArtifactID, SourceWorkspaceArtifactID);
 
 				Guid batchInstance = Guid.NewGuid();
 				string jobDetails = $@"{{""BatchInstance"":""{batchInstance}"",""BatchParameters"":null}}";

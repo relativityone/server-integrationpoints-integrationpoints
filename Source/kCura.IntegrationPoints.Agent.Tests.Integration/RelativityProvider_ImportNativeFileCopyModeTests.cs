@@ -57,7 +57,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 		public override void SuiteTeardown()
 		{
-			IntegrationPoint.Tests.Core.Agent.EnableAllAgents();
+			IntegrationPoint.Tests.Core.Agent.EnableAllIntegrationPointsAgents();
 			base.SuiteTeardown();
 		}
 
@@ -81,10 +81,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			IAPILog logger = Container.Resolve<IAPILog>();
 			IDateTimeHelper dateTimeHelper = Container.Resolve<IDateTimeHelper>();
 			var jobHistoryUpdater = new JobHistoryBatchUpdateStatus(
-				jobStatusUpdater, 
-				jobHistoryService, 
-				_jobService, 
-				serializer, 
+				jobStatusUpdater,
+				jobHistoryService,
+				_jobService,
+				serializer,
 				logger,
 				dateTimeHelper);
 
@@ -143,16 +143,18 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 			// arrange
 			IntegrationPointModel integrationPointModel = CreateIntegrationPointModel(
-				areNativesPresentInSource, 
-				areNativesPresentInTarget, 
-				importNativeFile, 
+				areNativesPresentInSource,
+				areNativesPresentInTarget,
+				importNativeFile,
 				importNativeFileCopyMode);
 
-			_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactID, integrationPointModel.ArtifactID, _ADMIN_USER_ID); // run now
+			_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactID, integrationPointModel.ArtifactID, _ADMIN_USER_ID); // add job to schedule queue
 			Job job = null;
 			try
 			{
-				job = GetNextJobInScheduleQueue(new[] { _sourceWorkspaceDto.ResourcePoolID.Value }, integrationPointModel.ArtifactID); // pick up job
+				int[] resourcePools = { _sourceWorkspaceDto.ResourcePoolID.Value };
+				job = GetNextJobInScheduleQueue(resourcePools, integrationPointModel.ArtifactID, SourceWorkspaceArtifactID);
+
 				// act
 				_exportManager.Execute(job); // run the job
 
@@ -168,9 +170,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			}
 		}
 
-		private IntegrationPointModel CreateIntegrationPointModel(bool areNativesPresentInSource, 
-			bool areNativesPresentInTarget, 
-			bool importNativeFile, 
+		private IntegrationPointModel CreateIntegrationPointModel(bool areNativesPresentInSource,
+			bool areNativesPresentInTarget,
+			bool importNativeFile,
 			ImportNativeFileCopyModeEnum importNativeFileCopyMode)
 		{
 			string serializedDestinationConfig = CreateDestinationConfig(importNativeFile, importNativeFileCopyMode);

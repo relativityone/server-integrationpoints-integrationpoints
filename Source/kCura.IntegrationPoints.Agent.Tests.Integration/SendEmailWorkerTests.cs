@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			_instanceSettingsManager = Helper.CreateAdminProxy<IInstanceSettingManager>();
 			string localComputerHostname = Dns.GetHostName();
 
-			await SetNotificationInstanceSettings(localComputerHostname);
+			await SetNotificationInstanceSettings(localComputerHostname).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -70,7 +70,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				AddSendingEmailJobToQueue(integrationPointArtifactId);
 
 				// assert
-				FakeSmtpMessage receivedMessage = await fakeSmtpServer.GetFirstMessage(_emailReceivedTimeout);
+				FakeSmtpMessage receivedMessage = await fakeSmtpServer.GetFirstMessage(_emailReceivedTimeout)
+					.ConfigureAwait(false);
 
 				receivedMessage.Should().NotBeNull();
 				receivedMessage.FromAddress.Should().Be(_EMAIL_FROM_ADDRESS);
@@ -103,7 +104,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		private static void EnsureAgentIsEnabled()
 		{
 			IntegrationPoint.Tests.Core.Agent.CreateIntegrationPointAgentIfNotExists();
-			IntegrationPoint.Tests.Core.Agent.EnableAllAgents();
+			IntegrationPoint.Tests.Core.Agent.EnableAllIntegrationPointsAgents();
 		}
 
 		private void AddSendingEmailJobToQueue(int integrationPointArtifactId)
@@ -129,15 +130,15 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 		private async Task SetNotificationInstanceSettings(string localComputerHostname)
 		{
-			await UpdateNotificationInstanceSettings("SMTPPort", _SMTP_PORT.ToString());
-			await UpdateNotificationInstanceSettings("SMTPServer", localComputerHostname);
-			await UpdateNotificationInstanceSettings("SMTPSSLisRequired", _SMTP_IS_SSL_ENABLED);
-			await UpdateNotificationInstanceSettings("EmailFrom", _EMAIL_FROM_ADDRESS);
+			await UpdateNotificationInstanceSettings("SMTPPort", _SMTP_PORT.ToString()).ConfigureAwait(false);
+			await UpdateNotificationInstanceSettings("SMTPServer", localComputerHostname).ConfigureAwait(false);
+			await UpdateNotificationInstanceSettings("SMTPSSLisRequired", _SMTP_IS_SSL_ENABLED).ConfigureAwait(false);
+			await UpdateNotificationInstanceSettings("EmailFrom", _EMAIL_FROM_ADDRESS).ConfigureAwait(false);
 		}
 
 		private async Task UpdateNotificationInstanceSettings(string settingName, string value)
 		{
-			InstanceSetting initialPassword = await GetNotificationInstanceSettings(settingName);
+			InstanceSetting initialPassword = await GetNotificationInstanceSettings(settingName).ConfigureAwait(false);
 
 			initialPassword.Value = value;
 			await _instanceSettingsManager.UpdateSingleAsync(initialPassword).ConfigureAwait(false);

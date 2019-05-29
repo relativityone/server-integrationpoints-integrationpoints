@@ -37,12 +37,15 @@ namespace kCura.IntegrationPoints.Data
 
 	public static class TaggingErrors
 	{
+		private const string SOURCE_OBJECT_TAGGING_ERROR_HEADER = "Tagging Documents with DestinationWorkspace and JobHistory object failed";
+
 		public const string LINK_OBJECT_INSTANCE_ERROR = "Unable to link Destination Workspace object to Job History object";
+		public const string SOURCE_OBJECT_MASS_EDIT_FAILURE = SOURCE_OBJECT_TAGGING_ERROR_HEADER + " - Mass Edit failure.";
+		public const string SOURCE_OBJECT_SCRATCH_TABLE_READ_ERROR = SOURCE_OBJECT_TAGGING_ERROR_HEADER + " - DocumentsIDs read failure.";
 	}
 
 	public static class MassEditErrors
 	{
-		public const string SOURCE_OBJECT_MASS_EDIT_FAILURE = "Tagging Documents with DestinationWorkspace and JobHistory object failed - Mass Edit failure.";
 		public const string JOB_HISTORY_ERROR_STATUS_QUERY_ERROR = "Unable to query for Error Status field on Job History Error.";
 		public const string JOB_HISTORY_ERROR_STATUS_EXISTENCE_ERROR = "Error Status field on Job History Error does not exist.";
 		public const string JOB_HISTORY_ERROR_MASS_EDIT_FAILURE = "Mass Edit Error Status in JobHistoryError object failed - Mass Edit failure.";
