@@ -1,21 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync.Transfer
 {
 	internal sealed class FolderPathFieldBuilder : ISpecialFieldBuilder
 	{
 		private readonly IFolderPathRetriever _folderPathRetriever;
-		private readonly ISourceServiceFactoryForUser _serviceFactory;
 		private readonly IFieldConfiguration _fieldConfiguration;
 
-		public FolderPathFieldBuilder(ISourceServiceFactoryForUser serviceFactory, IFolderPathRetriever folderPathRetriever,
-			IFieldConfiguration fieldConfiguration)
+		public FolderPathFieldBuilder(IFolderPathRetriever folderPathRetriever, IFieldConfiguration fieldConfiguration)
 		{
 			_folderPathRetriever = folderPathRetriever;
-			_serviceFactory = serviceFactory;
 			_fieldConfiguration = fieldConfiguration;
 		}
 

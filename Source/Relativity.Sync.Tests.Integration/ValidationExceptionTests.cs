@@ -11,7 +11,7 @@ using Relativity.Sync.Executors.Validation;
 namespace Relativity.Sync.Tests.Integration
 {
 	[TestFixture]
-	public class ValidationExceptionTests
+	internal sealed class ValidationExceptionTests : ExceptionSerializationTestsBase<ValidationException>
 	{
 		private Exception _innerException;
 		private ValidationMessage _validationMessage;
@@ -27,40 +27,6 @@ namespace Relativity.Sync.Tests.Integration
 			_innerException = new InvalidOperationException("foo");
 			_validationMessage = new ValidationMessage(_ERROR_CODE, _VALIDATION_MESSAGE);
 			_validationResult = new ValidationResult(_validationMessage);
-		}
-
-		[Test]
-		public void ItShouldSerializeToXml()
-		{
-			ValidationException originalException = new ValidationException(_VALIDATION_EXCEPTION_MESSAGE, _innerException);
-			byte[] buffer = new byte[_BUFFER_SIZE];
-			MemoryStream ms = new MemoryStream(buffer);
-			MemoryStream ms2 = new MemoryStream(buffer);
-			BinaryFormatter formatter = new BinaryFormatter();
-
-			// ACT
-			formatter.Serialize(ms, originalException);
-			ValidationException deserializedException = (ValidationException)formatter.Deserialize(ms2);
-
-			// ASSERT
-			deserializedException.InnerException.Should().NotBeNull();
-			deserializedException.InnerException.Message.Should().Be(originalException.InnerException.Message);
-			deserializedException.Message.Should().Be(originalException.Message);
-		}
-
-		[Test]
-		public void ItShouldSerializeToJson()
-		{
-			ValidationException originalException = new ValidationException(_VALIDATION_EXCEPTION_MESSAGE, _innerException);
-
-			// ACT
-			string json = JsonConvert.SerializeObject(originalException);
-			ValidationException deserializedException = JsonConvert.DeserializeObject<ValidationException>(json);
-
-			// ASSERT
-			deserializedException.InnerException.Should().NotBeNull();
-			deserializedException.InnerException.Message.Should().Be(originalException.InnerException.Message);
-			deserializedException.Message.Should().Be(originalException.Message);
 		}
 
 		[Test]

@@ -15,7 +15,7 @@ using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Unit.Stubs;
 using Relativity.Sync.Transfer;
 
-namespace Relativity.Sync.Tests.Unit
+namespace Relativity.Sync.Tests.Unit.Transfer
 {
 	[TestFixture]
 	internal sealed class SourceWorkspaceDataReaderTests

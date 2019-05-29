@@ -104,7 +104,7 @@ namespace Relativity.Sync.Tests.System
 			IFieldManager fieldManager = new FieldManager(configuration, new DocumentFieldRepository(_serviceFactoryStub, logger), new List<ISpecialFieldBuilder>()
 			{
 				new FileInfoFieldsBuilder(nativeFileRepository),
-				new FolderPathFieldBuilder(_serviceFactoryStub, new FolderPathRetriever(_serviceFactoryStub, logger), configuration),
+				new FolderPathFieldBuilder(new FolderPathRetriever(_serviceFactoryStub, logger), configuration),
 				new SourceTagsFieldBuilder(configuration)
 			});
 
