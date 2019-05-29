@@ -30,6 +30,11 @@ namespace Relativity.Sync.Transfer
 				return initialValue;
 			}
 
+			if (!_artifactIdToNativeFile.ContainsKey(document.ArtifactID))
+			{
+				throw new SyncException("Mapping from document artifact ID to native file was not found.");
+			}
+
 			switch (fieldInfoDto.SpecialFieldType)
 			{
 				case SpecialFieldType.NativeFileSize:
