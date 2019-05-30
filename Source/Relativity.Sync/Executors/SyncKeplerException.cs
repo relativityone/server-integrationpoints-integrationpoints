@@ -10,7 +10,7 @@ namespace Relativity.Sync.Executors
 	public sealed class SyncKeplerException : Exception
 	{
 		/// <inheritdoc />
-		public SyncKeplerException() : base()
+		public SyncKeplerException()
 		{
 		}
 

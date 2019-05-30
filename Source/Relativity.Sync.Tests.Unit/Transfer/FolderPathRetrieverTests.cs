@@ -21,7 +21,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 	[TestFixture]
 	public class FolderPathRetrieverTests
 	{
-		private Mock<ISourceServiceFactoryForUser> _serviceFactory;
 		private Mock<ISyncLog> _logger;
 		private FolderPathRetriever _instance;
 		private Mock<IObjectManager> _objectManager;
@@ -37,17 +36,17 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_objectManager = new Mock<IObjectManager>();
 			_folderManager = new Mock<IFolderManager>();
 
-			_serviceFactory = new Mock<ISourceServiceFactoryForUser>();
-			_serviceFactory
+			var serviceFactory = new Mock<ISourceServiceFactoryForUser>();
+			serviceFactory
 				.Setup(x => x.CreateProxyAsync<IObjectManager>())
 				.ReturnsAsync(_objectManager.Object);
-			_serviceFactory
+			serviceFactory
 				.Setup(x => x.CreateProxyAsync<IFolderManager>())
 				.ReturnsAsync(_folderManager.Object);
 
 			_logger = new Mock<ISyncLog>();
 
-			_instance = new FolderPathRetriever(_serviceFactory.Object, _logger.Object);
+			_instance = new FolderPathRetriever(serviceFactory.Object, _logger.Object);
 		}
 
 		private static IEnumerable<ICollection<int>> EmptyAndNullDocumentArtifactIds()
@@ -117,10 +116,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			const int rangeStart = 1000000;
 			ICollection<int> documentArtifactIds = Enumerable.Range(rangeStart, documentCount).ToArray();
 
-			var exception = new ServiceException();
 			_objectManager
 				.Setup(x => x.QueryAsync(It.Is<int>(y => y == _WORKSPACE_ARTIFACT_ID), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))
-				.ThrowsAsync(exception);
+				.Throws<ServiceException>();
 
 			_folderManager
 				.Setup(x => x.GetFullPathListAsync(It.Is<int>(y => y == _WORKSPACE_ARTIFACT_ID), It.IsAny<List<int>>()))
@@ -148,10 +146,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			const int rangeStart = 1000000;
 			ICollection<int> documentArtifactIds = Enumerable.Range(rangeStart, documentCount).ToArray();
 
-			var exception = new Exception();
 			_objectManager
 				.Setup(x => x.QueryAsync(It.Is<int>(y => y == _WORKSPACE_ARTIFACT_ID), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))
-				.ThrowsAsync(exception);
+				.Throws<ServiceException>();
 
 			_folderManager
 				.Setup(x => x.GetFullPathListAsync(It.Is<int>(y => y == _WORKSPACE_ARTIFACT_ID), It.IsAny<List<int>>()))
@@ -165,7 +162,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			// Task.WaitAll doesn't throw immediately when any Object or Folder Manager throws. Instead it waits for ALL tasks to complete in any way.
 			// But at the end it throws the first exception thrown. That is why in this test case we check for `logError` called exactly `batchCount` times
 			// Task.WaitAll call is made inside our SelectAsync extension method.
-			_logger.Verify(x => x.LogError(It.IsAny<Exception>(), It.IsAny<string>(), It.IsAny<QueryRequest>()), Times.Exactly(batchCount));
+			_logger.Verify(x => x.LogError(It.IsAny<ServiceException>(), It.IsAny<string>(), It.IsAny<QueryRequest>()), Times.Exactly(batchCount));
 		}
 
 		[Test]
@@ -176,14 +173,13 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			const int rangeStart = 1000000;
 			ICollection<int> documentArtifactIds = Enumerable.Range(rangeStart, documentCount).ToArray();
 
-			var exception = new ServiceException();
 			_objectManager
 				.Setup(x => x.QueryAsync(It.Is<int>(y => y == _WORKSPACE_ARTIFACT_ID), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))
 				.ReturnsAsync<int, QueryRequest, int, int, IObjectManager, QueryResult>((workspaceArtifactId, queryRequest, start, length) => BuildQueryResult(queryRequest));
 
 			_folderManager
 				.Setup(x => x.GetFullPathListAsync(It.Is<int>(y => y == _WORKSPACE_ARTIFACT_ID), It.IsAny<List<int>>()))
-				.ThrowsAsync(exception);
+				.Throws<ServiceException>();
 
 			// ACT & ASSERT
 			SyncKeplerException thrown = Assert.ThrowsAsync<SyncKeplerException>(async () =>
@@ -203,21 +199,20 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			const int rangeStart = 1000000;
 			ICollection<int> documentArtifactIds = Enumerable.Range(rangeStart, documentCount).ToArray();
 
-			var exception = new Exception();
 			_objectManager
 				.Setup(x => x.QueryAsync(It.Is<int>(y => y == _WORKSPACE_ARTIFACT_ID), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))
 				.ReturnsAsync<int, QueryRequest, int, int, IObjectManager, QueryResult>((workspaceArtifactId, queryRequest, start, length) => BuildQueryResult(queryRequest));
 
 			_folderManager
 				.Setup(x => x.GetFullPathListAsync(It.Is<int>(y => y == _WORKSPACE_ARTIFACT_ID), It.IsAny<List<int>>()))
-				.ThrowsAsync(exception);
+				.Throws<ServiceException>();
 
 			// ACT & ASSERT
 			Assert.ThrowsAsync<SyncKeplerException>(async () =>
 				await _instance.GetFolderPathsAsync(_WORKSPACE_ARTIFACT_ID, documentArtifactIds).ConfigureAwait(false)
 			);
 
-			_logger.Verify(x => x.LogError(It.IsAny<Exception>(), It.IsAny<string>(), It.Is<int>(y => y == _WORKSPACE_ARTIFACT_ID)), Times.Once);
+			_logger.Verify(x => x.LogError(It.IsAny<ServiceException>(), It.IsAny<string>(), It.Is<int>(y => y == _WORKSPACE_ARTIFACT_ID)), Times.Once);
 		}
 
 		#region Auxiliary methods

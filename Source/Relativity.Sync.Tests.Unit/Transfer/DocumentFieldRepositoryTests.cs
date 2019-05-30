@@ -20,7 +20,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 	[TestFixture]
 	public class DocumentFieldRepositoryTests
 	{
-		private Mock<ISourceServiceFactoryForUser> _serviceFactory;
 		private DocumentFieldRepository _instance;
 		private Mock<IObjectManager> _objectManager;
 		private readonly int _sourceWorkspaceArtifactId = 1234;
@@ -30,9 +29,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		{
 			_objectManager = new Mock<IObjectManager>();
 
-			_serviceFactory = new Mock<ISourceServiceFactoryForUser>();
-			_serviceFactory.Setup(f => f.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
-			_instance = new DocumentFieldRepository(_serviceFactory.Object, new EmptyLogger());
+			var serviceFactory = new Mock<ISourceServiceFactoryForUser>();
+			serviceFactory.Setup(f => f.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
+			_instance = new DocumentFieldRepository(serviceFactory.Object, new EmptyLogger());
 		}
 
 		[Test]

@@ -14,8 +14,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 	[TestFixture]
 	public sealed class BatchDataReaderBuilderTests
 	{
-		private FieldInfoDto _firstDocumentField;
-		private FieldInfoDto _secondDocumentField;
 		private List<FieldInfoDto> _getAllFieldsResult;
 		private Mock<IFieldManager> _fieldManager;
 		private RelativityObjectSlim[] _batch;
@@ -34,11 +32,11 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		[SetUp]
 		public void SetUp()
 		{
-			_firstDocumentField = FieldInfoDto.DocumentField(_FIRST_DOCUMENT_FIELD_NAME, false);
-			_firstDocumentField.DocumentFieldIndex = _FIRST_DOCUMENT_FIELD_INDEX_IN_BATCH;
-			_secondDocumentField = FieldInfoDto.DocumentField(_SECOND_DOCUMENT_FIELD_NAME, false);
-			_secondDocumentField.DocumentFieldIndex = _SECOND_DOCUMENT_FIELD_INDEX_IN_BATCH;
-			_getAllFieldsResult = new List<FieldInfoDto> {_firstDocumentField, _secondDocumentField};
+			FieldInfoDto firstDocumentField = FieldInfoDto.DocumentField(_FIRST_DOCUMENT_FIELD_NAME, false);
+			firstDocumentField.DocumentFieldIndex = _FIRST_DOCUMENT_FIELD_INDEX_IN_BATCH;
+			FieldInfoDto secondDocumentField = FieldInfoDto.DocumentField(_SECOND_DOCUMENT_FIELD_NAME, false);
+			secondDocumentField.DocumentFieldIndex = _SECOND_DOCUMENT_FIELD_INDEX_IN_BATCH;
+			_getAllFieldsResult = new List<FieldInfoDto> {firstDocumentField, secondDocumentField};
 			_batchObject = new RelativityObjectSlim {Values = new List<object> {_FIRST_DOCUMENT_FIELD_VALUE, _SECOND_DOCUMENT_FIELD_VALUE}};
 			_batch = new[] {_batchObject};
 			_fieldManager = new Mock<IFieldManager>();
