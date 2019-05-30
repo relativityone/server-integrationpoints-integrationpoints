@@ -12,6 +12,7 @@ using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Helpers;
+using Relativity.Sync.Tests.System.Stubs;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.System
@@ -96,8 +97,6 @@ namespace Relativity.Sync.Tests.System
 					ImportOverwriteMode = ImportOverwriteMode.AppendOverlay,
 					FieldOverlayBehavior = FieldOverlayBehavior.UseFieldSettings,
 					ImportNativeFileCopyMode = ImportNativeFileCopyMode.CopyFiles,
-					RelativityUserName = AppSettings.RelativityUserName,
-					RelativityPassword = AppSettings.RelativityUserPassword,
 					RelativityWebServiceUrl = AppSettings.RelativityWebApiUrl
 				}
 			};
@@ -149,7 +148,7 @@ namespace Relativity.Sync.Tests.System
 				logger);
 
 			// ImportAPI setup
-			IImportJobFactory importJobFactory = new Executors.ImportJobFactory(new ImportApiFactory(), dataReader,
+			IImportJobFactory importJobFactory = new Executors.ImportJobFactory(new ImportApiFactoryStub(AppSettings.RelativityUserName, AppSettings.RelativityUserPassword), dataReader,
 				new BatchProgressHandlerFactory(new BatchProgressUpdater(logger), dateTime),
 				new JobHistoryErrorRepository(_serviceFactoryStub),
 				logger);

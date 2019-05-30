@@ -9,9 +9,9 @@ namespace Relativity.Sync.Executors
 	[ExcludeFromCodeCoverage]
 	internal sealed class ImportApiFactory : IImportApiFactory
 	{
-		public async Task<IImportAPI> CreateImportApiAsync(string userName, string password, Uri webServiceUrl)
+		public async Task<IImportAPI> CreateImportApiAsync(Uri webServiceUrl)
 		{
-			return await Task.Run(() => new ImportAPI(userName, password, webServiceUrl.AbsoluteUri)).ConfigureAwait(false);
+			return await Task.Run(() => new ImportAPI(webServiceUrl.AbsoluteUri)).ConfigureAwait(false);
 		}
 	}
 }

@@ -89,7 +89,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			importApi.Setup(x => x.GetWorkspaceFields(It.IsAny<int>(), It.IsAny<int>())).Returns(() => new[] { field.Object });
 
 			var importApiFactory = new Mock<IImportApiFactory>();
-			importApiFactory.Setup(x => x.CreateImportApiAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Uri>())).ReturnsAsync(importApi.Object);
+			importApiFactory.Setup(x => x.CreateImportApiAsync(It.IsAny<Uri>())).ReturnsAsync(importApi.Object);
 
 			return importApiFactory;
 		}

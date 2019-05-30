@@ -44,8 +44,7 @@ namespace Relativity.Sync.Executors
 
 		private async Task<ImportBulkArtifactJob> CreateImportBulkArtifactJobAsync(ISynchronizationConfiguration configuration, int startingIndex)
 		{
-			IImportAPI importApi = await _importApiFactory.CreateImportApiAsync(configuration.ImportSettings.RelativityUserName, configuration.ImportSettings.RelativityPassword,
-				configuration.ImportSettings.RelativityWebServiceUrl).ConfigureAwait(false);
+			IImportAPI importApi = await _importApiFactory.CreateImportApiAsync(configuration.ImportSettings.RelativityWebServiceUrl).ConfigureAwait(false);
 			ImportBulkArtifactJob importJob = await Task.Run(() => importApi.NewNativeDocumentImportJob()).ConfigureAwait(false);
 			importJob.SourceData.SourceData = _dataReader;
 

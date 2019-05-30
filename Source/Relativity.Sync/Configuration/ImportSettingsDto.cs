@@ -213,16 +213,6 @@ namespace Relativity.Sync.Configuration
 			MoveExistingDocuments && !string.IsNullOrEmpty(FolderPathSourceFieldName);
 
 		/// <summary>
-		/// User name.
-		/// </summary>
-		public string RelativityUserName { get; set; }
-
-		/// <summary>
-		/// Password.
-		/// </summary>
-		public string RelativityPassword { get; set; }
-
-		/// <summary>
 		/// Relativity Web Service URL.
 		/// </summary>
 		public Uri RelativityWebServiceUrl { get; set; }

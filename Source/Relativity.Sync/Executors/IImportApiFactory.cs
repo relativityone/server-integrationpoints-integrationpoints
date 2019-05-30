@@ -6,6 +6,6 @@ namespace Relativity.Sync.Executors
 {
 	internal interface IImportApiFactory
 	{
-		Task<IImportAPI> CreateImportApiAsync(string userName, string password, Uri webServiceUrl);
+		Task<IImportAPI> CreateImportApiAsync(Uri webServiceUrl);
 	}
 }
