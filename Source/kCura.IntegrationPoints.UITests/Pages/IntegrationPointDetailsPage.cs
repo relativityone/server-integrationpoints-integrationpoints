@@ -10,7 +10,10 @@ namespace kCura.IntegrationPoints.UITests.Pages
 	public class IntegrationPointDetailsPage : GeneralPage
 	{
 		[FindsBy(How = How.LinkText, Using = "Run")]
-		protected IWebElement RunButton;
+		protected IWebElement RunButton { get; set; }
+
+		[FindsBy(How = How.Id, Using = "summaryPage")]
+		protected IWebElement SummaryPageTable { get; set; }
 
 		public IntegrationPointDetailsPage(RemoteWebDriver driver) : base(driver)
 		{
@@ -28,7 +31,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		public PropertiesTable SelectGeneralPropertiesTable()
 		{
 			WaitForPage();
-			var t = new PropertiesTable(Driver.FindElementById("summaryPage"), "General");
+			var t = new PropertiesTable(SummaryPageTable, "General");
 			t.Select();
 			return t;
 		}

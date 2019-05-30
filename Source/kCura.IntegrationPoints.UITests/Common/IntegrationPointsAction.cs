@@ -57,8 +57,14 @@ namespace kCura.IntegrationPoints.UITests.Common
 				secondPage.View = model.SourceInformationModel.View;
 			}
 
+			const int startExportAtRecordSleepTimeInMilliseconds = 500;
+			Thread.Sleep(startExportAtRecordSleepTimeInMilliseconds);
+
 			secondPage.StartExportAtRecord = model.SourceInformationModel.StartAtRecord;
-			Thread.Sleep(200);
+
+			const int selectAllFieldsSleepTimeInMilliseconds = 200;
+			Thread.Sleep(selectAllFieldsSleepTimeInMilliseconds);
+
 			if (model.SourceInformationModel.SelectAllFields)
 			{
 				secondPage.SelectAllSourceFields();
