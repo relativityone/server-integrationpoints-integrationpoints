@@ -24,8 +24,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private Mock<IFieldMappings> _fieldMappings;
 		private Mock<IJobHistoryErrorRepository> _jobHistoryErrorRepository;
 
-		private Mock<IImportJobFactory> _importJobFactory;
-		private Mock<ISyncMetrics> _syncMetrics;
 		private Mock<Sync.Executors.IImportJob> _importJob;
 		private Mock<ISynchronizationConfiguration> _config;
 
@@ -52,7 +50,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		public void SetUp()
 		{
 			var dateTime = new Mock<IDateTime>();
-			var jobHistoryErrorRepository = new Mock<IJobHistoryErrorRepository>();
 			var importJobFactory = new Mock<IImportJobFactory>();
 			var syncMetrics = new Mock<ISyncMetrics>();
 			_batchRepository = new Mock<IBatchRepository>();
@@ -78,8 +75,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			_fieldManager.Setup(x => x.GetSpecialFields()).Returns(_specialFields);
 
-			_synchronizationExecutor = new SynchronizationExecutor(_importJobFactory.Object, _batchRepository.Object, _destinationWorkspaceTagRepository.Object,
-				_syncMetrics.Object, _dateTime.Object, _fieldManager.Object, _fieldMappings.Object, _jobHistoryErrorRepository.Object, new EmptyLogger());
+			_synchronizationExecutor = new SynchronizationExecutor(importJobFactory.Object, _batchRepository.Object, _destinationWorkspaceTagRepository.Object,
+				syncMetrics.Object, dateTime.Object, _fieldManager.Object, _fieldMappings.Object, _jobHistoryErrorRepository.Object, new EmptyLogger());
 		}
 
 		[Test]
