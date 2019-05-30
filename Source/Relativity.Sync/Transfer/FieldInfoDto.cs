@@ -2,7 +2,7 @@
 
 namespace Relativity.Sync.Transfer
 {
-	internal sealed class FieldInfoDto
+	internal sealed class FieldInfoDto : IEquatable<FieldInfoDto>
 	{
 		#region Display name constants
 
@@ -39,14 +39,19 @@ namespace Relativity.Sync.Transfer
 
 		public bool Equals(FieldInfoDto other)
 		{
-			return
+			if (other == null)
+			{
+				return false;
+			}
+
+			return 
 				ReferenceEquals(this, other) ||
-					SpecialFieldType == other.SpecialFieldType &&
-					DisplayName.Equals(other.DisplayName, StringComparison.InvariantCulture) &&
-					IsDocumentField == other.IsDocumentField &&
-					RelativityDataType == other.RelativityDataType &&
-					IsIdentifier == other.IsIdentifier &&
-					DocumentFieldIndex == other.DocumentFieldIndex;
+				SpecialFieldType == other.SpecialFieldType &&
+				DisplayName.Equals(other.DisplayName, StringComparison.InvariantCulture) &&
+				IsDocumentField == other.IsDocumentField &&
+				RelativityDataType == other.RelativityDataType &&
+				IsIdentifier == other.IsIdentifier &&
+				DocumentFieldIndex == other.DocumentFieldIndex;
 		}
 
 		public override bool Equals(object obj)

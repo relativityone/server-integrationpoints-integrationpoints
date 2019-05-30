@@ -31,7 +31,6 @@ namespace Relativity.Sync.Executors
 			_destinationWorkspaceTagRepository = destinationWorkspaceTagRepository;
 			_importJobFactory = importJobFactory;
 			_syncMetrics = syncMetrics;
-			_dateTime = dateTime;
 			_fieldManager = fieldManager;
 			_fieldMappings = fieldMappings;
 			_jobHistoryErrorRepository = jobHistoryErrorRepository;
@@ -95,7 +94,7 @@ namespace Relativity.Sync.Executors
 				_syncMetrics.GaugeOperation("ImportJobEnd", importResult.Status, endTime.Ticks, "Ticks", new Dictionary<string, object>());
 			}
 
-			ExecutionResult taggingResult = GetTaggingResults(taggingTasks, configuration.JobHistoryArtifactId, token);
+			ExecutionResult taggingResult = await GetTaggingResults(taggingTasks, configuration.JobHistoryArtifactId).ConfigureAwait(false);
 			if (taggingResult.Status == ExecutionStatus.Failed)
 			{
 				var jobHistoryError = new CreateJobHistoryErrorDto(configuration.JobHistoryArtifactId, ErrorType.Job)
@@ -176,13 +175,13 @@ namespace Relativity.Sync.Executors
 			return failedArtifactIds;
 		}
 
-		private ExecutionResult GetTaggingResults(IList<Task<IEnumerable<int>>> taggingTasks, int jobHistoryArtifactId, CancellationToken token)
+		private async Task<ExecutionResult> GetTaggingResults(IList<Task<IEnumerable<int>>> taggingTasks, int jobHistoryArtifactId)
 		{
 			ExecutionResult taggingResult = ExecutionResult.Success();
 			var failedTagArtifactIds = new List<int>();
 			try
 			{
-				Task.WaitAll(taggingTasks.ToArray(), token);
+				await Task.WhenAll(taggingTasks).ConfigureAwait(false);
 				foreach (Task<IEnumerable<int>> task in taggingTasks)
 				{
 					failedTagArtifactIds.AddRange(task.Result);

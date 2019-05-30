@@ -19,7 +19,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 	public class SynchronizationExecutorTests
 	{
 		private Mock<IBatchRepository> _batchRepository;
-		private Mock<IDateTime> _dateTime;
 		private Mock<IDestinationWorkspaceTagRepository> _destinationWorkspaceTagRepository;
 		private Mock<IFieldManager> _fieldManager;
 		private Mock<IFieldMappings> _fieldMappings;
@@ -52,11 +51,12 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[SetUp]
 		public void SetUp()
 		{
-			_importJobFactory = new Mock<IImportJobFactory>();
+			var dateTime = new Mock<IDateTime>();
+			var jobHistoryErrorRepository = new Mock<IJobHistoryErrorRepository>();
+			var importJobFactory = new Mock<IImportJobFactory>();
+			var syncMetrics = new Mock<ISyncMetrics>();
 			_batchRepository = new Mock<IBatchRepository>();
 			_destinationWorkspaceTagRepository = new Mock<IDestinationWorkspaceTagRepository>();
-			_syncMetrics = new Mock<ISyncMetrics>();
-			_dateTime = new Mock<IDateTime>();
 			_fieldManager = new Mock<IFieldManager>();
 			_fieldMappings = new Mock<IFieldMappings>();
 			_jobHistoryErrorRepository = new Mock<IJobHistoryErrorRepository>();
@@ -74,7 +74,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			});
 
 			_importJob = new Mock<Sync.Executors.IImportJob>();
-			_importJobFactory.Setup(x => x.CreateImportJobAsync(It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IBatch>())).ReturnsAsync(_importJob.Object);
+			importJobFactory.Setup(x => x.CreateImportJobAsync(It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IBatch>())).ReturnsAsync(_importJob.Object);
 
 			_fieldManager.Setup(x => x.GetSpecialFields()).Returns(_specialFields);
 
@@ -244,7 +244,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
 
 			result.Message.Should().Be("Unexpected exception occurred while tagging synchronized documents in source workspace.");
-			result.Exception.Should().BeOfType<AggregateException>();
+			result.Exception.Should().BeOfType<InvalidOperationException>();
 			result.Status.Should().Be(ExecutionStatus.Failed);
 		}
 

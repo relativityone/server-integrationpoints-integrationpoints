@@ -18,7 +18,7 @@ namespace Relativity.Sync.Tests.Integration
 		{
 			const int bufferSize = 4096;
 
-			Exception innerEx = new Exception("foo");
+			ArgumentException innerEx = new ArgumentException("foo");
 			T originalException = CreateException("message", innerEx);
 			byte[] buffer = new byte[bufferSize];
 			MemoryStream ms = new MemoryStream(buffer);
@@ -38,7 +38,7 @@ namespace Relativity.Sync.Tests.Integration
 		[Test]
 		public void ItShouldSerializeToJson()
 		{
-			Exception innerEx = new Exception("foo");
+			ArgumentException innerEx = new ArgumentException("foo");
 			T originalException = CreateException("message", innerEx);
 
 			// ACT

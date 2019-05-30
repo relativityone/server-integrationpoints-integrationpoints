@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using FluentAssertions;
 using NUnit.Framework;
 using Relativity.Sync.Transfer;
@@ -118,6 +119,20 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			// Arrange
 			FieldInfoDto me = FieldInfoDto.NativeFileFilenameField();
 			object you = "test";
+
+			// Act
+			bool equals = me.Equals(you);
+
+			// Assert
+			equals.Should().BeFalse();
+		}
+
+		[Test]
+		public void ItShouldReturnNotEqualWhenComparingToNull()
+		{
+			// Arrange
+			FieldInfoDto me = FieldInfoDto.NativeFileFilenameField();
+			FieldInfoDto you = null;
 
 			// Act
 			bool equals = me.Equals(you);

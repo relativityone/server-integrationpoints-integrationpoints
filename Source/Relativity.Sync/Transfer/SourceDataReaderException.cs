@@ -10,7 +10,7 @@ namespace Relativity.Sync.Transfer
 	public sealed class SourceDataReaderException : Exception
 	{
 		/// <inheritdoc />
-		public SourceDataReaderException() : base()
+		public SourceDataReaderException()
 		{
 		}
 

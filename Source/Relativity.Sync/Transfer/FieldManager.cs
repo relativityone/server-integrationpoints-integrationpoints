@@ -36,9 +36,9 @@ namespace Relativity.Sync.Transfer
 
 		public async Task<IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder>> CreateSpecialFieldRowValueBuildersAsync(int sourceWorkspaceArtifactId, ICollection<int> documentArtifactIds)
 		{
-			IEnumerable<Task<ISpecialFieldRowValuesBuilder>> specialFieldRowValueBuilderTasks =
-				_specialFieldBuilders.Select(async b => await b.GetRowValuesBuilderAsync(sourceWorkspaceArtifactId, documentArtifactIds).ConfigureAwait(false));
-			ISpecialFieldRowValuesBuilder[] specialFieldRowValueBuilders = await Task.WhenAll(specialFieldRowValueBuilderTasks).ConfigureAwait(false);
+			IEnumerable<ISpecialFieldRowValuesBuilder> specialFieldRowValueBuilders = await _specialFieldBuilders
+				.SelectAsync(async b => await b.GetRowValuesBuilderAsync(sourceWorkspaceArtifactId, documentArtifactIds).ConfigureAwait(false))
+				.ConfigureAwait(false);
 
 			Dictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> specialFieldBuildersDictionary = new Dictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder>();
 			foreach (var builder in specialFieldRowValueBuilders)

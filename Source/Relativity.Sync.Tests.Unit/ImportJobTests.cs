@@ -15,7 +15,7 @@ using Relativity.Sync.Transfer;
 namespace Relativity.Sync.Tests.Unit
 {
 	[TestFixture]
-	internal class ImportJobTests : IDisposable
+	internal sealed class ImportJobTests : IDisposable
 	{
 		private Mock<IItemStatusMonitor> _itemStatusMonitor;
 		private Mock<IJobHistoryErrorRepository> _jobHistoryErrorRepository;
