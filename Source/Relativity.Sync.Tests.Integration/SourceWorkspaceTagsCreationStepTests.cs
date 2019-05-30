@@ -89,7 +89,7 @@ namespace Relativity.Sync.Tests.Integration
 			{
 				SourceWorkspaceArtifactId = sourceWorkspaceArtifactID,
 				DestinationWorkspaceArtifactId = destinationWorkspaceArtifactID,
-				JobArtifactId = jobArtifactId
+				JobHistoryArtifactId = jobArtifactId
 			};
 
 			_destinationObjectManagerMock.Setup(x => x.QueryAsync(
@@ -145,7 +145,7 @@ namespace Relativity.Sync.Tests.Integration
 			{
 				SourceWorkspaceArtifactId = sourceWorkspaceArtifactID,
 				DestinationWorkspaceArtifactId = destinationWorkspaceArtifactID,
-				JobArtifactId = jobArtifactId
+				JobHistoryArtifactId = jobArtifactId
 			};
 
 			_destinationObjectManagerMock.Setup(x => x.QueryAsync(
@@ -219,7 +219,7 @@ namespace Relativity.Sync.Tests.Integration
 			{
 				SourceWorkspaceArtifactId = sourceWorkspaceArtifactID,
 				DestinationWorkspaceArtifactId = destinationWorkspaceArtifactID,
-				JobArtifactId = jobArtifactId
+				JobHistoryArtifactId = jobArtifactId
 			};
 
 			_destinationObjectManagerMock.Setup(x => x.QueryAsync(
@@ -314,7 +314,7 @@ namespace Relativity.Sync.Tests.Integration
 			{
 				SourceWorkspaceArtifactId = sourceWorkspaceArtifactID,
 				DestinationWorkspaceArtifactId = destinationWorkspaceArtifactID,
-				JobArtifactId = jobArtifactId
+				JobHistoryArtifactId = jobArtifactId
 			};
 
 			_destinationObjectManagerMock.Setup(x => x.QueryAsync(
@@ -399,7 +399,7 @@ namespace Relativity.Sync.Tests.Integration
 			{
 				SourceWorkspaceArtifactId = sourceWorkspaceArtifactID,
 				DestinationWorkspaceArtifactId = destinationWorkspaceArtifactID,
-				JobArtifactId = jobArtifactId
+				JobHistoryArtifactId = jobArtifactId
 			};
 
 			_destinationObjectManagerMock.Setup(x => x.QueryAsync(
@@ -433,7 +433,7 @@ namespace Relativity.Sync.Tests.Integration
 			{
 				SourceWorkspaceArtifactId = srcWorkspaceArtifactId,
 				DestinationWorkspaceArtifactId = destWorkspaceArtifactId,
-				JobArtifactId = jobArtifactId
+				JobHistoryArtifactId = jobArtifactId
 			};
 
 			_destinationObjectManagerMock.Setup(x => x.QueryAsync(
@@ -484,7 +484,7 @@ namespace Relativity.Sync.Tests.Integration
 			{
 				SourceWorkspaceArtifactId = sourceWorkspaceArtifactID,
 				DestinationWorkspaceArtifactId = destinationWorkspaceArtifactID,
-				JobArtifactId = jobArtifactId
+				JobHistoryArtifactId = jobArtifactId
 			};
 
 			_destinationObjectManagerMock.Setup(x => x.QueryAsync(
@@ -571,7 +571,7 @@ namespace Relativity.Sync.Tests.Integration
 			{
 				SourceWorkspaceArtifactId = sourceWorkspaceArtifactID,
 				DestinationWorkspaceArtifactId = destinationWorkspaceArtifactID,
-				JobArtifactId = jobArtifactId
+				JobHistoryArtifactId = jobArtifactId
 			};
 
 			_destinationObjectManagerMock.Setup(x => x.QueryAsync(
@@ -625,7 +625,7 @@ namespace Relativity.Sync.Tests.Integration
 			{
 				SourceWorkspaceArtifactId = sourceWorkspaceArtifactID,
 				DestinationWorkspaceArtifactId = destinationWorkspaceArtifactID,
-				JobArtifactId = jobArtifactId
+				JobHistoryArtifactId = jobArtifactId
 			};
 
 			_destinationObjectManagerMock.Setup(x => x.QueryAsync(

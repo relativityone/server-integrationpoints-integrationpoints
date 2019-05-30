@@ -33,7 +33,7 @@ namespace Relativity.Sync.Executors
 			try
 			{
 				int destinationWorkspaceTagArtifactId = await CreateOrUpdateDestinationWorkspaceTagAsync(configuration, token).ConfigureAwait(false);
-				configuration.SetDestinationWorkspaceTagArtifactId(destinationWorkspaceTagArtifactId);
+				await configuration.SetDestinationWorkspaceTagArtifactIdAsync(destinationWorkspaceTagArtifactId).ConfigureAwait(false);
 			}
 			catch (Exception ex)
 			{
@@ -61,7 +61,7 @@ namespace Relativity.Sync.Executors
 			}
 
 			await _destinationWorkspaceTagsLinker.LinkDestinationWorkspaceTagToJobHistoryAsync(
-				configuration.SourceWorkspaceArtifactId, tag.ArtifactId, configuration.JobArtifactId).ConfigureAwait(false);
+				configuration.SourceWorkspaceArtifactId, tag.ArtifactId, configuration.JobHistoryArtifactId).ConfigureAwait(false);
 
 			return tag.ArtifactId;
 		}

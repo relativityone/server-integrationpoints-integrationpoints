@@ -18,12 +18,13 @@ namespace Relativity.Sync.Executors
 		private readonly IDestinationWorkspaceTagRepository _destinationWorkspaceTagRepository;
 		private readonly IImportJobFactory _importJobFactory;
 		private readonly IFieldManager _fieldManager;
+		private readonly IFieldMappings _fieldMappings;
 		private readonly IJobHistoryErrorRepository _jobHistoryErrorRepository;
 		private readonly ISyncLog _logger;
 		private readonly ISyncMetrics _syncMetrics;
 
 		public SynchronizationExecutor(IImportJobFactory importJobFactory, IBatchRepository batchRepository, IDestinationWorkspaceTagRepository destinationWorkspaceTagRepository,
-			ISyncMetrics syncMetrics, IDateTime dateTime, IFieldManager fieldManager, IJobHistoryErrorRepository jobHistoryErrorRepository, ISyncLog logger)
+			ISyncMetrics syncMetrics, IDateTime dateTime, IFieldManager fieldManager, IFieldMappings fieldMappings, IJobHistoryErrorRepository jobHistoryErrorRepository, ISyncLog logger)
 		{
 			_batchRepository = batchRepository;
 			_dateTime = dateTime;
@@ -32,6 +33,7 @@ namespace Relativity.Sync.Executors
 			_syncMetrics = syncMetrics;
 			_dateTime = dateTime;
 			_fieldManager = fieldManager;
+			_fieldMappings = fieldMappings;
 			_jobHistoryErrorRepository = jobHistoryErrorRepository;
 			_logger = logger;
 		}
@@ -89,8 +91,8 @@ namespace Relativity.Sync.Executors
 				TimeSpan jobDuration = endTime - startTime;
 				_syncMetrics.CountOperation("ImportJobStatus", importResult.Status);
 				_syncMetrics.TimedOperation("ImportJob", jobDuration, importResult.Status);
-				_syncMetrics.GaugeOperation("ImportJobStart", importResult.Status, startTime.Ticks, "Ticks", null);
-				_syncMetrics.GaugeOperation("ImportJobEnd", importResult.Status, endTime.Ticks, "Ticks", null);
+				_syncMetrics.GaugeOperation("ImportJobStart", importResult.Status, startTime.Ticks, "Ticks", new Dictionary<string, object>());
+				_syncMetrics.GaugeOperation("ImportJobEnd", importResult.Status, endTime.Ticks, "Ticks", new Dictionary<string, object>());
 			}
 
 			ExecutionResult taggingResult = GetTaggingResults(taggingTasks, configuration.JobHistoryArtifactId, token);
@@ -116,11 +118,14 @@ namespace Relativity.Sync.Executors
 
 		private void UpdateImportSettings(ISynchronizationConfiguration configuration)
 		{
-			int destinationIdentityFieldId = GetDestinationIdentityFieldId(configuration.FieldMappings);
+			int destinationIdentityFieldId = GetDestinationIdentityFieldId(_fieldMappings.GetFieldMappings());
 			IList<FieldInfoDto> specialFields = _fieldManager.GetSpecialFields().ToList();
 
 			configuration.ImportSettings.IdentityFieldId = destinationIdentityFieldId;
-			configuration.ImportSettings.FolderPathSourceFieldName = GetSpecialFieldColumnName(specialFields, SpecialFieldType.FolderPath);
+			if (configuration.DestinationFolderStructureBehavior == DestinationFolderStructureBehavior.ReadFromField)
+			{
+				configuration.ImportSettings.FolderPathSourceFieldName = GetSpecialFieldColumnName(specialFields, SpecialFieldType.FolderPath);
+			}
 			configuration.ImportSettings.FileSizeColumn = GetSpecialFieldColumnName(specialFields, SpecialFieldType.NativeFileSize);
 			configuration.ImportSettings.NativeFilePathSourceFieldName = GetSpecialFieldColumnName(specialFields, SpecialFieldType.NativeFileLocation);
 			configuration.ImportSettings.FileNameColumn = GetSpecialFieldColumnName(specialFields, SpecialFieldType.NativeFileFilename);
@@ -187,7 +192,7 @@ namespace Relativity.Sync.Executors
 				{
 					const int maxSubset = 50;
 					int subsetCount = failedTagArtifactIds.Count < maxSubset ? failedTagArtifactIds.Count : maxSubset;
-					string subsetArtifactIds = string.Join(",", failedTagArtifactIds, 0, subsetCount);
+					string subsetArtifactIds = string.Join(",", failedTagArtifactIds.Take(subsetCount));
 
 					string errorMessage = $"Failed to tag synchronized documents in source workspace. The first {maxSubset} out of {failedTagArtifactIds.Count} are: {subsetArtifactIds}.";
 					var failedTaggingException = new SyncException(errorMessage, jobHistoryArtifactId.ToString(CultureInfo.InvariantCulture));

@@ -11,7 +11,7 @@ namespace Relativity.Sync.Executors
 	{
 		public async Task<IImportAPI> CreateImportApiAsync(Uri webServiceUrl)
 		{
-			return await Task.Run(() => new ImportAPI(webServiceUrl.AbsoluteUri)).ConfigureAwait(false);
+			return await Task.Run(() => ImportAPI.CreateByRsaBearerToken(webServiceUrl.AbsoluteUri)).ConfigureAwait(false);
 		}
 	}
 }

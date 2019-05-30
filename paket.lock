@@ -86,7 +86,7 @@ NUGET
       Relativity.Services.DataContracts (>= 9.4.346.73)
     Relativity.Telemetry.APM (2019.1.1)
     Relativity.Telemetry.DataContracts.Shared (2019.5.0)
-    Relativity.Telemetry.Services.Interface (2019.5.0)
+    Relativity.Telemetry.Services.Interface (2019.5.1)
     Relativity.Testing.Identification (1.6.0)
       NUnit (>= 3.11)
       NUnitExtras.HierarchicalCategories (>= 1.1)

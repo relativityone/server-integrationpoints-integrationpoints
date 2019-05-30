@@ -17,12 +17,12 @@ namespace Relativity.Sync.Transfer
 		private List<FieldInfoDto> _specialFields;
 		private List<FieldInfoDto> _mappedDocumentFields;
 		private List<FieldInfoDto> _allFields;
-		private readonly ISynchronizationConfiguration _configuration;
+		private readonly IFieldConfiguration _configuration;
 		private readonly IDocumentFieldRepository _documentFieldRepository;
 
 		private readonly IList<ISpecialFieldBuilder> _specialFieldBuilders;
 
-		public FieldManager(ISynchronizationConfiguration configuration, IDocumentFieldRepository documentFieldRepository, IEnumerable<ISpecialFieldBuilder> specialFieldBuilders)
+		public FieldManager(IFieldConfiguration configuration, IDocumentFieldRepository documentFieldRepository, IEnumerable<ISpecialFieldBuilder> specialFieldBuilders)
 		{
 			_configuration = configuration;
 			_documentFieldRepository = documentFieldRepository;

@@ -81,7 +81,7 @@ namespace Relativity.Sync.Tests.System
 					}
 				},
 
-				JobArtifactId = jobHistoryArtifactId,
+				JobHistoryArtifactId = jobHistoryArtifactId,
 				JobHistoryArtifactId = jobHistoryArtifactId,
 				DestinationFolderArtifactId = destinationFolderArtifactId,
 				DestinationWorkspaceTagArtifactId = destinationWorkspaceTag.ArtifactId,

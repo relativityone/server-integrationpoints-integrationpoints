@@ -19,6 +19,6 @@ namespace Relativity.Sync.Configuration
 
 		bool IsSnapshotCreated { get; }
 
-		Task SetSnapshotDataAsync(Guid runId, long totalRecordsCount);
+		Task SetSnapshotDataAsync(Guid runId, int totalRecordsCount);
 	}
 }

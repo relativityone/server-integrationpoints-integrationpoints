@@ -25,10 +25,10 @@ namespace Relativity.Sync.Executors
 			try
 			{
 				RelativitySourceCaseTag sourceCaseTag = await _sourceCaseTagService.CreateOrUpdateSourceCaseTagAsync(configuration, token).ConfigureAwait(false);
-				configuration.SetSourceWorkspaceTag(sourceCaseTag.ArtifactId, sourceCaseTag.Name);
+				await configuration.SetSourceWorkspaceTagAsync(sourceCaseTag.ArtifactId, sourceCaseTag.Name).ConfigureAwait(false);
 
 				RelativitySourceJobTag sourceJobTag = await _sourceJobTagService.CreateSourceJobTagAsync(configuration, sourceCaseTag.ArtifactId, token).ConfigureAwait(false);
-				configuration.SetSourceJobTag(sourceJobTag.ArtifactId, sourceJobTag.Name);
+				await configuration.SetSourceJobTagAsync(sourceJobTag.ArtifactId, sourceJobTag.Name).ConfigureAwait(false);
 			}
 			catch (Exception ex)
 			{

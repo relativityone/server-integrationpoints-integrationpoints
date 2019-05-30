@@ -1,4 +1,5 @@
 ﻿using System;
+using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync
 {
@@ -23,20 +24,26 @@ namespace Relativity.Sync
 		public int WorkspaceId { get; }
 
 		/// <summary>
+		/// Import settings.
+		/// </summary>
+		public ImportSettingsDto ImportSettings { get; }
+
+		/// <summary>
 		///     Constructor
 		/// </summary>
-		public SyncJobParameters(int jobId, int workspaceId) : this(jobId, workspaceId, Guid.NewGuid().ToString())
+		public SyncJobParameters(int jobId, int workspaceId, ImportSettingsDto importSettings) : this(jobId, workspaceId, Guid.NewGuid().ToString(), importSettings)
 		{
 		}
 
 		/// <summary>
 		///     Constructor
 		/// </summary>
-		public SyncJobParameters(int jobId, int workspaceId, string correlationId)
+		public SyncJobParameters(int jobId, int workspaceId, string correlationId, ImportSettingsDto importSettings)
 		{
 			CorrelationId = correlationId;
 			JobId = jobId;
 			WorkspaceId = workspaceId;
+			ImportSettings = importSettings;
 		}
 	}
 }

@@ -15,8 +15,9 @@ namespace Relativity.Sync.Transfer
 	internal sealed class SourceWorkspaceDataReader : ISourceWorkspaceDataReader
 	{
 		private IDataReader _currentReader;
+		private IRelativityExportBatcher _exportBatcher;
 
-		private readonly IRelativityExportBatcher _exportBatcher;
+		private readonly RelativityExportBatcherFactory _exportBatcherFactory;
 		private readonly IFieldManager _fieldManager;
 		private readonly ISyncLog _logger;
 		private readonly ISynchronizationConfiguration _configuration;
@@ -30,7 +31,7 @@ namespace Relativity.Sync.Transfer
 			ISyncLog logger)
 		{
 			_readerBuilder = readerBuilder;
-			_exportBatcher = exportBatcherFactory(configuration.ExportRunId, configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId);
+			_exportBatcherFactory = exportBatcherFactory;
 			_fieldManager = fieldManager;
 			_logger = logger;
 			_configuration = configuration;
@@ -44,6 +45,11 @@ namespace Relativity.Sync.Transfer
 
 		public bool Read()
 		{
+			if (_exportBatcher == null)
+			{
+				_exportBatcher = _exportBatcherFactory(_configuration.ExportRunId, _configuration.SourceWorkspaceArtifactId, _configuration.SyncConfigurationArtifactId);
+			}
+
 			bool dataRead = _currentReader.Read();
 			if (!dataRead)
 			{
