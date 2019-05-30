@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using System.Threading.Tasks;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
@@ -44,8 +45,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			var configuration = new Mock<ISynchronizationConfiguration>(MockBehavior.Loose);
 			configuration.SetupGet(x => x.ImportSettings).Returns(() => new ImportSettingsDto());
 
-			Mock<IImportAPI> importApi = GetImportApiMock();
-			ImportJobFactory instance = GetTestInstance(importApi);
+			Mock<IImportApiFactory> importApiFactory = GetImportAPIFactoryMock();
+			ImportJobFactory instance = GetTestInstance(importApiFactory);
 
 			// Act
 			Sync.Executors.IImportJob result = await instance.CreateImportJobAsync(configuration.Object, _batch.Object).ConfigureAwait(false);
@@ -68,8 +69,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			var configuration = new Mock<ISynchronizationConfiguration>(MockBehavior.Loose);
 			configuration.SetupGet(x => x.ImportSettings).Returns(importSettingsDto);
 
-			Mock<IImportAPI> importApi = GetImportApiMock();
-			ImportJobFactory instance = GetTestInstance(importApi);
+			Mock<IImportApiFactory> importApiFactory = GetImportAPIFactoryMock();
+			ImportJobFactory instance = GetTestInstance(importApiFactory);
 
 			// Act
 			Sync.Executors.IImportJob result = await instance.CreateImportJobAsync(configuration.Object, _batch.Object).ConfigureAwait(false);
@@ -79,7 +80,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Assert.IsNotNull(result);
 		}
 
-		private Mock<IImportAPI> GetImportApiMock()
+		private Mock<IImportApiFactory> GetImportAPIFactoryMock()
 		{
 			var importApi = new Mock<IImportAPI>(MockBehavior.Loose);
 			importApi.Setup(x => x.NewNativeDocumentImportJob()).Returns(() => new ImportBulkArtifactJob());
@@ -87,12 +88,15 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			var field = new Mock<Field>();
 			importApi.Setup(x => x.GetWorkspaceFields(It.IsAny<int>(), It.IsAny<int>())).Returns(() => new[] { field.Object });
 
-			return importApi;
+			var importApiFactory = new Mock<IImportApiFactory>();
+			importApiFactory.Setup(x => x.CreateImportApiAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Uri>())).ReturnsAsync(importApi.Object);
+
+			return importApiFactory;
 		}
 
-		private ImportJobFactory GetTestInstance(Mock<IImportAPI> importApi)
+		private ImportJobFactory GetTestInstance(Mock<IImportApiFactory> importApiFactory)
 		{
-			var instance = new ImportJobFactory(importApi.Object, _dataReader.Object,
+			var instance = new ImportJobFactory(importApiFactory.Object, _dataReader.Object,
 				_batchProgressHandlerFactory.Object, _jobHistoryErrorRepository.Object, _logger);
 			return instance;
 		}

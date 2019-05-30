@@ -15,16 +15,16 @@ namespace Relativity.Sync.Executors
 {
 	internal sealed class ImportJobFactory : IImportJobFactory
 	{
-		private readonly IImportAPI _importApi;
+		private readonly IImportApiFactory _importApiFactory;
 		private readonly ISourceWorkspaceDataReader _dataReader;
 		private readonly IBatchProgressHandlerFactory _batchProgressHandlerFactory;
 		private readonly IJobHistoryErrorRepository _jobHistoryErrorRepository;
 		private readonly ISyncLog _logger;
 
-		public ImportJobFactory(IImportAPI importApi, ISourceWorkspaceDataReader dataReader, IBatchProgressHandlerFactory batchProgressHandlerFactory, 
-			IJobHistoryErrorRepository jobHistoryErrorRepository, ISyncLog logger)
+		public ImportJobFactory(IImportApiFactory importApiFactory, ISourceWorkspaceDataReader dataReader, 
+			IBatchProgressHandlerFactory batchProgressHandlerFactory, IJobHistoryErrorRepository jobHistoryErrorRepository, ISyncLog logger)
 		{
-			_importApi = importApi;
+			_importApiFactory = importApiFactory;
 			_dataReader = dataReader;
 			_batchProgressHandlerFactory = batchProgressHandlerFactory;
 			_jobHistoryErrorRepository = jobHistoryErrorRepository;
@@ -44,7 +44,9 @@ namespace Relativity.Sync.Executors
 
 		private async Task<ImportBulkArtifactJob> CreateImportBulkArtifactJobAsync(ISynchronizationConfiguration configuration, int startingIndex)
 		{
-			ImportBulkArtifactJob importJob = await Task.Run(() => _importApi.NewNativeDocumentImportJob()).ConfigureAwait(false);
+			IImportAPI importApi = await _importApiFactory.CreateImportApiAsync(configuration.ImportSettings.RelativityUserName, configuration.ImportSettings.RelativityPassword,
+				configuration.ImportSettings.RelativityWebServiceUrl).ConfigureAwait(false);
+			ImportBulkArtifactJob importJob = await Task.Run(() => importApi.NewNativeDocumentImportJob()).ConfigureAwait(false);
 			importJob.SourceData.SourceData = _dataReader;
 
 			// Default values
@@ -99,7 +101,7 @@ namespace Relativity.Sync.Executors
 			}
 
 			importJob.Settings.SelectedIdentifierFieldName = await GetSelectedIdentifierFieldNameAsync(
-				configuration.ImportSettings.CaseArtifactId, configuration.ImportSettings.ArtifactTypeId, configuration.ImportSettings.IdentityFieldId).ConfigureAwait(false);
+				importApi, configuration.ImportSettings.CaseArtifactId, configuration.ImportSettings.ArtifactTypeId, configuration.ImportSettings.IdentityFieldId).ConfigureAwait(false);
 
 			return importJob;
 		}
@@ -110,9 +112,9 @@ namespace Relativity.Sync.Executors
 			return encoding;
 		}
 
-		private async Task<string> GetSelectedIdentifierFieldNameAsync(int workspaceArtifactId, int artifactTypeId, int identityFieldArtifactId)
+		private static async Task<string> GetSelectedIdentifierFieldNameAsync(IImportAPI importApi, int workspaceArtifactId, int artifactTypeId, int identityFieldArtifactId)
 		{
-			IEnumerable<Field> workspaceFields = await Task.Run(() => _importApi.GetWorkspaceFields(workspaceArtifactId, artifactTypeId)).ConfigureAwait(false);
+			IEnumerable<Field> workspaceFields = await Task.Run(() => importApi.GetWorkspaceFields(workspaceArtifactId, artifactTypeId)).ConfigureAwait(false);
 			Field identityField = workspaceFields.First(x => x.ArtifactID == identityFieldArtifactId);
 			return identityField.Name;
 		}

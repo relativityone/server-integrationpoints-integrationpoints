@@ -27,7 +27,7 @@ namespace Relativity.Sync.Tests.System
 			_serviceFactoryStub = new ServiceFactoryStub(ServiceFactory);
 		}
 
-		[Test]
+		//[Test]
 		[Ignore("This test is not automatic yet.")]
 		public async Task ItShouldPassGoldFlow()
 		{
@@ -95,7 +95,10 @@ namespace Relativity.Sync.Tests.System
 					CaseArtifactId = destinationWorkspaceArtifactId,
 					ImportOverwriteMode = ImportOverwriteMode.AppendOverlay,
 					FieldOverlayBehavior = FieldOverlayBehavior.UseFieldSettings,
-					ImportNativeFileCopyMode = ImportNativeFileCopyMode.CopyFiles
+					ImportNativeFileCopyMode = ImportNativeFileCopyMode.CopyFiles,
+					RelativityUserName = AppSettings.RelativityUserName,
+					RelativityPassword = AppSettings.RelativityUserPassword,
+					RelativityWebServiceUrl = AppSettings.RelativityWebApiUrl
 				}
 			};
 
@@ -146,10 +149,7 @@ namespace Relativity.Sync.Tests.System
 				logger);
 
 			// ImportAPI setup
-			IImportAPI importApi = new ImportAPI(AppSettings.RelativityUserName, AppSettings.RelativityUserPassword, AppSettings.RelativityWebApiUrl.AbsoluteUri);
-			IImportJobFactory importJobFactory = new Executors.ImportJobFactory(
-				importApi,
-				dataReader,
+			IImportJobFactory importJobFactory = new Executors.ImportJobFactory(new ImportApiFactory(), dataReader,
 				new BatchProgressHandlerFactory(new BatchProgressUpdater(logger), dateTime),
 				new JobHistoryErrorRepository(_serviceFactoryStub),
 				logger);
