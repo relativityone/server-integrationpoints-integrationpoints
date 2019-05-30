@@ -170,7 +170,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			await _sut.ExecuteAsync(configuration.Object, CancellationToken.None).ConfigureAwait(false);
 
 			// assert
-			configuration.Verify(x => x.SetDestinationWorkspaceTagArtifactId(destinationWorkspaceTagArtifactId));
+			configuration.Verify(x => x.SetDestinationWorkspaceTagArtifactIdAsync(destinationWorkspaceTagArtifactId));
 		}
 
 		[Test]

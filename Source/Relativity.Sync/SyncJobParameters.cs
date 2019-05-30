@@ -29,9 +29,24 @@ namespace Relativity.Sync
 		public ImportSettingsDto ImportSettings { get; }
 
 		/// <summary>
+		/// Constructor
+		/// </summary>
+		public SyncJobParameters(int jobId, int workspaceId) : this(jobId, workspaceId, new ImportSettingsDto())
+		{
+
+		}
+
+		/// <summary>
 		///     Constructor
 		/// </summary>
 		public SyncJobParameters(int jobId, int workspaceId, ImportSettingsDto importSettings) : this(jobId, workspaceId, Guid.NewGuid().ToString(), importSettings)
+		{
+		}
+
+		/// <summary>
+		///     Constructor
+		/// </summary>
+		public SyncJobParameters(int jobId, int workspaceId, string correlationId) : this(jobId, workspaceId, correlationId, new ImportSettingsDto())
 		{
 		}
 

@@ -45,13 +45,12 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_configuration.SetupGet(x => x.SyncConfigurationArtifactId).Returns(0);
 			_configuration.SetupGet(x => x.DestinationWorkspaceTagArtifactId).Returns(0);
 			_configuration.SetupGet(x => x.ExportRunId).Returns(Guid.Empty);
-			_configuration.SetupGet(x => x.FieldMappings).Returns(new List<FieldMap>());
 			_configuration.SetupGet(x => x.JobHistoryArtifactId).Returns(0);
 			_configuration.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(0);
 		}
 
 		[Test]
-		public void ItShouldPassArgumentsToExportBatcherFactory()
+		public void ItShouldNotInvokeBatcherFactoryInConstructor()
 		{
 			// Arrange
 			Guid runId = Guid.NewGuid();
@@ -64,6 +63,28 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			// Act
 			SourceWorkspaceDataReader instance = BuildInstanceUnderTest();
+
+			// Assert
+			_exportBatcherFactory.Verify(x => x(runId, sourceWorkspaceId, syncConfigurationId), Times.Never);
+		}
+
+		[Test]
+		public void ItShouldInvokeBatcherFactoryOnlyOnceWhenRead()
+		{
+			// Arrange
+			Guid runId = Guid.NewGuid();
+			const int sourceWorkspaceId = 123;
+			const int syncConfigurationId = 456;
+
+			_configuration.SetupGet(x => x.ExportRunId).Returns(runId);
+			_configuration.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(sourceWorkspaceId);
+			_configuration.SetupGet(x => x.SyncConfigurationArtifactId).Returns(syncConfigurationId);
+
+			// Act
+			SourceWorkspaceDataReader instance = BuildInstanceUnderTest();
+			instance.Read();
+			instance.Read();
+			instance.Read();
 
 			// Assert
 			_exportBatcherFactory.Verify(x => x(runId, sourceWorkspaceId, syncConfigurationId), Times.Once);

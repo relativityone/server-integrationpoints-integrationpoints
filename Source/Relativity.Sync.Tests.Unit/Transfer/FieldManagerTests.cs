@@ -15,7 +15,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 	[TestFixture]
 	public class FieldManagerTests
 	{
-		private Mock<ISynchronizationConfiguration> _configuration;
+		private Mock<IFieldConfiguration> _configuration;
 		private Mock<IDocumentFieldRepository> _documentFieldRepository;
 		private Mock<ISpecialFieldBuilder> _builder1;
 		private Mock<ISpecialFieldBuilder> _builder2;
@@ -63,7 +63,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_builder2.Setup(b => b.GetRowValuesBuilderAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _documentArtifactIds)).ReturnsAsync(_rowValueBuilder2.Object);
 			_builder2.Setup(b => b.BuildColumns()).Returns(new[] { _nonDocumentSpecialField2 });
 
-			_configuration = new Mock<ISynchronizationConfiguration>();
+			_configuration = new Mock<IFieldConfiguration>();
 			_configuration.Setup(c => c.FieldMappings).Returns(new[] { _mappedField1, _mappedField2 });
 			_configuration.Setup(c => c.SourceWorkspaceArtifactId).Returns(_SOURCE_WORKSPACE_ARTIFACT_ID);
 			_documentFieldRepository = new Mock<IDocumentFieldRepository>();
@@ -190,7 +190,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public async Task ItShouldNoFieldsIfThereAreNoSpecialFieldsAndNoMappedDocumentFields()
 		{
 			// Arrange
-			_configuration = new Mock<ISynchronizationConfiguration>();
+			_configuration = new Mock<IFieldConfiguration>();
 			_configuration.Setup(c => c.FieldMappings).Returns(new List<FieldMap>(0));
 			_configuration.Setup(c => c.SourceWorkspaceArtifactId).Returns(_SOURCE_WORKSPACE_ARTIFACT_ID);
 

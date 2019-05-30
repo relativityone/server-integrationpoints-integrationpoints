@@ -32,7 +32,7 @@ namespace Relativity.Sync.Tests.Unit
 			_cache = new Mock<IConfiguration>();
 			_fieldMappings = new Mock<IFieldMappings>();
 
-			_instance = new DataSourceSnapshotConfiguration(_cache.Object, _fieldMappings.Object, new SyncJobParameters(1, _WORKSPACE_ID));
+			_instance = new DataSourceSnapshotConfiguration(_cache.Object, _fieldMappings.Object, new SyncJobParameters(1, _WORKSPACE_ID, new ImportSettingsDto()));
 		}
 
 		[Test]
@@ -95,7 +95,7 @@ namespace Relativity.Sync.Tests.Unit
 		public async Task ItShouldUpdateSnapshotData()
 		{
 			Guid snapshotId = Guid.NewGuid();
-			const long totalRecordsCount = 789654;
+			const int totalRecordsCount = 789654;
 
 			await _instance.SetSnapshotDataAsync(snapshotId, totalRecordsCount).ConfigureAwait(false);
 

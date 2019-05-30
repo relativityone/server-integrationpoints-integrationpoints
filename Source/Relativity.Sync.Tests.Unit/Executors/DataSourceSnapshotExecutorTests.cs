@@ -51,7 +51,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[Test]
 		public async Task ItShouldInitializeExportAndSaveResult()
 		{
-			const long totalRecords = 123456789;
+			const int totalRecords = 123456789;
 			Guid runId = Guid.NewGuid();
 
 			ExportInitializationResults exportInitializationResults = new ExportInitializationResults
