@@ -116,10 +116,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			const int rangeStart = 1000000;
 			ICollection<int> documentArtifactIds = Enumerable.Range(rangeStart, documentCount).ToArray();
 
-			var exception = new ServiceException();
 			_objectManager
 				.Setup(x => x.QueryAsync(It.Is<int>(y => y == _WORKSPACE_ARTIFACT_ID), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))
-				.ThrowsAsync(exception);
+				.Throws<ServiceException>();
 
 			_folderManager
 				.Setup(x => x.GetFullPathListAsync(It.Is<int>(y => y == _WORKSPACE_ARTIFACT_ID), It.IsAny<List<int>>()))
@@ -147,10 +146,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			const int rangeStart = 1000000;
 			ICollection<int> documentArtifactIds = Enumerable.Range(rangeStart, documentCount).ToArray();
 
-			var exception = new ServiceException();
 			_objectManager
 				.Setup(x => x.QueryAsync(It.Is<int>(y => y == _WORKSPACE_ARTIFACT_ID), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))
-				.ThrowsAsync(exception);
+				.Throws<ServiceException>();
 
 			_folderManager
 				.Setup(x => x.GetFullPathListAsync(It.Is<int>(y => y == _WORKSPACE_ARTIFACT_ID), It.IsAny<List<int>>()))
@@ -175,14 +173,13 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			const int rangeStart = 1000000;
 			ICollection<int> documentArtifactIds = Enumerable.Range(rangeStart, documentCount).ToArray();
 
-			var exception = new ServiceException();
 			_objectManager
 				.Setup(x => x.QueryAsync(It.Is<int>(y => y == _WORKSPACE_ARTIFACT_ID), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))
 				.ReturnsAsync<int, QueryRequest, int, int, IObjectManager, QueryResult>((workspaceArtifactId, queryRequest, start, length) => BuildQueryResult(queryRequest));
 
 			_folderManager
 				.Setup(x => x.GetFullPathListAsync(It.Is<int>(y => y == _WORKSPACE_ARTIFACT_ID), It.IsAny<List<int>>()))
-				.ThrowsAsync(exception);
+				.Throws<ServiceException>();
 
 			// ACT & ASSERT
 			SyncKeplerException thrown = Assert.ThrowsAsync<SyncKeplerException>(async () =>
@@ -202,14 +199,13 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			const int rangeStart = 1000000;
 			ICollection<int> documentArtifactIds = Enumerable.Range(rangeStart, documentCount).ToArray();
 
-			var exception = new ServiceException();
 			_objectManager
 				.Setup(x => x.QueryAsync(It.Is<int>(y => y == _WORKSPACE_ARTIFACT_ID), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))
 				.ReturnsAsync<int, QueryRequest, int, int, IObjectManager, QueryResult>((workspaceArtifactId, queryRequest, start, length) => BuildQueryResult(queryRequest));
 
 			_folderManager
 				.Setup(x => x.GetFullPathListAsync(It.Is<int>(y => y == _WORKSPACE_ARTIFACT_ID), It.IsAny<List<int>>()))
-				.ThrowsAsync(exception);
+				.Throws<ServiceException>();
 
 			// ACT & ASSERT
 			Assert.ThrowsAsync<SyncKeplerException>(async () =>

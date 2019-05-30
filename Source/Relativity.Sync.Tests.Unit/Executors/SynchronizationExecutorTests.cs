@@ -205,7 +205,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[Test]
 		public async Task ItShouldProperlyHandleTagDocumentException()
 		{
-			const int numberOfBatches = 2;
+			const int numberOfBatches = 1;
 			SetupBatchRepository(numberOfBatches);
 			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(ExecutionResult.Success);
 
