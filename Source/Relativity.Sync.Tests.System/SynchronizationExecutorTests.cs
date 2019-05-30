@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.Relativity.ImportAPI;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
@@ -14,6 +15,7 @@ using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Helpers;
 using Relativity.Sync.Tests.System.Stubs;
 using Relativity.Sync.Transfer;
+using IConfiguration = Relativity.Sync.Storage.IConfiguration;
 
 namespace Relativity.Sync.Tests.System
 {
@@ -82,7 +84,6 @@ namespace Relativity.Sync.Tests.System
 				},
 
 				JobHistoryArtifactId = jobHistoryArtifactId,
-				JobHistoryArtifactId = jobHistoryArtifactId,
 				DestinationFolderArtifactId = destinationFolderArtifactId,
 				DestinationWorkspaceTagArtifactId = destinationWorkspaceTag.ArtifactId,
 				SendEmails = false,
@@ -148,11 +149,18 @@ namespace Relativity.Sync.Tests.System
 				logger);
 
 			// ImportAPI setup
-			IImportJobFactory importJobFactory = new Executors.ImportJobFactory(new ImportApiFactoryStub(AppSettings.RelativityUserName, AppSettings.RelativityUserPassword), dataReader,
+			IImportApiFactory importApi = new ImportApiFactoryStub(AppSettings.RelativityUserName, AppSettings.RelativityUserPassword);
+			IImportJobFactory importJobFactory = new Executors.ImportJobFactory(
+				importApi,
+				dataReader,
 				new BatchProgressHandlerFactory(new BatchProgressUpdater(logger), dateTime),
 				new JobHistoryErrorRepository(_serviceFactoryStub),
 				logger);
-			var syncExecutor = new SynchronizationExecutor(importJobFactory, batchRepository, destinationWorkspaceTagRepository, syncMetrics, dateTime, fieldManager, jobHistoryErrorRepository, logger);
+			IConfiguration config = await Storage.Configuration.GetAsync(_serviceFactoryStub, new SyncJobParameters(jobHistoryArtifactId, sourceWorkspaceArtifactId, configuration.ImportSettings), logger,
+				new SemaphoreSlimWrapper(new SemaphoreSlim(1))).ConfigureAwait(false);
+			IFieldMappings fieldMappings = new FieldMappings(config, new JSONSerializer(), logger);
+			var syncExecutor = new SynchronizationExecutor(importJobFactory, batchRepository, destinationWorkspaceTagRepository, syncMetrics, dateTime, fieldManager, fieldMappings,
+				jobHistoryErrorRepository, logger);
 
 			// ACT
 			ExecutionResult syncResult = await syncExecutor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);

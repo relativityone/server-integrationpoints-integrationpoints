@@ -32,7 +32,7 @@ namespace Relativity.Sync.Tests.System.Helpers
 			ContainerBuilder containerBuilder = new ContainerBuilder();
 
 			ContainerFactory factory = new ContainerFactory();
-			SyncJobParameters syncParameters = new SyncJobParameters(configuration.JobArtifactId, configuration.SourceWorkspaceArtifactId);
+			SyncJobParameters syncParameters = new SyncJobParameters(configuration.JobHistoryArtifactId, configuration.SourceWorkspaceArtifactId);
 
 			IAPM apm = Mock.Of<IAPM>();
 			RelativityServices relativityServices = new RelativityServices(apm, new ServicesManagerStub(), AppSettings.RelativityUrl);
