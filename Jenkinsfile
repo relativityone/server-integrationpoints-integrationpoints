@@ -60,14 +60,13 @@ node('PolandBuild')
                 powershell ".\\build.ps1 publishNuget -progetApiKey $key"
             }
         }
-        // REL-325558 - enable Sonarqube scan when server will be back again
-        // if(env.BRANCH_NAME == 'develop')
-		// {
-        //     stage ('SonarQube')
-        //     {
-        //         powershell ".\\build.ps1 runSonarScanner -version $version"
-        //     }
-        // }
+        if(env.BRANCH_NAME == 'develop')
+		{
+            stage ('SonarQube')
+            {
+                powershell ".\\build.ps1 runSonarScanner -version $version"
+            }
+        }
         
         currentBuild.result = 'SUCCESS'
         step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
