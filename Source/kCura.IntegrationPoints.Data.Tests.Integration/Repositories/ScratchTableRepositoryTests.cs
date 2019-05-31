@@ -52,16 +52,16 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		[SetUp]
 		public void SetUp()
 		{
-			string tableSuffix =  Guid.NewGuid().ToString();
-			_tableName =  $"{_TABLE_PREFIX}_{tableSuffix}";
+			string tableSuffix = Guid.NewGuid().ToString();
+			_tableName = $"{_TABLE_PREFIX}_{tableSuffix}";
 			_sut = new ScratchTableRepository(
 				new WorkspaceDBContext(
 					Helper.GetDBContext(SourceWorkspaceArtifactID)
-				), 
-				_documentRepository, 
-				_fieldQueryRepository, 
+				),
+				_documentRepository,
+				_fieldQueryRepository,
 				_resourceDbProvider,
-				_TABLE_PREFIX, 
+				_TABLE_PREFIX,
 				tableSuffix,
 				SourceWorkspaceArtifactID);
 		}
@@ -82,7 +82,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			VerifyTempTableCountAndEntries(tempTable, _tableName, documentIDs);
 		}
 
-		[Test]
+		[IdentifiedTest("0ec702be-45f1-4237-9f98-1ad2a835fa7b")]
 		public void GetTempTableShouldThrowIfNoDocumentsInScratchTable()
 		{
 			//ARRANGE
@@ -116,12 +116,12 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			AssertErroredDocumentRemoval(_tableName, documentsIDsToRemove, expectedNumberOfDocuments);
 		}
 
-		[Test]
+		[IdentifiedTest("d219e78d-a35d-4c54-9de0-659718987fda")]
 		public void CreateScratchTableAndErroredDocumentDoesntExist()
 		{
 			//ARRANGE
 			List<int> documentIDs = Enumerable.Range(0, _DEFAULT_NUMBER_OF_DOCS_TO_CREATE).ToList();
-			var nonExistingDocumentsIdentifiers = new List<string> {"Non Existing Identifier"};
+			var nonExistingDocumentsIdentifiers = new List<string> { "Non Existing Identifier" };
 
 			//ACT
 			_sut.AddArtifactIdsIntoTempTable(documentIDs);
@@ -137,7 +137,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("ceaa43a6-fdf5-4756-90a7-1d7c5825a96c")]
 		public void CreateScratchTableAndInsertDuplicateEntries()
 		{
 			//ARRANGE
@@ -157,7 +157,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("e9736947-a005-477f-8681-f972ac2d41d5")]
 		public void DeletionOfScratchTable()
 		{
 			//ARRANGE
@@ -171,7 +171,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			VerifyTableDisposal(_tableName);
 		}
 
-		[Test]
+		[IdentifiedTest("2804213b-32a7-404f-8866-89d11c01afc7")]
 		public void ReadDocumentIDs_ShouldRetrieveDocumentIDsFromScratchTable()
 		{
 			//ARRANGE
@@ -187,8 +187,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			result.Should().Equal(documentIDs);
 		}
 
-		[TestCase(100, 30)]
-		[TestCase(100, 101)]
+		[IdentifiedTestCase("bbe320e5-4673-466b-9f82-3064a0d5f5c0", 100, 30)]
+		[IdentifiedTestCase("ac9fd15a-6250-44a8-85dc-130e7574bd01", 100, 101)]
 		public void ReadDocumentIDs_ShouldRetrieveDocumentIDsFromScratchTableWithOffset(int numDocs, int offset)
 		{
 			//ARRANGE
@@ -205,7 +205,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			result.Should().Equal(documentsAfterOffseting);
 		}
 
-		[Test]
+		[IdentifiedTest("74ac35ca-c5e6-4092-92a5-a58bed7d0370")]
 		public void ReadDocumentIDs_ShouldRetrieveNotOrderedData()
 		{
 			//ARRANGE
@@ -223,15 +223,14 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			result.Should().Equal(documentIDs);
 		}
 
-		[TestCase(100, 30)]
-		[TestCase(2000000, 3000, Category = TestCategories.STRESS_TEST, Ignore = "REL-324355 Stress tests should not be run on 'daily' pipeline")]
+		[IdentifiedTestCase("e4d1f249-df11-4b8e-a8eb-586a14e4c03f", 100, 30)]
 		public void ReadDocumentIDs_ShouldRetrieveAllDocumentsInBatches(int numDocs, int batchSize)
 		{
 			//ARRANGE
 			List<int> documentIDs = Enumerable.Range(0, numDocs).ToList();
 
 			_sut.AddArtifactIdsIntoTempTable(documentIDs);
-			int numberOfBatchIterations = (int) Math.Ceiling((double)numDocs / batchSize);
+			int numberOfBatchIterations = (int)Math.Ceiling((double)numDocs / batchSize);
 
 			//ACT
 			List<int> result = Enumerable.Range(0, numberOfBatchIterations)

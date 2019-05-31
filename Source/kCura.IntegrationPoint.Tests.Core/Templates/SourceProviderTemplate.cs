@@ -18,8 +18,6 @@ using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Core;
-using Relativity.Core.Service;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.ResourceServer;
 using System;

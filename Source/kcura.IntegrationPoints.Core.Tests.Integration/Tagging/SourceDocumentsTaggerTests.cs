@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
@@ -20,6 +21,7 @@ using Moq;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Tagging
 {
@@ -34,7 +36,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Tagging
 		private IDocumentRepository _documentRepository;
 		private IFieldQueryRepository _fieldQueryRepository;
 
-		private const int _SOURCE_WORKSPACE_TAGGING_BATCH_SIZE = 4;
+		private const int _SOURCE_WORKSPACE_TAGGING_BATCH_SIZE = 10000;
 
 		public SourceDocumentsTaggerTests()
 			: base(
@@ -70,27 +72,34 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Tagging
 			_sut = new SourceDocumentsTagger(documentRepository, configMock.Object, loggerMock.Object);
 		}
 
+		[SetUp]
+		public void SetUp()
+		{
+			_scratchTableRepository.DeleteTable();
+		}
+
 		public override void SuiteTeardown()
 		{
 			_scratchTableRepository.Dispose();
 			base.SuiteTeardown();
 		}
 
-		[Test]
-		public async Task ShouldTagDocuments()
+		[IdentifiedTestCase("528f7d6d-6b29-4b86-a3a8-80e23333312b", 10)]
+		[IdentifiedTestCase("7BE519E5-04D9-4DEC-A286-747389254856", 12384)]
+		[IdentifiedTestCase("0780AAB1-366D-4E41-8C9F-D0CDC497F28B", 500000, Category = TestCategories.STRESS_TEST, Explicit = true)]
+		public async Task ShouldTagDocuments(int numberOfDocuments)
 		{
 			// arrange
-			const int numberOfDocuments = 10;
-			DataTable dataTable = Import.GetImportTable("DocsToTag", numberOfDocuments);
-			Import.ImportNewDocuments(SourceWorkspaceArtifactID, dataTable);
-			int[] documentArtifactIDs = await _documentRepository
-				.RetrieveDocumentByIdentifierPrefixAsync(Fields.GetDocumentIdentifierFieldName(_fieldQueryRepository), "DocsToTag")
-				.ConfigureAwait(false);
-			_scratchTableRepository.AddArtifactIdsIntoTempTable(documentArtifactIDs);
-			Data.IntegrationPoint integrationPoint = await CreateAndGetDefaultIntegrationPointModel().ConfigureAwait(false);
+			string documentsPrefix = Guid.NewGuid().ToString();
+			Task<int[]> importDocumentsToWorkspaceAndScratchTableTask = ImportDocumentsToWorkspaceAndScratchTable(documentsPrefix, numberOfDocuments);
+			Task<Data.IntegrationPoint> createDefaultIntegrationPointTask = CreateAndGetDefaultIntegrationPointModel();
+
+			int[] documentArtifactIDs = await importDocumentsToWorkspaceAndScratchTableTask.ConfigureAwait(false);
+			Data.IntegrationPoint integrationPoint = await createDefaultIntegrationPointTask.ConfigureAwait(false);
 
 			Guid batchInstance = Guid.NewGuid();
-			JobHistory jobHistory = _jobHistoryService.CreateRdo(integrationPoint,
+			JobHistory jobHistory = _jobHistoryService.CreateRdo(
+				integrationPoint,
 				batchInstance,
 				JobTypeChoices.JobHistoryRun,
 				startTimeUtc: DateTime.UtcNow);
@@ -106,9 +115,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Tagging
 			await VerifyDocumentTaggingAsync(documentArtifactIDs, jobHistory.Name).ConfigureAwait(false);
 		}
 
-		[Test]
-		public void ShouldThrowExceptionWhenArtifactIdIsInvalid()
+		[IdentifiedTest("dbe75edd-3e9e-4b41-93ea-ac5fe491e085")]
+		public async Task ShouldThrowExceptionWhenTagsArtifactsIDsAreInvalid()
 		{
+			// arrange
+			const int numberOfDocuments = 1;
+			string documentsPrefix = Guid.NewGuid().ToString();
+			await ImportDocumentsToWorkspaceAndScratchTable(documentsPrefix, numberOfDocuments)
+				.ConfigureAwait(false);
+
 			// act
 			Func<Task> tagDocumentsAction = () =>
 				_sut.TagDocumentsWithDestinationWorkspaceAndJobHistoryAsync(_scratchTableRepository, -1, -1);
@@ -133,6 +148,20 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Tagging
 				destinationCaseValue.Should().Contain(expectedDestinationCase);
 				jobHistoryValue.Should().Contain(expectedJobHistory);
 			}
+		}
+
+		private async Task<int[]> ImportDocumentsToWorkspaceAndScratchTable(string documentsPrefix, int numberOfDocuments)
+		{
+			DataTable dataTable = Import.GetImportTable(documentsPrefix, numberOfDocuments);
+			Import.ImportNewDocuments(SourceWorkspaceArtifactID, dataTable);
+
+			string documentIdentifierFieldName = Fields.GetDocumentIdentifierFieldName(_fieldQueryRepository);
+			int[] documentArtifactIDs = await _documentRepository
+				.RetrieveDocumentByIdentifierPrefixAsync(documentIdentifierFieldName, documentsPrefix)
+				.ConfigureAwait(false);
+			_scratchTableRepository.AddArtifactIdsIntoTempTable(documentArtifactIDs);
+
+			return documentArtifactIDs;
 		}
 
 		private async Task<Data.IntegrationPoint> CreateAndGetDefaultIntegrationPointModel()
