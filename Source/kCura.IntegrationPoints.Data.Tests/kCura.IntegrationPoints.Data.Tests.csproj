@@ -124,6 +124,7 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Extensions\EnumerableExtensionsTests.cs" />
+    <Compile Include="Facades\Implementations\TestsHelpers\ObjectManagerFacadeTestsHelpers.cs" />
     <Compile Include="Facades\Implementations\ObjectManagerFacadeDiscoverHeavyRequestDecoratorTests.cs" />
     <Compile Include="Facades\Implementations\ObjectManagerFacadeFactoryTests.cs" />
     <Compile Include="Facades\Implementations\ObjectManagerFacadeInstrumentationDecoratorTests.cs" />

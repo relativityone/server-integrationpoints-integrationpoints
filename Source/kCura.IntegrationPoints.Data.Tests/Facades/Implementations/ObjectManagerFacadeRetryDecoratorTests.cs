@@ -4,10 +4,10 @@ using kCura.IntegrationPoints.Data.Facades.Implementations;
 using kCura.IntegrationPoints.Data.Interfaces;
 using Moq;
 using NUnit.Framework;
-using Relativity.Services.Objects.DataContracts;
 using System;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using static kCura.IntegrationPoints.Data.Tests.Facades.Implementations.TestsHelpers.ObjectManagerFacadeTestsHelpers;
 
 namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 {
@@ -16,8 +16,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 	{
 		private ObjectManagerFacadeRetryDecorator _sut;
 		private Mock<IObjectManagerFacade> _objectManager;
-
-		private const int _WORKSPACE_ID = 3232;
 
 		[SetUp]
 		public void SetUp()
@@ -34,42 +32,43 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		}
 
 		[Test]
-		public async Task CreateShouldReturnResultAndRetryOnFailures()
+		public Task CreateAsync_ShouldReturnResultAndRetryOnFailures()
 		{
-			var request = new CreateRequest();
-			await ShouldReturnResultAndRetryOnFailure(x => x.CreateAsync(_WORKSPACE_ID, request));
+			return ShouldReturnResultAndRetryOnFailureAsync(CreateCallWithAnyArgs);
 		}
 
 		[Test]
-		public async Task ReadShouldReturnResultAndRetryOnFailures()
+		public Task ReadAsync_ShouldReturnResultAndRetryOnFailures()
 		{
-			var request = new ReadRequest();
-			await ShouldReturnResultAndRetryOnFailure(x => x.ReadAsync(_WORKSPACE_ID, request));
+			return ShouldReturnResultAndRetryOnFailureAsync(ReadCallWithAnyArgs);
 		}
 
 		[Test]
-		public async Task UpdateShouldReturnResultAndRetryOnFailures()
+		public Task UpdateAsync_ShouldReturnResultAndRetryOnFailures()
 		{
-			var request = new UpdateRequest();
-			await ShouldReturnResultAndRetryOnFailure(x => x.UpdateAsync(_WORKSPACE_ID, request));
+			return ShouldReturnResultAndRetryOnFailureAsync(UpdateCallWithAnyArgs);
 		}
 
 		[Test]
-		public async Task DeleteShouldReturnResultAndRetryOnFailures()
+		public Task UpdateAsync_MassUpdate_ShouldReturnResultAndRetryOnFailures()
 		{
-			var request = new DeleteRequest();
-			await ShouldReturnResultAndRetryOnFailure(x => x.DeleteAsync(_WORKSPACE_ID, request));
+			return ShouldReturnResultAndRetryOnFailureAsync(MassUpdateCallWithAnyArgs);
 		}
 
 		[Test]
-		public async Task QueryShouldReturnResultAndRetryOnFailures()
+		public Task DeleteAsync_ShouldReturnResultAndRetryOnFailures()
 		{
-			var request = new QueryRequest();
-			await ShouldReturnResultAndRetryOnFailure(x => x.QueryAsync(_WORKSPACE_ID, request, 0, 0));
+			return ShouldReturnResultAndRetryOnFailureAsync(DeleteCallWithAnyArgs);
 		}
 
 		[Test]
-		public void ShouldDisposeObjectManagerFacade()
+		public Task QueryAsync_ShouldReturnResultAndRetryOnFailures()
+		{
+			return ShouldReturnResultAndRetryOnFailureAsync(QueryCallWithAnyArgs);
+		}
+
+		[Test]
+		public void This_ShouldDisposeObjectManagerFacade()
 		{
 			// act
 			_sut.Dispose();
@@ -79,7 +78,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		}
 
 		[Test]
-		public void ShouldDisposedObjectMangerFacadeOnlyOnce()
+		public void This_ShouldDisposeObjectMangerFacadeOnlyOnce()
 		{
 			// act
 			_sut.Dispose();
@@ -89,7 +88,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 			_objectManager.Verify(x => x.Dispose(), Times.Once);
 		}
 
-		private async Task ShouldReturnResultAndRetryOnFailure<TResult>(Expression<Func<IObjectManagerFacade, Task<TResult>>> methodToTest)
+		private async Task ShouldReturnResultAndRetryOnFailureAsync<TResult>(Expression<Func<IObjectManagerFacade, Task<TResult>>> methodToTest)
 			where TResult : new()
 		{
 			// arrange
@@ -103,7 +102,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 			Func<IObjectManagerFacade, Task<TResult>> compiledMethodToTest = methodToTest.Compile();
 
 			// act
-			TResult result = await compiledMethodToTest(_sut);
+			TResult result = await compiledMethodToTest(_sut).ConfigureAwait(false);
 
 			// assert
 			result.Should().Be(expectedResult);
