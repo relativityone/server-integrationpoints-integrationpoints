@@ -18,8 +18,6 @@ using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Core;
-using Relativity.Core.Service;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.ResourceServer;
 using System;
@@ -268,7 +266,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			return Helper.GetDBContext(-1).ExecuteSqlStatementAsScalar<int>(query, workspaceId, integrationPointId);
 		}
 
-		protected Job GetNextJobInScheduleQueue(int[] resourcePool, int integrationPointId)
+		protected Job GetNextJobInScheduleQueue(int[] resourcePool, int integrationPointID, int workspaceID)
 		{
 			IJobService jobServiceManager = Container.Resolve<IJobService>();
 
@@ -283,7 +281,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 					if (job != null)
 					{
 						// pick up job
-						if (job.RelatedObjectArtifactID == integrationPointId)
+						if (job.RelatedObjectArtifactID == integrationPointID && job.WorkspaceID == workspaceID)
 						{
 							return job;
 						}

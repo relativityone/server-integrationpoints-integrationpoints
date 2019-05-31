@@ -215,7 +215,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		public static void EnableAllAgents()
+		public static void EnableAllIntegrationPointsAgents()
 		{
 			Query query = GetAllIntegrationPointAgentsQuery();
 			EnableAgents(query);

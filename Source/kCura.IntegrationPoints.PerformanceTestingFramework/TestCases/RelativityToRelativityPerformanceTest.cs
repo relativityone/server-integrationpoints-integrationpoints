@@ -59,20 +59,20 @@ namespace kCura.IntegrationPoints.PerformanceTestingFramework.TestCases
 				//Arrange
 				if (_enableDataGrid)
 				{
-					Workspace.EnableDataGrid(TargetWorkspaceArtifactId);
+					Workspace.EnableDataGrid(TargetWorkspaceArtifactID);
 				}
 
-				IntegrationPointModel integrationPointModel = PrepareIntegrationPointsModel(TargetWorkspaceArtifactId);
+				IntegrationPointModel integrationPointModel = PrepareIntegrationPointsModel(TargetWorkspaceArtifactID);
 				IntegrationPointModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationPointModel);
 				var testDurationStopWatch = new Stopwatch();
 
 				//Act
-				_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, integrationPoint.ArtifactID, _ADMIN_USER_ID);
-				Status.WaitForIntegrationPointToLeavePendingState(Container, SourceWorkspaceArtifactId, integrationPoint.ArtifactID);
+				_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactID, integrationPoint.ArtifactID, _ADMIN_USER_ID);
+				Status.WaitForIntegrationPointToLeavePendingState(Container, SourceWorkspaceArtifactID, integrationPoint.ArtifactID);
 
 				//start the timer only after the job is picked up by an agent
 				testDurationStopWatch.Start();
-				Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactId, integrationPoint.ArtifactID);
+				Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactID, integrationPoint.ArtifactID);
 				testDurationStopWatch.Stop();
 
 				elapsedTime = testDurationStopWatch.Elapsed.TotalSeconds;
@@ -125,7 +125,7 @@ namespace kCura.IntegrationPoints.PerformanceTestingFramework.TestCases
 			return new IntegrationPointModel
 			{
 				Map = _fieldMappingsJson,
-				SourceConfiguration = SourceConfiguration(targetWorkspaceId, SavedSearchArtifactId),
+				SourceConfiguration = SourceConfiguration(targetWorkspaceId, SavedSearchArtifactID),
 				Destination = DestinationConfiguration(targetWorkspaceId),
 
 				SourceProvider = RelativityProvider.ArtifactId,

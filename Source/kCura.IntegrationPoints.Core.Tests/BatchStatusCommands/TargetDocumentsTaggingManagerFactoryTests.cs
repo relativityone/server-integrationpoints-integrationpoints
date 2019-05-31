@@ -18,12 +18,6 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 	[TestFixture]
 	public class TargetDocumentsTaggingManagerFactoryTests : TestBase
 	{
-		private const string _SOURCE_CONFIG = "source config";
-		private const string _DEST_CONFIG = "destination config";
-		private const string _NEW_DEST_CONFIG = "new destination config";
-		private const int _JOBHISTORY_ARTIFACT_ID = 321;
-		private const string _UNIQUE_JOBID = "very unique";
-
 		private IRepositoryFactory _repositoryFactory;
 		private ITagsCreator _tagsCreator;
 		private ITagSavedSearchManager _tagSavedSearchManager;
@@ -35,6 +29,13 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 		private TargetDocumentsTaggingManagerFactory _instance;
 		private ImportSettings _settings;
 		private IDataSynchronizer _dataSynchronizer;
+
+		private const string _DEST_CONFIG = "destination config";
+		private const string _NEW_DEST_CONFIG = "new destination config";
+		private const int _JOBHISTORY_ARTIFACT_ID = 321;
+		private const string _UNIQUE_JOBID = "very unique";
+
+		private readonly SourceConfiguration _sourceConfiguration = new SourceConfiguration();
 
 		[SetUp]
 		public override void SetUp()
@@ -67,7 +68,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 				_helper,
 				_serializer,
 				_fields,
-				_SOURCE_CONFIG,
+				_sourceConfiguration,
 				_DEST_CONFIG,
 				_JOBHISTORY_ARTIFACT_ID,
 				_UNIQUE_JOBID
@@ -93,7 +94,6 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 				SourceWorkspaceArtifactId = 1,
 				TargetWorkspaceArtifactId = 2
 			};
-			_serializer.Deserialize<SourceConfiguration>(_SOURCE_CONFIG).Returns(exportSettings);
 			_synchronizerFactory.CreateSynchronizer(Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID, _NEW_DEST_CONFIG).Returns(_dataSynchronizer);
 			_instance = new TargetDocumentsTaggingManagerFactory
 			(
@@ -105,7 +105,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 				_helper,
 				_serializer,
 				_fields,
-				_SOURCE_CONFIG,
+				_sourceConfiguration,
 				_DEST_CONFIG,
 				_JOBHISTORY_ARTIFACT_ID,
 				_UNIQUE_JOBID

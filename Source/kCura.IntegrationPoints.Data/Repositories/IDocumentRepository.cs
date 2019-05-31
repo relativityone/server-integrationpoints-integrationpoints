@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Data.Repositories.DTO;
 using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Data.Repositories
@@ -9,15 +10,15 @@ namespace kCura.IntegrationPoints.Data.Repositories
 	/// </summary>
 	public interface IDocumentRepository
 	{
-		int WorkspaceArtifactId { get; set; }
-
 		/// <summary>
 		/// Retrieves multiple documents
 		/// </summary>
 		/// <param name="documentIds">The artifact ids of the documents to retrieve</param>
 		/// <param name="fieldIds">The artifact Ids of the fields to retrieve</param>
 		/// <returns>An array of document ArtifactDTOs</returns>
-		Task<ArtifactDTO[]> RetrieveDocumentsAsync(IEnumerable<int> documentIds, HashSet<int> fieldIds);
+		Task<ArtifactDTO[]> RetrieveDocumentsAsync(
+			IEnumerable<int> documentIds, 
+			HashSet<int> fieldIds);
 		
 		/// <summary>
 		/// Retrieve a single document via its identifier
@@ -25,7 +26,9 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <param name="docIdentifierField">The field that is designated as the Document Identifier</param>
 		/// <param name="docIdentifierValues">The collection of values of the given identifier that represents the Documents we want to retrieve</param>
 		/// <returns>An array of ArtifactDTOs for the documents</returns>
-		Task<int[]> RetrieveDocumentsAsync(string docIdentifierField, ICollection<string> docIdentifierValues);
+		Task<int[]> RetrieveDocumentsAsync(
+			string docIdentifierField, 
+			ICollection<string> docIdentifierValues);
 
 		/// <summary>
 		/// Retrieves the artifact ids of documents containing the specified identifier prefix
@@ -33,6 +36,18 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <param name="documentIdentifierFieldName">The field name of the document identifier</param>
 		/// <param name="identifierPrefix">The prefix for the document identifier</param>
 		/// <returns>An array of artifact ids of the matching documents</returns>
-		Task<int[]> RetrieveDocumentByIdentifierPrefixAsync(string documentIdentifierFieldName, string identifierPrefix);
+		Task<int[]> RetrieveDocumentByIdentifierPrefixAsync(
+			string documentIdentifierFieldName, 
+			string identifierPrefix);
+
+		/// <summary>
+		/// Updates given fields for given documents. For multi objects field merge option is used
+		/// </summary>
+		/// <param name="documentsToUpdate"></param>
+		/// <param name="fieldsToUpdate"></param>
+		/// <returns></returns>
+		Task<bool> MassUpdateDocumentsAsync(
+			IEnumerable<int> documentsToUpdate, 
+			IEnumerable<FieldUpdateRequestDto> fieldsToUpdate);
 	}
 }

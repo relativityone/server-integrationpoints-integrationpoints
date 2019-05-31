@@ -133,30 +133,31 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return SendUpdateRequest(request, executionIdentity, GetRdoType(rdo));
 		}
 
-		public async Task<bool> MassUpdateAsync(
-			MassUpdateByObjectIdentifiersRequest request,
-			MassUpdateOptions updateOptions,
+		public Task<bool> MassUpdateAsync(
+			IEnumerable<int> objectsIDs,
+			IEnumerable<FieldRefValuePair> fieldsToUpdate,
+			FieldUpdateBehavior fieldUpdateBehavior,
 			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
 		{
-			try
+			List<RelativityObjectRef> objectsToEdit = objectsIDs
+				.Select(x => new RelativityObjectRef { ArtifactID = x })
+				.ToList();
+
+			var request = new MassUpdateByObjectIdentifiersRequest
 			{
-				using (IObjectManagerFacade client = _objectManagerFacadeFactory.Create(executionIdentity))
-				{
-					MassUpdateResult result = await client
-						.UpdateAsync(_workspaceArtifactId, request, updateOptions)
-						.ConfigureAwait(false);
-					return result.Success;
-				}
-			}
-			catch (IntegrationPointsException)
+				Objects = objectsToEdit,
+				FieldValues = fieldsToUpdate
+			};
+
+			var updateOptions = new MassUpdateOptions
 			{
-				throw;
-			}
-			catch (Exception ex)
-			{
-				HandleObjectManagerException(ex, message: GetErrorMessage<UpdateRequest>(_UNKNOWN_OBJECT_TYPE));
-				throw;
-			}
+				UpdateBehavior = fieldUpdateBehavior
+			};
+
+			return SendMassUpdateRequestAsync(
+				request,
+				updateOptions,
+				executionIdentity);
 		}
 
 		public bool Delete<T>(T rdo, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
@@ -574,6 +575,32 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			catch (Exception ex)
 			{
 				HandleObjectManagerException(ex, message: GetErrorMessage<UpdateRequest>(rdoType));
+				throw;
+			}
+		}
+
+		private async Task<bool> SendMassUpdateRequestAsync(
+			MassUpdateByObjectIdentifiersRequest request,
+			MassUpdateOptions updateOptions,
+			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
+		{
+			try
+			{
+				using (IObjectManagerFacade client = _objectManagerFacadeFactory.Create(executionIdentity))
+				{
+					MassUpdateResult result = await client
+						.UpdateAsync(_workspaceArtifactId, request, updateOptions)
+						.ConfigureAwait(false);
+					return result.Success;
+				}
+			}
+			catch (IntegrationPointsException)
+			{
+				throw;
+			}
+			catch (Exception ex)
+			{
+				HandleObjectManagerException(ex, message: GetErrorMessage<UpdateRequest>(_UNKNOWN_OBJECT_TYPE));
 				throw;
 			}
 		}

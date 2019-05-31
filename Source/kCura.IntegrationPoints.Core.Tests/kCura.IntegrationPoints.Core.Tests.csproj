@@ -146,6 +146,7 @@
     <Compile Include="Services\JobHistory\JobHistoryErrorServiceTest.cs" />
     <Compile Include="Services\JobHistory\JobHistoryServiceTests.cs" />
     <Compile Include="Services\Synchronizer\RdoSynchronizerProviderTests.cs" />
+    <Compile Include="Tagging\SourceDocumentsTaggerTests.cs" />
     <Compile Include="Tagging\TaggerTests.cs" />
     <Compile Include="Tagging\TagSavedSearchFolderTests.cs" />
     <Compile Include="Tagging\TagSavedSearchManagerTests.cs" />
@@ -189,6 +190,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Common\kCura.IntegrationPoints.Common.csproj">
       <Project>{32bcb03b-4980-4434-9392-f72334e6e348}</Project>
       <Name>kCura.IntegrationPoints.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Config\kCura.IntegrationPoints.Config.csproj">
+      <Project>{def928b5-37ce-4bf3-b663-f0b8912c9c3f}</Project>
+      <Name>kCura.IntegrationPoints.Config</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
       <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>

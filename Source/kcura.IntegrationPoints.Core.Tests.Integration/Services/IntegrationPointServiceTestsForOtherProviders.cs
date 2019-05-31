@@ -26,11 +26,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public override void SuiteSetup()
 		{
 			base.SuiteSetup();
+
+			IntegrationPoint.Tests.Core.Agent.EnableAllIntegrationPointsAgents();
+
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
 			_jobService = Container.Resolve<IJobService>();
 			_queueContext = new QueueDBContext(Helper, GlobalConst.SCHEDULE_AGENT_QUEUE_TABLE_NAME);
 		}
-		
+
 		[IdentifiedTest("a623e9b8-dd04-4f0e-9359-ce7afdad1d5c")]
 		public void Ldap_MultipleJobsInQueue_ThrowsJobsAlreadyRunning()
 		{
@@ -49,26 +52,26 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 				CreateJobHistoryOnIntegrationPoint(integrationPointId, batchInstance, JobTypeChoices.JobHistoryRun);
 
 				DataRow row;
-			    using (DataTable dataTable = new CreateScheduledJob(_queueContext).Execute(
-			        workspaceID: WorkspaceArtifactId,
-			        relatedObjectArtifactID: integrationPointId,
-			        taskType: "SyncManager",
-			        nextRunTime: DateTime.UtcNow,
-			        AgentTypeID: 1,
-			        scheduleRuleType: null,
-			        serializedScheduleRule: null,
-			        jobDetails: jobDetails,
-			        jobFlags: 0,
-			        SubmittedBy: 777,
-			        rootJobID: 1,
-			        parentJobID: 1))
-			    {
-			        row = dataTable.Rows[0];
-			    }
+				using (DataTable dataTable = new CreateScheduledJob(_queueContext).Execute(
+					workspaceID: WorkspaceArtifactId,
+					relatedObjectArtifactID: integrationPointId,
+					taskType: "SyncManager",
+					nextRunTime: DateTime.UtcNow,
+					AgentTypeID: 1,
+					scheduleRuleType: null,
+					serializedScheduleRule: null,
+					jobDetails: jobDetails,
+					jobFlags: 0,
+					SubmittedBy: 777,
+					rootJobID: 1,
+					parentJobID: 1))
+				{
+					row = dataTable.Rows[0];
+				}
 
-			    fakeJob = new Job(row);
+				fakeJob = new Job(row);
 
-			    // ACT & ASSERT
+				// ACT & ASSERT
 				Exception ex = Assert.Throws<Exception>(
 						() => _integrationPointService.RunIntegrationPoint(WorkspaceArtifactId, integrationPointId, 9));
 				Assert.That(Constants.IntegrationPoints.JOBS_ALREADY_RUNNING, Is.EqualTo(ex.Message));

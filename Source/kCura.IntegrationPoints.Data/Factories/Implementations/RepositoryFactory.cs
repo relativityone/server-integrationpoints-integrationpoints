@@ -38,9 +38,9 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			IServicesMgr destinationServiceMgr,
 			IRelativityObjectManagerFactory objectManagerFactory,
 			IExternalServiceInstrumentationProvider instrumentationProvider)
-			: this(helper, 
-				destinationServiceMgr, 
-				new Lazy<IRelativityObjectManagerFactory>(() => objectManagerFactory), 
+			: this(helper,
+				destinationServiceMgr,
+				new Lazy<IRelativityObjectManagerFactory>(() => objectManagerFactory),
 				new Lazy<IExternalServiceInstrumentationProvider>(() => instrumentationProvider))
 		{
 		}
@@ -92,16 +92,17 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IDestinationWorkspaceRepository GetDestinationWorkspaceRepository(int sourceWorkspaceArtifactId)
 		{
-			var rsapiService = new RSAPIService(_helper, sourceWorkspaceArtifactId);
-			IDestinationWorkspaceRepository destinationWorkspaceRepository = new DestinationWorkspaceRepository(rsapiService);
+			IRelativityObjectManager relativityObjectManager =
+				CreateRelativityObjectManager(sourceWorkspaceArtifactId);
+			IDestinationWorkspaceRepository destinationWorkspaceRepository = new DestinationWorkspaceRepository(relativityObjectManager);
 
 			return destinationWorkspaceRepository;
 		}
 
 		public IDocumentRepository GetDocumentRepository(int workspaceArtifactId)
 		{
-			IDocumentRepository documentRepository = new KeplerDocumentRepository(ObjectManagerFactory, workspaceArtifactId);
-			return documentRepository;
+			IRelativityObjectManager objectManager = CreateRelativityObjectManager(workspaceArtifactId);
+			return new KeplerDocumentRepository(objectManager);
 		}
 
 		public IFieldQueryRepository GetFieldQueryRepository(int workspaceArtifactId)
@@ -312,7 +313,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		public IFileRepository GetFileRepository()
 		{
 			return new DisposableFileRepository(
-				_sourceServiceMgr, 
+				_sourceServiceMgr,
 				InstrumentationProvider,
 				(fileManager, instrumentationProvider) => new FileRepository(fileManager, instrumentationProvider)
 			);

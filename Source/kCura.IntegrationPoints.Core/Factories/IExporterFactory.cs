@@ -26,7 +26,6 @@ namespace kCura.IntegrationPoints.Core.Factories
 			FieldMap[] mappedFields,
 			SourceConfiguration configuration,
 			JobHistoryErrorDTO.UpdateStatusType updateStatusType,
-			IntegrationPoint integrationPoint,
 			JobHistory jobHistory,
 			string uniqueJobId,
 			string userImportApiSettings);
