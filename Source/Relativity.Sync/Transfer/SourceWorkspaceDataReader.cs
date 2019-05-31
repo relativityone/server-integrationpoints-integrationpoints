@@ -54,7 +54,7 @@ namespace Relativity.Sync.Transfer
 
 			if (dataRead)
 			{
-				string identifierFieldName = _fieldManager.GetObjectIdentifierFieldAsync(CancellationToken.None).GetAwaiter().GetResult().DisplayName;
+				string identifierFieldName = _fieldManager.GetObjectIdentifierFieldAsync(CancellationToken.None).GetAwaiter().GetResult().SourceFieldName;
 				string itemIdentifier = _currentReader[identifierFieldName].ToString();
 				ItemStatusMonitor.MarkItemAsRead(itemIdentifier);
 			}

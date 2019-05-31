@@ -31,7 +31,7 @@ namespace Relativity.Sync.Tests.Unit.Stubs
 			{
 				if (i == _identifierField.DocumentFieldIndex)
 				{
-					columns.Add(new DataColumn(_identifierField.DisplayName, typeof(object)));
+					columns.Add(new DataColumn(_identifierField.SourceFieldName, typeof(object)));
 				}
 				else
 				{

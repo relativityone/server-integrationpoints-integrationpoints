@@ -149,7 +149,7 @@ namespace Relativity.Sync.Executors
 				_logger.LogError(message);
 				throw new SyncException(message);
 			}
-			return specialField.DisplayName;
+			return specialField.DestinationFieldName;
 		}
 
 		private async Task<IEnumerable<int>> TagDocumentsAsync(ISynchronizationConfiguration configuration, IEnumerable<int> artifactIds, CancellationToken token)

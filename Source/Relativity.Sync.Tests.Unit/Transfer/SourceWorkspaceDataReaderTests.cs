@@ -35,7 +35,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_exportBatcherFactory.Setup(x => x(It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<int>()))
 				.Returns(_exportBatcher.Object);
 
-			_identifierField = FieldInfoDto.DocumentField("IdentifierField", true);
+			_identifierField = FieldInfoDto.DocumentField("IdentifierField", "IdentifierField", true);
 			_identifierField.DocumentFieldIndex = 0;
 			_fieldManager = new Mock<IFieldManager>();
 			_fieldManager.Setup(m => m.GetObjectIdentifierFieldAsync(It.IsAny<CancellationToken>())).ReturnsAsync(_identifierField);

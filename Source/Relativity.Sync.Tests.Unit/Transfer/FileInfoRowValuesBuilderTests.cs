@@ -20,7 +20,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 		public static IEnumerable<TestCaseData> FieldInfoDtos()
 		{
-			yield return new TestCaseData(FieldInfoDto.DocumentField("abc", false), _INITIAL_VALUE_TYPE, _INITIAL_VALUE);
+			yield return new TestCaseData(FieldInfoDto.DocumentField("abc", "def", false), _INITIAL_VALUE_TYPE, _INITIAL_VALUE);
 			yield return new TestCaseData(FieldInfoDto.NativeFileSizeField(), typeof(long), _SIZE);
 			yield return new TestCaseData(FieldInfoDto.NativeFileLocationField(), typeof(string), _LOCATION);
 			yield return new TestCaseData(FieldInfoDto.NativeFileFilenameField(), typeof(string), _FILENAME);

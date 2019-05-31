@@ -35,11 +35,13 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			// Assert
 			result.Count.Should().Be(expectedFieldCount);
-			result.Should().Contain(info => info.SpecialFieldType == SpecialFieldType.NativeFileLocation).Which.DisplayName.Should().Be("NativeFileLocation");
-			result.Should().Contain(info => info.SpecialFieldType == SpecialFieldType.NativeFileSize).Which.DisplayName.Should().Be("NativeFileSize");
-			result.Should().Contain(info => info.SpecialFieldType == SpecialFieldType.NativeFileFilename).Which.DisplayName.Should().Be("NativeFileFilename");
-			result.Should().Contain(info => info.SpecialFieldType == SpecialFieldType.RelativityNativeType).Which.DisplayName.Should().Be("RelativityNativeType");
-			result.Should().Contain(info => info.SpecialFieldType == SpecialFieldType.SupportedByViewer).Which.DisplayName.Should().Be("SupportedByViewer");
+			result.Should().Contain(info => info.SpecialFieldType == SpecialFieldType.NativeFileLocation).Which.DestinationFieldName.Should().Be("NativeFileLocation");
+			result.Should().Contain(info => info.SpecialFieldType == SpecialFieldType.NativeFileSize).Which.DestinationFieldName.Should().Be("NativeFileSize");
+			result.Should().Contain(info => info.SpecialFieldType == SpecialFieldType.NativeFileFilename).Which.DestinationFieldName.Should().Be("NativeFileFilename");
+			result.Should().Contain(info => info.SpecialFieldType == SpecialFieldType.RelativityNativeType).Which.SourceFieldName.Should().Be("RelativityNativeType");
+			result.Should().Contain(info => info.SpecialFieldType == SpecialFieldType.RelativityNativeType).Which.DestinationFieldName.Should().Be("RelativityNativeType");
+			result.Should().Contain(info => info.SpecialFieldType == SpecialFieldType.SupportedByViewer).Which.SourceFieldName.Should().Be("SupportedByViewer");
+			result.Should().Contain(info => info.SpecialFieldType == SpecialFieldType.SupportedByViewer).Which.DestinationFieldName.Should().Be("SupportedByViewer");
 		}
 
 		[Test]

@@ -11,10 +11,176 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 	internal sealed class FieldInfoDtoTests
 	{
 		[Test]
+		public void ItShouldBuildGenericSpecialField()
+		{
+			// Arrange
+			SpecialFieldType specialFieldType = SpecialFieldType.FolderPath;
+			const string sourceFieldName = "Source Field";
+			const string destinationFieldName = "Destination Field";
+			
+			// Act
+			FieldInfoDto result = FieldInfoDto.GenericSpecialField(specialFieldType, sourceFieldName, destinationFieldName);
+
+			//Assert
+			result.SpecialFieldType.Should().Be(specialFieldType);
+			result.SourceFieldName.Should().Be(sourceFieldName);
+			result.DestinationFieldName.Should().Be(destinationFieldName);
+			result.IsDocumentField.Should().BeFalse();
+			result.IsIdentifier.Should().BeFalse();
+		}
+
+		[Test]
+		public void ItShouldBuildDocumentField()
+		{
+			// Arrange
+			const string sourceFieldName = "Source Field";
+			const string destinationFieldName = "Destination Field";
+			const bool isIdentifier = true;
+			
+			// Act
+			FieldInfoDto result = FieldInfoDto.DocumentField(sourceFieldName, destinationFieldName, isIdentifier);
+
+			//Assert
+			result.SourceFieldName.Should().Be(sourceFieldName);
+			result.DestinationFieldName.Should().Be(destinationFieldName);
+			result.IsDocumentField.Should().BeTrue();
+			result.IsIdentifier.Should().Be(isIdentifier);
+		}
+
+		[Test]
+		public void ItShouldBuildSourceWorkspaceField()
+		{
+			// Act
+			FieldInfoDto result = FieldInfoDto.SourceWorkspaceField();
+
+			//Assert
+			result.SpecialFieldType.Should().Be(SpecialFieldType.SourceWorkspace);
+			result.SourceFieldName.Should().BeEmpty();
+			result.DestinationFieldName.Should().Be("Relativity Source Case");
+			result.IsDocumentField.Should().BeFalse();
+			result.IsIdentifier.Should().BeFalse();
+		}
+
+		[Test]
+		public void ItShouldBuildSourceJobField()
+		{
+			// Act
+			FieldInfoDto result = FieldInfoDto.SourceJobField();
+
+			//Assert
+			result.SpecialFieldType.Should().Be(SpecialFieldType.SourceJob);
+			result.SourceFieldName.Should().BeEmpty();
+			result.DestinationFieldName.Should().Be("Relativity Source Job");
+			result.IsDocumentField.Should().BeFalse();
+			result.IsIdentifier.Should().BeFalse();
+		}
+
+		[Test]
+		public void ItShouldBuildFolderPathFieldForRetainingFolderStructure()
+		{
+			// Act
+			FieldInfoDto result = FieldInfoDto.FolderPathFieldFromSourceWorkspaceStructure();
+
+			//Assert
+			result.SpecialFieldType.Should().Be(SpecialFieldType.FolderPath);
+			result.SourceFieldName.Should().BeEmpty();
+			result.DestinationFieldName.Should().Be("76B270CB-7CA9-4121-B9A1-BC0D655E5B2D");
+			result.IsDocumentField.Should().BeFalse();
+			result.IsIdentifier.Should().BeFalse();
+		}
+
+		[Test]
+		public void ItShouldBuildFolderPathFieldForReadingFromField()
+		{
+			// Arrange
+			const string fieldName = "Display Name Field";
+			
+			// Act
+			FieldInfoDto result = FieldInfoDto.FolderPathFieldFromDocumentField(fieldName);
+
+			//Assert
+			result.SpecialFieldType.Should().Be(SpecialFieldType.FolderPath);
+			result.SourceFieldName.Should().Be(fieldName);
+			result.DestinationFieldName.Should().Be(fieldName);
+			result.IsDocumentField.Should().BeTrue();
+			result.IsIdentifier.Should().BeFalse();
+		}
+
+		[Test]
+		public void ItShouldBuildNativeFileFilenameField()
+		{
+			// Act
+			FieldInfoDto result = FieldInfoDto.NativeFileFilenameField();
+
+			//Assert
+			result.SpecialFieldType.Should().Be(SpecialFieldType.NativeFileFilename);
+			result.SourceFieldName.Should().BeEmpty();
+			result.DestinationFieldName.Should().Be("NativeFileFilename");
+			result.IsDocumentField.Should().BeFalse();
+			result.IsIdentifier.Should().BeFalse();
+		}
+
+		[Test]
+		public void ItShouldBuildNativeFileFileSizeField()
+		{
+			// Act
+			FieldInfoDto result = FieldInfoDto.NativeFileSizeField();
+
+			//Assert
+			result.SpecialFieldType.Should().Be(SpecialFieldType.NativeFileSize);
+			result.SourceFieldName.Should().BeEmpty();
+			result.DestinationFieldName.Should().Be("NativeFileSize");
+			result.IsDocumentField.Should().BeFalse();
+			result.IsIdentifier.Should().BeFalse();
+		}
+
+		[Test]
+		public void ItShouldBuildNativeFileLocationField()
+		{
+			// Act
+			FieldInfoDto result = FieldInfoDto.NativeFileLocationField();
+
+			//Assert
+			result.SpecialFieldType.Should().Be(SpecialFieldType.NativeFileLocation);
+			result.SourceFieldName.Should().BeEmpty();
+			result.DestinationFieldName.Should().Be("NativeFileLocation");
+			result.IsDocumentField.Should().BeFalse();
+			result.IsIdentifier.Should().BeFalse();
+		}
+
+		[Test]
+		public void ItShouldBuildSupportedByViewerField()
+		{
+			// Act
+			FieldInfoDto result = FieldInfoDto.SupportedByViewerField();
+
+			//Assert
+			result.SpecialFieldType.Should().Be(SpecialFieldType.SupportedByViewer);
+			result.SourceFieldName.Should().Be("SupportedByViewer");
+			result.DestinationFieldName.Should().Be("SupportedByViewer");
+			result.IsDocumentField.Should().BeTrue();
+			result.IsIdentifier.Should().BeFalse();
+		}
+
+		[Test]
+		public void ItShouldBuildRelativityNativeTypeField()
+		{
+			// Act
+			FieldInfoDto result = FieldInfoDto.RelativityNativeTypeField();
+
+			//Assert
+			result.SpecialFieldType.Should().Be(SpecialFieldType.RelativityNativeType);
+			result.SourceFieldName.Should().Be("RelativityNativeType");
+			result.DestinationFieldName.Should().Be("RelativityNativeType");
+			result.IsDocumentField.Should().BeTrue();
+			result.IsIdentifier.Should().BeFalse();
+		}
+
+		[Test]
 		public void ItShouldReturnEqualForTheSameObject()
 		{
 			// Arrange
-			FieldInfoDto field1 = FieldInfoDto.DocumentField("test", false);
+			FieldInfoDto field1 = FieldInfoDto.DocumentField("source", "dest", false);
 			FieldInfoDto field2 = field1;
 
 			// Act
@@ -28,8 +194,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public void ItShouldReturnEqualForObjectsWithSameProperties()
 		{
 			// Arrange
-			FieldInfoDto field1 = FieldInfoDto.DocumentField("test", false);
-			FieldInfoDto field2 = FieldInfoDto.DocumentField("test", false);
+			FieldInfoDto field1 = FieldInfoDto.DocumentField("source", "dest", false);
+			FieldInfoDto field2 = FieldInfoDto.DocumentField("source", "dest", false);
 
 			// Act
 			bool equals = field1.Equals(field2);
@@ -42,8 +208,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public void ItShouldReturnEqualForEquivalentObjectsCastToTypeObject()
 		{
 			// Arrange
-			object field1 = FieldInfoDto.DocumentField("test", false);
-			object field2 = FieldInfoDto.DocumentField("test", false);
+			object field1 = FieldInfoDto.DocumentField("test", "test", false);
+			object field2 = FieldInfoDto.DocumentField("test", "test", false);
 
 			// Act
 			bool equals = field1.Equals(field2);
@@ -57,45 +223,52 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			// Each FieldInfoDto pair differ in only one property which is also the name of the test case.
 
 			yield return new TestCaseData(
-				FieldInfoDto.GenericSpecialField(SpecialFieldType.FolderPath, "test"),
-				FieldInfoDto.GenericSpecialField(SpecialFieldType.RelativityNativeType, "test"))
+				FieldInfoDto.GenericSpecialField(SpecialFieldType.FolderPath, "source", "dest"),
+				FieldInfoDto.GenericSpecialField(SpecialFieldType.RelativityNativeType, "source", "dest"))
 			{
 				TestName = "SpecialFieldType"
 			};
 
 			yield return new TestCaseData(
-				FieldInfoDto.GenericSpecialField(SpecialFieldType.FolderPath, "foo"),
-				FieldInfoDto.GenericSpecialField(SpecialFieldType.FolderPath, "bar"))
+				FieldInfoDto.GenericSpecialField(SpecialFieldType.FolderPath, "foo", "foo"),
+				FieldInfoDto.GenericSpecialField(SpecialFieldType.FolderPath, "bar", "foo"))
 			{
 				TestName = "DisplayName"
 			};
 
 			yield return new TestCaseData(
-				FieldInfoDto.GenericSpecialField(SpecialFieldType.None, "test"),
-				FieldInfoDto.DocumentField("test", false))
+				FieldInfoDto.GenericSpecialField(SpecialFieldType.FolderPath, "foo", "foo"),
+				FieldInfoDto.GenericSpecialField(SpecialFieldType.FolderPath, "foo", "bar"))
+			{
+				TestName = "DisplayName"
+			};
+
+			yield return new TestCaseData(
+				FieldInfoDto.GenericSpecialField(SpecialFieldType.None, "test", "test"),
+				FieldInfoDto.DocumentField("test", "test", false))
 			{
 				TestName = "IsDocumentField"
 			};
 
 			yield return new TestCaseData(
-				FieldInfoDto.DocumentField("test", false),
-				FieldInfoDto.DocumentField("test", true))
+				FieldInfoDto.DocumentField("test", "test", false),
+				FieldInfoDto.DocumentField("test", "test", true))
 			{
 				TestName = "IsIdentifier"
 			};
 
-			FieldInfoDto rdtField1 = FieldInfoDto.DocumentField("test", false);
+			FieldInfoDto rdtField1 = FieldInfoDto.DocumentField("test", "test", false);
 			rdtField1.RelativityDataType = RelativityDataType.Currency;
-			FieldInfoDto rdtField2 = FieldInfoDto.DocumentField("test", false);
+			FieldInfoDto rdtField2 = FieldInfoDto.DocumentField("test", "test", false);
 			rdtField2.RelativityDataType = RelativityDataType.Date;
 			yield return new TestCaseData(rdtField1, rdtField2)
 			{
 				TestName = "RelativityDataType"
 			};
 
-			FieldInfoDto dfiField1 = FieldInfoDto.DocumentField("test", false);
+			FieldInfoDto dfiField1 = FieldInfoDto.DocumentField("test", "test", false);
 			dfiField1.DocumentFieldIndex = 0;
-			FieldInfoDto dfiField2 = FieldInfoDto.DocumentField("test", false);
+			FieldInfoDto dfiField2 = FieldInfoDto.DocumentField("test", "test", false);
 			dfiField2.DocumentFieldIndex = 1;
 			yield return new TestCaseData(dfiField1, dfiField2)
 			{
@@ -214,29 +387,36 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			// Each FieldInfoDto pair differ in only one immutable property which is also the name of the test case.
 
 			yield return new TestCaseData(
-				FieldInfoDto.GenericSpecialField(SpecialFieldType.FolderPath, "test"),
-				FieldInfoDto.GenericSpecialField(SpecialFieldType.RelativityNativeType, "test"))
+				FieldInfoDto.GenericSpecialField(SpecialFieldType.FolderPath, "test", "test"),
+				FieldInfoDto.GenericSpecialField(SpecialFieldType.RelativityNativeType, "test", "test"))
 			{
 				TestName = "SpecialFieldType"
 			};
 
 			yield return new TestCaseData(
-				FieldInfoDto.GenericSpecialField(SpecialFieldType.FolderPath, "foo"),
-				FieldInfoDto.GenericSpecialField(SpecialFieldType.FolderPath, "bar"))
+				FieldInfoDto.GenericSpecialField(SpecialFieldType.FolderPath, "foo", "foo"),
+				FieldInfoDto.GenericSpecialField(SpecialFieldType.FolderPath, "bar", "foo"))
 			{
 				TestName = "DisplayName"
 			};
 
 			yield return new TestCaseData(
-				FieldInfoDto.GenericSpecialField(SpecialFieldType.None, "test"),
-				FieldInfoDto.DocumentField("test", false))
+				FieldInfoDto.GenericSpecialField(SpecialFieldType.FolderPath, "foo", "foo"),
+				FieldInfoDto.GenericSpecialField(SpecialFieldType.FolderPath, "foo", "bar"))
+			{
+				TestName = "DisplayName"
+			};
+
+			yield return new TestCaseData(
+				FieldInfoDto.GenericSpecialField(SpecialFieldType.None, "test", "test"),
+				FieldInfoDto.DocumentField("test", "test", false))
 			{
 				TestName = "IsDocumentField"
 			};
 
 			yield return new TestCaseData(
-				FieldInfoDto.DocumentField("test", false),
-				FieldInfoDto.DocumentField("test", true))
+				FieldInfoDto.DocumentField("test", "test", false),
+				FieldInfoDto.DocumentField("test", "test", true))
 			{
 				TestName = "IsIdentifier"
 			};
