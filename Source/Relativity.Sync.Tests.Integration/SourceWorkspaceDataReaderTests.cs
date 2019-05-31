@@ -81,30 +81,5 @@ namespace Relativity.Sync.Tests.Integration
 			bool hasExtraData = _instance.Read();
 			hasExtraData.Should().Be(false);
 		}
-
-		public void ItShouldThrowProperExceptionWhenExportFails()
-		{
-
-		}
-
-		public void ItShouldThrowProperExceptionWhenNativeFileQueryFails()
-		{
-
-		}
-
-		public void ItShouldThrowProperExceptionWhenFolderPathQueryFails()
-		{
-
-		}
-
-		public void ItShouldReadDestinationTags()
-		{
-
-		}
-
-		public void ItShouldHandleDestinationFolderStructureBehavior()
-		{
-
-		}
 	}
 }

@@ -64,6 +64,10 @@ namespace Relativity.Sync.Transfer
 				string itemIdentifier = _currentReader[identifierFieldName].ToString();
 				ItemStatusMonitor.MarkItemAsRead(itemIdentifier);
 			}
+			else
+			{
+				_logger.LogInformation("No more data to be read from source workspace.");
+			}
 			return dataRead;
 		}
 
@@ -72,7 +76,11 @@ namespace Relativity.Sync.Transfer
 			Dispose(true);
 		}
 
-		private static IDataReader EmptyDataReader() => new DataTable().CreateDataReader();
+		private IDataReader EmptyDataReader()
+		{
+			_logger.LogVerbose("Creating empty data reader.");
+			return new DataTable().CreateDataReader();
+		}
 
 		private async Task<IDataReader> GetReaderForNextBatchAsync()
 		{
@@ -80,15 +88,19 @@ namespace Relativity.Sync.Transfer
 			try
 			{
 				batch = await _exportBatcher.GetNextBatchAsync().ConfigureAwait(false);
+				_logger.LogVerbose("Export API batch read.");
 			}
 			catch (Exception ex)
 			{
-				throw new SourceDataReaderException("Failed to get next batch from exporter", ex);
+				const string message = "Failed to get next batch from exporter.";
+				_logger.LogError(ex, message);
+				throw new SourceDataReaderException(message, ex);
 			}
 
 			IDataReader nextBatchReader;
 			if (batch == null || !batch.Any())
 			{
+				_logger.LogInformation("Batch returned from Export API is empty.");
 				nextBatchReader = EmptyDataReader();
 			}
 			else
@@ -97,10 +109,13 @@ namespace Relativity.Sync.Transfer
 				try
 				{
 					nextBatchReader = await _readerBuilder.BuildAsync(_configuration.SourceWorkspaceArtifactId, batch, CancellationToken.None).ConfigureAwait(false);
+					_logger.LogInformation("Created DataReader for next Export API batch.");
 				}
 				catch (Exception ex)
 				{
-					throw new SourceDataReaderException("Failed to prepare exported batch for import", ex);
+					const string message = "Failed to prepare exported batch for import";
+					_logger.LogError(ex, message);
+					throw new SourceDataReaderException(message, ex);
 				}
 			}
 
