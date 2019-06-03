@@ -125,22 +125,7 @@ namespace Relativity.Sync.Tests.Integration
 				.Verifiable();
 
 			const int totalItemsCount = 10;
-			ReadResult readResultForBatch = new ReadResult()
-			{
-				Object = new RelativityObject()
-				{
-					FieldValues = new List<FieldValuePair>()
-					{
-						CreateFieldValuePair(TotalItemsCountGuid, totalItemsCount),
-						CreateFieldValuePair(StartingIndexGuid, 0),
-						CreateFieldValuePair(StatusGuid, BatchStatus.New.ToString()),
-						CreateFieldValuePair(FailedItemsCountGuid, 0),
-						CreateFieldValuePair(TransferredItemsCountGuid, 0),
-						CreateFieldValuePair(ProgressGuid, (decimal)0),
-						CreateFieldValuePair(LockedByGuid, "locked by")
-					}
-				}
-			};
+			ReadResult readResultForBatch = CreateReadResultForBatch(totalItemsCount);
 
 			_objectManagerMock.Setup(x => x.ReadAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.Is<ReadRequest>(r => r.Object.ArtifactID == newBatchArtifactId)))
 				.ReturnsAsync(readResultForBatch)
@@ -169,7 +154,28 @@ namespace Relativity.Sync.Tests.Integration
 			_importBulkArtifactJob.Verify(x => x.Execute(), Times.Once);
 		}
 
-		private FieldValuePair CreateFieldValuePair(Guid guid, object value)
+		private ReadResult CreateReadResultForBatch(int totalItemsCount)
+		{
+			ReadResult readResultForBatch = new ReadResult()
+			{
+				Object = new RelativityObject()
+				{
+					FieldValues = new List<FieldValuePair>()
+					{
+						CreateFieldValuePair(TotalItemsCountGuid, totalItemsCount),
+						CreateFieldValuePair(StartingIndexGuid, 0),
+						CreateFieldValuePair(StatusGuid, BatchStatus.New.ToString()),
+						CreateFieldValuePair(FailedItemsCountGuid, 0),
+						CreateFieldValuePair(TransferredItemsCountGuid, 0),
+						CreateFieldValuePair(ProgressGuid, (decimal) 0),
+						CreateFieldValuePair(LockedByGuid, "locked by")
+					}
+				}
+			};
+			return readResultForBatch;
+		}
+
+		private static FieldValuePair CreateFieldValuePair(Guid guid, object value)
 		{
 			return new FieldValuePair()
 			{
