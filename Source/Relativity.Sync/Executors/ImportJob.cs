@@ -11,6 +11,7 @@ namespace Relativity.Sync.Executors
 	{
 		private bool _importApiFatalExceptionOccurred;
 		private bool _itemLevelErrorExists;
+		private bool _canReleaseSemaphore;
 		private Exception _importApiException;
 
 		private const string _IDENTIFIER_COLUMN = "Identifier";
@@ -29,6 +30,7 @@ namespace Relativity.Sync.Executors
 		{
 			_importApiFatalExceptionOccurred = false;
 			_itemLevelErrorExists = false;
+			_canReleaseSemaphore = true;
 			_importApiException = null;
 
 			_syncImportBulkArtifactJob = syncImportBulkArtifactJob;
@@ -52,7 +54,7 @@ namespace Relativity.Sync.Executors
 				_logger.LogInformation("Batch completed.");
 			}
 
-			_semaphoreSlim.Release();
+			ReleaseSemaphoreIfPossible();
 		}
 
 		private void HandleFatalException(JobReport jobReport)
@@ -68,6 +70,17 @@ namespace Relativity.Sync.Executors
 				StackTrace = jobReport.FatalException?.StackTrace
 			};
 			CreateJobHistoryError(jobError);
+
+			ReleaseSemaphoreIfPossible();
+		}
+
+		private void ReleaseSemaphoreIfPossible()
+		{
+			if (_canReleaseSemaphore)
+			{
+				_semaphoreSlim.Release();
+				_canReleaseSemaphore = false;
+			}
 		}
 
 		private void HandleItemLevelError(IDictionary row)

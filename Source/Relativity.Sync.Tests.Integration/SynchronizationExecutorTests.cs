@@ -119,7 +119,7 @@ namespace Relativity.Sync.Tests.Integration
 				},
 				TotalCount = numberOfNewBatches
 			};
-			//_configuration.Setup(x => x.GetFieldValue<string>(FieldMappingsFieldGuid)).Returns();
+
 			_objectManagerMock.Setup(x => x.QueryAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.Is<QueryRequest>(q => q.ObjectType.Guid == BatchObjectTypeGuid), It.IsAny<int>(), It.IsAny<int>()))
 				.ReturnsAsync(queryResultForNewBatches)
 				.Verifiable();
