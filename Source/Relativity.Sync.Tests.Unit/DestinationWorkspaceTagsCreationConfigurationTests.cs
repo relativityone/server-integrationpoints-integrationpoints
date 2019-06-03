@@ -13,8 +13,7 @@ namespace Relativity.Sync.Tests.Unit
 	internal sealed class DestinationWorkspaceTagsCreationConfigurationTests
 	{
 		private Mock<Relativity.Sync.Storage.IConfiguration> _cache;
-		private ImportSettingsDto _importSettings;
-		private SyncJobParameters _syncJobParameters;
+
 		private DestinationWorkspaceTagsCreationConfiguration _config;
 
 		private const int _JOB_ID = 1;
@@ -31,9 +30,9 @@ namespace Relativity.Sync.Tests.Unit
 		public void SetUp()
 		{
 			_cache = new Mock<Relativity.Sync.Storage.IConfiguration>();
-			_importSettings = new ImportSettingsDto();
-			_syncJobParameters = new SyncJobParameters(_JOB_ID, _SOURCE_WORKSPACE_ARTIFACT_ID, _importSettings);
-			_config = new DestinationWorkspaceTagsCreationConfiguration(_cache.Object, _syncJobParameters);
+			ImportSettingsDto importSettings = new ImportSettingsDto();
+			SyncJobParameters syncJobParameters = new SyncJobParameters(_JOB_ID, _SOURCE_WORKSPACE_ARTIFACT_ID, importSettings);
+			_config = new DestinationWorkspaceTagsCreationConfiguration(_cache.Object, syncJobParameters);
 		}
 
 		[Test]
