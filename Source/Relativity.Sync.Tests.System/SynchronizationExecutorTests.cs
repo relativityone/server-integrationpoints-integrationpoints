@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.Relativity.ImportAPI;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
@@ -30,7 +29,7 @@ namespace Relativity.Sync.Tests.System
 			_serviceFactoryStub = new ServiceFactoryStub(ServiceFactory);
 		}
 
-		//[Test]
+		[Test]
 		[Ignore("This test is not automatic yet.")]
 		public async Task ItShouldPassGoldFlow()
 		{
