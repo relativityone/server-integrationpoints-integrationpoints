@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.Models;
@@ -6,9 +7,9 @@ using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Exceptions;
-using kCura.IntegrationPoints.Services.Tests.Integration.Helpers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
 using Relativity.API;
 using Relativity.Services.Permission;
 using Relativity.Testing.Identification;
@@ -28,7 +29,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 		public override void SuiteSetup()
 		{
 			base.SuiteSetup();
-			RunDefaultIntegrationPoint();
+			RunDefaultIntegrationPoint().GetAwaiter().GetResult();
 			ModifyJobHistoryItem();
 		}
 
@@ -54,7 +55,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 				WorkspaceArtifactId = WorkspaceArtifactId
 			};
 			IJobHistoryManager jobHistoryManager = Helper.CreateUserProxy<IJobHistoryManager>(_userModel.EmailAddress);
-			PermissionsHelper.AssertPermissionErrorMessage(() => jobHistoryManager.GetJobHistoryAsync(jobHistoryRequest).Result);
+			AssertPermissionErrorMessage(() => jobHistoryManager.GetJobHistoryAsync(jobHistoryRequest).GetAwaiter().GetResult());
 		}
 
 		[IdentifiedTest("051c7ce7-3bf6-4d80-affd-aeabd353a47d")]
@@ -72,7 +73,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 				WorkspaceArtifactId = WorkspaceArtifactId
 			};
 			IJobHistoryManager jobHistoryManager = Helper.CreateUserProxy<IJobHistoryManager>(_userModel.EmailAddress);
-			PermissionsHelper.AssertPermissionErrorMessage(() => jobHistoryManager.GetJobHistoryAsync(jobHistoryRequest).Result);
+			AssertPermissionErrorMessage(() => jobHistoryManager.GetJobHistoryAsync(jobHistoryRequest).GetAwaiter().GetResult());
 		}
 
 		[IdentifiedTest("47249b2c-dce4-4d7c-a772-07fe5c0cdb01")]
@@ -83,7 +84,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 				WorkspaceArtifactId = TargetWorkspaceArtifactId
 			};
 			IJobHistoryManager jobHistoryManager = Helper.CreateUserProxy<IJobHistoryManager>(_userModel.EmailAddress);
-			PermissionsHelper.AssertPermissionErrorMessage(() => jobHistoryManager.GetJobHistoryAsync(jobHistoryRequest).Result);
+			AssertPermissionErrorMessage(() => jobHistoryManager.GetJobHistoryAsync(jobHistoryRequest).GetAwaiter().GetResult());
 		}
 
 		[IdentifiedTest("a18e2360-2a58-41e3-8b69-663f6f0d6c80")]
@@ -105,9 +106,9 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			IJobHistoryManager jobHistoryManager = Helper.CreateUserProxy<IJobHistoryManager>(_userModel.EmailAddress);
 
 			//Act & Assert
-			Assert.That(() => jobHistoryManager.GetJobHistoryAsync(jobHistoryRequest).Result,
-				Throws.Exception.With.InnerException.TypeOf<InternalServerErrorException>()
-					.And.With.InnerException.Message.EqualTo("Error occurred during request processing. Please contact your administrator."));
+			Assert.That(() => jobHistoryManager.GetJobHistoryAsync(jobHistoryRequest).GetAwaiter().GetResult(),
+				Throws.Exception.TypeOf<InternalServerErrorException>()
+					.With.Message.EqualTo("Error occurred during request processing. Please contact your administrator."));
 		}
 
 		private void RemoveIntegrationPointPermissionsFromSourceWorkspace()
@@ -130,14 +131,14 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			permissionsForIntegrationPoint.ViewSelected = false;
 		}
 
-		private void RunDefaultIntegrationPoint()
+		private async Task RunDefaultIntegrationPoint()
 		{
 			Core.Models.IntegrationPointModel ipModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, $"ip_{Utils.FormattedDateTimeNow}", "Append Only");
 			ipModel.Destination = CreateSerializedDestinationConfigWithTargetWorkspace(ImportOverwriteModeEnum.AppendOnly, TargetWorkspaceArtifactId);
 			Core.Models.IntegrationPointModel ip = CreateOrUpdateIntegrationPoint(ipModel);
 
 			IIntegrationPointManager integrationPointManager = Helper.CreateAdminProxy<IIntegrationPointManager>();
-			integrationPointManager.RunIntegrationPointAsync(SourceWorkspaceArtifactId, ip.ArtifactID).Wait();
+			await integrationPointManager.RunIntegrationPointAsync(SourceWorkspaceArtifactId, ip.ArtifactID);
 
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactId, ip.ArtifactID);
 		}
@@ -147,6 +148,11 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			//This is needed, as Integration Point, which has been run, doesn't contain any documents
 			IDBContext dbContext = Helper.GetDBContext(SourceWorkspaceArtifactId);
 			dbContext.ExecuteNonQuerySQLStatement(@"UPDATE [JobHistory] SET [ItemsTransferred] = 1, [TotalItems] = 1");
+		}
+
+		private void AssertPermissionErrorMessage(ActualValueDelegate<object> action)
+		{
+			Assert.That(action, Throws.TypeOf<InsufficientPermissionException>().With.Message.EqualTo("You do not have permission to access this service."));
 		}
 	}
 }
