@@ -5,9 +5,7 @@ using Moq;
 using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.Storage;
-using IConfiguration = Relativity.Sync.Storage.IConfiguration;
 
 namespace Relativity.Sync.Tests.Unit
 {
@@ -15,7 +13,7 @@ namespace Relativity.Sync.Tests.Unit
 	public class ValidationConfigurationTests
 	{
 		private ValidationConfiguration _configuration;
-		private Mock<IConfiguration> _cache;
+		private Mock<Sync.Storage.IConfiguration> _cache;
 		private Mock<IFieldMappings> _fieldMappings;
 		private const int _WORKSPACE_ID = 111;
 
@@ -32,9 +30,9 @@ namespace Relativity.Sync.Tests.Unit
 		[SetUp]
 		public void SetUp()
 		{
-			_cache = new Mock<IConfiguration>();
+			_cache = new Mock<Sync.Storage.IConfiguration>();
 			_fieldMappings = new Mock<IFieldMappings>();
-			SyncJobParameters jobParameters = new SyncJobParameters(1, _WORKSPACE_ID);
+			SyncJobParameters jobParameters = new SyncJobParameters(1, _WORKSPACE_ID, new ImportSettingsDto());
 			_configuration = new ValidationConfiguration(_cache.Object, _fieldMappings.Object, jobParameters);
 		}
 

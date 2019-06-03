@@ -8,6 +8,7 @@ using NUnit.Framework;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Workspace;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
@@ -86,8 +87,8 @@ namespace Relativity.Sync.Tests.System
 				syncConfigurationArtifactId = result.Object.ArtifactID;
 			}
 
-			SyncJobParameters jobParameters = new SyncJobParameters(syncConfigurationArtifactId, _workspaceId);
-			IConfiguration configuration = await Storage.Configuration
+			SyncJobParameters jobParameters = new SyncJobParameters(syncConfigurationArtifactId, _workspaceId, new ImportSettingsDto());
+			Storage.IConfiguration configuration = await Storage.Configuration
 				.GetAsync(_serviceFactory, jobParameters, new EmptyLogger(), new SemaphoreSlimWrapper(new SemaphoreSlim(1))).ConfigureAwait(false);
 
 			// ASSERT
@@ -143,8 +144,8 @@ namespace Relativity.Sync.Tests.System
 				syncConfigurationArtifactId = result.Object.ArtifactID;
 			}
 
-			SyncJobParameters jobParameters = new SyncJobParameters(syncConfigurationArtifactId, _workspaceId);
-			IConfiguration configuration = await Storage.Configuration
+			SyncJobParameters jobParameters = new SyncJobParameters(syncConfigurationArtifactId, _workspaceId, new ImportSettingsDto());
+			Storage.IConfiguration configuration = await Storage.Configuration
 				.GetAsync(_serviceFactory, jobParameters, new EmptyLogger(), new SemaphoreSlimWrapper(new SemaphoreSlim(1))).ConfigureAwait(false);
 
 			// ASSERT
