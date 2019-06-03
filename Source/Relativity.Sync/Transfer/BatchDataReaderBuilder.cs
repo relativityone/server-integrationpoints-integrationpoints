@@ -15,10 +15,12 @@ namespace Relativity.Sync.Transfer
 		private DataTable _templateDataTable;
 		private IReadOnlyList<FieldInfoDto> _allFields;
 		private readonly IFieldManager _fieldManager;
+		private readonly IFieldValueSanitizer _fieldValueSanitizer;
 
-		public BatchDataReaderBuilder(IFieldManager fieldManager)
+		public BatchDataReaderBuilder(IFieldManager fieldManager, IFieldValueSanitizer fieldValueSanitizer)
 		{
 			_fieldManager = fieldManager;
+			_fieldValueSanitizer = fieldValueSanitizer;
 		}
 
 		public async Task<IDataReader> BuildAsync(int sourceWorkspaceArtifactId, RelativityObjectSlim[] batch, CancellationToken token)
@@ -36,7 +38,7 @@ namespace Relativity.Sync.Transfer
 					await CreateSpecialFieldRowValuesBuildersAsync(sourceWorkspaceArtifactId, batch).ConfigureAwait(false);
 				foreach (RelativityObjectSlim obj in batch)
 				{
-					object[] row = BuildRow(specialFieldBuildersDictionary, _allFields, obj);
+					object[] row = await BuildRow(sourceWorkspaceArtifactId, specialFieldBuildersDictionary, _allFields, obj, token).ConfigureAwait(false);
 					dataTable.Rows.Add(row);
 				}
 			}
@@ -74,7 +76,8 @@ namespace Relativity.Sync.Transfer
 			return columns;
 		}
 
-		private static object[] BuildRow(IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> specialFieldBuilders, IReadOnlyList<FieldInfoDto> allFields, RelativityObjectSlim obj)
+		private async Task<object[]> BuildRow(int sourceWorkspaceArtifactId, IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> specialFieldBuilders, IReadOnlyList<FieldInfoDto> allFields,
+			RelativityObjectSlim obj, CancellationToken token)
 		{
 			object[] result = new object[allFields.Count];
 
@@ -83,21 +86,38 @@ namespace Relativity.Sync.Transfer
 				FieldInfoDto field = allFields[i];
 				if (field.SpecialFieldType != SpecialFieldType.None)
 				{
-					if (!specialFieldBuilders.ContainsKey(field.SpecialFieldType))
-					{
-						throw new SourceDataReaderException($"No special field row value builder found for special field type {nameof(SpecialFieldType)}.{field.SpecialFieldType}");
-					}
-
-					object initialFieldValue = field.IsDocumentField ? obj.Values[field.DocumentFieldIndex] : null;
-					result[i] = specialFieldBuilders[field.SpecialFieldType].BuildRowValue(field, obj, initialFieldValue);
+					result[i] = BuildSpecialFieldValue(specialFieldBuilders, obj, field);
 				}
 				else
 				{
-					result[i] = obj.Values[field.DocumentFieldIndex];
+					FieldInfoDto identifierField = await _fieldManager.GetObjectIdentifierFieldAsync(token).ConfigureAwait(false);
+					string itemIdentifier = obj.Values[identifierField.DocumentFieldIndex].ToString();
+					object initialValue = obj.Values[field.DocumentFieldIndex];
+					result[i] = await SanitizeFieldIfNeededAsync(sourceWorkspaceArtifactId, identifierField.SourceFieldName, itemIdentifier, field, initialValue).ConfigureAwait(false);
 				}
 			}
 
 			return result;
+		}
+
+		private static object BuildSpecialFieldValue(IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> specialFieldBuilders, RelativityObjectSlim obj, FieldInfoDto field)
+		{
+			if (!specialFieldBuilders.ContainsKey(field.SpecialFieldType))
+			{
+				throw new SourceDataReaderException($"No special field row value builder found for special field type {nameof(SpecialFieldType)}.{field.SpecialFieldType}");
+			}
+			object initialFieldValue = field.IsDocumentField ? obj.Values[field.DocumentFieldIndex] : null;
+
+			return specialFieldBuilders[field.SpecialFieldType].BuildRowValue(field, obj, initialFieldValue);
+		}
+
+		private async Task<object> SanitizeFieldIfNeededAsync(int sourceWorkspaceArtifactId, string itemIdentifierFieldName, string itemIdentifier, FieldInfoDto field, object initialValue)
+		{
+			if (_fieldValueSanitizer.ShouldBeSanitized(field.RelativityDataType))
+			{
+				return await _fieldValueSanitizer.SanitizeAsync(sourceWorkspaceArtifactId, itemIdentifierFieldName, itemIdentifier, field, initialValue).ConfigureAwait(false);
+			}
+			return initialValue;
 		}
 	}
 }
