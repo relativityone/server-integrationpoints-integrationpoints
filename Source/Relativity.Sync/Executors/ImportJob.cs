@@ -17,6 +17,7 @@ namespace Relativity.Sync.Executors
 		private const string _IDENTIFIER_COLUMN = "Identifier";
 		private const string _MESSAGE_COLUMN = "Message";
 
+		private readonly object _lockObject;
 		private readonly int _jobHistoryArtifactId;
 		private readonly int _sourceWorkspaceArtifactId;
 
@@ -28,6 +29,7 @@ namespace Relativity.Sync.Executors
 		public ImportJob(ISyncImportBulkArtifactJob syncImportBulkArtifactJob, ISemaphoreSlim semaphoreSlim, IJobHistoryErrorRepository jobHistoryErrorRepository,
 			int sourceWorkspaceArtifactId, int jobHistoryArtifactId, ISyncLog syncLog)
 		{
+			_lockObject = new object();
 			_importApiFatalExceptionOccurred = false;
 			_itemLevelErrorExists = false;
 			_canReleaseSemaphore = true;
@@ -76,10 +78,13 @@ namespace Relativity.Sync.Executors
 
 		private void ReleaseSemaphoreIfPossible()
 		{
-			if (_canReleaseSemaphore)
+			lock (_lockObject)
 			{
-				_semaphoreSlim.Release();
-				_canReleaseSemaphore = false;
+				if (_canReleaseSemaphore)
+				{
+					_semaphoreSlim.Release();
+					_canReleaseSemaphore = false;
+				}
 			}
 		}
 
