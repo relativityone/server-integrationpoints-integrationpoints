@@ -26,9 +26,13 @@
 		self.newProductionSetName.isModified(false);
 
 		self.view.dialog("open");
-		self.view.keypress(function (e) {
-			if (e.which === 13) {
-				self.create();
+		self.view.keyup(function (e) {
+			if (e.which == 13) {
+				if(e.handled !== true){
+					document.activeElement.blur();
+					self.create();
+					e.handled = true;
+				}
 			}
 		});
 	}
