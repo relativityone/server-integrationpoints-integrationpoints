@@ -233,14 +233,14 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				FieldInfoDto.GenericSpecialField(SpecialFieldType.FolderPath, "foo", "foo"),
 				FieldInfoDto.GenericSpecialField(SpecialFieldType.FolderPath, "bar", "foo"))
 			{
-				TestName = "DisplayName"
+				TestName = "SourceFieldName"
 			};
 
 			yield return new TestCaseData(
 				FieldInfoDto.GenericSpecialField(SpecialFieldType.FolderPath, "foo", "foo"),
 				FieldInfoDto.GenericSpecialField(SpecialFieldType.FolderPath, "foo", "bar"))
 			{
-				TestName = "DisplayName"
+				TestName = "DestinationFieldName"
 			};
 
 			yield return new TestCaseData(
@@ -397,14 +397,14 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				FieldInfoDto.GenericSpecialField(SpecialFieldType.FolderPath, "foo", "foo"),
 				FieldInfoDto.GenericSpecialField(SpecialFieldType.FolderPath, "bar", "foo"))
 			{
-				TestName = "DisplayName"
+				TestName = "SourceFieldName"
 			};
 
 			yield return new TestCaseData(
 				FieldInfoDto.GenericSpecialField(SpecialFieldType.FolderPath, "foo", "foo"),
 				FieldInfoDto.GenericSpecialField(SpecialFieldType.FolderPath, "foo", "bar"))
 			{
-				TestName = "DisplayName"
+				TestName = "DestinationFieldName"
 			};
 
 			yield return new TestCaseData(

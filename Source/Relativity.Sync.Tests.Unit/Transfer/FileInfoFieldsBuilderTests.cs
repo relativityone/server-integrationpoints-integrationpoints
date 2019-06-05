@@ -35,13 +35,13 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			// Assert
 			result.Count.Should().Be(expectedFieldCount);
-			result.Should().Contain(info => info.SpecialFieldType == SpecialFieldType.NativeFileLocation).Which.DestinationFieldName.Should().Be("NativeFileLocation");
-			result.Should().Contain(info => info.SpecialFieldType == SpecialFieldType.NativeFileSize).Which.DestinationFieldName.Should().Be("NativeFileSize");
-			result.Should().Contain(info => info.SpecialFieldType == SpecialFieldType.NativeFileFilename).Which.DestinationFieldName.Should().Be("NativeFileFilename");
-			result.Should().Contain(info => info.SpecialFieldType == SpecialFieldType.RelativityNativeType).Which.SourceFieldName.Should().Be("RelativityNativeType");
-			result.Should().Contain(info => info.SpecialFieldType == SpecialFieldType.RelativityNativeType).Which.DestinationFieldName.Should().Be("RelativityNativeType");
-			result.Should().Contain(info => info.SpecialFieldType == SpecialFieldType.SupportedByViewer).Which.SourceFieldName.Should().Be("SupportedByViewer");
-			result.Should().Contain(info => info.SpecialFieldType == SpecialFieldType.SupportedByViewer).Which.DestinationFieldName.Should().Be("SupportedByViewer");
+			result.Should().Contain(info => info.DestinationFieldName == "NativeFileSize").Which.SpecialFieldType.Should().Be(SpecialFieldType.NativeFileSize);
+			result.Should().Contain(info => info.DestinationFieldName == "NativeFileLocation").Which.SpecialFieldType.Should().Be(SpecialFieldType.NativeFileLocation);
+			result.Should().Contain(info => info.DestinationFieldName == "NativeFileFilename").Which.SpecialFieldType.Should().Be(SpecialFieldType.NativeFileFilename);
+			result.Should().Contain(info => info.SourceFieldName == "RelativityNativeType" && info.DestinationFieldName == "RelativityNativeType").Which.SpecialFieldType.Should()
+				.Be(SpecialFieldType.RelativityNativeType);
+			result.Should().Contain(info => info.SourceFieldName == "SupportedByViewer" && info.DestinationFieldName == "SupportedByViewer").Which.SpecialFieldType.Should()
+				.Be(SpecialFieldType.SupportedByViewer);
 		}
 
 		[Test]
