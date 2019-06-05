@@ -22,7 +22,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		[TestCase(DestinationFolderStructureBehavior.ReadFromField)]
 		public void ItShouldReturnInitialObjectWhenNotRetainingSourceWorkspaceStructure(DestinationFolderStructureBehavior folderStructureBehavior)
 		{
-			FieldInfoDto fieldInfo = FieldInfoDto.GenericSpecialField(SpecialFieldType.FolderPath, "blah");
+			FieldInfoDto fieldInfo = FieldInfoDto.GenericSpecialField(SpecialFieldType.FolderPath, "blah", "blah");
 			RelativityObjectSlim document = new RelativityObjectSlim { ArtifactID = 1 };
 			string initialValue = "test\\test";
 
@@ -38,7 +38,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		[Test]
 		public void ItShouldReturnFolderPathByArtifactIdWhenRetainingSourceWorkspaceStructure()
 		{
-			FieldInfoDto fieldInfo = FieldInfoDto.GenericSpecialField(SpecialFieldType.FolderPath, "blah");
+			FieldInfoDto fieldInfo = FieldInfoDto.GenericSpecialField(SpecialFieldType.FolderPath, "blah", "blah");
 			RelativityObjectSlim document = new RelativityObjectSlim { ArtifactID = 1 };
 			string initialValue = "test\\test";
 

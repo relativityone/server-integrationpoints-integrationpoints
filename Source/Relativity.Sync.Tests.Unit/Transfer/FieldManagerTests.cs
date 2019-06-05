@@ -27,8 +27,10 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		private const string _DOCUMENT_SPECIAL_FIELD_NAME = "DocumentSpecialField";
 		private const string _NON_DOCUMENT_SPECIAL_FIELD_1_NAME = "NonDocumentSpecialField1";
 		private const string _NON_DOCUMENT_SPECIAL_FIELD_2_NAME = "NonDocumentSpecialField2";
-		private const string _MAPPED_FIELD_1_NAME = "MappedField1";
-		private const string _MAPPED_FIELD_2_NAME = "MappedField2";
+		private const string _MAPPED_FIELD_1_SOURCE_NAME = "MappedField1Source";
+		private const string _MAPPED_FIELD_2_SOURCE_NAME = "MappedField2Source";
+		private const string _MAPPED_FIELD_1_DESTINATION_NAME = "MappedField1Destination";
+		private const string _MAPPED_FIELD_2_DESTINATION_NAME = "MappedField2Destination";
 		private const int _FIRST_DOCUMENT = 1;
 		private const int _SECOND_DOCUMENT = 2;
 		private const int _THIRD_DOCUMENT = 3;
@@ -38,12 +40,12 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		{
 			_documentArtifactIds = new[] {_FIRST_DOCUMENT, _SECOND_DOCUMENT, _THIRD_DOCUMENT};
 
-			FieldInfoDto documentIdentifierField = FieldInfoDto.DocumentField(_DOCUMENT_IDENTIFIER_FIELD_NAME, true);
-			FieldInfoDto documentSpecialField = FieldInfoDto.DocumentField(_DOCUMENT_SPECIAL_FIELD_NAME, false);
-			FieldInfoDto nonDocumentSpecialField1 = FieldInfoDto.GenericSpecialField(SpecialFieldType.None, _NON_DOCUMENT_SPECIAL_FIELD_1_NAME);
-			FieldInfoDto nonDocumentSpecialField2 = FieldInfoDto.GenericSpecialField(SpecialFieldType.None, _NON_DOCUMENT_SPECIAL_FIELD_2_NAME);
-			var mappedField1 = new FieldMap {SourceField = new FieldEntry {DisplayName = _MAPPED_FIELD_1_NAME}};
-			var mappedField2 = new FieldMap {SourceField = new FieldEntry {DisplayName = _MAPPED_FIELD_2_NAME}};
+			FieldInfoDto documentIdentifierField = FieldInfoDto.DocumentField(_DOCUMENT_IDENTIFIER_FIELD_NAME, _DOCUMENT_IDENTIFIER_FIELD_NAME, true);
+			FieldInfoDto documentSpecialField = FieldInfoDto.DocumentField(_DOCUMENT_SPECIAL_FIELD_NAME, _DOCUMENT_SPECIAL_FIELD_NAME, false);
+			FieldInfoDto nonDocumentSpecialField1 = FieldInfoDto.GenericSpecialField(SpecialFieldType.None, _NON_DOCUMENT_SPECIAL_FIELD_1_NAME, _NON_DOCUMENT_SPECIAL_FIELD_1_NAME);
+			FieldInfoDto nonDocumentSpecialField2 = FieldInfoDto.GenericSpecialField(SpecialFieldType.None, _NON_DOCUMENT_SPECIAL_FIELD_2_NAME, _NON_DOCUMENT_SPECIAL_FIELD_2_NAME);
+			var mappedField1 = new FieldMap {SourceField = new FieldEntry {DisplayName = _MAPPED_FIELD_1_SOURCE_NAME}, DestinationField = new FieldEntry{ DisplayName = _MAPPED_FIELD_1_DESTINATION_NAME}};
+			var mappedField2 = new FieldMap {SourceField = new FieldEntry {DisplayName = _MAPPED_FIELD_2_SOURCE_NAME}, DestinationField = new FieldEntry {DisplayName = _MAPPED_FIELD_2_DESTINATION_NAME}};
 			
 			_rowValueBuilder1 = new Mock<ISpecialFieldRowValuesBuilder>();
 			var builder1 = new Mock<ISpecialFieldBuilder>();
@@ -76,7 +78,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			result.Should().NotBeNull();
 			result.IsIdentifier.Should().BeTrue();
 			result.IsDocumentField.Should().BeTrue();
-			result.DisplayName.Should().Be(_DOCUMENT_IDENTIFIER_FIELD_NAME);
+			result.SourceFieldName.Should().Be(_DOCUMENT_IDENTIFIER_FIELD_NAME);
 		}
 
 		[Test]
@@ -86,11 +88,11 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			IList<FieldInfoDto> result = _instance.GetSpecialFields().ToList();
 
 			// Assert
-			result.Should().Contain(f => f.DisplayName == _DOCUMENT_SPECIAL_FIELD_NAME);
-			result.Should().Contain(f => f.DisplayName == _NON_DOCUMENT_SPECIAL_FIELD_1_NAME);
-			result.Should().Contain(f => f.DisplayName == _NON_DOCUMENT_SPECIAL_FIELD_2_NAME);
-			result.Should().NotContain(f => f.DisplayName == _MAPPED_FIELD_1_NAME);
-			result.Should().NotContain(f => f.DisplayName == _MAPPED_FIELD_2_NAME);
+			result.Should().Contain(f => f.SourceFieldName == _DOCUMENT_SPECIAL_FIELD_NAME);
+			result.Should().Contain(f => f.SourceFieldName == _NON_DOCUMENT_SPECIAL_FIELD_1_NAME);
+			result.Should().Contain(f => f.SourceFieldName == _NON_DOCUMENT_SPECIAL_FIELD_2_NAME);
+			result.Should().NotContain(f => f.SourceFieldName == _MAPPED_FIELD_1_SOURCE_NAME);
+			result.Should().NotContain(f => f.SourceFieldName == _MAPPED_FIELD_2_SOURCE_NAME);
 		}
 
 		[Test]
@@ -100,11 +102,12 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			IList<FieldInfoDto> result = await _instance.GetDocumentFieldsAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
-			result.Should().Contain(f => f.DisplayName == _DOCUMENT_SPECIAL_FIELD_NAME).Which.DocumentFieldIndex.Should().BeGreaterOrEqualTo(0);
-			result.Should().Contain(f => f.DisplayName == _MAPPED_FIELD_1_NAME).Which.DocumentFieldIndex.Should().BeGreaterOrEqualTo(0);
-			result.Should().Contain(f => f.DisplayName == _MAPPED_FIELD_2_NAME).Which.DocumentFieldIndex.Should().BeGreaterOrEqualTo(0);
-			result.Should().NotContain(f => f.DisplayName == _NON_DOCUMENT_SPECIAL_FIELD_1_NAME);
-			result.Should().NotContain(f => f.DisplayName == _NON_DOCUMENT_SPECIAL_FIELD_2_NAME);
+			result.Should().Contain(f => f.SourceFieldName == _DOCUMENT_SPECIAL_FIELD_NAME).Which.DocumentFieldIndex.Should().BeGreaterOrEqualTo(0);
+			result.Should().Contain(f => f.DestinationFieldName == _DOCUMENT_SPECIAL_FIELD_NAME).Which.DocumentFieldIndex.Should().BeGreaterOrEqualTo(0);
+			result.Should().Contain(f => f.SourceFieldName == _MAPPED_FIELD_1_SOURCE_NAME && f.DestinationFieldName == _MAPPED_FIELD_1_DESTINATION_NAME).Which.DocumentFieldIndex.Should().BeGreaterOrEqualTo(0);
+			result.Should().Contain(f => f.SourceFieldName == _MAPPED_FIELD_2_SOURCE_NAME && f.DestinationFieldName == _MAPPED_FIELD_2_DESTINATION_NAME).Which.DocumentFieldIndex.Should().BeGreaterOrEqualTo(0);
+			result.Should().NotContain(f => f.DestinationFieldName == _NON_DOCUMENT_SPECIAL_FIELD_1_NAME);
+			result.Should().NotContain(f => f.DestinationFieldName == _NON_DOCUMENT_SPECIAL_FIELD_2_NAME);
 			result.Select(f => f.DocumentFieldIndex).Should().ContainInOrder(Enumerable.Range(0, result.Count));
 		}
 
@@ -115,17 +118,20 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			IReadOnlyList<FieldInfoDto> result = await _instance.GetAllFieldsAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
-			result.Should().Contain(f => f.DisplayName == _DOCUMENT_SPECIAL_FIELD_NAME).Which.DocumentFieldIndex.Should().BeGreaterOrEqualTo(0);
+			result.Should().Contain(f => f.SourceFieldName == _DOCUMENT_SPECIAL_FIELD_NAME).Which.DocumentFieldIndex.Should().BeGreaterOrEqualTo(0);
+			result.Should().Contain(f => f.DestinationFieldName == _DOCUMENT_SPECIAL_FIELD_NAME).Which.DocumentFieldIndex.Should().BeGreaterOrEqualTo(0);
 
-			result.Should().Contain(f => f.DisplayName == _MAPPED_FIELD_1_NAME).Which.DocumentFieldIndex.Should().BeGreaterOrEqualTo(0);
-			result.Should().Contain(f => f.DisplayName == _MAPPED_FIELD_1_NAME).Which.RelativityDataType.Should().Be(_NON_SPECIAL_DOCUMENT_FIELD_RELATIVITY_DATA_TYPE);
+			result.Should().Contain(f => f.SourceFieldName == _MAPPED_FIELD_1_SOURCE_NAME && f.DestinationFieldName == _MAPPED_FIELD_1_DESTINATION_NAME).Which.DocumentFieldIndex.Should().BeGreaterOrEqualTo(0);
+			result.Should().Contain(f => f.SourceFieldName == _MAPPED_FIELD_1_SOURCE_NAME && f.DestinationFieldName == _MAPPED_FIELD_1_DESTINATION_NAME).Which.RelativityDataType.Should()
+				.Be(_NON_SPECIAL_DOCUMENT_FIELD_RELATIVITY_DATA_TYPE);
 			
-			result.Should().Contain(f => f.DisplayName == _MAPPED_FIELD_2_NAME).Which.DocumentFieldIndex.Should().BeGreaterOrEqualTo(0);
-			result.Should().Contain(f => f.DisplayName == _MAPPED_FIELD_2_NAME).Which.RelativityDataType.Should().Be(_NON_SPECIAL_DOCUMENT_FIELD_RELATIVITY_DATA_TYPE);
+			result.Should().Contain(f => f.SourceFieldName == _MAPPED_FIELD_2_SOURCE_NAME && f.DestinationFieldName == _MAPPED_FIELD_2_DESTINATION_NAME).Which.DocumentFieldIndex.Should().BeGreaterOrEqualTo(0);
+			result.Should().Contain(f => f.SourceFieldName == _MAPPED_FIELD_2_SOURCE_NAME && f.DestinationFieldName == _MAPPED_FIELD_2_DESTINATION_NAME).Which.RelativityDataType.Should()
+				.Be(_NON_SPECIAL_DOCUMENT_FIELD_RELATIVITY_DATA_TYPE);
 
-			result.Should().Contain(f => f.DisplayName == _NON_DOCUMENT_SPECIAL_FIELD_1_NAME).Which.DocumentFieldIndex.Should().Be(-1);
+			result.Should().Contain(f => f.DestinationFieldName == _NON_DOCUMENT_SPECIAL_FIELD_1_NAME).Which.DocumentFieldIndex.Should().Be(-1);
 
-			result.Should().Contain(f => f.DisplayName == _NON_DOCUMENT_SPECIAL_FIELD_2_NAME).Which.DocumentFieldIndex.Should().Be(-1);
+			result.Should().Contain(f => f.DestinationFieldName == _NON_DOCUMENT_SPECIAL_FIELD_2_NAME).Which.DocumentFieldIndex.Should().Be(-1);
 		}
 
 		[Test]

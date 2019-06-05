@@ -126,12 +126,14 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		public async Task ItShouldIncludeFieldsFromFieldMapping()
 		{
 			const string field1Id = "741258";
+			const string field1DestId = "Dest 1";
 			const string field2Id = "985632";
+			const string field2DestId = "Dest 2";
 
 			List<FieldInfoDto> fieldInfos = new List<FieldInfoDto>
 			{
-				FieldInfoDto.DocumentField(field1Id, false),
-				FieldInfoDto.DocumentField(field2Id, false)
+				FieldInfoDto.DocumentField(field1Id, field1DestId, false),
+				FieldInfoDto.DocumentField(field2Id, field2DestId, false)
 			};
 
 			_fieldManager.Setup(fm => fm.GetDocumentFieldsAsync(CancellationToken.None)).ReturnsAsync(fieldInfos);

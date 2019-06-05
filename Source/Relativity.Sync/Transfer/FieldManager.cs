@@ -110,7 +110,7 @@ namespace Relativity.Sync.Transfer
 				IDictionary<string, RelativityDataType> fieldNameToFieldType = await GetRelativityDataTypesForFieldsAsync(fields, token).ConfigureAwait(false);
 				foreach (var field in fields)
 				{
-					field.RelativityDataType = fieldNameToFieldType[field.DisplayName];
+					field.RelativityDataType = fieldNameToFieldType[field.SourceFieldName];
 				}
 			}
 
@@ -119,14 +119,14 @@ namespace Relativity.Sync.Transfer
 		
 		private async Task<IDictionary<string, RelativityDataType>> GetRelativityDataTypesForFieldsAsync(IEnumerable<FieldInfoDto> fields, CancellationToken token)
 		{
-			ICollection<string> fieldNames = fields.Select(f => f.DisplayName).ToArray();
+			ICollection<string> fieldNames = fields.Select(f => f.SourceFieldName).ToArray();
 			return await _documentFieldRepository.GetRelativityDataTypesForFieldsByFieldNameAsync(_configuration.SourceWorkspaceArtifactId, fieldNames, token)
 				.ConfigureAwait(false);
 		}
 
 		private FieldInfoDto CreateFieldInfoFromFieldMap(FieldMap fieldMap)
 		{
-			return FieldInfoDto.DocumentField(fieldMap.SourceField.DisplayName, fieldMap.SourceField.IsIdentifier);
+			return FieldInfoDto.DocumentField(fieldMap.SourceField.DisplayName, fieldMap.DestinationField.DisplayName, fieldMap.SourceField.IsIdentifier);
 		}
 	}
 }
