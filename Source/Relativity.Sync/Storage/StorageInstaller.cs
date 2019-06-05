@@ -20,6 +20,8 @@ namespace Relativity.Sync.Storage
 			builder.RegisterType<SourceWorkspaceTagsCreationConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<FieldMappings>().As<IFieldMappings>();
 			builder.RegisterType<JobHistoryErrorRepository>().As<IJobHistoryErrorRepository>();
+			builder.RegisterType<JobProgressUpdaterFactory>().As<IJobProgressUpdaterFactory>();
+			builder.RegisterType<JobProgressHandlerFactory>().As<IJobProgressHandlerFactory>();
 
 			builder.Register(CreateConfiguration).As<IConfiguration>().SingleInstance();
 		}

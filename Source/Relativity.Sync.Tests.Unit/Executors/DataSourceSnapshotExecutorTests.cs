@@ -24,6 +24,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 		private Mock<IObjectManager> _objectManager;
 		private Mock<IDataSourceSnapshotConfiguration> _configuration;
+		private Mock<IJobProgressUpdater> _jobProgressUpdater;
 		private Mock<IFieldManager> _fieldManager;
 
 		private const int _WORKSPACE_ID = 458712;
@@ -45,7 +46,11 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_configuration.Setup(x => x.DataSourceArtifactId).Returns(_DATA_SOURCE_ID);
 			_configuration.Setup(x => x.FieldMappings).Returns(new List<FieldMap>());
 
-			_instance = new DataSourceSnapshotExecutor(serviceFactory.Object, _fieldManager.Object, new EmptyLogger());
+			_jobProgressUpdater = new Mock<IJobProgressUpdater>();
+			Mock<IJobProgressUpdaterFactory> jobProgressUpdaterFactory = new Mock<IJobProgressUpdaterFactory>();
+			jobProgressUpdaterFactory.Setup(x => x.CreateJobProgressUpdater()).Returns(_jobProgressUpdater.Object);
+
+			_instance = new DataSourceSnapshotExecutor(serviceFactory.Object, _fieldManager.Object, jobProgressUpdaterFactory.Object, new EmptyLogger());
 		}
 
 		[Test]
@@ -68,6 +73,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			result.Status.Should().Be(ExecutionStatus.Completed);
 			_objectManager.Verify(x => x.InitializeExportAsync(_WORKSPACE_ID, It.Is<QueryRequest>(qr => AssertQueryRequest(qr)), 1));
 			_configuration.Verify(x => x.SetSnapshotDataAsync(runId, totalRecords));
+			_jobProgressUpdater.Verify(x => x.SetTotalItemsCountAsync(totalRecords));
 		}
 
 		private bool AssertQueryRequest(QueryRequest queryRequest)

@@ -18,15 +18,20 @@ namespace Relativity.Sync.Executors
 		private readonly IImportApiFactory _importApiFactory;
 		private readonly ISourceWorkspaceDataReader _dataReader;
 		private readonly IBatchProgressHandlerFactory _batchProgressHandlerFactory;
+		private readonly IJobProgressHandlerFactory _jobProgressHandlerFactory;
+		private readonly IJobProgressUpdaterFactory _jobProgressUpdaterFactory;
 		private readonly IJobHistoryErrorRepository _jobHistoryErrorRepository;
 		private readonly ISyncLog _logger;
 
 		public ImportJobFactory(IImportApiFactory importApiFactory, ISourceWorkspaceDataReader dataReader, 
-			IBatchProgressHandlerFactory batchProgressHandlerFactory, IJobHistoryErrorRepository jobHistoryErrorRepository, ISyncLog logger)
+			IBatchProgressHandlerFactory batchProgressHandlerFactory, IJobProgressHandlerFactory jobProgressHandlerFactory, 
+			IJobProgressUpdaterFactory jobProgressUpdaterFactory, IJobHistoryErrorRepository jobHistoryErrorRepository, ISyncLog logger)
 		{
 			_importApiFactory = importApiFactory;
 			_dataReader = dataReader;
 			_batchProgressHandlerFactory = batchProgressHandlerFactory;
+			_jobProgressHandlerFactory = jobProgressHandlerFactory;
+			_jobProgressUpdaterFactory = jobProgressUpdaterFactory;
 			_jobHistoryErrorRepository = jobHistoryErrorRepository;
 			_logger = logger;
 		}
@@ -37,9 +42,19 @@ namespace Relativity.Sync.Executors
 			var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importBulkArtifactJob, _dataReader.ItemStatusMonitor);
 
 			_batchProgressHandlerFactory.CreateBatchProgressHandler(batch, importBulkArtifactJob);
+			AttachJobProgressHandler(importBulkArtifactJob);
 
 			return new ImportJob(syncImportBulkArtifactJob, new SemaphoreSlimWrapper(new SemaphoreSlim(0, 1)), _jobHistoryErrorRepository,
 				configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, _logger);
+		}
+
+		private void AttachJobProgressHandler(ImportBulkArtifactJob importBulkArtifactJob)
+		{
+			IJobProgressUpdater jobProgressUpdater = _jobProgressUpdaterFactory.CreateJobProgressUpdater();
+			IJobProgressHandler jobProgressHandler = _jobProgressHandlerFactory.CreateJobProgressHandler(jobProgressUpdater);
+			importBulkArtifactJob.OnProgress += jobProgressHandler.HandleItemProcessed;
+			importBulkArtifactJob.OnError += jobProgressHandler.HandleItemError;
+			importBulkArtifactJob.OnComplete += jobProgressHandler.HandleProcessComplete;
 		}
 
 		private async Task<ImportBulkArtifactJob> CreateImportBulkArtifactJobAsync(ISynchronizationConfiguration configuration, int startingIndex)
