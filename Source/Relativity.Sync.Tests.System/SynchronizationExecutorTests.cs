@@ -100,6 +100,8 @@ namespace Relativity.Sync.Tests.System
 				}
 			};
 
+			IJobProgressHandlerFactory jobProgressHandlerFactory = new JobProgressHandlerFactory(dateTime);
+			IJobProgressUpdaterFactory jobProgressUpdaterFactory = new JobProgressUpdaterFactory(_serviceFactoryStub, configuration);
 			INativeFileRepository nativeFileRepository = new NativeFileRepository(_serviceFactoryStub);
 
 			IFieldManager fieldManager = new FieldManager(configuration, new DocumentFieldRepository(_serviceFactoryStub, logger), new List<ISpecialFieldBuilder>()
@@ -125,7 +127,7 @@ namespace Relativity.Sync.Tests.System
 			Assert.AreEqual(ExecutionStatus.Completed, sourceWorkspaceTagsCreationExecutorResult.Status);
 
 			// Data source snapshot creation
-			DataSourceSnapshotExecutor dataSourceSnapshotExecutor = new DataSourceSnapshotExecutor(_serviceFactoryStub, fieldManager, logger);
+			DataSourceSnapshotExecutor dataSourceSnapshotExecutor = new DataSourceSnapshotExecutor(_serviceFactoryStub, fieldManager, jobProgressUpdaterFactory,  logger);
 			ExecutionResult dataSourceExecutorResult = await dataSourceSnapshotExecutor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
 			Assert.AreEqual(ExecutionStatus.Completed, dataSourceExecutorResult.Status);
 
@@ -152,6 +154,8 @@ namespace Relativity.Sync.Tests.System
 				importApi,
 				dataReader,
 				new BatchProgressHandlerFactory(new BatchProgressUpdater(logger), dateTime),
+				jobProgressHandlerFactory,
+				jobProgressUpdaterFactory,
 				new JobHistoryErrorRepository(_serviceFactoryStub),
 				logger);
 			Storage.IConfiguration config = await Storage.Configuration.GetAsync(_serviceFactoryStub, new SyncJobParameters(jobHistoryArtifactId, sourceWorkspaceArtifactId, configuration.ImportSettings), logger,
