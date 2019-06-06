@@ -11,7 +11,14 @@ namespace Relativity.Sync.Transfer
 
 		public FieldValueSanitizer(IEnumerable<IFieldSanitizer> sanitizers)
 		{
-			_sanitizers = sanitizers.ToDictionary(s => s.SupportedType);
+			List<IFieldSanitizer> sanitizersList = sanitizers?.ToList() ?? new List<IFieldSanitizer>();
+			HashSet<RelativityDataType> uniqueDataTypes = new HashSet<RelativityDataType>(sanitizersList.Select(x => x.SupportedType));
+			if (sanitizersList.Count > uniqueDataTypes.Count)
+			{
+				throw new ArgumentException("Multiple sanitizers for the same data type were found. Ensure there is exactly one sanitizer per data type.", nameof(sanitizers));
+			}
+
+			_sanitizers = sanitizersList.ToDictionary(s => s.SupportedType);
 		}
 
 		public bool ShouldBeSanitized(RelativityDataType dataType)
