@@ -231,7 +231,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private string GetDocumentIdentifierField()
 		{
 			ArtifactDTO[] fieldArtifacts = _fieldQueryRepository.RetrieveFieldsAsync(
-				rdoTypeId: 10,
+				rdoTypeID: 10,
 				fieldNames: new HashSet<string>(
 					new[]
 					{
