@@ -3,7 +3,7 @@ using Relativity.API;
 
 namespace Relativity.Sync.Transfer
 {
-	internal interface IFieldSanitizer
+	internal interface IExportFieldSanitizer
 	{
 		RelativityDataType SupportedType { get; }
 

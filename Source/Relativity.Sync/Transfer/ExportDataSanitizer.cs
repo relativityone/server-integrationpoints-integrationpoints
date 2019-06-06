@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 
 namespace Relativity.Sync.Transfer
 {
-	internal sealed class FieldValueSanitizer : IFieldValueSanitizer
+	internal sealed class ExportDataSanitizer : IExportDataSanitizer
 	{
-		private readonly Dictionary<RelativityDataType, IFieldSanitizer> _sanitizers;
+		private readonly Dictionary<RelativityDataType, IExportFieldSanitizer> _sanitizers;
 
-		public FieldValueSanitizer(IEnumerable<IFieldSanitizer> sanitizers)
+		public ExportDataSanitizer(IEnumerable<IExportFieldSanitizer> sanitizers)
 		{
-			List<IFieldSanitizer> sanitizersList = sanitizers?.ToList() ?? new List<IFieldSanitizer>();
+			List<IExportFieldSanitizer> sanitizersList = sanitizers?.ToList() ?? new List<IExportFieldSanitizer>();
 			HashSet<RelativityDataType> uniqueDataTypes = new HashSet<RelativityDataType>(sanitizersList.Select(x => x.SupportedType));
 			if (sanitizersList.Count > uniqueDataTypes.Count)
 			{
@@ -21,7 +21,7 @@ namespace Relativity.Sync.Transfer
 			_sanitizers = sanitizersList.ToDictionary(s => s.SupportedType);
 		}
 
-		public bool ShouldBeSanitized(RelativityDataType dataType)
+		public bool ShouldSanitize(RelativityDataType dataType)
 		{
 			return _sanitizers.ContainsKey(dataType);
 		}

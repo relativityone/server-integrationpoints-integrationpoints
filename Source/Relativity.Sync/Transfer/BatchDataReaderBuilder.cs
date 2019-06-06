@@ -15,12 +15,12 @@ namespace Relativity.Sync.Transfer
 		private DataTable _templateDataTable;
 		private IReadOnlyList<FieldInfoDto> _allFields;
 		private readonly IFieldManager _fieldManager;
-		private readonly IFieldValueSanitizer _fieldValueSanitizer;
+		private readonly IExportDataSanitizer _exportDataSanitizer;
 
-		public BatchDataReaderBuilder(IFieldManager fieldManager, IFieldValueSanitizer fieldValueSanitizer)
+		public BatchDataReaderBuilder(IFieldManager fieldManager, IExportDataSanitizer exportDataSanitizer)
 		{
 			_fieldManager = fieldManager;
-			_fieldValueSanitizer = fieldValueSanitizer;
+			_exportDataSanitizer = exportDataSanitizer;
 		}
 
 		public async Task<IDataReader> BuildAsync(int sourceWorkspaceArtifactId, RelativityObjectSlim[] batch, CancellationToken token)
@@ -116,9 +116,9 @@ namespace Relativity.Sync.Transfer
 		private async Task<object> SanitizeFieldIfNeededAsync(int sourceWorkspaceArtifactId, string itemIdentifierFieldName, string itemIdentifier, FieldInfoDto field, object initialValue)
 		{
 			object sanitizedValue = initialValue;
-			if (_fieldValueSanitizer.ShouldBeSanitized(field.RelativityDataType))
+			if (_exportDataSanitizer.ShouldSanitize(field.RelativityDataType))
 			{
-				sanitizedValue = await _fieldValueSanitizer.SanitizeAsync(sourceWorkspaceArtifactId, itemIdentifierFieldName, itemIdentifier, field, initialValue).ConfigureAwait(false);
+				sanitizedValue = await _exportDataSanitizer.SanitizeAsync(sourceWorkspaceArtifactId, itemIdentifierFieldName, itemIdentifier, field, initialValue).ConfigureAwait(false);
 			}
 
 			return sanitizedValue;

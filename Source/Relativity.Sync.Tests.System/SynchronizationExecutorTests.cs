@@ -108,7 +108,7 @@ namespace Relativity.Sync.Tests.System
 				new SourceTagsFieldBuilder(configuration)
 			});
 
-			IFieldValueSanitizer fieldValueSanitizer = new FieldValueSanitizer(Enumerable.Empty<IFieldSanitizer>());
+			IExportDataSanitizer exportDataSanitizer = new ExportDataSanitizer(Enumerable.Empty<IExportFieldSanitizer>());
 
 			var jobHistoryErrorRepository = new JobHistoryErrorRepository(_serviceFactoryStub);
 
@@ -140,7 +140,7 @@ namespace Relativity.Sync.Tests.System
 				new RelativityExportBatcher(_serviceFactoryStub, new BatchRepository(_serviceFactoryStub), runId, wsId, syncConfigId);
 
 			var dataReader = new SourceWorkspaceDataReader(
-				new BatchDataReaderBuilder(fieldManager, fieldValueSanitizer), 
+				new BatchDataReaderBuilder(fieldManager, exportDataSanitizer),
 				configuration,
 				BatcherFactory,
 				fieldManager,

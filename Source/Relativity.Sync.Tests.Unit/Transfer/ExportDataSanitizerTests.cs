@@ -10,21 +10,21 @@ using Relativity.Sync.Transfer;
 namespace Relativity.Sync.Tests.Unit.Transfer
 {
 	[TestFixture]
-	internal sealed class FieldValueSanitizerTests
+	internal sealed class ExportDataSanitizerTests
 	{
 		[Test]
 		public void ItShouldThrowExceptionWhenGivenMultipleSanitizersWithSameDataType()
 		{
 			// Arrange
-			var sanitizer1 = new Mock<IFieldSanitizer>();
+			var sanitizer1 = new Mock<IExportFieldSanitizer>();
 			sanitizer1.SetupGet(x => x.SupportedType).Returns(RelativityDataType.Currency);
-			var sanitizer2 = new Mock<IFieldSanitizer>();
+			var sanitizer2 = new Mock<IExportFieldSanitizer>();
 			sanitizer2.SetupGet(x => x.SupportedType).Returns(RelativityDataType.Date);
-			var sanitizer3 = new Mock<IFieldSanitizer>();
+			var sanitizer3 = new Mock<IExportFieldSanitizer>();
 			sanitizer3.SetupGet(x => x.SupportedType).Returns(RelativityDataType.Currency);
 
 			// Act
-			Func<FieldValueSanitizer> action = () => new FieldValueSanitizer(new[] { sanitizer1.Object, sanitizer2.Object, sanitizer3.Object });
+			Func<ExportDataSanitizer> action = () => new ExportDataSanitizer(new[] { sanitizer1.Object, sanitizer2.Object, sanitizer3.Object });
 
 			// Assert
 			action.Should().Throw<ArgumentException>()
@@ -33,20 +33,20 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 		private static IEnumerable<TestCaseData> CorrectlyCheckForDataTypesToSanitizeTestCases()
 		{
-			var matchingSanitizer1 = new Mock<IFieldSanitizer>();
+			var matchingSanitizer1 = new Mock<IExportFieldSanitizer>();
 			matchingSanitizer1.SetupGet(x => x.SupportedType).Returns(RelativityDataType.Currency);
 
-			var matchingSanitizer2 = new Mock<IFieldSanitizer>();
+			var matchingSanitizer2 = new Mock<IExportFieldSanitizer>();
 			matchingSanitizer2.SetupGet(x => x.SupportedType).Returns(RelativityDataType.Currency);
 
-			var nonMatchingSanitizer = new Mock<IFieldSanitizer>();
+			var nonMatchingSanitizer = new Mock<IExportFieldSanitizer>();
 			nonMatchingSanitizer.SetupGet(x => x.SupportedType).Returns(RelativityDataType.Date);
 
 			yield return new TestCaseData(null, false)
 			{
 				TestName = "Null sanitizers"
 			};
-			yield return new TestCaseData(Enumerable.Empty<IFieldSanitizer>(), false)
+			yield return new TestCaseData(Enumerable.Empty<IExportFieldSanitizer>(), false)
 			{
 				TestName = "Empty sanitizers"
 			};
@@ -65,13 +65,13 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		}
 
 		[TestCaseSource(nameof(CorrectlyCheckForDataTypesToSanitizeTestCases))]
-		public void ItShouldCorrectlyCheckForDataTypesToSanitize(IEnumerable<IFieldSanitizer> sanitizers, bool expectedResult)
+		public void ItShouldCorrectlyCheckForDataTypesToSanitize(IEnumerable<IExportFieldSanitizer> sanitizers, bool expectedResult)
 		{
 			// Arrange
-			var instance = new FieldValueSanitizer(sanitizers);
+			var instance = new ExportDataSanitizer(sanitizers);
 
 			// Act
-			bool result = instance.ShouldBeSanitized(RelativityDataType.Currency);
+			bool result = instance.ShouldSanitize(RelativityDataType.Currency);
 
 			// Assert
 			result.Should().Be(expectedResult);
@@ -79,28 +79,28 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 		private static IEnumerable<TestCaseData> ThrowExceptionForUnregisteredDataTypeTestCases()
 		{
-			var nonMatchingSanitizer = new Mock<IFieldSanitizer>();
+			var nonMatchingSanitizer = new Mock<IExportFieldSanitizer>();
 			nonMatchingSanitizer.SetupGet(x => x.SupportedType).Returns(RelativityDataType.Date);
 
 			yield return new TestCaseData(null)
 			{
 				TestName = "Null sanitizers"
 			};
-			yield return new TestCaseData(Enumerable.Empty<IFieldSanitizer>())
+			yield return new TestCaseData(Enumerable.Empty<IExportFieldSanitizer>())
 			{
 				TestName = "Empty sanitizers"
 			};
-			yield return new TestCaseData((IEnumerable<IFieldSanitizer>)new[] { nonMatchingSanitizer.Object })
+			yield return new TestCaseData((IEnumerable<IExportFieldSanitizer>)new[] { nonMatchingSanitizer.Object })
 			{
 				TestName = "No matching sanitizer"
 			};
 		}
 
 		[TestCaseSource(nameof(ThrowExceptionForUnregisteredDataTypeTestCases))]
-		public async Task ItShouldThrowExceptionForUnregisteredDataType(IEnumerable<IFieldSanitizer> sanitizers)
+		public async Task ItShouldThrowExceptionForUnregisteredDataType(IEnumerable<IExportFieldSanitizer> sanitizers)
 		{
 			// Arrange
-			var instance = new FieldValueSanitizer(sanitizers);
+			var instance = new ExportDataSanitizer(sanitizers);
 
 			// Act
 			FieldInfoDto field = FieldInfoDto.DocumentField("src", "dst", false);
@@ -118,20 +118,20 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		{
 			// Arrange
 			Guid matchingResult = Guid.NewGuid();
-			var matchingSanitizer = new Mock<IFieldSanitizer>();
+			var matchingSanitizer = new Mock<IExportFieldSanitizer>();
 			matchingSanitizer.Setup(x => x.SupportedType).Returns(RelativityDataType.Currency);
 			matchingSanitizer
 				.Setup(x => x.SanitizeAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>()))
 				.ReturnsAsync(matchingResult);
 
 			Guid nonMatchingResult = Guid.NewGuid();
-			var nonMatchingSanitizer = new Mock<IFieldSanitizer>();
+			var nonMatchingSanitizer = new Mock<IExportFieldSanitizer>();
 			nonMatchingSanitizer.Setup(x => x.SupportedType).Returns(RelativityDataType.Date);
 			nonMatchingSanitizer
 				.Setup(x => x.SanitizeAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>()))
 				.ReturnsAsync(nonMatchingResult);
 
-			var instance = new FieldValueSanitizer(new[] { matchingSanitizer.Object, nonMatchingSanitizer.Object });
+			var instance = new ExportDataSanitizer(new[] { matchingSanitizer.Object, nonMatchingSanitizer.Object });
 
 			// Act
 			FieldInfoDto field = FieldInfoDto.DocumentField("src", "dst", false);
@@ -148,13 +148,13 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public async Task ItShouldPassThroughExceptionFromSanitizer()
 		{
 			// Arrange
-			var sanitizer = new Mock<IFieldSanitizer>();
+			var sanitizer = new Mock<IExportFieldSanitizer>();
 			sanitizer.Setup(x => x.SupportedType).Returns(RelativityDataType.Currency);
 			sanitizer
 				.Setup(x => x.SanitizeAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>()))
 				.Throws<SyncException>();
 
-			var instance = new FieldValueSanitizer(new[] { sanitizer.Object });
+			var instance = new ExportDataSanitizer(new[] { sanitizer.Object });
 
 			// Act
 			FieldInfoDto field = FieldInfoDto.DocumentField("src", "dst", false);

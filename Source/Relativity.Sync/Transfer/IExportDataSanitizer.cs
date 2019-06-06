@@ -2,9 +2,9 @@
 
 namespace Relativity.Sync.Transfer
 {
-	internal interface IFieldValueSanitizer
+	internal interface IExportDataSanitizer
 	{
-		bool ShouldBeSanitized(RelativityDataType dataType);
+		bool ShouldSanitize(RelativityDataType dataType);
 
 		Task<object> SanitizeAsync(int workspaceArtifactId, string itemIdentifierSourceFieldName, string itemIdentifier, FieldInfoDto field, object initialValue);
 	}

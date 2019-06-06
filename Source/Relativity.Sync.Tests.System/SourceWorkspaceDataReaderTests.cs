@@ -89,7 +89,7 @@ namespace Relativity.Sync.Tests.System
 				return new RelativityExportBatcher(sourceServiceFactory, new BatchRepository(sourceServiceFactory), runId, workspaceArtifactId, syncConfigurationArtifactId);
 			}
 
-			SourceWorkspaceDataReader dataReader = new SourceWorkspaceDataReader(new BatchDataReaderBuilder(fieldManager, new FieldValueSanitizer(Enumerable.Empty<IFieldSanitizer>())),
+			SourceWorkspaceDataReader dataReader = new SourceWorkspaceDataReader(new BatchDataReaderBuilder(fieldManager, new ExportDataSanitizer(Enumerable.Empty<IExportFieldSanitizer>())),
 				configuration,
 				ExportBatcherFactory,
 				fieldManager,
