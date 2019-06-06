@@ -1,6 +1,5 @@
 ﻿using System.Threading;
 using Autofac;
-using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync.Storage
@@ -11,12 +10,20 @@ namespace Relativity.Sync.Storage
 		{
 			builder.RegisterType<ProgressRepository>().As<IProgressRepository>();
 
-			builder.RegisterType<ValidationConfiguration>().As<IValidationConfiguration>();
+			builder.RegisterType<ValidationConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<DataSourceSnapshotConfiguration>().AsImplementedInterfaces();
+			builder.RegisterType<SnapshotPartitionConfiguration>().AsImplementedInterfaces();
+			builder.RegisterType<DestinationWorkspaceSavedSearchCreationConfiguration>().AsImplementedInterfaces();
+			builder.RegisterType<DataDestinationFinalizationConfiguration>().AsImplementedInterfaces();
+			builder.RegisterType<SynchronizationConfiguration>().AsImplementedInterfaces();
+			builder.RegisterType<DestinationWorkspaceTagsCreationConfiguration>().AsImplementedInterfaces();
+			builder.RegisterType<SourceWorkspaceTagsCreationConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<FieldMappings>().As<IFieldMappings>();
 			builder.RegisterType<JobHistoryErrorRepository>().As<IJobHistoryErrorRepository>();
+			builder.RegisterType<JobProgressUpdaterFactory>().As<IJobProgressUpdaterFactory>();
+			builder.RegisterType<JobProgressHandlerFactory>().As<IJobProgressHandlerFactory>();
 
-			builder.Register(CreateConfiguration).As<IConfiguration>();
+			builder.Register(CreateConfiguration).As<IConfiguration>().SingleInstance();
 		}
 
 		private IConfiguration CreateConfiguration(IComponentContext componentContext)

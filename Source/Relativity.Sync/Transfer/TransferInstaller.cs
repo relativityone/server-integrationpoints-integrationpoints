@@ -15,6 +15,7 @@ namespace Relativity.Sync.Transfer
 			builder.RegisterType<FieldManager>().As<IFieldManager>();
 			builder.RegisterType<FolderPathRetriever>().As<IFolderPathRetriever>();
 			builder.RegisterType<ItemStatusMonitor>().As<IItemStatusMonitor>();
+			builder.RegisterType<SourceWorkspaceDataReader>().As<ISourceWorkspaceDataReader>();
 			builder.RegisterTypes(Assembly.GetExecutingAssembly().GetTypes()
 				.Where(t => !t.IsAbstract && t.IsAssignableTo<ISpecialFieldBuilder>())
 				.ToArray()).As<ISpecialFieldBuilder>();

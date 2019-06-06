@@ -26,6 +26,7 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<BatchProgressHandlerFactory>().As<IBatchProgressHandlerFactory>();
 			builder.RegisterType<BatchProgressUpdater>().As<IBatchProgressUpdater>();
 			builder.RegisterType<ImportJobFactory>().As<IImportJobFactory>();
+			builder.RegisterType<ImportApiFactory>().As<IImportApiFactory>();
 
 			builder.RegisterType<SourceWorkspaceTagsCreationExecutionConstrains>().As<IExecutionConstrains<ISourceWorkspaceTagsCreationConfiguration>>();
 			builder.RegisterType<SourceWorkspaceTagsCreationExecutor>().As<IExecutor<ISourceWorkspaceTagsCreationConfiguration>>();
@@ -39,6 +40,8 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<DataSourceSnapshotExecutionConstrains>().As<IExecutionConstrains<IDataSourceSnapshotConfiguration>>();
 			builder.RegisterType<SnapshotPartitionExecutionConstrains>().As<IExecutionConstrains<ISnapshotPartitionConfiguration>>();
 			builder.RegisterType<SnapshotPartitionExecutor>().As<IExecutor<ISnapshotPartitionConfiguration>>();
+			builder.RegisterType<SynchronizationExecutorConstrains>().As<IExecutionConstrains<ISynchronizationConfiguration>>();
+			builder.RegisterType<SynchronizationExecutor>().As<IExecutor<ISynchronizationConfiguration>>();
 
 			builder.RegisterType<BatchRepository>().As<IBatchRepository>();
 			builder.RegisterType<ProgressRepository>().As<IProgressRepository>();

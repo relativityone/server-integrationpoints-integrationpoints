@@ -5,6 +5,7 @@ using Autofac;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.Logging;
 
 namespace Relativity.Sync.Tests.Integration
@@ -30,7 +31,8 @@ namespace Relativity.Sync.Tests.Integration
 			_container = containerBuilder.Build();
 
 			_containerFactory = new Mock<IContainerFactory>();
-			_syncJobParameters = new SyncJobParameters(1, 1);
+			var importSettings = new ImportSettingsDto();
+			_syncJobParameters = new SyncJobParameters(1, 1, importSettings);
 			_relativityServices = ContainerHelper.CreateMockedRelativityServices();
 			_configuration = new SyncJobExecutionConfiguration();
 			_logger = new EmptyLogger();

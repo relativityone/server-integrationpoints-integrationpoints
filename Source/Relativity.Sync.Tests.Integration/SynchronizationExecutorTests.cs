@@ -30,7 +30,7 @@ namespace Relativity.Sync.Tests.Integration
 		private Mock<IItemStatusMonitor> _itemStatusMonitor;
 
 		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 123;
-
+		
 		private static readonly Guid BatchObjectTypeGuid = new Guid("18C766EB-EB71-49E4-983E-FFDE29B1A44E");
 		private static readonly Guid FailedItemsCountGuid = new Guid("DC3228E4-2765-4C3B-B3B1-A0F054E280F6");
 
@@ -63,16 +63,6 @@ namespace Relativity.Sync.Tests.Integration
 			_config = new ConfigurationStub()
 			{
 				SourceWorkspaceArtifactId = _SOURCE_WORKSPACE_ARTIFACT_ID,
-				FieldMappings = new List<FieldMap>()
-				{
-					new FieldMap()
-					{
-						DestinationField = new FieldEntry
-						{
-							IsIdentifier = true,
-						}
-					}
-				},
 				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure
 			};
 			containerBuilder.RegisterInstance(_config).AsImplementedInterfaces();
@@ -81,6 +71,18 @@ namespace Relativity.Sync.Tests.Integration
 			var destinationServiceFactoryForUser = new Mock<IDestinationServiceFactoryForUser>();
 			var sourceServiceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
 			var sourceServiceFactoryForAdmin = new Mock<ISourceServiceFactoryForAdmin>();
+
+			var fieldMappings = new Mock<IFieldMappings>();
+			fieldMappings.Setup(x => x.GetFieldMappings()).Returns(new List<FieldMap>()
+			{
+				new FieldMap()
+				{
+					DestinationField = new FieldEntry
+					{
+						IsIdentifier = true,
+					}
+				}
+			});
 
 			destinationServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManagerMock.Object);
 			sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManagerMock.Object);
@@ -95,6 +97,7 @@ namespace Relativity.Sync.Tests.Integration
 
 			containerBuilder.RegisterInstance(new EmptyLogger()).As<ISyncLog>();
 			containerBuilder.RegisterInstance(correlationId).As<CorrelationId>();
+			containerBuilder.RegisterInstance(fieldMappings.Object).As<IFieldMappings>();
 
 			IContainer container = containerBuilder.Build();
 			_executor = container.Resolve<IExecutor<ISynchronizationConfiguration>>();

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Storage
 {
@@ -36,7 +35,7 @@ namespace Relativity.Sync.Storage
 		
 		public bool IsSnapshotCreated => !string.IsNullOrWhiteSpace(_cache.GetFieldValue<string>(SnapshotIdGuid));
 
-		public async Task SetSnapshotDataAsync(Guid runId, long totalRecordsCount)
+		public async Task SetSnapshotDataAsync(Guid runId, int totalRecordsCount)
 		{
 			await _cache.UpdateFieldValueAsync(SnapshotIdGuid, runId.ToString()).ConfigureAwait(false);
 			await _cache.UpdateFieldValueAsync(SnapshotRecordsCountGuid, totalRecordsCount).ConfigureAwait(false);

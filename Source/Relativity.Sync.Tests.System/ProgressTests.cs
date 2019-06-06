@@ -47,7 +47,7 @@ namespace Relativity.Sync.Tests.System
 			ConfigurationStub configuration = new ConfigurationStub
 			{
 				SourceWorkspaceArtifactId = workspaceArtifactId,
-				JobArtifactId = syncConfigurationArtifactId
+				JobHistoryArtifactId = syncConfigurationArtifactId
 			};
 			ISyncJob syncJob = SyncJobHelper.CreateWithMockedAllSteps(configuration);
 

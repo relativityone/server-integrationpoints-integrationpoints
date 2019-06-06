@@ -11,11 +11,13 @@ namespace Relativity.Sync.Executors
 	{
 		private bool _importApiFatalExceptionOccurred;
 		private bool _itemLevelErrorExists;
+		private bool _canReleaseSemaphore;
 		private Exception _importApiException;
 
 		private const string _IDENTIFIER_COLUMN = "Identifier";
 		private const string _MESSAGE_COLUMN = "Message";
 
+		private readonly object _lockObject;
 		private readonly int _jobHistoryArtifactId;
 		private readonly int _sourceWorkspaceArtifactId;
 
@@ -27,8 +29,10 @@ namespace Relativity.Sync.Executors
 		public ImportJob(ISyncImportBulkArtifactJob syncImportBulkArtifactJob, ISemaphoreSlim semaphoreSlim, IJobHistoryErrorRepository jobHistoryErrorRepository,
 			int sourceWorkspaceArtifactId, int jobHistoryArtifactId, ISyncLog syncLog)
 		{
+			_lockObject = new object();
 			_importApiFatalExceptionOccurred = false;
 			_itemLevelErrorExists = false;
+			_canReleaseSemaphore = true;
 			_importApiException = null;
 
 			_syncImportBulkArtifactJob = syncImportBulkArtifactJob;
@@ -45,14 +49,14 @@ namespace Relativity.Sync.Executors
 
 		private void HandleComplete(JobReport jobReport)
 		{
-			// IAPI always fires OnComplete event - even when fatal exception has occurred before, so we need to check that.
+			// IAPI may throw OnFatalException event before OnComplete, so we need to check that first.
 			if (!_importApiFatalExceptionOccurred)
 			{
 				_syncImportBulkArtifactJob.ItemStatusMonitor.MarkReadSoFarAsSuccessful();
 				_logger.LogInformation("Batch completed.");
 			}
 
-			_semaphoreSlim.Release();
+			ReleaseSemaphoreIfPossible();
 		}
 
 		private void HandleFatalException(JobReport jobReport)
@@ -68,6 +72,20 @@ namespace Relativity.Sync.Executors
 				StackTrace = jobReport.FatalException?.StackTrace
 			};
 			CreateJobHistoryError(jobError);
+
+			ReleaseSemaphoreIfPossible();
+		}
+
+		private void ReleaseSemaphoreIfPossible()
+		{
+			lock (_lockObject)
+			{
+				if (_canReleaseSemaphore)
+				{
+					_semaphoreSlim.Release();
+					_canReleaseSemaphore = false;
+				}
+			}
 		}
 
 		private void HandleItemLevelError(IDictionary row)

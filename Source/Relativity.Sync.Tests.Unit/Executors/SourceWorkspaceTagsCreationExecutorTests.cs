@@ -129,7 +129,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Mock<ISourceWorkspaceTagsCreationConfiguration> configuration = new Mock<ISourceWorkspaceTagsCreationConfiguration>();
 			configuration.Setup(x => x.SourceWorkspaceArtifactId).Returns(sourceWorkspaceArtifactId);
 			configuration.Setup(x => x.DestinationWorkspaceArtifactId).Returns(destinationWorkspaceArtifactId);
-			configuration.Setup(x => x.JobArtifactId).Returns(jobArtifactId);
+			configuration.Setup(x => x.JobHistoryArtifactId).Returns(jobArtifactId);
 
 			_workspaceNameQuery.Setup(x => x.GetWorkspaceNameAsync(_serviceFactory.Object, destinationWorkspaceArtifactId, CancellationToken.None)).ReturnsAsync(destinationWorkspaceName);
 			_federatedInstance.Setup(x => x.GetInstanceNameAsync()).ReturnsAsync(federatedInstanceName);
@@ -160,7 +160,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Mock<ISourceWorkspaceTagsCreationConfiguration> configuration = new Mock<ISourceWorkspaceTagsCreationConfiguration>();
 			configuration.Setup(x => x.SourceWorkspaceArtifactId).Returns(sourceWorkspaceArtifactId);
 			configuration.Setup(x => x.DestinationWorkspaceArtifactId).Returns(destinationWorkspaceArtifactId);
-			configuration.Setup(x => x.JobArtifactId).Returns(jobArtifactId);
+			configuration.Setup(x => x.JobHistoryArtifactId).Returns(jobArtifactId);
 
 			_workspaceNameQuery.Setup(x => x.GetWorkspaceNameAsync(_serviceFactory.Object, destinationWorkspaceArtifactId, CancellationToken.None)).ReturnsAsync(destinationWorkspaceName);
 			_federatedInstance.Setup(x => x.GetInstanceNameAsync()).ReturnsAsync(federatedInstanceName);
@@ -170,7 +170,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			await _sut.ExecuteAsync(configuration.Object, CancellationToken.None).ConfigureAwait(false);
 
 			// assert
-			configuration.Verify(x => x.SetDestinationWorkspaceTagArtifactId(destinationWorkspaceTagArtifactId));
+			configuration.Verify(x => x.SetDestinationWorkspaceTagArtifactIdAsync(destinationWorkspaceTagArtifactId));
 		}
 
 		[Test]

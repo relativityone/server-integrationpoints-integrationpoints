@@ -7,9 +7,9 @@ using Moq;
 using NUnit.Framework;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
-using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 
 namespace Relativity.Sync.Tests.Integration
@@ -48,9 +48,9 @@ namespace Relativity.Sync.Tests.Integration
 
 			const int second = 1000;
 			_semaphoreSlim = new SemaphoreSlimStub(() => Thread.Sleep(second));
-
-			SyncJobParameters jobParameters = new SyncJobParameters(_ARTIFACT_ID, _WORKSPACE_ID);
-			IConfiguration cache = await Storage.Configuration.GetAsync(_serviceFactory, jobParameters, new EmptyLogger(), _semaphoreSlim).ConfigureAwait(false);
+			var importSettings = new ImportSettingsDto();
+			SyncJobParameters jobParameters = new SyncJobParameters(_ARTIFACT_ID, _WORKSPACE_ID, importSettings);
+			Storage.IConfiguration cache = await Storage.Configuration.GetAsync(_serviceFactory, jobParameters, new EmptyLogger(), _semaphoreSlim).ConfigureAwait(false);
 
 			// ACT
 			Task updateTask = cache.UpdateFieldValueAsync(guid, newValue);

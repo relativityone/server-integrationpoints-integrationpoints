@@ -2,6 +2,7 @@
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 
@@ -12,7 +13,7 @@ namespace Relativity.Sync.Tests.Unit
 	{
 		private SnapshotPartitionConfiguration _instance;
 
-		private Mock<IConfiguration> _cache;
+		private Mock<Sync.Storage.IConfiguration> _cache;
 
 		private const int _WORKSPACE_ID = 987432;
 		private const int _JOB_ID = 9687413;
@@ -25,8 +26,8 @@ namespace Relativity.Sync.Tests.Unit
 		[SetUp]
 		public void SetUp()
 		{
-			_cache = new Mock<IConfiguration>();
-			SyncJobParameters syncJobParameters = new SyncJobParameters(_JOB_ID, _WORKSPACE_ID);
+			_cache = new Mock<Sync.Storage.IConfiguration>();
+			SyncJobParameters syncJobParameters = new SyncJobParameters(_JOB_ID, _WORKSPACE_ID, new ImportSettingsDto());
 			SyncJobExecutionConfiguration configuration = new SyncJobExecutionConfiguration
 			{
 				BatchSize = _BATCH_SIZE

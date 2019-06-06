@@ -1,4 +1,6 @@
-﻿namespace Relativity.Sync.Configuration
+﻿using System.Threading.Tasks;
+
+namespace Relativity.Sync.Configuration
 {
 	internal interface ISourceWorkspaceTagsCreationConfiguration : IConfiguration
 	{
@@ -6,10 +8,10 @@
 
 		int SourceWorkspaceArtifactId { get; }
 
-		int JobArtifactId { get; }
+		int JobHistoryArtifactId { get; }
 
 		bool IsDestinationWorkspaceTagArtifactIdSet { get; }
 
-		void SetDestinationWorkspaceTagArtifactId(int artifactId);
+		Task SetDestinationWorkspaceTagArtifactIdAsync(int artifactId);
 	}
 }

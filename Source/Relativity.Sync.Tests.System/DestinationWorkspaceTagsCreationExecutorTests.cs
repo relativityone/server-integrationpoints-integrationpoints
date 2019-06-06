@@ -55,7 +55,7 @@ namespace Relativity.Sync.Tests.System
 			{
 				DestinationWorkspaceArtifactId = _destinationWorkspace.ArtifactID,
 				SourceWorkspaceArtifactId = expectedSourceWorkspaceArtifactId,
-				JobArtifactId = expectedJobHistoryArtifactId
+				JobHistoryArtifactId = expectedJobHistoryArtifactId
 			};
 
 			// ACT
@@ -105,7 +105,7 @@ namespace Relativity.Sync.Tests.System
 			{
 				DestinationWorkspaceArtifactId = _destinationWorkspace.ArtifactID,
 				SourceWorkspaceArtifactId = expectedSourceWorkspaceArtifactId,
-				JobArtifactId = expectedJobHistoryArtifactId
+				JobHistoryArtifactId = expectedJobHistoryArtifactId
 			};
 
 			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IDestinationWorkspaceTagsCreationConfiguration>(configuration);

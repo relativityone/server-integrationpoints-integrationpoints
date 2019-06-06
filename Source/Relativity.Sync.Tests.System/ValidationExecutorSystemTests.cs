@@ -53,7 +53,7 @@ namespace Relativity.Sync.Tests.System
 			{
 				DestinationWorkspaceArtifactId = _destinationWorkspace.ArtifactID,
 				SourceWorkspaceArtifactId = expectedSourceWorkspaceArtifactId,
-				JobArtifactId = expectedJobHistoryArtifactId,
+				JobHistoryArtifactId = expectedJobHistoryArtifactId,
 				JobName = _JOB_HISTORY_NAME,
 				NotificationEmails = string.Empty,
 				SavedSearchArtifactId = savedSearchArtifactId,

@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using System.Threading.Tasks;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
@@ -18,6 +19,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 	public class ImportJobFactoryTests
 	{
 		private Mock<IBatchProgressHandlerFactory> _batchProgressHandlerFactory;
+		private Mock<IJobProgressHandlerFactory> _jobProgressHandlerFactory;
+		private Mock<IJobProgressUpdaterFactory> _jobProgressUpdaterFactory;
 		private Mock<ISourceWorkspaceDataReader> _dataReader;
 		private Mock<IJobHistoryErrorRepository> _jobHistoryErrorRepository;
 
@@ -25,10 +28,14 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 		private ISyncLog _logger;
 
-		[OneTimeSetUp]
-		public void OneTimeSetUp()
+		[SetUp]
+		public void SetUp()
 		{
 			_batchProgressHandlerFactory = new Mock<IBatchProgressHandlerFactory>();
+			_jobProgressUpdaterFactory = new Mock<IJobProgressUpdaterFactory>();
+			Mock<IJobProgressHandler> jobProgressHandler = new Mock<IJobProgressHandler>();
+			_jobProgressHandlerFactory = new Mock<IJobProgressHandlerFactory>();
+			_jobProgressHandlerFactory.Setup(x => x.CreateJobProgressHandler(It.IsAny<IJobProgressUpdater>())).Returns(jobProgressHandler.Object);
 			_dataReader = new Mock<ISourceWorkspaceDataReader>();
 			_jobHistoryErrorRepository = new Mock<IJobHistoryErrorRepository>();
 
@@ -43,9 +50,9 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			// Arrange
 			var configuration = new Mock<ISynchronizationConfiguration>(MockBehavior.Loose);
 			configuration.SetupGet(x => x.ImportSettings).Returns(() => new ImportSettingsDto());
-
-			Mock<IImportAPI> importApi = GetImportApiMock();
-			ImportJobFactory instance = GetTestInstance(importApi);
+			
+			Mock<IImportApiFactory> importApiFactory = GetImportAPIFactoryMock();
+			ImportJobFactory instance = GetTestInstance(importApiFactory);
 
 			// Act
 			Sync.Executors.IImportJob result = await instance.CreateImportJobAsync(configuration.Object, _batch.Object).ConfigureAwait(false);
@@ -68,8 +75,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			var configuration = new Mock<ISynchronizationConfiguration>(MockBehavior.Loose);
 			configuration.SetupGet(x => x.ImportSettings).Returns(importSettingsDto);
 
-			Mock<IImportAPI> importApi = GetImportApiMock();
-			ImportJobFactory instance = GetTestInstance(importApi);
+			Mock<IImportApiFactory> importApiFactory = GetImportAPIFactoryMock();
+			ImportJobFactory instance = GetTestInstance(importApiFactory);
 
 			// Act
 			Sync.Executors.IImportJob result = await instance.CreateImportJobAsync(configuration.Object, _batch.Object).ConfigureAwait(false);
@@ -79,7 +86,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Assert.IsNotNull(result);
 		}
 
-		private Mock<IImportAPI> GetImportApiMock()
+		private Mock<IImportApiFactory> GetImportAPIFactoryMock()
 		{
 			var importApi = new Mock<IImportAPI>(MockBehavior.Loose);
 			importApi.Setup(x => x.NewNativeDocumentImportJob()).Returns(() => new ImportBulkArtifactJob());
@@ -87,13 +94,17 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			var field = new Mock<Field>();
 			importApi.Setup(x => x.GetWorkspaceFields(It.IsAny<int>(), It.IsAny<int>())).Returns(() => new[] { field.Object });
 
-			return importApi;
+			var importApiFactory = new Mock<IImportApiFactory>();
+			importApiFactory.Setup(x => x.CreateImportApiAsync(It.IsAny<Uri>())).ReturnsAsync(importApi.Object);
+
+			return importApiFactory;
 		}
 
-		private ImportJobFactory GetTestInstance(Mock<IImportAPI> importApi)
+		private ImportJobFactory GetTestInstance(Mock<IImportApiFactory> importApiFactory)
 		{
-			var instance = new ImportJobFactory(importApi.Object, _dataReader.Object,
-				_batchProgressHandlerFactory.Object, _jobHistoryErrorRepository.Object, _logger);
+			var instance = new ImportJobFactory(importApiFactory.Object, _dataReader.Object, _batchProgressHandlerFactory.Object, 
+				_jobProgressHandlerFactory.Object, _jobProgressUpdaterFactory.Object,
+				_jobHistoryErrorRepository.Object, _logger);
 			return instance;
 		}
 	}

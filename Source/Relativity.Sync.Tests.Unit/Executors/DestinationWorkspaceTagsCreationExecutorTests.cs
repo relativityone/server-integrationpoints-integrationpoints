@@ -47,7 +47,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			// assert
 			executionResult.Status.Should().Be(ExecutionStatus.Completed);
-			configuration.Verify(x => x.SetSourceWorkspaceTag(It.Is<int>(i => i == sourceCaseArtifactId), It.Is<string>(s => s.Equals(sourceCaseTagName, StringComparison.InvariantCulture))));
+			configuration.Verify(x => x.SetSourceWorkspaceTagAsync(It.Is<int>(i => i == sourceCaseArtifactId), It.Is<string>(s => s.Equals(sourceCaseTagName, StringComparison.InvariantCulture))));
 		}
 
 		[Test]
@@ -71,7 +71,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			// assert
 			executionResult.Status.Should().Be(ExecutionStatus.Completed);
-			configuration.Verify(x => x.SetSourceJobTag(It.Is<int>(i => i == sourceJobTagArtifactId), It.Is<string>(s => s.Equals(sourceJobTagName, StringComparison.InvariantCulture))));
+			configuration.Verify(x => x.SetSourceJobTagAsync(It.Is<int>(i => i == sourceJobTagArtifactId), It.Is<string>(s => s.Equals(sourceJobTagName, StringComparison.InvariantCulture))));
 		}
 
 		[Test]

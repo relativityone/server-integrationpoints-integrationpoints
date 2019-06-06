@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Configuration
 {
@@ -9,8 +7,6 @@ namespace Relativity.Sync.Configuration
 		int DestinationWorkspaceTagArtifactId { get; }
 
 		Guid ExportRunId { get; }
-
-		IList<FieldMap> FieldMappings { get; }
 
 		ImportSettingsDto ImportSettings { get; }
 
@@ -23,5 +19,7 @@ namespace Relativity.Sync.Configuration
 		string SourceWorkspaceTagName { get; }
 
 		int SyncConfigurationArtifactId { get; }
+
+		DestinationFolderStructureBehavior DestinationFolderStructureBehavior { get; }
 	}
 }

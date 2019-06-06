@@ -21,6 +21,9 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private Mock<IBatchRepository> _batchRepository;
 		private Mock<IDestinationWorkspaceTagRepository> _destinationWorkspaceTagRepository;
 		private Mock<IFieldManager> _fieldManager;
+		private Mock<IFieldMappings> _fieldMappings;
+		private Mock<IJobHistoryErrorRepository> _jobHistoryErrorRepository;
+
 		private Mock<Sync.Executors.IImportJob> _importJob;
 		private Mock<ISynchronizationConfiguration> _config;
 
@@ -47,15 +50,16 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		public void SetUp()
 		{
 			var dateTime = new Mock<IDateTime>();
-			var jobHistoryErrorRepository = new Mock<IJobHistoryErrorRepository>();
 			var importJobFactory = new Mock<IImportJobFactory>();
 			var syncMetrics = new Mock<ISyncMetrics>();
 			_batchRepository = new Mock<IBatchRepository>();
 			_destinationWorkspaceTagRepository = new Mock<IDestinationWorkspaceTagRepository>();
 			_fieldManager = new Mock<IFieldManager>();
+			_fieldMappings = new Mock<IFieldMappings>();
+			_jobHistoryErrorRepository = new Mock<IJobHistoryErrorRepository>();
 			_config = new Mock<ISynchronizationConfiguration>();
 			_config.SetupGet(x => x.ImportSettings).Returns(new ImportSettingsDto());
-			_config.SetupGet(x => x.FieldMappings).Returns(new List<FieldMap>
+			_fieldMappings.Setup(x => x.GetFieldMappings()).Returns(new List<FieldMap>
 			{
 				new FieldMap
 				{
@@ -72,13 +76,14 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_fieldManager.Setup(x => x.GetSpecialFields()).Returns(_specialFields);
 
 			_synchronizationExecutor = new SynchronizationExecutor(importJobFactory.Object, _batchRepository.Object, _destinationWorkspaceTagRepository.Object,
-				syncMetrics.Object, dateTime.Object, _fieldManager.Object, jobHistoryErrorRepository.Object, new EmptyLogger());
+				syncMetrics.Object, dateTime.Object, _fieldManager.Object, _fieldMappings.Object, _jobHistoryErrorRepository.Object, new EmptyLogger());
 		}
 
 		[Test]
 		public async Task ItShouldSetImportApiSettings()
 		{
 			SetupBatchRepository(1);
+			_config.SetupGet(x => x.DestinationFolderStructureBehavior).Returns(DestinationFolderStructureBehavior.ReadFromField);
 			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(ExecutionResult.Success);
 
 			// act
@@ -94,10 +99,29 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		}
 
 		[Test]
+		public async Task ItShouldSetImportApiSettingsExceptFolderInfo()
+		{
+			SetupBatchRepository(1);
+			_config.SetupGet(x => x.DestinationFolderStructureBehavior).Returns(DestinationFolderStructureBehavior.None);
+			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(ExecutionResult.Success);
+
+			// act
+			await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
+
+			// assert
+			Assert.AreEqual(null, _config.Object.ImportSettings.FolderPathSourceFieldName);
+			Assert.AreEqual(_NATIVE_FILE_SIZE_DISPLAY_NAME, _config.Object.ImportSettings.FileSizeColumn);
+			Assert.AreEqual(_NATIVE_FILE_LOCATION_DISPLAY_NAME, _config.Object.ImportSettings.NativeFilePathSourceFieldName);
+			Assert.AreEqual(_NATIVE_FILE_FILENAME_DISPLAY_NAME, _config.Object.ImportSettings.FileNameColumn);
+			Assert.AreEqual(_RELATIVITY_NATIVE_TYPE_DISPLAY_NAME, _config.Object.ImportSettings.OiFileTypeColumnName);
+			Assert.AreEqual(_SUPPORTED_BY_VIEWER_DISPLAY_NAME, _config.Object.ImportSettings.SupportedByViewerColumn);
+		}
+
+		[Test]
 		public void ItShouldThrowExceptionWhenDestinationIdentityFieldNotExistsInFieldMappings()
 		{
 			SetupBatchRepository(1);
-			_config.SetupGet(x => x.FieldMappings).Returns(new List<FieldMap>());
+			_fieldMappings.Setup(x => x.GetFieldMappings()).Returns(new List<FieldMap>());
 
 			// act
 			Func<Task> action = async () => await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);

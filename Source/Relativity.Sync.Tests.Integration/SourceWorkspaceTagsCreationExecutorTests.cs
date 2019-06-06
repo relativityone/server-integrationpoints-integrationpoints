@@ -50,7 +50,7 @@ namespace Relativity.Sync.Tests.Integration
 		{
 			SourceWorkspaceArtifactId = _TEST_SOURCE_CASE_ARTIFACT_ID,
 			DestinationWorkspaceArtifactId = _TEST_DEST_CASE_ARTIFACT_ID,
-			JobArtifactId = _TEST_JOB_ARTIFACT_ID
+			JobHistoryArtifactId = _TEST_JOB_ARTIFACT_ID
 		};
 
 		[OneTimeSetUp]

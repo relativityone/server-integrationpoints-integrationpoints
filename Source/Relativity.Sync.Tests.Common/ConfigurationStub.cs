@@ -22,11 +22,12 @@ namespace Relativity.Sync.Tests.Common
 		public IList<FieldMap> FieldMappings { get; set; } = new List<FieldMap>();
 		public bool IsSnapshotCreated { get; set; }
 
-		public async Task SetSnapshotDataAsync(Guid runId, long totalRecordsCount)
+		public async Task SetSnapshotDataAsync(Guid runId, int totalRecordsCount)
 		{
 			await Task.Yield();
 			ExportRunId = runId;
 			TotalRecordsCount = (int)totalRecordsCount;
+			IsSnapshotCreated = true;
 		}
 
 		public string SourceWorkspaceTagName { get; set; }
@@ -54,32 +55,36 @@ namespace Relativity.Sync.Tests.Common
 		public string SourceJobTagName { get; set; }
 		public int SourceJobTagArtifactId { get; set; }
 		public int SourceWorkspaceTagArtifactId { get; set; }
-		public int JobArtifactId { get; set; }
 		public bool IsDestinationWorkspaceTagArtifactIdSet { get; set; }
-		public void SetDestinationWorkspaceTagArtifactId(int artifactId)
+		public async Task SetDestinationWorkspaceTagArtifactIdAsync(int artifactId)
 		{
+			await Task.Yield();
 			DestinationWorkspaceTagArtifactId = artifactId;
+			IsDestinationWorkspaceTagArtifactIdSet = true;
 		}
+
 		public int DestinationWorkspaceTagArtifactId { get; set; }
 		public int JobHistoryArtifactId { get; set; }
 		public ImportSettingsDto ImportSettings { get; set; } = new ImportSettingsDto();
 
 		public bool IsSourceJobTagSet { get; set; }
 
-		public void SetSourceJobTag(int artifactId, string name)
+		public async Task SetSourceJobTagAsync(int artifactId, string name)
 		{
+			await Task.Yield();
 			SourceJobTagArtifactId = artifactId;
 			SourceJobTagName = name;
+			IsSourceJobTagSet = true;
 		}
 
 		public bool IsSourceWorkspaceTagSet { get; set; }
-
-		public void SetSourceWorkspaceTag(int artifactId, string name)
+		public async Task SetSourceWorkspaceTagAsync(int artifactId, string name)
 		{
+			await Task.Yield();
 			SourceWorkspaceTagArtifactId = artifactId;
 			SourceWorkspaceTagName = name;
 		}
-		
+
 		public int ExecutingUserId => _ADMIN_ID;
 		public string JobStatus { get; set; }
 		public bool SendEmails { get; set; }

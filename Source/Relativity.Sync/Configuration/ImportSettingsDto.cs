@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Relativity.Sync.Configuration
 {
@@ -210,6 +211,11 @@ namespace Relativity.Sync.Configuration
 		/// </summary>
 		public bool MoveDocumentsInAnyOverlayMode => ImportOverwriteMode != ImportOverwriteMode.AppendOnly &&
 			MoveExistingDocuments && !string.IsNullOrEmpty(FolderPathSourceFieldName);
+
+		/// <summary>
+		/// Relativity Web Service URL.
+		/// </summary>
+		public Uri RelativityWebServiceUrl { get; set; }
 
 		/// <summary>
 		/// Default constructor.

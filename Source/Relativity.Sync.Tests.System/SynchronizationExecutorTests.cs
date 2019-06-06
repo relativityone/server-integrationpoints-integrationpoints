@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using kCura.Relativity.ImportAPI;
+using kCura.Apps.Common.Utils.Serializers;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
@@ -12,6 +12,7 @@ using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Helpers;
+using Relativity.Sync.Tests.System.Stubs;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.System
@@ -80,7 +81,6 @@ namespace Relativity.Sync.Tests.System
 					}
 				},
 
-				JobArtifactId = jobHistoryArtifactId,
 				JobHistoryArtifactId = jobHistoryArtifactId,
 				DestinationFolderArtifactId = destinationFolderArtifactId,
 				DestinationWorkspaceTagArtifactId = destinationWorkspaceTag.ArtifactId,
@@ -95,10 +95,13 @@ namespace Relativity.Sync.Tests.System
 					CaseArtifactId = destinationWorkspaceArtifactId,
 					ImportOverwriteMode = ImportOverwriteMode.AppendOverlay,
 					FieldOverlayBehavior = FieldOverlayBehavior.UseFieldSettings,
-					ImportNativeFileCopyMode = ImportNativeFileCopyMode.CopyFiles
+					ImportNativeFileCopyMode = ImportNativeFileCopyMode.CopyFiles,
+					RelativityWebServiceUrl = AppSettings.RelativityWebApiUrl
 				}
 			};
 
+			IJobProgressHandlerFactory jobProgressHandlerFactory = new JobProgressHandlerFactory(dateTime);
+			IJobProgressUpdaterFactory jobProgressUpdaterFactory = new JobProgressUpdaterFactory(_serviceFactoryStub, configuration);
 			INativeFileRepository nativeFileRepository = new NativeFileRepository(_serviceFactoryStub);
 
 			IFieldManager fieldManager = new FieldManager(configuration, new DocumentFieldRepository(_serviceFactoryStub, logger), new List<ISpecialFieldBuilder>()
@@ -124,7 +127,7 @@ namespace Relativity.Sync.Tests.System
 			Assert.AreEqual(ExecutionStatus.Completed, sourceWorkspaceTagsCreationExecutorResult.Status);
 
 			// Data source snapshot creation
-			DataSourceSnapshotExecutor dataSourceSnapshotExecutor = new DataSourceSnapshotExecutor(_serviceFactoryStub, fieldManager, logger);
+			DataSourceSnapshotExecutor dataSourceSnapshotExecutor = new DataSourceSnapshotExecutor(_serviceFactoryStub, fieldManager, jobProgressUpdaterFactory,  logger);
 			ExecutionResult dataSourceExecutorResult = await dataSourceSnapshotExecutor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
 			Assert.AreEqual(ExecutionStatus.Completed, dataSourceExecutorResult.Status);
 
@@ -146,14 +149,20 @@ namespace Relativity.Sync.Tests.System
 				logger);
 
 			// ImportAPI setup
-			IImportAPI importApi = new ImportAPI(AppSettings.RelativityUserName, AppSettings.RelativityUserPassword, AppSettings.RelativityWebApiUrl.AbsoluteUri);
+			IImportApiFactory importApi = new ImportApiFactoryStub(AppSettings.RelativityUserName, AppSettings.RelativityUserPassword);
 			IImportJobFactory importJobFactory = new Executors.ImportJobFactory(
 				importApi,
 				dataReader,
 				new BatchProgressHandlerFactory(new BatchProgressUpdater(logger), dateTime),
+				jobProgressHandlerFactory,
+				jobProgressUpdaterFactory,
 				new JobHistoryErrorRepository(_serviceFactoryStub),
 				logger);
-			var syncExecutor = new SynchronizationExecutor(importJobFactory, batchRepository, destinationWorkspaceTagRepository, syncMetrics, dateTime, fieldManager, jobHistoryErrorRepository, logger);
+			Storage.IConfiguration config = await Storage.Configuration.GetAsync(_serviceFactoryStub, new SyncJobParameters(jobHistoryArtifactId, sourceWorkspaceArtifactId, configuration.ImportSettings), logger,
+				new SemaphoreSlimWrapper(new SemaphoreSlim(1))).ConfigureAwait(false);
+			IFieldMappings fieldMappings = new FieldMappings(config, new JSONSerializer(), logger);
+			var syncExecutor = new SynchronizationExecutor(importJobFactory, batchRepository, destinationWorkspaceTagRepository, syncMetrics, dateTime, fieldManager, fieldMappings,
+				jobHistoryErrorRepository, logger);
 
 			// ACT
 			ExecutionResult syncResult = await syncExecutor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);

@@ -36,6 +36,7 @@ namespace Relativity.Sync.Storage
 		public T GetFieldValue<T>(Guid guid)
 		{
 			_semaphoreSlim.Wait();
+			object value = null;
 			try
 			{
 				if (!_cache.ContainsKey(guid))
@@ -44,14 +45,19 @@ namespace Relativity.Sync.Storage
 					throw new ArgumentException($"Field with GUID {guid} does not exist in cache.");
 				}
 
-				object value = _cache[guid];
+				value = _cache[guid];
 				if (value == null)
 				{
 					_logger.LogVerbose("Returning default value for field with GUID {guid}.", guid);
 					return default(T);
 				}
 
-				return (T)value;
+				return (T) value;
+			}
+			catch (InvalidCastException ex)
+			{
+				_logger.LogError("Exception occurred when trying to cast value: \"{value}\" to type {type}", value, typeof(T).ToString());
+				throw new InvalidCastException($"Cannot cast value \"{value}\" to type {typeof(T)}", ex);
 			}
 			finally
 			{
