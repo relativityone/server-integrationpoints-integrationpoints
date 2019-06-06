@@ -111,6 +111,31 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		}
 
 		[Test]
+		public async Task ItShouldCheckThatFieldShouldBeSanitized()
+		{
+			// Arrange
+			_firstDocumentField.RelativityDataType = RelativityDataType.Currency;
+			_secondDocumentField.RelativityDataType = RelativityDataType.Date;
+
+			_fieldValueSanitizer.Setup(s => s.ShouldBeSanitized(_firstDocumentField.RelativityDataType)).Returns(true);
+			_fieldValueSanitizer.Setup(s => s.ShouldBeSanitized(_secondDocumentField.RelativityDataType)).Returns(false);
+
+			const string valueAfterSanitization = "Value Sanitized!";
+			_fieldValueSanitizer.Setup(s => s.SanitizeAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<FieldInfoDto>(), It.IsAny<object>()))
+				.ReturnsAsync(valueAfterSanitization);
+
+			BatchDataReaderBuilder builder = new BatchDataReaderBuilder(_fieldManager.Object, _fieldValueSanitizer.Object);
+
+			// Act
+			IDataReader result = await builder.BuildAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _batch, CancellationToken.None).ConfigureAwait(false);
+			result.Read();
+
+			// Assert
+			result[_FIRST_DOCUMENT_FIELD_INDEX_IN_READER].Should().Be(valueAfterSanitization);
+			result[_SECOND_DOCUMENT_FIELD_INDEX_IN_BATCH].Should().Be(_SECOND_DOCUMENT_FIELD_VALUE);
+		}
+
+		[Test]
 		public async Task ItShouldReturnEmptyDataReaderWhenBatchEmpty()
 		{
 			// Arrange
