@@ -26,6 +26,8 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using Relativity.Services.Folder;
 using Component = Castle.MicroKernel.Registration.Component;
 
 namespace kCura.IntegrationPoint.Tests.Core.Templates
@@ -136,6 +138,14 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			Container.Register(Component.For<IRSAPIService>().Instance(new RSAPIService(Container.Resolve<IHelper>(), WorkspaceArtifactId)).LifestyleTransient());
 			Container.Register(Component.For<IExporterFactory>().ImplementedBy<ExporterFactory>());
 			Container.Register(Component.For<IAuthTokenGenerator>().ImplementedBy<ClaimsTokenGenerator>().LifestyleTransient());
+
+			Container.Register(
+				Component.For<IFolderManager>().UsingFactoryMethod(f =>
+					f.Resolve<IServicesMgr>().CreateProxy<IFolderManager>(ExecutionIdentity.CurrentUser)
+				)
+			);
+			Container.Register(Component.For<FolderWithDocumentsIdRetriever>().ImplementedBy<FolderWithDocumentsIdRetriever>());
+
 #pragma warning disable 618
 			var dependencies = new IWindsorInstaller[] { new QueryInstallers(), new KeywordInstaller(), new SharedAgentInstaller(), new ServicesInstaller(), new ValidationInstaller() };
 #pragma warning restore 618
