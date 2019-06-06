@@ -58,7 +58,7 @@ namespace Relativity.Sync.Tests.System
 				new FileInfoFieldsBuilder(new NativeFileRepository(sourceServiceFactory)),
 				new FolderPathFieldBuilder(new FolderPathRetriever(sourceServiceFactory, new EmptyLogger()), configuration), new SourceTagsFieldBuilder(configuration)
 			});
-			var executor = new DataSourceSnapshotExecutor(sourceServiceFactory, fieldManager, new EmptyLogger());
+			var executor = new DataSourceSnapshotExecutor(sourceServiceFactory, fieldManager, new JobProgressUpdaterFactory(sourceServiceFactory, configuration), new EmptyLogger());
 
 			ExecutionResult result = await executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
 
@@ -72,7 +72,7 @@ namespace Relativity.Sync.Tests.System
 
 			while (dataReader.Read())
 			{
-				for (int i = 0; i<dataReader.GetValues(tmpTable); i++)
+				for (int i = 0; i < dataReader.GetValues(tmpTable); i++)
 				{
 					logger.LogInformation($"{dataReader.GetName(i)} [{(tmpTable[i] == null ? "null" : tmpTable[i].GetType().Name)}]: {tmpTable[i]}");
 				}

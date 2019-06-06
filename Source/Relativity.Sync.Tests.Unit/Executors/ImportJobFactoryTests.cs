@@ -19,6 +19,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 	public class ImportJobFactoryTests
 	{
 		private Mock<IBatchProgressHandlerFactory> _batchProgressHandlerFactory;
+		private Mock<IJobProgressHandlerFactory> _jobProgressHandlerFactory;
+		private Mock<IJobProgressUpdaterFactory> _jobProgressUpdaterFactory;
 		private Mock<ISourceWorkspaceDataReader> _dataReader;
 		private Mock<IJobHistoryErrorRepository> _jobHistoryErrorRepository;
 
@@ -26,10 +28,14 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 		private ISyncLog _logger;
 
-		[OneTimeSetUp]
-		public void OneTimeSetUp()
+		[SetUp]
+		public void SetUp()
 		{
 			_batchProgressHandlerFactory = new Mock<IBatchProgressHandlerFactory>();
+			_jobProgressUpdaterFactory = new Mock<IJobProgressUpdaterFactory>();
+			Mock<IJobProgressHandler> jobProgressHandler = new Mock<IJobProgressHandler>();
+			_jobProgressHandlerFactory = new Mock<IJobProgressHandlerFactory>();
+			_jobProgressHandlerFactory.Setup(x => x.CreateJobProgressHandler(It.IsAny<IJobProgressUpdater>())).Returns(jobProgressHandler.Object);
 			_dataReader = new Mock<ISourceWorkspaceDataReader>();
 			_jobHistoryErrorRepository = new Mock<IJobHistoryErrorRepository>();
 
@@ -44,7 +50,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			// Arrange
 			var configuration = new Mock<ISynchronizationConfiguration>(MockBehavior.Loose);
 			configuration.SetupGet(x => x.ImportSettings).Returns(() => new ImportSettingsDto());
-
+			
 			Mock<IImportApiFactory> importApiFactory = GetImportAPIFactoryMock();
 			ImportJobFactory instance = GetTestInstance(importApiFactory);
 
@@ -96,8 +102,9 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 		private ImportJobFactory GetTestInstance(Mock<IImportApiFactory> importApiFactory)
 		{
-			var instance = new ImportJobFactory(importApiFactory.Object, _dataReader.Object,
-				_batchProgressHandlerFactory.Object, _jobHistoryErrorRepository.Object, _logger);
+			var instance = new ImportJobFactory(importApiFactory.Object, _dataReader.Object, _batchProgressHandlerFactory.Object, 
+				_jobProgressHandlerFactory.Object, _jobProgressUpdaterFactory.Object,
+				_jobHistoryErrorRepository.Object, _logger);
 			return instance;
 		}
 	}

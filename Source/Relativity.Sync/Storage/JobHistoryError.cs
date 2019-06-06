@@ -46,7 +46,7 @@ namespace Relativity.Sync.Storage
 
 		public DateTime TimestampUtc { get; private set; }
 
-		public JobHistoryError(IProxyFactory proxyFactory)
+		private JobHistoryError(IProxyFactory proxyFactory)
 		{
 			_proxyFactory = proxyFactory;
 		}

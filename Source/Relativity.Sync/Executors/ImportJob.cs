@@ -49,7 +49,7 @@ namespace Relativity.Sync.Executors
 
 		private void HandleComplete(JobReport jobReport)
 		{
-			// IAPI always fires OnComplete event - even when fatal exception has occurred before, so we need to check that.
+			// IAPI may throw OnFatalException event before OnComplete, so we need to check that first.
 			if (!_importApiFatalExceptionOccurred)
 			{
 				_syncImportBulkArtifactJob.ItemStatusMonitor.MarkReadSoFarAsSuccessful();

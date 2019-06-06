@@ -21,12 +21,14 @@ namespace Relativity.Sync.Executors
 
 		private readonly ISourceServiceFactoryForUser _serviceFactory;
 		private readonly IFieldManager _fieldManager;
+		private readonly IJobProgressUpdaterFactory _jobProgressUpdaterFactory;
 		private readonly ISyncLog _logger;
 
-		public DataSourceSnapshotExecutor(ISourceServiceFactoryForUser serviceFactory, IFieldManager fieldManager, ISyncLog logger)
+		public DataSourceSnapshotExecutor(ISourceServiceFactoryForUser serviceFactory, IFieldManager fieldManager, IJobProgressUpdaterFactory jobProgressUpdaterFactory, ISyncLog logger)
 		{
 			_serviceFactory = serviceFactory;
 			_fieldManager = fieldManager;
+			_jobProgressUpdaterFactory = jobProgressUpdaterFactory;
 			_logger = logger;
 		}
 
@@ -67,6 +69,10 @@ namespace Relativity.Sync.Executors
 			//ExportInitializationResult provide list of fields with order they will be returned when retrieving metadata
 			//however, order is the same as order of fields in QueryRequest when they are provided explicitly
 			await configuration.SetSnapshotDataAsync(results.RunID, (int)results.RecordCount).ConfigureAwait(false);
+
+			IJobProgressUpdater jobProgressUpdater = _jobProgressUpdaterFactory.CreateJobProgressUpdater();
+			await jobProgressUpdater.SetTotalItemsCountAsync((int) results.RecordCount).ConfigureAwait(false);
+
 			return ExecutionResult.Success();
 		}
 	}
