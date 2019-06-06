@@ -6,6 +6,7 @@ using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Transfer;
@@ -88,7 +89,7 @@ namespace Relativity.Sync.Tests.System
 				return new RelativityExportBatcher(sourceServiceFactory, new BatchRepository(sourceServiceFactory), runId, workspaceArtifactId, syncConfigurationArtifactId);
 			}
 
-			SourceWorkspaceDataReader dataReader = new SourceWorkspaceDataReader(new BatchDataReaderBuilder(fieldManager),
+			SourceWorkspaceDataReader dataReader = new SourceWorkspaceDataReader(new BatchDataReaderBuilder(fieldManager, new ExportDataSanitizer(Enumerable.Empty<IExportFieldSanitizer>())),
 				configuration,
 				ExportBatcherFactory,
 				fieldManager,

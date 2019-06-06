@@ -13,12 +13,16 @@ namespace Relativity.Sync.Transfer
 			builder.RegisterType<RelativityExportBatcher>().As<IRelativityExportBatcher>();
 			builder.RegisterType<NativeFileRepository>().As<INativeFileRepository>();
 			builder.RegisterType<FieldManager>().As<IFieldManager>();
+			builder.RegisterType<ExportDataSanitizer>().As<IExportDataSanitizer>();
 			builder.RegisterType<FolderPathRetriever>().As<IFolderPathRetriever>();
 			builder.RegisterType<ItemStatusMonitor>().As<IItemStatusMonitor>();
 			builder.RegisterType<SourceWorkspaceDataReader>().As<ISourceWorkspaceDataReader>();
 			builder.RegisterTypes(Assembly.GetExecutingAssembly().GetTypes()
 				.Where(t => !t.IsAbstract && t.IsAssignableTo<ISpecialFieldBuilder>())
 				.ToArray()).As<ISpecialFieldBuilder>();
+			builder.RegisterTypes(Assembly.GetExecutingAssembly().GetTypes()
+				.Where(t => !t.IsAbstract && t.IsAssignableTo<IExportFieldSanitizer>())
+				.ToArray()).As<IExportFieldSanitizer>();
 		}
 	}
 }

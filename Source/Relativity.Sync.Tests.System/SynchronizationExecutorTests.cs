@@ -111,6 +111,8 @@ namespace Relativity.Sync.Tests.System
 				new SourceTagsFieldBuilder(configuration)
 			});
 
+			IExportDataSanitizer exportDataSanitizer = new ExportDataSanitizer(Enumerable.Empty<IExportFieldSanitizer>());
+
 			var jobHistoryErrorRepository = new JobHistoryErrorRepository(_serviceFactoryStub);
 
 			// Source tags creation in destination workspace
@@ -141,7 +143,7 @@ namespace Relativity.Sync.Tests.System
 				new RelativityExportBatcher(_serviceFactoryStub, new BatchRepository(_serviceFactoryStub), runId, wsId, syncConfigId);
 
 			var dataReader = new SourceWorkspaceDataReader(
-				new BatchDataReaderBuilder(fieldManager), 
+				new BatchDataReaderBuilder(fieldManager, exportDataSanitizer),
 				configuration,
 				BatcherFactory,
 				fieldManager,
