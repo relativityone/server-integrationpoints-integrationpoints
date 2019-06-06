@@ -28,7 +28,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			// Assert
 			action.Should().Throw<ArgumentException>()
-				.Which.Message.Should().Contain("sanitizers"); // To ensure that Sync is throwing this exception, and not an underlying type.
+				.Which.Message.Should().Contain("sanitizers"); // To ensure that Sync (and not an underlying type) is throwing this exception.
 		}
 
 		private static IEnumerable<TestCaseData> CorrectlyCheckForDataTypesToSanitizeTestCases()
