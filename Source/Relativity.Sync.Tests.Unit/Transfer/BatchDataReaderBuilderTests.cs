@@ -32,9 +32,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		[SetUp]
 		public void SetUp()
 		{
-			FieldInfoDto firstDocumentField = FieldInfoDto.DocumentField(_FIRST_DOCUMENT_FIELD_NAME, false);
+			FieldInfoDto firstDocumentField = FieldInfoDto.DocumentField(_FIRST_DOCUMENT_FIELD_NAME, _FIRST_DOCUMENT_FIELD_NAME, false);
 			firstDocumentField.DocumentFieldIndex = _FIRST_DOCUMENT_FIELD_INDEX_IN_BATCH;
-			FieldInfoDto secondDocumentField = FieldInfoDto.DocumentField(_SECOND_DOCUMENT_FIELD_NAME, false);
+			FieldInfoDto secondDocumentField = FieldInfoDto.DocumentField(_SECOND_DOCUMENT_FIELD_NAME, _SECOND_DOCUMENT_FIELD_NAME, false);
 			secondDocumentField.DocumentFieldIndex = _SECOND_DOCUMENT_FIELD_INDEX_IN_BATCH;
 			_getAllFieldsResult = new List<FieldInfoDto> {firstDocumentField, secondDocumentField};
 			_batchObject = new RelativityObjectSlim {Values = new List<object> {_FIRST_DOCUMENT_FIELD_VALUE, _SECOND_DOCUMENT_FIELD_VALUE}};
@@ -107,7 +107,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			const SpecialFieldType specialFieldType = SpecialFieldType.SourceWorkspace;
 			const string specialFieldName = "Special field";
 			Guid specialFieldValue = new Guid("56C1128A-64B7-4F67-A57F-0932CBAE1747");
-			FieldInfoDto specialFieldDto = FieldInfoDto.GenericSpecialField(specialFieldType, specialFieldName);
+			FieldInfoDto specialFieldDto = FieldInfoDto.GenericSpecialField(specialFieldType, specialFieldName, specialFieldName);
 			
 			_getAllFieldsResult.Add(specialFieldDto);
 
@@ -138,7 +138,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			const SpecialFieldType differentSpecialFieldType = SpecialFieldType.FolderPath;
 			const SpecialFieldType specialFieldType = SpecialFieldType.SourceWorkspace;
 			const string specialFieldName = "Special field";
-			FieldInfoDto specialFieldDto = FieldInfoDto.GenericSpecialField(specialFieldType, specialFieldName);
+			FieldInfoDto specialFieldDto = FieldInfoDto.GenericSpecialField(specialFieldType, specialFieldName, specialFieldName);
 			
 			_getAllFieldsResult.Add(specialFieldDto);
 

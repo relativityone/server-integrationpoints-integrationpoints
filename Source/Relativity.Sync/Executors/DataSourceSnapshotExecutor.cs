@@ -40,7 +40,7 @@ namespace Relativity.Sync.Executors
 			_logger.LogVerbose("Including following system fields to export {supportedByViewer}, {nativeType}.", _SUPPORTED_BY_VIEWER_FIELD_NAME, _RELATIVITY_NATIVE_TYPE_FIELD_NAME);
 
 			IEnumerable<FieldInfoDto> documentFields = await _fieldManager.GetDocumentFieldsAsync(token).ConfigureAwait(false);
-			IEnumerable<FieldRef> documentFieldRefs = documentFields.Select(f => new FieldRef {Name = f.DisplayName});
+			IEnumerable<FieldRef> documentFieldRefs = documentFields.Select(f => new FieldRef {Name = f.SourceFieldName});
 
 			QueryRequest queryRequest = new QueryRequest
 			{

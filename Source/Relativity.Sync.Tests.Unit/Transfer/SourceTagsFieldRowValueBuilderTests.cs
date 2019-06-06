@@ -39,7 +39,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			var instance = new SourceTagsFieldRowValuesBuilder(configuration.Object);
 
-			FieldInfoDto fieldInfo = FieldInfoDto.GenericSpecialField(fieldType, "foo");
+			FieldInfoDto fieldInfo = FieldInfoDto.GenericSpecialField(fieldType, "foo", "bar");
 			var document = new RelativityObjectSlim();
 
 			// Act

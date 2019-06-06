@@ -184,7 +184,7 @@ namespace Relativity.Sync.Tests.Integration
 		private static RelativityObjectSlim ToRelativityObjectSlim(Document document, IEnumerable<Transfer.FieldInfoDto> sourceDocumentFields)
 		{
 			Dictionary<string, object> fieldToValue = document.FieldValues.ToDictionary(fv => fv.Field, fv => fv.Value);
-			List<object> orderedValues = sourceDocumentFields.Select(x => fieldToValue[x.DisplayName]).ToList();
+			List<object> orderedValues = sourceDocumentFields.Select(x => fieldToValue[x.SourceFieldName]).ToList();
 
 			return new RelativityObjectSlim
 			{

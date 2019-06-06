@@ -321,7 +321,7 @@ namespace Relativity.Sync.Tests.Integration
 			IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> specialFieldRowValueBuilders =
 				await _instance.CreateSpecialFieldRowValueBuildersAsync(0, new List<int> { documentArtifactId }).ConfigureAwait(false);
 
-			FieldInfoDto fieldInfo = FieldInfoDto.GenericSpecialField(SpecialFieldType.FolderPath, _FOLDER_PATH_SOURCE_FIELD_NAME);
+			FieldInfoDto fieldInfo = FieldInfoDto.GenericSpecialField(SpecialFieldType.FolderPath, _FOLDER_PATH_SOURCE_FIELD_NAME, _FOLDER_PATH_SOURCE_FIELD_NAME);
 			RelativityObjectSlim document = new RelativityObjectSlim { ArtifactID = documentArtifactId };
 			object value = specialFieldRowValueBuilders[fieldInfo.SpecialFieldType].BuildRowValue(fieldInfo, document, _FIELD_FOLDER_PATH_VALUE);
 
@@ -475,7 +475,7 @@ namespace Relativity.Sync.Tests.Integration
 			}
 			else
 			{
-				fieldInfo = FieldInfoDto.DocumentField(pair.Key, index == 0);
+				fieldInfo = FieldInfoDto.DocumentField(pair.Key, pair.Key, index == 0);
 			}
 			fieldInfo.RelativityDataType = pair.Value;
 			return fieldInfo;
