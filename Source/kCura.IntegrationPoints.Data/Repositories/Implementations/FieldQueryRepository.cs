@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data.RSAPIClient;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
@@ -17,160 +18,137 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 	{
 		private readonly IHelper _helper;
 		private readonly IServicesMgr _servicesMgr;
-		private readonly int _workspaceArtifactId;
+		private readonly int _workspaceArtifactID;
 
 		public FieldQueryRepository(
-			IHelper helper, IServicesMgr servicesMgr,
+			IHelper helper,
+			IServicesMgr servicesMgr,
 			IRelativityObjectManager relativityObjectManager,
-			int workspaceArtifactId) : base(relativityObjectManager)
+			int workspaceArtifactId)
+			: base(relativityObjectManager)
 		{
 			_helper = helper;
 			_servicesMgr = servicesMgr;
-			_workspaceArtifactId = workspaceArtifactId;
+			_workspaceArtifactID = workspaceArtifactId;
 		}
 
-		public async Task<ArtifactFieldDTO[]> RetrieveLongTextFieldsAsync(int rdoTypeId)
+		public async Task<ArtifactFieldDTO[]> RetrieveLongTextFieldsAsync(int rdoTypeID)
 		{
 			const string longTextFieldName = "Long Text";
 
-			var longTextFieldsQuery = new QueryRequest()
+			var longTextFieldsQuery = new QueryRequest
 			{
 				ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Field },
-				Condition = string.Format("'Object Type Artifact Type ID' == OBJECT {0} AND 'Field Type' == '{1}'", rdoTypeId, longTextFieldName)
+				Condition = $"'Object Type Artifact Type ID' == OBJECT {rdoTypeID} AND 'Field Type' == '{longTextFieldName}'"
 			};
 
-			ArtifactDTO[] artifactDtos = null;
-			try
-			{
-				artifactDtos = await RetrieveAllArtifactsAsync(longTextFieldsQuery);
-			}
-			catch (Exception e)
-			{
-				throw new Exception("Unable to retrieve long text fields", e);
-			}
-
-			ArtifactFieldDTO[] fieldDtos =
-				artifactDtos.Select(x => new ArtifactFieldDTO
-					{
-						ArtifactId = x.ArtifactId,
-						FieldType = longTextFieldName,
-						Name = x.TextIdentifier,
-						Value = null // Field RDO's don't have values...setting this to NULL to be explicit
-					})
-					.ToArray();
+			ArtifactDTO[] artifactDtos = await RetrieveAllArtifactsAsync(longTextFieldsQuery).ConfigureAwait(false);
+			ArtifactFieldDTO[] fieldDtos = artifactDtos
+				.Select(x => ConvertArtifactDtoToArtifactFieldDto(x, longTextFieldName))
+				.ToArray();
 
 			return fieldDtos;
 		}
 
-		public async Task<ArtifactDTO[]> RetrieveFieldsAsync(int rdoTypeId, HashSet<string> fieldNames)
+		public Task<ArtifactDTO[]> RetrieveFieldsAsync(int rdoTypeID, HashSet<string> fieldNames)
 		{
 			var fieldQuery = new QueryRequest
 			{
 				ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Field },
-				Fields = fieldNames.Select(x => new FieldRef() { Name = x }),
-				Condition = $"'Object Type Artifact Type Id' == OBJECT {rdoTypeId}"
+				Fields = fieldNames.Select(x => new FieldRef { Name = x }),
+				Condition = $"'Object Type Artifact Type Id' == OBJECT {rdoTypeID}"
 			};
 
-			ArtifactDTO[] fieldArtifactDtos = null;
-			try
-			{
-				fieldArtifactDtos = await RetrieveAllArtifactsAsync(fieldQuery);
-			}
-			catch (Exception e)
-			{
-				throw new Exception("Unable to retrieve fields", e);
-			}
-
-			return fieldArtifactDtos;
+			return RetrieveAllArtifactsAsync(fieldQuery);
 		}
 
-		public async Task<ArtifactDTO[]> RetrieveFieldsAsync(int rdoTypeId, string displayName, string fieldType, HashSet<string> fieldNames)
+		public ArtifactDTO[] RetrieveFields(int rdoTypeID, HashSet<string> fieldNames)
 		{
-			var fieldQuery = new QueryRequest
-			{
-				ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Field },
-				Fields = fieldNames.Select(x => new FieldRef {Name = x}),
-				Condition = $"'Object Type Artifact Type ID' == OBJECT {rdoTypeId} AND 'DisplayName' == '{EscapeSingleQuote(displayName)}' AND 'Field Type' == '{fieldType}'"
-			};
-
-			ArtifactDTO[] fieldArtifactDtos = null;
-			try
-			{
-				fieldArtifactDtos = await RetrieveAllArtifactsAsync(fieldQuery);
-			}
-			catch (Exception e)
-			{
-				throw new Exception("Unable to retrieve fields", e);
-			}
-
-			return fieldArtifactDtos;
+			return RetrieveFieldsAsync(rdoTypeID, fieldNames).GetAwaiter().GetResult();
 		}
 
-		public ArtifactDTO[] RetrieveFields(int rdoTypeId, HashSet<string> fieldNames)
+		public ArtifactDTO RetrieveField(int rdoTypeID, string displayName, string fieldType, HashSet<string> fieldNames)
 		{
-			return RetrieveFieldsAsync(rdoTypeId, fieldNames).GetAwaiter().GetResult();
-		}
-
-		public ArtifactDTO RetrieveField(int rdoTypeId, string displayName, string fieldType, HashSet<string> fieldNames)
-		{
-			ArtifactDTO[] fieldsDtos = RetrieveFieldsAsync(rdoTypeId, displayName, fieldType, fieldNames).GetAwaiter().GetResult();
-
+			ArtifactDTO[] fieldsDtos = RetrieveFieldsAsync(rdoTypeID, displayName, fieldType, fieldNames).GetAwaiter().GetResult();
 			return fieldsDtos.FirstOrDefault();
 		}
 
 		public ResultSet<Field> Read(Field dto)
 		{
-			ResultSet<Field> resultSet = null;
 			var rsapiClientFactory = new RsapiClientFactory();
 			using (IRSAPIClient rsapiClient = rsapiClientFactory.CreateUserClient(_helper))
 			{
-				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
+				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactID;
 
 				try
 				{
-					resultSet = rsapiClient.Repositories.Field.Read(dto);
+					return rsapiClient.Repositories.Field.Read(dto);
 				}
 				catch (Exception e)
 				{
-					throw new Exception("Unable to read Field dto", e);
+					throw new IntegrationPointsException("Unable to read Field dto", e)
+					{
+						ExceptionSource = IntegrationPointsExceptionSource.RSAPI
+					};
 				}
-
-				return resultSet;
 			}
 		}
 
-		public ArtifactDTO RetrieveTheIdentifierField(int rdoTypeId)
+		public ArtifactDTO RetrieveTheIdentifierField(int rdoTypeID)
 		{
-			HashSet<string> fieldsToRetrieveWhenQueryFields = new HashSet<string> {"Name", "Is Identifier"};
-			ArtifactDTO[] fieldsDtos = RetrieveFieldsAsync(rdoTypeId, fieldsToRetrieveWhenQueryFields).GetAwaiter().GetResult();
+			HashSet<string> fieldsToRetrieveWhenQueryFields = new HashSet<string> { "Name", "Is Identifier" };
+			ArtifactDTO[] fieldsDtos = RetrieveFieldsAsync(rdoTypeID, fieldsToRetrieveWhenQueryFields).GetAwaiter().GetResult();
 			ArtifactDTO identifierField = fieldsDtos.First(field => Convert.ToBoolean(field.Fields[1].Value));
 			return identifierField;
 		}
 
 		public ArtifactFieldDTO[] RetrieveBeginBatesFields()
 		{
-			IEnumerable<ArtifactFieldDTO> artifactFieldDTOs;
-			using (IFieldManager fieldManagerProxy =
-				_servicesMgr.CreateProxy<IFieldManager>(ExecutionIdentity.System))
+			using (IFieldManager fieldManagerProxy = _servicesMgr.CreateProxy<IFieldManager>(ExecutionIdentity.System))
 			{
-				var result = fieldManagerProxy.RetrieveBeginBatesFieldsAsync(_workspaceArtifactId).Result;
-				artifactFieldDTOs = result.Select(x => new ArtifactFieldDTO
-				{
-					ArtifactId = x.ArtifactID,
-					Name = x.Name
-				});
+				IEnumerable<global::Relativity.Services.Field.FieldRef> result = fieldManagerProxy.RetrieveBeginBatesFieldsAsync(_workspaceArtifactID).GetAwaiter().GetResult();
+				return result.Select(ConvertFieldRefToArtifactFieldDto).ToArray();
 			}
-
-			return artifactFieldDTOs.ToArray();
 		}
 
-		public int? RetrieveArtifactViewFieldId(int fieldArtifactId)
+		public int? RetrieveArtifactViewFieldId(int fieldArtifactID)
 		{
-			using (IFieldManager fieldManagerProxy =
-				_servicesMgr.CreateProxy<IFieldManager>(ExecutionIdentity.System))
+			using (IFieldManager fieldManagerProxy = _servicesMgr.CreateProxy<IFieldManager>(ExecutionIdentity.System))
 			{
-				return fieldManagerProxy.RetrieveArtifactViewFieldIdAsync(_workspaceArtifactId, fieldArtifactId).Result;
+				return fieldManagerProxy.RetrieveArtifactViewFieldIdAsync(_workspaceArtifactID, fieldArtifactID).GetAwaiter().GetResult();
 			}
+		}
+
+		private Task<ArtifactDTO[]> RetrieveFieldsAsync(int rdoTypeID, string displayName, string fieldType, HashSet<string> fieldNames)
+		{
+			var fieldQuery = new QueryRequest
+			{
+				ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Field },
+				Fields = fieldNames.Select(x => new FieldRef { Name = x }),
+				Condition = $"'Object Type Artifact Type ID' == OBJECT {rdoTypeID} AND 'DisplayName' == '{EscapeSingleQuote(displayName)}' AND 'Field Type' == '{fieldType}'"
+			};
+
+			return RetrieveAllArtifactsAsync(fieldQuery);
+		}
+
+		private static ArtifactFieldDTO ConvertFieldRefToArtifactFieldDto(global::Relativity.Services.Field.FieldRef artifactDto)
+		{
+			return new ArtifactFieldDTO
+			{
+				ArtifactId = artifactDto.ArtifactID,
+				Name = artifactDto.Name,
+			};
+		}
+
+		private static ArtifactFieldDTO ConvertArtifactDtoToArtifactFieldDto(ArtifactDTO artifactDto, string fieldTypeName)
+		{
+			return new ArtifactFieldDTO
+			{
+				ArtifactId = artifactDto.ArtifactId,
+				FieldType = fieldTypeName,
+				Name = artifactDto.TextIdentifier,
+				Value = null // Field RDO's don't have values...setting this to NULL to be explicit
+			};
 		}
 	}
 }

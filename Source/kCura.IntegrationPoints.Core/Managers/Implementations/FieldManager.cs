@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -28,12 +26,6 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		{
 			IFieldQueryRepository fieldQueryRepository = _repositoryFactory.GetFieldQueryRepository(workspaceArtifactId);
 			return fieldQueryRepository.RetrieveBeginBatesFields();
-		}
-
-		public ArtifactDTO[] RetrieveFields(int workspaceId, int rdoTypeId, HashSet<string> fieldNames)
-		{
-			IFieldQueryRepository fieldQueryRepository = _repositoryFactory.GetFieldQueryRepository(workspaceId);
-			return fieldQueryRepository.RetrieveFields(rdoTypeId, fieldNames);
 		}
 
 		public ArtifactDTO[] RetrieveFields(int workspaceId, HashSet<string> fieldNames)
