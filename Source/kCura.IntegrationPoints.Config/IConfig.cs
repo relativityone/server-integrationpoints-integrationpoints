@@ -57,5 +57,10 @@ namespace kCura.IntegrationPoints.Config
 		/// Gets a value indication wheter external calls duration should be measured
 		/// </summary>
 		bool MeasureDurationOfExternalCalls { get; }
+
+		/// <summary>
+		/// Gets size of source workspace tagging batch
+		/// </summary>
+		int SourceWorkspaceTaggerBatchSize { get; }
 	}
 }

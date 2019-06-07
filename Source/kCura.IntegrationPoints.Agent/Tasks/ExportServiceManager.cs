@@ -68,7 +68,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IScheduleRuleFactory scheduleRuleFactory,
 			IJobHistoryService jobHistoryService,
 			IJobHistoryErrorService jobHistoryErrorService,
-			JobStatisticsService statisticsService, 
+			JobStatisticsService statisticsService,
 			IToggleProvider toggleProvider,
 			IAgentValidator agentValidator,
 			IIntegrationPointRepository integrationPointRepository)
@@ -128,12 +128,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				{
 					using (APMClient.APMClient.TimedOperation(Constants.IntegrationPoints.Telemetry
 						.BUCKET_EXPORT_PUSH_TARGET_DOCUMENTS_TAGGING_IMPORT))
-						using (Client.MetricsClient.LogDuration(
-							Constants.IntegrationPoints.Telemetry.BUCKET_EXPORT_PUSH_TARGET_DOCUMENTS_TAGGING_IMPORT,
-							Guid.Empty))
-						{
-							FinalizeExportServiceObservers(job);
-						}
+					using (Client.MetricsClient.LogDuration(
+						Constants.IntegrationPoints.Telemetry.BUCKET_EXPORT_PUSH_TARGET_DOCUMENTS_TAGGING_IMPORT,
+						Guid.Empty))
+					{
+						FinalizeExportServiceObservers(job);
+					}
 				}
 			}
 			catch (OperationCanceledException e)
@@ -153,14 +153,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				//any additional operation that is happening in RelativityObjectManager can potentially cause failures.
 				try
 				{
-					jobHistoryHelper.MarkJobAsFailedAsync(extendedJob, _helper).ConfigureAwait(false).GetAwaiter().GetResult();
+					jobHistoryHelper.MarkJobAsFailedAsync(extendedJob, _helper).GetAwaiter().GetResult();
 				}
 				catch (Exception)
 				{
 					//one last chance
 					try
 					{
-						jobHistoryHelper.MarkJobAsFailedAsync(extendedJob, _helper).ConfigureAwait(false).GetAwaiter().GetResult();
+						jobHistoryHelper.MarkJobAsFailedAsync(extendedJob, _helper).GetAwaiter().GetResult();
 					}
 					catch (Exception)
 					{
@@ -387,21 +387,35 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private void InitializeExportServiceObservers(Job job, string userImportApiSettings)
 		{
 			LogInitializeExportServiceObserversStart(job);
-			SourceConfiguration settings = Serializer.Deserialize<SourceConfiguration>(IntegrationPointDto.SourceConfiguration);
-			IHelper targetHelper = _helperFactory.CreateTargetHelper(_helper, settings.FederatedInstanceArtifactId,
+			IHelper targetHelper = _helperFactory.CreateTargetHelper(
+				_helper,
+				SourceConfiguration.FederatedInstanceArtifactId,
 				IntegrationPointDto.SecuredConfiguration);
-			IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(_helper,
+			IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(
+				_helper,
 				targetHelper.GetServicesManager());
 			ITagsCreator tagsCreator = ManagerFactory.CreateTagsCreator(contextContainer);
 			ITagSavedSearchManager tagSavedSearchManager = ManagerFactory.CreateTaggingSavedSearchManager(contextContainer);
-			ISourceWorkspaceTagCreator sourceWorkspaceTagsCreator = ManagerFactory.CreateSourceWorkspaceTagsCreator(contextContainer, targetHelper, settings);
+			ISourceWorkspaceTagCreator sourceWorkspaceTagsCreator = ManagerFactory.CreateSourceWorkspaceTagsCreator(
+				contextContainer,
+				targetHelper,
+				SourceConfiguration);
 
-			_exportServiceJobObservers = _exporterFactory.InitializeExportServiceJobObservers(job, tagsCreator,
-				tagSavedSearchManager, SynchronizerFactory,
-				Serializer, JobHistoryErrorManager, JobStopManager,sourceWorkspaceTagsCreator,
-				MappedFields.ToArray(), SourceConfiguration,
-				UpdateStatusType, IntegrationPointDto, JobHistory,
-				GetUniqueJobId(job), userImportApiSettings);
+			_exportServiceJobObservers = _exporterFactory.InitializeExportServiceJobObservers(
+				job,
+				tagsCreator,
+				tagSavedSearchManager,
+				SynchronizerFactory,
+				Serializer,
+				JobHistoryErrorManager,
+				JobStopManager,
+				sourceWorkspaceTagsCreator,
+				MappedFields.ToArray(),
+				SourceConfiguration,
+				UpdateStatusType,
+				JobHistory,
+				GetUniqueJobId(job),
+				userImportApiSettings);
 
 			var exceptions = new ConcurrentQueue<Exception>();
 			_exportServiceJobObservers.ForEach(batch =>

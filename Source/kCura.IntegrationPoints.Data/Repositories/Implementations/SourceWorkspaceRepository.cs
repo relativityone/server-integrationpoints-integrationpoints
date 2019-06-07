@@ -50,49 +50,23 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			QueryRequest queryRequest = CreateQueryRequestForRetrieveSourceWorkspace(sourceWorkspaceArtifactId, federatedInstanceName, federatedInstanceArtifactId);
 
-			RelativityObject relativityObject;
-			try
-			{
-				relativityObject = _objectManager.Query(queryRequest)?.FirstOrDefault();
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(string.Format(RSAPIErrors.QUERY_SOURCE_WORKSPACE_ERROR, sourceWorkspaceArtifactId), ex);
-				throw;
-			}
+			RelativityObject relativityObject = _objectManager.Query(queryRequest)?.FirstOrDefault();
 
-			if (relativityObject == null)
-			{
-				return null;
-			}
-
-			return new SourceWorkspaceDTO(relativityObject.ArtifactID, relativityObject.FieldValues);
+			return relativityObject == null
+				? null
+				: new SourceWorkspaceDTO(relativityObject.ArtifactID, relativityObject.FieldValues);
 		}
 
 		public int Create(SourceWorkspaceDTO sourceWorkspaceDto)
 		{
-			try
-			{
-				return _objectManager.Create(sourceWorkspaceDto.ObjectTypeRef, sourceWorkspaceDto.FieldRefValuePairs);
-			}
-			catch (Exception e)
-			{
-				throw new Exception("Unable to create new instance of Source Workspace", e);
-			}
+			return _objectManager.Create(sourceWorkspaceDto.ObjectTypeRef, sourceWorkspaceDto.FieldRefValuePairs);
 		}
 
 		public void Update(SourceWorkspaceDTO sourceWorkspaceDto)
 		{
-			try
-			{
-				_objectManager.Update(sourceWorkspaceDto.ArtifactId, sourceWorkspaceDto.FieldRefValuePairs);
-			}
-			catch (Exception e)
-			{
-				throw new Exception("Unable to update Source Workspace instance", e);
-			}
+			_objectManager.Update(sourceWorkspaceDto.ArtifactId, sourceWorkspaceDto.FieldRefValuePairs);
 		}
-		
+
 		private static QueryRequest CreateQueryRequestForRetrieveSourceWorkspace(int sourceWorkspaceArtifactId, string federatedInstanceName, int? federatedInstanceArtifactId)
 		{
 			string condition = CreateConditionForRetrieveSourceWorkspace(sourceWorkspaceArtifactId, federatedInstanceName, federatedInstanceArtifactId);

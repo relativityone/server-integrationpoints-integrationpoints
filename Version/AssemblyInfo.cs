@@ -28,6 +28,7 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Domain.Tests.Integration")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Core")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Core.Tests")]
+[assembly: InternalsVisibleTo("kCura.IntegrationPoints.Core.Tests.Integration")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Data.Tests")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Data.Tests.Integration")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.DocumentTransferProvider")]

@@ -16,23 +16,9 @@ namespace kCura.IntegrationPoints.Data
 		public const string SCHEDULE_AGENT_QUEUE_TABLE_NAME = "ScheduleAgentQueue_08C0CE2D-8191-4E8F-B037-899CEAEE493D";
 	}
 
-	public partial class OverwriteFieldsChoiceGuids
-	{
-		public static readonly string APPEND_GUID = "998c2b04-d42e-435b-9fba-11fec836aad8";
-		public static readonly string APPEND_AND_OVERLAY_GUID = "5450ebc3-ac57-4e6a-9d28-d607bbdcf6fd";
-		public static readonly string OVERLAY_GUID = "70a1052d-93a3-4b72-9235-ac65f0d5a515";
-
-	}
-	public partial class FrequencyChoiceGuids
-	{
-		public static readonly string Daily = "B8B0849B-5E92-4730-B5F4-858DC2982491";
-		public static readonly string Weekly = "A694AAA9-F374-494C-8FE9-60C1EE388B27";
-		public static readonly string Monthly = "D8E62A6F-7B0D-4F38-881F-1699EF41B4E0";
-	}
-
 	public class Constants
 	{
-	    public const int ADMIN_CASE_ID = -1;
+		public const int ADMIN_CASE_ID = -1;
 
 		public const int DEFAULT_NAME_FIELD_LENGTH = 255;
 		public const int NON_SYSTEM_FIELD_START_ID = 1000000;
@@ -49,36 +35,26 @@ namespace kCura.IntegrationPoints.Data
 		public static readonly Guid RELATIVITY_SOURCEPROVIDER_GUID = new Guid("74A863B9-00EC-4BB7-9B3E-1E22323010C6");
 	}
 
-	public static class DocumentMultiObjectFields
+	public static class TaggingErrors
 	{
-		public const string DESTINATION_WORKSPACE_FIELD = "8980C2FA-0D33-4686-9A97-EA9D6F0B4196";
-		public const string JOB_HISTORY_FIELD = "97BC12FA-509B-4C75-8413-6889387D8EF6";
-	}
+		private const string SOURCE_OBJECT_TAGGING_ERROR_HEADER = "Tagging Documents with DestinationWorkspace and JobHistory object failed";
 
-	public static class RSAPIErrors
-	{
-		public const string UPDATE_DEST_WORKSPACE_ERROR = "Unable to update instance of Destination Workspace object";
-		public const string CREATE_DEST_WORKSPACE_ERROR = "Unable to create a new instance of Destination Workspace object";
-		public const string QUERY_DEST_WORKSPACE_ERROR = "Unable to query Destination Workspace instance";
-		public const string QUERY_SOURCE_WORKSPACE_ERROR = "Unable to query Source Workspace (Source Case Id {0}) ";
 		public const string LINK_OBJECT_INSTANCE_ERROR = "Unable to link Destination Workspace object to Job History object";
+		public const string SOURCE_OBJECT_MASS_EDIT_FAILURE = SOURCE_OBJECT_TAGGING_ERROR_HEADER + " - Mass Edit failure.";
+		public const string SOURCE_OBJECT_SCRATCH_TABLE_READ_ERROR = SOURCE_OBJECT_TAGGING_ERROR_HEADER + " - DocumentsIDs read failure.";
 	}
 
 	public static class MassEditErrors
 	{
-		public const string SOURCE_OBJECT_MO_QUERY_ERROR = "Unable to query for multi-object field on Document associated with DestinationWorkspace or JobHistory object.";
-		public const string SOURCE_OBJECT_MO_EXISTENCE_ERROR = "Multi-object field on Document associated with Destination Workspace or JobHistory object does not exist.";
-		public const string SOURCE_OBJECT_MASS_EDIT_FAILURE = "Tagging Documents with DestinationWorkspace and JobHistory object failed - Mass Edit failure.";
 		public const string JOB_HISTORY_ERROR_STATUS_QUERY_ERROR = "Unable to query for Error Status field on Job History Error.";
 		public const string JOB_HISTORY_ERROR_STATUS_EXISTENCE_ERROR = "Error Status field on Job History Error does not exist.";
 		public const string JOB_HISTORY_ERROR_MASS_EDIT_FAILURE = "Mass Edit Error Status in JobHistoryError object failed - Mass Edit failure.";
 	}
-	
+
 	public static class JobHistoryErrorErrors
 	{
 		public const string JOB_HISTORY_ERROR_TEMP_TABLE_CREATION_FAILURE = "Unable to create temp table for Error Status updates.";
 		public const string JOB_HISTORY_ERROR_RETRIEVE_FAILURE = "Unable to query for Job History Errors associated with provided JobHistory object ({0}).";
-		public const string JOB_HISTORY_ERROR_RETRIEVE_NO_RESULTS = "No Job History Errors returned for JobHistory object ({0}): {1}.";
 	}
 
 	public static class ObjectTypeErrors
@@ -94,7 +70,6 @@ namespace kCura.IntegrationPoints.Data
 	public static class ProductionConsts
 	{
 		public static readonly Guid ProductionInformationTypeGuid = new Guid("11F4D584-C2A7-4E13-8458-D2C031FA40B6");
-		public static readonly Guid WithNativesFieldGuid = new Guid("8C8BEC7A-1DF2-4AFC-B87B-AD2ECBE97C34");
 		public static readonly string WithNativesFieldName = "With Natives";
 		public static readonly Guid ImageCountFieldGuid = new Guid("D92B5B06-CDF0-44BA-B365-A2396F009C73");
 		public static readonly Guid DocumentFieldGuid = new Guid("1CAA97BA-1D77-40C6-9F9A-F5EA9CEFAF38");
@@ -108,8 +83,6 @@ namespace kCura.IntegrationPoints.Data
 	public static class DocumentFieldsConstants
 	{
 		public static readonly Guid HasNativeFieldGuid = new Guid("E09E18F3-D0C8-4CFC-96D1-FBB350FAB3E1");
-		public static readonly string HasNativeFieldNative = "Has Native";
-		public static readonly Guid HasImagesFieldGuid = new Guid("2BAACA72-790C-4B87-A7D8-C18C45CAC63D");
 		public static readonly string HasImagesFieldName = "Has Images";
 		public static readonly Guid RelativityImageCount = new Guid("D726B2D9-4192-43DF-86EF-27D36560931A");
 

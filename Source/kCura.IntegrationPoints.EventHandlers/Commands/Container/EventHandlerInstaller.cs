@@ -59,7 +59,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
 			container.Register(Component.For<IWorkspaceDBContext>().UsingFactoryMethod(k =>
 			{
 				IEHContext context = k.Resolve<IEHContext>();
-				return new WorkspaceContext(context.Helper.GetDBContext(context.Helper.GetActiveCaseID()));
+				return new WorkspaceDBContext(context.Helper.GetDBContext(context.Helper.GetActiveCaseID()));
 			}).LifestyleTransient());
 			container.Register(Component.For<IIntegrationPointProviderValidator>().UsingFactoryMethod(k =>
 					new IntegrationPointProviderValidator(Enumerable.Empty<IValidator>(), k.Resolve<IIntegrationPointSerializer>()))

@@ -3,7 +3,6 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
-using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Agent.Tasks;
@@ -58,7 +57,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 		public override void SuiteTeardown()
 		{
-			IntegrationPoint.Tests.Core.Agent.EnableAllAgents();
+			IntegrationPoint.Tests.Core.Agent.EnableAllIntegrationPointsAgents();
 			base.SuiteTeardown();
 		}
 
@@ -82,10 +81,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			IAPILog logger = Container.Resolve<IAPILog>();
 			IDateTimeHelper dateTimeHelper = Container.Resolve<IDateTimeHelper>();
 			var jobHistoryUpdater = new JobHistoryBatchUpdateStatus(
-				jobStatusUpdater, 
-				jobHistoryService, 
-				_jobService, 
-				serializer, 
+				jobStatusUpdater,
+				jobHistoryService,
+				_jobService,
+				serializer,
 				logger,
 				dateTimeHelper);
 
@@ -110,16 +109,16 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			);
 
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
-			_sourceWorkspaceDto = Workspace.GetWorkspaceDto(SourceWorkspaceArtifactId);
+			_sourceWorkspaceDto = Workspace.GetWorkspaceDto(SourceWorkspaceArtifactID);
 		}
 
 		[TearDown]
 		public void TearDown()
 		{
-			DocumentService.DeleteAllDocuments(SourceWorkspaceArtifactId);
-			DocumentService.DeleteAllDocuments(TargetWorkspaceArtifactId);
-			FolderService.DeleteUnusedFolders(SourceWorkspaceArtifactId);
-			FolderService.DeleteUnusedFolders(TargetWorkspaceArtifactId);
+			DocumentService.DeleteAllDocuments(SourceWorkspaceArtifactID);
+			DocumentService.DeleteAllDocuments(TargetWorkspaceArtifactID);
+			FolderService.DeleteUnusedFolders(SourceWorkspaceArtifactID);
+			FolderService.DeleteUnusedFolders(TargetWorkspaceArtifactID);
 		}
 
 		[IdentifiedTestCase("7256fb90-5742-4458-978d-94349eb287ef", ImportNativeFileCopyModeEnum.CopyFiles)]
@@ -139,26 +138,28 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		private void TestNativeFilesImport(bool areNativesPresentInSource, bool areNativesPresentInTarget,
 			bool importNativeFile, ImportNativeFileCopyModeEnum importNativeFileCopyMode, bool shouldBeNativePresentAfterPushInTarget)
 		{
-			ImportDocumentsToWorkspace(SourceWorkspaceArtifactId, areNativesPresentInSource);
-			ImportDocumentsToWorkspace(TargetWorkspaceArtifactId, areNativesPresentInTarget);
+			ImportDocumentsToWorkspace(SourceWorkspaceArtifactID, areNativesPresentInSource);
+			ImportDocumentsToWorkspace(TargetWorkspaceArtifactID, areNativesPresentInTarget);
 
 			// arrange
 			IntegrationPointModel integrationPointModel = CreateIntegrationPointModel(
-				areNativesPresentInSource, 
-				areNativesPresentInTarget, 
-				importNativeFile, 
+				areNativesPresentInSource,
+				areNativesPresentInTarget,
+				importNativeFile,
 				importNativeFileCopyMode);
 
-			_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, integrationPointModel.ArtifactID, _ADMIN_USER_ID); // run now
+			_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactID, integrationPointModel.ArtifactID, _ADMIN_USER_ID); // add job to schedule queue
 			Job job = null;
 			try
 			{
-				job = GetNextJobInScheduleQueue(new[] { _sourceWorkspaceDto.ResourcePoolID.Value }, integrationPointModel.ArtifactID); // pick up job
+				int[] resourcePools = { _sourceWorkspaceDto.ResourcePoolID.Value };
+				job = GetNextJobInScheduleQueue(resourcePools, integrationPointModel.ArtifactID, SourceWorkspaceArtifactID);
+
 				// act
 				_exportManager.Execute(job); // run the job
 
 				// assert
-				VerifyHasNativeForAllDocuments(TargetWorkspaceArtifactId, shouldBeNativePresentAfterPushInTarget);
+				VerifyHasNativeForAllDocuments(TargetWorkspaceArtifactID, shouldBeNativePresentAfterPushInTarget);
 			}
 			finally
 			{
@@ -169,9 +170,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			}
 		}
 
-		private IntegrationPointModel CreateIntegrationPointModel(bool areNativesPresentInSource, 
-			bool areNativesPresentInTarget, 
-			bool importNativeFile, 
+		private IntegrationPointModel CreateIntegrationPointModel(bool areNativesPresentInSource,
+			bool areNativesPresentInTarget,
+			bool importNativeFile,
 			ImportNativeFileCopyModeEnum importNativeFileCopyMode)
 		{
 			string serializedDestinationConfig = CreateDestinationConfig(importNativeFile, importNativeFileCopyMode);
@@ -199,7 +200,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		private string CreateDestinationConfig(bool importNativeFile, ImportNativeFileCopyModeEnum importNativeFileCopyMode)
 		{
 			ImportSettings destinationConfig =
-				CreateDestinationConfigWithTargetWorkspace(ImportOverwriteModeEnum.OverlayOnly, TargetWorkspaceArtifactId);
+				CreateDestinationConfigWithTargetWorkspace(ImportOverwriteModeEnum.OverlayOnly, TargetWorkspaceArtifactID);
 			destinationConfig.ImportNativeFileCopyMode = importNativeFileCopyMode;
 			destinationConfig.ImportNativeFile = importNativeFile;
 

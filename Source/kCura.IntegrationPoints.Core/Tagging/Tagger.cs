@@ -19,10 +19,14 @@ namespace kCura.IntegrationPoints.Core.Tagging
 		private readonly FieldMap[] _fields;
 		private readonly string _importConfig;
 
-		public Tagger(IDocumentRepository documentRepository, IDataSynchronizer synchronizer, IHelper helper, FieldMap[] fields, string importConfig, int sourceWorkspaceArtifactId)
+		public Tagger(
+			IDocumentRepository documentRepository,
+			IDataSynchronizer synchronizer,
+			IHelper helper,
+			FieldMap[] fields,
+			string importConfig)
 		{
 			_documentRepository = documentRepository;
-			_documentRepository.WorkspaceArtifactId = sourceWorkspaceArtifactId;
 			_synchronizer = synchronizer;
 			_fields = fields;
 			_importConfig = importConfig;

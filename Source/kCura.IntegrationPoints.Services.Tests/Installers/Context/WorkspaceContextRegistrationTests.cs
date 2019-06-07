@@ -81,7 +81,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Installers.Context
 			RegisterInstallerDependencies(_container);
 
 			// assert
-			_container.Should().ResolveImplementationWithoutThrowing<IWorkspaceDBContext, WorkspaceContext>();
+			_container.Should().ResolveImplementationWithoutThrowing<IWorkspaceDBContext, WorkspaceDBContext>();
 		}
 
 		[Test]

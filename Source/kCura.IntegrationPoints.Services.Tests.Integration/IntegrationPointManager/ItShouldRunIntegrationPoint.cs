@@ -23,11 +23,11 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 			var ip = CreateOrUpdateIntegrationPoint(ipModel);
 
 			var client = Helper.CreateAdminProxy<IIntegrationPointManager>();
-			client.RunIntegrationPointAsync(SourceWorkspaceArtifactId, ip.ArtifactID).Wait();
+			client.RunIntegrationPointAsync(SourceWorkspaceArtifactID, ip.ArtifactID).Wait();
 
-			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactId, ip.ArtifactID);
+			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactID, ip.ArtifactID);
 
-			var jobHistoryDataTable = Helper.GetDBContext(SourceWorkspaceArtifactId).ExecuteSqlStatementAsDataTable("SELECT * FROM [JobHistory]");
+			var jobHistoryDataTable = Helper.GetDBContext(SourceWorkspaceArtifactID).ExecuteSqlStatementAsDataTable("SELECT * FROM [JobHistory]");
 
 			Assert.That(jobHistoryDataTable.Rows.Count, Is.EqualTo(1));
 

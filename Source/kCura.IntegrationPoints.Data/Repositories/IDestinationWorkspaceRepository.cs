@@ -1,6 +1,4 @@
-﻿using System.Security.Claims;
-
-namespace kCura.IntegrationPoints.Data.Repositories
+﻿namespace kCura.IntegrationPoints.Data.Repositories
 {
 	/// <summary>
 	///     Responsible for handling Destination Workspace RDOs and their functionality.
@@ -27,19 +25,6 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <param name="federatedInstanceName">Name of the Federated Instance</param>
 		/// <returns>DestinationWorkspaceDTO of the instance that was just created</returns>
 		DestinationWorkspace Create(int targetWorkspaceArtifactId, string targetWorkspaceName, int? federatedInstanceArtifactId, string federatedInstanceName);
-
-		/// <summary>
-		///     Mass edits/tags the Documents that were with the corresponding Destination Workspace they were pushed to.
-		/// </summary>
-		/// <param name="claimsPrincipal">A ClaimsPrincipal object that contains the identity of the user</param>
-		/// <param name="numberOfDocs">The number of documents to tag</param>
-		/// <param name="destinationWorkspaceInstanceId">Artifact ID of the DestinationWorkspace RDO instance</param>
-		/// <param name="jobHistoryInstanceId">Artifact ID of the JobHistory RDO instance</param>
-		/// <param name="tableSuffix">Unique suffix that is appended to the scratch table</param>
-		/// <param name="sourceWorkspaceId">Artifact ID of the source workspace</param>
-		void TagDocsWithDestinationWorkspaceAndJobHistory(ClaimsPrincipal claimsPrincipal, int numberOfDocs, int destinationWorkspaceInstanceId, int jobHistoryInstanceId,
-			string tableSuffix,
-			int sourceWorkspaceId);
 
 		/// <summary>
 		///     Links the multi-object fields on DestinationWorkspace and JobHistory objects to each other.
