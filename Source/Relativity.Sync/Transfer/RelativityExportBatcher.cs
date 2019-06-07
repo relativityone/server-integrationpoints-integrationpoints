@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -46,13 +47,27 @@ namespace Relativity.Sync.Transfer
 
 			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
-				int resultsBlockSize = nextBatch.TotalItemsCount;
-				int startingIndex = nextBatch.StartingIndex;
+				List<RelativityObjectSlim> batchItems = new List<RelativityObjectSlim>();
 
-				RelativityObjectSlim[] block = await objectManager
-					.RetrieveResultsBlockFromExportAsync(_sourceWorkspaceArtifactId, _runId, resultsBlockSize, startingIndex)
-					.ConfigureAwait(false);
-				return block;
+				int batchStartingIndex = nextBatch.StartingIndex;
+				int batchEndingIndex = batchStartingIndex + nextBatch.TotalItemsCount;
+
+				// Export API may not return all items in our batch (the actual results block size is configurable on the instance level),
+				// so we have to account for results paging.
+
+				int currentExportIndex = batchStartingIndex;
+				while (currentExportIndex < batchEndingIndex)
+				{
+					int remainingItemsInBatch = batchEndingIndex - currentExportIndex;
+					RelativityObjectSlim[] block = await objectManager
+						.RetrieveResultsBlockFromExportAsync(_sourceWorkspaceArtifactId, _runId, remainingItemsInBatch, currentExportIndex)
+						.ConfigureAwait(false);
+
+					currentExportIndex += block.Length;
+					batchItems.AddRange(block);
+				}
+
+				return batchItems.ToArray();
 			}
 		}
 	}
