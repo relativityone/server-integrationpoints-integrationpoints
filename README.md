@@ -8,9 +8,8 @@ Relativity Sync utilizes the Relativity Import API, Export API, and various Kepl
 
 The workspace-to-workspace workflow was originally designed as a part of [Relativity Integration Points (RIP)](https://git.kcura.com/projects/IN/repos/integrationpoints/browse). Relativity Sync is currently packaged with RIP and is still only differentiated as a separate flow within it.
 
-Relativity Sync will add the following features to the old RIP workflow:
+Relativity Sync will add a few features to the old RIP workflow:
 
-- Cancellation and retry of jobs
 - Batching and parallel imports
 - Interfaces to receive detailed job progress reporting
 
@@ -42,7 +41,7 @@ Relativity Sync uses the [Banzai](https://github.com/eswann/Banzai) framework to
 1. Once you have the appropriate arguments, create an `ISyncJob` using the `SyncJobFactory.Create` method that's appropriate for your use case, and then invoke the job using `ISyncJob.ExecuteAsync`.
     - **NB**: There are also `RetryAsync` methods, but job retry is not yet supported.
     - You may provide an `IProgress<>` implementation to `ExecuteAsync` to get progress reporting; otherwise, Sync will not report any progress.
-    - You may also provide a `CancellationToken` to `ExecuteAsync`, but cancellation is only partially supported. Namely, **Import API jobs are not yet cancellable**. This is expected to be supported in a future release.
+    - You may also provide a `CancellationToken` to `ExecuteAsync`, but cancellation is only partially supported. Namely, **individual Import API jobs are not yet cancellable**. Since Relativity Sync batches out several Import API jobs you may be able to partially cancel document transfer, but jobs that are in progress when cancellation occurs will complete before the job is fully cancelled. Import API job cancellation is expected to be supported in a future release.
 
 ## Repository
 
