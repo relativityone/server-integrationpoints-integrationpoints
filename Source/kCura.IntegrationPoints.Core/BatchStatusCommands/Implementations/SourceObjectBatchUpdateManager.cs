@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using kCura.IntegrationPoints.Common.Monitoring.Constants;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Tagging;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
@@ -17,7 +18,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		private int _destinationWorkspaceRdoId;
 		private bool _errorOccurDuringJobStart;
 
-		private readonly int _jobHistoryInstanceID;
+		private readonly JobHistory _jobHistory;
 		private readonly int _destinationWorkspaceID;
 		private readonly int? _federatedInstanceID;
 		private readonly ISourceDocumentsTagger _sourceDocumentsTagger;
@@ -30,7 +31,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			ISourceWorkspaceTagCreator sourceWorkspaceTagCreator,
 			ISourceDocumentsTagger sourceDocumentsTagger,
 			SourceConfiguration sourceConfig,
-			int jobHistoryInstanceId,
+			JobHistory jobHistoryInstanceId,
 			string uniqueJobId)
 		{
 			ScratchTableRepository = sourceRepositoryFactory.GetScratchTableRepository(
@@ -39,7 +40,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 				uniqueJobId);
 			_destinationWorkspaceID = sourceConfig.TargetWorkspaceArtifactId;
 			_federatedInstanceID = sourceConfig.FederatedInstanceArtifactId;
-			_jobHistoryInstanceID = jobHistoryInstanceId;
+			_jobHistory = jobHistoryInstanceId;
 			_sourceWorkspaceTagCreator = sourceWorkspaceTagCreator;
 			_sourceDocumentsTagger = sourceDocumentsTagger;
 			_logger = logger.ForContext<SourceObjectBatchUpdateManager>();
@@ -53,7 +54,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			{
 				_destinationWorkspaceRdoId = _sourceWorkspaceTagCreator.CreateDestinationWorkspaceTag(
 					_destinationWorkspaceID,
-					_jobHistoryInstanceID,
+					_jobHistory.ArtifactId,
 					_federatedInstanceID);
 				LogDestinationWorkspaceLinkedToJobHistory();
 			}
@@ -94,7 +95,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 				await _sourceDocumentsTagger.TagDocumentsWithDestinationWorkspaceAndJobHistoryAsync(
 					ScratchTableRepository,
 					_destinationWorkspaceRdoId,
-					_jobHistoryInstanceID
+					_jobHistory.ArtifactId
 				).ConfigureAwait(false);
 			}
 		}
@@ -102,7 +103,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		private DurationLogger CreateTaggingDurationLogger() => Client.MetricsClient.LogDuration(
 			bucket: TelemetryMetricsBucketNames.BUCKET_SYNC_SOURCE_DOCUMENTS_TAGGING_DURATION,
 			workspaceGuid: Guid.Empty,
-			workflowID: _jobHistoryInstanceID.ToString());
+			workflowID: _jobHistory.BatchInstance);
 
 		#region Logging
 
@@ -127,7 +128,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			_logger.LogInformation(
 				"Destination workspace {_destinationWorkspaceRdoId} linked  to job history {_jobHistoryInstanceId}.",
 				_destinationWorkspaceRdoId,
-				_jobHistoryInstanceID);
+				_jobHistory.ArtifactId);
 		}
 
 		private void LogTaggingDocumentsStarted()
@@ -135,7 +136,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			_logger.LogDebug(
 				"Tagging documents started in source workspace {workspaceId} for job {jobIInstanceId}.",
 				_destinationWorkspaceID,
-				_jobHistoryInstanceID);
+				_jobHistory.ArtifactId);
 		}
 
 		#endregion
