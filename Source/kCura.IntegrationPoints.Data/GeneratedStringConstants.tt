@@ -14,7 +14,7 @@ var schemaFile = @"..\ApplicationsXML\application.xml";
 var fullPathSchemaFile = Path.Combine(Path.GetDirectoryName(templateFile), schemaFile);
 var objTypes = SchemaHelper.GetObjectTypes(fullPathSchemaFile);
 var tabTypes = SchemaHelper.GetObjectTypes(fullPathSchemaFile);
-string nameSpaceName = "kCura.IntegrationPoints.Data"; 
+string nameSpaceName = "kCura.IntegrationPoints.Data";
 #>
 using System;
 using kCura.Relativity.Client.DTOs;
@@ -66,7 +66,7 @@ namespace <#=nameSpaceName#>
 	foreach  (ObjectTypeDTO objType in objTypes)
 	{
 	#>
-	public const string <#=objType.Name.ToPascalCase()#> = @"<#=objType.Guid#>";
+	<#=GetGuidFieldDefinition(objType.Name, objType.Guid)#>
 	<#
 	}
 	#>
@@ -108,14 +108,14 @@ namespace <#=nameSpaceName#>
 		if (field.AssociativeArtifactTypeId > 0)
 		{
 #>
-		public const string <#=field.DisplayName.ToPascalCase()#> = @"<#=field.Guid#>";
+		<#=GetGuidFieldDefinition(field.DisplayName, field.Guid)#>
 <#
 		}
 	}
 	foreach (FieldDTO field in objType.UserFields)
 	{
 #>
-		public const string <#=field.DisplayName.ToPascalCase()#> = @"<#=field.Guid#>";
+		<#=GetGuidFieldDefinition(field.DisplayName, field.Guid)#>
 <#
 	}
 
@@ -170,7 +170,7 @@ foreach (ObjectTypeDTO objType in objTypes)
 	foreach (LayoutDTO layout in objType.UserLayouts)
 	{
 #>
-		public const string <#=layout.Name.ToPascalCase()#> = @"<#=layout.Guid#>";
+		<#=GetGuidFieldDefinition(layout.Name, layout.Guid)#>
 <#
 	}
 #>
@@ -204,7 +204,7 @@ foreach (ObjectTypeDTO objType in objTypes)
 #>
 	public partial class <#=objType.Name.ToPascalCase()#>TabGuids
 	{
-		public const string <#=objType.Tab.Name.ToPascalCase()#> = @"<#=objType.Tab.Guid#>";
+		<#=GetGuidFieldDefinition(objType.Tab.Name, objType.Tab.Guid)#>
 	}
 
 	public partial class <#=objType.Name.ToPascalCase()#>Tabs
@@ -230,7 +230,7 @@ foreach (ObjectTypeDTO objType in objTypes)
 	foreach (ViewDTO view in objType.UserViews)
 	{
 #>
-		public const string <#=view.Name.ToPascalCase()#> = @"<#=view.Guid#>";
+		<#=GetGuidFieldDefinition(view.Name, view.Guid)#>
 <#
 	}
 #>
@@ -254,3 +254,14 @@ foreach (ObjectTypeDTO objType in objTypes)
 	#endregion									
 
 }
+
+<#+
+public static string GetGuidFieldDefinition(string fieldName, string fieldValue)
+{
+	string fieldNameFormatted = fieldName.ToPascalCase();
+	string guidAsStringDefinition = $"public const string {fieldNameFormatted} = @\"{fieldValue}\";";
+	string guidDefinition = $"public static readonly Guid  {fieldNameFormatted}Guid = Guid.Parse({fieldNameFormatted});";
+	return $"{guidAsStringDefinition}\n\t\t{guidDefinition}";
+	
+}
+#>
