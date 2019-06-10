@@ -190,7 +190,6 @@
     <Compile Include="TestHelpers\IImagesService.cs" />
     <Compile Include="TestHelpers\ImagesService.cs" />
     <Compile Include="TestHelpers\INativesService.cs" />
-    <Compile Include="TestHelpers\IntegrationPointProviderEmptyValidator.cs" />
     <Compile Include="TestHelpers\IProductionImagesService.cs" />
     <Compile Include="TestHelpers\ITestHelper.cs" />
     <Compile Include="TestHelpers\JobBuilder.cs" />

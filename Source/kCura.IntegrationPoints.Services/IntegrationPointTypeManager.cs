@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.Services
 		{
 			CheckPermissions(nameof(GetIntegrationPointTypes), workspaceArtifactId, new[]
 			{
-				new PermissionModel(ObjectTypeGuids.IntegrationPointType, ObjectTypes.IntegrationPointType, ArtifactPermission.View)
+				new PermissionModel(ObjectTypeGuids.IntegrationPointTypeGuid, ObjectTypes.IntegrationPointType, ArtifactPermission.View)
 			});
 			try
 			{

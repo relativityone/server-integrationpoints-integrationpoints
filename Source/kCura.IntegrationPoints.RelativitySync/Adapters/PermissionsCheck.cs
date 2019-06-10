@@ -64,13 +64,13 @@ namespace kCura.IntegrationPoints.RelativitySync.Adapters
 
 			IntegrationPointModelBase model = IntegrationPointModel.FromIntegrationPoint(_extendedJob.IntegrationPointModel);
 
-			ValidationContext context = new ValidationContext()
+			var context = new ValidationContext
 			{
 				SourceProvider = sourceProvider,
 				DestinationProvider = destinationProvider,
 				IntegrationPointType = integrationPointType,
 				Model = model,
-				ObjectTypeGuid = ObjectTypeGuids.IntegrationPoint,
+				ObjectTypeGuid = ObjectTypeGuids.IntegrationPointGuid,
 				UserId = configuration.ExecutingUserId
 			};
 

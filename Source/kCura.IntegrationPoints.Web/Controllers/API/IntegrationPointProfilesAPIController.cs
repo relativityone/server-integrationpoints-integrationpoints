@@ -164,7 +164,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				IntegrationPointType = integrationPointType,
 				Model = model,
 				SourceProvider = sourceProvider,
-				ObjectTypeGuid = ObjectTypeGuids.IntegrationPointProfile
+				ObjectTypeGuid = ObjectTypeGuids.IntegrationPointProfileGuid
 			};
 
 			ValidationResult validationResult = _validationExecutor.ValidateOnProfile(validationContext);

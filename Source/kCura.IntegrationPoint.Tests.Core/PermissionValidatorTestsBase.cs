@@ -41,8 +41,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 		protected const int _SOURCE_PROVIDER_ID = 39309;
 		protected const int _DESTINATION_PROVIDER_ID = 42042;
 		protected const int _SAVED_SEARCH_ID = 9492;
-		protected Guid _SOURCE_PROVIDER_GUID = new Guid(ObjectTypeGuids.SourceProvider);
-		protected Guid _DESTINATION_PROVIDER_GUID = new Guid(ObjectTypeGuids.DestinationProvider);
+		protected Guid _SOURCE_PROVIDER_GUID = ObjectTypeGuids.SourceProviderGuid;
+		protected Guid _DESTINATION_PROVIDER_GUID = ObjectTypeGuids.DestinationProviderGuid;
 
 		protected IRepositoryFactory _repositoryFactory;
 		protected IPermissionRepository _sourcePermissionRepository;
@@ -70,7 +70,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				DestinationConfiguration = $"{{ \"artifactTypeID\": {_ARTIFACT_TYPE_ID} }}",
 				SourceProviderArtifactId = _SOURCE_PROVIDER_ID,
 				DestinationProviderArtifactId = _DESTINATION_PROVIDER_ID,
-				ObjectTypeGuid = "00000000-0000-0000-0000-000000000000"
+				ObjectTypeGuid = Guid.Empty
 			};
 
 			_serializer.Deserialize<SourceConfiguration>(_validationModel.SourceConfiguration)

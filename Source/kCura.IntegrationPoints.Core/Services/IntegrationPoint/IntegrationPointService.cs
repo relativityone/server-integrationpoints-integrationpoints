@@ -118,7 +118,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 				DestinationProvider destinationProvider = GetDestinationProvider(integrationPoint.DestinationProvider);
 				IntegrationPointType integrationPointType = GetIntegrationPointType(integrationPoint.Type);
 
-				RunValidation(integrationPointModel, sourceProvider, destinationProvider, integrationPointType, ObjectTypeGuids.IntegrationPoint);
+				RunValidation(integrationPointModel, sourceProvider, destinationProvider, integrationPointType, ObjectTypeGuids.IntegrationPointGuid);
 
 				//save RDO
 				if (integrationPoint.ArtifactId > 0)
@@ -278,7 +278,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 				DestinationProvider = destinationProvider,
 				IntegrationPointType = integrationPointType,
 				Model = IntegrationPointModel.FromIntegrationPoint(integrationPoint),
-				ObjectTypeGuid = ObjectTypeGuids.IntegrationPoint,
+				ObjectTypeGuid = ObjectTypeGuids.IntegrationPointGuid,
 				SourceProvider = sourceProvider,
 				UserId = -1
 			};
@@ -515,7 +515,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 					DestinationProvider = destinationProvider,
 					IntegrationPointType = integrationPointType,
 					Model = model,
-					ObjectTypeGuid = ObjectTypeGuids.IntegrationPoint,
+					ObjectTypeGuid = ObjectTypeGuids.IntegrationPointGuid,
 					SourceProvider = sourceProvider,
 					UserId = userId
 				};

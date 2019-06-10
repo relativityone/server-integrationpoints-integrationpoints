@@ -178,7 +178,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 
 			try
 			{
-				Guid[] viewFieldsGuids = { Guid.Parse(DocumentFieldGuids.ControlNumber) };
+				Guid[] viewFieldsGuids = { DocumentFieldGuids.ControlNumberGuid };
 				await View
 					.CreateViewAsync(
 						workspaceID,

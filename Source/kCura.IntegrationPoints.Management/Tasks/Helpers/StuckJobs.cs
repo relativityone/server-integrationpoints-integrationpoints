@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoints.Management.Tasks.Helpers
 		private IList<int> GetStuckJobsIds(IList<RDO> jobsInProgress, List<string> jobs)
 		{
 			return jobsInProgress
-				.Where(x => jobs.Any(y => string.Equals(y, x[new Guid(JobHistoryFieldGuids.BatchInstance)].ValueAsFixedLengthText, StringComparison.InvariantCultureIgnoreCase)))
+				.Where(x => jobs.Any(y => string.Equals(y, x[JobHistoryFieldGuids.BatchInstanceGuid].ValueAsFixedLengthText, StringComparison.InvariantCultureIgnoreCase)))
 				.Where(x => x.SystemLastModifiedOn < GetStuckTime())
 				.Select(x => x.ArtifactID).ToList();
 		}

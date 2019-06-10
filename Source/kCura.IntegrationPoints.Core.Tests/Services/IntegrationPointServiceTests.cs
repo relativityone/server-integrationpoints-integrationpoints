@@ -75,7 +75,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		private readonly int _sourceWorkspaceArtifactId = 789;
 		private readonly int _targetWorkspaceArtifactId = 9954;
 		private readonly int _userId = 951;
-		private readonly string _objectTypeGuid = ObjectTypeGuids.IntegrationPoint;
+		private readonly Guid _objectTypeGuid = ObjectTypeGuids.IntegrationPointGuid;
 
 		[SetUp]
 		public override void SetUp()
@@ -165,7 +165,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				DestinationProvider = _destinationProvider,
 				IntegrationPointType = _integrationPointType,
 				Model = Arg.Is<IntegrationPointModelBase>(x => MatchHelper.Matches(_integrationPointModel, x)),
-				ObjectTypeGuid = ObjectTypeGuids.IntegrationPoint,
+				ObjectTypeGuid = ObjectTypeGuids.IntegrationPointGuid,
 				SourceProvider = _sourceProvider,
 				UserId = -1
 			};

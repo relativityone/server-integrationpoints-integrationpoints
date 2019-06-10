@@ -161,7 +161,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 		{
 			return new FieldRef
 			{
-				Guid = Guid.Parse(JobHistoryFieldGuids.JobID)
+				Guid = JobHistoryFieldGuids.JobIDGuid
 			};
 		}
 
@@ -169,7 +169,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 		{
 			return new FieldRef
 			{
-				Guid = Guid.Parse(JobHistoryFieldGuids.EndTimeUTC)
+				Guid = JobHistoryFieldGuids.EndTimeUTCGuid
 			};
 		}
 
@@ -185,7 +185,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 		{
 			return new FieldRef
 			{
-				Guid = Guid.Parse(JobHistoryFieldGuids.JobStatus)
+				Guid = JobHistoryFieldGuids.JobStatusGuid
 			};
 		}
 
@@ -193,7 +193,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 		{
 			return new FieldRef
 			{
-				Guid = Guid.Parse(JobHistoryFieldGuids.StartTimeUTC)
+				Guid = JobHistoryFieldGuids.StartTimeUTCGuid
 			};
 		}
 
@@ -244,7 +244,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 		{
 			return new ObjectTypeRef
 			{
-				Guid = Guid.Parse(ObjectTypeGuids.JobHistoryError)
+				Guid = ObjectTypeGuids.JobHistoryErrorGuid
 			};
 		}
 
@@ -266,7 +266,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			{
 				Field = new FieldRef
 				{
-					Guid = Guid.Parse(JobHistoryErrorFieldGuids.Error)
+					Guid = JobHistoryErrorFieldGuids.ErrorGuid
 				},
 				Value = e.Message
 			};
@@ -278,7 +278,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			{
 				Field = new FieldRef
 				{
-					Guid = Guid.Parse(JobHistoryErrorFieldGuids.ErrorStatus)
+					Guid = JobHistoryErrorFieldGuids.ErrorStatusGuid
 				},
 				Value = new ChoiceRef
 				{
@@ -293,7 +293,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			{
 				Field = new FieldRef
 				{
-					Guid = Guid.Parse(JobHistoryErrorFieldGuids.ErrorType)
+					Guid = JobHistoryErrorFieldGuids.ErrorTypeGuid
 				},
 				Value = new ChoiceRef
 				{
@@ -308,7 +308,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			{
 				Field = new FieldRef
 				{
-					Guid = Guid.Parse(JobHistoryErrorFieldGuids.StackTrace)
+					Guid = JobHistoryErrorFieldGuids.StackTraceGuid
 				},
 				Value = e.ToString()
 			};
@@ -320,7 +320,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			{
 				Field = new FieldRef
 				{
-					Guid = Guid.Parse(JobHistoryErrorFieldGuids.Name)
+					Guid = JobHistoryErrorFieldGuids.NameGuid
 				},
 				Value = Guid.NewGuid().ToString()
 			};

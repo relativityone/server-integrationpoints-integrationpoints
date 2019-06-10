@@ -1,4 +1,6 @@
-﻿namespace kCura.IntegrationPoints.Core.Models
+﻿using System;
+
+namespace kCura.IntegrationPoints.Core.Models
 {
 	public class IntegrationPointProviderValidationModel
 	{
@@ -38,7 +40,7 @@
 
 		public string IntegrationPointTypeIdentifier { get; set; }
 
-		public string ObjectTypeGuid { get; set; }
+		public Guid ObjectTypeGuid { get; set; }
 
 		public string SecuredConfiguration { get; set; }
 

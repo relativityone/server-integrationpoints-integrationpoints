@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Models;
 using NUnit.Framework;
 using kCura.IntegrationPoints.Core.Validation;
@@ -11,7 +6,6 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using NSubstitute;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation
 {
@@ -24,7 +18,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 		private SourceProvider _sourceProvider;
 		private DestinationProvider _destinationProvider;
 		private IntegrationPointType _integrationPointType;
-		private string _objectTypeGuid = "00000000-0000-0000-0000-000000000000";
+		private Guid _objectTypeGuid = Guid.Empty;
 
 		[SetUp]
 		public void SetUp()
@@ -44,7 +38,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 			var validator = Substitute.For<IPermissionValidator>();
 			validator.Key.Returns(Constants.IntegrationPoints.Validation.INTEGRATION_POINT);
 
-			var permissionValidator = new IntegrationPointPermissionValidator(new []{ validator }, _serializer);
+			var permissionValidator = new IntegrationPointPermissionValidator(new[] { validator }, _serializer);
 
 			//act
 			permissionValidator.Validate(_model, _sourceProvider, _destinationProvider, _integrationPointType, _objectTypeGuid);

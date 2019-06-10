@@ -181,25 +181,25 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			{
 				ObjectType = new ObjectTypeRef
 				{
-					Guid = Guid.Parse(ObjectTypeGuids.JobHistoryError)
+					Guid = ObjectTypeGuids.JobHistoryErrorGuid
 				},
 				Fields = new[]
 				{
 					new FieldRef
 					{
-						Guid = Guid.Parse(JobHistoryErrorFieldGuids.StackTrace)
+						Guid = JobHistoryErrorFieldGuids.StackTraceGuid
 					},
 					new FieldRef
 					{
-						Guid = Guid.Parse(JobHistoryErrorFieldGuids.ErrorType)
+						Guid = JobHistoryErrorFieldGuids.ErrorTypeGuid
 					},
 					new FieldRef
 					{
-						Guid = Guid.Parse(JobHistoryErrorFieldGuids.ErrorStatus)
+						Guid = JobHistoryErrorFieldGuids.ErrorStatusGuid
 					},
 					new FieldRef
 					{
-						Guid = Guid.Parse(JobHistoryErrorFieldGuids.Error)
+						Guid = JobHistoryErrorFieldGuids.ErrorGuid
 					}
 				},
 				Condition = CreateCondition(new[] {jobHistoryArtifactId})

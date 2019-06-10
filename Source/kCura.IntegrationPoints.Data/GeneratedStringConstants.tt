@@ -259,7 +259,7 @@ foreach (ObjectTypeDTO objType in objTypes)
 public static string GetGuidFieldDefinition(string fieldName, string fieldValue)
 {
 	string fieldNameFormatted = fieldName.ToPascalCase();
-	string guidAsStringDefinition = $"public const string {fieldNameFormatted} = @\"{fieldValue}\";";
+	string guidAsStringDefinition = $"internal const string {fieldNameFormatted} = @\"{fieldValue}\";";
 	string guidDefinition = $"public static readonly Guid  {fieldNameFormatted}Guid = Guid.Parse({fieldNameFormatted});";
 	return $"{guidAsStringDefinition}\n\t\t{guidDefinition}";
 	

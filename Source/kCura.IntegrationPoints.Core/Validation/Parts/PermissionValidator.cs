@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Core.Validation.Parts
@@ -24,9 +25,9 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 		{
 			var result = new ValidationResult();
 
-			var objectTypeGuid = new Guid(model.ObjectTypeGuid);
+			Guid objectTypeGuid = model.ObjectTypeGuid;
 
-			var permissionRepository = _repositoryFactory.GetPermissionRepository(ContextHelper.WorkspaceID);
+			IPermissionRepository permissionRepository = _repositoryFactory.GetPermissionRepository(ContextHelper.WorkspaceID);
 
 			if (!permissionRepository.UserHasPermissionToAccessWorkspace())
 			{
