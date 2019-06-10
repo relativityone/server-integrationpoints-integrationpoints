@@ -17,7 +17,7 @@ namespace Relativity.Sync.Tests.Integration
 		{
 			// validation, permissions, object types, snapshot
 			// source workspace tags, destination workspace tags
-			const int expectedNumberOfExecutedSteps = 8;
+			const int expectedNumberOfExecutedSteps = 9;
 			return expectedNumberOfExecutedSteps;
 		}
 	}

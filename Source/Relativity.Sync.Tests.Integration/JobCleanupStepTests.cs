@@ -18,7 +18,7 @@ namespace Relativity.Sync.Tests.Integration
 			// validation, permissions, object types, snapshot, source tags, dest tags,
 			// data destination init, snapshot partition, sync, saved search,
 			// data destination finalization, status consolidation, notification
-			const int expectedNumberOfExecutedSteps = 13;
+			const int expectedNumberOfExecutedSteps = 14;
 			return expectedNumberOfExecutedSteps;
 		}
 	}
