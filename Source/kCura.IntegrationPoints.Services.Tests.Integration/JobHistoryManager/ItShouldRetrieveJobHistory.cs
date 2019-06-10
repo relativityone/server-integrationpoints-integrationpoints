@@ -42,9 +42,9 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			_groupId = Group.CreateGroup($"group_{Utils.FormattedDateTimeNow}");
 			_user = User.CreateUser("firstname", "lastname", $"a_{Utils.FormattedDateTimeNow}@relativity.com", new List<int> {_groupId});
 
-			Group.AddGroupToWorkspace(SourceWorkspaceArtifactId, _groupId);
+			Group.AddGroupToWorkspace(SourceWorkspaceArtifactID, _groupId);
 
-			_testData = TestData.Create(SourceWorkspaceArtifactId);
+			_testData = TestData.Create(SourceWorkspaceArtifactID);
 			_expectedResult = TestData.GetExpectedData(_testData);
 
 			foreach (var testData in _testData)
@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 		private IRelativityObjectManager CreateObjectManager()
 		{
 			var factory = new RelativityObjectManagerFactory(Helper);
-			return factory.CreateRelativityObjectManager(SourceWorkspaceArtifactId);
+			return factory.CreateRelativityObjectManager(SourceWorkspaceArtifactID);
 		}
 
 		private void CreateIntegrationPointAndAddJobHistory(TestData testData)
@@ -119,7 +119,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			var client = Helper.CreateAdminProxy<IJobHistoryManager>();
 			var request = new JobHistoryRequest
 			{
-				WorkspaceArtifactId = SourceWorkspaceArtifactId,
+				WorkspaceArtifactId = SourceWorkspaceArtifactID,
 				Page = 0,
 				PageSize = 10
 			};
@@ -141,7 +141,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			var client = Helper.CreateAdminProxy<IJobHistoryManager>();
 			var request = new JobHistoryRequest
 			{
-				WorkspaceArtifactId = SourceWorkspaceArtifactId,
+				WorkspaceArtifactId = SourceWorkspaceArtifactID,
 				Page = 1,
 				PageSize = 1,
 				SortColumnName = nameof(JobHistoryModel.EndTimeUTC)
@@ -163,7 +163,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			var client = Helper.CreateAdminProxy<IJobHistoryManager>();
 			var request = new JobHistoryRequest
 			{
-				WorkspaceArtifactId = SourceWorkspaceArtifactId,
+				WorkspaceArtifactId = SourceWorkspaceArtifactID,
 				Page = 10,
 				PageSize = 10,
 				SortColumnName = nameof(JobHistoryModel.EndTimeUTC)
@@ -181,7 +181,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			var client = Helper.CreateUserProxy<IJobHistoryManager>(_user.EmailAddress);
 			var request = new JobHistoryRequest
 			{
-				WorkspaceArtifactId = SourceWorkspaceArtifactId,
+				WorkspaceArtifactId = SourceWorkspaceArtifactID,
 				Page = 0,
 				PageSize = 10,
 				SortColumnName = nameof(JobHistoryModel.EndTimeUTC)
@@ -211,7 +211,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			var client = Helper.CreateAdminProxy<IJobHistoryManager>();
 			var request = new JobHistoryRequest
 			{
-				WorkspaceArtifactId = SourceWorkspaceArtifactId,
+				WorkspaceArtifactId = SourceWorkspaceArtifactID,
 				Page = 0,
 				PageSize = 10,
 				SortColumnName = propertyName,

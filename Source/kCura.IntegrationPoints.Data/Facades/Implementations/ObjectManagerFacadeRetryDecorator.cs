@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.Data.Facades.Implementations
 			return _retryHandler.ExecuteWithRetriesAsync(
 					() => _objectManager.CreateAsync(workspaceArtifactID, createRequest));
 		}
-
+		
 		public Task<DeleteResult> DeleteAsync(int workspaceArtifactID, DeleteRequest request)
 		{
 			return _retryHandler.ExecuteWithRetriesAsync(
@@ -60,12 +60,20 @@ namespace kCura.IntegrationPoints.Data.Facades.Implementations
 				() => _objectManager.UpdateAsync(workspaceArtifactID, request));
 		}
 
+		public Task<MassUpdateResult> UpdateAsync(
+			int workspaceArtifactID,
+			MassUpdateByObjectIdentifiersRequest request,
+			MassUpdateOptions updateOptions)
+		{
+			return _retryHandler.ExecuteWithRetriesAsync(
+				() => _objectManager.UpdateAsync(workspaceArtifactID, request, updateOptions));
+		}
+
 		public Task<IKeplerStream> StreamLongTextAsync(int workspaceArtifactID, RelativityObjectRef exportObject, FieldRef longTextField)
 		{
 			return _retryHandler.ExecuteWithRetriesAsync(
 				() => _objectManager.StreamLongTextAsync(workspaceArtifactID, exportObject, longTextField));
 		}
-
 
 		protected virtual void Dispose(bool disposing)
 		{

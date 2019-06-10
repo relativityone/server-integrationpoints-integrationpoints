@@ -277,11 +277,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			_logger.LogVerbose("Attempting to populate export fields.");
 		}
 
-		private void LogMissingIdentifierFieldError(string message)
-		{
-			_logger.LogError(message);
-		}
-
 		private void LogAttachingEventHandlers()
 		{
 			_logger.LogVerbose("Attaching event handlers to IExporter.");

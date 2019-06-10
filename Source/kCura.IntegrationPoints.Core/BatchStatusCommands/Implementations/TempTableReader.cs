@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			: base(columns)
 		{
 			_documentRepository = documentRepository;
-			_scratchTableReader = scratchTable.GetDocumentIdsDataReaderFromTable();
+			_scratchTableReader = scratchTable.GetDocumentIDsDataReaderFromTable();
 			_columns = columns;
 			_identifierFieldId = identifierFieldId;
 			_containsData = true;

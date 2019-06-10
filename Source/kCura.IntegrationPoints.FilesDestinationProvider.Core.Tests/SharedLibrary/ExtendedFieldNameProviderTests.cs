@@ -5,7 +5,6 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.WinEDDS;
 using NUnit.Framework;
-using Relativity;
 using Relativity.DataExchange.Service;
 using FieldType = kCura.IntegrationPoints.Contracts.Models.FieldType;
 using ViewFieldInfo = kCura.WinEDDS.ViewFieldInfo;

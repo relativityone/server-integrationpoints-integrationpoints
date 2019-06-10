@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories.DTO;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
 using Relativity.Services.Objects.DataContracts;
@@ -12,91 +12,63 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class KeplerDocumentRepository : MarshalByRefObject, IDocumentRepository
 	{
-		private const int DOCUMENT_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
-		private readonly IRelativityObjectManagerFactory _relativityObjectManagerFactory;
-		private IRelativityObjectManager _relativityObjectManager;
-		private int _workspaceArtifactId;
+		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
+		private readonly IRelativityObjectManager _relativityObjectManager;
 
-		public KeplerDocumentRepository(IRelativityObjectManagerFactory relativityObjectManagerFactory, int workspaceArtifactId)
+		public KeplerDocumentRepository(IRelativityObjectManager relativityObjectManager)
 		{
-			_relativityObjectManagerFactory = relativityObjectManagerFactory;
-			WorkspaceArtifactId = workspaceArtifactId;
-		}
-
-		public int WorkspaceArtifactId
-		{
-			get { return _workspaceArtifactId; }
-			set
-			{
-				if (_workspaceArtifactId != value)
-				{
-					_workspaceArtifactId = value;
-					_relativityObjectManager = null;
-				}
-			}
-		}
-
-		public IRelativityObjectManager RelativityObjectManager
-		{
-			get
-			{
-				if (_relativityObjectManager == null)
-				{
-					_relativityObjectManager = _relativityObjectManagerFactory.CreateRelativityObjectManager(WorkspaceArtifactId);
-				}
-				return _relativityObjectManager;
-			}
+			_relativityObjectManager = relativityObjectManager;
 		}
 
 		public async Task<int[]> RetrieveDocumentsAsync(string docIdentifierField, ICollection<string> docIdentifierValues)
 		{
 			var qr = new QueryRequest
 			{
-				ObjectType = new ObjectTypeRef { ArtifactTypeID = DOCUMENT_ARTIFACT_TYPE_ID },
+				ObjectType = new ObjectTypeRef { ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID },
 				Fields = new[] { new FieldRef { Name = "Artifact ID" } },
 				Condition = $@"'{docIdentifierField}' in ['{string.Join("','", docIdentifierValues)}']"
 			};
 
-			try
-			{
-				List<RelativityObject> documents = await RelativityObjectManager.QueryAsync(qr).ConfigureAwait(false);
-				return documents.Select(x => x.ArtifactID).ToArray();
-			}
-			catch (Exception e)
-			{
-				throw new Exception("Unable to retrieve document", e);
-			}
+			List<RelativityObject> documents = await _relativityObjectManager.QueryAsync(qr).ConfigureAwait(false);
+			return documents.Select(x => x.ArtifactID).ToArray();
 		}
 
 		public async Task<ArtifactDTO[]> RetrieveDocumentsAsync(IEnumerable<int> documentIds, HashSet<int> fieldIds)
 		{
 			var qr = new QueryRequest
 			{
-				ObjectType = new ObjectTypeRef { ArtifactTypeID = DOCUMENT_ARTIFACT_TYPE_ID },
+				ObjectType = new ObjectTypeRef { ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID },
 				Condition = $"'ArtifactID' in [{string.Join(",", documentIds)}]",
 				Fields = fieldIds.Select(x => new FieldRef { ArtifactID = x }).ToArray()
 			};
 
-			try
+			List<RelativityObject> documents = await _relativityObjectManager.QueryAsync(qr).ConfigureAwait(false);
+			return documents.Select(ConvertDocumentToArtifactDTO).ToArray();
+		}
+
+		public async Task<int[]> RetrieveDocumentByIdentifierPrefixAsync(string documentIdentifierFieldName, string identifierPrefix)
+		{
+			var queryRequest = new QueryRequest
 			{
-				List<RelativityObject> documents = await RelativityObjectManager.QueryAsync(qr).ConfigureAwait(false);
-				var output = new ArtifactDTO[documents.Count];
-				for (int i = 0; i < output.Length; i++)
-				{
-					output[i] = ConvertDocumentToArtifactDTO(documents[i]);
-				}
-				return output;
-			}
-			catch (Exception e)
-			{
-				throw new Exception("Unable to retrieve documents", e);
-			}
+				Condition = $"'{EscapeSingleQuote(documentIdentifierFieldName)}' like '{EscapeSingleQuote(identifierPrefix)}%'",
+			};
+
+			List<Document> documents = await _relativityObjectManager
+				.QueryAsync<Document>(queryRequest, noFields: true)
+				.ConfigureAwait(false);
+			return documents.Select(x => x.ArtifactId).ToArray();
+		}
+
+		public Task<bool> MassUpdateDocumentsAsync(IEnumerable<int> documentsToUpdate, IEnumerable<FieldUpdateRequestDto> fieldsToUpdate)
+		{
+			IEnumerable<FieldRefValuePair> convertedFieldstoUpdate = fieldsToUpdate.Select(ConvertToFieldRefValuePair);
+			return _relativityObjectManager.MassUpdateAsync(documentsToUpdate, convertedFieldstoUpdate, FieldUpdateBehavior.Merge);
 		}
 
 		private ArtifactDTO ConvertDocumentToArtifactDTO(RelativityObject document)
 		{
 			IEnumerable<ArtifactFieldDTO> fields = document.FieldValues.Select(ConvertFieldToArtifactFieldsDTO);
-			var artifact = new ArtifactDTO(document.ArtifactID, DOCUMENT_ARTIFACT_TYPE_ID, document.Name, fields);
+			var artifact = new ArtifactDTO(document.ArtifactID, _DOCUMENT_ARTIFACT_TYPE_ID, document.Name, fields);
 			return artifact;
 		}
 
@@ -111,31 +83,16 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			};
 		}
 
-		public async Task<int[]> RetrieveDocumentByIdentifierPrefixAsync(string documentIdentifierFieldName, string identifierPrefix)
+		private FieldRefValuePair ConvertToFieldRefValuePair(FieldUpdateRequestDto dto)
 		{
-			var queryRequest = new QueryRequest
+			return new FieldRefValuePair
 			{
-				Condition = $"'{EscapeSingleQuote(documentIdentifierFieldName)}' like '{EscapeSingleQuote(identifierPrefix)}%'",
-			};
-
-			int[] documentArtifactIds;
-
-			try
-			{
-				List<Document> documents = await RelativityObjectManager.QueryAsync<Document>(queryRequest, noFields: true).ConfigureAwait(false);
-				documentArtifactIds = new int[documents.Count];
-
-				for (int index = 0; index < documents.Count; index++)
+				Field = new FieldRef
 				{
-					documentArtifactIds[index] = documents[index].ArtifactId;
-				}
-			}
-			catch (Exception e)
-			{
-				throw new Exception("Unable to retrieve documents", e);
-			}
-
-			return documentArtifactIds;
+					Guid = dto.FieldIdentifier
+				},
+				Value = dto.NewValue.Value
+			};
 		}
 
 		private string EscapeSingleQuote(string s)

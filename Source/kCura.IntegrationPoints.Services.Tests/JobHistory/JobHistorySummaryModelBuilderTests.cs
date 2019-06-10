@@ -81,15 +81,5 @@ namespace kCura.IntegrationPoints.Services.Tests.JobHistory
 
 			Assert.That(summaryModel.Data, Is.EquivalentTo(expectedData));
 		}
-
-		private List<JobHistoryModel> CreateTestData()
-		{
-			var data = new List<JobHistoryModel>();
-			for (int i = 0; i < 10; i++)
-			{
-				data.Add(new JobHistoryModel());
-			}
-			return data;
-		}
 	}
 }

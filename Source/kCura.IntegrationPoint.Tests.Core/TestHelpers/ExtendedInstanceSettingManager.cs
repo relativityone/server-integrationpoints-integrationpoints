@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Relativity.API;
 using Relativity.Services;
 using Relativity.Services.InstanceSetting;
 
@@ -11,17 +8,15 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 {
 	public class ExtendedInstanceSettingManager : IInstanceSettingManager
 	{
-		private ExecutionIdentity _identity;
 		private Lazy<IInstanceSettingManager> _managerWrapper;
 		private readonly ITestHelper _helper;
 
 		private readonly object _lock = new object();
 		private IInstanceSettingManager Manager => _managerWrapper.Value;
 
-		public ExtendedInstanceSettingManager(ITestHelper helper, ExecutionIdentity identity)
+		public ExtendedInstanceSettingManager(ITestHelper helper)
 		{
 			_helper = helper;
-			_identity = identity;
 			_managerWrapper = new Lazy<IInstanceSettingManager>(helper.CreateUserProxy<IInstanceSettingManager>);
 		}
 		public void Dispose()

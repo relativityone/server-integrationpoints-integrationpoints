@@ -9,7 +9,6 @@ using kCura.Relativity.Client;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Services.Exceptions;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 {
@@ -17,12 +16,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 	public class ArtifactTreeServiceTests : TestBase
 	{
 		private IRSAPIClient _client;
-		private IHelper _helper;
-
-		private IArtifactService _artifactService;
 
 		private ArtifactTreeService _artifactTreeService;
-
 		private QueryResult _queryResult;
 		private IArtifactTreeCreator _treeCreator;
 		private APIOptions _apiOptions;
@@ -31,7 +26,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 		public override void SetUp()
 		{
 			_client = Substitute.For<IRSAPIClient>();
-			_helper = Substitute.For<IHelper>();
+			IHelper helper = Substitute.For<IHelper>();
 
 			_queryResult = new QueryResult { Success = true };
 			_client.Query(Arg.Any<APIOptions>(), Arg.Any<Query>()).Returns(_queryResult);
@@ -39,10 +34,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 			_apiOptions = Substitute.For<APIOptions>();
 			_client.APIOptions.Returns(_apiOptions);
 
-			_artifactService = Substitute.For<ArtifactService>(_client, _helper);
+			IArtifactService artifactService = Substitute.For<ArtifactService>(_client, helper);
 			_treeCreator = Substitute.For<IArtifactTreeCreator>();
 
-			_artifactTreeService = new ArtifactTreeService(_artifactService, _treeCreator);
+			_artifactTreeService = new ArtifactTreeService(artifactService, _treeCreator);
 		}
 
 		[Test]

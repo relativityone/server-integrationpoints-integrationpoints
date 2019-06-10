@@ -11,7 +11,6 @@ using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.Data.Queries;
 using NUnit.Framework;
 using System.Data;
-using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using Relativity.API;
 using Relativity.Testing.Identification;
@@ -60,7 +59,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			_agentService.CreateQueueTableOnce();
 
 			using (DataTable dataTable = new CreateScheduledJob(this._queueContext)
-				.Execute(SourceWorkspaceArtifactId, 1, "SendEmaiManager", DateTime.Now.AddDays(30), 1, null, null, jobDetails, 0, 777, 1, 1))
+				.Execute(SourceWorkspaceArtifactID, 1, "SendEmaiManager", DateTime.Now.AddDays(30), 1, null, null, jobDetails, 0, 777, 1, 1))
 			{
 				var tempJob = new Job(dataTable.Rows[0]);
 				_jobId = tempJob.JobId;

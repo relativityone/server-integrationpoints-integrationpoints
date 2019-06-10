@@ -124,6 +124,7 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Extensions\EnumerableExtensionsTests.cs" />
+    <Compile Include="Facades\Implementations\TestsHelpers\ObjectManagerFacadeTestsHelpers.cs" />
     <Compile Include="Facades\Implementations\ObjectManagerFacadeDiscoverHeavyRequestDecoratorTests.cs" />
     <Compile Include="Facades\Implementations\ObjectManagerFacadeFactoryTests.cs" />
     <Compile Include="Facades\Implementations\ObjectManagerFacadeInstrumentationDecoratorTests.cs" />
@@ -133,6 +134,7 @@
     <Compile Include="Facades\Implementations\TestCases\CollectionFieldValueTestCases.cs" />
     <Compile Include="Helpers\MatchHelper.cs" />
     <Compile Include="Installers\RepositoryRegistrationTests.cs" />
+    <Compile Include="Repositories\DTO\MultiObjectReferenceDtoTests.cs" />
     <Compile Include="Repositories\Implementations\AuditRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\CaseRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\DisposableFileRepositoryTests.cs" />
@@ -141,6 +143,7 @@
     <Compile Include="Repositories\Implementations\FoundationRepositoryFactoryTests.cs" />
     <Compile Include="Repositories\Implementations\JobHistoryErrorRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\KeplerArtifactGuidRepositoryTests.cs" />
+    <Compile Include="Repositories\Implementations\KeplerDocumentRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\PermissionRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\RelativityObjectManagerTests.cs" />
     <Compile Include="Repositories\Implementations\IntegrationPointRepositoryTests.cs" />
@@ -149,6 +152,7 @@
     <Compile Include="Repositories\Implementations\KeplerKeywordSearchRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\QueryFieldLookupRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\SavedSearchQueryRepositoryTests.cs" />
+    <Compile Include="Repositories\Implementations\ScratchTableRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\SourceJobRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\SourceWorkspaceRepositoryTests.cs" />
     <Compile Include="RetryHandlerFactoryTests.cs" />

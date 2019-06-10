@@ -1,0 +1,40 @@
+#!groovy
+
+def jenkinsPipelineLocation = "DataTransfer/IntegrationPointsUITests"
+def jobFullPath = "${jenkinsPipelineLocation}/${env.BRANCH_NAME}"
+
+timestamps{
+	stage ('Trigger UI Test'){
+		def r1EnvironmentConfigName = selectEnvironmentConfigNameBasedOnBranch(env.BRANCH_NAME)
+		echo "Current branch: ${env.BRANCH_NAME} Regression config: ${r1EnvironmentConfigName}"
+		try {
+			withCredentials([usernamePassword(credentialsId: 'RipUiUserRegressionEnvs', passwordVariable: 'RipUiUserPassword', usernameVariable: 'RipUiUserUsername')]){
+				build job: jobFullPath, parameters: [
+				string(name: 'ripUiTestsConfig', value: r1EnvironmentConfigName),
+				string(name: 'ripTestsAdminUsername', value: 'RipUiUserUsername'),
+				string(name: 'ripTestsAdminPassword', value: 'RipUiUserPassword'),
+				string(name: 'testsFilter', value: 'cat != NotWorkingOnRegressionEnvironment')
+				], wait: false
+			}
+		}
+		catch (Exception ex) {
+			echo "Job ${jobFullPath} not triggered: ${ex}"
+			currentBuild.result = "FAILED"
+		}
+	}
+}
+
+def selectEnvironmentConfigNameBasedOnBranch(branchName){
+	switch(branchName) {
+		case 'release-10.2-foxglove':
+			return 'Reg-A.config'
+		break
+		case 'release-10.1-blazingstar2':
+			return 'Reg-Prod-Update.config'
+		break
+		default:
+			//Develop or newest version
+			return 'Reg-Zero.config'
+		break
+	}
+}

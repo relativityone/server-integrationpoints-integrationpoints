@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Relativity.API;
 using Relativity.Services.ArtifactGuid;
 
 namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
@@ -9,14 +8,12 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 	public class ExtendedIArtifactGuidManager : IArtifactGuidManager
 	{
 		private readonly ITestHelper _helper;
-		private readonly ExecutionIdentity _identity;
 		private Lazy<IArtifactGuidManager> _managerWrapper;
 		private IArtifactGuidManager Manager => _managerWrapper.Value;
 
-		public ExtendedIArtifactGuidManager(ITestHelper helper, ExecutionIdentity identity)
+		public ExtendedIArtifactGuidManager(ITestHelper helper)
 		{
 			_helper = helper;
-			_identity = identity;
 			_managerWrapper = new Lazy<IArtifactGuidManager>(helper.CreateUserProxy<IArtifactGuidManager>);
 		}
 

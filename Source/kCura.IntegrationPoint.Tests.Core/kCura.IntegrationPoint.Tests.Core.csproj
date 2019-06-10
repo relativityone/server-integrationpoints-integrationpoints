@@ -186,6 +186,7 @@
     <Compile Include="TestHelpers\ExtendedIWorkspaceManager.cs" />
     <Compile Include="TestHelpers\ExtendedSearchContainerManager.cs" />
     <Compile Include="TestHelpers\FileServiceBase.cs" />
+    <Compile Include="TestHelpers\FolderWithDocumentsIdRetriever.cs" />
     <Compile Include="TestHelpers\IImagesService.cs" />
     <Compile Include="TestHelpers\ImagesService.cs" />
     <Compile Include="TestHelpers\INativesService.cs" />

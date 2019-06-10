@@ -13,7 +13,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 	internal class ExportInitProcessServiceTests : TestBase
 	{
 		private ExportInitProcessService _subjectUnderTests;
-		private IHelper _helperMock;
 		private ExportUsingSavedSearchSettings _exportSettings;
 		private IDocumentTotalStatistics _documentTotalStatistics;
 		private IRdoStatistics _rdoStatistics;
@@ -42,7 +41,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 				ViewId = _VIEW_ID,
 				StartExportAtRecord = 1
 			};
-			_helperMock = Substitute.For<IHelper>();
+			IHelper helperMock = Substitute.For<IHelper>();
 			_documentTotalStatistics = Substitute.For<IDocumentTotalStatistics>();
 			_rdoStatistics = Substitute.For<IRdoStatistics>();
 			_loggerMock = Substitute.For<IAPILog>();
@@ -50,12 +49,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 			ILogFactory logFactoryMock = Substitute.For<ILogFactory>();
 			IAPILog apiLog = Substitute.For<IAPILog>();
 
-			_helperMock.GetLoggerFactory().Returns(logFactoryMock);
+			helperMock.GetLoggerFactory().Returns(logFactoryMock);
 			logFactoryMock.GetLogger().Returns(apiLog);
 
 			apiLog.ForContext<ExportInitProcessService>().Returns(_loggerMock);
 
-			_subjectUnderTests = new ExportInitProcessService(_helperMock, _documentTotalStatistics, _rdoStatistics);
+			_subjectUnderTests = new ExportInitProcessService(helperMock, _documentTotalStatistics, _rdoStatistics);
 		}
 
 		[Test]

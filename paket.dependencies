@@ -4,18 +4,18 @@ strategy: min
 source https://proget.kcura.corp/nuget/NuGet
 
 //Main Relativity packages
-nuget kCura 10.3.40.14-DEV
-nuget kCura.Agent 10.3.40.14-DEV
-nuget kCura.EventHandler 10.3.40.14-DEV
-nuget kCura.Relativity.Client 10.3.40.14-DEV
-nuget Relativity.Authentication 10.3.40.14-DEV
-nuget Relativity.Core 10.3.40.14-DEV
-nuget Relativity.CustomPages 10.3.40.14-DEV
-nuget Relativity.Data 10.3.40.14-DEV
+nuget kCura 10.3.65.13-DEV
+nuget kCura.Agent 10.3.65.13-DEV
+nuget kCura.EventHandler 10.3.65.13-DEV
+nuget kCura.Relativity.Client 10.3.65.13-DEV
+nuget Relativity.Authentication 10.3.65.13-DEV
+nuget Relativity.Core 10.3.65.13-DEV
+nuget Relativity.CustomPages 10.3.65.13-DEV
+nuget Relativity.Data 10.3.65.13-DEV
 nuget Relativity.ImportExport 10.3.40.14-DEV
 nuget Relativity.DataExchange.Client.SDK 1.1.0
-nuget RelativityCore 10.3.40.14-DEV
-nuget Relativity.Services.Interfaces 10.3.40.14-DEV
+nuget RelativityCore 10.3.65.13-DEV
+nuget Relativity.Services.Interfaces 10.3.65.13-DEV
 
 //Other Relativity packages
 nuget Relativity.DataTransfer.MessageService ~> 10.2.0
@@ -28,6 +28,7 @@ nuget Relativity.Telemetry.APM 2019.1.1
 nuget Relativity.Telemetry.Services.Interface 2019.1.1
 nuget kCura.FreeImage 3.17.0.1
 nuget Relativity.DataGrid 14.0.0
+nuget Relativity.Testing.Identification 1.6.0
 
 //Relativity transient packages
 nuget kCura.OutsideIn.FI.Win32 ~> 2019.2.2 content: none 		//Relativity.DataExchange.Client.SDK
@@ -60,7 +61,7 @@ nuget NUnit 3.11
 nuget Selenium.Support 3.141.0
 nuget DotNetSeleniumExtras.PageObjects 3.11.0
 nuget DotNetSeleniumExtras.WaitHelpers 3.11.0
-nuget Selenium.WebDriver.ChromeDriver 74.0.3729.6
+nuget Selenium.WebDriver.ChromeDriver 75.0.3770.8-beta
 nuget Selenium.WebDriver.GeckoDriver 0.24.0
 
 //Analyzers

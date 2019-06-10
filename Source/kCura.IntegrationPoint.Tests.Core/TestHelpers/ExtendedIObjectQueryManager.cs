@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Relativity.API;
 using Relativity.Services.DataContracts.DTOs;
 using Relativity.Services.ObjectQuery;
 
@@ -10,14 +9,12 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 	public class ExtendedIObjectQueryManager : IObjectQueryManager
 	{
 		private readonly ITestHelper _helper;
-		private readonly ExecutionIdentity _identity;
 		private Lazy<IObjectQueryManager> _managerWrapper;
 		private IObjectQueryManager Manager => _managerWrapper.Value;
 
-		public ExtendedIObjectQueryManager(ITestHelper helper, ExecutionIdentity identity)
+		public ExtendedIObjectQueryManager(ITestHelper helper)
 		{
 			_helper = helper;
-			_identity = identity;
 			_managerWrapper = new Lazy<IObjectQueryManager>(helper.CreateUserProxy<IObjectQueryManager>);
 		}
 

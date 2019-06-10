@@ -23,21 +23,23 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 	[TestFixture]
 	public abstract class RelativityProviderTemplate : SourceProviderTemplate
 	{
+		private string _destinationConfig;
+
 		private readonly string _targetWorkspaceName;
 		private readonly string _targetWorkspaceTemplate;
-		private string _destinationConfig;
-		protected SourceProvider RelativityProvider;
-		protected SourceProvider LdapProvider;
-		protected IRepositoryFactory RepositoryFactory;
 
-		public int SourceWorkspaceArtifactId { get; protected set; }
-		public int TargetWorkspaceArtifactId { get; protected set; }
-		public int SavedSearchArtifactId { get; set; }
+		protected SourceProvider RelativityProvider { get; private set; }
+		protected SourceProvider LdapProvider { get; private set; }
+		protected IRepositoryFactory RepositoryFactory { get; private set; }
+
+		public int SourceWorkspaceArtifactID { get; private set; }
+		public int TargetWorkspaceArtifactID { get; private set; }
+		public int SavedSearchArtifactID { get; set; }
 		public int TypeOfExport { get; set; }
-		public int FolderArtifactId { get; set; }
+		public int FolderArtifactID { get; set; }
 
 		public RelativityProviderTemplate(
-			string sourceWorkspaceName, 
+			string sourceWorkspaceName,
 			string targetWorkspaceName,
 			string sourceWorkspaceTemplate = WorkspaceTemplates.NEW_CASE_TEMPLATE,
 			string targetWorkspaceTemplate = WorkspaceTemplates.NEW_CASE_TEMPLATE)
@@ -48,10 +50,10 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		}
 
 		protected RelativityProviderTemplate(
-			int sourceWorkspaceArtifactId, 
-			string targetWorkspaceName, 
+			int sourceWorkspaceArtifactID,
+			string targetWorkspaceName,
 			string targetWorkspaceTemplate = WorkspaceTemplates.NEW_CASE_TEMPLATE)
-			: base(sourceWorkspaceArtifactId)
+			: base(sourceWorkspaceArtifactID)
 		{
 			_targetWorkspaceName = targetWorkspaceName;
 			_targetWorkspaceTemplate = targetWorkspaceTemplate;
@@ -60,14 +62,14 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		public override void SuiteSetup()
 		{
 			base.SuiteSetup();
-			
-			SourceWorkspaceArtifactId = WorkspaceArtifactId;
 
-			Task.Run(async () => await SetupAsync()).Wait();
+			SourceWorkspaceArtifactID = WorkspaceArtifactId;
+
+			Task.Run(async () => await SetupAsync().ConfigureAwait(false)).Wait();
 
 			RelativityProvider = SourceProviders.First(provider => provider.Name == "Relativity");
 			LdapProvider = SourceProviders.First(provider => provider.Name == "LDAP");
-			
+
 			RepositoryFactory = Container.Resolve<IRepositoryFactory>();
 
 			IToggleProvider toggleProviderMock = Substitute.For<IToggleProvider>();
@@ -76,7 +78,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		public override void SuiteTeardown()
 		{
-			Workspace.DeleteWorkspace(TargetWorkspaceArtifactId);
+			Workspace.DeleteWorkspace(TargetWorkspaceArtifactID);
 			base.SuiteTeardown();
 		}
 
@@ -86,19 +88,27 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		{
 			if (_destinationConfig == null)
 			{
-				_destinationConfig = CreateSourceConfigWithTargetWorkspace(TargetWorkspaceArtifactId);
+				_destinationConfig = CreateSourceConfigWithTargetWorkspace(TargetWorkspaceArtifactID);
 			}
 			return _destinationConfig;
 		}
 
 		protected string CreateSourceConfigWithTargetWorkspace(int targetWorkspaceId)
 		{
-			return CreateSourceConfigWithCustomParameters(targetWorkspaceId, SavedSearchArtifactId, SourceWorkspaceArtifactId,
+			return CreateSourceConfigWithCustomParameters(
+				targetWorkspaceId,
+				SavedSearchArtifactID,
+				SourceWorkspaceArtifactID,
 				SourceConfiguration.ExportType.SavedSearch);
 		}
-		protected string CreateSourceConfigWithCustomParameters(int targetWorkspaceId, int savedSearchArtifactId, int sourceWorkspaceArtifactId, SourceConfiguration.ExportType exportType)
+
+		protected string CreateSourceConfigWithCustomParameters(
+			int targetWorkspaceId,
+			int savedSearchArtifactId,
+			int sourceWorkspaceArtifactId,
+			SourceConfiguration.ExportType exportType)
 		{
-			var sourceConfiguration = new SourceConfiguration()
+			var sourceConfiguration = new SourceConfiguration
 			{
 				SavedSearchArtifactId = savedSearchArtifactId,
 				SourceWorkspaceArtifactId = sourceWorkspaceArtifactId,
@@ -110,7 +120,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		protected string CreateDestinationConfig(ImportOverwriteModeEnum overwriteMode, int? federatedInstanceArtifactId = null)
 		{
-			return CreateSerializedDestinationConfigWithTargetWorkspace(overwriteMode, SourceWorkspaceArtifactId, federatedInstanceArtifactId);
+			return CreateSerializedDestinationConfigWithTargetWorkspace(overwriteMode, SourceWorkspaceArtifactID, federatedInstanceArtifactId);
 		}
 
 		protected string CreateSerializedDestinationConfigWithTargetWorkspace(ImportOverwriteModeEnum overwriteMode, int targetWorkspaceId, int? federatedInstanceArtifactId = null)
@@ -147,8 +157,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		protected FieldMap[] GetDefaultFieldMap()
 		{
 			IRepositoryFactory repositoryFactory = Container.Resolve<IRepositoryFactory>();
-			IFieldQueryRepository sourceFieldQueryRepository = repositoryFactory.GetFieldQueryRepository(SourceWorkspaceArtifactId);
-			IFieldQueryRepository destinationFieldQueryRepository = repositoryFactory.GetFieldQueryRepository(TargetWorkspaceArtifactId);
+			IFieldQueryRepository sourceFieldQueryRepository = repositoryFactory.GetFieldQueryRepository(SourceWorkspaceArtifactID);
+			IFieldQueryRepository destinationFieldQueryRepository = repositoryFactory.GetFieldQueryRepository(TargetWorkspaceArtifactID);
 
 			ArtifactDTO sourceDto = sourceFieldQueryRepository.RetrieveTheIdentifierField((int)global::kCura.Relativity.Client.ArtifactType.Document);
 			ArtifactDTO targetDto = destinationFieldQueryRepository.RetrieveTheIdentifierField((int)global::kCura.Relativity.Client.ArtifactType.Document);
@@ -177,11 +187,11 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		private async Task SetupAsync()
 		{
-			TargetWorkspaceArtifactId = string.IsNullOrEmpty(_targetWorkspaceName)
-				? SourceWorkspaceArtifactId
-				: await Task.Run(() => Workspace.CreateWorkspace(_targetWorkspaceName, _targetWorkspaceTemplate));
+			TargetWorkspaceArtifactID = string.IsNullOrEmpty(_targetWorkspaceName)
+				? SourceWorkspaceArtifactID
+				: await Task.Run(() => Workspace.CreateWorkspace(_targetWorkspaceName, _targetWorkspaceTemplate)).ConfigureAwait(false);
 
-			SavedSearchArtifactId = await Task.Run(() => SavedSearch.CreateSavedSearch(SourceWorkspaceArtifactId, "All documents"));
+			SavedSearchArtifactID = await Task.Run(() => SavedSearch.CreateSavedSearch(SourceWorkspaceArtifactID, "All documents")).ConfigureAwait(false);
 			TypeOfExport = (int)SourceConfiguration.ExportType.SavedSearch;
 		}
 

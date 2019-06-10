@@ -37,7 +37,6 @@ namespace kCura.IntegrationPoints.Services.JobHistory
 
 		private IList<int> RetrieveRelativitySourceProviderIds()
 		{
-			var sourceProviderQuery = _sourceProviderArtifactIdByGuidQueryBuilder.Create(Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID);
 			QueryRequest request = new QueryRequest()
 			{
 				Condition = $"'{SourceProviderFields.Identifier}' == '{Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID}'"
@@ -47,8 +46,6 @@ namespace kCura.IntegrationPoints.Services.JobHistory
 
 		private IList<int> RetrieveRelativityDestinationProviderIds()
 		{
-			var destinationProviderQuery = _destinationProviderArtifactIdByGuidQueryBuilder.Create(Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID);
-
 			QueryRequest request = new QueryRequest()
 			{
 				Condition = $"'{DestinationProviderFields.Identifier}' == '{Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID}'"

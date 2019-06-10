@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Data;
-
 using NUnit.Framework;
 using NSubstitute;
-
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
@@ -17,14 +15,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 	public class DataReaderFactoryTests : TestBase
 	{
 		private DataReaderFactory _instance;
-		private IWinEddsLoadFileFactory _winEddsLoadFileFactory;
-		private IWinEddsFileReaderFactory _winEddsFileReaderFactory;
-		private IFieldParserFactory _fieldParserFactory;
-		private IFieldParser _fieldParser;
-		private IArtifactReader _loadFileReader;
-		private IImageReader _opticonFileReader;
-		private LoadFile _loadFile;
-		private ImageLoadFile _imageLoadFile;
 		private ImportSettingsBase _settings;
 		private ISerializer _serializer;
 
@@ -34,28 +24,24 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 			_serializer = new JSONSerializer();
 			_settings = new ImportSettingsBase();
 
-			_loadFile = new LoadFile();
-			_imageLoadFile = new ImageLoadFile();
+			IWinEddsLoadFileFactory winEddsLoadFileFactory = Substitute.For<IWinEddsLoadFileFactory>();
+			winEddsLoadFileFactory.GetImageLoadFile(Arg.Any<ImportSettingsBase>()).Returns(new ImageLoadFile());
+			winEddsLoadFileFactory.GetLoadFile(Arg.Any<ImportSettingsBase>()).Returns(new LoadFile());
 
-			_winEddsLoadFileFactory = Substitute.For<IWinEddsLoadFileFactory>();
-			_winEddsLoadFileFactory.GetImageLoadFile(Arg.Any<ImportSettingsBase>()).Returns(_imageLoadFile);
-			_winEddsLoadFileFactory.GetLoadFile(Arg.Any<ImportSettingsBase>()).Returns(_loadFile);
+			IFieldParser fieldParser = Substitute.For<IFieldParser>();
+			fieldParser.GetFields().Returns(new List<string>());
 
-			_fieldParser = Substitute.For<IFieldParser>();
-			_fieldParser.GetFields().Returns(new List<string>());
+			IFieldParserFactory fieldParserFactory = Substitute.For<IFieldParserFactory>();
+			fieldParserFactory.GetFieldParser(Arg.Any<ImportProviderSettings>()).Returns(fieldParser);
 
-			_fieldParserFactory = Substitute.For<IFieldParserFactory>();
-			_fieldParserFactory.GetFieldParser(Arg.Any<ImportProviderSettings>()).Returns(_fieldParser);
+			IArtifactReader loadFileReader = Substitute.For<IArtifactReader>();
+			loadFileReader.GetColumnNames(Arg.Any<object>()).Returns(new string[0]);
 
-			_opticonFileReader = Substitute.For<IImageReader>();
-			_loadFileReader = Substitute.For<IArtifactReader>();
-			_loadFileReader.GetColumnNames(Arg.Any<object>()).Returns(new string[0]);
+			IWinEddsFileReaderFactory winEddsFileReaderFactory = Substitute.For<IWinEddsFileReaderFactory>();
+			winEddsFileReaderFactory.GetLoadFileReader(Arg.Any<LoadFile>()).Returns(loadFileReader);
+			winEddsFileReaderFactory.GetOpticonFileReader(Arg.Any<ImageLoadFile>()).Returns(Substitute.For<IImageReader>());
 
-			_winEddsFileReaderFactory = Substitute.For<IWinEddsFileReaderFactory>();
-			_winEddsFileReaderFactory.GetLoadFileReader(Arg.Any<LoadFile>()).Returns(_loadFileReader);
-			_winEddsFileReaderFactory.GetOpticonFileReader(Arg.Any<ImageLoadFile>()).Returns(_opticonFileReader);
-
-			_instance = new DataReaderFactory(_fieldParserFactory, _winEddsLoadFileFactory, _winEddsFileReaderFactory, _serializer);
+			_instance = new DataReaderFactory(fieldParserFactory, winEddsLoadFileFactory, winEddsFileReaderFactory, _serializer);
 		}
 
 		[Test]

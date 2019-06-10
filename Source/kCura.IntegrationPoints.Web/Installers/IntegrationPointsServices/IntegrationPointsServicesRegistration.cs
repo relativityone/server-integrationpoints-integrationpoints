@@ -39,8 +39,8 @@ namespace kCura.IntegrationPoints.Web.Installers.IntegrationPointsServices
 					.LifestylePerWebRequest(),
 				Component
 					.For<IWorkspaceDBContext>()
-					.ImplementedBy<Data.WorkspaceContext>()
-					.UsingFactoryMethod(k => new Data.WorkspaceContext(k.Resolve<WebClientFactory>().CreateDbContext()))
+					.ImplementedBy<Data.WorkspaceDBContext>()
+					.UsingFactoryMethod(k => new Data.WorkspaceDBContext(k.Resolve<WebClientFactory>().CreateDbContext()))
 					.LifestyleTransient(),
 				Component
 					.For<IAuthTokenGenerator>()

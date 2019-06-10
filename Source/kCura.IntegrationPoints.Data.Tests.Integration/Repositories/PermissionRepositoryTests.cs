@@ -51,9 +51,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			await CreateTestUserAndGroupAsync().ConfigureAwait(false);
 
 			_objectTypeRepository = Container.Resolve<IObjectTypeRepository>();
-			_adminPermissionRepository = new PermissionRepository(Helper, SourceWorkspaceArtifactId);
+			_adminPermissionRepository = new PermissionRepository(Helper, SourceWorkspaceArtifactID);
 			ITestHelper helperForUser = Helper.CreateHelperForUser(_user.EmailAddress, _user.Password);
-			_userPermissionRepository = new PermissionRepository(helperForUser, SourceWorkspaceArtifactId);
+			_userPermissionRepository = new PermissionRepository(helperForUser, SourceWorkspaceArtifactID);
 		}
 
 		public override void TestTeardown()
@@ -73,7 +73,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			permission.Editable = isEditable;
 			permission.Selected = isSelected;
 
-			await Permission.SavePermissionAsync(SourceWorkspaceArtifactId, _groupPermission).ConfigureAwait(false);
+			await Permission.SavePermissionAsync(SourceWorkspaceArtifactID, _groupPermission).ConfigureAwait(false);
 
 			// act
 			bool result = _userPermissionRepository.UserCanExport();
@@ -93,7 +93,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			permission.Editable = isEditable;
 			permission.Selected = isSelected;
 
-			await Permission.SavePermissionAsync(SourceWorkspaceArtifactId, _groupPermission).ConfigureAwait(false);
+			await Permission.SavePermissionAsync(SourceWorkspaceArtifactID, _groupPermission).ConfigureAwait(false);
 
 			// act
 			bool result = _userPermissionRepository.UserCanImport();
@@ -121,7 +121,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			permission.EditSelected = editSelected;
 			permission.ViewSelected = viewSelected;
 
-			await Permission.SavePermissionAsync(SourceWorkspaceArtifactId, _groupPermission).ConfigureAwait(false);
+			await Permission.SavePermissionAsync(SourceWorkspaceArtifactID, _groupPermission).ConfigureAwait(false);
 
 			// act
 			bool result = _userPermissionRepository.UserCanEditDocuments();
@@ -152,7 +152,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 					new GroupRef(_groupId)
 				}
 			};
-			await Permission.RemoveAddWorkspaceGroupAsync(SourceWorkspaceArtifactId, selector).ConfigureAwait(false);
+			await Permission.RemoveAddWorkspaceGroupAsync(SourceWorkspaceArtifactID, selector).ConfigureAwait(false);
 
 			// act
 			bool result = _userPermissionRepository.UserHasPermissionToAccessWorkspace();
@@ -170,7 +170,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			permission.AddSelected = addSelected;
 			permission.ViewSelected = true;
 
-			await Permission.SavePermissionAsync(SourceWorkspaceArtifactId, _groupPermission).ConfigureAwait(false);
+			await Permission.SavePermissionAsync(SourceWorkspaceArtifactID, _groupPermission).ConfigureAwait(false);
 
 			// act
 			bool result = _userPermissionRepository.UserHasArtifactTypePermission(
@@ -190,7 +190,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			permission.EditSelected = editSelected;
 			permission.ViewSelected = true;
 
-			await Permission.SavePermissionAsync(SourceWorkspaceArtifactId, _groupPermission).ConfigureAwait(false);
+			await Permission.SavePermissionAsync(SourceWorkspaceArtifactID, _groupPermission).ConfigureAwait(false);
 
 			// act
 			bool result = _userPermissionRepository.UserHasArtifactTypePermission(
@@ -209,7 +209,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			ObjectPermission permission = _groupPermission.ObjectPermissions.FindPermission(ObjectTypes.JobHistory);
 			permission.ViewSelected = viewSelected;
 
-			await Permission.SavePermissionAsync(SourceWorkspaceArtifactId, _groupPermission).ConfigureAwait(false);
+			await Permission.SavePermissionAsync(SourceWorkspaceArtifactID, _groupPermission).ConfigureAwait(false);
 
 			// act
 			bool result = _userPermissionRepository.UserHasArtifactTypePermission(
@@ -228,7 +228,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			ObjectPermission permission = _groupPermission.ObjectPermissions.FindPermission(ObjectTypes.JobHistory);
 			permission.ViewSelected = viewSelected;
 
-			await Permission.SavePermissionAsync(SourceWorkspaceArtifactId, _groupPermission).ConfigureAwait(false);
+			await Permission.SavePermissionAsync(SourceWorkspaceArtifactID, _groupPermission).ConfigureAwait(false);
 			int jobHistoryErrorTypeId = _objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.JobHistory));
 
 			// act
@@ -250,7 +250,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			permission.ViewSelected = viewSelected;
 			permission.EditSelected = editSelected;
 
-			await Permission.SavePermissionAsync(SourceWorkspaceArtifactId, _groupPermission).ConfigureAwait(false);
+			await Permission.SavePermissionAsync(SourceWorkspaceArtifactID, _groupPermission).ConfigureAwait(false);
 			int jobHistoryErrorTypeId = _objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.JobHistory));
 
 			// act
@@ -274,7 +274,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			permission.EditSelected = hasEditPermission;
 			permission.ViewSelected = true;
 
-			await Permission.SavePermissionAsync(SourceWorkspaceArtifactId, _groupPermission).ConfigureAwait(false);
+			await Permission.SavePermissionAsync(SourceWorkspaceArtifactID, _groupPermission).ConfigureAwait(false);
 			int jobHistoryErrorTypeId = _objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.JobHistory));
 
 			// act
@@ -295,7 +295,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 
 			if (!useAdmin)
 			{
-				Group.RemoveGroupFromWorkspace(SourceWorkspaceArtifactId, _groupId);
+				Group.RemoveGroupFromWorkspace(SourceWorkspaceArtifactID, _groupId);
 			}
 			IPermissionRepository sut = useAdmin ? _adminPermissionRepository : _userPermissionRepository;
 
@@ -341,9 +341,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		private async Task CreateTestGroupAsync()
 		{
 			_groupId = Group.CreateGroup("krowten");
-			Group.AddGroupToWorkspace(SourceWorkspaceArtifactId, _groupId);
+			Group.AddGroupToWorkspace(SourceWorkspaceArtifactID, _groupId);
 			_groupPermission = await Permission
-				.GetGroupPermissionsAsync(SourceWorkspaceArtifactId, _groupId)
+				.GetGroupPermissionsAsync(SourceWorkspaceArtifactID, _groupId)
 				.ConfigureAwait(false);
 		}
 

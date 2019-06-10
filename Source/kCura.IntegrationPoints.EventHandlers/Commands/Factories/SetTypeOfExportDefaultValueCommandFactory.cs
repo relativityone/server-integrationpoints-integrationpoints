@@ -55,7 +55,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 			IEddsServiceContext eddsServiceContext = new EddsServiceContext(serviceContextHelper);
 			IRepositoryFactory repositoryFactory = new RepositoryFactory(helper, helper.GetServicesManager());
 			IDBContext dbContext = helper.GetDBContext(helper.GetActiveCaseID());
-			IWorkspaceDBContext workspaceDbContext = new WorkspaceContext(dbContext);
+			IWorkspaceDBContext workspaceDbContext = new WorkspaceDBContext(dbContext);
 			IJobResourceTracker jobResourceTracker = new JobResourceTracker(repositoryFactory, workspaceDbContext);
 			IJobTracker jobTracker = new JobTracker(jobResourceTracker);
 			IFederatedInstanceManager federatedInstanceManager = new FederatedInstanceManager(repositoryFactory);

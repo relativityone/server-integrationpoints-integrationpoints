@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
+using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Core.Models;
@@ -45,50 +47,98 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 		private const string _RELATIVITY_SOURCE_CASE = "Relativity Source Case";
 		private const string _RELATIVITY_SOURCE_JOB = "Relativity Source Job";
 
-		public TargetDocumentsTaggingManagerTests() : base("TargetDocumentsTaggingManagerSource", null)
+		public TargetDocumentsTaggingManagerTests() : base(
+			sourceWorkspaceName: "TargetDocumentsTaggingManagerSource",
+			targetWorkspaceName: null)
 		{
 		}
 
 		public override void SuiteSetup()
 		{
 			base.SuiteSetup();
-			
+
 			_jobHistoryService = Container.Resolve<IJobHistoryService>();
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			_serializer = Container.Resolve<ISerializer>();
 			_helper = Container.Resolve<IHelper>();
-			var serviceManagerProvider = Container.Resolve<IServiceManagerProvider>();
+			IServiceManagerProvider serviceManagerProvider = Container.Resolve<IServiceManagerProvider>();
 			var managerFactory = new ManagerFactory(_helper, serviceManagerProvider);
 			_tagsCreator = managerFactory.CreateTagsCreator(new ContextContainer(_helper));
-			_tagSavedSearchManager = new TagSavedSearchManager(new TagSavedSearch(_repositoryFactory, new MultiObjectSavedSearchCondition(), _helper), new TagSavedSearchFolder(_repositoryFactory, _helper));
+			_tagSavedSearchManager = new TagSavedSearchManager(
+				new TagSavedSearch(_repositoryFactory, new MultiObjectSavedSearchCondition(), _helper),
+				new TagSavedSearchFolder(_repositoryFactory, _helper));
 			_synchronizerFactory = Container.Resolve<ISynchronizerFactory>();
-			_documentRepository = _repositoryFactory.GetDocumentRepository(SourceWorkspaceArtifactId);
-			_fieldQueryRepository = _repositoryFactory.GetFieldQueryRepository(SourceWorkspaceArtifactId);
+			_documentRepository = _repositoryFactory.GetDocumentRepository(SourceWorkspaceArtifactID);
+			_fieldQueryRepository = _repositoryFactory.GetFieldQueryRepository(SourceWorkspaceArtifactID);
 			_fieldMaps = GetDefaultFieldMap();
 		}
 
+		[Test]
 		[SmokeTest]
 		[IdentifiedTestCase("50d501dd-cc30-4882-8149-75bb0e8752f8", 499, "UnderBatch")]
 		[IdentifiedTestCase("360e1c73-0bf2-4066-ba2d-01a9f81f2888", 500, "EqualBatch")]
 		[IdentifiedTestCase("8b2f6597-11e9-4a23-b0a2-a8fea31b3d63", 502, "OverBatch")]
-		public void TargetWorkspaceDocumentTagging_GoldFlow(int numberOfDocuments, string documentIdentifier)
+		public async Task TargetWorkspaceDocumentTagging_GoldFlow(int numberOfDocuments, string documentIdentifier)
 		{
 			//Act
-			string expectedRelativitySourceCase = $"TargetDocumentsTaggingManagerSource - {SourceWorkspaceArtifactId}";
+			string expectedRelativitySourceCase = $"TargetDocumentsTaggingManagerSource - {SourceWorkspaceArtifactID}";
 			DataTable dataTable = Import.GetImportTable(documentIdentifier, numberOfDocuments);
-			Import.ImportNewDocuments(SourceWorkspaceArtifactId, dataTable);
-			int[] documentArtifactIds = _documentRepository.RetrieveDocumentByIdentifierPrefixAsync(Fields.GetDocumentIdentifierFieldName(_fieldQueryRepository), documentIdentifier).ConfigureAwait(false).GetAwaiter().GetResult();
+			Import.ImportNewDocuments(SourceWorkspaceArtifactID, dataTable);
+			int[] documentArtifactIDs = await _documentRepository
+				.RetrieveDocumentByIdentifierPrefixAsync(Fields.GetDocumentIdentifierFieldName(_fieldQueryRepository), documentIdentifier)
+				.ConfigureAwait(false);
 
-			IntegrationPointModel integrationModel = new IntegrationPointModel
+			string serializedSourceConfig = CreateDefaultSourceConfig();
+			Data.IntegrationPoint integrationPoint = await CreateAndGetIntegrationPoint(serializedSourceConfig).ConfigureAwait(false);
+			JobHistory jobHistory = _jobHistoryService.GetOrCreateScheduledRunHistoryRdo(integrationPoint, Guid.NewGuid(), DateTime.Now);
+
+			SourceConfiguration sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(serializedSourceConfig);
+			string destinationConfig = AppendWebAPIPathToImportSettings(integrationPoint.DestinationConfiguration);
+			var targetDocumentsTaggingManagerFactory = new TargetDocumentsTaggingManagerFactory(
+				_repositoryFactory,
+				_tagsCreator,
+				_tagSavedSearchManager,
+				_documentRepository,
+				_synchronizerFactory,
+				_helper,
+				_serializer,
+				_fieldMaps,
+				sourceConfiguration,
+				destinationConfig,
+				jobHistory.ArtifactId,
+				jobHistory.BatchInstance);
+			IConsumeScratchTableBatchStatus targetDocumentsTaggingManager = targetDocumentsTaggingManagerFactory.BuildDocumentsTagger();
+			targetDocumentsTaggingManager.ScratchTableRepository.AddArtifactIdsIntoTempTable(documentArtifactIDs);
+
+			//Act
+			Job job = new JobBuilder().WithJobId(1)
+				.WithWorkspaceId(SourceWorkspaceArtifactID)
+				.WithRelatedObjectArtifactId(integrationPoint.ArtifactId)
+				.WithSubmittedBy(_ADMIN_USER_ID)
+				.Build();
+			targetDocumentsTaggingManager.OnJobStart(job);
+			targetDocumentsTaggingManager.OnJobComplete(job);
+
+			//Assert
+			await VerifyRelativitySourceJobAndSourceCase(
+					documentArtifactIDs,
+					jobHistory.Name,
+					expectedRelativitySourceCase)
+				.ConfigureAwait(false);
+		}
+
+		private Task<Data.IntegrationPoint> CreateAndGetIntegrationPoint(string serializedSourceConfig)
+		{
+			var integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = RelativityDestinationProviderArtifactId,
 				SourceProvider = RelativityProvider.ArtifactId,
-				SourceConfiguration = CreateDefaultSourceConfig(),
+				SourceConfiguration = serializedSourceConfig,
 				LogErrors = true,
 				Name = $"IntegrationPointServiceTest{DateTime.Now:yy-MM-dd HH-mm-ss}",
 				SelectedOverwrite = "Overlay Only",
-				Scheduler = new Scheduler()
+				Scheduler = new Scheduler
 				{
 					EnableScheduler = false
 				},
@@ -96,53 +146,47 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
 			};
 			IntegrationPointModel integrationModelCreated = CreateOrUpdateIntegrationPoint(integrationModel);
-			Data.IntegrationPoint integrationPoint = IntegrationPointRepository.ReadAsync(integrationModelCreated.ArtifactID).GetAwaiter().GetResult();
-			JobHistory jobHistory = _jobHistoryService.GetOrCreateScheduledRunHistoryRdo(integrationPoint, Guid.NewGuid(), DateTime.Now);
-
-			string destinationConfig = AppendWebAPIPathToImportSettings(integrationModelCreated.Destination);
-			TargetDocumentsTaggingManagerFactory targetDocumentsTaggingManagerFactory = new TargetDocumentsTaggingManagerFactory(_repositoryFactory, _tagsCreator, _tagSavedSearchManager, _documentRepository, _synchronizerFactory, _helper, _serializer, _fieldMaps, integrationModelCreated.SourceConfiguration, destinationConfig, jobHistory.ArtifactId, jobHistory.BatchInstance);
-			IConsumeScratchTableBatchStatus targetDocumentsTaggingManager = targetDocumentsTaggingManagerFactory.BuildDocumentsTagger();
-			targetDocumentsTaggingManager.ScratchTableRepository.AddArtifactIdsIntoTempTable(documentArtifactIds);
-
-			//Act
-			Job job = new JobBuilder().WithJobId(1)
-				.WithWorkspaceId(SourceWorkspaceArtifactId)
-				.WithRelatedObjectArtifactId(integrationModelCreated.ArtifactID)
-				.WithSubmittedBy(_ADMIN_USER_ID)
-				.Build();
-			targetDocumentsTaggingManager.OnJobStart(job);
-			targetDocumentsTaggingManager.OnJobComplete(job);
-
-			//Assert
-			VerifyRelativitySourceJobAndSourceCase(documentArtifactIds, jobHistory.Name, expectedRelativitySourceCase);
+			return IntegrationPointRepository.ReadAsync(integrationModelCreated.ArtifactID);
 		}
 
-		private void VerifyRelativitySourceJobAndSourceCase(int[] documentArtifactIds, string expectedSourceJob, string expectedSourceCase)
+		private async Task VerifyRelativitySourceJobAndSourceCase(int[] documentArtifactIds, string expectedSourceJob, string expectedSourceCase)
 		{
-			_documentRepository = _repositoryFactory.GetDocumentRepository(SourceWorkspaceArtifactId);
+			_documentRepository = _repositoryFactory.GetDocumentRepository(SourceWorkspaceArtifactID);
 
-			ArtifactDTO relativitySourceCaseField = _fieldQueryRepository.RetrieveField((int)Relativity.Client.ArtifactType.Document, _RELATIVITY_SOURCE_CASE, FieldTypes.MultipleObject, new HashSet<string>() { "ArtifactID" });
-			int? relativitySourceCaseFieldArtifactId = relativitySourceCaseField?.ArtifactId;
-			ArtifactDTO relativitySourceJobField = _fieldQueryRepository.RetrieveField((int)Relativity.Client.ArtifactType.Document, _RELATIVITY_SOURCE_JOB, FieldTypes.MultipleObject, new HashSet<string>() { "ArtifactID" });
-			int? relativitySourceJobArtifactId = relativitySourceJobField?.ArtifactId;
+			var setOfArtifactIDField = new HashSet<string> { "ArtifactID" };
 
-			ArtifactDTO[] documentArtifacts =
-				_documentRepository.RetrieveDocumentsAsync(documentArtifactIds,
-					new HashSet<int>() { relativitySourceJobArtifactId.GetValueOrDefault(), relativitySourceCaseFieldArtifactId.GetValueOrDefault() })
-					.ConfigureAwait(false)
-					.GetAwaiter()
-					.GetResult();
+			ArtifactDTO relativitySourceCaseField = _fieldQueryRepository.RetrieveField(
+				(int)Relativity.Client.ArtifactType.Document,
+				_RELATIVITY_SOURCE_CASE,
+				FieldTypes.MultipleObject,
+				setOfArtifactIDField);
+			int? relativitySourceCaseFieldArtifactID = relativitySourceCaseField?.ArtifactId;
+			ArtifactDTO relativitySourceJobField = _fieldQueryRepository.RetrieveField(
+				(int)Relativity.Client.ArtifactType.Document,
+				_RELATIVITY_SOURCE_JOB,
+				FieldTypes.MultipleObject,
+				setOfArtifactIDField);
+			int? relativitySourceJobArtifactID = relativitySourceJobField?.ArtifactId;
+
+			ArtifactDTO[] documentArtifacts = await _documentRepository
+				.RetrieveDocumentsAsync(documentArtifactIds,
+					new HashSet<int>
+					{
+						relativitySourceJobArtifactID.GetValueOrDefault(),
+						relativitySourceCaseFieldArtifactID.GetValueOrDefault()
+					})
+				.ConfigureAwait(false);
 
 			foreach (ArtifactDTO artifact in documentArtifacts)
 			{
 				if (artifact.Fields[0].Value == null || !GetFirstMultiobjectFieldValueName(artifact.Fields[0]).Contains(expectedSourceJob))
 				{
-					throw new Exception($"Failed to correctly tag Document field 'Relativity Source Job'. Expected value: {expectedSourceJob}. Actual: {artifact.Fields[1].Value}.");
+					Assert.Fail($"Failed to correctly tag Document field 'Relativity Source Job'. Expected value: {expectedSourceJob}. Actual: {artifact.Fields[1].Value}.");
 				}
 
 				if (artifact.Fields[1].Value == null || !GetFirstMultiobjectFieldValueName(artifact.Fields[1]).Contains(expectedSourceCase))
 				{
-					throw new Exception($"Failed to correctly tag Document field 'Relativity Source Case'. Expected value: {expectedSourceCase}. Actual: {artifact.Fields[0].Value}.");
+					Assert.Fail($"Failed to correctly tag Document field 'Relativity Source Case'. Expected value: {expectedSourceCase}. Actual: {artifact.Fields[0].Value}.");
 				}
 			}
 		}
@@ -154,10 +198,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 		}
 
 		#region "Registration helpers"
-		
+
 		private string AppendWebAPIPathToImportSettings(string importSettings)
 		{
-			var options = _serializer.Deserialize<ImportSettings>(importSettings);
+			ImportSettings options = _serializer.Deserialize<ImportSettings>(importSettings);
 			options.WebServiceURL = SharedVariables.RelativityWebApiUrl;
 			return _serializer.Serialize(options);
 		}

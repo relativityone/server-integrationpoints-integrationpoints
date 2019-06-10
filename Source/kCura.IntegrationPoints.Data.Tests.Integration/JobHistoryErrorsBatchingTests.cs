@@ -15,7 +15,6 @@ using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Extensions;
-using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -51,6 +50,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		{
 			base.SuiteSetup();
 			
+			Agent.EnableAllIntegrationPointsAgents();
+
 			ResolveServices();
 		}
 
@@ -106,8 +107,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			//Act
 			try
 			{
-				_integrationPointService.RetryIntegrationPoint(SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID, 9);
-				Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID);
+				_integrationPointService.RetryIntegrationPoint(SourceWorkspaceArtifactID, integrationPointCreated.ArtifactID, 9);
+				Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactID, integrationPointCreated.ArtifactID);
 			}
 			catch (Exception ex)
 			{
@@ -131,8 +132,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			var errorReceived = false;
 			var docPrefix = "ErrorScenarioDoc";
 
-			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable(1, 1, docPrefix, docPrefix));
-			SavedSearch.ModifySavedSearchByAddingPrefix(RepositoryFactory, SourceWorkspaceArtifactId, SavedSearchArtifactId, docPrefix, false);
+			Import.ImportNewDocuments(SourceWorkspaceArtifactID, GetImportTable(1, 1, docPrefix, docPrefix));
+			SavedSearch.ModifySavedSearchByAddingPrefix(RepositoryFactory, SourceWorkspaceArtifactID, SavedSearchArtifactID, docPrefix, false);
 
 			var integrationModel = new IntegrationPointModel
 			{
@@ -152,13 +153,13 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			};
 
 			IntegrationPointModel integrationPointCreated = CreateOrUpdateIntegrationPoint(integrationModel);
-			_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID, _ADMIN_USER_ID);
+			_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactID, integrationPointCreated.ArtifactID, _ADMIN_USER_ID);
 
 			//Act
 			try
 			{
-				_integrationPointService.RetryIntegrationPoint(SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID, 9);
-				Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID);
+				_integrationPointService.RetryIntegrationPoint(SourceWorkspaceArtifactID, integrationPointCreated.ArtifactID, 9);
+				Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactID, integrationPointCreated.ArtifactID);
 			}
 			catch (Exception ex)
 			{
@@ -182,8 +183,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			var docPrefix = "JobLevelImport";
 			var stopJobManager = NSubstitute.Substitute.For<IJobStopManager>();
 			var helper = NSubstitute.Substitute.For<IHelper>();
-			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable(1, 1, docPrefix, docPrefix));
-			SavedSearch.ModifySavedSearchByAddingPrefix(RepositoryFactory, SourceWorkspaceArtifactId, SavedSearchArtifactId, docPrefix, false);
+			Import.ImportNewDocuments(SourceWorkspaceArtifactID, GetImportTable(1, 1, docPrefix, docPrefix));
+			SavedSearch.ModifySavedSearchByAddingPrefix(RepositoryFactory, SourceWorkspaceArtifactID, SavedSearchArtifactID, docPrefix, false);
 
 			var integrationModel = new IntegrationPointModel
 			{
@@ -210,12 +211,12 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 
 			//Create Job and temp table suffix
 			Job job = new JobBuilder().WithJobId(1)
-				.WithWorkspaceId(SourceWorkspaceArtifactId)
+				.WithWorkspaceId(SourceWorkspaceArtifactID)
 				.WithRelatedObjectArtifactId(integrationPointCreated.ArtifactID)
 				.WithSubmittedBy(_ADMIN_USER_ID)
 				.Build();
 			string tempTableSuffix = $"{ job.JobId }_{ batchInstance }";
-			_jobHistoryErrorManager = new JobHistoryErrorManager(RepositoryFactory, helper, SourceWorkspaceArtifactId, tempTableSuffix);
+			_jobHistoryErrorManager = new JobHistoryErrorManager(RepositoryFactory, helper, SourceWorkspaceArtifactID, tempTableSuffix);
 
 			//Create job level error
 			List<int> expectedJobHistoryErrorArtifactIds = CreateJobLevelJobHistoryError(jobHistory.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew);
@@ -226,7 +227,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			string startTempTableName = $"{ _JOB_START_TEMP_TABLE_PREFIX }_{ tempTableSuffix }";
 			string completeTempTableName = $"{ _JOB_COMPLETE_TEMP_TABLE_PREFIX }_{ tempTableSuffix }";
 			DataTable startTempTable = GetTempTable(startTempTableName);
-			_batchStatus = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, helper, RepositoryFactory, new OnBehalfOfUserClaimsPrincipalFactory(), stopJobManager, SourceWorkspaceArtifactId, _ADMIN_USER_ID, new JobHistoryErrorDTO.UpdateStatusType());
+			_batchStatus = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, helper, RepositoryFactory, new OnBehalfOfUserClaimsPrincipalFactory(), stopJobManager, SourceWorkspaceArtifactID, _ADMIN_USER_ID, new JobHistoryErrorDTO.UpdateStatusType());
 
 			_batchStatus.OnJobStart(job);
 			DataTable completedTempTable = GetTempTable(completeTempTableName);
@@ -250,8 +251,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			var stopJobManager = NSubstitute.Substitute.For<IJobStopManager>();
 			var helper = NSubstitute.Substitute.For<IHelper>();
 
-			Import.ImportNewDocuments(SourceWorkspaceArtifactId, importTable);
-			SavedSearch.ModifySavedSearchByAddingPrefix(RepositoryFactory, SourceWorkspaceArtifactId, SavedSearchArtifactId, docPrefix, false);
+			Import.ImportNewDocuments(SourceWorkspaceArtifactID, importTable);
+			SavedSearch.ModifySavedSearchByAddingPrefix(RepositoryFactory, SourceWorkspaceArtifactID, SavedSearchArtifactID, docPrefix, false);
 
 			var integrationModel = new IntegrationPointModel
 			{
@@ -278,13 +279,13 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 
 			//Create Job and temp table suffix
 			Job job = new JobBuilder().WithJobId(1)
-				.WithWorkspaceId(SourceWorkspaceArtifactId)
+				.WithWorkspaceId(SourceWorkspaceArtifactID)
 				.WithRelatedObjectArtifactId(integrationPointCreated.ArtifactID)
 				.WithSubmittedBy(_ADMIN_USER_ID)
 				.Build();
 			string tempTableSuffix = $"{ job.JobId }_{ batchInstance }";
 
-			_jobHistoryErrorManager = new JobHistoryErrorManager(RepositoryFactory, helper, SourceWorkspaceArtifactId, tempTableSuffix);
+			_jobHistoryErrorManager = new JobHistoryErrorManager(RepositoryFactory, helper, SourceWorkspaceArtifactID, tempTableSuffix);
 
 			//Create item level error
 			ICollection<int> expectedJobHistoryErrorExpired = CreateItemLevelJobHistoryErrors(jobHistory.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew, importTable);
@@ -305,7 +306,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 				ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobAndItem
 			};
 
-			_batchStatus = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, helper, RepositoryFactory, new OnBehalfOfUserClaimsPrincipalFactory(), stopJobManager, SourceWorkspaceArtifactId, _ADMIN_USER_ID, updateStatusType);
+			_batchStatus = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, helper, RepositoryFactory, new OnBehalfOfUserClaimsPrincipalFactory(), stopJobManager, SourceWorkspaceArtifactID, _ADMIN_USER_ID, updateStatusType);
 
 			_batchStatus.OnJobStart(job);
 			DataTable completedTempTable = GetTempTable(completeTempTableName);
@@ -328,8 +329,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			var docPrefix = "SavedSearchDoc";
 			var expiredDocPrefix = "TempSavedSearchExp";
 			DataTable importTable = GetImportTable(1, 100, docPrefix, expiredDocPrefix);
-			Import.ImportNewDocuments(SourceWorkspaceArtifactId, importTable);
-			SavedSearch.ModifySavedSearchByAddingPrefix(RepositoryFactory, SourceWorkspaceArtifactId, SavedSearchArtifactId, docPrefix, false);
+			Import.ImportNewDocuments(SourceWorkspaceArtifactID, importTable);
+			SavedSearch.ModifySavedSearchByAddingPrefix(RepositoryFactory, SourceWorkspaceArtifactID, SavedSearchArtifactID, docPrefix, false);
 
 			var integrationModel = new IntegrationPointModel
 			{
@@ -358,9 +359,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			CreateItemLevelJobHistoryErrors(jobHistory.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew, importTable);
 
 			//Act
-			SavedSearch.ModifySavedSearchByAddingPrefix(RepositoryFactory, SourceWorkspaceArtifactId, SavedSearchArtifactId, docPrefix, true);
-			_integrationPointService.RetryIntegrationPoint(SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID, _ADMIN_USER_ID);
-			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID);
+			SavedSearch.ModifySavedSearchByAddingPrefix(RepositoryFactory, SourceWorkspaceArtifactID, SavedSearchArtifactID, docPrefix, true);
+			_integrationPointService.RetryIntegrationPoint(SourceWorkspaceArtifactID, integrationPointCreated.ArtifactID, _ADMIN_USER_ID);
+			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactID, integrationPointCreated.ArtifactID);
 
 			//Assert
 			VerifyTempSavedSearchDeletion(integrationPointCreated.ArtifactID, jobHistory.ArtifactId);
@@ -370,8 +371,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		{
 			//Arrange
 			DataTable importTable = GetImportTable(startingControlNumber, numberOfDocuments, documentPrefix, expiredDocumentPrefix);
-			Import.ImportNewDocuments(SourceWorkspaceArtifactId, importTable);
-			SavedSearch.ModifySavedSearchByAddingPrefix(RepositoryFactory, SourceWorkspaceArtifactId, SavedSearchArtifactId, documentPrefix, true);
+			Import.ImportNewDocuments(SourceWorkspaceArtifactID, importTable);
+			SavedSearch.ModifySavedSearchByAddingPrefix(RepositoryFactory, SourceWorkspaceArtifactID, SavedSearchArtifactID, documentPrefix, true);
 			var stopJobManager = NSubstitute.Substitute.For<IJobStopManager>();
 			var helper = NSubstitute.Substitute.For<IHelper>();
 
@@ -400,13 +401,13 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 
 			//Create Job and temp table suffix
 			Job job = new JobBuilder().WithJobId(1)
-				.WithWorkspaceId(SourceWorkspaceArtifactId)
+				.WithWorkspaceId(SourceWorkspaceArtifactID)
 				.WithRelatedObjectArtifactId(integrationPointCreated.ArtifactID)
 				.WithSubmittedBy(_ADMIN_USER_ID)
 				.Build();
 			string tempTableSuffix = $"{ job.JobId }_{ batchInstance }";
 
-			_jobHistoryErrorManager = new JobHistoryErrorManager(RepositoryFactory, helper, SourceWorkspaceArtifactId, tempTableSuffix);
+			_jobHistoryErrorManager = new JobHistoryErrorManager(RepositoryFactory, helper, SourceWorkspaceArtifactID, tempTableSuffix);
 
 			//Create item level error
 			CreateItemLevelJobHistoryErrors(jobHistory.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew, importTable);
@@ -416,8 +417,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			List<int> expectedJobHistoryErrorExpired = GetExpectedExpiredErrors(expectedNonExpiredJobHistoryArtifacts);
 
 			//Act
-			SavedSearch.ModifySavedSearchByAddingPrefix(RepositoryFactory, SourceWorkspaceArtifactId, SavedSearchArtifactId, documentPrefix, true);
-			_jobHistoryErrorManager.CreateErrorListTempTablesForItemLevelErrors(job, SavedSearchArtifactId);
+			SavedSearch.ModifySavedSearchByAddingPrefix(RepositoryFactory, SourceWorkspaceArtifactID, SavedSearchArtifactID, documentPrefix, true);
+			_jobHistoryErrorManager.CreateErrorListTempTablesForItemLevelErrors(job, SavedSearchArtifactID);
 
 			string startTempTableName = $"{ _ITEM_START_INCLUDED_TEMP_TABLE_PREFIX }_{ tempTableSuffix }";
 			string completeTempTableName = $"{ _ITEM_COMPLETE_INCLUDED_TEMP_TABLE_PREFIX }_{ tempTableSuffix }";
@@ -430,7 +431,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			{
 				ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly
 			};
-			_batchStatus = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, helper, RepositoryFactory, new OnBehalfOfUserClaimsPrincipalFactory(), stopJobManager, SourceWorkspaceArtifactId, _ADMIN_USER_ID, updateStatusType);
+			_batchStatus = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, helper, RepositoryFactory, new OnBehalfOfUserClaimsPrincipalFactory(), stopJobManager, SourceWorkspaceArtifactID, _ADMIN_USER_ID, updateStatusType);
 
 			_batchStatus.OnJobStart(job);
 			DataTable completedTempTable = GetTempTable(completeTempTableName);
@@ -472,10 +473,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 
 		private void ResolveServices()
 		{
-			RepositoryFactory = Container.Resolve<IRepositoryFactory>();
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
 			_jobHistoryService = Container.Resolve<IJobHistoryService>();
-			_jobHistoryErrorRepository = RepositoryFactory.GetJobHistoryErrorRepository(SourceWorkspaceArtifactId);
+			_jobHistoryErrorRepository = RepositoryFactory.GetJobHistoryErrorRepository(SourceWorkspaceArtifactID);
 		}
 
 		private List<int> CreateItemLevelJobHistoryErrors(int jobHistoryArtifactId, Relativity.Client.DTOs.Choice errorStatus, DataTable importedDocuments)
@@ -528,7 +528,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 
 		private DataTable GetTempTable(string tempTableName)
 		{
-			string query = $"SELECT [ArtifactID] FROM { ClaimsPrincipal.Current.ResourceDBPrepend(SourceWorkspaceArtifactId) }.[{ tempTableName }]";
+			string query = $"SELECT [ArtifactID] FROM { ClaimsPrincipal.Current.ResourceDBPrepend(SourceWorkspaceArtifactID) }.[{ tempTableName }]";
 			try
 			{
 				DataTable tempTable = CaseContext.SqlContext.ExecuteSqlStatementAsDataTable(query);
@@ -619,7 +619,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 
 			using (var proxy = Helper.CreateAdminProxy<IKeywordSearchManager>())
 			{
-				KeywordSearchQueryResultSet resultSet = proxy.QueryAsync(SourceWorkspaceArtifactId, savedSearchQuery).Result;
+				KeywordSearchQueryResultSet resultSet = proxy.QueryAsync(SourceWorkspaceArtifactID, savedSearchQuery).Result;
 				if (resultSet.TotalCount != 0)
 				{
 					throw new Exception($"Expected temp Saved Search: {tempSavedSearchName} to be deleted after the retry job completed.");

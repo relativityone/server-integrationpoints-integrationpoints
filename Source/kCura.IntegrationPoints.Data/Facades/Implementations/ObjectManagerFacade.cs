@@ -20,14 +20,14 @@ namespace kCura.IntegrationPoints.Data.Facades.Implementations
 		public Task<CreateResult> CreateAsync(int workspaceArtifactID, CreateRequest createRequest)
 		{
 			return _objectManager.Value.CreateAsync(
-					workspaceArtifactID, 
+					workspaceArtifactID,
 					createRequest);
 		}
 
 		public Task<ReadResult> ReadAsync(int workspaceArtifactID, ReadRequest request)
 		{
 			return _objectManager.Value.ReadAsync(
-					workspaceArtifactID, 
+					workspaceArtifactID,
 					request);
 		}
 
@@ -36,6 +36,15 @@ namespace kCura.IntegrationPoints.Data.Facades.Implementations
 			return _objectManager.Value.UpdateAsync(
 					workspaceArtifactID,
 					request);
+		}
+
+		public Task<MassUpdateResult> UpdateAsync(int workspaceArtifactID, MassUpdateByObjectIdentifiersRequest request,
+			MassUpdateOptions updateOptions)
+		{
+			return _objectManager.Value.UpdateAsync(
+				workspaceArtifactID,
+				request,
+				updateOptions);
 		}
 
 		public Task<DeleteResult> DeleteAsync(int workspaceArtifactID, DeleteRequest request)

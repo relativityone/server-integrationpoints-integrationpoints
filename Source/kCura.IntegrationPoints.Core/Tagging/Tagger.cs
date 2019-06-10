@@ -19,10 +19,14 @@ namespace kCura.IntegrationPoints.Core.Tagging
 		private readonly FieldMap[] _fields;
 		private readonly string _importConfig;
 
-		public Tagger(IDocumentRepository documentRepository, IDataSynchronizer synchronizer, IHelper helper, FieldMap[] fields, string importConfig, int sourceWorkspaceArtifactId)
+		public Tagger(
+			IDocumentRepository documentRepository,
+			IDataSynchronizer synchronizer,
+			IHelper helper,
+			FieldMap[] fields,
+			string importConfig)
 		{
 			_documentRepository = documentRepository;
-			_documentRepository.WorkspaceArtifactId = sourceWorkspaceArtifactId;
 			_synchronizer = synchronizer;
 			_fields = fields;
 			_importConfig = importConfig;
@@ -33,6 +37,11 @@ namespace kCura.IntegrationPoints.Core.Tagging
 		{
 			try
 			{
+				if (scratchTableRepository.GetCount() < 1)
+				{
+					return;
+				}
+
 				FieldMap identifierField = GetIdentifierField();
 				LogStartTaggingDocuments(identifierField);
 				DataColumn[] columns =
@@ -47,10 +56,7 @@ namespace kCura.IntegrationPoints.Core.Tagging
 				{
 					FieldMap[] fieldsToPush = { identifierField };
 					var documentTransferContext = new DefaultTransferContext(reader);
-					if (scratchTableRepository.Count > 0)
-					{
-						_synchronizer.SyncData(documentTransferContext, fieldsToPush, _importConfig);
-					}
+					_synchronizer.SyncData(documentTransferContext, fieldsToPush, _importConfig);
 				}
 			}
 			catch (Exception e)

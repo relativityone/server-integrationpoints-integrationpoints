@@ -118,7 +118,10 @@
     <Compile Include="QueryBuilders\ISourceProviderArtifactIdByGuidQueryBuilder.cs" />
     <Compile Include="Repositories\ApplicationRepository.cs" />
     <Compile Include="Repositories\DTO\ArtifactRef.cs" />
+    <Compile Include="Repositories\DTO\FieldUpdateRequestDto.cs" />
+    <Compile Include="Repositories\DTO\IFieldValueDto.cs" />
     <Compile Include="Repositories\DTO\ICaseInfoDto.cs" />
+    <Compile Include="Repositories\DTO\MultiObjectReferenceDto.cs" />
     <Compile Include="Repositories\IApplicationRepository.cs" />
     <Compile Include="Repositories\IAuditRepository.cs" />
     <Compile Include="Repositories\ICaseRepository.cs" />
@@ -181,7 +184,6 @@
     <Compile Include="Queries\GetJobsCount.cs" />
     <Compile Include="Repositories\IDestinationProviderRepository.cs" />
     <Compile Include="Repositories\IArtifactGuidRepository.cs" />
-    <Compile Include="Commands\MassEdit\IMassEditCommand.cs" />
     <Compile Include="Commands\MassEdit\RelativityMassEditBase.cs" />
     <Compile Include="Factories\Implementations\RepositoryFactory.cs" />
     <Compile Include="Factories\IRepositoryFactory.cs" />
@@ -236,14 +238,14 @@
     <Compile Include="Repositories\ISavedSearchRepository.cs" />
     <Compile Include="RelativityVersion.cs" />
     <Compile Include="Constants.cs" />
-    <Compile Include="EddsDbContext.cs" />
+    <Compile Include="EddsDBContext.cs" />
     <Compile Include="Extensions\ChoiceExtensions.cs" />
     <Compile Include="GetArtifactForMassAction.cs" />
     <Compile Include="IEddsDBContext.cs" />
     <Compile Include="StreamWrappers\AsciiToUnicodeStream.cs" />
     <Compile Include="StreamWrappers\SelfDisposingStream.cs" />
     <Compile Include="StreamWrappers\SelfRecreatingStream.cs" />
-    <Compile Include="WorkspaceContext.cs" />
+    <Compile Include="WorkspaceDBContext.cs" />
     <Compile Include="Extensions\DBContextExtensions.cs" />
     <Compile Include="IntegrationPointQuery.cs" />
     <Compile Include="IWorkspaceDBContext.cs" />

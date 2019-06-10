@@ -75,8 +75,8 @@ namespace Rip.SystemTests
 				}));
 			Container.Register(
 				Component.For<IWorkspaceDBContext>()
-					.ImplementedBy<WorkspaceContext>()
-					.UsingFactoryMethod(k => new WorkspaceContext(k.Resolve<IHelper>().GetDBContext(WorkspaceID)))
+					.ImplementedBy<WorkspaceDBContext>()
+					.UsingFactoryMethod(k => new WorkspaceDBContext(k.Resolve<IHelper>().GetDBContext(WorkspaceID)))
 					.LifeStyle.Transient);
 			Container.Register(
 				Component.For<IRSAPIClient>()

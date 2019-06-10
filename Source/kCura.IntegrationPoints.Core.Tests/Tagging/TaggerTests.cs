@@ -18,7 +18,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 		private IDocumentRepository _documentRepository;
 		private IDataSynchronizer _dataSynchronizer;
 		private string _importConfig;
-		private int _sourceWorkspaceArtifactId;
 
 		public override void SetUp()
 		{
@@ -50,9 +49,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 			};
 
 			_importConfig = string.Empty;
-			_sourceWorkspaceArtifactId = 679185;
 
-			_instance = new Tagger(_documentRepository, _dataSynchronizer, helper, fields, _importConfig, _sourceWorkspaceArtifactId);
+			_instance = new Tagger(_documentRepository, _dataSynchronizer, helper, fields, _importConfig);
 		}
 
 		[Test]
@@ -69,7 +67,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 			};
 
 			var scratchTableRepository = Substitute.For<IScratchTableRepository>();
-			scratchTableRepository.Count.Returns(1);
+			scratchTableRepository.GetCount().Returns(1);
 
 			TagsContainer tagsContainer = new TagsContainer(job, workspace);
 
@@ -94,7 +92,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 			};
 
 			var scratchTableRepository = Substitute.For<IScratchTableRepository>();
-			scratchTableRepository.Count.Returns(0);
+			scratchTableRepository.GetCount().Returns(0);
 
 			TagsContainer tagsContainer = new TagsContainer(job, workspace);
 
@@ -103,12 +101,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 
 			//assert
 			_dataSynchronizer.DidNotReceiveWithAnyArgs().SyncData(Arg.Any<IDataTransferContext>(), Arg.Any<FieldMap[]>(), _importConfig);
-		}
-
-		[Test]
-		public void ItShouldAssignWorkspaceIdToDocumentRepository()
-		{
-			Assert.That(_documentRepository.WorkspaceArtifactId, Is.EqualTo(_sourceWorkspaceArtifactId));
 		}
 	}
 }

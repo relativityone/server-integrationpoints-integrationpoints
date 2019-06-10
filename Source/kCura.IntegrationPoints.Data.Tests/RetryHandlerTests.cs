@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			RetryHandler sut = CreateRetryHandler(numberOfRetries);
 
 			// act
-			string result = await sut.ExecuteWithRetriesAsync(operationToExecute);
+			string result = await sut.ExecuteWithRetriesAsync(operationToExecute).ConfigureAwait(false);
 
 			// assert
 			result.Should().Be(_EXPECTED_RESULT);
@@ -93,14 +93,14 @@ namespace kCura.IntegrationPoints.Data.Tests
 			var sut = new RetryHandler(null, numberOfRetries, _WAIT_TIME_BETWEEN_RETRIES);
 
 			// act
-			string result = await sut.ExecuteWithRetriesAsync(operationToExecute);
+			string result = await sut.ExecuteWithRetriesAsync(operationToExecute).ConfigureAwait(false);
 
 			// assert
 			result.Should().Be(_EXPECTED_RESULT);
 		}
 
 		[Test]
-		public void ShouldReturnResultWhenOperationsEventuallySucceed()
+		public async Task ShouldReturnResultWhenOperationsEventuallySucceed()
 		{
 			// arrange
 			const int numberOfFailsBeforeSuccess = 1;
@@ -110,7 +110,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			RetryHandler sut = CreateRetryHandler(numberOfRetries);
 
 			// act
-			string result = sut.ExecuteWithRetries(operationToExecute);
+			string result = await sut.ExecuteWithRetriesAsync(operationToExecute).ConfigureAwait(false);
 
 			// assert
 			result.Should().Be(_EXPECTED_RESULT);
@@ -127,14 +127,14 @@ namespace kCura.IntegrationPoints.Data.Tests
 			RetryHandler sut = CreateRetryHandler(numberOfRetries);
 
 			// act
-			Action functionToExecute = () => sut.ExecuteWithRetries(operationToExecute);
+			Func<Task> functionToExecute = () => sut.ExecuteWithRetriesAsync(operationToExecute);
 
 			// assert
 			functionToExecute.ShouldThrow<InvalidOperationException>();
 		}
 
 		[Test]
-		public void ItShouldLogCallerNameWhenRetrying()
+		public async Task ItShouldLogCallerNameWhenRetrying()
 		{
 			// arrange
 			const int numberOfFailsBeforeSuccess = 1;
@@ -144,7 +144,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			RetryHandler sut = CreateRetryHandler(numberOfRetries);
 
 			// act
-			sut.ExecuteWithRetries(operationToExecute);
+			await sut.ExecuteWithRetriesAsync(operationToExecute).ConfigureAwait(false);
 
 			// assert
 			string expectedName = nameof(ItShouldLogCallerNameWhenRetrying);

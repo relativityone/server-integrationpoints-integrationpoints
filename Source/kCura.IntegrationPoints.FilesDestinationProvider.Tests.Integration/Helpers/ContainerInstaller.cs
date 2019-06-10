@@ -26,20 +26,27 @@ using kCura.WinEDDS;
 using kCura.WinEDDS.Exporters;
 using NSubstitute;
 using Relativity.API;
+using Relativity.Services.Folder;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers
 {
 	internal static class ContainerInstaller
 	{
-		private static IInstanceSettingRepository _instanceSettings;
+		private const int _EXPORT_BATCH_SIZE = 1000;
+		private const int _EXPORT_THREAD_COUNT = 4;
 
-		private const int _DEF_EXPORT_BATCH_SIZE = 1000;
-		private const int _DEF_EXPORT_THREAD_COUNT = 4;
+		private const int _EXPORT_IO_ERROR_WAIT_TIME = 1;
+		private const int _EXPORT_IO_ERROR_NUMBER_OF_RETRIES = 1;
+		private const int _EXPORT_ERROR_NUMBER_OF_RETRIES = 2;
+		private const int _EXPORT_ERROR_WAIT_TIME = 10;
 
-		private const bool _DEF_USE_OLD_EXPORT = false;
+		private const bool _FORCE_PARALLELISM_IN_NEW_EXPORT = true;
+		private const int _MAX_NUMBER_OF_FILE_EXPORT_TASKS = 2;
+		private const int _MAXIMUM_FILES_FOR_TAPI_BRIDGE = 1000;
+		private const int _TAPI_BRIDGE_EXPORT_TRANSFER_WAITING_TIME_IN_SECONDS = 600;
+		private const bool _TAPI_FORCE_HTTP_CLIENT = false;
 
-		private const int _EXPORT_LOADFILE_IO_ERROR_WAIT_TIME = 1;
-		private const int _EXPORT_LOADFILE_IO_ERROR_RETRIES_NUMBER = 1;
+		private const bool _USE_OLD_EXPORT = false;
 
 		public static WindsorContainer CreateContainer(ExportTestConfiguration testConfiguration, ExportTestContext testContext)
 		{
@@ -62,13 +69,16 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 			windsorContainer.Register(Component.For<IHelper>().Instance(new TestHelper()).LifestyleTransient());
 
 			windsorContainer.Register(Component.For<IServicesMgr>().UsingFactoryMethod(f => f.Resolve<IHelper>().GetServicesManager()));
+			windsorContainer.Register(Component.For<IFolderManager>().UsingFactoryMethod(f =>
+				f.Resolve<IServicesMgr>().CreateProxy<IFolderManager>(ExecutionIdentity.CurrentUser)));
+			windsorContainer.Register(Component.For<FolderWithDocumentsIdRetriever>().ImplementedBy<FolderWithDocumentsIdRetriever>());
 
-			_instanceSettings = Substitute.For<IInstanceSettingRepository>();
-			_instanceSettings.GetConfigurationValue(Domain.Constants.INTEGRATION_POINT_INSTANCE_SETTING_SECTION,
+			IInstanceSettingRepository instanceSettings = Substitute.For<IInstanceSettingRepository>();
+			instanceSettings.GetConfigurationValue(Domain.Constants.INTEGRATION_POINT_INSTANCE_SETTING_SECTION,
 				Domain.Constants.REPLACE_WEB_API_WITH_EXPORT_CORE).Returns("False");
 
 			windsorContainer.Register(Component.For<IInstanceSettingRepository>()
-				.Instance(_instanceSettings)
+				.Instance(instanceSettings)
 				.LifestyleTransient());
 
 			windsorContainer.Register(Component.For<ISerializer>().Instance(Substitute.For<ISerializer>()).LifestyleTransient());
@@ -119,17 +129,23 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 
 		private static IExportConfig GetMockExportLoadFileConfig()
 		{
-			var exportConfig = Substitute.For<IExportConfig>();
+			IExportConfig exportConfig = Substitute.For<IExportConfig>();
 
-			exportConfig.ExportBatchSize.Returns(_DEF_EXPORT_BATCH_SIZE);
-			exportConfig.ExportThreadCount.Returns(_DEF_EXPORT_THREAD_COUNT);
+			exportConfig.ExportBatchSize.Returns(_EXPORT_BATCH_SIZE);
+			exportConfig.ExportThreadCount.Returns(_EXPORT_THREAD_COUNT);
 
-			exportConfig.ExportIOErrorWaitTime.Returns(_EXPORT_LOADFILE_IO_ERROR_WAIT_TIME);
-			exportConfig.ExportIOErrorNumberOfRetries.Returns(_EXPORT_LOADFILE_IO_ERROR_RETRIES_NUMBER);
-			exportConfig.ExportErrorNumberOfRetries.Returns(_DEF_EXPORT_BATCH_SIZE);
-			exportConfig.ExportErrorWaitTime.Returns(_DEF_EXPORT_THREAD_COUNT);
+			exportConfig.ExportIOErrorWaitTime.Returns(_EXPORT_IO_ERROR_WAIT_TIME);
+			exportConfig.ExportIOErrorNumberOfRetries.Returns(_EXPORT_IO_ERROR_NUMBER_OF_RETRIES);
+			exportConfig.ExportErrorNumberOfRetries.Returns(_EXPORT_ERROR_NUMBER_OF_RETRIES);
+			exportConfig.ExportErrorWaitTime.Returns(_EXPORT_ERROR_WAIT_TIME);
 
-			exportConfig.UseOldExport.Returns(_DEF_USE_OLD_EXPORT);
+			exportConfig.ForceParallelismInNewExport.Returns(_FORCE_PARALLELISM_IN_NEW_EXPORT);
+			exportConfig.MaxNumberOfFileExportTasks.Returns(_MAX_NUMBER_OF_FILE_EXPORT_TASKS);
+			exportConfig.MaximumFilesForTapiBridge.Returns(_MAXIMUM_FILES_FOR_TAPI_BRIDGE);
+			exportConfig.TapiBridgeExportTransferWaitingTimeInSeconds.Returns(_TAPI_BRIDGE_EXPORT_TRANSFER_WAITING_TIME_IN_SECONDS);
+			exportConfig.TapiForceHttpClient.Returns(_TAPI_FORCE_HTTP_CLIENT);
+
+			exportConfig.UseOldExport.Returns(_USE_OLD_EXPORT);
 
 			return exportConfig;
 		}

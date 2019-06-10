@@ -18,8 +18,6 @@ using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Core;
-using Relativity.Core.Service;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.ResourceServer;
 using System;
@@ -28,6 +26,8 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using Relativity.Services.Folder;
 using Component = Castle.MicroKernel.Registration.Component;
 
 namespace kCura.IntegrationPoint.Tests.Core.Templates
@@ -122,8 +122,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				}));
 			Container.Register(
 				Component.For<IWorkspaceDBContext>()
-					.ImplementedBy<WorkspaceContext>()
-					.UsingFactoryMethod(k => new WorkspaceContext(k.Resolve<IHelper>().GetDBContext(WorkspaceArtifactId)))
+					.ImplementedBy<WorkspaceDBContext>()
+					.UsingFactoryMethod(k => new WorkspaceDBContext(k.Resolve<IHelper>().GetDBContext(WorkspaceArtifactId)))
 					.LifeStyle.Transient);
 			Container.Register(
 				Component.For<IRSAPIClient>()
@@ -138,6 +138,14 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			Container.Register(Component.For<IRSAPIService>().Instance(new RSAPIService(Container.Resolve<IHelper>(), WorkspaceArtifactId)).LifestyleTransient());
 			Container.Register(Component.For<IExporterFactory>().ImplementedBy<ExporterFactory>());
 			Container.Register(Component.For<IAuthTokenGenerator>().ImplementedBy<ClaimsTokenGenerator>().LifestyleTransient());
+
+			Container.Register(
+				Component.For<IFolderManager>().UsingFactoryMethod(f =>
+					f.Resolve<IServicesMgr>().CreateProxy<IFolderManager>(ExecutionIdentity.CurrentUser)
+				)
+			);
+			Container.Register(Component.For<FolderWithDocumentsIdRetriever>().ImplementedBy<FolderWithDocumentsIdRetriever>());
+
 #pragma warning disable 618
 			var dependencies = new IWindsorInstaller[] { new QueryInstallers(), new KeywordInstaller(), new SharedAgentInstaller(), new ServicesInstaller(), new ValidationInstaller() };
 #pragma warning restore 618
@@ -268,7 +276,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			return Helper.GetDBContext(-1).ExecuteSqlStatementAsScalar<int>(query, workspaceId, integrationPointId);
 		}
 
-		protected Job GetNextJobInScheduleQueue(int[] resourcePool, int integrationPointId)
+		protected Job GetNextJobInScheduleQueue(int[] resourcePool, int integrationPointID, int workspaceID)
 		{
 			IJobService jobServiceManager = Container.Resolve<IJobService>();
 
@@ -283,7 +291,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 					if (job != null)
 					{
 						// pick up job
-						if (job.RelatedObjectArtifactID == integrationPointId)
+						if (job.RelatedObjectArtifactID == integrationPointID && job.WorkspaceID == workspaceID)
 						{
 							return job;
 						}

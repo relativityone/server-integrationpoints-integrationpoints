@@ -21,7 +21,6 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Authentication;
-using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -34,6 +33,7 @@ using System;
 using Castle.MicroKernel.Resolvers;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Agent.Installer.Components;
+using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data.Repositories;
 using ITaskFactory = kCura.IntegrationPoints.Agent.TaskFactory.ITaskFactory;
 
@@ -86,7 +86,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 			container.Register(Component.For<IWorkspaceDBContext>().UsingFactoryMethod(k =>
 			{
 				JobContextProvider jobContextProvider = k.Resolve<JobContextProvider>();
-				return new WorkspaceContext(_agentHelper.GetDBContext(jobContextProvider.Job.WorkspaceID));
+				return new WorkspaceDBContext(_agentHelper.GetDBContext(jobContextProvider.Job.WorkspaceID));
 			}).LifestyleTransient());
 
 			container.Register(Component.For<Job>().UsingFactoryMethod(k =>
@@ -176,11 +176,18 @@ namespace kCura.IntegrationPoints.Agent.Installer
 					{
 						targetRepositoryFactory = sourceRepositoryFactory;
 					}
-					IFederatedInstanceManager federatedInstanceManager = k.Resolve<IFederatedInstanceManager>();
 					IFolderPathReaderFactory folderPathReaderFactory = k.Resolve<IFolderPathReaderFactory>();
 					IRelativityObjectManager relativityObjectManager = k.Resolve<IRelativityObjectManager>();
-					return new global::kCura.IntegrationPoints.Core.Factories.Implementations.ExporterFactory(claimsPrincipalFactory,
-						sourceRepositoryFactory, targetRepositoryFactory, sourceHelper, federatedInstanceManager, folderPathReaderFactory, relativityObjectManager);
+					ISourceDocumentsTagger sourceDocumentsTagger = k.Resolve<ISourceDocumentsTagger>();
+
+					return new Core.Factories.Implementations.ExporterFactory(
+						claimsPrincipalFactory,
+						sourceRepositoryFactory,
+						targetRepositoryFactory,
+						sourceHelper,
+						folderPathReaderFactory,
+						relativityObjectManager,
+						sourceDocumentsTagger);
 				}).LifestyleTransient());
 
 			container.Register(Component.For<IRsapiClientWithWorkspaceFactory>().ImplementedBy<ExtendedRsapiClientWithWorkspaceFactory>().LifestyleTransient());

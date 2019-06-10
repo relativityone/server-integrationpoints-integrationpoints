@@ -28,8 +28,8 @@ namespace kCura.IntegrationPoints.Services.Installers.Context
                 ),
                 Component
                     .For<IWorkspaceDBContext>()
-                    .ImplementedBy<WorkspaceContext>()
-                    .UsingFactoryMethod(k => new WorkspaceContext(k.Resolve<IHelper>().GetDBContext(workspaceID)))
+                    .ImplementedBy<WorkspaceDBContext>()
+                    .UsingFactoryMethod(k => new WorkspaceDBContext(k.Resolve<IHelper>().GetDBContext(workspaceID)))
                     .LifestyleTransient()
             );
 

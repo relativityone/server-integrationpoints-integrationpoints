@@ -12,6 +12,8 @@ namespace kCura.IntegrationPoints.Config
 		private const string _RIP_METRICS_CONFIGURATION = "MetricsConfiguration";
 		private const string _RIP_METRICS_THROTTLING = "MetricsThrottlingSeconds";
 		private const string _RIP_METRICS_MEASURE_EXTERNAL_CALLS_DURATION = "MeasureDurationOfExternalCalls";
+		private const string _SOURCE_WORKSPACE_TAGGER_BATCH_SIZE = "SourceWorkspaceTaggerBatchSize";
+		private const int _SOURCE_WORKSPACE_TAGGER_BATCH_SIZE_DEFAULT = 10000;
 		private static readonly Lazy<Config> _instance = new Lazy<Config>(() => new Config());
 
 		protected Config()
@@ -44,6 +46,11 @@ namespace kCura.IntegrationPoints.Config
 		}
 
 		public bool MeasureDurationOfExternalCalls => GetValue(_RIP_METRICS_MEASURE_EXTERNAL_CALLS_DURATION, false);
+
+		public int SourceWorkspaceTaggerBatchSize => GetValue(
+			_SOURCE_WORKSPACE_TAGGER_BATCH_SIZE,
+			_SOURCE_WORKSPACE_TAGGER_BATCH_SIZE_DEFAULT
+			);
 
 		private bool GetMetricsToggle(Metrics metricName)
 		{

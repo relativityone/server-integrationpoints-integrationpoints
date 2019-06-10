@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
-using kCura.WinEDDS;
 using kCura.WinEDDS.Api;
 using System;
 using System.Data;
 using System.IO;
-using System.Linq;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
@@ -14,7 +12,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 	public class OpticonDataReader : DataReaderBase, IOpticonDataReader
 	{
 		private bool _isClosed;
-		private ImageLoadFile _config;
 		private ulong _documentId;
 		private readonly DataTable _schemaTable;
 		private readonly Dictionary<string, int> _ordinalMap;
@@ -22,9 +19,8 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 		private readonly string _loadFileDirectory;
 		private readonly string[] _currentLine;
 
-		public OpticonDataReader(ImportProviderSettings providerSettings, ImageLoadFile config, IImageReader reader)
+		public OpticonDataReader(ImportProviderSettings providerSettings, IImageReader reader)
 		{
-			_config = config;
 			_opticonFileReader = reader;
 
 			_isClosed = false;
