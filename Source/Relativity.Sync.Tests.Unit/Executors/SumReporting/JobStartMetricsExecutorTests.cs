@@ -13,7 +13,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 	public class JobStartMetricsExecutorTests
 	{
 		[Test]
-		public async Task Test()
+		public async Task ExecuteAsyncReportsMetricAndCompletesSuccessfullyTest()
 		{
 			// Arrange
 			var syncMetrics = new Mock<ISyncMetrics>();
