@@ -65,6 +65,9 @@
     <Compile Include="ChoiceQuery.cs" />
     <Compile Include="Contexts\IOnBehalfOfUserClaimsPrincipalFactory.cs" />
     <Compile Include="Contexts\OnBehalfOfUserClaimsPrincipalFactory.cs" />
+    <Compile Include="Converters\FieldValuePairExtensions.cs" />
+    <Compile Include="Converters\RelativityObjectExtensions.cs" />
+    <Compile Include="Converters\WorkspaceRefExtensions.cs" />
     <Compile Include="DTO\SavedSearchQueryRequest.cs" />
     <Compile Include="DTO\SavedSearchQueryResult.cs" />
     <Compile Include="Extensions\ClaimsPrincipalExtension.cs" />
@@ -72,6 +75,7 @@
     <Compile Include="Extensions\FieldExtensions.cs" />
     <Compile Include="Extensions\ObjectQueryResultSetExtensions.cs" />
     <Compile Include="Extensions\ResultSetExtensions.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Facades\Implementations\FieldValueMap.cs" />
     <Compile Include="Facades\Implementations\ObjectManagerFacade.cs" />
     <Compile Include="Facades\Implementations\ObjectManagerFacadeDiscoverHeavyRequestDecorator.cs" />
@@ -232,7 +236,6 @@
     <Compile Include="Repositories\ITabRepository.cs" />
     <Compile Include="Repositories\Implementations\KeplerArtifactGuidRepository.cs" />
     <Compile Include="Repositories\Implementations\KeplerInstanceSettingRepository.cs" />
-    <Compile Include="Repositories\KeplerServiceBase.cs" />
     <Compile Include="Repositories\IQueueRepository.cs" />
     <Compile Include="Repositories\IObjectTypeRepository.cs" />
     <Compile Include="Repositories\ISavedSearchRepository.cs" />

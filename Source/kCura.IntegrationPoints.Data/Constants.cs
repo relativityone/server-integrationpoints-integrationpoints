@@ -95,4 +95,10 @@ namespace kCura.IntegrationPoints.Data
 
 		public const string POPUP_FILTER_TYPE_NAME = "Popup";
 	}
+
+	public static class SavedSearchFieldsConstants
+	{
+		public const string NAME_FIELD = "Name";
+		public const string OWNER_FIELD = "Owner";
+	}
 }

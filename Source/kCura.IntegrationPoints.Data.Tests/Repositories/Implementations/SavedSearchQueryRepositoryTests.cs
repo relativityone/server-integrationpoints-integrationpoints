@@ -106,7 +106,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				FieldValues = new List<FieldValuePair>
 				{
 					new FieldValuePair { Field = new Field {Name = "Name" }, Value = "Search 1"},
-				}
+				},
+				ParentObject = new RelativityObjectRef { ArtifactID = 0 }
 			};
 			var secondObject = new RelativityObject
 			{
@@ -115,7 +116,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				{
 					new FieldValuePair { Field = new Field {Name = "Name" }, Value = "Search 2"},
 					new FieldValuePair { Field = new Field {Name = "Owner" }, Value = "Admin"}
-				}
+				},
+				ParentObject = new RelativityObjectRef { ArtifactID = 0 }
 			};
 			var thirdObject = new RelativityObject
 			{
@@ -124,25 +126,26 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				{
 					new FieldValuePair { Field = new Field {Name = "Name" }, Value = "Search 3"},
 					new FieldValuePair { Field = new Field {Name = "Owner" }, Value = ""}
-				}
+				},
+				ParentObject = new RelativityObjectRef { ArtifactID = 0 }
 			};
-			var queryResult = new ResultSet<RelativityObject>
+			var queryResult = new List<RelativityObject>
 			{
-				Items = new List<RelativityObject> { firstObject, secondObject, thirdObject },
-				TotalCount = 3,
-				ResultCount = 3
+				firstObject,
+				secondObject,
+				thirdObject
 			};
 
-			_objectManager.QueryAsync(Arg.Any<QueryRequest>(), Arg.Any<int>(), Arg.Any<int>()).Returns(queryResult);
+			_objectManager.QueryAsync(Arg.Any<QueryRequest>()).Returns(queryResult);
 
 			// act
 			List<SavedSearchDTO> actualResults = _subjectUnderTest.RetrievePublicSavedSearches().ToList();
 
 			// assert
 			Assert.AreEqual(2, actualResults.Count);
-			Assert.IsTrue(actualResults.Any(x=>x.ArtifactId == 1));
-			Assert.IsTrue(actualResults.Any(x=>x.ArtifactId == 3));
-			Assert.IsFalse(actualResults.Any(x=>x.ArtifactId == 2));
+			Assert.IsTrue(actualResults.Any(x => x.ArtifactId == 1));
+			Assert.IsTrue(actualResults.Any(x => x.ArtifactId == 3));
+			Assert.IsFalse(actualResults.Any(x => x.ArtifactId == 2));
 		}
 
 		[Test]
@@ -151,7 +154,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			var firstObject = new RelativityObject
 			{
 				ArtifactID = 1,
-				ParentObject = new RelativityObjectRef { ArtifactID = 101},
+				ParentObject = new RelativityObjectRef { ArtifactID = 101 },
 				FieldValues = new List<FieldValuePair>
 				{
 					new FieldValuePair { Field = new Field {Name = "Name" }, Value = "Search 1"},
