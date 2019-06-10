@@ -32,7 +32,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		private const string _IDENTIFIER_FIELD_VALUE = "blorgh";
 		private const string _SANITIZING_SOURCE_FIELD_NAME = "bar";
 		private const string _LONGTEXT_STREAM_SHIBBOLETH = "#KCURA99DF2F0FEB88420388879F1282A55760#";
-		private const int _BYTES_PER_UTF16_CHAR = 2;
 
 		[SetUp]
 		public void InitializeMocks()
