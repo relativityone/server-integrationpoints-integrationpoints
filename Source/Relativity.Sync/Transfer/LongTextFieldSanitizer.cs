@@ -13,7 +13,8 @@ namespace Relativity.Sync.Transfer
 	internal sealed class LongTextFieldSanitizer : IExportFieldSanitizer
 	{
 		private const string _BIG_LONG_TEXT_SHIBBOLETH = "#KCURA99DF2F0FEB88420388879F1282A55760#";
-		private const int _DOCUMENT_OBJECT_TYPE_ARTIFACT_TYPE_ID = 10;
+		private const int _DOCUMENT_OBJECT_TYPE_ARTIFACT_TYPE_ID = (int) ArtifactType.Document;
+
 		private readonly ISourceServiceFactoryForUser _serviceFactory;
 		private readonly ISyncLog _logger;
 
@@ -27,15 +28,19 @@ namespace Relativity.Sync.Transfer
 
 		public async Task<object> SanitizeAsync(int workspaceArtifactId, string itemIdentifierSourceFieldName, string itemIdentifier, string sanitizingSourceFieldName, object initialValue)
 		{
-			return await SanitizeAsync(workspaceArtifactId, itemIdentifierSourceFieldName, itemIdentifier, sanitizingSourceFieldName, (string) initialValue).ConfigureAwait(false);
+			if (initialValue == null || initialValue is string)
+			{
+				return await SanitizeAsync(workspaceArtifactId, itemIdentifierSourceFieldName, itemIdentifier, sanitizingSourceFieldName, (string) initialValue).ConfigureAwait(false);
+			}
+
+			throw new ArgumentException($"Expected initial value to be string, instead was {initialValue.GetType().FullName}", nameof(initialValue));
 		}
 
 		private async Task<object> SanitizeAsync(int workspaceArtifactId, string itemIdentifierSourceFieldName, string itemIdentifier, string sanitizingSourceFieldName, string initialValue)
 		{
-			await Task.Yield();
 			if (initialValue == _BIG_LONG_TEXT_SHIBBOLETH)
 			{
-				return CreateBigLongTextStreamAsync(workspaceArtifactId, itemIdentifierSourceFieldName, itemIdentifier, sanitizingSourceFieldName);
+				return await CreateBigLongTextStreamAsync(workspaceArtifactId, itemIdentifierSourceFieldName, itemIdentifier, sanitizingSourceFieldName).ConfigureAwait(false);
 			}
 			return initialValue;
 		}
@@ -69,7 +74,7 @@ namespace Relativity.Sync.Transfer
 		{
 			using (var objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
-				string conditionString = $"'Name'== '{sanitizingSourceFieldName}' AND 'Object Type Artifact Type ID' == {_DOCUMENT_OBJECT_TYPE_ARTIFACT_TYPE_ID}";
+				string conditionString = $"'Name' == '{sanitizingSourceFieldName}' AND 'Object Type Artifact Type ID' == {_DOCUMENT_OBJECT_TYPE_ARTIFACT_TYPE_ID}";
 				var request = new QueryRequest
 				{
 					ObjectType = new ObjectTypeRef {Name = "Field"},

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using Polly;
-using Relativity.API;
 
 namespace Relativity.Sync.Transfer.StreamWrappers
 {
