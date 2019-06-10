@@ -57,8 +57,6 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			await _instance.ExecuteAsync(_configuration, CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			Assert.AreNotEqual(_configuration.SourceJobArtifactTypeId, 0);
-			Assert.AreNotEqual(_configuration.SourceWorkspaceArtifactTypeId, 0);
 
 			await AssertSourceWorkspaceFields().ConfigureAwait(false);
 

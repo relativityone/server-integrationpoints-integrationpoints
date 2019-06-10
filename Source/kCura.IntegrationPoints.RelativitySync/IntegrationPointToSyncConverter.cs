@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 		private static readonly Guid EmailNotificationRecipientsGuid = new Guid("4F03914D-9E86-4B72-B75C-EE48FEEBB583");
 		private static readonly Guid FieldMappingsGuid = new Guid("E3CB5C64-C726-47F8-9CB0-1391C5911628");
 		private static readonly Guid FieldOverlayBehaviorGuid = new Guid("34ECB263-1370-4D6C-AC11-558447504EC4");
-		private static readonly Guid FolderPathSourceFieldArtifactIdGuid = new Guid("BF5F07A3-6349-47EE-9618-1DD32C9FD998");
+		private static readonly Guid FolderPathSourceFieldNameGuid = new Guid("66A37443-EF92-47ED-BEEA-392464C853D3");
 		private static readonly Guid ImportOverwriteModeGuid = new Guid("1914D2A3-A1FF-480B-81DC-7A2AA563047A");
 		private static readonly Guid MoveExistingDocumentsGuid = new Guid("26F9BF88-420D-4EFF-914B-C47BA36E10BF");
 		private static readonly Guid NativesBehaviorGuid = new Guid("D18F0199-7096-4B0C-AB37-4C9A3EA1D3D2");
@@ -35,14 +35,14 @@ namespace kCura.IntegrationPoints.RelativitySync
 			_serializer = serializer;
 		}
 
-		public async Task<int> CreateSyncConfiguration(IExtendedJob job, IHelper helper)
+		public async Task<int> CreateSyncConfigurationAsync(IExtendedJob job, IHelper helper)
 		{
 			using (IObjectManager objectManager = helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
 				SourceConfiguration sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(job.IntegrationPointModel.SourceConfiguration);
 				ImportSettings importSettings = _serializer.Deserialize<ImportSettings>(job.IntegrationPointModel.DestinationConfiguration);
 				FolderConf folderConf = _serializer.Deserialize<FolderConf>(job.IntegrationPointModel.DestinationConfiguration);
-				CreateRequest request = PrepareCreateRequest(job, sourceConfiguration, importSettings, folderConf);
+				CreateRequest request = await PrepareCreateRequestAsync(job, sourceConfiguration, importSettings, folderConf, objectManager).ConfigureAwait(false);
 				CreateResult result = await objectManager.CreateAsync(job.WorkspaceId, request).ConfigureAwait(false);
 				return result.Object.ArtifactID;
 			}
@@ -78,7 +78,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			return "None";
 		}
 
-		private CreateRequest PrepareCreateRequest(IExtendedJob job, SourceConfiguration sourceConfiguration, ImportSettings importSettings, FolderConf folderConf)
+		private async Task<CreateRequest> PrepareCreateRequestAsync(IExtendedJob job, SourceConfiguration sourceConfiguration, ImportSettings importSettings, FolderConf folderConf, IObjectManager objectManager)
 		{
 			return new CreateRequest
 			{
@@ -144,9 +144,9 @@ namespace kCura.IntegrationPoints.RelativitySync
 					{
 						Field = new FieldRef
 						{
-							Guid = FolderPathSourceFieldArtifactIdGuid
+							Guid = FolderPathSourceFieldNameGuid
 						},
-						Value = folderConf.FolderPathSourceField
+						Value = await GetFolderPathSourceFieldNameAsync(folderConf.FolderPathSourceField, sourceConfiguration.SourceWorkspaceArtifactId, objectManager).ConfigureAwait(false)
 					},
 					new FieldRefValuePair
 					{
@@ -214,6 +214,24 @@ namespace kCura.IntegrationPoints.RelativitySync
 					}
 				}
 			};
+		}
+
+		private async Task<string> GetFolderPathSourceFieldNameAsync(int artifactId, int workspaceId, IObjectManager objectManager)
+		{
+			if (artifactId == 0)
+			{
+				return string.Empty;
+			}
+
+			ReadRequest request = new ReadRequest
+			{
+				Object = new RelativityObjectRef
+				{
+					ArtifactID = artifactId
+				}
+			};
+			ReadResult result = await objectManager.ReadAsync(workspaceId, request).ConfigureAwait(false);
+			return result.Object.Name;
 		}
 	}
 }

@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 		{
 			using (IObjectManager manager = helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
-				await UpdateFinishedJobAsync(job, JobValidationFailedRef(), manager).ConfigureAwait(false);
+				await UpdateFinishedJobAsync(job, JobValidationFailedRef(), manager, true).ConfigureAwait(false);
 				await AddJobHistoryErrorAsync(job, manager, ex).ConfigureAwait(false);
 			}
 		}
@@ -65,7 +65,8 @@ namespace kCura.IntegrationPoints.RelativitySync
 		{
 			using (IObjectManager manager = helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
-				await UpdateFinishedJobAsync(job, JobStoppedStateRef(), manager).ConfigureAwait(false);
+				bool hasErrors = await HasErrorsAsync(job, manager).ConfigureAwait(false);
+				await UpdateFinishedJobAsync(job, JobStoppedStateRef(), manager, hasErrors).ConfigureAwait(false);
 			}
 		}
 
@@ -116,7 +117,8 @@ namespace kCura.IntegrationPoints.RelativitySync
 			using (IObjectManager manager = helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
 				ChoiceRef status;
-				if (await HasErrorsAsync(job, manager).ConfigureAwait(false))
+				bool hasErrors = await HasErrorsAsync(job, manager).ConfigureAwait(false);
+				if (hasErrors)
 				{
 					status = JobCompletedWithErrorsStateRef();
 				}
@@ -125,7 +127,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 					status = JobCompletedStateRef();
 				}
 
-				await UpdateFinishedJobAsync(job, status, manager).ConfigureAwait(false);
+				await UpdateFinishedJobAsync(job, status, manager, hasErrors).ConfigureAwait(false);
 			}
 		}
 
@@ -143,10 +145,10 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 		private static async Task MarkJobAsFailedAsync(IExtendedJob job, IObjectManager manager)
 		{
-			await UpdateFinishedJobAsync(job, JobFailedStateRef(), manager).ConfigureAwait(false);
+			await UpdateFinishedJobAsync(job, JobFailedStateRef(), manager, true).ConfigureAwait(false);
 		}
 
-		private static async Task UpdateFinishedJobAsync(IExtendedJob job, ChoiceRef status, IObjectManager manager)
+		private static async Task UpdateFinishedJobAsync(IExtendedJob job, ChoiceRef status, IObjectManager manager, bool hasErrors)
 		{
 			var currentTimeUtc = DateTime.UtcNow;
 			UpdateRequest jobHistoryUpdateRequest = new UpdateRequest
@@ -168,6 +170,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			};
 			await manager.UpdateAsync(job.WorkspaceId, jobHistoryUpdateRequest).ConfigureAwait(false);
 			await UpdateIntegrationPointLastRuntimeUtc(job, manager, currentTimeUtc).ConfigureAwait(false);
+			await UpdateIntegrationPointHasErrorsAsync(job, manager, hasErrors).ConfigureAwait(false);
 		}
 
 		private static async Task UpdateIntegrationPointLastRuntimeUtc(IExtendedJob job, IObjectManager manager, DateTime currentTimeUtc)
@@ -181,6 +184,23 @@ namespace kCura.IntegrationPoints.RelativitySync
 					{
 						Field = LastRuntimeUtcRef(),
 						Value = currentTimeUtc
+					},
+				}
+			};
+			await manager.UpdateAsync(job.WorkspaceId, integrationPointUpdateRequest).ConfigureAwait(false);
+		}
+
+		private static async Task UpdateIntegrationPointHasErrorsAsync(IExtendedJob job, IObjectManager manager, bool hasErrors)
+		{
+			UpdateRequest integrationPointUpdateRequest = new UpdateRequest
+			{
+				Object = IntegrationPointRef(job),
+				FieldValues = new[]
+				{
+					new FieldRefValuePair
+					{
+						Field = HasErrorsRef(),
+						Value = hasErrors
 					},
 				}
 			};
@@ -224,6 +244,14 @@ namespace kCura.IntegrationPoints.RelativitySync
 			return new FieldRef
 			{
 				Guid = Guid.Parse(IntegrationPointFieldGuids.LastRuntimeUTC)
+			};
+		}
+
+		private static FieldRef HasErrorsRef()
+		{
+			return new FieldRef()
+			{
+				Guid = Guid.Parse(IntegrationPointFieldGuids.HasErrors)
 			};
 		}
 

@@ -19,18 +19,16 @@ namespace kCura.IntegrationPoints.RelativitySync
 		private int? _sourceWorkspaceTagArtifactId;
 		private int? _destinationWorkspaceTagArtifactId;
 		private Guid? _exportRunId;
-		private List<int> _batchesIds;
 
-		public SyncConfiguration(int jobId, int submittedBy, SourceConfiguration sourceConfiguration, ImportSettings destinationConfiguration, List<string> emailRecipients)
+		public SyncConfiguration(int submittedBy, SourceConfiguration sourceConfiguration, ImportSettings destinationConfiguration, List<string> emailRecipients, ImportSettingsDto importSettings)
 		{
-			JobStatusArtifactId = jobId;
 			DataSourceArtifactId = sourceConfiguration.SavedSearchArtifactId;
 			DataDestinationArtifactId = destinationConfiguration.DestinationFolderArtifactId;
 			DestinationWorkspaceArtifactId = destinationConfiguration.CaseArtifactId;
-			JobArtifactId = jobId;
 			SourceWorkspaceArtifactId = sourceConfiguration.SourceWorkspaceArtifactId;
 			CreateSavedSearchForTags = destinationConfiguration.CreateSavedSearchForTagging;
 			EmailRecipients = emailRecipients;
+			ImportSettings = importSettings;
 			SendEmails = emailRecipients.Count > 0;
 			ExecutingUserId = submittedBy;
 		}
@@ -41,6 +39,8 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 		public int DataSourceArtifactId { get; }
 
+		public string FolderPathSourceFieldName { get; set; }
+
 		public bool IsSnapshotCreated => _exportRunId.HasValue;
 
 		public int DataDestinationArtifactId { get; set; }
@@ -49,30 +49,27 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 		public bool IsSavedSearchArtifactIdSet => _savedSearchArtifactId.HasValue;
 
-		public int JobStatusArtifactId { get; set; }
-
-		public bool Retrying => false;
-
-		public int JobArtifactId { get; }
-		public int SourceWorkspaceArtifactTypeId { get; set; }
-
 		public bool IsDestinationWorkspaceTagArtifactIdSet => _destinationWorkspaceTagArtifactId.HasValue;
 		public int DestinationWorkspaceTagArtifactId => _destinationWorkspaceTagArtifactId.Value;
-		public int JobHistoryTagArtifactId => _sourceJobTagArtifactId.Value;
+
+		public ImportSettingsDto ImportSettings { get; }
+		public int JobHistoryArtifactId { get; }
 
 		public bool IsSourceJobTagSet => _sourceJobTagArtifactId.HasValue;
 		public bool IsSourceWorkspaceTagSet => _sourceWorkspaceTagArtifactId.HasValue;
 
-		public void SetSourceJobTag(int artifactId, string name)
+		public Task SetSourceJobTagAsync(int artifactId, string name)
 		{
 			_sourceJobTagArtifactId = artifactId;
 			SourceJobTagName = name;
+			return Task.CompletedTask;
 		}
 
-		public void SetSourceWorkspaceTag(int artifactId, string name)
+		public Task SetSourceWorkspaceTagAsync(int artifactId, string name)
 		{
 			_sourceWorkspaceTagArtifactId = artifactId;
 			SourceWorkspaceTagName = name;
+			return Task.CompletedTask;
 		}
 
 		public string JobName { get; set; }
@@ -80,9 +77,10 @@ namespace kCura.IntegrationPoints.RelativitySync
 		public int SourceWorkspaceArtifactId { get; }
 		public int SyncConfigurationArtifactId { get; }
 
-		public void SetDestinationWorkspaceTagArtifactId(int artifactId)
+		public Task SetDestinationWorkspaceTagArtifactIdAsync(int artifactId)
 		{
 			_destinationWorkspaceTagArtifactId = artifactId;
+			return Task.CompletedTask;
 		}
 
 		public Task SetSavedSearchInDestinationArtifactIdAsync(int artifactId)
@@ -94,7 +92,6 @@ namespace kCura.IntegrationPoints.RelativitySync
 		public int DestinationWorkspaceArtifactId { get; }
 		public int SavedSearchArtifactId => _savedSearchArtifactId.Value;
 		public int DestinationFolderArtifactId { get; set; }
-		public int FolderPathSourceFieldArtifactId { get; set; }
 		public ImportOverwriteMode ImportOverwriteMode { get; set; }
 		public FieldOverlayBehavior FieldOverlayBehavior { get; set; }
 		public DestinationFolderStructureBehavior DestinationFolderStructureBehavior { get; set; }
@@ -107,13 +104,6 @@ namespace kCura.IntegrationPoints.RelativitySync
 		public bool SendEmails { get; }
 		public IEnumerable<string> EmailRecipients { get; }
 
-		public bool IsSnapshotPartitioned => _batchesIds != null;
-
-		public void SetSnapshotPartitions(List<int> batchesIds)
-		{
-			_batchesIds = batchesIds;
-		}
-
 		public int TotalRecordsCount { get; private set; }
 		public int BatchSize => int.MaxValue;
 
@@ -121,7 +111,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 		public int ExecutingUserId { get; private set; }
 
-		public Task SetSnapshotDataAsync(Guid runId, long totalRecordsCount)
+		public Task SetSnapshotDataAsync(Guid runId, int totalRecordsCount)
 		{
 			return Task.CompletedTask;
 		}

@@ -43,12 +43,13 @@ namespace kCura.IntegrationPoints.RelativitySync
 			try
 			{
 				CancellationToken cancellationToken = CancellationAdapter.GetCancellationToken(_job, _ripContainer);
-				using (IContainer container = InitializeSyncContainer())
+				SyncConfiguration syncConfiguration = SyncConfigurationFactory.Create(_job, _ripContainer, _logger);
+				using (IContainer container = InitializeSyncContainer(syncConfiguration))
 				{
 					metrics.MarkStartTime();
 					await MarkJobAsStartedAsync().ConfigureAwait(false);
 
-					ISyncJob syncJob = await CreateSyncJob(container).ConfigureAwait(false);
+					ISyncJob syncJob = await CreateSyncJob(container, syncConfiguration).ConfigureAwait(false);
 					Progress progress = new Progress();
 					progress.SyncProgress += (sender, syncProgress) => UpdateJobStatusAsync(syncProgress.Id).ConfigureAwait(false).GetAwaiter().GetResult();
 					await syncJob.ExecuteAsync(progress, cancellationToken).ConfigureAwait(false);
@@ -166,12 +167,12 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 		}
 
-		private async Task<ISyncJob> CreateSyncJob(IContainer container)
+		private async Task<ISyncJob> CreateSyncJob(IContainer container, SyncConfiguration syncConfiguration)
 		{
 			int syncConfigurationArtifactId;
 			try
 			{
-				syncConfigurationArtifactId = await _converter.CreateSyncConfiguration(_job, _ripContainer.Resolve<IHelper>()).ConfigureAwait(false);
+				syncConfigurationArtifactId = await _converter.CreateSyncConfigurationAsync(_job, _ripContainer.Resolve<IHelper>()).ConfigureAwait(false);
 			}
 			catch (Exception e)
 			{
@@ -180,21 +181,20 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 
 			SyncJobFactory jobFactory = new SyncJobFactory();
-			SyncJobParameters parameters = new SyncJobParameters(syncConfigurationArtifactId, _job.WorkspaceId, _correlationId.ToString());
+			SyncJobParameters parameters = new SyncJobParameters(syncConfigurationArtifactId, _job.WorkspaceId, _correlationId.ToString(), syncConfiguration.ImportSettings);
 			RelativityServices relativityServices = new RelativityServices(_apmMetrics, _ripContainer.Resolve<IHelper>().GetServicesManager(), ExtensionPointServiceFinder.ServiceUriProvider.AuthenticationUri());
 			ISyncLog syncLog = new SyncLog(_logger);
 			ISyncJob syncJob = jobFactory.Create(container, parameters, relativityServices, syncLog);
 			return syncJob;
 		}
 
-		private IContainer InitializeSyncContainer()
+		private IContainer InitializeSyncContainer(SyncConfiguration syncConfiguration)
 		{
 			// We are registering types directly related to adapting the new Relativity Sync workflow to the
 			// existing RIP workflow. The Autofac container we are building will only resolve adapters and related
 			// wrappers, and the Windsor container will only resolve existing RIP classes.
 
 			var containerBuilder = new ContainerBuilder();
-			SyncConfiguration syncConfiguration = SyncConfigurationFactory.Create(_job, _ripContainer, _logger);
 
 			_ripContainer.Register(Component.For<SyncConfiguration>().Instance(syncConfiguration));
 
@@ -209,10 +209,6 @@ namespace kCura.IntegrationPoints.RelativitySync
 			containerBuilder.Register(context => new PermissionsCheck(_ripContainer, context.Resolve<IValidationExecutorFactory>(), context.Resolve<IRdoRepository>()))
 				.As<IExecutor<IPermissionsCheckConfiguration>>()
 				.As<IExecutionConstrains<IPermissionsCheckConfiguration>>();
-
-			containerBuilder.RegisterInstance(new Synchronization(_ripContainer))
-				.As<IExecutor<ISynchronizationConfiguration>>()
-				.As<IExecutionConstrains<ISynchronizationConfiguration>>();
 
 			containerBuilder.RegisterInstance(new Adapters.Notification(_ripContainer))
 				.As<IExecutor<INotificationConfiguration>>()
@@ -233,14 +229,6 @@ namespace kCura.IntegrationPoints.RelativitySync
 			containerBuilder.RegisterType<JobStatusConsolidation>()
 				.As<IExecutor<IJobStatusConsolidationConfiguration>>()
 				.As<IExecutionConstrains<IJobStatusConsolidationConfiguration>>();
-
-			containerBuilder.RegisterType<SnapshotPartition>()
-				.As<IExecutor<ISnapshotPartitionConfiguration>>()
-				.As<IExecutionConstrains<ISnapshotPartitionConfiguration>>();
-
-			containerBuilder.RegisterType<DataSourceSnapshot>()
-				.As<IExecutor<IDataSourceSnapshotConfiguration>>()
-				.As<IExecutionConstrains<IDataSourceSnapshotConfiguration>>();
 
 			IContainer container = containerBuilder.Build();
 			return container;

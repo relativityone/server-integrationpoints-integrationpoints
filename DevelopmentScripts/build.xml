@@ -153,6 +153,7 @@
           <Assembly>lib\UnitTests\kCura.Relativity.Client.dll</Assembly>
           <Assembly>lib\UnitTests\Relativity.DataExchange.Client.SDK.dll</Assembly>
           <Assembly>lib\UnitTests\Relativity.DataTransfer.MessageService.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.Telemetry.Services.Interface.dll</Assembly>
           <Assembly>lib\UnitTests\Relativity.Transfer.Client.Aspera.dll</Assembly>
           <Assembly>lib\UnitTests\Relativity.Transfer.Client.dll</Assembly>
           <Assembly>lib\UnitTests\Relativity.Transfer.Client.Core.dll</Assembly>
