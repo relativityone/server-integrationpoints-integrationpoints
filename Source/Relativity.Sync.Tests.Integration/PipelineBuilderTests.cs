@@ -193,6 +193,7 @@ namespace Relativity.Sync.Tests.Integration
 				new[] {typeof(IDataSourceSnapshotConfiguration)},
 				new[]
 				{
+					typeof(ISumReporterConfiguration),
 					typeof(ISourceWorkspaceTagsCreationConfiguration),
 					typeof(IDestinationWorkspaceTagsCreationConfiguration),
 					typeof(IDataDestinationInitializationConfiguration)

@@ -17,6 +17,7 @@ namespace Relativity.Sync.Tests.Unit
 
 		private const string _CORRELATION_ID = "id";
 		private const string _NAME = "name";
+		private const string _WORKFLOW_ID = "workflow.id";
 
 		[SetUp]
 		public void SetUp()
@@ -115,6 +116,48 @@ namespace Relativity.Sync.Tests.Unit
 			_sink2.Verify(x => x.Log(It.Is<Metric>(m => AssertGaugeOperationMetric(m, gaugeValue, unitOfMeasure, executionStatus, customData))));
 		}
 
+		[Test]
+		public void ItShouldSendPointInTimeStringOperation()
+		{
+			// Arrange
+			const string value = "test value";
+
+			// Act
+			_instance.LogPointInTimeString(_NAME, value, _WORKFLOW_ID);
+
+			// Assert
+			_sink1.Verify(x => x.Log(It.Is<Metric>(m => AssertPointInTimeOperation(m, value) && m.Type == MetricType.PointInTimeString)));
+			_sink2.Verify(x => x.Log(It.Is<Metric>(m => AssertPointInTimeOperation(m, value) && m.Type == MetricType.PointInTimeString)));
+		}
+
+		[Test]
+		public void ItShouldSendPointInTimeLongOperation()
+		{
+			// Arrange
+			const long value = long.MaxValue;
+
+			// Act
+			_instance.LogPointInTimeLong(_NAME, value, _WORKFLOW_ID);
+
+			// Assert
+			_sink1.Verify(x => x.Log(It.Is<Metric>(m => AssertPointInTimeOperation(m, value) && m.Type == MetricType.PointInTimeLong)));
+			_sink2.Verify(x => x.Log(It.Is<Metric>(m => AssertPointInTimeOperation(m, value) && m.Type == MetricType.PointInTimeLong)));
+		}
+
+		[Test]
+		public void ItShouldSendPointInTimeDoubleOperation()
+		{
+			// Arrange
+			const double value = double.MaxValue;
+
+			// Act
+			_instance.LogPointInTimeDouble(_NAME, value, _WORKFLOW_ID);
+
+			// Assert
+			_sink1.Verify(x => x.Log(It.Is<Metric>(m => AssertPointInTimeOperation(m, value) && m.Type == MetricType.PointInTimeDouble)));
+			_sink2.Verify(x => x.Log(It.Is<Metric>(m => AssertPointInTimeOperation(m, value) && m.Type == MetricType.PointInTimeDouble)));
+		}
+
 		private static bool AssertMetric(Metric metric, MetricType metricType, ExecutionStatus executionStatus, Dictionary<string, object> customData)
 		{
 			metric.Type.Should().Be(metricType);
@@ -155,6 +198,16 @@ namespace Relativity.Sync.Tests.Unit
 
 			metric.Value.Should().Be(gaugeValue);
 
+			return true;
+		}
+
+		private static bool AssertPointInTimeOperation<T>(Metric actualMetric, T value)
+		{
+			actualMetric.Name.Should().Be(_NAME);
+			actualMetric.Value.Should().BeOfType<T>();
+			actualMetric.Value.Should().Be(value);
+			actualMetric.WorkflowId.Should().Be(_WORKFLOW_ID);
+			actualMetric.CorrelationId.Should().Be(_CORRELATION_ID);
 			return true;
 		}
 	}

@@ -1,6 +1,8 @@
 ﻿using Autofac;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.ExecutionConstrains;
+using Relativity.Sync.ExecutionConstrains.SumReporting;
+using Relativity.Sync.Executors.SumReporting;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.Storage;
 
@@ -28,6 +30,8 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<ImportJobFactory>().As<IImportJobFactory>();
 			builder.RegisterType<ImportApiFactory>().As<IImportApiFactory>();
 
+			builder.RegisterType<JobStartMetricsExecutorConstrains>().As<IExecutionConstrains<ISumReporterConfiguration>>();
+			builder.RegisterType<JobStartMetricsExecutor>().As<IExecutor<ISumReporterConfiguration>>();
 			builder.RegisterType<SourceWorkspaceTagsCreationExecutionConstrains>().As<IExecutionConstrains<ISourceWorkspaceTagsCreationConfiguration>>();
 			builder.RegisterType<SourceWorkspaceTagsCreationExecutor>().As<IExecutor<ISourceWorkspaceTagsCreationConfiguration>>();
 			builder.RegisterType<DestinationWorkspaceTagsCreationExecutionConstrains>().As<IExecutionConstrains<IDestinationWorkspaceTagsCreationConfiguration>>();
