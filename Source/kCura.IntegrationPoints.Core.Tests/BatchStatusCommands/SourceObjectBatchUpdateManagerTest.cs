@@ -3,14 +3,13 @@ using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
-using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Tagging;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.ScheduleQueue.Core;
 using Moq;
-using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
 
@@ -262,13 +261,19 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 
 		private SourceObjectBatchUpdateManager CreateSut()
 		{
+			var jobHistory = new JobHistory
+			{
+				ArtifactId = _JOB_HISTORY_RDO_ID,
+				BatchInstance = Guid.NewGuid().ToString()
+			};
+
 			return new SourceObjectBatchUpdateManager(
 				_repositoryFactoryMock.Object,
 				_loggerMock.Object,
 				_sourceWorkspaceTagsCreatorMock.Object,
 				_sourceWorkspaceDocumentsTaggerMock.Object,
 				_sourceConfig,
-				_JOB_HISTORY_RDO_ID,
+				jobHistory,
 				_UNIQUE_JOB_ID);
 		}
 	}

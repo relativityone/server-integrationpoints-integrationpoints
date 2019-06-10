@@ -166,7 +166,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				sourceWorkspaceTagsCreator,
 				_sourceDocumentsTagger,
 				configuration,
-				jobHistory.ArtifactId,
+				jobHistory,
 				uniqueJobId);
 		}
 
