@@ -1,6 +1,7 @@
 ﻿var CreateProductionSetViewModel = function (createCallback) {
 	var self = this;
 
+	const enterAsciiCode = 13;
 	self.newProductionSetName = ko.observable();
 	self.createCallback = createCallback;
 	self.model = {
@@ -26,10 +27,13 @@
 		self.newProductionSetName.isModified(false);
 
 		self.view.dialog("open");
-		self.view.keypress(function (e) {
-			if (e.which === 13) {
-				self.create();
+		self.view.keyup(function (e) {
+			if (e.which !== enterAsciiCode || e.handled === true) {
+				return;
 			}
+			document.activeElement.blur();
+			self.create();
+			e.handled = true;
 		});
 	}
 
