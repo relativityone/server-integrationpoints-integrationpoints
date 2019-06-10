@@ -23,16 +23,18 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private readonly IRelativityObjectManager _relativityObjectManager;
 		private readonly int _workspaceArtifactID;
 
+		private static readonly ObjectTypeRef _fieldObjectTypeRef = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Field };
+
 		public FieldQueryRepository(
 			IHelper helper,
 			IServicesMgr servicesMgr,
 			IRelativityObjectManager relativityObjectManager,
-			int workspaceArtifactId)
+			int workspaceArtifactID)
 		{
 			_helper = helper;
 			_servicesMgr = servicesMgr;
 			_relativityObjectManager = relativityObjectManager;
-			_workspaceArtifactID = workspaceArtifactId;
+			_workspaceArtifactID = workspaceArtifactID;
 		}
 
 		public async Task<ArtifactFieldDTO[]> RetrieveLongTextFieldsAsync(int rdoTypeID)
@@ -41,8 +43,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			var longTextFieldsQuery = new QueryRequest
 			{
-				ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Field },
-				Condition = $"'Object Type Artifact Type ID' == OBJECT {rdoTypeID} AND 'Field Type' == '{longTextFieldName}'"
+				ObjectType = _fieldObjectTypeRef,
+				Condition = $"{GetObjectTypeCondition(rdoTypeID)} AND 'Field Type' == '{longTextFieldName}'"
 			};
 
 			IEnumerable<RelativityObject> relativityObjects = await _relativityObjectManager
@@ -50,7 +52,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				.ConfigureAwait(false);
 
 			ArtifactFieldDTO[] fieldDtos = relativityObjects
-				.Select(x => ConvertArtifactDtoToArtifactFieldDto(x, longTextFieldName))
+				.Select(x => ConvertRelativityObjectToArtifactFieldDto(x, longTextFieldName))
 				.ToArray();
 
 			return fieldDtos;
@@ -60,9 +62,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			var fieldQuery = new QueryRequest
 			{
-				ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Field },
+				ObjectType = _fieldObjectTypeRef,
 				Fields = fieldNames.Select(x => new FieldRef { Name = x }),
-				Condition = $"'Object Type Artifact Type Id' == OBJECT {rdoTypeID}"
+				Condition = $"{GetObjectTypeCondition(rdoTypeID)}"
 			};
 
 			return _relativityObjectManager
@@ -102,7 +104,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		public ArtifactDTO RetrieveTheIdentifierField(int rdoTypeID)
+		public ArtifactDTO RetrieveIdentifierField(int rdoTypeID)
 		{
 			HashSet<string> fieldsToRetrieveWhenQueryFields = new HashSet<string> { "Name", "Is Identifier" };
 			ArtifactDTO[] fieldsDtos = RetrieveFieldsAsync(rdoTypeID, fieldsToRetrieveWhenQueryFields).GetAwaiter().GetResult();
@@ -115,7 +117,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			using (IFieldManager fieldManagerProxy = _servicesMgr.CreateProxy<IFieldManager>(ExecutionIdentity.System))
 			{
 				IEnumerable<global::Relativity.Services.Field.FieldRef> result = fieldManagerProxy.RetrieveBeginBatesFieldsAsync(_workspaceArtifactID).GetAwaiter().GetResult();
-				return result.Select(ConvertFieldRefToArtifactFieldDto).ToArray();
+				return result
+					.ToArtifactFieldDTOs()
+					.ToArray();
 			}
 		}
 
@@ -131,9 +135,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			var fieldQuery = new QueryRequest
 			{
-				ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Field },
+				ObjectType = _fieldObjectTypeRef,
 				Fields = fieldNames.Select(x => new FieldRef { Name = x }),
-				Condition = $"'Object Type Artifact Type ID' == OBJECT {rdoTypeID} AND 'DisplayName' == '{displayName.EscapeSingleQuote()}' AND 'Field Type' == '{fieldType}'"
+				Condition = $"{GetObjectTypeCondition(rdoTypeID)} AND 'DisplayName' == '{displayName.EscapeSingleQuote()}' AND 'Field Type' == '{fieldType}'"
 			};
 
 			return _relativityObjectManager
@@ -141,16 +145,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				.ToArtifactDTOsArrayAsyncDeprecated();
 		}
 
-		private static ArtifactFieldDTO ConvertFieldRefToArtifactFieldDto(global::Relativity.Services.Field.FieldRef artifactDto)
-		{
-			return new ArtifactFieldDTO
-			{
-				ArtifactId = artifactDto.ArtifactID,
-				Name = artifactDto.Name,
-			};
-		}
+		private string GetObjectTypeCondition(int rdoTypeID) => $"'Object Type Artifact Type Id' == OBJECT {rdoTypeID}";
 
-		private static ArtifactFieldDTO ConvertArtifactDtoToArtifactFieldDto(RelativityObject relativityObject, string fieldTypeName)
+		private static ArtifactFieldDTO ConvertRelativityObjectToArtifactFieldDto(RelativityObject relativityObject, string fieldTypeName)
 		{
 			return new ArtifactFieldDTO
 			{

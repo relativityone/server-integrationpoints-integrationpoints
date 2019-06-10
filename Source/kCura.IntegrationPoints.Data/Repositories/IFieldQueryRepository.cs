@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <param name="rdoTypeID"></param>
 		/// <returns>the ArtifactDTO represents the identifier field of the object</returns>
 		/// <remarks>the returns ArtifactDTO contains name and 'is identifier' fields</remarks>
-		ArtifactDTO RetrieveTheIdentifierField(int rdoTypeID);
+		ArtifactDTO RetrieveIdentifierField(int rdoTypeID);
 
 		/// <summary>
 		///     Reads a given Field Dto

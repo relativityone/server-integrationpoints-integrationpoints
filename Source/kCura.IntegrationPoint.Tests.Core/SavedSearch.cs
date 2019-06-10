@@ -78,7 +78,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		public static void ModifySavedSearchByAddingPrefix(IRepositoryFactory repositoryFactory, int workspaceID, int savedSearchID, string documentPrefix, bool excludeExpDocs)
 		{
 			IFieldQueryRepository sourceFieldQueryRepository = repositoryFactory.GetFieldQueryRepository(workspaceID);
-			int controlNumberFieldArtifactID = sourceFieldQueryRepository.RetrieveTheIdentifierField((int)ArtifactType.Document).ArtifactId;
+			int controlNumberFieldArtifactID = sourceFieldQueryRepository.RetrieveIdentifierField((int)ArtifactType.Document).ArtifactId;
 
 			var fieldRef = new FieldRef(controlNumberFieldArtifactID)
 			{

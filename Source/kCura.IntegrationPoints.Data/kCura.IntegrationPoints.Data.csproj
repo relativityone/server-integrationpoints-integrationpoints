@@ -65,6 +65,7 @@
     <Compile Include="ChoiceQuery.cs" />
     <Compile Include="Contexts\IOnBehalfOfUserClaimsPrincipalFactory.cs" />
     <Compile Include="Contexts\OnBehalfOfUserClaimsPrincipalFactory.cs" />
+    <Compile Include="Converters\FieldRefExtensions.cs" />
     <Compile Include="Converters\FieldValuePairExtensions.cs" />
     <Compile Include="Converters\RelativityObjectExtensions.cs" />
     <Compile Include="Converters\WorkspaceRefExtensions.cs" />
