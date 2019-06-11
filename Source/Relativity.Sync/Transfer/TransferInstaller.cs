@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Reflection;
 using Autofac;
+using Relativity.Sync.Transfer.StreamWrappers;
 
 namespace Relativity.Sync.Transfer
 {
@@ -17,6 +18,8 @@ namespace Relativity.Sync.Transfer
 			builder.RegisterType<FolderPathRetriever>().As<IFolderPathRetriever>();
 			builder.RegisterType<ItemStatusMonitor>().As<IItemStatusMonitor>();
 			builder.RegisterType<SourceWorkspaceDataReader>().As<ISourceWorkspaceDataReader>();
+			builder.RegisterType<ImportStreamBuilder>().As<IImportStreamBuilder>();
+			builder.RegisterType<StreamRetryPolicyFactory>().As<IStreamRetryPolicyFactory>();
 			builder.RegisterTypes(Assembly.GetExecutingAssembly().GetTypes()
 				.Where(t => !t.IsAbstract && t.IsAssignableTo<ISpecialFieldBuilder>())
 				.ToArray()).As<ISpecialFieldBuilder>();
