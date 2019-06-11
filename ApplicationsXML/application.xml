@@ -3044,7 +3044,7 @@
           <IsAdditionalFileField>false</IsAdditionalFileField>
           <IsArtifactBaseField>false</IsArtifactBaseField>
           <IsAvailableInChoiceTree>false</IsAvailableInChoiceTree>
-          <IsAvailableToAssociativeObjects>false</IsAvailableToAssociativeObjects>
+          <IsAvailableToAssociativeObjects>true</IsAvailableToAssociativeObjects>
           <IsEditable>false</IsEditable>
           <IsGroupByEnabled>false</IsGroupByEnabled>
           <IsIndexEnabled>false</IsIndexEnabled>
