@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -91,8 +89,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 		public void ItShouldWrapStreamInSelfDisposingStream()
 		{
 			// Arrange
-			//const string streamInput = "hello world!";
-			//var stream = new MemoryStream(Encoding.Unicode.GetBytes(streamInput));
 			var stream = new Mock<Stream>();
 			stream.Setup(x => x.Read(It.IsAny<byte[]>(), It.IsAny<int>(), It.IsAny<int>())).Returns(0);
 			var instance = new ImportStreamBuilder(_streamRetryPolicyFactory.Object, _logger.Object);
@@ -101,7 +97,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 			Stream result = instance.Create(() => stream.Object, StreamEncoding.Unicode);
 
 			// Assert
-			//ReadOutPastEndOfStream(result);
 			result.CanRead.Should().BeFalse();
 		}
 
@@ -120,14 +115,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 			int bytesRead = stream.Read(buffer, 0, buffer.Length);
 			string streamOutput = Encoding.Unicode.GetString(buffer, 0, bytesRead);
 			return streamOutput;
-		}
-
-		private void ReadOutPastEndOfStream(Stream stream)
-		{
-			const int bufferSize = 1024;
-			byte[] buffer = new byte[bufferSize];
-			int bytesRead = stream.Read(buffer, 0, buffer.Length);
-			stream.Read(buffer, bytesRead, 1);
 		}
 	}
 }

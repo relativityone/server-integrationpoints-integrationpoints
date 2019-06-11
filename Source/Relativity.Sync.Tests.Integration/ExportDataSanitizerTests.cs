@@ -10,7 +10,6 @@ using Moq;
 using Moq.Language.Flow;
 using NUnit.Framework;
 using Relativity.Kepler.Transport;
-using Relativity.Services.Exceptions;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
