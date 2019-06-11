@@ -20,7 +20,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 	[TestFixture]
 	internal sealed class SourceWorkspaceDataReaderTests
 	{
-		private Mock<RelativityExportBatcherFactory> _exportBatcherFactory;
+		private Mock<IRelativityExportBatcherFactory> _exportBatcherFactory;
 		private Mock<IRelativityExportBatcher> _exportBatcher;
 		private Mock<ISynchronizationConfiguration> _configuration;
 		private Mock<IFieldManager> _fieldManager;
@@ -31,8 +31,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public void SetUp()
 		{
 			_exportBatcher = new Mock<IRelativityExportBatcher>();
-			_exportBatcherFactory = new Mock<RelativityExportBatcherFactory>();
-			_exportBatcherFactory.Setup(x => x(It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<int>()))
+			_exportBatcherFactory = new Mock<IRelativityExportBatcherFactory>();
+			_exportBatcherFactory.Setup(x => x.CreateRelativityExportBatcher(It.IsAny<Batch>()))
 				.Returns(_exportBatcher.Object);
 
 			_identifierField = FieldInfoDto.DocumentField("IdentifierField", "IdentifierField", true);
@@ -50,48 +50,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		}
 
 		[Test]
-		public void ItShouldNotInvokeBatcherFactoryInConstructor()
-		{
-			// Arrange
-			Guid runId = Guid.NewGuid();
-			const int sourceWorkspaceId = 123;
-			const int syncConfigurationId = 456;
-
-			_configuration.SetupGet(x => x.ExportRunId).Returns(runId);
-			_configuration.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(sourceWorkspaceId);
-			_configuration.SetupGet(x => x.SyncConfigurationArtifactId).Returns(syncConfigurationId);
-
-			// Act
-			SourceWorkspaceDataReader instance = BuildInstanceUnderTest();
-
-			// Assert
-			_exportBatcherFactory.Verify(x => x(runId, sourceWorkspaceId, syncConfigurationId), Times.Never);
-		}
-
-		[Test]
-		public void ItShouldInvokeBatcherFactoryOnlyOnceWhenRead()
-		{
-			// Arrange
-			Guid runId = Guid.NewGuid();
-			const int sourceWorkspaceId = 123;
-			const int syncConfigurationId = 456;
-
-			_configuration.SetupGet(x => x.ExportRunId).Returns(runId);
-			_configuration.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(sourceWorkspaceId);
-			_configuration.SetupGet(x => x.SyncConfigurationArtifactId).Returns(syncConfigurationId);
-
-			// Act
-			SourceWorkspaceDataReader instance = BuildInstanceUnderTest();
-			instance.Read();
-			instance.Read();
-			instance.Read();
-
-			// Assert
-			_exportBatcherFactory.Verify(x => x(runId, sourceWorkspaceId, syncConfigurationId), Times.Once);
-		}
-
-		[Test]
-		public void ItShouldGetNextBatchWhenCurrentIsEmpty()
+		public void ItShouldGetNextItemsForBatchWhenCurrentIsEmpty()
 		{
 			// Arrange
 			SourceWorkspaceDataReader instance = BuildInstanceUnderTest();
@@ -100,7 +59,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			instance.Read();
 
 			// Assert
-			_exportBatcher.Verify(x => x.GetNextBatchAsync());
+			_exportBatcher.Verify(x => x.GetNextItemsFromBatchAsync());
 		}
 
 		[Test]
@@ -147,7 +106,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			instance.Read();
 
 			// Assert
-			_exportBatcher.Verify(x => x.GetNextBatchAsync(), Times.Exactly(1));
+			_exportBatcher.Verify(x => x.GetNextItemsFromBatchAsync(), Times.Exactly(1));
 		}
 
 		[Test]
@@ -260,7 +219,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public void ItShouldThrowProperExceptionWhenExportBatcherThrows()
 		{
 			// Arrange
-			_exportBatcher.Setup(x => x.GetNextBatchAsync())
+			_exportBatcher.Setup(x => x.GetNextItemsFromBatchAsync())
 				.Throws(new ServiceException("Foo"));
 			SourceWorkspaceDataReader instance = BuildInstanceUnderTest();
 
@@ -304,7 +263,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		{
 			return new SourceWorkspaceDataReader(dataTableBuilder,
 				_configuration.Object,
-				_exportBatcherFactory.Object,
+				_exportBatcher.Object,
 				_fieldManager.Object,
 				_itemStatusMonitor.Object,
 				new EmptyLogger());
@@ -312,7 +271,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 		private void ExportBatcherReturnsBatches(params RelativityObjectSlim[][] batches)
 		{
-			ISetupSequentialResult<Task<RelativityObjectSlim[]>> setupAssertion = _exportBatcher.SetupSequence(x => x.GetNextBatchAsync());
+			ISetupSequentialResult<Task<RelativityObjectSlim[]>> setupAssertion = _exportBatcher.SetupSequence(x => x.GetNextItemsFromBatchAsync());
 			foreach (RelativityObjectSlim[] batch in batches)
 			{
 				setupAssertion.ReturnsAsync(batch);
