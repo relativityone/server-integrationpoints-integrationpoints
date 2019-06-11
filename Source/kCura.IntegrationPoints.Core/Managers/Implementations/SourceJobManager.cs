@@ -17,15 +17,13 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			_repositoryFactory = repositoryFactory;
 		}
 
-		public SourceJobDTO CreateSourceJobDto(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId, int jobHistoryArtifactId, int sourceWorkspaceRdoInstanceArtifactId,
-			int sourceJobDescriptorArtifactTypeId)
+		public SourceJobDTO CreateSourceJobDto(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId, int jobHistoryArtifactId, int sourceWorkspaceRdoInstanceArtifactId)
 		{
 			ISourceJobRepository sourceJobRepository = _repositoryFactory.GetSourceJobRepository(destinationWorkspaceArtifactId);
 
 			string jobHistoryName = GetJobHistoryName(sourceWorkspaceArtifactId, jobHistoryArtifactId);
 			var jobHistoryDto = new SourceJobDTO
 			{
-				ArtifactTypeId = sourceJobDescriptorArtifactTypeId,
 				Name = GenerateSourceJobName(jobHistoryName, jobHistoryArtifactId),
 				SourceWorkspaceArtifactId = sourceWorkspaceRdoInstanceArtifactId,
 				JobHistoryArtifactId = jobHistoryArtifactId,

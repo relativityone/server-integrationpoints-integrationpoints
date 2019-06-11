@@ -32,15 +32,13 @@ namespace kCura.IntegrationPoints.Core.Tagging
 				int sourceWorkspaceDescriptorArtifactTypeId =
 					_sourceWorkspaceRdoInitializer.InitializeWorkspaceWithSourceWorkspaceRdo(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId);
 
-				SourceWorkspaceDTO sourceWorkspaceDto = _sourceWorkspaceManager.CreateSourceWorkspaceDto(destinationWorkspaceArtifactId, sourceWorkspaceArtifactId, federatedInstanceArtifactId,
-					sourceWorkspaceDescriptorArtifactTypeId);
+				SourceWorkspaceDTO sourceWorkspaceDto = _sourceWorkspaceManager.CreateSourceWorkspaceDto(destinationWorkspaceArtifactId, sourceWorkspaceArtifactId, federatedInstanceArtifactId);
 
-				int sourceJobDescriptorArtifactTypeId = _sourceJobRdoInitializer.InitializeWorkspaceWithSourceJobRdo(destinationWorkspaceArtifactId, sourceWorkspaceDto.ArtifactTypeId);
+				_sourceJobRdoInitializer.InitializeWorkspaceWithSourceJobRdo(destinationWorkspaceArtifactId, sourceWorkspaceDescriptorArtifactTypeId);
 
-				SourceJobDTO sourceJobDto = _sourceJobManager.CreateSourceJobDto(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, jobHistoryArtifactId, sourceWorkspaceDto.ArtifactId,
-					sourceJobDescriptorArtifactTypeId);
+				SourceJobDTO sourceJobDto = _sourceJobManager.CreateSourceJobDto(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, jobHistoryArtifactId, sourceWorkspaceDto.ArtifactId);
 
-				_logger.LogDebug("Created TagsContainer for workspace {workspaceName} and job: {jobName}. Destination {destinationWorkspaceArtifactId}, instance: {federatedInstanceArtifactId}", 
+				_logger.LogDebug("Created TagsContainer for workspace {workspaceName} and job: {jobName}. Destination {destinationWorkspaceArtifactId}, instance: {federatedInstanceArtifactId}",
 					sourceWorkspaceDto.Name, sourceJobDto.Name, destinationWorkspaceArtifactId, federatedInstanceArtifactId);
 				return new TagsContainer(sourceJobDto, sourceWorkspaceDto);
 			}

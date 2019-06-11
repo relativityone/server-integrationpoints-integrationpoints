@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using Castle.Core.Internal;
 using Castle.Windsor;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
+using Relativity.Sync.Configuration;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
@@ -30,7 +32,29 @@ namespace kCura.IntegrationPoints.RelativitySync
 				ImportSettings destinationConfiguration = serializer.Deserialize<ImportSettings>(job.IntegrationPointModel.DestinationConfiguration);
 				List<string> emailRecipients = IntegrationPointTaskBase.GetRecipientEmails(job.IntegrationPointModel, logger);
 
-				return new SyncConfiguration(job.JobHistoryId, job.SubmittedById, sourceConfiguration, destinationConfiguration, emailRecipients);
+				ImportSettingsDto importSettingsDto = new ImportSettingsDto()
+				{
+					RelativityWebServiceUrl = new Uri(Config.Config.Instance.WebApiPath),
+					CaseArtifactId = destinationConfiguration.CaseArtifactId,
+					CopyFilesToDocumentRepository = destinationConfiguration.CopyFilesToDocumentRepository,
+					DestinationFolderArtifactId = destinationConfiguration.DestinationFolderArtifactId,
+					DisableNativeLocationValidation = destinationConfiguration.DisableNativeLocationValidation,
+					DisableNativeValidation = destinationConfiguration.DisableNativeValidation,
+					ErrorFilePath = destinationConfiguration.ErrorFilePath,
+					ExtractedTextFieldContainsFilePath = destinationConfiguration.ExtractedTextFieldContainsFilePath,
+					ExtractedTextFileEncoding = destinationConfiguration.ExtractedTextFileEncoding,
+					FileSizeMapped = destinationConfiguration.FileSizeMapped,
+					FieldOverlayBehavior = _fieldOverlayBehaviors[destinationConfiguration.ImportOverlayBehavior],
+					ImportNativeFileCopyMode = (ImportNativeFileCopyMode)destinationConfiguration.ImportNativeFileCopyMode,
+					ImportOverwriteMode = (ImportOverwriteMode)destinationConfiguration.ImportOverwriteMode,
+					LoadImportedFullTextFromServer = destinationConfiguration.LoadImportedFullTextFromServer,
+					MoveExistingDocuments = destinationConfiguration.MoveExistingDocuments,
+					OiFileIdMapped = destinationConfiguration.OIFileIdMapped,
+					ParentObjectIdSourceFieldName = destinationConfiguration.ParentObjectIdSourceFieldName
+				};
+				destinationConfiguration.ObjectFieldIdListContainsArtifactId.ForEach(x => importSettingsDto.ObjectFieldIdListContainsArtifactId.Add(x));
+
+				return new SyncConfiguration(job.SubmittedById, sourceConfiguration, destinationConfiguration, emailRecipients, importSettingsDto);
 			}
 			catch (Exception e)
 			{
@@ -38,5 +62,13 @@ namespace kCura.IntegrationPoints.RelativitySync
 				throw;
 			}
 		}
+
+		private static readonly Dictionary<ImportOverlayBehaviorEnum, FieldOverlayBehavior> _fieldOverlayBehaviors = new Dictionary<ImportOverlayBehaviorEnum, FieldOverlayBehavior>()
+		{
+			{ ImportOverlayBehaviorEnum.UseRelativityDefaults, FieldOverlayBehavior.UseFieldSettings },
+			{ ImportOverlayBehaviorEnum.MergeAll, FieldOverlayBehavior.MergeValues },
+			{ ImportOverlayBehaviorEnum.ReplaceAll, FieldOverlayBehavior.ReplaceValues }
+		};
+
 	}
 }

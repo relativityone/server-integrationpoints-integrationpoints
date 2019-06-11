@@ -40,7 +40,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		{
 			int jobHistoryArtifactId = 134703;
 			int sourceWorkspaceRdoInstanceArtifactId = 966631;
-			int sourceJobDescriptorArtifactTypeId = 577930;
 
 			string jobHistoryName = "job_history_name_956";
 			var sourceJobId = 713321;
@@ -49,8 +48,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_sourceJobRepository.Create(Arg.Any<SourceJobDTO>()).Returns(sourceJobId);
 
 			//ACT
-			var sourceJobDto = _instance.CreateSourceJobDto(_SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID, jobHistoryArtifactId, sourceWorkspaceRdoInstanceArtifactId,
-				sourceJobDescriptorArtifactTypeId);
+			var sourceJobDto = _instance.CreateSourceJobDto(_SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID, jobHistoryArtifactId, sourceWorkspaceRdoInstanceArtifactId);
 
 			// ASSERT
 			ValidateSourceJob(sourceJobDto, sourceJobId, jobHistoryName, jobHistoryArtifactId, sourceWorkspaceRdoInstanceArtifactId);
@@ -61,7 +59,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		{
 			int jobHistoryArtifactId = 806694;
 			int sourceWorkspaceRdoInstanceArtifactId = 320154;
-			int sourceJobDescriptorArtifactTypeId = 846788;
 
 			string jobHistoryName = new string('x', 300);
 			var sourceJobId = 713321;
@@ -72,8 +69,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_sourceJobRepository.Create(Arg.Any<SourceJobDTO>()).Returns(sourceJobId);
 
 			//ACT
-			var sourceJobDto = _instance.CreateSourceJobDto(_SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID, jobHistoryArtifactId, sourceWorkspaceRdoInstanceArtifactId,
-				sourceJobDescriptorArtifactTypeId);
+			var sourceJobDto = _instance.CreateSourceJobDto(_SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID, jobHistoryArtifactId, sourceWorkspaceRdoInstanceArtifactId);
 
 			// ASSERT
 			Assert.That(sourceJobDto.Name.Length, Is.EqualTo(Data.Constants.DEFAULT_NAME_FIELD_LENGTH));

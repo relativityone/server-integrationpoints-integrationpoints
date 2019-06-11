@@ -56,10 +56,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		{
 			var expectedResult = 268763;
 
-			var sourceWorkspaceDto = new SourceWorkspaceDTO
-			{
-				ArtifactTypeId = 339125
-			};
+			var sourceWorkspaceDto = new SourceWorkspaceDTO();
 
 			_relativityObjectManager.Create(Arg.Any<ObjectTypeRef>(), Arg.Any<List<FieldRefValuePair>>()).Returns(expectedResult);
 
@@ -68,7 +65,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 
 			// ASSERT
 			Assert.That(actualResult, Is.EqualTo(expectedResult));
-			_relativityObjectManager.Received(1).Create(Arg.Is<ObjectTypeRef>(x => x.ArtifactID == 0 && x.ArtifactTypeID == sourceWorkspaceDto.ArtifactTypeId), Arg.Any<List<FieldRefValuePair>>());
+			_relativityObjectManager.Received(1).Create(Arg.Is<ObjectTypeRef>(x => x.ArtifactID == 0 && x.Guid == SourceWorkspaceDTO.ObjectTypeGuid), Arg.Any<List<FieldRefValuePair>>());
 		}
 
 		[Test]
@@ -135,7 +132,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		[Test]
 		public void ItShouldReturnNull_WhenObjectManager_ReturnedNull()
 		{
-			_relativityObjectManager.Query(Arg.Any<QueryRequest>()).Returns((List < RelativityObject > )null);
+			_relativityObjectManager.Query(Arg.Any<QueryRequest>()).Returns((List<RelativityObject>)null);
 
 			// ACT
 			var actualResult = _instance.RetrieveForSourceWorkspaceId(156272, "fed_name_503", 541);

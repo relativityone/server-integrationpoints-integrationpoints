@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Adapters
 			return Task.FromResult(configuration.SendEmails);
 		}
 
-		public async Task ExecuteAsync(INotificationConfiguration configuration, CancellationToken token)
+		public async Task<ExecutionResult> ExecuteAsync(INotificationConfiguration configuration, CancellationToken token)
 		{
 			await Task.Yield();
 
@@ -51,6 +51,8 @@ namespace kCura.IntegrationPoints.RelativitySync.Adapters
 			BatchEmail.ConvertMessage(emailMessage, configuration.EmailRecipients, converter);
 
 			sendEmailWorker.Execute(emailMessage, extendedJob.JobId);
+
+			return ExecutionResult.Success();
 		}
 	}
 }
