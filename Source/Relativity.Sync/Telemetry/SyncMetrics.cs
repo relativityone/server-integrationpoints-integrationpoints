@@ -83,5 +83,32 @@ namespace Relativity.Sync.Telemetry
 				sink.Log(metric);
 			}
 		}
+
+		public void LogPointInTimeString(string name, string value, string workflowId)
+		{
+			foreach (ISyncMetricsSink sink in _sinks)
+			{
+				Metric metric = Metric.PointInTimeStringOperation(name, value, workflowId, _correlationId.Value);
+				sink.Log(metric);
+			}
+		}
+
+		public void LogPointInTimeLong(string name, long value, string workflowId)
+		{
+			foreach (ISyncMetricsSink sink in _sinks)
+			{
+				Metric metric = Metric.PointInTimeLongOperation(name, value, workflowId, _correlationId.Value);
+				sink.Log(metric);
+			}
+		}
+
+		public void LogPointInTimeDouble(string name, double value, string workflowId)
+		{
+			foreach (ISyncMetricsSink sink in _sinks)
+			{
+				Metric metric = Metric.PointInTimeDoubleOperation(name, value, workflowId, _correlationId.Value);
+				sink.Log(metric);
+			}
+		}
 	}
 }
