@@ -9,14 +9,19 @@ namespace kCura.IntegrationPoints.Data.Converters
 	{
 		public static ArtifactFieldDTO ToArtifactFieldDTO(this FieldRef artifactDTO)
 		{
+			if (artifactDTO == null)
+			{
+				return null;
+			}
+
 			return new ArtifactFieldDTO
 			{
 				ArtifactId = artifactDTO.ArtifactID,
-				Name = artifactDTO.Name,
+				Name = artifactDTO.Name
 			};
 		}
 
 		public static IEnumerable<ArtifactFieldDTO> ToArtifactFieldDTOs(this IEnumerable<FieldRef> artifactDTOs) =>
-			artifactDTOs.Select(ToArtifactFieldDTO);
+			artifactDTOs?.Select(ToArtifactFieldDTO);
 	}
 }
