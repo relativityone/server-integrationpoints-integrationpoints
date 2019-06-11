@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public IEnumerable<SavedSearchDTO> RetrievePublicSavedSearches()
 		{
-			return GetSavedSearchesDto().GetAwaiter().GetResult().Where(item => item.IsPublic);
+			return GetSavedSearchesDtoAsync().GetAwaiter().GetResult().Where(item => item.IsPublic);
 		}
 
 		public SavedSearchQueryResult RetrievePublicSavedSearches(SavedSearchQueryRequest request)
@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return new SavedSearchQueryResult(request, result.TotalCount, mappedResult);
 		}
 
-		private async Task<IEnumerable<SavedSearchDTO>> GetSavedSearchesDto(string condition = null)
+		private async Task<IEnumerable<SavedSearchDTO>> GetSavedSearchesDtoAsync(string condition = null)
 		{
 			QueryRequest query = CreateQueryRequest(condition);
 
