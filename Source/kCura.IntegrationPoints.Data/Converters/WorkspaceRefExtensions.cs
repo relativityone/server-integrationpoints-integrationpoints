@@ -9,6 +9,11 @@ namespace kCura.IntegrationPoints.Data.Converters
 	{
 		public static WorkspaceDTO ToWorkspaceDTO(this WorkspaceRef workspaceRef)
 		{
+			if (workspaceRef == null)
+			{
+				return null;
+			}
+
 			return new WorkspaceDTO
 			{
 				Name = workspaceRef.Name,
@@ -18,7 +23,7 @@ namespace kCura.IntegrationPoints.Data.Converters
 
 		public static IEnumerable<WorkspaceDTO> ToWorkspaceDTOs(this IEnumerable<WorkspaceRef> workspaceRefs)
 		{
-			return workspaceRefs.Select(ToWorkspaceDTO);
+			return workspaceRefs?.Select(ToWorkspaceDTO);
 		}
 	}
 }
