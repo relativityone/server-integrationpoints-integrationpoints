@@ -13,16 +13,18 @@ namespace Relativity.Sync.Transfer
 	internal sealed class LongTextFieldSanitizer : IExportFieldSanitizer
 	{
 		private const string _BIG_LONG_TEXT_SHIBBOLETH = "#KCURA99DF2F0FEB88420388879F1282A55760#";
-		private const int _DOCUMENT_OBJECT_TYPE_ARTIFACT_TYPE_ID = (int) ArtifactType.Document;
+		private const int _DOCUMENT_OBJECT_TYPE_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
 
 		private readonly ISourceServiceFactoryForUser _serviceFactory;
+		private readonly IImportStreamBuilder _importStreamBuilder;
 		private readonly ISyncLog _logger;
 
 		public RelativityDataType SupportedType => RelativityDataType.LongText;
 
-		public LongTextFieldSanitizer(ISourceServiceFactoryForUser serviceFactory, ISyncLog logger)
+		public LongTextFieldSanitizer(ISourceServiceFactoryForUser serviceFactory, IImportStreamBuilder importStreamBuilder, ISyncLog logger)
 		{
 			_serviceFactory = serviceFactory;
+			_importStreamBuilder = importStreamBuilder;
 			_logger = logger;
 		}
 
@@ -30,7 +32,7 @@ namespace Relativity.Sync.Transfer
 		{
 			if (initialValue == null || initialValue is string)
 			{
-				return await SanitizeAsync(workspaceArtifactId, itemIdentifierSourceFieldName, itemIdentifier, sanitizingSourceFieldName, (string) initialValue).ConfigureAwait(false);
+				return await SanitizeAsync(workspaceArtifactId, itemIdentifierSourceFieldName, itemIdentifier, sanitizingSourceFieldName, (string)initialValue).ConfigureAwait(false);
 			}
 
 			throw new ArgumentException($"Expected initial value to be string, instead was {initialValue.GetType().FullName}", nameof(initialValue));
@@ -50,10 +52,10 @@ namespace Relativity.Sync.Transfer
 			int itemArtifactId = await GetItemArtifactIdAsync(workspaceArtifactId, itemIdentifierSourceFieldName, itemIdentifier).ConfigureAwait(false);
 			if (await IsFieldInUnicodeAsync(workspaceArtifactId, sanitizingSourceFieldName).ConfigureAwait(false))
 			{
-				return StreamUnicodeLongText(workspaceArtifactId, itemArtifactId, sanitizingSourceFieldName);
+				return StreamLongText(workspaceArtifactId, itemArtifactId, sanitizingSourceFieldName, StreamEncoding.Unicode);
 			}
 
-			return StreamNonUnicodeLongText(workspaceArtifactId, itemArtifactId, sanitizingSourceFieldName);
+			return StreamLongText(workspaceArtifactId, itemArtifactId, sanitizingSourceFieldName, StreamEncoding.ASCII);
 		}
 
 		private async Task<int> GetItemArtifactIdAsync(int workspaceArtifactId, string itemIdentifierSourceFieldName, string itemIdentifier)
@@ -62,7 +64,7 @@ namespace Relativity.Sync.Transfer
 			{
 				var request = new QueryRequest
 				{
-					ObjectType = new ObjectTypeRef{ ArtifactTypeID = _DOCUMENT_OBJECT_TYPE_ARTIFACT_TYPE_ID},
+					ObjectType = new ObjectTypeRef { ArtifactTypeID = _DOCUMENT_OBJECT_TYPE_ARTIFACT_TYPE_ID },
 					Condition = $"'{itemIdentifierSourceFieldName}' == '{itemIdentifier}'"
 				};
 				QueryResultSlim result = await objectManager.QuerySlimAsync(workspaceArtifactId, request, 0, 1).ConfigureAwait(false);
@@ -77,43 +79,26 @@ namespace Relativity.Sync.Transfer
 				string conditionString = $"'Name' == '{sanitizingSourceFieldName}' AND 'Object Type Artifact Type ID' == {_DOCUMENT_OBJECT_TYPE_ARTIFACT_TYPE_ID}";
 				var request = new QueryRequest
 				{
-					ObjectType = new ObjectTypeRef {Name = "Field"},
+					ObjectType = new ObjectTypeRef { Name = "Field" },
 					Condition = conditionString,
-					Fields = new[] {new FieldRef {Name = "Unicode"}}
+					Fields = new[] { new FieldRef { Name = "Unicode" } }
 				};
 				QueryResultSlim result = await objectManager.QuerySlimAsync(workspaceArtifactId, request, 0, 1).ConfigureAwait(false);
 				return (bool)result.Objects[0].Values[0];
 			}
 		}
 
-		public Stream StreamUnicodeLongText(int workspaceArtifactId, int relativityObjectArtifactId, string fieldName)
+		public Stream StreamLongText(int workspaceArtifactId, int relativityObjectArtifactId, string fieldName, StreamEncoding encoding)
 		{
 			try
 			{
-				var selfRecreatingStream = new SelfRecreatingStream(() => GetLongTextStreamAsync(workspaceArtifactId, relativityObjectArtifactId, fieldName).GetAwaiter().GetResult(), _logger);
-				var selfDisposingStream = new SelfDisposingStream(selfRecreatingStream, _logger);
-				return selfDisposingStream;
+				return _importStreamBuilder.Create(
+					() => GetLongTextStreamAsync(workspaceArtifactId, relativityObjectArtifactId, fieldName).GetAwaiter().GetResult(),
+					encoding);
 			}
 			catch (Exception ex)
 			{
-				string message = GetStreamLongTextErrorMessage(nameof(StreamUnicodeLongText), workspaceArtifactId, relativityObjectArtifactId, fieldName);
-				_logger.LogError(ex, message);
-				throw;
-			}
-		}
-
-		public Stream StreamNonUnicodeLongText(int workspaceArtifactId, int relativityObjectArtifactId, string fieldName)
-		{
-			try
-			{
-				var selfRecreatingStream = new SelfRecreatingStream(() => GetLongTextStreamAsync(workspaceArtifactId, relativityObjectArtifactId, fieldName).GetAwaiter().GetResult(), _logger);
-				var asciiToUnicodeStream = new AsciiToUnicodeStream(selfRecreatingStream);
-				var selfDisposingStream = new SelfDisposingStream(asciiToUnicodeStream, _logger);
-				return selfDisposingStream;
-			}
-			catch (Exception ex)
-			{
-				string message = GetStreamLongTextErrorMessage(nameof(StreamNonUnicodeLongText), workspaceArtifactId, relativityObjectArtifactId, fieldName);
+				string message = GetStreamLongTextErrorMessage(workspaceArtifactId, relativityObjectArtifactId, fieldName, encoding);
 				_logger.LogError(ex, message);
 				throw;
 			}
@@ -123,21 +108,21 @@ namespace Relativity.Sync.Transfer
 		{
 			using (var objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
-				var exportObject = new RelativityObjectRef() { ArtifactID = relativityObjectArtifactId };
-				var fieldRef = new FieldRef {Name = fieldName};
+				var exportObject = new RelativityObjectRef { ArtifactID = relativityObjectArtifactId };
+				var fieldRef = new FieldRef { Name = fieldName };
 				IKeplerStream keplerStream = await objectManager.StreamLongTextAsync(workspaceArtifactId, exportObject, fieldRef).ConfigureAwait(false);
 				return await keplerStream.GetStreamAsync().ConfigureAwait(false);
 			}
 		}
 
 		private static string GetStreamLongTextErrorMessage(
-			string methodName,
 			int workspaceArtifactID,
 			int relativityObjectArtifactId,
-			string fieldName)
+			string fieldName,
+			StreamEncoding encoding)
 		{
 			var msgBuilder = new StringBuilder();
-			msgBuilder.Append($"Error occurred when calling {methodName} method. ");
+			msgBuilder.Append($"Error occurred when creating stream with {encoding} encoding. ");
 			msgBuilder.Append($"Workspace: ({workspaceArtifactID}) ");
 			msgBuilder.Append($"ExportObject artifact id: ({relativityObjectArtifactId}) ");
 			msgBuilder.Append($"Long text field name: ({fieldName})");

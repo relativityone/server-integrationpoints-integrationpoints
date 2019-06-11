@@ -25,6 +25,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		private Mock<IObjectManager> _objectManager;
 		private Mock<ISourceServiceFactoryForUser> _userServiceFactory;
 		private Mock<ISyncLog> _logger;
+		private Mock<IImportStreamBuilder> _streamBuilder;
 
 		private const int _ITEM_ARTIFACT_ID = 1012323;
 		private const int _SOURCE_WORKSPACE_ID = 1014023;
@@ -40,7 +41,21 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_userServiceFactory = new Mock<ISourceServiceFactoryForUser>();
 			_userServiceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>())
 				.ReturnsAsync(_objectManager.Object);
+			_streamBuilder = new Mock<IImportStreamBuilder>();
 			_logger = new Mock<ISyncLog>();
+		}
+
+		[Test]
+		public void ItShouldSupportLongText()
+		{
+			// Arrange
+			var instance = new LongTextFieldSanitizer(_userServiceFactory.Object, _streamBuilder.Object, _logger.Object);
+
+			// Act
+			RelativityDataType supportedType = instance.SupportedType;
+
+			// Assert
+			supportedType.Should().Be(RelativityDataType.LongText);
 		}
 
 		[TestCase(null)]
@@ -50,7 +65,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public async Task ItShouldReturnNonShibbolethStringInitialValue(object initialValue)
 		{
 			// Arrange
-			var instance = new LongTextFieldSanitizer(_userServiceFactory.Object, _logger.Object);
+			var instance = new LongTextFieldSanitizer(_userServiceFactory.Object, _streamBuilder.Object, _logger.Object);
 
 			// Act
 			object result = await instance.SanitizeAsync(_SOURCE_WORKSPACE_ID, _IDENTIFIER_FIELD_NAME, _IDENTIFIER_FIELD_VALUE, _SANITIZING_SOURCE_FIELD_NAME, initialValue)
@@ -64,7 +79,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public async Task ItShouldThrowWhenGivenNonStringInitialValue()
 		{
 			// Arrange
-			var instance = new LongTextFieldSanitizer(_userServiceFactory.Object, _logger.Object);
+			var instance = new LongTextFieldSanitizer(_userServiceFactory.Object, _streamBuilder.Object, _logger.Object);
 
 			// Act
 			DateTime initialValue = DateTime.Now;
@@ -101,7 +116,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				.ReturnsAsync(fieldEncodingResult)
 				.Verifiable();
 
-			const string sanitizingFieldValue = "";
+			SetupStreamBuilder().Returns<Func<Stream>, StreamEncoding>((f, _) => f());
+
+			string sanitizingFieldValue = string.Empty;
 			byte[] streamValueBytes = Encoding.Unicode.GetBytes(sanitizingFieldValue);
 
 			Mock<IKeplerStream> keplerStream = new Mock<IKeplerStream>();
@@ -110,7 +127,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				.ReturnsAsync(keplerStream.Object)
 				.Verifiable();
 
-			var instance = new LongTextFieldSanitizer(_userServiceFactory.Object, _logger.Object);
+			var instance = new LongTextFieldSanitizer(_userServiceFactory.Object, _streamBuilder.Object, _logger.Object);
 
 			// Act
 			const string initialValue = _LONGTEXT_STREAM_SHIBBOLETH;
@@ -123,55 +140,12 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 		private static IEnumerable<TestCaseData> EncodingTestCases()
 		{
-			yield return new TestCaseData(Encoding.ASCII);
-			yield return new TestCaseData(Encoding.Unicode);
+			yield return new TestCaseData(StreamEncoding.ASCII);
+			yield return new TestCaseData(StreamEncoding.Unicode);
 		}
 
 		[TestCaseSource(nameof(EncodingTestCases))]
-		public async Task ItShouldReturnSelfDisposingStream(Encoding fieldEncoding)
-		{
-			// Arrange
-			const string sanitizingFieldValue = "this is a test stream";
-			SetupSuccessfulStreamTestCase(sanitizingFieldValue, fieldEncoding);
-
-			var instance = new LongTextFieldSanitizer(_userServiceFactory.Object, _logger.Object);
-
-			// Act
-			const string initialValue = _LONGTEXT_STREAM_SHIBBOLETH;
-			object result = await instance.SanitizeAsync(_SOURCE_WORKSPACE_ID, _IDENTIFIER_FIELD_NAME, _IDENTIFIER_FIELD_VALUE, _SANITIZING_SOURCE_FIELD_NAME, initialValue)
-				.ConfigureAwait(false);
-
-			// Assert
-			result.Should().NotBeNull().And.BeOfType<SelfDisposingStream>();
-		}
-
-		[TestCaseSource(nameof(EncodingTestCases))]
-		public async Task ItShouldReturnUnicodeEncodedStringOnRead(Encoding fieldEncoding)
-		{
-			// Arrange
-			const string sanitizingFieldValue = "this is a test stream";
-			SetupSuccessfulStreamTestCase(sanitizingFieldValue, fieldEncoding);
-
-			var instance = new LongTextFieldSanitizer(_userServiceFactory.Object, _logger.Object);
-
-			// Act
-			const string initialValue = _LONGTEXT_STREAM_SHIBBOLETH;
-			object result = await instance.SanitizeAsync(_SOURCE_WORKSPACE_ID, _IDENTIFIER_FIELD_NAME, _IDENTIFIER_FIELD_VALUE, _SANITIZING_SOURCE_FIELD_NAME, initialValue)
-				.ConfigureAwait(false);
-
-			// Assert
-			Stream resultStream = (Stream) result;
-
-			const int bufferLength = 1024;
-			byte[] streamedResultBuffer = new byte[bufferLength];
-			int bytesRead = resultStream.Read(streamedResultBuffer, 0, streamedResultBuffer.Length);
-			string reconstructedString = string.Join("", Encoding.Unicode.GetChars(streamedResultBuffer, 0, bytesRead));
-			reconstructedString.Should().Be(sanitizingFieldValue);
-		}
-
-		[Ignore("The thrown exceptions trigger the SelfRecreatingStream's retry policy, which causes these tests to run for several seconds.")]
-		[TestCaseSource(nameof(EncodingTestCases))]
-		public async Task ItShouldLogErrorAndRethrowWhenStreamCreationFails(Encoding fieldEncoding)
+		public async Task ItShouldLogErrorAndRethrowWhenStreamCreationThrows(StreamEncoding fieldEncoding)
 		{
 			// Arrange
 			const string sanitizingFieldName = _SANITIZING_SOURCE_FIELD_NAME;
@@ -179,13 +153,13 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			QueryResultSlim itemArtifactResult = WrapArtifactIdInQueryResultSlim(_ITEM_ARTIFACT_ID);
 			SetupItemArtifactIdRequest(MatchAll).ReturnsAsync(itemArtifactResult);
 
-			bool isUnicode = fieldEncoding is UnicodeEncoding;
+			bool isUnicode = fieldEncoding == StreamEncoding.Unicode;
 			QueryResultSlim fieldEncodingResult = WrapValuesInQueryResultSlim(isUnicode);
 			SetupFieldEncodingRequest(MatchAll).ReturnsAsync(fieldEncodingResult);
 
-			SetupStreamLongText(MatchAll, MatchAll).ThrowsAsync(new ServiceException());
+			SetupStreamBuilder().Throws<ServiceException>();
 
-			var instance = new LongTextFieldSanitizer(_userServiceFactory.Object, _logger.Object);
+			var instance = new LongTextFieldSanitizer(_userServiceFactory.Object, _streamBuilder.Object, _logger.Object);
 
 			// Act
 			const string initialValue = _LONGTEXT_STREAM_SHIBBOLETH;
@@ -195,29 +169,34 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			// Assert
 			await action.Should().ThrowAsync<ServiceException>().ConfigureAwait(false);
 
-			string expectedMethodName = isUnicode
-				? nameof(LongTextFieldSanitizer.StreamUnicodeLongText)
-				: nameof(LongTextFieldSanitizer.StreamNonUnicodeLongText);
+			string expectedEncoding = fieldEncoding.ToString();
 			_logger.Verify(x => x.LogError(
 				It.IsAny<Exception>(),
-				It.Is<string>(y => y.Contains(sanitizingFieldName) && y.Contains(expectedMethodName))));
+				It.Is<string>(y => y.Contains(sanitizingFieldName) && y.Contains(expectedEncoding))));
 		}
 
-		private void SetupSuccessfulStreamTestCase(string value, Encoding fieldEncoding)
+		[TestCaseSource(nameof(EncodingTestCases))]
+		public async Task ItShouldPassThroughCorrectStreamEncoding(StreamEncoding fieldEncoding)
 		{
+			// Arrange
 			QueryResultSlim itemArtifactResult = WrapArtifactIdInQueryResultSlim(_ITEM_ARTIFACT_ID);
 			SetupItemArtifactIdRequest(MatchAll).ReturnsAsync(itemArtifactResult);
 
-			bool isUnicode = fieldEncoding is UnicodeEncoding;
+			bool isUnicode = fieldEncoding == StreamEncoding.Unicode;
 			QueryResultSlim fieldEncodingResult = WrapValuesInQueryResultSlim(isUnicode);
 			SetupFieldEncodingRequest(MatchAll).ReturnsAsync(fieldEncodingResult);
 
-			byte[] streamValueBytes = fieldEncoding.GetBytes(value);
+			SetupStreamBuilder().Returns(new MemoryStream());
 
-			Mock<IKeplerStream> keplerStream = new Mock<IKeplerStream>();
-			keplerStream.Setup(x => x.GetStreamAsync()).ReturnsAsync(new MemoryStream(streamValueBytes));
-			SetupStreamLongText(MatchAll, MatchAll)
-				.ReturnsAsync(keplerStream.Object);
+			var instance = new LongTextFieldSanitizer(_userServiceFactory.Object, _streamBuilder.Object, _logger.Object);
+
+			// Act
+			const string initialValue = _LONGTEXT_STREAM_SHIBBOLETH;
+			await instance.SanitizeAsync(_SOURCE_WORKSPACE_ID, _IDENTIFIER_FIELD_NAME, _IDENTIFIER_FIELD_VALUE, _SANITIZING_SOURCE_FIELD_NAME, initialValue)
+				.ConfigureAwait(false);
+
+			// Assert
+			_streamBuilder.Verify(x => x.Create(It.IsAny<Func<Stream>>(), fieldEncoding));
 		}
 
 		private static bool MatchAll(object _) => true;
@@ -250,6 +229,11 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				It.IsAny<int>(),
 				It.Is<RelativityObjectRef>(r => objectRefMatcher(r)),
 				It.Is<FieldRef>(r => fieldRefMatcher(r))));
+		}
+
+		private ISetup<IImportStreamBuilder, Stream> SetupStreamBuilder()
+		{
+			return _streamBuilder.Setup(x => x.Create(It.IsAny<Func<Stream>>(), It.IsAny<StreamEncoding>()));
 		}
 
 		private static QueryResultSlim WrapValuesInQueryResultSlim(params object[] values)

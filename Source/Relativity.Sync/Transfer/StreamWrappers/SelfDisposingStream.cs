@@ -8,13 +8,15 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 	/// <summary>
 	/// Import API does not provide any way to dispose streams we're passing.
 	/// This stream will dispose itself when read.
-	/// It's working under assumption that IAPI won't acces this stream twice.
+	/// It's working under assumption that IAPI won't access this stream twice.
 	/// </summary>
 	internal sealed class SelfDisposingStream : Stream
 	{
+		private bool _disposed = false;
+
 		private readonly ISyncLog _logger;
 
-		internal Stream InnerStream { get; private set; }
+		internal Stream InnerStream { get; }
 
 		public SelfDisposingStream(
 			Stream stream,
@@ -77,14 +79,17 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 
 		public override long Position
 		{
-			get { return InnerStream.Position; }
-			set { InnerStream.Position = value; }
+			get => InnerStream.Position;
+			set => InnerStream.Position = value;
 		}
 
 		private void DisposeInnerStream()
 		{
-			InnerStream?.Dispose();
-			InnerStream = null;
+			if (!_disposed)
+			{
+				_disposed = true;
+				InnerStream.Dispose();
+			}
 		}
 
 		private void LogUnsupportedCall([CallerMemberName] string callerMemberName = "")

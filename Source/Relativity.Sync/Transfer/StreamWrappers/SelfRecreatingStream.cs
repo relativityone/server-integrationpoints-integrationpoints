@@ -13,22 +13,33 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 	/// </summary>
 	internal sealed class SelfRecreatingStream : Stream
 	{
+		// NOTE: This can't be readonly - we create a circular reference by
+		// passing in an instance method to the factory, so we need to set
+		// this field to null on dispose.
+		private ISyncPolicy<Stream> _getStreamRetryPolicy;
+
+		private bool _disposed = false;
+
 		private const int _MAX_RETRY_ATTEMPTS = 3;
 		private const int _WAIT_INTERVAL_IN_SECONDS = 1;
 
 		private readonly Func<Stream> _getStreamFunction;
 		private readonly ISyncLog _logger;
-		private readonly Policy<Stream> _getStreamRetryPolicy;
 
 		internal Stream InnerStream { get; private set; }
 
 		public SelfRecreatingStream(
 			Func<Stream> getStreamFunction,
+			IStreamRetryPolicyFactory streamRetryPolicyFactory,
 			ISyncLog logger)
 		{
 			_logger = logger;
 			_getStreamFunction = getStreamFunction;
-			_getStreamRetryPolicy = CreateGetStreamRetryPolicy();
+			_getStreamRetryPolicy = streamRetryPolicyFactory.Create(
+				OnRetry,
+				_MAX_RETRY_ATTEMPTS,
+				TimeSpan.FromSeconds(_WAIT_INTERVAL_IN_SECONDS));
+
 			InnerStream = _getStreamRetryPolicy.Execute(GetInnerStream);
 		}
 
@@ -84,9 +95,11 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 
 		protected override void Dispose(bool disposing)
 		{
-			if (!disposing)
+			if (disposing && !_disposed)
 			{
-				DisposeInnerStream();
+				_disposed = true;
+				_getStreamRetryPolicy = null; // See note at top
+				InnerStream?.Dispose();
 			}
 		}
 
@@ -104,23 +117,10 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 			}
 		}
 
-		private Policy<Stream> CreateGetStreamRetryPolicy()
-		{
-			return Policy
-				.HandleResult<Stream>(s => s == null || !s.CanRead)
-				.Or<Exception>()
-				.WaitAndRetry(_MAX_RETRY_ATTEMPTS, i => TimeSpan.FromSeconds(_WAIT_INTERVAL_IN_SECONDS), 
-					onRetry: (outcome, timespan, retryAttempt, context) =>
-				{
-					DisposeInnerStream();
-					_logger.LogWarning("Retrying Kepler Stream creation inside {0}. Attempt {1} of {2}", nameof(SelfRecreatingStream), retryAttempt, _MAX_RETRY_ATTEMPTS);
-				});
-		}
-
-		private void DisposeInnerStream()
+		private void OnRetry(int retryAttempt)
 		{
 			InnerStream?.Dispose();
-			InnerStream = null;
+			_logger.LogWarning("Retrying Kepler Stream creation inside {0}. Attempt {1} of {2}", nameof(SelfRecreatingStream), retryAttempt, _MAX_RETRY_ATTEMPTS);
 		}
 	}
 }

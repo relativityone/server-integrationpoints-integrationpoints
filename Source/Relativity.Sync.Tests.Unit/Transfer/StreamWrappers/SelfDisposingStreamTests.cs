@@ -9,27 +9,21 @@ using Relativity.Sync.Transfer.StreamWrappers;
 namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 {
 	[TestFixture]
+	[Parallelizable(ParallelScope.All)]
 	public class SelfDisposingStreamTests
 	{
-		private Mock<Stream> _streamMock;
-
-		[SetUp]
-		public void SetUp()
-		{
-			_streamMock = new Mock<Stream>();
-		}
-
 		[Test]
 		public void ItShouldInvokeFlushOnInnerStreamAndLogWarning()
 		{
 			// arrange 
-			var selfDisposingStream = new SelfDisposingStream(_streamMock.Object, new EmptyLogger());
-			
+			var streamMock = new Mock<Stream>();
+			var selfDisposingStream = new SelfDisposingStream(streamMock.Object, new EmptyLogger());
+
 			// act
 			selfDisposingStream.Flush();
 
 			// assert
-			_streamMock.Verify(x => x.Flush(), Times.Once);
+			streamMock.Verify(x => x.Flush(), Times.Once);
 		}
 
 		[Test]
@@ -38,14 +32,15 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 			// arrange
 			const long offset = 0;
 			const long expectedResult = 2;
-			_streamMock.Setup(x => x.Seek(offset, SeekOrigin.Begin)).Returns(expectedResult);
-			var selfDisposingStream = new SelfDisposingStream(_streamMock.Object, new EmptyLogger());
+			var streamMock = new Mock<Stream>();
+			streamMock.Setup(x => x.Seek(offset, SeekOrigin.Begin)).Returns(expectedResult);
+			var selfDisposingStream = new SelfDisposingStream(streamMock.Object, new EmptyLogger());
 
 			// act
 			long result = selfDisposingStream.Seek(offset, SeekOrigin.Begin);
 
 			// assert
-			_streamMock.Verify(x => x.Seek(offset, SeekOrigin.Begin), Times.Once);
+			streamMock.Verify(x => x.Seek(offset, SeekOrigin.Begin), Times.Once);
 			result.Should().Be(expectedResult);
 		}
 
@@ -53,14 +48,15 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 		public void ItShouldInvokeSetLengthOnInnerStreamAndLogWarning()
 		{
 			// arrange 
-			var selfDisposingStream = new SelfDisposingStream(_streamMock.Object, new EmptyLogger());
-			
+			var streamMock = new Mock<Stream>();
+			var selfDisposingStream = new SelfDisposingStream(streamMock.Object, new EmptyLogger());
+
 			// act
 			const long length = 4;
 			selfDisposingStream.SetLength(length);
 
 			// assert
-			_streamMock.Verify(x => x.SetLength(length), Times.Once);
+			streamMock.Verify(x => x.SetLength(length), Times.Once);
 		}
 
 		[Test]
@@ -71,14 +67,15 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 			const int offset = 4;
 			const int count = 6;
 			const int expectedResult = 8;
-			_streamMock.Setup(x => x.Read(buffer, offset, count)).Returns(expectedResult);
-			var selfDisposingStream = new SelfDisposingStream(_streamMock.Object, new EmptyLogger());
+			var streamMock = new Mock<Stream>();
+			streamMock.Setup(x => x.Read(buffer, offset, count)).Returns(expectedResult);
+			var selfDisposingStream = new SelfDisposingStream(streamMock.Object, new EmptyLogger());
 
 			// act
 			int result = selfDisposingStream.Read(buffer, offset, count);
 
 			// assert
-			_streamMock.Verify(x => x.Read(buffer, offset, count), Times.Once);
+			streamMock.Verify(x => x.Read(buffer, offset, count), Times.Once);
 			result.Should().Be(expectedResult);
 		}
 
@@ -89,15 +86,16 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 			byte[] buffer = Array.Empty<byte>();
 			const int offset = 10;
 			const int count = 12;
-			_streamMock.Setup(x => x.Read(buffer, offset, count)).Returns(0);
-			var selfDisposingStream = new SelfDisposingStream(_streamMock.Object, new EmptyLogger());
+			var streamMock = new Mock<Stream>();
+			streamMock.Setup(x => x.Read(buffer, offset, count)).Returns(0);
+			var selfDisposingStream = new SelfDisposingStream(streamMock.Object, new EmptyLogger());
 
 			// act
 			int result = selfDisposingStream.Read(buffer, offset, count);
 
 			// assert
-			_streamMock.Verify(x => x.Read(buffer, offset, count), Times.Once);
-			_streamMock.Verify(x => x.Close(), Times.Once);
+			streamMock.Verify(x => x.Read(buffer, offset, count), Times.Once);
+			streamMock.Verify(x => x.Close(), Times.Once);
 			result.Should().Be(0);
 		}
 
@@ -108,27 +106,29 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 			byte[] buffer = Array.Empty<byte>();
 			const int offset = 14;
 			const int count = 16;
-			var selfDisposingStream = new SelfDisposingStream(_streamMock.Object, new EmptyLogger());
+			var streamMock = new Mock<Stream>();
+			var selfDisposingStream = new SelfDisposingStream(streamMock.Object, new EmptyLogger());
 
 			// act
 			selfDisposingStream.Write(buffer, offset, count);
 
 			// assert
-			_streamMock.Verify(x => x.Write(buffer, offset, count), Times.Once);
+			streamMock.Verify(x => x.Write(buffer, offset, count), Times.Once);
 		}
 
 		[Test]
 		public void ItShouldInvokeReadGetterOnInnerStream()
 		{
 			// arrange
-			_streamMock.Setup(x => x.CanRead).Returns(true);
-			var selfDisposingStream = new SelfDisposingStream(_streamMock.Object, new EmptyLogger());
+			var streamMock = new Mock<Stream>();
+			streamMock.Setup(x => x.CanRead).Returns(true);
+			var selfDisposingStream = new SelfDisposingStream(streamMock.Object, new EmptyLogger());
 
 			// act
 			bool result = selfDisposingStream.CanRead;
 
 			// assert
-			_streamMock.VerifyGet(x => x.CanRead, Times.Once);
+			streamMock.VerifyGet(x => x.CanRead, Times.Once);
 			result.Should().BeTrue();
 		}
 
@@ -136,14 +136,15 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 		public void ItShouldInvokeCanSeekGetterOnInnerStream()
 		{
 			// arrange
-			_streamMock.Setup(x => x.CanSeek).Returns(true);
-			var selfDisposingStream = new SelfDisposingStream(_streamMock.Object, new EmptyLogger());
+			var streamMock = new Mock<Stream>();
+			streamMock.Setup(x => x.CanSeek).Returns(true);
+			var selfDisposingStream = new SelfDisposingStream(streamMock.Object, new EmptyLogger());
 
 			// act
 			bool result = selfDisposingStream.CanSeek;
 
 			// assert
-			_streamMock.VerifyGet(x => x.CanSeek, Times.Once);
+			streamMock.VerifyGet(x => x.CanSeek, Times.Once);
 			result.Should().BeTrue();
 		}
 
@@ -151,14 +152,15 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 		public void ItShouldInvokeCanWriteGetterOnInnerStream()
 		{
 			// arrange
-			_streamMock.Setup(x => x.CanWrite).Returns(true);
-			var selfDisposingStream = new SelfDisposingStream(_streamMock.Object, new EmptyLogger());
+			var streamMock = new Mock<Stream>();
+			streamMock.Setup(x => x.CanWrite).Returns(true);
+			var selfDisposingStream = new SelfDisposingStream(streamMock.Object, new EmptyLogger());
 
 			// act
 			bool result = selfDisposingStream.CanWrite;
 
 			// assert
-			_streamMock.VerifyGet(x => x.CanWrite, Times.Once);
+			streamMock.VerifyGet(x => x.CanWrite, Times.Once);
 			result.Should().BeTrue();
 		}
 
@@ -167,14 +169,15 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 		{
 			// arrange
 			const long length = 20;
-			_streamMock.Setup(x => x.Length).Returns(length);
-			var selfDisposingStream = new SelfDisposingStream(_streamMock.Object, new EmptyLogger());
+			var streamMock = new Mock<Stream>();
+			streamMock.Setup(x => x.Length).Returns(length);
+			var selfDisposingStream = new SelfDisposingStream(streamMock.Object, new EmptyLogger());
 
 			// act
 			long result = selfDisposingStream.Length;
 
 			// assert
-			_streamMock.VerifyGet(x => x.Length, Times.Once);
+			streamMock.VerifyGet(x => x.Length, Times.Once);
 			result.Should().Be(length);
 		}
 
@@ -183,14 +186,15 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 		{
 			// arrange
 			const long position = 22;
-			_streamMock.Setup(x => x.Position).Returns(position);
-			var selfDisposingStream = new SelfDisposingStream(_streamMock.Object, new EmptyLogger());
+			var streamMock = new Mock<Stream>();
+			streamMock.Setup(x => x.Position).Returns(position);
+			var selfDisposingStream = new SelfDisposingStream(streamMock.Object, new EmptyLogger());
 
 			// act
 			long result = selfDisposingStream.Position;
 
 			// assert
-			_streamMock.VerifyGet(x => x.Position, Times.Once);
+			streamMock.VerifyGet(x => x.Position, Times.Once);
 			result.Should().Be(position);
 		}
 
@@ -199,13 +203,32 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 		{
 			// arrange
 			const long position = 24;
-			var selfDisposingStream = new SelfDisposingStream(_streamMock.Object, new EmptyLogger());
+			var streamMock = new Mock<Stream>();
+			var selfDisposingStream = new SelfDisposingStream(streamMock.Object, new EmptyLogger());
 
 			// act
 			selfDisposingStream.Position = position;
 
 			// assert
-			_streamMock.VerifySet(x => x.Position = position, Times.Once);
+			streamMock.VerifySet(x => x.Position = position, Times.Once);
+		}
+
+		[Test]
+		public void ItShouldLogErrorAndRethrowWhenInnerStreamReadThrows()
+		{
+			// arrange
+			var streamMock = new Mock<Stream>();
+			streamMock.Setup(x => x.Read(It.IsAny<byte[]>(), It.IsAny<int>(), It.IsAny<int>()))
+				.Throws<ArgumentException>();
+			var loggerMock = new Mock<ISyncLog>();
+			var selfDisposingStream = new SelfDisposingStream(streamMock.Object, loggerMock.Object);
+
+			// act
+			Func<int> action = () => selfDisposingStream.Read(Array.Empty<byte>(), 0, 1);
+
+			// assert
+			action.Should().Throw<ArgumentException>();
+			loggerMock.Verify(x => x.LogError(It.Is<Exception>(y => y is ArgumentException), It.IsAny<string>(), It.IsAny<object[]>()));
 		}
 	}
 }

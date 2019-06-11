@@ -20,8 +20,8 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 
 		public override long Position
 		{
-			get { return AsciiStream.Position * _BYTES_PER_UNICODE_CHARACTER; }
-			set { SetLength(value); }
+			get => AsciiStream.Position * _BYTES_PER_UNICODE_CHARACTER;
+			set => SetLength(value);
 		}
 
 		public bool LeaveOpen { get; }

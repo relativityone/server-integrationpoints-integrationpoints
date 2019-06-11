@@ -3,7 +3,9 @@ using System.IO;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Polly;
 using Relativity.Sync.Logging;
+using Relativity.Sync.Tests.Unit.Stubs;
 using Relativity.Sync.Transfer.StreamWrappers;
 
 namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
@@ -13,6 +15,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 	{
 		private Mock<Stream> _readableInnerStreamMock;
 		private Mock<Stream> _unreadableInnerStreamMock;
+		private Mock<IStreamRetryPolicyFactory> _streamRetryPolicyFactoryMock;
 
 		[SetUp]
 		public void SetUp()
@@ -21,6 +24,12 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 			_readableInnerStreamMock.Setup(x => x.CanRead).Returns(true);
 			_unreadableInnerStreamMock = new Mock<Stream>();
 			_unreadableInnerStreamMock.Setup(x => x.CanRead).Returns(false);
+
+			_streamRetryPolicyFactoryMock = new Mock<IStreamRetryPolicyFactory>();
+			_streamRetryPolicyFactoryMock.Setup(x => x.Create(
+				It.IsAny<Action<int>>(),
+				It.IsAny<int>(),
+				It.IsAny<TimeSpan>())).Returns<Action<int>, int, TimeSpan>((f, i, _) => BuildNoWaitPolicy(i, f));
 		}
 
 		[Test]
@@ -31,7 +40,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 			const int expectedNumberOfCalls = 1;
 
 			// act
-			var selfRecreatingStream = new SelfRecreatingStream(() => GetStreamFunctionReturningValidStream(ref numberOfCalls), new EmptyLogger());
+			SelfRecreatingStream selfRecreatingStream = BuildInstance(() => GetStreamFunctionReturningValidStream(ref numberOfCalls));
 
 			// assert
 			numberOfCalls.Should().Be(expectedNumberOfCalls);
@@ -46,7 +55,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 			const int expectedNumberOfCalls = 2;
 
 			// act
-			var selfRecreatingStream = new SelfRecreatingStream(() => GetStreamFunctionReturningValidStreamOnRetry(ref numberOfCalls), new EmptyLogger());
+			SelfRecreatingStream selfRecreatingStream = BuildInstance(() => GetStreamFunctionReturningValidStreamOnRetry(ref numberOfCalls));
 
 			// assert
 			numberOfCalls.Should().Be(expectedNumberOfCalls);
@@ -61,7 +70,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 			const int expectedNumberOfCalls = 4;
 
 			// act
-			var selfRecreatingStream = new SelfRecreatingStream(() => GetStreamFunctionReturningUnreadableStream(ref numberOfCalls), new EmptyLogger());
+			SelfRecreatingStream selfRecreatingStream = BuildInstance(() => GetStreamFunctionReturningUnreadableStream(ref numberOfCalls));
 
 			// assert
 			numberOfCalls.Should().Be(expectedNumberOfCalls);
@@ -73,7 +82,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 		{
 			// arrange
 			int numberOfCalls = 0;
-			var selfRecreatingStream = new SelfRecreatingStream(() => GetStreamFunctionReturningValidStream(ref numberOfCalls), new EmptyLogger());
+			SelfRecreatingStream selfRecreatingStream = BuildInstance(() => GetStreamFunctionReturningValidStream(ref numberOfCalls));
 
 			// act
 			selfRecreatingStream.Flush();
@@ -87,7 +96,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 		{
 			// arrange
 			int numberOfCalls = 0;
-			var selfRecreatingStream = new SelfRecreatingStream(() => GetStreamFunctionReturningValidStream(ref numberOfCalls), new EmptyLogger());
+			SelfRecreatingStream selfRecreatingStream = BuildInstance(() => GetStreamFunctionReturningValidStream(ref numberOfCalls));
 			const long offset = 0;
 			const long seekReturnValue = 2;
 			_readableInnerStreamMock.Setup(x => x.Seek(offset, SeekOrigin.Begin)).Returns(seekReturnValue);
@@ -105,7 +114,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 		{
 			// arrange
 			int numberOfCalls = 0;
-			var selfRecreatingStream = new SelfRecreatingStream(() => GetStreamFunctionReturningValidStream(ref numberOfCalls), new EmptyLogger());
+			SelfRecreatingStream selfRecreatingStream = BuildInstance(() => GetStreamFunctionReturningValidStream(ref numberOfCalls));
 			const long length = 4;
 
 			// act
@@ -120,7 +129,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 		{
 			// arrange
 			int numberOfCalls = 0;
-			var selfRecreatingStream = new SelfRecreatingStream(() => GetStreamFunctionReturningValidStream(ref numberOfCalls), new EmptyLogger());
+			SelfRecreatingStream selfRecreatingStream = BuildInstance(() => GetStreamFunctionReturningValidStream(ref numberOfCalls));
 			byte[] buffer = Array.Empty<byte>();
 			const int offset = 10;
 			const int count = 12;
@@ -140,7 +149,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 		{
 			// arrange
 			int numberOfCalls = 0;
-			var selfRecreatingStream = new SelfRecreatingStream(() => GetStreamFunctionReturningValidStream(ref numberOfCalls), new EmptyLogger());
+			SelfRecreatingStream selfRecreatingStream = BuildInstance(() => GetStreamFunctionReturningValidStream(ref numberOfCalls));
 			byte[] buffer = Array.Empty<byte>();
 			const int offset = 16;
 			const int count = 18;
@@ -158,7 +167,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 		{
 			// arrange
 			int numberOfCalls = 0;
-			var selfRecreatingStream = new SelfRecreatingStream(() => GetStreamFunctionReturningValidStream(ref numberOfCalls), new EmptyLogger());
+			SelfRecreatingStream selfRecreatingStream = BuildInstance(() => GetStreamFunctionReturningValidStream(ref numberOfCalls));
 
 			// act
 			bool result = selfRecreatingStream.CanRead;
@@ -175,7 +184,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 			// arrange
 			int numberOfCalls = 0;
 			const int expectedNumberOfCalls = 5;
-			var selfRecreatingStream = new SelfRecreatingStream(() => GetStreamFunctionReturningValidStream(ref numberOfCalls), new EmptyLogger());
+			SelfRecreatingStream selfRecreatingStream = BuildInstance(() => GetStreamFunctionReturningValidStream(ref numberOfCalls));
 			_readableInnerStreamMock.Setup(x => x.CanRead).Returns(false);
 
 			// act
@@ -193,7 +202,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 		{
 			// arrange
 			int numberOfCalls = 0;
-			var selfRecreatingStream = new SelfRecreatingStream(() => GetStreamFunctionReturningValidStream(ref numberOfCalls), new EmptyLogger());
+			SelfRecreatingStream selfRecreatingStream = BuildInstance(() => GetStreamFunctionReturningValidStream(ref numberOfCalls));
 			_readableInnerStreamMock.Setup(x => x.CanSeek).Returns(true);
 
 			// act
@@ -209,7 +218,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 		{
 			// arrange
 			int numberOfCalls = 0;
-			var selfRecreatingStream = new SelfRecreatingStream(() => GetStreamFunctionReturningValidStream(ref numberOfCalls), new EmptyLogger());
+			SelfRecreatingStream selfRecreatingStream = BuildInstance(() => GetStreamFunctionReturningValidStream(ref numberOfCalls));
 			_readableInnerStreamMock.Setup(x => x.CanWrite).Returns(true);
 
 			// act
@@ -225,7 +234,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 		{
 			// arrange
 			int numberOfCalls = 0;
-			var selfRecreatingStream = new SelfRecreatingStream(() => GetStreamFunctionReturningValidStream(ref numberOfCalls), new EmptyLogger());
+			SelfRecreatingStream selfRecreatingStream = BuildInstance(() => GetStreamFunctionReturningValidStream(ref numberOfCalls));
 			const long length = 20;
 			_readableInnerStreamMock.Setup(x => x.Length).Returns(length);
 
@@ -242,7 +251,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 		{
 			// arrange
 			int numberOfCalls = 0;
-			var selfRecreatingStream = new SelfRecreatingStream(() => GetStreamFunctionReturningValidStream(ref numberOfCalls), new EmptyLogger());
+			SelfRecreatingStream selfRecreatingStream = BuildInstance(() => GetStreamFunctionReturningValidStream(ref numberOfCalls));
 			const long position = 22;
 			_readableInnerStreamMock.Setup(x => x.Position).Returns(position);
 
@@ -259,7 +268,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 		{
 			// arrange
 			int numberOfCalls = 0;
-			var selfRecreatingStream = new SelfRecreatingStream(() => GetStreamFunctionReturningValidStream(ref numberOfCalls), new EmptyLogger());
+			SelfRecreatingStream selfRecreatingStream = BuildInstance(() => GetStreamFunctionReturningValidStream(ref numberOfCalls));
 			const long position = 24;
 
 			// act
@@ -267,6 +276,47 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 
 			// assert
 			_readableInnerStreamMock.VerifySet(x => x.Position = position, Times.Once);
+		}
+
+		[Test]
+		public void ItShouldDisposeInnerStreamOnDispose()
+		{
+			// arrange
+			var stream = new DisposalCheckStream();
+			SelfRecreatingStream selfRecreatingStream = BuildInstance(() => stream);
+
+			// act
+			selfRecreatingStream.Dispose();
+
+			// assert
+			stream.IsDisposed.Should().BeTrue();
+		}
+
+		[Test]
+		public void ItShouldAllowMultipleDisposeCalls()
+		{
+			// arrange
+			SelfRecreatingStream selfRecreatingStream = BuildInstance(() => _readableInnerStreamMock.Object);
+
+			// act
+			selfRecreatingStream.Dispose();
+			Action action = () => selfRecreatingStream.Dispose();
+
+			// Assert
+			action.Should().NotThrow();
+		}
+
+		private ISyncPolicy<Stream> BuildNoWaitPolicy(int retryCount, Action<int> onRetry)
+		{
+			return Policy
+				.HandleResult<Stream>(s => s == null || !s.CanRead)
+				.Or<Exception>()
+				.Retry(retryCount, (_, i) => onRetry(i));
+		}
+
+		private SelfRecreatingStream BuildInstance(Func<Stream> getStreamFunction)
+		{
+			return new SelfRecreatingStream(getStreamFunction, _streamRetryPolicyFactoryMock.Object, new EmptyLogger());
 		}
 
 		private Stream GetStreamFunctionReturningValidStream(ref int numberOfCalls)
