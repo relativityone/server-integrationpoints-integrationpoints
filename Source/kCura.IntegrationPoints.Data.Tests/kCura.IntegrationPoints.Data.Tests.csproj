@@ -124,6 +124,7 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Converters\FieldRefExtensionsTests.cs" />
+    <Compile Include="Converters\FieldValuePairExtensionsTests.cs" />
     <Compile Include="Extensions\EnumerableExtensionsTests.cs" />
     <Compile Include="Extensions\StringExtensionsTests.cs" />
     <Compile Include="Facades\Implementations\TestsHelpers\ObjectManagerFacadeTestsHelpers.cs" />
