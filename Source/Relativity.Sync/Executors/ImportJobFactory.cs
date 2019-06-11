@@ -101,7 +101,7 @@ namespace Relativity.Sync.Executors
 			importJob.Settings.FolderPathSourceFieldName = configuration.ImportSettings.FolderPathSourceFieldName;
 			importJob.Settings.LoadImportedFullTextFromServer = configuration.ImportSettings.LoadImportedFullTextFromServer;
 			importJob.Settings.MoveDocumentsInAppendOverlayMode = configuration.ImportSettings.MoveDocumentsInAnyOverlayMode;
-			if (configuration.ImportSettings.ImportNativeFileCopyMode == ImportNativeFileCopyMode.CopyFiles)
+			if (configuration.ImportSettings.ImportNativeFileCopyMode != ImportNativeFileCopyMode.DoNotImportNativeFiles)
 			{
 				importJob.Settings.NativeFilePathSourceFieldName = configuration.ImportSettings.NativeFilePathSourceFieldName;
 			}
