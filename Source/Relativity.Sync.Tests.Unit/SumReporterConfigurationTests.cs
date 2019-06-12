@@ -3,6 +3,7 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
 
@@ -17,14 +18,13 @@ namespace Relativity.Sync.Tests.Unit
 			// Arrange
 			const int integrationPointArtifactId = 102575;
 			const int jobHistoryArtifactId = 102586;
-			var integrationPointGuid = new Guid("03D4F67E-22C9-488C-BEE6-411F05C52E01");
 			var jobHistoryGuid = new Guid("5D8F7F01-25CF-4246-B2E2-C05882539BB2");
 
-			var cache = new Mock<IConfiguration>();
-			cache.Setup(x => x.GetFieldValue<RelativityObjectValue>(integrationPointGuid)).Returns(new RelativityObjectValue { ArtifactID = integrationPointArtifactId }).Verifiable();
+			var cache = new Mock<Relativity.Sync.Storage.IConfiguration>();
 			cache.Setup(x => x.GetFieldValue<RelativityObjectValue>(jobHistoryGuid)).Returns(new RelativityObjectValue { ArtifactID = jobHistoryArtifactId }).Verifiable();
+			var syncJobParameters = new SyncJobParameters(0, 1, integrationPointArtifactId, string.Empty, new ImportSettingsDto());
 
-			var configuration = new SumReporterConfiguration(cache.Object);
+			var configuration = new SumReporterConfiguration(cache.Object, syncJobParameters);
 
 			// Act
 			string actualValue = configuration.WorkflowId;
