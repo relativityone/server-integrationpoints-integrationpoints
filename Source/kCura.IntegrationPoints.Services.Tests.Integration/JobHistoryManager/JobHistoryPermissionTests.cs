@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.Models;
@@ -9,7 +11,6 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Exceptions;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using NUnit.Framework;
-using NUnit.Framework.Constraints;
 using Relativity.API;
 using Relativity.Services.Permission;
 using Relativity.Testing.Identification;
@@ -55,7 +56,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 				WorkspaceArtifactId = WorkspaceArtifactId
 			};
 			IJobHistoryManager jobHistoryManager = Helper.CreateUserProxy<IJobHistoryManager>(_userModel.EmailAddress);
-			AssertPermissionErrorMessage(() => jobHistoryManager.GetJobHistoryAsync(jobHistoryRequest).GetAwaiter().GetResult());
+			AssertPermissionErrorMessage(() => jobHistoryManager.GetJobHistoryAsync(jobHistoryRequest));
 		}
 
 		[IdentifiedTest("051c7ce7-3bf6-4d80-affd-aeabd353a47d")]
@@ -73,7 +74,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 				WorkspaceArtifactId = WorkspaceArtifactId
 			};
 			IJobHistoryManager jobHistoryManager = Helper.CreateUserProxy<IJobHistoryManager>(_userModel.EmailAddress);
-			AssertPermissionErrorMessage(() => jobHistoryManager.GetJobHistoryAsync(jobHistoryRequest).GetAwaiter().GetResult());
+			AssertPermissionErrorMessage(() => jobHistoryManager.GetJobHistoryAsync(jobHistoryRequest));
 		}
 
 		[IdentifiedTest("47249b2c-dce4-4d7c-a772-07fe5c0cdb01")]
@@ -84,7 +85,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 				WorkspaceArtifactId = TargetWorkspaceArtifactID
 			};
 			IJobHistoryManager jobHistoryManager = Helper.CreateUserProxy<IJobHistoryManager>(_userModel.EmailAddress);
-			AssertPermissionErrorMessage(() => jobHistoryManager.GetJobHistoryAsync(jobHistoryRequest).GetAwaiter().GetResult());
+			AssertPermissionErrorMessage(() => jobHistoryManager.GetJobHistoryAsync(jobHistoryRequest));
 		}
 
 		[IdentifiedTest("a18e2360-2a58-41e3-8b69-663f6f0d6c80")]
@@ -138,7 +139,8 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			Core.Models.IntegrationPointModel ip = CreateOrUpdateIntegrationPoint(ipModel);
 
 			IIntegrationPointManager integrationPointManager = Helper.CreateAdminProxy<IIntegrationPointManager>();
-			await integrationPointManager.RunIntegrationPointAsync(SourceWorkspaceArtifactID, ip.ArtifactID);
+			await integrationPointManager.RunIntegrationPointAsync(SourceWorkspaceArtifactID, ip.ArtifactID)
+				.ConfigureAwait(false);
 
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactID, ip.ArtifactID);
 		}
@@ -150,9 +152,11 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			dbContext.ExecuteNonQuerySQLStatement(@"UPDATE [JobHistory] SET [ItemsTransferred] = 1, [TotalItems] = 1");
 		}
 
-		private void AssertPermissionErrorMessage(ActualValueDelegate<object> action)
+		private static void AssertPermissionErrorMessage(Func<Task> action)
 		{
-			Assert.That(action, Throws.TypeOf<InsufficientPermissionException>().With.Message.EqualTo("You do not have permission to access this service."));
+			action
+				.ShouldThrow<InsufficientPermissionException>()
+				.WithMessage("You do not have permission to access this service.");
 		}
 	}
 }
