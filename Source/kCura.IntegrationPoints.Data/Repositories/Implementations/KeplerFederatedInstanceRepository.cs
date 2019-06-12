@@ -67,7 +67,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				ObjectType = new ObjectTypeRef { ArtifactTypeID = _federatedInstanceArtifactTypeId },
 				Condition = condition,
-				Fields = new List<FieldRef>() { new FieldRef() { Name = "Name" }, new FieldRef() { Name = "Instance URL" } }
+				Fields = new List<FieldRef>()
+				{
+					new FieldRef() { Name = FederatedInstanceFieldsConstants.NAME_FIELD },
+					new FieldRef() { Name = FederatedInstanceFieldsConstants.INSTANCE_URL_FIELD }
+				}
 			};
 
 			IEnumerable<RelativityObject> artifactDtos = _relativityObjectManager.QueryAsync(query).GetAwaiter().GetResult();

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Domain.Models;
@@ -10,42 +11,62 @@ namespace kCura.IntegrationPoints.Data.Converters
 	{
 		public static WorkspaceDTO ToWorkspaceDTO(this RelativityObject relativityObject)
 		{
+			if (relativityObject == null)
+			{
+				return null;
+			}
+
 			return new WorkspaceDTO
 			{
 				ArtifactId = relativityObject.ArtifactID,
-				Name = (string)relativityObject.FieldValues[0].Value
+				Name = GetFieldValue<string, WorkspaceDTO>(relativityObject, WorkspaceFieldsConstants.NAME_FIELD)
 			};
 		}
 
 		public static IEnumerable<WorkspaceDTO> ToWorkspaceDTOs(this IEnumerable<RelativityObject> relativityObjects) =>
-			relativityObjects.Select(ToWorkspaceDTO);
+			relativityObjects?.Select(ToWorkspaceDTO);
 
 		public static SavedSearchDTO ToSavedSearchDTO(this RelativityObject relativityObject)
 		{
+			if (relativityObject == null)
+			{
+				return null;
+			}
+
+			if (relativityObject.ParentObject == null)
+			{
+				throw new ArgumentException($"{GetErrorMessageHeader<SavedSearchDTO>()} - missing '{nameof(RelativityObject.ParentObject)}' value");
+			}
+
 			return new SavedSearchDTO
 			{
 				ArtifactId = relativityObject.ArtifactID,
 				ParentContainerId = relativityObject.ParentObject.ArtifactID,
-				Name = relativityObject.FieldValues.FirstOrDefault(x => x.Field.Name == SavedSearchFieldsConstants.NAME_FIELD)?.Value as string,
-				Owner = relativityObject.FieldValues.FirstOrDefault(x => x.Field.Name == SavedSearchFieldsConstants.OWNER_FIELD)?.Value as string
+				Name = GetFieldValue<string, SavedSearchDTO>(relativityObject, SavedSearchFieldsConstants.NAME_FIELD),
+				Owner = GetFieldValue<string, SavedSearchDTO>(relativityObject, SavedSearchFieldsConstants.OWNER_FIELD)
 			};
 		}
 
 		public static IEnumerable<SavedSearchDTO> ToSavedSearchDTOs(this IEnumerable<RelativityObject> relativityObjects) =>
-			relativityObjects.Select(ToSavedSearchDTO);
+			relativityObjects?.Select(ToSavedSearchDTO);
 
 		public static FederatedInstanceDto ToFederatedInstanceDTO(this RelativityObject relativityObject)
 		{
+			if (relativityObject == null)
+			{
+				return null;
+			}
+
 			return new FederatedInstanceDto
 			{
 				ArtifactId = relativityObject.ArtifactID,
-				Name = relativityObject.FieldValues[0].Value as string,
-				InstanceUrl = relativityObject.FieldValues[1].Value as string
+				Name = GetFieldValue<string, FederatedInstanceDto>(relativityObject, FederatedInstanceFieldsConstants.NAME_FIELD),
+				InstanceUrl = GetFieldValue<string, FederatedInstanceDto>(relativityObject, FederatedInstanceFieldsConstants.INSTANCE_URL_FIELD)
 			};
 		}
 
 		public static IEnumerable<FederatedInstanceDto> ToFederatedInstanceDTOs(this IEnumerable<RelativityObject> relativityObjects) =>
-			relativityObjects.Select(ToFederatedInstanceDTO);
+			relativityObjects?.Select(ToFederatedInstanceDTO);
 
 		/// <summary>
 		/// It set <see cref="ArtifactDTO.ArtifactTypeId"/> to 0.
@@ -75,14 +96,14 @@ namespace kCura.IntegrationPoints.Data.Converters
 		/// <param name="relativityObjects"></param>
 		/// <returns></returns>
 		internal static IEnumerable<ArtifactDTO> ToArtifactDTOsDeprecated(this IEnumerable<RelativityObject> relativityObjects) =>
-			relativityObjects.Select(ToArtifactDTODeprecated);
+			relativityObjects?.Select(ToArtifactDTODeprecated);
 
 		/// <summary>
 		/// It set <see cref="ArtifactDTO.ArtifactTypeId"/> to 0.
 		/// This method works only for specific use cases
 		/// and should not be used in any new code
 		/// </summary>
-		/// <param name="relativityObjects"></param>
+		/// <param name="relativityObjectsTask"></param>
 		/// <returns></returns>
 		internal static async Task<ArtifactDTO[]> ToArtifactDTOsArrayAsyncDeprecated(this Task<List<RelativityObject>> relativityObjectsTask)
 		{
@@ -90,7 +111,35 @@ namespace kCura.IntegrationPoints.Data.Converters
 
 			return relativityObjects
 				.ToArtifactDTOsDeprecated()
-				.ToArray();
+				?.ToArray();
+		}
+
+		private static TValue GetFieldValue<TValue, TDestinationType>(RelativityObject relativityObject, string fieldName) where TValue : class
+		{
+			if (relativityObject.FieldValues == null)
+			{
+				throw new ArgumentException($"{GetErrorMessageHeader<TDestinationType>()} - missing fields values");
+			}
+
+			FieldValuePair fieldValuePair = relativityObject.FieldValues.FirstOrDefault(x => x.Field.Name == fieldName);
+
+			if (fieldValuePair == null)
+			{
+				throw new ArgumentException($"{GetErrorMessageHeader<TDestinationType>()} - missing '{fieldName}' value");
+			}
+
+			var valueToReturn = fieldValuePair.Value as TValue;
+			if (valueToReturn == null && fieldValuePair.Value != null)
+			{
+				throw new ArgumentException($"{GetErrorMessageHeader<TDestinationType>()} - wrong '{fieldName}' type");
+			}
+
+			return valueToReturn;
+		}
+
+		private static string GetErrorMessageHeader<TDestinationType>()
+		{
+			return $"{nameof(RelativityObject)} does not represent valid {typeof(TDestinationType).Name}";
 		}
 	}
 }

@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			var query = new QueryRequest()
 			{
 				ObjectType = new ObjectTypeRef() { ArtifactTypeID = (int)ArtifactType.Case },
-				Fields = new List<FieldRef>() { new FieldRef() { Name = "Name" } },
+				Fields = new List<FieldRef>() { new FieldRef() { Name = WorkspaceFieldsConstants.NAME_FIELD } },
 				Condition = $"'ArtifactID' == {workspaceArtifactId}",
 			};
 
@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			var query = new QueryRequest()
 			{
 				ObjectType = new ObjectTypeRef() { ArtifactTypeID = (int)ArtifactType.Case },
-				Fields = new List<FieldRef>() { new FieldRef() { Name = "Name" } }
+				Fields = new List<FieldRef>() { new FieldRef() { Name = WorkspaceFieldsConstants.NAME_FIELD } }
 			};
 
 			List<RelativityObject> artifactDTOs;

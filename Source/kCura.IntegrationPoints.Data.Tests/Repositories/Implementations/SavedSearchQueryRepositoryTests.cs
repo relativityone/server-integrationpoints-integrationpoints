@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			var relativityObject = new RelativityObject
 			{
 				ArtifactID = artifactId,
-				ParentObject = new RelativityObjectRef { ArtifactID = parentArtifactId},
+				ParentObject = new RelativityObjectRef { ArtifactID = parentArtifactId },
 				FieldValues = new List<FieldValuePair>
 				{
 					new FieldValuePair { Field = new Field {Name = "Name" }, Value = savedSearchName},
@@ -82,6 +82,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				FieldValues = new List<FieldValuePair>
 				{
 					new FieldValuePair { Field = new Field {Name = "Name" }, Value = savedSearchName},
+					new FieldValuePair { Field = new Field {Name = "Owner" }, Value = null}
 				}
 			};
 			_objectManager.Query(Arg.Any<QueryRequest>()).Returns(new List<RelativityObject> { relativityObject });
@@ -106,6 +107,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				FieldValues = new List<FieldValuePair>
 				{
 					new FieldValuePair { Field = new Field {Name = "Name" }, Value = "Search 1"},
+					new FieldValuePair { Field = new Field {Name = "Owner" }, Value = null}
 				},
 				ParentObject = new RelativityObjectRef { ArtifactID = 0 }
 			};
@@ -158,6 +160,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				FieldValues = new List<FieldValuePair>
 				{
 					new FieldValuePair { Field = new Field {Name = "Name" }, Value = "Search 1"},
+					new FieldValuePair { Field = new Field {Name = "Owner" }, Value = null}
 				}
 			};
 			var secondObject = new RelativityObject
