@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		{
 			base.SuiteSetup();
 
-			IntegrationPoint.Tests.Core.Agent.DisableAllAgents();
+			IntegrationPoint.Tests.Core.Agent.DisableAllIntegrationPointsAgents();
 			_queueContext = new QueueDBContext(Helper, GlobalConst.SCHEDULE_AGENT_QUEUE_TABLE_NAME);
 		}
 

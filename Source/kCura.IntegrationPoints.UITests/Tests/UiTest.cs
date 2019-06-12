@@ -91,7 +91,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 
 			Context = new TestContext();
 			Context.InitUser();
-			Task agentSetupTask = SetupAgentAsync();
+			Task agentSetupTask = Agent.CreateIntegrationPointAgentIfNotExistsAsync();
 			Task workspaceSetupTask = SetupWorkspaceAsync();
 
 			Task.WaitAll(agentSetupTask, workspaceSetupTask);
@@ -106,12 +106,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 				EnsureGeneralPageIsOpened();
 			}
 		}
-
-		private async Task SetupAgentAsync()
-		{
-			await Task.Run(() => Agent.CreateIntegrationPointAgentIfNotExists());
-		}
-
+		
 		private async Task SetupWorkspaceAsync()
 		{
 			if (string.IsNullOrEmpty(SharedVariables.UiUseThisExistingWorkspace))

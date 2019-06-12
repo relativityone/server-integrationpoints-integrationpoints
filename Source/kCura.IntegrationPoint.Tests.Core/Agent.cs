@@ -1,12 +1,13 @@
 ﻿using Castle.Core.Internal;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.Relativity.Client;
-using Relativity.Services;
 using Relativity.Services.Agent;
 using Relativity.Services.ResourceServer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using kCura.IntegrationPoint.Tests.Core.Exceptions;
 using Query = Relativity.Services.Query;
 
 namespace kCura.IntegrationPoint.Tests.Core
@@ -18,9 +19,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		private static ITestHelper Helper => new TestHelper();
 
-		public static Result CreateIntegrationPointAgent()
+		public static async Task<Result> CreateIntegrationPointAgentAsync()
 		{
-			global::Relativity.Services.Agent.Agent[] agents = GetIntegrationPointsAgents();
+			global::Relativity.Services.Agent.Agent[] agents = await GetIntegrationPointsAgentsAsync().ConfigureAwait(false);
 
 			if (agents.Length >= _MAX_NUMBER_OF_AGENTS_TO_CREATE)
 			{
@@ -31,12 +32,12 @@ namespace kCura.IntegrationPoint.Tests.Core
 				};
 			}
 
-			return CreateIntegrationPointAgentInternal();
+			return await CreateIntegrationPointAgentInternalAsync().ConfigureAwait(false);
 		}
 
-		public static Result CreateIntegrationPointAgentIfNotExists()
+		public static async Task<Result> CreateIntegrationPointAgentIfNotExistsAsync()
 		{
-			global::Relativity.Services.Agent.Agent[] agents = GetIntegrationPointsAgents();
+			global::Relativity.Services.Agent.Agent[] agents = await GetIntegrationPointsAgentsAsync().ConfigureAwait(false);
 
 			if (agents.Any())
 			{
@@ -47,40 +48,117 @@ namespace kCura.IntegrationPoint.Tests.Core
 				};
 			}
 
-			return CreateIntegrationPointAgentInternal();
+			return await CreateIntegrationPointAgentInternalAsync().ConfigureAwait(false);
 		}
 
-		private static global::Relativity.Services.Agent.Agent[] GetIntegrationPointsAgents()
+		public static async Task DeleteAgentAsync(int artifactId)
 		{
-			AgentTypeRef agentTypeRef = GetAgentTypeByName(_INTEGRATION_POINT_AGENT_TYPE_NAME);
-			Query query = new Query
+			if (artifactId == 0)
+			{
+				return;
+			}
+			using (IAgentManager proxy = Helper.CreateAdminProxy<IAgentManager>())
+			{
+				try
+				{
+					await proxy.DeleteSingleAsync(artifactId).ConfigureAwait(false);
+				}
+				catch (Exception ex)
+				{
+					throw new TestException($"Error: Failed deleting agent. Exception: {ex.Message}", ex);
+				}
+			}
+		}
+
+		public static Task EnableAllIntegrationPointsAgentsAsync()
+		{
+			return ChangeAllIntegrationPointAgentsEnabledStatus(isEnabled: true);
+		}
+
+		public static void EnableAllIntegrationPointsAgents()
+		{
+			EnableAllIntegrationPointsAgentsAsync().GetAwaiter().GetResult();
+		}
+
+		public static void DisableAllIntegrationPointsAgents()
+		{
+			ChangeAllIntegrationPointAgentsEnabledStatus(isEnabled: false).GetAwaiter().GetResult();
+		}
+
+		private static async Task ChangeAllIntegrationPointAgentsEnabledStatus(bool isEnabled)
+		{
+			global::Relativity.Services.Agent.Agent[] integrationPointsAgents = await GetIntegrationPointsAgentsAsync().ConfigureAwait(false);
+
+			IEnumerable<Task> updateAgentsTasks = integrationPointsAgents
+				.Select(agent => ChangeAgentEnabledStatusAsync(agent, isEnabled));
+
+			await Task.WhenAll(updateAgentsTasks).ConfigureAwait(false);
+		}
+
+		private static async Task ChangeAgentEnabledStatusAsync(global::Relativity.Services.Agent.Agent agent, bool isEnabled)
+		{
+			if (agent.Enabled == isEnabled)
+			{
+				return;
+			}
+
+			agent.Enabled = isEnabled;
+			await UpdateAgentAsync(agent).ConfigureAwait(false);
+		}
+
+		private static async Task UpdateAgentAsync(global::Relativity.Services.Agent.Agent agent)
+		{
+			using (IAgentManager proxy = Helper.CreateAdminProxy<IAgentManager>())
+			{
+				try
+				{
+					await proxy.UpdateSingleAsync(agent).ConfigureAwait(false);
+				}
+				catch (Exception ex)
+				{
+					throw new TestException($"Error: Failed to update agent. Exception: {ex.Message}", ex);
+				}
+			}
+		}
+
+		private static async Task<global::Relativity.Services.Agent.Agent[]> GetIntegrationPointsAgentsAsync()
+		{
+			AgentTypeRef agentTypeRef = await GetAgentTypeByNameAsync(_INTEGRATION_POINT_AGENT_TYPE_NAME).ConfigureAwait(false);
+			var query = new Query
 			{
 				Condition = $"'AgentTypeArtifactID' == {agentTypeRef.ArtifactID}"
 			};
-			AgentQueryResultSet resultSet = QueryAgents(query);
+			AgentQueryResultSet resultSet = await QueryAgentsAsync(query).ConfigureAwait(false);
+
+			bool areAnyFailures = !resultSet.Success || resultSet.Results.Any(x => !x.Success);
+			if (areAnyFailures)
+			{
+				throw new TestException($"Error: Cannot retrieve Integration Points agents, message: {resultSet.Message}");
+			}
+
 			return resultSet.Results
 				.Where(agent => agent.Success)
 				.Select(result => result.Artifact)
 				.ToArray();
 		}
 
-		private static Result CreateIntegrationPointAgentInternal()
+		private static async Task<Result> CreateIntegrationPointAgentInternalAsync()
 		{
-			List<ResourceServer> resourceServers = GetAgentServers();
+			List<ResourceServer> resourceServers = await GetAgentServersAsync().ConfigureAwait(false);
 
 			if (!resourceServers.Any())
 			{
-				throw new Exception("Error: No Agent servers available for agent creation.");
+				throw new TestException("Error: No Agent servers available for agent creation.");
 			}
 
-			ResourceServerRef resourceServerRef = new ResourceServerRef
+			var resourceServerRef = new ResourceServerRef
 			{
 				ArtifactID = resourceServers[0].ArtifactID
 			};
 
-			global::Relativity.Services.Agent.Agent agentDto = new global::Relativity.Services.Agent.Agent
+			var agentDto = new global::Relativity.Services.Agent.Agent
 			{
-				AgentType = GetAgentTypeByName(_INTEGRATION_POINT_AGENT_TYPE_NAME),
+				AgentType = await GetAgentTypeByNameAsync(_INTEGRATION_POINT_AGENT_TYPE_NAME).ConfigureAwait(false),
 				Enabled = true,
 				Interval = 5,
 				LoggingLevel = global::Relativity.Services.Agent.Agent.LoggingLevelEnum.Critical,
@@ -91,7 +169,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			{
 				using (IAgentManager proxy = Helper.CreateAdminProxy<IAgentManager>())
 				{
-					int artifactId = proxy.CreateSingleAsync(agentDto).ConfigureAwait(false).GetAwaiter().GetResult();
+					int artifactId = await proxy.CreateSingleAsync(agentDto).ConfigureAwait(false);
 
 					return new Result
 					{
@@ -102,132 +180,48 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 			catch (Exception ex)
 			{
-				throw new Exception($"Error: Failed to create agent. Exception: {ex.Message}");
+				throw new TestException($"Error: Failed to create agent. Exception: {ex.Message}", ex);
 			}
 		}
 
-		public static void UpdateAgent(global::Relativity.Services.Agent.Agent agent)
+		private static async Task<AgentQueryResultSet> QueryAgentsAsync(Query query)
 		{
 			using (IAgentManager proxy = Helper.CreateAdminProxy<IAgentManager>())
 			{
-				try
-				{
-					proxy.UpdateSingleAsync(agent).ConfigureAwait(false).GetAwaiter().GetResult();
-				}
-				catch (Exception ex)
-				{
-					throw new Exception($"Error: Failed to update agent. Exception: {ex.Message}");
-				}
-			}
-		}
+				AgentQueryResultSet agentQueryResultSet = await proxy.QueryAsync(query).ConfigureAwait(false);
 
-		public static List<ResourceServer> GetAgentServers()
-		{
-			using (IAgentManager proxy = Helper.CreateAdminProxy<IAgentManager>())
-			{
-				try
+				if (!agentQueryResultSet.Success)
 				{
-					List<ResourceServer> resourceServers = proxy.GetAgentServersAsync().ConfigureAwait(false).GetAwaiter().GetResult();
-					return resourceServers;
-				}
-				catch (Exception ex)
-				{
-					throw new Exception($"Error: Failed querying for agent servers. Exception: {ex.Message}");
-				}
-			}
-		}
-
-		public static void DeleteAgent(int artifactId)
-		{
-			if (artifactId == 0)
-			{
-				return;
-			}
-			using (IAgentManager proxy = Helper.CreateAdminProxy<IAgentManager>())
-			{
-				try
-				{
-					proxy.DeleteSingleAsync(artifactId).ConfigureAwait(false).GetAwaiter().GetResult();
-				}
-				catch (Exception ex)
-				{
-					throw new Exception($"Error: Failed deleting agent. Exception: {ex.Message}");
-				}
-			}
-		}
-
-		public static List<AgentTypeRef> GetAgentTypes()
-		{
-			using (IAgentManager proxy = Helper.CreateAdminProxy<IAgentManager>())
-			{
-				try
-				{
-					List<AgentTypeRef> agentTypeRefs = proxy.GetAgentTypesAsync().ConfigureAwait(false).GetAwaiter().GetResult();
-					return agentTypeRefs;
-				}
-				catch (Exception ex)
-				{
-					throw new Exception($"Error: Failed retrieving agent types. Exception: {ex.Message}");
-				}
-			}
-		}
-
-		public static AgentQueryResultSet QueryAgents(Query query)
-		{
-			using (IAgentManager proxy = Helper.CreateAdminProxy<IAgentManager>())
-			{
-				AgentQueryResultSet agentQueryResultSet = proxy.QueryAsync(query).ConfigureAwait(false).GetAwaiter().GetResult();
-
-				if (agentQueryResultSet.Success == false)
-				{
-					throw new Exception($"Error: Failed querying for agents. Exception: {agentQueryResultSet.Message}");
+					throw new TestException($"Error: Failed querying for agents. Exception: {agentQueryResultSet.Message}");
 				}
 
 				return agentQueryResultSet;
 			}
 		}
 
-		public static void DisableAgents(Query query)
+		private static async Task<List<ResourceServer>> GetAgentServersAsync()
 		{
-			AgentQueryResultSet agentQueryResultSet = QueryAgents(query);
-			List<Result<global::Relativity.Services.Agent.Agent>> results = agentQueryResultSet.Results;
-			foreach (Result<global::Relativity.Services.Agent.Agent> result in results)
+			using (IAgentManager proxy = Helper.CreateAdminProxy<IAgentManager>())
 			{
-				result.Artifact.Enabled = false;
-				UpdateAgent(result.Artifact);
+				try
+				{
+					List<ResourceServer> resourceServers = await proxy.GetAgentServersAsync().ConfigureAwait(false);
+					return resourceServers;
+				}
+				catch (Exception ex)
+				{
+					throw new TestException($"Error: Failed querying for agent servers. Exception: {ex.Message}", ex);
+				}
 			}
 		}
 
-		public static void DisableAllAgents()
+		private static async Task<AgentTypeRef> GetAgentTypeByNameAsync(string agentTypeName)
 		{
-			Query query = GetAllIntegrationPointAgentsQuery();
-			DisableAgents(query);
-		}
-
-		public static void EnableAgents(Query query)
-		{
-			AgentQueryResultSet agentQueryResultSet = QueryAgents(query);
-			List<Result<global::Relativity.Services.Agent.Agent>> results = agentQueryResultSet.Results;
-			foreach (Result<global::Relativity.Services.Agent.Agent> result in results)
-			{
-				result.Artifact.Enabled = true;
-				UpdateAgent(result.Artifact);
-			}
-		}
-
-		public static void EnableAllIntegrationPointsAgents()
-		{
-			Query query = GetAllIntegrationPointAgentsQuery();
-			EnableAgents(query);
-		}
-
-		public static AgentTypeRef GetAgentTypeByName(string agentTypeName)
-		{
-			List<AgentTypeRef> agentTypeRefs = GetAgentTypes();
+			List<AgentTypeRef> agentTypeRefs = await GetAgentTypesAsync().ConfigureAwait(false);
 
 			if (agentTypeRefs.IsNullOrEmpty())
 			{
-				throw new Exception("Failed to retrieve Agent Types. Please check the [AgentType] table on the primary server.");
+				throw new TestException("Failed to retrieve Agent Types. Please check the [AgentType] table on the primary server.");
 			}
 
 			foreach (AgentTypeRef agentTypeRef in agentTypeRefs)
@@ -238,23 +232,23 @@ namespace kCura.IntegrationPoint.Tests.Core
 				}
 			}
 
-			throw new Exception($"Error: Did not find any matching AgentTypes with the name: {agentTypeName}.");
+			throw new TestException($"Error: Did not find any matching AgentTypes with the name: {agentTypeName}.");
 		}
 
-		private static Query GetAllIntegrationPointAgentsQuery()
+		private static async Task<List<AgentTypeRef>> GetAgentTypesAsync()
 		{
-			AgentTypeRef agentTypeRef = GetAgentTypeByName(_INTEGRATION_POINT_AGENT_TYPE_NAME);
-
-			if (agentTypeRef == null)
+			using (IAgentManager proxy = Helper.CreateAdminProxy<IAgentManager>())
 			{
-				throw new Exception($"Agent with type name {_INTEGRATION_POINT_AGENT_TYPE_NAME} cannot be found");
+				try
+				{
+					List<AgentTypeRef> agentTypeRefs = await proxy.GetAgentTypesAsync().ConfigureAwait(false);
+					return agentTypeRefs;
+				}
+				catch (Exception ex)
+				{
+					throw new TestException($"Error: Failed retrieving agent types. Exception: {ex.Message}", ex);
+				}
 			}
-
-			Query query = new Query
-			{
-				Condition = $"'AgentTypeArtifactID' == {agentTypeRef.ArtifactID}"
-			};
-			return query;
 		}
 	}
 }

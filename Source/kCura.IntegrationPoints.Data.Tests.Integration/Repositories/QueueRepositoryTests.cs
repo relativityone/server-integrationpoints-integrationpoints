@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			_helper = new TestHelper();
 			_queueRepo = new QueueRepository(_helper);
 
-			Agent.DisableAllAgents();
+			Agent.DisableAllIntegrationPointsAgents();
 			ClearScheduleQueue();
 		}
 
@@ -252,7 +252,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			}
 			finally
 			{
-				Agent.DisableAllAgents();
+				Agent.DisableAllIntegrationPointsAgents();
 			}
 		}
 

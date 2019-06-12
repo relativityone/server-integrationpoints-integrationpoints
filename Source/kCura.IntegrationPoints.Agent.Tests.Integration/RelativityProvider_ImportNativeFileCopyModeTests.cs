@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		public override void SuiteSetup()
 		{
 			base.SuiteSetup();
-			IntegrationPoint.Tests.Core.Agent.DisableAllAgents();
+			IntegrationPoint.Tests.Core.Agent.DisableAllIntegrationPointsAgents();
 		}
 
 		protected override void InitializeIocContainer()
