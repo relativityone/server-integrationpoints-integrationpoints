@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
+using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Executors.SumReporting
 {
@@ -10,12 +12,14 @@ namespace Relativity.Sync.Executors.SumReporting
 	{
 		private readonly IBatchRepository _batchRepository;
 		private readonly IJobEndMetricsConfiguration _configuration;
+		private readonly IFieldManager _fieldManager;
 		private readonly ISyncMetrics _syncMetrics;
 
-		public JobEndMetricsService(IBatchRepository batchRepository, IJobEndMetricsConfiguration configuration, ISyncMetrics syncMetrics)
+		public JobEndMetricsService(IBatchRepository batchRepository, IJobEndMetricsConfiguration configuration, IFieldManager fieldManager, ISyncMetrics syncMetrics)
 		{
 			_batchRepository = batchRepository;
 			_configuration = configuration;
+			_fieldManager = fieldManager;
 			_syncMetrics = syncMetrics;
 		}
 
@@ -38,6 +42,9 @@ namespace Relativity.Sync.Executors.SumReporting
 			_syncMetrics.LogPointInTimeLong(TelemetryConstants.DATA_RECORDS_TOTAL_REQUESTED, totalRequested, _configuration.WorkflowId);
 
 			_syncMetrics.LogPointInTimeString(TelemetryConstants.JOB_END_STATUS, jobExecutionStatus.GetDescription(), _configuration.WorkflowId);
+
+			IReadOnlyList<FieldInfoDto> fields = await _fieldManager.GetAllFieldsAsync(CancellationToken.None).ConfigureAwait(false);
+			_syncMetrics.LogPointInTimeLong(TelemetryConstants.DATA_FIELDS_MAPPED, fields.Count, _configuration.WorkflowId);
 
 			return await Task.FromResult(ExecutionResult.Success()).ConfigureAwait(false);
 		}
