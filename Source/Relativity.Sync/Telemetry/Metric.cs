@@ -6,7 +6,7 @@ using System.Reflection;
 namespace Relativity.Sync.Telemetry
 {
 	/// <summary>
-	///     Simple data bag representing a metric sent to a sink.
+	/// Simple data bag representing a metric sent to a sink.
 	/// </summary>
 	internal sealed class Metric
 	{
@@ -26,43 +26,49 @@ namespace Relativity.Sync.Telemetry
 			Name = name;
 			Type = type;
 			CorrelationId = correlationId;
+			WorkflowId = correlationId;
 		}
 
 		/// <summary>
-		///     Name of the application.
+		/// Name of the application.
 		/// </summary>
 		/// <remarks>
-		///     Set to <see cref="_SYNC_APPLICATION_NAME"/> to easily distinguish between Sync and RIP
+		/// Set to <see cref="_SYNC_APPLICATION_NAME"/> to easily distinguish between Sync and RIP
 		/// </remarks>
 		public string Application { get; } = _SYNC_APPLICATION_NAME;
 
 		/// <summary>
-		///     Name of this metric.
+		/// Name of this metric.
 		/// </summary>
 		public string Name { get; }
 
 		/// <summary>
-		///     Type of metric this represents, e.g. a timed operation, a counter, etc.
+		/// Type of metric this represents, e.g. a timed operation, a counter, etc.
 		/// </summary>
 		public MetricType Type { get; }
 
 		/// <summary>
-		///     ID that correlates logging and telemetry across a single job.
+		/// ID that correlates logging and telemetry across a single job.
 		/// </summary>
 		public string CorrelationId { get; }
 
 		/// <summary>
-		///     Value of this metric.
+		/// ID that correlates the metric to a particular system usage workflow.
+		/// </summary>
+		public string WorkflowId { get; set; }
+
+		/// <summary>
+		/// Value of this metric.
 		/// </summary>
 		public object Value { get; set; }
 
 		/// <summary>
-		///     Status of the operation related to this metric.
+		/// Status of the operation related to this metric.
 		/// </summary>
 		public ExecutionStatus ExecutionStatus { get; set; }
 
 		/// <summary>
-		///     Any custom data associated with this metric.
+		/// Any custom data associated with this metric.
 		/// </summary>
 		public IDictionary<string, object> CustomData
 		{
@@ -72,7 +78,7 @@ namespace Relativity.Sync.Telemetry
 		}
 
 		/// <summary>
-		///     Creates a <see cref="Metric" /> representing the result of a timed operation.
+		/// Creates a <see cref="Metric" /> representing the result of a timed operation.
 		/// </summary>
 		/// <param name="name">Name or bucket for the metric</param>
 		/// <param name="duration">Duration of the operation</param>
@@ -89,7 +95,7 @@ namespace Relativity.Sync.Telemetry
 		}
 
 		/// <summary>
-		///     Creates a <see cref="Metric" /> representing the result of a counter operation.
+		/// Creates a <see cref="Metric" /> representing the result of a counter operation.
 		/// </summary>
 		/// <param name="name">Name or bucket for the metric</param>
 		/// <param name="executionStatus">Result of the operation</param>
@@ -104,7 +110,7 @@ namespace Relativity.Sync.Telemetry
 		}
 
 		/// <summary>
-		///		Creates a <see cref="Metric" /> representing the result of a gauge operation.
+		/// Creates a <see cref="Metric" /> representing the result of a gauge operation.
 		/// </summary>
 		/// <param name="name">Name or bucket for the metric</param>
 		/// <param name="executionStatus">Result of the operation</param>
@@ -123,7 +129,55 @@ namespace Relativity.Sync.Telemetry
 		}
 
 		/// <summary>
-		///     Creates a Dictionary out of the given <see cref="Metric" />'s public readable properties.
+		/// Create a <see cref="Metric"/> representing a point in time string value for system usage.
+		/// </summary>
+		/// <param name="name">The name of the metric.</param>
+		/// <param name="value">The string value of the metric.</param>
+		/// <param name="workflowId">The ID which correlates the metric to a particular workflow.</param>
+		/// <param name="correlationId">The ID which correlates all metrics across a job.</param>
+		/// <returns>A <see cref="Metric"/> representation of the point in time string.</returns>
+		public static Metric PointInTimeStringOperation(string name, string value, string workflowId, string correlationId)
+		{
+			return PointInTimeOperation(name, value, workflowId, correlationId, MetricType.PointInTimeString);
+		}
+
+		/// <summary>
+		/// Create a <see cref="Metric"/> representing a point in time long value for system usage.
+		/// </summary>
+		/// <param name="name">The name of the metric.</param>
+		/// <param name="value">The long value of the metric.</param>
+		/// <param name="workflowId">The ID which correlates the metric to a particular workflow.</param>
+		/// <param name="correlationId">The ID which correlates all metrics across a job.</param>
+		/// <returns>A <see cref="Metric"/> representation of the point in time long.</returns>
+		public static Metric PointInTimeLongOperation(string name, long value, string workflowId, string correlationId)
+		{
+			return PointInTimeOperation(name, value, workflowId, correlationId, MetricType.PointInTimeLong);
+		}
+
+		/// <summary>
+		/// Create a <see cref="Metric"/> representing a point in time double value for system usage.
+		/// </summary>
+		/// <param name="name">The name of the metric.</param>
+		/// <param name="value">The double value of the metric.</param>
+		/// <param name="workflowId">The ID which correlates the metric to a particular workflow.</param>
+		/// <param name="correlationId">The ID which correlates all metrics across a job.</param>
+		/// <returns>A <see cref="Metric"/> representation of the point in time double.</returns>
+		public static Metric PointInTimeDoubleOperation(string name, double value, string workflowId, string correlationId)
+		{
+			return PointInTimeOperation(name, value, workflowId, correlationId, MetricType.PointInTimeDouble);
+		}
+
+		private static Metric PointInTimeOperation(string name, object value, string workflowId, string correlationId, MetricType type)
+		{
+			return new Metric(name, type, correlationId)
+			{
+				Value = value,
+				WorkflowId = workflowId
+			};
+		}
+
+		/// <summary>
+		/// Creates a Dictionary out of the given <see cref="Metric" />'s public readable properties.
 		/// </summary>
 		public Dictionary<string, object> ToDictionary()
 		{
@@ -131,7 +185,7 @@ namespace Relativity.Sync.Telemetry
 		}
 
 		/// <summary>
-		///     Creates an array of <see cref="object" />s out of the the given <see cref="Metric" />'s public readable properties.
+		/// Creates an array of <see cref="object" />s out of the the given <see cref="Metric" />'s public readable properties.
 		/// </summary>
 		public object[] ToPropertyArray()
 		{

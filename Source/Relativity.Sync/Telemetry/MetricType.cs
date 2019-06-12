@@ -5,6 +5,9 @@
 	/// </summary>
 	internal enum MetricType
 	{
+		PointInTimeString = 0,
+		PointInTimeLong,
+		PointInTimeDouble,
 		TimedOperation,
 		Counter,
 		GaugeOperation

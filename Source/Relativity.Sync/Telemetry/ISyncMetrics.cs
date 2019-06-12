@@ -42,14 +42,6 @@ namespace Relativity.Sync.Telemetry
 		IDisposable TimedOperation(string name, ExecutionStatus executionStatus, Dictionary<string, object> customData);
 
 		/// <summary>
-		/// Log time elapsed with the given data.
-		/// </summary>
-		/// <param name="name">Name of the metric.</param>
-		/// <param name="executionStatus">Execution status.</param>
-		/// <returns>A disposable object. Wrap this inside a using block so the dispose can be called to stop the timing.</returns>
-		IDisposable TimedOperation(string name, ExecutionStatus executionStatus);
-
-		/// <summary>
 		/// Logs a single gauge metric with the given data.
 		/// </summary>
 		/// <param name="name">Name of the metric.</param>
@@ -58,5 +50,29 @@ namespace Relativity.Sync.Telemetry
 		/// <param name="unitOfMeasure">A string value to describe what the metric's Value property is.</param>
 		/// <param name="customData">Data associated with the metric, namely value and metadata.</param>
 		void GaugeOperation(string name, ExecutionStatus executionStatus, long value, string unitOfMeasure, Dictionary<string, object> customData);
+
+		/// <summary>
+		/// Logs a single string metric.
+		/// </summary>
+		/// <param name="name">Name of the metric.</param>
+		/// <param name="value">The value to report.</param>
+		/// <param name="workflowId">The ID which correlates the metric to a particular workflow.</param>
+		void LogPointInTimeString(string name, string value, string workflowId);
+
+		/// <summary>
+		/// Logs a single long metric.
+		/// </summary>
+		/// <param name="name">Name of the metric.</param>
+		/// <param name="value">The value to report.</param>
+		/// <param name="workflowId">The ID which correlates the metric to a particular workflow.</param>
+		void LogPointInTimeLong(string name, long value, string workflowId);
+
+		/// <summary>
+		/// Logs a single double metric.
+		/// </summary>
+		/// <param name="name">Name of the metric.</param>
+		/// <param name="value">The value to report.</param>
+		/// <param name="workflowId">The ID which correlates the metric to a particular workflow.</param>
+		void LogPointInTimeDouble(string name, double value, string workflowId);
 	}
 }

@@ -11,7 +11,7 @@ namespace Relativity.Sync.Tests.Common
 	internal sealed class ConfigurationStub : IDataDestinationFinalizationConfiguration, IDataDestinationInitializationConfiguration, IDataSourceSnapshotConfiguration,
 		IDestinationWorkspaceObjectTypesCreationConfiguration, IDestinationWorkspaceSavedSearchCreationConfiguration, IDestinationWorkspaceTagsCreationConfiguration, IJobCleanupConfiguration,
 		IJobStatusConsolidationConfiguration, INotificationConfiguration, IPermissionsCheckConfiguration, ISnapshotPartitionConfiguration,
-		ISourceWorkspaceTagsCreationConfiguration, ISynchronizationConfiguration, IValidationConfiguration, IUserContextConfiguration, IFieldConfiguration
+		ISourceWorkspaceTagsCreationConfiguration, ISynchronizationConfiguration, IValidationConfiguration, IUserContextConfiguration, IFieldConfiguration, ISumReporterConfiguration
 	{
 		private const int _ADMIN_ID = 9;
 
@@ -92,5 +92,6 @@ namespace Relativity.Sync.Tests.Common
 		public int TotalRecordsCount { get; set; }
 		public int BatchSize { get; set; }
 		public Guid ExportRunId { get; set; }
+		public string WorkflowId { get; }
 	}
 }

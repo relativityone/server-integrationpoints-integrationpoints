@@ -19,6 +19,7 @@ namespace Relativity.Sync.Tests.Unit
 		private const int _GAUGE_VALUE = 123;
 		private const string _CORRELATION_ID = "foobar";
 		private const string _UNIT_OF_MEASURE = "docs";
+		private const string _WORKFLOW_ID = "Sync_101654_102985";
 
 		private readonly TimeSpan _timeSpan = TimeSpan.FromDays(1);
 
@@ -29,7 +30,10 @@ namespace Relativity.Sync.Tests.Unit
 			{
 				Metric.TimedOperation("Test1", _timeSpan, ExecutionStatus.Canceled, _CORRELATION_ID),
 				Metric.CountOperation("Test2", ExecutionStatus.Completed, _CORRELATION_ID),
-				Metric.GaugeOperation("Test3", ExecutionStatus.Failed, _CORRELATION_ID, _GAUGE_VALUE, _UNIT_OF_MEASURE)
+				Metric.GaugeOperation("Test3", ExecutionStatus.Failed, _CORRELATION_ID, _GAUGE_VALUE, _UNIT_OF_MEASURE),
+				Metric.PointInTimeStringOperation("Test.String", "Sync", _WORKFLOW_ID, _CORRELATION_ID),
+				Metric.PointInTimeLongOperation("Test.Long", long.MaxValue, _WORKFLOW_ID, _CORRELATION_ID),
+				Metric.PointInTimeDoubleOperation("Test.Double", double.MaxValue, _WORKFLOW_ID, _CORRELATION_ID)
 			};
 		}
 
@@ -96,6 +100,12 @@ namespace Relativity.Sync.Tests.Unit
 				.Throws<Exception>();
 			_metricsManager.Setup(x => x.LogTimerAsDoubleAsync(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<double>()))
 				.Throws<Exception>();
+			_metricsManager.Setup(x => x.LogPointInTimeStringAsync(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>()))
+				.Throws<Exception>();
+			_metricsManager.Setup(x => x.LogPointInTimeLongAsync(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<long>()))
+				.Throws<Exception>();
+			_metricsManager.Setup(x => x.LogPointInTimeDoubleAsync(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<double>()))
+				.Throws<Exception>();
 
 			// ACT
 			Assert.DoesNotThrow(() => _expectedMetrics.ForEach(x => instance.Log(x)));
@@ -131,11 +141,32 @@ namespace Relativity.Sync.Tests.Unit
 				It.Is<string>(y => y.Equals(_CORRELATION_ID, StringComparison.Ordinal)),
 				It.Is<long>(y => y.Equals(_GAUGE_VALUE))
 			), times);
+
+			_metricsManager.Verify(x => x.LogPointInTimeStringAsync(
+				It.Is<string>(y => y.Equals("Test.String", StringComparison.Ordinal)),
+				It.Is<Guid>(y => y.Equals(Guid.Empty)),
+				It.Is<string>(y => y ==  _WORKFLOW_ID),
+				It.Is<string>(y => y == "Sync")
+			), times);
+
+			_metricsManager.Verify(x => x.LogPointInTimeLongAsync(
+				It.Is<string>(y => y.Equals("Test.Long", StringComparison.Ordinal)),
+				It.Is<Guid>(y => y.Equals(Guid.Empty)),
+				It.Is<string>(y => y == _WORKFLOW_ID),
+				It.Is<long>(y => y == long.MaxValue)
+			), times);
+
+			_metricsManager.Verify(x => x.LogPointInTimeDoubleAsync(
+				It.Is<string>(y => y.Equals("Test.Double", StringComparison.Ordinal)),
+				It.Is<Guid>(y => y.Equals(Guid.Empty)),
+				It.Is<string>(y => y == _WORKFLOW_ID),
+				It.Is<double>(y => y == double.MaxValue)
+			), times);
 		}
 
 		private void VerifyLogErrorIsCalled(Times times)
 		{
-			_logger.Verify(x => x.LogError(It.IsAny<Exception>(), It.IsAny<string>()), times);
+			_logger.Verify(x => x.LogError(It.IsAny<Exception>(), It.IsAny<string>(), It.IsAny<object[]>()), times);
 		}
 
 		private void VerifyMetricsManagerWasDisposed(Times times)

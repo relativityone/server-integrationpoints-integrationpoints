@@ -4,6 +4,7 @@ using Banzai;
 using Banzai.Autofac;
 using Banzai.Factories;
 using Relativity.Sync.Nodes;
+using Relativity.Sync.Nodes.SumReporting;
 
 namespace Relativity.Sync
 {
@@ -30,6 +31,7 @@ namespace Relativity.Sync
 				.AddChild<DataSourceSnapshotNode>()
 				.AddChild<SyncMultiNode>()
 				.ForLastChild()
+				.AddChild<JobStartMetricsNode>()
 				.AddChild<DestinationWorkspaceTagsCreationNode>()
 				.AddChild<SourceWorkspaceTagsCreationNode>()
 				.AddChild<DataDestinationInitializationNode>()

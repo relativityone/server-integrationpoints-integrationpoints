@@ -4,6 +4,17 @@ A library for syncing documents and Relativity Dynamic Objects (RDOs) between Re
 
 ## Overview
 
+Relativity Sync utilizes the Relativity Import API, Export API, and various Kepler-based APIs to transfer documents (and eventually objects) between workspaces.
+
+The workspace-to-workspace workflow was originally designed as a part of [Relativity Integration Points (RIP)](https://git.kcura.com/projects/IN/repos/integrationpoints/browse). Relativity Sync is currently packaged with RIP and is still only differentiated as a separate flow within it.
+
+Relativity Sync will add a few features to the old RIP workflow:
+
+- Batching and parallel imports
+- Interfaces to receive detailed job progress reporting
+
+### Structure
+
 Relativity Sync uses the [Banzai](https://github.com/eswann/Banzai) framework to structure its workflow.
 
 - Sync builds a pipeline which executes a series of steps. See `Relativity.Sync.PipelineBuilder` for how it is structured.
@@ -15,23 +26,22 @@ Relativity Sync uses the [Banzai](https://github.com/eswann/Banzai) framework to
     - `IExecutionConstrains<T>` implementations determine whether or not a step should be run; they are invoked by `Command<T>.CanExecuteAsync`.
     - `IExecutor<T>` implementations contains the actual logic for each step; they are invoked by `Command<T>.ExecuteAsync`.
 
-## Usage
+### Usage
 
 1. Reference the `Relativity.Sync` NuGet package or `Relativity.Sync.dll` (if building locally).
 1. Create an instance of `Relativity.Sync.SyncJobFactory`.
 1. The rest of integration with Relativity Sync involves constructing the appropriate arguments to `SyncJobFactory.Create`:
     1. `Autofac.IContainer`: This is an Autofac container with appropriate registrations. Since Relativity Sync is still in development, you will need to register implementations for the following dependencies:
-        - `Relativity.API.IServicesMgr`
-        - `Relativity.API.IProvideServiceUris`
-          - These are Relativity dependencies. They are only reliably resolvable from inside a Relativity API integration point (e.g. agent, event handler, etc.)
         - `Relativity.Sync.I*Configuration`
           - These are the configuration interfaces for each step. The underlying object is expected to act as a POCO, so you can implement all of these as part of one configuration object if needed.
-    1. `Relativity.Sync.SyncJobParameters`: This defines the RIP job, namely the job's ArtifactID + the ArtifactID of the source workspac.
-    1. (optional) `Relativity.Sync.SyncConfiguration`: These are configurations for tweaking the performance of Relativity Sync, mainly around batch sizes and parallelization. In almost all cases you should use the defaults.
+    1. `Relativity.Sync.SyncJobParameters`: This defines the RIP job, namely the job's ArtifactID + the ArtifactID of the source workspace.
+    1. `Relativity.Sync.RelativityServices`: This defines a set of Relativity API dependencies required by Sync. These should be available from inside any Relativity API integration point (e.g. agent, event handler, etc.).
+    1. (optional) `Relativity.Sync.SyncJobExecutionConfiguration`: These are configurations for tweaking the performance of Relativity Sync, mainly around batch sizes and parallelization. In almost all cases you should use the defaults.
     1. (optional) `Relativity.Sync.ISyncLog`: The root logger for the Sync job. By default this will be an empty logger, but you must provide an implementation to get any logging from the Sync framework.
 1. Once you have the appropriate arguments, create an `ISyncJob` using the `SyncJobFactory.Create` method that's appropriate for your use case, and then invoke the job using `ISyncJob.ExecuteAsync`.
     - **NB**: There are also `RetryAsync` methods, but job retry is not yet supported.
     - You may provide an `IProgress<>` implementation to `ExecuteAsync` to get progress reporting; otherwise, Sync will not report any progress.
+    - You may also provide a `CancellationToken` to `ExecuteAsync`, but cancellation is only partially supported. Namely, **individual Import API jobs are not yet cancellable**. Since Relativity Sync batches out several Import API jobs you may be able to partially cancel document transfer, but jobs that are in progress when cancellation occurs will complete before the job is fully cancelled. Import API job cancellation is expected to be supported in a future release.
 
 ## Repository
 
@@ -91,6 +101,15 @@ To see available additional options for building (e.g. to specify build version)
 
 ### Test
 
+Sync defines three kinds of tests - unit, integration, and system.
+- **Unit** tests cover the behavior of individual methods and properties of single classes. All dependencies should be mocked.
+- **Integration** tests cover the behavior of one or more classes acting in concert. System dependencies (e.g. Relativity APIs, file system) should be mocked, but generally classes defined in Sync should be used.
+- **System** tests cover the behavior of several classes acting in concert against a running instance of Relativity. Some components may still be mocked, e.g. logging, metrics, and nodes outside of the test scope.
+
+Unit tests are run as part of the default build; otherwise, you can run them in Visual Studio or using the `runUnitTests` build task:
+
+    > .\build.ps1 runUnitTests
+
 You can run integration tests in Visual Studio or using the `runIntegrationTests` build task:
 
     > .\build.ps1 runIntegrationTests
@@ -120,4 +139,4 @@ Relativity Sync also has other pipelines, in particular a nightly one for execut
     1. You should have comprehensive **unit test** coverage over any new classes.
     1. There should also be basic **integration test** coverage over golden flows and negative scenarios.
     1. If you are updating or creating a new workflow or new widely-used class, then you may need to create **system tests** to cover that as well.
-1. Push up your branch, and create a PR into `develop`. Add members of the Codigo o Plomo to the PR. You will be able to merge once the pipeline is green.
+1. Push up your branch, and create a PR into `develop`. Add members of the Codigo o Plomo team to the PR. You will be able to merge once the pipeline is green.
