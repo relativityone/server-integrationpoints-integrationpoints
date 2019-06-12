@@ -9,9 +9,7 @@ namespace kCura.IntegrationPoints.Core.Managers
 		/// <param name="destinationWorkspaceArtifactId">The destination workspace artifact ID.</param>
 		/// <param name="sourceWorkspaceArtifactId">The source workspace artifact ID.</param>
 		/// <param name="federatedInstanceArtifactId">The federated instace artifact ID.</param>
-		/// <param name="sourceWorkspaceDescriptorArtifactTypeId">The Relativity Source Workspace Descriptor Artifact Type ID.</param>
 		/// <returns></returns>
-		SourceWorkspaceDTO CreateSourceWorkspaceDto(int destinationWorkspaceArtifactId, int sourceWorkspaceArtifactId, int? federatedInstanceArtifactId,
-			int sourceWorkspaceDescriptorArtifactTypeId);
+		SourceWorkspaceDTO CreateSourceWorkspaceDto(int destinationWorkspaceArtifactId, int sourceWorkspaceArtifactId, int? federatedInstanceArtifactId);
 	}
 }

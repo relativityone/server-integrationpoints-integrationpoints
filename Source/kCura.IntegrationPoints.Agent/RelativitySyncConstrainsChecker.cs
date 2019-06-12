@@ -1,12 +1,16 @@
 ﻿using System;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.Toggles;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Core;
 using Relativity.API;
 using Relativity.Toggles;
 
@@ -18,16 +22,18 @@ namespace kCura.IntegrationPoints.Agent
 		private readonly IProviderTypeService _providerTypeService;
 		private readonly IIntegrationPointService _integrationPointService;
 		private readonly IToggleProvider _toggleProvider;
-		private readonly IConfigurationDeserializer _configurationDeserializer;
+		private readonly IJobHistoryService _jobHistoryService;
+		private readonly ISerializer _serializer;
 
 		public RelativitySyncConstrainsChecker(IIntegrationPointService integrationPointService,
 			IProviderTypeService providerTypeService, IToggleProvider toggleProvider,
-			IConfigurationDeserializer configurationDeserializer, IAPILog logger)
+			IJobHistoryService jobHistoryService, ISerializer serializer, IAPILog logger)
 		{
 			_integrationPointService = integrationPointService;
 			_providerTypeService = providerTypeService;
 			_toggleProvider = toggleProvider;
-			_configurationDeserializer = configurationDeserializer;
+			_jobHistoryService = jobHistoryService;
+			_serializer = serializer;
 			_logger = logger;
 		}
 
@@ -46,6 +52,11 @@ namespace kCura.IntegrationPoints.Agent
 				}
 
 				if (!string.IsNullOrWhiteSpace(job.ScheduleRuleType))
+				{
+					return false;
+				}
+
+				if (IsRetryingErrors(job))
 				{
 					return false;
 				}
@@ -79,6 +90,13 @@ namespace kCura.IntegrationPoints.Agent
 				_logger.LogError(ex, "Error occurred when checking if Integration Point should use Relativity Sync workflow");
 				return false;
 			}
+		}
+
+		private bool IsRetryingErrors(Job job)
+		{
+			TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
+			JobHistory jobHistory = _jobHistoryService.GetRdo(taskParameters.BatchInstance);
+			return jobHistory.JobType.EqualsToChoice(JobTypeChoices.JobHistoryRetryErrors);
 		}
 
 		private bool IsRelativitySyncToggleEnabled()
@@ -120,7 +138,7 @@ namespace kCura.IntegrationPoints.Agent
 		{
 			_logger.LogDebug(
 				$"Determining Integration Point provider type based on source and destination provider id's using {nameof(IProviderTypeService)} SourceProviderId: {{sourceProviderId}}; DestinationProviderId: {{destinationProviderId}}",
-				sourceProviderId, 
+				sourceProviderId,
 				destinationProviderId);
 
 			try
@@ -150,7 +168,7 @@ namespace kCura.IntegrationPoints.Agent
 
 			try
 			{
-				T result = _configurationDeserializer.DeserializeConfiguration<T>(jsonToDeserialize);
+				T result = _serializer.Deserialize<T>(jsonToDeserialize);
 				_logger.LogInformation($"Json for type {nameof(T)} deserialized successfully");
 				return result;
 			}
@@ -165,13 +183,13 @@ namespace kCura.IntegrationPoints.Agent
 		{
 			_logger.LogDebug(
 				"Checking if configurations allow using RelativitySync. SourceConfiguration.TypeOfExport: {typeOfExport}; DestinationConfiguration.ImageImport: {imageImport}; DestinationConfiguration.ProductionImport: {productionImport}",
-				sourceConfiguration.TypeOfExport, 
+				sourceConfiguration.TypeOfExport,
 				importSettings.ImageImport,
 				importSettings.ProductionImport);
 
 			return sourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.SavedSearch &&
-			       !importSettings.ImageImport &&
-			       !importSettings.ProductionImport;
+				   !importSettings.ImageImport &&
+				   !importSettings.ProductionImport;
 		}
 	}
 }

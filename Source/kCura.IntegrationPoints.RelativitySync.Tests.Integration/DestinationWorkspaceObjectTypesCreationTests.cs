@@ -57,8 +57,6 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			await _instance.ExecuteAsync(_configuration, CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			Assert.AreNotEqual(_configuration.SourceJobArtifactTypeId, 0);
-			Assert.AreNotEqual(_configuration.SourceWorkspaceArtifactTypeId, 0);
 
 			await AssertSourceWorkspaceFields().ConfigureAwait(false);
 
@@ -78,33 +76,29 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			Assert.Pass();
 		}
 
+		// NOTE: We aren't using [TestCase] here b/c that would require creating a workspace for each test case.
+		// These tests are otherwise very quick and we don't really expect them to fail. Change these to
+		// TestCases if they get any more complicated.
 		[IdentifiedTest("c804cbf0-0aee-4ed2-aab9-4f5239c9d3e7")]
-		public async Task ItShouldNotExecuteIfObjectTypesAreSet()
+		public async Task ItShouldAlwaysExecute()
 		{
-			_configuration.IsSourceJobArtifactTypeIdSet = true;
-			_configuration.IsSourceWorkspaceArtifactTypeIdSet = true;
+			foreach (bool isSourceJobArtifactTypeIdSet in TrueFalse())
+			{
+				foreach (bool isSourceWorkspaceArtifactTypeIdSet in TrueFalse())
+				{
+					_configuration.IsSourceJobArtifactTypeIdSet = isSourceJobArtifactTypeIdSet;
+					_configuration.IsSourceWorkspaceArtifactTypeIdSet = isSourceWorkspaceArtifactTypeIdSet;
 
-			// ACT
-			bool result = await _instance.CanExecuteAsync(_configuration, CancellationToken.None).ConfigureAwait(false);
+					// ACT
+					bool result = await _instance.CanExecuteAsync(_configuration, CancellationToken.None).ConfigureAwait(false);
 
-			// ASSERT
-			Assert.IsFalse(result);
-		}
-
-		[IdentifiedTestCase("d465485d-af12-47bb-b0eb-6e6579745745", true, false)]
-		[IdentifiedTestCase("c5df66cb-8346-4d43-9a15-ec3e83d68ff9", false, true)]
-		[IdentifiedTestCase("13269a81-6900-43d2-941c-b0a41471961f", false, false)]
-		public async Task ItShouldExecuteIfObjectTypesAreMissing(bool isSourceJobArtifactTypeIdSet, bool isSourceWorkspaceArtifactTypeIdSet)
-		{
-			_configuration.IsSourceJobArtifactTypeIdSet = isSourceJobArtifactTypeIdSet;
-			_configuration.IsSourceWorkspaceArtifactTypeIdSet = isSourceWorkspaceArtifactTypeIdSet;
-
-			// ACT
-
-			bool result = await _instance.CanExecuteAsync(_configuration, CancellationToken.None).ConfigureAwait(false);
-
-			// ASSERT
-			Assert.IsTrue(result);
+					// ASSERT
+					Assert.IsTrue(result,
+						"CanExecuteAsync was not true for (IsSourceJobArtifactTypeIdSet={0}, IsSourceWorkspaceArtifactTypeIdSet={1})",
+						isSourceJobArtifactTypeIdSet,
+						isSourceWorkspaceArtifactTypeIdSet);
+				}
+			}
 		}
 
 		private async Task AssertSourceWorkspaceFields()
@@ -164,6 +158,12 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 				QueryResult result = await objectManager.QueryAsync(_workspaceId, request, 0, 100).ConfigureAwait(false);
 				return result.Objects;
 			}
+		}
+
+		private IEnumerable<bool> TrueFalse()
+		{
+			yield return true;
+			yield return false;
 		}
 	}
 }

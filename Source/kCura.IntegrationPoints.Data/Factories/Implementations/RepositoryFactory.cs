@@ -38,9 +38,9 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			IServicesMgr destinationServiceMgr,
 			IRelativityObjectManagerFactory objectManagerFactory,
 			IExternalServiceInstrumentationProvider instrumentationProvider)
-			: this(helper, 
-				destinationServiceMgr, 
-				new Lazy<IRelativityObjectManagerFactory>(() => objectManagerFactory), 
+			: this(helper,
+				destinationServiceMgr,
+				new Lazy<IRelativityObjectManagerFactory>(() => objectManagerFactory),
 				new Lazy<IExternalServiceInstrumentationProvider>(() => instrumentationProvider))
 		{
 		}
@@ -86,22 +86,23 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		{
 			IRelativityObjectManager relativityObjectManager =
 				CreateRelativityObjectManager(workspaceArtifactId);
-		    IAPILog logger = _helper.GetLoggerFactory().GetLogger();
-            return new DestinationProviderRepository(logger, relativityObjectManager);
+			IAPILog logger = _helper.GetLoggerFactory().GetLogger();
+			return new DestinationProviderRepository(logger, relativityObjectManager);
 		}
 
 		public IDestinationWorkspaceRepository GetDestinationWorkspaceRepository(int sourceWorkspaceArtifactId)
 		{
-			var rsapiService = new RSAPIService(_helper, sourceWorkspaceArtifactId);
-			IDestinationWorkspaceRepository destinationWorkspaceRepository = new DestinationWorkspaceRepository(rsapiService);
+			IRelativityObjectManager relativityObjectManager =
+				CreateRelativityObjectManager(sourceWorkspaceArtifactId);
+			IDestinationWorkspaceRepository destinationWorkspaceRepository = new DestinationWorkspaceRepository(relativityObjectManager);
 
 			return destinationWorkspaceRepository;
 		}
 
 		public IDocumentRepository GetDocumentRepository(int workspaceArtifactId)
 		{
-			IDocumentRepository documentRepository = new KeplerDocumentRepository(ObjectManagerFactory, workspaceArtifactId);
-			return documentRepository;
+			IRelativityObjectManager objectManager = CreateRelativityObjectManager(workspaceArtifactId);
+			return new KeplerDocumentRepository(objectManager);
 		}
 
 		public IFieldQueryRepository GetFieldQueryRepository(int workspaceArtifactId)
@@ -168,9 +169,19 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return new QueueRepository(_helper);
 		}
 
-		public IScratchTableRepository GetScratchTableRepository(int workspaceArtifactId, string tablePrefix, string tableSuffix)
+		public IScratchTableRepository GetScratchTableRepository(int workspaceArtifactID, string tablePrefix, string tableSuffix)
 		{
-			return new ScratchTableRepository(_helper, GetDocumentRepository(workspaceArtifactId), GetFieldQueryRepository(workspaceArtifactId), new ResourceDbProvider(), tablePrefix, tableSuffix, workspaceArtifactId);
+			//todo: think how to inject ripdbcontext to here
+			IDBContext dbContext = _helper.GetDBContext(workspaceArtifactID);
+			return new ScratchTableRepository(
+				new WorkspaceDBContext(dbContext), 
+				GetDocumentRepository(workspaceArtifactID),
+				GetFieldQueryRepository(workspaceArtifactID),
+				new ResourceDbProvider(), 
+				tablePrefix,
+				tableSuffix,
+				workspaceArtifactID
+			);
 		}
 
 		public ISourceJobRepository GetSourceJobRepository(int workspaceArtifactId)
@@ -302,7 +313,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		public IFileRepository GetFileRepository()
 		{
 			return new DisposableFileRepository(
-				_sourceServiceMgr, 
+				_sourceServiceMgr,
 				InstrumentationProvider,
 				(fileManager, instrumentationProvider) => new FileRepository(fileManager, instrumentationProvider)
 			);

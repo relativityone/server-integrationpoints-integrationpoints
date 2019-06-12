@@ -18,7 +18,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 	{
 		
 		private IJobService _jobService;
-		private IObjectTypeRepository _objectTypeRepository;
 		private IJobManager _jobManager;
 		private long _jobId = 0; 
 
@@ -26,73 +25,75 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 		{
 		}
 
-	    public override void SuiteSetup()
-	    {
-	        base.SuiteSetup();
-	        _jobService = Container.Resolve<IJobService>();
-	        _objectTypeRepository = Container.Resolve<IObjectTypeRepository>();
-	        _jobManager = Container.Resolve<IJobManager>();
-	    }
-
-	    public override void TestTeardown()
+		public override void SuiteSetup()
 		{
-            _jobManager.DeleteJob(_jobId);
+			base.SuiteSetup();
+
+			IntegrationPoint.Tests.Core.Agent.EnableAllIntegrationPointsAgents();
+			
+			_jobService = Container.Resolve<IJobService>();
+			_jobManager = Container.Resolve<IJobManager>();
+		}
+
+		public override void TestTeardown()
+		{
+			_jobManager.DeleteJob(_jobId);
 		}
 
 		[TestCase]
 		public void ShouldChangeScheduledJobStopState()
 		{
-		    const int delayInMiliseconds = 100;
-		    const int maxWaitTimeInSeconds = 180;
-		    var stopwatch = new Stopwatch();
-            
-            //Arrange
-            IntegrationPointModel integrationModel = CreateDefaultIntegrationPointModelScheduled(ImportOverwriteModeEnum.AppendOnly, "testing", "Append Only", 
+			const int delayInMiliseconds = 100;
+			const int maxWaitTimeInSeconds = 180;
+			var stopwatch = new Stopwatch();
+			
+			//Arrange
+			IntegrationPointModel integrationModel = CreateDefaultIntegrationPointModelScheduled(ImportOverwriteModeEnum.AppendOnly, "testing", "Append Only", 
 				DateTime.UtcNow.AddDays(-1).ToString("MM/dd/yyyy", CultureInfo.InvariantCulture), DateTime.UtcNow.AddDays(1).ToString("MM/dd/yyyy", CultureInfo.InvariantCulture), 
 				ScheduleQueue.Core.ScheduleRules.ScheduleInterval.Daily);
 			IntegrationPointModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
-		    Job jobInitial = _jobService.GetJobs(integrationPoint.ArtifactID).FirstOrDefault();
-		    _jobId = jobInitial.JobId;
+			Job jobInitial = _jobService.GetJobs(integrationPoint.ArtifactID).FirstOrDefault();
+			_jobId = jobInitial.JobId;
 
-		    Job jobProcessed = _jobService.GetJobs(integrationPoint.ArtifactID).FirstOrDefault();
+			Job jobProcessed = _jobService.GetJobs(integrationPoint.ArtifactID).FirstOrDefault();
 
-		    stopwatch.Start(); 
-            while (stopwatch.Elapsed.TotalSeconds < maxWaitTimeInSeconds && jobInitial.StopState == jobProcessed.StopState)
-            {
-			    Thread.Sleep(delayInMiliseconds);
-                jobProcessed = _jobService.GetJobs(integrationPoint.ArtifactID).FirstOrDefault();
-            }
+			stopwatch.Start(); 
+			while (stopwatch.Elapsed.TotalSeconds < maxWaitTimeInSeconds && jobInitial.StopState == jobProcessed.StopState)
+			{
+				Thread.Sleep(delayInMiliseconds);
+				jobProcessed = _jobService.GetJobs(integrationPoint.ArtifactID).FirstOrDefault();
+			}
 
-            //Assert
-            Assert.AreNotEqual(jobInitial.StopState, jobProcessed.StopState);
+			//Assert
+			Assert.AreNotEqual(jobInitial.StopState, jobProcessed.StopState);
 		}
 
 
-	    [TestCase]
-	    public void ShouldChangeScheduledJobNextRunTime()
-	    {
-	        const int delayInMiliseconds = 500;
-	        const int maxWaitTimeInSeconds = 180;
-	        var stopwatch = new Stopwatch();
+		[TestCase]
+		public void ShouldChangeScheduledJobNextRunTime()
+		{
+			const int delayInMiliseconds = 500;
+			const int maxWaitTimeInSeconds = 180;
+			var stopwatch = new Stopwatch();
 
-            //Arrange
-            IntegrationPointModel integrationModel = CreateDefaultIntegrationPointModelScheduled(ImportOverwriteModeEnum.AppendOnly, "testing", "Append Only", 
+			//Arrange
+			IntegrationPointModel integrationModel = CreateDefaultIntegrationPointModelScheduled(ImportOverwriteModeEnum.AppendOnly, "testing", "Append Only", 
 				DateTime.UtcNow.AddDays(-1).ToString("MM/dd/yyyy", CultureInfo.InvariantCulture), DateTime.UtcNow.AddDays(1).ToString("MM/dd/yyyy", CultureInfo.InvariantCulture), 
 				ScheduleQueue.Core.ScheduleRules.ScheduleInterval.Daily);
-	        IntegrationPointModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
-	        Job jobInitial = _jobService.GetJobs(integrationPoint.ArtifactID).FirstOrDefault();
-	        _jobId = jobInitial.JobId;
+			IntegrationPointModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
+			Job jobInitial = _jobService.GetJobs(integrationPoint.ArtifactID).FirstOrDefault();
+			_jobId = jobInitial.JobId;
 
-	        Job jobProcessed = _jobService.GetJobs(integrationPoint.ArtifactID).FirstOrDefault();
-	        stopwatch.Start();
-            while (stopwatch.Elapsed.TotalSeconds < maxWaitTimeInSeconds && jobInitial.NextRunTime == jobProcessed.NextRunTime)
-	        {
-	            Thread.Sleep(delayInMiliseconds);
-	            jobProcessed = _jobService.GetJobs(integrationPoint.ArtifactID).FirstOrDefault();
-	        }
+			Job jobProcessed = _jobService.GetJobs(integrationPoint.ArtifactID).FirstOrDefault();
+			stopwatch.Start();
+			while (stopwatch.Elapsed.TotalSeconds < maxWaitTimeInSeconds && jobInitial.NextRunTime == jobProcessed.NextRunTime)
+			{
+				Thread.Sleep(delayInMiliseconds);
+				jobProcessed = _jobService.GetJobs(integrationPoint.ArtifactID).FirstOrDefault();
+			}
 
-            //Assert
-	        Assert.AreNotEqual(jobInitial.NextRunTime, jobProcessed.NextRunTime);
-        }
-    }
+			//Assert
+			Assert.AreNotEqual(jobInitial.NextRunTime, jobProcessed.NextRunTime);
+		}
+	}
 }

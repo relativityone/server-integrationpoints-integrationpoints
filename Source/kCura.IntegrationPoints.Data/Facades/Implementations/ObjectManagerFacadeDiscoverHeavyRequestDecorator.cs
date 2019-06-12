@@ -35,8 +35,8 @@ namespace kCura.IntegrationPoints.Data.Facades.Implementations
 
 		public Task<CreateResult> CreateAsync(int workspaceArtifactID, CreateRequest request)
 		{
-			Func<string> getMessage =
-				() => GetWarningMessage<CreateRequest>(
+			Func<string> getWarningMessageHeader =
+				() => GetWarningMessageHeader<CreateRequest>(
 					workspaceArtifactID,
 					rdoArtifactId: _UNKNOWN,
 					rdoType: request.ObjectType.Name);
@@ -44,15 +44,15 @@ namespace kCura.IntegrationPoints.Data.Facades.Implementations
 			IEnumerable<FieldValueMap> fieldValues = request.FieldValues
 				.Select(x => new FieldValueMap(x));
 
-			AnalyzeFields(fieldValues, getMessage);
+			AnalyzeFields(fieldValues, getWarningMessageHeader);
 
 			return _objectManager.CreateAsync(workspaceArtifactID, request);
 		}
 
 		public async Task<ReadResult> ReadAsync(int workspaceArtifactID, ReadRequest request)
 		{
-			Func<string> getMessage =
-				() => GetWarningMessage<ReadRequest>(
+			Func<string> getWarningMessageHeader =
+				() => GetWarningMessageHeader<ReadRequest>(
 					workspaceArtifactID,
 					request.Object.ArtifactID.ToString(),
 					rdoType: _UNKNOWN);
@@ -64,25 +64,42 @@ namespace kCura.IntegrationPoints.Data.Facades.Implementations
 			IEnumerable<FieldValueMap> fieldValues = result.Object.FieldValues
 				.Select(x => new FieldValueMap(x));
 
-			AnalyzeFields(fieldValues, getMessage);
+			AnalyzeFields(fieldValues, getWarningMessageHeader);
 
 			return result;
 		}
 
 		public Task<UpdateResult> UpdateAsync(int workspaceArtifactID, UpdateRequest request)
 		{
-			Func<string> getMessage = 
-				() => GetWarningMessage<UpdateRequest>(
-					workspaceArtifactID, 
+			Func<string> getWarningMessageHeader =
+				() => GetWarningMessageHeader<UpdateRequest>(
+					workspaceArtifactID,
 					request.Object.ArtifactID.ToString(),
 					rdoType: _UNKNOWN);
 
 			IEnumerable<FieldValueMap> fieldValues = request.FieldValues
 				.Select(x => new FieldValueMap(x));
 
-			AnalyzeFields(fieldValues, getMessage);
+			AnalyzeFields(fieldValues, getWarningMessageHeader);
 
 			return _objectManager.UpdateAsync(workspaceArtifactID, request);
+		}
+
+		public Task<MassUpdateResult> UpdateAsync(
+			int workspaceArtifactID,
+			MassUpdateByObjectIdentifiersRequest request,
+			MassUpdateOptions updateOptions)
+		{
+			Func<string> getWarningMessage =
+				() => GetWarningMessageHeader<UpdateRequest>(
+					workspaceArtifactID,
+					rdoArtifactId: _UNKNOWN,
+					rdoType: _UNKNOWN);
+
+			AnalyzeMassUpdateObjectsCollection(getWarningMessage, request);
+			AnalyzeMassUpdateFields(getWarningMessage, workspaceArtifactID, request);
+
+			return _objectManager.UpdateAsync(workspaceArtifactID, request, updateOptions);
 		}
 
 		public Task<DeleteResult> DeleteAsync(int workspaceArtifactID, DeleteRequest request)
@@ -92,8 +109,8 @@ namespace kCura.IntegrationPoints.Data.Facades.Implementations
 
 		public async Task<QueryResult> QueryAsync(int workspaceArtifactID, QueryRequest request, int start, int length)
 		{
-			Func<string> getMessage =
-				() => GetWarningMessage<QueryRequest>(
+			Func<string> getWarningMessageHeader =
+				() => GetWarningMessageHeader<QueryRequest>(
 					workspaceArtifactID,
 					rdoArtifactId: _UNKNOWN,
 					rdoType: request.ObjectType.Name);
@@ -106,7 +123,7 @@ namespace kCura.IntegrationPoints.Data.Facades.Implementations
 				.SelectMany(x => x.FieldValues)
 				.Select(x => new FieldValueMap(x));
 
-			AnalyzeFields(fieldValues, getMessage);
+			AnalyzeFields(fieldValues, getWarningMessageHeader);
 
 			return result;
 		}
@@ -117,9 +134,34 @@ namespace kCura.IntegrationPoints.Data.Facades.Implementations
 			return _objectManager.StreamLongTextAsync(workspaceArtifactID, exportObject, longTextField);
 		}
 
+		private void AnalyzeMassUpdateObjectsCollection(
+			Func<string> getWarningMessageHeader,
+			MassUpdateByObjectIdentifiersRequest request)
+		{
+			if (request.Objects.Count > _MAX_COUNT_OF_COLLECTION_IN_REQUEST)
+			{
+				string massUpdateWarningMessage = "Requested mass update operation exceeded max collection count" +
+										$" - {request.Objects.Count}, when allowed is {_MAX_COUNT_OF_COLLECTION_IN_REQUEST}";
+
+				string[] warningsToLog = {getWarningMessageHeader(), massUpdateWarningMessage};
+				LogWarnings(warningsToLog);
+			}
+		}
+
+		private void AnalyzeMassUpdateFields(
+			Func<string> getWarningMessageHeader,
+			int workspaceArtifactID,
+			MassUpdateByObjectIdentifiersRequest request)
+		{
+			IEnumerable<FieldValueMap> fieldValues = request.FieldValues
+				.Select(x => new FieldValueMap(x));
+
+			AnalyzeFields(fieldValues, getWarningMessageHeader);
+		}
+
 		private void AnalyzeFields(
-			IEnumerable<FieldValueMap> fieldValues, 
-			Func<string> getMessage)
+			IEnumerable<FieldValueMap> fieldValues,
+			Func<string> getWarningMessageHeader)
 		{
 			IList<string> warnings = DiscoverFieldsCollectionsWhichExceedMaxCountValue(fieldValues);
 
@@ -128,7 +170,7 @@ namespace kCura.IntegrationPoints.Data.Facades.Implementations
 				return;
 			}
 
-			warnings.Insert(0, getMessage());
+			warnings.Insert(0, getWarningMessageHeader());
 			LogWarnings(warnings);
 		}
 
@@ -153,14 +195,14 @@ namespace kCura.IntegrationPoints.Data.Facades.Implementations
 			warnings.ForEach(warning => _logger.LogWarning(warning));
 		}
 
-		private string GetWarningMessage<T>(
+		private string GetWarningMessageHeader<T>(
 			int workspaceArtifactId,
 			string rdoArtifactId,
 			string rdoType)
 		{
 			string operationName = GetOperationNameForRequestType<T>();
-			return $"Heavy request discovered when executing {operationName}" 
-			 + $" on object of type [{rdoType}], id {rdoArtifactId} with ObjectManager" 
+			return $"Heavy request discovered when executing {operationName}"
+			 + $" on object of type [{rdoType}], id {rdoArtifactId} with ObjectManager"
 			 + $" (Workspace: {workspaceArtifactId})";
 		}
 

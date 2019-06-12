@@ -81,7 +81,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 		{
 			var jobHistoryRequest = new JobHistoryRequest
 			{
-				WorkspaceArtifactId = TargetWorkspaceArtifactId
+				WorkspaceArtifactId = TargetWorkspaceArtifactID
 			};
 			IJobHistoryManager jobHistoryManager = Helper.CreateUserProxy<IJobHistoryManager>(_userModel.EmailAddress);
 			AssertPermissionErrorMessage(() => jobHistoryManager.GetJobHistoryAsync(jobHistoryRequest).GetAwaiter().GetResult());
@@ -91,14 +91,14 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 		public void MissingIntegrationPointPermissionsInSourceWorkspace()
 		{
 			//Arrange
-			Group.AddGroupToWorkspace(SourceWorkspaceArtifactId, _groupId);
-			Group.AddGroupToWorkspace(TargetWorkspaceArtifactId, _groupId);
+			Group.AddGroupToWorkspace(SourceWorkspaceArtifactID, _groupId);
+			Group.AddGroupToWorkspace(TargetWorkspaceArtifactID, _groupId);
 
 			RemoveIntegrationPointPermissionsFromSourceWorkspace();
 			
 			var jobHistoryRequest = new JobHistoryRequest
 			{
-				WorkspaceArtifactId = SourceWorkspaceArtifactId,
+				WorkspaceArtifactId = SourceWorkspaceArtifactID,
 				Page = 0,
 				PageSize = 10
 			};
@@ -113,7 +113,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 
 		private void RemoveIntegrationPointPermissionsFromSourceWorkspace()
 		{
-			GroupPermissions permissions = Permission.GetGroupPermissions(SourceWorkspaceArtifactId, _groupId);
+			GroupPermissions permissions = Permission.GetGroupPermissions(SourceWorkspaceArtifactID, _groupId);
 
 			RemoveViewPermission(permissions, ObjectTypes.IntegrationPoint);
 			RemoveViewPermission(permissions, ObjectTypes.IntegrationPointProfile);
@@ -122,7 +122,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			RemoveViewPermission(permissions, ObjectTypes.DestinationProvider);
 			RemoveViewPermission(permissions, ObjectTypes.JobHistoryError);
 
-			Permission.SavePermission(SourceWorkspaceArtifactId, permissions);
+			Permission.SavePermission(SourceWorkspaceArtifactID, permissions);
 		}
 
 		private void RemoveViewPermission(GroupPermissions permissions, string objectType)
@@ -134,19 +134,19 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 		private async Task RunDefaultIntegrationPoint()
 		{
 			Core.Models.IntegrationPointModel ipModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, $"ip_{Utils.FormattedDateTimeNow}", "Append Only");
-			ipModel.Destination = CreateSerializedDestinationConfigWithTargetWorkspace(ImportOverwriteModeEnum.AppendOnly, TargetWorkspaceArtifactId);
+			ipModel.Destination = CreateSerializedDestinationConfigWithTargetWorkspace(ImportOverwriteModeEnum.AppendOnly, TargetWorkspaceArtifactID);
 			Core.Models.IntegrationPointModel ip = CreateOrUpdateIntegrationPoint(ipModel);
 
 			IIntegrationPointManager integrationPointManager = Helper.CreateAdminProxy<IIntegrationPointManager>();
-			await integrationPointManager.RunIntegrationPointAsync(SourceWorkspaceArtifactId, ip.ArtifactID);
+			await integrationPointManager.RunIntegrationPointAsync(SourceWorkspaceArtifactID, ip.ArtifactID);
 
-			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactId, ip.ArtifactID);
+			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactID, ip.ArtifactID);
 		}
 
 		private void ModifyJobHistoryItem()
 		{
 			//This is needed, as Integration Point, which has been run, doesn't contain any documents
-			IDBContext dbContext = Helper.GetDBContext(SourceWorkspaceArtifactId);
+			IDBContext dbContext = Helper.GetDBContext(SourceWorkspaceArtifactID);
 			dbContext.ExecuteNonQuerySQLStatement(@"UPDATE [JobHistory] SET [ItemsTransferred] = 1, [TotalItems] = 1");
 		}
 

@@ -51,11 +51,11 @@
 					})
 				});
 				ajax.fail(function (value) {
-					try{
+					try {
 						const validationResultDto = JSON.parse(value.responseText);
 						IP.message.errorFormatted.raise(validationResultDto.errors, $(".cardContainer"), RUN_ERR_PREFIX);
-					}catch{
-					    IP.message.error.raise(RUN_ERR_PREFIX + " " + value.responseText, $(".cardContainer"));
+					} catch (e) {
+						IP.message.error.raise(RUN_ERR_PREFIX + " " + value.responseText, $(".cardContainer"));
 					}
 				});
 				ajax.done(function () {
@@ -140,10 +140,10 @@
 			IP.data.ajax({
 				url: IP.utils.generateWebAPIURL('IntegrationPointProfilesAPI/SaveAsProfile', integrationPointId, value),
 				type: 'POST',
-				success: function() {
+				success: function () {
 					IP.message.notify("Profile has been saved", $("#customRDOWithConsoleWrapper"));
 				},
-				fail:function (error) {
+				fail: function (error) {
 					IP.message.error.raise(error, $("#customRDOWithConsoleWrapper"));
 				}
 			});
@@ -168,11 +168,11 @@
 	});
 })(IP);
 
-$(window).unload(function () {
+$(window).on("unload", function () {
 	if (IP.isEdit === "Edit") {
 		IP.redirect.reset(true);
 	} else {
 		IP.redirect.reset(false);
 	}
-			obj.push({ key: 'Scheduled Time', value: IP.timeUtil.format24HourToMilitaryTime(result.scheduledTime, "h:mm A") + (timeZone ? "; " + timeZone.DisplayName : "") });
+	obj.push({ key: 'Scheduled Time', value: IP.timeUtil.format24HourToMilitaryTime(result.scheduledTime, "h:mm A") + (timeZone ? "; " + timeZone.DisplayName : "") });
 });

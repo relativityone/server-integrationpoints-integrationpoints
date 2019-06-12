@@ -13,9 +13,7 @@ namespace kCura.IntegrationPoints.Core.Managers
 		///     The artifact id of the instance of the parent Source Workspace rdo
 		///     to associate the new Source Job with
 		/// </param>
-		/// <param name="sourceJobDescriptorArtifactTypeId">The Relativity Source Job Object Type Descriptor Artifact Type Id</param>
 		/// <returns></returns>
-		SourceJobDTO CreateSourceJobDto(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId, int jobHistoryArtifactId, int sourceWorkspaceRdoInstanceArtifactId,
-			int sourceJobDescriptorArtifactTypeId);
+		SourceJobDTO CreateSourceJobDto(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId, int jobHistoryArtifactId, int sourceWorkspaceRdoInstanceArtifactId);
 	}
 }

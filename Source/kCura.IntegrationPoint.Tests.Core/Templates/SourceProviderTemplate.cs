@@ -122,8 +122,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				}));
 			Container.Register(
 				Component.For<IWorkspaceDBContext>()
-					.ImplementedBy<WorkspaceContext>()
-					.UsingFactoryMethod(k => new WorkspaceContext(k.Resolve<IHelper>().GetDBContext(WorkspaceArtifactId)))
+					.ImplementedBy<WorkspaceDBContext>()
+					.UsingFactoryMethod(k => new WorkspaceDBContext(k.Resolve<IHelper>().GetDBContext(WorkspaceArtifactId)))
 					.LifeStyle.Transient);
 			Container.Register(
 				Component.For<IRSAPIClient>()
@@ -276,7 +276,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			return Helper.GetDBContext(-1).ExecuteSqlStatementAsScalar<int>(query, workspaceId, integrationPointId);
 		}
 
-		protected Job GetNextJobInScheduleQueue(int[] resourcePool, int integrationPointId)
+		protected Job GetNextJobInScheduleQueue(int[] resourcePool, int integrationPointID, int workspaceID)
 		{
 			IJobService jobServiceManager = Container.Resolve<IJobService>();
 
@@ -291,7 +291,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 					if (job != null)
 					{
 						// pick up job
-						if (job.RelatedObjectArtifactID == integrationPointId)
+						if (job.RelatedObjectArtifactID == integrationPointID && job.WorkspaceID == workspaceID)
 						{
 							return job;
 						}

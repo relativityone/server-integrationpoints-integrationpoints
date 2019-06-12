@@ -52,17 +52,20 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public override void SuiteSetup()
 		{
 			base.SuiteSetup();
-			QueryRequest request = new QueryRequest()
+
+			IntegrationPoint.Tests.Core.Agent.EnableAllIntegrationPointsAgents();
+
+			var request = new QueryRequest
 			{
 				Fields = new DestinationProvider().ToFieldList(),
 			};
-			_destinationProvider = CaseContext.RsapiService.RelativityObjectManager.Query<DestinationProvider>(request).First();
+			_destinationProvider = ObjectManager.Query<DestinationProvider>(request).First();
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			_jobHistoryService = Container.Resolve<IJobHistoryService>();
 			_jobService = Container.Resolve<IJobService>();
-			_savedSearchRepository = _repositoryFactory.GetSavedSearchQueryRepository(SourceWorkspaceArtifactId);
-			Import.ImportNewDocuments(SourceWorkspaceArtifactId, Import.GetImportTable("IPTestDocument", 3));
+			_savedSearchRepository = _repositoryFactory.GetSavedSearchQueryRepository(SourceWorkspaceArtifactID);
+			Import.ImportNewDocuments(SourceWorkspaceArtifactID, Import.GetImportTable("IPTestDocument", 3));
 		}
 
 		#region UpdateProperties
@@ -115,8 +118,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			IntegrationPointModel originalModel = CreateIntegrationPointThatIsAlreadyRunModel(name);
 			IntegrationPointModel defaultModel = CreateOrUpdateIntegrationPoint(originalModel);
 
-			int newSavedSearch = SavedSearch.CreateSavedSearch(SourceWorkspaceArtifactId, name);
-			defaultModel.SourceConfiguration = CreateSourceConfig(newSavedSearch, SourceWorkspaceArtifactId, SourceConfiguration.ExportType.SavedSearch);
+			int newSavedSearch = SavedSearch.CreateSavedSearch(SourceWorkspaceArtifactID, name);
+			defaultModel.SourceConfiguration = CreateSourceConfig(newSavedSearch, SourceWorkspaceArtifactID, SourceConfiguration.ExportType.SavedSearch);
 
 			//Act & Assert
 			Assert.DoesNotThrow(() => CreateOrUpdateIntegrationPoint(defaultModel));
@@ -161,7 +164,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public void SaveIntegration_IntegrationPointWithNoSchedulerAndUpdateWithScheduler()
 		{
 			//Arrange
-			Import.ImportNewDocuments(SourceWorkspaceArtifactId, Import.GetImportTable("RunNow", 3));
+			Import.ImportNewDocuments(SourceWorkspaceArtifactID, Import.GetImportTable("RunNow", 3));
 
 			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
@@ -233,10 +236,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			IntegrationPointModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
 
 			//Act
-			_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, integrationPoint.ArtifactID, _ADMIN_USER_ID);
-			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactId, integrationPoint.ArtifactID);
+			_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactID, integrationPoint.ArtifactID, _ADMIN_USER_ID);
+			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactID, integrationPoint.ArtifactID);
 			IntegrationPointModel integrationPointPostJob = _integrationPointService.ReadIntegrationPointModel(integrationPoint.ArtifactID);
-			IJobHistoryRepository jobHistoryRepository = _repositoryFactory.GetJobHistoryRepository(SourceWorkspaceArtifactId);
+			IJobHistoryRepository jobHistoryRepository = _repositoryFactory.GetJobHistoryRepository(SourceWorkspaceArtifactID);
 			IList<int> jobHistoryArtifactIds = new List<int> { jobHistoryRepository.GetLastJobHistoryArtifactId(integrationPointPostJob.ArtifactID) };
 			Data.JobHistory jobHistory = _jobHistoryService.GetJobHistory(jobHistoryArtifactIds)[0];
 
@@ -248,8 +251,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Assert.AreEqual(JobStatusChoices.JobHistoryCompleted.Name, jobHistory.JobStatus.Name);
 			Assert.AreEqual(JobTypeChoices.JobHistoryRun.Name, jobHistory.JobType.Name);
 
-			IList<Audit> postRunAudits = this.GetLastAuditsForIntegrationPoint(integrationModel.Name, 3);
-			Assert.AreEqual(3, postRunAudits.Count, "There should be 4 audits");
+			// Follow up story regarding audits: REL-327585
+			const int expectedNumberOfAudits = 1;
+			IList<Audit> postRunAudits = this.GetLastAuditsForIntegrationPoint(integrationModel.Name, expectedNumberOfAudits);
+			Assert.AreEqual(expectedNumberOfAudits, postRunAudits.Count, $"There should be {expectedNumberOfAudits} audits");
 			Assert.IsTrue(postRunAudits.All(x => x.AuditAction == "Update"));
 			Assert.IsTrue(postRunAudits.All(x => x.UserFullName == _REALTIVITY_SERVICE_ACCOUNT_FULL_NAME), "The user full name should match");
 
@@ -283,9 +288,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			//Act
 
 			//Create Errors by using Append Only
-			_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, integrationPoint.ArtifactID, _ADMIN_USER_ID);
-			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactId, integrationPoint.ArtifactID);
-			IList<Audit> postRunAudits = this.GetLastAuditsForIntegrationPoint(integrationModel.Name, 4);
+			_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactID, integrationPoint.ArtifactID, _ADMIN_USER_ID);
+			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactID, integrationPoint.ArtifactID);
+			const int expectedNumberOfAudits = 2;
+			IList<Audit> postRunAudits = this.GetLastAuditsForIntegrationPoint(integrationModel.Name, expectedNumberOfAudits);
 
 			//Update Integration Point's SelectedOverWrite to "Overlay Only"
 			IntegrationPointModel integrationPointPostRun = _integrationPointService.ReadIntegrationPointModel(integrationPoint.ArtifactID);
@@ -294,11 +300,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			CreateOrUpdateIntegrationPoint(integrationPointPostRun);
 
 			//Retry Errors
-			_integrationPointService.RetryIntegrationPoint(SourceWorkspaceArtifactId, integrationPointPostRun.ArtifactID, _ADMIN_USER_ID);
-			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactId, integrationPointPostRun.ArtifactID);
+			_integrationPointService.RetryIntegrationPoint(SourceWorkspaceArtifactID, integrationPointPostRun.ArtifactID, _ADMIN_USER_ID);
+			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactID, integrationPointPostRun.ArtifactID);
 			IntegrationPointModel integrationPointPostRetry = _integrationPointService.ReadIntegrationPointModel(integrationPointPostRun.ArtifactID);
 
-			IJobHistoryRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryRepository(SourceWorkspaceArtifactId);
+			IJobHistoryRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryRepository(SourceWorkspaceArtifactID);
 			IList<int> jobHistoryArtifactIds = new List<int> { jobHistoryErrorRepository.GetLastJobHistoryArtifactId(integrationPointPostRetry.ArtifactID) };
 			Data.JobHistory jobHistory = _jobHistoryService.GetJobHistory(jobHistoryArtifactIds)[0];
 
@@ -310,13 +316,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Assert.AreEqual(JobStatusChoices.JobHistoryCompleted.Name, jobHistory.JobStatus.Name);
 			Assert.AreEqual(JobTypeChoices.JobHistoryRetryErrors.Name, jobHistory.JobType.Name);
 
-			Assert.AreEqual(4, postRunAudits.Count, "There should be 4 audits");
+			Assert.AreEqual(expectedNumberOfAudits, postRunAudits.Count, $"There should be {expectedNumberOfAudits} audits");
 			Assert.IsTrue(postRunAudits.All(x => x.AuditAction == "Update"));
 			Assert.IsTrue(postRunAudits.All(x => x.UserFullName == _REALTIVITY_SERVICE_ACCOUNT_FULL_NAME), "The user full name should match");
 			AssertThatAuditDetailsChanged(postRunAudits.First(), new HashSet<string>() { "Last Runtime (UTC)", "Has Errors" });
 
-			IList<Audit> postRetryAudits = this.GetLastAuditsForIntegrationPoint(integrationModel.Name, 4);
-			Assert.AreEqual(4, postRetryAudits.Count, "There should be 4 audits");
+			IList<Audit> postRetryAudits = this.GetLastAuditsForIntegrationPoint(integrationModel.Name, expectedNumberOfAudits);
+			Assert.AreEqual(expectedNumberOfAudits, postRetryAudits.Count, $"There should be {expectedNumberOfAudits} audits");
 			Assert.IsTrue(postRetryAudits.All(x => x.AuditAction == "Update"));
 			Assert.IsTrue(postRetryAudits.All(x => x.UserFullName == _REALTIVITY_SERVICE_ACCOUNT_FULL_NAME), "The user full name should match");
 			AssertThatAuditDetailsChanged(postRetryAudits.First(), new HashSet<string>() { "Last Runtime (UTC)", "Has Errors" });
@@ -357,7 +363,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			//Act
 
 			//Create Errors by using Append Only
-			Status.WaitForScheduledJobToComplete(Container, SourceWorkspaceArtifactId, integrationPointPreJobExecution.ArtifactID, timeoutInSeconds: 600);
+			Status.WaitForScheduledJobToComplete(Container, SourceWorkspaceArtifactID, integrationPointPreJobExecution.ArtifactID, timeoutInSeconds: 600);
 			IntegrationPointModel integrationPointPostRun = _integrationPointService.ReadIntegrationPointModel(integrationPointPreJobExecution.ArtifactID);
 
 			//Assert
@@ -472,7 +478,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.OverlayOnly),
 				DestinationProvider = RelativityDestinationProviderArtifactId,
 				SourceProvider = RelativityProvider.ArtifactId,
-				SourceConfiguration = CreateSourceConfigWithCustomParameters(TargetWorkspaceArtifactId, TemporarySavedSearchId, SourceWorkspaceArtifactId, SourceConfiguration.ExportType.SavedSearch),
+				SourceConfiguration = CreateSourceConfigWithCustomParameters(TargetWorkspaceArtifactID, TemporarySavedSearchId, SourceWorkspaceArtifactID, SourceConfiguration.ExportType.SavedSearch),
 				LogErrors = true,
 				Name = $"IntegrationPointServiceTest{DateTime.Now:yy-MM-dd HH-mm-ss}",
 				SelectedOverwrite = "Overlay Only",
@@ -485,10 +491,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			};
 
 			IntegrationPointModel integrationPointModel = CreateOrUpdateIntegrationPoint(integrationModel);
-			DeleteSavedSearch(SourceWorkspaceArtifactId, TemporarySavedSearchId);
+			DeleteSavedSearch(SourceWorkspaceArtifactID, TemporarySavedSearchId);
 
 			// Act
-			Assert.Throws<IntegrationPointValidationException>(() => _integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, integrationPointModel.ArtifactID, _ADMIN_USER_ID));
+			Assert.Throws<IntegrationPointValidationException>(() => _integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactID, integrationPointModel.ArtifactID, _ADMIN_USER_ID));
 
 			// Assert
 			Data.IntegrationPoint ip = _integrationPointService.ReadIntegrationPoint(integrationPointModel.ArtifactID);
@@ -509,7 +515,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 
 		private int CreateTemporarySavedSearch()
 		{
-			return SavedSearch.CreateSavedSearch(SourceWorkspaceArtifactId, "NewSavedSearch");
+			return SavedSearch.CreateSavedSearch(SourceWorkspaceArtifactID, "NewSavedSearch");
 		}
 
 		private void CleanScheduleAgentQueueFromAllRipJobs(int integrationPointArtifactId)
@@ -572,7 +578,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			var sourceConfiguration = new SourceConfiguration()
 			{
 				SavedSearchArtifactId = savedSearchId,
-				SourceWorkspaceArtifactId = SourceWorkspaceArtifactId,
+				SourceWorkspaceArtifactId = SourceWorkspaceArtifactID,
 				TargetWorkspaceArtifactId = targetWorkspaceId,
 				TypeOfExport = typeOfExport
 			};
@@ -586,7 +592,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.OverlayOnly),
 				DestinationProvider = _destinationProvider.ArtifactId,
 				SourceProvider = RelativityProvider.ArtifactId,
-				SourceConfiguration = CreateSourceConfig(SavedSearchArtifactId, TargetWorkspaceArtifactId, SourceConfiguration.ExportType.SavedSearch),
+				SourceConfiguration = CreateSourceConfig(SavedSearchArtifactID, TargetWorkspaceArtifactID, SourceConfiguration.ExportType.SavedSearch),
 				LogErrors = true,
 				Name = $"${name} - {DateTime.Today:yy-MM-dd HH-mm-ss}",
 				Map = CreateDefaultFieldMap(),
@@ -606,8 +612,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		private FieldMap[] GetSampleFields()
 		{
 			var repositoryFactory = Container.Resolve<IRepositoryFactory>();
-			IFieldQueryRepository sourceFieldQueryRepository = repositoryFactory.GetFieldQueryRepository(SourceWorkspaceArtifactId);
-			IFieldQueryRepository destinationFieldQueryRepository = repositoryFactory.GetFieldQueryRepository(TargetWorkspaceArtifactId);
+			IFieldQueryRepository sourceFieldQueryRepository = repositoryFactory.GetFieldQueryRepository(SourceWorkspaceArtifactID);
+			IFieldQueryRepository destinationFieldQueryRepository = repositoryFactory.GetFieldQueryRepository(TargetWorkspaceArtifactID);
 
 			ArtifactDTO identifierSourceField = sourceFieldQueryRepository.RetrieveTheIdentifierField((int)ArtifactType.Document);
 			ArtifactDTO identifierDestinationField = destinationFieldQueryRepository.RetrieveTheIdentifierField((int)ArtifactType.Document);

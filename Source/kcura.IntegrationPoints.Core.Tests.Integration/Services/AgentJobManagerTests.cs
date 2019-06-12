@@ -69,7 +69,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			//Arrange
 			Guid batchInstance = Guid.NewGuid();
 			Job job = new JobBuilder().WithJobId(1)
-				.WithWorkspaceId(SourceWorkspaceArtifactId)
+				.WithWorkspaceId(SourceWorkspaceArtifactID)
 				.WithRelatedObjectArtifactId(1)
 				.WithSubmittedBy(_ADMIN_USER_ID)
 				.Build();
@@ -95,13 +95,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 				.WithJobId(jobId)
 				.WithRootJobId(rootJobId)
 				.WithRelatedObjectArtifactId(integrationPoint.ArtifactID)
-				.WithWorkspaceId(SourceWorkspaceArtifactId)
+				.WithWorkspaceId(SourceWorkspaceArtifactID)
 				.WithSubmittedBy(_ADMIN_USER_ID)
 				.Build();
 
 			Guid batchInstance = Guid.NewGuid();
-			string scratchTableSuffix = $"{SourceWorkspaceArtifactId}_{rootJobId}_{batchInstance}";
-			_scratchTableRepository = _repositoryFactory.GetScratchTableRepository(SourceWorkspaceArtifactId, _JOB_TRACKER_TABLE_PREFIX, scratchTableSuffix);
+			string scratchTableSuffix = $"{SourceWorkspaceArtifactID}_{rootJobId}_{batchInstance}";
+			_scratchTableRepository = _repositoryFactory.GetScratchTableRepository(SourceWorkspaceArtifactID, _JOB_TRACKER_TABLE_PREFIX, scratchTableSuffix);
 
 			_jobTracker.CreateTrackingEntry(job, batchInstance.ToString());
 
@@ -126,13 +126,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 				.WithJobId(jobId)
 				.WithRootJobId(rootJobId)
 				.WithRelatedObjectArtifactId(integrationPoint.ArtifactID)
-				.WithWorkspaceId(SourceWorkspaceArtifactId)
+				.WithWorkspaceId(SourceWorkspaceArtifactID)
 				.WithSubmittedBy(_ADMIN_USER_ID)
 				.Build();
 			Job job2 = new JobBuilder().WithJob(job).WithJobId(jobId2).Build();
 			Guid batchInstance = Guid.NewGuid();
-			string scratchTableSuffix = $"{SourceWorkspaceArtifactId}_{rootJobId}_{batchInstance}";
-			_scratchTableRepository = _repositoryFactory.GetScratchTableRepository(SourceWorkspaceArtifactId, _JOB_TRACKER_TABLE_PREFIX, scratchTableSuffix);
+			string scratchTableSuffix = $"{SourceWorkspaceArtifactID}_{rootJobId}_{batchInstance}";
+			_scratchTableRepository = _repositoryFactory.GetScratchTableRepository(SourceWorkspaceArtifactID, _JOB_TRACKER_TABLE_PREFIX, scratchTableSuffix);
 			_jobTracker.CreateTrackingEntry(job, batchInstance.ToString());
 			_jobTracker.CreateTrackingEntry(job2, batchInstance.ToString());
 
@@ -152,7 +152,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 
 			int jobId = 1;
 			Job job = new JobBuilder().WithJobId(jobId)
-				.WithWorkspaceId(SourceWorkspaceArtifactId)
+				.WithWorkspaceId(SourceWorkspaceArtifactID)
 				.WithRelatedObjectArtifactId(integrationPoint.ArtifactID)
 				.WithSubmittedBy(_ADMIN_USER_ID)
 				.Build();

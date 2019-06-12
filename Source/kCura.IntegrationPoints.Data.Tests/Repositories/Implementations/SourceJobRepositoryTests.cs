@@ -47,10 +47,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		{
 			var expectedResult = 855108;
 
-			var sourceJobDto = new SourceJobDTO
-			{
-				ArtifactTypeId = 880951
-			};
+			var sourceJobDto = new SourceJobDTO();
 
 			_objectManager.Create(Arg.Any<ObjectTypeRef>(), Arg.Any<RelativityObjectRef>(), Arg.Any<List<FieldRefValuePair>>()).Returns(expectedResult);
 
@@ -59,7 +56,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 
 			// ASSERT
 			Assert.That(actualResult, Is.EqualTo(expectedResult));
-			_objectManager.Received(1).Create(Arg.Is<ObjectTypeRef>(x => x.ArtifactID == 0 && x.ArtifactTypeID == sourceJobDto.ArtifactTypeId), Arg.Any<RelativityObjectRef>(), Arg.Any<List<FieldRefValuePair>>());
+			_objectManager.Received(1).Create(Arg.Is<ObjectTypeRef>(x => x.ArtifactID == 0 && x.Guid == SourceJobDTO.ObjectTypeGuid), Arg.Any<RelativityObjectRef>(), Arg.Any<List<FieldRefValuePair>>());
 		}
 
 		[Test]

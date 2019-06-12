@@ -3,11 +3,11 @@ using Relativity.Sync;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
-	internal sealed class Progress : IProgress<SyncProgress>
+	internal sealed class Progress : IProgress<SyncJobState>
 	{
-		public event EventHandler<SyncProgress> SyncProgress;
+		public event EventHandler<SyncJobState> SyncProgress;
 
-		public void Report(SyncProgress value)
+		public void Report(SyncJobState value)
 		{
 			SyncProgress?.Invoke(this, value);
 		}

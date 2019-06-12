@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 		public override void SuiteTeardown()
 		{
-			IntegrationPoint.Tests.Core.Agent.EnableAllAgents();
+			IntegrationPoint.Tests.Core.Agent.EnableAllIntegrationPointsAgents();
 			base.SuiteTeardown();
 		}
 

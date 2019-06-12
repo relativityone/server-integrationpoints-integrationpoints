@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.Executors.Validation;
 using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
@@ -77,6 +78,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 		{
 			Mock<IExtendedJob> job = new Mock<IExtendedJob>();
 			job.Setup(x => x.JobHistoryId).Returns(_jobHistory.ArtifactId);
+			job.Setup(x => x.IntegrationPointId).Returns(_jobHistory.IntegrationPoint[0]);
 			job.Setup(x => x.WorkspaceId).Returns(WorkspaceArtifactId);
 
 			// ACT
@@ -87,6 +89,25 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			Assert.AreEqual(jobHistories.Count, 1);
 			Assert.IsTrue(jobHistories[0].EndTimeUTC.HasValue);
 			Assert.AreEqual(jobHistories[0].JobStatus.Name, JobStatusChoices.JobHistoryStopped.Name);
+		}
+
+		[IdentifiedTest("7173e7f5-330d-429d-878e-3673eebff40c")]
+		public async Task ItShouldMarkJobAsValidationFailed()
+		{
+			Mock<IExtendedJob> job = new Mock<IExtendedJob>();
+			job.Setup(x => x.JobHistoryId).Returns(_jobHistory.ArtifactId);
+			job.Setup(x => x.IntegrationPointId).Returns(_jobHistory.IntegrationPoint[0]);
+			job.Setup(x => x.WorkspaceId).Returns(WorkspaceArtifactId);
+			ValidationException exception = new ValidationException(new ValidationResult() { IsValid = false });
+
+			// ACT
+			await _instance.MarkJobAsValidationFailedAsync(exception, job.Object, Helper).ConfigureAwait(false);
+
+			// ASSERT
+			IList<JobHistory> jobHistories = Container.Resolve<IJobHistoryService>().GetJobHistory(new[] { _jobHistory.ArtifactId });
+			Assert.AreEqual(jobHistories.Count, 1);
+			Assert.IsTrue(jobHistories[0].EndTimeUTC.HasValue);
+			Assert.AreEqual(jobHistories[0].JobStatus.Name, JobStatusChoices.JobHistoryValidationFailed.Name);
 		}
 
 		[IdentifiedTest("2aaf1fbe-e284-4dcd-8ef8-e5a65d6d33b2")]
@@ -114,6 +135,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 		{
 			Mock<IExtendedJob> job = new Mock<IExtendedJob>();
 			job.Setup(x => x.JobHistoryId).Returns(_jobHistory.ArtifactId);
+			job.Setup(x => x.IntegrationPointId).Returns(_jobHistory.IntegrationPoint[0]);
 			job.Setup(x => x.WorkspaceId).Returns(WorkspaceArtifactId);
 
 			// ACT
@@ -131,6 +153,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 		{
 			Mock<IExtendedJob> job = new Mock<IExtendedJob>();
 			job.Setup(x => x.JobHistoryId).Returns(_jobHistory.ArtifactId);
+			job.Setup(x => x.IntegrationPointId).Returns(_jobHistory.IntegrationPoint[0]);
 			job.Setup(x => x.WorkspaceId).Returns(WorkspaceArtifactId);
 
 			CreateJobHistoryError(_jobHistory.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew, ErrorTypeChoices.JobHistoryErrorItem);
@@ -150,6 +173,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 		{
 			Mock<IExtendedJob> job = new Mock<IExtendedJob>();
 			job.Setup(x => x.JobHistoryId).Returns(_jobHistory.ArtifactId);
+			job.Setup(x => x.IntegrationPointId).Returns(_jobHistory.IntegrationPoint[0]);
 			job.Setup(x => x.WorkspaceId).Returns(WorkspaceArtifactId);
 
 

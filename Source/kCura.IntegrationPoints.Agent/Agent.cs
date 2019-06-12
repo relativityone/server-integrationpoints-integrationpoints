@@ -87,6 +87,7 @@ namespace kCura.IntegrationPoints.Agent
 							ripContainerForSync.Register(Component.For<IWindsorContainer>().Instance(ripContainerForSync));
 							ripContainerForSync.Register(Component.For<ISendEmailWorker>().UsingFactoryMethod(k => k.Resolve<SendEmailWorker>()));
 							ripContainerForSync.Register(Component.For<IExportServiceManager>().ImplementedBy<ExportServiceManager>().Named(Guid.NewGuid().ToString()).IsDefault());
+							ripContainerForSync.Register(Component.For<IntegrationPointToSyncConverter>().ImplementedBy<IntegrationPointToSyncConverter>());
 
 							RelativitySyncAdapter syncAdapter = ripContainerForSync.Resolve<RelativitySyncAdapter>();
 							return syncAdapter.RunAsync().ConfigureAwait(false).GetAwaiter().GetResult();

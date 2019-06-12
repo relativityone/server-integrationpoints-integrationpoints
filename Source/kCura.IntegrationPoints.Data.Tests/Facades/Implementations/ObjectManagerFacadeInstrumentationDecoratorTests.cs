@@ -1,282 +1,363 @@
 ﻿using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using kCura.IntegrationPoints.Data.Facades.Implementations;
 using kCura.IntegrationPoints.Domain.Exceptions;
-using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Kepler.Exceptions;
 using Relativity.Services.Objects.DataContracts;
 using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
+using FluentAssertions;
 using kCura.IntegrationPoints.Data.Facades;
+using Moq;
+using static kCura.IntegrationPoints.Data.Tests.Facades.Implementations.TestsHelpers.ObjectManagerFacadeTestsHelpers;
 
 namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 {
 	[TestFixture]
 	public class ObjectManagerFacadeInstrumentationDecoratorTests
 	{
-		private IObjectManagerFacade _objectManager;
-		private IExternalServiceInstrumentationProvider _instrumentationProvider;
-		private IExternalServiceInstrumentation _instrumentation;
-		private IExternalServiceInstrumentationStarted _startedInstrumentation;
-		private IAPILog _logger;
-		private ObjectManagerFacadeInstrumentationDecorator _sut;
+		private Mock<IObjectManagerFacade> _objectManagerMock;
+		private Mock<IExternalServiceInstrumentationProvider> _instrumentationProviderMock;
+		private Mock<IExternalServiceInstrumentation> _instrumentationMock;
+		private Mock<IExternalServiceInstrumentationStarted> _startedInstrumentationMock;
 
+		private ObjectManagerFacadeInstrumentationDecorator _sut;
+		
 		[SetUp]
 		public void SetUp()
 		{
-			_objectManager = Substitute.For<IObjectManagerFacade>();
-			_logger = Substitute.For<IAPILog>();
-			_instrumentation = Substitute.For<IExternalServiceInstrumentation>();
-			_startedInstrumentation = Substitute.For<IExternalServiceInstrumentationStarted>();
-			_instrumentation.Started().Returns(_startedInstrumentation);
-			_instrumentationProvider = Substitute.For<IExternalServiceInstrumentationProvider>();
-			_instrumentationProvider.Create(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
-				.Returns(_instrumentation);
-			_sut = new ObjectManagerFacadeInstrumentationDecorator(_objectManager, _instrumentationProvider, _logger);
-		}
-
-		[Test]
-		public async Task ItShouldCallStartedAndCompletedForSuccessfulCall_Create()
-		{
-			// arrange
-			_objectManager.CreateAsync(Arg.Any<int>(), Arg.Any<CreateRequest>()).Returns(new CreateResult());
-
-			// act
-			await _sut.CreateAsync(0, null);
-
-			// assert
-			_instrumentation.Received().Started();
-			_startedInstrumentation.Received().Completed();
-		}
-
-		[Test]
-		public async Task ItShouldCallStartedAndFailedForResultWithFailedEventHandlers_Create()
-		{
-			// arrange
-			string failReason = "Bad request";
-			var result = new CreateResult
+			_objectManagerMock = new Mock<IObjectManagerFacade>();
+			var loggerMock = new Mock<IAPILog>
 			{
-				EventHandlerStatuses = { new EventHandlerStatus { Message = failReason, Success = false } }
+				DefaultValue = DefaultValue.Mock
 			};
-			_objectManager.CreateAsync(Arg.Any<int>(), Arg.Any<CreateRequest>()).Returns(result);
-
-			// act
-			await _sut.CreateAsync(0, null);
-
-			// assert
-			_startedInstrumentation.Received().Failed(failReason);
+			_instrumentationMock = new Mock<IExternalServiceInstrumentation>();
+			_startedInstrumentationMock = new Mock<IExternalServiceInstrumentationStarted>();
+			_instrumentationMock
+				.Setup(x => x.Started())
+				.Returns(_startedInstrumentationMock.Object);
+			_instrumentationProviderMock = new Mock<IExternalServiceInstrumentationProvider>();
+			_instrumentationProviderMock
+				.Setup(x => x.Create(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+				.Returns(_instrumentationMock.Object);
+			_sut = new ObjectManagerFacadeInstrumentationDecorator(
+				_objectManagerMock.Object,
+				_instrumentationProviderMock.Object,
+				loggerMock.Object);
 		}
 
 		[Test]
-		public async Task ItShouldAggregateFailReasonsFromEventHandler_Create()
+		public Task CreateAsync_ShouldCallStartedAndCompletedForSuccessfulCall()
 		{
-			// arrange
-			string failReason1 = "Bad request";
-			string failReason2 = "Internal error";
-			string expectedFailureReason = $"{failReason1};{failReason2}";
-			var result = new CreateResult
-			{
-				EventHandlerStatuses =
+			return ShouldCallStartedAndCompletedForSuccessfulCallAsync(CreateCallWithAnyArgs);
+		}
+
+		[Test]
+		public Task CreateAsync_ShouldCallStartedAndFailedForResultWithFailedEventHandlers()
+		{
+			return ShouldCallStartedAndFailedForResultWithFailedEventHandlersAsync(
+				CreateCallWithAnyArgs,
+				(result, statuses) => result.EventHandlerStatuses = statuses
+				);
+		}
+
+		[Test]
+		public Task CreateAsync_ShouldAggregateFailReasonsFromEventHandler()
+		{
+			return ShouldAggregateFailReasonsFromEventHandlerAsync(
+				CreateCallWithAnyArgs,
+				(result, statuses) => result.EventHandlerStatuses = statuses
+			);
+		}
+
+		[Test]
+		public Task CreateAsync_ShouldCallFailedWhenExceptionIsThrown()
+		{
+			return ShouldCallFailedWhenExceptionIsThrownAsync(CreateCallWithAnyArgs);
+		}
+
+		[Test]
+		public void CreateAsync_ShouldRethrowExceptions()
+		{
+			ShouldRethrowExceptions(CreateCallWithAnyArgs);
+		}
+
+		[Test]
+		public void CreateAsync_ShouldWrapServiceNotFoundException()
+		{
+			ShouldWrapServiceNotFoundException(CreateCallWithAnyArgs);
+		}
+
+		[Test]
+		public Task ReadAsync_ShouldCallStartedAndCompletedForSuccessfulCall()
+		{
+			return ShouldCallStartedAndCompletedForSuccessfulCallAsync(ReadCallWithAnyArgs);
+		}
+
+		[Test]
+		public Task ReadAsync_ShouldCallFailedWhenExceptionIsThrown()
+		{
+			return ShouldCallFailedWhenExceptionIsThrownAsync(ReadCallWithAnyArgs);
+		}
+
+		[Test]
+		public void ReadAsync_ShouldRethrowExceptions()
+		{
+			ShouldRethrowExceptions(ReadCallWithAnyArgs);
+		}
+
+		[Test]
+		public void ReadAsync_ShouldWrapServiceNotFoundException()
+		{
+			ShouldWrapServiceNotFoundException(ReadCallWithAnyArgs);
+		}
+
+		[Test]
+		public Task UpdateAsync_ShouldCallStartedAndCompletedForSuccessfulCall()
+		{
+			return ShouldCallStartedAndCompletedForSuccessfulCallAsync(UpdateCallWithAnyArgs);
+		}
+
+		[Test]
+		public Task UpdateAsync_ShouldCallStartedAndFailedForResultWithFailedEventHandlers()
+		{
+			return ShouldCallStartedAndFailedForResultWithFailedEventHandlersAsync(
+				UpdateCallWithAnyArgs,
+				(result, statuses) => result.EventHandlerStatuses = statuses
+			);
+		}
+
+		[Test]
+		public Task UpdateAsync_ShouldCallFailedWhenExceptionIsThrown()
+		{
+			return ShouldCallFailedWhenExceptionIsThrownAsync(UpdateCallWithAnyArgs);
+		}
+
+		[Test]
+		public void UpdateAsync_ShouldRethrowExceptions()
+		{
+			ShouldRethrowExceptions(UpdateCallWithAnyArgs);
+		}
+
+		[Test]
+		public void UpdateAsync_ShouldWrapServiceNotFoundException()
+		{
+			ShouldWrapServiceNotFoundException(UpdateCallWithAnyArgs);
+		}
+
+		[Test]
+		public Task UpdateAsync_MassUpdate_ShouldCallStartedAndCompletedForSuccessfulCall()
+		{
+			return ShouldCallStartedAndCompletedForSuccessfulCallAsync(
+				MassUpdateCallWithAnyArgs,
+				setupResult: result => result.Success = true);
+		}
+
+		[Test]
+		public Task UpdateAsync_MassUpdate_ShouldCallStartedAndFailedForNonSuccessfulCall()
+		{
+			return ShouldCallStartedAndFailedForNonSuccessfulCallAsync(
+				MassUpdateCallWithAnyArgs,
+				setupResult: (result, failureReason) =>
 				{
-					new EventHandlerStatus { Message = failReason1, Success = false },
-					new EventHandlerStatus { Message = failReason2, Success = false }
+					result.Success = false;
+					result.Message = failureReason;
 				}
+			);
+		}
+
+		[Test]
+		public Task UpdateAsync_MassUpdate_ShouldCallFailedWhenExceptionIsThrown()
+		{
+			return ShouldCallFailedWhenExceptionIsThrownAsync(MassUpdateCallWithAnyArgs);
+		}
+
+		[Test]
+		public void UpdateAsync_MassUpdate_ShouldRethrowExceptions()
+		{
+			ShouldRethrowExceptions(MassUpdateCallWithAnyArgs);
+		}
+
+		[Test]
+		public void UpdateAsync_MassUpdate_ShouldWrapServiceNotFoundException()
+		{
+			ShouldWrapServiceNotFoundException(MassUpdateCallWithAnyArgs);
+		}
+
+		[Test]
+		public Task DeleteAsync_ShouldCallStartedAndCompletedForSuccessfulCall()
+		{
+			return ShouldCallStartedAndCompletedForSuccessfulCallAsync(DeleteCallWithAnyArgs);
+		}
+
+		[Test]
+		public Task DeleteAsync_ShouldCallFailedWhenExceptionIsThrown()
+		{
+			return ShouldCallFailedWhenExceptionIsThrownAsync(DeleteCallWithAnyArgs);
+		}
+
+		[Test]
+		public void DeleteAsync_ShouldRethrowExceptions()
+		{
+			ShouldRethrowExceptions(DeleteCallWithAnyArgs);
+		}
+
+		[Test]
+		public void DeleteAsync_ShouldWrapServiceNotFoundException()
+		{
+			ShouldWrapServiceNotFoundException(DeleteCallWithAnyArgs);
+		}
+
+		[Test]
+		public Task QueryAsync_ShouldCallStartedAndCompletedForSuccessfulCall()
+		{
+			return ShouldCallStartedAndCompletedForSuccessfulCallAsync(QueryCallWithAnyArgs);
+		}
+
+		[Test]
+		public Task QueryAsync_ShouldCallFailedWhenExceptionIsThrown()
+		{
+			return ShouldCallFailedWhenExceptionIsThrownAsync(QueryCallWithAnyArgs);
+		}
+
+		[Test]
+		public void QueryAsync_ShouldRethrowExceptions()
+		{
+			ShouldRethrowExceptions(QueryCallWithAnyArgs);
+		}
+
+		[Test]
+		public void QueryAsync_ShouldWrapServiceNotFoundException()
+		{
+			ShouldWrapServiceNotFoundException(QueryCallWithAnyArgs);
+		}
+
+		private async Task ShouldCallStartedAndCompletedForSuccessfulCallAsync<TResult>(
+			Expression<Func<IObjectManagerFacade, Task<TResult>>> methodToTest,
+			Action<TResult> setupResult = null)
+			where TResult : new()
+		{
+			// arrange
+			var result = new TResult();
+			setupResult?.Invoke(result);
+
+			_objectManagerMock
+				.Setup(methodToTest)
+				.ReturnsAsync(result);
+
+			Func<IObjectManagerFacade, Task<TResult>> compiledMethodToTest = methodToTest.Compile();
+
+			// act
+			await compiledMethodToTest(_sut).ConfigureAwait(false);
+
+			// assert
+			_instrumentationMock.Verify(x => x.Started());
+			_startedInstrumentationMock.Verify(x => x.Completed());
+		}
+
+		private async Task ShouldCallStartedAndFailedForNonSuccessfulCallAsync<TResult>(
+			Expression<Func<IObjectManagerFacade, Task<TResult>>> methodToTest,
+			Action<TResult, string> setupResult)
+			where TResult : new()
+		{
+			// arrange
+			string failureReason = "access denied";
+			var result = new TResult();
+			setupResult.Invoke(result, failureReason);
+
+			_objectManagerMock
+				.Setup(methodToTest)
+				.ReturnsAsync(result);
+
+			Func<IObjectManagerFacade, Task<TResult>> compiledMethodToTest = methodToTest.Compile();
+
+			// act
+			await compiledMethodToTest(_sut).ConfigureAwait(false);
+
+			// assert
+			_instrumentationMock.Verify(x => x.Started());
+			_startedInstrumentationMock.Verify(x => x.Failed(failureReason));
+		}
+
+		private async Task ShouldCallStartedAndFailedForResultWithFailedEventHandlersAsync<TResult>(
+			Expression<Func<IObjectManagerFacade, Task<TResult>>> methodToTest,
+			Action<TResult, List<EventHandlerStatus>> setEventHandlerStatuses)
+			where TResult : new()
+		{
+			// arrange
+			const string failReason = "Unauthorized";
+
+			var result = new TResult();
+			var eventHandlerStatuses = new List<EventHandlerStatus>
+			{
+				new EventHandlerStatus { Message = failReason, Success = false }
 			};
-			_objectManager.CreateAsync(Arg.Any<int>(), Arg.Any<CreateRequest>()).Returns(result);
+			setEventHandlerStatuses(result, eventHandlerStatuses);
+
+			_objectManagerMock
+				.Setup(methodToTest)
+				.ReturnsAsync(result);
+
+			Func<IObjectManagerFacade, Task<TResult>> compiledMethodToTest = methodToTest.Compile();
 
 			// act
-			await _sut.CreateAsync(0, null);
+			await compiledMethodToTest(_sut).ConfigureAwait(false);
 
 			// assert
-			_startedInstrumentation.Received().Failed(expectedFailureReason);
+			_instrumentationMock.Verify(x => x.Started());
+			_startedInstrumentationMock.Verify(x => x.Failed(failReason));
 		}
 
-		[Test]
-		public async Task ItShouldCallFailedWhenExceptionIsThrown_Create()
+		private async Task ShouldAggregateFailReasonsFromEventHandlerAsync<TResult>(
+			Expression<Func<IObjectManagerFacade, Task<TResult>>> methodToTest,
+			Action<TResult, List<EventHandlerStatus>> setEventHandlerStatuses)
+			where TResult : new()
 		{
 			// arrange
-			var exception = new Exception();
-			_objectManager.CreateAsync(Arg.Any<int>(), Arg.Any<CreateRequest>()).Throws(exception);
+			const string failReason1 = "Bad request";
+			const string failReason2 = "Internal error";
+			string expectedFailureReason = $"{failReason1};{failReason2}";
 
-			// act
-			try
+			var result = new TResult();
+			var eventHandlerStatuses = new List<EventHandlerStatus>
 			{
-				await _sut.CreateAsync(0, null);
-			}
-			catch (Exception)
-			{
-				// ignore
-			}
-
-			// assert
-			_startedInstrumentation.Received().Failed(exception);
-		}
-
-		[Test]
-		public async Task ItShouldRethrowExceptions_Create()
-		{
-			// arrange
-			var exception = new Exception();
-			_objectManager.CreateAsync(Arg.Any<int>(), Arg.Any<CreateRequest>()).Throws(exception);
-
-			// act
-			try
-			{
-				await _sut.CreateAsync(0, null);
-
-				// assert
-				Assert.Fail();
-			}
-			catch (Exception ex)
-			{
-				Assert.AreEqual(exception, ex);
-			}
-		}
-
-		[Test]
-		public async Task ItShouldWrapServiceNotFoundException_Create()
-		{
-			// arrange
-			var exception = new ServiceNotFoundException();
-			_objectManager.CreateAsync(Arg.Any<int>(), Arg.Any<CreateRequest>()).Throws(exception);
-
-			// act
-			try
-			{
-				await _sut.CreateAsync(0, null);
-
-				// assert
-				Assert.Fail();
-			}
-			catch (IntegrationPointsException ex)
-			{
-				Assert.AreEqual(exception, ex.InnerException);
-			}
-		}
-
-		[Test]
-		public async Task ItShouldCallStartedAndCompletedForSuccessfulCall_Read()
-		{
-			// arrange
-			_objectManager.ReadAsync(Arg.Any<int>(), Arg.Any<ReadRequest>()).Returns(new ReadResult());
-
-			// act
-			await _sut.ReadAsync(0, null);
-
-			// assert
-			_instrumentation.Received().Started();
-			_startedInstrumentation.Received().Completed();
-		}
-
-		[Test]
-		public async Task ItShouldCallFailedWhenExceptionIsThrown_Read()
-		{
-			// arrange
-			var exception = new Exception();
-			_objectManager.ReadAsync(Arg.Any<int>(), Arg.Any<ReadRequest>()).Throws(exception);
-
-			// act
-			try
-			{
-				await _sut.ReadAsync(0, null);
-			}
-			catch (Exception)
-			{
-				// ignore
-			}
-
-			// assert
-			_startedInstrumentation.Received().Failed(exception);
-		}
-
-		[Test]
-		public async Task ItShouldRethrowExceptions_Read()
-		{
-			// arrange
-			var exception = new Exception();
-			_objectManager.ReadAsync(Arg.Any<int>(), Arg.Any<ReadRequest>()).Throws(exception);
-
-			// act
-			try
-			{
-				await _sut.ReadAsync(0, null);
-
-				// assert
-				Assert.Fail();
-			}
-			catch (Exception ex)
-			{
-				Assert.AreEqual(exception, ex);
-			}
-		}
-
-		[Test]
-		public async Task ItShouldWrapServiceNotFoundException_Read()
-		{
-			// arrange
-			var exception = new ServiceNotFoundException();
-			_objectManager.ReadAsync(Arg.Any<int>(), Arg.Any<ReadRequest>()).Throws(exception);
-
-			// act
-			try
-			{
-				await _sut.ReadAsync(0, null);
-
-				// assert
-				Assert.Fail();
-			}
-			catch (IntegrationPointsException ex)
-			{
-				Assert.AreEqual(exception, ex.InnerException);
-			}
-		}
-
-		[Test]
-		public async Task ItShouldCallStartedAndCompletedForSuccessfulCall_Update()
-		{
-			// arrange
-			_objectManager.UpdateAsync(Arg.Any<int>(), Arg.Any<UpdateRequest>()).Returns(new UpdateResult());
-
-			// act
-			await _sut.UpdateAsync(0, null);
-
-			// assert
-			_instrumentation.Received().Started();
-			_startedInstrumentation.Received().Completed();
-		}
-
-		[Test]
-		public async Task ItShouldCallStartedAndFailedForResultWithFailedEventHandlers_Update()
-		{
-			// arrange
-			string failReason = "Unauthorized";
-			var result = new UpdateResult
-			{
-				EventHandlerStatuses = { new EventHandlerStatus { Message = failReason, Success = false } }
+				new EventHandlerStatus {Message = failReason1, Success = false},
+				new EventHandlerStatus {Message = failReason2, Success = false}
 			};
-			_objectManager.UpdateAsync(Arg.Any<int>(), Arg.Any<UpdateRequest>()).Returns(result);
+			setEventHandlerStatuses(result, eventHandlerStatuses);
+
+			_objectManagerMock
+				.Setup(methodToTest)
+				.ReturnsAsync(result);
+
+			Func<IObjectManagerFacade, Task<TResult>> compiledMethodToTest = methodToTest.Compile();
 
 			// act
-			await _sut.UpdateAsync(0, null);
+			await compiledMethodToTest(_sut).ConfigureAwait(false);
 
 			// assert
-			_instrumentation.Received().Started();
-			_startedInstrumentation.Received().Failed(failReason);
+			_startedInstrumentationMock.Verify(x => x.Failed(expectedFailureReason));
+
 		}
 
-		[Test]
-		public async Task ItShouldCallFailedWhenExceptionIsThrown_Update()
+		private async Task ShouldCallFailedWhenExceptionIsThrownAsync<TResult>(Expression<Func<IObjectManagerFacade, Task<TResult>>> methodToTest)
+			where TResult : new()
 		{
 			// arrange
 			var exception = new Exception();
-			_objectManager.UpdateAsync(Arg.Any<int>(), Arg.Any<UpdateRequest>()).Throws(exception);
+			_objectManagerMock
+				.Setup(methodToTest)
+				.Throws(exception);
+
+			Func<IObjectManagerFacade, Task<TResult>> compiledMethodToTest = methodToTest.Compile();
 
 			// act
 			try
 			{
-				await _sut.UpdateAsync(0, null);
+				await compiledMethodToTest(_sut).ConfigureAwait(false);
 			}
 			catch (Exception)
 			{
@@ -284,203 +365,48 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 			}
 
 			// assert
-			_startedInstrumentation.Received().Failed(exception);
+			_startedInstrumentationMock.Verify(x => x.Failed(exception));
 		}
 
-		[Test]
-		public async Task ItShouldRethrowExceptions_Update()
+		private void ShouldRethrowExceptions<TResult>(Expression<Func<IObjectManagerFacade, Task<TResult>>> methodToTest)
+			where TResult : new()
 		{
 			// arrange
 			var exception = new Exception();
-			_objectManager.UpdateAsync(Arg.Any<int>(), Arg.Any<UpdateRequest>()).Throws(exception);
+			_objectManagerMock
+				.Setup(methodToTest)
+				.Throws(exception);
+
+			Func<IObjectManagerFacade, Task<TResult>> compiledMethodToTest = methodToTest.Compile();
 
 			// act
-			try
-			{
-				await _sut.UpdateAsync(0, null);
-
-				// assert
-				Assert.Fail();
-			}
-			catch (Exception ex)
-			{
-				Assert.AreEqual(exception, ex);
-			}
-		}
-
-		[Test]
-		public async Task ItShouldWrapServiceNotFoundException_Update()
-		{
-			// arrange
-			var exception = new ServiceNotFoundException();
-			_objectManager.UpdateAsync(Arg.Any<int>(), Arg.Any<UpdateRequest>()).Throws(exception);
-
-			// act
-			try
-			{
-				await _sut.UpdateAsync(0, null);
-
-				// assert
-				Assert.Fail();
-			}
-			catch (IntegrationPointsException ex)
-			{
-				Assert.AreEqual(exception, ex.InnerException);
-			}
-		}
-
-		[Test]
-		public async Task ItShouldCallStartedAndCompletedForSuccessfulCall_Delete()
-		{
-			// arrange
-			_objectManager.DeleteAsync(Arg.Any<int>(), Arg.Any<DeleteRequest>()).Returns(new DeleteResult());
-
-			// act
-			await _sut.DeleteAsync(0, null);
+			Func<Task> executeMethodAction = () => compiledMethodToTest(_sut);
 
 			// assert
-			_instrumentation.Received().Started();
-			_startedInstrumentation.Received().Completed();
+			executeMethodAction.ShouldThrow<Exception>()
+				.Which
+				.Should().Be(exception);
 		}
 
-		[Test]
-		public async Task ItShouldCallFailedWhenExceptionIsThrown_Delete()
+		private void ShouldWrapServiceNotFoundException<TResult>(Expression<Func<IObjectManagerFacade, Task<TResult>>> methodToTest)
+			where TResult : new()
 		{
 			// arrange
-			var exception = new Exception();
-			_objectManager.DeleteAsync(Arg.Any<int>(), Arg.Any<DeleteRequest>()).Throws(exception);
+			var serviceNotFoundException = new ServiceNotFoundException();
+			_objectManagerMock
+				.Setup(methodToTest)
+				.Throws(serviceNotFoundException);
+
+			Func<IObjectManagerFacade, Task<TResult>> compiledMethodToTest = methodToTest.Compile();
 
 			// act
-			try
-			{
-				await _sut.DeleteAsync(0, null);
-			}
-			catch (Exception)
-			{
-				// ignore
-			}
+			Func<Task> executeMethodAction = () => compiledMethodToTest(_sut);
 
 			// assert
-			_startedInstrumentation.Received().Failed(exception);
-		}
-
-		[Test]
-		public async Task ItShouldRethrowExceptions_Delete()
-		{
-			// arrange
-			var exception = new Exception();
-			_objectManager.DeleteAsync(Arg.Any<int>(), Arg.Any<DeleteRequest>()).Throws(exception);
-
-			// act
-			try
-			{
-				await _sut.DeleteAsync(0, null);
-
-				// assert
-				Assert.Fail();
-			}
-			catch (Exception ex)
-			{
-				Assert.AreEqual(exception, ex);
-			}
-		}
-
-		[Test]
-		public async Task ItShouldWrapServiceNotFoundException_Delete()
-		{
-			// arrange
-			var exception = new ServiceNotFoundException();
-			_objectManager.DeleteAsync(Arg.Any<int>(), Arg.Any<DeleteRequest>()).Throws(exception);
-
-			// act
-			try
-			{
-				await _sut.DeleteAsync(0, null);
-
-				// assert
-				Assert.Fail();
-			}
-			catch (IntegrationPointsException ex)
-			{
-				Assert.AreEqual(exception, ex.InnerException);
-			}
-		}
-
-		[Test]
-		public async Task ItShouldCallStartedAndCompletedForSuccessfulCall_Query()
-		{
-			// arrange
-			_objectManager.QueryAsync(Arg.Any<int>(), Arg.Any<QueryRequest>(), Arg.Any<int>(), Arg.Any<int>()).Returns(new QueryResult());
-
-			// act
-			await _sut.QueryAsync(0, null, 0, 0);
-
-			// assert
-			_instrumentation.Received().Started();
-			_startedInstrumentation.Received().Completed();
-		}
-
-		[Test]
-		public async Task ItShouldCallFailedWhenExceptionIsThrown_Query()
-		{
-			// arrange
-			var exception = new Exception();
-			_objectManager.QueryAsync(Arg.Any<int>(), Arg.Any<QueryRequest>(), Arg.Any<int>(), Arg.Any<int>()).Throws(exception);
-
-			// act
-			try
-			{
-				await _sut.QueryAsync(0, null, 0, 0);
-			}
-			catch (Exception)
-			{
-				// ignore
-			}
-
-			// assert
-			_startedInstrumentation.Received().Failed(exception);
-		}
-
-		[Test]
-		public async Task ItShouldRethrowExceptions_Query()
-		{
-			// arrange
-			var exception = new Exception();
-			_objectManager.QueryAsync(Arg.Any<int>(), Arg.Any<QueryRequest>(), Arg.Any<int>(), Arg.Any<int>()).Throws(exception);
-
-			// act
-			try
-			{
-				await _sut.QueryAsync(0, null, 0, 0);
-
-				// assert
-				Assert.Fail();
-			}
-			catch (Exception ex)
-			{
-				Assert.AreEqual(exception, ex);
-			}
-		}
-
-		[Test]
-		public async Task ItShouldWrapServiceNotFoundException_Query()
-		{
-			// arrange
-			var exception = new ServiceNotFoundException();
-			_objectManager.QueryAsync(Arg.Any<int>(), Arg.Any<QueryRequest>(), Arg.Any<int>(), Arg.Any<int>()).Throws(exception);
-
-			// act
-			try
-			{
-				await _sut.QueryAsync(0, null, 0, 0);
-
-				// assert
-				Assert.Fail();
-			}
-			catch (IntegrationPointsException ex)
-			{
-				Assert.AreEqual(exception, ex.InnerException);
-			}
+			executeMethodAction.ShouldThrow<IntegrationPointsException>()
+				.WithInnerException<ServiceNotFoundException>()
+				.And.InnerException
+				.Should().Be(serviceNotFoundException);
 		}
 	}
 }

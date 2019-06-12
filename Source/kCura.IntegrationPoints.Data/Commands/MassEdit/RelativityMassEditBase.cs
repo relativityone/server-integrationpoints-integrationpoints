@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using kCura.IntegrationPoints.Data.Models;
 using Relativity.Core;
 using Relativity.Core.DTO;
 using Relativity.Core.Process;
@@ -12,35 +11,6 @@ namespace kCura.IntegrationPoints.Data.Commands.MassEdit
 	{
 		private const int _BATCH_SIZE = 1000;
 
-		protected void TagFieldsWithRdo(BaseServiceContext context, List<MassEditObject> massEditObjects,  int numberOfDocuments, global::Relativity.Query.ArtifactType objectType, string tempTableName)
-		{
-			Field[] fields = new Field[massEditObjects.Count];
-			int index = 0;
-			foreach (MassEditObject massEditObject in massEditObjects)
-			{
-				massEditObject.FieldToUpdate.Value = GetMultiObjectListUpdate(massEditObject.ObjectToLinkTo);
-				fields[index] = massEditObject.FieldToUpdate;
-
-				index++;
-			}
-
-			ExecuteMassEditAction(context, fields, numberOfDocuments, objectType, tempTableName);
-		}
-
-		internal MultiObjectListUpdate GetMultiObjectListUpdate(int rdoInstanceId)
-		{
-			var objectsToUpdate = new MultiObjectListUpdate();
-			var instances = new List<int>()
-			{
-				rdoInstanceId
-			};
-
-			objectsToUpdate.tristate = true;
-			objectsToUpdate.Selected = instances;
-
-			return objectsToUpdate;
-		}
-
 		protected void UpdateSingleChoiceField(BaseServiceContext context, Field fieldToUpdate, int numberOfErrors, global::Relativity.Query.ArtifactType objectType, int choiceArtifactId, string tempTableName)
 		{
 			//Providing some extra properties for the field to update
@@ -49,7 +19,7 @@ namespace kCura.IntegrationPoints.Data.Commands.MassEdit
 			fieldToUpdate.FieldArtifactTypeID = objectType.Id;
 			fieldToUpdate.Value = choiceArtifactId;
 
-			global::Relativity.Core.DTO.Field[] fields =
+			Field[] fields =
 			{
 				fieldToUpdate
 			};
