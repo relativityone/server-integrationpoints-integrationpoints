@@ -1,14 +1,15 @@
-﻿using kCura.IntegrationPoints.Data;
+﻿using System;
+using kCura.IntegrationPoints.Data;
 
 namespace kCura.IntegrationPoints.Services.Helpers
 {
 	public class PermissionModel
 	{
-		public string ObjectTypeGuid { get; }
+		public Guid ObjectTypeGuid { get; }
 		public string ObjectTypeName { get; }
 		public ArtifactPermission ArtifactPermission { get; }
 
-		public PermissionModel(string objectTypeGuid, string objectTypeName, ArtifactPermission artifactPermission)
+		public PermissionModel(Guid objectTypeGuid, string objectTypeName, ArtifactPermission artifactPermission)
 		{
 			ObjectTypeGuid = objectTypeGuid;
 			ObjectTypeName = objectTypeName;

@@ -355,7 +355,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			{
 				Fields = new List<FieldRef>
 				{
-					new FieldRef {Guid = new Guid(DestinationProviderFieldGuids.Identifier)}
+					new FieldRef {Guid = DestinationProviderFieldGuids.IdentifierGuid}
 				}
 			};
 

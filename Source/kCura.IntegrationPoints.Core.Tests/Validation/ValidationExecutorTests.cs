@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
 		private ValidationExecutor _subjectUnderTest;
 		private const int _USER_ID = 1;
-		private readonly string _OBJECT_TYPE_GUID = Guid.NewGuid().ToString();
+		private readonly Guid _objectTypeGuid = Guid.NewGuid();
 
 
 		#endregion // Fields
@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 				SourceProvider = _sourceProvider,
 				IntegrationPointType = _integrationPointType,
 				Model = _model,
-				ObjectTypeGuid = _OBJECT_TYPE_GUID,
+				ObjectTypeGuid = _objectTypeGuid,
 				UserId = _USER_ID
 			};
 		}
@@ -69,16 +69,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 			// ARRANGE
 
 			_permissionValidatorMock.Validate(_model, _sourceProvider,
-				_destinationProvider, _integrationPointType, _OBJECT_TYPE_GUID).Returns(new ValidationResult());
+				_destinationProvider, _integrationPointType, _objectTypeGuid).Returns(new ValidationResult());
 
 			_permissionValidatorMock.ValidateSave(_model, _sourceProvider,
-				_destinationProvider, _integrationPointType, _OBJECT_TYPE_GUID).Returns(new ValidationResult());
+				_destinationProvider, _integrationPointType, _objectTypeGuid).Returns(new ValidationResult());
 
 			_permissionValidatorMock.ValidateStop(_model, _sourceProvider,
-				_destinationProvider, _integrationPointType, _OBJECT_TYPE_GUID).Returns(new ValidationResult());
+				_destinationProvider, _integrationPointType, _objectTypeGuid).Returns(new ValidationResult());
 
 			_providerValidatorMock.Validate(_model, _sourceProvider,
-				_destinationProvider, _integrationPointType, _OBJECT_TYPE_GUID).Returns(new ValidationResult());
+				_destinationProvider, _integrationPointType, _objectTypeGuid).Returns(new ValidationResult());
 
 			_validationContex.UserId = 0;
 
@@ -105,10 +105,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 			// ARRANGE
 
 			_permissionValidatorMock.Validate(_model, _sourceProvider,
-				_destinationProvider, _integrationPointType, _OBJECT_TYPE_GUID).Returns(new ValidationResult());
+				_destinationProvider, _integrationPointType, _objectTypeGuid).Returns(new ValidationResult());
 
 			_providerValidatorMock.Validate(_model, _sourceProvider,
-				_destinationProvider, _integrationPointType, _OBJECT_TYPE_GUID).Returns(new ValidationResult());
+				_destinationProvider, _integrationPointType, _objectTypeGuid).Returns(new ValidationResult());
 
 			// ACT
 
@@ -117,16 +117,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 			// ASSERT
 
 			_permissionValidatorMock.Received(1).Validate(_model, _sourceProvider,
-				_destinationProvider, _integrationPointType, _OBJECT_TYPE_GUID);
+				_destinationProvider, _integrationPointType, _objectTypeGuid);
 
 			_permissionValidatorMock.DidNotReceive().ValidateSave(Arg.Any<IntegrationPointModelBase>(), Arg.Any<SourceProvider>(),
-				Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<string>());
+				Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<Guid>());
 
 			_permissionValidatorMock.DidNotReceive().ValidateStop(Arg.Any<IntegrationPointModelBase>(), Arg.Any<SourceProvider>(),
-				Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<string>());
+				Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<Guid>());
 
 			_providerValidatorMock.Received(1).Validate(_model, _sourceProvider,
-				_destinationProvider, _integrationPointType, _OBJECT_TYPE_GUID);
+				_destinationProvider, _integrationPointType, _objectTypeGuid);
 		}
 
 		[Test]
@@ -135,11 +135,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 			// ARRANGE
 			string expectedMessage = "Permission Issue!";
 
-			_permissionValidatorMock.Validate(_model, _sourceProvider, _destinationProvider, _integrationPointType, _OBJECT_TYPE_GUID)
-				.Returns(new ValidationResult(new [] { expectedMessage }));
+			_permissionValidatorMock.Validate(_model, _sourceProvider, _destinationProvider, _integrationPointType, _objectTypeGuid)
+				.Returns(new ValidationResult(new[] { expectedMessage }));
 
 			_providerValidatorMock.Validate(_model, _sourceProvider,
-				_destinationProvider, _integrationPointType, _OBJECT_TYPE_GUID).Returns(new ValidationResult());
+				_destinationProvider, _integrationPointType, _objectTypeGuid).Returns(new ValidationResult());
 
 			// ACT
 
@@ -150,16 +150,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 			Assert.That(permissionException.Message.Contains(expectedMessage));
 
 			_permissionValidatorMock.Received(1).Validate(_model, _sourceProvider,
-				_destinationProvider, _integrationPointType, _OBJECT_TYPE_GUID);
+				_destinationProvider, _integrationPointType, _objectTypeGuid);
 
 			_permissionValidatorMock.DidNotReceive().ValidateSave(Arg.Any<IntegrationPointModelBase>(), Arg.Any<SourceProvider>(),
-				Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<string>());
+				Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<Guid>());
 
 			_permissionValidatorMock.DidNotReceive().ValidateStop(Arg.Any<IntegrationPointModelBase>(), Arg.Any<SourceProvider>(),
-				Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<string>());
+				Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<Guid>());
 
 			_providerValidatorMock.DidNotReceive().Validate(_model, _sourceProvider,
-				_destinationProvider, _integrationPointType, _OBJECT_TYPE_GUID);
+				_destinationProvider, _integrationPointType, _objectTypeGuid);
 		}
 
 		[Test]
@@ -168,11 +168,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 			// ARRANGE
 			string expectedMessage = "Provider Issue!";
 
-			_permissionValidatorMock.Validate(_model, _sourceProvider, 
-					_destinationProvider, _integrationPointType, _OBJECT_TYPE_GUID).Returns(new ValidationResult());
+			_permissionValidatorMock.Validate(_model, _sourceProvider,
+					_destinationProvider, _integrationPointType, _objectTypeGuid).Returns(new ValidationResult());
 
 			_providerValidatorMock.Validate(_model, _sourceProvider,
-				_destinationProvider, _integrationPointType, _OBJECT_TYPE_GUID).Returns(new ValidationResult(new[] { expectedMessage }));
+				_destinationProvider, _integrationPointType, _objectTypeGuid).Returns(new ValidationResult(new[] { expectedMessage }));
 
 			// ACT
 
@@ -184,16 +184,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
 			// we expect permission will be checked 
 			_providerValidatorMock.Received(1).Validate(_model, _sourceProvider,
-				_destinationProvider, _integrationPointType, _OBJECT_TYPE_GUID);
+				_destinationProvider, _integrationPointType, _objectTypeGuid);
 
 			_permissionValidatorMock.Received(1).Validate(_model, _sourceProvider,
-				_destinationProvider, _integrationPointType, _OBJECT_TYPE_GUID);
+				_destinationProvider, _integrationPointType, _objectTypeGuid);
 
 			_permissionValidatorMock.DidNotReceive().ValidateSave(Arg.Any<IntegrationPointModelBase>(), Arg.Any<SourceProvider>(),
-				Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<string>());
+				Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<Guid>());
 
 			_permissionValidatorMock.DidNotReceive().ValidateStop(Arg.Any<IntegrationPointModelBase>(), Arg.Any<SourceProvider>(),
-				Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<string>());
+				Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<Guid>());
 
 		}
 
@@ -203,10 +203,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 			// ARRANGE
 
 			_permissionValidatorMock.ValidateSave(_model, _sourceProvider,
-				_destinationProvider, _integrationPointType, _OBJECT_TYPE_GUID).Returns(new ValidationResult());
+				_destinationProvider, _integrationPointType, _objectTypeGuid).Returns(new ValidationResult());
 
 			_providerValidatorMock.Validate(_model, _sourceProvider,
-				_destinationProvider, _integrationPointType, _OBJECT_TYPE_GUID).Returns(new ValidationResult());
+				_destinationProvider, _integrationPointType, _objectTypeGuid).Returns(new ValidationResult());
 
 			// ACT
 
@@ -215,16 +215,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 			// ASSERT
 
 			_permissionValidatorMock.Received(1).ValidateSave(_model, _sourceProvider,
-				_destinationProvider, _integrationPointType, _OBJECT_TYPE_GUID);
+				_destinationProvider, _integrationPointType, _objectTypeGuid);
 
 			_permissionValidatorMock.DidNotReceive().Validate(Arg.Any<IntegrationPointModelBase>(), Arg.Any<SourceProvider>(),
-				Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<string>());
+				Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<Guid>());
 
 			_permissionValidatorMock.DidNotReceive().ValidateStop(Arg.Any<IntegrationPointModelBase>(), Arg.Any<SourceProvider>(),
-				Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<string>());
+				Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<Guid>());
 
 			_providerValidatorMock.Received(1).Validate(_model, _sourceProvider,
-				_destinationProvider, _integrationPointType, _OBJECT_TYPE_GUID);
+				_destinationProvider, _integrationPointType, _objectTypeGuid);
 		}
 
 		[Test]
@@ -233,11 +233,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 			// ARRANGE
 			string expectedMessage = "Permission Issue!";
 
-			_permissionValidatorMock.ValidateSave(_model, _sourceProvider, _destinationProvider, _integrationPointType, _OBJECT_TYPE_GUID)
+			_permissionValidatorMock.ValidateSave(_model, _sourceProvider, _destinationProvider, _integrationPointType, _objectTypeGuid)
 				.Returns(new ValidationResult(new[] { expectedMessage }));
 
 			_providerValidatorMock.Validate(_model, _sourceProvider,
-				_destinationProvider, _integrationPointType, _OBJECT_TYPE_GUID).Returns(new ValidationResult());
+				_destinationProvider, _integrationPointType, _objectTypeGuid).Returns(new ValidationResult());
 
 			// ACT
 
@@ -248,16 +248,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 			Assert.That(permissionException.Message.Contains(expectedMessage));
 
 			_permissionValidatorMock.Received(1).ValidateSave(_model, _sourceProvider,
-				_destinationProvider, _integrationPointType, _OBJECT_TYPE_GUID);
+				_destinationProvider, _integrationPointType, _objectTypeGuid);
 
 			_permissionValidatorMock.DidNotReceive().Validate(Arg.Any<IntegrationPointModelBase>(), Arg.Any<SourceProvider>(),
-				Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<string>());
+				Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<Guid>());
 
 			_permissionValidatorMock.DidNotReceive().ValidateStop(Arg.Any<IntegrationPointModelBase>(), Arg.Any<SourceProvider>(),
-				Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<string>());
+				Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<Guid>());
 
 			_providerValidatorMock.DidNotReceive().Validate(_model, _sourceProvider,
-				_destinationProvider, _integrationPointType, _OBJECT_TYPE_GUID);
+				_destinationProvider, _integrationPointType, _objectTypeGuid);
 		}
 
 		[Test]
@@ -267,10 +267,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 			string expectedMessage = "Provider Issue!";
 
 			_permissionValidatorMock.ValidateSave(_model, _sourceProvider,
-					_destinationProvider, _integrationPointType, _OBJECT_TYPE_GUID).Returns(new ValidationResult());
+					_destinationProvider, _integrationPointType, _objectTypeGuid).Returns(new ValidationResult());
 
 			_providerValidatorMock.Validate(_model, _sourceProvider,
-				_destinationProvider, _integrationPointType, _OBJECT_TYPE_GUID).Returns(new ValidationResult(new[] { expectedMessage }));
+				_destinationProvider, _integrationPointType, _objectTypeGuid).Returns(new ValidationResult(new[] { expectedMessage }));
 
 			// ACT
 
@@ -282,16 +282,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
 			// we expect permission will be checked 
 			_providerValidatorMock.Received(1).Validate(_model, _sourceProvider,
-				_destinationProvider, _integrationPointType, _OBJECT_TYPE_GUID);
+				_destinationProvider, _integrationPointType, _objectTypeGuid);
 
 			_permissionValidatorMock.Received(1).ValidateSave(_model, _sourceProvider,
-				_destinationProvider, _integrationPointType, _OBJECT_TYPE_GUID);
+				_destinationProvider, _integrationPointType, _objectTypeGuid);
 
 			_permissionValidatorMock.DidNotReceive().Validate(Arg.Any<IntegrationPointModelBase>(), Arg.Any<SourceProvider>(),
-				Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<string>());
+				Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<Guid>());
 
 			_permissionValidatorMock.DidNotReceive().ValidateStop(Arg.Any<IntegrationPointModelBase>(), Arg.Any<SourceProvider>(),
-				Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<string>());
+				Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<Guid>());
 
 		}
 
@@ -301,7 +301,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 			// ARRANGE
 
 			_permissionValidatorMock.ValidateStop(_model, _sourceProvider,
-				_destinationProvider, _integrationPointType, _OBJECT_TYPE_GUID).Returns(new ValidationResult());
+				_destinationProvider, _integrationPointType, _objectTypeGuid).Returns(new ValidationResult());
 
 			//_providerValidatorMock.Validate(_model, _sourceProvider,
 			//	_destinationProvider, _integrationPointType, _OBJECT_TYPE_GUID).Returns(new ValidationResult());
@@ -313,16 +313,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 			// ASSERT
 
 			_permissionValidatorMock.Received(1).ValidateStop(_model, _sourceProvider,
-				_destinationProvider, _integrationPointType, _OBJECT_TYPE_GUID);
+				_destinationProvider, _integrationPointType, _objectTypeGuid);
 
 			_permissionValidatorMock.DidNotReceive().Validate(Arg.Any<IntegrationPointModelBase>(), Arg.Any<SourceProvider>(),
-				Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<string>());
+				Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<Guid>());
 
 			_permissionValidatorMock.DidNotReceive().ValidateSave(Arg.Any<IntegrationPointModelBase>(), Arg.Any<SourceProvider>(),
-				Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<string>());
+				Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<Guid>());
 
 			_providerValidatorMock.DidNotReceive().Validate(Arg.Any<IntegrationPointModelBase>(), Arg.Any<SourceProvider>(),
-				Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<string>());
+				Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<Guid>());
 		}
 
 		[Test]
@@ -331,11 +331,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 			// ARRANGE
 			string expectedMessage = "Permission Issue!";
 
-			_permissionValidatorMock.ValidateStop(_model, _sourceProvider, _destinationProvider, _integrationPointType, _OBJECT_TYPE_GUID)
+			_permissionValidatorMock.ValidateStop(_model, _sourceProvider, _destinationProvider, _integrationPointType, _objectTypeGuid)
 				.Returns(new ValidationResult(new[] { expectedMessage }));
 
 			_providerValidatorMock.Validate(_model, _sourceProvider,
-				_destinationProvider, _integrationPointType, _OBJECT_TYPE_GUID).Returns(new ValidationResult());
+				_destinationProvider, _integrationPointType, _objectTypeGuid).Returns(new ValidationResult());
 
 			// ACT
 
@@ -346,16 +346,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 			Assert.That(permissionException.Message.Contains(expectedMessage));
 
 			_permissionValidatorMock.Received(1).ValidateStop(_model, _sourceProvider,
-				_destinationProvider, _integrationPointType, _OBJECT_TYPE_GUID);
+				_destinationProvider, _integrationPointType, _objectTypeGuid);
 
 			_permissionValidatorMock.DidNotReceive().Validate(Arg.Any<IntegrationPointModelBase>(), Arg.Any<SourceProvider>(),
-				Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<string>());
+				Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<Guid>());
 
 			_permissionValidatorMock.DidNotReceive().ValidateSave(Arg.Any<IntegrationPointModelBase>(), Arg.Any<SourceProvider>(),
-				Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<string>());
+				Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<Guid>());
 
 			_providerValidatorMock.DidNotReceive().Validate(Arg.Any<IntegrationPointModelBase>(), Arg.Any<SourceProvider>(),
-				Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<string>());
+				Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<Guid>());
 		}
 
 		#endregion //Tests

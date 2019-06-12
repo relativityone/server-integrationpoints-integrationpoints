@@ -283,8 +283,12 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			errorManager.Create(new[] { error });
 		}
 
-		protected void RunValidation(IntegrationPointModelBase model, SourceProvider sourceProvider, DestinationProvider destinationProvider, IntegrationPointType integrationPointType,
-			string objectTypeGuid)
+		protected void RunValidation(
+			IntegrationPointModelBase model, 
+			SourceProvider sourceProvider, 
+			DestinationProvider destinationProvider, 
+			IntegrationPointType integrationPointType,
+			Guid objectTypeGuid)
 		{
 			var context = new ValidationContext
 			{

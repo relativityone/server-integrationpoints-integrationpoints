@@ -33,8 +33,8 @@ namespace kCura.IntegrationPoints.Services
 		/// <param name="permissionRepositoryFactory"></param>
 		/// <param name="container"></param>
 		protected KeplerServiceBase(
-			ILog logger, 
-			IPermissionRepositoryFactory permissionRepositoryFactory, 
+			ILog logger,
+			IPermissionRepositoryFactory permissionRepositoryFactory,
 			IWindsorContainer container)
 		{
 			_permissionRepositoryFactory = permissionRepositoryFactory;
@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.Services
 			_container = container;
 		}
 
-		protected KeplerServiceBase(ILog logger) 
+		protected KeplerServiceBase(ILog logger)
 			: this(logger, new PermissionRepositoryFactory(), container: null)
 		{
 		}
@@ -88,7 +88,7 @@ namespace kCura.IntegrationPoints.Services
 				}
 				foreach (PermissionModel permissionModel in permissionsToCheck)
 				{
-					if (!permissionRepository.UserHasArtifactTypePermission(new Guid(permissionModel.ObjectTypeGuid), permissionModel.ArtifactPermission))
+					if (!permissionRepository.UserHasArtifactTypePermission(permissionModel.ObjectTypeGuid, permissionModel.ArtifactPermission))
 					{
 						missingPermissions.Add($"{permissionModel.ObjectTypeName} - {permissionModel.ArtifactPermission}");
 					}

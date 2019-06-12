@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.Services
 		public async Task<JobHistorySummaryModel> GetJobHistoryAsync(JobHistoryRequest request)
 		{
 			CheckPermissions(nameof(GetJobHistoryAsync), request.WorkspaceArtifactId,
-				new[] {new PermissionModel(ObjectTypeGuids.JobHistory, ObjectTypes.JobHistory, ArtifactPermission.View)});
+				new[] {new PermissionModel(ObjectTypeGuids.JobHistoryGuid, ObjectTypes.JobHistory, ArtifactPermission.View)});
 			try
 			{
 				using (IWindsorContainer container = GetDependenciesContainer(request.WorkspaceArtifactId))

@@ -59,7 +59,7 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 
 		public override IList<OverwriteFieldsModel> GetOverwriteFieldChoices()
 		{
-			var choices = _choiceQuery.GetChoicesOnField(Guid.Parse(IntegrationPointProfileFieldGuids.OverwriteFields));
+			var choices = _choiceQuery.GetChoicesOnField(IntegrationPointProfileFieldGuids.OverwriteFieldsGuid);
 			return choices.Select(Mapper.Map<OverwriteFieldsModel>).ToList();
 		}
 

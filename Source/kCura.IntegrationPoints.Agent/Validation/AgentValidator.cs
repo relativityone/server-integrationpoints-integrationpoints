@@ -1,5 +1,4 @@
-﻿using kCura.IntegrationPoints.Core;
-using kCura.IntegrationPoints.Core.Models;
+﻿using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
@@ -38,13 +37,13 @@ namespace kCura.IntegrationPoints.Agent.Validation
 			IntegrationPointType integrationPointType =
 				_caseServiceContext.RsapiService.RelativityObjectManager.Read<IntegrationPointType>(integrationPoint.Type.Value);
 
-			ValidationContext context = new ValidationContext()
+			var context = new ValidationContext
 			{
 				SourceProvider = sourceProvider,
 				DestinationProvider = destinationProvider,
 				IntegrationPointType = integrationPointType,
 				Model = model,
-				ObjectTypeGuid = ObjectTypeGuids.IntegrationPoint,
+				ObjectTypeGuid = ObjectTypeGuids.IntegrationPointGuid,
 				UserId = submittedByUserId
 			};
 

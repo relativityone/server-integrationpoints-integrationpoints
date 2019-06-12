@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 		{
 			var result = new ValidationResult();
 
-			var objectTypeGuid = new Guid(model.ObjectTypeGuid);
+			Guid objectTypeGuid = model.ObjectTypeGuid;
 
 			IPermissionRepository sourcePermissionRepository = _repositoryFactory.GetPermissionRepository(ContextHelper.WorkspaceID);
 
@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 			{
 				result.Add(Constants.IntegrationPoints.NO_PERMISSION_TO_EDIT_INTEGRATIONPOINT);
 			}
-			if (!sourcePermissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.JobHistory), ArtifactPermission.Edit))
+			if (!sourcePermissionRepository.UserHasArtifactTypePermission(ObjectTypeGuids.JobHistoryGuid, ArtifactPermission.Edit))
 			{
 				result.Add(Constants.IntegrationPoints.PermissionErrors.JOB_HISTORY_NO_EDIT);
 			}
