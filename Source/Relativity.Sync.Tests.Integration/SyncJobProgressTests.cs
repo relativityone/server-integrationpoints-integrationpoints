@@ -5,6 +5,7 @@ using Autofac;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Executors.SumReporting;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Tests.Common;
@@ -24,6 +25,7 @@ namespace Relativity.Sync.Tests.Integration
 			ContainerBuilder containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
 			IntegrationTestsContainerBuilder.MockAllSteps(containerBuilder);
 			containerBuilder.RegisterInstance(Mock.Of<ISyncMetrics>()).As<ISyncMetrics>();
+			containerBuilder.RegisterInstance(Mock.Of<IJobEndMetricsService>()).As<IJobEndMetricsService>();
 			_progressRepository = new ProgressRepositoryStub();
 			containerBuilder.RegisterInstance(_progressRepository).As<IProgressRepository>();
 			_container = containerBuilder.Build();
