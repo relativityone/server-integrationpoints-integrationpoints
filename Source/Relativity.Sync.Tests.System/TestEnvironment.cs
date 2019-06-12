@@ -9,16 +9,18 @@ using System.Threading.Tasks;
 using System.Xml;
 using Relativity.Kepler.Transport;
 using Relativity.Services.ApplicationInstallManager;
+using Relativity.Services.Exceptions;
 using Relativity.Services.LibraryApplicationsManager;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.ServiceProxy;
 using Relativity.Services.Workspace;
-using Relativity.Sync.Tests.System.Stubs;
 
 namespace Relativity.Sync.Tests.System
 {
 	public sealed class TestEnvironment : IDisposable
 	{
-		private WorkspaceRef _templateWorkspace;
+		private int _templateWorkspaceArtifactId = -1;
 		private const string _RELATIVITY_SYNC_TEST_HELPER_RAP = "Relativity_Sync_Test_Helper.xml";
 		private readonly List<WorkspaceRef> _workspaces = new List<WorkspaceRef>();
 		private readonly SemaphoreSlim _templateWorkspaceSemaphore = new SemaphoreSlim(1);
@@ -34,10 +36,10 @@ namespace Relativity.Sync.Tests.System
 		{
 			string name = Guid.NewGuid().ToString();
 
+			int templateWorkspaceArtifactId = await GetTemplateWorkspaceArtifactId(templateWorkspaceName).ConfigureAwait(false);
 			using (var workspaceManager = _serviceFactory.CreateProxy<IWorkspaceManager>())
 			{
-				WorkspaceRef template = await GetTemplateWorkspace(workspaceManager, templateWorkspaceName).ConfigureAwait(false);
-				WorkspaceSetttings settings = new WorkspaceSetttings { Name = name, TemplateArtifactId = template.ArtifactID};
+				WorkspaceSetttings settings = new WorkspaceSetttings {Name = name, TemplateArtifactId = templateWorkspaceArtifactId};
 				WorkspaceRef newWorkspace =  await workspaceManager.CreateWorkspaceAsync(settings).ConfigureAwait(false);
 				if (newWorkspace == null)
 				{
@@ -55,18 +57,30 @@ namespace Relativity.Sync.Tests.System
 			return workspace;
 		}
 
-		private async Task<WorkspaceRef> GetTemplateWorkspace(IWorkspaceManager workspaceManager, string templateWorkspaceName)
+		private async Task<int> GetTemplateWorkspaceArtifactId(string templateWorkspaceName)
 		{
 			try
 			{
 				await _templateWorkspaceSemaphore.WaitAsync().ConfigureAwait(false);
-				if (_templateWorkspace == null)
+				if (_templateWorkspaceArtifactId == -1)
 				{
-					IEnumerable<WorkspaceRef> workspaces = await workspaceManager.RetrieveAllActive().ConfigureAwait(false);
-					return _templateWorkspace = workspaces.First(w => w.Name == templateWorkspaceName);
+					using (var objectManager = _serviceFactory.CreateProxy<IObjectManager>())
+					{
+						QueryRequest request = new QueryRequest
+						{
+							ObjectType = new ObjectTypeRef{ Name = "Workspace"},
+							Condition = $"'Name' == '{templateWorkspaceName}'"
+						};
+						QueryResultSlim result = await objectManager.QuerySlimAsync(-1, request, 0, 1).ConfigureAwait(false);
+						if (result.ResultCount == 0)
+						{
+							throw new NotFoundException($"Template workspace named: '{templateWorkspaceName}' not found.");
+						}
+						return _templateWorkspaceArtifactId = result.Objects.First().ArtifactID;
+					}
 				}
 
-				return _templateWorkspace;
+				return _templateWorkspaceArtifactId;
 			}
 			finally
 			{
