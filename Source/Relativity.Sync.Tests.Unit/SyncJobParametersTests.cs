@@ -30,7 +30,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			const string id = "example id";
 
-			SyncJobParameters syncJobParameters = new SyncJobParameters(1, 1, id, _importSettingsDto);
+			SyncJobParameters syncJobParameters = new SyncJobParameters(1, 1, 1, id, _importSettingsDto);
 
 			// ASSERT
 			syncJobParameters.CorrelationId.Should().Be(id);
