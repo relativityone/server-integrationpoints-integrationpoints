@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointPro
 		[IdentifiedTest("d32ae21d-35f7-49d3-b9a7-1937588b8752")]
 		public void Execute()
 		{
-			var expectedChoices = ChoicesHelper.GetAllChoiceUsingFieldGuid(IntegrationPointProfileFieldGuids.OverwriteFields, WorkspaceArtifactId, Helper);
+			var expectedChoices = ChoicesHelper.GetAllChoiceUsingFieldGuid(IntegrationPointProfileFieldGuids.OverwriteFieldsGuid, WorkspaceArtifactId, Helper);
 
 			var overwriteFieldModels = _client.GetOverwriteFieldsChoicesAsync(WorkspaceArtifactId).Result;
 

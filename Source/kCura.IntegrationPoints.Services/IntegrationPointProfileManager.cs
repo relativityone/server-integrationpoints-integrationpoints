@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.Services
 		public async Task<IntegrationPointModel> CreateIntegrationPointProfileAsync(CreateIntegrationPointRequest request)
 		{
 			CheckPermissions(nameof(CreateIntegrationPointProfileAsync), request.WorkspaceArtifactId,
-				new[] {new PermissionModel(ObjectTypeGuids.IntegrationPointProfile, ObjectTypes.IntegrationPointProfile, ArtifactPermission.Create)});
+				new[] {new PermissionModel(ObjectTypeGuids.IntegrationPointProfileGuid, ObjectTypes.IntegrationPointProfile, ArtifactPermission.Create)});
 			try
 			{
 				using (var container = GetDependenciesContainer(request.WorkspaceArtifactId))
@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.Services
 		public async Task<IntegrationPointModel> UpdateIntegrationPointProfileAsync(CreateIntegrationPointRequest request)
 		{
 			CheckPermissions(nameof(UpdateIntegrationPointProfileAsync), request.WorkspaceArtifactId,
-				new[] {new PermissionModel(ObjectTypeGuids.IntegrationPointProfile, ObjectTypes.IntegrationPointProfile, ArtifactPermission.Edit)});
+				new[] {new PermissionModel(ObjectTypeGuids.IntegrationPointProfileGuid, ObjectTypes.IntegrationPointProfile, ArtifactPermission.Edit)});
 			try
 			{
 				using (var container = GetDependenciesContainer(request.WorkspaceArtifactId))
@@ -71,7 +71,7 @@ namespace kCura.IntegrationPoints.Services
 		public async Task<IntegrationPointModel> GetIntegrationPointProfileAsync(int workspaceArtifactId, int integrationPointProfileArtifactId)
 		{
 			CheckPermissions(nameof(GetIntegrationPointProfileAsync), workspaceArtifactId,
-				new[] {new PermissionModel(ObjectTypeGuids.IntegrationPointProfile, ObjectTypes.IntegrationPointProfile, ArtifactPermission.View)});
+				new[] {new PermissionModel(ObjectTypeGuids.IntegrationPointProfileGuid, ObjectTypes.IntegrationPointProfile, ArtifactPermission.View)});
 			try
 			{
 				using (var container = GetDependenciesContainer(workspaceArtifactId))
@@ -90,7 +90,7 @@ namespace kCura.IntegrationPoints.Services
 		public async Task<IList<IntegrationPointModel>> GetAllIntegrationPointProfilesAsync(int workspaceArtifactId)
 		{
 			CheckPermissions(nameof(GetAllIntegrationPointProfilesAsync), workspaceArtifactId,
-				new[] {new PermissionModel(ObjectTypeGuids.IntegrationPointProfile, ObjectTypes.IntegrationPointProfile, ArtifactPermission.View)});
+				new[] {new PermissionModel(ObjectTypeGuids.IntegrationPointProfileGuid, ObjectTypes.IntegrationPointProfile, ArtifactPermission.View)});
 			try
 			{
 				using (var container = GetDependenciesContainer(workspaceArtifactId))
@@ -109,7 +109,7 @@ namespace kCura.IntegrationPoints.Services
 		public async Task<IList<OverwriteFieldsModel>> GetOverwriteFieldsChoicesAsync(int workspaceArtifactId)
 		{
 			CheckPermissions(nameof(GetOverwriteFieldsChoicesAsync), workspaceArtifactId,
-				new[] {new PermissionModel(ObjectTypeGuids.IntegrationPointProfile, ObjectTypes.IntegrationPointProfile, ArtifactPermission.View)});
+				new[] {new PermissionModel(ObjectTypeGuids.IntegrationPointProfileGuid, ObjectTypes.IntegrationPointProfile, ArtifactPermission.View)});
 			try
 			{
 				using (var container = GetDependenciesContainer(workspaceArtifactId))
@@ -131,8 +131,8 @@ namespace kCura.IntegrationPoints.Services
 			CheckPermissions(nameof(CreateIntegrationPointProfileFromIntegrationPointAsync), workspaceArtifactId,
 				new[]
 				{
-					new PermissionModel(ObjectTypeGuids.IntegrationPointProfile, ObjectTypes.IntegrationPointProfile, ArtifactPermission.Create),
-					new PermissionModel(ObjectTypeGuids.IntegrationPoint, ObjectTypes.IntegrationPoint, ArtifactPermission.View)
+					new PermissionModel(ObjectTypeGuids.IntegrationPointProfileGuid, ObjectTypes.IntegrationPointProfile, ArtifactPermission.Create),
+					new PermissionModel(ObjectTypeGuids.IntegrationPointGuid, ObjectTypes.IntegrationPoint, ArtifactPermission.View)
 				});
 			try
 			{

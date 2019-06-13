@@ -160,8 +160,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			IFieldQueryRepository sourceFieldQueryRepository = repositoryFactory.GetFieldQueryRepository(SourceWorkspaceArtifactID);
 			IFieldQueryRepository destinationFieldQueryRepository = repositoryFactory.GetFieldQueryRepository(TargetWorkspaceArtifactID);
 
-			ArtifactDTO sourceDto = sourceFieldQueryRepository.RetrieveTheIdentifierField((int)global::kCura.Relativity.Client.ArtifactType.Document);
-			ArtifactDTO targetDto = destinationFieldQueryRepository.RetrieveTheIdentifierField((int)global::kCura.Relativity.Client.ArtifactType.Document);
+			ArtifactDTO sourceDto = sourceFieldQueryRepository.RetrieveIdentifierField((int)global::kCura.Relativity.Client.ArtifactType.Document);
+			ArtifactDTO targetDto = destinationFieldQueryRepository.RetrieveIdentifierField((int)global::kCura.Relativity.Client.ArtifactType.Document);
 
 			FieldMap[] map = new[]
 			{

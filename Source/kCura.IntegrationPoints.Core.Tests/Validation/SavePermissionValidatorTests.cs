@@ -1,16 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Core.Managers.Implementations;
-using kCura.IntegrationPoints.Core.Models;
+﻿using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NUnit.Framework;
@@ -32,10 +22,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 		public void ValidateTest(bool isNew, bool typeEdit, bool instanceEdit, bool typeCreate, bool expected)
 		{
 			// arrange
-			var integrationPointObjectTypeGuid = new Guid(_validationModel.ObjectTypeGuid);
-			_sourcePermissionRepository.UserHasArtifactTypePermission(integrationPointObjectTypeGuid, ArtifactPermission.Edit).Returns(typeEdit);
-			_sourcePermissionRepository.UserHasArtifactInstancePermission(integrationPointObjectTypeGuid, _validationModel.ArtifactId, ArtifactPermission.Edit).Returns(instanceEdit);
-			_sourcePermissionRepository.UserHasArtifactTypePermission(integrationPointObjectTypeGuid, ArtifactPermission.Create).Returns(typeCreate);
+			_sourcePermissionRepository.UserHasArtifactTypePermission(_validationModel.ObjectTypeGuid, ArtifactPermission.Edit).Returns(typeEdit);
+			_sourcePermissionRepository.UserHasArtifactInstancePermission(_validationModel.ObjectTypeGuid, _validationModel.ArtifactId, ArtifactPermission.Edit).Returns(instanceEdit);
+			_sourcePermissionRepository.UserHasArtifactTypePermission(_validationModel.ObjectTypeGuid, ArtifactPermission.Create).Returns(typeCreate);
 
 			var savePermissionValidator = new SavePermissionValidator(_repositoryFactory, _serializer, ServiceContextHelper);
 
@@ -45,22 +34,22 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 			}
 
 			// act
-			var validationResult = savePermissionValidator.Validate(_validationModel);
+			ValidationResult validationResult = savePermissionValidator.Validate(_validationModel);
 
 			// assert
 			if (isNew)
 			{
-				_sourcePermissionRepository.DidNotReceive().UserHasArtifactTypePermission(integrationPointObjectTypeGuid, ArtifactPermission.Edit);
-				_sourcePermissionRepository.DidNotReceive().UserHasArtifactInstancePermission(integrationPointObjectTypeGuid, _validationModel.ArtifactId, ArtifactPermission.Edit);
+				_sourcePermissionRepository.DidNotReceive().UserHasArtifactTypePermission(_validationModel.ObjectTypeGuid, ArtifactPermission.Edit);
+				_sourcePermissionRepository.DidNotReceive().UserHasArtifactInstancePermission(_validationModel.ObjectTypeGuid, _validationModel.ArtifactId, ArtifactPermission.Edit);
 
-				_sourcePermissionRepository.Received(1).UserHasArtifactTypePermission(integrationPointObjectTypeGuid, ArtifactPermission.Create);
+				_sourcePermissionRepository.Received(1).UserHasArtifactTypePermission(_validationModel.ObjectTypeGuid, ArtifactPermission.Create);
 			}
 			else
 			{
-				_sourcePermissionRepository.Received(1).UserHasArtifactTypePermission(integrationPointObjectTypeGuid, ArtifactPermission.Edit);
-				_sourcePermissionRepository.Received(1).UserHasArtifactInstancePermission(integrationPointObjectTypeGuid, _validationModel.ArtifactId, ArtifactPermission.Edit);
+				_sourcePermissionRepository.Received(1).UserHasArtifactTypePermission(_validationModel.ObjectTypeGuid, ArtifactPermission.Edit);
+				_sourcePermissionRepository.Received(1).UserHasArtifactInstancePermission(_validationModel.ObjectTypeGuid, _validationModel.ArtifactId, ArtifactPermission.Edit);
 
-				_sourcePermissionRepository.DidNotReceive().UserHasArtifactTypePermission(integrationPointObjectTypeGuid, ArtifactPermission.Create);
+				_sourcePermissionRepository.DidNotReceive().UserHasArtifactTypePermission(_validationModel.ObjectTypeGuid, ArtifactPermission.Create);
 			}
 
 			validationResult.Check(expected);

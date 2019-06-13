@@ -1,16 +1,11 @@
-﻿
-using System;
+﻿using System;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Agent.Validation;
 using kCura.IntegrationPoints.Core.Exceptions;
-using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Core.Tests.Helpers;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
-using kCura.Relativity.Client.DTOs;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Validation
@@ -95,7 +90,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Validation
 				x.UserId == _USER_ID &&
 				x.DestinationProvider == _destinationProvider &&
 				x.Model.ArtifactID ==  _integrationPoint.ArtifactId &&
-				x.ObjectTypeGuid == ObjectTypeGuids.IntegrationPoint)
+				x.ObjectTypeGuid == ObjectTypeGuids.IntegrationPointGuid)
 			);
 
 			_caseContext.Received().RsapiService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider.Value);
@@ -115,7 +110,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Validation
 					x.UserId == _USER_ID &&
 					x.DestinationProvider == _destinationProvider &&
 					x.Model.ArtifactID == _integrationPoint.ArtifactId &&
-					x.ObjectTypeGuid == ObjectTypeGuids.IntegrationPoint)))
+					x.ObjectTypeGuid == ObjectTypeGuids.IntegrationPointGuid)))
 				.Do(o => { throw new PermissionException(); });
 
 			// Arrange

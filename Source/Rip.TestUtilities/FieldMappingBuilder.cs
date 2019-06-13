@@ -84,7 +84,7 @@ namespace Rip.TestUtilities
 
 		private ArtifactDTO RetrieveIdentifierField(IFieldQueryRepository fieldQueryRepository)
 		{
-			return fieldQueryRepository.RetrieveTheIdentifierField((int) ArtifactType.Document);
+			return fieldQueryRepository.RetrieveIdentifierField((int) ArtifactType.Document);
 		}
 
 		private static FieldEntry CreateIdentifierFieldEntry(ArtifactDTO fieldDto)

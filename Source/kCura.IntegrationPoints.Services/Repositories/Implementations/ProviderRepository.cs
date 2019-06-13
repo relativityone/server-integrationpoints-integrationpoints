@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.QueryBuilders.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.Relativity.Client.DTOs;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Services.Repositories.Implementations
@@ -32,8 +29,8 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 		{
 			var sourceProviders = _rsapiService.RelativityObjectManager.Query<SourceProvider>(new QueryRequest()
 			{
-				Fields = new List<FieldRef>() {new FieldRef() { Guid = new Guid(SourceProviderFieldGuids.Name) },
-					new FieldRef() { Guid = new Guid(SourceProviderFieldGuids.Identifier) }
+				Fields = new List<FieldRef>() {new FieldRef() { Guid = SourceProviderFieldGuids.NameGuid },
+					new FieldRef() { Guid = SourceProviderFieldGuids.IdentifierGuid }
 				}
 			});
 			return sourceProviders.Select(Mapper.Map<ProviderModel>).ToList();
@@ -44,8 +41,8 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 			var destinationProviders = _rsapiService.RelativityObjectManager.Query<DestinationProvider>(new QueryRequest()
 			{
 				Fields = new List<FieldRef>() {
-					new FieldRef() { Guid = new Guid(DestinationProviderFieldGuids.Name) },
-					new FieldRef() { Guid = new Guid(DestinationProviderFieldGuids.Identifier)}
+					new FieldRef() { Guid = DestinationProviderFieldGuids.NameGuid },
+					new FieldRef() { Guid = DestinationProviderFieldGuids.IdentifierGuid}
 				}
 			});
 			return destinationProviders.Select(Mapper.Map<ProviderModel>).ToList();

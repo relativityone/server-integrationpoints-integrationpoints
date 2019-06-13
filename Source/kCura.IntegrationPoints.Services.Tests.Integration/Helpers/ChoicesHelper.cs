@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using Relativity.API;
 
@@ -6,7 +7,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.Helpers
 {
 	public class ChoicesHelper
 	{
-		public static IDictionary<string, int> GetAllChoiceUsingFieldGuid(string guid, int workspaceArtifactId, IHelper helper)
+		public static IDictionary<string, int> GetAllChoiceUsingFieldGuid(Guid guid, int workspaceArtifactId, IHelper helper)
 		{
 			string sqlStatement = string.Format(_SELECT_CHOICES_ON_FIELD_WITH_GUID, guid);
 			var dataTable = helper.GetDBContext(workspaceArtifactId).ExecuteSqlStatementAsDataTable(sqlStatement);

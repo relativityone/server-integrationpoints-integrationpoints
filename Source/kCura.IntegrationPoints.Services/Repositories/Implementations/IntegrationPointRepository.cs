@@ -80,12 +80,12 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 
 		public int GetIntegrationPointArtifactTypeId()
 		{
-			return _objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.IntegrationPoint));
+			return _objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(ObjectTypeGuids.IntegrationPointGuid);
 		}
 
 		public override IList<OverwriteFieldsModel> GetOverwriteFieldChoices()
 		{
-			var choices = _choiceQuery.GetChoicesOnField(Guid.Parse(IntegrationPointFieldGuids.OverwriteFields));
+			var choices = _choiceQuery.GetChoicesOnField(IntegrationPointFieldGuids.OverwriteFieldsGuid);
 			return choices.Select(Mapper.Map<OverwriteFieldsModel>).ToList();
 		}
 

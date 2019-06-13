@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Data.Converters;
+using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.RSAPIClient;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
@@ -14,22 +16,25 @@ using Field = kCura.Relativity.Client.DTOs.Field;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
-	public class FieldQueryRepository : KeplerServiceBase, IFieldQueryRepository
+	public class FieldQueryRepository : IFieldQueryRepository
 	{
 		private readonly IHelper _helper;
 		private readonly IServicesMgr _servicesMgr;
+		private readonly IRelativityObjectManager _relativityObjectManager;
 		private readonly int _workspaceArtifactID;
+
+		private static readonly ObjectTypeRef _fieldObjectTypeRef = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Field };
 
 		public FieldQueryRepository(
 			IHelper helper,
 			IServicesMgr servicesMgr,
 			IRelativityObjectManager relativityObjectManager,
-			int workspaceArtifactId)
-			: base(relativityObjectManager)
+			int workspaceArtifactID)
 		{
 			_helper = helper;
 			_servicesMgr = servicesMgr;
-			_workspaceArtifactID = workspaceArtifactId;
+			_relativityObjectManager = relativityObjectManager;
+			_workspaceArtifactID = workspaceArtifactID;
 		}
 
 		public async Task<ArtifactFieldDTO[]> RetrieveLongTextFieldsAsync(int rdoTypeID)
@@ -38,13 +43,16 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			var longTextFieldsQuery = new QueryRequest
 			{
-				ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Field },
-				Condition = $"'Object Type Artifact Type ID' == OBJECT {rdoTypeID} AND 'Field Type' == '{longTextFieldName}'"
+				ObjectType = _fieldObjectTypeRef,
+				Condition = $"{GetObjectTypeCondition(rdoTypeID)} AND 'Field Type' == '{longTextFieldName}'"
 			};
 
-			ArtifactDTO[] artifactDtos = await RetrieveAllArtifactsAsync(longTextFieldsQuery).ConfigureAwait(false);
-			ArtifactFieldDTO[] fieldDtos = artifactDtos
-				.Select(x => ConvertArtifactDtoToArtifactFieldDto(x, longTextFieldName))
+			IEnumerable<RelativityObject> relativityObjects = await _relativityObjectManager
+				.QueryAsync(longTextFieldsQuery)
+				.ConfigureAwait(false);
+
+			ArtifactFieldDTO[] fieldDtos = relativityObjects
+				.Select(x => ConvertRelativityObjectToArtifactFieldDto(x, longTextFieldName))
 				.ToArray();
 
 			return fieldDtos;
@@ -54,12 +62,14 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			var fieldQuery = new QueryRequest
 			{
-				ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Field },
+				ObjectType = _fieldObjectTypeRef,
 				Fields = fieldNames.Select(x => new FieldRef { Name = x }),
-				Condition = $"'Object Type Artifact Type Id' == OBJECT {rdoTypeID}"
+				Condition = $"{GetObjectTypeCondition(rdoTypeID)}"
 			};
 
-			return RetrieveAllArtifactsAsync(fieldQuery);
+			return _relativityObjectManager
+				.QueryAsync(fieldQuery)
+				.ToArtifactDTOsArrayAsyncDeprecated();
 		}
 
 		public ArtifactDTO[] RetrieveFields(int rdoTypeID, HashSet<string> fieldNames)
@@ -94,7 +104,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		public ArtifactDTO RetrieveTheIdentifierField(int rdoTypeID)
+		public ArtifactDTO RetrieveIdentifierField(int rdoTypeID)
 		{
 			HashSet<string> fieldsToRetrieveWhenQueryFields = new HashSet<string> { "Name", "Is Identifier" };
 			ArtifactDTO[] fieldsDtos = RetrieveFieldsAsync(rdoTypeID, fieldsToRetrieveWhenQueryFields).GetAwaiter().GetResult();
@@ -107,7 +117,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			using (IFieldManager fieldManagerProxy = _servicesMgr.CreateProxy<IFieldManager>(ExecutionIdentity.System))
 			{
 				IEnumerable<global::Relativity.Services.Field.FieldRef> result = fieldManagerProxy.RetrieveBeginBatesFieldsAsync(_workspaceArtifactID).GetAwaiter().GetResult();
-				return result.Select(ConvertFieldRefToArtifactFieldDto).ToArray();
+				return result
+					.ToArtifactFieldDTOs()
+					.ToArray();
 			}
 		}
 
@@ -123,30 +135,25 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			var fieldQuery = new QueryRequest
 			{
-				ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Field },
+				ObjectType = _fieldObjectTypeRef,
 				Fields = fieldNames.Select(x => new FieldRef { Name = x }),
-				Condition = $"'Object Type Artifact Type ID' == OBJECT {rdoTypeID} AND 'DisplayName' == '{EscapeSingleQuote(displayName)}' AND 'Field Type' == '{fieldType}'"
+				Condition = $"{GetObjectTypeCondition(rdoTypeID)} AND 'DisplayName' == '{displayName.EscapeSingleQuote()}' AND 'Field Type' == '{fieldType}'"
 			};
 
-			return RetrieveAllArtifactsAsync(fieldQuery);
+			return _relativityObjectManager
+				.QueryAsync(fieldQuery)
+				.ToArtifactDTOsArrayAsyncDeprecated();
 		}
 
-		private static ArtifactFieldDTO ConvertFieldRefToArtifactFieldDto(global::Relativity.Services.Field.FieldRef artifactDto)
+		private string GetObjectTypeCondition(int rdoTypeID) => $"'Object Type Artifact Type Id' == OBJECT {rdoTypeID}";
+
+		private static ArtifactFieldDTO ConvertRelativityObjectToArtifactFieldDto(RelativityObject relativityObject, string fieldTypeName)
 		{
 			return new ArtifactFieldDTO
 			{
-				ArtifactId = artifactDto.ArtifactID,
-				Name = artifactDto.Name,
-			};
-		}
-
-		private static ArtifactFieldDTO ConvertArtifactDtoToArtifactFieldDto(ArtifactDTO artifactDto, string fieldTypeName)
-		{
-			return new ArtifactFieldDTO
-			{
-				ArtifactId = artifactDto.ArtifactId,
+				ArtifactId = relativityObject.ArtifactID,
 				FieldType = fieldTypeName,
-				Name = artifactDto.TextIdentifier,
+				Name = relativityObject.Name,
 				Value = null // Field RDO's don't have values...setting this to NULL to be explicit
 			};
 		}
