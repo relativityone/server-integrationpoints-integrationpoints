@@ -33,7 +33,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Converters
 			var input = new RelativityObject
 			{
 				ArtifactID = artifactID,
-				FieldValues = CreateFieldValuePairsWithGivenFieldInTheMiddle(WorkspaceFieldsConstants.NAME_FIELD, nameFieldValue)
+				FieldValues = CreateFieldValuePairsWithGivenFieldInTheMiddle(
+					WorkspaceFieldsConstants.NAME_FIELD, 
+					nameFieldValue)
 			};
 
 			// act
@@ -91,7 +93,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Converters
 			var input = new RelativityObject
 			{
 				ArtifactID = artifactID,
-				FieldValues = CreateFieldValuePairsWithGivenFieldInTheMiddle(WorkspaceFieldsConstants.NAME_FIELD, value: 12412)
+				FieldValues = CreateFieldValuePairsWithGivenFieldInTheMiddle(
+					WorkspaceFieldsConstants.NAME_FIELD, 
+					value: 12412)
 			};
 
 			// act
@@ -104,6 +108,33 @@ namespace kCura.IntegrationPoints.Data.Tests.Converters
 		}
 
 		[Test]
+		public void ToWorkspaceDTO_ShouldThrowArgumentExceptionWhenNameFieldIsDuplicated()
+		{
+			// arrange
+			const int artifactID = 421521;
+			const string name = "relativity case";
+
+			List<FieldValuePair> fieldsValues = CreateFieldValuePairsWithGivenFieldInTheMiddle(
+				WorkspaceFieldsConstants.NAME_FIELD,
+				value: name);
+			fieldsValues.Add(CreateFieldValuePair(WorkspaceFieldsConstants.NAME_FIELD, name));
+
+			var input = new RelativityObject
+			{
+				ArtifactID = artifactID,
+				FieldValues = fieldsValues
+			};
+
+			// act
+			Action convertAction = () => input.ToWorkspaceDTO();
+
+			// assert
+			string expectedErrorMessage =
+				$"{nameof(RelativityObject)} does not represent valid {nameof(WorkspaceDTO)} - duplicated '{WorkspaceFieldsConstants.NAME_FIELD}' field";
+			convertAction.ShouldThrow<ArgumentException>().WithMessage(expectedErrorMessage);
+		}
+
+		[Test]
 		public void ToWorkspaceDTO_ShouldConvertNullFieldValue()
 		{
 			// arrange
@@ -111,7 +142,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Converters
 			var input = new RelativityObject
 			{
 				ArtifactID = artifactID,
-				FieldValues = CreateFieldValuePairsWithGivenFieldInTheMiddle(WorkspaceFieldsConstants.NAME_FIELD, value: null)
+				FieldValues = CreateFieldValuePairsWithGivenFieldInTheMiddle(
+					WorkspaceFieldsConstants.NAME_FIELD, 
+					value: null)
 			};
 
 			// act
@@ -327,6 +360,39 @@ namespace kCura.IntegrationPoints.Data.Tests.Converters
 		}
 
 		[Test]
+		public void ToSavedSearchDTO_ShouldThrowArgumentExceptionWhenNameFieldIsDuplicated()
+		{
+			// arrange
+			const int artifactID = 23123;
+			const int parentArtifactID = 4121;
+			const string owner = "rip user";
+			const string name = "all docs";
+
+			List<FieldValuePair> fieldValuePairs = CreateFieldValuePairsWithWrongEntries();
+			fieldValuePairs.Add(CreateFieldValuePair(SavedSearchFieldsConstants.NAME_FIELD, name));
+			fieldValuePairs.Add(CreateFieldValuePair(SavedSearchFieldsConstants.NAME_FIELD, name));
+			fieldValuePairs.Add(CreateFieldValuePair(SavedSearchFieldsConstants.OWNER_FIELD, owner));
+
+			var input = new RelativityObject
+			{
+				ArtifactID = artifactID,
+				ParentObject = new RelativityObjectRef
+				{
+					ArtifactID = parentArtifactID
+				},
+				FieldValues = fieldValuePairs
+			};
+
+			// act
+			Action convertAction = () => input.ToSavedSearchDTO();
+
+			// assert
+			string expectedErrorMessage =
+				$"{nameof(RelativityObject)} does not represent valid {nameof(SavedSearchDTO)} - duplicated '{SavedSearchFieldsConstants.NAME_FIELD}' field";
+			convertAction.ShouldThrow<ArgumentException>().WithMessage(expectedErrorMessage);
+		}
+
+		[Test]
 		public void ToSavedSearchDTO_ShouldThrowArgumentExceptionWhenOwnerFieldHasWrongType()
 		{
 			// arrange
@@ -354,6 +420,39 @@ namespace kCura.IntegrationPoints.Data.Tests.Converters
 			// assert
 			string expectedErrorMessage =
 				$"{nameof(RelativityObject)} does not represent valid {nameof(SavedSearchDTO)} - wrong '{SavedSearchFieldsConstants.OWNER_FIELD}' type";
+			convertAction.ShouldThrow<ArgumentException>().WithMessage(expectedErrorMessage);
+		}
+
+		[Test]
+		public void ToSavedSearchDTO_ShouldThrowArgumentExceptionWhenOwnerFieldIsDuplicated()
+		{
+			// arrange
+			const int artifactID = 23123;
+			const int parentArtifactID = 4121;
+			const string owner = "rip user";
+			const string name = "all docs";
+
+			List<FieldValuePair> fieldValuePairs = CreateFieldValuePairsWithWrongEntries();
+			fieldValuePairs.Add(CreateFieldValuePair(SavedSearchFieldsConstants.NAME_FIELD, name));
+			fieldValuePairs.Add(CreateFieldValuePair(SavedSearchFieldsConstants.OWNER_FIELD, owner));
+			fieldValuePairs.Add(CreateFieldValuePair(SavedSearchFieldsConstants.OWNER_FIELD, owner));
+
+			var input = new RelativityObject
+			{
+				ArtifactID = artifactID,
+				ParentObject = new RelativityObjectRef
+				{
+					ArtifactID = parentArtifactID
+				},
+				FieldValues = fieldValuePairs
+			};
+
+			// act
+			Action convertAction = () => input.ToSavedSearchDTO();
+
+			// assert
+			string expectedErrorMessage =
+				$"{nameof(RelativityObject)} does not represent valid {nameof(SavedSearchDTO)} - duplicated '{SavedSearchFieldsConstants.OWNER_FIELD}' field";
 			convertAction.ShouldThrow<ArgumentException>().WithMessage(expectedErrorMessage);
 		}
 
@@ -536,6 +635,34 @@ namespace kCura.IntegrationPoints.Data.Tests.Converters
 		}
 
 		[Test]
+		public void ToFederatedInstanceDTO_ShouldThrowArgumentExceptionWhenNameFieldIsDuplicated()
+		{
+			// arrange
+			const int artifactID = 23123;
+			const string federatedInstanceName = "relInstance";
+			const string federatedInstanceUrl = "rip user";
+
+			List<FieldValuePair> fieldValuePairs = CreateFieldValuePairsWithWrongEntries();
+			fieldValuePairs.Add(CreateFieldValuePair(FederatedInstanceFieldsConstants.NAME_FIELD, federatedInstanceName));
+			fieldValuePairs.Add(CreateFieldValuePair(FederatedInstanceFieldsConstants.NAME_FIELD, federatedInstanceName));
+			fieldValuePairs.Add(CreateFieldValuePair(FederatedInstanceFieldsConstants.INSTANCE_URL_FIELD, federatedInstanceUrl));
+
+			var input = new RelativityObject
+			{
+				ArtifactID = artifactID,
+				FieldValues = fieldValuePairs
+			};
+
+			// act
+			Action convertAction = () => input.ToFederatedInstanceDTO();
+
+			// assert
+			string expectedErrorMessage =
+				$"{nameof(RelativityObject)} does not represent valid {nameof(FederatedInstanceDto)} - duplicated '{FederatedInstanceFieldsConstants.NAME_FIELD}' field";
+			convertAction.ShouldThrow<ArgumentException>().WithMessage(expectedErrorMessage);
+		}
+
+		[Test]
 		public void ToFederatedInstanceDTO_ShouldThrowArgumentExceptionWhenInstanceUrlFieldHasWrongType()
 		{
 			// arrange
@@ -558,6 +685,34 @@ namespace kCura.IntegrationPoints.Data.Tests.Converters
 			// assert
 			string expectedErrorMessage =
 				$"{nameof(RelativityObject)} does not represent valid {nameof(FederatedInstanceDto)} - wrong '{FederatedInstanceFieldsConstants.INSTANCE_URL_FIELD}' type";
+			convertAction.ShouldThrow<ArgumentException>().WithMessage(expectedErrorMessage);
+		}
+
+		[Test]
+		public void ToFederatedInstanceDTO_ShouldThrowArgumentExceptionWhenInstanceUrlFieldIsDuplicated()
+		{
+			// arrange
+			const int artifactID = 23123;
+			const string federatedInstanceName = "relInstance";
+			const string federatedInstanceUrl = "rip user";
+
+			List<FieldValuePair> fieldValuePairs = CreateFieldValuePairsWithWrongEntries();
+			fieldValuePairs.Add(CreateFieldValuePair(FederatedInstanceFieldsConstants.NAME_FIELD, federatedInstanceName));
+			fieldValuePairs.Add(CreateFieldValuePair(FederatedInstanceFieldsConstants.INSTANCE_URL_FIELD, federatedInstanceUrl));
+			fieldValuePairs.Add(CreateFieldValuePair(FederatedInstanceFieldsConstants.INSTANCE_URL_FIELD, federatedInstanceUrl));
+
+			var input = new RelativityObject
+			{
+				ArtifactID = artifactID,
+				FieldValues = fieldValuePairs
+			};
+
+			// act
+			Action convertAction = () => input.ToFederatedInstanceDTO();
+
+			// assert
+			string expectedErrorMessage =
+				$"{nameof(RelativityObject)} does not represent valid {nameof(FederatedInstanceDto)} - duplicated '{FederatedInstanceFieldsConstants.INSTANCE_URL_FIELD}' field";
 			convertAction.ShouldThrow<ArgumentException>().WithMessage(expectedErrorMessage);
 		}
 

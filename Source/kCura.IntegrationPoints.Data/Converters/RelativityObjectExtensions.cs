@@ -116,25 +116,37 @@ namespace kCura.IntegrationPoints.Data.Converters
 
 		private static TValue GetFieldValue<TValue, TDestinationType>(RelativityObject relativityObject, string fieldName) where TValue : class
 		{
+			ValidateFieldValueWithingRelativityObject<TValue, TDestinationType>(relativityObject, fieldName);
+
+			FieldValuePair fieldValuePair = relativityObject.FieldValues.Single(x => x.Field.Name == fieldName);
+			return fieldValuePair.Value as TValue;
+		}
+
+		private static void ValidateFieldValueWithingRelativityObject<TValue, TDestinationType>(RelativityObject relativityObject, string fieldName) where TValue : class
+		{
 			if (relativityObject.FieldValues == null)
 			{
 				throw new ArgumentException($"{GetErrorMessageHeader<TDestinationType>()} - missing fields values");
 			}
 
-			FieldValuePair fieldValuePair = relativityObject.FieldValues.FirstOrDefault(x => x.Field.Name == fieldName);
-
-			if (fieldValuePair == null)
+			IEnumerable<FieldValuePair> fieldsWithMatchingName = relativityObject.FieldValues.Where(x => x.Field.Name == fieldName);
+			List<FieldValuePair> twoFirstMatchingFields = fieldsWithMatchingName.Take(2).ToList();
+			if (!twoFirstMatchingFields.Any())
 			{
 				throw new ArgumentException($"{GetErrorMessageHeader<TDestinationType>()} - missing '{fieldName}' value");
 			}
 
-			var valueToReturn = fieldValuePair.Value as TValue;
-			if (valueToReturn == null && fieldValuePair.Value != null)
+			if (twoFirstMatchingFields.Count > 1)
+			{
+				throw new ArgumentException($"{GetErrorMessageHeader<TDestinationType>()} - duplicated '{fieldName}' field");
+			}
+
+			FieldValuePair fieldValuePair = twoFirstMatchingFields.Single();
+
+			if (fieldValuePair.Value != null && !(fieldValuePair.Value is TValue))
 			{
 				throw new ArgumentException($"{GetErrorMessageHeader<TDestinationType>()} - wrong '{fieldName}' type");
 			}
-
-			return valueToReturn;
 		}
 
 		private static string GetErrorMessageHeader<TDestinationType>()
