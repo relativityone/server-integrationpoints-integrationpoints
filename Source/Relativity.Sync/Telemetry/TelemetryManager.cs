@@ -39,11 +39,19 @@ namespace Relativity.Sync.Telemetry
 			{
 				CategoryRef category = await CreateAndEnableMetricCategoryIfNotExistAsync(TelemetryConstants.TELEMETRY_CATEGORY).ConfigureAwait(false);
 
-				_metricProviders.ForEach(item => item.AddMetricsForCategory(category));
+				AddMetricsForCategory(category);
 			}
 			catch (Exception e)
 			{
 				_logger.LogError(e, "Error occured when installing SUM metrics. SUM metrics might not be logged.");
+			}
+		}
+
+		private void AddMetricsForCategory(CategoryRef category)
+		{
+			using (var manager = _servicesManager.CreateProxy<IInternalMetricsCollectionManager>(ExecutionIdentity.System))
+			{
+				_metricProviders.ForEach(item => item.AddMetricsForCategory(manager, category));
 			}
 		}
 

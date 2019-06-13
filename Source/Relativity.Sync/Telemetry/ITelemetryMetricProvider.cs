@@ -5,6 +5,6 @@ namespace Relativity.Sync.Telemetry
 {
 	internal interface ITelemetryMetricProvider
 	{
-		Task AddMetricsForCategory(CategoryRef category);
+		Task AddMetricsForCategory(IInternalMetricsCollectionManager metricsCollectionManager, CategoryRef category);
 	}
 }
