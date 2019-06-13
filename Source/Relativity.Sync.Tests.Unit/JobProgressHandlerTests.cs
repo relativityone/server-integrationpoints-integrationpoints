@@ -49,28 +49,6 @@ namespace Relativity.Sync.Tests.Unit
 			_jobProgressUpdater.Verify(x => x.UpdateJobProgressAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Exactly(expectedNumberOfProgressUpdates));
 		}
 
-		[Test]
-		public void ItShouldUpdateProgressWhenCompleted()
-		{
-			const int failedItems = 1;
-			const int totalItemsProcessed = 2;
-
-			// act
-			for (int i = 0; i < totalItemsProcessed; i++)
-			{
-				_instance.HandleItemProcessed(i);
-			}
-
-			for (int i = 0; i < failedItems; i++)
-			{
-				_instance.HandleItemError(new Dictionary<int, int>());
-			}
-			_instance.HandleProcessComplete(CreateJobReport());
-
-			// assert
-			_jobProgressUpdater.Verify(x => x.UpdateJobProgressAsync(totalItemsProcessed - failedItems, failedItems));
-		}
-
 		[TestCase(0, 0, 0)]
 		[TestCase(2, 2, 0)]
 		[TestCase(3, 0, 3)]
