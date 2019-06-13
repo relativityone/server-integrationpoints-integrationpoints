@@ -75,14 +75,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return ChangeAllIntegrationPointAgentsEnabledStatus(isEnabled: true);
 		}
 
-		public static void EnableAllIntegrationPointsAgents()
+		public static Task DisableAllIntegrationPointsAgentsAsync()
 		{
-			EnableAllIntegrationPointsAgentsAsync().GetAwaiter().GetResult();
-		}
-
-		public static void DisableAllIntegrationPointsAgents()
-		{
-			ChangeAllIntegrationPointAgentsEnabledStatus(isEnabled: false).GetAwaiter().GetResult();
+			return ChangeAllIntegrationPointAgentsEnabledStatus(isEnabled: false);
 		}
 
 		private static async Task ChangeAllIntegrationPointAgentsEnabledStatus(bool isEnabled)

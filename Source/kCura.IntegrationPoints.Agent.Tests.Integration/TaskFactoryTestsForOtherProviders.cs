@@ -35,13 +35,13 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		{
 			base.SuiteSetup();
 
-			IntegrationPoint.Tests.Core.Agent.DisableAllIntegrationPointsAgents();
+			IntegrationPoint.Tests.Core.Agent.DisableAllIntegrationPointsAgentsAsync().GetAwaiter().GetResult();
 			_queueContext = new QueueDBContext(Helper, GlobalConst.SCHEDULE_AGENT_QUEUE_TABLE_NAME);
 		}
 
 		public override void SuiteTeardown()
 		{
-			IntegrationPoint.Tests.Core.Agent.EnableAllIntegrationPointsAgents();
+			IntegrationPoint.Tests.Core.Agent.EnableAllIntegrationPointsAgentsAsync().GetAwaiter().GetResult();
 			base.SuiteTeardown();
 		}
 

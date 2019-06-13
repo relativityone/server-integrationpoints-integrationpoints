@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
+using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using Relativity.Testing.Identification;
@@ -41,7 +42,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			_helper = new TestHelper();
 			_queueRepo = new QueueRepository(_helper);
 
-			Agent.DisableAllIntegrationPointsAgents();
+			Agent.DisableAllIntegrationPointsAgentsAsync().GetAwaiter().GetResult();
 			ClearScheduleQueue();
 		}
 
@@ -206,9 +207,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		[TestInQuarantine(TestQuarantineState.ShowsInstability, 
 			"It fails randomly because of exceeding the timeout specified. We need to increase the timeout or refactor this test somehow.")]
 		[Description("This test takes sometime to process. It requires the IP agent to be running.")]
-		public void OneExecutedScheduledJobInTheQueue_ExpectCountZero()
+		public async Task OneExecutedScheduledJobInTheQueue_ExpectCountZero()
 		{
-			Agent.EnableAllIntegrationPointsAgents();
+			await Agent.EnableAllIntegrationPointsAgentsAsync().ConfigureAwait(false);
 			try
 			{
 				// arrange
@@ -252,7 +253,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			}
 			finally
 			{
-				Agent.DisableAllIntegrationPointsAgents();
+				await Agent.DisableAllIntegrationPointsAgentsAsync().ConfigureAwait(false);
 			}
 		}
 
