@@ -5,7 +5,7 @@ namespace Relativity.Sync.Telemetry
 {
 	internal sealed class MainTelemetryMetricsProvider : TelemetryMetricsProviderBase
 	{
-		private readonly MetricIdentifier[] metricIdentifiers = new[]
+		private readonly MetricIdentifier[] _metricIdentifiers = new[]
 		{
 			new MetricIdentifier
 			{
@@ -47,7 +47,7 @@ namespace Relativity.Sync.Telemetry
 
 		protected override IEnumerable<MetricIdentifier> GetMetricIdentifiers()
 		{
-			return metricIdentifiers;
+			return _metricIdentifiers;
 		}
 	}
 }
