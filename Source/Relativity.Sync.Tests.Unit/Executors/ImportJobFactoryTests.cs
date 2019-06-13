@@ -21,9 +21,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private Mock<IBatchProgressHandlerFactory> _batchProgressHandlerFactory;
 		private Mock<IJobProgressHandlerFactory> _jobProgressHandlerFactory;
 		private Mock<IJobProgressUpdaterFactory> _jobProgressUpdaterFactory;
-		private Mock<ISourceWorkspaceDataReader> _dataReader;
+		private Mock<ISourceWorkspaceDataReaderFactory> _dataReaderFactory;
 		private Mock<IJobHistoryErrorRepository> _jobHistoryErrorRepository;
 
+		private Mock<ISourceWorkspaceDataReader> _dataReader;
 		private Mock<IBatch> _batch;
 
 		private ISyncLog _logger;
@@ -37,6 +38,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_jobProgressHandlerFactory = new Mock<IJobProgressHandlerFactory>();
 			_jobProgressHandlerFactory.Setup(x => x.CreateJobProgressHandler(It.IsAny<IJobProgressUpdater>())).Returns(jobProgressHandler.Object);
 			_dataReader = new Mock<ISourceWorkspaceDataReader>();
+			_dataReaderFactory = new Mock<ISourceWorkspaceDataReaderFactory>();
+			_dataReaderFactory.Setup(x => x.CreateSourceWorkspaceDataReader(It.IsAny<IBatch>())).Returns(_dataReader.Object);
 			_jobHistoryErrorRepository = new Mock<IJobHistoryErrorRepository>();
 
 			_logger = new EmptyLogger();
@@ -102,7 +105,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 		private ImportJobFactory GetTestInstance(Mock<IImportApiFactory> importApiFactory)
 		{
-			var instance = new ImportJobFactory(importApiFactory.Object, _dataReader.Object, _batchProgressHandlerFactory.Object, 
+			var instance = new ImportJobFactory(importApiFactory.Object, _dataReaderFactory.Object, _batchProgressHandlerFactory.Object, 
 				_jobProgressHandlerFactory.Object, _jobProgressUpdaterFactory.Object,
 				_jobHistoryErrorRepository.Object, _logger);
 			return instance;

@@ -5,6 +5,6 @@ namespace Relativity.Sync.Transfer
 {
 	internal interface IRelativityExportBatcher
 	{
-		Task<RelativityObjectSlim[]> GetNextBatchAsync();
+		Task<RelativityObjectSlim[]> GetNextItemsFromBatchAsync();
 	}
 }

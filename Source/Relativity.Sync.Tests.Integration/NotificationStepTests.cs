@@ -40,7 +40,7 @@ namespace Relativity.Sync.Tests.Integration
 			// ASSERT
 			action.Should().Throw<SyncException>();
 
-			const int expectedNumberOfSteps = 13;
+			const int expectedNumberOfSteps = 14;
 			_executorTypes.Count.Should().Be(expectedNumberOfSteps);
 			_executorTypes.Should().NotContain(x => x == typeof(INotificationConfiguration));
 		}

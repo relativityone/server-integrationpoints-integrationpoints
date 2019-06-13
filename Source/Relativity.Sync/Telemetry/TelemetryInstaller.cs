@@ -3,7 +3,6 @@ using System.Linq;
 using System.Reflection;
 using Autofac;
 using Relativity.API;
-using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync.Telemetry
 {

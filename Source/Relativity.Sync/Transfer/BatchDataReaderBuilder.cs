@@ -15,10 +15,12 @@ namespace Relativity.Sync.Transfer
 		private DataTable _templateDataTable;
 		private IReadOnlyList<FieldInfoDto> _allFields;
 		private readonly IFieldManager _fieldManager;
+		private readonly IExportDataSanitizer _exportDataSanitizer;
 
-		public BatchDataReaderBuilder(IFieldManager fieldManager)
+		public BatchDataReaderBuilder(IFieldManager fieldManager, IExportDataSanitizer exportDataSanitizer)
 		{
 			_fieldManager = fieldManager;
+			_exportDataSanitizer = exportDataSanitizer;
 		}
 
 		public async Task<IDataReader> BuildAsync(int sourceWorkspaceArtifactId, RelativityObjectSlim[] batch, CancellationToken token)
@@ -34,9 +36,9 @@ namespace Relativity.Sync.Transfer
 
 				IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> specialFieldBuildersDictionary =
 					await CreateSpecialFieldRowValuesBuildersAsync(sourceWorkspaceArtifactId, batch).ConfigureAwait(false);
-				foreach (RelativityObjectSlim obj in batch)
+				foreach (RelativityObjectSlim item in batch)
 				{
-					object[] row = BuildRow(specialFieldBuildersDictionary, _allFields, obj);
+					object[] row = await BuildRowAsync(sourceWorkspaceArtifactId, specialFieldBuildersDictionary, item, token).ConfigureAwait(false);
 					dataTable.Rows.Add(row);
 				}
 			}
@@ -74,30 +76,52 @@ namespace Relativity.Sync.Transfer
 			return columns;
 		}
 
-		private static object[] BuildRow(IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> specialFieldBuilders, IReadOnlyList<FieldInfoDto> allFields, RelativityObjectSlim obj)
+		private async Task<object[]> BuildRowAsync(int sourceWorkspaceArtifactId,
+			IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> specialFieldBuilders,
+			RelativityObjectSlim batchItem,
+			CancellationToken token)
 		{
-			object[] result = new object[allFields.Count];
+			object[] result = new object[_allFields.Count];
 
-			for (int i = 0; i < allFields.Count; i++)
+			for (int i = 0; i < _allFields.Count; i++)
 			{
-				FieldInfoDto field = allFields[i];
+				FieldInfoDto field = _allFields[i];
 				if (field.SpecialFieldType != SpecialFieldType.None)
 				{
-					if (!specialFieldBuilders.ContainsKey(field.SpecialFieldType))
-					{
-						throw new SourceDataReaderException($"No special field row value builder found for special field type {nameof(SpecialFieldType)}.{field.SpecialFieldType}");
-					}
-
-					object initialFieldValue = field.IsDocumentField ? obj.Values[field.DocumentFieldIndex] : null;
-					result[i] = specialFieldBuilders[field.SpecialFieldType].BuildRowValue(field, obj, initialFieldValue);
+					result[i] = BuildSpecialFieldValue(specialFieldBuilders, batchItem, field);
 				}
 				else
 				{
-					result[i] = obj.Values[field.DocumentFieldIndex];
+					FieldInfoDto identifierField = await _fieldManager.GetObjectIdentifierFieldAsync(token).ConfigureAwait(false);
+					string itemIdentifier = batchItem.Values[identifierField.DocumentFieldIndex].ToString();
+					object initialValue = batchItem.Values[field.DocumentFieldIndex];
+					result[i] = await SanitizeFieldIfNeededAsync(sourceWorkspaceArtifactId, identifierField.SourceFieldName, itemIdentifier, field, initialValue).ConfigureAwait(false);
 				}
 			}
 
 			return result;
+		}
+
+		private static object BuildSpecialFieldValue(IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> specialFieldBuilders, RelativityObjectSlim batchItem, FieldInfoDto fieldInfo)
+		{
+			if (!specialFieldBuilders.ContainsKey(fieldInfo.SpecialFieldType))
+			{
+				throw new SourceDataReaderException($"No special field row value builder found for special field type {nameof(SpecialFieldType)}.{fieldInfo.SpecialFieldType}");
+			}
+			object initialFieldValue = fieldInfo.IsDocumentField ? batchItem.Values[fieldInfo.DocumentFieldIndex] : null;
+
+			return specialFieldBuilders[fieldInfo.SpecialFieldType].BuildRowValue(fieldInfo, batchItem, initialFieldValue);
+		}
+
+		private async Task<object> SanitizeFieldIfNeededAsync(int sourceWorkspaceArtifactId, string itemIdentifierFieldName, string itemIdentifier, FieldInfoDto field, object initialValue)
+		{
+			object sanitizedValue = initialValue;
+			if (_exportDataSanitizer.ShouldSanitize(field.RelativityDataType))
+			{
+				sanitizedValue = await _exportDataSanitizer.SanitizeAsync(sourceWorkspaceArtifactId, itemIdentifierFieldName, itemIdentifier, field, initialValue).ConfigureAwait(false);
+			}
+
+			return sanitizedValue;
 		}
 	}
 }
