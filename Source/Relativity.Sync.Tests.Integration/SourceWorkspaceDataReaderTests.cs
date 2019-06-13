@@ -5,6 +5,7 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.Integration.Helpers;
 using Relativity.Sync.Transfer;
@@ -14,6 +15,8 @@ namespace Relativity.Sync.Tests.Integration
 	[TestFixture]
 	internal sealed partial class SourceWorkspaceDataReaderTests : IDisposable
 	{
+		private ContainerBuilder _containerBuilder;
+		private IContainer _container;
 		private SourceWorkspaceDataReader _instance;
 		private DocumentTransferServicesMocker _documentTransferServicesMocker;
 		private ConfigurationStub _configuration;
@@ -29,21 +32,14 @@ namespace Relativity.Sync.Tests.Integration
 			
 			_documentTransferServicesMocker = new DocumentTransferServicesMocker();
 
-			ContainerBuilder containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
-			IntegrationTestsContainerBuilder.MockReporting(containerBuilder);
-			_documentTransferServicesMocker.RegisterServiceMocks(containerBuilder);
-			containerBuilder.RegisterInstance(_configuration).AsImplementedInterfaces();
-			IContainer container = containerBuilder.Build();
+			_containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
+			IntegrationTestsContainerBuilder.MockReporting(_containerBuilder);
+			_documentTransferServicesMocker.RegisterServiceMocks(_containerBuilder);
+			_containerBuilder.RegisterInstance(_configuration).AsImplementedInterfaces();
+			_container = _containerBuilder.Build();
 
-			IFieldManager fieldManager = container.Resolve<IFieldManager>();
+			IFieldManager fieldManager = _container.Resolve<IFieldManager>();
 			_documentTransferServicesMocker.SetFieldManager(fieldManager);
-
-			_instance = new SourceWorkspaceDataReader(container.Resolve<IBatchDataReaderBuilder>(),
-				_configuration,
-				container.Resolve<RelativityExportBatcherFactory>(),
-				container.Resolve<IFieldManager>(),
-				container.Resolve<IItemStatusMonitor>(),
-				Mock.Of<ISyncLog>());
 		}
 
 		public void Dispose()
@@ -52,11 +48,21 @@ namespace Relativity.Sync.Tests.Integration
 		}
 
 		[Test]
-		public async Task ItShouldReadAcrossMultipleBatches()
+		public async Task ItShouldReadSingleBatch()
 		{
 			// Arrange
-			DocumentImportJob importData = MultipleBatchesImportJob;
 			const int batchSize = 100;
+			Mock<IBatch> batch = new Mock<IBatch>();
+			batch.SetupGet(x => x.TotalItemsCount).Returns(batchSize);
+			IRelativityExportBatcher batcher = _container.Resolve<IRelativityExportBatcherFactory>().CreateRelativityExportBatcher(batch.Object);
+			_instance = new SourceWorkspaceDataReader(_container.Resolve<IBatchDataReaderBuilder>(),
+				_configuration,
+				batcher,
+				_container.Resolve<IFieldManager>(),
+				_container.Resolve<IItemStatusMonitor>(),
+				Mock.Of<ISyncLog>());
+
+			DocumentImportJob importData = SingleBatchImportJob;
 			await _documentTransferServicesMocker.SetupServicesWithTestData(importData, batchSize).ConfigureAwait(false);
 
 			// Act/Assert

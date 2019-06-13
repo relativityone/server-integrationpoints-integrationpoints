@@ -16,19 +16,19 @@ namespace Relativity.Sync.Executors
 	internal sealed class ImportJobFactory : IImportJobFactory
 	{
 		private readonly IImportApiFactory _importApiFactory;
-		private readonly ISourceWorkspaceDataReader _dataReader;
+		private readonly ISourceWorkspaceDataReaderFactory _dataReaderFactory;
 		private readonly IBatchProgressHandlerFactory _batchProgressHandlerFactory;
 		private readonly IJobProgressHandlerFactory _jobProgressHandlerFactory;
 		private readonly IJobProgressUpdaterFactory _jobProgressUpdaterFactory;
 		private readonly IJobHistoryErrorRepository _jobHistoryErrorRepository;
 		private readonly ISyncLog _logger;
 
-		public ImportJobFactory(IImportApiFactory importApiFactory, ISourceWorkspaceDataReader dataReader, 
+		public ImportJobFactory(IImportApiFactory importApiFactory, ISourceWorkspaceDataReaderFactory dataReaderFactory, 
 			IBatchProgressHandlerFactory batchProgressHandlerFactory, IJobProgressHandlerFactory jobProgressHandlerFactory, 
 			IJobProgressUpdaterFactory jobProgressUpdaterFactory, IJobHistoryErrorRepository jobHistoryErrorRepository, ISyncLog logger)
 		{
 			_importApiFactory = importApiFactory;
-			_dataReader = dataReader;
+			_dataReaderFactory = dataReaderFactory;
 			_batchProgressHandlerFactory = batchProgressHandlerFactory;
 			_jobProgressHandlerFactory = jobProgressHandlerFactory;
 			_jobProgressUpdaterFactory = jobProgressUpdaterFactory;
@@ -38,8 +38,9 @@ namespace Relativity.Sync.Executors
 
 		public async Task<IImportJob> CreateImportJobAsync(ISynchronizationConfiguration configuration, IBatch batch)
 		{
-			ImportBulkArtifactJob importBulkArtifactJob = await CreateImportBulkArtifactJobAsync(configuration, batch.StartingIndex).ConfigureAwait(false);
-			var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importBulkArtifactJob, _dataReader.ItemStatusMonitor);
+			ISourceWorkspaceDataReader sourceWorkspaceDataReader = _dataReaderFactory.CreateSourceWorkspaceDataReader(batch);
+			ImportBulkArtifactJob importBulkArtifactJob = await CreateImportBulkArtifactJobAsync(configuration, batch.StartingIndex, sourceWorkspaceDataReader).ConfigureAwait(false);
+			var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importBulkArtifactJob, sourceWorkspaceDataReader.ItemStatusMonitor);
 
 			_batchProgressHandlerFactory.CreateBatchProgressHandler(batch, importBulkArtifactJob);
 			AttachJobProgressHandler(importBulkArtifactJob);
@@ -57,11 +58,11 @@ namespace Relativity.Sync.Executors
 			importBulkArtifactJob.OnComplete += jobProgressHandler.HandleProcessComplete;
 		}
 
-		private async Task<ImportBulkArtifactJob> CreateImportBulkArtifactJobAsync(ISynchronizationConfiguration configuration, int startingIndex)
+		private async Task<ImportBulkArtifactJob> CreateImportBulkArtifactJobAsync(ISynchronizationConfiguration configuration, int startingIndex, ISourceWorkspaceDataReader dataReader)
 		{
 			IImportAPI importApi = await _importApiFactory.CreateImportApiAsync(configuration.ImportSettings.RelativityWebServiceUrl).ConfigureAwait(false);
 			ImportBulkArtifactJob importJob = await Task.Run(() => importApi.NewNativeDocumentImportJob()).ConfigureAwait(false);
-			importJob.SourceData.SourceData = _dataReader;
+			importJob.SourceData.SourceData = dataReader;
 
 			// Default values
 			importJob.Settings.ArtifactTypeId = configuration.ImportSettings.ArtifactTypeId;

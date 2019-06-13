@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Relativity.Sync.Tests.System.Helpers;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.System
@@ -20,14 +21,22 @@ namespace Relativity.Sync.Tests.System
 		[Ignore("Depends on an already-created workspace plus specific pre-loaded data")]
 		public async Task ItShouldWork()
 		{
-			const int sourceWorkspaceArtifactId = 1215252;
-			const int dataSourceArtifactId = 1038052;
+			const int sourceWorkspaceArtifactId = 1019631;
+			const int dataSourceArtifactId = 1048428;
 			const int controlNumberFieldId = 1003667;
 			const int extractedTextFieldId = 1003668;
-			const string folderInfoFieldName = "field name";
+			const int totalItemsCount = 10;
+			const string folderInfoFieldName = "Document Folder Path";
+
+			string jobHistoryName = $"DataReaderTest_{Guid.NewGuid()}";
+			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, sourceWorkspaceArtifactId, jobHistoryName).ConfigureAwait(false);
+			int syncConfigurationArtifactId = await Rdos.CreateSyncConfigurationInstance(ServiceFactory, sourceWorkspaceArtifactId, jobHistoryArtifactId).ConfigureAwait(false);
+
 			ConfigurationStub configuration = new ConfigurationStub
 			{
 				SourceWorkspaceArtifactId = sourceWorkspaceArtifactId,
+				JobHistoryArtifactId = jobHistoryArtifactId,
+				SyncConfigurationArtifactId = syncConfigurationArtifactId,
 				DataSourceArtifactId = dataSourceArtifactId,
 				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.ReadFromField,
 				FolderPathSourceFieldName = folderInfoFieldName,
@@ -38,12 +47,24 @@ namespace Relativity.Sync.Tests.System
 						SourceField = new FieldEntry
 						{
 							DisplayName = "Control Number",
-							FieldIdentifier = controlNumberFieldId
+							FieldIdentifier = controlNumberFieldId,
+							IsIdentifier = true
+						},
+						DestinationField = new FieldEntry()
+						{
+							DisplayName = "Control Number",
+							FieldIdentifier = controlNumberFieldId,
+							IsIdentifier = true
 						}
 					},
 					new FieldMap
 					{
 						SourceField = new FieldEntry
+						{
+							DisplayName = "Extracted Text",
+							FieldIdentifier = extractedTextFieldId
+						},
+						DestinationField = new FieldEntry()
 						{
 							DisplayName = "Extracted Text",
 							FieldIdentifier = extractedTextFieldId
@@ -65,7 +86,11 @@ namespace Relativity.Sync.Tests.System
 
 			Assert.AreEqual(ExecutionStatus.Completed, result.Status);
 
-			SourceWorkspaceDataReader dataReader = BuildDataReader(fieldManager, configuration, sourceServiceFactory);
+			BatchRepository batchRepository = new BatchRepository(sourceServiceFactory);
+			IBatch batch = await batchRepository.CreateAsync(sourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId, totalItemsCount, 0).ConfigureAwait(false);
+			IRelativityExportBatcherFactory exportBatcherFactory = new RelativityExportBatcherFactory(sourceServiceFactory, configuration);
+			IRelativityExportBatcher batcher = exportBatcherFactory.CreateRelativityExportBatcher(batch);
+			SourceWorkspaceDataReader dataReader = BuildDataReader(fieldManager, configuration, batcher);
 			ConsoleLogger logger = new ConsoleLogger();
 
 			const int resultsBlockSize = 100;
@@ -82,16 +107,11 @@ namespace Relativity.Sync.Tests.System
 			}
 		}
 
-		private static SourceWorkspaceDataReader BuildDataReader(IFieldManager fieldManager, ISynchronizationConfiguration configuration, ServiceFactoryStub sourceServiceFactory)
+		private static SourceWorkspaceDataReader BuildDataReader(IFieldManager fieldManager, ISynchronizationConfiguration configuration, IRelativityExportBatcher batcher)
 		{
-			IRelativityExportBatcher ExportBatcherFactory(Guid runId, int workspaceArtifactId, int syncConfigurationArtifactId)
-			{
-				return new RelativityExportBatcher(sourceServiceFactory, new BatchRepository(sourceServiceFactory), runId, workspaceArtifactId, syncConfigurationArtifactId);
-			}
-
 			SourceWorkspaceDataReader dataReader = new SourceWorkspaceDataReader(new BatchDataReaderBuilder(fieldManager, new ExportDataSanitizer(Enumerable.Empty<IExportFieldSanitizer>())),
 				configuration,
-				ExportBatcherFactory,
+				batcher,
 				fieldManager,
 				new ItemStatusMonitor(),
 				new EmptyLogger());

@@ -15,9 +15,8 @@ namespace Relativity.Sync.Transfer
 	internal sealed class SourceWorkspaceDataReader : ISourceWorkspaceDataReader
 	{
 		private IDataReader _currentReader;
-		private IRelativityExportBatcher _exportBatcher;
 
-		private readonly RelativityExportBatcherFactory _exportBatcherFactory;
+		private readonly IRelativityExportBatcher _exportBatcher;
 		private readonly IFieldManager _fieldManager;
 		private readonly ISyncLog _logger;
 		private readonly ISynchronizationConfiguration _configuration;
@@ -25,16 +24,16 @@ namespace Relativity.Sync.Transfer
 
 		public SourceWorkspaceDataReader(IBatchDataReaderBuilder readerBuilder,
 			ISynchronizationConfiguration configuration,
-			RelativityExportBatcherFactory exportBatcherFactory,
+			IRelativityExportBatcher exportBatcher,
 			IFieldManager fieldManager,
-			IItemStatusMonitor itemStatusMonitor,
+			IItemStatusMonitor itemStatusMonitor, 
 			ISyncLog logger)
 		{
 			_readerBuilder = readerBuilder;
-			_exportBatcherFactory = exportBatcherFactory;
+			_configuration = configuration;
+			_exportBatcher = exportBatcher;
 			_fieldManager = fieldManager;
 			_logger = logger;
-			_configuration = configuration;
 
 			ItemStatusMonitor = itemStatusMonitor;
 
@@ -45,11 +44,6 @@ namespace Relativity.Sync.Transfer
 
 		public bool Read()
 		{
-			if (_exportBatcher == null)
-			{
-				_exportBatcher = _exportBatcherFactory(_configuration.ExportRunId, _configuration.SourceWorkspaceArtifactId, _configuration.SyncConfigurationArtifactId);
-			}
-
 			bool dataRead = _currentReader.Read();
 			if (!dataRead)
 			{
@@ -87,7 +81,7 @@ namespace Relativity.Sync.Transfer
 			RelativityObjectSlim[] batch;
 			try
 			{
-				batch = await _exportBatcher.GetNextBatchAsync().ConfigureAwait(false);
+				batch = await _exportBatcher.GetNextItemsFromBatchAsync().ConfigureAwait(false);
 				_logger.LogVerbose("Export API batch read.");
 			}
 			catch (Exception ex)
