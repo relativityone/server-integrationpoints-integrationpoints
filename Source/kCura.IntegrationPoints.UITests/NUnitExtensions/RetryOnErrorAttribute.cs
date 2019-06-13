@@ -18,12 +18,12 @@ namespace kCura.IntegrationPoints.UITests.NUnitExtensions
 		/// <summary>
 		/// Construct a RetryOnErrorAttribute
 		/// </summary>
-		public RetryOnErrorAttribute() : base(GetRetryOnErrorCount)
+		public RetryOnErrorAttribute() : base(GetRepeatOnErrorCount)
 		{
-			_maximumNumberOfRepeats = GetRetryOnErrorCount;
+			_maximumNumberOfRepeats = GetRepeatOnErrorCount;
 		}
 
-		private static int GetRetryOnErrorCount => SharedVariables.UiTestRepeatOnErrorCount;
+		private static int GetRepeatOnErrorCount => SharedVariables.UiTestRepeatOnErrorCount;
 
 		/// <inheritdoc />
 		/// <summary>

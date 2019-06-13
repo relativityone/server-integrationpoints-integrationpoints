@@ -20,6 +20,7 @@ namespace kCura.IntegrationPoints.UITests.NUnitExtensions
 		/// Initializes a new instance of the <see cref="T:kCura.IntegrationPoints.UITests.NUnitExtensions.RetryCommand" /> class.
 		/// </summary>
 		/// <param name="innerCommand">The inner command.</param>
+		/// <param name="logger">logger</param>
 		/// <param name="maximumNumberOfRepeats">The number of repetitions</param>
 		public RetryCommand(
 			TestCommand innerCommand,
