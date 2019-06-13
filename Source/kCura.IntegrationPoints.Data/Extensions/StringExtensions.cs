@@ -6,9 +6,7 @@ namespace kCura.IntegrationPoints.Data.Extensions
 	{
 		public static string EscapeSingleQuote(this string s)
 		{
-			return s == null
-				? null
-				: Regex.Replace(s, "'", "\\'");
+			return Regex.Replace(s, "'", "\\'");
 		}
 	}
 }

@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
 using kCura.IntegrationPoints.Data.Extensions;
 using NUnit.Framework;
 
@@ -21,16 +22,16 @@ namespace kCura.IntegrationPoints.Data.Tests.Extensions
 		}
 
 		[Test]
-		public void EscapeSingleQuote_ShouldWorksForNullValue()
+		public void EscapeSingleQuote_ShouldThrowExceptionForNullValue()
 		{
 			// arrange
 			string input = null;
 
 			// act 
-			string result = input.EscapeSingleQuote();
+			Action escapeSingleQuoteAction = () => input.EscapeSingleQuote();
 
 			// assert
-			result.Should().BeNull("because input was null");
+			escapeSingleQuoteAction.ShouldThrow<ArgumentNullException>();
 		}
 
 		[TestCase("'", @"\'")]
