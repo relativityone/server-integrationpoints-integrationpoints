@@ -243,7 +243,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 		{
 			return new FieldRef
 			{
-				Guid = Guid.Parse(IntegrationPointFieldGuids.LastRuntimeUTC)
+				Guid = IntegrationPointFieldGuids.LastRuntimeUTCGuid
 			};
 		}
 
@@ -251,7 +251,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 		{
 			return new FieldRef()
 			{
-				Guid = Guid.Parse(IntegrationPointFieldGuids.HasErrors)
+				Guid = IntegrationPointFieldGuids.HasErrorsGuid
 			};
 		}
 
