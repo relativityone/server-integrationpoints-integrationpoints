@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Data.Converters;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity;
 using Relativity.API;
@@ -9,32 +10,33 @@ using Relativity.Services.Workspace;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
-	public class KeplerWorkspaceRepository : KeplerServiceBase, IWorkspaceRepository
+	public class KeplerWorkspaceRepository : IWorkspaceRepository
 	{
 		private readonly IAPILog _logger;
 		private readonly IServicesMgr _servicesMgr;
+		private readonly IRelativityObjectManager _relativityObjectManager;
 
 		public KeplerWorkspaceRepository(IHelper helper, IServicesMgr servicesMgr, IRelativityObjectManager relativityObjectManager)
-			: base(relativityObjectManager)
 		{
 
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<KeplerWorkspaceRepository>();
+			_relativityObjectManager = relativityObjectManager;
 			_servicesMgr = servicesMgr;
 		}
 
 		public WorkspaceDTO Retrieve(int workspaceArtifactId, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
 		{
-			ArtifactDTO[] workspaces = null;
 			var query = new QueryRequest()
 			{
 				ObjectType = new ObjectTypeRef() { ArtifactTypeID = (int)ArtifactType.Case },
-				Fields = new List<FieldRef>() { new FieldRef() { Name = "Name" } },
+				Fields = new List<FieldRef>() { new FieldRef() { Name = WorkspaceFieldsConstants.NAME_FIELD } },
 				Condition = $"'ArtifactID' == {workspaceArtifactId}",
 			};
 
+			List<RelativityObject> artifactDTOs;
 			try
 			{
-				workspaces = RetrieveAllArtifactsAsync(query, executionIdentity).GetAwaiter().GetResult();
+				artifactDTOs = _relativityObjectManager.QueryAsync(query, executionIdentity).GetAwaiter().GetResult();
 			}
 			catch (Exception e)
 			{
@@ -42,7 +44,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				throw;
 			}
 
-			return Convert(workspaces).FirstOrDefault();
+			return artifactDTOs.ToWorkspaceDTOs().FirstOrDefault();
 		}
 
 		public IEnumerable<WorkspaceDTO> RetrieveAll()
@@ -50,13 +52,13 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			var query = new QueryRequest()
 			{
 				ObjectType = new ObjectTypeRef() { ArtifactTypeID = (int)ArtifactType.Case },
-				Fields = new List<FieldRef>() { new FieldRef() { Name = "Name" } }
+				Fields = new List<FieldRef>() { new FieldRef() { Name = WorkspaceFieldsConstants.NAME_FIELD } }
 			};
 
-			ArtifactDTO[] artifactDtos;
+			List<RelativityObject> artifactDTOs;
 			try
 			{
-				artifactDtos = RetrieveAllArtifactsAsync(query).GetAwaiter().GetResult();
+				artifactDTOs = _relativityObjectManager.QueryAsync(query).GetAwaiter().GetResult();
 			}
 			catch (Exception e)
 			{
@@ -64,42 +66,16 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				throw;
 			}
 
-			return Convert(artifactDtos);
+			return artifactDTOs.ToWorkspaceDTOs();
 		}
 
 		public IEnumerable<WorkspaceDTO> RetrieveAllActive()
 		{
-			IEnumerable<WorkspaceDTO> activeWorkspaces;
-
-			using (IWorkspaceManager workspaceManagerProxy =
-				_servicesMgr.CreateProxy<IWorkspaceManager>(ExecutionIdentity.CurrentUser))
+			using (IWorkspaceManager workspaceManagerProxy = _servicesMgr.CreateProxy<IWorkspaceManager>(ExecutionIdentity.CurrentUser))
 			{
 				IEnumerable<WorkspaceRef> result = workspaceManagerProxy.RetrieveAllActive().Result;
-				activeWorkspaces = result.Select(x => new WorkspaceDTO()
-				{
-					Name = x.Name,
-					ArtifactId = x.ArtifactID
-				});
+				return result.ToWorkspaceDTOs();
 			}
-
-			return activeWorkspaces;
 		}
-
-		private IEnumerable<WorkspaceDTO> Convert(IEnumerable<ArtifactDTO> artifactDtos)
-		{
-			var workspaces = new List<WorkspaceDTO>();
-
-			foreach (ArtifactDTO artifactDto in artifactDtos)
-			{
-				workspaces.Add(new WorkspaceDTO()
-				{
-					ArtifactId = artifactDto.ArtifactId,
-					Name = (string)artifactDto.Fields[0].Value
-				});
-			}
-
-			return workspaces;
-		}
-
 	}
 }

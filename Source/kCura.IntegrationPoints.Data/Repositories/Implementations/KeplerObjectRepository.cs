@@ -1,22 +1,23 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Data.Converters;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity.Services.Objects.DataContracts;
-using SearchProviderCondition = Relativity.Services.ObjectQuery.SearchProviderCondition;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
-	public class KeplerObjectRepository : KeplerServiceBase, IObjectRepository
+	public class KeplerObjectRepository : IObjectRepository
 	{
+		private readonly IRelativityObjectManager _relativityObjectManager;
 		private readonly int ArtifactTypeId;
 
 		public KeplerObjectRepository(IRelativityObjectManager relativityObjectManager, int objectTypeId)
-			: base(relativityObjectManager)
 		{
+			_relativityObjectManager = relativityObjectManager;
 			ArtifactTypeId = objectTypeId;
 		}
 
-		public async Task<ArtifactDTO[]> GetFieldsFromObjects(string[] fields)
+		public Task<ArtifactDTO[]> GetFieldsFromObjects(string[] fields)
 		{
 			var query = new QueryRequest
 			{
@@ -27,7 +28,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				SearchProviderCondition = null
 			};
 
-			return await RetrieveAllArtifactsAsync(query);
+			return _relativityObjectManager
+				.QueryAsync(query)
+				.ToArtifactDTOsArrayAsyncDeprecated();
 		}
 	}
 }

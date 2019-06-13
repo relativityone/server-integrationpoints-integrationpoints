@@ -95,4 +95,23 @@ namespace kCura.IntegrationPoints.Data
 
 		public const string POPUP_FILTER_TYPE_NAME = "Popup";
 	}
+
+	public abstract class RdoFieldsConstants
+	{
+		internal const string NAME_FIELD = "Name";
+	}
+
+	public abstract class SavedSearchFieldsConstants : RdoFieldsConstants
+	{
+		public const string OWNER_FIELD = "Owner";
+	}
+
+	public abstract class WorkspaceFieldsConstants : RdoFieldsConstants
+	{
+	}
+
+	public abstract class FederatedInstanceFieldsConstants : RdoFieldsConstants
+	{
+		public const string INSTANCE_URL_FIELD = "Instance URL";
+	}
 }
