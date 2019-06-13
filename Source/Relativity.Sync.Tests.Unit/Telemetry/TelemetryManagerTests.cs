@@ -19,7 +19,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 		{
 			_servicesManager = new Mock<IServicesMgr>();
 			_logger = new Mock<ISyncLog>();
-			_telemetryManager = new TelemetryManager(_servicesManager.Object, _logger.Object);
+			_telemetryManager = new TelemetryMetricsInstaller(_servicesManager.Object, _logger.Object);
 		}
 
 		[Test]
