@@ -64,27 +64,31 @@ namespace Relativity.Sync.Tests.System
 				await _templateWorkspaceSemaphore.WaitAsync().ConfigureAwait(false);
 				if (_templateWorkspaceArtifactId == -1)
 				{
-					using (var objectManager = _serviceFactory.CreateProxy<IObjectManager>())
-					{
-						QueryRequest request = new QueryRequest
-						{
-							ObjectType = new ObjectTypeRef{ Name = "Workspace"},
-							Condition = $"'Name' == '{templateWorkspaceName}'"
-						};
-						QueryResultSlim result = await objectManager.QuerySlimAsync(-1, request, 0, 1).ConfigureAwait(false);
-						if (result.ResultCount == 0)
-						{
-							throw new NotFoundException($"Template workspace named: '{templateWorkspaceName}' not found.");
-						}
-						return _templateWorkspaceArtifactId = result.Objects.First().ArtifactID;
-					}
+					_templateWorkspaceArtifactId = await GetWorkspaceArtifactIdByName(templateWorkspaceName).ConfigureAwait(false);
 				}
-
 				return _templateWorkspaceArtifactId;
 			}
 			finally
 			{
 				_templateWorkspaceSemaphore.Release();
+			}
+		}
+
+		public async Task<int> GetWorkspaceArtifactIdByName(string workspaceName)
+		{
+			using (var objectManager = _serviceFactory.CreateProxy<IObjectManager>())
+			{
+				QueryRequest request = new QueryRequest
+				{
+					ObjectType = new ObjectTypeRef{ Name = "Workspace"},
+					Condition = $"'Name' == '{workspaceName}'"
+				};
+				QueryResultSlim result = await objectManager.QuerySlimAsync(-1, request, 0, 1).ConfigureAwait(false);
+				if (result.ResultCount == 0)
+				{
+					throw new NotFoundException($"Template workspace named: '{workspaceName}' not found.");
+				}
+				return result.Objects.First().ArtifactID;
 			}
 		}
 
