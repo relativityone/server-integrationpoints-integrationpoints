@@ -21,9 +21,9 @@ namespace Relativity.Sync
 		}
 
 		// Explanation of how IAPI works:
-		// IAPI processes items in batch one by one and fires OnProgress event after each item (no matter if
-		// item was processed successfully or with errors).
-		// This is handled in HandleItemProcessed method below, where we are incrementing number of processed items.
+		// IAPI processes items in batch one by one and fires OnProgress event after each item that was
+		// successfully read from data reader. OnProgress is not fired when IAPI fails to read record from
+		// data reader. This is handled in HandleItemProcessed method below, where we are incrementing number of processed items.
 		// When IAPI completes processing of batch, it checks each item if it was successfully processed. If not, it fires OnError event for each of the items.
 		// That's why in HandleItemError method, we are decrementing number of successfully processed items and
 		// incrementing number of failed items.
@@ -37,7 +37,10 @@ namespace Relativity.Sync
 		public void HandleItemError(IDictionary row)
 		{
 			_itemsFailedCount++;
-			_itemsProcessedCount--;
+			if (_itemsProcessedCount > 0)
+			{
+				_itemsProcessedCount--;
+			}
 			UpdateProgressIfPossible();
 		}
 
