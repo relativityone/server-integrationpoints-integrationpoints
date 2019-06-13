@@ -20,7 +20,7 @@ namespace Relativity.Sync.Telemetry
 			_metricProviders = new List<ITelemetryMetricProvider>();
 		}
 
-		public void AddMetricProviders(ITelemetryMetricProvider metricProvider)
+		public void AddMetricProvider(ITelemetryMetricProvider metricProvider)
 		{
 			if (metricProvider == null)
 			{
