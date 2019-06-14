@@ -64,11 +64,11 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			actualResult.Should().NotBeNull();
 			actualResult.Status.Should().Be(ExecutionStatus.Completed);
 
-			_syncMetrics.Verify(x => x.LogPointInTimeLong(TelemetryConstants.DATA_RECORDS_TRANSFERRED, completedItemsPerBatch * testBatches.Count, It.IsAny<string>()), Times.Once);
-			_syncMetrics.Verify(x => x.LogPointInTimeLong(TelemetryConstants.DATA_RECORDS_FAILED, failedItemsPerBatch * testBatches.Count, It.IsAny<string>()), Times.Once);
-			_syncMetrics.Verify(x => x.LogPointInTimeLong(TelemetryConstants.DATA_RECORDS_TOTAL_REQUESTED, totalItemsCountPerBatch * testBatches.Count, It.IsAny<string>()), Times.Once);
-			_syncMetrics.Verify(x => x.LogPointInTimeString(TelemetryConstants.JOB_END_STATUS, expectedStatusDescription, It.IsAny<string>()), Times.Once);
-			_syncMetrics.Verify(x => x.LogPointInTimeLong(TelemetryConstants.DATA_FIELDS_MAPPED, testNumberOfFields, It.IsAny<string>()), Times.Once);
+			_syncMetrics.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_TRANSFERRED, completedItemsPerBatch * testBatches.Count, It.IsAny<string>()), Times.Once);
+			_syncMetrics.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_FAILED, failedItemsPerBatch * testBatches.Count, It.IsAny<string>()), Times.Once);
+			_syncMetrics.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_TOTAL_REQUESTED, totalItemsCountPerBatch * testBatches.Count, It.IsAny<string>()), Times.Once);
+			_syncMetrics.Verify(x => x.LogPointInTimeString(TelemetryConstants.MetricIdentifiers.JOB_END_STATUS, expectedStatusDescription, It.IsAny<string>()), Times.Once);
+			_syncMetrics.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_FIELDS_MAPPED, testNumberOfFields, It.IsAny<string>()), Times.Once);
 		}
 
 		[Test]

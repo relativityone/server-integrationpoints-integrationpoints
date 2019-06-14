@@ -42,14 +42,14 @@ namespace Relativity.Sync.Executors.SumReporting
 					totalRequested += batch.TotalItemsCount;
 				}
 
-				_syncMetrics.LogPointInTimeLong(TelemetryConstants.DATA_RECORDS_TRANSFERRED, totalTransferred, _configuration.WorkflowId);
-				_syncMetrics.LogPointInTimeLong(TelemetryConstants.DATA_RECORDS_FAILED, totalFailed, _configuration.WorkflowId);
-				_syncMetrics.LogPointInTimeLong(TelemetryConstants.DATA_RECORDS_TOTAL_REQUESTED, totalRequested, _configuration.WorkflowId);
+				_syncMetrics.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_TRANSFERRED, totalTransferred, _configuration.WorkflowId);
+				_syncMetrics.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_FAILED, totalFailed, _configuration.WorkflowId);
+				_syncMetrics.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_TOTAL_REQUESTED, totalRequested, _configuration.WorkflowId);
 
-				_syncMetrics.LogPointInTimeString(TelemetryConstants.JOB_END_STATUS, jobExecutionStatus.GetDescription(), _configuration.WorkflowId);
+				_syncMetrics.LogPointInTimeString(TelemetryConstants.MetricIdentifiers.JOB_END_STATUS, jobExecutionStatus.GetDescription(), _configuration.WorkflowId);
 
 				IReadOnlyList<FieldInfoDto> fields = await _fieldManager.GetAllFieldsAsync(CancellationToken.None).ConfigureAwait(false);
-				_syncMetrics.LogPointInTimeLong(TelemetryConstants.DATA_FIELDS_MAPPED, fields.Count, _configuration.WorkflowId);
+				_syncMetrics.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_FIELDS_MAPPED, fields.Count, _configuration.WorkflowId);
 			}
 			catch (Exception e)
 			{
