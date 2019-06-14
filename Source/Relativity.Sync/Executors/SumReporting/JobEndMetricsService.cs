@@ -56,7 +56,7 @@ namespace Relativity.Sync.Executors.SumReporting
 				_logger.LogError(e, "Failed to submit job end metrics.");
 			}
 
-			return await Task.FromResult(ExecutionResult.Success()).ConfigureAwait(false);
+			return ExecutionResult.Success();
 		}
 	}
 }
