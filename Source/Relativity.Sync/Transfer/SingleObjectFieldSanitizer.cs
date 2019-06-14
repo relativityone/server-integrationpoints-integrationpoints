@@ -4,8 +4,9 @@ using Relativity.Services.Objects.DataContracts;
 namespace Relativity.Sync.Transfer
 {
 	/// <summary>
-	/// Assumes that the incoming initial value is an artifact ID, and queries for the corresponding object's identifier
-	/// and returns that instead. Import API requires the 
+	/// Returns an object's identifier given its exported value, which in this case is assumed
+	/// to be a <see cref="RelativityObjectValue"/>. Import API expects the object identifier instead
+	/// of the ArtifactID.
 	/// </summary>
 	internal sealed class SingleObjectFieldSanitizer : IExportFieldSanitizer
 	{

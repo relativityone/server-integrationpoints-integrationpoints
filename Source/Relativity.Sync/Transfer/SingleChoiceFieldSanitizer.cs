@@ -3,6 +3,11 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.Sync.Transfer
 {
+	/// <summary>
+	/// Returns a choice's name given its exported value, which in this case is assumed
+	/// to be a <see cref="Choice"/>. Import API expects the choice name instead of e.g.
+	/// its artifact ID.
+	/// </summary>
 	internal sealed class SingleChoiceFieldSanitizer : IExportFieldSanitizer
 	{
 		public RelativityDataType SupportedType => RelativityDataType.SingleChoice;
