@@ -4,7 +4,7 @@ namespace Relativity.Sync.Telemetry
 {
 	internal interface ITelemetryManager
 	{
-		void AddMetricProviders(ITelemetryMetricProvider metricProvider);
+		void AddMetricProvider(ITelemetryMetricProvider metricProvider);
 		Task InstallMetrics();
 	}
 }

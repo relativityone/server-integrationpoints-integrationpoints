@@ -19,14 +19,14 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 		{
 			_servicesManager = new Mock<IServicesMgr>();
 			_logger = new Mock<ISyncLog>();
-			_telemetryManager = new TelemetryManager(_servicesManager.Object, _logger.Object);
+			_telemetryManager = new TelemetryMetricsInstaller(_servicesManager.Object, _logger.Object);
 		}
 
 		[Test]
 		public void ItShouldNotThrowExceptionOnAddingNullMetricsProvider()
 		{
 			// ACT
-			Assert.DoesNotThrow(() => _telemetryManager.AddMetricProviders(null));
+			Assert.DoesNotThrow(() => _telemetryManager.AddMetricProvider(null));
 
 			// ASSERT
 			_logger.Verify(x => x.LogDebug(It.IsAny<Exception>(), It.IsAny<string>()), Times.Once);
@@ -46,7 +46,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 				.Returns(metricsCollectionManager.Object);
 
 			// ACT
-			_telemetryManager.AddMetricProviders(null);
+			_telemetryManager.AddMetricProvider(null);
 			_telemetryManager.InstallMetrics();
 
 			// ASSERT
@@ -87,7 +87,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 			_servicesManager.Setup(x => x.CreateProxy<IInternalMetricsCollectionManager>(It.IsAny<ExecutionIdentity>()))
 				.Throws<Exception>();
 
-			_telemetryManager.AddMetricProviders(telemetryProvider.Object);
+			_telemetryManager.AddMetricProvider(telemetryProvider.Object);
 
 			// ACT
 			Assert.DoesNotThrow(() => _telemetryManager.InstallMetrics());
