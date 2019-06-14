@@ -53,8 +53,7 @@ namespace Relativity.Sync.Tests.Integration
 			IntegrationTestsContainerBuilder.MockReporting(builder);
 			builder.RegisterInstance(_logger.Object).As<ISyncLog>();
 
-			var syncConfiguration = new Mock<ISynchronizationConfiguration>();
-			builder.RegisterInstance(syncConfiguration.Object).As<ISynchronizationConfiguration>();
+			builder.RegisterInstance(Mock.Of<ISynchronizationConfiguration>()).As<ISynchronizationConfiguration>();
 
 			builder.RegisterType<ExportDataSanitizer>().As<ExportDataSanitizer>();
 			_container = builder.Build();
