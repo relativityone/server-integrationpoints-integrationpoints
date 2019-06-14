@@ -25,10 +25,10 @@ namespace Relativity.Sync.Tests.Integration
 			}
 		};
 
-		private static readonly DocumentImportJob MultipleBatchesImportJob = DocumentImportJob.Create(
+		private static readonly DocumentImportJob SingleBatchImportJob = DocumentImportJob.Create(
 			StandardSchema,
 			StandardFieldMappings,
-			Enumerable.Range(1, 1000).Select(CreateDocumentForStandardSchema).ToArray());
+			Enumerable.Range(1, 100).Select(CreateDocumentForStandardSchema).ToArray());
 
 		private static Document CreateDocumentForStandardSchema(int i)
 		{

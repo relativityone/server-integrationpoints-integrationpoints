@@ -139,22 +139,15 @@ namespace Relativity.Sync.Tests.System
 			Assert.AreEqual(ExecutionStatus.Completed, snapshotPartitionExecutorResult.Status);
 
 			// Data reader setup
-			IRelativityExportBatcher BatcherFactory(Guid runId, int wsId, int syncConfigId) =>
-				new RelativityExportBatcher(_serviceFactoryStub, new BatchRepository(_serviceFactoryStub), runId, wsId, syncConfigId);
-
-			var dataReader = new SourceWorkspaceDataReader(
-				new BatchDataReaderBuilder(fieldManager, exportDataSanitizer),
-				configuration,
-				BatcherFactory,
-				fieldManager,
-				new ItemStatusMonitor(),
-				logger);
+			IRelativityExportBatcherFactory exportBatcherFactory = new RelativityExportBatcherFactory(_serviceFactoryStub, configuration);
+			ISourceWorkspaceDataReaderFactory sourceWorkspaceDataReaderFactory = new SourceWorkspaceDataReaderFactory(exportBatcherFactory, fieldManager,
+				configuration, new BatchDataReaderBuilder(fieldManager, exportDataSanitizer), new ItemStatusMonitor(), logger);
 
 			// ImportAPI setup
 			IImportApiFactory importApi = new ImportApiFactoryStub(AppSettings.RelativityUserName, AppSettings.RelativityUserPassword);
 			IImportJobFactory importJobFactory = new Executors.ImportJobFactory(
 				importApi,
-				dataReader,
+				sourceWorkspaceDataReaderFactory,
 				new BatchProgressHandlerFactory(new BatchProgressUpdater(logger), dateTime),
 				jobProgressHandlerFactory,
 				jobProgressUpdaterFactory,

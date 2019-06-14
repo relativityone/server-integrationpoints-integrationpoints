@@ -29,7 +29,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			// Assert
 			actualResult.Status.Should().Be(ExecutionStatus.Completed);
 
-			syncMetrics.Verify(x => x.LogPointInTimeString(TelemetryConstants.JOB_START_TYPE, TelemetryConstants.PROVIDER_NAME, workflowId), Times.Once);
+			syncMetrics.Verify(x => x.LogPointInTimeString(TelemetryConstants.MetricIdentifiers.JOB_START_TYPE, TelemetryConstants.PROVIDER_NAME, workflowId), Times.Once);
 		}
 	}
 }

@@ -1,43 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Relativity.API;
 using Relativity.Services.InternalMetricsCollection;
 
 namespace Relativity.Sync.Telemetry
 {
 	internal abstract class TelemetryMetricsProviderBase : ITelemetryMetricProvider
 	{
-		private readonly IServicesMgr _servicesManager;
 		private readonly ISyncLog _logger;
 
 		protected abstract string ProviderName { get; }
 
-		protected TelemetryMetricsProviderBase(IServicesMgr servicesManager, ISyncLog logger)
+		protected TelemetryMetricsProviderBase(ISyncLog logger)
 		{
-			_servicesManager = servicesManager;
 			_logger = logger;
 		}
 
-		public async Task AddMetricsForCategory(CategoryRef category)
+		public async Task AddMetricsForCategory(IInternalMetricsCollectionManager metricsCollectionManager, CategoryRef category)
 		{
 			try
 			{
-				using (var manager = _servicesManager.CreateProxy<IInternalMetricsCollectionManager>(ExecutionIdentity.System))
+				foreach (MetricIdentifier metricIdentifier in GetMetricIdentifiers())
 				{
-					foreach (MetricIdentifier metricIdentifier in GetMetricIdentifiers())
+					if (metricIdentifier.Categories != null)
 					{
-						if (metricIdentifier.Categories != null)
-						{
-							metricIdentifier.Categories.Add(category);
-						}
-						else
-						{
-							metricIdentifier.Categories = new List<CategoryRef> { category };
-						}
-
-						await manager.CreateMetricIdentifierAsync(metricIdentifier, false).ConfigureAwait(false);
+						metricIdentifier.Categories.Add(category);
 					}
+					else
+					{
+						metricIdentifier.Categories = new List<CategoryRef> { category };
+					}
+
+					await metricsCollectionManager.CreateMetricIdentifierAsync(metricIdentifier, false).ConfigureAwait(false);
 				}
 			}
 			catch (Exception e)

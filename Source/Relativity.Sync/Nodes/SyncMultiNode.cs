@@ -7,6 +7,7 @@ namespace Relativity.Sync.Nodes
 {
 	internal sealed class SyncMultiNode : GroupNodeBase<SyncExecutionContext>
 	{
+		private IExecutionContext<SyncExecutionContext> _childrenExecutionContext;
 		private readonly ISyncExecutionContextFactory _contextFactory;
 
 		public SyncMultiNode(ISyncExecutionContextFactory contextFactory)
@@ -16,8 +17,14 @@ namespace Relativity.Sync.Nodes
 
 		protected override Task<NodeResultStatus> ExecuteChildrenAsync(IExecutionContext<SyncExecutionContext> context)
 		{
-			IExecutionContext<SyncExecutionContext> childrenExecutionContext = _contextFactory.Create(context.Subject.Progress, context.Subject.CancellationToken);
-			return base.ExecuteChildrenAsync(childrenExecutionContext);
+			_childrenExecutionContext = _contextFactory.Create(context.Subject.Progress, context.Subject.CancellationToken);
+			return base.ExecuteChildrenAsync(_childrenExecutionContext);
+		}
+
+		protected override void OnAfterExecute(IExecutionContext<SyncExecutionContext> context)
+		{
+			context.Subject.Results.AddRange(_childrenExecutionContext.Subject.Results);
+			base.OnAfterExecute(context);
 		}
 
 		protected override void OnBeforeExecute(IExecutionContext<SyncExecutionContext> context)
