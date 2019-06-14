@@ -17,7 +17,7 @@ namespace Relativity.Sync.Transfer
 			if (initialValue != null && choiceValue == null)
 			{
 				throw new SyncException("Unable to parse data from Relativity Export API - " +
-					$"expected value of type {typeof(Choice)}, instead was {choiceValue.GetType()}.");
+					$"expected value of type {typeof(Choice)}, instead was {initialValue.GetType()}.");
 			}
 
 			string value = choiceValue?.Name;

@@ -21,7 +21,7 @@ namespace Relativity.Sync.Transfer
 			if (initialValue != null && objectValue == null)
 			{
 				throw new SyncException("Unable to parse data from Relativity Export API - " +
-					$"expected value of type {typeof(RelativityObjectValue)}, instead was {objectValue.GetType()}.");
+					$"expected value of type {typeof(RelativityObjectValue)}, instead was {initialValue.GetType()}.");
 			}
 
 			string value = objectValue?.Name;

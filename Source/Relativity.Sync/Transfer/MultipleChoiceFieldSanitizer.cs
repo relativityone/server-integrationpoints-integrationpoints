@@ -33,7 +33,7 @@ namespace Relativity.Sync.Transfer
 			if (value == null)
 			{
 				throw new SyncException("Unable to parse data from Relativity Export API - " +
-					$"expected value of type {typeof(Choice[])}, instead was {value.GetType()}");
+					$"expected value of type {typeof(Choice[])}, instead was {initialValue.GetType()}");
 			}
 
 			char multiValueDelimiter = _configuration.ImportSettings.MultiValueDelimiter;
