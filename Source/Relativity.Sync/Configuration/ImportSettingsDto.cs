@@ -30,12 +30,12 @@ namespace Relativity.Sync.Configuration
 		/// <summary>
 		/// Delimiter character for multi values.
 		/// </summary>
-		public char MultiValueDelimiter => (char)_ASCII_RECORD_SEPARATOR;
+		public char MultiValueDelimiter { get; set; } = (char)_ASCII_RECORD_SEPARATOR;
 
 		/// <summary>
 		/// Delimiter character for nested values.
 		/// </summary>
-		public char NestedValueDelimiter => (char)_ASCII_GROUP_SEPARATOR;
+		public char NestedValueDelimiter { get; set; } = (char)_ASCII_GROUP_SEPARATOR;
 
 		// Base values
 		/// <summary>
