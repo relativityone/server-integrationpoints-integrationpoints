@@ -13,7 +13,6 @@ namespace Relativity.Sync.Executors
 	internal sealed class SynchronizationExecutor : IExecutor<ISynchronizationConfiguration>
 	{
 		private readonly IBatchRepository _batchRepository;
-		private readonly IDateTime _dateTime;
 		private readonly IDestinationWorkspaceTagRepository _destinationWorkspaceTagRepository;
 		private readonly IImportJobFactory _importJobFactory;
 		private readonly IFieldManager _fieldManager;
@@ -22,10 +21,9 @@ namespace Relativity.Sync.Executors
 		private readonly ISyncLog _logger;
 
 		public SynchronizationExecutor(IImportJobFactory importJobFactory, IBatchRepository batchRepository, IDestinationWorkspaceTagRepository destinationWorkspaceTagRepository,
-			IDateTime dateTime, IFieldManager fieldManager, IFieldMappings fieldMappings, IJobHistoryErrorRepository jobHistoryErrorRepository, ISyncLog logger)
+			IFieldManager fieldManager, IFieldMappings fieldMappings, IJobHistoryErrorRepository jobHistoryErrorRepository, ISyncLog logger)
 		{
 			_batchRepository = batchRepository;
-			_dateTime = dateTime;
 			_destinationWorkspaceTagRepository = destinationWorkspaceTagRepository;
 			_importJobFactory = importJobFactory;
 			_fieldManager = fieldManager;
