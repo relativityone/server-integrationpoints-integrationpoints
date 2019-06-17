@@ -25,6 +25,11 @@ namespace Relativity.Sync.Tests.System.Stubs
 			throw new NotImplementedException();
 		}
 
+		public Task<IEnumerable<IBatch>> GetAllAsync(int workspaceArtifactId, int syncConfigurationArtifactId)
+		{
+			throw new NotImplementedException();
+		}
+
 		public Task<IBatch> GetLastAsync(int workspaceArtifactId, int syncConfigurationId)
 		{
 			return Task.FromResult(_batches.Last());

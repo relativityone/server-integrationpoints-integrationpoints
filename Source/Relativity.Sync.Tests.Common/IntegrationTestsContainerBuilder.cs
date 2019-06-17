@@ -5,6 +5,7 @@ using System.Reflection;
 using Autofac;
 using Moq;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Executors.SumReporting;
 using Relativity.Sync.Telemetry;
 
 namespace Relativity.Sync.Tests.Common
@@ -14,12 +15,14 @@ namespace Relativity.Sync.Tests.Common
 		public static void MockReporting(ContainerBuilder containerBuilder)
 		{
 			containerBuilder.RegisterInstance(Mock.Of<ISyncMetrics>()).As<ISyncMetrics>();
+			containerBuilder.RegisterInstance(Mock.Of<IJobEndMetricsService>()).As<IJobEndMetricsService>();
 			containerBuilder.RegisterInstance(Mock.Of<IProgress<SyncJobState>>()).As<IProgress<SyncJobState>>();
 		}
 
 		public static void RegisterStubsForPipelineBuilderTests(ContainerBuilder containerBuilder, List<Type> executorTypes)
 		{
-			foreach (Type type in GetAllConfigurationInterfaces())
+			IEnumerable<Type> configurationInterfaces = GetAllConfigurationInterfaces();
+			foreach (Type type in configurationInterfaces)
 			{
 				containerBuilder.RegisterGenericAs(type, typeof(ExecutionConstrainsStub<>), typeof(IExecutionConstrains<>));
 				containerBuilder.RegisterGenericAs(type, typeof(ExecutorCollectionExecutedTypesStub<>), typeof(IExecutor<>));

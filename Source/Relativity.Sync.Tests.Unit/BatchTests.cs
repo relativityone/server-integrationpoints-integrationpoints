@@ -170,6 +170,18 @@ namespace Relativity.Sync.Tests.Unit
 			};
 		}
 
+		private static QueryResultSlim PrepareQueryResultSlim()
+		{
+			return new QueryResultSlim
+			{
+				Objects = new List<RelativityObjectSlim>
+				{
+					PrepareObjectSlim(),
+					PrepareObjectSlim()
+				}
+			};
+		}
+
 		private static RelativityObject PrepareObject(int totalItemsCount = 1, int startingIndex = 1, string status = "New", int? failedItemsCount = 1, int? transferredItemsCount = 1,
 			decimal? progress = 1, string lockedBy = "id")
 #pragma warning restore RG2011 // Method Argument Count Analyzer
@@ -236,6 +248,14 @@ namespace Relativity.Sync.Tests.Unit
 						Value = lockedBy
 					}
 				}
+			};
+		}
+
+		private static RelativityObjectSlim PrepareObjectSlim()
+		{
+			return new RelativityObjectSlim
+			{
+				ArtifactID = _ARTIFACT_ID
 			};
 		}
 
@@ -517,6 +537,13 @@ namespace Relativity.Sync.Tests.Unit
 			return true;
 		}
 
+		private bool AssertQueryRequestSlim(QueryRequest queryRequest, int syncConfigurationArtifactId)
+		{
+			queryRequest.ObjectType.Guid.Should().Be(BatchObjectTypeGuid);
+			queryRequest.Condition.Should().Be($"'{SyncConfigurationRelationGuid}' == OBJECT {syncConfigurationArtifactId}");
+			return true;
+		}
+
 		[Test]
 		public async Task ItShouldReturnAnyNewBatchIds()
 		{
@@ -563,6 +590,28 @@ namespace Relativity.Sync.Tests.Unit
 			Assert.ThrowsAsync<NotAuthorizedException>(async () => await _batchRepository.GetAllNewBatchesIdsAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false));
 
 			_objectManager.Verify(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(rr => AssertQueryAllNewRequest(rr)), 1, int.MaxValue), Times.Once);
+		}
+
+		[Test]
+		public async Task ItShouldReadAllBatches()
+		{
+			const int syncConfigurationArtifactId = 634;
+
+			QueryResultSlim queryResult = PrepareQueryResultSlim();
+			queryResult.TotalCount = queryResult.Objects.Count;
+			_objectManager.Setup(x => x.QuerySlimAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, int.MaxValue)).ReturnsAsync(queryResult);
+
+			ReadResult readResult = PrepareReadResult();
+			_objectManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<ReadRequest>())).ReturnsAsync(readResult);
+
+			// ACT
+			IEnumerable<IBatch> batches = await _batchRepository.GetAllAsync(_WORKSPACE_ID, syncConfigurationArtifactId).ConfigureAwait(false);
+
+			// ASSERT
+			batches.Should().NotBeNullOrEmpty();
+			batches.Should().NotContainNulls();
+
+			_objectManager.Verify(x => x.QuerySlimAsync(_WORKSPACE_ID, It.Is<QueryRequest>(rr => AssertQueryRequestSlim(rr, syncConfigurationArtifactId)), 1, int.MaxValue), Times.Once);
 		}
 
 		private bool AssertQueryAllNewRequest(QueryRequest queryRequest)

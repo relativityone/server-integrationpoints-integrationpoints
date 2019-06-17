@@ -6,6 +6,7 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Executors.SumReporting;
 using Relativity.Sync.Nodes;
 
 namespace Relativity.Sync.Tests.Unit
@@ -15,24 +16,34 @@ namespace Relativity.Sync.Tests.Unit
 	{
 		private SyncRootNode _instance;
 
-		private Mock<ICommand<INotificationConfiguration>> _command;
+		private CancellationToken _token;
+
+		private Mock<IJobEndMetricsService> _jobEndMetricsService;
+		private Mock<ICommand<INotificationConfiguration>> _notificationCommand;
 		private Mock<INode<SyncExecutionContext>> _childNode;
-		private SyncExecutionContext _syncExecutionContext;
 		private Mock<ISyncLog> _logger;
+
+		private SyncExecutionContext _syncExecutionContext;
+
+		[OneTimeSetUp]
+		public void OneTimeSetUp()
+		{
+			_token = CancellationToken.None;
+		}
 
 		[SetUp]
 		public void SetUp()
 		{
-			_command = new Mock<ICommand<INotificationConfiguration>>();
+			_jobEndMetricsService = new Mock<IJobEndMetricsService>();
+			_notificationCommand = new Mock<ICommand<INotificationConfiguration>>();
+			_logger = new Mock<ISyncLog>();
 
 			_childNode = new Mock<INode<SyncExecutionContext>>();
 
-			_logger = new Mock<ISyncLog>();
+			var progress = new Mock<IProgress<SyncJobState>>();
+			_syncExecutionContext = new SyncExecutionContext(progress.Object, _token);
 
-			IProgress<SyncJobState> progress = new EmptyProgress<SyncJobState>();
-			_syncExecutionContext = new SyncExecutionContext(progress, CancellationToken.None);
-
-			_instance = new SyncRootNode(_command.Object, _logger.Object);
+			_instance = new SyncRootNode(_jobEndMetricsService.Object, _notificationCommand.Object, _logger.Object);
 			_instance.AddChild(_childNode.Object);
 		}
 
@@ -43,8 +54,8 @@ namespace Relativity.Sync.Tests.Unit
 			int nodeExecutionOrder = 0;
 			int commandExecutionOrder = 0;
 			_childNode.Setup(x => x.ExecuteAsync(It.IsAny<IExecutionContext<SyncExecutionContext>>())).Callback(() => nodeExecutionOrder = index++);
-			_command.Setup(x => x.CanExecuteAsync(CancellationToken.None)).ReturnsAsync(true);
-			_command.Setup(x => x.ExecuteAsync(CancellationToken.None)).Returns(Task.FromResult(ExecutionResult.Success())).Callback(() => commandExecutionOrder = index++);
+			_notificationCommand.Setup(x => x.CanExecuteAsync(_token)).ReturnsAsync(true);
+			_notificationCommand.Setup(x => x.ExecuteAsync(_token)).ReturnsAsync(ExecutionResult.Success()).Callback(() => commandExecutionOrder = index++);
 
 			// ACT
 			await _instance.ExecuteAsync(_syncExecutionContext).ConfigureAwait(false);
@@ -58,8 +69,8 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public async Task ItShouldSendNotificationsAfterExecutionFailed()
 		{
-			_command.Setup(x => x.CanExecuteAsync(CancellationToken.None)).ReturnsAsync(true);
-			_command.Setup(x => x.ExecuteAsync(CancellationToken.None)).ReturnsAsync(ExecutionResult.Success());
+			_notificationCommand.Setup(x => x.CanExecuteAsync(_token)).ReturnsAsync(true);
+			_notificationCommand.Setup(x => x.ExecuteAsync(_token)).ReturnsAsync(ExecutionResult.Success());
 			_childNode.Setup(x => x.ExecuteAsync(It.IsAny<IExecutionContext<SyncExecutionContext>>())).Throws<InvalidOperationException>();
 
 			// ACT
@@ -67,15 +78,15 @@ namespace Relativity.Sync.Tests.Unit
 
 			// ASSERT
 			result.Status.Should().Be(NodeResultStatus.Failed);
-			_command.Verify(x => x.ExecuteAsync(CancellationToken.None), Times.Once);
+			_notificationCommand.Verify(x => x.ExecuteAsync(_token), Times.Once);
 		}
 
 		[Test]
 		public void ItShouldNotThrowIfNotificationCommandFailed()
 		{
 			const string expectedExceptionMessage = "FooBarBaz";
-			_command.Setup(x => x.CanExecuteAsync(CancellationToken.None)).ReturnsAsync(true);
-			_command.Setup(x => x.ExecuteAsync(CancellationToken.None)).ReturnsAsync(ExecutionResult.Failure(new InvalidOperationException(expectedExceptionMessage)));
+			_notificationCommand.Setup(x => x.CanExecuteAsync(_token)).ReturnsAsync(true);
+			_notificationCommand.Setup(x => x.ExecuteAsync(_token)).ReturnsAsync(ExecutionResult.Failure(new InvalidOperationException(expectedExceptionMessage)));
 
 			// ACT
 			Func<Task<NodeResult>> action = async () => await _instance.ExecuteAsync(_syncExecutionContext).ConfigureAwait(false);
@@ -91,13 +102,13 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public async Task ItShouldNotSendNotificationsIfDisabled()
 		{
-			_command.Setup(x => x.CanExecuteAsync(CancellationToken.None)).ReturnsAsync(false);
+			_notificationCommand.Setup(x => x.CanExecuteAsync(_token)).ReturnsAsync(false);
 
 			// ACT
 			await _instance.ExecuteAsync(_syncExecutionContext).ConfigureAwait(false);
 
 			// ASSERT
-			_command.Verify(x => x.ExecuteAsync(CancellationToken.None), Times.Never);
+			_notificationCommand.Verify(x => x.ExecuteAsync(_token), Times.Never);
 		}
 	}
 }

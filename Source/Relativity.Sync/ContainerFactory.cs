@@ -5,6 +5,7 @@ using System.Reflection;
 using Autofac;
 using kCura.Apps.Common.Utils.Serializers;
 using Relativity.API;
+using Relativity.Sync.Executors.SumReporting;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Telemetry;
@@ -36,6 +37,7 @@ namespace Relativity.Sync
 			containerBuilder.RegisterType<JSONSerializer>().As<ISerializer>();
 			containerBuilder.RegisterType<ProgressStateCounter>().As<IProgressStateCounter>();
 			containerBuilder.RegisterType<SyncJobProgress>().As<IProgress<SyncJobState>>();
+			containerBuilder.RegisterType<JobEndMetricsService>().As<IJobEndMetricsService>();
 
 			IPipelineBuilder pipelineBuilder = new PipelineBuilder();
 			pipelineBuilder.RegisterFlow(containerBuilder);
