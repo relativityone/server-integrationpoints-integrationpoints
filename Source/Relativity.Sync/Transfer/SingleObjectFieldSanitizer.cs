@@ -43,7 +43,7 @@ namespace Relativity.Sync.Transfer
 			if (string.IsNullOrWhiteSpace(objectValue.Name))
 			{
 				throw new SyncException("Unable to parse data from Relativity Export API - " +
-					$"expected input to be deserializable to type {typeof(RelativityObjectValue)} and name to not be null or empty");
+					$"expected input to be deserializable to type {typeof(RelativityObjectValue)} and name to not be null or empty (object value was: {initialValue})");
 			}
 
 			string value = objectValue.Name;
