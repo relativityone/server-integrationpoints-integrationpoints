@@ -7,6 +7,8 @@ using Autofac;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.Services.Folder;
+using Relativity.Services.Interfaces.File;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
@@ -25,12 +27,16 @@ namespace Relativity.Sync.Tests.Integration
 	{
 		private ConfigurationStub _config;
 		private IExecutor<ISynchronizationConfiguration> _executor;
+		private ISourceWorkspaceDataReaderFactory _dataReaderFactory;
 		private Mock<IObjectManager> _objectManagerMock;
+		private Mock<IFileManager> _fileManagerMock;
+		private Mock<IFolderManager> _folderManagerMock;
 		private Mock<ISyncImportBulkArtifactJob> _importBulkArtifactJob;
-		private Mock<IItemStatusMonitor> _itemStatusMonitor;
 
-		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 123;
-		
+		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 10001;
+		private const string _IDENTIFIER_COLUMN = "Identifier";
+		private const string _MESSAGE_COLUMN = "Message";
+
 		private static readonly Guid BatchObjectTypeGuid = new Guid("18C766EB-EB71-49E4-983E-FFDE29B1A44E");
 		private static readonly Guid FailedItemsCountGuid = new Guid("DC3228E4-2765-4C3B-B3B1-A0F054E280F6");
 
@@ -42,6 +48,12 @@ namespace Relativity.Sync.Tests.Integration
 		private static readonly Guid TotalItemsCountGuid = new Guid("F84589FE-A583-4EB3-BA8A-4A2EEE085C81");
 		private static readonly Guid TransferredItemsCountGuid = new Guid("B2D112CA-E81E-42C7-A6B2-C0E89F32F567");
 
+		private static readonly Guid JobHistoryErrorObject = new Guid("17E7912D-4F57-4890-9A37-ABC2B8A37BDB");
+
+		private static readonly Guid ErrorTypeField = new Guid("EEFFA5D3-82E3-46F8-9762-B4053D73F973");
+		private static readonly Guid ErrorTypeItem = new Guid("9DDC4914-FEF3-401F-89B7-2967CD76714B");
+		private static readonly Guid ErrorTypeJob = new Guid("FA8BB625-05E6-4BF7-8573-012146BAF19B");
+
 		[SetUp]
 		public void SetUp()
 		{
@@ -49,9 +61,7 @@ namespace Relativity.Sync.Tests.Integration
 			IntegrationTestsContainerBuilder.MockStepsExcept<ISynchronizationConfiguration>(containerBuilder);
 			containerBuilder.RegisterType<ImportJobFactoryStub>().As<IImportJobFactory>();
 
-			_itemStatusMonitor = new Mock<IItemStatusMonitor>();
 			_importBulkArtifactJob = new Mock<ISyncImportBulkArtifactJob>();
-			_importBulkArtifactJob.SetupGet(x => x.ItemStatusMonitor).Returns(_itemStatusMonitor.Object);
 			containerBuilder.RegisterInstance(_importBulkArtifactJob.Object).As<ISyncImportBulkArtifactJob>();
 
 			Mock<ISyncMetrics> syncMetrics = new Mock<ISyncMetrics>();
@@ -59,34 +69,47 @@ namespace Relativity.Sync.Tests.Integration
 
 			Mock<ISemaphoreSlim> semaphoreSlim = new Mock<ISemaphoreSlim>();
 			containerBuilder.RegisterInstance(semaphoreSlim.Object).As<ISemaphoreSlim>();
+			
+			IList<FieldMap> fieldMaps = new List<FieldMap>()
+			{
+				new FieldMap()
+				{
+					SourceField = new FieldEntry()
+					{
+						DisplayName = "Control Number",
+						IsIdentifier = true,
+					},
+					DestinationField = new FieldEntry
+					{
+						DisplayName = "Control Number",
+						IsIdentifier = true,
+					}
+				}
+			};
 
 			_config = new ConfigurationStub()
 			{
 				SourceWorkspaceArtifactId = _SOURCE_WORKSPACE_ARTIFACT_ID,
-				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure
+				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure,
+				FieldMappings = fieldMaps
 			};
 			containerBuilder.RegisterInstance(_config).AsImplementedInterfaces();
 
 			_objectManagerMock = new Mock<IObjectManager>();
+			_fileManagerMock = new Mock<IFileManager>();
+			_folderManagerMock = new Mock<IFolderManager>();
 			var destinationServiceFactoryForUser = new Mock<IDestinationServiceFactoryForUser>();
 			var sourceServiceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
 			var sourceServiceFactoryForAdmin = new Mock<ISourceServiceFactoryForAdmin>();
-
+			
 			var fieldMappings = new Mock<IFieldMappings>();
-			fieldMappings.Setup(x => x.GetFieldMappings()).Returns(new List<FieldMap>()
-			{
-				new FieldMap()
-				{
-					DestinationField = new FieldEntry
-					{
-						IsIdentifier = true,
-					}
-				}
-			});
+			fieldMappings.Setup(x => x.GetFieldMappings()).Returns(fieldMaps);
 
 			destinationServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManagerMock.Object);
 			sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManagerMock.Object);
 			sourceServiceFactoryForAdmin.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManagerMock.Object);
+			sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IFileManager>()).ReturnsAsync(_fileManagerMock.Object);
+			sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IFolderManager>()).ReturnsAsync(_folderManagerMock.Object);
 
 			containerBuilder.RegisterInstance(destinationServiceFactoryForUser.Object).As<IDestinationServiceFactoryForUser>();
 			containerBuilder.RegisterInstance(sourceServiceFactoryForUser.Object).As<ISourceServiceFactoryForUser>();
@@ -100,13 +123,265 @@ namespace Relativity.Sync.Tests.Integration
 			containerBuilder.RegisterInstance(fieldMappings.Object).As<IFieldMappings>();
 
 			IContainer container = containerBuilder.Build();
+			_importBulkArtifactJob.SetupGet(x => x.ItemStatusMonitor).Returns(container.Resolve<IItemStatusMonitor>());
+			_dataReaderFactory = container.Resolve<ISourceWorkspaceDataReaderFactory>();
 			_executor = container.Resolve<IExecutor<ISynchronizationConfiguration>>();
 		}
 
 		[Test]
 		public async Task ItShouldSuccessfullyRunImportAndTagDocuments()
 		{
-			const int newBatchArtifactId = 1234;
+			const int newBatchArtifactId = 1001;
+			const int folderArtifactId = 1002;
+			const int totalItemsCount = 10;
+			const int startIndex = 0;
+
+			Mock<IBatch> batch = SetupNewBatch(newBatchArtifactId, totalItemsCount);
+
+			IList<int> documentIds = Enumerable.Range(startIndex, totalItemsCount).ToList();
+			RelativityObjectSlim[] exportBlock = CreateExportBlock(documentIds);
+			ISourceWorkspaceDataReader dataReader = _dataReaderFactory.CreateSourceWorkspaceDataReader(batch.Object);
+			_importBulkArtifactJob.Setup(x => x.Execute()).Callback(() =>
+			{
+				for (int i = 0; i < totalItemsCount; i++)
+				{
+					dataReader.Read();
+				}
+				_importBulkArtifactJob.Raise(x => x.OnComplete += null, CreateJobReport());
+			});
+
+			SetupFieldQueryResult();
+			SetupFolderQueryResult(documentIds, folderArtifactId);
+			SetupFolderPaths(folderArtifactId);
+			SetupTaggingOfDocuments(totalItemsCount);
+
+			// act
+			ExecutionResult result = await _executor.ExecuteAsync(_config, CancellationToken.None).ConfigureAwait(false);
+
+			// assert
+			result.Status.Should().Be(ExecutionStatus.Completed);
+			_objectManagerMock.Verify();
+			_objectManagerMock.Verify(x => x.CreateAsync(_SOURCE_WORKSPACE_ARTIFACT_ID,
+				It.Is<CreateRequest>(cr => cr.ObjectType.Guid == JobHistoryErrorObject)), Times.Never);
+			_importBulkArtifactJob.Verify(x => x.Execute(), Times.Once);
+		}
+
+		[Test]
+		public async Task ItShouldReportItemLevelErrors()
+		{
+			const int newBatchArtifactId = 1001;
+			const int folderArtifactId = 1002;
+			const int jobHistoryErrorArtifactId = 1003;
+			const int totalItemsCount = 10;
+			const int numberOfErrors = 4;
+			int completedItems = totalItemsCount - numberOfErrors;
+			const int startIndex = 0;
+
+			Mock<IBatch> batch = SetupNewBatch(newBatchArtifactId, totalItemsCount);
+
+			IList<int> documentIds = Enumerable.Range(startIndex, totalItemsCount).ToList();
+			RelativityObjectSlim[] exportBlock = CreateExportBlock(documentIds);
+
+			batch.SetupGet(x => x.TotalItemsCount).Returns(totalItemsCount);
+			ISourceWorkspaceDataReader dataReader = _dataReaderFactory.CreateSourceWorkspaceDataReader(batch.Object);
+			List<RelativityObjectSlim> failedDocuments = exportBlock.Take(numberOfErrors).ToList();
+			_importBulkArtifactJob.Setup(x => x.Execute()).Callback(() =>
+			{
+				foreach (RelativityObjectSlim document in failedDocuments)
+				{
+					dataReader.Read();
+					_importBulkArtifactJob.Raise(x => x.OnError += null, new Dictionary<string, string>()
+					{
+						{ _IDENTIFIER_COLUMN, document.Values[0].ToString() },
+						{ _MESSAGE_COLUMN, "Some weird error message." },
+					});
+				}
+
+				for (int i = 0; i < completedItems; i++)
+				{
+					dataReader.Read();
+				}
+
+				_importBulkArtifactJob.Raise(x => x.OnComplete += null, CreateJobReport());
+			});
+
+			SetupFieldQueryResult();
+			SetupFolderQueryResult(documentIds, folderArtifactId);
+			SetupFolderPaths(folderArtifactId);
+			SetupTaggingOfDocuments(completedItems);
+
+			CreateResult createJobHistoryErrorResult = new CreateResult()
+			{
+				Object = new RelativityObject()
+				{
+					ArtifactID = jobHistoryErrorArtifactId
+				}
+			};
+			_objectManagerMock.Setup(x => x.CreateAsync(_SOURCE_WORKSPACE_ARTIFACT_ID,
+					It.Is<CreateRequest>(req => req.ObjectType.Guid == JobHistoryErrorObject)))
+					.ReturnsAsync(createJobHistoryErrorResult)
+					.Verifiable();
+
+			// act
+			ExecutionResult result = await _executor.ExecuteAsync(_config, CancellationToken.None).ConfigureAwait(false);
+
+			// assert
+			result.Status.Should().Be(ExecutionStatus.CompletedWithErrors);
+			_importBulkArtifactJob.Verify(x => x.Execute(), Times.Once);
+			_objectManagerMock.Verify(x => x.CreateAsync(_SOURCE_WORKSPACE_ARTIFACT_ID,
+				It.Is<CreateRequest>(request => request.ObjectType.Guid == JobHistoryErrorObject &&
+				                           (request.FieldValues.Single(fieldValuePair => fieldValuePair.Field.Guid == ErrorTypeField).Value as ChoiceRef).Guid == ErrorTypeItem)),
+				Times.Exactly(numberOfErrors));
+			_objectManagerMock.Verify();
+		}
+
+		[Test]
+		public async Task ItShouldReportJobLevelError()
+		{
+			const int newBatchArtifactId = 1001;
+			const int jobHistoryErrorArtifactId = 1003;
+			const int totalItemsCount = 10;
+
+			Mock<IBatch> batch = SetupNewBatch(newBatchArtifactId, totalItemsCount);
+			
+			batch.SetupGet(x => x.TotalItemsCount).Returns(totalItemsCount);
+			_importBulkArtifactJob.Setup(x => x.Execute()).Callback(() =>
+			{
+				_importBulkArtifactJob.Raise(x => x.OnFatalException += null, CreateJobReport());
+				_importBulkArtifactJob.Raise(x => x.OnComplete += null, CreateJobReport());
+			});
+
+			CreateResult createJobHistoryErrorResult = new CreateResult()
+			{
+				Object = new RelativityObject()
+				{
+					ArtifactID = jobHistoryErrorArtifactId
+				}
+			};
+			_objectManagerMock.Setup(x => x.CreateAsync(_SOURCE_WORKSPACE_ARTIFACT_ID,
+					It.Is<CreateRequest>(req => req.ObjectType.Guid == JobHistoryErrorObject)))
+					.ReturnsAsync(createJobHistoryErrorResult)
+					.Verifiable();
+
+			// act
+			ExecutionResult result = await _executor.ExecuteAsync(_config, CancellationToken.None).ConfigureAwait(false);
+
+			// assert
+			result.Status.Should().Be(ExecutionStatus.Failed);
+			_importBulkArtifactJob.Verify(x => x.Execute(), Times.Once);
+			_objectManagerMock.Verify(x => x.CreateAsync(_SOURCE_WORKSPACE_ARTIFACT_ID,
+				It.Is<CreateRequest>(request => request.ObjectType.Guid == JobHistoryErrorObject &&
+				                           (request.FieldValues.Single(fieldValuePair => fieldValuePair.Field.Guid == ErrorTypeField).Value as ChoiceRef).Guid == ErrorTypeJob)),
+				Times.Once);
+			_objectManagerMock.Verify();
+		}
+
+		private void SetupTaggingOfDocuments(int numberOfDocumentsToTag)
+		{
+			var taggingResult = new MassUpdateResult()
+			{
+				Success = true
+			};
+			_objectManagerMock.Setup(x => x.UpdateAsync(_SOURCE_WORKSPACE_ARTIFACT_ID,
+					It.Is<MassUpdateByObjectIdentifiersRequest>(request => request.Objects.Count == numberOfDocumentsToTag),
+					It.Is<MassUpdateOptions>(options => options.UpdateBehavior == FieldUpdateBehavior.Merge), It.IsAny<CancellationToken>()))
+					.ReturnsAsync(taggingResult)
+					.Verifiable();
+		}
+
+		private void SetupFolderPaths(int folderArtifactId)
+		{
+			var folderPaths = new List<FolderPath>()
+			{
+				new FolderPath()
+				{
+					ArtifactID = folderArtifactId,
+					FullPath = "/"
+				}
+			};
+			_folderManagerMock.Setup(x => x.GetFullPathListAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<List<int>>()))
+				.ReturnsAsync(folderPaths);
+		}
+
+		private void SetupFolderQueryResult(IList<int> documentIds, int folderArtifactId)
+		{
+			var folderQueryResult = new QueryResult()
+			{
+				Objects = documentIds.Select(x =>
+				{
+					RelativityObjectRef folder = new RelativityObjectRef()
+					{
+						ArtifactID = folderArtifactId
+					};
+					return new RelativityObject()
+					{
+						ArtifactID = x,
+						ParentObject = folder
+					};
+				}).ToList()
+			};
+			_objectManagerMock.Setup(x => x.QueryAsync(_SOURCE_WORKSPACE_ARTIFACT_ID,
+					It.Is<QueryRequest>(qr => qr.ObjectType.ArtifactTypeID == (int) ArtifactType.Document && qr.Condition.Contains("\"ArtifactID\" IN [")),
+					It.IsAny<int>(),
+					It.IsAny<int>()))
+					.ReturnsAsync(folderQueryResult)
+					.Verifiable();
+		}
+
+		private void SetupFieldQueryResult()
+		{
+			var fieldQueryResult = new QueryResultSlim()
+			{
+				Objects = new List<RelativityObjectSlim>()
+				{
+					new RelativityObjectSlim()
+					{
+						Values = new List<object>()
+						{
+							"Control Number",
+							"Fixed-Length Text"
+						}
+					}
+				}
+			};
+			_objectManagerMock.Setup(x => x.QuerySlimAsync(_SOURCE_WORKSPACE_ARTIFACT_ID,
+					It.Is<QueryRequest>(qr => qr.Condition.Contains("Control Number")),
+					It.IsAny<int>(),
+					It.IsAny<int>(),
+					It.IsAny<CancellationToken>()))
+					.ReturnsAsync(fieldQueryResult)
+					.Verifiable();
+		}
+
+		private RelativityObjectSlim[] CreateExportBlock(IList<int> documentIds)
+		{
+			RelativityObjectSlim[] exportBlock = documentIds.Select(x => new RelativityObjectSlim()
+			{
+				ArtifactID = x,
+				Values = new List<object>()
+				{
+					// Order does matter.
+					$"CONTROL_NUMBER_{x}",
+					true,
+					"HTML File"
+				}
+			}).ToArray();
+			
+			_objectManagerMock.Setup(x => x.RetrieveResultsBlockFromExportAsync(_SOURCE_WORKSPACE_ARTIFACT_ID,
+					It.IsAny<Guid>(),
+					documentIds.Count,
+					It.IsAny<int>()))
+					.ReturnsAsync(exportBlock)
+					.Verifiable();
+
+			return exportBlock;
+		}
+
+		private Mock<IBatch> SetupNewBatch(int newBatchArtifactId, int totalItemsCount)
+		{
+			Mock<IBatch> batch = new Mock<IBatch>();
+			batch.SetupGet(x => x.TotalItemsCount).Returns(totalItemsCount);
+
 			const int numberOfNewBatches = 1;
 			QueryResult queryResultForNewBatches = new QueryResult()
 			{
@@ -124,37 +399,16 @@ namespace Relativity.Sync.Tests.Integration
 				.ReturnsAsync(queryResultForNewBatches)
 				.Verifiable();
 
-			const int totalItemsCount = 10;
 			ReadResult readResultForBatch = CreateReadResultForBatch(totalItemsCount);
 
 			_objectManagerMock.Setup(x => x.ReadAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.Is<ReadRequest>(r => r.Object.ArtifactID == newBatchArtifactId)))
 				.ReturnsAsync(readResultForBatch)
 				.Verifiable();
 
-			const int startIndex = 100;
-			IEnumerable<int> documentIdsToTag = Enumerable.Range(startIndex, totalItemsCount);
-			_itemStatusMonitor.Setup(x => x.GetSuccessfulItemArtifactIds()).Returns(documentIdsToTag);
-
-			MassUpdateResult massUpdateResult = new MassUpdateResult()
-			{
-				Success = true
-			};
-			_objectManagerMock.Setup(x => x.UpdateAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, 
-					It.Is<MassUpdateByObjectIdentifiersRequest>(request => request.Objects.Count == totalItemsCount),
-					It.Is<MassUpdateOptions>(options => options.UpdateBehavior == FieldUpdateBehavior.Merge), It.IsAny<CancellationToken>()))
-					.ReturnsAsync(massUpdateResult)
-					.Verifiable();
-
-			// act
-			ExecutionResult result = await _executor.ExecuteAsync(_config, CancellationToken.None).ConfigureAwait(false);
-
-			// assert
-			result.Status.Should().Be(ExecutionStatus.Completed);
-			_objectManagerMock.Verify();
-			_importBulkArtifactJob.Verify(x => x.Execute(), Times.Once);
+			return batch;
 		}
 
-		private ReadResult CreateReadResultForBatch(int totalItemsCount)
+		private static ReadResult CreateReadResultForBatch(int totalItemsCount)
 		{
 			ReadResult readResultForBatch = new ReadResult()
 			{
@@ -188,6 +442,12 @@ namespace Relativity.Sync.Tests.Integration
 				},
 				Value = value
 			};
+		}
+
+		private static JobReport CreateJobReport()
+		{
+			JobReport jobReport = (JobReport)Activator.CreateInstance(typeof(JobReport), true);
+			return jobReport;
 		}
 	}
 }
