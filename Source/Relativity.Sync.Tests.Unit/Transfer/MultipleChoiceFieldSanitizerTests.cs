@@ -4,9 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.Unit.Transfer
@@ -32,62 +35,109 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			supportedType.Should().Be(RelativityDataType.MultipleChoice);
 		}
 
-		[Test]
-		public async Task ItShouldThrowSyncExceptionWhenEncounteringUnexpectedType()
+		private static IEnumerable<TestCaseData> ThrowSyncExceptionWhenDeserializationFailsTestCases()
+		{
+			yield return new TestCaseData(1);
+			yield return new TestCaseData("foo");
+			yield return new TestCaseData(new object());
+			yield return new TestCaseData(JsonHelpers.DeserializeJson("{ \"not\": \"an array\" }"));
+		}
+
+		[TestCaseSource(nameof(ThrowSyncExceptionWhenDeserializationFailsTestCases))]
+		public async Task ItShouldThrowSyncExceptionWithTypeNamesWhenDeserializationFails(object initialValue)
 		{
 			// Arrange
 			ISynchronizationConfiguration configuration = CreateConfigurationWithDefaultDelimiters();
 			var instance = new MultipleChoiceFieldSanitizer(configuration);
 
 			// Act
-			const int initialValue = 10123232;
 			Func<Task> action = async () =>
 				await instance.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
 
 			// Assert
 			(await action.Should().ThrowAsync<SyncException>().ConfigureAwait(false))
 				.Which.Message.Should()
-				.Contain(typeof(Choice[]).Name).And
-				.Contain(typeof(int).Name);
+					.Contain(typeof(Choice[]).Name).And
+					.Contain(initialValue.GetType().Name);
+		}
+
+		[TestCaseSource(nameof(ThrowSyncExceptionWhenDeserializationFailsTestCases))]
+		public async Task ItShouldThrowSyncExceptionWithInnerExceptionWhenDeserializationFails(object initialValue)
+		{
+			// Arrange
+			ISynchronizationConfiguration configuration = CreateConfigurationWithDefaultDelimiters();
+			var instance = new MultipleChoiceFieldSanitizer(configuration);
+
+			// Act
+			Func<Task> action = async () =>
+				await instance.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
+
+			// Assert
+			(await action.Should().ThrowAsync<SyncException>().ConfigureAwait(false))
+				.Which.InnerException.Should()
+					.Match(ex => ex is JsonReaderException || ex is JsonSerializationException);
+		}
+
+		private static IEnumerable<TestCaseData> ThrowSyncExceptionIfAnyElementsAreInvalidTestCases()
+		{
+			yield return new TestCaseData(JsonHelpers.DeserializeJson("[ { \"test\": 1 } ]"));
+			yield return new TestCaseData(JsonHelpers.DeserializeJson("[ { \"ArtifactID\": 101, \"Name\": \"Cool Choice\" }, { \"test\": 1 } ]"));
+			yield return new TestCaseData(JsonHelpers.DeserializeJson("[ { \"ArtifactID\": 101, \"Name\": \"Cool Choice\" }, { \"test\": 1 }, { \"ArtifactID\": 102, \"Name\": \"Cool Choice 2\" } ]"));
+		}
+
+		[TestCaseSource(nameof(ThrowSyncExceptionIfAnyElementsAreInvalidTestCases))]
+		public async Task ItShouldThrowSyncExceptionIfAnyElementsAreInvalid(object initialValue)
+		{
+			// Arrange
+			ISynchronizationConfiguration configuration = CreateConfigurationWithDefaultDelimiters();
+			var instance = new MultipleChoiceFieldSanitizer(configuration);
+
+			// Act
+			Func<Task> action = async () =>
+				await instance.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
+
+			// Assert
+			(await action.Should().ThrowAsync<SyncException>().ConfigureAwait(false))
+				.Which.Message.Should()
+				.Contain(typeof(Choice).Name);
 		}
 
 		private static IEnumerable<TestCaseData> ThrowSyncExceptionWhenNameContainsDelimiterTestCases()
 		{
-			yield return new TestCaseData(ChoicesFromNames("; Sick Choice"), "'; Sick Choice'")
+			yield return new TestCaseData(ChoiceJArrayFromNames("; Sick Choice"), "'; Sick Choice'")
 			{
 				TestName = "MultiValue - Singleton"
 			};
-			yield return new TestCaseData(ChoicesFromNames("Okay Name", "Cool; Name", "Awesome Name"), "'Cool; Name'")
+			yield return new TestCaseData(ChoiceJArrayFromNames("Okay Name", "Cool; Name", "Awesome Name"), "'Cool; Name'")
 			{
 				TestName = "MultiValue - Single violating name in larger collection"
 			};
-			yield return new TestCaseData(ChoicesFromNames("Okay Name", "Cool; Name", "Awesome; Name"), "'Cool; Name', 'Awesome; Name'")
+			yield return new TestCaseData(ChoiceJArrayFromNames("Okay Name", "Cool; Name", "Awesome; Name"), "'Cool; Name', 'Awesome; Name'")
 			{
 				TestName = "MultiValue - Many violating names in larger collection"
 			};
 
-			yield return new TestCaseData(ChoicesFromNames("/ Sick Choice"), "'/ Sick Choice'")
+			yield return new TestCaseData(ChoiceJArrayFromNames("/ Sick Choice"), "'/ Sick Choice'")
 			{
 				TestName = "NestedValue - Singleton"
 			};
-			yield return new TestCaseData(ChoicesFromNames("Okay Name", "Cool/ Name", "Awesome Name"), "'Cool/ Name'")
+			yield return new TestCaseData(ChoiceJArrayFromNames("Okay Name", "Cool/ Name", "Awesome Name"), "'Cool/ Name'")
 			{
 				TestName = "NestedValue - Single violating name in larger collection"
 			};
-			yield return new TestCaseData(ChoicesFromNames("Okay Name", "Cool/ Name", "Awesome/ Name"), "'Cool/ Name', 'Awesome/ Name'")
+			yield return new TestCaseData(ChoiceJArrayFromNames("Okay Name", "Cool/ Name", "Awesome/ Name"), "'Cool/ Name', 'Awesome/ Name'")
 			{
 				TestName = "NestedValue - Many violating names in larger collection"
 			};
 			
-			yield return new TestCaseData(ChoicesFromNames("Okay Name", "Cool/ Name", "Awesome; Name"), "'Cool/ Name', 'Awesome; Name'")
+			yield return new TestCaseData(ChoiceJArrayFromNames("Okay Name", "Cool/ Name", "Awesome; Name"), "'Cool/ Name', 'Awesome; Name'")
 			{
 				TestName = "Combined - Many violating names in larger collection"
 			};
 		}
 
 		[TestCaseSource(nameof(ThrowSyncExceptionWhenNameContainsDelimiterTestCases))]
-		public async Task ItShouldThrowSyncExceptionWhenNameContainsDelimiter(Choice[] initialValue,
-			string expectedViolators)
+		public async Task ItShouldThrowSyncExceptionWhenNameContainsDelimiter(object initialValue, string expectedViolators)
 		{
 			// Arrange
 			ISynchronizationConfiguration configuration = CreateConfigurationWithDefaultDelimiters();
@@ -108,15 +158,15 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			{
 				TestName = "Null"
 			};
-			yield return new TestCaseData(ChoicesFromNames(), string.Empty)
+			yield return new TestCaseData(ChoiceJArrayFromNames(), string.Empty)
 			{
 				TestName = "Empty"
 			};
-			yield return new TestCaseData(ChoicesFromNames("Sick Name"), "Sick Name")
+			yield return new TestCaseData(ChoiceJArrayFromNames("Sick Name"), "Sick Name")
 			{
 				TestName = "Single"
 			};
-			yield return new TestCaseData(ChoicesFromNames("Sick Name", "Cool Name", "Awesome Name"),
+			yield return new TestCaseData(ChoiceJArrayFromNames("Sick Name", "Cool Name", "Awesome Name"),
 				"Sick Name;Cool Name;Awesome Name")
 			{
 				TestName = "Multiple"
@@ -126,7 +176,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		}
 
 		[TestCaseSource(nameof(CombineNamesIntoReturnValueTestCases))]
-		public async Task ItShouldCombineNamesIntoReturnValue(Choice[] initialValue, string expectedResult)
+		public async Task ItShouldCombineNamesIntoReturnValue(object initialValue, object expectedResult)
 		{
 			// Arrange
 			ISynchronizationConfiguration configuration = CreateConfigurationWithDefaultDelimiters();
@@ -165,7 +215,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			var instance = new MultipleChoiceFieldSanitizer(configuration);
 
 			// Act
-			Choice[] initialValue = ChoicesFromNames("Test Name", "Cool Name");
+			JArray initialValue = ChoiceJArrayFromNames("Test Name", "Cool Name");
 			object result = await instance.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
 
 			// Assert
@@ -187,9 +237,10 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			return config.Object;
 		}
 
-		private static Choice[] ChoicesFromNames(params string[] names)
+		private static JArray ChoiceJArrayFromNames(params string[] names)
 		{
-			return names.Select(x => new Choice { Name = x }).ToArray();
+			Choice[] choices = names.Select(x => new Choice {Name = x}).ToArray();
+			return JsonHelpers.ToJToken<JArray>(choices);
 		}
 	}
 }

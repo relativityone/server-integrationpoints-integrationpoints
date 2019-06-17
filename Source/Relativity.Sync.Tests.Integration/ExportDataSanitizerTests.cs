@@ -8,6 +8,7 @@ using Autofac;
 using FluentAssertions;
 using Moq;
 using Moq.Language.Flow;
+using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using Relativity.Kepler.Transport;
 using Relativity.Services.Objects;
@@ -117,16 +118,16 @@ namespace Relativity.Sync.Tests.Integration
 		private static IEnumerable<TestCaseData> ObjectChoiceSanitizerGoldenTestCases()
 		{
 			yield return new TestCaseData(RelativityDataType.SingleObject, null, null);
-			yield return new TestCaseData(RelativityDataType.SingleObject, new RelativityObjectValue { Name = "FooBar" }, "FooBar");
+			yield return new TestCaseData(RelativityDataType.SingleObject, JsonHelpers.ToJToken<JObject>(new RelativityObjectValue { Name = "FooBar" }), "FooBar");
 
 			yield return new TestCaseData(RelativityDataType.SingleChoice, null, null);
-			yield return new TestCaseData(RelativityDataType.SingleChoice, new Choice { Name = "FooBar" }, "FooBar");
+			yield return new TestCaseData(RelativityDataType.SingleChoice, JsonHelpers.ToJToken<JObject>(new Choice { Name = "FooBar" }), "FooBar");
 
 			yield return new TestCaseData(RelativityDataType.MultipleObject, null, null);
-			yield return new TestCaseData(RelativityDataType.MultipleObject, ObjectValuesFromNames("Test Name", "Cool Name", "Rad Name"), "Test Name;Cool Name;Rad Name");
+			yield return new TestCaseData(RelativityDataType.MultipleObject, ObjectValueJArrayFromNames("Test Name", "Cool Name", "Rad Name"), "Test Name;Cool Name;Rad Name");
 
 			yield return new TestCaseData(RelativityDataType.MultipleChoice, null, null);
-			yield return new TestCaseData(RelativityDataType.MultipleChoice, ChoicesFromNames("Test Name", "Cool Name", "Rad Name"), "Test Name;Cool Name;Rad Name");
+			yield return new TestCaseData(RelativityDataType.MultipleChoice, ChoiceJArrayFromNames("Test Name", "Cool Name", "Rad Name"), "Test Name;Cool Name;Rad Name");
 
 			// TODO: Add tests for nested multiple choice values
 		}
@@ -156,7 +157,7 @@ namespace Relativity.Sync.Tests.Integration
 			// Act
 			FieldInfoDto sanitizingSourceField = DefaultField();
 			sanitizingSourceField.RelativityDataType = RelativityDataType.MultipleObject;
-			object initialValue = ObjectValuesFromNames("Cool Name", "Test; Name", "Other Name", "This/ Guy", "Some;; Other");
+			object initialValue = ObjectValueJArrayFromNames("Cool Name", "Test; Name", "Other Name", "This/ Guy", "Some;; Other");
 			Func<Task> action = async () => await instance.SanitizeAsync(_SOURCE_WORKSPACE_ID, _IDENTIFIER_FIELD_NAME, _IDENTIFIER_FIELD_VALUE, sanitizingSourceField, initialValue)
 				.ConfigureAwait(false);
 
@@ -176,7 +177,7 @@ namespace Relativity.Sync.Tests.Integration
 			// Act
 			FieldInfoDto sanitizingSourceField = DefaultField();
 			sanitizingSourceField.RelativityDataType = RelativityDataType.MultipleChoice;
-			object initialValue = ChoicesFromNames("Cool Name", "Test; Name", "Other Name", "This/ Guy", "Some;; Other");
+			object initialValue = ChoiceJArrayFromNames("Cool Name", "Test; Name", "Other Name", "This/ Guy", "Some;; Other");
 			Func<Task> action = async () => await instance.SanitizeAsync(_SOURCE_WORKSPACE_ID, _IDENTIFIER_FIELD_NAME, _IDENTIFIER_FIELD_VALUE, sanitizingSourceField, initialValue)
 				.ConfigureAwait(false);
 
@@ -271,14 +272,16 @@ namespace Relativity.Sync.Tests.Integration
 			};
 		}
 
-		private static RelativityObjectValue[] ObjectValuesFromNames(params string[] names)
+		private static JArray ObjectValueJArrayFromNames(params string[] names)
 		{
-			return names.Select(x => new RelativityObjectValue { Name = x }).ToArray();
+			RelativityObjectValue[] objectValues = names.Select(x => new RelativityObjectValue { Name = x }).ToArray();
+			return JsonHelpers.ToJToken<JArray>(objectValues);
 		}
 
-		private static Choice[] ChoicesFromNames(params string[] names)
+		private static JArray ChoiceJArrayFromNames(params string[] names)
 		{
-			return names.Select(x => new Choice { Name = x }).ToArray();
+			Choice[] choices = names.Select(x => new Choice { Name = x }).ToArray();
+			return JsonHelpers.ToJToken<JArray>(choices);
 		}
 	}
 }

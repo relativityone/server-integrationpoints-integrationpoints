@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.Unit.Transfer
@@ -38,21 +42,59 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			result.Should().BeNull();
 		}
 
-		[Test]
-		public async Task ItShouldThrowSyncExceptionWhenEncounteringUnexpectedType()
+		private static IEnumerable<TestCaseData> ThrowSyncExceptionWhenDeserializationFailsTestCases()
+		{
+			yield return new TestCaseData(1);
+			yield return new TestCaseData("foo");
+			yield return new TestCaseData(new object());
+			yield return new TestCaseData(JsonHelpers.DeserializeJson("[ \"not\", \"an object\" ]"));
+		}
+
+		[TestCaseSource(nameof(ThrowSyncExceptionWhenDeserializationFailsTestCases))]
+		public async Task ItShouldThrowSyncExceptionWithTypesNamesWhenDeserializationFails(object initialValue)
 		{
 			// Arrange
 			var instance = new SingleChoiceFieldSanitizer();
 
 			// Act
-			const int initialValue = 123123;
 			Func<Task> action = async () => await instance.SanitizeAsync(0, "foo", "bar", "bang", initialValue).ConfigureAwait(false);
 
 			// Assert
 			(await action.Should().ThrowAsync<SyncException>().ConfigureAwait(false))
 				.Which.Message.Should()
 					.Contain(typeof(Choice).Name).And
-					.Contain(typeof(int).Name);
+					.Contain(initialValue.GetType().Name);
+		}
+
+		[TestCaseSource(nameof(ThrowSyncExceptionWhenDeserializationFailsTestCases))]
+		public async Task ItShouldThrowSyncExceptionWithInnerExceptionWhenDeserializationFails(object initialValue)
+		{
+			// Arrange
+			var instance = new SingleChoiceFieldSanitizer();
+
+			// Act
+			Func<Task> action = async () => await instance.SanitizeAsync(0, "foo", "bar", "bang", initialValue).ConfigureAwait(false);
+
+			// Assert
+			(await action.Should().ThrowAsync<SyncException>().ConfigureAwait(false))
+				.Which.InnerException.Should()
+					.Match(ex => ex is JsonReaderException || ex is JsonSerializationException);
+		}
+
+		[Test]
+		public async Task ItShouldThrowSyncExceptionWhenChoiceNameIsNull()
+		{
+			// Arrange
+			var instance = new SingleChoiceFieldSanitizer();
+
+			// Act
+			object initialValue = JsonHelpers.DeserializeJson("{ \"ArtifactID\": 10123, \"Foo\": \"Bar\" }");
+			Func<Task> action = async () => await instance.SanitizeAsync(0, "foo", "bar", "bang", initialValue).ConfigureAwait(false);
+
+			// Assert
+			(await action.Should().ThrowAsync<SyncException>().ConfigureAwait(false))
+				.Which.Message.Should()
+					.Contain(typeof(Choice).Name);
 		}
 
 		[Test]
@@ -60,10 +102,10 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		{
 			// Arrange
 			var instance = new SingleChoiceFieldSanitizer();
+			const string expectedName = "Noice Choice";
 
 			// Act
-			const string expectedName = "Noice Choice";
-			Choice initialValue = new Choice { Name = expectedName };
+			object initialValue = JsonHelpers.ToJToken<JObject>(new Choice { Name = expectedName });
 			object result = await instance.SanitizeAsync(0, "foo", "bar", "bang", initialValue).ConfigureAwait(false);
 
 			// Assert

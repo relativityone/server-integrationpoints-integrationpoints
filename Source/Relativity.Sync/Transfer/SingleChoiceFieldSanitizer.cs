@@ -1,4 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using kCura.Apps.Common.Utils.Serializers;
+using Newtonsoft.Json;
 using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.Sync.Transfer
@@ -10,6 +13,8 @@ namespace Relativity.Sync.Transfer
 	/// </summary>
 	internal sealed class SingleChoiceFieldSanitizer : IExportFieldSanitizer
 	{
+		private readonly JSONSerializer _serializer = new JSONSerializer();
+
 		public RelativityDataType SupportedType => RelativityDataType.SingleChoice;
 
 		public Task<object> SanitizeAsync(int workspaceArtifactId,
@@ -18,14 +23,30 @@ namespace Relativity.Sync.Transfer
 			string sanitizingSourceFieldName,
 			object initialValue)
 		{
-			Choice choiceValue = initialValue as Choice;
-			if (initialValue != null && choiceValue == null)
+			if (initialValue == null)
 			{
-				throw new SyncException("Unable to parse data from Relativity Export API - " +
-					$"expected value of type {typeof(Choice)}, instead was {initialValue.GetType()}.");
+				return Task.FromResult(initialValue);
 			}
 
-			string value = choiceValue?.Name;
+			// We have to re-serialize and deserialize the value from Export API due to REL-250554.
+			Choice choice;
+			try
+			{
+				choice = _serializer.Deserialize<Choice>(initialValue.ToString());
+			}
+			catch (Exception ex) when (ex is JsonSerializationException || ex is JsonReaderException)
+			{
+				throw new SyncException("Unable to parse data from Relativity Export API - " +
+					$"expected value to be deserializable to {typeof(Choice)}, but instead type was {initialValue.GetType()}", ex);
+			}
+
+			if (string.IsNullOrWhiteSpace(choice.Name))
+			{
+				throw new SyncException("Unable to parse data from Relativity Export API - " +
+					$"expected input to be deserializable to type {typeof(Choice)} and name to not be null or empty");
+			}
+
+			string value = choice.Name;
 			return Task.FromResult<object>(value);
 		}
 	}

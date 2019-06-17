@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using kCura.Apps.Common.Utils.Serializers;
+using Newtonsoft.Json;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 
@@ -14,6 +17,7 @@ namespace Relativity.Sync.Transfer
 	internal sealed class MultipleObjectFieldSanitizer : IExportFieldSanitizer
 	{
 		private readonly ISynchronizationConfiguration _configuration;
+		private readonly JSONSerializer _serializer = new JSONSerializer();
 
 		public MultipleObjectFieldSanitizer(ISynchronizationConfiguration configuration)
 		{
@@ -33,16 +37,28 @@ namespace Relativity.Sync.Transfer
 				return Task.FromResult(initialValue);
 			}
 
-			if (!(initialValue is RelativityObjectValue[] value))
+			// We have to re-serialize and deserialize the value from Export API due to REL-250554.
+			RelativityObjectValue[] objectValues;
+			try
+			{
+				objectValues = _serializer.Deserialize<RelativityObjectValue[]>(initialValue.ToString());
+			}
+			catch (Exception ex) when (ex is JsonSerializationException || ex is JsonReaderException)
 			{
 				throw new SyncException("Unable to parse data from Relativity Export API - " +
-					$"expected value of type {typeof(RelativityObjectValue[])}, instead was {initialValue.GetType()}");
+					$"expected value to be deserializable to {typeof(RelativityObjectValue[])}, but instead type was {initialValue.GetType()}", ex);
+			}
+
+			if (objectValues.Any(x => string.IsNullOrWhiteSpace(x.Name)))
+			{
+				throw new SyncException("Unable to parse data from Relativity Export API - " +
+					$"expected elements of input to be deserializable to type {typeof(RelativityObjectValue)}");
 			}
 
 			char multiValueDelimiter = _configuration.ImportSettings.MultiValueDelimiter;
 			bool ContainsDelimiter(string x) => x.Contains(multiValueDelimiter);
 
-			List<string> names = value.Select(x => x.Name).ToList();
+			List<string> names = objectValues.Select(x => x.Name).ToList();
 			if (names.Any(ContainsDelimiter))
 			{
 				string violatingNameList = string.Join(", ", names.Where(ContainsDelimiter).Select(x => $"'{x}'"));
