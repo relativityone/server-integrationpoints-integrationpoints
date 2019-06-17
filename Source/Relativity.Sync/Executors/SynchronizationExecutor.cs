@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
-using Relativity.Sync.Telemetry;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Executors
@@ -21,16 +20,14 @@ namespace Relativity.Sync.Executors
 		private readonly IFieldMappings _fieldMappings;
 		private readonly IJobHistoryErrorRepository _jobHistoryErrorRepository;
 		private readonly ISyncLog _logger;
-		private readonly ISyncMetrics _syncMetrics;
 
 		public SynchronizationExecutor(IImportJobFactory importJobFactory, IBatchRepository batchRepository, IDestinationWorkspaceTagRepository destinationWorkspaceTagRepository,
-			ISyncMetrics syncMetrics, IDateTime dateTime, IFieldManager fieldManager, IFieldMappings fieldMappings, IJobHistoryErrorRepository jobHistoryErrorRepository, ISyncLog logger)
+			IDateTime dateTime, IFieldManager fieldManager, IFieldMappings fieldMappings, IJobHistoryErrorRepository jobHistoryErrorRepository, ISyncLog logger)
 		{
 			_batchRepository = batchRepository;
 			_dateTime = dateTime;
 			_destinationWorkspaceTagRepository = destinationWorkspaceTagRepository;
 			_importJobFactory = importJobFactory;
-			_syncMetrics = syncMetrics;
 			_fieldManager = fieldManager;
 			_fieldMappings = fieldMappings;
 			_jobHistoryErrorRepository = jobHistoryErrorRepository;
@@ -43,7 +40,6 @@ namespace Relativity.Sync.Executors
 			UpdateImportSettings(configuration);
 
 			ExecutionResult importResult = ExecutionResult.Success();
-			DateTime startTime = _dateTime.Now;
 			var taggingTasks = new List<Task<IEnumerable<int>>>();
 			try
 			{
@@ -83,15 +79,6 @@ namespace Relativity.Sync.Executors
 				const string message = "Unexpected exception occurred while executing synchronization.";
 				_logger.LogError(ex, message);
 				importResult = ExecutionResult.Failure(message, ex);
-			}
-			finally
-			{
-				DateTime endTime = _dateTime.Now;
-				TimeSpan jobDuration = endTime - startTime;
-				_syncMetrics.CountOperation("ImportJobStatus", importResult.Status);
-				_syncMetrics.TimedOperation("ImportJob", jobDuration, importResult.Status);
-				_syncMetrics.GaugeOperation("ImportJobStart", importResult.Status, startTime.Ticks, "Ticks", new Dictionary<string, object>());
-				_syncMetrics.GaugeOperation("ImportJobEnd", importResult.Status, endTime.Ticks, "Ticks", new Dictionary<string, object>());
 			}
 
 			ExecutionResult taggingResult = await GetTaggingResults(taggingTasks, configuration.JobHistoryArtifactId).ConfigureAwait(false);
