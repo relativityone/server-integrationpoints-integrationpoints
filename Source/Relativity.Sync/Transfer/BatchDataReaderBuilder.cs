@@ -72,7 +72,7 @@ namespace Relativity.Sync.Transfer
 
 		private static DataColumn[] BuildColumns(IEnumerable<FieldInfoDto> fields)
 		{
-			DataColumn[] columns = fields.Select(x => new DataColumn(x.DestinationFieldName, typeof(object))).ToArray();
+			DataColumn[] columns = fields.Select(x => new DataColumn(x.DestinationFieldName)).ToArray();
 			return columns;
 		}
 

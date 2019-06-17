@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -53,7 +54,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public async Task ItShouldReturnDataReaderWithProperlyOrderedColumnsAndValues()
 		{
 			// Arrange
-			BatchDataReaderBuilder builder = new BatchDataReaderBuilder(_fieldManager.Object, _exportDataSanitizer.Object);
+			var builder = new BatchDataReaderBuilder(_fieldManager.Object, _exportDataSanitizer.Object);
 
 			// Act
 			IDataReader result = await builder.BuildAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _batch, CancellationToken.None).ConfigureAwait(false);
@@ -64,7 +65,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			result.GetName(_FIRST_DOCUMENT_FIELD_INDEX_IN_READER).Should().Be(_FIRST_DOCUMENT_FIELD_NAME);
 			result.GetName(_SECOND_DOCUMENT_FIELD_INDEX_IN_READER).Should().Be(_SECOND_DOCUMENT_FIELD_NAME);
-			result[_FIRST_DOCUMENT_FIELD_NAME].Should().Be(_FIRST_DOCUMENT_FIELD_VALUE);
+
+			result[_FIRST_DOCUMENT_FIELD_NAME].Should().Be(_FIRST_DOCUMENT_FIELD_VALUE.ToString(CultureInfo.InvariantCulture));
 			result[_SECOND_DOCUMENT_FIELD_NAME].Should().Be(_SECOND_DOCUMENT_FIELD_VALUE);
 		}
 		
@@ -79,8 +81,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public async Task ItShouldReturnDataReaderWithProperRowCount()
 		{
 			// Arrange
-			RelativityObjectSlim[] batchWithTwoRows = new[] {_batchObject, _batchObject};
-			BatchDataReaderBuilder builder = new BatchDataReaderBuilder(_fieldManager.Object, _exportDataSanitizer.Object);
+			RelativityObjectSlim[] batchWithTwoRows = {_batchObject, _batchObject};
+			var builder = new BatchDataReaderBuilder(_fieldManager.Object, _exportDataSanitizer.Object);
 
 			// Act
 			IDataReader result = await builder.BuildAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, batchWithTwoRows, CancellationToken.None).ConfigureAwait(false);
@@ -100,7 +102,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_exportDataSanitizer.Setup(s => s.SanitizeAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _SECOND_DOCUMENT_FIELD_NAME, _SECOND_DOCUMENT_FIELD_VALUE, _firstDocumentField, It.IsAny<object>()))
 				.ReturnsAsync(valueAfterSanitization);
 			
-			BatchDataReaderBuilder builder = new BatchDataReaderBuilder(_fieldManager.Object, _exportDataSanitizer.Object);
+			var builder = new BatchDataReaderBuilder(_fieldManager.Object, _exportDataSanitizer.Object);
 
 			// Act
 			IDataReader result = await builder.BuildAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _batch, CancellationToken.None).ConfigureAwait(false);
@@ -124,7 +126,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_exportDataSanitizer.Setup(s => s.SanitizeAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<FieldInfoDto>(), It.IsAny<object>()))
 				.ReturnsAsync(valueAfterSanitization);
 
-			BatchDataReaderBuilder builder = new BatchDataReaderBuilder(_fieldManager.Object, _exportDataSanitizer.Object);
+			var builder = new BatchDataReaderBuilder(_fieldManager.Object, _exportDataSanitizer.Object);
 
 			// Act
 			IDataReader result = await builder.BuildAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _batch, CancellationToken.None).ConfigureAwait(false);
@@ -140,7 +142,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		{
 			// Arrange
 			RelativityObjectSlim[] emptyBatch = Array.Empty<RelativityObjectSlim>();
-			BatchDataReaderBuilder builder = new BatchDataReaderBuilder(_fieldManager.Object, _exportDataSanitizer.Object);
+			var builder = new BatchDataReaderBuilder(_fieldManager.Object, _exportDataSanitizer.Object);
 
 			// Act
 			IDataReader result = await builder.BuildAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, emptyBatch, CancellationToken.None).ConfigureAwait(false);
@@ -156,29 +158,29 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			const SpecialFieldType differentSpecialFieldType = SpecialFieldType.FolderPath;
 			const SpecialFieldType specialFieldType = SpecialFieldType.SourceWorkspace;
 			const string specialFieldName = "Special field";
-			Guid specialFieldValue = new Guid("56C1128A-64B7-4F67-A57F-0932CBAE1747");
+			var specialFieldValue = new Guid("56C1128A-64B7-4F67-A57F-0932CBAE1747");
 			FieldInfoDto specialFieldDto = FieldInfoDto.GenericSpecialField(specialFieldType, specialFieldName, specialFieldName);
 			
 			_getAllFieldsResult.Add(specialFieldDto);
 
-			Mock<ISpecialFieldRowValuesBuilder> specialFieldValueBuilder = new Mock<ISpecialFieldRowValuesBuilder>();
+			var specialFieldValueBuilder = new Mock<ISpecialFieldRowValuesBuilder>();
 			specialFieldValueBuilder.Setup(b => b.BuildRowValue(specialFieldDto, It.IsAny<RelativityObjectSlim>(), It.IsAny<object>())).Returns(specialFieldValue);
-			Dictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> buildersDictionary = new Dictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder>
+			var buildersDictionary = new Dictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder>
 			{
 				{specialFieldType, specialFieldValueBuilder.Object},
 				{differentSpecialFieldType, Mock.Of<ISpecialFieldRowValuesBuilder>()}
 			};
 			_fieldManager.Setup(fm => fm.CreateSpecialFieldRowValueBuildersAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<ICollection<int>>())).ReturnsAsync(buildersDictionary);
-			BatchDataReaderBuilder builder = new BatchDataReaderBuilder(_fieldManager.Object, _exportDataSanitizer.Object);
+			var builder = new BatchDataReaderBuilder(_fieldManager.Object, _exportDataSanitizer.Object);
 
 			// Act
 			IDataReader result = await builder.BuildAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _batch, CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			result.Read().Should().BeTrue();
-			result[_FIRST_DOCUMENT_FIELD_NAME].Should().Be(_FIRST_DOCUMENT_FIELD_VALUE);
+			result[_FIRST_DOCUMENT_FIELD_NAME].Should().Be(_FIRST_DOCUMENT_FIELD_VALUE.ToString(CultureInfo.InvariantCulture));
 			result[_SECOND_DOCUMENT_FIELD_NAME].Should().Be(_SECOND_DOCUMENT_FIELD_VALUE);
-			result[specialFieldName].Should().Be(specialFieldValue);
+			result[specialFieldName].Should().Be(specialFieldValue.ToString());
 		}
 
 		[Test]
@@ -192,13 +194,13 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			
 			_getAllFieldsResult.Add(specialFieldDto);
 
-			Dictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> buildersDictionary = new Dictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder>
+			var buildersDictionary = new Dictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder>
 			{
 				{differentSpecialFieldType, Mock.Of<ISpecialFieldRowValuesBuilder>()}
 			};
 			
 			_fieldManager.Setup(fm => fm.CreateSpecialFieldRowValueBuildersAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<ICollection<int>>())).ReturnsAsync(buildersDictionary);
-			BatchDataReaderBuilder builder = new BatchDataReaderBuilder(_fieldManager.Object, _exportDataSanitizer.Object);
+			var builder = new BatchDataReaderBuilder(_fieldManager.Object, _exportDataSanitizer.Object);
 
 			// Act
 			Func<Task<IDataReader>> action = () => builder.BuildAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _batch, CancellationToken.None);
