@@ -36,18 +36,23 @@ namespace Relativity.Sync.Transfer
 			}
 			catch (Exception ex) when (ex is JsonSerializationException || ex is JsonReaderException)
 			{
-				throw new SyncException("Unable to parse data from Relativity Export API - " +
+				throw new SyncException(GetExceptionMessageHeader(itemIdentifier, sanitizingSourceFieldName) +
 					$"expected value to be deserializable to {typeof(RelativityObjectValue)}, but instead type was {initialValue.GetType()}", ex);
 			}
 
 			if (string.IsNullOrWhiteSpace(objectValue.Name))
 			{
-				throw new SyncException("Unable to parse data from Relativity Export API - " +
+				throw new SyncException(GetExceptionMessageHeader(itemIdentifier, sanitizingSourceFieldName) +
 					$"expected input to be deserializable to type {typeof(RelativityObjectValue)} and name to not be null or empty (object value was: {initialValue})");
 			}
 
 			string value = objectValue.Name;
 			return Task.FromResult<object>(value);
+		}
+
+		private string GetExceptionMessageHeader(string itemIdentifier, string fieldName)
+		{
+			return $"Unable to parse data from Relativity Export API in field '{fieldName}' of object '{itemIdentifier}'";
 		}
 	}
 }
