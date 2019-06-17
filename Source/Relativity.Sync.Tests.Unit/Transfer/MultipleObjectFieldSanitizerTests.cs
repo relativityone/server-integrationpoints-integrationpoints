@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -19,13 +18,13 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 	[Parallelizable(ParallelScope.All)]
 	internal class MultipleObjectFieldSanitizerTests
 	{
-		private const char _DEFAULT_MULTI_VALUE_DELIMITER = ';';
+		private const char _MUTLI_DELIM = (char) 30;
 
 		[Test]
 		public void ItShouldSupportMultipleObject()
 		{
 			// Arrange
-			ISynchronizationConfiguration configuration = CreateConfigurationWithDelimiter(_DEFAULT_MULTI_VALUE_DELIMITER);
+			ISynchronizationConfiguration configuration = CreateConfiguration();
 			var instance = new MultipleObjectFieldSanitizer(configuration);
 
 			// Act
@@ -47,7 +46,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public async Task ItShouldThrowSyncExceptionWithTypeNamesWhenDeserializationFails(object initialValue)
 		{
 			// Arrange
-			ISynchronizationConfiguration configuration = CreateConfigurationWithDelimiter(_DEFAULT_MULTI_VALUE_DELIMITER);
+			ISynchronizationConfiguration configuration = CreateConfiguration();
 			var instance = new MultipleObjectFieldSanitizer(configuration);
 
 			// Act
@@ -65,7 +64,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public async Task ItShouldThrowSyncExceptionWithInnerExceptionWhenDeserializationFails(object initialValue)
 		{
 			// Arrange
-			ISynchronizationConfiguration configuration = CreateConfigurationWithDelimiter(_DEFAULT_MULTI_VALUE_DELIMITER);
+			ISynchronizationConfiguration configuration = CreateConfiguration();
 			var instance = new MultipleObjectFieldSanitizer(configuration);
 
 			// Act
@@ -89,7 +88,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public async Task ItShouldThrowSyncExceptionIfAnyElementsAreInvalid(object initialValue)
 		{
 			// Arrange
-			ISynchronizationConfiguration configuration = CreateConfigurationWithDelimiter(_DEFAULT_MULTI_VALUE_DELIMITER);
+			ISynchronizationConfiguration configuration = CreateConfiguration();
 			var instance = new MultipleObjectFieldSanitizer(configuration);
 
 			// Act
@@ -104,15 +103,21 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 		private static IEnumerable<TestCaseData> ThrowSyncExceptionWhenNameContainsMultiValueDelimiterTestCases()
 		{
-			yield return new TestCaseData(ObjectValueJArrayFromNames("; Sick Name"), "'; Sick Name'")
+			yield return new TestCaseData(
+				ObjectValueJArrayFromNames($"{_MUTLI_DELIM} Sick Name"),
+				$"'{_MUTLI_DELIM} Sick Name'")
 			{
 				TestName = "Singleton violating name"
 			};
-			yield return new TestCaseData(ObjectValueJArrayFromNames("Okay Name", "Cool; Name", "Awesome Name"), "'Cool; Name'")
+			yield return new TestCaseData(
+				ObjectValueJArrayFromNames("Okay Name", $"Cool{_MUTLI_DELIM} Name", "Awesome Name"),
+				$"'Cool{_MUTLI_DELIM} Name'")
 			{
 				TestName = "Single violating name in larger collection"
 			};
-			yield return new TestCaseData(ObjectValueJArrayFromNames("Okay Name", "Cool; Name", "Awesome; Name"), "'Cool; Name', 'Awesome; Name'")
+			yield return new TestCaseData(
+				ObjectValueJArrayFromNames("Okay Name", $"Cool{_MUTLI_DELIM} Name", $"Awesome{_MUTLI_DELIM} Name"),
+				$"'Cool{_MUTLI_DELIM} Name', 'Awesome{_MUTLI_DELIM} Name'")
 			{
 				TestName = "Many violating names in larger collection"
 			};
@@ -122,7 +127,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public async Task ItShouldThrowSyncExceptionWhenNameContainsMultiValueDelimiter(object initialValue, string expectedViolators)
 		{
 			// Arrange
-			ISynchronizationConfiguration configuration = CreateConfigurationWithDelimiter(_DEFAULT_MULTI_VALUE_DELIMITER);
+			ISynchronizationConfiguration configuration = CreateConfiguration();
 			var instance = new MultipleObjectFieldSanitizer(configuration);
 
 			// Act
@@ -147,7 +152,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			{
 				TestName = "Single"
 			};
-			yield return new TestCaseData(ObjectValueJArrayFromNames("Sick Name", "Cool Name", "Awesome Name"), "Sick Name;Cool Name;Awesome Name")
+			yield return new TestCaseData(ObjectValueJArrayFromNames("Sick Name", "Cool Name", "Awesome Name"),
+				$"Sick Name{_MUTLI_DELIM}Cool Name{_MUTLI_DELIM}Awesome Name")
 			{
 				TestName = "Multiple"
 			};
@@ -157,7 +163,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public async Task ItShouldCombineNamesIntoReturnValue(object initialValue, string expectedResult)
 		{
 			// Arrange
-			ISynchronizationConfiguration configuration = CreateConfigurationWithDelimiter(_DEFAULT_MULTI_VALUE_DELIMITER);
+			ISynchronizationConfiguration configuration = CreateConfiguration();
 			var instance = new MultipleObjectFieldSanitizer(configuration);
 
 			// Act
@@ -167,40 +173,10 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			result.Should().Be(expectedResult);
 		}
 
-		private static IEnumerable<TestCaseData> ReadMultiValueDelimiterFromConfigurationTestCases()
-		{
-			const int numCases = 10;
-			
-			// We avoid 0 (null) and 32 (space).
-			const int minChar = 1;
-			const int maxChar = 31;
-			Random rng = new Random();
-
-			return Enumerable.Range(1, numCases)
-				.Select(_ => new TestCaseData(
-					(char) rng.Next(minChar, maxChar + 1)));
-		}
-
-		[TestCaseSource(nameof(ReadMultiValueDelimiterFromConfigurationTestCases))]
-		public async Task ItShouldReadMultiValueDelimiterFromConfiguration(char delimiter)
-		{
-			// Arrange
-			ISynchronizationConfiguration configuration = CreateConfigurationWithDelimiter(delimiter);
-			var instance = new MultipleObjectFieldSanitizer(configuration);
-
-			// Act
-			object initialValue = ObjectValueJArrayFromNames("Test Name", "Cool Name");
-			object result = await instance.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
-
-			// Assert
-			result.Should().Be($"Test Name{delimiter}Cool Name");
-		}
-
-		private static ISynchronizationConfiguration CreateConfigurationWithDelimiter(char multiValueDelimiter)
+		private static ISynchronizationConfiguration CreateConfiguration()
 		{
 			var config = new Mock<ISynchronizationConfiguration>();
-			var importSettings = new ImportSettingsDto { MultiValueDelimiter = multiValueDelimiter };
-			config.SetupGet(x => x.ImportSettings).Returns(importSettings);
+			config.SetupGet(x => x.ImportSettings).Returns(new ImportSettingsDto());
 			return config.Object;
 		}
 

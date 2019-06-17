@@ -18,14 +18,14 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 	[Parallelizable(ParallelScope.All)]
 	internal class MultipleChoiceFieldSanitizerTests
 	{
-		private const char _DEFAULT_MULTI_VALUE_DELIMITER = ';';
-		private const char _DEFAULT_NESTED_VALUE_DELIMITER = '/';
+		private const char _NESTED_VALUE = (char) 29;
+		private const char _MULTI_VALUE = (char) 30;
 
 		[Test]
 		public void ItShouldSupportMultipleChoice()
 		{
 			// Arrange
-			ISynchronizationConfiguration configuration = CreateConfigurationWithDefaultDelimiters();
+			ISynchronizationConfiguration configuration = CreateConfiguration();
 			var instance = new MultipleChoiceFieldSanitizer(configuration);
 
 			// Act
@@ -47,7 +47,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public async Task ItShouldThrowSyncExceptionWithTypeNamesWhenDeserializationFails(object initialValue)
 		{
 			// Arrange
-			ISynchronizationConfiguration configuration = CreateConfigurationWithDefaultDelimiters();
+			ISynchronizationConfiguration configuration = CreateConfiguration();
 			var instance = new MultipleChoiceFieldSanitizer(configuration);
 
 			// Act
@@ -65,7 +65,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public async Task ItShouldThrowSyncExceptionWithInnerExceptionWhenDeserializationFails(object initialValue)
 		{
 			// Arrange
-			ISynchronizationConfiguration configuration = CreateConfigurationWithDefaultDelimiters();
+			ISynchronizationConfiguration configuration = CreateConfiguration();
 			var instance = new MultipleChoiceFieldSanitizer(configuration);
 
 			// Act
@@ -89,7 +89,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public async Task ItShouldThrowSyncExceptionIfAnyElementsAreInvalid(object initialValue)
 		{
 			// Arrange
-			ISynchronizationConfiguration configuration = CreateConfigurationWithDefaultDelimiters();
+			ISynchronizationConfiguration configuration = CreateConfiguration();
 			var instance = new MultipleChoiceFieldSanitizer(configuration);
 
 			// Act
@@ -104,33 +104,47 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 		private static IEnumerable<TestCaseData> ThrowSyncExceptionWhenNameContainsDelimiterTestCases()
 		{
-			yield return new TestCaseData(ChoiceJArrayFromNames("; Sick Choice"), "'; Sick Choice'")
+			yield return new TestCaseData(
+				ChoiceJArrayFromNames($"{_MULTI_VALUE} Sick Choice"),
+				$"'{_MULTI_VALUE} Sick Choice'")
 			{
 				TestName = "MultiValue - Singleton"
 			};
-			yield return new TestCaseData(ChoiceJArrayFromNames("Okay Name", "Cool; Name", "Awesome Name"), "'Cool; Name'")
+			yield return new TestCaseData(
+				ChoiceJArrayFromNames("Okay Name", $"Cool{_MULTI_VALUE} Name", "Awesome Name"),
+				$"'Cool{_MULTI_VALUE} Name'")
 			{
 				TestName = "MultiValue - Single violating name in larger collection"
 			};
-			yield return new TestCaseData(ChoiceJArrayFromNames("Okay Name", "Cool; Name", "Awesome; Name"), "'Cool; Name', 'Awesome; Name'")
+			yield return new TestCaseData(
+				ChoiceJArrayFromNames("Okay Name", $"Cool{_MULTI_VALUE} Name", $"Awesome{_MULTI_VALUE} Name"),
+				$"'Cool{_MULTI_VALUE} Name', 'Awesome{_MULTI_VALUE} Name'")
 			{
 				TestName = "MultiValue - Many violating names in larger collection"
 			};
 
-			yield return new TestCaseData(ChoiceJArrayFromNames("/ Sick Choice"), "'/ Sick Choice'")
+			yield return new TestCaseData(
+				ChoiceJArrayFromNames($"{_NESTED_VALUE} Sick Choice"),
+				$"'{_NESTED_VALUE} Sick Choice'")
 			{
 				TestName = "NestedValue - Singleton"
 			};
-			yield return new TestCaseData(ChoiceJArrayFromNames("Okay Name", "Cool/ Name", "Awesome Name"), "'Cool/ Name'")
+			yield return new TestCaseData(
+				ChoiceJArrayFromNames("Okay Name", $"Cool{_NESTED_VALUE} Name", "Awesome Name"),
+				$"'Cool{_NESTED_VALUE} Name'")
 			{
 				TestName = "NestedValue - Single violating name in larger collection"
 			};
-			yield return new TestCaseData(ChoiceJArrayFromNames("Okay Name", "Cool/ Name", "Awesome/ Name"), "'Cool/ Name', 'Awesome/ Name'")
+			yield return new TestCaseData(
+				ChoiceJArrayFromNames("Okay Name", $"Cool{_NESTED_VALUE} Name", $"Awesome{_NESTED_VALUE} Name"),
+				$"'Cool{_NESTED_VALUE} Name', 'Awesome{_NESTED_VALUE} Name'")
 			{
 				TestName = "NestedValue - Many violating names in larger collection"
 			};
 			
-			yield return new TestCaseData(ChoiceJArrayFromNames("Okay Name", "Cool/ Name", "Awesome; Name"), "'Cool/ Name', 'Awesome; Name'")
+			yield return new TestCaseData(
+				ChoiceJArrayFromNames("Okay Name", $"Cool{_NESTED_VALUE} Name", $"Awesome{_MULTI_VALUE} Name"),
+				$"'Cool{_NESTED_VALUE} Name', 'Awesome{_MULTI_VALUE} Name'")
 			{
 				TestName = "Combined - Many violating names in larger collection"
 			};
@@ -140,7 +154,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public async Task ItShouldThrowSyncExceptionWhenNameContainsDelimiter(object initialValue, string expectedViolators)
 		{
 			// Arrange
-			ISynchronizationConfiguration configuration = CreateConfigurationWithDefaultDelimiters();
+			ISynchronizationConfiguration configuration = CreateConfiguration();
 			var instance = new MultipleChoiceFieldSanitizer(configuration);
 
 			// Act
@@ -167,7 +181,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				TestName = "Single"
 			};
 			yield return new TestCaseData(ChoiceJArrayFromNames("Sick Name", "Cool Name", "Awesome Name"),
-				"Sick Name;Cool Name;Awesome Name")
+				$"Sick Name{_MULTI_VALUE}Cool Name{_MULTI_VALUE}Awesome Name")
 			{
 				TestName = "Multiple"
 			};
@@ -179,7 +193,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public async Task ItShouldCombineNamesIntoReturnValue(object initialValue, object expectedResult)
 		{
 			// Arrange
-			ISynchronizationConfiguration configuration = CreateConfigurationWithDefaultDelimiters();
+			ISynchronizationConfiguration configuration = CreateConfiguration();
 			var instance = new MultipleChoiceFieldSanitizer(configuration);
 
 			// Act
@@ -189,51 +203,10 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			result.Should().Be(expectedResult);
 		}
 
-		private static IEnumerable<TestCaseData> ReadDelimitersFromConfigurationTestCases()
-		{
-			const int numCases = 10;
-
-			// We avoid 0 (null), 32 (space) and the uppercase Latin alphabet range (starts at 65).
-			const int minMultiValueChar = 1;
-			const int maxMultiValueChar = 31;
-			const int minNestedValueChar = 33;
-			const int maxNestedValueChar = 64;
-			Random rng = new Random();
-
-			return Enumerable.Range(1, numCases)
-				.Select(_ => new TestCaseData(
-					(char) rng.Next(minMultiValueChar, maxMultiValueChar + 1),
-					(char) rng.Next(minNestedValueChar, maxNestedValueChar + 1)));
-		}
-
-		[TestCaseSource(nameof(ReadDelimitersFromConfigurationTestCases))]
-		public async Task ItShouldReadDelimitersFromConfiguration(char multiValueDelimiter, char nestedValueDelimiter)
-		{
-			// Arrange
-			ISynchronizationConfiguration configuration =
-				CreateConfigurationWithDelimiters(multiValueDelimiter, nestedValueDelimiter);
-			var instance = new MultipleChoiceFieldSanitizer(configuration);
-
-			// Act
-			JArray initialValue = ChoiceJArrayFromNames("Test Name", "Cool Name");
-			object result = await instance.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
-
-			// Assert
-			// TODO: Test nested value composition
-			result.Should().Be($"Test Name{multiValueDelimiter}Cool Name");
-		}
-
-		private static ISynchronizationConfiguration CreateConfigurationWithDefaultDelimiters()
-		{
-			return CreateConfigurationWithDelimiters(_DEFAULT_MULTI_VALUE_DELIMITER, _DEFAULT_NESTED_VALUE_DELIMITER);
-		}
-
-		private static ISynchronizationConfiguration CreateConfigurationWithDelimiters(char multiValueDelimiter,
-			char nestedValueDelimiter)
+		private static ISynchronizationConfiguration CreateConfiguration()
 		{
 			var config = new Mock<ISynchronizationConfiguration>();
-			var importSettings = new ImportSettingsDto { MultiValueDelimiter = multiValueDelimiter, NestedValueDelimiter = nestedValueDelimiter };
-			config.SetupGet(x => x.ImportSettings).Returns(importSettings);
+			config.SetupGet(x => x.ImportSettings).Returns(new ImportSettingsDto());
 			return config.Object;
 		}
 

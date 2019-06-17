@@ -35,8 +35,8 @@ namespace Relativity.Sync.Tests.Integration
 		private const string _IDENTIFIER_FIELD_VALUE = "blorgh";
 		private const string _SANITIZING_SOURCE_FIELD_NAME = "bar";
 		private const string _LONGTEXT_STREAM_SHIBBOLETH = "#KCURA99DF2F0FEB88420388879F1282A55760#";
-		private const char _MULTI_VALUE_DELIMITER = ';';
-		private const char _NESTED_VALUE_DELIMITER = '/';
+		private const char _NESTED_DELIM = (char) 29;
+		private const char _MULTI_DELIM = (char) 30;
 
 		[SetUp]
 		public void InitializeMocks()
@@ -53,12 +53,7 @@ namespace Relativity.Sync.Tests.Integration
 			builder.RegisterInstance(_logger.Object).As<ISyncLog>();
 
 			var configuration = new Mock<ISynchronizationConfiguration>();
-			var importSettings = new ImportSettingsDto
-			{
-				MultiValueDelimiter = _MULTI_VALUE_DELIMITER,
-				NestedValueDelimiter = _NESTED_VALUE_DELIMITER
-			};
-			configuration.SetupGet(x => x.ImportSettings).Returns(importSettings);
+			configuration.SetupGet(x => x.ImportSettings).Returns(new ImportSettingsDto());
 			builder.RegisterInstance(configuration.Object).As<ISynchronizationConfiguration>();
 
 			builder.RegisterType<ExportDataSanitizer>().As<ExportDataSanitizer>();
@@ -124,10 +119,16 @@ namespace Relativity.Sync.Tests.Integration
 			yield return new TestCaseData(RelativityDataType.SingleChoice, JsonHelpers.ToJToken<JObject>(new Choice { Name = "FooBar" }), "FooBar");
 
 			yield return new TestCaseData(RelativityDataType.MultipleObject, null, null);
-			yield return new TestCaseData(RelativityDataType.MultipleObject, ObjectValueJArrayFromNames("Test Name", "Cool Name", "Rad Name"), "Test Name;Cool Name;Rad Name");
+			yield return new TestCaseData(
+				RelativityDataType.MultipleObject,
+				ObjectValueJArrayFromNames("Test Name", "Cool Name", "Rad Name"),
+				$"Test Name{_MULTI_DELIM}Cool Name{_MULTI_DELIM}Rad Name");
 
 			yield return new TestCaseData(RelativityDataType.MultipleChoice, null, null);
-			yield return new TestCaseData(RelativityDataType.MultipleChoice, ChoiceJArrayFromNames("Test Name", "Cool Name", "Rad Name"), "Test Name;Cool Name;Rad Name");
+			yield return new TestCaseData(
+				RelativityDataType.MultipleChoice,
+				ChoiceJArrayFromNames("Test Name", "Cool Name", "Rad Name"),
+				$"Test Name{_MULTI_DELIM}Cool Name{_MULTI_DELIM}Rad Name");
 
 			// TODO: Add tests for nested multiple choice values
 		}
@@ -157,14 +158,14 @@ namespace Relativity.Sync.Tests.Integration
 			// Act
 			FieldInfoDto sanitizingSourceField = DefaultField();
 			sanitizingSourceField.RelativityDataType = RelativityDataType.MultipleObject;
-			object initialValue = ObjectValueJArrayFromNames("Cool Name", "Test; Name", "Other Name", "This/ Guy", "Some;; Other");
+			object initialValue = ObjectValueJArrayFromNames("Cool Name", $"Test{_MULTI_DELIM} Name", "Other Name", $"This{_NESTED_DELIM} Guy", $"Some{_MULTI_DELIM}{_MULTI_DELIM} Other");
 			Func<Task> action = async () => await instance.SanitizeAsync(_SOURCE_WORKSPACE_ID, _IDENTIFIER_FIELD_NAME, _IDENTIFIER_FIELD_VALUE, sanitizingSourceField, initialValue)
 				.ConfigureAwait(false);
 
 			// Assert
 			(await action.Should().ThrowAsync<SyncException>().ConfigureAwait(false))
 				.Which.Message.Should()
-					.MatchRegex(": 'Test; Name', 'Some;; Other'$").And
+					.MatchRegex($": 'Test{_MULTI_DELIM} Name', 'Some{_MULTI_DELIM}{_MULTI_DELIM} Other'$").And
 					.Contain(sanitizingSourceField.SourceFieldName);
 		}
 
@@ -177,14 +178,14 @@ namespace Relativity.Sync.Tests.Integration
 			// Act
 			FieldInfoDto sanitizingSourceField = DefaultField();
 			sanitizingSourceField.RelativityDataType = RelativityDataType.MultipleChoice;
-			object initialValue = ChoiceJArrayFromNames("Cool Name", "Test; Name", "Other Name", "This/ Guy", "Some;; Other");
+			object initialValue = ChoiceJArrayFromNames("Cool Name", $"Test{_MULTI_DELIM} Name", "Other Name", $"This{_NESTED_DELIM} Guy", $"Some{_MULTI_DELIM}{_MULTI_DELIM} Other");
 			Func<Task> action = async () => await instance.SanitizeAsync(_SOURCE_WORKSPACE_ID, _IDENTIFIER_FIELD_NAME, _IDENTIFIER_FIELD_VALUE, sanitizingSourceField, initialValue)
 				.ConfigureAwait(false);
 
 			// Assert
 			(await action.Should().ThrowAsync<SyncException>().ConfigureAwait(false))
 				.Which.Message.Should()
-				.MatchRegex(": 'Test; Name', 'This/ Guy', 'Some;; Other'$").And
+				.MatchRegex($": 'Test{_MULTI_DELIM} Name', 'This{_NESTED_DELIM} Guy', 'Some{_MULTI_DELIM}{_MULTI_DELIM} Other'$").And
 				.Contain(sanitizingSourceField.SourceFieldName);
 		}
 
