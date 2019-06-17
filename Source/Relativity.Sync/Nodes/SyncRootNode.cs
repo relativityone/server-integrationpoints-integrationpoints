@@ -25,7 +25,7 @@ namespace Relativity.Sync.Nodes
 			Task metricsTask = ReportJobEndMetrics(context);
 			Task notificationTask = RunNotificationCommand(context);
 
-			Task.WaitAll(metricsTask, notificationTask);
+			Task.WhenAll(metricsTask, notificationTask).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
 		private async Task ReportJobEndMetrics(IExecutionContext<SyncExecutionContext> context)
