@@ -34,16 +34,12 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 		public void SetUp()
 		{
 			_metricsCollectionManager = new Mock<IInternalMetricsCollectionManager>();
-			var servicesManager = new Mock<IServicesMgr>();
 			_logger = new Mock<ISyncLog>();
 
 			_metricsCollectionManager.Setup(x => x.CreateMetricIdentifierAsync(It.IsAny<MetricIdentifier>(), It.Is<bool>(y => y == false)))
 				.Returns(Task.FromResult(1));
 
-			servicesManager.Setup(x => x.CreateProxy<IInternalMetricsCollectionManager>(It.IsAny<ExecutionIdentity>()))
-				.Returns(_metricsCollectionManager.Object);
-
-			_telemetryMetricsProvider = new Mock<TelemetryMetricsProviderBase>(servicesManager.Object, _logger.Object);
+			_telemetryMetricsProvider = new Mock<TelemetryMetricsProviderBase>(_logger.Object);
 
 			_telemetryMetricsProvider.Protected()
 				.SetupGet<string>("ProviderName")
@@ -77,7 +73,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 				.Throws<Exception>();
 
 			// ACT
-			Assert.DoesNotThrowAsync(async () => await _telemetryMetricsProvider.Object.AddMetricsForCategory(_category).ConfigureAwait(false));
+			Assert.DoesNotThrowAsync(async () => await _telemetryMetricsProvider.Object.AddMetricsForCategory(_metricsCollectionManager.Object, _category).ConfigureAwait(false));
 
 			// ASSERT
 			_logger.Verify(x => x.LogError(It.IsAny<Exception>(), It.IsAny<string>(), It.IsAny<object[]>()), Times.Once);
@@ -99,7 +95,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 			SetupMetricIdentifierList(metricIdentifiers);
 
 			// ACT
-			await _telemetryMetricsProvider.Object.AddMetricsForCategory(_category).ConfigureAwait(false);
+			await _telemetryMetricsProvider.Object.AddMetricsForCategory(_metricsCollectionManager.Object, _category).ConfigureAwait(false);
 
 			// ASSERT
 			_metricsCollectionManager.Verify(x => x.CreateMetricIdentifierAsync(It.IsAny<MetricIdentifier>(), It.Is<bool>(y => y == false)), Times.Once);
@@ -132,7 +128,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 			SetupMetricIdentifierList(metricIdentifiers);
 
 			// ACT
-			await _telemetryMetricsProvider.Object.AddMetricsForCategory(_category).ConfigureAwait(false);
+			await _telemetryMetricsProvider.Object.AddMetricsForCategory(_metricsCollectionManager.Object, _category).ConfigureAwait(false);
 
 			// ASSERT
 			_metricsCollectionManager.Verify(x => x.CreateMetricIdentifierAsync(It.IsAny<MetricIdentifier>(), It.Is<bool>(y => y == false)), Times.Once);

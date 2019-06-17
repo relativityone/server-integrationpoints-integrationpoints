@@ -12,6 +12,7 @@ using NUnit.Framework;
 using Relativity.Kepler.Transport;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Transfer;
@@ -51,6 +52,9 @@ namespace Relativity.Sync.Tests.Integration
 			builder.RegisterInstance(userServiceFactory.Object).As<ISourceServiceFactoryForUser>();
 			IntegrationTestsContainerBuilder.MockReporting(builder);
 			builder.RegisterInstance(_logger.Object).As<ISyncLog>();
+
+			var syncConfiguration = new Mock<ISynchronizationConfiguration>();
+			builder.RegisterInstance(syncConfiguration.Object).As<ISynchronizationConfiguration>();
 
 			builder.RegisterType<ExportDataSanitizer>().As<ExportDataSanitizer>();
 			_container = builder.Build();

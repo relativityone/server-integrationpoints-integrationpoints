@@ -16,7 +16,7 @@ namespace Relativity.Sync.Executors.SumReporting
 
 		public Task<ExecutionResult> ExecuteAsync(ISumReporterConfiguration configuration, CancellationToken token)
 		{
-			_syncMetrics.LogPointInTimeString(TelemetryConstants.JOB_START_TYPE, TelemetryConstants.PROVIDER_NAME, configuration.WorkflowId);
+			_syncMetrics.LogPointInTimeString(TelemetryConstants.MetricIdentifiers.JOB_START_TYPE, TelemetryConstants.PROVIDER_NAME, configuration.WorkflowId);
 			return Task.FromResult(ExecutionResult.Success());
 		}
 	}
