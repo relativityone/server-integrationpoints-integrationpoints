@@ -289,6 +289,7 @@ namespace Relativity.Sync.Tests.Integration
 			ExecutionResult result = await _executor.ExecuteAsync(_config, tokenSource.Token).ConfigureAwait(false);
 
 			// assert
+			_importBulkArtifactJob.Verify(x => x.Execute(), Times.Never);
 			result.Status.Should().Be(ExecutionStatus.Canceled);
 		}
 
