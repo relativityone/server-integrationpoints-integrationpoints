@@ -242,9 +242,8 @@ namespace Relativity.Sync.Tests.Integration
 			const int jobHistoryErrorArtifactId = 1003;
 			const int totalItemsCount = 10;
 
-			Mock<IBatch> batch = SetupNewBatch(newBatchArtifactId, totalItemsCount);
+			SetupNewBatch(newBatchArtifactId, totalItemsCount);
 			
-			batch.SetupGet(x => x.TotalItemsCount).Returns(totalItemsCount);
 			_importBulkArtifactJob.Setup(x => x.Execute()).Callback(() =>
 			{
 				_importBulkArtifactJob.Raise(x => x.OnFatalException += null, CreateJobReport());
@@ -274,6 +273,23 @@ namespace Relativity.Sync.Tests.Integration
 				                           (request.FieldValues.Single(fieldValuePair => fieldValuePair.Field.Guid == ErrorTypeField).Value as ChoiceRef).Guid == ErrorTypeJob)),
 				Times.Once);
 			_objectManagerMock.Verify();
+		}
+
+		[Test]
+		public async Task ItShouldCancelJob()
+		{
+			const int newBatchArtifactId = 1001;
+			const int totalItemsCount = 10;
+
+			SetupNewBatch(newBatchArtifactId, totalItemsCount);
+			CancellationTokenSource tokenSource = new CancellationTokenSource();
+
+			// act
+			tokenSource.Cancel();
+			ExecutionResult result = await _executor.ExecuteAsync(_config, tokenSource.Token).ConfigureAwait(false);
+
+			// assert
+			result.Status.Should().Be(ExecutionStatus.Canceled);
 		}
 
 		private void SetupTaggingOfDocuments(int numberOfDocumentsToTag)
