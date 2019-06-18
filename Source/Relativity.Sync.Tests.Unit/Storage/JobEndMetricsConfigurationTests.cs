@@ -13,10 +13,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 	public class JobEndMetricsConfigurationTests
 	{
 		private JobEndMetricsConfiguration _instance;
-
-		private Mock<Relativity.Sync.Storage.IConfiguration> _cache;
-		private SyncJobParameters _syncJobParameters;
-
+		
 		private const int _INTEGRATION_POINT_ARTIFACT_ID = 102779;
 		private const int _JOB_HISTORY_ARTIFACT_ID = 103799;
 
@@ -29,12 +26,12 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			const int workspaceArtifactId = 101679;
 			const string correlationId = "Sample_Correlation_ID";
 
-			_cache = new Mock<Relativity.Sync.Storage.IConfiguration>();
-			_syncJobParameters = new SyncJobParameters(jobId, workspaceArtifactId, _INTEGRATION_POINT_ARTIFACT_ID, correlationId, new ImportSettingsDto());
+			Mock<Sync.Storage.IConfiguration> cache = new Mock<Sync.Storage.IConfiguration>();
+			SyncJobParameters syncJobParameters = new SyncJobParameters(jobId, workspaceArtifactId, _INTEGRATION_POINT_ARTIFACT_ID, correlationId, new ImportSettingsDto());
 
-			_cache.Setup(x => x.GetFieldValue<RelativityObjectValue>(JobHistoryGuid)).Returns(new RelativityObjectValue { ArtifactID = _JOB_HISTORY_ARTIFACT_ID });
+			cache.Setup(x => x.GetFieldValue<RelativityObjectValue>(JobHistoryGuid)).Returns(new RelativityObjectValue { ArtifactID = _JOB_HISTORY_ARTIFACT_ID });
 
-			_instance = new JobEndMetricsConfiguration(_cache.Object, _syncJobParameters);
+			_instance = new JobEndMetricsConfiguration(cache.Object, syncJobParameters);
 		}
 
 		[Test]

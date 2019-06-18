@@ -2,6 +2,7 @@
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Transfer;
 
@@ -11,11 +12,6 @@ namespace Relativity.Sync.Tests.Unit
 	internal sealed class SourceWorkspaceDataReaderFactoryTests
 	{
 		private Mock<IRelativityExportBatcherFactory> _exportBatcherFactory;
-		private Mock<IFieldManager> _fieldManager;
-		private Mock<ISyncLog> _logger;
-		private Mock<ISynchronizationConfiguration> _configuration;
-		private Mock<IBatchDataReaderBuilder> _readerBuilder;
-		private Mock<IItemStatusMonitor> _itemStatusMonitor;
 
 		private SourceWorkspaceDataReaderFactory _instance;
 
@@ -23,14 +19,13 @@ namespace Relativity.Sync.Tests.Unit
 		public void SetUp()
 		{
 			_exportBatcherFactory = new Mock<IRelativityExportBatcherFactory>();
-			_fieldManager = new Mock<IFieldManager>();
-			_logger = new Mock<ISyncLog>();
-			_configuration = new Mock<ISynchronizationConfiguration>();
-			_readerBuilder = new Mock<IBatchDataReaderBuilder>();
-			_itemStatusMonitor = new Mock<IItemStatusMonitor>();
+			Mock<IFieldManager> fieldManager = new Mock<IFieldManager>();
+			Mock<ISynchronizationConfiguration> configuration = new Mock<ISynchronizationConfiguration>();
+			Mock<IBatchDataReaderBuilder> readerBuilder = new Mock<IBatchDataReaderBuilder>();
+			Mock<IItemStatusMonitor> itemStatusMonitor = new Mock<IItemStatusMonitor>();
 
-			_instance = new SourceWorkspaceDataReaderFactory(_exportBatcherFactory.Object, _fieldManager.Object, _configuration.Object,
-				_readerBuilder.Object, _itemStatusMonitor.Object, _logger.Object);
+			_instance = new SourceWorkspaceDataReaderFactory(_exportBatcherFactory.Object, fieldManager.Object, configuration.Object,
+				readerBuilder.Object, itemStatusMonitor.Object, new EmptyLogger());
 		}
 
 		[Test]

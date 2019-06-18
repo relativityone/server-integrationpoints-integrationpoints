@@ -20,7 +20,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 	[TestFixture]
 	internal sealed class SourceWorkspaceDataReaderTests
 	{
-		private Mock<IRelativityExportBatcherFactory> _exportBatcherFactory;
 		private Mock<IRelativityExportBatcher> _exportBatcher;
 		private Mock<ISynchronizationConfiguration> _configuration;
 		private Mock<IFieldManager> _fieldManager;
@@ -31,8 +30,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public void SetUp()
 		{
 			_exportBatcher = new Mock<IRelativityExportBatcher>();
-			_exportBatcherFactory = new Mock<IRelativityExportBatcherFactory>();
-			_exportBatcherFactory.Setup(x => x.CreateRelativityExportBatcher(It.IsAny<Batch>()))
+			Mock<IRelativityExportBatcherFactory> exportBatcherFactory = new Mock<IRelativityExportBatcherFactory>();
+			exportBatcherFactory.Setup(x => x.CreateRelativityExportBatcher(It.IsAny<Batch>()))
 				.Returns(_exportBatcher.Object);
 
 			_identifierField = FieldInfoDto.DocumentField("IdentifierField", "IdentifierField", true);
