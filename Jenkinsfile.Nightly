@@ -20,67 +20,73 @@ properties ([
 def relativityBranchFallback = "develop"
 def raidInstalator = null
 
-node('PolandBuild')
+timestamps
 {
-    try
+    node('PolandBuild')
     {
-        stage ('Checkout')
+        try
         {
-            scmProps = checkout scm
-            step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true, commitSha1: scmProps.GIT_COMMIT])
-        }
-        stage ('Build')
-        {
-            powershell ".\\build.ps1 buildAndSign -buildConfig Release"
-        }
-        stage ('Unit Tests')
-        {
-            powershell ".\\build.ps1 runUnitTests"
-        }
-        stage ('Integration Tests')
-        {
-            powershell ".\\build.ps1 runIntegrationTests"
-        }
-        stage('Install RAID')
-        {
-            raidInstalator = load "scripts/installRaid.groovy"
-            raidInstalator.initializePipeline(this, env, params)
-            raidInstalator.prepareSut(relativityBranchFallback)
-        }
-
-        stage ('System Tests')
-        {
-            powershell ".\\build.ps1 runSystemTests -sutAddress $pipelineState.sut.name" + ".kcura.corp"
-        }
-        
-        currentBuild.result = 'SUCCESS'
-        step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
-    }
-    catch (err)
-    {
-        currentBuild.result = 'FAILURE'
-        echo err.toString()
-        
-        step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
-    }
-    finally
-    {
-        stage('Cleanup VMs')
-		{
-            raidInstalator.cleanupVMs()
-		}
-
-        if (currentBuild.result != 'SUCCESS')
-        {
-            withCredentials([string(credentialsId: 'SlackJenkinsIntegrationToken', variable: 'token')])
+            timeout(time: 3, unit: 'HOURS')
             {
-                message = "${env.BUILD_NUMBER} from *${syncBranch}* failed.\n${env.BUILD_URL}"
-                slackSend channel: "#cd_sync_nightly", color: "E8E8E8", message: "${message}", teamDomain: 'kcura-pd', token: token
+                stage ('Checkout')
+                {
+                    scmProps = checkout scm
+                    step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true, commitSha1: scmProps.GIT_COMMIT])
+                }
+                stage ('Build')
+                {
+                    powershell ".\\build.ps1 buildAndSign -buildConfig Release"
+                }
+                stage ('Unit Tests')
+                {
+                    powershell ".\\build.ps1 runUnitTests"
+                }
+                stage ('Integration Tests')
+                {
+                    powershell ".\\build.ps1 runIntegrationTests"
+                }
+                stage('Install RAID')
+                {
+                    raidInstalator = load "scripts/installRaid.groovy"
+                    raidInstalator.initializePipeline(this, env, params)
+                    raidInstalator.prepareSut(relativityBranchFallback)
+                }
+
+                stage ('System Tests')
+                {
+                    powershell ".\\build.ps1 runSystemTests -sutAddress $pipelineState.sut.name" + ".kcura.corp"
+                }
+                
+                currentBuild.result = 'SUCCESS'
+                step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
+            }
+        }
+        catch (err)
+        {
+            currentBuild.result = 'FAILURE'
+            echo err.toString()
+            
+            step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
+        }
+        finally
+        {
+            stage('Cleanup VMs')
+            {
+                raidInstalator.cleanupVMs()
             }
 
-            if (env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'master')
+            if (currentBuild.result != 'SUCCESS')
             {
-                sendEmailAboutFailureToTeam()
+                withCredentials([string(credentialsId: 'SlackJenkinsIntegrationToken', variable: 'token')])
+                {
+                    message = "${env.BUILD_NUMBER} from *${syncBranch}* failed.\n${env.BUILD_URL}"
+                    slackSend channel: "#cd_sync_nightly", color: "E8E8E8", message: "${message}", teamDomain: 'kcura-pd', token: token
+                }
+
+                if (env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'master')
+                {
+                    sendEmailAboutFailureToTeam()
+                }
             }
         }
     }
