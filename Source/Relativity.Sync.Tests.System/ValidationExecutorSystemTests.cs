@@ -44,9 +44,9 @@ namespace Relativity.Sync.Tests.System
 			string folderPathSourceFieldName = await Rdos.GetFolderPathSourceFieldName(ServiceFactory, expectedSourceWorkspaceArtifactId).ConfigureAwait(false);
 
 			const string fieldsMap =
-				"[{\"sourceField\":{\"displayName\":\"Control Number [Object Identifier]\",\"isIdentifier\":true," +
+				"[{\"sourceField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true," +
 				"\"fieldIdentifier\":\"1003667\",\"isRequired\":true},\"destinationField\":" +
-				"{\"displayName\":\"Control Number [Object Identifier]\",\"isIdentifier\":true,\"fieldIdentifier\":\"1003667\"," +
+				"{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1003667\"," +
 				"\"isRequired\":true},\"fieldMapType\":\"Identifier\"}]";
 
 			ConfigurationStub configuration = new ConfigurationStub
