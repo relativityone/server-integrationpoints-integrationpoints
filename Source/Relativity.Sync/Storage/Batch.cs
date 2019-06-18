@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -264,6 +265,38 @@ namespace Relativity.Sync.Storage
 			return batchIds;
 		}
 
+		private async Task<IEnumerable<IBatch>> ReadAllAsync(int workspaceArtifactId, int syncConfigurationArtifactId)
+		{
+			_workspaceArtifactId = workspaceArtifactId;
+
+			var batches = new ConcurrentBag<IBatch>();
+			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			{
+				var queryRequest = new QueryRequest
+				{
+					ObjectType = new ObjectTypeRef
+					{
+						Guid = BatchObjectTypeGuid
+					},
+					Condition = $"'{SyncConfigurationRelationGuid}' == OBJECT {syncConfigurationArtifactId}"
+				};
+
+				QueryResultSlim result = await objectManager.QuerySlimAsync(_workspaceArtifactId, queryRequest, 1, int.MaxValue).ConfigureAwait(false);
+				if (result.TotalCount > 0)
+				{
+					IEnumerable<int> batchIds = result.Objects.Select(x => x.ArtifactID);
+
+					Parallel.ForEach(batchIds, batchArtifactId =>
+					{
+						var batch = new Batch(_serviceFactory);
+						batch.ReadAsync(workspaceArtifactId, batchArtifactId).GetAwaiter().GetResult();
+						batches.Add(batch);
+					});
+				}
+			}
+			return batches;
+		}
+
 		private static FieldRef[] GetFieldsToRead()
 		{
 			return new[]
@@ -331,6 +364,13 @@ namespace Relativity.Sync.Storage
 			Batch batch = new Batch(serviceFactory);
 			await batch.ReadAsync(workspaceArtifactId, artifactId).ConfigureAwait(false);
 			return batch;
+		}
+
+		public static async Task<IEnumerable<IBatch>> GetAllAsync(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int syncConfigurationArtifactId)
+		{
+			Batch batch = new Batch(serviceFactory);
+			IEnumerable<IBatch> batches = await batch.ReadAllAsync(workspaceArtifactId, syncConfigurationArtifactId).ConfigureAwait(false);
+			return batches;
 		}
 
 		public static async Task<IBatch> GetLastAsync(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int syncConfigurationArtifactId)

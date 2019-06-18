@@ -8,6 +8,7 @@ using Autofac;
 using FluentAssertions;
 using Moq;
 using Moq.Language.Flow;
+using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using Relativity.Kepler.Transport;
 using Relativity.Services.Objects;
@@ -25,7 +26,6 @@ namespace Relativity.Sync.Tests.Integration
 	{
 		private Mock<IObjectManager> _objectManager;
 		private Mock<ISyncLog> _logger;
-		private FieldInfoDto _sanitizingSourceField;
 
 		private IContainer _container;
 
@@ -35,6 +35,8 @@ namespace Relativity.Sync.Tests.Integration
 		private const string _IDENTIFIER_FIELD_VALUE = "blorgh";
 		private const string _SANITIZING_SOURCE_FIELD_NAME = "bar";
 		private const string _LONGTEXT_STREAM_SHIBBOLETH = "#KCURA99DF2F0FEB88420388879F1282A55760#";
+		private const char _NESTED_DELIM = (char) 29;
+		private const char _MULTI_DELIM = (char) 30;
 
 		[SetUp]
 		public void InitializeMocks()
@@ -45,16 +47,14 @@ namespace Relativity.Sync.Tests.Integration
 				.ReturnsAsync(_objectManager.Object);
 			_logger = new Mock<ISyncLog>();
 
-			_sanitizingSourceField = FieldInfoDto.DocumentField(_SANITIZING_SOURCE_FIELD_NAME, "blah", false);
-			_sanitizingSourceField.RelativityDataType = RelativityDataType.LongText;
-
 			ContainerBuilder builder = ContainerHelper.CreateInitializedContainerBuilder();
 			builder.RegisterInstance(userServiceFactory.Object).As<ISourceServiceFactoryForUser>();
 			IntegrationTestsContainerBuilder.MockReporting(builder);
 			builder.RegisterInstance(_logger.Object).As<ISyncLog>();
 
-			var syncConfiguration = new Mock<ISynchronizationConfiguration>();
-			builder.RegisterInstance(syncConfiguration.Object).As<ISynchronizationConfiguration>();
+			var configuration = new Mock<ISynchronizationConfiguration>();
+			configuration.SetupGet(x => x.ImportSettings).Returns(new ImportSettingsDto());
+			builder.RegisterInstance(configuration.Object).As<ISynchronizationConfiguration>();
 
 			builder.RegisterType<ExportDataSanitizer>().As<ExportDataSanitizer>();
 			_container = builder.Build();
@@ -71,13 +71,14 @@ namespace Relativity.Sync.Tests.Integration
 		{
 			// Arrange
 			const string sanitizingFieldValue = "this is a test stream";
-			SetupSuccessfulStreamTestCase(sanitizingFieldValue, fieldEncoding);
+			SetupStreamTestCase(sanitizingFieldValue, fieldEncoding);
 
 			ExportDataSanitizer instance = _container.Resolve<ExportDataSanitizer>();
 
 			// Act
+			FieldInfoDto sanitizingSourceField = LongTextField();
 			const string initialValue = _LONGTEXT_STREAM_SHIBBOLETH;
-			object result = await instance.SanitizeAsync(_SOURCE_WORKSPACE_ID, _IDENTIFIER_FIELD_NAME, _IDENTIFIER_FIELD_VALUE, _sanitizingSourceField, initialValue)
+			object result = await instance.SanitizeAsync(_SOURCE_WORKSPACE_ID, _IDENTIFIER_FIELD_NAME, _IDENTIFIER_FIELD_VALUE, sanitizingSourceField, initialValue)
 				.ConfigureAwait(false);
 
 			// Assert
@@ -89,13 +90,14 @@ namespace Relativity.Sync.Tests.Integration
 		{
 			// Arrange
 			const string sanitizingFieldValue = "this is a test stream";
-			SetupSuccessfulStreamTestCase(sanitizingFieldValue, fieldEncoding);
+			SetupStreamTestCase(sanitizingFieldValue, fieldEncoding);
 
 			ExportDataSanitizer instance = _container.Resolve<ExportDataSanitizer>();
 
 			// Act
+			FieldInfoDto sanitizingSourceField = LongTextField();
 			const string initialValue = _LONGTEXT_STREAM_SHIBBOLETH;
-			object result = await instance.SanitizeAsync(_SOURCE_WORKSPACE_ID, _IDENTIFIER_FIELD_NAME, _IDENTIFIER_FIELD_VALUE, _sanitizingSourceField, initialValue)
+			object result = await instance.SanitizeAsync(_SOURCE_WORKSPACE_ID, _IDENTIFIER_FIELD_NAME, _IDENTIFIER_FIELD_VALUE, sanitizingSourceField, initialValue)
 				.ConfigureAwait(false);
 
 			// Assert
@@ -108,7 +110,86 @@ namespace Relativity.Sync.Tests.Integration
 			reconstructedString.Should().Be(sanitizingFieldValue);
 		}
 
-		private void SetupSuccessfulStreamTestCase(string value, Encoding fieldEncoding)
+		private static IEnumerable<TestCaseData> ObjectChoiceSanitizerGoldenTestCases()
+		{
+			yield return new TestCaseData(RelativityDataType.SingleObject, null, null);
+			yield return new TestCaseData(RelativityDataType.SingleObject, JsonHelpers.ToJToken<JObject>(new RelativityObjectValue { Name = "FooBar" }), "FooBar");
+
+			yield return new TestCaseData(RelativityDataType.SingleChoice, null, null);
+			yield return new TestCaseData(RelativityDataType.SingleChoice, JsonHelpers.ToJToken<JObject>(new Choice { Name = "FooBar" }), "FooBar");
+
+			yield return new TestCaseData(RelativityDataType.MultipleObject, null, null);
+			yield return new TestCaseData(
+				RelativityDataType.MultipleObject,
+				ObjectValueJArrayFromNames("Test Name", "Cool Name", "Rad Name"),
+				$"Test Name{_MULTI_DELIM}Cool Name{_MULTI_DELIM}Rad Name");
+
+			yield return new TestCaseData(RelativityDataType.MultipleChoice, null, null);
+			yield return new TestCaseData(
+				RelativityDataType.MultipleChoice,
+				ChoiceJArrayFromNames("Test Name", "Cool Name", "Rad Name"),
+				$"Test Name{_MULTI_DELIM}Cool Name{_MULTI_DELIM}Rad Name");
+
+			// TODO: Add tests for nested multiple choice values
+		}
+
+		[TestCaseSource(nameof(ObjectChoiceSanitizerGoldenTestCases))]
+		public async Task ObjectChoiceSanitizersShouldConstructCorrectValue(RelativityDataType type, object initialValue, object expectedResult)
+		{
+			// Arrange
+			ExportDataSanitizer instance = _container.Resolve<ExportDataSanitizer>();
+
+			// Act
+			FieldInfoDto sanitizingSourceField = DefaultField();
+			sanitizingSourceField.RelativityDataType = type;
+			object result = await instance.SanitizeAsync(_SOURCE_WORKSPACE_ID, _IDENTIFIER_FIELD_NAME, _IDENTIFIER_FIELD_VALUE, sanitizingSourceField, initialValue)
+				.ConfigureAwait(false);
+
+			// Assert
+			result.Should().Be(expectedResult);
+		}
+
+		[Test]
+		public async Task MultipleObjectSanitizerShouldThrowOnInvalidObjectName()
+		{
+			// Arrange
+			ExportDataSanitizer instance = _container.Resolve<ExportDataSanitizer>();
+
+			// Act
+			FieldInfoDto sanitizingSourceField = DefaultField();
+			sanitizingSourceField.RelativityDataType = RelativityDataType.MultipleObject;
+			object initialValue = ObjectValueJArrayFromNames("Cool Name", $"Test{_MULTI_DELIM} Name", "Other Name", $"This{_NESTED_DELIM} Guy", $"Some{_MULTI_DELIM}{_MULTI_DELIM} Other");
+			Func<Task> action = async () => await instance.SanitizeAsync(_SOURCE_WORKSPACE_ID, _IDENTIFIER_FIELD_NAME, _IDENTIFIER_FIELD_VALUE, sanitizingSourceField, initialValue)
+				.ConfigureAwait(false);
+
+			// Assert
+			(await action.Should().ThrowAsync<SyncException>().ConfigureAwait(false))
+				.Which.Message.Should()
+					.MatchRegex($": 'Test{_MULTI_DELIM} Name', 'Some{_MULTI_DELIM}{_MULTI_DELIM} Other'$").And
+					.Contain(sanitizingSourceField.SourceFieldName);
+		}
+
+		[Test]
+		public async Task MultipleChoiceSanitizerShouldThrowOnInvalidChoiceName()
+		{
+			// Arrange
+			ExportDataSanitizer instance = _container.Resolve<ExportDataSanitizer>();
+
+			// Act
+			FieldInfoDto sanitizingSourceField = DefaultField();
+			sanitizingSourceField.RelativityDataType = RelativityDataType.MultipleChoice;
+			object initialValue = ChoiceJArrayFromNames("Cool Name", $"Test{_MULTI_DELIM} Name", "Other Name", $"This{_NESTED_DELIM} Guy", $"Some{_MULTI_DELIM}{_MULTI_DELIM} Other");
+			Func<Task> action = async () => await instance.SanitizeAsync(_SOURCE_WORKSPACE_ID, _IDENTIFIER_FIELD_NAME, _IDENTIFIER_FIELD_VALUE, sanitizingSourceField, initialValue)
+				.ConfigureAwait(false);
+
+			// Assert
+			(await action.Should().ThrowAsync<SyncException>().ConfigureAwait(false))
+				.Which.Message.Should()
+				.MatchRegex($": 'Test{_MULTI_DELIM} Name', 'This{_NESTED_DELIM} Guy', 'Some{_MULTI_DELIM}{_MULTI_DELIM} Other'$").And
+				.Contain(sanitizingSourceField.SourceFieldName);
+		}
+
+		private void SetupStreamTestCase(string value, Encoding fieldEncoding)
 		{
 			QueryResultSlim itemArtifactResult = WrapArtifactIdInQueryResultSlim(_ITEM_ARTIFACT_ID);
 			SetupItemArtifactIdRequest(MatchAll).ReturnsAsync(itemArtifactResult);
@@ -123,6 +204,19 @@ namespace Relativity.Sync.Tests.Integration
 			keplerStream.Setup(x => x.GetStreamAsync()).ReturnsAsync(new MemoryStream(streamValueBytes));
 			SetupStreamLongText(MatchAll, MatchAll)
 				.ReturnsAsync(keplerStream.Object);
+		}
+
+		private static FieldInfoDto DefaultField()
+		{
+			FieldInfoDto field = FieldInfoDto.DocumentField(_SANITIZING_SOURCE_FIELD_NAME, "blah", false);
+			return field;
+		}
+
+		private static FieldInfoDto LongTextField()
+		{
+			FieldInfoDto field = FieldInfoDto.DocumentField(_SANITIZING_SOURCE_FIELD_NAME, "blah", false);
+			field.RelativityDataType = RelativityDataType.LongText;
+			return field;
 		}
 
 		private static bool MatchAll(object _) => true;
@@ -177,6 +271,18 @@ namespace Relativity.Sync.Tests.Integration
 					new RelativityObjectSlim {ArtifactID = artifactId}
 				}
 			};
+		}
+
+		private static JArray ObjectValueJArrayFromNames(params string[] names)
+		{
+			RelativityObjectValue[] objectValues = names.Select(x => new RelativityObjectValue { Name = x }).ToArray();
+			return JsonHelpers.ToJToken<JArray>(objectValues);
+		}
+
+		private static JArray ChoiceJArrayFromNames(params string[] names)
+		{
+			Choice[] choices = names.Select(x => new Choice { Name = x }).ToArray();
+			return JsonHelpers.ToJToken<JArray>(choices);
 		}
 	}
 }

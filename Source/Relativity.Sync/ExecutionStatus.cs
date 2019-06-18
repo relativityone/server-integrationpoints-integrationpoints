@@ -1,14 +1,22 @@
-﻿namespace Relativity.Sync
+﻿using System.ComponentModel;
+
+namespace Relativity.Sync
 {
-	/// <summary>
-	///     Indicates execution status of the command.
-	/// </summary>
 	internal enum ExecutionStatus
 	{
-		None,
+		[Description("None")]
+		None = 0,
+
+		[Description("Completed")]
 		Completed,
+
+		[Description("Completed with Errors")]
 		CompletedWithErrors,
+
+		[Description("Canceled")]
 		Canceled,
+
+		[Description("Failed")]
 		Failed
 	}
 }

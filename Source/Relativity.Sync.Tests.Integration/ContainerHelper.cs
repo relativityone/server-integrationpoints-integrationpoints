@@ -11,7 +11,6 @@ using Relativity.Services.InstanceSetting;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Nodes;
-using Relativity.Sync.Telemetry;
 using Relativity.Telemetry.APM;
 
 namespace Relativity.Sync.Tests.Integration
