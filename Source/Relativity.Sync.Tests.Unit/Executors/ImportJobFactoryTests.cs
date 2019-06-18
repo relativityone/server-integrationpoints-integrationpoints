@@ -24,7 +24,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private Mock<ISourceWorkspaceDataReaderFactory> _dataReaderFactory;
 		private Mock<IJobHistoryErrorRepository> _jobHistoryErrorRepository;
 
-		private Mock<ISourceWorkspaceDataReader> _dataReader;
 		private Mock<IBatch> _batch;
 
 		private ISyncLog _logger;
@@ -37,9 +36,9 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Mock<IJobProgressHandler> jobProgressHandler = new Mock<IJobProgressHandler>();
 			_jobProgressHandlerFactory = new Mock<IJobProgressHandlerFactory>();
 			_jobProgressHandlerFactory.Setup(x => x.CreateJobProgressHandler(It.IsAny<IJobProgressUpdater>())).Returns(jobProgressHandler.Object);
-			_dataReader = new Mock<ISourceWorkspaceDataReader>();
+			Mock<ISourceWorkspaceDataReader>  dataReader = new Mock<ISourceWorkspaceDataReader>();
 			_dataReaderFactory = new Mock<ISourceWorkspaceDataReaderFactory>();
-			_dataReaderFactory.Setup(x => x.CreateSourceWorkspaceDataReader(It.IsAny<IBatch>())).Returns(_dataReader.Object);
+			_dataReaderFactory.Setup(x => x.CreateSourceWorkspaceDataReader(It.IsAny<IBatch>())).Returns(dataReader.Object);
 			_jobHistoryErrorRepository = new Mock<IJobHistoryErrorRepository>();
 
 			_logger = new EmptyLogger();

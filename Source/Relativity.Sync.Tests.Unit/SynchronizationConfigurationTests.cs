@@ -6,16 +6,14 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
-using IConfiguration = Relativity.Sync.Storage.IConfiguration;
 
 namespace Relativity.Sync.Tests.Unit
 {
 	[TestFixture]
 	internal sealed class SynchronizationConfigurationTests
 	{
-		private Mock<IConfiguration> _cache;
+		private Mock<Sync.Storage.IConfiguration> _cache;
 		private ImportSettingsDto _importSettings;
-		private SyncJobParameters _syncJobParameters;
 		private SynchronizationConfiguration _syncConfig;
 
 		private const int _JOB_ID = 1;
@@ -31,10 +29,10 @@ namespace Relativity.Sync.Tests.Unit
 		[SetUp]
 		public void SetUp()
 		{
-			_cache = new Mock<IConfiguration>();
+			_cache = new Mock<Sync.Storage.IConfiguration>();
 			_importSettings = new ImportSettingsDto();
-			_syncJobParameters = new SyncJobParameters(_JOB_ID, _SOURCE_WORKSPACE_ARTIFACT_ID, _importSettings);
-			_syncConfig = new SynchronizationConfiguration(_cache.Object, _syncJobParameters, new EmptyLogger());
+			SyncJobParameters syncJobParameters = new SyncJobParameters(_JOB_ID, _SOURCE_WORKSPACE_ARTIFACT_ID, _importSettings);
+			_syncConfig = new SynchronizationConfiguration(_cache.Object, syncJobParameters, new EmptyLogger());
 		}
 
 		[Test]

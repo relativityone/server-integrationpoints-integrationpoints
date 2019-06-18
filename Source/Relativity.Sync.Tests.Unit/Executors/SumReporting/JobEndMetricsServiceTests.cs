@@ -19,21 +19,19 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 		private JobEndMetricsService _instance;
 
 		private Mock<IBatchRepository> _batchRepository;
-		private Mock<IJobEndMetricsConfiguration> _jobEndMetricsConfiguration;
 		private Mock<IFieldManager> _fieldManager;
 		private Mock<ISyncMetrics> _syncMetrics;
-		private Mock<ISyncLog> _logger;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_batchRepository = new Mock<IBatchRepository>();
-			_jobEndMetricsConfiguration = new Mock<IJobEndMetricsConfiguration>(MockBehavior.Loose);
+			Mock<IJobEndMetricsConfiguration> jobEndMetricsConfiguration = new Mock<IJobEndMetricsConfiguration>(MockBehavior.Loose);
 			_fieldManager = new Mock<IFieldManager>();
 			_syncMetrics = new Mock<ISyncMetrics>();
-			_logger = new Mock<ISyncLog>();
+			Mock<ISyncLog> logger = new Mock<ISyncLog>();
 
-			_instance = new JobEndMetricsService(_batchRepository.Object, _jobEndMetricsConfiguration.Object, _fieldManager.Object, _syncMetrics.Object, _logger.Object);
+			_instance = new JobEndMetricsService(_batchRepository.Object, jobEndMetricsConfiguration.Object, _fieldManager.Object, _syncMetrics.Object, logger.Object);
 		}
 
 		[Test]

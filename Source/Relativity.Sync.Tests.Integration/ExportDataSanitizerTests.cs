@@ -15,6 +15,7 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Transfer;
 using Relativity.Sync.Transfer.StreamWrappers;
@@ -25,7 +26,6 @@ namespace Relativity.Sync.Tests.Integration
 	internal sealed class ExportDataSanitizerTests
 	{
 		private Mock<IObjectManager> _objectManager;
-		private Mock<ISyncLog> _logger;
 
 		private IContainer _container;
 
@@ -45,12 +45,11 @@ namespace Relativity.Sync.Tests.Integration
 			var userServiceFactory = new Mock<ISourceServiceFactoryForUser>();
 			userServiceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>())
 				.ReturnsAsync(_objectManager.Object);
-			_logger = new Mock<ISyncLog>();
 
 			ContainerBuilder builder = ContainerHelper.CreateInitializedContainerBuilder();
 			builder.RegisterInstance(userServiceFactory.Object).As<ISourceServiceFactoryForUser>();
 			IntegrationTestsContainerBuilder.MockReporting(builder);
-			builder.RegisterInstance(_logger.Object).As<ISyncLog>();
+			builder.RegisterInstance(new EmptyLogger()).As<ISyncLog>();
 
 			var configuration = new Mock<ISynchronizationConfiguration>();
 			configuration.SetupGet(x => x.ImportSettings).Returns(new ImportSettingsDto());
