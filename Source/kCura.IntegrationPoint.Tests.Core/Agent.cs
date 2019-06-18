@@ -89,7 +89,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			try
 			{
-				using (IAgentManager proxy = Helper.CreateAdminProxy<IAgentManager>())
+				using (IAgentManager proxy = Helper.CreateProxy<IAgentManager>())
 				{
 					int artifactId = proxy.CreateSingleAsync(agentDto).ConfigureAwait(false).GetAwaiter().GetResult();
 
@@ -108,7 +108,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static void UpdateAgent(global::Relativity.Services.Agent.Agent agent)
 		{
-			using (IAgentManager proxy = Helper.CreateAdminProxy<IAgentManager>())
+			using (IAgentManager proxy = Helper.CreateProxy<IAgentManager>())
 			{
 				try
 				{
@@ -123,7 +123,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static List<ResourceServer> GetAgentServers()
 		{
-			using (IAgentManager proxy = Helper.CreateAdminProxy<IAgentManager>())
+			using (IAgentManager proxy = Helper.CreateProxy<IAgentManager>())
 			{
 				try
 				{
@@ -143,7 +143,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			{
 				return;
 			}
-			using (IAgentManager proxy = Helper.CreateAdminProxy<IAgentManager>())
+			using (IAgentManager proxy = Helper.CreateProxy<IAgentManager>())
 			{
 				try
 				{
@@ -158,7 +158,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static List<AgentTypeRef> GetAgentTypes()
 		{
-			using (IAgentManager proxy = Helper.CreateAdminProxy<IAgentManager>())
+			using (IAgentManager proxy = Helper.CreateProxy<IAgentManager>())
 			{
 				try
 				{
@@ -174,7 +174,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static AgentQueryResultSet QueryAgents(Query query)
 		{
-			using (IAgentManager proxy = Helper.CreateAdminProxy<IAgentManager>())
+			using (IAgentManager proxy = Helper.CreateProxy<IAgentManager>())
 			{
 				AgentQueryResultSet agentQueryResultSet = proxy.QueryAsync(query).ConfigureAwait(false).GetAwaiter().GetResult();
 

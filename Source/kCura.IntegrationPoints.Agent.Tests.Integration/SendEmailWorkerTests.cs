@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		public async Task OneTimeSetUp()
 		{
 			_jobService = Container.Resolve<IJobService>();
-			_instanceSettingsManager = Helper.CreateAdminProxy<IInstanceSettingManager>();
+			_instanceSettingsManager = Helper.CreateProxy<IInstanceSettingManager>();
 			string localComputerHostname = Dns.GetHostName();
 
 			await SetNotificationInstanceSettings(localComputerHostname).ConfigureAwait(false);

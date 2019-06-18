@@ -55,7 +55,8 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			{
 				WorkspaceArtifactId = WorkspaceArtifactId
 			};
-			IJobHistoryManager jobHistoryManager = Helper.CreateUserProxy<IJobHistoryManager>(_userModel.EmailAddress);
+
+			IJobHistoryManager jobHistoryManager = Helper.CreateProxy<IJobHistoryManager>(_userModel.EmailAddress);
 			AssertPermissionErrorMessage(() => jobHistoryManager.GetJobHistoryAsync(jobHistoryRequest));
 		}
 
@@ -73,7 +74,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			{
 				WorkspaceArtifactId = WorkspaceArtifactId
 			};
-			IJobHistoryManager jobHistoryManager = Helper.CreateUserProxy<IJobHistoryManager>(_userModel.EmailAddress);
+			IJobHistoryManager jobHistoryManager = Helper.CreateProxy<IJobHistoryManager>(_userModel.EmailAddress);
 			AssertPermissionErrorMessage(() => jobHistoryManager.GetJobHistoryAsync(jobHistoryRequest));
 		}
 
@@ -84,7 +85,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			{
 				WorkspaceArtifactId = TargetWorkspaceArtifactID
 			};
-			IJobHistoryManager jobHistoryManager = Helper.CreateUserProxy<IJobHistoryManager>(_userModel.EmailAddress);
+			IJobHistoryManager jobHistoryManager = Helper.CreateProxy<IJobHistoryManager>(_userModel.EmailAddress);
 			AssertPermissionErrorMessage(() => jobHistoryManager.GetJobHistoryAsync(jobHistoryRequest));
 		}
 
@@ -104,7 +105,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 				PageSize = 10
 			};
 
-			IJobHistoryManager jobHistoryManager = Helper.CreateUserProxy<IJobHistoryManager>(_userModel.EmailAddress);
+			IJobHistoryManager jobHistoryManager = Helper.CreateProxy<IJobHistoryManager>(_userModel.EmailAddress);
 
 			//Act & Assert
 			Assert.That(() => jobHistoryManager.GetJobHistoryAsync(jobHistoryRequest).GetAwaiter().GetResult(),
@@ -138,7 +139,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			ipModel.Destination = CreateSerializedDestinationConfigWithTargetWorkspace(ImportOverwriteModeEnum.AppendOnly, TargetWorkspaceArtifactID);
 			Core.Models.IntegrationPointModel ip = CreateOrUpdateIntegrationPoint(ipModel);
 
-			IIntegrationPointManager integrationPointManager = Helper.CreateAdminProxy<IIntegrationPointManager>();
+			IIntegrationPointManager integrationPointManager = Helper.CreateProxy<IIntegrationPointManager>();
 			await integrationPointManager.RunIntegrationPointAsync(SourceWorkspaceArtifactID, ip.ArtifactID)
 				.ConfigureAwait(false);
 

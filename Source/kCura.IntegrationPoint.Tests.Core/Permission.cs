@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		public static async Task<GroupPermissions> GetGroupPermissionsAsync(int workspaceID, int groupID)
 		{
 			var groupRef = new GroupRef(groupID);
-			using (var proxy = Helper.CreateAdminProxy<IPermissionManager>())
+			using (var proxy = Helper.CreateProxy<IPermissionManager>())
 			{
 				return await proxy.GetWorkspaceGroupPermissionsAsync(workspaceID, groupRef).ConfigureAwait(false);
 			}
@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static async Task SavePermissionAsync(int workspaceID, GroupPermissions permissions)
 		{
-			using (var proxy = Helper.CreateAdminProxy<IPermissionManager>())
+			using (var proxy = Helper.CreateProxy<IPermissionManager>())
 			{
 				await proxy.SetWorkspaceGroupPermissionsAsync(workspaceID, permissions).ConfigureAwait(false);
 			}
@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static async Task RemoveAddWorkspaceGroupAsync(int workspaceID, GroupSelector groupSelector)
 		{
-			using (var proxy = Helper.CreateAdminProxy<IPermissionManager>())
+			using (var proxy = Helper.CreateProxy<IPermissionManager>())
 			{
 				GroupSelector workspaceGroupSelector = await proxy
 					.GetWorkspaceGroupSelectorAsync(workspaceID)

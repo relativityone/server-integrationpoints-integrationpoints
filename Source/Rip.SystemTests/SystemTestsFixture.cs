@@ -37,7 +37,7 @@ namespace Rip.SystemTests
 			ConfigurationStore = new DefaultConfigurationStore();
 			TestHelper = new TestHelper();
 
-			await CreateAndConfigureWorkspaces();
+			await CreateAndConfigureWorkspaces().ConfigureAwait(false);
 			InitializeContainer();
 		}
 
@@ -51,7 +51,7 @@ namespace Rip.SystemTests
 			var applicationManager = new RelativityApplicationManager(TestHelper);
 			if (SharedVariables.UseIpRapFile())
 			{
-				await applicationManager.ImportRipToLibraryAsync();
+				await applicationManager.ImportRipToLibraryAsync().ConfigureAwait(false);
 			}
 
 			applicationManager.InstallApplicationFromLibrary(WorkspaceID);

@@ -4,7 +4,7 @@
 task default -depends build
 
 
-task build -depends build_initalize, start_sonar, build_integration_points, build_my_first_provider, build_json_loader, build_rip_documentation, copy_dlls_to_lib_dir, copy_test_dlls_to_lib_dir, copy_web_drivers, run_coverage, stop_sonar, generate_validation_message_table, sign {
+task build -depends build_initalize, check_configureawait, start_sonar, build_integration_points, build_my_first_provider, build_json_loader, build_rip_documentation, copy_dlls_to_lib_dir, copy_test_dlls_to_lib_dir, copy_web_drivers, run_coverage, stop_sonar, generate_validation_message_table, sign {
  
 }
 
@@ -18,6 +18,7 @@ task build_initalize {
     'branch        = ' + $branch 
     'build config  = ' + $build_config
     'run_sonarqube = ' + $run_sonarqube
+    'run_checkConfigureAwait= ' + $run_checkConfigureAwait
     'skip_tests    = ' + $skip_tests
     ''
 
@@ -27,6 +28,23 @@ task build_initalize {
 
     if([System.IO.Directory]::Exists($buildlogs_directory)) {Remove-Item $buildlogs_directory -Recurse}
     [System.IO.Directory]::CreateDirectory($buildlogs_directory)
+}
+
+task check_configureawait -depends get_configureawait_checker -precondition { return $RUN_CHECKCONFIGUREAWAIT } {
+    & (Join-Path $development_scripts_directory "check-configureawait.ps1") -sourceDir $source_directory -toolsDir $package_root_directory -logsDir $buildlogs_directory
+}
+
+task get_configureawait_checker {  
+    if (![System.IO.File]::Exists($configureawait_checker_pkg)) {
+        exec {   
+            & $nuget_exe @('install', 'ConfigureAwaitChecker.v9', '-ExcludeVersion', '-Version', $configureawait_checker_version, '-OutputDirectory', $package_root_directory)
+        }    
+    }
+    if (![System.IO.File]::Exists($resharper_commandlinetools_exe)) {
+        exec { 
+            & $nuget_exe @('install', 'JetBrains.ReSharper.CommandLineTools', '-ExcludeVersion', '-Version', $resharper_commandlinetools_version, '-OutputDirectory', $package_root_directory)
+        }
+    }
 }
 
 task get_sonarqube -precondition { (-not [System.IO.File]::Exists($sonarCube_exe)) } {    

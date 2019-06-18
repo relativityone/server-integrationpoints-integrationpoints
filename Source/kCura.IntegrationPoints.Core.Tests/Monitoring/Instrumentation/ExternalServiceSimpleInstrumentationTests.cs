@@ -117,7 +117,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring.Instrumentation
 			Func<int> func = ValidateFunctionExecution;
 
 			// act & assert
-			await _sut.ExecuteAsync(() => Task.Run(func));
+			await _sut.ExecuteAsync(() => Task.Run(func)).ConfigureAwait(false);
 		}
 
 		[Test]
@@ -125,8 +125,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring.Instrumentation
 		{
 			// act
 			await _sut.ExecuteAsync(
-				() => Task.Run(() =>_EXPECTED_RETURN_VALUE)
-			);
+				() => Task.Run(() => _EXPECTED_RETURN_VALUE)
+			).ConfigureAwait(false);
 
 			// assert
 			_startedInstrumentation.Received(1).Completed();
@@ -138,7 +138,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring.Instrumentation
 			// act
 			int result = await _sut.ExecuteAsync(
 				() => Task.Run(() => _EXPECTED_RETURN_VALUE)
-			);
+			).ConfigureAwait(false);
 
 			// assert
 			Assert.AreEqual(_EXPECTED_RETURN_VALUE, result);
@@ -153,7 +153,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring.Instrumentation
 			// act
 			try
 			{
-				await _sut.ExecuteAsync(() => Task.Run(throwExceptionFunc));
+				await _sut.ExecuteAsync(() => Task.Run(throwExceptionFunc)).ConfigureAwait(false);
 			}
 			catch (Exception ex)
 			{

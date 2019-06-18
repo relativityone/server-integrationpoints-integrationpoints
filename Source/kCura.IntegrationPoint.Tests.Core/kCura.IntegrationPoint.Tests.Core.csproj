@@ -176,15 +176,6 @@
     <Compile Include="Templates\SourceProviderTemplate.cs" />
     <Compile Include="TestHelpers\ExceptionHelper.cs" />
     <Compile Include="TestHelpers\ExtendedIAgentHelper.cs" />
-    <Compile Include="TestHelpers\ExtendedIArtifactGuidManager.cs" />
-    <Compile Include="TestHelpers\ExtendedIFieldManager.cs" />
-    <Compile Include="TestHelpers\ExtendedIKeywordSearchManager.cs" />
-    <Compile Include="TestHelpers\ExtendedInstanceSettingManager.cs" />
-    <Compile Include="TestHelpers\ExtendedIObjectQueryManager.cs" />
-    <Compile Include="TestHelpers\ExtendedIPermissionManager.cs" />
-    <Compile Include="TestHelpers\ExtendedIRSAPIClient.cs" />
-    <Compile Include="TestHelpers\ExtendedIWorkspaceManager.cs" />
-    <Compile Include="TestHelpers\ExtendedSearchContainerManager.cs" />
     <Compile Include="TestHelpers\FileServiceBase.cs" />
     <Compile Include="TestHelpers\FolderWithDocumentsIdRetriever.cs" />
     <Compile Include="TestHelpers\IImagesService.cs" />

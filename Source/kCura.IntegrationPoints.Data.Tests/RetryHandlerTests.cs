@@ -57,7 +57,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			RetryHandler sut = CreateRetryHandler(numberOfRetries);
 
 			// act
-			Func<Task<string>> functionToExecute = async () => await sut.ExecuteWithRetriesAsync(operationToExecute);
+			Func<Task> functionToExecute = () => sut.ExecuteWithRetriesAsync(operationToExecute);
 
 			// assert
 			functionToExecute.ShouldThrow<InvalidOperationException>();
@@ -75,7 +75,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			RetryHandler sut = CreateRetryHandler(numberOfRetries);
 
 			// act
-			Func<Task<string>> functionToExecute = async () => await sut.ExecuteWithRetriesAsync(operationToExecute);
+			Func<Task> functionToExecute = () => sut.ExecuteWithRetriesAsync(operationToExecute);
 
 			// assert
 			functionToExecute.ShouldThrowExactly<Exception>()

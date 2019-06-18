@@ -147,16 +147,16 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			return this;
 		}
 
-		public Task CreateEntityView(string viewName)
+		public Task CreateEntityViewAsync(string viewName)
 		{
 			return EntityObjectTypeHelper.CreateEntityView(viewName);
 		}
 
-		public async Task InstallIntegrationPointsAsync()
+		public  Task InstallIntegrationPointsAsync()
 		{
-			await Task.Run(() =>
+			return Task.Run(() =>
 				ApplicationInstallationHelper.InstallIntegrationPoints()
-			).ConfigureAwait(false);
+			);
 		}
 
 		public TestContext ImportDocumentsToRoot()
@@ -186,9 +186,9 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			return this;
 		}
 
-		public async Task ImportDocumentsWithLargeTextAsync()
+		public Task ImportDocumentsWithLargeTextAsync()
 		{
-			await ImportDocumentsAsync(
+			return ImportDocumentsAsync(
 				withNatives: false,
 				testDataType: DocumentTestDataBuilder.TestDataType.TextWithoutFolderStructure
 			);
@@ -200,9 +200,9 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			return this;
 		}
 
-		public async Task ImportDocumentsAsync(bool withNatives = true, DocumentTestDataBuilder.TestDataType testDataType = DocumentTestDataBuilder.TestDataType.ModerateWithFoldersStructure)
+		public Task ImportDocumentsAsync(bool withNatives = true, DocumentTestDataBuilder.TestDataType testDataType = DocumentTestDataBuilder.TestDataType.ModerateWithFoldersStructure)
 		{
-			await Task.Run(() => ImportDocuments(withNatives, testDataType));
+			return Task.Run(() => ImportDocuments(withNatives, testDataType));
 		}
 
 		public bool ExecuteRelativityFolderPathScript()

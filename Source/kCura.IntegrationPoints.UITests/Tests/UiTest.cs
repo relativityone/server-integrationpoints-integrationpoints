@@ -107,16 +107,16 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			}
 		}
 
-		private async Task SetupAgentAsync()
+		private Task SetupAgentAsync()
 		{
-			await Task.Run(() => Agent.CreateIntegrationPointAgentIfNotExists());
+			return Task.Run(() => Agent.CreateIntegrationPointAgentIfNotExists());
 		}
 
 		private async Task SetupWorkspaceAsync()
 		{
 			if (string.IsNullOrEmpty(SharedVariables.UiUseThisExistingWorkspace))
 			{
-				await CreateWorkspaceAsync();
+				await CreateWorkspaceAsync().ConfigureAwait(false);
 			}
 			else
 			{
@@ -135,20 +135,20 @@ namespace kCura.IntegrationPoints.UITests.Tests
 
 			if (!SharedVariables.UiSkipDocumentImport)
 			{
-				await ImportDocumentsAsync();
+				await ImportDocumentsAsync().ConfigureAwait(false);
 			}
 
-			await installIntegrationPointsTask;
+			await installIntegrationPointsTask.ConfigureAwait(false);
 		}
 
-		protected virtual async Task CreateWorkspaceAsync()
+		protected virtual Task CreateWorkspaceAsync()
 		{
-			await Context.CreateTestWorkspaceAsync();
+			return Context.CreateTestWorkspaceAsync();
 		}
 
-		protected virtual async Task ImportDocumentsAsync()
+		protected virtual Task ImportDocumentsAsync()
 		{
-			await Context.ImportDocumentsAsync();
+			return Context.ImportDocumentsAsync();
 		}
 
 		[TearDown]

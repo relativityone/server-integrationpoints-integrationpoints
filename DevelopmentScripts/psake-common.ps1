@@ -23,6 +23,7 @@ properties {
     $server_type = 'teambranch'
     $build_type = 'DEV'
     $run_sonarQube = $false
+    $run_checkConfigureAwait = $false
     $skip_tests = $false
 
     $git = Test-Path -Path ([System.IO.Path]::Combine($root, '.git'))
@@ -109,6 +110,11 @@ properties {
     $sonarqube_project_name = "IntegrationPoints"
     $sonarqube_properties = [System.IO.Path]::Combine($development_scripts_directory, "sonarqube", "SonarQube.Analysis.xml")
 
+    #configureAwait checker variables
+    $configureawait_checker_pkg = [System.IO.Path]::Combine($nuget_packages_directory, 'ConfigureAwaitChecker.v9', "configureawaitchecker.v9." + $configureawait_checker_version + ".nupkg")
+    $configureawait_checker_version = "0.15.0";
+    $resharper_commandlinetools_exe = [System.IO.Path]::Combine($nuget_packages_directory, 'JetBrains.ReSharper.CommandLineTools', 'tools', 'inspectcode.exe')
+    $resharper_commandlinetools_version = "2018.2.3"
     #dotCover variables
     $dotCover_exe = [System.IO.Path]::Combine($development_scripts_directory, 'JetBrains.dotCover.CommandLineTools', 'tools', 'dotCover.exe')
     $dotCover_result = [System.IO.Path]::Combine($development_scripts_directory, 'AppCoverageReport.html')

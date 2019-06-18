@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Services.InternalMetricsCollection;
@@ -31,7 +32,7 @@ namespace kCura.IntegrationPoints.Core.Telemetry
 				using (IInternalMetricsCollectionManager internalMetricsCollectionManager =
 					helper.GetServicesManager().CreateProxy<IInternalMetricsCollectionManager>(ExecutionIdentity.System))
 				{
-					AddMetricsForCategory(GetMetricIdentifiers(), integrationPointCategory, internalMetricsCollectionManager);
+					AddMetricsForCategoryAsync(GetMetricIdentifiers(), integrationPointCategory, internalMetricsCollectionManager).GetAwaiter().GetResult();
 				}
 			}
 			catch (AggregateException ex)
@@ -41,16 +42,23 @@ namespace kCura.IntegrationPoints.Core.Telemetry
 			}
 		}
 
-		private static void AddMetricsForCategory(List<MetricIdentifier> metricIdentifiers, Category category,
+		private static Task AddMetricsForCategoryAsync(List<MetricIdentifier> metricIdentifiers, Category category,
 			IInternalMetricsCollectionManager internalMetricsCollectionManager)
 		{
-			foreach (MetricIdentifier metricIdentifier in metricIdentifiers)
-			{
-				metricIdentifier.Categories = new List<CategoryRef> {category};
+			IEnumerable<Task> createMetricsTasks = metricIdentifiers.Select(metricIdentifier =>
+				AddMetricForCategoryAsync(
+					category,
+					internalMetricsCollectionManager,
+					metricIdentifier));
 
-				MetricIdentifier identifier = metricIdentifier;
-				Task.Run(async () => await internalMetricsCollectionManager.CreateMetricIdentifierAsync(identifier, false)).ConfigureAwait(false).GetAwaiter().GetResult();
-			}
+			return Task.WhenAll(createMetricsTasks);
+		}
+
+		private static Task AddMetricForCategoryAsync(Category category,
+			IInternalMetricsCollectionManager internalMetricsCollectionManager, MetricIdentifier metricIdentifier)
+		{
+			metricIdentifier.Categories = new List<CategoryRef> {category};
+			return internalMetricsCollectionManager.CreateMetricIdentifierAsync(metricIdentifier, false);
 		}
 
 		#endregion //Methods

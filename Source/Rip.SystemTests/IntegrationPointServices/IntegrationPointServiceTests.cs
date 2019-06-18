@@ -50,9 +50,9 @@ namespace Rip.SystemTests.IntegrationPointServices
 		{
 			_integrationPointService = _container.Resolve<IIntegrationPointService>();
 			_repositoryFactory = _container.Resolve<IRepositoryFactory>();
-			_fieldManager = _testHelper.CreateUserProxy<IFieldManager>();
+			_fieldManager = _testHelper.CreateProxy<IFieldManager>();
 			_objectManager = _container.Resolve<IRelativityObjectManager>();
-			_folderManager = _testHelper.CreateAdminProxy<IFolderManager>();
+			_folderManager = _testHelper.CreateProxy<IFolderManager>();
 			_serializer = _container.Resolve<ISerializer>();
 
 			_savedSearchArtifactID = SavedSearch.CreateSavedSearch(_sourceWorkspaceID, _ALL_DOCUMENTS_SAVED_SEARCH_NAME);

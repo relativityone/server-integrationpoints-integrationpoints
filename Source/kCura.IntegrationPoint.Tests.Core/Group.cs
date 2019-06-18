@@ -104,7 +104,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		private static async Task AddGroupToWorkspaceAsync(int workspaceId, int groupId)
 		{
-			using (var proxy = Helper.CreateAdminProxy<IPermissionManager>())
+			using (var proxy = Helper.CreateProxy<IPermissionManager>())
 			{
 				GroupSelector groupSelector = await proxy.GetWorkspaceGroupSelectorAsync(workspaceId).ConfigureAwait(false);
 				groupSelector.DisabledGroups = new List<GroupRef>();
@@ -116,7 +116,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		private static async Task RemoveGroupFromWorkspaceAsync(int workspaceId, int groupId)
 		{
-			using (var proxy = Helper.CreateAdminProxy<IPermissionManager>())
+			using (var proxy = Helper.CreateProxy<IPermissionManager>())
 			{
 				GroupSelector groupSelector = await proxy.GetWorkspaceGroupSelectorAsync(workspaceId).ConfigureAwait(false);
 				groupSelector.DisabledGroups = new List<GroupRef> { new GroupRef(groupId) };

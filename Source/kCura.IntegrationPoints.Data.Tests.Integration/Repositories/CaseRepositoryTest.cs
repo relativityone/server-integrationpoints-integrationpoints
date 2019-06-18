@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			IAPILog logger = Substitute.For<IAPILog>();
 			IExternalServiceInstrumentationProvider instrumentationProvider = 
 				new ExternalServiceInstrumentationProviderWithoutJobContext(logger);
-			IResourceServerManager resourceServerManager = _helper.CreateUserProxy<IResourceServerManager>();
+			IResourceServerManager resourceServerManager = _helper.CreateProxy<IResourceServerManager>();
 
 			_sut = new CaseRepository(resourceServerManager, instrumentationProvider);
 		}

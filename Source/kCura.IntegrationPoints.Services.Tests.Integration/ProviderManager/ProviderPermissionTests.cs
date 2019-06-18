@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.ProviderManager
 		[IdentifiedTest("8cd41525-6175-4c0e-a8bf-2a5030c8d34b")]
 		public void MissingWorkspacePermission()
 		{
-			var client = Helper.CreateUserProxy<IProviderManager>(UserModel.EmailAddress);
+			var client = Helper.CreateProxy<IProviderManager>(UserModel.EmailAddress);
 
 			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetDestinationProviders(WorkspaceArtifactId).Result);
 			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetSourceProviders(WorkspaceArtifactId).Result);
@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.ProviderManager
 			permissionsForRDO.ViewSelected = false;
 			Permission.SavePermission(WorkspaceArtifactId, permissions);
 
-			var client = Helper.CreateUserProxy<IProviderManager>(UserModel.EmailAddress);
+			var client = Helper.CreateProxy<IProviderManager>(UserModel.EmailAddress);
 			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetSourceProviders(WorkspaceArtifactId).Result);
 			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetSourceProviderArtifactIdAsync(WorkspaceArtifactId, Guid.NewGuid().ToString()).Result);
 		}
@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.ProviderManager
 			permissionsForRDO.ViewSelected = false;
 			Permission.SavePermission(WorkspaceArtifactId, permissions);
 
-			var client = Helper.CreateUserProxy<IProviderManager>(UserModel.EmailAddress);
+			var client = Helper.CreateProxy<IProviderManager>(UserModel.EmailAddress);
 			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetDestinationProviders(WorkspaceArtifactId).Result);
 			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetDestinationProviderArtifactIdAsync(WorkspaceArtifactId, Guid.NewGuid().ToString()).Result);
 		}

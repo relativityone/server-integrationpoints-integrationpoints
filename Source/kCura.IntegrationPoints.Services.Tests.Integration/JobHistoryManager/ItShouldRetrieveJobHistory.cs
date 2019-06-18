@@ -116,7 +116,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 		[IdentifiedTest("5d55e45e-e4bd-407e-9daf-bc5ce33879ab")]
 		public void ItShouldRetrieveHistory()
 		{
-			var client = Helper.CreateAdminProxy<IJobHistoryManager>();
+			var client = Helper.CreateProxy<IJobHistoryManager>();
 			var request = new JobHistoryRequest
 			{
 				WorkspaceArtifactId = SourceWorkspaceArtifactID,
@@ -138,7 +138,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 		[IdentifiedTest("700c2132-4dd5-4e98-a630-06618849935f")]
 		public void ItShouldRetrieveHistoryUsingPaging()
 		{
-			var client = Helper.CreateAdminProxy<IJobHistoryManager>();
+			var client = Helper.CreateProxy<IJobHistoryManager>();
 			var request = new JobHistoryRequest
 			{
 				WorkspaceArtifactId = SourceWorkspaceArtifactID,
@@ -160,7 +160,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 		[IdentifiedTest("c736309c-1f09-4a69-a436-ebd109610b0d")]
 		public void ItShouldHandleRetrievingHistoryFromOutsideTheRange()
 		{
-			var client = Helper.CreateAdminProxy<IJobHistoryManager>();
+			var client = Helper.CreateProxy<IJobHistoryManager>();
 			var request = new JobHistoryRequest
 			{
 				WorkspaceArtifactId = SourceWorkspaceArtifactID,
@@ -178,7 +178,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 		[IdentifiedTest("6db36b99-49d6-49c6-a16c-7113fe0e26f1")]
 		public void ItShouldRetrieveHistoryRespectingPermission()
 		{
-			var client = Helper.CreateUserProxy<IJobHistoryManager>(_user.EmailAddress);
+			var client = Helper.CreateProxy<IJobHistoryManager>(_user.EmailAddress);
 			var request = new JobHistoryRequest
 			{
 				WorkspaceArtifactId = SourceWorkspaceArtifactID,
@@ -208,7 +208,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 		[IdentifiedTestCase("994a6e18-3aa0-4c1c-b5bf-388b9f467d42", nameof(JobHistoryModel.ItemsTransferred), false)]
 		public void ItShouldSortResult(string propertyName, bool sortDescending)
 		{
-			var client = Helper.CreateAdminProxy<IJobHistoryManager>();
+			var client = Helper.CreateProxy<IJobHistoryManager>();
 			var request = new JobHistoryRequest
 			{
 				WorkspaceArtifactId = SourceWorkspaceArtifactID,

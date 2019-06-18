@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 			var ipModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, $"ip_{Utils.FormattedDateTimeNow}", "Append Only");
 			var ip = CreateOrUpdateIntegrationPoint(ipModel);
 
-			var client = Helper.CreateAdminProxy<IIntegrationPointManager>();
+			var client = Helper.CreateProxy<IIntegrationPointManager>();
 			client.RunIntegrationPointAsync(SourceWorkspaceArtifactID, ip.ArtifactID).Wait();
 
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactID, ip.ArtifactID);

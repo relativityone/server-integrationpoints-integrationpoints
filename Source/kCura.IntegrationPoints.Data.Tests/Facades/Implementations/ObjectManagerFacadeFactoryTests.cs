@@ -71,7 +71,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 			IObjectManagerFacade createdInstance = _sut.Create(executionIdentity);
 
 			// act
-			await createdInstance.DeleteAsync(0, null);
+			await createdInstance.DeleteAsync(0, null).ConfigureAwait(false);
 
 			// assert
 			_servicesManager.Verify(x => x.CreateProxy<IObjectManager>(executionIdentity));

@@ -229,7 +229,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		private static int GetRootFolder(ITestHelper helper, int workspaceArtifactId)
 		{
-			using (var folderManager = helper.CreateAdminProxy<IFolderManager>())
+			using (var folderManager = helper.CreateProxy<IFolderManager>())
 			{
 				return folderManager.GetWorkspaceRootAsync(workspaceArtifactId).Result.ArtifactID;
 			}

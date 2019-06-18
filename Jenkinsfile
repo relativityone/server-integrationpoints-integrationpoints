@@ -65,6 +65,11 @@ properties([
 			name: 'chromiumVersion', 
 			defaultValue: '72.0.3626.0', 
 			description: 'Set chromium version to be installed for UI tests.'
+		),
+		booleanParam(
+			name: 'enableCheckConfigureAwait',
+			defaultValue: true,
+			description: 'Enable checking if configureAwait is present everywhere it needs to be.'
 		)
 	])
 ])

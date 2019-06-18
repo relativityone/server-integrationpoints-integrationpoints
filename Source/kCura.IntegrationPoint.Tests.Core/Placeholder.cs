@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				Name = "CustomPlaceholder"
 			};
 
-			using (var proxy = Helper.CreateAdminProxy<IProductionPlaceholderManager>())
+			using (var proxy = Helper.CreateProxy<IProductionPlaceholderManager>())
 			{
 				return proxy.CreateSingleAsync(workspaceId, productionPlaceholder).GetAwaiter().GetResult();
 			}

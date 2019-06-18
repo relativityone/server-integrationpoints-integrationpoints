@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 		[IdentifiedTest("8fa4103c-1fa3-4538-acd5-d292072d4f46")]
 		public void MissingWorkspacePermission()
 		{
-			var client = Helper.CreateUserProxy<IIntegrationPointManager>(UserModel.EmailAddress);
+			var client = Helper.CreateProxy<IIntegrationPointManager>(UserModel.EmailAddress);
 			PermissionsHelper.AssertPermissionErrorMessage(() => client.CreateIntegrationPointAsync(new CreateIntegrationPointRequest
 			{
 				WorkspaceArtifactId = WorkspaceArtifactId
@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 			permissionsForRDO.ViewSelected = false;
 			Permission.SavePermission(WorkspaceArtifactId, permissions);
 
-			var client = Helper.CreateUserProxy<IIntegrationPointManager>(UserModel.EmailAddress);
+			var client = Helper.CreateProxy<IIntegrationPointManager>(UserModel.EmailAddress);
 			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetIntegrationPointAsync(WorkspaceArtifactId, 706302).Result);
 			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetAllIntegrationPointsAsync(WorkspaceArtifactId).Result);
 			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetOverwriteFieldsChoicesAsync(WorkspaceArtifactId).Result);
@@ -57,7 +57,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 			permissionsForRDO.AddSelected = false;
 			Permission.SavePermission(WorkspaceArtifactId, permissions);
 
-			var client = Helper.CreateUserProxy<IIntegrationPointManager>(UserModel.EmailAddress);
+			var client = Helper.CreateProxy<IIntegrationPointManager>(UserModel.EmailAddress);
 			PermissionsHelper.AssertPermissionErrorMessage(() => client.CreateIntegrationPointAsync(new CreateIntegrationPointRequest
 			{
 				WorkspaceArtifactId = WorkspaceArtifactId
@@ -75,7 +75,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 			permissionsForRDO.EditSelected = false;
 			Permission.SavePermission(WorkspaceArtifactId, permissions);
 
-			var client = Helper.CreateUserProxy<IIntegrationPointManager>(UserModel.EmailAddress);
+			var client = Helper.CreateProxy<IIntegrationPointManager>(UserModel.EmailAddress);
 			PermissionsHelper.AssertPermissionErrorMessage(() => client.UpdateIntegrationPointAsync(new UpdateIntegrationPointRequest
 			{
 				WorkspaceArtifactId = WorkspaceArtifactId
@@ -93,7 +93,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 			permissionsForRDO.ViewSelected = false;
 			Permission.SavePermission(WorkspaceArtifactId, permissions);
 
-			var client = Helper.CreateUserProxy<IIntegrationPointManager>(UserModel.EmailAddress);
+			var client = Helper.CreateProxy<IIntegrationPointManager>(UserModel.EmailAddress);
 			PermissionsHelper.AssertPermissionErrorMessage(() => client.CreateIntegrationPointFromProfileAsync(WorkspaceArtifactId, 334478, "ip_163").Result);
 		}
 	}

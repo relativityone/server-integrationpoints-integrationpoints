@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static async Task<ResourceServer> GetAgentServerAsync()
 		{
-			using (var resourceServerManager = Helper.CreateAdminProxy<IResourceServerManager>())
+			using (var resourceServerManager = Helper.CreateProxy<IResourceServerManager>())
 			{
 				List<ResourceServerTypeRef> serverTypes = await resourceServerManager
 					.RetrieveAllServerTypesAsync()

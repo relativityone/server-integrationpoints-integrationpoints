@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[LogApiExceptionFilter(Message = "Unable to retrieve saved searches list.")]
 		public async Task<HttpResponseMessage> Get(int workspaceArtifactId, int? savedSearchContainerId = null, int? savedSearchId = null)
 		{
-			JsTreeItemDTO tree = await _savedSearchesService.GetSavedSearchesTreeAsync(workspaceArtifactId, savedSearchContainerId, savedSearchId);
+			JsTreeItemDTO tree = await _savedSearchesService.GetSavedSearchesTreeAsync(workspaceArtifactId, savedSearchContainerId, savedSearchId).ConfigureAwait(true);
 			return Request.CreateResponse(HttpStatusCode.OK, tree);
 		}
 	}

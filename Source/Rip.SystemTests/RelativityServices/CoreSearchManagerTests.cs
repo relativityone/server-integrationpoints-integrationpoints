@@ -64,8 +64,8 @@ namespace Rip.SystemTests.RelativityServices
 			_workspaceID = SystemTestsFixture.WorkspaceID;
 			_workspaceService = new WorkspaceService(new ImportHelper(withNatives: true));
 			_testHelperLazy = new Lazy<ITestHelper>(() => new TestHelper());
-			_objectManager = _testHelperLazy.Value.CreateUserProxy<IObjectManager>();
-			_viewManager = _testHelperLazy.Value.CreateUserProxy<IViewManager>();
+			_objectManager = _testHelperLazy.Value.CreateProxy<IObjectManager>();
+			_viewManager = _testHelperLazy.Value.CreateProxy<IViewManager>();
 
 			DocumentsTestData documentsTestData = DocumentTestDataBuilder.BuildTestData(
 				withNatives: true, 
@@ -260,7 +260,7 @@ namespace Rip.SystemTests.RelativityServices
 		public async Task RetrieveAllExportableViewFields_ShouldRetrieveAllViewFieldsForDocument()
 		{
 			// arrange
-			IList<int> exportableFieldIDs = await RetrieveExportableFieldIDsAsync();
+			IList<int> exportableFieldIDs = await RetrieveExportableFieldIDsAsync().ConfigureAwait(false);
 
 			// act
 			ViewFieldInfo[] result = _sut.RetrieveAllExportableViewFields(
@@ -398,10 +398,10 @@ namespace Rip.SystemTests.RelativityServices
 
 		private CoreSearchManager CreateCoreSearchManager()
 		{
-			IViewFieldManager viewFieldManager = _testHelperLazy.Value.CreateUserProxy<IViewFieldManager>();
-			IFileManager fileManager = _testHelperLazy.Value.CreateUserProxy<IFileManager>();
-			IFileFieldManager fileFieldManager = _testHelperLazy.Value.CreateUserProxy<IFileFieldManager>();
-			IViewManager viewManager = _testHelperLazy.Value.CreateUserProxy<IViewManager>();
+			IViewFieldManager viewFieldManager = _testHelperLazy.Value.CreateProxy<IViewFieldManager>();
+			IFileManager fileManager = _testHelperLazy.Value.CreateProxy<IFileManager>();
+			IFileFieldManager fileFieldManager = _testHelperLazy.Value.CreateProxy<IFileFieldManager>();
+			IViewManager viewManager = _testHelperLazy.Value.CreateProxy<IViewManager>();
 			IExternalServiceInstrumentationProvider instrumentationProvider = 
 				new ExternalServiceInstrumentationProviderWithoutJobContext(_testHelperLazy.Value.GetLoggerFactory().GetLogger());
 			IViewFieldRepository viewFieldRepository = new ViewFieldRepository(viewFieldManager, instrumentationProvider);

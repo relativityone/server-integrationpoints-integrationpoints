@@ -12,11 +12,9 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 
 		string RelativityPassword { get; }
 
-		T CreateUserProxy<T>() where T : IDisposable;
+		T CreateProxy<T>() where T : IDisposable;
 
-		T CreateAdminProxy<T>() where T : IDisposable;
-
-		T CreateUserProxy<T>(string username) where T : IDisposable;
+		T CreateProxy<T>(string username) where T : IDisposable;
 
 		ISearchManager CreateSearchManager();
 

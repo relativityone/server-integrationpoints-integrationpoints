@@ -121,7 +121,8 @@ def getVersion()
 def build()
 {
     def sonarParameter = shouldRunSonar(params.enableSonarAnalysis, env.BRANCH_NAME)
-    powershell "./build.ps1 $sonarParameter $ripPipelineState.commonBuildArgs"
+    def checkConfigureAwaitParameter = params.enableCheckConfigureAwait ? "-checkConfigureAwait" : ""
+    powershell "./build.ps1 $sonarParameter $ripPipelineState.commonBuildArgs $checkConfigureAwaitParameter"
     archiveArtifacts artifacts: "DevelopmentScripts/*.html", fingerprint: true
 }
 

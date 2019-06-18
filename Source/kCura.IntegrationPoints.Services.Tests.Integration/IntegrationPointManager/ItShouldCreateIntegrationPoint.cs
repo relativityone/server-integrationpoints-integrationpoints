@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 			ExtensionPointServiceFinder.SecretStoreHelper = APIHelper_SecretStoreFactory.SecretCatalog;
 #pragma warning restore
 
-			_client = Helper.CreateAdminProxy<IIntegrationPointManager>();
+			_client = Helper.CreateProxy<IIntegrationPointManager>();
 		}
 
 		public override void SuiteTeardown()

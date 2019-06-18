@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Infrastructure.MessageHandlers
 			{
 			}
 
-			public Task<HttpResponseMessage> SendAyncInternal(HttpRequestMessage request, CancellationToken cancellationToken)
+			public Task<HttpResponseMessage> SendAsyncInternal(HttpRequestMessage request, CancellationToken cancellationToken)
 			{
 				return SendAsync(request, cancellationToken);
 			}
@@ -85,7 +85,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Infrastructure.MessageHandlers
 			Guid expectedCorrelationId = request.GetCorrelationId();
 
 			// act
-			await _sut.SendAyncInternal(request, CancellationToken.None);
+			await _sut.SendAsyncInternal(request, CancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			_loggerMock.Verify(x =>
@@ -104,7 +104,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Infrastructure.MessageHandlers
 				.Returns(expectedWorkspaceId);
 
 			// act
-			await _sut.SendAyncInternal(request, CancellationToken.None);
+			await _sut.SendAsyncInternal(request, CancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			_loggerMock.Verify(x =>
@@ -122,7 +122,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Infrastructure.MessageHandlers
 				.Setup(x => x.GetWorkspaceID())
 				.Throws(thrownException);
 
-			Func<Task> sendAsyncAction = async () => await _sut.SendAyncInternal(request, CancellationToken.None);
+			Func<Task> sendAsyncAction = () => _sut.SendAsyncInternal(request, CancellationToken.None);
 
 			// act & assert
 			sendAsyncAction.ShouldThrow<CorrelationContextCreationException>()
@@ -141,7 +141,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Infrastructure.MessageHandlers
 				.Returns(expectedUserId);
 
 			// act
-			await _sut.SendAyncInternal(request, CancellationToken.None);
+			await _sut.SendAsyncInternal(request, CancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			_loggerMock.Verify(x =>
@@ -160,7 +160,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Infrastructure.MessageHandlers
 				.Setup(x => x.GetUserID())
 				.Throws(thrownException);
 
-			Func<Task> sendAsyncAction = async () => await _sut.SendAyncInternal(request, CancellationToken.None);
+			Func<Task> sendAsyncAction = () => _sut.SendAsyncInternal(request, CancellationToken.None);
 
 			// act & assert
 			sendAsyncAction.ShouldThrow<CorrelationContextCreationException>()
