@@ -36,14 +36,19 @@ namespace Relativity.Sync.Transfer
 			}
 			catch (Exception ex) when (ex is JsonSerializationException || ex is JsonReaderException)
 			{
-				throw new SyncException("Unable to parse data from Relativity Export API - " +
-					$"expected value to be deserializable to {typeof(Choice)}, but instead type was {initialValue.GetType()}", ex);
+				throw new InvalidExportFieldValueException(
+					itemIdentifier,
+					sanitizingSourceFieldName,
+					$"Unable to parse data from Relativity Export API - expected value to be deserializable to {typeof(Choice)}, but instead type was {initialValue.GetType()}",
+					ex);
 			}
 
 			if (string.IsNullOrWhiteSpace(choice.Name))
 			{
-				throw new SyncException("Unable to parse data from Relativity Export API - " +
-					$"expected input to be deserializable to type {typeof(Choice)} and name to not be null or empty");
+				throw new InvalidExportFieldValueException(
+					itemIdentifier,
+					sanitizingSourceFieldName, 
+					$"Unable to parse data from Relativity Export API - expected input to be deserializable to type {typeof(Choice)} and name to not be null or empty");
 			}
 
 			string value = choice.Name;

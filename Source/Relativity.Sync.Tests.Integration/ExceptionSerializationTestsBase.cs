@@ -11,7 +11,7 @@ namespace Relativity.Sync.Tests.Integration
 {
 	[TestFixture]
 	[Parallelizable(ParallelScope.All)]
-	internal abstract class ExceptionSerializationTestsBase<T> where T : Exception, new()
+	internal abstract class ExceptionSerializationTestsBase<T> where T : Exception
 	{
 		[Test]
 		public void ItShouldSerializeToXml()

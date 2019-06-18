@@ -34,7 +34,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			supportedType.Should().Be(RelativityDataType.MultipleObject);
 		}
 
-		private static IEnumerable<TestCaseData> ThrowSyncExceptionWhenDeserializationFailsTestCases()
+		private static IEnumerable<TestCaseData> ThrowInvalidExportFieldValueExceptionWhenDeserializationFailsTestCases()
 		{
 			yield return new TestCaseData(1);
 			yield return new TestCaseData("foo");
@@ -42,8 +42,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			yield return new TestCaseData(JsonHelpers.DeserializeJson("{ \"not\": \"an array\" }"));
 		}
 
-		[TestCaseSource(nameof(ThrowSyncExceptionWhenDeserializationFailsTestCases))]
-		public async Task ItShouldThrowSyncExceptionWithTypeNamesWhenDeserializationFails(object initialValue)
+		[TestCaseSource(nameof(ThrowInvalidExportFieldValueExceptionWhenDeserializationFailsTestCases))]
+		public async Task ItShouldThrowInvalidExportFieldValueExceptionWithTypeNamesWhenDeserializationFails(object initialValue)
 		{
 			// Arrange
 			ISynchronizationConfiguration configuration = CreateConfiguration();
@@ -54,14 +54,14 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				await instance.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
 
 			// Assert
-			(await action.Should().ThrowAsync<SyncException>().ConfigureAwait(false))
+			(await action.Should().ThrowAsync<InvalidExportFieldValueException>().ConfigureAwait(false))
 				.Which.Message.Should()
 					.Contain(typeof(RelativityObjectValue[]).Name).And
 					.Contain(initialValue.GetType().Name);
 		}
 
-		[TestCaseSource(nameof(ThrowSyncExceptionWhenDeserializationFailsTestCases))]
-		public async Task ItShouldThrowSyncExceptionWithInnerExceptionWhenDeserializationFails(object initialValue)
+		[TestCaseSource(nameof(ThrowInvalidExportFieldValueExceptionWhenDeserializationFailsTestCases))]
+		public async Task ItShouldThrowInvalidExportFieldValueExceptionWithInnerExceptionWhenDeserializationFails(object initialValue)
 		{
 			// Arrange
 			ISynchronizationConfiguration configuration = CreateConfiguration();
@@ -72,20 +72,20 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				await instance.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
 
 			// Assert
-			(await action.Should().ThrowAsync<SyncException>().ConfigureAwait(false))
+			(await action.Should().ThrowAsync<InvalidExportFieldValueException>().ConfigureAwait(false))
 				.Which.InnerException.Should()
 					.Match(ex => ex is JsonReaderException || ex is JsonSerializationException);
 		}
 
-		private static IEnumerable<TestCaseData> ThrowSyncExceptionIfAnyElementsAreInvalidTestCases()
+		private static IEnumerable<TestCaseData> ThrowInvalidExportFieldValueExceptionWhenAnyElementsAreInvalidTestCases()
 		{
 			yield return new TestCaseData(JsonHelpers.DeserializeJson("[ { \"test\": 1 } ]"));
 			yield return new TestCaseData(JsonHelpers.DeserializeJson("[ { \"ArtifactID\": 101, \"Name\": \"Cool Object\" }, { \"test\": 1 } ]"));
 			yield return new TestCaseData(JsonHelpers.DeserializeJson("[ { \"ArtifactID\": 101, \"Name\": \"Cool Object\" }, { \"test\": 1 }, { \"ArtifactID\": 102, \"Name\": \"Cool Object 2\" } ]"));
 		}
 
-		[TestCaseSource(nameof(ThrowSyncExceptionIfAnyElementsAreInvalidTestCases))]
-		public async Task ItShouldThrowSyncExceptionIfAnyElementsAreInvalid(object initialValue)
+		[TestCaseSource(nameof(ThrowInvalidExportFieldValueExceptionWhenAnyElementsAreInvalidTestCases))]
+		public async Task ItShouldThrowInvalidExportFieldValueExceptionWhenAnyElementsAreInvalid(object initialValue)
 		{
 			// Arrange
 			ISynchronizationConfiguration configuration = CreateConfiguration();
@@ -96,7 +96,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				await instance.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
 
 			// Assert
-			(await action.Should().ThrowAsync<SyncException>().ConfigureAwait(false))
+			(await action.Should().ThrowAsync<InvalidExportFieldValueException>().ConfigureAwait(false))
 				.Which.Message.Should()
 				.Contain(typeof(RelativityObjectValue).Name);
 		}

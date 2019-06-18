@@ -45,14 +45,19 @@ namespace Relativity.Sync.Transfer
 			}
 			catch (Exception ex) when (ex is JsonSerializationException || ex is JsonReaderException)
 			{
-				throw new SyncException("Unable to parse data from Relativity Export API - " +
-					$"expected value to be deserializable to {typeof(RelativityObjectValue[])}, but instead type was {initialValue.GetType()}", ex);
+				throw new InvalidExportFieldValueException(
+					itemIdentifier,
+					sanitizingSourceFieldName,
+					$"Unable to parse data from Relativity Export API - expected value to be deserializable to {typeof(RelativityObjectValue[])}, but instead type was {initialValue.GetType()}",
+					ex);
 			}
 
 			if (objectValues.Any(x => string.IsNullOrWhiteSpace(x.Name)))
 			{
-				throw new SyncException("Unable to parse data from Relativity Export API - " +
-					$"expected elements of input to be deserializable to type {typeof(RelativityObjectValue)}");
+				throw new InvalidExportFieldValueException(
+					itemIdentifier,
+					sanitizingSourceFieldName,
+					$"Unable to parse data from Relativity Export API - expected elements of input to be deserializable to type {typeof(RelativityObjectValue)}");
 			}
 
 			char multiValueDelimiter = _configuration.ImportSettings.MultiValueDelimiter;

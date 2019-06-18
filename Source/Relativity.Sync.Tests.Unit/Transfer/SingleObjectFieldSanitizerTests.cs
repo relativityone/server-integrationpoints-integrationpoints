@@ -42,7 +42,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			result.Should().BeNull();
 		}
 
-		private static IEnumerable<TestCaseData> ThrowSyncExceptionWhenDeserializationFailsTestCases()
+		private static IEnumerable<TestCaseData> ThrowInvalidExportFieldValueExceptionWhenDeserializationFailsTestCases()
 		{
 			yield return new TestCaseData(1);
 			yield return new TestCaseData("foo");
@@ -50,8 +50,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			yield return new TestCaseData(JsonHelpers.DeserializeJson("[ \"not\", \"an object\" ]"));
 		}
 
-		[TestCaseSource(nameof(ThrowSyncExceptionWhenDeserializationFailsTestCases))]
-		public async Task ItShouldThrowSyncExceptionWithTypesNamesWhenDeserializationFails(object initialValue)
+		[TestCaseSource(nameof(ThrowInvalidExportFieldValueExceptionWhenDeserializationFailsTestCases))]
+		public async Task ItShouldThrowInvalidExportFieldValueExceptionWithTypesNamesWhenDeserializationFails(object initialValue)
 		{
 			// Arrange
 			var instance = new SingleObjectFieldSanitizer();
@@ -60,14 +60,14 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			Func<Task> action = async () => await instance.SanitizeAsync(0, "foo", "bar", "bang", initialValue).ConfigureAwait(false);
 
 			// Assert
-			(await action.Should().ThrowAsync<SyncException>().ConfigureAwait(false))
+			(await action.Should().ThrowAsync<InvalidExportFieldValueException>().ConfigureAwait(false))
 				.Which.Message.Should()
 					.Contain(typeof(RelativityObjectValue).Name).And
 					.Contain(initialValue.GetType().Name);
 		}
 
-		[TestCaseSource(nameof(ThrowSyncExceptionWhenDeserializationFailsTestCases))]
-		public async Task ItShouldThrowSyncExceptionWithInnerExceptionWhenDeserializationFails(object initialValue)
+		[TestCaseSource(nameof(ThrowInvalidExportFieldValueExceptionWhenDeserializationFailsTestCases))]
+		public async Task ItShouldThrowInvalidExportFieldValueExceptionWithInnerExceptionWhenDeserializationFails(object initialValue)
 		{
 			// Arrange
 			var instance = new SingleObjectFieldSanitizer();
@@ -76,7 +76,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			Func<Task> action = async () => await instance.SanitizeAsync(0, "foo", "bar", "bang", initialValue).ConfigureAwait(false);
 
 			// Assert
-			(await action.Should().ThrowAsync<SyncException>().ConfigureAwait(false))
+			(await action.Should().ThrowAsync<InvalidExportFieldValueException>().ConfigureAwait(false))
 				.Which.InnerException.Should()
 					.Match(ex => ex is JsonReaderException || ex is JsonSerializationException);
 		}
@@ -99,7 +99,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		[TestCase("")]
 		[TestCase("\"Name\": \"\"")]
 		[TestCase("\"Name\": \"  \"")]
-		public async Task ItShouldThrowSyncExceptionWhenObjectNameIsInvalidAndArtifactIDIsValid(string jsonNameProperty)
+		public async Task ItShouldThrowInvalidExportFieldValueExceptionWhenObjectNameIsInvalidAndArtifactIDIsValid(string jsonNameProperty)
 		{
 			// Arrange
 			var instance = new SingleObjectFieldSanitizer();
@@ -109,7 +109,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			Func<Task> action = async () => await instance.SanitizeAsync(0, "foo", "bar", "bang", initialValue).ConfigureAwait(false);
 
 			// Assert
-			(await action.Should().ThrowAsync<SyncException>().ConfigureAwait(false))
+			(await action.Should().ThrowAsync<InvalidExportFieldValueException>().ConfigureAwait(false))
 				.Which.Message.Should()
 					.Contain(typeof(RelativityObjectValue).Name);
 		}
