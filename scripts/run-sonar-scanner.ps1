@@ -6,6 +6,9 @@
 
 .PARAMETER projectName
     Project name
+	
+.PARAMETER branchName
+	Branch name
 
 .PARAMETER sourceDir
     Path to source directory
@@ -46,6 +49,7 @@ if (!$testCoverageReport) {
     throw "Cannot find test coverage report."
 }
 
+Write-Host "BRANCH NAME: $branchName"
 Write-Verbose "Running Sonar Scanner for version $version..."
 & $sonarScannerExe begin /k:$projectName `
     /n:$projectName `
