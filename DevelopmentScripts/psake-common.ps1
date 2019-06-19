@@ -104,7 +104,7 @@ properties {
     $package_root_directory = [System.IO.Path]::Combine($root, 'Packages')
 
     #sonarqube variables
-    $sonarqube_exe = [System.IO.Path]::Combine($development_scripts_directory, 'MSBuild.SonarQube.Runner.Tool', 'tools', 'sonar-scanner-msbuild-4.3.1.1372-net46', 'SonarScanner.MSBuild.exe')
+    $sonarqube_exe = [System.IO.Path]::Combine($development_scripts_directory, 'MSBuild.SonarQube.Runner.Tool', 'tools', 'sonar-scanner-msbuild-4.6.0.1930-net46', 'SonarScanner.MSBuild.exe')
     $sonarqube_version = "4.6.0"
     $sonarqube_project_key = "kCura.IntegrationPoints"
     $sonarqube_project_name = "IntegrationPoints"
