@@ -45,31 +45,32 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 			StreamEncoding streamEncoding = encoding is UnicodeEncoding
 				? StreamEncoding.Unicode
 				: StreamEncoding.ASCII;
-			Stream result = instance.Create(() => stream, streamEncoding);
+			//Stream result = instance.Create(() => stream, streamEncoding);
 
-			// Assert
-			string streamOutput = ReadOutUnicodeString(result);
-			streamOutput.Should().Be(streamInput);
+			//// Assert
+			//string streamOutput = ReadOutUnicodeString(result);
+			//streamOutput.Should().Be(streamInput);
+			Assert.Fail("To be adjusted to new implementation");
 		}
 
 		[Test]
 		public void ItShouldWrapStreamInSelfRecreatingStream()
 		{
 			// Arrange
-			int timesInvoked = 0;
+			//int timesInvoked = 0;
 
-			Stream GetStream()
-			{
-				timesInvoked += 1;
-				if (timesInvoked == 1)
-				{
-					throw new ServiceException();
-				}
+			//Stream GetStream()
+			//{
+			//	timesInvoked += 1;
+			//	if (timesInvoked == 1)
+			//	{
+			//		throw new ServiceException();
+			//	}
 
-				const string streamInput = "hello world!";
-				var stream = new MemoryStream(Encoding.Unicode.GetBytes(streamInput));
-				return stream;
-			}
+			//	const string streamInput = "hello world!";
+			//	var stream = new MemoryStream(Encoding.Unicode.GetBytes(streamInput));
+			//	return stream;
+			//}
 
 			SetupRetryPolicyFactory((onRetry, retryCount, dur) =>
 				Policy.HandleResult<Stream>(s => false)
@@ -79,10 +80,11 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 			var instance = new ImportStreamBuilder(_streamRetryPolicyFactory.Object, _logger.Object);
 
 			// Act
-			Stream result = instance.Create(GetStream, StreamEncoding.Unicode);
+			//Stream result = instance.Create(GetStream, StreamEncoding.Unicode);
 
-			// Assert
-			Assert.DoesNotThrow(() => ReadOutUnicodeString(result));
+			//// Assert
+			//Assert.DoesNotThrow(() => ReadOutUnicodeString(result));
+			Assert.Fail("To be adjusted to new implementation");
 		}
 
 		[Test]
@@ -94,10 +96,11 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 			var instance = new ImportStreamBuilder(_streamRetryPolicyFactory.Object, _logger.Object);
 
 			// Act
-			Stream result = instance.Create(() => stream.Object, StreamEncoding.Unicode);
+			//Stream result = instance.Create(() => stream.Object, StreamEncoding.Unicode);
 
-			// Assert
-			result.CanRead.Should().BeFalse();
+			//// Assert
+			//result.CanRead.Should().BeFalse();
+			Assert.Fail("To be adjusted to new implementation");
 		}
 
 		private void SetupRetryPolicyFactory(Func<Action<int>, int, TimeSpan, ISyncPolicy<Stream>> policyFunc)

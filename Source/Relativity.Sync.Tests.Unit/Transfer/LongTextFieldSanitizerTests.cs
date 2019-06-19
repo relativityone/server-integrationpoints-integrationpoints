@@ -196,7 +196,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				.ConfigureAwait(false);
 
 			// Assert
-			_streamBuilder.Verify(x => x.Create(It.IsAny<Func<Stream>>(), fieldEncoding));
+			//_streamBuilder.Verify(x => x.Create(It.IsAny<Func<Stream>>(), fieldEncoding));
+			Assert.Fail("To be adjusted to new implementation");
 		}
 
 		private static bool MatchAll(object _) => true;
@@ -233,7 +234,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 		private ISetup<IImportStreamBuilder, Stream> SetupStreamBuilder()
 		{
-			return _streamBuilder.Setup(x => x.Create(It.IsAny<Func<Stream>>(), It.IsAny<StreamEncoding>()));
+			//return _streamBuilder.Setup(x => x.Create(It.IsAny<Func<Stream>>(), It.IsAny<StreamEncoding>()));
+			Assert.Fail("To be adjusted to new implementation");
+			return null; // to be deleted after fixing test
 		}
 
 		private static QueryResultSlim WrapValuesInQueryResultSlim(params object[] values)
