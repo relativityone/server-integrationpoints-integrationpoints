@@ -26,6 +26,7 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 
 		private readonly Func<Task<Stream>> _getStreamFunction;
 		private readonly ISyncLog _logger;
+		private readonly Func<Stream> _InnerStreamValueFactory;
 
 		internal Lazy<Stream> InnerStream { get; private set; }
 
@@ -40,8 +41,9 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 				OnRetry,
 				_MAX_RETRY_ATTEMPTS,
 				TimeSpan.FromSeconds(_WAIT_INTERVAL_IN_SECONDS));
+			_InnerStreamValueFactory = () => _getStreamRetryPolicy.ExecuteAsync(GetInnerStream).GetAwaiter().GetResult();
 
-			InnerStream = _getStreamRetryPolicy.ExecuteAsync(GetInnerStream).GetAwaiter().GetResult();
+			InnerStream = new Lazy<Stream>(_InnerStreamValueFactory);
 		}
 
 		public override void Flush()
@@ -75,7 +77,7 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 			{
 				if (!InnerStream.Value.CanRead)
 				{
-					InnerStream = _getStreamRetryPolicy.ExecuteAsync(GetInnerStream).GetAwaiter().GetResult();
+					InnerStream = new Lazy<Stream>(_InnerStreamValueFactory);
 				}
 
 				return InnerStream.Value.CanRead;
