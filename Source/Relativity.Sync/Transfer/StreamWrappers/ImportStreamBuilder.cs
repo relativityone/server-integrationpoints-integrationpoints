@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using Relativity.Services.Objects;
 
 namespace Relativity.Sync.Transfer.StreamWrappers
 {
@@ -21,9 +22,10 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 			_logger = logger;
 		}
 
-		public Stream Create(Func<Task<Stream>> streamFunc, StreamEncoding encoding)
+		public Stream Create(Func<Task<IObjectManager>> objectManagerFactory, Func<IObjectManager, Task<Stream>> streamFactory, StreamEncoding encoding)
 		{
-			Stream wrappedStream = new SelfRecreatingStream(streamFunc, _streamRetryPolicyFactory, _logger);
+			IObjectManager objectManager = objectManagerFactory().GetAwaiter().GetResult();
+			Stream wrappedStream = new SelfRecreatingStream(objectManager, streamFactory, _streamRetryPolicyFactory, _logger);
 			if (encoding == StreamEncoding.ASCII)
 			{
 				wrappedStream = new AsciiToUnicodeStream(wrappedStream);

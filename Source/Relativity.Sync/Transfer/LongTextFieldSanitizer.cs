@@ -10,20 +10,14 @@ using Relativity.Sync.Transfer.StreamWrappers;
 
 namespace Relativity.Sync.Transfer
 {
-	internal sealed class LongTextFieldSanitizer : IExportFieldSanitizer, IDisposable
+	internal sealed class LongTextFieldSanitizer : IExportFieldSanitizer
 	{
-		private IObjectManager _objectManager;
 		private const int _DOCUMENT_OBJECT_TYPE_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
 		private const string _BIG_LONG_TEXT_SHIBBOLETH = "#KCURA99DF2F0FEB88420388879F1282A55760#";
 
 		private readonly IImportStreamBuilder _importStreamBuilder;
 		private readonly ISourceServiceFactoryForUser _serviceFactory;
 		private readonly ISyncLog _logger;
-
-		public async Task<IObjectManager> GetObjectManager()
-		{
-			return _objectManager ?? (_objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false));
-		}
 
 		public RelativityDataType SupportedType => RelativityDataType.LongText;
 
@@ -99,7 +93,8 @@ namespace Relativity.Sync.Transfer
 			try
 			{
 				return _importStreamBuilder.Create(
-					async () => await GetLongTextStreamAsync(workspaceArtifactId, relativityObjectArtifactId, fieldName).ConfigureAwait(false),
+					async () => await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false),
+					async (objectManager) => await GetLongTextStreamAsync(objectManager, workspaceArtifactId, relativityObjectArtifactId, fieldName).ConfigureAwait(false),
 					encoding);
 			}
 			catch (Exception ex)
@@ -110,11 +105,10 @@ namespace Relativity.Sync.Transfer
 			}
 		}
 
-		private async Task<Stream> GetLongTextStreamAsync(int workspaceArtifactId, int relativityObjectArtifactId, string fieldName)
+		private static async Task<Stream> GetLongTextStreamAsync(IObjectManager objectManager, int workspaceArtifactId, int relativityObjectArtifactId, string fieldName)
 		{
 			var exportObject = new RelativityObjectRef { ArtifactID = relativityObjectArtifactId };
 			var fieldRef = new FieldRef { Name = fieldName };
-			IObjectManager objectManager = await GetObjectManager().ConfigureAwait(false);
 			IKeplerStream keplerStream = await objectManager.StreamLongTextAsync(workspaceArtifactId, exportObject, fieldRef).ConfigureAwait(false);
 			return await keplerStream.GetStreamAsync().ConfigureAwait(false);
 		}
@@ -131,12 +125,6 @@ namespace Relativity.Sync.Transfer
 			msgBuilder.Append($"ExportObject artifact id: ({relativityObjectArtifactId}) ");
 			msgBuilder.Append($"Long text field name: ({fieldName})");
 			return msgBuilder.ToString();
-		}
-
-		public void Dispose()
-		{
-			_objectManager?.Dispose();
-			_objectManager = null;
 		}
 	}
 }
