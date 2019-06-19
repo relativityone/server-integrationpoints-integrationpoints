@@ -106,8 +106,11 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 			{
 				_disposed = true;
 				_getStreamRetryPolicy = null; // See note at top
-				InnerStream.Value?.Dispose();
 				_objectManager.Dispose();
+				if (InnerStream.IsValueCreated)
+				{
+					InnerStream.Value.Dispose();
+				}
 			}
 		}
 
