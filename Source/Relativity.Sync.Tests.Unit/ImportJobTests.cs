@@ -99,6 +99,52 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
+		public async Task ItShouldReleaseSemaphoreWhenFatalExceptionOccurs()
+		{
+			_syncImportBulkArtifactJob.Setup(x => x.Execute()).Callback(() =>
+			{
+				_syncImportBulkArtifactJob.Raise(x => x.OnFatalException += null, CreateJobReport());
+			});
+
+			// act
+			await _importJob.RunAsync(CancellationToken.None).ConfigureAwait(false);
+
+			// assert
+			_semaphore.Verify(x => x.Release(), Times.Once);
+		}
+
+		[Test]
+		public async Task ItShouldReleaseSemaphoreWhenJobCompletes()
+		{
+			_syncImportBulkArtifactJob.Setup(x => x.Execute()).Callback(() =>
+			{
+				_syncImportBulkArtifactJob.Raise(x => x.OnComplete += null, CreateJobReport());
+			});
+
+			// act
+			await _importJob.RunAsync(CancellationToken.None).ConfigureAwait(false);
+
+			// assert
+			_semaphore.Verify(x => x.Release(), Times.Once);
+		}
+
+		[Test]
+		public async Task ItShouldReleaseSemaphoreOnlyOnceWhenFatalExceptionAndCompleteOccurrs()
+		{
+			_syncImportBulkArtifactJob.Setup(x => x.Execute()).Callback(() =>
+			{
+				_syncImportBulkArtifactJob.Raise(x => x.OnFatalException += null, CreateJobReport());
+				_syncImportBulkArtifactJob.Raise(x => x.OnComplete += null, CreateJobReport());
+			});
+
+			// act
+			await _importJob.RunAsync(CancellationToken.None).ConfigureAwait(false);
+
+			// assert
+			_semaphore.Verify(x => x.Release(), Times.Once);
+		}
+
+		[Test]
 		public void ItShouldHandleOnComplete()
 		{
 			_syncImportBulkArtifactJob.Setup(x => x.Execute()).Raises(x => x.OnComplete += null, CreateJobReport());
