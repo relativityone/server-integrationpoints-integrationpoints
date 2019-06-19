@@ -12,11 +12,11 @@ namespace Relativity.Sync.Configuration
 
 		int JobHistoryArtifactId { get; }
 
-		string SourceJobTagName { get; }
+		int SourceJobTagArtifactId { get; }
 
 		int SourceWorkspaceArtifactId { get; }
 
-		string SourceWorkspaceTagName { get; }
+		int SourceWorkspaceTagArtifactId { get; }
 
 		int SyncConfigurationArtifactId { get; }
 

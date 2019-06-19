@@ -156,7 +156,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		{
 			// Arrange
 			const SpecialFieldType differentSpecialFieldType = SpecialFieldType.FolderPath;
-			const SpecialFieldType specialFieldType = SpecialFieldType.SourceWorkspace;
+			const SpecialFieldType specialFieldType = SpecialFieldType.NativeFileLocation;
 			const string specialFieldName = "Special field";
 			var specialFieldValue = new Guid("56C1128A-64B7-4F67-A57F-0932CBAE1747");
 			FieldInfoDto specialFieldDto = FieldInfoDto.GenericSpecialField(specialFieldType, specialFieldName, specialFieldName);
@@ -188,7 +188,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		{
 			// Arrange
 			const SpecialFieldType differentSpecialFieldType = SpecialFieldType.FolderPath;
-			const SpecialFieldType specialFieldType = SpecialFieldType.SourceWorkspace;
+			const SpecialFieldType specialFieldType = SpecialFieldType.SupportedByViewer;
 			const string specialFieldName = "Special field";
 			FieldInfoDto specialFieldDto = FieldInfoDto.GenericSpecialField(specialFieldType, specialFieldName, specialFieldName);
 			

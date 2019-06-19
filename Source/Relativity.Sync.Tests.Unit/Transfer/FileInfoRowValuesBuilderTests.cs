@@ -49,7 +49,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 		public static IEnumerable<TestCaseData> UnsupportedNonDocumentFieldInfoDtos()
 		{
-			yield return new TestCaseData(FieldInfoDto.SourceJobField());
+			yield return new TestCaseData(FieldInfoDto.FolderPathFieldFromSourceWorkspaceStructure());
 		}
 
 		[Test]

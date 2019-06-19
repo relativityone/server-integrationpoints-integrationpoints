@@ -48,34 +48,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		}
 
 		[Test]
-		public void ItShouldBuildSourceWorkspaceField()
-		{
-			// Act
-			FieldInfoDto result = FieldInfoDto.SourceWorkspaceField();
-
-			//Assert
-			result.SpecialFieldType.Should().Be(SpecialFieldType.SourceWorkspace);
-			result.SourceFieldName.Should().BeEmpty();
-			result.DestinationFieldName.Should().Be("Relativity Source Case");
-			result.IsDocumentField.Should().BeFalse();
-			result.IsIdentifier.Should().BeFalse();
-		}
-
-		[Test]
-		public void ItShouldBuildSourceJobField()
-		{
-			// Act
-			FieldInfoDto result = FieldInfoDto.SourceJobField();
-
-			//Assert
-			result.SpecialFieldType.Should().Be(SpecialFieldType.SourceJob);
-			result.SourceFieldName.Should().BeEmpty();
-			result.DestinationFieldName.Should().Be("Relativity Source Job");
-			result.IsDocumentField.Should().BeFalse();
-			result.IsIdentifier.Should().BeFalse();
-		}
-
-		[Test]
 		public void ItShouldBuildFolderPathFieldForRetainingFolderStructure()
 		{
 			// Act

@@ -83,7 +83,6 @@ namespace Relativity.Sync.Tests.Unit
 			// assert
 			_cache.Verify(x => x.UpdateFieldValueAsync(SourceJobTagArtifactIdGuid, artifactId));
 			_cache.Verify(x => x.UpdateFieldValueAsync(SourceJobTagNameGuid, name));
-			_config.IsSourceJobTagSet.Should().BeTrue();
 		}
 
 		[Test]
@@ -98,7 +97,6 @@ namespace Relativity.Sync.Tests.Unit
 			// assert
 			_cache.Verify(x => x.UpdateFieldValueAsync(SourceWorkspaceTagArtifactIdGuid, artifactId));
 			_cache.Verify(x => x.UpdateFieldValueAsync(SourceWorkspaceTagNameGuid, name));
-			_config.IsSourceWorkspaceTagSet.Should().BeTrue();
 		}
 	}
 }

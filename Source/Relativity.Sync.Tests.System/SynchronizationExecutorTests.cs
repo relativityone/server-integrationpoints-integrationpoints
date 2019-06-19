@@ -107,8 +107,7 @@ namespace Relativity.Sync.Tests.System
 			IFieldManager fieldManager = new FieldManager(configuration, new DocumentFieldRepository(_serviceFactoryStub, logger), new List<ISpecialFieldBuilder>()
 			{
 				new FileInfoFieldsBuilder(nativeFileRepository),
-				new FolderPathFieldBuilder(new FolderPathRetriever(_serviceFactoryStub, logger), configuration),
-				new SourceTagsFieldBuilder(configuration)
+				new FolderPathFieldBuilder(new FolderPathRetriever(_serviceFactoryStub, logger), configuration)
 			});
 
 			IExportDataSanitizer exportDataSanitizer = new ExportDataSanitizer(Enumerable.Empty<IExportFieldSanitizer>());
@@ -156,7 +155,7 @@ namespace Relativity.Sync.Tests.System
 			Storage.IConfiguration config = await Storage.Configuration.GetAsync(_serviceFactoryStub, new SyncJobParameters(jobHistoryArtifactId, sourceWorkspaceArtifactId, configuration.ImportSettings), logger,
 				new SemaphoreSlimWrapper(new SemaphoreSlim(1))).ConfigureAwait(false);
 			IFieldMappings fieldMappings = new FieldMappings(config, new JSONSerializer(), logger);
-			var syncExecutor = new SynchronizationExecutor(importJobFactory, batchRepository, destinationWorkspaceTagRepository, fieldManager, fieldMappings,
+			var syncExecutor = new SynchronizationExecutor(importJobFactory, batchRepository, destinationWorkspaceTagRepository, null, fieldManager, fieldMappings,
 				jobHistoryErrorRepository, logger);
 
 			// ACT

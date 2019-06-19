@@ -53,7 +53,15 @@ namespace Relativity.Sync.Transfer
 		public IEnumerable<int> GetSuccessfulItemArtifactIds()
 		{
 			IEnumerable<ItemInfo> successfulItems = _items.Values.Where(item => item.Status == ItemStatus.Succeed);
-			return successfulItems.Select(status => status.ArtifactId);
+			IEnumerable<int> artifactIds = successfulItems.Select(status => status.ArtifactId);
+			return artifactIds;
+		}
+
+		public IEnumerable<string> GetSuccessfulItemIdentifiers()
+		{
+			IEnumerable<KeyValuePair<string, ItemInfo>> successfulItems = _items.Where(item => item.Value.Status == ItemStatus.Succeed);
+			IEnumerable<string> identifiers = successfulItems.Select(item => item.Key);
+			return identifiers;
 		}
 
 		private class ItemInfo

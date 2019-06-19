@@ -74,8 +74,6 @@ namespace Relativity.Sync.Tests.Integration
 				_instance["NativeFileFilename"].ConvertTo<string>().Should().Be(document.NativeFile.Filename);
 				_instance["NativeFileLocation"].ConvertTo<string>().Should().Be(document.NativeFile.Location);
 				_instance["NativeFileSize"].ConvertTo<long>().Should().Be(document.NativeFile.Size);
-				_instance["Relativity Source Case"].ConvertTo<string>().Should().Be(_configuration.SourceWorkspaceTagName);
-				_instance["Relativity Source Job"].ConvertTo<string>().Should().Be(_configuration.SourceJobTagName);
 
 				foreach (FieldValue fieldValue in document.FieldValues)
 				{

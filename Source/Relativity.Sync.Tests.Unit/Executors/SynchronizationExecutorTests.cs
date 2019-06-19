@@ -72,7 +72,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			_fieldManager.Setup(x => x.GetSpecialFields()).Returns(_specialFields);
 
-			_synchronizationExecutor = new SynchronizationExecutor(importJobFactory.Object, _batchRepository.Object, _destinationWorkspaceTagRepository.Object,
+			_synchronizationExecutor = new SynchronizationExecutor(importJobFactory.Object, _batchRepository.Object, _destinationWorkspaceTagRepository.Object, null,
 				_fieldManager.Object, _fieldMappings.Object, jobHistoryErrorRepository.Object, new EmptyLogger());
 		}
 

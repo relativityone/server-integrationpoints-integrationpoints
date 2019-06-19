@@ -201,7 +201,7 @@ namespace Relativity.Sync.Executors
 			{
 				UpdateBehavior = FieldUpdateBehavior.Merge
 			};
-			IEnumerable<IList<int>> documentArtifactIdBatches = CollectionExtensions.SplitList(documentArtifactIds, _MAX_OBJECT_QUERY_BATCH_SIZE);
+			IEnumerable<IList<int>> documentArtifactIdBatches = documentArtifactIds.SplitList(_MAX_OBJECT_QUERY_BATCH_SIZE);
 			foreach (IList<int> documentArtifactIdBatch in documentArtifactIdBatches)
 			{
 				TagDocumentsResult tagResult = await TagDocumentsBatchAsync(synchronizationConfiguration, documentArtifactIdBatch, fieldValues, massUpdateOptions, token).ConfigureAwait(false);
@@ -214,7 +214,7 @@ namespace Relativity.Sync.Executors
 		private async Task<TagDocumentsResult> TagDocumentsBatchAsync(
 			ISynchronizationConfiguration synchronizationConfiguration, IList<int> batch, IEnumerable<FieldRefValuePair> fieldValues, MassUpdateOptions massUpdateOptions, CancellationToken token)
 		{
-			var metricsCustomData = new Dictionary<string, object>() { { "batchSize", batch.Count } };
+			var metricsCustomData = new Dictionary<string, object> { { "batchSize", batch.Count } };
 
 			var updateByIdentifiersRequest = new MassUpdateByObjectIdentifiersRequest
 			{
