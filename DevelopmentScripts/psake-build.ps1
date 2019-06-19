@@ -498,6 +498,7 @@ task start_sonar -depends get_sonarqube -precondition { return $RUN_SONARQUBE } 
         ("/n:$sonarqube_project_name"),
         ("/v:$branch_hash"),
         ("/s:$sonarqube_properties"),
+        ("/d:sonar.branch.name=""$branch"""),
         ("/d:sonar.cs.nunit.reportsPaths=""$NUnit_TestOutputFile"""),
         ("/d:sonar.cs.dotcover.reportsPaths=""$dotCover_result"""))
     & $sonarqube_exe $args    
