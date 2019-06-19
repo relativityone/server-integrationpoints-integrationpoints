@@ -553,6 +553,13 @@ def deleteDirectoryIfExists(String directoryToDelete)
 	}
 }
 
+def importTestResultsToTestTracker()
+{
+    testTracker(ripPipelineState.relativityBuildVersion,
+        env.BRANCH_NAME,
+        "$Constants.INTEGRATION_TESTS_RESULTS_REPORT_PATH;$Constants.UI_TESTS_RESULTS_REPORT_PATH;$Constants.INTEGRATION_TESTS_IN_QUARANTINE_RESULTS_REPORT_PATH")
+}
+
 /*****************
  **** PRIVATE ****
 /*****************

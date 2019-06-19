@@ -4,6 +4,7 @@ library 'PipelineTools@RMT-9.3.1'
 library 'SCVMMHelpers@3.2.0'
 library 'GitHelpers@1.0.0'
 library 'SlackHelpers@3.0.0'
+library 'TestTrackerHelpers@master'
 
 properties([
 	pipelineTriggers(env.JOB_NAME.contains("IntegrationPointsNightly") ? [cron('H 16 * * *')] : []),
@@ -224,7 +225,8 @@ timestamps
 		{
 			parallel([
 				CleanupVms: { jenkinsHelpers.cleanupVMs() },
-				CleanupChefArtifacts: { jenkinsHelpers.cleanupChefArtifacts() }
+				CleanupChefArtifacts: { jenkinsHelpers.cleanupChefArtifacts() },
+				ImportTestResultsToTestTracker: { jenkinsHelpers.importTestResultsToTestTracker() }
 			])
 		}
 
