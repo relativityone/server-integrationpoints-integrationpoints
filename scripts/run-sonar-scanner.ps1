@@ -53,8 +53,8 @@ Write-Verbose "Running Sonar Scanner for version $version..."
     /d:sonar.login=$token `
     /d:sonar.host.url=$url `
     /d:sonar.language=cs `
-	/d:sonar.branch.name=$branchName `
 	/d:sonar.branch.target="develop" `
+	/d:sonar.branch.name=$branchName `
     /d:sonar.exclusions="Source/**/obj/**/*,Source/**/bin/**/*" `
     /d:sonar.cs.dotcover.reportsPaths=$testCoverageReport
 
