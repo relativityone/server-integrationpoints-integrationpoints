@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Polly;
 using Relativity.Services.Objects;
+using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync.Transfer.StreamWrappers
 {
@@ -25,26 +26,28 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 		private const int _MAX_RETRY_ATTEMPTS = 3;
 		private const int _WAIT_INTERVAL_IN_SECONDS = 1;
 
-		private readonly Func<IObjectManager, Task<Stream>> _getStreamFunction;
-		private readonly IObjectManager _objectManager;
+		private readonly Lazy<IObjectManager> _objectManager;
+		private readonly Func<IObjectManager, Task<Stream>> _streamFactory;
 		private readonly ISyncLog _logger;
 		private readonly Func<Stream> _innerStreamValueFactory;
 
 		internal Lazy<Stream> InnerStream { get; private set; }
 
 		public SelfRecreatingStream(
-			IObjectManager objectManager,
-			Func<IObjectManager, Task<Stream>> getStreamFunction,
+			ISourceServiceFactoryForUser serviceFactory,
+			Func<IObjectManager, Task<Stream>> streamFactory,
 			IStreamRetryPolicyFactory streamRetryPolicyFactory,
-			ISyncLog logger)
+			ISyncLog logger
+			)
 		{
-			_objectManager = objectManager;
+			_objectManager = new Lazy<IObjectManager>(() => serviceFactory.CreateProxyAsync<IObjectManager>().GetAwaiter().GetResult());
 			_logger = logger;
-			_getStreamFunction = getStreamFunction;
+			_streamFactory = streamFactory;
 			_getStreamRetryPolicy = streamRetryPolicyFactory.Create(
 				OnRetry,
 				_MAX_RETRY_ATTEMPTS,
-				TimeSpan.FromSeconds(_WAIT_INTERVAL_IN_SECONDS));
+				TimeSpan.FromSeconds(_WAIT_INTERVAL_IN_SECONDS)
+				);
 			_innerStreamValueFactory = () => _getStreamRetryPolicy.ExecuteAsync(GetInnerStream).GetAwaiter().GetResult();
 
 			InnerStream = new Lazy<Stream>(_innerStreamValueFactory);
@@ -106,10 +109,13 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 			{
 				_disposed = true;
 				_getStreamRetryPolicy = null; // See note at top
-				_objectManager.Dispose();
 				if (InnerStream.IsValueCreated)
 				{
 					InnerStream.Value.Dispose();
+				}
+				if (_objectManager.IsValueCreated)
+				{
+					_objectManager.Value.Dispose();
 				}
 			}
 		}
@@ -118,7 +124,7 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 		{
 			try
 			{
-				Stream stream = await _getStreamFunction(_objectManager).ConfigureAwait(false);
+				Stream stream = await _streamFactory(_objectManager.Value).ConfigureAwait(false);
 				return stream;
 			}
 			catch (Exception ex)
