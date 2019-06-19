@@ -9,6 +9,7 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Transfer;
 
@@ -18,18 +19,29 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 	[Parallelizable(ParallelScope.All)]
 	internal class MultipleChoiceFieldSanitizerTests
 	{
+		private Mock<ISynchronizationConfiguration> _config;
+		private Mock<ISourceServiceFactoryForAdmin> _serviceFactory;
+		private Mock<IChoiceTreeToStringConverter> _choiceTreeToStringConverter;
+		private MultipleChoiceFieldSanitizer _instance;
+
 		private const char _NESTED_VALUE = (char) 29;
 		private const char _MULTI_VALUE = (char) 30;
+
+		[SetUp]
+		public void SetUp()
+		{
+			_config = new Mock<ISynchronizationConfiguration>();
+			_config.SetupGet(x => x.ImportSettings).Returns(new ImportSettingsDto());
+			_serviceFactory = new Mock<ISourceServiceFactoryForAdmin>();
+			_choiceTreeToStringConverter = new Mock<IChoiceTreeToStringConverter>();
+			_instance = new MultipleChoiceFieldSanitizer(_config.Object, _serviceFactory.Object, _choiceTreeToStringConverter.Object);
+		}
 
 		[Test]
 		public void ItShouldSupportMultipleChoice()
 		{
-			// Arrange
-			ISynchronizationConfiguration configuration = CreateConfiguration();
-			var instance = new MultipleChoiceFieldSanitizer(configuration);
-
 			// Act
-			RelativityDataType supportedType = instance.SupportedType;
+			RelativityDataType supportedType = _instance.SupportedType;
 
 			// Assert
 			supportedType.Should().Be(RelativityDataType.MultipleChoice);
@@ -46,13 +58,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		[TestCaseSource(nameof(ThrowExceptionWhenDeserializationFailsTestCases))]
 		public async Task ItShouldThrowInvalidExportFieldValueExceptionWithTypeNamesWhenDeserializationFails(object initialValue)
 		{
-			// Arrange
-			ISynchronizationConfiguration configuration = CreateConfiguration();
-			var instance = new MultipleChoiceFieldSanitizer(configuration);
-
 			// Act
-			Func<Task> action = async () =>
-				await instance.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
+			Func<Task> action = async () => await _instance.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
 
 			// Assert
 			(await action.Should().ThrowAsync<InvalidExportFieldValueException>().ConfigureAwait(false))
@@ -64,13 +71,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		[TestCaseSource(nameof(ThrowExceptionWhenDeserializationFailsTestCases))]
 		public async Task ItShouldThrowInvalidExportFieldValueExceptionWithInnerExceptionWhenDeserializationFails(object initialValue)
 		{
-			// Arrange
-			ISynchronizationConfiguration configuration = CreateConfiguration();
-			var instance = new MultipleChoiceFieldSanitizer(configuration);
-
 			// Act
-			Func<Task> action = async () =>
-				await instance.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
+			Func<Task> action = async () => await _instance.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
 
 			// Assert
 			(await action.Should().ThrowAsync<InvalidExportFieldValueException>().ConfigureAwait(false))
@@ -88,13 +90,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		[TestCaseSource(nameof(ThrowExceptionWhenAnyElementsAreInvalidTestCases))]
 		public async Task ItShouldThrowInvalidExportFieldValueExceptionWhenAnyElementsAreInvalid(object initialValue)
 		{
-			// Arrange
-			ISynchronizationConfiguration configuration = CreateConfiguration();
-			var instance = new MultipleChoiceFieldSanitizer(configuration);
-
 			// Act
-			Func<Task> action = async () =>
-				await instance.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
+			Func<Task> action = async () => await _instance.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
 
 			// Assert
 			(await action.Should().ThrowAsync<InvalidExportFieldValueException>().ConfigureAwait(false))
@@ -153,13 +150,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		[TestCaseSource(nameof(ThrowSyncExceptionWhenNameContainsDelimiterTestCases))]
 		public async Task ItShouldThrowSyncExceptionWhenNameContainsDelimiter(object initialValue, string expectedViolators)
 		{
-			// Arrange
-			ISynchronizationConfiguration configuration = CreateConfiguration();
-			var instance = new MultipleChoiceFieldSanitizer(configuration);
-
 			// Act
-			Func<Task> action = async () =>
-				await instance.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
+			Func<Task> action = async () => await _instance.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
 
 			// Assert
 			(await action.Should().ThrowAsync<SyncException>().ConfigureAwait(false))
@@ -193,22 +185,11 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		[TestCaseSource(nameof(CombineNamesIntoReturnValueTestCases))]
 		public async Task ItShouldCombineNamesIntoReturnValue(object initialValue, object expectedResult)
 		{
-			// Arrange
-			ISynchronizationConfiguration configuration = CreateConfiguration();
-			var instance = new MultipleChoiceFieldSanitizer(configuration);
-
 			// Act
-			object result = await instance.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
+			object result = await _instance.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
 
 			// Assert
 			result.Should().Be(expectedResult);
-		}
-
-		private static ISynchronizationConfiguration CreateConfiguration()
-		{
-			var config = new Mock<ISynchronizationConfiguration>();
-			config.SetupGet(x => x.ImportSettings).Returns(new ImportSettingsDto());
-			return config.Object;
 		}
 
 		private static JArray ChoiceJArrayFromNames(params string[] names)

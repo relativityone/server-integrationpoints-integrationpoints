@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
 using Newtonsoft.Json;
+using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync.Transfer
 {
@@ -18,16 +21,20 @@ namespace Relativity.Sync.Transfer
 	internal sealed class MultipleChoiceFieldSanitizer : IExportFieldSanitizer
 	{
 		private readonly ISynchronizationConfiguration _configuration;
+		private readonly ISourceServiceFactoryForAdmin _serviceFactory;
+		private readonly IChoiceTreeToStringConverter _choiceTreeConverter;
 		private readonly JSONSerializer _serializer = new JSONSerializer();
 
-		public MultipleChoiceFieldSanitizer(ISynchronizationConfiguration configuration)
+		public MultipleChoiceFieldSanitizer(ISynchronizationConfiguration configuration, ISourceServiceFactoryForAdmin serviceFactory, IChoiceTreeToStringConverter choiceTreeConverter)
 		{
 			_configuration = configuration;
+			_serviceFactory = serviceFactory;
+			_choiceTreeConverter = choiceTreeConverter;
 		}
 
 		public RelativityDataType SupportedType => RelativityDataType.MultipleChoice;
 
-		public Task<object> SanitizeAsync(int workspaceArtifactId,
+		public async Task<object> SanitizeAsync(int workspaceArtifactId,
 			string itemIdentifierSourceFieldName,
 			string itemIdentifier,
 			string sanitizingSourceFieldName,
@@ -35,7 +42,7 @@ namespace Relativity.Sync.Transfer
 		{
 			if (initialValue == null)
 			{
-				return Task.FromResult(initialValue);
+				return initialValue;
 			}
 
 			// We have to re-serialize and deserialize the value from Export API due to REL-250554.
@@ -75,10 +82,55 @@ namespace Relativity.Sync.Transfer
 					$"delimiter ('{nestedValueDelimiter}'). Rename these choices or choose a different delimiter: {violatingNameList}");
 			}
 
-			// TODO: Check & combine based on choice nesting
-			string multiValueDelimiterString = char.ToString(multiValueDelimiter);
-			string combinedNames = string.Join(multiValueDelimiterString, names);
-			return Task.FromResult<object>(combinedNames);
+			IList<ChoiceWithParentInfo> choicesFlatList = await GetChoicesWithParentInfoAsync(choices).ConfigureAwait(false);
+			const int parentArtifactIdForRootChoices = 1003663; // TODO get parent artifact ID (which is workspace id) of root choices
+			IList<ChoiceWithParentInfo> choicesTree = BuildChoiceTree(choicesFlatList, parentArtifactIdForRootChoices);
+
+			string treeString = _choiceTreeConverter.ConvertTreeToString(choicesTree);
+			return treeString;
+		}
+
+		private async Task<IList<ChoiceWithParentInfo>> GetChoicesWithParentInfoAsync(Choice[] choices)
+		{
+			IList<ChoiceWithParentInfo> choicesWithParentInfo = new List<ChoiceWithParentInfo>(choices.Length);
+			using (IObjectManager om = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			{
+				foreach (Choice choice in choices)
+				{
+					const int choiceArtifactTypeId = 7;
+					QueryRequest request = new QueryRequest()
+					{
+						ObjectType = new ObjectTypeRef()
+						{
+							ArtifactTypeID = choiceArtifactTypeId
+						},
+						Condition = $"'ArtifactID' == {choice.ArtifactID}"
+					};
+					QueryResult queryResult = await om.QueryAsync(_configuration.SourceWorkspaceArtifactId, request, 1, 1).ConfigureAwait(false);
+					if (queryResult.ResultCount == 0)
+					{
+						throw new SyncException($"Query for Choice Artifact ID: {choice.ArtifactID} returned no results.");
+					}
+
+					int parentArtifactId = queryResult.Objects[0].ParentObject.ArtifactID;
+					
+					choicesWithParentInfo.Add(new ChoiceWithParentInfo(parentArtifactId, choice.ArtifactID, choice.Name));
+				}
+			}
+
+			return choicesWithParentInfo;
+		}
+
+		private IList<ChoiceWithParentInfo> BuildChoiceTree(IList<ChoiceWithParentInfo> flatList, int parentArtifactId)
+		{
+			IList<ChoiceWithParentInfo> tree = new List<ChoiceWithParentInfo>();
+			foreach (ChoiceWithParentInfo choice in flatList.Where(x => x.ParentArtifactID == parentArtifactId))
+			{
+				choice.Children = BuildChoiceTree(flatList, choice.ArtifactID);
+				tree.Add(choice);
+			}
+
+			return tree;
 		}
 	}
 }
