@@ -81,14 +81,31 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 					.Match(ex => ex is JsonReaderException || ex is JsonSerializationException);
 		}
 
-		[Test]
-		public async Task ItShouldThrowSyncExceptionWhenObjectNameIsNull()
+		[TestCase("")]
+		[TestCase("\"ArtifactID\": 0")]
+		public async Task ItShouldReturnNullWhenArtifactIdIsZero(string jsonArtifactIdProperty)
 		{
 			// Arrange
 			var instance = new SingleObjectFieldSanitizer();
 
 			// Act
-			object initialValue = JsonHelpers.DeserializeJson("{ \"ArtifactID\": 10123, \"Foo\": \"Bar\" }");
+			object initialValue = JsonHelpers.DeserializeJson($"{{ {jsonArtifactIdProperty} }}");
+			object result = await instance.SanitizeAsync(0, "foo", "bar", "bang", initialValue).ConfigureAwait(false);
+
+			// Assert
+			result.Should().BeNull();
+		}
+
+		[TestCase("")]
+		[TestCase("\"Name\": \"\"")]
+		[TestCase("\"Name\": \"  \"")]
+		public async Task ItShouldThrowSyncExceptionWhenObjectNameIsInvalidAndArtifactIDIsValid(string jsonNameProperty)
+		{
+			// Arrange
+			var instance = new SingleObjectFieldSanitizer();
+
+			// Act
+			object initialValue = JsonHelpers.DeserializeJson($"{{ \"ArtifactID\": 10123, {jsonNameProperty} }}");
 			Func<Task> action = async () => await instance.SanitizeAsync(0, "foo", "bar", "bang", initialValue).ConfigureAwait(false);
 
 			// Assert
@@ -105,7 +122,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			const string expectedName = "Awesome Object";
 
 			// Act
-			object initialValue = JsonHelpers.ToJToken<JObject>(new RelativityObjectValue { Name = expectedName });
+			object initialValue = JsonHelpers.ToJToken<JObject>(new RelativityObjectValue { ArtifactID = 1, Name = expectedName });
 			object result = await instance.SanitizeAsync(0, "foo", "bar", "bang", initialValue).ConfigureAwait(false);
 
 			// Assert

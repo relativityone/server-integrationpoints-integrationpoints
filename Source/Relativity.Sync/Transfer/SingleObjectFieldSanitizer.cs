@@ -36,18 +36,29 @@ namespace Relativity.Sync.Transfer
 			}
 			catch (Exception ex) when (ex is JsonSerializationException || ex is JsonReaderException)
 			{
-				throw new SyncException("Unable to parse data from Relativity Export API - " +
-					$"expected value to be deserializable to {typeof(RelativityObjectValue)}, but instead type was {initialValue.GetType()}", ex);
+				throw new SyncException(GetExceptionMessageHeader(itemIdentifier, sanitizingSourceFieldName) +
+					$" expected value to be deserializable to {typeof(RelativityObjectValue)}, but instead type was {initialValue.GetType()}", ex);
+			}
+
+			// If a Single Object field is not set, Object Manager returns a valid object with an ArtifactID of 0 instead of a null value.
+			if (objectValue.ArtifactID == default(int))
+			{
+				return Task.FromResult<object>(null);
 			}
 
 			if (string.IsNullOrWhiteSpace(objectValue.Name))
 			{
-				throw new SyncException("Unable to parse data from Relativity Export API - " +
-					$"expected input to be deserializable to type {typeof(RelativityObjectValue)} and name to not be null or empty");
+				throw new SyncException(GetExceptionMessageHeader(itemIdentifier, sanitizingSourceFieldName) +
+					$" expected input to be deserializable to type {typeof(RelativityObjectValue)} and ArtifactID property to not be empty (object value was: {initialValue})");
 			}
 
 			string value = objectValue.Name;
 			return Task.FromResult<object>(value);
+		}
+
+		private string GetExceptionMessageHeader(string itemIdentifier, string fieldName)
+		{
+			return $"Unable to parse data from Relativity Export API in field '{fieldName}' of object '{itemIdentifier}'";
 		}
 	}
 }

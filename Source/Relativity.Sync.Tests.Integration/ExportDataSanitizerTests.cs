@@ -112,7 +112,7 @@ namespace Relativity.Sync.Tests.Integration
 		private static IEnumerable<TestCaseData> ObjectChoiceSanitizerGoldenTestCases()
 		{
 			yield return new TestCaseData(RelativityDataType.SingleObject, null, null);
-			yield return new TestCaseData(RelativityDataType.SingleObject, JsonHelpers.ToJToken<JObject>(new RelativityObjectValue { Name = "FooBar" }), "FooBar");
+			yield return new TestCaseData(RelativityDataType.SingleObject, JsonHelpers.ToJToken<JObject>(new RelativityObjectValue { ArtifactID = 1, Name = "FooBar" }), "FooBar");
 
 			yield return new TestCaseData(RelativityDataType.SingleChoice, null, null);
 			yield return new TestCaseData(RelativityDataType.SingleChoice, JsonHelpers.ToJToken<JObject>(new Choice { Name = "FooBar" }), "FooBar");
