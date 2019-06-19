@@ -64,13 +64,10 @@ timestamps
                         powershell ".\\build.ps1 publishNuget -progetApiKey $key"
                     }
                 }
-                if(env.BRANCH_NAME == 'develop')
-                {
-                    stage ('SonarQube')
-                    {
-                        powershell ".\\build.ps1 runSonarScanner -version $version"
-                    }
-                }
+				stage ('SonarQube')
+				{
+					powershell ".\\build.ps1 runSonarScanner -version $version"
+				}                
                 
                 currentBuild.result = 'SUCCESS'
                 step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
