@@ -585,7 +585,7 @@ private isPowershellResultTrue(s)
 
 private shouldRunSonar(Boolean enableSonarAnalysis, String branchName)
 {
-	return (enableSonarAnalysis && branchName == "develop" && !isNightly())
+	return (enableSonarAnalysis && !isNightly())
 			? "-sonarqube"
 			: ""
 }
