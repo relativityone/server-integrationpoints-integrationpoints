@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using Polly;
 
 namespace Relativity.Sync.Transfer.StreamWrappers
@@ -16,20 +17,20 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 		// NOTE: This can't be readonly - we create a circular reference by
 		// passing in an instance method to the factory, so we need to set
 		// this field to null on dispose.
-		private ISyncPolicy<Stream> _getStreamRetryPolicy;
+		private IAsyncPolicy<Stream> _getStreamRetryPolicy;
 
 		private bool _disposed;
 
 		private const int _MAX_RETRY_ATTEMPTS = 3;
 		private const int _WAIT_INTERVAL_IN_SECONDS = 1;
 
-		private readonly Func<Stream> _getStreamFunction;
+		private readonly Func<Task<Stream>> _getStreamFunction;
 		private readonly ISyncLog _logger;
 
 		internal Lazy<Stream> InnerStream { get; private set; }
 
 		public SelfRecreatingStream(
-			Func<Stream> getStreamFunction,
+			Func<Task<Stream>> getStreamFunction,
 			IStreamRetryPolicyFactory streamRetryPolicyFactory,
 			ISyncLog logger)
 		{
@@ -40,7 +41,7 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 				_MAX_RETRY_ATTEMPTS,
 				TimeSpan.FromSeconds(_WAIT_INTERVAL_IN_SECONDS));
 
-			InnerStream = new Lazy<Stream>(() => _getStreamRetryPolicy.Execute(GetInnerStream));
+			InnerStream = _getStreamRetryPolicy.ExecuteAsync(GetInnerStream).GetAwaiter().GetResult();
 		}
 
 		public override void Flush()
@@ -74,7 +75,7 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 			{
 				if (!InnerStream.Value.CanRead)
 				{
-					InnerStream = new Lazy<Stream>(() => _getStreamRetryPolicy.Execute(GetInnerStream));
+					InnerStream = _getStreamRetryPolicy.ExecuteAsync(GetInnerStream).GetAwaiter().GetResult();
 				}
 
 				return InnerStream.Value.CanRead;
@@ -103,11 +104,11 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 			}
 		}
 
-		private Stream GetInnerStream()
+		private async Task<Stream> GetInnerStream()
 		{
 			try
 			{
-				Stream stream = _getStreamFunction.Invoke();
+				Stream stream = await _getStreamFunction().ConfigureAwait(false);
 				return stream;
 			}
 			catch (Exception ex)
