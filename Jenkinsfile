@@ -66,7 +66,7 @@ timestamps
                 }
 				stage ('SonarQube')
 				{
-					powershell ".\\build.ps1 runSonarScanner -version $version"
+					powershell ".\\build.ps1 runSonarScanner -version $version -branchName ${env.BRANCH_NAME}"
 				}                
                 
                 currentBuild.result = 'SUCCESS'
