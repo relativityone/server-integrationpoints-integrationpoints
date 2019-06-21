@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Polly;
 using Relativity.Services.Exceptions;
+using Relativity.Services.Objects;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Transfer.StreamWrappers;
 
 namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
@@ -22,7 +25,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 		public void SetUp()
 		{
 			_streamRetryPolicyFactory = new Mock<IStreamRetryPolicyFactory>();
-			SetupRetryPolicyFactory((a, b, c) => Policy.NoOp<Stream>());
+			SetupRetryPolicyFactory((a, b, c) => Policy.NoOpAsync<Stream>());
 			_logger = new Mock<ISyncLog>();
 		}
 
@@ -45,46 +48,45 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 			StreamEncoding streamEncoding = encoding is UnicodeEncoding
 				? StreamEncoding.Unicode
 				: StreamEncoding.ASCII;
-			//Stream result = instance.Create(() => stream, streamEncoding);
+			Stream result = instance.Create(Mock.Of<ISourceServiceFactoryForUser>(), GetFuncOfTaskOfStream(stream), streamEncoding);
 
 			//// Assert
-			//string streamOutput = ReadOutUnicodeString(result);
-			//streamOutput.Should().Be(streamInput);
-			Assert.Fail("To be adjusted to new implementation");
+			string streamOutput = ReadOutUnicodeString(result);
+			streamOutput.Should().Be(streamInput);
 		}
 
 		[Test]
 		public void ItShouldWrapStreamInSelfRecreatingStream()
 		{
 			// Arrange
-			//int timesInvoked = 0;
+			int timesInvoked = 0;
 
-			//Stream GetStream()
-			//{
-			//	timesInvoked += 1;
-			//	if (timesInvoked == 1)
-			//	{
-			//		throw new ServiceException();
-			//	}
+			async Task<Stream> GetStream(IObjectManager objectManager)
+			{
+				await Task.Yield();
+				timesInvoked++;
+				if (timesInvoked == 1)
+				{
+					throw new ServiceException();
+				}
 
-			//	const string streamInput = "hello world!";
-			//	var stream = new MemoryStream(Encoding.Unicode.GetBytes(streamInput));
-			//	return stream;
-			//}
+				const string streamInput = "hello world!";
+				var stream = new MemoryStream(Encoding.Unicode.GetBytes(streamInput));
+				return stream;
+			}
 
 			SetupRetryPolicyFactory((onRetry, retryCount, dur) =>
 				Policy.HandleResult<Stream>(s => false)
 					.Or<Exception>()
-					.Retry(retryCount, (_, i) => onRetry(i)));
+					.RetryAsync(retryCount, (_, i) => onRetry(i)));
 
 			var instance = new ImportStreamBuilder(_streamRetryPolicyFactory.Object, _logger.Object);
 
 			// Act
-			//Stream result = instance.Create(GetStream, StreamEncoding.Unicode);
+			Stream result = instance.Create(Mock.Of<ISourceServiceFactoryForUser>(), GetStream, StreamEncoding.Unicode);
 
 			//// Assert
-			//Assert.DoesNotThrow(() => ReadOutUnicodeString(result));
-			Assert.Fail("To be adjusted to new implementation");
+			Assert.DoesNotThrow(() => ReadOutUnicodeString(result));
 		}
 
 		[Test]
@@ -96,14 +98,24 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 			var instance = new ImportStreamBuilder(_streamRetryPolicyFactory.Object, _logger.Object);
 
 			// Act
-			//Stream result = instance.Create(() => stream.Object, StreamEncoding.Unicode);
+			Stream result = instance.Create(Mock.Of<ISourceServiceFactoryForUser>(), GetFuncOfTaskOfStream(stream.Object), StreamEncoding.Unicode);
 
 			//// Assert
-			//result.CanRead.Should().BeFalse();
-			Assert.Fail("To be adjusted to new implementation");
+			result.CanRead.Should().BeFalse();
 		}
 
-		private void SetupRetryPolicyFactory(Func<Action<int>, int, TimeSpan, ISyncPolicy<Stream>> policyFunc)
+		private Func<IObjectManager, Task<Stream>> GetFuncOfTaskOfStream(Stream stream)
+		{
+			return om => WrapStreamInTask(stream);
+		}
+
+		private static async Task<Stream> WrapStreamInTask(Stream stream)
+		{
+			await Task.Yield();
+			return stream;
+		}
+
+		private void SetupRetryPolicyFactory(Func<Action<int>, int, TimeSpan, IAsyncPolicy<Stream>> policyFunc)
 		{
 			_streamRetryPolicyFactory.Setup(x => x.Create(
 				It.IsAny<Action<int>>(),

@@ -136,7 +136,10 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 
 		private void OnRetry(int retryAttempt)
 		{
-			InnerStream.Value?.Dispose();
+			if (InnerStream.IsValueCreated)
+			{
+				InnerStream.Value.Dispose();
+			}
 			_logger.LogWarning("Retrying Kepler Stream creation inside {0}. Attempt {1} of {2}", nameof(SelfRecreatingStream), retryAttempt, _MAX_RETRY_ATTEMPTS);
 		}
 	}
