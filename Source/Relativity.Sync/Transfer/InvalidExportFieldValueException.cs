@@ -46,7 +46,7 @@ namespace Relativity.Sync.Transfer
 
 		private static string MessageTemplate(string sourceObjectName, string sourceFieldName, string message)
 		{
-			return $"Unable to parse data from Relativity Export API in field '{sourceFieldName}' of object '{sourceObjectName}': {message}";
+			return $"Unable to parse data from Relativity Export API in field '{sourceFieldName}' of object '{sourceObjectName}'. {message}";
 		}
 	}
 }

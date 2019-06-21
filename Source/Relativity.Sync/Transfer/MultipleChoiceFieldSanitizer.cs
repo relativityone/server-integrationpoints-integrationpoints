@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
 using Newtonsoft.Json;
@@ -34,11 +33,7 @@ namespace Relativity.Sync.Transfer
 
 		public RelativityDataType SupportedType => RelativityDataType.MultipleChoice;
 
-		public async Task<object> SanitizeAsync(int workspaceArtifactId,
-			string itemIdentifierSourceFieldName,
-			string itemIdentifier,
-			string sanitizingSourceFieldName,
-			object initialValue)
+		public async Task<object> SanitizeAsync(int workspaceArtifactId, string itemIdentifierSourceFieldName, string itemIdentifier, string sanitizingSourceFieldName, object initialValue)
 		{
 			if (initialValue == null)
 			{
@@ -53,19 +48,15 @@ namespace Relativity.Sync.Transfer
 			}
 			catch (Exception ex) when (ex is JsonSerializationException || ex is JsonReaderException)
 			{
-				throw new InvalidExportFieldValueException(
-					itemIdentifier,
-					sanitizingSourceFieldName,
-					$"Unable to parse data from Relativity Export API - expected value to be deserializable to {typeof(Choice[])}, but instead type was {initialValue.GetType()}",
+				throw new InvalidExportFieldValueException(itemIdentifier, sanitizingSourceFieldName,
+					$"Expected value to be deserializable to {typeof(Choice[])}, but instead type was {initialValue.GetType()}.",
 					ex);
 			}
 
 			if (choices.Any(x => string.IsNullOrWhiteSpace(x.Name)))
 			{
-				throw new InvalidExportFieldValueException(
-					itemIdentifier,
-					sanitizingSourceFieldName, 
-					$"Unable to parse data from Relativity Export API - expected elements of input to be deserializable to type {typeof(Choice)}");
+				throw new InvalidExportFieldValueException(itemIdentifier, sanitizingSourceFieldName,
+					$"Expected elements of input to be deserializable to type {typeof(Choice)}.");
 			}
 
 			char multiValueDelimiter = _configuration.ImportSettings.MultiValueDelimiter;
@@ -79,7 +70,7 @@ namespace Relativity.Sync.Transfer
 				throw new SyncException(
 					$"The identifiers of the following choices referenced by object '{itemIdentifier}' in field '{sanitizingSourceFieldName}' " +
 					$"contain the character specified as the multi-value delimiter ('{multiValueDelimiter}') or the one specified as the nested value " +
-					$"delimiter ('{nestedValueDelimiter}'). Rename these choices or choose a different delimiter: {violatingNameList}");
+					$"delimiter ('{nestedValueDelimiter}'). Rename these choices or choose a different delimiter: {violatingNameList}.");
 			}
 
 			IList<ChoiceWithParentInfo> choicesFlatList = await GetChoicesWithParentInfoAsync(choices).ConfigureAwait(false);
@@ -129,7 +120,6 @@ namespace Relativity.Sync.Transfer
 				choice.Children = BuildChoiceTree(flatList, choice.ArtifactID);
 				tree.Add(choice);
 			}
-
 			return tree;
 		}
 	}
