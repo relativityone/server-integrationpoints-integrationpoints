@@ -280,5 +280,35 @@ namespace Relativity.Sync.Tests.System.Helpers
 				return ids;
 			}
 		}
+
+		public static Task<IList<string>> GetAllDocumentIdentifiersAsync(ServiceFactory serviceFactory, int workspaceId)
+		{
+			return QueryDocumentIdentifiersAsync(serviceFactory, workspaceId, string.Empty);
+		}
+
+		public static async Task<IList<string>> QueryDocumentIdentifiersAsync(ServiceFactory serviceFactory, int workspaceId, string condition)
+		{
+			using (IObjectManager objectManager = serviceFactory.CreateProxy<IObjectManager>())
+			{
+				var identifiers = new List<string>();
+				var queryRequest = new QueryRequest
+				{
+					ObjectType = new ObjectTypeRef { ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID },
+					Condition = condition,
+					IncludeNameInQueryResult = true
+				};
+
+				QueryResult queryResult;
+				do
+				{
+					const int batchSize = 100;
+					queryResult = await objectManager.QueryAsync(workspaceId, queryRequest, identifiers.Count, batchSize).ConfigureAwait(false);
+					identifiers.AddRange(queryResult.Objects.Select(x => x.Name));
+				}
+				while (identifiers.Count < queryResult.TotalCount);
+
+				return identifiers;
+			}
+		}
 	}
 }
