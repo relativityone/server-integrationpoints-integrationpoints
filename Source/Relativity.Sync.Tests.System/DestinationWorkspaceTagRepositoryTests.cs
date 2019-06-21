@@ -56,15 +56,15 @@ namespace Relativity.Sync.Tests.System
 				new EmptyLogger(),
 				new SyncMetrics(Enumerable.Empty<ISyncMetricsSink>(), new CorrelationId("SystemTests")));
 
-			IList<TagDocumentsResult> results = await repository.TagDocumentsAsync(configuration, documentsToTag, CancellationToken.None).ConfigureAwait(false);
+			IList<TagDocumentsResult<int>> results = await repository.TagDocumentsAsync(configuration, documentsToTag, CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			Assert.IsNotNull(results);
 			Assert.AreEqual(1, results.Count);
-			TagDocumentsResult result = results.First();
+			TagDocumentsResult<int> result = results.First();
 
 			Assert.IsTrue(result.Success, $"Failed to tag documents: {result.Message}");
-			Assert.IsFalse(result.FailedDocumentArtifactIds.Any());
+			Assert.IsFalse(result.FailedDocuments.Any());
 			Assert.AreEqual(documentsToTag.Count, result.TotalObjectsUpdated);
 
 			string isTaggedCondition =

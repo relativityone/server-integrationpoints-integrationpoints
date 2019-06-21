@@ -21,8 +21,8 @@ namespace Relativity.Sync.Executors
 		private readonly ISyncMetrics _syncMetrics;
 		private readonly IFieldMappings _fieldMappings;
 
-		private readonly Guid _sourceWorkspaceTagFieldMultiObject = new Guid("036DB373-5724-4C72-A073-375106DE5E73");
-		private readonly Guid _sourceJobTagFieldMultiObject = new Guid("4F632A3F-68CF-400E-BD29-FD364A5EBE58");
+		private readonly Guid _sourceWorkspaceTagFieldMultiObject = new Guid("2FA844E3-44F0-47F9-ABB7-D6D8BE0C9B8F");
+		private readonly Guid _sourceJobTagFieldMultiObject = new Guid("7CC3FAAF-CBB8-4315-A79F-3AA882F1997F");
 
 		public SourceWorkspaceTagRepository(IDestinationServiceFactoryForUser serviceFactory, ISyncLog logger, ISyncMetrics syncMetrics, IFieldMappings fieldMappings)
 		{
@@ -32,13 +32,13 @@ namespace Relativity.Sync.Executors
 			_fieldMappings = fieldMappings;
 		}
 		
-		public async Task<IList<TagDocumentsResult>> TagDocumentsAsync(ISynchronizationConfiguration synchronizationConfiguration, IList<string> documentIdentifiers, CancellationToken token)
+		public async Task<IList<TagDocumentsResult<string>>> TagDocumentsAsync(ISynchronizationConfiguration synchronizationConfiguration, IList<string> documentIdentifiers, CancellationToken token)
 		{
-			var tagResults = new List<TagDocumentsResult>();
+			var tagResults = new List<TagDocumentsResult<string>>();
 			if (documentIdentifiers.Count == 0)
 			{
 				const string noUpdateMessage = "A call to the Mass Update API was not made as there are no objects to update.";
-				var result = new TagDocumentsResult(Array.Empty<int>(), noUpdateMessage, true, documentIdentifiers.Count);
+				var result = new TagDocumentsResult<string>(documentIdentifiers, noUpdateMessage, true, documentIdentifiers.Count);
 				tagResults.Add(result);
 				return tagResults;
 			}
@@ -51,14 +51,14 @@ namespace Relativity.Sync.Executors
 			IEnumerable<IList<string>> documentArtifactIdBatches = documentIdentifiers.SplitList(_MAX_OBJECT_QUERY_BATCH_SIZE);
 			foreach (IList<string> documentArtifactIdBatch in documentArtifactIdBatches)
 			{
-				TagDocumentsResult tagResult = await TagDocumentsBatchAsync(synchronizationConfiguration, documentArtifactIdBatch, fieldValues, massUpdateOptions, token).ConfigureAwait(false);
+				TagDocumentsResult<string> tagResult = await TagDocumentsBatchAsync(synchronizationConfiguration, documentArtifactIdBatch, fieldValues, massUpdateOptions, token).ConfigureAwait(false);
 				tagResults.Add(tagResult);
 			}
 
 			return tagResults;
 		}
 
-		private async Task<TagDocumentsResult> TagDocumentsBatchAsync(
+		private async Task<TagDocumentsResult<string>> TagDocumentsBatchAsync(
 			ISynchronizationConfiguration synchronizationConfiguration, IList<string> batch, IEnumerable<FieldRefValuePair> fieldValues, MassUpdateOptions massUpdateOptions, CancellationToken token)
 		{
 			var metricsCustomData = new Dictionary<string, object> { { "batchSize", batch.Count } };
@@ -69,31 +69,29 @@ namespace Relativity.Sync.Executors
 				FieldValues = fieldValues
 			};
 
-			TagDocumentsResult result = null;
+			TagDocumentsResult<string> result = null;
 			try
 			{
 				using (_syncMetrics.TimedOperation("Relativity.Sync.TagDocuments.DestinationUpdate.Time", ExecutionStatus.None, metricsCustomData))
 				using (var objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 				{
 					MassUpdateResult updateResult = await objectManager
-						.UpdateAsync(synchronizationConfiguration.SourceWorkspaceArtifactId, updateByCriteriaRequest,
-							massUpdateOptions, token).ConfigureAwait(false);
-
-					result = GenerateTagDocumentsResult(updateResult, Array.Empty<int>());
+						.UpdateAsync(synchronizationConfiguration.DestinationWorkspaceArtifactId, updateByCriteriaRequest, massUpdateOptions, token).ConfigureAwait(false);
+					result = GenerateTagDocumentsResult(updateResult, batch);
 				}
 			}
-			catch (SyncException updateException)
+			catch (Exception updateException)
 			{
-				const string exceptionMessage = "Mass tagging Documents with Destination Workspace and Job History fields failed.";
+				const string exceptionMessage = "Mass tagging Documents with Source Workspace and Job History fields failed.";
 				const string exceptionTemplate =
-					"Mass tagging documents in source workspace {SourceWorkspace} with destination workspace field {DestinationWorkspaceField} and job history field {JobHistoryField} failed.";
+					"Mass tagging documents in destination workspace {DestinationWorkspace} with source workspace field {SourceWorkspaceField} and job history field {JobHistoryField} failed.";
 
 				_logger.LogError(updateException, exceptionTemplate,
-					synchronizationConfiguration.SourceWorkspaceArtifactId, synchronizationConfiguration.DestinationWorkspaceTagArtifactId, synchronizationConfiguration.JobHistoryArtifactId);
-				result = new TagDocumentsResult(Array.Empty<int>(), exceptionMessage, false, 0);
+					synchronizationConfiguration.DestinationWorkspaceArtifactId, synchronizationConfiguration.SourceWorkspaceTagArtifactId, synchronizationConfiguration.SourceJobTagArtifactId);
+				result = new TagDocumentsResult<string>(batch, exceptionMessage, false, 0);
 			}
 
-			_syncMetrics.GaugeOperation("Relativity.Sync.TagDocuments.SourceUpdate.Count", ExecutionStatus.None, result.TotalObjectsUpdated, "document(s)", metricsCustomData);
+			_syncMetrics.GaugeOperation("Relativity.Sync.TagDocuments.DestinationUpdate.Count", ExecutionStatus.None, result.TotalObjectsUpdated, "document(s)", metricsCustomData);
 
 			return result;
 		}
@@ -101,12 +99,19 @@ namespace Relativity.Sync.Executors
 		private ObjectIdentificationCriteria ConvertIdentifiersToObjectCriteria(IList<string> identifiers)
 		{
 			FieldMap identifierField = _fieldMappings.GetFieldMappings().FirstOrDefault(x => x.DestinationField.IsIdentifier);
+
+			if (identifierField == null)
+			{
+				const string noIdentifierFoundMessage = "Unable to find the destination identifier field in the list of mapped fields for artifact tagging.";
+				throw new SyncException(noIdentifierFoundMessage);
+			}
+
 			IEnumerable<string> quotedIdentifiers = identifiers.Select(KeplerQueryHelpers.EscapeForSingleQuotes).Select(i => $"'{i}'");
 			string joinedIdentifiers = string.Join(",", quotedIdentifiers);
 
 			var criteria = new ObjectIdentificationCriteria
 			{
-				ObjectType = new ObjectTypeRef {ArtifactTypeID = (int) ArtifactType.Document},
+				ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Document },
 				Condition = $"'{identifierField.DestinationField.DisplayName}' IN [{joinedIdentifiers}]"
 			};
 			return criteria;
@@ -135,9 +140,9 @@ namespace Relativity.Sync.Executors
 			return artifactIds.Select(x => new RelativityObjectRef { ArtifactID = x });
 		}
 
-		private static TagDocumentsResult GenerateTagDocumentsResult(MassUpdateResult updateResult, IList<int> batch)
+		private static TagDocumentsResult<string> GenerateTagDocumentsResult(MassUpdateResult updateResult, IList<string> batch)
 		{
-			IEnumerable<int> failedDocumentArtifactIds;
+			IEnumerable<string> failedDocumentArtifactIds;
 			if (!updateResult.Success)
 			{
 				int elementsToCapture = batch.Count - updateResult.TotalObjectsUpdated;
@@ -145,9 +150,9 @@ namespace Relativity.Sync.Executors
 			}
 			else
 			{
-				failedDocumentArtifactIds = Array.Empty<int>();
+				failedDocumentArtifactIds = Array.Empty<string>();
 			}
-			var result = new TagDocumentsResult(failedDocumentArtifactIds, updateResult.Message, updateResult.Success, updateResult.TotalObjectsUpdated);
+			var result = new TagDocumentsResult<string>(failedDocumentArtifactIds, updateResult.Message, updateResult.Success, updateResult.TotalObjectsUpdated);
 			return result;
 		}
 	}

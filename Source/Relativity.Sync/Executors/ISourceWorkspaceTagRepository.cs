@@ -7,6 +7,6 @@ namespace Relativity.Sync.Executors
 {
 	internal interface ISourceWorkspaceTagRepository
 	{
-		Task<IList<TagDocumentsResult>> TagDocumentsAsync(ISynchronizationConfiguration synchronizationConfiguration, IList<string> documentIdentifiers, CancellationToken token);
+		Task<IList<TagDocumentsResult<string>>> TagDocumentsAsync(ISynchronizationConfiguration synchronizationConfiguration, IList<string> documentIdentifiers, CancellationToken token);
 	}
 }

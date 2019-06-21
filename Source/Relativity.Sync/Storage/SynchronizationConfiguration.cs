@@ -10,6 +10,7 @@ namespace Relativity.Sync.Storage
 		private readonly SyncJobParameters _syncJobParameters;
 		private readonly ISyncLog _syncLog;
 
+		private static readonly Guid DestinationWorkspaceArtifactIdGuid = new Guid("15B88438-6CF7-47AB-B630-424633159C69");
 		private static readonly Guid DestinationWorkspaceTagArtifactIdGuid = new Guid("E2100C10-B53B-43FA-BB1B-51E43DCE8208");
 		private static readonly Guid JobHistoryGuid = new Guid("5D8F7F01-25CF-4246-B2E2-C05882539BB2");
 		private static readonly Guid SnapshotIdGuid = new Guid("D1210A1B-C461-46CB-9B73-9D22D05880C5");
@@ -24,6 +25,7 @@ namespace Relativity.Sync.Storage
 			_syncLog = syncLog;
 		}
 
+		public int DestinationWorkspaceArtifactId => _cache.GetFieldValue<int>(DestinationWorkspaceArtifactIdGuid);
 		public int DestinationWorkspaceTagArtifactId => _cache.GetFieldValue<int>(DestinationWorkspaceTagArtifactIdGuid);
 		public Guid ExportRunId
 		{
