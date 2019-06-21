@@ -14,18 +14,20 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 	/// </summary>
 	internal sealed class ImportStreamBuilder : IImportStreamBuilder
 	{
+		private readonly ISourceServiceFactoryForUser _serviceFactory;
 		private readonly IStreamRetryPolicyFactory _streamRetryPolicyFactory;
 		private readonly ISyncLog _logger;
 
-		public ImportStreamBuilder(IStreamRetryPolicyFactory streamRetryPolicyFactory, ISyncLog logger)
+		public ImportStreamBuilder(ISourceServiceFactoryForUser serviceFactory, IStreamRetryPolicyFactory streamRetryPolicyFactory, ISyncLog logger)
 		{
+			_serviceFactory = serviceFactory;
 			_streamRetryPolicyFactory = streamRetryPolicyFactory;
 			_logger = logger;
 		}
 
-		public Stream Create(ISourceServiceFactoryForUser serviceFactory, Func<IObjectManager, Task<Stream>> streamFactory, StreamEncoding encoding)
+		public Stream Create(Func<IObjectManager, Task<Stream>> streamFactory, StreamEncoding encoding)
 		{
-			Stream wrappedStream = new SelfRecreatingStream(serviceFactory, streamFactory, _streamRetryPolicyFactory, _logger);
+			Stream wrappedStream = new SelfRecreatingStream(_serviceFactory, streamFactory, _streamRetryPolicyFactory, _logger);
 			if (encoding == StreamEncoding.ASCII)
 			{
 				wrappedStream = new AsciiToUnicodeStream(wrappedStream);

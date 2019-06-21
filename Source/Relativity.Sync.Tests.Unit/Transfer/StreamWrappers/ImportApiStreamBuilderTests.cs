@@ -42,13 +42,13 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 			const string streamInput = "hello world!";
 			var stream = new MemoryStream(encoding.GetBytes(streamInput));
 
-			var instance = new ImportStreamBuilder(_streamRetryPolicyFactory.Object, _logger.Object);
+			var instance = new ImportStreamBuilder(Mock.Of<ISourceServiceFactoryForUser>(),_streamRetryPolicyFactory.Object, _logger.Object);
 
 			// Act
 			StreamEncoding streamEncoding = encoding is UnicodeEncoding
 				? StreamEncoding.Unicode
 				: StreamEncoding.ASCII;
-			Stream result = instance.Create(Mock.Of<ISourceServiceFactoryForUser>(), GetFuncOfTaskOfStream(stream), streamEncoding);
+			Stream result = instance.Create(GetFuncOfTaskOfStream(stream), streamEncoding);
 
 			//// Assert
 			string streamOutput = ReadOutUnicodeString(result);
@@ -80,10 +80,10 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 					.Or<Exception>()
 					.RetryAsync(retryCount, (_, i) => onRetry(i)));
 
-			var instance = new ImportStreamBuilder(_streamRetryPolicyFactory.Object, _logger.Object);
+			var instance = new ImportStreamBuilder(Mock.Of<ISourceServiceFactoryForUser>(),_streamRetryPolicyFactory.Object, _logger.Object);
 
 			// Act
-			Stream result = instance.Create(Mock.Of<ISourceServiceFactoryForUser>(), GetStream, StreamEncoding.Unicode);
+			Stream result = instance.Create(GetStream, StreamEncoding.Unicode);
 
 			//// Assert
 			Assert.DoesNotThrow(() => ReadOutUnicodeString(result));
@@ -95,10 +95,10 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 			// Arrange
 			var stream = new Mock<Stream>();
 			stream.Setup(x => x.Read(It.IsAny<byte[]>(), It.IsAny<int>(), It.IsAny<int>())).Returns(0);
-			var instance = new ImportStreamBuilder(_streamRetryPolicyFactory.Object, _logger.Object);
+			var instance = new ImportStreamBuilder(Mock.Of<ISourceServiceFactoryForUser>(), _streamRetryPolicyFactory.Object, _logger.Object);
 
 			// Act
-			Stream result = instance.Create(Mock.Of<ISourceServiceFactoryForUser>(), GetFuncOfTaskOfStream(stream.Object), StreamEncoding.Unicode);
+			Stream result = instance.Create(GetFuncOfTaskOfStream(stream.Object), StreamEncoding.Unicode);
 
 			//// Assert
 			result.CanRead.Should().BeFalse();

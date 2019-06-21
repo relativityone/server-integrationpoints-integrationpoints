@@ -116,9 +116,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				.ReturnsAsync(fieldEncodingResult)
 				.Verifiable();
 
-			SetupStreamBuilder()
-				.Returns<ISourceServiceFactoryForUser, Func<IObjectManager, Task<Stream>>, StreamEncoding>((serviceFactory, streamFactory, streamEncoding) =>
-					streamFactory(_objectManager.Object).GetAwaiter().GetResult());
+			SetupStreamBuilder().Returns<Func<IObjectManager, Task<Stream>>, StreamEncoding>((s, _) => s(_objectManager.Object).GetAwaiter().GetResult());
 
 			string sanitizingFieldValue = string.Empty;
 			byte[] streamValueBytes = Encoding.Unicode.GetBytes(sanitizingFieldValue);
@@ -198,7 +196,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				.ConfigureAwait(false);
 
 			// Assert
-			_streamBuilder.Verify(x => x.Create(It.IsAny<ISourceServiceFactoryForUser>(), It.IsAny<Func<IObjectManager, Task<Stream>>>(), fieldEncoding));
+			_streamBuilder.Verify(x => x.Create(It.IsAny<Func<IObjectManager, Task<Stream>>>(), fieldEncoding));
 		}
 
 		private static bool MatchAll(object _) => true;
@@ -235,7 +233,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 		private ISetup<IImportStreamBuilder, Stream> SetupStreamBuilder()
 		{
-			return _streamBuilder.Setup(x => x.Create(It.IsAny<ISourceServiceFactoryForUser>(), It.IsAny<Func<IObjectManager, Task<Stream>>>(), It.IsAny<StreamEncoding>()));
+			return _streamBuilder.Setup(x => x.Create(It.IsAny<Func<IObjectManager, Task<Stream>>>(), It.IsAny<StreamEncoding>()));
 		}
 
 		private static QueryResultSlim WrapValuesInQueryResultSlim(params object[] values)

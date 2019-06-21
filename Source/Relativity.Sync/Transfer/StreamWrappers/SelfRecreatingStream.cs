@@ -16,20 +16,21 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 	/// </summary>
 	internal sealed class SelfRecreatingStream : Stream
 	{
+
+		private bool _disposed;
 		// NOTE: This can't be readonly - we create a circular reference by
 		// passing in an instance method to the factory, so we need to set
 		// this field to null on dispose.
 		private IAsyncPolicy<Stream> _getStreamRetryPolicy;
 
-		private bool _disposed;
+		private IObjectManager _objectManager;
 
 		private const int _MAX_RETRY_ATTEMPTS = 3;
 		private const int _WAIT_INTERVAL_IN_SECONDS = 1;
-
-		private readonly Lazy<IObjectManager> _objectManager;
 		private readonly Func<IObjectManager, Task<Stream>> _streamFactory;
-		private readonly ISyncLog _logger;
 		private readonly Func<Stream> _innerStreamValueFactory;
+		private readonly ISourceServiceFactoryForUser _serviceFactory;
+		private readonly ISyncLog _logger;
 
 		internal Lazy<Stream> InnerStream { get; private set; }
 
@@ -37,18 +38,16 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 			ISourceServiceFactoryForUser serviceFactory,
 			Func<IObjectManager, Task<Stream>> streamFactory,
 			IStreamRetryPolicyFactory streamRetryPolicyFactory,
-			ISyncLog logger
-			)
+			ISyncLog logger)
 		{
-			_objectManager = new Lazy<IObjectManager>(() => serviceFactory.CreateProxyAsync<IObjectManager>().GetAwaiter().GetResult());
+			_serviceFactory = serviceFactory;
 			_logger = logger;
 			_streamFactory = streamFactory;
 			_getStreamRetryPolicy = streamRetryPolicyFactory.Create(
 				OnRetry,
 				_MAX_RETRY_ATTEMPTS,
-				TimeSpan.FromSeconds(_WAIT_INTERVAL_IN_SECONDS)
-				);
-			_innerStreamValueFactory = () => _getStreamRetryPolicy.ExecuteAsync(GetInnerStream).GetAwaiter().GetResult();
+				TimeSpan.FromSeconds(_WAIT_INTERVAL_IN_SECONDS));
+			_innerStreamValueFactory = () => _getStreamRetryPolicy.ExecuteAsync(GetInnerStreamAsync).GetAwaiter().GetResult();
 
 			InnerStream = new Lazy<Stream>(_innerStreamValueFactory);
 		}
@@ -113,18 +112,22 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 				{
 					InnerStream.Value.Dispose();
 				}
-				if (_objectManager.IsValueCreated)
-				{
-					_objectManager.Value.Dispose();
-				}
+
+				_objectManager?.Dispose();
 			}
 		}
 
-		private async Task<Stream> GetInnerStream()
+		private async Task<IObjectManager> GetObjectManagerAsync()
+		{
+			return _objectManager ?? (_objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false));
+		}
+
+		private async Task<Stream> GetInnerStreamAsync()
 		{
 			try
 			{
-				Stream stream = await _streamFactory(_objectManager.Value).ConfigureAwait(false);
+				IObjectManager objectManager = await GetObjectManagerAsync().ConfigureAwait(false);
+				Stream stream = await _streamFactory(objectManager).ConfigureAwait(false);
 				return stream;
 			}
 			catch (Exception ex)

@@ -224,8 +224,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 			bool canRead = selfRecreatingStream.CanRead;
 
 			// assert
-			//const int expectedCanReadCallCount = 7;
-			//_readableInnerStreamMock.VerifyGet(x => x.CanRead, Times.Exactly(expectedCanReadCallCount));
 			canRead.Should().BeFalse();
 			numberOfCalls.Should().Be(expectedNumberOfCalls);
 		}

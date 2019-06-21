@@ -92,9 +92,7 @@ namespace Relativity.Sync.Transfer
 		{
 			try
 			{
-				return _importStreamBuilder.Create(
-					_serviceFactory,
-					async (objectManager) => await GetLongTextStreamAsync(objectManager, workspaceArtifactId, relativityObjectArtifactId, fieldName).ConfigureAwait(false),
+				return _importStreamBuilder.Create(async objectManager => await GetLongTextStreamAsync(objectManager, workspaceArtifactId, relativityObjectArtifactId, fieldName).ConfigureAwait(false),
 					encoding);
 			}
 			catch (Exception ex)
