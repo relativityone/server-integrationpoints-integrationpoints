@@ -13,19 +13,12 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 		private Mock<ISynchronizationConfiguration> _config;
 		private ChoiceTreeToStringConverter _instance;
-
-		private const char _MULTI_VALUE_DELIMITER = ';';
-		private const char _NESTED_VALUE_DELIMITER = '/';
 		
 		[SetUp]
 		public void SetUp()
 		{
 			_config = new Mock<ISynchronizationConfiguration>();
-			ImportSettingsDto importSettings = new ImportSettingsDto()
-			{
-				MultiValueDelimiter = _MULTI_VALUE_DELIMITER,
-				NestedValueDelimiter = _NESTED_VALUE_DELIMITER
-			};
+			var importSettings = new ImportSettingsDto();
 			_config.SetupGet(x => x.ImportSettings).Returns(importSettings);
 			_instance = new ChoiceTreeToStringConverter(_config.Object);
 		}
