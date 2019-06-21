@@ -34,6 +34,7 @@ namespace Relativity.Sync.Tests.Integration
 		private Mock<ISyncImportBulkArtifactJob> _importBulkArtifactJob;
 
 		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 10001;
+		private const int _DESTINATION_WORKSPACE_ARTIFACT_ID = 20002;
 		private const string _IDENTIFIER_COLUMN = "Identifier";
 		private const string _MESSAGE_COLUMN = "Message";
 
@@ -89,6 +90,7 @@ namespace Relativity.Sync.Tests.Integration
 
 			_config = new ConfigurationStub()
 			{
+				DestinationWorkspaceArtifactId = _DESTINATION_WORKSPACE_ARTIFACT_ID,
 				SourceWorkspaceArtifactId = _SOURCE_WORKSPACE_ARTIFACT_ID,
 				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure,
 				FieldMappings = fieldMaps
@@ -129,7 +131,6 @@ namespace Relativity.Sync.Tests.Integration
 		}
 
 		[Test]
-		[Ignore("Temp ignore")]
 		public async Task ItShouldSuccessfullyRunImportAndTagDocuments()
 		{
 			const int newBatchArtifactId = 1001;
@@ -168,7 +169,6 @@ namespace Relativity.Sync.Tests.Integration
 		}
 
 		[Test]
-		[Ignore("Temp ignore")]
 		public async Task ItShouldReportItemLevelErrors()
 		{
 			const int newBatchArtifactId = 1001;
@@ -297,12 +297,17 @@ namespace Relativity.Sync.Tests.Integration
 
 		private void SetupTaggingOfDocuments(int numberOfDocumentsToTag)
 		{
-			var taggingResult = new MassUpdateResult()
+			var taggingResult = new MassUpdateResult
 			{
 				Success = true
 			};
 			_objectManagerMock.Setup(x => x.UpdateAsync(_SOURCE_WORKSPACE_ARTIFACT_ID,
 					It.Is<MassUpdateByObjectIdentifiersRequest>(request => request.Objects.Count == numberOfDocumentsToTag),
+					It.Is<MassUpdateOptions>(options => options.UpdateBehavior == FieldUpdateBehavior.Merge), It.IsAny<CancellationToken>()))
+					.ReturnsAsync(taggingResult)
+					.Verifiable();
+			_objectManagerMock.Setup(x => x.UpdateAsync(_DESTINATION_WORKSPACE_ARTIFACT_ID,
+					It.IsAny<MassUpdateByCriteriaRequest>(),
 					It.Is<MassUpdateOptions>(options => options.UpdateBehavior == FieldUpdateBehavior.Merge), It.IsAny<CancellationToken>()))
 					.ReturnsAsync(taggingResult)
 					.Verifiable();
