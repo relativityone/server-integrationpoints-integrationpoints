@@ -10,7 +10,6 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
-using Relativity.Sync.Telemetry;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.Unit.Executors
@@ -22,6 +21,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private Mock<IDestinationWorkspaceTagRepository> _destinationWorkspaceTagRepository;
 		private Mock<IFieldManager> _fieldManager;
 		private Mock<IFieldMappings> _fieldMappings;
+		private Mock<ISourceWorkspaceTagRepository> _sourceWorkspaceTagRepository;
 
 		private Mock<Sync.Executors.IImportJob> _importJob;
 		private Mock<ISynchronizationConfiguration> _config;
@@ -51,6 +51,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			var importJobFactory = new Mock<IImportJobFactory>();
 			_batchRepository = new Mock<IBatchRepository>();
 			_destinationWorkspaceTagRepository = new Mock<IDestinationWorkspaceTagRepository>();
+			_sourceWorkspaceTagRepository = new Mock<ISourceWorkspaceTagRepository>();
 			_fieldManager = new Mock<IFieldManager>();
 			_fieldMappings = new Mock<IFieldMappings>();
 			Mock<IJobHistoryErrorRepository> jobHistoryErrorRepository = new Mock<IJobHistoryErrorRepository>();
@@ -72,7 +73,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			_fieldManager.Setup(x => x.GetSpecialFields()).Returns(_specialFields);
 
-			_synchronizationExecutor = new SynchronizationExecutor(importJobFactory.Object, _batchRepository.Object, _destinationWorkspaceTagRepository.Object, null,
+			_synchronizationExecutor = new SynchronizationExecutor(importJobFactory.Object, _batchRepository.Object, _destinationWorkspaceTagRepository.Object, _sourceWorkspaceTagRepository.Object,
 				_fieldManager.Object, _fieldMappings.Object, jobHistoryErrorRepository.Object, new EmptyLogger());
 		}
 
@@ -231,13 +232,16 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(ExecutionResult.Success);
 
 			_importJob.Setup(x => x.GetPushedDocumentArtifactIds()).ReturnsAsync(new[] { 1 });
+			_importJob.Setup(x => x.GetPushedDocumentIdentifiers()).ReturnsAsync(new[] { "CONTROL_NUM_1" });
 			_destinationWorkspaceTagRepository.Setup(x => x.TagDocumentsAsync(
 				It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IList<int>>(), It.IsAny<CancellationToken>())).Throws<InvalidOperationException>();
+			_sourceWorkspaceTagRepository.Setup(x => x.TagDocumentsAsync(
+				It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IList<string>>(), It.IsAny<CancellationToken>())).Throws<InvalidOperationException>();
 
 			// act
 			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
 
-			result.Message.Should().Be("Unexpected exception occurred while tagging synchronized documents in workspace.");
+			result.Message.Should().Be("Unexpected exception occurred while tagging synchronized documents in workspace. Unexpected exception occurred while tagging synchronized documents in workspace.");
 			result.Exception.Should().BeOfType<AggregateException>();
 			result.Status.Should().Be(ExecutionStatus.Failed);
 		}

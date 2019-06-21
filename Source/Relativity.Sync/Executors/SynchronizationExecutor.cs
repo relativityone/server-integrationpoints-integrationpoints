@@ -216,7 +216,7 @@ namespace Relativity.Sync.Executors
 					int subsetCount = failedTagArtifactIds.Count < maxSubset ? failedTagArtifactIds.Count : maxSubset;
 					string subsetArtifactIds = string.Join(",", failedTagArtifactIds.Take(subsetCount));
 
-					string errorMessage = $"Failed to tag synchronized documents in workspace. The first {maxSubset} out of {failedTagArtifactIds.Count} are: {subsetArtifactIds}.";
+					string errorMessage = $"Failed to tag synchronized documents in workspace. The first {subsetCount} out of {failedTagArtifactIds.Count} are: {subsetArtifactIds}.";
 					var failedTaggingException = new SyncException(errorMessage, jobHistoryArtifactId.ToString(CultureInfo.InvariantCulture));
 					taggingResult = ExecutionResult.Failure(errorMessage, failedTaggingException);
 				}
