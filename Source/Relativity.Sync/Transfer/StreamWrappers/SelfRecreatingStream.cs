@@ -14,66 +14,65 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 	internal sealed class SelfRecreatingStream : Stream
 	{
 		private bool _disposed;
+		private Lazy<Stream> _innerStream;
 
 		private readonly IRetriableStreamBuilder _streamBuilder;
 		private readonly ISyncLog _logger;
-
-		internal Lazy<Stream> InnerStream { get; private set; }
-
+		
 		public SelfRecreatingStream(IRetriableStreamBuilder streamBuilder, ISyncLog logger)
 		{
 			_streamBuilder = streamBuilder;
 			_logger = logger;
-			InnerStream = new Lazy<Stream>(() => GetInnerStreamAsync().GetAwaiter().GetResult());
+			_innerStream = new Lazy<Stream>(() => GetInnerStreamAsync().GetAwaiter().GetResult());
 		}
 
 		public override void Flush()
 		{
-			InnerStream.Value.Flush();
+			_innerStream.Value.Flush();
 		}
 
 		public override long Seek(long offset, SeekOrigin origin)
 		{
-			return InnerStream.Value.Seek(offset, origin);
+			return _innerStream.Value.Seek(offset, origin);
 		}
 
 		public override void SetLength(long value)
 		{
-			InnerStream.Value.SetLength(value);
+			_innerStream.Value.SetLength(value);
 		}
 
 		public override int Read(byte[] buffer, int offset, int count)
 		{
-			return InnerStream.Value.Read(buffer, offset, count);
+			return _innerStream.Value.Read(buffer, offset, count);
 		}
 
 		public override void Write(byte[] buffer, int offset, int count)
 		{
-			InnerStream.Value.Write(buffer, offset, count);
+			_innerStream.Value.Write(buffer, offset, count);
 		}
 
 		public override bool CanRead
 		{
 			get
 			{
-				if (!InnerStream.Value.CanRead)
+				if (!_innerStream.Value.CanRead)
 				{
-					InnerStream = new Lazy<Stream>(() => GetInnerStreamAsync().GetAwaiter().GetResult());
+					_innerStream = new Lazy<Stream>(() => GetInnerStreamAsync().GetAwaiter().GetResult());
 				}
-				return InnerStream.Value.CanRead;
+				return _innerStream.Value.CanRead;
 			}
 		}
 
-		public override bool CanSeek => InnerStream.Value.CanSeek;
+		public override bool CanSeek => _innerStream.Value.CanSeek;
 
-		public override bool CanWrite => InnerStream.Value.CanWrite;
+		public override bool CanWrite => _innerStream.Value.CanWrite;
 
-		public override long Length => InnerStream.Value.Length;
+		public override long Length => _innerStream.Value.Length;
 
 		public override long Position
 		{
-			get => InnerStream.Value.Position;
-			set => InnerStream.Value.Position = value;
+			get => _innerStream.Value.Position;
+			set => _innerStream.Value.Position = value;
 		}
 
 		protected override void Dispose(bool disposing)
@@ -81,9 +80,9 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 			if (disposing && !_disposed)
 			{
 				_disposed = true;
-				if (InnerStream.IsValueCreated)
+				if (_innerStream.IsValueCreated)
 				{
-					InnerStream.Value.Dispose();
+					_innerStream.Value.Dispose();
 				}
 			}
 		}
