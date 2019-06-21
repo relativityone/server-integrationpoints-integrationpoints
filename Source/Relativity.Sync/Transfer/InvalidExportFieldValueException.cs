@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Serialization;
 
 namespace Relativity.Sync.Transfer
 {
@@ -12,46 +13,40 @@ namespace Relativity.Sync.Transfer
 		/// <summary>
 		/// Creates an instance of <see cref="InvalidExportFieldValueException"/>.
 		/// </summary>
-		/// <param name="sourceObjectName">Name of the object for which the error occurred</param>
-		/// <param name="sourceFieldName">Name of the field on the object identified by <paramref name="sourceObjectName"/> for which the error occurred</param>
-		/// <param name="message">Additional message describing the error</param>
-		public InvalidExportFieldValueException(string sourceObjectName, string sourceFieldName, string message)
-			: base($"{MessageTemplate(sourceObjectName, sourceFieldName)}: {message}")
+		/// <param name="sourceObjectName">Name of the object for which the error occurred.</param>
+		/// <param name="sourceFieldName">Name of the field on the object identified by <paramref name="sourceObjectName"/> for which the error occurred.</param>
+		/// <param name="message">Additional message describing the error.</param>
+		internal InvalidExportFieldValueException(string sourceObjectName, string sourceFieldName, string message)
+			: base(MessageTemplate(sourceObjectName, sourceFieldName, message))
 		{
 		}
 
 		/// <summary>
 		/// Creates an instance of <see cref="InvalidExportFieldValueException"/>.
 		/// </summary>
-		/// <param name="sourceObjectName">Name of the object for which the error occurred</param>
-		/// <param name="sourceFieldName">Name of the field on the object identified by <paramref name="sourceObjectName"/> for which the error occurred</param>
-		/// <param name="message">Additional message describing the error</param>
-		/// <param name="innerException">Exception which caused this exception to be thrown</param>
-		public InvalidExportFieldValueException(string sourceObjectName, string sourceFieldName, string message, Exception innerException)
-			: base($"{MessageTemplate(sourceObjectName, sourceFieldName)}: {message}", innerException)
+		/// <param name="sourceObjectName">Name of the object for which the error occurred.</param>
+		/// <param name="sourceFieldName">Name of the field on the object identified by <paramref name="sourceObjectName"/> for which the error occurred.</param>
+		/// <param name="message">Additional message describing the error.</param>
+		/// <param name="innerException">Original thrown exception.</param>
+		internal InvalidExportFieldValueException(string sourceObjectName, string sourceFieldName, string message, Exception innerException)
+			: base(MessageTemplate(sourceObjectName, sourceFieldName, message), innerException)
 		{
 		}
 
-		internal InvalidExportFieldValueException() : base()
-		{
-		}
+		/// <inheritdoc />
+		public InvalidExportFieldValueException() { }
 
-		internal InvalidExportFieldValueException(string message) : base(message)
-		{
-		}
+		/// <inheritdoc />
+		public InvalidExportFieldValueException(string message) : base(message) { }
 
-		internal InvalidExportFieldValueException(string message, Exception innerException) : base(message, innerException)
-		{
-		}
+		/// <inheritdoc />
+		public InvalidExportFieldValueException(string message, Exception innerException) : base(message, innerException) { }
 
-		private InvalidExportFieldValueException(System.Runtime.Serialization.SerializationInfo serializationInfo, System.Runtime.Serialization.StreamingContext streamingContext)
-			: base(serializationInfo, streamingContext)
-		{
-		}
+		private InvalidExportFieldValueException(SerializationInfo serializationInfo, StreamingContext streamingContext) : base(serializationInfo, streamingContext) { }
 
-		private static string MessageTemplate(string sourceObjectName, string sourceFieldName)
+		private static string MessageTemplate(string sourceObjectName, string sourceFieldName, string message)
 		{
-			return $"Unable to parse data from Relativity Export API in field '{sourceFieldName}' of object '{sourceObjectName}'";
+			return $"Unable to parse data from Relativity Export API in field '{sourceFieldName}' of object '{sourceObjectName}': {message}";
 		}
 	}
 }
