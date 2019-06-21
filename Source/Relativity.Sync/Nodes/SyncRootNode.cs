@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Banzai;
 using Relativity.Sync.Configuration;
@@ -38,7 +39,7 @@ namespace Relativity.Sync.Nodes
 					const string id = "Sending job end metrics";
 					context.Subject.Progress.ReportStarted(id);
 
-					ExecutionStatus status = ExecutionStatus.None;
+					ExecutionStatus status;
 					switch (context.ParentResult.Status)
 					{
 						case NodeResultStatus.Succeeded:
@@ -49,6 +50,9 @@ namespace Relativity.Sync.Nodes
 							break;
 						case NodeResultStatus.Failed:
 							status = ExecutionStatus.Failed;
+							break;
+						default:
+							status = ExecutionStatus.None;
 							break;
 					}
 					if (context.CancelProcessing)

@@ -18,7 +18,6 @@ namespace Relativity.Sync.Tests.Unit
 
 		private CancellationToken _token;
 
-		private Mock<IJobEndMetricsService> _jobEndMetricsService;
 		private Mock<ICommand<INotificationConfiguration>> _notificationCommand;
 		private Mock<INode<SyncExecutionContext>> _childNode;
 		private Mock<ISyncLog> _logger;
@@ -34,7 +33,7 @@ namespace Relativity.Sync.Tests.Unit
 		[SetUp]
 		public void SetUp()
 		{
-			_jobEndMetricsService = new Mock<IJobEndMetricsService>();
+			Mock<IJobEndMetricsService> jobEndMetricsService = new Mock<IJobEndMetricsService>();
 			_notificationCommand = new Mock<ICommand<INotificationConfiguration>>();
 			_logger = new Mock<ISyncLog>();
 
@@ -43,7 +42,7 @@ namespace Relativity.Sync.Tests.Unit
 			var progress = new Mock<IProgress<SyncJobState>>();
 			_syncExecutionContext = new SyncExecutionContext(progress.Object, _token);
 
-			_instance = new SyncRootNode(_jobEndMetricsService.Object, _notificationCommand.Object, _logger.Object);
+			_instance = new SyncRootNode(jobEndMetricsService.Object, _notificationCommand.Object, _logger.Object);
 			_instance.AddChild(_childNode.Object);
 		}
 

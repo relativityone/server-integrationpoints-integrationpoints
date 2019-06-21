@@ -6,16 +6,13 @@ using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
-using IConfiguration = Relativity.Sync.Storage.IConfiguration;
 
 namespace Relativity.Sync.Tests.Unit
 {
 	[TestFixture]
 	internal sealed class SourceWorkspaceTagsCreationConfigurationTests
 	{
-		private Mock<IConfiguration> _cache;
-		private ImportSettingsDto _importSettings;
-		private SyncJobParameters _syncJobParameters;
+		private Mock<Sync.Storage.IConfiguration> _cache;
 		private SourceWorkspaceTagsCreationConfiguration _config;
 
 		private const int _JOB_ID = 1;
@@ -28,10 +25,10 @@ namespace Relativity.Sync.Tests.Unit
 		[SetUp]
 		public void SetUp()
 		{
-			_cache = new Mock<IConfiguration>();
-			_importSettings = new ImportSettingsDto();
-			_syncJobParameters = new SyncJobParameters(_JOB_ID, _SOURCE_WORKSPACE_ARTIFACT_ID, _importSettings);
-			_config = new SourceWorkspaceTagsCreationConfiguration(_cache.Object, _syncJobParameters);
+			_cache = new Mock<Sync.Storage.IConfiguration>();
+			ImportSettingsDto importSettings = new ImportSettingsDto();
+			SyncJobParameters syncJobParameters = new SyncJobParameters(_JOB_ID, _SOURCE_WORKSPACE_ARTIFACT_ID, importSettings);
+			_config = new SourceWorkspaceTagsCreationConfiguration(_cache.Object, syncJobParameters);
 		}
 
 		[Test]

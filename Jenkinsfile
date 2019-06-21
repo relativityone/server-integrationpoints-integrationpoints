@@ -11,86 +11,89 @@ properties ([
 def version
 def packageVersion
 
-node('PolandBuild')
+timestamps
 {
-    try
+    node('PolandBuild')
     {
-        stage ('Checkout')
+        try
         {
-            scmProps = checkout scm
-            step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true, commitSha1: scmProps.GIT_COMMIT])
-        }
-        stage ('Get version')
-        {
-            withCredentials([usernamePassword(credentialsId: 'TCBuildVersionCredentials', passwordVariable: 'DBPASSWORD', usernameVariable: 'DBUSER')])
+            timeout(30)
             {
-                def outputString = powershell(returnStdout: true, script: ".\\build.ps1 getVersion -buildType ${params.buildType} -branchName ${env.BRANCH_NAME} -databaseUser $DBUSER -databasePassword $DBPASSWORD").trim()
-                version = extractValue("VERSION", outputString)
-                packageVersion = extractValue("PACKAGE_VERSION", outputString)
-                if (!outputString || !version || !packageVersion)
+                stage ('Checkout')
                 {
-                    error("Unable to retrieve version!")
+                    scmProps = checkout scm
+                    step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true, commitSha1: scmProps.GIT_COMMIT])
                 }
-                echo outputString
-                currentBuild.displayName = packageVersion
-            }            
-        }
-        stage ('ConfigureAwait check')
-        {
-            powershell ".\\build.ps1 checkConfigureAwait"
-        }
-        stage ('Build')
-        {
-            powershell ".\\build.ps1 buildAndSign -buildConfig Release -version $version -packageVersion $packageVersion"
-        }
-        stage ('Unit Tests')
-        {
-            powershell ".\\build.ps1 runUnitTests"
-        }
-        stage ('Integration Tests')
-        {
-            powershell ".\\build.ps1 runIntegrationTests"
-        }
-        stage ('NuGet publish')
-        {
-            powershell ".\\build.ps1 packNuget -packageVersion $packageVersion"
+                stage ('Get version')
+                {
+                    withCredentials([usernamePassword(credentialsId: 'TCBuildVersionCredentials', passwordVariable: 'DBPASSWORD', usernameVariable: 'DBUSER')])
+                    {
+                        def outputString = powershell(returnStdout: true, script: ".\\build.ps1 getVersion -buildType ${params.buildType} -branchName ${env.BRANCH_NAME} -databaseUser $DBUSER -databasePassword $DBPASSWORD").trim()
+                        version = extractValue("VERSION", outputString)
+                        packageVersion = extractValue("PACKAGE_VERSION", outputString)
+                        if (!outputString || !version || !packageVersion)
+                        {
+                            error("Unable to retrieve version!")
+                        }
+                        echo outputString
+                        currentBuild.displayName = packageVersion
+                    }            
+                }
+                stage ('ConfigureAwait check')
+                {
+                    powershell ".\\build.ps1 checkConfigureAwait"
+                }
+                stage ('Build')
+                {
+                    powershell ".\\build.ps1 buildAndSign -buildConfig Release -version $version -packageVersion $packageVersion"
+                }
+                stage ('Unit Tests')
+                {
+                    powershell ".\\build.ps1 runUnitTests"
+                }
+                stage ('Integration Tests')
+                {
+                    powershell ".\\build.ps1 runIntegrationTests"
+                }
+                stage ('NuGet publish')
+                {
+                    powershell ".\\build.ps1 packNuget -packageVersion $packageVersion"
 
-            withCredentials([string(credentialsId: 'ProgetNugetApiKey', variable: 'key')])
-            {
-                powershell ".\\build.ps1 publishNuget -progetApiKey $key"
-            }
-        }
-        if(env.BRANCH_NAME == 'develop')
-		{
-            stage ('SonarQube')
-            {
-                powershell ".\\build.ps1 runSonarScanner -version $version"
-            }
-        }
-        
-        currentBuild.result = 'SUCCESS'
-        step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
-    }
-    catch (err)
-    {
-        currentBuild.result = 'FAILURE'
-        echo err.toString()
-        
-        step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
-    }
-    finally
-    {
-        if (currentBuild.result != 'SUCCESS')
-        {
-            withCredentials([string(credentialsId: 'SlackJenkinsIntegrationToken', variable: 'token')])
-            {
-                message = "${env.BUILD_NUMBER} from ${env.BRANCH_NAME} failed.\n${env.BUILD_URL}"
-                slackSend channel: "#cd_sync", color: "E8E8E8", message: "${message}", teamDomain: 'kcura-pd', token: token
-            }
+                    withCredentials([string(credentialsId: 'ProgetNugetApiKey', variable: 'key')])
+                    {
+                        powershell ".\\build.ps1 publishNuget -progetApiKey $key"
+                    }
+                }
+                stage ('SonarQube')
+                {
+                    powershell ".\\build.ps1 runSonarScanner -version $version -branchName ${env.BRANCH_NAME}"
+                }
 
-            if (env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'master')
+                currentBuild.result = 'SUCCESS'
+                step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
+            }
+        }
+        catch (err)
+        {
+            currentBuild.result = 'FAILURE'
+            echo err.toString()
+            
+            step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
+        }
+        finally
+        {
+            if (currentBuild.result != 'SUCCESS')
             {
-                sendEmailAboutFailureToTeam()
+                withCredentials([string(credentialsId: 'SlackJenkinsIntegrationToken', variable: 'token')])
+                {
+                    message = "${env.BUILD_NUMBER} from ${env.BRANCH_NAME} failed.\n${env.BUILD_URL}"
+                    slackSend channel: "#cd_sync", color: "E8E8E8", message: "${message}", teamDomain: 'kcura-pd', token: token
+                }
+
+                if (env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'master')
+                {
+                    sendEmailAboutFailureToTeam()
+                }
             }
         }
     }
