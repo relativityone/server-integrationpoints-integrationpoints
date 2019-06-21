@@ -8,13 +8,12 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Search;
 using Relativity.Services.ServiceProxy;
 using Relativity.Sync.Executors;
-using Relativity.Sync.Logging;
 
 namespace Relativity.Sync.Tests.System.Helpers
 {
 	internal static class Rdos
 	{
-		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int) ArtifactType.Document;
+		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
 
 		private static readonly Guid _RELATIVITY_SOURCE_CASE_OBJECT_TYPE_GUID = new Guid("7E03308C-0B58-48CB-AFA4-BB718C3F5CAC");
 		private static readonly Guid _RELATIVITY_SOURCE_JOB_OBJECT_TYPE_GUID = new Guid("6f4dd346-d398-4e76-8174-f0cd8236cbe7");
@@ -203,7 +202,7 @@ namespace Relativity.Sync.Tests.System.Helpers
 		{
 			using (IKeywordSearchManager keywordSearchManager = serviceFactory.CreateProxy<IKeywordSearchManager>())
 			{
-				Services.Query request = new Services.Query()
+				Services.Query request = new Services.Query
 				{
 					Condition = $"(('Name' == '{name}'))"
 				};
@@ -237,9 +236,9 @@ namespace Relativity.Sync.Tests.System.Helpers
 						Name = "Field"
 					},
 					Condition = "(('Name' == 'Document Folder Path'))",
-					Fields = new List<FieldRef>()
+					Fields = new List<FieldRef>
 					{
-						new FieldRef()
+						new FieldRef
 						{
 							Name = "Field Type"
 						}
@@ -251,34 +250,16 @@ namespace Relativity.Sync.Tests.System.Helpers
 			}
 		}
 
-		public static Task<IList<int>> GetAllDocumentsAsync(ServiceFactory serviceFactory, int workspaceId)
+		public static Task<IList<int>> QueryDocumentIdsAsync(ServiceFactory serviceFactory, int workspaceId)
 		{
-			return QueryDocumentsAsync(serviceFactory, workspaceId, string.Empty);
+			return QueryDocumentIdsAsync(serviceFactory, workspaceId, string.Empty);
 		}
 
-		public static async Task<IList<int>> QueryDocumentsAsync(ServiceFactory serviceFactory, int workspaceId, string condition)
+		public static async Task<IList<int>> QueryDocumentIdsAsync(ServiceFactory serviceFactory, int workspaceId, string condition)
 		{
-			using (IObjectManager objectManager = serviceFactory.CreateProxy<IObjectManager>())
-			{
-				var ids = new List<int>();
-
-				QueryRequest queryRequest = new QueryRequest
-				{
-					ObjectType = new ObjectTypeRef { ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID },
-					Condition = condition
-				};
-
-				QueryResult queryResult;
-				do
-				{
-					const int batchSize = 100;
-					queryResult = await objectManager.QueryAsync(workspaceId, queryRequest, ids.Count, batchSize).ConfigureAwait(false);
-					ids.AddRange(queryResult.Objects.Select(x => x.ArtifactID));
-				}
-				while (ids.Count < queryResult.TotalCount);
-
-				return ids;
-			}
+			IList<RelativityObject> documents = await QueryDocumentsAsync(serviceFactory, workspaceId, condition).ConfigureAwait(false);
+			IList<int> identifiers = documents.Select(x => x.ArtifactID).ToList();
+			return identifiers;
 		}
 
 		public static Task<IList<string>> GetAllDocumentIdentifiersAsync(ServiceFactory serviceFactory, int workspaceId)
@@ -288,9 +269,16 @@ namespace Relativity.Sync.Tests.System.Helpers
 
 		public static async Task<IList<string>> QueryDocumentIdentifiersAsync(ServiceFactory serviceFactory, int workspaceId, string condition)
 		{
+			IList<RelativityObject> documents = await QueryDocumentsAsync(serviceFactory, workspaceId, condition).ConfigureAwait(false);
+			IList<string> identifiers = documents.Select(x => x.Name).ToList();
+			return identifiers;
+		}
+
+		private static async Task<IList<RelativityObject>> QueryDocumentsAsync(ServiceFactory serviceFactory, int workspaceId, string condition)
+		{
 			using (IObjectManager objectManager = serviceFactory.CreateProxy<IObjectManager>())
 			{
-				var identifiers = new List<string>();
+				var documents = new List<RelativityObject>();
 				var queryRequest = new QueryRequest
 				{
 					ObjectType = new ObjectTypeRef { ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID },
@@ -302,12 +290,11 @@ namespace Relativity.Sync.Tests.System.Helpers
 				do
 				{
 					const int batchSize = 100;
-					queryResult = await objectManager.QueryAsync(workspaceId, queryRequest, identifiers.Count, batchSize).ConfigureAwait(false);
-					identifiers.AddRange(queryResult.Objects.Select(x => x.Name));
+					queryResult = await objectManager.QueryAsync(workspaceId, queryRequest, documents.Count, batchSize).ConfigureAwait(false);
+					documents.AddRange(queryResult.Objects);
 				}
-				while (identifiers.Count < queryResult.TotalCount);
-
-				return identifiers;
+				while (documents.Count < queryResult.TotalCount);
+				return documents;
 			}
 		}
 	}

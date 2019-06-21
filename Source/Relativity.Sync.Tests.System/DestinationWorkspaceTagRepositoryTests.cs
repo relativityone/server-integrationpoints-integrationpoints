@@ -70,7 +70,7 @@ namespace Relativity.Sync.Tests.System
 			string isTaggedCondition =
 				$"('{_documentDestinationWorkspaceMultiObjectFieldGuid}' CONTAINS MULTIOBJECT [{destinationWorkspaceTagId}]) AND " +
 				$"('{_documentJobHistoryMultiObjectFieldGuid}' CONTAINS MULTIOBJECT [{jobHistoryId}])";
-			IList<int> taggedDocuments = await Rdos.QueryDocumentsAsync(ServiceFactory, _sourceWorkspaceArtifactId, isTaggedCondition).ConfigureAwait(false);
+			IList<int> taggedDocuments = await Rdos.QueryDocumentIdsAsync(ServiceFactory, _sourceWorkspaceArtifactId, isTaggedCondition).ConfigureAwait(false);
 			CollectionAssert.AreEqual(documentsToTag.OrderBy(x => x), taggedDocuments.OrderBy(x => x));
 		}
 
@@ -84,7 +84,7 @@ namespace Relativity.Sync.Tests.System
 			ImportJobResult importResult = await ImportJobExecutor.ExecuteAsync(documentImportJob).ConfigureAwait(false);
 			Assert.IsTrue(importResult.Success, $"{importResult.Errors.Count} errors occurred during document upload: {importResult}");
 
-			IList<int> documentIds = await Rdos.GetAllDocumentsAsync(ServiceFactory, _sourceWorkspaceArtifactId).ConfigureAwait(false);
+			IList<int> documentIds = await Rdos.QueryDocumentIdsAsync(ServiceFactory, _sourceWorkspaceArtifactId).ConfigureAwait(false);
 			Assert.AreEqual(numDocuments, documentIds.Count, $"Unexpected number of documents in workspace {_sourceWorkspaceArtifactId}. Ensure test is run against clean workspace.");
 			return documentIds;
 		}
