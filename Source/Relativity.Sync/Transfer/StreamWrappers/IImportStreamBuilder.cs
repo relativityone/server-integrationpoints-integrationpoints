@@ -7,6 +7,6 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 {
 	internal interface IImportStreamBuilder
 	{
-		Stream Create(Func<IObjectManager, Task<Stream>> streamFactory, StreamEncoding encoding);
+		Stream Create(IRetriableStreamBuilder streamBuilder, StreamEncoding encoding);
 	}
 }

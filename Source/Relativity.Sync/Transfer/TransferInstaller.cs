@@ -27,6 +27,7 @@ namespace Relativity.Sync.Transfer
 			builder.RegisterTypes(Assembly.GetExecutingAssembly().GetTypes()
 				.Where(t => !t.IsAbstract && t.IsAssignableTo<IExportFieldSanitizer>())
 				.ToArray()).As<IExportFieldSanitizer>();
+			builder.RegisterType<RetriableLongTextStreamBuilderFactory>().As<IRetriableStreamBuilderFactory>();
 		}
 	}
 }
