@@ -237,8 +237,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			// act
 			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
 
-			result.Message.Should().Be("Unexpected exception occurred while tagging synchronized documents in source workspace.");
-			result.Exception.Should().BeOfType<InvalidOperationException>();
+			result.Message.Should().Be("Unexpected exception occurred while tagging synchronized documents in workspace.");
+			result.Exception.Should().BeOfType<AggregateException>();
 			result.Status.Should().Be(ExecutionStatus.Failed);
 		}
 
