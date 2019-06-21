@@ -4,6 +4,8 @@ namespace Relativity.Sync.Configuration
 {
 	internal interface ISynchronizationConfiguration : IConfiguration
 	{
+		int DestinationWorkspaceArtifactId { get; }
+
 		int DestinationWorkspaceTagArtifactId { get; }
 
 		Guid ExportRunId { get; }
@@ -12,11 +14,11 @@ namespace Relativity.Sync.Configuration
 
 		int JobHistoryArtifactId { get; }
 
-		string SourceJobTagName { get; }
+		int SourceJobTagArtifactId { get; }
 
 		int SourceWorkspaceArtifactId { get; }
 
-		string SourceWorkspaceTagName { get; }
+		int SourceWorkspaceTagArtifactId { get; }
 
 		int SyncConfigurationArtifactId { get; }
 

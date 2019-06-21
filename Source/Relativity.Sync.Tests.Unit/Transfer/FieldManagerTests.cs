@@ -139,7 +139,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		{
 			// Arrange 
 			const SpecialFieldType rowValueBuilder1FieldType = SpecialFieldType.FolderPath;
-			const SpecialFieldType rowValueBuilder2FieldType = SpecialFieldType.SourceWorkspace;
+			const SpecialFieldType rowValueBuilder2FieldType = SpecialFieldType.NativeFileLocation;
 
 			_rowValueBuilder1.Setup(rb => rb.AllowedSpecialFieldTypes).Returns(new[] {rowValueBuilder1FieldType});
 			_rowValueBuilder2.Setup(rb => rb.AllowedSpecialFieldTypes).Returns(new[] {rowValueBuilder2FieldType});

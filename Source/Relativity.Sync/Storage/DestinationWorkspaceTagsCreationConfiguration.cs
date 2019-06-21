@@ -26,20 +26,17 @@ namespace Relativity.Sync.Storage
 		public int SourceWorkspaceArtifactId => _syncJobParameters.WorkspaceId;
 		public int DestinationWorkspaceArtifactId => _cache.GetFieldValue<int>(DestinationWorkspaceArtifactIdGuid);
 		public int JobHistoryArtifactId => _cache.GetFieldValue<RelativityObjectValue>(JobHistoryGuid).ArtifactID;
-		public bool IsSourceJobTagSet { get; private set; }
+
 		public async Task SetSourceJobTagAsync(int artifactId, string name)
 		{
 			await _cache.UpdateFieldValueAsync(SourceJobTagArtifactIdGuid, artifactId).ConfigureAwait(false);
 			await _cache.UpdateFieldValueAsync(SourceJobTagNameGuid, name).ConfigureAwait(false);
-			IsSourceJobTagSet = true;
 		}
 
-		public bool IsSourceWorkspaceTagSet { get; private set; }
 		public async Task SetSourceWorkspaceTagAsync(int artifactId, string name)
 		{
 			await _cache.UpdateFieldValueAsync(SourceWorkspaceTagArtifactIdGuid, artifactId).ConfigureAwait(false);
 			await _cache.UpdateFieldValueAsync(SourceWorkspaceTagNameGuid, name).ConfigureAwait(false);
-			IsSourceWorkspaceTagSet = true;
 		}
 	}
 }

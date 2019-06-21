@@ -107,8 +107,6 @@ namespace Relativity.Sync.Tests.Integration
 			yield return FieldInfoDto.NativeFileLocationField();
 			yield return FieldInfoDto.NativeFileFilenameField();
 			yield return FieldInfoDto.NativeFileSizeField();
-			yield return FieldInfoDto.SourceJobField();
-			yield return FieldInfoDto.SourceWorkspaceField();
 
 			foreach (FieldInfoDto field in SpecialDocumentFields())
 			{
@@ -200,50 +198,6 @@ namespace Relativity.Sync.Tests.Integration
 					specialFieldRowValueBuilders.Should().ContainKey(specialFieldType);
 				}
 			}
-		}
-
-		[Test]
-		public async Task ItShouldBuildSourceJobTag()
-		{
-			// Arrange
-			const string sourceJobTagName = "SourceJobTag";
-			_configuration.SourceJobTagName = sourceJobTagName;
-
-			SetupDocumentFieldServices(MappedDocumentFieldTypePairs());
-			SetupFileInfoFieldServices();
-
-			// Act
-			IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> specialFieldRowValueBuilders =
-				await _instance.CreateSpecialFieldRowValueBuildersAsync(0, new List<int>()).ConfigureAwait(false);
-
-			FieldInfoDto sourceJobField = FieldInfoDto.SourceJobField();
-			RelativityObjectSlim document = new RelativityObjectSlim();
-			object value = specialFieldRowValueBuilders[SpecialFieldType.SourceJob].BuildRowValue(sourceJobField, document, null);
-
-			// Assert
-			value.Should().Be(sourceJobTagName);
-		}
-
-		[Test]
-		public async Task ItShouldBuildSourceWorkspaceTag()
-		{
-			// Arrange
-			const string sourceWorkspaceTagName = "SourceWorkspaceTag";
-			_configuration.SourceWorkspaceTagName = sourceWorkspaceTagName;
-
-			SetupDocumentFieldServices(MappedDocumentFieldTypePairs());
-			SetupFileInfoFieldServices();
-
-			// Act
-			IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> specialFieldRowValueBuilders =
-				await _instance.CreateSpecialFieldRowValueBuildersAsync(0, new List<int>()).ConfigureAwait(false);
-
-			FieldInfoDto sourceWorkspaceField = FieldInfoDto.SourceWorkspaceField();
-			RelativityObjectSlim document = new RelativityObjectSlim();
-			object value = specialFieldRowValueBuilders[SpecialFieldType.SourceJob].BuildRowValue(sourceWorkspaceField, document, null);
-
-			// Assert
-			value.Should().Be(sourceWorkspaceTagName);
 		}
 
 		private static IEnumerable<TestCaseData> NativeFileInfoTestCases()

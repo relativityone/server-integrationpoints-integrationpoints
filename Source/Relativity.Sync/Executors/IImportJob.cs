@@ -10,5 +10,7 @@ namespace Relativity.Sync.Executors
 		Task<ExecutionResult> RunAsync(CancellationToken token);
 
 		Task<IEnumerable<int>> GetPushedDocumentArtifactIds();
+
+		Task<IEnumerable<string>> GetPushedDocumentIdentifiers();
 	}
 }

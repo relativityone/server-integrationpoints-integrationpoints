@@ -16,14 +16,15 @@ namespace Relativity.Sync.Tests.Unit
 		private ImportSettingsDto _importSettings;
 		private SynchronizationConfiguration _syncConfig;
 
-		private const int _JOB_ID = 1;
-		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 2;
-		
+		private const int _JOB_ID = 2;
+		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 3;
+
+		private static readonly Guid DestinationWorkspaceArtifactIdGuid = new Guid("15B88438-6CF7-47AB-B630-424633159C69");
 		private static readonly Guid DestinationWorkspaceTagArtifactIdGuid = new Guid("E2100C10-B53B-43FA-BB1B-51E43DCE8208");
 		private static readonly Guid JobHistoryGuid = new Guid("5D8F7F01-25CF-4246-B2E2-C05882539BB2");
 		private static readonly Guid SnapshotIdGuid = new Guid("D1210A1B-C461-46CB-9B73-9D22D05880C5");
-		private static readonly Guid SourceJobTagNameGuid = new Guid("DA0E1931-9460-4A61-9033-A8035697C1A4");
-		private static readonly Guid SourceWorkspaceTagNameGuid = new Guid("D828B69E-AAAE-4639-91E2-416E35C163B1");
+		private static readonly Guid SourceJobTagArtifactIdGuid = new Guid("C0A63A29-ABAE-4BF4-A3F4-59E5BD87A33E");
+		private static readonly Guid SourceWorkspaceTagArtifactIdGuid = new Guid("FEAB129B-AEEF-4AA4-BC91-9EAE9A4C35F6");
 		private static readonly Guid DestinationFolderStructureBehaviorGuid = new Guid("A1593105-BD99-4A15-A51A-3AA8D4195908");
 
 		[SetUp]
@@ -56,6 +57,19 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
+		public void ItShouldReturnDestinationWorkspaceArtifactId()
+		{
+			const int destinationWorkspaceArtifactId = 1040589;
+			_cache.Setup(x => x.GetFieldValue<int>(DestinationWorkspaceArtifactIdGuid)).Returns(destinationWorkspaceArtifactId);
+
+			// act
+			int actualDestinationWorkspaceArtifactId = _syncConfig.DestinationWorkspaceArtifactId;
+
+			// assert
+			actualDestinationWorkspaceArtifactId.Should().Be(destinationWorkspaceArtifactId);
+		}
+
+		[Test]
 		public void ItShouldReturnDestinationWorkspaceTagArtifactId()
 		{
 			const int destinationWorkspaceTagArtifactId = 3;
@@ -84,27 +98,27 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public void ItShouldReturnSourceJobTagName()
 		{
-			const string sourceJobTagName = "job name";
-			_cache.Setup(x => x.GetFieldValue<string>(SourceJobTagNameGuid)).Returns(sourceJobTagName);
+			const int sourceJobTagArtifactId = 105649;
+			_cache.Setup(x => x.GetFieldValue<int>(SourceJobTagArtifactIdGuid)).Returns(sourceJobTagArtifactId);
 
 			// act
-			string actualSourceJobTagName = _syncConfig.SourceJobTagName;
+			int actualSourceJobTagName = _syncConfig.SourceJobTagArtifactId;
 
 			// assert
-			actualSourceJobTagName.Should().Be(sourceJobTagName);
+			actualSourceJobTagName.Should().Be(sourceJobTagArtifactId);
 		}
 
 		[Test]
 		public void ItShouldReturnSourceWorkspaceTagName()
 		{
-			const string sourceWorkspaceTagName = "workspace name";
-			_cache.Setup(x => x.GetFieldValue<string>(SourceWorkspaceTagNameGuid)).Returns(sourceWorkspaceTagName);
+			const int sourceWorkspaceTagArtifactId = 105656;
+			_cache.Setup(x => x.GetFieldValue<int>(SourceWorkspaceTagArtifactIdGuid)).Returns(sourceWorkspaceTagArtifactId);
 
 			// act
-			string actualSourceJobTagName = _syncConfig.SourceWorkspaceTagName;
+			int actualSourceJobTagName = _syncConfig.SourceWorkspaceTagArtifactId;
 
 			// assert
-			actualSourceJobTagName.Should().Be(sourceWorkspaceTagName);
+			actualSourceJobTagName.Should().Be(sourceWorkspaceTagArtifactId);
 		}
 
 		[Test]

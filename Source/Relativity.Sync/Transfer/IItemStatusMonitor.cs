@@ -10,5 +10,6 @@ namespace Relativity.Sync.Transfer
 		void MarkReadSoFarAsSuccessful();
 		void MarkReadSoFarAsFailed();
 		IEnumerable<int> GetSuccessfulItemArtifactIds();
+		IEnumerable<string> GetSuccessfulItemIdentifiers();
 	}
 }

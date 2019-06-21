@@ -10,11 +10,7 @@ namespace Relativity.Sync.Configuration
 
 		int JobHistoryArtifactId { get; }
 
-		bool IsSourceJobTagSet { get; }
-
 		Task SetSourceJobTagAsync(int artifactId, string name);
-
-		bool IsSourceWorkspaceTagSet { get; }
 
 		Task SetSourceWorkspaceTagAsync(int artifactId, string name);
 	}
