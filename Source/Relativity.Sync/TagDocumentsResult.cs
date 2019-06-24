@@ -2,9 +2,9 @@
 
 namespace Relativity.Sync
 {
-	internal sealed class TagDocumentsResult<T>
+	internal sealed class TagDocumentsResult<TIdentifier>
 	{
-		public IEnumerable<T> FailedDocuments { get; }
+		public IEnumerable<TIdentifier> FailedDocuments { get; }
 
 		public string Message { get; }
 
@@ -12,7 +12,7 @@ namespace Relativity.Sync
 
 		public int TotalObjectsUpdated { get; }
 
-		public TagDocumentsResult(IEnumerable<T> failedDocuments, string message, bool success, int totalObjectsUpdated)
+		public TagDocumentsResult(IEnumerable<TIdentifier> failedDocuments, string message, bool success, int totalObjectsUpdated)
 		{
 			FailedDocuments = failedDocuments;
 			Message = message;
