@@ -11,6 +11,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 	{
 #pragma warning disable RG2009 // Hardcoded Numeric Value
 
+		private ImportSettingsDto _importSettings;
 		private Mock<ISynchronizationConfiguration> _config;
 		private ChoiceTreeToStringConverter _instance;
 		
@@ -18,8 +19,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public void SetUp()
 		{
 			_config = new Mock<ISynchronizationConfiguration>();
-			var importSettings = new ImportSettingsDto();
-			_config.SetupGet(x => x.ImportSettings).Returns(importSettings);
+			_importSettings = new ImportSettingsDto();
+			_config.SetupGet(x => x.ImportSettings).Returns(_importSettings);
 			_instance = new ChoiceTreeToStringConverter(_config.Object);
 		}
 
@@ -32,7 +33,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			string actual = _instance.ConvertTreeToString(new List<ChoiceWithParentInfo>() {choice});
 
 			// assert
-			string expected = $"Hot;";
+			string expected = $"Hot{_importSettings.MultiValueDelimiter}";
 			Assert.AreEqual(expected, actual);
 		}
 
@@ -50,7 +51,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			string actual = _instance.ConvertTreeToString(new List<ChoiceWithParentInfo>() { root });
 
 			// assert
-			string expected = $"Root/Child;";
+			string expected = $"Root{_importSettings.NestedValueDelimiter}Child{_importSettings.MultiValueDelimiter}";
 			Assert.AreEqual(expected, actual);
 		}
 
@@ -77,7 +78,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			choice2.Children.Add(choice3);
 			choice5.Children.Add(choice6);
 
-			string expected = $"1/2/3;1/4;5/6;";
+			string expected = $"1{_importSettings.NestedValueDelimiter}2{_importSettings.NestedValueDelimiter}3" +
+				$"{_importSettings.MultiValueDelimiter}1{_importSettings.NestedValueDelimiter}4" +
+				$"{_importSettings.MultiValueDelimiter}5{_importSettings.NestedValueDelimiter}6{_importSettings.MultiValueDelimiter}";
 
 			// act
 			string actual = _instance.ConvertTreeToString(new List<ChoiceWithParentInfo>() { choice1, choice5 });

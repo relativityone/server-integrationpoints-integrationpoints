@@ -4,10 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
 using Newtonsoft.Json;
-using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync.Transfer
 {
@@ -20,14 +18,14 @@ namespace Relativity.Sync.Transfer
 	internal sealed class MultipleChoiceFieldSanitizer : IExportFieldSanitizer
 	{
 		private readonly ISynchronizationConfiguration _configuration;
-		private readonly ISourceServiceFactoryForAdmin _serviceFactory;
+		private readonly IChoiceCache _choiceCache;
 		private readonly IChoiceTreeToStringConverter _choiceTreeConverter;
 		private readonly JSONSerializer _serializer = new JSONSerializer();
 
-		public MultipleChoiceFieldSanitizer(ISynchronizationConfiguration configuration, ISourceServiceFactoryForAdmin serviceFactory, IChoiceTreeToStringConverter choiceTreeConverter)
+		public MultipleChoiceFieldSanitizer(ISynchronizationConfiguration configuration, IChoiceCache choiceCache, IChoiceTreeToStringConverter choiceTreeConverter)
 		{
 			_configuration = configuration;
-			_serviceFactory = serviceFactory;
+			_choiceCache = choiceCache;
 			_choiceTreeConverter = choiceTreeConverter;
 		}
 
@@ -73,53 +71,19 @@ namespace Relativity.Sync.Transfer
 					$"delimiter ('{nestedValueDelimiter}'). Rename these choices or choose a different delimiter: {violatingNameList}.");
 			}
 
-			IList<ChoiceWithParentInfo> choicesFlatList = await GetChoicesWithParentInfoAsync(choices).ConfigureAwait(false);
+			IList<ChoiceWithParentInfo> choicesFlatList = await _choiceCache.GetChoicesWithParentInfoAsync(choices).ConfigureAwait(false);
 			IList<ChoiceWithParentInfo> choicesTree = BuildChoiceTree(choicesFlatList, null);	// start with null to designate the roots of the tree
 
 			string treeString = _choiceTreeConverter.ConvertTreeToString(choicesTree);
 			return treeString;
 		}
 
-		private async Task<IList<ChoiceWithParentInfo>> GetChoicesWithParentInfoAsync(Choice[] choices)
+		private IList<ChoiceWithParentInfo> BuildChoiceTree(IList<ChoiceWithParentInfo> flatList, int? parentArtifactId)
 		{
-			var choicesWithParentInfo = new List<ChoiceWithParentInfo>(choices.Length);
-			using (var objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
-			{
-				foreach (Choice choice in choices)
-				{
-					var request = new QueryRequest
-					{
-						ObjectType = new ObjectTypeRef
-						{
-							ArtifactTypeID = (int)ArtifactType.Code
-						},
-						Condition = $"'ArtifactID' == {choice.ArtifactID}"
-					};
-					QueryResult queryResult = await objectManager.QueryAsync(_configuration.SourceWorkspaceArtifactId, request, 1, 1).ConfigureAwait(false);
-					if (queryResult.ResultCount == 0)
-					{
-						throw new SyncException($"Query for Choice Artifact ID '{choice.ArtifactID}' returned no results.");
-					}
-
-					int? parentArtifactId = queryResult.Objects[0].ParentObject.ArtifactID;
-					if (choices.All(x => x.ArtifactID != parentArtifactId))
-					{
-						parentArtifactId = null;
-					}
-
-					var choiceWithParentInfo = new ChoiceWithParentInfo(parentArtifactId, choice.ArtifactID, choice.Name);
-					choicesWithParentInfo.Add(choiceWithParentInfo);
-				}
-			}
-			return choicesWithParentInfo;
-		}
-
-		private List<ChoiceWithParentInfo> BuildChoiceTree(IList<ChoiceWithParentInfo> flatList, int? parentArtifactId)
-		{
-			List<ChoiceWithParentInfo> tree = new List<ChoiceWithParentInfo>();
+			IList<ChoiceWithParentInfo> tree = new List<ChoiceWithParentInfo>();
 			foreach (ChoiceWithParentInfo choice in flatList.Where(x => x.ParentArtifactId == parentArtifactId))
 			{
-				List<ChoiceWithParentInfo> choiceChildren = BuildChoiceTree(flatList, choice.ArtifactID);
+				IList<ChoiceWithParentInfo> choiceChildren = BuildChoiceTree(flatList, choice.ArtifactID);
 				choice.Children.AddRange(choiceChildren);
 				tree.Add(choice);
 			}

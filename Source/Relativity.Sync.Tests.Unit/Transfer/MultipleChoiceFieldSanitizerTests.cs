@@ -20,7 +20,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 	internal class MultipleChoiceFieldSanitizerTests
 	{
 		private Mock<ISynchronizationConfiguration> _config;
-		private Mock<ISourceServiceFactoryForAdmin> _serviceFactory;
+		private Mock<IChoiceCache> _choiceCache;
 		private Mock<IChoiceTreeToStringConverter> _choiceTreeToStringConverter;
 		private MultipleChoiceFieldSanitizer _instance;
 
@@ -32,9 +32,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		{
 			_config = new Mock<ISynchronizationConfiguration>();
 			_config.SetupGet(x => x.ImportSettings).Returns(new ImportSettingsDto());
-			_serviceFactory = new Mock<ISourceServiceFactoryForAdmin>();
+			_choiceCache = new Mock<IChoiceCache>();
 			_choiceTreeToStringConverter = new Mock<IChoiceTreeToStringConverter>();
-			_instance = new MultipleChoiceFieldSanitizer(_config.Object, _serviceFactory.Object, _choiceTreeToStringConverter.Object);
+			_instance = new MultipleChoiceFieldSanitizer(_config.Object, _choiceCache.Object, _choiceTreeToStringConverter.Object);
 		}
 
 		[Test]
