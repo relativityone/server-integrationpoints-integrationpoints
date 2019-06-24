@@ -19,6 +19,7 @@ using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Facades.SecretStore.Implementation;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -168,18 +169,24 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 		{
 			try
 			{
-				var permissionRepository = new PermissionRepository(ConnectionHelper.Helper(), key.WorkspaceId);
-				IRelativityObjectManager objectManager = CreateObjectManager(ConnectionHelper.Helper(), key.WorkspaceId);
+				ICPHelper helper = ConnectionHelper.Helper();
+				var permissionRepository = new PermissionRepository(helper, key.WorkspaceId);
+				IRelativityObjectManager objectManager = CreateObjectManager(helper, key.WorkspaceId);
 				IAPILog logger = ConnectionHelper.Helper().GetLoggerFactory().GetLogger();
 				IIntegrationPointSerializer integrationPointSerializer = CreateIntegrationPointSerializer(logger);
+				ISecretsRepository secretsRepository = new SecretsRepository(
+					SecretStoreFacadeFactory_Deprecated.Create(helper.GetSecretStore, logger),
+					logger
+				);
 				IIntegrationPointRepository integrationPointRepository =
-					CreateIntegrationPointRepository(objectManager, integrationPointSerializer, logger);
+					CreateIntegrationPointRepository(objectManager, integrationPointSerializer, secretsRepository, logger);
 				var providerTypeService = new ProviderTypeService(objectManager);
 				var buttonStateBuilder = new ButtonStateBuilder(providerTypeService, _queueManager, _jobHistoryManager,
 					_stateManager, permissionRepository, _permissionValidator, integrationPointRepository);
 
-				IntegrationPoint integrationPoint =
-					integrationPointRepository.ReadAsync(key.IntegrationPointId).GetAwaiter().GetResult();
+				IntegrationPoint integrationPoint = await integrationPointRepository
+					.ReadWithFieldMappingAsync(key.IntegrationPointId)
+					.ConfigureAwait(false);
 
 				ProviderType providerType = providerTypeService.GetProviderType(
 					integrationPoint.SourceProvider.Value,
@@ -220,11 +227,17 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			return new IntegrationPointSerializer(logger);
 		}
 
-		private static IIntegrationPointRepository CreateIntegrationPointRepository(IRelativityObjectManager relativityObjectManager,
-			IIntegrationPointSerializer serializer, 
+		private static IIntegrationPointRepository CreateIntegrationPointRepository(
+			IRelativityObjectManager relativityObjectManager,
+			IIntegrationPointSerializer serializer,
+			ISecretsRepository secretsRepository,
 			IAPILog logger)
 		{
-			return new IntegrationPointRepository(relativityObjectManager, serializer, logger);
+			return new IntegrationPointRepository(
+				relativityObjectManager, 
+				serializer,
+				secretsRepository,
+				logger);
 		}
 
 		private List<IntegrationPointDataHubKey> RemoveTask(string connectionId)

@@ -1,15 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Testing.Identification;
+using Relativity.Services.Objects.Exceptions;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoints
 {
@@ -37,9 +41,13 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 		{
 			base.TestSetup();
 
-			var integrationPointModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, $"IP{Utils.FormattedDateTimeNow}", "Append Only");
+			IntegrationPointModel integrationPointModel = CreateDefaultIntegrationPointModel(
+				ImportOverwriteModeEnum.AppendOnly, 
+				$"IP{Utils.FormattedDateTimeNow}", 
+				"Append Only"
+			);
 			integrationPointModel = CreateOrUpdateIntegrationPoint(integrationPointModel);
-			_integrationPoint = IntegrationPointRepository.ReadAsync(integrationPointModel.ArtifactID).GetAwaiter().GetResult();
+			_integrationPoint = IntegrationPointRepository.ReadWithFieldMappingAsync(integrationPointModel.ArtifactID).GetAwaiter().GetResult();
 
 			_jobHistory = _jobHistoryService.CreateRdo(_integrationPoint, Guid.NewGuid(), JobTypeChoices.JobHistoryRun, DateTime.Now);
 
@@ -51,52 +59,42 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 		public void ItShouldDeleteIntegrationPointWithJobHistory()
 		{
 			// ACT
-			CaseContext.RsapiService.RelativityObjectManager.Delete(_integrationPoint.ArtifactId);
+			IntegrationPointRepository.Delete(_integrationPoint.ArtifactId);
 
 			// ASSERT
-			var query = new Query<RDO>
-			{
-				Fields = FieldValue.NoFields,
-				Condition = new WholeNumberCondition(ArtifactQueryFieldNames.ArtifactID, NumericConditionEnum.EqualTo, _integrationPoint.ArtifactId)
-			};
-			QueryRequest request = new QueryRequest()
-			{
-				Condition = $"'{ArtifactQueryFieldNames.ArtifactID}' == {_integrationPoint.ArtifactId}"
-			};
-			var integrationPoints = CaseContext.RsapiService.RelativityObjectManager.Query<Data.IntegrationPoint>(request);
+			Func<Task> readAction = () => IntegrationPointRepository
+				.ReadAsync(_integrationPoint.ArtifactId);
 
-			Assert.That(integrationPoints, Is.Null.Or.Empty);
+			readAction.ShouldThrow<IntegrationPointsException>()
+				.WithInnerException<ArtifactNotFoundException>();
 		}
 
 		[IdentifiedTest("8c13cfb5-42d1-47de-91fb-6c7cc1858432")]
 		public void ItShouldDeleteIntegrationPointWithoutJobHistory()
 		{
-			var integrationPointModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, $"IP{Utils.FormattedDateTimeNow}", "Append Only");
+			IntegrationPointModel integrationPointModel = CreateDefaultIntegrationPointModel(
+				ImportOverwriteModeEnum.AppendOnly, 
+				$"IP{Utils.FormattedDateTimeNow}", 
+				"Append Only"
+			);
 			integrationPointModel = CreateOrUpdateIntegrationPoint(integrationPointModel);
 
 			// ACT
-			CaseContext.RsapiService.RelativityObjectManager.Delete(integrationPointModel.ArtifactID);
+			IntegrationPointRepository.Delete(integrationPointModel.ArtifactID);
 
 			// ASSERT
-			var query = new Query<RDO>
-			{
-				Fields = FieldValue.NoFields,
-				Condition = new WholeNumberCondition(ArtifactQueryFieldNames.ArtifactID, NumericConditionEnum.EqualTo, integrationPointModel.ArtifactID)
-			};
-			var request = new QueryRequest
-			{
-				Condition = $"'{ArtifactQueryFieldNames.ArtifactID}' == {integrationPointModel.ArtifactID}",
-			};
-			List<Data.IntegrationPoint> integrationPoints = CaseContext.RsapiService.RelativityObjectManager.Query<Data.IntegrationPoint>(request);
+			Func<Task> action = () => IntegrationPointRepository
+				.ReadAsync(integrationPointModel.ArtifactID);
 
-			Assert.That(integrationPoints, Is.Null.Or.Empty);
+			action.ShouldThrow<IntegrationPointsException>()
+				.WithInnerException<ArtifactNotFoundException>();
 		}
 
 		[IdentifiedTest("513f1d3b-d1fb-49a4-919e-b0a6ef33529d")]
 		public void ItShouldUnlinkJobHistory()
 		{
 			// ACT
-			CaseContext.RsapiService.RelativityObjectManager.Delete(_integrationPoint.ArtifactId);
+			IntegrationPointRepository.Delete(_integrationPoint.ArtifactId);
 
 			// ASSERT
 			var jobHistory = CaseContext.RsapiService.RelativityObjectManager.Read<JobHistory>(_jobHistory.ArtifactId);
@@ -109,7 +107,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 		public void ItShouldLeaveJobHistoryErrors()
 		{
 			// ACT
-			CaseContext.RsapiService.RelativityObjectManager.Delete(_integrationPoint.ArtifactId);
+			IntegrationPointRepository.Delete(_integrationPoint.ArtifactId);
 
 			// ASSERT
 			var query = new QueryRequest

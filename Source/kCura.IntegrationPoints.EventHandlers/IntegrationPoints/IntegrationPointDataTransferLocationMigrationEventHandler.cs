@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.EventHandler;
 using kCura.EventHandler.CustomAttributes;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Managers;
@@ -10,14 +9,14 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Facades.SecretStore.Implementation;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Data.RSAPIClient;
-using kCura.IntegrationPoints.EventHandlers.Installers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
-using kCura.IntegrationPoints.SourceProviderInstaller;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
@@ -32,7 +31,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		private IRepositoryFactory _repositoryFactory;
 		private IDataTransferLocationMigrationHelper _dataTransferLocationMigrationHelper;
 		private ICaseServiceContext _serviceContext;
-		private IRelativityObjectManager _integrationPointLibrary;
 		private IDataTransferLocationService _dataTransferLocationService;
 		private IResourcePoolManager _resourcePoolManager;
 		private IDataTransferLocationMigration _dataTransferLocationMigration;
@@ -103,19 +101,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			}
 		}
 
-		internal IRelativityObjectManager IntegrationPointLibrary
-		{
-			get
-			{
-				if (_integrationPointLibrary == null)
-				{
-					_integrationPointLibrary = CaseServiceContext.RsapiService.RelativityObjectManager;
-				}
-
-				return _integrationPointLibrary;
-			}
-		}
-
 		internal IDataTransferLocationService DataTransferLocationService
 		{
 			get
@@ -150,9 +135,22 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			{
 				if (_dataTransferLocationMigration == null)
 				{
-					_dataTransferLocationMigration = new DataTransferLocationMigration(Logger, DestinationProviderRepository,
-						SourceProviderRepository, DataTransferLocationMigrationHelper, CaseServiceContext, IntegrationPointLibrary,
-						DataTransferLocationService, ResourcePoolManager, Helper);
+					_dataTransferLocationMigration = new DataTransferLocationMigration(
+						Logger, 
+						DestinationProviderRepository,
+						SourceProviderRepository, 
+						DataTransferLocationMigrationHelper, 
+						new IntegrationPointRepository(
+							ObjectManager, 
+							new IntegrationPointSerializer(Logger), 
+							new SecretsRepository(
+								SecretStoreFacadeFactory_Deprecated.Create(Helper.GetSecretStore, Logger), 
+								Logger
+							), 
+							Logger), 
+						DataTransferLocationService, 
+						ResourcePoolManager, 
+						Helper);
 				}
 
 				return _dataTransferLocationMigration;

@@ -14,6 +14,7 @@ using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Tests;
 using kCura.IntegrationPoints.Core.Validation;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
@@ -36,7 +37,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private ISerializer _serializerMock;
 		private IExportInitProcessService _exportInitProcessService;
 		private IIntegrationPointService _integrationPointService;
-
+		private IIntegrationPointRepository _integrationPointRepositoryMock;
 
 		private readonly Job _job = JobHelper.GetJob(1, 2, 3, 4, 5, 6, 7, TaskType.ExportWorker,
 				DateTime.MinValue, DateTime.MinValue, null, 1, DateTime.MinValue, 2, "", null);
@@ -55,8 +56,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_exportInitProcessService = Substitute.For<IExportInitProcessService>();
 			IAgentValidator agentValidator = Substitute.For<IAgentValidator>();
 			_integrationPointService = Substitute.For<IIntegrationPointService>();
+			_integrationPointRepositoryMock = Substitute.For<IIntegrationPointRepository>();
 
-			_instanceToTest = new ExportManager(Substitute.For<ICaseServiceContext>(),
+			_instanceToTest = new ExportManager(
+				caseServiceContextMock,
 				Substitute.For<IDataProviderFactory>(),
 				_jobManagerMock,
 				Substitute.For<IJobService>(),
@@ -65,7 +68,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				_serializerMock,
 				Substitute.For<IGuidService>(),
 				Substitute.For<IJobHistoryService>(),
-				Substitute.For<JobHistoryErrorService>(caseServiceContextMock, _helperMock),
+				Substitute.For<JobHistoryErrorService>(
+					caseServiceContextMock, 
+					_helperMock,
+					_integrationPointRepositoryMock),
 				Substitute.For<IScheduleRuleFactory>(),
 				managerFactoryMock,
 				_contextContainerFactoryMock,

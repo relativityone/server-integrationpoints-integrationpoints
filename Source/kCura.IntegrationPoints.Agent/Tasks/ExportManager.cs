@@ -46,7 +46,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		#region Constructors
 
-		public ExportManager(ICaseServiceContext caseServiceContext,
+		public ExportManager(
+			ICaseServiceContext caseServiceContext,
 			IDataProviderFactory providerFactory,
 			IJobManager jobManager,
 			IJobService jobService,

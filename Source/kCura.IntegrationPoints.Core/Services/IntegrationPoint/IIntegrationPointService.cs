@@ -14,31 +14,10 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 		IList<Data.IntegrationPoint> GetAllRDOs();
 
 		/// <summary>
-		/// Retrieves all the integration points for given source providers.
-		/// </summary>
-		/// <param name="sourceProviderIds">Artifact ids of source providers.</param>
-		/// /// <returns>A list of integration point objects.</returns>
-		IList<Data.IntegrationPoint> GetAllRDOsForSourceProvider(List<int> sourceProviderIds);
-
-		/// <summary>
 		/// Retrieves all the integration points in the workspace including all data fields.
 		/// </summary>
 		/// <returns>A list of integration point objects.</returns>
 		IList<Data.IntegrationPoint> GetAllRDOsWithAllFields();
-
-		/// <summary>
-		/// Retrieves the source configuration information for the given integration point artifact id.
-		/// </summary>
-		/// <param name="artifactId">Artifact id of the integration point.</param>
-		/// <returns>The source configuration information.</returns>
-		string GetSourceOptions(int artifactId);
-
-		/// <summary>
-		/// Retrieves the identifier field information for the given integration point artifact id.
-		/// </summary>
-		/// <param name="artifactId">Artifact id of the integration point.</param>
-		/// <returns>The field entry information for the source identifier field.</returns>
-		FieldEntry GetIdentifierFieldEntry(int artifactId);
 
 		/// <summary>
 		/// Retrieves the identifier field information for the field map.
@@ -76,11 +55,10 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 		int SaveIntegration(IntegrationPointModel model);
 
 		/// <summary>
-		/// Retrieves the list of email addresses associated with the integration point.
+		/// Updates an integration point.
 		/// </summary>
-		/// <param name="artifactId">Artifact id of the integration point.</param>
-		/// <returns>A list of email addresses.</returns>
-		IEnumerable<string> GetRecipientEmails(int artifactId);
+		/// <param name="model">The integration point.</param>
+		void UpdateIntegrationPoint(Data.IntegrationPoint integrationPoint);
 
 		/// <summary>
 		/// Run integration point as a new job.

@@ -4,7 +4,6 @@ using Relativity.API;
 using kCura.EventHandler.CustomAttributes;
 using kCura.IntegrationPoints.EventHandlers.Commands;
 using kCura.IntegrationPoints.EventHandlers.Commands.Context;
-using kCura.IntegrationPoints.SourceProviderInstaller;
 
 namespace kCura.IntegrationPoints.EventHandlers.Installers
 {

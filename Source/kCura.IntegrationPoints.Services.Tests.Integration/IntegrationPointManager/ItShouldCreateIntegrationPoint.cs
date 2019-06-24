@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Models;
@@ -121,7 +123,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 			IntegrationPointModel createdIntegrationPoint = _client.CreateIntegrationPointAsync(createRequest).Result;
 
 			Data.IntegrationPoint actualIntegrationPoint =
-				IntegrationPointRepository.ReadAsync(createdIntegrationPoint.ArtifactId).GetAwaiter().GetResult();
+				IntegrationPointRepository.ReadWithFieldMappingAsync(createdIntegrationPoint.ArtifactId).GetAwaiter().GetResult();
 			IntegrationPointModel expectedIntegrationPointModel = createRequest.IntegrationPoint;
 
 			Assert.That(expectedIntegrationPointModel.Name, Is.EqualTo(actualIntegrationPoint.Name));
@@ -143,7 +145,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 				.CreateIntegrationPointFromProfileAsync(SourceWorkspaceArtifactID, profile.ArtifactID, integrationPointName).Result;
 
 			Data.IntegrationPoint actualIntegrationPoint =
-				IntegrationPointRepository.ReadAsync(integrationPointModel.ArtifactId).GetAwaiter().GetResult();
+				IntegrationPointRepository.ReadWithFieldMappingAsync(integrationPointModel.ArtifactId).GetAwaiter().GetResult();
 
 			Assert.That(actualIntegrationPoint.Name, Is.EqualTo(integrationPointName));
 			Assert.That(actualIntegrationPoint.SourceProvider, Is.EqualTo(profile.SourceProvider));
@@ -159,16 +161,34 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 		}
 
 		[IdentifiedTest("09d2a68e-879e-431a-889e-5059b2f76b82")]
-		public void ItShouldCreateIntegrationPointWithEncryptedCredentials()
+		public async Task ItShouldCreateIntegrationPointWithEncryptedCredentials()
 		{
-			var username = "username_933";
-			var password = "password_729";
+			string username = "username_933";
+			string password = "password_729";
 
-			OverwriteFieldsModel overwriteFieldsModel = _client.GetOverwriteFieldsChoicesAsync(SourceWorkspaceArtifactID).Result.First(x => x.Name == "Append/Overlay");
+			IList<OverwriteFieldsModel> choicesModels = await _client
+				.GetOverwriteFieldsChoicesAsync(SourceWorkspaceArtifactID)
+				.ConfigureAwait(false);
 
-			CreateIntegrationPointRequest createRequest = IntegrationPointBaseHelper.CreateCreateIntegrationPointRequest(Helper, RepositoryFactory, SourceWorkspaceArtifactID, SavedSearchArtifactID, TypeOfExport,
-				TargetWorkspaceArtifactID, false, true, false, string.Empty, "Use Field Settings", overwriteFieldsModel,
-				GetDefaultFieldMap().ToList(), false);
+			OverwriteFieldsModel overwriteFieldsModel = choicesModels
+				.First(x => x.Name == "Append/Overlay");
+
+			CreateIntegrationPointRequest createRequest = IntegrationPointBaseHelper.CreateCreateIntegrationPointRequest(
+				Helper, 
+				RepositoryFactory, 
+				SourceWorkspaceArtifactID, 
+				SavedSearchArtifactID, 
+				TypeOfExport,
+				TargetWorkspaceArtifactID, 
+				false, 
+				true, 
+				false, 
+				string.Empty, 
+				"Use Field Settings", 
+				overwriteFieldsModel,
+				GetDefaultFieldMap().ToList(), 
+				false
+			);
 
 			createRequest.IntegrationPoint.SecuredConfiguration = new Credentials
 			{
@@ -176,9 +196,13 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 				Password = password
 			};
 
-			IntegrationPointModel integrationPointModel = _client.CreateIntegrationPointAsync(createRequest).Result;
+			IntegrationPointModel integrationPointModel = await _client
+				.CreateIntegrationPointAsync(createRequest)
+				.ConfigureAwait(false);
 
-			IntegrationPointModel integrationPoint = _client.GetIntegrationPointAsync(createRequest.WorkspaceArtifactId, integrationPointModel.ArtifactId).Result;
+			IntegrationPointModel integrationPoint = await _client
+				.GetIntegrationPointAsync(createRequest.WorkspaceArtifactId, integrationPointModel.ArtifactId)
+				.ConfigureAwait(false);
 
 			string actualSecret = integrationPoint.SecuredConfiguration as string;
 			string expectedSecret = JsonConvert.SerializeObject(createRequest.IntegrationPoint.SecuredConfiguration);
@@ -189,19 +213,45 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 		[IdentifiedTestCase("ca67dbfb-8272-4010-b084-d9ba689b28dc", true, true, true, "", "Use Field Settings", "Append Only", false)]
 		[IdentifiedTestCase("0e1847bd-e140-42f8-adb4-ee6d7ed46f8c", false, false, false, null, "Replace Values", "Append/Overlay", false)]
 		[IdentifiedTestCase("596cf427-9fb2-499b-b5fa-d00469c26df6", false, false, false, "a937467@relativity.com", "Merge Values", "Append/Overlay", false)]
-		public void ItShouldCreateRelativityIntegrationPoint(bool importNativeFile, bool logErrors, bool useFolderPathInformation, string emailNotificationRecipients,
-			string fieldOverlayBehavior, string overwriteFieldsChoices, bool promoteEligible)
+		public async Task ItShouldCreateRelativityIntegrationPoint(
+			bool importNativeFile, 
+			bool logErrors, 
+			bool useFolderPathInformation, 
+			string emailNotificationRecipients,
+			string fieldOverlayBehavior, 
+			string overwriteFieldsChoices, 
+			bool promoteEligible)
 		{
-			OverwriteFieldsModel overwriteFieldsModel = _client.GetOverwriteFieldsChoicesAsync(SourceWorkspaceArtifactID).Result.First(x => x.Name == overwriteFieldsChoices);
+			IList<OverwriteFieldsModel> overwriteFieldsModels = await _client
+				.GetOverwriteFieldsChoicesAsync(SourceWorkspaceArtifactID)
+				.ConfigureAwait(false);
 
-			CreateIntegrationPointRequest createRequest = IntegrationPointBaseHelper.CreateCreateIntegrationPointRequest(Helper, RepositoryFactory, SourceWorkspaceArtifactID, SavedSearchArtifactID, TypeOfExport,
-				TargetWorkspaceArtifactID, importNativeFile, logErrors, useFolderPathInformation, emailNotificationRecipients, fieldOverlayBehavior, overwriteFieldsModel, 
-				GetDefaultFieldMap().ToList(), promoteEligible);
+			OverwriteFieldsModel overwriteFieldsModel = overwriteFieldsModels
+				.First(x => x.Name == overwriteFieldsChoices);
 
-			IntegrationPointModel createdIntegrationPoint = _client.CreateIntegrationPointAsync(createRequest).Result;
+			CreateIntegrationPointRequest createRequest = IntegrationPointBaseHelper.CreateCreateIntegrationPointRequest(
+				Helper, 
+				RepositoryFactory, 
+				SourceWorkspaceArtifactID, 
+				SavedSearchArtifactID, 
+				TypeOfExport,
+				TargetWorkspaceArtifactID, 
+				importNativeFile, 
+				logErrors, 
+				useFolderPathInformation, 
+				emailNotificationRecipients, 
+				fieldOverlayBehavior, 
+				overwriteFieldsModel, 
+				GetDefaultFieldMap().ToList(), 
+				promoteEligible
+			);
 
-			Data.IntegrationPoint actualIntegrationPoint =
-				IntegrationPointRepository.ReadAsync(createdIntegrationPoint.ArtifactId).GetAwaiter().GetResult();
+			IntegrationPointModel createdIntegrationPoint = await _client.CreateIntegrationPointAsync(createRequest)
+				.ConfigureAwait(false);
+
+			Data.IntegrationPoint actualIntegrationPoint = await IntegrationPointRepository
+				.ReadWithFieldMappingAsync(createdIntegrationPoint.ArtifactId)
+				.ConfigureAwait(false);
 			IntegrationPointModel expectedIntegrationPointModel = createRequest.IntegrationPoint;
 
 			IntegrationPointBaseHelper.AssertIntegrationPointModelBase(actualIntegrationPoint, 

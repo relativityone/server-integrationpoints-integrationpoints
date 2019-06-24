@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.Relativity.Client.DTOs;
 using Relativity.API;
@@ -17,13 +18,15 @@ namespace kCura.IntegrationPoints.Core.Services
 	{
 		public const int ERROR_BATCH_SIZE = 500;
 		private readonly ICaseServiceContext _context;
+		private readonly IIntegrationPointRepository _integrationPointRepository;
 		private readonly List<JobHistoryError> _jobHistoryErrorList;
 		private readonly IAPILog _logger;
 		private bool _errorOccurredDuringJob;
 
-		public JobHistoryErrorService(ICaseServiceContext context, IHelper helper)
+		public JobHistoryErrorService(ICaseServiceContext context, IHelper helper, IIntegrationPointRepository integrationPointRepository)
 		{
 			_context = context;
+			_integrationPointRepository = integrationPointRepository;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<IJobHistoryErrorService>();
 			_jobHistoryErrorList = new List<JobHistoryError>();
 			_errorOccurredDuringJob = false;
@@ -172,7 +175,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			{
 				if (IntegrationPoint != null)
 				{
-					_context.RsapiService.RelativityObjectManager.Update(IntegrationPoint);
+					_integrationPointRepository.Update(IntegrationPoint);
 				}
 			}
 			catch (Exception e)

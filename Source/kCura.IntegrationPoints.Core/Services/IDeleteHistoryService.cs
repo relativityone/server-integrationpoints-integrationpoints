@@ -5,7 +5,7 @@ namespace kCura.IntegrationPoints.Core.Services
 {
 	public interface IDeleteHistoryService
 	{
-		void DeleteHistoriesAssociatedWithIP(int workspaceID, int integrationPointID);
-		void DeleteHistoriesAssociatedWithIPs(List<int> integrationPointsIDs, IRelativityObjectManager objectManager);
+		void DeleteHistoriesAssociatedWithIP(int integrationPointID);
+		void DeleteHistoriesAssociatedWithIPs(List<int> integrationPointsIDs);
 	}
 }

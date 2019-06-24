@@ -220,10 +220,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 					}
 				}
 			};
-
-			List<Job> associatedJobs = new List<Job> { _job };
-			List<FieldMap> fieldsMap = new List<FieldMap>();
-			_integrationPointRepository.ReadAsync(_job.RelatedObjectArtifactID).Returns(_integrationPoint);
+			
+			var associatedJobs = new List<Job> { _job };
+			var fieldsMap = new List<FieldMap>();
+			_integrationPointRepository.ReadWithFieldMappingAsync(_job.RelatedObjectArtifactID).Returns(_integrationPoint);
 			_integrationPointRepository.GetSecuredConfiguration(_job.RelatedObjectArtifactID).Returns(_integrationPoint.SecuredConfiguration);
 			caseServiceContext.RsapiService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider.Value).Returns(sourceProvider);
 			caseServiceContext.RsapiService.RelativityObjectManager.Read<DestinationProvider>(_integrationPoint.DestinationProvider.Value).Returns(destinationProvider);

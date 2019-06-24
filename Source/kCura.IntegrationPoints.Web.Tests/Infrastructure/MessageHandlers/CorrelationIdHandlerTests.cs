@@ -1,7 +1,6 @@
 ﻿using FluentAssertions;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Web.Context.UserContext;
-using kCura.IntegrationPoints.Web.Context.WorkspaceContext;
 using kCura.IntegrationPoints.Web.Infrastructure.MessageHandlers;
 using kCura.IntegrationPoints.Web.IntegrationPointsServices.Logging;
 using Moq;
@@ -12,6 +11,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Common.Context;
 
 namespace kCura.IntegrationPoints.Web.Tests.Infrastructure.MessageHandlers
 {

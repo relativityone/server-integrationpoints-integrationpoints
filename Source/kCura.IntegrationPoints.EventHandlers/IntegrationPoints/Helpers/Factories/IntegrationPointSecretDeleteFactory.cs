@@ -1,11 +1,10 @@
 ﻿using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Facades.SecretStore.Implementation;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
-using kCura.IntegrationPoints.Data.SecretStore;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
 using Relativity.API;
-using Relativity.SecretCatalog;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factories
 {
@@ -13,13 +12,23 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factor
 	{
 		public static IIntegrationPointSecretDelete Create(IEHHelper helper)
 		{
-			ISecretManager secretManager = new SecretManager(helper.GetActiveCaseID());
-			ISecretCatalog secretCatalog = new DefaultSecretCatalogFactory().Create(helper.GetActiveCaseID());
+			IAPILog logger = helper.GetLoggerFactory().GetLogger();
+			ISecretsRepository secretsRepository = new SecretsRepository(
+				SecretStoreFacadeFactory_Deprecated.Create(helper.GetSecretStore, logger), 
+				logger
+			);
 			IRelativityObjectManager relativityObjectManager = CreateObjectManager(helper);
-			IIntegrationPointSerializer integrationPointSerializer = CreateIntegrationPointSerializer(helper);
+			IIntegrationPointSerializer integrationPointSerializer = CreateIntegrationPointSerializer(logger);
 			IIntegrationPointRepository integrationPointRepository =
-				CreateIntegrationPointRespository(relativityObjectManager, integrationPointSerializer, helper);
-			return new IntegrationPointSecretDelete(secretManager, secretCatalog, integrationPointRepository);
+				CreateIntegrationPointRepository(
+					relativityObjectManager, 
+					integrationPointSerializer,
+					secretsRepository,
+					logger);
+			return new IntegrationPointSecretDelete(
+				helper.GetActiveCaseID(), 
+				secretsRepository, 
+				integrationPointRepository);
 		}
 
 		private static IRelativityObjectManager CreateObjectManager(IEHHelper helper)
@@ -27,16 +36,23 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factor
 			return new RelativityObjectManagerFactory(helper).CreateRelativityObjectManager(helper.GetActiveCaseID());
 		}
 
-		private static IIntegrationPointSerializer CreateIntegrationPointSerializer(IEHHelper helper)
+		private static IIntegrationPointSerializer CreateIntegrationPointSerializer(IAPILog logger)
 		{
-			return new IntegrationPointSerializer(helper.GetLoggerFactory().GetLogger());
+			return new IntegrationPointSerializer(logger);
 		}
 
-		private static IIntegrationPointRepository CreateIntegrationPointRespository(IRelativityObjectManager objectManager,
+		private static IIntegrationPointRepository CreateIntegrationPointRepository(
+			IRelativityObjectManager objectManager,
 			IIntegrationPointSerializer serializer,
-			IEHHelper helper)
+			ISecretsRepository secretsRepository,
+			IAPILog logger)
 		{
-			return new IntegrationPointRepository(objectManager, serializer, helper.GetLoggerFactory().GetLogger());
+			return new IntegrationPointRepository(
+				objectManager, 
+				serializer,
+				secretsRepository,
+				logger
+			);
 		}
 	}
 }

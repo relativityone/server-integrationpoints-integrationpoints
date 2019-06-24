@@ -1,8 +1,14 @@
-﻿using Castle.Core;
+﻿using System;
+using Castle.Core;
 using Castle.MicroKernel.Registration;
+using Castle.MicroKernel.Resolvers;
 using Castle.Windsor;
 using kCura.IntegrationPoint.Tests.Core.FluentAssertions;
+using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
+using kCura.IntegrationPoints.Data.Facades.SecretStore;
+using kCura.IntegrationPoints.Data.Facades.SecretStore.Implementation;
 using kCura.IntegrationPoints.Data.Installers;
+using kCura.IntegrationPoints.Data.Interfaces;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using NUnit.Framework;
@@ -70,7 +76,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Installers
 		[Test]
 		public void SourceProviderRepository_ShouldBeResolvedWithoutThrowing()
 		{
-			// arrage
+			// arrange
 			RegisterDependencies(_sut);
 
 			// assert
@@ -97,7 +103,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Installers
 		[Test]
 		public void DestinationProviderRepository_ShouldBeResolvedWithoutThrowing()
 		{
-			// arrage
+			// arrange
 			RegisterDependencies(_sut);
 
 			// assert
@@ -133,16 +139,111 @@ namespace kCura.IntegrationPoints.Data.Tests.Installers
 				.ResolveWithoutThrowing<IDocumentRepository>();
 		}
 
+		[Test]
+		public void SecretsRepository_ShouldBeRegisteredWithProperLifestyle()
+		{
+			// assert
+			_sut.Should()
+				.HaveRegisteredSingleComponent<ISecretsRepository>()
+				.Which.Should().BeRegisteredWithLifestyle(LifestyleType.Transient);
+		}
+
+		[Test]
+		public void SecretsRepository_ShouldBeRegisteredWithProperImplementation()
+		{
+			// assert
+			_sut.Should()
+				.HaveRegisteredProperImplementation<ISecretsRepository, SecretsRepository>();
+		}
+
+		[Test]
+		public void SecretsRepository_ShouldBeResolvedWithoutThrowing()
+		{
+			// arrange
+			RegisterDependencies(_sut);
+
+			// assert
+			_sut.Should()
+				.ResolveWithoutThrowing<ISecretsRepository>();
+		}
+
+		[Test]
+		public void SecretStoreFacade_ShouldBeRegisteredWithSecretStoreFacadeRetryDecorator()
+		{
+			// assert
+			_sut.Should()
+				.HaveRegisteredMultipleComponents<ISecretStoreFacade>()
+				.And.OneOfThemWithImplementation<SecretStoreFacadeRetryDecorator>()
+				.Which.Should()
+				.BeRegisteredWithLifestyle(LifestyleType.Transient);
+		}
+
+		[Test]
+		public void SecretStoreFacade_ShouldBeRegisteredWithSecretStoreFacadeInstrumentationDecorator()
+		{
+			// assert
+			_sut.Should()
+				.HaveRegisteredMultipleComponents<ISecretStoreFacade>()
+				.And.OneOfThemWithImplementation<SecretStoreFacadeInstrumentationDecorator>()
+				.Which.Should()
+				.BeRegisteredWithLifestyle(LifestyleType.Transient);
+		}
+
+		[Test]
+		public void SecretStoreFacade_ShouldBeRegisteredWithSecretStoreFacade()
+		{
+			// assert
+			_sut.Should()
+				.HaveRegisteredMultipleComponents<ISecretStoreFacade>()
+				.And.OneOfThemWithImplementation<SecretStoreFacade>()
+				.Which.Should()
+				.BeRegisteredWithLifestyle(LifestyleType.Transient);
+		}
+
+		[Test]
+		public void SecretStoreFacade_ShouldBeResolvedWithoutThrowing()
+		{
+			// arrange
+			RegisterDependencies(_sut);
+
+			// assert
+			_sut.Should()
+				.ResolveWithoutThrowing<ISecretStoreFacade>();
+		}
+
+		[Test]
+		public void SecretStoreFacade_ShouldBeRegisteredInCorrectOrder()
+		{
+			// assert
+			Type[] implementationsOrder =
+			{
+				typeof(SecretStoreFacadeRetryDecorator),
+				typeof(SecretStoreFacadeInstrumentationDecorator),
+				typeof(SecretStoreFacade)
+			};
+
+			_sut.Should()
+				.HaveRegisteredMultipleComponents<ISecretStoreFacade>()
+				.And.AllRegisteredInFollowingOrder(implementationsOrder);
+		}
+
 		private static void RegisterDependencies(IWindsorContainer container)
 		{
 			IRegistration[] dependencies =
 			{
 				CreateDummyObjectRegistration<IRelativityObjectManager>(),
 				CreateDummyObjectRegistration<IIntegrationPointSerializer>(),
+				CreateDummyObjectRegistration<IExternalServiceInstrumentationProvider>(),
+				CreateDummyObjectRegistration<IRetryHandlerFactory>(),
 				CreateDummyObjectRegistration<IAPILog>()
 			};
 
 			container.Register(dependencies);
+
+			container.Register(Component
+				.For<ILazyComponentLoader>()
+				.ImplementedBy<LazyOfTComponentLoader>()
+			);
 		}
 	}
 }

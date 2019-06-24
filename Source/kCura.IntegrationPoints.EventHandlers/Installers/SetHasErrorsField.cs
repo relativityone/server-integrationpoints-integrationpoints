@@ -19,6 +19,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Facades.SecretStore.Implementation;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Queries;
@@ -138,12 +139,17 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			IIntegrationPointPermissionValidator permissionValidator = new IntegrationPointPermissionValidator(Enumerable.Empty<IPermissionValidator>(), integrationPointSerializer);
 			IValidationExecutor validationExecutor = new ValidationExecutor(ipValidator, permissionValidator, Helper);
 
-			IJobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(caseServiceContext, Helper);
-
+			ISecretsRepository secretsRepository = new SecretsRepository(
+				SecretStoreFacadeFactory_Deprecated.Create(Helper.GetSecretStore, Logger), 
+				Logger
+			);
 			IIntegrationPointRepository integrationPointRepository = new IntegrationPointRepository(
 				caseServiceContext.RsapiService.RelativityObjectManager,
 				integrationPointSerializer,
+				secretsRepository,
 				Logger);
+
+			IJobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(caseServiceContext, Helper, integrationPointRepository);
 
 			_integrationPointService = new IntegrationPointService(Helper, caseServiceContext, contextContainerFactory,
 				integrationPointSerializer, choiceQuery, jobManager, _jobHistoryService, jobHistoryErrorService, managerFactory,
@@ -156,7 +162,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			return new RelativityObjectManagerFactory(helper).CreateRelativityObjectManager(workspaceID);
 		}
 
-		internal void UpdateIntegrationPointHasErrorsField(Data.IntegrationPoint integrationPoint)
+		internal void UpdateIntegrationPointHasErrorsField(IntegrationPoint integrationPoint)
 		{
 			integrationPoint.HasErrors = false;
 
@@ -175,7 +181,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 				}
 			}
 
-			_caseServiceContext.RsapiService.RelativityObjectManager.Update(integrationPoint);
+			_integrationPointService.UpdateIntegrationPoint(integrationPoint);
 		}
 
 		internal IList<Data.IntegrationPoint> GetIntegrationPoints()

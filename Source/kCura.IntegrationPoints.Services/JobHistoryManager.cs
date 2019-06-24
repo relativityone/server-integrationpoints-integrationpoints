@@ -4,6 +4,7 @@ using Castle.Windsor;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Services.Helpers;
 using kCura.IntegrationPoints.Services.Installers;
+using kCura.IntegrationPoints.Services.JobHistory;
 using kCura.IntegrationPoints.Services.Repositories;
 using Relativity.Logging;
 
@@ -30,8 +31,13 @@ namespace kCura.IntegrationPoints.Services
 
 		public async Task<JobHistorySummaryModel> GetJobHistoryAsync(JobHistoryRequest request)
 		{
-			CheckPermissions(nameof(GetJobHistoryAsync), request.WorkspaceArtifactId,
-				new[] {new PermissionModel(ObjectTypeGuids.JobHistoryGuid, ObjectTypes.JobHistory, ArtifactPermission.View)});
+			CheckPermissions(
+				nameof(GetJobHistoryAsync), 
+				request.WorkspaceArtifactId,
+				new[]
+				{
+					new PermissionModel(ObjectTypeGuids.JobHistoryGuid, ObjectTypes.JobHistory, ArtifactPermission.View)
+				});
 			try
 			{
 				using (IWindsorContainer container = GetDependenciesContainer(request.WorkspaceArtifactId))

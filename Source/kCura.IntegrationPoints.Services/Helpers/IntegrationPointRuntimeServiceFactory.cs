@@ -24,9 +24,13 @@ namespace kCura.IntegrationPoints.Services.Helpers
 		public IIntegrationPointService CreateIntegrationPointRuntimeService(Core.Models.IntegrationPointModel model)
 		{
 			DestinationConfiguration importSettings = _serializer.Deserialize<DestinationConfiguration>(model.Destination);
+
 			IHelper targetHelper = _helperFactory.CreateTargetHelper(_helper, importSettings.FederatedInstanceArtifactId, model.SecuredConfiguration);
 
-			return _serviceFactory.CreateIntegrationPointService(_helper, targetHelper);
+			return _serviceFactory.CreateIntegrationPointService(
+				_helper, 
+				targetHelper
+			);
 		}
 	}
 }
