@@ -13,7 +13,6 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 	internal sealed class RetriableLongTextStreamBuilder : IRetriableStreamBuilder
 	{
 		private IObjectManager _objectManager;
-		private Stream _stream;
 
 		private const int _MAX_RETRY_ATTEMPTS = 3;
 		private const int _WAIT_INTERVAL_IN_SECONDS = 1;
@@ -66,11 +65,10 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 			return _objectManager ?? (_objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false));
 		}
 
-		private void OnRetry(int retryAttempt)
+		private void OnRetry(Stream stream, Exception exception, int retryAttempt)
 		{
-			_stream?.Dispose();
-			_stream = null;
-			_logger.LogWarning("Retrying Kepler Stream creation inside {0}. Attempt {1} of {2}", nameof(SelfRecreatingStream), retryAttempt, _MAX_RETRY_ATTEMPTS);
+			stream?.Dispose();
+			_logger.LogWarning(exception,"Retrying Kepler Stream creation inside {0}. Attempt {1} of {2}", nameof(SelfRecreatingStream), retryAttempt, _MAX_RETRY_ATTEMPTS);
 			_syncMetrics.CountOperation(nameof(RetriableLongTextStreamBuilder), ExecutionStatus.Failed);
 		}
 
@@ -82,7 +80,6 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 		public void Dispose()
 		{
 			_objectManager?.Dispose();
-			_stream?.Dispose();
 		}
 	}
 }

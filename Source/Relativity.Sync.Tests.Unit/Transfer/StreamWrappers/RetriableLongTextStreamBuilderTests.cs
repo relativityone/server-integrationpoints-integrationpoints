@@ -49,8 +49,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 			_userServiceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
 
 			_policyFactory = new Mock<IStreamRetryPolicyFactory>();
-			_policyFactory.Setup(f => f.Create(It.IsAny<Func<Stream, bool>>(), It.IsAny<Action<int>>(), _RETRY_COUNT, It.IsAny<TimeSpan>()))
-				.Returns((Func<Stream, bool> shouldRetry, Action<int> onRetry, int retryCount, TimeSpan waitInterval) => GetRetryPolicy(shouldRetry, onRetry, retryCount));
+			_policyFactory.Setup(f => f.Create(It.IsAny<Func<Stream, bool>>(), It.IsAny<Action<Stream, Exception, int>>(), _RETRY_COUNT, It.IsAny<TimeSpan>()))
+				.Returns((Func<Stream, bool> shouldRetry, Action<Stream, Exception, int> onRetry, int retryCount, TimeSpan waitInterval) => GetRetryPolicy(shouldRetry, onRetry, retryCount));
 			_syncMetrics = new Mock<ISyncMetrics>();
 			
 			_instance = new RetriableLongTextStreamBuilder(_WORKSPACE_ARTIFACT_ID, _RELATIVITY_OBJECT_ARTIFACT_ID, _LONG_TEXT_FIELD_NAME, _userServiceFactory.Object, _policyFactory.Object,
@@ -147,12 +147,12 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 			_syncMetrics.Verify(m => m.CountOperation(It.IsAny<string>(), ExecutionStatus.Failed), Times.Exactly(_RETRY_COUNT));
 		}
 
-		private IAsyncPolicy<Stream> GetRetryPolicy(Func<Stream, bool> shouldRetry, Action<int> onRetry, int retryCount)
+		private IAsyncPolicy<Stream> GetRetryPolicy(Func<Stream, bool> shouldRetry, Action<Stream, Exception, int> onRetry, int retryCount)
 		{
 			return Policy
 				.HandleResult(shouldRetry)
 				.Or<Exception>()
-				.RetryAsync(retryCount, (result, i) => onRetry(i));
+				.RetryAsync(retryCount, (result, i) => onRetry(result.Result, result.Exception, i));
 		}
 
 		private ISetup<IObjectManager, Task<IKeplerStream>> SetupStreamLongText(
