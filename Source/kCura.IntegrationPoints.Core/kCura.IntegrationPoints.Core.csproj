@@ -72,6 +72,7 @@
     <Compile Include="BatchStatusCommands\Implementations\TargetDocumentsTaggingManager.cs" />
     <Compile Include="BatchStatusCommands\Implementations\TargetDocumentsTaggingManagerFactory.cs" />
     <Compile Include="BatchStatusCommands\Implementations\TempTableReader.cs" />
+    <Compile Include="FederatedInstanceServicesManager.cs" />
     <Compile Include="Provider\Internals\ApplicationGuidFinder.cs" />
     <Compile Include="Provider\Internals\DataProviderFactoryFactory.cs" />
     <Compile Include="Provider\Internals\IApplicationGuidFinder.cs" />
@@ -87,8 +88,6 @@
     <Compile Include="Validation\IAgentValidator.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="ContextContainer.cs" />
-    <Compile Include="FederatedInstanceKeplerHandler.cs" />
-    <Compile Include="FederatedInstanceRsapiHandler.cs" />
     <Compile Include="QueryOptions\JobHistoryQueryOptions.cs" />
     <Compile Include="Helpers\Implementations\DateTimeUtcHelper.cs" />
     <Compile Include="Helpers\JSONHelper.cs" />

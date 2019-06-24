@@ -2,9 +2,6 @@
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity.API;
-using Relativity.APIHelper;
-using Relativity.APIHelper.ServiceManagers.ProxyHandlers;
-using Relativity.Services.Pipeline;
 
 namespace kCura.IntegrationPoints.Core
 {
@@ -18,7 +15,13 @@ namespace kCura.IntegrationPoints.Core
 		private readonly IHelper _sourceHelper;
 		
 
-		public OAuthHelper(IHelper sourceHelper, Uri instanceUri, Uri rsapiUri, Uri keplerUri, OAuthClientDto oAuthClientDto, ITokenProvider tokenProvider)
+		public OAuthHelper(
+			IHelper sourceHelper, 
+			Uri instanceUri, 
+			Uri rsapiUri, 
+			Uri keplerUri, 
+			OAuthClientDto oAuthClientDto, 
+			ITokenProvider tokenProvider)
 		{
 			_sourceHelper = sourceHelper;
 			_instanceUri = instanceUri;
@@ -30,28 +33,28 @@ namespace kCura.IntegrationPoints.Core
 
 		public void Dispose()
 		{
-			throw new System.NotImplementedException();
+			//nothing to dispose
 		}
 
 		public IDBContext GetDBContext(int caseID)
 		{
-			throw new System.NotImplementedException();
+			throw new NotImplementedException();
 		}
 
 		public IServicesMgr GetServicesManager()
 		{
-			IServicesMgr servicesMgr = new ServicesManagerBase(_rsapiUri, _keplerUri, WireProtocolVersion.V2, new IProxyHandler[]
-			{
-				new FederatedInstanceKeplerHandler(_instanceUri, _oAuthClientDto, _tokenProvider),
-				new FederatedInstanceRsapiHandler(_instanceUri, _oAuthClientDto, _tokenProvider)
-			});
-            
-		    return servicesMgr;
+			return new FederatedInstanceServicesManager(
+				_keplerUri,
+				_rsapiUri,
+				_instanceUri,
+				_oAuthClientDto,
+				_tokenProvider
+			);
 		}
 
 		public IUrlHelper GetUrlHelper()
 		{
-			throw new System.NotImplementedException();
+			throw new NotImplementedException();
 		}
 
 		public ILogFactory GetLoggerFactory()
@@ -61,22 +64,22 @@ namespace kCura.IntegrationPoints.Core
 
 		public string ResourceDBPrepend()
 		{
-			throw new System.NotImplementedException();
+			throw new NotImplementedException();
 		}
 
 		public string ResourceDBPrepend(IDBContext context)
 		{
-			throw new System.NotImplementedException();
+			throw new NotImplementedException();
 		}
 
 		public string GetSchemalessResourceDataBasePrepend(IDBContext context)
 		{
-			throw new System.NotImplementedException();
+			throw new NotImplementedException();
 		}
 
 		public Guid GetGuid(int workspaceID, int artifactID)
 		{
-			throw new System.NotImplementedException();
+			throw new NotImplementedException();
 		}
 
 		public ISecretStore GetSecretStore()
