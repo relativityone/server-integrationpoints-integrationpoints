@@ -14,7 +14,6 @@ namespace kCura.IntegrationPoints.Core
 		private readonly ITokenProvider _tokenProvider;
 		private readonly IHelper _sourceHelper;
 		
-
 		public OAuthHelper(
 			IHelper sourceHelper, 
 			Uri instanceUri, 
