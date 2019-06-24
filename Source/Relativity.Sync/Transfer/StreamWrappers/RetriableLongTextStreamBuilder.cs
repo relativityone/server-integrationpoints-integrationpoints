@@ -16,6 +16,7 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 
 		private const int _MAX_RETRY_ATTEMPTS = 3;
 		private const int _WAIT_INTERVAL_IN_SECONDS = 1;
+		private const string _STREAM_RETRY_COUNT_BUCKET_NAME = "Relativity.Sync.LongTextStreamBuilder.Retry.Count";
 
 		private readonly int _relativityObjectArtifactId;
 		private readonly int _workspaceArtifactId;
@@ -68,8 +69,9 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 		private void OnRetry(Stream stream, Exception exception, int retryAttempt)
 		{
 			stream?.Dispose();
-			_logger.LogWarning(exception,"Retrying Kepler Stream creation inside {0}. Attempt {1} of {2}", nameof(SelfRecreatingStream), retryAttempt, _MAX_RETRY_ATTEMPTS);
-			_syncMetrics.CountOperation(nameof(RetriableLongTextStreamBuilder), ExecutionStatus.Failed);
+			_logger.LogWarning(exception, $"Retrying Kepler Stream creation inside {nameof(SelfRecreatingStream)}. Attempt {{retryAttempt}} of {{maxNumberOfRetries}}", nameof(SelfRecreatingStream),
+				retryAttempt, _MAX_RETRY_ATTEMPTS);
+			_syncMetrics.CountOperation(_STREAM_RETRY_COUNT_BUCKET_NAME, ExecutionStatus.Failed);
 		}
 
 		private static bool ShouldRetry(Stream stream)
