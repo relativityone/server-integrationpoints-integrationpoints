@@ -185,13 +185,13 @@ namespace Relativity.Sync.Executors
 			}
 		}
 
-		public async Task<IList<TagDocumentsResult>> TagDocumentsAsync(ISynchronizationConfiguration synchronizationConfiguration, IList<int> documentArtifactIds, CancellationToken token)
+		public async Task<IList<TagDocumentsResult<int>>> TagDocumentsAsync(ISynchronizationConfiguration synchronizationConfiguration, IList<int> documentArtifactIds, CancellationToken token)
 		{
-			var tagResults = new List<TagDocumentsResult>();
+			var tagResults = new List<TagDocumentsResult<int>>();
 			if (documentArtifactIds.Count == 0)
 			{
 				const string noUpdateMessage = "A call to the Mass Update API was not made as there are no objects to update.";
-				var result = new TagDocumentsResult(documentArtifactIds, noUpdateMessage, true, documentArtifactIds.Count);
+				var result = new TagDocumentsResult<int>(documentArtifactIds, noUpdateMessage, true, documentArtifactIds.Count);
 				tagResults.Add(result);
 				return tagResults;
 			}
@@ -201,20 +201,20 @@ namespace Relativity.Sync.Executors
 			{
 				UpdateBehavior = FieldUpdateBehavior.Merge
 			};
-			IEnumerable<IList<int>> documentArtifactIdBatches = CollectionExtensions.SplitList(documentArtifactIds, _MAX_OBJECT_QUERY_BATCH_SIZE);
+			IEnumerable<IList<int>> documentArtifactIdBatches = documentArtifactIds.SplitList(_MAX_OBJECT_QUERY_BATCH_SIZE);
 			foreach (IList<int> documentArtifactIdBatch in documentArtifactIdBatches)
 			{
-				TagDocumentsResult tagResult = await TagDocumentsBatchAsync(synchronizationConfiguration, documentArtifactIdBatch, fieldValues, massUpdateOptions, token).ConfigureAwait(false);
+				TagDocumentsResult<int> tagResult = await TagDocumentsBatchAsync(synchronizationConfiguration, documentArtifactIdBatch, fieldValues, massUpdateOptions, token).ConfigureAwait(false);
 				tagResults.Add(tagResult);
 			}
 
 			return tagResults;
 		}
 
-		private async Task<TagDocumentsResult> TagDocumentsBatchAsync(
+		private async Task<TagDocumentsResult<int>> TagDocumentsBatchAsync(
 			ISynchronizationConfiguration synchronizationConfiguration, IList<int> batch, IEnumerable<FieldRefValuePair> fieldValues, MassUpdateOptions massUpdateOptions, CancellationToken token)
 		{
-			var metricsCustomData = new Dictionary<string, object>() { { "batchSize", batch.Count } };
+			var metricsCustomData = new Dictionary<string, object> { { "batchSize", batch.Count } };
 
 			var updateByIdentifiersRequest = new MassUpdateByObjectIdentifiersRequest
 			{
@@ -222,15 +222,14 @@ namespace Relativity.Sync.Executors
 				FieldValues = fieldValues
 			};
 
-			TagDocumentsResult result;
+			TagDocumentsResult<int> result;
 			try
 			{
 				using (_syncMetrics.TimedOperation("Relativity.Sync.TagDocuments.SourceUpdate.Time", ExecutionStatus.None, metricsCustomData))
 				using (var objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 				{
 					MassUpdateResult updateResult = await objectManager
-						.UpdateAsync(synchronizationConfiguration.SourceWorkspaceArtifactId, updateByIdentifiersRequest,
-							massUpdateOptions, token).ConfigureAwait(false);
+						.UpdateAsync(synchronizationConfiguration.SourceWorkspaceArtifactId, updateByIdentifiersRequest, massUpdateOptions, token).ConfigureAwait(false);
 					result = GenerateTagDocumentsResult(updateResult, batch);
 				}
 			}
@@ -242,7 +241,7 @@ namespace Relativity.Sync.Executors
 
 				_logger.LogError(updateException, exceptionTemplate,
 					synchronizationConfiguration.SourceWorkspaceArtifactId, synchronizationConfiguration.DestinationWorkspaceTagArtifactId, synchronizationConfiguration.JobHistoryArtifactId);
-				result = new TagDocumentsResult(batch, exceptionMessage, false, 0);
+				result = new TagDocumentsResult<int>(batch, exceptionMessage, false, 0);
 			}
 
 			_syncMetrics.GaugeOperation("Relativity.Sync.TagDocuments.SourceUpdate.Count", ExecutionStatus.None, result.TotalObjectsUpdated, "document(s)", metricsCustomData);
@@ -288,7 +287,7 @@ namespace Relativity.Sync.Executors
 			return artifactIds.Select(x => new RelativityObjectRef { ArtifactID = x });
 		}
 
-		private static TagDocumentsResult GenerateTagDocumentsResult(MassUpdateResult updateResult, IList<int> batch)
+		private static TagDocumentsResult<int> GenerateTagDocumentsResult(MassUpdateResult updateResult, IList<int> batch)
 		{
 			IEnumerable<int> failedDocumentArtifactIds;
 			if (!updateResult.Success)
@@ -300,7 +299,7 @@ namespace Relativity.Sync.Executors
 			{
 				failedDocumentArtifactIds = Array.Empty<int>();
 			}
-			var result = new TagDocumentsResult(failedDocumentArtifactIds, updateResult.Message, updateResult.Success, updateResult.TotalObjectsUpdated);
+			var result = new TagDocumentsResult<int>(failedDocumentArtifactIds, updateResult.Message, updateResult.Success, updateResult.TotalObjectsUpdated);
 			return result;
 		}
 

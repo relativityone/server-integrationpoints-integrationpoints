@@ -311,13 +311,13 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				.Throws<NotAuthorizedException>();
 
 			// Act
-			IList<TagDocumentsResult> actualResult = await _sut.TagDocumentsAsync(synchronizationConfiguration.Object, testArtifactIds, _token).ConfigureAwait(false);
+			IList<TagDocumentsResult<int>> actualResult = await _sut.TagDocumentsAsync(synchronizationConfiguration.Object, testArtifactIds, _token).ConfigureAwait(false);
 
 			// Assert
 			CollectionAssert.IsNotEmpty(actualResult);
 			Assert.IsFalse(actualResult[0].Success);
 			Assert.AreEqual(expectedTotalObjectsUpdated, actualResult[0].TotalObjectsUpdated);
-			CollectionAssert.AreEqual(testArtifactIds, actualResult[0].FailedDocumentArtifactIds);
+			CollectionAssert.AreEqual(testArtifactIds, actualResult[0].FailedDocuments);
 
 			_syncMetrics.Verify(x => x.GaugeOperation(It.IsAny<string>(), It.Is<ExecutionStatus>(y => y == ExecutionStatus.None), It.Is<long>(y => y == expectedTotalObjectsUpdated), It.IsAny<string>(),
 				It.IsAny<Dictionary<string, object>>()));
@@ -342,13 +342,13 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				.ReturnsAsync(testMassUpdateResult);
 
 			// Act
-			IList<TagDocumentsResult> actualResult = await _sut.TagDocumentsAsync(synchronizationConfiguration.Object, testArtifactIds, _token).ConfigureAwait(false);
+			IList<TagDocumentsResult<int>> actualResult = await _sut.TagDocumentsAsync(synchronizationConfiguration.Object, testArtifactIds, _token).ConfigureAwait(false);
 
 			// Assert
 			CollectionAssert.IsNotEmpty(actualResult);
 			Assert.IsFalse(actualResult[0].Success);
 			Assert.AreEqual(expectedTotalObjectsUpdated, actualResult[0].TotalObjectsUpdated);
-			CollectionAssert.AreEqual(new[] { 0 }, actualResult[0].FailedDocumentArtifactIds);
+			CollectionAssert.AreEqual(new[] { 0 }, actualResult[0].FailedDocuments);
 
 			_syncMetrics.Verify(x => x.GaugeOperation(It.IsAny<string>(), It.Is<ExecutionStatus>(y => y == ExecutionStatus.None), It.Is<long>(y => y == expectedTotalObjectsUpdated), It.IsAny<string>(),
 				It.IsAny<Dictionary<string, object>>()));
@@ -363,14 +363,14 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			int[] testArtifactIds = Array.Empty<int>();
 
 			// Act
-			IList<TagDocumentsResult> actualResult = await _sut.TagDocumentsAsync(synchronizationConfiguration.Object, testArtifactIds, _token).ConfigureAwait(false);
+			IList<TagDocumentsResult<int>> actualResult = await _sut.TagDocumentsAsync(synchronizationConfiguration.Object, testArtifactIds, _token).ConfigureAwait(false);
 
 			// Assert
 			CollectionAssert.IsNotEmpty(actualResult);
 			Assert.IsTrue(actualResult[0].Success);
 			Assert.AreEqual(testArtifactIds.Length, actualResult[0].TotalObjectsUpdated);
 			Assert.AreEqual("A call to the Mass Update API was not made as there are no objects to update.", actualResult[0].Message);
-			CollectionAssert.IsEmpty(actualResult[0].FailedDocumentArtifactIds);
+			CollectionAssert.IsEmpty(actualResult[0].FailedDocuments);
 
 			_syncMetrics.Verify(x => x.GaugeOperation(It.IsAny<string>(), It.Is<ExecutionStatus>(y => y == ExecutionStatus.None), It.IsAny<int>(), It.IsAny<string>(),
 				It.IsAny<Dictionary<string, object>>()), Times.Never);
@@ -410,7 +410,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			});
 
 			// Act
-			IList<TagDocumentsResult> actualResult = await _sut.TagDocumentsAsync(synchronizationConfiguration.Object, testArtifactIds, _token).ConfigureAwait(false);
+			IList<TagDocumentsResult<int>> actualResult = await _sut.TagDocumentsAsync(synchronizationConfiguration.Object, testArtifactIds, _token).ConfigureAwait(false);
 
 			// Assert
 			Assert.IsNotNull(actualResult);
@@ -418,14 +418,14 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			Assert.IsTrue(actualResult[0].Success);
 			Assert.AreEqual(firstBatchSize, actualResult[0].TotalObjectsUpdated);
-			CollectionAssert.IsEmpty(actualResult[0].FailedDocumentArtifactIds);
+			CollectionAssert.IsEmpty(actualResult[0].FailedDocuments);
 
 			_syncMetrics.Verify(x => x.GaugeOperation(It.IsAny<string>(), It.Is<ExecutionStatus>(y => y == ExecutionStatus.None), It.Is<long>(y => y == firstBatchSize), It.IsAny<string>(),
 				It.IsAny<Dictionary<string, object>>()));
 
 			Assert.IsTrue(actualResult[1].Success);
 			Assert.AreEqual(secondBatchSize, actualResult[1].TotalObjectsUpdated);
-			CollectionAssert.IsEmpty(actualResult[1].FailedDocumentArtifactIds);
+			CollectionAssert.IsEmpty(actualResult[1].FailedDocuments);
 
 			_syncMetrics.Verify(x => x.GaugeOperation(It.IsAny<string>(), It.Is<ExecutionStatus>(y => y == ExecutionStatus.None), It.Is<long>(y => y == secondBatchSize), It.IsAny<string>(),
 				It.IsAny<Dictionary<string, object>>()));
@@ -463,13 +463,13 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			});
 
 			// Act
-			IList<TagDocumentsResult> actualResult = await _sut.TagDocumentsAsync(synchronizationConfiguration.Object, testArtifactIds, _token).ConfigureAwait(false);
+			IList<TagDocumentsResult<int>> actualResult = await _sut.TagDocumentsAsync(synchronizationConfiguration.Object, testArtifactIds, _token).ConfigureAwait(false);
 
 			// Assert
 			Assert.IsNotNull(actualResult);
 			Assert.IsTrue(actualResult[0].Success);
 			Assert.AreEqual(testArtifactIds.Length, actualResult[0].TotalObjectsUpdated);
-			CollectionAssert.IsEmpty(actualResult[0].FailedDocumentArtifactIds);
+			CollectionAssert.IsEmpty(actualResult[0].FailedDocuments);
 
 			_syncMetrics.Verify(x => x.GaugeOperation(It.IsAny<string>(), It.Is<ExecutionStatus>(y => y == ExecutionStatus.None), It.Is<long>(y => y == testArtifactIds.Length), It.IsAny<string>(),
 				It.IsAny<Dictionary<string, object>>()));

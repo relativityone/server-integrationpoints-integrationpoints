@@ -6,8 +6,6 @@ namespace Relativity.Sync.Transfer
 	{
 		#region Display name constants
 
-		private const string _RELATIVITY_SOURCE_CASE_DISPLAY_NAME = "Relativity Source Case";
-		private const string _RELATIVITY_SOURCE_JOB_DISPLAY_NAME = "Relativity Source Job";
 		private const string _FOLDER_PATH_FROM_WORKSPACE_DISPLAY_NAME = "76B270CB-7CA9-4121-B9A1-BC0D655E5B2D";
 		private const string _NATIVE_FILE_FILENAME_DISPLAY_NAME = "NativeFileFilename";
 		private const string _NATIVE_FILE_SIZE_DISPLAY_NAME = "NativeFileSize";
@@ -95,16 +93,6 @@ namespace Relativity.Sync.Transfer
 		public static FieldInfoDto DocumentField(string sourceFieldName, string destinationFieldName, bool isIdentifier)
 		{
 			return new FieldInfoDto(SpecialFieldType.None, sourceFieldName, destinationFieldName, isIdentifier, true);
-		}
-
-		public static FieldInfoDto SourceWorkspaceField()
-		{
-			return new FieldInfoDto(SpecialFieldType.SourceWorkspace, string.Empty, _RELATIVITY_SOURCE_CASE_DISPLAY_NAME, false, false);
-		}
-
-		public static FieldInfoDto SourceJobField()
-		{
-			return new FieldInfoDto(SpecialFieldType.SourceJob, string.Empty, _RELATIVITY_SOURCE_JOB_DISPLAY_NAME, false, false);
 		}
 
 		public static FieldInfoDto FolderPathFieldFromDocumentField(string displayName)

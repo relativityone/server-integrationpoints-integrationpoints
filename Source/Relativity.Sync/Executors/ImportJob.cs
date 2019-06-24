@@ -162,6 +162,12 @@ namespace Relativity.Sync.Executors
 			return _syncImportBulkArtifactJob.ItemStatusMonitor.GetSuccessfulItemArtifactIds();
 		}
 
+		public async Task<IEnumerable<string>> GetPushedDocumentIdentifiers()
+		{
+			await Task.Yield();
+			return _syncImportBulkArtifactJob.ItemStatusMonitor.GetSuccessfulItemIdentifiers();
+		}
+
 		public void Dispose()
 		{
 			_semaphoreSlim?.Dispose();

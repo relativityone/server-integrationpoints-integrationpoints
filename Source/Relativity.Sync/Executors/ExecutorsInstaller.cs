@@ -18,6 +18,7 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<JobHistoryNameQuery>().As<IJobHistoryNameQuery>();
 			builder.RegisterType<RelativitySourceJobTagRepository>().As<IRelativitySourceJobTagRepository>();
 			builder.RegisterType<DestinationWorkspaceTagRepository>().As<IDestinationWorkspaceTagRepository>();
+			builder.RegisterType<SourceWorkspaceTagRepository>().As<ISourceWorkspaceTagRepository>();
 			builder.RegisterType<DestinationWorkspaceTagLinker>().As<IDestinationWorkspaceTagsLinker>();
 			builder.RegisterType<FederatedInstance>().As<IFederatedInstance>();
 			builder.RegisterType<WorkspaceNameQuery>().As<IWorkspaceNameQuery>();
