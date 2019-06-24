@@ -74,8 +74,7 @@ namespace Relativity.Sync.Transfer
 			}
 
 			IList<ChoiceWithParentInfo> choicesFlatList = await GetChoicesWithParentInfoAsync(choices).ConfigureAwait(false);
-			const int parentArtifactIdForRootChoices = 1003663; // TODO get parent artifact ID (which is workspace id) of root choices
-			IList<ChoiceWithParentInfo> choicesTree = BuildChoiceTree(choicesFlatList, parentArtifactIdForRootChoices);
+			IList<ChoiceWithParentInfo> choicesTree = BuildChoiceTree(choicesFlatList, null);	// start with null to designate the roots of the tree
 
 			string treeString = _choiceTreeConverter.ConvertTreeToString(choicesTree);
 			return treeString;
@@ -83,41 +82,45 @@ namespace Relativity.Sync.Transfer
 
 		private async Task<IList<ChoiceWithParentInfo>> GetChoicesWithParentInfoAsync(Choice[] choices)
 		{
-			IList<ChoiceWithParentInfo> choicesWithParentInfo = new List<ChoiceWithParentInfo>(choices.Length);
-			using (IObjectManager om = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			var choicesWithParentInfo = new List<ChoiceWithParentInfo>(choices.Length);
+			using (var objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				foreach (Choice choice in choices)
 				{
-					const int choiceArtifactTypeId = 7;
-					QueryRequest request = new QueryRequest()
+					var request = new QueryRequest
 					{
-						ObjectType = new ObjectTypeRef()
+						ObjectType = new ObjectTypeRef
 						{
-							ArtifactTypeID = choiceArtifactTypeId
+							ArtifactTypeID = (int)ArtifactType.Code
 						},
 						Condition = $"'ArtifactID' == {choice.ArtifactID}"
 					};
-					QueryResult queryResult = await om.QueryAsync(_configuration.SourceWorkspaceArtifactId, request, 1, 1).ConfigureAwait(false);
+					QueryResult queryResult = await objectManager.QueryAsync(_configuration.SourceWorkspaceArtifactId, request, 1, 1).ConfigureAwait(false);
 					if (queryResult.ResultCount == 0)
 					{
-						throw new SyncException($"Query for Choice Artifact ID: {choice.ArtifactID} returned no results.");
+						throw new SyncException($"Query for Choice Artifact ID '{choice.ArtifactID}' returned no results.");
 					}
 
-					int parentArtifactId = queryResult.Objects[0].ParentObject.ArtifactID;
-					
-					choicesWithParentInfo.Add(new ChoiceWithParentInfo(parentArtifactId, choice.ArtifactID, choice.Name));
+					int? parentArtifactId = queryResult.Objects[0].ParentObject.ArtifactID;
+					if (choices.All(x => x.ArtifactID != parentArtifactId))
+					{
+						parentArtifactId = null;
+					}
+
+					var choiceWithParentInfo = new ChoiceWithParentInfo(parentArtifactId, choice.ArtifactID, choice.Name);
+					choicesWithParentInfo.Add(choiceWithParentInfo);
 				}
 			}
-
 			return choicesWithParentInfo;
 		}
 
-		private IList<ChoiceWithParentInfo> BuildChoiceTree(IList<ChoiceWithParentInfo> flatList, int parentArtifactId)
+		private List<ChoiceWithParentInfo> BuildChoiceTree(IList<ChoiceWithParentInfo> flatList, int? parentArtifactId)
 		{
-			IList<ChoiceWithParentInfo> tree = new List<ChoiceWithParentInfo>();
-			foreach (ChoiceWithParentInfo choice in flatList.Where(x => x.ParentArtifactID == parentArtifactId))
+			List<ChoiceWithParentInfo> tree = new List<ChoiceWithParentInfo>();
+			foreach (ChoiceWithParentInfo choice in flatList.Where(x => x.ParentArtifactId == parentArtifactId))
 			{
-				choice.Children = BuildChoiceTree(flatList, choice.ArtifactID);
+				List<ChoiceWithParentInfo> choiceChildren = BuildChoiceTree(flatList, choice.ArtifactID);
+				choice.Children.AddRange(choiceChildren);
 				tree.Add(choice);
 			}
 			return tree;

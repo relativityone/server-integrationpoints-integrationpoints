@@ -5,14 +5,16 @@ namespace Relativity.Sync.Transfer
 {
 	internal sealed class ChoiceWithParentInfo : Choice
 	{
-		public int ParentArtifactID { get; }
-		public IList<ChoiceWithParentInfo> Children { get; set; } = new List<ChoiceWithParentInfo>();
+		public int? ParentArtifactId { get; }
+		public List<ChoiceWithParentInfo> Children { get; }
 
-		public ChoiceWithParentInfo(int parentArtifactId, int artifactId, string name)
+		public ChoiceWithParentInfo(int? parentArtifactId, int artifactId, string name)
 		{
-			ParentArtifactID = parentArtifactId;
+			ParentArtifactId = parentArtifactId;
 			ArtifactID = artifactId;
 			Name = name;
+
+			Children = new List<ChoiceWithParentInfo>();
 		}
 	}
 }

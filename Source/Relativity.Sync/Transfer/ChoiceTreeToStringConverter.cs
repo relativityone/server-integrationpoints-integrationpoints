@@ -7,28 +7,30 @@ namespace Relativity.Sync.Transfer
 {
 	internal sealed class ChoiceTreeToStringConverter : IChoiceTreeToStringConverter
 	{
-		private readonly ISynchronizationConfiguration _config;
+		private readonly char _multiValueDelimiter;
+		private readonly char _nestedValueDelimiter;
 
 		public ChoiceTreeToStringConverter(ISynchronizationConfiguration config)
 		{
-			_config = config;
+			_multiValueDelimiter = config.ImportSettings.MultiValueDelimiter;
+			_nestedValueDelimiter = config.ImportSettings.NestedValueDelimiter;
 		}
 
 		public string ConvertTreeToString(IList<ChoiceWithParentInfo> tree)
 		{
-			List<StringBuilder> treePaths = new List<StringBuilder>();
+			var treePaths = new List<StringBuilder>();
 
 			foreach (ChoiceWithParentInfo choice in tree)
 			{
-				StringBuilder path = new StringBuilder();
+				var path = new StringBuilder();
 				Traverse(choice, treePaths, path);
 			}
 
-			string merged = string.Join(char.ToString(_config.ImportSettings.MultiValueDelimiter), treePaths) + _config.ImportSettings.MultiValueDelimiter;
+			string merged = string.Join(char.ToString(_multiValueDelimiter), treePaths) + char.ToString(_multiValueDelimiter);
 			return merged;
 		}
 
-		private void Traverse(ChoiceWithParentInfo choice, List<StringBuilder> paths, StringBuilder path)
+		private void Traverse(ChoiceWithParentInfo choice, IList<StringBuilder> paths, StringBuilder path)
 		{
 			path.Append(choice.Name);
 
@@ -40,8 +42,8 @@ namespace Relativity.Sync.Transfer
 			{
 				foreach (ChoiceWithParentInfo child in choice.Children)
 				{
-					StringBuilder newPath = new StringBuilder(path.ToString());
-					newPath.Append(_config.ImportSettings.NestedValueDelimiter);
+					var newPath = new StringBuilder(path.ToString());
+					newPath.Append(_nestedValueDelimiter);
 					Traverse(child, paths, newPath);
 				}
 			}
