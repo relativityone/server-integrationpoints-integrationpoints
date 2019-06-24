@@ -24,7 +24,7 @@ properties {
     $build_type = 'DEV'
     $run_sonarQube = $false
     $run_checkConfigureAwait = $false
-    $relativity_branch = ''
+    $sq_target_branch = ''
     $skip_tests = $false
 
     $git = Test-Path -Path ([System.IO.Path]::Combine($root, '.git'))

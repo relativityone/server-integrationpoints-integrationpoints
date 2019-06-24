@@ -29,7 +29,7 @@ $DEPLOY = ""
 $APIKEY = $null
 # $GIT = Test-Path -Path ([System.IO.Path]::Combine($root, '.git'))
 $RUN_SONARQUBE = $false
-$RELATIVITY_BRANCH = 'develop'
+$SQ_TARGET_BRANCH = 'develop'
 $CHECK_CONFIGURE_AWAIT = $false
 $SKIP_TESTS = $false
 $ALERT = [environment]::GetEnvironmentVariable("alertOnBuildCompletion","User")
@@ -87,7 +87,7 @@ for ($i = 0; $i -lt $args.count; $i++){
         "^[/-]h"    {$SHOWHELP = $true}
 
         "^[/-]e" {$EDITOR = $true} 
-        "^[/-][Ss]onar[Qq]ube$" {$RUN_SONARQUBE = $true; $RELATIVITY_BRANCH = $args[$i + 1]; $i++}
+        "^[/-][Ss]onar[Qq]ube$" {$RUN_SONARQUBE = $true; $SQ_TARGET_BRANCH = $args[$i + 1]; $i++}
         "^[/-][Cc]heck[Cc]onfigure[Aa]wait$" {$CHECK_CONFIGURE_AWAIT = $true}
     }
 }
@@ -109,7 +109,7 @@ write-host "nuget             step is set to" $NUGET
 write-host "package           step is set to" $PACKAGE
 write-host "deploy            step is set to" ($DEPLOY -eq "")
 write-host "sonarQube         step is set to" $RUN_SONARQUBE
-write-host "relativity branch is " $RELATIVITY_BRANCH
+write-host "SQ target branch is " $SQ_TARGET_BRANCH
 write-host "checkConfigureAwait step is set to" $CHECK_CONFIGURE_AWAIT
 write-host "skip tests build  step is set to" $SKIP_TESTS
 
@@ -198,7 +198,7 @@ if($BUILD -and $STATUS){
                                                       'build_config'=$BUILDCONFIG;
                                                       'build_type'=$BUILDTYPE;
                                                       'run_sonarqube'=$RUN_SONARQUBE;
-                                                      'relativity_branch'=$RELATIVITY_BRANCH;
+                                                      'sq_target_branch'=$SQ_TARGET_BRANCH;
                                                       'run_checkConfigureAwait'=$CHECK_CONFIGURE_AWAIT;
                                                       'skip_tests'=$SKIP_TESTS;}
     Invoke-psake $root\DevelopmentScripts\psake-build.ps1 -properties $properties

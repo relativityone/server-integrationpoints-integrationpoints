@@ -19,7 +19,7 @@ task build_initalize {
     'build config  = ' + $build_config
     'run_sonarqube = ' + $run_sonarqube
     'run_checkConfigureAwait= ' + $run_checkConfigureAwait
-    'relativity_branch= ' + $relativity_branch
+    'sq_target_branch= ' + $sq_target_branch
     'skip_tests    = ' + $skip_tests
     ''
 
@@ -500,7 +500,7 @@ task start_sonar -depends get_sonarqube -precondition { return $RUN_SONARQUBE } 
         ("/v:$branch_hash"),
         ("/s:$sonarqube_properties"),
         ("/d:sonar.branch.name=""$branch"""),
-        ("/d:sonar.branch.target=""$relativity_branch"""),
+        ("/d:sonar.branch.target=""$sq_target_branch"""),
         ("/d:sonar.cs.nunit.reportsPaths=""$NUnit_TestOutputFile"""),
         ("/d:sonar.cs.dotcover.reportsPaths=""$dotCover_result"""))
     & $sonarqube_exe $args    
