@@ -37,6 +37,7 @@ class RIPPipelineState
     def relativityBuildVersion = ""
     def relativityBuildType = ""
     def relativityBranch = ""
+    def relativityBranchFallback = ""
 
     def version
     def commonBuildArgs
@@ -94,6 +95,11 @@ def initializeRIPPipeline(script, env, params)
 {
     ripPipelineState = new RIPPipelineState(script, env, params)
     ripPipelineState.relativityBranch = params.relativityBranch ?: env.BRANCH_NAME
+}
+
+def setRelativityBranchFallback(relativityBranchFallback)
+{
+    ripPipelineState.relativityBranchFallback = relativityBranchFallback
 }
 
 /*
@@ -593,7 +599,7 @@ private isPowershellResultTrue(s)
 private shouldRunSonar(Boolean enableSonarAnalysis, String branchName)
 {
 	return (enableSonarAnalysis && !isNightly())
-			? "-sonarqube $ripPipelineState.relativityBranch"
+			? "-sonarqube $ripPipelineState.relativityBranchFallback"
 			: ""
 }
 

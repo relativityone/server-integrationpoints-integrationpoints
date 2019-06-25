@@ -99,6 +99,7 @@ timestamps
 				}
 				jenkinsHelpers = load "DevelopmentScripts/JenkinsHelpers.groovy"
 				jenkinsHelpers.initializeRIPPipeline(this, env, params)
+				jenkinsHelpers.setRelativityBranchFallback(relativityBranchFallback)
 			}
 			stage ('Get Version')
 			{
