@@ -63,11 +63,11 @@ namespace Relativity.Sync.Executors
 						importResult = await importJob.RunAsync(token).ConfigureAwait(false);
 
 						IEnumerable<int> pushedDocumentArtifactIds = await importJob.GetPushedDocumentArtifactIds().ConfigureAwait(false);
-						Task<IEnumerable<int>> destinationTaggingTask = TagDestinationDocumentsAsync(configuration, pushedDocumentArtifactIds, token);
+						Task<IEnumerable<int>> destinationTaggingTask = TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(configuration, pushedDocumentArtifactIds, token);
 						destinationTaggingTasks.Add(destinationTaggingTask);
 
 						IEnumerable<string> pushedDocumentIdentifiers = await importJob.GetPushedDocumentIdentifiers().ConfigureAwait(false);
-						Task<IEnumerable<string>> sourceTaggingTask = TagSourceDocumentsAsync(configuration, pushedDocumentIdentifiers, token);
+						Task<IEnumerable<string>> sourceTaggingTask = TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(configuration, pushedDocumentIdentifiers, token);
 						sourceTaggingTasks.Add(sourceTaggingTask);
 					}
 					_logger.LogInformation("Batch ID: {batchId} processed successfully.", batchId);
@@ -162,7 +162,8 @@ namespace Relativity.Sync.Executors
 			return specialField.DestinationFieldName;
 		}
 
-		private async Task<IEnumerable<string>> TagSourceDocumentsAsync(ISynchronizationConfiguration configuration, IEnumerable<string> documentIdentifiers, CancellationToken token)
+		private async Task<IEnumerable<string>> TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(
+			ISynchronizationConfiguration configuration, IEnumerable<string> documentIdentifiers, CancellationToken token)
 		{
 			var failedIdentifiers = new List<string>();
 			IList<string> identifiersList = documentIdentifiers.ToList();
@@ -180,7 +181,7 @@ namespace Relativity.Sync.Executors
 			return failedIdentifiers;
 		}
 
-		private async Task<IEnumerable<int>> TagDestinationDocumentsAsync(ISynchronizationConfiguration configuration, IEnumerable<int> artifactIds, CancellationToken token)
+		private async Task<IEnumerable<int>> TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(ISynchronizationConfiguration configuration, IEnumerable<int> artifactIds, CancellationToken token)
 		{
 			var failedArtifactIds = new List<int>();
 			IList<int> artifactIdsList = artifactIds.ToList();
@@ -198,16 +199,16 @@ namespace Relativity.Sync.Executors
 			return failedArtifactIds;
 		}
 
-		private async Task<ExecutionResult> GetTaggingResults<T>(IList<Task<IEnumerable<T>>> taggingTasks, int jobHistoryArtifactId)
+		private async Task<ExecutionResult> GetTaggingResults<TIdentifier>(IList<Task<IEnumerable<TIdentifier>>> taggingTasks, int jobHistoryArtifactId)
 		{
 			ExecutionResult taggingResult = ExecutionResult.Success();
-			var failedTagArtifactIds = new List<T>();
+			var failedTagArtifactIds = new List<TIdentifier>();
 			try
 			{
-				await Task.WhenAll(taggingTasks).ConfigureAwait(false);
-				foreach (Task<IEnumerable<T>> task in taggingTasks)
+				IEnumerable<IEnumerable<TIdentifier>> taskResults = await Task.WhenAll(taggingTasks).ConfigureAwait(false);
+				foreach (var taskResult in taskResults)
 				{
-					failedTagArtifactIds.AddRange(task.Result);
+					failedTagArtifactIds.AddRange(taskResult);
 				}
 
 				if (failedTagArtifactIds.Any())
