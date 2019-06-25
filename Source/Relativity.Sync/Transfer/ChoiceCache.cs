@@ -50,21 +50,16 @@ namespace Relativity.Sync.Transfer
 
 		private async Task<ChoiceWithParentInfo> QueryChoiceWithParentInfoAsync(IObjectManager objectManager, Choice choice, ICollection<Choice> choices)
 		{
-			var request = new QueryRequest
+			var request = new ReadRequest
 			{
-				ObjectType = new ObjectTypeRef
+				Object = new RelativityObjectRef()
 				{
-					ArtifactTypeID = (int)ArtifactType.Code
-				},
-				Condition = $"'ArtifactID' == {choice.ArtifactID}"
+					ArtifactID = choice.ArtifactID
+				}
 			};
-			QueryResult queryResult = await objectManager.QueryAsync(_configuration.SourceWorkspaceArtifactId, request, 1, 1).ConfigureAwait(false);
-			if (queryResult.ResultCount == 0)
-			{
-				throw new SyncException($"Query for Choice Artifact ID '{choice.ArtifactID}' returned no results.");
-			}
+			ReadResult readResult = await objectManager.ReadAsync(_configuration.SourceWorkspaceArtifactId, request).ConfigureAwait(false);
 
-			int? parentArtifactId = queryResult.Objects[0].ParentObject.ArtifactID;
+			int? parentArtifactId = readResult.Object.ParentObject.ArtifactID;
 			if (choices.All(x => x.ArtifactID != parentArtifactId))
 			{
 				parentArtifactId = null;

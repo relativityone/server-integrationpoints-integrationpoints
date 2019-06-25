@@ -39,22 +39,18 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			{
 				ArtifactID = choiceArtifactId
 			};
-			QueryResult queryResult = new QueryResult()
+			ReadResult readResult = new ReadResult()
 			{
-				Objects = new List<RelativityObject>()
+				Object = new RelativityObject()
 				{
-					new RelativityObject()
+					ArtifactID = choiceArtifactId,
+					ParentObject = new RelativityObjectRef()
 					{
-						ArtifactID = choiceArtifactId,
-						ParentObject = new RelativityObjectRef()
-						{
-							ArtifactID = parentArtifactId
-						}
+						ArtifactID = parentArtifactId
 					}
-				},
-				ResultCount = 1
+				}
 			};
-			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(queryResult)
+			_objectManager.Setup(x => x.ReadAsync(It.IsAny<int>(), It.IsAny<ReadRequest>())).ReturnsAsync(readResult)
 				.Verifiable();
 
 			// act
@@ -80,22 +76,18 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			{
 				ArtifactID = parentArtifactId
 			};
-			QueryResult queryResult = new QueryResult()
+			ReadResult result = new ReadResult()
 			{
-				Objects = new List<RelativityObject>()
+				Object = new RelativityObject()
 				{
-					new RelativityObject()
+					ArtifactID = choiceArtifactId,
+					ParentObject = new RelativityObjectRef()
 					{
-						ArtifactID = choiceArtifactId,
-						ParentObject = new RelativityObjectRef()
-						{
-							ArtifactID = parentArtifactId
-						}
+						ArtifactID = parentArtifactId
 					}
-				},
-				ResultCount = 1
+				}
 			};
-			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(queryResult)
+			_objectManager.Setup(x => x.ReadAsync(It.IsAny<int>(), It.IsAny<ReadRequest>())).ReturnsAsync(result)
 				.Verifiable();
 
 			// act
@@ -117,22 +109,18 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			{
 				ArtifactID = choiceArtifactId
 			};
-			QueryResult queryResult = new QueryResult()
+			ReadResult queryResult = new ReadResult()
 			{
-				Objects = new List<RelativityObject>()
+				Object = new RelativityObject()
 				{
-					new RelativityObject()
+					ArtifactID = choiceArtifactId,
+					ParentObject = new RelativityObjectRef()
 					{
-						ArtifactID = choiceArtifactId,
-						ParentObject = new RelativityObjectRef()
-						{
-							ArtifactID = parentArtifactId
-						}
+						ArtifactID = parentArtifactId
 					}
-				},
-				ResultCount = 1
+				}
 			};
-			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(queryResult)
+			_objectManager.Setup(x => x.ReadAsync(It.IsAny<int>(), It.IsAny<ReadRequest>())).ReturnsAsync(queryResult)
 				.Verifiable();
 
 			// act
@@ -140,7 +128,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			await _instance.GetChoicesWithParentInfoAsync(new List<Choice>() { choice }).ConfigureAwait(false);
 
 			// assert
-			_objectManager.Verify(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()), Times.Once);
+			_objectManager.Verify(x => x.ReadAsync(It.IsAny<int>(), It.IsAny<ReadRequest>()), Times.Once);
 		}
 	}
 }

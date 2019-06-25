@@ -15,7 +15,6 @@ using Relativity.Sync.Transfer;
 namespace Relativity.Sync.Tests.Unit.Transfer
 {
 	[TestFixture]
-	[Parallelizable(ParallelScope.All)]
 	internal class MultipleChoiceFieldSanitizerTests
 	{
 		private Mock<ISynchronizationConfiguration> _config;
