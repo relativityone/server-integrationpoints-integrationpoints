@@ -11,10 +11,10 @@ namespace Relativity.Sync.Transfer
 	internal sealed class ChoiceCache : IChoiceCache
 	{
 		private readonly ISynchronizationConfiguration _configuration;
-		private readonly ISourceServiceFactoryForAdmin _serviceFactory;
+		private readonly ISourceServiceFactoryForUser _serviceFactory;
 		private readonly IDictionary<int, ChoiceWithParentInfo> _cache;
 
-		public ChoiceCache(ISynchronizationConfiguration configuration, ISourceServiceFactoryForAdmin serviceFactory)
+		public ChoiceCache(ISynchronizationConfiguration configuration, ISourceServiceFactoryForUser serviceFactory)
 		{
 			_configuration = configuration;
 			_serviceFactory = serviceFactory;

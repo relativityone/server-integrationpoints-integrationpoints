@@ -135,7 +135,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			// Assert
 			(await action.Should().ThrowAsync<SyncException>().ConfigureAwait(false))
-				.Which.Message.Should().MatchRegex($" {expectedViolators}$");
+				.Which.Message.Should().MatchRegex($" {expectedViolators}\\.$");
 		}
 
 		private static IEnumerable<TestCaseData> CombineNamesIntoReturnValueTestCases()

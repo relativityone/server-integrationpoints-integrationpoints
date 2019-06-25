@@ -124,12 +124,6 @@ namespace Relativity.Sync.Tests.Integration
 				$"Test Name{_MULTI_DELIM}Cool Name{_MULTI_DELIM}Rad Name");
 
 			yield return new TestCaseData(RelativityDataType.MultipleChoice, null, null);
-			yield return new TestCaseData(
-				RelativityDataType.MultipleChoice,
-				ChoiceJArrayFromNames("Test Name", "Cool Name", "Rad Name"),
-				$"Test Name{_MULTI_DELIM}Cool Name{_MULTI_DELIM}Rad Name");
-
-			// TODO: Add tests for nested multiple choice values
 		}
 
 		[TestCaseSource(nameof(ObjectChoiceSanitizerGoldenTestCases))]
@@ -149,6 +143,143 @@ namespace Relativity.Sync.Tests.Integration
 		}
 
 		[Test]
+		public async Task ItShouldSanitizeMultipleChoice()
+		{
+#pragma warning disable RG2009 // Hardcoded Numeric Value - using a lot of hardoced values here
+			// Arrange
+			ExportDataSanitizer instance = _container.Resolve<ExportDataSanitizer>();
+
+			Choice[] choices =
+			{
+				new Choice()
+				{
+					ArtifactID = 1,
+					Name = "Test Name"
+				},
+				new Choice()
+				{
+					ArtifactID = 2,
+					Name = "Cool Name"
+				},
+				new Choice()
+				{
+					ArtifactID = 3,
+					Name = "Rad Name"
+				},
+			};
+
+			foreach (Choice choice in choices)
+			{
+				QueryResult queryResult = new QueryResult()
+				{
+					ResultCount = 1,
+					Objects = new List<RelativityObject>()
+					{
+						new RelativityObject()
+						{
+							ArtifactID = choice.ArtifactID,
+							Name = choice.Name,
+							ParentObject = new RelativityObjectRef()
+						}
+					}
+				};
+				_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.Is<QueryRequest>(r =>
+						r.ObjectType.ArtifactTypeID == (int)ArtifactType.Code &&
+						r.Condition.Contains($"'ArtifactID' == {choice.ArtifactID}")), It.IsAny<int>(), It.IsAny<int>()))
+						.ReturnsAsync(queryResult);
+			}
+
+			string expectedResult = $"Test Name{_MULTI_DELIM}Cool Name{_MULTI_DELIM}Rad Name{_MULTI_DELIM}";
+
+			// Act
+			FieldInfoDto sanitizingSourceField = DefaultField();
+			sanitizingSourceField.RelativityDataType = RelativityDataType.MultipleChoice;
+			object result = await instance.SanitizeAsync(_SOURCE_WORKSPACE_ID, _IDENTIFIER_FIELD_NAME, _IDENTIFIER_FIELD_VALUE, sanitizingSourceField, ChoiceJArrayFromChoices(choices))
+				.ConfigureAwait(false);
+
+			// Assert
+			result.Should().Be(expectedResult);
+#pragma warning restore RG2009 // Hardcoded Numeric Value
+		}
+
+		[Test]
+		public async Task ItShouldSanitizeNestedMultipleChoice()
+		{
+#pragma warning disable RG2009 // Hardcoded Numeric Value - using a lot of hardoced values here
+			// Arrange
+			ExportDataSanitizer instance = _container.Resolve<ExportDataSanitizer>();
+
+			const int parentArtifactId = 1;
+			const int nestedArtifactId = 2;
+			Choice parentChoice = new Choice()
+			{
+				ArtifactID = parentArtifactId,
+				Name = "Parent Name"
+			};
+			Choice nestedChoice = new Choice()
+			{
+				ArtifactID = nestedArtifactId,
+				Name = "Nested Name"
+			};
+			Choice[] choices =
+			{
+				parentChoice,
+				nestedChoice,
+			};
+
+			QueryResult queryResultForParent = new QueryResult()
+			{
+				ResultCount = 1,
+				Objects = new List<RelativityObject>()
+				{
+					new RelativityObject()
+					{
+						ArtifactID = parentChoice.ArtifactID,
+						Name = parentChoice.Name,
+						ParentObject = new RelativityObjectRef()
+					}
+				}
+			};
+			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.Is<QueryRequest>(r =>
+					r.ObjectType.ArtifactTypeID == (int)ArtifactType.Code &&
+					r.Condition.Contains($"'ArtifactID' == {parentChoice.ArtifactID}")), It.IsAny<int>(), It.IsAny<int>()))
+					.ReturnsAsync(queryResultForParent);
+
+			QueryResult queryResultForNested = new QueryResult()
+			{
+				ResultCount = 1,
+				Objects = new List<RelativityObject>()
+				{
+					new RelativityObject()
+					{
+						ArtifactID = nestedChoice.ArtifactID,
+						Name = nestedChoice.Name,
+						ParentObject = new RelativityObjectRef()
+						{
+							ArtifactID = parentArtifactId
+						}
+					}
+				}
+			};
+			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.Is<QueryRequest>(r =>
+					r.ObjectType.ArtifactTypeID == (int)ArtifactType.Code &&
+					r.Condition.Contains($"'ArtifactID' == {nestedChoice.ArtifactID}")), It.IsAny<int>(), It.IsAny<int>()))
+					.ReturnsAsync(queryResultForNested);
+
+			string expectedResult = $"{parentChoice.Name}{_NESTED_DELIM}{nestedChoice.Name}{_MULTI_DELIM}";
+
+			// Act
+			FieldInfoDto sanitizingSourceField = DefaultField();
+			sanitizingSourceField.RelativityDataType = RelativityDataType.MultipleChoice;
+			object result = await instance.SanitizeAsync(_SOURCE_WORKSPACE_ID, _IDENTIFIER_FIELD_NAME, _IDENTIFIER_FIELD_VALUE, sanitizingSourceField, ChoiceJArrayFromChoices(choices))
+				.ConfigureAwait(false);
+
+			// Assert
+			result.Should().Be(expectedResult);
+#pragma warning restore RG2009 // Hardcoded Numeric Value
+		}
+
+		[Test]
 		public async Task MultipleObjectSanitizerShouldThrowOnInvalidObjectName()
 		{
 			// Arrange
@@ -164,7 +295,7 @@ namespace Relativity.Sync.Tests.Integration
 			// Assert
 			(await action.Should().ThrowAsync<SyncException>().ConfigureAwait(false))
 				.Which.Message.Should()
-					.MatchRegex($": 'Test{_MULTI_DELIM} Name', 'Some{_MULTI_DELIM}{_MULTI_DELIM} Other'$").And
+					.MatchRegex($": 'Test{_MULTI_DELIM} Name', 'Some{_MULTI_DELIM}{_MULTI_DELIM} Other'\\.$").And
 					.Contain(sanitizingSourceField.SourceFieldName);
 		}
 
@@ -184,7 +315,7 @@ namespace Relativity.Sync.Tests.Integration
 			// Assert
 			(await action.Should().ThrowAsync<SyncException>().ConfigureAwait(false))
 				.Which.Message.Should()
-				.MatchRegex($": 'Test{_MULTI_DELIM} Name', 'This{_NESTED_DELIM} Guy', 'Some{_MULTI_DELIM}{_MULTI_DELIM} Other'$").And
+				.MatchRegex($": 'Test{_MULTI_DELIM} Name', 'This{_NESTED_DELIM} Guy', 'Some{_MULTI_DELIM}{_MULTI_DELIM} Other'\\.$").And
 				.Contain(sanitizingSourceField.SourceFieldName);
 		}
 
@@ -281,6 +412,11 @@ namespace Relativity.Sync.Tests.Integration
 		private static JArray ChoiceJArrayFromNames(params string[] names)
 		{
 			Choice[] choices = names.Select(x => new Choice { Name = x }).ToArray();
+			return ChoiceJArrayFromChoices(choices);
+		}
+
+		private static JArray ChoiceJArrayFromChoices(params Choice[] choices)
+		{
 			return JsonHelpers.ToJToken<JArray>(choices);
 		}
 	}

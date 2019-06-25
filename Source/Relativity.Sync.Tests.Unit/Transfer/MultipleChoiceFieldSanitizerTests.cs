@@ -9,7 +9,6 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Transfer;
 
@@ -155,41 +154,30 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			// Assert
 			(await action.Should().ThrowAsync<SyncException>().ConfigureAwait(false))
-				.Which.Message.Should().MatchRegex($" {expectedViolators}$");
+				.Which.Message.Should().MatchRegex($" {expectedViolators}\\.$");
 		}
 
-		private static IEnumerable<TestCaseData> CombineNamesIntoReturnValueTestCases()
-		{
-			yield return new TestCaseData(null, null)
-			{
-				TestName = "Null"
-			};
-			yield return new TestCaseData(ChoiceJArrayFromNames(), string.Empty)
-			{
-				TestName = "Empty"
-			};
-			yield return new TestCaseData(ChoiceJArrayFromNames("Sick Name"), "Sick Name")
-			{
-				TestName = "Single"
-			};
-			yield return new TestCaseData(
-				ChoiceJArrayFromNames("Sick Name", "Cool Name", "Awesome Name"),
-				$"Sick Name{_MULTI_VALUE}Cool Name{_MULTI_VALUE}Awesome Name")
-			{
-				TestName = "Multiple"
-			};
-
-			// TODO: Add test cases for nested values
-		}
-
-		[TestCaseSource(nameof(CombineNamesIntoReturnValueTestCases))]
-		public async Task ItShouldCombineNamesIntoReturnValue(object initialValue, object expectedResult)
+		[Test]
+		public async Task ItShouldReturnNull()
 		{
 			// Act
-			object result = await _instance.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
+			object result = await _instance.SanitizeAsync(0, "foo", "bar", "baz", null).ConfigureAwait(false);
 
 			// Assert
-			result.Should().Be(expectedResult);
+			result.Should().BeNull();
+		}
+		
+		[Test]
+		public async Task ItShouldReturnEmptyString()
+		{
+			_choiceCache.Setup(x => x.GetChoicesWithParentInfoAsync(It.IsAny<ICollection<Choice>>())).ReturnsAsync(new List<ChoiceWithParentInfo>());
+			_choiceTreeToStringConverter.Setup(x => x.ConvertTreeToString(It.IsAny<IList<ChoiceWithParentInfo>>())).Returns(string.Empty);
+
+			// Act
+			object result = await _instance.SanitizeAsync(0, "foo", "bar", "baz", ChoiceJArrayFromNames().ToString()).ConfigureAwait(false);
+
+			// Assert
+			result.Should().Be(string.Empty);
 		}
 
 		private static JArray ChoiceJArrayFromNames(params string[] names)
