@@ -1,15 +1,21 @@
 ﻿using System;
 using System.IO;
 
-namespace Relativity.Sync.Tests.Unit.Stubs
+namespace Relativity.Sync.Tests.Common
 {
 	/// <summary>
 	/// Needed to directly check if a class disposes a <see cref="Stream"/>,
 	/// since <see cref="Stream.Dispose"/> is not virtual.
 	/// </summary>
-	internal sealed class DisposalCheckStream : Stream
+	public sealed class DisposalCheckStream : Stream
 	{
+		private bool _canRead;
 		public bool IsDisposed { get; set; }
+
+		public void SetCanRead(bool canRead)
+		{
+			_canRead = canRead;
+		}
 
 		public override void Flush()
 		{
@@ -36,7 +42,8 @@ namespace Relativity.Sync.Tests.Unit.Stubs
 			throw new NotImplementedException();
 		}
 
-		public override bool CanRead { get; }
+		public override bool CanRead => _canRead;
+
 		public override bool CanSeek { get; }
 		public override bool CanWrite { get; }
 		public override long Length { get; }
