@@ -31,7 +31,7 @@ task build_initalize {
 }
 
 task check_configureawait -depends get_configureawait_checker -precondition { return $RUN_CHECKCONFIGUREAWAIT } {
-    & (Join-Path $development_scripts_directory "check-configureawait.ps1") -sourceDir $source_directory -toolsDir $package_root_directory -logsDir $buildlogs_directory
+    & (Join-Path $development_scripts_directory "check-configureawait.ps1") -sourceDir $source_directory -toolsDir $package_root_directory -logsDir $artifacts_directory
 }
 
 task get_configureawait_checker {  
