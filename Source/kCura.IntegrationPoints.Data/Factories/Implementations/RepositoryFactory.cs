@@ -8,6 +8,7 @@ using Relativity.Data;
 using System;
 using System.Security.Claims;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
+using kCura.WinEDDS.Service.Export;
 using Relativity.API.Foundation.Repositories;
 using Relativity.Services.ResourceServer;
 using ArtifactType = Relativity.ArtifactType;
@@ -25,6 +26,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		private readonly IHelper _helper;
 		private readonly IServicesMgr _destinationServiceMgr;
 		private readonly IServicesMgr _sourceServiceMgr;
+		private readonly IServiceFactory _serviceFactory;
 		private readonly Lazy<IRelativityObjectManagerFactory> _objectManagerFactory;
 		private readonly Lazy<IExternalServiceInstrumentationProvider> _instrumentationProvider;
 
@@ -37,9 +39,11 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			IHelper helper,
 			IServicesMgr destinationServiceMgr,
 			IRelativityObjectManagerFactory objectManagerFactory,
-			IExternalServiceInstrumentationProvider instrumentationProvider)
+			IExternalServiceInstrumentationProvider instrumentationProvider,
+			IServiceFactory serviceFactory)
 			: this(helper,
 				destinationServiceMgr,
+				serviceFactory,
 				new Lazy<IRelativityObjectManagerFactory>(() => objectManagerFactory),
 				new Lazy<IExternalServiceInstrumentationProvider>(() => instrumentationProvider))
 		{
@@ -53,6 +57,21 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		{
 			_helper = helper;
 			_destinationServiceMgr = destinationServiceMgr;
+			_sourceServiceMgr = _helper.GetServicesManager(); //TODO: it's on our wall of shame
+			_objectManagerFactory = objectManagerFactory;
+			_instrumentationProvider = instrumentationProvider;
+		}
+
+		private RepositoryFactory(
+			IHelper helper,
+			IServicesMgr destinationServiceMgr,
+			IServiceFactory serviceFactory,
+			Lazy<IRelativityObjectManagerFactory> objectManagerFactory,
+			Lazy<IExternalServiceInstrumentationProvider> instrumentationProvider)
+		{
+			_helper = helper;
+			_destinationServiceMgr = destinationServiceMgr;
+			_serviceFactory = serviceFactory;
 			_sourceServiceMgr = _helper.GetServicesManager(); //TODO: it's on our wall of shame
 			_objectManagerFactory = objectManagerFactory;
 			_instrumentationProvider = instrumentationProvider;
@@ -313,9 +332,9 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		public IFileRepository GetFileRepository()
 		{
 			return new DisposableFileRepository(
-				_sourceServiceMgr,
+				_serviceFactory,
 				InstrumentationProvider,
-				(fileManager, instrumentationProvider) => new FileRepository(fileManager, instrumentationProvider)
+				(searchManager, instrumentationProvider) => new FileRepository(searchManager, instrumentationProvider)
 			);
 		}
 

@@ -41,6 +41,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.APIHelper.dll</HintPath>
     </Reference>
+    <Reference Include="Relativity.DataExchange.Client.SDK">
+      <HintPath>..\..\..\..\Users\kblasinski\.nuget\packages\relativity.dataexchange.client.sdk\1.1.0\lib\net462\Relativity.DataExchange.Client.SDK.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />

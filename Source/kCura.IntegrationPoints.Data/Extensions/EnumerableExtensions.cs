@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
+using kCura.Data;
+using DataRow = System.Data.DataRow;
 
 namespace kCura.IntegrationPoints.Data.Extensions
 {
@@ -20,6 +22,11 @@ namespace kCura.IntegrationPoints.Data.Extensions
 			}
 
 			return dataTable;
+		}
+
+		public static kCura.Data.DataView ToDataView(this DataSet dataSet)
+		{
+			return new kCura.Data.DataView(dataSet);
 		}
 
 		public static kCura.Data.DataView ToDataView<T>(this IEnumerable<T> collection) where T : class

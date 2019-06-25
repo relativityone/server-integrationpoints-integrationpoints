@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 using kCura.IntegrationPoints.Common.Constants;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
+using kCura.WinEDDS.Service.Export;
 using Relativity.Services.Interfaces.File;
 using Relativity.Services.Interfaces.File.Models;
 
@@ -9,38 +12,35 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class FileRepository : IFileRepository
 	{
-		private readonly IFileManager _fileManager;
+		private readonly ISearchManager _searchManager;
 		private readonly IExternalServiceInstrumentationProvider _instrumentationProvider;
 
 		public FileRepository(
-			IFileManager fileManager, 
+			ISearchManager searchManager, 
 			IExternalServiceInstrumentationProvider instrumentationProvider)
 		{
-			_fileManager = fileManager;
+			_searchManager = searchManager;
 			_instrumentationProvider = instrumentationProvider;
 		}
 
-		public FileResponse[] GetNativesForSearch(int workspaceID, int[] documentIDs)
+		public DataSet GetNativesForSearch(int workspaceID, int[] documentIDs)
 		{
 			ThrowWhenNullArgument(documentIDs, nameof(documentIDs));
 
 			if (!documentIDs.Any())
 			{
-				return Enumerable.Empty<FileResponse>().ToArray();
+				return new DataSet("empty");
 			}
 
 			IExternalServiceSimpleInstrumentation instrumentation = CreateInstrumentation(
-				operationName: nameof(IFileManager.GetNativesForSearchAsync)
+				operationName: nameof(ISearchManager.RetrieveNativesForSearch)
 			);
 
-			return instrumentation.ExecuteAsync(
-				() => _fileManager.GetNativesForSearchAsync(workspaceID, documentIDs)
-			)
-			.GetAwaiter()
-			.GetResult();
+			return instrumentation.Execute<DataSet>(
+				() => _searchManager.RetrieveNativesForSearch(workspaceID, string.Join(",", documentIDs)));
 		}
 
-		public FileResponse[] GetNativesForProduction(
+		public DataSet GetNativesForProduction(
 			int workspaceID, 
 			int productionID, 
 			int[] documentIDs)
@@ -49,21 +49,19 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			if (!documentIDs.Any())
 			{
-				return Enumerable.Empty<FileResponse>().ToArray();
+				return new DataSet("empty");
 			}
 
 
 			IExternalServiceSimpleInstrumentation instrumentation = CreateInstrumentation(
-				operationName: nameof(IFileManager.GetNativesForProductionAsync)
+				operationName: nameof(ISearchManager.RetrieveNativesForProduction)
 			);
-			return instrumentation.ExecuteAsync(
-				() => _fileManager.GetNativesForProductionAsync(workspaceID, productionID, documentIDs)
-			)
-			.GetAwaiter()
-			.GetResult();
+			return instrumentation.Execute<DataSet>(
+				() => _searchManager.RetrieveNativesForProduction(workspaceID, productionID,
+					String.Join(",", documentIDs)));
 		}
 
-		public ProductionDocumentImageResponse[] GetImagesForProductionDocuments(
+		public DataSet GetImagesForProductionDocuments(
 			int workspaceID, 
 			int productionID,
 			int[] documentIDs)
@@ -72,72 +70,60 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			if (!documentIDs.Any())
 			{
-				return Enumerable.Empty<ProductionDocumentImageResponse>().ToArray();
+				return new DataSet("empty");
 			}
 
 			IExternalServiceSimpleInstrumentation instrumentation = CreateInstrumentation(
-				operationName: nameof(IFileManager.GetImagesForProductionDocumentsAsync)
+				operationName: nameof(ISearchManager.RetrieveImagesForProductionDocuments)
 			);
 
-			return instrumentation.ExecuteAsync(
-				() => _fileManager.GetImagesForProductionDocumentsAsync(workspaceID, productionID, documentIDs)
-			)
-			.GetAwaiter()
-			.GetResult();
+			return instrumentation.Execute<DataSet>(
+				() => _searchManager.RetrieveImagesForProductionDocuments(workspaceID, documentIDs, productionID));
 		}
 
-		public DocumentImageResponse[] GetImagesForDocuments(int workspaceID, int[] documentIDs)
+		public DataSet GetImagesForDocuments(int workspaceID, int[] documentIDs)
 		{
 			ThrowWhenNullArgument(documentIDs, nameof(documentIDs));
 
 			if (!documentIDs.Any())
 			{
-				return Enumerable.Empty<DocumentImageResponse>().ToArray();
+				return new DataSet("empty");
 			}
 
 			IExternalServiceSimpleInstrumentation instrumentation = CreateInstrumentation(
-				operationName: nameof(IFileManager.GetImagesForDocumentsAsync)
+				operationName: nameof(ISearchManager.RetrieveImagesForDocuments)
 			);
 
-			return instrumentation.ExecuteAsync(
-				() => _fileManager.GetImagesForDocumentsAsync(workspaceID, documentIDs)
-			)
-			.GetAwaiter()
-			.GetResult();
+			return instrumentation.Execute<DataSet>(
+				() => _searchManager.RetrieveImagesForDocuments(workspaceID, documentIDs));
 		}
 
-		public FileResponse[] GetProducedImagesForDocument(int workspaceID, int documentID)
+		public DataSet GetProducedImagesForDocument(int workspaceID, int documentID)
 		{
 			IExternalServiceSimpleInstrumentation instrumentation = CreateInstrumentation(
-				operationName: nameof(IFileManager.GetProducedImagesForDocumentAsync)
+				operationName: nameof(ISearchManager.RetrieveProducedImagesForDocument)
 			);
 
-			return instrumentation.ExecuteAsync(
-				() => _fileManager.GetProducedImagesForDocumentAsync(workspaceID, documentID)
-			)
-			.GetAwaiter()
-			.GetResult();
+			return instrumentation.Execute<DataSet>(
+				() => _searchManager.RetrieveProducedImagesForDocument(workspaceID, documentID));
 		}
 
-		public ExportProductionDocumentImageResponse[] GetImagesForExport(int workspaceID, int[] productionIDs, int[] documentIDs)
+		public DataSet GetImagesForExport(int workspaceID, int[] productionIDs, int[] documentIDs)
 		{
 			ThrowWhenNullArgument(productionIDs, nameof(productionIDs));
 			ThrowWhenNullArgument(documentIDs, nameof(documentIDs));
 
 			if (!productionIDs.Any() || !documentIDs.Any())
 			{
-				return Enumerable.Empty<ExportProductionDocumentImageResponse>().ToArray();
+				return new DataSet("empty");
 			}
 
 			IExternalServiceSimpleInstrumentation instrumentation = CreateInstrumentation(
-				operationName: nameof(IFileManager.GetImagesForExportAsync)
+				operationName: nameof(ISearchManager.RetrieveImagesByProductionIDsAndDocumentIDsForExport)
 			);
 
-			return instrumentation.ExecuteAsync(
-				() => _fileManager.GetImagesForExportAsync(workspaceID, productionIDs, documentIDs)
-			)
-			.GetAwaiter()
-			.GetResult();
+			return instrumentation.Execute<DataSet>(
+				() => _searchManager.RetrieveImagesByProductionIDsAndDocumentIDsForExport(workspaceID, productionIDs, documentIDs));
 		}
 
 		private void ThrowWhenNullArgument<T>(T argument, string argumentName)
@@ -152,7 +138,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			return _instrumentationProvider.CreateSimple(
 				ExternalServiceTypes.KEPLER,
-				nameof(IFileManager),
+				nameof(ISearchManager),
 				operationName
 			);
 		}

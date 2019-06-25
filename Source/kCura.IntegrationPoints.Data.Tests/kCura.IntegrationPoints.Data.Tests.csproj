@@ -19,6 +19,8 @@
     <TestProjectType>UnitTest</TestProjectType>
     <TargetFrameworkProfile />
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup>
     <PlatformTarget>x64</PlatformTarget>
@@ -47,13 +49,93 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="kCura, Version=10.1.33.3, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\kCura\lib\net462\kCura.dll</HintPath>
+    <Reference Include="BCrypt.Net, Version=0.1.5073.29922, Culture=neutral, PublicKeyToken=6bcd409ee6bc9292, processorArchitecture=MSIL">
+      <HintPath>..\packages\BCrypt-Official.0.1.109\lib\BCrypt.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="FaspManager, Version=3.7.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\relativity.faspmanager.3.7.2.0\lib\net40\FaspManager.dll</HintPath>
+    </Reference>
+    <Reference Include="FreeImageNET, Version=3.18.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.DataExchange.Client.SDK.1.4.0\lib\net462\FreeImageNET.dll</HintPath>
+    </Reference>
+    <Reference Include="kCura, Version=10.3.5.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.10.3.5.3\lib\net462\kCura.dll</HintPath>
+    </Reference>
+    <Reference Include="kCura.Injection, Version=1.0.8.0, Culture=neutral, PublicKeyToken=318fc9f898ce154d, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.Injection.10.3.5.3\lib\net462\kCura.Injection.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="oi, Version=2019.3.0.728, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.OutsideIn.FI.Win32.2019.3.0\lib\net40\oi.dll</HintPath>
+    </Reference>
+    <Reference Include="Polly, Version=5.3.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Polly.5.3.1\lib\net45\Polly.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity, Version=10.3.5.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.10.3.5.3\lib\net462\Relativity.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Core, Version=10.0.85.14, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.DataExchange.Client.SDK, Version=1.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.DataExchange.Client.SDK.1.4.0\lib\net462\Relativity.DataExchange.Client.SDK.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.DataTransfer.MessageService, Version=10.2.0.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.DataTransfer.MessageService.10.2.0\lib\Relativity.DataTransfer.MessageService.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Kepler, Version=1.0.1.627, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Kepler.1.0.1.627\lib\net462\Relativity.Kepler.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Logging, Version=2018.11.8.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Logging.2018.11.8\lib\net462\Relativity.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Logging.Interfaces, Version=2018.11.8.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Logging.Interfaces.2018.11.8\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.OAuth2Client, Version=1.0.27.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.OAuth2Client.1.0.27\lib\net462\Relativity.OAuth2Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.OAuth2Client.IdentityModel, Version=1.0.27.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.OAuth2Client.1.0.27\lib\net462\Relativity.OAuth2Client.IdentityModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.OAuth2Client.IdentityModel.Interfaces, Version=1.0.27.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.OAuth2Client.Interfaces.1.0.27\lib\net462\Relativity.OAuth2Client.IdentityModel.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.OAuth2Client.Implicit, Version=1.0.27.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.OAuth2Client.Implicit.1.0.27\lib\net462\Relativity.OAuth2Client.Implicit.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.OAuth2Client.Interfaces, Version=1.0.27.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.OAuth2Client.Interfaces.1.0.27\lib\net462\Relativity.OAuth2Client.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Services.ServiceProxy, Version=1.0.1.627, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Kepler.Client.1.0.1.627\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=9.4.159.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.159\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Telemetry.Services.Interface, Version=9.6.88.61, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Telemetry.Services.Interface.9.6.88.61\lib\net462\Relativity.Telemetry.Services.Interface.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Transfer.Client, Version=6.0.16.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\relativity.transfer.client.6.0.16\lib\net462\Relativity.Transfer.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Transfer.Client.Aspera, Version=6.0.16.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\relativity.transfer.client.6.0.16\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Transfer.Client.Core, Version=6.0.16.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\relativity.transfer.client.6.0.16\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Transfer.Client.FileShare, Version=6.0.16.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\relativity.transfer.client.6.0.16\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Transfer.Client.Http, Version=6.0.16.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\relativity.transfer.client.6.0.16\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="Renci.SshNet, Version=2016.0.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
+      <HintPath>..\packages\SSH.NET.2016.0.0\lib\net40\Renci.SshNet.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -68,6 +150,9 @@
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml" />
+    <Reference Include="ZetaLongPaths, Version=1.0.0.16, Culture=neutral, PublicKeyToken=b764f59068f31f38, processorArchitecture=MSIL">
+      <HintPath>..\packages\ZetaLongPaths.1.0.0.16\lib\net40-full\ZetaLongPaths.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">
@@ -180,6 +265,8 @@
     <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="oi\unmanaged\cmmap000.bin" />
+    <None Include="packages.config" />
     <None Include="paket.references" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
@@ -214,6 +301,26 @@
     <Analyzer Include="..\..\packages\CSharpGuidelineAnalyzer\analyzers\dotnet\cs\CSharpGuidelineAnalyzer.dll">
       <Paket>True</Paket>
     </Analyzer>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="LICENSE.txt" />
+    <Content Include="oi\docs\fileids_values_only_sorted.txt" />
+    <Content Include="oi\docs\fileids_values_strs.txt" />
+    <Content Include="oi\unmanaged\oilink.exe" />
+    <Content Include="oi\unmanaged\oilink.jar" />
+    <Content Include="oi\unmanaged\sccca-R1.dll" />
+    <Content Include="oi\unmanaged\sccch-R1.dll" />
+    <Content Include="oi\unmanaged\sccda-R1.dll" />
+    <Content Include="oi\unmanaged\sccex-R1.dll" />
+    <Content Include="oi\unmanaged\sccfa-R1.dll" />
+    <Content Include="oi\unmanaged\sccfi-R1.dll" />
+    <Content Include="oi\unmanaged\sccfmt-R1.dll" />
+    <Content Include="oi\unmanaged\sccfnt-R1.dll" />
+    <Content Include="oi\unmanaged\sccfut-R1.dll" />
+    <Content Include="oi\unmanaged\sccind-R1.dll" />
+    <Content Include="oi\unmanaged\scclo-R1.dll" />
+    <Content Include="oi\unmanaged\sccut-R1.dll" />
+    <Content Include="oi\unmanaged\wvcore-R1.dll" />
   </ItemGroup>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
@@ -277,15 +384,7 @@
     </When>
   </Choose>
   <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Newtonsoft.Json">
-          <HintPath>..\..\packages\Newtonsoft.Json\lib\net45\Newtonsoft.Json.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'" />
   </Choose>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
@@ -310,26 +409,10 @@
     </When>
   </Choose>
   <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Polly">
-          <HintPath>..\..\packages\Polly\lib\net45\Polly.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'" />
   </Choose>
   <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity">
-          <HintPath>..\..\packages\Relativity\lib\net462\Relativity.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'" />
   </Choose>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
@@ -343,15 +426,7 @@
     </When>
   </Choose>
   <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.Kepler">
-          <HintPath>..\..\packages\Relativity.Kepler\lib\net462\Relativity.Kepler.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'" />
   </Choose>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
@@ -430,15 +505,7 @@
     </When>
   </Choose>
   <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.Telemetry.DataContracts.Shared">
-          <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'" />
   </Choose>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
@@ -454,4 +521,15 @@
       </ItemGroup>
     </When>
   </Choose>
+  <Import Project="..\packages\kCura.10.3.5.3\build\kCura.targets" Condition="Exists('..\packages\kCura.10.3.5.3\build\kCura.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\kCura.10.3.5.3\build\kCura.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\kCura.10.3.5.3\build\kCura.targets'))" />
+    <Error Condition="!Exists('..\packages\kCura.OutsideIn.FI.Win32.2019.3.0\build\kCura.OutsideIn.FI.Win32.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\kCura.OutsideIn.FI.Win32.2019.3.0\build\kCura.OutsideIn.FI.Win32.targets'))" />
+    <Error Condition="!Exists('..\packages\Relativity.DataExchange.Client.SDK.1.4.0\build\Relativity.DataExchange.Client.SDK.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Relativity.DataExchange.Client.SDK.1.4.0\build\Relativity.DataExchange.Client.SDK.targets'))" />
+  </Target>
+  <Import Project="..\packages\kCura.OutsideIn.FI.Win32.2019.3.0\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\packages\kCura.OutsideIn.FI.Win32.2019.3.0\build\kCura.OutsideIn.FI.Win32.targets')" />
+  <Import Project="..\packages\Relativity.DataExchange.Client.SDK.1.4.0\build\Relativity.DataExchange.Client.SDK.targets" Condition="Exists('..\packages\Relativity.DataExchange.Client.SDK.1.4.0\build\Relativity.DataExchange.Client.SDK.targets')" />
 </Project>

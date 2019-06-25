@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
 					.LifestyleTransient(),
 				Component
 					.For<ISearchManager>()
-					.ImplementedBy<CoreSearchManager>()
+					.UsingFactoryMethod(x => { return container.Resolve<WebApiServiceFactory>().CreateSearchManager(); })
 					.LifestyleTransient(),
 				Component
 					.For<IExportFileDownloaderFactory>()

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Data;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
+using kCura.WinEDDS.Service.Export;
 using Relativity.API;
 using Relativity.Services.Interfaces.File;
 using Relativity.Services.Interfaces.File.Models;
@@ -7,87 +9,87 @@ using Relativity.Services.Interfaces.File.Models;
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	/// <summary>
-	/// Implementation above the original FileRepository for creating and disposing IFileManager kepler proxy.
+	/// Implementation above the original FileRepository for creating and disposing IsearchManager kepler proxy.
 	/// It will be no longer required when we move all dependencies to the IoC container.
 	/// </summary>
 	public class DisposableFileRepository : IFileRepository
 	{
-		private readonly IServicesMgr _servicesMgr;
+		private readonly IServiceFactory _serviceFactory;
 		private readonly IExternalServiceInstrumentationProvider _instrumentationProvider;
 		private readonly CreateFileRepositoryDelegate _createFileRepositoryDelegate;
 
 		public delegate IFileRepository CreateFileRepositoryDelegate(
-			IFileManager fileManager,
+			ISearchManager searchManager,
 			IExternalServiceInstrumentationProvider instrumentationProvider
 		);
 
 		public DisposableFileRepository(
-			IServicesMgr servicesMgr,
+			IServiceFactory serviceFactory,
 			IExternalServiceInstrumentationProvider instrumentationProvider,
 			CreateFileRepositoryDelegate createFileRepositoryDelegate)
 		{
-			_servicesMgr = servicesMgr;
+			_serviceFactory = serviceFactory;
 			_instrumentationProvider = instrumentationProvider;
 			_createFileRepositoryDelegate = createFileRepositoryDelegate;
 		}
 
-		public FileResponse[] GetNativesForSearch(int workspaceID, int[] documentIDs)
+		public DataSet GetNativesForSearch(int workspaceID, int[] documentIDs)
 		{
-			using (IFileManager fileManager = CreateFileManagerProxy())
+			using (ISearchManager searchManager = CreateSearchManager())
 			{
-				return _createFileRepositoryDelegate(fileManager, _instrumentationProvider)
+				return _createFileRepositoryDelegate(searchManager, _instrumentationProvider)
 					.GetNativesForSearch(workspaceID, documentIDs);
 			}
 		}
 
-		public FileResponse[] GetNativesForProduction(int workspaceID, int productionID, int[] documentIDs)
+		public DataSet GetNativesForProduction(int workspaceID, int productionID, int[] documentIDs)
 		{
-			using (IFileManager fileManager = CreateFileManagerProxy())
+			using (ISearchManager searchManager = CreateSearchManager())
 			{
-				return _createFileRepositoryDelegate(fileManager, _instrumentationProvider)
+				return _createFileRepositoryDelegate(searchManager, _instrumentationProvider)
 					.GetNativesForProduction(workspaceID, productionID, documentIDs);
 			}
 		}
 
-		public ProductionDocumentImageResponse[] GetImagesForProductionDocuments(int workspaceID, int productionID, int[] documentIDs)
+		public DataSet GetImagesForProductionDocuments(int workspaceID, int productionID, int[] documentIDs)
 		{
-			using (IFileManager fileManager = CreateFileManagerProxy())
+			using (ISearchManager searchManager = CreateSearchManager())
 			{
-				return _createFileRepositoryDelegate(fileManager, _instrumentationProvider)
+				return _createFileRepositoryDelegate(searchManager, _instrumentationProvider)
 					.GetImagesForProductionDocuments(workspaceID, productionID, documentIDs);
 			}
 		}
 
-		public DocumentImageResponse[] GetImagesForDocuments(int workspaceID, int[] documentIDs)
+		public DataSet GetImagesForDocuments(int workspaceID, int[] documentIDs)
 		{
-			using (IFileManager fileManager = CreateFileManagerProxy())
+			using (ISearchManager searchManager = CreateSearchManager())
 			{
-				return _createFileRepositoryDelegate(fileManager, _instrumentationProvider)
+				return _createFileRepositoryDelegate(searchManager, _instrumentationProvider)
 					.GetImagesForDocuments(workspaceID, documentIDs);
 			}
 		}
 
-		public FileResponse[] GetProducedImagesForDocument(int workspaceID, int documentID)
+		public DataSet GetProducedImagesForDocument(int workspaceID, int documentID)
 		{
-			using (IFileManager fileManager = CreateFileManagerProxy())
+			using (ISearchManager searchManager = CreateSearchManager())
 			{
-				return _createFileRepositoryDelegate(fileManager, _instrumentationProvider)
+				return _createFileRepositoryDelegate(searchManager, _instrumentationProvider)
 					.GetProducedImagesForDocument(workspaceID, documentID);
 			}
 		}
 
-		public ExportProductionDocumentImageResponse[] GetImagesForExport(int workspaceID, int[] productionIDs, int[] documentIDs)
+		public DataSet GetImagesForExport(int workspaceID, int[] productionIDs, int[] documentIDs)
 		{
-			using (IFileManager fileManager = CreateFileManagerProxy())
+			using (ISearchManager searchManager = CreateSearchManager())
 			{
-				return _createFileRepositoryDelegate(fileManager, _instrumentationProvider)
+				return _createFileRepositoryDelegate(searchManager, _instrumentationProvider)
 					.GetImagesForExport(workspaceID, productionIDs, documentIDs);
 			}
 		}
 
-		private IFileManager CreateFileManagerProxy()
+		private ISearchManager CreateSearchManager()
 		{
-			return _servicesMgr.CreateProxy<IFileManager>(ExecutionIdentity.CurrentUser);
+			return _serviceFactory.CreateSearchManager();
 		}
 	}
 }

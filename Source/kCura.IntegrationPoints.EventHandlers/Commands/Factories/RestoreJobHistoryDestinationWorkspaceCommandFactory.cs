@@ -12,6 +12,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 	{
 		public static ICommand Create(IHelper helper, int workspaceArtifactId)
 		{
+			//dupa sraka
 			IRelativityObjectManager objectManager = CreateObjectManager(helper, workspaceArtifactId);
 			var repositoryFactory = new RepositoryFactory(helper, helper.GetServicesManager());
 			IFederatedInstanceManager federatedInstanceManager = new FederatedInstanceManager(repositoryFactory);

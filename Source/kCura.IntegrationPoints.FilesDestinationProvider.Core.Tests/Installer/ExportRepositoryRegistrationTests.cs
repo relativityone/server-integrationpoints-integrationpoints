@@ -6,8 +6,6 @@ using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories.Implementations;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
@@ -22,44 +20,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Installer
 	[TestFixture]
 	public class ExportRepositoryRegistrationTests
 	{
-		[Test]
-		public void ViewFieldRepository_ShouldBeRegisteredWithProperLifestyle()
-		{
-			// arrange
-			IWindsorContainer sut = new WindsorContainer();
-			sut.AddExportRepositories();
-
-			// assert
-			sut.Should()
-				.HaveRegisteredSingleComponent<IViewFieldRepository>()
-				.Which.Should().BeRegisteredWithLifestyle(LifestyleType.Transient);
-		}
-
-		[Test]
-		public void ViewFieldRepository_ShouldBeRegisteredWithProperImplementation()
-		{
-			// arrange
-			IWindsorContainer sut = new WindsorContainer();
-			sut.AddExportRepositories();
-
-			// assert
-			sut.Should()
-				.HaveRegisteredProperImplementation<IViewFieldRepository, ViewFieldRepository>();
-		}
-
-		[Test]
-		public void ViewFieldRepository_ShouldBeResolvedWithoutThrowing()
-		{
-			// arrange
-			IWindsorContainer sut = new WindsorContainer();
-			sut.AddExportRepositories();
-			RegisterDependencies(sut);
-
-			// assert
-			sut.Should()
-				.ResolveWithoutThrowing<IViewFieldRepository>();
-		}
-
 		[Test]
 		public void FileRepository_ShouldBeRegisteredWithProperLifestyle()
 		{
@@ -96,77 +56,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Installer
 			sut.Should().ResolveWithoutThrowing<IFileRepository>();
 		}
 
-		[Test]
-		public void FileFieldRepository_ShouldBeRegisteredWithProperLifestyle()
-		{
-			//arrange
-			IWindsorContainer sut = new WindsorContainer();
-			sut.AddExportRepositories();
-
-			//assert
-			sut.Should()
-				.HaveRegisteredSingleComponent<IFileFieldRepository>()
-				.Which.Should().BeRegisteredWithLifestyle(LifestyleType.Transient);
-		}
-
-		[Test]
-		public void FileFieldRepository_ShouldBeRegisteredWithProperImplementation()
-		{
-			//arrange
-			IWindsorContainer sut = new WindsorContainer();
-			sut.AddExportRepositories();
-
-			//assert
-			sut.Should().HaveRegisteredProperImplementation<IFileFieldRepository, FileFieldRepository>();
-		}
-
-		[Test]
-		public void FileFieldRepository_ShouldBeResolvedWithoutThrowing()
-		{
-			//arrange
-			IWindsorContainer sut = new WindsorContainer();
-			sut.AddExportRepositories();
-			RegisterDependencies(sut);
-
-			//assert
-			sut.Should().ResolveWithoutThrowing<IFileFieldRepository>();
-		}
-
-		[Test]
-		public void ViewRepository_ShouldBeRegisteredWithProperLifestyle()
-		{
-			//arrange
-			IWindsorContainer sut = new WindsorContainer();
-			sut.AddExportRepositories();
-
-			//assert
-			sut.Should()
-				.HaveRegisteredSingleComponent<IViewRepository>()
-				.Which.Should().BeRegisteredWithLifestyle(LifestyleType.Transient);
-		}
-
-		[Test]
-		public void ViewRepository_ShouldBeRegisteredWithProperImplementation()
-		{
-			//arrange
-			IWindsorContainer sut = new WindsorContainer();
-			sut.AddExportRepositories();
-
-			//assert
-			sut.Should().HaveRegisteredProperImplementation<IViewRepository, ViewRepository>();
-		}
-
-		[Test]
-		public void ViewRepository_ShouldBeResolvedWithoutThrowing()
-		{
-			//arrange
-			IWindsorContainer sut = new WindsorContainer();
-			sut.AddExportRepositories();
-			RegisterDependencies(sut);
-
-			//assert
-			sut.Should().ResolveWithoutThrowing<IViewRepository>();
-		}
 
 		private static void RegisterDependencies(IWindsorContainer container)
 		{

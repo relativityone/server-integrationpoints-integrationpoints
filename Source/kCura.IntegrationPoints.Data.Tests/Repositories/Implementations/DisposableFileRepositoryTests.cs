@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Data;
 using System.Linq;
 using FluentAssertions;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
+using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
+using kCura.WinEDDS.Service.Export;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
@@ -16,8 +19,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 	public class DisposableFileRepositoryTests
 	{
 		private Mock<IFileRepository> _fileRepositoryMock;
-		private Mock<IServicesMgr> _servicesMgrMock;
-		private Mock<IFileManager> _fileManagerMock;
+		private Mock<ISearchManager> _searchMangerMock;
+		private Mock<IServiceFactory> _serviceFactoryMock;
 		private Mock<IExternalServiceInstrumentationProvider> _instrumentationProviderMock;
 		private Mock<DisposableFileRepository.CreateFileRepositoryDelegate> _createFileRepositoryDelegateMock;
 
@@ -31,20 +34,21 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		public void Setup()
 		{
 			_fileRepositoryMock = new Mock<IFileRepository>();
-			_fileManagerMock = new Mock<IFileManager>();
-			_servicesMgrMock = new Mock<IServicesMgr>();
-			_servicesMgrMock
-				.Setup(_ => _.CreateProxy<IFileManager>(It.IsAny<ExecutionIdentity>()))
-				.Returns(_fileManagerMock.Object);
+			_serviceFactoryMock = new Mock<IServiceFactory>();
+			_searchMangerMock = new Mock<ISearchManager>();
+
+			_serviceFactoryMock
+				.Setup(_ => _.CreateSearchManager())
+				.Returns(_searchMangerMock.Object);
 			_instrumentationProviderMock = new Mock<IExternalServiceInstrumentationProvider>();
 			_createFileRepositoryDelegateMock = new Mock<DisposableFileRepository.CreateFileRepositoryDelegate>();
 			_createFileRepositoryDelegateMock.Setup(_ => _(
-				It.IsAny<IFileManager>(),
+				It.IsAny<ISearchManager>(),
 				It.IsAny<IExternalServiceInstrumentationProvider>()
 			)).Returns(_fileRepositoryMock.Object);
 
 			_sut = new DisposableFileRepository(
-				_servicesMgrMock.Object,
+				_serviceFactoryMock.Object,
 				_instrumentationProviderMock.Object,
 				_createFileRepositoryDelegateMock.Object
 			);
@@ -54,22 +58,20 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		public void GetNativesForSearch_ShouldReturnResponsesFromInnerFileRepository()
 		{
 			//arrange
-			FileResponse[] responses = { new FileResponse(), new FileResponse() };
+			FileResponse [] responses = { new FileResponse(), new FileResponse() };
 			_fileRepositoryMock
 				.Setup(_ => _.GetNativesForSearch(_WORKSPACE_ID, _DOCUMENT_IDS))
-				.Returns(responses);
+				.Returns(responses.ToDataSet());
 
 			//arrange
-			FileResponse[] result = _sut.GetNativesForSearch(_WORKSPACE_ID, _DOCUMENT_IDS);
+			DataSet result = _sut.GetNativesForSearch(_WORKSPACE_ID, _DOCUMENT_IDS);
 			
 			//assert
 			_fileRepositoryMock.Verify(
 				_ => _.GetNativesForSearch(_WORKSPACE_ID, _DOCUMENT_IDS), 
 				Times.Once
 			);
-
-			result.Length.Should().Be(responses.Length);
-			result.Should().Contain(responses);
+			
 		}
 
 		[Test]
@@ -86,19 +88,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		}
 
 		[Test]
-		public void GetNativesForSearch_ShouldCallDisposeOnFileManagerProxy()
-		{
-			//arrange
-			FileResponse[] result = _sut.GetNativesForSearch(_WORKSPACE_ID, _DOCUMENT_IDS);
-
-			//assert
-			_fileManagerMock.Verify(
-				_ => _.Dispose(),
-				Times.Once
-			);
-		}
-
-		[Test]
 		public void GetNativesForProduction_ShouldReturnResponsesFromInnerFileRepository()
 		{
 			//arrange
@@ -106,10 +95,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			int productionID = _PRODUCTION_IDS.First();
 			_fileRepositoryMock
 				.Setup(_ => _.GetNativesForProduction(_WORKSPACE_ID, productionID, _DOCUMENT_IDS))
-				.Returns(responses);
+				.Returns(responses.ToDataSet());
 
 			//arrange
-			FileResponse[] result = _sut.GetNativesForProduction(_WORKSPACE_ID, productionID, _DOCUMENT_IDS);
+			DataSet result = _sut.GetNativesForProduction(_WORKSPACE_ID, productionID, _DOCUMENT_IDS);
 
 			//assert
 			_fileRepositoryMock.Verify(
@@ -117,8 +106,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				Times.Once
 			);
 
-			result.Length.Should().Be(responses.Length);
-			result.Should().Contain(responses);
+			AssertIfDataSetsAreSameAsExpected(responses.ToDataSet(), result);
 		}
 
 		[Test]
@@ -136,22 +124,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		}
 
 		[Test]
-		public void GetNativesForProduction_ShouldCallDisposeOnFileManagerProxy()
-		{
-			//arrange
-			FileResponse[] result = _sut.GetNativesForProduction(
-				_WORKSPACE_ID,
-				_PRODUCTION_IDS.First(),
-				_DOCUMENT_IDS);
-
-			//assert
-			_fileManagerMock.Verify(
-				_ => _.Dispose(),
-				Times.Once
-			);
-		}
-
-		[Test]
 		public void GetImagesForProductionDocuments_ShouldReturnResponsesFromInnerFileRepository()
 		{
 			//arrange
@@ -163,10 +135,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			int productionID = _PRODUCTION_IDS.First();
 			_fileRepositoryMock
 				.Setup(_ => _.GetImagesForProductionDocuments(_WORKSPACE_ID, productionID, _DOCUMENT_IDS))
-				.Returns(responses);
+				.Returns(responses.ToDataSet());
 
 			//arrange
-			ProductionDocumentImageResponse[] result = _sut.GetImagesForProductionDocuments(_WORKSPACE_ID, productionID, _DOCUMENT_IDS);
+			DataSet result = _sut.GetImagesForProductionDocuments(_WORKSPACE_ID, productionID, _DOCUMENT_IDS);
 
 			//assert
 			_fileRepositoryMock.Verify(
@@ -174,8 +146,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				Times.Once
 			);
 
-			result.Length.Should().Be(responses.Length);
-			result.Should().Contain(responses);
+			AssertIfDataSetsAreSameAsExpected(responses.ToDataSet(), result);
 		}
 
 		[Test]
@@ -193,22 +164,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		}
 
 		[Test]
-		public void GetImagesForProductionDocuments_ShouldCallDisposeOnFileManagerProxy()
-		{
-			//arrange
-			ProductionDocumentImageResponse[] result = _sut.GetImagesForProductionDocuments(
-				_WORKSPACE_ID,
-				_PRODUCTION_IDS.First(),
-				_DOCUMENT_IDS);
-
-			//assert
-			_fileManagerMock.Verify(
-				_ => _.Dispose(),
-				Times.Once
-			);
-		}
-
-		[Test]
 		public void GetImagesForDocuments_ShouldReturnResponsesFromInnerFileRepository()
 		{
 			//arrange
@@ -219,10 +174,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			};
 			_fileRepositoryMock
 				.Setup(_ => _.GetImagesForDocuments(_WORKSPACE_ID, _DOCUMENT_IDS))
-				.Returns(responses);
+				.Returns(responses.ToDataSet());
 
 			//arrange
-			DocumentImageResponse[] result = _sut.GetImagesForDocuments(_WORKSPACE_ID, _DOCUMENT_IDS);
+			DataSet result = _sut.GetImagesForDocuments(_WORKSPACE_ID, _DOCUMENT_IDS);
 
 			//assert
 			_fileRepositoryMock.Verify(
@@ -230,8 +185,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				Times.Once
 			);
 
-			result.Length.Should().Be(responses.Length);
-			result.Should().Contain(responses);
+			AssertIfDataSetsAreSameAsExpected(responses.ToDataSet(), result);
 		}
 
 		[Test]
@@ -248,21 +202,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		}
 
 		[Test]
-		public void GetImagesForDocuments_ShouldCallDisposeOnFileManagerProxy()
-		{
-			//arrange
-			DocumentImageResponse[] result = _sut.GetImagesForDocuments(
-				_WORKSPACE_ID,
-				_DOCUMENT_IDS);
-
-			//assert
-			_fileManagerMock.Verify(
-				_ => _.Dispose(),
-				Times.Once
-			);
-		}
-
-		[Test]
 		public void GetProducedImagesForDocument_ShouldReturnResponsesFromInnerFileRepository()
 		{
 			//arrange
@@ -274,35 +213,20 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			int documentID = _DOCUMENT_IDS.First();
 			_fileRepositoryMock
 				.Setup(_ => _.GetProducedImagesForDocument(_WORKSPACE_ID, documentID))
-				.Returns(responses);
+				.Returns(responses.ToDataSet());
 
 			//arrange
-			FileResponse[] result = _sut.GetProducedImagesForDocument(_WORKSPACE_ID, documentID);
+			DataSet result = _sut.GetProducedImagesForDocument(_WORKSPACE_ID, documentID);
 
 			//assert
 			_fileRepositoryMock.Verify(
 				_ => _.GetProducedImagesForDocument(_WORKSPACE_ID, documentID),
 				Times.Once
 			);
-
-			result.Length.Should().Be(responses.Length);
-			result.Should().Contain(responses);
+			AssertIfDataSetsAreSameAsExpected(responses.ToDataSet(), result);
 		}
 
-		[Test]
-		public void GetProducedImagesForDocument_ShouldCallDisposeOnFileManagerProxy()
-		{
-			//arrange
-			FileResponse[] result = _sut.GetProducedImagesForDocument(
-				_WORKSPACE_ID,
-				_DOCUMENT_IDS.First());
 
-			//assert
-			_fileManagerMock.Verify(
-				_ => _.Dispose(),
-				Times.Once
-			);
-		}
 
 		[Test]
 		public void GetImagesForExport_ShouldReturnResponsesFromInnerFileRepository()
@@ -315,10 +239,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			};
 			_fileRepositoryMock
 				.Setup(_ => _.GetImagesForExport(_WORKSPACE_ID, _PRODUCTION_IDS, _DOCUMENT_IDS))
-				.Returns(responses);
+				.Returns(responses.ToDataSet());
 
 			//arrange
-			ExportProductionDocumentImageResponse[] result = _sut.GetImagesForExport(
+			DataSet result = _sut.GetImagesForExport(
 				_WORKSPACE_ID, 
 				_PRODUCTION_IDS, 
 				_DOCUMENT_IDS
@@ -330,8 +254,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				Times.Once
 			);
 
-			result.Length.Should().Be(responses.Length);
-			result.Should().Contain(responses);
+			AssertIfDataSetsAreSameAsExpected(responses.ToDataSet(), result);
 		}
 
 		[Test]
@@ -362,21 +285,12 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			action.ShouldNotThrow();
 		}
 
-		[Test]
-		public void GetImagesForExport_ShouldCallDisposeOnFileManagerProxy()
-		{
-			//arrange
-			ExportProductionDocumentImageResponse[] result = _sut.GetImagesForExport(
-				_WORKSPACE_ID,
-				_PRODUCTION_IDS,
-				_DOCUMENT_IDS
-			);
 
-			//assert
-			_fileManagerMock.Verify(
-				_ => _.Dispose(),
-				Times.Once
-			);
+		private void AssertIfDataSetsAreSameAsExpected(DataSet expectedDataSet, DataSet currentDataSet)
+		{
+
+			expectedDataSet.Tables[0].Rows.Count.ShouldBeEquivalentTo(expectedDataSet.Tables[0].Rows.Count);
 		}
+
 	}
 }

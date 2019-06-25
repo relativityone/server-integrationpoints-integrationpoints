@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Contracts.Models;
@@ -220,8 +221,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 					Arg.Is<int[]>(x => x.Single() == documentArtifactID))
 				.Returns(info =>
 				{
-					ProductionDocumentImageResponse[] responses = CreateProductionDocumentImageResponses();
-					responses.First().Location = null;
+					DataSet responses = CreateProductionDocumentImageResponses();
+					responses.Tables[0].Rows[0][1] = null;
 					return responses;
 				});
 
@@ -263,28 +264,30 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 			return retrievedData;
 		}
 
-		private DocumentImageResponse[] CreateDocumentImageResponses()
+		private DataSet CreateDocumentImageResponses()
 		{
-			return new[]
+			DataSet dataSet = new DataSet("DocumentImageResponse");
+			DataTable table = dataSet.Tables.Add();
+			table.Columns.Add();
+			table.Rows.Add()[0] = new ProductionDocumentImageResponse
 			{
-				new DocumentImageResponse
-				{
-					Identifier = "AZIPPER_0007293",
-					Location = "\\somelocation"
-				}
+				NativeIdentifier = "AZIPPER_0007293",
+				Location = "\\somelocation"
 			};
+			return dataSet;
 		}
 
-		private ProductionDocumentImageResponse[] CreateProductionDocumentImageResponses()
+		private DataSet CreateProductionDocumentImageResponses()
 		{
-			return new[]
-			{
-				new ProductionDocumentImageResponse
+			DataSet dataSet = new DataSet("ProductionDocumentImageResponse");
+			DataTable table = dataSet.Tables.Add();
+			table.Columns.Add();
+			table.Rows.Add()[0] = new ProductionDocumentImageResponse
 				{
 					NativeIdentifier = "AZIPPER_0007293",
 					Location = "\\somelocation"
-				}
-			};
+				};
+			return dataSet;
 		}
 
 		#endregion
