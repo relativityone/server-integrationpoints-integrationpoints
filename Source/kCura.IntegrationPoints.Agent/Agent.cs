@@ -23,7 +23,6 @@ using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.TimeMachine;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
-using Component = Castle.MicroKernel.Registration.Component;
 
 namespace kCura.IntegrationPoints.Agent
 {
@@ -75,34 +74,47 @@ namespace kCura.IntegrationPoints.Agent
 		protected override TaskResult ProcessJob(Job job)
 		{
 			using (IWindsorContainer ripContainerForSync = CreateAgentLevelContainer())
+			using (ripContainerForSync.Resolve<JobContextProvider>().StartJobContext(job))
 			{
-				using (ripContainerForSync.Resolve<JobContextProvider>().StartJobContext(job))
+				if (ShouldUseRelativitySync(job, ripContainerForSync))
 				{
-					if (ShouldUseRelativitySync(job, ripContainerForSync))
+					try
 					{
+						ripContainerForSync.Register(Castle.MicroKernel.Registration.Component.For<IExtendedJob>().ImplementedBy<ExtendedJob>());
+						ripContainerForSync.Register(Castle.MicroKernel.Registration.Component.For<RelativitySyncAdapter>().ImplementedBy<RelativitySyncAdapter>());
+						ripContainerForSync.Register(Castle.MicroKernel.Registration.Component.For<IWindsorContainer>().Instance(ripContainerForSync));
+						ripContainerForSync.Register(Castle.MicroKernel.Registration.Component.For<ISendEmailWorker>().UsingFactoryMethod(k => k.Resolve<SendEmailWorker>()));
+						ripContainerForSync.Register(Castle.MicroKernel.Registration.Component.For<IExportServiceManager>().ImplementedBy<ExportServiceManager>().Named(Guid.NewGuid().ToString()).IsDefault());
+						ripContainerForSync.Register(Castle.MicroKernel.Registration.Component.For<IntegrationPointToSyncConverter>().ImplementedBy<IntegrationPointToSyncConverter>());
+
+						RelativitySyncAdapter syncAdapter = ripContainerForSync.Resolve<RelativitySyncAdapter>();
+						return syncAdapter.RunAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+					}
+					catch (Exception e)
+					{
+						//Not much we can do here. If container failed we're unable to do anything.
+						//Exception was thrown from container, because RelativitySyncAdapter catches all exceptions inside
+						Logger.LogError(e, $"Unable to resolve {nameof(RelativitySyncAdapter)}.");
+
 						try
 						{
-							ripContainerForSync.Register(Component.For<IExtendedJob>().ImplementedBy<ExtendedJob>());
-							ripContainerForSync.Register(Component.For<RelativitySyncAdapter>().ImplementedBy<RelativitySyncAdapter>());
-							ripContainerForSync.Register(Component.For<IWindsorContainer>().Instance(ripContainerForSync));
-							ripContainerForSync.Register(Component.For<ISendEmailWorker>().UsingFactoryMethod(k => k.Resolve<SendEmailWorker>()));
-							ripContainerForSync.Register(Component.For<IExportServiceManager>().ImplementedBy<ExportServiceManager>().Named(Guid.NewGuid().ToString()).IsDefault());
-							ripContainerForSync.Register(Component.For<IntegrationPointToSyncConverter>().ImplementedBy<IntegrationPointToSyncConverter>());
-
-							RelativitySyncAdapter syncAdapter = ripContainerForSync.Resolve<RelativitySyncAdapter>();
-							return syncAdapter.RunAsync().ConfigureAwait(false).GetAwaiter().GetResult();
-						}
-						catch (Exception e)
-						{
-							//Not much we can do here. If container failed we're unable to do anything.
-							//Exception was thrown from container, because RelativitySyncAdapter catches all exceptions inside
-							Logger.LogError(e, $"Unable to resolve {nameof(RelativitySyncAdapter)}.");
-							return new TaskResult
+							var jobHistoryHelper = new JobHistoryHelper();
+							IExtendedJob syncJob = ripContainerForSync.Resolve<IExtendedJob>();
+							if (syncJob != null)
 							{
-								Status = TaskStatusEnum.Fail,
-								Exceptions = new[] {e}
-							};
+								jobHistoryHelper.MarkJobAsFailedAsync(syncJob, e, _helper).ConfigureAwait(false).GetAwaiter().GetResult();
+							}
 						}
+						catch (Exception ie)
+						{
+							Logger.LogError(ie, "Unable to mark Sync job as failed and log a job history error in {WorkspaceArtifactId} for {JobId}.", job.WorkspaceID, job.JobId);
+						}
+
+						return new TaskResult
+						{
+							Status = TaskStatusEnum.Fail,
+							Exceptions = new[] { e }
+						};
 					}
 				}
 			}
@@ -140,7 +152,7 @@ namespace kCura.IntegrationPoints.Agent
 		{
 			try
 			{
-				ripContainerForSync.Register(Component.For<RelativitySyncConstrainsChecker>().ImplementedBy<RelativitySyncConstrainsChecker>());
+				ripContainerForSync.Register(Castle.MicroKernel.Registration.Component.For<RelativitySyncConstrainsChecker>().ImplementedBy<RelativitySyncConstrainsChecker>());
 				RelativitySyncConstrainsChecker constrainsChecker = ripContainerForSync.Resolve<RelativitySyncConstrainsChecker>();
 				return constrainsChecker.ShouldUseRelativitySync(job);
 			}
