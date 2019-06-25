@@ -61,6 +61,6 @@ namespace kCura.IntegrationPoints.Config
 		/// <summary>
 		/// Gets size of source workspace tagging batch
 		/// </summary>
-		int SourceWorkspaceTaggerBatchSize { get; }
+		int SourceWorkspaceTaggerBatchSize { get; } // TODO rename instance setting
 	}
 }

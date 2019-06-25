@@ -102,7 +102,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			ORDER BY [ArtifactID] OFFSET {offset} ROWS FETCH NEXT {size} ROWS ONLY";
 
 			//ACT
-			_sut.ReadDocumentIDs(offset, size).ToList();
+			_sut.ReadArtifactIDs(offset, size).ToList();
 
 			//ASSERT
 			_workspaceDbContextMock.Verify(x => x.ExecuteSQLStatementAsReader(expectedQuery), Times.Once);

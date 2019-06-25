@@ -13,6 +13,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Helpers;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
@@ -35,6 +36,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		private readonly IFolderPathReaderFactory _folderPathReaderFactory;
 		private readonly IRelativityObjectManager _relativityObjectManager;
 		private readonly ISourceDocumentsTagger _sourceDocumentsTagger;
+		private readonly IMassUpdateHelper _massUpdateHelper;
 		private readonly IAPILog _logger;
 
 		public ExporterFactory(
@@ -44,7 +46,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			IHelper helper,
 			IFolderPathReaderFactory folderPathReaderFactory,
 			IRelativityObjectManager relativityObjectManager,
-			ISourceDocumentsTagger sourceDocumentsTagger)
+			ISourceDocumentsTagger sourceDocumentsTagger,
+			IMassUpdateHelper massUpdateHelper)
 		{
 			_claimsPrincipalFactory = claimsPrincipalFactory;
 			_sourceRepositoryFactory = sourceRepositoryFactory;
@@ -53,6 +56,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			_folderPathReaderFactory = folderPathReaderFactory;
 			_relativityObjectManager = relativityObjectManager;
 			_sourceDocumentsTagger = sourceDocumentsTagger;
+			_massUpdateHelper = massUpdateHelper;
 			_logger = _helper.GetLoggerFactory().GetLogger().ForContext<ExporterFactory>();
 		}
 
@@ -74,7 +78,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			IConsumeScratchTableBatchStatus destinationFieldsTagger = CreateDestinationFieldsTagger(tagsCreator, tagSavedSearchManager, synchronizerFactory,
 				serializer, mappedFields, configuration, jobHistory, uniqueJobId, userImportApiSettings);
 			IConsumeScratchTableBatchStatus sourceFieldsTagger = CreateSourceFieldsTagger(configuration, jobHistory, sourceWorkspaceTagsCreator, uniqueJobId);
-			IBatchStatus sourceJobHistoryErrorUpdater = CreateJobHistoryErrorUpdater(job, jobHistoryErrorManager, jobStopManager, configuration, updateStatusType);
+			IBatchStatus sourceJobHistoryErrorUpdater = CreateJobHistoryErrorUpdater(jobHistoryErrorManager, jobStopManager, configuration, updateStatusType);
 
 			var batchStatusCommands = new List<IBatchStatus>
 			{
@@ -171,7 +175,6 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		}
 
 		private IBatchStatus CreateJobHistoryErrorUpdater(
-			Job job,
 			IJobHistoryErrorManager jobHistoryErrorManager,
 			IJobStopManager jobStopManager,
 			SourceConfiguration configuration,
@@ -179,13 +182,12 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		{
 			return new JobHistoryErrorBatchUpdateManager(
 				jobHistoryErrorManager,
-				_helper,
+				_logger,
 				_sourceRepositoryFactory,
-				_claimsPrincipalFactory,
 				jobStopManager,
 				configuration.SourceWorkspaceArtifactId,
-				job.SubmittedBy,
-				updateStatusType);
+				updateStatusType,
+				_massUpdateHelper);
 		}
 
 		private IExporterService CreateRelativityExporterService(

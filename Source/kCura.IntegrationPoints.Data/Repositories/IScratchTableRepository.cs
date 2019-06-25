@@ -47,12 +47,12 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		void DeleteTable();
 
 		/// <summary>
-		/// Retrieve document IDs from scratch table with offset. The documents are in descending order
+		/// Retrieve artifact IDs from scratch table with offset. The artifacts are in descending order
 		/// </summary>
 		/// <param name="offset"></param>
 		/// <param name="size"></param>
 		/// <returns>Document IDs from scratch table</returns>
-		IEnumerable<int> ReadDocumentIDs(int offset, int size);
+		IEnumerable<int> ReadArtifactIDs(int offset, int size);
 
 		/// <summary>
 		/// Retrieve the temp table name for the ScratchTableRepository instance

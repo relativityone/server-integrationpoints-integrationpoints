@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Security.Claims;
 using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Data.Repositories
 {
-	public interface IJobHistoryErrorRepository
+	public interface IJobHistoryErrorRepository : IMassUpdateRepository
 	{
 		/// <summary>
 		/// Retrieves the Job History Errors for the given Job History Artifact Id
@@ -13,16 +12,6 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <param name="errorType">Error Type choice to gather job history errors for</param>
 		/// <returns>Collection of Artifact Ids of Job History Errors for the provided Job History and Error Type</returns>
 		ICollection<int> RetrieveJobHistoryErrorArtifactIds(int jobHistoryArtifactId, JobHistoryErrorDTO.Choices.ErrorType.Values errorType);
-
-		/// <summary>
-		/// Mass edits the Job History Errors 
-		/// </summary>
-		/// <param name="claimsPrincipal">A ClaimsPrincipal object that contains the identity of the user</param>
-		/// <param name="numberOfErrors">The number of errors to be updated</param>
-		/// <param name="jobHistoryErrorTypeId">Type Id of the Job History Error</param>
-		/// <param name="errorStatusArtifactId">The Error Status Artifact Id to update the errors to</param>
-		/// <param name="tableName">Unique temp table name to run updates with</param>
-		void UpdateErrorStatuses(ClaimsPrincipal claimsPrincipal, int numberOfErrors, int jobHistoryErrorTypeId, int errorStatusArtifactId, string tableName);
 
 		/// <summary>
 		/// Creates a saved search to temporarily be used for retry error jobs.

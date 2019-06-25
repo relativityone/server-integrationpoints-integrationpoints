@@ -141,7 +141,7 @@
     <Compile Include="Facades\SecretStore\Implementation\SecretStoreFacadeRetryDecoratorTests.cs" />
     <Compile Include="Facades\SecretStore\Implementation\SecretStoreFacadeInstrumentationDecoratorTests.cs" />
     <Compile Include="Facades\SecretStore\Implementation\SecretStoreFacadeTests.cs" />
-    <Compile Include="Helpers\MatchHelper.cs" />
+    <Compile Include="Helpers\MassUpdateHelperTests.cs" />
     <Compile Include="Installers\RepositoryRegistrationTests.cs" />
     <Compile Include="Installers\RetryingMechanismRegistrationTests.cs" />
     <Compile Include="Repositories\DTO\MultiObjectReferenceDtoTests.cs" />

@@ -21,8 +21,8 @@
 		/// <summary>
 		/// Set all associate job history errors to be expired
 		/// </summary>
-		/// <param name="workspaceArtifactId">The workspace artifact id.</param>
-		/// <param name="jobHistoryArtifactId">An artifact id of the job history</param>
-		void SetErrorStatusesToExpired(int workspaceArtifactId, int jobHistoryArtifactId);
+		/// <param name="workspaceArtifactID">The workspace artifact ID.</param>
+		/// <param name="jobHistoryArtifactID">An artifact ID of the job history</param>
+		void SetErrorStatusesToExpired(int workspaceArtifactID, int jobHistoryArtifactID);
 	}
 }

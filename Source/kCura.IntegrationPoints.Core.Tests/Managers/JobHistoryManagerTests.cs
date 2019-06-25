@@ -2,14 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Helpers;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.DTO;
 using kCura.IntegrationPoints.Domain.Models;
+using Moq;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
@@ -19,14 +23,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 	[TestFixture]
 	public class JobHistoryManagerTests : TestBase
 	{
-		private IJobHistoryManager _testInstance;
+		private IJobHistoryManager _sut;
+
 		private IRepositoryFactory _repositoryFactory;
 		private IJobHistoryRepository _jobHistoryRepository;
 		private IObjectTypeRepository _objectTypeRepo;
 		private IArtifactGuidRepository _artifactGuidRepo;
 		private IJobHistoryErrorRepository _jobHistoryErrorRepo;
-		private IScratchTableRepository _itemLevelScratchTable;
-		private IScratchTableRepository _jobLevelScratchTable;
+		private Mock<IMassUpdateHelper> _massUpdateHelperMock;
 
 		private const int _WORKSPACE_ID = 100532;
 
@@ -38,17 +42,18 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_objectTypeRepo = Substitute.For<IObjectTypeRepository>();
 			_artifactGuidRepo = Substitute.For<IArtifactGuidRepository>();
 			_jobHistoryErrorRepo = Substitute.For<IJobHistoryErrorRepository>();
+			_massUpdateHelperMock = new Mock<IMassUpdateHelper>();
+			_massUpdateHelperMock.Setup(x => x.UpdateArtifactsAsync(
+				It.IsAny<ICollection<int>>(),
+				It.IsAny<FieldUpdateRequestDto[]>(),
+				It.IsAny<IMassUpdateRepository>())
+			).Returns(Task.CompletedTask);
 
-			var helper = Substitute.For<IHelper>();
-			_testInstance = new JobHistoryManager(_repositoryFactory, helper);
-			_itemLevelScratchTable = Substitute.For<IScratchTableRepository>();
-			_jobLevelScratchTable = Substitute.For<IScratchTableRepository>();
-			_jobLevelScratchTable.GetTempTableName().Returns("Job Level errors");
-			_itemLevelScratchTable.GetTempTableName().Returns("Item Level errors");
+			IAPILog logger = Substitute.For<IAPILog>();
+			_sut = new JobHistoryManager(_repositoryFactory, logger, _massUpdateHelperMock.Object);
 
 			_repositoryFactory.GetJobHistoryRepository(_WORKSPACE_ID).Returns(_jobHistoryRepository);
 			_repositoryFactory.GetJobHistoryErrorRepository(_WORKSPACE_ID).Returns(_jobHistoryErrorRepo);
-			_repositoryFactory.GetScratchTableRepository(_WORKSPACE_ID, "StoppingRIPJob_", Arg.Any<String>()).Returns(_itemLevelScratchTable, _jobLevelScratchTable);
 		}
 
 		[Test]
@@ -60,7 +65,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_jobHistoryRepository.GetLastJobHistoryArtifactId(integrationPointArtifactId).Returns(expectedLastTwoJobHistoryIds);
 
 			// ACT
-			int result = _testInstance.GetLastJobHistoryArtifactId(_WORKSPACE_ID, integrationPointArtifactId);
+			int result = _sut.GetLastJobHistoryArtifactId(_WORKSPACE_ID, integrationPointArtifactId);
 
 			// ASSERT
 			Assert.AreEqual(expectedLastTwoJobHistoryIds, result);
@@ -71,23 +76,23 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		{
 			// ARRANGE
 			int integrationPointArtifactId = 1322131;
-			int[] pendingJobHistoryIds = {234323, 980934};
-			int[] processingJobHistoryIds = {323, 9893};
+			int[] pendingJobHistoryIDs = { 234323, 980934 };
+			int[] processingJobHistoryIDs = { 323, 9893 };
 			IDictionary<Guid, int[]> artifactIdsByStatus = new Dictionary<Guid, int[]>()
 			{
-				{JobStatusChoices.JobHistoryPending.Guids.First(), pendingJobHistoryIds},
-				{JobStatusChoices.JobHistoryProcessing.Guids.First(), processingJobHistoryIds},
+				{JobStatusChoices.JobHistoryPending.Guids.First(), pendingJobHistoryIDs},
+				{JobStatusChoices.JobHistoryProcessing.Guids.First(), processingJobHistoryIDs},
 			};
 
 			_jobHistoryRepository.GetStoppableJobHistoryArtifactIdsByStatus(integrationPointArtifactId).Returns(artifactIdsByStatus);
 
 			// ACT
-			StoppableJobCollection result = _testInstance.GetStoppableJobCollection(_WORKSPACE_ID, integrationPointArtifactId);
+			StoppableJobCollection result = _sut.GetStoppableJobCollection(_WORKSPACE_ID, integrationPointArtifactId);
 
 			// ASSERT
-			Assert.IsTrue(pendingJobHistoryIds.SequenceEqual(result.PendingJobArtifactIds),
+			Assert.IsTrue(pendingJobHistoryIDs.SequenceEqual(result.PendingJobArtifactIds),
 				"The PendingJobArtifactIds should be correct");
-			Assert.IsTrue(processingJobHistoryIds.SequenceEqual(result.ProcessingJobArtifactIds),
+			Assert.IsTrue(processingJobHistoryIDs.SequenceEqual(result.ProcessingJobArtifactIds),
 				"The ProcessingJobArtifactIds should be correct");
 		}
 
@@ -103,7 +108,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_jobHistoryRepository.GetStoppableJobHistoryArtifactIdsByStatus(integrationPointArtifactId).Returns(artifactIdsByStatus);
 
 			// ACT
-			StoppableJobCollection result = _testInstance.GetStoppableJobCollection(_WORKSPACE_ID, integrationPointArtifactId);
+			StoppableJobCollection result = _sut.GetStoppableJobCollection(_WORKSPACE_ID, integrationPointArtifactId);
 
 			// ASSERT
 			Assert.IsNotNull(result.PendingJobArtifactIds, $"The {nameof(StoppableJobCollection.PendingJobArtifactIds)} should not be null.");
@@ -119,28 +124,41 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			// ARRANGE
 			const int jobHistoryTypeId = 78;
 			const int errorChoiceArtifactId = 98756;
-			int[] itemLevelErrors = new[] {2, 3, 4};
-			Dictionary<Guid, int> guids = new Dictionary<Guid, int>()
+			int[] itemLevelErrors = { 2, 3, 4 };
+			int[] jobLevelErrors = { };
+			var guids = new Dictionary<Guid, int>
 			{
-				{ErrorStatusChoices.JobHistoryErrorExpired.Guids[0], errorChoiceArtifactId}
+				{ErrorStatusChoices.JobHistoryErrorExpiredGuid, errorChoiceArtifactId}
 			};
 			_repositoryFactory.GetObjectTypeRepository(_WORKSPACE_ID).Returns(_objectTypeRepo);
 			_repositoryFactory.GetArtifactGuidRepository(_WORKSPACE_ID).Returns(_artifactGuidRepo);
 
-			_objectTypeRepo.RetrieveObjectTypeDescriptorArtifactTypeId(Arg.Is<Guid>(guid => guid.Equals(new Guid(ObjectTypeGuids.JobHistoryError)))).Returns(jobHistoryTypeId);
-			_artifactGuidRepo.GetArtifactIdsForGuids(ErrorStatusChoices.JobHistoryErrorExpired.Guids).Returns(guids);
+			_objectTypeRepo.RetrieveObjectTypeDescriptorArtifactTypeId(ObjectTypeGuids.JobHistoryErrorGuid)
+				.Returns(jobHistoryTypeId);
+			_artifactGuidRepo.GetArtifactIdsForGuids(new[] { ErrorStatusChoices.JobHistoryErrorExpiredGuid })
+				.Returns(guids);
 
-			_jobHistoryErrorRepo.RetrieveJobHistoryErrorArtifactIds(jobHistoryTypeId, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(itemLevelErrors);
-			_jobHistoryErrorRepo.RetrieveJobHistoryErrorArtifactIds(jobHistoryTypeId, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).Returns(new int[] { });
-			
+			_jobHistoryErrorRepo.RetrieveJobHistoryErrorArtifactIds(jobHistoryTypeId, JobHistoryErrorDTO.Choices.ErrorType.Values.Item)
+				.Returns(itemLevelErrors);
+			_jobHistoryErrorRepo.RetrieveJobHistoryErrorArtifactIds(jobHistoryTypeId, JobHistoryErrorDTO.Choices.ErrorType.Values.Job)
+				.Returns(jobLevelErrors);
+
 			// ACT
-			_testInstance.SetErrorStatusesToExpired(_WORKSPACE_ID, jobHistoryTypeId);
+			_sut.SetErrorStatusesToExpired(_WORKSPACE_ID, jobHistoryTypeId);
 
 			// ASSERT
-			_itemLevelScratchTable.Received(1).AddArtifactIdsIntoTempTable(Arg.Is<ICollection<int>>(collection => collection.SequenceEqual(itemLevelErrors)));
-			_jobLevelScratchTable.Received(1).AddArtifactIdsIntoTempTable(Arg.Is<ICollection<int>>(collection => collection.Count == 0));
-			_jobHistoryErrorRepo.Received(1).UpdateErrorStatuses(Arg.Any<ClaimsPrincipal>(), itemLevelErrors.Length, jobHistoryTypeId, errorChoiceArtifactId, _itemLevelScratchTable.GetTempTableName());
-			_jobHistoryErrorRepo.Received(1).UpdateErrorStatuses(Arg.Any<ClaimsPrincipal>(), 0, jobHistoryTypeId, errorChoiceArtifactId, _jobLevelScratchTable.GetTempTableName());
+			_massUpdateHelperMock.Verify(
+				x => x.UpdateArtifactsAsync(
+					itemLevelErrors,
+					It.Is<FieldUpdateRequestDto[]>(fields => ValidateErrorStatusField(fields, ErrorStatusChoices.JobHistoryErrorExpiredGuid)),
+					_jobHistoryErrorRepo)
+				);
+			_massUpdateHelperMock.Verify(
+				x => x.UpdateArtifactsAsync(
+					jobLevelErrors,
+					It.Is<FieldUpdateRequestDto[]>(fields => ValidateErrorStatusField(fields, ErrorStatusChoices.JobHistoryErrorExpiredGuid)),
+					_jobHistoryErrorRepo)
+				);
 		}
 
 		[Test]
@@ -164,12 +182,20 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_jobHistoryErrorRepo.RetrieveJobHistoryErrorArtifactIds(jobHistoryTypeId, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(itemLevelErrors);
 			_jobHistoryErrorRepo.RetrieveJobHistoryErrorArtifactIds(jobHistoryTypeId, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).Returns(new int[] { });
 
-			_jobHistoryErrorRepo
-				.When(repo => repo.UpdateErrorStatuses(Arg.Any<ClaimsPrincipal>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<string>()))
-				.Do(info => { throw new Exception("error"); });
+			_massUpdateHelperMock.Setup(x => x.UpdateArtifactsAsync(
+					It.IsAny<ICollection<int>>(),
+					It.IsAny<FieldUpdateRequestDto[]>(),
+					It.IsAny<IMassUpdateRepository>()))
+				.Throws<Exception>();
 
 			// ACT
-			Assert.DoesNotThrow(() => _testInstance.SetErrorStatusesToExpired(_WORKSPACE_ID, jobHistoryTypeId));
+			Assert.DoesNotThrow(() => _sut.SetErrorStatusesToExpired(_WORKSPACE_ID, jobHistoryTypeId));
+		}
+
+		private bool ValidateErrorStatusField(FieldUpdateRequestDto[] fields, Guid expectedStatus)
+		{
+			FieldUpdateRequestDto statusField = fields.SingleOrDefault(x => x.FieldIdentifier == JobHistoryErrorFieldGuids.ErrorStatusGuid);
+			return statusField?.NewValue is SingleChoiceReferenceDto errorStatusValue && errorStatusValue.ChoiceValueGuid == expectedStatus;
 		}
 	}
 }

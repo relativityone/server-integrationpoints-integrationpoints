@@ -34,6 +34,7 @@ using Castle.MicroKernel.Resolvers;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Agent.Installer.Components;
 using kCura.IntegrationPoints.Core.Tagging;
+using kCura.IntegrationPoints.Data.Helpers;
 using kCura.IntegrationPoints.Data.Repositories;
 using ITaskFactory = kCura.IntegrationPoints.Agent.TaskFactory.ITaskFactory;
 
@@ -110,7 +111,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 			container.Register(Component.For<CurrentUser>().UsingFactoryMethod(k =>
 			{
 				JobContextProvider jobContextProvider = k.Resolve<JobContextProvider>();
-				return new CurrentUser(userID:jobContextProvider.Job.SubmittedBy);
+				return new CurrentUser(userID: jobContextProvider.Job.SubmittedBy);
 			}).LifestyleTransient());
 
 			container.Register(Component.For<IScheduleRuleFactory>().UsingFactoryMethod(k => _scheduleRuleFactory, true).LifestyleTransient());
@@ -179,6 +180,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 					IFolderPathReaderFactory folderPathReaderFactory = k.Resolve<IFolderPathReaderFactory>();
 					IRelativityObjectManager relativityObjectManager = k.Resolve<IRelativityObjectManager>();
 					ISourceDocumentsTagger sourceDocumentsTagger = k.Resolve<ISourceDocumentsTagger>();
+					IMassUpdateHelper massUpdateHelper = k.Resolve<IMassUpdateHelper>();
 
 					return new Core.Factories.Implementations.ExporterFactory(
 						claimsPrincipalFactory,
@@ -187,7 +189,8 @@ namespace kCura.IntegrationPoints.Agent.Installer
 						sourceHelper,
 						folderPathReaderFactory,
 						relativityObjectManager,
-						sourceDocumentsTagger);
+						sourceDocumentsTagger,
+						massUpdateHelper);
 				}).LifestyleTransient());
 
 			container.Register(Component.For<IRsapiClientWithWorkspaceFactory>().ImplementedBy<ExtendedRsapiClientWithWorkspaceFactory>().LifestyleTransient());

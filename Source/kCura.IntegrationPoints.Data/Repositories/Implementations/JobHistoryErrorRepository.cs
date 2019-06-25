@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
-using System.Security.Claims;
-using kCura.IntegrationPoints.Data.Commands.MassEdit;
-using kCura.IntegrationPoints.Data.Extensions;
+using System.Threading.Tasks;
+using kCura.IntegrationPoints.Data.Converters;
 using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Domain.Exceptions;
+using kCura.IntegrationPoints.Data.Repositories.DTO;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client.DTOs;
 using Relativity.API;
-using Relativity.Core;
-using Relativity.Data;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Search;
 using FieldRef = Relativity.Services.Field.FieldRef;
@@ -65,69 +61,20 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				Condition = jobHistoryCondition,
 			};
 
-			try
-			{
-				return _objectManager.Query<JobHistoryError>(query);
-			}
-			catch (Exception ex)
-			{
-				throw new IntegrationPointsException(string.Format(JobHistoryErrorErrors.JOB_HISTORY_ERROR_RETRIEVE_FAILURE, jobHistoryArtifactId), ex)
-				{
-					ExceptionSource = IntegrationPointsExceptionSource.KEPLER
-				};
-			}
+			return _objectManager.Query<JobHistoryError>(query);
 		}
 
 		private Guid GetChoiceGuidForErrorType(JobHistoryErrorDTO.Choices.ErrorType.Values errorType)
 		{
 			switch (errorType)
 			{
-					case JobHistoryErrorDTO.Choices.ErrorType.Values.Item:
-						return ErrorTypeChoices.JobHistoryErrorItem.Guids.First();
+				case JobHistoryErrorDTO.Choices.ErrorType.Values.Item:
+					return ErrorTypeChoices.JobHistoryErrorItem.Guids.First();
 
-					case JobHistoryErrorDTO.Choices.ErrorType.Values.Job:
-						return ErrorTypeChoices.JobHistoryErrorJob.Guids.First();
+				case JobHistoryErrorDTO.Choices.ErrorType.Values.Job:
+					return ErrorTypeChoices.JobHistoryErrorJob.Guids.First();
 				default:
 					throw new InvalidOperationException($"Guid for requested error type doesn't exist. Error type: {errorType}");
-			}
-		}
-
-		public void UpdateErrorStatuses(ClaimsPrincipal claimsPrincipal, int numberOfErrors, int jobHistoryErrorTypeId, int errorStatusArtifactId, string tableName)
-		{
-			if (numberOfErrors <= 0)
-			{
-				return;
-			}
-
-			BaseServiceContext baseService = claimsPrincipal.GetUnversionContext(_workspaceArtifactId);
-
-			Guid[] guids = { new Guid(JobHistoryErrorFieldGuids.ErrorStatus) };
-			DataRowCollection fieldRows;
-			try
-			{
-				fieldRows = FieldQuery.RetrieveAllByGuids(baseService.ChicagoContext.DBContext, guids).Table.Rows;
-			}
-			catch (Exception ex)
-			{
-				throw new Exception(MassEditErrors.JOB_HISTORY_ERROR_STATUS_QUERY_ERROR, ex);
-			}
-
-			if (fieldRows.Count == 0)
-			{
-				throw new Exception(MassEditErrors.JOB_HISTORY_ERROR_STATUS_EXISTENCE_ERROR);
-			}
-
-			global::Relativity.Query.ArtifactType jobHistoryErrorArtifactType = new global::Relativity.Query.ArtifactType(jobHistoryErrorTypeId, JobHistoryErrorDTO.TableName);
-			global::Relativity.Core.DTO.Field singleChoiceField = new global::Relativity.Core.DTO.Field(baseService, fieldRows[0]);
-
-			try
-			{
-				JobHistoryErrorMassEditRepository jobHistoryErrorMassEditRepository = new JobHistoryErrorMassEditRepository();
-				jobHistoryErrorMassEditRepository.UpdateErrorStatuses(baseService, singleChoiceField, numberOfErrors, jobHistoryErrorArtifactType, errorStatusArtifactId, tableName);
-			}
-			catch (Exception e)
-			{
-				throw new Exception(MassEditErrors.JOB_HISTORY_ERROR_MASS_EDIT_FAILURE, e);
 			}
 		}
 
@@ -215,13 +162,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return jobHistoryErrors;
 		}
 
-		private class JobHistoryErrorMassEditRepository : RelativityMassEditBase
+		public Task<bool> MassUpdateAsync(IEnumerable<int> rdoToUpdateArtifactIDs, IEnumerable<FieldUpdateRequestDto> fieldsToUpdate)
 		{
-			public void UpdateErrorStatuses(BaseServiceContext baseService, global::Relativity.Core.DTO.Field singleChoiceField, int numberOfErrors,
-				global::Relativity.Query.ArtifactType jobHistoryErrorArtifactType, int errorStatusArtifactId, string tableName)
-			{
-				base.UpdateSingleChoiceField(baseService, singleChoiceField, numberOfErrors, jobHistoryErrorArtifactType, errorStatusArtifactId, tableName);
-			}
+			IEnumerable<FieldRefValuePair> convertedFieldstoUpdate = fieldsToUpdate.Select(x => x.ToFieldRefValuePair());
+			return _objectManager.MassUpdateAsync(rdoToUpdateArtifactIDs, convertedFieldstoUpdate, FieldUpdateBehavior.Merge);
 		}
 	}
 }

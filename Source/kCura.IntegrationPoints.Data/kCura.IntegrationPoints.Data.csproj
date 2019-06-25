@@ -21,7 +21,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <DebugType>full</DebugType>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>6</LangVersion>
+    <LangVersion>7</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <PlatformTarget>x64</PlatformTarget>
@@ -31,6 +31,7 @@
     <Optimize>true</Optimize>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>7</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="kCura.Apps.Common.Utils, Version=2.1.8.2, Culture=neutral, processorArchitecture=MSIL">
@@ -66,6 +67,7 @@
     <Compile Include="Contexts\IOnBehalfOfUserClaimsPrincipalFactory.cs" />
     <Compile Include="Contexts\OnBehalfOfUserClaimsPrincipalFactory.cs" />
     <Compile Include="Converters\FieldRefExtensions.cs" />
+    <Compile Include="Converters\FieldUpdateRequestDtoExtensions.cs" />
     <Compile Include="Converters\FieldValuePairExtensions.cs" />
     <Compile Include="Converters\RelativityObjectExtensions.cs" />
     <Compile Include="Converters\WorkspaceRefExtensions.cs" />
@@ -95,11 +97,14 @@
     <Compile Include="Factories\IRSAPIServiceFactory.cs" />
     <Compile Include="Factories\Implementations\RSAPIServiceFactory.cs" />
     <Compile Include="GenericLibraryFactory.cs" />
+    <Compile Include="Helpers\IMassUpdateHelper.cs" />
+    <Compile Include="Helpers\MassUpdateHelper.cs" />
     <Compile Include="IChoiceQuery.cs" />
     <Compile Include="IGenericLibraryFactory.cs" />
     <Compile Include="IIntegrationPointBaseFieldGuidsConstants.cs" />
     <Compile Include="IIntegrationPointBaseFieldsConstants.cs" />
     <Compile Include="IIntegrationPointSerializer.cs" />
+    <Compile Include="Installers\HelpersRegistration.cs" />
     <Compile Include="Installers\RepositoryRegistration.cs" />
     <Compile Include="Installers\RetryingMechanismRegistration.cs" />
     <Compile Include="IntegrationPointSerializer.cs" />
@@ -132,12 +137,14 @@
     <Compile Include="Repositories\DTO\ICaseInfoDto.cs" />
     <Compile Include="Repositories\DTO\MultiObjectReferenceDto.cs" />
     <Compile Include="Models\SecretPath.cs" />
+    <Compile Include="Repositories\DTO\SingleChoiceReferenceDto.cs" />
     <Compile Include="Repositories\IApplicationRepository.cs" />
     <Compile Include="Repositories\IAuditRepository.cs" />
     <Compile Include="Repositories\ICaseRepository.cs" />
     <Compile Include="Repositories\IFileRepository.cs" />
     <Compile Include="Repositories\IFoundationRepositoryFactory.cs" />
     <Compile Include="Repositories\Implementations\SecretsRepository.cs" />
+    <Compile Include="Repositories\IMassUpdateRepository.cs" />
     <Compile Include="Repositories\IRepository.cs" />
     <Compile Include="Repositories\IIntegrationPointRepository.cs" />
     <Compile Include="Repositories\Implementations\AuditRepository.cs" />
@@ -191,7 +198,6 @@
     <Compile Include="Queries\GetJobsCount.cs" />
     <Compile Include="Repositories\IDestinationProviderRepository.cs" />
     <Compile Include="Repositories\IArtifactGuidRepository.cs" />
-    <Compile Include="Commands\MassEdit\RelativityMassEditBase.cs" />
     <Compile Include="Factories\Implementations\RepositoryFactory.cs" />
     <Compile Include="Factories\IRepositoryFactory.cs" />
     <Compile Include="Repositories\IArtifactTypeRepository.cs" />

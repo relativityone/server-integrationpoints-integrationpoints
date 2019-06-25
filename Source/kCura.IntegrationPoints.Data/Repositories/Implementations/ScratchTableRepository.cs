@@ -183,7 +183,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_caseContext.ExecuteNonQuerySQLStatement(sql);
 		}
 
-		public IEnumerable<int> ReadDocumentIDs(int offset, int size)
+		public IEnumerable<int> ReadArtifactIDs(int offset, int size)
 		{
 			using (IDataReader reader = CreateBatchOfDocumentIdReader(offset, size))
 			{

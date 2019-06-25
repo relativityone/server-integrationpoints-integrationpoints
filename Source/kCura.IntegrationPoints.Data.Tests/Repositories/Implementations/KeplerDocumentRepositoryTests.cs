@@ -355,7 +355,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 
 			// act
 			await _sut
-				.MassUpdateDocumentsAsync(documentsIDs, fieldUpdateRequests)
+				.MassUpdateAsync(documentsIDs, fieldUpdateRequests)
 				.ConfigureAwait(false);
 
 			// assert
@@ -382,7 +382,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 
 			// act
 			bool result = await _sut
-				.MassUpdateDocumentsAsync(
+				.MassUpdateAsync(
 					Enumerable.Empty<int>(),
 					Enumerable.Empty<FieldUpdateRequestDto>())
 				.ConfigureAwait(false);
@@ -407,7 +407,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 
 			// act
 			Func<Task> massUpdateAction = () => _sut
-				.MassUpdateDocumentsAsync(
+				.MassUpdateAsync(
 					Enumerable.Empty<int>(),
 					Enumerable.Empty<FieldUpdateRequestDto>());
 

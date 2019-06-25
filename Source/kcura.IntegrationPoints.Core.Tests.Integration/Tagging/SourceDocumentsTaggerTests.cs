@@ -14,7 +14,9 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Helpers;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Moq;
@@ -68,8 +70,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Tagging
 				DefaultValue = DefaultValue.Mock
 			};
 
+			var massUpdateHelper = new MassUpdateHelper(configMock.Object, loggerMock.Object);
+
 			IDocumentRepository documentRepository = Container.Resolve<IDocumentRepository>();
-			_sut = new SourceDocumentsTagger(documentRepository, configMock.Object, loggerMock.Object);
+			_sut = new SourceDocumentsTagger(documentRepository, loggerMock.Object, massUpdateHelper);
 		}
 
 		[SetUp]
@@ -129,8 +133,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Tagging
 				_sut.TagDocumentsWithDestinationWorkspaceAndJobHistoryAsync(_scratchTableRepository, -1, -1);
 
 			// assert
-			string expectedMessage = "Tagging Documents with DestinationWorkspace and JobHistory object failed - Mass Edit failure.";
-			tagDocumentsAction.ShouldThrow<Exception>().WithMessage(expectedMessage);
+			string expectedMessage = "Mass edit of artifacts failed - Object Manager failure.";
+			tagDocumentsAction.ShouldThrow<IntegrationPointsException>().WithMessage(expectedMessage);
 		}
 
 		private async Task VerifyDocumentTaggingAsync(int[] documentArtifactIDs, string expectedJobHistory)

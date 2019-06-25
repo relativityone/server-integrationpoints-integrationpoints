@@ -6,6 +6,7 @@ using System.Security.Claims;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Core.Managers;
@@ -13,12 +14,13 @@ using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
-using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Extensions;
+using kCura.IntegrationPoints.Data.Helpers;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
+using Moq;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Search;
@@ -30,18 +32,22 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 	[TestFixture]
 	public class JobHistoryErrorsBatchingTests : RelativityProviderTemplate
 	{
+		private Mock<IAPILog> _loggerMock;
+
 		private IIntegrationPointService _integrationPointService;
 		private IJobHistoryService _jobHistoryService;
 		private IJobHistoryErrorRepository _jobHistoryErrorRepository;
 		private IJobHistoryErrorManager _jobHistoryErrorManager;
 		private IBatchStatus _batchStatus;
+		private IMassUpdateHelper _massUpdateHelper;
+		private const int _MASS_UPDATE_REQUEST_BATCH_SIZE = 100;
 		private const int _ADMIN_USER_ID = 9;
 		private const string _JOB_START_TEMP_TABLE_PREFIX = "IntegrationPoint_Relativity_JobHistoryErrors_JobStart";
 		private const string _JOB_COMPLETE_TEMP_TABLE_PREFIX = "IntegrationPoint_Relativity_JobHistoryErrors_JobComplete";
 		private const string _ITEM_START_INCLUDED_TEMP_TABLE_PREFIX = "IntegrationPoint_Relativity_JobHistoryErrors_ItemStart";
 		private const string _ITEM_START_EXCLUDED_TEMP_TABLE_PREFIX = "IntegrationPoint_Relativity_JobHistoryErrors_ItemStart_Excluded";
 		private const string _ITEM_COMPLETE_INCLUDED_TEMP_TABLE_PREFIX = "IntegrationPoint_Relativity_JobHistoryErrors_ItemComplete";
-		
+
 		public JobHistoryErrorsBatchingTests() : base("JobHistoryErrorsSource", null)
 		{
 		}
@@ -49,10 +55,24 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		public override void SuiteSetup()
 		{
 			base.SuiteSetup();
-			
+
 			Agent.EnableAllIntegrationPointsAgents();
 
 			ResolveServices();
+		}
+
+		[SetUp]
+		public void SetUp()
+		{
+
+			var configMock = new Mock<IConfig>();
+			configMock.Setup(x => x.SourceWorkspaceTaggerBatchSize)
+				.Returns(_MASS_UPDATE_REQUEST_BATCH_SIZE);
+			_loggerMock = new Mock<IAPILog>
+			{
+				DefaultValue = DefaultValue.Mock
+			};
+			_massUpdateHelper = new MassUpdateHelper(configMock.Object, _loggerMock.Object);
 		}
 
 		[IdentifiedTest("607ec5bd-e284-4672-9c3e-80437ba492de")]
@@ -227,7 +247,15 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			string startTempTableName = $"{ _JOB_START_TEMP_TABLE_PREFIX }_{ tempTableSuffix }";
 			string completeTempTableName = $"{ _JOB_COMPLETE_TEMP_TABLE_PREFIX }_{ tempTableSuffix }";
 			DataTable startTempTable = GetTempTable(startTempTableName);
-			_batchStatus = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, helper, RepositoryFactory, new OnBehalfOfUserClaimsPrincipalFactory(), stopJobManager, SourceWorkspaceArtifactID, _ADMIN_USER_ID, new JobHistoryErrorDTO.UpdateStatusType());
+			_batchStatus = new JobHistoryErrorBatchUpdateManager(
+				_jobHistoryErrorManager,
+				_loggerMock.Object,
+				RepositoryFactory,
+				stopJobManager,
+				SourceWorkspaceArtifactID,
+				new JobHistoryErrorDTO.UpdateStatusType(),
+				_massUpdateHelper
+				);
 
 			_batchStatus.OnJobStart(job);
 			DataTable completedTempTable = GetTempTable(completeTempTableName);
@@ -306,7 +334,14 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 				ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobAndItem
 			};
 
-			_batchStatus = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, helper, RepositoryFactory, new OnBehalfOfUserClaimsPrincipalFactory(), stopJobManager, SourceWorkspaceArtifactID, _ADMIN_USER_ID, updateStatusType);
+			_batchStatus = new JobHistoryErrorBatchUpdateManager(
+				_jobHistoryErrorManager,
+				_loggerMock.Object,
+				RepositoryFactory,
+				stopJobManager,
+				SourceWorkspaceArtifactID,
+				updateStatusType,
+				_massUpdateHelper);
 
 			_batchStatus.OnJobStart(job);
 			DataTable completedTempTable = GetTempTable(completeTempTableName);
@@ -431,7 +466,14 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			{
 				ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly
 			};
-			_batchStatus = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, helper, RepositoryFactory, new OnBehalfOfUserClaimsPrincipalFactory(), stopJobManager, SourceWorkspaceArtifactID, _ADMIN_USER_ID, updateStatusType);
+			_batchStatus = new JobHistoryErrorBatchUpdateManager(
+				_jobHistoryErrorManager,
+				_loggerMock.Object,
+				RepositoryFactory,
+				stopJobManager,
+				SourceWorkspaceArtifactID,
+				updateStatusType,
+				_massUpdateHelper);
 
 			_batchStatus.OnJobStart(job);
 			DataTable completedTempTable = GetTempTable(completeTempTableName);
@@ -489,7 +531,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 					ParentArtifactId = jobHistoryArtifactId,
 					JobHistory = jobHistoryArtifactId,
 					Name = Guid.NewGuid().ToString(),
-					SourceUniqueID = Convert.ToString((object) dataRow["Control Number"]),
+					SourceUniqueID = Convert.ToString((object)dataRow["Control Number"]),
 					ErrorType = ErrorTypeChoices.JobHistoryErrorItem,
 					ErrorStatus = errorStatus,
 					Error = "Inserted Error for testing.",
@@ -562,7 +604,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			var actualJobHistoryArtifactIds = new List<int>();
 			foreach (DataRow dataRow in tempTable.Rows)
 			{
-				actualJobHistoryArtifactIds.Add(Convert.ToInt32((object) dataRow["ArtifactID"]));
+				actualJobHistoryArtifactIds.Add(Convert.ToInt32((object)dataRow["ArtifactID"]));
 			}
 
 			List<int> discrepancies = expectedJobHistoryErrorArtifacts.Except(actualJobHistoryArtifactIds).ToList();
