@@ -1,6 +1,7 @@
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Facades.SecretStore.Implementation;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -17,9 +18,14 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factor
 			ICaseServiceContext caseServiceContext = ServiceContextFactory.CreateCaseServiceContext(helper, helper.GetActiveCaseID());
 			IAPILog logger = helper.GetLoggerFactory().GetLogger();
 			IIntegrationPointSerializer integrationPointSerializer = new IntegrationPointSerializer(logger);
+			ISecretsRepository secretsRepository = new SecretsRepository(
+				SecretStoreFacadeFactory_Deprecated.Create(helper.GetSecretStore, logger), 
+				logger
+			);
 			IIntegrationPointRepository integrationPointRepository = new IntegrationPointRepository(
 				caseServiceContext.RsapiService.RelativityObjectManager,
 				integrationPointSerializer,
+				secretsRepository,
 				logger);
 
 			IFederatedInstanceModelFactory federatedInstanceModelFactory;

@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Data.Facades.ObjectManager;
 using kCura.IntegrationPoints.Data.StreamWrappers;
 using Relativity.Kepler.Transport;
 using FieldRef = Relativity.Services.Objects.DataContracts.FieldRef;
@@ -24,18 +25,15 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private const string _UNKNOWN_OBJECT_TYPE = "[UnknownObjectType]";
 		private readonly int _workspaceArtifactId;
 		private readonly IAPILog _logger;
-		private readonly ISecretStoreHelper _secretStoreHelper;
 		private readonly IObjectManagerFacadeFactory _objectManagerFacadeFactory;
 
 		internal RelativityObjectManager(
 			int workspaceArtifactId,
 			IAPILog logger,
-			ISecretStoreHelper secretStoreHelper,
 			IObjectManagerFacadeFactory objectManagerFacadeFactory)
 		{
 			_workspaceArtifactId = workspaceArtifactId;
 			_logger = logger.ForContext<RelativityObjectManager>();
-			_secretStoreHelper = secretStoreHelper;
 			_objectManagerFacadeFactory = objectManagerFacadeFactory;
 		}
 
@@ -86,9 +84,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				Object = new RelativityObjectRef { ArtifactID = artifactId },
 				Fields = new T().ToFieldList()
 			};
-			return SendReadRequest<T>(request,
-				decryptSecuredConfiguration: true,
-				executionIdentity: executionIdentity);
+			return SendReadRequest<T>(request, executionIdentity: executionIdentity);
 		}
 
 		public T Read<T>(int artifactId,
@@ -101,9 +97,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				Object = new RelativityObjectRef { ArtifactID = artifactId },
 				Fields = fieldsGuids.Select(x => new FieldRef { Guid = x }).ToArray()
 			};
-			return SendReadRequest<T>(request,
-				decryptSecuredConfiguration: true,
-				executionIdentity: executionIdentity);
+			return SendReadRequest<T>(request, executionIdentity: executionIdentity);
 		}
 
 		public bool Update(int artifactId,
@@ -128,8 +122,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				Object = rdo.ToObjectRef(),
 				FieldValues = rdo.ToFieldValues().ToList()
 			};
-			SetEncryptedConfigurationForUpdate(rdo, executionIdentity, request);
-
 			return SendUpdateRequest(request, executionIdentity, GetRdoType(rdo));
 		}
 
@@ -191,34 +183,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				.GetResult();
 		}
 
-		public Task<ResultSet<T>> QueryAsync<T>(QueryRequest q,
-			int start,
-			int length,
-			bool noFields = false,
-			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
-			where T : BaseRdo, new()
-		{
-			Func<IObjectManagerFacade, Task<ResultSet<T>>> func = async (client) =>
-			{
-				QueryResult queryResults = await client.QueryAsync(_workspaceArtifactId, q, start + 1, length)
-					.ConfigureAwait(false);
-				return new ResultSet<T>
-				{
-					ResultCount = queryResults.ResultCount,
-					TotalCount = queryResults.TotalCount,
-					Items = queryResults.Objects
-						.Select(x => x.ToRDO<T>())
-						.Select(SetDecryptedSecuredConfiguration)
-						.ToList()
-				};
-			};
-
-			T rdo = new T();
-			BootstrapQuery(q, rdo, noFields);
-
-			return SendQueryRequestAsync(func, q, rdo, executionIdentity);
-		}
-
 		public List<T> Query<T>(QueryRequest q, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new()
 		{
 			return QueryAsync<T>(q, noFields: false, executionIdentity: executionIdentity)
@@ -249,8 +213,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 						output = new List<T>(totalResults);
 					}
 
-					IEnumerable<T> partialResultsAsRdo = partialResult.Objects.Select(x => x.ToRDO<T>())
-						.Select(SetDecryptedSecuredConfiguration);
+					IEnumerable<T> partialResultsAsRdo = partialResult.Objects.Select(x => x.ToRDO<T>());
 					output.AddRange(partialResultsAsRdo);
 
 					retrievedResults += partialResult.Objects.Count;
@@ -441,6 +404,42 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
+		//This method was introduced during migration to SecretStore,
+		//because it was really hard to decide which helper do
+		//we need to use to get proper workspaceID for given case.
+		//Do not use this method. It should be removed asap.
+		public int GetWorkspaceID_Deprecated()
+		{
+			return _workspaceArtifactId;
+		}
+
+		private Task<ResultSet<T>> QueryAsync<T>(QueryRequest q,
+			int start,
+			int length,
+			bool noFields = false,
+			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
+			where T : BaseRdo, new()
+		{
+			Func<IObjectManagerFacade, Task<ResultSet<T>>> func = async (client) =>
+			{
+				QueryResult queryResults = await client.QueryAsync(_workspaceArtifactId, q, start + 1, length)
+					.ConfigureAwait(false);
+				return new ResultSet<T>
+				{
+					ResultCount = queryResults.ResultCount,
+					TotalCount = queryResults.TotalCount,
+					Items = queryResults.Objects
+						.Select(x => x.ToRDO<T>())
+						.ToList()
+				};
+			};
+
+			T rdo = new T();
+			BootstrapQuery(q, rdo, noFields);
+
+			return SendQueryRequestAsync(func, q, rdo, executionIdentity);
+		}
+
 		private async Task<Stream> GetLongTextStreamAsync(
 			int relativityObjectArtifactId,
 			FieldRef longTextFieldRef,
@@ -499,9 +498,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		private T SendReadRequest<T>(ReadRequest request,
-			bool decryptSecuredConfiguration,
-			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
+		private T SendReadRequest<T>(ReadRequest request, 
+			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) 
 			where T : BaseRdo, new()
 		{
 			try
@@ -511,10 +509,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					ReadResult result = client.ReadAsync(_workspaceArtifactId, request)
 						.GetAwaiter()
 						.GetResult();
-					T rdo = result.Object.ToRDO<T>();
-					return decryptSecuredConfiguration
-						? SetDecryptedSecuredConfiguration(rdo)
-						: rdo;
+					return result.Object.ToRDO<T>();
 				}
 			}
 			catch (IntegrationPointsException)
@@ -535,8 +530,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				using (IObjectManagerFacade client = _objectManagerFacadeFactory.Create(executionIdentity))
 				{
-					_secretStoreHelper.SetEncryptedSecuredConfigurationForNewRdo(request.FieldValues);
-
 					int artifactId = client.CreateAsync(_workspaceArtifactId, request)
 						.GetAwaiter()
 						.GetResult()
@@ -648,43 +641,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				q.Fields = rdo.ToFieldList();
 			}
-		}
-
-		private T Read<T>(int artifactId, bool decryptSecuredConfiguration, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new()
-		{
-			var request = new ReadRequest
-			{
-				Object = new RelativityObjectRef { ArtifactID = artifactId },
-				Fields = new T().ToFieldList()
-			};
-			return SendReadRequest<T>(request, decryptSecuredConfiguration, executionIdentity);
-		}
-
-		private void SetEncryptedConfigurationForUpdate<T>(T rdo, ExecutionIdentity executionIdentity, UpdateRequest request) where T : BaseRdo, new()
-		{
-			if (rdo is IntegrationPoint)
-			{
-				IntegrationPoint existingRdo = Read<IntegrationPoint>(rdo.ArtifactId, false, executionIdentity);
-				_secretStoreHelper.SetEncryptedSecuredConfigurationForExistingRdo(existingRdo, request.FieldValues);
-			}
-		}
-
-		private T SetDecryptedSecuredConfiguration<T>(T rdo) where T : BaseRdo, new()
-		{
-			if (rdo is IntegrationPoint && rdo.HasField(new Guid(IntegrationPointFieldGuids.SecuredConfiguration)))
-			{
-				string secretId = rdo.GetField<string>(new Guid(IntegrationPointFieldGuids.SecuredConfiguration));
-				if (!string.IsNullOrWhiteSpace(secretId))
-				{
-					string decryptedSecret = _secretStoreHelper.DecryptSecuredConfiguration(secretId);
-					if (!string.IsNullOrWhiteSpace(decryptedSecret))
-					{
-						rdo.SetField<string>(new Guid(IntegrationPointFieldGuids.SecuredConfiguration), decryptedSecret);
-						return rdo;
-					}
-				}
-			}
-			return rdo;
 		}
 
 		private void SetParentArtifactId<T>(CreateRequest request, T rdo) where T : BaseRdo, new()

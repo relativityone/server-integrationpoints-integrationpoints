@@ -1,7 +1,7 @@
-﻿using kCura.IntegrationPoints.Core.Services.ServiceContext;
+﻿using kCura.IntegrationPoints.Common.Context;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Web.Context.UserContext;
-using kCura.IntegrationPoints.Web.Context.WorkspaceContext;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.IntegrationPointsServices

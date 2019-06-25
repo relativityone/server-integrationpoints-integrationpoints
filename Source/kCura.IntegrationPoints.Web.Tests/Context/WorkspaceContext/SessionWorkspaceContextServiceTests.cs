@@ -1,5 +1,6 @@
 ﻿using System;
 using FluentAssertions;
+using kCura.IntegrationPoints.Common.Context;
 using kCura.IntegrationPoints.Web.Context.WorkspaceContext;
 using kCura.IntegrationPoints.Web.Infrastructure.Session;
 using Moq;

@@ -5,8 +5,8 @@ using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Monitoring;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using Relativity.API;
@@ -24,13 +24,18 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 		private readonly IJobHistoryService _jobHistoryService;
 		private readonly IServiceFactory _serviceFactory;
 		private readonly IJobHistoryErrorService _jobHistoryErrorService;
-		private readonly ICaseServiceContext _caseServiceContext;
+		private readonly IIntegrationPointRepository _integrationPointRepository;
 
 		private readonly IntegrationPoint _integrationPoint;
 
-		public TaskFactoryJobHistoryService(IHelper helper, IHelperFactory helperFactory, 
-			IIntegrationPointSerializer serializer, IServiceFactory serviceFactory, IJobHistoryErrorService jobHistoryErrorService, 
-			ICaseServiceContext caseServiceContext, IntegrationPoint integrationPoint)
+		public TaskFactoryJobHistoryService(
+			IHelper helper, 
+			IHelperFactory helperFactory, 
+			IIntegrationPointSerializer serializer, 
+			IServiceFactory serviceFactory, 
+			IJobHistoryErrorService jobHistoryErrorService,
+			IIntegrationPointRepository integrationPointRepository,
+			IntegrationPoint integrationPoint)
 		{
 			_helper = helper;
 			_logger = _helper.GetLoggerFactory().GetLogger().ForContext<TaskFactoryJobHistoryService>();
@@ -38,7 +43,7 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 			_serializer = serializer;
 			_serviceFactory = serviceFactory;
 			_jobHistoryErrorService = jobHistoryErrorService;
-			_caseServiceContext = caseServiceContext;
+			_integrationPointRepository = integrationPointRepository;
 
 			_integrationPoint = integrationPoint;
 			_jobHistoryService = CreateJobHistoryService(_integrationPoint);
@@ -85,7 +90,7 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 			List<int> jobHistoryIds = _integrationPoint.JobHistory.ToList();
 			jobHistoryIds.Remove(jobHistory.ArtifactId);
 			_integrationPoint.JobHistory = jobHistoryIds.ToArray();
-			_caseServiceContext.RsapiService.RelativityObjectManager.Update(_integrationPoint);
+			_integrationPointRepository.Update(_integrationPoint);
 
 			jobHistory.JobStatus = JobStatusChoices.JobHistoryStopped;
 			_jobHistoryService.UpdateRdo(jobHistory);

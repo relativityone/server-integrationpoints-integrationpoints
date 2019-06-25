@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 		public ButtonStateDTO CreateButtonState(int applicationArtifactId, int integrationPointArtifactId)
 		{
 			IntegrationPoint integrationPoint =
-				_integrationPointRepository.ReadAsync(integrationPointArtifactId).GetAwaiter().GetResult();
+				_integrationPointRepository.ReadWithFieldMappingAsync(integrationPointArtifactId).GetAwaiter().GetResult();
 			ProviderType providerType = _providerTypeService.GetProviderType(integrationPoint.SourceProvider.Value,
 				integrationPoint.DestinationProvider.Value);
 

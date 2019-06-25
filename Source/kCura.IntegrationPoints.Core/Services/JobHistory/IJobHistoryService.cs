@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using kCura.IntegrationPoints.Core.QueryOptions;
 
 namespace kCura.IntegrationPoints.Core.Services.JobHistory
 {

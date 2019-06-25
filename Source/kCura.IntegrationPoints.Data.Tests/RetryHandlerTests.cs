@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 		[TestCase(1, (ushort)1)]
 		[TestCase(0, (ushort)3)]
 		[TestCase(2, (ushort)3)]
-		public async Task ShouldReturnValueWhenNumberOfRetriesGreaterOrEqualThanNumberOfFailuresAsync(
+		public async Task ExecuteWithRetriesAsync_TaskWithResult_ShouldReturnValueWhenNumberOfRetriesGreaterOrEqualThanNumberOfFailuresAsync(
 			int numberOfFailsBeforeSuccess, ushort numberOfRetries)
 		{
 			// arrange
@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 		[TestCase(1, (ushort)0)]
 		[TestCase(2, (ushort)1)]
 		[TestCase(10, (ushort)3)]
-		public void ShouldThrowsExceptionWhenNumberOfRetriesIsLessThanNumberOfFailuresAsync(
+		public void ExecuteWithRetriesAsync_TaskWithResult_ShouldThrowsExceptionWhenNumberOfRetriesIsLessThanNumberOfFailuresAsync(
 			int numberOfFailsBeforeSuccess, ushort numberOfRetries)
 		{
 			// arrange
@@ -57,14 +57,14 @@ namespace kCura.IntegrationPoints.Data.Tests
 			RetryHandler sut = CreateRetryHandler(numberOfRetries);
 
 			// act
-			Func<Task> functionToExecute = () => sut.ExecuteWithRetriesAsync(operationToExecute);
+			Func<Task<string>> functionToExecute = () => sut.ExecuteWithRetriesAsync(operationToExecute);
 
 			// assert
 			functionToExecute.ShouldThrow<InvalidOperationException>();
 		}
 
 		[Test]
-		public void ShouldThrowsExactlyTheSameExceptionAsync()
+		public void ExecuteWithRetriesAsync_TaskWithResult_ShouldThrowsExactlyTheSameExceptionAsync()
 		{
 			// arrange
 			const int numberOfFailsBeforeSuccess = 1;
@@ -75,7 +75,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			RetryHandler sut = CreateRetryHandler(numberOfRetries);
 
 			// act
-			Func<Task> functionToExecute = () => sut.ExecuteWithRetriesAsync(operationToExecute);
+			Func<Task<string>> functionToExecute = () => sut.ExecuteWithRetriesAsync(operationToExecute);
 
 			// assert
 			functionToExecute.ShouldThrowExactly<Exception>()
@@ -83,7 +83,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 		}
 
 		[Test]
-		public async Task ShouldWorkWithNullLogger()
+		public async Task ExecuteWithRetriesAsync_TaskWithResult_ShouldWorkWithNullLogger()
 		{
 			// arrange
 			const int numberOfFailsBeforeSuccess = 1;
@@ -100,7 +100,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 		}
 
 		[Test]
-		public async Task ShouldReturnResultWhenOperationsEventuallySucceed()
+		public async Task ExecuteWithRetriesAsync_TaskWithResult_ShouldReturnResultWhenOperationsEventuallySucceed()
 		{
 			// arrange
 			const int numberOfFailsBeforeSuccess = 1;
@@ -117,7 +117,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 		}
 
 		[Test]
-		public void ShouldRethrowExceptionWhenOperationConstantlyFails()
+		public void ExecuteWithRetriesAsync_TaskWithResult_ShouldRethrowExceptionWhenOperationConstantlyFails()
 		{
 			// arrange
 			const int numberOfFailsBeforeSuccess = 5;
@@ -134,7 +134,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 		}
 
 		[Test]
-		public async Task ItShouldLogCallerNameWhenRetrying()
+		public async Task ExecuteWithRetriesAsync_TaskWithResult_ItShouldLogCallerNameWhenRetrying()
 		{
 			// arrange
 			const int numberOfFailsBeforeSuccess = 1;
@@ -147,7 +147,140 @@ namespace kCura.IntegrationPoints.Data.Tests
 			await sut.ExecuteWithRetriesAsync(operationToExecute).ConfigureAwait(false);
 
 			// assert
-			string expectedName = nameof(ItShouldLogCallerNameWhenRetrying);
+			string expectedName = nameof(ExecuteWithRetriesAsync_TaskWithResult_ItShouldLogCallerNameWhenRetrying);
+			_logger.Verify(
+				z => z.LogWarning(
+					It.IsAny<Exception>(),
+					It.IsAny<string>(),
+					It.Is<object[]>(parameters => parameters.Any(x => expectedName == x as string))
+				)
+			);
+		}
+
+		[TestCase(0, (ushort)0)]
+		[TestCase(0, (ushort)1)]
+		[TestCase(1, (ushort)1)]
+		[TestCase(0, (ushort)3)]
+		[TestCase(2, (ushort)3)]
+		public void ExecuteWithRetriesAsync_Task_ShouldNotThrowWhenNumberOfRetriesGreaterOrEqualThanNumberOfFailuresAsync(
+			int numberOfFailsBeforeSuccess, ushort numberOfRetries)
+		{
+			// arrange
+			Func<Task> operationToExecute = CreateAsyncOperationMock(_EXPECTED_RESULT, numberOfFailsBeforeSuccess);
+			RetryHandler sut = CreateRetryHandler(numberOfRetries);
+
+			// act
+			Func<Task> retryAction = () => sut.ExecuteWithRetriesAsync(operationToExecute);
+
+			// assert
+			retryAction.ShouldNotThrow();
+		}
+
+		[TestCase(1, (ushort)0)]
+		[TestCase(2, (ushort)1)]
+		[TestCase(10, (ushort)3)]
+		public void ExecuteWithRetriesAsync_Task_ShouldThrowsExceptionWhenNumberOfRetriesIsLessThanNumberOfFailuresAsync(
+			int numberOfFailsBeforeSuccess, ushort numberOfRetries)
+		{
+			// arrange
+			Func<Task> operationToExecute = CreateAsyncOperationMock<string, InvalidOperationException>(
+				_EXPECTED_RESULT, 
+				numberOfFailsBeforeSuccess
+			);
+			RetryHandler sut = CreateRetryHandler(numberOfRetries);
+
+			// act
+			Func<Task> functionToExecute = () => sut.ExecuteWithRetriesAsync(operationToExecute);
+
+			// assert
+			functionToExecute.ShouldThrow<InvalidOperationException>();
+		}
+
+		[Test]
+		public void ExecuteWithRetriesAsync_Task_ShouldThrowsExactlyTheSameExceptionAsync()
+		{
+			// arrange
+			const int numberOfFailsBeforeSuccess = 1;
+			const int numberOfRetries = 0;
+			var expectedException = new Exception(Guid.NewGuid().ToString());
+
+			Func<Task> operationToExecute = CreateAsyncOperationMock(_EXPECTED_RESULT, expectedException, numberOfFailsBeforeSuccess);
+			RetryHandler sut = CreateRetryHandler(numberOfRetries);
+
+			// act
+			Func<Task> functionToExecute = () => sut.ExecuteWithRetriesAsync(operationToExecute);
+
+			// assert
+			functionToExecute.ShouldThrowExactly<Exception>()
+				.Where(ex => ex == expectedException);
+		}
+
+		[Test]
+		public void ExecuteWithRetriesAsync_Task_ShouldWorkWithNullLogger()
+		{
+			// arrange
+			const int numberOfFailsBeforeSuccess = 1;
+			const int numberOfRetries = 5;
+
+			Func<Task> operationToExecute = CreateAsyncOperationMock(_EXPECTED_RESULT, numberOfFailsBeforeSuccess);
+			var sut = new RetryHandler(null, numberOfRetries, _WAIT_TIME_BETWEEN_RETRIES);
+
+			// act
+			Func<Task> retryAction = () => sut.ExecuteWithRetriesAsync(operationToExecute);
+
+			// assert
+			retryAction.ShouldNotThrow();
+		}
+
+		[Test]
+		public void ExecuteWithRetriesAsync_Task_ShouldNotThrowWhenOperationsEventuallySucceed()
+		{
+			// arrange
+			const int numberOfFailsBeforeSuccess = 1;
+			const int numberOfRetries = 5;
+
+			Func<Task> operationToExecute = CreateAsyncOperationMock(_EXPECTED_RESULT, numberOfFailsBeforeSuccess);
+			RetryHandler sut = CreateRetryHandler(numberOfRetries);
+
+			// act
+			Func<Task> retryAction = () => sut.ExecuteWithRetriesAsync(operationToExecute);
+
+			// assert
+			retryAction.ShouldNotThrow();
+		}
+
+		[Test]
+		public void ExecuteWithRetriesAsync_Task_ShouldRethrowExceptionWhenOperationConstantlyFails()
+		{
+			// arrange
+			const int numberOfFailsBeforeSuccess = 5;
+			const int numberOfRetries = 3;
+
+			Func<Task> operationToExecute = CreateAsyncOperationMock<string, InvalidOperationException>(_EXPECTED_RESULT, numberOfFailsBeforeSuccess);
+			RetryHandler sut = CreateRetryHandler(numberOfRetries);
+
+			// act
+			Func<Task> functionToExecute = () => sut.ExecuteWithRetriesAsync(operationToExecute);
+
+			// assert
+			functionToExecute.ShouldThrow<InvalidOperationException>();
+		}
+
+		[Test]
+		public async Task ExecuteWithRetriesAsync_Task_ItShouldLogCallerNameWhenRetrying()
+		{
+			// arrange
+			const int numberOfFailsBeforeSuccess = 1;
+			const int numberOfRetries = 1;
+
+			Func<Task> operationToExecute = CreateAsyncOperationMock<string, InvalidOperationException>(_EXPECTED_RESULT, numberOfFailsBeforeSuccess);
+			RetryHandler sut = CreateRetryHandler(numberOfRetries);
+
+			// act
+			await sut.ExecuteWithRetriesAsync(operationToExecute).ConfigureAwait(false);
+
+			// assert
+			string expectedName = nameof(ExecuteWithRetriesAsync_Task_ItShouldLogCallerNameWhenRetrying);
 			_logger.Verify(
 				z => z.LogWarning(
 					It.IsAny<Exception>(),

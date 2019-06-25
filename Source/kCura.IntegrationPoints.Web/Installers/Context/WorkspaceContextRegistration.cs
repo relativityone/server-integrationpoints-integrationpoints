@@ -1,5 +1,6 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Common.Context;
 using kCura.IntegrationPoints.Web.Context.WorkspaceContext;
 
 namespace kCura.IntegrationPoints.Web.Installers.Context

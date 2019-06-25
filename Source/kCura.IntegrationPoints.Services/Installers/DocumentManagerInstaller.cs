@@ -4,9 +4,8 @@ using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
-using kCura.IntegrationPoints.Data.SecretStore;
-using kCura.IntegrationPoints.Services.Repositories;
 using kCura.IntegrationPoints.Services.Repositories.Implementations;
+using IDocumentRepository = kCura.IntegrationPoints.Services.Repositories.IDocumentRepository;
 
 namespace kCura.IntegrationPoints.Services.Installers
 {
@@ -19,12 +18,17 @@ namespace kCura.IntegrationPoints.Services.Installers
 
 		protected override IList<IWindsorInstaller> Dependencies { get; }
 
-		protected override void RegisterComponents(IWindsorContainer container, IConfigurationStore store, int workspaceID)
+		protected override void RegisterComponents(
+			IWindsorContainer container, 
+			IConfigurationStore store, 
+			int workspaceID)
 		{
-			container.Register(Component.For<ISecretCatalogFactory>().ImplementedBy<DefaultSecretCatalogFactory>().LifestyleTransient());
-			container.Register(Component.For<ISecretManagerFactory>().ImplementedBy<SecretManagerFactory>().LifestyleTransient());
-			container.Register(Component.For<IRelativityObjectManagerFactory>().ImplementedBy<RelativityObjectManagerFactory>().LifestyleTransient());
-			container.Register(Component.For<IDocumentRepository>().ImplementedBy<DocumentRepository>().LifestyleTransient());
+			container.Register(Component.For<IRelativityObjectManagerFactory>()
+				.ImplementedBy<RelativityObjectManagerFactory>()
+				.LifestyleTransient());
+			container.Register(Component.For<IDocumentRepository>()
+				.ImplementedBy<DocumentRepository>()
+				.LifestyleTransient());
 		}
 	}
 }

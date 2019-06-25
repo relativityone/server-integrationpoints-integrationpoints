@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="Constants\ExternalServiceTypes.cs" />
     <Compile Include="Monitoring\Constants\TelemetryMetricsBucketNames.cs" />
+    <Compile Include="Context\IWorkspaceContext.cs" />
     <Compile Include="Monitoring\Instrumentation\ExternalServiceInstrumentation.cs" />
     <Compile Include="Monitoring\Instrumentation\ExternalServiceInstrumentationProviderWithoutJobContext.cs" />
     <Compile Include="Monitoring\Instrumentation\ExternalServiceLogsInstrumentation.cs" />

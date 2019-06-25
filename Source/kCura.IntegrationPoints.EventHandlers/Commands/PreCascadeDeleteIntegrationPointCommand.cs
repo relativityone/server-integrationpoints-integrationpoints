@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 		{
 			List<int> artifactIds = _artifactsToDelete.GetIds();
 			artifactIds.ForEach(artifactId => _preCascadeDeleteValidator.Validate(_context.Helper.GetActiveCaseID(), artifactId));
-			artifactIds.ForEach(artifactId => _deleteHistoryService.DeleteHistoriesAssociatedWithIP(_context.Helper.GetActiveCaseID(), artifactId));
+			artifactIds.ForEach(artifactId => _deleteHistoryService.DeleteHistoriesAssociatedWithIP(artifactId));
 		}
 	}
 }

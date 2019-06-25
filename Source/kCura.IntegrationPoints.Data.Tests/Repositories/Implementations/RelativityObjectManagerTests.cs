@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using kCura.IntegrationPoints.Data.Facades.ObjectManager;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Data.StreamWrappers;
 using kCura.IntegrationPoints.Domain.Exceptions;
@@ -19,9 +20,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 	public class RelativityObjectManagerTests
 	{
 		private Mock<IAPILog> _apiLogMock;
-		private Mock<ISecretStoreHelper> _secretStoreHelperMock;
-		private Mock<Data.Facades.IObjectManagerFacadeFactory> _objectManagerFacadeFactoryMock;
-		private Mock<Data.Facades.IObjectManagerFacade> _objectManagerFacadeMock;
+		private Mock<IObjectManagerFacadeFactory> _objectManagerFacadeFactoryMock;
+		private Mock<IObjectManagerFacade> _objectManagerFacadeMock;
 		private RelativityObjectManager _sut;
 
 		private const int _WORKSPACE_ARTIFACT_ID = 12345;
@@ -35,16 +35,14 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			_apiLogMock.Setup(x => x.ForContext<RelativityObjectManager>()).Returns(_apiLogMock.Object);
 			_apiLogMock.Setup(x => x.ForContext<SelfDisposingStream>()).Returns(_apiLogMock.Object);
 			_apiLogMock.Setup(x => x.ForContext<SelfRecreatingStream>()).Returns(_apiLogMock.Object);
-			_secretStoreHelperMock = new Mock<ISecretStoreHelper>();
-			_objectManagerFacadeMock = new Mock<Data.Facades.IObjectManagerFacade>();
-			_objectManagerFacadeFactoryMock = new Mock<Data.Facades.IObjectManagerFacadeFactory>();
+			_objectManagerFacadeMock = new Mock<IObjectManagerFacade>();
+			_objectManagerFacadeFactoryMock = new Mock<IObjectManagerFacadeFactory>();
 			_objectManagerFacadeFactoryMock
 				.Setup(x => x.Create(It.IsAny<ExecutionIdentity>()))
 				.Returns(_objectManagerFacadeMock.Object);
 			_sut = new RelativityObjectManager(
 				_WORKSPACE_ARTIFACT_ID,
 				_apiLogMock.Object,
-				_secretStoreHelperMock.Object,
 				_objectManagerFacadeFactoryMock.Object);
 		}
 

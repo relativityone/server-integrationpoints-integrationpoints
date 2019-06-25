@@ -1,17 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using Moq;
-using NSubstitute;
 using NUnit.Framework;
-using Relativity.API.Foundation;
-using Relativity.Core.Service;
-using Relativity.Services.FileField.Models;
 using Relativity.Services.Interfaces.File;
 using Relativity.Services.Interfaces.File.Models;
 
