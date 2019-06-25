@@ -69,10 +69,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			switch (errorType)
 			{
 				case JobHistoryErrorDTO.Choices.ErrorType.Values.Item:
-					return ErrorTypeChoices.JobHistoryErrorItem.Guids.First();
-
+					return ErrorTypeChoices.JobHistoryErrorItemGuid;
 				case JobHistoryErrorDTO.Choices.ErrorType.Values.Job:
-					return ErrorTypeChoices.JobHistoryErrorJob.Guids.First();
+					return ErrorTypeChoices.JobHistoryErrorJobGuid;
 				default:
 					throw new InvalidOperationException($"Guid for requested error type doesn't exist. Error type: {errorType}");
 			}

@@ -56,19 +56,19 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 					{
 						case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobAndItem:
 							_jobHistoryErrorManager.JobHistoryErrorJobComplete = _jobHistoryErrorManager.JobHistoryErrorJobStart.CopyTempTable(Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_COMPLETE);
-							TryUpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorJobStart, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorInProgressGuid);
-							TryUpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorItemStart, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorExpiredGuid);
+							UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorJobStart, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorInProgressGuid);
+							UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorItemStart, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorExpiredGuid);
 							break;
 
 						case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobOnly:
 							_jobHistoryErrorManager.JobHistoryErrorJobComplete = _jobHistoryErrorManager.JobHistoryErrorJobStart.CopyTempTable(Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_COMPLETE);
-							TryUpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorJobStart, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorInProgressGuid);
+							UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorJobStart, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorInProgressGuid);
 							break;
 
 						case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly:
 							_jobHistoryErrorManager.JobHistoryErrorItemComplete = _jobHistoryErrorManager.JobHistoryErrorItemStart.CopyTempTable(Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_COMPLETE);
-							TryUpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorItemStart, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorInProgressGuid);
-							TryUpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorItemStartExcluded, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorExpiredGuid);
+							UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorItemStart, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorInProgressGuid);
+							UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorItemStartExcluded, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorExpiredGuid);
 							break;
 					}
 				}
@@ -77,16 +77,16 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 					switch (_updateStatusType.ErrorTypes)
 					{
 						case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobAndItem:
-							TryUpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorJobStart, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorExpiredGuid);
-							TryUpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorItemStart, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorExpiredGuid);
+							UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorJobStart, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorExpiredGuid);
+							UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorItemStart, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorExpiredGuid);
 							break;
 
 						case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobOnly:
-							TryUpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorJobStart, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorExpiredGuid);
+							UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorJobStart, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorExpiredGuid);
 							break;
 
 						case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly:
-							TryUpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorItemStart, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorExpiredGuid);
+							UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorItemStart, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorExpiredGuid);
 							break;
 					}
 				}
@@ -109,14 +109,14 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 				{
 					if (_jobStopManager.IsStopRequested())
 					{
-						TryUpdateStatuses(
+						UpdateStatuses(
 							_jobHistoryErrorManager.JobHistoryErrorItemComplete, 
 							jobHistoryErrorRepository,
 							ErrorStatusChoices.JobHistoryErrorExpiredGuid);
 					}
 					else if (_updateStatusType.ErrorTypes == JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly)
 					{
-						TryUpdateStatuses(
+						UpdateStatuses(
 							_jobHistoryErrorManager.JobHistoryErrorItemComplete, 
 							jobHistoryErrorRepository,
 							ErrorStatusChoices.JobHistoryErrorRetriedGuid);
@@ -124,7 +124,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 					else if (_updateStatusType.ErrorTypes == JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobOnly ||
 							_updateStatusType.ErrorTypes == JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobAndItem)
 					{
-						TryUpdateStatuses(
+						UpdateStatuses(
 							_jobHistoryErrorManager.JobHistoryErrorJobComplete, 
 							jobHistoryErrorRepository,
 							ErrorStatusChoices.JobHistoryErrorRetriedGuid);
@@ -137,7 +137,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			}
 		}
 
-		private void TryUpdateStatuses(
+		private void UpdateStatuses(
 			IScratchTableRepository scratchTable,
 			IMassUpdateRepository massUpdateRepository,
 			Guid errorStatusChoiceValueGuid)
@@ -170,11 +170,6 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 						fieldsToUpdate,
 						massUpdateRepository)
 					.ConfigureAwait(false);
-			}
-			catch (Exception ex)
-			{
-				_logger.LogWarning(ex, "Exception occured while updating job history errors statuses");
-				// ignore error
 			}
 			finally
 			{
