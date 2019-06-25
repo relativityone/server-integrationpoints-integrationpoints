@@ -17,6 +17,8 @@ namespace Relativity.Sync.Transfer
 			builder.RegisterType<ExportDataSanitizer>().As<IExportDataSanitizer>();
 			builder.RegisterType<FolderPathRetriever>().As<IFolderPathRetriever>();
 			builder.RegisterType<ItemStatusMonitor>().As<IItemStatusMonitor>().SingleInstance();
+			builder.RegisterType<ChoiceTreeToStringConverter>().As<IChoiceTreeToStringConverter>();
+			builder.RegisterType<ChoiceCache>().As<IChoiceCache>();
 			builder.RegisterType<SourceWorkspaceDataReaderFactory>().As<ISourceWorkspaceDataReaderFactory>();
 			builder.RegisterType<RelativityExportBatcherFactory>().As<IRelativityExportBatcherFactory>();
 			builder.RegisterType<ImportStreamBuilder>().As<IImportStreamBuilder>();

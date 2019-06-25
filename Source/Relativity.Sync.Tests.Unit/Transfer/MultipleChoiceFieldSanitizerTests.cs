@@ -15,27 +15,37 @@ using Relativity.Sync.Transfer;
 namespace Relativity.Sync.Tests.Unit.Transfer
 {
 	[TestFixture]
-	[Parallelizable(ParallelScope.All)]
 	internal class MultipleChoiceFieldSanitizerTests
 	{
+		private Mock<ISynchronizationConfiguration> _config;
+		private Mock<IChoiceCache> _choiceCache;
+		private Mock<IChoiceTreeToStringConverter> _choiceTreeToStringConverter;
+		private MultipleChoiceFieldSanitizer _instance;
+
 		private const char _NESTED_VALUE = (char) 29;
 		private const char _MULTI_VALUE = (char) 30;
+
+		[SetUp]
+		public void SetUp()
+		{
+			_config = new Mock<ISynchronizationConfiguration>();
+			_config.SetupGet(x => x.ImportSettings).Returns(new ImportSettingsDto());
+			_choiceCache = new Mock<IChoiceCache>();
+			_choiceTreeToStringConverter = new Mock<IChoiceTreeToStringConverter>();
+			_instance = new MultipleChoiceFieldSanitizer(_config.Object, _choiceCache.Object, _choiceTreeToStringConverter.Object);
+		}
 
 		[Test]
 		public void ItShouldSupportMultipleChoice()
 		{
-			// Arrange
-			ISynchronizationConfiguration configuration = CreateConfiguration();
-			var instance = new MultipleChoiceFieldSanitizer(configuration);
-
 			// Act
-			RelativityDataType supportedType = instance.SupportedType;
+			RelativityDataType supportedType = _instance.SupportedType;
 
 			// Assert
 			supportedType.Should().Be(RelativityDataType.MultipleChoice);
 		}
 
-		private static IEnumerable<TestCaseData> ThrowSyncExceptionWhenDeserializationFailsTestCases()
+		private static IEnumerable<TestCaseData> ThrowExceptionWhenDeserializationFailsTestCases()
 		{
 			yield return new TestCaseData(1);
 			yield return new TestCaseData("foo");
@@ -43,61 +53,46 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			yield return new TestCaseData(JsonHelpers.DeserializeJson("{ \"not\": \"an array\" }"));
 		}
 
-		[TestCaseSource(nameof(ThrowSyncExceptionWhenDeserializationFailsTestCases))]
-		public async Task ItShouldThrowSyncExceptionWithTypeNamesWhenDeserializationFails(object initialValue)
+		[TestCaseSource(nameof(ThrowExceptionWhenDeserializationFailsTestCases))]
+		public async Task ItShouldThrowInvalidExportFieldValueExceptionWithTypeNamesWhenDeserializationFails(object initialValue)
 		{
-			// Arrange
-			ISynchronizationConfiguration configuration = CreateConfiguration();
-			var instance = new MultipleChoiceFieldSanitizer(configuration);
-
 			// Act
-			Func<Task> action = async () =>
-				await instance.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
+			Func<Task> action = async () => await _instance.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
 
 			// Assert
-			(await action.Should().ThrowAsync<SyncException>().ConfigureAwait(false))
+			(await action.Should().ThrowAsync<InvalidExportFieldValueException>().ConfigureAwait(false))
 				.Which.Message.Should()
 					.Contain(typeof(Choice[]).Name).And
 					.Contain(initialValue.GetType().Name);
 		}
 
-		[TestCaseSource(nameof(ThrowSyncExceptionWhenDeserializationFailsTestCases))]
-		public async Task ItShouldThrowSyncExceptionWithInnerExceptionWhenDeserializationFails(object initialValue)
+		[TestCaseSource(nameof(ThrowExceptionWhenDeserializationFailsTestCases))]
+		public async Task ItShouldThrowInvalidExportFieldValueExceptionWithInnerExceptionWhenDeserializationFails(object initialValue)
 		{
-			// Arrange
-			ISynchronizationConfiguration configuration = CreateConfiguration();
-			var instance = new MultipleChoiceFieldSanitizer(configuration);
-
 			// Act
-			Func<Task> action = async () =>
-				await instance.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
+			Func<Task> action = async () => await _instance.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
 
 			// Assert
-			(await action.Should().ThrowAsync<SyncException>().ConfigureAwait(false))
+			(await action.Should().ThrowAsync<InvalidExportFieldValueException>().ConfigureAwait(false))
 				.Which.InnerException.Should()
 					.Match(ex => ex is JsonReaderException || ex is JsonSerializationException);
 		}
 
-		private static IEnumerable<TestCaseData> ThrowSyncExceptionIfAnyElementsAreInvalidTestCases()
+		private static IEnumerable<TestCaseData> ThrowExceptionWhenAnyElementsAreInvalidTestCases()
 		{
 			yield return new TestCaseData(JsonHelpers.DeserializeJson("[ { \"test\": 1 } ]"));
 			yield return new TestCaseData(JsonHelpers.DeserializeJson("[ { \"ArtifactID\": 101, \"Name\": \"Cool Choice\" }, { \"test\": 1 } ]"));
 			yield return new TestCaseData(JsonHelpers.DeserializeJson("[ { \"ArtifactID\": 101, \"Name\": \"Cool Choice\" }, { \"test\": 1 }, { \"ArtifactID\": 102, \"Name\": \"Cool Choice 2\" } ]"));
 		}
 
-		[TestCaseSource(nameof(ThrowSyncExceptionIfAnyElementsAreInvalidTestCases))]
-		public async Task ItShouldThrowSyncExceptionIfAnyElementsAreInvalid(object initialValue)
+		[TestCaseSource(nameof(ThrowExceptionWhenAnyElementsAreInvalidTestCases))]
+		public async Task ItShouldThrowInvalidExportFieldValueExceptionWhenAnyElementsAreInvalid(object initialValue)
 		{
-			// Arrange
-			ISynchronizationConfiguration configuration = CreateConfiguration();
-			var instance = new MultipleChoiceFieldSanitizer(configuration);
-
 			// Act
-			Func<Task> action = async () =>
-				await instance.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
+			Func<Task> action = async () => await _instance.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
 
 			// Assert
-			(await action.Should().ThrowAsync<SyncException>().ConfigureAwait(false))
+			(await action.Should().ThrowAsync<InvalidExportFieldValueException>().ConfigureAwait(false))
 				.Which.Message.Should()
 				.Contain(typeof(Choice).Name);
 		}
@@ -153,61 +148,35 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		[TestCaseSource(nameof(ThrowSyncExceptionWhenNameContainsDelimiterTestCases))]
 		public async Task ItShouldThrowSyncExceptionWhenNameContainsDelimiter(object initialValue, string expectedViolators)
 		{
-			// Arrange
-			ISynchronizationConfiguration configuration = CreateConfiguration();
-			var instance = new MultipleChoiceFieldSanitizer(configuration);
-
 			// Act
-			Func<Task> action = async () =>
-				await instance.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
+			Func<Task> action = async () => await _instance.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
 
 			// Assert
 			(await action.Should().ThrowAsync<SyncException>().ConfigureAwait(false))
-				.Which.Message.Should().MatchRegex($" {expectedViolators}$");
+				.Which.Message.Should().MatchRegex($" {expectedViolators}\\.$");
 		}
 
-		private static IEnumerable<TestCaseData> CombineNamesIntoReturnValueTestCases()
+		[Test]
+		public async Task ItShouldReturnNull()
 		{
-			yield return new TestCaseData(null, null)
-			{
-				TestName = "Null"
-			};
-			yield return new TestCaseData(ChoiceJArrayFromNames(), string.Empty)
-			{
-				TestName = "Empty"
-			};
-			yield return new TestCaseData(ChoiceJArrayFromNames("Sick Name"), "Sick Name")
-			{
-				TestName = "Single"
-			};
-			yield return new TestCaseData(ChoiceJArrayFromNames("Sick Name", "Cool Name", "Awesome Name"),
-				$"Sick Name{_MULTI_VALUE}Cool Name{_MULTI_VALUE}Awesome Name")
-			{
-				TestName = "Multiple"
-			};
-
-			// TODO: Add test cases for nested values
-		}
-
-		[TestCaseSource(nameof(CombineNamesIntoReturnValueTestCases))]
-		public async Task ItShouldCombineNamesIntoReturnValue(object initialValue, object expectedResult)
-		{
-			// Arrange
-			ISynchronizationConfiguration configuration = CreateConfiguration();
-			var instance = new MultipleChoiceFieldSanitizer(configuration);
-
 			// Act
-			object result = await instance.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
+			object result = await _instance.SanitizeAsync(0, "foo", "bar", "baz", null).ConfigureAwait(false);
 
 			// Assert
-			result.Should().Be(expectedResult);
+			result.Should().BeNull();
 		}
-
-		private static ISynchronizationConfiguration CreateConfiguration()
+		
+		[Test]
+		public async Task ItShouldReturnEmptyString()
 		{
-			var config = new Mock<ISynchronizationConfiguration>();
-			config.SetupGet(x => x.ImportSettings).Returns(new ImportSettingsDto());
-			return config.Object;
+			_choiceCache.Setup(x => x.GetChoicesWithParentInfoAsync(It.IsAny<ICollection<Choice>>())).ReturnsAsync(new List<ChoiceWithParentInfo>());
+			_choiceTreeToStringConverter.Setup(x => x.ConvertTreeToString(It.IsAny<IList<ChoiceWithParentInfo>>())).Returns(string.Empty);
+
+			// Act
+			object result = await _instance.SanitizeAsync(0, "foo", "bar", "baz", ChoiceJArrayFromNames().ToString()).ConfigureAwait(false);
+
+			// Assert
+			result.Should().Be(string.Empty);
 		}
 
 		private static JArray ChoiceJArrayFromNames(params string[] names)

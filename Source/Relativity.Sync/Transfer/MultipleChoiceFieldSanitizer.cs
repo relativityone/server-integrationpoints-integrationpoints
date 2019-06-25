@@ -18,24 +18,24 @@ namespace Relativity.Sync.Transfer
 	internal sealed class MultipleChoiceFieldSanitizer : IExportFieldSanitizer
 	{
 		private readonly ISynchronizationConfiguration _configuration;
+		private readonly IChoiceCache _choiceCache;
+		private readonly IChoiceTreeToStringConverter _choiceTreeConverter;
 		private readonly JSONSerializer _serializer = new JSONSerializer();
 
-		public MultipleChoiceFieldSanitizer(ISynchronizationConfiguration configuration)
+		public MultipleChoiceFieldSanitizer(ISynchronizationConfiguration configuration, IChoiceCache choiceCache, IChoiceTreeToStringConverter choiceTreeConverter)
 		{
 			_configuration = configuration;
+			_choiceCache = choiceCache;
+			_choiceTreeConverter = choiceTreeConverter;
 		}
 
 		public RelativityDataType SupportedType => RelativityDataType.MultipleChoice;
 
-		public Task<object> SanitizeAsync(int workspaceArtifactId,
-			string itemIdentifierSourceFieldName,
-			string itemIdentifier,
-			string sanitizingSourceFieldName,
-			object initialValue)
+		public async Task<object> SanitizeAsync(int workspaceArtifactId, string itemIdentifierSourceFieldName, string itemIdentifier, string sanitizingSourceFieldName, object initialValue)
 		{
 			if (initialValue == null)
 			{
-				return Task.FromResult(initialValue);
+				return initialValue;
 			}
 
 			// We have to re-serialize and deserialize the value from Export API due to REL-250554.
@@ -46,14 +46,15 @@ namespace Relativity.Sync.Transfer
 			}
 			catch (Exception ex) when (ex is JsonSerializationException || ex is JsonReaderException)
 			{
-				throw new SyncException("Unable to parse data from Relativity Export API - " +
-					$"expected value to be deserializable to {typeof(Choice[])}, but instead type was {initialValue.GetType()}", ex);
+				throw new InvalidExportFieldValueException(itemIdentifier, sanitizingSourceFieldName,
+					$"Expected value to be deserializable to {typeof(Choice[])}, but instead type was {initialValue.GetType()}.",
+					ex);
 			}
 
 			if (choices.Any(x => string.IsNullOrWhiteSpace(x.Name)))
 			{
-				throw new SyncException("Unable to parse data from Relativity Export API - " +
-					$"expected elements of input to be deserializable to type {typeof(Choice)}");
+				throw new InvalidExportFieldValueException(itemIdentifier, sanitizingSourceFieldName,
+					$"Expected elements of input to be deserializable to type {typeof(Choice)}.");
 			}
 
 			char multiValueDelimiter = _configuration.ImportSettings.MultiValueDelimiter;
@@ -67,13 +68,26 @@ namespace Relativity.Sync.Transfer
 				throw new SyncException(
 					$"The identifiers of the following choices referenced by object '{itemIdentifier}' in field '{sanitizingSourceFieldName}' " +
 					$"contain the character specified as the multi-value delimiter ('{multiValueDelimiter}') or the one specified as the nested value " +
-					$"delimiter ('{nestedValueDelimiter}'). Rename these choices or choose a different delimiter: {violatingNameList}");
+					$"delimiter ('{nestedValueDelimiter}'). Rename these choices or choose a different delimiter: {violatingNameList}.");
 			}
 
-			// TODO: Check & combine based on choice nesting
-			string multiValueDelimiterString = char.ToString(multiValueDelimiter);
-			string combinedNames = string.Join(multiValueDelimiterString, names);
-			return Task.FromResult<object>(combinedNames);
+			IList<ChoiceWithParentInfo> choicesFlatList = await _choiceCache.GetChoicesWithParentInfoAsync(choices).ConfigureAwait(false);
+			IList<ChoiceWithParentInfo> choicesTree = BuildChoiceTree(choicesFlatList, null);	// start with null to designate the roots of the tree
+
+			string treeString = _choiceTreeConverter.ConvertTreeToString(choicesTree);
+			return treeString;
+		}
+
+		private IList<ChoiceWithParentInfo> BuildChoiceTree(IList<ChoiceWithParentInfo> flatList, int? parentArtifactId)
+		{
+			IList<ChoiceWithParentInfo> tree = new List<ChoiceWithParentInfo>();
+			foreach (ChoiceWithParentInfo choice in flatList.Where(x => x.ParentArtifactId == parentArtifactId))
+			{
+				IList<ChoiceWithParentInfo> choiceChildren = BuildChoiceTree(flatList, choice.ArtifactID);
+				choice.Children.AddRange(choiceChildren);
+				tree.Add(choice);
+			}
+			return tree;
 		}
 	}
 }
