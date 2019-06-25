@@ -38,6 +38,11 @@ namespace kCura.IntegrationPoints.Core
 
 		public T CreateProxy<T>(ExecutionIdentity identity) where T : IDisposable
 		{
+			if (typeof(T) == typeof(IRSAPIClient))
+			{
+				return (T)CreateRsapiProxy();
+			}
+
 			string token = GetValidSystemToken(
 				errorMessage: "Unable to connect to federated instance Kepler"
 			);
@@ -53,7 +58,7 @@ namespace kCura.IntegrationPoints.Core
 			return userServiceFactory.CreateProxy<T>();
 		}
 
-		public IRSAPIClient CreateProxy(ExecutionIdentity identity)
+		private IRSAPIClient CreateRsapiProxy()
 		{
 			string token = GetValidSystemToken(
 				errorMessage: "Unable to connect to federated instance RSAPI"
