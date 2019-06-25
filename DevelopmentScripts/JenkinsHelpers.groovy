@@ -95,7 +95,7 @@ def initializeRIPPipeline(script, env, params, relativityBranchFallback)
 {
     ripPipelineState = new RIPPipelineState(script, env, params)
     ripPipelineState.relativityBranch = params.relativityBranch ?: env.BRANCH_NAME
-        ripPipelineState.relativityBranchFallback = relativityBranchFallback
+    ripPipelineState.relativityBranchFallback = relativityBranchFallback
 }
 
 /*
