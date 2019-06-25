@@ -105,9 +105,9 @@ namespace kCura.IntegrationPoints.Agent
 								jobHistoryHelper.MarkJobAsFailedAsync(syncJob, e, _helper).ConfigureAwait(false).GetAwaiter().GetResult();
 							}
 						}
-						catch
+						catch (Exception ie)
 						{
-							// Don't catch or throw anything as it will probably be related to the original exception
+							Logger.LogError(ie, "Unable to mark Sync job as failed and log a job history error in {WorkspaceArtifactId} for {JobId}.", job.WorkspaceID, job.JobId);
 						}
 
 						return new TaskResult
