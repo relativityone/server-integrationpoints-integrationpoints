@@ -64,7 +64,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Tagging
 			_fieldQueryRepository = repositoryFactory.GetFieldQueryRepository(SourceWorkspaceArtifactID);
 
 			var configMock = new Mock<IConfig>();
-			configMock.Setup(x => x.SourceWorkspaceTaggerBatchSize).Returns(_SOURCE_WORKSPACE_TAGGING_BATCH_SIZE);
+			configMock.Setup(x => x.MassUpdateBatchSize).Returns(_SOURCE_WORKSPACE_TAGGING_BATCH_SIZE);
 			var loggerMock = new Mock<IAPILog>
 			{
 				DefaultValue = DefaultValue.Mock

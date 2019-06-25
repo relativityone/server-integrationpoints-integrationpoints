@@ -59,8 +59,8 @@ namespace kCura.IntegrationPoints.Config
 		bool MeasureDurationOfExternalCalls { get; }
 
 		/// <summary>
-		/// Gets size of source workspace tagging batch
+		/// Gets size of mass update batch
 		/// </summary>
-		int SourceWorkspaceTaggerBatchSize { get; } // TODO rename instance setting
+		int MassUpdateBatchSize { get; }
 	}
 }

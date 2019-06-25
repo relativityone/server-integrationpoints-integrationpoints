@@ -280,7 +280,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 		private void SetupBatchSize(int batchSize)
 		{
 			_configMock
-				.Setup(x => x.SourceWorkspaceTaggerBatchSize)
+				.Setup(x => x.MassUpdateBatchSize)
 				.Returns(batchSize);
 		}
 

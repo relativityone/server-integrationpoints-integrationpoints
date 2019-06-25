@@ -136,7 +136,7 @@ namespace kCura.IntegrationPoints.Data.Helpers
 
 		private int ReadBatchSizeFromConfigAndValidateValue()
 		{
-			int batchSize = _config.SourceWorkspaceTaggerBatchSize;
+			int batchSize = _config.MassUpdateBatchSize;
 			ValidateBatchSize(batchSize);
 			return batchSize;
 		}

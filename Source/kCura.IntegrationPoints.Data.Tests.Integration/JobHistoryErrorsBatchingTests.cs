@@ -66,7 +66,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		{
 
 			var configMock = new Mock<IConfig>();
-			configMock.Setup(x => x.SourceWorkspaceTaggerBatchSize)
+			configMock.Setup(x => x.MassUpdateBatchSize)
 				.Returns(_MASS_UPDATE_REQUEST_BATCH_SIZE);
 			_loggerMock = new Mock<IAPILog>
 			{
