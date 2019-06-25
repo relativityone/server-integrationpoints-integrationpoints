@@ -97,7 +97,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 
 			if (testData.DeletedAfterRun)
 			{
-				_objectManager.Delete(integrationPoint.ArtifactID);
+				IntegrationPointRepository.Delete(integrationPoint.ArtifactID);
 			}
 		}
 

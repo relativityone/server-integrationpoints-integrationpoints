@@ -1,4 +1,5 @@
 ﻿using System.Web;
+using kCura.IntegrationPoints.Common.Context;
 
 namespace kCura.IntegrationPoints.Web.Context.WorkspaceContext
 {

@@ -15225,18 +15225,6 @@
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
-      <ArtifactId>1038968</ArtifactId>
-      <AssemblyArtifactId>1016759</AssemblyArtifactId>
-      <Name>kCura.IntegrationPoints.EventHandlers.Installers.CreateTenantIdForSecretStoreInstaller</Name>
-      <Guid>24a52901-3b2e-4db7-b45f-562a64fc4386</Guid>
-      <Guids>97008beb-6b49-4989-b4e9-47a426d110e2</Guids>
-      <ExecutionType>10</ExecutionType>
-      <Order>30</Order>
-      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.19</ApplicationVersion>
-      <RunTarget>0</RunTarget>
-    </InstallEventHandler>
-    <InstallEventHandler>
       <ArtifactId>1038969</ArtifactId>
       <AssemblyArtifactId>1016759</AssemblyArtifactId>
       <Name>kCura.IntegrationPoints.EventHandlers.Installers.RestoreJobHistoryDestinationWorkspaceEventHandler</Name>
@@ -15328,18 +15316,6 @@
       <Guids>c658ca09-9e6e-4d46-88d1-9e5e4e475b78</Guids>
       <ExecutionType>14</ExecutionType>
       <Order>60</Order>
-      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.19</ApplicationVersion>
-      <RunTarget>0</RunTarget>
-    </InstallEventHandler>
-    <InstallEventHandler>
-      <ArtifactId>1038977</ArtifactId>
-      <AssemblyArtifactId>1016759</AssemblyArtifactId>
-      <Name>kCura.IntegrationPoints.EventHandlers.Installers.SecretStorePostWorkspaceCreateEventHandler</Name>
-      <Guid>09854211-85c1-4360-adae-ced54096d86a</Guid>
-      <Guids>811a82c5-e23a-4dc9-9c73-1b546c8be451</Guids>
-      <ExecutionType>14</ExecutionType>
-      <Order>95</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
       <ApplicationVersion>9.7.0.19</ApplicationVersion>
       <RunTarget>0</RunTarget>
@@ -15570,6 +15546,19 @@
       <Order>65</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
       <ApplicationVersion>9.7.0.19</ApplicationVersion>
+      <RunTarget>0</RunTarget>
+    </InstallEventHandler>
+		<!--todo: replace with tt image app xml-->
+	  <InstallEventHandler>
+      <ArtifactId>1043798</ArtifactId>
+      <AssemblyArtifactId>1016717</AssemblyArtifactId>
+      <Name>kCura.IntegrationPoints.EventHandlers.Installers.MigrateSecretCatalogPathToSecretStorePathInstaller</Name>
+      <Guid>5fc77ecf-f263-4a0a-b3b8-82e0eb18be57</Guid>
+      <Guids>9f1a01b2-4d9a-4dff-a948-eeb6b41d2d3f</Guids>
+      <ExecutionType>10</ExecutionType>
+      <Order>210</Order>
+      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
+      <ApplicationVersion>9.7.0.16</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
   </InstallEventHandlers>

@@ -33,14 +33,14 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 
         private void SetTypeOfExportForIntegrationPoints()
         {
-			foreach (Data.IntegrationPoint point in _integrationPointService.GetAllRDOsWithAllFields())
+			foreach (IntegrationPoint point in _integrationPointService.GetAllRDOsWithAllFields())
 			{
 				string resultConf = _sourceConfigurationTypeOfExpertUpdater.GetCorrectedSourceConfiguration(point.SourceProvider,
 					point.DestinationProvider, point.SourceConfiguration);
 				if (resultConf != null)
 				{
 					point.SourceConfiguration = resultConf;
-					_objectManager.Update(point);
+					_integrationPointService.UpdateIntegrationPoint(point);
 				}
 			}
 		}

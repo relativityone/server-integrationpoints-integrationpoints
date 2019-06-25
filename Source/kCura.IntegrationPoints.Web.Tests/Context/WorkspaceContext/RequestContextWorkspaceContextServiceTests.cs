@@ -4,6 +4,7 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.Web;
+using kCura.IntegrationPoints.Common.Context;
 
 namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceContext
 {

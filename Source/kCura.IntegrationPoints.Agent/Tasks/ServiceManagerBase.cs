@@ -229,7 +229,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					JobService.UpdateStopState(new List<long> { job.JobId }, StopState.None);
 					IntegrationPointDto.NextScheduledRuntimeUTC = JobService.GetJobNextUtcRunDateTime(job, ScheduleRuleFactory, Result);
 				}
-				CaseServiceContext.RsapiService.RelativityObjectManager.Update(IntegrationPointDto);
+				IntegrationPointRepository.Update(IntegrationPointDto);
 				LogUpdateIntegrationPointRuntimesSuccesfulEnd(job);
 			}
 			catch (Exception e)
@@ -282,7 +282,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			int integrationPointId = job.RelatedObjectArtifactID;
 			IntegrationPoint integrationPoint =
-				IntegrationPointRepository.ReadAsync(integrationPointId).GetAwaiter().GetResult();
+				IntegrationPointRepository.ReadWithFieldMappingAsync(integrationPointId).GetAwaiter().GetResult();
 			if (integrationPoint == null)
 			{
 				LogLoadingIntegrationPointDtoError(job);

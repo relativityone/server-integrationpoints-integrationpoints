@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.Web.Context.WorkspaceContext.Exceptions;
+﻿using kCura.IntegrationPoints.Common.Context;
+using kCura.IntegrationPoints.Web.Context.WorkspaceContext.Exceptions;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.Context.WorkspaceContext

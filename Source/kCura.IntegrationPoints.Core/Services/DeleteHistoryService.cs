@@ -1,6 +1,4 @@
-﻿using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.Repositories;
-using Relativity.Services.Objects.DataContracts;
+﻿using kCura.IntegrationPoints.Data.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,19 +7,19 @@ namespace kCura.IntegrationPoints.Core.Services
 {
     public class DeleteHistoryService : IDeleteHistoryService
     {
-        private readonly IRelativityObjectManagerFactory _objectManagerFactory;
+        private readonly IIntegrationPointRepository _integrationPointRepository;
 
-        public DeleteHistoryService(IRelativityObjectManagerFactory objectManagerFactory)
+        public DeleteHistoryService(IIntegrationPointRepository integrationPointRepository)
         {
-            _objectManagerFactory = objectManagerFactory;
+	        _integrationPointRepository = integrationPointRepository;
         }
 
-        public void DeleteHistoriesAssociatedWithIP(int workspaceID, int integrationPointID)
+        public void DeleteHistoriesAssociatedWithIP(int integrationPointID)
         {
-            DeleteHistoriesAssociatedWithIPs(new List<int> { integrationPointID }, _objectManagerFactory.CreateRelativityObjectManager(workspaceID));
+            DeleteHistoriesAssociatedWithIPs(new List<int> { integrationPointID });
         }
 
-        public void DeleteHistoriesAssociatedWithIPs(List<int> integrationPointsIDs, IRelativityObjectManager objectManager)
+        public void DeleteHistoriesAssociatedWithIPs(List<int> integrationPointsIDs)
         {
             ValidateParameterIsNotNull(integrationPointsIDs, nameof(integrationPointsIDs));
             if (!integrationPointsIDs.Any())
@@ -29,12 +27,8 @@ namespace kCura.IntegrationPoints.Core.Services
                 return;
             }
 
-            var request = new QueryRequest
-            {
-                Condition = $"'ArtifactId' in [{string.Join(",", integrationPointsIDs)}]"
-
-            };
-            IList<Data.IntegrationPoint> integrationPoints = objectManager.Query<Data.IntegrationPoint>(request);
+            IList<Data.IntegrationPoint> integrationPoints = _integrationPointRepository
+	            .GetAll(integrationPointsIDs);
 
             // Since 9.4 release we're not deleting job history RDOs (they've being used by ECA Dashboard)
             // We're also not removing JobHistoryErrors as it was taking too long (SQL timeouts)
@@ -43,7 +37,7 @@ namespace kCura.IntegrationPoints.Core.Services
             foreach (Data.IntegrationPoint integrationPoint in integrationPoints)
             {
                 integrationPoint.JobHistory = null;
-                objectManager.Update(integrationPoint);
+                _integrationPointRepository.Update(integrationPoint);
             }
         }
 

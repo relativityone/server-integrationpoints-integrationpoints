@@ -72,6 +72,7 @@
     <Compile Include="BatchStatusCommands\Implementations\TargetDocumentsTaggingManager.cs" />
     <Compile Include="BatchStatusCommands\Implementations\TargetDocumentsTaggingManagerFactory.cs" />
     <Compile Include="BatchStatusCommands\Implementations\TempTableReader.cs" />
+    <Compile Include="Installers\Registrations\SecretStoreMigrationRegistration.cs" />
     <Compile Include="FederatedInstanceServicesManager.cs" />
     <Compile Include="Provider\Internals\ApplicationGuidFinder.cs" />
     <Compile Include="Provider\Internals\DataProviderFactoryFactory.cs" />
@@ -82,6 +83,8 @@
     <Compile Include="Provider\IRipProviderUninstaller.cs" />
     <Compile Include="Provider\RipProviderInstaller.cs" />
     <Compile Include="Provider\RipProviderUninstaller.cs" />
+    <Compile Include="Services\ISecretStoreMigrationService.cs" />
+    <Compile Include="Services\SecretStoreMigrationService.cs" />
     <Compile Include="Services\SourceTypes\SourceType.cs" />
     <Compile Include="Tagging\ISourceDocumentsTagger.cs" />
     <Compile Include="Tagging\SourceDocumentsTagger.cs" />

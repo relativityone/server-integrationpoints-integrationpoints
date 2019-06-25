@@ -1,6 +1,7 @@
 ﻿using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using NSubstitute;
 using NUnit.Framework;
@@ -20,7 +21,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 		[Test]
 		public void ItShouldReturnSameInstanceEveryTime()
 		{
-			var jobHistoryErrorService = new JobHistoryErrorService(Substitute.For<ICaseServiceContext>(), Substitute.For<IHelper>());
+			var jobHistoryErrorService = new JobHistoryErrorService(
+				Substitute.For<ICaseServiceContext>(), 
+				Substitute.For<IHelper>(), 
+				Substitute.For<IIntegrationPointRepository>()
+			);
 
 			var jobHistoryErrorServiceProvider = new JobHistoryErrorServiceProvider(jobHistoryErrorService);
 

@@ -7,8 +7,8 @@ using kCura.IntegrationPoints.LDAPProvider;
 using kCura.IntegrationPoints.Web.Models;
 using System;
 using System.Web.Mvc;
+using kCura.IntegrationPoints.Common.Context;
 using kCura.IntegrationPoints.Web.Context.UserContext;
-using kCura.IntegrationPoints.Web.Context.WorkspaceContext;
 
 namespace kCura.IntegrationPoints.Web.Controllers
 {

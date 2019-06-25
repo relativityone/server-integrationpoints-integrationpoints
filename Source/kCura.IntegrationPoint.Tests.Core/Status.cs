@@ -67,16 +67,22 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static void WaitForScheduledJobToComplete(IWindsorContainer container, int workspaceArtifactId, int integrationPointArtifactId, int timeoutInSeconds = 300, int sleepIntervalInMilliseconds = 500)
 		{
-			var rsapiService = container.Resolve<IRSAPIService>();
+			var integrationPointRepository = container.Resolve<IIntegrationPointRepository>();
 
 			double timeWaitedInSeconds = 0.0;
-			IntegrationPoints.Data.IntegrationPoint integrationPoint = rsapiService.RelativityObjectManager.Read<IntegrationPoints.Data.IntegrationPoint>(integrationPointArtifactId);
+			IntegrationPoints.Data.IntegrationPoint integrationPoint = integrationPointRepository
+				.ReadAsync(integrationPointArtifactId)
+				.GetAwaiter()
+				.GetResult();
 
 			while (integrationPoint.LastRuntimeUTC == null)
 			{
 				VerifyTimeout(timeWaitedInSeconds, timeoutInSeconds, nameof(WaitForScheduledJobToComplete));
 				timeWaitedInSeconds = SleepAndUpdateTimeout(sleepIntervalInMilliseconds, timeWaitedInSeconds);
-				integrationPoint = rsapiService.RelativityObjectManager.Read<IntegrationPoints.Data.IntegrationPoint>(integrationPointArtifactId);
+				integrationPoint = integrationPointRepository
+					.ReadAsync(integrationPointArtifactId)
+					.GetAwaiter()
+					.GetResult();
 			}
 		}
 

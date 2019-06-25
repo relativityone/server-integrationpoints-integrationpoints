@@ -3,13 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.Transformers;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity.API;
-using Relativity.Services.Objects.DataContracts;
 using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations
@@ -20,18 +17,26 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 		private readonly IDestinationProviderRepository _destinationProviderRepository;
 		private readonly ISourceProviderRepository _sourceProviderRepository;
 		private readonly IDataTransferLocationMigrationHelper _dataTransferLocationMigrationHelper;
-		private readonly IRelativityObjectManager _integrationPointLibrary;
+		private readonly IIntegrationPointRepository _integrationPointRepository;
 		private readonly IDataTransferLocationService _dataTransferLocationService;
 		private readonly IResourcePoolManager _resourcePoolManager;
 		private readonly IEHHelper _helper;
 
-		public DataTransferLocationMigration(IAPILog logger, IDestinationProviderRepository destinationProviderRepository, ISourceProviderRepository sourceProviderRepository, IDataTransferLocationMigrationHelper dataTransferLocationMigrationHelper, ICaseServiceContext serviceContext, IRelativityObjectManager integrationPointLibrary, IDataTransferLocationService dataTransferLocationService, IResourcePoolManager resourcePoolManager, IEHHelper helper)
+		public DataTransferLocationMigration(
+			IAPILog logger, 
+			IDestinationProviderRepository destinationProviderRepository, 
+			ISourceProviderRepository sourceProviderRepository, 
+			IDataTransferLocationMigrationHelper dataTransferLocationMigrationHelper,
+			IIntegrationPointRepository integrationPointRepository,
+			IDataTransferLocationService dataTransferLocationService, 
+			IResourcePoolManager resourcePoolManager, 
+			IEHHelper helper)
 		{
 			_logger = logger;
 			_destinationProviderRepository = destinationProviderRepository;
 			_sourceProviderRepository = sourceProviderRepository;
 			_dataTransferLocationMigrationHelper = dataTransferLocationMigrationHelper;
-			_integrationPointLibrary = integrationPointLibrary;
+			_integrationPointRepository = integrationPointRepository;
 			_dataTransferLocationService = dataTransferLocationService;
 			_resourcePoolManager = resourcePoolManager;
 			_helper = helper;
@@ -42,7 +47,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			int sourceProviderArtifactId = GetRelativitySourceProviderArtifactId();
 			int destinationProviderArtifactId = GetLoadFileDestinationProviderArtifactId();
 
-			IList<Data.IntegrationPoint> integrationPoints = GetAllExportIntegrationPoints(sourceProviderArtifactId,
+			IList<IntegrationPoint> integrationPoints = GetAllExportIntegrationPoints(sourceProviderArtifactId,
 				destinationProviderArtifactId);
 
 			MigrateDestinationLocationPaths(integrationPoints);
@@ -74,12 +79,14 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			}
 		}
 
-		private IList<Data.IntegrationPoint> GetAllExportIntegrationPoints(int relativitySourceProviderArtifactId, int loadFileDestinationProviderArtifactId)
+		private IList<IntegrationPoint> GetAllExportIntegrationPoints(int relativitySourceProviderArtifactId, int loadFileDestinationProviderArtifactId)
 		{
 			try
 			{
-				QueryRequest request = BuildIntegrationPointsQuery(relativitySourceProviderArtifactId, loadFileDestinationProviderArtifactId);
-				return _integrationPointLibrary.Query<IntegrationPoint>(request);
+				return _integrationPointRepository.GetAllBySourceAndDestinationProviderIDs(
+					relativitySourceProviderArtifactId,
+					loadFileDestinationProviderArtifactId
+				);
 			}
 			catch (Exception ex)
 			{
@@ -88,7 +95,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			}
 		}
 
-		private void MigrateDestinationLocationPaths(IList<Data.IntegrationPoint> integrationPoints)
+		private void MigrateDestinationLocationPaths(IList<IntegrationPoint> integrationPoints)
 		{
 			if (!integrationPoints.Any())
 			{
@@ -104,7 +111,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			}
 		}
 
-		private void UpdateIntegrationPoint(Data.IntegrationPoint integrationPoint, IList<string> processingSourceLocations,
+		private void UpdateIntegrationPoint(IntegrationPoint integrationPoint, IList<string> processingSourceLocations,
 			string newDataTransferLocationRoot)
 		{
 			try
@@ -114,7 +121,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 						processingSourceLocations, newDataTransferLocationRoot);
 				integrationPoint.SourceConfiguration = updatedSourceConfigurationString;
 
-				_integrationPointLibrary.Update(integrationPoint);
+				_integrationPointRepository.Update(integrationPoint);
 			}
 			catch (Exception ex)
 			{
@@ -149,20 +156,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 				_logger.LogError(ex, "Failed to retrieve default relative location for integration point");
 				throw;
 			}
-		}
-
-		private QueryRequest BuildIntegrationPointsQuery(int relativitySourceProviderArtifactId,
-			int loadFileDestinationProviderArtifactId)
-		{
-			var request = new QueryRequest
-			{
-				Condition = $"'{IntegrationPointFields.SourceProvider}' == {relativitySourceProviderArtifactId} " +
-							$"AND " +
-							$"'{IntegrationPointFields.DestinationProvider}' == {loadFileDestinationProviderArtifactId}",
-				Fields = new IntegrationPoint().ToFieldList()
-			};
-
-			return request;
 		}
 	}
 }
