@@ -98,8 +98,7 @@ timestamps
 					step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
 				}
 				jenkinsHelpers = load "DevelopmentScripts/JenkinsHelpers.groovy"
-				jenkinsHelpers.initializeRIPPipeline(this, env, params)
-				jenkinsHelpers.setRelativityBranchFallback(relativityBranchFallback)
+				jenkinsHelpers.initializeRIPPipeline(this, env, params, relativityBranchFallback)
 			}
 			stage ('Get Version')
 			{
@@ -146,7 +145,7 @@ timestamps
 				// Provision SUT
 				stage('Install RAID')
 				{
-					jenkinsHelpers.raid(relativityBranchFallback)
+					jenkinsHelpers.raid()
 				}
 			}
 
