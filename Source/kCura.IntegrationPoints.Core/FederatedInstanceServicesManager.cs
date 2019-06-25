@@ -43,19 +43,7 @@ namespace kCura.IntegrationPoints.Core
 				return (T)CreateRsapiProxy();
 			}
 
-			string token = GetValidSystemToken(
-				errorMessage: "Unable to connect to federated instance Kepler"
-			);
-
-			var credentials = new ServiceProxyBearerTokenCredentials(token);
-
-			ServiceFactorySettings userSettings = new ServiceFactorySettings(
-				_rsapiUri, 
-				_keplerUri,
-				credentials
-			);
-			ServiceFactory userServiceFactory = new ServiceFactory(userSettings);
-			return userServiceFactory.CreateProxy<T>();
+			return CreateKeplerProxy<T>(identity);
 		}
 
 		private IRSAPIClient CreateRsapiProxy()
@@ -70,6 +58,23 @@ namespace kCura.IntegrationPoints.Core
 				_rsapiUri,
 				authenticationType
 			);
+		}
+
+		private T CreateKeplerProxy<T>(ExecutionIdentity identity) where T : IDisposable
+		{
+			string token = GetValidSystemToken(
+				errorMessage: "Unable to connect to federated instance Kepler"
+			);
+
+			var credentials = new ServiceProxyBearerTokenCredentials(token);
+
+			ServiceFactorySettings userSettings = new ServiceFactorySettings(
+				_rsapiUri,
+				_keplerUri,
+				credentials
+			);
+			ServiceFactory userServiceFactory = new ServiceFactory(userSettings);
+			return userServiceFactory.CreateProxy<T>();
 		}
 
 		private string GetValidSystemToken(string errorMessage)
