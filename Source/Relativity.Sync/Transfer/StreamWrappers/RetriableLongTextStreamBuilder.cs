@@ -69,8 +69,8 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 		private void OnRetry(Stream stream, Exception exception, int retryAttempt)
 		{
 			stream?.Dispose();
-			_logger.LogWarning(exception, $"Retrying Kepler Stream creation inside {nameof(SelfRecreatingStream)}. Attempt {{retryAttempt}} of {{maxNumberOfRetries}}", nameof(SelfRecreatingStream),
-				retryAttempt, _MAX_RETRY_ATTEMPTS);
+			_logger.LogWarning(exception, "Retrying Kepler Stream creation inside {SelfRecreatingStream}. Attempt {retryAttempt} of {maxNumberOfRetries}",
+				nameof(SelfRecreatingStream), retryAttempt, _MAX_RETRY_ATTEMPTS);
 			_syncMetrics.CountOperation(_STREAM_RETRY_COUNT_BUCKET_NAME, ExecutionStatus.Failed);
 		}
 

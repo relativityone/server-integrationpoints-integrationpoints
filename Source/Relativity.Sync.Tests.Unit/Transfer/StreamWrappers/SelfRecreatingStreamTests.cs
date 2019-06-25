@@ -4,7 +4,7 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Logging;
-using Relativity.Sync.Tests.Unit.Stubs;
+using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Transfer.StreamWrappers;
 
 namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
@@ -284,14 +284,37 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 			_streamBuilderMock.Setup(sb => sb.GetStreamAsync()).ReturnsAsync(stream);
 
 			SelfRecreatingStream selfRecreatingStream = new SelfRecreatingStream(_streamBuilderMock.Object, new EmptyLogger());
-
-
+			
 			// act
 			bool canRead = selfRecreatingStream.CanRead;
 			selfRecreatingStream.Dispose();
 
 			// assert
 			stream.IsDisposed.Should().BeTrue();
+		}
+
+		[Test]
+		public void ItShouldDisposeReturnReadableStreamAndDisposeUnreadable()
+		{
+			// arrange
+			const int expectedCallCount = 2;
+
+			var unreadableStream = new DisposalCheckStream();
+			unreadableStream.SetCanRead(false);
+
+			var readableStream = new DisposalCheckStream();
+			readableStream.SetCanRead(true);
+			_streamBuilderMock.SetupSequence(sb => sb.GetStreamAsync()).ReturnsAsync(unreadableStream).ReturnsAsync(readableStream);
+
+			SelfRecreatingStream selfRecreatingStream = new SelfRecreatingStream(_streamBuilderMock.Object, new EmptyLogger());
+			
+			// act
+			bool canRead = selfRecreatingStream.CanRead;
+
+			// assert
+			unreadableStream.IsDisposed.Should().BeTrue();
+			readableStream.IsDisposed.Should().BeFalse();
+			_streamBuilderMock.Verify(sb => sb.GetStreamAsync(), Times.Exactly(expectedCallCount));
 		}
 
 		[Test]
