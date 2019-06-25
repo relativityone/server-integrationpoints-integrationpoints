@@ -329,7 +329,7 @@ def runIntegrationTestsInQuarantine()
     }
 }
 
-def gatherTestStats()
+def publishBuildArtifacts()
 {
     timeout(time: 5, unit: 'MINUTES')
     {
@@ -342,7 +342,13 @@ def gatherTestStats()
         powershell "Import-Module ./Vendor/psake/tools/psake.psm1; Invoke-psake ./DevelopmentScripts/psake-test.ps1 generate_nunit_reports"
         def artifactsPath = Constants.ARTIFACTS_PATH
         archiveArtifacts artifacts: "$artifactsPath/**/*", fingerprint: true, allowEmptyArchive: true
+    }
+}
 
+def gatherTestStats()
+{
+    timeout(time: 5, unit: 'MINUTES')
+    {
         if(isNightly())
         {
             storeIntegrationTestsInQuarantineResults()

@@ -184,6 +184,7 @@ timestamps
 				{
 					stage ('Gathering test stats')
 					{
+						jenkinsHelpers.publishBuildArtifacts()
 						jenkinsHelpers.gatherTestStats()
 					}
 				}
