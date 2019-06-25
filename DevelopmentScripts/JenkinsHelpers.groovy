@@ -122,7 +122,7 @@ def build()
 {
     def sonarParameter = shouldRunSonar(params.enableSonarAnalysis, env.BRANCH_NAME)
     def checkConfigureAwaitParameter = params.enableCheckConfigureAwait ? "-checkConfigureAwait" : ""
-    powershell "./build.ps1 $sonarParameter $ripPipelineState.relativityBranch $ripPipelineState.commonBuildArgs $checkConfigureAwaitParameter"
+    powershell "./build.ps1 $sonarParameter $ripPipelineState.commonBuildArgs $checkConfigureAwaitParameter"
     archiveArtifacts artifacts: "DevelopmentScripts/*.html", fingerprint: true
 }
 
@@ -586,7 +586,7 @@ private isPowershellResultTrue(s)
 private shouldRunSonar(Boolean enableSonarAnalysis, String branchName)
 {
 	return (enableSonarAnalysis && !isNightly())
-			? "-sonarqube"
+			? "-sonarqube $ripPipelineState.relativityBranch"
 			: ""
 }
 
