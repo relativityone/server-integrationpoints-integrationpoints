@@ -73,6 +73,7 @@
     <Compile Include="BatchStatusCommands\Implementations\TargetDocumentsTaggingManagerFactory.cs" />
     <Compile Include="BatchStatusCommands\Implementations\TempTableReader.cs" />
     <Compile Include="Installers\Registrations\SecretStoreMigrationRegistration.cs" />
+    <Compile Include="FederatedInstanceServicesManager.cs" />
     <Compile Include="Provider\Internals\ApplicationGuidFinder.cs" />
     <Compile Include="Provider\Internals\DataProviderFactoryFactory.cs" />
     <Compile Include="Provider\Internals\IApplicationGuidFinder.cs" />
@@ -90,8 +91,6 @@
     <Compile Include="Validation\IAgentValidator.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="ContextContainer.cs" />
-    <Compile Include="FederatedInstanceKeplerHandler.cs" />
-    <Compile Include="FederatedInstanceRsapiHandler.cs" />
     <Compile Include="Helpers\Implementations\DateTimeUtcHelper.cs" />
     <Compile Include="Helpers\JSONHelper.cs" />
     <Compile Include="Helpers\Logging\LogHelper.cs" />
@@ -1283,11 +1282,6 @@
         </Reference>
         <Reference Include="Relativity.API">
           <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.API.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.APIHelper">
-          <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.APIHelper.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
