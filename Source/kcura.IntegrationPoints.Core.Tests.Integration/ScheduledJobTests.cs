@@ -6,7 +6,6 @@ using System.Threading;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using NUnit.Framework;
@@ -29,7 +28,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 		{
 			base.SuiteSetup();
 
-			IntegrationPoint.Tests.Core.Agent.EnableAllIntegrationPointsAgents();
+			IntegrationPoint.Tests.Core.Agent.EnableAllIntegrationPointsAgentsAsync().GetAwaiter().GetResult();
 			
 			_jobService = Container.Resolve<IJobService>();
 			_jobManager = Container.Resolve<IJobManager>();

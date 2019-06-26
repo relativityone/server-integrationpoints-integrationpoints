@@ -101,7 +101,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 			if (_wasAgentCreated)
 			{
-				Agent.DeleteAgent(AgentArtifactId);
+				Agent.DeleteAgentAsync(AgentArtifactId).GetAwaiter().GetResult();
 			}
 			base.SuiteTeardown();
 		}
@@ -351,7 +351,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 			if (CreatingAgentEnabled)
 			{
-				Result agentCreatedResult = await Task.Run(() => Agent.CreateIntegrationPointAgent()).ConfigureAwait(false);
+				Result agentCreatedResult = await Agent.CreateIntegrationPointAgentAsync().ConfigureAwait(false);
 				AgentArtifactId = agentCreatedResult.ArtifactID;
 				_wasAgentCreated = agentCreatedResult.Success;
 			}
