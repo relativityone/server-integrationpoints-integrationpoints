@@ -57,7 +57,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			{
 				return;
 			}
-			using (IAgentManager proxy = Helper.CreateAdminProxy<IAgentManager>())
+			using (IAgentManager proxy = Helper.CreateProxy<IAgentManager>())
 			{
 				try
 				{
@@ -103,7 +103,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		private static async Task UpdateAgentAsync(global::Relativity.Services.Agent.Agent agent)
 		{
-			using (IAgentManager proxy = Helper.CreateAdminProxy<IAgentManager>())
+			using (IAgentManager proxy = Helper.CreateProxy<IAgentManager>())
 			{
 				try
 				{
@@ -162,7 +162,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			try
 			{
-				using (IAgentManager proxy = Helper.CreateAdminProxy<IAgentManager>())
+				using (IAgentManager proxy = Helper.CreateProxy<IAgentManager>())
 				{
 					int artifactId = await proxy.CreateSingleAsync(agentDto).ConfigureAwait(false);
 
@@ -181,7 +181,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		private static async Task<AgentQueryResultSet> QueryAgentsAsync(Query query)
 		{
-			using (IAgentManager proxy = Helper.CreateAdminProxy<IAgentManager>())
+			using (IAgentManager proxy = Helper.CreateProxy<IAgentManager>())
 			{
 				AgentQueryResultSet agentQueryResultSet = await proxy.QueryAsync(query).ConfigureAwait(false);
 
@@ -196,7 +196,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		private static async Task<List<ResourceServer>> GetAgentServersAsync()
 		{
-			using (IAgentManager proxy = Helper.CreateAdminProxy<IAgentManager>())
+			using (IAgentManager proxy = Helper.CreateProxy<IAgentManager>())
 			{
 				try
 				{
@@ -232,7 +232,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		private static async Task<List<AgentTypeRef>> GetAgentTypesAsync()
 		{
-			using (IAgentManager proxy = Helper.CreateAdminProxy<IAgentManager>())
+			using (IAgentManager proxy = Helper.CreateProxy<IAgentManager>())
 			{
 				try
 				{

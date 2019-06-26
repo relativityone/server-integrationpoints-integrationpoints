@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 		public override void SuiteSetup()
 		{
 			base.SuiteSetup();
-			_client = Helper.CreateAdminProxy<IIntegrationPointManager>();
+			_client = Helper.CreateProxy<IIntegrationPointManager>();
 		}
 
 		public override void SuiteTeardown()

@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 				572226
 			};
 
-			var helper = Substitute.For<IEHHelper>();
+			IEHHelper helper = Substitute.For<IEHHelper>();
 			helper.GetActiveCaseID().Returns(_WORKSPACE_ID);
 			IEHContext context = new EHContext
 			{
@@ -69,7 +69,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 			// ASSERT
 			foreach (var artifactId in _artifactIds)
 			{
-				_deleteHistoryService.Received(1).DeleteHistoriesAssociatedWithIP(_WORKSPACE_ID, artifactId);
+				_deleteHistoryService.Received(1).DeleteHistoriesAssociatedWithIP(artifactId);
 			}
 		}
 
@@ -81,7 +81,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 			// ACT & ASSERT
 			Assert.That(() => _instance.Execute(), Throws.Exception);
 
-			_deleteHistoryService.DidNotReceiveWithAnyArgs().DeleteHistoriesAssociatedWithIP(_WORKSPACE_ID, Arg.Any<int>());
+			_deleteHistoryService.DidNotReceiveWithAnyArgs().DeleteHistoriesAssociatedWithIP(Arg.Any<int>());
 		}
 	}
 }

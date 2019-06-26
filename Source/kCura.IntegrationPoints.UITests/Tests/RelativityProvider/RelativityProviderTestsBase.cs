@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		public virtual void OneTimeSetUp()
 		{
 			Context.ExecuteRelativityFolderPathScript();
-			FolderManager = Context.Helper.CreateAdminProxy<IFolderManager>();
+			FolderManager = Context.Helper.CreateProxy<IFolderManager>();
 			NativesService = new NativesService(Context.Helper);
 			ImageService = new ImagesService(Context.Helper);
 			ProductionImageService = new ProductionImagesService(Context.Helper);

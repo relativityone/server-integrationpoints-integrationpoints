@@ -53,12 +53,11 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Commands\CreateTenantIdForSecretStoreCommandTests.cs" />
     <Compile Include="Commands\DeleteIntegrationPointCommandTests.cs" />
     <Compile Include="Commands\Helpers\ArtifactsToDeleteTests.cs" />
-    <Compile Include="Commands\Helpers\TenantForSecretStoreCreationValidatorTests.cs" />
     <Compile Include="Commands\ImportNativeFileCopyModeUpdaterTests.cs" />
     <Compile Include="Commands\JobHistoryDestinationWorkspaceParserTests.cs" />
+    <Compile Include="Commands\MigrateSecretCatalogPathToSecretStorePathCommandTests.cs" />
     <Compile Include="Commands\PreCascadeDeleteIntegrationPointCommandTests.cs" />
     <Compile Include="Commands\RenameCustodianToEntity\RenameCustodianToEntityForSourceProviderCommandTests.cs" />
     <Compile Include="Commands\RenameCustodianToEntity\RenameCustodianToEntityInIntegrationPointConfigurationCommandTests.cs" />
@@ -69,14 +68,12 @@
     <Compile Include="Commands\SplitJsonObjectServiceTests.cs" />
     <Compile Include="Commands\UpdateConfigurationCommandTestsBase.cs" />
     <Compile Include="Commands\UpdateDestinationWorkspaceEntriesCommandTests.cs" />
-    <Compile Include="Commands\Helpers\CreateTenantIdForSecretStoreTests.cs" />
     <Compile Include="Commands\RemoveSecuredConfigurationFromIntegrationPointServiceTests.cs" />
     <Compile Include="Commands\UpdateFtpConfigurationCommandTests.cs" />
     <Compile Include="Commands\UpdateLdapConfigurationCommandTests.cs" />
     <Compile Include="Commands\UpdateRelativityConfigurationCommandTests.cs" />
+    <Compile Include="Context\EventHandlerWorkspaceContextServiceTests.cs" />
     <Compile Include="EncryptionManager\DefaultEncryptionManagerTests.cs" />
-    <Compile Include="Installers\Helpers\SecretStoreCleanUpTests.cs" />
-    <Compile Include="Installers\SecretStoreCleanUpEventHandlerWrapperTests.cs" />
     <Compile Include="Installers\SetHasErrorsFieldTests.cs" />
     <Compile Include="Installers\SourceProvidersMigrationEventHandlerTests.cs" />
     <Compile Include="Installers\UpdateJobHistoryDestinationWorkspaceTests.cs" />
@@ -92,6 +89,10 @@
     <Compile Include="IntegrationPoints\Validators\PreCascadeDeleteEventHandlerValidatorTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Common\kCura.IntegrationPoints.Common.csproj">
+      <Project>{32BCB03B-4980-4434-9392-F72334E6E348}</Project>
+      <Name>kCura.IntegrationPoints.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
       <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>
       <Name>kCura.IntegrationPoints.Contracts</Name>
@@ -309,17 +310,6 @@
         </Reference>
         <Reference Include="Relativity.Productions.Services.Interfaces.Private">
           <HintPath>..\..\packages\Relativity.Productions.Services.Interfaces\lib\net45\Relativity.Productions.Services.Interfaces.Private.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.SecretCatalog">
-          <HintPath>..\..\packages\Relativity.SecretCatalog\lib\Relativity.SecretCatalog.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

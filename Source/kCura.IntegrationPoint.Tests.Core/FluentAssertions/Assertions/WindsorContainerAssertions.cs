@@ -184,5 +184,5 @@ namespace kCura.IntegrationPoint.Tests.Core.FluentAssertions.Assertions
                 return null;
             }
         }
-    }
+	}
 }

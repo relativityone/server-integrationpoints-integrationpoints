@@ -602,7 +602,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		private JobHistory CreateJobHistoryOnIntegrationPoint(int integrationPointArtifactId, Guid batchInstance)
 		{
 			IntegrationPoint integrationPoint =
-				IntegrationPointRepository.ReadAsync(integrationPointArtifactId).GetAwaiter().GetResult();
+				IntegrationPointRepository.ReadWithFieldMappingAsync(integrationPointArtifactId).GetAwaiter().GetResult();
 			JobHistory jobHistory =
 				_jobHistoryService.CreateRdo(integrationPoint, batchInstance, JobTypeChoices.JobHistoryRun, DateTime.Now);
 			jobHistory.EndTimeUTC = DateTime.Now;
@@ -617,7 +617,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			var savedSearchQuery = new global::Relativity.Services.Query();
 			savedSearchQuery.Condition = $"'Name' EqualTo '{tempSavedSearchName}'";
 
-			using (var proxy = Helper.CreateAdminProxy<IKeywordSearchManager>())
+			using (var proxy = Helper.CreateProxy<IKeywordSearchManager>())
 			{
 				KeywordSearchQueryResultSet resultSet = proxy.QueryAsync(SourceWorkspaceArtifactID, savedSearchQuery).Result;
 				if (resultSet.TotalCount != 0)

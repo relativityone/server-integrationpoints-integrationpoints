@@ -1,12 +1,12 @@
 ﻿using Castle.MicroKernel;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Common.Context;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Authentication;
-using kCura.IntegrationPoints.Web.Context.WorkspaceContext;
 using kCura.IntegrationPoints.Web.IntegrationPointsServices;
 using Relativity.API;
 
@@ -39,8 +39,8 @@ namespace kCura.IntegrationPoints.Web.Installers.IntegrationPointsServices
 					.LifestylePerWebRequest(),
 				Component
 					.For<IWorkspaceDBContext>()
-					.ImplementedBy<Data.WorkspaceDBContext>()
-					.UsingFactoryMethod(k => new Data.WorkspaceDBContext(k.Resolve<WebClientFactory>().CreateDbContext()))
+					.ImplementedBy<WorkspaceDBContext>()
+					.UsingFactoryMethod(k => new WorkspaceDBContext(k.Resolve<WebClientFactory>().CreateDbContext()))
 					.LifestyleTransient(),
 				Component
 					.For<IAuthTokenGenerator>()

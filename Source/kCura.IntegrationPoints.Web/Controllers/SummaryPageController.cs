@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
@@ -32,7 +33,8 @@ namespace kCura.IntegrationPoints.Web.Controllers
 		[LogApiExceptionFilter(Message = "Unable to get SummaryPage for requested Integration Point")]
 		public ActionResult GetSummaryPage(int id, string controllerType)
 		{
-			Tuple<int, int> providerIds = GetSourceAndDestinationProviderIds(id, controllerType);
+			Tuple<int, int> providerIds = GetSourceAndDestinationProviderIdsAsync(id, controllerType)
+				.GetAwaiter().GetResult();
 
 			ProviderType providerType = _providerTypeService.GetProviderType(providerIds.Item1, providerIds.Item2);
 
@@ -48,12 +50,13 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			return PartialView("~/Views/IntegrationPoints/SchedulerSummaryPage.cshtml");
 		}
 
-		private Tuple<int, int> GetSourceAndDestinationProviderIds(int integrationPointId, string controllerType)
+		private async Task<Tuple<int, int>> GetSourceAndDestinationProviderIdsAsync(int integrationPointId, string controllerType)
 		{
 			if (controllerType == IntegrationPointApiControllerNames.IntegrationPointApiControllerName)
 			{
-				IntegrationPoint integrationPoint =
-					_integrationPointRepository.ReadAsync(integrationPointId).GetAwaiter().GetResult();
+				IntegrationPoint integrationPoint = await _integrationPointRepository
+					.ReadWithFieldMappingAsync(integrationPointId)
+					.ConfigureAwait(false);
 
 				return new Tuple<int, int>(integrationPoint.SourceProvider.Value, integrationPoint.DestinationProvider.Value);
 			}

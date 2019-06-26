@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
 
 		public bool ExecuteRelativityFolderPathScript()
 		{
-			using (var client = _testContext.Helper.CreateAdminProxy<IRSAPIClient>())
+			using (var client = _testContext.Helper.CreateProxy<IRSAPIClient>())
 			{
 				client.APIOptions.WorkspaceID = _testContext.GetWorkspaceId();
 

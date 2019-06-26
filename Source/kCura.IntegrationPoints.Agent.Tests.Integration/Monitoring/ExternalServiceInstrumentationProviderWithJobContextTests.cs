@@ -1,5 +1,4 @@
 ﻿using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Agent.Context;
 using kCura.IntegrationPoints.Agent.Monitoring;
@@ -18,7 +17,6 @@ using Relativity.DataTransfer.MessageService;
 using Relativity.DataTransfer.MessageService.MetricsManager.APM;
 using System;
 using System.Threading.Tasks;
-using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using Relativity.Testing.Identification;
 
@@ -83,7 +81,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration.Monitoring
 			}
 
 			// assert
-			await Task.Delay(_DELAY_FOR_PROCESSING_MESSAGE_IN_MS);
+			await Task.Delay(_DELAY_FOR_PROCESSING_MESSAGE_IN_MS).ConfigureAwait(false);
 			_metricManagerMock.Verify(x => x.LogCount(
 				_BUCKET_EXTERNALL_CALL,
 				It.IsAny<long>(),
@@ -109,7 +107,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration.Monitoring
 			}
 
 			// assert
-			await Task.Delay(_DELAY_FOR_PROCESSING_MESSAGE_IN_MS);
+			await Task.Delay(_DELAY_FOR_PROCESSING_MESSAGE_IN_MS).ConfigureAwait(false);
 			_metricManagerMock.Verify(x => x.LogCount(
 				_BUCKET_EXTERNALL_CALL,
 				It.IsAny<long>(),
@@ -136,7 +134,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration.Monitoring
 			}
 
 			// assert
-			await Task.Delay(_DELAY_FOR_PROCESSING_MESSAGE_IN_MS);
+			await Task.Delay(_DELAY_FOR_PROCESSING_MESSAGE_IN_MS).ConfigureAwait(false);
 			_metricManagerMock.Verify(x => x.LogCount(_BUCKET_EXTERNALL_CALL, It.IsAny<long>(), It.IsAny<IMetricMetadata>()), Times.Never);
 		}
 
@@ -153,8 +151,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration.Monitoring
 				JobID = _JOB_ID.ToString(),
 				WorkspaceID = _WORKSPACE_ID
 			};
-			await _messageService.Send(jobStartedMessage);
-			await Task.Delay(_DELAY_FOR_PROCESSING_MESSAGE_IN_MS);
+			await _messageService.Send(jobStartedMessage).ConfigureAwait(false);
+			await Task.Delay(_DELAY_FOR_PROCESSING_MESSAGE_IN_MS).ConfigureAwait(false);
 
 			using (_jobContextProvider.StartJobContext(GetJob()))
 			{
@@ -173,13 +171,13 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration.Monitoring
 				JobID = _JOB_ID.ToString(),
 				WorkspaceID = _WORKSPACE_ID
 			};
-			await Task.Delay(_DELAY_FOR_PROCESSING_MESSAGE_IN_MS);
+			await Task.Delay(_DELAY_FOR_PROCESSING_MESSAGE_IN_MS).ConfigureAwait(false);
 
 			// act
-			await _messageService.Send(jobCompletedMessage);
+			await _messageService.Send(jobCompletedMessage).ConfigureAwait(false);
 
 			// assert
-			await Task.Delay(_DELAY_FOR_PROCESSING_MESSAGE_IN_MS);
+			await Task.Delay(_DELAY_FOR_PROCESSING_MESSAGE_IN_MS).ConfigureAwait(false);
 			_metricManagerMock.Verify(x => x.LogCount(
 				_BUCKET_EXTERNALL_CALL_JOB_SUMMARY,
 				It.IsAny<long>(),

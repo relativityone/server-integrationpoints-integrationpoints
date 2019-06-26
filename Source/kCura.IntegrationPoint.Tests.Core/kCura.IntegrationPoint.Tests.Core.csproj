@@ -176,15 +176,6 @@
     <Compile Include="Templates\SourceProviderTemplate.cs" />
     <Compile Include="TestHelpers\ExceptionHelper.cs" />
     <Compile Include="TestHelpers\ExtendedIAgentHelper.cs" />
-    <Compile Include="TestHelpers\ExtendedIArtifactGuidManager.cs" />
-    <Compile Include="TestHelpers\ExtendedIFieldManager.cs" />
-    <Compile Include="TestHelpers\ExtendedIKeywordSearchManager.cs" />
-    <Compile Include="TestHelpers\ExtendedInstanceSettingManager.cs" />
-    <Compile Include="TestHelpers\ExtendedIObjectQueryManager.cs" />
-    <Compile Include="TestHelpers\ExtendedIPermissionManager.cs" />
-    <Compile Include="TestHelpers\ExtendedIRSAPIClient.cs" />
-    <Compile Include="TestHelpers\ExtendedIWorkspaceManager.cs" />
-    <Compile Include="TestHelpers\ExtendedSearchContainerManager.cs" />
     <Compile Include="TestHelpers\FileServiceBase.cs" />
     <Compile Include="TestHelpers\FolderWithDocumentsIdRetriever.cs" />
     <Compile Include="TestHelpers\IImagesService.cs" />
@@ -239,6 +230,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Agent\kCura.IntegrationPoints.Agent.csproj">
       <Project>{BFA5641B-AA6F-4FA5-A20D-6F42B484CAE4}</Project>
       <Name>kCura.IntegrationPoints.Agent</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Common\kCura.IntegrationPoints.Common.csproj">
+      <Project>{32BCB03B-4980-4434-9392-F72334E6E348}</Project>
+      <Name>kCura.IntegrationPoints.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
       <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>

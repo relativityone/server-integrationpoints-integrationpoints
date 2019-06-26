@@ -1,12 +1,9 @@
 ﻿using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using NSubstitute;
 using NUnit.Framework;
-using Relativity.API;
-using Relativity.Services.Objects.DataContracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,19 +14,14 @@ namespace kCura.IntegrationPoints.Core.Tests
     public class DeleteHistoryServiceTest : TestBase
     {
         private DeleteHistoryService _sut;
-        private IRelativityObjectManager _objectManager;
-
-        private const int _WORKSPACE_ID = 813386;
+        private IIntegrationPointRepository _integrationPointRepository;
 
         [SetUp]
         public override void SetUp()
         {
-            _objectManager = Substitute.For<IRelativityObjectManager>();
+	        _integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
 
-            IRelativityObjectManagerFactory rsapiServiceFactory = Substitute.For<IRelativityObjectManagerFactory>();
-            rsapiServiceFactory.CreateRelativityObjectManager(_WORKSPACE_ID).Returns(_objectManager);
-
-            _sut = new DeleteHistoryService(rsapiServiceFactory);
+            _sut = new DeleteHistoryService(_integrationPointRepository);
         }
 
         [Test]
@@ -50,13 +42,13 @@ namespace kCura.IntegrationPoints.Core.Tests
                 }
             };
 
-            _objectManager.Query<Data.IntegrationPoint>(Arg.Any<QueryRequest>()).Returns(integrationPoints);
+            _integrationPointRepository.GetAll(Arg.Any<List<int>>()).Returns(integrationPoints);
 
             // act
-            _sut.DeleteHistoriesAssociatedWithIPs(integrationPointsIDs, _objectManager);
+            _sut.DeleteHistoriesAssociatedWithIPs(integrationPointsIDs);
 
-            // assert
-            _objectManager.Received(2).Update(Arg.Is<Data.IntegrationPoint>(x => !x.JobHistory.Any()));
+			// assert
+			_integrationPointRepository.Received(2).Update(Arg.Is<Data.IntegrationPoint>(x => !x.JobHistory.Any()));
         }
 
         [Test]
@@ -66,18 +58,19 @@ namespace kCura.IntegrationPoints.Core.Tests
             var integrationPointsIDs = new List<int>();
 
             // act
-            _sut.DeleteHistoriesAssociatedWithIPs(integrationPointsIDs, _objectManager);
+            _sut.DeleteHistoriesAssociatedWithIPs(integrationPointsIDs);
 
-            // assert
-            _objectManager.DidNotReceiveWithAnyArgs()
-                .Query<Data.IntegrationPoint>(Arg.Any<QueryRequest>(), Arg.Any<ExecutionIdentity>());
+			// assert
+			_integrationPointRepository
+				.DidNotReceiveWithAnyArgs()
+                .GetAll(Arg.Any<List<int>>());
         }
 
         [Test]
         public void ItShouldThrowExceptionWhenIDsListIsNull()
         {
             // act
-            Action deleteAction = () => _sut.DeleteHistoriesAssociatedWithIPs(null, _objectManager);
+            Action deleteAction = () => _sut.DeleteHistoriesAssociatedWithIPs(null);
 
             // assert
             deleteAction.ShouldThrow<ArgumentNullException>("because input list was empty");

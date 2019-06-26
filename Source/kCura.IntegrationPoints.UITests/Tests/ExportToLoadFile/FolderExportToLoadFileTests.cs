@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 		[OneTimeSetUp]
 		public async Task OneTimeSetup()
 		{
-			await CreateDocumentView();
+			await CreateDocumentViewAsync().ConfigureAwait(false);
 		}
 
 		[SetUp]
@@ -172,7 +172,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
 		}
 
-		private async Task CreateDocumentView()
+		private async Task CreateDocumentViewAsync()
 		{
 			int workspaceID = Context.GetWorkspaceId();
 

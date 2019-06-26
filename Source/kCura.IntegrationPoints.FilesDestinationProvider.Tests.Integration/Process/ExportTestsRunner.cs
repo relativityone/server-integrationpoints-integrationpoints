@@ -71,15 +71,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 
 		[Test]
 		[SmokeTest]
-		[TestInQuarantine(TestQuarantineState.SeemsToBeStable)]
-		[TestCaseSource(nameof(FlakyExportTestCaseSource))]
-		public void RunFlakyTestCase(IExportTestCase testCase)
-		{
-			RunTestCase(testCase);
-		}
-
-		[Test]
-		[SmokeTest]
 		[TestCaseSource(nameof(InvalidFileshareExportTestCaseSource))]
 		public void RunInvalidFileshareTestCase(IInvalidFileshareExportTestCase testCase)
 		{
@@ -113,38 +104,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		private static IEnumerable<IExportTestCase> ExportTestCaseSource()
 		{
 			return _windsorContainer
-				.ResolveAll<IExportTestCase>()
-				.Where(x => !IsFlakyTest(x));
-		}
-
-		private static IEnumerable<IExportTestCase> FlakyExportTestCaseSource()
-		{
-			return _windsorContainer
-				.ResolveAll<IExportTestCase>()
-				.Where(IsFlakyTest);
+				.ResolveAll<IExportTestCase>();
 		}
 
 		private static IEnumerable<IInvalidFileshareExportTestCase> InvalidFileshareExportTestCaseSource()
 		{
 			return _windsorContainer.ResolveAll<IInvalidFileshareExportTestCase>();
 		}
-
-		private static bool IsFlakyTest(IExportTestCase testCase)
-		{
-			return testCase is ItShouldExportFilesStartingFromGivenRecord
-				   || testCase is ItShouldExportFolderAndSubfoldersWithNatives
-				   || testCase is ItShouldExportFolderWithNatives
-				   || testCase is ItShouldExportImagesAsMultiplePages
-				   || testCase is ItShouldExportImagesAsPdfs
-				   || testCase is ItShouldExportImagesAsSinglePages
-				   || testCase is ItShouldExportOriginalImagesPrecendence
-				   || testCase is ItShouldExportProducedImagesPrecedence
-				   || testCase is ItShouldExportProductionSetWithImages
-				   || testCase is ItShouldExportProductionSetWithNatives
-				   || testCase is ItShouldExportSavedSearch
-				;
-		}
-
+		
 		private void InitializeSut()
 		{
 			IHelper helper = _windsorContainer.Resolve<IHelper>();

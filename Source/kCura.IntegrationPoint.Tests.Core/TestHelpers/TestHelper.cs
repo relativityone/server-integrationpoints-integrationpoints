@@ -42,41 +42,38 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			_logFactory = Substitute.For<ILogFactory>();
 			_instanceSettingsBundleMock = Substitute.For<IInstanceSettingsBundle>();
 			_serviceManager = Substitute.For<IServicesMgr>();
-			_serviceManager.CreateProxy<IRSAPIClient>(Arg.Any<ExecutionIdentity>()).Returns(new ExtendedIRSAPIClient());
-			_serviceManager.CreateProxy<IPermissionManager>(ExecutionIdentity.CurrentUser).Returns(new ExtendedIPermissionManager(this));
-			_serviceManager.CreateProxy<IPermissionManager>(ExecutionIdentity.System).Returns(new ExtendedIPermissionManager(this));
-			_serviceManager.CreateProxy<IObjectQueryManager>(ExecutionIdentity.System).Returns(new ExtendedIObjectQueryManager(this));
-			_serviceManager.CreateProxy<IObjectQueryManager>(ExecutionIdentity.CurrentUser).Returns(new ExtendedIObjectQueryManager(this));
-			_serviceManager.CreateProxy<IKeywordSearchManager>(ExecutionIdentity.System).Returns(new ExtendedIKeywordSearchManager(this));
-			_serviceManager.CreateProxy<IKeywordSearchManager>(ExecutionIdentity.CurrentUser).Returns(new ExtendedIKeywordSearchManager(this));
-			_serviceManager.CreateProxy<IWorkspaceManager>(ExecutionIdentity.CurrentUser).Returns(new ExtendedIWorkspaceManager(this));
-			_serviceManager.CreateProxy<IArtifactGuidManager>(ExecutionIdentity.System).Returns(new ExtendedIArtifactGuidManager(this));
-			_serviceManager.CreateProxy<IFieldManager>(ExecutionIdentity.System).Returns(new ExtendedIFieldManager(this));
-			_serviceManager.CreateProxy<IInstanceSettingManager>(ExecutionIdentity.CurrentUser).Returns(new ExtendedInstanceSettingManager(this));
-			_serviceManager.CreateProxy<ISearchContainerManager>(ExecutionIdentity.CurrentUser).Returns(new ExtendedSearchContainerManager(this));
-			_serviceManager.CreateProxy<IOAuth2ClientManager>(ExecutionIdentity.System).Returns(_ => CreateAdminProxy<IOAuth2ClientManager>());
-			_serviceManager.CreateProxy<IObjectManager>(ExecutionIdentity.System).Returns(_ => CreateAdminProxy<IObjectManager>());
-			_serviceManager.CreateProxy<IObjectManager>(ExecutionIdentity.CurrentUser).Returns(_ => CreateUserProxy<IObjectManager>());
-			_serviceManager.CreateProxy<IResourceServerManager>(ExecutionIdentity.CurrentUser).Returns(_ => CreateUserProxy<IResourceServerManager>());
-			_serviceManager.CreateProxy<IResourceServerManager>(ExecutionIdentity.System).Returns(_ => CreateAdminProxy<IResourceServerManager>());
-			_serviceManager.CreateProxy<IFolderManager>(ExecutionIdentity.CurrentUser).Returns(_ => CreateUserProxy<IFolderManager>());
+			_serviceManager.CreateProxy<IRSAPIClient>(Arg.Any<ExecutionIdentity>()).Returns(_ => Rsapi.CreateRsapiClient());
+			RegisterProxyInServiceManagerMock<IPermissionManager>(ExecutionIdentity.CurrentUser);
+			RegisterProxyInServiceManagerMock<IPermissionManager>(ExecutionIdentity.System);
+			RegisterProxyInServiceManagerMock<IObjectQueryManager>(ExecutionIdentity.CurrentUser);
+			RegisterProxyInServiceManagerMock<IObjectQueryManager>(ExecutionIdentity.System);
+			RegisterProxyInServiceManagerMock<IKeywordSearchManager>(ExecutionIdentity.CurrentUser);
+			RegisterProxyInServiceManagerMock<IKeywordSearchManager>(ExecutionIdentity.System);
+			RegisterProxyInServiceManagerMock<IObjectManager>(ExecutionIdentity.CurrentUser);
+			RegisterProxyInServiceManagerMock<IObjectManager>(ExecutionIdentity.System);
+			RegisterProxyInServiceManagerMock<IResourceServerManager>(ExecutionIdentity.CurrentUser);
+			RegisterProxyInServiceManagerMock<IResourceServerManager>(ExecutionIdentity.System);
+			RegisterProxyInServiceManagerMock<IWorkspaceManager>(ExecutionIdentity.CurrentUser);
+			RegisterProxyInServiceManagerMock<IArtifactGuidManager>(ExecutionIdentity.System);
+			RegisterProxyInServiceManagerMock<IFieldManager>(ExecutionIdentity.System);
+			RegisterProxyInServiceManagerMock<IInstanceSettingManager>(ExecutionIdentity.CurrentUser);
+			RegisterProxyInServiceManagerMock<ISearchContainerManager>(ExecutionIdentity.CurrentUser);
+			RegisterProxyInServiceManagerMock<IOAuth2ClientManager>(ExecutionIdentity.System);
+			RegisterProxyInServiceManagerMock<IFolderManager>(ExecutionIdentity.CurrentUser);
 			_serviceManager.GetServicesURL().Returns(SharedVariables.RelativityRestUri);
 		}
 
-		public T CreateUserProxy<T>() where T : IDisposable
+		private void RegisterProxyInServiceManagerMock<T>(ExecutionIdentity executionIdentity) where T : IDisposable
 		{
-			return CreateUserProxy<T>(RelativityUserName);
+			_serviceManager.CreateProxy<T>(executionIdentity).Returns(_ => CreateProxy<T>());
 		}
 
-		public T CreateAdminProxy<T>() where T : IDisposable
+		public T CreateProxy<T>() where T : IDisposable
 		{
-			var credential = new global::Relativity.Services.ServiceProxy.UsernamePasswordCredentials(RelativityUserName, RelativityPassword);
-			ServiceFactorySettings settings = new ServiceFactorySettings(SharedVariables.RsapiUri, SharedVariables.RelativityRestUri, credential);
-			ServiceFactory adminServiceFactory = new ServiceFactory(settings);
-			return adminServiceFactory.CreateProxy<T>();
+			return CreateProxy<T>(RelativityUserName);
 		}
-
-		public T CreateUserProxy<T>(string username) where T : IDisposable
+		
+		public T CreateProxy<T>(string username) where T : IDisposable
 		{
 			var userCredential = new global::Relativity.Services.ServiceProxy.UsernamePasswordCredentials(username, RelativityPassword);
 			ServiceFactorySettings userSettings = new ServiceFactorySettings(SharedVariables.RsapiUri, SharedVariables.RelativityRestUri, userCredential);

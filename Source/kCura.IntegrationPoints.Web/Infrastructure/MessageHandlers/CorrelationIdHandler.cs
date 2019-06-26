@@ -1,13 +1,13 @@
 ﻿using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Web.Context.UserContext;
-using kCura.IntegrationPoints.Web.Context.WorkspaceContext;
 using kCura.IntegrationPoints.Web.IntegrationPointsServices.Logging;
 using Relativity.API;
 using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Common.Context;
 
 namespace kCura.IntegrationPoints.Web.Infrastructure.MessageHandlers
 {

@@ -6,6 +6,9 @@ using kCura.EventHandler.CustomAttributes;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Facades.SecretStore.Implementation;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.SourceProviderInstaller;
 using Relativity.API;
 using Constants = kCura.IntegrationPoints.Domain.Constants;
@@ -19,6 +22,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 	{
 		private ICaseServiceContext _caseContext;
 		private IIntegrationPointTypeService _integrationPointTypeService;
+		private IIntegrationPointRepository _integrationPointRepository;
 
 		protected override IAPILog CreateLogger()
 		{
@@ -34,7 +38,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 
 		protected override void Run()
 		{
-			IList<IntegrationPoint> integrationPoints = GetIntegrationPoints();
+			IList<IntegrationPoint> integrationPoints = IntegrationPointRepository.GetAllIntegrationPoints();
 			IList<IntegrationPointType> integrationPointTypes = IntegrationPointTypeService.GetAllIntegrationPointTypes();
 
 			foreach (IntegrationPoint integrationPoint in integrationPoints)
@@ -55,6 +59,32 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			set { _integrationPointTypeService = value; }
 		}
 
+		internal IIntegrationPointRepository IntegrationPointRepository
+		{
+			get
+			{
+				if (_integrationPointRepository != null)
+				{
+					return _integrationPointRepository;
+				}
+
+				IAPILog logger = Helper.GetLoggerFactory().GetLogger();
+
+				_integrationPointRepository = new IntegrationPointRepository(
+					ObjectManager,
+					new IntegrationPointSerializer(logger),
+					new SecretsRepository(
+						SecretStoreFacadeFactory_Deprecated.Create(Helper.GetSecretStore, logger), 
+						logger
+					),
+					logger
+				);
+
+				return _integrationPointRepository;
+			}
+			set { _integrationPointRepository = value; }
+		}
+
 		internal void UpdateIntegrationPointType(IntegrationPoint integrationPoint, IList<IntegrationPointType> integrationPointTypes)
 		{
 			if ((integrationPoint.Type != null) && (integrationPoint.Type != 0))
@@ -70,14 +100,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			{
 				integrationPoint.Type = integrationPointTypes.First(x => x.Identifier == Core.Constants.IntegrationPoints.IntegrationPointTypes.ImportGuid.ToString()).ArtifactId;
 			}
-			ObjectManager.Update(integrationPoint);
-		}
-
-		internal IList<IntegrationPoint> GetIntegrationPoints()
-		{
-			IntegrationPointQuery integrationPointQuery = new IntegrationPointQuery(ObjectManager);
-			IList<Data.IntegrationPoint> integrationPoints = integrationPointQuery.GetAllIntegrationPoints();
-			return integrationPoints;
+			IntegrationPointRepository.Update(integrationPoint);
 		}
 	}
 }

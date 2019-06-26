@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.Web.Infrastructure.Session;
+﻿using kCura.IntegrationPoints.Common.Context;
+using kCura.IntegrationPoints.Web.Infrastructure.Session;
 
 namespace kCura.IntegrationPoints.Web.Context.WorkspaceContext
 {

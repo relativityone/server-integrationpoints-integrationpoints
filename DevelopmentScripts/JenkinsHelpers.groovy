@@ -121,7 +121,8 @@ def getVersion()
 def build()
 {
     def sonarParameter = shouldRunSonar(params.enableSonarAnalysis, env.BRANCH_NAME)
-    powershell "./build.ps1 $sonarParameter $ripPipelineState.commonBuildArgs"
+    def checkConfigureAwaitParameter = params.enableCheckConfigureAwait ? "-checkConfigureAwait" : ""
+    powershell "./build.ps1 $sonarParameter $ripPipelineState.commonBuildArgs $checkConfigureAwaitParameter"
     archiveArtifacts artifacts: "DevelopmentScripts/*.html", fingerprint: true
 }
 
@@ -550,6 +551,13 @@ def deleteDirectoryIfExists(String directoryToDelete)
 	{
 		deleteDir()
 	}
+}
+
+def importTestResultsToTestTracker()
+{
+    testTracker(ripPipelineState.relativityBuildVersion,
+        env.BRANCH_NAME,
+        "$Constants.INTEGRATION_TESTS_RESULTS_REPORT_PATH;$Constants.UI_TESTS_RESULTS_REPORT_PATH;$Constants.INTEGRATION_TESTS_IN_QUARANTINE_RESULTS_REPORT_PATH")
 }
 
 /*****************

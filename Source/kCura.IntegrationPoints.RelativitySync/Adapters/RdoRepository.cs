@@ -21,17 +21,9 @@ namespace kCura.IntegrationPoints.RelativitySync.Adapters
 		{
 			string typeName = nameof(T);
 			_logger.LogDebug("Reading object of type {typeName} with artifact ID: {artifactId} using ObjectManager", typeName, artifactId);
-			try
-			{
-				T readObject = _caseServiceContext.RsapiService.RelativityObjectManager.Read<T>(artifactId);
-				_logger.LogDebug("Successfuly retrieved object of type {typeName} with artifact ID: {artifactId} using ObjectManager", typeName, artifactId);
-				return readObject;
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "Failed to retrieve object of type {typeName} with artifact ID: {artifactId} using ObjectManager", typeName, artifactId);
-				throw;
-			}
+			T readObject = _caseServiceContext.RsapiService.RelativityObjectManager.Read<T>(artifactId);
+			_logger.LogDebug("Successfuly retrieved object of type {typeName} with artifact ID: {artifactId} using ObjectManager", typeName, artifactId);
+			return readObject;
 		}
 	}
 }

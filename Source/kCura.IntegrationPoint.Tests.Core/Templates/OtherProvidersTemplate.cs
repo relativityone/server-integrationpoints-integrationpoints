@@ -79,7 +79,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			IRepositoryFactory repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			IFieldQueryRepository workspaceFieldQueryRepository = repositoryFactory.GetFieldQueryRepository(WorkspaceArtifactId);
 
-			ArtifactDTO documentDto = workspaceFieldQueryRepository.RetrieveTheIdentifierField((int)Relativity.Client.ArtifactType.Document);
+			ArtifactDTO documentDto = workspaceFieldQueryRepository.RetrieveIdentifierField((int)Relativity.Client.ArtifactType.Document);
 
 			FieldMap[] map =
 			{

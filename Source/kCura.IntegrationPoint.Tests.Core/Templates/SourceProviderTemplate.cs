@@ -26,7 +26,9 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using Castle.MicroKernel.Resolvers;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using Relativity.Services.Folder;
 using Component = Castle.MicroKernel.Registration.Component;
 
@@ -111,6 +113,11 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		protected virtual void InitializeIocContainer()
 		{
+			Container.Register(Component
+				.For<ILazyComponentLoader>()
+				.ImplementedBy<LazyOfTComponentLoader>()
+			);
+
 			Container.Register(Component.For<IHelper>().UsingFactoryMethod(k => Helper, managedExternally: true));
 			Container.Register(Component.For<IAPILog>().UsingFactoryMethod(k => Helper.GetLoggerFactory().GetLogger()));
 			Container.Register(Component.For<IRsapiClientWithWorkspaceFactory>().ImplementedBy<RsapiClientWithWorkspaceFactory>().LifestyleTransient());
@@ -145,9 +152,23 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				)
 			);
 			Container.Register(Component.For<FolderWithDocumentsIdRetriever>().ImplementedBy<FolderWithDocumentsIdRetriever>());
+			Container.Register(
+				Component
+					.For<IExternalServiceInstrumentationProvider>()
+					.ImplementedBy<ExternalServiceInstrumentationProviderWithoutJobContext>()
+					.LifestyleSingleton()
+			);
+
 
 #pragma warning disable 618
-			var dependencies = new IWindsorInstaller[] { new QueryInstallers(), new KeywordInstaller(), new SharedAgentInstaller(), new ServicesInstaller(), new ValidationInstaller() };
+			var dependencies = new IWindsorInstaller[]
+			{
+				new QueryInstallers(),
+				new KeywordInstaller(),
+				new SharedAgentInstaller(),
+				new ServicesInstaller(),
+				new ValidationInstaller()
+			};
 #pragma warning restore 618
 
 			foreach (IWindsorInstaller dependency in dependencies)
@@ -201,7 +222,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		protected IntegrationPointModel RefreshIntegrationModel(IntegrationPointModel model)
 		{
-			IntegrationPoints.Data.IntegrationPoint ip = IntegrationPointRepository.ReadAsync(model.ArtifactID)
+			IntegrationPoints.Data.IntegrationPoint ip = IntegrationPointRepository.ReadWithFieldMappingAsync(model.ArtifactID)
 				.GetAwaiter().GetResult();
 			return IntegrationPointModel.FromIntegrationPoint(ip);
 		}
@@ -221,7 +242,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		{
 			IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
 			IntegrationPoints.Data.IntegrationPoint integrationPoint =
-				IntegrationPointRepository.ReadAsync(integrationPointArtifactId).GetAwaiter().GetResult();
+				IntegrationPointRepository.ReadWithFieldMappingAsync(integrationPointArtifactId).GetAwaiter().GetResult();
 			JobHistory jobHistory = jobHistoryService.CreateRdo(integrationPoint, batchInstance, jobTypeChoice, DateTime.Now);
 
 			if (jobEnded)

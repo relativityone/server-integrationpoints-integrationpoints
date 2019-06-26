@@ -2,8 +2,6 @@
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
-using kCura.IntegrationPoint.Tests.Core.TestCategories;
-using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Services.Tests.Integration.StatisticsManager.TestCase;
 using NUnit.Framework;
@@ -28,15 +26,11 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.StatisticsManager
 			new GetNativesTotalForProduction(),
 			new GetImagesFileSizeForProduction(),
 			new GetImagesTotalForProduction(),
-			new GetNativesFileSizeForProduction()
+			new GetNativesFileSizeForProduction(),
+			new GetImagesFileSizeForFolder(),
+			new GetNativesFileSizeForFolder()
 		};
 
-		private static IEnumerable<IStatisticsTestCase> _quarantinedBrokenTestCases = new IStatisticsTestCase[]
-		{
-			new GetImagesFileSizeForFolder(),
-			new GetNativesFileSizeForFolder() 
-		};
-		
 		public StatisticsManagerTests() : base($"Statistics_{Utils.FormattedDateTimeNow}")
 		{
 		}
@@ -67,13 +61,6 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.StatisticsManager
 
 		[TestCaseSource(nameof(_testCases))]
 		public void ItShouldGetDocumentTotal(IStatisticsTestCase statisticsTestCase)
-		{
-			statisticsTestCase.Execute(Helper, WorkspaceArtifactId, _testCaseSettings);
-		}
-
-		[TestCaseSource(nameof(_quarantinedBrokenTestCases))]
-		[TestInQuarantine(TestQuarantineState.SeemsToBeStable)]
-		public void ItShouldGetDocumentTotalQuarantinedBrokentests(IStatisticsTestCase statisticsTestCase)
 		{
 			statisticsTestCase.Execute(Helper, WorkspaceArtifactId, _testCaseSettings);
 		}

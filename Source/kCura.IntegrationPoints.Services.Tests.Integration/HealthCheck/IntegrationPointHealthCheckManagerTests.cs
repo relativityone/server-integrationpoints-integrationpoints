@@ -10,7 +10,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.HealthCheck
 		[IdentifiedTest("bc05ee7f-a723-4385-9778-557ca2d8a7a4")]
 		public void ShouldBeHealthyByDefault()
 		{
-			IIntegrationPointHealthCheckManager client = Helper.CreateUserProxy<IIntegrationPointHealthCheckManager>(UserModel.EmailAddress);
+			IIntegrationPointHealthCheckManager client = Helper.CreateProxy<IIntegrationPointHealthCheckManager>(UserModel.EmailAddress);
 
 			HealthCheckOperationResult result = client.RunHealthChecksAsync().Result;
 

@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				Order = 0
 			};
 
-			using (IViewManager viewManager = Helper.CreateAdminProxy<IViewManager>())
+			using (IViewManager viewManager = Helper.CreateProxy<IViewManager>())
 			{
 				return await viewManager.CreateSingleAsync(workspaceID, viewToCreate).ConfigureAwait(false);
 			}
@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		private static async Task<List<FieldRef>> GetViewFieldsReferences(int workspaceID, int objectTypeID, IEnumerable<Guid> fieldsGuids)
 		{
-			using (IItemListViewManager viewManager = Helper.CreateAdminProxy<IItemListViewManager>())
+			using (IItemListViewManager viewManager = Helper.CreateProxy<IItemListViewManager>())
 			{
 				Dictionary<int, ItemListFieldRef> objectTypeViewFields = await viewManager
 					.GetFieldsAsync(workspaceID, objectTypeID)

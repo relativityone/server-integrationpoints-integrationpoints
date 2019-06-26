@@ -75,11 +75,6 @@ namespace kCura.IntegrationPoints.Data
 		public static readonly Guid DocumentFieldGuid = new Guid("1CAA97BA-1D77-40C6-9F9A-F5EA9CEFAF38");
 	}
 
-	public static class SecretStoreConstants
-	{
-		public const string TENANT_ID_PREFIX = "92080CA4-4903-41B0-9E4C-4DC7DF961A8E";
-	}
-
 	public static class DocumentFieldsConstants
 	{
 		public static readonly Guid HasNativeFieldGuid = new Guid("E09E18F3-D0C8-4CFC-96D1-FBB350FAB3E1");
@@ -94,5 +89,24 @@ namespace kCura.IntegrationPoints.Data
 		public const int HAS_IMAGES_YES_ARTIFACT_ID = 1034243;
 
 		public const string POPUP_FILTER_TYPE_NAME = "Popup";
+	}
+
+	public abstract class RdoFieldsConstants
+	{
+		internal const string NAME_FIELD = "Name";
+	}
+
+	public abstract class SavedSearchFieldsConstants : RdoFieldsConstants
+	{
+		public const string OWNER_FIELD = "Owner";
+	}
+
+	public abstract class WorkspaceFieldsConstants : RdoFieldsConstants
+	{
+	}
+
+	public abstract class FederatedInstanceFieldsConstants : RdoFieldsConstants
+	{
+		public const string INSTANCE_URL_FIELD = "Instance URL";
 	}
 }

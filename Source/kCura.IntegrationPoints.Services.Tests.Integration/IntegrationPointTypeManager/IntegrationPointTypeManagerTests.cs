@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointTyp
 		public override void SuiteSetup()
 		{
 			base.SuiteSetup();
-			_client = Helper.CreateAdminProxy<IIntegrationPointTypeManager>();
+			_client = Helper.CreateProxy<IIntegrationPointTypeManager>();
 		}
 
 		public override void SuiteTeardown()

@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 		public async Task OneTimeSetup()
 		{
 			Context.AddEntityObjectToWorkspace();
-			await Context.CreateEntityView(_VIEW_NAME);
+			await Context.CreateEntityViewAsync(_VIEW_NAME).ConfigureAwait(false);
 
 			Install(Context.WorkspaceId.Value);
 			_rsapiService = Container.Resolve<IRSAPIService>();

@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointTyp
 		[IdentifiedTest("b24092e3-255a-4dea-bb9f-610721eb65f3")]
 		public void MissingWorkspacePermission()
 		{
-			var client = Helper.CreateUserProxy<IIntegrationPointTypeManager>(UserModel.EmailAddress);
+			var client = Helper.CreateProxy<IIntegrationPointTypeManager>(UserModel.EmailAddress);
 			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetIntegrationPointTypes(WorkspaceArtifactId).Result);
 		}
 
@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointTyp
 			permissionsForRDO.ViewSelected = false;
 			Permission.SavePermission(WorkspaceArtifactId, permissions);
 
-			var client = Helper.CreateUserProxy<IIntegrationPointTypeManager>(UserModel.EmailAddress);
+			var client = Helper.CreateProxy<IIntegrationPointTypeManager>(UserModel.EmailAddress);
 			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetIntegrationPointTypes(WorkspaceArtifactId).Result);
 		}
 	}

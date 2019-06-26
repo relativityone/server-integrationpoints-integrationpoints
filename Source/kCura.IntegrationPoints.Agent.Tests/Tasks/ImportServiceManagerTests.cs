@@ -121,7 +121,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			SourceProvider sourceProvider = new SourceProvider();
 			List<FieldMap> mappings = new List<FieldMap>();
 
-			integrationPointRepository.ReadAsync(job.RelatedObjectArtifactID).Returns(_integrationPoint);
+			integrationPointRepository.ReadWithFieldMappingAsync(job.RelatedObjectArtifactID).Returns(_integrationPoint);
 			serializer.Deserialize<SourceConfiguration>(_integrationPoint.SourceConfiguration).Returns(configuration);
 			serializer.Deserialize<TaskParameters>(job.JobDetails).Returns(_taskParameters);
 			jobHistoryService.GetOrCreateScheduledRunHistoryRdo(_integrationPoint, _taskParameters.BatchInstance, Arg.Any<DateTime>()).Returns(jobHistory);

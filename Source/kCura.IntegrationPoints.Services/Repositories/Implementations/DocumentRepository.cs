@@ -108,8 +108,8 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 
 		public async Task<HistoricalPromotionStatusSummaryModel> GetHistoricalPromotionStatusAsync(HistoricalPromotionStatusRequest request)
 		{
-			HistoricalPromotionStatusModel currentPromotionStatus = await GetCurrentDocumentModelAsync(request.WorkspaceArtifactId);
-			IList<HistoricalPromotionStatusModel> historicalPromotionStatus = await GetHistoricalDocumentModelAsync(request.WorkspaceArtifactId);
+			HistoricalPromotionStatusModel currentPromotionStatus = await GetCurrentDocumentModelAsync(request.WorkspaceArtifactId).ConfigureAwait(false);
+			IList<HistoricalPromotionStatusModel> historicalPromotionStatus = await GetHistoricalDocumentModelAsync(request.WorkspaceArtifactId).ConfigureAwait(false);
 
 			bool currentPromotionStatusUpdated = false;
 			DateTime currentDate = currentPromotionStatus.Date.Date;
@@ -139,7 +139,7 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 		private async Task<HistoricalPromotionStatusModel> GetCurrentDocumentModelAsync(int workspaceId)
 		{
 			CurrentPromotionStatusRequest request = new CurrentPromotionStatusRequest {WorkspaceArtifactId = workspaceId};
-			CurrentPromotionStatusModel currentPromotionStatus = await GetCurrentPromotionStatusAsync(request);
+			CurrentPromotionStatusModel currentPromotionStatus = await GetCurrentPromotionStatusAsync(request).ConfigureAwait(false);
 
 			HistoricalPromotionStatusModel model = new HistoricalPromotionStatusModel
 			{
@@ -160,7 +160,7 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 			List<HistoricalPromotionStatusModel> historicalModels = new List<HistoricalPromotionStatusModel>();
 			using (SqlDataReader reader = workspaceContext.ExecuteSQLStatementAsReader(_DOCUMENT_VOLUME_SQL))
 			{
-				while (await reader.ReadAsync())
+				while (await reader.ReadAsync().ConfigureAwait(false))
 				{
 					HistoricalPromotionStatusModel historicalModel = new HistoricalPromotionStatusModel
 					{

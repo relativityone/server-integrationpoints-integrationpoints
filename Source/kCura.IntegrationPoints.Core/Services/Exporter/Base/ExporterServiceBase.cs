@@ -132,7 +132,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 					case FieldTypeHelper.FieldType.Objects:
 						MultipleObjectFieldArtifactIds.Add(artifactId);
 						IFieldQueryRepository fieldQueryRepository = sourceRepositoryFactory.GetFieldQueryRepository(SourceConfiguration.SourceWorkspaceArtifactId);
-						ArtifactDTO identifierField = fieldQueryRepository.RetrieveTheIdentifierField(fieldInfo.AssociativeArtifactTypeID);
+						ArtifactDTO identifierField = fieldQueryRepository.RetrieveIdentifierField(fieldInfo.AssociativeArtifactTypeID);
 						string identifierFieldName = (string)identifierField.Fields.First(field => field.Name == "Name").Value;
 						IObjectRepository objectRepository = sourceRepositoryFactory.GetObjectRepository(SourceConfiguration.SourceWorkspaceArtifactId, fieldInfo.AssociativeArtifactTypeID);
 						ArtifactDTO[] objects = objectRepository.GetFieldsFromObjects(new[] { identifierFieldName }).GetAwaiter().GetResult();

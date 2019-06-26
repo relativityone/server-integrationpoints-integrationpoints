@@ -108,7 +108,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.Helpers
 
 		private static int GetRootFolder(ITestHelper helper, int workspaceArtifactId)
 		{
-			using (var folderManager = helper.CreateAdminProxy<IFolderManager>())
+			using (var folderManager = helper.CreateProxy<IFolderManager>())
 			{
 				return folderManager.GetWorkspaceRootAsync(workspaceArtifactId).Result.ArtifactID;
 			}
@@ -116,7 +116,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.Helpers
 
 		public static int GetTypeArtifactId(ITestHelper helper, int workspaceArtifactId, string typeName)
 		{
-			using (var typeClient = helper.CreateAdminProxy<IIntegrationPointTypeManager>())
+			using (var typeClient = helper.CreateProxy<IIntegrationPointTypeManager>())
 			{
 				return typeClient.GetIntegrationPointTypes(workspaceArtifactId).Result.First(x => x.Name == typeName).ArtifactId;
 			}
@@ -124,7 +124,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.Helpers
 
 		public static int GetSourceProviderArtifactId(string guid, int workspaceArtifactId, ITestHelper helper)
 		{
-			using (var providerClient = helper.CreateAdminProxy<IProviderManager>())
+			using (var providerClient = helper.CreateProxy<IProviderManager>())
 			{
 				return providerClient.GetSourceProviderArtifactIdAsync(workspaceArtifactId, guid).Result;
 			}
@@ -132,7 +132,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.Helpers
 
 		public static int GetDestinationProviderArtifactId(string guid, int workspaceArtifactId, ITestHelper helper)
 		{
-			using (var providerClient = helper.CreateAdminProxy<IProviderManager>())
+			using (var providerClient = helper.CreateProxy<IProviderManager>())
 			{
 				return providerClient.GetDestinationProviderArtifactIdAsync(workspaceArtifactId, guid).Result;
 			}

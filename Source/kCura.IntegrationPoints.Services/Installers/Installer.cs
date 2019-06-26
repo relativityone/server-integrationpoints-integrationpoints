@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using AutoMapper;
 using Castle.MicroKernel.Registration;
+using Castle.MicroKernel.Resolvers;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Core.Installers;
@@ -30,8 +31,15 @@ namespace kCura.IntegrationPoints.Services.Installers
 		{
 			container.Install(new InfrastructureInstaller());
 #pragma warning disable CS0618 // Type or member is obsolete REL-292860
-			container.Register(Component.For<IHelper, IServiceHelper>().Instance(global::Relativity.API.Services.Helper));
+			container.Register(Component
+				.For<IHelper, IServiceHelper>()
+				.Instance(global::Relativity.API.Services.Helper)
+			);
 #pragma warning restore CS0618 // Type or member is obsolete
+			container.Register(Component
+				.For<ILazyComponentLoader>()
+				.ImplementedBy<LazyOfTComponentLoader>()
+			);
 		}
 
 		protected abstract IList<IWindsorInstaller> Dependencies { get; }

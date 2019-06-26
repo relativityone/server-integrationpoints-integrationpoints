@@ -28,11 +28,26 @@ namespace kCura.IntegrationPoints.Data
 
 		public Task<T> ExecuteWithRetriesAsync<T>(Func<Task<T>> function, [CallerMemberName] string callerName = "")
 		{
-			var contextData = new Dictionary<string, object>
+			return _retryPolicy.ExecuteAsync(
+				context => function(),
+				CreateContextData(callerName)
+			);
+		}
+
+		public Task ExecuteWithRetriesAsync(Func<Task> function, [CallerMemberName] string callerName = "")
+		{
+			return _retryPolicy.ExecuteAsync(
+				context => function(), 
+				CreateContextData(callerName)
+			);
+		}
+
+		private Dictionary<string, object> CreateContextData(string callerName)
+		{
+			return new Dictionary<string, object>
 			{
 				[_CALLER_NAME_KEY] = callerName
 			};
-			return _retryPolicy.ExecuteAsync(context => function(), contextData);
 		}
 
 		private RetryPolicy CreateRetryPolicy()

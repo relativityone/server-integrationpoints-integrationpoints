@@ -1,8 +1,13 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Data.Models;
+using kCura.IntegrationPoints.Data.QueryOptions;
+using kCura.IntegrationPoints.Data.Transformers;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.Relativity.Client;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
 
@@ -14,22 +19,35 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		private readonly IRelativityObjectManager _objectManager;
 		private readonly IIntegrationPointSerializer _serializer;
+		private readonly ISecretsRepository _secretsRepository;
 		private readonly IAPILog _logger;
 
-		public IntegrationPointRepository(IRelativityObjectManager objectManager,
+		private readonly Guid _securedConfigurationGuid = IntegrationPointFieldGuids.SecuredConfigurationGuid;
+		private readonly Guid _fieldMappingGuid = IntegrationPointFieldGuids.FieldMappingsGuid;
+
+		private readonly int _workspaceID;
+
+		public IntegrationPointRepository(
+			IRelativityObjectManager objectManager,
 			IIntegrationPointSerializer serializer,
+			ISecretsRepository secretsRepository,
 			IAPILog apiLog)
 		{
 			_objectManager = objectManager;
 			_serializer = serializer;
+			_secretsRepository = secretsRepository;
 			_logger = apiLog.ForContext<IntegrationPointRepository>();
+			_workspaceID = _objectManager.GetWorkspaceID_Deprecated();
 		}
 
-		public async Task<IntegrationPoint> ReadAsync(int integrationPointArtifactID)
+		public Task<IntegrationPoint> ReadAsync(int integrationPointArtifactID)
 		{
-			IntegrationPoint integrationPoint = _objectManager.Read<IntegrationPoint>(integrationPointArtifactID);
-			integrationPoint.FieldMappings = await GetFieldMappingJsonAsync(integrationPointArtifactID).ConfigureAwait(false);
-			return integrationPoint;
+			return ReadAsync(integrationPointArtifactID, IntegrationPointQueryOptions.All().Decrypted());
+		}
+
+		public Task<IntegrationPoint> ReadWithFieldMappingAsync(int integrationPointArtifactID)
+		{
+			return ReadAsync(integrationPointArtifactID, IntegrationPointQueryOptions.All().Decrypted().WithFieldMapping());
 		}
 
 		public async Task<IEnumerable<FieldMap>> GetFieldMappingAsync(int integrationPointArtifactID)
@@ -63,20 +81,295 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public string GetSecuredConfiguration(int integrationPointArtifactID)
 		{
-			return _objectManager.Read<IntegrationPoint>(integrationPointArtifactID).SecuredConfiguration;
+			IntegrationPoint integrationPoint = ReadAsync(
+					integrationPointArtifactID,
+					IntegrationPointQueryOptions.All())
+				.GetAwaiter()
+				.GetResult();
+
+			return integrationPoint.SecuredConfiguration;
 		}
 
 		public string GetName(int integrationPointArtifactID)
 		{
-			return _objectManager.Read<IntegrationPoint>(integrationPointArtifactID).Name;
+			IntegrationPoint integrationPoint = ReadAsync(
+					integrationPointArtifactID,
+					IntegrationPointQueryOptions.All())
+				.GetAwaiter()
+				.GetResult();
+
+			return integrationPoint.Name;
+		}
+
+		public int CreateOrUpdate(IntegrationPoint integrationPoint)
+		{
+			if (integrationPoint.ArtifactId <= 0)
+			{
+				var emptyIntegrationPoint = new IntegrationPoint();
+				integrationPoint.ArtifactId = _objectManager.Create(emptyIntegrationPoint);
+			}
+
+			Update(integrationPoint);
+			return integrationPoint.ArtifactId;
+		}
+
+		public void Update(IntegrationPoint integrationPoint)
+		{
+			SetEncryptedSecuredConfiguration(_workspaceID, integrationPoint);
+			_objectManager.Update(integrationPoint);
+		}
+
+		public void Delete(int integrationPointID)
+		{
+			_objectManager.Delete(integrationPointID);
+		}
+
+		public IList<IntegrationPoint> GetAll(List<int> integrationPointIDs)
+		{
+			var request = new QueryRequest
+			{
+				Condition = $"'ArtifactId' in [{string.Join(",", integrationPointIDs)}]"
+
+			};
+			return Query(_workspaceID, request);
+		}
+
+		public IList<IntegrationPoint> GetAllBySourceAndDestinationProviderIDs(int sourceProviderArtifactID, int destinationProviderArtifactID)
+		{
+			var query = new QueryRequest
+			{
+				Condition =
+					$"'{IntegrationPointFields.SourceProvider}' == {sourceProviderArtifactID} " +
+					$"AND " +
+					$"'{IntegrationPointFields.DestinationProvider}' == {destinationProviderArtifactID}",
+				Fields = new IntegrationPoint().ToFieldList()
+			};
+			return Query(_workspaceID, query);
+		}
+
+		public IList<IntegrationPoint> GetIntegrationPoints(List<int> sourceProviderIds)
+		{
+			QueryRequest sourceProviderQuery = GetBasicSourceProviderQuery(sourceProviderIds);
+
+			sourceProviderQuery.Fields = new List<FieldRef>
+			{
+				new FieldRef {Name = IntegrationPointFields.Name}
+			};
+
+			return Query(_workspaceID, sourceProviderQuery);
+		}
+
+		public IList<IntegrationPoint> GetIntegrationPointsWithAllFields(List<int> sourceProviderIds)
+		{
+			IList<IntegrationPoint> integrationPointsWithoutFields = GetIntegrationPointsWithoutFields(sourceProviderIds);
+
+			return integrationPointsWithoutFields
+				.Select(integrationPoint => ReadAsync(integrationPoint.ArtifactId).GetAwaiter().GetResult())
+				.ToList();
+		}
+
+		public IList<IntegrationPoint> GetAllIntegrationPoints()
+		{
+			var query = new QueryRequest()
+			{
+				Fields = GetFields()
+			};
+
+			return Query(_workspaceID, query);
+		}
+
+		public IList<IntegrationPoint> GetIntegrationPointsWithAllFields()
+		{
+			IList<IntegrationPoint> integrationPointsWithoutFields = GetAllIntegrationPointsWithoutFields();
+
+			return integrationPointsWithoutFields
+				.Select(integrationPoint => ReadAsync(integrationPoint.ArtifactId).GetAwaiter().GetResult())
+				.ToList();
+		}
+
+		private IList<IntegrationPoint> GetAllIntegrationPointsWithoutFields()
+		{
+			var query = new QueryRequest();
+
+			return Query(_workspaceID, query);
+		}
+
+		private IList<IntegrationPoint> GetIntegrationPointsWithoutFields(List<int> sourceProviderIds)
+		{
+			QueryRequest sourceProviderQuery = GetBasicSourceProviderQuery(sourceProviderIds);
+
+			return Query(_workspaceID, sourceProviderQuery);
+		}
+
+		private IEnumerable<FieldRef> GetFields()
+		{
+			return BaseRdo.GetFieldMetadata(typeof(IntegrationPoint)).Values.ToList().Select(field => new FieldRef { Guid = field.FieldGuid });
+		}
+
+		private QueryRequest GetBasicSourceProviderQuery(List<int> sourceProviderIds)
+		{
+			return new QueryRequest
+			{
+				Condition = $"'{IntegrationPointFields.SourceProvider}' in [{string.Join(",", sourceProviderIds)}]"
+			};
+		}
+
+		private async Task<IntegrationPoint> ReadAsync(int integrationPointArtifactID, IntegrationPointQueryOptions queryOptions)
+		{
+			IntegrationPoint integrationPoint = _objectManager.Read<IntegrationPoint>(integrationPointArtifactID);
+
+			if (queryOptions.Decrypt)
+			{
+				SetDecryptedSecuredConfiguration(_workspaceID, integrationPoint);
+			}
+
+			if (queryOptions.FieldMapping)
+			{
+				integrationPoint.FieldMappings = await GetFieldMappingJsonAsync(integrationPointArtifactID)
+					.ConfigureAwait(false);
+			}
+
+			return integrationPoint;
+		}
+
+		private IList<IntegrationPoint> Query(int workspaceID, QueryRequest queryRequest)
+		{
+			return _objectManager
+				.Query<IntegrationPoint>(queryRequest)
+				.Select(ip => SetDecryptedSecuredConfiguration(workspaceID, ip))
+				.ToList();
 		}
 
 		private async Task<string> GetFieldMappingJsonAsync(int integrationPointArtifactID)
 		{
-			var field = new FieldRef { Guid = Guid.Parse(IntegrationPointFieldGuids.FieldMappings) };
+			var field = new FieldRef { Guid = _fieldMappingGuid };
 			Stream fieldMapStream = _objectManager.StreamUnicodeLongText(integrationPointArtifactID, field);
-			var fieldMapStreamReader = new StreamReader(fieldMapStream);
-			return await fieldMapStreamReader.ReadToEndAsync().ConfigureAwait(false);
+			using (var fieldMapStreamReader = new StreamReader(fieldMapStream))
+			{
+				return await fieldMapStreamReader
+					.ReadToEndAsync()
+					.ConfigureAwait(false);
+			}
+		}
+
+		private void SetEncryptedSecuredConfiguration(int workspaceID, IntegrationPoint integrationPoint)
+		{
+			FieldRefValuePair securedConfigurationField = integrationPoint
+				.ToFieldValues()
+				.FirstOrDefault(x => x.Field.Guid == _securedConfigurationGuid);
+
+			if (securedConfigurationField == null)
+			{
+				return;
+			}
+
+			string secretID = GetSecuredConfiguration(integrationPoint.ArtifactId);
+
+			integrationPoint.SecuredConfiguration = EncryptSecuredConfigurationAsync(
+					secretID,
+					workspaceID,
+					integrationPoint
+				)
+				.GetAwaiter()
+				.GetResult();
+		}
+
+		private IntegrationPoint SetDecryptedSecuredConfiguration(int workspaceID, IntegrationPoint rdo)
+		{
+			string secretID = rdo.GetField<string>(_securedConfigurationGuid);
+			if (string.IsNullOrWhiteSpace(secretID))
+			{
+				return rdo;
+			}
+
+			string decryptedSecret = DecryptSecuredConfigurationAsync(workspaceID, rdo)
+				.GetAwaiter()
+				.GetResult();
+			if (string.IsNullOrWhiteSpace(decryptedSecret))
+			{
+				return rdo;
+			}
+
+			rdo.SetField(_securedConfigurationGuid, decryptedSecret);
+			return rdo;
+		}
+
+		private async Task<string> EncryptSecuredConfigurationAsync(
+			string secretID,
+			int workspaceID,
+			IntegrationPoint integrationPoint)
+		{
+			if (integrationPoint.SecuredConfiguration == null)
+			{
+				return null;
+			}
+			try
+			{
+				SecretPath secretPath = GetSecretPathOrGenerateNewOne(
+					workspaceID, 
+					integrationPoint.ArtifactId, 
+					secretID
+				);
+				Dictionary<string, string> secretData = CreateSecuredConfigurationSecretData(
+					integrationPoint.SecuredConfiguration
+				);
+				return await _secretsRepository
+					.EncryptAsync(secretPath, secretData)
+					.ConfigureAwait(false);
+			}
+			catch (FieldNotFoundException ex)
+			{
+				_logger.LogWarning(ex, "Can not write Secured Configuration for Integration Point record during encryption process (Secret config: {securedConfiguration} )", integrationPoint.SecuredConfiguration);
+				//Ignore as Integration Point RDO doesn't always include SecuredConfiguration
+				//Any access to missing fieldGuid will throw FieldNotFoundException
+				return integrationPoint.SecuredConfiguration;
+			}
+		}
+
+		private async Task<string> DecryptSecuredConfigurationAsync(int workspaceID, IntegrationPoint integrationPoint)
+		{
+			string secretID = integrationPoint.SecuredConfiguration;
+			if (string.IsNullOrWhiteSpace(secretID))
+			{
+				return null;
+			}
+
+			SecretPath secretPath = GetSecretPathOrGenerateNewOne(
+				workspaceID,
+				integrationPoint.ArtifactId,
+				secretID
+			);
+			Dictionary<string, string> secretData = await _secretsRepository
+				.DecryptAsync(secretPath)
+				.ConfigureAwait(false);
+			return ReadSecuredConfigurationFromSecretData(secretData);
+		}
+
+		private Dictionary<string, string> CreateSecuredConfigurationSecretData(string securedConfiguration)
+		{
+			return new Dictionary<string, string>
+			{
+				[nameof(IntegrationPoint.SecuredConfiguration)] = securedConfiguration
+			};
+		}
+
+		private SecretPath GetSecretPathOrGenerateNewOne(int workspaceID, int integrationPointID, string secretID)
+		{
+			if (string.IsNullOrWhiteSpace(secretID))
+			{
+				secretID = Guid.NewGuid().ToString();
+			}
+
+			return SecretPath.ForIntegrationPointSecret(
+				workspaceID,
+				integrationPointID,
+				secretID
+			);
+		}
+
+		private string ReadSecuredConfigurationFromSecretData(Dictionary<string, string> secretData)
+		{
+			return secretData?[nameof(IntegrationPoint.SecuredConfiguration)];
 		}
 	}
 }

@@ -18,13 +18,13 @@ namespace kCura.IntegrationPoint.Tests.Core
 {
 	public class WorkspaceService
 	{
-		private const string _TEMPLATE_WORKSPACE_NAME = "Relativity Starter Template";
 		private const string _LEGACY_TEMPLATE_WORKSPACE_NAME = "kCura Starter Template";
 		private const string _SAVED_SEARCH_FOLDER = "Testing Folder";
-
-		internal const int _PRODUCTION_PLACEHOLDER_ARTIFACT_TYPE_ID = 1000035;
+		private const string _TEMPLATE_WORKSPACE_NAME = "Relativity Starter Template";
 
 		private readonly ImportHelper _importHelper;
+
+		internal const int _PRODUCTION_PLACEHOLDER_ARTIFACT_TYPE_ID = 1000035;
 
 		public WorkspaceService(ImportHelper importHelper)
 		{
@@ -109,9 +109,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return CreateProductionSetAsync(workspaceArtifactId, productionSetName).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
-		public async Task<int> CreateProductionSetAsync(int workspaceArtifactId, string productionSetName)
+		public Task<int> CreateProductionSetAsync(int workspaceArtifactId, string productionSetName)
 		{
-			return await Production.Create(workspaceArtifactId, productionSetName);
+			return Production.Create(workspaceArtifactId, productionSetName);
 		}
 
 		public int CreateAndRunProduction(int workspaceArtifactId, int savedSearchId, string productionName)

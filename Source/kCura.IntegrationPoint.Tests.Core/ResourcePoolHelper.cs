@@ -15,26 +15,25 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static async Task<ResourcePool> GetResourcePool(string resourcePoolName)
 		{
-			using (var proxy = Helper.CreateAdminProxy<IResourcePoolManager>())
+			using (var proxy = Helper.CreateProxy<IResourcePoolManager>())
 			{
 				var condition = new TextCondition("Name", TextConditionEnum.EqualTo, resourcePoolName);
 				var query = new Query() { Condition = condition.ToQueryString() };
 
-				var resourcePoolQueryResultSet = await proxy.QueryAsync(query);
-				var resourcePools = resourcePoolQueryResultSet;
+				ResourcePoolQueryResultSet resourcePoolQueryResultSet = await proxy.QueryAsync(query).ConfigureAwait(false);
 
-				if (!resourcePools.Results.Any())
+				if (!resourcePoolQueryResultSet.Results.Any())
 				{
 					throw new Exception($"No Resource Pools with name: {resourcePoolName} found");
 				}
 
-				return resourcePools.Results.First().Artifact;
+				return resourcePoolQueryResultSet.Results.First().Artifact;
 			}
 		}
 
 		public static async Task<List<ResourceServerRef>> GetServersConnectedToResourcePool(ResourcePool resourcePool)
 		{
-			using (var resourcePoolManager = Helper.CreateAdminProxy<IResourcePoolManager>())
+			using (var resourcePoolManager = Helper.CreateProxy<IResourcePoolManager>())
 			{
 				var resourcePoolRef = new ResourcePoolRef { ArtifactID = resourcePool.ArtifactID, Name = resourcePool.Name };
 				return await resourcePoolManager.RetrieveResourceServersAsync(resourcePoolRef).ConfigureAwait(false);
@@ -48,7 +47,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			if (serversConnectedToResourcePool.All(x => x.ArtifactID != agentServer.ArtifactID))
 			{
-				using (var resourcePoolManager = Helper.CreateAdminProxy<IResourcePoolManager>())
+				using (var resourcePoolManager = Helper.CreateProxy<IResourcePoolManager>())
 				{
 					var agentServerToAdd = new ResourceServerRef()
 					{
