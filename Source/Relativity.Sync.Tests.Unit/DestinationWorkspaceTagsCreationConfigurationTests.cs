@@ -31,7 +31,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			_cache = new Mock<Relativity.Sync.Storage.IConfiguration>();
 			ImportSettingsDto importSettings = new ImportSettingsDto();
-			SyncJobParameters syncJobParameters = new SyncJobParameters(_JOB_ID, _SOURCE_WORKSPACE_ARTIFACT_ID, importSettings);
+			SyncJobParameters syncJobParameters = new SyncJobParameters(_JOB_ID, _SOURCE_WORKSPACE_ARTIFACT_ID, Guid.NewGuid(), importSettings);
 			_config = new DestinationWorkspaceTagsCreationConfiguration(_cache.Object, syncJobParameters);
 		}
 

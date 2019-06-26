@@ -32,7 +32,7 @@ namespace Relativity.Sync.Tests.Integration
 
 			_containerFactory = new Mock<IContainerFactory>();
 			var importSettings = new ImportSettingsDto();
-			_syncJobParameters = new SyncJobParameters(1, 1, importSettings);
+			_syncJobParameters = new SyncJobParameters(1, 1, Guid.NewGuid(), importSettings);
 			_relativityServices = ContainerHelper.CreateMockedRelativityServices();
 			_configuration = new SyncJobExecutionConfiguration();
 			_logger = new EmptyLogger();

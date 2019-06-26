@@ -22,7 +22,7 @@ namespace Relativity.Sync.Tests.Unit
 
 			var cache = new Mock<Relativity.Sync.Storage.IConfiguration>();
 			cache.Setup(x => x.GetFieldValue<RelativityObjectValue>(jobHistoryGuid)).Returns(new RelativityObjectValue { ArtifactID = jobHistoryArtifactId }).Verifiable();
-			var syncJobParameters = new SyncJobParameters(0, 1, integrationPointArtifactId, string.Empty, new ImportSettingsDto());
+			var syncJobParameters = new SyncJobParameters(0, 1, Guid.NewGuid(), integrationPointArtifactId, string.Empty, new ImportSettingsDto());
 
 			var configuration = new SumReporterConfiguration(cache.Object, syncJobParameters);
 

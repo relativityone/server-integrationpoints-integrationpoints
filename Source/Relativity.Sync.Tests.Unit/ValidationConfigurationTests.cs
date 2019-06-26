@@ -16,7 +16,7 @@ namespace Relativity.Sync.Tests.Unit
 		private Mock<Sync.Storage.IConfiguration> _cache;
 		private Mock<IFieldMappings> _fieldMappings;
 		private const int _WORKSPACE_ID = 111;
-
+		
 		private static readonly Guid DestinationFolderStructureBehaviorGuid = new Guid("A1593105-BD99-4A15-A51A-3AA8D4195908");
 		private static readonly Guid DestinationWorkspaceArtifactIdGuid = new Guid("15B88438-6CF7-47AB-B630-424633159C69");
 		private static readonly Guid DataDestinationArtifactIdGuid = new Guid("0E9D7B8E-4643-41CC-9B07-3A66C98248A1");
@@ -32,7 +32,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			_cache = new Mock<Sync.Storage.IConfiguration>();
 			_fieldMappings = new Mock<IFieldMappings>();
-			SyncJobParameters jobParameters = new SyncJobParameters(1, _WORKSPACE_ID, new ImportSettingsDto());
+			SyncJobParameters jobParameters = new SyncJobParameters(1, _WORKSPACE_ID, Guid.NewGuid(), new ImportSettingsDto());
 			_configuration = new ValidationConfiguration(_cache.Object, _fieldMappings.Object, jobParameters);
 		}
 

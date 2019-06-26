@@ -27,7 +27,7 @@ namespace Relativity.Sync.Tests.Unit
 		public void SetUp()
 		{
 			_cache = new Mock<Sync.Storage.IConfiguration>();
-			SyncJobParameters syncJobParameters = new SyncJobParameters(_JOB_ID, _WORKSPACE_ID, new ImportSettingsDto());
+			SyncJobParameters syncJobParameters = new SyncJobParameters(_JOB_ID, _WORKSPACE_ID, Guid.NewGuid(), new ImportSettingsDto());
 			SyncJobExecutionConfiguration configuration = new SyncJobExecutionConfiguration
 			{
 				BatchSize = _BATCH_SIZE
