@@ -2,7 +2,6 @@
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using Relativity.Kepler.Transport;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
@@ -12,18 +11,20 @@ namespace Relativity.Sync.Transfer
 {
 	internal sealed class LongTextFieldSanitizer : IExportFieldSanitizer
 	{
-		private const string _BIG_LONG_TEXT_SHIBBOLETH = "#KCURA99DF2F0FEB88420388879F1282A55760#";
 		private const int _DOCUMENT_OBJECT_TYPE_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
+		private const string _BIG_LONG_TEXT_SHIBBOLETH = "#KCURA99DF2F0FEB88420388879F1282A55760#";
 
-		private readonly ISourceServiceFactoryForUser _serviceFactory;
 		private readonly IImportStreamBuilder _importStreamBuilder;
+		private readonly ISourceServiceFactoryForUser _serviceFactory;
+		private readonly IRetriableStreamBuilderFactory _streamBuilderFactory;
 		private readonly ISyncLog _logger;
 
 		public RelativityDataType SupportedType => RelativityDataType.LongText;
 
-		public LongTextFieldSanitizer(ISourceServiceFactoryForUser serviceFactory, IImportStreamBuilder importStreamBuilder, ISyncLog logger)
+		public LongTextFieldSanitizer(ISourceServiceFactoryForUser serviceFactory, IRetriableStreamBuilderFactory streamBuilderFactory, IImportStreamBuilder importStreamBuilder, ISyncLog logger)
 		{
 			_serviceFactory = serviceFactory;
+			_streamBuilderFactory = streamBuilderFactory;
 			_importStreamBuilder = importStreamBuilder;
 			_logger = logger;
 		}
@@ -92,26 +93,14 @@ namespace Relativity.Sync.Transfer
 		{
 			try
 			{
-				return _importStreamBuilder.Create(
-					() => GetLongTextStreamAsync(workspaceArtifactId, relativityObjectArtifactId, fieldName).GetAwaiter().GetResult(),
-					encoding);
+				IRetriableStreamBuilder streamBuilder = _streamBuilderFactory.Create(workspaceArtifactId, relativityObjectArtifactId, fieldName);
+				return _importStreamBuilder.Create(streamBuilder, encoding);
 			}
 			catch (Exception ex)
 			{
 				string message = GetStreamLongTextErrorMessage(workspaceArtifactId, relativityObjectArtifactId, fieldName, encoding);
 				_logger.LogError(ex, message);
 				throw;
-			}
-		}
-
-		private async Task<Stream> GetLongTextStreamAsync(int workspaceArtifactId, int relativityObjectArtifactId, string fieldName)
-		{
-			using (var objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
-			{
-				var exportObject = new RelativityObjectRef { ArtifactID = relativityObjectArtifactId };
-				var fieldRef = new FieldRef { Name = fieldName };
-				IKeplerStream keplerStream = await objectManager.StreamLongTextAsync(workspaceArtifactId, exportObject, fieldRef).ConfigureAwait(false);
-				return await keplerStream.GetStreamAsync().ConfigureAwait(false);
 			}
 		}
 

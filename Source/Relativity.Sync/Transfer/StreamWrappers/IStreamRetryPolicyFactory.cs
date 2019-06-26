@@ -6,6 +6,6 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 {
 	internal interface IStreamRetryPolicyFactory
 	{
-		ISyncPolicy<Stream> Create(Action<int> onRetry, int retryCount, TimeSpan sleepDuration);
+		IAsyncPolicy<Stream> Create(Func<Stream, bool> shouldRetry, Action<Stream, Exception, int> onRetry, int retryCount, TimeSpan sleepDuration);
 	}
 }

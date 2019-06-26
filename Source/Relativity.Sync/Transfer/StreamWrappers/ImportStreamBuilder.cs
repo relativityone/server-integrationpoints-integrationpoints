@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 
 namespace Relativity.Sync.Transfer.StreamWrappers
 {
@@ -11,18 +10,17 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 	/// </summary>
 	internal sealed class ImportStreamBuilder : IImportStreamBuilder
 	{
-		private readonly IStreamRetryPolicyFactory _streamRetryPolicyFactory;
 		private readonly ISyncLog _logger;
 
-		public ImportStreamBuilder(IStreamRetryPolicyFactory streamRetryPolicyFactory, ISyncLog logger)
+		public ImportStreamBuilder(ISyncLog logger)
 		{
-			_streamRetryPolicyFactory = streamRetryPolicyFactory;
 			_logger = logger;
 		}
 
-		public Stream Create(Func<Stream> streamFunc, StreamEncoding encoding)
+		public Stream Create(IRetriableStreamBuilder streamBuilder, StreamEncoding encoding)
 		{
-			Stream wrappedStream = new SelfRecreatingStream(streamFunc, _streamRetryPolicyFactory, _logger);
+			
+			Stream wrappedStream = new SelfRecreatingStream(streamBuilder, _logger);
 			if (encoding == StreamEncoding.ASCII)
 			{
 				wrappedStream = new AsciiToUnicodeStream(wrappedStream);

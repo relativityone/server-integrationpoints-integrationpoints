@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using Polly;
+using System.Threading.Tasks;
 
 namespace Relativity.Sync.Transfer.StreamWrappers
 {
@@ -13,84 +13,67 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 	/// </summary>
 	internal sealed class SelfRecreatingStream : Stream
 	{
-		// NOTE: This can't be readonly - we create a circular reference by
-		// passing in an instance method to the factory, so we need to set
-		// this field to null on dispose.
-		private ISyncPolicy<Stream> _getStreamRetryPolicy;
+		private bool _disposed;
+		private Lazy<Stream> _innerStream;
 
-		private bool _disposed = false;
-
-		private const int _MAX_RETRY_ATTEMPTS = 3;
-		private const int _WAIT_INTERVAL_IN_SECONDS = 1;
-
-		private readonly Func<Stream> _getStreamFunction;
+		private readonly IRetriableStreamBuilder _streamBuilder;
 		private readonly ISyncLog _logger;
-
-		internal Stream InnerStream { get; private set; }
-
-		public SelfRecreatingStream(
-			Func<Stream> getStreamFunction,
-			IStreamRetryPolicyFactory streamRetryPolicyFactory,
-			ISyncLog logger)
+		
+		public SelfRecreatingStream(IRetriableStreamBuilder streamBuilder, ISyncLog logger)
 		{
+			_streamBuilder = streamBuilder;
 			_logger = logger;
-			_getStreamFunction = getStreamFunction;
-			_getStreamRetryPolicy = streamRetryPolicyFactory.Create(
-				OnRetry,
-				_MAX_RETRY_ATTEMPTS,
-				TimeSpan.FromSeconds(_WAIT_INTERVAL_IN_SECONDS));
-
-			InnerStream = _getStreamRetryPolicy.Execute(GetInnerStream);
+			_innerStream = new Lazy<Stream>(() => GetInnerStreamAsync().GetAwaiter().GetResult());
 		}
 
 		public override void Flush()
 		{
-			InnerStream.Flush();
+			_innerStream.Value.Flush();
 		}
 
 		public override long Seek(long offset, SeekOrigin origin)
 		{
-			return InnerStream.Seek(offset, origin);
+			return _innerStream.Value.Seek(offset, origin);
 		}
 
 		public override void SetLength(long value)
 		{
-			InnerStream.SetLength(value);
+			_innerStream.Value.SetLength(value);
 		}
 
 		public override int Read(byte[] buffer, int offset, int count)
 		{
-			return InnerStream.Read(buffer, offset, count);
+			return _innerStream.Value.Read(buffer, offset, count);
 		}
 
 		public override void Write(byte[] buffer, int offset, int count)
 		{
-			InnerStream.Write(buffer, offset, count);
+			_innerStream.Value.Write(buffer, offset, count);
 		}
 
 		public override bool CanRead
 		{
 			get
 			{
-				if (!InnerStream.CanRead)
+				if (!_innerStream.Value.CanRead)
 				{
-					InnerStream = _getStreamRetryPolicy.Execute(GetInnerStream);
+					_innerStream.Value.Dispose();
+					_innerStream = new Lazy<Stream>(() => GetInnerStreamAsync().GetAwaiter().GetResult());
 				}
-
-				return InnerStream.CanRead;
+				return _innerStream.Value.CanRead;
 			}
 		}
 
-		public override bool CanSeek => InnerStream.CanSeek;
+		public override bool CanSeek => _innerStream.Value.CanSeek;
 
-		public override bool CanWrite => InnerStream.CanWrite;
+		public override bool CanWrite => _innerStream.Value.CanWrite;
 
-		public override long Length => InnerStream.Length;
+		public override long Length => _innerStream.Value.Length;
 
 		public override long Position
 		{
-			get => InnerStream.Position;
-			set => InnerStream.Position = value;
+			get => _innerStream.Value.Position;
+			set => _innerStream.Value.Position = value;
 		}
 
 		protected override void Dispose(bool disposing)
@@ -98,29 +81,24 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 			if (disposing && !_disposed)
 			{
 				_disposed = true;
-				_getStreamRetryPolicy = null; // See note at top
-				InnerStream?.Dispose();
+				if (_innerStream.IsValueCreated)
+				{
+					_innerStream.Value.Dispose();
+				}
 			}
 		}
 
-		private Stream GetInnerStream()
+		private async Task<Stream> GetInnerStreamAsync()
 		{
 			try
 			{
-				Stream stream = _getStreamFunction.Invoke();
-				return stream;
+				return await _streamBuilder.GetStreamAsync().ConfigureAwait(false);
 			}
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "Unable to create inner stream inside {0}", nameof(SelfRecreatingStream));
 				throw;
 			}
-		}
-
-		private void OnRetry(int retryAttempt)
-		{
-			InnerStream?.Dispose();
-			_logger.LogWarning("Retrying Kepler Stream creation inside {0}. Attempt {1} of {2}", nameof(SelfRecreatingStream), retryAttempt, _MAX_RETRY_ATTEMPTS);
 		}
 	}
 }
