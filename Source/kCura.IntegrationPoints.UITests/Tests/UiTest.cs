@@ -79,7 +79,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		}
 
 		[OneTimeSetUp]
-		protected void SetupSuite()
+		protected Task SetupSuite()
 		{
 			// enable TLS 1.2 for R1 regression environments
 			ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
@@ -94,7 +94,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			Task agentSetupTask = Agent.CreateIntegrationPointAgentIfNotExistsAsync();
 			Task workspaceSetupTask = SetupWorkspaceAsync();
 
-			Task.WaitAll(agentSetupTask, workspaceSetupTask);
+			return Task.WhenAll(agentSetupTask, workspaceSetupTask);
 		}
 
 		[SetUp]
@@ -106,7 +106,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 				EnsureGeneralPageIsOpened();
 			}
 		}
-		
+
 		private async Task SetupWorkspaceAsync()
 		{
 			if (string.IsNullOrEmpty(SharedVariables.UiUseThisExistingWorkspace))

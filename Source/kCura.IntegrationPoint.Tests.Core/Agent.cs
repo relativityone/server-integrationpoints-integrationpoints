@@ -51,9 +51,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return await CreateIntegrationPointAgentInternalAsync().ConfigureAwait(false);
 		}
 
-		public static async Task DeleteAgentAsync(int artifactId)
+		public static async Task DeleteAgentAsync(int artifactID)
 		{
-			if (artifactId == 0)
+			if (artifactID == 0)
 			{
 				return;
 			}
@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			{
 				try
 				{
-					await proxy.DeleteSingleAsync(artifactId).ConfigureAwait(false);
+					await proxy.DeleteSingleAsync(artifactID).ConfigureAwait(false);
 				}
 				catch (Exception ex)
 				{
@@ -72,15 +72,15 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static Task EnableAllIntegrationPointsAgentsAsync()
 		{
-			return ChangeAllIntegrationPointAgentsEnabledStatus(isEnabled: true);
+			return ChangeAllIntegrationPointAgentsEnabledStatusAsync(isEnabled: true);
 		}
 
 		public static Task DisableAllIntegrationPointsAgentsAsync()
 		{
-			return ChangeAllIntegrationPointAgentsEnabledStatus(isEnabled: false);
+			return ChangeAllIntegrationPointAgentsEnabledStatusAsync(isEnabled: false);
 		}
 
-		private static async Task ChangeAllIntegrationPointAgentsEnabledStatus(bool isEnabled)
+		private static async Task ChangeAllIntegrationPointAgentsEnabledStatusAsync(bool isEnabled)
 		{
 			global::Relativity.Services.Agent.Agent[] integrationPointsAgents = await GetIntegrationPointsAgentsAsync().ConfigureAwait(false);
 
@@ -90,15 +90,15 @@ namespace kCura.IntegrationPoint.Tests.Core
 			await Task.WhenAll(updateAgentsTasks).ConfigureAwait(false);
 		}
 
-		private static async Task ChangeAgentEnabledStatusAsync(global::Relativity.Services.Agent.Agent agent, bool isEnabled)
+		private static Task ChangeAgentEnabledStatusAsync(global::Relativity.Services.Agent.Agent agent, bool isEnabled)
 		{
 			if (agent.Enabled == isEnabled)
 			{
-				return;
+				return Task.CompletedTask;
 			}
 
 			agent.Enabled = isEnabled;
-			await UpdateAgentAsync(agent).ConfigureAwait(false);
+			return UpdateAgentAsync(agent);
 		}
 
 		private static async Task UpdateAgentAsync(global::Relativity.Services.Agent.Agent agent)
@@ -125,8 +125,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 			};
 			AgentQueryResultSet resultSet = await QueryAgentsAsync(query).ConfigureAwait(false);
 
-			bool areAnyFailures = !resultSet.Success || resultSet.Results.Any(x => !x.Success);
-			if (areAnyFailures)
+			bool anyFailures = !resultSet.Success || resultSet.Results.Any(x => !x.Success);
+			if (anyFailures)
 			{
 				throw new TestException($"Error: Cannot retrieve Integration Points agents, message: {resultSet.Message}");
 			}
@@ -164,11 +164,11 @@ namespace kCura.IntegrationPoint.Tests.Core
 			{
 				using (IAgentManager proxy = Helper.CreateProxy<IAgentManager>())
 				{
-					int artifactId = await proxy.CreateSingleAsync(agentDto).ConfigureAwait(false);
+					int artifactID = await proxy.CreateSingleAsync(agentDto).ConfigureAwait(false);
 
 					return new Result
 					{
-						ArtifactID = artifactId,
+						ArtifactID = artifactID,
 						Success = true
 					};
 				}
