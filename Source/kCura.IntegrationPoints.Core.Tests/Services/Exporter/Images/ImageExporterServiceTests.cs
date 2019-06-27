@@ -268,12 +268,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 		{
 			DataSet dataSet = new DataSet("DocumentImageResponse");
 			DataTable table = dataSet.Tables.Add();
-			table.Columns.Add();
-			table.Rows.Add()[0] = new ProductionDocumentImageResponse
+			table.Columns.Add(new DataColumn("NativeIdentifier"));
+			table.Columns.Add(new DataColumn("Location"));
+			table.Rows.Add(new ProductionDocumentImageResponse
 			{
 				NativeIdentifier = "AZIPPER_0007293",
 				Location = "\\somelocation"
-			};
+			});
 			return dataSet;
 		}
 
@@ -281,12 +282,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 		{
 			DataSet dataSet = new DataSet("ProductionDocumentImageResponse");
 			DataTable table = dataSet.Tables.Add();
-			table.Columns.Add();
-			table.Rows.Add()[0] = new ProductionDocumentImageResponse
-				{
-					NativeIdentifier = "AZIPPER_0007293",
-					Location = "\\somelocation"
-				};
+			table.Columns.Add(new DataColumn("NativeIdentifier"));
+			table.Columns.Add(new DataColumn("Location"));
+			table.Rows.Add(new ProductionDocumentImageResponse
+			{
+				NativeIdentifier = "AZIPPER_0007293",
+				Location = "\\somelocation"
+			});
 			return dataSet;
 		}
 

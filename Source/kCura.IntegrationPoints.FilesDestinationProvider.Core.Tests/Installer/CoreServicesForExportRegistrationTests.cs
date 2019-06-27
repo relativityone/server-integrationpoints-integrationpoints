@@ -107,36 +107,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Installer
 				.ResolveWithoutThrowing<IFieldManager>();
 		}
 
-		[Test]
-		public void SearchManager_ShouldBeRegisteredWithProperLifestyle()
-		{
-			// arrange
-			IWindsorContainer sut = new WindsorContainer();
-
-			// act
-			sut.AddCoreServicesForExport();
-
-			// assert
-			sut.Should()
-				.HaveRegisteredSingleComponent<ISearchManager>()
-				.Which.Should().BeRegisteredWithLifestyle(LifestyleType.Transient);
-		}
-		
-
-		[Test]
-		public void SearchManager_ShouldBeResolvedWithoutThrowing()
-		{
-			// arrange
-			IWindsorContainer sut = new WindsorContainer();
-			RegisterDependencies(sut);
-
-			// act
-			sut.AddCoreServicesForExport();
-
-			// assert
-			sut.Should()
-				.ResolveWithoutThrowing<ISearchManager>();
-		}
 
 		[Test]
 		public void ExportFileDownloaderFactory_ShouldBeRegisteredWithProperLifestyle()
