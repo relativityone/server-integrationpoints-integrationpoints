@@ -5,6 +5,7 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Services.Exceptions;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 
@@ -68,6 +69,22 @@ namespace Relativity.Sync.Tests.Unit
 			firstCallResult.Should().Be(_workspaceGuid);
 			secondCallResult.Should().Be(_workspaceGuid);
 			_objectManager.Verify(x => x.QueryAsync(-1, It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()), Times.Once);
+		}
+
+		[Test]
+		public void ItShouldThrowExceptionWhenWorkspaceNotFound()
+		{
+			QueryResult queryResult = new QueryResult()
+			{
+				Objects = new List<RelativityObject>()
+			};
+			_objectManager.Setup(x => x.QueryAsync(-1, It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(queryResult);
+
+			// act
+			Func<Task> action = async () => await _instance.GetWorkspaceGuidAsync(1).ConfigureAwait(false);
+
+			// assert
+			action.Should().Throw<NotFoundException>();
 		}
 	}
 }
