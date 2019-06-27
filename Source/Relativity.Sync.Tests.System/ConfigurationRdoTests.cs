@@ -24,7 +24,6 @@ namespace Relativity.Sync.Tests.System
 		private ISourceServiceFactoryForAdmin _serviceFactory;
 
 		private int _workspaceId;
-		private Guid _workspaceGuid;
 		private int _jobHistoryArtifactId;
 
 		private static readonly Guid CreateSavedSearchInDestinationGuid = new Guid("BFAB4AF6-4704-4A12-A8CA-C96A1FBCB77D");
@@ -60,7 +59,6 @@ namespace Relativity.Sync.Tests.System
 
 			WorkspaceRef workspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
 			_workspaceId = workspace.ArtifactID;
-			_workspaceGuid = workspace.Guids.FirstOrDefault();
 
 			_jobHistoryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, _workspaceId).ConfigureAwait(false);
 		}
@@ -88,7 +86,7 @@ namespace Relativity.Sync.Tests.System
 				syncConfigurationArtifactId = result.Object.ArtifactID;
 			}
 
-			SyncJobParameters jobParameters = new SyncJobParameters(syncConfigurationArtifactId, _workspaceId, _workspaceGuid, new ImportSettingsDto());
+			SyncJobParameters jobParameters = new SyncJobParameters(syncConfigurationArtifactId, _workspaceId, new ImportSettingsDto());
 			Storage.IConfiguration configuration = await Storage.Configuration
 				.GetAsync(_serviceFactory, jobParameters, new EmptyLogger(), new SemaphoreSlimWrapper(new SemaphoreSlim(1))).ConfigureAwait(false);
 
@@ -145,7 +143,7 @@ namespace Relativity.Sync.Tests.System
 				syncConfigurationArtifactId = result.Object.ArtifactID;
 			}
 
-			SyncJobParameters jobParameters = new SyncJobParameters(syncConfigurationArtifactId, _workspaceId, _workspaceGuid, new ImportSettingsDto());
+			SyncJobParameters jobParameters = new SyncJobParameters(syncConfigurationArtifactId, _workspaceId, new ImportSettingsDto());
 			Storage.IConfiguration configuration = await Storage.Configuration
 				.GetAsync(_serviceFactory, jobParameters, new EmptyLogger(), new SemaphoreSlimWrapper(new SemaphoreSlim(1))).ConfigureAwait(false);
 

@@ -58,7 +58,7 @@ namespace Relativity.Sync.Tests.Integration
 			ContainerBuilder containerBuilder = new ContainerBuilder();
 			ContainerFactory containerFactory = new ContainerFactory();
 			RelativityServices relativityServices = CreateMockedRelativityServices();
-			containerFactory.RegisterSyncDependencies(containerBuilder, new SyncJobParameters(1, 1, Guid.NewGuid(), new ImportSettingsDto()),
+			containerFactory.RegisterSyncDependencies(containerBuilder, new SyncJobParameters(1, 1, new ImportSettingsDto()),
 				relativityServices, new SyncJobExecutionConfiguration(), new EmptyLogger());
 			return containerBuilder;
 		}

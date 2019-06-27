@@ -27,7 +27,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			const string correlationId = "Sample_Correlation_ID";
 
 			Mock<Sync.Storage.IConfiguration> cache = new Mock<Sync.Storage.IConfiguration>();
-			SyncJobParameters syncJobParameters = new SyncJobParameters(jobId, workspaceArtifactId, Guid.NewGuid(), _INTEGRATION_POINT_ARTIFACT_ID, correlationId, new ImportSettingsDto());
+			SyncJobParameters syncJobParameters = new SyncJobParameters(jobId, workspaceArtifactId, _INTEGRATION_POINT_ARTIFACT_ID, correlationId, new ImportSettingsDto());
 
 			cache.Setup(x => x.GetFieldValue<RelativityObjectValue>(JobHistoryGuid)).Returns(new RelativityObjectValue { ArtifactID = _JOB_HISTORY_ARTIFACT_ID });
 

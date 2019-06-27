@@ -8,12 +8,14 @@ namespace Relativity.Sync.Telemetry
 	{
 		private readonly ISyncLog _logger;
 		private readonly IServicesMgr _servicesManager;
-		private readonly WorkspaceGuid _workspaceGuid;
+		private readonly IWorkspaceGuidService _workspaceGuidService;
+		private readonly SyncJobParameters _syncJobParameters;
 
-		public SumSyncMetricsSink(IServicesMgr servicesManager, ISyncLog logger, WorkspaceGuid workspaceGuid)
+		public SumSyncMetricsSink(IServicesMgr servicesManager, ISyncLog logger, IWorkspaceGuidService workspaceGuidService, SyncJobParameters syncJobParameters)
 		{
 			_logger = logger;
-			_workspaceGuid = workspaceGuid;
+			_workspaceGuidService = workspaceGuidService;
+			_syncJobParameters = syncJobParameters;
 			_servicesManager = servicesManager;
 		}
 
@@ -34,26 +36,28 @@ namespace Relativity.Sync.Telemetry
 
 		private void LogSumMetric(IMetricsManager metricsManager, Metric metric)
 		{
+			Guid workspaceGuid = _workspaceGuidService.GetWorkspaceGuidAsync(_syncJobParameters.WorkspaceId).ConfigureAwait(false).GetAwaiter().GetResult();
+
 			MetricType metricType = metric.Type;
 			switch (metricType)
 			{
 				case MetricType.PointInTimeString:
-					LogPointInTimeString(metricsManager, metric);
+					LogPointInTimeString(metricsManager, metric, workspaceGuid);
 					break;
 				case MetricType.PointInTimeLong:
-					LogPointInTimeLong(metricsManager, metric);
+					LogPointInTimeLong(metricsManager, metric, workspaceGuid);
 					break;
 				case MetricType.PointInTimeDouble:
-					LogPointInTimeDouble(metricsManager, metric);
+					LogPointInTimeDouble(metricsManager, metric, workspaceGuid);
 					break;
 				case MetricType.TimedOperation:
-					LogTimedOperation(metricsManager, metric);
+					LogTimedOperation(metricsManager, metric, workspaceGuid);
 					break;
 				case MetricType.Counter:
-					LogCounterOperation(metricsManager, metric);
+					LogCounterOperation(metricsManager, metric, workspaceGuid);
 					break;
 				case MetricType.GaugeOperation:
-					LogGaugeOperation(metricsManager, metric);
+					LogGaugeOperation(metricsManager, metric, workspaceGuid);
 					break;
 				default:
 					_logger.LogDebug("Logging metric type '{type}' to SUM is not implemented.", metricType);
@@ -61,34 +65,34 @@ namespace Relativity.Sync.Telemetry
 			}
 		}
 
-		private void LogPointInTimeString(IMetricsManager metricsManager, Metric metric)
+		private static void LogPointInTimeString(IMetricsManager metricsManager, Metric metric, Guid workspaceGuid)
 		{
-			metricsManager.LogPointInTimeStringAsync(metric.Name, _workspaceGuid.Value, metric.WorkflowId, metric.Value.ToString());
+			metricsManager.LogPointInTimeStringAsync(metric.Name, workspaceGuid, metric.WorkflowId, metric.Value.ToString());
 		}
 
-		private void LogPointInTimeLong(IMetricsManager metricsManager, Metric metric)
+		private static void LogPointInTimeLong(IMetricsManager metricsManager, Metric metric, Guid workspaceGuid)
 		{
-			metricsManager.LogPointInTimeLongAsync(metric.Name, _workspaceGuid.Value, metric.WorkflowId, (long)metric.Value);
+			metricsManager.LogPointInTimeLongAsync(metric.Name, workspaceGuid, metric.WorkflowId, (long)metric.Value);
 		}
 
-		private void LogPointInTimeDouble(IMetricsManager metricsManager, Metric metric)
+		private static void LogPointInTimeDouble(IMetricsManager metricsManager, Metric metric, Guid workspaceGuid)
 		{
-			metricsManager.LogPointInTimeDoubleAsync(metric.Name, _workspaceGuid.Value, metric.WorkflowId, (double)metric.Value);
+			metricsManager.LogPointInTimeDoubleAsync(metric.Name, workspaceGuid, metric.WorkflowId, (double)metric.Value);
 		}
 
-		private void LogGaugeOperation(IMetricsManager metricsManager, Metric metric)
+		private static void LogGaugeOperation(IMetricsManager metricsManager, Metric metric, Guid workspaceGuid)
 		{
-			metricsManager.LogGaugeAsync(metric.Name, _workspaceGuid.Value, metric.WorkflowId, (long)metric.Value);
+			metricsManager.LogGaugeAsync(metric.Name, workspaceGuid, metric.WorkflowId, (long)metric.Value);
 		}
 
-		private void LogCounterOperation(IMetricsManager metricsManager, Metric metric)
+		private static void LogCounterOperation(IMetricsManager metricsManager, Metric metric, Guid workspaceGuid)
 		{
-			metricsManager.LogCountAsync(metric.Name, _workspaceGuid.Value, metric.WorkflowId, 1);
+			metricsManager.LogCountAsync(metric.Name, workspaceGuid, metric.WorkflowId, 1);
 		}
 
-		private void LogTimedOperation(IMetricsManager metricsManager, Metric metric)
+		private static void LogTimedOperation(IMetricsManager metricsManager, Metric metric, Guid workspaceGuid)
 		{
-			metricsManager.LogTimerAsDoubleAsync(metric.Name, _workspaceGuid.Value, metric.WorkflowId, (double)metric.Value);
+			metricsManager.LogTimerAsDoubleAsync(metric.Name, workspaceGuid, metric.WorkflowId, (double)metric.Value);
 		}
 	}
 }

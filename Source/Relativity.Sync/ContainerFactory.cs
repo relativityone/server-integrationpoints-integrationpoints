@@ -19,7 +19,6 @@ namespace Relativity.Sync
 			ISyncLog logger)
 		{
 			CorrelationId correlationId = new CorrelationId(syncJobParameters.CorrelationId);
-			WorkspaceGuid workspaceGuid = new WorkspaceGuid(syncJobParameters.WorkspaceGuid);
 
 			const string syncJob = nameof(SyncJob);
 			containerBuilder.RegisterType<SyncJob>().Named(syncJob, typeof(ISyncJob));
@@ -28,11 +27,11 @@ namespace Relativity.Sync
 			containerBuilder.RegisterInstance(new ContextLogger(correlationId, logger)).As<ISyncLog>();
 			containerBuilder.RegisterInstance(syncJobParameters).As<SyncJobParameters>();
 			containerBuilder.RegisterInstance(correlationId).As<CorrelationId>();
-			containerBuilder.RegisterInstance(workspaceGuid).As<WorkspaceGuid>();
 			containerBuilder.RegisterInstance(configuration).As<SyncJobExecutionConfiguration>();
 			containerBuilder.RegisterInstance(relativityServices).As<RelativityServices>();
 			containerBuilder.RegisterInstance(relativityServices.ServicesMgr).As<IServicesMgr>();
 			containerBuilder.RegisterInstance(relativityServices.APM).As<IAPM>();
+			containerBuilder.RegisterType<WorkspaceGuidService>().As<IWorkspaceGuidService>().SingleInstance();
 			containerBuilder.RegisterType<SyncExecutionContextFactory>().As<ISyncExecutionContextFactory>();
 			containerBuilder.RegisterType<AppDomainWrapper>().As<IAppDomain>();
 			containerBuilder.RegisterType<DateTimeWrapper>().As<IDateTime>();

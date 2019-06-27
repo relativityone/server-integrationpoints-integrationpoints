@@ -19,7 +19,7 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public void CorrelationIdShouldNotBeEmpty()
 		{
-			SyncJobParameters syncJobParameters = new SyncJobParameters(1, 1, Guid.Empty, _importSettingsDto);
+			SyncJobParameters syncJobParameters = new SyncJobParameters(1, 1, _importSettingsDto);
 
 			// ASSERT
 			syncJobParameters.CorrelationId.Should().NotBeNullOrWhiteSpace();
@@ -30,7 +30,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			const string id = "example id";
 
-			SyncJobParameters syncJobParameters = new SyncJobParameters(1, 1, Guid.Empty, 1, id, _importSettingsDto);
+			SyncJobParameters syncJobParameters = new SyncJobParameters(1, 1, 1, id, _importSettingsDto);
 
 			// ASSERT
 			syncJobParameters.CorrelationId.Should().Be(id);
@@ -41,7 +41,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			const int jobId = 801314;
 
-			SyncJobParameters syncJobParameters = new SyncJobParameters(jobId, 1, Guid.Empty, _importSettingsDto);
+			SyncJobParameters syncJobParameters = new SyncJobParameters(jobId, 1, _importSettingsDto);
 
 			// ASSERT
 			syncJobParameters.JobId.Should().Be(jobId);
@@ -52,27 +52,16 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			const int workspaceId = 172320;
 
-			SyncJobParameters syncJobParameters = new SyncJobParameters(1, workspaceId, Guid.Empty, _importSettingsDto);
+			SyncJobParameters syncJobParameters = new SyncJobParameters(1, workspaceId, _importSettingsDto);
 
 			// ASSERT
 			syncJobParameters.WorkspaceId.Should().Be(workspaceId);
 		}
 
 		[Test]
-		public void ItShouldSetWorkspaceGuid()
-		{
-			Guid workspaceGuid = Guid.NewGuid();
-
-			SyncJobParameters syncJobParameters = new SyncJobParameters(1, 1, workspaceGuid, _importSettingsDto);
-
-			// ASSERT
-			syncJobParameters.WorkspaceGuid.Should().Be(workspaceGuid);
-		}
-
-		[Test]
 		public void ItShouldCreateNonEmptyCorrelationId()
 		{
-			SyncJobParameters syncJobParameters = new SyncJobParameters(1, 1, Guid.Empty, _importSettingsDto);
+			SyncJobParameters syncJobParameters = new SyncJobParameters(1, 1, _importSettingsDto);
 
 			syncJobParameters.CorrelationId.Should().NotBeNullOrWhiteSpace();
 			syncJobParameters.CorrelationId.Should().NotBe(new Guid().ToString());
@@ -83,8 +72,8 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public void ItShouldCreateDifferentCorrelationIdsEveryTime()
 		{
-			SyncJobParameters firstSyncJobParameters = new SyncJobParameters(1, 1, Guid.Empty, _importSettingsDto);
-			SyncJobParameters secondSyncJobParameters = new SyncJobParameters(1, 1, Guid.Empty, _importSettingsDto);
+			SyncJobParameters firstSyncJobParameters = new SyncJobParameters(1, 1, _importSettingsDto);
+			SyncJobParameters secondSyncJobParameters = new SyncJobParameters(1, 1, _importSettingsDto);
 
 			firstSyncJobParameters.CorrelationId.Should().NotBe(secondSyncJobParameters.CorrelationId);
 		}
