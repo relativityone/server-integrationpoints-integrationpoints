@@ -1,4 +1,5 @@
-﻿using kCura.Apps.Common.Data;
+﻿using System;
+using kCura.Apps.Common.Data;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.EventHandler;
 using kCura.IntegrationPoints.Core;
@@ -13,6 +14,7 @@ using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Facades.SecretStore.Implementation;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -23,6 +25,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
 using Relativity.API;
+using Console = kCura.EventHandler.Console;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
@@ -95,11 +98,15 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			{
 				if (_buttonStateBuilder == null)
 				{
-					var logger = Helper.GetLoggerFactory().GetLogger();
+					IAPILog logger = Helper.GetLoggerFactory().GetLogger();
 					IRelativityObjectManager objectManager = CreateObjectManager(Helper, Helper.GetActiveCaseID());
 					IIntegrationPointSerializer integrationPointSerializer = CreateIntegrationPointSerializer(logger);
+					ISecretsRepository secretsRepository = new SecretsRepository(
+						SecretStoreFacadeFactory_Deprecated.Create(Helper.GetSecretStore, logger), 
+						logger
+					);
 					IIntegrationPointRepository integrationPointRepository =
-						CreateIntegrationPointRepository(objectManager, integrationPointSerializer, logger);
+						CreateIntegrationPointRepository(objectManager, integrationPointSerializer, secretsRepository, logger);
 
 					IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(Helper);
 					IQueueManager queueManager = ManagerFactory.CreateQueueManager(contextContainer);
@@ -129,9 +136,13 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			return new IntegrationPointSerializer(logger);
 		}
 
-		private IIntegrationPointRepository CreateIntegrationPointRepository(IRelativityObjectManager objectManager, IIntegrationPointSerializer serializer, IAPILog logger)
+		private IIntegrationPointRepository CreateIntegrationPointRepository(
+			IRelativityObjectManager objectManager, 
+			IIntegrationPointSerializer serializer, 
+			ISecretsRepository secretsRepository,
+			IAPILog logger)
 		{
-			return new IntegrationPointRepository(objectManager, serializer, logger);
+			return new IntegrationPointRepository(objectManager, serializer, secretsRepository, logger);
 		}
 
 		private IOnClickEventConstructor OnClickEventConstructor

@@ -25,7 +25,6 @@ namespace kCura.IntegrationPoints.Data.Installers
 			container.Register(Component.For<JobStatistics>().ImplementedBy<JobStatistics>().LifestyleTransient());
 			container.Register(Component.For<JobStatisticsQuery>().ImplementedBy<JobStatisticsQuery>().LifestyleTransient());
 			container.Register(Component.For<JobHistoryErrorQuery>().ImplementedBy<JobHistoryErrorQuery>().LifestyleTransient());
-			container.Register(Component.For<IIntegrationPointQuery>().ImplementedBy<IntegrationPointQuery>().LifestyleTransient());
 
 			container.Register(Component.For<IObjectTypeQuery>().ImplementedBy<SqlObjectTypeQuery>().LifestyleTransient());
 			container.Register(Component.For<IChoiceQuery>().ImplementedBy<ChoiceQuery>().LifestyleTransient());
@@ -36,7 +35,6 @@ namespace kCura.IntegrationPoints.Data.Installers
 
 			container.Register(Component.For<ISourceProviderArtifactIdByGuidQueryBuilder>().ImplementedBy<SourceProviderArtifactIdByGuidQueryBuilder>().LifestyleSingleton());
 			container.Register(Component.For<IDestinationProviderArtifactIdByGuidQueryBuilder>().ImplementedBy<DestinationProviderArtifactIdByGuidQueryBuilder>().LifestyleSingleton());
-			container.Register(Component.For<IIntegrationPointByProvidersQueryBuilder>().ImplementedBy<IntegrationPointByProvidersQueryBuilder>().LifestyleSingleton());
 			container.Register(Component.For<IIntegrationPointsCompletedJobsQueryBuilder>().ImplementedBy<IntegrationPointsCompletedJobsQueryBuilder>().LifestyleSingleton());
 
 			container.Register(Component.For<IDocumentTotalStatistics>().ImplementedBy<DocumentTotalStatistics>().LifestyleTransient());

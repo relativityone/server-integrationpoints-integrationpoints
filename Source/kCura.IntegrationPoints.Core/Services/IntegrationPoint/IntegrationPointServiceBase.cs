@@ -18,7 +18,7 @@ using System.Linq;
 
 namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 {
-	public abstract class IntegrationPointServiceBase<T> where T : BaseRdo, new()
+	public abstract class IntegrationPointServiceBase
 	{
 		protected IRelativityObjectManager ObjectManager;
 
@@ -56,56 +56,10 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			ObjectManager = objectManager;
 		}
 
-		public IList<T> GetAllRDOs()
-		{
-			var query = new IntegrationPointBaseQuery<T>(ObjectManager);
-			return query.GetAllIntegrationPoints();
-		}
-
-		public IList<T> GetAllRDOsWithAllFields()
-		{
-			var query = new IntegrationPointBaseQuery<T>(ObjectManager);
-			return query.GetIntegrationPointsWithAllFields();
-		}
-
-		public IList<T> GetAllRDOsForSourceProvider(List<int> sourceProviderIds)
-		{
-			var query = new IntegrationPointBaseQuery<T>(ObjectManager);
-			return query.GetIntegrationPointsWithAllFields(sourceProviderIds);
-		}
-
-		protected IList<T> GetAllRDOsWithBasicProfileColumns()
-		{
-			var query = new IntegrationPointBaseQuery<T>(ObjectManager);
-			return query.GetAllIntegrationPointsProfileWithBasicColumns();
-
-		}
-
-		protected abstract IntegrationPointModelBase GetModel(int artifactId);
-
-		public string GetSourceOptions(int artifactId)
-		{
-			return GetModel(artifactId).SourceConfiguration;
-		}
-
-		public FieldEntry GetIdentifierFieldEntry(int artifactId)
-		{
-			var model = GetModel(artifactId);
-			return GetIdentifierFieldEntry(model.Map);
-		}
-
 		public FieldEntry GetIdentifierFieldEntry(string fieldMap)
 		{
 			var fields = Serializer.Deserialize<List<FieldMap>>(fieldMap);
 			return fields.FirstOrDefault(x => x.FieldMapType == FieldMapTypeEnum.Identifier)?.SourceField;
-		}
-
-		public IEnumerable<string> GetRecipientEmails(int artifactId)
-		{
-			var integrationPoint = GetModel(artifactId);
-			string emailRecipients = integrationPoint.NotificationEmails ?? string.Empty;
-			IEnumerable<string> emailRecipientList = emailRecipients.Split(';').Select(x => x.Trim());
-			return emailRecipientList;
 		}
 
 		protected PeriodicScheduleRule ConvertModelToScheduleRule(IntegrationPointModelBase model)

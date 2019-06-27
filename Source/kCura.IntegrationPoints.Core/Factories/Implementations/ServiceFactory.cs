@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Facades.SecretStore.Implementation;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using Relativity.API;
@@ -23,7 +24,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		private readonly IValidationExecutor _validationExecutor;
 		private readonly IProviderTypeService _providerTypeService;
 		private readonly IMessageService _messageService;
-		
+
 		public ServiceFactory(ICaseServiceContext caseServiceContext, 
 			IContextContainerFactory contextContainerFactory,
 			IIntegrationPointSerializer serializer, 
@@ -47,12 +48,23 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 
 		public IIntegrationPointService CreateIntegrationPointService(IHelper helper, IHelper targetHelper)
 		{
+			IAPILog logger = helper.GetLoggerFactory().GetLogger();
 			IJobHistoryService jobHistoryService = CreateJobHistoryService(helper, targetHelper);
-			IJobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(_caseServiceContext, helper);
+			ISecretsRepository secretsRepository = new SecretsRepository(
+				SecretStoreFacadeFactory_Deprecated.Create(helper.GetSecretStore, logger),
+				logger
+			);
 			IIntegrationPointRepository integrationPointRepository = new IntegrationPointRepository(
 				_caseServiceContext.RsapiService.RelativityObjectManager, 
-				_serializer, 
-				helper.GetLoggerFactory().GetLogger());
+				_serializer,
+				secretsRepository,
+				logger
+			);
+			IJobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(
+				_caseServiceContext, 
+				helper, 
+				integrationPointRepository
+			);
 			return new IntegrationPointService(
 				helper,
 				_caseServiceContext,

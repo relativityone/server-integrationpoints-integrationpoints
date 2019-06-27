@@ -21,6 +21,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 	{
 		private Mock<IRelativityObjectManager> _objectManagerMock;
 		private Mock<IIntegrationPointSerializer> _serializerMock;
+		private Mock<ISecretsRepository> _secretsRepositoryMock;
 		private Mock<IAPILog> _loggerMock;
 		private Mock<IAPILog> _internalLoggerMock;
 		private IntegrationPoint _integrationPoint;
@@ -42,7 +43,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		private const int _ARTIFACT_ID = 1025823;
 		private const string _FIELD_MAPPING_LONG = "fieldMappingLong";
 		private const string _FIELD_MAPPING_INVALID = "fieldMappingInvalid";
-		private const string _SECURED_CONFIGURATION = "securedConf";
+		private const string _SECURED_CONFIGURATION = "2ddbfb34-5dce-47a2-99ab-a7328600673b";
 		private const string _NAME = "Test Integration Point";
 
 		[SetUp]
@@ -52,6 +53,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			_serializerMock = new Mock<IIntegrationPointSerializer>();
 			_loggerMock = new Mock<IAPILog>();
 			_internalLoggerMock = new Mock<IAPILog>();
+			_secretsRepositoryMock = new Mock<ISecretsRepository>();
 			_loggerMock.Setup(x => x.ForContext<IntegrationPointRepository>()).Returns(_internalLoggerMock.Object);
 			_fieldMapping = CreateFieldMapping();
 			_emptyFieldMapping = new List<FieldMap>();
@@ -61,9 +63,14 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			_serializerMock.Setup(x => x.Deserialize<IEnumerable<FieldMap>>(_FIELD_MAPPING_LONG)).Returns(_fieldMapping);
 			_serializerMock.Setup(x => x.Deserialize<IEnumerable<FieldMap>>(_FIELD_MAPPING_INVALID))
 				.Throws<SerializationException>();
+			
 			_nextScheduledRuntime = DateTime.UtcNow.AddDays(1);
 			_lastRuntime = DateTime.UtcNow.AddDays(-1);
-			_sut = new IntegrationPointRepository(_objectManagerMock.Object, _serializerMock.Object, _loggerMock.Object);
+			_sut = new IntegrationPointRepository(
+				_objectManagerMock.Object, 
+				_serializerMock.Object,
+				_secretsRepositoryMock.Object,
+				_loggerMock.Object);
 		}
 
 		[Test]
@@ -81,7 +88,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			expectedResult.FieldMappings = _FIELD_MAPPING_LONG;
 
 			// Act
-			IntegrationPoint actualResult = _sut.ReadAsync(_ARTIFACT_ID).GetAwaiter().GetResult();
+			IntegrationPoint actualResult = _sut.ReadWithFieldMappingAsync(_ARTIFACT_ID).GetAwaiter().GetResult();
 
 			// Assert
 			_objectManagerMock.Verify(x => x.Read<IntegrationPoint>(_ARTIFACT_ID, ExecutionIdentity.CurrentUser), Times.Once);
@@ -107,7 +114,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			_objectManagerMock.Setup(x => x.Read<IntegrationPoint>(_ARTIFACT_ID, ExecutionIdentity.CurrentUser)).Throws<Exception>();
 
 			// Act
-			Action action = () => _sut.ReadAsync(_ARTIFACT_ID).GetAwaiter().GetResult();
+			Action action = () => _sut.ReadWithFieldMappingAsync(_ARTIFACT_ID).GetAwaiter().GetResult();
 
 			// Assert
 			action.ShouldThrow<Exception>();
@@ -139,7 +146,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				.Throws<Exception>();
 
 			// Act
-			Action action = () => _sut.ReadAsync(_ARTIFACT_ID).GetAwaiter().GetResult();
+			Action action = () => _sut.ReadWithFieldMappingAsync(_ARTIFACT_ID).GetAwaiter().GetResult();
 
 			// Assert
 			action.ShouldThrow<Exception>();
@@ -156,19 +163,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 					It.IsAny<string>(),
 					It.IsAny<object[]>()),
 				Times.Never);
-		}
-
-		[Test]
-		public void Read_ShouldThrowException_WhenObjectManagerIsNull()
-		{
-			// Arrange
-			IntegrationPointRepository sut = new IntegrationPointRepository(null, _serializerMock.Object, _loggerMock.Object);
-
-			// Act
-			Action action = () => sut.ReadAsync(_ARTIFACT_ID).GetAwaiter().GetResult();
-
-			// Assert
-			action.ShouldThrow<NullReferenceException>();
 		}
 
 		[Test]
@@ -321,13 +315,14 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		}
 
 		[Test]
-		public void GetFieldMapJsonAsync_ShouldThrowException_WhenObjectManagerIsNull()
+		public void This_ShouldThrowException_WhenObjectManagerIsNull()
 		{
-			// Arrange
-			IntegrationPointRepository sut = new IntegrationPointRepository(null, _serializerMock.Object, _loggerMock.Object);
-
 			// Act
-			Action action = () => sut.GetFieldMappingAsync(_ARTIFACT_ID).GetAwaiter().GetResult();
+			Action action = () => new IntegrationPointRepository(
+				null,
+				_serializerMock.Object,
+				_secretsRepositoryMock.Object,
+				_loggerMock.Object);
 
 			// Assert
 			action.ShouldThrow<NullReferenceException>();
@@ -375,19 +370,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		}
 
 		[Test]
-		public void GetSecuredConfiguration_ShouldThrowException_WhenObjectManagerIsNull()
-		{
-			// Arrange
-			IntegrationPointRepository sut = new IntegrationPointRepository(null, _serializerMock.Object, _loggerMock.Object);
-
-			// Act
-			Action action = () => sut.GetSecuredConfiguration(_ARTIFACT_ID);
-
-			// Assert
-			action.ShouldThrow<NullReferenceException>();
-		}
-
-		[Test]
 		public void GetName_ShouldReturnValidName()
 		{
 			// Arrange
@@ -426,19 +408,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 					It.IsAny<string>(),
 					It.IsAny<object[]>()),
 				Times.Never);
-		}
-
-		[Test]
-		public void GetName_ShouldThrowException_WhenObjectManagerIsNull()
-		{
-			// Arrange
-			IntegrationPointRepository sut = new IntegrationPointRepository(null, _serializerMock.Object, _loggerMock.Object);
-
-			// Act
-			Action action = () => sut.GetName(_ARTIFACT_ID);
-
-			// Assert
-			action.ShouldThrow<NullReferenceException>();
 		}
 
 		private static IEnumerable<FieldMap> CreateFieldMapping()
@@ -495,7 +464,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				OverwriteFields = null,
 				JobHistory = new[] { _JOB_HISTORY_1, _JOB_HISTORY_2 },
 				NextScheduledRuntimeUTC = _nextScheduledRuntime,
-				LastRuntimeUTC = _lastRuntime
+				LastRuntimeUTC = _lastRuntime,
 			};
 		}
 

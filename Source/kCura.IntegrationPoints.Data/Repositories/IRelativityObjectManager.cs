@@ -30,7 +30,6 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		bool Delete(int artifactId, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser);
 
 		ResultSet<T> Query<T>(QueryRequest q, int start, int length, bool noFields = false, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new();
-		Task<ResultSet<T>> QueryAsync<T>(QueryRequest q, int start, int length, bool noFields = false, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new();
 		List<T> Query<T>(QueryRequest q, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new();
 		Task<List<T>> QueryAsync<T>(QueryRequest q, bool noFields = false, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new();
 		List<RelativityObject> Query(QueryRequest q, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser);
@@ -43,5 +42,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
 
 		System.IO.Stream StreamUnicodeLongText(int relativityObjectArtifactId, FieldRef longTextFieldRef, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser);
 		System.IO.Stream StreamNonUnicodeLongText(int relativityObjectArtifactId, FieldRef longTextFieldRef, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser);
+
+		int GetWorkspaceID_Deprecated();
 	}
 }

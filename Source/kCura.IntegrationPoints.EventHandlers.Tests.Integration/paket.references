@@ -12,3 +12,4 @@ RelativityCore
 Selenium.WebDriver
 Relativity.OAuth2Client
 relativity.testing.identification
+FluentAssertions

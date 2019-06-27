@@ -59,7 +59,6 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Commands\Container\EventHandlerInstaller.cs" />
-    <Compile Include="Commands\CreateTenantIdForSecretStoreCommand.cs" />
     <Compile Include="Commands\DeleteIntegrationPointCommand.cs" />
     <Compile Include="Commands\Context\EHContext.cs" />
     <Compile Include="Commands\EventHandlerExecutorExHandler.cs" />
@@ -71,8 +70,6 @@
     <Compile Include="Commands\Container\ContainerFactory.cs" />
     <Compile Include="Commands\Container\IContainerFactory.cs" />
     <Compile Include="Commands\Helpers\IArtifactsToDelete.cs" />
-    <Compile Include="Commands\Helpers\ITenantForSecretStoreCreationValidator.cs" />
-    <Compile Include="Commands\Helpers\TenantForSecretStoreCreationValidator.cs" />
     <Compile Include="Commands\ICommand.cs" />
     <Compile Include="Commands\IEHCommand.cs" />
     <Compile Include="Commands\Context\IEHContext.cs" />
@@ -81,6 +78,7 @@
     <Compile Include="Commands\IRemoveSecuredConfigurationFromIntegrationPointService.cs" />
     <Compile Include="Commands\ISourceConfigurationTypeOfExportUpdater.cs" />
     <Compile Include="Commands\ISplitJsonObjectService.cs" />
+    <Compile Include="Commands\MigrateSecretCatalogPathToSecretStorePathCommand.cs" />
     <Compile Include="Commands\PreCascadeDeleteIntegrationPointCommand.cs" />
     <Compile Include="Commands\RemoveAgentJobLogTableCommand.cs" />
     <Compile Include="Commands\RemoveSecuredConfigurationFromIntegrationPointService.cs" />
@@ -109,16 +107,11 @@
     <Compile Include="Commands\UpdateIntegrationPointConfigurationCommandBase.cs" />
     <Compile Include="Commands\UpdateLdapConfigurationCommand.cs" />
     <Compile Include="Commands\UpdateRelativityConfigurationCommand.cs" />
+    <Compile Include="Context\EventHandlerWorkspaceContextService.cs" />
     <Compile Include="EncryptionManager\DefaultEncryptionManager.cs" />
     <Compile Include="EncryptionManager\IEncryptionManager.cs" />
-    <Compile Include="Installers\CreateTenantIdForSecretStoreInstaller.cs" />
     <Compile Include="Commands\Factories\RestoreJobHistoryDestinationWorkspaceCommandFactory.cs" />
-    <Compile Include="Installers\Helpers\Factories\SecretStoreCleanUpFactory.cs" />
-    <Compile Include="Commands\Helpers\CreateTenantIdForSecretStore.cs" />
-    <Compile Include="Commands\Helpers\ICreateTenantIdForSecretStore.cs" />
-    <Compile Include="Installers\Helpers\ISecretStoreCleanUp.cs" />
-    <Compile Include="Installers\Helpers\Implementations\SecretStoreCleanUp.cs" />
-    <Compile Include="Installers\Helpers\SecretStoreCleanUpEventHandlerWrapper.cs" />
+    <Compile Include="Installers\MigrateSecretCatalogPathToSecretStorePathInstaller.cs" />
     <Compile Include="Installers\RegisterDataTransferLocationInstaller.cs" />
     <Compile Include="Installers\RegisterDestinationProviders.cs" />
     <Compile Include="Installers\RegisterImportProvider.cs" />
@@ -127,7 +120,6 @@
     <Compile Include="Installers\RemoveUnusedEventHandlers.cs" />
     <Compile Include="Installers\RenameCustodianToEntityInIntegrationPointConfigurationEventHandler.cs" />
     <Compile Include="Installers\RestoreJobHistoryDestinationWorkspaceEventHandler.cs" />
-    <Compile Include="Installers\SecretStorePostWorkspaceCreateEventHandler.cs" />
     <Compile Include="Installers\SecretStorePreWorkspaceDeleteEventHandler.cs" />
     <Compile Include="Installers\SecretStoreUninstaller.cs" />
     <Compile Include="Installers\SetImportNativeFileCopyMode.cs" />
@@ -206,6 +198,10 @@
     <Compile Include="TagBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Common\kCura.IntegrationPoints.Common.csproj">
+      <Project>{32bcb03b-4980-4434-9392-f72334e6e348}</Project>
+      <Name>kCura.IntegrationPoints.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
       <Project>{0CEDB7AF-DB89-47DE-9587-8CCD58621F2F}</Project>
       <Name>kCura.IntegrationPoints.Contracts</Name>
@@ -252,6 +248,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Installers\Helpers\" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
@@ -431,17 +428,6 @@
       <ItemGroup>
         <Reference Include="Relativity.Services.ServiceProxy">
           <HintPath>..\..\packages\Relativity.Kepler.Client\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.SecretCatalog">
-          <HintPath>..\..\packages\Relativity.SecretCatalog\lib\Relativity.SecretCatalog.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.Core.Models;
+﻿using kCura.IntegrationPoints.Common.Context;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.Tabs;
 using kCura.IntegrationPoints.Data;
@@ -6,7 +7,6 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.LDAPProvider;
 using kCura.IntegrationPoints.Web.Context.UserContext;
-using kCura.IntegrationPoints.Web.Context.WorkspaceContext;
 
 namespace kCura.IntegrationPoints.Web.Controllers
 {

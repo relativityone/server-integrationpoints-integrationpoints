@@ -22,9 +22,16 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 		private readonly IDestinationParser _destinationParser;
 		private readonly IContextContainerFactory _contextContainerFactory;
 
-		public JobHistoryRepository(IHelper helper, IHelperFactory helperFactory, IRelativityIntegrationPointsRepository relativityIntegrationPointsRepository,
-			ICompletedJobsHistoryRepository completedJobsHistoryRepository, IManagerFactory managerFactory, IContextContainerFactory contextContainerFactory,
-			IJobHistoryAccess jobHistoryAccess, IJobHistorySummaryModelBuilder summaryModelBuilder, IDestinationParser destinationParser)
+		public JobHistoryRepository(
+			IHelper helper, 
+			IHelperFactory helperFactory, 
+			IRelativityIntegrationPointsRepository relativityIntegrationPointsRepository,
+			ICompletedJobsHistoryRepository completedJobsHistoryRepository, 
+			IManagerFactory managerFactory, 
+			IContextContainerFactory contextContainerFactory,
+			IJobHistoryAccess jobHistoryAccess, 
+			IJobHistorySummaryModelBuilder summaryModelBuilder, 
+			IDestinationParser destinationParser)
 		{
 			_helper = helper;
 			_helperFactory = helperFactory;

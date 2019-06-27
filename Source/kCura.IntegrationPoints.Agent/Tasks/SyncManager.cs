@@ -52,7 +52,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private IEnumerable<IBatchStatus> _batchStatus;
 		private readonly IAgentValidator _agentValidator;
 
-		public SyncManager(ICaseServiceContext caseServiceContext,
+		public SyncManager(
+			ICaseServiceContext caseServiceContext,
 			IDataProviderFactory providerFactory,
 			IJobManager jobManager,
 			IJobService jobService,
@@ -401,7 +402,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				IntegrationPoint.NextScheduledRuntimeUTC = _jobService.GetJobNextUtcRunDateTime(job, _scheduleRuleFactory, taskResult);
 			}
-			_caseServiceContext.RsapiService.RelativityObjectManager.Update(IntegrationPoint);
+			IntegrationPointService.UpdateIntegrationPoint(IntegrationPoint);
 			LogUpdateLastRuntimeAndCalculateNextRuntimeSuccesfulEnd(job);
 		}
 

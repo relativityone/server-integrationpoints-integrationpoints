@@ -19,6 +19,7 @@ task build_initalize {
     'build config  = ' + $build_config
     'run_sonarqube = ' + $run_sonarqube
     'run_checkConfigureAwait= ' + $run_checkConfigureAwait
+    'sq_target_branch= ' + $sq_target_branch
     'skip_tests    = ' + $skip_tests
     ''
 
@@ -491,13 +492,15 @@ task copy_web_drivers -depends create_lib_dir, build_integration_points -precond
 	Copy-Item -path $geckodriver_path -Destination $tests_directory
 }
 
-task start_sonar -depends get_sonarqube -precondition { return $RUN_SONARQUBE } {     
+task start_sonar -depends get_sonarqube -precondition { return $RUN_SONARQUBE } {
     $args = @(
         'begin',
         ("/k:$sonarqube_project_key"),
         ("/n:$sonarqube_project_name"),
         ("/v:$branch_hash"),
         ("/s:$sonarqube_properties"),
+        ("/d:sonar.branch.name=""$branch"""),
+        ("/d:sonar.branch.target=""$sq_target_branch"""),
         ("/d:sonar.cs.nunit.reportsPaths=""$NUnit_TestOutputFile"""),
         ("/d:sonar.cs.dotcover.reportsPaths=""$dotCover_result"""))
     & $sonarqube_exe $args    
@@ -529,7 +532,7 @@ task run_coverage -depends get_dotcover, get_testrunner, get_nunit, test_initali
         Write-Host $arg
         & $dotCover_exe $arg
         Write-Host "Coverage complete"
-        
+
     }    
 }
 
