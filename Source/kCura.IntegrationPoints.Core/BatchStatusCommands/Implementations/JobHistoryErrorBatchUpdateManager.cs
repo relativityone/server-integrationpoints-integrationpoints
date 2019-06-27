@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Data;
@@ -18,7 +20,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		private readonly IJobHistoryErrorManager _jobHistoryErrorManager;
 		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly IJobStopManager _jobStopManager;
-		private readonly int _sourceWorkspaceArtifactId;
+		private readonly int _sourceWorkspaceArtifactID;
 		private readonly JobHistoryErrorDTO.UpdateStatusType _updateStatusType;
 		private readonly IAPILog _logger;
 		private readonly IMassUpdateHelper _massUpdateHelper;
@@ -28,72 +30,40 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			IAPILog logger,
 			IRepositoryFactory repositoryFactory,
 			IJobStopManager jobStopManager,
-			int sourceWorkspaceArtifactId,
+			int sourceWorkspaceArtifactID,
 			JobHistoryErrorDTO.UpdateStatusType updateStatusType,
 			IMassUpdateHelper massUpdateHelper)
 		{
 			_jobHistoryErrorManager = jobHistoryErrorManager;
 			_repositoryFactory = repositoryFactory;
 			_jobStopManager = jobStopManager;
-			_sourceWorkspaceArtifactId = sourceWorkspaceArtifactId;
+			_sourceWorkspaceArtifactID = sourceWorkspaceArtifactID;
 			_updateStatusType = updateStatusType;
 			_logger = logger.ForContext<JobHistoryErrorBatchUpdateManager>();
 			_massUpdateHelper = massUpdateHelper;
 		}
+
+		private bool IsRetryErrorsJob =>
+			_updateStatusType.JobType == JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors;
 
 		public void OnJobStart(Job job)
 		{
 			try
 			{
 				_logger.LogDebug("JobHistoryErrorBatchUpdateManager OnJobStart. Workspace: {workspaceId}, jobType: {jobType}, errorTypes: {errorType}",
-					_sourceWorkspaceArtifactId, _updateStatusType.JobType, _updateStatusType.ErrorTypes);
-				IJobHistoryErrorRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(_sourceWorkspaceArtifactId);
+					_sourceWorkspaceArtifactID, _updateStatusType.JobType, _updateStatusType.ErrorTypes);
+				IJobHistoryErrorRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(_sourceWorkspaceArtifactID);
 
-				if (_updateStatusType.JobType == JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors)
-				{
+				UpdateScratchTablesOnStart();
 
-					switch (_updateStatusType.ErrorTypes)
-					{
-						case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobAndItem:
-							_jobHistoryErrorManager.JobHistoryErrorJobComplete = _jobHistoryErrorManager.JobHistoryErrorJobStart.CopyTempTable(Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_COMPLETE);
-							UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorJobStart, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorInProgressGuid);
-							UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorItemStart, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorExpiredGuid);
-							break;
-
-						case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobOnly:
-							_jobHistoryErrorManager.JobHistoryErrorJobComplete = _jobHistoryErrorManager.JobHistoryErrorJobStart.CopyTempTable(Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_COMPLETE);
-							UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorJobStart, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorInProgressGuid);
-							break;
-
-						case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly:
-							_jobHistoryErrorManager.JobHistoryErrorItemComplete = _jobHistoryErrorManager.JobHistoryErrorItemStart.CopyTempTable(Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_COMPLETE);
-							UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorItemStart, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorInProgressGuid);
-							UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorItemStartExcluded, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorExpiredGuid);
-							break;
-					}
-				}
-				else //This runs for Run Now or Scheduled jobs
-				{
-					switch (_updateStatusType.ErrorTypes)
-					{
-						case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobAndItem:
-							UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorJobStart, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorExpiredGuid);
-							UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorItemStart, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorExpiredGuid);
-							break;
-
-						case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobOnly:
-							UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorJobStart, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorExpiredGuid);
-							break;
-
-						case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly:
-							UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorItemStart, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorExpiredGuid);
-							break;
-					}
-				}
+				IEnumerable<UpdateErrorStatusData> updateErrorStatusesData = IsRetryErrorsJob
+					? GetUpdateStatusesOnStartForRetryErrorsJob(jobHistoryErrorRepository)
+					: GetUpdateStatusesOnStartForNonRetryJob(jobHistoryErrorRepository);
+				UpdateStatuses(updateErrorStatusesData, jobHistoryErrorRepository);
 			}
 			catch (Exception ex)
 			{
-				throw LogJobStartSaveJobHistoryException(job, ex);
+				throw GetAndLogJobStartSaveJobHistoryException(job, ex);
 			}
 		}
 
@@ -102,57 +72,140 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			try
 			{
 				_logger.LogDebug("JobHistoryErrorBatchUpdateManager OnJobComplete. Workspace: {workspaceId}, jobType: {jobType}, errorTypes: {errorType}",
-					_sourceWorkspaceArtifactId, _updateStatusType.JobType, _updateStatusType?.ErrorTypes);
-				IJobHistoryErrorRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(_sourceWorkspaceArtifactId);
+					_sourceWorkspaceArtifactID,
+					_updateStatusType.JobType,
+					_updateStatusType?.ErrorTypes);
 
-				if (_updateStatusType.JobType == JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors)
+				if (!IsRetryErrorsJob)
 				{
-					if (_jobStopManager.IsStopRequested())
-					{
-						UpdateStatuses(
-							_jobHistoryErrorManager.JobHistoryErrorItemComplete, 
-							jobHistoryErrorRepository,
-							ErrorStatusChoices.JobHistoryErrorExpiredGuid);
-					}
-					else if (_updateStatusType.ErrorTypes == JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly)
-					{
-						UpdateStatuses(
-							_jobHistoryErrorManager.JobHistoryErrorItemComplete, 
-							jobHistoryErrorRepository,
-							ErrorStatusChoices.JobHistoryErrorRetriedGuid);
-					}
-					else if (_updateStatusType.ErrorTypes == JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobOnly ||
-							_updateStatusType.ErrorTypes == JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobAndItem)
-					{
-						UpdateStatuses(
-							_jobHistoryErrorManager.JobHistoryErrorJobComplete, 
-							jobHistoryErrorRepository,
-							ErrorStatusChoices.JobHistoryErrorRetriedGuid);
-					}
+					return;
 				}
+
+				IJobHistoryErrorRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(_sourceWorkspaceArtifactID);
+				IEnumerable<UpdateErrorStatusData> updateErrorStatusesData = GetUpdateStatusDataForRetryErrorsJobComplete(jobHistoryErrorRepository);
+				UpdateStatuses(updateErrorStatusesData, jobHistoryErrorRepository);
 			}
 			catch (Exception ex)
 			{
-				throw LogJobCompleteSaveJobHistoryException(job, ex);
+				throw GetAndLogJobCompleteSaveJobHistoryException(job, ex);
+			}
+		}
+
+		private void UpdateScratchTablesOnStart()
+		{
+			if (!IsRetryErrorsJob)
+			{
+				return;
+			}
+
+			switch (_updateStatusType.ErrorTypes)
+			{
+				case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobAndItem:
+					_jobHistoryErrorManager.JobHistoryErrorJobComplete = _jobHistoryErrorManager.JobHistoryErrorJobStart.CopyTempTable(Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_COMPLETE);
+					break;
+				case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobOnly:
+					_jobHistoryErrorManager.JobHistoryErrorJobComplete = _jobHistoryErrorManager.JobHistoryErrorJobStart.CopyTempTable(Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_COMPLETE);
+					break;
+				case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly:
+					_jobHistoryErrorManager.JobHistoryErrorItemComplete = _jobHistoryErrorManager.JobHistoryErrorItemStart.CopyTempTable(Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_COMPLETE);
+					break;
+			}
+		}
+
+		private IEnumerable<UpdateErrorStatusData> GetUpdateStatusesOnStartForNonRetryJob(IJobHistoryErrorRepository jobHistoryErrorRepository)
+		{
+			switch (_updateStatusType.ErrorTypes)
+			{
+				case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobAndItem:
+					yield return new UpdateErrorStatusData(
+						_jobHistoryErrorManager.JobHistoryErrorJobStart,
+						ErrorStatusChoices.JobHistoryErrorExpiredGuid);
+					yield return new UpdateErrorStatusData(
+						_jobHistoryErrorManager.JobHistoryErrorItemStart,
+						ErrorStatusChoices.JobHistoryErrorExpiredGuid);
+					break;
+				case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobOnly:
+					yield return new UpdateErrorStatusData(
+						_jobHistoryErrorManager.JobHistoryErrorJobStart,
+						ErrorStatusChoices.JobHistoryErrorExpiredGuid);
+					break;
+				case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly:
+					yield return new UpdateErrorStatusData(
+						_jobHistoryErrorManager.JobHistoryErrorItemStart,
+						ErrorStatusChoices.JobHistoryErrorExpiredGuid);
+					break;
+			}
+		}
+
+		private IEnumerable<UpdateErrorStatusData> GetUpdateStatusesOnStartForRetryErrorsJob(IJobHistoryErrorRepository jobHistoryErrorRepository)
+		{
+			switch (_updateStatusType.ErrorTypes)
+			{
+				case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobAndItem:
+					yield return new UpdateErrorStatusData(
+						_jobHistoryErrorManager.JobHistoryErrorJobStart,
+						ErrorStatusChoices.JobHistoryErrorInProgressGuid);
+					yield return new UpdateErrorStatusData(
+						_jobHistoryErrorManager.JobHistoryErrorItemStart,
+						ErrorStatusChoices.JobHistoryErrorExpiredGuid);
+					break;
+				case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobOnly:
+					yield return new UpdateErrorStatusData(
+						_jobHistoryErrorManager.JobHistoryErrorJobStart,
+						ErrorStatusChoices.JobHistoryErrorInProgressGuid);
+					break;
+				case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly:
+					yield return new UpdateErrorStatusData(
+						_jobHistoryErrorManager.JobHistoryErrorItemStart,
+						ErrorStatusChoices.JobHistoryErrorInProgressGuid);
+					yield return new UpdateErrorStatusData(
+						_jobHistoryErrorManager.JobHistoryErrorItemStartExcluded,
+						ErrorStatusChoices.JobHistoryErrorExpiredGuid);
+					break;
+			}
+		}
+
+		private IEnumerable<UpdateErrorStatusData> GetUpdateStatusDataForRetryErrorsJobComplete(IJobHistoryErrorRepository jobHistoryErrorRepository)
+		{
+			if (_jobStopManager.IsStopRequested())
+			{
+				yield return new UpdateErrorStatusData(
+					_jobHistoryErrorManager.JobHistoryErrorItemComplete,
+					ErrorStatusChoices.JobHistoryErrorExpiredGuid);
+			}
+			else if (_updateStatusType.ErrorTypes == JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly)
+			{
+				yield return new UpdateErrorStatusData(
+					_jobHistoryErrorManager.JobHistoryErrorItemComplete,
+					ErrorStatusChoices.JobHistoryErrorRetriedGuid);
+			}
+			else if (_updateStatusType.ErrorTypes == JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobOnly ||
+					_updateStatusType.ErrorTypes == JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobAndItem)
+			{
+				yield return new UpdateErrorStatusData(
+					_jobHistoryErrorManager.JobHistoryErrorJobComplete,
+					ErrorStatusChoices.JobHistoryErrorRetriedGuid);
 			}
 		}
 
 		private void UpdateStatuses(
-			IScratchTableRepository scratchTable,
-			IMassUpdateRepository massUpdateRepository,
-			Guid errorStatusChoiceValueGuid)
+			IEnumerable<UpdateErrorStatusData> updateErrorStatusesData,
+			IRepositoryWithMassUpdate repositoryWithMassUpdate)
 		{
-			TryUpdateStatusesAsync(
-					scratchTable,
-					massUpdateRepository,
-					errorStatusChoiceValueGuid)
-				.GetAwaiter()
-				.GetResult();
+			foreach (UpdateErrorStatusData updateErrorStatusData in updateErrorStatusesData)
+			{
+				UpdateStatusesAsync(
+						updateErrorStatusData.ScratchTableRepository,
+						repositoryWithMassUpdate,
+						updateErrorStatusData.ErrorStatusValue)
+					.GetAwaiter()
+					.GetResult();
+			}
 		}
 
-		private async Task TryUpdateStatusesAsync(
+		private async Task UpdateStatusesAsync(
 			IScratchTableRepository scratchTable,
-			IMassUpdateRepository massUpdateRepository,
+			IRepositoryWithMassUpdate massUpdateRepository,
 			Guid errorStatusChoiceValueGuid)
 		{
 			try
@@ -177,19 +230,37 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			}
 		}
 
-		private IntegrationPointsException LogJobCompleteSaveJobHistoryException(Job job, Exception exception)
+		private IntegrationPointsException GetAndLogJobCompleteSaveJobHistoryException(Job job, Exception exception)
 		{
 			string message = "Error while updating Job History after job completion. Cannot perform save history information on job";
-			_logger.LogError("Error while updating Job History after job completion. Cannot perform save history information on job: {@job}.", job);
+			return GetAndLogException(job, exception, message);
+		}
+
+		private IntegrationPointsException GetAndLogJobStartSaveJobHistoryException(Job job, Exception exception)
+		{
+			string message = "Error while updating Job History before job start. Cannot perform save history information on job.";
+			return GetAndLogException(job, exception, message);
+		}
+
+		private IntegrationPointsException GetAndLogException(
+			Job job,
+			Exception exception,
+			string message)
+		{
+			_logger.LogError($"{message}: {{@job}}.", job);
 			return new IntegrationPointsException(message, exception);
 		}
 
-
-		private IntegrationPointsException LogJobStartSaveJobHistoryException(Job job, Exception exception)
+		private struct UpdateErrorStatusData
 		{
-			string message = "Error while updating Job History before job start. Cannot perform save history information on job.";
-			_logger.LogError("Error while updating Job History before job start. Cannot perform save history information on job: {@job}.", job);
-			return new IntegrationPointsException(message, exception);
+			public IScratchTableRepository ScratchTableRepository { get; }
+			public Guid ErrorStatusValue { get; }
+
+			public UpdateErrorStatusData(IScratchTableRepository scratchTableRepository, Guid errorStatusValue)
+			{
+				ScratchTableRepository = scratchTableRepository;
+				ErrorStatusValue = errorStatusValue;
+			}
 		}
 	}
 }

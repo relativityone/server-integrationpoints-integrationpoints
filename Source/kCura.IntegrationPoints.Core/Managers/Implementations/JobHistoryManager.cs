@@ -109,9 +109,17 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 		#region Logging
 
-		private void LogSettingErrorStatusError(int workspaceArtifactID, int jobHistoryArtifactID, JobHistoryErrorDTO.Choices.ErrorType.Values errorType, Exception e)
+		private void LogSettingErrorStatusError(
+			int workspaceArtifactID,
+			int jobHistoryArtifactID,
+			JobHistoryErrorDTO.Choices.ErrorType.Values errorType,
+			Exception exception)
 		{
-			_logger.LogError(e, "Failed to set error status ({ErrorType}) for JobHistory {JobHistoryId} in Workspace {WorkspaceId}.", errorType, jobHistoryArtifactID,
+			_logger.LogError(
+				exception,
+				"Failed to set error status ({ErrorType}) for JobHistory {JobHistoryId} in Workspace {WorkspaceId}.",
+				errorType,
+				jobHistoryArtifactID,
 				workspaceArtifactID);
 		}
 

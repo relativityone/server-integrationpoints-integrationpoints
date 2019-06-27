@@ -1,4 +1,6 @@
-﻿namespace kCura.IntegrationPoints.Core.Managers
+﻿using System.Threading.Tasks;
+
+namespace kCura.IntegrationPoints.Core.Managers
 {
 	public interface IJobHistoryManager
 	{
@@ -24,5 +26,12 @@
 		/// <param name="workspaceArtifactID">The workspace artifact ID.</param>
 		/// <param name="jobHistoryArtifactID">An artifact ID of the job history</param>
 		void SetErrorStatusesToExpired(int workspaceArtifactID, int jobHistoryArtifactID);
+
+		/// <summary>
+		/// Set all associate job history errors to be expired
+		/// </summary>
+		/// <param name="workspaceArtifactID">The workspace artifact ID.</param>
+		/// <param name="jobHistoryArtifactID">An artifact ID of the job history</param>
+		Task SetErrorStatusesToExpiredAsync(int workspaceArtifactID, int jobHistoryArtifactID);
 	}
 }

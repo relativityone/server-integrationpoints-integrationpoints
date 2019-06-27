@@ -10,11 +10,11 @@ namespace kCura.IntegrationPoints.Data.Helpers
 		Task UpdateArtifactsAsync(
 			ICollection<int> artifactsToUpdate,
 			FieldUpdateRequestDto[] fieldsToUpdate,
-			IMassUpdateRepository massUpdateRepository);
+			IRepositoryWithMassUpdate repositoryWithMassUpdate);
 
 		Task UpdateArtifactsAsync(
 			IScratchTableRepository artifactsToUpdateRepository,
 			FieldUpdateRequestDto[] fieldsToUpdate,
-			IMassUpdateRepository massUpdateRepository);
+			IRepositoryWithMassUpdate repositoryWithMassUpdate);
 	}
 }

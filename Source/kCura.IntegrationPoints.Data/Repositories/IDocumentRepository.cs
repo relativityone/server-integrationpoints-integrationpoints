@@ -7,7 +7,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
 	/// <summary>
 	/// Responsible for handling Documents
 	/// </summary>
-	public interface IDocumentRepository : IMassUpdateRepository
+	public interface IDocumentRepository : IRepositoryWithMassUpdate
 	{
 		/// <summary>
 		/// Retrieves multiple documents

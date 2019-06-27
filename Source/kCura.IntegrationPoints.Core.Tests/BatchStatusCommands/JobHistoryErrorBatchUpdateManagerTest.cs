@@ -342,7 +342,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 				x => x.UpdateArtifactsAsync(
 					It.IsAny<IScratchTableRepository>(),
 					It.IsAny<FieldUpdateRequestDto[]>(),
-					It.IsAny<IMassUpdateRepository>()),
+					It.IsAny<IRepositoryWithMassUpdate>()),
 				Times.Never);
 		}
 
@@ -362,8 +362,8 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 		private bool ValidateErrorStatusFieldValue(FieldUpdateRequestDto[] fields, Guid expectedChoiceValue)
 		{
 			FieldUpdateRequestDto errorStatusField = fields.SingleOrDefault(x => x.FieldIdentifier == JobHistoryErrorFieldGuids.ErrorStatusGuid);
-			return errorStatusField.NewValue is SingleChoiceReferenceDto signleChoiceReference &&
-				   signleChoiceReference.ChoiceValueGuid == expectedChoiceValue;
+			return errorStatusField.NewValue is SingleChoiceReferenceDto signleChoiceReference
+				   && signleChoiceReference.ChoiceValueGuid == expectedChoiceValue;
 		}
 	}
 }

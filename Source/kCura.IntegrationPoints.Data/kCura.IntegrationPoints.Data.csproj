@@ -144,7 +144,7 @@
     <Compile Include="Repositories\IFileRepository.cs" />
     <Compile Include="Repositories\IFoundationRepositoryFactory.cs" />
     <Compile Include="Repositories\Implementations\SecretsRepository.cs" />
-    <Compile Include="Repositories\IMassUpdateRepository.cs" />
+    <Compile Include="Repositories\IRepositoryWithMassUpdate.cs" />
     <Compile Include="Repositories\IRepository.cs" />
     <Compile Include="Repositories\IIntegrationPointRepository.cs" />
     <Compile Include="Repositories\Implementations\AuditRepository.cs" />

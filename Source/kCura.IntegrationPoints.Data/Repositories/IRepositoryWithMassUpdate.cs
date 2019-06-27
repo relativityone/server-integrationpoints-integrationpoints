@@ -4,7 +4,7 @@ using kCura.IntegrationPoints.Data.Repositories.DTO;
 
 namespace kCura.IntegrationPoints.Data.Repositories
 {
-	public interface IMassUpdateRepository // TODO this name is a bit misleading
+	public interface IRepositoryWithMassUpdate
 	{
 		/// <summary>
 		/// Updates given fields for given artifacts. For multi objects field merge option is used

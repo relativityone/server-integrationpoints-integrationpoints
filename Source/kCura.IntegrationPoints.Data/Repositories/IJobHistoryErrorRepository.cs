@@ -3,7 +3,7 @@ using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Data.Repositories
 {
-	public interface IJobHistoryErrorRepository : IMassUpdateRepository
+	public interface IJobHistoryErrorRepository : IRepositoryWithMassUpdate
 	{
 		/// <summary>
 		/// Retrieves the Job History Errors for the given Job History Artifact Id

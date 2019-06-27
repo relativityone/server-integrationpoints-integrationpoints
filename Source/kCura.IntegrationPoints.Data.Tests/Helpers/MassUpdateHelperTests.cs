@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 
 		private Mock<IConfig> _configMock;
 		private Mock<IAPILog> _loggerMock;
-		private Mock<IMassUpdateRepository> _massUpdateRepositoryMock;
+		private Mock<IRepositoryWithMassUpdate> _massUpdateRepositoryMock;
 		private Mock<IScratchTableRepository> _scratchTableRepositoryMock;
 
 		private const int _DEFAULT_BATCH_SIZE = 100;
@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 				DefaultValue = DefaultValue.Mock
 			};
 
-			_massUpdateRepositoryMock = new Mock<IMassUpdateRepository>();
+			_massUpdateRepositoryMock = new Mock<IRepositoryWithMassUpdate>();
 			SetupMassUpdateResult(true);
 
 			_scratchTableRepositoryMock = new Mock<IScratchTableRepository>();
@@ -54,8 +54,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 		{
 			// act
 			Action constructor = () => new MassUpdateHelper(
-				null,
-				_loggerMock.Object);
+				config: null,
+				logger: _loggerMock.Object);
 
 			// assert
 			constructor.ShouldThrow<ArgumentNullException>();
@@ -67,7 +67,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 			// act
 			Action constructor = () => new MassUpdateHelper(
 				_configMock.Object,
-				null);
+				logger: null);
 
 			// assert
 			constructor.ShouldNotThrow<Exception>();
@@ -78,7 +78,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 		{
 			// act
 			Func<Task> updateArtifactsFromScratchTableAction = () => _sut.UpdateArtifactsAsync(
-					(IScratchTableRepository) null,
+					(IScratchTableRepository)null,
 					new FieldUpdateRequestDto[0],
 					_massUpdateRepositoryMock.Object);
 
@@ -163,22 +163,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 		[TestCase(3, 3)]
 		[TestCase(3, 0)]
 		[TestCase(5, 18)]
-		public async Task UpdateArtifactsFromScratchTableAsync_ShouldUpdateDocumentsInBatches(int batchSize, int numberOfDocuments)
+		public async Task UpdateArtifactsFromScratchTableAsync_ShouldUpdateDocumentsInBatches(int batchSize, int numberOfArtifacts)
 		{
 			// arrange
 			SetupBatchSize(batchSize);
-			SetupNumberOfArtifacts(numberOfDocuments);
-
-			var artifactIDsBatches = new List<List<int>>();
-			for (int offset = 0; offset < numberOfDocuments; offset += batchSize)
-			{
-				List<int> artifactsIDsBatch = Enumerable.Range(0, batchSize).ToList();
-				artifactIDsBatches.Add(artifactsIDsBatch);
-
-				_scratchTableRepositoryMock
-					.Setup(x => x.ReadArtifactIDs(0, batchSize))
-					.Returns(artifactsIDsBatch);
-			}
+			SetupNumberOfArtifacts(numberOfArtifacts);
+			List<List<int>> artifactIDsBatches = SetupAndGetScratchTableArtifactsBatches(
+				numberOfArtifacts,
+				batchSize);
 
 			Guid fieldGuid = Guid.NewGuid();
 			int singleObjectArtifactID = 2312;
@@ -215,17 +207,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 
 			SetupBatchSize(batchSize);
 			SetupNumberOfArtifacts(numberOfArtifacts);
-
-			var artifactsIDsBatches = new List<List<int>>();
-			for (int offset = 0; offset < numberOfArtifacts; offset += batchSize)
-			{
-				List<int> artifactsIDsBatch = Enumerable.Range(0, batchSize).ToList();
-				artifactsIDsBatches.Add(artifactsIDsBatch);
-
-				_scratchTableRepositoryMock
-					.Setup(x => x.ReadArtifactIDs(0, batchSize))
-					.Returns(artifactsIDsBatch);
-			}
+			List<List<int>> artifactsIDsBatches = SetupAndGetScratchTableArtifactsBatches(
+				numberOfArtifacts,
+				batchSize);
 
 			for (int batchNumber = 0; batchNumber < artifactsIDsBatches.Count; batchNumber++)
 			{
@@ -258,7 +242,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 			// arrange
 			var sut = new MassUpdateHelper(
 				_configMock.Object,
-				null);
+				logger: null);
 
 			// act
 			Func<Task> updateAction = () => sut.UpdateArtifactsAsync(
@@ -284,13 +268,29 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 				.Returns(batchSize);
 		}
 
+		private List<List<int>> SetupAndGetScratchTableArtifactsBatches(int numberOfArtifacts, int batchSize)
+		{
+			var artifactIDsBatches = new List<List<int>>();
+			for (int offset = 0; offset < numberOfArtifacts; offset += batchSize)
+			{
+				List<int> artifactsIDsBatch = Enumerable.Range(0, batchSize).ToList();
+				artifactIDsBatches.Add(artifactsIDsBatch);
+
+				_scratchTableRepositoryMock
+					.Setup(x => x.ReadArtifactIDs(0, batchSize))
+					.Returns(artifactsIDsBatch);
+			}
+
+			return artifactIDsBatches;
+		}
+
 		private void SetupMassUpdateResult(bool massUpdateResult)
 		{
 			_massUpdateRepositoryMock
 				.Setup(x => x.MassUpdateAsync(
 					It.IsAny<IEnumerable<int>>(),
 					It.IsAny<IEnumerable<FieldUpdateRequestDto>>())
-				).Returns(Task.FromResult(massUpdateResult));
+				).ReturnsAsync(massUpdateResult);
 		}
 
 		private void SetupMassUpdateResult(IEnumerable<int> objectIDs, bool massUpdateResult)
@@ -299,7 +299,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 				.Setup(x => x.MassUpdateAsync(
 					objectIDs,
 					It.IsAny<IEnumerable<FieldUpdateRequestDto>>())
-				).Returns(Task.FromResult(massUpdateResult));
+				).ReturnsAsync(massUpdateResult);
 		}
 
 		private static bool ValidateFieldUpdateRequestContainArtifactID(
@@ -307,8 +307,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 			Guid fieldGuid,
 			int expectedArtifactID)
 		{
-			FieldUpdateRequestDto fieldUpdateRequest = requests.Single(x =>
-				x.FieldIdentifier == fieldGuid);
+			FieldUpdateRequestDto fieldUpdateRequest = requests
+				.Single(x => x.FieldIdentifier == fieldGuid);
 			var multiObjectReference = fieldUpdateRequest.NewValue as MultiObjectReferenceDto;
 			return multiObjectReference?.ObjectReferences.SequenceEqual(new[] { expectedArtifactID }) ?? false;
 		}

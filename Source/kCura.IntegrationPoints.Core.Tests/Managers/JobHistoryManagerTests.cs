@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Managers;
@@ -14,7 +13,6 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.DTO;
 using kCura.IntegrationPoints.Domain.Models;
 using Moq;
-using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
 
@@ -25,11 +23,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 	{
 		private IJobHistoryManager _sut;
 
-		private IRepositoryFactory _repositoryFactory;
-		private IJobHistoryRepository _jobHistoryRepository;
-		private IObjectTypeRepository _objectTypeRepo;
-		private IArtifactGuidRepository _artifactGuidRepo;
-		private IJobHistoryErrorRepository _jobHistoryErrorRepo;
+		private Mock<IRepositoryFactory> _repositoryFactoryMock;
+		private Mock<IJobHistoryRepository> _jobHistoryRepositoryMock;
+		private Mock<IObjectTypeRepository> _objectTypeRepoMock;
+		private Mock<IArtifactGuidRepository> _artifactGuidRepoMock;
+		private Mock<IJobHistoryErrorRepository> _jobHistoryErrorRepoMock;
 		private Mock<IMassUpdateHelper> _massUpdateHelperMock;
 
 		private const int _WORKSPACE_ID = 100532;
@@ -37,23 +35,30 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		[SetUp]
 		public override void SetUp()
 		{
-			_repositoryFactory = Substitute.For<IRepositoryFactory>();
-			_jobHistoryRepository = Substitute.For<IJobHistoryRepository>();
-			_objectTypeRepo = Substitute.For<IObjectTypeRepository>();
-			_artifactGuidRepo = Substitute.For<IArtifactGuidRepository>();
-			_jobHistoryErrorRepo = Substitute.For<IJobHistoryErrorRepository>();
+			_repositoryFactoryMock = new Mock<IRepositoryFactory>();
+			_jobHistoryRepositoryMock = new Mock<IJobHistoryRepository>();
+			_objectTypeRepoMock = new Mock<IObjectTypeRepository>();
+			_artifactGuidRepoMock = new Mock<IArtifactGuidRepository>();
+			_jobHistoryErrorRepoMock = new Mock<IJobHistoryErrorRepository>();
 			_massUpdateHelperMock = new Mock<IMassUpdateHelper>();
 			_massUpdateHelperMock.Setup(x => x.UpdateArtifactsAsync(
 				It.IsAny<ICollection<int>>(),
 				It.IsAny<FieldUpdateRequestDto[]>(),
-				It.IsAny<IMassUpdateRepository>())
+				It.IsAny<IRepositoryWithMassUpdate>())
 			).Returns(Task.CompletedTask);
 
-			IAPILog logger = Substitute.For<IAPILog>();
-			_sut = new JobHistoryManager(_repositoryFactory, logger, _massUpdateHelperMock.Object);
+			var loggerMock = new Mock<IAPILog>
+			{
+				DefaultValue = DefaultValue.Mock
+			};
+			_sut = new JobHistoryManager(_repositoryFactoryMock.Object, loggerMock.Object, _massUpdateHelperMock.Object);
 
-			_repositoryFactory.GetJobHistoryRepository(_WORKSPACE_ID).Returns(_jobHistoryRepository);
-			_repositoryFactory.GetJobHistoryErrorRepository(_WORKSPACE_ID).Returns(_jobHistoryErrorRepo);
+			_repositoryFactoryMock
+				.Setup(x => x.GetJobHistoryRepository(_WORKSPACE_ID))
+				.Returns(_jobHistoryRepositoryMock.Object);
+			_repositoryFactoryMock
+				.Setup(x => x.GetJobHistoryErrorRepository(_WORKSPACE_ID))
+				.Returns(_jobHistoryErrorRepoMock.Object);
 		}
 
 		[Test]
@@ -62,7 +67,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			// ARRANGE
 			int integrationPointArtifactId = 1322131;
 			int expectedLastTwoJobHistoryIds = 234242;
-			_jobHistoryRepository.GetLastJobHistoryArtifactId(integrationPointArtifactId).Returns(expectedLastTwoJobHistoryIds);
+			_jobHistoryRepositoryMock
+				.Setup(x => x.GetLastJobHistoryArtifactId(integrationPointArtifactId))
+				.Returns(expectedLastTwoJobHistoryIds);
 
 			// ACT
 			int result = _sut.GetLastJobHistoryArtifactId(_WORKSPACE_ID, integrationPointArtifactId);
@@ -84,7 +91,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 				{JobStatusChoices.JobHistoryProcessing.Guids.First(), processingJobHistoryIDs},
 			};
 
-			_jobHistoryRepository.GetStoppableJobHistoryArtifactIdsByStatus(integrationPointArtifactId).Returns(artifactIdsByStatus);
+			_jobHistoryRepositoryMock
+				.Setup(x => x.GetStoppableJobHistoryArtifactIdsByStatus(integrationPointArtifactId))
+				.Returns(artifactIdsByStatus);
 
 			// ACT
 			StoppableJobCollection result = _sut.GetStoppableJobCollection(_WORKSPACE_ID, integrationPointArtifactId);
@@ -105,7 +114,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			{
 			};
 
-			_jobHistoryRepository.GetStoppableJobHistoryArtifactIdsByStatus(integrationPointArtifactId).Returns(artifactIdsByStatus);
+			_jobHistoryRepositoryMock
+				.Setup(x => x.GetStoppableJobHistoryArtifactIdsByStatus(integrationPointArtifactId))
+				.Returns(artifactIdsByStatus);
 
 			// ACT
 			StoppableJobCollection result = _sut.GetStoppableJobCollection(_WORKSPACE_ID, integrationPointArtifactId);
@@ -130,17 +141,25 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			{
 				{ErrorStatusChoices.JobHistoryErrorExpiredGuid, errorChoiceArtifactId}
 			};
-			_repositoryFactory.GetObjectTypeRepository(_WORKSPACE_ID).Returns(_objectTypeRepo);
-			_repositoryFactory.GetArtifactGuidRepository(_WORKSPACE_ID).Returns(_artifactGuidRepo);
+			_repositoryFactoryMock
+				.Setup(x => x.GetObjectTypeRepository(_WORKSPACE_ID))
+				.Returns(_objectTypeRepoMock.Object);
+			_repositoryFactoryMock
+				.Setup(x => x.GetArtifactGuidRepository(_WORKSPACE_ID))
+				.Returns(_artifactGuidRepoMock.Object);
 
-			_objectTypeRepo.RetrieveObjectTypeDescriptorArtifactTypeId(ObjectTypeGuids.JobHistoryErrorGuid)
+			_objectTypeRepoMock
+				.Setup(x => x.RetrieveObjectTypeDescriptorArtifactTypeId(ObjectTypeGuids.JobHistoryErrorGuid))
 				.Returns(jobHistoryTypeId);
-			_artifactGuidRepo.GetArtifactIdsForGuids(new[] { ErrorStatusChoices.JobHistoryErrorExpiredGuid })
+			_artifactGuidRepoMock
+				.Setup(x => x.GetArtifactIdsForGuids(new[] { ErrorStatusChoices.JobHistoryErrorExpiredGuid }))
 				.Returns(guids);
 
-			_jobHistoryErrorRepo.RetrieveJobHistoryErrorArtifactIds(jobHistoryTypeId, JobHistoryErrorDTO.Choices.ErrorType.Values.Item)
+			_jobHistoryErrorRepoMock
+				.Setup(x => x.RetrieveJobHistoryErrorArtifactIds(jobHistoryTypeId, JobHistoryErrorDTO.Choices.ErrorType.Values.Item))
 				.Returns(itemLevelErrors);
-			_jobHistoryErrorRepo.RetrieveJobHistoryErrorArtifactIds(jobHistoryTypeId, JobHistoryErrorDTO.Choices.ErrorType.Values.Job)
+			_jobHistoryErrorRepoMock
+				.Setup(x => x.RetrieveJobHistoryErrorArtifactIds(jobHistoryTypeId, JobHistoryErrorDTO.Choices.ErrorType.Values.Job))
 				.Returns(jobLevelErrors);
 
 			// ACT
@@ -151,13 +170,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 				x => x.UpdateArtifactsAsync(
 					itemLevelErrors,
 					It.Is<FieldUpdateRequestDto[]>(fields => ValidateErrorStatusField(fields, ErrorStatusChoices.JobHistoryErrorExpiredGuid)),
-					_jobHistoryErrorRepo)
+					_jobHistoryErrorRepoMock.Object)
 				);
 			_massUpdateHelperMock.Verify(
 				x => x.UpdateArtifactsAsync(
 					jobLevelErrors,
 					It.Is<FieldUpdateRequestDto[]>(fields => ValidateErrorStatusField(fields, ErrorStatusChoices.JobHistoryErrorExpiredGuid)),
-					_jobHistoryErrorRepo)
+					_jobHistoryErrorRepoMock.Object)
 				);
 		}
 
@@ -173,19 +192,31 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			{
 				{ErrorStatusChoices.JobHistoryErrorExpired.Guids[0], errorChoiceArtifactId}
 			};
-			_repositoryFactory.GetObjectTypeRepository(_WORKSPACE_ID).Returns(_objectTypeRepo);
-			_repositoryFactory.GetArtifactGuidRepository(_WORKSPACE_ID).Returns(_artifactGuidRepo);
+			_repositoryFactoryMock
+				.Setup(x => x.GetObjectTypeRepository(_WORKSPACE_ID))
+				.Returns(_objectTypeRepoMock.Object);
+			_repositoryFactoryMock
+				.Setup(x => x.GetArtifactGuidRepository(_WORKSPACE_ID))
+				.Returns(_artifactGuidRepoMock.Object);
 
-			_objectTypeRepo.RetrieveObjectTypeDescriptorArtifactTypeId(Arg.Is<Guid>(guid => guid.Equals(new Guid(ObjectTypeGuids.JobHistoryError)))).Returns(jobHistoryTypeId);
-			_artifactGuidRepo.GetArtifactIdsForGuids(ErrorStatusChoices.JobHistoryErrorExpired.Guids).Returns(guids);
+			_objectTypeRepoMock
+				.Setup(x => x.RetrieveObjectTypeDescriptorArtifactTypeId(ObjectTypeGuids.JobHistoryErrorGuid))
+				.Returns(jobHistoryTypeId);
+			_artifactGuidRepoMock
+				.Setup(x => x.GetArtifactIdsForGuids(ErrorStatusChoices.JobHistoryErrorExpired.Guids))
+				.Returns(guids);
 
-			_jobHistoryErrorRepo.RetrieveJobHistoryErrorArtifactIds(jobHistoryTypeId, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(itemLevelErrors);
-			_jobHistoryErrorRepo.RetrieveJobHistoryErrorArtifactIds(jobHistoryTypeId, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).Returns(new int[] { });
+			_jobHistoryErrorRepoMock
+				.Setup(x => x.RetrieveJobHistoryErrorArtifactIds(jobHistoryTypeId, JobHistoryErrorDTO.Choices.ErrorType.Values.Item))
+				.Returns(itemLevelErrors);
+			_jobHistoryErrorRepoMock
+				.Setup(x => x.RetrieveJobHistoryErrorArtifactIds(jobHistoryTypeId, JobHistoryErrorDTO.Choices.ErrorType.Values.Job))
+				.Returns(new int[] { });
 
 			_massUpdateHelperMock.Setup(x => x.UpdateArtifactsAsync(
 					It.IsAny<ICollection<int>>(),
 					It.IsAny<FieldUpdateRequestDto[]>(),
-					It.IsAny<IMassUpdateRepository>()))
+					It.IsAny<IRepositoryWithMassUpdate>()))
 				.Throws<Exception>();
 
 			// ACT

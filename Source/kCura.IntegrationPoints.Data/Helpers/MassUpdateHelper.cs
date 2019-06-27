@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Data.Helpers
 		public Task UpdateArtifactsAsync(
 			IScratchTableRepository artifactsToUpdateRepository,
 			FieldUpdateRequestDto[] fieldsToUpdate,
-			IMassUpdateRepository massUpdateRepository)
+			IRepositoryWithMassUpdate repositoryWithMassUpdate)
 		{
 			if (artifactsToUpdateRepository == null)
 			{
@@ -35,13 +35,13 @@ namespace kCura.IntegrationPoints.Data.Helpers
 			return UpdateArtifactsAsync(
 				sourceArtifactsReader,
 				fieldsToUpdate,
-				massUpdateRepository);
+				repositoryWithMassUpdate);
 		}
 
 		public Task UpdateArtifactsAsync(
 			ICollection<int> artifactsToUpdate,
 			FieldUpdateRequestDto[] fieldsToUpdate,
-			IMassUpdateRepository massUpdateRepository)
+			IRepositoryWithMassUpdate repositoryWithMassUpdate)
 		{
 			if (artifactsToUpdate == null)
 			{
@@ -52,13 +52,13 @@ namespace kCura.IntegrationPoints.Data.Helpers
 			return UpdateArtifactsAsync(
 				sourceArtifactsReader,
 				fieldsToUpdate,
-				massUpdateRepository);
+				repositoryWithMassUpdate);
 		}
 
 		private async Task UpdateArtifactsAsync(
 			ISourceArtifactsReader sourceArtifactsReader,
 			FieldUpdateRequestDto[] fieldsToUpdate,
-			IMassUpdateRepository massUpdateRepository)
+			IRepositoryWithMassUpdate repositoryWithMassUpdate)
 		{
 			int numberOfArtifactsToUpdate = sourceArtifactsReader.GetCount();
 			if (numberOfArtifactsToUpdate <= 0)
@@ -78,7 +78,7 @@ namespace kCura.IntegrationPoints.Data.Helpers
 						batchSize,
 						processedCount,
 						fieldsToUpdate,
-						massUpdateRepository)
+						repositoryWithMassUpdate)
 					.ConfigureAwait(false);
 			}
 		}
@@ -88,12 +88,12 @@ namespace kCura.IntegrationPoints.Data.Helpers
 			int batchSize,
 			int documentsOffset,
 			IEnumerable<FieldUpdateRequestDto> fieldsToUpdate,
-			IMassUpdateRepository massUpdateRepository)
+			IRepositoryWithMassUpdate repositoryWithMassUpdate)
 		{
 			try
 			{
 				IEnumerable<int> currentBatch = sourceArtifactsReader.ReadArtifactIDs(documentsOffset, batchSize);
-				await MassUpdateArtifactsAsync(fieldsToUpdate, currentBatch, massUpdateRepository)
+				await MassUpdateArtifactsAsync(fieldsToUpdate, currentBatch, repositoryWithMassUpdate)
 					.ConfigureAwait(false);
 			}
 			catch (IntegrationPointsException ex)
@@ -108,12 +108,12 @@ namespace kCura.IntegrationPoints.Data.Helpers
 		private static async Task MassUpdateArtifactsAsync(
 			IEnumerable<FieldUpdateRequestDto> fieldsToUpdate,
 			IEnumerable<int> currentBatch,
-			IMassUpdateRepository massUpdateRepository)
+			IRepositoryWithMassUpdate repositoryWithMassUpdate)
 		{
 			bool isUpdated;
 			try
 			{
-				isUpdated = await massUpdateRepository
+				isUpdated = await repositoryWithMassUpdate
 					.MassUpdateAsync(currentBatch, fieldsToUpdate)
 					.ConfigureAwait(false);
 			}
@@ -125,15 +125,9 @@ namespace kCura.IntegrationPoints.Data.Helpers
 				};
 			}
 
-			if (!isUpdated)
-			{
-				throw new IntegrationPointsException(MassEditErrors.OBJECT_MANAGER_ERROR)
-				{
-					ExceptionSource = IntegrationPointsExceptionSource.KEPLER
-				};
-			}
+			ThrowIfArtifactsNotUpdated(isUpdated);
 		}
-
+		
 		private int ReadBatchSizeFromConfigAndValidateValue()
 		{
 			int batchSize = _config.MassUpdateBatchSize;
@@ -153,6 +147,17 @@ namespace kCura.IntegrationPoints.Data.Helpers
 			}
 		}
 
+		private static void ThrowIfArtifactsNotUpdated(bool isUpdated)
+		{
+			if (!isUpdated)
+			{
+				throw new IntegrationPointsException(MassEditErrors.OBJECT_MANAGER_ERROR)
+				{
+					ExceptionSource = IntegrationPointsExceptionSource.KEPLER
+				};
+			}
+		}
+
 		private void LogNoArtifactsToUpdate()
 		{
 			_logger?.LogInformation("Skipping mass update - no artifacts to edit.");
@@ -165,7 +170,7 @@ namespace kCura.IntegrationPoints.Data.Helpers
 				batchSize,
 				numberOfDocuments);
 		}
-
+		
 		private interface ISourceArtifactsReader
 		{
 			int GetCount();
