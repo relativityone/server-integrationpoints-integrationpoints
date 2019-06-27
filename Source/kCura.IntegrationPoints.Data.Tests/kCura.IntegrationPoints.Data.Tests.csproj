@@ -49,14 +49,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BCrypt.Net, Version=0.1.5073.29922, Culture=neutral, PublicKeyToken=6bcd409ee6bc9292, processorArchitecture=MSIL">
-      <HintPath>..\packages\BCrypt-Official.0.1.109\lib\BCrypt.Net.dll</HintPath>
-    </Reference>
-    <Reference Include="kCura, Version=10.3.5.3, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCura.10.3.5.3\lib\net462\kCura.dll</HintPath>
-    </Reference>
-    <Reference Include="kCura.Injection, Version=1.0.8.0, Culture=neutral, PublicKeyToken=318fc9f898ce154d, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCura.Injection.10.3.5.3\lib\net462\kCura.Injection.dll</HintPath>
+    <Reference Include="kCura, Version=10.1.33.3, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\kCura\lib\net462\kCura.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Core, Version=10.0.85.14, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -188,7 +183,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="oi\unmanaged\cmmap000.bin" />
-    <None Include="packages.config" />
     <None Include="paket.references" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
@@ -197,35 +191,6 @@
     </PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\..\.paket\paket.targets" />
-  <ItemGroup>
-    <Content Include="LICENSE.txt" />
-    <Content Include="oi\docs\fileids_values_only_sorted.txt" />
-    <Content Include="oi\docs\fileids_values_strs.txt" />
-    <Content Include="oi\unmanaged\oilink.exe" />
-    <Content Include="oi\unmanaged\oilink.jar" />
-    <Content Include="oi\unmanaged\sccca-R1.dll" />
-    <Content Include="oi\unmanaged\sccch-R1.dll" />
-    <Content Include="oi\unmanaged\sccda-R1.dll" />
-    <Content Include="oi\unmanaged\sccex-R1.dll" />
-    <Content Include="oi\unmanaged\sccfa-R1.dll" />
-    <Content Include="oi\unmanaged\sccfi-R1.dll" />
-    <Content Include="oi\unmanaged\sccfmt-R1.dll" />
-    <Content Include="oi\unmanaged\sccfnt-R1.dll" />
-    <Content Include="oi\unmanaged\sccfut-R1.dll" />
-    <Content Include="oi\unmanaged\sccind-R1.dll" />
-    <Content Include="oi\unmanaged\scclo-R1.dll" />
-    <Content Include="oi\unmanaged\sccut-R1.dll" />
-    <Content Include="oi\unmanaged\wvcore-R1.dll" />
-  </ItemGroup>
-  <Import Project="..\packages\kCura.10.3.5.3\build\kCura.targets" Condition="Exists('..\packages\kCura.10.3.5.3\build\kCura.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\kCura.10.3.5.3\build\kCura.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\kCura.10.3.5.3\build\kCura.targets'))" />
-    <Error Condition="!Exists('..\packages\kCura.OutsideIn.FI.Win32.2019.3.0\build\kCura.OutsideIn.FI.Win32.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\kCura.OutsideIn.FI.Win32.2019.3.0\build\kCura.OutsideIn.FI.Win32.targets'))" />
-  </Target>
-  <Import Project="..\packages\kCura.OutsideIn.FI.Win32.2019.3.0\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\packages\kCura.OutsideIn.FI.Win32.2019.3.0\build\kCura.OutsideIn.FI.Win32.targets')" />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
