@@ -19,17 +19,16 @@ namespace Relativity.Sync.Tests.Unit
 	[TestFixture]
 	public sealed class ConfigurationTests
 	{
+		private Guid _testFieldGuid;
+		private ISyncLog _syncLog;
 		private Mock<IObjectManager> _objectManager;
 		private Mock<ISemaphoreSlim> _semaphoreSlim;
 		private Mock<ISourceServiceFactoryForAdmin> _sourceServiceFactoryForAdmin;
-
-		private Guid _testFieldGuid;
 		private SyncJobParameters _syncJobParameters;
-		private ISyncLog _syncLog;
 
+		private const int _TEST_CONFIG_ARTIFACT_ID = 123;
 		private const int _TEST_FIELD_VALUE = 100;
 		private const int _TEST_WORKSPACE_ID = 789;
-		private const int _TEST_CONFIG_ARTIFACT_ID = 123;
 
 		private static readonly Guid ConfigurationObjectTypeGuid = new Guid("3BE3DE56-839F-4F0E-8446-E1691ED5FD57");
 

@@ -36,7 +36,8 @@ namespace Relativity.Sync
 		/// <summary>
 		/// Constructor for testing only
 		/// </summary>
-		internal SyncJobParameters(int jobId, int workspaceId, ImportSettingsDto importSettings) : this(jobId, workspaceId, int.MaxValue, Guid.NewGuid().ToString(), importSettings)
+		internal SyncJobParameters(int jobId, int workspaceId, ImportSettingsDto importSettings) : 
+			this(jobId, workspaceId, int.MaxValue, Guid.NewGuid().ToString(), importSettings)
 		{
 		}
 

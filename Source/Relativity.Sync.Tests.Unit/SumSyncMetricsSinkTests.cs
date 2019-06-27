@@ -3,6 +3,7 @@ using kCura.Vendor.Castle.Core.Internal;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.Telemetry;
 using Relativity.Telemetry.Services.Metrics;
 
@@ -14,6 +15,9 @@ namespace Relativity.Sync.Tests.Unit
 		private Mock<ISyncLog> _logger;
 		private Mock<IMetricsManager> _metricsManager;
 		private Mock<IServicesMgr> _servicesManager;
+		private Mock<IWorkspaceGuidService> _workspaceGuidService;
+		private SyncJobParameters _syncJobParameters;
+		private Guid _workspaceGuid;
 		private Metric[] _expectedMetrics;
 
 		private const int _GAUGE_VALUE = 123;
@@ -43,6 +47,10 @@ namespace Relativity.Sync.Tests.Unit
 			_logger = new Mock<ISyncLog>();
 			_metricsManager = new Mock<IMetricsManager>();
 			_servicesManager = new Mock<IServicesMgr>();
+			_workspaceGuidService = new Mock<IWorkspaceGuidService>();
+			_workspaceGuid = Guid.NewGuid();
+			_workspaceGuidService.Setup(x => x.GetWorkspaceGuidAsync(It.IsAny<int>())).ReturnsAsync(_workspaceGuid);
+			_syncJobParameters = new SyncJobParameters(0, 0, new ImportSettingsDto());
 
 			_servicesManager.Setup(x => x.CreateProxy<IMetricsManager>(It.IsAny<ExecutionIdentity>()))
 				.Returns(_metricsManager.Object);
@@ -50,7 +58,7 @@ namespace Relativity.Sync.Tests.Unit
 
 		private SumSyncMetricsSink CreateInstance()
 		{
-			return new SumSyncMetricsSink(_servicesManager.Object, _logger.Object);
+			return new SumSyncMetricsSink(_servicesManager.Object, _logger.Object, _workspaceGuidService.Object, _syncJobParameters);
 		}
 
 		[Test]
@@ -123,42 +131,42 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			_metricsManager.Verify(x => x.LogTimerAsDoubleAsync(
 				It.Is<string>(y => y.Equals("Test1", StringComparison.Ordinal)),
-				It.Is<Guid>(y => y.Equals(Guid.Empty)),
+				It.Is<Guid>(y => y.Equals(_workspaceGuid)),
 				It.Is<string>(y => y.Equals(_CORRELATION_ID, StringComparison.Ordinal)),
 				It.Is<double>(y => y.Equals(_timeSpan.TotalMilliseconds))
 			), times);
 
 			_metricsManager.Verify(x => x.LogCountAsync(
 				It.Is<string>(y => y.Equals("Test2", StringComparison.Ordinal)),
-				It.Is<Guid>(y => y.Equals(Guid.Empty)),
+				It.Is<Guid>(y => y.Equals(_workspaceGuid)),
 				It.Is<string>(y => y.Equals(_CORRELATION_ID, StringComparison.Ordinal)),
 				It.Is<long>(y => y.Equals(1))
 			), times);
 
 			_metricsManager.Verify(x => x.LogGaugeAsync(
 				It.Is<string>(y => y.Equals("Test3", StringComparison.Ordinal)),
-				It.Is<Guid>(y => y.Equals(Guid.Empty)),
+				It.Is<Guid>(y => y.Equals(_workspaceGuid)),
 				It.Is<string>(y => y.Equals(_CORRELATION_ID, StringComparison.Ordinal)),
 				It.Is<long>(y => y.Equals(_GAUGE_VALUE))
 			), times);
 
 			_metricsManager.Verify(x => x.LogPointInTimeStringAsync(
 				It.Is<string>(y => y.Equals("Test.String", StringComparison.Ordinal)),
-				It.Is<Guid>(y => y.Equals(Guid.Empty)),
+				It.Is<Guid>(y => y.Equals(_workspaceGuid)),
 				It.Is<string>(y => y ==  _WORKFLOW_ID),
 				It.Is<string>(y => y == "Sync")
 			), times);
 
 			_metricsManager.Verify(x => x.LogPointInTimeLongAsync(
 				It.Is<string>(y => y.Equals("Test.Long", StringComparison.Ordinal)),
-				It.Is<Guid>(y => y.Equals(Guid.Empty)),
+				It.Is<Guid>(y => y.Equals(_workspaceGuid)),
 				It.Is<string>(y => y == _WORKFLOW_ID),
 				It.Is<long>(y => y == long.MaxValue)
 			), times);
 
 			_metricsManager.Verify(x => x.LogPointInTimeDoubleAsync(
 				It.Is<string>(y => y.Equals("Test.Double", StringComparison.Ordinal)),
-				It.Is<Guid>(y => y.Equals(Guid.Empty)),
+				It.Is<Guid>(y => y.Equals(_workspaceGuid)),
 				It.Is<string>(y => y == _WORKFLOW_ID),
 				It.Is<double>(y => y == double.MaxValue)
 			), times);

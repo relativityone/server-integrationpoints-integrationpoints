@@ -152,8 +152,8 @@ namespace Relativity.Sync.Tests.System
 				jobProgressUpdaterFactory,
 				new JobHistoryErrorRepository(_serviceFactoryStub),
 				logger);
-			Storage.IConfiguration config = await Storage.Configuration.GetAsync(_serviceFactoryStub, new SyncJobParameters(jobHistoryArtifactId, sourceWorkspaceArtifactId, configuration.ImportSettings), logger,
-				new SemaphoreSlimWrapper(new SemaphoreSlim(1))).ConfigureAwait(false);
+			Storage.IConfiguration config = await Storage.Configuration.GetAsync(_serviceFactoryStub, new SyncJobParameters(jobHistoryArtifactId, sourceWorkspaceArtifactId, configuration.ImportSettings),
+				logger, new SemaphoreSlimWrapper(new SemaphoreSlim(1))).ConfigureAwait(false);
 			IFieldMappings fieldMappings = new FieldMappings(config, new JSONSerializer(), logger);
 			ISourceWorkspaceTagRepository sourceWorkspaceTagRepository = new SourceWorkspaceTagRepository(_serviceFactoryStub, logger, syncMetrics, fieldMappings);
 
