@@ -58,8 +58,6 @@
     <Compile Include="Authentication\TokenCredentialProviderTests.cs" />
     <Compile Include="Extensions\StringExtensionsTests.cs" />
     <Compile Include="Factories\HelperFactoryTests.cs" />
-    <Compile Include="FederatedInstanceRsapiHandlerTests.cs" />
-    <Compile Include="FederatedInstanceKeplerHandlerTests.cs" />
     <Compile Include="Helpers\ButtonStateBuilderTests.cs" />
     <Compile Include="Helpers\MatchHelper.cs" />
     <Compile Include="Helpers\RelativePathDirectoryTreeProviderTests.cs" />
@@ -1038,11 +1036,6 @@
         </Reference>
         <Reference Include="Relativity.API">
           <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.API.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.APIHelper">
-          <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.APIHelper.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

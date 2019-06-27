@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		{
 			base.SuiteSetup();
 
-			IntegrationPoint.Tests.Core.Agent.DisableAllAgents();
+			IntegrationPoint.Tests.Core.Agent.DisableAllIntegrationPointsAgentsAsync().GetAwaiter().GetResult();
 			_queueContext = new QueueDBContext(Helper, GlobalConst.SCHEDULE_AGENT_QUEUE_TABLE_NAME);
 		}
 
@@ -66,7 +66,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 		public override void SuiteTeardown()
 		{
-			IntegrationPoint.Tests.Core.Agent.EnableAllIntegrationPointsAgents();
+			IntegrationPoint.Tests.Core.Agent.EnableAllIntegrationPointsAgentsAsync().GetAwaiter().GetResult();
 			base.SuiteTeardown();
 		}
 

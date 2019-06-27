@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		{
 			base.SuiteSetup();
 
-			IntegrationPoint.Tests.Core.Agent.EnableAllIntegrationPointsAgents();
+			IntegrationPoint.Tests.Core.Agent.EnableAllIntegrationPointsAgentsAsync().GetAwaiter().GetResult();
 
 			var request = new QueryRequest
 			{

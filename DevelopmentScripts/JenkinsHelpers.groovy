@@ -37,6 +37,7 @@ class RIPPipelineState
     def relativityBuildVersion = ""
     def relativityBuildType = ""
     def relativityBranch = ""
+    def relativityBranchFallback = ""
 
     def version
     def commonBuildArgs
@@ -90,10 +91,11 @@ class RIPPipelineState
 // State for the whole pipeline
 ripPipelineState = null
 
-def initializeRIPPipeline(script, env, params)
+def initializeRIPPipeline(script, env, params, relativityBranchFallback)
 {
     ripPipelineState = new RIPPipelineState(script, env, params)
     ripPipelineState.relativityBranch = params.relativityBranch ?: env.BRANCH_NAME
+    ripPipelineState.relativityBranchFallback = relativityBranchFallback
 }
 
 /*
@@ -202,10 +204,7 @@ def testingVMsAreRequired(params)
 	return !params.skipIntegrationTests || !params.skipUITests
 }
 
-/*
- * @param relativityBranchFallback - the default fallback branch. develop by default, but should be set to release branch name on release branches!!!
- */
-def raid(String relativityBranchFallback)
+def raid()
 {
     timeout(time: 90, unit: 'MINUTES')
     {
@@ -237,7 +236,7 @@ def raid(String relativityBranchFallback)
                 if (installingRelativity)
                 {
                     (relativityBuildVersion, relativityBranch, relativityBuildType) = getNewBranchAndVersion(
-                        relativityBranchFallback,
+                        ripPipelineState.relativityBranchFallback,
                         relativityBranch,
                         params.relativityBuildVersion,
                         params.relativityBuildType,
@@ -592,8 +591,8 @@ private isPowershellResultTrue(s)
 
 private shouldRunSonar(Boolean enableSonarAnalysis, String branchName)
 {
-	return (enableSonarAnalysis && branchName == "develop" && !isNightly())
-			? "-sonarqube"
+	return (enableSonarAnalysis && !isNightly())
+			? "-sonarqube $ripPipelineState.relativityBranchFallback"
 			: ""
 }
 

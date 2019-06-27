@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		{
 			base.SuiteSetup();
 
-			IntegrationPoint.Tests.Core.Agent.EnableAllIntegrationPointsAgents();
+			IntegrationPoint.Tests.Core.Agent.EnableAllIntegrationPointsAgentsAsync().GetAwaiter().GetResult();
 
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
 			_jobService = Container.Resolve<IJobService>();
