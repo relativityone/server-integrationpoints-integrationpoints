@@ -18,7 +18,8 @@ namespace kCura.IntegrationPoints.Data.Helpers
 		public MassUpdateHelper(IConfig config, IAPILog logger)
 		{
 			_config = config ?? throw new ArgumentNullException(nameof(config));
-			_logger = logger?.ForContext<MassUpdateHelper>();
+			_logger = (logger ?? throw new ArgumentNullException(nameof(logger)))
+				.ForContext<MassUpdateHelper>();
 		}
 
 		public Task UpdateArtifactsAsync(
@@ -127,7 +128,7 @@ namespace kCura.IntegrationPoints.Data.Helpers
 
 			ThrowIfArtifactsNotUpdated(isUpdated);
 		}
-		
+
 		private int ReadBatchSizeFromConfigAndValidateValue()
 		{
 			int batchSize = _config.MassUpdateBatchSize;
@@ -170,7 +171,7 @@ namespace kCura.IntegrationPoints.Data.Helpers
 				batchSize,
 				numberOfDocuments);
 		}
-		
+
 		private interface ISourceArtifactsReader
 		{
 			int GetCount();

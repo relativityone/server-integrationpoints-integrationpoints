@@ -24,7 +24,8 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			IMassUpdateHelper massUpdateHelper)
 		{
 			_repositoryFactory = repositoryFactory;
-			_logger = logger.ForContext<JobHistoryManager>();
+			_logger = (logger ?? throw new ArgumentNullException(nameof(logger)))
+				.ForContext<JobHistoryManager>();
 			_massUpdateHelper = massUpdateHelper;
 		}
 

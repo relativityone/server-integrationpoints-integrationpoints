@@ -39,8 +39,10 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			_jobStopManager = jobStopManager;
 			_sourceWorkspaceArtifactID = sourceWorkspaceArtifactID;
 			_updateStatusType = updateStatusType;
-			_logger = logger.ForContext<JobHistoryErrorBatchUpdateManager>();
 			_massUpdateHelper = massUpdateHelper;
+
+			_logger = (logger ?? throw new ArgumentNullException(nameof(logger)))
+				.ForContext<JobHistoryErrorBatchUpdateManager>();
 		}
 
 		private bool IsRetryErrorsJob =>

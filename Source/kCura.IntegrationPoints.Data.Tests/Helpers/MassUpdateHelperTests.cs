@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 		}
 
 		[Test]
-		public void Constructor_ShouldNotThrowExceptionWhenLoggerIsNull()
+		public void Constructor_ShouldThrowArgumentNullExceptionWhenLoggerIsNull()
 		{
 			// act
 			Action constructor = () => new MassUpdateHelper(
@@ -70,7 +70,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 				logger: null);
 
 			// assert
-			constructor.ShouldNotThrow<Exception>();
+			constructor.ShouldThrow<ArgumentNullException>();
 		}
 
 		[Test]
@@ -235,25 +235,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 					Times.Never);
 			}
 		}
-
-		[Test]
-		public void UpdateArtifactsFromScratchTableAsync_ShouldWorkWithNullLogger()
-		{
-			// arrange
-			var sut = new MassUpdateHelper(
-				_configMock.Object,
-				logger: null);
-
-			// act
-			Func<Task> updateAction = () => sut.UpdateArtifactsAsync(
-				_scratchTableRepositoryMock.Object,
-				new FieldUpdateRequestDto[0],
-				_massUpdateRepositoryMock.Object);
-
-			// assert
-			updateAction.ShouldNotThrow<Exception>();
-		}
-
+		
 		private void SetupNumberOfArtifacts(int totalNumberOfArtifacts)
 		{
 			_scratchTableRepositoryMock

@@ -15,13 +15,14 @@ namespace kCura.IntegrationPoints.Core.Tagging
 		private readonly IAPILog _logger;
 
 		public SourceDocumentsTagger(
-			IDocumentRepository documentRepository, 
-			IAPILog logger, 
+			IDocumentRepository documentRepository,
+			IAPILog logger,
 			IMassUpdateHelper massUpdateHelper)
 		{
 			_documentRepository = documentRepository ?? throw new ArgumentNullException(nameof(documentRepository));
 			_massUpdateHelper = massUpdateHelper ?? throw new ArgumentNullException(nameof(massUpdateHelper));
-			_logger = logger?.ForContext<SourceDocumentsTagger>();
+			_logger = (logger ?? throw new ArgumentNullException(nameof(logger)))
+				.ForContext<SourceDocumentsTagger>();
 		}
 
 		public async Task TagDocumentsWithDestinationWorkspaceAndJobHistoryAsync(
@@ -34,7 +35,7 @@ namespace kCura.IntegrationPoints.Core.Tagging
 				throw new ArgumentNullException(nameof(documentsToTagRepository));
 			}
 
-			_logger?.LogInformation("Tagging documents in source workspace started.");
+			_logger.LogInformation("Tagging documents in source workspace started.");
 			FieldUpdateRequestDto[] documentTagsInSourceWorkspace = GetTagsValues(
 				destinationWorkspaceInstanceID,
 				jobHistoryInstanceID);
@@ -46,7 +47,7 @@ namespace kCura.IntegrationPoints.Core.Tagging
 					_documentRepository)
 				.ConfigureAwait(false);
 
-			_logger?.LogInformation("Tagging documents in source workspace completed.");
+			_logger.LogInformation("Tagging documents in source workspace completed.");
 		}
 
 		private static FieldUpdateRequestDto[] GetTagsValues(int destinationWorkspaceInstanceID, int jobHistoryInstanceID)
