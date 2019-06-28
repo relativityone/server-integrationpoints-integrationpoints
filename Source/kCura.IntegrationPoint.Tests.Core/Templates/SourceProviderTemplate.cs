@@ -144,7 +144,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 			Container.Register(Component.For<IRSAPIService>().Instance(new RSAPIService(Container.Resolve<IHelper>(), WorkspaceArtifactId)).LifestyleTransient());
 			Container.Register(Component.For<IExporterFactory>().ImplementedBy<ExporterFactory>());
-			Container.Register(Component.For<IExportServiceObserversFactory>().ImplementedBy<IExportServiceObserversFactory>());
+			Container.Register(Component.For<IExportServiceObserversFactory>().ImplementedBy<ExportServiceObserversFactory>());
 			Container.Register(Component.For<IAuthTokenGenerator>().ImplementedBy<ClaimsTokenGenerator>().LifestyleTransient());
 
 			Container.Register(
