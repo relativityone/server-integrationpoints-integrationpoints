@@ -161,10 +161,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return jobHistoryErrors;
 		}
 
-		public Task<bool> MassUpdateAsync(IEnumerable<int> rdoToUpdateArtifactIDs, IEnumerable<FieldUpdateRequestDto> fieldsToUpdate)
+		public Task<bool> MassUpdateAsync(IEnumerable<int> artifactIDsToUpdate, IEnumerable<FieldUpdateRequestDto> fieldsToUpdate)
 		{
 			IEnumerable<FieldRefValuePair> convertedFieldstoUpdate = fieldsToUpdate.Select(x => x.ToFieldRefValuePair());
-			return _objectManager.MassUpdateAsync(rdoToUpdateArtifactIDs, convertedFieldstoUpdate, FieldUpdateBehavior.Merge);
+			return _objectManager.MassUpdateAsync(artifactIDsToUpdate, convertedFieldstoUpdate, FieldUpdateBehavior.Merge);
 		}
 	}
 }

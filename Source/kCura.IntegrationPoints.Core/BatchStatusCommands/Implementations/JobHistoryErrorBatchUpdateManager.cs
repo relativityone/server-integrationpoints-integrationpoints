@@ -59,8 +59,8 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 				UpdateScratchTablesOnStart();
 
 				IEnumerable<UpdateErrorStatusData> updateErrorStatusesData = IsRetryErrorsJob
-					? GetUpdateStatusesOnStartForRetryErrorsJob(jobHistoryErrorRepository)
-					: GetUpdateStatusesOnStartForNonRetryJob(jobHistoryErrorRepository);
+					? GetUpdateStatusesOnStartForRetryErrorsJob()
+					: GetUpdateStatusesOnStartForNonRetryJob();
 				UpdateStatuses(updateErrorStatusesData, jobHistoryErrorRepository);
 			}
 			catch (Exception ex)
@@ -84,7 +84,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 				}
 
 				IJobHistoryErrorRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(_sourceWorkspaceArtifactID);
-				IEnumerable<UpdateErrorStatusData> updateErrorStatusesData = GetUpdateStatusDataForRetryErrorsJobComplete(jobHistoryErrorRepository);
+				IEnumerable<UpdateErrorStatusData> updateErrorStatusesData = GetUpdateStatusDataForRetryErrorsJobComplete();
 				UpdateStatuses(updateErrorStatusesData, jobHistoryErrorRepository);
 			}
 			catch (Exception ex)
@@ -114,7 +114,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			}
 		}
 
-		private IEnumerable<UpdateErrorStatusData> GetUpdateStatusesOnStartForNonRetryJob(IJobHistoryErrorRepository jobHistoryErrorRepository)
+		private IEnumerable<UpdateErrorStatusData> GetUpdateStatusesOnStartForNonRetryJob()
 		{
 			switch (_updateStatusType.ErrorTypes)
 			{
@@ -139,7 +139,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			}
 		}
 
-		private IEnumerable<UpdateErrorStatusData> GetUpdateStatusesOnStartForRetryErrorsJob(IJobHistoryErrorRepository jobHistoryErrorRepository)
+		private IEnumerable<UpdateErrorStatusData> GetUpdateStatusesOnStartForRetryErrorsJob()
 		{
 			switch (_updateStatusType.ErrorTypes)
 			{
@@ -167,7 +167,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			}
 		}
 
-		private IEnumerable<UpdateErrorStatusData> GetUpdateStatusDataForRetryErrorsJobComplete(IJobHistoryErrorRepository jobHistoryErrorRepository)
+		private IEnumerable<UpdateErrorStatusData> GetUpdateStatusDataForRetryErrorsJobComplete()
 		{
 			if (_jobStopManager.IsStopRequested())
 			{
