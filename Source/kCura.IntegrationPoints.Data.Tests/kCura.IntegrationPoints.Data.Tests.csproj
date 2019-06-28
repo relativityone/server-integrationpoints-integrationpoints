@@ -124,6 +124,7 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Converters\FieldRefExtensionsTests.cs" />
+    <Compile Include="Converters\FieldUpdateRequestDtoExtensionsTests.cs" />
     <Compile Include="Converters\FieldValuePairExtensionsTests.cs" />
     <Compile Include="Converters\RelativityObjectExtensionsTests.cs" />
     <Compile Include="Converters\WorkspaceRefExtensionsTests.cs" />

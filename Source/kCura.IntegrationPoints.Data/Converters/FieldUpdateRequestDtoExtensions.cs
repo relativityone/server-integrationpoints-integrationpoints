@@ -7,6 +7,11 @@ namespace kCura.IntegrationPoints.Data.Converters
 	{
 		public static FieldRefValuePair ToFieldRefValuePair(this FieldUpdateRequestDto dto)
 		{
+			if (dto == null)
+			{
+				return null;
+			}
+
 			return new FieldRefValuePair
 			{
 				Field = new FieldRef

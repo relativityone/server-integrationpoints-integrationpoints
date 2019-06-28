@@ -10,7 +10,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.DTO
 		public FieldUpdateRequestDto(Guid fieldIdentifier, IFieldValueDto newValue)
 		{
 			FieldIdentifier = fieldIdentifier;
-			NewValue = newValue;
+			NewValue = newValue ?? throw new ArgumentNullException(nameof(newValue));
 		}
 	}
 }
