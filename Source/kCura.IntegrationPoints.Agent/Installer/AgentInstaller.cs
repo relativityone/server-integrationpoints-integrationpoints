@@ -33,8 +33,7 @@ using System;
 using Castle.MicroKernel.Resolvers;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Agent.Installer.Components;
-using kCura.IntegrationPoints.Core.Tagging;
-using kCura.IntegrationPoints.Data.Helpers;
+using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using ITaskFactory = kCura.IntegrationPoints.Agent.TaskFactory.ITaskFactory;
 
@@ -146,6 +145,13 @@ namespace kCura.IntegrationPoints.Agent.Installer
 				return new OAuth2TokenGenerator(helper, oauth2ClientFactory, tokenProviderFactory, contextUser);
 			}).LifestyleTransient());
 
+			container.Register(
+				Component
+					.For<IExportServiceObserversFactory>()
+					.ImplementedBy<ExportServiceObserversFactory>()
+					.LifestyleTransient()
+				);
+
 			// TODO: yea, we need a better way of getting the target IRepositoryFactory to the IExporterFactory -- biedrzycki: Sept 1, 2016
 			container.Register(Component.For<Core.Factories.IExporterFactory>().UsingFactoryMethod(
 				k =>
@@ -179,18 +185,14 @@ namespace kCura.IntegrationPoints.Agent.Installer
 					}
 					IFolderPathReaderFactory folderPathReaderFactory = k.Resolve<IFolderPathReaderFactory>();
 					IRelativityObjectManager relativityObjectManager = k.Resolve<IRelativityObjectManager>();
-					ISourceDocumentsTagger sourceDocumentsTagger = k.Resolve<ISourceDocumentsTagger>();
-					IMassUpdateHelper massUpdateHelper = k.Resolve<IMassUpdateHelper>();
 
-					return new Core.Factories.Implementations.ExporterFactory(
+					return new ExporterFactory(
 						claimsPrincipalFactory,
 						sourceRepositoryFactory,
 						targetRepositoryFactory,
 						sourceHelper,
 						folderPathReaderFactory,
-						relativityObjectManager,
-						sourceDocumentsTagger,
-						massUpdateHelper);
+						relativityObjectManager);
 				}).LifestyleTransient());
 
 			container.Register(Component.For<IRsapiClientWithWorkspaceFactory>().ImplementedBy<ExtendedRsapiClientWithWorkspaceFactory>().LifestyleTransient());
