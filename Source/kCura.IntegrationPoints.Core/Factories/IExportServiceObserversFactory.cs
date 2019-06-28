@@ -12,7 +12,8 @@ namespace kCura.IntegrationPoints.Core.Factories
 {
 	public interface IExportServiceObserversFactory
 	{
-		List<IBatchStatus> InitializeExportServiceJobObservers(Job job,
+		List<IBatchStatus> InitializeExportServiceJobObservers(
+			Job job,
 			ITagsCreator tagsCreator,
 			ITagSavedSearchManager tagSavedSearchManager,
 			ISynchronizerFactory synchronizerFactory,

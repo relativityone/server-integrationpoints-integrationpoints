@@ -37,14 +37,15 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			_logger = logger;
 		}
 
-		public List<IBatchStatus> InitializeExportServiceJobObservers(Job job,
+		public List<IBatchStatus> InitializeExportServiceJobObservers(
+			Job job,
 			ITagsCreator tagsCreator,
 			ITagSavedSearchManager tagSavedSearchManager,
 			ISynchronizerFactory synchronizerFactory,
 			ISerializer serializer,
 			IJobHistoryErrorManager jobHistoryErrorManager,
 			IJobStopManager jobStopManager,
-			ISourceWorkspaceTagCreator sourceWorkspaceTagsCreator,
+			ISourceWorkspaceTagCreator sourceWorkspaceTagCreator,
 			FieldMap[] mappedFields,
 			SourceConfiguration configuration,
 			JobHistoryErrorDTO.UpdateStatusType updateStatusType,
@@ -66,7 +67,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			IConsumeScratchTableBatchStatus sourceFieldsTagger = CreateSourceFieldsTagger(
 				configuration,
 				jobHistory,
-				sourceWorkspaceTagsCreator,
+				sourceWorkspaceTagCreator,
 				uniqueJobId);
 
 			IBatchStatus sourceJobHistoryErrorUpdater = CreateJobHistoryErrorUpdater(
