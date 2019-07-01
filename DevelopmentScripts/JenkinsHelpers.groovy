@@ -302,7 +302,7 @@ def getSessionId()
 
 def runIntegrationTests()
 {
-    timeout(time: 180, unit: 'MINUTES')
+    timeout(time: 240, unit: 'MINUTES')
     {
         runTestsAndSetBuildResult(TestType.integration, params.skipIntegrationTests)
     }
