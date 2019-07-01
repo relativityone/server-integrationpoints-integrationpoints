@@ -170,7 +170,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public async Task ItShouldReturnEmptyString()
 		{
 			_choiceCache.Setup(x => x.GetChoicesWithParentInfoAsync(It.IsAny<ICollection<Choice>>())).ReturnsAsync(new List<ChoiceWithParentInfo>());
-			_choiceTreeToStringConverter.Setup(x => x.ConvertTreeToString(It.IsAny<IList<ChoiceWithParentInfo>>())).Returns(string.Empty);
+			_choiceTreeToStringConverter.Setup(x => x.ConvertTreeToString(It.IsAny<IList<ChoiceWithChildInfo>>())).Returns(string.Empty);
 
 			// Act
 			object result = await _instance.SanitizeAsync(0, "foo", "bar", "baz", ChoiceJArrayFromNames().ToString()).ConfigureAwait(false);

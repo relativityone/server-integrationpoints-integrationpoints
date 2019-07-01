@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Executors;
 using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync.Transfer
@@ -44,7 +46,6 @@ namespace Relativity.Sync.Transfer
 					choicesWithParentInfo.Add(choiceWithParentInfo);
 				}
 			}
-
 			return choicesWithParentInfo;
 		}
 
@@ -52,19 +53,26 @@ namespace Relativity.Sync.Transfer
 		{
 			var request = new ReadRequest
 			{
-				Object = new RelativityObjectRef()
+				Object = new RelativityObjectRef
 				{
 					ArtifactID = choice.ArtifactID
 				}
 			};
-			ReadResult readResult = await objectManager.ReadAsync(_configuration.SourceWorkspaceArtifactId, request).ConfigureAwait(false);
+			ReadResult readResult;
+			try
+			{
+				readResult = await objectManager.ReadAsync(_configuration.SourceWorkspaceArtifactId, request).ConfigureAwait(false);
+			}
+			catch (Exception ex)
+			{
+				throw new SyncKeplerException($"Failed to retrieve data on choice '{choice.Name}' ({choice.ArtifactID}) in workspace {_configuration.SourceWorkspaceArtifactId}.", ex);
+			}
 
 			int? parentArtifactId = readResult.Object.ParentObject.ArtifactID;
 			if (choices.All(x => x.ArtifactID != parentArtifactId))
 			{
 				parentArtifactId = null;
 			}
-
 			var choiceWithParentInfo = new ChoiceWithParentInfo(parentArtifactId, choice.ArtifactID, choice.Name);
 			return choiceWithParentInfo;
 		}
