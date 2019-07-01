@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading;
@@ -72,7 +73,11 @@ namespace Relativity.Sync.Transfer
 
 		private static DataColumn[] BuildColumns(IEnumerable<FieldInfoDto> fields)
 		{
-			DataColumn[] columns = fields.Select(x => new DataColumn(x.DestinationFieldName)).ToArray();
+			DataColumn[] columns = fields.Select(x =>
+			{
+				Type dataType = x.RelativityDataType == RelativityDataType.LongText ? typeof(object) : typeof(string);
+				return new DataColumn(x.DestinationFieldName, dataType);
+			}).ToArray();
 			return columns;
 		}
 
