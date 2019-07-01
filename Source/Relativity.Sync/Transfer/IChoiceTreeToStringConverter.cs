@@ -4,6 +4,6 @@ namespace Relativity.Sync.Transfer
 {
 	internal interface IChoiceTreeToStringConverter
 	{
-		string ConvertTreeToString(IList<ChoiceWithParentInfo> tree);
+		string ConvertTreeToString(IList<ChoiceWithChildInfo> tree);
 	}
 }
