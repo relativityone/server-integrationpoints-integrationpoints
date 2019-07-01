@@ -19,7 +19,7 @@ nuget Relativity.Telemetry.Services.Interface ~> 2019.1.1
 nuget relativity.testing.identification ~> 1.6.0
 nuget relativity.transfer.client ~> 6.0
 
-nuget Microsoft.CodeAnalysis.FxCopAnalyzers ~> 2.6
+nuget Microsoft.CodeAnalysis.FxCopAnalyzers 2.9.2
 nuget CSharpGuidelineAnalyzer ~> 2.3
 nuget Autofac ~> 4.9 redirects: force
 nuget Polly ~> 5.3.1
