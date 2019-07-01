@@ -90,7 +90,7 @@ namespace Relativity.Sync.Transfer
 				try
 				{
 					List<FolderPath> result = await folderManager.GetFullPathListAsync(workspaceArtifactId, folderIds.ToList()).ConfigureAwait(false);
-					return result.ToDictionary(f => f.ArtifactID, f => f.FullPath);
+					return result.ToDictionary(f => f.ArtifactID, f => RemoveUnnecessarySpaces(f.FullPath));
 				}
 				catch (ServiceException ex)
 				{
@@ -103,6 +103,11 @@ namespace Relativity.Sync.Transfer
 					throw new SyncKeplerException($"Failed to get folders in workspace {workspaceArtifactId}", ex);
 				}
 			}
+		}
+
+		private static string RemoveUnnecessarySpaces(string folderPath)
+		{
+			return folderPath.TrimEnd().Replace(" \\ ", "\\");
 		}
 	}
 }

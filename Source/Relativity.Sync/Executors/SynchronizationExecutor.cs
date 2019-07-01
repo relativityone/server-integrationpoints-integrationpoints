@@ -126,7 +126,7 @@ namespace Relativity.Sync.Executors
 			IList<FieldInfoDto> specialFields = _fieldManager.GetSpecialFields().ToList();
 
 			configuration.ImportSettings.IdentityFieldId = destinationIdentityFieldId;
-			if (configuration.DestinationFolderStructureBehavior == DestinationFolderStructureBehavior.ReadFromField)
+			if (configuration.DestinationFolderStructureBehavior != DestinationFolderStructureBehavior.None)
 			{
 				configuration.ImportSettings.FolderPathSourceFieldName = GetSpecialFieldColumnName(specialFields, SpecialFieldType.FolderPath);
 			}
