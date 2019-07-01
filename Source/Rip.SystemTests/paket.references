@@ -1,5 +1,6 @@
 ﻿Castle.Windsor
 FluentAssertions
+kCura.Apps.Common.Config
 kCura.Relativity.Client
 Moq
 NUnit
@@ -8,7 +9,10 @@ Relativity
 Relativity.API
 Relativity.Core
 Relativity.DataExchange.Client.SDK
+Relativity.Productions.Services.Interfaces
 Relativity.Services.DataContracts
 Relativity.Services.Interfaces
-Relativity.Productions.Services.Interfaces
+Relativity.Telemetry.APM
+relativity.testing.identification
+Relativity.Toggles
 Serilog

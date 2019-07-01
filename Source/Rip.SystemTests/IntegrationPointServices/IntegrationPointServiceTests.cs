@@ -19,6 +19,7 @@ using Relativity.Services.Folder;
 using Relativity.Services.Interfaces.Field;
 using Relativity.Services.Interfaces.Field.Models;
 using Relativity.Services.Interfaces.Shared.Models;
+using Relativity.Testing.Identification;
 using Rip.TestUtilities;
 using Constants = kCura.IntegrationPoints.Core.Constants;
 
@@ -63,7 +64,7 @@ namespace Rip.SystemTests.IntegrationPointServices
 				.ArtifactId;
 		}
 
-		[Test]
+		[IdentifiedTest("b30513bf-e6b8-4680-a74b-d77b17976d20")]
 		public async Task IntegrationPointShouldBeSavedAndRetrievedProperly_WhenFieldMappingJsonIsLongerThan10000()
 		{
 			// arrange

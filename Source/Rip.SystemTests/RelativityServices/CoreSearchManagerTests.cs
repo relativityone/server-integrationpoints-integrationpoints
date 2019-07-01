@@ -24,6 +24,7 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Search;
 using Relativity.Services.User;
+using Relativity.Testing.Identification;
 using Rip.SystemTests.RelativityServices.Arrangers;
 using Rip.SystemTests.RelativityServices.TestCases;
 using FieldCategory = Relativity.Services.Objects.DataContracts.FieldCategory;
@@ -83,7 +84,7 @@ namespace Rip.SystemTests.RelativityServices
 			_productionID = CreateAndRunProduction(_workspaceService);
 		}
 
-		[Test]
+		[IdentifiedTest("970522ef-de92-404d-b120-c198ebb154e5")]
 		public void RetrieveNativesForSearch_ShouldRetrieveAllDocumentsByIDs()
 		{
 			//arrange
@@ -105,7 +106,7 @@ namespace Rip.SystemTests.RelativityServices
 			);
 		}
 
-		[Test]
+		[IdentifiedTest("254977f7-1f71-4315-a257-5c3a0d19923a")]
 		public void RetrieveNativesForProduction_ShouldRetrieveDocumentsByIDsAndProductionID()
 		{
 			//arrange
@@ -128,7 +129,7 @@ namespace Rip.SystemTests.RelativityServices
 			);
 		}
 
-		[Test]
+		[IdentifiedTest("635f343b-afa1-4012-b67d-55288baef551")]
 		public async Task RetrieveFilesForDynamicObjects_ShouldRetrieveFileForProductionPlacehoder()
 		{
 			//arrange
@@ -155,7 +156,7 @@ namespace Rip.SystemTests.RelativityServices
 				.Be(productionPlaceholderArtifactID);
 		}
 
-		[Test]
+		[IdentifiedTest("67ccf933-70c7-4d57-ae01-a17801e0fead")]
 		public void RetrieveImagesForProductionDocuments_ShouldRetrieveImagesForProducedDocuments()
 		{
 			//arrange
@@ -179,7 +180,7 @@ namespace Rip.SystemTests.RelativityServices
 			);
 		}
 
-		[Test]
+		[IdentifiedTest("b30e2994-b38a-4544-b2c3-b8b5f10c1969")]
 		public void RetrieveImagesForDocuments_ShouldRetrieveImagesByDocumentIDs()
 		{
 			//arrange
@@ -206,7 +207,7 @@ namespace Rip.SystemTests.RelativityServices
 			);
 		}
 
-		[Test]
+		[IdentifiedTest("74dd9275-1c0d-4fba-b894-aeef33d54d4f")]
 		public  void RetrieveProducedImagesForDocument_ShouldRetrieveImagesByDocumentId()
 		{
 			//arrange
@@ -228,7 +229,7 @@ namespace Rip.SystemTests.RelativityServices
 			);
 		}
 
-		[Test]
+		[IdentifiedTest("394b7203-50b3-4433-a08c-6e1c230ff771")]
 		public void RetrieveImagesByProductionIDsAndDocumentIDsForExport_ShouldRetrieveProducedImagesForExport()
 		{
 			//arrange
@@ -256,7 +257,7 @@ namespace Rip.SystemTests.RelativityServices
 			);
 		}
 
-		[Test]
+		[IdentifiedTest("d381c2fd-30f1-472c-a050-317dcd103cf8")]
 		public async Task RetrieveAllExportableViewFields_ShouldRetrieveAllViewFieldsForDocument()
 		{
 			// arrange
@@ -276,7 +277,7 @@ namespace Rip.SystemTests.RelativityServices
 			exportableFieldIDs.Should().Contain(fieldArtifactIDs);
 		}
 
-		[Test]
+		[IdentifiedTest("b317ec6d-ebb3-4481-973c-a61d8321da25")]
 		public void RetrieveDefaultViewFieldIDs_ShouldRetrieveDefaultViewFieldIDsForSavedSearchView()
 		{
 			// arrange
@@ -294,7 +295,7 @@ namespace Rip.SystemTests.RelativityServices
 			result.Should().Contain(expectedViewFieldIDs);
 		}
 
-		[Test]
+		[IdentifiedTest("7b0fa46f-2831-4c6e-99c5-2eb0af8dddd3")]
 		public void RetrieveViewsByContextArtifactID_ShouldRetrieveViews()
 		{
 			//arrange
@@ -308,7 +309,7 @@ namespace Rip.SystemTests.RelativityServices
 			AssertViewResponseContainsExpectedView(view, result);
 		}
 
-		[Test]
+		[IdentifiedTest("da483778-1f5e-44f5-a125-dc1e5082c71e")]
 		public async Task RetrieveViewsByContextArtifactIDForSearch_ShouldRetrieveViews()
 		{
 			//arrange

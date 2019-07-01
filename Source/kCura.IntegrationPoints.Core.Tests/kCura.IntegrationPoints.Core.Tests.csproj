@@ -1039,6 +1039,11 @@
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
+        <Reference Include="Relativity.APIHelper">
+          <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.APIHelper.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
         <Reference Include="Relativity.ApplicationBase">
           <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.ApplicationBase.dll</HintPath>
           <Private>True</Private>
