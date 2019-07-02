@@ -223,15 +223,14 @@ namespace kCura.IntegrationPoints.RelativitySync
 				return string.Empty;
 			}
 
-			ReadRequest request = new ReadRequest
+			var request = new QueryRequest()
 			{
-				Object = new RelativityObjectRef
-				{
-					ArtifactID = artifactId
-				}
+				ObjectType = new ObjectTypeRef {Name = "Field"},
+				Condition = $"\"ArtifactID\" == {artifactId}",
+				Fields = new[] {new FieldRef {Name = "Name"}}
 			};
-			ReadResult result = await objectManager.ReadAsync(workspaceId, request).ConfigureAwait(false);
-			return result.Object.Name;
+			QueryResultSlim result = await objectManager.QuerySlimAsync(workspaceId, request, 0, 1).ConfigureAwait(false);
+			return result.Objects[0].Values[0].ToString();
 		}
 	}
 }

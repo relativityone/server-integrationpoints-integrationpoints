@@ -3,7 +3,7 @@ $root = (Get-Item $PSScriptRoot).parent.FullName
 Import-Module $root\Vendor\psake\tools\psake.psm1
 
 # Constants
-New-Variable -Name CURRENT_VERSION -Value '10.2.0.0' -Option Constant
+New-Variable -Name CURRENT_VERSION -Value '10.3.0.0' -Option Constant
 New-Variable -Name COMPANY -Value 'Relativity ODA LLC' -Option Constant
 New-Variable -Name PRODUCT -Value 'IntegrationPoints' -Option Constant
 New-Variable -Name PRODUCTDESCRIPTION -Value 'IntegrationPoints' -Option Constant
