@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
-using NSubstitute;
+using kCura.IntegrationPoints.Data.Tests.Repositories.Implementations.CommonTests;
+using Moq;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services;
@@ -17,20 +19,31 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 	[TestFixture]
 	public class JobHistoryErrorRepositoryTests : TestBase
 	{
-		private JobHistoryErrorRepository _instance;
-		private IHelper _helper;
-		private IRelativityObjectManager _objectManager;
+		private JobHistoryErrorRepository _sut;
+
+		private Mock<IHelper> _helperMock;
+		private Mock<IRelativityObjectManager> _objectManagerMock;
 		private int _workspaceArtifactId;
+
+		private MassUpdateTests _massUpdateTests;
 
 		[SetUp]
 		public override void SetUp()
 		{
-			_helper = NSubstitute.Substitute.For<IHelper>();
-			_objectManager = NSubstitute.Substitute.For<IRelativityObjectManager>();
+			_helperMock = new Mock<IHelper>();
+			_objectManagerMock = new Mock<IRelativityObjectManager>();
 			_workspaceArtifactId = 456;
-			var objectManagerFactory = Substitute.For<IRelativityObjectManagerFactory>();
-			objectManagerFactory.CreateRelativityObjectManager(Arg.Any<int>()).Returns(_objectManager);
-			_instance = new JobHistoryErrorRepository(_helper, objectManagerFactory, _workspaceArtifactId);
+			var objectManagerFactory = new Mock<IRelativityObjectManagerFactory>();
+			objectManagerFactory
+				.Setup(x => x.CreateRelativityObjectManager(It.IsAny<int>()))
+				.Returns(_objectManagerMock.Object);
+
+			_sut = new JobHistoryErrorRepository(
+				_helperMock.Object,
+				objectManagerFactory.Object,
+				_workspaceArtifactId);
+
+			_massUpdateTests = new MassUpdateTests(_sut, _objectManagerMock);
 		}
 
 		#region Read
@@ -44,10 +57,15 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		public void Read(IEnumerable<int> artifactIds)
 		{
 			// act
-			_instance.Read(artifactIds);
+			_sut.Read(artifactIds);
 
 			// assert
-			_objectManager.Received(1).Query<JobHistoryError>(Arg.Is<QueryRequest>( x => x.Condition == $"'{ArtifactQueryFieldNames.ArtifactID}' in [{string.Join(",", artifactIds)}]"));
+			_objectManagerMock.Verify(
+				x => x.Query<JobHistoryError>(
+					It.Is<QueryRequest>(z => z.Condition == $"'{ArtifactQueryFieldNames.ArtifactID}' in [{string.Join(",", artifactIds)}]"),
+					ExecutionIdentity.CurrentUser
+					)
+				);
 		}
 		#endregion
 
@@ -85,26 +103,57 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		public void DeleteItemLevelErrorsSavedSearch_GoldFlow(List<Task> mockTasks)
 		{
 			// arrange
-			IKeywordSearchManager keywordSearch = Substitute.For<IKeywordSearchManager>();
+			Mock<IKeywordSearchManager> keywordSearchMock = new Mock<IKeywordSearchManager>();
 
 			int searchId = 123456;
-			_helper.GetServicesManager().CreateProxy<IKeywordSearchManager>(Arg.Any<ExecutionIdentity>()).Returns(keywordSearch);
+			_helperMock
+				.Setup(
+					x => x
+						.GetServicesManager()
+						.CreateProxy<IKeywordSearchManager>(It.IsAny<ExecutionIdentity>())
+					)
+				.Returns(keywordSearchMock.Object);
 			if (mockTasks.Count < 2)
 			{
-				keywordSearch.DeleteSingleAsync(_workspaceArtifactId, searchId).Returns(mockTasks[0]);
+				keywordSearchMock
+					.Setup(x => x.DeleteSingleAsync(_workspaceArtifactId, searchId))
+					.Returns(mockTasks[0]);
 			}
 			else
 			{
-				keywordSearch.DeleteSingleAsync(_workspaceArtifactId, searchId).Returns(mockTasks[0], mockTasks.GetRange(1, mockTasks.Count - 1).ToArray());
+				keywordSearchMock
+					.SetupSequence(x => x.DeleteSingleAsync(_workspaceArtifactId, searchId))
+					.Returns(mockTasks);
 			}
 
 			// act
-			_instance.DeleteItemLevelErrorsSavedSearch(searchId);
+			_sut.DeleteItemLevelErrorsSavedSearch(searchId);
 
 			// assert
-			keywordSearch.Received(mockTasks.Count).DeleteSingleAsync(_workspaceArtifactId, searchId);
+			keywordSearchMock.Verify(
+				x => x.DeleteSingleAsync(_workspaceArtifactId, searchId),
+				Times.Exactly(mockTasks.Count));
 		}
 
 		#endregion
+
+		[Test]
+		public Task MassUpdateAsync_ShouldBuildProperRequest()
+		{
+			return _massUpdateTests.ShouldBuildProperRequest();
+		}
+
+		[TestCase(true)]
+		[TestCase(false)]
+		public Task MassUpdateAsync_ShouldReturnCorrectResult(bool expectedResult)
+		{
+			return _massUpdateTests.ShouldReturnCorrectResult(expectedResult);
+		}
+
+		[Test]
+		public void MassUpdateAsync_ShouldRethrowObjectManagerException()
+		{
+			_massUpdateTests.ShouldRethrowObjectManagerException();
+		}
 	}
 }

@@ -152,6 +152,7 @@
     <Compile Include="Repositories\DTO\SingleChoiceReferenceDtoTests.cs" />
     <Compile Include="Repositories\Implementations\AuditRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\CaseRepositoryTests.cs" />
+    <Compile Include="Repositories\Implementations\CommonTests\MassUpdateTests.cs" />
     <Compile Include="Repositories\Implementations\DisposableFileRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\FieldRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\FileRepositoryTests.cs" />

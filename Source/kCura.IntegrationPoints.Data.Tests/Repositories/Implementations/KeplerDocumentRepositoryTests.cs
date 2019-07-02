@@ -4,9 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.Repositories.DTO;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
-using kCura.IntegrationPoints.Domain.Exceptions;
+using kCura.IntegrationPoints.Data.Tests.Repositories.Implementations.CommonTests;
 using kCura.IntegrationPoints.Domain.Models;
 using Moq;
 using NUnit.Framework;
@@ -18,14 +17,19 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 	[TestFixture]
 	public class KeplerDocumentRepositoryTests
 	{
-		private Mock<IRelativityObjectManager> _objectManagerMock;
 		private KeplerDocumentRepository _sut;
+
+		private Mock<IRelativityObjectManager> _objectManagerMock;
+
+		private MassUpdateTests _massUpdateTests;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_objectManagerMock = new Mock<IRelativityObjectManager>();
 			_sut = new KeplerDocumentRepository(_objectManagerMock.Object);
+
+			_massUpdateTests = new MassUpdateTests(_sut, _objectManagerMock);
 		}
 
 		[Test]
@@ -319,108 +323,22 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		}
 
 		[Test]
-		public async Task MassUpdateDocumentsAsync_ShouldBuildProperRequest()
+		public Task MassUpdateAsync_ShouldBuildProperRequest()
 		{
-			// arrange
-			var documentsIDs = new List<int> { 43, 21, 132, 8430, 587 };
-
-			var fieldUpdateRequests = new List<FieldUpdateRequestDto>
-			{
-				new FieldUpdateRequestDto(
-					Guid.NewGuid(),
-					CreateFieldValueDtoMock(8)),
-				new FieldUpdateRequestDto(
-					Guid.NewGuid(),
-					CreateFieldValueDtoMock(3))
-			};
-
-			_objectManagerMock
-				.Setup(x => x.MassUpdateAsync(
-					It.IsAny<IEnumerable<int>>(),
-					It.IsAny<IEnumerable<FieldRefValuePair>>(),
-					It.IsAny<FieldUpdateBehavior>(),
-					It.IsAny<ExecutionIdentity>()))
-				.Returns(Task.FromResult(true));
-
-			Func<IEnumerable<FieldRefValuePair>, bool> fieldsValidator = fields =>
-			{
-				bool resultIsValid = true;
-				foreach (FieldUpdateRequestDto fieldUpdateRequestDto in fieldUpdateRequests)
-				{
-					FieldRefValuePair matchingField = fields.Single(x => x.Field.Guid == fieldUpdateRequestDto.FieldIdentifier);
-					resultIsValid &= matchingField.Value == fieldUpdateRequestDto.NewValue.Value;
-				}
-				return resultIsValid;
-			};
-
-			// act
-			await _sut
-				.MassUpdateAsync(documentsIDs, fieldUpdateRequests)
-				.ConfigureAwait(false);
-
-			// assert
-			_objectManagerMock.Verify(
-				x => x.MassUpdateAsync(
-					It.Is<IEnumerable<int>>(receivedIDs => receivedIDs.SequenceEqual(documentsIDs)),
-					It.Is<IEnumerable<FieldRefValuePair>>(fields => fieldsValidator(fields)),
-					FieldUpdateBehavior.Merge,
-					ExecutionIdentity.CurrentUser));
+			return _massUpdateTests.ShouldBuildProperRequest();
 		}
 
 		[TestCase(true)]
 		[TestCase(false)]
-		public async Task MassUpdateDocumentsAsync_ShouldReturnCorrectResult(bool expectedResult)
+		public Task MassUpdateAsync_ShouldReturnCorrectResult(bool expectedResult)
 		{
-			// arrange
-			_objectManagerMock
-				.Setup(x => x.MassUpdateAsync(
-					It.IsAny<IEnumerable<int>>(),
-					It.IsAny<IEnumerable<FieldRefValuePair>>(),
-					It.IsAny<FieldUpdateBehavior>(),
-					It.IsAny<ExecutionIdentity>()))
-				.Returns(Task.FromResult(expectedResult));
-
-			// act
-			bool result = await _sut
-				.MassUpdateAsync(
-					Enumerable.Empty<int>(),
-					Enumerable.Empty<FieldUpdateRequestDto>())
-				.ConfigureAwait(false);
-
-			// assert
-			result.Should().Be(expectedResult);
+			return _massUpdateTests.ShouldReturnCorrectResult(expectedResult);
 		}
 
 		[Test]
-		public void MassUpdateDocumentsAsync_ShouldRethrowObjectManagerException()
+		public void MassUpdateAsync_ShouldRethrowObjectManagerException()
 		{
-			// arrange
-			IntegrationPointsException exceptionToThrow = new IntegrationPointsException();
-
-			_objectManagerMock
-				.Setup(x => x.MassUpdateAsync(
-					It.IsAny<IEnumerable<int>>(),
-					It.IsAny<IEnumerable<FieldRefValuePair>>(),
-					It.IsAny<FieldUpdateBehavior>(),
-					It.IsAny<ExecutionIdentity>()))
-				.Throws(exceptionToThrow);
-
-			// act
-			Func<Task> massUpdateAction = () => _sut
-				.MassUpdateAsync(
-					Enumerable.Empty<int>(),
-					Enumerable.Empty<FieldUpdateRequestDto>());
-
-			// assert
-			massUpdateAction.ShouldThrow<IntegrationPointsException>()
-				.Which.Should().Be(exceptionToThrow);
-		}
-
-		private IFieldValueDto CreateFieldValueDtoMock(int value)
-		{
-			var fieldValueMock = new Mock<IFieldValueDto>();
-			fieldValueMock.Setup(x => x.Value).Returns(value);
-			return fieldValueMock.Object;
+			_massUpdateTests.ShouldRethrowObjectManagerException();
 		}
 	}
 }
