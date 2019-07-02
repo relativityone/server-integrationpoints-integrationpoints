@@ -26,6 +26,8 @@ namespace Rip.SystemTests.JobHistory
 		private int _workspaceID => SystemTestsFixture.WorkspaceID;
 		private IRelativityObjectManager _objectManager;
 
+		private List<int> _artifactsIDsToDelete;
+
 		[OneTimeSetUp]
 		public void OneTimeSetup()
 		{
@@ -42,6 +44,21 @@ namespace Rip.SystemTests.JobHistory
 				repositoryFactory,
 				logger,
 				massUpdateHelper);
+		}
+
+		[SetUp]
+		public void SetUp()
+		{
+			_artifactsIDsToDelete = new List<int>();
+		}
+
+		[TearDown]
+		public void TearDown()
+		{
+			foreach (int artifactID in _artifactsIDsToDelete)
+			{
+				_objectManager.Delete(artifactID);
+			}
 		}
 
 		[IdentifiedTestCase("e5b734d9-5020-47f5-ab78-34363fb186a3", 0, 0)]
@@ -128,7 +145,9 @@ namespace Rip.SystemTests.JobHistory
 				Name = $"Dummy - {Guid.NewGuid()}"
 			};
 
-			return _objectManager.Create(jobHistory);
+			int artifactID = _objectManager.Create(jobHistory);
+			_artifactsIDsToDelete.Add(artifactID);
+			return artifactID;
 		}
 
 		private int CreateDummyIntegrationPoints()
@@ -138,7 +157,9 @@ namespace Rip.SystemTests.JobHistory
 				Name = $"Dummy - {Guid.NewGuid()}"
 			};
 
-			return _objectManager.Create(integrationPoint);
+			int artifactID = _objectManager.Create(integrationPoint);
+			_artifactsIDsToDelete.Add(artifactID);
+			return artifactID;
 		}
 
 		private Task<List<JobHistoryError>> GetAllJobHistoryErrorsForJobHistoryAsync(int jobHistoryArtifactID)
