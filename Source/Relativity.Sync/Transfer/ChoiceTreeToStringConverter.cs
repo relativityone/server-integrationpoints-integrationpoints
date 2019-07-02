@@ -16,11 +16,11 @@ namespace Relativity.Sync.Transfer
 			_nestedValueDelimiter = config.ImportSettings.NestedValueDelimiter;
 		}
 
-		public string ConvertTreeToString(IList<ChoiceWithParentInfo> tree)
+		public string ConvertTreeToString(IList<ChoiceWithChildInfo> tree)
 		{
 			var treePaths = new List<StringBuilder>();
 
-			foreach (ChoiceWithParentInfo choice in tree)
+			foreach (ChoiceWithChildInfo choice in tree)
 			{
 				var path = new StringBuilder();
 				Traverse(choice, treePaths, path);
@@ -30,7 +30,7 @@ namespace Relativity.Sync.Transfer
 			return merged;
 		}
 
-		private void Traverse(ChoiceWithParentInfo choice, IList<StringBuilder> paths, StringBuilder path)
+		private void Traverse(ChoiceWithChildInfo choice, IList<StringBuilder> paths, StringBuilder path)
 		{
 			path.Append(choice.Name);
 
@@ -40,7 +40,7 @@ namespace Relativity.Sync.Transfer
 			}
 			else
 			{
-				foreach (ChoiceWithParentInfo child in choice.Children)
+				foreach (ChoiceWithChildInfo child in choice.Children)
 				{
 					var newPath = new StringBuilder(path.ToString());
 					newPath.Append(_nestedValueDelimiter);

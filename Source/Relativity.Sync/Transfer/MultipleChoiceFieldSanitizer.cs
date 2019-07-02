@@ -72,20 +72,20 @@ namespace Relativity.Sync.Transfer
 			}
 
 			IList<ChoiceWithParentInfo> choicesFlatList = await _choiceCache.GetChoicesWithParentInfoAsync(choices).ConfigureAwait(false);
-			IList<ChoiceWithParentInfo> choicesTree = BuildChoiceTree(choicesFlatList, null);	// start with null to designate the roots of the tree
+			IList<ChoiceWithChildInfo> choicesTree = BuildChoiceTree(choicesFlatList, null);	// start with null to designate the roots of the tree
 
 			string treeString = _choiceTreeConverter.ConvertTreeToString(choicesTree);
 			return treeString;
 		}
 
-		private IList<ChoiceWithParentInfo> BuildChoiceTree(IList<ChoiceWithParentInfo> flatList, int? parentArtifactId)
+		private IList<ChoiceWithChildInfo> BuildChoiceTree(IList<ChoiceWithParentInfo> flatList, int? parentArtifactId)
 		{
-			IList<ChoiceWithParentInfo> tree = new List<ChoiceWithParentInfo>();
+			var tree = new List<ChoiceWithChildInfo>();
 			foreach (ChoiceWithParentInfo choice in flatList.Where(x => x.ParentArtifactId == parentArtifactId))
 			{
-				IList<ChoiceWithParentInfo> choiceChildren = BuildChoiceTree(flatList, choice.ArtifactID);
-				choice.Children.AddRange(choiceChildren);
-				tree.Add(choice);
+				IList<ChoiceWithChildInfo> choiceChildren = BuildChoiceTree(flatList, choice.ArtifactID);
+				var choiceWithChildren = new ChoiceWithChildInfo(choice.ArtifactID, choice.Name, choiceChildren);
+				tree.Add(choiceWithChildren);
 			}
 			return tree;
 		}
