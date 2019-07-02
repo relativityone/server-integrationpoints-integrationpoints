@@ -2,7 +2,7 @@
 using System.Linq;
 using Moq.Language;
 
-namespace kCura.IntegrationPoint.Tests.Core.Extensions
+namespace kCura.IntegrationPoint.Tests.Core.Extensions.Moq
 {
 	public static class MoqExtensions
 	{
