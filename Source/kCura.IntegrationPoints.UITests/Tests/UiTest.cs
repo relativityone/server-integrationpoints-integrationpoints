@@ -126,12 +126,6 @@ namespace kCura.IntegrationPoints.UITests.Tests
 				Log.Information("ID of workspace '{WorkspaceName}': {WorkspaceId}.", Context.WorkspaceName, Context.WorkspaceId);
 			}
 
-			var applicationManager = new RelativityApplicationManager(Helper);
-			if (SharedVariables.UseIpRapFile())
-			{
-				await applicationManager.ImportRipToLibraryAsync().ConfigureAwait(false);
-			}
-
 			Task installIntegrationPointsTask = Context.InstallIntegrationPointsAsync();
 
 			if (!SharedVariables.UiSkipDocumentImport)
