@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				Fields = new List<FieldRef> { new FieldRef("Control Number") }
 			};
 
-			using (var proxy = Helper.CreateAdminProxy<IKeywordSearchManager>())
+			using (var proxy = Helper.CreateProxy<IKeywordSearchManager>())
 			{
 				return proxy.CreateSingleAsync(workspaceID, keywordSearch).GetAwaiter().GetResult();
 			}
@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static void UpdateSavedSearchCriteria(int workspaceArtifactID, int searchArtifactID, CriteriaCollection searchCriteria)
 		{
-			using (var proxy = Helper.CreateAdminProxy<IKeywordSearchManager>())
+			using (var proxy = Helper.CreateProxy<IKeywordSearchManager>())
 			{
 				KeywordSearch keywordSearch = proxy.ReadSingleAsync(workspaceArtifactID, searchArtifactID).Result;
 				keywordSearch.SearchCriteria = searchCriteria;
@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			{
 				return;
 			}
-			using (var proxy = Helper.CreateAdminProxy<IKeywordSearchManager>())
+			using (var proxy = Helper.CreateProxy<IKeywordSearchManager>())
 			{
 				proxy.DeleteSingleAsync(workspaceArtifactID, savedSearchArtifactID).GetAwaiter().GetResult();
 			}
@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static int Create(int workspaceArtifactID, KeywordSearch search)
 		{
-			using (var proxy = Helper.CreateAdminProxy<IKeywordSearchManager>())
+			using (var proxy = Helper.CreateProxy<IKeywordSearchManager>())
 			{
 				return proxy.CreateSingleAsync(workspaceArtifactID, search).GetAwaiter().GetResult();
 			}
@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static async Task<KeywordSearch> ReadAsync(int workspaceArtifactID, int searchArtifactID)
 		{
-			using (var proxy = Helper.CreateAdminProxy<IKeywordSearchManager>())
+			using (var proxy = Helper.CreateProxy<IKeywordSearchManager>())
 			{
 				return await proxy.ReadSingleAsync(workspaceArtifactID, searchArtifactID).ConfigureAwait(false);
 			}
@@ -69,7 +69,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		
 		public static int CreateSearchFolder(int workspaceArtifactID, SearchContainer searchContainer)
 		{
-			using (var proxy = Helper.CreateAdminProxy<ISearchContainerManager>())
+			using (var proxy = Helper.CreateProxy<ISearchContainerManager>())
 			{
 				return proxy.CreateSingleAsync(workspaceArtifactID, searchContainer).GetAwaiter().GetResult();
 			}
@@ -78,7 +78,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		public static void ModifySavedSearchByAddingPrefix(IRepositoryFactory repositoryFactory, int workspaceID, int savedSearchID, string documentPrefix, bool excludeExpDocs)
 		{
 			IFieldQueryRepository sourceFieldQueryRepository = repositoryFactory.GetFieldQueryRepository(workspaceID);
-			int controlNumberFieldArtifactID = sourceFieldQueryRepository.RetrieveTheIdentifierField((int)ArtifactType.Document).ArtifactId;
+			int controlNumberFieldArtifactID = sourceFieldQueryRepository.RetrieveIdentifierField((int)ArtifactType.Document).ArtifactId;
 
 			var fieldRef = new FieldRef(controlNumberFieldArtifactID)
 			{

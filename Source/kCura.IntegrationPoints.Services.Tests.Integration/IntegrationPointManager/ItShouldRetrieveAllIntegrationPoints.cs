@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 				x.ArtifactID = CreateOrUpdateIntegrationPoint(x).ArtifactID;
 			});
 
-			_client = Helper.CreateAdminProxy<IIntegrationPointManager>();
+			_client = Helper.CreateProxy<IIntegrationPointManager>();
 		}
 
 		public override void SuiteTeardown()

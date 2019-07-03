@@ -79,7 +79,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		}
 
 		[OneTimeSetUp]
-		protected void SetupSuite()
+		protected Task SetupSuite()
 		{
 			// enable TLS 1.2 for R1 regression environments
 			ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
@@ -91,10 +91,10 @@ namespace kCura.IntegrationPoints.UITests.Tests
 
 			Context = new TestContext();
 			Context.InitUser();
-			Task agentSetupTask = SetupAgentAsync();
+			Task agentSetupTask = Agent.CreateIntegrationPointAgentIfNotExistsAsync();
 			Task workspaceSetupTask = SetupWorkspaceAsync();
 
-			Task.WaitAll(agentSetupTask, workspaceSetupTask);
+			return Task.WhenAll(agentSetupTask, workspaceSetupTask);
 		}
 
 		[SetUp]
@@ -107,16 +107,11 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			}
 		}
 
-		private async Task SetupAgentAsync()
-		{
-			await Task.Run(() => Agent.CreateIntegrationPointAgentIfNotExists());
-		}
-
 		private async Task SetupWorkspaceAsync()
 		{
 			if (string.IsNullOrEmpty(SharedVariables.UiUseThisExistingWorkspace))
 			{
-				await CreateWorkspaceAsync();
+				await CreateWorkspaceAsync().ConfigureAwait(false);
 			}
 			else
 			{
@@ -135,20 +130,20 @@ namespace kCura.IntegrationPoints.UITests.Tests
 
 			if (!SharedVariables.UiSkipDocumentImport)
 			{
-				await ImportDocumentsAsync();
+				await ImportDocumentsAsync().ConfigureAwait(false);
 			}
 
-			await installIntegrationPointsTask;
+			await installIntegrationPointsTask.ConfigureAwait(false);
 		}
 
-		protected virtual async Task CreateWorkspaceAsync()
+		protected virtual Task CreateWorkspaceAsync()
 		{
-			await Context.CreateTestWorkspaceAsync();
+			return Context.CreateTestWorkspaceAsync();
 		}
 
-		protected virtual async Task ImportDocumentsAsync()
+		protected virtual Task ImportDocumentsAsync()
 		{
-			await Context.ImportDocumentsAsync();
+			return Context.ImportDocumentsAsync();
 		}
 
 		[TearDown]

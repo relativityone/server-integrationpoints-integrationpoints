@@ -94,9 +94,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				BatchInstance = Guid.NewGuid(),
 				BatchParameters = new List<String>() { "1", "2" }
 			};
-			List<Job> associatedJobs = new List<Job>() {_job};
-			List<FieldMap> fieldsMap = new List<FieldMap>();
-			integrationPointRepository.ReadAsync(_job.RelatedObjectArtifactID).Returns(_integrationPoint);
+			var associatedJobs = new List<Job>() {_job};
+			var fieldsMap = new List<FieldMap>();
+			integrationPointRepository.ReadWithFieldMappingAsync(_job.RelatedObjectArtifactID).Returns(_integrationPoint);
 			integrationPointRepository.GetSecuredConfiguration(_job.RelatedObjectArtifactID).Returns(_integrationPoint.SecuredConfiguration);
 			_caseServiceContext.RsapiService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider.Value).Returns(sourceProvider);
 			_caseServiceContext.RsapiService.RelativityObjectManager.Read<DestinationProvider>(_integrationPoint.DestinationProvider.Value).Returns(destinationProvider);

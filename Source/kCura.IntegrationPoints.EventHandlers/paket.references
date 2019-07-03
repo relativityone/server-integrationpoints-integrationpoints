@@ -7,7 +7,6 @@ LanguageExt.Core
 Relativity
 Relativity.Core
 Relativity.Data
-Relativity.SecretCatalog
 Relativity.Services.Interfaces
 SystemWrapper.Interfaces
 Relativity.DataTransfer.MessageService

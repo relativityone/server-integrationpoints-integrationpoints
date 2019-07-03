@@ -24,8 +24,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 					new SourceProvider()
 					{
 						Name = Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_NAME,
-						Url = String.Format("/%applicationpath%/CustomPages/{0}/IntegrationPoints/{1}/",  Core.Constants.IntegrationPoints.RELATIVITY_CUSTOMPAGE_GUID,  Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_CONFIGURATION),
-						ViewDataUrl = String.Format("/%applicationpath%/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/%appId%/api/relativity/view"),
+						Url = $"/%applicationpath%/CustomPages/{Core.Constants.IntegrationPoints.RELATIVITY_CUSTOMPAGE_GUID}/IntegrationPoints/{Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_CONFIGURATION}/",
+						ViewDataUrl = "/%applicationpath%/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/%appId%/api/relativity/view",
 						Configuration = new SourceProviderConfiguration()
 						{
 							AlwaysImportNativeFiles = true,

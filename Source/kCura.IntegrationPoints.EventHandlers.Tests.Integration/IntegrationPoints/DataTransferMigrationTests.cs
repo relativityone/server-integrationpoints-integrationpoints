@@ -10,10 +10,10 @@ using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
@@ -39,6 +39,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 		private ISourceProviderRepository _sourceProviderRepository;
 		private IDataTransferLocationMigrationHelper _dataTransferLocationMigrationHelper;
 		private IRelativityObjectManager _relativityObjectManager;
+		private IIntegrationPointRepository _integrationPointRepository;
 		private IDataTransferLocationService _dataTransferLocationService;
 		private IResourcePoolManager _resourcePoolManager;
 		private IEHHelper _ehHelper;
@@ -63,6 +64,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 			_dataTransferLocationService = Container.Resolve<IDataTransferLocationService>();
 			_ehHelper = new EHHelper(Helper, WorkspaceArtifactId);
 			_relativityObjectManager = CaseContext.RsapiService.RelativityObjectManager;
+			_integrationPointRepository = new IntegrationPointRepository(
+				_relativityObjectManager, 
+				Substitute.For<IIntegrationPointSerializer>(),
+				Substitute.For<ISecretsRepository>(),
+				_logger);
 			_choiceQuery = Container.Resolve<IChoiceQuery>();
 			_resourcePoolManager = Substitute.For<IResourcePoolManager>();
 
@@ -75,17 +81,22 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 
 			_destinationProviderRepository = _repositoryFactory.GetDestinationProviderRepository(WorkspaceArtifactId);
 			_sourceProviderRepository = _repositoryFactory.GetSourceProviderRepository(WorkspaceArtifactId);
-			_relativityObjectManager = CaseContext.RsapiService.RelativityObjectManager;
 
-			_dataTransferLocationMigration = CreteDataTransferLocationMigration(_logger, _destinationProviderRepository,
-				_sourceProviderRepository, _dataTransferLocationMigrationHelper, CaseContext, _relativityObjectManager,
-				_dataTransferLocationService, _resourcePoolManager, _ehHelper);
+			_dataTransferLocationMigration = CreteDataTransferLocationMigration(
+				_logger, 
+				_destinationProviderRepository,
+				_sourceProviderRepository, 
+				_dataTransferLocationMigrationHelper,
+				_integrationPointRepository,
+				_dataTransferLocationService, 
+				_resourcePoolManager, 
+				_ehHelper);
 		}
 
 		public override void TestTeardown()
 		{
 			base.TestTeardown();
-			_relativityObjectManager.Delete(_savedIntegrationPointId);
+			_integrationPointRepository.Delete(_savedIntegrationPointId);
 		}
 
 		[IdentifiedTest("7932a346-7bce-4601-84b6-bfc40ce59486")]
@@ -97,7 +108,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 			_dataTransferLocationMigration.Migrate();
 
 			Data.IntegrationPoint integrationPointAfterMigration =
-				IntegrationPointRepository.ReadAsync(_savedIntegrationPointId).GetAwaiter().GetResult();
+				IntegrationPointRepository.ReadWithFieldMappingAsync(_savedIntegrationPointId).GetAwaiter().GetResult();
 			Dictionary<string, object> deserializedSourceConfigurationAfterMigration =
 				_serializer.Deserialize<Dictionary<string, object>>(integrationPointAfterMigration.SourceConfiguration);
 
@@ -130,9 +141,15 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 			_sourceProviderRepository.GetArtifactIdFromSourceProviderTypeGuidIdentifier(Constants.IntegrationPoints.SourceProviders.RELATIVITY)
 				.Throws(new Exception("SampleException"));
 
-			_dataTransferLocationMigration = CreteDataTransferLocationMigration(_logger, _destinationProviderRepository,
-				_sourceProviderRepository, _dataTransferLocationMigrationHelper, CaseContext, _relativityObjectManager,
-				_dataTransferLocationService, _resourcePoolManager, _ehHelper);
+			_dataTransferLocationMigration = CreteDataTransferLocationMigration(
+				_logger, 
+				_destinationProviderRepository,
+				_sourceProviderRepository, 
+				_dataTransferLocationMigrationHelper,
+				_integrationPointRepository,
+				_dataTransferLocationService, 
+				_resourcePoolManager, 
+				_ehHelper);
 
 			Assert.That(() => _dataTransferLocationMigration.Migrate(), Throws.Exception);
 			_logger.Received(1).LogError(Arg.Any<Exception>() ,"Failed to retrieve Relativity Source Provider ArtifactId");
@@ -149,9 +166,15 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 					Constants.IntegrationPoints.DestinationProviders.LOADFILE)
 				.Throws(new Exception("SampleException"));
 
-			_dataTransferLocationMigration = CreteDataTransferLocationMigration(_logger, _destinationProviderRepository,
-				_sourceProviderRepository, _dataTransferLocationMigrationHelper, CaseContext, _relativityObjectManager,
-				_dataTransferLocationService, _resourcePoolManager, _ehHelper);
+			_dataTransferLocationMigration = CreteDataTransferLocationMigration(
+				_logger, 
+				_destinationProviderRepository,
+				_sourceProviderRepository, 
+				_dataTransferLocationMigrationHelper, 
+				_integrationPointRepository,
+				_dataTransferLocationService, 
+				_resourcePoolManager, 
+				_ehHelper);
 
 			Assert.That(() => _dataTransferLocationMigration.Migrate(), Throws.Exception);
 			_logger.Received(1).LogError(Arg.Any<Exception>(), "Failed to retrieve LoadFile Destination Provider ArtifactId");
@@ -163,26 +186,44 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 			Data.IntegrationPoint integrationPoint = CreateIntegrationPoint();
 			_savedIntegrationPointId = SaveIntegrationPoint(integrationPoint);
 
-			_relativityObjectManager = Substitute.For<IRelativityObjectManager>();
-			_relativityObjectManager.Query<Data.IntegrationPoint>(Arg.Any<QueryRequest>()).Throws(new Exception("SampleException"));
+			IIntegrationPointRepository integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
+			integrationPointRepository
+				.GetAllBySourceAndDestinationProviderIDs(Arg.Any<int>(), Arg.Any<int>())
+				.Throws(new Exception("SampleException"));
 
-			_dataTransferLocationMigration = CreteDataTransferLocationMigration(_logger, _destinationProviderRepository,
-				_sourceProviderRepository, _dataTransferLocationMigrationHelper, CaseContext, _relativityObjectManager,
-				_dataTransferLocationService, _resourcePoolManager, _ehHelper);
+			_dataTransferLocationMigration = CreteDataTransferLocationMigration(
+				_logger, 
+				_destinationProviderRepository,
+				_sourceProviderRepository, 
+				_dataTransferLocationMigrationHelper,
+				integrationPointRepository,
+				_dataTransferLocationService, 
+				_resourcePoolManager, 
+				_ehHelper);
 
 			Assert.That(() => _dataTransferLocationMigration.Migrate(), Throws.Exception);
 			_logger.Received(1).LogError(Arg.Any<Exception>(), "Failed to retrieve Integration Points data");
 		}
 
-		private IDataTransferLocationMigration CreteDataTransferLocationMigration(IAPILog logger,
-			IDestinationProviderRepository destinationProviderRepository, ISourceProviderRepository sourceProviderRepository,
-			IDataTransferLocationMigrationHelper dataTransferLocationMigrationHelper, ICaseServiceContext serviceContext,
-			IRelativityObjectManager integrationPointLibrary,
-			IDataTransferLocationService dataTransferLocationService, IResourcePoolManager resourcePoolManager, IEHHelper helper)
+		private IDataTransferLocationMigration CreteDataTransferLocationMigration(
+			IAPILog logger,
+			IDestinationProviderRepository destinationProviderRepository, 
+			ISourceProviderRepository sourceProviderRepository,
+			IDataTransferLocationMigrationHelper dataTransferLocationMigrationHelper, 
+			IIntegrationPointRepository integrationPointRepository,
+			IDataTransferLocationService dataTransferLocationService, 
+			IResourcePoolManager resourcePoolManager, 
+			IEHHelper helper)
 		{
-			return new DataTransferLocationMigration(logger, destinationProviderRepository,
-				sourceProviderRepository, dataTransferLocationMigrationHelper, serviceContext, integrationPointLibrary,
-				dataTransferLocationService, resourcePoolManager, helper);
+			return new DataTransferLocationMigration(
+				logger, 
+				destinationProviderRepository,
+				sourceProviderRepository, 
+				dataTransferLocationMigrationHelper,
+				integrationPointRepository,
+				dataTransferLocationService, 
+				resourcePoolManager, 
+				helper);
 		}
 
 		private Data.IntegrationPoint CreateIntegrationPoint()

@@ -4,6 +4,7 @@ library 'PipelineTools@RMT-9.3.1'
 library 'SCVMMHelpers@3.2.0'
 library 'GitHelpers@1.0.0'
 library 'SlackHelpers@3.0.0'
+library 'TestTrackerHelpers@master'
 
 properties([
 	pipelineTriggers(env.JOB_NAME.contains("IntegrationPointsNightly") ? [cron('H 16 * * *')] : []),
@@ -65,6 +66,11 @@ properties([
 			name: 'chromiumVersion', 
 			defaultValue: '72.0.3626.0', 
 			description: 'Set chromium version to be installed for UI tests.'
+		),
+		booleanParam(
+			name: 'enableCheckConfigureAwait',
+			defaultValue: true,
+			description: 'Enable checking if configureAwait is present everywhere it needs to be.'
 		)
 	])
 ])
@@ -92,7 +98,7 @@ timestamps
 					step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
 				}
 				jenkinsHelpers = load "DevelopmentScripts/JenkinsHelpers.groovy"
-				jenkinsHelpers.initializeRIPPipeline(this, env, params)
+				jenkinsHelpers.initializeRIPPipeline(this, env, params, relativityBranchFallback)
 			}
 			stage ('Get Version')
 			{
@@ -139,7 +145,7 @@ timestamps
 				// Provision SUT
 				stage('Install RAID')
 				{
-					jenkinsHelpers.raid(relativityBranchFallback)
+					jenkinsHelpers.raid()
 				}
 			}
 
@@ -178,6 +184,7 @@ timestamps
 				{
 					stage ('Gathering test stats')
 					{
+						jenkinsHelpers.publishBuildArtifacts()
 						jenkinsHelpers.gatherTestStats()
 					}
 				}
@@ -219,7 +226,8 @@ timestamps
 		{
 			parallel([
 				CleanupVms: { jenkinsHelpers.cleanupVMs() },
-				CleanupChefArtifacts: { jenkinsHelpers.cleanupChefArtifacts() }
+				CleanupChefArtifacts: { jenkinsHelpers.cleanupChefArtifacts() },
+				ImportTestResultsToTestTracker: { jenkinsHelpers.importTestResultsToTestTracker() }
 			])
 		}
 

@@ -119,13 +119,13 @@ namespace kCura.IntegrationPoints.EventHandlers
 			};
 		}
 
-		private Response HandleError(int wkspId, Exception ex, Guid correlationId)
+		private Response HandleError(int workspaceID, Exception ex, Guid correlationId)
 		{
 			string descError = GetFailureMessage(ex);
 
 			var errorModel = new ErrorModel(ex, true/* We want to add each errro to Error tab*/, descError)
 			{
-				WorkspaceId = wkspId,
+				WorkspaceId = workspaceID,
 				CorrelationId = correlationId
 			};
 			_errorService.Value.Log(errorModel);

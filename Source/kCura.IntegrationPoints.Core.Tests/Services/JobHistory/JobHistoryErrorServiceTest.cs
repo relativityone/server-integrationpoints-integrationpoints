@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
@@ -25,6 +26,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 
 		private JobHistoryErrorService _instance;
 		private IJobStopManager _stopJobManager;
+		private IIntegrationPointRepository _integrationPointRepository;
 
 		[SetUp]
 		public override void SetUp()
@@ -35,8 +37,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			_caseServiceContext = Substitute.For<ICaseServiceContext>();
 			_helper = Substitute.For<IHelper>();
 			_stopJobManager = Substitute.For<IJobStopManager>();
+			_integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
 
-			_instance = new JobHistoryErrorService(_caseServiceContext, _helper)
+			_instance = new JobHistoryErrorService(_caseServiceContext, _helper, _integrationPointRepository)
 			{
 				IntegrationPoint = _integrationPoint,
 				JobHistory = _jobHistory,
@@ -110,14 +113,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			// Arrange
 			_instance.AddError(ErrorTypeChoices.JobHistoryErrorItem, "MyIdentifier", "Fake item error.", null);
 			_caseServiceContext.RsapiService.JobHistoryErrorLibrary.Create(Arg.Any<IEnumerable<JobHistoryError>>()).Throws(new Exception());
-			_caseServiceContext.RsapiService.RelativityObjectManager.Update(Arg.Any<Data.IntegrationPoint>()).Returns(true);
 			_instance.IntegrationPoint.HasErrors = false;
 
 			// Act
 			Exception returnedException = Assert.Throws<Exception>(() => _instance.CommitErrors());
 
 			// Assert
-			_caseServiceContext.RsapiService.RelativityObjectManager.Received().Update(Arg.Any<Data.IntegrationPoint>());
+			_integrationPointRepository.Received().Update(Arg.Any<Data.IntegrationPoint>());
 			Assert.IsTrue(returnedException.Message.Contains("Could not commit Job History Errors. These are uncommitted errors:" + Environment.NewLine));
 			Assert.IsTrue(returnedException.Message.Contains("Type: Item    Identifier: MyIdentifier    Error: Fake item error."));
 		}
@@ -126,8 +128,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		public void CommitErrors_FailsCommit_ThrowsException_JobLevelError()
 		{
 			// Arrange
-		_caseServiceContext.RsapiService.JobHistoryErrorLibrary.Create(Arg.Any<IEnumerable<JobHistoryError>>()).Throws(new Exception());
-			_caseServiceContext.RsapiService.RelativityObjectManager.Update(Arg.Any<Data.IntegrationPoint>()).Returns(true);
+			_caseServiceContext.RsapiService.JobHistoryErrorLibrary.Create(Arg.Any<IEnumerable<JobHistoryError>>()).Throws(new Exception());
 			_instance.IntegrationPoint.HasErrors = false;
 
 			// Act
@@ -135,7 +136,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			Exception returnedException = Assert.Throws<Exception>(() => _instance.AddError(ErrorTypeChoices.JobHistoryErrorJob, "", "Fake job error.", null));
 
 			// Assert
-			_caseServiceContext.RsapiService.RelativityObjectManager.Received().Update(Arg.Any<Data.IntegrationPoint>());
+			_integrationPointRepository.Received().Update(Arg.Any<Data.IntegrationPoint>());
 			Assert.IsTrue(returnedException.Message.Contains("Could not commit Job History Errors. These are uncommitted errors:" + Environment.NewLine));
 			Assert.IsTrue(returnedException.Message.Contains("Type: Job    Error: Fake job error." + Environment.NewLine));
 		}
@@ -150,7 +151,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			Exception returnedException = Assert.Throws<Exception>(() => _instance.AddError(ErrorTypeChoices.JobHistoryErrorJob, "", "Fake job error.", null));
 
 			// Assert
-			_caseServiceContext.RsapiService.RelativityObjectManager.DidNotReceive().Update(Arg.Any<Data.IntegrationPoint>());
+			_integrationPointRepository.DidNotReceive().Update(Arg.Any<Data.IntegrationPoint>());
 			_caseServiceContext.RsapiService.JobHistoryErrorLibrary.DidNotReceive().Create(Arg.Any<IEnumerable<JobHistoryError>>());
 			Assert.That(returnedException.Message, Is.EqualTo("Type:Job Id:  Error:Fake job error."));
 		}
@@ -237,7 +238,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 
 			// assert
 			Assert.IsFalse(_integrationPoint.HasErrors);
-			_caseServiceContext.RsapiService.RelativityObjectManager.Received(1).Update(_integrationPoint);
+			_integrationPointRepository.Received(1).Update(_integrationPoint);
 
 		}
 
@@ -252,7 +253,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 
 			// assert
 			Assert.IsFalse(_integrationPoint.HasErrors);
-			_caseServiceContext.RsapiService.RelativityObjectManager.Received(1).Update(_integrationPoint);
+			_integrationPointRepository.Received(1).Update(_integrationPoint);
 		}
 
 		[Test]
@@ -267,7 +268,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 
 			// assert
 			Assert.IsFalse(_integrationPoint.HasErrors);
-			_caseServiceContext.RsapiService.RelativityObjectManager.Received(1).Update(_integrationPoint);
+			_integrationPointRepository.Received(1).Update(_integrationPoint);
 		}
 
 		[Test]
@@ -282,14 +283,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 
 			// assert
 			Assert.IsTrue(_integrationPoint.HasErrors);
-			_caseServiceContext.RsapiService.RelativityObjectManager.Received(1).Update(_integrationPoint);
+			_integrationPointRepository.Received(1).Update(_integrationPoint);
 		}
 
 		[Test]
 		public void CommitErrors_SuppressErrorOnUpdateHasErrorField()
 		{
 			// ARRANGE
-			_caseServiceContext.RsapiService.RelativityObjectManager.Update(Arg.Any<Data.IntegrationPoint>()).Throws(new Exception());
+			_integrationPointRepository
+				.When(mock => mock.Update(Arg.Any<Data.IntegrationPoint>()))
+				.Do(call => throw new Exception());
 
 			// ACT & ASSERT
 			Assert.DoesNotThrow(() => _instance.CommitErrors());
@@ -307,18 +310,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 
 			public void RaiseDocumentError(string identifier, string msg)
 			{
-				if (OnDocumentError != null)
-				{
-					OnDocumentError(identifier, msg);
-				}
+				OnDocumentError?.Invoke(identifier, msg);
 			}
 
 			public void RaiseOnJobError(Exception ex)
 			{
-				if (OnJobError != null)
-				{
-					OnJobError(ex);
-				}
+				OnJobError?.Invoke(ex);
 			}
 		}
 	}

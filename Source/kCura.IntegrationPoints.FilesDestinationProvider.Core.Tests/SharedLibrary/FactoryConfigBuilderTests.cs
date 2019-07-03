@@ -1,7 +1,7 @@
 ﻿using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Extensions;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers.FileNaming;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
@@ -21,6 +21,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 		private ExportDataContext _exportDataContext;
 		private JobHistoryErrorServiceProvider _jobHistoryErrorServiceProvider;
 		private IServiceFactory _serviceFactory;
+		private IIntegrationPointRepository _integrationPointRepository;
 
 		[SetUp]
 		public override void SetUp()
@@ -28,7 +29,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 			IHelper helper = Substitute.For<IHelper>();
 			IExportConfig exportConfig = Substitute.For<IExportConfig>();
 			ICaseServiceContext context = Substitute.For<ICaseServiceContext>();
-			IJobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(context, helper);
+			_integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
+			var jobHistoryErrorService = new JobHistoryErrorService(context, helper, _integrationPointRepository);
 			_jobHistoryErrorServiceProvider = new JobHistoryErrorServiceProvider(jobHistoryErrorService);
 
 			IFileNameProvidersDictionaryBuilder fileNameProvidersDictionaryBuilder = new FileNameProvidersDictionaryBuilder();

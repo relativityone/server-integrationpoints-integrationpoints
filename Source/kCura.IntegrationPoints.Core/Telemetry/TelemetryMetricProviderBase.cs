@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Services.InternalMetricsCollection;
@@ -31,7 +32,7 @@ namespace kCura.IntegrationPoints.Core.Telemetry
 				using (IInternalMetricsCollectionManager internalMetricsCollectionManager =
 					helper.GetServicesManager().CreateProxy<IInternalMetricsCollectionManager>(ExecutionIdentity.System))
 				{
-					AddMetricsForCategory(GetMetricIdentifiers(), integrationPointCategory, internalMetricsCollectionManager);
+					AddMetricsForCategoryAsync(GetMetricIdentifiers(), integrationPointCategory, internalMetricsCollectionManager).GetAwaiter().GetResult();
 				}
 			}
 			catch (AggregateException ex)
@@ -41,16 +42,24 @@ namespace kCura.IntegrationPoints.Core.Telemetry
 			}
 		}
 
-		private static void AddMetricsForCategory(List<MetricIdentifier> metricIdentifiers, Category category,
+		private static async Task AddMetricsForCategoryAsync(List<MetricIdentifier> metricIdentifiers, Category category,
 			IInternalMetricsCollectionManager internalMetricsCollectionManager)
 		{
+			// Requests to IInternalMetricsCollectionManager have to be sent sequentially REL-307015
 			foreach (MetricIdentifier metricIdentifier in metricIdentifiers)
 			{
-				metricIdentifier.Categories = new List<CategoryRef> {category};
-
-				MetricIdentifier identifier = metricIdentifier;
-				Task.Run(async () => await internalMetricsCollectionManager.CreateMetricIdentifierAsync(identifier, false)).ConfigureAwait(false).GetAwaiter().GetResult();
+				await AddMetricForCategoryAsync(
+					category,
+					internalMetricsCollectionManager,
+					metricIdentifier).ConfigureAwait(false);
 			}
+		}
+
+		private static Task AddMetricForCategoryAsync(Category category,
+			IInternalMetricsCollectionManager internalMetricsCollectionManager, MetricIdentifier metricIdentifier)
+		{
+			metricIdentifier.Categories = new List<CategoryRef> { category };
+			return internalMetricsCollectionManager.CreateMetricIdentifierAsync(metricIdentifier, false);
 		}
 
 		#endregion //Methods
@@ -61,7 +70,7 @@ namespace kCura.IntegrationPoints.Core.Telemetry
 		{
 			_logger.LogError(ex, "Failed to add telemetry metric identifiers for {ProviderName}.", ProviderName);
 		}
-		
+
 		#endregion
 	}
 }

@@ -21,7 +21,10 @@ namespace kCura.IntegrationPoints.Services
 		/// <param name="logger"></param>
 		/// <param name="permissionRepositoryFactory"></param>
 		/// <param name="container"></param>
-		internal IntegrationPointManager(ILog logger, IPermissionRepositoryFactory permissionRepositoryFactory, IWindsorContainer container)
+		internal IntegrationPointManager(
+			ILog logger, 
+			IPermissionRepositoryFactory permissionRepositoryFactory, 
+			IWindsorContainer container)
 			: base(logger, permissionRepositoryFactory, container)
 		{
 		}
@@ -36,13 +39,19 @@ namespace kCura.IntegrationPoints.Services
 
 		public async Task<IntegrationPointModel> CreateIntegrationPointAsync(CreateIntegrationPointRequest request)
 		{
-			CheckPermissions(nameof(CreateIntegrationPointAsync), request.WorkspaceArtifactId,
-				new[] {new PermissionModel(ObjectTypeGuids.IntegrationPointGuid, ObjectTypes.IntegrationPoint, ArtifactPermission.Create)});
+			CheckPermissions(
+				nameof(CreateIntegrationPointAsync), 
+				request.WorkspaceArtifactId,
+				
+				new[]
+				{
+					new PermissionModel(ObjectTypeGuids.IntegrationPointGuid, ObjectTypes.IntegrationPoint, ArtifactPermission.Create)
+				});
 			try
 			{
 				using (var container = GetDependenciesContainer(request.WorkspaceArtifactId))
 				{
-					var integrationPointRepository = container.Resolve<IIntegrationPointRepository>();
+					IIntegrationPointRepository integrationPointRepository = container.Resolve<IIntegrationPointRepository>();
 					return await Task.Run(() => integrationPointRepository.CreateIntegrationPoint(request)).ConfigureAwait(false);
 				}
 			}
@@ -55,13 +64,18 @@ namespace kCura.IntegrationPoints.Services
 
 		public async Task<IntegrationPointModel> UpdateIntegrationPointAsync(UpdateIntegrationPointRequest request)
 		{
-			CheckPermissions(nameof(UpdateIntegrationPointAsync), request.WorkspaceArtifactId,
-				new[] {new PermissionModel(ObjectTypeGuids.IntegrationPointGuid, ObjectTypes.IntegrationPoint, ArtifactPermission.Edit)});
+			CheckPermissions(
+				nameof(UpdateIntegrationPointAsync), 
+				request.WorkspaceArtifactId,
+				new[]
+				{
+					new PermissionModel(ObjectTypeGuids.IntegrationPointGuid, ObjectTypes.IntegrationPoint, ArtifactPermission.Edit)
+				});
 			try
 			{
 				using (var container = GetDependenciesContainer(request.WorkspaceArtifactId))
 				{
-					var integrationPointRepository = container.Resolve<IIntegrationPointRepository>();
+					IIntegrationPointRepository integrationPointRepository = container.Resolve<IIntegrationPointRepository>();
 					return await Task.Run(() => integrationPointRepository.UpdateIntegrationPoint(request)).ConfigureAwait(false);
 				}
 			}
@@ -80,7 +94,7 @@ namespace kCura.IntegrationPoints.Services
 			{
 				using (var container = GetDependenciesContainer(workspaceArtifactId))
 				{
-					var integrationPointRepository = container.Resolve<IIntegrationPointRepository>();
+					IIntegrationPointRepository integrationPointRepository = container.Resolve<IIntegrationPointRepository>();
 					return await Task.Run(() => integrationPointRepository.GetIntegrationPoint(integrationPointArtifactId)).ConfigureAwait(false);
 				}
 			}
@@ -99,7 +113,7 @@ namespace kCura.IntegrationPoints.Services
 			{
 				using (var container = GetDependenciesContainer(workspaceArtifactId))
 				{
-					var integrationPointRepository = container.Resolve<IIntegrationPointRepository>();
+					IIntegrationPointRepository integrationPointRepository = container.Resolve<IIntegrationPointRepository>();
 					return await Task.Run(() => integrationPointRepository.RunIntegrationPoint(workspaceArtifactId, integrationPointArtifactId)).ConfigureAwait(false);
 				}
 			}
@@ -118,7 +132,7 @@ namespace kCura.IntegrationPoints.Services
 			{
 				using (var container = GetDependenciesContainer(workspaceArtifactId))
 				{
-					var integrationPointRepository = container.Resolve<IIntegrationPointRepository>();
+					IIntegrationPointRepository integrationPointRepository = container.Resolve<IIntegrationPointRepository>();
 					return await Task.Run(() => integrationPointRepository.GetAllIntegrationPoints()).ConfigureAwait(false);
 				}
 			}
@@ -137,7 +151,7 @@ namespace kCura.IntegrationPoints.Services
 			{
 				using (var container = GetDependenciesContainer(workspaceArtifactId))
 				{
-					var integrationPointRepository = container.Resolve<IIntegrationPointRepository>();
+					IIntegrationPointRepository integrationPointRepository = container.Resolve<IIntegrationPointRepository>();
 					return await Task.Run(() => integrationPointRepository.GetEligibleToPromoteIntegrationPoints()).ConfigureAwait(false);
 				}
 			}
@@ -156,7 +170,7 @@ namespace kCura.IntegrationPoints.Services
 			{
 				using (var container = GetDependenciesContainer(workspaceArtifactId))
 				{
-					var integrationPointRepository = container.Resolve<IIntegrationPointRepository>();
+					IIntegrationPointRepository integrationPointRepository = container.Resolve<IIntegrationPointRepository>();
 					return await Task.Run(() => integrationPointRepository.GetOverwriteFieldChoices()).ConfigureAwait(false);
 				}
 			}
@@ -179,7 +193,7 @@ namespace kCura.IntegrationPoints.Services
 			{
 				using (var container = GetDependenciesContainer(workspaceArtifactId))
 				{
-					var integrationPointRepository = container.Resolve<IIntegrationPointRepository>();
+					IIntegrationPointRepository integrationPointRepository = container.Resolve<IIntegrationPointRepository>();
 					return await Task.Run(() => integrationPointRepository.CreateIntegrationPointFromProfile(profileArtifactId, integrationPointName)).ConfigureAwait(false);
 				}
 			}
@@ -198,7 +212,7 @@ namespace kCura.IntegrationPoints.Services
 			{
 				using (var container = GetDependenciesContainer(workspaceArtifactId))
 				{
-					var integrationPointRepository = container.Resolve<IIntegrationPointRepository>();
+					IIntegrationPointRepository integrationPointRepository = container.Resolve<IIntegrationPointRepository>();
 					return await Task.Run(() => integrationPointRepository.GetIntegrationPointArtifactTypeId()).ConfigureAwait(false);
 				}
 			}

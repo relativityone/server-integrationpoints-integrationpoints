@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.Data
 
 		public virtual bool HasField(Guid fieldGuid)
 		{
-			return _rdo.Fields.Any(x => x.Guids.Contains(fieldGuid));
+			return Rdo.Fields.Any(x => x.Guids.Contains(fieldGuid));
 		}
 
 		public virtual T GetField<T>(Guid fieldGuid)

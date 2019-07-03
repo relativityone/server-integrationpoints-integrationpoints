@@ -120,7 +120,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		private static void CreateLoginProfile(int userArtifactId, string userEmail)
 		{
-			using (var manager = Helper.CreateAdminProxy<ILoginProfileManager>())
+			using (var manager = Helper.CreateProxy<ILoginProfileManager>())
 			{
 				manager.SaveLoginProfileAsync(new LoginProfile
 				{

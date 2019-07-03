@@ -37,6 +37,7 @@ class RIPPipelineState
     def relativityBuildVersion = ""
     def relativityBuildType = ""
     def relativityBranch = ""
+    def relativityBranchFallback = ""
 
     def version
     def commonBuildArgs
@@ -90,10 +91,11 @@ class RIPPipelineState
 // State for the whole pipeline
 ripPipelineState = null
 
-def initializeRIPPipeline(script, env, params)
+def initializeRIPPipeline(script, env, params, relativityBranchFallback)
 {
     ripPipelineState = new RIPPipelineState(script, env, params)
     ripPipelineState.relativityBranch = params.relativityBranch ?: env.BRANCH_NAME
+    ripPipelineState.relativityBranchFallback = relativityBranchFallback
 }
 
 /*
@@ -121,7 +123,8 @@ def getVersion()
 def build()
 {
     def sonarParameter = shouldRunSonar(params.enableSonarAnalysis, env.BRANCH_NAME)
-    powershell "./build.ps1 $sonarParameter $ripPipelineState.commonBuildArgs"
+    def checkConfigureAwaitParameter = params.enableCheckConfigureAwait ? "-checkConfigureAwait" : ""
+    powershell "./build.ps1 $sonarParameter $ripPipelineState.commonBuildArgs $checkConfigureAwaitParameter"
     archiveArtifacts artifacts: "DevelopmentScripts/*.html", fingerprint: true
 }
 
@@ -201,10 +204,7 @@ def testingVMsAreRequired(params)
 	return !params.skipIntegrationTests || !params.skipUITests
 }
 
-/*
- * @param relativityBranchFallback - the default fallback branch. develop by default, but should be set to release branch name on release branches!!!
- */
-def raid(String relativityBranchFallback)
+def raid()
 {
     timeout(time: 90, unit: 'MINUTES')
     {
@@ -236,7 +236,7 @@ def raid(String relativityBranchFallback)
                 if (installingRelativity)
                 {
                     (relativityBuildVersion, relativityBranch, relativityBuildType) = getNewBranchAndVersion(
-                        relativityBranchFallback,
+                        ripPipelineState.relativityBranchFallback,
                         relativityBranch,
                         params.relativityBuildVersion,
                         params.relativityBuildType,
@@ -328,7 +328,7 @@ def runIntegrationTestsInQuarantine()
     }
 }
 
-def gatherTestStats()
+def publishBuildArtifacts()
 {
     timeout(time: 5, unit: 'MINUTES')
     {
@@ -341,7 +341,13 @@ def gatherTestStats()
         powershell "Import-Module ./Vendor/psake/tools/psake.psm1; Invoke-psake ./DevelopmentScripts/psake-test.ps1 generate_nunit_reports"
         def artifactsPath = Constants.ARTIFACTS_PATH
         archiveArtifacts artifacts: "$artifactsPath/**/*", fingerprint: true, allowEmptyArchive: true
+    }
+}
 
+def gatherTestStats()
+{
+    timeout(time: 5, unit: 'MINUTES')
+    {
         if(isNightly())
         {
             storeIntegrationTestsInQuarantineResults()
@@ -552,6 +558,13 @@ def deleteDirectoryIfExists(String directoryToDelete)
 	}
 }
 
+def importTestResultsToTestTracker()
+{
+    testTracker(ripPipelineState.relativityBuildVersion,
+        env.BRANCH_NAME,
+        "$Constants.INTEGRATION_TESTS_RESULTS_REPORT_PATH;$Constants.UI_TESTS_RESULTS_REPORT_PATH;$Constants.INTEGRATION_TESTS_IN_QUARANTINE_RESULTS_REPORT_PATH")
+}
+
 /*****************
  **** PRIVATE ****
 /*****************
@@ -584,8 +597,8 @@ private isPowershellResultTrue(s)
 
 private shouldRunSonar(Boolean enableSonarAnalysis, String branchName)
 {
-	return (enableSonarAnalysis && branchName == "develop" && !isNightly())
-			? "-sonarqube"
+	return (enableSonarAnalysis && !isNightly())
+			? "-sonarqube $ripPipelineState.relativityBranchFallback"
 			: ""
 }
 
@@ -934,6 +947,7 @@ private storeIntegrationTestsInQuarantineResults()
 
 private stashCommonArtifacts()
 {
+    stash includes: 'Artifacts/*', name: 'buildArtifacts'
 	stash includes: 'DevelopmentScripts/*.ps1', name: 'buildScripts'
     stash includes: 'build.ps1', name: 'buildps1'
     stash includes: 'Vendor/psake/tools/*', name: 'psake'
@@ -943,6 +957,7 @@ private stashCommonArtifacts()
 
 private unstashCommonArtifacts()
 {
+    unstash 'buildArtifacts'
     unstash 'buildScripts'
 	unstash 'buildps1'
     unstash 'psake'

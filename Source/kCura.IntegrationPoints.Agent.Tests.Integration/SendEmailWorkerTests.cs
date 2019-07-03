@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		public async Task OneTimeSetUp()
 		{
 			_jobService = Container.Resolve<IJobService>();
-			_instanceSettingsManager = Helper.CreateAdminProxy<IInstanceSettingManager>();
+			_instanceSettingsManager = Helper.CreateProxy<IInstanceSettingManager>();
 			string localComputerHostname = Dns.GetHostName();
 
 			await SetNotificationInstanceSettings(localComputerHostname).ConfigureAwait(false);
@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		public async Task ShouldSendEmailToSmtpServer()
 		{
 			// arrange
-			EnsureAgentIsEnabled();
+			await EnsureAgentIsEnabledAsync().ConfigureAwait(false);
 			int integrationPointArtifactId = CreateDummyIntegrationPoint();
 
 			using (FakeSmtpServer fakeSmtpServer = FakeSmtpServer.Start(_SMTP_PORT))
@@ -101,10 +101,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			return integrationPointArtifactId;
 		}
 
-		private static void EnsureAgentIsEnabled()
+		private static async Task EnsureAgentIsEnabledAsync()
 		{
-			IntegrationPoint.Tests.Core.Agent.CreateIntegrationPointAgentIfNotExists();
-			IntegrationPoint.Tests.Core.Agent.EnableAllIntegrationPointsAgents();
+			await IntegrationPoint.Tests.Core.Agent.CreateIntegrationPointAgentIfNotExistsAsync().ConfigureAwait(false);
+			await IntegrationPoint.Tests.Core.Agent.EnableAllIntegrationPointsAgentsAsync().ConfigureAwait(false);
 		}
 
 		private void AddSendingEmailJobToQueue(int integrationPointArtifactId)

@@ -146,7 +146,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 			}).LifestyleTransient());
 
 			// TODO: yea, we need a better way of getting the target IRepositoryFactory to the IExporterFactory -- biedrzycki: Sept 1, 2016
-			container.Register(Component.For<global::kCura.IntegrationPoints.Core.Factories.IExporterFactory>().UsingFactoryMethod(
+			container.Register(Component.For<Core.Factories.IExporterFactory>().UsingFactoryMethod(
 				k =>
 				{
 					IOnBehalfOfUserClaimsPrincipalFactory claimsPrincipalFactory =
@@ -155,7 +155,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 					JobContextProvider jobContextProvider = k.Resolve<JobContextProvider>();
 					int integrationPointId = jobContextProvider.Job.RelatedObjectArtifactID;
 					IIntegrationPointRepository integrationPointRepository = k.Resolve<IIntegrationPointRepository>();
-					IntegrationPoint integrationPoint = integrationPointRepository.ReadAsync(integrationPointId).GetAwaiter().GetResult();
+					IntegrationPoint integrationPoint = integrationPointRepository.ReadWithFieldMappingAsync(integrationPointId).GetAwaiter().GetResult();
 					if (integrationPoint == null)
 					{
 						throw new ArgumentException("Failed to retrieved corresponding Integration Point.");

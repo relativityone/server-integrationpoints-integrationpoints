@@ -176,10 +176,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				.Returns(_previousJobHistoryArtifactId);
 			_objectManager.Read<Data.JobHistory>(_previousJobHistoryArtifactId).Returns(_previousJobHistory);
 
-			_integrationPointRepository.ReadAsync(_integrationPointArtifactId).Returns(_integrationPoint);
+			_integrationPointRepository.ReadWithFieldMappingAsync(_integrationPointArtifactId).Returns(_integrationPoint);
 			_objectManager.Read<SourceProvider>(_sourceProviderId).Returns(_sourceProvider);
 			_objectManager.Read<DestinationProvider>(_destinationProviderId).Returns(_destinationProvider);
-			_objectManager.Read<Data.IntegrationPoint>(_integrationPointArtifactId).Returns(_integrationPoint);
+			_integrationPointRepository.ReadWithFieldMappingAsync(_integrationPointArtifactId).Returns(_integrationPoint);
 			_objectManager.Read<IntegrationPointType>(_integrationPointTypeArtifactId).Returns(_integrationPointType);
 		}
 
@@ -646,7 +646,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			// Check if Job status changed to Validation Failed
 			_jobHistoryService.Received().UpdateRdo(Arg.Is<Data.JobHistory>(x => x.JobStatus.Name == JobStatusChoices.JobHistoryValidationFailed.Name));
 			// Check If Integration Points objest has been set HasErrors flag to YES
-			_objectManager.Received()
+			_integrationPointRepository.Received()
 				.Update(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == _integrationPointArtifactId && x.HasErrors == true));
 		}
 
@@ -758,7 +758,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			_jobManager.DidNotReceive().CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), Arg.Any<TaskType>(), _sourceWorkspaceArtifactId, _integrationPoint.ArtifactId, _userId);
 
-			_objectManager.Received()
+			_integrationPointRepository.Received()
 					.Update(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == _integrationPointArtifactId && x.HasErrors == true));
 		}
 
@@ -944,7 +944,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			// Act
 			const string errorMessage = "KHAAAAAANN!!!";
 			var exception = new Exception(errorMessage);
-			_integrationPointRepository.ReadAsync(0).ThrowsForAnyArgs(exception);
+			_integrationPointRepository.ReadWithFieldMappingAsync(0).ThrowsForAnyArgs(exception);
 			_managerFactory.CreateErrorManager(_contextContainer).Returns(_errorManager);
 
 			// Assert
@@ -1141,6 +1141,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			_caseServiceContext.EddsUserID = _userId;
 
+			_integrationPointRepository
+				.CreateOrUpdate(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == model.ArtifactID))
+				.Returns(model.ArtifactID);
+
 			// Act
 			int result = _instance.SaveIntegration(model);
 
@@ -1163,8 +1167,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				x.ObjectTypeGuid == _objectTypeGuid
 			));
 
-
-			_objectManager.Received(1).Update(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == model.ArtifactID));
+			_integrationPointRepository
+				.Received(1)
+				.CreateOrUpdate(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == model.ArtifactID));
 			_jobManager.Received(1).GetJob(
 				_sourceWorkspaceArtifactId,
 				model.ArtifactID,
@@ -1223,9 +1228,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_objectManager.Read<DestinationProvider>(Arg.Is(model.DestinationProvider)).Returns(destinationProvider);
 			_objectManager.Read<IntegrationPointType>(Arg.Is(model.Type)).Returns(integrationPointType);
 
-
 			const int newIntegrationPoinId = 389234;
-			_objectManager.Create(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == 0))
+			_integrationPointRepository
+				.CreateOrUpdate(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == 0))
 				.Returns(newIntegrationPoinId);
 
 			_caseServiceContext.EddsUserID = _userId;
@@ -1251,7 +1256,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				x.ObjectTypeGuid == _objectTypeGuid
 			));
 
-			_objectManager.Received(1).Create(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == newIntegrationPoinId));
+			_integrationPointRepository.Received(1).CreateOrUpdate(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == newIntegrationPoinId));
 			_jobManager.Received(1).GetJob(
 				_sourceWorkspaceArtifactId,
 				newIntegrationPoinId,
@@ -1304,7 +1309,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				LastRun = null,
 				Destination = JsonConvert.SerializeObject(new { DestinationProviderType = "" })
 			};
-			_objectManager.Create(Arg.Any<Data.IntegrationPoint>())
+			_integrationPointRepository.CreateOrUpdate(Arg.Any<Data.IntegrationPoint>())
 				.Returns(integrationPointArtifactId);
 
 			_choiceQuery.GetChoicesOnField(Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<Choice>()
@@ -1422,14 +1427,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		public void ReadIntegrationPointModel_ShouldReturnIntegrationPointModel()
 		{
 			// arrange
-			_integrationPointRepository.ReadAsync(_integrationPointArtifactId).Returns(Task.FromResult(_integrationPoint));
+			_integrationPointRepository.ReadWithFieldMappingAsync(_integrationPointArtifactId).Returns(Task.FromResult(_integrationPoint));
 			IntegrationPointModel expectedResult = (IntegrationPointModel) _integrationPointModel;
 
 			// act
 			IntegrationPointModel result = _instance.ReadIntegrationPointModel(_integrationPointArtifactId);
 
 			// assert
-			_integrationPointRepository.Received(1).ReadAsync(_integrationPointArtifactId);
+			_integrationPointRepository.Received(1).ReadWithFieldMappingAsync(_integrationPointArtifactId);
 			MatchHelper.Matches(expectedResult, result);
 		}
 
@@ -1437,13 +1442,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		public void ReadIntegrationPoint_ShouldReturnIntegrationPoint_WhenRepositoryReturnsIntegrationPoint()
 		{
 			// arrange
-			_integrationPointRepository.ReadAsync(_integrationPointArtifactId).Returns(Task.FromResult(_integrationPoint));
+			_integrationPointRepository.ReadWithFieldMappingAsync(_integrationPointArtifactId).Returns(Task.FromResult(_integrationPoint));
 
 			// act
 			Data.IntegrationPoint result = _instance.ReadIntegrationPoint(_integrationPointArtifactId);
 
 			// assert
-			_integrationPointRepository.Received(1).ReadAsync(_integrationPointArtifactId);
+			_integrationPointRepository.Received(1).ReadWithFieldMappingAsync(_integrationPointArtifactId);
 			MatchHelper.Matches(_integrationPoint, result);
 		}
 
@@ -1451,13 +1456,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		public void ReadIntegrationPoint_ShouldThrowException_WhenRepositoryThrowsException()
 		{
 			// arrange
-			_integrationPointRepository.ReadAsync(_integrationPointArtifactId).Throws<Exception>();
+			_integrationPointRepository.ReadWithFieldMappingAsync(_integrationPointArtifactId).Throws<Exception>();
 
 			// act
 			Assert.Throws<Exception>(() =>_instance.ReadIntegrationPoint(_integrationPointArtifactId));
 
 			// assert
-			_integrationPointRepository.Received(1).ReadAsync(_integrationPointArtifactId);
+			_integrationPointRepository.Received(1).ReadWithFieldMappingAsync(_integrationPointArtifactId);
 		}
 	}
 }

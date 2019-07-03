@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.QueryBuilders;
-using kCura.IntegrationPoints.Data.Transformers;
-using kCura.Relativity.Client.DTOs;
+using kCura.IntegrationPoints.Data.Repositories;
 using Relativity.Services.Objects.DataContracts;
 using Constants = kCura.IntegrationPoints.Core.Constants;
 
@@ -12,19 +10,14 @@ namespace kCura.IntegrationPoints.Services.JobHistory
 	public class RelativityIntegrationPointsRepositoryAdminAccess : IRelativityIntegrationPointsRepository
 	{
 		private readonly IRSAPIService _rsapiService;
-		private readonly IIntegrationPointByProvidersQueryBuilder _integrationPointByProvidersQueryBuilder;
-		private readonly ISourceProviderArtifactIdByGuidQueryBuilder _sourceProviderArtifactIdByGuidQueryBuilder;
-		private readonly IDestinationProviderArtifactIdByGuidQueryBuilder _destinationProviderArtifactIdByGuidQueryBuilder;
+		private readonly IIntegrationPointRepository _integrationPointRepository;
 
-		public RelativityIntegrationPointsRepositoryAdminAccess(IRSAPIService rsapiService,
-			IIntegrationPointByProvidersQueryBuilder integrationPointByProvidersQueryBuilder,
-			ISourceProviderArtifactIdByGuidQueryBuilder sourceProviderArtifactIdByGuidQueryBuilder,
-			IDestinationProviderArtifactIdByGuidQueryBuilder destinationProviderArtifactIdByGuidQueryBuilder)
+		public RelativityIntegrationPointsRepositoryAdminAccess(
+			IRSAPIService rsapiService,
+			IIntegrationPointRepository integrationPointRepository)
 		{
 			_rsapiService = rsapiService;
-			_integrationPointByProvidersQueryBuilder = integrationPointByProvidersQueryBuilder;
-			_sourceProviderArtifactIdByGuidQueryBuilder = sourceProviderArtifactIdByGuidQueryBuilder;
-			_destinationProviderArtifactIdByGuidQueryBuilder = destinationProviderArtifactIdByGuidQueryBuilder;
+			_integrationPointRepository = integrationPointRepository;
 		}
 
 		public List<Core.Models.IntegrationPointModel> RetrieveIntegrationPoints()
@@ -55,9 +48,10 @@ namespace kCura.IntegrationPoints.Services.JobHistory
 
 		private List<Core.Models.IntegrationPointModel> RetrieveIntegrationPoints(IList<int> sourceProvider, IList<int> destinationProvider)
 		{
-			QueryRequest integrationPointsQuery = _integrationPointByProvidersQueryBuilder.CreateQuery(sourceProvider[0], destinationProvider[0]);
-
-			return _rsapiService.RelativityObjectManager.Query<IntegrationPoint>(integrationPointsQuery).Select(Core.Models.IntegrationPointModel.FromIntegrationPoint).ToList();
+			return _integrationPointRepository
+				.GetAllBySourceAndDestinationProviderIDs(sourceProvider[0], destinationProvider[0])
+				.Select(Core.Models.IntegrationPointModel.FromIntegrationPoint)
+				.ToList();
 		}
 
 		private List<int> GetArtifactIds<T>(List<T> results) where T : BaseRdo

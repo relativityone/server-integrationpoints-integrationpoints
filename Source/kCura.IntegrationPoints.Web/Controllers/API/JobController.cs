@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using System.Web.Http;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts;
@@ -57,13 +58,15 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		// POST API/Job/Run
 		[HttpPost]
 		[LogApiExceptionFilter(Message = "Unable to run the transfer job.")]
-		public HttpResponseMessage Run(Payload payload)
+		public async Task<HttpResponseMessage> Run(Payload payload)
 		{
 			AuditAction(payload, _RUN_AUDIT_MESSAGE);
 
-			IntegrationPoint integrationPoint = _integrationPointRepository.ReadAsync(Convert.ToInt32(payload.ArtifactId))
-				.GetAwaiter().GetResult();
-			DestinationConfiguration importSettings = JsonConvert.DeserializeObject<DestinationConfiguration>(integrationPoint.DestinationConfiguration);
+			IntegrationPoint integrationPoint = await _integrationPointRepository
+				.ReadWithFieldMappingAsync(Convert.ToInt32(payload.ArtifactId))
+				.ConfigureAwait(false);
+			DestinationConfiguration importSettings = JsonConvert
+				.DeserializeObject<DestinationConfiguration>(integrationPoint.DestinationConfiguration);
 
 			// this validation was introduced due to an issue with ARMed workspaces (REL-171985)
 			// so far, ARM is not capable of copying SQL Secret Catalog records for integration points in workspace database
@@ -80,25 +83,34 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 			IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_helper, targetHelper);
 
-			HttpResponseMessage httpResponseMessage = RunInternal(payload.AppId, payload.ArtifactId, integrationPointService.RunIntegrationPoint);
+			HttpResponseMessage httpResponseMessage = RunInternal(
+				payload.AppId, 
+				payload.ArtifactId, 
+				integrationPointService.RunIntegrationPoint
+			);
 			return httpResponseMessage;
 		}
 
 		// POST API/Job/Retry
 		[HttpPost]
 		[LogApiExceptionFilter(Message = "Unable to retry run of the transfer job.")]
-		public HttpResponseMessage Retry(Payload payload)
+		public async Task<HttpResponseMessage> Retry(Payload payload)
 		{
 			AuditAction(payload, _RETRY_AUDIT_MESSAGE);
 
-			IntegrationPoint integrationPoint = _integrationPointRepository.ReadAsync(Convert.ToInt32(payload.ArtifactId))
-				.GetAwaiter().GetResult();
+			IntegrationPoint integrationPoint = await _integrationPointRepository
+				.ReadWithFieldMappingAsync(Convert.ToInt32(payload.ArtifactId))
+				.ConfigureAwait(false);
 			DestinationConfiguration importSettings = JsonConvert.DeserializeObject<DestinationConfiguration>(integrationPoint.DestinationConfiguration);
 			IHelper targetHelper = _helperFactory.CreateTargetHelper(_helper, importSettings.FederatedInstanceArtifactId, integrationPoint.SecuredConfiguration);
 
 			IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_helper, targetHelper);
 
-			HttpResponseMessage httpResponseMessage = RunInternal(payload.AppId, payload.ArtifactId, integrationPointService.RetryIntegrationPoint);
+			HttpResponseMessage httpResponseMessage = RunInternal(
+				payload.AppId, 
+				payload.ArtifactId, 
+				integrationPointService.RetryIntegrationPoint
+			);
 			return httpResponseMessage;
 		}
 

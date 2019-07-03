@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				.Returns(SavedSearchesTreeTestHelper.GetSampleTreeWithSearches());
 
 			// act
-			var actual = await _subjectUnderTest.GetSavedSearchesTreeAsync(workspaceArtifactId);
+			var actual = await _subjectUnderTest.GetSavedSearchesTreeAsync(workspaceArtifactId).ConfigureAwait(false);
 
 			// assert
 			Assert.That(actual, Is.Not.Null);
@@ -105,10 +105,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				.Returns(searchContainerItemCollection);
 
 			// act
-			await _subjectUnderTest.GetSavedSearchesTreeAsync(workspaceArtifactId, null, savedSearchId);
+			await _subjectUnderTest.GetSavedSearchesTreeAsync(workspaceArtifactId, null, savedSearchId).ConfigureAwait(false);
 
 			// assert
-			await _searchContainerManager.Received().GetSearchContainerTreeAsync(workspaceArtifactId, Arg.Is<List<int>>(x => x.SequenceEqual(savedSearchContainerAncestors)));
+			await _searchContainerManager.Received().GetSearchContainerTreeAsync(workspaceArtifactId, Arg.Is<List<int>>(x => x.SequenceEqual(savedSearchContainerAncestors))).ConfigureAwait(false);
 		}
 
 		[Test]
@@ -133,7 +133,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				.Returns(searchContainerItemCollection);
 
 			// act
-			await _subjectUnderTest.GetSavedSearchesTreeAsync(workspaceArtifactId, null, savedSearchId);
+			await _subjectUnderTest.GetSavedSearchesTreeAsync(workspaceArtifactId, null, savedSearchId).ConfigureAwait(false);
 
 			// assert
 			Expression<Predicate<IEnumerable<SearchContainerItem>>> areSearchContainersValid = containers => containers.Count() == 1;
@@ -154,11 +154,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				.Returns(children);
 
 			// act
-			await _subjectUnderTest.GetSavedSearchesTreeAsync(workspaceArtifactId, nodeId);
+			await _subjectUnderTest.GetSavedSearchesTreeAsync(workspaceArtifactId, nodeId).ConfigureAwait(false);
 
 			// assert
 			await _searchContainerManager.Received()
-				.GetSearchContainerItemsAsync(workspaceArtifactId, Arg.Is<SearchContainerRef>(x => x.ArtifactID == nodeId));
+				.GetSearchContainerItemsAsync(workspaceArtifactId, Arg.Is<SearchContainerRef>(x => x.ArtifactID == nodeId)).ConfigureAwait(false);
 		}
 
 		[Test]
@@ -172,11 +172,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			.Returns(children);
 
 			// act
-			await _subjectUnderTest.GetSavedSearchesTreeAsync(workspaceArtifactId, nodeId);
+			await _subjectUnderTest.GetSavedSearchesTreeAsync(workspaceArtifactId, nodeId).ConfigureAwait(false);
 
 			// assert
 			await _searchContainerManager.Received()
-				.ReadSingleAsync(workspaceArtifactId, nodeId);
+				.ReadSingleAsync(workspaceArtifactId, nodeId).ConfigureAwait(false);
 
 		}
 
@@ -207,7 +207,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				.Returns(children);
 
 			// act
-			await _subjectUnderTest.GetSavedSearchesTreeAsync(workspaceArtifactId, nodeId);
+			await _subjectUnderTest.GetSavedSearchesTreeAsync(workspaceArtifactId, nodeId).ConfigureAwait(false);
 
 			// assert
 			Expression<Predicate<IEnumerable<SearchContainerItem>>> areSearchContainersValid = containers => containers.Count() == 1;

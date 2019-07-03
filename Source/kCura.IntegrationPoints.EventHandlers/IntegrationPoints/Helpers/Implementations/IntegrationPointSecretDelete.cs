@@ -1,41 +1,37 @@
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.SecretStore;
-using Relativity.SecretCatalog;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations
 {
 	public class IntegrationPointSecretDelete : IIntegrationPointSecretDelete
 	{
+		private readonly int _workspaceID;
 		private readonly IIntegrationPointRepository _integrationPointRepository;
-		private readonly ISecretManager _secretManager;
-		private readonly ISecretCatalog _secretCatalog;
+		private readonly ISecretsRepository _secretsRepository;
 
-		public IntegrationPointSecretDelete(ISecretManager secretManager, ISecretCatalog secretCatalog, IIntegrationPointRepository integrationPointRepository)
+		public IntegrationPointSecretDelete(
+			int workspaceID,
+			ISecretsRepository secretsRepository, 
+			IIntegrationPointRepository integrationPointRepository)
 		{
-			_secretManager = secretManager;
-			_secretCatalog = secretCatalog;
+			_workspaceID = workspaceID;
+			_secretsRepository = secretsRepository;
 			_integrationPointRepository = integrationPointRepository;
 		}
 
 		public void DeleteSecret(int integrationPointId)
 		{
-			var integrationPointSecret = RetrieveSecretId(integrationPointId);
+			string integrationPointSecret = _integrationPointRepository
+				.GetSecuredConfiguration(integrationPointId);
 			//Old IntegrationPoints don't contain SecuredConfiguration
 			if (!string.IsNullOrWhiteSpace(integrationPointSecret))
 			{
-				DeleteSecret(integrationPointSecret);
+				_secretsRepository.DeleteAllRipSecretsFromIntegrationPointAsync(
+						_workspaceID, 
+						integrationPointId
+					).GetAwaiter()
+					.GetResult();
 			}
 		}
-
-		private string RetrieveSecretId(int integrationPointId)
-		{
-			return _integrationPointRepository.GetSecuredConfiguration(integrationPointId);
-		}
-
-		private void DeleteSecret(string integrationPointSecret)
-		{
-			var secretIdentifier = _secretManager.RetrieveIdentifier(integrationPointSecret);
-			_secretCatalog.RevokeSecret(secretIdentifier);
-		}
+		
 	}
 }

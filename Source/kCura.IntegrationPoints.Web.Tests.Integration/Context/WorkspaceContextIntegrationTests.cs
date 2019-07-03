@@ -1,7 +1,6 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using FluentAssertions;
-using kCura.IntegrationPoints.Web.Context.WorkspaceContext;
 using kCura.IntegrationPoints.Web.Context.WorkspaceContext.Exceptions;
 using kCura.IntegrationPoints.Web.Infrastructure.Session;
 using kCura.IntegrationPoints.Web.Installers.Context;
@@ -15,6 +14,7 @@ using System.Web.Routing;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using Relativity.Testing.Identification;
+using kCura.IntegrationPoints.Common.Context;
 
 namespace kCura.IntegrationPoints.Web.Tests.Integration.Context
 {

@@ -9,7 +9,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.StatisticsManager.T
 		public void Execute(ITestHelper helper, int workspaceArtifactId, TestCaseSettings testCaseSettings)
 		{
 			long total;
-			using (IStatisticsManager statisticsManager = helper.CreateAdminProxy<IStatisticsManager>())
+			using (IStatisticsManager statisticsManager = helper.CreateProxy<IStatisticsManager>())
 			{
 				total = statisticsManager.GetImagesFileSizeForFolderAsync(workspaceArtifactId, testCaseSettings.FolderId, testCaseSettings.ViewId, false).Result;
 			}

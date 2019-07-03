@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		{
 			base.SuiteSetup();
 
-			IntegrationPoint.Tests.Core.Agent.EnableAllIntegrationPointsAgents();
+			IntegrationPoint.Tests.Core.Agent.EnableAllIntegrationPointsAgentsAsync().GetAwaiter().GetResult();
 
 			var request = new QueryRequest
 			{
@@ -615,8 +615,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			IFieldQueryRepository sourceFieldQueryRepository = repositoryFactory.GetFieldQueryRepository(SourceWorkspaceArtifactID);
 			IFieldQueryRepository destinationFieldQueryRepository = repositoryFactory.GetFieldQueryRepository(TargetWorkspaceArtifactID);
 
-			ArtifactDTO identifierSourceField = sourceFieldQueryRepository.RetrieveTheIdentifierField((int)ArtifactType.Document);
-			ArtifactDTO identifierDestinationField = destinationFieldQueryRepository.RetrieveTheIdentifierField((int)ArtifactType.Document);
+			ArtifactDTO identifierSourceField = sourceFieldQueryRepository.RetrieveIdentifierField((int)ArtifactType.Document);
+			ArtifactDTO identifierDestinationField = destinationFieldQueryRepository.RetrieveIdentifierField((int)ArtifactType.Document);
 
 			ArtifactFieldDTO[] sourceFields = sourceFieldQueryRepository.RetrieveLongTextFieldsAsync((int)ArtifactType.Document).Result;
 			ArtifactFieldDTO[] destinationFields = destinationFieldQueryRepository.RetrieveLongTextFieldsAsync((int)ArtifactType.Document).Result;

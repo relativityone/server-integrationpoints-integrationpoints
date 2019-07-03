@@ -24,29 +24,29 @@ namespace kCura.IntegrationPoint.Tests.Core
 		public RelativityApplicationManager(ITestHelper helper)
 		{
 			_helper = helper;
-			_libraryManager = helper.CreateAdminProxy<ILibraryApplicationsManager>();
+			_libraryManager = helper.CreateProxy<ILibraryApplicationsManager>();
 		}
 		
 		public async Task ImportRipToLibraryAsync()
 		{
 			string applicationFilePath = SharedVariables.UseLocalRap 
-			    ? GetLocalRipRapPath() 
-			    : GetBuildPackagesRipRapPath();
-		    await ImportApplicationToLibraryAsync(_TESTING_RAP_NAME, applicationFilePath).ConfigureAwait(false);
+				? GetLocalRipRapPath() 
+				: GetBuildPackagesRipRapPath();
+			await ImportApplicationToLibraryAsync(_TESTING_RAP_NAME, applicationFilePath).ConfigureAwait(false);
 		}
 
-	    public async Task ImportApplicationToLibraryAsync(string name, string applicationFilePath)
-	    {
-	        using (FileStream fileStream = File.OpenRead(applicationFilePath))
-	        {
-	            var keplerStream = new KeplerStream(fileStream);
-	            await _libraryManager.EnsureApplication(_TESTING_RAP_NAME, keplerStream, true, true).ConfigureAwait(false);
-	        }
-        }
-
-        public void InstallApplicationFromLibrary(int workspaceArtifactId, string appGuidString = _RIP_GUID_STRING)
+		public async Task ImportApplicationToLibraryAsync(string name, string applicationFilePath)
 		{
-			using (var applicationInstallManager = _helper.CreateAdminProxy<IApplicationInstallManager>())
+			using (FileStream fileStream = File.OpenRead(applicationFilePath))
+			{
+				var keplerStream = new KeplerStream(fileStream);
+				await _libraryManager.EnsureApplication(_TESTING_RAP_NAME, keplerStream, true, true).ConfigureAwait(false);
+			}
+		}
+
+		public void InstallApplicationFromLibrary(int workspaceArtifactId, string appGuidString = _RIP_GUID_STRING)
+		{
+			using (var applicationInstallManager = _helper.CreateProxy<IApplicationInstallManager>())
 			{
 				applicationInstallManager.InstallLibraryApplicationByGuid(workspaceArtifactId, new Guid(appGuidString)).Wait();
 			}
@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public bool IsApplicationInstalledAndUpToDate(int workspaceArtifactId, string appGuidString = _RIP_GUID_STRING)
 		{
-			using (var applicationInstallManager = _helper.CreateAdminProxy<IApplicationInstallManager>())
+			using (var applicationInstallManager = _helper.CreateProxy<IApplicationInstallManager>())
 			{
 				ApplicationInstallStatus installStatus = applicationInstallManager.GetApplicationInstallStatusAsync(workspaceArtifactId, new Guid(appGuidString)).Result;
 				return installStatus == ApplicationInstallStatus.Installed;

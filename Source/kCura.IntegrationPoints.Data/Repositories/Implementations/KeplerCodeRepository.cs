@@ -1,32 +1,37 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Data.Converters;
+using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
-	public class KeplerCodeRepository : KeplerServiceBase, ICodeRepository
+	public class KeplerCodeRepository : ICodeRepository
 	{
-		public KeplerCodeRepository(IRelativityObjectManager relativityObjectManager)
-			: base(relativityObjectManager)
-		{
+		private readonly IRelativityObjectManager _relativityObjectManager;
 
+		public KeplerCodeRepository(IRelativityObjectManager relativityObjectManager)
+		{
+			_relativityObjectManager = relativityObjectManager;
 		}
 
-		public async Task<ArtifactDTO[]> RetrieveCodeAsync(string name)
+		public Task<ArtifactDTO[]> RetrieveCodeAsync(string name)
 		{
 			var query = new QueryRequest
 			{
 				ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Code },
-				Condition = $"'Field' == '{EscapeSingleQuote(name)}'",
-				Fields = new List<FieldRef>{ new FieldRef {Name = "Name" } },
+				Condition = $"'Field' == '{name.EscapeSingleQuote()}'",
+				Fields = new List<FieldRef> { new FieldRef { Name = "Name" } },
 				SampleParameters = null,
 				RelationalField = null,
 				SearchProviderCondition = null,
 			};
 
-			return await RetrieveAllArtifactsAsync(query);
+			return _relativityObjectManager
+				.QueryAsync(query)
+				.ToArtifactDTOsArrayAsyncDeprecated();
 		}
 	}
 }

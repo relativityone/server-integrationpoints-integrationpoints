@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -10,12 +9,10 @@ using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Services;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.Relativity.Client.DTOs;
-using kCura.Relativity.Client.Repositories;
 using Relativity.API;
 using Relativity.Services.Folder;
 using Folder = Relativity.Services.Folder.Folder;
@@ -27,14 +24,14 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly ICPHelper _helper;
 		private readonly IHelperFactory _helperFactory;
 		private readonly IArtifactServiceFactory _artifactServiceFactory;
-	    private readonly IFolderTreeBuilder _folderTreeCreator;
+		private readonly IFolderTreeBuilder _folderTreeCreator;
 
 		public SearchFolderController(IArtifactServiceFactory artifactServiceFactory, IHelperFactory helperFactory, ICPHelper helper, IFolderTreeBuilder folderTreeCreator)
 		{
 			_helper = helper;
 			_helperFactory = helperFactory;
 			_artifactServiceFactory = artifactServiceFactory;
-		    _folderTreeCreator = folderTreeCreator;
+			_folderTreeCreator = folderTreeCreator;
 		}
 
 		[HttpPost]
@@ -61,7 +58,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			var targetHelper = _helperFactory.CreateTargetHelper(_helper, federatedInstanceId, credentials?.ToString());
 			using (var folderManager = targetHelper.GetServicesManager().CreateProxy<IFolderManager>(ExecutionIdentity.CurrentUser))
 			{
-				var result = await folderManager.GetFullPathListAsync(destinationWorkspaceId, new List<int> {folderArtifactId});
+				var result = await folderManager.GetFullPathListAsync(destinationWorkspaceId, new List<int> { folderArtifactId }).ConfigureAwait(true);
 
 				return Request.CreateResponse(HttpStatusCode.OK, result);
 			}
@@ -71,8 +68,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[LogApiExceptionFilter(Message = "Unable to retrieve data transfer location directory structure.")]
 		public async Task<HttpResponseMessage> GetStructure([FromBody] object credentials, int destinationWorkspaceId, int federatedInstanceId, int folderArtifactId)
 		{
-		    Folder folder = null;
-		    bool isRoot = false;
+			Folder folder = null;
+			bool isRoot = false;
 
 			var targetHelper = _helperFactory.CreateTargetHelper(_helper, federatedInstanceId, credentials?.ToString());
 
@@ -84,7 +81,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				if (folderArtifactId > 0)
 				{
 					currentNodeId = folderArtifactId;
-					var children = await folderManager.GetChildrenAsync(destinationWorkspaceId, currentNodeId);
+					var children = await folderManager.GetChildrenAsync(destinationWorkspaceId, currentNodeId).ConfigureAwait(true);
 
 					tree = children.Select(x => _folderTreeCreator.CreateItemWithoutChildren(x)).ToList();
 				}
@@ -93,10 +90,10 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 					isRoot = true;
 
 					Folder root = await folderManager
-						.GetWorkspaceRootAsync(destinationWorkspaceId);
+						.GetWorkspaceRootAsync(destinationWorkspaceId).ConfigureAwait(true);
 
 					currentNodeId = root.ArtifactID;
-					folder = (await folderManager.GetFolderTreeAsync(destinationWorkspaceId, new List<int> {currentNodeId}))[0];
+					folder = (await folderManager.GetFolderTreeAsync(destinationWorkspaceId, new List<int> { currentNodeId }).ConfigureAwait(true))[0];
 
 					JsTreeItemDTO currentNode = _folderTreeCreator.CreateItemWithChildren(folder, isRoot);
 					tree.Add(currentNode);

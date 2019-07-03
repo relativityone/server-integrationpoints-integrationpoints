@@ -24,30 +24,30 @@ namespace kCura.IntegrationPoints.Core.Services
 			_repositoryFactory = repositoryFactory;
 		}
 
-		public async Task<JsTreeItemDTO> GetSavedSearchesTreeAsync(int workspaceArtifactId, int? nodeId = null, int? savedSearchId = null)
+		public Task<JsTreeItemDTO> GetSavedSearchesTreeAsync(int workspaceArtifactId, int? nodeId = null, int? savedSearchId = null)
 		{
 			if (!nodeId.HasValue && !savedSearchId.HasValue)
 			{
-				return await GetSavedSearchesTreeForRootAndDirectChildren(workspaceArtifactId);
+				return GetSavedSearchesTreeForRootAndDirectChildren(workspaceArtifactId);
 			}
 			if (!nodeId.HasValue)
 			{
-				return await GetSavedSearchesTreeWithVisibleSavedSearch(workspaceArtifactId, savedSearchId.Value);
+				return GetSavedSearchesTreeWithVisibleSavedSearch(workspaceArtifactId, savedSearchId.Value);
 			}
-			return await GetSavedSearchesTreeForDirectChildrenOfNode(workspaceArtifactId, nodeId.Value);
+			return GetSavedSearchesTreeForDirectChildrenOfNode(workspaceArtifactId, nodeId.Value);
 		}
 
 		private async Task<JsTreeItemDTO> GetSavedSearchesTreeForRootAndDirectChildren(int workspaceArtifactId)
 		{
-			SearchContainerItemCollection searchContainterCollection = await _searchContainerManager.GetSearchContainerTreeAsync(workspaceArtifactId, Enumerable.Empty<int>().ToList());
+			SearchContainerItemCollection searchContainterCollection = await _searchContainerManager.GetSearchContainerTreeAsync(workspaceArtifactId, Enumerable.Empty<int>().ToList()).ConfigureAwait(false);
 			return _treeCreator.Create(searchContainterCollection.SearchContainerItems,
 				FilterAvailableSavedSearches(searchContainterCollection.SavedSearchContainerItems));
 		}
 
 		private async Task<JsTreeItemDTO> GetSavedSearchesTreeWithVisibleSavedSearch(int workspaceArtifactId, int savedSearchId)
 		{
-			List<int> allAncestors = await GetAllAncestorIdsForSavedSearch(workspaceArtifactId, savedSearchId);
-			SearchContainerItemCollection searchContainterCollection = await _searchContainerManager.GetSearchContainerTreeAsync(workspaceArtifactId, allAncestors);
+			List<int> allAncestors = await GetAllAncestorIdsForSavedSearch(workspaceArtifactId, savedSearchId).ConfigureAwait(false);
+			SearchContainerItemCollection searchContainterCollection = await _searchContainerManager.GetSearchContainerTreeAsync(workspaceArtifactId, allAncestors).ConfigureAwait(false);
 
 			return _treeCreator.Create(searchContainterCollection.SearchContainerItems,
 				FilterAvailableSavedSearches(searchContainterCollection.SavedSearchContainerItems));
@@ -57,8 +57,8 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			var rootContainerReference = new SearchContainerRef(nodeId);
 			Task<SearchContainerItemCollection> childItemsTask = _searchContainerManager.GetSearchContainerItemsAsync(workspaceArtifactId, rootContainerReference);
-			SearchContainer rootContainer = await _searchContainerManager.ReadSingleAsync(workspaceArtifactId, rootContainerReference.ArtifactID);
-			SearchContainerItemCollection childItems = await childItemsTask;
+			SearchContainer rootContainer = await _searchContainerManager.ReadSingleAsync(workspaceArtifactId, rootContainerReference.ArtifactID).ConfigureAwait(false);
+			SearchContainerItemCollection childItems = await childItemsTask.ConfigureAwait(false);
 
 			return _treeCreator.CreateTreeForNodeAndDirectChildren(rootContainer, childItems.SearchContainerItems,
 				FilterAvailableSavedSearches(childItems.SavedSearchContainerItems));
@@ -70,7 +70,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			int nodeId = savedSearchQueryRepository.RetrieveSavedSearch(savedSearchId).ParentContainerId;
 
 			var allAncestors = new List<int>();
-			SearchContainer currentNode = await _searchContainerManager.ReadSingleAsync(workspaceArtifactId, nodeId);
+			SearchContainer currentNode = await _searchContainerManager.ReadSingleAsync(workspaceArtifactId, nodeId).ConfigureAwait(false);
 			while (currentNode != null)
 			{
 				allAncestors.Add(currentNode.ArtifactID);
@@ -78,7 +78,7 @@ namespace kCura.IntegrationPoints.Core.Services
 				SearchContainer parentNode;
 				try
 				{
-					parentNode = await _searchContainerManager.ReadSingleAsync(workspaceArtifactId, currentNode.ParentSearchContainer.ArtifactID);
+					parentNode = await _searchContainerManager.ReadSingleAsync(workspaceArtifactId, currentNode.ParentSearchContainer.ArtifactID).ConfigureAwait(false);
 				}
 				catch (Exception)
 				{

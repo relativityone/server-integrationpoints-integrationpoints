@@ -1,4 +1,5 @@
-﻿using System.Web;
+﻿using System;
+using System.Web;
 using Castle.Core;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
@@ -6,6 +7,7 @@ using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.Common.Context;
 using kCura.IntegrationPoints.Web.Context.WorkspaceContext;
 using kCura.IntegrationPoints.Web.Infrastructure.Session;
 using kCura.IntegrationPoints.Web.Installers.Context;
@@ -47,7 +49,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Installers.Context
 				.Which.Should()
 				.BeRegisteredWithLifestyle(LifestyleType.PerWebRequest);
 		}
-		
+
 		[Test]
 		public void NotFoundWorkspaceContextService_ShouldBeRegisteredWithProperLifestyle()
 		{
@@ -61,6 +63,26 @@ namespace kCura.IntegrationPoints.Web.Tests.Installers.Context
 				.And.OneOfThemWithImplementation<NotFoundWorkspaceContextService>()
 				.Which.Should()
 				.BeRegisteredWithLifestyle(LifestyleType.PerWebRequest);
+		}
+
+		[Test]
+		public void WorkspaceContext_ShouldBeRegisteredInCorrectOrder()
+		{
+			// arrange
+			IWindsorContainer sut = new WindsorContainer();
+			sut.AddWorkspaceContext();
+
+			// assert
+			Type[] implementationsOrder =
+			{
+				typeof(RequestContextWorkspaceContextService),
+				typeof(SessionWorkspaceContextService),
+				typeof(NotFoundWorkspaceContextService)
+			};
+
+			sut.Should()
+				.HaveRegisteredMultipleComponents<IWorkspaceContext>()
+				.And.AllRegisteredInFollowingOrder(implementationsOrder);
 		}
 
 		[Test]

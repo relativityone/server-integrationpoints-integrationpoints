@@ -8,7 +8,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.StatisticsManager.T
 		public void Execute(ITestHelper helper, int workspaceArtifactId, TestCaseSettings testCaseSettings)
 		{
 			long total;
-			using (var statisticsManager = helper.CreateAdminProxy<IStatisticsManager>())
+			using (var statisticsManager = helper.CreateProxy<IStatisticsManager>())
 			{
 				total = statisticsManager.GetNativesFileSizeForSavedSearchAsync(workspaceArtifactId, testCaseSettings.SavedSearchId).Result;
 			}

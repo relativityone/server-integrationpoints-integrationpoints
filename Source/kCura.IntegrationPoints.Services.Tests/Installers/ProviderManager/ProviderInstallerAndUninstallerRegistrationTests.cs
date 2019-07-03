@@ -190,7 +190,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Installers.ProviderManager
 		{
 			IRegistration[] dependencies =
 			{
-				CreateDummyObjectRegistration<IIntegrationPointQuery>(),
+				CreateDummyObjectRegistration<IIntegrationPointRepository>(),
 				CreateDummyObjectRegistration<IDeleteHistoryService>(),
 				CreateDummyObjectRegistration<IRelativityObjectManager>(),
 				CreateDummyObjectRegistration<IWorkspaceDBContext>(),

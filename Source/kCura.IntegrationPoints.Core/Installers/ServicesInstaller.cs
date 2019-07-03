@@ -37,7 +37,6 @@ using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Data.RSAPIClient;
-using kCura.IntegrationPoints.Data.SecretStore;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Domain.Models;
@@ -117,8 +116,6 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IDestinationTypeFactory>().ImplementedBy<DestinationTypeFactory>().LifestyleTransient());
 			container.Register(Component.For<IResourceDbProvider>().ImplementedBy<ResourceDbProvider>().LifestyleTransient());
 			container.Register(Component.For<IServicesMgr>().UsingFactoryMethod(k => k.Resolve<IHelper>().GetServicesManager(), true));
-			container.Register(Component.For<IRepositoryFactory>().ImplementedBy<RepositoryFactory>().LifestyleTransient());
-			container.Register(Component.For<IWorkspaceRepository>().ImplementedBy<KeplerWorkspaceRepository>().UsingFactoryMethod((k) => k.Resolve<IRepositoryFactory>().GetWorkspaceRepository()).LifestyleTransient());
 			container.Register(Component.For<IRdoFilter>().ImplementedBy<RdoFilter>().LifestyleTransient());
 			container.Register(Component.For<UserService>().ImplementedBy<UserService>().LifestyleTransient());
 			container.Register(Component.For<IChoiceService>().ImplementedBy<ChoiceService>().LifestyleTransient());
@@ -172,8 +169,6 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IDataTransferLocationServiceFactory>().ImplementedBy<DataTransferLocationServiceFactory>().DependsOn(new { container = container }).LifestyleTransient());
 			container.Register(Component.For<IFolderPathReaderFactory>().ImplementedBy<FolderPathReaderFactory>().LifestyleTransient());
 			container.Register(Component.For<IRsapiClientFactory>().ImplementedBy<RsapiClientFactory>());
-			container.Register(Component.For<ISecretCatalogFactory>().ImplementedBy<DefaultSecretCatalogFactory>().LifestyleTransient());
-			container.Register(Component.For<ISecretManagerFactory>().ImplementedBy<SecretManagerFactory>().LifestyleTransient());
 
 			container.Register(Component.For<IIntegrationPointProviderTypeService>()
 				.ImplementedBy<CachedIntegrationPointProviderTypeService>()
@@ -187,8 +182,8 @@ namespace kCura.IntegrationPoints.Core.Installers
 				IManagerFactory managerFactory = k.Resolve<IManagerFactory>();
 				IContextContainerFactory contextContainerFactory = k.Resolve<IContextContainerFactory>();
 				IHelper helper = k.Resolve<IHelper>();
-				IContextContainer contextConainer = contextContainerFactory.CreateContextContainer(helper);
-				IFederatedInstanceManager federatedInstanceManager = managerFactory.CreateFederatedInstanceManager(contextConainer);
+				IContextContainer contextContainer = contextContainerFactory.CreateContextContainer(helper);
+				IFederatedInstanceManager federatedInstanceManager = managerFactory.CreateFederatedInstanceManager(contextContainer);
 
 				return federatedInstanceManager;
 			}).LifestyleTransient());
@@ -202,9 +197,9 @@ namespace kCura.IntegrationPoints.Core.Installers
 
 			container.Register(Component.For<ICredentialProvider>().UsingFactoryMethod(kernel =>
 			{
-				var helper = kernel.Resolve<IHelper>();
-				var authProvider = kernel.Resolve<IAuthProvider>();
-				var tokenGenerator = kernel.Resolve<IAuthTokenGenerator>();
+				IHelper helper = kernel.Resolve<IHelper>();
+				IAuthProvider authProvider = kernel.Resolve<IAuthProvider>();
+				IAuthTokenGenerator tokenGenerator = kernel.Resolve<IAuthTokenGenerator>();
 
 				return new TokenCredentialProvider(authProvider, tokenGenerator, helper);
 			}).LifestyleTransient());
@@ -218,10 +213,17 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IMessageService>().ImplementedBy<IntegrationPointsMessageService>().LifestyleSingleton());
 
 			container.Register(Component
+				.For<ISecretStore>()
+				.UsingFactoryMethod(k => k.Resolve<IHelper>().GetSecretStore())
+				.LifestyleTransient()
+			);
+
+			container.Register(Component
 				.For<ISourceDocumentsTagger>()
 				.ImplementedBy<SourceDocumentsTagger>()
 				.LifestyleTransient());
 
+			container.AddRetryingMechanism();
 			container.AddRepositories();
 		}
 
@@ -230,10 +232,9 @@ namespace kCura.IntegrationPoints.Core.Installers
 			return new SqlServerToggleProvider(() => ConnectionFactory(helper), () => AsyncConnectionFactory(helper)) { CacheEnabled = true };
 		}
 
-		private async Task<SqlConnection> AsyncConnectionFactory(IHelper helper)
+		private Task<SqlConnection> AsyncConnectionFactory(IHelper helper)
 		{
-			Task<SqlConnection> task = Task.Run(() => ConnectionFactory(helper));
-			return await task;
+			return Task.Run(() => ConnectionFactory(helper));
 		}
 
 		private SqlConnection ConnectionFactory(IHelper helper)

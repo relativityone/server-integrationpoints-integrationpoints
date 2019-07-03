@@ -1,22 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Data.Converters;
+using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
-using Relativity;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
-	public class KeplerFederatedInstanceRepository : KeplerServiceBase, IFederatedInstanceRepository
+	public class KeplerFederatedInstanceRepository : IFederatedInstanceRepository
 	{
 		private readonly IAPILog _logger;
 		private readonly int _federatedInstanceArtifactTypeId;
+		private readonly IRelativityObjectManager _relativityObjectManager;
 
 		public KeplerFederatedInstanceRepository(int federatedInstanceArtifactTypeId, IHelper helper, IRelativityObjectManager relativityObjectManager)
-			: base(relativityObjectManager)
 		{
 			_federatedInstanceArtifactTypeId = federatedInstanceArtifactTypeId;
+			_relativityObjectManager = relativityObjectManager;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<KeplerWorkspaceRepository>();
 		}
 
@@ -24,7 +26,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			try
 			{
-				return RetrieveFederatedInstanceByCondition($"'Name' == '{EscapeSingleQuote(name)}'").FirstOrDefault();
+				return RetrieveFederatedInstanceByCondition($"'Name' == '{name.EscapeSingleQuote()}'").FirstOrDefault();
 			}
 			catch (Exception e)
 			{
@@ -65,31 +67,15 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				ObjectType = new ObjectTypeRef { ArtifactTypeID = _federatedInstanceArtifactTypeId },
 				Condition = condition,
-				Fields = new List<FieldRef>() { new FieldRef() { Name = "Name" }, new FieldRef() { Name = "Instance URL" } }
+				Fields = new List<FieldRef>()
+				{
+					new FieldRef() { Name = FederatedInstanceFieldsConstants.NAME_FIELD },
+					new FieldRef() { Name = FederatedInstanceFieldsConstants.INSTANCE_URL_FIELD }
+				}
 			};
 
-			ArtifactDTO[] artifactDtos = null;
-
-			artifactDtos = this.RetrieveAllArtifactsAsync(query).GetAwaiter().GetResult();
-
-			return Convert(artifactDtos);
-		}
-
-		private IEnumerable<FederatedInstanceDto> Convert(IEnumerable<ArtifactDTO> artifactDtos)
-		{
-			var federatedInstances = new List<FederatedInstanceDto>();
-
-			foreach (ArtifactDTO artifactDto in artifactDtos)
-			{
-				federatedInstances.Add(new FederatedInstanceDto
-				{
-					ArtifactId = artifactDto.ArtifactId,
-					Name = artifactDto.Fields[0].Value as string,
-					InstanceUrl = artifactDto.Fields[1].Value as string
-				});
-			}
-
-			return federatedInstances;
+			IEnumerable<RelativityObject> artifactDtos = _relativityObjectManager.QueryAsync(query).GetAwaiter().GetResult();
+			return artifactDtos.ToFederatedInstanceDTOs();
 		}
 	}
 }

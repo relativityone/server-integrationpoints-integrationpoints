@@ -23,6 +23,7 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Agent")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Agent.Tests")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Data")]
+[assembly: InternalsVisibleTo("kCura.IntegrationPoints.Data.Tests")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Domain")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Domain.Tests")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Domain.Tests.Integration")]
@@ -63,6 +64,6 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
-// [assembly: AssemblyVersion("10.2.0.0")]
-[assembly: AssemblyVersion("10.2.0.0")]
-[assembly: AssemblyFileVersion("10.2.0.0")]
+// [assembly: AssemblyVersion("10.3.0.0")]
+[assembly: AssemblyVersion("10.3.0.0")]
+[assembly: AssemblyFileVersion("10.3.0.0")]

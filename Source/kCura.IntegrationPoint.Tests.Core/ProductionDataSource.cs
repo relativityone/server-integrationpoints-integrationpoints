@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 			const int markupSetArtifactId = 1034197;
 
-			using (var productionManager = Helper.CreateAdminProxy<IProductionDataSourceManager>())
+			using (var productionManager = Helper.CreateProxy<IProductionDataSourceManager>())
 			{
 				var productionDataSource = new global::Relativity.Productions.Services.ProductionDataSource
 				{

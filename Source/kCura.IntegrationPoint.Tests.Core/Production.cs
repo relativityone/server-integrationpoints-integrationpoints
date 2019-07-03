@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 			const int productionFontSize = 10;
 
-			using (var productionManager = Helper.CreateAdminProxy<IProductionManager>())
+			using (var productionManager = Helper.CreateProxy<IProductionManager>())
 			{
 				var production = new global::Relativity.Productions.Services.Production
 				{
@@ -79,7 +79,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			Func<IProductionManager, Task<ProductionJobResult>> functionToExecute,
 			string expectedStatus)
 		{
-			using (var productionManager = Helper.CreateAdminProxy<IProductionManager>())
+			using (var productionManager = Helper.CreateProxy<IProductionManager>())
 			{
 				ProductionJobResult result = await functionToExecute(productionManager).ConfigureAwait(false);
 				if (!result.WasJobCreated)
@@ -123,7 +123,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		private static async Task<string> GetProductionStatusAsync(int workspaceId, int productionId)
 		{
-			using (var productionManager = Helper.CreateAdminProxy<IProductionManager>())
+			using (var productionManager = Helper.CreateProxy<IProductionManager>())
 			{
 				global::Relativity.Productions.Services.Production result = await productionManager
 					.ReadSingleAsync(workspaceId, productionId)

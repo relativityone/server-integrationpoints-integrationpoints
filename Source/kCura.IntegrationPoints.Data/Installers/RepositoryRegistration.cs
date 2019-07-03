@@ -1,14 +1,20 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Factories.Implementations;
+using kCura.IntegrationPoints.Data.Facades.SecretStore;
+using kCura.IntegrationPoints.Data.Facades.SecretStore.Implementation;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 
 namespace kCura.IntegrationPoints.Data.Installers
 {
-	public static class RepositoryRegistration
-	{
-		public static IWindsorContainer AddRepositories(this IWindsorContainer container)
-		{
+    public static class RepositoryRegistration
+    {
+        public static IWindsorContainer AddRepositories(this IWindsorContainer container)
+        {
+	        container.RegisterSecretsRepository();
+
 			return container.Register(
 				Component
 					.For<IIntegrationPointRepository>()
@@ -23,10 +29,37 @@ namespace kCura.IntegrationPoints.Data.Installers
 					.ImplementedBy<DestinationProviderRepository>()
 					.LifestyleTransient(),
 				Component
-				.For<IDocumentRepository>()
-				.ImplementedBy<KeplerDocumentRepository>()
-				.LifestyleTransient()
-				);
-		}
-	}
+					.For<IDocumentRepository>()
+					.ImplementedBy<KeplerDocumentRepository>()
+					.LifestyleTransient(),
+				Component
+					.For<IRepositoryFactory>()
+					.ImplementedBy<RepositoryFactory>()
+					.LifestyleTransient(),
+				Component
+					.For<IWorkspaceRepository>()
+					.ImplementedBy<KeplerWorkspaceRepository>()
+					.UsingFactoryMethod(k => k.Resolve<IRepositoryFactory>().GetWorkspaceRepository())
+					.LifestyleTransient()
+			);
+        }
+
+        private static void RegisterSecretsRepository(this IWindsorContainer container)
+        {
+	        container.Register(
+		        Component.For<ISecretStoreFacade>()
+			        .ImplementedBy<SecretStoreFacadeRetryDecorator>()
+			        .LifestyleTransient(),
+				Component.For<ISecretStoreFacade>()
+			        .ImplementedBy<SecretStoreFacadeInstrumentationDecorator>()
+			        .LifestyleTransient(),
+				Component.For<ISecretStoreFacade>()
+			        .ImplementedBy<SecretStoreFacade>()
+			        .LifestyleTransient(),
+				Component.For<ISecretsRepository>()
+			        .ImplementedBy<SecretsRepository>()
+			        .LifestyleTransient()
+	        );
+        }
+    }
 }

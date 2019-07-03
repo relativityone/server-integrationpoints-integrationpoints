@@ -104,7 +104,7 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 		{
 			LogGetIntegrationPointStart(job);
 			IntegrationPoint integrationPoint =
-				_integrationPointRepository.ReadAsync(job.RelatedObjectArtifactID).GetAwaiter().GetResult();
+				_integrationPointRepository.ReadWithFieldMappingAsync(job.RelatedObjectArtifactID).GetAwaiter().GetResult();
 
 			if (integrationPoint == null)
 			{

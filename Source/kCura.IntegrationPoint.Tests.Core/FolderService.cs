@@ -9,7 +9,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static int CreateFolder(int workspaceArtifactId, string folderName, int? parentFolderId)
 		{
-			using (var folderManager = Helper.CreateAdminProxy<IFolderManager>())
+			using (var folderManager = Helper.CreateProxy<IFolderManager>())
 			{
 				var folder = new global::Relativity.Services.Folder.Folder
 				{
@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static void DeleteUnusedFolders(int workspaceId)
 		{
-			using (var folderManager = Helper.CreateAdminProxy<IFolderManager>())
+			using (var folderManager = Helper.CreateProxy<IFolderManager>())
 			{
 				folderManager.DeleteUnusedFoldersAsync(workspaceId).Wait();
 			}

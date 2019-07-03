@@ -11,10 +11,12 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
+using Relativity.Services.Objects.DataContracts;
+using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 {
-	public class IntegrationPointProfileService : IntegrationPointServiceBase<IntegrationPointProfile>, IIntegrationPointProfileService
+	public class IntegrationPointProfileService : IntegrationPointServiceBase, IIntegrationPointProfileService
 	{
 		public IntegrationPointProfileService(IHelper helper,
 			ICaseServiceContext context,
@@ -24,11 +26,42 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			IManagerFactory managerFactory,
 			IValidationExecutor validationExecutor,
 			IRelativityObjectManager objectManager)
-			: base(helper, context, choiceQuery, serializer, managerFactory, contextContainerFactory, validationExecutor, objectManager)
+			: base(helper, 
+				context, 
+				choiceQuery, 
+				serializer, 
+				managerFactory, 
+				contextContainerFactory, 
+				validationExecutor, 
+				objectManager)
 		{
 		}
 
 		protected override string UnableToSaveFormat => "Unable to save Integration Point Profile:{0} cannot be changed once the Integration Point Profile has been saved";
+
+		public IList<IntegrationPointProfile> GetAllRDOs()
+		{
+			IEnumerable<FieldRef> fields = BaseRdo.GetFieldMetadata(
+				typeof(IntegrationPointProfile)).Values.ToList()
+					.Select(field => new FieldRef { Guid = field.FieldGuid }
+			);
+
+			var query = new QueryRequest
+			{
+				Fields = fields
+			};
+
+			return ObjectManager.Query<IntegrationPointProfile>(query);
+		}
+
+		public IList<IntegrationPointProfile> GetAllRDOsWithAllFields()
+		{
+			var query = new QueryRequest();
+			IList<IntegrationPointProfile> result = ObjectManager.Query<IntegrationPointProfile>(query);
+			result.Select(integrationPoint => ObjectManager.Read<IntegrationPointProfile>(integrationPoint.ArtifactId))
+				.ToList();
+			return result;
+		}
 
 		public IntegrationPointProfile ReadIntegrationPointProfile(int artifactId)
 		{
@@ -111,9 +144,27 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			return profile.ArtifactId;
 		}
 
-		protected override IntegrationPointModelBase GetModel(int artifactId)
+		public void UpdateIntegrationPointProfile(IntegrationPointProfile profile)
 		{
-			return ReadIntegrationPointProfileModel(artifactId);
+			ObjectManager.Update(profile);
+		}
+
+		protected IList<IntegrationPointProfile> GetAllRDOsWithBasicProfileColumns()
+		{
+			var fields = BaseRdo.GetFieldMetadata(typeof(IntegrationPointProfile)).Values.ToList()
+				.Select(field => new FieldValue(field.FieldGuid))
+				.Where(field => field.Guids.Contains(IntegrationPointProfileFieldGuids.DestinationProviderGuid) ||
+				                field.Guids.Contains(IntegrationPointProfileFieldGuids.SourceProviderGuid) ||
+				                field.Guids.Contains(IntegrationPointProfileFieldGuids.NameGuid) ||
+				                field.Guids.Contains(IntegrationPointProfileFieldGuids.TypeGuid))
+				.Select(field => new FieldRef { Guid = field.Guids.First() });
+
+			var query = new QueryRequest()
+			{
+				Fields = fields
+			};
+
+			return ObjectManager.Query<IntegrationPointProfile>(query);
 		}
 	}
 }

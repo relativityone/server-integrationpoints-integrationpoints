@@ -21,8 +21,14 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 		private readonly IIntegrationPointService _integrationPointLocalService;
 		private readonly IIntegrationPointProfileService _integrationPointProfileService;
 
-		public IntegrationPointRepository(IIntegrationPointRuntimeServiceFactory serviceFactory, IObjectTypeRepository objectTypeRepository, IUserInfo userInfo, IChoiceQuery choiceQuery, 
-			IBackwardCompatibility backwardCompatibility, IIntegrationPointService integrationPointLocalService, IIntegrationPointProfileService integrationPointProfileService) : base(backwardCompatibility)
+		public IntegrationPointRepository(
+			IIntegrationPointRuntimeServiceFactory serviceFactory, 
+			IObjectTypeRepository objectTypeRepository, 
+			IUserInfo userInfo, 
+			IChoiceQuery choiceQuery, 
+			IBackwardCompatibility backwardCompatibility, 
+			IIntegrationPointService integrationPointLocalService, 
+			IIntegrationPointProfileService integrationPointProfileService) : base(backwardCompatibility)
 		{
 			_serviceFactory = serviceFactory;
 			_objectTypeRepository = objectTypeRepository;
@@ -35,20 +41,20 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 		public IntegrationPointModel CreateIntegrationPoint(CreateIntegrationPointRequest request)
 		{
 			request.IntegrationPoint.ArtifactId = 0;
-			var artifactId = SaveIntegrationPoint(request);
+			int artifactId = SaveIntegrationPoint(request);
 			return GetIntegrationPoint(artifactId);
 		}
 
 		public IntegrationPointModel UpdateIntegrationPoint(UpdateIntegrationPointRequest request)
 		{
-			var artifactId = SaveIntegrationPoint(request);
+			int artifactId = SaveIntegrationPoint(request);
 			return GetIntegrationPoint(artifactId);
 		}
 
 		public override int Save(IntegrationPointModel model, string overwriteFieldsName)
 		{
-			var integrationPointModel = model.ToCoreModel(overwriteFieldsName);
-			var integrationPointRuntimeService = _serviceFactory.CreateIntegrationPointRuntimeService(integrationPointModel);
+			Core.Models.IntegrationPointModel integrationPointModel = model.ToCoreModel(overwriteFieldsName);
+			IIntegrationPointService integrationPointRuntimeService = _serviceFactory.CreateIntegrationPointRuntimeService(integrationPointModel);
 			return integrationPointRuntimeService.SaveIntegration(integrationPointModel);
 		}
 

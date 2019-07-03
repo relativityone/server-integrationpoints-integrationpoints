@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		private const string _ITEM_START_INCLUDED_TEMP_TABLE_PREFIX = "IntegrationPoint_Relativity_JobHistoryErrors_ItemStart";
 		private const string _ITEM_START_EXCLUDED_TEMP_TABLE_PREFIX = "IntegrationPoint_Relativity_JobHistoryErrors_ItemStart_Excluded";
 		private const string _ITEM_COMPLETE_INCLUDED_TEMP_TABLE_PREFIX = "IntegrationPoint_Relativity_JobHistoryErrors_ItemComplete";
-		
+
 		public JobHistoryErrorsBatchingTests() : base("JobHistoryErrorsSource", null)
 		{
 		}
@@ -49,8 +49,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		public override void SuiteSetup()
 		{
 			base.SuiteSetup();
-			
-			Agent.EnableAllIntegrationPointsAgents();
+
+			Agent.EnableAllIntegrationPointsAgentsAsync().GetAwaiter().GetResult();
 
 			ResolveServices();
 		}
@@ -489,7 +489,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 					ParentArtifactId = jobHistoryArtifactId,
 					JobHistory = jobHistoryArtifactId,
 					Name = Guid.NewGuid().ToString(),
-					SourceUniqueID = Convert.ToString((object) dataRow["Control Number"]),
+					SourceUniqueID = Convert.ToString((object)dataRow["Control Number"]),
 					ErrorType = ErrorTypeChoices.JobHistoryErrorItem,
 					ErrorStatus = errorStatus,
 					Error = "Inserted Error for testing.",
@@ -562,7 +562,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			var actualJobHistoryArtifactIds = new List<int>();
 			foreach (DataRow dataRow in tempTable.Rows)
 			{
-				actualJobHistoryArtifactIds.Add(Convert.ToInt32((object) dataRow["ArtifactID"]));
+				actualJobHistoryArtifactIds.Add(Convert.ToInt32((object)dataRow["ArtifactID"]));
 			}
 
 			List<int> discrepancies = expectedJobHistoryErrorArtifacts.Except(actualJobHistoryArtifactIds).ToList();
@@ -602,7 +602,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		private JobHistory CreateJobHistoryOnIntegrationPoint(int integrationPointArtifactId, Guid batchInstance)
 		{
 			IntegrationPoint integrationPoint =
-				IntegrationPointRepository.ReadAsync(integrationPointArtifactId).GetAwaiter().GetResult();
+				IntegrationPointRepository.ReadWithFieldMappingAsync(integrationPointArtifactId).GetAwaiter().GetResult();
 			JobHistory jobHistory =
 				_jobHistoryService.CreateRdo(integrationPoint, batchInstance, JobTypeChoices.JobHistoryRun, DateTime.Now);
 			jobHistory.EndTimeUTC = DateTime.Now;
@@ -617,7 +617,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			var savedSearchQuery = new global::Relativity.Services.Query();
 			savedSearchQuery.Condition = $"'Name' EqualTo '{tempSavedSearchName}'";
 
-			using (var proxy = Helper.CreateAdminProxy<IKeywordSearchManager>())
+			using (var proxy = Helper.CreateProxy<IKeywordSearchManager>())
 			{
 				KeywordSearchQueryResultSet resultSet = proxy.QueryAsync(SourceWorkspaceArtifactID, savedSearchQuery).Result;
 				if (resultSet.TotalCount != 0)

@@ -2,10 +2,12 @@
 using System;
 using System.Threading.Tasks;
 using Castle.MicroKernel.Registration;
+using Castle.MicroKernel.Resolvers;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Installers;
@@ -37,7 +39,7 @@ namespace Rip.SystemTests
 			ConfigurationStore = new DefaultConfigurationStore();
 			TestHelper = new TestHelper();
 
-			await CreateAndConfigureWorkspaces();
+			await CreateAndConfigureWorkspaces().ConfigureAwait(false);
 			InitializeContainer();
 		}
 
@@ -51,7 +53,7 @@ namespace Rip.SystemTests
 			var applicationManager = new RelativityApplicationManager(TestHelper);
 			if (SharedVariables.UseIpRapFile())
 			{
-				await applicationManager.ImportRipToLibraryAsync();
+				await applicationManager.ImportRipToLibraryAsync().ConfigureAwait(false);
 			}
 
 			applicationManager.InstallApplicationFromLibrary(WorkspaceID);
@@ -64,6 +66,10 @@ namespace Rip.SystemTests
 
 		private static void InitializeContainer()
 		{
+			Container.Register(Component
+				.For<ILazyComponentLoader>()
+				.ImplementedBy<LazyOfTComponentLoader>()
+			);
 			Container.Register(Component.For<IHelper>().UsingFactoryMethod(k => TestHelper, managedExternally: true));
 			Container.Register(Component.For<IAPILog>().UsingFactoryMethod(k => TestHelper.GetLoggerFactory().GetLogger()));
 			Container.Register(Component.For<IRsapiClientWithWorkspaceFactory>().ImplementedBy<RsapiClientWithWorkspaceFactory>().LifestyleTransient());
@@ -90,6 +96,9 @@ namespace Rip.SystemTests
 			Container.Register(Component.For<IRSAPIService>().Instance(new RSAPIService(Container.Resolve<IHelper>(), WorkspaceID)).LifestyleTransient());
 			Container.Register(Component.For<IExporterFactory>().ImplementedBy<ExporterFactory>());
 			Container.Register(Component.For<IAuthTokenGenerator>().ImplementedBy<ClaimsTokenGenerator>().LifestyleTransient());
+			Container.Register(Component.For<IExternalServiceInstrumentationProvider>()
+				.ImplementedBy<ExternalServiceInstrumentationProviderWithoutJobContext>()
+				.LifestyleSingleton());
 			var dependencies = new IWindsorInstaller[]
 			{
 				new QueryInstallers(),

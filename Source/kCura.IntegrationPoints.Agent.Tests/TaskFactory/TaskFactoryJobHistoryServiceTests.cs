@@ -6,7 +6,6 @@ using kCura.IntegrationPoints.Agent.TaskFactory;
 using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.Relativity.Client.DTOs;
@@ -24,8 +23,34 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 		private ITaskFactoryJobHistoryService _sut;
 		private IJobHistoryService _jobHistoryService;
 		private IJobHistoryErrorService _jobHistoryErrorService;
-		private IRelativityObjectManager _objectmanager;
+		private IIntegrationPointRepository _integrationPointRepository;
 
+		public void SetUp(Data.IntegrationPoint ip = null)
+		{
+			var helper = Substitute.For<IHelper>();
+			var helperFactory = Substitute.For<IHelperFactory>();
+			var serializer = Substitute.For<IIntegrationPointSerializer>();
+			serializer.Deserialize<DestinationConfiguration>(Arg.Any<string>()).Returns(new DestinationConfiguration());
+			serializer.Deserialize<TaskParameters>(Arg.Any<string>()).Returns(new TaskParameters());
+
+			_jobHistoryService = Substitute.For<IJobHistoryService>();
+
+			var serviceFactory = Substitute.For<IServiceFactory>();
+			serviceFactory.CreateJobHistoryService(Arg.Any<IHelper>(), Arg.Any<IHelper>()).Returns(_jobHistoryService);
+			_jobHistoryErrorService = Substitute.For<IJobHistoryErrorService>();
+			_integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
+
+			ip = ip ?? GetDefaultIntegrationPoint();
+			_sut = new TaskFactoryJobHistoryService(
+				helper, 
+				helperFactory, 
+				serializer, 
+				serviceFactory, 
+				_jobHistoryErrorService, 
+				_integrationPointRepository, 
+				ip
+			);
+		}
 
 		[Test]
 		public void ItShouldUpdateJobHistoryWhenItDoesnNotHaveValue()
@@ -122,7 +147,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 			_sut.RemoveJobHistoryFromIntegrationPoint(job);
 
 			// Assert
-			_objectmanager.Received()
+			_integrationPointRepository.Received()
 				.Update(Arg.Is<Data.IntegrationPoint>(x => x.JobHistory.SequenceEqual(expectedIpJobHistoryIdsAfterUpdate)));
 		}
 
@@ -216,30 +241,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 			Assert.AreEqual(integrationPointArtifactId, _jobHistoryErrorService.IntegrationPoint.ArtifactId);
 			Assert.AreEqual(jobHistoryArtifactId, _jobHistoryErrorService.JobHistory.ArtifactId);
 			_jobHistoryErrorService.Received().AddError(Arg.Is<Choice>(x=>x.Name == ErrorTypeChoices.JobHistoryErrorJob.Name), exception);
-		}
-
-		public void SetUp(Data.IntegrationPoint ip = null)
-		{
-			var helper = Substitute.For<IHelper>();
-			var helperFactory = Substitute.For<IHelperFactory>();
-			var serializer = Substitute.For<IIntegrationPointSerializer>();
-			serializer.Deserialize<DestinationConfiguration>(Arg.Any<string>()).Returns(new DestinationConfiguration());
-			serializer.Deserialize<TaskParameters>(Arg.Any<string>()).Returns(new TaskParameters());
-
-			_jobHistoryService = Substitute.For<IJobHistoryService>();
-
-			var serviceFactory = Substitute.For<IServiceFactory>();
-			serviceFactory.CreateJobHistoryService(Arg.Any<IHelper>(), Arg.Any<IHelper>()).Returns(_jobHistoryService);
-			_jobHistoryErrorService = Substitute.For<IJobHistoryErrorService>();
-
-			var caseServiceContext = Substitute.For<ICaseServiceContext>();
-			var rsapiService = Substitute.For<IRSAPIService>();
-			_objectmanager = Substitute.For<IRelativityObjectManager>();
-			rsapiService.RelativityObjectManager.Returns(_objectmanager);
-			caseServiceContext.RsapiService.Returns(rsapiService);
-
-			ip = ip ?? GetDefaultIntegrationPoint();
-			_sut = new TaskFactoryJobHistoryService(helper, helperFactory, serializer, serviceFactory, _jobHistoryErrorService, caseServiceContext, ip);
 		}
 
 		private Data.IntegrationPoint GetDefaultIntegrationPoint()
