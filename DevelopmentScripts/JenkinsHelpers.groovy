@@ -947,7 +947,7 @@ private storeIntegrationTestsInQuarantineResults()
 
 private stashCommonArtifacts()
 {
-    stash includes: 'Artifacts/*', name: 'buildArtifacts'
+    stash allowEmpty: true, includes: 'Artifacts/*', name: 'buildArtifacts'
 	stash includes: 'DevelopmentScripts/*.ps1', name: 'buildScripts'
     stash includes: 'build.ps1', name: 'buildps1'
     stash includes: 'Vendor/psake/tools/*', name: 'psake'
