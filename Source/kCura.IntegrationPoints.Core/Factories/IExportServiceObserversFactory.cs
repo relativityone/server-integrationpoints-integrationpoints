@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Core.Factories
 			SourceConfiguration configuration,
 			JobHistoryErrorDTO.UpdateStatusType updateStatusType,
 			JobHistory jobHistory,
-			string uniqueJobId,
+			string uniqueJobID,
 			string userImportApiSettings);
 	}
 }

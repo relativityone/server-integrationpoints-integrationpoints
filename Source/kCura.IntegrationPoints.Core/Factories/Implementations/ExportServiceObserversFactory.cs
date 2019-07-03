@@ -50,7 +50,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			SourceConfiguration configuration,
 			JobHistoryErrorDTO.UpdateStatusType updateStatusType,
 			JobHistory jobHistory,
-			string uniqueJobId,
+			string uniqueJobID,
 			string userImportApiSettings)
 		{
 			IConsumeScratchTableBatchStatus destinationFieldsTagger = CreateDestinationFieldsTagger(
@@ -61,14 +61,14 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				mappedFields,
 				configuration,
 				jobHistory,
-				uniqueJobId,
+				uniqueJobID,
 				userImportApiSettings);
 
 			IConsumeScratchTableBatchStatus sourceFieldsTagger = CreateSourceFieldsTagger(
 				configuration,
 				jobHistory,
 				sourceWorkspaceTagCreator,
-				uniqueJobId);
+				uniqueJobID);
 
 			IBatchStatus sourceJobHistoryErrorUpdater = CreateJobHistoryErrorUpdater(
 				jobHistoryErrorManager,
@@ -92,7 +92,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			FieldMap[] mappedFields,
 			SourceConfiguration sourceConfiguration,
 			JobHistory jobHistory,
-			string uniqueJobId,
+			string uniqueJobID,
 			string userImportApiSettings)
 		{
 			IDocumentRepository documentRepository = _repositoryFactory.GetDocumentRepository(sourceConfiguration.SourceWorkspaceArtifactId);
@@ -109,7 +109,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				sourceConfiguration,
 				userImportApiSettings,
 				jobHistory.ArtifactId,
-				uniqueJobId);
+				uniqueJobID);
 
 			IConsumeScratchTableBatchStatus destinationFieldsTagger = taggerFactory.BuildDocumentsTagger();
 			return destinationFieldsTagger;
@@ -119,7 +119,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			SourceConfiguration configuration,
 			JobHistory jobHistory,
 			ISourceWorkspaceTagCreator sourceWorkspaceTagsCreator,
-			string uniqueJobId)
+			string uniqueJobID)
 		{
 			return new SourceObjectBatchUpdateManager(
 				_repositoryFactory,
@@ -128,7 +128,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				_sourceDocumentsTagger,
 				configuration,
 				jobHistory,
-				uniqueJobId);
+				uniqueJobID);
 		}
 
 		private IBatchStatus CreateJobHistoryErrorUpdater(

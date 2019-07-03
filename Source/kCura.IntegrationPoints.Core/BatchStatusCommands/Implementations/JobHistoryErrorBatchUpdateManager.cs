@@ -55,12 +55,15 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 					_sourceWorkspaceArtifactID, _updateStatusType.JobType, _updateStatusType.ErrorTypes);
 				IJobHistoryErrorRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(_sourceWorkspaceArtifactID);
 
-				UpdateScratchTablesOnStart();
+				if (IsRetryErrorsJob)
+				{
+					UpdateScratchTablesOnStart();
+				}
 
 				IEnumerable<UpdateErrorStatusData> updateErrorStatusesData = IsRetryErrorsJob
 					? GetUpdateStatusesOnStartForRetryErrorsJob()
 					: GetUpdateStatusesOnStartForNonRetryJob();
-				UpdateStatuses(updateErrorStatusesData, jobHistoryErrorRepository);
+				UpdateStatusesAsync(updateErrorStatusesData, jobHistoryErrorRepository).GetAwaiter().GetResult();
 			}
 			catch (Exception ex)
 			{
@@ -84,7 +87,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 
 				IJobHistoryErrorRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(_sourceWorkspaceArtifactID);
 				IEnumerable<UpdateErrorStatusData> updateErrorStatusesData = GetUpdateStatusDataForRetryErrorsJobComplete();
-				UpdateStatuses(updateErrorStatusesData, jobHistoryErrorRepository);
+				UpdateStatusesAsync(updateErrorStatusesData, jobHistoryErrorRepository).GetAwaiter().GetResult();
 			}
 			catch (Exception ex)
 			{
@@ -94,11 +97,6 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 
 		private void UpdateScratchTablesOnStart()
 		{
-			if (!IsRetryErrorsJob)
-			{
-				return;
-			}
-
 			switch (_updateStatusType.ErrorTypes)
 			{
 				case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobAndItem:
@@ -189,18 +187,17 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			}
 		}
 
-		private void UpdateStatuses(
+		private async Task UpdateStatusesAsync(
 			IEnumerable<UpdateErrorStatusData> updateErrorStatusesData,
 			IRepositoryWithMassUpdate repositoryWithMassUpdate)
 		{
 			foreach (UpdateErrorStatusData updateErrorStatusData in updateErrorStatusesData)
 			{
-				UpdateStatusesAsync(
+				await UpdateStatusesAsync(
 						updateErrorStatusData.ScratchTableRepository,
 						repositoryWithMassUpdate,
 						updateErrorStatusData.ErrorStatusValue)
-					.GetAwaiter()
-					.GetResult();
+					.ConfigureAwait(false);
 			}
 		}
 
@@ -233,13 +230,13 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 
 		private IntegrationPointsException GetAndLogJobCompleteSaveJobHistoryException(Job job, Exception exception)
 		{
-			string message = "Error while updating Job History after job completion. Cannot perform save history information on job";
+			const string message = "Error while updating Job History after job completion. Cannot perform save history information on job";
 			return GetAndLogException(job, exception, message);
 		}
 
 		private IntegrationPointsException GetAndLogJobStartSaveJobHistoryException(Job job, Exception exception)
 		{
-			string message = "Error while updating Job History before job start. Cannot perform save history information on job.";
+			const string message = "Error while updating Job History before job start. Cannot perform save history information on job.";
 			return GetAndLogException(job, exception, message);
 		}
 

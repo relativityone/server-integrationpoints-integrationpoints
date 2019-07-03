@@ -9,8 +9,8 @@ namespace kCura.IntegrationPoints.Core.Factories
 		IExporterService BuildExporter(
 			IJobStopManager jobStopManager,
 			FieldMap[] mappedFields,
-			string config,
-			int savedSearchArtifactId,
+			string serializedSourceConfiguration,
+			int savedSearchArtifactID,
 			int onBehalfOfUser,
 			string userImportApiSettings);
 	}

@@ -64,7 +64,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		[SetUp]
 		public void SetUp()
 		{
-
 			var configMock = new Mock<IConfig>();
 			configMock
 				.Setup(x => x.MassUpdateBatchSize)

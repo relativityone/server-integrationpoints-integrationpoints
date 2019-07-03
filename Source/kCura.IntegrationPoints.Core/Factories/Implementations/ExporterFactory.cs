@@ -27,7 +27,6 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		private readonly IHelper _helper;
 		private readonly IFolderPathReaderFactory _folderPathReaderFactory;
 		private readonly IRelativityObjectManager _relativityObjectManager;
-		
 		private readonly IAPILog _logger;
 
 		public ExporterFactory(
@@ -50,25 +49,25 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		public IExporterService BuildExporter(
 			IJobStopManager jobStopManager,
 			FieldMap[] mappedFields,
-			string config,
-			int savedSearchArtifactId,
+			string serializedSourceConfiguration,
+			int savedSearchArtifactID,
 			int onBehalfOfUser,
 			string userImportApiSettings)
 		{
-			LogBuildExporterExecutionWithParameters(mappedFields, config, savedSearchArtifactId, onBehalfOfUser, userImportApiSettings);
+			LogBuildExporterExecutionWithParameters(mappedFields, serializedSourceConfiguration, savedSearchArtifactID, onBehalfOfUser, userImportApiSettings);
 			ClaimsPrincipal claimsPrincipal = GetClaimsPrincipal(onBehalfOfUser);
 			IBaseServiceContextProvider baseServiceContextProvider = new BaseServiceContextProvider(claimsPrincipal);
 
 			ImportSettings settings = JsonConvert.DeserializeObject<ImportSettings>(userImportApiSettings);
-			SourceConfiguration sourceConfiguration = JsonConvert.DeserializeObject<SourceConfiguration>(config);
+			SourceConfiguration sourceConfiguration = JsonConvert.DeserializeObject<SourceConfiguration>(serializedSourceConfiguration);
 			BaseServiceContext baseServiceContext = claimsPrincipal.GetUnversionContext(sourceConfiguration.SourceWorkspaceArtifactId);
 
 			IExporterService exporter = settings.ImageImport ?
 				CreateImageExporterService(
 					jobStopManager,
 					mappedFields,
-					config,
-					savedSearchArtifactId,
+					serializedSourceConfiguration,
+					savedSearchArtifactID,
 					baseServiceContextProvider,
 					settings,
 					sourceConfiguration,
@@ -76,8 +75,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				CreateRelativityExporterService(
 					jobStopManager,
 					mappedFields,
-					config,
-					savedSearchArtifactId,
+					serializedSourceConfiguration,
+					savedSearchArtifactID,
 					claimsPrincipal,
 					baseServiceContextProvider,
 					settings,

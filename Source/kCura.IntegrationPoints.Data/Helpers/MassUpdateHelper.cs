@@ -99,7 +99,7 @@ namespace kCura.IntegrationPoints.Data.Helpers
 			}
 			catch (IntegrationPointsException ex)
 			{
-				_logger?.LogError(ex,
+				_logger.LogError(ex,
 					"Error occured while mass updating artifacts. Number of processed items: {processedCount}",
 					documentsOffset);
 				throw;
@@ -161,12 +161,12 @@ namespace kCura.IntegrationPoints.Data.Helpers
 
 		private void LogNoArtifactsToUpdate()
 		{
-			_logger?.LogInformation("Skipping mass update - no artifacts to edit.");
+			_logger.LogInformation("Skipping mass update - no artifacts to edit.");
 		}
 
 		private void LogMassUpdateStarted(int numberOfDocuments, int batchSize)
 		{
-			_logger?.LogInformation(
+			_logger.LogInformation(
 				"Mass update of artifacts started. Batch size: {batchSize}, number of documents: {numberOfDocuments}",
 				batchSize,
 				numberOfDocuments);
