@@ -102,7 +102,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			ORDER BY [ArtifactID] OFFSET {offset} ROWS FETCH NEXT {size} ROWS ONLY";
 
 			//ACT
-			_sut.ReadArtifactIDs(offset, size).ToList();
+			_sut.ReadArtifactIDs(offset, size);
 
 			//ASSERT
 			_workspaceDbContextMock.Verify(x => x.ExecuteSQLStatementAsReader(expectedQuery), Times.Once);
@@ -146,7 +146,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		public void RemoveErrorDocuments_ShouldNotThrowIfParameterIsEmptyArray()
 		{
 			//ARRANGE
-			string[] emptyArray = {};
+			string[] emptyArray = { };
 			Action action = () => _sut.RemoveErrorDocuments(documentControlNumbers: emptyArray);
 
 			//ACT & ASSERT

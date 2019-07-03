@@ -193,7 +193,7 @@ namespace kCura.IntegrationPoints.Data.Helpers
 			{
 				try
 				{
-					return _scratchTableRepository.ReadArtifactIDs(artifactsOffset, batchSize).ToList();
+					return _scratchTableRepository.ReadArtifactIDs(artifactsOffset, batchSize);
 				}
 				catch (Exception ex)
 				{

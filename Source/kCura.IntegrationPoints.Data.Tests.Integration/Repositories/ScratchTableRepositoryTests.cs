@@ -181,7 +181,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			_sut.AddArtifactIdsIntoTempTable(documentIDs);
 
 			//ACT
-			IEnumerable<int> result = _sut.ReadArtifactIDs(offset: 0, size: numDocs).ToList();
+			IEnumerable<int> result = _sut.ReadArtifactIDs(offset: 0, size: numDocs);
 
 			//ASSERT
 			result.Should().Equal(documentIDs);
@@ -199,7 +199,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			_sut.AddArtifactIdsIntoTempTable(documentIDs);
 
 			//ACT
-			IEnumerable<int> result = _sut.ReadArtifactIDs(offset, numDocs).ToList();
+			IEnumerable<int> result = _sut.ReadArtifactIDs(offset, numDocs);
 
 			//ASSERT
 			result.Should().Equal(documentsAfterOffseting);
@@ -217,7 +217,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			_sut.AddArtifactIdsIntoTempTable(documentIDs);
 			documentIDs.Sort();
 			//ACT
-			IEnumerable<int> result = _sut.ReadArtifactIDs(offset, numDocs).ToList();
+			IEnumerable<int> result = _sut.ReadArtifactIDs(offset, numDocs);
 
 			//ASSERT
 			result.Should().Equal(documentIDs);
