@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoints.Config;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Helpers;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.DTO;
@@ -84,6 +85,32 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 
 			// assert
 			updateArtifactsFromScratchTableAction.ShouldThrow<ArgumentNullException>();
+		}
+
+		[Test]
+		public void UpdateArtifactsAsync_FromScratchTable_ShouldThrowExceptionWhenReadingArtifactsIDsFailed()
+		{
+			// arrange
+			SetupNumberOfArtifacts(100);
+			SetupScratchTableReadingToFail();
+
+			Guid fieldGuid = Guid.NewGuid();
+			int singleObjectArtifactID = 2312;
+			IFieldValueDto fieldValueDto = new MultiObjectReferenceDto(singleObjectArtifactID);
+			var fieldUpdateRequestDto = new FieldUpdateRequestDto(fieldGuid, fieldValueDto);
+
+			FieldUpdateRequestDto[] fieldsToUpdate = { fieldUpdateRequestDto };
+
+			// act
+			Func<Task> updateArtifactsAction = () => _sut.UpdateArtifactsAsync(
+				_scratchTableRepositoryMock.Object,
+				fieldsToUpdate,
+				_massUpdateRepositoryMock.Object);
+
+			// assert
+			updateArtifactsAction
+				.ShouldThrow<IntegrationPointsException>()
+				.WithMessage(MassEditErrors.SCRATCH_TABLE_READ_ERROR);
 		}
 
 		[Test]
@@ -378,6 +405,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 			}
 		}
 
+		private void SetupScratchTableReadingToFail()
+		{
+			_scratchTableRepositoryMock
+				.Setup(x => x.ReadArtifactIDs(It.IsAny<int>(), It.IsAny<int>()))
+				.Throws<Exception>();
+		}
+
 		private void SetupMassUpdateResult(bool massUpdateResult)
 		{
 			_massUpdateRepositoryMock
@@ -427,7 +461,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 			List<List<int>> artifactsIDsBatches,
 			Func<Task> massUpdateAction)
 		{
-			massUpdateAction.ShouldThrow<IntegrationPointsException>();
+			massUpdateAction
+				.ShouldThrow<IntegrationPointsException>()
+				.WithMessage(MassEditErrors.OBJECT_MANAGER_ERROR);
 			for (int batchNumber = batchWithMassUpdateFailure + 1; batchNumber < artifactsIDsBatches.Count; batchNumber++)
 			{
 				_massUpdateRepositoryMock.Verify(x =>
