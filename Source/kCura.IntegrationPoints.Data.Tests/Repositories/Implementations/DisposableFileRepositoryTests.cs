@@ -289,7 +289,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		private void AssertIfDataSetsAreSameAsExpected(DataSet expectedDataSet, DataSet currentDataSet)
 		{
 
-			expectedDataSet.Tables[0].Rows.Count.ShouldBeEquivalentTo(expectedDataSet.Tables[0].Rows.Count);
+			expectedDataSet.Tables[0].Rows.Count.ShouldBeEquivalentTo(currentDataSet.Tables[0].Rows.Count);
 		}
 
 	}

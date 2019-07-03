@@ -32,6 +32,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 			IRelativityObjectManager relativityObjectManager, 
 			IRepositoryFactory sourceRepositoryFactory, 
 			IRepositoryFactory targetRepositoryFactory,
+			IFileRepository fileRepository,
 			IJobStopManager jobStopManager, 
 			IHelper helper, 
 			IBaseServiceContextProvider baseServiceContextProvider, 
@@ -44,7 +45,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 				config, searchArtifactId)
 		{
 			_settings = settings;
-			_fileRepository = sourceRepositoryFactory.GetFileRepository();
+			_fileRepository = fileRepository;
 		}
 
 		public override IDataTransferContext GetDataTransferContext(IExporterTransferConfiguration transferConfiguration)

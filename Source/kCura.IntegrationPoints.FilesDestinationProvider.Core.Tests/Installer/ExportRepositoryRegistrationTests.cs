@@ -44,22 +44,22 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Installer
 			sut.Should().HaveRegisteredProperImplementation<IFileRepository, FileRepository>();
 		}
 
+		//[Test]
+		//public void FileRepository_ShouldBeResolvedWithoutThrowing()
+		//{
+		//	//arrange
+		//	IWindsorContainer sut = new WindsorContainer();
+		//	sut.AddExportRepositories();
+		//	RegisterDependencies(sut);
+
+		//	//assert
+		//	sut.Should().ResolveWithoutThrowing<IFileRepository>();
+		//}
+
 
 		private static void RegisterDependencies(IWindsorContainer container)
 		{
-			var viewFieldManagerMock = new Mock<IViewFieldManager>();
-			var fileManagerMock = new Mock<IFileManager>();
-			var fileFieldManagerMock = new Mock<IFileFieldManager>();
-			var viewManagerMock = new Mock<IViewManager>();
 			var servicesMgrMock = new Mock<IServicesMgr>();
-			servicesMgrMock.Setup(x => x.CreateProxy<IViewFieldManager>(ExecutionIdentity.CurrentUser))
-				.Returns(viewFieldManagerMock.Object);
-			servicesMgrMock.Setup(x => x.CreateProxy<IFileManager>(ExecutionIdentity.CurrentUser))
-				.Returns(fileManagerMock.Object);
-			servicesMgrMock.Setup(x => x.CreateProxy<IFileFieldManager>(ExecutionIdentity.CurrentUser))
-				.Returns(fileFieldManagerMock.Object);
-			servicesMgrMock.Setup(x => x.CreateProxy<IViewManager>(ExecutionIdentity.CurrentUser))
-				.Returns(viewManagerMock.Object);
 
 			IRegistration[] dependencies =
 			{

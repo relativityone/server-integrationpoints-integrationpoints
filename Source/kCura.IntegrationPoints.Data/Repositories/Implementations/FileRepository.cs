@@ -35,9 +35,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			IExternalServiceSimpleInstrumentation instrumentation = CreateInstrumentation(
 				operationName: nameof(ISearchManager.RetrieveNativesForSearch)
 			);
-
+			string docIDs = string.Join(",", documentIDs);
 			return instrumentation.Execute<DataSet>(
-				() => _searchManager.RetrieveNativesForSearch(workspaceID, string.Join(",", documentIDs)));
+				() => _searchManager.RetrieveNativesForSearch(workspaceID, docIDs));
 		}
 
 		public DataSet GetNativesForProduction(
@@ -56,9 +56,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			IExternalServiceSimpleInstrumentation instrumentation = CreateInstrumentation(
 				operationName: nameof(ISearchManager.RetrieveNativesForProduction)
 			);
+
+			string docIDs = string.Join(",", documentIDs);
 			return instrumentation.Execute<DataSet>(
-				() => _searchManager.RetrieveNativesForProduction(workspaceID, productionID,
-					String.Join(",", documentIDs)));
+				() => _searchManager.RetrieveNativesForProduction(workspaceID, 
+					productionID,
+					docIDs));
 		}
 
 		public DataSet GetImagesForProductionDocuments(
