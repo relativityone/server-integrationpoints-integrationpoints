@@ -79,7 +79,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 		}
 
 		[Test]
-		public void ShouldThrowOnMassUpdateHelperException()
+		public void ShouldRethrowOnMassUpdateHelperException()
 		{
 			//arrange
 			var massUpdateException = new InvalidOperationException();
@@ -100,7 +100,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 		}
 
 		[Test]
-		public async Task ShouldVerifyObjectsInRequest()
+		public async Task ShouldCallMassUpdateHelperWithProperArguments()
 		{
 
 			//act
@@ -154,14 +154,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 		}
 
 		private static bool IsFieldUpdateRequestValid(
-			FieldUpdateRequestDto[] fieldUpdateRequestDtos,
+			FieldUpdateRequestDto[] fieldUpdateRequestDto,
 			Guid fieldGuid,
 			int expectedRelativityArtifactID)
 		{
-			FieldUpdateRequestDto jobHistoryGuidFieldUpdateRequestDto = fieldUpdateRequestDtos.Single(f => f.FieldIdentifier == fieldGuid);
+			FieldUpdateRequestDto jobHistoryGuidFieldUpdateRequestDto = fieldUpdateRequestDto.Single(f => f.FieldIdentifier == fieldGuid);
 			RelativityObjectRef[] relativityObjectReferences = ((RelativityObjectRef[])jobHistoryGuidFieldUpdateRequestDto.NewValue.Value);
-			RelativityObjectRef relativityObjectRefArtifactID = relativityObjectReferences.Single();
-			return relativityObjectRefArtifactID.ArtifactID == expectedRelativityArtifactID;
+			RelativityObjectRef relativityObjectReference = relativityObjectReferences.Single();
+			return relativityObjectReference.ArtifactID == expectedRelativityArtifactID;
 
 		}
 	}
