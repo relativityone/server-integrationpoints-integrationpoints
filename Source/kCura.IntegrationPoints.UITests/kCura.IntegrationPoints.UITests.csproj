@@ -112,7 +112,7 @@
     <Compile Include="Driver\ChromeDriverFactory.cs" />
     <Compile Include="Driver\ChromeOptionsExtensions.cs" />
     <Compile Include="Driver\ChromiumBasedDriverFactory.cs" />
-    <Compile Include="Driver\ChromiumDriverFactory.cs" />    
+    <Compile Include="Driver\ChromiumDriverFactory.cs" />
     <Compile Include="Driver\DriverExtensions.cs" />
     <Compile Include="Driver\DriverFactory.cs" />
     <Compile Include="Driver\FirefoxDriverFactory.cs" />
@@ -555,6 +555,11 @@
       <ItemGroup>
         <Reference Include="Relativity.Logging">
           <HintPath>..\..\packages\Relativity.Logging\lib\net462\Relativity.Logging.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.Logging.Interfaces">
+          <HintPath>..\..\packages\Relativity.Logging\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
