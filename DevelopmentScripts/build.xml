@@ -102,6 +102,7 @@
       <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.Domain.Tests.dll</DLL>
       <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.Email.Tests.dll</DLL>
       <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.SourceProviderInstaller.Tests.dll</DLL>
+      <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.Common.Tests.dll</DLL>
     </DLLs>
     <WhiteList>
       <allow>kCura.IntegrationPoints.Agent.Tests.Tasks.SyncCustodianManagerWorkerTests.Execute_GoldFlow</allow>

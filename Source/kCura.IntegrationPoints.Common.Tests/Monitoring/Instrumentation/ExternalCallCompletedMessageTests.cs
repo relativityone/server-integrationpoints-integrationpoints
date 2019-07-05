@@ -1,8 +1,8 @@
-﻿using NUnit.Framework;
-using System;
+﻿using System;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation.Model;
+using NUnit.Framework;
 
-namespace kCura.IntegrationPoints.Core.Tests.Monitoring.Instrumentation
+namespace kCura.IntegrationPoints.Common.Tests.Monitoring.Instrumentation
 {
 	[TestFixture]
 	public class ExternalCallCompletedMessageTests
