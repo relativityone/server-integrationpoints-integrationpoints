@@ -1,5 +1,4 @@
 ﻿using System.Security;
-using Castle.Core.Internal;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 
 namespace kCura.IntegrationPoint.Tests.Core.Models.Import.FTP
@@ -25,7 +24,10 @@ namespace kCura.IntegrationPoint.Tests.Core.Models.Import.FTP
 			set
 			{
 				_secureUsername.Clear();
-				value.ForEach(c => _secureUsername.AppendChar(c));
+				foreach (char c in value)
+				{
+					_secureUsername.AppendChar(c);
+				}
 			}
 		}
 
@@ -38,7 +40,10 @@ namespace kCura.IntegrationPoint.Tests.Core.Models.Import.FTP
 			set
 			{
 				_securePassword.Clear();
-				value.ForEach(c => _securePassword.AppendChar(c));
+				foreach (char c in value)
+				{
+					_securePassword.AppendChar(c);
+				}
 			}
 		}
 

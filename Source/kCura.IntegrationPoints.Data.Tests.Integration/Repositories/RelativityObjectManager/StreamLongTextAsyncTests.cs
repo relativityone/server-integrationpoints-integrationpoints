@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Castle.Core.Internal;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
@@ -135,24 +134,27 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.Relativity
 		{
 			int @base = 2;
 			int lastExponent = (int)Math.Floor(Math.Log(size, @base));
-			return new int[] {0}
+			return new int[] { 0 }
 				.Concat(Enumerable.Range(0, lastExponent))
 				.Select(x => (int)Math.Pow(@base, x))
-				.Concat(new int[] {size - 1})
+				.Concat(new int[] { size - 1 })
 				.ToArray();
 		}
 
-		private void ValidateSpecificCharacters(IEnumerable<int> positions, string expectedString, string actualString)
+		private void ValidateSpecificCharacters(
+			IEnumerable<int> positions,
+			string expectedString,
+			string actualString)
 		{
-			positions.ForEach(i =>
+			foreach (int position in positions)
 			{
-				char expectedChar = expectedString[i];
-				char actualChar = actualString[i];
+				char expectedChar = expectedString[position];
+				char actualChar = actualString[position];
 				expectedChar
 					.Should()
 					.Be(actualChar,
 						"Characters on the same position both in input string and result stream should be the same!");
-			});
+			}
 		}
 
 		private char ReadCharacter(Stream stream)
@@ -169,9 +171,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.Relativity
 		{
 			var queryRequest = new QueryRequest
 			{
-				ObjectType = new ObjectTypeRef { ArtifactTypeID = (int) ArtifactType.Document},
+				ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Document },
 				Fields = new[] { new FieldRef { Name = "Artifact ID" } },
-				Condition  = $"'Control Number' LIKE '{controlNumber}'))"
+				Condition = $"'Control Number' LIKE '{controlNumber}'))"
 			};
 			List<RelativityObject> results = _relativityObjectManager.Query(queryRequest);
 			return results.First().ArtifactID;

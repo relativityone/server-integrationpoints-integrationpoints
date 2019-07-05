@@ -1,5 +1,4 @@
-﻿using Castle.Core.Internal;
-using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+﻿using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.Relativity.Client;
 using Relativity.Services.Agent;
 using Relativity.Services.ResourceServer;
@@ -8,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.Exceptions;
+using kCura.IntegrationPoints.Common.Extensions.DotNet;
 using Query = Relativity.Services.Query;
 
 namespace kCura.IntegrationPoint.Tests.Core

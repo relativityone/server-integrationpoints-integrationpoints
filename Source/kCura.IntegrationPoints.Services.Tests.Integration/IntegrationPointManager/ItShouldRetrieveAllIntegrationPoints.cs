@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Castle.Core.Internal;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
-using kCura.IntegrationPoints.Services.Tests.Integration.Helpers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using NUnit.Framework;
 using Relativity.Testing.Identification;
@@ -30,15 +28,15 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 			var ldap1 = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, "LDAP_Provider_1", "Append Only");
 			ldap1.SourceProvider = LdapProvider.ArtifactId;
 			ldap1.Type = Container.Resolve<IIntegrationPointTypeService>()
-				.GetIntegrationPointType(kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ImportGuid)
+				.GetIntegrationPointType(Core.Constants.IntegrationPoints.IntegrationPointTypes.ImportGuid)
 				.ArtifactId;
 
-			_expectedIntegrationPoints = new List<Core.Models.IntegrationPointModel> {rel1, rel2, ldap1};
+			_expectedIntegrationPoints = new List<Core.Models.IntegrationPointModel> { rel1, rel2, ldap1 };
 
-			_expectedIntegrationPoints.ForEach(x =>
+			foreach (Core.Models.IntegrationPointModel integrationPoint in _expectedIntegrationPoints)
 			{
-				x.ArtifactID = CreateOrUpdateIntegrationPoint(x).ArtifactID;
-			});
+				integrationPoint.ArtifactID = CreateOrUpdateIntegrationPoint(integrationPoint).ArtifactID;
+			}
 
 			_client = Helper.CreateProxy<IIntegrationPointManager>();
 		}

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Castle.Core.Internal;
 using Castle.Windsor;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Agent;
@@ -52,7 +51,11 @@ namespace kCura.IntegrationPoints.RelativitySync
 					OiFileIdMapped = destinationConfiguration.OIFileIdMapped,
 					ParentObjectIdSourceFieldName = destinationConfiguration.ParentObjectIdSourceFieldName
 				};
-				destinationConfiguration.ObjectFieldIdListContainsArtifactId.ForEach(x => importSettingsDto.ObjectFieldIdListContainsArtifactId.Add(x));
+
+				foreach (int artifactID in destinationConfiguration.ObjectFieldIdListContainsArtifactId)
+				{
+					importSettingsDto.ObjectFieldIdListContainsArtifactId.Add(artifactID);
+				}
 
 				return new SyncConfiguration(job.SubmittedById, sourceConfiguration, destinationConfiguration, emailRecipients, importSettingsDto);
 			}
