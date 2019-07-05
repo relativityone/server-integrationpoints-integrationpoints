@@ -2,6 +2,7 @@
 using Stream = System.IO.Stream;
 using System.Collections.Generic;
 using System.Data;
+using kCura.IntegrationPoints.Core.Extensions;
 using kCura.IntegrationPoints.Core.Services.Exporter.Base;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
@@ -29,6 +30,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private readonly IRelativityObjectManager _relativityObjectManager;
 		private readonly IQueryFieldLookupRepository _fieldLookupRepository;
 		private readonly IAPILog _logger;
+
+		private const string _DUPLICATED_NATIVE_KEY_ERROR_MESSAGE = "Duplicated key found.Check if there is no natives duplicates for a given document";
 
 		private static readonly string _nativeDocumentArtifactIdColumn = "DocumentArtifactID";
 		private static readonly string _nativeFileNameColumn = "Filename";
@@ -202,36 +205,30 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			for (int index = 0; index < dataView.Table.Rows.Count; index++)
 			{
 				DataRow row = dataView.Table.Rows[index];
-				int nativeDocumentArtifactId = (int)row[_nativeDocumentArtifactIdColumn];
-				string nativeFileLocation = (string)row[_nativeLocationColumn];
-				AddAndThrowIfKeyExists(_nativeFileLocations, nativeDocumentArtifactId, nativeFileLocation);
+				int nativeDocumentArtifactId = (int) row[_nativeDocumentArtifactIdColumn];
+				string nativeFileLocation = (string) row[_nativeLocationColumn];
+				_nativeFileLocations.AddAndFailJobIfKeyExists(
+					nativeDocumentArtifactId, 
+					nativeFileLocation,
+					_DUPLICATED_NATIVE_KEY_ERROR_MESSAGE,
+					_logger
+				);
 				string nativeFileName = (string)row[_nativeFileNameColumn];
-				AddAndThrowIfKeyExists(_nativeFileNames, nativeDocumentArtifactId, nativeFileName);
+				_nativeFileNames.AddAndFailJobIfKeyExists(
+					nativeDocumentArtifactId, 
+					nativeFileName,
+					_DUPLICATED_NATIVE_KEY_ERROR_MESSAGE,
+					_logger
+					
+				);
 				long nativeFileSize = (long)row[_nativeFileSizeColumn];
-				AddAndThrowIfKeyExists(_nativeFileSizes, nativeDocumentArtifactId, nativeFileSize);
+				_nativeFileSizes.AddAndFailJobIfKeyExists(
+					nativeDocumentArtifactId, 
+					nativeFileSize,
+					_DUPLICATED_NATIVE_KEY_ERROR_MESSAGE,
+					_logger
+				);
 			}
-		}
-
-		private void AddAndThrowIfKeyExists<T>(
-			Dictionary<int, T> dict,
-			int nativeDocumentArtifactID,
-			T value)
-		{
-			if (dict.ContainsKey(nativeDocumentArtifactID))
-			{
-				string message =
-					"Duplicated key found. Check if there is no " +
-					"natives duplicates for a given document";
-
-				string exceptionMessage = $"{message}, documentID: {nativeDocumentArtifactID}";
-				string logMessageTemplate = message + ", documentID: {@nativeDocumentArtifactID}";
-
-				var ex = new IntegrationPointsException(exceptionMessage);
-				_logger.LogError(ex, logMessageTemplate, nativeDocumentArtifactID);
-				throw ex;
-			}
-
-			dict.Add(nativeDocumentArtifactID, value);
 		}
 
 		private void LoadNativesMetadataFromDocumentsTable()
