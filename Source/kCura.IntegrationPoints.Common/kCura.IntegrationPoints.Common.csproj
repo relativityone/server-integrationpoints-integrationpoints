@@ -48,7 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants\ExternalServiceTypes.cs" />
-    <Compile Include="Extensions\DotNet\IEnumerableExtensions.cs" />
+    <Compile Include="Extensions\DotNet\EnumerableExtensions.cs" />
     <Compile Include="Monitoring\Constants\TelemetryMetricsBucketNames.cs" />
     <Compile Include="Context\IWorkspaceContext.cs" />
     <Compile Include="Monitoring\Instrumentation\ExternalServiceInstrumentation.cs" />

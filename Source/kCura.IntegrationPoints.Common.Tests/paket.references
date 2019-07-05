@@ -1,4 +1,5 @@
-﻿NSubstitute
+﻿FluentAssertions
+NSubstitute
 NUnit
 Moq
 Relativity.API

@@ -4,9 +4,9 @@ using System.Linq;
 
 namespace kCura.IntegrationPoints.Common.Extensions.DotNet
 {
-	public static class IEnumerableExtensions
+	public static class EnumerableExtensions
 	{
-		public static bool IsNullOrEmpty(this IEnumerable enumerable) // TODO unit tests
+		public static bool IsNullOrEmpty(this IEnumerable enumerable)
 		{
 			if (enumerable == null)
 			{
@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.Common.Extensions.DotNet
 			return !hasElements;
 		}
 
-		public static bool IsNullOrEmpty<T>(this IEnumerable<T> enumerable) // TODO unit tests
+		public static bool IsNullOrEmpty<T>(this IEnumerable<T> enumerable)
 		{
 			return enumerable == null || !enumerable.Any();
 		}
