@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private static readonly string _nativeFileSizeColumn = "Size";
 		private static readonly string _nativeLocationColumn = "Location";
 		private static readonly string _separator = ",";
-		
+
 		public DocumentTransferDataReader(IExporterService relativityExportService,
 			FieldMap[] fieldMappings,
 			BaseServiceContext context,
@@ -166,8 +166,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		}
 
 		private IntegrationPointsException LogGetValueError(
-			Exception e, 
-			int index, 
+			Exception e,
+			int index,
 			bool isFieldIdentifierNumeric,
 			ArtifactFieldDTO retrievedField,
 			string fieldIdentifier,
@@ -176,17 +176,17 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			)
 		{
 			string message = $"Error occurred when getting value for index {index}, " +
-			              $"isFieldIdentifierNumeric: {isFieldIdentifierNumeric}, " +
-			              $"retrievedField: {retrievedField}, " +
-			              $"fieldIdentifier: {fieldIdentifier}, " +
-			              $"fieldArtifactId: {fieldArtifactId}, " +
-			              $"result: {result}";
+						  $"isFieldIdentifierNumeric: {isFieldIdentifierNumeric}, " +
+						  $"retrievedField: {retrievedField}, " +
+						  $"fieldIdentifier: {fieldIdentifier}, " +
+						  $"fieldArtifactId: {fieldArtifactId}, " +
+						  $"result: {result}";
 			string template = "Error occurred when getting value for index {index}, " +
-			              "isFieldIdentifierNumeric: {isFieldIdentifierNumeric}, " +
-			              "retrievedField: {@retrievedField}, " +
-			              "fieldIdentifier: {fieldIdentifier}, " +
-			              "fieldArtifactId: {fieldArtifactId}, " +
-			              "result: {@result}";
+						  "isFieldIdentifierNumeric: {isFieldIdentifierNumeric}, " +
+						  "retrievedField: {@retrievedField}, " +
+						  "fieldIdentifier: {fieldIdentifier}, " +
+						  "fieldArtifactId: {fieldArtifactId}, " +
+						  "result: {@result}";
 			var exc = new IntegrationPointsException(message, e);
 			_logger.LogError(exc, template, index, isFieldIdentifierNumeric, retrievedField, fieldIdentifier, fieldArtifactId, result);
 			return exc;
@@ -204,12 +204,34 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				DataRow row = dataView.Table.Rows[index];
 				int nativeDocumentArtifactId = (int)row[_nativeDocumentArtifactIdColumn];
 				string nativeFileLocation = (string)row[_nativeLocationColumn];
-				_nativeFileLocations.Add(nativeDocumentArtifactId, nativeFileLocation);
+				AddAndThrowIfKeyExists(_nativeFileLocations, nativeDocumentArtifactId, nativeFileLocation);
 				string nativeFileName = (string)row[_nativeFileNameColumn];
-				_nativeFileNames.Add(nativeDocumentArtifactId, nativeFileName);
+				AddAndThrowIfKeyExists(_nativeFileNames, nativeDocumentArtifactId, nativeFileName);
 				long nativeFileSize = (long)row[_nativeFileSizeColumn];
-				_nativeFileSizes.Add(nativeDocumentArtifactId, nativeFileSize);
+				AddAndThrowIfKeyExists(_nativeFileSizes, nativeDocumentArtifactId, nativeFileSize);
 			}
+		}
+
+		private void AddAndThrowIfKeyExists<T>(
+			Dictionary<int, T> dict,
+			int nativeDocumentArtifactID,
+			T value)
+		{
+			if (dict.ContainsKey(nativeDocumentArtifactID))
+			{
+				string message =
+					"Duplicated key found. Check if there is no " +
+					"natives duplicates for a given document";
+
+				string exceptionMessage = $"{message}, documentID: {nativeDocumentArtifactID}";
+				string logMessageTemplate = message + ", documentID: {@nativeDocumentArtifactID}";
+
+				var ex = new IntegrationPointsException(exceptionMessage);
+				_logger.LogError(ex, logMessageTemplate, nativeDocumentArtifactID);
+				throw ex;
+			}
+
+			dict.Add(nativeDocumentArtifactID, value);
 		}
 
 		private void LoadNativesMetadataFromDocumentsTable()
@@ -218,7 +240,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			string supportedByViewerColumn = "SupportedByViewer";
 			string relativityNativeTypeColumn = "RelativityNativeType";
 
-			string [] documentColumnsToRetrieve = { supportedByViewerColumn, relativityNativeTypeColumn };
+			string[] documentColumnsToRetrieve = { supportedByViewerColumn, relativityNativeTypeColumn };
 
 			kCura.Data.DataView nativeTypeForGivenDocument = DocumentQuery.RetrieveValuesByColumnNamesAndArtifactIDs(Context, ReadingArtifactIDs, documentColumnsToRetrieve);
 
