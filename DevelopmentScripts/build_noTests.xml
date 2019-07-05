@@ -185,6 +185,7 @@
         <Project path="Source\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj" />
         <Project path="Source\kCura.IntegrationPoints.Agent.Tests\kCura.IntegrationPoints.Agent.Tests.csproj" />
         <Project path="Source\kCura.IntegrationPoints.Agent.Tests.Integration\kCura.IntegrationPoints.Agent.Tests.Integration.csproj" />
+        <Project path="Source\kCura.IntegrationPoints.Common.Tests\kCura.IntegrationPoints.Common.Tests.csproj" />
         <Project path="Source\kCura.IntegrationPoints.Core.Contracts.Tests\kCura.IntegrationPoints.Core.Contracts.Tests.csproj" />
         <Project path="Source\kCura.IntegrationPoints.Core.Tests\kCura.IntegrationPoints.Core.Tests.csproj" />
         <Project path="Source\kcura.IntegrationPoints.Core.Tests.Integration\kcura.IntegrationPoints.Core.Tests.Integration.csproj" />
