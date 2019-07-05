@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Threading;
 
 namespace Relativity.Sync
 {
@@ -10,6 +11,7 @@ namespace Relativity.Sync
 		private int _itemsProcessedCount = 0;
 		private int _itemsFailedCount = 0;
 
+		private readonly object _lockObject = new object();
 		private readonly IJobProgressUpdater _jobProgressUpdater;
 		private readonly IDateTime _dateTime;
 		private readonly TimeSpan _throttle = TimeSpan.FromSeconds(1);
@@ -30,25 +32,34 @@ namespace Relativity.Sync
 
 		public void HandleItemProcessed(long item)
 		{
-			_itemsProcessedCount++;
-			UpdateProgressIfPossible();
+			lock (_lockObject)
+			{
+				_itemsProcessedCount++;
+				UpdateProgressIfPossible();
+			}
 		}
 
 		public void HandleItemError(IDictionary row)
 		{
-			_itemsFailedCount++;
-			if (_itemsProcessedCount > 0)
+			lock (_lockObject)
 			{
-				_itemsProcessedCount--;
+				_itemsFailedCount++;
+				if (_itemsProcessedCount > 0)
+				{
+					_itemsProcessedCount--;
+				}
+				UpdateProgressIfPossible();
 			}
-			UpdateProgressIfPossible();
 		}
 
 		public void HandleProcessComplete(JobReport jobReport)
 		{
-			_itemsProcessedCount = jobReport.TotalRows - jobReport.ErrorRowCount;
-			_itemsFailedCount = jobReport.ErrorRowCount;
-			UpdateProgress();
+			lock (_lockObject)
+			{
+				_itemsProcessedCount = jobReport.TotalRows - jobReport.ErrorRowCount;
+				_itemsFailedCount = jobReport.ErrorRowCount;
+				UpdateProgress();
+			}
 		}
 
 		private void UpdateProgressIfPossible()

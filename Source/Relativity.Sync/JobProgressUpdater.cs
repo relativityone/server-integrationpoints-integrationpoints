@@ -12,75 +12,91 @@ namespace Relativity.Sync
 		private readonly int _workspaceArtifactId;
 		private readonly int _jobHistoryArtifactId;
 		private readonly ISourceServiceFactoryForAdmin _serviceFactory;
+		private readonly ISyncLog _logger;
 
 		private static readonly Guid CompletedItemsCountGuid = new Guid("70680399-c8ea-4b12-b711-e9ecbc53cb1c");
 		private static readonly Guid FailedItemsCountGuid = new Guid("c224104f-c1ca-4caa-9189-657e01d5504e");
 		private static readonly Guid TotalItemsCountGuid = new Guid("576189a9-0347-4b20-9369-b16d1ac89b4b");
 
-		public JobProgressUpdater(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int jobHistoryArtifactId)
+		public JobProgressUpdater(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int jobHistoryArtifactId, ISyncLog logger)
 		{
 			_serviceFactory = serviceFactory;
 			_workspaceArtifactId = workspaceArtifactId;
 			_jobHistoryArtifactId = jobHistoryArtifactId;
+			_logger = logger;
 		}
 
 		public async Task SetTotalItemsCountAsync(int totalItemsCount)
 		{
-			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			try
 			{
-				UpdateRequest updateRequest = new UpdateRequest()
+				using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 				{
-					Object = new RelativityObjectRef()
+					UpdateRequest updateRequest = new UpdateRequest()
 					{
-						ArtifactID = _jobHistoryArtifactId
-					},
-					FieldValues = new []
-					{
-						new FieldRefValuePair()
+						Object = new RelativityObjectRef()
 						{
-							Field = new FieldRef()
+							ArtifactID = _jobHistoryArtifactId
+						},
+						FieldValues = new []
+						{
+							new FieldRefValuePair()
 							{
-								Guid = TotalItemsCountGuid
-							},
-							Value = totalItemsCount
+								Field = new FieldRef()
+								{
+									Guid = TotalItemsCountGuid
+								},
+								Value = totalItemsCount
+							}
 						}
-					}
-				};
-				await objectManager.UpdateAsync(_workspaceArtifactId, updateRequest).ConfigureAwait(false);
+					};
+					await objectManager.UpdateAsync(_workspaceArtifactId, updateRequest).ConfigureAwait(false);
+				}
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Failed to update total items count for job history artifact ID: {_jobHistoryArtifactId}. See inner exception for more details.", _jobHistoryArtifactId);
 			}
 		}
 
 		public async Task UpdateJobProgressAsync(int completedRecordsCount, int failedRecordsCount)
 		{
-			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			try
 			{
-				UpdateRequest updateRequest = new UpdateRequest()
+				using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 				{
-					Object = new RelativityObjectRef()
+					UpdateRequest updateRequest = new UpdateRequest()
 					{
-						ArtifactID = _jobHistoryArtifactId
-					},
-					FieldValues = new[]
-					{
-						new FieldRefValuePair()
+						Object = new RelativityObjectRef()
 						{
-							Field = new FieldRef()
-							{
-								Guid = CompletedItemsCountGuid
-							},
-							Value = completedRecordsCount
+							ArtifactID = _jobHistoryArtifactId
 						},
-						new FieldRefValuePair()
+						FieldValues = new[]
 						{
-							Field = new FieldRef()
+							new FieldRefValuePair()
 							{
-								Guid = FailedItemsCountGuid
+								Field = new FieldRef()
+								{
+									Guid = CompletedItemsCountGuid
+								},
+								Value = completedRecordsCount
 							},
-							Value = failedRecordsCount
-						}, 
-					}
-				};
-				await objectManager.UpdateAsync(_workspaceArtifactId, updateRequest).ConfigureAwait(false);
+							new FieldRefValuePair()
+							{
+								Field = new FieldRef()
+								{
+									Guid = FailedItemsCountGuid
+								},
+								Value = failedRecordsCount
+							}, 
+						}
+					};
+					await objectManager.UpdateAsync(_workspaceArtifactId, updateRequest).ConfigureAwait(false);
+				}
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Failed to update items transferred and items failed for job history artifact ID: {_jobHistoryArtifactId}. See inner exception for more details.", _jobHistoryArtifactId);
 			}
 		}
 	}
