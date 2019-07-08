@@ -2,7 +2,7 @@
 
 namespace kCura.IntegrationPoints.Core.Toggles
 {
-	[DefaultValue(false)]
+	[DefaultValue(true)]
 	public class UseOldExportVolumeManagerToggle : IToggle
 	{
 	}
