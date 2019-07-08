@@ -2,6 +2,7 @@ AutoMapper
 Castle.Windsor
 CSharpGuidelineAnalyzer
 FluentAssertions
+kCura
 kCura.Apps.Common.Config
 kCura.Relativity.Client
 LanguageExt.Core
@@ -19,5 +20,5 @@ Relativity.Productions.Services.Interfaces
 Relativity.Services.Interfaces.Private
 Relativity.Telemetry.APM
 Relativity.Toggles
-RelativityCore
 Relativity.OAuth2Client
+Serilog
