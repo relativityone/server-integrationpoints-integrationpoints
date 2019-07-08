@@ -33,8 +33,10 @@ namespace Relativity.Sync
 			{
 				_logger.LogError(ex, "Exception occurred while updating import job progress.");
 			}
-
-			_semaphoreSlim.Release();
+			finally
+			{
+				_semaphoreSlim.Release();
+			}
 		}
 
 		private static double CalculateProgress(int processedRecordsCount, int totalRecordsCount)
