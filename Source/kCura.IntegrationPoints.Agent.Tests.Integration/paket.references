@@ -1,3 +1,4 @@
+Castle.Windsor
 CSharpGuidelineAnalyzer
 FluentAssertions
 kCura.Agent
@@ -13,7 +14,7 @@ Relativity.Data
 Relativity.DataTransfer.MessageService
 Relativity.Telemetry.APM
 relativity.transfer.client
-RelativityCore
 Relativity.OAuth2Client
 Relativity.OAuth2Client.Interfaces
+Relativity.Services.Interfaces.Private
 relativity.testing.identification
