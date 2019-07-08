@@ -8,7 +8,6 @@ namespace Relativity.Sync
 	{
 		private DateTime _lastProgressEventTimestamp = DateTime.MinValue;
 
-		private readonly object _lockObject = new object();
 		private readonly IBatch _batch;
 		private readonly IBatchProgressUpdater _progressUpdater;
 		private readonly IDateTime _dateTime;
@@ -23,26 +22,20 @@ namespace Relativity.Sync
 
 		public void HandleProcessProgress(FullStatus status)
 		{
-			lock (_lockObject)
+			bool canUpdate = CanUpdateProgress();
+			if (canUpdate)
 			{
-				bool canUpdate = CanUpdateProgress();
-				if (canUpdate)
-				{
-					int completedRecordsCount = (int)status.TotalRecordsProcessed - (int)status.TotalRecordsProcessedWithErrors;
-					int failedRecordsCount = (int)status.TotalRecordsProcessedWithErrors;
-					UpdateProgress(completedRecordsCount, failedRecordsCount);
-				}
+				int completedRecordsCount = (int) status.TotalRecordsProcessed - (int) status.TotalRecordsProcessedWithErrors;
+				int failedRecordsCount = (int) status.TotalRecordsProcessedWithErrors;
+				UpdateProgress(completedRecordsCount, failedRecordsCount);
 			}
 		}
 
 		public void HandleProcessComplete(JobReport jobReport)
 		{
-			lock (_lockObject)
-			{
-				int failedRecordsCount = jobReport.ErrorRowCount;
-				int completedRecordsCount = jobReport.TotalRows - jobReport.ErrorRowCount;
-				UpdateProgress(completedRecordsCount, failedRecordsCount);
-			}
+			int failedRecordsCount = jobReport.ErrorRowCount;
+			int completedRecordsCount = jobReport.TotalRows - jobReport.ErrorRowCount;
+			UpdateProgress(completedRecordsCount, failedRecordsCount);
 		}
 
 		private bool CanUpdateProgress()
