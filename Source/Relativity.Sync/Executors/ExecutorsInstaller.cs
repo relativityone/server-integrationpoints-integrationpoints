@@ -28,7 +28,7 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<TagSavedSearch>().As<ITagSavedSearch>();
 			builder.RegisterType<TagSavedSearchFolder>().As<ITagSavedSearchFolder>();
 			builder.RegisterType<BatchProgressHandlerFactory>().As<IBatchProgressHandlerFactory>();
-			builder.Register(c => new BatchProgressUpdater(c.Resolve<ISyncLog>(), new SemaphoreSlimWrapper(new SemaphoreSlim(0, 1)))).As<IBatchProgressUpdater>();
+			builder.Register(c => new BatchProgressUpdater(c.Resolve<ISyncLog>(), new SemaphoreSlimWrapper(new SemaphoreSlim(1)))).As<IBatchProgressUpdater>();
 			builder.RegisterType<ImportJobFactory>().As<IImportJobFactory>();
 			builder.RegisterType<ImportApiFactory>().As<IImportApiFactory>();
 
