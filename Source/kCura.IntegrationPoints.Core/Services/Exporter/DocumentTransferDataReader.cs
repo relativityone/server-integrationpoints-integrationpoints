@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private readonly IQueryFieldLookupRepository _fieldLookupRepository;
 		private readonly IAPILog _logger;
 
-		private const string _DUPLICATED_NATIVE_KEY_ERROR_MESSAGE = "Duplicated key found.Check if there is no natives duplicates for a given document";
+		private const string _DUPLICATED_NATIVE_KEY_ERROR_MESSAGE = "Duplicated key found. Check if there is no natives duplicates for a given document";
 
 		private static readonly string _nativeDocumentArtifactIdColumn = "DocumentArtifactID";
 		private static readonly string _nativeFileNameColumn = "Filename";
@@ -207,26 +207,22 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				DataRow row = dataView.Table.Rows[index];
 				int nativeDocumentArtifactId = (int) row[_nativeDocumentArtifactIdColumn];
 				string nativeFileLocation = (string) row[_nativeLocationColumn];
-				_nativeFileLocations.AddAndFailJobIfKeyExists(
+				_nativeFileLocations.AddOrThrowIfKeyExists(
 					nativeDocumentArtifactId, 
 					nativeFileLocation,
-					_DUPLICATED_NATIVE_KEY_ERROR_MESSAGE,
-					_logger
+					_DUPLICATED_NATIVE_KEY_ERROR_MESSAGE
 				);
 				string nativeFileName = (string)row[_nativeFileNameColumn];
-				_nativeFileNames.AddAndFailJobIfKeyExists(
+				_nativeFileNames.AddOrThrowIfKeyExists(
 					nativeDocumentArtifactId, 
 					nativeFileName,
-					_DUPLICATED_NATIVE_KEY_ERROR_MESSAGE,
-					_logger
-					
+					_DUPLICATED_NATIVE_KEY_ERROR_MESSAGE
 				);
 				long nativeFileSize = (long)row[_nativeFileSizeColumn];
-				_nativeFileSizes.AddAndFailJobIfKeyExists(
+				_nativeFileSizes.AddOrThrowIfKeyExists(
 					nativeDocumentArtifactId, 
 					nativeFileSize,
-					_DUPLICATED_NATIVE_KEY_ERROR_MESSAGE,
-					_logger
+					_DUPLICATED_NATIVE_KEY_ERROR_MESSAGE
 				);
 			}
 		}
