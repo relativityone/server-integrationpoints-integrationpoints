@@ -24,8 +24,8 @@ namespace Relativity.Sync.Executors
 		private const string _SOURCE_WORKSPACE_INSTANCENAME_FIELD_NAME = "Source Instance Name";
 
 		private const string _SOURCE_JOB_OBJECT_TYPE_NAME = "Relativity Source Job";
-		private const string _SOURCEJOB_JOBHISTORYID_FIELD_NAME = "Job History Artifact ID";
-		private const string _SOURCEJOB_JOBHISTORYNAME_FIELD_NAME = "Job History Name";
+		private const string _SOURCE_JOB_JOBHISTORYID_FIELD_NAME = "Job History Artifact ID";
+		private const string _SOURCE_JOB_JOBHISTORYNAME_FIELD_NAME = "Job History Name";
 
 		private readonly ISyncObjectTypeManager _syncObjectTypeManager;
 		private readonly ISyncFieldManager _syncFieldManager;
@@ -240,7 +240,7 @@ namespace Relativity.Sync.Executors
 					JobHistoryIdFieldGuid,
 					new WholeNumberFieldRequest()
 					{
-						Name = _SOURCEJOB_JOBHISTORYID_FIELD_NAME,
+						Name = _SOURCE_JOB_JOBHISTORYID_FIELD_NAME,
 						ObjectType = objectType,
 						IsRequired = true,
 						IsLinked = false,
@@ -256,7 +256,7 @@ namespace Relativity.Sync.Executors
 					JobHistoryNameFieldGuid,
 					new FixedLengthFieldRequest()
 					{
-						Name = _SOURCEJOB_JOBHISTORYNAME_FIELD_NAME,
+						Name = _SOURCE_JOB_JOBHISTORYNAME_FIELD_NAME,
 						ObjectType = objectType,
 						IsRequired = true,
 						IncludeInTextIndex = false,
