@@ -18,7 +18,7 @@ namespace Relativity.Sync.Tests.Unit
 		public void SetUp()
 		{
 			_batch = new Mock<IBatch>();
-			_batchProgressUpdater = new BatchProgressUpdater(new EmptyLogger());
+			_batchProgressUpdater = new BatchProgressUpdater(new EmptyLogger(), Mock.Of<ISemaphoreSlim>());
 		}
 
 		[TestCase(0, 0, 0, 0)]

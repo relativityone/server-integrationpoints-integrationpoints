@@ -74,13 +74,14 @@ namespace Relativity.Sync.Tests.System
 			};
 
 			var sourceServiceFactory = new ServiceFactoryStub(ServiceFactory);
-			var documentFieldRepository = new DocumentFieldRepository(sourceServiceFactory, new EmptyLogger());
+			ISyncLog syncLog = new EmptyLogger();
+			var documentFieldRepository = new DocumentFieldRepository(sourceServiceFactory, syncLog);
 			var fieldManager = new FieldManager(configuration, documentFieldRepository, new List<ISpecialFieldBuilder>
 			{
 				new FileInfoFieldsBuilder(new NativeFileRepository(sourceServiceFactory)),
-				new FolderPathFieldBuilder(new FolderPathRetriever(sourceServiceFactory, new EmptyLogger()), configuration)
+				new FolderPathFieldBuilder(new FolderPathRetriever(sourceServiceFactory, syncLog), configuration)
 			});
-			var executor = new DataSourceSnapshotExecutor(sourceServiceFactory, fieldManager, new JobProgressUpdaterFactory(sourceServiceFactory, configuration), new EmptyLogger());
+			var executor = new DataSourceSnapshotExecutor(sourceServiceFactory, fieldManager, new JobProgressUpdaterFactory(sourceServiceFactory, configuration, syncLog), syncLog);
 
 			ExecutionResult result = await executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
 

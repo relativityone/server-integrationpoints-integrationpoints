@@ -101,7 +101,7 @@ namespace Relativity.Sync.Tests.System
 			};
 
 			IJobProgressHandlerFactory jobProgressHandlerFactory = new JobProgressHandlerFactory(dateTime);
-			IJobProgressUpdaterFactory jobProgressUpdaterFactory = new JobProgressUpdaterFactory(_serviceFactoryStub, configuration);
+			IJobProgressUpdaterFactory jobProgressUpdaterFactory = new JobProgressUpdaterFactory(_serviceFactoryStub, configuration, logger);
 			INativeFileRepository nativeFileRepository = new NativeFileRepository(_serviceFactoryStub);
 
 			IFieldManager fieldManager = new FieldManager(configuration, new DocumentFieldRepository(_serviceFactoryStub, logger), new List<ISpecialFieldBuilder>()
@@ -147,7 +147,7 @@ namespace Relativity.Sync.Tests.System
 			IImportJobFactory importJobFactory = new Executors.ImportJobFactory(
 				importApi,
 				sourceWorkspaceDataReaderFactory,
-				new BatchProgressHandlerFactory(new BatchProgressUpdater(logger), dateTime),
+				new BatchProgressHandlerFactory(new BatchProgressUpdater(logger, new SemaphoreSlimWrapper(new SemaphoreSlim(1))), dateTime),
 				jobProgressHandlerFactory,
 				jobProgressUpdaterFactory,
 				new JobHistoryErrorRepository(_serviceFactoryStub),

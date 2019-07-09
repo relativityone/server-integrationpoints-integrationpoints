@@ -60,5 +60,7 @@
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "RG2002: Avoid putting multiple classes in a single file", Justification = "Private class scope", Scope = "type", Target = "~T:Relativity.Sync.Transfer.ItemStatusMonitor")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "RG0001: Class names should match the name of the file they are in", Justification = "Inner static class in other static class. Both containing constants.", Scope = "type", Target = "~T:Relativity.Sync.Telemetry.TelemetryConstants")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "RG2002: Avoid putting multiple classes in a single file", Justification = "Inner static class in other static class. Both containing constants.", Scope = "type", Target = "~T:Relativity.Sync.Telemetry.TelemetryConstants")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "member", Target = "~M:Relativity.Sync.JobProgressUpdater.SetTotalItemsCountAsync(System.Int32)~System.Threading.Tasks.Task")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "member", Target = "~M:Relativity.Sync.JobProgressUpdater.UpdateJobProgressAsync(System.Int32,System.Int32)~System.Threading.Tasks.Task")]
 
 #pragma warning restore RG2001 // Character Per Line
