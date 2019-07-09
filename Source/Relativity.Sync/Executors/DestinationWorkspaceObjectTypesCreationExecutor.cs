@@ -52,20 +52,8 @@ namespace Relativity.Sync.Executors
 			int destinationWorkspaceArtifactId = configuration.DestinationWorkspaceArtifactId;
 			try
 			{
-				int workspaceObjectTypeArtifactId = await GetWorkspaceObjectTypeArtifactIdAsync(destinationWorkspaceArtifactId).ConfigureAwait(false);
-				ObjectTypeRequest sourceCaseObjectTypeRequest = GetObjectTypeRequest(_SOURCE_WORKSPACE_OBJECT_TYPE_NAME, workspaceObjectTypeArtifactId);
-				int sourceCaseObjectTypeArtifactId = await _syncObjectTypeManager.EnsureObjectTypeExistsAsync(destinationWorkspaceArtifactId,
-					SourceWorkspaceObjectTypeGuid, sourceCaseObjectTypeRequest).ConfigureAwait(false);
-				await _syncFieldManager.EnsureFieldsExistAsync(destinationWorkspaceArtifactId, GetSourceWorkspaceRdoFieldsRequests(sourceCaseObjectTypeArtifactId)).ConfigureAwait(false);
-				IDictionary<Guid, BaseFieldRequest> sourceCaseDocumentFieldRequest = GetDocumentFieldRequest(sourceCaseObjectTypeArtifactId, _SOURCE_WORKSPACE_OBJECT_TYPE_NAME, SourceWorkspaceFieldOnDocumentGuid);
-				await _syncFieldManager.EnsureFieldsExistAsync(destinationWorkspaceArtifactId, sourceCaseDocumentFieldRequest).ConfigureAwait(false);
-
-				ObjectTypeRequest sourceJobObjectTypeRequest = GetObjectTypeRequest(_SOURCE_JOB_OBJECT_TYPE_NAME, sourceCaseObjectTypeArtifactId);
-				int sourceJobObjectTypeArtifactId = await _syncObjectTypeManager
-					.EnsureObjectTypeExistsAsync(destinationWorkspaceArtifactId, SourceJobObjectTypeGuid, sourceJobObjectTypeRequest).ConfigureAwait(false);
-				await _syncFieldManager.EnsureFieldsExistAsync(destinationWorkspaceArtifactId, GetSourceJobRdoFieldsRequests(sourceJobObjectTypeArtifactId)).ConfigureAwait(false);
-				IDictionary<Guid, BaseFieldRequest> sourceJobDocumentFieldRequest = GetDocumentFieldRequest(sourceJobObjectTypeArtifactId, _SOURCE_JOB_OBJECT_TYPE_NAME, JobHistoryFieldOnDocumentGuid);
-				await _syncFieldManager.EnsureFieldsExistAsync(destinationWorkspaceArtifactId, sourceJobDocumentFieldRequest).ConfigureAwait(false);
+				int sourceCaseObjectTypeArtifactId = await CreateSourceCaseObjectTypeAndFields(destinationWorkspaceArtifactId).ConfigureAwait(false);
+				await CreateSourceJobObjectTypeAndFields(sourceCaseObjectTypeArtifactId, destinationWorkspaceArtifactId).ConfigureAwait(false);
 			}
 			catch (Exception ex)
 			{
@@ -74,6 +62,21 @@ namespace Relativity.Sync.Executors
 			}
 
 			return ExecutionResult.Success();
+		}
+
+		private async Task<int> CreateSourceCaseObjectTypeAndFields(int destinationWorkspaceArtifactId)
+		{
+			int workspaceObjectTypeArtifactId = await GetWorkspaceObjectTypeArtifactIdAsync(destinationWorkspaceArtifactId).ConfigureAwait(false);
+
+			ObjectTypeRequest sourceCaseObjectTypeRequest = GetObjectTypeRequest(_SOURCE_WORKSPACE_OBJECT_TYPE_NAME, workspaceObjectTypeArtifactId);
+			int sourceCaseObjectTypeArtifactId = await _syncObjectTypeManager.EnsureObjectTypeExistsAsync(destinationWorkspaceArtifactId,
+				SourceWorkspaceObjectTypeGuid, sourceCaseObjectTypeRequest).ConfigureAwait(false);
+
+			await _syncFieldManager.EnsureFieldsExistAsync(destinationWorkspaceArtifactId, 
+				GetSourceWorkspaceRdoFieldsRequests(sourceCaseObjectTypeArtifactId)).ConfigureAwait(false);
+			await _syncFieldManager.EnsureFieldsExistAsync(destinationWorkspaceArtifactId, 
+				GetDocumentFieldRequest(sourceCaseObjectTypeArtifactId, _SOURCE_WORKSPACE_OBJECT_TYPE_NAME, SourceWorkspaceFieldOnDocumentGuid)).ConfigureAwait(false);
+			return sourceCaseObjectTypeArtifactId;
 		}
 
 		private async Task<int> GetWorkspaceObjectTypeArtifactIdAsync(int workspaceArtifactId)
@@ -90,7 +93,19 @@ namespace Relativity.Sync.Executors
 			}
 		}
 
-		private ObjectTypeRequest GetObjectTypeRequest(string name, int parentArtifactId)
+		private async Task CreateSourceJobObjectTypeAndFields(int sourceCaseObjectTypeArtifactId, int destinationWorkspaceArtifactId)
+		{
+			ObjectTypeRequest sourceJobObjectTypeRequest = GetObjectTypeRequest(_SOURCE_JOB_OBJECT_TYPE_NAME, sourceCaseObjectTypeArtifactId);
+			int sourceJobObjectTypeArtifactId = await _syncObjectTypeManager
+				.EnsureObjectTypeExistsAsync(destinationWorkspaceArtifactId, SourceJobObjectTypeGuid, sourceJobObjectTypeRequest).ConfigureAwait(false);
+
+			await _syncFieldManager.EnsureFieldsExistAsync(destinationWorkspaceArtifactId, 
+				GetSourceJobRdoFieldsRequests(sourceJobObjectTypeArtifactId)).ConfigureAwait(false);
+			await _syncFieldManager.EnsureFieldsExistAsync(destinationWorkspaceArtifactId, 
+				GetDocumentFieldRequest(sourceJobObjectTypeArtifactId, _SOURCE_JOB_OBJECT_TYPE_NAME, JobHistoryFieldOnDocumentGuid)).ConfigureAwait(false);
+		}
+
+		private static ObjectTypeRequest GetObjectTypeRequest(string name, int parentArtifactId)
 		{
 			return new ObjectTypeRequest()
 			{
@@ -108,7 +123,7 @@ namespace Relativity.Sync.Executors
 			};
 		}
 
-		private IDictionary<Guid, BaseFieldRequest> GetDocumentFieldRequest(int objectTypeArtifactId, string name, Guid guid)
+		private static IDictionary<Guid, BaseFieldRequest> GetDocumentFieldRequest(int objectTypeArtifactId, string name, Guid guid)
 		{
 			ObjectTypeIdentifier documentObjectType = new ObjectTypeIdentifier()
 			{
@@ -135,13 +150,15 @@ namespace Relativity.Sync.Executors
 						AllowPivot = false,
 						AvailableInFieldTree = false,
 						IsRequired = false,
-						Width = width
+						Width = width,
+						FilterType = FilterType.Popup,
+						OverlayBehavior = OverlayBehavior.ReplaceValues
 					}
 				}
 			};
 		}
 
-		private IDictionary<Guid, BaseFieldRequest> GetSourceWorkspaceRdoFieldsRequests(int objectTypeArtifactId)
+		private static IDictionary<Guid, BaseFieldRequest> GetSourceWorkspaceRdoFieldsRequests(int objectTypeArtifactId)
 		{
 			ObjectTypeIdentifier objectType = new ObjectTypeIdentifier()
 			{
@@ -210,7 +227,7 @@ namespace Relativity.Sync.Executors
 			};
 		}
 
-		private IDictionary<Guid, BaseFieldRequest> GetSourceJobRdoFieldsRequests(int objectTypeArtifactId)
+		private static IDictionary<Guid, BaseFieldRequest> GetSourceJobRdoFieldsRequests(int objectTypeArtifactId)
 		{
 			ObjectTypeIdentifier objectType = new ObjectTypeIdentifier()
 			{

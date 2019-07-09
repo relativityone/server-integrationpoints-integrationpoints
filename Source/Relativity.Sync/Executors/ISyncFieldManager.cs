@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Relativity.Services.Interfaces.Field.Models;
 
-namespace Relativity.Sync
+namespace Relativity.Sync.Executors
 {
 	internal interface ISyncFieldManager
 	{

@@ -8,7 +8,7 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
 
-namespace Relativity.Sync
+namespace Relativity.Sync.Executors
 {
 	internal sealed class SyncFieldManager : ISyncFieldManager
 	{
