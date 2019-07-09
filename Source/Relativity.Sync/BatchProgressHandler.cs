@@ -11,7 +11,7 @@ namespace Relativity.Sync
 		private readonly IBatch _batch;
 		private readonly IBatchProgressUpdater _progressUpdater;
 		private readonly IDateTime _dateTime;
-		private readonly TimeSpan _throttle = TimeSpan.FromSeconds(1);
+		private readonly TimeSpan _throttle = TimeSpan.FromSeconds(5);
 
 		public BatchProgressHandler(IBatch batch, IBatchProgressUpdater progressUpdater, IDateTime dateTime)
 		{

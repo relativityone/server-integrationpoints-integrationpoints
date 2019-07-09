@@ -14,7 +14,7 @@ namespace Relativity.Sync
 		private readonly object _lockObject = new object();
 		private readonly IJobProgressUpdater _jobProgressUpdater;
 		private readonly IDateTime _dateTime;
-		private readonly TimeSpan _throttle = TimeSpan.FromSeconds(1);
+		private readonly TimeSpan _throttle = TimeSpan.FromSeconds(5);
 
 		public JobProgressHandler(IJobProgressUpdater jobProgressUpdater, IDateTime dateTime)
 		{
