@@ -142,7 +142,6 @@
     <Compile Include="Repositories\IIntegrationPointRepository.cs" />
     <Compile Include="Repositories\Implementations\AuditRepository.cs" />
     <Compile Include="Repositories\Implementations\CaseRepository.cs" />
-    <Compile Include="Repositories\Implementations\DisposableFileRepository.cs" />
     <Compile Include="Repositories\Implementations\DTO\CaseInfoDto.cs" />
     <Compile Include="Repositories\Implementations\Repository.cs" />
     <Compile Include="Repositories\Implementations\FileRepository.cs" />

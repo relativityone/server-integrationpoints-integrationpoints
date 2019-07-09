@@ -151,7 +151,6 @@
     <Compile Include="Models\SecretPathTests.cs" />
     <Compile Include="Repositories\Implementations\AuditRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\CaseRepositoryTests.cs" />
-    <Compile Include="Repositories\Implementations\DisposableFileRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\FieldRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\FileRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\FoundationRepositoryFactoryTests.cs" />

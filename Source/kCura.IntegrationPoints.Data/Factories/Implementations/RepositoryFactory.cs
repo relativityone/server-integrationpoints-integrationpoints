@@ -329,14 +329,6 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return queryFieldLookupRepository;
 		}
 
-		public IFileRepository GetFileRepository()
-		{
-			return new DisposableFileRepository(
-				_serviceFactory,
-				InstrumentationProvider,
-				(searchManager, instrumentationProvider) => new FileRepository(searchManager, instrumentationProvider)
-			);
-		}
 
 		public IAuditRepository GetAuditRepository(int workspaceArtifactId)
 		{

@@ -23,7 +23,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 	public class ImageExporterService : ExporterServiceBase
 	{
 		private readonly ImportSettings _settings;
-		private const string ImageLocationColumn = "Location";
 
 		private readonly IFileRepository _fileRepository;
 
@@ -117,11 +116,10 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 			int artifactType, 
 			List<ArtifactDTO> result)
 		{
-			DataView imagesDataView = _fileRepository
+			List<string> imagesDataView = _fileRepository
 				.GetImagesForDocuments(
-					SourceConfiguration.SourceWorkspaceArtifactId, 
-					documentIDs: new[] { documentArtifactId })
-				.ToDataView();
+					SourceConfiguration.SourceWorkspaceArtifactId,
+					documentIDs: new[] {documentArtifactId});
 			if (imagesDataView.Count > 0)
 			{
 				CreateImageArtifactDtos(imagesDataView, documentArtifactId, fields, fieldsValue, artifactType, result);
@@ -150,12 +148,11 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 			List<ArtifactDTO> result, 
 			int productionArtifactId)
 		{
-			DataView producedImagesDataView = _fileRepository
+			List<string> producedImagesDataView = _fileRepository
 				.GetImagesForProductionDocuments(
 					SourceConfiguration.SourceWorkspaceArtifactId,
 					productionArtifactId, 
-					documentIDs: new[] { documentArtifactId })
-				.ToDataView();
+					documentIDs: new[] { documentArtifactId });
 			if (producedImagesDataView.Count > 0)
 			{
 				CreateImageArtifactDtos(producedImagesDataView, documentArtifactId, fields, fieldsValue, artifactType, result);
@@ -163,7 +160,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 			return producedImagesDataView.Count;
 		}
 
-		private void CreateImageArtifactDtos(kCura.Data.DataView dataView, int documentArtifactId, List<ArtifactFieldDTO> fields, object[] fieldsValue, int artifactType,
+		private void CreateImageArtifactDtos(List<string> dataView, int documentArtifactId, List<ArtifactFieldDTO> fields, object[] fieldsValue, int artifactType,
 			List<ArtifactDTO> result)
 		{
 			SetupBaseFields(fieldsValue, fields);
@@ -173,9 +170,9 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 			// - Core Export API's RetrieveResults() method returns results based on _avfIds and in the same order (potentially adding additional columns at the end)
 			string documentIdentifier = fieldsValue[0].ToString();
 
-			for (int index = 0; index < dataView.Table.Rows.Count; index++)
+			foreach (var locationRow in dataView)
 			{
-				ArtifactDTO artifactDto = CreateImageArtifactDto(dataView.Table.Rows[index], documentArtifactId, documentIdentifier, fields, artifactType);
+				ArtifactDTO artifactDto = CreateImageArtifactDto(locationRow, documentArtifactId, documentIdentifier, fields, artifactType);
 				result.Add(artifactDto);
 			}
 		}
@@ -197,11 +194,11 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 			}
 		}
 
-		private ArtifactDTO CreateImageArtifactDto(DataRow imageDataRow, int documentArtifactId, string documentIdentifier,
+		private ArtifactDTO CreateImageArtifactDto(string location, int documentArtifactId, string documentIdentifier,
 			List<ArtifactFieldDTO> fields, int artifactType)
 		{
-			string fileLocation = imageDataRow[ImageLocationColumn].ToString();
-			List<ArtifactFieldDTO> artifactFieldDtos = AddImageFields(fields, fileLocation, documentIdentifier);
+
+			List<ArtifactFieldDTO> artifactFieldDtos = AddImageFields(fields, location, documentIdentifier);
 			var artifactDto = new ArtifactDTO(documentArtifactId, artifactType, string.Empty, artifactFieldDtos);
 			return artifactDto;
 		}

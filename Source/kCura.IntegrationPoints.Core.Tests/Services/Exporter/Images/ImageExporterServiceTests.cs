@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
@@ -88,7 +89,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 			_sourceRepositoryFactory.GetQueryFieldLookupRepository(_SOURCE_WORKSPACE_ARTIFACT_ID).Returns(queryFieldLookupRepository);
 
 			_fileRepository = Substitute.For<IFileRepository>();
-			_sourceRepositoryFactory.GetFileRepository().Returns(_fileRepository);
 		}
 
 
@@ -100,7 +100,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 			// Arrange
 			string config = GetConfig(SourceConfiguration.ExportType.SavedSearch);
 
-			_instance = new ImageExporterService(_exporter, _relativityObjectManager, _sourceRepositoryFactory, _targetRepositoryFactory,
+			_instance = new ImageExporterService(_exporter, _relativityObjectManager, _sourceRepositoryFactory, _targetRepositoryFactory, _fileRepository,
 				_jobStopManager, _helper, _baseServiceContextProvider, _mappedFields, _START_AT, config, _SEARCH_ARTIFACT_ID, settings: null);
 
 			IExporterTransferConfiguration transferConfiguration = Substitute.For<IExporterTransferConfiguration>();
@@ -139,6 +139,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 				_relativityObjectManager, 
 				_sourceRepositoryFactory, 
 				_targetRepositoryFactory,
+				_fileRepository,
 				_jobStopManager, 
 				_helper, 
 				_baseServiceContextProvider, 
@@ -183,7 +184,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 					Arg.Is<int[]>(x => x.Single() == documentArtifactID))
 				.Returns(CreateProductionDocumentImageResponses());
 
-			_instance = new ImageExporterService(_exporter, _relativityObjectManager, _sourceRepositoryFactory, _targetRepositoryFactory,
+			_instance = new ImageExporterService(_exporter, _relativityObjectManager, _sourceRepositoryFactory, _targetRepositoryFactory, _fileRepository,
 				_jobStopManager, _helper, _baseServiceContextProvider, _mappedFields, _START_AT, config, _SEARCH_ARTIFACT_ID, _settings);
 
 			_instance.GetDataTransferContext(Substitute.For<IExporterTransferConfiguration>());
@@ -194,49 +195,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 			// Assert
 			Assert.That(actual.Length, Is.EqualTo(1));
 			Assert.That(actual[0].GetFieldByName(IntegrationPoints.Domain.Constants.SPECIAL_FILE_NAME_FIELD_NAME).Value, Is.EqualTo("AZIPPER_0007293"));
-		}
-
-		[Test]
-		public void ItShouldReturnEmptyImageLocationWhenProductionImageLocationIsDbNull()
-		{
-			// Arrange
-			const int productionArtifactID = 10010;
-			const int documentArtifactID = 10000;
-
-			string config = GetConfig(SourceConfiguration.ExportType.ProductionSet, productionArtifactID);
-
-			ImportSettings settings = new ImportSettings()
-			{
-				ProductionPrecedence = ExportSettings.ProductionPrecedenceType.Produced.ToString(),
-				ImagePrecedence = new[] { new ProductionDTO() { ArtifactID = productionArtifactID.ToString() } },
-			};		
-
-			_exporter
-				.RetrieveResults(Arg.Any<Guid>(), Arg.Any<int[]>(), Arg.Any<int>())
-				.Returns(PrepareRetrievedData(documentArtifactID));
-			
-			_fileRepository.GetImagesForProductionDocuments(
-					_SOURCE_WORKSPACE_ARTIFACT_ID, 
-					productionArtifactID, 
-					Arg.Is<int[]>(x => x.Single() == documentArtifactID))
-				.Returns(info =>
-				{
-					DataSet responses = CreateProductionDocumentImageResponses();
-					responses.Tables[0].Rows[0][1] = null;
-					return responses;
-				});
-
-			_instance = new ImageExporterService(_exporter, _relativityObjectManager, _sourceRepositoryFactory, _targetRepositoryFactory,
-				_jobStopManager, _helper, _baseServiceContextProvider, _mappedFields, _START_AT, config, _SEARCH_ARTIFACT_ID, settings);
-
-			_instance.GetDataTransferContext(Substitute.For<IExporterTransferConfiguration>());
-
-			// Act
-			ArtifactDTO[] actual = _instance.RetrieveData(0);
-
-			// Assert
-			Assert.That(actual.Length, Is.EqualTo(1));
-			Assert.That(actual[0].GetFieldByName(IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME).Value, Is.EqualTo(string.Empty));
 		}
 
 		#endregion
@@ -264,32 +222,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 			return retrievedData;
 		}
 
-		private DataSet CreateDocumentImageResponses()
+		private List<string> CreateDocumentImageResponses()
 		{
-			DataSet dataSet = new DataSet("DocumentImageResponse");
-			DataTable table = dataSet.Tables.Add();
-			table.Columns.Add(new DataColumn("NativeIdentifier"));
-			table.Columns.Add(new DataColumn("Location"));
-			table.Rows.Add(new ProductionDocumentImageResponse
-			{
-				NativeIdentifier = "AZIPPER_0007293",
-				Location = "\\somelocation"
-			});
-			return dataSet;
+			return new List<string>(){ "\\someLocation"};
 		}
 
-		private DataSet CreateProductionDocumentImageResponses()
+		private List<string> CreateProductionDocumentImageResponses()
 		{
-			DataSet dataSet = new DataSet("ProductionDocumentImageResponse");
-			DataTable table = dataSet.Tables.Add();
-			table.Columns.Add(new DataColumn("NativeIdentifier"));
-			table.Columns.Add(new DataColumn("Location"));
-			table.Rows.Add(new ProductionDocumentImageResponse
-			{
-				NativeIdentifier = "AZIPPER_0007293",
-				Location = "\\somelocation"
-			});
-			return dataSet;
+			return new List<string>() { "\\someLocation" };
 		}
 
 		#endregion

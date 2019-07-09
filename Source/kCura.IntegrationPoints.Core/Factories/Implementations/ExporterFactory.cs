@@ -35,6 +35,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		private readonly IFolderPathReaderFactory _folderPathReaderFactory;
 		private readonly IRelativityObjectManager _relativityObjectManager;
 		private readonly ISourceDocumentsTagger _sourceDocumentsTagger;
+		private readonly IFileRepository _fileRepository;
 		private readonly IAPILog _logger;
 
 		public ExporterFactory(
@@ -44,7 +45,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			IHelper helper,
 			IFolderPathReaderFactory folderPathReaderFactory,
 			IRelativityObjectManager relativityObjectManager,
-			ISourceDocumentsTagger sourceDocumentsTagger)
+			ISourceDocumentsTagger sourceDocumentsTagger,
+			IFileRepository fileRepository)
 		{
 			_claimsPrincipalFactory = claimsPrincipalFactory;
 			_sourceRepositoryFactory = sourceRepositoryFactory;
@@ -53,6 +55,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			_folderPathReaderFactory = folderPathReaderFactory;
 			_relativityObjectManager = relativityObjectManager;
 			_sourceDocumentsTagger = sourceDocumentsTagger;
+			_fileRepository = fileRepository;
 			_logger = _helper.GetLoggerFactory().GetLogger().ForContext<ExporterFactory>();
 		}
 
@@ -246,6 +249,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				_relativityObjectManager,
 				_sourceRepositoryFactory,
 				_targetRepositoryFactory,
+				_fileRepository,
 				jobStopManager,
 				_helper,
 				baseServiceContextProvider,

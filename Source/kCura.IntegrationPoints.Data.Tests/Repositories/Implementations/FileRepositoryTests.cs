@@ -10,7 +10,6 @@ using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.WinEDDS.Service.Export;
 using Moq;
 using NUnit.Framework;
-using Relativity.Services.Interfaces.File;
 using Relativity.Services.Interfaces.File.Models;
 
 namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
@@ -179,166 +178,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 					It.IsAny<string>()))
 				.Returns(_instrumentationSimpleProviderMock.Object);
 
-			_sut = new FileRepository(_searchManagerMock.Object, _instrumentationProviderMock.Object);
+			_sut = new FileRepository(() => _searchManagerMock.Object, _instrumentationProviderMock.Object);
 		}
 
-		[Test]
-		public void GetNativesForSearch_ShouldReturnResponsesWhenCorrectDocumentIDsPassed()
-		{
-			//arrange
-			int[] documentIDs = _testFileResponses.Select(x => x.DocumentArtifactID).ToArray();
-			_instrumentationSimpleProviderMock
-				.Setup(x => x.Execute(It.IsAny<Func<DataSet>>()))
-				.Returns(_testFileResponses.ToDataSet());
-
-			//act
-			DataSet result = _sut.GetNativesForSearch(
-				_WORKSPACE_ID,
-				documentIDs
-			);
-
-			//assert
-			VerifyIfInstrumentationHasBeenCalled<DataSet>(
-				operationName: nameof(ISearchManager.RetrieveNativesForSearch)
-			);
-			AssertIfDataSetsAreSameAsExpected(_testFileResponses.ToDataSet(), result);
-		}
-
-		[Test]
-		public void GetNativesForSearch_ShouldThrowWhenNullPassedAsDocumentIDs()
-		{
-			//act
-			Action action = () => _sut.GetNativesForSearch(
-				_WORKSPACE_ID,
-				documentIDs: null
-			);
-
-			//assert
-			action.ShouldThrow<ArgumentNullException>().WithMessage("Value cannot be null.\r\nParameter name: documentIDs");
-			VerifyIfInstrumentationHasNeverBeenCalled<FileResponse[]>(
-				operationName: nameof(ISearchManager.RetrieveNativesForSearch)
-			);
-		}
-
-		[Test]
-		public void GetNativesForSearch_ShouldReturnEmptyArrayWhenEmptyArrayPassedAsDocumentIDs()
-		{
-			//act
-			DataSet result = _sut.GetNativesForSearch(
-				_WORKSPACE_ID,
-				documentIDs: new int[] { }
-			);
-
-			//assert
-			result.Tables.Should().BeEmpty();
-			VerifyIfInstrumentationHasNeverBeenCalled<FileResponse[]>(
-				operationName: nameof(ISearchManager.RetrieveNativesForSearch)
-			);
-		}
-
-		[Test]
-		public void GetNativesForSearch_ShouldRethrowWhenCallToServiceThrows()
-		{
-			//arrange
-			int[] documentIDs = { 1001, 2002, 3003 };
-			_instrumentationSimpleProviderMock
-				.Setup(x => x.Execute(It.IsAny<Func<DataSet>>()))
-				.Throws<InvalidOperationException>();
-
-			//act
-			Action action = () => _sut.GetNativesForSearch(
-				_WORKSPACE_ID,
-				documentIDs
-			);
-
-			//assert
-			action.ShouldThrow<InvalidOperationException>();
-		}
-
-		[Test]
-		public void GetNativesForProduction_ShouldReturnResponsesWhenCorrectDocumentIDsPassed()
-		{
-			//arrange
-			const int productionID = 1111;
-			int[] documentIDs = _testFileResponses.Select(x => x.DocumentArtifactID).ToArray();
-			_instrumentationSimpleProviderMock
-				.Setup(x => x.Execute(It.IsAny<Func<DataSet>>()))
-				.Returns(_testFileResponses.ToDataSet());
-
-			//act
-			DataSet result = _sut.GetNativesForProduction(
-				_WORKSPACE_ID,
-				productionID,
-				documentIDs
-			);
-
-			//assert
-			VerifyIfInstrumentationHasBeenCalled<DataSet>(
-				operationName: nameof(ISearchManager.RetrieveNativesForProduction)
-			);
-			AssertIfDataSetsAreSameAsExpected(_testFileResponses.ToDataSet(), result);
-		}
-
-		[Test]
-		public void GetNativesForProduction_ShouldThrowWhenNullPassedAsDocumentIDs()
-		{
-			//arrange
-			const int productionID = 1111;
-
-			//act
-			Action action = () => _sut.GetNativesForProduction(
-				_WORKSPACE_ID,
-				productionID,
-				documentIDs: null
-			);
-
-			//assert
-			action.ShouldThrow<ArgumentNullException>().WithMessage("Value cannot be null.\r\nParameter name: documentIDs");
-			VerifyIfInstrumentationHasNeverBeenCalled<FileResponse[]>(
-				operationName: nameof(ISearchManager.RetrieveNativesForProduction)
-			);
-		}
-
-		[Test]
-		public void GetNativesForProduction_ShouldReturnEmptyArrayWhenEmptyArrayPassedAsDocumentIDs()
-		{
-			//arrange
-			const int productionID = 1111;
-
-			//act
-			DataSet result = _sut.GetNativesForProduction(
-				_WORKSPACE_ID,
-				productionID,
-				documentIDs: new int[] { }
-			);
-
-			//assert
-			result.Tables.Should().BeEmpty();
-			VerifyIfInstrumentationHasNeverBeenCalled<FileResponse[]>(
-				operationName: nameof(ISearchManager.RetrieveNativesForProduction)
-			);
-		}
-
-		[Test]
-		public void GetNativesForProduction_ShouldRethrowWhenCallToServiceThrows()
-		{
-			//arrange
-			int productionID = 1001;
-			int[] documentIDs = { 1001, 2002, 3003 };
-			_instrumentationSimpleProviderMock
-				.Setup(x => x.Execute(It.IsAny<Func<DataSet>>()))
-				.Throws<InvalidOperationException>();
-
-			//act
-			Action action = () => _sut.GetNativesForProduction(
-				_WORKSPACE_ID,
-				productionID,
-				documentIDs
-			);
-
-			//assert
-			action.ShouldThrow<InvalidOperationException>();
-		}
 
 		[Test]
 		public void GetImagesForProductionDocuments_ShouldReturnResponsesWhenCorrectDocumentIDsPassed()
@@ -351,7 +193,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				.Returns(_testProductionDocumentImageResponses.ToDataSet());
 
 			//act
-			DataSet result = _sut.GetImagesForProductionDocuments(
+			List<string> result = _sut.GetImagesForProductionDocuments(
 				_WORKSPACE_ID,
 				productionID,
 				documentIDs
@@ -362,7 +204,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				operationName: nameof(ISearchManager.RetrieveImagesForProductionDocuments)
 			);
 			AssertIfDataSetsAreSameAsExpected(
-				_testProductionDocumentImageResponses.ToDataSet(),
+				_testProductionDocumentImageResponses.Select(x => x.Location).ToList(),
 				result
 			);
 		}
@@ -394,14 +236,14 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			const int productionID = 1111;
 
 			//act
-			DataSet result = _sut.GetImagesForProductionDocuments(
+			List<string> result = _sut.GetImagesForProductionDocuments(
 				_WORKSPACE_ID,
 				productionID,
 				documentIDs: new int[] { }
 			);
 
 			//assert
-			result.Tables.Should().BeEmpty();
+			result.Should().BeEmpty();
 			VerifyIfInstrumentationHasNeverBeenCalled<ProductionDocumentImageResponse[]>(
 				operationName: nameof(ISearchManager.RetrieveImagesForProductionDocuments)
 			);
@@ -438,7 +280,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				.Returns(_testDocumentImageResponses.ToDataSet());
 
 			//act
-			DataSet result = _sut.GetImagesForDocuments(
+			List<string> result = _sut.GetImagesForDocuments(
 				_WORKSPACE_ID,
 				documentIDs
 			);
@@ -448,7 +290,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				operationName: nameof(ISearchManager.RetrieveImagesForDocuments)
 			);
 			AssertIfDataSetsAreSameAsExpected(
-				_testDocumentImageResponses.ToDataSet(),
+				_testDocumentImageResponses.Select(x => x.Location).ToList(),
 				result
 			);
 		}
@@ -473,13 +315,13 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		public void GetImagesForDocuments_ShouldReturnEmptyArrayWhenEmptyArrayPassedAsDocumentIDs()
 		{
 			//act
-			DataSet result = _sut.GetImagesForDocuments(
+			List<string> result = _sut.GetImagesForDocuments(
 				_WORKSPACE_ID,
 				documentIDs: new int[] { }
 			);
 
 			//assert
-			result.Tables.Should().BeEmpty();
+			result.Should().BeEmpty();
 			VerifyIfInstrumentationHasNeverBeenCalled<DocumentImageResponse[]>(
 				operationName: nameof(ISearchManager.RetrieveImagesForDocuments)
 			);
@@ -504,196 +346,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			action.ShouldThrow<InvalidOperationException>();
 		}
 
-		[Test]
-		public void GetProducedImagesForDocument_ShouldReturnCorrectResponses()
+		private void AssertIfDataSetsAreSameAsExpected(List<string> expectedDataSet, List<string> currentDataSet)
 		{
-			//arrange
-			int documentID = _testFileResponses.First().DocumentArtifactID;
-			DataSet fileResponses = _testFileResponses
-				.Where(x => x.DocumentArtifactID == documentID)
-				.ToDataSet();
-			_instrumentationSimpleProviderMock
-				.Setup(x => x.Execute(It.IsAny<Func<DataSet>>()))
-				.Returns(fileResponses);
-
-			//act
-			DataSet result = _sut.GetProducedImagesForDocument(
-				_WORKSPACE_ID,
-				documentID
-			);
-
-			//assert
-			VerifyIfInstrumentationHasBeenCalled<DataSet>(
-				operationName: nameof(ISearchManager.RetrieveProducedImagesForDocument)
-			);
-			AssertIfDataSetsAreSameAsExpected(
-				fileResponses,
-				result
-			);
-		}
-
-		[Test]
-		public void GetProducedImagesForDocument_ShouldRethrowWhenCallToServiceThrows()
-		{
-			//arrange
-			int documentID = 1001;
-			_instrumentationSimpleProviderMock
-				.Setup(x => x.Execute(It.IsAny<Func<DataSet>>()))
-				.Throws<InvalidOperationException>();
-
-			//act
-			Action action = () => _sut.GetProducedImagesForDocument(
-				_WORKSPACE_ID,
-				documentID
-			);
-
-			//assert
-			action.ShouldThrow<InvalidOperationException>();
-		}
-
-		[Test]
-		public void GetImagesForExport_ShouldReturnResponsesWhenCorrectDocumentIDsAndProductionIDsPassed()
-		{
-			//arrange
-			int[] documentIDs = _testExportProductionDocumentImageResponses
-				.Select(x => x.DocumentArtifactID)
-				.ToArray();
-			int[] productionIDs = _testExportProductionDocumentImageResponses
-				.Select(x => x.ProductionArtifactID)
-				.ToArray();
-			_instrumentationSimpleProviderMock
-				.Setup(x => x.Execute(It.IsAny<Func<DataSet>>()))
-				.Returns(_testExportProductionDocumentImageResponses.ToDataSet());
-
-			//act
-			DataSet result = _sut.GetImagesForExport(
-				_WORKSPACE_ID,
-				productionIDs,
-				documentIDs
-			);
-
-			//assert
-			VerifyIfInstrumentationHasBeenCalled<DataSet>(
-				operationName: nameof(ISearchManager.RetrieveImagesByProductionIDsAndDocumentIDsForExport)
-			);
-			AssertIfDataSetsAreSameAsExpected(
-				_testExportProductionDocumentImageResponses.ToDataSet(),
-				result
-			);
-		}
-
-		[Test]
-		public void GetImagesForExport_ShouldThrowWhenNullPassedAsDocumentIDs()
-		{
-			//arrange
-			int[] productionIDs = _testExportProductionDocumentImageResponses
-				.Select(x => x.ProductionArtifactID)
-				.ToArray();
-
-			//act
-			Action action = () => _sut.GetImagesForExport(
-				_WORKSPACE_ID,
-				productionIDs,
-				documentIDs: null
-			);
-
-			//assert
-			action.ShouldThrow<ArgumentNullException>().WithMessage("Value cannot be null.\r\nParameter name: documentIDs");
-			VerifyIfInstrumentationHasNeverBeenCalled<ExportProductionDocumentImageResponse[]>(
-				operationName: nameof(ISearchManager.RetrieveImagesByProductionIDsAndDocumentIDsForExport)
-			);
-		}
-
-		[Test]
-		public void GetImagesForExport_ShouldThrowWhenNullPassedAsProductionIDs()
-		{
-			//arrange
-			int[] documentIDs = _testExportProductionDocumentImageResponses
-				.Select(x => x.ProductionArtifactID)
-				.ToArray();
-
-			//act
-			Action action = () => _sut.GetImagesForExport(
-				_WORKSPACE_ID,
-				productionIDs: null,
-				documentIDs: documentIDs
-			);
-
-			//assert
-			action.ShouldThrow<ArgumentNullException>().WithMessage("Value cannot be null.\r\nParameter name: productionIDs");
-			VerifyIfInstrumentationHasNeverBeenCalled<ExportProductionDocumentImageResponse[]>(
-				operationName: nameof(ISearchManager.RetrieveImagesByProductionIDsAndDocumentIDsForExport)
-			);
-		}
-
-		[Test]
-		public void GetImagesForExport_ShouldReturnEmptyArrayWhenEmptyArrayPassedAsDocumentIDs()
-		{
-			//arrange
-			int[] productionIDs = _testExportProductionDocumentImageResponses
-				.Select(x => x.ProductionArtifactID)
-				.ToArray();
-
-			//act
-			DataSet result = _sut.GetImagesForExport(
-				_WORKSPACE_ID,
-				productionIDs,
-				documentIDs: new int[] { }
-			);
-
-			//assert
-			result.Tables.Should().BeEmpty();
-			VerifyIfInstrumentationHasNeverBeenCalled<ExportProductionDocumentImageResponse[]>(
-				operationName: nameof(ISearchManager.RetrieveImagesByProductionIDsAndDocumentIDsForExport)
-			);
-		}
-
-		[Test]
-		public void GetImagesForExport_ShouldReturnEmptyArrayWhenEmptyArrayPassedAsProductionIDs()
-		{
-			//arrange
-			int[] documentIDs = _testExportProductionDocumentImageResponses
-				.Select(x => x.ProductionArtifactID)
-				.ToArray();
-
-			//act
-			DataSet result = _sut.GetImagesForExport(
-				_WORKSPACE_ID,
-				productionIDs: new int[] { },
-				documentIDs: documentIDs
-			);
-
-			//assert
-			result.Tables.Should().BeEmpty();
-			VerifyIfInstrumentationHasNeverBeenCalled<ExportProductionDocumentImageResponse[]>(
-				operationName: nameof(ISearchManager.RetrieveImagesByProductionIDsAndDocumentIDsForExport)
-			);
-		}
-
-		[Test]
-		public void GetImagesForExport_ShouldRethrowWhenCallToServiceThrows()
-		{
-			//arrange
-			int[] documentIDs = { 1001, 2002, 3003 };
-			int[] productionIDs = { 1011, 2022, 3033 };
-			_instrumentationSimpleProviderMock
-				.Setup(x => x.Execute(It.IsAny<Func<DataSet>>()))
-				.Throws<InvalidOperationException>();
-
-			//act
-			Action action = () => _sut.GetImagesForExport(
-				_WORKSPACE_ID,
-				productionIDs,
-				documentIDs
-			);
-
-			//assert
-			action.ShouldThrow<InvalidOperationException>();
-		}
-
-		private void AssertIfDataSetsAreSameAsExpected(DataSet expectedDataSet, DataSet currentDataSet)
-		{
-			expectedDataSet.Tables[0].Rows.Count.ShouldBeEquivalentTo(expectedDataSet.Tables[0].Rows.Count);
+			expectedDataSet.Should().Equal(currentDataSet);
 		}
 
 
