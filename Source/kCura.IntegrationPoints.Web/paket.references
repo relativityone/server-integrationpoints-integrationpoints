@@ -1,3 +1,4 @@
+Castle.Windsor
 CSharpGuidelineAnalyzer
 kCura.Apps.Common.Config
 kCura.Relativity.Client
@@ -10,6 +11,8 @@ Relativity.Core
 Relativity.CustomPages
 Relativity.DataExchange.Client.SDK
 Relativity.Productions.Services.Interfaces
+Relativity.Services.Interfaces
 Relativity.Telemetry.Services.Interface
-RelativityCore
+Relativity.Toggles
 Relativity.DataTransfer.MessageService
+SystemWrapper.Interfaces
