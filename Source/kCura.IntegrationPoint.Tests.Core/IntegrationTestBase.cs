@@ -8,7 +8,6 @@ using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
-using APIHelper_SecretStoreFactory = Relativity.APIHelper.SecretStore.SecretStoreFactory;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
@@ -26,7 +25,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 			DisableServerCertificateValidation();
 
 			SetupConfigValues();
-			SetupSecretStore();
 			SetupAuthentication();
 
 			Container = new WindsorContainer();
@@ -104,17 +102,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				{"connectionString", SharedVariables.EddsConnectionString}
 			});
 		}
-
-		private static void SetupSecretStore()
-		{
-#pragma warning disable 414, CS0618
-			// Platform made currently BuildSecretStore method internal. The only option is for now use obsolete method. 
-			// When Platofrm team deliver final solution we should replace the code
-			// We have JIRA for removing it: REL-281626
-			ExtensionPointServiceFinder.SecretStoreHelper = APIHelper_SecretStoreFactory.SecretCatalog;
-#pragma warning restore
-		}
-
+		
 		private void SetupAuthentication()
 		{
 			IProvideServiceUris serviceUrisProvider = Substitute.For<IProvideServiceUris>();
