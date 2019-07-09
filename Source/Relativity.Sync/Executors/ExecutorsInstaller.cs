@@ -1,4 +1,5 @@
-﻿using Autofac;
+﻿using System.Threading;
+using Autofac;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.ExecutionConstrains;
 using Relativity.Sync.ExecutionConstrains.SumReporting;
@@ -29,7 +30,7 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<TagSavedSearch>().As<ITagSavedSearch>();
 			builder.RegisterType<TagSavedSearchFolder>().As<ITagSavedSearchFolder>();
 			builder.RegisterType<BatchProgressHandlerFactory>().As<IBatchProgressHandlerFactory>();
-			builder.RegisterType<BatchProgressUpdater>().As<IBatchProgressUpdater>();
+			builder.Register(c => new BatchProgressUpdater(c.Resolve<ISyncLog>(), new SemaphoreSlimWrapper(new SemaphoreSlim(1)))).As<IBatchProgressUpdater>();
 			builder.RegisterType<ImportJobFactory>().As<IImportJobFactory>();
 			builder.RegisterType<ImportApiFactory>().As<IImportApiFactory>();
 
