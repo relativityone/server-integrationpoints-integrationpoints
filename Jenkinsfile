@@ -190,6 +190,7 @@ timestamps
 					{
 						jenkinsHelpers.publishBuildArtifacts()
 						jenkinsHelpers.gatherTestStats()
+						jenkinsHelpers.importTestResultsToTestTracker()
 					}
 				}
 			}
@@ -230,8 +231,7 @@ timestamps
 		{
 			parallel([
 				CleanupVms: { jenkinsHelpers.cleanupVMs() },
-				CleanupChefArtifacts: { jenkinsHelpers.cleanupChefArtifacts() },
-				ImportTestResultsToTestTracker: { jenkinsHelpers.importTestResultsToTestTracker() }
+				CleanupChefArtifacts: { jenkinsHelpers.cleanupChefArtifacts() }
 			])
 		}
 
