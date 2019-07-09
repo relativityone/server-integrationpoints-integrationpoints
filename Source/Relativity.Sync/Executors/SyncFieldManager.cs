@@ -23,6 +23,11 @@ namespace Relativity.Sync.Executors
 
 		public async Task EnsureFieldsExistAsync(int workspaceArtifactId, IDictionary<Guid, BaseFieldRequest> fieldRequests)
 		{
+			if (fieldRequests == null)
+			{
+				return;
+			}
+
 			using (IArtifactGuidManager artifactGuidManager = await _serviceFactory.CreateProxyAsync<IArtifactGuidManager>().ConfigureAwait(false))
 			{
 				for (int i = 0; i < fieldRequests.Count; i++)
