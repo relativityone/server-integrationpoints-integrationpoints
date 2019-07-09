@@ -13,10 +13,12 @@ namespace Relativity.Sync.Executors
 	internal sealed class SyncFieldManager : ISyncFieldManager
 	{
 		private readonly IDestinationServiceFactoryForAdmin _serviceFactory;
+		private readonly ISyncLog _logger;
 
-		public SyncFieldManager(IDestinationServiceFactoryForAdmin serviceFactory)
+		public SyncFieldManager(IDestinationServiceFactoryForAdmin serviceFactory, ISyncLog logger)
 		{
 			_serviceFactory = serviceFactory;
+			_logger = logger;
 		}
 
 		public async Task EnsureFieldsExistAsync(int workspaceArtifactId, IDictionary<Guid, BaseFieldRequest> fieldRequests)
@@ -26,10 +28,15 @@ namespace Relativity.Sync.Executors
 				for (int i = 0; i < fieldRequests.Count; i++)
 				{
 					Guid fieldGuid = fieldRequests.Keys.ElementAt(i);
+					BaseFieldRequest fieldRequest = fieldRequests.Values.ElementAt(i);
+
 					bool guidExists = await artifactGuidManager.GuidExistsAsync(workspaceArtifactId, fieldGuid).ConfigureAwait(false);
+					_logger.LogVerbose("Field name '{fieldName}' with GUID: {guid} already exists.", fieldRequest.Name, fieldGuid);
 					if (!guidExists)
 					{
-						int fieldArtifactId = await ReadOrCreateFieldAsync(workspaceArtifactId, fieldRequests.Values.ElementAt(i)).ConfigureAwait(false);
+						int fieldArtifactId = await ReadOrCreateFieldAsync(workspaceArtifactId, fieldRequest).ConfigureAwait(false);
+						_logger.LogVerbose("Assigning GUID {fieldGuid} to field name '{fieldName}' with Artifact ID: {fieldArtifactId}",
+							fieldGuid, fieldRequest.Name, fieldArtifactId);
 						await artifactGuidManager.CreateSingleAsync(workspaceArtifactId, fieldArtifactId, new List<Guid>() { fieldGuid }).ConfigureAwait(false);
 					}
 				}
@@ -41,10 +48,12 @@ namespace Relativity.Sync.Executors
 			QueryResult queryByNameResult = await QueryFieldByNameAsync(workspaceArtifactId, fieldRequest.Name).ConfigureAwait(false);
 			if (queryByNameResult.Objects.Count > 0)
 			{
+				_logger.LogVerbose("Field name '{fieldName}' already exists, but may not have GUID assigned.", fieldRequest.Name);
 				return queryByNameResult.Objects.First().ArtifactID;
 			}
 			else
 			{
+				_logger.LogVerbose("Creating field name '{fieldName}'", fieldRequest.Name);
 				using (Services.Interfaces.Field.IFieldManager fieldManager = await _serviceFactory.CreateProxyAsync<Services.Interfaces.Field.IFieldManager>().ConfigureAwait(false))
 				{
 					if (fieldRequest is WholeNumberFieldRequest wholeNumberFieldRequest)
@@ -61,7 +70,9 @@ namespace Relativity.Sync.Executors
 					}
 					else
 					{
-						throw new NotSupportedException($"Sync doesn't support creation of field type: {fieldRequest.GetType()}.");
+						string typeName = fieldRequest.GetType().ToString();
+						_logger.LogError("Sync doesn't support creation of field type: {fieldType}", typeName);
+						throw new NotSupportedException($"Sync doesn't support creation of field type: {typeName}");
 					}
 				}
 			}
@@ -69,6 +80,7 @@ namespace Relativity.Sync.Executors
 
 		private async Task<QueryResult> QueryFieldByNameAsync(int workspaceArtifactId, string fieldName)
 		{
+			_logger.LogVerbose("Querying for field name '{fieldName}'", fieldName);
 			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				QueryRequest queryRequest = new QueryRequest()

@@ -15,6 +15,9 @@ namespace Relativity.Sync.Executors
 {
 	internal sealed class DestinationWorkspaceObjectTypesCreationExecutor : IExecutor<IDestinationWorkspaceObjectTypesCreationConfiguration>
 	{
+		private const int _DEFAULT_FIELD_WIDTH = 100;
+		private const int _DEFAULT_FIXEDLENGTH_FIELD_LENGTH = 255;
+
 		private const string _SOURCE_WORKSPACE_OBJECT_TYPE_NAME = "Relativity Source Case";
 		private const string _SOURCE_WORKSPACE_CASEID_FIELD_NAME = "Source Workspace Artifact ID";
 		private const string _SOURCE_WORKSPACE_CASENAME_FIELD_NAME = "Source Workspace Name";
@@ -50,6 +53,8 @@ namespace Relativity.Sync.Executors
 		public async Task<ExecutionResult> ExecuteAsync(IDestinationWorkspaceObjectTypesCreationConfiguration configuration, CancellationToken token)
 		{
 			int destinationWorkspaceArtifactId = configuration.DestinationWorkspaceArtifactId;
+			_logger.LogVerbose("Creating object types and fields in destination workspace Artifact ID: {destinationWorkspaceArtifactId}", destinationWorkspaceArtifactId);
+
 			try
 			{
 				int sourceCaseObjectTypeArtifactId = await CreateSourceCaseObjectTypeAndFields(destinationWorkspaceArtifactId).ConfigureAwait(false);
@@ -134,9 +139,7 @@ namespace Relativity.Sync.Executors
 			{
 				ArtifactID = objectTypeArtifactId
 			};
-
-			const int width = 100;
-
+			
 			return new Dictionary<Guid, BaseFieldRequest>()
 			{
 				{
@@ -150,7 +153,7 @@ namespace Relativity.Sync.Executors
 						AllowPivot = false,
 						AvailableInFieldTree = false,
 						IsRequired = false,
-						Width = width,
+						Width = _DEFAULT_FIELD_WIDTH,
 						FilterType = FilterType.Popup,
 						OverlayBehavior = OverlayBehavior.ReplaceValues
 					}
@@ -164,8 +167,6 @@ namespace Relativity.Sync.Executors
 			{
 				ArtifactID = objectTypeArtifactId
 			};
-			const int width = 100;
-			const int length = 255;
 			return new Dictionary<Guid, BaseFieldRequest>()
 			{
 				{
@@ -180,7 +181,7 @@ namespace Relativity.Sync.Executors
 						AllowSortTally = false,
 						AllowGroupBy = false,
 						AllowPivot = false,
-						Width = width,
+						Width = _DEFAULT_FIELD_WIDTH,
 						Wrapping = false
 					}
 				},
@@ -198,10 +199,10 @@ namespace Relativity.Sync.Executors
 						AllowGroupBy = false,
 						AllowPivot = false,
 						OpenToAssociations = false,
-						Width = width,
+						Width = _DEFAULT_FIELD_WIDTH,
 						Wrapping = false,
 						HasUnicode = false,
-						Length = length
+						Length = _DEFAULT_FIXEDLENGTH_FIELD_LENGTH
 					}
 				},
 				{
@@ -218,10 +219,10 @@ namespace Relativity.Sync.Executors
 						AllowGroupBy = false,
 						AllowPivot = false,
 						OpenToAssociations = false,
-						Width = width,
+						Width = _DEFAULT_FIELD_WIDTH,
 						Wrapping = false,
 						HasUnicode = false,
-						Length = length
+						Length = _DEFAULT_FIXEDLENGTH_FIELD_LENGTH
 					}
 				}
 			};
@@ -233,8 +234,6 @@ namespace Relativity.Sync.Executors
 			{
 				ArtifactID = objectTypeArtifactId
 			};
-			const int width = 100;
-			const int length = 255;
 			return new Dictionary<Guid, BaseFieldRequest>()
 			{
 				{
@@ -249,7 +248,7 @@ namespace Relativity.Sync.Executors
 						AllowSortTally = false,
 						AllowGroupBy = false,
 						AllowPivot = false,
-						Width = width,
+						Width = _DEFAULT_FIELD_WIDTH,
 						Wrapping = false
 					}
 				},
@@ -267,10 +266,10 @@ namespace Relativity.Sync.Executors
 						AllowGroupBy = false,
 						AllowPivot = false,
 						OpenToAssociations = false,
-						Width = width,
+						Width = _DEFAULT_FIELD_WIDTH,
 						Wrapping = false,
 						HasUnicode = false,
-						Length = length
+						Length = _DEFAULT_FIXEDLENGTH_FIELD_LENGTH
 					}
 				}
 			};
