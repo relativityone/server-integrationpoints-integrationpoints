@@ -8,7 +8,6 @@ using NUnit.Framework;
 using Relativity.Services.Interfaces.Field.Models;
 using Relativity.Services.Interfaces.ObjectType.Models;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Services.Objects.Exceptions;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
 using Relativity.Sync.Logging;
@@ -113,25 +112,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private bool VerifySourceJobDocumentFields(IDictionary<Guid, BaseFieldRequest> fieldsToCreate)
 		{
 			return fieldsToCreate.ContainsKey(JobHistoryFieldOnDocumentGuid);
-		}
-
-		[Test]
-		public async Task ItShouldThrowWhenWorkspaceObjectTypeNotExists()
-		{
-			QueryResult queryResultForWorkspaceObjectType = new QueryResult()
-			{
-				Objects = new List<RelativityObject>()
-			};
-			_objectTypeManager.Setup(x => x.QueryObjectTypeByNameAsync(It.IsAny<int>(), It.Is<string>(s => s == "Workspace")))
-				.ReturnsAsync(queryResultForWorkspaceObjectType);
-
-			// act
-			ExecutionResult result = await _instance.ExecuteAsync(Mock.Of<IDestinationWorkspaceObjectTypesCreationConfiguration>(), CancellationToken.None)
-				.ConfigureAwait(false);
-
-			// assert
-			result.Status.Should().Be(ExecutionStatus.Failed);
-			result.Exception.Should().BeOfType<ArtifactNotFoundException>();
 		}
 	}
 }
