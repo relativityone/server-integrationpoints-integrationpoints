@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Services.Interfaces.Field.Models;
 using Relativity.Services.Interfaces.ObjectType.Models;
 using Relativity.Services.Interfaces.Shared;
 using Relativity.Services.Interfaces.Shared.Models;
-using Relativity.Services.Objects.DataContracts;
-using Relativity.Services.Objects.Exceptions;
 using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Executors
@@ -24,8 +21,8 @@ namespace Relativity.Sync.Executors
 		private const string _SOURCE_WORKSPACE_INSTANCENAME_FIELD_NAME = "Source Instance Name";
 
 		private const string _SOURCE_JOB_OBJECT_TYPE_NAME = "Relativity Source Job";
-		private const string _SOURCEJOB_JOBHISTORYID_FIELD_NAME = "Job History Artifact ID";
-		private const string _SOURCEJOB_JOBHISTORYNAME_FIELD_NAME = "Job History Name";
+		private const string _SOURCE_JOB_JOBHISTORYID_FIELD_NAME = "Job History Artifact ID";
+		private const string _SOURCE_JOB_JOBHISTORYNAME_FIELD_NAME = "Job History Name";
 
 		private readonly ISyncObjectTypeManager _syncObjectTypeManager;
 		private readonly ISyncFieldManager _syncFieldManager;
@@ -71,9 +68,8 @@ namespace Relativity.Sync.Executors
 
 		private async Task<int> CreateSourceCaseObjectTypeAndFields(int destinationWorkspaceArtifactId)
 		{
-			int workspaceObjectTypeArtifactId = await GetWorkspaceObjectTypeArtifactIdAsync(destinationWorkspaceArtifactId).ConfigureAwait(false);
-
-			ObjectTypeRequest sourceCaseObjectTypeRequest = GetObjectTypeRequest(_SOURCE_WORKSPACE_OBJECT_TYPE_NAME, workspaceObjectTypeArtifactId);
+			ObjectTypeRequest sourceCaseObjectTypeRequest = GetObjectTypeRequest(_SOURCE_WORKSPACE_OBJECT_TYPE_NAME);
+			sourceCaseObjectTypeRequest.ParentObjectType.Value.Name = "Workspace";
 			int sourceCaseObjectTypeArtifactId = await _syncObjectTypeManager.EnsureObjectTypeExistsAsync(destinationWorkspaceArtifactId,
 				SourceWorkspaceObjectTypeGuid, sourceCaseObjectTypeRequest).ConfigureAwait(false);
 
@@ -84,23 +80,10 @@ namespace Relativity.Sync.Executors
 			return sourceCaseObjectTypeArtifactId;
 		}
 
-		private async Task<int> GetWorkspaceObjectTypeArtifactIdAsync(int workspaceArtifactId)
-		{
-			const string workspaceObjectTypeName = "Workspace";
-			QueryResult queryResult = await _syncObjectTypeManager.QueryObjectTypeByNameAsync(workspaceArtifactId, workspaceObjectTypeName).ConfigureAwait(false);
-			if (!queryResult.Objects.Any())
-			{
-				throw new ArtifactNotFoundException($"Cannot find object type name: '{workspaceObjectTypeName}'");
-			}
-			else
-			{
-				return queryResult.Objects.First().ArtifactID;
-			}
-		}
-
 		private async Task CreateSourceJobObjectTypeAndFields(int sourceCaseObjectTypeArtifactId, int destinationWorkspaceArtifactId)
 		{
-			ObjectTypeRequest sourceJobObjectTypeRequest = GetObjectTypeRequest(_SOURCE_JOB_OBJECT_TYPE_NAME, sourceCaseObjectTypeArtifactId);
+			ObjectTypeRequest sourceJobObjectTypeRequest = GetObjectTypeRequest(_SOURCE_JOB_OBJECT_TYPE_NAME);
+			sourceJobObjectTypeRequest.ParentObjectType.Value.ArtifactID = sourceCaseObjectTypeArtifactId;
 			int sourceJobObjectTypeArtifactId = await _syncObjectTypeManager
 				.EnsureObjectTypeExistsAsync(destinationWorkspaceArtifactId, SourceJobObjectTypeGuid, sourceJobObjectTypeRequest).ConfigureAwait(false);
 
@@ -110,14 +93,11 @@ namespace Relativity.Sync.Executors
 				GetDocumentFieldRequest(sourceJobObjectTypeArtifactId, _SOURCE_JOB_OBJECT_TYPE_NAME, JobHistoryFieldOnDocumentGuid)).ConfigureAwait(false);
 		}
 
-		private static ObjectTypeRequest GetObjectTypeRequest(string name, int parentArtifactId)
+		private static ObjectTypeRequest GetObjectTypeRequest(string name)
 		{
 			return new ObjectTypeRequest()
 			{
-				ParentObjectType = new Securable<ObjectTypeIdentifier>(new ObjectTypeIdentifier()
-				{
-					ArtifactID = parentArtifactId
-				}),
+				ParentObjectType = new Securable<ObjectTypeIdentifier>(new ObjectTypeIdentifier()),
 				Name = name,
 				CopyInstancesOnParentCopy = false,
 				CopyInstancesOnCaseCreation = false,
@@ -240,7 +220,7 @@ namespace Relativity.Sync.Executors
 					JobHistoryIdFieldGuid,
 					new WholeNumberFieldRequest()
 					{
-						Name = _SOURCEJOB_JOBHISTORYID_FIELD_NAME,
+						Name = _SOURCE_JOB_JOBHISTORYID_FIELD_NAME,
 						ObjectType = objectType,
 						IsRequired = true,
 						IsLinked = false,
@@ -256,7 +236,7 @@ namespace Relativity.Sync.Executors
 					JobHistoryNameFieldGuid,
 					new FixedLengthFieldRequest()
 					{
-						Name = _SOURCEJOB_JOBHISTORYNAME_FIELD_NAME,
+						Name = _SOURCE_JOB_JOBHISTORYNAME_FIELD_NAME,
 						ObjectType = objectType,
 						IsRequired = true,
 						IncludeInTextIndex = false,
