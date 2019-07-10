@@ -72,6 +72,7 @@
     <Compile Include="BatchStatusCommands\Implementations\TargetDocumentsTaggingManager.cs" />
     <Compile Include="BatchStatusCommands\Implementations\TargetDocumentsTaggingManagerFactory.cs" />
     <Compile Include="BatchStatusCommands\Implementations\TempTableReader.cs" />
+    <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="Installers\Registrations\SecretStoreMigrationRegistration.cs" />
     <Compile Include="FederatedInstanceServicesManager.cs" />
     <Compile Include="Provider\Internals\ApplicationGuidFinder.cs" />
