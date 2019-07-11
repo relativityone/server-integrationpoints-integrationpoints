@@ -2,9 +2,9 @@
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
-namespace kCura.IntegrationPoints.Data.Interfaces
+namespace kCura.IntegrationPoints.Common.Handlers
 {
-	internal interface IRetryHandler
+	public interface IRetryHandler
 	{
 		Task<T> ExecuteWithRetriesAsync<T>(
 			Func<Task<T>> function, 

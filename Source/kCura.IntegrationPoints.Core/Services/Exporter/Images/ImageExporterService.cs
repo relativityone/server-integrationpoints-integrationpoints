@@ -117,7 +117,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 			List<ArtifactDTO> result)
 		{
 			List<string> imagesDataView = _fileRepository
-				.GetImagesForDocuments(
+				.GetImagesLocationForDocuments(
 					SourceConfiguration.SourceWorkspaceArtifactId,
 					documentIDs: new[] {documentArtifactId});
 			if (imagesDataView.Count > 0)
@@ -149,7 +149,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 			int productionArtifactId)
 		{
 			List<string> producedImagesDataView = _fileRepository
-				.GetImagesForProductionDocuments(
+				.GetImagesLocationForProductionDocuments(
 					SourceConfiguration.SourceWorkspaceArtifactId,
 					productionArtifactId, 
 					documentIDs: new[] { documentArtifactId });

@@ -4,11 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using kCura.IntegrationPoints.Common.Handlers;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.WinEDDS.Service.Export;
 using Moq;
+using NSubstitute;
 using NUnit.Framework;
 using Relativity.Services.Interfaces.File.Models;
 
@@ -20,6 +22,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		private Mock<ISearchManager> _searchManagerMock;
 		private Mock<IExternalServiceInstrumentationProvider> _instrumentationProviderMock;
 		private Mock<IExternalServiceSimpleInstrumentation> _instrumentationSimpleProviderMock;
+		private Mock<IRetryHandler> _retryHandlerMock;
 
 		private FileRepository _sut;
 
@@ -169,6 +172,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		public void SetUp()
 		{
 			_searchManagerMock = new Mock<ISearchManager>();
+			_retryHandlerMock = new Mock<IRetryHandler>();
 			_instrumentationProviderMock = new Mock<IExternalServiceInstrumentationProvider>();
 			_instrumentationSimpleProviderMock = new Mock<IExternalServiceSimpleInstrumentation>();
 			_instrumentationProviderMock
@@ -178,7 +182,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 					It.IsAny<string>()))
 				.Returns(_instrumentationSimpleProviderMock.Object);
 
-			_sut = new FileRepository(() => _searchManagerMock.Object, _instrumentationProviderMock.Object);
+			_sut = new FileRepository(() => _searchManagerMock.Object, _instrumentationProviderMock.Object, _retryHandlerMock.Object );
 		}
 
 
@@ -193,7 +197,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				.Returns(_testProductionDocumentImageResponses.ToDataSet());
 
 			//act
-			List<string> result = _sut.GetImagesForProductionDocuments(
+			List<string> result = _sut.GetImagesLocationForProductionDocuments(
 				_WORKSPACE_ID,
 				productionID,
 				documentIDs
@@ -203,7 +207,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			VerifyIfInstrumentationHasBeenCalled<DataSet>(
 				operationName: nameof(ISearchManager.RetrieveImagesForProductionDocuments)
 			);
-			AssertIfDataSetsAreSameAsExpected(
+			AssertIfListsAreSameAsExpected(
 				_testProductionDocumentImageResponses.Select(x => x.Location).ToList(),
 				result
 			);
@@ -216,7 +220,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			const int productionID = 1111;
 
 			//act
-			Action action = () => _sut.GetImagesForProductionDocuments(
+			Action action = () => _sut.GetImagesLocationForProductionDocuments(
 				_WORKSPACE_ID,
 				productionID,
 				documentIDs: null
@@ -236,7 +240,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			const int productionID = 1111;
 
 			//act
-			List<string> result = _sut.GetImagesForProductionDocuments(
+			List<string> result = _sut.GetImagesLocationForProductionDocuments(
 				_WORKSPACE_ID,
 				productionID,
 				documentIDs: new int[] { }
@@ -260,7 +264,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				.Throws<InvalidOperationException>();
 
 			//act
-			Action action = () => _sut.GetImagesForProductionDocuments(
+			Action action = () => _sut.GetImagesLocationForProductionDocuments(
 				_WORKSPACE_ID,
 				productionID,
 				documentIDs
@@ -280,7 +284,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				.Returns(_testDocumentImageResponses.ToDataSet());
 
 			//act
-			List<string> result = _sut.GetImagesForDocuments(
+			List<string> result = _sut.GetImagesLocationForDocuments(
 				_WORKSPACE_ID,
 				documentIDs
 			);
@@ -289,7 +293,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			VerifyIfInstrumentationHasBeenCalled<DataSet>(
 				operationName: nameof(ISearchManager.RetrieveImagesForDocuments)
 			);
-			AssertIfDataSetsAreSameAsExpected(
+			AssertIfListsAreSameAsExpected(
 				_testDocumentImageResponses.Select(x => x.Location).ToList(),
 				result
 			);
@@ -299,7 +303,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		public void GetImagesForDocuments_ShouldThrowWhenNullPassedAsDocumentIDs()
 		{
 			//act
-			Action action = () => _sut.GetImagesForDocuments(
+			Action action = () => _sut.GetImagesLocationForDocuments(
 				_WORKSPACE_ID,
 				documentIDs: null
 			);
@@ -315,7 +319,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		public void GetImagesForDocuments_ShouldReturnEmptyArrayWhenEmptyArrayPassedAsDocumentIDs()
 		{
 			//act
-			List<string> result = _sut.GetImagesForDocuments(
+			List<string> result = _sut.GetImagesLocationForDocuments(
 				_WORKSPACE_ID,
 				documentIDs: new int[] { }
 			);
@@ -337,7 +341,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				.Throws<InvalidOperationException>();
 
 			//act
-			Action action = () => _sut.GetImagesForDocuments(
+			Action action = () => _sut.GetImagesLocationForDocuments(
 				_WORKSPACE_ID,
 				documentIDs
 			);
@@ -346,7 +350,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			action.ShouldThrow<InvalidOperationException>();
 		}
 
-		private void AssertIfDataSetsAreSameAsExpected(List<string> expectedDataSet, List<string> currentDataSet)
+		private void AssertIfListsAreSameAsExpected(List<string> expectedDataSet, List<string> currentDataSet)
 		{
 			expectedDataSet.Should().Equal(currentDataSet);
 		}

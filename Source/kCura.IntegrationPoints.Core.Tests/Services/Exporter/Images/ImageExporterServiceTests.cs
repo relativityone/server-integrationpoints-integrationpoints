@@ -129,7 +129,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 				.Returns(PrepareRetrievedData(documentArtifactID));
 
 			_fileRepository
-				.GetImagesForDocuments(
+				.GetImagesLocationForDocuments(
 					_SOURCE_WORKSPACE_ARTIFACT_ID,
 					Arg.Is<int[]>(x => x.Single() == documentArtifactID))
 				.Returns(CreateDocumentImageResponses());
@@ -178,7 +178,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 			_exporter.RetrieveResults(Arg.Any<Guid>(), Arg.Any<int[]>(), Arg.Any<int>()).Returns(PrepareRetrievedData(documentArtifactID));
 
 			_fileRepository
-				.GetImagesForProductionDocuments(
+				.GetImagesLocationForProductionDocuments(
 					_SOURCE_WORKSPACE_ARTIFACT_ID, 
 					productionArtifactID, 
 					Arg.Is<int[]>(x => x.Single() == documentArtifactID))

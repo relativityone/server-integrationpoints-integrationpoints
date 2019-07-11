@@ -103,10 +103,8 @@
     <Compile Include="Installers\RepositoryRegistration.cs" />
     <Compile Include="Installers\RetryingMechanismRegistration.cs" />
     <Compile Include="IntegrationPointSerializer.cs" />
-    <Compile Include="Interfaces\IRetryHandlerFactory.cs" />
     <Compile Include="IResourceDbProvider.cs" />
     <Compile Include="IResourcePoolContext.cs" />
-    <Compile Include="Interfaces\IRetryHandler.cs" />
     <Compile Include="IRipDBContext.cs" />
     <Compile Include="IRsapiClientWithWorkspaceFactory.cs" />
     <Compile Include="Logging\ISystemEventLoggingService.cs" />
@@ -369,6 +367,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Interfaces\" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

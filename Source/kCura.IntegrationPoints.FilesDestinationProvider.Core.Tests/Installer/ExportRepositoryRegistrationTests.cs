@@ -43,31 +43,5 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Installer
 			//assert
 			sut.Should().HaveRegisteredProperImplementation<IFileRepository, FileRepository>();
 		}
-
-		//[Test]
-		//public void FileRepository_ShouldBeResolvedWithoutThrowing()
-		//{
-		//	//arrange
-		//	IWindsorContainer sut = new WindsorContainer();
-		//	sut.AddExportRepositories();
-		//	RegisterDependencies(sut);
-
-		//	//assert
-		//	sut.Should().ResolveWithoutThrowing<IFileRepository>();
-		//}
-
-
-		private static void RegisterDependencies(IWindsorContainer container)
-		{
-			var servicesMgrMock = new Mock<IServicesMgr>();
-
-			IRegistration[] dependencies =
-			{
-				Component.For<IServicesMgr>().Instance(servicesMgrMock.Object),
-				CreateDummyObjectRegistration<IExternalServiceInstrumentationProvider>()
-			};
-
-			container.Register(dependencies);
-		}
 	}
 }

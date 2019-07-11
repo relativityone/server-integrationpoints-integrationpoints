@@ -3,13 +3,10 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using kCura.Config;
 using kCura.IntegrationPoints.Common.Constants;
+using kCura.IntegrationPoints.Common.Handlers;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
-using kCura.IntegrationPoints.Data.Extensions;
 using kCura.WinEDDS.Service.Export;
-using Relativity.Services.Interfaces.File;
-using Relativity.Services.Interfaces.File.Models;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
@@ -17,17 +14,21 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 	{
 		private readonly Func<ISearchManager> _searchManagerFactory;
 		private readonly IExternalServiceInstrumentationProvider _instrumentationProvider;
+		private readonly IRetryHandler _retryHandler;
+
 		private const string ImageLocationColumn = "Location";
 
 		public FileRepository(
-			Func<ISearchManager> searchManagerFactory, 
-			IExternalServiceInstrumentationProvider instrumentationProvider)
+			Func<ISearchManager> searchManagerFactory,
+			IExternalServiceInstrumentationProvider instrumentationProvider,
+			IRetryHandler retryHandler)
 		{
+			_retryHandler = retryHandler;
 			_searchManagerFactory = searchManagerFactory;
 			_instrumentationProvider = instrumentationProvider;
 		}
 
-		public List<string> GetImagesForProductionDocuments(
+		public List<string> GetImagesLocationForProductionDocuments(
 			int workspaceID,
 			int productionID,
 			int[] documentIDs)
@@ -44,13 +45,15 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			);
 			using (ISearchManager searchManager = _searchManagerFactory())
 			{
-				return ToLocationList(instrumentation.Execute<DataSet>(
-					() => searchManager.RetrieveImagesForProductionDocuments(workspaceID, documentIDs,
-						productionID)));
+				List<string> fileLocations = ToLocationList(instrumentation.Execute<DataSet>(
+					() => _retryHandler.ExecuteWithRetriesAsync<DataSet>(
+						() => Task.Run(() => searchManager.RetrieveImagesForProductionDocuments(workspaceID, documentIDs, productionID))
+					).Result
+				));
+				return fileLocations;
 			}
 		}
-
-		public List<string> GetImagesForDocuments(int workspaceID, int[] documentIDs)
+		public List<string> GetImagesLocationForDocuments(int workspaceID, int[] documentIDs)
 		{
 			ThrowWhenNullArgument(documentIDs, nameof(documentIDs));
 
@@ -64,8 +67,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			);
 			using (ISearchManager searchManager = _searchManagerFactory())
 			{
-				return ToLocationList(instrumentation.Execute<DataSet>(
-					() => searchManager.RetrieveImagesForDocuments(workspaceID, documentIDs)));
+				List<string> fileLocations = ToLocationList(instrumentation.Execute<DataSet>(
+					() => _retryHandler.ExecuteWithRetriesAsync<DataSet>(
+						() => Task.Run(() => searchManager.RetrieveImagesForDocuments(workspaceID, documentIDs))
+						).Result
+					));
+				return fileLocations;
 			}
 		}
 		private void ThrowWhenNullArgument<T>(T argument, string argumentName)
@@ -88,7 +95,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private List<string> ToLocationList(DataSet fileLocationDataSet)
 		{
 			var values = fileLocationDataSet.Tables[0].AsEnumerable();
-			return values.Select(x => (x[ImageLocationColumn] ?? string.Empty).ToString()).ToList();
+			return values.Select(x => (x[ImageLocationColumn]).ToString()).ToList();
 		}
 	}
 }
