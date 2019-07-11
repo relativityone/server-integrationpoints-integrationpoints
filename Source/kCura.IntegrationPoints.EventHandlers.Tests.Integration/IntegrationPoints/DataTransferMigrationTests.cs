@@ -22,7 +22,6 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Services.Objects.DataContracts;
 using Relativity.Testing.Identification;
 using Choice = kCura.Relativity.Client.DTOs.Choice;
 using Constants = kCura.IntegrationPoints.Core.Constants;
