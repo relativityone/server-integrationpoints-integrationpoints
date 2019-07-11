@@ -11,7 +11,6 @@ using kCura.WinEDDS;
 using kCura.WinEDDS.Service.Export;
 using Relativity.Services.Interfaces.ViewField.Models;
 using Relativity.Services.ViewManager.Models;
-using RelativityViewFieldInfo = Relativity.ViewFieldInfo;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 {
