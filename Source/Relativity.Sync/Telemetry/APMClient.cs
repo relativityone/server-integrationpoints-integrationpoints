@@ -20,9 +20,9 @@ namespace Relativity.Sync.Telemetry
 		}
 
 		/// <inheritdoc />
-		public void Log(string name, Dictionary<string, object> data)
+		public void Log(string name, Dictionary<string, object> customData)
 		{
-			_apm.CountOperation(name, customData: data).Write();
+			_apm.CountOperation(name, customData: customData).Write();
 		}
 	}
 }

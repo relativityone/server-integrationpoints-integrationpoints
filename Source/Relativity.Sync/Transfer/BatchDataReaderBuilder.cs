@@ -93,7 +93,8 @@ namespace Relativity.Sync.Transfer
 				FieldInfoDto field = _allFields[i];
 				if (field.SpecialFieldType != SpecialFieldType.None)
 				{
-					result[i] = BuildSpecialFieldValue(specialFieldBuilders, batchItem, field);
+					object specialValue = BuildSpecialFieldValue(specialFieldBuilders, batchItem, field);
+					result[i] = specialValue;
 				}
 				else
 				{

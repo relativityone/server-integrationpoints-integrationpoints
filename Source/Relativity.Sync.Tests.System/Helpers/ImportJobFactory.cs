@@ -8,7 +8,7 @@ namespace Relativity.Sync.Tests.System.Helpers
 	{
 		private const int _CONTROL_NUMBER_FIELD_ARTIFACT_ID = 1003667;
 
-		public static ImportBulkArtifactJob CreateNonNativesDocumentImportJob(int sourceWorkspaceArtifactId, int destinationFolderArtifactId, DocumentData documents)
+		public static ImportBulkArtifactJob CreateNonNativesDocumentImportJob(int sourceWorkspaceArtifactId, int destinationFolderArtifactId, ImportDataTableWrapper documents)
 		{
 			ImportAPI importApi = new ImportAPI(AppSettings.RelativityUserName, AppSettings.RelativityUserPassword, AppSettings.RelativityWebApiUrl.ToString());
 			ImportBulkArtifactJob job = importApi.NewObjectImportJob((int)ArtifactType.Document);

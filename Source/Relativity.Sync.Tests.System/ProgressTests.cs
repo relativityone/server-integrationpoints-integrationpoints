@@ -17,11 +17,9 @@ using Relativity.Testing.Identification;
 namespace Relativity.Sync.Tests.System
 {
 	[TestFixture]
-	public sealed class ProgressTests : SystemTest
+	internal sealed class ProgressTests : SystemTest
 	{
 		private WorkspaceRef _sourceWorkspace;
-
-		private const string _JOB_HISTORY_NAME = "Test Job Name";
 
 		private static readonly Guid ProgressObjectTypeGuid = new Guid("3D107450-DB18-4FE1-8219-73EE1F921ED9");
 
@@ -41,13 +39,15 @@ namespace Relativity.Sync.Tests.System
 		public async Task ItShouldLogProgressForEachStep()
 		{
 			int workspaceArtifactId = _sourceWorkspace.ArtifactID;
+			string jobHistoryName = $"JobHistory.{Guid.NewGuid()}";
 
-			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, workspaceArtifactId, _JOB_HISTORY_NAME).ConfigureAwait(false);
+			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, workspaceArtifactId, jobHistoryName).ConfigureAwait(false);
 			int syncConfigurationArtifactId = await Rdos.CreateSyncConfigurationInstance(ServiceFactory, _sourceWorkspace.ArtifactID, jobHistoryArtifactId).ConfigureAwait(false);
 			ConfigurationStub configuration = new ConfigurationStub
 			{
 				SourceWorkspaceArtifactId = workspaceArtifactId,
-				JobHistoryArtifactId = syncConfigurationArtifactId
+				JobHistoryArtifactId = jobHistoryArtifactId,
+				SyncConfigurationArtifactId = syncConfigurationArtifactId
 			};
 			ISyncJob syncJob = SyncJobHelper.CreateWithMockedAllSteps(configuration);
 

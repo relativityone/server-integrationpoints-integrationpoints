@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using kCura.Apps.Common.Utils.Serializers;
 using Relativity.Services.Folder;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Search;
 using Relativity.Services.ServiceProxy;
 using Relativity.Sync.Executors;
+using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Tests.System.Helpers
 {
@@ -29,6 +31,7 @@ namespace Relativity.Sync.Tests.System.Helpers
 		private static readonly Guid _DESTINATION_WORKSPACE_DESTINATION_WORKSPACE_ARTIFACTID_GUID = new Guid("207e6836-2961-466b-a0d2-29974a4fad36");
 		private static readonly Guid _DESTINATION_WORKSPACE_DESTINATION_WORKSPACE_NAME_GUID = new Guid("348d7394-2658-4da4-87d0-8183824adf98");
 		private static readonly Guid _DESTINATION_WORKSPACE_NAME_GUID = new Guid("155649c0-db15-4ee7-b449-bfdf2a54b7b5");
+		private static readonly Guid _SYNC_CONFIGURATION_FIELD_MAPPINGS_GUID = new Guid("E3CB5C64-C726-47F8-9CB0-1391C5911628");
 
 		public static async Task<int> CreateJobHistoryInstance(ServiceFactory serviceFactory, int workspaceId, string name = "Name")
 		{
@@ -57,7 +60,7 @@ namespace Relativity.Sync.Tests.System.Helpers
 			}
 		}
 
-		public static async Task<int> CreateSyncConfigurationInstance(ServiceFactory serviceFactory, int workspaceId, int jobHistoryId)
+		public static async Task<int> CreateSyncConfigurationInstance(ServiceFactory serviceFactory, int workspaceId, int jobHistoryId, List<FieldMap> fieldMappings = null)
 		{
 			using (IObjectManager objectManager = serviceFactory.CreateProxy<IObjectManager>())
 			{
@@ -70,6 +73,14 @@ namespace Relativity.Sync.Tests.System.Helpers
 					ParentObject = new RelativityObjectRef
 					{
 						ArtifactID = jobHistoryId
+					},
+					FieldValues = new List<FieldRefValuePair>
+					{
+						new FieldRefValuePair
+						{
+							Field = new FieldRef { Guid = _SYNC_CONFIGURATION_FIELD_MAPPINGS_GUID },
+							Value = new JSONSerializer().Serialize(fieldMappings)
+						}
 					}
 				};
 				CreateResult result = await objectManager.CreateAsync(workspaceId, request).ConfigureAwait(false);

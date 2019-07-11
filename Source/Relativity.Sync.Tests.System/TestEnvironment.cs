@@ -32,15 +32,18 @@ namespace Relativity.Sync.Tests.System
 			_serviceFactory = new ServiceFactoryFromAppConfig().CreateServiceFactory();
 		}
 
-		public async Task<WorkspaceRef> CreateWorkspaceAsync(string templateWorkspaceName = "Relativity Starter Template")
+		public async Task<WorkspaceRef> CreateWorkspaceAsync(string name = null, string templateWorkspaceName = "Relativity Starter Template")
 		{
-			string name = Guid.NewGuid().ToString();
+			if (string.IsNullOrWhiteSpace(name))
+			{
+				name = Guid.NewGuid().ToString();
+			}
 
 			int templateWorkspaceArtifactId = await GetTemplateWorkspaceArtifactId(templateWorkspaceName).ConfigureAwait(false);
 			using (var workspaceManager = _serviceFactory.CreateProxy<IWorkspaceManager>())
 			{
-				WorkspaceSetttings settings = new WorkspaceSetttings {Name = name, TemplateArtifactId = templateWorkspaceArtifactId};
-				WorkspaceRef newWorkspace =  await workspaceManager.CreateWorkspaceAsync(settings).ConfigureAwait(false);
+				WorkspaceSetttings settings = new WorkspaceSetttings { Name = name, TemplateArtifactId = templateWorkspaceArtifactId };
+				WorkspaceRef newWorkspace = await workspaceManager.CreateWorkspaceAsync(settings).ConfigureAwait(false);
 				if (newWorkspace == null)
 				{
 					throw new InvalidOperationException("Workspace creation failed. WorkspaceManager kepler service returned null");
@@ -50,9 +53,9 @@ namespace Relativity.Sync.Tests.System
 			}
 		}
 
-		public async Task<WorkspaceRef> CreateWorkspaceWithFieldsAsync(string templateWorkspaceName = "Relativity Starter Template")
+		public async Task<WorkspaceRef> CreateWorkspaceWithFieldsAsync(string name = null, string templateWorkspaceName = "Relativity Starter Template")
 		{
-			WorkspaceRef workspace = await CreateWorkspaceAsync(templateWorkspaceName).ConfigureAwait(false);
+			WorkspaceRef workspace = await CreateWorkspaceAsync(name, templateWorkspaceName).ConfigureAwait(false);
 			await CreateFieldsInWorkspace(workspace.ArtifactID).ConfigureAwait(false);
 			return workspace;
 		}
@@ -80,14 +83,16 @@ namespace Relativity.Sync.Tests.System
 			{
 				QueryRequest request = new QueryRequest
 				{
-					ObjectType = new ObjectTypeRef{ Name = "Workspace"},
+					ObjectType = new ObjectTypeRef { Name = "Workspace" },
 					Condition = $"'Name' == '{workspaceName}'"
 				};
 				QueryResultSlim result = await objectManager.QuerySlimAsync(-1, request, 0, 1).ConfigureAwait(false);
+
 				if (result.ResultCount == 0)
 				{
 					throw new NotFoundException($"Template workspace named: '{workspaceName}' not found.");
 				}
+
 				return result.Objects.First().ArtifactID;
 			}
 		}
@@ -173,9 +178,9 @@ namespace Relativity.Sync.Tests.System
 		/// <returns>XML document loaded from given stream</returns>
 		private static XmlDocument SafeLoadXml(FileStream fileStream)
 		{
-			var xmlReaderSettings = new XmlReaderSettings {XmlResolver = null};
+			var xmlReaderSettings = new XmlReaderSettings { XmlResolver = null };
 			XmlReader reader = XmlReader.Create(fileStream, xmlReaderSettings);
-			XmlDocument appXml = new XmlDocument {XmlResolver = null};
+			XmlDocument appXml = new XmlDocument { XmlResolver = null };
 			appXml.Load(reader);
 			return appXml;
 		}

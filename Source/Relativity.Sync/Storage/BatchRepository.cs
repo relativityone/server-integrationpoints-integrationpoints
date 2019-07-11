@@ -23,9 +23,9 @@ namespace Relativity.Sync.Storage
 			return await Batch.GetAsync(_serviceFactory, workspaceArtifactId, artifactId).ConfigureAwait(false);
 		}
 
-		public async Task<IEnumerable<IBatch>> GetAllAsync(int workspaceArtifactId, int syncConfigurationId)
+		public async Task<IEnumerable<IBatch>> GetAllAsync(int workspaceArtifactId, int syncConfigurationArtifactId)
 		{
-			return await Batch.GetAllAsync(_serviceFactory, workspaceArtifactId, syncConfigurationId).ConfigureAwait(false);
+			return await Batch.GetAllAsync(_serviceFactory, workspaceArtifactId, syncConfigurationArtifactId).ConfigureAwait(false);
 		}
 
 		public async Task<IBatch> GetLastAsync(int workspaceArtifactId, int syncConfigurationId)

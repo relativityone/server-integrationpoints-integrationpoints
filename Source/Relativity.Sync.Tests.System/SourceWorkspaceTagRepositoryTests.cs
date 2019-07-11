@@ -121,9 +121,9 @@ namespace Relativity.Sync.Tests.System
 		private async Task<IList<string>> UploadDocumentsAsync(int numDocuments)
 		{
 			int destinationFolderId = await Rdos.GetRootFolderInstance(ServiceFactory, _destinationWorkspaceArtifactId).ConfigureAwait(false);
-			DocumentData documentData = DocumentData.GenerateDocumentsWithoutNatives(numDocuments);
+			ImportDataTableWrapper importDataTableWrapper = DataTableFactory.GenerateDocumentsWithExtractedText(numDocuments);
 
-			ImportBulkArtifactJob documentImportJob = Helpers.ImportJobFactory.CreateNonNativesDocumentImportJob(_destinationWorkspaceArtifactId, destinationFolderId, documentData);
+			ImportBulkArtifactJob documentImportJob = Helpers.ImportJobFactory.CreateNonNativesDocumentImportJob(_destinationWorkspaceArtifactId, destinationFolderId, importDataTableWrapper);
 
 			ImportJobResult importResult = await ImportJobExecutor.ExecuteAsync(documentImportJob).ConfigureAwait(false);
 			Assert.IsTrue(importResult.Success, $"{importResult.Errors.Count} errors occurred during document upload: {importResult}");

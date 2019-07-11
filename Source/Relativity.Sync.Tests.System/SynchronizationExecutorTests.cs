@@ -1,60 +1,69 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using kCura.Apps.Common.Utils.Serializers;
+using Autofac;
 using NUnit.Framework;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
+using Relativity.Services.Workspace;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
-using Relativity.Sync.Logging;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Storage;
-using Relativity.Sync.Telemetry;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Helpers;
 using Relativity.Sync.Tests.System.Stubs;
-using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.System
 {
 	[TestFixture]
 	internal sealed class SynchronizationExecutorTests : SystemTest
 	{
-		private ServiceFactoryStub _serviceFactoryStub;
-
-		protected override async Task ChildSuiteSetup()
-		{
-			await base.ChildSuiteSetup().ConfigureAwait(false);
-			_serviceFactoryStub = new ServiceFactoryStub(ServiceFactory);
-		}
+		private static readonly Dataset Dataset = Dataset.NativesAndExtractedText;
+		private static readonly Guid JobHistoryErrorObject = new Guid("17E7912D-4F57-4890-9A37-ABC2B8A37BDB");
+		private static readonly Guid ErrorMessageField = new Guid("4112B894-35B0-4E53-AB99-C9036D08269D");
+		private static readonly Guid StackTraceField = new Guid("0353DBDE-9E00-4227-8A8F-4380A8891CFF");
 
 		[Test]
-		[Ignore("This test is not automatic yet.")]
 		public async Task ItShouldPassGoldFlow()
 		{
-			const int sourceWorkspaceArtifactId = 1018393;
-			const int destinationWorkspaceArtifactId = 1018394;
-			const string destinationWorkspaceName = "Sync 2";
-
 			const int batchSize = 1000;
-			const int allDocumentsSavedSearchArtifactId = 1038052;
 			const int controlNumberFieldId = 1003667;
 			const int totalRecordsCount = 1;
-			string jobHistoryName = $"SysTest_{Guid.NewGuid()}";
+
+			string sourceWorkspaceName = $"Source.{Guid.NewGuid()}";
+			string destinationWorkspaceName = $"Destination.{Guid.NewGuid()}";
+			string jobHistoryName = $"JobHistory.{Guid.NewGuid()}";
+
+			var fieldMap = new List<FieldMap>
+			{
+				new FieldMap
+				{
+					SourceField = new FieldEntry
+					{
+						DisplayName = "Control Number",
+						FieldIdentifier = controlNumberFieldId,
+						IsIdentifier = true
+					},
+					DestinationField = new FieldEntry()
+					{
+						DisplayName = "Control Number",
+						FieldIdentifier = controlNumberFieldId,
+						IsIdentifier = true
+					}
+				}
+			};
+
+			int sourceWorkspaceArtifactId = await CreateWorkspaceAsync(sourceWorkspaceName).ConfigureAwait(false);
+			int destinationWorkspaceArtifactId = await CreateWorkspaceAsync(destinationWorkspaceName).ConfigureAwait(false);
+			int allDocumentsSavedSearchArtifactId = await Rdos.GetSavedSearchInstance(ServiceFactory, sourceWorkspaceArtifactId).ConfigureAwait(false);
 
 			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, sourceWorkspaceArtifactId, jobHistoryName).ConfigureAwait(false);
 			int destinationFolderArtifactId = await Rdos.GetRootFolderInstance(ServiceFactory, destinationWorkspaceArtifactId).ConfigureAwait(false);
-			int syncConfigurationArtifactId = await Rdos.CreateSyncConfigurationInstance(ServiceFactory, sourceWorkspaceArtifactId, jobHistoryArtifactId).ConfigureAwait(false);
-
-			ISyncLog logger = new EmptyLogger();
-			IDateTime dateTime = new DateTimeWrapper();
-			ISyncMetrics syncMetrics = new SyncMetrics(Enumerable.Empty<ISyncMetricsSink>(), new CorrelationId("SystemTests"));
-			IBatchRepository batchRepository = new BatchRepository(_serviceFactoryStub);
-			ITagNameFormatter tagNameFormatter = new TagNameFormatter(logger);
-			IDestinationWorkspaceTagRepository destinationWorkspaceTagRepository = new DestinationWorkspaceTagRepository(_serviceFactoryStub,
-				new FederatedInstance(), tagNameFormatter, logger, syncMetrics);
-			DestinationWorkspaceTag destinationWorkspaceTag = await destinationWorkspaceTagRepository.CreateAsync(sourceWorkspaceArtifactId,
-				destinationWorkspaceArtifactId, destinationWorkspaceName).ConfigureAwait(false);
+			int syncConfigurationArtifactId = await Rdos.CreateSyncConfigurationInstance(ServiceFactory, sourceWorkspaceArtifactId, jobHistoryArtifactId, fieldMap).ConfigureAwait(false);
 
 			ConfigurationStub configuration = new ConfigurationStub
 			{
@@ -62,28 +71,10 @@ namespace Relativity.Sync.Tests.System
 				DestinationWorkspaceArtifactId = destinationWorkspaceArtifactId,
 				DataSourceArtifactId = allDocumentsSavedSearchArtifactId,
 				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure,
-				FieldMappings = new List<FieldMap>
-				{
-					new FieldMap
-					{
-						SourceField = new FieldEntry
-						{
-							DisplayName = "Control Number",
-							FieldIdentifier = controlNumberFieldId,
-							IsIdentifier = true
-						},
-						DestinationField = new FieldEntry()
-						{
-							DisplayName = "Control Number",
-							FieldIdentifier = controlNumberFieldId,
-							IsIdentifier = true
-						}
-					}
-				},
+				FieldMappings = fieldMap,
 
 				JobHistoryArtifactId = jobHistoryArtifactId,
 				DestinationFolderArtifactId = destinationFolderArtifactId,
-				DestinationWorkspaceTagArtifactId = destinationWorkspaceTag.ArtifactId,
 				SendEmails = false,
 
 				TotalRecordsCount = totalRecordsCount,
@@ -100,72 +91,97 @@ namespace Relativity.Sync.Tests.System
 				}
 			};
 
-			IJobProgressHandlerFactory jobProgressHandlerFactory = new JobProgressHandlerFactory(dateTime);
-			IJobProgressUpdaterFactory jobProgressUpdaterFactory = new JobProgressUpdaterFactory(_serviceFactoryStub, configuration, logger);
-			INativeFileRepository nativeFileRepository = new NativeFileRepository(_serviceFactoryStub);
+			IContainer container = ContainerHelper.Create(configuration,
+				containerBuilder => containerBuilder.RegisterInstance(new ImportApiFactoryStub()).As<IImportApiFactory>()
+			);
 
-			IFieldManager fieldManager = new FieldManager(configuration, new DocumentFieldRepository(_serviceFactoryStub, logger), new List<ISpecialFieldBuilder>()
-			{
-				new FileInfoFieldsBuilder(nativeFileRepository),
-				new FolderPathFieldBuilder(new FolderPathRetriever(_serviceFactoryStub, logger), configuration)
-			});
+			// Initialize configuration.DestinationWorkspaceTagArtifactId
+			IDestinationWorkspaceTagRepository destinationWorkspaceTagRepository = container.Resolve<IDestinationWorkspaceTagRepository>();
+			DestinationWorkspaceTag destinationWorkspaceTag = await destinationWorkspaceTagRepository.CreateAsync(sourceWorkspaceArtifactId,
+				destinationWorkspaceArtifactId, destinationWorkspaceName).ConfigureAwait(false);
+			configuration.DestinationWorkspaceTagArtifactId = destinationWorkspaceTag.ArtifactId;
 
-			IExportDataSanitizer exportDataSanitizer = new ExportDataSanitizer(Enumerable.Empty<IExportFieldSanitizer>());
-
-			var jobHistoryErrorRepository = new JobHistoryErrorRepository(_serviceFactoryStub);
+			// Import documents
+			var importHelper = new ImportHelper(ServiceFactory);
+			ImportDataTableWrapper dataTableWrapper = DataTableFactory.CreateImportDataTable(Dataset, extractedText: true, natives: true);
+			ImportJobResult importJobResult = await importHelper.ImportDataAsync(sourceWorkspaceArtifactId, dataTableWrapper).ConfigureAwait(false);
+			Assert.IsTrue(importJobResult.Success, $"IAPI errors: {string.Join(global::System.Environment.NewLine, importJobResult.Errors)}");
 
 			// Source tags creation in destination workspace
-			DestinationWorkspaceTagsCreationExecutor destinationWorkspaceTagsCreationExecutor = new DestinationWorkspaceTagsCreationExecutor(
-				new SourceCaseTagService(
-					new RelativitySourceCaseTagRepository(_serviceFactoryStub, logger),
-					new WorkspaceNameQuery(logger),
-					new FederatedInstance(),
-					tagNameFormatter,
-					_serviceFactoryStub),
-					new SourceJobTagService(new RelativitySourceJobTagRepository(_serviceFactoryStub, logger), new JobHistoryNameQuery(_serviceFactoryStub, logger), tagNameFormatter),
-					logger);
+			IExecutor<IDestinationWorkspaceTagsCreationConfiguration> destinationWorkspaceTagsCreationExecutor = container.Resolve<IExecutor<IDestinationWorkspaceTagsCreationConfiguration>>();
 			ExecutionResult sourceWorkspaceTagsCreationExecutorResult = await destinationWorkspaceTagsCreationExecutor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
 			Assert.AreEqual(ExecutionStatus.Completed, sourceWorkspaceTagsCreationExecutorResult.Status);
 
 			// Data source snapshot creation
-			DataSourceSnapshotExecutor dataSourceSnapshotExecutor = new DataSourceSnapshotExecutor(_serviceFactoryStub, fieldManager, jobProgressUpdaterFactory,  logger);
+			IExecutor<IDataSourceSnapshotConfiguration> dataSourceSnapshotExecutor = container.Resolve<IExecutor<IDataSourceSnapshotConfiguration>>();
 			ExecutionResult dataSourceExecutorResult = await dataSourceSnapshotExecutor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
 			Assert.AreEqual(ExecutionStatus.Completed, dataSourceExecutorResult.Status);
 
 			// Data partitioning
-			SnapshotPartitionExecutor snapshotPartitionExecutor = new SnapshotPartitionExecutor(batchRepository, logger);
+			IExecutor<ISnapshotPartitionConfiguration> snapshotPartitionExecutor = container.Resolve<IExecutor<ISnapshotPartitionConfiguration>>();
 			ExecutionResult snapshotPartitionExecutorResult = await snapshotPartitionExecutor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
 			Assert.AreEqual(ExecutionStatus.Completed, snapshotPartitionExecutorResult.Status);
 
-			// Data reader setup
-			IRelativityExportBatcherFactory exportBatcherFactory = new RelativityExportBatcherFactory(_serviceFactoryStub, configuration);
-			ISourceWorkspaceDataReaderFactory sourceWorkspaceDataReaderFactory = new SourceWorkspaceDataReaderFactory(exportBatcherFactory, fieldManager,
-				configuration, new BatchDataReaderBuilder(fieldManager, exportDataSanitizer), new ItemStatusMonitor(), logger);
-
 			// ImportAPI setup
-			IImportApiFactory importApi = new ImportApiFactoryStub(AppSettings.RelativityUserName, AppSettings.RelativityUserPassword);
-			IImportJobFactory importJobFactory = new Executors.ImportJobFactory(
-				importApi,
-				sourceWorkspaceDataReaderFactory,
-				new BatchProgressHandlerFactory(new BatchProgressUpdater(logger, new SemaphoreSlimWrapper(new SemaphoreSlim(1))), dateTime),
-				jobProgressHandlerFactory,
-				jobProgressUpdaterFactory,
-				new JobHistoryErrorRepository(_serviceFactoryStub),
-				logger);
-			Storage.IConfiguration config = await Storage.Configuration.GetAsync(_serviceFactoryStub, new SyncJobParameters(jobHistoryArtifactId, sourceWorkspaceArtifactId, configuration.ImportSettings),
-				logger, new SemaphoreSlimWrapper(new SemaphoreSlim(1))).ConfigureAwait(false);
-			IFieldMappings fieldMappings = new FieldMappings(config, new JSONSerializer(), logger);
-			ISourceWorkspaceTagRepository sourceWorkspaceTagRepository = new SourceWorkspaceTagRepository(_serviceFactoryStub, logger, syncMetrics, fieldMappings);
-
-			var syncExecutor = new SynchronizationExecutor(importJobFactory, batchRepository, destinationWorkspaceTagRepository, sourceWorkspaceTagRepository, fieldManager, fieldMappings,
-				jobHistoryErrorRepository, logger);
+			IExecutor<ISynchronizationConfiguration> syncExecutor = container.Resolve<IExecutor<ISynchronizationConfiguration>>();
 
 			// ACT
 			ExecutionResult syncResult = await syncExecutor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			Assert.AreEqual(ExecutionStatus.Completed, syncResult.Status);
+			Assert.AreEqual(ExecutionStatus.Completed, syncResult.Status,
+				await AggregateJobHistoryErrorMessagesAsync(sourceWorkspaceArtifactId, jobHistoryArtifactId, syncResult).ConfigureAwait(false));
+		}
 
+		private async Task<int> CreateWorkspaceAsync(string workspaceName)
+		{
+			WorkspaceRef workspace = await Environment
+				.CreateWorkspaceWithFieldsAsync(workspaceName)
+				.ConfigureAwait(false);
+
+			return workspace.ArtifactID;
+		}
+
+		private async Task<string> AggregateJobHistoryErrorMessagesAsync(int sourceWorkspaceId, int jobHistoryId, ExecutionResult syncResult)
+		{
+			var serviceFactoryStub = new ServiceFactoryStub(ServiceFactory);
+			IEnumerable<RelativityObject> jobHistoryErrors =
+				await GetAllJobErrorsAsync(serviceFactoryStub, sourceWorkspaceId, jobHistoryId).ConfigureAwait(false);
+
+			var sb = new StringBuilder();
+			sb.AppendLine($"Synchronization step failed: {syncResult.Message}: {syncResult.Exception}");
+			foreach (RelativityObject err in jobHistoryErrors)
+			{
+				sb.AppendLine($"Item level error: {err[ErrorMessageField].Value}")
+					.AppendLine((string)err[StackTraceField].Value)
+					.AppendLine();
+			}
+
+			return sb.ToString();
+		}
+
+		private static async Task<IEnumerable<RelativityObject>> GetAllJobErrorsAsync(
+			ISourceServiceFactoryForAdmin serviceFactory,
+			int workspaceArtifactId,
+			int jobHistoryArtifactId)
+		{
+			using (var objectManager = await serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			{
+				var request = new QueryRequest
+				{
+					ObjectType = new ObjectTypeRef { Guid = JobHistoryErrorObject },
+					Condition = $"'Job History' == {jobHistoryArtifactId}",
+					Fields = new List<FieldRef>
+					{
+						new FieldRef { Guid = ErrorMessageField },
+						new FieldRef { Guid = StackTraceField }
+					}
+				};
+
+				IEnumerable<QueryResult> results = await objectManager.QueryAllAsync(workspaceArtifactId, request).ConfigureAwait(false);
+
+				return results.SelectMany(x => x.Objects);
+			}
 		}
 	}
 }
