@@ -1,8 +1,11 @@
-﻿namespace Relativity.Sync
+﻿using System.Collections.Generic;
+
+namespace Relativity.Sync
 {
 	internal sealed class ProgressStateCounter : IProgressStateCounter
 	{
 		private int _current;
+		private readonly IDictionary<string, int> _orderDictionary = new Dictionary<string, int>();
 
 		public ProgressStateCounter() : this(0) { }
 
@@ -16,6 +19,25 @@
 			int value = _current;
 			_current += 1;
 			return value;
+		}
+
+		public int GetOrderForGroup(string groupName)
+		{
+			if (string.IsNullOrWhiteSpace(groupName))
+			{
+				int nextId = Next();
+				return nextId;
+			}
+			else
+			{
+				if (!_orderDictionary.ContainsKey(groupName))
+				{
+					int nextId = Next();
+					_orderDictionary.Add(groupName, nextId);
+				}
+
+				return _orderDictionary[groupName];
+			}
 		}
 	}
 }

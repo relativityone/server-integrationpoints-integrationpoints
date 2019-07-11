@@ -31,7 +31,7 @@ namespace Relativity.Sync.Nodes
 		{
 			string mergedStep = string.Join(Environment.NewLine, Children.Select(x => x.Id));
 
-			context.Subject.Progress.ReportStarted(mergedStep);
+			context.Subject.Progress.ReportStarted(mergedStep, string.Empty);
 		}
 	}
 }

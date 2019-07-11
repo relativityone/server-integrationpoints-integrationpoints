@@ -7,6 +7,7 @@ namespace Relativity.Sync.Nodes
 		public DataDestinationInitializationNode(ICommand<IDataDestinationInitializationConfiguration> command, ISyncLog logger) : base(command, logger)
 		{
 			Id = "Initializing data destination";
+			ParallelGroupName = "Parallel";
 		}
 	}
 }

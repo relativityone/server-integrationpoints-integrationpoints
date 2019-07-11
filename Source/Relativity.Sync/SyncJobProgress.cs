@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Relativity.Sync.Storage;
 
@@ -58,11 +59,13 @@ namespace Relativity.Sync
 
 		private async Task CreateAsync(SyncJobState value)
 		{
+			int order = _counter.GetOrderForGroup(value.ParallelGroupId);
+
 			IProgress progressObject = await _progressRepository.CreateAsync(
 				_sourceWorkspaceArtifactId,
 				_syncConfigurationArtifactId,
 				value.Id,
-				_counter.Next(),
+				order,
 				value.Status).ConfigureAwait(false);
 
 			await progressObject.SetMessageAsync(value.Message).ConfigureAwait(false);

@@ -35,7 +35,7 @@ namespace Relativity.Sync.Tests.Unit
 			_progressRepository.ForCreate.Add(progress);
 
 			// ACT
-			SyncJobState state = new SyncJobState("FooBar", SyncJobStatus.New, null, null);
+			SyncJobState state = new SyncJobState("FooBar", string.Empty, SyncJobStatus.New, null, null);
 			_instance.Report(state);
 
 			// ASSERT
@@ -50,7 +50,7 @@ namespace Relativity.Sync.Tests.Unit
 			_progressRepository.ForQuery.Add(progress);
 			 
 			// ACT
-			SyncJobState state = new SyncJobState("FooBar", SyncJobStatus.Failed, "A problem happened", new InvalidOperationException());
+			SyncJobState state = new SyncJobState("FooBar", string.Empty, SyncJobStatus.Failed, "A problem happened", new InvalidOperationException());
 			_instance.Report(state);
 
 			// ASSERT
@@ -70,9 +70,9 @@ namespace Relativity.Sync.Tests.Unit
 			_progressRepository.ForCreate.Add(progress3);
 
 			// ACT
-			SyncJobState state1 = SyncJobState.Start("FooBar1");
-			SyncJobState state2 = SyncJobState.Start("FooBar2");
-			SyncJobState state3 = SyncJobState.Start("FooBar3");
+			SyncJobState state1 = SyncJobState.Start("FooBar1", string.Empty);
+			SyncJobState state2 = SyncJobState.Start("FooBar2", string.Empty);
+			SyncJobState state3 = SyncJobState.Start("FooBar3", string.Empty);
 			_instance.Report(state1);
 			_instance.Report(state2);
 			_instance.Report(state3);
@@ -90,7 +90,7 @@ namespace Relativity.Sync.Tests.Unit
 				.Throws<ServiceException>();
 
 			// ACT
-			SyncJobState state = SyncJobState.Start("FooBar");
+			SyncJobState state = SyncJobState.Start("FooBar", string.Empty);
 			_instance = new SyncJobProgress(_jobParameters, progressRepositoryMock.Object, _counter, Mock.Of<ISyncLog>());
 			_instance.Report(state);
 
@@ -109,7 +109,7 @@ namespace Relativity.Sync.Tests.Unit
 				It.IsAny<SyncJobStatus>())).Throws<ServiceException>();
 
 			// ACT
-			SyncJobState state = SyncJobState.Start("FooBar");
+			SyncJobState state = SyncJobState.Start("FooBar", string.Empty);
 			_instance = new SyncJobProgress(_jobParameters, progressRepositoryMock.Object, _counter, Mock.Of<ISyncLog>());
 			_instance.Report(state);
 
@@ -128,7 +128,7 @@ namespace Relativity.Sync.Tests.Unit
 			progress.Setup(x => x.SetStatusAsync(It.IsAny<SyncJobStatus>())).Throws<ServiceException>();
 
 			// ACT
-			SyncJobState state = SyncJobState.Start("FooBar");
+			SyncJobState state = SyncJobState.Start("FooBar", string.Empty);
 			_instance = new SyncJobProgress(_jobParameters, progressRepositoryMock.Object, _counter, Mock.Of<ISyncLog>());
 			_instance.Report(state);
 

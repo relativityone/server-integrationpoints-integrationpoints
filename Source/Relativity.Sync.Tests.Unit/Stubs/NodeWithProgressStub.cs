@@ -7,7 +7,7 @@ namespace Relativity.Sync.Tests.Unit.Stubs
 	{
 		protected override Task<NodeResultStatus> PerformExecuteAsync(IExecutionContext<SyncExecutionContext> context)
 		{
-			context.Subject.Progress.Report(SyncJobState.Start(Id));
+			context.Subject.Progress.Report(SyncJobState.Start(Id, string.Empty));
 			return Task.FromResult(NodeResultStatus.Succeeded);
 		}
 	}

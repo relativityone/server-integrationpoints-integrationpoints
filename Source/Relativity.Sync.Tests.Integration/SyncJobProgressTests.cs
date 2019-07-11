@@ -47,10 +47,8 @@ namespace Relativity.Sync.Tests.Integration
 			Assert.IsNotNull(maxOrder);
 		}
 
-		// This _should_ theoretically assign the same order to these children, but we don't have a mechanism
-		// to do that at this time.
 		[Test]
-		public async Task ItShouldNotAssignSameOrderToMultiNodeChildren()
+		public async Task ItShouldAssignSameOrderToMultiNodeChildren()
 		{
 			// ACT
 			await _instance.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
@@ -58,6 +56,7 @@ namespace Relativity.Sync.Tests.Integration
 			// ASSERT
 			string[] multiNodeChildIds =
 			{
+				_container.ResolveNode<ISumReporterConfiguration>().Id,
 				_container.ResolveNode<IDestinationWorkspaceTagsCreationConfiguration>().Id,
 				_container.ResolveNode<ISourceWorkspaceTagsCreationConfiguration>().Id,
 				_container.ResolveNode<IDataDestinationInitializationConfiguration>().Id
@@ -69,7 +68,7 @@ namespace Relativity.Sync.Tests.Integration
 				.ToArray();
 
 			Assert.AreEqual(multiNodeChildIds.Length, multiNodeChildOrders.Length);
-			Assert.False(multiNodeChildOrders.All(x => x == multiNodeChildOrders[0]));
+			Assert.True(multiNodeChildOrders.All(x => x == multiNodeChildOrders[0]));
 		}
 	}
 }
