@@ -7,7 +7,7 @@ namespace Relativity.Sync.Nodes.SumReporting
 		public JobStartMetricsNode(ICommand<ISumReporterConfiguration> command, ISyncLog logger) : base(command, logger)
 		{
 			Id = "Reporting job start metrics";
-			ParallelGroupName = "Parallel";
+			ParallelGroupName = "Multi node";
 		}
 	}
 }

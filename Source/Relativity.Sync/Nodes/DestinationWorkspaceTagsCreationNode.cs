@@ -7,7 +7,7 @@ namespace Relativity.Sync.Nodes
 		public DestinationWorkspaceTagsCreationNode(ICommand<IDestinationWorkspaceTagsCreationConfiguration> command, ISyncLog logger) : base(command, logger)
 		{
 			Id = "Creating tags in destination workspace";
-			ParallelGroupName = "Parallel";
+			ParallelGroupName = "Multi node";
 		}
 	}
 }
