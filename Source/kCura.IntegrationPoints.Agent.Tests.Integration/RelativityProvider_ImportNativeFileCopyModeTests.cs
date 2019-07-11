@@ -67,6 +67,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			IContextContainerFactory contextContainerFactory = Container.Resolve<IContextContainerFactory>();
 			ISynchronizerFactory synchronizerFactory = Container.Resolve<ISynchronizerFactory>();
 			IExporterFactory exporterFactory = Container.Resolve<IExporterFactory>();
+			IExportServiceObserversFactory exportServiceObserversFactory = Container.Resolve<IExportServiceObserversFactory>();
 			IOnBehalfOfUserClaimsPrincipalFactory onBehalfOfUserClaimsPrincipalFactory = Container.Resolve<IOnBehalfOfUserClaimsPrincipalFactory>();
 			IRepositoryFactory repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			IManagerFactory managerFactory = Container.Resolve<IManagerFactory>();
@@ -93,6 +94,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				contextContainerFactory,
 				synchronizerFactory,
 				exporterFactory,
+				exportServiceObserversFactory,
 				onBehalfOfUserClaimsPrincipalFactory,
 				repositoryFactory,
 				managerFactory,

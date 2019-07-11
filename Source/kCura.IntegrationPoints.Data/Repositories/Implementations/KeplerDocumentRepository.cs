@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Data.Converters;
 using kCura.IntegrationPoints.Data.Repositories.DTO;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
@@ -59,10 +60,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return documents.Select(x => x.ArtifactId).ToArray();
 		}
 
-		public Task<bool> MassUpdateDocumentsAsync(IEnumerable<int> documentsToUpdate, IEnumerable<FieldUpdateRequestDto> fieldsToUpdate)
+		public Task<bool> MassUpdateAsync(IEnumerable<int> artifactIDsToUpdate, IEnumerable<FieldUpdateRequestDto> fieldsToUpdate)
 		{
-			IEnumerable<FieldRefValuePair> convertedFieldstoUpdate = fieldsToUpdate.Select(ConvertToFieldRefValuePair);
-			return _relativityObjectManager.MassUpdateAsync(documentsToUpdate, convertedFieldstoUpdate, FieldUpdateBehavior.Merge);
+			IEnumerable<FieldRefValuePair> convertedFieldstoUpdate = fieldsToUpdate.Select(x => x.ToFieldRefValuePair());
+			return _relativityObjectManager.MassUpdateAsync(artifactIDsToUpdate, convertedFieldstoUpdate, FieldUpdateBehavior.Merge);
 		}
 
 		private ArtifactDTO ConvertDocumentToArtifactDTO(RelativityObject document)
@@ -80,18 +81,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				FieldType = field.Field.FieldType.ToString(),
 				Name = field.Field.Name,
 				Value = field.Value
-			};
-		}
-
-		private FieldRefValuePair ConvertToFieldRefValuePair(FieldUpdateRequestDto dto)
-		{
-			return new FieldRefValuePair
-			{
-				Field = new FieldRef
-				{
-					Guid = dto.FieldIdentifier
-				},
-				Value = dto.NewValue.Value
 			};
 		}
 

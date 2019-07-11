@@ -1,344 +1,173 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using kCura.IntegrationPoints.Config;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Helpers;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.DTO;
-using kCura.IntegrationPoints.Domain.Exceptions;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Core.Tests.Tagging
 {
 	[TestFixture]
-	public class SourceDocumentsTaggerTests
+	public class SourceDocumentsTaggerTests : TestBase
 	{
-		private SourceDocumentsTagger _sut;
-
-		private Mock<IConfig> _configMock;
 		private Mock<IAPILog> _loggerMock;
 		private Mock<IDocumentRepository> _documentRepositoryMock;
-		private Mock<IScratchTableRepository> _scratchTableRepositoryMock;
+		private Mock<IMassUpdateHelper> _massUpdateHelperMock;
+		private Mock<IScratchTableRepository> _documentsToTagRepositoryMock;
 
-		private const int _DEFAULT_BATCH_SIZE = 100;
-		private const int _DEFAULT_NUMBER_OF_DOCUMENTS = 1000;
-		private const int _DEFAULT_DESTINATION_WORKSPACE_ID = 43284;
-		private const int _DEFAULT_JOB_HISTORY_ID = 74322;
+		private SourceDocumentsTagger _sut;
+		private const int _DESTINATION_WORKSPACE_INSTANCE_ID = 1357475;
+		private const int _JOB_HISTORY_INSTANCE_ID = 1357475;
+		private const int _EXPECTED_NUMBER_OF_FIELD_UPDATE_REQUEST_DTO = 2;
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
-			_configMock = new Mock<IConfig>();
-			SetupBatchSize(_DEFAULT_BATCH_SIZE);
-
-			_loggerMock = new Mock<IAPILog>
-			{
-				DefaultValue = DefaultValue.Mock
-			};
-
 			_documentRepositoryMock = new Mock<IDocumentRepository>();
-			SetupMassUpdateResult(true);
-
-			_scratchTableRepositoryMock = new Mock<IScratchTableRepository>();
-			SetupNumberOfDocuments(_DEFAULT_NUMBER_OF_DOCUMENTS);
+			_loggerMock = new Mock<IAPILog>() { DefaultValue = DefaultValue.Mock };
+			_massUpdateHelperMock = new Mock<IMassUpdateHelper>();
+			_documentsToTagRepositoryMock = new Mock<IScratchTableRepository>();
 
 			_sut = new SourceDocumentsTagger(
 				_documentRepositoryMock.Object,
-				_configMock.Object,
-				_loggerMock.Object);
+				_loggerMock.Object,
+				_massUpdateHelperMock.Object);
 		}
 
 		[Test]
-		public void ConstructorShouldThrowArgumentNullExceptionWhenDocumentRepositoryIsNull()
+		public void Constructor_ShouldThrowWhenDocumentRepositoryIsNull()
 		{
-			// act
-			Action constructor = () => new SourceDocumentsTagger(
-				null,
-				_configMock.Object,
-				_loggerMock.Object);
+			//act
+			Action action = () => new SourceDocumentsTagger(
+				documentRepository: null,
+				logger: _loggerMock.Object,
+				massUpdateHelper: _massUpdateHelperMock.Object);
 
-			// assert
-			constructor.ShouldThrow<ArgumentNullException>();
+			//assert
+			action.ShouldThrow<ArgumentNullException>();
 		}
 
 		[Test]
-		public void ConstructorShouldThrowArgumentNullExceptionWhenConfigIsNull()
+		public void Constructor_ShouldThrowWhenLoggerIsNull()
 		{
-			// act
-			Action constructor = () => new SourceDocumentsTagger(
+			//act
+			Action action = () => new SourceDocumentsTagger(
 				_documentRepositoryMock.Object,
-				null,
-				_loggerMock.Object);
+				logger: null,
+				massUpdateHelper: _massUpdateHelperMock.Object);
 
-			// assert
-			constructor.ShouldThrow<ArgumentNullException>();
+			//assert
+			action.ShouldThrow<ArgumentNullException>();
 		}
 
 		[Test]
-		public void ConstructorShouldNotThrowExceptionWhenLoggerIsNull()
+		public void Constructor_ShouldThrowWhenMassUpdateHelperIsNull()
 		{
-			// act
-			Action constructor = () => new SourceDocumentsTagger(
+			//act
+			Action action = () => new SourceDocumentsTagger(
 				_documentRepositoryMock.Object,
-				_configMock.Object,
-				null);
+				_loggerMock.Object,
+				massUpdateHelper: null);
 
-			// assert
-			constructor.ShouldNotThrow<Exception>();
+			//assert
+			action.ShouldThrow<ArgumentNullException>();
 		}
 
 		[Test]
-		public void ShouldThrowArgumentNullExceptionWhenScratchTableIsNull()
+		public void ShouldRethrowMassUpdateHelperException()
 		{
-			// act
-			Func<Task> tagDocumentsUsingNullScratchTableAction = () => _sut
+			//arrange
+			var massUpdateException = new InvalidOperationException();
+			_massUpdateHelperMock
+				.Setup(
+					x => x.UpdateArtifactsAsync(
+						It.IsAny<IScratchTableRepository>(),
+						It.IsAny<FieldUpdateRequestDto[]>(),
+						It.IsAny<IDocumentRepository>()))
+				.Throws(massUpdateException);
+			
+			//act
+			Func<Task> action = () => _sut.TagDocumentsWithDestinationWorkspaceAndJobHistoryAsync(
+				_documentsToTagRepositoryMock.Object,
+				_DESTINATION_WORKSPACE_INSTANCE_ID,
+				_JOB_HISTORY_INSTANCE_ID);
+			
+			//assert
+			action.ShouldThrow<InvalidOperationException>().Which.Should().Be(massUpdateException);
+		}
+
+		[Test]
+		public async Task ShouldCallMassUpdateHelperWithProperArguments()
+		{
+
+			//act
+			await _sut
 				.TagDocumentsWithDestinationWorkspaceAndJobHistoryAsync(
-					null,
-					_DEFAULT_DESTINATION_WORKSPACE_ID,
-					_DEFAULT_JOB_HISTORY_ID);
+					_documentsToTagRepositoryMock.Object,
+					_DESTINATION_WORKSPACE_INSTANCE_ID,
+					_JOB_HISTORY_INSTANCE_ID)
+				.ConfigureAwait(false);
 
-			// assert
-			tagDocumentsUsingNullScratchTableAction.ShouldThrow<ArgumentNullException>();
+			//assert
+			_massUpdateHelperMock
+				.Verify(
+					h => h.UpdateArtifactsAsync(
+						_documentsToTagRepositoryMock.Object,
+						It.Is<FieldUpdateRequestDto[]>(f => AreFieldsValid(f)),
+						_documentRepositoryMock.Object),
+					Times.Once);
 		}
 
 		[Test]
-		public async Task ShouldNotAttemptToReadDataWhenNoDocumentsToTag()
+		public void ShouldThrowWhenDocumentsToTagRepositoryIsNull()
 		{
-			// arrange
-			SetupNumberOfDocuments(0);
-
-			// act
-			await _sut.TagDocumentsWithDestinationWorkspaceAndJobHistoryAsync(
-					_scratchTableRepositoryMock.Object,
-					_DEFAULT_DESTINATION_WORKSPACE_ID,
-					_DEFAULT_JOB_HISTORY_ID)
-				.ConfigureAwait(false);
-
-			// assert
-			_scratchTableRepositoryMock.Verify(
-				x => x.ReadDocumentIDs(
-					It.IsAny<int>(),
-					It.IsAny<int>()),
-				Times.Never);
+			//act
+			Func<Task> action = () => _sut.TagDocumentsWithDestinationWorkspaceAndJobHistoryAsync(
+				documentsToTagRepository: null,
+				destinationWorkspaceInstanceID: _DESTINATION_WORKSPACE_INSTANCE_ID,
+				jobHistoryInstanceID: _JOB_HISTORY_INSTANCE_ID);
+			//assert
+			action.ShouldThrow<ArgumentNullException>();
 		}
 
-		[TestCase(0, 1, 0)]
-		[TestCase(1, 3, 1)]
-		[TestCase(3, 3, 1)]
-		[TestCase(4, 3, 2)]
-		[TestCase(6, 3, 2)]
-		public async Task ShouldReadDataInBatches(
-			int totalNumberOfDocuments,
-			int batchSize,
-			int expectedNumberOfBatches)
+
+		private bool AreFieldsValid(FieldUpdateRequestDto[] fieldUpdateRequestDtos)
 		{
-			// arrange
-			SetupBatchSize(batchSize);
-			SetupNumberOfDocuments(totalNumberOfDocuments);
-
-			IEnumerable<int> expectedOffsets = Enumerable
-				.Repeat(0, expectedNumberOfBatches)
-				.Select(x => x * batchSize);
-
-			// act
-			await _sut.TagDocumentsWithDestinationWorkspaceAndJobHistoryAsync(
-				_scratchTableRepositoryMock.Object,
-				_DEFAULT_DESTINATION_WORKSPACE_ID,
-				_DEFAULT_JOB_HISTORY_ID)
-				.ConfigureAwait(false);
-
-			// assert
-			foreach (int expectedOffset in expectedOffsets)
+			if (fieldUpdateRequestDtos.Length != _EXPECTED_NUMBER_OF_FIELD_UPDATE_REQUEST_DTO)
 			{
-				_scratchTableRepositoryMock.Verify(x => x.ReadDocumentIDs(expectedOffset, batchSize));
-			}
-		}
-
-		[TestCase(0)]
-		[TestCase(-1)]
-		[Timeout(100)]
-		public void ShouldThrowExceptionWhenBatchSizeIsLessThanOne(int batchSize)
-		{
-			// arrange
-			SetupBatchSize(batchSize);
-			string expectedExceptionMessage = $"Batch size for source documents tagging has to be bigger than 0, but found {batchSize}";
-
-			// act
-			Func<Task> tagDocumentsAction = () => _sut.TagDocumentsWithDestinationWorkspaceAndJobHistoryAsync(
-					_scratchTableRepositoryMock.Object,
-					_DEFAULT_DESTINATION_WORKSPACE_ID,
-					_DEFAULT_JOB_HISTORY_ID);
-
-			// assert
-			tagDocumentsAction
-				.ShouldThrow<IntegrationPointsException>()
-				.WithMessage(expectedExceptionMessage);
-		}
-
-		[TestCase(3, 3)]
-		[TestCase(3, 0)]
-		[TestCase(5, 18)]
-		public async Task ShouldUpdateDocumentsInBatches(int batchSize, int numberOfDocuments)
-		{
-			// arrange
-			SetupBatchSize(batchSize);
-			SetupNumberOfDocuments(numberOfDocuments);
-
-			var documentsIDsBatches = new List<List<int>>();
-			for (int offset = 0; offset < numberOfDocuments; offset += batchSize)
-			{
-				List<int> documentsIDsBatch = Enumerable.Range(0, batchSize).ToList();
-				documentsIDsBatches.Add(documentsIDsBatch);
-
-				_scratchTableRepositoryMock
-					.Setup(x => x.ReadDocumentIDs(0, batchSize))
-					.Returns(documentsIDsBatch);
+				return false;
 			}
 
-			// act
-			await _sut.TagDocumentsWithDestinationWorkspaceAndJobHistoryAsync(
-				_scratchTableRepositoryMock.Object,
-				_DEFAULT_DESTINATION_WORKSPACE_ID,
-				_DEFAULT_JOB_HISTORY_ID)
-				.ConfigureAwait(false);
-
-			// assert
-			foreach (List<int> documentsIDsBatch in documentsIDsBatches)
-			{
-				_documentRepositoryMock.Verify(
-					x => x.MassUpdateDocumentsAsync(
-						documentsIDsBatch,
-						It.Is<IEnumerable<FieldUpdateRequestDto>>(fields => ValidateTagsFieldsRequests(fields)))
-				);
-			}
+			
+			bool isFieldUpdateRequestValidForJobHistoryGuid = IsFieldUpdateRequestValid(
+				fieldUpdateRequestDtos,
+				DocumentFieldGuids.JobHistoryGuid,
+				_JOB_HISTORY_INSTANCE_ID);
+			bool isFieldUpdateRequestValidForDestinationCaseGuid = IsFieldUpdateRequestValid(
+				fieldUpdateRequestDtos,
+				DocumentFieldGuids.RelativityDestinationCaseGuid,
+				_DESTINATION_WORKSPACE_INSTANCE_ID);
+			return isFieldUpdateRequestValidForJobHistoryGuid && isFieldUpdateRequestValidForDestinationCaseGuid;
 		}
 
-		[Test]
-		public void ShouldThrowExceptionWhenMassUpdateFailed()
-		{
-			// arrange
-			const int batchSize = 10;
-			const int numberOfDocuments = 30;
-			const int batchWithMassUpdateFailure = 1;
-
-			SetupBatchSize(batchSize);
-			SetupNumberOfDocuments(numberOfDocuments);
-
-			var documentsIDsBatches = new List<List<int>>();
-			for (int offset = 0; offset < numberOfDocuments; offset += batchSize)
-			{
-				List<int> documentsIDsBatch = Enumerable.Range(0, batchSize).ToList();
-				documentsIDsBatches.Add(documentsIDsBatch);
-
-				_scratchTableRepositoryMock
-					.Setup(x => x.ReadDocumentIDs(0, batchSize))
-					.Returns(documentsIDsBatch);
-			}
-
-			for (int batchNumber = 0; batchNumber < documentsIDsBatches.Count; batchNumber++)
-			{
-				bool isBatchWithFailure = batchNumber == batchWithMassUpdateFailure;
-				SetupMassUpdateResult(documentsIDsBatches[batchNumber], isBatchWithFailure);
-			}
-
-			// act
-			Func<Task> tagDocumentsAction = () => _sut.TagDocumentsWithDestinationWorkspaceAndJobHistoryAsync(
-				_scratchTableRepositoryMock.Object,
-				_DEFAULT_DESTINATION_WORKSPACE_ID,
-				_DEFAULT_JOB_HISTORY_ID);
-
-			// assert
-			tagDocumentsAction.ShouldThrow<IntegrationPointsException>();
-			for (int batchNumber = batchWithMassUpdateFailure + 1; batchNumber < documentsIDsBatches.Count; batchNumber++)
-			{
-				_documentRepositoryMock.Verify(x =>
-					x.MassUpdateDocumentsAsync(
-						documentsIDsBatches[batchNumber],
-						It.IsAny<IEnumerable<FieldUpdateRequestDto>>()
-						),
-					Times.Never);
-			}
-		}
-
-		[Test]
-		public void ShouldWorkWithNullLogger()
-		{
-			// arrange
-			var sut = new SourceDocumentsTagger(
-				_documentRepositoryMock.Object,
-				_configMock.Object,
-				logger: null);
-
-			// act
-			Func<Task> tagDocumentsAction = () => sut.TagDocumentsWithDestinationWorkspaceAndJobHistoryAsync(
-				_scratchTableRepositoryMock.Object,
-				_DEFAULT_DESTINATION_WORKSPACE_ID,
-				_DEFAULT_JOB_HISTORY_ID);
-
-			// assert
-			tagDocumentsAction.ShouldNotThrow<Exception>();
-		}
-
-		private void SetupNumberOfDocuments(int totalNumberOfDocuments)
-		{
-			_scratchTableRepositoryMock
-				.Setup(x => x.GetCount())
-				.Returns(totalNumberOfDocuments);
-		}
-
-		private void SetupBatchSize(int batchSize)
-		{
-			_configMock
-				.Setup(x => x.SourceWorkspaceTaggerBatchSize)
-				.Returns(batchSize);
-		}
-
-		private void SetupMassUpdateResult(bool massUpdateResult)
-		{
-			_documentRepositoryMock
-				.Setup(x => x.MassUpdateDocumentsAsync(
-					It.IsAny<IEnumerable<int>>(),
-					It.IsAny<IEnumerable<FieldUpdateRequestDto>>())
-				).Returns(Task.FromResult(massUpdateResult));
-		}
-
-		private void SetupMassUpdateResult(IEnumerable<int> objectIDs, bool massUpdateResult)
-		{
-			_documentRepositoryMock
-				.Setup(x => x.MassUpdateDocumentsAsync(
-					objectIDs,
-					It.IsAny<IEnumerable<FieldUpdateRequestDto>>())
-				).Returns(Task.FromResult(massUpdateResult));
-		}
-
-		private bool ValidateTagsFieldsRequests(IEnumerable<FieldUpdateRequestDto> requests)
-		{
-			bool isValid = true;
-			isValid &= ValidateFieldUpdateRequestContainArtifactID(
-				requests,
-				Guid.Parse(DocumentFieldGuids.RelativityDestinationCase),
-				_DEFAULT_DESTINATION_WORKSPACE_ID);
-			isValid &= ValidateFieldUpdateRequestContainArtifactID(
-				requests,
-				Guid.Parse(DocumentFieldGuids.JobHistory),
-				_DEFAULT_JOB_HISTORY_ID);
-			return isValid;
-		}
-
-		private static bool ValidateFieldUpdateRequestContainArtifactID(
-			IEnumerable<FieldUpdateRequestDto> requests,
+		private static bool IsFieldUpdateRequestValid(
+			FieldUpdateRequestDto[] fieldUpdateRequestDto,
 			Guid fieldGuid,
-			int expectedArtifactID)
+			int expectedRelativityArtifactID)
 		{
-			FieldUpdateRequestDto fieldUpdateRequest = requests.Single(x =>
-				x.FieldIdentifier == fieldGuid);
-			var multiObjectReference = fieldUpdateRequest.NewValue as MultiObjectReferenceDto;
-			return multiObjectReference?.ObjectReferences.SequenceEqual(new[] { expectedArtifactID }) ?? false;
+			FieldUpdateRequestDto jobHistoryGuidFieldUpdateRequestDto = fieldUpdateRequestDto.Single(f => f.FieldIdentifier == fieldGuid);
+			RelativityObjectRef[] relativityObjectReferences = ((RelativityObjectRef[])jobHistoryGuidFieldUpdateRequestDto.NewValue.Value);
+			RelativityObjectRef relativityObjectReference = relativityObjectReferences.Single();
+			return relativityObjectReference.ArtifactID == expectedRelativityArtifactID;
+
 		}
 	}
 }

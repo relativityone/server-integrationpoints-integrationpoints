@@ -224,6 +224,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 				.LifestyleTransient());
 
 			container.AddRetryingMechanism();
+			container.AddHelpers();
 			container.AddRepositories();
 		}
 

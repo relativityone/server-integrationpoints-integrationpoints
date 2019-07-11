@@ -443,7 +443,7 @@ namespace kCura.IntegrationPoints.Data
 		public const string SourceWorkspaceTagArtifactID = @"Source workspace tag artifact ID";
 		public const string SourceWorkspaceTagName = @"Source workspace tag name";
 		public const string DestinationWorkspaceTagArtifactID = @"Destination workspace tag artifact ID";
-		public const string FolderPathSourceFieldArtifactID = @"Folder path source field artifact ID";
+		public const string FolderPathSourceFieldName = @"Folder path source field name";
 		public const string Name = @"Name";
 	}
 
@@ -495,8 +495,8 @@ namespace kCura.IntegrationPoints.Data
 		public static readonly Guid  SourceWorkspaceTagNameGuid = Guid.Parse(SourceWorkspaceTagName);
 		internal const string DestinationWorkspaceTagArtifactID = @"e2100c10-b53b-43fa-bb1b-51e43dce8208";
 		public static readonly Guid  DestinationWorkspaceTagArtifactIDGuid = Guid.Parse(DestinationWorkspaceTagArtifactID);
-		internal const string FolderPathSourceFieldArtifactID = @"bf5f07a3-6349-47ee-9618-1dd32c9fd998";
-		public static readonly Guid  FolderPathSourceFieldArtifactIDGuid = Guid.Parse(FolderPathSourceFieldArtifactID);
+		internal const string FolderPathSourceFieldName = @"66a37443-ef92-47ed-beea-392464c853d3";
+		public static readonly Guid  FolderPathSourceFieldNameGuid = Guid.Parse(FolderPathSourceFieldName);
 		internal const string Name = @"ef8bbd3d-79b0-47fa-9fc9-8faa535788b0";
 		public static readonly Guid  NameGuid = Guid.Parse(Name);
 	}
@@ -574,50 +574,74 @@ namespace kCura.IntegrationPoints.Data
 
 	public partial class OverwriteFieldsChoices
 	{
-		public static Choice IntegrationPointAppendOnly = new Choice(Guid.Parse("998c2b04-d42e-435b-9fba-11fec836aad8")) {Name=@"Append Only"};
-		public static Choice IntegrationPointAppendOverlay = new Choice(Guid.Parse("5450ebc3-ac57-4e6a-9d28-d607bbdcf6fd")) {Name=@"Append/Overlay"};
-		public static Choice IntegrationPointOverlayOnly = new Choice(Guid.Parse("70a1052d-93a3-4b72-9235-ac65f0d5a515")) {Name=@"Overlay Only"};
+		public static Guid IntegrationPointAppendOnlyGuid = Guid.Parse("998c2b04-d42e-435b-9fba-11fec836aad8");
+		public static Choice IntegrationPointAppendOnly = new Choice(IntegrationPointAppendOnlyGuid) {Name=@"Append Only"};
+		public static Guid IntegrationPointAppendOverlayGuid = Guid.Parse("5450ebc3-ac57-4e6a-9d28-d607bbdcf6fd");
+		public static Choice IntegrationPointAppendOverlay = new Choice(IntegrationPointAppendOverlayGuid) {Name=@"Append/Overlay"};
+		public static Guid IntegrationPointOverlayOnlyGuid = Guid.Parse("70a1052d-93a3-4b72-9235-ac65f0d5a515");
+		public static Choice IntegrationPointOverlayOnly = new Choice(IntegrationPointOverlayOnlyGuid) {Name=@"Overlay Only"};
 	}
 
 	public partial class JobStatusChoices
 	{
-		public static Choice JobHistoryValidating = new Choice(Guid.Parse("6a2dcef5-5826-4f61-9bac-59fef879ebc2")) {Name=@"Validating"};
-		public static Choice JobHistoryValidationFailed = new Choice(Guid.Parse("d0b43a57-bdc8-4c14-b2f0-2928ae4f750a")) {Name=@"Validation Failed"};
-		public static Choice JobHistoryPending = new Choice(Guid.Parse("24512aba-b8aa-4858-9324-5799033d7e96")) {Name=@"Pending"};
-		public static Choice JobHistoryProcessing = new Choice(Guid.Parse("bb170e53-2264-4708-9b00-86156187ed54")) {Name=@"Processing"};
-		public static Choice JobHistoryCompleted = new Choice(Guid.Parse("c7d1eb34-166e-48d0-bce7-0be0df43511c")) {Name=@"Completed"};
-		public static Choice JobHistoryCompletedWithErrors = new Choice(Guid.Parse("c0f4a2b2-499e-45bc-96d7-f8bc25e18b37")) {Name=@"Completed with errors"};
-		public static Choice JobHistoryErrorJobFailed = new Choice(Guid.Parse("3152ece9-40e6-44dd-afc8-1004f55dfb63")) {Name=@"Error - job failed"};
-		public static Choice JobHistoryStopping = new Choice(Guid.Parse("97c1410d-864d-4811-857b-952464872baa")) {Name=@"Stopping"};
-		public static Choice JobHistoryStopped = new Choice(Guid.Parse("a29c5bcb-d3a6-4f81-877a-2a6556c996c3")) {Name=@"Stopped"};
+		public static Guid JobHistoryValidatingGuid = Guid.Parse("6a2dcef5-5826-4f61-9bac-59fef879ebc2");
+		public static Choice JobHistoryValidating = new Choice(JobHistoryValidatingGuid) {Name=@"Validating"};
+		public static Guid JobHistoryValidationFailedGuid = Guid.Parse("d0b43a57-bdc8-4c14-b2f0-2928ae4f750a");
+		public static Choice JobHistoryValidationFailed = new Choice(JobHistoryValidationFailedGuid) {Name=@"Validation Failed"};
+		public static Guid JobHistoryPendingGuid = Guid.Parse("24512aba-b8aa-4858-9324-5799033d7e96");
+		public static Choice JobHistoryPending = new Choice(JobHistoryPendingGuid) {Name=@"Pending"};
+		public static Guid JobHistoryProcessingGuid = Guid.Parse("bb170e53-2264-4708-9b00-86156187ed54");
+		public static Choice JobHistoryProcessing = new Choice(JobHistoryProcessingGuid) {Name=@"Processing"};
+		public static Guid JobHistoryCompletedGuid = Guid.Parse("c7d1eb34-166e-48d0-bce7-0be0df43511c");
+		public static Choice JobHistoryCompleted = new Choice(JobHistoryCompletedGuid) {Name=@"Completed"};
+		public static Guid JobHistoryCompletedWithErrorsGuid = Guid.Parse("c0f4a2b2-499e-45bc-96d7-f8bc25e18b37");
+		public static Choice JobHistoryCompletedWithErrors = new Choice(JobHistoryCompletedWithErrorsGuid) {Name=@"Completed with errors"};
+		public static Guid JobHistoryErrorJobFailedGuid = Guid.Parse("3152ece9-40e6-44dd-afc8-1004f55dfb63");
+		public static Choice JobHistoryErrorJobFailed = new Choice(JobHistoryErrorJobFailedGuid) {Name=@"Error - job failed"};
+		public static Guid JobHistoryStoppingGuid = Guid.Parse("97c1410d-864d-4811-857b-952464872baa");
+		public static Choice JobHistoryStopping = new Choice(JobHistoryStoppingGuid) {Name=@"Stopping"};
+		public static Guid JobHistoryStoppedGuid = Guid.Parse("a29c5bcb-d3a6-4f81-877a-2a6556c996c3");
+		public static Choice JobHistoryStopped = new Choice(JobHistoryStoppedGuid) {Name=@"Stopped"};
 	}
 
 	public partial class JobTypeChoices
 	{
-		public static Choice JobHistoryRun = new Choice(Guid.Parse("86c8c17d-74ec-4187-bdb1-9380252f4c20")) {Name=@"Run"};
-		public static Choice JobHistoryScheduledRun = new Choice(Guid.Parse("79510ad3-49cb-4b4f-840c-c64247404a4d")) {Name=@"Scheduled Run"};
-		public static Choice JobHistoryRetryErrors = new Choice(Guid.Parse("b0171a20-2042-44eb-a957-5dbc9c377c2f")) {Name=@"Retry Errors"};
+		public static Guid JobHistoryRunGuid = Guid.Parse("86c8c17d-74ec-4187-bdb1-9380252f4c20");
+		public static Choice JobHistoryRun = new Choice(JobHistoryRunGuid) {Name=@"Run"};
+		public static Guid JobHistoryScheduledRunGuid = Guid.Parse("79510ad3-49cb-4b4f-840c-c64247404a4d");
+		public static Choice JobHistoryScheduledRun = new Choice(JobHistoryScheduledRunGuid) {Name=@"Scheduled Run"};
+		public static Guid JobHistoryRetryErrorsGuid = Guid.Parse("b0171a20-2042-44eb-a957-5dbc9c377c2f");
+		public static Choice JobHistoryRetryErrors = new Choice(JobHistoryRetryErrorsGuid) {Name=@"Retry Errors"};
 	}
 
 	public partial class ErrorTypeChoices
 	{
-		public static Choice JobHistoryErrorItem = new Choice(Guid.Parse("9ddc4914-fef3-401f-89b7-2967cd76714b")) {Name=@"Item"};
-		public static Choice JobHistoryErrorJob = new Choice(Guid.Parse("fa8bb625-05e6-4bf7-8573-012146baf19b")) {Name=@"Job"};
+		public static Guid JobHistoryErrorItemGuid = Guid.Parse("9ddc4914-fef3-401f-89b7-2967cd76714b");
+		public static Choice JobHistoryErrorItem = new Choice(JobHistoryErrorItemGuid) {Name=@"Item"};
+		public static Guid JobHistoryErrorJobGuid = Guid.Parse("fa8bb625-05e6-4bf7-8573-012146baf19b");
+		public static Choice JobHistoryErrorJob = new Choice(JobHistoryErrorJobGuid) {Name=@"Job"};
 	}
 
 	public partial class ErrorStatusChoices
 	{
-		public static Choice JobHistoryErrorNew = new Choice(Guid.Parse("f881b199-8a67-4d49-b1c1-f9e68658fb5a")) {Name=@"New"};
-		public static Choice JobHistoryErrorExpired = new Choice(Guid.Parse("af01a8fa-b419-49b1-bd71-25296e221e57")) {Name=@"Expired"};
-		public static Choice JobHistoryErrorInProgress = new Choice(Guid.Parse("e5ebd98c-c976-4fa2-936f-434e265ea0aa")) {Name=@"In Progress"};
-		public static Choice JobHistoryErrorRetried = new Choice(Guid.Parse("7d3d393d-384f-434e-9776-f9966550d29a")) {Name=@"Retried"};
+		public static Guid JobHistoryErrorNewGuid = Guid.Parse("f881b199-8a67-4d49-b1c1-f9e68658fb5a");
+		public static Choice JobHistoryErrorNew = new Choice(JobHistoryErrorNewGuid) {Name=@"New"};
+		public static Guid JobHistoryErrorExpiredGuid = Guid.Parse("af01a8fa-b419-49b1-bd71-25296e221e57");
+		public static Choice JobHistoryErrorExpired = new Choice(JobHistoryErrorExpiredGuid) {Name=@"Expired"};
+		public static Guid JobHistoryErrorInProgressGuid = Guid.Parse("e5ebd98c-c976-4fa2-936f-434e265ea0aa");
+		public static Choice JobHistoryErrorInProgress = new Choice(JobHistoryErrorInProgressGuid) {Name=@"In Progress"};
+		public static Guid JobHistoryErrorRetriedGuid = Guid.Parse("7d3d393d-384f-434e-9776-f9966550d29a");
+		public static Choice JobHistoryErrorRetried = new Choice(JobHistoryErrorRetriedGuid) {Name=@"Retried"};
 	}
 
 	public partial class OverwriteFieldsChoices
 	{
-		public static Choice IntegrationPointProfileAppendOnly = new Choice(Guid.Parse("12105945-5fb8-4640-8516-11a96f12279c")) {Name=@"Append Only"};
-		public static Choice IntegrationPointProfileAppendOverlay = new Choice(Guid.Parse("e5c80435-d876-4cba-b645-658a545eaea1")) {Name=@"Append/Overlay"};
-		public static Choice IntegrationPointProfileOverlayOnly = new Choice(Guid.Parse("e08fc9e5-416c-4656-a9a1-6323013160fb")) {Name=@"Overlay Only"};
+		public static Guid IntegrationPointProfileAppendOnlyGuid = Guid.Parse("12105945-5fb8-4640-8516-11a96f12279c");
+		public static Choice IntegrationPointProfileAppendOnly = new Choice(IntegrationPointProfileAppendOnlyGuid) {Name=@"Append Only"};
+		public static Guid IntegrationPointProfileAppendOverlayGuid = Guid.Parse("e5c80435-d876-4cba-b645-658a545eaea1");
+		public static Choice IntegrationPointProfileAppendOverlay = new Choice(IntegrationPointProfileAppendOverlayGuid) {Name=@"Append/Overlay"};
+		public static Guid IntegrationPointProfileOverlayOnlyGuid = Guid.Parse("e08fc9e5-416c-4656-a9a1-6323013160fb");
+		public static Choice IntegrationPointProfileOverlayOnly = new Choice(IntegrationPointProfileOverlayOnlyGuid) {Name=@"Overlay Only"};
 	}
 
 	#endregion								

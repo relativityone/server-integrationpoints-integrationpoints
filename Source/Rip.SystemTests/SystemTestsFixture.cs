@@ -5,6 +5,8 @@ using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.Resolvers;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
+using kCura.Apps.Common.Config;
+using kCura.Apps.Common.Data;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
@@ -41,8 +43,10 @@ namespace Rip.SystemTests
 
 			await CreateAndConfigureWorkspaces().ConfigureAwait(false);
 			InitializeContainer();
-		}
 
+			InitializeRelativityInstanceSettingsClient();
+		}
+		
 		private static async Task CreateAndConfigureWorkspaces()
 		{
 			WorkspaceID = Workspace.CreateWorkspace(
@@ -95,6 +99,7 @@ namespace Rip.SystemTests
 					.LifeStyle.Transient);
 			Container.Register(Component.For<IRSAPIService>().Instance(new RSAPIService(Container.Resolve<IHelper>(), WorkspaceID)).LifestyleTransient());
 			Container.Register(Component.For<IExporterFactory>().ImplementedBy<ExporterFactory>());
+			Container.Register(Component.For<IExportServiceObserversFactory>().ImplementedBy<IExportServiceObserversFactory>());
 			Container.Register(Component.For<IAuthTokenGenerator>().ImplementedBy<ClaimsTokenGenerator>().LifestyleTransient());
 			Container.Register(Component.For<IExternalServiceInstrumentationProvider>()
 				.ImplementedBy<ExternalServiceInstrumentationProviderWithoutJobContext>()
@@ -112,6 +117,11 @@ namespace Rip.SystemTests
 			{
 				dependency.Install(Container, ConfigurationStore);
 			}
+		}
+
+		private void InitializeRelativityInstanceSettingsClient()
+		{
+			Manager.Settings.Factory = new HelperConfigSqlServiceFactory(TestHelper);
 		}
 
 		[OneTimeTearDown]

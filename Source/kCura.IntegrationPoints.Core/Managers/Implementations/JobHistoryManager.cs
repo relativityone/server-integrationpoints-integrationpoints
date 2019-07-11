@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
+using System.Threading.Tasks;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Helpers;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.DTO;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity.API;
 
@@ -15,11 +16,17 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 	{
 		private readonly IAPILog _logger;
 		private readonly IRepositoryFactory _repositoryFactory;
+		private readonly IMassUpdateHelper _massUpdateHelper;
 
-		internal JobHistoryManager(IRepositoryFactory repositoryFactory, IHelper helper)
+		internal JobHistoryManager(
+			IRepositoryFactory repositoryFactory,
+			IAPILog logger,
+			IMassUpdateHelper massUpdateHelper)
 		{
 			_repositoryFactory = repositoryFactory;
-			_logger = helper.GetLoggerFactory().GetLogger().ForContext<JobHistoryManager>();
+			_logger = (logger ?? throw new ArgumentNullException(nameof(logger)))
+				.ForContext<JobHistoryManager>();
+			_massUpdateHelper = massUpdateHelper;
 		}
 
 		public int GetLastJobHistoryArtifactId(int workspaceArtifactId, int integrationPointArtifactId)
@@ -32,63 +39,89 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		{
 			IJobHistoryRepository jobHistoryRepository = _repositoryFactory.GetJobHistoryRepository(workspaceArtifactId);
 			IDictionary<Guid, int[]> stoppableJobStatusDictionary = jobHistoryRepository.GetStoppableJobHistoryArtifactIdsByStatus(integrationPointArtifactId);
-			Guid pendingGuid = JobStatusChoices.JobHistoryPending.Guids.First();
-			Guid processingGuid = JobStatusChoices.JobHistoryProcessing.Guids.First();
 
-			int[] pendingJobArtifactIds;
-			int[] processingJobArtifactIds;
-			stoppableJobStatusDictionary.TryGetValue(pendingGuid, out pendingJobArtifactIds);
-			stoppableJobStatusDictionary.TryGetValue(processingGuid, out processingJobArtifactIds);
+			stoppableJobStatusDictionary.TryGetValue(JobStatusChoices.JobHistoryPendingGuid, out int[] pendingJobArtifactIDs);
+			stoppableJobStatusDictionary.TryGetValue(JobStatusChoices.JobHistoryProcessingGuid, out int[] processingJobArtifactIDs);
 
 			var stoppableJobCollection = new StoppableJobCollection
 			{
-				PendingJobArtifactIds = pendingJobArtifactIds ?? new int[0],
-				ProcessingJobArtifactIds = processingJobArtifactIds ?? new int[0]
+				PendingJobArtifactIds = pendingJobArtifactIDs ?? new int[0],
+				ProcessingJobArtifactIds = processingJobArtifactIDs ?? new int[0]
 			};
 
 			return stoppableJobCollection;
 		}
 
-		public void SetErrorStatusesToExpired(int workspaceArtifactId, int jobHistoryArtifactId)
+		public void SetErrorStatusesToExpired(int workspaceArtifactID, int jobHistoryArtifactID)
 		{
-			IObjectTypeRepository objectTypeRepository = _repositoryFactory.GetObjectTypeRepository(workspaceArtifactId);
-			IArtifactGuidRepository artifactGuidRepository = _repositoryFactory.GetArtifactGuidRepository(workspaceArtifactId);
-
-			int objectTypeId = objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.JobHistoryError));
-			int errorStatusChoiceArtifactId =
-				artifactGuidRepository.GetArtifactIdsForGuids(ErrorStatusChoices.JobHistoryErrorExpired.Guids)[ErrorStatusChoices.JobHistoryErrorExpired.Guids[0]];
-
-			SetErrorStatuses(workspaceArtifactId, jobHistoryArtifactId, objectTypeId, errorStatusChoiceArtifactId, JobHistoryErrorDTO.Choices.ErrorType.Values.Item);
-			SetErrorStatuses(workspaceArtifactId, jobHistoryArtifactId, objectTypeId, errorStatusChoiceArtifactId, JobHistoryErrorDTO.Choices.ErrorType.Values.Job);
+			SetErrorStatusesToExpiredAsync(workspaceArtifactID, jobHistoryArtifactID).GetAwaiter().GetResult();
 		}
 
-		private void SetErrorStatuses(int workspaceArtifactId, int jobHistoryArtifactId, int objectTypeId, int errorStatusChoiceArtifactId,
+		public async Task SetErrorStatusesToExpiredAsync(int workspaceArtifactID, int jobHistoryArtifactID)
+		{
+			JobHistoryErrorDTO.Choices.ErrorType.Values[] errorTypesToSetToExpired =
+			{
+				JobHistoryErrorDTO.Choices.ErrorType.Values.Item,
+				JobHistoryErrorDTO.Choices.ErrorType.Values.Job
+			};
+
+			foreach (JobHistoryErrorDTO.Choices.ErrorType.Values errorTypeToSetToExpired in errorTypesToSetToExpired)
+			{
+				await SetErrorStatusesAsync(
+						workspaceArtifactID,
+						jobHistoryArtifactID,
+						ErrorStatusChoices.JobHistoryErrorExpiredGuid,
+						errorTypeToSetToExpired)
+					.ConfigureAwait(false);
+			}
+		}
+
+		private async Task SetErrorStatusesAsync(
+			int workspaceArtifactID,
+			int jobHistoryArtifactID,
+			Guid errorStatusChoiceValueGuid,
 			JobHistoryErrorDTO.Choices.ErrorType.Values errorType)
 		{
 			try
 			{
-				IJobHistoryErrorRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(workspaceArtifactId);
-				using (IScratchTableRepository scratchTable = _repositoryFactory.GetScratchTableRepository(workspaceArtifactId, "StoppingRIPJob_", Guid.NewGuid().ToString()))
+				IJobHistoryErrorRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(workspaceArtifactID);
+				ICollection<int> itemLevelErrorArtifactIds = jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(jobHistoryArtifactID, errorType);
+
+				FieldUpdateRequestDto[] fieldsToUpdate =
 				{
-					ICollection<int> itemLevelErrorArtifactIds = jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(jobHistoryArtifactId, errorType);
-					scratchTable.AddArtifactIdsIntoTempTable(itemLevelErrorArtifactIds);
-					jobHistoryErrorRepository.UpdateErrorStatuses(ClaimsPrincipal.Current, itemLevelErrorArtifactIds.Count, objectTypeId, errorStatusChoiceArtifactId,
-						scratchTable.GetTempTableName());
-				}
+					new FieldUpdateRequestDto(
+						JobHistoryErrorFieldGuids.ErrorStatusGuid,
+						new SingleChoiceReferenceDto(errorStatusChoiceValueGuid))
+				};
+
+				await _massUpdateHelper
+					.UpdateArtifactsAsync(
+						itemLevelErrorArtifactIds,
+						fieldsToUpdate,
+						jobHistoryErrorRepository)
+					.ConfigureAwait(false);
 			}
 			catch (Exception e)
 			{
-				LogSettingErrorStatusError(workspaceArtifactId, jobHistoryArtifactId, errorType, e);
+				LogSettingErrorStatusError(workspaceArtifactID, jobHistoryArtifactID, errorType, e);
 				// ignore failure
 			}
 		}
 
 		#region Logging
 
-		private void LogSettingErrorStatusError(int workspaceArtifactId, int jobHistoryArtifactId, JobHistoryErrorDTO.Choices.ErrorType.Values errorType, Exception e)
+		private void LogSettingErrorStatusError(
+			int workspaceArtifactID,
+			int jobHistoryArtifactID,
+			JobHistoryErrorDTO.Choices.ErrorType.Values errorType,
+			Exception exception)
 		{
-			_logger.LogError(e, "Failed to set error status ({ErrorType}) for JobHistory {JobHistoryId} in Workspace {WorkspaceId}.", errorType, jobHistoryArtifactId,
-				workspaceArtifactId);
+			_logger.LogError(
+				exception,
+				"Failed to set error status ({ErrorType}) for JobHistory {JobHistoryId} in Workspace {WorkspaceId}.",
+				errorType,
+				jobHistoryArtifactID,
+				workspaceArtifactID);
 		}
 
 		#endregion

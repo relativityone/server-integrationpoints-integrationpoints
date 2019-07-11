@@ -52,7 +52,6 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="DocumentTransferProviderTests.cs" />
-    <Compile Include="DocumentArtifactIdDataReaderTests.cs" />
     <Compile Include="Installers\DocumentTransferProviderInstallerTests.cs" />
   </ItemGroup>
   <ItemGroup>

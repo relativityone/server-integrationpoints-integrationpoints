@@ -45,6 +45,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private int _savedSearchArtifactId;
 		private List<IBatchStatus> _exportServiceJobObservers;
 		private readonly IContextContainerFactory _contextContainerFactory;
+		private readonly IExportServiceObserversFactory _exportServiceObserversFactory;
 		private readonly IExporterFactory _exporterFactory;
 		private readonly IHelper _helper;
 		private readonly IHelperFactory _helperFactory;
@@ -59,6 +60,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IContextContainerFactory contextContainerFactory,
 			ISynchronizerFactory synchronizerFactory,
 			IExporterFactory exporterFactory,
+			IExportServiceObserversFactory exportServiceObserversFactory,
 			IOnBehalfOfUserClaimsPrincipalFactory onBehalfOfUserClaimsPrincipalFactory,
 			IRepositoryFactory repositoryFactory,
 			IManagerFactory managerFactory,
@@ -92,6 +94,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_contextContainerFactory = contextContainerFactory;
 			_repositoryFactory = repositoryFactory;
 			_toggleProvider = toggleProvider;
+			_exportServiceObserversFactory = exportServiceObserversFactory;
 			_exporterFactory = exporterFactory;
 			_helper = helper;
 			_helperFactory = helperFactory;
@@ -401,7 +404,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				targetHelper,
 				SourceConfiguration);
 
-			_exportServiceJobObservers = _exporterFactory.InitializeExportServiceJobObservers(
+			_exportServiceJobObservers = _exportServiceObserversFactory.InitializeExportServiceJobObservers(
 				job,
 				tagsCreator,
 				tagSavedSearchManager,

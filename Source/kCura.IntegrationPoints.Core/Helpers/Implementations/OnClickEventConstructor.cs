@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Data;
@@ -76,14 +75,14 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
 			Dictionary<Guid, int> guidsAndArtifactIds = artifactGuidManager.GetArtifactIdsForGuids(workspaceId, new[]
 			{
-				ErrorStatusChoices.JobHistoryErrorNew.Guids.Single(),
+				ErrorStatusChoices.JobHistoryErrorNewGuid,
 				errorErrorStatusFieldGuid,
 				jobHistoryFieldGuid
 			});
 
 			int jobHistoryErrorStatusArtifactViewFieldId =
 				fieldManager.RetrieveArtifactViewFieldId(workspaceId, guidsAndArtifactIds[errorErrorStatusFieldGuid]).GetValueOrDefault();
-			int jobHistoryErrorStatusNewChoiceArtifactId = guidsAndArtifactIds[ErrorStatusChoices.JobHistoryErrorNew.Guids.Single()];
+			int jobHistoryErrorStatusNewChoiceArtifactId = guidsAndArtifactIds[ErrorStatusChoices.JobHistoryErrorNewGuid];
 			int jobHistoryErrorDescriptorArtifactTypeId = objectTypeManager.RetrieveObjectTypeDescriptorArtifactTypeId(workspaceId, new Guid(ObjectTypeGuids.JobHistoryError));
 			int jobHistoryArtifactViewFieldId = fieldManager.RetrieveArtifactViewFieldId(workspaceId, guidsAndArtifactIds[jobHistoryFieldGuid]).GetValueOrDefault();
 			int jobHistoryInstanceArtifactId = jobHistoryManager.GetLastJobHistoryArtifactId(workspaceId, integrationPointId);

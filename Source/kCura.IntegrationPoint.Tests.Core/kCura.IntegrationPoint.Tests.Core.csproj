@@ -82,6 +82,7 @@
     <Compile Include="Extensions\DirectoryExtensions.cs" />
     <Compile Include="Extensions\GenericPermissionListExtension.cs" />
     <Compile Include="Extensions\JobExtensions.cs" />
+    <Compile Include="Extensions\Moq\MoqExtensions.cs" />
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Extensions\ObjectPermissionListExtension.cs" />
     <Compile Include="Extensions\SecureStringExtension.cs" />
