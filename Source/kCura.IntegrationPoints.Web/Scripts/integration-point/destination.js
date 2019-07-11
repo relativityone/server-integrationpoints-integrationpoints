@@ -55,6 +55,11 @@
 	}
 	this.selectedDestinationTypeGuid = function () {
 		var results = self.destinationTypes().filter(withArtifactId(self.selectedDestinationType()));
+		if (results[0].displayName === "Relativity") {
+			this.isDestinationObjectDisabled(true);
+		} else {
+			this.isDestinationObjectDisabled(false);
+		}
 		return results.length > 0 ? results[0].value : "";
 	}
 
