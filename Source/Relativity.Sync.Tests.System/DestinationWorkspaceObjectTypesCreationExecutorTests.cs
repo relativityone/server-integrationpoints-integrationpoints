@@ -8,6 +8,7 @@ using Relativity.Services.Workspace;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Helpers;
+using Relativity.Testing.Identification;
 
 namespace Relativity.Sync.Tests.System
 {
@@ -34,7 +35,7 @@ namespace Relativity.Sync.Tests.System
 			_destinationWorkspace = await Environment.CreateWorkspaceAsync().ConfigureAwait(false);
 		}
 
-		[Test]
+		[IdentifiedTest("b393cc92-f5b9-4e5c-8e3e-b8e48507746b")]
 		public async Task ItShouldCreateObjectTypesAndFields()
 		{
 			// Verify that object types and fields are not existing in a workspace before we run the test
