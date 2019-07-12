@@ -5,7 +5,6 @@ NSubstitute
 NUnit
 Polly
 Relativity.API
-Relativity.Core
 Relativity.Kepler.Client
 Relativity.Telemetry.APM
 Relativity.OAuth2Client
