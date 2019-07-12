@@ -6,7 +6,6 @@ Relativity.Services.Interfaces.Private
 Relativity.Kepler.Client
 Relativity.Telemetry.APM
 kCura.Apps.Common.Utils
-kCura.Relativity.Client
 
 Microsoft.CodeAnalysis.FxCopAnalyzers
 CSharpGuidelineAnalyzer
