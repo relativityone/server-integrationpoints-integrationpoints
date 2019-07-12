@@ -284,17 +284,6 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="Relativity.Core">
-          <HintPath>..\..\packages\Relativity.Core\lib\net462\Relativity.Core.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
         <Reference Include="FreeImageNET">
           <HintPath>..\..\packages\Relativity.DataExchange.Client.SDK\lib\net462\FreeImageNET.dll</HintPath>
           <Private>True</Private>

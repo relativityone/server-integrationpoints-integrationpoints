@@ -7,7 +7,6 @@ NUnit
 Polly
 Relativity
 Relativity.API
-Relativity.Core
 Relativity.DataExchange.Client.SDK
 Relativity.Productions.Services.Interfaces
 Relativity.Services.DataContracts
