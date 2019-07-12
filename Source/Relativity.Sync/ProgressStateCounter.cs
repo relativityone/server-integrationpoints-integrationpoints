@@ -23,7 +23,7 @@ namespace Relativity.Sync
 
 		public int GetOrderForGroup(string groupName)
 		{
-			if (string.IsNullOrWhiteSpace(groupName))
+			if (string.IsNullOrEmpty(groupName))
 			{
 				int nextId = Next();
 				return nextId;

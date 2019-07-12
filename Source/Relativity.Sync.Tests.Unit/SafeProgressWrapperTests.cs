@@ -15,7 +15,7 @@ namespace Relativity.Sync.Tests.Unit
 			var instance = new SafeProgressWrapper<SyncJobState>(innerProgress.Object, new EmptyLogger());
 
 			// ACT
-			instance.Report(SyncJobState.Start("Test", string.Empty));
+			instance.Report(SyncJobState.Start("Test"));
 
 			// ASSERT
 			innerProgress.Verify(x => x.Report(It.IsAny<SyncJobState>()));
@@ -30,7 +30,7 @@ namespace Relativity.Sync.Tests.Unit
 			var instance = new SafeProgressWrapper<SyncJobState>(innerProgress.Object, logger.Object);
 
 			// ACT
-			instance.Report(SyncJobState.Start("Test", string.Empty));
+			instance.Report(SyncJobState.Start("Test"));
 
 			// ASSERT
 			logger.Verify(x => x.LogWarning(It.IsAny<InvalidOperationException>(),

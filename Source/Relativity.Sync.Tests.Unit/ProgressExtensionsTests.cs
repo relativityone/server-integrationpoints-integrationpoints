@@ -56,7 +56,7 @@ namespace Relativity.Sync.Tests.Unit
 
 			// ACT
 			IProgress<SyncJobState> result = progressReporters.Combine();
-			SyncJobState value = SyncJobState.Start("Test", string.Empty);
+			SyncJobState value = SyncJobState.Start("Test");
 			result.Report(value);
 
 			// ASSERT

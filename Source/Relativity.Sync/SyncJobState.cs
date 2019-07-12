@@ -115,6 +115,15 @@ namespace Relativity.Sync
 			return new SyncJobState(id, parallelGroupId, SyncJobStatus.Started, "Executing...", null);
 		}
 
+		/// <summary>
+		/// Creates a <see cref="SyncJobState"/> for a step that started executing.
+		/// </summary>
+		/// <param name="id">ID of the step</param>
+		public static SyncJobState Start(string id)
+		{
+			return new SyncJobState(id, string.Empty, SyncJobStatus.Started, "Executing...", null);
+		}
+
 		/// <inheritdoc />
 		public override string ToString()
 		{

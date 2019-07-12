@@ -48,7 +48,6 @@ namespace Relativity.Sync.Tests.Unit
 
 		[TestCase(null)]
 		[TestCase("")]
-		[TestCase(" ")]
 		public void ItShouldIncrementForNotSpecifiedGroupName(string groupName)
 		{
 			// act
