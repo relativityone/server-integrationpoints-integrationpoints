@@ -1,25 +1,9 @@
 ﻿using kCura.EDDS.WebAPI.AuditManagerBase;
-using kCura.EDDS.WebAPI.ExportManagerBase;
-using Relativity.Core;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 {
 	public static class ExportConvertingExtensions
 	{
-		public static InitializationResults ToInitializationResults(this Export.InitializationResults result)
-		{
-			if (result == null)
-			{
-				return null;
-			}
-			return new InitializationResults
-			{
-				ColumnNames = result.ColumnNames,
-				RowCount = result.RowCount,
-				RunId = result.RunId
-			};
-		}
-
 		public static global::Relativity.API.Foundation.ExportStatistics ToFoundationExportStatistics(this ExportStatistics exportStatistics)
 		{
 			if (exportStatistics == null)
