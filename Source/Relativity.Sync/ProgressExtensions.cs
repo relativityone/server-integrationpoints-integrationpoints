@@ -9,7 +9,7 @@ namespace Relativity.Sync
 		/// </summary>
 		/// <param name="progress">Progress reporter</param>
 		/// <param name="id">ID of the Sync step</param>
-		/// <param name="parallelGroupId"></param>
+		/// <param name="parallelGroupId">Name of the group for which nodes are executed in parallel</param>
 		public static void ReportStarted(this IProgress<SyncJobState> progress, string id, string parallelGroupId)
 		{
 			SyncJobState jobState = SyncJobState.Start(id, parallelGroupId);
@@ -21,7 +21,7 @@ namespace Relativity.Sync
 		/// </summary>
 		/// <param name="progress">Progress reporter</param>
 		/// <param name="id">ID of the Sync step</param>
-		/// <param name="parallelGroupId"></param>
+		/// <param name="parallelGroupId">Name of the group for which nodes are executed in parallel</param>
 		/// <param name="exception">Exception that caused the failure</param>
 		public static void ReportFailure(this IProgress<SyncJobState> progress, string id, string parallelGroupId, Exception exception)
 		{
@@ -34,7 +34,7 @@ namespace Relativity.Sync
 		/// </summary>
 		/// <param name="progress">Progress reporter</param>
 		/// <param name="id">ID of the Sync step</param>
-		/// <param name="parallelGroupId"></param>
+		/// <param name="parallelGroupId">Name of the group for which nodes are executed in parallel</param>
 		public static void ReportCanceled(this IProgress<SyncJobState> progress, string id, string parallelGroupId)
 		{
 			SyncJobState jobState = SyncJobState.Canceled(id, parallelGroupId);
@@ -46,7 +46,7 @@ namespace Relativity.Sync
 		/// </summary>
 		/// <param name="progress">Progress reporter</param>
 		/// <param name="id">ID of the Sync step</param>
-		/// <param name="parallelGroupId"></param>
+		/// <param name="parallelGroupId">Name of the group for which nodes are executed in parallel</param>
 		public static void ReportCompleted(this IProgress<SyncJobState> progress, string id, string parallelGroupId)
 		{
 			SyncJobState jobState = SyncJobState.Completed(id, parallelGroupId);
@@ -58,7 +58,7 @@ namespace Relativity.Sync
 		/// </summary>
 		/// <param name="progress">Progress reporter</param>
 		/// <param name="id">ID of the Sync step</param>
-		/// <param name="parallelGroupId"></param>
+		/// <param name="parallelGroupId">Name of the group for which nodes are executed in parallel</param>
 		public static void ReportCompletedWithErrors(this IProgress<SyncJobState> progress, string id, string parallelGroupId)
 		{
 			SyncJobState jobState = SyncJobState.CompletedWithErrors(id, parallelGroupId);
