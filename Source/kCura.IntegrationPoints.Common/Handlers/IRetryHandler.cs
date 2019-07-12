@@ -15,5 +15,10 @@ namespace kCura.IntegrationPoints.Common.Handlers
 			Func<Task> function,
 			[CallerMemberName] string callerName = ""
 		);
+
+		T ExecuteWithRetries<T>(
+			Func<T> function,
+			[CallerMemberName] string callerName = ""
+		);
 	}
 }
