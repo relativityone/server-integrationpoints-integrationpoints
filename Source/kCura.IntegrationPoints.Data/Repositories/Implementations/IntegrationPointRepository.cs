@@ -115,8 +115,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public void Update(IntegrationPoint integrationPoint)
 		{
+			string decryptedSecuredConfiguration = integrationPoint.SecuredConfiguration;
 			SetEncryptedSecuredConfiguration(_workspaceID, integrationPoint);
 			_objectManager.Update(integrationPoint);
+			integrationPoint.SecuredConfiguration = decryptedSecuredConfiguration;
 		}
 
 		public void Delete(int integrationPointID)
