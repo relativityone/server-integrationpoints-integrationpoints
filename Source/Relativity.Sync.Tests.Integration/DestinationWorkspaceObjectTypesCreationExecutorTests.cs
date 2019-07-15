@@ -7,7 +7,6 @@ using Autofac;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using OutsideIn.Options;
 using Relativity.Services.ArtifactGuid;
 using Relativity.Services.Exceptions;
 using Relativity.Services.Interfaces.Field;
@@ -21,7 +20,6 @@ using Relativity.Sync.Executors;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.Common;
-using Relativity.Sync.Tests.Integration.Helpers;
 
 namespace Relativity.Sync.Tests.Integration
 {
