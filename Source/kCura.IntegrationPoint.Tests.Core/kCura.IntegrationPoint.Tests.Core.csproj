@@ -178,6 +178,8 @@
     <Compile Include="Templates\OtherProvidersTemplate.cs" />
     <Compile Include="Templates\RelativityProviderTemplate.cs" />
     <Compile Include="Templates\SourceProviderTemplate.cs" />
+    <Compile Include="TestHelpers\Converters\DataRowExtensions.cs" />
+    <Compile Include="TestHelpers\Dto\FileTestDto.cs" />
     <Compile Include="TestHelpers\ExceptionHelper.cs" />
     <Compile Include="TestHelpers\ExtendedIAgentHelper.cs" />
     <Compile Include="TestHelpers\FileServiceBase.cs" />
@@ -7945,17 +7947,6 @@
       <ItemGroup>
         <Reference Include="Relativity.API">
           <HintPath>..\..\packages\Relativity.API\lib\net462\Relativity.API.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.Core">
-          <HintPath>..\..\packages\Relativity.Core\lib\net462\Relativity.Core.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
