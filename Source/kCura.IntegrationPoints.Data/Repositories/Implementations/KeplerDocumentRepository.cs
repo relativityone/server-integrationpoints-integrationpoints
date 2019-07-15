@@ -49,6 +49,19 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return documents.Select(ConvertDocumentToArtifactDTO).ToArray();
 		}
 
+		public async Task<ArtifactDTO[]> RetrieveDocumentsAsync(IEnumerable<int> documentIds, HashSet<string> fieldNames)
+		{
+			var qr = new QueryRequest
+			{
+				ObjectType = new ObjectTypeRef { ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID },
+				Condition = $"'ArtifactID' in [{string.Join(",", documentIds)}]",
+				Fields = fieldNames.Select(fieldName => new FieldRef { Name = fieldName }).ToArray()
+			};
+
+			List<RelativityObject> documents = await _relativityObjectManager.QueryAsync(qr).ConfigureAwait(false);
+			return documents.Select(ConvertDocumentToArtifactDTO).ToArray();
+		}
+
 		public async Task<int[]> RetrieveDocumentByIdentifierPrefixAsync(string documentIdentifierFieldName, string identifierPrefix)
 		{
 			var queryRequest = new QueryRequest

@@ -19,10 +19,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 {
 	public abstract class ExporterServiceBase : IExporterService
 	{
-		protected IDataTransferContext Context;
-		protected int RetrievedDataCount;
-		protected IQueryFieldLookupRepository QueryFieldLookupRepository;
-		protected SourceConfiguration SourceConfiguration;
+		protected readonly IQueryFieldLookupRepository QueryFieldLookupRepository;
+		protected readonly SourceConfiguration SourceConfiguration;
 		protected readonly BaseServiceContext BaseContext;
 		protected readonly ExportInitializationResultsDto ExportJobInfo;
 		protected readonly FieldMap[] MappedFields;
@@ -34,6 +32,9 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 		protected readonly IRelativityObjectManager RelativityObjectManager;
 		protected readonly IJobStopManager JobStopManager;
 		protected readonly int[] FieldArtifactIds;
+
+		protected IDataTransferContext Context { get; set; }
+		protected int RetrievedDataCount { get; set; }
 
 		internal ExporterServiceBase(
 			IDocumentRepository documentRepository,
