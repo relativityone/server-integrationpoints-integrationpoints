@@ -7,9 +7,7 @@ using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Web.Controllers.API;
-using NSubstitute;
 using NUnit.Framework;
-using Relativity.Core.Service;
 using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.Web.Tests.Integration.Controllers
@@ -20,7 +18,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Controllers
 		private List<int> _savedSearchesArtifactIds;
 		private List<int> _userIds;
 		private List<int> _groupIds;
-		private IHtmlSanitizerManager _htmlSanitizerManage;
 
 		public SavedSearchQueryTests() : base("SavedSearchQueryTests")
 		{
@@ -37,8 +34,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Controllers
 			_groupIds = new List<int>();
 			_userIds = new List<int>();
 			_savedSearchesArtifactIds = new List<int>();
-			_htmlSanitizerManage = Substitute.For<IHtmlSanitizerManager>();
-			_htmlSanitizerManage.Sanitize(Arg.Any<string>()).Returns(new SanitizeResult() { CleanHTML = "Bla", HasErrors = false });
 		}
 
 		public override void TestTeardown()
