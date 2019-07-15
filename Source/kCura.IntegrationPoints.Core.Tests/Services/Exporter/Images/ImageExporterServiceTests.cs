@@ -99,7 +99,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 			string config = GetConfig(SourceConfiguration.ExportType.SavedSearch);
 
 			_instance = new ImageExporterService(_documentRepository, _relativityObjectManager, _sourceRepositoryFactory, _targetRepositoryFactory,
-				_jobStopManager, _helper, _baseServiceContextProvider, _mappedFields, _START_AT, config, _SEARCH_ARTIFACT_ID, settings: null);
+				_fileRepository, _jobStopManager, _helper, _baseServiceContextProvider, _mappedFields, _START_AT, config, _SEARCH_ARTIFACT_ID, settings: null);
 
 			IExporterTransferConfiguration transferConfiguration = Substitute.For<IExporterTransferConfiguration>();
 
@@ -185,7 +185,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 				.Returns(CreateProductionDocumentImageResponses());
 
 			_instance = new ImageExporterService(_documentRepository, _relativityObjectManager, _sourceRepositoryFactory, _targetRepositoryFactory,
-				_jobStopManager, _helper, _baseServiceContextProvider, _mappedFields, _START_AT, config, _SEARCH_ARTIFACT_ID, _settings);
+				_fileRepository, _jobStopManager, _helper, _baseServiceContextProvider, _mappedFields, _START_AT, config, _SEARCH_ARTIFACT_ID, _settings);
 
 			_instance.GetDataTransferContext(Substitute.For<IExporterTransferConfiguration>());
 
@@ -197,48 +197,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 			Assert.That(actual[0].GetFieldByName(IntegrationPoints.Domain.Constants.SPECIAL_FILE_NAME_FIELD_NAME).Value, Is.EqualTo("AZIPPER_0007293"));
 		}
 
-		[Test]
-		public void ItShouldReturnEmptyImageLocationWhenProductionImageLocationIsDbNull()
-		{
-			// Arrange
-			const int productionArtifactID = 10010;
-			const int documentArtifactID = 10000;
-
-			string config = GetConfig(SourceConfiguration.ExportType.ProductionSet, productionArtifactID);
-
-			ImportSettings settings = new ImportSettings()
-			{
-				ProductionPrecedence = ExportSettings.ProductionPrecedenceType.Produced.ToString(),
-				ImagePrecedence = new[] { new ProductionDTO() { ArtifactID = productionArtifactID.ToString() } },
-			};		
-
-			_documentRepository
-				.RetrieveResultsBlockFromExportAsync(Arg.Any<ExportInitializationResultsDto>(), Arg.Any<int>(), Arg.Any<int>())
-				.Returns(PrepareRetrievedData(documentArtifactID));
-			
-			_fileRepository.GetImagesForProductionDocuments(
-					_SOURCE_WORKSPACE_ARTIFACT_ID, 
-					productionArtifactID, 
-					Arg.Is<int[]>(x => x.Single() == documentArtifactID))
-				.Returns(info =>
-				{
-					ProductionDocumentImageResponse[] responses = CreateProductionDocumentImageResponses();
-					responses.First().Location = null;
-					return responses;
-				});
-
-			_instance = new ImageExporterService(_documentRepository, _relativityObjectManager, _sourceRepositoryFactory, _targetRepositoryFactory,
-				_jobStopManager, _helper, _baseServiceContextProvider, _mappedFields, _START_AT, config, _SEARCH_ARTIFACT_ID, settings);
-
-			_instance.GetDataTransferContext(Substitute.For<IExporterTransferConfiguration>());
-
-			// Act
-			ArtifactDTO[] actual = _instance.RetrieveData(0);
-
-			// Assert
-			Assert.That(actual.Length, Is.EqualTo(1));
-			Assert.That(actual[0].GetFieldByName(IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME).Value, Is.EqualTo(string.Empty));
-		}
 
 		#endregion
 

@@ -140,11 +140,10 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 			int artifactType, 
 			List<ArtifactDTO> result)
 		{
-			DataView imagesDataView = _fileRepository
-				.GetImagesForDocuments(
-					SourceConfiguration.SourceWorkspaceArtifactId, 
-					documentIDs: new[] { documentArtifactID })
-				.ToDataView();
+			List<string> imagesDataView = _fileRepository
+				.GetImagesLocationForDocuments(
+					SourceConfiguration.SourceWorkspaceArtifactId,
+					documentIDs: new[] {documentArtifactID});
 			if (imagesDataView.Count > 0)
 			{
 				CreateImageArtifactDtos(imagesDataView, documentArtifactID, fields, fieldValues, artifactType, result);
@@ -188,8 +187,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 				.GetImagesLocationForProductionDocuments(
 					SourceConfiguration.SourceWorkspaceArtifactId,
 					productionArtifactId, 
-					documentIDs: new[] { documentArtifactID })
-				.ToDataView();
+					documentIDs: new[] { documentArtifactID });
 			if (producedImagesDataView.Count > 0)
 			{
 				CreateImageArtifactDtos(producedImagesDataView, documentArtifactID, fields, fieldValues, artifactType, result);
@@ -198,7 +196,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 		}
 
 		private void CreateImageArtifactDtos(
-			DataView dataView, 
+			List<string> dataView, 
 			int documentArtifactID, 
 			List<ArtifactFieldDTO> fields, 
 			IDictionary<string, object> fieldValues, 
@@ -214,7 +212,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 
 			foreach (var locationRow in dataView)
 			{
-				ArtifactDTO artifactDto = CreateImageArtifactDto(dataView.Table.Rows[index], documentArtifactId, documentIdentifier, fields, artifactType);
+				ArtifactDTO artifactDto = CreateImageArtifactDto(locationRow, documentArtifactID, documentIdentifier, fields, artifactType);
 				result.Add(artifactDto);
 			}
 		}
@@ -240,12 +238,11 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 		}
 
 		private ArtifactDTO CreateImageArtifactDto(
-			DataRow imageDataRow, 
+			string fileLocation, 
 			int documentArtifactID, 
 			string documentIdentifier,
 			List<ArtifactFieldDTO> fields, int artifactType)
 		{
-			string fileLocation = imageDataRow[ImageLocationColumn].ToString();
 			List<ArtifactFieldDTO> artifactFieldDtos = AddImageFields(fields, fileLocation, documentIdentifier);
 			var artifactDto = new ArtifactDTO(documentArtifactID, artifactType, string.Empty, artifactFieldDtos);
 			return artifactDto;

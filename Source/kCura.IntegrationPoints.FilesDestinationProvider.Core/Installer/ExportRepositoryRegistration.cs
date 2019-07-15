@@ -5,7 +5,6 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.WinEDDS.Service.Export;
 using Relativity.API;
-using Relativity.Core.Api.Manager.Shared;
 using Relativity.Services.FileField;
 using Relativity.Services.Interfaces.File;
 using Relativity.Services.Interfaces.ViewField;
