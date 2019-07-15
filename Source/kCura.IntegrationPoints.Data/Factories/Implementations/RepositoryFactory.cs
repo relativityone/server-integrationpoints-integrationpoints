@@ -8,8 +8,6 @@ using Relativity.Data;
 using System;
 using System.Security.Claims;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
-using kCura.IntegrationPoints.Data.Interfaces;
-using kCura.WinEDDS.Service.Export;
 using Relativity.API.Foundation.Repositories;
 using Relativity.Services.ResourceServer;
 using ArtifactType = Relativity.ArtifactType;

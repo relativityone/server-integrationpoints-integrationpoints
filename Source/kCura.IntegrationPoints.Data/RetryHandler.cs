@@ -1,5 +1,4 @@
-﻿using kCura.IntegrationPoints.Data.Interfaces;
-using Polly;
+﻿using Polly;
 using Polly.Retry;
 using Relativity.API;
 using System;

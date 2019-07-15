@@ -1,6 +1,6 @@
 ﻿using kCura.IntegrationPoints.Common.Handlers;
 
-namespace kCura.IntegrationPoints.Data.Interfaces
+namespace kCura.IntegrationPoints.Common
 {
 	public interface IRetryHandlerFactory
 	{

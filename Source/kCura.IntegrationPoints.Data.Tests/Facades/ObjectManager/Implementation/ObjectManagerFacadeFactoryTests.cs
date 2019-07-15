@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
 using FluentAssertions;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using kCura.IntegrationPoints.Data.Facades.ObjectManager;
 using kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation;
-using kCura.IntegrationPoints.Data.Interfaces;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;

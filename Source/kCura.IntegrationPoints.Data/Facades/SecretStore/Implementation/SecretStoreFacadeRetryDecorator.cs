@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Handlers;
-using kCura.IntegrationPoints.Data.Interfaces;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data.Facades.SecretStore.Implementation
