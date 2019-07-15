@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Banzai;
 using Relativity.Sync.Configuration;
@@ -12,6 +11,8 @@ namespace Relativity.Sync.Nodes
 		private readonly IJobEndMetricsService _jobEndMetricsService;
 		private readonly ICommand<INotificationConfiguration> _notificationCommand;
 		private readonly ISyncLog _logger;
+
+		private readonly string _parallelGroupName = string.Empty;
 
 		public SyncRootNode(IJobEndMetricsService jobEndMetricsService, ICommand<INotificationConfiguration> notificationCommand, ISyncLog logger)
 		{
@@ -37,7 +38,7 @@ namespace Relativity.Sync.Nodes
 				if (validationNode != null && validationNode.Status == NodeResultStatus.Succeeded)
 				{
 					const string id = "Sending job end metrics";
-					context.Subject.Progress.ReportStarted(id);
+					context.Subject.Progress.ReportStarted(id, _parallelGroupName);
 
 					ExecutionStatus status;
 					switch (context.ParentResult.Status)
@@ -68,7 +69,7 @@ namespace Relativity.Sync.Nodes
 		private async Task RunNotificationCommand(IExecutionContext<SyncExecutionContext> context)
 		{
 			const string id = "Sending notifications";
-			context.Subject.Progress.ReportStarted(id);
+			context.Subject.Progress.ReportStarted(id, _parallelGroupName);
 
 			if (await _notificationCommand.CanExecuteAsync(context.Subject.CancellationToken).ConfigureAwait(false))
 			{
@@ -79,7 +80,7 @@ namespace Relativity.Sync.Nodes
 				{
 					// result.Exception may be null, but this should not cause any issues.
 					_logger.LogError(result.Exception, "Failed to send notifications: {message}", result.Message);
-					context.Subject.Progress.ReportFailure(id, result.Exception);
+					context.Subject.Progress.ReportFailure(id, _parallelGroupName, result.Exception);
 				}
 			}
 		}

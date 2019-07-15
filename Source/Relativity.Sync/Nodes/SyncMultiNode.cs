@@ -9,7 +9,8 @@ namespace Relativity.Sync.Nodes
 	{
 		private IExecutionContext<SyncExecutionContext> _childrenExecutionContext;
 		private readonly ISyncExecutionContextFactory _contextFactory;
-
+		private readonly string _parallelGroupName = string.Empty;
+		
 		public SyncMultiNode(ISyncExecutionContextFactory contextFactory)
 		{
 			_contextFactory = contextFactory;
@@ -31,7 +32,7 @@ namespace Relativity.Sync.Nodes
 		{
 			string mergedStep = string.Join(Environment.NewLine, Children.Select(x => x.Id));
 
-			context.Subject.Progress.ReportStarted(mergedStep);
+			context.Subject.Progress.ReportStarted(mergedStep, _parallelGroupName);
 		}
 	}
 }

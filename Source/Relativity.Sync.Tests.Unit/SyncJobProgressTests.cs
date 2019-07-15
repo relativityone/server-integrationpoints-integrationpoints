@@ -35,7 +35,7 @@ namespace Relativity.Sync.Tests.Unit
 			_progressRepository.ForCreate.Add(progress);
 
 			// ACT
-			SyncJobState state = new SyncJobState("FooBar", SyncJobStatus.New, null, null);
+			SyncJobState state = new SyncJobState("FooBar", string.Empty, SyncJobStatus.New, null, null);
 			_instance.Report(state);
 
 			// ASSERT
@@ -50,7 +50,7 @@ namespace Relativity.Sync.Tests.Unit
 			_progressRepository.ForQuery.Add(progress);
 			 
 			// ACT
-			SyncJobState state = new SyncJobState("FooBar", SyncJobStatus.Failed, "A problem happened", new InvalidOperationException());
+			SyncJobState state = new SyncJobState("FooBar", string.Empty, SyncJobStatus.Failed, "A problem happened", new InvalidOperationException());
 			_instance.Report(state);
 
 			// ASSERT

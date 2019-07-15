@@ -10,6 +10,8 @@ namespace Relativity.Sync.Nodes
 		private readonly ICommand<T> _command;
 		private readonly ISyncLog _logger;
 
+		protected string ParallelGroupName { get; set; } = string.Empty;
+
 		protected SyncNode(ICommand<T> command, ISyncLog logger)
 		{
 			_command = command;
@@ -31,7 +33,7 @@ namespace Relativity.Sync.Nodes
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "Uncaught exception when checking whether step '{step}' should execute.", Id);
-				context.Subject.Progress.ReportFailure(Id, ex);
+				context.Subject.Progress.ReportFailure(Id, ParallelGroupName, ex);
 				throw;
 			}
 		}
@@ -62,28 +64,28 @@ namespace Relativity.Sync.Nodes
 			if (result.Status == ExecutionStatus.Failed)
 			{
 				_logger.LogError(result.Exception, "Error occurred during execution of step '{step}': {message}", Id, result.Message);
-				context.Subject.Progress.ReportFailure(Id, result.Exception);
+				context.Subject.Progress.ReportFailure(Id, ParallelGroupName, result.Exception);
 
 				return NodeResultStatus.Failed;
 			}
 			else if (result.Status == ExecutionStatus.Canceled)
 			{
 				_logger.LogDebug("Step '{step}' was canceled during execution.", Id);
-				context.Subject.Progress.ReportCanceled(Id);
+				context.Subject.Progress.ReportCanceled(Id, ParallelGroupName);
 
 				return NodeResultStatus.Failed;
 			}
 			else if (result.Status == ExecutionStatus.CompletedWithErrors)
 			{
 				_logger.LogWarning(result.Exception, "Step '{step}' completed with errors: {message}", Id, result.Message);
-				context.Subject.Progress.ReportCompletedWithErrors(Id);
+				context.Subject.Progress.ReportCompletedWithErrors(Id, ParallelGroupName);
 
 				return NodeResultStatus.SucceededWithErrors;
 			}
 			else
 			{
 				_logger.LogDebug("Step '{step}' completed successfully.", Id);
-				context.Subject.Progress.ReportCompleted(Id);
+				context.Subject.Progress.ReportCompleted(Id, ParallelGroupName);
 
 				return NodeResultStatus.Succeeded;
 			}
@@ -91,7 +93,7 @@ namespace Relativity.Sync.Nodes
 
 		protected override void OnBeforeExecute(IExecutionContext<SyncExecutionContext> context)
 		{
-			context.Subject.Progress.ReportStarted(Id);
+			context.Subject.Progress.ReportStarted(Id, ParallelGroupName);
 		}
 	}
 }

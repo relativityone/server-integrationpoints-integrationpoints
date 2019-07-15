@@ -212,7 +212,7 @@ namespace Relativity.Sync.Tests.Integration
 		{
 			foreach (INode<SyncExecutionContext> node in nodes)
 			{
-				SyncJobState expected = SyncJobState.Completed(node.Id);
+				SyncJobState expected = SyncJobState.Completed(node.Id, string.Empty);
 				progress.Verify(x => x.Report(It.Is<SyncJobState>(v => Equals(expected, v))));
 			}
 		}
@@ -221,7 +221,7 @@ namespace Relativity.Sync.Tests.Integration
 		{
 			foreach (INode<SyncExecutionContext> node in nodes)
 			{
-				SyncJobState expected = SyncJobState.Failure(node.Id, new InvalidOperationException());
+				SyncJobState expected = SyncJobState.Failure(node.Id, string.Empty, new InvalidOperationException());
 				progress.Verify(x => x.Report(It.Is<SyncJobState>(v => Equals(expected, v))));
 			}
 		}
@@ -230,7 +230,7 @@ namespace Relativity.Sync.Tests.Integration
 		{
 			foreach (INode<SyncExecutionContext> node in nodes)
 			{
-				SyncJobState expected = SyncJobState.CompletedWithErrors(node.Id);
+				SyncJobState expected = SyncJobState.CompletedWithErrors(node.Id, string.Empty);
 				progress.Verify(x => x.Report(It.Is<SyncJobState>(v => Equals(expected, v))));
 			}
 		}
