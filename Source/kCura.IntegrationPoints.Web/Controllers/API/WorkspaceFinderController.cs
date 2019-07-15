@@ -11,7 +11,6 @@ using kCura.IntegrationPoints.Domain.Utils;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Models;
 using Relativity.API;
-using Relativity.Core.Service;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
@@ -20,14 +19,14 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly IContextContainerFactory _contextContainerFactory;
 		private readonly ICPHelper _helper;
 		private readonly IHelperFactory _helperFactory;
-		private readonly IHtmlSanitizerManager _htmlSanitizerManager;
+		private readonly IStringSanitizer _htmlSanitizer;
 		private readonly IManagerFactory _managerFactory;
 		private readonly IWorkspaceContext _workspaceIdProvider;
 
 		public WorkspaceFinderController(
-			IManagerFactory managerFactory, 
-			IContextContainerFactory contextContainerFactory, 
-			IHtmlSanitizerManager htmlSanitizerManager, 
+			IManagerFactory managerFactory,
+			IContextContainerFactory contextContainerFactory,
+			IStringSanitizer htmlSanitizer,
 			ICPHelper helper,
 			IHelperFactory helperFactory,
 			IWorkspaceContext workspaceIdProvider)
@@ -36,7 +35,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			_contextContainerFactory = contextContainerFactory;
 			_helper = helper;
 			_helperFactory = helperFactory;
-			_htmlSanitizerManager = htmlSanitizerManager;
+			_htmlSanitizer = htmlSanitizer;
 			_workspaceIdProvider = workspaceIdProvider;
 		}
 
@@ -79,7 +78,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				new WorkspaceModel
 				{
 					DisplayName = WorkspaceAndJobNameUtils.GetFormatForWorkspaceOrJobDisplay(
-						_htmlSanitizerManager.Sanitize(x.Name).CleanHTML,
+						_htmlSanitizer.SanitizeHtmlContent(x.Name).CleanHtml,
 						x.ArtifactId
 					),
 					Value = x.ArtifactId

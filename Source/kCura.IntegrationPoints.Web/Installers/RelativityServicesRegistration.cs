@@ -6,7 +6,6 @@ using kCura.IntegrationPoints.Web.IntegrationPointsServices;
 using kCura.IntegrationPoints.Web.RelativityServices;
 using kCura.Relativity.Client;
 using Relativity.API;
-using Relativity.Core.Service;
 using Relativity.CustomPages;
 
 namespace kCura.IntegrationPoints.Web.Installers
@@ -21,8 +20,8 @@ namespace kCura.IntegrationPoints.Web.Installers
 					.UsingFactoryMethod(k => new RetriableCPHelperProxy(ConnectionHelper.Helper()))
 					.LifestylePerWebRequest(),
 				Component
-					.For<IHtmlSanitizerManager>()
-					.ImplementedBy<HtmlSanitizerManager>()
+					.For<IStringSanitizer>()
+					.UsingFactoryMethod(k => k.Resolve<IHelper>().GetStringSanitizer(Data.Constants.ADMIN_CASE_ID)) // TODO should we use proper caseID???
 					.LifestyleSingleton(),
 				Component
 					.For<IRSAPIService>()
