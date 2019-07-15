@@ -72,7 +72,6 @@
     <Compile Include="AgentTypeInformationHelper.cs" />
     <Compile Include="AuditHelper.cs" />
     <Compile Include="ClaimsPrincipalFactory.cs" />
-    <Compile Include="Constants.cs" />
     <Compile Include="DBContextMockBuilder.cs" />
     <Compile Include="DocumentService.cs" />
     <Compile Include="DocumentTestDataBuilder.cs" />
@@ -144,6 +143,7 @@
     <Compile Include="Models\Import\CopyNativeFiles.cs" />
     <Compile Include="Models\Import\ImportEntitySettingsModel.cs" />
     <Compile Include="Models\Import\ImportDocumentSettingsModel.cs" />
+    <Compile Include="Models\ProductionCreateResultDto.cs" />
     <Compile Include="Models\Shared\ImportSettingsModel.cs" />
     <Compile Include="Models\Import\LoadFile\MultiSelectFieldOverlayBehavior.cs" />
     <Compile Include="Models\Shared\OverwriteType.cs" />

@@ -55,8 +55,9 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.StatisticsManager
 			_testCaseSettings.ViewId = workspaceService.GetView(WorkspaceArtifactId, "Documents");
 			_testCaseSettings.FolderId = _testCaseSettings.DocumentsTestData.Documents.Last().FolderId.GetValueOrDefault();
 
-			_testCaseSettings.ProductionId =
-				workspaceService.CreateAndRunProduction(WorkspaceArtifactId, _testCaseSettings.SavedSearchId, "Production");
+			_testCaseSettings.ProductionId = workspaceService
+				.CreateAndRunProduction(WorkspaceArtifactId, _testCaseSettings.SavedSearchId, "Production")
+				.ProductionArtifactID;
 		}
 
 		[TestCaseSource(nameof(_testCases))]

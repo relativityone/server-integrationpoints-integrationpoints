@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
 using kCura.IntegrationPoint.Tests.Core.Exceptions;
 using kCura.IntegrationPoint.Tests.Core.Models;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.Relativity.Client;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
@@ -121,7 +121,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			importJob.Settings.CopyFilesToDocumentRepository = _withNatives;
 
 			importJob.Settings.DestinationFolderArtifactID = GetWorkspaceRootFolderID(workspaceArtifactId);
-			importJob.Settings.FolderPathSourceFieldName = Constants.FOLDER_PATH;
+			importJob.Settings.FolderPathSourceFieldName = TestConstants.FieldNames.FOLDER_PATH;
 
 			if (!_withNatives)
 			{

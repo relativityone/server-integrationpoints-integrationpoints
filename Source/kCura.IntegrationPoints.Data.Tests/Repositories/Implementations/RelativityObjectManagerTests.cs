@@ -12,6 +12,7 @@ using Moq;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Kepler.Transport;
+using Relativity.Services.DataContracts.DTOs.Results;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
@@ -348,6 +349,285 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				It.Is<MassUpdateByObjectIdentifiersRequest>(request => requestVerifier(request)),
 				It.Is<MassUpdateOptions>(options => updateOptionsVerifier(options)))
 			);
+		}
+
+		[Test]
+		public async Task InitializeExportAsync_ItShouldReturnSameResultAsFacade()
+		{
+			// arrange
+			var queryRequest = new QueryRequest();
+			const int start = 6;
+			var expectedResult = new ExportInitializationResults();
+			_objectManagerFacadeMock
+				.Setup(x =>
+					x.InitializeExportAsync(
+						_WORKSPACE_ARTIFACT_ID,
+						queryRequest,
+						start))
+				.ReturnsAsync(expectedResult);
+
+			// act
+			ExportInitializationResults actualResult = await _sut.InitializeExportAsync(
+					queryRequest,
+					start,
+					ExecutionIdentity.System)
+				.ConfigureAwait(false);
+
+			// assert
+			_objectManagerFacadeMock.Verify(x => x.InitializeExportAsync(
+				_WORKSPACE_ARTIFACT_ID,
+				queryRequest,
+				start));
+			actualResult.Should().Be(expectedResult);
+		}
+
+		[Test]
+		public void InitializeExportAsync_ItShouldRethrowIntegrationPointException()
+		{
+			// arrange
+			var queryRequest = new QueryRequest();
+			const int start = 6;
+			_objectManagerFacadeMock
+				.Setup(x =>
+					x.InitializeExportAsync(
+						_WORKSPACE_ARTIFACT_ID,
+						queryRequest,
+						start))
+				.Throws<IntegrationPointsException>();
+
+			// act
+			Func<Task> action = () =>
+				_sut.InitializeExportAsync(
+					queryRequest,
+					start,
+					ExecutionIdentity.System);
+
+			// assert
+			action.ShouldThrow<IntegrationPointsException>();
+		}
+
+		[Test]
+		public void InitializeExportAsync_ItShouldThrowExceptionWrappedInIntegrationPointException()
+		{
+			// arrange
+			var queryRequest = new QueryRequest();
+			const int start = 6;
+			_objectManagerFacadeMock
+				.Setup(x =>
+					x.InitializeExportAsync(
+						_WORKSPACE_ARTIFACT_ID,
+						queryRequest,
+						start))
+				.Throws<Exception>();
+
+			// act
+			Func<Task> action = () =>
+				_sut.InitializeExportAsync(
+					queryRequest,
+					start,
+					ExecutionIdentity.System);
+
+			// assert
+			action.ShouldThrow<IntegrationPointsException>();
+		}
+
+		[Test]
+		public async Task RetrieveResultsBlockFromExport_ShouldCallFacadeOnce_WhenEntireBlockIsReturned()
+		{
+			// arrange
+			Guid runID = Guid.Parse("885B7099-963B-493F-895D-6692A6340B5E");
+			const int resultsBlockSize = 10;
+			const int exportIndexID = 0;
+			RelativityObjectSlim[] expectedResult = CreateTestRelativityObjectsSlim(resultsBlockSize);
+			_objectManagerFacadeMock.Setup(x => x.RetrieveResultsBlockFromExportAsync(
+					_WORKSPACE_ARTIFACT_ID,
+					runID,
+					resultsBlockSize,
+					exportIndexID))
+				.ReturnsAsync(expectedResult);
+
+			// act
+			RelativityObjectSlim[] actualResult = await _sut.RetrieveResultsBlockFromExportAsync(
+					runID,
+					resultsBlockSize,
+					exportIndexID,
+					ExecutionIdentity.System)
+				.ConfigureAwait(false);
+
+			// assert
+			_objectManagerFacadeMock.Verify(x => x.RetrieveResultsBlockFromExportAsync(
+					_WORKSPACE_ARTIFACT_ID,
+					runID,
+					resultsBlockSize,
+					exportIndexID),
+				Times.Once);
+			actualResult.ShouldBeEquivalentTo(expectedResult, options => options.WithStrictOrdering());
+		}
+
+		[Test]
+		public async Task RetrieveResultsBlockFromExport_ShouldCallFacadeTwoTimes_WhenBlockIsReturnedInHalves()
+		{
+			// arrange
+			Guid runID = Guid.Parse("885B7099-963B-493F-895D-6692A6340B5E");
+			const int resultsBlockSize = 10;
+			const int returnedSize = 5;
+			const int exportIndexID = 0;
+			const int expectedCallsCount = 2;
+			RelativityObjectSlim[] expectedResult = CreateTestRelativityObjectsSlim(resultsBlockSize);
+			_objectManagerFacadeMock.Setup(x => x.RetrieveResultsBlockFromExportAsync(
+					_WORKSPACE_ARTIFACT_ID,
+					runID,
+					resultsBlockSize,
+					exportIndexID))
+				.ReturnsAsync(GetRelativityObjectSlimArrayPart(expectedResult, 0, returnedSize));
+			_objectManagerFacadeMock.Setup(x => x.RetrieveResultsBlockFromExportAsync(
+					_WORKSPACE_ARTIFACT_ID,
+					runID,
+					resultsBlockSize - returnedSize,
+					exportIndexID + returnedSize))
+				.ReturnsAsync(GetRelativityObjectSlimArrayPart(expectedResult, returnedSize, returnedSize));
+
+			// act
+			RelativityObjectSlim[] actualResult = await _sut.RetrieveResultsBlockFromExportAsync(
+					runID,
+					resultsBlockSize,
+					exportIndexID,
+					ExecutionIdentity.System)
+				.ConfigureAwait(false);
+
+			// assert
+			_objectManagerFacadeMock.Verify(x => x.RetrieveResultsBlockFromExportAsync(
+					_WORKSPACE_ARTIFACT_ID,
+					runID,
+					It.IsAny<int>(),
+					It.IsAny<int>()),
+				Times.Exactly(expectedCallsCount));
+			actualResult.ShouldBeEquivalentTo(expectedResult, options => options.WithStrictOrdering());
+		}
+
+		[Test]
+		public async Task RetrieveResultsBlockFromExport_ShouldCallFacadThreeTimes_WhenBlockIsReturnedInUnevenParts()
+		{
+			// arrange
+			Guid runID = Guid.Parse("885B7099-963B-493F-895D-6692A6340B5E");
+			const int resultsBlockSize = 10;
+			const int returnedSize = 4;
+			const int exportIndexID = 0;
+			const int expectedCallsCount = 3;
+			RelativityObjectSlim[] expectedResult = CreateTestRelativityObjectsSlim(resultsBlockSize);
+			_objectManagerFacadeMock.Setup(x => x.RetrieveResultsBlockFromExportAsync(
+					_WORKSPACE_ARTIFACT_ID,
+					runID,
+					resultsBlockSize,
+					exportIndexID))
+				.ReturnsAsync(GetRelativityObjectSlimArrayPart(expectedResult, 0, returnedSize));
+			_objectManagerFacadeMock.Setup(x => x.RetrieveResultsBlockFromExportAsync(
+					_WORKSPACE_ARTIFACT_ID,
+					runID,
+					resultsBlockSize - returnedSize,
+					exportIndexID + returnedSize))
+				.ReturnsAsync(GetRelativityObjectSlimArrayPart(expectedResult, returnedSize, returnedSize));
+			_objectManagerFacadeMock.Setup(x => x.RetrieveResultsBlockFromExportAsync(
+					_WORKSPACE_ARTIFACT_ID,
+					runID,
+					resultsBlockSize - 2 * returnedSize,
+					exportIndexID + 2 * returnedSize))
+				.ReturnsAsync(GetRelativityObjectSlimArrayPart(
+					expectedResult, 
+					2 * returnedSize,
+					resultsBlockSize - 2 * returnedSize));
+
+			// act
+			RelativityObjectSlim[] actualResult = await _sut.RetrieveResultsBlockFromExportAsync(
+					runID,
+					resultsBlockSize,
+					exportIndexID,
+					ExecutionIdentity.System)
+				.ConfigureAwait(false);
+
+			// assert
+			_objectManagerFacadeMock.Verify(x => x.RetrieveResultsBlockFromExportAsync(
+					_WORKSPACE_ARTIFACT_ID,
+					runID,
+					It.IsAny<int>(),
+					It.IsAny<int>()),
+				Times.Exactly(expectedCallsCount));
+			actualResult.ShouldBeEquivalentTo(expectedResult, options => options.WithStrictOrdering());
+		}
+
+		[Test]
+		public void RetrieveResultsBlockFromExportAsync_ItShouldRethrowIntegrationPointException()
+		{
+			Guid runID = Guid.Parse("885B7099-963B-493F-895D-6692A6340B5E");
+			const int resultsBlockSize = 6;
+			const int exportIndexID = 0;
+			_objectManagerFacadeMock
+				.Setup(x =>
+					x.RetrieveResultsBlockFromExportAsync(
+						_WORKSPACE_ARTIFACT_ID,
+						runID,
+						resultsBlockSize,
+						exportIndexID))
+				.Throws<IntegrationPointsException>();
+
+			Func<Task> action = () =>
+				_sut.RetrieveResultsBlockFromExportAsync(
+						runID,
+						resultsBlockSize,
+						exportIndexID,
+						ExecutionIdentity.System);
+
+			action.ShouldThrow<IntegrationPointsException>();
+		}
+
+		[Test]
+		public void RetrieveResultsBlockFromExportAsync_ItShouldThrowExceptionWrappedInIntegrationPointException()
+		{
+			Guid runID = Guid.Parse("885B7099-963B-493F-895D-6692A6340B5E");
+			const int resultsBlockSize = 6;
+			const int exportIndexID = 0;
+			_objectManagerFacadeMock
+				.Setup(x =>
+					x.RetrieveResultsBlockFromExportAsync(
+						_WORKSPACE_ARTIFACT_ID,
+						runID,
+						resultsBlockSize,
+						exportIndexID))
+				.Throws<Exception>();
+
+			Func<Task> action = () =>
+				_sut.RetrieveResultsBlockFromExportAsync(
+						runID,
+						resultsBlockSize,
+						exportIndexID,
+						ExecutionIdentity.System);
+
+			action.ShouldThrow<IntegrationPointsException>();
+		}
+
+		private static RelativityObjectSlim[] CreateTestRelativityObjectsSlim(int size)
+		{
+			var objects = new RelativityObjectSlim[size];
+			int iterator = 1;
+			for (int i = 0; i < size; ++i)
+			{
+				int artifactID = ++iterator;
+				var values = new List<object> { ++iterator, ++iterator, ++iterator, ++iterator };
+				var objectSlim = new RelativityObjectSlim
+				{
+					ArtifactID = artifactID,
+					Values = values
+				};
+				objects[i] = objectSlim;
+			}
+			return objects;
+		}
+
+		private static RelativityObjectSlim[] GetRelativityObjectSlimArrayPart(RelativityObjectSlim[] originalArray, int start, int length)
+		{
+			var result = new RelativityObjectSlim[length];
+			Array.Copy(originalArray, start, result, 0, length);
+			return result;
 		}
 	}
 }

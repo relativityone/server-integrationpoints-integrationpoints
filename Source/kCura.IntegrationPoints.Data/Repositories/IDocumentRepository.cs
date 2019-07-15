@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Data.DTO;
+using kCura.IntegrationPoints.Data.Repositories.DTO;
 using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Data.Repositories
@@ -38,5 +40,42 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		Task<int[]> RetrieveDocumentByIdentifierPrefixAsync(
 			string documentIdentifierFieldName,
 			string identifierPrefix);
+
+		/// <summary>
+		/// Initializes an export of documents returned by a Saved Search
+		/// </summary>
+		/// <param name="searchArtifactID"></param>
+		/// <param name="artifactFieldIDs"></param>
+		/// <param name="startAtRecord"></param>
+		/// <returns>Initialization results that allow to perform an export process</returns>
+		Task<ExportInitializationResultsDto> InitializeSearchExportAsync(
+			int searchArtifactID,
+			int[] artifactFieldIDs,
+			int startAtRecord);
+
+		/// <summary>
+		/// Initializes an export of documents from a Production
+		/// </summary>
+		/// <param name="productionArtifactID"></param>
+		/// <param name="artifactFieldIDs"></param>
+		/// <param name="startAtRecord"></param>
+		/// <returns>Initialization results that allow to perform an export process</returns>
+		Task<ExportInitializationResultsDto> InitializeProductionExportAsync(
+			int productionArtifactID,
+			int[] artifactFieldIDs,
+			int startAtRecord);
+
+		/// <summary>
+		/// Retrieves batch of data for the export starting at exportIndexID and of size lower or equal to resultsBlockSize
+		/// </summary>
+		/// <param name="initializationResults"></param>
+		/// <param name="resultsBlockSize"></param>
+		/// <param name="exportIndexID">List of exported documents</param>
+		/// <returns>Initialization results that allow to perform an export process</returns>
+		Task<IList<RelativityObjectSlimDto>> RetrieveResultsBlockFromExportAsync(
+			ExportInitializationResultsDto initializationResults,
+			int resultsBlockSize,
+			int exportIndexID);
+
 	}
 }

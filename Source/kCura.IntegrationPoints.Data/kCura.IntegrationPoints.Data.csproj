@@ -70,7 +70,10 @@
     <Compile Include="Converters\FieldUpdateRequestDtoExtensions.cs" />
     <Compile Include="Converters\FieldValuePairExtensions.cs" />
     <Compile Include="Converters\RelativityObjectExtensions.cs" />
+    <Compile Include="Converters\RelativityObjectSlimExtensions.cs" />
     <Compile Include="Converters\WorkspaceRefExtensions.cs" />
+    <Compile Include="DTO\ExportInitializationResultsDto.cs" />
+    <Compile Include="DTO\RelativityObjectSlimDto.cs" />
     <Compile Include="DTO\SavedSearchQueryRequest.cs" />
     <Compile Include="DTO\SavedSearchQueryResult.cs" />
     <Compile Include="Extensions\ClaimsPrincipalExtension.cs" />

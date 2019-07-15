@@ -4,11 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.Models;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.UtilityDTO;
 using kCura.Relativity.Client;
-using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Rip.SystemTests.RelativityServices.TestCases;
-using QueryResult = Relativity.Services.Objects.DataContracts.QueryResult;
 
 namespace Rip.SystemTests.RelativityServices.Arrangers
 {
@@ -21,13 +21,12 @@ namespace Rip.SystemTests.RelativityServices.Arrangers
 
 		public static async Task FillTestCasesWithDocumentArtifactIDsAsync(
 			int workspaceID,
-			IEnumerable<DocumentTestCase> documentTestCases, 
-			IObjectManager objectManager)
+			IList<DocumentTestCase> documentTestCases, 
+			IRelativityObjectManager objectManager)
 		{
 			IList<RelativityObject> documents = await FetchDocumentsAsync(
-					workspaceID,
-					objectManager, 
-					take: documentTestCases.Count()
+					objectManager,
+					documentTestCases
 				)
 				.ConfigureAwait(false);
 
@@ -84,15 +83,17 @@ namespace Rip.SystemTests.RelativityServices.Arrangers
 		}
 
 		private static async Task<IList<RelativityObject>> FetchDocumentsAsync(
-			int workspaceID,
-			IObjectManager objectManager, 
-			int take)
+			IRelativityObjectManager objectManager, 
+			IList<DocumentTestCase> documentTestCases)
 		{
+			IEnumerable<string> controlNumbers = documentTestCases.Select(x => x.ControlNumber);
+			int take = documentTestCases.Count;
+
 			var queryRequest = new QueryRequest
 			{
 				ObjectType = new ObjectTypeRef
 				{
-					ArtifactTypeID = (int)ArtifactType.Document
+					ArtifactTypeID = (int) ArtifactType.Document
 				},
 				Fields = new[]
 				{
@@ -100,15 +101,29 @@ namespace Rip.SystemTests.RelativityServices.Arrangers
 					{
 						Name = _CONTROL_NUMBER_COLUMN_NAME
 					}
-				}
+				},
+				Condition = BuildCondition(controlNumbers)
 			};
 
-			QueryResult queryResult =
-				await objectManager
-					.QueryAsync(workspaceID, queryRequest, 0, take)
+			ResultSet<RelativityObject> queryResult =
+				await objectManager	
+					.QueryAsync(queryRequest, 0, take)
 					.ConfigureAwait(false);
 
-			return queryResult.Objects;
+			return queryResult.Items;
+		}
+
+		private static string BuildCondition(IEnumerable<string> controlNumbers)
+		{
+			const string singleConditionFormat = "(('Control Number' IN ['{0}']))";
+			const string fullConditionFormat = "({0})";
+			const string conditionSeparator = " OR ";
+
+			IEnumerable<string> singleConditions =
+				controlNumbers.Select(controlNumber => string.Format(singleConditionFormat, controlNumber));
+
+			string fullCondition = string.Join(conditionSeparator, singleConditions);
+			return string.Format(fullConditionFormat, fullCondition);
 		}
 	}
 }

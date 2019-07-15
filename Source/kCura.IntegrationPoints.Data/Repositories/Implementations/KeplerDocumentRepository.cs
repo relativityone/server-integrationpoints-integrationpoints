@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data.Converters;
+using kCura.IntegrationPoints.Data.DTO;
 using kCura.IntegrationPoints.Data.Repositories.DTO;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
+using Relativity.Services.DataContracts.DTOs.Results;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
@@ -66,6 +68,40 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return _relativityObjectManager.MassUpdateAsync(artifactIDsToUpdate, convertedFieldstoUpdate, FieldUpdateBehavior.Merge);
 		}
 
+		public Task<ExportInitializationResultsDto> InitializeSearchExportAsync(
+			int searchArtifactID,
+			int[] artifactFieldIDs,
+			int startAtRecord)
+		{
+			QueryRequest request = CreateQueryRequestForSearchExport(searchArtifactID, artifactFieldIDs);
+			return InitializeExportAsync(request, startAtRecord);
+		}
+
+		public Task<ExportInitializationResultsDto> InitializeProductionExportAsync(
+			int productionArtifactID,
+			int[] artifactFieldIDs,
+			int startAtRecord)
+		{
+			QueryRequest request = CreateQueryRequestForProductionExport(productionArtifactID, artifactFieldIDs);
+			return InitializeExportAsync(request, startAtRecord);
+		}
+
+		public async Task<IList<RelativityObjectSlimDto>> RetrieveResultsBlockFromExportAsync(
+			ExportInitializationResultsDto initializationResults,
+			int resultsBlockSize,
+			int exportIndexID)
+		{
+			RelativityObjectSlim[] objects = await _relativityObjectManager
+				.RetrieveResultsBlockFromExportAsync(initializationResults.RunID, resultsBlockSize, exportIndexID)
+				.ConfigureAwait(false);
+
+			IList<RelativityObjectSlimDto> objectDtos = objects
+				.Select(objectSlim => objectSlim.ToRelativityObjectSlimDto(initializationResults.FieldNames))
+				.ToList();
+
+			return objectDtos;
+		}
+
 		private ArtifactDTO ConvertDocumentToArtifactDTO(RelativityObject document)
 		{
 			IEnumerable<ArtifactFieldDTO> fields = document.FieldValues.Select(ConvertFieldToArtifactFieldsDTO);
@@ -87,6 +123,49 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private string EscapeSingleQuote(string s)
 		{
 			return Regex.Replace(s, "'", "\\'");
+		}
+
+		private static QueryRequest CreateQueryRequestForSearchExport(int searchArtifactID, int[] artifactFieldIDs)
+		{
+			IList<FieldRef> fields = GetFieldsListFromArtifactIDs(artifactFieldIDs);
+			QueryRequest request = new QueryRequest
+			{
+				ObjectType = new ObjectTypeRef {ArtifactTypeID = (int) ArtifactType.Document},
+				Fields = fields,
+				Condition = $"'ArtifactId' IN SAVEDSEARCH {searchArtifactID}"
+			};
+			return request;
+		}
+
+		private QueryRequest CreateQueryRequestForProductionExport(int productionArtifactID, int[] artifactFieldIDs)
+		{
+			IList<FieldRef> fields = GetFieldsListFromArtifactIDs(artifactFieldIDs);
+			QueryRequest request = new QueryRequest
+			{
+				ObjectType = new ObjectTypeRef {ArtifactTypeID = (int) ArtifactType.Document},
+				Fields = fields,
+				Condition = $"(('Production' SUBQUERY ((('Production::ProductionSet' == OBJECT {productionArtifactID})))))"
+			};
+			return request;
+		}
+
+		private static IList<FieldRef> GetFieldsListFromArtifactIDs(int[] artifactFieldIDs)
+		{
+			List<FieldRef> fields = artifactFieldIDs
+				.Select(artifactFieldID => new FieldRef { ArtifactID = artifactFieldID })
+				.ToList();
+			return fields;
+		}
+
+		private async Task<ExportInitializationResultsDto> InitializeExportAsync(QueryRequest request, int startAtRecord)
+		{
+			ExportInitializationResults results = await _relativityObjectManager.InitializeExportAsync(request, startAtRecord)
+				.ConfigureAwait(false);
+
+			return new ExportInitializationResultsDto(
+				results.RunID,
+				results.RecordCount,
+				results.FieldData.Select(x => x.Name).ToArray());
 		}
 	}
 }

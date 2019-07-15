@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Models;
@@ -110,9 +111,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		{
 			// ARRANGE
 			int integrationPointArtifactId = 1322131;
-			IDictionary<Guid, int[]> artifactIdsByStatus = new Dictionary<Guid, int[]>()
-			{
-			};
+			IDictionary<Guid, int[]> artifactIdsByStatus = new Dictionary<Guid, int[]>();
 
 			_jobHistoryRepositoryMock
 				.Setup(x => x.GetStoppableJobHistoryArtifactIdsByStatus(integrationPointArtifactId))
@@ -129,7 +128,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		}
 
 		[Test]
-		[Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
+		[Category(TestConstants.TestCategories.STOP_JOB)]
 		public void SetErrorStatusesToExpired_GoldFlow()
 		{
 			// ARRANGE
@@ -181,7 +180,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		}
 
 		[Test]
-		[Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
+		[Category(TestConstants.TestCategories.STOP_JOB)]
 		public void SetErrorStatusesToExpired_UpdatesFail()
 		{
 			// ARRANGE

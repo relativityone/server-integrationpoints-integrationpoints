@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using Castle.Windsor;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
@@ -10,6 +11,7 @@ using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
+using kCura.IntegrationPoints.Data.UtilityDTO;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories.Implementations;
@@ -20,17 +22,16 @@ using Relativity.API.Foundation;
 using Relativity.Services.FileField;
 using Relativity.Services.Interfaces.File;
 using Relativity.Services.Interfaces.ViewField;
-using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Search;
 using Relativity.Services.User;
 using Relativity.Testing.Identification;
 using Rip.SystemTests.RelativityServices.Arrangers;
 using Rip.SystemTests.RelativityServices.TestCases;
+using Rip.TestUtilities;
 using FieldCategory = Relativity.Services.Objects.DataContracts.FieldCategory;
 using FieldRef = Relativity.Services.Field.FieldRef;
 using IViewManager = Relativity.Services.View.IViewManager;
-using QueryResult = Relativity.Services.Objects.DataContracts.QueryResult;
 using View = Relativity.Services.View.View;
 
 namespace Rip.SystemTests.RelativityServices
@@ -39,12 +40,17 @@ namespace Rip.SystemTests.RelativityServices
 	public class CoreSearchManagerTests
 	{
 		private int _workspaceID;
-		private int _productionID;
+		private int _searchID;
+		private ProductionCreateResultDto _productionCreateResult;
+		private IWindsorContainer _container => SystemTestsFixture.Container;
 		private Lazy<ITestHelper> _testHelperLazy;
-		private IObjectManager _objectManager;
+		private IRelativityObjectManager _objectManager;
 		private IViewManager _viewManager;
+		private IKeywordSearchManager _keywordSearchManager;
 		private DocumentTestCase[] _documentTestCases;
 		private WorkspaceService _workspaceService;
+		private ProductionHelper _productionHelper;
+		private SavedSearchHelper _savedSearchHelper;
 
 		private CoreSearchManager _sut;
 
@@ -65,10 +71,14 @@ namespace Rip.SystemTests.RelativityServices
 			_workspaceID = SystemTestsFixture.WorkspaceID;
 			_workspaceService = new WorkspaceService(new ImportHelper(withNatives: true));
 			_testHelperLazy = new Lazy<ITestHelper>(() => new TestHelper());
-			_objectManager = _testHelperLazy.Value.CreateProxy<IObjectManager>();
+			_objectManager = _container.Resolve<IRelativityObjectManager>();
 			_viewManager = _testHelperLazy.Value.CreateProxy<IViewManager>();
+			_keywordSearchManager = _testHelperLazy.Value.CreateProxy<IKeywordSearchManager>();
+			_productionHelper = new ProductionHelper(_workspaceID, _objectManager, _workspaceService);
+			_savedSearchHelper = new SavedSearchHelper(_workspaceID, _keywordSearchManager);
 
 			DocumentsTestData documentsTestData = DocumentTestDataBuilder.BuildTestData(
+				prefix: "CSM_",
 				withNatives: true, 
 				testDataType: DocumentTestDataBuilder.TestDataType.SmallWithoutFolderStructure
 			);
@@ -81,7 +91,15 @@ namespace Rip.SystemTests.RelativityServices
 			).ConfigureAwait(false);
 
 			_sut = CreateCoreSearchManager();
-			_productionID = CreateAndRunProduction(_workspaceService);
+
+			CreateAndRunProduction(documentsTestData);
+		}
+
+		[OneTimeTearDown]
+		public void OneTimeTearDown()
+		{
+			_productionHelper.DeleteProduction(_productionCreateResult);
+			_savedSearchHelper.DeleteSavedSearch(_searchID);
 		}
 
 		[IdentifiedTest("970522ef-de92-404d-b120-c198ebb154e5")]
@@ -115,8 +133,8 @@ namespace Rip.SystemTests.RelativityServices
 
 			//act
 			DataSet result = _sut.RetrieveNativesForProduction(
-				_workspaceID, 
-				_productionID,
+				_workspaceID,
+				_productionCreateResult.ProductionArtifactID,
 				documentIDsAsString
 			);
 
@@ -135,11 +153,9 @@ namespace Rip.SystemTests.RelativityServices
 			//arrange
 			int placeholderFieldArtifactID = await GetPlaceholderFieldArtifactIDAsync()
 				.ConfigureAwait(false);
-			int productionPlaceholderArtifactID =
-				await _workspaceService.GetDefaultProductionPlaceholderArtifactIDAsync(
-					_workspaceID,
-					_objectManager
-				).ConfigureAwait(false);
+			int productionPlaceholderArtifactID = await _workspaceService
+				.GetDefaultProductionPlaceholderArtifactIDAsync(_objectManager)
+				.ConfigureAwait(false);
 
 			//act
 			DataSet result = _sut.RetrieveFilesForDynamicObjects(
@@ -167,8 +183,8 @@ namespace Rip.SystemTests.RelativityServices
 			//act
 			DataSet result = _sut.RetrieveImagesForProductionDocuments(
 				_workspaceID, 
-				documentIDs, 
-				_productionID
+				documentIDs,
+				_productionCreateResult.ProductionArtifactID
 			);
 
 			//assert
@@ -240,7 +256,7 @@ namespace Rip.SystemTests.RelativityServices
 			//act
 			DataSet result = _sut.RetrieveImagesByProductionIDsAndDocumentIDsForExport(
 				_workspaceID, 
-				new []{ _productionID }, 
+				new []{ _productionCreateResult.ProductionArtifactID }, 
 				documentIDs.ToArray()
 			);
 
@@ -253,7 +269,7 @@ namespace Rip.SystemTests.RelativityServices
 			);
 			AssertProductionIDIsSameAsExpected(
 				result,
-				_productionID
+				_productionCreateResult.ProductionArtifactID
 			);
 		}
 
@@ -338,12 +354,12 @@ namespace Rip.SystemTests.RelativityServices
 				Condition = $"'{TestConstants.FieldNames.OBJECT_TYPE_ARTIFACT_TYPE_ID}' == OBJECT {_DOCUMENT_ARTIFACT_TYPE_ID}"
 			};
 
-			QueryResult queryResult = await _objectManager
-				.QueryAsync(_workspaceID, fieldQuery, 0, 1000)
+			ResultSet<RelativityObject> queryResult = await _objectManager
+				.QueryAsync(fieldQuery, 0, 1000)
 				.ConfigureAwait(false);
 
 			IList<int> fields = queryResult
-				.Objects
+				.Items
 				.Select(fieldObject => new
 				{
 					ArtifactID = (int) fieldObject[TestConstants.FieldNames.ARTIFACT_ID].Value,
@@ -418,19 +434,10 @@ namespace Rip.SystemTests.RelativityServices
 			return coreSearchManager;
 		}
 
-		private int CreateAndRunProduction(WorkspaceService workspaceService)
+		private void CreateAndRunProduction(DocumentsTestData documentsTestData)
 		{
-			int savedSearch = workspaceService.CreateSavedSearch(
-				new List<string> { "Control Number" }, 
-				_workspaceID, 
-				"SavedSearchName"
-			);
-
-			return workspaceService.CreateAndRunProduction(
-				_workspaceID, 
-				savedSearch, 
-				"ProdName"
-			);
+			_searchID = _savedSearchHelper.CreateSavedSearch(documentsTestData);
+			_productionCreateResult = _productionHelper.CreateAndRunProduction(_searchID);
 		}
 
 		private DataRow[] GetRowsFromFirstTable(DataSet dataSet) => dataSet.Tables[0].Select();
@@ -513,11 +520,13 @@ namespace Rip.SystemTests.RelativityServices
 				Condition = "('Field Type' == 'File' AND 'Name' == 'Placeholder')"
 			};
 
-			QueryResult result = await _objectManager.QueryAsync(
-					_workspaceID, request, start: 1, length: 1
+			ResultSet<RelativityObject> result = await _objectManager.QueryAsync(
+					request, 
+					start: 0, 
+					length: 1
 				).ConfigureAwait(false);
 
-			return result.Objects.Single().ArtifactID;
+			return result.Items.Single().ArtifactID;
 		}
 
 		private void AssertViewResponseContainsExpectedView(View view, DataSet dataSet)

@@ -51,6 +51,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private readonly IHelperFactory _helperFactory;
 		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly IToggleProvider _toggleProvider;
+		private readonly IDocumentRepository _documentRepository;
 		private IJobHistoryErrorManager JobHistoryErrorManager { get; set; }
 		private JobHistoryErrorDTO.UpdateStatusType UpdateStatusType { get; set; }
 
@@ -73,7 +74,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			JobStatisticsService statisticsService,
 			IToggleProvider toggleProvider,
 			IAgentValidator agentValidator,
-			IIntegrationPointRepository integrationPointRepository)
+			IIntegrationPointRepository integrationPointRepository,
+			IDocumentRepository documentRepository)
 			: base(helper,
 				jobService,
 				serializer,
@@ -98,6 +100,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_exporterFactory = exporterFactory;
 			_helper = helper;
 			_helperFactory = helperFactory;
+			_documentRepository = documentRepository;
 			Logger = helper.GetLoggerFactory().GetLogger().ForContext<ExportServiceManager>();
 		}
 
@@ -191,7 +194,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				IntegrationPointDto.SourceConfiguration,
 				_savedSearchArtifactId,
 				job.SubmittedBy,
-				userImportApiSettings))
+				userImportApiSettings,
+				_documentRepository))
 			{
 				LogPushingDocumentsStart(job);
 				IScratchTableRepository[] scratchTables = _exportServiceJobObservers.OfType<IConsumeScratchTableBatchStatus>()

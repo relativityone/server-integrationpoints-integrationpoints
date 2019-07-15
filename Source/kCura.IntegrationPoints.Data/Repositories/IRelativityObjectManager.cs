@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data.UtilityDTO;
 using Relativity.API;
+using Relativity.Services.DataContracts.DTOs.Results;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Repositories
@@ -42,6 +43,9 @@ namespace kCura.IntegrationPoints.Data.Repositories
 
 		System.IO.Stream StreamUnicodeLongText(int relativityObjectArtifactId, FieldRef longTextFieldRef, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser);
 		System.IO.Stream StreamNonUnicodeLongText(int relativityObjectArtifactId, FieldRef longTextFieldRef, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser);
+
+		Task<ExportInitializationResults> InitializeExportAsync(QueryRequest queryRequest, int start, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser);
+		Task<RelativityObjectSlim[]> RetrieveResultsBlockFromExportAsync(Guid runID, int resultsBlockSize, int exportIndexID, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser);
 
 		int GetWorkspaceID_Deprecated();
 	}

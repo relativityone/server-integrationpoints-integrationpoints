@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation;
 using Moq;
 using NUnit.Framework;
 using Relativity.Kepler.Transport;
+using Relativity.Services.DataContracts.DTOs.Results;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 
@@ -161,6 +162,58 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 			actualResult.Should().Be(expectedResult);
 		}
 
+		[Test]
+		public async Task InitializeExportAsync_ShouldReturnSameResultAsObjectManager()
+		{
+			//arrange
+			const int workspaceID = 101;
+			var queryRequest = new QueryRequest();
+			const int start = 5;
+			ExportInitializationResults expectedResult = new ExportInitializationResults();
+
+			_objectManagerMock.Setup(x => x.InitializeExportAsync(
+					workspaceID,
+					queryRequest,
+					start))
+				.ReturnsAsync(expectedResult);
+
+			//act
+			ExportInitializationResults actualResult = await _sut
+				.InitializeExportAsync(workspaceID, queryRequest, start)
+				.ConfigureAwait(false);
+
+			//assert
+			_objectManagerMock.Verify(x => x.InitializeExportAsync(workspaceID, queryRequest, start), Times.Once);
+			actualResult.Should().Be(expectedResult);
+		}
+
+		[Test]
+		public async Task RetrieveResultsBlockFromExportAsync_ShouldReturnSameResultAsObjectManager()
+		{
+			//arrange
+			const int workspaceID = 101;
+			Guid runID = Guid.Parse("EA150180-3A58-4DFF-AA6C-6385075FCFD3");
+			const int resultsBlockSize = 5;
+			const int exportIndexID = 0;
+			RelativityObjectSlim relativityObjectSlim = new RelativityObjectSlim();
+			RelativityObjectSlim[] expectedResult = {relativityObjectSlim};
+
+			_objectManagerMock.Setup(x => x.RetrieveResultsBlockFromExportAsync(
+					workspaceID,
+					runID,
+					resultsBlockSize,
+					exportIndexID))
+				.ReturnsAsync(expectedResult);
+
+			//act
+			RelativityObjectSlim[] actualResult = await _sut
+				.RetrieveResultsBlockFromExportAsync(workspaceID, runID, resultsBlockSize, exportIndexID)
+				.ConfigureAwait(false);
+
+			//assert
+			_objectManagerMock.Verify(x => x.RetrieveResultsBlockFromExportAsync(workspaceID, runID, resultsBlockSize, exportIndexID), Times.Once);
+			actualResult.Should().BeSameAs(expectedResult);
+		}
 
 		[Test]
 		public void CreateAsync_ShouldThrowWhenObjectManagerNotInitialized()
@@ -296,6 +349,24 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 		}
 
 		[Test]
+		public void InitializeExportAsync_ShouldThrowWhenObjectManagerNotInitialized()
+		{
+			//arrange
+			const int workspaceID = 101;
+			var queryRequest = new QueryRequest();
+			const int start = 5;
+
+			_sut = new ObjectManagerFacade(() => null);
+
+			//act
+			Func<Task> action = () => _sut
+				.InitializeExportAsync(workspaceID, queryRequest, start);
+
+			//assert
+			action.ShouldThrow<NullReferenceException>();
+		}
+
+		[Test]
 		public void UpdateAsync_MassUpdate_ShouldThrowWhenObjectManagerNotInitialized()
 		{
 			//arrange
@@ -316,6 +387,25 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 				.Which.Should().Be(exceptionToThrow);
 		}
 		
+		[Test]
+		public void RetrieveResultsBlockFromExportAsync_ShouldThrowWhenObjectManagerNotInitialized()
+		{
+			//arrange
+			const int workspaceID = 101;
+			Guid runID = Guid.Parse("EA150180-3A58-4DFF-AA6C-6385075FCFD3");
+			const int resultsBlockSize = 5;
+			const int exportIndexID = 0;
+
+			_sut = new ObjectManagerFacade(() => null);
+
+			//act
+			Func<Task> action = () => _sut
+				.RetrieveResultsBlockFromExportAsync(workspaceID, runID, resultsBlockSize, exportIndexID);
+
+			//assert
+			action.ShouldThrow<NullReferenceException>();
+		}
+
 		[Test]
 		public async Task This_ShouldDisposeObjectManagerWhenItsAlreadyCreated()
 		{
