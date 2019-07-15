@@ -25,7 +25,8 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
 			string testDir = NUnit.Framework.TestContext.CurrentContext.TestDirectory.Replace("kCura.IntegrationPoints.UITests",
 				"kCura.IntegrationPoint.Tests.Core");
 			Log.Information("TestDir for ImportDocuments '{testDir}'", testDir);
-			DocumentsTestData data = DocumentTestDataBuilder.BuildTestData(testDir, withNatives, testDataType);
+			string prefix = string.Empty;
+			DocumentsTestData data = DocumentTestDataBuilder.BuildTestData(prefix, testDir, withNatives, testDataType);
 			var importHelper = new ImportHelper();
 			var workspaceService = new WorkspaceService(importHelper);
 			bool importSucceded = workspaceService.TryImportData(_testContext.GetWorkspaceId(), data);

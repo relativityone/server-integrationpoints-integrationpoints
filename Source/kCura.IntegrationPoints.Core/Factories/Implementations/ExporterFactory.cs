@@ -6,15 +6,12 @@ using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Core.Services.Exporter.Images;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.Contexts;
-using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Newtonsoft.Json;
 using Relativity.API;
-using Relativity.Core;
-using Relativity.Core.Api.Shared.Manager.Export;
 
 namespace kCura.IntegrationPoints.Core.Factories.Implementations
 {
@@ -52,7 +49,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			string serializedSourceConfiguration,
 			int savedSearchArtifactID,
 			int onBehalfOfUser,
-			string userImportApiSettings)
+			string userImportApiSettings,
+			IDocumentRepository documentRepository)
 		{
 			LogBuildExporterExecutionWithParameters(mappedFields, serializedSourceConfiguration, savedSearchArtifactID, onBehalfOfUser, userImportApiSettings);
 			ClaimsPrincipal claimsPrincipal = GetClaimsPrincipal(onBehalfOfUser);
@@ -60,7 +58,6 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 
 			ImportSettings settings = JsonConvert.DeserializeObject<ImportSettings>(userImportApiSettings);
 			SourceConfiguration sourceConfiguration = JsonConvert.DeserializeObject<SourceConfiguration>(serializedSourceConfiguration);
-			BaseServiceContext baseServiceContext = claimsPrincipal.GetUnversionContext(sourceConfiguration.SourceWorkspaceArtifactId);
 
 			IExporterService exporter = settings.ImageImport ?
 				CreateImageExporterService(
@@ -71,7 +68,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 					baseServiceContextProvider,
 					settings,
 					sourceConfiguration,
-					baseServiceContext) :
+					documentRepository) :
 				CreateRelativityExporterService(
 					jobStopManager,
 					mappedFields,
@@ -80,7 +77,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 					claimsPrincipal,
 					baseServiceContextProvider,
 					settings,
-					baseServiceContext);
+					documentRepository);
 			return exporter;
 		}
 		
@@ -92,14 +89,13 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			ClaimsPrincipal claimsPrincipal,
 			IBaseServiceContextProvider baseServiceContextProvider,
 			ImportSettings settings,
-			BaseServiceContext baseServiceContext)
+			IDocumentRepository documentRepository)
 		{
-			IExporter exporter = BuildSavedSearchExporter(baseServiceContext, settings.LoadImportedFullTextFromServer);
 			IFolderPathReader folderPathReader = _folderPathReaderFactory.Create(claimsPrincipal, settings, config);
 			const int startAtRecord = 0;
 
 			return new RelativityExporterService(
-				exporter,
+				documentRepository,
 				_relativityObjectManager,
 				_sourceRepositoryFactory,
 				_targetRepositoryFactory,
@@ -121,24 +117,21 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			IBaseServiceContextProvider baseServiceContextProvider,
 			ImportSettings settings,
 			SourceConfiguration sourceConfiguration,
-			BaseServiceContext baseServiceContext)
+			IDocumentRepository documentRepository)
 		{
-			IExporter exporter;
 			int searchArtifactId;
 			if (sourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.SavedSearch)
 			{
-				exporter = BuildSavedSearchExporter(baseServiceContext, settings.LoadImportedFullTextFromServer);
 				searchArtifactId = savedSearchArtifactId;
 			}
 			else
 			{
-				exporter = BuildProductionExporter(baseServiceContext, settings.LoadImportedFullTextFromServer);
 				searchArtifactId = sourceConfiguration.SourceProductionId;
 			}
 
 			const int startAtRecord = 0;
 			return new ImageExporterService(
-				exporter,
+				documentRepository,
 				_relativityObjectManager,
 				_sourceRepositoryFactory,
 				_targetRepositoryFactory,
@@ -160,30 +153,6 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			}
 			ClaimsPrincipal claimsPrincipal = _claimsPrincipalFactory.CreateClaimsPrincipal(onBehalfOfUser);
 			return claimsPrincipal;
-		}
-
-		private IExporter BuildSavedSearchExporter(BaseServiceContext baseService, bool shouldUseDgPaths)
-		{
-			return new SavedSearchExporter(
-				baseService,
-				new UserPermissionsMatrix(baseService),
-				global::Relativity.ArtifactType.Document,
-				Domain.Constants.MULTI_VALUE_DELIMITER,
-				Domain.Constants.NESTED_VALUE_DELIMITER,
-				global::Relativity.Core.Api.Settings.RSAPI.Config.DynamicallyLoadedDllPaths,
-				shouldUseDgPaths);
-		}
-
-		private IExporter BuildProductionExporter(BaseServiceContext baseService, bool shouldUseDgPaths)
-		{
-			return new ProductionExporter(
-				baseService,
-				new UserPermissionsMatrix(baseService),
-				global::Relativity.ArtifactType.Document,
-				Domain.Constants.MULTI_VALUE_DELIMITER,
-				Domain.Constants.NESTED_VALUE_DELIMITER,
-				global::Relativity.Core.Api.Settings.RSAPI.Config.DynamicallyLoadedDllPaths,
-				shouldUseDgPaths);
 		}
 
 		private void LogBuildExporterExecutionWithParameters(

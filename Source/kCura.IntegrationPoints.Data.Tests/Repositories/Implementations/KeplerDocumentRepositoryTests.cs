@@ -3,29 +3,44 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using kCura.IntegrationPoints.Data.DTO;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.DTO;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Data.Tests.Repositories.Implementations.CommonTests;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.Relativity.Client;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Services.DataContracts.DTOs.Results;
+using Relativity.Services.Field;
 using Relativity.Services.Objects.DataContracts;
+using Field = Relativity.Services.Objects.DataContracts.Field;
+using FieldRef = Relativity.Services.Objects.DataContracts.FieldRef;
 
 namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 {
 	[TestFixture]
 	public class KeplerDocumentRepositoryTests
 	{
-		private KeplerDocumentRepository _sut;
-
 		private Mock<IRelativityObjectManager> _objectManagerMock;
-
+		private ExportInitializationResultsDto _initializationResults;
+		private KeplerDocumentRepository _sut;
 		private MassUpdateTests _massUpdateTests;
+
+		private const int _SEARCH_ARTIFACT_ID = 12321;
+		private const int _PRODUCTION_ARTIFACT_ID = 45654;
+		private const int _START_AT_RECORD = 1;
+		private const string _EXTRACTED_TEXT_FIELD_NAME = "Extracted Text";
+		private const string _CONTROL_NUMBER_FIELD_NAME = "Control Number";
+		private readonly Guid _runIDGuid = new Guid("8D65B607-31C9-4B50-BB19-D3139873E65D");
 
 		[SetUp]
 		public void SetUp()
 		{
+			string[] fieldNames = {"Control Number", "Email", "Test1", "Test2"};
+			_initializationResults = new ExportInitializationResultsDto(_runIDGuid, 0, fieldNames);
 			_objectManagerMock = new Mock<IRelativityObjectManager>();
 			_sut = new KeplerDocumentRepository(_objectManagerMock.Object);
 
@@ -54,8 +69,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				bool isValid = true;
 				isValid &= queryRequest.Condition == @"'CONTROL NUMBER' in ['5','9843','3212']";
 				isValid &= queryRequest.Fields.Any(field => field.Name == "Artifact ID");
-				isValid &= queryRequest.ObjectType.ArtifactTypeID ==
-						   kCura.IntegrationPoint.Tests.Core.Constants.DOCUMENT_ARTIFACT_TYPE_ID;
+				isValid &= queryRequest.ObjectType.ArtifactTypeID == (int) ArtifactType.Document;
 				return isValid;
 			};
 
@@ -145,8 +159,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				{
 					isValid &= queryRequest.Fields.Any(field => field.ArtifactID == fieldID);
 				}
-				isValid &= queryRequest.ObjectType.ArtifactTypeID ==
-						   kCura.IntegrationPoint.Tests.Core.Constants.DOCUMENT_ARTIFACT_TYPE_ID;
+				isValid &= queryRequest.ObjectType.ArtifactTypeID == (int) ArtifactType.Document;
 				return isValid;
 			};
 
@@ -339,6 +352,217 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		public void MassUpdateAsync_ShouldRethrowObjectManagerException()
 		{
 			_massUpdateTests.ShouldRethrowObjectManagerException();
+		}
+
+		[Test]
+		public async Task InitializeSearchExport_ShouldCallObjectManagerWithProperParametersAndReturnProperValue()
+		{
+			// arrange
+			int[] viewFieldIDs = { 1, 5, 88, 2222 };
+			QueryRequest queryRequest = PrepareTestQueryRequestForSavedSearch(viewFieldIDs);
+			ExportInitializationResults exportInitializationResults = CreateTestExportInitializationResults();
+			_objectManagerMock.Setup(x =>
+				x.InitializeExportAsync(
+					It.IsAny<QueryRequest>(),
+					_START_AT_RECORD,
+					ExecutionIdentity.CurrentUser
+				)
+			).ReturnsAsync(exportInitializationResults);
+
+			// act
+			ExportInitializationResultsDto result = await _sut
+				.InitializeSearchExportAsync(_SEARCH_ARTIFACT_ID, viewFieldIDs, _START_AT_RECORD)
+				.ConfigureAwait(false);
+
+			// assert
+			_objectManagerMock.Verify(x =>
+				x.InitializeExportAsync(
+					It.Is<QueryRequest>(query =>
+						VerifyFieldsAreIdentical(queryRequest, query) &&
+						queryRequest.Condition == query.Condition
+					),
+					_START_AT_RECORD,
+					ExecutionIdentity.CurrentUser),
+				Times.Once);
+			result.FieldNames.Should().Equal(
+				exportInitializationResults.FieldData.Select(x => x.Name));
+		}
+
+		[Test]
+		public async Task InitializeProductionExport_ShouldCallObjectManagerWithProperParametersAndReturnProperValue()
+		{
+			// arrange
+			int[] viewFieldIDs = { 1, 5, 88, 2222 };
+			QueryRequest queryRequest = PrepareTestQueryRequestForProduction(viewFieldIDs);
+			ExportInitializationResults exportInitializationResults = CreateTestExportInitializationResults();
+			_objectManagerMock.Setup(x =>
+				x.InitializeExportAsync(
+					It.IsAny<QueryRequest>(),
+					_START_AT_RECORD,
+					ExecutionIdentity.CurrentUser
+				)
+			).ReturnsAsync(exportInitializationResults);
+
+			// act
+			ExportInitializationResultsDto result = await _sut
+				.InitializeProductionExportAsync(_PRODUCTION_ARTIFACT_ID, viewFieldIDs, _START_AT_RECORD)
+				.ConfigureAwait(false);
+
+			// assert
+			_objectManagerMock.Verify(x =>
+				x.InitializeExportAsync(
+					It.Is<QueryRequest>(query =>
+						VerifyFieldsAreIdentical(queryRequest, query) &&
+						queryRequest.Condition == query.Condition
+					),
+					_START_AT_RECORD,
+					ExecutionIdentity.CurrentUser),
+				Times.Once);
+			result.FieldNames.Should().Equal(
+				exportInitializationResults.FieldData.Select(x => x.Name));
+		}
+
+		[Test]
+		public async Task RetrieveResultsBlockFromExport_ShouldReturnSameResultAsObjectManager()
+		{
+			// arrange
+			const int resultsBlockSize = 10;
+			const int exportIndexID = 0;
+			RelativityObjectSlim[] objects = CreateTestRelativityObjectsSlim(resultsBlockSize);
+			_objectManagerMock.Setup(x => x.RetrieveResultsBlockFromExportAsync(
+						_runIDGuid,
+						resultsBlockSize,
+						exportIndexID,
+						ExecutionIdentity.CurrentUser))
+				.ReturnsAsync(objects);
+
+			// act
+			IList<RelativityObjectSlimDto> result = await _sut
+				.RetrieveResultsBlockFromExportAsync(_initializationResults, resultsBlockSize, exportIndexID)
+				.ConfigureAwait(false);
+
+			// assert
+			_objectManagerMock.Verify(x =>
+					x.RetrieveResultsBlockFromExportAsync(
+						_runIDGuid,
+						resultsBlockSize,
+						exportIndexID,
+						ExecutionIdentity.CurrentUser),
+				Times.Once);
+			result.Count.Should().Be(objects.Length);
+			VerifyObjectDtosAreTheSameAsObjects(result, objects);
+		}
+
+		private ExportInitializationResults CreateTestExportInitializationResults()
+		{
+			List<FieldMetadata> fields = new List<FieldMetadata>
+			{
+				new FieldMetadata
+				{
+					Name = _CONTROL_NUMBER_FIELD_NAME
+				},
+				new FieldMetadata
+				{
+					Name = _EXTRACTED_TEXT_FIELD_NAME
+				}
+			};
+			ExportInitializationResults exportInitializationResults = new ExportInitializationResults()
+			{
+				RunID = _runIDGuid,
+				RecordCount = fields.Count,
+				FieldData = fields
+			};
+			return exportInitializationResults;
+		}
+
+		private static RelativityObjectSlim[] CreateTestRelativityObjectsSlim(int size)
+		{
+			var objects = new RelativityObjectSlim[size];
+			int iterator = 1;
+			for (int i = 0; i < size; ++i)
+			{
+				int artifactID = ++iterator;
+				var values = new List<object> {++iterator, ++iterator, ++iterator, ++iterator};
+				var objectSlim = new RelativityObjectSlim
+				{
+					ArtifactID = artifactID,
+					Values = values
+				};
+				objects[i] = objectSlim;
+			}
+			return objects;
+		}
+
+		private static QueryRequest PrepareTestQueryRequestForSavedSearch(IEnumerable<int> artifactViewFieldIDs)
+		{
+			string queryString = $"'ArtifactId' IN SAVEDSEARCH {_SEARCH_ARTIFACT_ID}";
+			return PrepareTestQueryRequest(artifactViewFieldIDs, queryString);
+		}
+
+		private static QueryRequest PrepareTestQueryRequestForProduction(IEnumerable<int> artifactViewFieldIDs)
+		{
+			string queryString =
+				$"(('Production' SUBQUERY ((('Production::ProductionSet' == OBJECT {_PRODUCTION_ARTIFACT_ID})))))";
+			return PrepareTestQueryRequest(artifactViewFieldIDs, queryString);
+		}
+
+		private static QueryRequest PrepareTestQueryRequest(IEnumerable<int> artifactViewFieldIDs, string queryString)
+		{
+			List<FieldRef> fields = artifactViewFieldIDs.Select(
+				artifactViewFieldId => new FieldRef
+				{
+					ArtifactID = artifactViewFieldId
+				}
+			).ToList();
+
+			var queryRequest = new QueryRequest
+			{
+				Fields = fields,
+				Condition = queryString
+			};
+			return queryRequest;
+		}
+
+		private bool VerifyFieldsAreIdentical(QueryRequest expectedQueryRequest, QueryRequest actualQueryRequest)
+		{
+			expectedQueryRequest.Fields.Length().Should().Be(actualQueryRequest.Fields.Length());
+			FieldRef[] expectedFieldRef = expectedQueryRequest.Fields.ToArray();
+			FieldRef[] actualFieldRef = actualQueryRequest.Fields.ToArray();
+
+			var asserts = expectedFieldRef.Zip(actualFieldRef, (a, e) => new
+			{
+				Expected = e,
+				Actual = a
+			});
+
+			foreach (var assert in asserts)
+			{
+				assert.Expected.ArtifactID.Should().Be(assert.Actual.ArtifactID);
+				assert.Expected.Guid.Should().Be(assert.Actual.Guid);
+				assert.Expected.ViewFieldID.Should().Be(assert.Actual.ViewFieldID);
+				assert.Expected.Name.Should().Be(assert.Actual.Name);
+			}
+
+			return true;
+		}
+
+		private void VerifyObjectDtosAreTheSameAsObjects(
+			IEnumerable<RelativityObjectSlimDto> objectDtos,
+			IEnumerable<RelativityObjectSlim> objects)
+		{
+			var zippedObjects = objectDtos.Zip(objects, (a, e) => new
+			{
+				ObjectDto = a,
+				Object = e
+			});
+
+			foreach (var zippedObject in zippedObjects)
+			{
+				RelativityObjectSlimDto objectDto = zippedObject.ObjectDto;
+				RelativityObjectSlim relativityObject = zippedObject.Object;
+				objectDto.ArtifactID.Should().Be(relativityObject.ArtifactID);
+				objectDto.FieldValues.Values.Should().BeEquivalentTo(relativityObject.Values);
+			}
 		}
 	}
 }

@@ -12,6 +12,6 @@ Relativity.Productions.Services.Interfaces
 Relativity.Services.DataContracts
 Relativity.Services.Interfaces
 Relativity.Telemetry.APM
-relativity.testing.identification
+Relativity.Testing.Identification
 Relativity.Toggles
 Serilog

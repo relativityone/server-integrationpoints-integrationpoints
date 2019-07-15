@@ -1,13 +1,15 @@
-﻿using System.Threading.Tasks;
+﻿using System;
 using kCura.IntegrationPoints.Data.Interfaces;
-using Relativity.Kepler.Transport;
 using Relativity.Services.Objects.DataContracts;
+using System.Threading.Tasks;
+using Relativity.Kepler.Transport;
+using Relativity.Services.DataContracts.DTOs.Results;
 
 namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
 {
 	internal class ObjectManagerFacadeRetryDecorator : IObjectManagerFacade
 	{
-		private bool _disposedValue = false;
+		private bool _disposedValue;
 
 		private const ushort _MAX_NUMBER_OF_RETRIES = 3;
 		private const ushort _EXPONENTIAL_WAIT_TIME_BASE_IN_SEC = 3;
@@ -74,6 +76,27 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
 			return _retryHandler.ExecuteWithRetriesAsync(
 				() => _objectManager.StreamLongTextAsync(workspaceArtifactID, exportObject, longTextField));
 		}
+
+		public Task<ExportInitializationResults> InitializeExportAsync(int workspaceArtifactID, QueryRequest queryRequest, int start)
+		{
+			return _retryHandler.ExecuteWithRetriesAsync(
+				() => _objectManager.InitializeExportAsync(workspaceArtifactID, queryRequest, start));
+		}
+
+		public Task<RelativityObjectSlim[]> RetrieveResultsBlockFromExportAsync(
+			int workspaceArtifactID,
+			Guid runID,
+			int resultsBlockSize,
+			int exportIndexID)
+		{
+			return _retryHandler.ExecuteWithRetriesAsync(
+				() => _objectManager.RetrieveResultsBlockFromExportAsync(
+					workspaceArtifactID, 
+					runID, 
+					resultsBlockSize,
+					exportIndexID));
+		}
+
 
 		protected virtual void Dispose(bool disposing)
 		{

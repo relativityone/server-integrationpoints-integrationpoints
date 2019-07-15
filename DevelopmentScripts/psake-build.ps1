@@ -309,6 +309,7 @@ task copy_dlls_to_lib_dir -depends create_lib_dir {
 
 task copy_test_dlls_to_lib_dir -depends create_lib_dir -precondition { return -not $skip_tests } {
     $test_files =
+            "Source\Rip.SystemTests\SystemTestData",
             "Source\kCura.IntegrationPoint.Tests.Core\ExternalDependencies",
             "Source\kCura.IntegrationPoint.Tests.Core\TestData",
             "Source\kCura.IntegrationPoint.Tests.Core\TestDataExtended",

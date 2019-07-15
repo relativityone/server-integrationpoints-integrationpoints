@@ -1,5 +1,4 @@
-﻿using kCura.IntegrationPoints.Data.Facades;
-using kCura.IntegrationPoints.Data.Transformers;
+﻿using kCura.IntegrationPoints.Data.Transformers;
 using kCura.IntegrationPoints.Data.UtilityDTO;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using Relativity.API;
@@ -13,6 +12,7 @@ using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data.Facades.ObjectManager;
 using kCura.IntegrationPoints.Data.StreamWrappers;
 using Relativity.Kepler.Transport;
+using Relativity.Services.DataContracts.DTOs.Results;
 using FieldRef = Relativity.Services.Objects.DataContracts.FieldRef;
 using QueryResult = Relativity.Services.Objects.DataContracts.QueryResult;
 using RelativityObjectRef = Relativity.Services.Objects.DataContracts.RelativityObjectRef;
@@ -404,6 +404,82 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
+		public async Task<ExportInitializationResults> InitializeExportAsync(
+			QueryRequest queryRequest,
+			int start,
+			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
+		{
+			try
+			{
+				using (IObjectManagerFacade client = _objectManagerFacadeFactory.Create(executionIdentity))
+				{
+					return await client
+						.InitializeExportAsync(_workspaceArtifactId, queryRequest, start)
+						.ConfigureAwait(false);
+				}
+			}
+			catch (IntegrationPointsException)
+			{
+				throw;
+			}
+			catch (Exception ex)
+			{
+				string message = GetInitializeExportErrorMessage(
+					_workspaceArtifactId,
+					queryRequest.Condition,
+					start,
+					executionIdentity);
+				HandleObjectManagerException(ex, message);
+				throw;
+			}
+		}
+
+		public async Task<RelativityObjectSlim[]> RetrieveResultsBlockFromExportAsync(
+			Guid runID,
+			int resultsBlockSize, 
+			int exportIndexID, 
+			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
+		{
+			try
+			{
+				using (IObjectManagerFacade client = _objectManagerFacadeFactory.Create(executionIdentity))
+				{
+					var results = new List<RelativityObjectSlim>(resultsBlockSize);
+					int remainingObjectsCount = resultsBlockSize;
+					int startIndex = exportIndexID;
+					RelativityObjectSlim[] partialResults;
+
+					do
+					{
+						partialResults = await client
+							.RetrieveResultsBlockFromExportAsync(_workspaceArtifactId, runID, remainingObjectsCount, startIndex)
+							.ConfigureAwait(false);
+
+						results.AddRange(partialResults);
+						remainingObjectsCount -= partialResults.Length;
+						startIndex += partialResults.Length;
+					} while (remainingObjectsCount > 0 && partialResults.Any());
+
+					return results.ToArray();
+				}
+			}
+			catch (IntegrationPointsException)
+			{
+				throw;
+			}
+			catch (Exception ex)
+			{
+				string message = GetRetrieveNextResultsBlockFromExportErrorMessage(
+					_workspaceArtifactId,
+					runID.ToString(),
+					resultsBlockSize,
+					exportIndexID,
+					executionIdentity);
+				HandleObjectManagerException(ex, message);
+				throw;
+			}
+		}
+
 		//This method was introduced during migration to SecretStore,
 		//because it was really hard to decide which helper do
 		//we need to use to get proper workspaceID for given case.
@@ -468,8 +544,40 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			var msgBuilder = new StringBuilder();
 			msgBuilder.Append($"Error occurred when calling {methodName} method. ");
 			msgBuilder.Append($"Workspace: ({workspaceArtifactID}) ");
-			msgBuilder.Append($"ExportObject artifact id: ({relativityObjectArtifactId}) ");
-			msgBuilder.Append($"Long text field ({longTextFieldRef?.Name}) artifact id: ({longTextFieldRef?.ArtifactID}) ");
+			msgBuilder.Append($"ExportObject artifact ID: ({relativityObjectArtifactId}) ");
+			msgBuilder.Append($"Long text field ({longTextFieldRef?.Name}) artifact ID: ({longTextFieldRef?.ArtifactID}) ");
+			msgBuilder.Append($"Execution identity: {executionIdentity}");
+			return msgBuilder.ToString();
+		}
+
+		private string GetInitializeExportErrorMessage(
+			int workspaceArtifactID,
+			string queryCondition,
+			int startRecord,
+			ExecutionIdentity executionIdentity)
+		{
+			var msgBuilder = new StringBuilder();
+			msgBuilder.Append($"Error occured when calling {nameof(InitializeExportAsync)}. ");
+			msgBuilder.Append($"Workspace: ({workspaceArtifactID}) ");
+			msgBuilder.Append($"Query condition: ({queryCondition})");
+			msgBuilder.Append($"Start record: ({startRecord}) ");
+			msgBuilder.Append($"Execution identity: {executionIdentity}");
+			return msgBuilder.ToString();
+		}
+
+		private string GetRetrieveNextResultsBlockFromExportErrorMessage(
+			int workspaceArtifactID,
+			string runID,
+			int resultsBlockSize,
+			int exportIndexID,
+			ExecutionIdentity executionIdentity)
+		{
+			var msgBuilder = new StringBuilder();
+			msgBuilder.Append($"Error occured when calling {nameof(RetrieveResultsBlockFromExportAsync)}. ");
+			msgBuilder.Append($"Workspace: ({workspaceArtifactID}) ");
+			msgBuilder.Append($"Run ID: ({runID}) ");
+			msgBuilder.Append($"Results block size: ({resultsBlockSize}) ");
+			msgBuilder.Append($"Export index ID: ({exportIndexID}) ");
 			msgBuilder.Append($"Execution identity: {executionIdentity}");
 			return msgBuilder.ToString();
 		}

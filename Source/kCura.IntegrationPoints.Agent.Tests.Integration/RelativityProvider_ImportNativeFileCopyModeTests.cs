@@ -1,4 +1,5 @@
-﻿using Castle.MicroKernel.Registration;
+﻿using System.Linq;
+using Castle.MicroKernel.Registration;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
@@ -16,6 +17,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client.DTOs;
@@ -81,6 +83,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			IJobStatusUpdater jobStatusUpdater = Container.Resolve<IJobStatusUpdater>();
 			IAPILog logger = Container.Resolve<IAPILog>();
 			IDateTimeHelper dateTimeHelper = Container.Resolve<IDateTimeHelper>();
+			IDocumentRepository documentRepository = Container.Resolve<IDocumentRepository>();
 			var jobHistoryUpdater = new JobHistoryBatchUpdateStatus(
 				jobStatusUpdater,
 				jobHistoryService,
@@ -107,7 +110,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				jobStatisticsService,
 				null,
 				agentValidator,
-				IntegrationPointRepository
+				IntegrationPointRepository,
+				documentRepository
 			);
 
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
@@ -215,18 +219,20 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		{
 			var workspaceService = new WorkspaceService(new ImportHelper(withNatives));
 
-			DocumentsTestData documentsTestData = DocumentTestDataBuilder.BuildTestData(null, withNatives);
+			DocumentsTestData documentsTestData = DocumentTestDataBuilder.BuildTestData(withNatives: withNatives);
 			workspaceService.TryImportData(workspaceId, documentsTestData);
 		}
 
-		private void VerifyHasNativeForAllDocuments(int workspaceId, bool expectedHasNative)
+		private void VerifyHasNativeForAllDocuments(int workspaceID, bool expectedHasNative)
 		{
 			string[] documentFields = { TestConstants.FieldNames.HAS_NATIVES };
-			foreach (Result<Relativity.Client.DTOs.Document> docResult in DocumentService.GetAllDocuments(workspaceId, documentFields))
-			{
-				bool hasNative = docResult.Artifact.HasNative.Value;
-				Assert.AreEqual(expectedHasNative, hasNative);
-			}
+
+			bool allHasNativeAsExpected = DocumentService
+				.GetAllDocuments(workspaceID, documentFields)
+				.Select(document => document.Artifact.HasNative.Value)
+				.All(hasNative => hasNative == expectedHasNative);
+
+			Assert.IsTrue(allHasNativeAsExpected);
 		}
 	}
 }

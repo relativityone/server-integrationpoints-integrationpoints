@@ -12,8 +12,8 @@ using kCura.IntegrationPoints.UITests.Validation;
 using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
+using kCura.Relativity.Client;
 using Relativity.Testing.Identification;
-using Constants = kCura.IntegrationPoint.Tests.Core.Constants;
 using IntegrationPointType = kCura.IntegrationPoint.Tests.Core.Models.IntegrationPointType;
 
 namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
@@ -183,7 +183,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 					.CreateViewAsync(
 						workspaceID,
 						_VIEW_NAME,
-						Constants.DOCUMENT_ARTIFACT_TYPE_ID,
+						(int) ArtifactType.Document,
 						viewFieldsGuids)
 					.ConfigureAwait(false);
 			}

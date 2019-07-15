@@ -3,6 +3,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data.Facades.ObjectManager;
 using Moq;
+using Relativity.Services.DataContracts.DTOs.Results;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementation.TestsHelpers
@@ -41,5 +42,20 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 			It.IsAny<int>(),
 			It.IsAny<int>()
 		);
+
+		public static Expression<Func<IObjectManagerFacade, Task<ExportInitializationResults>>> InitializeExportCallWithAnyArgs 
+			=> x => x.InitializeExportAsync(
+				It.IsAny<int>(),
+				It.IsAny<QueryRequest>(),
+				It.IsAny<int>()
+		);
+
+		public static Expression<Func<IObjectManagerFacade, Task<RelativityObjectSlim[]>>> RetrieveResultsBlockFromExportCallWithAnyArgs
+			=> x => x.RetrieveResultsBlockFromExportAsync(
+				It.IsAny<int>(),
+				It.IsAny<Guid>(),
+				It.IsAny<int>(),
+				It.IsAny<int>()
+			);
 	}
 }
