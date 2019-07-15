@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ using kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementation.Te
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Services.DataContracts.DTOs.Results;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementation
@@ -678,6 +680,59 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 
 			//assert
 			_objectManagerMock.Verify(x => x.Dispose(), Times.Once);
+		}
+
+		[Test]
+		public async Task InitializeExportAsync_ShouldReturnSameResultAsInnerFacade()
+		{
+			//arrange
+			const int workspaceID = 101;
+			var queryRequest = new QueryRequest();
+			const int start = 5;
+			ExportInitializationResults expectedResult = new ExportInitializationResults();
+
+			_objectManagerMock.Setup(x => x.InitializeExportAsync(
+					workspaceID,
+					queryRequest,
+					start))
+				.ReturnsAsync(expectedResult);
+
+			//act
+			ExportInitializationResults actualResult = await _sut
+				.InitializeExportAsync(workspaceID, queryRequest, start)
+				.ConfigureAwait(false);
+
+			//assert
+			_objectManagerMock.Verify(x => x.InitializeExportAsync(workspaceID, queryRequest, start), Times.Once);
+			actualResult.Should().Be(expectedResult);
+		}
+
+		[Test]
+		public async Task RetrieveResultsBlockFromExportAsync_ShouldReturnSameResultAsInnerFacade()
+		{
+			//arrange
+			const int workspaceID = 101;
+			Guid runID = Guid.Parse("EA150180-3A58-4DFF-AA6C-6385075FCFD3");
+			const int resultsBlockSize = 5;
+			const int exportIndexID = 0;
+			RelativityObjectSlim relativityObjectSlim = new RelativityObjectSlim();
+			RelativityObjectSlim[] expectedResult = { relativityObjectSlim };
+
+			_objectManagerMock.Setup(x => x.RetrieveResultsBlockFromExportAsync(
+					workspaceID,
+					runID,
+					resultsBlockSize,
+					exportIndexID))
+				.ReturnsAsync(expectedResult);
+
+			//act
+			RelativityObjectSlim[] actualResult = await _sut
+				.RetrieveResultsBlockFromExportAsync(workspaceID, runID, resultsBlockSize, exportIndexID)
+				.ConfigureAwait(false);
+
+			//assert
+			_objectManagerMock.Verify(x => x.RetrieveResultsBlockFromExportAsync(workspaceID, runID, resultsBlockSize, exportIndexID), Times.Once);
+			actualResult.Should().BeSameAs(expectedResult);
 		}
 
 		private CreateRequest BuildCreateRequest(

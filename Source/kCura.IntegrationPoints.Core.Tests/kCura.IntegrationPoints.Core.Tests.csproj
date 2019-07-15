@@ -56,6 +56,7 @@
     <Compile Include="Authentication\OAuth2ClientFactoryTests.cs" />
     <Compile Include="Authentication\OAuth2TokenGeneratorTests.cs" />
     <Compile Include="Authentication\TokenCredentialProviderTests.cs" />
+    <Compile Include="Extensions\DictionaryExtensionsTests.cs" />
     <Compile Include="Extensions\StringExtensionsTests.cs" />
     <Compile Include="Extensions\DictionaryExtensionsTests.cs" />
     <Compile Include="Factories\HelperFactoryTests.cs" />
@@ -650,17 +651,6 @@
       <ItemGroup>
         <Reference Include="Relativity">
           <HintPath>..\..\packages\Relativity\lib\net462\Relativity.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.API">
-          <HintPath>..\..\packages\Relativity.API\lib\net462\Relativity.API.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

@@ -126,6 +126,7 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Converters\FieldRefExtensionsTests.cs" />
+    <Compile Include="Converters\FieldUpdateRequestDtoExtensionsTests.cs" />
     <Compile Include="Converters\FieldValuePairExtensionsTests.cs" />
     <Compile Include="Converters\RelativityObjectExtensionsTests.cs" />
     <Compile Include="Converters\WorkspaceRefExtensionsTests.cs" />
@@ -143,14 +144,17 @@
     <Compile Include="Facades\SecretStore\Implementation\SecretStoreFacadeRetryDecoratorTests.cs" />
     <Compile Include="Facades\SecretStore\Implementation\SecretStoreFacadeInstrumentationDecoratorTests.cs" />
     <Compile Include="Facades\SecretStore\Implementation\SecretStoreFacadeTests.cs" />
-    <Compile Include="Helpers\MatchHelper.cs" />
+    <Compile Include="Helpers\MassUpdateHelperTests.cs" />
+    <Compile Include="Installers\HelpersRegistrationTests.cs" />
     <Compile Include="Installers\RepositoryRegistrationTests.cs" />
     <Compile Include="Installers\RetryingMechanismRegistrationTests.cs" />
     <Compile Include="Repositories\DTO\MultiObjectReferenceDtoTests.cs" />
     <Compile Include="QueryOptions\JobHistoryQueryOptionsTests.cs" />
     <Compile Include="Models\SecretPathTests.cs" />
+    <Compile Include="Repositories\DTO\SingleChoiceReferenceDtoTests.cs" />
     <Compile Include="Repositories\Implementations\AuditRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\CaseRepositoryTests.cs" />
+    <Compile Include="Repositories\Implementations\CommonTests\MassUpdateTests.cs" />
     <Compile Include="Repositories\Implementations\FieldRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\FileRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\FoundationRepositoryFactoryTests.cs" />

@@ -11,10 +11,8 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using Relativity;
-using Relativity.API;
 using Relativity.Testing.Identification;
 using Constants = kCura.IntegrationPoints.Core.Constants;
-using APIHelper_SecretStoreFactory = Relativity.APIHelper.SecretStore.SecretStoreFactory;
 
 namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointManager
 {
@@ -30,13 +28,6 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 		public override void SuiteSetup()
 		{
 			base.SuiteSetup();
-
-#pragma warning disable 414, CS0618
-			// Platform made currently BuildSecretStore method internal. The only option is for now use obsolute method. 
-			// When Platofrm team deliver final solution we should replace the code
-			ExtensionPointServiceFinder.SecretStoreHelper = APIHelper_SecretStoreFactory.SecretCatalog;
-#pragma warning restore
-
 			_client = Helper.CreateProxy<IIntegrationPointManager>();
 		}
 

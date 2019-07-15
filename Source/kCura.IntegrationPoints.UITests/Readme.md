@@ -2,7 +2,8 @@
 
 ## Developer documentation
 
-More details about RIP UI tests: https://einstein.kcura.com/display/DV/RIP+UI+Tests
+* [More details about RIP UI tests](https://einstein.kcura.com/display/DV/RIP+UI+Tests)
+* [Descriptions of test cases](https://einstein.kcura.com/pages/viewpage.action?spaceKey=DV&title=Relativity+to+Relativity)
 
 ---
 

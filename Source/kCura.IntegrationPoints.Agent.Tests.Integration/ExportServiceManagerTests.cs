@@ -77,6 +77,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			IContextContainerFactory contextContainerFactory = Container.Resolve<IContextContainerFactory>();
 			ISynchronizerFactory synchronizerFactory = Container.Resolve<ISynchronizerFactory>();
 			IExporterFactory exporterFactory = Container.Resolve<IExporterFactory>();
+			IExportServiceObserversFactory exportServiceObserversFactory= Container.Resolve<IExportServiceObserversFactory>();
 			IOnBehalfOfUserClaimsPrincipalFactory onBehalfOfUserClaimsPrincipalFactory = Container.Resolve<IOnBehalfOfUserClaimsPrincipalFactory>();
 			IRepositoryFactory repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			IManagerFactory managerFactory = Container.Resolve<IManagerFactory>();
@@ -91,6 +92,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			IAPILog logger = Container.Resolve<IAPILog>();
 			IDateTimeHelper dateTimeHelper = Container.Resolve<IDateTimeHelper>();
 			IIntegrationPointRepository integrationPointRepository = Container.Resolve<IIntegrationPointRepository>();
+			IDocumentRepository documentRepository = Container.Resolve<IDocumentRepository>();
 			var jobHistoryUpdater = new JobHistoryBatchUpdateStatus(
 				jobStatusUpdater,
 				jobHistoryService,
@@ -104,6 +106,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				_caseContext, contextContainerFactory,
 				synchronizerFactory,
 				exporterFactory,
+				exportServiceObserversFactory,
 				onBehalfOfUserClaimsPrincipalFactory,
 				repositoryFactory,
 				managerFactory,
@@ -116,7 +119,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				jobStatisticsService,
 				null,
 				agentValidator,
-				integrationPointRepository);
+				integrationPointRepository,
+				documentRepository);
 
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
 			_sourceWorkspaceDto = Workspace.GetWorkspaceDto(SourceWorkspaceArtifactID);

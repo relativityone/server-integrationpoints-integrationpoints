@@ -9,10 +9,10 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.Exceptions;
-using Relativity.Services.Objects;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.UtilityDTO;
 using Relativity.Services.Objects.DataContracts;
 using FieldRef = Relativity.Services.Field.FieldRef;
-using QueryResult = Relativity.Services.Objects.DataContracts.QueryResult;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
@@ -41,128 +41,128 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return Workspace.CreateWorkspace(name, templateName);
 		}
 
-		public bool TryImportData(int workspaceArtifactId, DocumentsTestData documentsTestData)
+		public bool TryImportData(int workspaceArtifactID, DocumentsTestData documentsTestData)
 		{
-			return _importHelper.ImportData(workspaceArtifactId, documentsTestData);
+			return _importHelper.ImportData(workspaceArtifactID, documentsTestData);
 		}
 
-		public void ImportData(int workspaceId, DocumentsTestData documentsTestData)
+		public void ImportData(int workspaceID, DocumentsTestData documentsTestData)
 		{
-			bool importSucceeded = TryImportData(workspaceId, documentsTestData);
+			bool importSucceeded = TryImportData(workspaceID, documentsTestData);
 			if (!importSucceeded)
 			{
 				throw new TestException("Importing documents does not succeeded.");
 			}
 		}
 
-		public bool ImportSingleExtractedText(int workspaceArtifactId, string controlNumber, string extractedTextFilePath)
+		public bool ImportSingleExtractedText(int workspaceArtifactID, string controlNumber, string extractedTextFilePath)
 		{
 			System.Data.DataTable documentData = 
 				DocumentTestDataBuilder.GetSingleExtractedTextDocument(controlNumber, extractedTextFilePath);
-			return _importHelper.ImportMetadataFromFileWithExtractedTextInFile(workspaceArtifactId, documentData);
+			return _importHelper.ImportMetadataFromFileWithExtractedTextInFile(workspaceArtifactID, documentData);
 		}
 
 
-		public void DeleteWorkspace(int artifactId)
+		public void DeleteWorkspace(int artifactID)
 		{
 			using (IRSAPIClient rsapiClient = Rsapi.CreateRsapiClient())
 			{
-				rsapiClient.Repositories.Workspace.DeleteSingle(artifactId);
+				rsapiClient.Repositories.Workspace.DeleteSingle(artifactID);
 			}
 		}
 
-		public int CreateSavedSearch(FieldEntry[] fieldEntries,  int workspaceId, string savedSearchName)
+		public int CreateSavedSearch(FieldEntry[] fieldEntries,  int workspaceID, string savedSearchName)
 		{
 			List<FieldRef> fields = fieldEntries
 				.Select(x => new FieldRef(x.DisplayName))
 				.ToList();
 
-			return CreateSavedSearch(fields, workspaceId, savedSearchName);
+			return CreateSavedSearch(fields, workspaceID, savedSearchName);
 		}
 
-		public int CreateSavedSearch(IEnumerable<string> fields, int workspaceId, string savedSearchName)
+		public int CreateSavedSearch(IEnumerable<string> fields, int workspaceID, string savedSearchName)
 		{
-			return CreateSavedSearch(fields.Select(displayName => new FieldRef(displayName)).ToList(), workspaceId,
+			return CreateSavedSearch(fields.Select(displayName => new FieldRef(displayName)).ToList(), workspaceID,
 				savedSearchName);
 		}
 
-		public int CreateSavedSearch(List<FieldRef> fields, int workspaceId, string savedSearchName)
+		public int CreateSavedSearch(List<FieldRef> fields, int workspaceID, string savedSearchName)
 		{
 			var folder = new SearchContainer
 			{
 				Name = _SAVED_SEARCH_FOLDER
 			};
-			int folderArtifactId = SavedSearch.CreateSearchFolder(workspaceId, folder);
+			int folderArtifactID = SavedSearch.CreateSearchFolder(workspaceID, folder);
 
 			var search = new KeywordSearch
 			{
 				Name = savedSearchName,
 				ArtifactTypeID = (int)ArtifactType.Document,
-				SearchContainer = new SearchContainerRef(folderArtifactId),
+				SearchContainer = new SearchContainerRef(folderArtifactID),
 				Fields = fields
 			};
-			return SavedSearch.Create(workspaceId, search);
+			return SavedSearch.Create(workspaceID, search);
 		}
 
-		public int CreateProductionSet(int workspaceArtifactId, string productionSetName)
+		public int CreateProductionSet(int workspaceArtifactID, string productionSetName)
 		{
-			return CreateProductionSetAsync(workspaceArtifactId, productionSetName).ConfigureAwait(false).GetAwaiter().GetResult();
+			return CreateProductionSetAsync(workspaceArtifactID, productionSetName).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
-		public Task<int> CreateProductionSetAsync(int workspaceArtifactId, string productionSetName)
+		public Task<int> CreateProductionSetAsync(int workspaceArtifactID, string productionSetName)
 		{
-			return Production.Create(workspaceArtifactId, productionSetName);
+			return Production.Create(workspaceArtifactID, productionSetName);
 		}
 
-		public int CreateAndRunProduction(int workspaceArtifactId, int savedSearchId, string productionName)
+		public ProductionCreateResultDto CreateAndRunProduction(int workspaceArtifactID, int savedSearchID, string productionName)
 		{
 			string placeHolderFilePath = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\DefaultPlaceholder.tif");
 
-			return CreateAndRunProduction(workspaceArtifactId, savedSearchId, productionName, placeHolderFilePath);
+			return CreateAndRunProduction(workspaceArtifactID, savedSearchID, productionName, placeHolderFilePath);
 		}
 
-		public int CreateAndRunProduction(int workspaceArtifactId, int savedSearchId, string productionName, string placeHolderFilePath)
+		public ProductionCreateResultDto CreateAndRunProduction(int workspaceArtifactID, int savedSearchID, string productionName, string placeHolderFilePath)
 		{
 			return CreateAndRunProductionAsync(
-					workspaceArtifactId,
-					savedSearchId,
+					workspaceArtifactID,
+					savedSearchID,
 					productionName,
 					placeHolderFilePath
 				).GetAwaiter().GetResult();
 		}
 
-		public async Task<int> CreateAndRunProductionAsync(int workspaceArtifactId, int savedSearchId, string productionName, string placeHolderFilePath)
+		public async Task<ProductionCreateResultDto> CreateAndRunProductionAsync(int workspaceArtifactID, int savedSearchID, string productionName, string placeHolderFilePath)
 		{
 			byte[] placeHolderFileDataBytes = File.ReadAllBytes(placeHolderFilePath);
-			int productionId = CreateProductionSet(workspaceArtifactId, productionName);
-			int placeholderId = Placeholder.Create(workspaceArtifactId, placeHolderFileDataBytes);
+			int productionSetArtifactID = CreateProductionSet(workspaceArtifactID, productionName);
+			int placeholderID = Placeholder.Create(workspaceArtifactID, placeHolderFileDataBytes);
 
-			await ProductionDataSource.CreateDataSourceWithPlaceholderAsync(
-				workspaceArtifactId,
-				productionId,
-				savedSearchId,
+			int dataSourceArtifactID = await ProductionDataSource.CreateDataSourceWithPlaceholderAsync(
+				workspaceArtifactID,
+				productionSetArtifactID,
+				savedSearchID,
 				UseImagePlaceholderOption.WhenNoImageExists,
-				placeholderId
+				placeholderID
 			).ConfigureAwait(false);
 
 			await Production.StageAndWaitForCompletionAsync(
-				workspaceArtifactId,
-				productionId
+				workspaceArtifactID,
+				productionSetArtifactID
 			).ConfigureAwait(false);
 
 			await Production.RunAndWaitForCompletionAsync(
-				workspaceArtifactId,
-				productionId
+				workspaceArtifactID,
+				productionSetArtifactID
 			).ConfigureAwait(false);
 
-			return productionId;
+			var productionModel = new ProductionCreateResultDto(productionSetArtifactID, dataSourceArtifactID);
+
+			return productionModel;
 		}
 
-		public async Task<int> GetDefaultProductionPlaceholderArtifactIDAsync(
-			int workspaceArtifactID,
-			IObjectManager objectManager)
+		public async Task<int> GetDefaultProductionPlaceholderArtifactIDAsync(IRelativityObjectManager objectManager)
 		{
-			QueryResult result = await objectManager.QueryAsync(workspaceArtifactID, new QueryRequest
+			ResultSet<RelativityObject> result = await objectManager.QueryAsync(new QueryRequest
 				{
 					ObjectType = new ObjectTypeRef
 					{
@@ -177,12 +177,12 @@ namespace kCura.IntegrationPoint.Tests.Core
 					}
 				}, 1, 1)
 				.ConfigureAwait(false);
-			return result.Objects.Single().ArtifactID;
+			return result.Items.Single().ArtifactID;
 		}
 
-		public int GetView(int workspaceId, string viewName)
+		public int GetView(int workspaceID, string viewName)
 		{
-			return View.QueryView(workspaceId, viewName);
+			return View.QueryView(workspaceID, viewName);
 		}
 	}
 }

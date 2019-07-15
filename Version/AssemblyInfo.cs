@@ -51,6 +51,7 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Email.Tests")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.PerformanceTests")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.RelativitySync.Tests")]
+[assembly: InternalsVisibleTo("Rip.SystemTests")]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 //[assembly: Guid("9808fab4-ae17-49c5-a74a-e34543378422")]
@@ -64,6 +65,6 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
-// [assembly: AssemblyVersion("10.3.1.4")]
-[assembly: AssemblyVersion("10.3.1.4")]
-[assembly: AssemblyFileVersion("10.3.1.4")]
+// [assembly: AssemblyVersion("10.3.0.0")]
+[assembly: AssemblyVersion("10.3.0.0")]
+[assembly: AssemblyFileVersion("10.3.0.0")]

@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
-using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases.Base;
 using NUnit.Framework;
@@ -35,10 +34,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 		public override void Verify(DirectoryInfo directory, DocumentsTestData documentsTestData)
 		{
 			int textCount = documentsTestData.AllDocumentsDataTable.Rows.Count;
-			int nativessCount = documentsTestData.Documents.Sum(folderWithDocumentse => 
-				folderWithDocumentse.Documents.Rows.Cast<DataRow>().Count(documentsRow => documentsRow[Constants.NATIVE_FILE_FIELD] != null || documentsRow[Constants.NATIVE_FILE_FIELD]?.ToString() != String.Empty)
-			);
-			int imagesCount = documentsTestData.Documents.Sum(folderWithDocumentse => folderWithDocumentse.Documents.Rows.Cast<DataRow>().Count(documentsRow => (bool)documentsRow[Constants.HAS_IMAGES_FIELD]));
+			int nativessCount = documentsTestData.Documents.Sum(folderWithDocumentse =>
+				folderWithDocumentse.Documents.Rows.Cast<DataRow>().Count(documentsRow =>
+					documentsRow[TestConstants.FieldNames.NATIVE_FILE] != null ||
+					documentsRow[TestConstants.FieldNames.NATIVE_FILE]?.ToString() != string.Empty));
+			int imagesCount = documentsTestData.Documents.Sum(folderWithDocumentse =>
+				folderWithDocumentse.Documents.Rows.Cast<DataRow>()
+					.Count(documentsRow => (bool) documentsRow[TestConstants.FieldNames.HAS_IMAGES]));
 
 
 			ValidateDirectoriesExistence("NATIVES", directory, nativessCount);

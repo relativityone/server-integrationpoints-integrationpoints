@@ -1,3 +1,4 @@
+Castle.Windsor
 CSharpGuidelineAnalyzer
 kCura.Apps.Common.Data
 kCura.Apps.Common.Utils
@@ -8,8 +9,10 @@ Relativity
 Relativity.API
 Relativity.Core
 Relativity.Data
+Relativity.Kepler
+Relativity.Services.Interfaces
 Relativity.Telemetry.APM
 relativity.transfer.client
-RelativityCore
 Relativity.OAuth2Client
 relativity.testing.identification
+Serilog

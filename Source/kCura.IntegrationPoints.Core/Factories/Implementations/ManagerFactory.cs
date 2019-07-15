@@ -10,6 +10,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
+using kCura.IntegrationPoints.Data.Helpers;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.ScheduleQueue.Core;
@@ -20,12 +21,15 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 	public class ManagerFactory : IManagerFactory
 	{
 		private readonly IHelper _helper;
+		private readonly IAPILog _logger;
 		private readonly IServiceManagerProvider _serviceManagerProvider;
 
 		public ManagerFactory(IHelper helper, IServiceManagerProvider serviceManagerProvider)
 		{
 			_helper = helper;
 			_serviceManagerProvider = serviceManagerProvider;
+
+			_logger = _helper.GetLoggerFactory().GetLogger();
 		}
 
 		public IArtifactGuidManager CreateArtifactGuidManager(IContextContainer contextContainer)
@@ -40,7 +44,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 
 		public IJobHistoryManager CreateJobHistoryManager(IContextContainer contextContainer)
 		{
-			return new JobHistoryManager(CreateRepositoryFactory(contextContainer), _helper);
+			var massUpdateHelper = new MassUpdateHelper(Config.Config.Instance, _logger);
+			return new JobHistoryManager(CreateRepositoryFactory(contextContainer), _logger, massUpdateHelper);
 		}
 
 		public IJobHistoryErrorManager CreateJobHistoryErrorManager(IContextContainer contextContainer, int sourceWorkspaceArtifactId, string uniqueJobId)

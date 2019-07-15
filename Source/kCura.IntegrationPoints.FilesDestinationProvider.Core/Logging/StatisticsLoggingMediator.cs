@@ -40,7 +40,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 
 		#region Methods
 
-		public StatisticsLoggingMediator(IMessageService messageService, IJobHistoryErrorService historyErrorService,
+		public StatisticsLoggingMediator(
+			IMessageService messageService, 
+			IJobHistoryErrorService historyErrorService,
 			ICaseServiceContext caseServiceContext,
 			IIntegrationPointProviderTypeService integrationPointProviderTypeService,
 			IDateTimeHelper dateTimeHelper)

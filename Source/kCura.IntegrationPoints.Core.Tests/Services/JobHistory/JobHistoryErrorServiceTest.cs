@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
@@ -157,7 +158,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		}
 
 		[Test]
-		[Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
+		[Category(TestConstants.TestCategories.STOP_JOB)]
 		public void OnRowError_DoNotAddErrorWhenStopped()
 		{
 			// ARRANGE
@@ -174,7 +175,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		}
 
 		[Test]
-		[Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
+		[Category(TestConstants.TestCategories.STOP_JOB)]
 		public void OnRowError_AddErrorWhenRunning()
 		{
 			// ARRANGE
@@ -211,7 +212,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 
 		[TestCase(true)]
 		[TestCase(false)]
-		[Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
+		[Category(TestConstants.TestCategories.STOP_JOB)]
 		public void OnJobError_AlwaysAddError(bool isStopped)
 		{
 			// ARRANGE

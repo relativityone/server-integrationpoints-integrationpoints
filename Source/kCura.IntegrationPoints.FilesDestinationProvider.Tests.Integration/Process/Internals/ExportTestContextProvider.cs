@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
+using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Services;
@@ -97,10 +98,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 
 		private void CreateAndRunProduction()
 		{
-			_testContext.ProductionArtifactID = _workspaceService.CreateAndRunProduction(
-				_testContext.WorkspaceID, 
+			ProductionCreateResultDto productionCreateResult = _workspaceService.CreateAndRunProduction(
+				_testContext.WorkspaceID,
 				_testContext.ExportedObjArtifactID,
 				_testConfiguration.ProductionArtifactName);
+
+			_testContext.ProductionArtifactID = productionCreateResult.ProductionArtifactID;
 		}
 	}
 }

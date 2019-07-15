@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Relativity.Kepler.Transport;
+using Relativity.Services.DataContracts.DTOs.Results;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Facades.ObjectManager
@@ -30,5 +31,16 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager
 			int workspaceArtifactID,
 			RelativityObjectRef exportObject,
 			FieldRef longTextField);
+
+		Task<ExportInitializationResults> InitializeExportAsync(
+			int workspaceArtifactID,
+			QueryRequest queryRequest,
+			int start);
+
+		Task<RelativityObjectSlim[]> RetrieveResultsBlockFromExportAsync(
+			int workspaceArtifactID, 
+			Guid runID,
+			int resultsBlockSize,
+			int exportIndexID);
 	}
 }

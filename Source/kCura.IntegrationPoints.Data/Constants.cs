@@ -35,26 +35,21 @@ namespace kCura.IntegrationPoints.Data
 		public static readonly Guid RELATIVITY_SOURCEPROVIDER_GUID = new Guid("74A863B9-00EC-4BB7-9B3E-1E22323010C6");
 	}
 
-	public static class TaggingErrors
-	{
-		private const string SOURCE_OBJECT_TAGGING_ERROR_HEADER = "Tagging Documents with DestinationWorkspace and JobHistory object failed";
-
-		public const string LINK_OBJECT_INSTANCE_ERROR = "Unable to link Destination Workspace object to Job History object";
-		public const string SOURCE_OBJECT_MASS_EDIT_FAILURE = SOURCE_OBJECT_TAGGING_ERROR_HEADER + " - Mass Edit failure.";
-		public const string SOURCE_OBJECT_SCRATCH_TABLE_READ_ERROR = SOURCE_OBJECT_TAGGING_ERROR_HEADER + " - DocumentsIDs read failure.";
-	}
-
 	public static class MassEditErrors
 	{
-		public const string JOB_HISTORY_ERROR_STATUS_QUERY_ERROR = "Unable to query for Error Status field on Job History Error.";
-		public const string JOB_HISTORY_ERROR_STATUS_EXISTENCE_ERROR = "Error Status field on Job History Error does not exist.";
-		public const string JOB_HISTORY_ERROR_MASS_EDIT_FAILURE = "Mass Edit Error Status in JobHistoryError object failed - Mass Edit failure.";
+		private const string MASS_EDIT_ERROR_HEADER = "Mass edit of artifacts failed";
+		public const string OBJECT_MANAGER_ERROR = MASS_EDIT_ERROR_HEADER + " - Object Manager failure.";
+		public const string SCRATCH_TABLE_READ_ERROR = MASS_EDIT_ERROR_HEADER + " - Scratch table failure.";
 	}
 
+	public static class TaggingErrors
+	{
+		public const string LINK_OBJECT_INSTANCE_ERROR = "Unable to link Destination Workspace object to Job History object";
+	}
+	
 	public static class JobHistoryErrorErrors
 	{
 		public const string JOB_HISTORY_ERROR_TEMP_TABLE_CREATION_FAILURE = "Unable to create temp table for Error Status updates.";
-		public const string JOB_HISTORY_ERROR_RETRIEVE_FAILURE = "Unable to query for Job History Errors associated with provided JobHistory object ({0}).";
 	}
 
 	public static class ObjectTypeErrors
@@ -74,7 +69,7 @@ namespace kCura.IntegrationPoints.Data
 		public static readonly Guid ImageCountFieldGuid = new Guid("D92B5B06-CDF0-44BA-B365-A2396F009C73");
 		public static readonly Guid DocumentFieldGuid = new Guid("1CAA97BA-1D77-40C6-9F9A-F5EA9CEFAF38");
 	}
-
+	
 	public static class DocumentFieldsConstants
 	{
 		public static readonly Guid HasNativeFieldGuid = new Guid("E09E18F3-D0C8-4CFC-96D1-FBB350FAB3E1");

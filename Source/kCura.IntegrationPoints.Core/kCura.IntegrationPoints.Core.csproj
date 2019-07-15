@@ -56,6 +56,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="LICENSE.txt">
+      <Paket>True</Paket>
+    </Content>
     <Compile Include="Authentication\AuthProvider.cs" />
     <Compile Include="Authentication\ICredentialProvider.cs" />
     <Compile Include="Authentication\ITokenProviderFactoryFactory.cs" />
@@ -73,6 +76,8 @@
     <Compile Include="BatchStatusCommands\Implementations\TargetDocumentsTaggingManagerFactory.cs" />
     <Compile Include="BatchStatusCommands\Implementations\TempTableReader.cs" />
     <Compile Include="Extensions\DictionaryExtensions.cs" />
+    <Compile Include="Factories\IExportServiceObserversFactory.cs" />
+    <Compile Include="Factories\Implementations\ExportServiceObserversFactory.cs" />
     <Compile Include="Installers\Registrations\SecretStoreMigrationRegistration.cs" />
     <Compile Include="FederatedInstanceServicesManager.cs" />
     <Compile Include="Provider\Internals\ApplicationGuidFinder.cs" />
@@ -451,9 +456,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="LICENSE.txt">
-      <Paket>True</Paket>
-    </Content>
     <None Include="Validation\ValidationMessages.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>ValidationMessages.cs</LastGenOutput>
@@ -895,17 +897,6 @@
       <ItemGroup>
         <Reference Include="Relativity">
           <HintPath>..\..\packages\Relativity\lib\net462\Relativity.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.API">
-          <HintPath>..\..\packages\Relativity.API\lib\net462\Relativity.API.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
