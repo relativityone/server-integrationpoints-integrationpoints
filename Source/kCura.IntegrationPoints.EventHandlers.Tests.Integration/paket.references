@@ -6,7 +6,6 @@ kCura.EventHandler
 kCura.Relativity.Client
 NSubstitute
 NUnit
-Relativity.Core
 Relativity.Data
 Relativity.Telemetry.APM
 Selenium.WebDriver
