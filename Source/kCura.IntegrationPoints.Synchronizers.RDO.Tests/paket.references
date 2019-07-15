@@ -4,7 +4,6 @@ kCura.Relativity.Client
 NSubstitute
 NUnit
 Relativity.API
-Relativity.Core
 Relativity.Data
 Relativity.DataExchange.Client.SDK
 Relativity.Kepler.Client
