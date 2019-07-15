@@ -6,6 +6,7 @@ kCura.Apps.Common.Data
 kCura.Apps.Common.Utils
 kCura.OutsideIn.FI.Win32
 kCura.Relativity.Client
+Moq
 NSubstitute
 NUnit
 Relativity.Audit.SDK

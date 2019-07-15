@@ -185,17 +185,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_caseContext.ExecuteNonQuerySQLStatement(sql);
 		}
 
-		public IEnumerable<int> ReadDocumentIDs(int offset, int size)
+		public IEnumerable<int> ReadArtifactIDs(int offset, int size)
 		{
-			using (IDataReader reader = CreateBatchOfDocumentIdReader(offset, size))
-			{
-				while (reader.Read())
-				{
-					yield return reader.GetInt32(0);
-				}
-			}
+			return ReadArtifactIDsInternal(offset, size).ToList();
 		}
-
+		
 		public string GetTempTableName()
 		{
 			if (_tempTableName == null)
@@ -217,6 +211,17 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		public string GetResourceDBPrepend()
 		{
 			return _resourceDbProvider.GetResourceDbPrepend(_workspaceId);
+		}
+
+		private IEnumerable<int> ReadArtifactIDsInternal(int offset, int size)
+		{
+			using (IDataReader reader = CreateBatchOfDocumentIdReader(offset, size))
+			{
+				while (reader.Read())
+				{
+					yield return reader.GetInt32(0);
+				}
+			}
 		}
 
 		private ICollection<int> GetErroredDocumentId(ICollection<string> documentControlNumbers)

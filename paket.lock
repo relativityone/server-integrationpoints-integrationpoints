@@ -484,7 +484,7 @@ NUGET
     Newtonsoft.Json (6.0.8)
     NuGetPowerTools (0.29)
     Polly (5.3.1)
-    Relativity (10.3.90.91)
+    Relativity (10.3.98.72)
     Relativity.API (10.3.90.11-DEV)
     Relativity.DataExchange.Client.SDK (1.1.0)
       kCura.OutsideIn.FI.Win32 (>= 2019.2.2)

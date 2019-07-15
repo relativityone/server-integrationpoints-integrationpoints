@@ -1,3 +1,4 @@
+Castle.Windsor
 CSharpGuidelineAnalyzer
 kCura.Relativity.Client
 LanguageExt.Core
@@ -5,6 +6,5 @@ NSubstitute
 NUnit
 Relativity.API
 Relativity.DataExchange.Client.SDK
-RelativityCore
 Moq
 FluentAssertions

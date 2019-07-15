@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using kCura.IntegrationPoints.Data.Commands.MassEdit;
 using Relativity.Services.Objects.DataContracts;
 using Sort = Relativity.Services.Objects.DataContracts.Sort;
 using SortEnum = Relativity.Services.Objects.DataContracts.SortEnum;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
-	public class JobHistoryRepository : RelativityMassEditBase, IJobHistoryRepository
+	public class JobHistoryRepository : IJobHistoryRepository
 	{
 		private readonly IRelativityObjectManager _relativityObjectManager;
 
