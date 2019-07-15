@@ -158,7 +158,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 					.ImplementedBy<ExternalServiceInstrumentationProviderWithoutJobContext>()
 					.LifestyleSingleton()
 			);
-
+			Container.Register(Component.For<IFileRepository>().LifestyleTransient());
 
 #pragma warning disable 618
 			var dependencies = new IWindsorInstaller[]
