@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
-using Relativity.Core.Service;
+using Relativity.API;
 using Relativity.Services.Search;
 
 namespace kCura.IntegrationPoints.Core.Helpers.Implementations
@@ -11,11 +11,11 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 	public class SavedSearchesTreeCreator : ISavedSearchesTreeCreator
 	{
 		private const string SanitizedSavedSearchDefaultName = "Sanitized Search Name";
-		private readonly IHtmlSanitizerManager _htmlSanitizerManager;
+		private readonly IStringSanitizer _htmlSanitizer;
 
-		public SavedSearchesTreeCreator(IHtmlSanitizerManager htmlSanitizerManager)
+		public SavedSearchesTreeCreator(IStringSanitizer htmlSanitizer)
 		{
-			_htmlSanitizerManager = htmlSanitizerManager;
+			_htmlSanitizer = htmlSanitizer;
 		}
 
 		public JsTreeItemDTO Create(IEnumerable<SearchContainerItem> nodes)
@@ -68,10 +68,10 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
 		private string GetSanitizedText(string text)
 		{
-			SanitizeResult sanitizedResult = _htmlSanitizerManager.Sanitize(text);
-			return sanitizedResult.HasErrors || string.IsNullOrWhiteSpace(sanitizedResult.CleanHTML)
+			SanitizeHtmlContentResult sanitizedResult = _htmlSanitizer.SanitizeHtmlContent(text);
+			return sanitizedResult.ErrorMessages.Count > 0 || string.IsNullOrWhiteSpace(sanitizedResult.CleanHtml)
 				? SanitizedSavedSearchDefaultName
-				: sanitizedResult.CleanHTML;
+				: sanitizedResult.CleanHtml;
 		}
 
 		private JsTreeItemDTO CreateWithChildrenImpl(IEnumerable<SearchContainerItem> nodes, IEnumerable<SavedSearchContainerItem> children)
