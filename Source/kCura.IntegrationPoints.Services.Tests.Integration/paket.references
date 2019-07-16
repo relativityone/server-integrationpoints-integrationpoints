@@ -7,7 +7,6 @@ kCura.Relativity.Client
 NUnit
 Relativity
 Relativity.API
-Relativity.Core
 Relativity.Data
 Relativity.Kepler
 Relativity.Services.Interfaces
