@@ -55,12 +55,13 @@
 	}
 	this.selectedDestinationTypeGuid = function () {
 		var results = self.destinationTypes().filter(withArtifactId(self.selectedDestinationType()));
-		if (results[0].displayName === "Relativity") {
-			this.isDestinationObjectDisabled(true);
-		} else {
-			this.isDestinationObjectDisabled(false);
-		}
+		self.isRelativityProvider(results);
 		return results.length > 0 ? results[0].value : "";
+	}
+
+	this.isRelativityProvider = function (results) {
+		var isRelativityProvider = results[0].value === "74A863B9-00EC-4BB7-9B3E-1E22323010C6";
+		this.isDestinationObjectDisabled(isRelativityProvider);
 	}
 
 	this.setRelativityAsDestinationProvider = function () {
