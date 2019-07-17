@@ -46,6 +46,16 @@ namespace Relativity.Sync
 
 		public void HandleProcessComplete(JobReport jobReport)
 		{
+			UpdateJobStatistics(jobReport);
+		}
+
+		public void HandleFatalException(JobReport jobReport)
+		{
+			UpdateJobStatistics(jobReport);
+		}
+
+		private void UpdateJobStatistics(JobReport jobReport)
+		{
 			_itemsProcessedCount = jobReport.TotalRows - jobReport.ErrorRowCount;
 			_itemsFailedCount = jobReport.ErrorRowCount;
 			UpdateProgress();

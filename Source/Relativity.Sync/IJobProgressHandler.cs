@@ -7,5 +7,6 @@ namespace Relativity.Sync
 		void HandleItemProcessed(long item);
 		void HandleItemError(IDictionary row);
 		void HandleProcessComplete(JobReport jobReport);
+		void HandleFatalException(JobReport jobReport);
 	}
 }
