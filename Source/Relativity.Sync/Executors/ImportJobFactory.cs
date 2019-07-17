@@ -94,20 +94,35 @@ namespace Relativity.Sync.Executors
 			importJob.Settings.DestinationFolderArtifactID = configuration.ImportSettings.DestinationFolderArtifactId;
 			importJob.Settings.DisableControlNumberCompatibilityMode = configuration.ImportSettings.DisableControlNumberCompatibilityMode;
 			importJob.Settings.DisableExtractedTextFileLocationValidation = configuration.ImportSettings.DisableExtractedTextFileLocationValidation;
-			importJob.Settings.DisableNativeLocationValidation = configuration.ImportSettings.DisableNativeLocationValidation;
-			importJob.Settings.DisableNativeValidation = configuration.ImportSettings.DisableNativeValidation;
+			if (configuration.ImportSettings.ImportNativeFileCopyMode == ImportNativeFileCopyMode.SetFileLinks)
+			{
+				importJob.Settings.DisableNativeLocationValidation = true;
+			}
+			else
+			{
+				importJob.Settings.DisableNativeLocationValidation = configuration.ImportSettings.DisableNativeLocationValidation;
+			}
 			importJob.Settings.FileNameColumn = configuration.ImportSettings.FileNameColumn;
 			importJob.Settings.FileSizeColumn = configuration.ImportSettings.FileSizeColumn;
-			importJob.Settings.FileSizeMapped = configuration.ImportSettings.FileSizeMapped;
 			importJob.Settings.FolderPathSourceFieldName = configuration.ImportSettings.FolderPathSourceFieldName;
 			importJob.Settings.LoadImportedFullTextFromServer = configuration.ImportSettings.LoadImportedFullTextFromServer;
 			importJob.Settings.MoveDocumentsInAppendOverlayMode = configuration.ImportSettings.MoveDocumentsInAnyOverlayMode;
+
 			if (configuration.ImportSettings.ImportNativeFileCopyMode != ImportNativeFileCopyMode.DoNotImportNativeFiles)
 			{
 				importJob.Settings.NativeFilePathSourceFieldName = configuration.ImportSettings.NativeFilePathSourceFieldName;
+				importJob.Settings.OIFileIdMapped = true;
+				importJob.Settings.FileSizeMapped = true;
+				importJob.Settings.DisableNativeValidation = true;
 			}
+			else
+			{
+				importJob.Settings.OIFileIdMapped = configuration.ImportSettings.OiFileIdMapped;
+				importJob.Settings.FileSizeMapped = configuration.ImportSettings.FileSizeMapped;
+				importJob.Settings.DisableNativeValidation = configuration.ImportSettings.DisableNativeValidation;
+			}
+
 			importJob.Settings.OIFileIdColumnName = configuration.ImportSettings.OiFileIdColumnName;
-			importJob.Settings.OIFileIdMapped = configuration.ImportSettings.OiFileIdMapped;
 			importJob.Settings.OIFileTypeColumnName = configuration.ImportSettings.OiFileTypeColumnName;
 			importJob.Settings.SupportedByViewerColumn = configuration.ImportSettings.SupportedByViewerColumn;
 
