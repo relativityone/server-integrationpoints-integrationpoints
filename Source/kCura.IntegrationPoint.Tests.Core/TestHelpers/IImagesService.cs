@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using Relativity.Core.DTO;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers.Dto;
 
 namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 {
 	public interface IImagesService
 	{
-		IList<File> GetImagesFileInfo(int workspaceId, int documentArtifactId);
+		IList<FileTestDto> GetImagesFileInfo(int workspaceId, int documentArtifactId);
 	}
 }
