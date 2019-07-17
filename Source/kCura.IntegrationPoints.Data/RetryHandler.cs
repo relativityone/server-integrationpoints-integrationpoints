@@ -9,7 +9,7 @@ using kCura.IntegrationPoints.Common.Handlers;
 
 namespace kCura.IntegrationPoints.Data
 {
-	internal class RetryHandler : IRetryHandler
+	public class RetryHandler : IRetryHandler
 	{
 		private const string _CALLER_NAME_KEY = "CallerName";
 
@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Data
 		private readonly RetryPolicy _asyncRetryPolicy;
 		private readonly RetryPolicy _retryPolicy;
 
-		internal RetryHandler(IAPILog logger, ushort maxNumberOfRetries, ushort exponentialWaitTimeBaseInSeconds)
+		public RetryHandler(IAPILog logger, ushort maxNumberOfRetries, ushort exponentialWaitTimeBaseInSeconds)
 		{
 			_maxNumberOfRetries = maxNumberOfRetries;
 			_exponentialWaitTimeBaseInSeconds = exponentialWaitTimeBaseInSeconds;
