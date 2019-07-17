@@ -64,4 +64,9 @@
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "member", Target = "~M:Relativity.Sync.JobProgressUpdater.SetTotalItemsCountAsync(System.Int32)~System.Threading.Tasks.Task")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "member", Target = "~M:Relativity.Sync.JobProgressUpdater.UpdateJobProgressAsync(System.Int32,System.Int32)~System.Threading.Tasks.Task")]
 
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "type", Target = "Relativity.Sync.Executors.PermissionCheckExecutor")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "type", Target = "Relativity.Sync.Executors.PermissionCheck.PermissionCheckBase")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "type", Target = "Relativity.Sync.Executors.PermissionCheck.SourcePermissionCheck")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "type", Target = "Relativity.Sync.Executors.PermissionCheck.DestinationPermissionCheck")]
+
 #pragma warning restore RG2001 // Character Per Line

@@ -3,6 +3,7 @@ using Autofac;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.ExecutionConstrains;
 using Relativity.Sync.ExecutionConstrains.SumReporting;
+using Relativity.Sync.Executors.PermissionCheck;
 using Relativity.Sync.Executors.SumReporting;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.Storage;
@@ -44,6 +45,8 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<DestinationWorkspaceObjectTypesCreationExecutor>().As<IExecutor<IDestinationWorkspaceObjectTypesCreationConfiguration>>();
 			builder.RegisterType<ValidationExecutionConstrains>().As<IExecutionConstrains<IValidationConfiguration>>();
 			builder.RegisterType<ValidationExecutor>().As<IExecutor<IValidationConfiguration>>();
+			builder.RegisterType<PermissionCheckExecutionConstrains>().As<IExecutionConstrains<IPermissionsCheckConfiguration>>();
+			builder.RegisterType<PermissionCheckExecutor>().As<IExecutor<IPermissionsCheckConfiguration>>();
 			builder.RegisterType<DestinationWorkspaceSavedSearchCreationExecutionConstrains>().As<IExecutionConstrains<IDestinationWorkspaceSavedSearchCreationConfiguration>>();
 			builder.RegisterType<DestinationWorkspaceSavedSearchCreationExecutor>().As<IExecutor<IDestinationWorkspaceSavedSearchCreationConfiguration>>();
 			builder.RegisterType<DataSourceSnapshotExecutor>().As<IExecutor<IDataSourceSnapshotConfiguration>>();

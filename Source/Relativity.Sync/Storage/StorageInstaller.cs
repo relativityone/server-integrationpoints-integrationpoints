@@ -11,6 +11,7 @@ namespace Relativity.Sync.Storage
 			builder.RegisterType<ProgressRepository>().As<IProgressRepository>();
 
 			builder.RegisterType<ValidationConfiguration>().AsImplementedInterfaces();
+			builder.RegisterType<PermissionsCheckConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<SumReporterConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<DataSourceSnapshotConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<SnapshotPartitionConfiguration>().AsImplementedInterfaces();
