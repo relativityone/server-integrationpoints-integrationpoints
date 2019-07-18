@@ -3,6 +3,7 @@ using Stream = System.IO.Stream;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 using kCura.IntegrationPoints.Core.Extensions;
 using kCura.IntegrationPoints.Core.Services.Exporter.Base;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -100,7 +101,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				if (_readingArtifactIdsReference != ReadingArtifactIDs)
 				{
 					LoadNativeFilesLocationsAndNames();
-					LoadNativesMetadataFromDocumentsTable();
+					LoadNativesMetadataFromDocumentsTable().GetAwaiter().GetResult();
 				}
 
 				switch (fieldIdentifier)
@@ -230,32 +231,40 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			}
 		}
 
-		private void LoadNativesMetadataFromDocumentsTable()
+		private async Task LoadNativesMetadataFromDocumentsTable()
 		{
-			string supportedByViewerField = "Supported By Viewer";
-			string relativityNativeTypeField = "Relativity Native Type";
+			const string supportedByViewerField = "Supported By Viewer";
+			const string relativityNativeTypeField = "Relativity Native Type";
 
 			string[] fieldNames = { supportedByViewerField, relativityNativeTypeField };
 			HashSet<string> fieldNameSet = new HashSet<string>(fieldNames);
-			ArtifactDTO[] documents = _documentRepository.RetrieveDocumentsAsync(ReadingArtifactIDs, fieldNameSet)
-				.GetAwaiter().GetResult();
+			ArtifactDTO[] documents = await _documentRepository.RetrieveDocumentsAsync(ReadingArtifactIDs, fieldNameSet);
 
-			foreach (ArtifactDTO artifactDto in documents)
+			var nativeFileTypesToAdd = documents
+				.Select(x => new
+				{
+					DocumentArtifactID = x.ArtifactId,
+					NativeFileType = Convert.ToString(x.Fields.Single(y => y.Name == relativityNativeTypeField).Value)
+				})
+				.Where(x => !string.IsNullOrEmpty(x.NativeFileType));
+
+			IEnumerable<int> documentsSupportedByViewerToAdd = documents
+				.Select(x => new
+				{
+					DocumentArtifactID = x.ArtifactId,
+					SupportedByViewer = x.Fields.Single(y => y.Name == supportedByViewerField).Value
+				})
+				.Where(x => x.SupportedByViewer is bool supportedByViewerBool && supportedByViewerBool)
+				.Select(x => x.DocumentArtifactID);
+
+			foreach (var nativeFileTypeToAdd in nativeFileTypesToAdd)
 			{
-				int documentArtifactID = artifactDto.ArtifactId;
-				object nativeFileTypeObject = artifactDto.Fields.First(x => x.Name == relativityNativeTypeField).Value;
-				string nativeFileType = Convert.ToString(nativeFileTypeObject);
+				_nativeFileTypes.Add(nativeFileTypeToAdd.DocumentArtifactID, nativeFileTypeToAdd.NativeFileType);
+			}
 
-				if (!string.IsNullOrEmpty(nativeFileType))
-				{
-					_nativeFileTypes.Add(documentArtifactID, nativeFileType);
-				}
-
-				object supportedByViewerObject = artifactDto.Fields.First(x => x.Name == supportedByViewerField).Value;
-				if (supportedByViewerObject is bool supportedByViewer && supportedByViewer)
-				{
-					_documentsSupportedByViewer.Add(documentArtifactID);
-				}
+			foreach (var documentSupportedByViewerToAdd in documentsSupportedByViewerToAdd)
+			{
+				_documentsSupportedByViewer.Add(documentSupportedByViewerToAdd);
 			}
 		}
 

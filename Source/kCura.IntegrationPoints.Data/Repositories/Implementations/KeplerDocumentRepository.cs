@@ -49,12 +49,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return documents.Select(ConvertDocumentToArtifactDTO).ToArray();
 		}
 
-		public async Task<ArtifactDTO[]> RetrieveDocumentsAsync(IEnumerable<int> documentIds, HashSet<string> fieldNames)
+		public async Task<ArtifactDTO[]> RetrieveDocumentsAsync(IEnumerable<int> documentIDs, HashSet<string> fieldNames)
 		{
 			var qr = new QueryRequest
 			{
 				ObjectType = new ObjectTypeRef { ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID },
-				Condition = $"'ArtifactID' in [{string.Join(",", documentIds)}]",
+				Condition = $"'ArtifactID' in [{string.Join(",", documentIDs)}]",
 				Fields = fieldNames.Select(fieldName => new FieldRef { Name = fieldName }).ToArray()
 			};
 
