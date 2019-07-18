@@ -3,6 +3,7 @@ using Castle.Core;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using kCura.IntegrationPoint.Tests.Core.FluentAssertions;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Handlers;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -67,6 +68,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Installer
 			{
 				Component.For<IServicesMgr>().Instance(servicesMgrMock.Object),
 				CreateDummyObjectRegistration<IExternalServiceInstrumentationProvider>(),
+				CreateDummyObjectRegistration<IRetryHandlerFactory>(),
 				CreateDummyObjectRegistration<IRetryHandler>(),
 			};
 
