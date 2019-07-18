@@ -86,7 +86,7 @@ namespace Relativity.Sync.Tests.Unit
 			_syncJobProgress.SyncJobState.Id.Should().Be(_STEP_NAME);
 		}
 
-		[TestCase(ExecutionStatus.Canceled, NodeResultStatus.Failed)]
+		[TestCase(ExecutionStatus.Canceled, NodeResultStatus.Succeeded)]
 		[TestCase(ExecutionStatus.Failed, NodeResultStatus.Failed)]
 		[TestCase(ExecutionStatus.CompletedWithErrors, NodeResultStatus.SucceededWithErrors)]
 		[TestCase(ExecutionStatus.Completed, NodeResultStatus.Succeeded)]

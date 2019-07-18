@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
@@ -38,7 +39,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_jobProgressHandlerFactory.Setup(x => x.CreateJobProgressHandler(It.IsAny<IJobProgressUpdater>())).Returns(jobProgressHandler.Object);
 			Mock<ISourceWorkspaceDataReader>  dataReader = new Mock<ISourceWorkspaceDataReader>();
 			_dataReaderFactory = new Mock<ISourceWorkspaceDataReaderFactory>();
-			_dataReaderFactory.Setup(x => x.CreateSourceWorkspaceDataReader(It.IsAny<IBatch>())).Returns(dataReader.Object);
+			_dataReaderFactory.Setup(x => x.CreateSourceWorkspaceDataReader(It.IsAny<IBatch>(), It.IsAny<CancellationToken>())).Returns(dataReader.Object);
 			_jobHistoryErrorRepository = new Mock<IJobHistoryErrorRepository>();
 
 			_logger = new EmptyLogger();
@@ -57,7 +58,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			ImportJobFactory instance = GetTestInstance(importApiFactory);
 
 			// Act
-			Sync.Executors.IImportJob result = await instance.CreateImportJobAsync(configuration.Object, _batch.Object).ConfigureAwait(false);
+			Sync.Executors.IImportJob result = await instance.CreateImportJobAsync(configuration.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
 			result.Dispose();
 
 			// Assert
@@ -81,7 +82,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			ImportJobFactory instance = GetTestInstance(importApiFactory);
 
 			// Act
-			Sync.Executors.IImportJob result = await instance.CreateImportJobAsync(configuration.Object, _batch.Object).ConfigureAwait(false);
+			Sync.Executors.IImportJob result = await instance.CreateImportJobAsync(configuration.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
 			result.Dispose();
 
 			// Assert

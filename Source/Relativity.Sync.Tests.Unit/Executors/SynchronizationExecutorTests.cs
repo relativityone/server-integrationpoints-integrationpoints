@@ -69,7 +69,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			});
 
 			_importJob = new Mock<Sync.Executors.IImportJob>();
-			importJobFactory.Setup(x => x.CreateImportJobAsync(It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IBatch>())).ReturnsAsync(_importJob.Object);
+			importJobFactory.Setup(x => x.CreateImportJobAsync(It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IBatch>(), It.IsAny<CancellationToken>())).ReturnsAsync(_importJob.Object);
 
 			_fieldManager.Setup(x => x.GetSpecialFields()).Returns(_specialFields);
 
