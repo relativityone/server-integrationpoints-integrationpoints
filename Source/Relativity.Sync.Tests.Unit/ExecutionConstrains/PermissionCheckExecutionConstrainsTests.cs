@@ -20,7 +20,7 @@ namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
 		}
 
 		[Test]
-		public async Task PermissionCheckAlwaysTrue()
+		public async Task ItShouldAlwaysCanExecute()
 		{
 			//Arrange
 			var configuration = new Mock<IPermissionsCheckConfiguration>();
