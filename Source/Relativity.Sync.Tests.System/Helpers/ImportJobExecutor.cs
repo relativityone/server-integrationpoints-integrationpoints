@@ -7,7 +7,7 @@ namespace Relativity.Sync.Tests.System.Helpers
 {
 	internal static class ImportJobExecutor
 	{
-		public static async Task<ImportJobResult> ExecuteAsync(ImportBulkArtifactJob job)
+		public static async Task<ImportJobResult> ExecuteAsync<T>(T job) where T : IImportNotifier, IImportBulkArtifactJob
 		{
 			var errorMessages = new List<string>();
 			job.OnComplete += report =>

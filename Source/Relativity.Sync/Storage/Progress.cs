@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using kCura.Utility;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
@@ -38,7 +37,7 @@ namespace Relativity.Sync.Storage
 			Status = status;
 		}
 
-		public Progress(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int artifactId)
+		private Progress(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int artifactId)
 		{
 			_serviceFactory = serviceFactory;
 			_workspaceArtifactId = workspaceArtifactId;
@@ -46,7 +45,7 @@ namespace Relativity.Sync.Storage
 			ArtifactId = artifactId;
 		}
 
-		public Progress(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int syncConfigurationArtifactId, string name)
+		private Progress(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int syncConfigurationArtifactId, string name)
 		{
 			_serviceFactory = serviceFactory;
 			_workspaceArtifactId = workspaceArtifactId;

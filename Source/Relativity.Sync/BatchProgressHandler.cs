@@ -11,7 +11,7 @@ namespace Relativity.Sync
 		private readonly IBatch _batch;
 		private readonly IBatchProgressUpdater _progressUpdater;
 		private readonly IDateTime _dateTime;
-		private readonly TimeSpan _throttle = TimeSpan.FromSeconds(1);
+		private readonly TimeSpan _throttle = TimeSpan.FromSeconds(5);
 
 		public BatchProgressHandler(IBatch batch, IBatchProgressUpdater progressUpdater, IDateTime dateTime)
 		{
@@ -25,8 +25,8 @@ namespace Relativity.Sync
 			bool canUpdate = CanUpdateProgress();
 			if (canUpdate)
 			{
-				int completedRecordsCount = (int)status.TotalRecordsProcessed - (int)status.TotalRecordsProcessedWithErrors;
-				int failedRecordsCount = (int)status.TotalRecordsProcessedWithErrors;
+				int completedRecordsCount = (int) status.TotalRecordsProcessed - (int) status.TotalRecordsProcessedWithErrors;
+				int failedRecordsCount = (int) status.TotalRecordsProcessedWithErrors;
 				UpdateProgress(completedRecordsCount, failedRecordsCount);
 			}
 		}

@@ -69,11 +69,11 @@ namespace Relativity.Sync.Telemetry
 		}
 
 		/// <inheritdoc />
-		public void GaugeOperation(string name, ExecutionStatus status, long value, string unitOfMeasure, Dictionary<string, object> customData)
+		public void GaugeOperation(string name, ExecutionStatus executionStatus, long value, string unitOfMeasure, Dictionary<string, object> customData)
 		{
 			foreach (ISyncMetricsSink sink in _sinks)
 			{
-				Metric metric = Metric.GaugeOperation(name, status, _correlationId.Value, value, unitOfMeasure);
+				Metric metric = Metric.GaugeOperation(name, executionStatus, _correlationId.Value, value, unitOfMeasure);
 				foreach (KeyValuePair<string, object> keyValuePair in customData)
 				{
 					metric.CustomData.Add(keyValuePair);

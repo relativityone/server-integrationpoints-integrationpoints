@@ -1,5 +1,4 @@
 ﻿using System;
-using kCura.Vendor.Castle.Core.Internal;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
@@ -91,7 +90,7 @@ namespace Relativity.Sync.Tests.Unit
 
 			// ASSERT
 			VerifyEachExpectedMetricLogIsCalled(Times.Never());
-			
+
 			VerifyLogErrorIsCalled(Times.Exactly(_expectedMetrics.Length));
 			VerifyMetricsManagerWasDisposed(Times.Never());
 		}
@@ -153,7 +152,7 @@ namespace Relativity.Sync.Tests.Unit
 			_metricsManager.Verify(x => x.LogPointInTimeStringAsync(
 				It.Is<string>(y => y.Equals("Test.String", StringComparison.Ordinal)),
 				It.Is<Guid>(y => y.Equals(_workspaceGuid)),
-				It.Is<string>(y => y ==  _WORKFLOW_ID),
+				It.Is<string>(y => y == _WORKFLOW_ID),
 				It.Is<string>(y => y == "Sync")
 			), times);
 

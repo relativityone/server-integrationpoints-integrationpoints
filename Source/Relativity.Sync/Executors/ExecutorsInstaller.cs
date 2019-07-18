@@ -1,4 +1,5 @@
-﻿using Autofac;
+﻿using System.Threading;
+using Autofac;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.ExecutionConstrains;
 using Relativity.Sync.ExecutionConstrains.SumReporting;
@@ -18,6 +19,8 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<JobHistoryNameQuery>().As<IJobHistoryNameQuery>();
 			builder.RegisterType<RelativitySourceJobTagRepository>().As<IRelativitySourceJobTagRepository>();
 			builder.RegisterType<DestinationWorkspaceTagRepository>().As<IDestinationWorkspaceTagRepository>();
+			builder.RegisterType<SyncObjectTypeManager>().As<ISyncObjectTypeManager>();
+			builder.RegisterType<SyncFieldManager>().As<ISyncFieldManager>();
 			builder.RegisterType<SourceWorkspaceTagRepository>().As<ISourceWorkspaceTagRepository>();
 			builder.RegisterType<DestinationWorkspaceTagLinker>().As<IDestinationWorkspaceTagsLinker>();
 			builder.RegisterType<FederatedInstance>().As<IFederatedInstance>();
@@ -27,7 +30,7 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<TagSavedSearch>().As<ITagSavedSearch>();
 			builder.RegisterType<TagSavedSearchFolder>().As<ITagSavedSearchFolder>();
 			builder.RegisterType<BatchProgressHandlerFactory>().As<IBatchProgressHandlerFactory>();
-			builder.RegisterType<BatchProgressUpdater>().As<IBatchProgressUpdater>();
+			builder.Register(c => new BatchProgressUpdater(c.Resolve<ISyncLog>(), new SemaphoreSlimWrapper(new SemaphoreSlim(1)))).As<IBatchProgressUpdater>();
 			builder.RegisterType<ImportJobFactory>().As<IImportJobFactory>();
 			builder.RegisterType<ImportApiFactory>().As<IImportApiFactory>();
 
@@ -37,6 +40,8 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<SourceWorkspaceTagsCreationExecutor>().As<IExecutor<ISourceWorkspaceTagsCreationConfiguration>>();
 			builder.RegisterType<DestinationWorkspaceTagsCreationExecutionConstrains>().As<IExecutionConstrains<IDestinationWorkspaceTagsCreationConfiguration>>();
 			builder.RegisterType<DestinationWorkspaceTagsCreationExecutor>().As<IExecutor<IDestinationWorkspaceTagsCreationConfiguration>>();
+			builder.RegisterType<DestinationWorkspaceObjectTypesCreationExecutorConstrains>().As<IExecutionConstrains<IDestinationWorkspaceObjectTypesCreationConfiguration>>();
+			builder.RegisterType<DestinationWorkspaceObjectTypesCreationExecutor>().As<IExecutor<IDestinationWorkspaceObjectTypesCreationConfiguration>>();
 			builder.RegisterType<ValidationExecutionConstrains>().As<IExecutionConstrains<IValidationConfiguration>>();
 			builder.RegisterType<ValidationExecutor>().As<IExecutor<IValidationConfiguration>>();
 			builder.RegisterType<DestinationWorkspaceSavedSearchCreationExecutionConstrains>().As<IExecutionConstrains<IDestinationWorkspaceSavedSearchCreationConfiguration>>();

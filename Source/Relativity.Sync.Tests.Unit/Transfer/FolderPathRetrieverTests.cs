@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using FluentAssertions;
-using kCura.Vendor.Castle.Core.Internal;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.Exceptions;

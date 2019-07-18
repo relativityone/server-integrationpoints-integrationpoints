@@ -1,14 +1,19 @@
 using System;
-using NUnit.Framework;
-using Relativity.Sync.Configuration;
-using Relativity.Sync.Executors;
-using Relativity.Sync.Logging;
-using Relativity.Sync.Storage;
-using Relativity.Sync.Tests.Common;
 using System.Collections.Generic;
-using System.Linq;
+using System.Globalization;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
+using Castle.Core.Internal;
+using FluentAssertions;
+using NUnit.Framework;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
+using Relativity.Services.Workspace;
+using Relativity.Sync.Configuration;
+using Relativity.Sync.Storage;
+using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Helpers;
 using Relativity.Sync.Transfer;
 
@@ -17,84 +22,96 @@ namespace Relativity.Sync.Tests.System
 	[TestFixture]
 	internal sealed class SourceWorkspaceDataReaderTests : SystemTest
 	{
+		private static readonly Dataset Dataset = Dataset.NativesAndExtractedText;
+
 		[Test]
-		[Ignore("Depends on an already-created workspace plus specific pre-loaded data")]
-		public async Task ItShouldWork()
+		public async Task ItShouldPassGoldFlow()
 		{
-			const int sourceWorkspaceArtifactId = 1019631;
-			const int dataSourceArtifactId = 1048428;
+			const string folderInfoFieldName = "Document Folder Path";
 			const int controlNumberFieldId = 1003667;
 			const int extractedTextFieldId = 1003668;
 			const int totalItemsCount = 10;
-			const string folderInfoFieldName = "Document Folder Path";
 
-			string jobHistoryName = $"DataReaderTest_{Guid.NewGuid()}";
+			long extractedTextSizeThreshold = await QueryForExtractedTextSizeThreshold().ConfigureAwait(false);
+
+			string sourceWorkspaceName = $"{Guid.NewGuid()}";
+			string jobHistoryName = $"JobHistory.{Guid.NewGuid()}";
+
+			var fieldMap = new List<FieldMap>
+			{
+				new FieldMap
+				{
+					SourceField = new FieldEntry
+					{
+						DisplayName = "Control Number",
+						FieldIdentifier = controlNumberFieldId,
+						IsIdentifier = true
+					},
+					DestinationField = new FieldEntry()
+					{
+						DisplayName = "Control Number",
+						FieldIdentifier = controlNumberFieldId,
+						IsIdentifier = true
+					}
+				},
+				new FieldMap
+				{
+					SourceField = new FieldEntry
+					{
+						DisplayName = "Extracted Text",
+						FieldIdentifier = extractedTextFieldId
+					},
+					DestinationField = new FieldEntry()
+					{
+						DisplayName = "Extracted Text",
+						FieldIdentifier = extractedTextFieldId
+					}
+				},
+			};
+
+			// Prepare environment
+			int sourceWorkspaceArtifactId = await CreateWorkspaceAsync(sourceWorkspaceName).ConfigureAwait(false);
+			int allDocumentsSavedSearchArtifactId = await Rdos.GetSavedSearchInstance(ServiceFactory, sourceWorkspaceArtifactId).ConfigureAwait(false);
 			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, sourceWorkspaceArtifactId, jobHistoryName).ConfigureAwait(false);
-			int syncConfigurationArtifactId = await Rdos.CreateSyncConfigurationInstance(ServiceFactory, sourceWorkspaceArtifactId, jobHistoryArtifactId).ConfigureAwait(false);
+			int syncConfigurationArtifactId = await Rdos.CreateSyncConfigurationInstance(ServiceFactory, sourceWorkspaceArtifactId, jobHistoryArtifactId, fieldMap).ConfigureAwait(false);
 
+			// Create configuration
 			ConfigurationStub configuration = new ConfigurationStub
 			{
 				SourceWorkspaceArtifactId = sourceWorkspaceArtifactId,
 				JobHistoryArtifactId = jobHistoryArtifactId,
 				SyncConfigurationArtifactId = syncConfigurationArtifactId,
-				DataSourceArtifactId = dataSourceArtifactId,
+				DataSourceArtifactId = allDocumentsSavedSearchArtifactId,
 				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.ReadFromField,
 				FolderPathSourceFieldName = folderInfoFieldName,
-				FieldMappings = new List<FieldMap>
-				{
-					new FieldMap
-					{
-						SourceField = new FieldEntry
-						{
-							DisplayName = "Control Number",
-							FieldIdentifier = controlNumberFieldId,
-							IsIdentifier = true
-						},
-						DestinationField = new FieldEntry()
-						{
-							DisplayName = "Control Number",
-							FieldIdentifier = controlNumberFieldId,
-							IsIdentifier = true
-						}
-					},
-					new FieldMap
-					{
-						SourceField = new FieldEntry
-						{
-							DisplayName = "Extracted Text",
-							FieldIdentifier = extractedTextFieldId
-						},
-						DestinationField = new FieldEntry()
-						{
-							DisplayName = "Extracted Text",
-							FieldIdentifier = extractedTextFieldId
-						}
-					},
-				}
+				FieldMappings = fieldMap
 			};
 
-			var sourceServiceFactory = new ServiceFactoryStub(ServiceFactory);
-			var documentFieldRepository = new DocumentFieldRepository(sourceServiceFactory, new EmptyLogger());
-			var fieldManager = new FieldManager(configuration, documentFieldRepository, new List<ISpecialFieldBuilder>
-			{
-				new FileInfoFieldsBuilder(new NativeFileRepository(sourceServiceFactory)),
-				new FolderPathFieldBuilder(new FolderPathRetriever(sourceServiceFactory, new EmptyLogger()), configuration)
-			});
-			var executor = new DataSourceSnapshotExecutor(sourceServiceFactory, fieldManager, new JobProgressUpdaterFactory(sourceServiceFactory, configuration), new EmptyLogger());
+			// Import documents
+			var importHelper = new ImportHelper(ServiceFactory);
+			ImportDataTableWrapper dataTableWrapper = DataTableFactory.CreateImportDataTable(Dataset, extractedText: true, natives: true);
+			ImportJobResult importJobResult = await importHelper.ImportDataAsync(sourceWorkspaceArtifactId, dataTableWrapper).ConfigureAwait(false);
+			Assert.IsTrue(importJobResult.Success, $"IAPI errors: {string.Join(global::System.Environment.NewLine, importJobResult.Errors)}");
 
+			// Initialize container
+			IContainer container = ContainerHelper.Create(configuration);
+
+			// Create snapshot
+			IExecutor<IDataSourceSnapshotConfiguration> executor = container.Resolve<IExecutor<IDataSourceSnapshotConfiguration>>();
 			ExecutionResult result = await executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+			result.Status.Should().Be(ExecutionStatus.Completed);
 
-			Assert.AreEqual(ExecutionStatus.Completed, result.Status);
-
-			BatchRepository batchRepository = new BatchRepository(sourceServiceFactory);
+			// Create batch and SourceWorkspaceDataReader
+			IBatchRepository batchRepository = container.Resolve<IBatchRepository>();
 			IBatch batch = await batchRepository.CreateAsync(sourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId, totalItemsCount, 0).ConfigureAwait(false);
-			IRelativityExportBatcherFactory exportBatcherFactory = new RelativityExportBatcherFactory(sourceServiceFactory, configuration);
-			IRelativityExportBatcher batcher = exportBatcherFactory.CreateRelativityExportBatcher(batch);
-			SourceWorkspaceDataReader dataReader = BuildDataReader(fieldManager, configuration, batcher);
-			ConsoleLogger logger = new ConsoleLogger();
+			ISourceWorkspaceDataReader dataReader = container.Resolve<ISourceWorkspaceDataReaderFactory>().CreateSourceWorkspaceDataReader(batch);
 
+			// Test SourceWorkspaceDataReader
 			const int resultsBlockSize = 100;
 			object[] tmpTable = new object[resultsBlockSize];
+			ISyncLog logger = new ConsoleLogger();
+
+			IDataReaderRowSetValidator validator = DataReaderRowSetValidator.Create(dataTableWrapper.Data);
 
 			while (dataReader.Read())
 			{
@@ -102,20 +119,107 @@ namespace Relativity.Sync.Tests.System
 				{
 					logger.LogInformation($"{dataReader.GetName(i)} [{(tmpTable[i] == null ? "null" : tmpTable[i].GetType().Name)}]: {tmpTable[i]}");
 				}
-
 				logger.LogInformation("");
+
+				object controlNumberObject = dataReader["Control Number"];
+				controlNumberObject.Should().BeOfType<string>();
+				string controlNumber = (string)controlNumberObject;
+
+				Action<string, object, object> extractedTextValidator = (cn, extractedTextFilePathObject, actualExtractedTextObject) =>
+					ValidateExtractedText(cn, extractedTextFilePathObject, actualExtractedTextObject, extractedTextSizeThreshold);
+
+				validator.ValidateAndRegisterRead(
+					controlNumber,
+					new FieldVerifyData { ColumnName = ImportDataTableWrapper.FileName, ActualValue = dataReader["NativeFileFilename"], Validator = ValidateNativeFileName },
+					new FieldVerifyData { ColumnName = ImportDataTableWrapper.NativeFilePath, ActualValue = dataReader["NativeFileSize"], Validator = ValidateNativeFileSize },
+					new FieldVerifyData
+				{
+					ColumnName = ImportDataTableWrapper.ExtractedTextFilePath,
+					ActualValue = dataReader["Extracted Text"],
+					Validator = extractedTextValidator
+				}
+					);
+			}
+
+			validator.ValidateAllRead();
+		}
+
+		private async Task<long> QueryForExtractedTextSizeThreshold()
+		{
+			const string instanceSettingName = "MaximumLongTextSizeForExportInCell";
+			const string instanceSettingSection = "kCura.EDDS.WebAPI";
+
+			QueryRequest query = new QueryRequest
+			{
+				ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.InstanceSetting },
+				Condition = $"('Section' == '{instanceSettingSection}') AND ('Name' == '{instanceSettingName}')",
+				Fields = new[]
+				{
+					new FieldRef {Name = "Value"}
+				}
+			};
+
+			using (IObjectManager objectManager = ServiceFactory.CreateProxy<IObjectManager>())
+			{
+				QueryResult queryAsync = await objectManager.QueryAsync(-1, query, 0, 1).ConfigureAwait(false);
+				queryAsync.ResultCount.Should().Be(1, $"{instanceSettingSection}.{instanceSettingName} should be set.");
+				long threshold = long.Parse((string)queryAsync.Objects[0]["Value"].Value, NumberStyles.Integer, CultureInfo.InvariantCulture);
+				return threshold;
 			}
 		}
 
-		private static SourceWorkspaceDataReader BuildDataReader(IFieldManager fieldManager, ISynchronizationConfiguration configuration, IRelativityExportBatcher batcher)
+		private static void ValidateNativeFileName(string controlNumber, object expectedNativeFileNameObject, object actualNativeFileNameObject)
 		{
-			SourceWorkspaceDataReader dataReader = new SourceWorkspaceDataReader(new BatchDataReaderBuilder(fieldManager, new ExportDataSanitizer(Enumerable.Empty<IExportFieldSanitizer>())),
-				configuration,
-				batcher,
-				fieldManager,
-				new ItemStatusMonitor(),
-				new EmptyLogger());
-			return dataReader;
+			string expectedNativeFile = (string)expectedNativeFileNameObject;
+
+			actualNativeFileNameObject.Should().BeOfType<string>("every column in the data reader apart from Long Text should be of type string");
+
+			string actualNativeFileName = (string)actualNativeFileNameObject;
+			actualNativeFileName.Should().Be(expectedNativeFile);
+		}
+
+		private static void ValidateNativeFileSize(string controlNumber, object nativeFilePathObject, object actualNativeFileSizeObject)
+		{
+			string nativeFilePath = (string)nativeFilePathObject;
+			var nativeFile = new FileInfo(nativeFilePath);
+			long expectedNativeFileSize = nativeFile.Length;
+
+			actualNativeFileSizeObject.Should().BeOfType<string>("every column in the data reader apart from Long Text should be of type string");
+
+			long.TryParse((string)actualNativeFileSizeObject, NumberStyles.Any, CultureInfo.InvariantCulture, out var actualNativeFileSize).Should().BeTrue("native file size should a parsable long");
+			actualNativeFileSize.Should().Be(expectedNativeFileSize);
+		}
+
+		private static void ValidateExtractedText(string controlNumber, object extractedTextFilePathObject, object actualExtractedTextObject, long extractedTextSizeThreshold)
+		{
+			string extractedTextFilePath = (string)extractedTextFilePathObject;
+			long extractedTextFileSize = File.ReadAllText(extractedTextFilePath).Length;
+
+			if (extractedTextFileSize > extractedTextSizeThreshold)
+			{
+				actualExtractedTextObject.Should().BeAssignableTo<Stream>("document {0} has size {1}, which is above extracted text size threshold ({2}).",
+					controlNumber, extractedTextFileSize, extractedTextSizeThreshold);
+
+				Stream actualExtractedTextStream = (Stream)actualExtractedTextObject;
+				actualExtractedTextStream.CanRead.Should().BeTrue("received stream needs to be readable.");
+			}
+			else
+			{
+				actualExtractedTextObject.Should().BeOfType<string>("document {0} has size {1}, which is below extracted text size threshold ({2}).",
+					controlNumber, extractedTextFileSize, extractedTextSizeThreshold);
+
+				string actualExtractedTextAsString = (string)actualExtractedTextObject;
+				actualExtractedTextAsString.IsNullOrEmpty().Should().BeFalse("extracted text should contain some content.");
+			}
+		}
+
+		private async Task<int> CreateWorkspaceAsync(string workspaceName)
+		{
+			WorkspaceRef workspace = await Environment
+				.CreateWorkspaceWithFieldsAsync(name: workspaceName)
+				.ConfigureAwait(false);
+
+			return workspace.ArtifactID;
 		}
 	}
 }

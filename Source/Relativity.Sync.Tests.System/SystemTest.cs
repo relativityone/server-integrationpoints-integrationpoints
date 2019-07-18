@@ -3,8 +3,6 @@ using System.Threading.Tasks;
 using kCura.Relativity.Client;
 using NUnit.Framework;
 using Relativity.Services.ServiceProxy;
-using Relativity.Sync.Tests.System.Stubs;
-using UsernamePasswordCredentials = kCura.Relativity.Client.UsernamePasswordCredentials;
 
 namespace Relativity.Sync.Tests.System
 {
@@ -17,7 +15,7 @@ namespace Relativity.Sync.Tests.System
 		[OneTimeSetUp]
 		public async Task SuiteSetup()
 		{
-			Client = new RSAPIClient(AppSettings.RelativityServicesUrl, new UsernamePasswordCredentials(AppSettings.RelativityUserName, AppSettings.RelativityUserPassword));
+			Client = new RSAPIClient(AppSettings.RelativityServicesUrl, new kCura.Relativity.Client.UsernamePasswordCredentials(AppSettings.RelativityUserName, AppSettings.RelativityUserPassword));
 			ServiceFactory = new ServiceFactoryFromAppConfig().CreateServiceFactory();
 			Environment = new TestEnvironment();
 			await ChildSuiteSetup().ConfigureAwait(false);

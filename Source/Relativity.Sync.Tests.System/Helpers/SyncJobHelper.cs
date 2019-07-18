@@ -1,10 +1,7 @@
 ﻿using System;
 using Autofac;
 using Moq;
-using Relativity.Sync.Configuration;
 using Relativity.Sync.Tests.Common;
-using Relativity.Sync.Tests.System.Stubs;
-using Relativity.Telemetry.APM;
 
 namespace Relativity.Sync.Tests.System.Helpers
 {
@@ -12,12 +9,12 @@ namespace Relativity.Sync.Tests.System.Helpers
 	{
 		public static ISyncJob CreateWithMockedProgressAndContainerExceptProvidedType<TStepConfiguration>(ConfigurationStub configuration)
 		{
-			return Create(configuration, IntegrationTestsContainerBuilder.MockStepsExcept<TStepConfiguration>, true);
+			return Create(configuration, IntegrationTestsContainerBuilder.MockStepsExcept<TStepConfiguration>, MockProgress);
 		}
 
 		public static ISyncJob CreateWithMockedProgressAndAllSteps(ConfigurationStub configuration)
 		{
-			return Create(configuration, IntegrationTestsContainerBuilder.MockAllSteps, true);
+			return Create(configuration, IntegrationTestsContainerBuilder.MockAllSteps, MockProgress);
 		}
 
 		/// <summary>
@@ -25,30 +22,19 @@ namespace Relativity.Sync.Tests.System.Helpers
 		/// </summary>
 		public static ISyncJob CreateWithMockedAllSteps(ConfigurationStub configuration)
 		{
-			return Create(configuration, IntegrationTestsContainerBuilder.MockAllSteps, false);
+			return Create(configuration, IntegrationTestsContainerBuilder.MockAllSteps);
 		}
 
-		private static ISyncJob Create(ConfigurationStub configuration, Action<ContainerBuilder> mockSteps, bool mockProgress)
+		private static ISyncJob Create(ConfigurationStub configuration, params Action<ContainerBuilder>[] mockActions)
 		{
-			ContainerBuilder containerBuilder = new ContainerBuilder();
+			IContainer container = ContainerHelper.Create(configuration, mockActions);
 
-			ContainerFactory factory = new ContainerFactory();
-			SyncJobParameters syncParameters = new SyncJobParameters(configuration.JobHistoryArtifactId, configuration.SourceWorkspaceArtifactId, new ImportSettingsDto());
+			return container.Resolve<ISyncJob>();
+		}
 
-			IAPM apm = Mock.Of<IAPM>();
-			RelativityServices relativityServices = new RelativityServices(apm, new ServicesManagerStub(), AppSettings.RelativityUrl);
-
-			factory.RegisterSyncDependencies(containerBuilder, syncParameters, relativityServices, new SyncJobExecutionConfiguration(), new ConsoleLogger());
-
-			mockSteps.Invoke(containerBuilder);
-
-			containerBuilder.RegisterInstance(configuration).AsImplementedInterfaces();
-			if (mockProgress)
-			{
-				containerBuilder.RegisterInstance(Mock.Of<IProgress<SyncJobState>>()).As<IProgress<SyncJobState>>();
-			}
-
-			return containerBuilder.Build().Resolve<ISyncJob>();
+		private static void MockProgress(ContainerBuilder containerBuilder)
+		{
+			containerBuilder.RegisterInstance(Mock.Of<IProgress<SyncJobState>>()).As<IProgress<SyncJobState>>();
 		}
 	}
 }

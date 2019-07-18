@@ -143,7 +143,7 @@ namespace Relativity.Sync.Storage
 						const string longTextTruncateMark = "...";
 
 						if (fieldValuePair.Field.FieldType == FieldType.LongText &&
-							!string.IsNullOrEmpty(fieldValuePair.Value.ToString()) &&
+							!string.IsNullOrEmpty(fieldValuePair.Value?.ToString()) &&
 							fieldValuePair.Value.ToString().EndsWith(longTextTruncateMark, StringComparison.InvariantCulture))
 						{
 							const int maxNumberOfRetries = 2;

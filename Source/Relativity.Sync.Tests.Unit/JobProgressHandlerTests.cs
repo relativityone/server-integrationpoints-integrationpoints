@@ -13,6 +13,8 @@ namespace Relativity.Sync.Tests.Unit
 
 		private JobProgressHandler _instance;
 
+		private const int _THROTTLE_SECONDS = 5;
+
 		[SetUp]
 		public void SetUp()
 		{
@@ -22,16 +24,16 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[TestCase(0, 0, 0)]
-		[TestCase(0, 123, 0)]
+		[TestCase(0, 123 * _THROTTLE_SECONDS, 0)]
 		[TestCase(1, 0, 1)]
-		[TestCase(1, 500, 1)]
-		[TestCase(2, 500, 1)]
-		[TestCase(2, 1000, 2)]
-		[TestCase(3, 500, 2)]
-		[TestCase(4, 500, 2)]
-		[TestCase(4, 1000, 4)]
-		[TestCase(5, 500, 3)]
-		[TestCase(20, 500, 10)]
+		[TestCase(1, 500 * _THROTTLE_SECONDS, 1)]
+		[TestCase(2, 500 * _THROTTLE_SECONDS, 1)]
+		[TestCase(2, 1000 * _THROTTLE_SECONDS, 2)]
+		[TestCase(3, 500 * _THROTTLE_SECONDS, 2)]
+		[TestCase(4, 500 * _THROTTLE_SECONDS, 2)]
+		[TestCase(4, 1000 * _THROTTLE_SECONDS, 4)]
+		[TestCase(5, 500 * _THROTTLE_SECONDS, 3)]
+		[TestCase(20, 500 * _THROTTLE_SECONDS, 10)]
 		public void ItShouldThrottleProgressEvents(int numberOfEvents, int delayBetweenEvents, int expectedNumberOfProgressUpdates)
 		{
 			DateTime now = DateTime.Now;
