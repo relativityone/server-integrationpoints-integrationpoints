@@ -104,7 +104,7 @@ namespace Relativity.Sync.Tests.System
 			// Create batch and SourceWorkspaceDataReader
 			IBatchRepository batchRepository = container.Resolve<IBatchRepository>();
 			IBatch batch = await batchRepository.CreateAsync(sourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId, totalItemsCount, 0).ConfigureAwait(false);
-			ISourceWorkspaceDataReader dataReader = container.Resolve<ISourceWorkspaceDataReaderFactory>().CreateSourceWorkspaceDataReader(batch);
+			ISourceWorkspaceDataReader dataReader = container.Resolve<ISourceWorkspaceDataReaderFactory>().CreateSourceWorkspaceDataReader(batch, CancellationToken.None);
 
 			// Test SourceWorkspaceDataReader
 			const int resultsBlockSize = 100;
