@@ -4,7 +4,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Common
 {
-	internal class RetryHandlerFactory : IRetryHandlerFactory
+	public class RetryHandlerFactory : IRetryHandlerFactory
 	{
 		private readonly IAPILog _logger;
 

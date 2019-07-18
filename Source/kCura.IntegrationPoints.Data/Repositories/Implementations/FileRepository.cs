@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Constants;
 using kCura.IntegrationPoints.Common.Handlers;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
@@ -21,9 +22,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		public FileRepository(
 			Func<ISearchManager> searchManagerFactory,
 			IExternalServiceInstrumentationProvider instrumentationProvider,
-			IRetryHandler retryHandler)
+			IRetryHandlerFactory retryHandlerFactory)
 		{
-			_retryHandler = retryHandler;
+			_retryHandler = retryHandlerFactory.Create();
 			_searchManagerFactory = searchManagerFactory;
 			_instrumentationProvider = instrumentationProvider;
 		}
