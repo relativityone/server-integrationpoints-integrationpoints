@@ -142,7 +142,7 @@ namespace Relativity.Sync.Tests.Integration
 
 			IList<int> documentIds = Enumerable.Range(startIndex, totalItemsCount).ToList();
 			RelativityObjectSlim[] exportBlock = CreateExportBlock(documentIds);
-			ISourceWorkspaceDataReader dataReader = _dataReaderFactory.CreateSourceWorkspaceDataReader(batch.Object);
+			ISourceWorkspaceDataReader dataReader = _dataReaderFactory.CreateSourceWorkspaceDataReader(batch.Object, CancellationToken.None);
 			_importBulkArtifactJob.Setup(x => x.Execute()).Callback(() =>
 			{
 				for (int i = 0; i < totalItemsCount; i++)
@@ -185,7 +185,7 @@ namespace Relativity.Sync.Tests.Integration
 			RelativityObjectSlim[] exportBlock = CreateExportBlock(documentIds);
 
 			batch.SetupGet(x => x.TotalItemsCount).Returns(totalItemsCount);
-			ISourceWorkspaceDataReader dataReader = _dataReaderFactory.CreateSourceWorkspaceDataReader(batch.Object);
+			ISourceWorkspaceDataReader dataReader = _dataReaderFactory.CreateSourceWorkspaceDataReader(batch.Object, CancellationToken.None);
 			List<RelativityObjectSlim> failedDocuments = exportBlock.Take(numberOfErrors).ToList();
 			_importBulkArtifactJob.Setup(x => x.Execute()).Callback(() =>
 			{

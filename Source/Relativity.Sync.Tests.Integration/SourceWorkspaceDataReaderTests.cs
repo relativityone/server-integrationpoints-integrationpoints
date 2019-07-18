@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using FluentAssertions;
@@ -60,7 +61,8 @@ namespace Relativity.Sync.Tests.Integration
 				batcher,
 				_container.Resolve<IFieldManager>(),
 				_container.Resolve<IItemStatusMonitor>(),
-				Mock.Of<ISyncLog>());
+				Mock.Of<ISyncLog>(),
+				CancellationToken.None);
 
 			DocumentImportJob importData = SingleBatchImportJob;
 			await _documentTransferServicesMocker.SetupServicesWithTestData(importData, batchSize).ConfigureAwait(false);

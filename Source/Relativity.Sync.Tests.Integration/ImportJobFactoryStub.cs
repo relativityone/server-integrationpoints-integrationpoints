@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
 using Relativity.Sync.Storage;
@@ -20,7 +21,7 @@ namespace Relativity.Sync.Tests.Integration
 			_logger = logger;
 		}
 
-		public Task<Executors.IImportJob> CreateImportJobAsync(ISynchronizationConfiguration configuration, IBatch batch)
+		public Task<Executors.IImportJob> CreateImportJobAsync(ISynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
 		{
 			Executors.IImportJob importJob = new ImportJob(_importBulkArtifactJob, _semaphoreSlim, _jobHistoryErrorRepository,
 				configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, _logger);
