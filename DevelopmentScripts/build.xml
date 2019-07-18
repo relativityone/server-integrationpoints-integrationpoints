@@ -517,6 +517,17 @@
           <Assembly>lib\Renci.SshNet.dll</Assembly>
           <Assembly>lib\SystemInterface.dll</Assembly>
           <Assembly>lib\ZetaLongPaths.dll</Assembly>
+          <Assembly>lib\kCura.WinEDDS.ImportExtension.dll</Assembly>
+          <Assembly>lib\kCura.Relativity.ImportAPI.dll</Assembly>
+          <Assembly>lib\kCura.Relativity.ImportAPI.Extension.dll</Assembly>
+          <Assembly>lib\FreeImageNET.dll</Assembly>
+          <Assembly>lib\Ionic.Zip.dll</Assembly>
+          <Assembly>lib\kCura.dll</Assembly>
+          <Assembly>lib\kCura.ImageValidator.dll</Assembly>
+          <Assembly>lib\kCura.OI.FileID.dll</Assembly>
+          <Assembly>lib\kCura.Windows.Forms.dll</Assembly>
+          <Assembly>lib\kCura.Windows.Process.dll</Assembly>
+          <Assembly>lib\Relativity.dll</Assembly>
         </Assemblies>
         <ResourceFiles />
         <CustomPages>
