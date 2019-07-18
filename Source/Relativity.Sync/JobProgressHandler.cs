@@ -54,12 +54,18 @@ namespace Relativity.Sync
 
 		public void HandleProcessComplete(JobReport jobReport)
 		{
-			UpdateJobStatistics(jobReport);
+			lock (_lockObject)
+			{
+				UpdateJobStatistics(jobReport);
+			}
 		}
 
 		public void HandleFatalException(JobReport jobReport)
 		{
-			UpdateJobStatistics(jobReport);
+			lock (_lockObject)
+			{
+				UpdateJobStatistics(jobReport);
+			}
 		}
 
 		private void UpdateJobStatistics(JobReport jobReport)
