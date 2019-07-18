@@ -16,10 +16,10 @@ namespace Relativity.Sync
 		[Description("Canceled")]
 		Canceled,
 
-		[Description("Failed")]
-		Failed,
-
 		[Description("Skipped")]
-		Skipped
+		Skipped,
+
+		[Description("Failed")]
+		Failed
 	}
 }
