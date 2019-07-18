@@ -3,6 +3,7 @@ CSharpGuidelineAnalyzer
 kCura
 kCura.Relativity.Client
 Newtonsoft.Json
+Polly
 Relativity
 Relativity.API
 Relativity.Core
