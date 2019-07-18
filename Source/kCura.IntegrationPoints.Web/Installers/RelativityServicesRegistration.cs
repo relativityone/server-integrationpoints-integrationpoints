@@ -20,9 +20,15 @@ namespace kCura.IntegrationPoints.Web.Installers
 					.UsingFactoryMethod(k => new RetriableCPHelperProxy(ConnectionHelper.Helper()))
 					.LifestylePerWebRequest(),
 				Component
+					.For<IAPILog>()
+					.UsingFactoryMethod(k => k.Resolve<IHelper>().GetLoggerFactory().GetLogger())
+					.Named("ApiLogFromWeb")
+					.IsDefault()
+					.LifestylePerWebRequest(),
+				Component
 					.For<IStringSanitizer>()
-					.UsingFactoryMethod(k => k.Resolve<IHelper>().GetStringSanitizer(Data.Constants.ADMIN_CASE_ID)) // TODO should we use proper caseID???
-					.LifestyleSingleton(),
+					.UsingFactoryMethod(k => k.Resolve<IHelper>().GetStringSanitizer(Data.Constants.ADMIN_CASE_ID))
+					.LifestylePerWebRequest(),
 				Component
 					.For<IRSAPIService>()
 					.UsingFactoryMethod(k => k.Resolve<IServiceContextHelper>().GetRsapiService())

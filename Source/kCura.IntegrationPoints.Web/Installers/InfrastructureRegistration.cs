@@ -6,6 +6,8 @@ using Relativity.API;
 using System.Net.Http;
 using System.Web;
 using System.Web.Http.ExceptionHandling;
+using System.Web.Http.Filters;
+using kCura.IntegrationPoints.Web.Filters;
 
 namespace kCura.IntegrationPoints.Web.Installers
 {
@@ -18,8 +20,9 @@ namespace kCura.IntegrationPoints.Web.Installers
 				.AddDelegatingHandlers()
 				.AddExceptionLoggers()
 				.AddSessionService()
-				.AddErrorService();
-
+				.AddErrorService()
+				.AddExceptionFilters()
+				.AddFilterProviders();
 		}
 
 		private static IWindsorContainer AddCurrentHttpContext(this IWindsorContainer container)
@@ -54,12 +57,21 @@ namespace kCura.IntegrationPoints.Web.Installers
 			);
 		}
 
+		private static IWindsorContainer AddFilterProviders(this IWindsorContainer container)
+		{
+			return container.Register(Component
+				.For<IFilterProvider>()
+				.ImplementedBy<WindsorFilterProvider>()
+				.LifestyleSingleton()
+			);
+		}
+
 		private static IWindsorContainer AddErrorService(this IWindsorContainer container)
 		{
 			return container.Register(Component
 				.For<IErrorService>()
 				.ImplementedBy<CustomPageErrorService>()
-				.LifestyleSingleton()
+				.LifestylePerWebRequest()
 			);
 		}
 
@@ -75,6 +87,14 @@ namespace kCura.IntegrationPoints.Web.Installers
 					)
 				)
 				.LifestylePerWebRequest()
+			);
+		}
+
+		private static IWindsorContainer AddExceptionFilters(this IWindsorContainer container)
+		{
+			return container.Register(Component
+				.For<ExceptionFilter>()
+				.LifestyleTransient() // we need to create single exception filter per each attribute
 			);
 		}
 	}
