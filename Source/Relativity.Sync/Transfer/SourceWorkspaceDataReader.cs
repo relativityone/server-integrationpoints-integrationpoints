@@ -49,6 +49,7 @@ namespace Relativity.Sync.Transfer
 		{
 			if (_cancellationToken.IsCancellationRequested)
 			{
+				_currentReader.Dispose();
 				return false;
 			}
 
