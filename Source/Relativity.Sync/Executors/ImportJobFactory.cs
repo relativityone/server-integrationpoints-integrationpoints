@@ -56,6 +56,7 @@ namespace Relativity.Sync.Executors
 			importBulkArtifactJob.OnProgress += jobProgressHandler.HandleItemProcessed;
 			importBulkArtifactJob.OnError += jobProgressHandler.HandleItemError;
 			importBulkArtifactJob.OnComplete += jobProgressHandler.HandleProcessComplete;
+			importBulkArtifactJob.OnFatalException += jobProgressHandler.HandleFatalException;
 		}
 
 		private async Task<ImportBulkArtifactJob> CreateImportBulkArtifactJobAsync(ISynchronizationConfiguration configuration, int startingIndex, ISourceWorkspaceDataReader dataReader)

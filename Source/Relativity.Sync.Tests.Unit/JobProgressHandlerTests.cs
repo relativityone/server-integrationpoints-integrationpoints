@@ -74,6 +74,26 @@ namespace Relativity.Sync.Tests.Unit
 			_jobProgressUpdater.Verify(x => x.UpdateJobProgressAsync(expectedNumberOfItemsProcessed, numberOfItemErrorEvents));
 		}
 
+		[Test]
+		public void ItShouldUpdateStatisticsWhenJobCompletes()
+		{
+			// act
+			_instance.HandleProcessComplete(CreateJobReport());
+
+			// assert
+			_jobProgressUpdater.Verify(x => x.UpdateJobProgressAsync(It.IsAny<int>(), It.IsAny<int>()));
+		}
+
+		[Test]
+		public void ItShouldUpdateStatisticsWhenFatalExceptionOccurrs()
+		{
+			// act
+			_instance.HandleFatalException(CreateJobReport());
+
+			// assert
+			_jobProgressUpdater.Verify(x => x.UpdateJobProgressAsync(It.IsAny<int>(), It.IsAny<int>()));
+		}
+
 		private static JobReport CreateJobReport()
 		{
 			JobReport jobReport = (JobReport)Activator.CreateInstance(typeof(JobReport), true);
