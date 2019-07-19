@@ -26,9 +26,10 @@ namespace Relativity.Sync.Nodes
 
 		public override async Task<bool> ShouldExecuteAsync(IExecutionContext<SyncExecutionContext> context)
 		{
+			bool canExecute;
 			try
 			{
-				return await _command.CanExecuteAsync(context.Subject.CancellationToken).ConfigureAwait(false);
+				canExecute = await _command.CanExecuteAsync(context.Subject.CancellationToken).ConfigureAwait(false);
 			}
 			catch (Exception ex)
 			{
@@ -36,6 +37,12 @@ namespace Relativity.Sync.Nodes
 				context.Subject.Progress.ReportFailure(Id, ParallelGroupName, ex);
 				throw;
 			}
+
+			if (!canExecute)
+			{
+				HandleExecutionResult(context, ExecutionResult.Skipped());
+			}
+			return canExecute;
 		}
 
 		protected override async Task<NodeResultStatus> PerformExecuteAsync(IExecutionContext<SyncExecutionContext> context)
@@ -70,7 +77,7 @@ namespace Relativity.Sync.Nodes
 			}
 			else if (result.Status == ExecutionStatus.Canceled)
 			{
-				_logger.LogDebug("Step '{step}' was canceled during execution.", Id);
+				_logger.LogInformation("Step '{step}' was canceled during execution.", Id);
 				context.Subject.Progress.ReportCanceled(Id, ParallelGroupName);
 
 				return NodeResultStatus.Succeeded;
@@ -82,9 +89,16 @@ namespace Relativity.Sync.Nodes
 
 				return NodeResultStatus.SucceededWithErrors;
 			}
+			else if (result.Status == ExecutionStatus.Skipped)
+			{
+				_logger.LogInformation("Step '{step}' was skipped.", Id);
+				context.Subject.Progress.ReportCompleted(Id, ParallelGroupName);
+
+				return NodeResultStatus.NotRun;
+			}
 			else
 			{
-				_logger.LogDebug("Step '{step}' completed successfully.", Id);
+				_logger.LogInformation("Step '{step}' completed successfully.", Id);
 				context.Subject.Progress.ReportCompleted(Id, ParallelGroupName);
 
 				return NodeResultStatus.Succeeded;
@@ -93,7 +107,15 @@ namespace Relativity.Sync.Nodes
 
 		protected override void OnBeforeExecute(IExecutionContext<SyncExecutionContext> context)
 		{
-			context.Subject.Progress.ReportStarted(Id, ParallelGroupName);
+			if (context.Subject.CancellationToken.IsCancellationRequested)
+			{
+				context.CancelProcessing = true;
+			}
+			else
+			{
+				_logger.LogInformation("Processing step '{step}'.", Id);
+				context.Subject.Progress.ReportStarted(Id, ParallelGroupName);
+			}
 		}
 	}
 }

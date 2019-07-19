@@ -87,9 +87,38 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[TestCase(ExecutionStatus.Canceled, NodeResultStatus.Succeeded)]
+		[Test]
+		public async Task ItShouldHaveStatusCompletedWhenCannotExecute()
+		{
+			_command.Setup(x => x.CanExecuteAsync(CancellationToken.None)).ReturnsAsync(false);
+
+			// ACT
+			await _instance.ExecuteAsync(_executionContext).ConfigureAwait(false);
+
+			// ASSERT
+			_syncJobProgress.SyncJobState.Status.Should().Be(SyncJobStatus.Completed);
+		}
+
+		[Test]
+		public async Task ItShouldCancelPipeline()
+		{
+			CancellationTokenSource tokenSource = new CancellationTokenSource();
+			SyncExecutionContext context = new SyncExecutionContext(_syncJobProgress, tokenSource.Token);
+			tokenSource.Cancel();
+			
+			// ACT
+			await _instance.ExecuteAsync(context).ConfigureAwait(false);
+
+			// ASSERT
+			_command.Verify(x => x.CanExecuteAsync(It.IsAny<CancellationToken>()), Times.Never);
+			_command.Verify(x => x.ExecuteAsync(It.IsAny<CancellationToken>()), Times.Never);
+		}
+
+		[TestCase(ExecutionStatus.Canceled, NodeResultStatus.Failed)]
 		[TestCase(ExecutionStatus.Failed, NodeResultStatus.Failed)]
 		[TestCase(ExecutionStatus.CompletedWithErrors, NodeResultStatus.SucceededWithErrors)]
 		[TestCase(ExecutionStatus.Completed, NodeResultStatus.Succeeded)]
+		[TestCase(ExecutionStatus.Skipped, NodeResultStatus.NotRun)]
 		public async Task ItShouldConvertExecutionResult(ExecutionStatus resultStatus, NodeResultStatus expectedStatus)
 		{
 			_command.Setup(x => x.CanExecuteAsync(CancellationToken.None)).ReturnsAsync(true);
