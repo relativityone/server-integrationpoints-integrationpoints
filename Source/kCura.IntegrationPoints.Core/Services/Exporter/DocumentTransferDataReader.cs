@@ -101,7 +101,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				if (_readingArtifactIdsReference != ReadingArtifactIDs)
 				{
 					LoadNativeFilesLocationsAndNames();
-					LoadNativesMetadataFromDocumentsTable().GetAwaiter().GetResult();
+					LoadNativesMetadataFromDocumentsTableAsync().GetAwaiter().GetResult();
 				}
 
 				switch (fieldIdentifier)
@@ -231,14 +231,15 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			}
 		}
 
-		private async Task LoadNativesMetadataFromDocumentsTable()
+		private async Task LoadNativesMetadataFromDocumentsTableAsync()
 		{
 			const string supportedByViewerField = "Supported By Viewer";
 			const string relativityNativeTypeField = "Relativity Native Type";
 
 			string[] fieldNames = { supportedByViewerField, relativityNativeTypeField };
 			HashSet<string> fieldNameSet = new HashSet<string>(fieldNames);
-			ArtifactDTO[] documents = await _documentRepository.RetrieveDocumentsAsync(ReadingArtifactIDs, fieldNameSet);
+			ArtifactDTO[] documents = await _documentRepository.RetrieveDocumentsAsync(ReadingArtifactIDs, fieldNameSet)
+				.ConfigureAwait(false);
 
 			var nativeFileTypesToAdd = documents
 				.Select(x => new
