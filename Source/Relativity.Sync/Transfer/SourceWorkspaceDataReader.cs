@@ -21,19 +21,22 @@ namespace Relativity.Sync.Transfer
 		private readonly ISyncLog _logger;
 		private readonly ISynchronizationConfiguration _configuration;
 		private readonly IBatchDataReaderBuilder _readerBuilder;
+		private readonly CancellationToken _cancellationToken;
 
 		public SourceWorkspaceDataReader(IBatchDataReaderBuilder readerBuilder,
 			ISynchronizationConfiguration configuration,
 			IRelativityExportBatcher exportBatcher,
 			IFieldManager fieldManager,
 			IItemStatusMonitor itemStatusMonitor, 
-			ISyncLog logger)
+			ISyncLog logger,
+			CancellationToken cancellationToken)
 		{
 			_readerBuilder = readerBuilder;
 			_configuration = configuration;
 			_exportBatcher = exportBatcher;
 			_fieldManager = fieldManager;
 			_logger = logger;
+			_cancellationToken = cancellationToken;
 
 			ItemStatusMonitor = itemStatusMonitor;
 
@@ -44,6 +47,12 @@ namespace Relativity.Sync.Transfer
 
 		public bool Read()
 		{
+			if (_cancellationToken.IsCancellationRequested)
+			{
+				_currentReader.Dispose();
+				return false;
+			}
+
 			bool dataRead = _currentReader.Read();
 			if (!dataRead)
 			{

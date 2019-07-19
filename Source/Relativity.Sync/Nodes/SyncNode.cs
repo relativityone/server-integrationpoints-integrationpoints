@@ -80,7 +80,7 @@ namespace Relativity.Sync.Nodes
 				_logger.LogInformation("Step '{step}' was canceled during execution.", Id);
 				context.Subject.Progress.ReportCanceled(Id, ParallelGroupName);
 
-				return NodeResultStatus.Failed;
+				return NodeResultStatus.Succeeded;
 			}
 			else if (result.Status == ExecutionStatus.CompletedWithErrors)
 			{

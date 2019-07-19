@@ -1,4 +1,5 @@
-﻿using Relativity.Sync.Configuration;
+﻿using System.Threading;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Transfer
@@ -23,10 +24,10 @@ namespace Relativity.Sync.Transfer
 			_logger = logger;
 		}
 
-		public ISourceWorkspaceDataReader CreateSourceWorkspaceDataReader(IBatch batch)
+		public ISourceWorkspaceDataReader CreateSourceWorkspaceDataReader(IBatch batch, CancellationToken token)
 		{
 			IRelativityExportBatcher relativityExportBatcher = _exportBatcherFactory.CreateRelativityExportBatcher(batch);
-			return new SourceWorkspaceDataReader(_readerBuilder, _configuration, relativityExportBatcher, _fieldManager, _itemStatusMonitor, _logger);
+			return new SourceWorkspaceDataReader(_readerBuilder, _configuration, relativityExportBatcher, _fieldManager, _itemStatusMonitor, _logger, token);
 		}
 	}
 }

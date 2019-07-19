@@ -125,6 +125,31 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		}
 
 		[Test]
+		public void ItShouldReturnFalseWhenCancelled()
+		{
+			// Arrange
+			const int batchSize = 2;
+			ExportBatcherReturnsBatches(GenerateBatch(batchSize), EmptyBatch());
+			CancellationTokenSource tokenSource = new CancellationTokenSource();
+			var dataReader = new SourceWorkspaceDataReader(new SimpleBatchDataReaderBuilder(_identifierField), 
+				_configuration.Object,
+				_exportBatcher.Object,
+				_fieldManager.Object,
+				_itemStatusMonitor.Object,
+				new EmptyLogger(),
+				tokenSource.Token);
+
+			// Act
+			bool firstCall = dataReader.Read();
+			tokenSource.Cancel();
+			bool secondCall = dataReader.Read();
+
+			// Assert
+			firstCall.Should().BeTrue();
+			secondCall.Should().BeFalse();
+		}
+
+		[Test]
 		public void ItShouldReturnFalseWhenCurrentBatchIsEmptyAndNextBatchIsEmpty()
 		{
 			// Arrange
@@ -265,7 +290,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				_exportBatcher.Object,
 				_fieldManager.Object,
 				_itemStatusMonitor.Object,
-				new EmptyLogger());
+				new EmptyLogger(),
+				CancellationToken.None);
 		}
 
 		private void ExportBatcherReturnsBatches(params RelativityObjectSlim[][] batches)

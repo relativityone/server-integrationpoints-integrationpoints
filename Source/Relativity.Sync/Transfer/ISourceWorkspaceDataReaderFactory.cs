@@ -1,9 +1,10 @@
-﻿using Relativity.Sync.Storage;
+﻿using System.Threading;
+using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Transfer
 {
 	internal interface ISourceWorkspaceDataReaderFactory
 	{
-		ISourceWorkspaceDataReader CreateSourceWorkspaceDataReader(IBatch batch);
+		ISourceWorkspaceDataReader CreateSourceWorkspaceDataReader(IBatch batch, CancellationToken token);
 	}
 }

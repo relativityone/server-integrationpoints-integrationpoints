@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System.Threading;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
@@ -35,7 +36,7 @@ namespace Relativity.Sync.Tests.Unit
 			_exportBatcherFactory.Setup(x => x.CreateRelativityExportBatcher(It.IsAny<IBatch>())).Returns(batcher.Object);
 
 			// act
-			ISourceWorkspaceDataReader dataReader = _instance.CreateSourceWorkspaceDataReader(Mock.Of<IBatch>());
+			ISourceWorkspaceDataReader dataReader = _instance.CreateSourceWorkspaceDataReader(Mock.Of<IBatch>(), CancellationToken.None);
 
 			// assert
 			dataReader.Should().NotBeNull();
