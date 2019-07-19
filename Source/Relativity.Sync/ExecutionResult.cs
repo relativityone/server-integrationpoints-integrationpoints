@@ -49,6 +49,14 @@ namespace Relativity.Sync
 		}
 
 		/// <summary>
+		/// Creates a <see cref="ExecutionResult"/> for a cancelled operation.
+		/// </summary>
+		public static ExecutionResult Skipped()
+		{
+			return new ExecutionResult(ExecutionStatus.Skipped, string.Empty, null);
+		}
+
+		/// <summary>
 		/// Status of the execution. <see cref="Exception"/> and <see cref="Message"/> will only have meaningful
 		/// values when this property is not <see cref="ExecutionStatus.Completed"/>.
 		/// </summary>
