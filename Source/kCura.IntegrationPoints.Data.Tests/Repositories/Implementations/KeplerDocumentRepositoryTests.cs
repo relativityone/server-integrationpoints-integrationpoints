@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoints.Data.DTO;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.Repositories.DTO;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Data.Tests.Repositories.Implementations.CommonTests;
 using kCura.IntegrationPoints.Domain.Models;
@@ -131,34 +130,23 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		}
 
 		[Test]
-		public async Task RetrieveDocumentsAsync_ShouldBuildProperRequest()
+		public async Task RetrieveDocumentsAsync_ByFieldIDs_ShouldBuildProperRequest()
 		{
 			// arrange
 			int[] artifactsIDs = { 5, 9843, 3212 };
 			var fieldIDs = new HashSet<int> { 597, 412 };
-			List<RelativityObject> response = artifactsIDs
-				.Select(
-					artifactID => new RelativityObject
-					{
-						ArtifactID = artifactID,
-						FieldValues = new List<FieldValuePair>()
-					})
-				.ToList();
+			Arrange_RetrieveDocumentsAsync_ShouldBuildProperRequest(artifactsIDs);
 
-			_objectManagerMock
-				.Setup(x => x.QueryAsync(
-					It.IsAny<QueryRequest>(),
-					It.IsAny<ExecutionIdentity>()))
-				.Returns(Task.FromResult(response));
-
+			const string condition = @"'ArtifactID' in [5,9843,3212]";
 			Func<QueryRequest, bool> queryRequestValidator = queryRequest =>
 			{
 				bool isValid = true;
-				isValid &= queryRequest.Condition == @"'ArtifactID' in [5,9843,3212]";
+				isValid &= queryRequest.Condition == condition;
 				foreach (int fieldID in fieldIDs)
 				{
 					isValid &= queryRequest.Fields.Any(field => field.ArtifactID == fieldID);
 				}
+
 				isValid &= queryRequest.ObjectType.ArtifactTypeID == (int) ArtifactType.Document;
 				return isValid;
 			};
@@ -175,7 +163,40 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		}
 
 		[Test]
-		public async Task RetrieveDocumentsAsync_ShouldReturnArtifactDTOs()
+		public async Task RetrieveDocumentsAsync_ByFieldNames_ShouldBuildProperRequest()
+		{
+			// arrange
+			int[] artifactsIDs = { 5, 9843, 3212 };
+			var fieldNames = new HashSet<string> { "Control Number", "Sent from" };
+			Arrange_RetrieveDocumentsAsync_ShouldBuildProperRequest(artifactsIDs);
+
+			const string condition = @"'ArtifactID' in [5,9843,3212]";
+			Func<QueryRequest, bool> queryRequestValidator = queryRequest =>
+			{
+				bool isValid = true;
+				isValid &= queryRequest.Condition == condition;
+				foreach (string fieldName in fieldNames)
+				{
+					isValid &= queryRequest.Fields.Any(field => field.Name == fieldName);
+				}
+
+				isValid &= queryRequest.ObjectType.ArtifactTypeID == (int) ArtifactType.Document;
+				return isValid;
+			};
+
+			// act
+			await _sut
+				.RetrieveDocumentsAsync(artifactsIDs, fieldNames)
+				.ConfigureAwait(false);
+
+			// assert
+			_objectManagerMock.Verify(
+				x => x.QueryAsync(It.Is<QueryRequest>(query => queryRequestValidator(query)),
+					ExecutionIdentity.CurrentUser));
+		}
+
+		[Test]
+		public async Task RetrieveDocumentsAsync_ByFieldIDs_ShouldReturnArtifactDTOs()
 		{
 			// arrange
 			const int firstFieldArtifactID = 597;
@@ -235,7 +256,67 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		}
 
 		[Test]
-		public void RetrieveDocumentsAsync_ShouldRethrowObjectManagerException()
+		public async Task RetrieveDocumentsAsync_ByFieldNames_ShouldReturnArtifactDTOs()
+		{
+			// arrange
+			const string firstFieldName = "Control Number";
+			const string secondFieldName = "Sent To";
+			int[] artifactsIDs = { 5, 9843, 3212 };
+			var fieldNames = new HashSet<string> { firstFieldName, secondFieldName };
+			List<RelativityObject> response = artifactsIDs
+				.Select(
+					artifactID => new RelativityObject
+					{
+						ArtifactID = artifactID,
+						FieldValues = new List<FieldValuePair>
+						{
+							new FieldValuePair
+							{
+								Field = new Field
+								{
+									Name = firstFieldName
+								},
+								Value = string.Empty
+							},
+							new FieldValuePair
+							{
+								Field = new Field
+								{
+									Name = secondFieldName
+								},
+								Value = string.Empty
+							}
+						}
+					})
+				.ToList();
+
+			_objectManagerMock
+				.Setup(x => x.QueryAsync(
+					It.IsAny<QueryRequest>(),
+					It.IsAny<ExecutionIdentity>()))
+				.Returns(Task.FromResult(response));
+
+			// act
+			ArtifactDTO[] result = await _sut
+				.RetrieveDocumentsAsync(artifactsIDs, fieldNames)
+				.ConfigureAwait(false);
+
+			// assert
+			result.Select(x => x.ArtifactId).Should()
+				.BeEquivalentTo(
+					artifactsIDs,
+					"because all requested documents should be returned");
+			foreach (ArtifactDTO artifactDto in result)
+			{
+				artifactDto.Fields.Select(x => x.Name).Should()
+					.BeEquivalentTo(
+						fieldNames,
+						"because for each documents each field should be present");
+			}
+		}
+
+		[Test]
+		public void RetrieveDocumentsAsync_ByFieldIDs_ShouldRethrowObjectManagerException()
 		{
 			// arrange
 			var exceptionToThrow = new Exception();
@@ -248,6 +329,26 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			// act
 			Func<Task> retrieveDocumentsAction = () => _sut
 				.RetrieveDocumentsAsync(Enumerable.Empty<int>(), new HashSet<int>());
+
+			// assert
+			retrieveDocumentsAction.ShouldThrow<Exception>()
+				.Which.Should().Be(exceptionToThrow);
+		}
+
+		[Test]
+		public void RetrieveDocumentsAsync_ByFieldNames_ShouldRethrowObjectManagerException()
+		{
+			// arrange
+			var exceptionToThrow = new Exception();
+			_objectManagerMock
+				.Setup(x => x.QueryAsync(
+					It.IsAny<QueryRequest>(),
+					It.IsAny<ExecutionIdentity>()))
+				.Throws(exceptionToThrow);
+
+			// act
+			Func<Task> retrieveDocumentsAction = () => _sut
+				.RetrieveDocumentsAsync(Enumerable.Empty<int>(), new HashSet<string>());
 
 			// assert
 			retrieveDocumentsAction.ShouldThrow<Exception>()
@@ -451,6 +552,24 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				Times.Once);
 			result.Count.Should().Be(objects.Length);
 			VerifyObjectDtosAreTheSameAsObjects(result, objects);
+		}
+
+		private void Arrange_RetrieveDocumentsAsync_ShouldBuildProperRequest(IEnumerable<int> artifactIDs)
+		{
+			List<RelativityObject> response = artifactIDs
+				.Select(
+					artifactID => new RelativityObject
+					{
+						ArtifactID = artifactID,
+						FieldValues = new List<FieldValuePair>()
+					})
+				.ToList();
+
+			_objectManagerMock
+				.Setup(x => x.QueryAsync(
+					It.IsAny<QueryRequest>(),
+					It.IsAny<ExecutionIdentity>()))
+				.Returns(Task.FromResult(response));
 		}
 
 		private ExportInitializationResults CreateTestExportInitializationResults()

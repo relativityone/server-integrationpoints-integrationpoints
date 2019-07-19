@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data.DTO;
-using kCura.IntegrationPoints.Data.Repositories.DTO;
 using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Data.Repositories
@@ -20,6 +19,16 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		Task<ArtifactDTO[]> RetrieveDocumentsAsync(
 			IEnumerable<int> documentIds,
 			HashSet<int> fieldIds);
+
+		/// <summary>
+		/// Retrieves multiple documents
+		/// </summary>
+		/// <param name="documentIds">The artifact ids of the documents to retrieve</param>
+		/// <param name="fieldNames">The names of the fields to retrieve</param>
+		/// <returns>An array of document ArtifactDTOs</returns>
+		Task<ArtifactDTO[]> RetrieveDocumentsAsync(
+			IEnumerable<int> documentIds,
+			HashSet<string> fieldNames);
 
 		/// <summary>
 		/// Retrieve a single document via its identifier
