@@ -7,8 +7,8 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <summary>
 		/// Create an audit record of a RDO with the detail.
 		/// </summary>
-		/// <param name="artifactId">An artifact Id of the auditing Rdo</param>
-		/// <param name="detail">A DTO represents the auditing information.</param>
-		void CreateAuditRecord(int artifactId, AuditElement detail);
+		/// <param name="artifactID">An artifact Id of the auditing Rdo</param>
+		/// <param name="details">A DTO represents the auditing information.</param>
+		void CreateAuditRecord(int artifactID, AuditElement details);
 	}
 }

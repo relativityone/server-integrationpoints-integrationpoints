@@ -10,8 +10,9 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
 	public class FederatedInstanceManager : IFederatedInstanceManager
 	{
+		private const string _ARTIFACT_TYPE_NAME = "Federated Instance";
+
 		private readonly IRepositoryFactory _repositoryFactory;
-		private const string ARTIFACT_TYPE_NAME = "FederatedInstance";
 
 		public FederatedInstanceManager(IRepositoryFactory repositoryFactory)
 		{
@@ -106,7 +107,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		private IFederatedInstanceRepository GetFederatedInstanceRepository()
 		{
 			IArtifactTypeRepository artifactTypeRepository = _repositoryFactory.GetArtifactTypeRepository();
-			int artifactTypeId = artifactTypeRepository.GetArtifactTypeIdFromArtifactTypeName(ARTIFACT_TYPE_NAME);
+			int artifactTypeId = artifactTypeRepository.GetArtifactTypeIdFromArtifactTypeName(_ARTIFACT_TYPE_NAME);
 			return _repositoryFactory.GetFederatedInstanceRepository(artifactTypeId);
 		}
 	}

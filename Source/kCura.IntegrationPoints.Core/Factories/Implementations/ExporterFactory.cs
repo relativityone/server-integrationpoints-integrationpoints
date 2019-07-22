@@ -74,7 +74,6 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 					mappedFields,
 					serializedSourceConfiguration,
 					savedSearchArtifactID,
-					claimsPrincipal,
 					baseServiceContextProvider,
 					settings,
 					documentRepository);
@@ -86,12 +85,14 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			FieldMap[] mappedFields,
 			string config,
 			int savedSearchArtifactId,
-			ClaimsPrincipal claimsPrincipal,
 			IBaseServiceContextProvider baseServiceContextProvider,
 			ImportSettings settings,
 			IDocumentRepository documentRepository)
 		{
-			IFolderPathReader folderPathReader = _folderPathReaderFactory.Create(claimsPrincipal, settings, config);
+			int workspaceArtifactId = JsonConvert.DeserializeObject<SourceConfiguration>(config).SourceWorkspaceArtifactId;
+			IDBContext dbContext = _helper.GetDBContext(workspaceArtifactId);
+			bool useDynamicFolderPath = settings.UseDynamicFolderPath;
+			IFolderPathReader folderPathReader = _folderPathReaderFactory.Create(dbContext, useDynamicFolderPath);
 			const int startAtRecord = 0;
 
 			return new RelativityExporterService(

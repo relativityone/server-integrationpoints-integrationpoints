@@ -1,51 +1,59 @@
 ﻿using System;
-using System.IO;
-using System.Xml;
+using System.Xml.Linq;
 using System.Xml.Serialization;
+using kCura.IntegrationPoints.Common.Constants;
+using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using kCura.IntegrationPoints.Data.Models;
-using Relativity.Core;
+using kCura.IntegrationPoints.Data.Repositories.DTO;
+using Relativity.API.Foundation;
+using IFoundationAuditRepository = Relativity.API.Foundation.Repositories.IAuditRepository;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
-
 	public class RelativityAuditRepository : IRelativityAuditRepository
 	{
-		private readonly BaseServiceContext _context;
+		private readonly IFoundationAuditRepository _foundationAuditRepository;
+		private readonly IExternalServiceInstrumentationProvider _instrumentationProvider;
 
-		public RelativityAuditRepository(BaseServiceContext context)
+		public RelativityAuditRepository(
+			IFoundationAuditRepository foundationAuditRepository, 
+			IExternalServiceInstrumentationProvider instrumentationProvider)
 		{
-			_context = context;
+			_foundationAuditRepository = foundationAuditRepository;
+			_instrumentationProvider = instrumentationProvider;
 		}
 
-		public void CreateAuditRecord(int artifactId, AuditElement detail)
+		public void CreateAuditRecord(int artifactID, AuditElement details)
 		{
-			string auditDetail = SerializeAudit(detail);
-			AuditHelper.CreateAuditRecord(_context, artifactId, (int)AuditAction.Run, auditDetail);
+			XElement detailsXElement = ConvertAuditElementToXElement(details);
+			IAuditRecord auditRecord = new AuditRecord(artifactID, AuditAction.Run, detailsXElement, TimeSpan.Zero);
+
+			IExternalServiceSimpleInstrumentation instrumentation = _instrumentationProvider.CreateSimple(
+				ExternalServiceTypes.API_FOUNDATION,
+				nameof(global::Relativity.API.Foundation.Repositories.IAuditRepository),
+				nameof(IFoundationAuditRepository.CreateAuditRecord));
+
+			instrumentation.Execute(() => _foundationAuditRepository.CreateAuditRecord(auditRecord));
 		}
 
-		private string SerializeAudit(AuditElement detail)
+		private static XElement ConvertAuditElementToXElement(AuditElement auditElement)
 		{
-			if (detail == null)
+			var xDocument = new XDocument();
+
+			if (auditElement == null)
 			{
-				return String.Empty;
+				return xDocument.Root;
 			}
 
-			var xmlNamespace = new XmlSerializerNamespaces();
-			xmlNamespace.Add(String.Empty, String.Empty);
-			XmlSerializer serializer = new XmlSerializer(typeof (AuditElement));
-			XmlWriterSettings settings = new XmlWriterSettings
+			var xmlSerializerNamespaces = new XmlSerializerNamespaces();
+			xmlSerializerNamespaces.Add(string.Empty, string.Empty);
+			var xmlSerializer = new XmlSerializer(typeof(AuditElement));
+			using (var writer = xDocument.CreateWriter())
 			{
-				OmitXmlDeclaration = true
-			};
-
-			using (StringWriter stream = new StringWriter())
-			{
-				using (XmlWriter writer = XmlWriter.Create(stream, settings))
-				{
-					serializer.Serialize(writer, detail, xmlNamespace);
-				}
-				return stream.ToString();
+				xmlSerializer.Serialize(writer, auditElement, xmlSerializerNamespaces);
 			}
+
+			return xDocument.Root;
 		}
 	}
 }

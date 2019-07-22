@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_artifactTypeRepository = Substitute.For<IArtifactTypeRepository>();
 			_federatedInstanceRepository = Substitute.For<IFederatedInstanceRepository>();
 
-			_artifactTypeRepository.GetArtifactTypeIdFromArtifactTypeName("FederatedInstance").Returns(artifactTypeId);
+			_artifactTypeRepository.GetArtifactTypeIdFromArtifactTypeName("Federated Instance").Returns(artifactTypeId);
 			_repositoryFactory.GetArtifactTypeRepository().Returns(_artifactTypeRepository);
 			_repositoryFactory.GetFederatedInstanceRepository(artifactTypeId).Returns(_federatedInstanceRepository);
 

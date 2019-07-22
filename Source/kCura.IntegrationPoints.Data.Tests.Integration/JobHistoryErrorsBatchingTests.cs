@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Security.Claims;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
@@ -14,7 +13,6 @@ using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
-using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Helpers;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
@@ -570,7 +568,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 
 		private DataTable GetTempTable(string tempTableName)
 		{
-			string query = $"SELECT [ArtifactID] FROM { ClaimsPrincipal.Current.ResourceDBPrepend(SourceWorkspaceArtifactID) }.[{ tempTableName }]";
+			IDBContext dbContext = Helper.GetDBContext(SourceWorkspaceArtifactID);
+			string query = $"SELECT [ArtifactID] FROM { Helper.ResourceDBPrepend(dbContext) }.[{ tempTableName }]";
 			try
 			{
 				DataTable tempTable = CaseContext.SqlContext.ExecuteSqlStatementAsDataTable(query);

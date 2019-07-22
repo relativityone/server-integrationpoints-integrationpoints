@@ -2,23 +2,23 @@
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using kCura.Data.RowDataGateway;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 {
 	public class DynamicFolderPathReaderTests : TestBase
 	{
-		private BaseContext _dbContext;
+		private IDBContext _dbContext;
 		private DynamicFolderPathReader _instance;
 
 		public override void SetUp()
 		{
-			_dbContext = Substitute.For<BaseContext>();
+			_dbContext = Substitute.For<IDBContext>();
 			_instance = new DynamicFolderPathReader(_dbContext);
 		}
 

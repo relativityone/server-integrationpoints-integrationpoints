@@ -1,18 +1,26 @@
-﻿using System.Security.Claims;
-using kCura.IntegrationPoints.Data.Extensions;
+﻿using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data
 {
 	public class ResourceDbProvider : IResourceDbProvider
 	{
-		public string GetSchemalessResourceDataBasePrepend(int workspaceId)
+		private readonly IHelper _helper;
+
+		public ResourceDbProvider(IHelper helper)
 		{
-			return ClaimsPrincipal.Current.GetSchemalessResourceDataBasePrepend(workspaceId);
+			_helper = helper;
 		}
 
-		public string GetResourceDbPrepend(int workspaceId)
+		public string GetSchemalessResourceDataBasePrepend(int workspaceID)
 		{
-			return ClaimsPrincipal.Current.ResourceDBPrepend(workspaceId);
+			IDBContext dbContext = _helper.GetDBContext(workspaceID);
+			return _helper.GetSchemalessResourceDataBasePrepend(dbContext);
+		}
+
+		public string GetResourceDbPrepend(int workspaceID)
+		{
+			IDBContext dbContext = _helper.GetDBContext(workspaceID);
+			return _helper.ResourceDBPrepend(dbContext);
 		}
 	}
 }

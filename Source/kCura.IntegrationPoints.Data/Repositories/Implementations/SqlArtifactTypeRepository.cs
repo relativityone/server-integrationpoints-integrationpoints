@@ -1,28 +1,38 @@
-﻿
-using System.Data;
-using System.Data.SqlClient;
-using Relativity.Core;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class SqlArtifactTypeRepository : IArtifactTypeRepository
 	{
-		private readonly BaseContext _context;
+		private const int _ARTIFACT_TYPE_ID_OBJECT_TYPE = 25;
+		private const string _ARTIFACT_TYPE_ID_FIELD = "Artifact Type ID";
+		private const string _NAME_FIELD = "Name";
 
-		public SqlArtifactTypeRepository(BaseContext context)
+		private readonly IRelativityObjectManager _objectManager;
+
+		public SqlArtifactTypeRepository(IRelativityObjectManager objectManager)
 		{
-			_context = context;
+			_objectManager = objectManager;
 		}
 
 		public int GetArtifactTypeIdFromArtifactTypeName(string artifactTypeName)
 		{
-			const string artifactTypeParameterId = "@ArtifactType";
-			string sql = $"SELECT [ArtifactTypeID] FROM [EDDSDBO].[ArtifactType] WHERE [ArtifactType] = {artifactTypeParameterId}";
-			var artifactParameter = new SqlParameter(artifactTypeParameterId, SqlDbType.VarChar) { Value = artifactTypeName };
+			var objectType = new ObjectTypeRef {ArtifactTypeID = _ARTIFACT_TYPE_ID_OBJECT_TYPE};
+			var fields = new List<FieldRef> {new FieldRef {Name = _ARTIFACT_TYPE_ID_FIELD}};
 
-			int artifactTypeId = _context.DBContext.ExecuteSqlStatementAsScalar<int>(sql, new[] { artifactParameter });
+			var queryRequest = new QueryRequest
+			{
+				ObjectType = objectType,
+				Fields = fields,
+				Condition = $"((('{_NAME_FIELD}' LIKE ['{artifactTypeName}'])))"
+			};
 
-			return artifactTypeId;
+			RelativityObject artifactTypeObject = _objectManager.Query(queryRequest).Single();
+			int artifactTypeID = (int) artifactTypeObject[_ARTIFACT_TYPE_ID_FIELD].Value;
+
+			return artifactTypeID;
 		}
 	}
 }

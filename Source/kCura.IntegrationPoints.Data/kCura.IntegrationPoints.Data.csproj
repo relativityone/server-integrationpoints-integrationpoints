@@ -76,7 +76,6 @@
     <Compile Include="DTO\RelativityObjectSlimDto.cs" />
     <Compile Include="DTO\SavedSearchQueryRequest.cs" />
     <Compile Include="DTO\SavedSearchQueryResult.cs" />
-    <Compile Include="Extensions\ClaimsPrincipalExtension.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\FieldExtensions.cs" />
     <Compile Include="Extensions\ObjectQueryResultSetExtensions.cs" />
@@ -135,6 +134,7 @@
     <Compile Include="QueryOptions\JobHistoryQueryOptions.cs" />
     <Compile Include="Repositories\ApplicationRepository.cs" />
     <Compile Include="Repositories\DTO\ArtifactRef.cs" />
+    <Compile Include="Repositories\DTO\AuditRecord.cs" />
     <Compile Include="Repositories\DTO\FieldUpdateRequestDto.cs" />
     <Compile Include="Repositories\DTO\IFieldValueDto.cs" />
     <Compile Include="Repositories\DTO\ICaseInfoDto.cs" />
@@ -197,7 +197,6 @@
     <Compile Include="Repositories\ISavedSearchQueryRepository.cs" />
     <Compile Include="Migrations\AddReplaceWebAPIWithExportCoreSetting.cs" />
     <Compile Include="Models\AuditElement.cs" />
-    <Compile Include="Models\MassEditObject.cs" />
     <Compile Include="Queries\GetJobsCount.cs" />
     <Compile Include="Repositories\IDestinationProviderRepository.cs" />
     <Compile Include="Repositories\IArtifactGuidRepository.cs" />
@@ -492,17 +491,6 @@
       <ItemGroup>
         <Reference Include="Relativity.API">
           <HintPath>..\..\packages\Relativity.API\lib\net462\Relativity.API.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.Core">
-          <HintPath>..\..\packages\Relativity.Core\lib\net462\Relativity.Core.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
