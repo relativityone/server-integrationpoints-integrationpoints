@@ -12,7 +12,6 @@ nuget Relativity.Authentication 10.3.109.3
 nuget Relativity.Core 10.3.109.3
 nuget Relativity.CustomPages 10.3.109.3
 nuget Relativity.Data 10.3.109.3
-nuget Relativity.ImportExport 10.3.40.14-DEV
 nuget Relativity.DataExchange.Client.SDK 1.1.0
 nuget RelativityCore 10.3.109.3
 nuget Relativity.Services.Interfaces 10.3.109.3
