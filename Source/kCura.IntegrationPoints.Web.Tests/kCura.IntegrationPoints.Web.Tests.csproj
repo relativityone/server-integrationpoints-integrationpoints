@@ -97,6 +97,7 @@
     <Compile Include="Context\WorkspaceContext\SessionWorkspaceContextServiceTests.cs" />
     <Compile Include="RelativityServices\RetriableCPHelperProxyTests.cs" />
     <Compile Include="Context\WorkspaceContext\RequestContextWorkspaceContextServiceTests.cs" />
+    <Compile Include="WindsorFilterProviderTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">
