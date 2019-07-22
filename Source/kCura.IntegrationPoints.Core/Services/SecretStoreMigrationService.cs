@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			catch (Exception ex)
 			{
 				_apiLog.LogError(ex, 
-					$"{_MIGRATION_FAILED_MESSAGE} - CatalogTenantID: {0} CatalogID: {1}, SecretPath: {2}",
+					$"{_MIGRATION_FAILED_MESSAGE} - CatalogTenantID: {{@sourceSecretCatalogTenantID}} CatalogID: {{@sourceSecretCatalogID}}, SecretPath: {{@destinationSecretPath}}",
 					sourceSecretCatalogTenantID,
 					sourceSecretCatalogID,
 					destinationSecretPath
