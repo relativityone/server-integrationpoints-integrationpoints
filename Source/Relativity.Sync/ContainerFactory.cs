@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Autofac;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.WinEDDS.Service.Export;
 using Relativity.API;
 using Relativity.Sync.Executors.SumReporting;
 using Relativity.Sync.Executors.Validation;
@@ -31,6 +32,7 @@ namespace Relativity.Sync
 			containerBuilder.RegisterInstance(relativityServices).As<RelativityServices>();
 			containerBuilder.RegisterInstance(relativityServices.ServicesMgr).As<IServicesMgr>();
 			containerBuilder.RegisterInstance(relativityServices.APM).As<IAPM>();
+			containerBuilder.RegisterInstance(relativityServices.SearchManagerFactory).As<Func<ISearchManager>>();
 			containerBuilder.RegisterType<WorkspaceGuidService>().As<IWorkspaceGuidService>().SingleInstance();
 			containerBuilder.RegisterType<SyncExecutionContextFactory>().As<ISyncExecutionContextFactory>();
 			containerBuilder.RegisterType<AppDomainWrapper>().As<IAppDomain>();
