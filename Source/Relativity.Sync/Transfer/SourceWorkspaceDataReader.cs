@@ -63,7 +63,7 @@ namespace Relativity.Sync.Transfer
 
 			if (dataRead)
 			{
-				string identifierFieldName = _fieldManager.GetObjectIdentifierFieldAsync(CancellationToken.None).GetAwaiter().GetResult().SourceFieldName;
+				string identifierFieldName = _fieldManager.GetObjectIdentifierFieldAsync(CancellationToken.None).GetAwaiter().GetResult().DestinationFieldName;
 				string itemIdentifier = _currentReader[identifierFieldName].ToString();
 				ItemStatusMonitor.MarkItemAsRead(itemIdentifier);
 			}
@@ -108,9 +108,9 @@ namespace Relativity.Sync.Transfer
 			}
 			else
 			{
-				await CreateItemStatusRecordsAsync(batch).ConfigureAwait(false);
 				try
 				{
+					await CreateItemStatusRecordsAsync(batch).ConfigureAwait(false);
 					nextBatchReader = await _readerBuilder.BuildAsync(_configuration.SourceWorkspaceArtifactId, batch, CancellationToken.None).ConfigureAwait(false);
 					_logger.LogInformation("Created DataReader for next Export API batch.");
 				}

@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Relativity.Sync.Transfer;
 
-namespace Relativity.Sync.Tests.Integration
+namespace Relativity.Sync.Tests.Integration.Helpers
 {
 	internal sealed class Document
 	{

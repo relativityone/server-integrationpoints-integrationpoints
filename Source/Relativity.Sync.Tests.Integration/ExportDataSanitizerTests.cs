@@ -17,6 +17,7 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.Common;
+using Relativity.Sync.Tests.Integration.Helpers;
 using Relativity.Sync.Transfer;
 using Relativity.Sync.Transfer.StreamWrappers;
 

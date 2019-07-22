@@ -5,6 +5,7 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Tests.Integration.Helpers;
 
 namespace Relativity.Sync.Tests.Integration
 {

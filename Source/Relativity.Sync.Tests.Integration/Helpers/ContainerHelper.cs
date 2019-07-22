@@ -13,7 +13,7 @@ using Relativity.Sync.Logging;
 using Relativity.Sync.Nodes;
 using Relativity.Telemetry.APM;
 
-namespace Relativity.Sync.Tests.Integration
+namespace Relativity.Sync.Tests.Integration.Helpers
 {
 	internal static class ContainerHelper
 	{
@@ -33,7 +33,7 @@ namespace Relativity.Sync.Tests.Integration
 		{
 			Type syncNodeType = typeof(SyncNode<>).MakeGenericType(typeof(TConfig));
 			Type implementingNodeType = GetSyncNodeImplementationTypes().First(x => x.BaseType == syncNodeType);
-			var implementingNode = (INode<SyncExecutionContext>) container.Resolve(implementingNodeType);
+			var implementingNode = (INode<SyncExecutionContext>)container.Resolve(implementingNodeType);
 			return implementingNode;
 		}
 
@@ -63,6 +63,15 @@ namespace Relativity.Sync.Tests.Integration
 			return containerBuilder;
 		}
 
+		public static IContainer CreateContainer(Action<ContainerBuilder> containerBuilderAction)
+		{
+			ContainerBuilder containerBuilder = CreateInitializedContainerBuilder();
+
+			containerBuilderAction(containerBuilder);
+
+			return containerBuilder.Build();
+		}
+
 		/// <summary>
 		///     Creates Relativity Services with mocked dependencies
 		/// </summary>
@@ -82,7 +91,7 @@ namespace Relativity.Sync.Tests.Integration
 				}
 			});
 			instanceSettingManager.Setup(x => x.QueryAsync(It.IsAny<Services.Query>())).ReturnsAsync(resultSet);
-			
+
 			Mock<IServicesMgr> servicesMgr = new Mock<IServicesMgr>();
 			servicesMgr.Setup(x => x.CreateProxy<IInstanceSettingManager>(It.IsAny<ExecutionIdentity>())).Returns(instanceSettingManager.Object);
 

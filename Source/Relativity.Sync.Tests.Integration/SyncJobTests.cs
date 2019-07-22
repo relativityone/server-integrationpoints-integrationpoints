@@ -8,6 +8,7 @@ using NUnit.Framework;
 using Relativity.Sync.Configuration;
 using Banzai;
 using Relativity.Sync.Tests.Common;
+using Relativity.Sync.Tests.Integration.Helpers;
 
 namespace Relativity.Sync.Tests.Integration
 {

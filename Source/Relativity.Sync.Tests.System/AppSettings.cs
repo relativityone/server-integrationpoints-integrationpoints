@@ -10,10 +10,9 @@ namespace Relativity.Sync.Tests.System
 		private static Uri _relativityWebApiUrl;
 		private static Uri _relativityUrl;
 
-		private static readonly UriBuilder Builder = new UriBuilder("https", RelativityHostName);
 		private static string RelativityHostName => ConfigurationManager.AppSettings.Get(nameof(RelativityHostName));
 
-		public static Uri RelativityUrl => _relativityUrl ?? (_relativityUrl  = BuildUri("Relativity"));
+		public static Uri RelativityUrl => _relativityUrl ?? (_relativityUrl = BuildUri("Relativity"));
 		public static Uri RelativityServicesUrl => _relativityServicesUrl ?? (_relativityServicesUrl = BuildUri(ConfigurationManager.AppSettings.Get(nameof(RelativityServicesUrl))));
 		public static Uri RelativityRestUrl => _relativityRestUrl ?? (_relativityRestUrl = BuildUri(ConfigurationManager.AppSettings.Get(nameof(RelativityRestUrl))));
 		public static Uri RelativityWebApiUrl => _relativityWebApiUrl ?? (_relativityWebApiUrl = BuildUri(ConfigurationManager.AppSettings.Get(nameof(RelativityWebApiUrl))));
@@ -23,8 +22,13 @@ namespace Relativity.Sync.Tests.System
 
 		private static Uri BuildUri(string path)
 		{
-			Builder.Path = path;
-			return Builder.Uri;
+			if (string.IsNullOrEmpty(RelativityHostName))
+			{
+				throw new ConfigurationErrorsException($"{nameof(RelativityHostName)} is not set. Please supply it's value in app.config in order to run system tests.");
+			}
+
+			var uriBuilder = new UriBuilder("https", RelativityHostName, -1, path);
+			return uriBuilder.Uri;
 		}
 	}
 }
