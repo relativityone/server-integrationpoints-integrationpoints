@@ -2,6 +2,7 @@ Castle.Windsor
 CSharpGuidelineAnalyzer
 kCura
 kCura.Relativity.Client
+kCura.Apps.Common.Utils
 Newtonsoft.Json
 Polly
 Relativity

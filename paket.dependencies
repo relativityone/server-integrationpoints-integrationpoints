@@ -82,7 +82,7 @@ group Sync
 	strategy: min
 	source https://proget.kcura.corp/nuget/NuGet
 	nuget Relativity.Sync 0.1.2-beta27
-	nuget Autofac ~> 4.9
+	nuget Autofac 4.9.2.0
 	nuget Relativity.API 10.3.109.3
 	nuget Relativity.Services.DataContracts 10.3.109.3
 	nuget Relativity.Services.Interfaces 10.3.109.3

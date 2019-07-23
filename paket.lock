@@ -453,7 +453,7 @@ STRATEGY: MIN
 RESTRICTION: == net462
 NUGET
   remote: https://proget.kcura.corp/nuget/NuGet
-    Autofac (4.9.0)
+    Autofac (4.9.2)
     Banzai (3.0.2)
     Banzai.Autofac (3.0.2)
     kCura.Apps.Common.Utils (2.1.1)
