@@ -33,17 +33,17 @@ namespace Relativity.Sync.Tests.Integration
 		private Mock<IObjectManager> _objectManager;
 		private Mock<ISearchManager> _searchManager;
 
-		private const long _NATIVE_FILE_SIZE_VALUE = 1013L;
 		private const string _DOCUMENT_ARTIFACT_ID_COLUMN_NAME = "DocumentArtifactID";
-		private const string _FIELD_FOLDER_PATH_VALUE = "test3/test4";
-		private const string _FILENAME_COLUMN_NAME = "Filename";
-
 		private const string _FOLDER_PATH_SOURCE_FIELD_NAME = "FolderPathSource";
 		private const string _LOCATION_COLUMN_NAME = "Location";
+		private const string _FILENAME_COLUMN_NAME = "Filename";
+		private const string _SIZE_COLUMN_NAME = "Size";
+
+		private const string _FIELD_FOLDER_PATH_VALUE = "test3/test4";
 		private const string _NATIVE_FILE_FILENAME_VALUE = "foo.txt";
 		private const string _NATIVE_FILE_LOCATION_VALUE = "test1/test2";
-		private const string _SIZE_COLUMN_NAME = "Size";
 		private const string _SOURCE_WORKSPACE_FOLDER_PATH_VALUE = "test5/test6/test7";
+		private const long _NATIVE_FILE_SIZE_VALUE = 1013L;
 
 		[SetUp]
 		public void SetUp()
