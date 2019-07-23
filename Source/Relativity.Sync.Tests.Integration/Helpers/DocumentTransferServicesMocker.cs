@@ -13,13 +13,10 @@ using kCura.WinEDDS.Service.Export;
 using Moq;
 using Moq.Language.Flow;
 using Relativity.Kepler.Transport;
-using Relativity.Services.Interfaces.File;
-using Relativity.Services.Interfaces.File.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Transfer;
-using IFieldManager = Relativity.Sync.Transfer.IFieldManager;
 
 namespace Relativity.Sync.Tests.Integration.Helpers
 {
@@ -28,7 +25,7 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 	/// </summary>
 	internal sealed class DocumentTransferServicesMocker
 	{
-		private IFieldManager _fieldManager;
+		private Relativity.Sync.Transfer.IFieldManager _fieldManager;
 
 		private const string _DOCUMENT_ARTIFACT_ID_COLUMN_NAME = "DocumentArtifactID";
 		private const string _FILENAME_COLUMN_NAME = "Filename";
@@ -65,7 +62,7 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 			SetupFailingServiceCreation<IObjectManager>();
 		}
 
-		public void SetupFailingFileManagerCreation()
+		public void SetupFailingSearchManagerCreation()
 		{
 			SetupFailingServiceCreation<ISearchManager>();
 		}
@@ -75,7 +72,7 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 			ObjectManager.Setup(expression).Throws<AggregateException>();
 		}
 
-		public void SetupFailingFileManagerCall<TResult>(Expression<Func<ISearchManager, TResult>> expression)
+		public void SetupFailingSearchManagerCall<TResult>(Expression<Func<ISearchManager, TResult>> expression)
 		{
 			SearchManager.Setup(expression).Throws<AggregateException>();
 		}
@@ -110,7 +107,7 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 				.ReturnsAsync(new MemoryStream(encoding.GetBytes(streamContents)));
 		}
 
-		public void SetFieldManager(IFieldManager fieldManager)
+		public void SetFieldManager(Relativity.Sync.Transfer.IFieldManager fieldManager)
 		{
 			_fieldManager = fieldManager;
 		}
@@ -162,7 +159,7 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 			return retVal;
 		}
 		
-		private async Task SetupExportResultBlocks(IFieldManager fieldManager, Document[] documents, int batchSize)
+		private async Task SetupExportResultBlocks(Relativity.Sync.Transfer.IFieldManager fieldManager, Document[] documents, int batchSize)
 		{
 			IList<FieldInfoDto> sourceDocumentFields = await fieldManager.GetDocumentFieldsAsync(CancellationToken.None).ConfigureAwait(false);
 			for (int takenDocumentsCount = 0; takenDocumentsCount < documents.Length; takenDocumentsCount += batchSize)
