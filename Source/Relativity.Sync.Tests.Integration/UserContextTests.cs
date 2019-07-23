@@ -15,6 +15,7 @@ using Relativity.Sync.Authentication;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Tests.Common;
+using Relativity.Sync.Tests.Integration.Helpers;
 using Relativity.Telemetry.APM;
 
 namespace Relativity.Sync.Tests.Integration

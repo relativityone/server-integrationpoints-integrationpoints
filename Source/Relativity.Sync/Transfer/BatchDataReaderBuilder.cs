@@ -34,7 +34,6 @@ namespace Relativity.Sync.Transfer
 			DataTable dataTable = CreateEmptyDataTable(_allFields);
 			if (batch != null && batch.Any())
 			{
-
 				IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> specialFieldBuildersDictionary =
 					await CreateSpecialFieldRowValuesBuildersAsync(sourceWorkspaceArtifactId, batch).ConfigureAwait(false);
 				foreach (RelativityObjectSlim item in batch)

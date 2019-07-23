@@ -1,4 +1,4 @@
-﻿namespace Relativity.Sync.Tests.Integration
+﻿namespace Relativity.Sync.Tests.Integration.Helpers
 {
 	internal sealed class FieldValue
 	{

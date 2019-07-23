@@ -1,25 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using kCura.WinEDDS.Service.Export;
 using Moq;
-using Moq.Language;
 using Moq.Language.Flow;
+using Relativity.Kepler.Transport;
 using Relativity.Services.Interfaces.File;
 using Relativity.Services.Interfaces.File.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
-using Relativity.Sync.Tests.Integration.Helpers;
 using Relativity.Sync.Transfer;
 using IFieldManager = Relativity.Sync.Transfer.IFieldManager;
 
-namespace Relativity.Sync.Tests.Integration
+namespace Relativity.Sync.Tests.Integration.Helpers
 {
 	/// <summary>
 	///     Mocks external interfaces necessary for testing document transfer (i.e. the source workspace data reader).
@@ -57,15 +59,34 @@ namespace Relativity.Sync.Tests.Integration
 
 		public async Task SetupServicesWithTestData(DocumentImportJob job, int batchSize)
 		{
-			SetupServiceCreation(ObjectManager, SourceServiceFactoryForUser, SourceServiceFactoryForAdmin);
+			SetupServiceCreation(ObjectManager);
 
 			SetupFields(job.Schema);
-			SetupBatches(batchSize, job.Documents.Length);
 			await SetupExportResultBlocks(_fieldManager, job.Documents, batchSize).ConfigureAwait(false);
 			SetupNatives(job.Documents);
 
 			// We should also setup folder paths here. That should be done once we are able to reliably
 			// mock out workflows other than those using DestinationFolderPathBehavior.None.
+		}
+
+		public void SetupFailingObjectManagerCreation()
+		{
+			SetupFailingServiceCreation<IObjectManager>();
+		}
+
+		public void SetupFailingFileManagerCreation()
+		{
+			SetupFailingServiceCreation<IFileManager>();
+		}
+
+		public void SetupFailingObjectManagerCall<TResult>(Expression<Func<IObjectManager, TResult>> expression)
+		{
+			ObjectManager.Setup(expression).Throws<AggregateException>();
+		}
+
+		public void SetupFailingFileManagerCall<TResult>(Expression<Func<IFileManager, TResult>> expression)
+		{
+			FileManager.Setup(expression).Throws<AggregateException>();
 		}
 
 		public void RegisterServiceMocks(ContainerBuilder containerBuilder)
@@ -76,17 +97,43 @@ namespace Relativity.Sync.Tests.Integration
 			containerBuilder.RegisterInstance(searchManagerFactory).As<Func<ISearchManager>>();
 		}
 
+		public void SetupLongTextStream(string fieldName, Encoding encoding, string streamContents)
+		{
+			var keplerStream = new Mock<IKeplerStream>();
+
+			int docArtifactId = (fieldName + streamContents).GetHashCode();
+			ObjectManager
+				.Setup(x => x.QuerySlimAsync(It.IsAny<int>(), It.Is<QueryRequest>(q => MatchesQueryByIdentifierRequest(q)), It.IsAny<int>(), It.IsAny<int>()))
+				.ReturnsAsync(QueryResultSlimForArtifactIDs(docArtifactId));
+
+			bool isUnicode = encoding.Equals(Encoding.Unicode);
+			ObjectManager
+				.Setup(x => x.QuerySlimAsync(It.IsAny<int>(), It.Is<QueryRequest>(q => MatchesFieldUnicodeQueryRequest(q)), It.IsAny<int>(), It.IsAny<int>()))
+				.ReturnsAsync(QueryResultSlimForValues(new List<object> { isUnicode }));
+
+			ObjectManager
+				.Setup(x => x.StreamLongTextAsync(It.IsAny<int>(), It.Is<RelativityObjectRef>(y => y.ArtifactID == docArtifactId), It.Is<FieldRef>(y => y.Name == "LongText")))
+				.ReturnsAsync(keplerStream.Object);
+
+			keplerStream.Setup(x => x.GetStreamAsync())
+				.ReturnsAsync(new MemoryStream(encoding.GetBytes(streamContents)));
+		}
+
 		public void SetFieldManager(IFieldManager fieldManager)
 		{
 			_fieldManager = fieldManager;
 		}
 
-		private void SetupServiceCreation<T>(Mock<T> serviceMock,
-			Mock<ISourceServiceFactoryForUser> userServiceFactory,
-			Mock<ISourceServiceFactoryForAdmin> adminServiceFactory) where T : class, IDisposable
+		private void SetupServiceCreation<T>(Mock<T> serviceMock) where T : class, IDisposable
 		{
-			userServiceFactory.Setup(x => x.CreateProxyAsync<T>()).ReturnsAsync(serviceMock.Object);
-			adminServiceFactory.Setup(x => x.CreateProxyAsync<T>()).ReturnsAsync(serviceMock.Object);
+			SourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<T>()).ReturnsAsync(serviceMock.Object);
+			SourceServiceFactoryForAdmin.Setup(x => x.CreateProxyAsync<T>()).ReturnsAsync(serviceMock.Object);
+		}
+
+		private void SetupFailingServiceCreation<T>() where T : class, IDisposable
+		{
+			SourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<T>()).ThrowsAsync(new AggregateException());
+			SourceServiceFactoryForAdmin.Setup(x => x.CreateProxyAsync<T>()).ThrowsAsync(new AggregateException());
 		}
 
 		private void SetupFields(IReadOnlyDictionary<string, RelativityDataType> fieldSchema)
@@ -123,50 +170,18 @@ namespace Relativity.Sync.Tests.Integration
 			QueryResultSlim retVal = new QueryResultSlim { Objects = objects };
 			return retVal;
 		}
-
-		private void SetupBatches(int batchSize, int totalItemCount)
-		{
-			List<QueryResult> results = new List<QueryResult>();
-			for (int i = 0; i < totalItemCount; i += batchSize)
-			{
-				int totalItemsInBatch = Math.Min(batchSize, totalItemCount - i);
-				var result = new QueryResult
-				{
-					TotalCount = 1,
-					Objects = new List<RelativityObject>
-					{
-						BatchObject(totalItemsInBatch, i, "New")
-					}
-				};
-				results.Add(result);
-			}
-
-			SetupBatches(results);
-		}
-
-		private void SetupBatches(IEnumerable<QueryResult> queryResults)
-		{
-			ISetupSequentialResult<Task<QueryResult>> setupAssertion = ObjectManager.SetupSequence(x => x.QueryAsync(It.IsAny<int>(),
-				It.Is<QueryRequest>(r => r.ObjectType.Guid == BatchObjectTypeGuid),
-				It.IsAny<int>(),
-				It.IsAny<int>()));
-			foreach (QueryResult result in queryResults)
-			{
-				setupAssertion.ReturnsAsync(result);
-			}
-			setupAssertion.ReturnsAsync(new QueryResult());
-		}
-
+		
 		private async Task SetupExportResultBlocks(IFieldManager fieldManager, Document[] documents, int batchSize)
 		{
-			IList<Transfer.FieldInfoDto> sourceDocumentFields = await fieldManager.GetDocumentFieldsAsync(CancellationToken.None).ConfigureAwait(false);
-			for (int i = 0; i < documents.Length; i += batchSize)
+			IList<FieldInfoDto> sourceDocumentFields = await fieldManager.GetDocumentFieldsAsync(CancellationToken.None).ConfigureAwait(false);
+			for (int takenDocumentsCount = 0; takenDocumentsCount < documents.Length; takenDocumentsCount += batchSize)
 			{
-				int resultsBlockSize = Math.Min(batchSize, documents.Length - i);
-				int exportIndexId = i;
+				int remainingDocumentCount = documents.Length - takenDocumentsCount;
+				int resultsBlockSize = Math.Min(batchSize, remainingDocumentCount);
+				int exportIndexId = takenDocumentsCount;
 				RelativityObjectSlim[] block = GetBlock(sourceDocumentFields, documents, resultsBlockSize, exportIndexId);
 
-				SetupExportResultBlock(resultsBlockSize, exportIndexId, block);
+				SetupExportResultBlock(remainingDocumentCount, exportIndexId, block);
 			}
 		}
 
@@ -228,29 +243,29 @@ namespace Relativity.Sync.Tests.Integration
 			return dataSet;
 		}
 
-		private static RelativityObject BatchObject(int totalItemCount, int startingIndex, string status)
+		private static bool MatchesQueryByIdentifierRequest(QueryRequest request)
 		{
-			return new RelativityObject
+			return request.ObjectType.ArtifactTypeID == (int)ArtifactType.Document && request.Condition.Contains("'Control Number' ==");
+		}
+
+		private static bool MatchesFieldUnicodeQueryRequest(QueryRequest request)
+		{
+			return request.ObjectType.Name == "Field" && request.Fields.First().Name == "Unicode";
+		}
+
+		private static QueryResultSlim QueryResultSlimForArtifactIDs(params int[] artifactIds)
+		{
+			return new QueryResultSlim
 			{
-				FieldValues = new List<FieldValuePair>
-				{
-					FieldValue(TotalItemsCountGuid, totalItemCount),
-					FieldValue(StartingIndexGuid, startingIndex),
-					FieldValue(StatusGuid, status),
-					FieldValue(FailedItemsCountGuid, null),
-					FieldValue(TransferredItemsCountGuid, null),
-					FieldValue(ProgressGuid, null),
-					FieldValue(LockedByGuid, null)
-				}
+				Objects = artifactIds.Select(x => new RelativityObjectSlim { ArtifactID = x }).ToList()
 			};
 		}
 
-		private static FieldValuePair FieldValue(Guid guid, object value)
+		private static QueryResultSlim QueryResultSlimForValues(params List<object>[] valueSets)
 		{
-			return new FieldValuePair
+			return new QueryResultSlim
 			{
-				Field = new Field { Guids = new List<Guid> { guid } },
-				Value = value
+				Objects = valueSets.Select(x => new RelativityObjectSlim { Values = x }).ToList()
 			};
 		}
 	}

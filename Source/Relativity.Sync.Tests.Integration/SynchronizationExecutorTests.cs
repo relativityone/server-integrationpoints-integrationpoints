@@ -18,6 +18,7 @@ using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Tests.Common;
+using Relativity.Sync.Tests.Integration.Helpers;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.Integration

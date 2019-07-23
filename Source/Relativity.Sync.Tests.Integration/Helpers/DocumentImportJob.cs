@@ -4,7 +4,7 @@ using System.Linq;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Transfer;
 
-namespace Relativity.Sync.Tests.Integration
+namespace Relativity.Sync.Tests.Integration.Helpers
 {
 	internal sealed class DocumentImportJob
 	{

@@ -8,6 +8,7 @@ using Relativity.Services.Objects;
 using Relativity.Services.ServiceProxy;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Tests.Common;
+using Relativity.Sync.Tests.Integration.Helpers;
 
 namespace Relativity.Sync.Tests.Integration
 {
