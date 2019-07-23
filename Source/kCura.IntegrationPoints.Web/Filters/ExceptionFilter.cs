@@ -22,11 +22,15 @@ namespace kCura.IntegrationPoints.Web.Filters
 
 		public ExceptionFilter(
 			LogApiExceptionFilterAttribute attribute,
-			Func<ITextSanitizer> stringSanitizerFactory,
+			Func<ITextSanitizer> textSanitizerFactory,
 			Func<IAPILog> loggerFactory)
 		{
-			_attribute = attribute;
-			_sanitizerFactory = stringSanitizerFactory;
+			_attribute = attribute ?? throw new ArgumentNullException(nameof(attribute));
+			_sanitizerFactory = textSanitizerFactory ?? throw new ArgumentNullException(nameof(textSanitizerFactory));
+			if (loggerFactory == null)
+			{
+				throw new ArgumentNullException(nameof(loggerFactory));
+			}
 			_loggerFactory = () => loggerFactory().ForContext<ExceptionFilter>();
 		}
 

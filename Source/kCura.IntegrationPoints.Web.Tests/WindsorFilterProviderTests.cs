@@ -91,7 +91,7 @@ namespace kCura.IntegrationPoints.Web.Tests
 
 				CreatedFilterInstance = new ExceptionFilter(
 					attribute,
-					stringSanitizerFactory: null,
+					textSanitizerFactory: null,
 					loggerFactory: null);
 
 				return CreatedFilterInstance;
