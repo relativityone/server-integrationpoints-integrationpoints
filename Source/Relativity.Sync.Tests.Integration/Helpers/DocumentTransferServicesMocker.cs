@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
+using kCura.WinEDDS.Service.Export;
 using Moq;
 using Moq.Language;
 using Moq.Language.Flow;
@@ -15,6 +17,7 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Tests.Integration.Helpers;
 using Relativity.Sync.Transfer;
+using IFieldManager = Relativity.Sync.Transfer.IFieldManager;
 
 namespace Relativity.Sync.Tests.Integration
 {
@@ -25,32 +28,36 @@ namespace Relativity.Sync.Tests.Integration
 	{
 		private IFieldManager _fieldManager;
 
+		private const string _DOCUMENT_ARTIFACT_ID_COLUMN_NAME = "DocumentArtifactID";
+		private const string _FILENAME_COLUMN_NAME = "Filename";
+		private const string _LOCATION_COLUMN_NAME = "Location";
+		private const string _SIZE_COLUMN_NAME = "Size";
+
 		private static readonly Guid BatchObjectTypeGuid = new Guid("18C766EB-EB71-49E4-983E-FFDE29B1A44E");
-		private static readonly Guid TotalItemsCountGuid = new Guid("F84589FE-A583-4EB3-BA8A-4A2EEE085C81");
+		private static readonly Guid FailedItemsCountGuid = new Guid("DC3228E4-2765-4C3B-B3B1-A0F054E280F6");
+		private static readonly Guid LockedByGuid = new Guid("BEFC75D3-5825-4479-B499-58C6EF719DDB");
+		private static readonly Guid ProgressGuid = new Guid("8C6DAF67-9428-4F5F-98D7-3C71A1FF3AE8");
 		private static readonly Guid StartingIndexGuid = new Guid("B56F4F70-CEB3-49B8-BC2B-662D481DDC8A");
 		private static readonly Guid StatusGuid = new Guid("D16FAF24-BC87-486C-A0AB-6354F36AF38E");
-		private static readonly Guid FailedItemsCountGuid = new Guid("DC3228E4-2765-4C3B-B3B1-A0F054E280F6");
+		private static readonly Guid TotalItemsCountGuid = new Guid("F84589FE-A583-4EB3-BA8A-4A2EEE085C81");
 		private static readonly Guid TransferredItemsCountGuid = new Guid("B2D112CA-E81E-42C7-A6B2-C0E89F32F567");
-		private static readonly Guid ProgressGuid = new Guid("8C6DAF67-9428-4F5F-98D7-3C71A1FF3AE8");
-		private static readonly Guid LockedByGuid = new Guid("BEFC75D3-5825-4479-B499-58C6EF719DDB");
 
 		public Mock<ISourceServiceFactoryForUser> SourceServiceFactoryForUser { get; }
 		public Mock<ISourceServiceFactoryForAdmin> SourceServiceFactoryForAdmin { get; }
 		public Mock<IObjectManager> ObjectManager { get; }
-		public Mock<IFileManager> FileManager { get; }
+		public Mock<ISearchManager> SearchManager { get; }
 
 		public DocumentTransferServicesMocker()
 		{
 			SourceServiceFactoryForAdmin = new Mock<ISourceServiceFactoryForAdmin>();
 			SourceServiceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
 			ObjectManager = new Mock<IObjectManager>();
-			FileManager = new Mock<IFileManager>();
+			SearchManager = new Mock<ISearchManager>();
 		}
 
 		public async Task SetupServicesWithTestData(DocumentImportJob job, int batchSize)
 		{
 			SetupServiceCreation(ObjectManager, SourceServiceFactoryForUser, SourceServiceFactoryForAdmin);
-			SetupServiceCreation(FileManager, SourceServiceFactoryForUser, SourceServiceFactoryForAdmin);
 
 			SetupFields(job.Schema);
 			SetupBatches(batchSize, job.Documents.Length);
@@ -65,6 +72,8 @@ namespace Relativity.Sync.Tests.Integration
 		{
 			containerBuilder.RegisterInstance(SourceServiceFactoryForUser.Object).As<ISourceServiceFactoryForUser>();
 			containerBuilder.RegisterInstance(SourceServiceFactoryForAdmin.Object).As<ISourceServiceFactoryForAdmin>();
+			Func<ISearchManager> searchManagerFactory = () => SearchManager.Object;
+			containerBuilder.RegisterInstance(searchManagerFactory).As<Func<ISearchManager>>();
 		}
 
 		public void SetFieldManager(IFieldManager fieldManager)
@@ -169,19 +178,20 @@ namespace Relativity.Sync.Tests.Integration
 
 		private void SetupNatives(Document[] documents)
 		{
-			FileManager
-				.Setup(x => x.GetNativesForSearchAsync(It.IsAny<int>(), It.IsAny<int[]>()))
-				.ReturnsAsync<int, int[], IFileManager, FileResponse[]>((_, ids) => DocumentsForArtifactIds(ids, documents));
+			DataSet dataSet = GetDataSetForDocuments(documents);
+			SearchManager
+				.Setup(x => x.RetrieveNativesForSearch(It.IsAny<int>(), It.IsAny<string>()))
+				.Returns(dataSet);
 		}
 
-		private static RelativityObjectSlim[] GetBlock(IList<Transfer.FieldInfoDto> sourceDocumentFields, Document[] documents, int resultsBlockSize, int startingIndex)
+		private static RelativityObjectSlim[] GetBlock(IList<FieldInfoDto> sourceDocumentFields, Document[] documents, int resultsBlockSize, int startingIndex)
 		{
 			return documents.Skip(startingIndex)
 				.Take(resultsBlockSize)
 				.Select(x => ToRelativityObjectSlim(x, sourceDocumentFields)).ToArray();
 		}
 
-		private static RelativityObjectSlim ToRelativityObjectSlim(Document document, IEnumerable<Transfer.FieldInfoDto> sourceDocumentFields)
+		private static RelativityObjectSlim ToRelativityObjectSlim(Document document, IEnumerable<FieldInfoDto> sourceDocumentFields)
 		{
 			Dictionary<string, object> fieldToValue = document.FieldValues.ToDictionary(fv => fv.Field, fv => fv.Value);
 			List<object> orderedValues = sourceDocumentFields.Select(x => fieldToValue[x.SourceFieldName]).ToList();
@@ -193,10 +203,29 @@ namespace Relativity.Sync.Tests.Integration
 			};
 		}
 
-		private static FileResponse[] DocumentsForArtifactIds(int[] requestedIds, Document[] documents)
+		private static DataSet GetDataSetForDocuments(Document[] documents)
 		{
-			Dictionary<int, Document> idToDocumentMap = documents.ToDictionary(d => d.ArtifactId);
-			return requestedIds.Select(i => idToDocumentMap[i].ToFileResponse()).ToArray();
+			DataSet dataSet = new DataSet();
+			DataTable dataTable = new DataTable("Table1");
+			dataSet.Tables.Add(dataTable);
+			dataTable.Columns.AddRange(new[]
+			{
+				new DataColumn(_DOCUMENT_ARTIFACT_ID_COLUMN_NAME, typeof(int)),
+				new DataColumn(_LOCATION_COLUMN_NAME, typeof(string)),
+				new DataColumn(_FILENAME_COLUMN_NAME, typeof(string)),
+				new DataColumn(_SIZE_COLUMN_NAME, typeof(long))
+			});
+			DataRow[] rows = documents.Select(document =>
+			{
+				DataRow dataRow = dataTable.NewRow();
+				dataRow[_DOCUMENT_ARTIFACT_ID_COLUMN_NAME] = document.ArtifactId;
+				dataRow[_LOCATION_COLUMN_NAME] = document.NativeFile.Location;
+				dataRow[_FILENAME_COLUMN_NAME] = document.NativeFile.Filename;
+				dataRow[_SIZE_COLUMN_NAME] = document.NativeFile.Size;
+				return dataRow;
+			}).ToArray();
+			rows.ForEach(row => dataTable.Rows.Add(row));
+			return dataSet;
 		}
 
 		private static RelativityObject BatchObject(int totalItemCount, int startingIndex, string status)

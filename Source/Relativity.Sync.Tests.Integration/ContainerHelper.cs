@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Autofac;
 using Banzai;
+using kCura.WinEDDS.Service.Export;
 using Moq;
 using Relativity.API;
 using Relativity.Services;
@@ -86,8 +87,10 @@ namespace Relativity.Sync.Tests.Integration
 			Mock<IServicesMgr> servicesMgr = new Mock<IServicesMgr>();
 			servicesMgr.Setup(x => x.CreateProxy<IInstanceSettingManager>(It.IsAny<ExecutionIdentity>())).Returns(instanceSettingManager.Object);
 
+			Mock<ISearchManager> searchManager = new Mock<ISearchManager>();
+
 			Uri authenticationUri = new Uri("https://localhost", UriKind.RelativeOrAbsolute);
-			return new RelativityServices(apm, servicesMgr.Object, authenticationUri);
+			return new RelativityServices(apm, servicesMgr.Object, () => searchManager.Object, authenticationUri);
 		}
 	}
 }
