@@ -76,6 +76,8 @@
     <Compile Include="BatchStatusCommands\Implementations\TargetDocumentsTaggingManagerFactory.cs" />
     <Compile Include="BatchStatusCommands\Implementations\TempTableReader.cs" />
     <Compile Include="Extensions\DictionaryExtensions.cs" />
+    <Compile Include="Interfaces\TextSanitizer\SanitizationResult.cs" />
+    <Compile Include="Interfaces\TextSanitizer\ITextSanitizer.cs" />
     <Compile Include="Factories\IExportServiceObserversFactory.cs" />
     <Compile Include="Factories\Implementations\ExportServiceObserversFactory.cs" />
     <Compile Include="Installers\Registrations\SecretStoreMigrationRegistration.cs" />
@@ -568,6 +570,7 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>

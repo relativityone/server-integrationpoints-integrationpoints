@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http.Filters;
+using kCura.IntegrationPoints.Core.Interfaces.TextSanitizer;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Web.Attributes;
 using Relativity.API;
@@ -16,12 +17,12 @@ namespace kCura.IntegrationPoints.Web.Filters
 		private const string _CONTACT_ADMIN_MESSAGE_ENDING = " Please check Error tab for more details";
 
 		private readonly LogApiExceptionFilterAttribute _attribute;
-		private readonly Func<IStringSanitizer> _sanitizerFactory;
+		private readonly Func<ITextSanitizer> _sanitizerFactory;
 		private readonly Func<IAPILog> _loggerFactory;
 
 		public ExceptionFilter(
 			LogApiExceptionFilterAttribute attribute,
-			Func<IStringSanitizer> stringSanitizerFactory,
+			Func<ITextSanitizer> stringSanitizerFactory,
 			Func<IAPILog> loggerFactory)
 		{
 			_attribute = attribute;
@@ -49,7 +50,7 @@ namespace kCura.IntegrationPoints.Web.Filters
 
 		private void SetMessageToResponse(HttpActionExecutedContext actionExecutedContext, string msg)
 		{
-			string sanitizedMsg = _sanitizerFactory().SanitizeHtmlContent(msg).CleanHtml;
+			string sanitizedMsg = _sanitizerFactory().Sanitize(msg).SanitizedText;
 			actionExecutedContext.Response = actionExecutedContext.Request.CreateResponse(HttpStatusCode.InternalServerError, sanitizedMsg);
 			actionExecutedContext.Response.Content = new StringContent(sanitizedMsg);
 		}

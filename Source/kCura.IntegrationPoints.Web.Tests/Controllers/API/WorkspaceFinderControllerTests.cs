@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using kCura.IntegrationPoint.Tests.Core;
+﻿using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
@@ -8,12 +7,13 @@ using kCura.IntegrationPoints.Web.Controllers.API;
 using kCura.IntegrationPoints.Web.Models;
 using NSubstitute;
 using NUnit.Framework;
-using Relativity.API;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoints.Common.Context;
+using kCura.IntegrationPoints.Core.Interfaces.TextSanitizer;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 
 		private IManagerFactory _managerFactoryMock;
 		private IContextContainerFactory _contextContainerFactoryMock;
-		private IStringSanitizer _htmlSanitizerManagerMock;
+		private ITextSanitizer _htmlSanitizerManagerMock;
 		private ICPHelper _cpHelperMock;
 		private IHelperFactory _helperFactoryMock;
 		private IWorkspaceManager _workspaceManagerMock;
@@ -85,7 +85,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		{
 			_managerFactoryMock = Substitute.For<IManagerFactory>();
 			_contextContainerFactoryMock = Substitute.For<IContextContainerFactory>();
-			_htmlSanitizerManagerMock = Substitute.For<IStringSanitizer>();
+			_htmlSanitizerManagerMock = Substitute.For<ITextSanitizer>();
 			_cpHelperMock = Substitute.For<ICPHelper>();
 			_helperFactoryMock = Substitute.For<IHelperFactory>();
 			_workspaceManagerMock = Substitute.For<IWorkspaceManager>();
@@ -112,8 +112,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			_managerFactoryMock.CreateWorkspaceManager(_contextContainerMock).Returns(_workspaceManagerMock);
 
 			_htmlSanitizerManagerMock
-				.SanitizeHtmlContent(Arg.Any<string>())
-				.Returns(x => new SanitizeHtmlContentResult { CleanHtml = x.Arg<string>(), ErrorMessages = new ArrayList() });
+				.Sanitize(Arg.Any<string>())
+				.Returns(x => new SanitizationResult(sanitizedText: x.Arg<string>(), hasErrors: false));
 		}
 
 		[Test]

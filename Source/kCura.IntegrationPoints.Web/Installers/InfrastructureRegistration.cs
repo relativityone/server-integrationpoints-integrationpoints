@@ -94,7 +94,7 @@ namespace kCura.IntegrationPoints.Web.Installers
 		{
 			return container.Register(Component
 				.For<ExceptionFilter>()
-				.LifestyleTransient() // we need to create single exception filter per each attribute
+				.LifestyleTransient() // we need to create single exception filter instance per each attribute instance
 			);
 		}
 	}

@@ -95,6 +95,7 @@
     <Compile Include="IntegrationPointsServices\Logging\WebCorrelationContextProviderTests.cs" />
     <Compile Include="Infrastructure\MessageHandlers\CorrelationIdHandlerTests.cs" />
     <Compile Include="Context\WorkspaceContext\SessionWorkspaceContextServiceTests.cs" />
+    <Compile Include="IntegrationPointsServices\TextSanitizerTests.cs" />
     <Compile Include="RelativityServices\RetriableCPHelperProxyTests.cs" />
     <Compile Include="Context\WorkspaceContext\RequestContextWorkspaceContextServiceTests.cs" />
     <Compile Include="WindsorFilterProviderTests.cs" />

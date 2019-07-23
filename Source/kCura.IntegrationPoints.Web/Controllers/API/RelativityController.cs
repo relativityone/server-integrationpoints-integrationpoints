@@ -2,16 +2,16 @@
 using System.Dynamic;
 using System.Text.RegularExpressions;
 using System.Web.Http;
+using kCura.IntegrationPoints.Core.Interfaces.TextSanitizer;
 using kCura.IntegrationPoints.Web.Attributes;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
 	public class RelativityController : ApiController
 	{
-		private readonly IStringSanitizer _htmlSanitizerManager;
+		private readonly ITextSanitizer _htmlSanitizerManager;
 
-		public RelativityController(IStringSanitizer htmlSanitizerManager)
+		public RelativityController(ITextSanitizer htmlSanitizerManager)
 		{
 			_htmlSanitizerManager = htmlSanitizerManager;
 		}
@@ -36,11 +36,11 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				foreach (KeyValuePair<string, object> kvp in settings)
 				{
 					string key = regex.Replace(kvp.Key, " ");
-					key = _htmlSanitizerManager.SanitizeHtmlContent(key).CleanHtml;
+					key = _htmlSanitizerManager.Sanitize(key).SanitizedText;
 					object value = null;
 					if (kvp.Value != null)
 					{
-						value = _htmlSanitizerManager.SanitizeHtmlContent(kvp.Value.ToString()).CleanHtml;
+						value = _htmlSanitizerManager.Sanitize(kvp.Value.ToString()).SanitizedText;
 					}
 					result.Add(new KeyValuePair<string, object>(key, value));
 				}
