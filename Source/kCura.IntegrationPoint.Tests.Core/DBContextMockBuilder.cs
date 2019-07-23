@@ -76,6 +76,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 					)
 				);
 
+			context.Database.Returns(baseContext.Database);
+
 			SetupExecuteSqlStatementAsScalar<int>(context, baseContext);
 			SetupExecuteSqlStatementAsScalar<bool>(context, baseContext);
 
