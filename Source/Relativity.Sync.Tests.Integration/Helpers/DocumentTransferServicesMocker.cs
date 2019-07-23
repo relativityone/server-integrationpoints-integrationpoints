@@ -35,15 +35,6 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 		private const string _LOCATION_COLUMN_NAME = "Location";
 		private const string _SIZE_COLUMN_NAME = "Size";
 
-		private static readonly Guid BatchObjectTypeGuid = new Guid("18C766EB-EB71-49E4-983E-FFDE29B1A44E");
-		private static readonly Guid FailedItemsCountGuid = new Guid("DC3228E4-2765-4C3B-B3B1-A0F054E280F6");
-		private static readonly Guid LockedByGuid = new Guid("BEFC75D3-5825-4479-B499-58C6EF719DDB");
-		private static readonly Guid ProgressGuid = new Guid("8C6DAF67-9428-4F5F-98D7-3C71A1FF3AE8");
-		private static readonly Guid StartingIndexGuid = new Guid("B56F4F70-CEB3-49B8-BC2B-662D481DDC8A");
-		private static readonly Guid StatusGuid = new Guid("D16FAF24-BC87-486C-A0AB-6354F36AF38E");
-		private static readonly Guid TotalItemsCountGuid = new Guid("F84589FE-A583-4EB3-BA8A-4A2EEE085C81");
-		private static readonly Guid TransferredItemsCountGuid = new Guid("B2D112CA-E81E-42C7-A6B2-C0E89F32F567");
-
 		public Mock<ISourceServiceFactoryForUser> SourceServiceFactoryForUser { get; }
 		public Mock<ISourceServiceFactoryForAdmin> SourceServiceFactoryForAdmin { get; }
 		public Mock<IObjectManager> ObjectManager { get; }
@@ -76,7 +67,7 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 
 		public void SetupFailingFileManagerCreation()
 		{
-			SetupFailingServiceCreation<IFileManager>();
+			SetupFailingServiceCreation<ISearchManager>();
 		}
 
 		public void SetupFailingObjectManagerCall<TResult>(Expression<Func<IObjectManager, TResult>> expression)
@@ -84,9 +75,9 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 			ObjectManager.Setup(expression).Throws<AggregateException>();
 		}
 
-		public void SetupFailingFileManagerCall<TResult>(Expression<Func<IFileManager, TResult>> expression)
+		public void SetupFailingFileManagerCall<TResult>(Expression<Func<ISearchManager, TResult>> expression)
 		{
-			FileManager.Setup(expression).Throws<AggregateException>();
+			SearchManager.Setup(expression).Throws<AggregateException>();
 		}
 
 		public void RegisterServiceMocks(ContainerBuilder containerBuilder)

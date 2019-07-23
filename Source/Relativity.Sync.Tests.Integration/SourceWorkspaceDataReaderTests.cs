@@ -323,8 +323,8 @@ namespace Relativity.Sync.Tests.Integration
 						"Failing second RetrieveResultsBlockFromExportAsync object manager call"),
 
 				new Tuple<Action<DocumentTransferServicesMocker>, string>(dtsm => dtsm.SetupFailingFileManagerCall(fm =>
-						fm.GetNativesForSearchAsync(It.IsAny<int>(), It.IsAny<int[]>())),
-						"Failing GetNativesForSearchAsync file manager call"),
+						fm.RetrieveNativesForSearch(It.IsAny<int>(), It.IsAny<string>())),
+						"Failing GetNativesForSearchAsync search manager call"),
 
 				new Tuple<Action<DocumentTransferServicesMocker>, string>(dtsm => dtsm.SetupFailingObjectManagerCall(om =>
 						om.QuerySlimAsync(It.IsAny<int>(), It.Is<QueryRequest>(r => r.ObjectType.Name == "Field"), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>())),
