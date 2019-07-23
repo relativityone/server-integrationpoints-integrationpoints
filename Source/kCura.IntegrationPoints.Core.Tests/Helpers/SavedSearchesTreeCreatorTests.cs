@@ -185,7 +185,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 				string input = keyValuePair.Key;
 				string output = keyValuePair.Value;
 
-				var sanitizationResult = new SanitizationResult(sanitizedText: output, false);
+				var sanitizationResult = new SanitizationResult(sanitizedText: output, hasErrors: false);
 				htmlSanitizer.Sanitize(input).Returns(sanitizationResult);
 			}
 		}
