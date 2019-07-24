@@ -12,9 +12,10 @@ NUnit
 Relativity.Authentication
 Relativity.Data
 Relativity.DataTransfer.MessageService
-Relativity.Telemetry.APM
-relativity.transfer.client
+Relativity.Logging
 Relativity.OAuth2Client
 Relativity.OAuth2Client.Interfaces
 Relativity.Services.Interfaces.Private
+Relativity.Telemetry.APM
 relativity.testing.identification
+relativity.transfer.client
