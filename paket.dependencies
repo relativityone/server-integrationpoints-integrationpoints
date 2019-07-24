@@ -86,3 +86,5 @@ group Sync
 	nuget Relativity.API 10.3.109.3
 	nuget Relativity.Services.DataContracts 10.3.109.3
 	nuget Relativity.Services.Interfaces 10.3.109.3
+	nuget Relativity.Services.Interfaces.Private 10.3.109.3
+	nuget Relativity.Telemetry.DataContracts.Shared 9.4.159
