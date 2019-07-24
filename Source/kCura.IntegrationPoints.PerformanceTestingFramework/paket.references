@@ -6,7 +6,6 @@ kCura.Relativity.Client
 NSubstitute
 NUnit
 Relativity.API
-Relativity.Core
 Relativity.Telemetry.APM
 relativity.transfer.client
 Relativity.OAuth2Client

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers.Dto;
 using NUnit.Framework;
-using Relativity.Core.DTO;
 using Document = kCura.Relativity.Client.DTOs.Document;
 
 namespace kCura.IntegrationPoint.Tests.Core.Validators
@@ -25,14 +25,14 @@ namespace kCura.IntegrationPoint.Tests.Core.Validators
 			int expectedNumberOfImages = Math.Max(sourceDocument.RelativityImageCount.GetValueOrDefault(), 1);
 			Assert.That(destinationDocument.RelativityImageCount, Is.EqualTo(expectedNumberOfImages), $"Number of images is different than expected for document {destinationDocument.ArtifactID}");
 
-			IList<File> destinationImages = _imagesService.GetImagesFileInfo(_destinationWorkspaceId, destinationDocument.ArtifactID);
+			IList<FileTestDto> destinationImages = _imagesService.GetImagesFileInfo(_destinationWorkspaceId, destinationDocument.ArtifactID);
 
 			Assert.That(destinationImages, Is.Not.Null, $"Could not find file for document {destinationDocument.ArtifactID}");
-			foreach (File destinationImage in destinationImages)
+			foreach (FileTestDto destinationImage in destinationImages)
 			{
-				Assert.That(destinationImage.InRepository, Is.EqualTo(_expectInRepository), $"Destination image {destinationImage.FileID} does not have InRepository flag set to {_expectInRepository}");
+				Assert.That(destinationImage.InRepository, Is.EqualTo(_expectInRepository), $"Destination image {destinationImage.Filename} does not have InRepository flag set to {_expectInRepository}");
 			}
-			
+
 		}
 	}
 }

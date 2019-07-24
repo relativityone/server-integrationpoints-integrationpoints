@@ -1,6 +1,7 @@
-﻿namespace kCura.IntegrationPoint.Tests.Core.Validators
+﻿using kCura.IntegrationPoint.Tests.Core.TestHelpers.Dto;
+
+namespace kCura.IntegrationPoint.Tests.Core.Validators
 {
-	using global::Relativity.Core.DTO;
 	using NUnit.Framework;
 	using TestHelpers;
 
@@ -11,7 +12,12 @@
 		private readonly int _sourceWorkspaceId;
 		private readonly int _destinationWorkspaceId;
 
-		public DocumentHasNativesAndInRepositoryValidator(INativesService nativesService, int sourceWorkspaceId, int destinationWorkspaceId, bool expectHasNatives, bool expectInRepository) : base(expectHasNatives)
+		public DocumentHasNativesAndInRepositoryValidator(
+			INativesService nativesService,
+			int sourceWorkspaceId,
+			int destinationWorkspaceId,
+			bool expectHasNatives,
+			bool expectInRepository) : base(expectHasNatives)
 		{
 			_destinationWorkspaceId = destinationWorkspaceId;
 			_sourceWorkspaceId = sourceWorkspaceId;
@@ -23,16 +29,15 @@
 		{
 			base.ValidateDocument(destinationDocument, sourceDocument);
 
-			File destinationFile = _nativesService.GetNativeFileInfo(_destinationWorkspaceId, destinationDocument.ArtifactID);
+			FileTestDto destinationFile = _nativesService.GetNativeFileInfo(_destinationWorkspaceId, destinationDocument.ArtifactID);
 
 			if (!ShouldExpectNativesForDocument(sourceDocument))
 			{
-				Assert.That(destinationFile, Is.Null,
-					$"There should be no natives in repository for document {destinationDocument.ArtifactID}");
+				Assert.IsNull(destinationFile, $"There should be no natives in repository for document {destinationDocument.ArtifactID}");
 				return;
 			}
 
-			File sourceFile = _nativesService.GetNativeFileInfo(_sourceWorkspaceId, sourceDocument.ArtifactID);
+			FileTestDto sourceFile = _nativesService.GetNativeFileInfo(_sourceWorkspaceId, sourceDocument.ArtifactID);
 
 			if (_expectInRepository)
 			{

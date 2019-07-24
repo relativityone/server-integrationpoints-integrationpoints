@@ -11,7 +11,6 @@ NSubstitute
 NUnit
 Relativity
 Relativity.API
-Relativity.Core
 Relativity.Data
 Relativity.DataExchange.Client.SDK
 kCura.OutsideIn.FI.Win32

@@ -26,6 +26,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		protected ISourceWorkspaceManager _sourceWorkspaceManager;
 		protected ISourceJobManager _sourceJobManager;
 		protected IRelativityObjectManager _relativityObjectManager;
+		protected IDocumentRepository _documentRepository;
 
 		protected const int _SPECIAL_FIELD_COUNT = 5;
 		protected const int _DOCUMENT_ARTIFACTID = 123423;
