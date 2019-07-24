@@ -21,8 +21,6 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 {
 	public class RepositoryFactory : MarshalByRefObject, IRepositoryFactory
 	{
-		private const int _ADMIN_WORKSPACE_ID = -1;
-
 		private readonly IHelper _helper;
 		private readonly IServicesMgr _destinationServiceMgr;
 		private readonly IServicesMgr _sourceServiceMgr;
@@ -69,7 +67,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IArtifactTypeRepository GetArtifactTypeRepository()
 		{
-			IRelativityObjectManager relativityObject = CreateRelativityObjectManager(_ADMIN_WORKSPACE_ID);
+			IRelativityObjectManager relativityObject = CreateRelativityObjectManager(Constants.ADMIN_CASE_ID);
 			IArtifactTypeRepository artifactTypeRepository = new SqlArtifactTypeRepository(relativityObject);
 
 			return artifactTypeRepository;

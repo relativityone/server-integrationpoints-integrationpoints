@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				.Returns(expectedResult);
 
 			// act
-			int actualArtifactTypeID = _sut.GetArtifactTypeIdFromArtifactTypeName(_ARTIFACT_TYPE_NAME);
+			int actualArtifactTypeID = _sut.GetArtifactTypeIDFromArtifactTypeName(_ARTIFACT_TYPE_NAME);
 
 			// assert
 			_objectManagerMock.Verify(

@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_objectManager = objectManager;
 		}
 
-		public int GetArtifactTypeIdFromArtifactTypeName(string artifactTypeName)
+		public int GetArtifactTypeIDFromArtifactTypeName(string artifactTypeName)
 		{
 			var objectType = new ObjectTypeRef {ArtifactTypeID = _ARTIFACT_TYPE_ID_OBJECT_TYPE};
 			var fields = new List<FieldRef> {new FieldRef {Name = _ARTIFACT_TYPE_ID_FIELD}};

@@ -1,9 +1,7 @@
-﻿using Relativity.API;
-
-namespace kCura.IntegrationPoints.Core.Services.Exporter
+﻿namespace kCura.IntegrationPoints.Core.Services.Exporter
 {
 	public interface IFolderPathReaderFactory
 	{
-		IFolderPathReader Create(IDBContext dbContext, bool useDynamicFolderPath);
+		IFolderPathReader Create(int workspaceArtifactID, bool useDynamicFolderPath);
 	}
 }

@@ -107,8 +107,8 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		private IFederatedInstanceRepository GetFederatedInstanceRepository()
 		{
 			IArtifactTypeRepository artifactTypeRepository = _repositoryFactory.GetArtifactTypeRepository();
-			int artifactTypeId = artifactTypeRepository.GetArtifactTypeIdFromArtifactTypeName(_ARTIFACT_TYPE_NAME);
-			return _repositoryFactory.GetFederatedInstanceRepository(artifactTypeId);
+			int artifactTypeID = artifactTypeRepository.GetArtifactTypeIDFromArtifactTypeName(_ARTIFACT_TYPE_NAME);
+			return _repositoryFactory.GetFederatedInstanceRepository(artifactTypeID);
 		}
 	}
 }

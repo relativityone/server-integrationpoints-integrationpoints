@@ -129,7 +129,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 
 		public string ResourceDBPrepend(IDBContext context)
 		{
-			return Helper.GetInstance().GetResourceDataBasePrepend();
+			return ResourceDBPrepend();
 		}
 
 		public string GetSchemalessResourceDataBasePrepend(IDBContext context)

@@ -195,7 +195,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				_savedSearchArtifactId,
 				job.SubmittedBy,
 				userImportApiSettings,
-				_documentRepository))
+				_documentRepository,
+				Serializer))
 			{
 				LogPushingDocumentsStart(job);
 				IScratchTableRepository[] scratchTables = _exportServiceJobObservers.OfType<IConsumeScratchTableBatchStatus>()

@@ -6,6 +6,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.DTO
 {
 	public class AuditRecord : IAuditRecord
 	{
+		public AuditAction Action { get; }
+		public int ArtifactID { get; }
+		public XElement Details { get; }
+		public TimeSpan? ExecutionTime { get; }
+
 		public AuditRecord(int artifactID, AuditAction action, XElement details, TimeSpan? executionTime)
 		{
 			ArtifactID = artifactID;
@@ -13,10 +18,5 @@ namespace kCura.IntegrationPoints.Data.Repositories.DTO
 			Details = details;
 			ExecutionTime = executionTime;
 		}
-
-		public AuditAction Action { get; }
-		public int ArtifactID { get; }
-		public XElement Details { get; }
-		public TimeSpan? ExecutionTime { get; }
 	}
 }

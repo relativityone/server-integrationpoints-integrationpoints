@@ -23,10 +23,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_instrumentationProvider = instrumentationProvider;
 		}
 
-		public void CreateAuditRecord(int artifactID, AuditElement details)
+		public void CreateAuditRecord(int artifactID, AuditElement auditElement)
 		{
-			XElement detailsXElement = ConvertAuditElementToXElement(details);
-			IAuditRecord auditRecord = new AuditRecord(artifactID, AuditAction.Run, detailsXElement, TimeSpan.Zero);
+			XElement detailsXElement = ConvertAuditElementToXElement(auditElement);
+			IAuditRecord auditRecord =
+				new AuditRecord(artifactID, AuditAction.Run, detailsXElement, executionTime: TimeSpan.Zero);
 
 			IExternalServiceSimpleInstrumentation instrumentation = _instrumentationProvider.CreateSimple(
 				ExternalServiceTypes.API_FOUNDATION,
@@ -46,7 +47,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 
 			var xmlSerializerNamespaces = new XmlSerializerNamespaces();
-			xmlSerializerNamespaces.Add(string.Empty, string.Empty);
+			xmlSerializerNamespaces.Add(prefix: string.Empty, ns: string.Empty);
 			var xmlSerializer = new XmlSerializer(typeof(AuditElement));
 			using (var writer = xDocument.CreateWriter())
 			{
