@@ -43,7 +43,7 @@ namespace kCura.IntegrationPoints.Web.Tests
 			// assert
 			filters.Should().BeEmpty("because no attributes were returned by actionDescriptor");
 		}
-		
+
 		[Test]
 		public void ShouldReturnValidFilterInfo()
 		{
@@ -91,8 +91,8 @@ namespace kCura.IntegrationPoints.Web.Tests
 
 				CreatedFilterInstance = new ExceptionFilter(
 					attribute,
-					textSanitizerFactory: null,
-					loggerFactory: null);
+					textSanitizerFactory: () => null,
+					loggerFactory: () => null);
 
 				return CreatedFilterInstance;
 			}
