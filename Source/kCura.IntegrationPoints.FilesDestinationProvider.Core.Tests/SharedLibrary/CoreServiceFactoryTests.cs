@@ -15,8 +15,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 		private ExportFile _exportFile;
 		private Mock<IServiceFactory> _webApiServiceFactoryMock;
 		private Mock<Func<IAuditManager>> _auditManagerFactoryMock;
-		private Mock<Func<IFieldManager>> _fieldManagerFactoryMock;
-		private Mock<Func<ISearchManager>> _searchManagerFactoryMock;
 		private Mock<IExportFileDownloaderFactory> _exportFileDownloaderFactoryMock;
 
 		private const int _EXPORT_ARTIFACT_TYPE_ID = 123;
@@ -28,8 +26,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 
 			_webApiServiceFactoryMock = new Mock<IServiceFactory>();
 			_auditManagerFactoryMock = new Mock<Func<IAuditManager>>();
-			_fieldManagerFactoryMock = new Mock<Func<IFieldManager>>();
-			_searchManagerFactoryMock = new Mock<Func<ISearchManager>>();
 			_exportFileDownloaderFactoryMock = new Mock<IExportFileDownloaderFactory>();
 
 			_sut = CreateCoreServiceFactory();
@@ -70,7 +66,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 		{
 			// arrange
 			var fieldManagerMock = new Mock<IFieldManager>();
-			_fieldManagerFactoryMock.Setup(x => x()).Returns(fieldManagerMock.Object);
+			_webApiServiceFactoryMock.Setup(x => x.CreateFieldManager()).Returns(fieldManagerMock.Object);
 
 			// act
 			IFieldManager actualFieldManager = _sut.CreateFieldManager();
@@ -92,7 +88,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 			}
 
 			// assert
-			_fieldManagerFactoryMock.Verify(x => x(), Times.Exactly(numberOfCalls));
+			_webApiServiceFactoryMock.Verify(x => x.CreateFieldManager(), Times.Exactly(numberOfCalls));
 		}
 
 		[Test]
@@ -100,7 +96,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 		{
 			// arrange
 			var searchManagerMock = new Mock<ISearchManager>();
-			_searchManagerFactoryMock.Setup(x => x()).Returns(searchManagerMock.Object);
+			_webApiServiceFactoryMock.Setup(x => x.CreateSearchManager()).Returns(searchManagerMock.Object);
 
 			// act
 			ISearchManager actualSearchManager = _sut.CreateSearchManager();
@@ -122,7 +118,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 			}
 
 			// assert
-			_searchManagerFactoryMock.Verify(x => x(), Times.Exactly(numberOfCalls));
+			_webApiServiceFactoryMock.Verify(x => x.CreateSearchManager(), Times.Exactly(numberOfCalls));
 		}
 
 		[Test]
@@ -228,8 +224,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 		{
 			return new CoreServiceFactory(
 				_auditManagerFactoryMock.Object,
-				_fieldManagerFactoryMock.Object,
-				_searchManagerFactoryMock.Object,
 				_exportFileDownloaderFactoryMock.Object,
 				_exportFile,
 				_webApiServiceFactoryMock.Object);

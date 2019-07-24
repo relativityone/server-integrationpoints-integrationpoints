@@ -28,7 +28,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Castle.MicroKernel.Resolvers;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.Common;
+using kCura.IntegrationPoints.Common.Handlers;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
+using kCura.WinEDDS.Service.Export;
 using Relativity.Services.Folder;
 using Component = Castle.MicroKernel.Registration.Component;
 
@@ -159,7 +163,13 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 					.ImplementedBy<ExternalServiceInstrumentationProviderWithoutJobContext>()
 					.LifestyleSingleton()
 			);
-
+			Container.Register(Component.For<IRetryHandlerFactory>().ImplementedBy<RetryHandlerFactory>().LifestyleTransient());
+			Container.Register(Component.For<IRetryHandler>().ImplementedBy<RetryHandler>().LifestyleTransient());
+			Container.Register(Component.For<Func<ISearchManager>>()
+				.UsingFactoryMethod(k => (Func<ISearchManager>)(() => k.Resolve<kCura.WinEDDS.Service.Export.IServiceFactory>().CreateSearchManager()))
+				.LifestyleTransient()
+			);
+			Container.Register(Component.For<IFileRepository>().ImplementedBy<FileRepository>().LifestyleTransient());
 
 #pragma warning disable 618
 			var dependencies = new IWindsorInstaller[]

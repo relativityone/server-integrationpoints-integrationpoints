@@ -1,7 +1,8 @@
 ﻿using FluentAssertions;
-using kCura.IntegrationPoints.Data.Interfaces;
+using kCura.IntegrationPoints.Common;
 using NUnit.Framework;
 using System;
+using kCura.IntegrationPoints.Common.Handlers;
 
 namespace kCura.IntegrationPoints.Data.Tests
 {

@@ -55,7 +55,6 @@
     </Compile>
     <Compile Include="ExportManagers\CoreFieldManagerTests.cs" />
     <Compile Include="ExportManagers\CoreAuditManagerTests.cs" />
-    <Compile Include="ExportManagers\CoreSearchManagerTests.cs" />
     <Compile Include="ExportManagers\ExportConvertingExtensionsTests.cs" />
     <Compile Include="ExportManagers\Factories\FileDownloaderFactoryTests.cs" />
     <Compile Include="Helpers\DestinationFolderHelperTests.cs" />
@@ -77,8 +76,6 @@
     <Compile Include="Process\ExportProcessRunnerTests.cs" />
     <Compile Include="Process\VolumeInfoBuilderTests.cs" />
     <Compile Include="Logging\ExportUserNotificationTests.cs" />
-    <Compile Include="Repositories\FileFieldRepositoryTests.cs" />
-    <Compile Include="Repositories\ViewFieldRepositoryTests.cs" />
     <Compile Include="Services\ArtifactTreeServiceTests.cs" />
     <Compile Include="Services\ExportInitProcessServiceTests.cs" />
     <Compile Include="Services\ViewServiceTests.cs" />

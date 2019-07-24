@@ -1,70 +1,36 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Constants;
+using kCura.IntegrationPoints.Common.Handlers;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
-using Relativity.Services.Interfaces.File;
-using Relativity.Services.Interfaces.File.Models;
+using kCura.WinEDDS.Service.Export;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class FileRepository : IFileRepository
 	{
-		private readonly IFileManager _fileManager;
+		private readonly Func<ISearchManager> _searchManagerFactory;
 		private readonly IExternalServiceInstrumentationProvider _instrumentationProvider;
+		private readonly IRetryHandler _retryHandler;
+
+		private const string ImageLocationColumn = "Location";
 
 		public FileRepository(
-			IFileManager fileManager, 
-			IExternalServiceInstrumentationProvider instrumentationProvider)
+			Func<ISearchManager> searchManagerFactory,
+			IExternalServiceInstrumentationProvider instrumentationProvider,
+			IRetryHandlerFactory retryHandlerFactory)
 		{
-			_fileManager = fileManager;
+			_retryHandler = retryHandlerFactory.Create();
+			_searchManagerFactory = searchManagerFactory;
 			_instrumentationProvider = instrumentationProvider;
 		}
 
-		public FileResponse[] GetNativesForSearch(int workspaceID, int[] documentIDs)
-		{
-			ThrowWhenNullArgument(documentIDs, nameof(documentIDs));
-
-			if (!documentIDs.Any())
-			{
-				return Enumerable.Empty<FileResponse>().ToArray();
-			}
-
-			IExternalServiceSimpleInstrumentation instrumentation = CreateInstrumentation(
-				operationName: nameof(IFileManager.GetNativesForSearchAsync)
-			);
-
-			return instrumentation.ExecuteAsync(
-				() => _fileManager.GetNativesForSearchAsync(workspaceID, documentIDs)
-			)
-			.GetAwaiter()
-			.GetResult();
-		}
-
-		public FileResponse[] GetNativesForProduction(
-			int workspaceID, 
-			int productionID, 
-			int[] documentIDs)
-		{
-			ThrowWhenNullArgument(documentIDs, nameof(documentIDs));
-
-			if (!documentIDs.Any())
-			{
-				return Enumerable.Empty<FileResponse>().ToArray();
-			}
-
-
-			IExternalServiceSimpleInstrumentation instrumentation = CreateInstrumentation(
-				operationName: nameof(IFileManager.GetNativesForProductionAsync)
-			);
-			return instrumentation.ExecuteAsync(
-				() => _fileManager.GetNativesForProductionAsync(workspaceID, productionID, documentIDs)
-			)
-			.GetAwaiter()
-			.GetResult();
-		}
-
-		public ProductionDocumentImageResponse[] GetImagesForProductionDocuments(
-			int workspaceID, 
+		public List<string> GetImagesLocationForProductionDocuments(
+			int workspaceID,
 			int productionID,
 			int[] documentIDs)
 		{
@@ -72,74 +38,42 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			if (!documentIDs.Any())
 			{
-				return Enumerable.Empty<ProductionDocumentImageResponse>().ToArray();
+				return new List<string>();
 			}
 
 			IExternalServiceSimpleInstrumentation instrumentation = CreateInstrumentation(
-				operationName: nameof(IFileManager.GetImagesForProductionDocumentsAsync)
+				operationName: nameof(ISearchManager.RetrieveImagesForProductionDocuments)
 			);
-
-			return instrumentation.ExecuteAsync(
-				() => _fileManager.GetImagesForProductionDocumentsAsync(workspaceID, productionID, documentIDs)
-			)
-			.GetAwaiter()
-			.GetResult();
+			using (ISearchManager searchManager = _searchManagerFactory())
+			{
+				List<string> fileLocations = ToLocationList(instrumentation.Execute<DataSet>(
+					() => _retryHandler.ExecuteWithRetries<DataSet>(
+						() => searchManager.RetrieveImagesForProductionDocuments(workspaceID, documentIDs, productionID))
+				));
+				return fileLocations;
+			}
 		}
-
-		public DocumentImageResponse[] GetImagesForDocuments(int workspaceID, int[] documentIDs)
+		public List<string> GetImagesLocationForDocuments(int workspaceID, int[] documentIDs)
 		{
 			ThrowWhenNullArgument(documentIDs, nameof(documentIDs));
 
 			if (!documentIDs.Any())
 			{
-				return Enumerable.Empty<DocumentImageResponse>().ToArray();
+				return new List<string>();
 			}
 
 			IExternalServiceSimpleInstrumentation instrumentation = CreateInstrumentation(
-				operationName: nameof(IFileManager.GetImagesForDocumentsAsync)
+				operationName: nameof(ISearchManager.RetrieveImagesForDocuments)
 			);
-
-			return instrumentation.ExecuteAsync(
-				() => _fileManager.GetImagesForDocumentsAsync(workspaceID, documentIDs)
-			)
-			.GetAwaiter()
-			.GetResult();
-		}
-
-		public FileResponse[] GetProducedImagesForDocument(int workspaceID, int documentID)
-		{
-			IExternalServiceSimpleInstrumentation instrumentation = CreateInstrumentation(
-				operationName: nameof(IFileManager.GetProducedImagesForDocumentAsync)
-			);
-
-			return instrumentation.ExecuteAsync(
-				() => _fileManager.GetProducedImagesForDocumentAsync(workspaceID, documentID)
-			)
-			.GetAwaiter()
-			.GetResult();
-		}
-
-		public ExportProductionDocumentImageResponse[] GetImagesForExport(int workspaceID, int[] productionIDs, int[] documentIDs)
-		{
-			ThrowWhenNullArgument(productionIDs, nameof(productionIDs));
-			ThrowWhenNullArgument(documentIDs, nameof(documentIDs));
-
-			if (!productionIDs.Any() || !documentIDs.Any())
+			using (ISearchManager searchManager = _searchManagerFactory())
 			{
-				return Enumerable.Empty<ExportProductionDocumentImageResponse>().ToArray();
+				List<string> fileLocations = ToLocationList(instrumentation.Execute<DataSet>(
+					() => _retryHandler.ExecuteWithRetries<DataSet>(
+						() => searchManager.RetrieveImagesForDocuments(workspaceID, documentIDs))
+					));
+				return fileLocations;
 			}
-
-			IExternalServiceSimpleInstrumentation instrumentation = CreateInstrumentation(
-				operationName: nameof(IFileManager.GetImagesForExportAsync)
-			);
-
-			return instrumentation.ExecuteAsync(
-				() => _fileManager.GetImagesForExportAsync(workspaceID, productionIDs, documentIDs)
-			)
-			.GetAwaiter()
-			.GetResult();
 		}
-
 		private void ThrowWhenNullArgument<T>(T argument, string argumentName)
 		{
 			if (argument == null)
@@ -152,9 +86,15 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			return _instrumentationProvider.CreateSimple(
 				ExternalServiceTypes.KEPLER,
-				nameof(IFileManager),
+				nameof(ISearchManager),
 				operationName
 			);
+		}
+
+		private List<string> ToLocationList(DataSet fileLocationDataSet)
+		{
+			var values = fileLocationDataSet.Tables[0].AsEnumerable();
+			return values.Select(x => (x[ImageLocationColumn]).ToString()).ToList();
 		}
 	}
 }
