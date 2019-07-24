@@ -18,6 +18,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 	{
 		private Job _job;
 		private int _rowErrors;
+		private static object _lockToken = new object();
 
 		private readonly IMessageService _messageService;
 		private readonly IIntegrationPointProviderTypeService _integrationPointProviderTypeService;
@@ -110,11 +111,14 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			string tableName = JobTracker.GenerateJobTrackerTempTableName(_job, batchInstance.ToString());
 			long totalSize = _fileSizeStatisticsService.CalculatePushedFilesSizeForJobHistory((int)_job.JobId, IntegrationPointImportSettings, IntegrationPointSourceConfiguration);
 
-			using (new JobHistoryMutex(_context, batchInstance))
-			{
-				// TODO refactoring, command query separation
-				JobStatistics stats = _query.UpdateAndRetrieveStats(tableName, _job.JobId, new JobStatistics { Completed = total, Errored = _rowErrors, ImportApiErrors = errorCount }, _job.WorkspaceID);
-				UpdateJobHistory(batchInstance, stats, totalSize);
+			lock(_lockToken)
+			{ 
+				using (new JobHistoryMutex(_context, batchInstance))
+				{
+					// TODO refactoring, command query separation
+					JobStatistics stats = _query.UpdateAndRetrieveStats(tableName, _job.JobId, new JobStatistics { Completed = total, Errored = _rowErrors, ImportApiErrors = errorCount }, _job.WorkspaceID);
+					UpdateJobHistory(batchInstance, stats, totalSize);
+				}
 			}
 
 			_rowErrors = 0;
@@ -127,9 +131,12 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
 		public void Update(Guid identifier, int transferredItem, int erroredCount)
 		{
-			using (new JobHistoryMutex(_context, identifier))
+			lock(_lockToken)
 			{
-				UpdateJobHistory(transferredItem, erroredCount);
+				using (new JobHistoryMutex(_context, identifier))
+				{
+					UpdateJobHistory(transferredItem, erroredCount);
+				}
 			}
 		}
 
