@@ -1,8 +1,10 @@
 ﻿using System;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.WinEDDS.Service.Export;
 using Relativity.API;
 using Relativity.Services.FileField;
@@ -29,7 +31,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
 			);
 
 			container.Register(Component.For<Func<ISearchManager>>()
-				.UsingFactoryMethod(k => (Func<ISearchManager>)(() => k.Resolve<IServiceFactory>().CreateSearchManager()))
+				.UsingFactoryMethod(k => (Func<ISearchManager>)(() => k.Resolve<IServiceManagerProvider>().Create<ISearchManager, SearchManagerFactory>()))
 				.LifestyleTransient()
 			);
 
@@ -40,7 +42,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
 			);
 
 			container.Register(
-				Component.For<IFileFieldManager>().UsingFactoryMethod(f => 
+				Component.For<IFileFieldManager>().UsingFactoryMethod(f =>
 					f.Resolve<IServicesMgr>().CreateProxy<IFileFieldManager>(ExecutionIdentity.CurrentUser)
 				)
 			);
