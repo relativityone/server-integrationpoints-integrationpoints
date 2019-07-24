@@ -81,9 +81,9 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			SavedSearchSelector = new SavedSearchSelector(Driver);
 		}
 
-		public PushToRelativitySecondPage SelectSavedSearch()
+		public PushToRelativitySecondPage SelectSavedSearch(string savedSearchName)
 		{
-			SavedSearchSelector.SelectSavedSearch("All Documents");
+			SavedSearchSelector.SelectSavedSearch(savedSearchName);
 			return this;
 		}
 

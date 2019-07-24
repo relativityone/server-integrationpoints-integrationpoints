@@ -2,6 +2,8 @@
 using Stream = System.IO.Stream;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
+using System.Threading.Tasks;
 using kCura.IntegrationPoints.Core.Extensions;
 using kCura.IntegrationPoints.Core.Services.Exporter.Base;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -10,7 +12,6 @@ using kCura.IntegrationPoints.Domain.Models;
 using Relativity;
 using Relativity.API;
 using Relativity.Core;
-using Relativity.Core.Service;
 using Relativity.Services.Objects.DataContracts;
 using FileQuery = Relativity.Core.Service.FileQuery;
 
@@ -29,6 +30,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private readonly HashSet<int> _documentsSupportedByViewer;
 		private readonly IRelativityObjectManager _relativityObjectManager;
 		private readonly IQueryFieldLookupRepository _fieldLookupRepository;
+		private readonly IDocumentRepository _documentRepository;
 		private readonly IAPILog _logger;
 
 		private const string _DUPLICATED_NATIVE_KEY_ERROR_MESSAGE = "Duplicated key found. Check if there is no natives duplicates for a given document";
@@ -44,6 +46,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			BaseServiceContext context,
 			IScratchTableRepository[] scratchTableRepositories,
 			IRelativityObjectManager relativityObjectManager,
+			IDocumentRepository documentRepository,
 			IAPILog logger,
 			IQueryFieldLookupRepository fieldLookupRepository,
 			bool useDynamicFolderPath) :
@@ -56,6 +59,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			_documentsSupportedByViewer = new HashSet<int>();
 			_relativityObjectManager = relativityObjectManager;
 			_fieldLookupRepository = fieldLookupRepository;
+			_documentRepository = documentRepository;
 			_logger = logger.ForContext<DocumentTransferDataReader>();
 		}
 
@@ -97,7 +101,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				if (_readingArtifactIdsReference != ReadingArtifactIDs)
 				{
 					LoadNativeFilesLocationsAndNames();
-					LoadNativesMetadataFromDocumentsTable();
+					LoadNativesMetadataFromDocumentsTableAsync().GetAwaiter().GetResult();
 				}
 
 				switch (fieldIdentifier)
@@ -227,32 +231,41 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			}
 		}
 
-		private void LoadNativesMetadataFromDocumentsTable()
+		private async Task LoadNativesMetadataFromDocumentsTableAsync()
 		{
-			string documentArtifactIdColumn = "ArtifactId";
-			string supportedByViewerColumn = "SupportedByViewer";
-			string relativityNativeTypeColumn = "RelativityNativeType";
+			const string supportedByViewerField = "Supported By Viewer";
+			const string relativityNativeTypeField = "Relativity Native Type";
 
-			string[] documentColumnsToRetrieve = { supportedByViewerColumn, relativityNativeTypeColumn };
+			string[] fieldNames = { supportedByViewerField, relativityNativeTypeField };
+			HashSet<string> fieldNameSet = new HashSet<string>(fieldNames);
+			ArtifactDTO[] documents = await _documentRepository.RetrieveDocumentsAsync(ReadingArtifactIDs, fieldNameSet)
+				.ConfigureAwait(false);
 
-			kCura.Data.DataView nativeTypeForGivenDocument = DocumentQuery.RetrieveValuesByColumnNamesAndArtifactIDs(Context, ReadingArtifactIDs, documentColumnsToRetrieve);
+			var nativeFileTypesToAdd = documents
+				.Select(x => new
+				{
+					DocumentArtifactID = x.ArtifactId,
+					NativeFileType = Convert.ToString(x.Fields.Single(y => y.Name == relativityNativeTypeField).Value)
+				})
+				.Where(x => !string.IsNullOrEmpty(x.NativeFileType));
 
-			for (int index = 0; index < nativeTypeForGivenDocument.Table.Rows.Count; index++)
+			IEnumerable<int> documentsSupportedByViewerToAdd = documents
+				.Select(x => new
+				{
+					DocumentArtifactID = x.ArtifactId,
+					SupportedByViewer = x.Fields.Single(y => y.Name == supportedByViewerField).Value
+				})
+				.Where(x => x.SupportedByViewer is bool supportedByViewerBool && supportedByViewerBool)
+				.Select(x => x.DocumentArtifactID);
+
+			foreach (var nativeFileTypeToAdd in nativeFileTypesToAdd)
 			{
-				DataRow row = nativeTypeForGivenDocument.Table.Rows[index];
-				var documentArtifactId = (int)row[documentArtifactIdColumn];
-				string nativeFileType = Convert.ToString(row[relativityNativeTypeColumn]);
+				_nativeFileTypes.Add(nativeFileTypeToAdd.DocumentArtifactID, nativeFileTypeToAdd.NativeFileType);
+			}
 
-				if (!string.IsNullOrEmpty(nativeFileType))
-				{
-					_nativeFileTypes.Add(documentArtifactId, nativeFileType);
-				}
-
-				bool supportedByViewer;
-				if (bool.TryParse(row[supportedByViewerColumn].ToString(), out supportedByViewer) && supportedByViewer)
-				{
-					_documentsSupportedByViewer.Add(documentArtifactId);
-				}
+			foreach (var documentSupportedByViewerToAdd in documentsSupportedByViewerToAdd)
+			{
+				_documentsSupportedByViewer.Add(documentSupportedByViewerToAdd);
 			}
 		}
 

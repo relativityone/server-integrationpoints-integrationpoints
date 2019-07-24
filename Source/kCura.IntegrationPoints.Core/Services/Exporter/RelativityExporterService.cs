@@ -57,6 +57,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				BaseContext,
 				transferConfiguration.ScratchRepositories, 
 				RelativityObjectManager,
+				DocumentRepository,
 				Logger,
 				QueryFieldLookupRepository,
 				transferConfiguration.ImportSettings.UseDynamicFolderPath);
