@@ -59,6 +59,8 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<BatchRepository>().As<IBatchRepository>();
 			builder.RegisterType<ProgressRepository>().As<IProgressRepository>();
 			builder.RegisterType<SemaphoreSlimWrapper>().As<ISemaphoreSlim>();
+			builder.RegisterType<SourcePermissionCheck>().As<IPermissionCheck>();
+			builder.RegisterType<DestinationPermissionCheck>().As<IPermissionCheck>();
 		}
 	}
 }

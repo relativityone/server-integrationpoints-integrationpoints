@@ -17,11 +17,11 @@ namespace Relativity.Sync.Executors.PermissionCheck
 
 		public async Task<ExecutionResult> ExecuteAsync(IPermissionsCheckConfiguration configuration, CancellationToken token)
 		{
-			ExecutionResult validateResult = await ValidatePermissions(configuration,token).ConfigureAwait(false);
+			ExecutionResult validateResult = await ValidatePermissionsAsync(configuration,token).ConfigureAwait(false);
 			return validateResult;
 		}
 
-		private async Task<ExecutionResult> ValidatePermissions(IPermissionsCheckConfiguration configuration, CancellationToken token)
+		private async Task<ExecutionResult> ValidatePermissionsAsync(IPermissionsCheckConfiguration configuration, CancellationToken token)
 		{
 			var validationResult = new ValidationResult();
 

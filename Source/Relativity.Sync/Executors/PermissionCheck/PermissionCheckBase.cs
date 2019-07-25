@@ -14,7 +14,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
 	{
 		public abstract Task<ValidationResult> ValidateAsync(IPermissionsCheckConfiguration configuration, CancellationToken token);
 
-		protected static async Task<IList<PermissionValue>> GetPermissions(IProxyFactory proxy, int workspaceArtifactId, int artifactId, List<PermissionRef> permissionRefs)
+		protected static async Task<IList<PermissionValue>> GetPermissionsAsync(IProxyFactory proxy, int workspaceArtifactId, int artifactId, List<PermissionRef> permissionRefs)
 		{
 			using (var permissionManager = await proxy.CreateProxyAsync<IPermissionManager>().ConfigureAwait(false))
 			{
@@ -23,7 +23,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			}
 		}
 
-		protected static async Task<IList<PermissionValue>> GetPermissions(IProxyFactory proxy, int workspaceArtifactId, List<PermissionRef> permissionRefs)
+		protected static async Task<IList<PermissionValue>> GetPermissionsAsync(IProxyFactory proxy, int workspaceArtifactId, List<PermissionRef> permissionRefs)
 		{
 			using (var permissionManager = await proxy.CreateProxyAsync<IPermissionManager>().ConfigureAwait(false))
 			{

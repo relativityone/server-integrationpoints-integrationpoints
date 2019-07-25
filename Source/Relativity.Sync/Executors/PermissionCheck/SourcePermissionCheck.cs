@@ -42,23 +42,23 @@ namespace Relativity.Sync.Executors.PermissionCheck
 		{
 			var validationResult = new ValidationResult();
 
-			validationResult.Add(await ValidateUserHasPermissionToAccessWorkspace(configuration).ConfigureAwait(false));
-			validationResult.Add(await ValidateUserHasArtifactTypePermission(configuration, IntegrationPoint, PermissionType.View, _INTEGRATION_POINT_TYPE_NO_VIEW).ConfigureAwait(false));
-			validationResult.Add(await ValidateUserHasArtifactInstancePermissions(configuration, IntegrationPoint, configuration.IntegrationPointArtifactId, PermissionType.View,
+			validationResult.Add(await ValidateUserHasPermissionToAccessWorkspaceAsync(configuration).ConfigureAwait(false));
+			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, IntegrationPoint, PermissionType.View, _INTEGRATION_POINT_TYPE_NO_VIEW).ConfigureAwait(false));
+			validationResult.Add(await ValidateUserHasArtifactInstancePermissionsAsync(configuration, IntegrationPoint, configuration.IntegrationPointArtifactId, PermissionType.View,
 				_INTEGRATION_POINT_INSTANCE_NO_VIEW).ConfigureAwait(false));
-			validationResult.Add(await ValidateUserHasArtifactTypePermission(configuration, JobHistory, PermissionType.Add, _JOB_HISTORY_TYPE_NO_ADD).ConfigureAwait(false));
-			validationResult.Add(await ValidateUserHasArtifactTypePermission(configuration, SourceProvider, PermissionType.View, _SOURCE_PROVIDER_NO_VIEW).ConfigureAwait(false));
-			validationResult.Add(await ValidateUserHasArtifactTypePermission(configuration, DestinationProvider, PermissionType.View, _DESTINATION_PROVIDER_NO_VIEW).ConfigureAwait(false));
-			validationResult.Add(await ValidateUserHasArtifactInstancePermissions(configuration, SourceProvider, configuration.SourceProviderArtifactId, PermissionType.View,
+			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, JobHistory, PermissionType.Add, _JOB_HISTORY_TYPE_NO_ADD).ConfigureAwait(false));
+			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, SourceProvider, PermissionType.View, _SOURCE_PROVIDER_NO_VIEW).ConfigureAwait(false));
+			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, DestinationProvider, PermissionType.View, _DESTINATION_PROVIDER_NO_VIEW).ConfigureAwait(false));
+			validationResult.Add(await ValidateUserHasArtifactInstancePermissionsAsync(configuration, SourceProvider, configuration.SourceProviderArtifactId, PermissionType.View,
 				_SOURCE_PROVIDER_NO_INSTANCE_VIEW).ConfigureAwait(false));
 
-			validationResult.Add(await ValidateSourceWorkspacePermission(configuration, _ALLOW_EXPORT_PERMISSION_ID, _SOURCE_WORKSPACE_NO_EXPORT).ConfigureAwait(false));
-			validationResult.Add(await ValidateSourceWorkspacePermission(configuration, _EDIT_DOCUMENT_PERMISSION_ID, _SOURCE_WORKSPACE_NO_DOC_EDIT).ConfigureAwait(false));
+			validationResult.Add(await ValidateSourceWorkspacePermissionAsync(configuration, _ALLOW_EXPORT_PERMISSION_ID, _SOURCE_WORKSPACE_NO_EXPORT).ConfigureAwait(false));
+			validationResult.Add(await ValidateSourceWorkspacePermissionAsync(configuration, _EDIT_DOCUMENT_PERMISSION_ID, _SOURCE_WORKSPACE_NO_DOC_EDIT).ConfigureAwait(false));
 
 			return validationResult;
 		}
 
-		private async Task<ValidationResult> ValidateUserHasPermissionToAccessWorkspace(IPermissionsCheckConfiguration configuration)
+		private async Task<ValidationResult> ValidateUserHasPermissionToAccessWorkspaceAsync(IPermissionsCheckConfiguration configuration)
 		{
 			var artifactTypeIdentifier = new ArtifactTypeIdentifier((int)ArtifactType.Case);
 			List<PermissionRef> permissionRefs = GetPermissionRefs(artifactTypeIdentifier, PermissionType.View);
@@ -66,7 +66,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			bool userHasViewPermissions = false;
 			try
 			{
-				IList<PermissionValue> permissions = await GetPermissions(_sourceServiceFactory, -1, configuration.SourceWorkspaceArtifactId, permissionRefs).ConfigureAwait(false);
+				IList<PermissionValue> permissions = await GetPermissionsAsync(_sourceServiceFactory, -1, configuration.SourceWorkspaceArtifactId, permissionRefs).ConfigureAwait(false);
 				userHasViewPermissions = DoesUserHavePermissions(permissions);
 			}
 			catch (Exception ex)
@@ -78,7 +78,8 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			return DoesUserHaveViewPermission(userHasViewPermissions, errorMessage);
 		}
 
-		private async Task<ValidationResult> ValidateUserHasArtifactTypePermission(IPermissionsCheckConfiguration configuration, Guid artifactTypeGuid, PermissionType artifactPermission, string errorMessage)
+		private async Task<ValidationResult> ValidateUserHasArtifactTypePermissionAsync(IPermissionsCheckConfiguration configuration, 
+			Guid artifactTypeGuid, PermissionType artifactPermission, string errorMessage)
 		{
 			var artifactTypeIdentifier = new ArtifactTypeIdentifier(artifactTypeGuid);
 			List<PermissionRef> permissionRefs = GetPermissionRefs(artifactTypeIdentifier, artifactPermission);
@@ -86,7 +87,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			bool userHasViewPermissions = false;
 			try
 			{
-				IList<PermissionValue> permissions = await GetPermissions(_sourceServiceFactory, configuration.SourceWorkspaceArtifactId, permissionRefs).ConfigureAwait(false);
+				IList<PermissionValue> permissions = await GetPermissionsAsync(_sourceServiceFactory, configuration.SourceWorkspaceArtifactId, permissionRefs).ConfigureAwait(false);
 				userHasViewPermissions = DoesUserHavePermissions(permissions);
 			}
 			catch (Exception ex)
@@ -97,7 +98,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			return DoesUserHaveViewPermission(userHasViewPermissions,errorMessage);
 		}
 
-		private async Task<ValidationResult> ValidateUserHasArtifactInstancePermissions(IPermissionsCheckConfiguration configuration,
+		private async Task<ValidationResult> ValidateUserHasArtifactInstancePermissionsAsync(IPermissionsCheckConfiguration configuration,
 			Guid artifactTypeGuid, int artifactId, PermissionType artifactPermission, string errorMessage)
 		{
 			var artifactTypeIdentifier = new ArtifactTypeIdentifier(artifactTypeGuid);
@@ -106,7 +107,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			bool userHasViewPermissions = false;
 			try
 			{
-				IList<PermissionValue> permissions = await GetPermissions(_sourceServiceFactory, configuration.SourceWorkspaceArtifactId, artifactId, permissionRefs).ConfigureAwait(false);
+				IList<PermissionValue> permissions = await GetPermissionsAsync(_sourceServiceFactory, configuration.SourceWorkspaceArtifactId, artifactId, permissionRefs).ConfigureAwait(false);
 				userHasViewPermissions = DoesUserHavePermissions(permissions);
 			}
 			catch (Exception ex)
@@ -117,14 +118,14 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			return DoesUserHaveViewPermission(userHasViewPermissions,errorMessage);
 		}
 
-		private async Task<ValidationResult> ValidateSourceWorkspacePermission(IPermissionsCheckConfiguration configuration, int permissionId, string errorMessage)
+		private async Task<ValidationResult> ValidateSourceWorkspacePermissionAsync(IPermissionsCheckConfiguration configuration, int permissionId, string errorMessage)
 		{
 			List<PermissionRef> permissionRefs = GetPermissionRefs(permissionId);
 
 			bool userHasViewPermissions = false;
 			try
 			{
-				IList<PermissionValue> permissions = await GetPermissions(_sourceServiceFactory, configuration.SourceWorkspaceArtifactId, permissionRefs).ConfigureAwait(false);
+				IList<PermissionValue> permissions = await GetPermissionsAsync(_sourceServiceFactory, configuration.SourceWorkspaceArtifactId, permissionRefs).ConfigureAwait(false);
 				userHasViewPermissions = DoesUserHavePermissions(permissions, permissionId);
 			}
 			catch (Exception ex)
