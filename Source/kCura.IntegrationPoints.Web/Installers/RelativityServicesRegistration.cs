@@ -6,7 +6,6 @@ using kCura.IntegrationPoints.Web.IntegrationPointsServices;
 using kCura.IntegrationPoints.Web.RelativityServices;
 using kCura.Relativity.Client;
 using Relativity.API;
-using Relativity.Core.Service;
 using Relativity.CustomPages;
 
 namespace kCura.IntegrationPoints.Web.Installers
@@ -21,9 +20,15 @@ namespace kCura.IntegrationPoints.Web.Installers
 					.UsingFactoryMethod(k => new RetriableCPHelperProxy(ConnectionHelper.Helper()))
 					.LifestylePerWebRequest(),
 				Component
-					.For<IHtmlSanitizerManager>()
-					.ImplementedBy<HtmlSanitizerManager>()
-					.LifestyleSingleton(),
+					.For<IAPILog>()
+					.UsingFactoryMethod(k => k.Resolve<IHelper>().GetLoggerFactory().GetLogger())
+					.Named("ApiLogFromWeb")
+					.IsDefault()
+					.LifestylePerWebRequest(),
+				Component
+					.For<IStringSanitizer>()
+					.UsingFactoryMethod(k => k.Resolve<IHelper>().GetStringSanitizer(Data.Constants.ADMIN_CASE_ID))
+					.LifestylePerWebRequest(),
 				Component
 					.For<IRSAPIService>()
 					.UsingFactoryMethod(k => k.Resolve<IServiceContextHelper>().GetRsapiService())

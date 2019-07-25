@@ -5,7 +5,6 @@ using System.Linq;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
-using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -41,7 +40,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			_caseServiceContext = Container.Resolve<ICaseServiceContext>();
 			_documentRepository = _repositoryFactory.GetDocumentRepository(SourceWorkspaceArtifactID);
 			_fieldQueryRepository = _repositoryFactory.GetFieldQueryRepository(SourceWorkspaceArtifactID);
-			_resourceDbProvider = new ResourceDbProvider();
+			_resourceDbProvider = new ResourceDbProvider(Helper);
 		}
 
 		public override void TestTeardown()

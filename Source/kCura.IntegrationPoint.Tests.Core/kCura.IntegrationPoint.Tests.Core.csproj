@@ -178,6 +178,8 @@
     <Compile Include="Templates\OtherProvidersTemplate.cs" />
     <Compile Include="Templates\RelativityProviderTemplate.cs" />
     <Compile Include="Templates\SourceProviderTemplate.cs" />
+    <Compile Include="TestHelpers\Converters\DataRowExtensions.cs" />
+    <Compile Include="TestHelpers\Dto\FileTestDto.cs" />
     <Compile Include="TestHelpers\ExceptionHelper.cs" />
     <Compile Include="TestHelpers\ExtendedIAgentHelper.cs" />
     <Compile Include="TestHelpers\FileServiceBase.cs" />
@@ -7805,7 +7807,7 @@
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="kCura.Apps.Common.Config">
-          <HintPath>..\..\packages\kCura.Apps.Common.Config\lib\net462\kCura.Apps.Common.Config.dll</HintPath>
+          <HintPath>..\..\packages\kCura.Apps.Common.Config\lib\net45\kCura.Apps.Common.Config.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -7816,7 +7818,7 @@
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="kCura.Apps.Common.Data">
-          <HintPath>..\..\packages\kCura.Apps.Common.Data\lib\net462\kCura.Apps.Common.Data.dll</HintPath>
+          <HintPath>..\..\packages\kCura.Apps.Common.Data\lib\net45\kCura.Apps.Common.Data.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -7827,7 +7829,7 @@
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="kCura.Apps.Common.Utils">
-          <HintPath>..\..\packages\kCura.Apps.Common.Utils\lib\net462\kCura.Apps.Common.Utils.dll</HintPath>
+          <HintPath>..\..\packages\kCura.Apps.Common.Utils\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -7949,17 +7951,6 @@
       <ItemGroup>
         <Reference Include="Relativity.API">
           <HintPath>..\..\packages\Relativity.API\lib\net462\Relativity.API.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.Core">
-          <HintPath>..\..\packages\Relativity.Core\lib\net462\Relativity.Core.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

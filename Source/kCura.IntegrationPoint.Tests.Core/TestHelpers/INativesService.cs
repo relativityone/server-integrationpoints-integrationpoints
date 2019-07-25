@@ -1,9 +1,9 @@
-﻿using Relativity.Core.DTO;
+﻿using kCura.IntegrationPoint.Tests.Core.TestHelpers.Dto;
 
 namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 {
 	public interface INativesService
 	{
-		File GetNativeFileInfo(int workspaceId, int documentArtifactId);
+		FileTestDto GetNativeFileInfo(int workspaceId, int documentArtifactId);
 	}
 }

@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using Relativity.Core.DTO;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers.Converters;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers.Dto;
 
 namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 {
@@ -11,17 +12,21 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 		{
 		}
 
-		public IList<File> GetProductionImagesFileInfo(int workspaceId, int documentArtifactId)
+		public IList<FileTestDto> GetProductionImagesFileInfo(int workspaceId, int documentArtifactId)
 		{
 			DataSet dataSet = SearchManager.RetrieveProducedImagesForDocument(workspaceId, documentArtifactId);
 			DataTable imagesTable = dataSet.Tables[0];
 
 			if (imagesTable == null || imagesTable.Rows.Count == 0)
 			{
-				return new List<File>();
+				return new List<FileTestDto>();
 			}
 
-			return imagesTable.Rows.Cast<DataRow>().Select(row => new File(row)).ToList();
+			return imagesTable
+				.Rows
+				.Cast<DataRow>()
+				.Select(row => row.ToFileTestDto())
+				.ToList();
 		}
 	}
 }

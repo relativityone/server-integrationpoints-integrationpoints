@@ -7,7 +7,6 @@ kCura.Relativity.Client
 NUnit
 Relativity
 Relativity.API
-Relativity.Core
 Relativity.Data
 Relativity.Kepler
 Relativity.Services.Interfaces
@@ -15,4 +14,5 @@ Relativity.Telemetry.APM
 relativity.transfer.client
 Relativity.OAuth2Client
 relativity.testing.identification
+Relativity.Toggles
 Serilog

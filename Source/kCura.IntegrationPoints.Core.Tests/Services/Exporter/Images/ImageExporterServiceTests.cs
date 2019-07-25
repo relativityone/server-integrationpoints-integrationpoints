@@ -15,7 +15,6 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity;
@@ -96,10 +95,22 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 		public void ItShouldGetDataTransferContext()
 		{
 			// Arrange
-			string config = GetConfig(SourceConfiguration.ExportType.SavedSearch);
+			SourceConfiguration sourceConfiguration = GetConfig(SourceConfiguration.ExportType.SavedSearch);
 
-			_instance = new ImageExporterService(_documentRepository, _relativityObjectManager, _sourceRepositoryFactory, _targetRepositoryFactory,
-				_fileRepository, _jobStopManager, _helper, _baseServiceContextProvider, _mappedFields, _START_AT, config, _SEARCH_ARTIFACT_ID, settings: null);
+			_instance = new ImageExporterService(
+				_documentRepository, 
+				_relativityObjectManager, 
+				_sourceRepositoryFactory,
+				_targetRepositoryFactory,
+				_fileRepository,
+				_jobStopManager, 
+				_helper, 
+				_baseServiceContextProvider, 
+				_mappedFields, 
+				_START_AT, 
+				sourceConfiguration,
+				_SEARCH_ARTIFACT_ID, 
+				settings: null);
 
 			IExporterTransferConfiguration transferConfiguration = Substitute.For<IExporterTransferConfiguration>();
 
@@ -115,7 +126,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 		public void ItShouldRetrieveOriginalImages()
 		{
 			// Arrange
-			string config = GetConfig(SourceConfiguration.ExportType.SavedSearch);
+			SourceConfiguration config = GetConfig(SourceConfiguration.ExportType.SavedSearch);
 			ImportSettings settings = new ImportSettings
 			{
 				ProductionPrecedence = string.Empty
@@ -165,7 +176,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 			const int productionArtifactID = 10010;
 			const int documentArtifactID = 10000;
 
-			string config = GetConfig(SourceConfiguration.ExportType.ProductionSet, productionArtifactID);
+			SourceConfiguration config = GetConfig(SourceConfiguration.ExportType.ProductionSet, productionArtifactID);
 
 			ImportSettings _settings = new ImportSettings()
 			{
@@ -184,8 +195,20 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 					Arg.Is<int[]>(x => x.Single() == documentArtifactID))
 				.Returns(CreateProductionDocumentImageResponses());
 
-			_instance = new ImageExporterService(_documentRepository, _relativityObjectManager, _sourceRepositoryFactory, _targetRepositoryFactory,
-				_fileRepository, _jobStopManager, _helper, _baseServiceContextProvider, _mappedFields, _START_AT, config, _SEARCH_ARTIFACT_ID, _settings);
+			_instance = new ImageExporterService(
+				_documentRepository, 
+				_relativityObjectManager, 
+				_sourceRepositoryFactory, 
+				_targetRepositoryFactory,
+				_fileRepository,
+				_jobStopManager, 
+				_helper,
+				_baseServiceContextProvider, 
+				_mappedFields, 
+				_START_AT, 
+				config, 
+				_SEARCH_ARTIFACT_ID, 
+				_settings);
 
 			_instance.GetDataTransferContext(Substitute.For<IExporterTransferConfiguration>());
 
@@ -202,17 +225,17 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 
 		#region "Helpers"
 
-		private string GetConfig(SourceConfiguration.ExportType exportType, int sourceProductionId = 0)
+		private SourceConfiguration GetConfig(SourceConfiguration.ExportType exportType, int sourceProductionID = 0)
 		{
 			var sourceConfiguration = new SourceConfiguration()
 			{
 				SourceWorkspaceArtifactId = _SOURCE_WORKSPACE_ARTIFACT_ID,
 				TargetWorkspaceArtifactId = _TARGET_WORKSPACE_ARTIFACT_ID,
 				TypeOfExport = exportType,
-				SourceProductionId = sourceProductionId
+				SourceProductionId = sourceProductionID
 			};
 
-			return JsonConvert.SerializeObject(sourceConfiguration);
+			return sourceConfiguration;
 		}
 
 		private IList<RelativityObjectSlimDto> PrepareRetrievedData(int documentArtifactId)

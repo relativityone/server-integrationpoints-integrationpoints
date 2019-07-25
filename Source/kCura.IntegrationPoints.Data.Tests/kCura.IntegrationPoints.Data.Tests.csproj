@@ -162,6 +162,7 @@
     <Compile Include="Repositories\Implementations\KeplerArtifactGuidRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\KeplerDocumentRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\PermissionRepositoryTests.cs" />
+    <Compile Include="Repositories\Implementations\RelativityAuditRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\RelativityObjectManagerTests.cs" />
     <Compile Include="Repositories\Implementations\IntegrationPointRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\KeplerInstanceSettingRepositoryTests.cs" />
@@ -173,6 +174,8 @@
     <Compile Include="Repositories\Implementations\SecretsRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\SourceJobRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\SourceWorkspaceRepositoryTests.cs" />
+    <Compile Include="Repositories\Implementations\SqlArtifactTypeRepositoryTests.cs" />
+    <Compile Include="ResourceDbProviderTests.cs" />
     <Compile Include="RetryHandlerFactoryTests.cs" />
     <Compile Include="RetryHandlerTests.cs" />
     <Compile Include="RSAPIClient\RsapiClientWrapperWithLoggingTests.cs" />

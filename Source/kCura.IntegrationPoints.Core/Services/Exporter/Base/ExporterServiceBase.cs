@@ -11,7 +11,6 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
-using Newtonsoft.Json;
 using Relativity.API;
 using Relativity.Core;
 
@@ -19,10 +18,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 {
 	public abstract class ExporterServiceBase : IExporterService
 	{
-		protected IDataTransferContext Context;
-		protected int RetrievedDataCount;
-		protected IQueryFieldLookupRepository QueryFieldLookupRepository;
-		protected SourceConfiguration SourceConfiguration;
+		protected readonly IQueryFieldLookupRepository QueryFieldLookupRepository;
+		protected readonly SourceConfiguration SourceConfiguration;
 		protected readonly BaseServiceContext BaseContext;
 		protected readonly ExportInitializationResultsDto ExportJobInfo;
 		protected readonly FieldMap[] MappedFields;
@@ -35,6 +32,9 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 		protected readonly IJobStopManager JobStopManager;
 		protected readonly int[] FieldArtifactIds;
 
+		protected IDataTransferContext Context { get; set; }
+		protected int RetrievedDataCount { get; set; }
+
 		internal ExporterServiceBase(
 			IDocumentRepository documentRepository,
 			IRelativityObjectManager relativityObjectManager,
@@ -45,14 +45,14 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 			IBaseServiceContextProvider baseServiceContextProvider,
 			FieldMap[] mappedFields,
 			int startAt,
-			string config,
+			SourceConfiguration sourceConfiguration,
 			int searchArtifactId)
 			: this(mappedFields, jobStopManager, helper)
 		{
 
 			DocumentRepository = documentRepository;
 			RelativityObjectManager = relativityObjectManager;
-			SourceConfiguration = JsonConvert.DeserializeObject<SourceConfiguration>(config);
+			SourceConfiguration = sourceConfiguration;
 			BaseContext = baseServiceContextProvider.GetUnversionContext(SourceConfiguration.SourceWorkspaceArtifactId);
 
 			ValidateDestinationFields(targetRepositoryFactory, mappedFields);
