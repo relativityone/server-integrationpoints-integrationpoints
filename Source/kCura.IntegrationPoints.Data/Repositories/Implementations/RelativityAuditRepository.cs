@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Xml.Linq;
 using System.Xml.Serialization;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Constants;
+using kCura.IntegrationPoints.Common.Handlers;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using kCura.IntegrationPoints.Data.Models;
 using kCura.IntegrationPoints.Data.Repositories.DTO;
@@ -12,15 +14,21 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class RelativityAuditRepository : IRelativityAuditRepository
 	{
+		private const ushort _MAX_NUMBER_OF_RETRIES = 3;
+		private const ushort _EXPONENTIAL_WAIT_TIME_BASE_IN_SECONDS = 3;
+
 		private readonly IFoundationAuditRepository _foundationAuditRepository;
 		private readonly IExternalServiceInstrumentationProvider _instrumentationProvider;
+		private readonly IRetryHandler _retryHandler;
 
 		public RelativityAuditRepository(
 			IFoundationAuditRepository foundationAuditRepository, 
-			IExternalServiceInstrumentationProvider instrumentationProvider)
+			IExternalServiceInstrumentationProvider instrumentationProvider,
+			IRetryHandlerFactory retruHandlerFactory)
 		{
 			_foundationAuditRepository = foundationAuditRepository;
 			_instrumentationProvider = instrumentationProvider;
+			_retryHandler = retruHandlerFactory.Create(_MAX_NUMBER_OF_RETRIES, _EXPONENTIAL_WAIT_TIME_BASE_IN_SECONDS);
 		}
 
 		public void CreateAuditRecord(int artifactID, AuditElement auditElement)
@@ -34,7 +42,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				nameof(global::Relativity.API.Foundation.Repositories.IAuditRepository),
 				nameof(IFoundationAuditRepository.CreateAuditRecord));
 
-			instrumentation.Execute(() => _foundationAuditRepository.CreateAuditRecord(auditRecord));
+			_retryHandler.ExecuteWithRetries(
+				() => instrumentation.Execute(
+					() => _foundationAuditRepository.CreateAuditRecord(auditRecord)));
 		}
 
 		private static XElement ConvertAuditElementToXElement(AuditElement auditElement)

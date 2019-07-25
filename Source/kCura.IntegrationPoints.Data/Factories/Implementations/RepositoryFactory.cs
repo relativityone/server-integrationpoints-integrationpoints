@@ -5,6 +5,7 @@ using Relativity.API;
 using Relativity.Data;
 using System;
 using System.Security.Claims;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using Relativity.API.Foundation.Repositories;
 using Relativity.Services.ResourceServer;
@@ -263,7 +264,9 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			var foundationRepositoryFactory = new FoundationRepositoryFactory(_sourceServiceMgr, InstrumentationProvider);
 			IFoundationAuditRepository foundationAuditRepository =
 				foundationRepositoryFactory.GetRepository<IFoundationAuditRepository>(workspaceArtifactId);
-			return new RelativityAuditRepository(foundationAuditRepository, InstrumentationProvider);
+			IAPILog logger = _helper.GetLoggerFactory().GetLogger();
+			IRetryHandlerFactory retryHandlerFactory = new RetryHandlerFactory(logger);
+			return new RelativityAuditRepository(foundationAuditRepository, InstrumentationProvider, retryHandlerFactory);
 		}
 
 		public IFederatedInstanceRepository GetFederatedInstanceRepository(int artifactTypeId)
