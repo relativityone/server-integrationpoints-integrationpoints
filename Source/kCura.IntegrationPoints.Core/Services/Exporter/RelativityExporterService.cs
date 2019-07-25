@@ -28,6 +28,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			IHelper helper,
 			IFolderPathReader folderPathReader, 
 			IBaseServiceContextProvider baseServiceContextProvider,
+			IFileRepository fileRepository,
 			FieldMap[] mappedFields, 
 			int startAt, 
 			string config, 
@@ -39,7 +40,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				targetRepositoryFactory, 
 				jobStopManager, 
 				helper, 
-				baseServiceContextProvider, 
+				baseServiceContextProvider,
+				fileRepository,
 				mappedFields, 
 				startAt, 
 				config, 
@@ -59,7 +61,9 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				DocumentRepository,
 				Logger,
 				QueryFieldLookupRepository,
-				transferConfiguration.ImportSettings.UseDynamicFolderPath);
+				FileRepository,
+				transferConfiguration.ImportSettings.UseDynamicFolderPath,
+				SourceConfiguration.SourceWorkspaceArtifactId);
 			var exporterTransferContext = 
 				new ExporterTransferContext(documentTransferDataReader, transferConfiguration)
 					{ TotalItemsFound = TotalRecordsFound };

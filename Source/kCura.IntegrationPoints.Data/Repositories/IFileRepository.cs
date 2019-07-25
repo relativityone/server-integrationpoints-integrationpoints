@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using kCura.IntegrationPoints.Data.Repositories.DTO;
 
 namespace kCura.IntegrationPoints.Data.Repositories
 {
@@ -6,6 +7,6 @@ namespace kCura.IntegrationPoints.Data.Repositories
 	{
 		List<string> GetImagesLocationForProductionDocuments(int workspaceID, int productionID, int[] documentIDs);
 		List<string> GetImagesLocationForDocuments(int workspaceID, int[] documentIDs);
-
+		List<FileDto> GetNativesForDocuments(int workspaceID, int[] documentIDs);
 	}
 }

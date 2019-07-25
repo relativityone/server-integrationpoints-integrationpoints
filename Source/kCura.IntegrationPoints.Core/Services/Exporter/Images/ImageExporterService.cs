@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
@@ -9,13 +8,11 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.DTO;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
 using ArtifactType = kCura.Relativity.Client.ArtifactType;
-using DataView = kCura.Data.DataView;
 using ExportSettings = kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportSettings;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
@@ -24,37 +21,35 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 	{
 		private readonly ImportSettings _settings;
 
-		private readonly IFileRepository _fileRepository;
-
 		public ImageExporterService(
-			IDocumentRepository documentRepository, 
-			IRelativityObjectManager relativityObjectManager, 
-			IRepositoryFactory sourceRepositoryFactory, 
+			IDocumentRepository documentRepository,
+			IRelativityObjectManager relativityObjectManager,
+			IRepositoryFactory sourceRepositoryFactory,
 			IRepositoryFactory targetRepositoryFactory,
 			IFileRepository fileRepository,
-			IJobStopManager jobStopManager, 
-			IHelper helper, 
-			IBaseServiceContextProvider baseServiceContextProvider, 
-			FieldMap[] mappedFields, 
+			IJobStopManager jobStopManager,
+			IHelper helper,
+			IBaseServiceContextProvider baseServiceContextProvider,
+			FieldMap[] mappedFields,
 			int startAt,
-			string config, 
-			int searchArtifactId, 
+			string config,
+			int searchArtifactId,
 			ImportSettings settings)
 			: base(
-				documentRepository, 
-				relativityObjectManager, 
-				sourceRepositoryFactory, 
-				targetRepositoryFactory, 
-				jobStopManager, 
-				helper, 
-				baseServiceContextProvider, 
+				documentRepository,
+				relativityObjectManager,
+				sourceRepositoryFactory,
+				targetRepositoryFactory,
+				jobStopManager,
+				helper,
+				baseServiceContextProvider,
+				fileRepository,
 				mappedFields, 
 				startAt,
 				config, 
 				searchArtifactId)
 		{
 			_settings = settings;
-			_fileRepository = fileRepository;
 		}
 
 		public override IDataTransferContext GetDataTransferContext(IExporterTransferConfiguration transferConfiguration)
@@ -140,7 +135,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 			int artifactType, 
 			List<ArtifactDTO> result)
 		{
-			List<string> imagesDataView = _fileRepository
+			List<string> imagesDataView = FileRepository
 				.GetImagesLocationForDocuments(
 					SourceConfiguration.SourceWorkspaceArtifactId,
 					documentIDs: new[] {documentArtifactID});
@@ -183,7 +178,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 			List<ArtifactDTO> result, 
 			int productionArtifactId)
 		{
-			List<string> producedImagesDataView = _fileRepository
+			List<string> producedImagesDataView = FileRepository
 				.GetImagesLocationForProductionDocuments(
 					SourceConfiguration.SourceWorkspaceArtifactId,
 					productionArtifactId, 
