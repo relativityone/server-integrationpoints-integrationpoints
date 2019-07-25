@@ -51,7 +51,7 @@ namespace Relativity.Sync.Telemetry
 		{
 			using (var manager = _servicesManager.CreateProxy<IInternalMetricsCollectionManager>(ExecutionIdentity.System))
 			{
-				_metricProviders.ForEach(item => item.AddMetricsForCategory(manager, category));
+				_metricProviders.ForEach(item => item.AddMetricsForCategory(manager, category).GetAwaiter().GetResult());
 			}
 		}
 

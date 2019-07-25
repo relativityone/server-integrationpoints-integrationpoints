@@ -7,7 +7,7 @@ namespace Relativity.Sync.Executors
 {
 	internal interface IImportJob : IDisposable
 	{
-		Task<ExecutionResult> RunAsync(CancellationToken token);
+		Task<ImportJobResult> RunAsync(CancellationToken token);
 
 		Task<IEnumerable<int>> GetPushedDocumentArtifactIds();
 

@@ -17,6 +17,7 @@ namespace Relativity.Sync.Telemetry
 			builder.RegisterType<APMClient>().As<IAPMClient>();
 			builder.RegisterType<SystemStopwatch>().As<IStopwatch>();
 			builder.RegisterType<SyncMetrics>().As<ISyncMetrics>();
+			builder.RegisterType<JobStatisticsContainer>().As<IJobStatisticsContainer>().SingleInstance();
 			builder.Register(c => EnvironmentPropertyProvider.Create(c.Resolve<IServicesMgr>(), c.Resolve<ISyncLog>()))
 				.As<IEnvironmentPropertyProvider>()
 				.SingleInstance();
