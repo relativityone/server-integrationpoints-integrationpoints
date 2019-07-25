@@ -24,11 +24,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		public RelativityAuditRepository(
 			IFoundationAuditRepository foundationAuditRepository, 
 			IExternalServiceInstrumentationProvider instrumentationProvider,
-			IRetryHandlerFactory retruHandlerFactory)
+			IRetryHandlerFactory retryHandlerFactory)
 		{
 			_foundationAuditRepository = foundationAuditRepository;
 			_instrumentationProvider = instrumentationProvider;
-			_retryHandler = retruHandlerFactory.Create(_MAX_NUMBER_OF_RETRIES, _EXPONENTIAL_WAIT_TIME_BASE_IN_SECONDS);
+			_retryHandler = retryHandlerFactory.Create(_MAX_NUMBER_OF_RETRIES, _EXPONENTIAL_WAIT_TIME_BASE_IN_SECONDS);
 		}
 
 		public void CreateAuditRecord(int artifactID, AuditElement auditElement)
