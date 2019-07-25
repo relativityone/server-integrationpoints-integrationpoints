@@ -1353,67 +1353,67 @@
       <Notes />
     </Assembly>
     <Assembly>
-      <ArtifactId>8016771</ArtifactId> <!-- TODO generate ArtifactID on tt-img-app -->
+      <ArtifactId>4729476</ArtifactId>
       <Keywords />
       <Name>kCura.WinEDDS.ImportExtension.dll</Name>
       <Notes />
     </Assembly>
     <Assembly>
-      <ArtifactId>1016771</ArtifactId> <!-- TODO generate ArtifactID on tt-img-app -->
+      <ArtifactId>4729493</ArtifactId>
       <Keywords />
       <Name>kCura.Relativity.ImportAPI.dll</Name>
       <Notes />
     </Assembly>
     <Assembly>
-      <ArtifactId>1016771</ArtifactId> <!-- TODO generate ArtifactID on tt-img-app -->
+      <ArtifactId>4729497</ArtifactId>
       <Keywords />
       <Name>kCura.Relativity.ImportAPI.Extension.dll</Name>
       <Notes />
     </Assembly>
     <Assembly>
-      <ArtifactId>1016771</ArtifactId> <!-- TODO generate ArtifactID on tt-img-app -->
+      <ArtifactId>4729501</ArtifactId>
       <Keywords />
       <Name>FreeImageNET.dll</Name>
       <Notes />
     </Assembly>
-      <Assembly>
-      <ArtifactId>1016771</ArtifactId> <!-- TODO generate ArtifactID on tt-img-app -->
+    <Assembly>
+      <ArtifactId>4729507</ArtifactId>
       <Keywords />
       <Name>Ionic.Zip.dll</Name>
       <Notes />
     </Assembly>
-      <Assembly>
-      <ArtifactId>1016771</ArtifactId> <!-- TODO generate ArtifactID on tt-img-app -->
+    <Assembly>
+      <ArtifactId>4729511</ArtifactId>
       <Keywords />
       <Name>kCura.dll</Name>
       <Notes />
     </Assembly>
-      <Assembly>
-      <ArtifactId>1016771</ArtifactId> <!-- TODO generate ArtifactID on tt-img-app -->
+    <Assembly>
+      <ArtifactId>4729518</ArtifactId>
       <Keywords />
       <Name>kCura.ImageValidator.dll</Name>
       <Notes />
     </Assembly>
-      <Assembly>
-      <ArtifactId>1016771</ArtifactId> <!-- TODO generate ArtifactID on tt-img-app -->
+    <Assembly>
+      <ArtifactId>4729524</ArtifactId>
       <Keywords />
       <Name>kCura.OI.FileID.dll</Name>
       <Notes />
     </Assembly>
     <Assembly>
-      <ArtifactId>1016771</ArtifactId> <!-- TODO generate ArtifactID on tt-img-app -->
+      <ArtifactId>4729530</ArtifactId>
       <Keywords />
       <Name>kCura.Windows.Forms.dll</Name>
       <Notes />
     </Assembly>
     <Assembly>
-      <ArtifactId>1016771</ArtifactId> <!-- TODO generate ArtifactID on tt-img-app -->
+      <ArtifactId>4729536</ArtifactId>
       <Keywords />
       <Name>kCura.Windows.Process.dll</Name>
       <Notes />
     </Assembly>
     <Assembly>
-      <ArtifactId>1016771</ArtifactId> <!-- TODO generate ArtifactID on tt-img-app -->
+      <ArtifactId>4729554</ArtifactId>
       <Keywords />
       <Name>Relativity.dll</Name>
       <Notes />
