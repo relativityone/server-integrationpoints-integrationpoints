@@ -2,6 +2,7 @@
 using kCura.Relativity.Client;
 using NSubstitute;
 using Relativity.API;
+using Relativity.Data;
 using Relativity.Services.ArtifactGuid;
 using Relativity.Services.Folder;
 using Relativity.Services.InstanceSetting;
@@ -123,17 +124,17 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 
 		public string ResourceDBPrepend()
 		{
-			throw new NotImplementedException();
+			return Helper.GetInstance().GetResourceDataBasePrepend();
 		}
 
 		public string ResourceDBPrepend(IDBContext context)
 		{
-			throw new NotImplementedException();
+			return ResourceDBPrepend();
 		}
 
 		public string GetSchemalessResourceDataBasePrepend(IDBContext context)
 		{
-			throw new NotImplementedException();
+			return context.Database;
 		}
 
 		public Guid GetGuid(int workspaceID, int artifactID)

@@ -1,9 +1,7 @@
-﻿using kCura.IntegrationPoints.Data.Extensions;
-using kCura.IntegrationPoints.Data.Repositories;
+﻿using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using Relativity;
 using Relativity.API;
-using Relativity.Core;
 using Relativity.Data;
 using System;
 using System.Security.Claims;
@@ -13,6 +11,7 @@ using Relativity.Services.ResourceServer;
 using ArtifactType = Relativity.ArtifactType;
 using Context = kCura.Data.RowDataGateway.Context;
 using IAuditRepository = kCura.IntegrationPoints.Data.Repositories.IAuditRepository;
+using IFoundationAuditRepository = Relativity.API.Foundation.Repositories.IAuditRepository;
 using IErrorRepository = kCura.IntegrationPoints.Data.Repositories.IErrorRepository;
 using IFieldRepository = kCura.IntegrationPoints.Data.Repositories.IFieldRepository;
 using IObjectRepository = kCura.IntegrationPoints.Data.Repositories.IObjectRepository;
@@ -68,8 +67,8 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IArtifactTypeRepository GetArtifactTypeRepository()
 		{
-			BaseContext baseContext = GetBaseContextForWorkspace(-1);
-			IArtifactTypeRepository artifactTypeRepository = new SqlArtifactTypeRepository(baseContext);
+			IRelativityObjectManager relativityObject = CreateRelativityObjectManager(Constants.ADMIN_CASE_ID);
+			IArtifactTypeRepository artifactTypeRepository = new SqlArtifactTypeRepository(relativityObject);
 
 			return artifactTypeRepository;
 		}
@@ -177,7 +176,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 				new WorkspaceDBContext(dbContext), 
 				GetDocumentRepository(workspaceArtifactID),
 				GetFieldQueryRepository(workspaceArtifactID),
-				new ResourceDbProvider(), 
+				new ResourceDbProvider(_helper), 
 				tablePrefix,
 				tableSuffix,
 				workspaceArtifactID
@@ -272,8 +271,10 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IRelativityAuditRepository GetRelativityAuditRepository(int workspaceArtifactId)
 		{
-			BaseServiceContext baseServiceContext = GetBaseServiceContextForWorkspace(workspaceArtifactId);
-			return new RelativityAuditRepository(baseServiceContext);
+			var foundationRepositoryFactory = new FoundationRepositoryFactory(_sourceServiceMgr, InstrumentationProvider);
+			IFoundationAuditRepository foundationAuditRepository =
+				foundationRepositoryFactory.GetRepository<IFoundationAuditRepository>(workspaceArtifactId);
+			return new RelativityAuditRepository(foundationAuditRepository, InstrumentationProvider);
 		}
 
 		public IFederatedInstanceRepository GetFederatedInstanceRepository(int artifactTypeId)
@@ -348,41 +349,6 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return ObjectManagerFactory.CreateRelativityObjectManager(workspaceArtifactId, _destinationServiceMgr);
 		}
 
-		private BaseContext GetBaseContextForWorkspace(int workspaceArtifactId)
-		{
-			ContextContainer contexts = GetContextsForWorkspace(workspaceArtifactId);
-			return contexts.BaseContext;
-		}
-
-		private BaseServiceContext GetBaseServiceContextForWorkspace(int workspaceArtifactId)
-		{
-			ContextContainer contexts = GetContextsForWorkspace(workspaceArtifactId);
-			return contexts.BaseServiceContext;
-		}
-
-		private ContextContainer GetContextsForWorkspace(int workspaceArtifactId)
-		{
-			BaseServiceContext baseServiceContext = ClaimsPrincipal.Current.GetUnversionContext(workspaceArtifactId);
-			BaseContext baseContext;
-			if (workspaceArtifactId == -1)
-			{
-				baseContext = baseServiceContext
-					.GetMasterDbServiceContext()
-					.ThreadSafeChicagoContext;
-			}
-			else
-			{
-				baseContext = baseServiceContext.ChicagoContext
-					.ThreadSafeChicagoContext;
-			}
-			var contextContainer = new ContextContainer()
-			{
-				BaseContext = baseContext,
-				BaseServiceContext = baseServiceContext
-			};
-			return contextContainer;
-		}
-
 		public IKeywordSearchRepository GetKeywordSearchRepository()
 		{
 			return new KeplerKeywordSearchRepository(_destinationServiceMgr);
@@ -396,11 +362,5 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		}
 
 		#endregion Helper Methods
-
-		private class ContextContainer
-		{
-			public BaseServiceContext BaseServiceContext { get; set; }
-			public BaseContext BaseContext { get; set; }
-		}
 	}
 }

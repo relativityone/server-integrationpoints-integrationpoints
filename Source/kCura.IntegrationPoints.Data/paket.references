@@ -7,7 +7,6 @@ Newtonsoft.Json
 Polly
 Relativity
 Relativity.API
-Relativity.Core
 Relativity.Data
 Relativity.Productions.Services.Interfaces
 Relativity.Services.Interfaces.Private

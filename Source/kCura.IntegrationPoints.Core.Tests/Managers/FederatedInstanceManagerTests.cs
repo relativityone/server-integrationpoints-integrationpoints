@@ -14,11 +14,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 	[TestFixture]
 	public class FederatedInstanceManagerTests : TestBase
 	{
-		private int artifactTypeId = 2048;
-		private IRepositoryFactory _repositoryFactory;
 		private IArtifactTypeRepository _artifactTypeRepository;
 		private IFederatedInstanceRepository _federatedInstanceRepository;
+		private IRepositoryFactory _repositoryFactory;
 		private IServiceUrlRepository _serviceUrlRepository;
+
+		private const int _ARTIFACT_TYPE_ID = 2048;
+		private const string _FEDERATED_INSTANCE_ARTIFACT_TYPE_NAME = "Federated Instance";
 
 		[SetUp]
 		public override void SetUp()
@@ -27,9 +29,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_artifactTypeRepository = Substitute.For<IArtifactTypeRepository>();
 			_federatedInstanceRepository = Substitute.For<IFederatedInstanceRepository>();
 
-			_artifactTypeRepository.GetArtifactTypeIdFromArtifactTypeName("FederatedInstance").Returns(artifactTypeId);
+			_artifactTypeRepository
+				.GetArtifactTypeIDFromArtifactTypeName(_FEDERATED_INSTANCE_ARTIFACT_TYPE_NAME)
+				.Returns(_ARTIFACT_TYPE_ID);
 			_repositoryFactory.GetArtifactTypeRepository().Returns(_artifactTypeRepository);
-			_repositoryFactory.GetFederatedInstanceRepository(artifactTypeId).Returns(_federatedInstanceRepository);
+			_repositoryFactory.GetFederatedInstanceRepository(_ARTIFACT_TYPE_ID).Returns(_federatedInstanceRepository);
 
 			_serviceUrlRepository = Substitute.For<IServiceUrlRepository>();
 			_repositoryFactory.GetServiceUrlRepository().Returns(_serviceUrlRepository);
