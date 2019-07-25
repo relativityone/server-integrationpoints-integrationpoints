@@ -63,6 +63,8 @@
     <Compile Include="Extensions\ObjectQueryResultSetExtensions.cs" />
     <Compile Include="Extensions\ResultSetExtensions.cs" />
     <Compile Include="Extensions\TaskExtension.cs" />
+    <Compile Include="Facades\Internals\RetryHandler.cs" />
+    <Compile Include="Facades\ObjectManagerFacadeWithRetries.cs" />
     <Compile Include="Factories\Implementations\RelativityObjectManagerFactory.cs" />
     <Compile Include="Factories\IRelativityObjectManagerFactory.cs" />
     <Compile Include="Factories\IRSAPIServiceFactory.cs" />
@@ -422,6 +424,17 @@
       <ItemGroup>
         <Reference Include="Newtonsoft.Json">
           <HintPath>..\..\packages\Newtonsoft.Json\lib\net45\Newtonsoft.Json.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Polly">
+          <HintPath>..\..\packages\Polly\lib\net45\Polly.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
