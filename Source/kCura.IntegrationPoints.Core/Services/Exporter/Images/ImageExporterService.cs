@@ -32,8 +32,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 			IBaseServiceContextProvider baseServiceContextProvider,
 			FieldMap[] mappedFields,
 			int startAt,
-			string config,
-			int searchArtifactId,
+			SourceConfiguration sourceConfiguration, 
+			int searchArtifactId, 
 			ImportSettings settings)
 			: base(
 				documentRepository,
@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 				fileRepository,
 				mappedFields, 
 				startAt,
-				config, 
+				sourceConfiguration, 
 				searchArtifactId)
 		{
 			_settings = settings;

@@ -4,6 +4,7 @@ using Castle.Windsor;
 using kCura.IntegrationPoints.Common.Context;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
+using kCura.IntegrationPoints.Core.Interfaces.TextSanitizer;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Authentication;
@@ -45,7 +46,11 @@ namespace kCura.IntegrationPoints.Web.Installers.IntegrationPointsServices
 				Component
 					.For<IAuthTokenGenerator>()
 					.ImplementedBy<ClaimsTokenGenerator>()
-					.LifestyleTransient()
+					.LifestyleTransient(),
+				Component
+					.For<ITextSanitizer>()
+					.ImplementedBy<TextSanitizer>()
+					.LifestylePerWebRequest()
 			);
 		}
 

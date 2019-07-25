@@ -11,7 +11,6 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using Moq;
-using Newtonsoft.Json;
 using NUnit.Framework;
 using Relativity;
 using Relativity.API;
@@ -319,7 +318,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 				.Setup(x => x.InitializeProductionExportAsync(_SEARCH_ARTIFACT_ID, It.IsAny<int[]>(), _START_AT))
 				.ReturnsAsync(_exportApiResult);
 
-			string config = GetConfig(SourceConfiguration.ExportType.SavedSearch);
+			SourceConfiguration config = GetConfig(SourceConfiguration.ExportType.SavedSearch);
 
 			_instance = new RelativityExporterService(
 				_documentRepository.Object,
@@ -337,7 +336,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 				_SEARCH_ARTIFACT_ID);
 		}
 
-		private static string GetConfig(SourceConfiguration.ExportType exportType, int sourceProductionID = 0)
+		private static SourceConfiguration GetConfig(SourceConfiguration.ExportType exportType, int sourceProductionID = 0)
 		{
 			var sourceConfiguration = new SourceConfiguration()
 			{
@@ -347,7 +346,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 				SourceProductionId = sourceProductionID
 			};
 
-			return JsonConvert.SerializeObject(sourceConfiguration);
+			return sourceConfiguration;
 		}
 
 		private static void ValidateArtifact(ArtifactDTO expect, ArtifactDTO actual)

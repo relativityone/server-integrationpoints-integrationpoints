@@ -2,11 +2,11 @@ Castle.Windsor
 CSharpGuidelineAnalyzer
 kCura
 kCura.Relativity.Client
+kCura.Apps.Common.Utils
 Newtonsoft.Json
 Polly
 Relativity
 Relativity.API
-Relativity.Core
 Relativity.Data
 Relativity.Productions.Services.Interfaces
 Relativity.Services.Interfaces.Private

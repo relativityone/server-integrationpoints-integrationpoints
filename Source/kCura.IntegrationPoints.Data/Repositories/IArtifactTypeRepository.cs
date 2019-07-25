@@ -2,6 +2,6 @@
 {
 	public interface IArtifactTypeRepository
 	{
-		int GetArtifactTypeIdFromArtifactTypeName(string artifactTypeName);
+		int GetArtifactTypeIDFromArtifactTypeName(string artifactTypeName);
 	}
 }

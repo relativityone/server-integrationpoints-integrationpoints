@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter.Base;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -31,7 +32,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			IFileRepository fileRepository,
 			FieldMap[] mappedFields, 
 			int startAt, 
-			string config, 
+			SourceConfiguration sourceConfiguration, 
 			int searchArtifactId)
 			: base(
 				documentRepository,
@@ -44,7 +45,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				fileRepository,
 				mappedFields, 
 				startAt, 
-				config, 
+				sourceConfiguration, 
 				searchArtifactId)
 		{
 			_folderPathReader = folderPathReader;

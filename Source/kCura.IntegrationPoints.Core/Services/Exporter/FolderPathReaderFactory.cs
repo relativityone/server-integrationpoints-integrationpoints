@@ -1,21 +1,24 @@
-﻿using System.Security.Claims;
-using kCura.IntegrationPoints.Core.Contracts.Configuration;
-using kCura.IntegrationPoints.Data.Extensions;
-using kCura.IntegrationPoints.Synchronizers.RDO;
-using Newtonsoft.Json;
+﻿using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter
 {
 	public class FolderPathReaderFactory : IFolderPathReaderFactory
 	{
-		public IFolderPathReader Create(ClaimsPrincipal claimsPrincipal, ImportSettings importSettings, string sourceConfiguration)
+		private readonly IHelper _helper;
+
+		public FolderPathReaderFactory(IHelper helper)
 		{
-			if (importSettings.UseDynamicFolderPath)
+			_helper = helper;
+		}
+
+		public IFolderPathReader Create(int workspaceArtifactID, bool useDynamicFolderPath)
+		{
+			if (useDynamicFolderPath)
 			{
-				var workspaceArtifactId = JsonConvert.DeserializeObject<SourceConfiguration>(sourceConfiguration).SourceWorkspaceArtifactId;
-				var dbContext = claimsPrincipal.GetUnversionContext(workspaceArtifactId).ChicagoContext.DBContext;
+				IDBContext dbContext = _helper.GetDBContext(workspaceArtifactID);
 				return new DynamicFolderPathReader(dbContext);
 			}
+
 			return new EmptyFolderPathReader();
 		}
 	}

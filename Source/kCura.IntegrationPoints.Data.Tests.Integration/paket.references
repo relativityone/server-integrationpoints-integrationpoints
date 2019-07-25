@@ -15,6 +15,7 @@ Relativity.Services.Interfaces
 Relativity.Services.Interfaces.Private
 Relativity.Telemetry.APM
 relativity.testing.identification
+Relativity.Toggles
 relativity.transfer.client
 Relativity.OAuth2Client
 Serilog

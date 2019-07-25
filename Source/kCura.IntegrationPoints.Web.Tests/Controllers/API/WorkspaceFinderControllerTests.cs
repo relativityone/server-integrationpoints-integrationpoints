@@ -7,14 +7,13 @@ using kCura.IntegrationPoints.Web.Controllers.API;
 using kCura.IntegrationPoints.Web.Models;
 using NSubstitute;
 using NUnit.Framework;
-using Relativity.API;
-using Relativity.Core.Service;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoints.Common.Context;
-using kCura.IntegrationPoints.Web.Context.WorkspaceContext;
+using kCura.IntegrationPoints.Core.Interfaces.TextSanitizer;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
@@ -27,7 +26,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 
 		private IManagerFactory _managerFactoryMock;
 		private IContextContainerFactory _contextContainerFactoryMock;
-		private IHtmlSanitizerManager _htmlSanitizerManagerMock;
+		private ITextSanitizer _htmlSanitizerManagerMock;
 		private ICPHelper _cpHelperMock;
 		private IHelperFactory _helperFactoryMock;
 		private IWorkspaceManager _workspaceManagerMock;
@@ -86,7 +85,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		{
 			_managerFactoryMock = Substitute.For<IManagerFactory>();
 			_contextContainerFactoryMock = Substitute.For<IContextContainerFactory>();
-			_htmlSanitizerManagerMock = Substitute.For<IHtmlSanitizerManager>();
+			_htmlSanitizerManagerMock = Substitute.For<ITextSanitizer>();
 			_cpHelperMock = Substitute.For<ICPHelper>();
 			_helperFactoryMock = Substitute.For<IHelperFactory>();
 			_workspaceManagerMock = Substitute.For<IWorkspaceManager>();
@@ -112,7 +111,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			_contextContainerFactoryMock.CreateContextContainer(_cpHelperMock, _servicesMgrMock).Returns(_contextContainerMock);
 			_managerFactoryMock.CreateWorkspaceManager(_contextContainerMock).Returns(_workspaceManagerMock);
 
-			_htmlSanitizerManagerMock.Sanitize(Arg.Any<string>()).Returns(x => new SanitizeResult() { CleanHTML = x.Arg<string>(), HasErrors = false });
+			_htmlSanitizerManagerMock
+				.Sanitize(Arg.Any<string>())
+				.Returns(x => new SanitizationResult(sanitizedText: x.Arg<string>(), hasErrors: false));
 		}
 
 		[Test]

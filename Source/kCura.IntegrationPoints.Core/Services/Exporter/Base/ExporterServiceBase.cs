@@ -11,7 +11,6 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
-using Newtonsoft.Json;
 using Relativity.API;
 using Relativity.Core;
 
@@ -48,7 +47,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 			IFileRepository fileRepository,
 			FieldMap[] mappedFields,
 			int startAt,
-			string config,
+			SourceConfiguration sourceConfiguration,
 			int searchArtifactId)
 			: this(mappedFields, jobStopManager, helper)
 		{
@@ -56,7 +55,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 			DocumentRepository = documentRepository;
 			FileRepository = fileRepository;
 			RelativityObjectManager = relativityObjectManager;
-			SourceConfiguration = JsonConvert.DeserializeObject<SourceConfiguration>(config);
+			SourceConfiguration = sourceConfiguration;
 			BaseContext = baseServiceContextProvider.GetUnversionContext(SourceConfiguration.SourceWorkspaceArtifactId);
 
 			ValidateDestinationFields(targetRepositoryFactory, mappedFields);

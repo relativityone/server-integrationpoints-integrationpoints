@@ -1,9 +1,8 @@
-﻿using System.Linq;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.ExceptionHandling;
+using System.Web.Http.Filters;
 using FluentAssertions;
-using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Extensions;
 using Moq;
 using NUnit.Framework;
@@ -44,20 +43,18 @@ namespace kCura.IntegrationPoints.Web.Tests.Extensions
 		}
 
 		[Test]
-		public void ShouldRegisterWebApiFilter()
+		public void ShouldAddWebAPIFiltersProviders()
 		{
 			// arrange
 			var httpConfiguration = new HttpConfiguration();
+			var filterProviderMock = new Mock<IFilterProvider>();
 
 			// act
-			httpConfiguration.RegisterWebAPIFilters();
+			httpConfiguration.AddWebAPIFiltersProvider(filterProviderMock.Object);
 
 			// assert
-			httpConfiguration
-				.Filters
-				.Where(x=>x.Instance.GetType() == typeof(LogApiExceptionFilterAttribute))
-				.Should()
-				.ContainSingle("because this filter was registered");
+			httpConfiguration.Services.GetServices(typeof(IFilterProvider)).Should()
+				.Contain(filterProviderMock.Object, "because this filter provider was added");
 		}
 	}
 }

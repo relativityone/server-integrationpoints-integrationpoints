@@ -216,7 +216,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 					_configuration.SavedSearchArtifactId,
 					job.SubmittedBy,
 					_IMPORTSETTINGS_WITH_USERID,
-					_documentRepository)
+					_documentRepository,
+					_serializer)
 				.Returns(_exporterService);
 
 			_exporterService.TotalRecordsFound.Returns(_EXPORT_DOC_COUNT);
@@ -425,7 +426,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				_RETRY_SAVEDSEARCHID, 
 				_job.SubmittedBy, 
 				_IMPORTSETTINGS_WITH_USERID,
-				_documentRepository);
+				_documentRepository,
+				_serializer);
 			AssertRetrySavedSearch(true);
 		}
 
@@ -545,7 +547,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				Arg.Any<int>(), 
 				Arg.Any<int>(), 
 				_IMPORTSETTINGS_WITH_USERID,
-				Arg.Any<IDocumentRepository>());
+				Arg.Any<IDocumentRepository>(),
+				Arg.Any<ISerializer>());
 
 			_sendingEmailNotification.Received(1).OnJobComplete(_job);
 			_updateJobHistoryStatus.Received(1).OnJobStart(_job);
@@ -741,7 +744,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 					_RETRY_SAVEDSEARCHID, 
 					_job.SubmittedBy, 
 					_IMPORTSETTINGS_WITH_USERID,
-					_documentRepository);
+					_documentRepository,
+					_serializer);
 				_jobHistoryErrorManager.Received(1).CreateItemLevelErrorsSavedSearch(_job, _configuration.SavedSearchArtifactId);
 				_jobHistoryErrorRepository.Received(1).DeleteItemLevelErrorsSavedSearch(_RETRY_SAVEDSEARCHID);
 			}
@@ -754,7 +758,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 					_configuration.SavedSearchArtifactId, 
 					_job.SubmittedBy, 
 					_IMPORTSETTINGS_WITH_USERID,
-					_documentRepository);
+					_documentRepository,
+					_serializer);
 				_jobHistoryErrorManager.DidNotReceive().CreateItemLevelErrorsSavedSearch(_job, _configuration.SavedSearchArtifactId);
 				_jobHistoryErrorRepository.DidNotReceive().DeleteItemLevelErrorsSavedSearch(_RETRY_SAVEDSEARCHID);
 			}
