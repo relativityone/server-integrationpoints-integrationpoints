@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Web.Installers.IntegrationPointsServices
 				Component
 					.For<IWebCorrelationContextProvider>()
 					.ImplementedBy<WebActionContextProvider>()
-					.LifestyleTransient()
+					.LifestylePerWebRequest()
 			);
 		}
 	}

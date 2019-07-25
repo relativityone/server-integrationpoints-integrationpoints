@@ -42,9 +42,15 @@ namespace kCura.IntegrationPoints.Web
 
 			WebApiConfig.Register(GlobalConfiguration.Configuration);
 
-			GlobalConfiguration.Configuration.AddMessageHandler(_container.Resolve<CorrelationIdHandler>());
-			GlobalConfiguration.Configuration.RegisterWebAPIFilters();
-			GlobalConfiguration.Configuration.AddExceptionLogger(_container.Resolve<WebAPIExceptionLogger>());
+			GlobalConfiguration.Configuration.AddMessageHandler(
+				handler: _container.Resolve<CorrelationIdHandler>()
+			);
+			GlobalConfiguration.Configuration.AddWebAPIFiltersProvider(
+				filterProvider: _container.Resolve<System.Web.Http.Filters.IFilterProvider>()
+			);
+			GlobalConfiguration.Configuration.AddExceptionLogger(
+				exceptionLogger: _container.Resolve<WebAPIExceptionLogger>()
+			);
 
 			FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
 			RouteConfig.RegisterRoutes(RouteTable.Routes);
@@ -71,7 +77,7 @@ namespace kCura.IntegrationPoints.Web
 			};
 			errorService.Log(errorModel);
 		}
-		
+
 		protected void Application_End()
 		{
 			_container?.Dispose();
@@ -83,7 +89,6 @@ namespace kCura.IntegrationPoints.Web
 			IKernel kernel = _container.Kernel;
 			kernel.Resolver.AddSubResolver(new CollectionResolver(kernel, true));
 
-			_container.Register(Component.For<IHelper>().Instance(ConnectionHelper.Helper()));
 			_container.Install(FromAssembly.InDirectory(new AssemblyFilter(HttpRuntime.BinDirectory, "kCura.IntegrationPoints*.dll"))); //<--- DO NOT CHANGE THIS LINE
 
 			ControllerBuilder.Current.SetControllerFactory(new WindsorControllerFactory(_container.Kernel));

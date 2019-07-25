@@ -1,5 +1,6 @@
 ﻿using Castle.Core;
 using Castle.Windsor;
+using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.FluentAssertions;
 using kCura.IntegrationPoints.Web.Installers.IntegrationPointsServices;
 using kCura.IntegrationPoints.Web.IntegrationPointsServices.Logging;
@@ -40,7 +41,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Installers.IntegrationPointsServices
 			_sut.Should()
 				.HaveRegisteredSingleComponent<IWebCorrelationContextProvider>()
 				.Which.Should()
-				.BeRegisteredWithLifestyle(LifestyleType.Transient);
+				.BeRegisteredWithLifestyle(LifestyleType.PerWebRequest);
 		}
 
 		[Test]
@@ -52,8 +53,13 @@ namespace kCura.IntegrationPoints.Web.Tests.Installers.IntegrationPointsServices
 		[Test]
 		public void IWebCorrelationContextProvider_ShouldBeResolvedAndNotThrow()
 		{
+			// arrange
+			var sut = new WindsorContainer();
+			sut.ConfigureChangingLifestyleFromPerWebRequestToTransientBecausePerWebRequestIsNotResolvableInTests();
+			sut.AddLoggingContext();
+
 			//act & assert
-			_sut.Should().ResolveWithoutThrowing<IWebCorrelationContextProvider>();
+			sut.Should().ResolveWithoutThrowing<IWebCorrelationContextProvider>();
 		}
 	}
 }
