@@ -52,19 +52,12 @@
     </Compile>
     <Compile Include="EnumHelper.cs" />
     <Compile Include="ExportManagers\CoreFieldManager.cs" />
-    <Compile Include="ExportManagers\CoreSearchManager.cs" />
     <Compile Include="ExportManagers\Factories\FileDownloaderFactory.cs" />
     <Compile Include="ExportManagers\Factories\IExportFileDownloaderFactory.cs" />
     <Compile Include="Helpers\FieldConverter.cs" />
     <Compile Include="Helpers\CoreViewFieldInfo.cs" />
     <Compile Include="Installer\CoreServicesForExportRegistration.cs" />
     <Compile Include="Installer\ExportRepositoryRegistration.cs" />
-    <Compile Include="Repositories\Implementations\FileFieldRepository.cs" />
-    <Compile Include="Repositories\Implementations\ViewFieldRepository.cs" />
-    <Compile Include="Repositories\Implementations\ViewRepository.cs" />
-    <Compile Include="Repositories\IViewFieldRepository.cs" />
-    <Compile Include="Repositories\IFileFieldRepository.cs" />
-    <Compile Include="Repositories\IViewRepository.cs" />
     <Compile Include="SharedLibrary\ExportServiceFactory.cs" />
     <Compile Include="SharedLibrary\IExportServiceFactory.cs" />
     <Compile Include="Extensions\ExportFileExtension.cs" />

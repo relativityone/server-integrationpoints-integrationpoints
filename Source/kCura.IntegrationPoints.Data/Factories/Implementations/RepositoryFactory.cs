@@ -32,17 +32,6 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		{
 		}
 
-		public RepositoryFactory(
-			IHelper helper,
-			IServicesMgr destinationServiceMgr,
-			IRelativityObjectManagerFactory objectManagerFactory,
-			IExternalServiceInstrumentationProvider instrumentationProvider)
-			: this(helper,
-				destinationServiceMgr,
-				new Lazy<IRelativityObjectManagerFactory>(() => objectManagerFactory),
-				new Lazy<IExternalServiceInstrumentationProvider>(() => instrumentationProvider))
-		{
-		}
 
 		private RepositoryFactory(
 			IHelper helper,
@@ -311,14 +300,6 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return queryFieldLookupRepository;
 		}
 
-		public IFileRepository GetFileRepository()
-		{
-			return new DisposableFileRepository(
-				_sourceServiceMgr,
-				InstrumentationProvider,
-				(fileManager, instrumentationProvider) => new FileRepository(fileManager, instrumentationProvider)
-			);
-		}
 
 		public IAuditRepository GetAuditRepository(int workspaceArtifactId)
 		{

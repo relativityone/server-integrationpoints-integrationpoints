@@ -8,8 +8,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 	internal class CoreServiceFactory : IServiceFactory
 	{
 		private readonly Func<IAuditManager> _auditManagerFactory;
-		private readonly Func<IFieldManager> _fieldManagerFactory;
-		private readonly Func<ISearchManager> _searchManagerFactory;
 		private readonly IExportFileDownloaderFactory _exportFileDownloaderFactory;
 
 		private readonly ExportFile _exportFile;
@@ -17,15 +15,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 
 		public CoreServiceFactory(
 			Func<IAuditManager> auditManagerFactory,
-			Func<IFieldManager> fieldManagerFactory,
-			Func<ISearchManager> searchManagerFactory,
 			IExportFileDownloaderFactory exportFileDownloaderFactory,
 			ExportFile exportFile,
 			IServiceFactory webApiServiceFactory)
 		{
 			_auditManagerFactory = auditManagerFactory;
-			_fieldManagerFactory = fieldManagerFactory;
-			_searchManagerFactory = searchManagerFactory;
 			_exportFileDownloaderFactory = exportFileDownloaderFactory;
 
 			_exportFile = exportFile;
@@ -36,9 +30,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 
 		public IExportManager CreateExportManager() => _webApiServiceFactory.CreateExportManager();
 
-		public IFieldManager CreateFieldManager() => _fieldManagerFactory();
+		public IFieldManager CreateFieldManager() => _webApiServiceFactory.CreateFieldManager();
 
-		public ISearchManager CreateSearchManager() => _searchManagerFactory();
+		public ISearchManager CreateSearchManager() => _webApiServiceFactory.CreateSearchManager();
 
 		public IProductionManager CreateProductionManager() => _webApiServiceFactory.CreateProductionManager();
 

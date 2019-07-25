@@ -216,12 +216,6 @@ namespace kCura.IntegrationPoints.Data.Factories
 	    IQueryFieldLookupRepository GetQueryFieldLookupRepository(int workspaceArtifactId);
 
 		/// <summary>
-		/// Returns a class implementing the IFileRepository interface.
-		/// </summary>
-		/// <returns>A class implementing the IFileRepository interface.</returns>
-		IFileRepository GetFileRepository();
-
-		/// <summary>
 		/// Returns a class implementing the IAuditRepository interface.
 		/// </summary>
 		/// <param name="workspaceArtifactId"></param>

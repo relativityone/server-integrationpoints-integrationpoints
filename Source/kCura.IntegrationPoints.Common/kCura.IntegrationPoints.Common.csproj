@@ -48,6 +48,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants\ExternalServiceTypes.cs" />
+    <Compile Include="Handlers\IRetryHandler.cs" />
+    <Compile Include="Handlers\IRetryHandlerFactory.cs" />
     <Compile Include="Monitoring\Constants\TelemetryMetricsBucketNames.cs" />
     <Compile Include="Context\IWorkspaceContext.cs" />
     <Compile Include="Monitoring\Instrumentation\ExternalServiceInstrumentation.cs" />

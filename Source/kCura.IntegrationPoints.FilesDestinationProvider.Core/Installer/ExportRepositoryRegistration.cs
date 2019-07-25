@@ -1,9 +1,11 @@
-﻿using Castle.MicroKernel.Registration;
+﻿using System;
+using Castle.MicroKernel.Registration;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories.Implementations;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
+using kCura.WinEDDS.Service.Export;
 using Relativity.API;
 using Relativity.Services.FileField;
 using Relativity.Services.Interfaces.File;
@@ -21,17 +23,18 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
 					f.Resolve<IServicesMgr>().CreateProxy<IViewFieldManager>(ExecutionIdentity.CurrentUser)
 				)
 			);
-			container.Register(
-				Component.For<IViewFieldRepository>()
-					.ImplementedBy<ViewFieldRepository>()
-					.LifestyleTransient()
-			);
 
 			container.Register(
 				Component.For<IFileManager>().UsingFactoryMethod(f =>
 					f.Resolve<IServicesMgr>().CreateProxy<IFileManager>(ExecutionIdentity.CurrentUser)
 				)
 			);
+
+			container.Register(Component.For<Func<ISearchManager>>()
+				.UsingFactoryMethod(k => (Func<ISearchManager>)(() => k.Resolve<IServiceManagerProvider>().Create<ISearchManager, SearchManagerFactory>()))
+				.LifestyleTransient()
+			);
+
 			container.Register(
 				Component.For<IFileRepository>()
 					.ImplementedBy<FileRepository>()
@@ -39,25 +42,15 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
 			);
 
 			container.Register(
-				Component.For<IFileFieldManager>().UsingFactoryMethod(f => 
+				Component.For<IFileFieldManager>().UsingFactoryMethod(f =>
 					f.Resolve<IServicesMgr>().CreateProxy<IFileFieldManager>(ExecutionIdentity.CurrentUser)
 				)
-			);
-			container.Register(
-				Component.For<IFileFieldRepository>()
-					.ImplementedBy<FileFieldRepository>()
-					.LifestyleTransient()
 			);
 
 			container.Register(
 				Component.For<IViewManager>().UsingFactoryMethod(f =>
 					f.Resolve<IServicesMgr>().CreateProxy<IViewManager>(ExecutionIdentity.CurrentUser)
 				)
-			);
-			container.Register(
-				Component.For<IViewRepository>()
-					.ImplementedBy<ViewRepository>()
-					.LifestyleTransient()
 			);
 			return container;
 		}

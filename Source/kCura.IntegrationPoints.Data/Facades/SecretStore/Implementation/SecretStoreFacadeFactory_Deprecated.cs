@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using Relativity.API;
 

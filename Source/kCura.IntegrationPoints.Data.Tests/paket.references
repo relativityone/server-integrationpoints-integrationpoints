@@ -9,6 +9,7 @@ Relativity
 Relativity.API
 Relativity.Productions.Services.Interfaces
 Relativity.Services.Interfaces.Private
+Relativity.DataExchange.Client.SDK
 Moq
 Newtonsoft.Json
 FluentAssertions

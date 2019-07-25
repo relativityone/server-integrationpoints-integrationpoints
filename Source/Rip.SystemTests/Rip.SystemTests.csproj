@@ -46,7 +46,6 @@
     <Compile Include="IntegrationPointServices\KeplerDocumentRepositoryTests.cs" />
     <Compile Include="JobHistory\JobHistoryManagerTests.cs" />
     <Compile Include="RelativityServices\Arrangers\DocumentTestCaseArranger.cs" />
-    <Compile Include="RelativityServices\CoreSearchManagerTests.cs" />
     <Compile Include="RelativityServices\TestCases\DocumentTestCase.cs" />
     <Compile Include="RelativityServices\TestCases\ImageTestCase.cs" />
     <Compile Include="SystemTestsFixture.cs" />

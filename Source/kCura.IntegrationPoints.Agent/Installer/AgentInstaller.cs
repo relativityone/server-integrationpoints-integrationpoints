@@ -185,14 +185,15 @@ namespace kCura.IntegrationPoints.Agent.Installer
 					}
 					IFolderPathReaderFactory folderPathReaderFactory = k.Resolve<IFolderPathReaderFactory>();
 					IRelativityObjectManager relativityObjectManager = k.Resolve<IRelativityObjectManager>();
-
+					IFileRepository fileRepository = k.Resolve<IFileRepository>();
 					return new ExporterFactory(
 						claimsPrincipalFactory,
 						sourceRepositoryFactory,
 						targetRepositoryFactory,
 						sourceHelper,
 						folderPathReaderFactory,
-						relativityObjectManager);
+						relativityObjectManager,
+						fileRepository);
 				}).LifestyleTransient());
 
 			container.Register(Component.For<IRsapiClientWithWorkspaceFactory>().ImplementedBy<ExtendedRsapiClientWithWorkspaceFactory>().LifestyleTransient());
