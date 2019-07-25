@@ -1,9 +1,10 @@
-﻿using kCura.IntegrationPoints.Data.Interfaces;
+﻿using kCura.IntegrationPoints.Common.Handlers;
+using kCura.IntegrationPoints.Data;
 using Relativity.API;
 
-namespace kCura.IntegrationPoints.Data
+namespace kCura.IntegrationPoints.Common
 {
-	internal class RetryHandlerFactory : IRetryHandlerFactory
+	public class RetryHandlerFactory : IRetryHandlerFactory
 	{
 		private readonly IAPILog _logger;
 
