@@ -5,7 +5,6 @@ using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Core.Services.Exporter.Images;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -59,7 +58,6 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		{
 			LogBuildExporterExecutionWithParameters(mappedFields, serializedSourceConfiguration, savedSearchArtifactID, onBehalfOfUser, userImportApiSettings);
 			ClaimsPrincipal claimsPrincipal = GetClaimsPrincipal(onBehalfOfUser);
-			IBaseServiceContextProvider baseServiceContextProvider = new BaseServiceContextProvider(claimsPrincipal);
 
 			ImportSettings settings = JsonConvert.DeserializeObject<ImportSettings>(userImportApiSettings);
 			SourceConfiguration sourceConfiguration = JsonConvert.DeserializeObject<SourceConfiguration>(serializedSourceConfiguration);
@@ -69,7 +67,6 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 					jobStopManager,
 					mappedFields,
 					savedSearchArtifactID,
-					baseServiceContextProvider,
 					settings,
 					sourceConfiguration,
 					documentRepository) :
@@ -78,7 +75,6 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 					mappedFields,
 					serializedSourceConfiguration,
 					savedSearchArtifactID,
-					baseServiceContextProvider,
 					settings,
 					documentRepository,
 					serializer);
@@ -90,7 +86,6 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			FieldMap[] mappedFields,
 			string serializedSourceConfiguration,
 			int savedSearchArtifactID,
-			IBaseServiceContextProvider baseServiceContextProvider,
 			ImportSettings settings,
 			IDocumentRepository documentRepository,
 			ISerializer serializer)
@@ -109,7 +104,6 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				jobStopManager,
 				_helper,
 				folderPathReader,
-				baseServiceContextProvider,
 				_fileRepository,
 				mappedFields,
 				startAtRecord,
@@ -121,7 +115,6 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			IJobStopManager jobStopManager,
 			FieldMap[] mappedFiles,
 			int savedSearchArtifactId,
-			IBaseServiceContextProvider baseServiceContextProvider,
 			ImportSettings settings,
 			SourceConfiguration sourceConfiguration,
 			IDocumentRepository documentRepository)
@@ -145,7 +138,6 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				_fileRepository,
 				jobStopManager,
 				_helper,
-				baseServiceContextProvider,
 				mappedFiles,
 				startAtRecord,
 				sourceConfiguration,

@@ -5,7 +5,6 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.DTO;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -30,7 +29,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		private Mock<IRepositoryFactory> _targetRepositoryFactory;
 		private Mock<IFolderPathReader> _folderPathReader;
 		private Mock<IHelper> _helper;
-		private Mock<IBaseServiceContextProvider> _baseServiceContextProvider;
 		private Mock<IJobStopManager> _jobStopManager;
 		private Mock<IQueryFieldLookupRepository> _queryFieldLookupRepository;
 		private Mock<IRelativityObjectManager> _relativityObjectManager;
@@ -124,7 +122,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 				.Returns(_queryFieldLookupRepository.Object);
 
 			_relativityObjectManager = new Mock<IRelativityObjectManager>();
-			_baseServiceContextProvider = new Mock<IBaseServiceContextProvider>();
 		}
 
 		[Test]
@@ -328,7 +325,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 				_jobStopManager.Object,
 				_helper.Object,
 				_folderPathReader.Object,
-				_baseServiceContextProvider.Object,
 				_fileRepository.Object,
 				_mappedFields,
 				_START_AT,

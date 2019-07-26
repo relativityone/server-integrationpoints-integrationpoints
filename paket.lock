@@ -218,7 +218,6 @@ NUGET
       Relativity.Toggles (>= 1.0.0.68)
       System.IdentityModel.Tokens.Jwt (>= 4.0.2.206221351)
     Relativity.Authentication.Interfaces (10.3.109.3)
-    Relativity.Core (10.3.109.3)
     Relativity.CustomPages (10.3.109.3)
     Relativity.Data (10.3.109.3)
     Relativity.DataExchange.Client.SDK (1.1.0)

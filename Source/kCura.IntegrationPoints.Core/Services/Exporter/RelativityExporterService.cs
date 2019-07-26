@@ -4,7 +4,6 @@ using System.Linq;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter.Base;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.DTO;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -27,8 +26,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			IRepositoryFactory targetRepositoryFactory, 
 			IJobStopManager jobStopManager, 
 			IHelper helper,
-			IFolderPathReader folderPathReader, 
-			IBaseServiceContextProvider baseServiceContextProvider,
+			IFolderPathReader folderPathReader,
 			IFileRepository fileRepository,
 			FieldMap[] mappedFields, 
 			int startAt, 
@@ -40,8 +38,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				sourceRepositoryFactory, 
 				targetRepositoryFactory, 
 				jobStopManager, 
-				helper, 
-				baseServiceContextProvider,
+				helper,
 				fileRepository,
 				mappedFields, 
 				startAt, 
@@ -55,8 +52,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		{
 			var documentTransferDataReader = new DocumentTransferDataReader(
 				this, 
-				MappedFields, 
-				BaseContext,
+				MappedFields,
 				transferConfiguration.ScratchRepositories, 
 				RelativityObjectManager,
 				DocumentRepository,

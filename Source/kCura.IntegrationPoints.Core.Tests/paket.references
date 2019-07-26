@@ -9,7 +9,6 @@ Moq
 NSubstitute
 NUnit
 Relativity.API
-Relativity.Core
 Relativity.DataExchange.Client.SDK
 Relativity.DataTransfer.MessageService
 Relativity.OAuth2Client.Interfaces

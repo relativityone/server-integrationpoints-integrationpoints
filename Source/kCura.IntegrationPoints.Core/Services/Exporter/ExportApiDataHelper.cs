@@ -1,13 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
-using kCura.EDDS.DocumentCompareGateway;
-using Relativity.Core;
-using Relativity.Core.Service;
-using Relativity.Data;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter
 {

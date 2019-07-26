@@ -5,7 +5,6 @@ using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Core;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 {
@@ -17,7 +16,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			return new DocumentTransferDataReader(
 				_exportService,
 				_templateFieldEntries,
-				_context,
 				_scratchRepositories,
 				_relativityObjectManager,
 				_documentRepository,
@@ -31,13 +29,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		protected override ExportTransferDataReaderBase CreateDataReaderTestInstanceWithParameters(
 			IExporterService relativityExportService,
 			FieldMap[] fieldMappings,
-			BaseServiceContext context,
 			IScratchTableRepository[] scratchTableRepositories)
 		{
 			return new DocumentTransferDataReader(
 				relativityExportService,
 				fieldMappings,
-				context,
 				scratchTableRepositories,
 				_relativityObjectManager,
 				_documentRepository,
