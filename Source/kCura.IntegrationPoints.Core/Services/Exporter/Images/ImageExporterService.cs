@@ -4,7 +4,6 @@ using System.Linq;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter.Base;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.DTO;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -29,7 +28,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 			IFileRepository fileRepository,
 			IJobStopManager jobStopManager,
 			IHelper helper,
-			IBaseServiceContextProvider baseServiceContextProvider,
 			FieldMap[] mappedFields,
 			int startAt,
 			SourceConfiguration sourceConfiguration, 
@@ -42,7 +40,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 				targetRepositoryFactory,
 				jobStopManager,
 				helper,
-				baseServiceContextProvider,
 				fileRepository,
 				mappedFields, 
 				startAt,
@@ -54,7 +51,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 
 		public override IDataTransferContext GetDataTransferContext(IExporterTransferConfiguration transferConfiguration)
 		{
-			var imageTransferDataReader = new ImageTransferDataReader(this, MappedFields, BaseContext, Logger, transferConfiguration.ScratchRepositories);
+			var imageTransferDataReader = new ImageTransferDataReader(this, MappedFields, Logger, transferConfiguration.ScratchRepositories);
 			return Context ?? (Context = new ExporterTransferContext(imageTransferDataReader, transferConfiguration));
 		}
 

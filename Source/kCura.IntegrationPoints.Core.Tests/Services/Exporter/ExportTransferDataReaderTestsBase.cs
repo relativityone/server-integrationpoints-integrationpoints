@@ -12,7 +12,6 @@ using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
-using Relativity.Core;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 {
@@ -21,7 +20,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 	{
 		protected IExporterService _exportService;
 		protected IDataReader _instance;
-		protected BaseServiceContext _context;
 		protected IScratchTableRepository[] _scratchRepositories;
 		protected ISourceWorkspaceManager _sourceWorkspaceManager;
 		protected ISourceJobManager _sourceJobManager;
@@ -44,7 +42,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		protected abstract ExportTransferDataReaderBase CreateDataReaderTestInstanceWithParameters(
 			IExporterService relativityExportService,
 			FieldMap[] fieldMappings,
-			BaseServiceContext context,
 			IScratchTableRepository[] scratchTableRepositories);
 
 		protected readonly SourceWorkspaceDTO _sourceWorkspaceDto = new SourceWorkspaceDTO
@@ -375,7 +372,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 						}
 					}
 				},
-				_context,
 				_scratchRepositories);
 
 			// Act
@@ -415,7 +411,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 						}
 					}
 				},
-				_context,
 				_scratchRepositories);
 
 			// Act
@@ -446,7 +441,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 						}
 					}
 				},
-				_context,
 				_scratchRepositories);
 
 			// Act
@@ -683,7 +677,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 						SourceField =   new FieldEntry() {FieldIdentifier = "456", DisplayName = "def"}
 					}
 				},
-				_context,
 				_scratchRepositories);
 
 			var expectedResult = new DataTable()
@@ -716,7 +709,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			_instance = CreateDataReaderTestInstanceWithParameters(
 				_exportService,
 				new FieldMap[0],
-				_context,
 				_scratchRepositories);
 
 			var expectedResult = new DataTable()
@@ -747,7 +739,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			_instance =CreateDataReaderTestInstanceWithParameters(
 				_exportService,
 				new FieldMap[0],
-				_context,
 				_scratchRepositories);
 
 			var expectedResult = new DataTable()
@@ -824,7 +815,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 						SourceField = new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" }
 					}
 				},
-				_context,
 				_scratchRepositories);
 
 			// Act
@@ -867,7 +857,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 						SourceField = new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" }
 					}
 				},
-				_context,
 				_scratchRepositories);
 
 			// Act
@@ -909,7 +898,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 						SourceField = new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" },
 					}
 				},
-				_context,
 				_scratchRepositories);
 
 			// Act
@@ -950,7 +938,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 						SourceField = new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" },
 					}
 				},
-				_context,
 				_scratchRepositories);
 
 			// Act
@@ -992,7 +979,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 						SourceField = new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" },
 					}
 				},
-				_context,
 				_scratchRepositories);
 
 			// Act
@@ -1034,7 +1020,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 						SourceField = new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" },
 					}
 				},
-				_context,
 				_scratchRepositories);
 
 			// Act
@@ -1076,7 +1061,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 						SourceField = new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" },
 					}
 				},
-				_context,
 				_scratchRepositories);
 
 			// Act
@@ -1119,7 +1103,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 						SourceField = new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" },
 					}
 				},
-				_context,
 				_scratchRepositories);
 
 			// Act
@@ -1162,7 +1145,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 						SourceField = new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" },
 					}
 				},
-				_context,
 				_scratchRepositories);
 
 			// Act
@@ -1205,7 +1187,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 						SourceField = new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" },
 					}
 				},
-				_context,
 				_scratchRepositories);
 
 			// Act
@@ -1248,7 +1229,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 						SourceField = new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" },
 					}
 				},
-				_context,
 				_scratchRepositories);
 
 			// Act

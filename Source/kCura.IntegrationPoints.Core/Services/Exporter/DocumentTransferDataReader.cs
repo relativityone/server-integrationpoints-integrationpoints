@@ -11,7 +11,6 @@ using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity;
 using Relativity.API;
-using Relativity.Core;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter
@@ -39,7 +38,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		public DocumentTransferDataReader(
 			IExporterService relativityExportService,
 			FieldMap[] fieldMappings,
-			BaseServiceContext context,
 			IScratchTableRepository[] scratchTableRepositories,
 			IRelativityObjectManager relativityObjectManager,
 			IDocumentRepository documentRepository,
@@ -48,7 +46,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			IFileRepository fileRepository,
 			bool useDynamicFolderPath,
 			int workspaceArtifactID) :
-			base(relativityExportService, fieldMappings, context, scratchTableRepositories, logger, useDynamicFolderPath)
+			base(relativityExportService, fieldMappings, scratchTableRepositories, logger, useDynamicFolderPath)
 		{
 			_nativeFileLocations = new Dictionary<int, string>();
 			_nativeFileNames = new Dictionary<int, string>();
