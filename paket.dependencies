@@ -9,7 +9,6 @@ nuget kCura.Agent 10.3.109.3
 nuget kCura.EventHandler 10.3.109.3
 nuget kCura.Relativity.Client 10.3.109.3
 nuget Relativity.Authentication 10.3.109.3
-nuget Relativity.Core 10.3.109.3
 nuget Relativity.CustomPages 10.3.109.3
 nuget Relativity.Data 10.3.109.3
 nuget Relativity.DataExchange.Client.SDK 1.1.0

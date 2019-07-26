@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Contracts.Models;
@@ -8,7 +7,6 @@ using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Core.Services.Exporter.Images;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.DTO;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -19,7 +17,6 @@ using NSubstitute;
 using NUnit.Framework;
 using Relativity;
 using Relativity.API;
-using Relativity.Services.Interfaces.File.Models;
 using ExportSettings = kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportSettings;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
@@ -35,7 +32,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 		private IRepositoryFactory _targetRepositoryFactory;
 		private IJobStopManager _jobStopManager;
 		private IHelper _helper;
-		private IBaseServiceContextProvider _baseServiceContextProvider;
 		private FieldMap[] _mappedFields;
 		private IFileRepository _fileRepository;
 		private IRelativityObjectManager _relativityObjectManager;
@@ -57,7 +53,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 			_helper = Substitute.For<IHelper>();
 			_relativityObjectManager = Substitute.For<IRelativityObjectManager>();
 
-			_baseServiceContextProvider = Substitute.For<IBaseServiceContextProvider>();
 
 			_mappedFields = new[]
 			{
@@ -104,8 +99,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 				_targetRepositoryFactory,
 				_fileRepository,
 				_jobStopManager, 
-				_helper, 
-				_baseServiceContextProvider, 
+				_helper,
 				_mappedFields, 
 				_START_AT, 
 				sourceConfiguration,
@@ -150,8 +144,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 				_targetRepositoryFactory,
 				_fileRepository,
 				_jobStopManager, 
-				_helper, 
-				_baseServiceContextProvider, 
+				_helper,
 				_mappedFields, 
 				_START_AT, 
 				config, 
@@ -203,7 +196,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 				_fileRepository,
 				_jobStopManager, 
 				_helper,
-				_baseServiceContextProvider, 
 				_mappedFields, 
 				_START_AT, 
 				config, 

@@ -1,5 +1,4 @@
-﻿using System;
-using Castle.Core;
+﻿using Castle.Core;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using kCura.IntegrationPoint.Tests.Core.FluentAssertions;
@@ -9,14 +8,9 @@ using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer;
-using kCura.WinEDDS.Service.Export;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Services.FileField;
-using Relativity.Services.Interfaces.File;
-using Relativity.Services.Interfaces.ViewField;
-using Relativity.Services.View;
 using static kCura.IntegrationPoint.Tests.Core.TestHelpers.WindsorContainerTestHelpers;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Installer

@@ -5,7 +5,6 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.DTO;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -25,11 +24,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		private IList<RelativityObjectSlimDto> _goldFlowRetrievableData;
 		private ExportInitializationResultsDto _exportApiResult;
 		private Mock<IDocumentRepository> _documentRepository;
+		private Mock<IFileRepository> _fileRepository;
 		private Mock<IRepositoryFactory> _sourceRepositoryFactory;
 		private Mock<IRepositoryFactory> _targetRepositoryFactory;
 		private Mock<IFolderPathReader> _folderPathReader;
 		private Mock<IHelper> _helper;
-		private Mock<IBaseServiceContextProvider> _baseServiceContextProvider;
 		private Mock<IJobStopManager> _jobStopManager;
 		private Mock<IQueryFieldLookupRepository> _queryFieldLookupRepository;
 		private Mock<IRelativityObjectManager> _relativityObjectManager;
@@ -55,6 +54,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 				.Setup(x => x.GetLoggerFactory().GetLogger().ForContext<RelativityExporterService>())
 				.Returns(apiLogMock.Object);
 			_documentRepository = new Mock<IDocumentRepository>();
+			_fileRepository = new Mock<IFileRepository>();
 			_sourceRepositoryFactory = new Mock<IRepositoryFactory>();
 			Mock<IFieldQueryRepository> fieldQueryRepositoryMock = new Mock<IFieldQueryRepository>();
 			_targetRepositoryFactory = new Mock<IRepositoryFactory>();
@@ -122,7 +122,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 				.Returns(_queryFieldLookupRepository.Object);
 
 			_relativityObjectManager = new Mock<IRelativityObjectManager>();
-			_baseServiceContextProvider = new Mock<IBaseServiceContextProvider>();
 		}
 
 		[Test]
@@ -326,7 +325,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 				_jobStopManager.Object,
 				_helper.Object,
 				_folderPathReader.Object,
-				_baseServiceContextProvider.Object,
+				_fileRepository.Object,
 				_mappedFields,
 				_START_AT,
 				config,

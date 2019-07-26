@@ -4,7 +4,6 @@ using System.Linq;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter.Validators;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.DTO;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -12,7 +11,6 @@ using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using Relativity.API;
-using Relativity.Core;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 {
@@ -20,7 +18,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 	{
 		protected readonly IQueryFieldLookupRepository QueryFieldLookupRepository;
 		protected readonly SourceConfiguration SourceConfiguration;
-		protected readonly BaseServiceContext BaseContext;
 		protected readonly ExportInitializationResultsDto ExportJobInfo;
 		protected readonly FieldMap[] MappedFields;
 		protected readonly HashSet<int> LongTextFieldArtifactIds;
@@ -30,6 +27,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 		protected readonly IDocumentRepository DocumentRepository;
 		protected readonly IRelativityObjectManager RelativityObjectManager;
 		protected readonly IJobStopManager JobStopManager;
+		protected readonly IFileRepository FileRepository;
 		protected readonly int[] FieldArtifactIds;
 
 		protected IDataTransferContext Context { get; set; }
@@ -42,7 +40,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 			IRepositoryFactory targetRepositoryFactory,
 			IJobStopManager jobStopManager,
 			IHelper helper,
-			IBaseServiceContextProvider baseServiceContextProvider,
+			IFileRepository fileRepository,
 			FieldMap[] mappedFields,
 			int startAt,
 			SourceConfiguration sourceConfiguration,
@@ -51,9 +49,9 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 		{
 
 			DocumentRepository = documentRepository;
+			FileRepository = fileRepository;
 			RelativityObjectManager = relativityObjectManager;
 			SourceConfiguration = sourceConfiguration;
-			BaseContext = baseServiceContextProvider.GetUnversionContext(SourceConfiguration.SourceWorkspaceArtifactId);
 
 			ValidateDestinationFields(targetRepositoryFactory, mappedFields);
 

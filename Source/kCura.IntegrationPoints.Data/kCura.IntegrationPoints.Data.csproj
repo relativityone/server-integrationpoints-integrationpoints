@@ -126,6 +126,7 @@
     <Compile Include="Repositories\DTO\ArtifactRef.cs" />
     <Compile Include="Repositories\DTO\AuditRecord.cs" />
     <Compile Include="Repositories\DTO\FieldUpdateRequestDto.cs" />
+    <Compile Include="Repositories\DTO\FileDto.cs" />
     <Compile Include="Repositories\DTO\IFieldValueDto.cs" />
     <Compile Include="Repositories\DTO\ICaseInfoDto.cs" />
     <Compile Include="Repositories\DTO\MultiObjectReferenceDto.cs" />
