@@ -46,7 +46,7 @@ namespace Relativity.Sync.Storage
 			}
 		}
 
-		public async Task<int> GetSourceProviderArtifactIdAsync()
+		private async Task<int> GetSourceProviderArtifactIdAsync()
 		{
 			using (var objectManager = await _sourceServiceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
@@ -65,7 +65,7 @@ namespace Relativity.Sync.Storage
 				{
 					return objectManagerValue.Objects.First().ArtifactID;
 				}
-				throw new SyncException($"Error while querying for 'Relativity' provider using ObjectManager. Query returned {objectManagerValue.Objects.Count} objects, but exactly 1 was expected.");
+				throw new SyncException($"Error while querying for 'Relativity' provider using ObjectManager. Query returned {objectManagerValue.TotalCount} objects, but exactly 1 was expected.");
 			}
 		}
 	}
