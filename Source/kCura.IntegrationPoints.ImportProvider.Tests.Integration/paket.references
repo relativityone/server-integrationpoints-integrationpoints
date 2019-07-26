@@ -12,3 +12,6 @@ kCura.FreeImage
 Relativity.DataTransfer.MessageService
 kCura.OutsideIn.FI.Win32
 relativity.testing.identification
+
+group TestPackages
+	Serilog
