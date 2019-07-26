@@ -204,8 +204,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		}
 
 		[IdentifiedTest("c5eca681-6859-441e-84b0-634c41570f12"), Timeout(300000)]
-		[TestInQuarantine(TestQuarantineState.ShowsInstability, 
-			"It fails randomly because of exceeding the timeout specified. We need to increase the timeout or refactor this test somehow.")]
 		[Description("This test takes sometime to process. It requires the IP agent to be running.")]
 		public async Task OneExecutedScheduledJobInTheQueue_ExpectCountZero()
 		{
