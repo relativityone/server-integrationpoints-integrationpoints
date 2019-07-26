@@ -2,8 +2,8 @@
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using kCura.IntegrationPoint.Tests.Core.FluentAssertions;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Data.Installers;
-using kCura.IntegrationPoints.Data.Interfaces;
 using NUnit.Framework;
 using Relativity.API;
 using static kCura.IntegrationPoint.Tests.Core.TestHelpers.WindsorContainerTestHelpers;

@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.Web.Infrastructure.ExceptionLoggers
 	//http://www.strathweb.com/2014/03/asp-net-web-api-exception-logging-raygun-io/
 	public class WebAPIExceptionLogger : ExceptionLogger
 	{
-		private readonly IErrorService _service;
+		private readonly Func<IErrorService> _errorServiceFactory;
 		private readonly ISystemEventLoggingService _systemEventLoggingService;
 
 		/// <summary>
@@ -24,13 +24,13 @@ namespace kCura.IntegrationPoints.Web.Infrastructure.ExceptionLoggers
 		/// <param name="systemEventLoggingService"></param>
 		internal WebAPIExceptionLogger(IErrorService service, ISystemEventLoggingService systemEventLoggingService)
 		{
-			_service = service;
+			_errorServiceFactory = () => service;
 			_systemEventLoggingService = systemEventLoggingService;
 		}
 
-		public WebAPIExceptionLogger(IErrorService service)
+		public WebAPIExceptionLogger(Func<IErrorService> errorServiceFactory)
 		{
-			_service = service;
+			_errorServiceFactory = errorServiceFactory;
 			_systemEventLoggingService = new SystemEventLoggingService();
 		}
 
@@ -40,7 +40,9 @@ namespace kCura.IntegrationPoints.Web.Infrastructure.ExceptionLoggers
 			{
 				var workspaceId = RetrieveWorkspaceId(context);
 				var errorModel = CreateErrorModel(context, workspaceId);
-				_service.Log(errorModel);
+
+				IErrorService errorService = _errorServiceFactory();
+				errorService.Log(errorModel);
 			}
 			catch (Exception e)
 			{

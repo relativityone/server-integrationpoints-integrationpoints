@@ -48,6 +48,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants\ExternalServiceTypes.cs" />
+    <Compile Include="Handlers\IRetryHandler.cs" />
+    <Compile Include="Handlers\IRetryHandlerFactory.cs" />
     <Compile Include="Extensions\DotNet\EnumerableExtensions.cs" />
     <Compile Include="Monitoring\Constants\TelemetryMetricsBucketNames.cs" />
     <Compile Include="Context\IWorkspaceContext.cs" />
@@ -94,7 +96,7 @@
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="kCura.Apps.Common.Config">
-          <HintPath>..\..\packages\kCura.Apps.Common.Config\lib\net462\kCura.Apps.Common.Config.dll</HintPath>
+          <HintPath>..\..\packages\kCura.Apps.Common.Config\lib\net45\kCura.Apps.Common.Config.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -105,7 +107,7 @@
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="kCura.Apps.Common.Data">
-          <HintPath>..\..\packages\kCura.Apps.Common.Data\lib\net462\kCura.Apps.Common.Data.dll</HintPath>
+          <HintPath>..\..\packages\kCura.Apps.Common.Data\lib\net45\kCura.Apps.Common.Data.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -116,7 +118,7 @@
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="kCura.Apps.Common.Utils">
-          <HintPath>..\..\packages\kCura.Apps.Common.Utils\lib\net462\kCura.Apps.Common.Utils.dll</HintPath>
+          <HintPath>..\..\packages\kCura.Apps.Common.Utils\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

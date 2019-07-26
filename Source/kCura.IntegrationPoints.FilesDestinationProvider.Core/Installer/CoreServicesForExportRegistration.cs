@@ -20,10 +20,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
 					.ImplementedBy<CoreFieldManager>()
 					.LifestyleTransient(),
 				Component
-					.For<ISearchManager>()
-					.ImplementedBy<CoreSearchManager>()
-					.LifestyleTransient(),
-				Component
 					.For<IExportFileDownloaderFactory>()
 					.ImplementedBy<FileDownloaderFactory>()
 					.LifestyleTransient(),
@@ -34,7 +30,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
 					.For<CoreServiceFactory>()
 					.LifestyleTransient()
 			);
-
 			return container;
 		}
 	}

@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using System.Text;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter;
@@ -24,6 +25,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		private readonly IHelper _helper;
 		private readonly IFolderPathReaderFactory _folderPathReaderFactory;
 		private readonly IRelativityObjectManager _relativityObjectManager;
+		private readonly IFileRepository _fileRepository;
 		private readonly IAPILog _logger;
 
 		public ExporterFactory(
@@ -32,7 +34,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			IRepositoryFactory targetRepositoryFactory,
 			IHelper helper,
 			IFolderPathReaderFactory folderPathReaderFactory,
-			IRelativityObjectManager relativityObjectManager)
+			IRelativityObjectManager relativityObjectManager,
+			IFileRepository fileRepository)
 		{
 			_claimsPrincipalFactory = claimsPrincipalFactory;
 			_sourceRepositoryFactory = sourceRepositoryFactory;
@@ -40,6 +43,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			_helper = helper;
 			_folderPathReaderFactory = folderPathReaderFactory;
 			_relativityObjectManager = relativityObjectManager;
+			_fileRepository = fileRepository;
 			_logger = _helper.GetLoggerFactory().GetLogger().ForContext<ExporterFactory>();
 		}
 
@@ -50,7 +54,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			int savedSearchArtifactID,
 			int onBehalfOfUser,
 			string userImportApiSettings,
-			IDocumentRepository documentRepository)
+			IDocumentRepository documentRepository,
+			ISerializer serializer)
 		{
 			LogBuildExporterExecutionWithParameters(mappedFields, serializedSourceConfiguration, savedSearchArtifactID, onBehalfOfUser, userImportApiSettings);
 			ClaimsPrincipal claimsPrincipal = GetClaimsPrincipal(onBehalfOfUser);
@@ -63,7 +68,6 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				CreateImageExporterService(
 					jobStopManager,
 					mappedFields,
-					serializedSourceConfiguration,
 					savedSearchArtifactID,
 					baseServiceContextProvider,
 					settings,
@@ -74,24 +78,27 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 					mappedFields,
 					serializedSourceConfiguration,
 					savedSearchArtifactID,
-					claimsPrincipal,
 					baseServiceContextProvider,
 					settings,
-					documentRepository);
+					documentRepository,
+					serializer);
 			return exporter;
 		}
 		
 		private IExporterService CreateRelativityExporterService(
 			IJobStopManager jobStopManager,
 			FieldMap[] mappedFields,
-			string config,
-			int savedSearchArtifactId,
-			ClaimsPrincipal claimsPrincipal,
+			string serializedSourceConfiguration,
+			int savedSearchArtifactID,
 			IBaseServiceContextProvider baseServiceContextProvider,
 			ImportSettings settings,
-			IDocumentRepository documentRepository)
+			IDocumentRepository documentRepository,
+			ISerializer serializer)
 		{
-			IFolderPathReader folderPathReader = _folderPathReaderFactory.Create(claimsPrincipal, settings, config);
+			SourceConfiguration sourceConfiguration = serializer.Deserialize<SourceConfiguration>(serializedSourceConfiguration);
+			int workspaceArtifactID = sourceConfiguration.SourceWorkspaceArtifactId;
+			bool useDynamicFolderPath = settings.UseDynamicFolderPath;
+			IFolderPathReader folderPathReader = _folderPathReaderFactory.Create(workspaceArtifactID, useDynamicFolderPath);
 			const int startAtRecord = 0;
 
 			return new RelativityExporterService(
@@ -105,14 +112,13 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				baseServiceContextProvider,
 				mappedFields,
 				startAtRecord,
-				config,
-				savedSearchArtifactId);
+				sourceConfiguration,
+				savedSearchArtifactID);
 		}
 
 		private IExporterService CreateImageExporterService(
 			IJobStopManager jobStopManager,
 			FieldMap[] mappedFiles,
-			string config,
 			int savedSearchArtifactId,
 			IBaseServiceContextProvider baseServiceContextProvider,
 			ImportSettings settings,
@@ -135,12 +141,13 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				_relativityObjectManager,
 				_sourceRepositoryFactory,
 				_targetRepositoryFactory,
+				_fileRepository,
 				jobStopManager,
 				_helper,
 				baseServiceContextProvider,
 				mappedFiles,
 				startAtRecord,
-				config,
+				sourceConfiguration,
 				searchArtifactId,
 				settings);
 		}

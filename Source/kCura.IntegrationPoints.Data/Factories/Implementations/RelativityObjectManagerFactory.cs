@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
+﻿using kCura.IntegrationPoints.Common;
+using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;

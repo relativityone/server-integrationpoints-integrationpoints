@@ -7,7 +7,7 @@ using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
-using kCura.ScheduleQueue.Core.TimeMachine;
+using Newtonsoft.Json;
 using Relativity.API;
 
 namespace kCura.ScheduleQueue.Core.Services
@@ -80,7 +80,7 @@ namespace kCura.ScheduleQueue.Core.Services
 				return new FinalizeJobResult {JobState = JobLogState.Finished};
 			}
 
-			LogOnFinalizeJob(job.JobId, job.JobDetails);
+			LogOnFinalizeJob(job.JobId, job.JobDetails, taskResult);
 
 			var result = new FinalizeJobResult();
 
@@ -285,10 +285,10 @@ namespace kCura.ScheduleQueue.Core.Services
 
 		#region Logging
 
-		public void LogOnFinalizeJob(long jobJobId, string jobJobDetails)
+		public void LogOnFinalizeJob(long jobJobId, string jobJobDetails, TaskResult taskResult)
 		{
-			_log.LogInformation("Attempting to finalize job with ID: ({jobid}) in {TypeName}. Job details: {Jobdetails}",
-				jobJobId, nameof(JobService), jobJobDetails);
+			_log.LogInformation("Attempting to finalize job with ID: ({jobid}) in {TypeName}. Job details: {Jobdetails}. Exceptions: {Exceptions}",
+				jobJobId, nameof(JobService), jobJobDetails, JsonConvert.SerializeObject(taskResult.Exceptions));
 		}
 
 		public void LogOnUnlockJobs(int agentId)

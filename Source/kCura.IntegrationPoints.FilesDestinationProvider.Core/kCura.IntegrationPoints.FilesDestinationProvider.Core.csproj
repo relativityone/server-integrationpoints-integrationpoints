@@ -52,19 +52,12 @@
     </Compile>
     <Compile Include="EnumHelper.cs" />
     <Compile Include="ExportManagers\CoreFieldManager.cs" />
-    <Compile Include="ExportManagers\CoreSearchManager.cs" />
     <Compile Include="ExportManagers\Factories\FileDownloaderFactory.cs" />
     <Compile Include="ExportManagers\Factories\IExportFileDownloaderFactory.cs" />
     <Compile Include="Helpers\FieldConverter.cs" />
     <Compile Include="Helpers\CoreViewFieldInfo.cs" />
     <Compile Include="Installer\CoreServicesForExportRegistration.cs" />
     <Compile Include="Installer\ExportRepositoryRegistration.cs" />
-    <Compile Include="Repositories\Implementations\FileFieldRepository.cs" />
-    <Compile Include="Repositories\Implementations\ViewFieldRepository.cs" />
-    <Compile Include="Repositories\Implementations\ViewRepository.cs" />
-    <Compile Include="Repositories\IViewFieldRepository.cs" />
-    <Compile Include="Repositories\IFileFieldRepository.cs" />
-    <Compile Include="Repositories\IViewRepository.cs" />
     <Compile Include="SharedLibrary\ExportServiceFactory.cs" />
     <Compile Include="SharedLibrary\IExportServiceFactory.cs" />
     <Compile Include="Extensions\ExportFileExtension.cs" />
@@ -255,7 +248,7 @@
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="kCura.Apps.Common.Utils">
-          <HintPath>..\..\packages\kCura.Apps.Common.Utils\lib\net462\kCura.Apps.Common.Utils.dll</HintPath>
+          <HintPath>..\..\packages\kCura.Apps.Common.Utils\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

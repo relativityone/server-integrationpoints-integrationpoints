@@ -2,12 +2,12 @@
 using System.Web.Http;
 using System.Web.Http.Results;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Core.Interfaces.TextSanitizer;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using NSubstitute;
 using NUnit.Framework;
-using Relativity.Core.Service;
 
-namespace kCura.IntegrationPoints.Web.Tests.Controllers
+namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
 	[TestFixture]
 	public class RelativityControllerTests : TestBase
@@ -15,14 +15,16 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 		private RelativityController _instance;
 		private const int WORKSPACE_ARTIFACT_ID = 10293;
 		private const int SAVED_SEARCH_ID = 123434;
-		private IHtmlSanitizerManager _htmlSanitizerManage;
+		private ITextSanitizer _stringSanitizer;
 
 		[SetUp]
 		public override void SetUp()
 		{
-			_htmlSanitizerManage = Substitute.For<IHtmlSanitizerManager>();
-			_htmlSanitizerManage.Sanitize(Arg.Any<string>()).Returns(x => new SanitizeResult() { CleanHTML = x.Arg<string>(), HasErrors = false });
-			_instance = new RelativityController(_htmlSanitizerManage);
+			_stringSanitizer = Substitute.For<ITextSanitizer>();
+			_stringSanitizer
+				.Sanitize(Arg.Any<string>())
+				.Returns(x => new SanitizationResult(sanitizedText: x.Arg<string>(), hasErrors: false));
+			_instance = new RelativityController(_stringSanitizer);
 		}
 
 		[Test]
