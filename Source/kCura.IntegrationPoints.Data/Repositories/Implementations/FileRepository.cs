@@ -51,8 +51,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			);
 			using (ISearchManager searchManager = _searchManagerFactory())
 			{
-				List<string> fileLocations = ToLocationList(instrumentation.Execute(
-					() => _retryHandler.ExecuteWithRetries(
+				List<string> fileLocations = ToLocationList(_retryHandler.ExecuteWithRetries(
+					() => instrumentation.Execute(
 						() => searchManager.RetrieveImagesForProductionDocuments(workspaceID, documentIDs, productionID))
 				));
 				return fileLocations;

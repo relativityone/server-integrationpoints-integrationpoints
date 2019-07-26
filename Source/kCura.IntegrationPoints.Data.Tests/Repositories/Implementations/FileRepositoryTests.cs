@@ -204,6 +204,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			_instrumentationSimpleProviderMock
 				.Setup(x => x.Execute(It.IsAny<Func<DataSet>>()))
 				.Returns(_testProductionDocumentImageResponses.ToDataSet());
+			_retryHandlerMock
+				.Setup(x => x.ExecuteWithRetries(It.IsAny<Func<DataSet>>(), It.IsAny<string>()))
+				.Returns((Func<DataSet> f, string s) => f.Invoke());
 
 			//act
 			List<string> result = _sut.GetImagesLocationForProductionDocuments(
@@ -271,6 +274,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			_instrumentationSimpleProviderMock
 				.Setup(x => x.Execute(It.IsAny<Func<DataSet>>()))
 				.Throws<InvalidOperationException>();
+			_retryHandlerMock
+				.Setup(x => x.ExecuteWithRetries(It.IsAny<Func<DataSet>>(), It.IsAny<string>()))
+				.Returns((Func<DataSet> f, string s) => f.Invoke());
 
 			//act
 			Action action = () => _sut.GetImagesLocationForProductionDocuments(
