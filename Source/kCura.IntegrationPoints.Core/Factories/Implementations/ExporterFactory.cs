@@ -110,6 +110,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				_helper,
 				folderPathReader,
 				baseServiceContextProvider,
+				_fileRepository,
 				mappedFields,
 				startAtRecord,
 				sourceConfiguration,

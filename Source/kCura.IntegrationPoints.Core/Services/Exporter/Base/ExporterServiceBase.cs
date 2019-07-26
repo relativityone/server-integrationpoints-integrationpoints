@@ -30,6 +30,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 		protected readonly IDocumentRepository DocumentRepository;
 		protected readonly IRelativityObjectManager RelativityObjectManager;
 		protected readonly IJobStopManager JobStopManager;
+		protected readonly IFileRepository FileRepository;
 		protected readonly int[] FieldArtifactIds;
 
 		protected IDataTransferContext Context { get; set; }
@@ -43,6 +44,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 			IJobStopManager jobStopManager,
 			IHelper helper,
 			IBaseServiceContextProvider baseServiceContextProvider,
+			IFileRepository fileRepository,
 			FieldMap[] mappedFields,
 			int startAt,
 			SourceConfiguration sourceConfiguration,
@@ -51,6 +53,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 		{
 
 			DocumentRepository = documentRepository;
+			FileRepository = fileRepository;
 			RelativityObjectManager = relativityObjectManager;
 			SourceConfiguration = sourceConfiguration;
 			BaseContext = baseServiceContextProvider.GetUnversionContext(SourceConfiguration.SourceWorkspaceArtifactId);

@@ -23,7 +23,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 				_documentRepository,
 				Substitute.For<IAPILog>(),
 				Substitute.For<IQueryFieldLookupRepository>(),
-				false);
+				Substitute.For<IFileRepository>(),
+				false,
+				_SOURCE_WORKSPACE_ARTIFACTID);
 		}
 
 		protected override ExportTransferDataReaderBase CreateDataReaderTestInstanceWithParameters(
@@ -41,7 +43,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 				_documentRepository,
 				Substitute.For<IAPILog>(),
 				Substitute.For<IQueryFieldLookupRepository>(),
-				false);
+				Substitute.For<IFileRepository>(),
+				false,
+				_SOURCE_WORKSPACE_ARTIFACTID);
 		}
 	}
 }

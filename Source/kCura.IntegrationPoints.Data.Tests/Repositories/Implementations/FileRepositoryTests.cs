@@ -8,10 +8,10 @@ using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Handlers;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using kCura.IntegrationPoints.Data.Extensions;
+using kCura.IntegrationPoints.Data.Repositories.DTO;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.WinEDDS.Service.Export;
 using Moq;
-using NSubstitute;
 using NUnit.Framework;
 using Relativity.Services.Interfaces.File.Models;
 
@@ -33,6 +33,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		private const int _PRODUCTION_ID_2 = 1711;
 		private const string _KEPLER_SERVICE_TYPE = "Kepler";
 		private const string _KEPLER_SERVICE_NAME = nameof(ISearchManager);
+		private const string _DOCUMENT_ARTIFACT_ID_COLUMN = "DocumentArtifactID";
+		private const string _FILE_NAME_COLUMN = "Filename";
+		private const string _LOCATION_COLUMN = "Location";
+		private const string _FILE_SIZE_COLUMN = "Size";
 
 		private readonly FileResponse[] _testFileResponses =
 		{
@@ -190,7 +194,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 
 			_sut = new FileRepository(() => _searchManagerMock.Object, _instrumentationProviderMock.Object, _retryHandlerFactoryMock.Object );
 		}
-
 
 		[Test]
 		public void GetImagesForProductionDocuments_ShouldReturnResponsesWhenCorrectDocumentIDsPassed()
@@ -356,11 +359,89 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			action.ShouldThrow<InvalidOperationException>();
 		}
 
+		[Test]
+		public void GetNativesForDocuments_ShouldReturnProperValueWhenCorrectDocumentIDsPassed()
+		{
+			// arrange
+			IList<FileDto> expectedResult =
+				CreateTestNativeFileDtos(out var documentArtifactIDsString, out var documentArtifactIDs);
+			DataSet filesDataSet = CreateTestNativesDataSet(expectedResult);
+
+			_instrumentationSimpleProviderMock
+				.Setup(x => x.Execute(It.IsAny<Func<DataSet>>()))
+				.Returns<Func<DataSet>>(x =>  x.Invoke());
+			_retryHandlerMock
+				.Setup(x => x.ExecuteWithRetries(It.IsAny<Func<DataSet>>(), It.IsAny<string>()))
+				.Returns( (Func<DataSet> f, string s) => f.Invoke());
+			_searchManagerMock
+				.Setup(x => x.RetrieveNativesForSearch(_WORKSPACE_ID, documentArtifactIDsString))
+				.Returns(filesDataSet);
+
+			// act
+			List<FileDto> result = _sut.GetNativesForDocuments(_WORKSPACE_ID, documentArtifactIDs);
+
+			// assert
+			VerifyIfInstrumentationHasBeenCalled<DataSet>(
+				operationName: nameof(ISearchManager.RetrieveNativesForSearch)
+			);
+			AssertFileDtosAreIdentical(result, expectedResult);
+		}
+
+		[Test]
+		public void GetNativesForDocuments_ShouldThrowWhenNullPassedAsDocumentIDs()
+		{
+			// act
+			Action action = () => _sut.GetNativesForDocuments(
+				_WORKSPACE_ID,
+				documentIDs: null
+			);
+
+			// assert
+			action.ShouldThrow<ArgumentNullException>().WithMessage("Value cannot be null.\r\nParameter name: documentIDs");
+			VerifyIfInstrumentationHasNeverBeenCalled<DocumentImageResponse[]>(
+				operationName: nameof(ISearchManager.RetrieveNativesForSearch)
+			);
+		}
+
+		[Test]
+		public void GetNativesForDocuments_ShouldReturnEmptyArrayWhenEmptyArrayPassedAsDocumentIDs()
+		{
+			// act
+			List<FileDto> result = _sut.GetNativesForDocuments(
+				_WORKSPACE_ID,
+				documentIDs: new int[] { }
+			);
+
+			// assert
+			result.Should().BeEmpty();
+			VerifyIfInstrumentationHasNeverBeenCalled<DocumentImageResponse[]>(
+				operationName: nameof(ISearchManager.RetrieveNativesForSearch)
+			);
+		}
+
+		[Test]
+		public void GetNativesForDocuments_ShouldRethrowWhenCallToServiceThrows()
+		{
+			// arrange
+			int[] documentIDs = { 1001, 2002, 3003 };
+			_instrumentationSimpleProviderMock
+				.Setup(x => x.Execute(It.IsAny<Func<DataSet>>()))
+				.Throws<InvalidOperationException>();
+
+			// act
+			Action action = () => _sut.GetNativesForDocuments(
+				_WORKSPACE_ID,
+				documentIDs
+			);
+
+			//assert
+			action.ShouldThrow<InvalidOperationException>();
+		}
+
 		private void AssertIfListsAreSameAsExpected(List<string> expectedDataSet, List<string> currentDataSet)
 		{
 			expectedDataSet.Should().Equal(currentDataSet);
 		}
-
 
 		private void VerifyIfInstrumentationHasBeenCalled<T>(string operationName)
 		{
@@ -392,6 +473,64 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				x => x.ExecuteAsync(It.IsAny<Func<Task<T>>>()),
 				Times.Never
 			);
+		}
+
+		private static IList<FileDto> CreateTestNativeFileDtos(out string documentArtifactIDsString, out int[] documentArtifactIDs)
+		{
+			const int documentArtifactID1 = 1000123;
+			const int documentArtifactID2 = 1000456;
+			documentArtifactIDs = new[] { documentArtifactID1, documentArtifactID2 };
+			documentArtifactIDsString = string.Join(",", documentArtifactIDs.Select(x => x.ToString()));
+			FileDto file1 = new FileDto
+			{
+				DocumentArtifactID = documentArtifactID1,
+				Location = "Location1",
+				FileSize = 1000,
+				FileName = "Name1"
+			};
+			FileDto file2 = new FileDto
+			{
+				DocumentArtifactID = documentArtifactID2,
+				Location = "Location2",
+				FileSize = 2000,
+				FileName = "Name2"
+			};
+			return new List<FileDto> { file1, file2 };
+		}
+
+		private static DataSet CreateTestNativesDataSet(IEnumerable<FileDto> fileDtos)
+		{
+			DataTable dataTable = new DataTable();
+			dataTable.Columns.Add(_DOCUMENT_ARTIFACT_ID_COLUMN, typeof(int));
+			dataTable.Columns.Add(_FILE_NAME_COLUMN, typeof(string));
+			dataTable.Columns.Add(_LOCATION_COLUMN, typeof(string));
+			dataTable.Columns.Add(_FILE_SIZE_COLUMN, typeof(long));
+			DataSet filesDataSet = new DataSet();
+			foreach (var fileDto in fileDtos)
+			{
+				AddFileDtoToDataTable(dataTable, fileDto);
+			}
+			filesDataSet.Tables.Add(dataTable);
+			return filesDataSet;
+		}
+
+		private static void AddFileDtoToDataTable(DataTable dataTable, FileDto fileDto)
+		{
+			object[] values = { fileDto.DocumentArtifactID, fileDto.FileName, fileDto.Location, fileDto.FileSize };
+			dataTable.Rows.Add(values);
+		}
+
+		private static void AssertFileDtosAreIdentical(IEnumerable<FileDto> actual, IEnumerable<FileDto> expected)
+		{
+			actual.Zip(expected, (x, y) => new
+			{
+				Actual = x,
+				Expected = y
+			}).Should().OnlyContain(item =>
+				item.Expected.DocumentArtifactID == item.Actual.DocumentArtifactID &&
+				item.Expected.FileName == item.Actual.FileName &&
+				item.Expected.FileSize == item.Actual.FileSize &&
+				item.Expected.Location == item.Actual.Location);
 		}
 	}
 }

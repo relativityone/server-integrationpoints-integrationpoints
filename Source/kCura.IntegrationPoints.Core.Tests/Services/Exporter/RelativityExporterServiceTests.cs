@@ -25,6 +25,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		private IList<RelativityObjectSlimDto> _goldFlowRetrievableData;
 		private ExportInitializationResultsDto _exportApiResult;
 		private Mock<IDocumentRepository> _documentRepository;
+		private Mock<IFileRepository> _fileRepository;
 		private Mock<IRepositoryFactory> _sourceRepositoryFactory;
 		private Mock<IRepositoryFactory> _targetRepositoryFactory;
 		private Mock<IFolderPathReader> _folderPathReader;
@@ -55,6 +56,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 				.Setup(x => x.GetLoggerFactory().GetLogger().ForContext<RelativityExporterService>())
 				.Returns(apiLogMock.Object);
 			_documentRepository = new Mock<IDocumentRepository>();
+			_fileRepository = new Mock<IFileRepository>();
 			_sourceRepositoryFactory = new Mock<IRepositoryFactory>();
 			Mock<IFieldQueryRepository> fieldQueryRepositoryMock = new Mock<IFieldQueryRepository>();
 			_targetRepositoryFactory = new Mock<IRepositoryFactory>();
@@ -327,6 +329,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 				_helper.Object,
 				_folderPathReader.Object,
 				_baseServiceContextProvider.Object,
+				_fileRepository.Object,
 				_mappedFields,
 				_START_AT,
 				config,
