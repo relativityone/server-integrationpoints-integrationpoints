@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Castle.Core.Internal;
+using kCura.IntegrationPoints.Common.Extensions.DotNet;
 
 namespace kCura.IntegrationPoints.Web.IntegrationPointsServices.Logging
 {

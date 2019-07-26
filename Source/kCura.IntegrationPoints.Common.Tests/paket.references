@@ -1,0 +1,6 @@
+﻿FluentAssertions
+NSubstitute
+NUnit
+Moq
+Relativity.API
+Relativity.DataTransfer.MessageService

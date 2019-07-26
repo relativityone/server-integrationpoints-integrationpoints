@@ -1,12 +1,12 @@
-﻿using NSubstitute;
+﻿using System;
+using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
+using kCura.IntegrationPoints.Common.Monitoring.Instrumentation.Model;
+using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
-using System;
-using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
-using kCura.IntegrationPoints.Common.Monitoring.Instrumentation.Model;
 
-namespace kCura.IntegrationPoints.Core.Tests.Monitoring.Instrumentation
+namespace kCura.IntegrationPoints.Common.Tests.Monitoring.Instrumentation
 {
 	[TestFixture]
 	public class ExternalServiceInstrumentationTests

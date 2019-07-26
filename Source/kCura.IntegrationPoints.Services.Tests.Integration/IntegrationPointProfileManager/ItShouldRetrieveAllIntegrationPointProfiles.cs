@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Castle.Core.Internal;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
-using kCura.IntegrationPoints.Services.Tests.Integration.Helpers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using NUnit.Framework;
 using Relativity.Testing.Identification;
@@ -36,8 +34,12 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointPro
 
 			_expectedIntegrationPointProfiles = new List<IntegrationPointProfileModel> {rel1, rel2, ldap1};
 
-			_expectedIntegrationPointProfiles.ForEach(x => { x.ArtifactID = CreateOrUpdateIntegrationPointProfile(x).ArtifactID; });
-
+			foreach (IntegrationPointProfileModel integrationPointProfile in _expectedIntegrationPointProfiles)
+			{
+				IntegrationPointProfileModel createdIntegrationPointProfile = CreateOrUpdateIntegrationPointProfile(integrationPointProfile);
+				integrationPointProfile.ArtifactID = createdIntegrationPointProfile.ArtifactID;
+			}
+			
 			_client = Helper.CreateProxy<IIntegrationPointProfileManager>();
 		}
 

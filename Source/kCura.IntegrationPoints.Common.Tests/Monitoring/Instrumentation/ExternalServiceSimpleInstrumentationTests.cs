@@ -1,10 +1,10 @@
-﻿using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
+﻿using System;
+using System.Threading.Tasks;
+using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using NSubstitute;
 using NUnit.Framework;
-using System;
-using System.Threading.Tasks;
 
-namespace kCura.IntegrationPoints.Core.Tests.Monitoring.Instrumentation
+namespace kCura.IntegrationPoints.Common.Tests.Monitoring.Instrumentation
 {
 	[TestFixture]
 	public class ExternalServiceSimpleInstrumentationTests

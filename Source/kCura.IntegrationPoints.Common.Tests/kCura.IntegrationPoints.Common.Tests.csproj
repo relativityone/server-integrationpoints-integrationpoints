@@ -1,38 +1,38 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\packages\NUnit\build\NUnit.props" Condition="Exists('..\..\packages\NUnit\build\NUnit.props')" Label="Paket" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{32BCB03B-4980-4434-9392-F72334E6E348}</ProjectGuid>
+    <ProjectGuid>{92381E05-24E9-46F2-9D95-8B41518CD69C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>kCura.IntegrationPoints.Common</RootNamespace>
-    <AssemblyName>kCura.IntegrationPoints.Common</AssemblyName>
+    <RootNamespace>kCura.IntegrationPoints.Common.Tests</RootNamespace>
+    <AssemblyName>kCura.IntegrationPoints.Common.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <PlatformTarget>x64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\x64\</OutputPath>
-    <DefineConstants>DEVENV,$(Injections)</DefineConstants>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <PlatformTarget>x64</PlatformTarget>
-    <DefineConstants>$(Injections)</DefineConstants>
     <OutputPath>bin\x64\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
-    <DebugSymbols>true</DebugSymbols>
-    <DefineConstants>
-    </DefineConstants>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -47,56 +47,38 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Constants\ExternalServiceTypes.cs" />
-    <Compile Include="Handlers\IRetryHandler.cs" />
-    <Compile Include="Handlers\IRetryHandlerFactory.cs" />
-    <Compile Include="Extensions\DotNet\EnumerableExtensions.cs" />
-    <Compile Include="Monitoring\Constants\TelemetryMetricsBucketNames.cs" />
-    <Compile Include="Context\IWorkspaceContext.cs" />
-    <Compile Include="Monitoring\Instrumentation\ExternalServiceInstrumentation.cs" />
-    <Compile Include="Monitoring\Instrumentation\ExternalServiceInstrumentationProviderWithoutJobContext.cs" />
-    <Compile Include="Monitoring\Instrumentation\ExternalServiceLogsInstrumentation.cs" />
-    <Compile Include="Monitoring\Instrumentation\ExternalServiceSimpleInstrumentation.cs" />
-    <Compile Include="Monitoring\Instrumentation\IExternalServiceSimpleInstrumentation.cs" />
-    <Compile Include="Monitoring\Instrumentation\IExternalServiceInstrumentationProvider.cs" />
-    <Compile Include="Monitoring\Instrumentation\Model\ExternalCallCompletedMessage.cs" />
-    <Compile Include="Monitoring\Instrumentation\Model\InstrumentationJobContext.cs" />
-    <Compile Include="Monitoring\Instrumentation\Model\InstrumentationServiceCallContext.cs" />
-    <Compile Include="Monitoring\Messages\JobProgressStatisticsMessage.cs" />
-    <Compile Include="Monitoring\UnitsOfMeasureConstants.cs" />
     <Compile Include="..\..\Version\AssemblyInfo.cs">
-      <Link>Properties\AssemblyInfo.cs</Link>
+      <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Monitoring\Instrumentation\IExternalServiceInstrumentation.cs" />
-    <Compile Include="Monitoring\Instrumentation\IExternalServiceInstrumentationStarted.cs" />
-    <Compile Include="Monitoring\Messages\JobStatisticsMessage.cs" />
-    <Compile Include="Monitoring\Messages\JobLifetime\JobCompletedMessage.cs" />
-    <Compile Include="Monitoring\Messages\JobLifetime\JobFailedMessage.cs" />
-    <Compile Include="Monitoring\Messages\JobLifetime\JobStartedMessage.cs" />
-    <Compile Include="Monitoring\Messages\JobLifetime\JobValidationFailedMessage.cs" />
-    <Compile Include="Monitoring\Messages\JobMessageBase.cs" />
-    <Compile Include="Monitoring\Messages\JobThroughputBytesMessage.cs" />
-    <Compile Include="Monitoring\Messages\JobCompletedRecordsCountMessage.cs" />
-    <Compile Include="Monitoring\Messages\JobProgressMessage.cs" />
-    <Compile Include="Monitoring\Messages\JobThroughputMessage.cs" />
-    <Compile Include="Monitoring\Messages\JobTotalRecordsCountMessage.cs" />
-    <Compile Include="Monitoring\Messages\MetricMetadataExtensions.cs" />
+    <Compile Include="Extensions\DotNet\EnumerableExtensionsTests.cs" />
+    <Compile Include="Monitoring\Instrumentation\ExternalCallCompletedMessageTests.cs" />
+    <Compile Include="Monitoring\Instrumentation\ExternalServiceInstrumentationTests.cs" />
+    <Compile Include="Monitoring\Instrumentation\ExternalServiceSimpleInstrumentationTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Common\kCura.IntegrationPoints.Common.csproj">
+      <Project>{32bcb03b-4980-4434-9392-f72334e6e348}</Project>
+      <Name>kCura.IntegrationPoints.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="paket.references" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\.paket\paket.targets" />
-  <ItemGroup>
-    <Analyzer Include="..\..\packages\CSharpGuidelineAnalyzer\analyzers\dotnet\cs\CSharpGuidelineAnalyzer.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-  </ItemGroup>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="kCura.Apps.Common.Config">
-          <HintPath>..\..\packages\kCura.Apps.Common.Config\lib\net45\kCura.Apps.Common.Config.dll</HintPath>
+        <Reference Include="FluentAssertions">
+          <HintPath>..\..\packages\FluentAssertions\lib\net45\FluentAssertions.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="FluentAssertions.Core">
+          <HintPath>..\..\packages\FluentAssertions\lib\net45\FluentAssertions.Core.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -106,8 +88,8 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="kCura.Apps.Common.Data">
-          <HintPath>..\..\packages\kCura.Apps.Common.Data\lib\net45\kCura.Apps.Common.Data.dll</HintPath>
+        <Reference Include="Moq">
+          <HintPath>..\..\packages\Moq\lib\net45\Moq.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -117,8 +99,8 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="kCura.Apps.Common.Utils">
-          <HintPath>..\..\packages\kCura.Apps.Common.Utils\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
+        <Reference Include="NSubstitute">
+          <HintPath>..\..\packages\NSubstitute\lib\net45\NSubstitute.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -128,19 +110,8 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="kCura.Relativity.Client">
-          <HintPath>..\..\packages\kCura.Relativity.Client\lib\net462\kCura.Relativity.Client.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Newtonsoft.Json">
-          <HintPath>..\..\packages\Newtonsoft.Json\lib\net45\Newtonsoft.Json.dll</HintPath>
+        <Reference Include="nunit.framework">
+          <HintPath>..\..\packages\NUnit\lib\net45\nunit.framework.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -185,33 +156,6 @@
       <ItemGroup>
         <Reference Include="Relativity.Services.ServiceProxy">
           <HintPath>..\..\packages\Relativity.Kepler.Client\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.Productions.Services.Interfaces">
-          <HintPath>..\..\packages\Relativity.Productions.Services.Interfaces\lib\net45\Relativity.Productions.Services.Interfaces.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.Productions.Services.Interfaces.Private">
-          <HintPath>..\..\packages\Relativity.Productions.Services.Interfaces\lib\net45\Relativity.Productions.Services.Interfaces.Private.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.Telemetry.APM">
-          <HintPath>..\..\packages\Relativity.Telemetry.APM\lib\net462\Relativity.Telemetry.APM.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

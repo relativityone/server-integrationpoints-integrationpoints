@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Castle.Core.Internal;
 using kCura.IntegrationPoints.Data.Facades.ObjectManager.DTOs;
 using Relativity.API;
 using Relativity.Kepler.Transport;
@@ -166,7 +165,7 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
 				string massUpdateWarningMessage = "Requested mass update operation exceeded max collection count" +
 										$" - {request.Objects.Count}, when allowed is {_MAX_COUNT_OF_COLLECTION_IN_REQUEST}";
 
-				string[] warningsToLog = {getWarningMessageHeader(), massUpdateWarningMessage};
+				string[] warningsToLog = { getWarningMessageHeader(), massUpdateWarningMessage };
 				LogWarnings(warningsToLog);
 			}
 		}
@@ -215,7 +214,10 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
 
 		private void LogWarnings(IList<string> warnings)
 		{
-			warnings.ForEach(warning => _logger.LogWarning(warning));
+			foreach (string warning in warnings)
+			{
+				_logger.LogWarning(warning);
+			}
 		}
 
 		private string GetWarningMessageHeader<T>(

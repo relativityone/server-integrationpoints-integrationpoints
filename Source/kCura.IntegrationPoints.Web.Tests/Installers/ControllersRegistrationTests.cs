@@ -1,5 +1,4 @@
 ﻿using Castle.Core;
-using Castle.Core.Internal;
 using Castle.Windsor;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
@@ -159,7 +158,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Installers
 
 		public void InterfaceImplementationInWebProjectShouldBeRegistered<T>()
 		{
-			Type[] implementationsInAssembly = GetPublicClassesFromWebProjectAssembly(c => c.Is<T>());
+			Type[] implementationsInAssembly = GetPublicClassesFromWebProjectAssembly(
+				type => typeof(T).IsAssignableFrom(type));
 			Type[] registeredImplementations = _sut.GetImplementationTypesFor<T>();
 
 			registeredImplementations.Should()
