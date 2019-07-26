@@ -18,4 +18,6 @@ relativity.testing.identification
 Relativity.Toggles
 relativity.transfer.client
 Relativity.OAuth2Client
-Serilog
+
+group TestPackages
+	Serilog

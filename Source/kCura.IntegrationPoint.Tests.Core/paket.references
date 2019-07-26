@@ -20,4 +20,6 @@ Relativity.Services.Interfaces.Private
 Relativity.Telemetry.APM
 Relativity.Toggles
 Relativity.OAuth2Client
-Serilog
+
+group TestPackages
+	Serilog
