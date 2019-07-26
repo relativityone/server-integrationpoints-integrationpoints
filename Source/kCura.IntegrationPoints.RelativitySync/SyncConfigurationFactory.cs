@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using Castle.Windsor;
+﻿using Castle.Windsor;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
 using Relativity.Sync.Configuration;
+using System;
+using System.Collections.Generic;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 				logger.LogError(e, "Unable to resolve dependencies from container.");
 				throw;
 			}
-			
+
 			try
 			{
 				SourceConfiguration sourceConfiguration = serializer.Deserialize<SourceConfiguration>(job.IntegrationPointModel.SourceConfiguration);
@@ -52,9 +52,12 @@ namespace kCura.IntegrationPoints.RelativitySync
 					ParentObjectIdSourceFieldName = destinationConfiguration.ParentObjectIdSourceFieldName
 				};
 
-				foreach (int artifactID in destinationConfiguration.ObjectFieldIdListContainsArtifactId)
+				if (destinationConfiguration.ObjectFieldIdListContainsArtifactId != null)
 				{
-					importSettingsDto.ObjectFieldIdListContainsArtifactId.Add(artifactID);
+					foreach (int artifactID in destinationConfiguration.ObjectFieldIdListContainsArtifactId)
+					{
+						importSettingsDto.ObjectFieldIdListContainsArtifactId.Add(artifactID);
+					}
 				}
 
 				return new SyncConfiguration(job.SubmittedById, sourceConfiguration, destinationConfiguration, emailRecipients, importSettingsDto);
