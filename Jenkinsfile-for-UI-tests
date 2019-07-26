@@ -123,11 +123,16 @@ timestamps
 			}
 
 			if (jenkinsHelpers.testingVMsAreRequired(params))
-			{				
+			{
 				stage ('Stash Tests Artifacts')
 				{
 					jenkinsHelpers.stashTestsArtifacts()
 				}
+			}
+
+			stage ('Cleanup Source directory')
+			{
+				jenkinsHelpers.deleteDirectoryIfExists('Source')
 			}
 		}
 		
