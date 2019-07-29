@@ -1,6 +1,8 @@
 ﻿CSharpGuidelineAnalyzer
-FluentAssertions
 kCura.EventHandler
-Moq
-NUnit
 Relativity.Kepler
+
+group TestPackages
+	FluentAssertions
+	Moq
+	NUnit

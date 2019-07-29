@@ -1,12 +1,16 @@
 Castle.Windsor
 CSharpGuidelineAnalyzer
 Newtonsoft.Json
-NSubstitute
-NUnit
 Polly
 Relativity.API
 Relativity.Kepler.Client
 Relativity.Telemetry.APM
 Relativity.OAuth2Client
 Relativity.Toggles
-relativity.testing.identification
+
+group TestPackages
+	FluentAssertions
+	Moq
+	NUnit
+	NSubstitute
+	relativity.testing.identification

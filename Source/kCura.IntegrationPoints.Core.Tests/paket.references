@@ -1,13 +1,9 @@
 Castle.Windsor
 CSharpGuidelineAnalyzer
-FluentAssertions
 kCura
 kCura.Apps.Common.Utils
 kCura.Relativity.Client
 LanguageExt.Core
-Moq
-NSubstitute
-NUnit
 Relativity.API
 Relativity.DataExchange.Client.SDK
 Relativity.DataTransfer.MessageService
@@ -17,3 +13,9 @@ Relativity.Services.Interfaces
 Relativity.Services.Interfaces.Private
 Relativity.Telemetry.APM
 SystemWrapper.Interfaces
+
+group TestPackages
+	FluentAssertions
+	Moq
+	NUnit
+	NSubstitute
