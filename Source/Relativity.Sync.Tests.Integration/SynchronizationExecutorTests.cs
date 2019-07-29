@@ -30,7 +30,6 @@ namespace Relativity.Sync.Tests.Integration
 		private IExecutor<ISynchronizationConfiguration> _executor;
 		private ISourceWorkspaceDataReaderFactory _dataReaderFactory;
 		private Mock<IObjectManager> _objectManagerMock;
-		private Mock<IFileManager> _fileManagerMock;
 		private Mock<IFolderManager> _folderManagerMock;
 		private Mock<ISyncImportBulkArtifactJob> _importBulkArtifactJob;
 
@@ -99,7 +98,6 @@ namespace Relativity.Sync.Tests.Integration
 			containerBuilder.RegisterInstance(_config).AsImplementedInterfaces();
 
 			_objectManagerMock = new Mock<IObjectManager>();
-			_fileManagerMock = new Mock<IFileManager>();
 			_folderManagerMock = new Mock<IFolderManager>();
 			var destinationServiceFactoryForUser = new Mock<IDestinationServiceFactoryForUser>();
 			var sourceServiceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
@@ -111,7 +109,6 @@ namespace Relativity.Sync.Tests.Integration
 			destinationServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManagerMock.Object);
 			sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManagerMock.Object);
 			sourceServiceFactoryForAdmin.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManagerMock.Object);
-			sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IFileManager>()).ReturnsAsync(_fileManagerMock.Object);
 			sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IFolderManager>()).ReturnsAsync(_folderManagerMock.Object);
 
 			containerBuilder.RegisterInstance(destinationServiceFactoryForUser.Object).As<IDestinationServiceFactoryForUser>();
