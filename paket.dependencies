@@ -12,38 +12,35 @@ nuget Relativity.Authentication 10.3.109.3
 nuget Relativity.CustomPages 10.3.109.3
 nuget Relativity.Data 10.3.109.3
 nuget Relativity.DataExchange.Client.SDK 1.1.0
-nuget RelativityCore 10.3.109.3
 nuget Relativity.Services.Interfaces 10.3.109.3
+nuget Relativity.Services.Interfaces.Private 10.3.109.3
 
 //Other Relativity packages
-nuget Relativity.DataTransfer.MessageService ~> 10.2.0
 nuget kCura.Apps.Common.Config 2.1.1
+nuget kCura.FreeImage 3.17.0.1
 nuget kCura.LongPath 1.0.20
 nuget Relativity.Audit.SDK 1.5.0
+nuget Relativity.DataGrid 14.0.0
+nuget Relativity.DataTransfer.MessageService ~> 10.2.0
+nuget Relativity.Kepler 2.0.7
+nuget Relativity.Kepler.Client 2.0.7
+nuget Relativity.Logging 2018.11.8
+nuget Relativity.Logging.Interfaces 2018.11.8
 nuget Relativity.OAuth2Client 1.0.27
 nuget Relativity.Productions.Services.Interfaces 10.3.2
-nuget Relativity.Telemetry.APM 2019.1.1 
-nuget Relativity.Telemetry.Services.Interface 2019.1.1
-nuget kCura.FreeImage 3.17.0.1
-nuget Relativity.DataGrid 14.0.0
 nuget Relativity.Testing.Identification 1.6.0
+nuget Relativity.Telemetry.APM 2019.1.1 
+nuget Relativity.Telemetry.MetricsCollection  2018.12.2
+nuget Relativity.Telemetry.Services.Interface 2019.1.1
+nuget Relativity.Toggles 1.0.0.100
+nuget Relativity.Vfs.IO 1.0.24
 
 //Relativity transient packages
 nuget kCura.OutsideIn.FI.Win32 ~> 2019.2.2 content: none 		//Relativity.DataExchange.Client.SDK
-nuget Relativity.ServiceBus ~> 2.3.24 						//RelativityCore
-nuget Relativity.SecretCatalog.AzureKeyVault ~> 1.0.19 		//RelativityCore
-nuget Relativity.Telemetry.MetricsCollection ~> 2018.12.2 	//RelativityCore
-nuget Relativity.Vfs.IO ~> 1.0.24 							//RelativityCore
-nuget Relativity.Toggles ~> 1.0.0.100 						//RelativityCore
-nuget SystemWrapper.Wrappers ~> 0.25.0.186 					//RelativityCore
-nuget Relativity.Logging 2018.11.8	 						//RelativityCore
-nuget Relativity.Logging.Interfaces 2018.11.8
-nuget Relativity.Kepler ~> 2.0.7						
-nuget Relativity.Kepler.Client ~> 2.0.7
-nuget Castle.Windsor ~> 3.3.0						
 
 //Other packages
 nuget AutoMapper 4.2.1
+nuget Castle.Windsor 3.3.0
 nuget FluentAssertions 4.19.4
 nuget LanguageExt.Core 3.1.15
 nuget Microsoft.AspNet.Mvc 5.2.3
@@ -61,6 +58,7 @@ nuget DotNetSeleniumExtras.PageObjects 3.11.0
 nuget DotNetSeleniumExtras.WaitHelpers 3.11.0
 nuget Selenium.WebDriver.ChromeDriver 75.0.3770.8-beta
 nuget Selenium.WebDriver.GeckoDriver 0.24.0
+nuget SystemWrapper.Wrappers 0.25.0.186
 
 //Analyzers
 nuget CSharpGuidelineAnalyzer 1.0.3.0

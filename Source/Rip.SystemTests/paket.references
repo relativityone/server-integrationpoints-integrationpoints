@@ -14,4 +14,6 @@ Relativity.Services.Interfaces
 Relativity.Telemetry.APM
 Relativity.Testing.Identification
 Relativity.Toggles
-Serilog
+
+group TestPackages
+	Serilog

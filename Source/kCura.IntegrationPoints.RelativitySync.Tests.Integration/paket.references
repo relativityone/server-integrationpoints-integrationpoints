@@ -6,5 +6,7 @@ kCura.Relativity.Client
 Polly
 Moq
 NUnit
-Serilog
 relativity.testing.identification
+
+group TestPackages
+	Serilog

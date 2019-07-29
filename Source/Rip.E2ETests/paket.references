@@ -5,4 +5,6 @@ Polly
 Relativity.API
 Relativity.Kepler
 Relativity.Kepler.Client
-Serilog
+
+group TestPackages
+	Serilog
