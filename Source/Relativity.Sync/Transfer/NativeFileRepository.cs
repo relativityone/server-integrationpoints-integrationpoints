@@ -67,7 +67,8 @@ namespace Relativity.Sync.Transfer
 
 			foreach (DataRow dataRow in dataTable.Rows)
 			{
-				natives.Add(GetNativeFile(dataRow));
+				INativeFile nativeFile = GetNativeFile(dataRow);
+				natives.Add(nativeFile);
 			}
 
 			return natives;
