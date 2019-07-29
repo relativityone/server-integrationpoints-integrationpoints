@@ -29,8 +29,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		private FileRepository _sut;
 
 		private const int _WORKSPACE_ID = 1001000;
-		private const int _PRODUCTION_ID = 1710;
-		private const int _PRODUCTION_ID_2 = 1711;
 		private const string _KEPLER_SERVICE_TYPE = "Kepler";
 		private const string _KEPLER_SERVICE_NAME = nameof(ISearchManager);
 		private const string _DOCUMENT_ARTIFACT_ID_COLUMN = "DocumentArtifactID";
@@ -139,38 +137,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				Billable = false,
 				PageID = 121,
 				ByteRange = 45155
-			},
-		};
-
-		private readonly ExportProductionDocumentImageResponse[] _testExportProductionDocumentImageResponses =
-		{
-			new ExportProductionDocumentImageResponse
-			{
-				DocumentArtifactID = 1700,
-				ProductionArtifactID = _PRODUCTION_ID,
-				BatesNumber = "Bates123",
-				Location = "Location33",
-				ByteRange = 2,
-				ImageFileName = "FileName1234",
-				ImageGuid = "82644DB3-3865-4B99-9DB4-60CE40401BD1",
-				ImageSize = 1234,
-				PageID = 123,
-				SourceGuid = "32644DB3-3865-4B99-9DB4-60CE40401BD1",
-				Order = 1
-			},
-			new ExportProductionDocumentImageResponse
-			{
-				DocumentArtifactID = 1702,
-				ProductionArtifactID = _PRODUCTION_ID_2,
-				BatesNumber = "Bates1233",
-				Location = "Location313",
-				ByteRange = 23,
-				ImageFileName = "FileName12134",
-				ImageGuid = "82644DB3-3865-4B99-9DB4-61CE40401BD1",
-				ImageSize = 12234,
-				PageID = 1123,
-				SourceGuid = "32644DB2-3865-4B99-9DB4-60CE40401BD1",
-				Order = 2
 			},
 		};
 
@@ -297,6 +263,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			_instrumentationSimpleProviderMock
 				.Setup(x => x.Execute(It.IsAny<Func<DataSet>>()))
 				.Returns(_testDocumentImageResponses.ToDataSet());
+			_retryHandlerMock
+				.Setup(x => x.ExecuteWithRetries(It.IsAny<Func<DataSet>>(), It.IsAny<string>()))
+				.Returns((Func<DataSet> f, string s) => f.Invoke());
 
 			//act
 			List<string> result = _sut.GetImagesLocationForDocuments(
@@ -351,8 +320,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		{
 			//arrange
 			int[] documentIDs = { 1001, 2002, 3003 };
-			_instrumentationSimpleProviderMock
-				.Setup(x => x.Execute(It.IsAny<Func<DataSet>>()))
+			_retryHandlerMock
+				.Setup(x => x.ExecuteWithRetries(It.IsAny<Func<DataSet>>(), It.IsAny<string>()))
 				.Throws<InvalidOperationException>();
 
 			//act
@@ -433,6 +402,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			_instrumentationSimpleProviderMock
 				.Setup(x => x.Execute(It.IsAny<Func<DataSet>>()))
 				.Throws<InvalidOperationException>();
+			_retryHandlerMock
+				.Setup(x => x.ExecuteWithRetries(It.IsAny<Func<DataSet>>(), It.IsAny<string>()))
+				.Returns((Func<DataSet> f, string s) => f.Invoke());
 
 			// act
 			Action action = () => _sut.GetNativesForDocuments(
