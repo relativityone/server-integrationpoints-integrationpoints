@@ -34,28 +34,31 @@ namespace Relativity.Sync.Transfer
 
 			_logger.LogInformation("Searching for native files. Documents count: {numberOfDocuments}", documentIds.Count);
 
-			ISearchManager searchManager = _searchManagerFactory();
-			string concatenatedArtifactIds = string.Join(",", documentIds);
-			DataSet dataSet = await Task.Run(() => searchManager.RetrieveNativesForSearch(workspaceId, concatenatedArtifactIds)).ConfigureAwait(false);
-
-			if (dataSet == null)
+			using (ISearchManager searchManager = _searchManagerFactory())
 			{
-				_logger.LogWarning("SearchManager returned null data set.");
-				return empty;
+				string concatenatedArtifactIds = string.Join(",", documentIds);
+				ISearchManager searchManagerForLambda = searchManager;
+				DataSet dataSet = await Task.Run(() => searchManagerForLambda.RetrieveNativesForSearch(workspaceId, concatenatedArtifactIds)).ConfigureAwait(false);
+
+				if (dataSet == null)
+				{
+					_logger.LogWarning("SearchManager returned null data set.");
+					return empty;
+				}
+
+				if (dataSet.Tables.Count == 0)
+				{
+					_logger.LogWarning("SearchManager returned empty data set.");
+					return empty;
+				}
+
+				DataTable dataTable = dataSet.Tables[0];
+				IList<INativeFile> nativeFiles = GetNativeFiles(dataTable);
+
+				_logger.LogInformation("Found {numberOfNatives} native files.", nativeFiles.Count);
+
+				return nativeFiles;
 			}
-
-			if (dataSet.Tables.Count == 0)
-			{
-				_logger.LogWarning("SearchManager returned empty data set.");
-				return empty;
-			}
-
-			DataTable dataTable = dataSet.Tables[0];
-			IList<INativeFile> nativeFiles = GetNativeFiles(dataTable);
-
-			_logger.LogInformation("Found {numberOfNatives} native files.", nativeFiles.Count);
-
-			return nativeFiles;
 		}
 
 		private IList<INativeFile> GetNativeFiles(DataTable dataTable)
