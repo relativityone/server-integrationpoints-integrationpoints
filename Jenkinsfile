@@ -130,6 +130,10 @@ timestamps
 					jenkinsHelpers.publishToBldPkgs()
 				}
 			}
+			stage ('Cleanup Source directory')
+			{
+				jenkinsHelpers.deleteDirectoryIfExists('Source')
+			}
 		}
 		
 		if (jenkinsHelpers.testingVMsAreRequired(params))
