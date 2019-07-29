@@ -48,7 +48,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 			Mock<IPermissionManager> permissionManager = ArrangeSet();
 
 			//Act
-			ValidationResult actualResult = await _instance.ValidateAsync(configuration.Object, _token).ConfigureAwait(false);
+			ValidationResult actualResult = await _instance.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
 			//Assert
 			actualResult.IsValid.Should().BeTrue();
@@ -69,7 +69,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 
 			// Act
 			ValidationResult actualResult =
-				await _instance.ValidateAsync(configuration.Object, _token).ConfigureAwait(false);
+				await _instance.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
 			//Assert
 			actualResult.IsValid.Should().BeFalse();
@@ -92,7 +92,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 
 			// Act
 			ValidationResult actualResult =
-				await _instance.ValidateAsync(configuration.Object, _token).ConfigureAwait(false);
+				await _instance.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
 			//Assert
 			actualResult.IsValid.Should().BeFalse();
@@ -114,7 +114,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 
 			// Act
 			ValidationResult actualResult =
-				await _instance.ValidateAsync(configuration.Object, _token).ConfigureAwait(false);
+				await _instance.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
 			//Assert
 			actualResult.IsValid.Should().BeFalse();
@@ -136,13 +136,13 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 
 			// Act
 			ValidationResult actualResult =
-				await _instance.ValidateAsync(configuration.Object, _token).ConfigureAwait(false);
+				await _instance.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
 			//Assert
 			actualResult.IsValid.Should().BeFalse();
 			actualResult.Messages.Should().HaveCount(1);
 			actualResult.Messages.First().ShortMessage.Should().Be(
-				"Verify if the user still has permission to create saved search on destination workspace");
+				"User does not have permission to create saved searches in the destination workspace.");
 		}
 
 		[Test]
@@ -158,7 +158,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 
 			// Act
 			ValidationResult actualResult =
-				await _instance.ValidateAsync(configuration.Object, _token).ConfigureAwait(false);
+				await _instance.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
 			//Assert
 			actualResult.IsValid.Should().BeFalse();
@@ -181,7 +181,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 
 			// Act
 			ValidationResult actualResult =
-				await _instance.ValidateAsync(configuration.Object, _token).ConfigureAwait(false);
+				await _instance.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
 			//Assert
 			actualResult.IsValid.Should().BeFalse();
@@ -204,7 +204,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 				.ReturnsAsync(permissionToEdit);
 
 			// Act
-			ValidationResult actualResult = await _instance.ValidateAsync(configuration.Object, _token).ConfigureAwait(false);
+			ValidationResult actualResult = await _instance.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
 			// Assert
 			actualResult.IsValid.Should().BeFalse();
@@ -232,7 +232,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 				It.Is<List<PermissionRef>>(y => y.Any(z => z.PermissionID == _ALLOW_IMPORT_PERMISSION_ID)))).ReturnsAsync(permissionValuesDefault);
 
 			// Act
-			ValidationResult actualResult = await _instance.ValidateAsync(configuration.Object, _token).ConfigureAwait(false);
+			ValidationResult actualResult = await _instance.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
 			// Assert
 			actualResult.IsValid.Should().BeFalse();

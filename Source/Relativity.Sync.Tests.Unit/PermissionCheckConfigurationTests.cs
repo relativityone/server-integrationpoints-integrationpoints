@@ -10,14 +10,14 @@ using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Storage;
 using IConfiguration = Relativity.Sync.Storage.IConfiguration;
 
-namespace Relativity.Sync.Tests.Unit.Storage
+namespace Relativity.Sync.Tests.Unit
 {
 	[TestFixture]
 	public class PermissionCheckConfigurationTests
 	{
-
 		private Mock<ISourceServiceFactoryForUser> _sourceServiceFactory;
 		private Mock<IConfiguration> _cache;
+		private Mock<IObjectManager> _objectManager;
 		private PermissionsCheckConfiguration _instance;
 		private SyncJobParameters _sycJobParameters;
 
@@ -25,14 +25,16 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		private const int _INTEGRATION_POINT_ARTIFACT_ID = 102779;
 
 		private static readonly Guid RelativityProviderGuid = new Guid("423b4d43-eae9-4e14-b767-17d629de4bb2");
+
 		[SetUp]
 		public void SetUp()
 		{
 			const int jobId = 50;
 			const string correlationId = "Sample_Correlation_ID";
-
+		
 			_sourceServiceFactory = new Mock<ISourceServiceFactoryForUser>();
 			_cache = new Mock<IConfiguration>();
+			_objectManager = new Mock<IObjectManager>();
 			_sycJobParameters = new SyncJobParameters(jobId, _WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, correlationId, new ImportSettingsDto());
 			_instance = new PermissionsCheckConfiguration(_cache.Object, _sycJobParameters,_sourceServiceFactory.Object);
 		}
@@ -41,8 +43,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void ShouldReturnSourceProviderArtifactIdTests()
 		{
 			// Arrange
-			var objectManager = new Mock<IObjectManager>();
-			_sourceServiceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(objectManager.Object);
+			_sourceServiceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
 
 			var relativityObjects = new List<RelativityObject>
 			{
@@ -58,7 +59,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 				Objects = relativityObjects
 			};
 
-			objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(),0,1))
+			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), 0, 1))
 				.ReturnsAsync(objectManagerValue);
 
 			// Act
@@ -74,8 +75,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void ShouldThrowExceptionTests(int totalCountValue)
 		{
 			// Arrange
-			var objectManager = new Mock<IObjectManager>();
-			_sourceServiceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(objectManager.Object);
+			_sourceServiceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
 
 			var relativityObjects = new List<RelativityObject>
 			{
@@ -91,11 +91,11 @@ namespace Relativity.Sync.Tests.Unit.Storage
 				Objects = relativityObjects
 			};
 
-			objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), 0, 1))
+			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), 0, 1))
 				.ReturnsAsync(objectManagerValue);
 
 			// Act-Assert
-			int actualResult = 0;
+			int actualResult;
 			SyncException actualException = Assert.Throws<SyncException>(() => actualResult = _instance.SourceProviderArtifactId);
 			actualException.Message.Should().Be(
 				$"Error while querying for 'Relativity' provider using ObjectManager. Query returned {totalCountValue} objects, but exactly 1 was expected.");
@@ -105,8 +105,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void VerifyCorrectnessOfQueryRequestTests()
 		{
 			// Arrange
-			var objectManager = new Mock<IObjectManager>();
-			_sourceServiceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(objectManager.Object);
+			_sourceServiceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
 
 			var relativityObjects = new List<RelativityObject>
 			{
@@ -122,7 +121,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 				Objects = relativityObjects
 			};
 
-			objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), 0, 1))
+			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), 0, 1))
 				.ReturnsAsync(objectManagerValue);
 
 			// Act
@@ -130,7 +129,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 
 			//Assert
 			sourceArtifactId.Should().Be(_WORKSPACE_ARTIFACT_ID);
-			objectManager.Verify(x => x.QueryAsync(It.IsAny<int>(),It.Is<QueryRequest>(qr => AssertQueryRequest(qr)),0,1));
+			_objectManager.Verify(x => x.QueryAsync(It.IsAny<int>(),It.Is<QueryRequest>(qr => AssertQueryRequest(qr)), 0, 1));
 		}
 
 		private bool AssertQueryRequest(QueryRequest queryRequest)

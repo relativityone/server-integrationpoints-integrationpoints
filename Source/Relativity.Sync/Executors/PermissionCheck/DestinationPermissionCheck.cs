@@ -15,7 +15,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
 		private const string _MISSING_DESTINATION_RDO_PERMISSIONS =
 			"User does not have all required destination RDO permissions. Please make sure the user has view, edit, and add permissions for the destination RDO.";
 		private const string _MISSING_DESTINATION_SAVED_SEARCH_ADD_PERMISSION =
-			"Verify if the user still has permission to create saved search on destination workspace";
+			"User does not have permission to create saved searches in the destination workspace.";
 
 		private const int _ALLOW_IMPORT_PERMISSION_ID = 158; // 158 is the artifact id of the "Allow Import" permission
 
@@ -28,26 +28,27 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			_logger = logger;
 		}
 
-		public override async Task<ValidationResult> ValidateAsync(IPermissionsCheckConfiguration configuration, CancellationToken token)
+		public override async Task<ValidationResult> ValidateAsync(IPermissionsCheckConfiguration configuration)
 		{
 			var validationResult = new ValidationResult();
 
 			validationResult.Add(await ValidateDestinationWorkspaceUserHasPermissionToAccessWorkspaceAsync(configuration).ConfigureAwait(false));
 			validationResult.Add(await ValidateDestinationWorkspaceUserCanImportHasPermissionAsync(configuration, _ALLOW_IMPORT_PERMISSION_ID).ConfigureAwait(false));
 			validationResult.Add(await ValidateDestinationWorkspaceUserHasArtifactTypePermissionsAsync(configuration,
-				new ArtifactTypeIdentifier((int)ArtifactType.Document), new[] { PermissionType.View, PermissionType.Add, PermissionType.Edit }, _MISSING_DESTINATION_RDO_PERMISSIONS).ConfigureAwait(false));
+				ArtifactType.Document, new[] { PermissionType.View, PermissionType.Add, PermissionType.Edit }, _MISSING_DESTINATION_RDO_PERMISSIONS).ConfigureAwait(false));
 			validationResult.Add(await ValidateDestinationWorkspaceUserHasArtifactTypePermissionsAsync(configuration,
-				new ArtifactTypeIdentifier((int)ArtifactType.Search), new[] { PermissionType.Add }, _MISSING_DESTINATION_SAVED_SEARCH_ADD_PERMISSION).ConfigureAwait(false));
+				ArtifactType.Search, new[] { PermissionType.Add }, _MISSING_DESTINATION_SAVED_SEARCH_ADD_PERMISSION).ConfigureAwait(false));
 
-			validationResult.Add(await ValidateDestinationFolderPermissionsUserHasArtifactInstancePermissionAsync(configuration, new ArtifactTypeIdentifier((int)ArtifactType.Document),
-				new[] { PermissionType.Add }).ConfigureAwait(false));
-			validationResult.Add(await ValidateDestinationFolderPermissionsUserHasArtifactInstancePermissionAsync(configuration, new ArtifactTypeIdentifier((int)ArtifactType.Folder),
-				new[] { PermissionType.Add }).ConfigureAwait(false));
-			validationResult.Add(await ValidateDestinationFolderPermissionsUserHasArtifactInstancePermissionAsync(configuration, new ArtifactTypeIdentifier((int)ArtifactType.Document),
-				new[] { PermissionType.Delete }).ConfigureAwait(false));
+			validationResult.Add(await ValidateDestinationFolderPermissionsUserHasArtifactInstancePermissionAsync(configuration, ArtifactType.Document,
+				PermissionType.Add).ConfigureAwait(false));
+			validationResult.Add(await ValidateDestinationFolderPermissionsUserHasArtifactInstancePermissionAsync(configuration, ArtifactType.Folder,
+				PermissionType.Add).ConfigureAwait(false));
+			validationResult.Add(await ValidateDestinationFolderPermissionsUserHasArtifactInstancePermissionAsync(configuration, ArtifactType.Document,
+				PermissionType.Delete).ConfigureAwait(false));
 
 			return validationResult;
 		}
+
 
 		public async Task<ValidationResult> ValidateDestinationWorkspaceUserHasPermissionToAccessWorkspaceAsync(IPermissionsCheckConfiguration configuration)
 		{
@@ -106,9 +107,9 @@ namespace Relativity.Sync.Executors.PermissionCheck
 		}
 
 		private async Task<ValidationResult> ValidateDestinationWorkspaceUserHasArtifactTypePermissionsAsync(IPermissionsCheckConfiguration configuration,
-			ArtifactTypeIdentifier artifactTypeIdentifier, IEnumerable<PermissionType> artifactPermissions, string errorMessage)
+			ArtifactType artifactTypeIdentifier, IEnumerable<PermissionType> artifactPermissions, string errorMessage)
 		{
-			List<PermissionRef> permissionRefs = GetPermissionRefs(artifactTypeIdentifier, artifactPermissions);
+			List<PermissionRef> permissionRefs = GetPermissionRefs(new ArtifactTypeIdentifier((int)artifactTypeIdentifier), artifactPermissions);
 
 			var validationResult = new ValidationResult();
 			bool userHasViewPermissions = false;
@@ -135,9 +136,9 @@ namespace Relativity.Sync.Executors.PermissionCheck
 		}
 
 		private async Task<ValidationResult> ValidateDestinationFolderPermissionsUserHasArtifactInstancePermissionAsync(IPermissionsCheckConfiguration configuration,
-			ArtifactTypeIdentifier artifactTypeIdentifier, IEnumerable<PermissionType> artifactPermissions)
+			ArtifactType artifactTypeIdentifier, PermissionType artifactPermissions)
 		{
-			List<PermissionRef> permissionRefs = GetPermissionRefs(artifactTypeIdentifier, artifactPermissions);
+			List<PermissionRef> permissionRefs = GetPermissionRefs(new ArtifactTypeIdentifier((int)artifactTypeIdentifier), artifactPermissions);
 
 			var validationResult = new ValidationResult();
 			bool userHasViewPermissions = false;

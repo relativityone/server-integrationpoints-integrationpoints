@@ -7,6 +7,6 @@ namespace Relativity.Sync.Executors.PermissionCheck
 {
 	internal interface IPermissionCheck
 	{
-		Task<ValidationResult> ValidateAsync(IPermissionsCheckConfiguration configuration, CancellationToken token);
+		Task<ValidationResult> ValidateAsync(IPermissionsCheckConfiguration configuration);
 	}
 }

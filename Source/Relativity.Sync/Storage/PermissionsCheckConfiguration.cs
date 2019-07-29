@@ -10,7 +10,7 @@ namespace Relativity.Sync.Storage
 {
 	internal sealed class PermissionsCheckConfiguration : IPermissionsCheckConfiguration
 	{
-		private int? _sourceArtifactId = null;
+		private readonly Lazy<int> _sourceArtifactId = null;
 
 		private readonly IConfiguration _cache;
 		private readonly ISourceServiceFactoryForUser _sourceServiceFactory;
@@ -26,25 +26,15 @@ namespace Relativity.Sync.Storage
 			SourceWorkspaceArtifactId = syncJobParameters.WorkspaceId;
 			IntegrationPointArtifactId = syncJobParameters.IntegrationPointArtifactId;
 			_sourceServiceFactory = sourceServiceFactory;
+			_sourceArtifactId = new Lazy<int>(() => GetSourceProviderArtifactIdAsync().ConfigureAwait(false).GetAwaiter()
+				.GetResult());
 		}
 
 		public int SourceWorkspaceArtifactId { get; }
 		public int DestinationWorkspaceArtifactId => _cache.GetFieldValue<int>(DestinationWorkspaceArtifactIdGuid);
 		public int DestinationFolderArtifactId => _cache.GetFieldValue<int>(DataDestinationArtifactIdGuid);
 		public int IntegrationPointArtifactId { get; }
-		public int SourceProviderArtifactId
-		{
-			get
-			{
-				if (!_sourceArtifactId.HasValue)
-				{
-					_sourceArtifactId = GetSourceProviderArtifactIdAsync().ConfigureAwait(false).GetAwaiter()
-						.GetResult();
-				}
-
-				return _sourceArtifactId.Value;
-			}
-		}
+		public int SourceProviderArtifactId => _sourceArtifactId.Value;
 
 		private async Task<int> GetSourceProviderArtifactIdAsync()
 		{

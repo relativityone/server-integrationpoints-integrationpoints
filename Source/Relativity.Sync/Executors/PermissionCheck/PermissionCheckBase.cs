@@ -12,7 +12,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
 {
 	internal abstract class PermissionCheckBase : IPermissionCheck
 	{
-		public abstract Task<ValidationResult> ValidateAsync(IPermissionsCheckConfiguration configuration, CancellationToken token);
+		public abstract Task<ValidationResult> ValidateAsync(IPermissionsCheckConfiguration configuration);
 
 		protected static async Task<IList<PermissionValue>> GetPermissionsAsync(IProxyFactory proxy, int workspaceArtifactId, int artifactId, List<PermissionRef> permissionRefs)
 		{

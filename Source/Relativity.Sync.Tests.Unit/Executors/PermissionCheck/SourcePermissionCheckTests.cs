@@ -52,7 +52,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 			Mock<IPermissionManager> permissionManager = ArrangeSet();
 
 			// Act
-			ValidationResult actualResult = await _instance.ValidateAsync(configuration.Object, _cancellationToken).ConfigureAwait(false);
+			ValidationResult actualResult = await _instance.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
 			// Assert
 			actualResult.IsValid.Should().BeTrue();
@@ -71,7 +71,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 				It.IsAny<List<PermissionRef>>(), It.IsAny<int>())).Throws<SyncException>();
 
 			// Act
-			ValidationResult actualResult = await _instance.ValidateAsync(configuration.Object, _cancellationToken).ConfigureAwait(false);
+			ValidationResult actualResult = await _instance.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
 			// Assert
 			actualResult.IsValid.Should().BeFalse();
@@ -92,7 +92,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 				.Throws<SyncException>();
 
 			// Act
-			ValidationResult actualResult = await _instance.ValidateAsync(configuration.Object, _cancellationToken).ConfigureAwait(false);
+			ValidationResult actualResult = await _instance.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
 			// Assert
 			actualResult.IsValid.Should().BeFalse();
@@ -112,7 +112,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 				.Throws<SyncException>();
 
 			// Act
-			ValidationResult actualResult = await _instance.ValidateAsync(configuration.Object, _cancellationToken).ConfigureAwait(false);
+			ValidationResult actualResult = await _instance.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
 			// Assert
 			actualResult.IsValid.Should().BeFalse();
@@ -133,7 +133,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 				.Throws<SyncException>();
 
 			// Act
-			ValidationResult actualResult = await _instance.ValidateAsync(configuration.Object, _cancellationToken).ConfigureAwait(false);
+			ValidationResult actualResult = await _instance.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
 			// Assert
 			actualResult.IsValid.Should().BeFalse();
@@ -154,7 +154,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 				.Throws<SyncException>();
 
 			// Act
-			ValidationResult actualResult = await _instance.ValidateAsync(configuration.Object, _cancellationToken).ConfigureAwait(false);
+			ValidationResult actualResult = await _instance.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
 			// Assert
 			actualResult.IsValid.Should().BeFalse();
@@ -175,7 +175,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 				.Throws<SyncException>();
 
 			// Act
-			ValidationResult actualResult = await _instance.ValidateAsync(configuration.Object, _cancellationToken).ConfigureAwait(false);
+			ValidationResult actualResult = await _instance.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
 			// Assert
 			actualResult.IsValid.Should().BeFalse();
@@ -196,7 +196,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 				.Throws<SyncException>();
 
 			// Act
-			ValidationResult actualResult = await _instance.ValidateAsync(configuration.Object, _cancellationToken).ConfigureAwait(false);
+			ValidationResult actualResult = await _instance.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
 			// Assert
 			actualResult.IsValid.Should().BeFalse();
@@ -217,7 +217,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 				.Throws<SyncException>();
 
 			// Act
-			ValidationResult actualResult = await _instance.ValidateAsync(configuration.Object, _cancellationToken).ConfigureAwait(false);
+			ValidationResult actualResult = await _instance.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
 			// Assert
 			actualResult.IsValid.Should().BeFalse();
@@ -238,7 +238,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 				.Throws<SyncException>();
 
 			// Act
-			ValidationResult actualResult = await _instance.ValidateAsync(configuration.Object, _cancellationToken).ConfigureAwait(false);
+			ValidationResult actualResult = await _instance.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
 			// Assert
 			actualResult.IsValid.Should().BeFalse();
@@ -260,7 +260,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 				.ReturnsAsync(permissionToExport);
 
 			// Act
-			ValidationResult actualResult = await _instance.ValidateAsync(configuration.Object, _cancellationToken).ConfigureAwait(false);
+			ValidationResult actualResult = await _instance.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
 			// Assert
 			actualResult.IsValid.Should().BeFalse();
@@ -282,7 +282,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 				.ReturnsAsync(permissionToEdit);
 
 			// Act
-			ValidationResult actualResult = await _instance.ValidateAsync(configuration.Object, _cancellationToken).ConfigureAwait(false);
+			ValidationResult actualResult = await _instance.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
 			// Assert
 			actualResult.IsValid.Should().BeFalse();
@@ -311,7 +311,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 				.ReturnsAsync(permissionValuesDefault);
 
 			// Act
-			ValidationResult actualResult = await _instance.ValidateAsync(configuration.Object, _cancellationToken).ConfigureAwait(false);
+			ValidationResult actualResult = await _instance.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
 			// Assert
 			actualResult.IsValid.Should().BeFalse();
