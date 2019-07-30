@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.Agent
 				IntegrationPoint integrationPoint = GetIntegrationPoint(job.RelatedObjectArtifactID);
 				ProviderType providerType = GetProviderType(integrationPoint.SourceProvider ?? 0,
 					integrationPoint.DestinationProvider ?? 0);
-				if (providerType == ProviderType.Relativity)
+				if (providerType == ProviderType.Relativity && job.TaskType == "ExportService")
 				{
 					SourceConfiguration sourceConfiguration =
 						VerboseDeserialize<SourceConfiguration>(integrationPoint.SourceConfiguration);
