@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 		[SetUp]
 		public void SetUp()
 		{
-			_job = JobHelper.GetJob(1, 2, 3, 4, 5, 6, _integrationPointId, TaskType.ExportWorker,
+			_job = JobHelper.GetJob(1, 2, 3, 4, 5, 6, _integrationPointId, TaskType.ExportService,
 				DateTime.MinValue, DateTime.MinValue, null, 1, DateTime.MinValue, 2, "", null);
 
 			_sourceConfiguration = new SourceConfiguration { TypeOfExport = SourceConfiguration.ExportType.SavedSearch };
@@ -91,6 +91,23 @@ namespace kCura.IntegrationPoints.Agent.Tests
 			bool result = _instance.ShouldUseRelativitySync(_job);
 
 			Assert.IsTrue(result);
+		}
+
+		[Test]
+		public void ItShouldNotAllowUsingSyncWorkflowWhenTaskTypeDifferentThanExportService()
+		{
+			_toggleProvider.Setup(p => p.IsEnabled<EnableSyncToggle>()).Returns(true);
+			_providerTypeService.Setup(s => s.GetProviderType(_sourceProviderId, _destinationProviderId))
+				.Returns(ProviderType.Relativity);
+			_sourceConfiguration.TypeOfExport = SourceConfiguration.ExportType.SavedSearch;
+			_importSettings.ImageImport = false;
+			_importSettings.ProductionImport = false;
+			_job = JobHelper.GetJob(1, 2, 3, 4, 5, 6, _integrationPointId, TaskType.ExportManager,
+				DateTime.MinValue, DateTime.MinValue, null, 1, DateTime.MinValue, 2, "", null);
+
+			bool result = _instance.ShouldUseRelativitySync(_job);
+
+			Assert.IsFalse(result);
 		}
 
 		[TestCase(SourceConfiguration.ExportType.ProductionSet, false, false)]
