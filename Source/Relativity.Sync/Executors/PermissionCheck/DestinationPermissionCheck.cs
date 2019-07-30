@@ -49,7 +49,6 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			return validationResult;
 		}
 
-
 		public async Task<ValidationResult> ValidateDestinationWorkspaceUserHasPermissionToAccessWorkspaceAsync(IPermissionsCheckConfiguration configuration)
 		{
 			var validationResult = new ValidationResult();
