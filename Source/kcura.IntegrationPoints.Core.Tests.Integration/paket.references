@@ -1,17 +1,19 @@
 Castle.Windsor
 CSharpGuidelineAnalyzer
-FluentAssertions
 kCura.Apps.Common.Data
 kCura.Apps.Common.Utils
 kCura.OutsideIn.FI.Win32
 kCura.Relativity.Client
-Moq
-NUnit
 Relativity
 Relativity.API
 Relativity.OAuth2Client
 Relativity.Telemetry.APM
-relativity.testing.identification
 relativity.transfer.client
 Relativity.Services.Interfaces
-Selenium.WebDriver
+
+group TestPackages
+	FluentAssertions
+	Moq
+	NUnit
+	relativity.testing.identification
+	Selenium.WebDriver

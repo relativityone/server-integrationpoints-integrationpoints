@@ -1,4 +1,5 @@
 Relativity.API
 
-NUnit
-Moq
+group TestPackages
+	Moq
+	NUnit

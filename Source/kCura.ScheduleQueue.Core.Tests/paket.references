@@ -1,5 +1,7 @@
 CSharpGuidelineAnalyzer
 kCura.Apps.Common.Utils
-NSubstitute
-NUnit
 Relativity.API
+
+group TestPackages
+	NUnit
+	NSubstitute

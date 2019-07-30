@@ -1,5 +1,7 @@
 CSharpGuidelineAnalyzer
 Newtonsoft.Json
-NSubstitute
-NUnit
 Relativity.API
+
+group TestPackages
+	NUnit
+	NSubstitute

@@ -3,10 +3,12 @@ CSharpGuidelineAnalyzer
 kCura.Apps.Common.Data
 kCura.Apps.Common.Utils
 kCura.Relativity.Client
-NSubstitute
-NUnit
 Relativity.API
 Relativity.Telemetry.APM
 relativity.transfer.client
 Relativity.OAuth2Client
 Relativity.Services.Interfaces
+
+group TestPackages
+	NUnit
+	NSubstitute

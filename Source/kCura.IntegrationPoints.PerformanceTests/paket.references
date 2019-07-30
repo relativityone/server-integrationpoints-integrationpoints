@@ -3,7 +3,7 @@ kCura.Relativity.Client
 Relativity.Kepler.Client
 Relativity.Telemetry.APM
 Castle.Windsor
-BenchmarkDotNet
 
 group TestPackages
+	BenchmarkDotNet
 	Newtonsoft.Json

@@ -1,6 +1,8 @@
 CSharpGuidelineAnalyzer
-FluentAssertions
 LanguageExt.Core
-Moq
-NUnit
 Relativity.API
+
+group TestPackages
+	FluentAssertions
+	Moq
+	NUnit

@@ -2,6 +2,8 @@ CSharpGuidelineAnalyzer
 kCura.Apps.Common.Utils
 Relativity.Data
 Relativity.DataExchange.Client.SDK
-NUnit
-NSubstitute
 SystemWrapper.Interfaces
+
+group TestPackages
+	NUnit
+	NSubstitute

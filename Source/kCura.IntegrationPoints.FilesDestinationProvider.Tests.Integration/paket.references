@@ -4,12 +4,14 @@ kCura
 kCura.Apps.Common.Data
 kCura.Apps.Common.Utils
 kCura.Relativity.Client
-NSubstitute
-NUnit
 Relativity.API
 Relativity.DataExchange.Client.SDK
 Relativity.Services.DataContracts
 Relativity.Services.Interfaces
 Relativity.Telemetry.MetricsCollection
 Relativity.Productions.Services.Interfaces
-relativity.testing.identification
+
+group TestPackages
+	NUnit
+	NSubstitute
+	relativity.testing.identification

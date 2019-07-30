@@ -4,12 +4,14 @@ kCura.Apps.Common.Data
 kCura.Apps.Common.Utils
 kCura.EventHandler
 kCura.Relativity.Client
-NSubstitute
-NUnit
 Relativity.Data
 Relativity.Telemetry.APM
-Selenium.WebDriver
 Relativity.OAuth2Client
-relativity.testing.identification
 Relativity.Services.Interfaces
-FluentAssertions
+
+group TestPackages
+	FluentAssertions
+	NUnit
+	NSubstitute
+	Selenium.WebDriver
+	relativity.testing.identification

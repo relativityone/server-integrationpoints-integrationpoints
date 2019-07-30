@@ -1,5 +1,7 @@
 CSharpGuidelineAnalyzer
-FluentAssertions
-Moq
-NUnit
-relativity.testing.identification
+
+group TestPackages
+	FluentAssertions
+	Moq
+	NUnit
+	relativity.testing.identification

@@ -1,9 +1,11 @@
 CSharpGuidelineAnalyzer
-FluentAssertions
-Moq
-NSubstitute
-NUnit
 Relativity.API
 Relativity.Services.Interfaces
 Relativity.Logging.Interfaces
 Relativity.Logging
+
+group TestPackages
+	FluentAssertions
+	Moq
+	NUnit
+	NSubstitute

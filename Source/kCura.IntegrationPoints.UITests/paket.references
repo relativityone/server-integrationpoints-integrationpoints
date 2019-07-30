@@ -2,25 +2,26 @@ Castle.Windsor
 CSharpGuidelineAnalyzer
 kCura
 Newtonsoft.Json
-NUnit
 Relativity
 Relativity.API
 Relativity.Data
 Relativity.Kepler.Client
 Relativity.Logging
-DotNetSeleniumExtras.PageObjects
-DotNetSeleniumExtras.WaitHelpers
-Selenium.Support
-Selenium.WebDriver.ChromeDriver
-Selenium.WebDriver.GeckoDriver
 Relativity.Services.Interfaces
 Relativity.Productions.Services.Interfaces
 kCura.Relativity.Client
 Relativity.Telemetry.APM
 Polly
 Relativity.DataExchange.Client.SDK
-FluentAssertions
-relativity.testing.identification
+
 group TestPackages
+	DotNetSeleniumExtras.PageObjects
+	DotNetSeleniumExtras.WaitHelpers
+	FluentAssertions
+	NUnit
+	relativity.testing.identification
+	Selenium.Support
+	Selenium.WebDriver.ChromeDriver
+	Selenium.WebDriver.GeckoDriver
 	Serilog
 	Serilog.Sinks.Seq
