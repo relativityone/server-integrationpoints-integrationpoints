@@ -33,26 +33,9 @@ namespace kCura.IntegrationPoints.RelativitySync.Adapters
 
 		public async Task<ExecutionResult> ExecuteAsync(INotificationConfiguration configuration, CancellationToken token)
 		{
-			await Task.Yield();
-
-			KeywordConverter converter = _container.Resolve<KeywordConverter>();
-			ISendEmailWorker sendEmailWorker = _container.Resolve<ISendEmailWorker>();
-			IExtendedJob extendedJob = _container.Resolve<IExtendedJob>();
-			IJobHistoryService jobHistoryService = _container.Resolve<IJobHistoryService>();
-
-			IList<JobHistory> history = jobHistoryService.GetJobHistory(new[] {extendedJob.JobHistoryId});
-
-			if (history.Count != 1)
-			{
-				throw new ArgumentException($"Unable to find JobHistory {extendedJob.JobHistoryId}");
-			}
-
-			EmailMessage emailMessage = BatchEmail.GenerateEmail(history[0].JobStatus);
-			BatchEmail.ConvertMessage(emailMessage, configuration.EmailRecipients, converter);
-
-			sendEmailWorker.Execute(emailMessage, extendedJob.JobId);
-
-			return ExecutionResult.Success();
+			// Email notification is being handled by IBatchStatus which is being run by ExportServiceManager.
+			// We don't want to double the emails.
+			return await Task.FromResult(ExecutionResult.Success()).ConfigureAwait(false);
 		}
 	}
 }
