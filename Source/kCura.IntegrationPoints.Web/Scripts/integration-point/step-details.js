@@ -299,13 +299,12 @@ var IP = IP || {};
 				self.source.displayRelativityInSourceTypes(self.isExportType());
 				self.source.isSourceProviderDisabled(self.isExportType());
 				self.destination.isDestinationProviderDisabled(!self.isExportType());
+				self.destination.isDestinationObjectDisabled(self.isExportType());
 				if (self.isExportType() === false) {
 					self.destination.setRelativityAsDestinationProvider();
-					self.destination.isDestinationObjectDisabled(false);
 				} else {
 					var relativitySourceProviderGuid = "423b4d43-eae9-4e14-b767-17d629de4bb2";
 					self.source.selectedType(relativitySourceProviderGuid);
-					self.destination.isDestinationObjectDisabled(true);
 				}
 			}
 		};
