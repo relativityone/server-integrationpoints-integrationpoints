@@ -87,10 +87,11 @@ namespace Relativity.Sync.Transfer
 		{
 			using (var folderManager = await _serviceFactory.CreateProxyAsync<IFolderManager>().ConfigureAwait(false))
 			{
+				List<FolderPath> result;
+				List<int> foldersWithIds = folderIds.ToList(); 
 				try
 				{
-					List<FolderPath> result = await folderManager.GetFullPathListAsync(workspaceArtifactId, folderIds.ToList()).ConfigureAwait(false);
-					return result.ToDictionary(f => f.ArtifactID, f => RemoveUnnecessarySpaces(f.FullPath));
+					result = await folderManager.GetFullPathListAsync(workspaceArtifactId, foldersWithIds).ConfigureAwait(false);
 				}
 				catch (ServiceException ex)
 				{
@@ -102,6 +103,11 @@ namespace Relativity.Sync.Transfer
 					_logger.LogError(ex, "Failed to get folders in workspace: {workspaceArtifactId}", workspaceArtifactId);
 					throw new SyncKeplerException($"Failed to get folders in workspace {workspaceArtifactId}", ex);
 				}
+				if (result.Count != foldersWithIds.Count)
+				{
+					throw new SyncException("Unable to send document between workspace due to lack of folder in source workspace. Different quantity of foldersId after begin job");
+				}
+				return result.ToDictionary(f => f.ArtifactID, f => RemoveUnnecessarySpaces(f.FullPath));
 			}
 		}
 
