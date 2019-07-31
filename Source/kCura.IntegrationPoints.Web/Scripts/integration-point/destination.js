@@ -57,11 +57,13 @@
 		}
 	}
 	this.selectedDestinationTypeGuid = function () {
+		self.isDestinationObjectDisabled(true);
 		var results = self.destinationTypes().filter(withArtifactId(self.selectedDestinationType()));
 		return results.length > 0 ? results[0].value : "";
 	}
 
 	this.setRelativityAsDestinationProvider = function () {
+		self.isDestinationObjectDisabled(false);
 		var defaultRelativityProvider = self.destinationTypes().filter(function (obj) {
 			return obj.value === relativityProviderGuid;
 		});
