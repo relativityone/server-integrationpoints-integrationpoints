@@ -305,6 +305,7 @@ var IP = IP || {};
 				} else {
 					var relativitySourceProviderGuid = "423b4d43-eae9-4e14-b767-17d629de4bb2";
 					self.source.selectedType(relativitySourceProviderGuid);
+					self.destination.isDestinationObjectDisabled(true);
 				}
 			}
 		};

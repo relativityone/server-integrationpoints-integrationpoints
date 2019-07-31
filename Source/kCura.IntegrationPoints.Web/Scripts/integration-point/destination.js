@@ -57,7 +57,6 @@
 		}
 	}
 	this.selectedDestinationTypeGuid = function () {
-		self.isDestinationObjectDisabled(true);
 		var results = self.destinationTypes().filter(withArtifactId(self.selectedDestinationType()));
 		return results.length > 0 ? results[0].value : "";
 	}
