@@ -63,7 +63,6 @@
 	}
 
 	this.setRelativityAsDestinationProvider = function () {
-		self.isDestinationObjectDisabled(false);
 		var defaultRelativityProvider = self.destinationTypes().filter(function (obj) {
 			return obj.value === relativityProviderGuid;
 		});

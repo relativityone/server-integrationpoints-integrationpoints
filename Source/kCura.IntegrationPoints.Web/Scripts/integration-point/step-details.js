@@ -301,6 +301,7 @@ var IP = IP || {};
 				self.destination.isDestinationProviderDisabled(!self.isExportType());
 				if (self.isExportType() === false) {
 					self.destination.setRelativityAsDestinationProvider();
+					self.destination.isDestinationObjectDisabled(false);
 				} else {
 					var relativitySourceProviderGuid = "423b4d43-eae9-4e14-b767-17d629de4bb2";
 					self.source.selectedType(relativitySourceProviderGuid);
