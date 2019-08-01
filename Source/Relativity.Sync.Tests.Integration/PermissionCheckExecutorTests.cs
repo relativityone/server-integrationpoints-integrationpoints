@@ -28,7 +28,6 @@ namespace Relativity.Sync.Tests.Integration
 		private const int _EDIT_DOCUMENT_PERMISSION_ID = 45; // 45 is the artifact id of the "Edit Documents" permission
 		private const int _ALLOW_IMPORT_PERMISSION_ID = 158; // 158 is the artifact id of the "Allow Import" permission
 		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 27564;
-		private const int _INTEGRATION_POINT_ARTIFACT_ID = 24234;
 		private const int _DATA_DESTINATION_ARTIFACT_ID = 23842;
 		private const int _DESTINATION_WORKSPACE_ARTIFACT_ID = 21321;
 		[SetUp]
@@ -52,7 +51,6 @@ namespace Relativity.Sync.Tests.Integration
 			_configurationStub = new ConfigurationStub
 			{
 				SourceWorkspaceArtifactId = _SOURCE_WORKSPACE_ARTIFACT_ID,
-				IntegrationPointArtifactId = _INTEGRATION_POINT_ARTIFACT_ID,
 				DestinationFolderArtifactId = _DATA_DESTINATION_ARTIFACT_ID,
 				DestinationWorkspaceArtifactId = _DESTINATION_WORKSPACE_ARTIFACT_ID
 			};
