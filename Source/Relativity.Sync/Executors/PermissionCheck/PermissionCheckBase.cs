@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -76,6 +77,17 @@ namespace Relativity.Sync.Executors.PermissionCheck
 				userHasPermissions = hasPermissionValue.Selected && hasPermissionValue.PermissionID == permissionId;
 			}
 			return userHasPermissions;
+		}
+
+		protected static ValidationResult DoesUserHaveViewPermission(bool userHasViewPermissions, string errorMessage)
+		{
+			var validationResult = new ValidationResult();
+			if (!userHasViewPermissions)
+			{
+				var validationMessage = new ValidationMessage(errorMessage);
+				validationResult.Add(validationMessage);
+			}
+			return validationResult;
 		}
 	}
 }

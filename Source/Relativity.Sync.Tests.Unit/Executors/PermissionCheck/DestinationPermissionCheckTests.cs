@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,9 +27,11 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 		private const int _ARTIFACT_TYPE_FOLDER = 9;
 		private const int _ARTIFACT_TYPE_SEARCH = 15;
 		private const int _EXPECTED_VALUE_FOR_DOCUMENT = 2;
-		private const int _EXPECTED_VALUE_FOR_ALL_FAILED_VALIDATE = 7;
+		private const int _EXPECTED_VALUE_FOR_ALL_FAILED_VALIDATE = 8;
 		private const int _TEST_WORKSPACE_ARTIFACT_ID = 20489;
 		private const int _TEST_FOLDER_ARTIFACT_ID = 20476;
+
+		private readonly Guid ObjectTypeGuid = new Guid("7E03308C-0B58-48CB-AFA4-BB718C3F5CAC");
 
 		[SetUp]
 		public void SetUp()
@@ -53,6 +56,27 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 			//Assert
 			actualResult.IsValid.Should().BeTrue();
 			actualResult.Messages.Should().HaveCount(0);
+		}
+
+		[Test]
+		public async Task UserShouldNotHavePermissionToAddObjectType()
+		{
+			// Arrange
+			Mock<IPermissionsCheckConfiguration> configuration = ConfigurationSet();
+
+			Mock<IPermissionManager> permissionManager = ArrangeSet();
+
+			permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>(y => y.Any(z => z.ArtifactType.Guids.Contains(ObjectTypeGuid)))))
+				.Throws<SyncException>();
+
+			// Act
+			ValidationResult actualResult = await _instance.ValidateAsync(configuration.Object).ConfigureAwait(false);
+
+			// Assert
+			actualResult.IsValid.Should().BeFalse();
+			actualResult.Messages.Should().HaveCount(1);
+			actualResult.Messages.First().ShortMessage.Should()
+				.Be("User does not have permission to add object type in destination workspace Tag.");
 		}
 
 		[Test]

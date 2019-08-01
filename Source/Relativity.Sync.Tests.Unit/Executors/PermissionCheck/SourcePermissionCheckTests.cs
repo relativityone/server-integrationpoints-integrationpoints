@@ -27,12 +27,13 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 		private const int _TEST_INTEGRATION_POINT_ARTIFACT_ID = 105684;
 		private const int _ALLOW_EXPORT_PERMISSION_ID = 159; // 159 is the artifact id of the "Allow Export" permission
 		private const int _EDIT_DOCUMENT_PERMISSION_ID = 45; // 45 is the artifact id of the "Edit Documents" permission
-		private const int _EXPECTED_VALUE_FOR_ALL_FAILED_VALIDATE = 9;
+		private const int _EXPECTED_VALUE_FOR_ALL_FAILED_VALIDATE = 8;
 
-		private readonly Guid IntegrationPoint = new Guid("03d4f67e-22c9-488c-bee6-411f05c52e01");
 		private readonly Guid JobHistory = new Guid("08f4b1f7-9692-4a08-94ab-b5f3a88b6cc9");
-		private readonly Guid SourceProvider = new Guid("5be4a1f7-87a8-4cbe-a53f-5027d4f70b80");
-		private readonly Guid DestinationProvider = new Guid("d014f00d-f2c0-4e7a-b335-84fcb6eae980");
+		private readonly Guid ObjectTypeGuid = new Guid("7E03308C-0B58-48CB-AFA4-BB718C3F5CAC");
+		private readonly Guid BatchObjectTypeGuid = new Guid("18C766EB-EB71-49E4-983E-FFDE29B1A44E");
+		private readonly Guid ProgressObjectTypeGuid = new Guid("3D107450-DB18-4FE1-8219-73EE1F921ED9");
+		private readonly Guid ConfigurationObjectTypeGuid = new Guid("3BE3DE56-839F-4F0E-8446-E1691ED5FD57");
 
 		[SetUp]
 		public void SetUp()
@@ -81,47 +82,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 		}
 
 		[Test]
-		public async Task UserShouldNotHavePermissionToViewIpTest()
-		{
-			// Arrange
-			Mock<IPermissionsCheckConfiguration> configuration = ConfigurationSet();
-
-			Mock<IPermissionManager> permissionManager = ArrangeSet();
-
-			permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>(y => y.Any(z => z.ArtifactType.Guids.Contains(IntegrationPoint)))))
-				.Throws<SyncException>();
-
-			// Act
-			ValidationResult actualResult = await _instance.ValidateAsync(configuration.Object).ConfigureAwait(false);
-
-			// Assert
-			actualResult.IsValid.Should().BeFalse();
-			actualResult.Messages.Should().HaveCount(1);
-			actualResult.Messages.First().ShortMessage.Should().Be("User does not have permission to view Integration Points.");
-		}
-
-		[Test]
-		public async Task UserShouldNotHavePermissionToViewTheIpTest()
-		{
-			// Arrange
-			Mock<IPermissionsCheckConfiguration> configuration = ConfigurationSet();
-
-			Mock<IPermissionManager> permissionManager = ArrangeSet();
-
-			permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>(y => y.Any(z => z.ArtifactType.Guids.Contains(IntegrationPoint))),It.IsAny<int>()))
-				.Throws<SyncException>();
-
-			// Act
-			ValidationResult actualResult = await _instance.ValidateAsync(configuration.Object).ConfigureAwait(false);
-
-			// Assert
-			actualResult.IsValid.Should().BeFalse();
-			actualResult.Messages.Should().HaveCount(1);
-			actualResult.Messages.First().ShortMessage.Should()
-				.Be("User does not have permission to view the Integration Point.");
-		}
-
-		[Test]
 		public async Task UserShouldNotHavePermissionToAddJobHistoryRdoTest()
 		{
 			// Arrange
@@ -143,14 +103,14 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 		}
 
 		[Test]
-		public async Task UserShouldNotHaveArtifactPermissionToViewSourceProviderRdoTest()
+		public async Task UserShouldNotHavePermissionToAddObjectTypeTest()
 		{
 			// Arrange
 			Mock<IPermissionsCheckConfiguration> configuration = ConfigurationSet();
 
 			Mock<IPermissionManager> permissionManager = ArrangeSet();
 
-			permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>(y => y.Any(z => z.ArtifactType.Guids.Contains(SourceProvider)))))
+			permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>(y => y.Any(z => z.ArtifactType.Guids.Contains(ObjectTypeGuid)))))
 				.Throws<SyncException>();
 
 			// Act
@@ -160,18 +120,18 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 			actualResult.IsValid.Should().BeFalse();
 			actualResult.Messages.Should().HaveCount(1);
 			actualResult.Messages.First().ShortMessage.Should()
-				.Be("User does not have permission to view Source Provider RDOs.");
+				.Be("User does not have permission to add object type in source workspace Tag.");
 		}
 
 		[Test]
-		public async Task UserShouldNotHavePermissionToViewDestinationProviderRdoTest()
+		public async Task UserShouldNotHavePermissionToBatchTest()
 		{
 			// Arrange
 			Mock<IPermissionsCheckConfiguration> configuration = ConfigurationSet();
 
 			Mock<IPermissionManager> permissionManager = ArrangeSet();
 
-			permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>(y => y.Any(z => z.ArtifactType.Guids.Contains(DestinationProvider)))))
+			permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>(y => y.Any(z => z.ArtifactType.Guids.Contains(BatchObjectTypeGuid)))))
 				.Throws<SyncException>();
 
 			// Act
@@ -181,18 +141,18 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 			actualResult.IsValid.Should().BeFalse();
 			actualResult.Messages.Should().HaveCount(1);
 			actualResult.Messages.First().ShortMessage.Should()
-				.Be("User does not have permission to view Destination Provider RDOs.");
+				.Be("User does not have permission to batch object type in source workspace.");
 		}
 
 		[Test]
-		public async Task UserShouldNotHaveInstancePermissionToViewSourceProviderRdoTest()
+		public async Task UserShouldNotHavePermissionToProgressTest()
 		{
 			// Arrange
 			Mock<IPermissionsCheckConfiguration> configuration = ConfigurationSet();
 
 			Mock<IPermissionManager> permissionManager = ArrangeSet();
 
-			permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>(y => y.Any(z => z.ArtifactType.Guids.Contains(SourceProvider))), It.IsAny<int>()))
+			permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>(y => y.Any(z => z.ArtifactType.Guids.Contains(ProgressObjectTypeGuid)))))
 				.Throws<SyncException>();
 
 			// Act
@@ -202,7 +162,28 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 			actualResult.IsValid.Should().BeFalse();
 			actualResult.Messages.Should().HaveCount(1);
 			actualResult.Messages.First().ShortMessage.Should()
-				.Be("User does not have permission to view the Source Provider RDO.");
+				.Be("User does not have permission to progress object type in source workspace.");
+		}
+
+		[Test]
+		public async Task UserShouldNotHavePermissionToConfigurationTest()
+		{
+			// Arrange
+			Mock<IPermissionsCheckConfiguration> configuration = ConfigurationSet();
+
+			Mock<IPermissionManager> permissionManager = ArrangeSet();
+
+			permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>(y => y.Any(z => z.ArtifactType.Guids.Contains(ConfigurationObjectTypeGuid)))))
+				.Throws<SyncException>();
+
+			// Act
+			ValidationResult actualResult = await _instance.ValidateAsync(configuration.Object).ConfigureAwait(false);
+
+			// Assert
+			actualResult.IsValid.Should().BeFalse();
+			actualResult.Messages.Should().HaveCount(1);
+			actualResult.Messages.First().ShortMessage.Should()
+				.Be("User does not have permission to configuration object type in source workspace.");
 		}
 
 		[Test]
