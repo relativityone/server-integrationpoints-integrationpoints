@@ -14,7 +14,7 @@ using Relativity.Sync.Telemetry;
 
 namespace Relativity.Sync.Executors
 {
-	internal sealed class DestinationWorkspaceTagRepository : IDestinationWorkspaceTagRepository
+	internal sealed class DestinationWorkspaceTagRepository : WorkspaceTagRepositoryBase, IDestinationWorkspaceTagRepository
 	{
 		private const int _MAX_OBJECT_QUERY_BATCH_SIZE = 10000;
 
@@ -280,11 +280,6 @@ namespace Relativity.Sync.Executors
 				}
 			};
 			return fieldRefValuePairs;
-		}
-
-		private static IEnumerable<RelativityObjectRef> ToMultiObjectValue(params int[] artifactIds)
-		{
-			return artifactIds.Select(x => new RelativityObjectRef { ArtifactID = x });
 		}
 
 		private static TagDocumentsResult<int> GenerateTagDocumentsResult(MassUpdateResult updateResult, IList<int> batch)
