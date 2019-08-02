@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using kCura.Relativity.Client.DTOs;
+using kCura.WinEDDS.Service;
 using NUnit.Framework;
 using Platform.Keywords.RSAPI;
 using Relativity.API;
 using Relativity.API.Foundation.Permissions;
+using Relativity.Services.Group;
 using Relativity.Services.Permission;
 using Relativity.Services.Workspace;
 using Relativity.Sync.Configuration;
@@ -20,8 +24,8 @@ namespace Relativity.Sync.Tests.System
 		private WorkspaceRef _sourceWorkspace;
 		private WorkspaceRef _destinationWorkspace;
 		private ConfigurationStub _configurationStub;
-
-		private const int _INTEGRATION_POINT_ARTIFACT_ID = 24234;
+		private Group _group;
+		private GroupRef GroupRef => new GroupRef(_group.ArtifactID);
 
 		[SetUp]
 		public async Task SetUp()
@@ -35,9 +39,9 @@ namespace Relativity.Sync.Tests.System
 			string groupName = Guid.NewGuid().ToString();
 			const string userName = "testuser@relativity.com";
 			const string password = "Test1234!";
-			Group group = CreateGroup(groupName);
-			SetUpUser(userName, password, group);
-			AddGroupToWorkspaces(group);
+			_group = CreateGroup(groupName);
+			SetUpUser(userName, password, _group);
+			await AddGroupToWorkspaceAsync(_sourceWorkspace.ArtifactID, _group).ConfigureAwait(false);
 		}
 
 		[Test]
@@ -48,21 +52,72 @@ namespace Relativity.Sync.Tests.System
 			_configurationStub = new ConfigurationStub
 			{
 				SourceWorkspaceArtifactId = _sourceWorkspace.ArtifactID,
-				IntegrationPointArtifactId = _INTEGRATION_POINT_ARTIFACT_ID,
 				DestinationFolderArtifactId = destinationFolderArtifactId,
 				DestinationWorkspaceArtifactId = _destinationWorkspace.ArtifactID
 			};
 
-			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IPermissionsCheckConfiguration>(_configurationStub);
+			IEnumerable<PermissionConfig> objectPermissions = new []
+			{
+				new PermissionConfig
+				{
+					ObjectName = "Job History",
+					Add = true
+				},
+				new PermissionConfig
+				{
+					ObjectName = "Object Type",
+					Add = true
+				},
+				new PermissionConfig
+				{
+					ObjectName = "Sync Batch",
+					Add = true, Edit = true, View = true
+				},
+				new PermissionConfig
+				{
+					ObjectName = "Sync Progress",
+					Add = true, Edit = true, View = true
+				},
+				new PermissionConfig
+				{
+					ObjectName = "Sync Configuration",
+					Edit = true
+				}
+			};
+			await SetUpPermissions(_sourceWorkspace.ArtifactID, objectPermissions).ConfigureAwait(false);
 
+			//ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IPermissionsCheckConfiguration>(_configurationStub);
+
+			// Act-Assert
+			//Assert.DoesNotThrowAsync(async () =>
+			//await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false));
+		}
+
+		private async Task SetUpPermissions(int sourceWorkspaceArtifactId, IEnumerable<PermissionConfig> permissionConfigs)
+		{
+			using (IPermissionManager permissionManager = ServiceFactory.CreateProxy<IPermissionManager>())
+			{
+				GroupPermissions workspaceGroupPermissions = await permissionManager
+					.GetWorkspaceGroupPermissionsAsync(sourceWorkspaceArtifactId, GroupRef)
+					.ConfigureAwait(false);
+
+				foreach (PermissionConfig permissionConfig in permissionConfigs)
+				{
+					ObjectPermission permissionObject = workspaceGroupPermissions.ObjectPermissions.Find(permission => permission.Name.Equals(permissionConfig.ObjectName, StringComparison.OrdinalIgnoreCase));
+					permissionObject.AddSelected = permissionConfig.Add;
+					permissionObject.ViewSelected = permissionConfig.View;
+					permissionObject.EditSelected = permissionConfig.Edit;
+				}
+
+				await permissionManager.SetWorkspaceGroupPermissionsAsync(sourceWorkspaceArtifactId, workspaceGroupPermissions).ConfigureAwait(false);
+			}
 		}
 
 		private Group CreateGroup(string name)
 		{
 			Group newGroup = new Group
 			{
-				Name = name,
-				Users = new MultiUserFieldValueList()
+				Name = name
 			};
 
 			WriteResultSet<Group> result = Client.Repositories.Group.Create(newGroup);
@@ -91,13 +146,24 @@ namespace Relativity.Sync.Tests.System
 			GroupHelpers.GroupAddUserIfNotInGroup(Client, group, user);
 		}
 
-		private void AddGroupToWorkspaces(Group group)
+		private async Task AddGroupToWorkspaceAsync(int workspaceId, Group group)
 		{
-			using (IPermissionManager permissionManager =  ServiceFactory.CreateProxy<IPermissionManager>())
+			using (var proxy = ServiceFactory.CreateProxy<IPermissionManager>())
 			{
-				PermissionHelpers.AddGroupToWorkspace(permissionManager, _sourceWorkspace.ArtifactID, group);
-				PermissionHelpers.AddGroupToWorkspace(permissionManager, _destinationWorkspace.ArtifactID, group);
+				GroupSelector groupSelector = await proxy.GetWorkspaceGroupSelectorAsync(workspaceId).ConfigureAwait(false);
+				groupSelector.DisabledGroups = new List<GroupRef>();
+				groupSelector.EnabledGroups = new List<GroupRef> { new GroupRef(group.ArtifactID) };
+
+				await proxy.AddRemoveWorkspaceGroupsAsync(workspaceId, groupSelector).ConfigureAwait(false);
 			}
 		}
+	}
+
+	internal class PermissionConfig
+	{
+		public string ObjectName { get; set; }
+		public bool Add { get; set; }
+		public bool Edit { get; set; }
+		public bool View { get; set; }
 	}
 }
