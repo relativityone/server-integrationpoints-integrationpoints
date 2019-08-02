@@ -25,7 +25,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
 		private readonly IDestinationServiceFactoryForUser _destinationServiceFactory;
 		private readonly ISyncLog _logger;
 
-		private readonly Guid _objectTypeGuid = new Guid("7E03308C-0B58-48CB-AFA4-BB718C3F5CAC");
+		private readonly Guid ObjectTypeGuid = new Guid("3F45E490-B4CF-4C7D-8BB6-9CA891C0C198");
 
 		public DestinationPermissionCheck(IDestinationServiceFactoryForUser destinationServiceFactory, ISyncLog logger)
 		{
@@ -43,7 +43,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
 				ArtifactType.Document, new[] { PermissionType.View, PermissionType.Add, PermissionType.Edit }, _MISSING_DESTINATION_RDO_PERMISSIONS).ConfigureAwait(false));
 			validationResult.Add(await ValidateDestinationWorkspaceUserHasArtifactTypePermissionsAsync(configuration,
 				ArtifactType.Search, new[] { PermissionType.Add }, _MISSING_DESTINATION_SAVED_SEARCH_ADD_PERMISSION).ConfigureAwait(false));
-			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, _objectTypeGuid, PermissionType.Add, _OBJECT_TYPE_NO_ADD).ConfigureAwait(false));
+			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, ObjectTypeGuid, PermissionType.Add, _OBJECT_TYPE_NO_ADD).ConfigureAwait(false));
 			validationResult.Add(await ValidateDestinationFolderPermissionsUserHasArtifactInstancePermissionAsync(configuration, ArtifactType.Document,
 				PermissionType.Add).ConfigureAwait(false));
 			validationResult.Add(await ValidateDestinationFolderPermissionsUserHasArtifactInstancePermissionAsync(configuration, ArtifactType.Folder,
@@ -86,8 +86,6 @@ namespace Relativity.Sync.Executors.PermissionCheck
 		public async Task<ValidationResult> ValidateDestinationWorkspaceUserCanImportHasPermissionAsync(
 			IPermissionsCheckConfiguration configuration, int permissionId, string errorMessage)
 		{
-			var validationResult = new ValidationResult();
-
 			List<PermissionRef> permissionRefs = GetPermissionRefs(permissionId);
 
 			bool userHasViewPermissions = false;
@@ -131,7 +129,6 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			List<PermissionRef> permissionRefs = GetPermissionRefs(new ArtifactTypeIdentifier((int)artifactTypeIdentifier), artifactPermissions);
 
 			bool userHasViewPermissions = false;
-
 			try
 			{
 				IList<PermissionValue> permissions = await GetPermissionsAsync(_destinationServiceFactory,
