@@ -2,6 +2,7 @@
 using kCura.IntegrationPoints.UITests.Driver;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
+using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.PageObjects;
 
 namespace kCura.IntegrationPoints.UITests.Pages
@@ -10,25 +11,41 @@ namespace kCura.IntegrationPoints.UITests.Pages
 	{
 		private const string _NAME_INPUT_ID = "name";
 
-		[FindsBy(How = How.Id, Using = "next")]
-		protected IWebElement NextButton { get; set; }
-		
-		protected IWebElement NameInput => Driver.FindElementEx(By.Id(_NAME_INPUT_ID), TimeSpan.FromMinutes(1));
-
 		public string Name
 		{
 			get { return NameInput.Text; }
 			set { NameInput.SetText(value); }
 		}
 
+		public string ProfileObject
+		{
+			get { return ProfileSelect.SelectedOption.Text; }
+			set { ProfileSelect.SelectByText(value); }
+		}
+
+		[FindsBy(How = How.Id, Using = "next")]
+		protected IWebElement NextButton { get; set; }
+
+		[FindsBy(How = How.Id, Using = "save")]
+		protected IWebElement SaveButton { get; set; }
+
+		[FindsBy(How = How.Id, Using = "apply-profile-selector")]
+		protected IWebElement ProfileElement { get; set; }
+
+		[FindsBy(How = How.Id, Using = _NAME_INPUT_ID)]
+		protected IWebElement NameInput { get; set; }
+
+		protected SelectElement ProfileSelect => new SelectElement(ProfileElement);
+
 		protected FirstPage(RemoteWebDriver driver) : base(driver)
 		{
 			PageFactory.InitElements(driver, this);
 		}
 
-		public bool ValidatePage()
+		public IntegrationPointDetailsPage SaveIntegrationPoint()
 		{
-			return IsAnyElementVisible(By.Id(_NAME_INPUT_ID));
+			SaveButton.ClickEx();
+			return new IntegrationPointDetailsPage(Driver);
 		}
 	}
 }

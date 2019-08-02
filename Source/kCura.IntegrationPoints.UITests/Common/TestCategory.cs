@@ -10,6 +10,7 @@
 		public const string DATA_GRID_RELATED = "DataGridRelated";
 		public const string MISCELLANEOUS = "Miscellaneous";
 		public const string NOT_WORKING_ON_REGRESSION_ENVIRONMENT = "NotWorkingOnRegressionEnvironment";
+		public const string PROFILE= "Profile";
 		public const string PERFORMANCE_BASELINE = "PerformanceBaseline";
 	}
 }

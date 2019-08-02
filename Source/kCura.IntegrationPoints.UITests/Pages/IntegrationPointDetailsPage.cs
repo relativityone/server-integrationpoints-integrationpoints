@@ -3,6 +3,7 @@ using kCura.IntegrationPoints.UITests.Components;
 using kCura.IntegrationPoints.UITests.Driver;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
+using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.PageObjects;
 
 namespace kCura.IntegrationPoints.UITests.Pages
@@ -11,6 +12,18 @@ namespace kCura.IntegrationPoints.UITests.Pages
 	{
 		[FindsBy(How = How.LinkText, Using = "Run")]
 		protected IWebElement RunButton;
+
+		[FindsBy(How = How.LinkText, Using = "Save as a Profile")]
+		protected IWebElement SaveAsAProfileButton { get; set; }
+
+		[FindsBy(How = How.Id, Using = "profile-name")]
+		protected IWebElement ProfileNameInput { get; set; }
+
+		public string ProfileName
+		{
+			get { return ProfileNameInput.Text; }
+			set { ProfileNameInput.SetText(value); }
+		}
 
 		public IntegrationPointDetailsPage(RemoteWebDriver driver) : base(driver)
 		{
@@ -22,6 +35,13 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		{
 			RunButton.ClickEx();
 			ClickOkOnConfirmationDialog();
+			return this;
+		}
+
+		public IntegrationPointDetailsPage SaveAsAProfileIntegrationPoint()
+		{
+			SaveAsAProfileButton.ClickEx();
+			SaveAsAProfileOnConfirmationDialog();
 			return this;
 		}
 
@@ -56,6 +76,12 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		{
 			By okButtonLocator = By.XPath("//*[text()='OK']");
 			Driver.FindElementEx(okButtonLocator).ClickEx();
+		}
+
+		private void SaveAsAProfileOnConfirmationDialog()
+		{
+			By saveAsProfileButtonLocator = By.Id("save-as-profile-confirm-button");
+			Driver.FindElementEx(saveAsProfileButtonLocator).ClickEx();
 		}
 	}
 }

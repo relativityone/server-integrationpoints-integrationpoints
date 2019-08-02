@@ -23,21 +23,189 @@ namespace kCura.IntegrationPoints.UITests.Common
 			Context = context;
 		}
 
-        public ExportFirstPage SetupFirstIntegrationPointPage(GeneralPage generalPage, IntegrationPointGeneralModel model)
-        {
-            IntegrationPointsPage ipPage = generalPage.GoToIntegrationPointsPage();
-            ExportFirstPage firstPage = ipPage.CreateNewExportIntegrationPoint();
-            firstPage.Name = model.Name;
-            firstPage.Destination = model.DestinationProvider;
-            if (!string.IsNullOrEmpty(model.TransferredObject))
-            {
-	            firstPage.TransferedObject =
-		            CustodianToEntityUtils.GetValidTransferredObjectName(firstPage.IsEntityTransferredObjectOptionAvailable, model);
-            }
-            return firstPage;
-        }
+		public IntegrationPointDetailsPage CreateNewExportEntityToLoadfileIntegrationPoint(
+			EntityExportToLoadFileModel model)
+		{
+			GeneralPage generalPage = GoToWorkspacePage();
 
-		public ExportToFileSecondPage SetupExportToFileSecondPage(ExportFirstPage firstPage,
+			ExportFirstPage firstPage = SetupFirstIntegrationPointPage(generalPage, model);
+
+			ExportEntityToFileSecondPage secondPage = SetupEntityExportToFileSecondPage(firstPage, model);
+
+			ExportToFileThirdPage thirdPage = SetupExportToFileThirdPage(secondPage, model);
+
+			return thirdPage.SaveIntegrationPoint();
+		}
+
+		public IntegrationPointDetailsPage CreateNewExportToLoadFileIntegrationPoint(
+			ExportToLoadFileProviderModel model)
+		{
+			GeneralPage generalPage = GoToWorkspacePage();
+
+			ExportFirstPage firstPage = SetupFirstIntegrationPointPage(generalPage, model);
+
+			ExportToFileSecondPage secondPage = SetupExportToFileSecondPage(firstPage, model);
+
+			ExportToFileThirdPage thirdPage = SetupExportToFileThirdPage(secondPage, model);
+
+			return thirdPage.SaveIntegrationPoint();
+		}
+
+		public IntegrationPointDetailsPage CreateNewRelativityProviderIntegrationPoint(RelativityProviderModel model)
+		{
+			GeneralPage generalPage = GoToWorkspacePage();
+
+			ExportFirstPage firstPage = SetupFirstIntegrationPointPage(generalPage, model);
+
+			PushToRelativitySecondPage secondPage = SetupPushToRelativitySecondPage(firstPage, model);
+
+			PushToRelativityThirdPage thirdPage = SetupPushToRelativityThirdPage(secondPage, model);
+
+			return thirdPage.SaveIntegrationPoint();
+		}
+
+		public IntegrationPointDetailsPage CreateNewRelativityProviderIntegrationPointFromProfile(
+			IntegrationPointGeneralModel model)
+		{
+			GeneralPage generalPage = GoToWorkspacePage();
+
+			ExportFirstPage firstPage = SetupFirstIntegrationPointPage(generalPage, model);
+
+			return firstPage.SaveIntegrationPoint();
+		}
+
+		protected GeneralPage GoToWorkspacePage()
+		{
+			return new GeneralPage(Driver).PassWelcomeScreen().ChooseWorkspace(Context.WorkspaceName);
+		}
+
+		protected ExportFirstPage ApplyModelToFirstPage(ExportFirstPage firstPage, IntegrationPointGeneralModel model)
+		{
+			firstPage.Name = model.Name;
+			firstPage.Destination = model.DestinationProvider;
+			if (!string.IsNullOrEmpty(model.TransferredObject))
+			{
+				firstPage.TransferedObject =
+					CustodianToEntityUtils.GetValidTransferredObjectName(
+						firstPage.IsEntityTransferredObjectOptionAvailable, model);
+			}
+
+			if (!string.IsNullOrEmpty(model.Profile))
+			{
+				firstPage.ProfileObject = model.Profile;
+			}
+
+			return firstPage;
+		}
+
+		protected PushToRelativitySecondPage SetupPushToRelativitySecondPage(ExportFirstPage firstPage,
+			RelativityProviderModel model)
+		{
+			PushToRelativitySecondPage secondPage = firstPage.GoToNextPagePush();
+
+			SelectSource(secondPage, model);
+
+			secondPage.DestinationWorkspace = model.DestinationWorkspace;
+			SelectDestination(secondPage, model);
+			return secondPage;
+		}
+
+		protected PushToRelativityThirdPage SetupPushToRelativityThirdPage(PushToRelativitySecondPage secondPage,
+			RelativityProviderModel model)
+		{
+			PushToRelativityThirdPage thirdPage = secondPage.GoToNextPage();
+
+			if (model.GetValueOrDefault(m => m.Source) != RelativityProviderModel.SourceTypeEnum.Production &&
+			    model.GetValueOrDefault(m => m.Location) != RelativityProviderModel.LocationEnum.ProductionSet)
+			{
+				MapWorkspaceFields(thirdPage, model.FieldMapping);
+				thirdPage.SelectCopyImages(model.CopyImages);
+			}
+
+
+			if (model.Overwrite == RelativityProviderModel.OverwriteModeEnum.AppendOnly)
+			{
+				thirdPage.SelectOverwrite = "Append Only";
+			}
+			else if (model.Overwrite == RelativityProviderModel.OverwriteModeEnum.OverlayOnly)
+			{
+				thirdPage.SelectOverwrite = "Overlay Only";
+			}
+			else if (model.Overwrite == RelativityProviderModel.OverwriteModeEnum.AppendOverlay)
+			{
+				thirdPage.SelectOverwrite = "Append/Overlay";
+			}
+
+
+			if (model.MultiSelectFieldOverlay ==
+			    RelativityProviderModel.MultiSelectFieldOverlayBehaviorEnum.MergeValues)
+			{
+				thirdPage.SelectMultiSelectFieldOverlayBehavior = "Merge Values";
+			}
+			else if (model.MultiSelectFieldOverlay ==
+			         RelativityProviderModel.MultiSelectFieldOverlayBehaviorEnum.ReplaceValues)
+			{
+				thirdPage.SelectMultiSelectFieldOverlayBehavior = "Replace Values";
+			}
+			else if (model.MultiSelectFieldOverlay ==
+			         RelativityProviderModel.MultiSelectFieldOverlayBehaviorEnum.UseFieldSettings)
+			{
+				thirdPage.SelectMultiSelectFieldOverlayBehavior = "Use Field Settings";
+			}
+
+			if (model.ImagePrecedence == ImagePrecedence.OriginalImages)
+			{
+				thirdPage.SelectImagePrecedence = "Original Images";
+			}
+			else if (model.ImagePrecedence == ImagePrecedence.ProducedImages)
+			{
+				thirdPage.SelectImagePrecedence = "Produced Images";
+				thirdPage.SelectProductionPrecedence(model.SourceProductionName);
+				thirdPage.SelectIncludeOriginalImagesIfNotProduced(model.IncludeOriginalImagesIfNotProduced);
+			}
+
+			thirdPage.SelectCopyNativeFiles(model.CopyNativeFiles);
+
+			if (model.UseFolderPathInformation == RelativityProviderModel.UseFolderPathInformationEnum.No)
+			{
+				thirdPage.SelectFolderPathInfo = "No";
+			}
+			else if (model.UseFolderPathInformation ==
+			         RelativityProviderModel.UseFolderPathInformationEnum.ReadFromField)
+			{
+				thirdPage.SelectFolderPathInfo = "Read From Field";
+				thirdPage.SelectReadFromField = "Document Folder Path";
+			}
+			else if (model.UseFolderPathInformation ==
+			         RelativityProviderModel.UseFolderPathInformationEnum.ReadFromFolderTree)
+			{
+				thirdPage.SelectFolderPathInfo = "Read From Folder Tree";
+			}
+
+			thirdPage.SelectMoveExitstingDocuments(model.MoveExistingDocuments);
+
+
+			thirdPage.SelectCopyFilesToRepository(model.CopyFilesToRepository);
+
+			return thirdPage;
+		}
+
+		private ExportFirstPage SetupFirstIntegrationPointPage(GeneralPage generalPage,
+			IntegrationPointGeneralModel model)
+		{
+			ExportFirstPage firstPage = GoToFirstPageIntegrationPoints(generalPage);
+			ExportFirstPage firstPageWithModelApplied = ApplyModelToFirstPage(firstPage, model);
+
+			return firstPageWithModelApplied;
+		}
+
+		private ExportFirstPage GoToFirstPageIntegrationPoints(GeneralPage generalPage)
+		{
+			IntegrationPointsPage ipPage = generalPage.GoToIntegrationPointsPage();
+			return ipPage.CreateNewExportIntegrationPoint();
+		}
+
+		private ExportToFileSecondPage SetupExportToFileSecondPage(ExportFirstPage firstPage,
 			ExportToLoadFileProviderModel model)
 		{
 			ExportToFileSecondPage secondPage = firstPage.GoToNextPage();
@@ -74,7 +242,8 @@ namespace kCura.IntegrationPoints.UITests.Common
 			return secondPage;
 		}
 
-		private void SetupExportToFileThirdPageExportDetails(ExportToFileThirdPageExportDetails thirdPageExportDetails, ExportToLoadFileDetailsModel exportDetails)
+		private void SetupExportToFileThirdPageExportDetails(ExportToFileThirdPageExportDetails thirdPageExportDetails,
+			ExportToLoadFileDetailsModel exportDetails)
 		{
 			if (exportDetails.ExportImages.HasValue && exportDetails.ExportImages.Value)
 			{
@@ -95,7 +264,8 @@ namespace kCura.IntegrationPoints.UITests.Common
 			{
 				thirdPageExportDetails.DestinationFolder.ChooseRootElement();
 			}
-			else if (exportDetails.DestinationFolder == ExportToLoadFileProviderModel.DestinationFolderTypeEnum.SubfolderOfRoot)
+			else if (exportDetails.DestinationFolder ==
+			         ExportToLoadFileProviderModel.DestinationFolderTypeEnum.SubfolderOfRoot)
 			{
 				thirdPageExportDetails.DestinationFolder.ChooseFirstChildElement();
 			}
@@ -111,7 +281,9 @@ namespace kCura.IntegrationPoints.UITests.Common
 			}
 		}
 
-		private void SetupExportToFileThirdPageLoadFileOptions(ExportToFileThirdPageLoadFileOptions thirdPageLoadFileOptions, ExportToLoadFileLoadFileOptionsModel loadFileOptions, bool exportNatives)
+		private void SetupExportToFileThirdPageLoadFileOptions(
+			ExportToFileThirdPageLoadFileOptions thirdPageLoadFileOptions,
+			ExportToLoadFileLoadFileOptionsModel loadFileOptions, bool exportNatives)
 		{
 			thirdPageLoadFileOptions.ImageFileFormat = loadFileOptions.ImageFileFormat;
 			thirdPageLoadFileOptions.DataFileFormat = loadFileOptions.DataFileFormat;
@@ -123,7 +295,8 @@ namespace kCura.IntegrationPoints.UITests.Common
 				thirdPageLoadFileOptions.UserPrefix = loadFileOptions.UserPrefix;
 			}
 
-			if (!exportNatives && loadFileOptions.IncludeNativeFilesPath.HasValue && loadFileOptions.IncludeNativeFilesPath.Value)
+			if (!exportNatives && loadFileOptions.IncludeNativeFilesPath.HasValue &&
+			    loadFileOptions.IncludeNativeFilesPath.Value)
 			{
 				thirdPageLoadFileOptions.IncludeNativeFilesPath();
 			}
@@ -141,7 +314,9 @@ namespace kCura.IntegrationPoints.UITests.Common
 			}
 		}
 
-		private void SetupExportToFileThirdPageImageOptions(ExportToFileThirdPageImageNativeTextOptions thirdPageImageNativeTextOptions, ExportToLoadFileImageOptionsModel imageOptions)
+		private void SetupExportToFileThirdPageImageOptions(
+			ExportToFileThirdPageImageNativeTextOptions thirdPageImageNativeTextOptions,
+			ExportToLoadFileImageOptionsModel imageOptions)
 		{
 			thirdPageImageNativeTextOptions.FileType = imageOptions.ImageFileType;
 			switch (imageOptions.ImagePrecedence)
@@ -156,33 +331,47 @@ namespace kCura.IntegrationPoints.UITests.Common
 					thirdPageImageNativeTextOptions.ImagePrecedence = "Original Images";
 					break;
 			}
+
 			thirdPageImageNativeTextOptions.ImageSubdirectoryPrefix = imageOptions.ImageSubdirectoryPrefix;
 		}
 
-		private void SetupExportToFileThirdPageNativeOptions(ExportToFileThirdPageImageNativeTextOptions thirdPageImageNativeTextOptions, ExportToLoadFileNativeOptionsModel nativeOptions)
+		private void SetupExportToFileThirdPageNativeOptions(
+			ExportToFileThirdPageImageNativeTextOptions thirdPageImageNativeTextOptions,
+			ExportToLoadFileNativeOptionsModel nativeOptions)
 		{
 			thirdPageImageNativeTextOptions.NativeSubdirectoryPrefix = nativeOptions.NativeSubdirectoryPrefix;
 		}
 
-		private void SetupExportToFileThirdPageTextOptions(ExportToFileThirdPageImageNativeTextOptions thirdPageImageNativeTextOptions, ExportToLoadFileTextOptionsModel textOptions)
+		private void SetupExportToFileThirdPageTextOptions(
+			ExportToFileThirdPageImageNativeTextOptions thirdPageImageNativeTextOptions,
+			ExportToLoadFileTextOptionsModel textOptions)
 		{
 			thirdPageImageNativeTextOptions.TextFileEncoding = textOptions.TextFileEncoding;
 			thirdPageImageNativeTextOptions.SelectTextPrecedenceField(textOptions.TextPrecedence);
 			thirdPageImageNativeTextOptions.TextSubdirectoryPrefix = textOptions.TextSubdirectoryPrefix;
 		}
 
-		private void SetupExportToFileThirdPageVolumeSubdirectoryDetails(ExportToFileThirdPageVolumeSubdirectoryDetails thirdPageVolumeSubdirectoryDetails, ExportToLoadFileVolumeAndSubdirectoryModel volumeSubdirectoryDetails)
+		private void SetupExportToFileThirdPageVolumeSubdirectoryDetails(
+			ExportToFileThirdPageVolumeSubdirectoryDetails thirdPageVolumeSubdirectoryDetails,
+			ExportToLoadFileVolumeAndSubdirectoryModel volumeSubdirectoryDetails)
 		{
 			thirdPageVolumeSubdirectoryDetails.VolumePrefix = volumeSubdirectoryDetails.VolumePrefix;
-			thirdPageVolumeSubdirectoryDetails.VolumeStartNumber = volumeSubdirectoryDetails.VolumeStartNumber?.ToString() ?? string.Empty;
-			thirdPageVolumeSubdirectoryDetails.VolumeNumberOfDigits = volumeSubdirectoryDetails.VolumeNumberOfDigits?.ToString() ?? string.Empty;
-			thirdPageVolumeSubdirectoryDetails.VolumeMaxSize = volumeSubdirectoryDetails.VolumeMaxSize?.ToString() ?? string.Empty;
-			thirdPageVolumeSubdirectoryDetails.SubdirectoryStartNumber = volumeSubdirectoryDetails.SubdirectoryStartNumber?.ToString() ?? string.Empty;
-			thirdPageVolumeSubdirectoryDetails.SubdirectoryNumberOfDigits = volumeSubdirectoryDetails.SubdirectoryNumberOfDigits?.ToString() ?? string.Empty;
-			thirdPageVolumeSubdirectoryDetails.SubdirectoryMaxFiles = volumeSubdirectoryDetails.SubdirectoryMaxFiles?.ToString() ?? string.Empty;
+			thirdPageVolumeSubdirectoryDetails.VolumeStartNumber =
+				volumeSubdirectoryDetails.VolumeStartNumber?.ToString() ?? string.Empty;
+			thirdPageVolumeSubdirectoryDetails.VolumeNumberOfDigits =
+				volumeSubdirectoryDetails.VolumeNumberOfDigits?.ToString() ?? string.Empty;
+			thirdPageVolumeSubdirectoryDetails.VolumeMaxSize =
+				volumeSubdirectoryDetails.VolumeMaxSize?.ToString() ?? string.Empty;
+			thirdPageVolumeSubdirectoryDetails.SubdirectoryStartNumber =
+				volumeSubdirectoryDetails.SubdirectoryStartNumber?.ToString() ?? string.Empty;
+			thirdPageVolumeSubdirectoryDetails.SubdirectoryNumberOfDigits =
+				volumeSubdirectoryDetails.SubdirectoryNumberOfDigits?.ToString() ?? string.Empty;
+			thirdPageVolumeSubdirectoryDetails.SubdirectoryMaxFiles =
+				volumeSubdirectoryDetails.SubdirectoryMaxFiles?.ToString() ?? string.Empty;
 		}
 
-		public ExportToFileThirdPage SetupExportToFileThirdPage(ExportToFileSecondPage secondPage, ExportToLoadFileProviderModel model)
+		private ExportToFileThirdPage SetupExportToFileThirdPage(ExportToFileSecondPage secondPage,
+			ExportToLoadFileProviderModel model)
 		{
 			ExportToFileThirdPage thirdPage = secondPage.GoToNextPage();
 
@@ -217,14 +406,17 @@ namespace kCura.IntegrationPoints.UITests.Common
 
 			if (volumeAndSubdirectoryDetailsVisible)
 			{
-				ExportToLoadFileVolumeAndSubdirectoryModel volumeSubdirectoryDetails = model.ToLoadFileVolumeAndSubdirectoryModel;
-				SetupExportToFileThirdPageVolumeSubdirectoryDetails(thirdPage.VolumeSubdirectoryDetails, volumeSubdirectoryDetails);
+				ExportToLoadFileVolumeAndSubdirectoryModel volumeSubdirectoryDetails =
+					model.ToLoadFileVolumeAndSubdirectoryModel;
+				SetupExportToFileThirdPageVolumeSubdirectoryDetails(thirdPage.VolumeSubdirectoryDetails,
+					volumeSubdirectoryDetails);
 			}
 
 			return thirdPage;
 		}
 
-		public ExportToFileThirdPage SetupExportToFileThirdPage(ExportEntityToFileSecondPage secondPage, EntityExportToLoadFileModel model)
+		private ExportToFileThirdPage SetupExportToFileThirdPage(ExportEntityToFileSecondPage secondPage,
+			EntityExportToLoadFileModel model)
 		{
 			ExportToFileThirdPage thirdPage = secondPage.GoToNextPage();
 
@@ -259,29 +451,16 @@ namespace kCura.IntegrationPoints.UITests.Common
 
 			if (volumeAndSubdirectoryDetailsVisible)
 			{
-				ExportToLoadFileVolumeAndSubdirectoryModel volumeSubdirectoryDetails = model.OutputSettings.VolumeAndSubdirectoryOptions;
-				SetupExportToFileThirdPageVolumeSubdirectoryDetails(thirdPage.VolumeSubdirectoryDetails, volumeSubdirectoryDetails);
+				ExportToLoadFileVolumeAndSubdirectoryModel volumeSubdirectoryDetails =
+					model.OutputSettings.VolumeAndSubdirectoryOptions;
+				SetupExportToFileThirdPageVolumeSubdirectoryDetails(thirdPage.VolumeSubdirectoryDetails,
+					volumeSubdirectoryDetails);
 			}
 
 			return thirdPage;
 		}
 
-		public IntegrationPointDetailsPage CreateNewExportEntityToLoadfileIntegrationPoint(EntityExportToLoadFileModel model)
-		{
-			GeneralPage generalPage = new GeneralPage(Driver)
-				.PassWelcomeScreen()
-				.ChooseWorkspace(Context.WorkspaceName);
-
-			ExportFirstPage firstPage = SetupFirstIntegrationPointPage(generalPage, model);
-
-			ExportEntityToFileSecondPage secondPage = SetupEntityExportToFileSecondPage(firstPage, model);
-
-			ExportToFileThirdPage thirdPage = SetupExportToFileThirdPage(secondPage, model);
-
-			return thirdPage.SaveIntegrationPoint();
-		}
-
-		public ExportEntityToFileSecondPage SetupEntityExportToFileSecondPage(ExportFirstPage firstPage,
+		private ExportEntityToFileSecondPage SetupEntityExportToFileSecondPage(ExportFirstPage firstPage,
 			EntityExportToLoadFileModel model)
 		{
 			ExportEntityToFileSecondPage secondPage = firstPage.GotoNextPageEntity();
@@ -291,48 +470,7 @@ namespace kCura.IntegrationPoints.UITests.Common
 			{
 				secondPage.SelectAllFields();
 			}
-			return secondPage;
-		}
 
-        public IntegrationPointDetailsPage CreateNewExportToLoadFileIntegrationPoint(ExportToLoadFileProviderModel model)
-        {
-            GeneralPage generalPage = new GeneralPage(Driver)
-				.PassWelcomeScreen()
-				.ChooseWorkspace(Context.WorkspaceName);
-
-			ExportFirstPage firstPage = SetupFirstIntegrationPointPage(generalPage, model);
-
-			ExportToFileSecondPage secondPage = SetupExportToFileSecondPage(firstPage, model);
-
-			ExportToFileThirdPage thirdPage = SetupExportToFileThirdPage(secondPage, model);
-
-			return thirdPage.SaveIntegrationPoint();
-		}
-
-		public IntegrationPointDetailsPage CreateNewRelativityProviderIntegrationPoint(RelativityProviderModel model)
-		{
-			GeneralPage generalPage = new GeneralPage(Driver).PassWelcomeScreen();
-			generalPage.ChooseWorkspace(Context.WorkspaceName);
-
-			ExportFirstPage firstPage = SetupFirstIntegrationPointPage(generalPage, model);
-
-			PushToRelativitySecondPage secondPage = SetupPushToRelativitySecondPage(firstPage, model);
-
-			PushToRelativityThirdPage thirdPage = SetupPushToRelativityThirdPage(secondPage, model);
-
-			return thirdPage.SaveIntegrationPoint();
-		}
-
-
-
-		public PushToRelativitySecondPage SetupPushToRelativitySecondPage(ExportFirstPage firstPage, RelativityProviderModel model)
-		{
-			PushToRelativitySecondPage secondPage = firstPage.GoToNextPagePush();
-
-			SelectSource(secondPage, model);
-
-			secondPage.DestinationWorkspace = model.DestinationWorkspace;
-			SelectDestination(secondPage, model);
 			return secondPage;
 		}
 
@@ -375,81 +513,6 @@ namespace kCura.IntegrationPoints.UITests.Common
 					secondPage.SelectProductionLocation(model.DestinationProductionName);
 					break;
 			}
-		}
-
-		public PushToRelativityThirdPage SetupPushToRelativityThirdPage(PushToRelativitySecondPage secondPage, RelativityProviderModel model)
-		{
-			PushToRelativityThirdPage thirdPage = secondPage.GoToNextPage();
-
-			if (model.GetValueOrDefault(m => m.Source) != RelativityProviderModel.SourceTypeEnum.Production &&
-				model.GetValueOrDefault(m => m.Location) != RelativityProviderModel.LocationEnum.ProductionSet)
-			{
-				MapWorkspaceFields(thirdPage, model.FieldMapping);
-				thirdPage.SelectCopyImages(model.CopyImages);
-			}
-
-
-			if (model.Overwrite == RelativityProviderModel.OverwriteModeEnum.AppendOnly)
-			{
-				thirdPage.SelectOverwrite = "Append Only";
-			}
-			else if (model.Overwrite == RelativityProviderModel.OverwriteModeEnum.OverlayOnly)
-			{
-				thirdPage.SelectOverwrite = "Overlay Only";
-			}
-			else if (model.Overwrite == RelativityProviderModel.OverwriteModeEnum.AppendOverlay)
-			{
-				thirdPage.SelectOverwrite = "Append/Overlay";
-			}
-
-
-
-			if (model.MultiSelectFieldOverlay == RelativityProviderModel.MultiSelectFieldOverlayBehaviorEnum.MergeValues)
-			{
-				thirdPage.SelectMultiSelectFieldOverlayBehavior = "Merge Values";
-			}
-			else if (model.MultiSelectFieldOverlay == RelativityProviderModel.MultiSelectFieldOverlayBehaviorEnum.ReplaceValues)
-			{
-				thirdPage.SelectMultiSelectFieldOverlayBehavior = "Replace Values";
-			}
-			else if (model.MultiSelectFieldOverlay == RelativityProviderModel.MultiSelectFieldOverlayBehaviorEnum.UseFieldSettings)
-			{
-				thirdPage.SelectMultiSelectFieldOverlayBehavior = "Use Field Settings";
-			}
-
-			if (model.ImagePrecedence == ImagePrecedence.OriginalImages)
-			{
-				thirdPage.SelectImagePrecedence = "Original Images";
-			}
-			else if (model.ImagePrecedence == ImagePrecedence.ProducedImages)
-			{
-				thirdPage.SelectImagePrecedence = "Produced Images";
-				thirdPage.SelectProductionPrecedence(model.SourceProductionName);
-				thirdPage.SelectIncludeOriginalImagesIfNotProduced(model.IncludeOriginalImagesIfNotProduced);
-			}
-
-			thirdPage.SelectCopyNativeFiles(model.CopyNativeFiles);
-
-			if (model.UseFolderPathInformation == RelativityProviderModel.UseFolderPathInformationEnum.No)
-			{
-				thirdPage.SelectFolderPathInfo = "No";
-			}
-			else if (model.UseFolderPathInformation == RelativityProviderModel.UseFolderPathInformationEnum.ReadFromField)
-			{
-				thirdPage.SelectFolderPathInfo = "Read From Field";
-				thirdPage.SelectReadFromField = "Document Folder Path";
-			}
-			else if (model.UseFolderPathInformation == RelativityProviderModel.UseFolderPathInformationEnum.ReadFromFolderTree)
-			{
-				thirdPage.SelectFolderPathInfo = "Read From Folder Tree";
-			}
-
-			thirdPage.SelectMoveExitstingDocuments(model.MoveExistingDocuments);
-
-
-			thirdPage.SelectCopyFilesToRepository(model.CopyFilesToRepository);
-
-			return thirdPage;
 		}
 
 		private void MapWorkspaceFields(PushToRelativityThirdPage thirdPage, List<Tuple<string, string>> fieldMapping)

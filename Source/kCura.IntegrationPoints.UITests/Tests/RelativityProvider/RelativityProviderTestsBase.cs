@@ -1,6 +1,7 @@
 ﻿using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
+using kCura.Relativity.Client;
 
 namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 {
@@ -48,6 +49,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 				{
 					Workspace.DeleteWorkspace(DestinationContext.GetWorkspaceId());
 				}
+
 				DestinationContext.TearDown();
 			}
 		}
@@ -70,20 +72,31 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 		protected DocumentsValidator CreateDocumentsForFolderTreeValidator()
 		{
+			DocumentPathValidator documentPathValidator = DocumentPathValidator.CreateForFolderTree(
+				Context.GetWorkspaceId(),
+				DestinationContext.GetWorkspaceId(),
+				FolderManager);
 			return new PushDocumentsValidator(Context.GetWorkspaceId(), DestinationContext.GetWorkspaceId())
-				.ValidateWith(DocumentPathValidator.CreateForFolderTree(Context.GetWorkspaceId(), DestinationContext.GetWorkspaceId(), FolderManager));
+				.ValidateWith(documentPathValidator);
 		}
 
 		protected DocumentsValidator CreateDocumentsForRootValidator()
 		{
+			DocumentPathValidator documentPathValidator = DocumentPathValidator.CreateForRoot(
+				Context.GetWorkspaceId(),
+				FolderManager);
 			return new PushDocumentsValidator(Context.GetWorkspaceId(), DestinationContext.GetWorkspaceId())
-				.ValidateWith(DocumentPathValidator.CreateForRoot(DestinationContext.GetWorkspaceId(), FolderManager));
+				.ValidateWith(documentPathValidator);
 		}
 
 		protected DocumentsValidator CreateDocumentsForRootWithFolderNameValidator()
 		{
+			DocumentPathValidator documentPathValidator = DocumentPathValidator.CreateForRoot(
+				Context.GetWorkspaceId(),
+				FolderManager,
+				"NATIVES");
 			return new PushDocumentsValidator(Context.GetWorkspaceId(), DestinationContext.GetWorkspaceId())
-				.ValidateWith(DocumentPathValidator.CreateForRoot(DestinationContext.GetWorkspaceId(), FolderManager, "NATIVES"));
+				.ValidateWith(documentPathValidator);
 		}
 	}
 }

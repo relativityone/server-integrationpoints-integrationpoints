@@ -89,6 +89,7 @@
     <Compile Include="BrandNew\Import\LoadFile\LoadFileSettingsPanel.cs" />
     <Compile Include="BrandNew\IntegrationPointsPage.cs" />
     <Compile Include="BrandNew\GeneralPanel.cs" />
+    <Compile Include="Common\IntegrationPointProfileAction.cs" />
     <Compile Include="Common\IntegrationPointsAction.cs" />
     <Compile Include="Common\UiTestException.cs" />
     <Compile Include="Common\TestCategory.cs" />
@@ -137,6 +138,7 @@
     <Compile Include="Pages\ImportThirdPage.cs" />
     <Compile Include="BrandNew\Import\FTP\SecondPage.cs" />
     <Compile Include="Pages\IntegrationPointDetailsPage.cs" />
+    <Compile Include="Pages\IntegrationPointProfilePage.cs" />
     <Compile Include="Pages\IntegrationPointsPage.cs" />
     <Compile Include="Pages\ExportToFileSecondPage.cs" />
     <Compile Include="Pages\ExportFirstPage.cs" />
@@ -156,6 +158,7 @@
     <Compile Include="Tests\ImportFromLoadFile\ImportFromLoadFileTest.cs" />
     <Compile Include="Tests\LDAPProvider\ImportLdapProviderTest.cs" />
     <Compile Include="Tests\PerformanceBaseline\PerformanceBaselineImagesTest.cs" />
+    <Compile Include="Tests\Profile\CreateAndApplyProfilesTest.cs" />
     <Compile Include="Tests\PerformanceBaseline\PerformanceBaselineNativesTest.cs" />
     <Compile Include="Tests\RelativityProvider\DataGridToSqlTest.cs" />
     <Compile Include="Tests\ExportToLoadFile\ProductionExportToLoadFileTests.cs" />
@@ -179,6 +182,7 @@
     <Compile Include="Validation\RelativityProviderValidation\LinksSavedSearchToFolderValidator.cs" />
     <Compile Include="Validation\RelativityProviderValidation\RelativityProviderValidatorBase.cs" />
     <Compile Include="Validation\RelativityProviderValidation\ImagesSavedSearchToFolderValidator.cs" />
+    <Compile Include="Validation\RelativityProviderValidation\SavedSearchToFolderValidator.cs" />
     <Compile Include="Validation\RelativityProviderValidation\SavedSearchToProductionSetValidator.cs" />
   </ItemGroup>
   <ItemGroup>
