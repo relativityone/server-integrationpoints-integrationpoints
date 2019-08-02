@@ -105,7 +105,13 @@ namespace Relativity.Sync.Transfer
 				}
 				if (result.Count != foldersWithIds.Count)
 				{
-					throw new SyncException("Unable to send document between workspace due to lack of folder in source workspace. Different quantity of foldersId after begin job");
+					List<int> differentValues = new List<int>();
+					result.ForEach(o => differentValues.Add(o.ArtifactID));
+					differentValues = foldersWithIds.Except(differentValues).ToList();
+					const int maxSubset = 50;
+					int subsetCount = differentValues.Count < maxSubset ? differentValues.Count : maxSubset;
+					string subsetArtifactIds = string.Join(",", differentValues.Take(subsetCount));
+					throw new SyncException($"Could not find folders with IDs { subsetArtifactIds } in workspace {workspaceArtifactId}.");
 				}
 				return result.ToDictionary(f => f.ArtifactID, f => RemoveUnnecessarySpaces(f.FullPath));
 			}
