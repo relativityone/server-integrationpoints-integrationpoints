@@ -42,6 +42,9 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			var validationResult = new ValidationResult();
 
 			validationResult.Add(await ValidateUserHasPermissionToAccessWorkspaceAsync(configuration).ConfigureAwait(false));
+			validationResult.Add(await ValidateSourceWorkspacePermissionAsync(configuration, _ALLOW_EXPORT_PERMISSION_ID, _SOURCE_WORKSPACE_NO_EXPORT).ConfigureAwait(false));
+			validationResult.Add(await ValidateSourceWorkspacePermissionAsync(configuration, _EDIT_DOCUMENT_PERMISSION_ID, _SOURCE_WORKSPACE_NO_DOC_EDIT).ConfigureAwait(false));
+
 			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, JobHistory, PermissionType.Add, _JOB_HISTORY_TYPE_NO_ADD).ConfigureAwait(false));
 			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, ObjectTypeGuid, PermissionType.Add, _OBJECT_TYPE_NO_ADD).ConfigureAwait(false));
 			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, BatchObjectTypeGuid, new[] {PermissionType.Add, PermissionType.Edit, PermissionType.View },
@@ -49,8 +52,6 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, ProgressObjectTypeGuid,
 					new[] {PermissionType.Add, PermissionType.Edit, PermissionType.View}, _PROGRESS_OBJECT_TYPE_ERROR).ConfigureAwait(false));
 			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, ConfigurationObjectTypeGuid, PermissionType.Edit, _CONFIGURATION_TYPE_NO_ADD).ConfigureAwait(false));
-			validationResult.Add(await ValidateSourceWorkspacePermissionAsync(configuration, _ALLOW_EXPORT_PERMISSION_ID, _SOURCE_WORKSPACE_NO_EXPORT).ConfigureAwait(false));
-			validationResult.Add(await ValidateSourceWorkspacePermissionAsync(configuration, _EDIT_DOCUMENT_PERMISSION_ID, _SOURCE_WORKSPACE_NO_DOC_EDIT).ConfigureAwait(false));
 
 			return validationResult;
 		}
