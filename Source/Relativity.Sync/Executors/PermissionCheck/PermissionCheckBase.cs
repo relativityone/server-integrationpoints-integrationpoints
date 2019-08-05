@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Services;
 using Relativity.Services.Permission;
@@ -13,9 +11,16 @@ namespace Relativity.Sync.Executors.PermissionCheck
 {
 	internal abstract class PermissionCheckBase : IPermissionCheck
 	{
+		protected IProxyFactory ProxyFactory { get; }
+
+		protected PermissionCheckBase(IProxyFactory proxyFactory)
+		{
+			ProxyFactory = proxyFactory;
+		}
+
 		public abstract Task<ValidationResult> ValidateAsync(IPermissionsCheckConfiguration configuration);
 
-		protected static async Task<IList<PermissionValue>> GetPermissionsAsync(IProxyFactory proxy, int workspaceArtifactId, int artifactId, List<PermissionRef> permissionRefs)
+		protected static async Task<IList<PermissionValue>> GetPermissionsForArtifactIdAsync(IProxyFactory proxy, int workspaceArtifactId, int artifactId, List<PermissionRef> permissionRefs)
 		{
 			using (var permissionManager = await proxy.CreateProxyAsync<IPermissionManager>().ConfigureAwait(false))
 			{
@@ -79,12 +84,12 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			return userHasPermissions;
 		}
 
-		protected static ValidationResult DoesUserHaveViewPermission(bool userHasViewPermissions, string errorMessage)
+		protected static ValidationResult DoesUserHaveViewPermission(bool userHasViewPermissions, string errorMessage, string errorCode = null)
 		{
 			var validationResult = new ValidationResult();
 			if (!userHasViewPermissions)
 			{
-				var validationMessage = new ValidationMessage(errorMessage);
+				ValidationMessage validationMessage = (errorCode == null) ? new ValidationMessage(errorMessage) : new ValidationMessage(errorCode, errorMessage);
 				validationResult.Add(validationMessage);
 			}
 			return validationResult;

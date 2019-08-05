@@ -31,7 +31,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 		private const int _TEST_WORKSPACE_ARTIFACT_ID = 20489;
 		private const int _TEST_FOLDER_ARTIFACT_ID = 20476;
 
-		private readonly Guid ObjectTypeGuid = new Guid("7E03308C-0B58-48CB-AFA4-BB718C3F5CAC");
+		private readonly Guid ObjectTypeGuid = new Guid("3F45E490-B4CF-4C7D-8BB6-9CA891C0C198");
 
 		[SetUp]
 		public void SetUp()

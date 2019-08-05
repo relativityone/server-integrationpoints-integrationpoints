@@ -22,19 +22,17 @@ namespace Relativity.Sync.Executors.PermissionCheck
 		private const int _ALLOW_EXPORT_PERMISSION_ID = 159; // 159 is the artifact id of the "Allow Export" permission
 		private const int _EDIT_DOCUMENT_PERMISSION_ID = 45; // 45 is the artifact id of the "Edit Documents" permission
 
-		private readonly Guid JobHistory = new Guid("08f4b1f7-9692-4a08-94ab-b5f3a88b6cc9");
-		private readonly Guid ObjectTypeGuid = new Guid("7E03308C-0B58-48CB-AFA4-BB718C3F5CAC");
-		private readonly Guid BatchObjectTypeGuid = new Guid("18C766EB-EB71-49E4-983E-FFDE29B1A44E");
-		private readonly Guid ProgressObjectTypeGuid = new Guid("3D107450-DB18-4FE1-8219-73EE1F921ED9");
-		private readonly Guid ConfigurationObjectTypeGuid = new Guid("3BE3DE56-839F-4F0E-8446-E1691ED5FD57");
+		private readonly Guid _jobHistory = new Guid("08f4b1f7-9692-4a08-94ab-b5f3a88b6cc9");
+		private readonly Guid _objectTypeGuid = new Guid("3F45E490-B4CF-4C7D-8BB6-9CA891C0C198");
+		private readonly Guid _batchObjectTypeGuid = new Guid("18C766EB-EB71-49E4-983E-FFDE29B1A44E");
+		private readonly Guid _progressObjectTypeGuid = new Guid("3D107450-DB18-4FE1-8219-73EE1F921ED9");
+		private readonly Guid _configurationObjectTypeGuid = new Guid("3BE3DE56-839F-4F0E-8446-E1691ED5FD57");
 
 		private readonly ISyncLog _logger;
-		private readonly ISourceServiceFactoryForUser _sourceServiceFactory;
 
-		public SourcePermissionCheck(ISyncLog logger, ISourceServiceFactoryForUser sourceServiceFactory)
+		public SourcePermissionCheck(ISyncLog logger, ISourceServiceFactoryForUser sourceServiceFactory) : base(sourceServiceFactory)
 		{
 			_logger = logger;
-			_sourceServiceFactory = sourceServiceFactory;
 		}
 
 		public override async Task<ValidationResult> ValidateAsync(IPermissionsCheckConfiguration configuration)
@@ -42,15 +40,16 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			var validationResult = new ValidationResult();
 
 			validationResult.Add(await ValidateUserHasPermissionToAccessWorkspaceAsync(configuration).ConfigureAwait(false));
-			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, JobHistory, PermissionType.Add, _JOB_HISTORY_TYPE_NO_ADD).ConfigureAwait(false));
-			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, ObjectTypeGuid, PermissionType.Add, _OBJECT_TYPE_NO_ADD).ConfigureAwait(false));
-			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, BatchObjectTypeGuid, new[] {PermissionType.Add, PermissionType.Edit, PermissionType.View },
-				_BATCH_OBJECT_TYPE_ERROR).ConfigureAwait(false));
-			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, ProgressObjectTypeGuid,
-					new[] {PermissionType.Add, PermissionType.Edit, PermissionType.View}, _PROGRESS_OBJECT_TYPE_ERROR).ConfigureAwait(false));
-			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, ConfigurationObjectTypeGuid, PermissionType.Edit, _CONFIGURATION_TYPE_NO_ADD).ConfigureAwait(false));
 			validationResult.Add(await ValidateSourceWorkspacePermissionAsync(configuration, _ALLOW_EXPORT_PERMISSION_ID, _SOURCE_WORKSPACE_NO_EXPORT).ConfigureAwait(false));
 			validationResult.Add(await ValidateSourceWorkspacePermissionAsync(configuration, _EDIT_DOCUMENT_PERMISSION_ID, _SOURCE_WORKSPACE_NO_DOC_EDIT).ConfigureAwait(false));
+
+			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, _jobHistory, PermissionType.Add, _JOB_HISTORY_TYPE_NO_ADD).ConfigureAwait(false));
+			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, _objectTypeGuid, PermissionType.Add, _OBJECT_TYPE_NO_ADD).ConfigureAwait(false));
+			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, _configurationObjectTypeGuid, PermissionType.Edit, _CONFIGURATION_TYPE_NO_ADD).ConfigureAwait(false));
+			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, _batchObjectTypeGuid, new[] { PermissionType.Add, PermissionType.Edit, PermissionType.View },
+				_BATCH_OBJECT_TYPE_ERROR).ConfigureAwait(false));
+			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, _progressObjectTypeGuid,
+					new[] { PermissionType.Add, PermissionType.Edit, PermissionType.View }, _PROGRESS_OBJECT_TYPE_ERROR).ConfigureAwait(false));
 
 			return validationResult;
 		}
@@ -63,7 +62,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			bool userHasViewPermissions = false;
 			try
 			{
-				IList<PermissionValue> permissions = await GetPermissionsAsync(_sourceServiceFactory, -1, configuration.SourceWorkspaceArtifactId, permissionRefs).ConfigureAwait(false);
+				IList<PermissionValue> permissions = await GetPermissionsForArtifactIdAsync(ProxyFactory, -1, configuration.SourceWorkspaceArtifactId, permissionRefs).ConfigureAwait(false);
 				userHasViewPermissions = DoesUserHavePermissions(permissions);
 			}
 			catch (Exception ex)
@@ -75,25 +74,31 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			return DoesUserHaveViewPermission(userHasViewPermissions, errorMessage);
 		}
 
-		private async Task<ValidationResult> ValidateUserHasArtifactTypePermissionAsync(IPermissionsCheckConfiguration configuration, 
-			Guid artifactTypeGuid, PermissionType artifactPermission, string errorMessage)
+		private async Task<ValidationResult> ValidateSourceWorkspacePermissionAsync(IPermissionsCheckConfiguration configuration, int permissionId, string errorMessage)
 		{
-			var artifactTypeIdentifier = new ArtifactTypeIdentifier(artifactTypeGuid);
-			List<PermissionRef> permissionRefs = GetPermissionRefs(artifactTypeIdentifier, artifactPermission);
+			List<PermissionRef> permissionRefs = GetPermissionRefs(permissionId);
 
 			bool userHasViewPermissions = false;
 			try
 			{
-				IList<PermissionValue> permissions = await GetPermissionsAsync(_sourceServiceFactory, configuration.SourceWorkspaceArtifactId, permissionRefs).ConfigureAwait(false);
-				userHasViewPermissions = DoesUserHavePermissions(permissions);
+				IList<PermissionValue> permissions = await GetPermissionsAsync(ProxyFactory, configuration.SourceWorkspaceArtifactId, permissionRefs).ConfigureAwait(false);
+				userHasViewPermissions = DoesUserHavePermissions(permissions, permissionId);
 			}
 			catch (Exception ex)
 			{
-				_logger.LogInformation(ex, "User does not have artifact type permission {WorkspaceArtifactID}.", configuration.SourceWorkspaceArtifactId);
+				_logger.LogInformation(ex, "User can not Export and has not permission {WorkspaceArtifactID}.", configuration.SourceWorkspaceArtifactId);
 			}
 
 			return DoesUserHaveViewPermission(userHasViewPermissions, errorMessage);
 		}
+
+		private async Task<ValidationResult> ValidateUserHasArtifactTypePermissionAsync(IPermissionsCheckConfiguration configuration,
+			Guid artifactTypeGuid, PermissionType artifactPermission, string errorMessage)
+		{
+			return await ValidateUserHasArtifactTypePermissionAsync(configuration, artifactTypeGuid,
+				new[] {artifactPermission}, errorMessage).ConfigureAwait(false);
+		}
+
 		private async Task<ValidationResult> ValidateUserHasArtifactTypePermissionAsync(IPermissionsCheckConfiguration configuration,
 			Guid artifactTypeGuid, IEnumerable<PermissionType> artifactPermissions, string errorMessage)
 		{
@@ -103,30 +108,12 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			bool userHasViewPermissions = false;
 			try
 			{
-				IList<PermissionValue> permissions = await GetPermissionsAsync(_sourceServiceFactory, configuration.SourceWorkspaceArtifactId, permissionRefs).ConfigureAwait(false);
+				IList<PermissionValue> permissions = await GetPermissionsAsync(ProxyFactory, configuration.SourceWorkspaceArtifactId, permissionRefs).ConfigureAwait(false);
 				userHasViewPermissions = DoesUserHavePermissions(permissions);
 			}
 			catch (Exception ex)
 			{
 				_logger.LogInformation(ex, "User does not have artifact type permission {WorkspaceArtifactID}.", configuration.SourceWorkspaceArtifactId);
-			}
-
-			return DoesUserHaveViewPermission(userHasViewPermissions, errorMessage);
-		}
-
-		private async Task<ValidationResult> ValidateSourceWorkspacePermissionAsync(IPermissionsCheckConfiguration configuration, int permissionId, string errorMessage)
-		{
-			List<PermissionRef> permissionRefs = GetPermissionRefs(permissionId);
-
-			bool userHasViewPermissions = false;
-			try
-			{
-				IList<PermissionValue> permissions = await GetPermissionsAsync(_sourceServiceFactory, configuration.SourceWorkspaceArtifactId, permissionRefs).ConfigureAwait(false);
-				userHasViewPermissions = DoesUserHavePermissions(permissions, permissionId);
-			}
-			catch (Exception ex)
-			{
-				_logger.LogInformation(ex, "User can not Export and has not permission {WorkspaceArtifactID}.", configuration.SourceWorkspaceArtifactId);
 			}
 
 			return DoesUserHaveViewPermission(userHasViewPermissions, errorMessage);
