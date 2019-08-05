@@ -14,7 +14,7 @@ using Relativity.Sync.Telemetry;
 
 namespace Relativity.Sync.Executors
 {
-	internal sealed class DestinationWorkspaceTagRepository : WorkspaceTagRepositoryBase, IDestinationWorkspaceTagRepository
+	internal sealed class DestinationWorkspaceTagRepository : WorkspaceTagRepositoryBase<int>, IDestinationWorkspaceTagRepository
 	{
 		private const int _MAX_OBJECT_QUERY_BATCH_SIZE = 10000;
 
@@ -101,7 +101,6 @@ namespace Relativity.Sync.Executors
 					_logger.LogError(ex, $"Failed to query {nameof(DestinationWorkspaceTag)} object: {{request}}", request);
 					throw new SyncKeplerException($"Failed to query {nameof(DestinationWorkspaceTag)} in workspace {sourceWorkspaceArtifactId}", ex);
 				}
-
 				return queryResult.Objects.FirstOrDefault();
 			}
 		}
@@ -185,7 +184,7 @@ namespace Relativity.Sync.Executors
 			}
 		}
 
-		public async Task<IList<TagDocumentsResult<int>>> TagDocumentsAsync(ISynchronizationConfiguration synchronizationConfiguration, IList<int> documentArtifactIds, CancellationToken token)
+		public override async Task<IList<TagDocumentsResult<int>>> TagDocumentsAsync(ISynchronizationConfiguration synchronizationConfiguration, IList<int> documentArtifactIds, CancellationToken token)
 		{
 			var tagResults = new List<TagDocumentsResult<int>>();
 			if (documentArtifactIds.Count == 0)
@@ -207,11 +206,10 @@ namespace Relativity.Sync.Executors
 				TagDocumentsResult<int> tagResult = await TagDocumentsBatchAsync(synchronizationConfiguration, documentArtifactIdBatch, fieldValues, massUpdateOptions, token).ConfigureAwait(false);
 				tagResults.Add(tagResult);
 			}
-
 			return tagResults;
 		}
 
-		private async Task<TagDocumentsResult<int>> TagDocumentsBatchAsync(
+		public override async Task<TagDocumentsResult<int>> TagDocumentsBatchAsync(
 			ISynchronizationConfiguration synchronizationConfiguration, IList<int> batch, IEnumerable<FieldRefValuePair> fieldValues, MassUpdateOptions massUpdateOptions, CancellationToken token)
 		{
 			var metricsCustomData = new Dictionary<string, object> { { "batchSize", batch.Count } };
@@ -264,7 +262,7 @@ namespace Relativity.Sync.Executors
 			return objectRefs;
 		}
 
-		private FieldRefValuePair[] GetDocumentFieldTags(ISynchronizationConfiguration synchronizationConfiguration)
+		public override FieldRefValuePair[] GetDocumentFieldTags(ISynchronizationConfiguration synchronizationConfiguration)
 		{
 			FieldRefValuePair[] fieldRefValuePairs =
 			{
@@ -282,21 +280,7 @@ namespace Relativity.Sync.Executors
 			return fieldRefValuePairs;
 		}
 
-		private static TagDocumentsResult<int> GenerateTagDocumentsResult(MassUpdateResult updateResult, IList<int> batch)
-		{
-			IEnumerable<int> failedDocumentArtifactIds;
-			if (!updateResult.Success)
-			{
-				int elementsToCapture = batch.Count - updateResult.TotalObjectsUpdated;
-				failedDocumentArtifactIds = batch.ToList().GetRange(updateResult.TotalObjectsUpdated, elementsToCapture);
-			}
-			else
-			{
-				failedDocumentArtifactIds = Array.Empty<int>();
-			}
-			var result = new TagDocumentsResult<int>(failedDocumentArtifactIds, updateResult.Message, updateResult.Success, updateResult.TotalObjectsUpdated);
-			return result;
-		}
+		
 
 		private IEnumerable<FieldRefValuePair> CreateFieldValues(int destinationWorkspaceArtifactId, string destinationWorkspaceName, string federatedInstanceName, int federatedInstanceId)
 		{
@@ -329,7 +313,6 @@ namespace Relativity.Sync.Executors
 					Value = federatedInstanceId
 				}
 			};
-
 			return pairs;
 		}
 	}

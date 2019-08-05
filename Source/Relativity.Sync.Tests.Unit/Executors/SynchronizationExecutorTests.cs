@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -22,6 +23,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private Mock<IFieldManager> _fieldManager;
 		private Mock<IFieldMappings> _fieldMappings;
 		private Mock<ISourceWorkspaceTagRepository> _sourceWorkspaceTagRepository;
+		private Mock<IDocumentsTagRepository> _documentTagRepository;
 
 		private Mock<Sync.Executors.IImportJob> _importJob;
 		private Mock<ISynchronizationConfiguration> _config;
@@ -54,6 +56,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_sourceWorkspaceTagRepository = new Mock<ISourceWorkspaceTagRepository>();
 			_fieldManager = new Mock<IFieldManager>();
 			_fieldMappings = new Mock<IFieldMappings>();
+			_documentTagRepository = new Mock<IDocumentsTagRepository>();
 			Mock<IJobHistoryErrorRepository> jobHistoryErrorRepository = new Mock<IJobHistoryErrorRepository>();
 			_config = new Mock<ISynchronizationConfiguration>();
 			_config.SetupGet(x => x.ImportSettings).Returns(new ImportSettingsDto());
@@ -73,8 +76,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			_fieldManager.Setup(x => x.GetSpecialFields()).Returns(_specialFields);
 
-			_synchronizationExecutor = new SynchronizationExecutor(importJobFactory.Object, _batchRepository.Object, _destinationWorkspaceTagRepository.Object, _sourceWorkspaceTagRepository.Object,
-				_fieldManager.Object, _fieldMappings.Object, jobHistoryErrorRepository.Object, new EmptyLogger());
+			_synchronizationExecutor = new SynchronizationExecutor(importJobFactory.Object, _batchRepository.Object,
+				_fieldManager.Object, _fieldMappings.Object,new EmptyLogger(), _documentTagRepository.Object);
 		}
 
 		[Test]
@@ -269,5 +272,26 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_batchRepository.Setup(x => x.GetAllNewBatchesIdsAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(batches);
 			_batchRepository.Setup(x => x.GetAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync((new Mock<IBatch>()).Object);
 		}
+
+		private void SetUpTagging()
+		{
+			const int rangeStart = 1;
+			const int tagCount = 123;
+
+			IEnumerable<string> destinationTagging = Enumerable.Repeat("1", tagCount);
+			IEnumerable<int> sourceTagging = Enumerable.Repeat(rangeStart, tagCount);
+
+			_documentTagRepository.Setup(x => x.TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(It.IsAny<ISynchronizationConfiguration>(), 
+				It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>())).ReturnsAsync(destinationTagging);
+			_documentTagRepository.Setup(x => x.TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(It.IsAny<ISynchronizationConfiguration>(), 
+				It.IsAny<IEnumerable<int>>(), It.IsAny<CancellationToken>())).ReturnsAsync(sourceTagging);
+
+			Exception ex = new Exception();
+
+//			_documentTagRepository.Setup(x => x.GenerateDocumentTaggingJobHistoryError(It.IsAny<ExecutionResult>(),
+////				It.IsAny<int>())).Returns();
+		}
+
+
 	}
 }
