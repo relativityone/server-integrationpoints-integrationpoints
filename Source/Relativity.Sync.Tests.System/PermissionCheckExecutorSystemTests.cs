@@ -1,20 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using kCura.Relativity.Client.DTOs;
-using kCura.WinEDDS.Service;
 using NUnit.Framework;
 using Platform.Keywords.RSAPI;
-using Relativity.API;
-using Relativity.API.Foundation.Permissions;
 using Relativity.Services.Group;
 using Relativity.Services.Permission;
 using Relativity.Services.Workspace;
-using Relativity.Sync.Configuration;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Helpers;
-using Relativity.Transfer;
 
 namespace Relativity.Sync.Tests.System
 {
@@ -56,40 +50,70 @@ namespace Relativity.Sync.Tests.System
 				DestinationWorkspaceArtifactId = _destinationWorkspace.ArtifactID
 			};
 
-			IEnumerable<PermissionConfig> objectPermissionsForSource = new []
+			IEnumerable<ObjectPermissionSelection> objectPermissionsForSource = new[]
 			{
-				new PermissionConfig
+				new ObjectPermissionSelection
 				{
 					ObjectName = "Job History",
-					Add = true
+					AddSelected = true
 				},
-				new PermissionConfig
+				new ObjectPermissionSelection
 				{
 					ObjectName = "Object Type",
-					Add = true
+					AddSelected = true
 				},
-				new PermissionConfig
+				new ObjectPermissionSelection
 				{
 					ObjectName = "Sync Batch",
-					Add = true, Edit = true, View = true
+					AddSelected = true,
+					EditSelected = true,
+					ViewSelected = true
 				},
-				new PermissionConfig
+				new ObjectPermissionSelection
 				{
 					ObjectName = "Sync Progress",
-					Add = true, Edit = true, View = true
+					AddSelected = true,
+					EditSelected = true,
+					ViewSelected = true
 				},
-				new PermissionConfig
+				new ObjectPermissionSelection
 				{
 					ObjectName = "Sync Configuration",
-					Edit = true
+					EditSelected = true
 				}
 			};
 
-			IEnumerable<PermissionConfig> objectPermissionsForDestination = new[]
+			IEnumerable<ObjectPermissionSelection> objectPermissionsForDestination = new[]
 			{
-				new PermissionConfig(), 
+				new ObjectPermissionSelection
+				{
+					ObjectName = "Object Type",
+					AddSelected = true
+				},
+				new ObjectPermissionSelection
+				{
+					ObjectName = "Search",
+					AddSelected = true
+				},
+				new ObjectPermissionSelection
+				{
+					ObjectName = "Document",
+					AddSelected = true
+				}
 			};
+
+			IEnumerable<string> selectedAdminPermissionsForSource = new[]
+			{
+				"Allow Export"
+			};
+
+			IEnumerable<string> selectedAdminPermissionsForDestination = new[]
+			{
+				"Allow Import"
+			};
+
 			await SetUpPermissions(_sourceWorkspace.ArtifactID, objectPermissionsForSource).ConfigureAwait(false);
+			await SetUpPermissions(_destinationWorkspace.ArtifactID, objectPermissionsForDestination).ConfigureAwait(false);
 
 			//ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IPermissionsCheckConfiguration>(_configurationStub);
 
@@ -98,23 +122,28 @@ namespace Relativity.Sync.Tests.System
 			//await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false));
 		}
 
-		private async Task SetUpPermissions(int sourceWorkspaceArtifactId, IEnumerable<PermissionConfig> permissionConfigs)
+		private async Task SetUpPermissions(int workspaceArtifactId, IEnumerable<ObjectPermissionSelection> permissionConfigs)
 		{
 			using (IPermissionManager permissionManager = ServiceFactory.CreateProxy<IPermissionManager>())
 			{
 				GroupPermissions workspaceGroupPermissions = await permissionManager
-					.GetWorkspaceGroupPermissionsAsync(sourceWorkspaceArtifactId, GroupRef)
+					.GetWorkspaceGroupPermissionsAsync(workspaceArtifactId, GroupRef)
 					.ConfigureAwait(false);
 
-				foreach (PermissionConfig permissionConfig in permissionConfigs)
+				foreach (ObjectPermissionSelection permissionConfig in permissionConfigs)
 				{
 					ObjectPermission permissionObject = workspaceGroupPermissions.ObjectPermissions.Find(permission => permission.Name.Equals(permissionConfig.ObjectName, StringComparison.OrdinalIgnoreCase));
-					permissionObject.AddSelected = permissionConfig.Add;
-					permissionObject.ViewSelected = permissionConfig.View;
-					permissionObject.EditSelected = permissionConfig.Edit;
+					permissionObject.AddSelected = permissionConfig.AddSelected;
+					permissionObject.ViewSelected = permissionConfig.ViewSelected;
+					permissionObject.EditSelected = permissionConfig.EditSelected;
 				}
 
-				await permissionManager.SetWorkspaceGroupPermissionsAsync(sourceWorkspaceArtifactId, workspaceGroupPermissions).ConfigureAwait(false);
+				foreach (var permission in workspaceGroupPermissions.AdminPermissions)
+				{
+					
+				}
+
+				await permissionManager.SetWorkspaceGroupPermissionsAsync(workspaceArtifactId, workspaceGroupPermissions).ConfigureAwait(false);
 			}
 		}
 
