@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
 
@@ -10,16 +9,19 @@ namespace Relativity.Sync
 		private readonly T _configuration;
 		private readonly IExecutionConstrains<T> _executionConstrains;
 		private readonly IExecutor<T> _executor;
+		private readonly ISyncLog _logger;
 
-		public Command(T configuration, IExecutionConstrains<T> executionConstrains, IExecutor<T> executor)
+		public Command(T configuration, IExecutionConstrains<T> executionConstrains, IExecutor<T> executor, ISyncLog logger)
 		{
 			_configuration = configuration;
 			_executionConstrains = executionConstrains;
 			_executor = executor;
+			_logger = logger;
 		}
 
 		public async Task<bool> CanExecuteAsync(CancellationToken token)
 		{
+			_logger.LogInformation("Starting execution of step with configuration {configurationName}.", typeof(T).Name, _configuration);
 			return await _executionConstrains.CanExecuteAsync(_configuration, token).ConfigureAwait(false);
 		}
 
