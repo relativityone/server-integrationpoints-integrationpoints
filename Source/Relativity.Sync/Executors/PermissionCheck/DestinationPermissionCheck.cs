@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Services;
 using Relativity.Services.Permission;
@@ -22,14 +21,12 @@ namespace Relativity.Sync.Executors.PermissionCheck
 
 		private const int _ALLOW_IMPORT_PERMISSION_ID = 158; // 158 is the artifact id of the "Allow Import" permission
 
-		private readonly IDestinationServiceFactoryForUser _destinationServiceFactory;
 		private readonly ISyncLog _logger;
 
-		private readonly Guid ObjectTypeGuid = new Guid("3F45E490-B4CF-4C7D-8BB6-9CA891C0C198");
+		private readonly Guid _objectTypeGuid = new Guid("3F45E490-B4CF-4C7D-8BB6-9CA891C0C198");
 
-		public DestinationPermissionCheck(IDestinationServiceFactoryForUser destinationServiceFactory, ISyncLog logger)
+		public DestinationPermissionCheck(IDestinationServiceFactoryForUser destinationServiceFactory, ISyncLog logger) : base(destinationServiceFactory)
 		{
-			_destinationServiceFactory = destinationServiceFactory;
 			_logger = logger;
 		}
 
@@ -44,7 +41,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
 				ArtifactType.Document, new[] { PermissionType.View, PermissionType.Add, PermissionType.Edit }, _MISSING_DESTINATION_RDO_PERMISSIONS).ConfigureAwait(false));
 			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration,
 				ArtifactType.Search, new[] { PermissionType.Add }, _MISSING_DESTINATION_SAVED_SEARCH_ADD_PERMISSION).ConfigureAwait(false));
-			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, ObjectTypeGuid, PermissionType.Add, _OBJECT_TYPE_NO_ADD).ConfigureAwait(false));
+			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, _objectTypeGuid, PermissionType.Add, _OBJECT_TYPE_NO_ADD).ConfigureAwait(false));
 			validationResult.Add(await ValidateDestinationFolderPermissionsUserHasArtifactInstancePermissionAsync(configuration, ArtifactType.Document,
 				PermissionType.Add).ConfigureAwait(false));
 			validationResult.Add(await ValidateDestinationFolderPermissionsUserHasArtifactInstancePermissionAsync(configuration, ArtifactType.Folder,
@@ -55,18 +52,15 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			return validationResult;
 		}
 
-
 		public async Task<ValidationResult> ValidateDestinationWorkspaceUserHasPermissionToAccessWorkspaceAsync(IPermissionsCheckConfiguration configuration)
 		{
-			var validationResult = new ValidationResult();
-
 			var artifactTypeIdentifier = new ArtifactTypeIdentifier((int)ArtifactType.Case);
 			List<PermissionRef> permissionRefs = GetPermissionRefs(artifactTypeIdentifier, PermissionType.View);
 
 			bool userHasViewPermissions = false;
 			try
 			{
-				IList<PermissionValue> permissions = await GetPermissionsAsync(_destinationServiceFactory, -1, configuration.DestinationWorkspaceArtifactId, permissionRefs).ConfigureAwait(false);
+				IList<PermissionValue> permissions = await GetPermissionsForArtifactIdAsync(ProxyFactory, -1, configuration.DestinationWorkspaceArtifactId, permissionRefs).ConfigureAwait(false);
 				userHasViewPermissions = DoesUserHavePermissions(permissions);
 			}
 			catch (Exception ex)
@@ -74,14 +68,10 @@ namespace Relativity.Sync.Executors.PermissionCheck
 				_logger.LogInformation(ex, "Destination workspace: user has not permission to access workspace {WorkspaceArtifactID}.",
 					configuration.DestinationWorkspaceArtifactId);
 			}
-			if (!userHasViewPermissions)
-			{
-				const string errorCode = "20.001";
-				const string errorMessage = "User does not have sufficient permissions to access destination workspace. Contact your system administrator.";
-				var validationMessage = new ValidationMessage(errorCode, errorMessage);
-				validationResult.Add(validationMessage);
-			}
-			return validationResult;
+			const string errorCode = "20.001";
+			const string errorMessage = "User does not have sufficient permissions to access destination workspace. Contact your system administrator.";
+
+			return DoesUserHaveViewPermission(userHasViewPermissions, errorMessage, errorCode);
 		}
 
 		public async Task<ValidationResult> ValidateDestinationWorkspaceUserCanImportHasPermissionAsync(
@@ -92,7 +82,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			bool userHasViewPermissions = false;
 			try
 			{
-				IList<PermissionValue> permissions = await GetPermissionsAsync(_destinationServiceFactory, configuration.DestinationWorkspaceArtifactId, permissionRefs).ConfigureAwait(false);
+				IList<PermissionValue> permissions = await GetPermissionsAsync(ProxyFactory, configuration.DestinationWorkspaceArtifactId, permissionRefs).ConfigureAwait(false);
 				userHasViewPermissions = DoesUserHavePermissions(permissions, permissionId);
 			}
 			catch (Exception ex)
@@ -108,17 +98,17 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			Guid artifactTypeGuid, PermissionType artifactPermission, string errorMessage)
 		{
 			var artifactTypeIdentifier = new ArtifactTypeIdentifier(artifactTypeGuid);
-			return await ValidationResult(configuration, new[] {artifactPermission}, errorMessage, artifactTypeIdentifier).ConfigureAwait(false);
+			return await ValidateArtifactTypePermission(configuration, new[] { artifactPermission }, errorMessage, artifactTypeIdentifier).ConfigureAwait(false);
 		}
 
 		private async Task<ValidationResult> ValidateUserHasArtifactTypePermissionAsync(IPermissionsCheckConfiguration configuration,
 			ArtifactType artifactTypeIdentifier, IEnumerable<PermissionType> artifactPermissions, string errorMessage)
 		{
 			var typeIdentifier = new ArtifactTypeIdentifier((int)artifactTypeIdentifier);
-			return await ValidationResult(configuration, artifactPermissions, errorMessage, typeIdentifier).ConfigureAwait(false);
+			return await ValidateArtifactTypePermission(configuration, artifactPermissions, errorMessage, typeIdentifier).ConfigureAwait(false);
 		}
 
-		private async Task<ValidationResult> ValidationResult(IPermissionsCheckConfiguration configuration, IEnumerable<PermissionType> artifactPermissions,
+		private async Task<ValidationResult> ValidateArtifactTypePermission(IPermissionsCheckConfiguration configuration, IEnumerable<PermissionType> artifactPermissions,
 			string errorMessage, ArtifactTypeIdentifier typeIdentifier)
 		{
 			List<PermissionRef> permissionRefs = GetPermissionRefs(typeIdentifier, artifactPermissions);
@@ -126,9 +116,8 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			bool userHasViewPermissions = false;
 			try
 			{
-				IList<PermissionValue> permissions = await GetPermissionsAsync(_destinationServiceFactory,
+				IList<PermissionValue> permissions = await GetPermissionsAsync(ProxyFactory,
 					configuration.DestinationWorkspaceArtifactId, permissionRefs).ConfigureAwait(false);
-
 				userHasViewPermissions = DoesUserHavePermissions(permissions);
 			}
 			catch (Exception ex)
@@ -146,12 +135,10 @@ namespace Relativity.Sync.Executors.PermissionCheck
 		{
 			List<PermissionRef> permissionRefs = GetPermissionRefs(new ArtifactTypeIdentifier((int)artifactTypeIdentifier), artifactPermissions);
 
-			var validationResult = new ValidationResult();
 			bool userHasViewPermissions = false;
-
 			try
 			{
-				IList<PermissionValue> permissions = await GetPermissionsAsync(_destinationServiceFactory, configuration.DestinationWorkspaceArtifactId, configuration.DestinationFolderArtifactId, permissionRefs)
+				IList<PermissionValue> permissions = await GetPermissionsForArtifactIdAsync(ProxyFactory, configuration.DestinationWorkspaceArtifactId, configuration.DestinationFolderArtifactId, permissionRefs)
 					.ConfigureAwait(false);
 				userHasViewPermissions = DoesUserHavePermissions(permissions);
 			}
@@ -161,15 +148,10 @@ namespace Relativity.Sync.Executors.PermissionCheck
 					"Destination Folder {DestinationFolderArtifactId}: user has not artifact instance permission {WorkspaceArtifactID}.",
 					configuration.DestinationFolderArtifactId, configuration.DestinationWorkspaceArtifactId);
 			}
+			const string errorCode = "20.009";
+			const string errorMessage = "Verify if a folder in destination workspace selected in the Integration Point exists or if a user has a proper permission to access it.";
 
-			if (!userHasViewPermissions)
-			{
-				const string errorCode = "20.009";
-				const string errorMessage = "Verify if a folder in destination workspace selected in the Integration Point exists or if a user has a proper permission to access it.";
-				var validationMessage = new ValidationMessage(errorCode, errorMessage);
-				validationResult.Add(validationMessage);
-			}
-			return validationResult;
+			return DoesUserHaveViewPermission(userHasViewPermissions, errorMessage, errorCode);
 		}
 	}
 }
