@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,11 +28,11 @@ namespace Relativity.Sync.Tests.Unit
 		private const string _IDENTIFIER_COLUMN = "Identifier";
 		private const string _MESSAGE_COLUMN = "Message";
 		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 1;
+		private const int _JOB_HISTORY_ARTIFACT_ID = 2;
 
 		[SetUp]
 		public void SetUp()
 		{
-			const int jobHistoryArtifactId = 2;
 			_itemStatusMonitor = new Mock<IItemStatusMonitor>();
 			_jobHistoryErrorRepository = new Mock<IJobHistoryErrorRepository>();
 			_semaphore = new Mock<ISemaphoreSlim>();
@@ -39,7 +40,7 @@ namespace Relativity.Sync.Tests.Unit
 			_syncImportBulkArtifactJob.SetupGet(x => x.ItemStatusMonitor).Returns(_itemStatusMonitor.Object);
 
 			_importJob = new ImportJob(_syncImportBulkArtifactJob.Object, _semaphore.Object, _jobHistoryErrorRepository.Object,
-				_SOURCE_WORKSPACE_ARTIFACT_ID, jobHistoryArtifactId, new EmptyLogger());
+				_SOURCE_WORKSPACE_ARTIFACT_ID, _JOB_HISTORY_ARTIFACT_ID, new EmptyLogger());
 		}
 
 		[Test]
@@ -68,8 +69,9 @@ namespace Relativity.Sync.Tests.Unit
 			_itemStatusMonitor.Verify(x => x.MarkReadSoFarAsSuccessful(), Times.Once);
 
 			string expectedErrorMessage = $"IAPI {message}";
-			_jobHistoryErrorRepository.Verify(x => x.CreateAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.Is<CreateJobHistoryErrorDto>(dto =>
-				dto.SourceUniqueId == identifier && dto.ErrorMessage == expectedErrorMessage && dto.ErrorType == ErrorType.Item)));
+			_jobHistoryErrorRepository.Verify(x => x.MassCreateAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _JOB_HISTORY_ARTIFACT_ID, It.Is<IList<CreateJobHistoryErrorDto>>(dto =>
+				dto.First().SourceUniqueId == identifier && dto.First().ErrorMessage == expectedErrorMessage && dto.First().ErrorType == ErrorType.Item
+			)));
 		}
 
 		[Test]
@@ -94,8 +96,8 @@ namespace Relativity.Sync.Tests.Unit
 			_itemStatusMonitor.Verify(x => x.MarkReadSoFarAsFailed(), Times.Once);
 			_itemStatusMonitor.Verify(x => x.MarkReadSoFarAsSuccessful(), Times.Never);
 
-			_jobHistoryErrorRepository.Verify(x => x.CreateAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.Is<CreateJobHistoryErrorDto>(dto =>
-				dto.ErrorType == ErrorType.Job)));
+			_jobHistoryErrorRepository.Verify(x => x.MassCreateAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _JOB_HISTORY_ARTIFACT_ID, It.Is< IList<CreateJobHistoryErrorDto>>(dto =>
+				dto.First().ErrorType == ErrorType.Job)));
 		}
 
 		[Test]

@@ -8,6 +8,7 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Workspace;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Helpers;
@@ -20,6 +21,8 @@ namespace Relativity.Sync.Tests.System
 	{
 		private WorkspaceRef _workspace;
 		private ISourceServiceFactoryForAdmin _sourceServiceFactoryForAdmin;
+		private IDateTime _dateTime;
+		private ISyncLog _logger;
 
 		private readonly Guid _jobHistoryErrorObject = new Guid("17E7912D-4F57-4890-9A37-ABC2B8A37BDB");
 		private readonly Guid _errorMessageField = new Guid("4112B894-35B0-4E53-AB99-C9036D08269D");
@@ -33,6 +36,8 @@ namespace Relativity.Sync.Tests.System
 		{
 			_workspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
 			_sourceServiceFactoryForAdmin = new ServiceFactoryForAdmin(new ServicesManagerStub(), new DynamicProxyFactoryStub());
+			_dateTime = new DateTimeWrapper();
+			_logger = new EmptyLogger();
 		}
 
 		[IdentifiedTest("125edbf4-7c69-4be4-8b7d-535571e75abe")]
@@ -46,27 +51,32 @@ namespace Relativity.Sync.Tests.System
 			string expectedSourceUniqueId = "Totally unique Id";
 			string expectedStackTrace = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
 
-			CreateJobHistoryErrorDto createDto = new CreateJobHistoryErrorDto(expectedJobHistoryArtifactId, expectedErrorType)
+			CreateJobHistoryErrorDto createDto = new CreateJobHistoryErrorDto(expectedErrorType)
 			{
 				ErrorMessage = expectedErrorMessage,
 				SourceUniqueId = expectedSourceUniqueId,
 				StackTrace = expectedStackTrace,
 			};
 			
-			JobHistoryErrorRepository instance = new JobHistoryErrorRepository(_sourceServiceFactoryForAdmin);
+			JobHistoryErrorRepository instance = new JobHistoryErrorRepository(_sourceServiceFactoryForAdmin, _dateTime, _logger);
 
 			// Act
-			IJobHistoryError createResult = await instance.CreateAsync(_workspace.ArtifactID, createDto).ConfigureAwait(false);
+			IEnumerable<int> massCreateResult = await instance.MassCreateAsync(_workspace.ArtifactID, expectedJobHistoryArtifactId, new List<CreateJobHistoryErrorDto>()
+			{
+				createDto
+			}).ConfigureAwait(false);
 
 			// Assert
-			RelativityObject error = await QueryForCreatedJobHistoryError(createResult.ArtifactId).ConfigureAwait(false);
+			int createdErrorArtifactId = massCreateResult.First();
+			createdErrorArtifactId.Should().NotBe(0);
+
+			RelativityObject error = await QueryForCreatedJobHistoryError(createdErrorArtifactId).ConfigureAwait(false);
 			error[_errorMessageField].Value.Should().Be(expectedErrorMessage);
 			error[_stackTraceField].Value.Should().Be(expectedStackTrace);
 			error[_sourceUniqueIdField].Value.Should().Be(expectedSourceUniqueId);
 			error[_errorStatusField].Value.As<Choice>().Name.Should().Be(expErrorStatus.ToString());
 			error[_errorTypeField].Value.As<Choice>().Name.Should().Be(expectedErrorType.ToString());
 			error.ParentObject.ArtifactID.Should().Be(expectedJobHistoryArtifactId);
-			error.Name.Should().Be(createResult.Name);
 		}
 
 		private async Task<RelativityObject> QueryForCreatedJobHistoryError(int jobHistoryErrorArtifactId)
