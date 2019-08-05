@@ -56,7 +56,7 @@ namespace Relativity.Sync.Tests.System
 				DestinationWorkspaceArtifactId = _destinationWorkspace.ArtifactID
 			};
 
-			IEnumerable<PermissionConfig> objectPermissions = new []
+			IEnumerable<PermissionConfig> objectPermissionsForSource = new []
 			{
 				new PermissionConfig
 				{
@@ -84,7 +84,12 @@ namespace Relativity.Sync.Tests.System
 					Edit = true
 				}
 			};
-			await SetUpPermissions(_sourceWorkspace.ArtifactID, objectPermissions).ConfigureAwait(false);
+
+			IEnumerable<PermissionConfig> objectPermissionsForDestination = new[]
+			{
+				new PermissionConfig(), 
+			};
+			await SetUpPermissions(_sourceWorkspace.ArtifactID, objectPermissionsForSource).ConfigureAwait(false);
 
 			//ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IPermissionsCheckConfiguration>(_configurationStub);
 
@@ -157,13 +162,5 @@ namespace Relativity.Sync.Tests.System
 				await proxy.AddRemoveWorkspaceGroupsAsync(workspaceId, groupSelector).ConfigureAwait(false);
 			}
 		}
-	}
-
-	internal class PermissionConfig
-	{
-		public string ObjectName { get; set; }
-		public bool Add { get; set; }
-		public bool Edit { get; set; }
-		public bool View { get; set; }
 	}
 }
