@@ -117,7 +117,7 @@ namespace Relativity.Sync.Executors
 				ErrorMessage = taggingResult.Message,
 				StackTrace = taggingResult.Exception?.StackTrace
 			};
-			await _jobHistoryErrorRepository.MassCreateAsync(configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, new List<CreateJobHistoryErrorDto>() {jobHistoryError})
+			await _jobHistoryErrorRepository.CreateAsync(configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, jobHistoryError)
 				.ConfigureAwait(false);
 		}
 

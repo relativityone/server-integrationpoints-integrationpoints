@@ -73,7 +73,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 				SourceUniqueId = sourceUniqueId,
 				StackTrace = stackTrace
 			};
-			MassCreateResult createResult = new MassCreateResult()
+			MassCreateResult massCreateResult = new MassCreateResult()
 			{
 				Success = true,
 				Objects = new List<RelativityObjectRef>()
@@ -84,17 +84,15 @@ namespace Relativity.Sync.Tests.Unit.Storage
 					}
 				}
 			};
-			_objectManager.Setup(x => x.CreateAsync(It.IsAny<int>(), It.IsAny<MassCreateRequest>())).ReturnsAsync(createResult);
+			_objectManager.Setup(x => x.CreateAsync(It.IsAny<int>(), It.IsAny<MassCreateRequest>())).ReturnsAsync(massCreateResult);
 
 			// act
-			IEnumerable<int> massCreateResult = await _jobHistoryErrorRepository.MassCreateAsync(_TEST_WORKSPACE_ARTIFACT_ID, _TEST_JOB_HISTORY_ARTIFACT_ID, new List<CreateJobHistoryErrorDto>()
-			{
-				createJobHistoryErrorDto
-			}).ConfigureAwait(false);
+			int createResult = await _jobHistoryErrorRepository.CreateAsync(_TEST_WORKSPACE_ARTIFACT_ID, _TEST_JOB_HISTORY_ARTIFACT_ID, createJobHistoryErrorDto)
+				.ConfigureAwait(false);
 
 			// assert
 			_objectManager.Verify(x => x.CreateAsync(It.IsAny<int>(), It.Is<MassCreateRequest>(cr => VerifyMassCreateRequest(cr, createJobHistoryErrorDto))));
-			massCreateResult.First().Should().Be(errorArtifactId);
+			createResult.Should().Be(errorArtifactId);
 		}
 
 		[Test]

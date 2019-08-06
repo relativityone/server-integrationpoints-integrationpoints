@@ -68,10 +68,7 @@ namespace Relativity.Sync.Tests.Unit
 			_itemStatusMonitor.Verify(x => x.MarkItemAsFailed(identifier), Times.Once);
 			_itemStatusMonitor.Verify(x => x.MarkReadSoFarAsSuccessful(), Times.Once);
 
-			string expectedErrorMessage = $"IAPI {message}";
-			_jobHistoryErrorRepository.Verify(x => x.MassCreateAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _JOB_HISTORY_ARTIFACT_ID, It.Is<IList<CreateJobHistoryErrorDto>>(dto =>
-				dto.First().SourceUniqueId == identifier && dto.First().ErrorMessage == expectedErrorMessage && dto.First().ErrorType == ErrorType.Item
-			)));
+			_jobHistoryErrorRepository.Verify(x => x.MassCreateAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _JOB_HISTORY_ARTIFACT_ID, It.IsAny<IList<CreateJobHistoryErrorDto>>()));
 		}
 
 		[Test]
@@ -96,8 +93,8 @@ namespace Relativity.Sync.Tests.Unit
 			_itemStatusMonitor.Verify(x => x.MarkReadSoFarAsFailed(), Times.Once);
 			_itemStatusMonitor.Verify(x => x.MarkReadSoFarAsSuccessful(), Times.Never);
 
-			_jobHistoryErrorRepository.Verify(x => x.MassCreateAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _JOB_HISTORY_ARTIFACT_ID, It.Is< IList<CreateJobHistoryErrorDto>>(dto =>
-				dto.First().ErrorType == ErrorType.Job)));
+			_jobHistoryErrorRepository.Verify(x => x.CreateAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _JOB_HISTORY_ARTIFACT_ID, It.Is<CreateJobHistoryErrorDto>(dto =>
+				dto.ErrorType == ErrorType.Job)));
 		}
 
 		[Test]

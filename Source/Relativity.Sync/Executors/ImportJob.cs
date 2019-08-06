@@ -126,14 +126,14 @@ namespace Relativity.Sync.Executors
 		{
 			if (_itemLevelErrors.Any())
 			{
-				_jobHistoryErrorRepository.MassCreateAsync(_sourceWorkspaceArtifactId, _jobHistoryArtifactId, new List<CreateJobHistoryErrorDto>(_itemLevelErrors)).GetAwaiter().GetResult();
+				_jobHistoryErrorRepository.MassCreateAsync(_sourceWorkspaceArtifactId, _jobHistoryArtifactId, _itemLevelErrors).GetAwaiter().GetResult();
 				_itemLevelErrors.Clear();
 			}
 		}
 
 		private void CreateJobHistoryError(CreateJobHistoryErrorDto jobError)
 		{
-			_jobHistoryErrorRepository.MassCreateAsync(_sourceWorkspaceArtifactId, _jobHistoryArtifactId, new List<CreateJobHistoryErrorDto>() {jobError}).ConfigureAwait(false);
+			_jobHistoryErrorRepository.CreateAsync(_sourceWorkspaceArtifactId, _jobHistoryArtifactId, jobError).ConfigureAwait(false);
 		}
 
 		private static string GetValueOrNull(IDictionary row, string key)

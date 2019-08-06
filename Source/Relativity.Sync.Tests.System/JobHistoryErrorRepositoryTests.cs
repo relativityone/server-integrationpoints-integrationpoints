@@ -61,13 +61,9 @@ namespace Relativity.Sync.Tests.System
 			JobHistoryErrorRepository instance = new JobHistoryErrorRepository(_sourceServiceFactoryForAdmin, _dateTime, _logger);
 
 			// Act
-			IEnumerable<int> massCreateResult = await instance.MassCreateAsync(_workspace.ArtifactID, expectedJobHistoryArtifactId, new List<CreateJobHistoryErrorDto>()
-			{
-				createDto
-			}).ConfigureAwait(false);
+			int createdErrorArtifactId = await instance.CreateAsync(_workspace.ArtifactID, expectedJobHistoryArtifactId, createDto).ConfigureAwait(false);
 
 			// Assert
-			int createdErrorArtifactId = massCreateResult.First();
 			createdErrorArtifactId.Should().NotBe(0);
 
 			RelativityObject error = await QueryForCreatedJobHistoryError(createdErrorArtifactId).ConfigureAwait(false);

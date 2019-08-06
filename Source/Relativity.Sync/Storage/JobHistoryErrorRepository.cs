@@ -74,6 +74,12 @@ namespace Relativity.Sync.Storage
 			}
 		}
 
+		public async Task<int> CreateAsync(int workspaceArtifactId, int jobHistoryArtifactId, CreateJobHistoryErrorDto createJobHistoryErrorDto)
+		{
+			IEnumerable<int> massCreateResult = await MassCreateAsync(workspaceArtifactId, jobHistoryArtifactId, new List<CreateJobHistoryErrorDto>() {createJobHistoryErrorDto}).ConfigureAwait(false);
+			return massCreateResult.First();
+		}
+
 		private ObjectTypeRef GetObjectTypeRef()
 		{
 			return new ObjectTypeRef()
