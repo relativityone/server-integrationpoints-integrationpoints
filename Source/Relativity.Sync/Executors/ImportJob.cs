@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -22,7 +23,7 @@ namespace Relativity.Sync.Executors
 		private readonly object _lockObject;
 		private readonly int _jobHistoryArtifactId;
 		private readonly int _sourceWorkspaceArtifactId;
-		private readonly IList<CreateJobHistoryErrorDto> _itemLevelErrors;
+		private readonly ConcurrentQueue<CreateJobHistoryErrorDto> _itemLevelErrors;
 
 		private readonly ISyncImportBulkArtifactJob _syncImportBulkArtifactJob;
 		private readonly IJobHistoryErrorRepository _jobHistoryErrorRepository;
@@ -35,7 +36,7 @@ namespace Relativity.Sync.Executors
 			_lockObject = new object();
 			_importApiFatalExceptionOccurred = false;
 			_itemLevelErrorExists = false;
-			_itemLevelErrors = new List<CreateJobHistoryErrorDto>();
+			_itemLevelErrors = new ConcurrentQueue<CreateJobHistoryErrorDto>();
 			_canReleaseSemaphore = true;
 			_importApiException = null;
 
@@ -114,7 +115,7 @@ namespace Relativity.Sync.Executors
 				SourceUniqueId = sourceUniqueId
 			};
 
-			_itemLevelErrors.Add(itemError);
+			_itemLevelErrors.Enqueue(itemError);
 
 			if (_itemLevelErrors.Count >= _ITEMLEVEL_ERRORS_MASS_CREATE_SIZE)
 			{
@@ -124,10 +125,15 @@ namespace Relativity.Sync.Executors
 
 		private void MassCreateItemLevelErrorsIfAny()
 		{
-			if (_itemLevelErrors.Any())
+			List<CreateJobHistoryErrorDto> itemLevelErrors = new List<CreateJobHistoryErrorDto>();
+			while (_itemLevelErrors.TryDequeue(out CreateJobHistoryErrorDto dto))
 			{
-				_jobHistoryErrorRepository.MassCreateAsync(_sourceWorkspaceArtifactId, _jobHistoryArtifactId, _itemLevelErrors).GetAwaiter().GetResult();
-				_itemLevelErrors.Clear();
+				itemLevelErrors.Add(dto);
+			}
+
+			if (itemLevelErrors.Any())
+			{
+				_jobHistoryErrorRepository.MassCreateAsync(_sourceWorkspaceArtifactId, _jobHistoryArtifactId, itemLevelErrors).GetAwaiter().GetResult();
 			}
 		}
 
