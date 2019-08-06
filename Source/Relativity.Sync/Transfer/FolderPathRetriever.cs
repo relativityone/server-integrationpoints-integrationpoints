@@ -105,9 +105,9 @@ namespace Relativity.Sync.Transfer
 				}
 				if (result.Count != foldersWithIds.Count)
 				{
-					List<int> differentValues = foldersWithIds.Where(x => result.All(y => y.ArtifactID != x)).ToList();
+					List<int> differentValues = foldersWithIds.Except(result.Select(x => x.ArtifactID)).ToList();
 					const int maxSubset = 50;
-					int subsetCount = differentValues.Count < maxSubset ? differentValues.Count : maxSubset;
+					int subsetCount = Math.Min(differentValues.Count, maxSubset);
 					string subsetArtifactIds = string.Join(",", differentValues.Take(subsetCount));
 					throw new SyncException($"Could not find folders with IDs {subsetArtifactIds} in workspace {workspaceArtifactId}.");
 				}
