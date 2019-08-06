@@ -1,5 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.Validation;
 

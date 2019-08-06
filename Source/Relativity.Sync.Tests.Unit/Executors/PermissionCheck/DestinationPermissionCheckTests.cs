@@ -17,7 +17,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 	[TestFixture]
 	public class DestinationPermissionCheckTests
 	{
-		private CancellationToken _token;
 		private DestinationPermissionCheck _instance;
 		private Mock<ISyncLog> _logger;
 		private Mock<IDestinationServiceFactoryForUser> _destinationServiceFactory;
@@ -31,12 +30,11 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 		private const int _TEST_WORKSPACE_ARTIFACT_ID = 20489;
 		private const int _TEST_FOLDER_ARTIFACT_ID = 20476;
 
-		private readonly Guid ObjectTypeGuid = new Guid("3F45E490-B4CF-4C7D-8BB6-9CA891C0C198");
+		private readonly Guid _objectTypeGuid = new Guid("3F45E490-B4CF-4C7D-8BB6-9CA891C0C198");
 
 		[SetUp]
 		public void SetUp()
 		{
-			_token = CancellationToken.None;
 			_logger = new Mock<ISyncLog>();
 			_destinationServiceFactory = new Mock<IDestinationServiceFactoryForUser>();
 			_instance = new DestinationPermissionCheck(_destinationServiceFactory.Object, _logger.Object);
@@ -66,7 +64,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 
 			Mock<IPermissionManager> permissionManager = ArrangeSet();
 
-			permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>(y => y.Any(z => z.ArtifactType.Guids.Contains(ObjectTypeGuid)))))
+			permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>(y => y.Any(z => z.ArtifactType.Guids.Contains(_objectTypeGuid)))))
 				.Throws<SyncException>();
 
 			// Act

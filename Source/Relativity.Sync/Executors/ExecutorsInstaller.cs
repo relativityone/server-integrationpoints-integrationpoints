@@ -1,4 +1,6 @@
-﻿using System.Threading;
+﻿using System.Linq;
+using System.Reflection;
+using System.Threading;
 using Autofac;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.ExecutionConstrains;
@@ -55,12 +57,11 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<SnapshotPartitionExecutor>().As<IExecutor<ISnapshotPartitionConfiguration>>();
 			builder.RegisterType<SynchronizationExecutorConstrains>().As<IExecutionConstrains<ISynchronizationConfiguration>>();
 			builder.RegisterType<SynchronizationExecutor>().As<IExecutor<ISynchronizationConfiguration>>();
+			builder.RegisterTypes(Assembly.GetExecutingAssembly().GetTypes().Where(t => !t.IsAbstract && t.IsAssignableTo<IPermissionCheck>()).ToArray()).As<IPermissionCheck>();
 
 			builder.RegisterType<BatchRepository>().As<IBatchRepository>();
 			builder.RegisterType<ProgressRepository>().As<IProgressRepository>();
 			builder.RegisterType<SemaphoreSlimWrapper>().As<ISemaphoreSlim>();
-			builder.RegisterType<SourcePermissionCheck>().As<IPermissionCheck>();
-			builder.RegisterType<DestinationPermissionCheck>().As<IPermissionCheck>();
 		}
 	}
 }

@@ -40,8 +40,8 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			var validationResult = new ValidationResult();
 
 			validationResult.Add(await ValidateUserHasPermissionToAccessWorkspaceAsync(configuration).ConfigureAwait(false));
-			validationResult.Add(await ValidateSourceWorkspacePermissionAsync(configuration, _ALLOW_EXPORT_PERMISSION_ID, _SOURCE_WORKSPACE_NO_EXPORT).ConfigureAwait(false));
-			validationResult.Add(await ValidateSourceWorkspacePermissionAsync(configuration, _EDIT_DOCUMENT_PERMISSION_ID, _SOURCE_WORKSPACE_NO_DOC_EDIT).ConfigureAwait(false));
+			validationResult.Add(await ValidatePermissionAsync(configuration, _ALLOW_EXPORT_PERMISSION_ID, _SOURCE_WORKSPACE_NO_EXPORT).ConfigureAwait(false));
+			validationResult.Add(await ValidatePermissionAsync(configuration, _EDIT_DOCUMENT_PERMISSION_ID, _SOURCE_WORKSPACE_NO_DOC_EDIT).ConfigureAwait(false));
 
 			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, _jobHistory, PermissionType.Add, _JOB_HISTORY_TYPE_NO_ADD).ConfigureAwait(false));
 			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, _objectTypeGuid, PermissionType.Add, _OBJECT_TYPE_NO_ADD).ConfigureAwait(false));
@@ -74,7 +74,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			return DoesUserHaveViewPermission(userHasViewPermissions, errorMessage);
 		}
 
-		private async Task<ValidationResult> ValidateSourceWorkspacePermissionAsync(IPermissionsCheckConfiguration configuration, int permissionId, string errorMessage)
+		private async Task<ValidationResult> ValidatePermissionAsync(IPermissionsCheckConfiguration configuration, int permissionId, string errorMessage)
 		{
 			List<PermissionRef> permissionRefs = GetPermissionRefs(permissionId);
 
