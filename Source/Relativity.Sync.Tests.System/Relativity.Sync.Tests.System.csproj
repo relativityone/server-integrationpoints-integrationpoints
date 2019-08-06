@@ -19,6 +19,9 @@
 		<Folder Include="Resources\" />
 	</ItemGroup>
 	<ItemGroup>
+	  <Reference Include="System.Web.Services" />
+	</ItemGroup>
+	<ItemGroup>
 		<None Update="Data\NativesAndExtractedText\IMAGES\AMEYERS_0000757.tif">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>

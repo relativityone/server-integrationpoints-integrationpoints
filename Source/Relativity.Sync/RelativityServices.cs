@@ -1,4 +1,5 @@
 ﻿using System;
+using kCura.WinEDDS.Service.Export;
 using Relativity.API;
 using Relativity.Telemetry.APM;
 
@@ -12,12 +13,18 @@ namespace Relativity.Sync
 		/// <summary>
 		///     Constructor
 		/// </summary>
-		public RelativityServices(IAPM apm, IServicesMgr servicesMgr, Uri authenticationUri)
+		public RelativityServices(IAPM apm, IServicesMgr servicesMgr, Func<ISearchManager> searchManagerFactory, Uri authenticationUri)
 		{
+			SearchManagerFactory = searchManagerFactory;
 			APM = apm;
 			ServicesMgr = servicesMgr;
 			AuthenticationUri = authenticationUri;
 		}
+		
+		/// <summary>
+		/// 
+		/// </summary>
+		public Func<ISearchManager> SearchManagerFactory { get; }
 
 		/// <summary>
 		///     Provides access to Relativity Telemetry

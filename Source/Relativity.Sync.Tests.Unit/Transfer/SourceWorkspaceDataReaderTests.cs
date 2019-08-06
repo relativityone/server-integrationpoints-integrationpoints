@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -106,6 +108,44 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			// Assert
 			_exportBatcher.Verify(x => x.GetNextItemsFromBatchAsync(), Times.Exactly(1));
+		}
+
+		[Test]
+		public void ItShouldDisposePreviousBlockWhenNewOneIsCreated()
+		{
+			// Arrange
+			const int batchSize = 2;
+			const int numberOfBatches = 5;
+
+			RelativityObjectSlim[][] batches = Enumerable.Range(1, numberOfBatches)
+				.Select(i => GenerateBatch(batchSize))
+				.ToArray();
+			ExportBatcherReturnsBatches(batches);
+
+			IList<Mock<IDataReader>> mocks = new List<Mock<IDataReader>>();
+			bool previousReaderWasDisposed = true;
+			var dataReaderBuilder = new Mock<IBatchDataReaderBuilder>();
+			dataReaderBuilder
+				.Setup(x => x.BuildAsync(It.IsAny<int>(), It.IsAny<RelativityObjectSlim[]>(), It.IsAny<CancellationToken>()))
+				.ReturnsAsync(() => 
+			{
+				previousReaderWasDisposed.Should().BeTrue();
+				previousReaderWasDisposed = false;
+				var dataReaderMock = new Mock<IDataReader>();
+				dataReaderMock.Setup(x => x.Dispose()).Callback(() => previousReaderWasDisposed = true);
+				mocks.Add(dataReaderMock);
+				return dataReaderMock.Object;
+			});
+
+			SourceWorkspaceDataReader instance = BuildInstanceUnderTest(dataReaderBuilder.Object);
+
+			// Act
+			Enumerable.Range(0, numberOfBatches).ForEach(i => instance.Read());
+			instance.Dispose();
+
+			// Assert
+			mocks.Count.Should().Be(numberOfBatches);
+			mocks.ForEach(m => m.Verify(x => x.Dispose(), Times.AtLeastOnce));
 		}
 
 		[Test]

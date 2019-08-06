@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using Relativity.Services.Interfaces.File.Models;
 
 namespace Relativity.Sync.Tests.Integration.Helpers
 {
@@ -31,17 +30,6 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 			}
 
 			throw new ArgumentException($"Method does not know how to convert to type {target}");
-		}
-
-		public static FileResponse ToFileResponse(this Document document)
-		{
-			return new FileResponse
-			{
-				DocumentArtifactID = document.ArtifactId,
-				Filename = document.NativeFile.Filename,
-				Location = document.NativeFile.Location,
-				Size = document.NativeFile.Size
-			};
 		}
 	}
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -7,12 +8,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using FluentAssertions;
+using kCura.WinEDDS.Service.Export;
 using Moq;
 using Moq.Language.Flow;
 using NUnit.Framework;
 using Relativity.Services.Folder;
-using Relativity.Services.Interfaces.File;
-using Relativity.Services.Interfaces.File.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
@@ -28,17 +28,22 @@ namespace Relativity.Sync.Tests.Integration
 	internal sealed class FieldManagerTests
 	{
 		private ConfigurationStub _configuration;
-		private Mock<IObjectManager> _objectManager;
-		private Mock<IFileManager> _fileManager;
-		private Mock<IFolderManager> _folderManager;
 		private FieldManager _instance;
+		private Mock<IFolderManager> _folderManager;
+		private Mock<IObjectManager> _objectManager;
+		private Mock<ISearchManager> _searchManager;
 
+		private const string _DOCUMENT_ARTIFACT_ID_COLUMN_NAME = "DocumentArtifactID";
 		private const string _FOLDER_PATH_SOURCE_FIELD_NAME = "FolderPathSource";
-		private const long _NATIVE_FILE_SIZE_VALUE = 1013L;
+		private const string _LOCATION_COLUMN_NAME = "Location";
+		private const string _FILENAME_COLUMN_NAME = "Filename";
+		private const string _SIZE_COLUMN_NAME = "Size";
+
+		private const string _FIELD_FOLDER_PATH_VALUE = "test3/test4";
 		private const string _NATIVE_FILE_FILENAME_VALUE = "foo.txt";
 		private const string _NATIVE_FILE_LOCATION_VALUE = "test1/test2";
 		private const string _SOURCE_WORKSPACE_FOLDER_PATH_VALUE = "test5/test6/test7";
-		private const string _FIELD_FOLDER_PATH_VALUE = "test3/test4";
+		private const long _NATIVE_FILE_SIZE_VALUE = 1013L;
 
 		[SetUp]
 		public void SetUp()
@@ -55,7 +60,8 @@ namespace Relativity.Sync.Tests.Integration
 			};
 
 			_objectManager = new Mock<IObjectManager>();
-			_fileManager = new Mock<IFileManager>();
+			_searchManager = new Mock<ISearchManager>();
+			Func<ISearchManager> searchManagerFactory = () => _searchManager.Object;
 			_folderManager = new Mock<IFolderManager>();
 
 			var adminServiceFactory = new Mock<ISourceServiceFactoryForAdmin>();
@@ -63,8 +69,6 @@ namespace Relativity.Sync.Tests.Integration
 			var userServiceFactory = new Mock<ISourceServiceFactoryForUser>();
 			userServiceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>())
 				.ReturnsAsync(_objectManager.Object);
-			userServiceFactory.Setup(x => x.CreateProxyAsync<IFileManager>())
-				.ReturnsAsync(_fileManager.Object);
 			userServiceFactory.Setup(x => x.CreateProxyAsync<IFolderManager>())
 				.ReturnsAsync(_folderManager.Object);
 
@@ -73,6 +77,7 @@ namespace Relativity.Sync.Tests.Integration
 			builder.RegisterInstance(_configuration).AsImplementedInterfaces();
 			builder.RegisterInstance(adminServiceFactory.Object).As<ISourceServiceFactoryForAdmin>();
 			builder.RegisterInstance(userServiceFactory.Object).As<ISourceServiceFactoryForUser>();
+			builder.RegisterInstance(searchManagerFactory).As<Func<ISearchManager>>();
 
 			// This is so we can resolve FieldManager directly. We would normally register it by its interface.
 			builder.RegisterType<FieldManager>().As<FieldManager>();
@@ -225,14 +230,7 @@ namespace Relativity.Sync.Tests.Integration
 			const int documentArtifactId = 1231;
 
 			SetupDocumentFieldServices(MappedDocumentFieldTypePairs());
-
-			SetupFileInfoFieldServices(new FileResponse
-			{
-				DocumentArtifactID = documentArtifactId,
-				Filename = _NATIVE_FILE_FILENAME_VALUE,
-				Location = _NATIVE_FILE_LOCATION_VALUE,
-				Size = _NATIVE_FILE_SIZE_VALUE
-			});
+			SetupFileInfoFieldServices(new NativeFile(documentArtifactId, _NATIVE_FILE_LOCATION_VALUE, _NATIVE_FILE_FILENAME_VALUE, _NATIVE_FILE_SIZE_VALUE));
 
 			// Act
 			IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> specialFieldRowValueBuilders =
@@ -300,11 +298,36 @@ namespace Relativity.Sync.Tests.Integration
 			});
 		}
 
-		private void SetupFileInfoFieldServices(params FileResponse[] nativeFileResponses)
+		private void SetupFileInfoFieldServices(params INativeFile[] nativeFileResponses)
 		{
-			_fileManager.Setup(x => x.GetNativesForSearchAsync(It.IsAny<int>(), It.IsAny<int[]>()))
-				.ReturnsAsync<int, int[], IFileManager, FileResponse[]>((_, ids) =>
-					nativeFileResponses.Where(x => ids.Contains(x.DocumentArtifactID)).ToArray());
+			DataSet result = GetDataSetForDocuments(nativeFileResponses);
+			_searchManager.Setup(x => x.RetrieveNativesForSearch(It.IsAny<int>(), It.IsAny<string>()))
+				.Returns(result);
+		}
+
+		private static DataSet GetDataSetForDocuments(INativeFile[] nativeFiles)
+		{
+			DataSet dataSet = new DataSet();
+			DataTable dataTable = new DataTable("Table1");
+			dataSet.Tables.Add(dataTable);
+			dataTable.Columns.AddRange(new[]
+			{
+				new DataColumn(_DOCUMENT_ARTIFACT_ID_COLUMN_NAME, typeof(int)),
+				new DataColumn(_LOCATION_COLUMN_NAME, typeof(string)),
+				new DataColumn(_FILENAME_COLUMN_NAME, typeof(string)),
+				new DataColumn(_SIZE_COLUMN_NAME, typeof(long))
+			});
+			DataRow[] rows = nativeFiles.Select(nativeFile =>
+			{
+				DataRow dataRow = dataTable.NewRow();
+				dataRow[_DOCUMENT_ARTIFACT_ID_COLUMN_NAME] = nativeFile.DocumentArtifactId;
+				dataRow[_LOCATION_COLUMN_NAME] = nativeFile.Location;
+				dataRow[_FILENAME_COLUMN_NAME] = nativeFile.Filename;
+				dataRow[_SIZE_COLUMN_NAME] = nativeFile.Size;
+				return dataRow;
+			}).ToArray();
+			rows.ForEach(row => dataTable.Rows.Add(row));
+			return dataSet;
 		}
 
 		private void SetupFolderPathFieldServices(Func<int, int> doc2Folder, params FolderPath[] folderPaths)

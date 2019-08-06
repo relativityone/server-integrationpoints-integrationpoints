@@ -12,6 +12,7 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Tests.Common;
+using Relativity.Sync.Tests.Integration.Helpers;
 using Relativity.Sync.Transfer.StreamWrappers;
 
 namespace Relativity.Sync.Tests.Integration

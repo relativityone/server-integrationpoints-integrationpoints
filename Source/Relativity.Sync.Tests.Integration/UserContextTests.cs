@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Autofac;
 using FluentAssertions;
+using kCura.WinEDDS.Service.Export;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
@@ -14,6 +15,7 @@ using Relativity.Sync.Authentication;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Tests.Common;
+using Relativity.Sync.Tests.Integration.Helpers;
 using Relativity.Telemetry.APM;
 
 namespace Relativity.Sync.Tests.Integration
@@ -83,8 +85,9 @@ namespace Relativity.Sync.Tests.Integration
 		{
 			IAPM apm = Mock.Of<IAPM>();
 			IServicesMgr servicesMgr = Mock.Of<IServicesMgr>();
+			ISearchManager searchManager = Mock.Of<ISearchManager>();
 			Uri authenticationUri = new Uri(_INSTANCE_URL);
-			RelativityServices relativityServices = new RelativityServices(apm, servicesMgr, authenticationUri);
+			RelativityServices relativityServices = new RelativityServices(apm, servicesMgr, () => searchManager, authenticationUri);
 			_containerBuilder.RegisterInstance(relativityServices).As<RelativityServices>();
 		}
 
