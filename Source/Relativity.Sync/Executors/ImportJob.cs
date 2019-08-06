@@ -15,7 +15,7 @@ namespace Relativity.Sync.Executors
 		private bool _canReleaseSemaphore;
 		private Exception _importApiException;
 
-		private const int _ITEMLEVEL_ERRORS_MASS_CREATE_SIZE = 1000;
+		private const int _ITEMLEVEL_ERRORS_MASS_CREATE_SIZE = 10000;
 		private const string _IDENTIFIER_COLUMN = "Identifier";
 		private const string _MESSAGE_COLUMN = "Message";
 
