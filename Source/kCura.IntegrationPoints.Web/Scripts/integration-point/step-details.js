@@ -302,12 +302,11 @@ var IP = IP || {};
 				self.destination.isDestinationProviderDisabled(!isExportType);
 				if (isExportType === false) {
 					self.destination.setRelativityAsDestinationProvider();
-					self.destination.isDestinationObjectDisabled(isExportType);
 				} else {
 					var relativitySourceProviderGuid = "423b4d43-eae9-4e14-b767-17d629de4bb2";
 					self.source.selectedType(relativitySourceProviderGuid);
-					self.destination.isDestinationObjectDisabled(isExportType);
 				}
+				self.destination.isDestinationObjectDisabled(isExportType);
 			}
 		};
 	};
