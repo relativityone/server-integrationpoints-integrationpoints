@@ -6,13 +6,13 @@ using FluentAssertions;
 using NUnit.Framework;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Services.ServiceProxy;
 using Relativity.Services.Workspace;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Helpers;
-using Relativity.Sync.Tests.System.Stubs;
 using Relativity.Testing.Identification;
 
 namespace Relativity.Sync.Tests.System
@@ -20,7 +20,7 @@ namespace Relativity.Sync.Tests.System
 	public class JobHistoryErrorRepositoryTests : SystemTest
 	{
 		private WorkspaceRef _workspace;
-		private ISourceServiceFactoryForAdmin _sourceServiceFactoryForAdmin;
+		private ISourceServiceFactoryForUser _serviceFactory;
 		private IDateTime _dateTime;
 		private ISyncLog _logger;
 
@@ -35,7 +35,7 @@ namespace Relativity.Sync.Tests.System
 		public async Task SetUp()
 		{
 			_workspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
-			_sourceServiceFactoryForAdmin = new ServiceFactoryForAdmin(new ServicesManagerStub(), new DynamicProxyFactoryStub());
+			_serviceFactory = new ServiceFactoryForUser(ServiceFactory, new DynamicProxyFactoryStub());
 			_dateTime = new DateTimeWrapper();
 			_logger = new EmptyLogger();
 		}
@@ -58,7 +58,7 @@ namespace Relativity.Sync.Tests.System
 				StackTrace = expectedStackTrace,
 			};
 			
-			JobHistoryErrorRepository instance = new JobHistoryErrorRepository(_sourceServiceFactoryForAdmin, _dateTime, _logger);
+			JobHistoryErrorRepository instance = new JobHistoryErrorRepository(_serviceFactory, _dateTime, _logger);
 
 			// Act
 			int createdErrorArtifactId = await instance.CreateAsync(_workspace.ArtifactID, expectedJobHistoryArtifactId, createDto).ConfigureAwait(false);
