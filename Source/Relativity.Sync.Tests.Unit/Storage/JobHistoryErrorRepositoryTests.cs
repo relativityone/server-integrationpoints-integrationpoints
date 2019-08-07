@@ -19,7 +19,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 	internal sealed class JobHistoryErrorRepositoryTests
 	{
 		private JobHistoryErrorRepository _jobHistoryErrorRepository;
-		private Mock<ISourceServiceFactoryForAdmin> _serviceFactory;
+		private Mock<ISourceServiceFactoryForUser> _serviceFactory;
 		private Mock<IObjectManager> _objectManager;
 		private Mock<IDateTime> _dateTime;
 		private DateTime _utcNow;
@@ -50,7 +50,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		[SetUp]
 		public void SetUp()
 		{
-			_serviceFactory = new Mock<ISourceServiceFactoryForAdmin>();
+			_serviceFactory = new Mock<ISourceServiceFactoryForUser>();
 			_utcNow = DateTime.UtcNow;
 			_dateTime = new Mock<IDateTime>();
 			_dateTime.SetupGet(x => x.UtcNow).Returns(_utcNow);

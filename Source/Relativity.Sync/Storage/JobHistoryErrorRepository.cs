@@ -29,12 +29,12 @@ namespace Relativity.Sync.Storage
 		private readonly Guid _errorTypeJob = new Guid("FA8BB625-05E6-4BF7-8573-012146BAF19B");
 
 		private readonly IDateTime _dateTime;
-		private readonly ISourceServiceFactoryForAdmin _sourceServiceFactoryForAdmin;
+		private readonly ISourceServiceFactoryForUser _serviceFactory;
 		private readonly ISyncLog _logger;
 
-		public JobHistoryErrorRepository(ISourceServiceFactoryForAdmin sourceServiceFactoryForAdmin, IDateTime dateTime, ISyncLog logger)
+		public JobHistoryErrorRepository(ISourceServiceFactoryForUser serviceFactory, IDateTime dateTime, ISyncLog logger)
 		{
-			_sourceServiceFactoryForAdmin = sourceServiceFactoryForAdmin;
+			_serviceFactory = serviceFactory;
 			_dateTime = dateTime;
 			_logger = logger;
 		}
@@ -54,7 +54,7 @@ namespace Relativity.Sync.Storage
 				_dateTime.UtcNow
 			}).ToList();
 
-			using (IObjectManager objectManager = await _sourceServiceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				var request = new MassCreateRequest()
 				{
