@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter.Base;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Data.DTO;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using Relativity.API;
-using Relativity.Core.Api.Shared.Manager.Export;
 using ArtifactType = kCura.Relativity.Client.ArtifactType;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter
@@ -19,45 +20,30 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private readonly IFolderPathReader _folderPathReader;
 
 		public RelativityExporterService(
-			IExporter exporter, 
+			IDocumentRepository documentRepository, 
 			IRelativityObjectManager relativityObjectManager,
 			IRepositoryFactory sourceRepositoryFactory, 
 			IRepositoryFactory targetRepositoryFactory, 
 			IJobStopManager jobStopManager, 
 			IHelper helper,
-			IFolderPathReader folderPathReader, 
-			IBaseServiceContextProvider baseServiceContextProvider,
+			IFolderPathReader folderPathReader,
+			IFileRepository fileRepository,
 			FieldMap[] mappedFields, 
 			int startAt, 
-			string config, 
+			SourceConfiguration sourceConfiguration, 
 			int searchArtifactId)
 			: base(
-				exporter,
+				documentRepository,
 				relativityObjectManager,
 				sourceRepositoryFactory, 
 				targetRepositoryFactory, 
 				jobStopManager, 
-				helper, 
-				baseServiceContextProvider, 
+				helper,
+				fileRepository,
 				mappedFields, 
 				startAt, 
-				config, 
+				sourceConfiguration, 
 				searchArtifactId)
-		{
-			_folderPathReader = folderPathReader;
-		}
-
-		internal RelativityExporterService(
-			IExporter exporter, 
-			IRelativityObjectManager relativityObjectManager,
-			IJobStopManager jobStopManager, 
-			IHelper helper,
-			IQueryFieldLookupRepository queryFieldLookupRepository, 
-			IFolderPathReader folderPathReader,
-			FieldMap[] mappedFields, 
-			HashSet<int> longTextField, 
-			int[] avfIds)
-			: base(exporter, relativityObjectManager, jobStopManager, helper, queryFieldLookupRepository, mappedFields, longTextField, avfIds)
 		{
 			_folderPathReader = folderPathReader;
 		}
@@ -66,13 +52,15 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		{
 			var documentTransferDataReader = new DocumentTransferDataReader(
 				this, 
-				MappedFields, 
-				BaseContext,
+				MappedFields,
 				transferConfiguration.ScratchRepositories, 
 				RelativityObjectManager,
+				DocumentRepository,
 				Logger,
 				QueryFieldLookupRepository,
-				transferConfiguration.ImportSettings.UseDynamicFolderPath);
+				FileRepository,
+				transferConfiguration.ImportSettings.UseDynamicFolderPath,
+				SourceConfiguration.SourceWorkspaceArtifactId);
 			var exporterTransferContext = 
 				new ExporterTransferContext(documentTransferDataReader, transferConfiguration)
 					{ TotalItemsFound = TotalRecordsFound };
@@ -81,26 +69,28 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 		public override ArtifactDTO[] RetrieveData(int size)
 		{
-			Logger.LogDebug("Start retrieving data in RelativityExporterService. Size: {size}, export type: {typeOfExport}, AvfIds size: {avfIdsSize}",
-				size, SourceConfiguration?.TypeOfExport, ArtifactViewFieldIds.Length);
+			Logger.LogDebug("Start retrieving data in RelativityExporterService. Size: {size}, export type: {typeOfExport}, FieldArtifactIds size: {avfIdsSize}",
+				size, SourceConfiguration?.TypeOfExport, FieldArtifactIds.Length);
+
+			IList<RelativityObjectSlimDto> retrievedData = DocumentRepository
+					.RetrieveResultsBlockFromExportAsync(ExportJobInfo, size, RetrievedDataCount)
+					.GetAwaiter().GetResult();
+
+			Logger.LogDebug($"Retrieved {retrievedData.Count} documents in ImageExporterService");
+
 			var result = new List<ArtifactDTO>(size);
-			object[] retrievedData = Exporter.RetrieveResults(ExportJobInfo.RunId, ArtifactViewFieldIds, size);
-			if (retrievedData != null)
+
+			foreach (RelativityObjectSlimDto data in retrievedData)
 			{
-				Logger.LogDebug("Retrieved {numberOfDocuments} documents in RelativityExporterService", retrievedData.Length);
-				int artifactType = (int)ArtifactType.Document;
-				foreach (object data in retrievedData)
-				{
-					var fields = new List<ArtifactFieldDTO>(ArtifactViewFieldIds.Length);
+				var fields = new List<ArtifactFieldDTO>(FieldArtifactIds.Length);
 
-					object[] fieldsValue = (object[])data;
-					int documentArtifactId = Convert.ToInt32(fieldsValue[ArtifactViewFieldIds.Length]);
+				int documentArtifactID = data.ArtifactID;
 
-					SetupBaseFields(fieldsValue, fields);
+				SetupBaseFields(data.FieldValues.Values.ToArray(), fields);
 
-					// TODO: replace String.empty
-					result.Add(new ArtifactDTO(documentArtifactId, artifactType, string.Empty, fields));
-				}
+				// TODO: replace String.empty
+				string textIdentifier = string.Empty;
+				result.Add(new ArtifactDTO(documentArtifactID, (int) ArtifactType.Document, textIdentifier, fields));
 			}
 
 			Logger.LogDebug("Before setting folder paths for documents");
@@ -113,7 +103,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 		private void SetupBaseFields(object[] fieldsValue, List<ArtifactFieldDTO> fields)
 		{
-			for (int index = 0; index < ArtifactViewFieldIds.Length; index++)
+			for (int index = 0; index < FieldArtifactIds.Length; index++)
 			{
 				int artifactId = FieldArtifactIds[index];
 				object value = fieldsValue[index];
@@ -138,7 +128,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 				fields.Add(new LazyExceptArtifactFieldDto(exception)
 				{
-					Name = ExportJobInfo.ColumnNames[index],
+					Name = ExportJobInfo.FieldNames[index],
 					ArtifactId = artifactId,
 					Value = value,
 					FieldType = QueryFieldLookupRepository.GetFieldTypeByArtifactId(artifactId)

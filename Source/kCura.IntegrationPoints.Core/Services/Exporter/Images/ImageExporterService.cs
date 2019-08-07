@@ -1,21 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter.Base;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Data.DTO;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
-using Relativity.Core.Api.Shared.Manager.Export;
 using ArtifactType = kCura.Relativity.Client.ArtifactType;
-using DataView = kCura.Data.DataView;
 using ExportSettings = kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportSettings;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
@@ -23,116 +19,146 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 	public class ImageExporterService : ExporterServiceBase
 	{
 		private readonly ImportSettings _settings;
-		private const string ImageLocationColumn = "Location";
-
-		private readonly IFileRepository _fileRepository;
 
 		public ImageExporterService(
-			IExporter exporter, 
-			IRelativityObjectManager relativityObjectManager, 
-			IRepositoryFactory sourceRepositoryFactory, 
+			IDocumentRepository documentRepository,
+			IRelativityObjectManager relativityObjectManager,
+			IRepositoryFactory sourceRepositoryFactory,
 			IRepositoryFactory targetRepositoryFactory,
-			IJobStopManager jobStopManager, 
-			IHelper helper, 
-			IBaseServiceContextProvider baseServiceContextProvider, 
-			FieldMap[] mappedFields, 
+			IFileRepository fileRepository,
+			IJobStopManager jobStopManager,
+			IHelper helper,
+			FieldMap[] mappedFields,
 			int startAt,
-			string config, 
+			SourceConfiguration sourceConfiguration, 
 			int searchArtifactId, 
 			ImportSettings settings)
-			: base(exporter, relativityObjectManager, sourceRepositoryFactory, targetRepositoryFactory, jobStopManager, helper, baseServiceContextProvider, mappedFields, startAt,
-				config, searchArtifactId)
+			: base(
+				documentRepository,
+				relativityObjectManager,
+				sourceRepositoryFactory,
+				targetRepositoryFactory,
+				jobStopManager,
+				helper,
+				fileRepository,
+				mappedFields, 
+				startAt,
+				sourceConfiguration, 
+				searchArtifactId)
 		{
 			_settings = settings;
-			_fileRepository = sourceRepositoryFactory.GetFileRepository();
 		}
 
 		public override IDataTransferContext GetDataTransferContext(IExporterTransferConfiguration transferConfiguration)
 		{
-			var imageTransferDataReader = new ImageTransferDataReader(this, MappedFields, BaseContext, Logger, transferConfiguration.ScratchRepositories);
+			var imageTransferDataReader = new ImageTransferDataReader(this, MappedFields, Logger, transferConfiguration.ScratchRepositories);
 			return Context ?? (Context = new ExporterTransferContext(imageTransferDataReader, transferConfiguration));
 		}
 
 		public override ArtifactDTO[] RetrieveData(int size)
 		{
-			Logger.LogDebug("Start retrieving data in ImageExporterService. Size: {size}, export type: {typeOfExport}, AvfIds size: {avfIdsSize}",
-				size, SourceConfiguration.TypeOfExport, ArtifactViewFieldIds.Length);
+			Logger.LogDebug("Start retrieving data in ImageExporterService. Size: {size}, export type: {typeOfExport}, FieldArtifactIds size: {avfIdsSize}",
+				size, SourceConfiguration.TypeOfExport, FieldArtifactIds.Length);
+
+			IList<RelativityObjectSlimDto> retrievedData = DocumentRepository
+				.RetrieveResultsBlockFromExportAsync(ExportJobInfo, size, RetrievedDataCount)
+				.GetAwaiter().GetResult();
+
+			Logger.LogDebug($"Retrieved {retrievedData.Count} documents in ImageExporterService");
 
 			var imagesResult = new List<ArtifactDTO>();
-			object[] retrievedData = Exporter.RetrieveResults(ExportJobInfo.RunId, ArtifactViewFieldIds, size);
 
-			if (retrievedData != null)
+			foreach (RelativityObjectSlimDto data in retrievedData)
 			{
-				Logger.LogDebug("Retrieved {numberOfDocuments} documents in ImageExporterService", retrievedData.Length);
-				int artifactType = (int)ArtifactType.Document;
-				foreach (object data in retrievedData)
+				var fields = new List<ArtifactFieldDTO>();
+
+				int documentArtifactID = data.ArtifactID;
+				if (SourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.ProductionSet)
 				{
-					var fields = new List<ArtifactFieldDTO>();
-					object[] fieldsValue = (object[])data;
-
-					int documentArtifactId = Convert.ToInt32(fieldsValue[ArtifactViewFieldIds.Length]);
-					if (SourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.ProductionSet)
-					{
-						SetProducedImagesByProductionId(documentArtifactId, fields, fieldsValue, artifactType, imagesResult,
-							SourceConfiguration.SourceProductionId);
-					}
-					else
-					{
-						SetImagesBySavedSearch(documentArtifactId, fields, fieldsValue, artifactType, imagesResult);
-					}
-
+					SetProducedImagesByProductionId(
+						documentArtifactID, 
+						fields, 
+						data.FieldValues, 
+						(int) ArtifactType.Document,
+						imagesResult, 
+						SourceConfiguration.SourceProductionId);
 				}
-				RetrievedDataCount += retrievedData.Length;
+				else
+				{
+					SetImagesBySavedSearch(
+						documentArtifactID, 
+						fields, 
+						data.FieldValues, 
+						(int) ArtifactType.Document,
+						imagesResult);
+				}
+
 			}
+
+			RetrievedDataCount += retrievedData.Count;
 
 			Logger.LogDebug("Retrieved {numberOfImages} images in ImageExporterService", imagesResult.Count);
 			Context.TotalItemsFound = Context.TotalItemsFound.GetValueOrDefault() + imagesResult.Count;
 			return imagesResult.ToArray();
 		}
 
-		private void SetImagesBySavedSearch(int documentArtifactId, List<ArtifactFieldDTO> fields, object[] fieldsValue, int artifactType,
+		private void SetImagesBySavedSearch(
+			int documentArtifactID, 
+			List<ArtifactFieldDTO> fields, 
+			IDictionary<string, object> fieldValues, 
+			int artifactType,
 			List<ArtifactDTO> imagesResult)
 		{
 			ExportSettings.ProductionPrecedenceType productionPrecedenceType = GetProductionPrecedenceType();
 			if (productionPrecedenceType == ExportSettings.ProductionPrecedenceType.Produced)
 			{
-				int producedImagesCount = SetProducedImagesByPrecedence(documentArtifactId, fields, fieldsValue, artifactType, imagesResult);
+				int producedImagesCount = SetProducedImagesByPrecedence(documentArtifactID, fields, fieldValues, artifactType, imagesResult);
 				if (_settings.IncludeOriginalImages && producedImagesCount == 0)
 				{
-					Logger.LogDebug("Produced images are not available, original images will be used. Document: {documentArtifactId}", documentArtifactId);
-					SetOriginalImages(documentArtifactId, fieldsValue, fields, artifactType, imagesResult);
+					Logger.LogDebug("Produced images are not available, original images will be used. Document: {documentArtifactId}", documentArtifactID);
+					SetOriginalImages(documentArtifactID, fieldValues, fields, artifactType, imagesResult);
 				}
 			}
 			else
 			{
-				SetOriginalImages(documentArtifactId, fieldsValue, fields, artifactType, imagesResult);
+				SetOriginalImages(documentArtifactID, fieldValues, fields, artifactType, imagesResult);
 			}
 		}
 
 		private void SetOriginalImages(
-			int documentArtifactId, 
-			object[] fieldsValue, 
+			int documentArtifactID, 
+			IDictionary<string, object> fieldValues, 
 			List<ArtifactFieldDTO> fields, 
 			int artifactType, 
 			List<ArtifactDTO> result)
 		{
-			DataView imagesDataView = _fileRepository
-				.GetImagesForDocuments(
-					SourceConfiguration.SourceWorkspaceArtifactId, 
-					documentIDs: new[] { documentArtifactId })
-				.ToDataView();
+			List<string> imagesDataView = FileRepository
+				.GetImagesLocationForDocuments(
+					SourceConfiguration.SourceWorkspaceArtifactId,
+					documentIDs: new[] {documentArtifactID});
 			if (imagesDataView.Count > 0)
 			{
-				CreateImageArtifactDtos(imagesDataView, documentArtifactId, fields, fieldsValue, artifactType, result);
+				CreateImageArtifactDtos(imagesDataView, documentArtifactID, fields, fieldValues, artifactType, result);
 			}
 		}
 
-		private int SetProducedImagesByPrecedence(int documentArtifactId, List<ArtifactFieldDTO> fields, object[] fieldsValue, int artifactType, List<ArtifactDTO> result)
+		private int SetProducedImagesByPrecedence(
+			int documentArtifactID, 
+			List<ArtifactFieldDTO> fields, 
+			IDictionary<string, object> fieldValues, 
+			int artifactType, 
+			List<ArtifactDTO> result)
 		{
 			foreach (ProductionDTO prod in _settings.ImagePrecedence)
 			{
 				int productionArtifactId = Convert.ToInt32(prod.ArtifactID);
-				int producedImagesCount = SetProducedImagesByProductionId(documentArtifactId, fields, fieldsValue, artifactType, result, productionArtifactId);
+				int producedImagesCount = SetProducedImagesByProductionId(
+					documentArtifactID, 
+					fields, 
+					fieldValues, 
+					artifactType,
+					result, 
+					productionArtifactId);
 				if (producedImagesCount > 0)
 				{
 					return producedImagesCount;
@@ -142,66 +168,75 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 		}
 
 		private int SetProducedImagesByProductionId(
-			int documentArtifactId, 
+			int documentArtifactID, 
 			List<ArtifactFieldDTO> fields, 
-			object[] fieldsValue, 
+			IDictionary<string, object> fieldValues, 
 			int artifactType,
 			List<ArtifactDTO> result, 
 			int productionArtifactId)
 		{
-			DataView producedImagesDataView = _fileRepository
-				.GetImagesForProductionDocuments(
+			List<string> producedImagesDataView = FileRepository
+				.GetImagesLocationForProductionDocuments(
 					SourceConfiguration.SourceWorkspaceArtifactId,
 					productionArtifactId, 
-					documentIDs: new[] { documentArtifactId })
-				.ToDataView();
+					documentIDs: new[] { documentArtifactID });
 			if (producedImagesDataView.Count > 0)
 			{
-				CreateImageArtifactDtos(producedImagesDataView, documentArtifactId, fields, fieldsValue, artifactType, result);
+				CreateImageArtifactDtos(producedImagesDataView, documentArtifactID, fields, fieldValues, artifactType, result);
 			}
 			return producedImagesDataView.Count;
 		}
 
-		private void CreateImageArtifactDtos(kCura.Data.DataView dataView, int documentArtifactId, List<ArtifactFieldDTO> fields, object[] fieldsValue, int artifactType,
+		private void CreateImageArtifactDtos(
+			List<string> dataView, 
+			int documentArtifactID, 
+			List<ArtifactFieldDTO> fields, 
+			IDictionary<string, object> fieldValues, 
+			int artifactType,
 			List<ArtifactDTO> result)
 		{
-			SetupBaseFields(fieldsValue, fields);
+			SetupBaseFields(fieldValues, fields);
 
 			// the assumption is based on the following facts:
 			// - for images we only allow maping identifier field, so _avfIds has only one object, this is guarded by validation
 			// - Core Export API's RetrieveResults() method returns results based on _avfIds and in the same order (potentially adding additional columns at the end)
-			string documentIdentifier = fieldsValue[0].ToString();
+			string documentIdentifier = fieldValues.Values.First().ToString();
 
-			for (int index = 0; index < dataView.Table.Rows.Count; index++)
+			foreach (var locationRow in dataView)
 			{
-				ArtifactDTO artifactDto = CreateImageArtifactDto(dataView.Table.Rows[index], documentArtifactId, documentIdentifier, fields, artifactType);
+				ArtifactDTO artifactDto = CreateImageArtifactDto(locationRow, documentArtifactID, documentIdentifier, fields, artifactType);
 				result.Add(artifactDto);
 			}
 		}
 
-		private void SetupBaseFields(object[] fieldsValue, List<ArtifactFieldDTO> fields)
+		private void SetupBaseFields(IDictionary<string, object> fieldValues, List<ArtifactFieldDTO> fields)
 		{
-			for (int index = 0; index < ArtifactViewFieldIds.Length; index++)
-			{
-				int artifactId = FieldArtifactIds[index];
-				object value = fieldsValue[index];
-
-				fields.Add(new ArtifactFieldDTO
+			IEnumerable<ArtifactFieldDTO> baseFields = FieldArtifactIds
+				.Zip(fieldValues, (fieldArtifactID, fieldValue) => new
 				{
-					Name = ExportJobInfo.ColumnNames[index],
-					ArtifactId = artifactId,
-					Value = value,
-					FieldType = QueryFieldLookupRepository.GetFieldTypeByArtifactId(artifactId)
+					ArtifactID = fieldArtifactID,
+					Name = fieldValue.Key,
+					Value = fieldValue.Value
+				})
+				.Select(artifact => new ArtifactFieldDTO
+				{
+					Name = artifact.Name,
+					ArtifactId = artifact.ArtifactID,
+					Value = artifact.Value,
+					FieldType = QueryFieldLookupRepository.GetFieldTypeByArtifactId(artifact.ArtifactID)
 				});
-			}
+
+			fields.AddRange(baseFields);
 		}
 
-		private ArtifactDTO CreateImageArtifactDto(DataRow imageDataRow, int documentArtifactId, string documentIdentifier,
+		private ArtifactDTO CreateImageArtifactDto(
+			string fileLocation, 
+			int documentArtifactID, 
+			string documentIdentifier,
 			List<ArtifactFieldDTO> fields, int artifactType)
 		{
-			string fileLocation = imageDataRow[ImageLocationColumn].ToString();
 			List<ArtifactFieldDTO> artifactFieldDtos = AddImageFields(fields, fileLocation, documentIdentifier);
-			var artifactDto = new ArtifactDTO(documentArtifactId, artifactType, string.Empty, artifactFieldDtos);
+			var artifactDto = new ArtifactDTO(documentArtifactID, artifactType, string.Empty, artifactFieldDtos);
 			return artifactDto;
 		}
 

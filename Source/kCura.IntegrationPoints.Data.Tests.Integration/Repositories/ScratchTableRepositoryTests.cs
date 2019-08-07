@@ -5,7 +5,6 @@ using System.Linq;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
-using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -41,7 +40,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			_caseServiceContext = Container.Resolve<ICaseServiceContext>();
 			_documentRepository = _repositoryFactory.GetDocumentRepository(SourceWorkspaceArtifactID);
 			_fieldQueryRepository = _repositoryFactory.GetFieldQueryRepository(SourceWorkspaceArtifactID);
-			_resourceDbProvider = new ResourceDbProvider();
+			_resourceDbProvider = new ResourceDbProvider(Helper);
 		}
 
 		public override void TestTeardown()
@@ -181,7 +180,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			_sut.AddArtifactIdsIntoTempTable(documentIDs);
 
 			//ACT
-			IEnumerable<int> result = _sut.ReadDocumentIDs(offset: 0, size: numDocs).ToList();
+			IEnumerable<int> result = _sut.ReadArtifactIDs(offset: 0, size: numDocs);
 
 			//ASSERT
 			result.Should().Equal(documentIDs);
@@ -199,7 +198,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			_sut.AddArtifactIdsIntoTempTable(documentIDs);
 
 			//ACT
-			IEnumerable<int> result = _sut.ReadDocumentIDs(offset, numDocs).ToList();
+			IEnumerable<int> result = _sut.ReadArtifactIDs(offset, numDocs);
 
 			//ASSERT
 			result.Should().Equal(documentsAfterOffseting);
@@ -217,7 +216,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			_sut.AddArtifactIdsIntoTempTable(documentIDs);
 			documentIDs.Sort();
 			//ACT
-			IEnumerable<int> result = _sut.ReadDocumentIDs(offset, numDocs).ToList();
+			IEnumerable<int> result = _sut.ReadArtifactIDs(offset, numDocs);
 
 			//ASSERT
 			result.Should().Equal(documentIDs);
@@ -234,7 +233,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 
 			//ACT
 			List<int> result = Enumerable.Range(0, numberOfBatchIterations)
-				.SelectMany(batchNumber => _sut.ReadDocumentIDs(batchSize * batchNumber, batchSize))
+				.SelectMany(batchNumber => _sut.ReadArtifactIDs(batchSize * batchNumber, batchSize))
 				.ToList();
 
 			//ASSERT

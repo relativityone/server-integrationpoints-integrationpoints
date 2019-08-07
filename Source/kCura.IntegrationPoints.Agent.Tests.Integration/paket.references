@@ -1,19 +1,23 @@
+Castle.Windsor
 CSharpGuidelineAnalyzer
-FluentAssertions
 kCura.Agent
 kCura.Apps.Common.Data
 kCura.Apps.Common.Utils
 kCura.OutsideIn.FI.Win32
 kCura.Relativity.Client
-Moq
-netDumbster
-NUnit
 Relativity.Authentication
 Relativity.Data
 Relativity.DataTransfer.MessageService
-Relativity.Telemetry.APM
-relativity.transfer.client
-RelativityCore
+Relativity.Logging
 Relativity.OAuth2Client
 Relativity.OAuth2Client.Interfaces
-relativity.testing.identification
+Relativity.Services.Interfaces.Private
+Relativity.Telemetry.APM
+relativity.transfer.client
+
+group TestPackages
+	FluentAssertions
+	Moq
+	netDumbster
+	NUnit
+	relativity.testing.identification

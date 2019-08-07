@@ -14,6 +14,7 @@ properties {
     $pdb_directory = [System.IO.Path]::Combine($root, 'PDBs')
     $doc_directory = [System.IO.Path]::Combine($root, 'Documentation')
     $nuget_packages_directory = [System.IO.Path]::Combine($root, 'packages')
+    $nuget_test_packages_directory = [System.IO.Path]::Combine($nuget_packages_directory, 'testpackages')
     $lib_directory = [System.IO.Path]::Combine($root, 'lib')
     $tests_directory = [System.IO.Path]::Combine($lib_directory, 'UnitTests')
     $artifacts_directory = [System.IO.Path]::Combine($root, 'Artifacts')
@@ -121,10 +122,10 @@ properties {
     $dotCover_result = [System.IO.Path]::Combine($development_scripts_directory, 'AppCoverageReport.html')
 
     #chromedriver
-	$chromedriver_path = [System.IO.Path]::Combine($nuget_packages_directory, 'Selenium.WebDriver.ChromeDriver', 'driver', 'win32', 'chromedriver.exe')
+	$chromedriver_path = [System.IO.Path]::Combine($nuget_test_packages_directory, 'Selenium.WebDriver.ChromeDriver', 'driver', 'win32', 'chromedriver.exe')
 	
 	#geckodriver
-    $geckodriver_path = [System.IO.Path]::Combine($nuget_packages_directory, 'Selenium.WebDriver.GeckoDriver', 'driver', 'win64', 'geckodriver.exe')
+    $geckodriver_path = [System.IO.Path]::Combine($nuget_test_packages_directory, 'Selenium.WebDriver.GeckoDriver', 'driver', 'win64', 'geckodriver.exe')
     
     #test variables
     $tests_project_file = [System.IO.Path]::Combine($development_scripts_directory, 'IntegrationPointsTests.nunit')

@@ -2,9 +2,9 @@
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using FluentAssertions;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Data.Facades.ObjectManager;
 using kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation;
-using kCura.IntegrationPoints.Data.Interfaces;
 using kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementation.TestsHelpers;
 using Moq;
 using NUnit.Framework;

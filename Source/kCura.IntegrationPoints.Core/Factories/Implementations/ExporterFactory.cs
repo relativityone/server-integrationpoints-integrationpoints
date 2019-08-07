@@ -1,27 +1,17 @@
-﻿using System.Collections.Generic;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using System.Text;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Core.Services.Exporter.Images;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Core.Tagging;
-using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
-using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.ScheduleQueue.Core;
 using Newtonsoft.Json;
 using Relativity.API;
-using Relativity.Core;
-using Relativity.Core.Api.Shared.Manager.Export;
 
 namespace kCura.IntegrationPoints.Core.Factories.Implementations
 {
@@ -34,7 +24,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		private readonly IHelper _helper;
 		private readonly IFolderPathReaderFactory _folderPathReaderFactory;
 		private readonly IRelativityObjectManager _relativityObjectManager;
-		private readonly ISourceDocumentsTagger _sourceDocumentsTagger;
+		private readonly IFileRepository _fileRepository;
 		private readonly IAPILog _logger;
 
 		public ExporterFactory(
@@ -44,7 +34,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			IHelper helper,
 			IFolderPathReaderFactory folderPathReaderFactory,
 			IRelativityObjectManager relativityObjectManager,
-			ISourceDocumentsTagger sourceDocumentsTagger)
+			IFileRepository fileRepository)
 		{
 			_claimsPrincipalFactory = claimsPrincipalFactory;
 			_sourceRepositoryFactory = sourceRepositoryFactory;
@@ -52,206 +42,105 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			_helper = helper;
 			_folderPathReaderFactory = folderPathReaderFactory;
 			_relativityObjectManager = relativityObjectManager;
-			_sourceDocumentsTagger = sourceDocumentsTagger;
+			_fileRepository = fileRepository;
 			_logger = _helper.GetLoggerFactory().GetLogger().ForContext<ExporterFactory>();
-		}
-
-		public List<IBatchStatus> InitializeExportServiceJobObservers(Job job,
-			ITagsCreator tagsCreator,
-			ITagSavedSearchManager tagSavedSearchManager,
-			ISynchronizerFactory synchronizerFactory,
-			ISerializer serializer,
-			IJobHistoryErrorManager jobHistoryErrorManager,
-			IJobStopManager jobStopManager,
-			ISourceWorkspaceTagCreator sourceWorkspaceTagsCreator,
-			FieldMap[] mappedFields,
-			SourceConfiguration configuration,
-			JobHistoryErrorDTO.UpdateStatusType updateStatusType,
-			JobHistory jobHistory,
-			string uniqueJobId,
-			string userImportApiSettings)
-		{
-			IConsumeScratchTableBatchStatus destinationFieldsTagger = CreateDestinationFieldsTagger(tagsCreator, tagSavedSearchManager, synchronizerFactory,
-				serializer, mappedFields, configuration, jobHistory, uniqueJobId, userImportApiSettings);
-			IConsumeScratchTableBatchStatus sourceFieldsTagger = CreateSourceFieldsTagger(configuration, jobHistory, sourceWorkspaceTagsCreator, uniqueJobId);
-			IBatchStatus sourceJobHistoryErrorUpdater = CreateJobHistoryErrorUpdater(job, jobHistoryErrorManager, jobStopManager, configuration, updateStatusType);
-
-			var batchStatusCommands = new List<IBatchStatus>
-			{
-				destinationFieldsTagger,
-				sourceFieldsTagger,
-				sourceJobHistoryErrorUpdater
-			};
-			return batchStatusCommands;
 		}
 
 		public IExporterService BuildExporter(
 			IJobStopManager jobStopManager,
 			FieldMap[] mappedFields,
-			string config,
-			int savedSearchArtifactId,
+			string serializedSourceConfiguration,
+			int savedSearchArtifactID,
 			int onBehalfOfUser,
-			string userImportApiSettings)
+			string userImportApiSettings,
+			IDocumentRepository documentRepository,
+			ISerializer serializer)
 		{
-			LogBuildExporterExecutionWithParameters(mappedFields, config, savedSearchArtifactId, onBehalfOfUser, userImportApiSettings);
+			LogBuildExporterExecutionWithParameters(mappedFields, serializedSourceConfiguration, savedSearchArtifactID, onBehalfOfUser, userImportApiSettings);
 			ClaimsPrincipal claimsPrincipal = GetClaimsPrincipal(onBehalfOfUser);
-			IBaseServiceContextProvider baseServiceContextProvider = new BaseServiceContextProvider(claimsPrincipal);
 
 			ImportSettings settings = JsonConvert.DeserializeObject<ImportSettings>(userImportApiSettings);
-			SourceConfiguration sourceConfiguration = JsonConvert.DeserializeObject<SourceConfiguration>(config);
-			BaseServiceContext baseServiceContext = claimsPrincipal.GetUnversionContext(sourceConfiguration.SourceWorkspaceArtifactId);
+			SourceConfiguration sourceConfiguration = JsonConvert.DeserializeObject<SourceConfiguration>(serializedSourceConfiguration);
 
 			IExporterService exporter = settings.ImageImport ?
 				CreateImageExporterService(
 					jobStopManager,
 					mappedFields,
-					config,
-					savedSearchArtifactId,
-					baseServiceContextProvider,
+					savedSearchArtifactID,
 					settings,
 					sourceConfiguration,
-					baseServiceContext) :
+					documentRepository) :
 				CreateRelativityExporterService(
 					jobStopManager,
 					mappedFields,
-					config,
-					savedSearchArtifactId,
-					claimsPrincipal,
-					baseServiceContextProvider,
+					serializedSourceConfiguration,
+					savedSearchArtifactID,
 					settings,
-					baseServiceContext);
+					documentRepository,
+					serializer);
 			return exporter;
 		}
-
-		private IConsumeScratchTableBatchStatus CreateDestinationFieldsTagger(
-			ITagsCreator tagsCreator,
-			ITagSavedSearchManager tagSavedSearchManager,
-			ISynchronizerFactory synchronizerFactory,
-			ISerializer serializer,
-			FieldMap[] mappedFields,
-			SourceConfiguration sourceConfiguration,
-			JobHistory jobHistory,
-			string uniqueJobId,
-			string userImportApiSettings)
-		{
-			IDocumentRepository documentRepository = _sourceRepositoryFactory.GetDocumentRepository(sourceConfiguration.SourceWorkspaceArtifactId);
-
-			var taggerFactory = new TargetDocumentsTaggingManagerFactory(
-				_sourceRepositoryFactory,
-				tagsCreator,
-				tagSavedSearchManager,
-				documentRepository,
-				synchronizerFactory,
-				_helper,
-				serializer,
-				mappedFields,
-				sourceConfiguration,
-				userImportApiSettings,
-				jobHistory.ArtifactId,
-				uniqueJobId);
-
-			IConsumeScratchTableBatchStatus destinationFieldsTagger = taggerFactory.BuildDocumentsTagger();
-			return destinationFieldsTagger;
-		}
-
-		private IConsumeScratchTableBatchStatus CreateSourceFieldsTagger(
-			SourceConfiguration configuration,
-			JobHistory jobHistory,
-			ISourceWorkspaceTagCreator sourceWorkspaceTagsCreator,
-			string uniqueJobId)
-		{
-			return new SourceObjectBatchUpdateManager(
-				_sourceRepositoryFactory,
-				_logger,
-				sourceWorkspaceTagsCreator,
-				_sourceDocumentsTagger,
-				configuration,
-				jobHistory,
-				uniqueJobId);
-		}
-
-		private IBatchStatus CreateJobHistoryErrorUpdater(
-			Job job,
-			IJobHistoryErrorManager jobHistoryErrorManager,
-			IJobStopManager jobStopManager,
-			SourceConfiguration configuration,
-			JobHistoryErrorDTO.UpdateStatusType updateStatusType)
-		{
-			return new JobHistoryErrorBatchUpdateManager(
-				jobHistoryErrorManager,
-				_helper,
-				_sourceRepositoryFactory,
-				_claimsPrincipalFactory,
-				jobStopManager,
-				configuration.SourceWorkspaceArtifactId,
-				job.SubmittedBy,
-				updateStatusType);
-		}
-
+		
 		private IExporterService CreateRelativityExporterService(
 			IJobStopManager jobStopManager,
 			FieldMap[] mappedFields,
-			string config,
-			int savedSearchArtifactId,
-			ClaimsPrincipal claimsPrincipal,
-			IBaseServiceContextProvider baseServiceContextProvider,
+			string serializedSourceConfiguration,
+			int savedSearchArtifactID,
 			ImportSettings settings,
-			BaseServiceContext baseServiceContext)
+			IDocumentRepository documentRepository,
+			ISerializer serializer)
 		{
-			IExporter exporter = BuildSavedSearchExporter(baseServiceContext, settings.LoadImportedFullTextFromServer);
-			IFolderPathReader folderPathReader = _folderPathReaderFactory.Create(claimsPrincipal, settings, config);
+			SourceConfiguration sourceConfiguration = serializer.Deserialize<SourceConfiguration>(serializedSourceConfiguration);
+			int workspaceArtifactID = sourceConfiguration.SourceWorkspaceArtifactId;
+			bool useDynamicFolderPath = settings.UseDynamicFolderPath;
+			IFolderPathReader folderPathReader = _folderPathReaderFactory.Create(workspaceArtifactID, useDynamicFolderPath);
 			const int startAtRecord = 0;
 
 			return new RelativityExporterService(
-				exporter,
+				documentRepository,
 				_relativityObjectManager,
 				_sourceRepositoryFactory,
 				_targetRepositoryFactory,
 				jobStopManager,
 				_helper,
 				folderPathReader,
-				baseServiceContextProvider,
+				_fileRepository,
 				mappedFields,
 				startAtRecord,
-				config,
-				savedSearchArtifactId);
+				sourceConfiguration,
+				savedSearchArtifactID);
 		}
 
 		private IExporterService CreateImageExporterService(
 			IJobStopManager jobStopManager,
 			FieldMap[] mappedFiles,
-			string config,
 			int savedSearchArtifactId,
-			IBaseServiceContextProvider baseServiceContextProvider,
 			ImportSettings settings,
 			SourceConfiguration sourceConfiguration,
-			BaseServiceContext baseServiceContext)
+			IDocumentRepository documentRepository)
 		{
-			IExporter exporter;
 			int searchArtifactId;
 			if (sourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.SavedSearch)
 			{
-				exporter = BuildSavedSearchExporter(baseServiceContext, settings.LoadImportedFullTextFromServer);
 				searchArtifactId = savedSearchArtifactId;
 			}
 			else
 			{
-				exporter = BuildProductionExporter(baseServiceContext, settings.LoadImportedFullTextFromServer);
 				searchArtifactId = sourceConfiguration.SourceProductionId;
 			}
 
 			const int startAtRecord = 0;
 			return new ImageExporterService(
-				exporter,
+				documentRepository,
 				_relativityObjectManager,
 				_sourceRepositoryFactory,
 				_targetRepositoryFactory,
+				_fileRepository,
 				jobStopManager,
 				_helper,
-				baseServiceContextProvider,
 				mappedFiles,
 				startAtRecord,
-				config,
+				sourceConfiguration,
 				searchArtifactId,
 				settings);
 		}
@@ -264,30 +153,6 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			}
 			ClaimsPrincipal claimsPrincipal = _claimsPrincipalFactory.CreateClaimsPrincipal(onBehalfOfUser);
 			return claimsPrincipal;
-		}
-
-		private IExporter BuildSavedSearchExporter(BaseServiceContext baseService, bool shouldUseDgPaths)
-		{
-			return new SavedSearchExporter(
-				baseService,
-				new UserPermissionsMatrix(baseService),
-				global::Relativity.ArtifactType.Document,
-				Domain.Constants.MULTI_VALUE_DELIMITER,
-				Domain.Constants.NESTED_VALUE_DELIMITER,
-				global::Relativity.Core.Api.Settings.RSAPI.Config.DynamicallyLoadedDllPaths,
-				shouldUseDgPaths);
-		}
-
-		private IExporter BuildProductionExporter(BaseServiceContext baseService, bool shouldUseDgPaths)
-		{
-			return new ProductionExporter(
-				baseService,
-				new UserPermissionsMatrix(baseService),
-				global::Relativity.ArtifactType.Document,
-				Domain.Constants.MULTI_VALUE_DELIMITER,
-				Domain.Constants.NESTED_VALUE_DELIMITER,
-				global::Relativity.Core.Api.Settings.RSAPI.Config.DynamicallyLoadedDllPaths,
-				shouldUseDgPaths);
 		}
 
 		private void LogBuildExporterExecutionWithParameters(

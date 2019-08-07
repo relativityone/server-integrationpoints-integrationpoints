@@ -4,7 +4,6 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Castle.Components.DictionaryAdapter;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
@@ -76,7 +75,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			using (IFolderManager folderManager = targetHelper.GetServicesManager()
 				.CreateProxy<IFolderManager>(ExecutionIdentity.CurrentUser))
 			{
-				List<JsTreeItemDTO> tree = new EditableList<JsTreeItemDTO>();
+				var tree = new List<JsTreeItemDTO>();
 				var currentNodeId = 0;
 				if (folderArtifactId > 0)
 				{

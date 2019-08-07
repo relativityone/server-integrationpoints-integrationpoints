@@ -1,3 +1,4 @@
+Castle.Windsor
 CSharpGuidelineAnalyzer
 kCura.Apps.Common.Config
 kCura.Relativity.Client
@@ -5,11 +6,13 @@ Microsoft.AspNet.Mvc
 Microsoft.AspNet.SignalR.Core
 Microsoft.AspNet.Web.Optimization
 Microsoft.AspNet.WebApi.WebHost
+Microsoft.Owin.Host.SystemWeb
 Relativity.API
-Relativity.Core
 Relativity.CustomPages
 Relativity.DataExchange.Client.SDK
 Relativity.Productions.Services.Interfaces
+Relativity.Services.Interfaces
 Relativity.Telemetry.Services.Interface
-RelativityCore
+Relativity.Toggles
 Relativity.DataTransfer.MessageService
+SystemWrapper.Interfaces

@@ -1,4 +1,6 @@
 CSharpGuidelineAnalyzer
 kCura.Apps.Common.Utils
-NSubstitute
-NUnit
+
+group TestPackages
+	NUnit
+	NSubstitute

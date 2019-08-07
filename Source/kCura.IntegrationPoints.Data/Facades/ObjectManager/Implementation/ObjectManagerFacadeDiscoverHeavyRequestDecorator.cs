@@ -3,17 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Castle.Core.Internal;
 using kCura.IntegrationPoints.Data.Facades.ObjectManager.DTOs;
 using Relativity.API;
 using Relativity.Kepler.Transport;
+using Relativity.Services.DataContracts.DTOs.Results;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
 {
 	internal class ObjectManagerFacadeDiscoverHeavyRequestDecorator : IObjectManagerFacade
 	{
-		private bool _disposedValue = false;
+		private bool _disposedValue;
 
 		private const int _MAX_COUNT_OF_COLLECTION_IN_REQUEST = 100000;
 		private const string _UNKNOWN = "[UNKNOWN]";
@@ -135,6 +135,27 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
 			return _objectManager.StreamLongTextAsync(workspaceArtifactID, exportObject, longTextField);
 		}
 
+		public Task<ExportInitializationResults> InitializeExportAsync(
+			int workspaceArtifactID, 
+			QueryRequest queryRequest, 
+			int start)
+		{
+			return _objectManager.InitializeExportAsync(workspaceArtifactID, queryRequest, start);
+		}
+
+		public Task<RelativityObjectSlim[]> RetrieveResultsBlockFromExportAsync(
+			int workspaceArtifactID,
+			Guid runID,
+			int resultsBlockSize,
+			int exportIndexID)
+		{
+			return _objectManager.RetrieveResultsBlockFromExportAsync(
+				workspaceArtifactID, 
+				runID, 
+				resultsBlockSize,
+				exportIndexID);
+		}
+
 		private void AnalyzeMassUpdateObjectsCollection(
 			Func<string> getWarningMessageHeader,
 			MassUpdateByObjectIdentifiersRequest request)
@@ -144,7 +165,7 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
 				string massUpdateWarningMessage = "Requested mass update operation exceeded max collection count" +
 										$" - {request.Objects.Count}, when allowed is {_MAX_COUNT_OF_COLLECTION_IN_REQUEST}";
 
-				string[] warningsToLog = {getWarningMessageHeader(), massUpdateWarningMessage};
+				string[] warningsToLog = { getWarningMessageHeader(), massUpdateWarningMessage };
 				LogWarnings(warningsToLog);
 			}
 		}
@@ -193,7 +214,10 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
 
 		private void LogWarnings(IList<string> warnings)
 		{
-			warnings.ForEach(warning => _logger.LogWarning(warning));
+			foreach (string warning in warnings)
+			{
+				_logger.LogWarning(warning);
+			}
 		}
 
 		private string GetWarningMessageHeader<T>(

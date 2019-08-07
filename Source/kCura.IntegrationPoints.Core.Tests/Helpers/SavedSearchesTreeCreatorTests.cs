@@ -1,40 +1,22 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
+using kCura.IntegrationPoints.Core.Interfaces.TextSanitizer;
 using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NUnit.Framework;
-using Relativity.Core.Service;
 using Relativity.Services.Search;
 
 namespace kCura.IntegrationPoints.Core.Tests.Helpers
 {
 	[TestFixture]
-	public class SavedSearchesTreeCreatorTests : TestBase
+	public class SavedSearchesTreeCreatorTests
 	{
-		[SetUp]
-		public override void SetUp()
-		{
-
-		}
-
-		private void SetupHtmlSanitizerMock(IHtmlSanitizerManager htmlSanitizer)
-		{
-			htmlSanitizer.Sanitize("<p>Kierkegaard</p>Platon").Returns(new SanitizeResult() { CleanHTML = "Platon", HasErrors = false });
-			htmlSanitizer.Sanitize("<img src=x onerror=alert(Saved Search 1) />Nitsche").Returns(new SanitizeResult() { CleanHTML = "Nitsche", HasErrors = false });
-			htmlSanitizer.Sanitize("<em>No-one survive</em>").Returns(new SanitizeResult() { CleanHTML = "Sanitized Search Name", HasErrors = false });
-			htmlSanitizer.Sanitize("Search Folder 3").Returns(new SanitizeResult() { CleanHTML = "Search Folder 3", HasErrors = false });
-			htmlSanitizer.Sanitize("<i>Saved </i>Search 1").Returns(new SanitizeResult() { CleanHTML = "Search 1", HasErrors = false });
-			htmlSanitizer.Sanitize("<king>Search </king>2").Returns(new SanitizeResult() { CleanHTML = "2", HasErrors = false });
-			htmlSanitizer.Sanitize("<em>Saved Search 3</em>").Returns(new SanitizeResult() { CleanHTML = "Sanitized Search Name", HasErrors = false });
-		}
-
 		[Test]
 		public void ItShouldCreateTree()
 		{
 			// arrange
-			var htmlSanitizer = Substitute.For<IHtmlSanitizerManager>();
+			var htmlSanitizer = Substitute.For<ITextSanitizer>();
 			SetupHtmlSanitizerMock(htmlSanitizer);
 			var counter = 0;
 			htmlSanitizer.When(x => x.Sanitize(Arg.Any<string>())).Do(_ => counter++);
@@ -66,7 +48,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 		public void ItShouldCreateTreeWithSearches()
 		{
 			// arrange
-			var htmlSanitizer = Substitute.For<IHtmlSanitizerManager>();
+			var htmlSanitizer = Substitute.For<ITextSanitizer>();
 			SetupHtmlSanitizerMock(htmlSanitizer);
 			var counter = 0;
 			htmlSanitizer.When(x => x.Sanitize(Arg.Any<string>())).Do(_ => counter++);
@@ -102,8 +84,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 			int childContainerStartArtifactId = 100000;
 			int childSearchStartArtifactId = 200000;
 
-			var htmlSanitizer = Substitute.For<IHtmlSanitizerManager>();
-			htmlSanitizer.Sanitize(Arg.Any<string>()).Returns(new SanitizeResult { CleanHTML = sanitizedText, HasErrors = false });
+			var htmlSanitizer = Substitute.For<ITextSanitizer>();
+			htmlSanitizer.Sanitize(Arg.Any<string>()).Returns(new SanitizationResult(sanitizedText, hasErrors: false));
 
 			List<SearchContainerItem> childContainers = Enumerable
 				.Range(childContainerStartArtifactId, numberOfChildContainer)
@@ -183,6 +165,29 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 				},
 				Personal = false
 			};
+		}
+
+		private void SetupHtmlSanitizerMock(ITextSanitizer htmlSanitizer)
+		{
+			var sanitizationInputOutputDictionary = new Dictionary<string, string>
+			{
+				["<p>Kierkegaard</p>Platon"] = "Platon",
+				["<img src=x onerror=alert(Saved Search 1) />Nitsche"] = "Nitsche",
+				["<em>No-one survive</em>"] = "Sanitized Search Name",
+				["Search Folder 3"] = "Search Folder 3",
+				["<i>Saved </i>Search 1"] = "Search 1",
+				["<king>Search </king>2"] = "2",
+				["<em>Saved Search 3</em>"] = "Sanitized Search Name"
+			};
+
+			foreach (KeyValuePair<string, string> keyValuePair in sanitizationInputOutputDictionary)
+			{
+				string input = keyValuePair.Key;
+				string output = keyValuePair.Value;
+
+				var sanitizationResult = new SanitizationResult(sanitizedText: output, hasErrors: false);
+				htmlSanitizer.Sanitize(input).Returns(sanitizationResult);
+			}
 		}
 	}
 }

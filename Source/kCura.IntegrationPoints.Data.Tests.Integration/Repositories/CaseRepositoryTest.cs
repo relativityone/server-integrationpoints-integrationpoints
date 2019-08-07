@@ -7,13 +7,9 @@ using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.Services.ResourceServer;
-using System;
-using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using Relativity.API;
 using Relativity.Testing.Identification;
-using CaseInfo = Relativity.CaseInfo;
-using TestCategories = kCura.IntegrationPoint.Tests.Core.Constants;
 
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 {

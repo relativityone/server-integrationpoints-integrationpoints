@@ -1,8 +1,10 @@
-﻿FluentAssertions
-Moq
-NUnit
-Polly
+﻿Polly
 Relativity.API
 Relativity.Kepler
 Relativity.Kepler.Client
-Serilog
+
+group TestPackages
+	FluentAssertions
+	Moq
+	NUnit
+	Serilog

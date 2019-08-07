@@ -14,7 +14,7 @@
 
 		public const string INTEGRATION_POINT_DESTINATION_PROVIDER_RELATIVITY = "Relativity";
 
-		public string Name { get; }
+		public string Name { get; set; }
 
 		[DefaultValue(IntegrationPointType.Export)]
 		public IntegrationPointType Type { get; set; }

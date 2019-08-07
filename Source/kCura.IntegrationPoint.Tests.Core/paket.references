@@ -1,16 +1,12 @@
 AutoMapper
 Castle.Windsor
 CSharpGuidelineAnalyzer
-FluentAssertions
+kCura
 kCura.Apps.Common.Config
 kCura.Relativity.Client
 LanguageExt.Core
-Moq
-NSubstitute
-NUnit
 Relativity
 Relativity.API
-Relativity.Core
 Relativity.Data
 Relativity.DataExchange.Client.SDK
 kCura.OutsideIn.FI.Win32
@@ -19,5 +15,11 @@ Relativity.Productions.Services.Interfaces
 Relativity.Services.Interfaces.Private
 Relativity.Telemetry.APM
 Relativity.Toggles
-RelativityCore
 Relativity.OAuth2Client
+
+group TestPackages
+	FluentAssertions
+	Moq
+	NUnit
+	NSubstitute
+	Serilog

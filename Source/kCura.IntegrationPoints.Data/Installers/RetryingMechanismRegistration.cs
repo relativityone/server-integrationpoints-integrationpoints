@@ -1,6 +1,6 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.Windsor;
-using kCura.IntegrationPoints.Data.Interfaces;
+using kCura.IntegrationPoints.Common;
 
 namespace kCura.IntegrationPoints.Data.Installers
 {

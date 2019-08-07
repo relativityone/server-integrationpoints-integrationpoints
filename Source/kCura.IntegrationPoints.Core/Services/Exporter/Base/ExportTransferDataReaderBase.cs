@@ -8,7 +8,6 @@ using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using Relativity.API;
-using Relativity.Core;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 {
@@ -19,7 +18,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 		protected const string _FIELD_IDENTIFIER_PARSE_ERROR_MSG =
 			"Parsing field identifier ({@fieldId}) FAILED.";
 
-		protected readonly BaseServiceContext Context;
 		protected readonly IExporterService RelativityExporterService;
 		protected readonly int FolderPathFieldSourceArtifactId;
 		protected readonly IScratchTableRepository[] ScratchTableRepositories;
@@ -29,14 +27,12 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 		protected ExportTransferDataReaderBase(
 			IExporterService relativityExportService,
 			FieldMap[] fieldMappings,
-			BaseServiceContext context,
 			IScratchTableRepository[] scratchTableRepositories,
 			IAPILog logger,
 			bool useDynamicFolderPath) :
 				base(GenerateDataColumnsFromFieldEntries(fieldMappings, useDynamicFolderPath))
 		{
 			_logger = logger.ForContext<ExportTransferDataReaderBase>();
-			Context = context;
 			ScratchTableRepositories = scratchTableRepositories;
 			RelativityExporterService = relativityExportService;
 

@@ -64,8 +64,6 @@ namespace kCura.IntegrationPoints.Core.Installers
 	{
 		public void Install(IWindsorContainer container, IConfigurationStore store)
 		{
-			IToggleProvider toggleProvider = CreateSqlServerToggleProvider(container.Resolve<IHelper>());
-
 			container.Register(Component.For<ISerializer>().ImplementedBy<JSONSerializer>().UsingFactoryMethod(x =>
 			{
 				var serializer = new JSONSerializer();
@@ -175,7 +173,11 @@ namespace kCura.IntegrationPoints.Core.Installers
 				.DependsOn(Dependency.OnValue<TimeSpan>(TimeSpan.FromMinutes(2))).LifestyleTransient());
 
 			// TODO: we need to make use of an async GetDBContextAsync (pending Dan Wells' patch) -- biedrzycki: Feb 5th, 2016
-			container.Register(Component.For<IToggleProvider>().Instance(toggleProvider).LifestyleTransient());
+			container.Register(Component
+				.For<IToggleProvider>()
+				.UsingFactoryMethod(k => CreateSqlServerToggleProvider(k.Resolve<IHelper>()))
+				.LifestyleSingleton()
+			);
 
 			container.Register(Component.For<IFederatedInstanceManager>().UsingFactoryMethod(k =>
 			{
@@ -224,6 +226,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 				.LifestyleTransient());
 
 			container.AddRetryingMechanism();
+			container.AddHelpers();
 			container.AddRepositories();
 		}
 

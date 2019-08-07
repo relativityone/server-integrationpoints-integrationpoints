@@ -5,13 +5,13 @@ using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoints.Common.Context;
 using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Interfaces.TextSanitizer;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Utils;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Models;
 using Relativity.API;
-using Relativity.Core.Service;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
@@ -20,14 +20,14 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly IContextContainerFactory _contextContainerFactory;
 		private readonly ICPHelper _helper;
 		private readonly IHelperFactory _helperFactory;
-		private readonly IHtmlSanitizerManager _htmlSanitizerManager;
+		private readonly ITextSanitizer _textSanitizer;
 		private readonly IManagerFactory _managerFactory;
 		private readonly IWorkspaceContext _workspaceIdProvider;
 
 		public WorkspaceFinderController(
-			IManagerFactory managerFactory, 
-			IContextContainerFactory contextContainerFactory, 
-			IHtmlSanitizerManager htmlSanitizerManager, 
+			IManagerFactory managerFactory,
+			IContextContainerFactory contextContainerFactory,
+			ITextSanitizer textSanitizer,
 			ICPHelper helper,
 			IHelperFactory helperFactory,
 			IWorkspaceContext workspaceIdProvider)
@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			_contextContainerFactory = contextContainerFactory;
 			_helper = helper;
 			_helperFactory = helperFactory;
-			_htmlSanitizerManager = htmlSanitizerManager;
+			_textSanitizer = textSanitizer;
 			_workspaceIdProvider = workspaceIdProvider;
 		}
 
@@ -79,7 +79,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				new WorkspaceModel
 				{
 					DisplayName = WorkspaceAndJobNameUtils.GetFormatForWorkspaceOrJobDisplay(
-						_htmlSanitizerManager.Sanitize(x.Name).CleanHTML,
+						_textSanitizer.Sanitize(x.Name).SanitizedText,
 						x.ArtifactId
 					),
 					Value = x.ArtifactId

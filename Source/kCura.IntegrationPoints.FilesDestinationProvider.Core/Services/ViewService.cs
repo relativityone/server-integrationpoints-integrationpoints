@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using Castle.Core.Internal;
+using kCura.IntegrationPoints.Common.Extensions.DotNet;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Domain.Models;

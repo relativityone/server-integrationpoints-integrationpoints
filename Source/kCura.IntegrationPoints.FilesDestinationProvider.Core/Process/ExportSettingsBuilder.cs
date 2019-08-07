@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Castle.Core.Internal;
+using kCura.IntegrationPoints.Common.Extensions.DotNet;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers.FileNaming;
 using Relativity.API;
@@ -73,7 +73,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 				ExportFilesLocation = sourceSettings.Fileshare,
 				OverwriteFiles = sourceSettings.OverwriteFiles,
 				ExportNatives = sourceSettings.ExportNatives,
-				SelViewFieldIds = fieldMap.Select(item =>item.DestinationField).ToDictionary(entry => int.Parse(entry.FieldIdentifier)),
+				SelViewFieldIds = fieldMap.Select(item => item.DestinationField).ToDictionary(entry => int.Parse(entry.FieldIdentifier)),
 				ArtifactTypeId = artifactTypeId,
 				OutputDataFileFormat = dataFileFormat,
 				DataFileEncoding = Encoding.GetEncoding(sourceSettings.DataFileEncodingType),
@@ -107,9 +107,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 				ProductionId = sourceSettings.ProductionId,
 				ProductionName = sourceSettings.ProductionName,
 				AppendOriginalFileName = sourceSettings.AppendOriginalFileName,
-                IsAutomaticFolderCreationEnabled = sourceSettings.IsAutomaticFolderCreationEnabled,
+				IsAutomaticFolderCreationEnabled = sourceSettings.IsAutomaticFolderCreationEnabled,
 				FileNameParts = _descriptorPartsBuilder.CreateDescriptorParts(sourceSettings.FileNameParts)
-            };
+			};
 
 			return exportSettings;
 		}

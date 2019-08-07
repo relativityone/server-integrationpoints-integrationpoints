@@ -1,15 +1,21 @@
+Castle.Windsor
 CSharpGuidelineAnalyzer
 kCura.Apps.Common.Data
 kCura.Apps.Common.Utils
 kCura.OutsideIn.FI.Win32
 kCura.Relativity.Client
-NUnit
 Relativity
 Relativity.API
-Relativity.Core
 Relativity.Data
+Relativity.Kepler
+Relativity.Services.Interfaces
 Relativity.Telemetry.APM
 relativity.transfer.client
-RelativityCore
 Relativity.OAuth2Client
-relativity.testing.identification
+Relativity.Toggles
+
+group TestPackages
+	FluentAssertions
+	NUnit
+	relativity.testing.identification
+	Serilog

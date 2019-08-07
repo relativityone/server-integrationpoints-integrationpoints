@@ -14,11 +14,14 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using kCura.Relativity.Client;
 using NUnit.Framework;
 using Relativity.Services.Folder;
 using Relativity.Services.Interfaces.Field;
 using Relativity.Services.Interfaces.Field.Models;
 using Relativity.Services.Interfaces.Shared.Models;
+using Relativity.Services.Search;
+using Relativity.Testing.Identification;
 using Rip.TestUtilities;
 using Constants = kCura.IntegrationPoints.Core.Constants;
 
@@ -39,21 +42,28 @@ namespace Rip.SystemTests.IntegrationPointServices
 		private IWindsorContainer _container => SystemTestsFixture.Container;
 		private ITestHelper _testHelper => SystemTestsFixture.TestHelper;
 		private IIntegrationPointService _integrationPointService;
+		private IIntegrationPointRepository _integrationPointRepository;
 		private IRepositoryFactory _repositoryFactory;
 		private IFieldManager _fieldManager;
 		private IRelativityObjectManager _objectManager;
 		private IFolderManager _folderManager;
 		private ISerializer _serializer;
+		private IKeywordSearchManager _keywordSearchManager;
+		private SavedSearchHelper _savedSearchHelper;
+		private IList<int> _integrationPointArtifactIds;
 
 		[OneTimeSetUp]
 		public void OneTimeSetup()
 		{
 			_integrationPointService = _container.Resolve<IIntegrationPointService>();
+			_integrationPointRepository = _container.Resolve<IIntegrationPointRepository>();
 			_repositoryFactory = _container.Resolve<IRepositoryFactory>();
 			_fieldManager = _testHelper.CreateProxy<IFieldManager>();
 			_objectManager = _container.Resolve<IRelativityObjectManager>();
 			_folderManager = _testHelper.CreateProxy<IFolderManager>();
 			_serializer = _container.Resolve<ISerializer>();
+			_keywordSearchManager = _testHelper.CreateProxy<IKeywordSearchManager>();
+			_savedSearchHelper = new SavedSearchHelper(_sourceWorkspaceID, _keywordSearchManager);
 
 			_savedSearchArtifactID = SavedSearch.CreateSavedSearch(_sourceWorkspaceID, _ALL_DOCUMENTS_SAVED_SEARCH_NAME);
 
@@ -61,9 +71,22 @@ namespace Rip.SystemTests.IntegrationPointServices
 			_integrationPointExportType = typeService
 				.GetIntegrationPointType(Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid)
 				.ArtifactId;
+
+			_integrationPointArtifactIds = new List<int>();
+		}
+
+		[OneTimeTearDown]
+		public void OneTimeTearDown()
+		{
+			_savedSearchHelper.DeleteSavedSearch(_savedSearchArtifactID);
+			foreach (int integrationPointArtifactID in _integrationPointArtifactIds)
+			{
+				_integrationPointRepository.Delete(integrationPointArtifactID);
+			}
 		}
 
 		[Test]
+		[IdentifiedTest("b30513bf-e6b8-4680-a74b-d77b17976d20")]
 		public async Task IntegrationPointShouldBeSavedAndRetrievedProperly_WhenFieldMappingJsonIsLongerThan10000()
 		{
 			// arrange
@@ -97,7 +120,7 @@ namespace Rip.SystemTests.IntegrationPointServices
 				string fieldName = CreateFieldNameLongerThan45Characters(i);
 				var fixedLengthFieldRequest = new FixedLengthFieldRequest
 				{
-					ObjectType = new ObjectTypeIdentifier {ArtifactTypeID = kCura.IntegrationPoint.Tests.Core.Constants.DOCUMENT_ARTIFACT_TYPE_ID },
+					ObjectType = new ObjectTypeIdentifier {ArtifactTypeID = (int) ArtifactType.Document},
 					Name = fieldName,
 					Length = 255,
 					IsRequired = false,
@@ -141,7 +164,9 @@ namespace Rip.SystemTests.IntegrationPointServices
 				.WithOverwriteMode(ImportOverwriteModeEnum.AppendOnly)
 				.Build();
 
-			return _integrationPointService.SaveIntegration(integrationPointModel);
+			int integrationPointArtifactID = _integrationPointService.SaveIntegration(integrationPointModel);
+			_integrationPointArtifactIds.Add(integrationPointArtifactID);
+			return integrationPointArtifactID;
 		}
 
 		private SourceConfiguration CreateRelativityProviderSavedSearchSourceConfiguration()
@@ -161,7 +186,7 @@ namespace Rip.SystemTests.IntegrationPointServices
 		{
 			var configuration = new ImportSettings
 			{
-				ArtifactTypeId = kCura.IntegrationPoint.Tests.Core.Constants.DOCUMENT_ARTIFACT_TYPE_ID,
+				ArtifactTypeId = (int) ArtifactType.Document,
 				CaseArtifactId = _destinationWorkspaceID,
 				Provider = Constants.IntegrationPoints.RELATIVITY_PROVIDER_NAME,
 				ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly,

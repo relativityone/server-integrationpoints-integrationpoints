@@ -1,2 +1,4 @@
 CSharpGuidelineAnalyzer
-NUnit
+
+group TestPackages
+	NUnit

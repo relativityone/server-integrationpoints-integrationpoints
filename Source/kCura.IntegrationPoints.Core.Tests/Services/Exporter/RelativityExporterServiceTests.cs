@@ -2,15 +2,17 @@
 using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter;
+using kCura.IntegrationPoints.Data.DTO;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using Moq;
 using NUnit.Framework;
 using Relativity;
 using Relativity.API;
-using Relativity.Core.Api.Shared.Manager.Export;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 {
@@ -19,21 +21,29 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 	{
 		private ArtifactDTO _goldFlowExpectedDto;
 		private FieldMap[] _mappedFields;
-		private int[] _avfIds;
-		private object[] _goldFlowRetrievableData;
-		private global::Relativity.Core.Export.InitializationResults _exportApiResult;
-		private HashSet<int> _longTextField;
-
-		private Mock<IExporter> _exporter;
+		private IList<RelativityObjectSlimDto> _goldFlowRetrievableData;
+		private ExportInitializationResultsDto _exportApiResult;
+		private Mock<IDocumentRepository> _documentRepository;
+		private Mock<IFileRepository> _fileRepository;
+		private Mock<IRepositoryFactory> _sourceRepositoryFactory;
+		private Mock<IRepositoryFactory> _targetRepositoryFactory;
 		private Mock<IFolderPathReader> _folderPathReader;
 		private Mock<IHelper> _helper;
 		private Mock<IJobStopManager> _jobStopManager;
 		private Mock<IQueryFieldLookupRepository> _queryFieldLookupRepository;
 		private Mock<IRelativityObjectManager> _relativityObjectManager;
 		private RelativityExporterService _instance;
-		
-		private const string _CONTROL_NUMBER = "Control Num";
-		private const string _FILE_NAME = "FileName";
+		private IDictionary<string, object> _fieldValues;
+
+		private const string _CONTROL_NUMBER = "Control Number";
+		private const string _CONTROL_NUMBER_VALUE = "REL01";
+		private const string _EMAIL = "Email";
+		private const string _EMAIL_VALUE = "test@relativity.com";
+		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 1;
+		private const int _TARGET_WORKSPACE_ARTIFACT_ID = 2;
+		private const int _FIELD_IDENTIFIER = 12345;
+		private const int _START_AT = 0;
+		private const int _SEARCH_ARTIFACT_ID = 0;
 
 		[SetUp]
 		public override void SetUp()
@@ -43,18 +53,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			_helper
 				.Setup(x => x.GetLoggerFactory().GetLogger().ForContext<RelativityExporterService>())
 				.Returns(apiLogMock.Object);
-			_exporter = new Mock<IExporter>();
-			_exportApiResult = new global::Relativity.Core.Export.InitializationResults()
-			{
-				RunId = new Guid("3A51AF56-0813-4E25-89DD-E08EC0C8526C"),
-				ColumnNames = new[] { _CONTROL_NUMBER, _FILE_NAME }
-			};
-			_exporter
-				.Setup(x => x.InitializeExport(0, null, 0))
-				.Returns(_exportApiResult);
+			_documentRepository = new Mock<IDocumentRepository>();
+			_fileRepository = new Mock<IFileRepository>();
+			_sourceRepositoryFactory = new Mock<IRepositoryFactory>();
+			Mock<IFieldQueryRepository> fieldQueryRepositoryMock = new Mock<IFieldQueryRepository>();
+			_targetRepositoryFactory = new Mock<IRepositoryFactory>();
+			_targetRepositoryFactory.Setup(x => x.GetFieldQueryRepository(It.IsAny<int>()))
+				.Returns(fieldQueryRepositoryMock.Object);
 
 			// source identifier is the only thing that matters
-			_mappedFields = new FieldMap[]
+			_mappedFields = new[]
 			{
 				new FieldMap()
 				{
@@ -72,51 +80,55 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 				}
 			};
 
-			_goldFlowRetrievableData = new object[] { new object[] { "REL01", "FileName", 1111 } };
+			_fieldValues = new Dictionary<string, object>
+			{
+				{_CONTROL_NUMBER, _CONTROL_NUMBER_VALUE},
+				{_EMAIL, _EMAIL_VALUE}
+			};
+
+			const int artifactID = 1111;
+			_goldFlowRetrievableData = new List<RelativityObjectSlimDto>
+			{
+				new RelativityObjectSlimDto(artifactID, _fieldValues)
+			};
 			_goldFlowExpectedDto = new ArtifactDTO(1111, 10, "Document", new[]
 			{
 				new ArtifactFieldDTO()
 				{
 					ArtifactId = 123,
-					Value = "REL01",
+					Value = _CONTROL_NUMBER_VALUE,
 					Name = _CONTROL_NUMBER,
 					FieldType = FieldTypeHelper.FieldType.Empty.ToString()
 				},
 				new ArtifactFieldDTO()
 				{
 					ArtifactId = 456,
-					Value = _FILE_NAME,
-					Name = _FILE_NAME,
+					Value = _EMAIL_VALUE,
+					Name = _EMAIL,
 					FieldType = FieldTypeHelper.FieldType.Empty.ToString()
 				},
 			});
-			_longTextField = new HashSet<int>(new int[] { 456 });
 
-			_avfIds = new[] { 1, 2 };
 			_jobStopManager = new Mock<IJobStopManager>();
 			_jobStopManager
 				.Setup(x => x.IsStopRequested())
 				.Returns(false);
 			_folderPathReader = new Mock<IFolderPathReader>();
+
 			_queryFieldLookupRepository = new Mock<IQueryFieldLookupRepository>();
+			var viewFieldInfo = new ViewFieldInfo("", "", FieldTypeHelper.FieldType.Empty);
+			_queryFieldLookupRepository.Setup(x => x.GetFieldByArtifactId(_FIELD_IDENTIFIER)).Returns(viewFieldInfo);
+			_sourceRepositoryFactory.Setup(x => x.GetQueryFieldLookupRepository(_SOURCE_WORKSPACE_ARTIFACT_ID))
+				.Returns(_queryFieldLookupRepository.Object);
+
 			_relativityObjectManager = new Mock<IRelativityObjectManager>();
-			_instance = new RelativityExporterService(
-				_exporter.Object, 
-				_relativityObjectManager.Object,
-				_jobStopManager.Object, 
-				_helper.Object,
-				_queryFieldLookupRepository.Object, 
-				_folderPathReader.Object, 
-				_mappedFields, 
-				_longTextField, 
-				_avfIds);
 		}
 
 		[Test]
 		public void HasDataToRetrieve_ReturnsFalseOnJobThatDoesNotHaveAnythingToRead()
 		{
 			// arrange
-			_exportApiResult.RowCount = 0;
+			SetupInitializationResultAndTestInstance(0);
 
 			_queryFieldLookupRepository
 				.Setup(x => x.GetFieldByArtifactId(It.IsAny<int>()))
@@ -134,11 +146,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		public void HasDataToRetrieve_ReturnsFalseOnFinishedJob()
 		{
 			// arrange
-			_exportApiResult.RowCount = 1;
+			SetupInitializationResultAndTestInstance(1);
 			
-			_exporter
-				.Setup(x => x.RetrieveResults(_exportApiResult.RunId, _avfIds, 1))
-				.Returns(_goldFlowRetrievableData);
+			_documentRepository
+				.Setup(x => x.RetrieveResultsBlockFromExportAsync(_exportApiResult, 1, 0))
+				.ReturnsAsync(_goldFlowRetrievableData);
 
 			_queryFieldLookupRepository
 				.Setup(x => x.GetFieldByArtifactId(It.IsAny<int>()))
@@ -158,12 +170,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 
 		}
 
-
 		[Test]
 		public void HasDataToRetrieve_ReturnsTrueOnRunningJob_WithIntMaxData()
 		{
 			// arrange
-			_exportApiResult.RowCount = Int32.MaxValue;
+			SetupInitializationResultAndTestInstance(int.MaxValue);
 
 			// act
 			bool hasDataToRetrieve = _instance.HasDataToRetrieve;
@@ -176,8 +187,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		public void HasDataToRetrieve_ReturnsFalseOnRunningJob_WithLongMaxData()
 		{
 			// arrange
-			_exportApiResult.RowCount = Int64.MaxValue;
-			
+			SetupInitializationResultAndTestInstance(long.MaxValue);
+
 			// act
 			bool hasDataToRetrieve = _instance.HasDataToRetrieve;
 
@@ -189,8 +200,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		public void HasDataToRetrieve_ReturnsFalseOnStoppedJob()
 		{
 			// arrange
-			_exportApiResult.RowCount = Int64.MaxValue;
-			
+			SetupInitializationResultAndTestInstance(long.MaxValue);
+
 			_jobStopManager
 				.Setup(x => x.IsStopRequested())
 				.Returns(true);
@@ -206,27 +217,32 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		public void RetrieveData_GoldFlow()
 		{
 			// Arrange
-			object[] obj = new[] {new object[] { "REL01", "FileName", 1111 }};
+			SetupInitializationResultAndTestInstance(0);
 
-
-			_exporter
-				.Setup(x => x.RetrieveResults(_exportApiResult.RunId, It.IsAny<int[]>(), 1))
-				.Returns(obj);
-
-			ArtifactDTO expecteDto = new ArtifactDTO(1111, 10, "Document", new []
+			const int artifactID = 1111;
+			var obj = new List<RelativityObjectSlimDto>
 			{
-				new ArtifactFieldDTO()
+				new RelativityObjectSlimDto(artifactID, _fieldValues)
+			};
+
+			_documentRepository
+				.Setup(x => x.RetrieveResultsBlockFromExportAsync(_exportApiResult, 1, 0))
+				.ReturnsAsync(obj);
+
+			ArtifactDTO expectedDto = new ArtifactDTO(1111, 10, "Document", new []
+			{
+				new ArtifactFieldDTO
 				{
 					ArtifactId = 123,
-					Value = "REL01",
+					Value = _CONTROL_NUMBER_VALUE,
 					Name = _CONTROL_NUMBER,
 					FieldType = FieldTypeHelper.FieldType.Empty.ToString()
 				},
-				new ArtifactFieldDTO()
+				new ArtifactFieldDTO
 				{
 					ArtifactId = 456,
-					Value = _FILE_NAME,
-					Name = _FILE_NAME,
+					Value = _EMAIL_VALUE,
+					Name = _EMAIL,
 					FieldType = FieldTypeHelper.FieldType.Empty.ToString()
 				},
 			});
@@ -242,24 +258,22 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			// Act
 			ArtifactDTO[] data = _instance.RetrieveData(1);
 
-
 			// Assert
 			Assert.NotNull(data);
 			Assert.AreEqual(1, data.Length);
 			ArtifactDTO artifact = data[0];
 
-			ValidateArtifact(expecteDto, artifact);
+			ValidateArtifact(expectedDto, artifact);
 		}
 
 		[Test]
 		public void RetrieveData_NoDataReturned()
 		{
 			// Arrange
-			int[] avfIds = new[] { 1, 2 };
-
-			_exporter
-				.Setup(x => x.RetrieveResults(_exportApiResult.RunId, avfIds, 1))
-				.Returns<object>(null);
+			SetupInitializationResultAndTestInstance(0);
+			_documentRepository
+				.Setup(x => x.RetrieveResultsBlockFromExportAsync(_exportApiResult, 1, 0))
+				.ReturnsAsync(new List<RelativityObjectSlimDto>());
 
 			// Act
 			ArtifactDTO[] data = _instance.RetrieveData(1);
@@ -273,11 +287,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		public void RetrieveData_ShouldSetFolderPath()
 		{
 			// Arrange
-			int[] avfIds = new[] { 1, 2 };
-
-			_exporter
-				.Setup(x => x.RetrieveResults(_exportApiResult.RunId, avfIds, 1))
-				.Returns<object>(null);
+			SetupInitializationResultAndTestInstance(0);
+			_documentRepository
+				.Setup(x => x.RetrieveResultsBlockFromExportAsync(_exportApiResult, 1, 0))
+				.ReturnsAsync(new List<RelativityObjectSlimDto>());
 
 			// Act
 			_instance.RetrieveData(1);
@@ -287,7 +300,52 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 				.Verify(x => x.SetFolderPaths(It.IsAny<List<ArtifactDTO>>()), Times.Once);
 		}
 
-		private void ValidateArtifact(ArtifactDTO expect, ArtifactDTO actual)
+		private void SetupInitializationResultAndTestInstance(long recordCount)
+		{
+			string[] fieldNames = { _CONTROL_NUMBER, _EMAIL };
+			_exportApiResult = new ExportInitializationResultsDto(
+				new Guid("3A51AF56-0813-4E25-89DD-E08EC0C8526C"),
+				recordCount,
+				fieldNames);
+
+			_documentRepository
+				.Setup(x => x.InitializeSearchExportAsync(_SEARCH_ARTIFACT_ID, It.IsAny<int[]>(), _START_AT))
+				.ReturnsAsync(_exportApiResult);
+			_documentRepository
+				.Setup(x => x.InitializeProductionExportAsync(_SEARCH_ARTIFACT_ID, It.IsAny<int[]>(), _START_AT))
+				.ReturnsAsync(_exportApiResult);
+
+			SourceConfiguration config = GetConfig(SourceConfiguration.ExportType.SavedSearch);
+
+			_instance = new RelativityExporterService(
+				_documentRepository.Object,
+				_relativityObjectManager.Object,
+				_sourceRepositoryFactory.Object,
+				_targetRepositoryFactory.Object,
+				_jobStopManager.Object,
+				_helper.Object,
+				_folderPathReader.Object,
+				_fileRepository.Object,
+				_mappedFields,
+				_START_AT,
+				config,
+				_SEARCH_ARTIFACT_ID);
+		}
+
+		private static SourceConfiguration GetConfig(SourceConfiguration.ExportType exportType, int sourceProductionID = 0)
+		{
+			var sourceConfiguration = new SourceConfiguration()
+			{
+				SourceWorkspaceArtifactId = _SOURCE_WORKSPACE_ARTIFACT_ID,
+				TargetWorkspaceArtifactId = _TARGET_WORKSPACE_ARTIFACT_ID,
+				TypeOfExport = exportType,
+				SourceProductionId = sourceProductionID
+			};
+
+			return sourceConfiguration;
+		}
+
+		private static void ValidateArtifact(ArtifactDTO expect, ArtifactDTO actual)
 		{
 			Assert.AreEqual(expect.ArtifactId, actual.ArtifactId);
 			Assert.AreEqual(expect.ArtifactTypeId, actual.ArtifactTypeId);

@@ -9,7 +9,6 @@ using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers.Factories;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.WinEDDS.Service.Export;
 using NUnit.Framework;
@@ -108,49 +107,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Installer
 				.ResolveWithoutThrowing<IFieldManager>();
 		}
 
-		[Test]
-		public void SearchManager_ShouldBeRegisteredWithProperLifestyle()
-		{
-			// arrange
-			IWindsorContainer sut = new WindsorContainer();
-
-			// act
-			sut.AddCoreServicesForExport();
-
-			// assert
-			sut.Should()
-				.HaveRegisteredSingleComponent<ISearchManager>()
-				.Which.Should().BeRegisteredWithLifestyle(LifestyleType.Transient);
-		}
-
-		[Test]
-		public void SearchManager_ShouldBeRegisteredWithProperImplementation()
-		{
-			// arrange
-			IWindsorContainer sut = new WindsorContainer();
-
-			// act
-			sut.AddCoreServicesForExport();
-
-			// assert
-			sut.Should()
-				.HaveRegisteredProperImplementation<ISearchManager, CoreSearchManager>();
-		}
-
-		[Test]
-		public void SearchManager_ShouldBeResolvedWithoutThrowing()
-		{
-			// arrange
-			IWindsorContainer sut = new WindsorContainer();
-			RegisterDependencies(sut);
-
-			// act
-			sut.AddCoreServicesForExport();
-
-			// assert
-			sut.Should()
-				.ResolveWithoutThrowing<ISearchManager>();
-		}
 
 		[Test]
 		public void ExportFileDownloaderFactory_ShouldBeRegisteredWithProperLifestyle()
@@ -304,9 +260,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Installer
 			IRegistration[] repositoriesRegistrations =
 			{
 				CreateDummyObjectRegistration<IFileRepository>(),
-				CreateDummyObjectRegistration<IFileFieldRepository>(),
-				CreateDummyObjectRegistration<IViewFieldRepository>(),
-				CreateDummyObjectRegistration<IViewRepository>()
 			};
 
 			container.Register(repositoriesRegistrations);

@@ -42,53 +42,55 @@ using Choice = kCura.Relativity.Client.DTOs.Choice;
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 {
 	[TestFixture]
-	[NUnit.Framework.Description("IMPORTANT" +
+	[Description("IMPORTANT" +
 				 "These existing tests will show that they cover majority of the code. " +
 				 "But the tests below are only consist of the stopping scenarios and regular gold flow." +
 				 "A lot more tests must be added !")]
 	public class ExportServiceManagerTests : TestBase
 	{
-		private const int _RETRY_SAVEDSEARCHID = 312;
-		private const int _EXPORT_DOC_COUNT = 0;
-		private const string _IMPORTSETTINGS_WITH_USERID = "blah blah blah";
+		private Data.IntegrationPoint _integrationPoint;
 
 		private ExportServiceManager _instance;
-		private IHelper _helper;
-		private IHelperFactory _helperFactory;
+		private IAgentValidator _agentValidator;
+		private IBatchStatus _exportServiceObserver;
+		private IBatchStatus _sendingEmailNotification;
+		private IBatchStatus _updateJobHistoryStatus;
 		private ICaseServiceContext _caseContext;
 		private IContextContainerFactory _contextContainerFactory;
-
+		private IDataSynchronizer _synchornizer;
+		private IDocumentRepository _documentRepository;
+		private IEnumerable<IBatchStatus> _batchStatuses;
 		private IExporterFactory _exporterFactory;
+		private IExportServiceObserversFactory _exportServiceObserversFactory;
+		private IExporterService _exporterService;
+		private IHelper _helper;
+		private IHelperFactory _helperFactory;
+		private IIntegrationPointRepository _integrationPointRepository;
+		private IJobHistoryErrorManager _jobHistoryErrorManager;
+		private IJobHistoryErrorRepository _jobHistoryErrorRepository;
+		private IJobHistoryErrorService _jobHistoryErrorService;
+		private IJobHistoryManager _historyManager;
+		private IJobHistoryService _jobHistoryService;
+		private IJobService _jobService;
+		private IJobStopManager _jobStopManager;
+		private IManagerFactory _managerFactory;
 		private IOnBehalfOfUserClaimsPrincipalFactory _claimPrincipleFactory;
 		private IRepositoryFactory _repositoryFactory;
-		private IManagerFactory _managerFactory;
-		private IEnumerable<IBatchStatus> _batchStatuses;
-		private ISerializer _serializer;
-		private IJobService _jobService;
-		private IScheduleRuleFactory _scheduleRuleFactory;
-		private IJobHistoryService _jobHistoryService;
-		private IJobHistoryErrorService _jobHistoryErrorService;
-		private IJobHistoryErrorManager _jobHistoryErrorManager;
 		private ISavedSearchQueryRepository _savedSearchQueryRepository;
-		private IJobStopManager _jobStopManager;
-		private IExporterService _exporterService;
-		private IIntegrationPointRepository _integrationPointRepository;
-
+		private IScheduleRuleFactory _scheduleRuleFactory;
+		private ISerializer _serializer;
+	
 		private Job _job;
-		private Data.IntegrationPoint _integrationPoint;
-		private SourceConfiguration _configuration;
-		private TaskParameters _taskParameters;
 		private JobHistory _jobHistory;
-		private SourceProvider _sourceProvider;
 		private JobHistoryErrorDTO.UpdateStatusType _updateStatusType;
 		private JobStatisticsService _jobStatisticsService;
-		private IBatchStatus _exportServiceObserver;
-		private IJobHistoryErrorRepository _jobHistoryErrorRepository;
-		private IBatchStatus _updateJobHistoryStatus;
-		private IBatchStatus _sendingEmailNotification;
-		private IDataSynchronizer _synchornizer;
-		private IJobHistoryManager _historyManager;
-		private IAgentValidator _agentValidator;
+		private SourceConfiguration _configuration;
+		private SourceProvider _sourceProvider;
+		private TaskParameters _taskParameters;
+
+		private const int _EXPORT_DOC_COUNT = 0;
+		private const int _RETRY_SAVEDSEARCHID = 312;
+		private const string _IMPORTSETTINGS_WITH_USERID = "blah blah blah";
 
 		[SetUp]
 		public override void SetUp()
@@ -96,7 +98,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			Job job = JobExtensions.CreateJob();
 			SetUp(job);
 		}
-
 
 		private void SetUp(Job job)
 		{
@@ -107,12 +108,14 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
 			ISynchronizerFactory synchronizerFactory = Substitute.For<ISynchronizerFactory>();
 			_exporterFactory = Substitute.For<IExporterFactory>();
+			_exportServiceObserversFactory = Substitute.For<IExportServiceObserversFactory>();
 			_claimPrincipleFactory = Substitute.For<IOnBehalfOfUserClaimsPrincipalFactory>();
 			ITagsCreator tagsCreator = Substitute.For<ITagsCreator>();
 			ITagSavedSearchManager tagSavedSearchManager = Substitute.For<ITagSavedSearchManager>();
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
 			_managerFactory = Substitute.For<IManagerFactory>();
 			_integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
+			_documentRepository = Substitute.For<IDocumentRepository>();
 
 			_sendingEmailNotification = Substitute.For<IBatchStatus>();
 			_updateJobHistoryStatus = Substitute.For<IBatchStatus>();
@@ -138,13 +141,30 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_historyManager = Substitute.For<IJobHistoryManager>();
 			_agentValidator = Substitute.For<IAgentValidator>();
 			_jobStatisticsService = Substitute.For<JobStatisticsService>();
-			var sourceWorkspaceTagsCreator = Substitute.For<ISourceWorkspaceTagCreator>();
+			ISourceWorkspaceTagCreator sourceWorkspaceTagsCreator = Substitute.For<ISourceWorkspaceTagCreator>();
 
-			_exporterFactory.InitializeExportServiceJobObservers(Arg.Any<Job>(), tagsCreator, tagSavedSearchManager,
-				synchronizerFactory, _serializer, _jobHistoryErrorManager, _jobStopManager, sourceWorkspaceTagsCreator,
-				Arg.Any<FieldMap[]>(), Arg.Any<SourceConfiguration>(), Arg.Any<JobHistoryErrorDTO.UpdateStatusType>(),
-				Arg.Any<JobHistory>(), Arg.Any<string>(), Arg.Any<string>())
-				.Returns(new List<IBatchStatus>() { _exportServiceObserver });
+			var exportJobObservers = new List<IBatchStatus>
+			{
+				_exportServiceObserver
+			};
+
+			_exportServiceObserversFactory
+				.InitializeExportServiceJobObservers(
+					Arg.Any<Job>(),
+					tagsCreator,
+					tagSavedSearchManager,
+					synchronizerFactory,
+					_serializer,
+					_jobHistoryErrorManager,
+					_jobStopManager,
+					sourceWorkspaceTagsCreator,
+					Arg.Any<FieldMap[]>(),
+					Arg.Any<SourceConfiguration>(),
+					Arg.Any<JobHistoryErrorDTO.UpdateStatusType>(),
+					Arg.Any<JobHistory>(),
+					Arg.Any<string>(),
+					Arg.Any<string>())
+				.Returns(exportJobObservers);
 
 			object syncRootLock = new object();
 			_integrationPoint = new Data.IntegrationPoint()
@@ -189,8 +209,16 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			_repositoryFactory.GetDocumentRepository(_configuration.SourceWorkspaceArtifactId).Returns(documentRepository);
 
-			_exporterFactory.BuildExporter(_jobStopManager, Arg.Any<FieldMap[]>(), _integrationPoint.SourceConfiguration,
-				_configuration.SavedSearchArtifactId, job.SubmittedBy, _IMPORTSETTINGS_WITH_USERID).Returns(_exporterService);
+			_exporterFactory.BuildExporter(
+					_jobStopManager,
+					Arg.Any<FieldMap[]>(),
+					_integrationPoint.SourceConfiguration,
+					_configuration.SavedSearchArtifactId,
+					job.SubmittedBy,
+					_IMPORTSETTINGS_WITH_USERID,
+					_documentRepository,
+					_serializer)
+				.Returns(_exporterService);
 
 			_exporterService.TotalRecordsFound.Returns(_EXPORT_DOC_COUNT);
 			_jobStopManager.SyncRoot.Returns(syncRootLock);
@@ -202,16 +230,27 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_managerFactory.CreateTaggingSavedSearchManager(Arg.Any<IContextContainer>()).Returns(tagSavedSearchManager);
 			_managerFactory.CreateSourceWorkspaceTagsCreator(Arg.Any<IContextContainer>(), Arg.Any<IHelper>(), Arg.Any<SourceConfiguration>()).Returns(sourceWorkspaceTagsCreator);
 
-			_instance = new ExportServiceManager(_helper, _helperFactory,
-				_caseContext, _contextContainerFactory,
-				synchronizerFactory, _exporterFactory,
-				_claimPrincipleFactory, _repositoryFactory,
-				_managerFactory, _batchStatuses, _serializer, _jobService, _scheduleRuleFactory, _jobHistoryService,
+			_instance = new ExportServiceManager(_helper,
+				_helperFactory,
+				_caseContext,
+				_contextContainerFactory,
+				synchronizerFactory,
+				_exporterFactory,
+				_exportServiceObserversFactory,
+				_claimPrincipleFactory,
+				_repositoryFactory,
+				_managerFactory,
+				_batchStatuses,
+				_serializer,
+				_jobService,
+				_scheduleRuleFactory,
+				_jobHistoryService,
 				_jobHistoryErrorService,
 				_jobStatisticsService,
-				null,
-				_agentValidator,
-				_integrationPointRepository);
+				toggleProvider: null,
+				agentValidator: _agentValidator,
+				integrationPointRepository: _integrationPointRepository,
+				documentRepository: _documentRepository);
 			_managerFactory.CreateJobHistoryManager(contextContainer).Returns(_historyManager);
 		}
 
@@ -219,13 +258,13 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		public void Execute_FailToLoadIntegrationPointRDO()
 		{
 			// ARRANGE
-			_integrationPointRepository.ReadWithFieldMappingAsync(_job.RelatedObjectArtifactID).Returns((Data.IntegrationPoint) null);
+			_integrationPointRepository.ReadWithFieldMappingAsync(_job.RelatedObjectArtifactID).Returns((Data.IntegrationPoint)null);
 
 			// ACT
 			_instance.Execute(_job);
 
 			// ASSERT
-			_jobHistoryErrorService.Received(1).AddError(Arg.Is<Choice>(choice => choice.EqualsToChoice(ErrorTypeChoices.JobHistoryErrorJob)), Arg.Is<ArgumentException>(ex => ex.Message == "Failed to retrieve corresponding Integration Point."));
+			AssertJobHistoryErrorServiceReceivedException<ArgumentException>("Failed to retrieve corresponding Integration Point.");
 			_jobService.Received().UpdateStopState(Arg.Is<List<long>>(lst => lst.Contains(_job.JobId)), StopState.Unstoppable);
 			_jobHistoryErrorService.Received().CommitErrors();
 		}
@@ -262,13 +301,14 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			Assert.Throws<IntegrationPointsException>(() => _instance.Execute(_job));
 
 			// ASSERT
-			_jobHistoryErrorService.Received(1).AddError(Arg.Is<Choice>(choice => choice.EqualsToChoice(ErrorTypeChoices.JobHistoryErrorJob)), Arg.Is<Exception>(ex => ex.Message == Core.Constants.IntegrationPoints.PermissionErrors.SAVED_SEARCH_NO_ACCESS));
+			AssertJobHistoryErrorServiceReceivedException<Exception>(
+				Core.Constants.IntegrationPoints.PermissionErrors.SAVED_SEARCH_NO_ACCESS);
 			_jobService.Received().UpdateStopState(Arg.Is<List<long>>(lst => lst.Contains(_job.JobId)), StopState.Unstoppable);
 			_jobHistoryErrorService.Received().CommitErrors();
 		}
 
 		[Test]
-		[NUnit.Framework.Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
+		[Category(TestConstants.TestCategories.STOP_JOB)]
 		public void Execute_StopAtTheVeryBeginningOfTheJob()
 		{
 			// ARRANGE
@@ -284,7 +324,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		}
 
 		[Test]
-		[NUnit.Framework.Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
+		[Category(TestConstants.TestCategories.STOP_JOB)]
 		public void Execute_StopAfterAcquiringTheSynchronizer()
 		{
 			// ARRANGE
@@ -301,7 +341,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		}
 
 		[Test]
-		[NUnit.Framework.Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
+		[Category(TestConstants.TestCategories.STOP_JOB)]
 		public void Execute_StopBeforeExecutePushingData()
 		{
 			// ARRANGE
@@ -322,7 +362,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		}
 
 		[Test]
-		[NUnit.Framework.Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
+		[Category(TestConstants.TestCategories.STOP_JOB)]
 		public void Execute_NoStopRequested()
 		{
 			// ACT
@@ -348,10 +388,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_instance.Execute(_job);
 
 			// ASSERT
-			_jobHistoryErrorService.Received(1).AddError(Arg.Is<Choice>(choice => choice.EqualsToChoice(ErrorTypeChoices.JobHistoryErrorJob)), Arg.Is<AggregateException>(ex => ex.InnerExceptions[0].Message == exceptionMessage));
+			AssertJobHistoryErrorServiceReceivedAggregateException(exceptionMessage);
 			_jobService.Received().UpdateStopState(Arg.Is<List<long>>(lst => lst.Contains(_job.JobId)), StopState.Unstoppable);
 			_jobHistoryErrorService.Received().CommitErrors();
-
 		}
 
 		[Test]
@@ -366,7 +405,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			// ASSERT
 			AssertFinalizedJob(_job);
-			_jobHistoryErrorService.Received(1).AddError(Arg.Is<Choice>(choice => choice.EqualsToChoice(ErrorTypeChoices.JobHistoryErrorJob)), Arg.Is<AggregateException>(ex => ex.InnerExceptions[0].Message == exceptionMessage));
+			AssertJobHistoryErrorServiceReceivedAggregateException(exceptionMessage);
 		}
 
 		[Test]
@@ -380,9 +419,15 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_instance.Execute(_job);
 
 			// ASSERT
-			_exporterFactory.Received(1).BuildExporter(_jobStopManager, Arg.Any<FieldMap[]>(),
+			_exporterFactory.Received(1).BuildExporter(
+				_jobStopManager, 
+				Arg.Any<FieldMap[]>(),
 				_integrationPoint.SourceConfiguration,
-				_RETRY_SAVEDSEARCHID, _job.SubmittedBy, _IMPORTSETTINGS_WITH_USERID);
+				_RETRY_SAVEDSEARCHID, 
+				_job.SubmittedBy, 
+				_IMPORTSETTINGS_WITH_USERID,
+				_documentRepository,
+				_serializer);
 			AssertRetrySavedSearch(true);
 		}
 
@@ -407,7 +452,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		}
 
 		[Test]
-		[NUnit.Framework.Description("This happens when GeneralWithEntityRdoSynchronizerFactory is passed in.")]
+		[Description("This happens when GeneralWithEntityRdoSynchronizerFactory is passed in.")]
 		public void Execute_CreateDestinationProvider_MakeSureToSetSourceProvider()
 		{
 			// ARRANGE
@@ -417,16 +462,28 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			ISynchronizerFactory synchronizerFactory = Substitute.For<GeneralWithEntityRdoSynchronizerFactory>(windsorContainer, objectTypeRepository, rsapiClientFactory);
 
 			// ACT
-			ExportServiceManager instance = new ExportServiceManager(_helper, _helperFactory,
-				_caseContext, _contextContainerFactory,
-				synchronizerFactory, _exporterFactory,
-				_claimPrincipleFactory, _repositoryFactory,
-				_managerFactory, _batchStatuses, _serializer, _jobService, _scheduleRuleFactory, _jobHistoryService,
+			ExportServiceManager instance = new ExportServiceManager(
+				_helper,
+				_helperFactory,
+				_caseContext,
+				_contextContainerFactory,
+				synchronizerFactory,
+				_exporterFactory,
+				_exportServiceObserversFactory,
+				_claimPrincipleFactory,
+				_repositoryFactory,
+				_managerFactory,
+				_batchStatuses,
+				_serializer,
+				_jobService,
+				_scheduleRuleFactory,
+				_jobHistoryService,
 				_jobHistoryErrorService,
 				_jobStatisticsService,
 				null,
 				_agentValidator,
-				_integrationPointRepository);
+				_integrationPointRepository,
+				_documentRepository);
 			try
 			{
 				instance.Execute(_job);
@@ -443,7 +500,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		}
 
 		[Test]
-		[NUnit.Framework.Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
+		[Category(TestConstants.TestCategories.STOP_JOB)]
 		public void Execute_FailToSetJobStateAsUnstoppable_OnFinalizeExportServiceObservers()
 		{
 			// ARRANGE
@@ -483,7 +540,15 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_instance.Execute(_job);
 
 			// ASSERT
-			_exporterFactory.DidNotReceive().BuildExporter(Arg.Any<IJobStopManager>(), Arg.Any<FieldMap[]>(), Arg.Any<string>(), Arg.Any<int>(), Arg.Any<int>(), _IMPORTSETTINGS_WITH_USERID);
+			_exporterFactory.DidNotReceive().BuildExporter(
+				Arg.Any<IJobStopManager>(), 
+				Arg.Any<FieldMap[]>(), 
+				Arg.Any<string>(), 
+				Arg.Any<int>(), 
+				Arg.Any<int>(), 
+				_IMPORTSETTINGS_WITH_USERID,
+				Arg.Any<IDocumentRepository>(),
+				Arg.Any<ISerializer>());
 
 			_sendingEmailNotification.Received(1).OnJobComplete(_job);
 			_updateJobHistoryStatus.Received(1).OnJobStart(_job);
@@ -506,7 +571,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		}
 
 		[Test]
-		[NUnit.Framework.Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
+		[Category(TestConstants.TestCategories.STOP_JOB)]
 		public void Execute_EnsureToMarkErrorStatusAsExpiredIfTheJobIsStopped()
 		{
 			// ARRAGE
@@ -521,7 +586,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		}
 
 		[Test]
-		[NUnit.Framework.Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
+		[Category(TestConstants.TestCategories.STOP_JOB)]
 		public void Execute_FailMarkErrorStatusAsExpiredIfTheJobIsStopped_ExpectNoException()
 		{
 			// ARRAGE
@@ -536,7 +601,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		}
 
 		[Test]
-		[NUnit.Framework.Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
+		[Category(TestConstants.TestCategories.STOP_JOB)]
 		public void Execute_MakeSureToUpdateJobStopStateToNoneOnScheduledJob()
 		{
 			// ARRANGE
@@ -645,6 +710,24 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_jobHistoryErrorService.Received().CommitErrors();
 		}
 
+		private void AssertJobHistoryErrorServiceReceivedException<T>(string message) where T : Exception
+		{
+			_jobHistoryErrorService
+				.Received(1)
+				.AddError(
+					Arg.Is<Choice>(choice => choice.EqualsToChoice(ErrorTypeChoices.JobHistoryErrorJob)),
+					Arg.Is<T>(ex => ex.Message == message));
+		}
+
+		private void AssertJobHistoryErrorServiceReceivedAggregateException(string innerMessage)
+		{
+			_jobHistoryErrorService
+				.Received(1)
+				.AddError(
+					Arg.Is<Choice>(choice => choice.EqualsToChoice(ErrorTypeChoices.JobHistoryErrorJob)),
+					Arg.Is<AggregateException>(ex => ex.InnerExceptions[0].Message == innerMessage));
+		}
+
 		private void EnsureToUpdateTotalItemCount()
 		{
 			_jobHistoryService.Received().UpdateRdo(Arg.Is<JobHistory>(rdo => rdo.TotalItems == _EXPORT_DOC_COUNT));
@@ -654,13 +737,29 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		{
 			if (expectToCreate)
 			{
-				_exporterFactory.Received(1).BuildExporter(_jobStopManager, Arg.Any<FieldMap[]>(), _integrationPoint.SourceConfiguration, _RETRY_SAVEDSEARCHID, _job.SubmittedBy, _IMPORTSETTINGS_WITH_USERID);
+				_exporterFactory.Received(1).BuildExporter(
+					_jobStopManager, 
+					Arg.Any<FieldMap[]>(), 
+					_integrationPoint.SourceConfiguration, 
+					_RETRY_SAVEDSEARCHID, 
+					_job.SubmittedBy, 
+					_IMPORTSETTINGS_WITH_USERID,
+					_documentRepository,
+					_serializer);
 				_jobHistoryErrorManager.Received(1).CreateItemLevelErrorsSavedSearch(_job, _configuration.SavedSearchArtifactId);
 				_jobHistoryErrorRepository.Received(1).DeleteItemLevelErrorsSavedSearch(_RETRY_SAVEDSEARCHID);
 			}
 			else
 			{
-				_exporterFactory.Received(1).BuildExporter(_jobStopManager, Arg.Any<FieldMap[]>(), _integrationPoint.SourceConfiguration, _configuration.SavedSearchArtifactId, _job.SubmittedBy, _IMPORTSETTINGS_WITH_USERID);
+				_exporterFactory.Received(1).BuildExporter(
+					_jobStopManager, 
+					Arg.Any<FieldMap[]>(), 
+					_integrationPoint.SourceConfiguration, 
+					_configuration.SavedSearchArtifactId, 
+					_job.SubmittedBy, 
+					_IMPORTSETTINGS_WITH_USERID,
+					_documentRepository,
+					_serializer);
 				_jobHistoryErrorManager.DidNotReceive().CreateItemLevelErrorsSavedSearch(_job, _configuration.SavedSearchArtifactId);
 				_jobHistoryErrorRepository.DidNotReceive().DeleteItemLevelErrorsSavedSearch(_RETRY_SAVEDSEARCHID);
 			}

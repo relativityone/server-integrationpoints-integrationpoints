@@ -14,7 +14,6 @@ namespace kCura.IntegrationPoints.UITests.Pages
 {
 	public class GeneralPage : Page
 	{
-
 		// TODO Move to some "SthBar", "Navigator" or something similar
 		[FindsBy(How = How.Id, Using = "GetNavigateHomeScript")]
 		protected IWebElement NavigateHome;
@@ -30,10 +29,6 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		[FindsBy(How = How.CssSelector, Using = ".quickNavTextbox")]
 		protected IWebElement QuickNavigationInput;
-
-		[FindsBy(How = How.XPath, Using =
-				"//div[@class='quickNavOuterContainer']/ul/li[@class='quickNavResultItem ui-menu-item']/a[@title='Integration Points']")]
-		protected IWebElement QuickNavigationResult;
 
 		[FindsBy(How = How.CssSelector, Using = "span[title = 'User Dropdown Menu']")]
 		protected IWebElement UserDropdownMenu;
@@ -58,6 +53,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			{
 				Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(SharedVariables.UiImplicitWaitInSec);
 			}
+
 			return this;
 		}
 
@@ -99,13 +95,26 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public IntegrationPointsPage GoToIntegrationPointsPage()
 		{
-			WaitForPage();
-			QuickNavigation.ClickEx();
-			QuickNavigationInput.SendKeys("Integration Points");
-			Sleep(300);
-			QuickNavigationResult.ClickEx();
+			GoToPage("Integration Points");
 			return new IntegrationPointsPage(Driver);
 		}
 
+		public IntegrationPointProfilePage GoToIntegrationPointProfilePage()
+		{
+			GoToPage("Integration Point Profile");
+			return new IntegrationPointProfilePage(Driver);
+		}
+
+		private void GoToPage(string pageName)
+		{
+			WaitForPage();
+			QuickNavigation.ClickEx();
+			QuickNavigationInput.SendKeys(pageName);
+			Sleep(300);
+			string resultLinkXPath =
+				$"//div[@class='quickNavOuterContainer']/ul/li[@class='quickNavResultItem ui-menu-item']/a[@title='{pageName}']";
+			IWebElement resultLink = Driver.FindElementByXPath(resultLinkXPath);
+			resultLink.ClickEx();
+		}
 	}
 }

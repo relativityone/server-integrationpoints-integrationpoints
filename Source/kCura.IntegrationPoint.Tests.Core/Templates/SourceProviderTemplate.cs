@@ -27,8 +27,12 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using Castle.MicroKernel.Resolvers;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
+using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
+using kCura.WinEDDS.Service.Export;
 using Relativity.Services.Folder;
 using Component = Castle.MicroKernel.Registration.Component;
 
@@ -143,7 +147,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				.LifeStyle.Transient);
 
 			Container.Register(Component.For<IRSAPIService>().Instance(new RSAPIService(Container.Resolve<IHelper>(), WorkspaceArtifactId)).LifestyleTransient());
-			Container.Register(Component.For<IExporterFactory>().ImplementedBy<ExporterFactory>());
+			Container.Register(Component.For<IntegrationPoints.Core.Factories.IExporterFactory>().ImplementedBy<ExporterFactory>());
+			Container.Register(Component.For<IExportServiceObserversFactory>().ImplementedBy<ExportServiceObserversFactory>());
 			Container.Register(Component.For<IAuthTokenGenerator>().ImplementedBy<ClaimsTokenGenerator>().LifestyleTransient());
 
 			Container.Register(
@@ -158,7 +163,11 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 					.ImplementedBy<ExternalServiceInstrumentationProviderWithoutJobContext>()
 					.LifestyleSingleton()
 			);
-
+			Container.Register(Component.For<Func<ISearchManager>>()
+				.UsingFactoryMethod(k => (Func<ISearchManager>)(() => k.Resolve<IServiceManagerProvider>().Create<ISearchManager, SearchManagerFactory>()))
+				.LifestyleTransient()
+			);
+			Container.Register(Component.For<IFileRepository>().ImplementedBy<FileRepository>().LifestyleTransient());
 
 #pragma warning disable 618
 			var dependencies = new IWindsorInstaller[]

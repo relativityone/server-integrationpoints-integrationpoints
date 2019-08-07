@@ -1,0 +1,8 @@
+﻿Relativity.API
+Relativity.DataTransfer.MessageService
+
+group TestPackages
+	FluentAssertions
+	Moq
+	NUnit
+	NSubstitute

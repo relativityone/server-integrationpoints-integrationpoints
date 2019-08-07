@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using Castle.Core.Internal;
 using kCura.Data.RowDataGateway;
+using kCura.IntegrationPoints.Common.Extensions.DotNet;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 
@@ -109,15 +109,18 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public void AddArtifactIdsIntoTempTable(ICollection<int> artifactIds)
 		{
-			if (!CollectionExtensions.IsNullOrEmpty(artifactIds))
+			if (artifactIds.IsNullOrEmpty())
 			{
-				string fullTableName = GetTempTableName();
-				string schemalessResourceDataBasePrepend = GetSchemalessResourceDataBasePrepend();
-				string resourceDBPrepend = GetResourceDBPrepend();
+				return;
+			}
 
-				ConnectionData connectionData = ConnectionData.GetConnectionDataWithCurrentCredentials(_caseContext.ServerName, GetSchemalessResourceDataBasePrepend());
-				string connectionString =
-				$@"
+			string fullTableName = GetTempTableName();
+			string schemalessResourceDataBasePrepend = GetSchemalessResourceDataBasePrepend();
+			string resourceDBPrepend = GetResourceDBPrepend();
+
+			ConnectionData connectionData = ConnectionData.GetConnectionDataWithCurrentCredentials(_caseContext.ServerName, GetSchemalessResourceDataBasePrepend());
+			string connectionString =
+			$@"
 				data source={connectionData.Server};
 				initial catalog={connectionData.Database};
 				persist security info=False;
@@ -127,31 +130,30 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				packet size=4096;
 				connect timeout=30;
 				";
-				Context context = new Context(connectionString);
+			Context context = new Context(connectionString);
 
-				string sql =
-				$@"
+			string sql =
+			$@"
 				IF NOT EXISTS (SELECT * FROM {schemalessResourceDataBasePrepend}.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{fullTableName}')
 				BEGIN
 					CREATE TABLE {resourceDBPrepend}.[{fullTableName}] ([{_DOCUMENT_ARTIFACT_ID_COLUMN_NAME}] INT PRIMARY KEY CLUSTERED)
 				END";
 
-				_caseContext.ExecuteNonQuerySQLStatement(sql);
+			_caseContext.ExecuteNonQuerySQLStatement(sql);
 
-				using (DataTable artifactIdTable = new DataTable())
+			using (DataTable artifactIdTable = new DataTable())
+			{
+				artifactIdTable.Columns.Add();
+				foreach (int artifactId in artifactIds)
 				{
-					artifactIdTable.Columns.Add();
-					foreach (int artifactId in artifactIds)
-					{
-						artifactIdTable.Rows.Add(artifactId);
-					}
-
-					SqlBulkCopyParameters bulkParameters = new SqlBulkCopyParameters
-					{
-						DestinationTableName = $"{GetResourceDBPrepend()}.[{fullTableName}]"
-					};
-					context.ExecuteBulkCopy(artifactIdTable, bulkParameters);
+					artifactIdTable.Rows.Add(artifactId);
 				}
+
+				SqlBulkCopyParameters bulkParameters = new SqlBulkCopyParameters
+				{
+					DestinationTableName = $"{GetResourceDBPrepend()}.[{fullTableName}]"
+				};
+				context.ExecuteBulkCopy(artifactIdTable, bulkParameters);
 			}
 		}
 
@@ -183,17 +185,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_caseContext.ExecuteNonQuerySQLStatement(sql);
 		}
 
-		public IEnumerable<int> ReadDocumentIDs(int offset, int size)
+		public IEnumerable<int> ReadArtifactIDs(int offset, int size)
 		{
-			using (IDataReader reader = CreateBatchOfDocumentIdReader(offset, size))
-			{
-				while (reader.Read())
-				{
-					yield return reader.GetInt32(0);
-				}
-			}
+			return ReadArtifactIDsInternal(offset, size).ToList();
 		}
-
+		
 		public string GetTempTableName()
 		{
 			if (_tempTableName == null)
@@ -215,6 +211,17 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		public string GetResourceDBPrepend()
 		{
 			return _resourceDbProvider.GetResourceDbPrepend(_workspaceId);
+		}
+
+		private IEnumerable<int> ReadArtifactIDsInternal(int offset, int size)
+		{
+			using (IDataReader reader = CreateBatchOfDocumentIdReader(offset, size))
+			{
+				while (reader.Read())
+				{
+					yield return reader.GetInt32(0);
+				}
+			}
 		}
 
 		private ICollection<int> GetErroredDocumentId(ICollection<string> documentControlNumbers)

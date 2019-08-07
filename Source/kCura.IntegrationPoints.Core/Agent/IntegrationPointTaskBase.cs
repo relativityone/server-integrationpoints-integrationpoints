@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using Castle.Core.Internal;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
@@ -133,9 +132,13 @@ namespace kCura.IntegrationPoints.Core.Agent
 
 		protected virtual IEnumerable<FieldMap> GetFieldMap(string serializedFieldMappings)
 		{
-			IEnumerable<FieldMap> fieldMap = Serializer.Deserialize<List<FieldMap>>(serializedFieldMappings);
-			fieldMap.ForEach(f => f.SourceField.IsIdentifier = f.FieldMapType == FieldMapTypeEnum.Identifier);
-			return fieldMap;
+			IEnumerable<FieldMap> fieldMaps = Serializer.Deserialize<List<FieldMap>>(serializedFieldMappings);
+			foreach (FieldMap fieldMap in fieldMaps)
+			{
+				bool isIdentifier = fieldMap.FieldMapType == FieldMapTypeEnum.Identifier;
+				fieldMap.SourceField.IsIdentifier = isIdentifier;
+			}
+			return fieldMaps;
 		}
 
 		protected List<string> GetRecipientEmails()

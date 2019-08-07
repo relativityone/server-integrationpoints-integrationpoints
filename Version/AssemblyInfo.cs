@@ -22,6 +22,7 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints")]  //ILMerged dll
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Agent")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Agent.Tests")]
+[assembly: InternalsVisibleTo("kCura.IntegrationPoints.Common.Tests")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Data")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Data.Tests")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Domain")]
@@ -45,12 +46,14 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.SourceProviderInstaller")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Synchronizers.RDO")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Synchronizers.RDO.Tests")]
+[assembly: InternalsVisibleTo("kCura.IntegrationPoint.Tests.Core")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Web")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Web.Tests")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Web.Tests.Integration")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Email.Tests")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.PerformanceTests")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.RelativitySync.Tests")]
+[assembly: InternalsVisibleTo("Rip.SystemTests")]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 //[assembly: Guid("9808fab4-ae17-49c5-a74a-e34543378422")]

@@ -8,7 +8,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
-using Relativity;
+using kCura.Relativity.Client;
 using Relativity.API;
 using Constants = kCura.IntegrationPoints.Domain.Constants;
 

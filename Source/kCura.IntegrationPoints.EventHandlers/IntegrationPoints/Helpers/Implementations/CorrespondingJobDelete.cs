@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Castle.Core.Internal;
 using kCura.IntegrationPoints.Core.Contracts.Helpers;
 using kCura.ScheduleQueue.Core;
 
@@ -17,9 +16,20 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 
 		public void DeleteCorrespondingJob(int workspaceId, int integrationPointArtifactId)
 		{
-			var taskTypes = TaskTypeHelper.GetManagerTypes().Select(taskType => taskType.ToString()).ToList();
-			IEnumerable<Job> jobs = _jobService.GetScheduledJobs(workspaceId, integrationPointArtifactId, taskTypes);
-			jobs.ForEach(job => _jobService.DeleteJob(job.JobId));
+			List<string> taskTypes = TaskTypeHelper
+				.GetManagerTypes()
+				.Select(taskType => taskType.ToString())
+				.ToList();
+
+			IEnumerable<Job> jobs = _jobService.GetScheduledJobs(
+				workspaceId,
+				integrationPointArtifactId,
+				taskTypes);
+
+			foreach (Job job in jobs)
+			{
+				_jobService.DeleteJob(job.JobId);
+			}
 		}
 	}
 }

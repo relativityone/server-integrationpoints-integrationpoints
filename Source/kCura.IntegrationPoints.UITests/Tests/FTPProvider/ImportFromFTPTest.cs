@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FTPProvider
 	{
 		private IRSAPIService _service;
 
-		private const string _CSV_FILEPATH = "All Documents.csv";
+		private const string _CSV_FILEPATH = "ImportFromFtpTest.csv";
 
 		[OneTimeSetUp]
 		public void OneTimeSetUp()

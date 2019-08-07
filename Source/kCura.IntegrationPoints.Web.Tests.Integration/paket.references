@@ -1,19 +1,20 @@
 Castle.Windsor
-FluentAssertions
 CSharpGuidelineAnalyzer
 kCura.Apps.Common.Data
 kCura.Apps.Common.Utils
 kCura.Relativity.Client
 Microsoft.AspNet.Mvc
 Microsoft.AspNet.WebApi.Core
-Moq
-NSubstitute
-NUnit
 Relativity.API
-Relativity.Core
 Relativity.Data
 Relativity.Kepler.Client
 Relativity.Telemetry.APM
 Relativity.Toggles
 Relativity.DataExchange.Client.SDK
-relativity.testing.identification
+
+group TestPackages
+	FluentAssertions
+	Moq
+	NUnit
+	NSubstitute
+	relativity.testing.identification

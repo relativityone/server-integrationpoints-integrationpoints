@@ -1,14 +1,19 @@
 ﻿Castle.Windsor
-FluentAssertions
+kCura.Apps.Common.Config
 kCura.Relativity.Client
-Moq
-NUnit
 Polly
 Relativity
 Relativity.API
-Relativity.Core
 Relativity.DataExchange.Client.SDK
+Relativity.Productions.Services.Interfaces
 Relativity.Services.DataContracts
 Relativity.Services.Interfaces
-Relativity.Productions.Services.Interfaces
-Serilog
+Relativity.Telemetry.APM
+Relativity.Toggles
+
+group TestPackages
+	FluentAssertions
+	Moq
+	NUnit
+	Relativity.Testing.Identification
+	Serilog

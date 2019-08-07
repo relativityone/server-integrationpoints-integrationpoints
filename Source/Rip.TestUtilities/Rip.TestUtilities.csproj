@@ -48,8 +48,15 @@
   <ItemGroup>
     <Compile Include="FieldMappingBuilder.cs" />
     <Compile Include="IntegrationPointModelBuilder.cs" />
+    <Compile Include="LoadFileHelper.cs" />
+    <Compile Include="ProductionHelper.cs" />
+    <Compile Include="SavedSearchHelper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">
+      <Project>{ad3e5540-fa39-4983-8a23-fcc756d51a32}</Project>
+      <Name>kCura.IntegrationPoint.Tests.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
       <Project>{0CEDB7AF-DB89-47DE-9587-8CCD58621F2F}</Project>
       <Name>kCura.IntegrationPoints.Contracts</Name>
@@ -81,7 +88,7 @@
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="kCura.Apps.Common.Utils">
-          <HintPath>..\..\packages\kCura.Apps.Common.Utils\lib\net462\kCura.Apps.Common.Utils.dll</HintPath>
+          <HintPath>..\..\packages\kCura.Apps.Common.Utils\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

@@ -2,9 +2,9 @@
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using kCura.Data.RowDataGateway;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter
 {
@@ -61,9 +61,9 @@ DEALLOCATE MY_CURSOR
 
 SELECT * FROM @FolderPaths";
 
-		private readonly BaseContext _dbContext;
+		private readonly IDBContext _dbContext;
 
-		public DynamicFolderPathReader(BaseContext dbContext)
+		public DynamicFolderPathReader(IDBContext dbContext)
 		{
 			_dbContext = dbContext;
 		}

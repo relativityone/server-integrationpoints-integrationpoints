@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.Domain.Exceptions;
 using Relativity.API;
 using Relativity.Kepler.Exceptions;
 using Relativity.Kepler.Transport;
+using Relativity.Services.DataContracts.DTOs.Results;
 using Relativity.Services.Objects.DataContracts;
 using IObjectManager = Relativity.Services.Objects.IObjectManager;
 
@@ -16,7 +17,7 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
 {
 	internal class ObjectManagerFacadeInstrumentationDecorator : IObjectManagerFacade
 	{
-		private bool _isDisposed = false;
+		private bool _isDisposed;
 
 		private readonly IExternalServiceInstrumentationProvider _instrumentationProvider;
 		private readonly IAPILog _logger;
@@ -34,50 +35,41 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
 
 		public async Task<CreateResult> CreateAsync(int workspaceArtifactID, CreateRequest createRequest)
 		{
-			IExternalServiceInstrumentationStarted startedInstrumentation = StartInstrumentation();
-			CreateResult result =
-				await Execute(x => x.CreateAsync(workspaceArtifactID, createRequest), startedInstrumentation)
-					.ConfigureAwait(false);
-			CompleteResultWithEventHandlers(result.EventHandlerStatuses, startedInstrumentation);
-			return result;
-		}
-
-		public async Task<DeleteResult> DeleteAsync(int workspaceArtifactID, DeleteRequest request)
-		{
-			IExternalServiceInstrumentationStarted startedInstrumentation = StartInstrumentation();
-			DeleteResult result =
-				await Execute(x => x.DeleteAsync(workspaceArtifactID, request), startedInstrumentation)
-					.ConfigureAwait(false);
-			startedInstrumentation.Completed();
-			return result;
-		}
-
-		public async Task<QueryResult> QueryAsync(int workspaceArtifactID, QueryRequest request, int start, int length)
-		{
-			IExternalServiceInstrumentationStarted startedInstrumentation = StartInstrumentation();
-			QueryResult result =
-				await Execute(x => x.QueryAsync(workspaceArtifactID, request, start, length), startedInstrumentation)
-					.ConfigureAwait(false);
-			startedInstrumentation.Completed();
-			return result;
-		}
-
-		public async Task<ReadResult> ReadAsync(int workspaceArtifactID, ReadRequest request)
-		{
-			IExternalServiceInstrumentationStarted startedInstrumentation = StartInstrumentation();
-			ReadResult result = await Execute(x => x.ReadAsync(workspaceArtifactID, request), startedInstrumentation)
+			IExternalServiceInstrumentationStarted instrumentation = StartInstrumentation();
+			CreateResult result = await ExecuteAsync(
+					x => x.CreateAsync(workspaceArtifactID, createRequest),
+					instrumentation)
 				.ConfigureAwait(false);
-			startedInstrumentation.Completed();
+			CompleteResultWithEventHandlers(result.EventHandlerStatuses, instrumentation);
 			return result;
+		}
+
+		public Task<DeleteResult> DeleteAsync(int workspaceArtifactID, DeleteRequest request)
+		{
+			return ExecuteAsync(
+				x => x.DeleteAsync(workspaceArtifactID, request));
+		}
+
+		public Task<QueryResult> QueryAsync(int workspaceArtifactID, QueryRequest request, int start, int length)
+		{
+			return ExecuteAsync(
+				x => x.QueryAsync(workspaceArtifactID, request, start, length));
+		}
+
+		public Task<ReadResult> ReadAsync(int workspaceArtifactID, ReadRequest request)
+		{
+			return ExecuteAsync(
+				x => x.ReadAsync(workspaceArtifactID, request));
 		}
 
 		public async Task<UpdateResult> UpdateAsync(int workspaceArtifactID, UpdateRequest request)
 		{
-			IExternalServiceInstrumentationStarted startedInstrumentation = StartInstrumentation();
-			UpdateResult result =
-				await Execute(x => x.UpdateAsync(workspaceArtifactID, request), startedInstrumentation)
-					.ConfigureAwait(false);
-			CompleteResultWithEventHandlers(result.EventHandlerStatuses, startedInstrumentation);
+			IExternalServiceInstrumentationStarted instrumentation = StartInstrumentation();
+			UpdateResult result = await ExecuteAsync(
+					x => x.UpdateAsync(workspaceArtifactID, request),
+					instrumentation)
+				.ConfigureAwait(false);
+			CompleteResultWithEventHandlers(result.EventHandlerStatuses, instrumentation);
 			return result;
 		}
 
@@ -86,32 +78,44 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
 			MassUpdateByObjectIdentifiersRequest request,
 			MassUpdateOptions updateOptions)
 		{
-			IExternalServiceInstrumentationStarted startedInstrumentation = StartInstrumentation();
-			MassUpdateResult result =
-				await Execute(x => x.UpdateAsync(workspaceArtifactID, request, updateOptions), startedInstrumentation)
-					.ConfigureAwait(false);
+			IExternalServiceInstrumentationStarted instrumentation = StartInstrumentation();
+			MassUpdateResult result = await ExecuteAsync(
+					x => x.UpdateAsync(workspaceArtifactID, request, updateOptions), 
+					instrumentation)
+				.ConfigureAwait(false);
 
 			if (result.Success)
 			{
-				startedInstrumentation.Completed();
+				instrumentation.Completed();
 			}
 			else
 			{
-				startedInstrumentation.Failed(result.Message);
+				instrumentation.Failed(result.Message);
 			}
+
 			return result;
 		}
 
-		public async Task<IKeplerStream> StreamLongTextAsync(int workspaceArtifactID, RelativityObjectRef exportObject, FieldRef fieldRef)
+		public Task<IKeplerStream> StreamLongTextAsync(int workspaceArtifactID, RelativityObjectRef exportObject, FieldRef longTextField)
 		{
-			IExternalServiceInstrumentationStarted startedInstrumentation = StartInstrumentation();
-			IKeplerStream result =
-				await Execute(x =>
-					x.StreamLongTextAsync(workspaceArtifactID, exportObject, fieldRef),
-					startedInstrumentation)
-				.ConfigureAwait(false);
-			startedInstrumentation.Completed();
-			return result;
+			return ExecuteAsync(
+				x => x.StreamLongTextAsync(workspaceArtifactID, exportObject, longTextField));
+		}
+
+		public Task<ExportInitializationResults> InitializeExportAsync(int workspaceArtifactID, QueryRequest queryRequest, int start)
+		{
+			return ExecuteAsync(
+				x => x.InitializeExportAsync(workspaceArtifactID, queryRequest, start));
+		}
+
+		public Task<RelativityObjectSlim[]> RetrieveResultsBlockFromExportAsync(
+			int workspaceArtifactID,
+			Guid runID,
+			int resultsBlockSize,
+			int exportIndexID)
+		{
+			return ExecuteAsync(
+				x => x.RetrieveResultsBlockFromExportAsync(workspaceArtifactID, runID, resultsBlockSize, exportIndexID));
 		}
 
 		private void CompleteResultWithEventHandlers(List<EventHandlerStatus> eventHandlerStatuses,
@@ -130,12 +134,36 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
 			}
 		}
 
-		private async Task<T> Execute<T>(Func<IObjectManagerFacade, Task<T>> f,
-			IExternalServiceInstrumentationStarted instrumentation, [CallerMemberName]string operation = "")
+		private Task<T> ExecuteAsync<T>(
+			Func<IObjectManagerFacade, Task<T>> function,
+			IExternalServiceInstrumentationStarted instrumentation,
+			[CallerMemberName] string operation = "")
+		{
+			return ExecuteAsync(function, instrumentation, false, operation);
+		}
+
+		private Task<T> ExecuteAsync<T>(
+			Func<IObjectManagerFacade, Task<T>> function,
+			[CallerMemberName] string operation = "")
+		{
+			IExternalServiceInstrumentationStarted instrumentation = StartInstrumentation(operation);
+			return ExecuteAsync(function, instrumentation, true, operation);
+		}
+
+		private async Task<T> ExecuteAsync<T>(
+			Func<IObjectManagerFacade, Task<T>> function,
+			IExternalServiceInstrumentationStarted instrumentation,
+			bool completeInstrumentationOnSuccess,
+			string operation)
 		{
 			try
 			{
-				return await f(_objectManager).ConfigureAwait(false);
+				T result = await function(_objectManager).ConfigureAwait(false);
+				if (completeInstrumentationOnSuccess)
+				{
+					instrumentation.Completed();
+				}
+				return result;
 			}
 			catch (ServiceNotFoundException ex)
 			{

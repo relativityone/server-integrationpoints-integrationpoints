@@ -1,4 +1,10 @@
+Castle.Windsor
 CSharpGuidelineAnalyzer
+kCura
 kCura.Apps.Common.Utils
-RelativityCore
+kCura.Relativity.Client
 Relativity.DataExchange.Client.SDK
+Relativity.API
+Relativity.Services.Interfaces
+Relativity.Toggles
+Relativity.Telemetry.MetricsCollection

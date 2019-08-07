@@ -4,6 +4,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core.Models;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoint.Tests.Core
@@ -21,7 +22,11 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		private const string _WORKSPACE_EXTRACTED_TEXT = "Extracted Text";
 
-		public static DocumentsTestData BuildTestData(string testDirectory = null, bool withNatives = true, TestDataType testDataType = TestDataType.SmallWithFoldersStructure)
+		public static DocumentsTestData BuildTestData(
+			string prefix = "", 
+			string testDirectory = null, 
+			bool withNatives = true, 
+			TestDataType testDataType = TestDataType.SmallWithFoldersStructure)
 		{
 			if (string.IsNullOrEmpty(testDirectory))
 			{
@@ -34,28 +39,28 @@ namespace kCura.IntegrationPoint.Tests.Core
 			switch (testDataType)
 			{
 				case TestDataType.SmallWithFoldersStructure:
-					foldersWithDocuments = GetFoldersWithDocuments(testDirectory, withNatives);
-					images = GetImageDataTable(testDirectory);
+					foldersWithDocuments = GetFoldersWithDocuments(prefix, testDirectory, withNatives);
+					images = GetImageDataTable(prefix, testDirectory);
 					break;
 				case TestDataType.SmallWithoutFolderStructure:
-					foldersWithDocuments = GetDocumentsIntoRootFolder(Path.Combine(testDirectory, TestDataNativesPath), withNatives);
-					images = GetImageDataTableForAllNativesInGivenFolder(testDirectory, TestDataPath);
+					foldersWithDocuments = GetDocumentsIntoRootFolder(prefix, Path.Combine(testDirectory, TestDataNativesPath), withNatives);
+					images = GetImageDataTableForAllNativesInGivenFolder(prefix, testDirectory, TestDataPath);
 					break;
 				case TestDataType.ModerateWithFoldersStructure:
 					foldersWithDocuments = GetFoldersWithDocumentsBasedOnDirectoryStructureOfNatives(Path.Combine(testDirectory, TestDataExtendedNativesPath), withNatives);
-					images = GetImageDataTableForAllNativesInGivenFolder(testDirectory, TestDataExtendedPath);
+					images = GetImageDataTableForAllNativesInGivenFolder(prefix, testDirectory, TestDataExtendedPath);
 					break;
 				case TestDataType.ModerateWithoutFoldersStructure:
-					foldersWithDocuments = GetDocumentsIntoRootFolder(Path.Combine(testDirectory, TestDataExtendedNativesPath), withNatives);
-					images = GetImageDataTableForAllNativesInGivenFolder(testDirectory, TestDataExtendedPath);
+					foldersWithDocuments = GetDocumentsIntoRootFolder(prefix, Path.Combine(testDirectory, TestDataExtendedNativesPath), withNatives);
+					images = GetImageDataTableForAllNativesInGivenFolder(prefix, testDirectory, TestDataExtendedPath);
 					break;
 				case TestDataType.TextWithoutFolderStructure:
-					foldersWithDocuments = GetDocumentsIntoRootFolder(Path.Combine(testDirectory, TestDataTextNativesPath), withNatives);
-					images = GetImageDataTableForAllNativesInGivenFolder(testDirectory, TestDataTextPath);
+					foldersWithDocuments = GetDocumentsIntoRootFolder(prefix, Path.Combine(testDirectory, TestDataTextNativesPath), withNatives);
+					images = GetImageDataTableForAllNativesInGivenFolder(prefix, testDirectory, TestDataTextPath);
 					break;
 				case TestDataType.SaltPepperWithFolderStructure:
-					foldersWithDocuments = GetDocumentsIntoRootFolder(Path.Combine(testDirectory, SaltPepperTestDataNativesPath), withNatives);
-					images = GetImageDataTableForAllNativesInGivenFolder(testDirectory, SaltPepperTestDataPath);
+					foldersWithDocuments = GetDocumentsIntoRootFolder(prefix, Path.Combine(testDirectory, SaltPepperTestDataNativesPath), withNatives);
+					images = GetImageDataTableForAllNativesInGivenFolder(prefix, testDirectory, SaltPepperTestDataPath);
 					break;
 				default:
 					throw new Exception("Unsupported TestDataType parameter");
@@ -66,7 +71,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		public static DataTable GetSingleExtractedTextDocument(string controlNumber, string extractedTextFilePath)
 		{
 			var table = new DataTable();
-			table.Columns.Add(Constants.CONTROL_NUMBER_FIELD, typeof(string));
+			table.Columns.Add(TestConstants.FieldNames.CONTROL_NUMBER, typeof(string));
 			table.Columns.Add(_WORKSPACE_EXTRACTED_TEXT, typeof(string));
 			table.Rows.Add(controlNumber, extractedTextFilePath);
 			return table;
@@ -97,36 +102,67 @@ namespace kCura.IntegrationPoint.Tests.Core
 			var table = new DataTable();
 
 			// The document identifier column name must match the field name in the workspace.
-			table.Columns.Add(Constants.CONTROL_NUMBER_FIELD, typeof(string));
-			table.Columns.Add(Constants.FILE_NAME_FIELD, typeof(string));
-			table.Columns.Add(Constants.NATIVE_FILE_FIELD, typeof(string));
-			table.Columns.Add(Constants.ISSUE_DESIGNATION_FIELD, typeof(string));
-			table.Columns.Add(Constants.HAS_IMAGES_FIELD, typeof(bool));
-			table.Columns.Add(Constants.FOLDER_PATH, typeof(string));
+			table.Columns.Add(TestConstants.FieldNames.CONTROL_NUMBER, typeof(string));
+			table.Columns.Add(TestConstants.FieldNames.FILE_NAME, typeof(string));
+			table.Columns.Add(TestConstants.FieldNames.NATIVE_FILE, typeof(string));
+			table.Columns.Add(TestConstants.FieldNames.ISSUE_DESIGNATION, typeof(string));
+			table.Columns.Add(TestConstants.FieldNames.HAS_IMAGES, typeof(bool));
+			table.Columns.Add(TestConstants.FieldNames.FOLDER_PATH, typeof(string));
+			table.Columns.Add(TestConstants.FieldNames.DOCUMENT_EXTENSION, typeof(string));
 			return table;
 		}
 
-		private static IList<FolderWithDocuments> GetFoldersWithDocuments(string testDirectory, bool withNatives = true)
+		private static IList<FolderWithDocuments> GetFoldersWithDocuments(string prefix, string testDirectory, bool withNatives = true)
 		{
-			string firstFolderName = "first";
-			var firstFolder = new FolderWithDocuments(firstFolderName, CreateDataTableForDocuments());
-			firstFolder.Documents.Rows.Add("AMEYERS_0000757", "AMEYERS_0000757.htm",
-				withNatives ? Path.Combine(testDirectory, @"TestData\NATIVES\AMEYERS_0000757.htm") : string.Empty, "Level1\\Level2", true, firstFolderName);
+			const string issueDesignation = "Level1\\Level2";
+			bool hasImages = true;
 
-			string firstFolderChildName = "child";
+			const string firstFolderName = "first";
+			var firstFolder = new FolderWithDocuments(firstFolderName, CreateDataTableForDocuments());
+			firstFolder.Documents.Rows.Add(
+				prefix + "AMEYERS_0000757",
+				"AMEYERS_0000757.htm",
+				withNatives ? Path.Combine(testDirectory, @"TestData\NATIVES\AMEYERS_0000757.htm") : string.Empty, 
+				issueDesignation, 
+				hasImages, 
+				firstFolderName,
+				"HTM");
+
+			const string firstFolderChildName = "child";
 			var firstFolderChild = new FolderWithDocuments(firstFolderChildName, CreateDataTableForDocuments());
-			firstFolderChild.Documents.Rows.Add("AMEYERS_0000975", "AMEYERS_0000975.pdf",
-				withNatives ? Path.Combine(testDirectory, @"TestData\NATIVES\AMEYERS_0000975.pdf") : string.Empty, "Level1\\Level2", true, firstFolderName + "\\" + firstFolderChildName);
+			firstFolderChild.Documents.Rows.Add(
+				prefix + "AMEYERS_0000975",
+				"AMEYERS_0000975.pdf",
+				withNatives ? Path.Combine(testDirectory, @"TestData\NATIVES\AMEYERS_0000975.pdf") : string.Empty, 
+				issueDesignation, 
+				hasImages, 
+				firstFolderName + "\\" + firstFolderChildName,
+				"PDF");
 
 			firstFolderChild.ParentFolderWithDocuments = firstFolder;
 			firstFolder.ChildrenFoldersWithDocument.Add(firstFolderChild);
 
-			string secondFolderName = "second";
+			const string secondFolderName = "second";
 			var secondFolder = new FolderWithDocuments(secondFolderName, CreateDataTableForDocuments());
-			secondFolder.Documents.Rows.Add("AMEYERS_0001185", "AMEYERS_0001185.xls",
-				withNatives ? Path.Combine(testDirectory, @"TestData\NATIVES\AMEYERS_0001185.xls") : string.Empty, "Level1\\Level2", true, secondFolderName);
-			secondFolder.Documents.Rows.Add("AZIPPER_0011318", "AZIPPER_0011318.msg",
-				withNatives ? Path.Combine(testDirectory, @"TestData\NATIVES\AZIPPER_0011318.msg") : string.Empty, "Level1\\Level2", false, secondFolderName);
+			secondFolder.Documents.Rows.Add(
+				prefix + "AMEYERS_0001185", 
+				"AMEYERS_0001185.xls",
+				withNatives ? Path.Combine(testDirectory, @"TestData\NATIVES\AMEYERS_0001185.xls") : string.Empty, 
+				issueDesignation, 
+				hasImages, 
+				secondFolderName,
+				"XLS");
+
+			hasImages = false;
+
+			secondFolder.Documents.Rows.Add(
+				prefix + "AZIPPER_0011318", 
+				"AZIPPER_0011318.msg",
+				withNatives ? Path.Combine(testDirectory, @"TestData\NATIVES\AZIPPER_0011318.msg") : string.Empty, 
+				issueDesignation, 
+				hasImages, 
+				secondFolderName,
+				"MSG");
 
 			return new[] { firstFolder, firstFolderChild, secondFolder };
 		}
@@ -167,22 +203,42 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		private static void FillFolderWithFiles(FolderWithDocuments newFolder, string folderPath, string foldersPrefix, bool withNatives)
 		{
+			const string issueDesignation = "Level1\\Level2";
+			const bool hasImages = false;
+
 			string documentsFolderPath = GetDocumentFolderRelativePath(folderPath, foldersPrefix);
 			foreach (string filePath in Directory.GetFiles(folderPath, "*", SearchOption.TopDirectoryOnly))
 			{
-				newFolder.Documents.Rows.Add(Path.GetFileNameWithoutExtension(filePath), Path.GetFileName(filePath), withNatives ? filePath : string.Empty, "Level1\\Level2", false, documentsFolderPath);
+				newFolder.Documents.Rows.Add(
+					Path.GetFileNameWithoutExtension(filePath), 
+					Path.GetFileName(filePath), 
+					withNatives ? filePath : string.Empty, 
+					issueDesignation, 
+					hasImages, 
+					documentsFolderPath,
+					Path.GetExtension(filePath)?.ToUpperInvariant() ?? string.Empty);
 			}
 		}
 
-		private static IList<FolderWithDocuments> GetDocumentsIntoRootFolder(string nativesFolderPath, bool withNatives = true)
+		private static IList<FolderWithDocuments> GetDocumentsIntoRootFolder(string prefix, string nativesFolderPath, bool withNatives = true)
 		{
+			const string issueDesignation = "Level1\\Level2";
+			const bool hasImages = false;
+
 			var foldersList = new List<FolderWithDocuments>();
 
 			var newFolder = new FolderWithDocuments(Path.GetFileName(nativesFolderPath), CreateDataTableForDocuments());
 
 			foreach (string filePath in Directory.GetFiles(nativesFolderPath, "*", SearchOption.AllDirectories))
 			{
-				newFolder.Documents.Rows.Add(Path.GetFileNameWithoutExtension(filePath), Path.GetFileName(filePath), withNatives ? filePath : string.Empty, "Level1\\Level2", false, newFolder.FolderName);
+				newFolder.Documents.Rows.Add(
+					prefix + Path.GetFileNameWithoutExtension(filePath), 
+					Path.GetFileName(filePath),
+					withNatives ? filePath : string.Empty, 
+					issueDesignation, 
+					hasImages, 
+					newFolder.FolderName,
+					Path.GetExtension(filePath)?.ToUpperInvariant() ?? string.Empty);
 			}
 
 			foldersList.Add(newFolder);
@@ -198,25 +254,40 @@ namespace kCura.IntegrationPoint.Tests.Core
 			var table = new DataTable();
 
 			// The document identifer column name must match the field name in the workspace.
-			table.Columns.Add(Constants.CONTROL_NUMBER_FIELD, typeof(string));
-			table.Columns.Add(Constants.BATES_BEG_FIELD, typeof(string));
-			table.Columns.Add(Constants.FILE_FIELD, typeof(string));
+			table.Columns.Add(TestConstants.FieldNames.CONTROL_NUMBER, typeof(string));
+			table.Columns.Add(TestConstants.FieldNames.BATES_BEG, typeof(string));
+			table.Columns.Add(TestConstants.FieldNames.FILE, typeof(string));
 			return table;
 		}
 
-		private static DataTable GetImageDataTable(string testDirectory)
+		private static DataTable GetImageDataTable(string prefix, string testDirectory)
 		{
 			DataTable table = CreateDataTableForImages();
 
-			table.Rows.Add("AMEYERS_0000757", "AMEYERS_0000757", Path.Combine(testDirectory, @"TestData\IMAGES\AMEYERS_0000757.tif"));
-			table.Rows.Add("AMEYERS_0000975", "AMEYERS_0000975", Path.Combine(testDirectory, @"TestData\IMAGES\AMEYERS_0000975.tif"));
-			table.Rows.Add("AMEYERS_0001185", "AMEYERS_0001185", Path.Combine(testDirectory, @"TestData\IMAGES\AMEYERS_0001185.tif"));
-			table.Rows.Add("AMEYERS_0001185", "AMEYERS_0001185_001", Path.Combine(testDirectory, @"TestData\IMAGES\AMEYERS_0001185_001.tif"));
+			table.Rows.Add(
+				prefix + "AMEYERS_0000757", 
+				prefix + "AMEYERS_0000757", 
+				Path.Combine(testDirectory, @"TestData\IMAGES\AMEYERS_0000757.tif"));
+
+			table.Rows.Add(
+				prefix + "AMEYERS_0000975", 
+				prefix + "AMEYERS_0000975", 
+				Path.Combine(testDirectory, @"TestData\IMAGES\AMEYERS_0000975.tif"));
+
+			table.Rows.Add(
+				prefix + "AMEYERS_0001185", 
+				prefix + "AMEYERS_0001185", 
+				Path.Combine(testDirectory, @"TestData\IMAGES\AMEYERS_0001185.tif"));
+
+			table.Rows.Add(
+				prefix + "AMEYERS_0001185", 
+				prefix + "AMEYERS_0001185_001", 
+				Path.Combine(testDirectory, @"TestData\IMAGES\AMEYERS_0001185_001.tif"));
 
 			return table;
 		}
 
-		private static DataTable GetImageDataTableForAllNativesInGivenFolder(string testDirectory, string testDataDirectory)
+		private static DataTable GetImageDataTableForAllNativesInGivenFolder(string prefix, string testDirectory, string testDataDirectory)
 		{
 			string nativesFolderPath = Path.Combine(testDirectory, testDataDirectory, "NATIVES");
 			string imagesFolderPath = Path.Combine(testDirectory, testDataDirectory, "IMAGES");
@@ -226,7 +297,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			{
 				foreach (string imageFilePath in GetListOfImagesForGivenNativeFile(nativeFileName, imagesFolderPath))
 				{
-					tableOfImages.Rows.Add(CreateImageRowBasedOnImageFilePath(nativeFileName, imageFilePath));
+					tableOfImages.Rows.Add(CreateImageRowBasedOnImageFilePath(prefix, nativeFileName, imageFilePath));
 				}
 			}
 
@@ -238,12 +309,12 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return Directory.GetFiles(imagesFolderPath, $"{nativeFileName}*.tif", SearchOption.AllDirectories);
 		}
 
-		private static object[] CreateImageRowBasedOnImageFilePath(string nativeFileName, string imageFilePath)
+		private static object[] CreateImageRowBasedOnImageFilePath(string prefix, string nativeFileName, string imageFilePath)
 		{
 			return new object[]
 			{
-				nativeFileName,
-				Path.GetFileNameWithoutExtension(imageFilePath),
+				prefix + nativeFileName,
+				prefix + Path.GetFileNameWithoutExtension(imageFilePath),
 				imageFilePath
 			};
 		}

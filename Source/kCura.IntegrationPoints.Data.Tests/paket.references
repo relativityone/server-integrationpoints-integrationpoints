@@ -2,13 +2,16 @@ Castle.Windsor
 CSharpGuidelineAnalyzer
 kCura.Relativity.Client
 LanguageExt.Core
-NSubstitute
-NUnit
 Polly
 Relativity
 Relativity.API
 Relativity.Productions.Services.Interfaces
 Relativity.Services.Interfaces.Private
-Moq
+Relativity.DataExchange.Client.SDK
 Newtonsoft.Json
-FluentAssertions
+
+group TestPackages
+	FluentAssertions
+	Moq
+	NUnit
+	NSubstitute

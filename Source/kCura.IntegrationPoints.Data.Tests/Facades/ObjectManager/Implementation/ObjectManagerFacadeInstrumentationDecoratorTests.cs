@@ -235,13 +235,73 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 			ShouldWrapServiceNotFoundException(ObjectManagerFacadeTestsHelpers.QueryCallWithAnyArgs);
 		}
 
-		private async Task ShouldCallStartedAndCompletedForSuccessfulCallAsync<TResult>(
+		[Test]
+		public Task InitializeExportAsync_ShouldCallStartedAndCompletedForSuccessfulCall()
+		{
+			return ShouldCallStartedAndCompletedForSuccessfulCallAsync(
+				ObjectManagerFacadeTestsHelpers.InitializeExportCallWithAnyArgs);
+		}
+
+		[Test]
+		public Task InitializeExportAsync_ShouldCallFailedWhenExceptionIsThrown()
+		{
+			return ShouldCallFailedWhenExceptionIsThrownAsync(ObjectManagerFacadeTestsHelpers.InitializeExportCallWithAnyArgs);
+		}
+
+		[Test]
+		public void InitializeExportAsync_ShouldRethrowExceptions()
+		{
+			ShouldRethrowExceptions(ObjectManagerFacadeTestsHelpers.InitializeExportCallWithAnyArgs);
+		}
+
+		[Test]
+		public void InitializeExportAsync_ShouldWrapServiceNotFoundException()
+		{
+			ShouldWrapServiceNotFoundException(ObjectManagerFacadeTestsHelpers.InitializeExportCallWithAnyArgs);
+		}
+
+		[Test]
+		public Task RetrieveResultsBlockFromExportAsync_ShouldCallStartedAndCompletedForSuccessfulCall()
+		{
+			var result = new RelativityObjectSlim[] {};
+			return ShouldCallStartedAndCompletedForSuccessfulCallWithResultAsync(
+				ObjectManagerFacadeTestsHelpers.RetrieveResultsBlockFromExportCallWithAnyArgs, 
+				result);
+		}
+
+		[Test]
+		public Task RetrieveResultsBlockFromExportAsync_ShouldCallFailedWhenExceptionIsThrown()
+		{
+			return ShouldCallFailedWhenExceptionIsThrownAsync(ObjectManagerFacadeTestsHelpers.InitializeExportCallWithAnyArgs);
+		}
+
+		[Test]
+		public void RetrieveResultsBlockFromExportAsync_ShouldRethrowExceptions()
+		{
+			ShouldRethrowExceptions(ObjectManagerFacadeTestsHelpers.InitializeExportCallWithAnyArgs);
+		}
+
+		[Test]
+		public void RetrieveResultsBlockFromExportAsync_ShouldWrapServiceNotFoundException()
+		{
+			ShouldWrapServiceNotFoundException(ObjectManagerFacadeTestsHelpers.InitializeExportCallWithAnyArgs);
+		}
+
+		private Task ShouldCallStartedAndCompletedForSuccessfulCallAsync<TResult>(
 			Expression<Func<IObjectManagerFacade, Task<TResult>>> methodToTest,
 			Action<TResult> setupResult = null)
 			where TResult : new()
 		{
-			// arrange
 			var result = new TResult();
+			return ShouldCallStartedAndCompletedForSuccessfulCallWithResultAsync(methodToTest, result, setupResult);
+		}
+
+		private async Task ShouldCallStartedAndCompletedForSuccessfulCallWithResultAsync<TResult>(
+			Expression<Func<IObjectManagerFacade, Task<TResult>>> methodToTest,
+			TResult result,
+			Action<TResult> setupResult = null)
+		{
+			// arrange
 			setupResult?.Invoke(result);
 
 			_objectManagerMock
@@ -344,7 +404,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 		}
 
 		private async Task ShouldCallFailedWhenExceptionIsThrownAsync<TResult>(Expression<Func<IObjectManagerFacade, Task<TResult>>> methodToTest)
-			where TResult : new()
 		{
 			// arrange
 			var exception = new Exception();
@@ -369,7 +428,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 		}
 
 		private void ShouldRethrowExceptions<TResult>(Expression<Func<IObjectManagerFacade, Task<TResult>>> methodToTest)
-			where TResult : new()
 		{
 			// arrange
 			var exception = new Exception();
@@ -389,7 +447,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 		}
 
 		private void ShouldWrapServiceNotFoundException<TResult>(Expression<Func<IObjectManagerFacade, Task<TResult>>> methodToTest)
-			where TResult : new()
 		{
 			// arrange
 			var serviceNotFoundException = new ServiceNotFoundException();

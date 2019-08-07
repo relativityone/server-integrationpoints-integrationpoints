@@ -43,7 +43,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Infrastructure.MessageHandlers
 				IWorkspaceContext workspaceIdProvider,
 				IUserContext userContext
 			) : base(
-				logger,
+				() => logger,
 				() => webCorrelationContextProvide,
 				() => workspaceIdProvider,
 				() => userContext

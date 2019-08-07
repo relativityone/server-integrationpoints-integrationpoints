@@ -8,7 +8,6 @@ using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.NUnitExtensions;
 using kCura.IntegrationPoints.UITests.Pages;
 using kCura.IntegrationPoints.UITests.Validation;
-using kCura.Vendor.Castle.Core.Internal;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -59,10 +58,16 @@ namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 			model.Source.ImportNestedItems = false;
 
 			model.Source.Password = new SecureString();
-			SharedVariables.LdapPassword.ForEach(c => model.Source.Password.AppendChar(c));
+			foreach (char c in SharedVariables.LdapPassword)
+			{
+				model.Source.Password.AppendChar(c);
+			}
 
 			model.Source.Username = new SecureString();
-			SharedVariables.LdapUsername.ForEach(c => model.Source.Username.AppendChar(c));
+			foreach (char c in SharedVariables.LdapUsername)
+			{
+				model.Source.Username.AppendChar(c);
+			}
 
 			// Step 3
 			model.ImportEntitySettingsModel.UniqueIdentifier = "UniqueID";

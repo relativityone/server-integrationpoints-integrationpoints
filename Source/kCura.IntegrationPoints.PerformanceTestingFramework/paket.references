@@ -1,12 +1,14 @@
-﻿CSharpGuidelineAnalyzer
+﻿Castle.Windsor
+CSharpGuidelineAnalyzer
 kCura.Apps.Common.Data
 kCura.Apps.Common.Utils
 kCura.Relativity.Client
-NSubstitute
-NUnit
 Relativity.API
-Relativity.Core
 Relativity.Telemetry.APM
 relativity.transfer.client
-RelativityCore
 Relativity.OAuth2Client
+Relativity.Services.Interfaces
+
+group TestPackages
+	NUnit
+	NSubstitute

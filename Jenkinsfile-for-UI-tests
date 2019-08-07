@@ -123,7 +123,7 @@ timestamps
 			}
 
 			if (jenkinsHelpers.testingVMsAreRequired(params))
-			{				
+			{
 				stage ('Stash Tests Artifacts')
 				{
 					jenkinsHelpers.stashTestsArtifacts()

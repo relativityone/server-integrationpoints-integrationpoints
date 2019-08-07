@@ -1,15 +1,17 @@
+Castle.Windsor
 CSharpGuidelineAnalyzer
 kCura.Apps.Common.Data
 kCura.Apps.Common.Utils
 kCura.EventHandler
 kCura.Relativity.Client
-NSubstitute
-NUnit
-Relativity.Core
 Relativity.Data
 Relativity.Telemetry.APM
-RelativityCore
-Selenium.WebDriver
 Relativity.OAuth2Client
-relativity.testing.identification
-FluentAssertions
+Relativity.Services.Interfaces
+
+group TestPackages
+	FluentAssertions
+	NUnit
+	NSubstitute
+	Selenium.WebDriver
+	relativity.testing.identification
