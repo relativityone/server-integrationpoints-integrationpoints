@@ -125,7 +125,7 @@ namespace Relativity.Sync.Executors
 
 		private void MassCreateItemLevelErrorsIfAny()
 		{
-			List<CreateJobHistoryErrorDto> itemLevelErrors = new List<CreateJobHistoryErrorDto>();
+			List<CreateJobHistoryErrorDto> itemLevelErrors = new List<CreateJobHistoryErrorDto>(_itemLevelErrors.Count);
 			while (_itemLevelErrors.TryDequeue(out CreateJobHistoryErrorDto dto))
 			{
 				itemLevelErrors.Add(dto);
