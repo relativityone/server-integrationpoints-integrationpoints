@@ -236,6 +236,22 @@ namespace Relativity.Sync.Tests.System.Helpers
 			}
 		}
 
+		public static async Task<int> CreateFolderInstance(ServiceFactory serviceFactory, int workspaceId,
+			string folderName)
+		{
+			using (IFolderManager folderManager = serviceFactory.CreateProxy<IFolderManager>())
+			{
+				Folder rootFolder = await folderManager.GetWorkspaceRootAsync(workspaceId).ConfigureAwait(false);
+				var folder = new Folder
+				{
+					ParentFolder = new FolderRef(rootFolder.ArtifactID),
+					Name = folderName
+				};
+				int childFolderArtifactId = await folderManager.CreateSingleAsync(workspaceId, folder).ConfigureAwait(false);
+				return childFolderArtifactId;
+			}
+		}
+
 		public static async Task<string> GetFolderPathSourceFieldName(ServiceFactory serviceFactory, int workspaceId)
 		{
 			using (IObjectManager objectManager = serviceFactory.CreateProxy<IObjectManager>())

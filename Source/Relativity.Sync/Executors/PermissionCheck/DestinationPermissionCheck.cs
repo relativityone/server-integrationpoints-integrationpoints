@@ -23,8 +23,6 @@ namespace Relativity.Sync.Executors.PermissionCheck
 
 		private readonly ISyncLog _logger;
 
-		private readonly Guid _objectTypeGuid = new Guid("3F45E490-B4CF-4C7D-8BB6-9CA891C0C198");
-
 		public DestinationPermissionCheck(IDestinationServiceFactoryForUser destinationServiceFactory, ISyncLog logger) : base(destinationServiceFactory)
 		{
 			_logger = logger;
@@ -37,11 +35,12 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			validationResult.Add(await ValidateDestinationWorkspaceUserHasPermissionToAccessWorkspaceAsync(configuration).ConfigureAwait(false));
 			validationResult.Add(await ValidateDestinationWorkspaceUserCanImportHasPermissionAsync(configuration, _ALLOW_IMPORT_PERMISSION_ID, _MISSING_DESTINATION_IMPORT).ConfigureAwait(false));
 
-			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration,
-				ArtifactType.Document, new[] { PermissionType.View, PermissionType.Add, PermissionType.Edit }, _MISSING_DESTINATION_RDO_PERMISSIONS).ConfigureAwait(false));
-			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration,
-				ArtifactType.Search, new[] { PermissionType.Add }, _MISSING_DESTINATION_SAVED_SEARCH_ADD_PERMISSION).ConfigureAwait(false));
-			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, _objectTypeGuid, PermissionType.Add, _OBJECT_TYPE_NO_ADD).ConfigureAwait(false));
+			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, ArtifactType.Document, 
+				new[] { PermissionType.View, PermissionType.Add, PermissionType.Edit }, _MISSING_DESTINATION_RDO_PERMISSIONS).ConfigureAwait(false));
+			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, ArtifactType.Search, 
+				new[] { PermissionType.Add }, _MISSING_DESTINATION_SAVED_SEARCH_ADD_PERMISSION).ConfigureAwait(false));
+			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, ArtifactType.ObjectType, 
+				new[] { PermissionType.Add }, _OBJECT_TYPE_NO_ADD).ConfigureAwait(false));
 			validationResult.Add(await ValidateDestinationFolderPermissionsUserHasArtifactInstancePermissionAsync(configuration, ArtifactType.Document,
 				PermissionType.Add).ConfigureAwait(false));
 			validationResult.Add(await ValidateDestinationFolderPermissionsUserHasArtifactInstancePermissionAsync(configuration, ArtifactType.Folder,
@@ -95,22 +94,9 @@ namespace Relativity.Sync.Executors.PermissionCheck
 		}
 
 		private async Task<ValidationResult> ValidateUserHasArtifactTypePermissionAsync(IPermissionsCheckConfiguration configuration,
-			Guid artifactTypeGuid, PermissionType artifactPermission, string errorMessage)
-		{
-			var artifactTypeIdentifier = new ArtifactTypeIdentifier(artifactTypeGuid);
-			return await ValidateArtifactTypePermission(configuration, new[] { artifactPermission }, errorMessage, artifactTypeIdentifier).ConfigureAwait(false);
-		}
-
-		private async Task<ValidationResult> ValidateUserHasArtifactTypePermissionAsync(IPermissionsCheckConfiguration configuration,
 			ArtifactType artifactTypeIdentifier, IEnumerable<PermissionType> artifactPermissions, string errorMessage)
 		{
 			var typeIdentifier = new ArtifactTypeIdentifier((int)artifactTypeIdentifier);
-			return await ValidateArtifactTypePermission(configuration, artifactPermissions, errorMessage, typeIdentifier).ConfigureAwait(false);
-		}
-
-		private async Task<ValidationResult> ValidateArtifactTypePermission(IPermissionsCheckConfiguration configuration, IEnumerable<PermissionType> artifactPermissions,
-			string errorMessage, ArtifactTypeIdentifier typeIdentifier)
-		{
 			List<PermissionRef> permissionRefs = GetPermissionRefs(typeIdentifier, artifactPermissions);
 
 			bool userHasViewPermissions = false;

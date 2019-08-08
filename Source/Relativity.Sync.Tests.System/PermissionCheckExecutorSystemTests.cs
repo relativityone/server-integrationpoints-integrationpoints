@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Castle.Core.Internal;
@@ -17,13 +18,111 @@ using Relativity.Sync.Tests.System.Helpers;
 namespace Relativity.Sync.Tests.System
 {
 	[TestFixture]
-	public class PermissionCheckExecutorSystemTests : SystemTest
+	internal class PermissionCheckExecutorSystemTests : SystemTest
 	{
 		private WorkspaceRef _sourceWorkspace;
 		private WorkspaceRef _destinationWorkspace;
 		private ConfigurationStub _configurationStub;
 		private Group _group;
 		private int _destinationFolderArtifactId;
+		private User _user;
+
+		private const string _DESTINATION_FOLDER_NAME = "folderName";
+
+		public static IEnumerable<ObjectPermissionSelection> ObjectPermissionsForSource => new[]
+		{
+			new ObjectPermissionSelection
+			{
+				ObjectName = "Job History",
+				AddSelected = true,
+				ViewSelected = true
+			},
+			new ObjectPermissionSelection
+			{
+				ObjectName = "Object Type",
+				AddSelected = true,
+				ViewSelected = true
+			},
+			new ObjectPermissionSelection
+			{
+				ObjectName = "Sync Batch",
+				AddSelected = true,
+				EditSelected = true,
+				ViewSelected = true
+			},
+			new ObjectPermissionSelection
+			{
+				ObjectName = "Sync Progress",
+				AddSelected = true,
+				EditSelected = true,
+				ViewSelected = true
+			},
+			new ObjectPermissionSelection
+			{
+				ObjectName = "Sync Configuration",
+				EditSelected = true,
+				ViewSelected = true
+			},
+			new ObjectPermissionSelection
+			{
+				ObjectName = "Document",
+				EditSelected = true,
+				ViewSelected = true
+			}
+		};
+
+		public static IEnumerable<ObjectPermissionSelection> ObjectPermissionsForDestination => new[]
+		{
+			new ObjectPermissionSelection
+			{
+				ObjectName = "Object Type",
+				AddSelected = true,
+				ViewSelected = true
+			},
+			new ObjectPermissionSelection
+			{
+				ObjectName = "Search",
+				AddSelected = true,
+				ViewSelected = true
+			},
+			new ObjectPermissionSelection
+			{
+				ObjectName = "Document",
+				AddSelected = true,
+				ViewSelected = true,
+				EditSelected = true
+			}
+		};
+
+		public static IEnumerable<string> SelectedAdminPermissionsForSource => new[]
+		{
+			"Allow Export"
+		};
+
+		public static IEnumerable<string> SelectedAdminPermissionsForDestination => new[]
+		{
+			"Allow Import"
+		};
+
+		public static IEnumerable<PermissionValue> DestinationPermissionValues => new []
+		{
+			new PermissionValue
+			{
+				ArtifactType = new ArtifactTypeIdentifier((int) ArtifactType.Document),
+				PermissionType = PermissionType.Add
+			},
+			new PermissionValue
+			{
+				ArtifactType = new ArtifactTypeIdentifier((int) ArtifactType.Folder),
+				PermissionType = PermissionType.Add
+			},
+			new PermissionValue
+			{
+				ArtifactType = new ArtifactTypeIdentifier((int) ArtifactType.Document),
+				PermissionType = PermissionType.Delete
+			}
+		};
+
 		private GroupRef GroupRef => new GroupRef(_group.ArtifactID);
 
 		[SetUp]
@@ -34,13 +133,13 @@ namespace Relativity.Sync.Tests.System
 			await Task.WhenAll(sourceWorkspaceCreationTask, destinationWorkspaceCreationTask).ConfigureAwait(false);
 			_sourceWorkspace = sourceWorkspaceCreationTask.Result;
 			_destinationWorkspace = destinationWorkspaceCreationTask.Result;
-			_destinationFolderArtifactId = await Rdos.GetRootFolderInstance(ServiceFactory, _destinationWorkspace.ArtifactID).ConfigureAwait(false);
+			_destinationFolderArtifactId = await Rdos.CreateFolderInstance(ServiceFactory, _destinationWorkspace.ArtifactID, _DESTINATION_FOLDER_NAME).ConfigureAwait(false);
 
 			string groupName = Guid.NewGuid().ToString();
 			const string userName = "testuser@relativity.com";
 			const string password = "Test1234!";
 			_group = CreateGroup(groupName);
-			SetUpUser(userName, password, _group);
+			_user = CreateAndSetUpUser(userName, password, _group);
 			await AddGroupToWorkspaceAsync(_sourceWorkspace.ArtifactID, _group).ConfigureAwait(false);
 			await AddGroupToWorkspaceAsync(_destinationWorkspace.ArtifactID, _group).ConfigureAwait(false);
 		}
@@ -55,103 +154,9 @@ namespace Relativity.Sync.Tests.System
 				DestinationWorkspaceArtifactId = _destinationWorkspace.ArtifactID
 			};
 
-			IEnumerable<ObjectPermissionSelection> objectPermissionsForSource = new[]
-			{
-				new ObjectPermissionSelection
-				{
-					ObjectName = "Job History",
-					AddSelected = true,
-					ViewSelected = true
-				},
-				new ObjectPermissionSelection
-				{
-					ObjectName = "Object Type",
-					AddSelected = true,
-					ViewSelected = true
-				},
-				new ObjectPermissionSelection
-				{
-					ObjectName = "Sync Batch",
-					AddSelected = true,
-					EditSelected = true,
-					ViewSelected = true
-				},
-				new ObjectPermissionSelection
-				{
-					ObjectName = "Sync Progress",
-					AddSelected = true,
-					EditSelected = true,
-					ViewSelected = true
-				},
-				new ObjectPermissionSelection
-				{
-					ObjectName = "Sync Configuration",
-					EditSelected = true,
-					ViewSelected = true
-				},
-				new ObjectPermissionSelection
-				{
-					ObjectName = "Document",
-					EditSelected = true,
-					ViewSelected = true
-				}
-			};
-
-			IEnumerable<ObjectPermissionSelection> objectPermissionsForDestination = new[]
-			{
-				new ObjectPermissionSelection
-				{
-					ObjectName = "Object Type",
-					AddSelected = true,
-					ViewSelected = true
-				},
-				new ObjectPermissionSelection
-				{
-					ObjectName = "Search",
-					AddSelected = true,
-					ViewSelected = true
-				},
-				new ObjectPermissionSelection
-				{
-					ObjectName = "Document",
-					AddSelected = true,
-					ViewSelected = true,
-					EditSelected = true
-				}
-			};
-
-			IEnumerable<string> selectedAdminPermissionsForSource = new[]
-			{
-				"Allow Export"
-			};
-
-			IEnumerable<string> selectedAdminPermissionsForDestination = new[]
-			{
-				"Allow Import"
-			};
-
-			var destinationPermissionValues = new List<PermissionValue>
-			{
-				new PermissionValue
-				{
-					ArtifactType = new ArtifactTypeIdentifier((int) ArtifactType.Document),
-					PermissionType = PermissionType.Add
-				},
-				new PermissionValue
-				{
-					ArtifactType = new ArtifactTypeIdentifier((int) ArtifactType.Folder),
-					PermissionType = PermissionType.Add
-				},
-				new PermissionValue
-				{
-					ArtifactType = new ArtifactTypeIdentifier((int) ArtifactType.Document),
-					PermissionType = PermissionType.Delete
-				}
-			};
-
-			await SetUpPermissions(_sourceWorkspace.ArtifactID, objectPermissionsForSource, selectedAdminPermissionsForSource).ConfigureAwait(false);
-			await SetUpPermissions(_destinationWorkspace.ArtifactID, objectPermissionsForDestination,
-					selectedAdminPermissionsForDestination, destinationPermissionValues, _destinationFolderArtifactId).ConfigureAwait(false);
+			await SetUpPermissionsInWorkspace(_sourceWorkspace.ArtifactID, ObjectPermissionsForSource, SelectedAdminPermissionsForSource).ConfigureAwait(false);
+			await SetUpPermissionsInWorkspace(_destinationWorkspace.ArtifactID, ObjectPermissionsForDestination, SelectedAdminPermissionsForDestination).ConfigureAwait(false);
+			await SetUpPermissionsForArtifactInWorkspace(_destinationWorkspace.ArtifactID, DestinationPermissionValues.ToList(), _destinationFolderArtifactId).ConfigureAwait(false);
 
 			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IPermissionsCheckConfiguration>(_configurationStub);
 
@@ -159,10 +164,14 @@ namespace Relativity.Sync.Tests.System
 			Assert.DoesNotThrowAsync(async () => await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false));
 		}
 
-		private async Task SetUpPermissions(int workspaceArtifactId,
-			IEnumerable<ObjectPermissionSelection> objectPermissionSelections,
-			IEnumerable<string> selectedAdminPermissions, List<PermissionValue> values = null,
-			int objectArtifactId = 0)
+		[TearDown]
+		public void TearDown()
+		{
+			GroupHelpers.DeleteGroup(Client, _group);
+			UserHelpers.DeleteUser(Client, _user);
+		}
+
+		private async Task SetUpPermissionsInWorkspace(int workspaceArtifactId, IEnumerable<ObjectPermissionSelection> objectPermissionSelections, IEnumerable<string> selectedAdminPermissions)
 		{
 			using (IPermissionManager permissionManager = ServiceFactory.CreateProxy<IPermissionManager>())
 			{
@@ -178,18 +187,27 @@ namespace Relativity.Sync.Tests.System
 					objectPermission.EditSelected = permissionConfig.EditSelected;
 				}
 
-				foreach (var permissionName in selectedAdminPermissions)
+				foreach (string permissionName in selectedAdminPermissions)
 				{
 					GenericPermission adminPermission = workspaceGroupPermissions.AdminPermissions
 						.Find(p => p.Name.Equals(permissionName, StringComparison.OrdinalIgnoreCase));
 					adminPermission.Selected = true;
 				}
 
-				if (!values.IsNullOrEmpty())
-				{
-					await permissionManager.SetPermissionSelectedForGroupAsync(workspaceArtifactId, values, GroupRef, objectArtifactId).ConfigureAwait(false);
-				}
 				await permissionManager.SetWorkspaceGroupPermissionsAsync(workspaceArtifactId, workspaceGroupPermissions).ConfigureAwait(false);
+			}
+		}
+
+		private async Task SetUpPermissionsForArtifactInWorkspace(int workspaceArtifactId, List<PermissionValue> values, int objectArtifactId)
+		{
+			if (!values.IsNullOrEmpty())
+			{
+				using (IPermissionManager permissionManager = ServiceFactory.CreateProxy<IPermissionManager>())
+				{
+					await permissionManager
+						.SetPermissionSelectedForGroupAsync(workspaceArtifactId, values, GroupRef, objectArtifactId)
+						.ConfigureAwait(false);
+				}
 			}
 		}
 
@@ -209,7 +227,7 @@ namespace Relativity.Sync.Tests.System
 			return GroupHelpers.GroupGetByName(Client, name);
 		}
 
-		private void SetUpUser(string userName, string password, Group group)
+		private User CreateAndSetUpUser(string userName, string password, Group group)
 		{
 			int userArtifactId = UserHelpers.FindUserArtifactID(Client, userName);
 
@@ -224,6 +242,7 @@ namespace Relativity.Sync.Tests.System
 			}
 
 			GroupHelpers.GroupAddUserIfNotInGroup(Client, group, user);
+			return user;
 		}
 
 		private async Task AddGroupToWorkspaceAsync(int workspaceId, Group group)
