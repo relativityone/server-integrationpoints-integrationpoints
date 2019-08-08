@@ -25,13 +25,12 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 		private const int _ALLOW_IMPORT_PERMISSION_ID = 158; // 158 is the artifact id of the "Allow Import" permission
 		private const int _ARTIFACT_TYPE_DOCUMENT = 10;
 		private const int _ARTIFACT_TYPE_FOLDER = 9;
+		private const int _ARTIFACT_OBJECT_TYPE = 25;
 		private const int _ARTIFACT_TYPE_SEARCH = 15;
 		private const int _EXPECTED_VALUE_FOR_DOCUMENT = 2;
 		private const int _EXPECTED_VALUE_FOR_ALL_FAILED_VALIDATE = 8;
 		private const int _TEST_WORKSPACE_ARTIFACT_ID = 20489;
 		private const int _TEST_FOLDER_ARTIFACT_ID = 20476;
-
-		private readonly Guid ObjectTypeGuid = new Guid("3F45E490-B4CF-4C7D-8BB6-9CA891C0C198");
 
 		[SetUp]
 		public void SetUp()
@@ -66,8 +65,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 
 			Mock<IPermissionManager> permissionManager = ArrangeSet();
 
-			permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>(y => y.Any(z => z.ArtifactType.Guids.Contains(ObjectTypeGuid)))))
-				.Throws<SyncException>();
+			permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), 
+					It.Is<List<PermissionRef>>(y => y.Any(z => z.ArtifactType.ID == _ARTIFACT_OBJECT_TYPE)))).Throws<SyncException>();
 
 			// Act
 			ValidationResult actualResult = await _instance.ValidateAsync(configuration.Object).ConfigureAwait(false);
