@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Storage;
@@ -14,12 +16,14 @@ namespace Relativity.Sync.Executors
 		private bool _canReleaseSemaphore;
 		private Exception _importApiException;
 
+		private const int _ITEMLEVEL_ERRORS_MASS_CREATE_SIZE = 10000;
 		private const string _IDENTIFIER_COLUMN = "Identifier";
 		private const string _MESSAGE_COLUMN = "Message";
 
 		private readonly object _lockObject;
 		private readonly int _jobHistoryArtifactId;
 		private readonly int _sourceWorkspaceArtifactId;
+		private readonly ConcurrentQueue<CreateJobHistoryErrorDto> _itemLevelErrors;
 
 		private readonly ISyncImportBulkArtifactJob _syncImportBulkArtifactJob;
 		private readonly IJobHistoryErrorRepository _jobHistoryErrorRepository;
@@ -32,6 +36,7 @@ namespace Relativity.Sync.Executors
 			_lockObject = new object();
 			_importApiFatalExceptionOccurred = false;
 			_itemLevelErrorExists = false;
+			_itemLevelErrors = new ConcurrentQueue<CreateJobHistoryErrorDto>();
 			_canReleaseSemaphore = true;
 			_importApiException = null;
 
@@ -56,6 +61,7 @@ namespace Relativity.Sync.Executors
 				_logger.LogInformation("Batch completed.");
 			}
 
+			MassCreateItemLevelErrorsIfAny();
 			ReleaseSemaphoreIfPossible();
 		}
 
@@ -66,13 +72,13 @@ namespace Relativity.Sync.Executors
 			_importApiException = jobReport.FatalException;
 
 			_syncImportBulkArtifactJob.ItemStatusMonitor.MarkReadSoFarAsFailed();
-			var jobError = new CreateJobHistoryErrorDto(_jobHistoryArtifactId, ErrorType.Job)
+			var jobError = new CreateJobHistoryErrorDto(ErrorType.Job)
 			{
 				ErrorMessage = jobReport.FatalException?.Message,
 				StackTrace = jobReport.FatalException?.StackTrace
 			};
-			CreateJobHistoryError(jobError);
 
+			CreateJobHistoryError(jobError);
 			ReleaseSemaphoreIfPossible();
 		}
 
@@ -98,17 +104,42 @@ namespace Relativity.Sync.Executors
 			_logger.LogError("Item level error occurred. Source: {sourceUniqueId} Message: {errorMessage}", sourceUniqueId, errorMessage);
 
 			_syncImportBulkArtifactJob.ItemStatusMonitor.MarkItemAsFailed(sourceUniqueId);
-			var itemError = new CreateJobHistoryErrorDto(_jobHistoryArtifactId, ErrorType.Item)
+			AddItemLevelError(sourceUniqueId, errorMessage);
+		}
+
+		private void AddItemLevelError(string sourceUniqueId, string errorMessage)
+		{
+			var itemError = new CreateJobHistoryErrorDto(ErrorType.Item)
 			{
 				ErrorMessage = errorMessage,
 				SourceUniqueId = sourceUniqueId
 			};
-			CreateJobHistoryError(itemError);
+
+			_itemLevelErrors.Enqueue(itemError);
+
+			if (_itemLevelErrors.Count >= _ITEMLEVEL_ERRORS_MASS_CREATE_SIZE)
+			{
+				MassCreateItemLevelErrorsIfAny();
+			}
+		}
+
+		private void MassCreateItemLevelErrorsIfAny()
+		{
+			List<CreateJobHistoryErrorDto> itemLevelErrors = new List<CreateJobHistoryErrorDto>(_itemLevelErrors.Count);
+			while (_itemLevelErrors.TryDequeue(out CreateJobHistoryErrorDto dto))
+			{
+				itemLevelErrors.Add(dto);
+			}
+
+			if (itemLevelErrors.Any())
+			{
+				_jobHistoryErrorRepository.MassCreateAsync(_sourceWorkspaceArtifactId, _jobHistoryArtifactId, itemLevelErrors).GetAwaiter().GetResult();
+			}
 		}
 
 		private void CreateJobHistoryError(CreateJobHistoryErrorDto jobError)
 		{
-			_jobHistoryErrorRepository.CreateAsync(_sourceWorkspaceArtifactId, jobError).ConfigureAwait(false).GetAwaiter().GetResult();
+			_jobHistoryErrorRepository.CreateAsync(_sourceWorkspaceArtifactId, _jobHistoryArtifactId, jobError).ConfigureAwait(false);
 		}
 
 		private static string GetValueOrNull(IDictionary row, string key)
