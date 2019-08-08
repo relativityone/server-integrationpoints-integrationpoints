@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using FreeImageAPI.Metadata;
 
 namespace Relativity.Sync.Telemetry
 {
@@ -14,12 +15,20 @@ namespace Relativity.Sync.Telemetry
 
 		private const string _SYNC_APPLICATION_NAME = "Relativity.Sync";
 
-		// Info for public properties with get methods on this class.
-		// These are set by compile time, so we can calculate these ahead of time.
-		private static readonly IEnumerable<PropertyInfo> _PUBLIC_READABLE_PROPERTIES =
+		private static readonly IEnumerable<PropertyInfo> PublicInstanceProperties =
 			typeof(Metric)
 				.GetProperties(BindingFlags.Instance | BindingFlags.Public)
 				.Where(p => p.GetMethod != null);
+
+		// Info for public properties with get methods on this class.
+		// These are set by compile time, so we can calculate these ahead of time.
+		private static readonly IEnumerable<PropertyInfo> PublicInstanceValueProperties =
+			PublicInstanceProperties
+				.Where(p => p.PropertyType != typeof(IDictionary<string, object>));
+
+		private static readonly IEnumerable<PropertyInfo> PublicInstanceDictionaryProperties =
+			PublicInstanceProperties
+				.Where(p => p.PropertyType == typeof(IDictionary<string, object>));
 
 		private Metric(string name, MetricType type, string correlationId)
 		{
@@ -181,7 +190,26 @@ namespace Relativity.Sync.Telemetry
 		/// </summary>
 		public Dictionary<string, object> ToDictionary()
 		{
-			return _PUBLIC_READABLE_PROPERTIES.ToDictionary(p => p.Name, p => p.GetValue(this));
+			object GetValueAndConvertEnums(PropertyInfo p) => p.PropertyType.IsEnum ? p.GetValue(this).ToString() : p.GetValue(this);
+
+			Dictionary<string, object> valueProperties = PublicInstanceValueProperties
+				.ToDictionary(p => p.Name, GetValueAndConvertEnums);
+
+			Dictionary<string, object> dictionaryProperties = PublicInstanceDictionaryProperties
+				.Select(p => new { DictName = p.Name, Dict = (Dictionary<string, object>)p.GetValue(this) })
+				.SelectMany(x => x.Dict.Select(kvp => new { Key = $"{x.DictName}.{kvp.Key}", kvp.Value }))
+				.ToDictionary(x => x.Key, x => x.Value);
+
+			Dictionary<string, object>[] dictionaries =
+			{
+				valueProperties,
+				dictionaryProperties
+			};
+			Dictionary<string, object> dictionary = dictionaries
+				.SelectMany(x => x)
+				.ToDictionary(x => x.Key, x => x.Value);
+
+			return dictionary;
 		}
 
 		/// <summary>
@@ -189,7 +217,7 @@ namespace Relativity.Sync.Telemetry
 		/// </summary>
 		public object[] ToPropertyArray()
 		{
-			return _PUBLIC_READABLE_PROPERTIES.Select(p => (object)new KeyValuePair<string, object>(p.Name, p.GetValue(this))).ToArray();
+			return PublicInstanceProperties.Select(p => (object)new KeyValuePair<string, object>(p.Name, p.GetValue(this))).ToArray();
 		}
 	}
 }
