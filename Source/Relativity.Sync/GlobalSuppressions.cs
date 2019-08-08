@@ -63,5 +63,7 @@
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "member", Target = "~M:Relativity.Sync.Executors.DestinationWorkspaceObjectTypesCreationExecutor.ExecuteAsync(Relativity.Sync.Configuration.IDestinationWorkspaceObjectTypesCreationConfiguration,System.Threading.CancellationToken)~System.Threading.Tasks.Task{Relativity.Sync.ExecutionResult}")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "member", Target = "~M:Relativity.Sync.JobProgressUpdater.SetTotalItemsCountAsync(System.Int32)~System.Threading.Tasks.Task")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "member", Target = "~M:Relativity.Sync.JobProgressUpdater.UpdateJobProgressAsync(System.Int32,System.Int32)~System.Threading.Tasks.Task")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "member", Target = "~M:Relativity.Sync.Command`1.TryLogConfiguration")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "member", Target = "~M:Relativity.Sync.Telemetry.SplunkSyncMetricsSink.Log(Relativity.Sync.Telemetry.Metric)")]
 
 #pragma warning restore RG2001 // Character Per Line

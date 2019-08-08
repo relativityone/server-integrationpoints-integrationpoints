@@ -47,7 +47,7 @@ namespace Relativity.Sync.Storage
 		public int SourceJobTagArtifactId => _cache.GetFieldValue<int>(SourceJobTagArtifactIdGuid);
 		public int SourceWorkspaceArtifactId => _syncJobParameters.WorkspaceId;
 		public int SourceWorkspaceTagArtifactId => _cache.GetFieldValue<int>(SourceWorkspaceTagArtifactIdGuid);
-		public int SyncConfigurationArtifactId => _syncJobParameters.JobId;
+		public int SyncConfigurationArtifactId => _syncJobParameters.SyncConfigurationArtifactId;
 		public DestinationFolderStructureBehavior DestinationFolderStructureBehavior =>
 			(DestinationFolderStructureBehavior)(Enum.Parse(typeof(DestinationFolderStructureBehavior), _cache.GetFieldValue<string>(DestinationFolderStructureBehaviorGuid)));
 	}

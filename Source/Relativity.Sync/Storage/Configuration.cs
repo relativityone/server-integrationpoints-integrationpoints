@@ -28,7 +28,7 @@ namespace Relativity.Sync.Storage
 		{
 			_serviceFactory = serviceFactory;
 			_workspaceArtifactId = syncJobParameters.WorkspaceId;
-			_syncConfigurationArtifactId = syncJobParameters.JobId;
+			_syncConfigurationArtifactId = syncJobParameters.SyncConfigurationArtifactId;
 			_logger = logger;
 			_semaphoreSlim = semaphoreSlim;
 		}

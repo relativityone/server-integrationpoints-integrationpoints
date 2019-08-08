@@ -1,5 +1,7 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync
@@ -21,13 +23,30 @@ namespace Relativity.Sync
 
 		public async Task<bool> CanExecuteAsync(CancellationToken token)
 		{
-			_logger.LogInformation("Starting execution of step with configuration {configurationName}.", typeof(T).Name, _configuration);
+			_logger.LogInformation("Checking if can execute step '{StepName}'", typeof(T).Name);
+			TryLogConfiguration();
 			return await _executionConstrains.CanExecuteAsync(_configuration, token).ConfigureAwait(false);
 		}
 
 		public async Task<ExecutionResult> ExecuteAsync(CancellationToken token)
 		{
 			return await _executor.ExecuteAsync(_configuration, token).ConfigureAwait(false);
+		}
+
+		private void TryLogConfiguration()
+		{
+			try
+			{
+				string configurationJson = JsonConvert.SerializeObject(_configuration, new JsonSerializerSettings()
+				{
+					NullValueHandling = NullValueHandling.Ignore
+				});
+				_logger.LogInformation("Configuration properties of step '{StepName}': {Configuration}", typeof(T).Name, configurationJson);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error while serializing configuration in step '{StepName}'", typeof(T).Name);
+			}
 		}
 	}
 }

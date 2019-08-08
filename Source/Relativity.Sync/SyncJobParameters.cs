@@ -16,7 +16,7 @@ namespace Relativity.Sync
 		/// <summary>
 		/// Job ID
 		/// </summary>
-		public int JobId { get; }
+		public int SyncConfigurationArtifactId { get; }
 
 		/// <summary>
 		/// ID of a workspace where job was created
@@ -36,18 +36,18 @@ namespace Relativity.Sync
 		/// <summary>
 		/// Constructor for testing only
 		/// </summary>
-		internal SyncJobParameters(int jobId, int workspaceId, ImportSettingsDto importSettings) : 
-			this(jobId, workspaceId, int.MaxValue, Guid.NewGuid().ToString(), importSettings)
+		internal SyncJobParameters(int syncConfigurationArtifactId, int workspaceId, ImportSettingsDto importSettings) : 
+			this(syncConfigurationArtifactId, workspaceId, int.MaxValue, Guid.NewGuid().ToString(), importSettings)
 		{
 		}
 
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		public SyncJobParameters(int jobId, int workspaceId, int integrationPointArtifactId, string correlationId, ImportSettingsDto importSettings)
+		public SyncJobParameters(int syncConfigurationArtifactId, int workspaceId, int integrationPointArtifactId, string correlationId, ImportSettingsDto importSettings)
 		{
 			CorrelationId = correlationId;
-			JobId = jobId;
+			SyncConfigurationArtifactId = syncConfigurationArtifactId;
 			WorkspaceId = workspaceId;
 			IntegrationPointArtifactId = integrationPointArtifactId;
 			ImportSettings = importSettings;

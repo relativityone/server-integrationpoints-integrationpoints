@@ -1,4 +1,7 @@
-﻿namespace Relativity.Sync.Telemetry
+﻿using System;
+using Newtonsoft.Json;
+
+namespace Relativity.Sync.Telemetry
 {
 	/// <summary>
 	///     Logs <see cref="Metric"/>s to Splunk. Uses the Relativity <see cref="ISyncLog"/>
@@ -23,7 +26,19 @@
 		/// <inheritdoc />
 		public void Log(Metric metric)
 		{
-			_logger.LogInformation("Sending metric {metricName}.", metric.Name, metric);
+			try
+			{
+				string propertiesJson = JsonConvert.SerializeObject(metric, new JsonSerializerSettings()
+				{
+					NullValueHandling = NullValueHandling.Ignore
+				});
+				_logger.LogInformation("Sending metric {MetricName} with properties: {MetricProperties}",
+					metric.Name, propertiesJson);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Failed to send metric {MetricName}.", metric.Name);
+			}
 		}
 	}
 }

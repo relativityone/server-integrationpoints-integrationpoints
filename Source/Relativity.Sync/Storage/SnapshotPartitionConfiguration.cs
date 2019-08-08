@@ -17,7 +17,7 @@ namespace Relativity.Sync.Storage
 			_syncLog = syncLog;
 
 			SourceWorkspaceArtifactId = syncJobParameters.WorkspaceId;
-			SyncConfigurationArtifactId = syncJobParameters.JobId;
+			SyncConfigurationArtifactId = syncJobParameters.SyncConfigurationArtifactId;
 			BatchSize = configuration.BatchSize;
 		}
 
