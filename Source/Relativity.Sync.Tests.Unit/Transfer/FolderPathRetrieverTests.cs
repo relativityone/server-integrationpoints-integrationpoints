@@ -192,7 +192,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		}
 
 		[Test]
-		public void ItShouldThrowSyncExceptionOnFolderManagerServiceTest()
+		public void ItShouldThrowSyncExceptionWhenFolderManagerResultsAreMissing()
 		{
 			// ARRANGE
 			const int countArtifactId = 10;
