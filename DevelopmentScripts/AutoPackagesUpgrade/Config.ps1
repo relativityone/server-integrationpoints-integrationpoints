@@ -1,0 +1,12 @@
+$JiraApiUri = "https://jira.kcura.com/rest"
+$BitbucketApiUri = "https://git.kcura.com/rest/api/1.0"
+$JenkinsApiUri = "https://jenkins.kcura.corp"
+$JiraAssignee = "damian.janas"
+#$PRreviewers = "konrad.kopciuch;piotr.szmigielski;konrad.blasinski;kamil.bizon;damian.janas"
+$PRreviewers = "damian.janas"
+$TeamName = "Buena Vista Coding Club"
+$MainJiraLabel = "rip-rel-packages-update"
+$RipUpdateJiraLabel = "rip-packages-update"
+$RelativityUpdateJiraLabel = "rel-packages-update"
+$LogCharsLimit = 8000
+$AutoPackageUpgradeAdnotation = "This Jira was created automatically by AutoPackagesUpgrade script."
