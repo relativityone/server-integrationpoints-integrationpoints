@@ -36,6 +36,16 @@ namespace Relativity.Sync.Telemetry
 			{
 				Name = TelemetryConstants.MetricIdentifiers.DATA_RECORDS_TRANSFERRED,
 				Description = "The number of records that were successfully transferred during the Integration Points job."
+			},
+			new MetricIdentifier
+			{
+				Name = TelemetryConstants.MetricIdentifiers.DATA_BYTES_NATIVES_REQUESTED,
+				Description = "The total number of bytes of native files that were requested to transfer."
+			},
+			new MetricIdentifier
+			{
+				Name = TelemetryConstants.MetricIdentifiers.DATA_BYTES_TOTAL_TRANSFERRED,
+				Description = "The total number of bytes that were successfully transferred, including files and metadata."
 			}
 		};
 

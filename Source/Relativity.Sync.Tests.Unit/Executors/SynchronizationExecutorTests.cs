@@ -10,6 +10,7 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Telemetry;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.Unit.Executors
@@ -22,6 +23,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private Mock<IFieldManager> _fieldManager;
 		private Mock<IFieldMappings> _fieldMappings;
 		private Mock<ISourceWorkspaceTagRepository> _sourceWorkspaceTagRepository;
+		private Mock<IJobStatisticsContainer> _jobStatisticsContainer;
 
 		private Mock<Sync.Executors.IImportJob> _importJob;
 		private Mock<ISynchronizationConfiguration> _config;
@@ -52,6 +54,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_batchRepository = new Mock<IBatchRepository>();
 			_destinationWorkspaceTagRepository = new Mock<IDestinationWorkspaceTagRepository>();
 			_sourceWorkspaceTagRepository = new Mock<ISourceWorkspaceTagRepository>();
+			_jobStatisticsContainer = new Mock<IJobStatisticsContainer>();
 			_fieldManager = new Mock<IFieldManager>();
 			_fieldMappings = new Mock<IFieldMappings>();
 			Mock<IJobHistoryErrorRepository> jobHistoryErrorRepository = new Mock<IJobHistoryErrorRepository>();
@@ -74,7 +77,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_fieldManager.Setup(x => x.GetSpecialFields()).Returns(_specialFields);
 
 			_synchronizationExecutor = new SynchronizationExecutor(importJobFactory.Object, _batchRepository.Object, _destinationWorkspaceTagRepository.Object, _sourceWorkspaceTagRepository.Object,
-				_fieldManager.Object, _fieldMappings.Object, jobHistoryErrorRepository.Object, new EmptyLogger());
+				_fieldManager.Object, _fieldMappings.Object, jobHistoryErrorRepository.Object, _jobStatisticsContainer.Object, new EmptyLogger());
 		}
 
 		[Test]
@@ -82,7 +85,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		{
 			SetupBatchRepository(1);
 			_config.SetupGet(x => x.DestinationFolderStructureBehavior).Returns(DestinationFolderStructureBehavior.ReadFromField);
-			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(ExecutionResult.Success);
+			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(CreateSuccessfulResult());
 
 			// act
 			await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
@@ -101,7 +104,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		{
 			SetupBatchRepository(1);
 			_config.SetupGet(x => x.DestinationFolderStructureBehavior).Returns(DestinationFolderStructureBehavior.None);
-			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(ExecutionResult.Success);
+			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(CreateSuccessfulResult());
 
 			// act
 			await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
@@ -151,7 +154,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		public async Task ItShouldRunImportApiJobForEachBatch(int numberOfBatches)
 		{
 			SetupBatchRepository(numberOfBatches);
-			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(ExecutionResult.Success);
+			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(CreateSuccessfulResult());
 
 			// act
 			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
@@ -183,7 +186,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		{
 			const int numberOfBatches = 1;
 			SetupBatchRepository(numberOfBatches);
-			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(ExecutionResult.Success);
+			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(CreateSuccessfulResult());
 
 			// act
 			await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
@@ -229,7 +232,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		{
 			const int numberOfBatches = 1;
 			SetupBatchRepository(numberOfBatches);
-			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(ExecutionResult.Success);
+			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(CreateSuccessfulResult());
 
 			_importJob.Setup(x => x.GetPushedDocumentArtifactIds()).ReturnsAsync(new[] { 1 });
 			_importJob.Setup(x => x.GetPushedDocumentIdentifiers()).ReturnsAsync(new[] { "CONTROL_NUM_1" });
@@ -268,6 +271,11 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			_batchRepository.Setup(x => x.GetAllNewBatchesIdsAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(batches);
 			_batchRepository.Setup(x => x.GetAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync((new Mock<IBatch>()).Object);
+		}
+
+		private ImportJobResult CreateSuccessfulResult()
+		{
+			return new ImportJobResult(ExecutionResult.Success(), 1);
 		}
 	}
 }

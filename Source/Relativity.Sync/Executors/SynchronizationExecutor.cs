@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Telemetry;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Executors
@@ -18,11 +19,13 @@ namespace Relativity.Sync.Executors
 		private readonly IFieldManager _fieldManager;
 		private readonly IFieldMappings _fieldMappings;
 		private readonly IJobHistoryErrorRepository _jobHistoryErrorRepository;
-		private readonly ISyncLog _logger;
 		private readonly ISourceWorkspaceTagRepository _sourceWorkspaceTagRepository;
+		private readonly IJobStatisticsContainer _jobStatisticsContainer;
+		private readonly ISyncLog _logger;
 
 		public SynchronizationExecutor(IImportJobFactory importJobFactory, IBatchRepository batchRepository, IDestinationWorkspaceTagRepository destinationWorkspaceTagRepository,
-			ISourceWorkspaceTagRepository sourceWorkspaceTagRepository, IFieldManager fieldManager, IFieldMappings fieldMappings, IJobHistoryErrorRepository jobHistoryErrorRepository, ISyncLog logger)
+			ISourceWorkspaceTagRepository sourceWorkspaceTagRepository, IFieldManager fieldManager, IFieldMappings fieldMappings, IJobHistoryErrorRepository jobHistoryErrorRepository,
+			IJobStatisticsContainer jobStatisticsContainer, ISyncLog logger)
 		{
 			_batchRepository = batchRepository;
 			_destinationWorkspaceTagRepository = destinationWorkspaceTagRepository;
@@ -30,8 +33,9 @@ namespace Relativity.Sync.Executors
 			_fieldManager = fieldManager;
 			_fieldMappings = fieldMappings;
 			_jobHistoryErrorRepository = jobHistoryErrorRepository;
-			_logger = logger;
 			_sourceWorkspaceTagRepository = sourceWorkspaceTagRepository;
+			_jobStatisticsContainer = jobStatisticsContainer;
+			_logger = logger;
 		}
 
 		public async Task<ExecutionResult> ExecuteAsync(ISynchronizationConfiguration configuration, CancellationToken token)
@@ -60,7 +64,9 @@ namespace Relativity.Sync.Executors
 					IBatch batch = await _batchRepository.GetAsync(configuration.SourceWorkspaceArtifactId, batchId).ConfigureAwait(false);
 					using (IImportJob importJob = await _importJobFactory.CreateImportJobAsync(configuration, batch, token).ConfigureAwait(false))
 					{
-						importResult = await importJob.RunAsync(token).ConfigureAwait(false);
+						ImportJobResult importJobResult = await importJob.RunAsync(token).ConfigureAwait(false);
+						importResult = importJobResult.ExecutionResult;
+						_jobStatisticsContainer.TotalBytesTransferred += importJobResult.JobSizeInBytes;
 
 						IEnumerable<int> pushedDocumentArtifactIds = await importJob.GetPushedDocumentArtifactIds().ConfigureAwait(false);
 						Task<IEnumerable<int>> destinationTaggingTask = TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(configuration, pushedDocumentArtifactIds, token);
@@ -70,6 +76,7 @@ namespace Relativity.Sync.Executors
 						Task<IEnumerable<string>> sourceTaggingTask = TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(configuration, pushedDocumentIdentifiers, token);
 						sourceTaggingTasks.Add(sourceTaggingTask);
 					}
+
 					_logger.LogInformation("Batch ID: {batchId} processed successfully.", batchId);
 				}
 			}
