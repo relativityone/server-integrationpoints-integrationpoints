@@ -5,14 +5,14 @@ using System.Text;
 
 namespace Relativity.Sync.Tests.System.Helpers
 {
-	internal sealed class ImportJobResult
+	internal sealed class ImportJobErrors
 	{
 		private readonly List<string> _errors;
 
 		public IReadOnlyList<string> Errors => _errors.AsReadOnly();
 		public bool Success => !Errors.Any();
 
-		public ImportJobResult(List<string> errors)
+		public ImportJobErrors(List<string> errors)
 		{
 			_errors = errors;
 		}

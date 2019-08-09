@@ -21,6 +21,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 		private Mock<IBatchRepository> _batchRepository;
 		private Mock<IFieldManager> _fieldManager;
 		private Mock<ISyncMetrics> _syncMetrics;
+		private Mock<IJobStatisticsContainer> _jobStatisticsContainer;
 
 		[SetUp]
 		public void SetUp()
@@ -30,8 +31,9 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			_fieldManager = new Mock<IFieldManager>();
 			_syncMetrics = new Mock<ISyncMetrics>();
 			Mock<ISyncLog> logger = new Mock<ISyncLog>();
+			_jobStatisticsContainer = new Mock<IJobStatisticsContainer>();
 
-			_instance = new JobEndMetricsService(_batchRepository.Object, jobEndMetricsConfiguration.Object, _fieldManager.Object, _syncMetrics.Object, logger.Object);
+			_instance = new JobEndMetricsService(_batchRepository.Object, jobEndMetricsConfiguration.Object, _fieldManager.Object, _jobStatisticsContainer.Object, _syncMetrics.Object, logger.Object);
 		}
 
 		[Test]
@@ -55,6 +57,11 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			IEnumerable<FieldInfoDto> fields = Enumerable.Repeat(FieldInfoDto.NativeFileFilenameField(), testNumberOfFields);
 			_fieldManager.Setup(x => x.GetAllFieldsAsync(It.Is<CancellationToken>(c => c == CancellationToken.None))).ReturnsAsync(fields.ToList);
 
+			const long jobSize = 12345;
+			const long nativesSize = 5678;
+			_jobStatisticsContainer.SetupGet(x => x.TotalBytesTransferred).Returns(jobSize);
+			_jobStatisticsContainer.SetupGet(x => x.NativesBytesRequested).Returns(Task.FromResult(nativesSize));
+
 			// Act
 			ExecutionResult actualResult = await _instance.ExecuteAsync(expectedStatus).ConfigureAwait(false);
 
@@ -67,6 +74,33 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			_syncMetrics.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_TOTAL_REQUESTED, totalItemsCountPerBatch * testBatches.Count, It.IsAny<string>()), Times.Once);
 			_syncMetrics.Verify(x => x.LogPointInTimeString(TelemetryConstants.MetricIdentifiers.JOB_END_STATUS, expectedStatusDescription, It.IsAny<string>()), Times.Once);
 			_syncMetrics.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_FIELDS_MAPPED, testNumberOfFields, It.IsAny<string>()), Times.Once);
+			_syncMetrics.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_TOTAL_TRANSFERRED, jobSize, It.IsAny<string>()), Times.Once);
+			_syncMetrics.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_NATIVES_REQUESTED, nativesSize, It.IsAny<string>()), Times.Once);
+		}
+
+		[Test]
+		public async Task ItShouldNotLogBytesTransferredWhenNoNativeFilesHasBeenTransferred()
+		{
+			// Act
+			ExecutionResult actualResult = await _instance.ExecuteAsync(ExecutionStatus.Completed).ConfigureAwait(false);
+
+			// Assert
+			actualResult.Should().NotBeNull();
+			actualResult.Status.Should().Be(ExecutionStatus.Completed);
+			_syncMetrics.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_NATIVES_REQUESTED, It.IsAny<long>(), It.IsAny<string>()), Times.Never);
+		}
+
+		[Test]
+		public async Task ItShouldNotReportBytesTransferredWhenJobFailed()
+		{
+			// Arrange
+			const ExecutionStatus expectedStatus = ExecutionStatus.CompletedWithErrors;
+			
+			// Act
+			ExecutionResult actualResult = await _instance.ExecuteAsync(expectedStatus).ConfigureAwait(false);
+
+			// Assert
+			_syncMetrics.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_TOTAL_TRANSFERRED, It.IsAny<long>(), It.IsAny<string>()), Times.Never);
 		}
 
 		[Test]

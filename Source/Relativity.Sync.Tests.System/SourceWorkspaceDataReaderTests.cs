@@ -90,8 +90,8 @@ namespace Relativity.Sync.Tests.System
 			// Import documents
 			var importHelper = new ImportHelper(ServiceFactory);
 			ImportDataTableWrapper dataTableWrapper = DataTableFactory.CreateImportDataTable(Dataset, extractedText: true, natives: true);
-			ImportJobResult importJobResult = await importHelper.ImportDataAsync(sourceWorkspaceArtifactId, dataTableWrapper).ConfigureAwait(false);
-			Assert.IsTrue(importJobResult.Success, $"IAPI errors: {string.Join(global::System.Environment.NewLine, importJobResult.Errors)}");
+			ImportJobErrors importJobErrors = await importHelper.ImportDataAsync(sourceWorkspaceArtifactId, dataTableWrapper).ConfigureAwait(false);
+			Assert.IsTrue(importJobErrors.Success, $"IAPI errors: {string.Join(global::System.Environment.NewLine, importJobErrors.Errors)}");
 
 			// Initialize container
 			IContainer container = ContainerHelper.Create(configuration);

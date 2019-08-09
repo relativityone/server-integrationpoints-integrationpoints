@@ -60,10 +60,10 @@ namespace Relativity.Sync.Tests.Unit
 			});
 
 			// act
-			ExecutionResult executionResult = await _importJob.RunAsync(CancellationToken.None).ConfigureAwait(false);
+			ImportJobResult importJobResult = await _importJob.RunAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// assert
-			executionResult.Status.Should().Be(ExecutionStatus.CompletedWithErrors);
+			importJobResult.ExecutionResult.Status.Should().Be(ExecutionStatus.CompletedWithErrors);
 
 			_itemStatusMonitor.Verify(x => x.MarkItemAsFailed(identifier), Times.Once);
 			_itemStatusMonitor.Verify(x => x.MarkReadSoFarAsSuccessful(), Times.Once);
@@ -85,10 +85,10 @@ namespace Relativity.Sync.Tests.Unit
 			});
 
 			// act
-			ExecutionResult executionStatus = await _importJob.RunAsync(CancellationToken.None).ConfigureAwait(false);
+			ImportJobResult importJobResult = await _importJob.RunAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// assert
-			executionStatus.Status.Should().Be(ExecutionStatus.Failed);
+			importJobResult.ExecutionResult.Status.Should().Be(ExecutionStatus.Failed);
 
 			_itemStatusMonitor.Verify(x => x.MarkReadSoFarAsFailed(), Times.Once);
 			_itemStatusMonitor.Verify(x => x.MarkReadSoFarAsSuccessful(), Times.Never);
@@ -149,7 +149,7 @@ namespace Relativity.Sync.Tests.Unit
 			_syncImportBulkArtifactJob.Setup(x => x.Execute()).Raises(x => x.OnComplete += null, CreateJobReport());
 
 			// act
-			Func<Task<ExecutionResult>> action = async () => await _importJob.RunAsync(CancellationToken.None).ConfigureAwait(false);
+			Func<Task<ImportJobResult>> action = async () => await _importJob.RunAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			action.Should().NotThrow();
