@@ -97,7 +97,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			};
 
 			//Act
-			ExecutionResult executionResult = await _instance.GetTaggingResults(taggingTasks, It.IsAny<int>()).ConfigureAwait(false);
+			ExecutionResult executionResult = await _instance.GetTaggingResultsAsync(taggingTasks, It.IsAny<int>()).ConfigureAwait(false);
 
 			//Assert
 			executionResult.Message.Should()
@@ -115,7 +115,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			};
 
 			//Act
-			ExecutionResult executionResult = await _instance.GetTaggingResults(taggingTasks, It.IsAny<int>()).ConfigureAwait(false);
+			ExecutionResult executionResult = await _instance.GetTaggingResultsAsync(taggingTasks, It.IsAny<int>()).ConfigureAwait(false);
 
 			//Assert
 			executionResult.Message.Should()
@@ -132,7 +132,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			};
 
 			//Act
-			ExecutionResult executionResult = await _instance.GetTaggingResults(taggingTasks, It.IsAny<int>()).ConfigureAwait(false);
+			ExecutionResult executionResult = await _instance.GetTaggingResultsAsync(taggingTasks, It.IsAny<int>()).ConfigureAwait(false);
 
 			//Assert
 			executionResult.Exception.Should().Be(null);
@@ -149,7 +149,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			};
 
 			//Act
-			ExecutionResult executionResult = await _instance.GetTaggingResults(taggingTasks, It.IsAny<int>()).ConfigureAwait(false);
+			ExecutionResult executionResult = await _instance.GetTaggingResultsAsync(taggingTasks, It.IsAny<int>()).ConfigureAwait(false);
 
 			//Assert
 			executionResult.Message.Should()
@@ -168,7 +168,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			configuration.Setup(x => x.SourceWorkspaceArtifactId).Returns(sourceArtifactId);
 
 			//Act
-			await _instance.GenerateDocumentTaggingJobHistoryError(executionResult, configuration.Object).ConfigureAwait(false);
+			await _instance.GenerateDocumentTaggingJobHistoryErrorAsync(executionResult, configuration.Object).ConfigureAwait(false);
 
 			//Assert
 			_jobHistory.Verify(x =>

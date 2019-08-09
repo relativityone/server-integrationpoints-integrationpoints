@@ -16,10 +16,10 @@ namespace Relativity.Sync.Executors
 		private readonly IFieldManager _fieldManager;
 		private readonly IFieldMappings _fieldMappings;
 		private readonly ISyncLog _logger;
-		private readonly IDocumentsTagRepository _documentsTagRepository;
+		private readonly IDocumentTagRepository _documentsTagRepository;
 
 		public SynchronizationExecutor(IImportJobFactory importJobFactory, IBatchRepository batchRepository, IFieldManager fieldManager, 
-			IFieldMappings fieldMappings, ISyncLog logger, IDocumentsTagRepository documentsTagRepository)
+			IFieldMappings fieldMappings, ISyncLog logger, IDocumentTagRepository documentsTagRepository)
 		{
 			_batchRepository = batchRepository;
 			_importJobFactory = importJobFactory;
@@ -81,15 +81,15 @@ namespace Relativity.Sync.Executors
 				importResult = ExecutionResult.Failure(message, ex);
 			}
 
-			ExecutionResult destinationTaggingResult = await _documentsTagRepository.GetTaggingResults(destinationTaggingTasks, configuration.JobHistoryArtifactId).ConfigureAwait(false);
+			ExecutionResult destinationTaggingResult = await _documentsTagRepository.GetTaggingResultsAsync(destinationTaggingTasks, configuration.JobHistoryArtifactId).ConfigureAwait(false);
 			if (destinationTaggingResult.Status == ExecutionStatus.Failed)
 			{
-				await _documentsTagRepository.GenerateDocumentTaggingJobHistoryError(destinationTaggingResult, configuration).ConfigureAwait(false);
+				await _documentsTagRepository.GenerateDocumentTaggingJobHistoryErrorAsync(destinationTaggingResult, configuration).ConfigureAwait(false);
 			}
-			ExecutionResult sourceTaggingResult = await _documentsTagRepository.GetTaggingResults(sourceTaggingTasks, configuration.JobHistoryArtifactId).ConfigureAwait(false);
+			ExecutionResult sourceTaggingResult = await _documentsTagRepository.GetTaggingResultsAsync(sourceTaggingTasks, configuration.JobHistoryArtifactId).ConfigureAwait(false);
 			if (sourceTaggingResult.Status == ExecutionStatus.Failed)
 			{
-				await _documentsTagRepository.GenerateDocumentTaggingJobHistoryError(sourceTaggingResult, configuration).ConfigureAwait(false);
+				await _documentsTagRepository.GenerateDocumentTaggingJobHistoryErrorAsync(sourceTaggingResult, configuration).ConfigureAwait(false);
 			}
 
 			ExecutionResult executionResult = importResult;

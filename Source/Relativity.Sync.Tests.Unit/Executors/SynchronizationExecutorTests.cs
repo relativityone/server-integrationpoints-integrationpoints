@@ -1,5 +1,4 @@
 ﻿using System;
-
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -21,7 +20,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private Mock<IBatchRepository> _batchRepository;
 		private Mock<IFieldManager> _fieldManager;
 		private Mock<IFieldMappings> _fieldMappings;
-		private Mock<IDocumentsTagRepository> _documentTagRepository;
+		private Mock<IDocumentTagRepository> _documentTagRepository;
 		private Mock<IImportJobFactory> _importJobFactory;
 
 		private Mock<Sync.Executors.IImportJob> _importJob;
@@ -46,7 +45,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			FieldInfoDto.SupportedByViewerField()
 		};
 
-
 		[SetUp]
 		public void SetUp()
 		{
@@ -54,8 +52,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_batchRepository = new Mock<IBatchRepository>();
 			_fieldManager = new Mock<IFieldManager>();
 			_fieldMappings = new Mock<IFieldMappings>();
-			_documentTagRepository = new Mock<IDocumentsTagRepository>();
-			Mock<IJobHistoryErrorRepository> jobHistoryErrorRepository = new Mock<IJobHistoryErrorRepository>();
+			_documentTagRepository = new Mock<IDocumentTagRepository>();
 			_config = new Mock<ISynchronizationConfiguration>();
 			_config.SetupGet(x => x.ImportSettings).Returns(new ImportSettingsDto());
 			_fieldMappings.Setup(x => x.GetFieldMappings()).Returns(new List<FieldMap>
@@ -259,10 +256,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Exception ex = new Exception();
 			ExecutionResult executionResult = new ExecutionResult(status, "Er", ex);
 			_documentTagRepository
-				.Setup(x => x.GetTaggingResults(It.IsAny<List<Task<IEnumerable<int>>>>(), It.IsAny<int>()))
+				.Setup(x => x.GetTaggingResultsAsync(It.IsAny<List<Task<IEnumerable<int>>>>(), It.IsAny<int>()))
 				.ReturnsAsync(executionResult);
 			_documentTagRepository
-				.Setup(x => x.GetTaggingResults(It.IsAny<List<Task<IEnumerable<string>>>>(), It.IsAny<int>()))
+				.Setup(x => x.GetTaggingResultsAsync(It.IsAny<List<Task<IEnumerable<string>>>>(), It.IsAny<int>()))
 				.ReturnsAsync(executionResult);
 		}
 

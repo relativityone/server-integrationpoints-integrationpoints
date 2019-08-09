@@ -9,7 +9,7 @@ using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Executors
 {
-	internal sealed class DocumentsTagRepository : IDocumentsTagRepository
+	internal sealed class DocumentsTagRepository : IDocumentTagRepository
 	{
 		private readonly IDestinationWorkspaceTagRepository _destinationWorkspaceTagRepository;
 		private readonly ISourceWorkspaceTagRepository _sourceWorkspaceTagRepository;
@@ -62,7 +62,7 @@ namespace Relativity.Sync.Executors
 			return failedArtifactIds;
 		}
 
-		public async Task<ExecutionResult> GetTaggingResults<TIdentifier>(IList<Task<IEnumerable<TIdentifier>>> taggingTasks, int jobHistoryArtifactId)
+		public async Task<ExecutionResult> GetTaggingResultsAsync<TIdentifier>(IList<Task<IEnumerable<TIdentifier>>> taggingTasks, int jobHistoryArtifactId)
 		{
 			ExecutionResult taggingResult = ExecutionResult.Success();
 			var failedTagArtifactIds = new List<TIdentifier>();
@@ -99,7 +99,8 @@ namespace Relativity.Sync.Executors
 			}
 			return taggingResult;
 		}
-		public async Task GenerateDocumentTaggingJobHistoryError(ExecutionResult taggingResult, ISynchronizationConfiguration configuration)
+
+		public async Task GenerateDocumentTaggingJobHistoryErrorAsync(ExecutionResult taggingResult, ISynchronizationConfiguration configuration)
 		{
 			var jobHistoryError = new CreateJobHistoryErrorDto(ErrorType.Job)
 			{

@@ -14,8 +14,6 @@ namespace Relativity.Sync.Executors
 {
 	internal sealed class SourceWorkspaceTagRepository : WorkspaceTagRepositoryBase<string>, ISourceWorkspaceTagRepository
 	{
-		private const int _MAX_OBJECT_QUERY_BATCH_SIZE = 10000;
-
 		private readonly IProxyFactory _serviceFactory;
 		private readonly ISyncLog _logger;
 		private readonly ISyncMetrics _syncMetrics;
@@ -32,31 +30,6 @@ namespace Relativity.Sync.Executors
 			_fieldMappings = fieldMappings;
 		}
 		
-		public override async Task<IList<TagDocumentsResult<string>>> TagDocumentsAsync(ISynchronizationConfiguration synchronizationConfiguration, IList<string> documentIdentifiers, CancellationToken token)
-		{
-			var tagResults = new List<TagDocumentsResult<string>>();
-			if (documentIdentifiers.Count == 0)
-			{
-				const string noUpdateMessage = "A call to the Mass Update API was not made as there are no objects to update.";
-				var result = new TagDocumentsResult<string>(documentIdentifiers, noUpdateMessage, true, documentIdentifiers.Count);
-				tagResults.Add(result);
-				return tagResults;
-			}
-
-			IEnumerable<FieldRefValuePair> fieldValues = GetDocumentFieldTags(synchronizationConfiguration);
-			var massUpdateOptions = new MassUpdateOptions
-			{
-				UpdateBehavior = FieldUpdateBehavior.Merge
-			};
-			IEnumerable<IList<string>> documentArtifactIdBatches = documentIdentifiers.SplitList(_MAX_OBJECT_QUERY_BATCH_SIZE);
-			foreach (IList<string> documentArtifactIdBatch in documentArtifactIdBatches)
-			{
-				TagDocumentsResult<string> tagResult = await TagDocumentsBatchAsync(synchronizationConfiguration, documentArtifactIdBatch, fieldValues, massUpdateOptions, token).ConfigureAwait(false);
-				tagResults.Add(tagResult);
-			}
-			return tagResults;
-		}
-
 		public override async Task<TagDocumentsResult<string>> TagDocumentsBatchAsync(
 			ISynchronizationConfiguration synchronizationConfiguration, IList<string> batch, IEnumerable<FieldRefValuePair> fieldValues, MassUpdateOptions massUpdateOptions, CancellationToken token)
 		{
