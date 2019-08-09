@@ -115,7 +115,7 @@ namespace Relativity.Sync.Storage
 					string name = (string)jobError[_nameField].Value;
 					string sourceUniqueId = (string)jobError[_sourceUniqueIdField].Value;
 					string stackTrace = (string)jobError[_stackTraceField].Value;
-					DateTime timestampUtc = DateTime.Parse((string)jobError[_timestampUtcField].Value, CultureInfo.InvariantCulture);
+					DateTime timestampUtc = (DateTime)jobError[_timestampUtcField].Value;
 
 					jobHistoryError = new JobHistoryError(artifactId, errorMessage, errorStatus, errorType, jobHistoryArtifactId, name, sourceUniqueId, stackTrace, timestampUtc);
 				}
