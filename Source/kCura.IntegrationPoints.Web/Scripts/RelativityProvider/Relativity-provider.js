@@ -90,6 +90,9 @@
 
 	//An event raised when the host page has loaded the current settings page.
 	message.subscribe('load', function (m) {
+		if (!m.includes("\"FederatedInstanceArtifactId\":null")) {
+			m = undefined;
+		}
 		var _bind = function (m) {
 			viewModel = new Model(m);
 			viewModel.onDOMLoaded();
@@ -221,12 +224,8 @@
 						result = result.filter(function (value) { return value.artifactId == null; });
 					}
 					self.federatedInstances(result);
-
-					if (state.FederatedInstanceArtifactId != undefined) {
-						self.FederatedInstanceArtifactId(state.FederatedInstanceArtifactId);
-					} else {
-						self.FederatedInstanceArtifactId(self.federatedInstances()[0].artifactId);
-					}
+					self.FederatedInstanceArtifactId(self.federatedInstances()[0].artifactId);
+					
 					self.updateWorkspaces();
 					self.ShowAuthentiactionButton(self.FederatedInstanceArtifactId() != null);
 					self.FederatedInstanceArtifactId.subscribe(function (value) {
@@ -244,7 +243,7 @@
 						}
 						self.ShowAuthentiactionButton(isRemoteInstance);
 					});
-					self.ShowRelativityInstance(result.length >= 2);
+					self.ShowRelativityInstance(false);
 				},
 				error: function () {
 					IP.frameMessaging().dFrame.IP.message.error.raise("Unable to retrieve Relativity instances. Please contact your system administrator.");
