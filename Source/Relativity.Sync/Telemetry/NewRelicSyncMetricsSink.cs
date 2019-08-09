@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Relativity.Sync.Telemetry
+﻿namespace Relativity.Sync.Telemetry
 {
 	/// <summary>
 	///     Logs <see cref="Metric"/>s to New Relic.
 	/// </summary>
 	internal sealed class NewRelicSyncMetricsSink : ISyncMetricsSink
 	{
+		private const string _NEW_RELIC_INDEX_NAME = "Relativity.Sync";
+
 		private readonly IAPMClient _apmClient;
 
 		/// <summary>
@@ -23,7 +21,7 @@ namespace Relativity.Sync.Telemetry
 		/// <inheritdoc />
 		public void Log(Metric metric)
 		{
-			_apmClient.Log(metric.Name, metric.ToDictionary());
+			_apmClient.Log(_NEW_RELIC_INDEX_NAME, metric.ToDictionary());
 		}
 	}
 }
