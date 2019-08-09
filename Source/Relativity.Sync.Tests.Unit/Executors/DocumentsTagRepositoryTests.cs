@@ -172,14 +172,13 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			//Assert
 			_jobHistory.Verify(x =>
-				x.CreateAsync(sourceArtifactId, It.Is<CreateJobHistoryErrorDto>(y => CheckCreateJobHistory(y, jobHistoryArtifactId))));
+				x.CreateAsync(sourceArtifactId, jobHistoryArtifactId, It.Is<CreateJobHistoryErrorDto>(y => CheckCreateJobHistory(y))));
 		}
 
-		private bool CheckCreateJobHistory(CreateJobHistoryErrorDto createJobHistory, int jobHistoryArtifactId)
+		private bool CheckCreateJobHistory(CreateJobHistoryErrorDto createJobHistory)
 		{
 			createJobHistory.ErrorMessage.Should().Be("Er");
 			createJobHistory.StackTrace.Should().Be(null);
-			createJobHistory.JobHistoryArtifactId.Should().Be(jobHistoryArtifactId);
 			createJobHistory.ErrorType.Should().Be(ErrorType.Job);
 			return true;
 		}

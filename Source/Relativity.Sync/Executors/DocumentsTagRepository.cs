@@ -101,12 +101,12 @@ namespace Relativity.Sync.Executors
 		}
 		public async Task GenerateDocumentTaggingJobHistoryError(ExecutionResult taggingResult, ISynchronizationConfiguration configuration)
 		{
-			var jobHistoryError = new CreateJobHistoryErrorDto(configuration.JobHistoryArtifactId, ErrorType.Job)
+			var jobHistoryError = new CreateJobHistoryErrorDto(ErrorType.Job)
 			{
 				ErrorMessage = taggingResult.Message,
 				StackTrace = taggingResult.Exception?.StackTrace
 			};
-			await _jobHistoryErrorRepository.CreateAsync(configuration.SourceWorkspaceArtifactId, jobHistoryError).ConfigureAwait(false);
+			await _jobHistoryErrorRepository.CreateAsync(configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, jobHistoryError).ConfigureAwait(false);
 		}
 	}
 }
