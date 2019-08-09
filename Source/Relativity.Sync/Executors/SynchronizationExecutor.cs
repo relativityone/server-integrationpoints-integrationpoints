@@ -105,6 +105,17 @@ namespace Relativity.Sync.Executors
 			return executionResult;
 		}
 
+		private async Task GenerateDocumentTaggingJobHistoryError(ExecutionResult taggingResult, ISynchronizationConfiguration configuration)
+		{
+			var jobHistoryError = new CreateJobHistoryErrorDto(ErrorType.Job)
+			{
+				ErrorMessage = taggingResult.Message,
+				StackTrace = taggingResult.Exception?.StackTrace
+			};
+			await _jobHistoryErrorRepository.CreateAsync(configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, jobHistoryError)
+				.ConfigureAwait(false);
+		}
+
 		private void UpdateImportSettings(ISynchronizationConfiguration configuration)
 		{
 			int destinationIdentityFieldId = GetDestinationIdentityFieldId(_fieldMappings.GetFieldMappings());
