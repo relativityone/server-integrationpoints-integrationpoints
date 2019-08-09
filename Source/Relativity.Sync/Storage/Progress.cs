@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -9,6 +12,7 @@ namespace Relativity.Sync.Storage
 	internal sealed class Progress : IProgress
 	{
 		private readonly ISourceServiceFactoryForAdmin _serviceFactory;
+		private readonly ISyncLog _logger;
 		private readonly int _syncConfigurationArtifactId;
 		private readonly int _workspaceArtifactId;
 
@@ -21,7 +25,7 @@ namespace Relativity.Sync.Storage
 		private static readonly Guid MessageGuid = new Guid("2E296F79-1B81-4BF6-98AD-68DA13F8DA44");
 		private static readonly Guid ParentArtifactGuid = new Guid("E0188DD7-4B1B-454D-AFA4-3CCC7F9DC001");
 
-		private Progress(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int syncConfigurationArtifactId, string name, int order, SyncJobStatus status)
+		private Progress(ISourceServiceFactoryForAdmin serviceFactory, ISyncLog logger, int workspaceArtifactId, int syncConfigurationArtifactId, string name, int order, SyncJobStatus status)
 		{
 			if (string.IsNullOrWhiteSpace(name))
 			{
@@ -29,6 +33,7 @@ namespace Relativity.Sync.Storage
 			}
 
 			_serviceFactory = serviceFactory;
+			_logger = logger;
 			_workspaceArtifactId = workspaceArtifactId;
 			_syncConfigurationArtifactId = syncConfigurationArtifactId;
 
@@ -37,17 +42,19 @@ namespace Relativity.Sync.Storage
 			Status = status;
 		}
 
-		private Progress(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int artifactId)
+		public Progress(ISourceServiceFactoryForAdmin serviceFactory, ISyncLog logger, int workspaceArtifactId, int artifactId)
 		{
 			_serviceFactory = serviceFactory;
+			_logger = logger;
 			_workspaceArtifactId = workspaceArtifactId;
 
 			ArtifactId = artifactId;
 		}
 
-		private Progress(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int syncConfigurationArtifactId, string name)
+		public Progress(ISourceServiceFactoryForAdmin serviceFactory, ISyncLog logger, int workspaceArtifactId, int syncConfigurationArtifactId, string name)
 		{
 			_serviceFactory = serviceFactory;
+			_logger = logger;
 			_workspaceArtifactId = workspaceArtifactId;
 			_syncConfigurationArtifactId = syncConfigurationArtifactId;
 
@@ -137,97 +144,120 @@ namespace Relativity.Sync.Storage
 
 		private async Task ReadAsync()
 		{
+			var request = new ReadRequest
+			{
+				Object = new RelativityObjectRef
+				{
+					ArtifactID = ArtifactId
+				},
+				Fields = GetFieldRefsForQuery()
+			};
+
 			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
-				ReadRequest request = new ReadRequest
-				{
-					Object = new RelativityObjectRef
-					{
-						ArtifactID = ArtifactId
-					},
-					Fields = new[]
-					{
-						new FieldRef
-						{
-							Guid = NameGuid
-						},
-						new FieldRef
-						{
-							Guid = OrderGuid
-						},
-						new FieldRef
-						{
-							Guid = StatusGuid
-						},
-						new FieldRef
-						{
-							Guid = ExceptionGuid
-						},
-						new FieldRef
-						{
-							Guid = MessageGuid
-						}
-					}
-				};
-
 				ReadResult result = await objectManager.ReadAsync(_workspaceArtifactId, request).ConfigureAwait(false);
-
-				Name = (string) result.Object[NameGuid].Value;
-				Order = (int) result.Object[OrderGuid].Value;
-				Status = ((string) result.Object[StatusGuid].Value).GetEnumFromDescription<SyncJobStatus>();
-				Exception = (string) result.Object[ExceptionGuid].Value;
-				Message = (string) result.Object[MessageGuid].Value;
+				PopulateProgressProperties(result.Object);
 			}
 		}
 
 		private async Task<bool> QueryAsync()
 		{
+			var request = new QueryRequest
+			{
+				ObjectType = new ObjectTypeRef
+				{
+					Guid = ProgressObjectTypeGuid
+				},
+				Condition = $"'{NameGuid}' == '{Name}' AND '{ParentArtifactGuid}' == {_syncConfigurationArtifactId}",
+				Fields = GetFieldRefsForQuery()
+			};
+
+			bool objectExists = false;
 			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
-				QueryRequest request = new QueryRequest
-				{
-					ObjectType = new ObjectTypeRef
-					{
-						Guid = ProgressObjectTypeGuid
-					},
-					Condition = $"'{NameGuid}' == '{Name}' AND '{ParentArtifactGuid}' == {_syncConfigurationArtifactId}",
-					Fields = new[]
-					{
-						new FieldRef
-						{
-							Guid = OrderGuid
-						},
-						new FieldRef
-						{
-							Guid = StatusGuid
-						},
-						new FieldRef
-						{
-							Guid = ExceptionGuid
-						},
-						new FieldRef
-						{
-							Guid = MessageGuid
-						}
-					}
-				};
-
 				QueryResult result = await objectManager.QueryAsync(_workspaceArtifactId, request, 1, 1).ConfigureAwait(false);
-
 				if (result.Objects.Count > 0)
 				{
-					RelativityObject resultObject = result.Objects[0];
-					ArtifactId = resultObject.ArtifactID;
-					Order = (int) resultObject[OrderGuid].Value;
-					Status = ((string) resultObject[StatusGuid].Value).GetEnumFromDescription<SyncJobStatus>();
-					Exception = (string) resultObject[ExceptionGuid].Value;
-					Message = (string) resultObject[MessageGuid].Value;
-
-					return true;
+					PopulateProgressProperties(result.Objects[0]);
+					objectExists = true;
 				}
-
-				return false;
 			}
+			return objectExists;
+		}
+		private async Task<IReadOnlyCollection<IProgress>> QueryAllAsync()
+		{
+			var progresses = new ConcurrentBag<IProgress>();
+			var queryRequest = new QueryRequest
+			{
+				ObjectType = new ObjectTypeRef
+				{
+					Guid = ProgressObjectTypeGuid
+				},
+				Condition = $"'{ParentArtifactGuid}' == OBJECT {_syncConfigurationArtifactId}",
+				IncludeNameInQueryResult = true
+			};
+			try
+			{
+				using (var objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+				{
+					QueryResult result = await objectManager.QueryAsync(_workspaceArtifactId, queryRequest, 1, int.MaxValue).ConfigureAwait(false);
+					if (result.TotalCount > 0)
+					{
+						IEnumerable<int> progressIds = result.Objects.Select(x => x.ArtifactID);
+
+						Parallel.ForEach(progressIds, progressArtifactId =>
+						{
+							var progress = new Progress(_serviceFactory, _logger, _workspaceArtifactId, progressArtifactId);
+							progress.ReadAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+							progresses.Add(progress);
+						});
+					}
+				}
+			}
+			catch (Exception progressQueryAllException)
+			{
+				_logger.LogError(progressQueryAllException, "Failed to retrieve all progress information for workspace {WorkspaceArtifactID} and sync configuration object {SyncConfigArtifactID}.",
+					_workspaceArtifactId, _syncConfigurationArtifactId);
+			}
+			return progresses;
+		}
+
+		private static IEnumerable<FieldRef> GetFieldRefsForQuery()
+		{
+			IEnumerable<FieldRef> fields = new[]
+			{
+				new FieldRef
+				{
+					Guid = NameGuid
+				},
+				new FieldRef
+				{
+					Guid = OrderGuid
+				},
+				new FieldRef
+				{
+					Guid = StatusGuid
+				},
+				new FieldRef
+				{
+					Guid = ExceptionGuid
+				},
+				new FieldRef
+				{
+					Guid = MessageGuid
+				}
+			};
+			return fields;
+		}
+
+		private void PopulateProgressProperties(RelativityObject relativityObject)
+		{
+			ArtifactId = relativityObject.ArtifactID;
+			Name = (string)relativityObject[NameGuid].Value;
+			Order = (int)relativityObject[OrderGuid].Value;
+			Status = ((string)relativityObject[StatusGuid].Value).GetEnumFromDescription<SyncJobStatus>();
+			Exception = (string)relativityObject[ExceptionGuid].Value;
+			Message = (string)relativityObject[MessageGuid].Value;
 		}
 
 		private async Task UpdateFieldValue<T>(Guid fieldGuid, T value)
@@ -239,24 +269,31 @@ namespace Relativity.Sync.Storage
 			}
 		}
 
-		public static async Task<IProgress> CreateAsync(ISourceServiceFactoryForAdmin serviceFactory, CreateProgressDto createProgressDto)
+		public static async Task<IProgress> CreateAsync(ISourceServiceFactoryForAdmin serviceFactory, ISyncLog logger, CreateProgressDto createProgressDto)
 		{
-			Progress progress = new Progress(serviceFactory,
+			Progress progress = new Progress(serviceFactory, logger,
 				createProgressDto.WorkspaceArtifactId, createProgressDto.SyncConfigurationArtifactId, createProgressDto.Name, createProgressDto.Order, createProgressDto.Status);
 			await progress.CreateAsync().ConfigureAwait(false);
 			return progress;
 		}
 
-		public static async Task<IProgress> GetAsync(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int artifactId)
+		public static async Task<IProgress> GetAsync(ISourceServiceFactoryForAdmin serviceFactory, ISyncLog logger, int workspaceArtifactId, int artifactId)
 		{
-			Progress progress = new Progress(serviceFactory, workspaceArtifactId, artifactId);
+			Progress progress = new Progress(serviceFactory, logger, workspaceArtifactId, artifactId);
 			await progress.ReadAsync().ConfigureAwait(false);
 			return progress;
 		}
 
-		public static async Task<IProgress> QueryAsync(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int syncConfigurationArtifactId, string name)
+		public static async Task<IReadOnlyCollection<IProgress>> QueryAllAsync(ISourceServiceFactoryForAdmin serviceFactory, ISyncLog logger, int workspaceArtifactId, int syncConfigurationArtifactId)
 		{
-			Progress progress = new Progress(serviceFactory, workspaceArtifactId, syncConfigurationArtifactId, name);
+			var progress = new Progress(serviceFactory, logger, workspaceArtifactId, syncConfigurationArtifactId, string.Empty);
+			IReadOnlyCollection<IProgress> batches = await progress.QueryAllAsync().ConfigureAwait(false);
+			return batches;
+		}
+
+		public static async Task<IProgress> QueryAsync(ISourceServiceFactoryForAdmin serviceFactory, ISyncLog logger, int workspaceArtifactId, int syncConfigurationArtifactId, string name)
+		{
+			Progress progress = new Progress(serviceFactory, logger, workspaceArtifactId, syncConfigurationArtifactId, name);
 			bool exists = await progress.QueryAsync().ConfigureAwait(false);
 			return exists ? progress : null;
 		}

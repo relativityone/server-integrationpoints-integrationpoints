@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Relativity.Services.Objects;
@@ -27,6 +28,8 @@ namespace Relativity.Sync.Storage
 
 		private readonly Guid _errorTypeItem = new Guid("9DDC4914-FEF3-401F-89B7-2967CD76714B");
 		private readonly Guid _errorTypeJob = new Guid("FA8BB625-05E6-4BF7-8573-012146BAF19B");
+
+		private readonly Guid _jobHistoryRelationGuid = new Guid("8B747B91-0627-4130-8E53-2931FFC4135F");
 
 		private readonly IDateTime _dateTime;
 		private readonly ISourceServiceFactoryForUser _serviceFactory;
@@ -56,7 +59,7 @@ namespace Relativity.Sync.Storage
 
 			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
-				var request = new MassCreateRequest()
+				var request = new MassCreateRequest
 				{
 					ObjectType = GetObjectTypeRef(),
 					ParentObject = GetParentObject(jobHistoryArtifactId),
@@ -66,7 +69,7 @@ namespace Relativity.Sync.Storage
 				MassCreateResult result = await objectManager.CreateAsync(workspaceArtifactId, request).ConfigureAwait(false);
 				if (!result.Success)
 				{
-					throw new SyncException($"Mass creation of item level errors was not successfull. Message: {result.Message}");
+					throw new SyncException($"Mass creation of item level errors was not successful. Message: {result.Message}");
 				}
 
 				_logger.LogInformation("Successfully mass-created item level errors: {count}", createJobHistoryErrorDtos.Count);
@@ -76,44 +79,77 @@ namespace Relativity.Sync.Storage
 
 		public async Task<int> CreateAsync(int workspaceArtifactId, int jobHistoryArtifactId, CreateJobHistoryErrorDto createJobHistoryErrorDto)
 		{
-			IEnumerable<int> massCreateResult = await MassCreateAsync(workspaceArtifactId, jobHistoryArtifactId, new List<CreateJobHistoryErrorDto>() {createJobHistoryErrorDto}).ConfigureAwait(false);
+			IEnumerable<int> massCreateResult = await MassCreateAsync(workspaceArtifactId, jobHistoryArtifactId, new List<CreateJobHistoryErrorDto> { createJobHistoryErrorDto }).ConfigureAwait(false);
 			return massCreateResult.First();
+		}
+
+		public async Task<IJobHistoryError> GetLastJobErrorAsync(int workspaceArtifactId, int jobHistoryArtifactId)
+		{
+			IJobHistoryError jobHistoryError = null;
+
+			using (var objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			{
+				var readRequest = new ReadRequest
+				{
+					Object = new RelativityObjectRef
+					{
+						Guid = _errorTypeJob
+					}
+				};
+				ReadResult jobErrorType = await objectManager.ReadAsync(workspaceArtifactId, readRequest).ConfigureAwait(false);
+				var request = new QueryRequest
+				{
+					ObjectType = new ObjectTypeRef { Guid = _jobHistoryErrorObject },
+					Condition = $"'{_jobHistoryRelationGuid}' == OBJECT {jobHistoryArtifactId} AND '{_errorTypeField}' == CHOICE {jobErrorType.Object.ArtifactID}",
+					Fields = GetFields()
+				};
+				QueryResult result = await objectManager.QueryAsync(workspaceArtifactId, request, 0, int.MaxValue).ConfigureAwait(false);
+				if (result.TotalCount > 0)
+				{
+					RelativityObject jobError = result.Objects.First();
+
+					int artifactId = jobError.ArtifactID;
+					string errorMessage = (string)jobError[_errorMessageField].Value;
+					ErrorStatus errorStatus = ((Choice)jobError[_errorStatusField].Value).Name.GetEnumFromDescription<ErrorStatus>();
+					ErrorType errorType = ((Choice)jobError[_errorTypeField].Value).Name.GetEnumFromDescription<ErrorType>();
+					string name = (string)jobError[_nameField].Value;
+					string sourceUniqueId = (string)jobError[_sourceUniqueIdField].Value;
+					string stackTrace = (string)jobError[_stackTraceField].Value;
+					DateTime timestampUtc = DateTime.Parse((string)jobError[_timestampUtcField].Value, CultureInfo.InvariantCulture);
+
+					jobHistoryError = new JobHistoryError(artifactId, errorMessage, errorStatus, errorType, jobHistoryArtifactId, name, sourceUniqueId, stackTrace, timestampUtc);
+				}
+			}
+			return jobHistoryError;
 		}
 
 		private ObjectTypeRef GetObjectTypeRef()
 		{
-			return new ObjectTypeRef()
-			{
-				Guid = _jobHistoryErrorObject
-			};
+			return new ObjectTypeRef { Guid = _jobHistoryErrorObject };
 		}
 
 		private RelativityObjectRef GetParentObject(int jobHistoryArtifactId)
 		{
-			return new RelativityObjectRef()
-			{
-				ArtifactID = jobHistoryArtifactId
-			};
+			return new RelativityObjectRef { ArtifactID = jobHistoryArtifactId };
 		}
 
 		private FieldRef[] GetFields()
 		{
 			return new[]
 			{
-				new FieldRef() {Guid = _errorMessageField},
-				new FieldRef() {Guid = _errorStatusField},
-				new FieldRef() {Guid = _errorTypeField},
-				new FieldRef() {Guid = _nameField},
-				new FieldRef() {Guid = _sourceUniqueIdField},
-				new FieldRef() {Guid = _stackTraceField},
-				new FieldRef() {Guid = _timestampUtcField}
+				new FieldRef { Guid = _errorMessageField },
+				new FieldRef { Guid = _errorStatusField },
+				new FieldRef { Guid = _errorTypeField },
+				new FieldRef { Guid = _nameField },
+				new FieldRef { Guid = _sourceUniqueIdField },
+				new FieldRef { Guid = _stackTraceField },
+				new FieldRef { Guid = _timestampUtcField }
 			};
 		}
 
 		private ChoiceRef GetErrorStatusChoice(ErrorStatus errorStatus)
 		{
 			var errorStatusChoice = new ChoiceRef();
-
 			switch (errorStatus)
 			{
 				case ErrorStatus.New:
@@ -131,14 +167,12 @@ namespace Relativity.Sync.Storage
 				default:
 					throw new ArgumentException($"Invalid Error Status {errorStatus}");
 			}
-
 			return errorStatusChoice;
 		}
 
 		private ChoiceRef GetErrorTypeChoice(ErrorType errorType)
 		{
 			var errorTypeChoice = new ChoiceRef();
-
 			switch (errorType)
 			{
 				case ErrorType.Job:
@@ -150,9 +184,7 @@ namespace Relativity.Sync.Storage
 				default:
 					throw new ArgumentException($"Invalid Error Type {errorType}");
 			}
-
 			return errorTypeChoice;
 		}
-
 	}
 }
