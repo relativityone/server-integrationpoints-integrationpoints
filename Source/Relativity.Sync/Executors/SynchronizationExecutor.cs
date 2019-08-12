@@ -34,9 +34,12 @@ namespace Relativity.Sync.Executors
 			_logger.LogVerbose("Creating settings for ImportAPI.");
 			UpdateImportSettings(configuration);
 
-			ExecutionResult importResult = ExecutionResult.Success();
-			var destinationTaggingTasks = new List<Task<IEnumerable<int>>>();
-			var sourceTaggingTasks = new List<Task<IEnumerable<string>>>();
+			ExecutionResult importAndTagResult = ExecutionResult.Success();
+			var destinationTaggingTasks = new List<Task<ExecutionResult>>();
+			var sourceTaggingTasks = new List<Task<ExecutionResult>>();
+			ExecutionResult[] destinationTaggingResults = { ExecutionResult.Success() };
+			ExecutionResult[] sourceTaggingResults = { ExecutionResult.Success() };
+
 			try
 			{
 				_logger.LogVerbose("Gathering batches to execute.");
@@ -47,7 +50,7 @@ namespace Relativity.Sync.Executors
 					if (token.IsCancellationRequested)
 					{
 						_logger.LogInformation("Import job has been canceled.");
-						importResult = ExecutionResult.Canceled();
+						importAndTagResult = ExecutionResult.Canceled();
 						break;
 					}
 
@@ -55,15 +58,15 @@ namespace Relativity.Sync.Executors
 					IBatch batch = await _batchRepository.GetAsync(configuration.SourceWorkspaceArtifactId, batchId).ConfigureAwait(false);
 					using (IImportJob importJob = await _importJobFactory.CreateImportJobAsync(configuration, batch, token).ConfigureAwait(false))
 					{
-						importResult = await importJob.RunAsync(token).ConfigureAwait(false);
+						importAndTagResult = await importJob.RunAsync(token).ConfigureAwait(false);
 
 						IEnumerable<int> pushedDocumentArtifactIds = await importJob.GetPushedDocumentArtifactIds().ConfigureAwait(false);
-						Task<IEnumerable<int>> destinationTaggingTask = _documentsTagRepository.TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(configuration, pushedDocumentArtifactIds, token);
-						destinationTaggingTasks.Add(destinationTaggingTask);
+						Task<ExecutionResult> destinationTaggingResult = _documentsTagRepository.TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(configuration, pushedDocumentArtifactIds, token);
+						destinationTaggingTasks.Add(destinationTaggingResult);
 
 						IEnumerable<string> pushedDocumentIdentifiers = await importJob.GetPushedDocumentIdentifiers().ConfigureAwait(false);
-						Task<IEnumerable<string>> sourceTaggingTask = _documentsTagRepository.TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(configuration, pushedDocumentIdentifiers, token);
-						sourceTaggingTasks.Add(sourceTaggingTask);
+						Task<ExecutionResult> sourceTaggingResult = _documentsTagRepository.TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(configuration, pushedDocumentIdentifiers, token);
+						sourceTaggingTasks.Add(sourceTaggingResult);
 					}
 					_logger.LogInformation("Batch ID: {batchId} processed successfully.", batchId);
 				}
@@ -72,29 +75,48 @@ namespace Relativity.Sync.Executors
 			{
 				const string message = "Fatal exception occurred while executing import job.";
 				_logger.LogError(ex, message);
-				importResult = ExecutionResult.Failure(message, ex);
+				importAndTagResult = ExecutionResult.Failure(message, ex);
 			}
 			catch (Exception ex)
 			{
 				const string message = "Unexpected exception occurred while executing synchronization.";
 				_logger.LogError(ex, message);
-				importResult = ExecutionResult.Failure(message, ex);
+				importAndTagResult = ExecutionResult.Failure(message, ex);
 			}
 
-			ExecutionResult destinationTaggingResult = await _documentsTagRepository.GetTaggingResultsAsync(destinationTaggingTasks, configuration.JobHistoryArtifactId).ConfigureAwait(false);
-			if (destinationTaggingResult.Status == ExecutionStatus.Failed)
+			try
 			{
-				await _documentsTagRepository.GenerateDocumentTaggingJobHistoryErrorAsync(destinationTaggingResult, configuration).ConfigureAwait(false);
+				destinationTaggingResults =
+					await Task.WhenAll(destinationTaggingTasks).ConfigureAwait(false);
+				sourceTaggingResults = await Task.WhenAll(sourceTaggingTasks).ConfigureAwait(false);
 			}
-			ExecutionResult sourceTaggingResult = await _documentsTagRepository.GetTaggingResultsAsync(sourceTaggingTasks, configuration.JobHistoryArtifactId).ConfigureAwait(false);
-			if (sourceTaggingResult.Status == ExecutionStatus.Failed)
+			catch (OperationCanceledException oce)
 			{
-				await _documentsTagRepository.GenerateDocumentTaggingJobHistoryErrorAsync(sourceTaggingResult, configuration).ConfigureAwait(false);
+				const string taggingCanceledMessage = "Tagging synchronized documents in workspace was interrupted due to the job being canceled.";
+				_logger.LogInformation(oce, taggingCanceledMessage);
+				importAndTagResult = new ExecutionResult(ExecutionStatus.Canceled, taggingCanceledMessage, oce);
+			}
+			catch (Exception ex)
+			{
+				const string message = "Unexpected exception occurred while tagging synchronized documents in workspace.";
+				_logger.LogError(ex, message);
+				importAndTagResult = ExecutionResult.Failure(message, ex);
 			}
 
-			ExecutionResult executionResult = importResult;
-			if (destinationTaggingResult.Status == ExecutionStatus.Failed || sourceTaggingResult.Status == ExecutionStatus.Failed || token.IsCancellationRequested)
+			ExecutionResult executionResult = importAndTagResult;
+
+			if (destinationTaggingResults.Any(x => x.Status == ExecutionStatus.Failed) ||
+				sourceTaggingResults.Any(x => x.Status == ExecutionStatus.Failed) || token.IsCancellationRequested)
 			{
+				ExecutionResult destinationTaggingResult = ExecutionResult.Success();
+				ExecutionResult sourceTaggingResult = ExecutionResult.Success();
+
+				if (!token.IsCancellationRequested)
+				{
+					destinationTaggingResult = destinationTaggingResults.First(x => x.Status == ExecutionStatus.Failed);
+					sourceTaggingResult = sourceTaggingResults.First(x => x.Status == ExecutionStatus.Failed);
+				}
+
 				string[] messages = { executionResult.Message, destinationTaggingResult.Message, sourceTaggingResult.Message };
 				string resultMessage = string.Join(" ", messages.Where(m => !string.IsNullOrEmpty(m)));
 				Exception[] exceptions = { executionResult.Exception, destinationTaggingResult.Exception, sourceTaggingResult.Exception };
