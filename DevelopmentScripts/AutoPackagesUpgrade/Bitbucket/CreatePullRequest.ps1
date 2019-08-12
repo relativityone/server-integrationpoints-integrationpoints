@@ -101,8 +101,7 @@ Process
 		Invoke-RestMethod -Uri $uri -Method POST -Headers $headers -Body $body -UseBasicParsing 
 	}  
 	catch 
-	{  
-		$_.Exception.Response
+	{
 		Write-Warning "Remote Server Response: $($_.Exception.Message)"  
 		Write-Output "Status Code: $($_.Exception.Response.StatusCode)" 
 		Write-Error "Creating pull request failed" -ErrorAction Stop

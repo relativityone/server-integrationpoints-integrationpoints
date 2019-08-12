@@ -26,8 +26,8 @@ Process
 {
 	Write-Verbose "Beginning of CreateBranch.ps1"
 	
-	#Write-Verbose "Clean"
-	#git -C $Path clean -dfx 
+	Write-Verbose "Clean"
+	git -C $Path clean -dfx 
 	Write-Verbose "GC Auto"
 	git -C $Path gc --auto
 	Write-Verbose "Checkout parent"

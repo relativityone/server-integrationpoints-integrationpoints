@@ -31,7 +31,7 @@
 .EXAMPLE
 	.\UpdateRelativityInRip.ps1 -ToVersion 10.3.90.11-DEV -OnBranch develop -RipSourceCodePath S:\integrationpoints -JiraNumber REL-331932
 
-	To include resolving latests packages versions and handling Jira tracking automatically use:
+.EXAMPLE
 	.\UpdateRelativityInRip.ps1 -OnBranch develop -RipSourceCodePath S:\integrationpoints
 #>
 

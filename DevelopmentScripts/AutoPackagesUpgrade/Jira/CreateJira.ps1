@@ -89,10 +89,7 @@ Process
 	$headers = GetBasicAuthJsonHttpHeaders -Credential $Credential
 	try 
 	{  	 
-		$response = Invoke-RestMethod -Uri $createJiraUri -Method POST -Headers $headers -Body $body -UseBasicParsing  
-		Write-Verbose "ID: $($response.id)"  
-		Write-Verbose "Key: $($response.key)"  
-		Write-Verbose "Self: $($response.self)"      
+		$response = Invoke-RestMethod -Uri $createJiraUri -Method POST -Headers $headers -Body $body -UseBasicParsing      
 		$jiraKey = $($response.key)  
 	}  
 	catch 
