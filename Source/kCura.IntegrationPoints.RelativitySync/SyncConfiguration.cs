@@ -75,6 +75,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 		public string JobName { get; set; }
 		public string NotificationEmails { get; set; }
 		public int SourceWorkspaceArtifactId { get; }
+		public string SourceWorkspaceTag { get; }
 		public int SyncConfigurationArtifactId { get; }
 
 		public Task SetDestinationWorkspaceTagArtifactIdAsync(int artifactId)

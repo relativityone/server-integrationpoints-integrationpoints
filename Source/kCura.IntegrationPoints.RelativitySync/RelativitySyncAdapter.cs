@@ -211,10 +211,6 @@ namespace kCura.IntegrationPoints.RelativitySync
 				.As<IExecutor<IPermissionsCheckConfiguration>>()
 				.As<IExecutionConstrains<IPermissionsCheckConfiguration>>();
 
-			containerBuilder.RegisterInstance(new Adapters.Notification(_ripContainer))
-				.As<IExecutor<INotificationConfiguration>>()
-				.As<IExecutionConstrains<INotificationConfiguration>>();
-
 			containerBuilder.RegisterType<DataDestinationFinalization>()
 				.As<IExecutor<IDataDestinationFinalizationConfiguration>>()
 				.As<IExecutionConstrains<IDataDestinationFinalizationConfiguration>>();
