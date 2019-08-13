@@ -57,6 +57,8 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<SnapshotPartitionExecutor>().As<IExecutor<ISnapshotPartitionConfiguration>>();
 			builder.RegisterType<SynchronizationExecutionConstrains>().As<IExecutionConstrains<ISynchronizationConfiguration>>();
 			builder.RegisterType<SynchronizationExecutor>().As<IExecutor<ISynchronizationConfiguration>>();
+			builder.RegisterType<NotificationExecutionConstrains>().As<IExecutionConstrains<INotificationConfiguration>>();
+			builder.RegisterType<NotificationExecutor>().As<IExecutor<INotificationConfiguration>>();
 			builder.RegisterTypes(Assembly.GetExecutingAssembly().GetTypes().Where(t => !t.IsAbstract && t.IsAssignableTo<IPermissionCheck>()).ToArray()).As<IPermissionCheck>();
 
 			builder.RegisterType<BatchRepository>().As<IBatchRepository>();
