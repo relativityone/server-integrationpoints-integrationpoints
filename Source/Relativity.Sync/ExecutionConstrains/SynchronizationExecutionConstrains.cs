@@ -8,12 +8,12 @@ using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.ExecutionConstrains
 {
-	internal sealed class SynchronizationExecutorConstrains : IExecutionConstrains<ISynchronizationConfiguration>
+	internal sealed class SynchronizationExecutionConstrains : IExecutionConstrains<ISynchronizationConfiguration>
 	{
 		private readonly IBatchRepository _batchRepository;
 		private readonly ISyncLog _syncLog;
 
-		public SynchronizationExecutorConstrains(IBatchRepository batchRepository, ISyncLog syncLog)
+		public SynchronizationExecutionConstrains(IBatchRepository batchRepository, ISyncLog syncLog)
 		{
 			_batchRepository = batchRepository;
 			_syncLog = syncLog;

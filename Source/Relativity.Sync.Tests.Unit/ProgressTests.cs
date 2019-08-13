@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using kCura.Utility;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Tests.Unit
@@ -35,7 +35,7 @@ namespace Relativity.Sync.Tests.Unit
 		public void SetUp()
 		{
 			Mock<ISourceServiceFactoryForAdmin> serviceFactoryMock = new Mock<ISourceServiceFactoryForAdmin>();
-			_progressRepository = new ProgressRepository(serviceFactoryMock.Object);
+			_progressRepository = new ProgressRepository(serviceFactoryMock.Object, new EmptyLogger());
 
 			_objectManager = new Mock<IObjectManager>();
 			serviceFactoryMock.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
@@ -126,7 +126,7 @@ namespace Relativity.Sync.Tests.Unit
 			const string message = "message 9";
 			const int syncConfigurationArtifactId = 854796;
 
-			QueryResult result = PrepareQueryResult(order, statusDescription, exception, message);
+			QueryResult result = PrepareQueryResult(name, order, statusDescription, exception, message);
 
 			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, 1)).ReturnsAsync(result);
 
@@ -144,53 +144,16 @@ namespace Relativity.Sync.Tests.Unit
 			_objectManager.Verify(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(qr => AssertQueryRequest(qr, name, syncConfigurationArtifactId)), 1, 1), Times.Once);
 		}
 
-		private QueryResult PrepareQueryResult(int order, string status, string exception, string message)
+		private QueryResult PrepareQueryResult(string name, int order, string status, string exception, string message)
 		{
-			return new QueryResult
+			var queryResult = new QueryResult
 			{
 				Objects = new List<RelativityObject>
 				{
-					new RelativityObject
-					{
-						ArtifactID = _ARTIFACT_ID,
-						FieldValues = new List<FieldValuePair>
-						{
-							new FieldValuePair
-							{
-								Field = new Field
-								{
-									Guids = new List<Guid> {OrderGuid}
-								},
-								Value = order
-							},
-							new FieldValuePair
-							{
-								Field = new Field
-								{
-									Guids = new List<Guid> {StatusGuid}
-								},
-								Value = status
-							},
-							new FieldValuePair
-							{
-								Field = new Field
-								{
-									Guids = new List<Guid> {ExceptionGuid}
-								},
-								Value = exception
-							},
-							new FieldValuePair
-							{
-								Field = new Field
-								{
-									Guids = new List<Guid> {MessageGuid}
-								},
-								Value = message
-							}
-						}
-					}
+					PrepareRelativityObjectResult(name, order, status, exception, message)
 				}
 			};
+			return queryResult;
 		}
 
 		private bool AssertQueryRequest(QueryRequest queryRequest, string name, int syncConfigurationArtifactId)
@@ -198,8 +161,9 @@ namespace Relativity.Sync.Tests.Unit
 			queryRequest.ObjectType.Guid.Should().Be(ProgressObjectTypeGuid);
 			queryRequest.Condition.Should().Be($"'{NameGuid}' == '{name}' AND '{ParentArtifactGuid}' == {syncConfigurationArtifactId}");
 
-			const int four = 4;
-			queryRequest.Fields.Count().Should().Be(four);
+			const int expectedNumberOfFields = 5;
+			queryRequest.Fields.Count().Should().Be(expectedNumberOfFields);
+			queryRequest.Fields.Should().Contain(x => x.Guid == NameGuid);
 			queryRequest.Fields.Should().Contain(x => x.Guid == ExceptionGuid);
 			queryRequest.Fields.Should().Contain(x => x.Guid == OrderGuid);
 			queryRequest.Fields.Should().Contain(x => x.Guid == StatusGuid);
@@ -232,55 +196,61 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			ReadResult readResult = new ReadResult
 			{
-				Object = new RelativityObject
+				Object = PrepareRelativityObjectResult(name, order, status, exception, message),
+			};
+			return readResult;
+		}
+
+		private static RelativityObject PrepareRelativityObjectResult(string name, int order, string status, string exception, string message)
+		{
+			var relativityObjectResult = new RelativityObject
+			{
+				ArtifactID = _ARTIFACT_ID,
+				FieldValues = new List<FieldValuePair>
 				{
-					ArtifactID = _ARTIFACT_ID,
-					FieldValues = new List<FieldValuePair>
+					new FieldValuePair
 					{
-						new FieldValuePair
+						Field = new Field
 						{
-							Field = new Field
-							{
-								Guids = new List<Guid> {NameGuid}
-							},
-							Value = name
+							Guids = new List<Guid> {NameGuid}
 						},
-						new FieldValuePair
+						Value = name
+					},
+					new FieldValuePair
+					{
+						Field = new Field
 						{
-							Field = new Field
-							{
-								Guids = new List<Guid> {OrderGuid}
-							},
-							Value = order
+							Guids = new List<Guid> {OrderGuid}
 						},
-						new FieldValuePair
+						Value = order
+					},
+					new FieldValuePair
+					{
+						Field = new Field
 						{
-							Field = new Field
-							{
-								Guids = new List<Guid> {StatusGuid}
-							},
-							Value = status
+							Guids = new List<Guid> {StatusGuid}
 						},
-						new FieldValuePair
+						Value = status
+					},
+					new FieldValuePair
+					{
+						Field = new Field
 						{
-							Field = new Field
-							{
-								Guids = new List<Guid> {ExceptionGuid}
-							},
-							Value = exception
+							Guids = new List<Guid> {ExceptionGuid}
 						},
-						new FieldValuePair
+						Value = exception
+					},
+					new FieldValuePair
+					{
+						Field = new Field
 						{
-							Field = new Field
-							{
-								Guids = new List<Guid> {MessageGuid}
-							},
-							Value = message
-						}
+							Guids = new List<Guid> {MessageGuid}
+						},
+						Value = message
 					}
 				}
 			};
-			return readResult;
+			return relativityObjectResult;
 		}
 
 		private bool AssertReadRequest(ReadRequest readRequest)
@@ -442,6 +412,97 @@ namespace Relativity.Sync.Tests.Unit
 
 			// ASSERT
 			action.Should().Throw<ArgumentNullException>();
+		}
+
+		[Test]
+		public async Task ItShouldQueryAllProgressTests()
+		{
+			//Arrange
+			const string name = "progress name 1";
+			const int order = 3;
+			const string statusDescription = "In Progress";
+			const string exception = "exception 5";
+			const string message = "message 10";
+			const int syncConfigurationArtifactId = 854796;
+			
+			QueryResult result = PrepareQueryResult(name, order, statusDescription, exception, message);
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, It.IsAny<int>())).ReturnsAsync(result);
+
+			ReadResult readResult = PrepareReadResult();
+			_objectManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<ReadRequest>())).ReturnsAsync(readResult);
+
+			//Act
+			IEnumerable<IProgress> progress = await _progressRepository.QueryAllAsync(_WORKSPACE_ID, syncConfigurationArtifactId)
+				.ConfigureAwait(false);
+
+			//Assert
+			progress.Count().Should().Be(0);
+			progress.Should().BeEmpty();
+
+			_objectManager.Verify(x => x.QueryAsync(_WORKSPACE_ID,
+					It.Is<QueryRequest>(qr => AssertQueryAllRequest(qr, syncConfigurationArtifactId)), 1,It.IsAny<int>()), Times.Once);
+		}
+
+		private bool AssertQueryAllRequest(QueryRequest queryRequest, int syncConfigurationArtifactId)
+		{
+			queryRequest.ObjectType.Guid.Should().Be(ProgressObjectTypeGuid);
+			queryRequest.Condition.Should().Be($"'{ParentArtifactGuid}' == OBJECT {syncConfigurationArtifactId}");
+			return true;
+		}
+
+		[Test]
+		public async Task ItShouldQueryAllCompletedWithErrorsTests()
+		{
+			//Arrange
+			const string name = "progress name 1";
+			const int order = 3;
+			const string statusDescription = "In Progress";
+			const SyncJobStatus expectedStatus = SyncJobStatus.CompletedWithErrors;
+			const string exception = "exception 5";
+			const string message = "message 10";
+			const int syncConfigurationArtifactId = 854796;
+
+			QueryResult result = PrepareQueryResult(name, order, statusDescription, exception, message);
+			result.TotalCount = 1;
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, It.IsAny<int>())).ReturnsAsync(result);
+			
+			ReadResult readResult = PrepareReadResult();
+			_objectManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<ReadRequest>())).ReturnsAsync(readResult);
+
+			//Act
+			IEnumerable<IProgress> progress = await _progressRepository.QueryAllAsync(_WORKSPACE_ID, syncConfigurationArtifactId)
+				.ConfigureAwait(false);
+
+			//Assert
+			progress.First().Status.Should().Be(expectedStatus);
+			progress.First().Exception.Should().Be("exception");
+			progress.First().Message.Should().Be("message");
+			progress.First().Name.Should().Be("name");
+			progress.First().ArtifactId.Should().Be(_ARTIFACT_ID);
+		}
+
+		[Test]
+		public async Task ItShouldQueryAllThrowExceptionTests()
+		{
+			//Arrange
+			const string name = "progress name 1";
+			const int order = 3;
+			const string statusDescription = "In Progress";
+			const string exception = "exception 5";
+			const string message = "message 10";
+			const int syncConfigurationArtifactId = 854796;
+
+			QueryResult result = PrepareQueryResult(name, order, statusDescription, exception, message);
+			result.TotalCount = 1;
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, It.IsAny<int>())).Throws<Exception>();
+
+			//Act
+			IEnumerable<IProgress> progress = await _progressRepository.QueryAllAsync(_WORKSPACE_ID, syncConfigurationArtifactId)
+				.ConfigureAwait(false);
+
+			//Assert
+			progress.Count().Should().Be(0);
+			progress.Should().BeEmpty();
 		}
 	}
 }

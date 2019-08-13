@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
 using Relativity.Services.Workspace;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Helpers;
@@ -23,7 +24,7 @@ namespace Relativity.Sync.Tests.System
 		{
 			await base.ChildSuiteSetup().ConfigureAwait(false);
 
-			_repository = new ProgressRepository(new ServiceFactoryStub(ServiceFactory));
+			_repository = new ProgressRepository(new ServiceFactoryStub(ServiceFactory), new EmptyLogger());
 
 			WorkspaceRef workspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
 			_workspaceId = workspace.ArtifactID;
