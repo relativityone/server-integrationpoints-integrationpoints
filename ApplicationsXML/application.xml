@@ -1866,6 +1866,12 @@
       <Name>Relativity.Telemetry.Services.Interface.dll</Name>
       <Notes />
     </Assembly>
+    <Assembly>
+      <ArtifactId>4940267</ArtifactId>
+      <Keywords />
+      <Name>itextsharp.dll</Name>
+      <Notes />
+    </Assembly>
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
