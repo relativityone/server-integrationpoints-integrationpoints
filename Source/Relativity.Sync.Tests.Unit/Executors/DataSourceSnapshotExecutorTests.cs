@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -13,6 +14,7 @@ using Relativity.Sync.Executors;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Telemetry;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.Unit.Executors
@@ -25,6 +27,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private Mock<IObjectManager> _objectManager;
 		private Mock<IDataSourceSnapshotConfiguration> _configuration;
 		private Mock<IJobProgressUpdater> _jobProgressUpdater;
+		private Mock<INativeFileRepository> _nativeFileRepository;
+		private IJobStatisticsContainer _jobStatisticsContainer;
 		private Mock<IFieldManager> _fieldManager;
 
 		private const int _WORKSPACE_ID = 458712;
@@ -45,12 +49,49 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_configuration.Setup(x => x.SourceWorkspaceArtifactId).Returns(_WORKSPACE_ID);
 			_configuration.Setup(x => x.DataSourceArtifactId).Returns(_DATA_SOURCE_ID);
 			_configuration.Setup(x => x.FieldMappings).Returns(new List<FieldMap>());
+			
+			_nativeFileRepository = new Mock<INativeFileRepository>();
+			_jobStatisticsContainer = new JobStatisticsContainer();
 
 			_jobProgressUpdater = new Mock<IJobProgressUpdater>();
 			Mock<IJobProgressUpdaterFactory> jobProgressUpdaterFactory = new Mock<IJobProgressUpdaterFactory>();
 			jobProgressUpdaterFactory.Setup(x => x.CreateJobProgressUpdater()).Returns(_jobProgressUpdater.Object);
 
-			_instance = new DataSourceSnapshotExecutor(serviceFactory.Object, _fieldManager.Object, jobProgressUpdaterFactory.Object, new EmptyLogger());
+			_instance = new DataSourceSnapshotExecutor(serviceFactory.Object, _fieldManager.Object, jobProgressUpdaterFactory.Object,
+				_nativeFileRepository.Object, _jobStatisticsContainer, new EmptyLogger());
+		}
+
+		[Test]
+		public async Task ItShouldSetNativesSize()
+		{
+#pragma warning disable RG2009 // Hardcoded Numeric Value
+			// Arrange
+			List<INativeFile> allNatives = new List<INativeFile>()
+			{
+				new NativeFile(0, string.Empty, string.Empty, 10),
+				new NativeFile(1, string.Empty, string.Empty, 20),
+				new NativeFile(2, string.Empty, string.Empty, 30)
+			};
+			_nativeFileRepository.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<ICollection<int>>())).ReturnsAsync(allNatives);
+			ExportInitializationResults exportResult = new ExportInitializationResults()
+			{
+				RecordCount = allNatives.Count
+			};
+			_objectManager.Setup(x => x.InitializeExportAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>())).ReturnsAsync(exportResult);
+			QueryResult queryResult = new QueryResult()
+			{
+				Objects = allNatives.Select(native => new RelativityObject() {ArtifactID = native.DocumentArtifactId}).ToList()
+			};
+			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(queryResult);
+			
+			// Act
+			await _instance.ExecuteAsync(_configuration.Object, CancellationToken.None).ConfigureAwait(false);
+			long nativesSize = await _jobStatisticsContainer.NativesBytesRequested.ConfigureAwait(false);
+
+			// Assert
+			long expectedTotalSize = allNatives.Sum(x => x.Size);
+			nativesSize.Should().Be(expectedTotalSize);
+#pragma warning restore RG2009 // Hardcoded Numeric Value
 		}
 
 		[Test]
@@ -65,6 +106,11 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				RunID = runId
 			};
 			_objectManager.Setup(x => x.InitializeExportAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1)).ReturnsAsync(exportInitializationResults);
+			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(new QueryResult()
+			{
+				Objects = new List<RelativityObject>()
+			});
+			_nativeFileRepository.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<ICollection<int>>())).ReturnsAsync(Enumerable.Empty<INativeFile>());
 
 			// ACT
 			ExecutionResult result = await _instance.ExecuteAsync(_configuration.Object, CancellationToken.None).ConfigureAwait(false);

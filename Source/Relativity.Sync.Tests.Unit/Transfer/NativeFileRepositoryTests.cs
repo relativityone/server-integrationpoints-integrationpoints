@@ -113,9 +113,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			
 			NativeFile[] expectedNativeFiles =
 			{
-				new NativeFile(123, @"\\test1\test2", "test3.txt", 101L),
-				new NativeFile(456, @"\\test2\test3", "test5.txt", 1010L),
-				new NativeFile(789, @"\\test3\test4", "test6.html", 231123L)
+				new NativeFile(123, @"\\test1\test2", "test3.txt", 11),
+				new NativeFile(456, @"\\test2\test3", "test5.txt", 12),
+				new NativeFile(789, @"\\test3\test4", "test6.html", 13)
 			};
 
 			yield return new TestCaseData(response, expectedNativeFiles)
@@ -134,9 +134,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				new DataColumn(_FILENAME_COLUMN_NAME, typeof(string)),
 				new DataColumn(_SIZE_COLUMN_NAME, typeof(long))
 			});
-			dataTable.Rows.Add(CreateRow(dataTable, 123, @"\\test1\test2", "test3.txt", 101L));
-			dataTable.Rows.Add(CreateRow(dataTable, 456, @"\\test2\test3", "test5.txt", 1010L));
-			dataTable.Rows.Add(CreateRow(dataTable, 789, @"\\test3\test4", "test6.html", 231123L));
+			dataTable.Rows.Add(CreateRow(dataTable, 123, @"\\test1\test2", "test3.txt", 11));
+			dataTable.Rows.Add(CreateRow(dataTable, 456, @"\\test2\test3", "test5.txt", 12));
+			dataTable.Rows.Add(CreateRow(dataTable, 789, @"\\test3\test4", "test6.html", 13));
 			DataSet dataSet = new DataSet();
 			dataSet.Tables.Add(dataTable);
 			return dataSet;

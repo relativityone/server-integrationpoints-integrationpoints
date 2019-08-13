@@ -18,7 +18,7 @@ namespace Relativity.Sync.Tests.System.Helpers
 			_serviceFactory = serviceFactory;
 		}
 
-		public async Task<ImportJobResult> ImportDataAsync(int workspaceArtifactId, ImportDataTableWrapper dataTableWrapper)
+		public async Task<ImportJobErrors> ImportDataAsync(int workspaceArtifactId, ImportDataTableWrapper dataTableWrapper)
 		{
 			kCura.WinEDDS.Config.ConfigSettings[nameof(kCura.WinEDDS.Config.TapiForceHttpClient)] = true.ToString(CultureInfo.InvariantCulture);
 			kCura.WinEDDS.Config.ConfigSettings[nameof(kCura.WinEDDS.Config.TapiForceBcpHttpClient)] = true.ToString(CultureInfo.InvariantCulture);
@@ -29,12 +29,12 @@ namespace Relativity.Sync.Tests.System.Helpers
 					AppSettings.RelativityUserPassword,
 					AppSettings.RelativityWebApiUrl.ToString());
 
-			ImportJobResult result = await ConfigureAndRunImportApiJobAsync(workspaceArtifactId, dataTableWrapper, importApi).ConfigureAwait(false);
+			ImportJobErrors errors = await ConfigureAndRunImportApiJobAsync(workspaceArtifactId, dataTableWrapper, importApi).ConfigureAwait(false);
 
-			return result;
+			return errors;
 		}
 
-		private async Task<ImportJobResult> ConfigureAndRunImportApiJobAsync(int workspaceArtifactId, ImportDataTableWrapper dataTable, ImportAPI importApi)
+		private async Task<ImportJobErrors> ConfigureAndRunImportApiJobAsync(int workspaceArtifactId, ImportDataTableWrapper dataTable, ImportAPI importApi)
 		{
 			ImportBulkArtifactJob importJob = importApi.NewNativeDocumentImportJob();
 			importJob.Settings.CaseArtifactId = workspaceArtifactId;
