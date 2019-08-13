@@ -119,7 +119,7 @@ Process
 		.\Jira\ChangeIssueStatus.ps1 -Credential $Credential -JiraNumber $JiraNumber -StatusName "In Progress"
 	}
 	.\Git\CreateBranch.ps1 -ParentBranch $OnBranch -BranchName $updateBranchName -Path $RipSourceCodePath
-	$upgradeLogs = .\PackageUpdate\UpdateRelativityPackagesInRip.ps1 -ToVersion $ToVersion -RipSourceCodePath $RipSourceCodePath -WithNewestkCura -WithNewestRelativityApi -WithNewestRelativityDataExchange
+	$upgradeLogs = .\PackageUpdate\UpdateRelativityPackagesInRip.ps1 -ToVersion $ToVersion -RipSourceCodePath $RipSourceCodePath -WithLatestkCura -WithLatestRelativityApi -WithLatestRelativityDataExchange
 	.\Git\Commit.ps1 -JiraNumber $JiraNumber -Message $commitMessage -Path $RipSourceCodePath
 	.\Git\Push.ps1 -BranchName $updateBranchName -Path $RipSourceCodePath
 	if(!$SkipPullRequest)

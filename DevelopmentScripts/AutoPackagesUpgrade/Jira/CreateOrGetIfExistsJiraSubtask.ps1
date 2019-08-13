@@ -40,9 +40,10 @@ Process
 	Write-Verbose "Beginning of CreateOrGetIfExistsJiraSubtask.ps1"  
 
 	$createJiraUri = "$JiraApiUri/api/2/issue/"
-	$getJiraUri = "$JiraApiUri/api/2/search?jql=parent=$ParentIssueKey+AND+summary~$Summary&fields=key"
+	$getJiraUri = "$JiraApiUri/api/2/search?jql=parent=$ParentIssueKey+AND+labels=$Label&fields=key"
   
-	Write-Verbose $jiraUri
+	Write-Verbose $createJiraUri
+	Write-Verbose $getJiraUri
 
 	[String] $body = '{  
 		"fields":{  
@@ -72,10 +73,15 @@ Process
 	$headers = GetBasicAuthJsonHttpHeaders -Credential $Credential
 	try 
 	{  	 
-		$response = Invoke-RestMethod -Uri $getJiraUri -Method GET -Headers $headers -Body $body -UseBasicParsing
+		$response = Invoke-RestMethod -Uri $getJiraUri -Method GET -Headers $headers -UseBasicParsing
 		
-		if(!$response.key)
+		if($response.issues -and $response.issues.length -gt 0)
 		{
+			$response = $response.issues[0]
+		}
+		else
+		{
+			Write-Verbose "Subtask does not exist - attempting to create a new one"
 			$response = Invoke-RestMethod -Uri $createJiraUri -Method POST -Headers $headers -Body $body -UseBasicParsing
 		}    
 		$jiraKey = $($response.key)
