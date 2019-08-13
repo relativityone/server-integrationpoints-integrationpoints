@@ -101,9 +101,10 @@ namespace Relativity.Sync.Storage
 				{
 					ObjectType = new ObjectTypeRef { Guid = _jobHistoryErrorObject },
 					Condition = $"'{_jobHistoryRelationGuid}' == OBJECT {jobHistoryArtifactId} AND '{_errorTypeField}' == CHOICE {jobErrorType.Object.ArtifactID}",
-					Fields = GetFields()
+					Fields = GetFields(),
+					Sorts = new[] { new Sort { Direction = SortEnum.Descending, FieldIdentifier = new FieldRef { Guid = _timestampUtcField } } }
 				};
-				QueryResult result = await objectManager.QueryAsync(workspaceArtifactId, request, 0, int.MaxValue).ConfigureAwait(false);
+				QueryResult result = await objectManager.QueryAsync(workspaceArtifactId, request, 0, 1).ConfigureAwait(false);
 				if (result.TotalCount > 0)
 				{
 					RelativityObject jobError = result.Objects.First();
