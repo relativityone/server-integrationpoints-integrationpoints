@@ -27,9 +27,9 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 		private const int _ALLOW_EXPORT_PERMISSION_ID = 159; // 159 is the artifact id of the "Allow Export" permission
 		private const int _EDIT_DOCUMENT_PERMISSION_ID = 45; // 45 is the artifact id of the "Edit Documents" permission
 		private const int _EXPECTED_VALUE_FOR_ALL_FAILED_VALIDATE = 8;
+		private const int _ARTIFACT_OBJECT_TYPE = 25;
 
 		private readonly Guid _jobHistory = new Guid("08f4b1f7-9692-4a08-94ab-b5f3a88b6cc9");
-		private readonly Guid _objectTypeGuid = new Guid("3F45E490-B4CF-4C7D-8BB6-9CA891C0C198");
 		private readonly Guid _batchObjectTypeGuid = new Guid("18C766EB-EB71-49E4-983E-FFDE29B1A44E");
 		private readonly Guid _progressObjectTypeGuid = new Guid("3D107450-DB18-4FE1-8219-73EE1F921ED9");
 		private readonly Guid _configurationObjectTypeGuid = new Guid("3BE3DE56-839F-4F0E-8446-E1691ED5FD57");
@@ -104,7 +104,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 			Mock<IPermissionsCheckConfiguration> configuration = ConfigurationSet();
 			Mock<IPermissionManager> permissionManager = ArrangeSet();
 
-			permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>(y => y.Any(z => z.ArtifactType.Guids.Contains(_objectTypeGuid)))))
+			permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>(y => y.Any(z => z.ArtifactType.ID == _ARTIFACT_OBJECT_TYPE))))
 				.Throws<SyncException>();
 
 			// Act
