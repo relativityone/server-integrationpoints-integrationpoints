@@ -16,22 +16,18 @@ namespace Relativity.Sync.Executors
 		private readonly IImportJobFactory _importJobFactory;
 		private readonly IFieldManager _fieldManager;
 		private readonly IFieldMappings _fieldMappings;
-		private readonly ISourceWorkspaceTagRepository _sourceWorkspaceTagRepository;
 		private readonly IJobStatisticsContainer _jobStatisticsContainer;
 		private readonly ISyncLog _logger;
+		private readonly IDocumentTagRepository _documentsTagRepository;
 
-		public SynchronizationExecutor(IImportJobFactory importJobFactory, IBatchRepository batchRepository, IDestinationWorkspaceTagRepository destinationWorkspaceTagRepository,
-			ISourceWorkspaceTagRepository sourceWorkspaceTagRepository, IFieldManager fieldManager, IFieldMappings fieldMappings, IJobHistoryErrorRepository jobHistoryErrorRepository,
-			IJobStatisticsContainer jobStatisticsContainer, ISyncLog logger)
-		public SynchronizationExecutor(IImportJobFactory importJobFactory, IBatchRepository batchRepository, IDestinationWorkspaceTagRepository destinationWorkspaceTagRepository,
-			ISourceWorkspaceTagRepository sourceWorkspaceTagRepository, IFieldManager fieldManager, IFieldMappings fieldMappings, IJobHistoryErrorRepository jobHistoryErrorRepository,
+		public SynchronizationExecutor(IImportJobFactory importJobFactory, IBatchRepository batchRepository,
+			IDocumentTagRepository documentsTagRepository, IFieldManager fieldManager, IFieldMappings fieldMappings, 
 			IJobStatisticsContainer jobStatisticsContainer, ISyncLog logger)
 		{
 			_batchRepository = batchRepository;
 			_importJobFactory = importJobFactory;
 			_fieldManager = fieldManager;
 			_fieldMappings = fieldMappings;
-			_sourceWorkspaceTagRepository = sourceWorkspaceTagRepository;
 			_jobStatisticsContainer = jobStatisticsContainer;
 			_logger = logger;
 			_documentsTagRepository = documentsTagRepository;
@@ -67,7 +63,7 @@ namespace Relativity.Sync.Executors
 					using (IImportJob importJob = await _importJobFactory.CreateImportJobAsync(configuration, batch, token).ConfigureAwait(false))
 					{
 						ImportJobResult importJobResult = await importJob.RunAsync(token).ConfigureAwait(false);
-						importResult = importJobResult.ExecutionResult;
+						importAndTagResult = importJobResult.ExecutionResult;
 						_jobStatisticsContainer.TotalBytesTransferred += importJobResult.JobSizeInBytes;
 
 						IEnumerable<int> pushedDocumentArtifactIds = await importJob.GetPushedDocumentArtifactIds().ConfigureAwait(false);

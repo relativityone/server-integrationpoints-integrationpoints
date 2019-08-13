@@ -21,8 +21,9 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private Mock<IBatchRepository> _batchRepository;
 		private Mock<IFieldManager> _fieldManager;
 		private Mock<IFieldMappings> _fieldMappings;
-		private Mock<ISourceWorkspaceTagRepository> _sourceWorkspaceTagRepository;
 		private Mock<IJobStatisticsContainer> _jobStatisticsContainer;
+		private Mock<IDocumentTagRepository> _documentTagRepository;
+		private Mock<IImportJobFactory> _importJobFactory;
 
 		private Mock<Sync.Executors.IImportJob> _importJob;
 		private Mock<ISynchronizationConfiguration> _config;
@@ -49,6 +50,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[SetUp]
 		public void SetUp()
 		{
+			_documentTagRepository = new Mock<IDocumentTagRepository>();
 			_importJobFactory = new Mock<IImportJobFactory>();
 			_batchRepository = new Mock<IBatchRepository>();
 			_jobStatisticsContainer = new Mock<IJobStatisticsContainer>();
@@ -56,6 +58,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_fieldMappings = new Mock<IFieldMappings>();
 			_documentTagRepository = new Mock<IDocumentTagRepository>();
 			_config = new Mock<ISynchronizationConfiguration>();
+
 			_config.SetupGet(x => x.ImportSettings).Returns(new ImportSettingsDto());
 			_fieldMappings.Setup(x => x.GetFieldMappings()).Returns(new List<FieldMap>
 			{
@@ -73,8 +76,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			_fieldManager.Setup(x => x.GetSpecialFields()).Returns(_specialFields);
 
-			_synchronizationExecutor = new SynchronizationExecutor(importJobFactory.Object, _batchRepository.Object, _destinationWorkspaceTagRepository.Object, _sourceWorkspaceTagRepository.Object,
-				_fieldManager.Object, _fieldMappings.Object, jobHistoryErrorRepository.Object, _jobStatisticsContainer.Object, new EmptyLogger());
+			_synchronizationExecutor = new SynchronizationExecutor(_importJobFactory.Object, _batchRepository.Object, 
+				_documentTagRepository.Object,_fieldManager.Object, _fieldMappings.Object, _jobStatisticsContainer.Object, new EmptyLogger());
 		}
 
 		[Test]
@@ -85,16 +88,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(CreateSuccessfulResult());
 
 			Task<ExecutionResult> executionResult = ReturnTaggingCompletedResultAsync();
-
-			_documentTagRepository
-				.Setup(x => x.TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(
-					It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IEnumerable<int>>(),
-					It.IsAny<CancellationToken>())).Returns(executionResult);
-
-			_documentTagRepository
-				.Setup(x => x.TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(
-					It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IEnumerable<string>>(),
-					It.IsAny<CancellationToken>())).Returns(executionResult);
+			SetUpDocumentsTagRepository(executionResult);
 
 			// act
 			await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
@@ -112,22 +106,17 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[Test]
 		public async Task ItShouldCancelTaggingResultTest()
 		{
+			const long jobSize = 12L;
 			SetupBatchRepository(1);
 			_config.SetupGet(x => x.DestinationFolderStructureBehavior).Returns(DestinationFolderStructureBehavior.None);
-			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(ExecutionResult.Success);
+			ImportJobResult importJob = new ImportJobResult(ExecutionResult.Success(), jobSize);
+			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(importJob);
+
 			CancellationTokenSource tokenSource = new CancellationTokenSource();
 			tokenSource.Cancel();
+
 			Task<ExecutionResult> executionResult = ReturnTaggingCompletedResultAsync(tokenSource.Token);
-
-			_documentTagRepository
-				.Setup(x => x.TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(
-					It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IEnumerable<int>>(),
-					It.IsAny<CancellationToken>())).Returns(executionResult);
-
-			_documentTagRepository
-				.Setup(x => x.TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(
-					It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IEnumerable<string>>(),
-					It.IsAny<CancellationToken>())).Returns(executionResult);
+			SetUpDocumentsTagRepository(executionResult);
 
 			//Act
 			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
@@ -141,21 +130,16 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[Test]
 		public async Task ItShouldCatchExceptionTest()
 		{
+			const long jobSize = 12L;
 			SetupBatchRepository(1);
 			_config.SetupGet(x => x.DestinationFolderStructureBehavior).Returns(DestinationFolderStructureBehavior.None);
-			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(ExecutionResult.Success);
+			ImportJobResult importJob = new ImportJobResult(ExecutionResult.Success(), jobSize);
+			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(importJob);
 
 			Task<ExecutionResult> executionResult = null;
 
-			_documentTagRepository
-				.Setup(x => x.TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(
-					It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IEnumerable<int>>(),
-					It.IsAny<CancellationToken>())).Returns(executionResult);
-
-			_documentTagRepository
-				.Setup(x => x.TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(
-					It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IEnumerable<string>>(),
-					It.IsAny<CancellationToken>())).Returns(executionResult);
+			SetUpDocumentsTagRepository(executionResult);
+		
 
 			//Act
 			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
@@ -169,23 +153,17 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[Test]
 		public async Task ItShouldSetImportApiSettingsExceptFolderInfo()
 		{
+			//Arrange
+			const long jobSize = 12L;
 			SetupBatchRepository(1);
 			_config.SetupGet(x => x.DestinationFolderStructureBehavior).Returns(DestinationFolderStructureBehavior.None);
 			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(CreateSuccessfulResult());
-
-			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(ExecutionResult.Success);
+			ImportJobResult importJob = new ImportJobResult(ExecutionResult.Success(), jobSize);
+			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(importJob);
 
 			Task<ExecutionResult> executionResult = ReturnTaggingCompletedResultAsync();
 
-			_documentTagRepository
-				.Setup(x => x.TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(
-					It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IEnumerable<int>>(),
-					It.IsAny<CancellationToken>())).Returns(executionResult);
-
-			_documentTagRepository
-				.Setup(x => x.TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(
-					It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IEnumerable<string>>(),
-					It.IsAny<CancellationToken>())).Returns(executionResult);
+			SetUpDocumentsTagRepository(executionResult);
 
 			// act
 			await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
@@ -234,22 +212,15 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[TestCase(5)]
 		public async Task ItShouldRunImportApiJobForEachBatch(int numberOfBatches)
 		{
+			const long jobSize = 12L;
 			SetupBatchRepository(numberOfBatches);
 			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(CreateSuccessfulResult());
-
-			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(ExecutionResult.Success);
+			ImportJobResult importJob = new ImportJobResult(ExecutionResult.Success(), jobSize);
+			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(importJob);
 
 			Task<ExecutionResult> executionResult = ReturnTaggingCompletedResultAsync();
 
-			_documentTagRepository
-				.Setup(x => x.TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(
-					It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IEnumerable<int>>(),
-					It.IsAny<CancellationToken>())).Returns(executionResult);
-
-			_documentTagRepository
-				.Setup(x => x.TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(
-					It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IEnumerable<string>>(),
-					It.IsAny<CancellationToken>())).Returns(executionResult);
+			SetUpDocumentsTagRepository(executionResult);
 
 			// act
 			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
@@ -265,6 +236,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		{
 			const int numberOfBatches = 1;
 			SetupBatchRepository(numberOfBatches);
+
 			CancellationTokenSource tokenSource = new CancellationTokenSource();
 			tokenSource.Cancel();
 
@@ -283,16 +255,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(CreateSuccessfulResult());
 
 			Task<ExecutionResult> executionResult = ReturnTaggingCompletedResultAsync();
-
-			_documentTagRepository
-				.Setup(x => x.TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(
-					It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IEnumerable<int>>(),
-					It.IsAny<CancellationToken>())).Returns(executionResult);
-
-			_documentTagRepository
-				.Setup(x => x.TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(
-					It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IEnumerable<string>>(),
-					It.IsAny<CancellationToken>())).Returns(executionResult);
+			SetUpDocumentsTagRepository(executionResult);
 
 			// act
 			await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
@@ -339,16 +302,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(CreateSuccessfulResult());
 
 			Task<ExecutionResult> executionResult = ReturnTaggingFailedResultAsync();
-
-			_documentTagRepository
-				.Setup(x => x.TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(
-					It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IEnumerable<int>>(),
-					It.IsAny<CancellationToken>())).Returns(executionResult);
-
-			_documentTagRepository
-				.Setup(x => x.TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(
-					It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IEnumerable<string>>(),
-					It.IsAny<CancellationToken>())).Returns(executionResult);
+			SetUpDocumentsTagRepository(executionResult);
 
 			// act
 			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
@@ -377,6 +331,19 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			_batchRepository.Setup(x => x.GetAllNewBatchesIdsAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(batches);
 			_batchRepository.Setup(x => x.GetAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync((new Mock<IBatch>()).Object);
+		}
+
+		private void SetUpDocumentsTagRepository(Task<ExecutionResult> executionResult)
+		{
+			_documentTagRepository
+				.Setup(x => x.TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(
+					It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IEnumerable<int>>(),
+					It.IsAny<CancellationToken>())).Returns(executionResult);
+
+			_documentTagRepository
+				.Setup(x => x.TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(
+					It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IEnumerable<string>>(),
+					It.IsAny<CancellationToken>())).Returns(executionResult);
 		}
 
 		private async Task<ExecutionResult> ReturnTaggingCompletedResultAsync()
