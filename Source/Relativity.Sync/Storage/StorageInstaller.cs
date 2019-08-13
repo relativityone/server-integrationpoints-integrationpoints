@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using Autofac;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync.Storage
@@ -25,6 +26,7 @@ namespace Relativity.Sync.Storage
 			builder.RegisterType<JobHistoryErrorRepository>().As<IJobHistoryErrorRepository>();
 			builder.RegisterType<JobProgressUpdaterFactory>().As<IJobProgressUpdaterFactory>();
 			builder.RegisterType<JobProgressHandlerFactory>().As<IJobProgressHandlerFactory>();
+			builder.RegisterType<NotificationConfiguration>().As<INotificationConfiguration>();
 
 			builder.Register(CreateConfiguration).As<IConfiguration>().SingleInstance();
 		}

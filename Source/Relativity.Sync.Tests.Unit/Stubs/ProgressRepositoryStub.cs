@@ -32,6 +32,11 @@ namespace Relativity.Sync.Tests.Unit.Stubs
 			return Task.FromResult(progress);
 		}
 
+		public Task<IReadOnlyCollection<IProgress>> QueryAllAsync(int workspaceArtifactId, int syncConfigurationArtifactId)
+		{
+			return Task.FromResult(ForQuery as IReadOnlyCollection<IProgress>);
+		}
+
 		public Task<IProgress> QueryAsync(int workspaceArtifactId, int syncConfigurationArtifactId, string name)
 		{
 			IProgress progress = ForQuery.FirstOrDefault(x => x.Name.Equals(name, StringComparison.InvariantCulture));

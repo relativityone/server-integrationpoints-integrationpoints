@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
@@ -8,11 +9,10 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
+using kCura.WinEDDS.Service.Export;
 using Moq;
 using Moq.Language.Flow;
 using Relativity.Kepler.Transport;
-using Relativity.Services.Interfaces.File;
-using Relativity.Services.Interfaces.File.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
@@ -25,25 +25,29 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 	/// </summary>
 	internal sealed class DocumentTransferServicesMocker
 	{
-		private IFieldManager _fieldManager;
+		private Relativity.Sync.Transfer.IFieldManager _fieldManager;
+
+		private const string _DOCUMENT_ARTIFACT_ID_COLUMN_NAME = "DocumentArtifactID";
+		private const string _FILENAME_COLUMN_NAME = "Filename";
+		private const string _LOCATION_COLUMN_NAME = "Location";
+		private const string _SIZE_COLUMN_NAME = "Size";
 
 		public Mock<ISourceServiceFactoryForUser> SourceServiceFactoryForUser { get; }
 		public Mock<ISourceServiceFactoryForAdmin> SourceServiceFactoryForAdmin { get; }
 		public Mock<IObjectManager> ObjectManager { get; }
-		public Mock<IFileManager> FileManager { get; }
+		public Mock<ISearchManager> SearchManager { get; }
 
 		public DocumentTransferServicesMocker()
 		{
 			SourceServiceFactoryForAdmin = new Mock<ISourceServiceFactoryForAdmin>();
 			SourceServiceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
 			ObjectManager = new Mock<IObjectManager>();
-			FileManager = new Mock<IFileManager>();
+			SearchManager = new Mock<ISearchManager>();
 		}
 
 		public async Task SetupServicesWithTestData(DocumentImportJob job, int batchSize)
 		{
 			SetupServiceCreation(ObjectManager);
-			SetupServiceCreation(FileManager);
 
 			SetupFields(job.Schema);
 			await SetupExportResultBlocks(_fieldManager, job.Documents, batchSize).ConfigureAwait(false);
@@ -58,9 +62,9 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 			SetupFailingServiceCreation<IObjectManager>();
 		}
 
-		public void SetupFailingFileManagerCreation()
+		public void SetupFailingSearchManagerCreation()
 		{
-			SetupFailingServiceCreation<IFileManager>();
+			SetupFailingServiceCreation<ISearchManager>();
 		}
 
 		public void SetupFailingObjectManagerCall<TResult>(Expression<Func<IObjectManager, TResult>> expression)
@@ -68,15 +72,17 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 			ObjectManager.Setup(expression).Throws<AggregateException>();
 		}
 
-		public void SetupFailingFileManagerCall<TResult>(Expression<Func<IFileManager, TResult>> expression)
+		public void SetupFailingSearchManagerCall<TResult>(Expression<Func<ISearchManager, TResult>> expression)
 		{
-			FileManager.Setup(expression).Throws<AggregateException>();
+			SearchManager.Setup(expression).Throws<AggregateException>();
 		}
 
 		public void RegisterServiceMocks(ContainerBuilder containerBuilder)
 		{
 			containerBuilder.RegisterInstance(SourceServiceFactoryForUser.Object).As<ISourceServiceFactoryForUser>();
 			containerBuilder.RegisterInstance(SourceServiceFactoryForAdmin.Object).As<ISourceServiceFactoryForAdmin>();
+			Func<ISearchManager> searchManagerFactory = () => SearchManager.Object;
+			containerBuilder.RegisterInstance(searchManagerFactory).As<Func<ISearchManager>>();
 		}
 
 		public void SetupLongTextStream(string fieldName, Encoding encoding, string streamContents)
@@ -101,7 +107,7 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 				.ReturnsAsync(new MemoryStream(encoding.GetBytes(streamContents)));
 		}
 
-		public void SetFieldManager(IFieldManager fieldManager)
+		public void SetFieldManager(Relativity.Sync.Transfer.IFieldManager fieldManager)
 		{
 			_fieldManager = fieldManager;
 		}
@@ -153,7 +159,7 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 			return retVal;
 		}
 		
-		private async Task SetupExportResultBlocks(IFieldManager fieldManager, Document[] documents, int batchSize)
+		private async Task SetupExportResultBlocks(Relativity.Sync.Transfer.IFieldManager fieldManager, Document[] documents, int batchSize)
 		{
 			IList<FieldInfoDto> sourceDocumentFields = await fieldManager.GetDocumentFieldsAsync(CancellationToken.None).ConfigureAwait(false);
 			for (int takenDocumentsCount = 0; takenDocumentsCount < documents.Length; takenDocumentsCount += batchSize)
@@ -175,9 +181,10 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 
 		private void SetupNatives(Document[] documents)
 		{
-			FileManager
-				.Setup(x => x.GetNativesForSearchAsync(It.IsAny<int>(), It.IsAny<int[]>()))
-				.ReturnsAsync<int, int[], IFileManager, FileResponse[]>((_, ids) => DocumentsForArtifactIds(ids, documents));
+			DataSet dataSet = GetDataSetForDocuments(documents);
+			SearchManager
+				.Setup(x => x.RetrieveNativesForSearch(It.IsAny<int>(), It.IsAny<string>()))
+				.Returns(dataSet);
 		}
 
 		private static RelativityObjectSlim[] GetBlock(IList<FieldInfoDto> sourceDocumentFields, Document[] documents, int resultsBlockSize, int startingIndex)
@@ -199,10 +206,29 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 			};
 		}
 
-		private static FileResponse[] DocumentsForArtifactIds(int[] requestedIds, Document[] documents)
+		private static DataSet GetDataSetForDocuments(Document[] documents)
 		{
-			Dictionary<int, Document> idToDocumentMap = documents.ToDictionary(d => d.ArtifactId);
-			return requestedIds.Select(i => idToDocumentMap[i].ToFileResponse()).ToArray();
+			DataSet dataSet = new DataSet();
+			DataTable dataTable = new DataTable("Table1");
+			dataSet.Tables.Add(dataTable);
+			dataTable.Columns.AddRange(new[]
+			{
+				new DataColumn(_DOCUMENT_ARTIFACT_ID_COLUMN_NAME, typeof(int)),
+				new DataColumn(_LOCATION_COLUMN_NAME, typeof(string)),
+				new DataColumn(_FILENAME_COLUMN_NAME, typeof(string)),
+				new DataColumn(_SIZE_COLUMN_NAME, typeof(long))
+			});
+			DataRow[] rows = documents.Select(document =>
+			{
+				DataRow dataRow = dataTable.NewRow();
+				dataRow[_DOCUMENT_ARTIFACT_ID_COLUMN_NAME] = document.ArtifactId;
+				dataRow[_LOCATION_COLUMN_NAME] = document.NativeFile.Location;
+				dataRow[_FILENAME_COLUMN_NAME] = document.NativeFile.Filename;
+				dataRow[_SIZE_COLUMN_NAME] = document.NativeFile.Size;
+				return dataRow;
+			}).ToArray();
+			rows.ForEach(row => dataTable.Rows.Add(row));
+			return dataSet;
 		}
 
 		private static bool MatchesQueryByIdentifierRequest(QueryRequest request)

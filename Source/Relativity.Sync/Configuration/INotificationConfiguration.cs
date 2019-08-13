@@ -4,13 +4,20 @@ namespace Relativity.Sync.Configuration
 {
 	internal interface INotificationConfiguration : IConfiguration
 	{
-		/// <summary>
-		///     string will be changed after we introduce final progress handling
-		/// </summary>
-		string JobStatus { get; }
+		int DestinationWorkspaceArtifactId { get; }
+
+		IEnumerable<string> EmailRecipients { get; }
+
+		int JobHistoryArtifactId { get; }
+
+		string JobName { get; }
 
 		bool SendEmails { get; }
 
-		IEnumerable<string> EmailRecipients { get; }
+		int SourceWorkspaceArtifactId { get; }
+
+		string SourceWorkspaceTag { get; }
+
+		int SyncConfigurationArtifactId { get; }
 	}
 }

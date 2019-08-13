@@ -13,6 +13,8 @@
 			public static readonly string JOB_START_TYPE = $"{_METRIC_PREPEND}.Job.Start.Type";
 			public static readonly string JOB_END_STATUS = $"{_METRIC_PREPEND}.Job.End.Status";
 
+			public static readonly string DATA_BYTES_TOTAL_TRANSFERRED = $"{_METRIC_PREPEND}.Data.Bytes.TotalTransferred";
+			public static readonly string DATA_BYTES_NATIVES_REQUESTED = $"{_METRIC_PREPEND}.Data.Bytes.NativesRequested";
 			public static readonly string DATA_RECORDS_TRANSFERRED = $"{_METRIC_PREPEND}.Data.Records.Transferred";
 			public static readonly string DATA_RECORDS_FAILED = $"{_METRIC_PREPEND}.Data.Records.Failed";
 			public static readonly string DATA_RECORDS_TOTAL_REQUESTED = $"{_METRIC_PREPEND}.Data.Records.TotalRequested";

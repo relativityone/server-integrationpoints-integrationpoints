@@ -8,7 +8,6 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.Folder;
-using Relativity.Services.Interfaces.File;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
@@ -30,7 +29,6 @@ namespace Relativity.Sync.Tests.Integration
 		private IExecutor<ISynchronizationConfiguration> _executor;
 		private ISourceWorkspaceDataReaderFactory _dataReaderFactory;
 		private Mock<IObjectManager> _objectManagerMock;
-		private Mock<IFileManager> _fileManagerMock;
 		private Mock<IFolderManager> _folderManagerMock;
 		private Mock<ISyncImportBulkArtifactJob> _importBulkArtifactJob;
 
@@ -50,11 +48,7 @@ namespace Relativity.Sync.Tests.Integration
 		private static readonly Guid TotalItemsCountGuid = new Guid("F84589FE-A583-4EB3-BA8A-4A2EEE085C81");
 		private static readonly Guid TransferredItemsCountGuid = new Guid("B2D112CA-E81E-42C7-A6B2-C0E89F32F567");
 
-		private static readonly Guid JobHistoryErrorObject = new Guid("17E7912D-4F57-4890-9A37-ABC2B8A37BDB");
-
-		private static readonly Guid ErrorTypeField = new Guid("EEFFA5D3-82E3-46F8-9762-B4053D73F973");
-		private static readonly Guid ErrorTypeItem = new Guid("9DDC4914-FEF3-401F-89B7-2967CD76714B");
-		private static readonly Guid ErrorTypeJob = new Guid("FA8BB625-05E6-4BF7-8573-012146BAF19B");
+		private static readonly Guid JobHistoryErrorObjectTypeGuid = new Guid("17E7912D-4F57-4890-9A37-ABC2B8A37BDB");
 
 		[SetUp]
 		public void SetUp()
@@ -71,7 +65,7 @@ namespace Relativity.Sync.Tests.Integration
 
 			Mock<ISemaphoreSlim> semaphoreSlim = new Mock<ISemaphoreSlim>();
 			containerBuilder.RegisterInstance(semaphoreSlim.Object).As<ISemaphoreSlim>();
-			
+
 			IList<FieldMap> fieldMaps = new List<FieldMap>()
 			{
 				new FieldMap()
@@ -99,7 +93,6 @@ namespace Relativity.Sync.Tests.Integration
 			containerBuilder.RegisterInstance(_config).AsImplementedInterfaces();
 
 			_objectManagerMock = new Mock<IObjectManager>();
-			_fileManagerMock = new Mock<IFileManager>();
 			_folderManagerMock = new Mock<IFolderManager>();
 			var destinationServiceFactoryForUser = new Mock<IDestinationServiceFactoryForUser>();
 			var sourceServiceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
@@ -111,7 +104,6 @@ namespace Relativity.Sync.Tests.Integration
 			destinationServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManagerMock.Object);
 			sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManagerMock.Object);
 			sourceServiceFactoryForAdmin.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManagerMock.Object);
-			sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IFileManager>()).ReturnsAsync(_fileManagerMock.Object);
 			sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IFolderManager>()).ReturnsAsync(_folderManagerMock.Object);
 
 			containerBuilder.RegisterInstance(destinationServiceFactoryForUser.Object).As<IDestinationServiceFactoryForUser>();
@@ -165,7 +157,7 @@ namespace Relativity.Sync.Tests.Integration
 			result.Status.Should().Be(ExecutionStatus.Completed);
 			_objectManagerMock.Verify();
 			_objectManagerMock.Verify(x => x.CreateAsync(_SOURCE_WORKSPACE_ARTIFACT_ID,
-				It.Is<CreateRequest>(cr => cr.ObjectType.Guid == JobHistoryErrorObject)), Times.Never);
+				It.Is<CreateRequest>(cr => cr.ObjectType.Guid == JobHistoryErrorObjectTypeGuid)), Times.Never);
 			_importBulkArtifactJob.Verify(x => x.Execute(), Times.Once);
 		}
 
@@ -212,17 +204,20 @@ namespace Relativity.Sync.Tests.Integration
 			SetupFolderQueryResult(documentIds, folderArtifactId);
 			SetupFolderPaths(folderArtifactId);
 			SetupTaggingOfDocuments(completedItems);
-
-			CreateResult createJobHistoryErrorResult = new CreateResult()
+			
+			MassCreateResult massCreateResult = new MassCreateResult()
 			{
-				Object = new RelativityObject()
+				Success = true,
+				Objects = new List<RelativityObjectRef>()
 				{
-					ArtifactID = jobHistoryErrorArtifactId
+					new RelativityObjectRef()
+					{
+						ArtifactID = jobHistoryErrorArtifactId
+					}
 				}
 			};
 			_objectManagerMock.Setup(x => x.CreateAsync(_SOURCE_WORKSPACE_ARTIFACT_ID,
-					It.Is<CreateRequest>(req => req.ObjectType.Guid == JobHistoryErrorObject)))
-					.ReturnsAsync(createJobHistoryErrorResult)
+					It.Is<MassCreateRequest>(cr => cr.ValueLists.Count == failedDocuments.Count))).ReturnsAsync(massCreateResult)
 					.Verifiable();
 
 			// act
@@ -231,10 +226,6 @@ namespace Relativity.Sync.Tests.Integration
 			// assert
 			result.Status.Should().Be(ExecutionStatus.CompletedWithErrors);
 			_importBulkArtifactJob.Verify(x => x.Execute(), Times.Once);
-			_objectManagerMock.Verify(x => x.CreateAsync(_SOURCE_WORKSPACE_ARTIFACT_ID,
-				It.Is<CreateRequest>(request => request.ObjectType.Guid == JobHistoryErrorObject &&
-				                           (request.FieldValues.Single(fieldValuePair => fieldValuePair.Field.Guid == ErrorTypeField).Value as ChoiceRef).Guid == ErrorTypeItem)),
-				Times.Exactly(numberOfErrors));
 			_objectManagerMock.Verify();
 		}
 
@@ -253,16 +244,19 @@ namespace Relativity.Sync.Tests.Integration
 				_importBulkArtifactJob.Raise(x => x.OnComplete += null, CreateJobReport());
 			});
 
-			CreateResult createJobHistoryErrorResult = new CreateResult()
+			MassCreateResult massCreateResult = new MassCreateResult()
 			{
-				Object = new RelativityObject()
+				Success = true,
+				Objects = new List<RelativityObjectRef>()
 				{
-					ArtifactID = jobHistoryErrorArtifactId
+					new RelativityObjectRef()
+					{
+						ArtifactID = jobHistoryErrorArtifactId
+					}
 				}
 			};
 			_objectManagerMock.Setup(x => x.CreateAsync(_SOURCE_WORKSPACE_ARTIFACT_ID,
-					It.Is<CreateRequest>(req => req.ObjectType.Guid == JobHistoryErrorObject)))
-					.ReturnsAsync(createJobHistoryErrorResult)
+					It.Is<MassCreateRequest>(cr => cr.ValueLists.Count == 1))).ReturnsAsync(massCreateResult)
 					.Verifiable();
 
 			// act
@@ -271,10 +265,6 @@ namespace Relativity.Sync.Tests.Integration
 			// assert
 			result.Status.Should().Be(ExecutionStatus.Failed);
 			_importBulkArtifactJob.Verify(x => x.Execute(), Times.Once);
-			_objectManagerMock.Verify(x => x.CreateAsync(_SOURCE_WORKSPACE_ARTIFACT_ID,
-				It.Is<CreateRequest>(request => request.ObjectType.Guid == JobHistoryErrorObject &&
-				                           (request.FieldValues.Single(fieldValuePair => fieldValuePair.Field.Guid == ErrorTypeField).Value as ChoiceRef).Guid == ErrorTypeJob)),
-				Times.Once);
 			_objectManagerMock.Verify();
 		}
 
