@@ -42,7 +42,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 {
 	public class ExportServiceManager : ServiceManagerBase, IExportServiceManager
 	{
-		private int _savedSearchArtifactId;
+		private int _originalSavedSearchArtifactID;
+		private int _itemLevelErrorSavedSearchArtifactID;
 		private List<IBatchStatus> _exportServiceJobObservers;
 		private readonly IContextContainerFactory _contextContainerFactory;
 		private readonly IExportServiceObserversFactory _exportServiceObserversFactory;
@@ -192,7 +193,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			using (IExporterService exporter = _exporterFactory.BuildExporter(JobStopManager, MappedFields.ToArray(),
 				IntegrationPointDto.SourceConfiguration,
-				_savedSearchArtifactId,
+				_originalSavedSearchArtifactID,
 				job.SubmittedBy,
 				userImportApiSettings,
 				_documentRepository,
@@ -341,15 +342,15 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			if (SourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.SavedSearch)
 			{
-				_savedSearchArtifactId = RetrieveSavedSearchArtifactId(job);
+				_originalSavedSearchArtifactID = RetrieveSavedSearchArtifactId(job);
 
 				//Load saved search for just item-level error retries
 				if (UpdateStatusType.IsItemLevelErrorRetry())
 				{
 					Logger.LogInformation("Creating item level erros saved search for retry job.");
-					_savedSearchArtifactId = JobHistoryErrorManager.CreateItemLevelErrorsSavedSearch(job,
+					_itemLevelErrorSavedSearchArtifactID = JobHistoryErrorManager.CreateItemLevelErrorsSavedSearch(job,
 						SourceConfiguration.SavedSearchArtifactId);
-					JobHistoryErrorManager.CreateErrorListTempTablesForItemLevelErrors(job, _savedSearchArtifactId);
+					JobHistoryErrorManager.CreateErrorListTempTablesForItemLevelErrors(job, _itemLevelErrorSavedSearchArtifactID);
 				}
 			}
 			LogJobHistoryErrorManagerSetupSuccessfulEnd(job);
@@ -461,7 +462,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				{
 					IJobHistoryErrorRepository jobHistoryErrorRepository =
 						_repositoryFactory.GetJobHistoryErrorRepository(SourceConfiguration.SourceWorkspaceArtifactId);
-					jobHistoryErrorRepository.DeleteItemLevelErrorsSavedSearch(_savedSearchArtifactId);
+					jobHistoryErrorRepository.DeleteItemLevelErrorsSavedSearch(_itemLevelErrorSavedSearchArtifactID);
 				}
 			}
 			catch (Exception e)
