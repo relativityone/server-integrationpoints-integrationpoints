@@ -213,45 +213,6 @@
 			return "";
 		};
 
-		if (self.federatedInstances.length === 0) {
-			IP.data.ajax({
-				type: 'GET',
-				url: IP.utils.generateWebAPIURL('InstanceFinder'),
-				async: true,
-				success: function (result) {
-					//TODO hack for now - remove this after enabling I2I in profiles
-					if (parent.IP.data.params['apiControllerName'] == 'IntegrationPointProfilesAPI') {
-						result = result.filter(function (value) { return value.artifactId == null; });
-					}
-					self.federatedInstances(result);
-					self.FederatedInstanceArtifactId(self.federatedInstances()[0].artifactId);
-					
-					self.updateWorkspaces();
-					self.ShowAuthentiactionButton(self.FederatedInstanceArtifactId() != null);
-					self.FederatedInstanceArtifactId.subscribe(function (value) {
-						var isRemoteInstance = value != null;
-						self.AuthenticationFailed(false);
-						self.SecuredConfiguration(null);
-						if (state.TargetWorkspaceArtifactId != null) {
-							state.TargetWorkspaceArtifactId = null;
-							state.FolderArtifactId = null;
-						}
-						if (isRemoteInstance) {
-							self.openAuthenticateModal();
-						} else {
-							self.updateWorkspaces();
-						}
-						self.ShowAuthentiactionButton(isRemoteInstance);
-					});
-					self.ShowRelativityInstance(false);
-				},
-				error: function () {
-					IP.frameMessaging().dFrame.IP.message.error.raise("Unable to retrieve Relativity instances. Please contact your system administrator.");
-					self.federatedInstances([]);
-				}
-			});
-		}
-
 		self.validateProductionAddPermissions = function (destinationWorkspaceId) {
 			IP.data.ajax({
 				type: "POST",

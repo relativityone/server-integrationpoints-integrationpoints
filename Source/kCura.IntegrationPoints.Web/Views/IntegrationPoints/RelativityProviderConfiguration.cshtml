@@ -47,19 +47,6 @@
 			<span class="label">Destination</span>
 			<img data-bind="click: openRelativityProviderDetailsTooltip" class="tooltip-img" id="contextualHelp" style="padding-left: 5px;" />
 			<table style="width: 100%;">
-				<tr data-bind="visible: ShowRelativityInstance()">
-					<td style="width: 48%;">
-						<div class="field-row">
-							<div class="field-label required">
-								Relativity Instance:
-							</div>
-							<div class="field-value">
-								<select id="relativitySelector" data-bind="options: federatedInstances, optionsText: 'name', optionsValue: 'artifactId', value: FederatedInstanceArtifactId, select2searchable: {}"></select>
-								<button id="authenticate-button" data-bind="click: openAuthenticateModal,visible: ShowAuthentiactionButton()" class="actionButtonSmall">...</button>
-							</div>
-						</div>
-					</td>
-				</tr>
 				<tr>
 					<td style="width: 48%;">
 						<div class="field-row">
