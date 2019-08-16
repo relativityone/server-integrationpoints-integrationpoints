@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter.Base;
@@ -28,6 +29,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 			IFileRepository fileRepository,
 			IJobStopManager jobStopManager,
 			IHelper helper,
+			ISerializer serializer,
 			FieldMap[] mappedFields,
 			int startAt,
 			SourceConfiguration sourceConfiguration, 
@@ -41,6 +43,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 				jobStopManager,
 				helper,
 				fileRepository,
+				serializer,
 				mappedFields, 
 				startAt,
 				sourceConfiguration, 

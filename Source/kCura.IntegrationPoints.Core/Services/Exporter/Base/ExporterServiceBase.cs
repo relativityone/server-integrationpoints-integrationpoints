@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter.Validators;
@@ -28,7 +30,9 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 		protected readonly IRelativityObjectManager RelativityObjectManager;
 		protected readonly IJobStopManager JobStopManager;
 		protected readonly IFileRepository FileRepository;
+		protected readonly ISerializer Serializer;
 		protected readonly int[] FieldArtifactIds;
+		protected readonly FieldEntry IdentifierField;
 
 		protected IDataTransferContext Context { get; set; }
 		protected int RetrievedDataCount { get; set; }
@@ -41,6 +45,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 			IJobStopManager jobStopManager,
 			IHelper helper,
 			IFileRepository fileRepository,
+			ISerializer serializer,
 			FieldMap[] mappedFields,
 			int startAt,
 			SourceConfiguration sourceConfiguration,
@@ -50,6 +55,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 
 			DocumentRepository = documentRepository;
 			FileRepository = fileRepository;
+			Serializer = serializer;
 			RelativityObjectManager = relativityObjectManager;
 			SourceConfiguration = sourceConfiguration;
 
@@ -83,6 +89,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 			JobStopManager = jobStopManager;
 			Logger = helper.GetLoggerFactory().GetLogger().ForContext<RelativityExporterService>();
 			FieldArtifactIds = mappedFields.Select(field => int.Parse(field.SourceField.FieldIdentifier)).ToArray();
+			IdentifierField = mappedFields.First(x => x.SourceField.IsIdentifier).SourceField;
 		}
 
 		public virtual bool HasDataToRetrieve => (TotalRecordsFound > RetrievedDataCount) && !JobStopManager.IsStopRequested();
