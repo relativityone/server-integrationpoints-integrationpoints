@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
+using Relativity;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
@@ -63,6 +64,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 
 			QueryFieldLookupRepository = sourceRepositoryFactory.GetQueryFieldLookupRepository(SourceConfiguration.SourceWorkspaceArtifactId);
 
+			ValidateSourceFields(sourceRepositoryFactory, mappedFields);
+
 			try
 			{
 				ExportJobInfo = SourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.SavedSearch
@@ -107,6 +110,40 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 				Context.DataReader.Dispose();
 				Context.DataReader = null;
 				Context = null;
+			}
+		}
+
+		private void ValidateSourceFields(IRepositoryFactory sourceRepositoryFactory, IEnumerable<FieldMap> mappedFields)
+		{
+			var nestedAndMultiValuesValidator = new NestedAndMultiValuesFieldValidator(Logger);
+
+			foreach (FieldEntry source in mappedFields.Select(f => f.SourceField))
+			{
+				int artifactID = Convert.ToInt32(source.FieldIdentifier);
+				ViewFieldInfo fieldInfo = QueryFieldLookupRepository.GetFieldByArtifactId(artifactID);
+
+				switch (fieldInfo.FieldType)
+				{
+					case FieldTypeHelper.FieldType.Objects:
+						IFieldQueryRepository fieldQueryRepository = sourceRepositoryFactory.GetFieldQueryRepository(SourceConfiguration.SourceWorkspaceArtifactId);
+						ArtifactDTO identifierField = fieldQueryRepository.RetrieveIdentifierField(fieldInfo.AssociativeArtifactTypeID);
+						string identifierFieldName = (string) identifierField.Fields.First(field => field.Name == "Name").Value;
+						IObjectRepository objectRepository =
+							sourceRepositoryFactory.GetObjectRepository(
+								SourceConfiguration.SourceWorkspaceArtifactId,
+								fieldInfo.AssociativeArtifactTypeID);
+						ArtifactDTO[] objects = objectRepository.GetFieldsFromObjects(new[] {identifierFieldName})
+							.GetAwaiter().GetResult();
+						nestedAndMultiValuesValidator.VerifyObjectField(fieldInfo.DisplayName, objects);
+						break;
+
+					case FieldTypeHelper.FieldType.MultiCode:
+						ICodeRepository codeRepository =
+							sourceRepositoryFactory.GetCodeRepository(SourceConfiguration.SourceWorkspaceArtifactId);
+						ArtifactDTO[] codes = codeRepository.RetrieveCodeAsync(fieldInfo.DisplayName).GetAwaiter().GetResult();
+						nestedAndMultiValuesValidator.VerifyChoiceField(fieldInfo.DisplayName, codes);
+						break;
+				}
 			}
 		}
 
