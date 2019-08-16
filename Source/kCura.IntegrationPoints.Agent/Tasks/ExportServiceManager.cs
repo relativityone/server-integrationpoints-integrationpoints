@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.Exporter;
+using kCura.IntegrationPoints.Core.Services.Exporter.Sanitization;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Tagging;
@@ -53,6 +54,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly IToggleProvider _toggleProvider;
 		private readonly IDocumentRepository _documentRepository;
+		private readonly IExportDataSanitizer _exportDataSanitizer;
 		private IJobHistoryErrorManager JobHistoryErrorManager { get; set; }
 		private JobHistoryErrorDTO.UpdateStatusType UpdateStatusType { get; set; }
 
@@ -77,7 +79,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IToggleProvider toggleProvider,
 			IAgentValidator agentValidator,
 			IIntegrationPointRepository integrationPointRepository,
-			IDocumentRepository documentRepository)
+			IDocumentRepository documentRepository,
+			IExportDataSanitizer exportDataSanitizer)
 			: base(helper,
 				jobService,
 				serializer,
@@ -102,6 +105,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_helper = helper;
 			_helperFactory = helperFactory;
 			_documentRepository = documentRepository;
+			_exportDataSanitizer = exportDataSanitizer;
 			Logger = helper.GetLoggerFactory().GetLogger().ForContext<ExportServiceManager>();
 		}
 
@@ -203,7 +207,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				job.SubmittedBy,
 				userImportApiSettings,
 				_documentRepository,
-				Serializer))
+				Serializer,
+				_exportDataSanitizer))
 			{
 				LogPushingDocumentsStart(job);
 				IScratchTableRepository[] scratchTables = _exportServiceJobObservers.OfType<IConsumeScratchTableBatchStatus>()

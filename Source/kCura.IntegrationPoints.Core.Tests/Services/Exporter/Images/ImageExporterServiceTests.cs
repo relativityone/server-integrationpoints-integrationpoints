@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
@@ -35,6 +36,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 		private FieldMap[] _mappedFields;
 		private IFileRepository _fileRepository;
 		private IRelativityObjectManager _relativityObjectManager;
+		private ISerializer _serializer;
 		#endregion
 
 		private const int _START_AT = 0;
@@ -52,7 +54,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 			_jobStopManager = Substitute.For<IJobStopManager>();
 			_helper = Substitute.For<IHelper>();
 			_relativityObjectManager = Substitute.For<IRelativityObjectManager>();
-
+			_serializer = Substitute.For<ISerializer>();
 
 			_mappedFields = new[]
 			{
@@ -60,8 +62,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 				{
 					SourceField = new FieldEntry()
 					{
-						FieldIdentifier = _FIELD_IDENTIFIER.ToString()
-					}
+						FieldIdentifier = _FIELD_IDENTIFIER.ToString(),
+						IsIdentifier = true
+					},
 				}
 			};
 
@@ -100,6 +103,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 				_fileRepository,
 				_jobStopManager, 
 				_helper,
+				_serializer,
 				_mappedFields, 
 				_START_AT, 
 				sourceConfiguration,
@@ -145,6 +149,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 				_fileRepository,
 				_jobStopManager, 
 				_helper,
+				_serializer,
 				_mappedFields, 
 				_START_AT, 
 				config, 
@@ -196,6 +201,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 				_fileRepository,
 				_jobStopManager, 
 				_helper,
+				_serializer,
 				_mappedFields, 
 				_START_AT, 
 				config, 

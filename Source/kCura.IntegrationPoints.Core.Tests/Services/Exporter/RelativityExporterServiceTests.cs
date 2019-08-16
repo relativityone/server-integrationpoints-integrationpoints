@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter;
+using kCura.IntegrationPoints.Core.Services.Exporter.Sanitization;
 using kCura.IntegrationPoints.Data.DTO;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -32,6 +34,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		private Mock<IJobStopManager> _jobStopManager;
 		private Mock<IQueryFieldLookupRepository> _queryFieldLookupRepository;
 		private Mock<IRelativityObjectManager> _relativityObjectManager;
+		private Mock<ISerializer> _serializer;
+		private Mock<IExportDataSanitizer> _exportDataSanitizer;
 		private RelativityExporterService _instance;
 		private IDictionary<string, object> _fieldValues;
 
@@ -68,7 +72,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 				{
 					SourceField = new FieldEntry()
 					{
-						FieldIdentifier = "123"
+						FieldIdentifier = "123",
+						IsIdentifier = true,
+						DisplayName = "Control Number [Object Identifier]"
 					}
 				},
 				new FieldMap()
@@ -122,6 +128,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 				.Returns(_queryFieldLookupRepository.Object);
 
 			_relativityObjectManager = new Mock<IRelativityObjectManager>();
+			_serializer = new Mock<ISerializer>();
+			_exportDataSanitizer = new Mock<IExportDataSanitizer>();
 		}
 
 		[Test]
@@ -326,6 +334,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 				_helper.Object,
 				_folderPathReader.Object,
 				_fileRepository.Object,
+				_serializer.Object,
+				_exportDataSanitizer.Object,
 				_mappedFields,
 				_START_AT,
 				config,

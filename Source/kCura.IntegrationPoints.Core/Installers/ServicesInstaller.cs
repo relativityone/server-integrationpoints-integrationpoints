@@ -54,6 +54,7 @@ using Relativity.Toggles.Providers;
 using System;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Core.Installers.Registrations;
 using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data.Installers;
 using IFederatedInstanceManager = kCura.IntegrationPoints.Domain.Managers.IFederatedInstanceManager;
@@ -228,6 +229,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.AddRetryingMechanism();
 			container.AddHelpers();
 			container.AddRepositories();
+			container.AddExportSanitizer();
 		}
 
 		private SqlServerToggleProvider CreateSqlServerToggleProvider(IHelper helper)

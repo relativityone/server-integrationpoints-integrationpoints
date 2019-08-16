@@ -27,6 +27,7 @@ using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.Data.RowDataGateway;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoints.Agent.Validation;
+using kCura.IntegrationPoints.Core.Services.Exporter.Sanitization;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data.Repositories;
 using Newtonsoft.Json;
@@ -93,6 +94,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			IDateTimeHelper dateTimeHelper = Container.Resolve<IDateTimeHelper>();
 			IIntegrationPointRepository integrationPointRepository = Container.Resolve<IIntegrationPointRepository>();
 			IDocumentRepository documentRepository = Container.Resolve<IDocumentRepository>();
+			IExportDataSanitizer exportDataSanitizer = Container.Resolve<IExportDataSanitizer>();
 			var jobHistoryUpdater = new JobHistoryBatchUpdateStatus(
 				jobStatusUpdater,
 				jobHistoryService,
@@ -120,7 +122,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				null,
 				agentValidator,
 				integrationPointRepository,
-				documentRepository);
+				documentRepository,
+				exportDataSanitizer);
 
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
 			_sourceWorkspaceDto = Workspace.GetWorkspaceDto(SourceWorkspaceArtifactID);
