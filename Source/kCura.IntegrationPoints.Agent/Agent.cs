@@ -16,6 +16,8 @@ using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Domain.Exceptions;
+using kCura.IntegrationPoints.Domain.Extensions;
+using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.RelativitySync;
 using kCura.IntegrationPoints.RelativitySync.RipOverride;
 using kCura.ScheduleQueue.AgentBase;
@@ -36,6 +38,7 @@ namespace kCura.IntegrationPoints.Agent
 		private JobContextProvider _jobContextProvider;
 		private IJobExecutor _jobExecutor;
 		private const string _AGENT_NAME = "Integration Points Agent";
+		private const string _RELATIVITY_SYNC_JOB_TYPE = "Relativity.Sync";
 		private readonly Lazy<IWindsorContainer> _agentLevelContainer;
 
 		public virtual event ExceptionEventHandler JobExecutionError;
@@ -88,7 +91,12 @@ namespace kCura.IntegrationPoints.Agent
 						ripContainerForSync.Register(Castle.MicroKernel.Registration.Component.For<IntegrationPointToSyncConverter>().ImplementedBy<IntegrationPointToSyncConverter>());
 
 						RelativitySyncAdapter syncAdapter = ripContainerForSync.Resolve<RelativitySyncAdapter>();
-						return syncAdapter.RunAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+						IAPILog logger = ripContainerForSync.Resolve<IAPILog>();
+						AgentCorrelationContext correlationContext = GetCorrelationContext(job);
+						using (logger.LogContextPushProperties(correlationContext))
+						{
+							return syncAdapter.RunAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+						}
 					}
 					catch (Exception e)
 					{
@@ -129,6 +137,20 @@ namespace kCura.IntegrationPoints.Agent
 
 				return _jobExecutor.ProcessJob(job);
 			}
+		}
+
+		private static AgentCorrelationContext GetCorrelationContext(Job job)
+		{
+			var correlationContext = new AgentCorrelationContext
+			{
+				JobId = job.JobId,
+				RootJobId = job.RootJobId,
+				WorkspaceId = job.WorkspaceID,
+				UserId = job.SubmittedBy,
+				IntegrationPointId = job.RelatedObjectArtifactID,
+				ActionName = _RELATIVITY_SYNC_JOB_TYPE
+			};
+			return correlationContext;
 		}
 
 		private void SendJobStartedMessage(Job job)
