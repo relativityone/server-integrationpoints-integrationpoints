@@ -124,6 +124,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			_queryFieldLookupRepository = new Mock<IQueryFieldLookupRepository>();
 			var viewFieldInfo = new ViewFieldInfo("", "", FieldTypeHelper.FieldType.Empty);
 			_queryFieldLookupRepository.Setup(x => x.GetFieldByArtifactId(_FIELD_IDENTIFIER)).Returns(viewFieldInfo);
+			foreach (var artifactFieldDto in _goldFlowExpectedDto.Fields)
+			{
+				_queryFieldLookupRepository.Setup(x => x.GetFieldByArtifactId(artifactFieldDto.ArtifactId)).Returns(viewFieldInfo);
+			}
 			_sourceRepositoryFactory.Setup(x => x.GetQueryFieldLookupRepository(_SOURCE_WORKSPACE_ARTIFACT_ID))
 				.Returns(_queryFieldLookupRepository.Object);
 
