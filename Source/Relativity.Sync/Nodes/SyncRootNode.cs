@@ -10,7 +10,6 @@ namespace Relativity.Sync.Nodes
 	{
 		private readonly IJobEndMetricsService _jobEndMetricsService;
 		private readonly ICommand<INotificationConfiguration> _notificationCommand;
-		private readonly string _parallelGroupName = string.Empty;
 
 		public SyncRootNode(IJobEndMetricsService jobEndMetricsService, ICommand<INotificationConfiguration> notificationCommand)
 		{
@@ -34,9 +33,6 @@ namespace Relativity.Sync.Nodes
 				NodeResult validationNode = context.ParentResult.ChildResults.FirstOrDefault(x => x.Id == "Validating");
 				if (validationNode != null && validationNode.Status == NodeResultStatus.Succeeded)
 				{
-					const string id = "Sending job end metrics";
-					context.Subject.Progress.ReportStarted(id, _parallelGroupName);
-
 					ExecutionStatus status;
 					switch (context.ParentResult.Status)
 					{
