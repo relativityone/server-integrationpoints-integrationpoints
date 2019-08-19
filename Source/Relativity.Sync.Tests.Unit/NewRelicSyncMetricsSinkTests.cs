@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Telemetry;
@@ -19,20 +18,17 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public void ItDoesNotSendMetricsOnLog()
+		public void ItSendsMetricsOnLog()
 		{
 			NewRelicSyncMetricsSink sink = new NewRelicSyncMetricsSink(_apmClient.Object);
 			Metric metric = Metric.TimedOperation("Test", TimeSpan.FromSeconds(1), ExecutionStatus.Completed, "foobar");
 			sink.Log(metric);
 
-			// Need to specify all arguments when mocking out a method.
-			_apmClient.Verify(
-				x => x.Log(It.IsAny<string>(), It.IsAny<Dictionary<string, object>>()),
-				Times.Never);
+			_apmClient.Verify(x => x.Log(It.IsAny<string>(), It.IsAny<Dictionary<string, object>>()), Times.Once);
 		}
 
 		[Test]
-		public void ItSendsMetricsOnDispose()
+		public void ItSendsMetricInDictionaryThatIsSerializableByPeriodicBatchingSink()
 		{
 			NewRelicSyncMetricsSink sink = new NewRelicSyncMetricsSink(_apmClient.Object);
 			Metric[] expectedMetrics = { Metric.TimedOperation("Test", TimeSpan.FromSeconds(1), ExecutionStatus.Completed, "foobar") };
@@ -41,54 +37,19 @@ namespace Relativity.Sync.Tests.Unit
 			{
 				sink.Log(m);
 			}
-			sink.Dispose();
 
 			_apmClient.Verify(
-				x => x.Log(It.IsAny<string>(), It.Is<Dictionary<string, object>>(d => MatchesMetrics(d, expectedMetrics))),
-				Times.Once);
+				x => x.Log(It.IsAny<string>(), It.Is<Dictionary<string, object>>(d => DictionaryIsSerializableByPeriodicBatchingSink(d))),
+				Times.Exactly(expectedMetrics.Length));
 		}
 
-		[Test]
-		public void ItSendsMultipleMetricsInPayload()
+		private bool DictionaryIsSerializableByPeriodicBatchingSink(Dictionary<string, object> metricDictionary)
 		{
-			NewRelicSyncMetricsSink sink = new NewRelicSyncMetricsSink(_apmClient.Object);
-			Metric[] expectedMetrics =
-			{
-				Metric.TimedOperation("Test1", TimeSpan.FromDays(1), ExecutionStatus.Canceled, "foobar"),
-				Metric.TimedOperation("Test2", TimeSpan.FromMilliseconds(1), ExecutionStatus.Completed, "foobar"),
-				Metric.TimedOperation("Test3", TimeSpan.FromSeconds(1), ExecutionStatus.Failed, "foobar")
-			};
+			var periodicBatchingSinkStub = new PeriodicBatchingSinkStub();
 
-			foreach (Metric m in expectedMetrics)
-			{
-				sink.Log(m);
-			}
-			sink.Dispose();
+			string serializedMetric = periodicBatchingSinkStub.ToJson(metricDictionary);
 
-			_apmClient.Verify(
-				x => x.Log(It.IsAny<string>(), It.Is<Dictionary<string, object>>(d => MatchesMetrics(d, expectedMetrics))),
-				Times.Once);
-		}
-
-		private static bool MatchesMetrics(Dictionary<string, object> customData, Metric[] metrics)
-		{
-			return customData.Count == metrics.Length && metrics.All(m => customData.Values.Count(obj => MatchesMetric(obj, m)) == 1);
-		}
-
-		private static bool MatchesMetric(object me, Metric you)
-		{
-			if (me is Dictionary<string, object>)
-			{
-				var meAsDict = me as Dictionary<string, object>;
-				return
-					meAsDict["Name"].Equals(you.Name) &&
-					meAsDict["Type"].Equals(you.Type) &&
-					meAsDict["ExecutionStatus"].Equals(you.ExecutionStatus) &&
-					meAsDict["Value"].Equals(you.Value) &&
-					meAsDict["Application"].Equals("Relativity.Sync");
-			}
-
-			return false;
+			return !string.IsNullOrEmpty(serializedMetric);
 		}
 	}
 }
