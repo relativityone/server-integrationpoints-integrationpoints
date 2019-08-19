@@ -67,7 +67,6 @@ var loadData = function (ko, dataContainer) {
 			this.sourceDetails = "Saved Search: " + dataContainer.sourceConfiguration.SavedSearch;
 		}
 		this.sourceRelativityInstance = dataContainer.sourceConfiguration.SourceRelativityInstance;
-		this.destinationRelativityInstance = dataContainer.destinationConfiguration.DestinationRelativityInstance;
 		this.multiSelectOverlay = dataContainer.destinationConfiguration.FieldOverlayBehavior;
 		this.useFolderPathInfo = ko.observable();
 		formatFolderPathInformation(dataContainer.destinationConfiguration.UseFolderPathInformation, dataContainer.destinationConfiguration.UseDynamicFolderPath);
