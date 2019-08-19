@@ -157,7 +157,7 @@ namespace Relativity.Sync.Tests.Integration
 
 			// ASSERT
 			INode<SyncExecutionContext>[] completedNodes = ContainerHelper.GetSyncNodeImplementationTypes()
-				.Where(x => x.BaseType != typeof(SyncNode<IDataSourceSnapshotConfiguration>) && x.BaseType != typeof(SyncNode<INotificationConfiguration>))
+				.Where(x => x.BaseType != typeof(SyncNode<IDataSourceSnapshotConfiguration>))
 				.Select(x => (INode<SyncExecutionContext>)container.Resolve(x))
 				.ToArray();
 			AssertNodesReportedCompleted(progress, completedNodes);
