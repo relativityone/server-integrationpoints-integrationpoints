@@ -59,8 +59,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			}
 			catch (Exception ex)
 			{
-				_logger.LogInformation(ex, "Destination workspace: user has not permission to access workspace {WorkspaceArtifactID}.",
-					configuration.DestinationWorkspaceArtifactId);
+				_logger.LogInformation(ex, $"Destination workspace: user has not permission to access workspace ({configuration.DestinationWorkspaceArtifactId}).");
 			}
 			const string errorCode = "20.001";
 			const string errorMessage = "User does not have sufficient permissions to access destination workspace. Contact your system administrator.";
@@ -81,8 +80,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			}
 			catch (Exception ex)
 			{
-				_logger.LogInformation(ex, "Destination workspace: user can not import and has not permission {WorkspaceArtifactID}.",
-					configuration.DestinationWorkspaceArtifactId);
+				_logger.LogInformation(ex, $"User has no permission to import and destination workspace ({configuration.DestinationWorkspaceArtifactId}).");
 			}
 			const string errorMessage = "User does not have permission to import in the destination workspace.";
 			return DoesUserHaveViewPermission(userHasViewPermissions, errorMessage);
@@ -104,8 +102,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			catch (Exception ex)
 			{
 				_logger.LogInformation(ex,
-					"Destination workspace: user has not artifact type permission {WorkspaceArtifactID}.",
-					configuration.DestinationWorkspaceArtifactId);
+					$"User has no artifact type permission to destination workspace ({configuration.DestinationWorkspaceArtifactId}).");
 			}
 			return DoesUserHaveViewPermission(userHasViewPermissions, errorMessage);
 		}
@@ -125,8 +122,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			catch (Exception ex)
 			{
 				_logger.LogInformation(ex,
-					"Destination Folder {DestinationFolderArtifactId}: user has not artifact instance permission {WorkspaceArtifactID}.",
-					configuration.DestinationFolderArtifactId, configuration.DestinationWorkspaceArtifactId);
+					$"Destination Folder {configuration.DestinationFolderArtifactId}: user has not artifact instance permission {configuration.DestinationWorkspaceArtifactId}.");
 			}
 			const string errorCode = "20.009";
 			const string errorMessage = "Verify if a folder in destination workspace selected in the Integration Point exists or if a user has a proper permission to access it.";

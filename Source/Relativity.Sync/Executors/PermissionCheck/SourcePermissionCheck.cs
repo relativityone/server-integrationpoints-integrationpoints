@@ -66,7 +66,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			}
 			catch (Exception ex)
 			{
-				_logger.LogInformation(ex, "User does not have permission to view workspace {WorkspaceArtifactID}.", configuration.SourceWorkspaceArtifactId);
+				_logger.LogInformation(ex, $"User does not have permission to view source workspace ({configuration.SourceWorkspaceArtifactId}).");
 			}
 
 			const string errorMessage = "User does not have permission to access this workspace.";
@@ -85,7 +85,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			}
 			catch (Exception ex)
 			{
-				_logger.LogInformation(ex, "User can not Export and has not permission {WorkspaceArtifactID}.", configuration.SourceWorkspaceArtifactId);
+				_logger.LogInformation(ex, $"User does not have permission {permissionId} in the source workspace ({configuration.SourceWorkspaceArtifactId})");
 			}
 
 			return DoesUserHaveViewPermission(userHasViewPermissions, errorMessage);
@@ -127,8 +127,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			}
 			catch (Exception ex)
 			{
-				_logger.LogInformation(ex, "User does not have artifact type permission {WorkspaceArtifactID}.",
-					configuration.SourceWorkspaceArtifactId);
+				_logger.LogInformation(ex, $"User does not have artifact type permission {configuration.SourceWorkspaceArtifactId} in source workspace ({configuration.SourceWorkspaceArtifactId})");
 			}
 
 			return DoesUserHaveViewPermission(userHasViewPermissions, errorMessage);

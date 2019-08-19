@@ -30,6 +30,7 @@ namespace Relativity.Sync.Tests.Integration
 		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 27564;
 		private const int _DATA_DESTINATION_ARTIFACT_ID = 23842;
 		private const int _DESTINATION_WORKSPACE_ARTIFACT_ID = 21321;
+
 		[SetUp]
 		public void SetUp()
 		{
@@ -54,14 +55,13 @@ namespace Relativity.Sync.Tests.Integration
 				DestinationFolderArtifactId = _DATA_DESTINATION_ARTIFACT_ID,
 				DestinationWorkspaceArtifactId = _DESTINATION_WORKSPACE_ARTIFACT_ID
 			};
+			_permissionManager = SetUpPermissionManager();
 		}
 
 		[Test]
 		public async Task ValidationResultShouldReturnCompleted()
 		{
 			// Arrange
-			_permissionManager = ArrangeSet();
-
 			IExecutor<IPermissionsCheckConfiguration> instance = _container.Resolve<IExecutor<IPermissionsCheckConfiguration>>();
 			
 			// Act
@@ -75,8 +75,6 @@ namespace Relativity.Sync.Tests.Integration
 		public async Task ValidationResultShouldReturnFailed()
 		{
 			// Arrange
-			_permissionManager = ArrangeSet();
-
 			var permissionToImport = new List<PermissionValue> { new PermissionValue { Selected = false, PermissionID = _ALLOW_IMPORT_PERMISSION_ID } };
 			_permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(),
 				It.Is<List<PermissionRef>>(y => y.Any(z => z.PermissionID == _ALLOW_IMPORT_PERMISSION_ID)))).ReturnsAsync(permissionToImport);
@@ -91,7 +89,7 @@ namespace Relativity.Sync.Tests.Integration
 			validationResult.Message.Should().Be("Permission checks failed. See messages for more details.");
 		}
 
-		private Mock<IPermissionManager> ArrangeSet()
+		private Mock<IPermissionManager> SetUpPermissionManager()
 		{
 			var permissionValue = new List<PermissionValue> { new PermissionValue { Selected = true } };
 			_permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.IsAny<List<PermissionRef>>(), It.IsAny<int>()))
