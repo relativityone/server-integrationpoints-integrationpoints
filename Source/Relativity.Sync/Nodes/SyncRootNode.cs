@@ -10,15 +10,12 @@ namespace Relativity.Sync.Nodes
 	{
 		private readonly IJobEndMetricsService _jobEndMetricsService;
 		private readonly ICommand<INotificationConfiguration> _notificationCommand;
-		private readonly ISyncLog _logger;
-
 		private readonly string _parallelGroupName = string.Empty;
 
-		public SyncRootNode(IJobEndMetricsService jobEndMetricsService, ICommand<INotificationConfiguration> notificationCommand, ISyncLog logger)
+		public SyncRootNode(IJobEndMetricsService jobEndMetricsService, ICommand<INotificationConfiguration> notificationCommand)
 		{
 			_jobEndMetricsService = jobEndMetricsService;
 			_notificationCommand = notificationCommand;
-			_logger = logger;
 			Id = "SyncRoot";
 		}
 
@@ -73,15 +70,7 @@ namespace Relativity.Sync.Nodes
 
 			if (await _notificationCommand.CanExecuteAsync(context.Subject.CancellationToken).ConfigureAwait(false))
 			{
-				ExecutionResult result = await _notificationCommand.ExecuteAsync(context.Subject.CancellationToken).ConfigureAwait(false);
-
-				// We really shouldn't be throwing if we can't return a proper result, so we'll just log the error here.
-				if (result.Status == ExecutionStatus.Failed)
-				{
-					// result.Exception may be null, but this should not cause any issues.
-					_logger.LogError(result.Exception, "Failed to send notifications: {message}", result.Message);
-					context.Subject.Progress.ReportFailure(id, _parallelGroupName, result.Exception);
-				}
+				await _notificationCommand.ExecuteAsync(context.Subject.CancellationToken).ConfigureAwait(false);
 			}
 		}
 	}

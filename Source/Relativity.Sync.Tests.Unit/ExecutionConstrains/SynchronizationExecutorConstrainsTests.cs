@@ -39,7 +39,7 @@ namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
 			var batchRepository = new Mock<IBatchRepository>();
 			batchRepository.Setup(x => x.GetAllNewBatchesIdsAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(batchIds);
 
-			var synchronizationExecutorConstrains = new SynchronizationExecutorConstrains(batchRepository.Object, _syncLog);
+			var synchronizationExecutorConstrains = new SynchronizationExecutionConstrains(batchRepository.Object, _syncLog);
 
 			// Act
 			bool actualResult = await synchronizationExecutorConstrains.CanExecuteAsync(_synchronizationConfiguration.Object, _token).ConfigureAwait(false);
@@ -55,7 +55,7 @@ namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
 			var batchRepository = new Mock<IBatchRepository>();
 			batchRepository.Setup(x => x.GetAllNewBatchesIdsAsync(It.IsAny<int>(), It.IsAny<int>())).Throws<OutOfMemoryException>();
 
-			var synchronizationExecutorConstrains = new SynchronizationExecutorConstrains(batchRepository.Object, _syncLog);
+			var synchronizationExecutorConstrains = new SynchronizationExecutionConstrains(batchRepository.Object, _syncLog);
 
 			// Act & Assert
 			Assert.ThrowsAsync<OutOfMemoryException>(async () => await synchronizationExecutorConstrains.CanExecuteAsync(_synchronizationConfiguration.Object, _token).ConfigureAwait(false));

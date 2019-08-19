@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -188,6 +189,32 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			thrown.InnerException.Should().BeOfType<ServiceException>();
 
 			_logger.Verify(x => x.LogError(It.IsAny<ServiceException>(), It.IsAny<string>(), It.Is<int>(y => y == _WORKSPACE_ARTIFACT_ID)), Times.Once);
+		}
+
+		[Test]
+		public void ItShouldThrowSyncExceptionWhenFolderManagerResultsAreMissing()
+		{
+			// ARRANGE
+			const int countArtifactId = 10;
+			const int countListId = 7;
+			const int rangeStart = 1000000;
+			ICollection<int> documentArtifactIds = Enumerable.Range(rangeStart, countArtifactId).ToArray();
+			List<int> documentListId = Enumerable.Range(rangeStart, countListId).ToArray().ToList();
+			_objectManager
+				.Setup(x => x.QueryAsync(It.Is<int>(y => y == _WORKSPACE_ARTIFACT_ID), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))
+				.ReturnsAsync<int, QueryRequest, int, int, IObjectManager, QueryResult>((workspaceArtifactId, queryRequest, start, length) => BuildQueryResult(queryRequest));
+
+			List<FolderPath> folderPaths = BuildFolderPathList(documentListId);
+			
+			_folderManager
+				.Setup(x => x.GetFullPathListAsync(It.Is<int>(y => y == _WORKSPACE_ARTIFACT_ID), It.IsAny<List<int>>()))
+				.ReturnsAsync(folderPaths);
+
+			// ACT-ASSERT
+			SyncException syncException = Assert.ThrowsAsync<SyncException>(async () =>
+				await _instance.GetFolderPathsAsync(_WORKSPACE_ARTIFACT_ID, documentArtifactIds).ConfigureAwait(false));
+			syncException.Message.Should()
+				.Be($"Could not find folders with IDs 1000007,1000008,1000009,1000010 in workspace {_WORKSPACE_ARTIFACT_ID}.");
 		}
 
 		[Test]

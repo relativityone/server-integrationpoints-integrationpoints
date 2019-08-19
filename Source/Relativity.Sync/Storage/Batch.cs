@@ -289,7 +289,7 @@ namespace Relativity.Sync.Storage
 					Parallel.ForEach(batchIds, batchArtifactId =>
 					{
 						var batch = new Batch(_serviceFactory);
-						batch.ReadAsync(workspaceArtifactId, batchArtifactId).GetAwaiter().GetResult();
+						batch.ReadAsync(workspaceArtifactId, batchArtifactId).ConfigureAwait(false).GetAwaiter().GetResult();
 						batches.Add(batch);
 					});
 				}

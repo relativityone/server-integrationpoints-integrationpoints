@@ -125,8 +125,8 @@ namespace Relativity.Sync.Tests.System
 
 			ImportBulkArtifactJob documentImportJob = Helpers.ImportJobFactory.CreateNonNativesDocumentImportJob(_destinationWorkspaceArtifactId, destinationFolderId, importDataTableWrapper);
 
-			ImportJobResult importResult = await ImportJobExecutor.ExecuteAsync(documentImportJob).ConfigureAwait(false);
-			Assert.IsTrue(importResult.Success, $"{importResult.Errors.Count} errors occurred during document upload: {importResult}");
+			ImportJobErrors importErrors = await ImportJobExecutor.ExecuteAsync(documentImportJob).ConfigureAwait(false);
+			Assert.IsTrue(importErrors.Success, $"{importErrors.Errors.Count} errors occurred during document upload: {importErrors}");
 
 			IList<string> documentIds = await Rdos.GetAllDocumentIdentifiersAsync(ServiceFactory, _destinationWorkspaceArtifactId).ConfigureAwait(false);
 			Assert.AreEqual(numDocuments, documentIds.Count, $"Unexpected number of documents in workspace {_destinationWorkspaceArtifactId}. Ensure test is run against clean workspace.");

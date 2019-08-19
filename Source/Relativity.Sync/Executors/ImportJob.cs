@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -15,6 +15,7 @@ namespace Relativity.Sync.Executors
 		private bool _itemLevelErrorExists;
 		private bool _canReleaseSemaphore;
 		private Exception _importApiException;
+		private JobReport _importApiJobReport;
 
 		private const int _ITEMLEVEL_ERRORS_MASS_CREATE_SIZE = 10000;
 		private const string _IDENTIFIER_COLUMN = "Identifier";
@@ -54,6 +55,8 @@ namespace Relativity.Sync.Executors
 
 		private void HandleComplete(JobReport jobReport)
 		{
+			_importApiJobReport = jobReport;
+
 			// IAPI may throw OnFatalException event before OnComplete, so we need to check that first.
 			if (!_importApiFatalExceptionOccurred)
 			{
@@ -67,6 +70,8 @@ namespace Relativity.Sync.Executors
 
 		private void HandleFatalException(JobReport jobReport)
 		{
+			_importApiJobReport = jobReport;
+
 			_logger.LogError(jobReport.FatalException, jobReport.FatalException?.Message);
 			_importApiFatalExceptionOccurred = true;
 			_importApiException = jobReport.FatalException;
@@ -147,13 +152,14 @@ namespace Relativity.Sync.Executors
 			return row.Contains(key) ? row[key].ToString() : null;
 		}
 
-		public async Task<ExecutionResult> RunAsync(CancellationToken token)
+		public async Task<ImportJobResult> RunAsync(CancellationToken token)
 		{
 			ExecutionResult executionResult = ExecutionResult.Success();
+			long jobSizeInBytes = GetJobSize();
 			if (token.IsCancellationRequested)
 			{
 				executionResult = ExecutionResult.Canceled();
-				return executionResult;
+				return new ImportJobResult(executionResult, jobSizeInBytes);
 			}
 
 			try
@@ -184,7 +190,19 @@ namespace Relativity.Sync.Executors
 				const string completedWithErrors = "Import completed with item level errors.";
 				executionResult = new ExecutionResult(ExecutionStatus.CompletedWithErrors, completedWithErrors, null);
 			}
-			return executionResult;
+
+			jobSizeInBytes = GetJobSize();
+			return new ImportJobResult(executionResult, jobSizeInBytes);
+		}
+
+		private long GetJobSize()
+		{
+			long jobSize = 0;
+			if (_importApiJobReport != null)
+			{
+				jobSize = _importApiJobReport.FileBytes + _importApiJobReport.MetadataBytes;
+			}
+			return jobSize;
 		}
 
 		public async Task<IEnumerable<int>> GetPushedDocumentArtifactIds()
