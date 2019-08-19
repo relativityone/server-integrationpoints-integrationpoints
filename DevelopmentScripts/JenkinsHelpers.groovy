@@ -341,6 +341,14 @@ def runUiTests()
 {
 	timeout(time: 10, unit: 'HOURS')
 	{
+		def stageName = "UI Tests"
+
+		if (params.skipUITests)
+		{
+			echo "$stageName are going to be skipped."
+			return
+		}
+
 		def testType = getUITestType()
 		switchSyncToggleBasedOnTestTypeIfNeeded(testType)
 		runTestsAndSetBuildResult(testType, params.skipUITests)
