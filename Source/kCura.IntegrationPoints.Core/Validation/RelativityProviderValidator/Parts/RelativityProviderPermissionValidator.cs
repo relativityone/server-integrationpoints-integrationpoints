@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts.Interfaces;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 
 namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts
 {
@@ -26,7 +27,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 		public override ValidationResult Validate(IntegrationPointProviderValidationModel model)
 		{
 			var result = new ValidationResult();
-            result.Add(ValidateFederatedInstanceConnection(model));
+            result.Add(ValidateFederatedInstance(model));
 		    if (result.IsValid)
 		    {
 		        result.Add(ValidateSourceWorkspacePermission());
@@ -36,18 +37,17 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 		    return result;
 		}
 
-	    private ValidationResult ValidateFederatedInstanceConnection(IntegrationPointProviderValidationModel model)
+	    private ValidationResult ValidateFederatedInstance(IntegrationPointProviderValidationModel model)
 	    {
-	        var result = new ValidationResult();
+	       var result = new ValidationResult();
+			ImportSettings importSettings = Serializer.Deserialize<ImportSettings>(model.DestinationConfiguration);
 
-            SourceConfiguration sourceConfiguration = Serializer.Deserialize<SourceConfiguration>(model.SourceConfiguration);
-	        if (sourceConfiguration.FederatedInstanceArtifactId.HasValue)
-	        {
-	            IFederatedInstanceConnectionValidator validator = _validatorsFactory.CreateFederatedInstanceConnectionValidator(
-	                sourceConfiguration.FederatedInstanceArtifactId, model.SecuredConfiguration);
-                result.Add(validator.Validate());
-	        }
-	        return result;
+			if (importSettings.FederatedInstanceArtifactId != null)
+			{
+				result.Add(ValidationMessages.FederatedInstanceNotSupported);
+			}
+
+			return result;
 	    }
 
 	    private ValidationResult ValidateSourceWorkspacePermission()

@@ -90,7 +90,7 @@
 
 	//An event raised when the host page has loaded the current settings page.
 	message.subscribe('load', function (m) {
-		if (!m.includes("\"FederatedInstanceArtifactId\":null")) {
+		if (!m.includes("\"FederatedInstanceArtifactId\":null") && m.includes("FederatedInstanceArtifactId")) {
 			m = undefined;
 		}
 		var _bind = function (m) {

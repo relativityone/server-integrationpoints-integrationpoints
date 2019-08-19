@@ -10,7 +10,6 @@ using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client.DTOs;
-using Newtonsoft.Json;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
@@ -57,22 +56,8 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 			SourceConfiguration sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(integrationModel.SourceConfiguration);
 			
 			var result = new ValidationResult();
-			result.Add(ValidateFederatedInstance(integrationModel));
 			result.Add(ValidateSourceWorkspace(sourceConfiguration));
 			result.Add(ValidateDestinationWorkspace(integrationModel, sourceConfiguration));
-			return result;
-		}
-
-		private ValidationResult ValidateFederatedInstance(IntegrationPointProviderValidationModel integrationModel)
-		{
-			var result = new ValidationResult();
-			ImportSettings importSettings = JsonConvert.DeserializeObject<ImportSettings>(integrationModel.DestinationConfiguration);
-
-			if (importSettings.FederatedInstanceArtifactId != null)
-			{
-				result.Add("Sending instance to instance is not supported");
-			}
-
 			return result;
 		}
 

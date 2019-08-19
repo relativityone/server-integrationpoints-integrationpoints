@@ -49,12 +49,6 @@
     <troubleshooting>Verify if a Production Set that was used as the location on destination workspace still exist. Also check permission setting for used production on destination workspace. It may be secured for users group.</troubleshooting>
   </Message>
 
-   <Message Name="FederatedInstanceNotAccessible">
-    <errorCode>20.011</errorCode>
-    <shortMessage>Unable to connect to federated instance. Check if destination instance still exists or if a user has a proper permission to access it.</shortMessage>
-    <troubleshooting>There is problem while trying to connect to federated instance. Verify if this instance is still available or if authorization token didn't expire.</troubleshooting>
-  </Message>
-
   <Message Name="FederatedInstanceDestinationWorkspaceNotAvailable">
     <errorCode>20.012</errorCode>
     <shortMessage>Destination workspace on federated instance is not available. Check if destination workspace still exists or if a user has a proper permission to access it.</shortMessage>
@@ -66,4 +60,11 @@
     <shortMessage>Verify if a Production Set used as the location in destination workspace is in New status.</shortMessage>
     <troubleshooting>Verify if a Production Set that was used as the location on destination workspace is sill in New status. There is a possibility that used Production was staged or ran. Only Production with New status can be used as a Production Set in Integration Points.</troubleshooting>
   </Message>
+  
+   <Message Name="FederatedInstanceNotSupported">
+    <errorCode>20.014</errorCode>
+    <shortMessage>Instance to instance is not supported.</shortMessage>
+    <troubleshooting>There is problem while trying to connect to federated instance. Verify if this instance is still available or if authorization token didn't expire.</troubleshooting>
+  </Message>
+
 </ValidationMessages>
