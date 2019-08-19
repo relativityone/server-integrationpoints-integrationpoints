@@ -65,13 +65,15 @@ namespace Relativity.Sync.Nodes
 
 		private async Task RunNotificationCommand(IExecutionContext<SyncExecutionContext> context)
 		{
-			const string id = "Sending notifications";
+			const string id = "Notifying";
 			context.Subject.Progress.ReportStarted(id, _parallelGroupName);
 
 			if (await _notificationCommand.CanExecuteAsync(context.Subject.CancellationToken).ConfigureAwait(false))
 			{
 				await _notificationCommand.ExecuteAsync(context.Subject.CancellationToken).ConfigureAwait(false);
 			}
+
+			context.Subject.Progress.ReportCompleted(id, _parallelGroupName);
 		}
 	}
 }
