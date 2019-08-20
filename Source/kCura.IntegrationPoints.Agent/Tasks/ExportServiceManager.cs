@@ -44,7 +44,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 	public class ExportServiceManager : ServiceManagerBase, IExportServiceManager
 	{
 		private ExportJobErrorService _exportJobErrorService;
-		private int _savedSearchArtifactId;
+		private int _sourceSavedSearchArtifactID;
+		private int? _itemLevelErrorSavedSearchArtifactID;
 		private List<IBatchStatus> _exportServiceJobObservers;
 		private readonly IContextContainerFactory _contextContainerFactory;
 		private readonly IExporterFactory _exporterFactory;
@@ -55,7 +56,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private IJobHistoryErrorManager JobHistoryErrorManager { get; set; }
 		private JobHistoryErrorDTO.UpdateStatusType UpdateStatusType { get; set; }
 
-		public ExportServiceManager(IHelper helper,
+		public ExportServiceManager(
+			IHelper helper,
 			IHelperFactory helperFactory,
 			ICaseServiceContext caseServiceContext,
 			IContextContainerFactory contextContainerFactory,
@@ -90,7 +92,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				agentValidator,
 				integrationPointRepository)
 		{
-
 			_contextContainerFactory = contextContainerFactory;
 			_repositoryFactory = repositoryFactory;
 			_toggleProvider = toggleProvider;
@@ -186,9 +187,15 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void PushDocuments(Job job, string userImportApiSettings, IDataSynchronizer synchronizer)
 		{
-			using (IExporterService exporter = _exporterFactory.BuildExporter(JobStopManager, MappedFields.ToArray(),
+			int savedSearchID = UpdateStatusType.IsItemLevelErrorRetry()
+				? _itemLevelErrorSavedSearchArtifactID.Value
+				: _sourceSavedSearchArtifactID;
+
+			using (IExporterService exporter = _exporterFactory.BuildExporter(
+				JobStopManager, 
+				MappedFields.ToArray(),
 				IntegrationPointDto.SourceConfiguration,
-				_savedSearchArtifactId,
+				savedSearchID,
 				job.SubmittedBy,
 				userImportApiSettings))
 			{
@@ -220,7 +227,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 						synchronizer.SyncData(dataTransferContext, MappedFields, userImportApiSettings);
 					}
 				}
-				LogPushingDocumetsSuccessfulEnd(job);
+				LogPushingDocumentsSuccessfulEnd(job);
 			}
 		}
 
@@ -335,15 +342,15 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			if (SourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.SavedSearch)
 			{
-				_savedSearchArtifactId = RetrieveSavedSearchArtifactId(job);
+				_sourceSavedSearchArtifactID = RetrieveSavedSearchArtifactId(job);
 
 				//Load saved search for just item-level error retries
 				if (UpdateStatusType.IsItemLevelErrorRetry())
 				{
-					Logger.LogInformation("Creating item level erros saved search for retry job.");
-					_savedSearchArtifactId = JobHistoryErrorManager.CreateItemLevelErrorsSavedSearch(job,
+					Logger.LogInformation("Creating item level errors saved search for retry job.");
+					_itemLevelErrorSavedSearchArtifactID = JobHistoryErrorManager.CreateItemLevelErrorsSavedSearch(job,
 						SourceConfiguration.SavedSearchArtifactId);
-					JobHistoryErrorManager.CreateErrorListTempTablesForItemLevelErrors(job, _savedSearchArtifactId);
+					JobHistoryErrorManager.CreateErrorListTempTablesForItemLevelErrors(job, _itemLevelErrorSavedSearchArtifactID.Value);
 				}
 			}
 			LogJobHistoryErrorManagerSetupSuccessfulEnd(job);
@@ -439,9 +446,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				//we can delete the temp saved search (only gets called on retry for item-level only errors)
 				if (UpdateStatusType != null && UpdateStatusType.IsItemLevelErrorRetry())
 				{
+					if (!_itemLevelErrorSavedSearchArtifactID.HasValue)
+					{
+						throw new ArgumentNullException("Item level error saved search has not been created, so it cannot be deleted.");
+					}
+
 					IJobHistoryErrorRepository jobHistoryErrorRepository =
 						_repositoryFactory.GetJobHistoryErrorRepository(SourceConfiguration.SourceWorkspaceArtifactId);
-					jobHistoryErrorRepository.DeleteItemLevelErrorsSavedSearch(_savedSearchArtifactId);
+					jobHistoryErrorRepository.DeleteItemLevelErrorsSavedSearch(_itemLevelErrorSavedSearchArtifactID.Value);
 				}
 			}
 			catch (Exception e)
@@ -492,7 +504,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				sourceConfiguration?.SavedSearchArtifactId);
 		}
 
-		private void LogPushingDocumetsSuccessfulEnd(Job job)
+		private void LogPushingDocumentsSuccessfulEnd(Job job)
 		{
 			Logger.LogInformation("Successfully finished pushing documents in Export Service Manager for job: {JobId}.",
 				job.JobId);

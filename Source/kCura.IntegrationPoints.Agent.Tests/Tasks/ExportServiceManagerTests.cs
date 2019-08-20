@@ -35,6 +35,7 @@ using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
 using Choice = kCura.Relativity.Client.DTOs.Choice;
@@ -80,6 +81,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private IExporterService _exporterService;
 		private IIntegrationPointRepository _integrationPointRepository;
 
+		private IAPILog _logger;
+	
 		private Job _job;
 		private Data.IntegrationPoint _integrationPoint;
 		private SourceConfiguration _configuration;
@@ -110,6 +113,11 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		{
 			_job = job;
 			_helper = Substitute.For<IHelper>();
+			_logger = Substitute.For<IAPILog>();
+			ILogFactory logFactory = Substitute.For<ILogFactory>();
+			logFactory.GetLogger().Returns(_logger);
+			_helper.GetLoggerFactory().Returns(logFactory);
+			_logger.ForContext<ServiceManagerBase>().Returns(_logger);
 			_helperFactory = Substitute.For<IHelperFactory>();
 			_caseContext = Substitute.For<ICaseServiceContext>();
 			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
@@ -389,10 +397,39 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_instance.Execute(_job);
 
 			// ASSERT
-			_exporterFactory.Received(1).BuildExporter(_jobStopManager, Arg.Any<FieldMap[]>(),
+			AssertRetrySavedSearch(expectToCreate: true);
+		}
+
+		[Test]
+		public void Execute_ItemLevelErrorSavedSearchIsNotDeletedWhenItFailsToCreateOne()
+		{
+			// ARRANGE
+			_updateStatusType.ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly;
+			_updateStatusType.JobType = JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors;
+
+			var exception = new Exception();
+			_jobHistoryErrorManager
+				.CreateItemLevelErrorsSavedSearch(_job, _configuration.SavedSearchArtifactId)
+				.Throws(exception);
+
+			// ACT
+			_instance.Execute(_job);
+
+			// ASSERT
+			_jobHistoryErrorManager.Received(1).CreateItemLevelErrorsSavedSearch(_job, _configuration.SavedSearchArtifactId);
+			_exporterFactory.Received(0).BuildExporter(
+				_jobStopManager,
+				Arg.Any<FieldMap[]>(),
 				_integrationPoint.SourceConfiguration,
-				_RETRY_SAVEDSEARCHID, _job.SubmittedBy, _IMPORTSETTINGS_WITH_USERID);
-			AssertRetrySavedSearch(true);
+				_RETRY_SAVEDSEARCHID,
+				_job.SubmittedBy,
+				_IMPORTSETTINGS_WITH_USERID);
+			_jobHistoryErrorRepository.Received(0).DeleteItemLevelErrorsSavedSearch(Arg.Any<int>());
+			_logger.LogError(
+				exception, 
+				"Failed to delete temp Saved Search {SavedSearchArtifactId}.",
+				_configuration.SavedSearchArtifactId
+			);
 		}
 
 		[TestCase(JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.None, JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.Run)]
@@ -412,7 +449,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_instance.Execute(_job);
 
 			// ASSERT
-			AssertRetrySavedSearch(false);
+			AssertRetrySavedSearch(expectToCreate: false);
 		}
 
 		[Test]
