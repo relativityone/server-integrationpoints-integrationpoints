@@ -50,12 +50,13 @@ namespace Relativity.Sync.Storage
 				};
 				QueryResult objectManagerValue = await objectManager.QueryAsync(SourceWorkspaceArtifactId, queryRequest, 0, 1)
 					.ConfigureAwait(false);
-				
-				if (objectManagerValue.TotalCount == 1)
+
+				const int countOfObjects = 1;
+				if (objectManagerValue.TotalCount == countOfObjects)
 				{
 					return objectManagerValue.Objects.First().ArtifactID;
 				}
-				throw new SyncException($"Error while querying for 'Relativity' provider using ObjectManager. Query returned {objectManagerValue.TotalCount} objects, but exactly 1 was expected.");
+				throw new SyncException($"Error while querying for 'Relativity' provider using ObjectManager. Query returned {objectManagerValue.TotalCount} objects, but exactly {countOfObjects} was expected.");
 			}
 		}
 	}

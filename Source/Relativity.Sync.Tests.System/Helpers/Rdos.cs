@@ -236,8 +236,7 @@ namespace Relativity.Sync.Tests.System.Helpers
 			}
 		}
 
-		public static async Task<int> CreateFolderInstance(ServiceFactory serviceFactory, int workspaceId,
-			string folderName)
+		public static async Task<int> CreateFolderInstance(ServiceFactory serviceFactory, int workspaceId, string folderName)
 		{
 			using (IFolderManager folderManager = serviceFactory.CreateProxy<IFolderManager>())
 			{

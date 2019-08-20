@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -74,7 +73,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 			actualResult.IsValid.Should().BeFalse();
 			actualResult.Messages.Should().HaveCount(1);
 			actualResult.Messages.First().ShortMessage.Should()
-				.Be("User does not have permission to access this workspace.");
+				.Be("User does not have permission to access the source workspace.");
 		}
 
 		[Test]
@@ -94,7 +93,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 			actualResult.IsValid.Should().BeFalse();
 			actualResult.Messages.Should().HaveCount(1);
 			actualResult.Messages.First().ShortMessage.Should()
-				.Be("User does not have permission to add Job History RDOs.");
+				.Be("User does not have permission to add Job History RDOs in the source workspace.");
 		}
 
 		[Test]
@@ -114,7 +113,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 			actualResult.IsValid.Should().BeFalse();
 			actualResult.Messages.Should().HaveCount(1);
 			actualResult.Messages.First().ShortMessage.Should()
-				.Be("User does not have permission to add object type in source workspace Tag.");
+				.Be("User does not have permission to add object types in the source workspace.");
 		}
 
 		[Test]
@@ -134,7 +133,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 			actualResult.IsValid.Should().BeFalse();
 			actualResult.Messages.Should().HaveCount(1);
 			actualResult.Messages.First().ShortMessage.Should()
-				.Be("User does not have permission to batch object type in source workspace.");
+				.Be("User does not have permission to the Batch object type in the source workspace.");
 		}
 
 		[Test]
@@ -154,7 +153,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 			actualResult.IsValid.Should().BeFalse();
 			actualResult.Messages.Should().HaveCount(1);
 			actualResult.Messages.First().ShortMessage.Should()
-				.Be("User does not have permission to progress object type in source workspace.");
+				.Be("User does not have permission to the Progress object type in the source workspace.");
 		}
 
 		[Test]
@@ -174,7 +173,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 			actualResult.IsValid.Should().BeFalse();
 			actualResult.Messages.Should().HaveCount(1);
 			actualResult.Messages.First().ShortMessage.Should()
-				.Be("User does not have permission to configuration object type in source workspace.");
+				.Be("User does not have permission to the Configuration object type in the source workspace.");
 		}
 
 		[Test]
@@ -214,7 +213,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 			actualResult.IsValid.Should().BeFalse();
 			actualResult.Messages.Should().HaveCount(1);
 			actualResult.Messages.First().ShortMessage.Should()
-				.Be("User does not have permission to edit documents in this workspace.");
+				.Be("User does not have permission to edit Documents in this workspace.");
 		}
 
 		[Test]
@@ -257,7 +256,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 			actualResult.IsValid.Should().BeFalse();
 			actualResult.Messages.Should().HaveCount(1);
 			actualResult.Messages.First().ShortMessage.Should()
-				.Be("User does not have permission to edit documents in this workspace.");
+				.Be("User does not have permission to edit Documents in this workspace.");
 		}
 
 		[Test]
@@ -286,7 +285,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 			actualResult.IsValid.Should().BeFalse();
 			actualResult.Messages.Should().HaveCount(_EXPECTED_VALUE_FOR_ALL_FAILED_VALIDATE);
 			actualResult.Messages.First().ShortMessage.Should()
-				.Be("User does not have permission to access this workspace.");
+				.Be("User does not have permission to access the source workspace.");
 		}
 
 		private Mock<IPermissionManager> ArrangeSet()
