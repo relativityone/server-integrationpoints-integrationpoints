@@ -115,7 +115,16 @@ namespace Relativity.Sync.Tests.System
 				{
 					WorkspaceIDs = new List<int> { workspaceArtifactId }
 				};
-				await applicationInstallManager.InstallApplicationAsync(-1, _HELPER_APP_GUID, installApplicationRequest).ConfigureAwait(false);
+				InstallApplicationResponse install = await applicationInstallManager.InstallApplicationAsync(-1, _HELPER_APP_GUID, installApplicationRequest).ConfigureAwait(false);
+				int applicationInstallId = install.Results.First().ApplicationInstallID;
+				InstallStatusCode installStatusCode;
+				do
+				{
+					await Task.Yield();
+					GetInstallStatusResponse status = await applicationInstallManager.GetStatusAsync(-1, _HELPER_APP_GUID, applicationInstallId).ConfigureAwait(false);
+					installStatusCode = status.InstallStatus.Code;
+				}
+				while (installStatusCode == InstallStatusCode.Pending || installStatusCode == InstallStatusCode.InProgress);
 			}
 		}
 
