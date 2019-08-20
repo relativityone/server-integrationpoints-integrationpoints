@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 		public override ValidationResult Validate(IntegrationPointProviderValidationModel model)
 		{
 			var result = new ValidationResult();
-            result.Add(ValidateFederatedInstance(model));
+            result.Add(ValidateInstanceToInstanceIsNotUsed(model));
 		    if (result.IsValid)
 		    {
 		        result.Add(ValidateSourceWorkspacePermission());
@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 		    return result;
 		}
 
-	    private ValidationResult ValidateFederatedInstance(IntegrationPointProviderValidationModel model)
+	    private ValidationResult ValidateInstanceToInstanceIsNotUsed(IntegrationPointProviderValidationModel model)
 	    {
 	       var result = new ValidationResult();
 			ImportSettings importSettings = Serializer.Deserialize<ImportSettings>(model.DestinationConfiguration);

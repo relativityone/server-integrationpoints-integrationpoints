@@ -76,7 +76,7 @@ var loadData = function (ko, dataContainer) {
 		this.promoteEligible = dataContainer.promoteEligible;
 
 		this.importNativeFile = ko.observable(dataContainer.destinationConfiguration.importNativeFile == 'true');
-        this.importImageFile = ko.observable(dataContainer.destinationConfiguration.ImageImport == 'true' &&
+		this.importImageFile = ko.observable(dataContainer.destinationConfiguration.ImageImport == 'true' &&
             (!dataContainer.destinationConfiguration.ImagePrecedence || dataContainer.destinationConfiguration.ImagePrecedence.length == 0));
 		this.copyImages = ko.observable(dataContainer.destinationConfiguration.ImageImport == 'true');
 		this.imagePrecedence = ko.observable(getTextRepresentation(dataContainer.destinationConfiguration.ImagePrecedence));

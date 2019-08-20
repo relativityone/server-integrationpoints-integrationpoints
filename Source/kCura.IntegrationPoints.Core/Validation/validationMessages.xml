@@ -64,7 +64,7 @@
    <Message Name="FederatedInstanceNotSupported">
     <errorCode>20.014</errorCode>
     <shortMessage>Instance to instance is not supported.</shortMessage>
-    <troubleshooting>There is problem while trying to connect to federated instance. Verify if this instance is still available or if authorization token didn't expire.</troubleshooting>
+    <troubleshooting>Instance to instance is not supported.</troubleshooting>
   </Message>
 
 </ValidationMessages>

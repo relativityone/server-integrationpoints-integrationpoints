@@ -78,7 +78,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 		}
 
 		[Test]
-		public void ItShouldNotValidateDestinationWorkspacePermissions_WhenIsSetUpAnotherInstance()
+		public void ItShouldNotValidateWhenIsSetUpAnotherInstance()
 		{
 			_serializer.Deserialize<SourceConfiguration>(_validationModel.SourceConfiguration)
 				.Returns(new SourceConfiguration
