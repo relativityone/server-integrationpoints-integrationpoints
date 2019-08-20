@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 
 		private ValidationResult ValidateInstanceToInstanceIsNotUsed(IntegrationPointProviderValidationModel model)
 		{
-            var result = new ValidationResult();
+			var result = new ValidationResult();
 			ImportSettings importSettings = Serializer.Deserialize<ImportSettings>(model.DestinationConfiguration);
 
 			if (importSettings.FederatedInstanceArtifactId != null)
