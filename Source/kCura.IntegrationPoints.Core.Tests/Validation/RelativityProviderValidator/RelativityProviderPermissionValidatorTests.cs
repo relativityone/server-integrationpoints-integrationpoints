@@ -78,7 +78,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 		}
 
 		[Test]
-		public void ItShouldNotValidateWhenIsSetUpAnotherInstance()
+		public void ItShouldNotValidate_WhenFederatedInstanceIsSetUp()
 		{
 			_serializer.Deserialize<SourceConfiguration>(_validationModel.SourceConfiguration)
 				.Returns(new SourceConfiguration

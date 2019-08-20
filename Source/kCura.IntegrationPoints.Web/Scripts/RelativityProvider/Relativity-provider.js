@@ -67,7 +67,6 @@
 		var stepModel = IP.frameMessaging().dFrame.IP.points.steps.steps[1].model;
 		var destinationJson = stepModel.destination;
 		var destination = JSON.parse(destinationJson);
-		destination.FederatedInstanceArtifactId = viewModel.FederatedInstanceArtifactId();
 		destination.CreateSavedSearchForTagging = viewModel.CreateSavedSearchForTagging();
 		destination.CaseArtifactId = viewModel.TargetWorkspaceArtifactId();
 		destination.DestinationFolderArtifactId = viewModel.FolderArtifactId();
@@ -116,9 +115,7 @@
 		var self = this;
 		self.SavedSearchService = new SavedSearchService();
 
-		self.federatedInstances = ko.observableArray(state.federatedInstances);
 		self.workspaces = ko.observableArray(state.workspaces);
-		self.FederatedInstanceArtifactId = ko.observable(state.FederatedInstanceArtifactId);
 		self.TargetWorkspaceArtifactId = ko.observable(state.TargetWorkspaceArtifactId);
 		self.DestinationFolder = ko.observable(state.DestinationFolder);
 		self.FolderArtifactId = ko.observable(state.FolderArtifactId);
@@ -217,8 +214,7 @@
 			IP.data.ajax({
 				type: "POST",
 				url: IP.utils.generateWebAPIURL("Production/CheckProductionAddPermission",
-					destinationWorkspaceId,
-					self.FederatedInstanceArtifactId() ? self.FederatedInstanceArtifactId() : 0),
+					destinationWorkspaceId),
 				data: self.SecuredConfiguration()
 			}).then(function (result) {
 				self.ShowProductionAddButton(result);
@@ -234,8 +230,7 @@
 					type: "POST",
 					url: IP.utils.generateWebAPIURL("SearchFolder/GetStructure",
 						destinationWorkspaceId,
-						params.id != "#" ? params.id : "0",
-						self.FederatedInstanceArtifactId() ? self.FederatedInstanceArtifactId() : 0),
+						params.id != "#" ? params.id : "0", 0),
 					data: self.SecuredConfiguration()
 				}).then(function (result) {
 					onSuccess(result);
@@ -279,8 +274,7 @@
 				type: "POST",
 				url: IP.utils.generateWebAPIURL("SearchFolder/GetFullPathList",
 					destinationWorkspaceId,
-					folderArtifactId,
-					self.FederatedInstanceArtifactId() ? self.FederatedInstanceArtifactId() : 0),
+					folderArtifactId, 0),
 				async: true,
 				data: self.SecuredConfiguration()
 			})
@@ -317,7 +311,7 @@
 
 			var retrieveWorkspacesPromise = IP.data.ajax({
 				type: 'POST',
-				url: IP.utils.generateWebAPIURL('WorkspaceFinder', self.FederatedInstanceArtifactId()),
+				url: IP.utils.generateWebAPIURL('WorkspaceFinder', null),
 				data: self.SecuredConfiguration(),
 				async: true
 			}).fail(function () {
@@ -371,8 +365,8 @@
 			savedSearchPickerViewModel.open(self.SavedSearchArtifactId());
 		};
 
-		self.updateSecuredConfiguration = function (clientId, clientSecret) {
-			self.SecuredConfiguration(IP.utils.generateCredentialsData(self.FederatedInstanceArtifactId(), clientId, clientSecret));
+		self.updateSecuredConfiguration = function () {
+			self.SecuredConfiguration(null);
 			self.updateWorkspaces();
 		}
 
@@ -380,7 +374,7 @@
 			if (targetWorkspaceId) {
 				var productionSetsPromise = IP.data.ajax({
 					type: "POST",
-					url: IP.utils.generateWebAPIURL("Production/GetProductionsForImport", targetWorkspaceId, self.FederatedInstanceArtifactId()),
+					url: IP.utils.generateWebAPIURL("Production/GetProductionsForImport", targetWorkspaceId),
 					data: self.SecuredConfiguration()
 				}).fail(function (error) {
 					IP.message.error.raise("No production sets were returned for target workspace.");
@@ -395,8 +389,8 @@
 		};
 
 		var authenticateModalViewModel = new AuthenticateViewModel(
-			function (clientId, clientSecret) {
-				self.updateSecuredConfiguration(clientId, clientSecret);
+			function () {
+				self.updateSecuredConfiguration();
 			},
 			function () {
 				self.AuthenticationFailed(true);
@@ -428,7 +422,7 @@
 
 		var createProductionSetModalViewModel = new CreateProductionSetViewModel(
 			function (newProductionSetName, positionLeft) {
-				creatingProductionSetModalViewModel.open(newProductionSetName, self.TargetWorkspaceArtifactId(), self.SecuredConfiguration(), self.FederatedInstanceArtifactId(), positionLeft);
+				creatingProductionSetModalViewModel.open(newProductionSetName, self.TargetWorkspaceArtifactId(), self.SecuredConfiguration(), null, positionLeft);
 			}
 		);
 
@@ -521,7 +515,6 @@
 		this.errors = ko.validation.group(this, { deep: true });
 		this.getSelectedOption = function () {
 			return {
-				"FederatedInstanceArtifactId": self.FederatedInstanceArtifactId(),
 				"SavedSearchArtifactId": self.SavedSearchArtifactId(),
 				"TypeOfExport": self.TypeOfExport(),
 				"ProductionImport": self.ProductionImport(),
