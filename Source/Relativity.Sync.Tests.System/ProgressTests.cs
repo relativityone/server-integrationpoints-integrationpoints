@@ -57,7 +57,7 @@ namespace Relativity.Sync.Tests.System
 			// ASSERT
 			List<RelativityObject> progressRdos = await QueryForProgressRdosAsync(workspaceArtifactId, syncConfigurationArtifactId).ConfigureAwait(false);
 
-			const int nonNodeProgressSteps = 2; // MultiNode + JobEndMetrics
+			const int nonNodeProgressSteps = 1; // MultiNode
 			int minimumExpectedProgressRdos = GetSyncNodes().Count + nonNodeProgressSteps;
 			progressRdos.Count.Should().Be(minimumExpectedProgressRdos);
 		}
