@@ -11,7 +11,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
 {
 	internal abstract class PermissionCheckBase : IPermissionCheck
 	{
-		private static IProxyFactory _proxyFactory;
+		private readonly IProxyFactory _proxyFactory;
 
 		protected PermissionCheckBase(IProxyFactory proxyFactory)
 		{
@@ -20,7 +20,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
 
 		public abstract Task<ValidationResult> ValidateAsync(IPermissionsCheckConfiguration configuration);
 
-		protected static async Task<IList<PermissionValue>> GetPermissionsForArtifactIdAsync(int workspaceArtifactId, int artifactId, List<PermissionRef> permissionRefs)
+		protected async Task<IList<PermissionValue>> GetPermissionsForArtifactIdAsync(int workspaceArtifactId, int artifactId, List<PermissionRef> permissionRefs)
 		{
 			using (var permissionManager = await _proxyFactory.CreateProxyAsync<IPermissionManager>().ConfigureAwait(false))
 			{
@@ -29,7 +29,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			}
 		}
 
-		protected static async Task<IList<PermissionValue>> GetPermissionsAsync(int workspaceArtifactId, List<PermissionRef> permissionRefs)
+		protected async Task<IList<PermissionValue>> GetPermissionsAsync(int workspaceArtifactId, List<PermissionRef> permissionRefs)
 		{
 			using (var permissionManager = await _proxyFactory.CreateProxyAsync<IPermissionManager>().ConfigureAwait(false))
 			{
