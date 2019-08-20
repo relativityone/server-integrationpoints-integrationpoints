@@ -11,9 +11,9 @@ using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client.DTOs;
 using NUnit.Framework;
+using Relativity.Services.Exceptions;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Testing.Identification;
-using Relativity.Services.Objects.Exceptions;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoints
 {
@@ -66,7 +66,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 				.ReadAsync(_integrationPoint.ArtifactId);
 
 			readAction.ShouldThrow<IntegrationPointsException>()
-				.WithInnerException<ArtifactNotFoundException>();
+				.WithInnerException<NotFoundException>();
 		}
 
 		[IdentifiedTest("8c13cfb5-42d1-47de-91fb-6c7cc1858432")]
@@ -87,7 +87,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 				.ReadAsync(integrationPointModel.ArtifactID);
 
 			action.ShouldThrow<IntegrationPointsException>()
-				.WithInnerException<ArtifactNotFoundException>();
+				.WithInnerException<NotFoundException>();
 		}
 
 		[IdentifiedTest("513f1d3b-d1fb-49a4-919e-b0a6ef33529d")]
