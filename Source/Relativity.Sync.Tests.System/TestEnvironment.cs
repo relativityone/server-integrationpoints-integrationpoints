@@ -8,9 +8,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using Relativity.Kepler.Transport;
-using Relativity.Services.ApplicationInstallManager;
 using Relativity.Services.Exceptions;
-using Relativity.Services.LibraryApplicationsManager;
+using Relativity.Services.Interfaces.LibraryApplication.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.ServiceProxy;
@@ -110,9 +109,13 @@ namespace Relativity.Sync.Tests.System
 		public async Task CreateFieldsInWorkspace(int workspaceArtifactId)
 		{
 			await InstallHelperAppIfNeeded().ConfigureAwait(false);
-			using (var applicationInstallManager = _serviceFactory.CreateProxy<IApplicationInstallManager>())
+			using (var applicationInstallManager = _serviceFactory.CreateProxy<Services.Interfaces.LibraryApplication.IApplicationInstallManager>())
 			{
-				await applicationInstallManager.InstallLibraryApplicationByGuid(workspaceArtifactId, _HELPER_APP_GUID).ConfigureAwait(false);
+				var installApplicationRequest = new InstallApplicationRequest
+				{
+					WorkspaceIDs = new List<int> { workspaceArtifactId }
+				};
+				await applicationInstallManager.InstallApplicationAsync(-1, _HELPER_APP_GUID, installApplicationRequest).ConfigureAwait(false);
 			}
 		}
 
@@ -120,10 +123,10 @@ namespace Relativity.Sync.Tests.System
 		{
 			string appFilePath = GetHelperApplicationFilePath();
 			using (var fileStream = File.OpenRead(appFilePath))
-			using (var applicationLibraryManager = _serviceFactory.CreateProxy<ILibraryApplicationsManager>())
+			using (var applicationLibraryManager = _serviceFactory.CreateProxy<Services.Interfaces.LibraryApplication.ILibraryApplicationManager>())
 			{
-				ICollection<LibraryApplication> apps = await applicationLibraryManager.GetAllLibraryApplicationsAsync().ConfigureAwait(false);
-				LibraryApplication libraryApp = apps.FirstOrDefault(app => app.GUID == _HELPER_APP_GUID);
+				List<LibraryApplicationResponse> apps = await applicationLibraryManager.ReadAllAsync(-1).ConfigureAwait(false);
+				LibraryApplicationResponse libraryApp = apps.FirstOrDefault(app => app.Guids.Contains(_HELPER_APP_GUID));
 				var libraryAppVersion = new Version(libraryApp?.Version ?? "0.0.0.0");
 				Version appXmlAppVersion = GetVersionFromApplicationXmlStream(fileStream);
 
@@ -134,7 +137,14 @@ namespace Relativity.Sync.Tests.System
 					using (var outStream = await CreateRapFileInMemory(fileStream).ConfigureAwait(false))
 					using (var keplerStream = new KeplerStream(outStream))
 					{
-						await applicationLibraryManager.EnsureApplication(Path.ChangeExtension(_RELATIVITY_SYNC_TEST_HELPER_RAP, "rap"), keplerStream, false, false).ConfigureAwait(false);
+						var updateLibraryApplicationRequest = new UpdateLibraryApplicationRequest
+						{
+							CreateIfMissing = true,
+							FileName = Path.ChangeExtension(_RELATIVITY_SYNC_TEST_HELPER_RAP, "rap"),
+							IgnoreVersion = false,
+							RefreshCustomPages = false
+						};
+						await applicationLibraryManager.UpdateAsync(-1, keplerStream, updateLibraryApplicationRequest).ConfigureAwait(false);
 					}
 				}
 			}
