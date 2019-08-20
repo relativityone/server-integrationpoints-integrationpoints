@@ -48,6 +48,7 @@
     <Compile Include="RelativityServices\Arrangers\DocumentTestCaseArranger.cs" />
     <Compile Include="RelativityServices\TestCases\DocumentTestCase.cs" />
     <Compile Include="RelativityServices\TestCases\ImageTestCase.cs" />
+    <Compile Include="Repositories\IntegrationPointRepositoryTests.cs" />
     <Compile Include="SystemTestsFixture.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -484,6 +485,20 @@
       <ItemGroup>
         <Reference Include="Renci.SshNet">
           <HintPath>..\..\packages\SSH.NET\lib\net40\Renci.SshNet.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="mscorlib">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.ValueTuple">
+          <HintPath>..\..\packages\System.ValueTuple\lib\net461\System.ValueTuple.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
