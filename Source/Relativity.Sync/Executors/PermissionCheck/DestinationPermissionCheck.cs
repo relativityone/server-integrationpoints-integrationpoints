@@ -12,10 +12,10 @@ namespace Relativity.Sync.Executors.PermissionCheck
 	internal sealed class DestinationPermissionCheck : PermissionCheckBase
 	{
 		private const string _MISSING_DESTINATION_RDO_PERMISSIONS =
-			"User does not have all required destination RDO permissions. Please make sure the user has view, edit, and add permissions for the destination RDO.";
+			"User does not have permissions to view, edit, and add Documents in the destination workspace.";
 		private const string _MISSING_DESTINATION_SAVED_SEARCH_ADD_PERMISSION =
 			"User does not have permission to create saved searches in the destination workspace.";
-		private const string _OBJECT_TYPE_NO_ADD = "User does not have permission to add object type in destination workspace Tag.";
+		private const string _OBJECT_TYPE_NO_ADD = "User does not have permission to add object types in the destination workspace.";
 
 		private readonly ISyncLog _logger;
 
@@ -54,12 +54,12 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			bool userHasViewPermissions = false;
 			try
 			{
-				IList<PermissionValue> permissions = await GetPermissionsForArtifactIdAsync(ProxyFactory, -1, configuration.DestinationWorkspaceArtifactId, permissionRefs).ConfigureAwait(false);
+				IList<PermissionValue> permissions = await GetPermissionsForArtifactIdAsync(-1, configuration.DestinationWorkspaceArtifactId, permissionRefs).ConfigureAwait(false);
 				userHasViewPermissions = DoesUserHavePermissions(permissions);
 			}
 			catch (Exception ex)
 			{
-				_logger.LogInformation(ex, $"Destination workspace: user has not permission to access workspace ({configuration.DestinationWorkspaceArtifactId}).");
+				_logger.LogInformation(ex, "{PermissionCheck}: user does not have permission to access workspace {ArtifactId}.", nameof(DestinationPermissionCheck), configuration.DestinationWorkspaceArtifactId);
 			}
 			const string errorCode = "20.001";
 			const string errorMessage = "User does not have sufficient permissions to access destination workspace. Contact your system administrator.";
@@ -67,20 +67,20 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			return DoesUserHaveViewPermission(userHasViewPermissions, errorMessage, errorCode);
 		}
 
-		private async Task<ValidationResult> ValidateUserCanImportHasPermissionAsync(
-			IPermissionsCheckConfiguration configuration)
+		private async Task<ValidationResult> ValidateUserCanImportHasPermissionAsync(IPermissionsCheckConfiguration configuration)
 		{
 			const int permissionId = 158; // 158 is the artifact id of the "Allow Import" permission
 			List<PermissionRef> permissionRefs = GetPermissionRefs(permissionId);
 			bool userHasViewPermissions = false;
 			try
 			{
-				IList<PermissionValue> permissions = await GetPermissionsAsync(ProxyFactory, configuration.DestinationWorkspaceArtifactId, permissionRefs).ConfigureAwait(false);
+				IList<PermissionValue> permissions = await GetPermissionsAsync(configuration.DestinationWorkspaceArtifactId, permissionRefs).ConfigureAwait(false);
 				userHasViewPermissions = DoesUserHavePermissions(permissions, permissionId);
 			}
 			catch (Exception ex)
 			{
-				_logger.LogInformation(ex, $"User has no permission to import and destination workspace ({configuration.DestinationWorkspaceArtifactId}).");
+				_logger.LogInformation(ex, "{PermissionCheck}: user does not have allow import permission in destination workspace {ArtifactId}.", 
+					nameof(DestinationPermissionCheck), configuration.DestinationWorkspaceArtifactId);
 			}
 			const string errorMessage = "User does not have permission to import in the destination workspace.";
 			return DoesUserHaveViewPermission(userHasViewPermissions, errorMessage);
@@ -95,14 +95,13 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			bool userHasViewPermissions = false;
 			try
 			{
-				IList<PermissionValue> permissions = await GetPermissionsAsync(ProxyFactory,
-					configuration.DestinationWorkspaceArtifactId, permissionRefs).ConfigureAwait(false);
+				IList<PermissionValue> permissions = await GetPermissionsAsync(configuration.DestinationWorkspaceArtifactId, permissionRefs).ConfigureAwait(false);
 				userHasViewPermissions = DoesUserHavePermissions(permissions);
 			}
 			catch (Exception ex)
 			{
-				_logger.LogInformation(ex,
-					$"User has no artifact type permission to destination workspace ({configuration.DestinationWorkspaceArtifactId}).");
+				_logger.LogInformation(ex, "{PermissionCheck}: user does not have artifact type {ArtifactTypeIdentifier} permission(s) in destination workspace {ArtifactId}.", 
+					nameof(DestinationPermissionCheck), artifactTypeIdentifier, configuration.DestinationWorkspaceArtifactId);
 			}
 			return DoesUserHaveViewPermission(userHasViewPermissions, errorMessage);
 		}
@@ -115,17 +114,17 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			bool userHasViewPermissions = false;
 			try
 			{
-				IList<PermissionValue> permissions = await GetPermissionsForArtifactIdAsync(ProxyFactory, configuration.DestinationWorkspaceArtifactId, configuration.DestinationFolderArtifactId, permissionRefs)
+				IList<PermissionValue> permissions = await GetPermissionsForArtifactIdAsync(configuration.DestinationWorkspaceArtifactId, configuration.DestinationFolderArtifactId, permissionRefs)
 					.ConfigureAwait(false);
 				userHasViewPermissions = DoesUserHavePermissions(permissions);
 			}
 			catch (Exception ex)
 			{
-				_logger.LogInformation(ex,
-					$"Destination Folder {configuration.DestinationFolderArtifactId}: user has not artifact instance permission {configuration.DestinationWorkspaceArtifactId}.");
+				_logger.LogInformation(ex, "{PermissionCheck}: user does not have permission to access destination folder {FolderArtifactId} in destination workspace {ArtifactId}.", 
+					nameof(DestinationPermissionCheck), configuration.DestinationFolderArtifactId, configuration.DestinationWorkspaceArtifactId);
 			}
 			const string errorCode = "20.009";
-			const string errorMessage = "Verify if a folder in destination workspace selected in the Integration Point exists or if a user has a proper permission to access it.";
+			const string errorMessage = "User does not have permission to access the folder in the destination workspace or the folder does not exist.";
 
 			return DoesUserHaveViewPermission(userHasViewPermissions, errorMessage, errorCode);
 		}
