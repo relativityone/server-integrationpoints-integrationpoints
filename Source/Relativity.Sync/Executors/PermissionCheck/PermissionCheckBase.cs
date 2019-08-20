@@ -11,27 +11,27 @@ namespace Relativity.Sync.Executors.PermissionCheck
 {
 	internal abstract class PermissionCheckBase : IPermissionCheck
 	{
-		private static IProxyFactory _proxyFactory;
+		protected IProxyFactory ProxyFactory { get; }
 
 		protected PermissionCheckBase(IProxyFactory proxyFactory)
 		{
-			_proxyFactory = proxyFactory;
+			ProxyFactory = proxyFactory;
 		}
 
 		public abstract Task<ValidationResult> ValidateAsync(IPermissionsCheckConfiguration configuration);
 
-		protected static async Task<IList<PermissionValue>> GetPermissionsForArtifactIdAsync(int workspaceArtifactId, int artifactId, List<PermissionRef> permissionRefs)
+		protected static async Task<IList<PermissionValue>> GetPermissionsForArtifactIdAsync(IProxyFactory proxy, int workspaceArtifactId, int artifactId, List<PermissionRef> permissionRefs)
 		{
-			using (var permissionManager = await _proxyFactory.CreateProxyAsync<IPermissionManager>().ConfigureAwait(false))
+			using (var permissionManager = await proxy.CreateProxyAsync<IPermissionManager>().ConfigureAwait(false))
 			{
 				IList<PermissionValue> permissionValues = await permissionManager.GetPermissionSelectedAsync(workspaceArtifactId, permissionRefs, artifactId).ConfigureAwait(false);
 				return permissionValues;
 			}
 		}
 
-		protected static async Task<IList<PermissionValue>> GetPermissionsAsync(int workspaceArtifactId, List<PermissionRef> permissionRefs)
+		protected static async Task<IList<PermissionValue>> GetPermissionsAsync(IProxyFactory proxy, int workspaceArtifactId, List<PermissionRef> permissionRefs)
 		{
-			using (var permissionManager = await _proxyFactory.CreateProxyAsync<IPermissionManager>().ConfigureAwait(false))
+			using (var permissionManager = await proxy.CreateProxyAsync<IPermissionManager>().ConfigureAwait(false))
 			{
 				IList<PermissionValue> permissionValues = await permissionManager.GetPermissionSelectedAsync(workspaceArtifactId, permissionRefs).ConfigureAwait(false);
 				return permissionValues;

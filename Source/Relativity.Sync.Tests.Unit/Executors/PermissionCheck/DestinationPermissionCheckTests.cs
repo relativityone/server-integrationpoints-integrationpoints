@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -71,7 +73,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 			actualResult.IsValid.Should().BeFalse();
 			actualResult.Messages.Should().HaveCount(1);
 			actualResult.Messages.First().ShortMessage.Should()
-				.Be("User does not have permission to add object types in the destination workspace.");
+				.Be("User does not have permission to add object type in destination workspace Tag.");
 		}
 
 		[Test]
@@ -139,7 +141,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 			actualResult.IsValid.Should().BeFalse();
 			actualResult.Messages.Should().HaveCount(1);
 			actualResult.Messages.First().ShortMessage.Should().Be(
-				"User does not have permissions to view, edit, and add Documents in the destination workspace.");
+				"User does not have all required destination RDO permissions. Please make sure the user has view, edit, and add permissions for the destination RDO.");
 		}
 
 		[Test]
@@ -183,7 +185,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 			actualResult.IsValid.Should().BeFalse();
 			actualResult.Messages.Should().HaveCount(_EXPECTED_VALUE_FOR_DOCUMENT);
 			actualResult.Messages.First().ShortMessage.Should().Be(
-				"User does not have permission to access the folder in the destination workspace or the folder does not exist.");
+				"Verify if a folder in destination workspace selected in the Integration Point exists or if a user has a proper permission to access it.");
 			actualResult.Messages.First().ErrorCode.Should().Be("20.009");
 		}
 
@@ -206,7 +208,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 			actualResult.IsValid.Should().BeFalse();
 			actualResult.Messages.Should().HaveCount(1);
 			actualResult.Messages.First().ShortMessage.Should().Be(
-				"User does not have permission to access the folder in the destination workspace or the folder does not exist.");
+				"Verify if a folder in destination workspace selected in the Integration Point exists or if a user has a proper permission to access it.");
 			actualResult.Messages.First().ErrorCode.Should().Be("20.009");
 		}
 

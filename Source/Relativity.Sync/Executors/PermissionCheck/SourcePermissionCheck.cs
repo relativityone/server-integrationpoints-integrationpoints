@@ -11,13 +11,13 @@ namespace Relativity.Sync.Executors.PermissionCheck
 {
 	internal sealed class SourcePermissionCheck : PermissionCheckBase
 	{
-		private const string _JOB_HISTORY_TYPE_NO_ADD = "User does not have permission to add Job History RDOs in the source workspace.";
-		private const string _OBJECT_TYPE_NO_ADD = "User does not have permission to add object types in the source workspace.";
-		private const string _CONFIGURATION_TYPE_NO_ADD = "User does not have permission to the Configuration object type in the source workspace.";
-		private const string _BATCH_OBJECT_TYPE_ERROR = "User does not have permission to the Batch object type in the source workspace.";
-		private const string _PROGRESS_OBJECT_TYPE_ERROR = "User does not have permission to the Progress object type in the source workspace.";
+		private const string _JOB_HISTORY_TYPE_NO_ADD = "User does not have permission to add Job History RDOs.";
+		private const string _OBJECT_TYPE_NO_ADD = "User does not have permission to add object type in source workspace Tag.";
+		private const string _CONFIGURATION_TYPE_NO_ADD = "User does not have permission to configuration object type in source workspace.";
+		private const string _BATCH_OBJECT_TYPE_ERROR = "User does not have permission to batch object type in source workspace.";
+		private const string _PROGRESS_OBJECT_TYPE_ERROR = "User does not have permission to progress object type in source workspace.";
 		private const string _SOURCE_WORKSPACE_NO_EXPORT = "User does not have permission to export in the source workspace.";
-		private const string _SOURCE_WORKSPACE_NO_DOC_EDIT = "User does not have permission to edit Documents in this workspace.";
+		private const string _SOURCE_WORKSPACE_NO_DOC_EDIT = "User does not have permission to edit documents in this workspace.";
 
 		private const int _ALLOW_EXPORT_PERMISSION_ID = 159; // 159 is the artifact id of the "Allow Export" permission
 		private const int _EDIT_DOCUMENT_PERMISSION_ID = 45; // 45 is the artifact id of the "Edit Documents" permission
@@ -61,15 +61,15 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			bool userHasViewPermissions = false;
 			try
 			{
-				IList<PermissionValue> permissions = await GetPermissionsForArtifactIdAsync(-1, configuration.SourceWorkspaceArtifactId, permissionRefs).ConfigureAwait(false);
+				IList<PermissionValue> permissions = await GetPermissionsForArtifactIdAsync(ProxyFactory, -1, configuration.SourceWorkspaceArtifactId, permissionRefs).ConfigureAwait(false);
 				userHasViewPermissions = DoesUserHavePermissions(permissions);
 			}
 			catch (Exception ex)
 			{
-				_logger.LogInformation(ex, "{PermissionCheck}: user does not have permission to view source workspace {ArtifactId}.", nameof(SourcePermissionCheck), configuration.SourceWorkspaceArtifactId);
+				_logger.LogInformation(ex, $"User does not have permission to view source workspace ({configuration.SourceWorkspaceArtifactId}).");
 			}
 
-			const string errorMessage = "User does not have permission to access the source workspace.";
+			const string errorMessage = "User does not have permission to access this workspace.";
 			return DoesUserHaveViewPermission(userHasViewPermissions, errorMessage);
 		}
 
@@ -80,13 +80,12 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			bool userHasViewPermissions = false;
 			try
 			{
-				IList<PermissionValue> permissions = await GetPermissionsAsync(configuration.SourceWorkspaceArtifactId, permissionRefs).ConfigureAwait(false);
+				IList<PermissionValue> permissions = await GetPermissionsAsync(ProxyFactory, configuration.SourceWorkspaceArtifactId, permissionRefs).ConfigureAwait(false);
 				userHasViewPermissions = DoesUserHavePermissions(permissions, permissionId);
 			}
 			catch (Exception ex)
 			{
-				_logger.LogInformation(ex, "{PermissionCheck}: user does not have permission with ID {PermissionId} in the source workspace {ArtifactId}).", 
-					nameof(SourcePermissionCheck), permissionId, configuration.SourceWorkspaceArtifactId);
+				_logger.LogInformation(ex, $"User does not have permission {permissionId} in the source workspace ({configuration.SourceWorkspaceArtifactId})");
 			}
 
 			return DoesUserHaveViewPermission(userHasViewPermissions, errorMessage);
@@ -122,14 +121,13 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			try
 			{
 				IList<PermissionValue> permissions =
-					await GetPermissionsAsync(configuration.SourceWorkspaceArtifactId, permissionRefs)
+					await GetPermissionsAsync(ProxyFactory, configuration.SourceWorkspaceArtifactId, permissionRefs)
 						.ConfigureAwait(false);
 				userHasViewPermissions = DoesUserHavePermissions(permissions);
 			}
 			catch (Exception ex)
 			{
-				_logger.LogInformation(ex, "{PermissionCheck}: user does not have artifact type permission {ArtifactTypeIdentifier} in source workspace {ArtifactId}.", 
-					nameof(SourcePermissionCheck), artifactTypeIdentifier, configuration.SourceWorkspaceArtifactId);
+				_logger.LogInformation(ex, $"User does not have artifact type permission {configuration.SourceWorkspaceArtifactId} in source workspace ({configuration.SourceWorkspaceArtifactId})");
 			}
 
 			return DoesUserHaveViewPermission(userHasViewPermissions, errorMessage);
