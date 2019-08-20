@@ -1,6 +1,49 @@
 #!groovy
 
-def jenkinsPipelineLocation = "DataTransfer/IntegrationPointsUITests"
+def jenkinsHelpers = load "DevelopmentScripts/JenkinsHelpers.groovy"
+jenkinsHelpers.initializeRIPPipeline(this, env, params, relativityBranchFallback)
+
+interface UiPipelinesNames
+{
+	final String REG_UI_IMPORT_EXPORT_JOB_NAME = "IntegrationPointsUIReg-ImportExport"
+	final String REG_UI_SYNC_TOGGLE_ON_JOB_NAME = "IntegrationPointsUIReg-SyncToggleOn"
+	final String REG_UI_SYNC_TOGGLE_OFF_JOB_NAME = "IntegrationPointsUIReg-SyncToggleOff"
+}
+
+def isUIRegImportExport()
+{
+	return env.JOB_NAME.contains(UiPipelinesNames.REG_UI_IMPORT_EXPORT_JOB_NAME)
+}
+
+def isUIRegSyncToggleOn()
+{
+	return env.JOB_NAME.contains(UiPipelinesNames.REG_UI_SYNC_TOGGLE_ON_JOB_NAME)
+}
+
+def isUIRegSyncToggleOff()
+{
+	return env.JOB_NAME.contains(UiPipelinesNames.REG_UI_SYNC_TOGGLE_OFF_JOB_NAME)
+}
+
+def getPipelineName()
+{
+	if(isUIRegImportExport())
+	{
+		return Constants.UI_IMPORT_EXPORT_JOB_NAME
+	}
+	if(isUIRegSyncToggleOn())
+	{
+		return Constants.UI_SYNC_TOGGLE_ON_JOB_NAME
+	}
+	if(isUIRegSyncToggleOff())
+	{
+		return Constants.UI_SYNC_TOGGLE_OFF_JOB_NAME
+	}
+	error "Unknown UI test type!"
+}
+
+def pipelineName = getPipelineName()
+def jenkinsPipelineLocation = "DataTransfer/$pipelineName"
 def jobFullPath = "${jenkinsPipelineLocation}/${env.BRANCH_NAME}"
 
 timestamps{
