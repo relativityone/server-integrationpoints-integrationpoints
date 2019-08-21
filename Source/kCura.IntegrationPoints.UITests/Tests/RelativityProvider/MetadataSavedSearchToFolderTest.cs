@@ -15,7 +15,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 	[Category(TestCategory.EXPORT_TO_RELATIVITY)]
 	public class MetadataSavedSearchToFolderTest: RelativityProviderTestsBase
 	{
-
 		private static readonly List<Tuple<string, string>> DefaultFieldsMapping = new List<Tuple<string, string>>
 		{
 			new Tuple<string, string>("Control Number", "Control Number"),
@@ -29,6 +28,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			{
 				Source = RelativityProviderModel.SourceTypeEnum.SavedSearch,
 				RelativityInstance = "This Instance",
+				SavedSearch = "All documents",
 				DestinationWorkspace = $"{DestinationContext.WorkspaceName} - {DestinationContext.WorkspaceId}",
 				CopyNativeFiles = RelativityProviderModel.CopyNativeFilesEnum.No,
 				FieldMapping = DefaultFieldsMapping
