@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Models;
@@ -53,11 +54,61 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			_helperFactory = Substitute.For<IHelperFactory>();
 
 			_cpHelper.GetServicesManager().Returns(_svcMgr);
-			_svcMgr.CreateProxy<IMetricsManager>(Arg.Any<ExecutionIdentity>()).Returns(Substitute.For<IMetricsManager>());
+			_svcMgr.CreateProxy<IMetricsManager>(Arg.Any<ExecutionIdentity>())
+				.Returns(Substitute.For<IMetricsManager>());
 
-			_instance = new IntegrationPointsAPIController(_serviceFactory, _relativityUrlHelper, _rdoSynchronizerProvider, _cpHelper, _helperFactory) {Request = new HttpRequestMessage()};
+			_instance = new IntegrationPointsAPIController(_serviceFactory, _relativityUrlHelper,
+				_rdoSynchronizerProvider, _cpHelper, _helperFactory) {Request = new HttpRequestMessage()};
 
 			_instance.Request.SetConfiguration(new HttpConfiguration());
+		}
+
+
+		[Test]
+		public void GetModel_WithFederatedInstanceHasValue_ReturnEmptySourceConfiguration()
+		{
+			// Arrange
+			var model = new IntegrationPointModel()
+			{
+				ArtifactID = 123,
+				SourceConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = 12345 })
+			};
+
+			_serviceFactory.CreateIntegrationPointService(_cpHelper, _cpHelper).Returns(_integrationPointService);
+
+			_integrationPointService.ReadIntegrationPointModel(Arg.Any<int>()).Returns(model);
+
+			// Act
+			HttpResponseMessage httpResponse = _instance.Get(_WORKSPACE_ID);
+
+			// Assert
+			string serializedModel = httpResponse.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+			IntegrationPointModel integrationPointModel = JsonConvert.DeserializeObject<IntegrationPointModel>(serializedModel);
+			integrationPointModel.SourceConfiguration.Should().BeNullOrEmpty();
+			
+		}
+
+		[Test]
+		public void GetModel_FederatedInstanceHasNull_ReturnSourceConfiguration()
+		{
+			// Arrange
+			var model = new IntegrationPointModel()
+			{
+				ArtifactID = 123,
+				SourceConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = null })
+			};
+
+			_serviceFactory.CreateIntegrationPointService(_cpHelper, _cpHelper).Returns(_integrationPointService);
+
+			_integrationPointService.ReadIntegrationPointModel(Arg.Any<int>()).Returns(model);
+
+			// Act
+			HttpResponseMessage httpResponse = _instance.Get(_WORKSPACE_ID);
+
+			// Assert
+			string serializedModel = httpResponse.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+			IntegrationPointModel integrationPointModel = JsonConvert.DeserializeObject<IntegrationPointModel>(serializedModel);
+			integrationPointModel.SourceConfiguration.Should().Contain("\"FederatedInstanceArtifactId\":null");
 		}
 
 		[TestCase(null)]
