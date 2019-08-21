@@ -57,6 +57,13 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				{
 					model.DestinationProvider = _provider.GetRdoSynchronizerId();
 				}
+
+				if (!model.SourceConfiguration.Contains("\"FederatedInstanceArtifactId\":null") &&
+				    model.SourceConfiguration.Contains("FederatedInstanceArtifactId"))
+				{
+					model.SourceConfiguration = null;
+				}
+
 				return Request.CreateResponse(HttpStatusCode.Accepted, model);
 			}
 			catch (Exception exception)
