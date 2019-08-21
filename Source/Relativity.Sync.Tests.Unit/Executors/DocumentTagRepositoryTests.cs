@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -14,13 +12,13 @@ using Relativity.Sync.Storage;
 namespace Relativity.Sync.Tests.Unit.Executors
 {
 	[TestFixture]
-	public class DocumentsTagRepositoryTests
+	public class DocumentTagRepositoryTests
 	{
 		private Mock<IDestinationWorkspaceTagRepository> _destinationWorkspace;
 		private Mock<ISourceWorkspaceTagRepository> _sourceWorkspace;
 		private Mock<IJobHistoryErrorRepository> _jobHistory;
 		private Mock<ISynchronizationConfiguration> _config;
-		private DocumentsTagRepository _instance;
+		private DocumentTagRepository _instance;
 
 		private const int _JOB_HISTORY_ARTIFACT_ID = 23042;
 		private const int _SOURCE_ARTIFACT_ID = 23042;
@@ -34,7 +32,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_destinationWorkspace = new Mock<IDestinationWorkspaceTagRepository>();
 			_sourceWorkspace = new Mock<ISourceWorkspaceTagRepository>();
 			_jobHistory = new Mock<IJobHistoryErrorRepository>();
-			_instance = new DocumentsTagRepository(_destinationWorkspace.Object, _sourceWorkspace.Object, _jobHistory.Object);
+			_instance = new DocumentTagRepository(_destinationWorkspace.Object, _sourceWorkspace.Object, _jobHistory.Object);
 		}
 
 		[Test]

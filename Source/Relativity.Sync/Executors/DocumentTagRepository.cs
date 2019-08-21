@@ -9,13 +9,13 @@ using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Executors
 {
-	internal sealed class DocumentsTagRepository : IDocumentTagRepository
+	internal sealed class DocumentTagRepository : IDocumentTagRepository
 	{
 		private readonly IDestinationWorkspaceTagRepository _destinationWorkspaceTagRepository;
 		private readonly ISourceWorkspaceTagRepository _sourceWorkspaceTagRepository;
 		private readonly IJobHistoryErrorRepository _jobHistoryErrorRepository;
 
-		public DocumentsTagRepository(IDestinationWorkspaceTagRepository destinationWorkspaceTagRepository,
+		public DocumentTagRepository(IDestinationWorkspaceTagRepository destinationWorkspaceTagRepository,
 			ISourceWorkspaceTagRepository sourceWorkspaceTagRepository, IJobHistoryErrorRepository jobHistoryErrorRepository)
 		{
 			_destinationWorkspaceTagRepository = destinationWorkspaceTagRepository;
