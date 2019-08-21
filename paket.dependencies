@@ -2,17 +2,17 @@ framework: auto-detect
 
 source https://proget.kcura.corp/nuget/NuGet
 
-nuget Relativity ~> 10.3.0
-nuget Relativity.API ~> 10.3.0
+nuget Relativity ~> 11.0.0
+nuget Relativity.API ~> 12.0.0
 nuget Relativity.DataExchange.Client.SDK 1.1.0
 nuget Relativity.Kepler ~> 2.0.7
 nuget Relativity.OAuth2Client ~> 1.0.0
-nuget Relativity.Platform.Keywords ~> 10.3.0
-nuget Relativity.Services.Interfaces ~> 10.3.0
-nuget Relativity.Services.Interfaces.Private ~> 10.3.0
-nuget Relativity.Services.DataContracts ~> 10.3.0
+nuget Relativity.Platform.Keywords ~> 11.0.0
+nuget Relativity.Services.Interfaces ~> 11.0.0
+nuget Relativity.Services.Interfaces.Private ~> 11.0.0
+nuget Relativity.Services.DataContracts ~> 11.0.0
 nuget kCura.Apps.Common.Utils ~> 2.1.0
-nuget kCura.Relativity.Client ~> 10.3.0
+nuget kCura.Relativity.Client ~> 11.0.0
 nuget Relativity.Kepler.Client ~> 2.0.7
 nuget Relativity.Telemetry.APM ~> 2019.1.1
 nuget Relativity.Telemetry.Services.Interface ~> 2019.1.1

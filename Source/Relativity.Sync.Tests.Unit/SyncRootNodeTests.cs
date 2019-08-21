@@ -20,7 +20,6 @@ namespace Relativity.Sync.Tests.Unit
 
 		private Mock<ICommand<INotificationConfiguration>> _notificationCommand;
 		private Mock<INode<SyncExecutionContext>> _childNode;
-		private Mock<ISyncLog> _logger;
 
 		private SyncExecutionContext _syncExecutionContext;
 
@@ -33,16 +32,15 @@ namespace Relativity.Sync.Tests.Unit
 		[SetUp]
 		public void SetUp()
 		{
-			Mock<IJobEndMetricsService> jobEndMetricsService = new Mock<IJobEndMetricsService>();
+			var jobEndMetricsService = new Mock<IJobEndMetricsService>();
 			_notificationCommand = new Mock<ICommand<INotificationConfiguration>>();
-			_logger = new Mock<ISyncLog>();
 
 			_childNode = new Mock<INode<SyncExecutionContext>>();
 
 			var progress = new Mock<IProgress<SyncJobState>>();
 			_syncExecutionContext = new SyncExecutionContext(progress.Object, _token);
 
-			_instance = new SyncRootNode(jobEndMetricsService.Object, _notificationCommand.Object, _logger.Object);
+			_instance = new SyncRootNode(jobEndMetricsService.Object, _notificationCommand.Object);
 			_instance.AddChild(_childNode.Object);
 		}
 
@@ -78,24 +76,6 @@ namespace Relativity.Sync.Tests.Unit
 			// ASSERT
 			result.Status.Should().Be(NodeResultStatus.Failed);
 			_notificationCommand.Verify(x => x.ExecuteAsync(_token), Times.Once);
-		}
-
-		[Test]
-		public void ItShouldNotThrowIfNotificationCommandFailed()
-		{
-			const string expectedExceptionMessage = "FooBarBaz";
-			_notificationCommand.Setup(x => x.CanExecuteAsync(_token)).ReturnsAsync(true);
-			_notificationCommand.Setup(x => x.ExecuteAsync(_token)).ReturnsAsync(ExecutionResult.Failure(new InvalidOperationException(expectedExceptionMessage)));
-
-			// ACT
-			Func<Task<NodeResult>> action = async () => await _instance.ExecuteAsync(_syncExecutionContext).ConfigureAwait(false);
-
-			// ASSERT
-			action.Should().NotThrow();
-			_logger.Verify(x => x.LogError(
-				It.Is<Exception>(ex => ex.Message.Equals(expectedExceptionMessage, StringComparison.InvariantCulture)),
-				It.IsAny<string>(),
-				It.IsAny<object[]>()));
 		}
 
 		[Test]
