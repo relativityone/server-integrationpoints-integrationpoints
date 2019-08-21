@@ -59,6 +59,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 		[Test]
 		public void ItShouldValidateDestinationWorkspacePermissions_WhenDestinationWorkspaceExists()
 		{
+			// arrange
 			_serializer.Deserialize<SourceConfiguration>(_validationModel.SourceConfiguration)
 				.Returns(new SourceConfiguration
 				{
@@ -80,7 +81,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 		[Test]
 		public void ItShouldNotValidate_WhenFederatedInstanceIsSetUp()
 		{
-            // arrange
+			// arrange
 			_serializer.Deserialize<SourceConfiguration>(_validationModel.SourceConfiguration)
 				.Returns(new SourceConfiguration
 				{
@@ -109,6 +110,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 		[Test]
 		public void ItShouldNotValidateDestinationWorkspacePermissions_WhenDestinationWorkspaceDoesNotExist()
 		{
+			// arrange
 			_serializer.Deserialize<SourceConfiguration>(_validationModel.SourceConfiguration)
 				.Returns(new SourceConfiguration
 				{
@@ -134,6 +136,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 		[Test]
 		public void ItShouldValidateSourceProductionPermissions()
 		{
+			// arrange
 			_serializer.Deserialize<SourceConfiguration>(_validationModel.SourceConfiguration)
 				.Returns(new SourceConfiguration
 				{
