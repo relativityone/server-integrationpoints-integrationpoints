@@ -3,6 +3,7 @@ Relativity.DataExchange.Client.SDK
 Relativity.Kepler
 Relativity.Platform.Keywords
 Relativity.Services.Interfaces
+Relativity.Services.DataContracts
 kCura.Relativity.Client
 
 Microsoft.CodeAnalysis.FxCopAnalyzers
