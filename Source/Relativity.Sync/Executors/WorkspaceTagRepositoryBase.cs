@@ -8,21 +8,17 @@ using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Executors
 {
-	internal abstract class WorkspaceTagRepositoryBase<T>
+	internal abstract class WorkspaceTagRepositoryBase<TIdentifier> : IWorkspaceTagRepository<TIdentifier>
 	{
 		private const int _MAX_OBJECT_QUERY_BATCH_SIZE = 10000;
 
-		public async Task<IList<TagDocumentsResult<T>>> TagDocumentsAsync(
-			ISynchronizationConfiguration synchronizationConfiguration, IList<T> documentIdentifiers,
-			CancellationToken token)
+		public async Task<IList<TagDocumentsResult<TIdentifier>>> TagDocumentsAsync(ISynchronizationConfiguration synchronizationConfiguration, IList<TIdentifier> documentIdentifiers, CancellationToken token)
 		{
-			var tagResults = new List<TagDocumentsResult<T>>();
+			var tagResults = new List<TagDocumentsResult<TIdentifier>>();
 			if (documentIdentifiers.Count == 0)
 			{
-				const string noUpdateMessage =
-					"A call to the Mass Update API was not made as there are no objects to update.";
-				var result = new TagDocumentsResult<T>(documentIdentifiers, noUpdateMessage, true,
-					documentIdentifiers.Count);
+				const string noUpdateMessage = "A call to the Mass Update API was not made as there are no objects to update.";
+				var result = new TagDocumentsResult<TIdentifier>(documentIdentifiers, noUpdateMessage, true, documentIdentifiers.Count);
 				tagResults.Add(result);
 				return tagResults;
 			}
@@ -32,32 +28,29 @@ namespace Relativity.Sync.Executors
 			{
 				UpdateBehavior = FieldUpdateBehavior.Merge
 			};
-			IEnumerable<IList<T>> documentArtifactIdBatches =
-				documentIdentifiers.SplitList(_MAX_OBJECT_QUERY_BATCH_SIZE);
-			foreach (IList<T> documentArtifactIdBatch in documentArtifactIdBatches)
+			IEnumerable<IList<TIdentifier>> documentArtifactIdBatches = documentIdentifiers.SplitList(_MAX_OBJECT_QUERY_BATCH_SIZE);
+			foreach (IList<TIdentifier> documentArtifactIdBatch in documentArtifactIdBatches)
 			{
-				TagDocumentsResult<T> tagResult = await TagDocumentsBatchAsync(synchronizationConfiguration,
-					documentArtifactIdBatch, fieldValues, massUpdateOptions, token).ConfigureAwait(false);
+				TagDocumentsResult<TIdentifier> tagResult = await TagDocumentsBatchAsync(synchronizationConfiguration, documentArtifactIdBatch, fieldValues, massUpdateOptions, token).ConfigureAwait(false);
 				tagResults.Add(tagResult);
 			}
-
 			return tagResults;
 		}
 
-		public abstract Task<TagDocumentsResult<T>> TagDocumentsBatchAsync(
-			ISynchronizationConfiguration synchronizationConfiguration, IList<T> batch,
+		protected abstract Task<TagDocumentsResult<TIdentifier>> TagDocumentsBatchAsync(
+			ISynchronizationConfiguration synchronizationConfiguration, IList<TIdentifier> batch,
 			IEnumerable<FieldRefValuePair> fieldValues, MassUpdateOptions massUpdateOptions, CancellationToken token);
 
-		public abstract FieldRefValuePair[] GetDocumentFieldTags(ISynchronizationConfiguration synchronizationConfiguration);
+		protected abstract FieldRefValuePair[] GetDocumentFieldTags(ISynchronizationConfiguration synchronizationConfiguration);
 
 		protected static IEnumerable<RelativityObjectRef> ToMultiObjectValue(params int[] artifactIds)
 		{
 			return artifactIds.Select(x => new RelativityObjectRef { ArtifactID = x });
 		}
 
-		protected static TagDocumentsResult<T> GenerateTagDocumentsResult(MassUpdateResult updateResult, IList<T> batch)
+		protected static TagDocumentsResult<TIdentifier> GenerateTagDocumentsResult(MassUpdateResult updateResult, IList<TIdentifier> batch)
 		{
-			IEnumerable<T> failedDocumentArtifactIds;
+			IEnumerable<TIdentifier> failedDocumentArtifactIds;
 			if (!updateResult.Success)
 			{
 				int elementsToCapture = batch.Count - updateResult.TotalObjectsUpdated;
@@ -65,9 +58,9 @@ namespace Relativity.Sync.Executors
 			}
 			else
 			{
-				failedDocumentArtifactIds = Array.Empty<T>();
+				failedDocumentArtifactIds = Array.Empty<TIdentifier>();
 			}
-			var result = new TagDocumentsResult<T>(failedDocumentArtifactIds, updateResult.Message, updateResult.Success, updateResult.TotalObjectsUpdated);
+			var result = new TagDocumentsResult<TIdentifier>(failedDocumentArtifactIds, updateResult.Message, updateResult.Success, updateResult.TotalObjectsUpdated);
 			return result;
 		}
 	}

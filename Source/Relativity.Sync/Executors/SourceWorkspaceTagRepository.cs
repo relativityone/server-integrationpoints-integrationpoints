@@ -14,23 +14,23 @@ namespace Relativity.Sync.Executors
 {
 	internal sealed class SourceWorkspaceTagRepository : WorkspaceTagRepositoryBase<string>, ISourceWorkspaceTagRepository
 	{
+		private readonly IFieldMappings _fieldMappings;
 		private readonly IProxyFactory _serviceFactory;
 		private readonly ISyncLog _logger;
 		private readonly ISyncMetrics _syncMetrics;
-		private readonly IFieldMappings _fieldMappings;
 
 		private readonly Guid _sourceWorkspaceTagFieldMultiObject = new Guid("2FA844E3-44F0-47F9-ABB7-D6D8BE0C9B8F");
 		private readonly Guid _sourceJobTagFieldMultiObject = new Guid("7CC3FAAF-CBB8-4315-A79F-3AA882F1997F");
 
 		public SourceWorkspaceTagRepository(IDestinationServiceFactoryForUser serviceFactory, ISyncLog logger, ISyncMetrics syncMetrics, IFieldMappings fieldMappings)
 		{
-			_serviceFactory = serviceFactory;
-			_logger = logger;
-			_syncMetrics = syncMetrics;
 			_fieldMappings = fieldMappings;
+			_logger = logger;
+			_serviceFactory = serviceFactory;
+			_syncMetrics = syncMetrics;
 		}
 		
-		public override async Task<TagDocumentsResult<string>> TagDocumentsBatchAsync(
+		protected override async Task<TagDocumentsResult<string>> TagDocumentsBatchAsync(
 			ISynchronizationConfiguration synchronizationConfiguration, IList<string> batch, IEnumerable<FieldRefValuePair> fieldValues, MassUpdateOptions massUpdateOptions, CancellationToken token)
 		{
 			var metricsCustomData = new Dictionary<string, object> { { "batchSize", batch.Count } };
@@ -41,14 +41,13 @@ namespace Relativity.Sync.Executors
 				FieldValues = fieldValues
 			};
 
-			TagDocumentsResult<string> result = null;
+			TagDocumentsResult<string> result;
 			try
 			{
 				using (_syncMetrics.TimedOperation("Relativity.Sync.TagDocuments.DestinationUpdate.Time", ExecutionStatus.None, metricsCustomData))
 				using (var objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 				{
-					MassUpdateResult updateResult = await objectManager
-						.UpdateAsync(synchronizationConfiguration.DestinationWorkspaceArtifactId, updateByCriteriaRequest, massUpdateOptions, token).ConfigureAwait(false);
+					MassUpdateResult updateResult = await objectManager.UpdateAsync(synchronizationConfiguration.DestinationWorkspaceArtifactId, updateByCriteriaRequest, massUpdateOptions, token).ConfigureAwait(false);
 					result = GenerateTagDocumentsResult(updateResult, batch);
 				}
 			}
@@ -66,6 +65,24 @@ namespace Relativity.Sync.Executors
 			_syncMetrics.GaugeOperation("Relativity.Sync.TagDocuments.DestinationUpdate.Count", ExecutionStatus.None, result.TotalObjectsUpdated, "document(s)", metricsCustomData);
 
 			return result;
+		}
+
+		protected override FieldRefValuePair[] GetDocumentFieldTags(ISynchronizationConfiguration synchronizationConfiguration)
+		{
+			FieldRefValuePair[] fieldRefValuePairs =
+			{
+				new FieldRefValuePair
+				{
+					Field = new FieldRef { Guid = _sourceWorkspaceTagFieldMultiObject },
+					Value = ToMultiObjectValue(synchronizationConfiguration.SourceWorkspaceTagArtifactId)
+				},
+				new FieldRefValuePair
+				{
+					Field = new FieldRef { Guid = _sourceJobTagFieldMultiObject },
+					Value = ToMultiObjectValue(synchronizationConfiguration.SourceJobTagArtifactId)
+				}
+			};
+			return fieldRefValuePairs;
 		}
 
 		private ObjectIdentificationCriteria ConvertIdentifiersToObjectCriteria(IList<string> identifiers)
@@ -88,25 +105,5 @@ namespace Relativity.Sync.Executors
 			};
 			return criteria;
 		}
-
-		public override FieldRefValuePair[] GetDocumentFieldTags(ISynchronizationConfiguration synchronizationConfiguration)
-		{
-			FieldRefValuePair[] fieldRefValuePairs =
-			{
-				new FieldRefValuePair
-				{
-					Field = new FieldRef { Guid = _sourceWorkspaceTagFieldMultiObject },
-					Value = ToMultiObjectValue(synchronizationConfiguration.SourceWorkspaceTagArtifactId)
-				},
-				new FieldRefValuePair
-				{
-					Field = new FieldRef { Guid = _sourceJobTagFieldMultiObject },
-					Value = ToMultiObjectValue(synchronizationConfiguration.SourceJobTagArtifactId)
-				}
-			};
-			return fieldRefValuePairs;
-		}
-
-	
 	}
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
@@ -14,7 +15,7 @@ namespace Relativity.Sync.Executors
 		private readonly ISourceWorkspaceTagRepository _sourceWorkspaceTagRepository;
 		private readonly IJobHistoryErrorRepository _jobHistoryErrorRepository;
 
-		public DocumentsTagRepository(IDestinationWorkspaceTagRepository destinationWorkspaceTagRepository, 
+		public DocumentsTagRepository(IDestinationWorkspaceTagRepository destinationWorkspaceTagRepository,
 			ISourceWorkspaceTagRepository sourceWorkspaceTagRepository, IJobHistoryErrorRepository jobHistoryErrorRepository)
 		{
 			_destinationWorkspaceTagRepository = destinationWorkspaceTagRepository;
@@ -24,36 +25,24 @@ namespace Relativity.Sync.Executors
 
 		public async Task<ExecutionResult> TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(ISynchronizationConfiguration configuration, IEnumerable<string> documentIdentifiers, CancellationToken token)
 		{
-			var failedIdentifiers = new List<string>();
-			IList<string> identifiersList = documentIdentifiers.ToList();
-			if (identifiersList.Any())
-			{
-				IList<TagDocumentsResult<string>> taggingResults = await _sourceWorkspaceTagRepository.TagDocumentsAsync(configuration, identifiersList, token).ConfigureAwait(false);
-				foreach (TagDocumentsResult<string> taggingResult in taggingResults)
-				{
-					if (taggingResult.FailedDocuments.Any())
-					{
-						failedIdentifiers.AddRange(taggingResult.FailedDocuments);
-					}
-				}
-			}
-
-			ExecutionResult sourceTaggingResult = GetTaggingResults(failedIdentifiers, configuration.JobHistoryArtifactId);
-			if (sourceTaggingResult.Status == ExecutionStatus.Failed)
-			{
-				await GenerateDocumentTaggingJobHistoryErrorAsync(sourceTaggingResult, configuration).ConfigureAwait(false);
-			}
-			return sourceTaggingResult;
+			return await TagDocumentsInWorkspaceWithInfoAsync(_sourceWorkspaceTagRepository.TagDocumentsAsync, configuration, documentIdentifiers, token).ConfigureAwait(false);
 		}
 
 		public async Task<ExecutionResult> TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(ISynchronizationConfiguration configuration, IEnumerable<int> artifactIds, CancellationToken token)
 		{
-			var failedArtifactIds = new List<int>();
-			IList<int> artifactIdsList = artifactIds.ToList();
-			if (artifactIdsList.Any())
+			return await TagDocumentsInWorkspaceWithInfoAsync(_destinationWorkspaceTagRepository.TagDocumentsAsync, configuration, artifactIds, token).ConfigureAwait(false);
+		}
+
+		private async Task<ExecutionResult> TagDocumentsInWorkspaceWithInfoAsync<TIdentifier>(
+			Func<ISynchronizationConfiguration, IList<TIdentifier>, CancellationToken, Task<IList<TagDocumentsResult<TIdentifier>>>> taggingFunctionAsync,
+			ISynchronizationConfiguration configuration, IEnumerable<TIdentifier> documentIdentifiers, CancellationToken token)
+		{
+			var failedArtifactIds = new List<TIdentifier>();
+			IList<TIdentifier> documentIdentifiersList = documentIdentifiers.ToList();
+			if (documentIdentifiersList.Any())
 			{
-				IList<TagDocumentsResult<int>> taggingResults = await _destinationWorkspaceTagRepository.TagDocumentsAsync(configuration, artifactIdsList, token).ConfigureAwait(false);
-				foreach (TagDocumentsResult<int> taggingResult in taggingResults)
+				IList<TagDocumentsResult<TIdentifier>> taggingResults = await taggingFunctionAsync.Invoke(configuration, documentIdentifiersList, token).ConfigureAwait(false);
+				foreach (TagDocumentsResult<TIdentifier> taggingResult in taggingResults)
 				{
 					if (taggingResult.FailedDocuments.Any())
 					{
