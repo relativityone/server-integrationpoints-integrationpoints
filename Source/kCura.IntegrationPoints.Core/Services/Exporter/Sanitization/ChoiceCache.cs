@@ -50,7 +50,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
 			ICollection<ChoiceDto> allChoices)
 		{
 			IList<ChoiceWithParentInfoDto> missingChoicesWithParentInfo =
-				await _choiceRepository.QueryChoiceWithParentInfoAsync(missingChoices, allChoices);
+				await _choiceRepository.QueryChoiceWithParentInfoAsync(missingChoices, allChoices).ConfigureAwait(false);
 
 			foreach (var choice in missingChoicesWithParentInfo)
 			{

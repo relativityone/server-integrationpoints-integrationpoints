@@ -117,7 +117,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				FieldTypeHelper.FieldType fieldType = QueryFieldLookupRepository.GetFieldTypeByArtifactID(artifactID);
 				object initialValue = fieldsValue[index];
 
-				object value = await SanitizeFieldIfNeededAsync(fieldName, fieldType, initialValue, itemIdentifier);
+				object value = await SanitizeFieldIfNeededAsync(fieldName, fieldType, initialValue, itemIdentifier)
+					.ConfigureAwait(false);
 
 				fields.Add(new ArtifactFieldDTO
 				{
