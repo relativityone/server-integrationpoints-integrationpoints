@@ -57,7 +57,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 				return objectTypeViewFields.Values
 					.Where(viewField => viewField.Guids.Intersect(fieldsGuids).Any())
-					.Select(viewField => viewField as FieldRef)
+					.Select(viewField => new FieldRef(viewField.ArtifactID))
 					.ToList();
 			}
 		}
