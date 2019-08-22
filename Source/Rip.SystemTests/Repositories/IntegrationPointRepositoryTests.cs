@@ -34,7 +34,7 @@ namespace Rip.SystemTests.Repositories
 			_sut.Delete(integrationPointID);
 
 			// ASSERT
-			bool integrationPointExists = await IntegrationPointExists(integrationPointID).ConfigureAwait(false);
+			bool integrationPointExists = await CheckIfIntegrationPointExistsAsync(integrationPointID).ConfigureAwait(false);
 			integrationPointExists.Should().BeFalse("because integration points should be deleted");
 
 			// TEARDOWN
@@ -51,10 +51,10 @@ namespace Rip.SystemTests.Repositories
 			_sut.Delete(integrationPointID);
 
 			// ASSERT
-			bool integrationPointExists = await IntegrationPointExists(integrationPointID).ConfigureAwait(false);
+			bool integrationPointExists = await CheckIfIntegrationPointExistsAsync(integrationPointID).ConfigureAwait(false);
 			integrationPointExists.Should().BeFalse("because integration points should be deleted");
 		}
-
+		
 		[IdentifiedTest("513f1d3b-d1fb-49a4-919e-b0a6ef33529d")]
 		public void Delete_ShouldUnlinkJobHistoryButNotDeleteIt()
 		{
@@ -75,7 +75,7 @@ namespace Rip.SystemTests.Repositories
 		}
 
 		[IdentifiedTest("d8447c19-db91-4d65-82d5-19f90e3a6d7b")]
-		public void Delete_ShouldLeaveJobHistoryErrors()
+		public async Task Delete_ShouldLeaveJobHistoryErrors()
 		{
 			// ARRANGE
 			(int integrationPointID, int jobHistoryID, int jobHistoryErrorID) = CreateIntegrationPointWithJobHistoryAndJobHistoryError();
@@ -88,9 +88,10 @@ namespace Rip.SystemTests.Repositories
 			{
 				Condition = $"'{ArtifactQueryFieldNames.ArtifactID}' == {jobHistoryErrorID}"
 			};
-			List<JobHistoryError> jobHistoryErrors = _objectManager.Query<JobHistoryError>(query);
+			List<JobHistoryError> jobHistoryErrors = await _objectManager
+				.QueryAsync<JobHistoryError>(query)
+				.ConfigureAwait(false);
 
-			jobHistoryErrors.Should().NotBeNull();
 			jobHistoryErrors.Should().NotBeEmpty();
 
 			// TEARDOWN
@@ -138,7 +139,7 @@ namespace Rip.SystemTests.Repositories
 			return _objectManager.Create(jobHistoryError);
 		}
 
-		private async Task<bool> IntegrationPointExists(int artifactID)
+		private async Task<bool> CheckIfIntegrationPointExistsAsync(int artifactID)
 		{
 			var queryRequest = new QueryRequest
 			{
