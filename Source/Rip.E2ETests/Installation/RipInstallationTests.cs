@@ -14,191 +14,195 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data.Repositories;
+using Relativity.Testing.Identification;
+using Rip.E2ETests.Constants;
 using CoreConstants = kCura.IntegrationPoints.Core.Constants;
 
 namespace Rip.E2ETests.Installation
 {
-    [TestFixture]
-    public class RipInstallationTests
-    {
-        private RelativityApplicationManager ApplicationManager { get; }
-        private RelativityObjectManagerFactory ObjectManagerFactory { get; }
+	[TestFixture]
+	public class RipInstallationTests
+	{
+		private RelativityApplicationManager ApplicationManager { get; }
+		private RelativityObjectManagerFactory ObjectManagerFactory { get; }
 
-        private readonly string[] _ripInternalSourceProviders = { "LDAP", "FTP (CSV File)", "Load File", "Relativity" };
-        private readonly string[] _ripInternalDestinationProviders = { "Relativity", "Load File" };
-        private const string _MY_FIRST_PROVIDER_APPLICATION_NAME = "MyFirstProvider";
-        private const string _MY_FIRST_PROVIDER_SOURCE_PROVIDER_NAME = "My First Provider";
-        private const string _MY_FIRST_PROVIDER_GUID = "616c3c78-aa2c-46b9-b81c-21be354f323d";
-        private const string _JSON_LOADER_APPLICATION_NAME = "JsonLoader";
-        private const string _JSON_LOADER_SOURCE_PROVIDER_NAME = "JSON";
-        private const string _JSON_LOADER_GUID = "57151c17-cd92-4a6e-800c-a75bf807d097";
-        private const string _RIP_GUID = CoreConstants.IntegrationPoints.APPLICATION_GUID_STRING;
-        
-        private const string _WORKSPACE_TEMPLATE_WITHOUT_RIP = SourceProviderTemplate.WorkspaceTemplates.NEW_CASE_TEMPLATE;
-        private readonly string _mainWorkspaceName = $"RipInstallTest{Guid.NewGuid()}";
+		private readonly string[] _ripInternalSourceProviders = { "LDAP", "FTP (CSV File)", "Load File", "Relativity" };
+		private readonly string[] _ripInternalDestinationProviders = { "Relativity", "Load File" };
+		private const string _JSON_LOADER_APPLICATION_NAME = "JsonLoader";
+		private const string _JSON_LOADER_SOURCE_PROVIDER_NAME = "JSON";
+		private const string _JSON_LOADER_GUID = "57151c17-cd92-4a6e-800c-a75bf807d097";
+		private const string _RIP_GUID = CoreConstants.IntegrationPoints.APPLICATION_GUID_STRING;
 
-        private int? _mainWorkspaceID;
-        private readonly List<int> _createdWorkspaces = new List<int>();
+		private const string _WORKSPACE_TEMPLATE_WITHOUT_RIP = SourceProviderTemplate.WorkspaceTemplates.NEW_CASE_TEMPLATE;
+		private readonly string _mainWorkspaceName = $"RipInstallTest{Guid.NewGuid()}";
 
-        public RipInstallationTests()
-        {
-            var helper = new TestHelper();
-            ApplicationManager = new RelativityApplicationManager(helper);
-            ObjectManagerFactory = new RelativityObjectManagerFactory(helper);
-        }
+		private int? _mainWorkspaceID;
+		private readonly List<int> _createdWorkspaces = new List<int>();
 
-        [OneTimeSetUp]
-        public async Task OneTimeSetUp()
-        {
-            _mainWorkspaceID = await CreateWorkspaceAsync(_mainWorkspaceName, _WORKSPACE_TEMPLATE_WITHOUT_RIP).ConfigureAwait(false);
+		public RipInstallationTests()
+		{
+			var helper = new TestHelper();
+			ApplicationManager = new RelativityApplicationManager(helper);
+			ObjectManagerFactory = new RelativityObjectManagerFactory(helper);
+		}
 
-            if (SharedVariables.UseIpRapFile())
-            {
-                await ApplicationManager.ImportRipToLibraryAsync().ConfigureAwait(false);
-            }
-            await ImportMyFirstProviderToLibraryAsync().ConfigureAwait(false);
-            await ImportJsonLoaderToLibraryAsync().ConfigureAwait(false);
-        }
+		[OneTimeSetUp]
+		public async Task OneTimeSetUp()
+		{
+			_mainWorkspaceID = await CreateWorkspaceAsync(_mainWorkspaceName, _WORKSPACE_TEMPLATE_WITHOUT_RIP).ConfigureAwait(false);
 
-        [OneTimeTearDown]
-        public void OneTimeTearDown()
-        {
-            foreach (int workspaceID in _createdWorkspaces)
-            {
-                Workspace.DeleteWorkspace(workspaceID);
-            }
-        }
+			if (SharedVariables.UseIpRapFile())
+			{
+				await ApplicationManager.ImportRipToLibraryAsync().ConfigureAwait(false);
+			}
+			await ImportMyFirstProviderToLibraryAsync().ConfigureAwait(false);
+			await ImportJsonLoaderToLibraryAsync().ConfigureAwait(false);
+		}
 
-        [Test]
-        [Order(10)]
-        public void ShouldInstallRipToWorkspaceCreatedFromTemplateWithoutRip()
-        {
-            // arrange
-            int mainWorkspaceID = ValidateAndGetMainWorkspaceID();
+		[OneTimeTearDown]
+		public void OneTimeTearDown()
+		{
+			foreach (int workspaceID in _createdWorkspaces)
+			{
+				Workspace.DeleteWorkspace(workspaceID);
+			}
+		}
 
-            // act
-            ApplicationManager.InstallApplicationFromLibrary(mainWorkspaceID, _RIP_GUID);
+		[Test]
+		[IdentifiedTest("73fe58a5-087e-4071-8976-e54960dcbef1")]
+		[Order(10)]
+		public void ShouldInstallRipToWorkspaceCreatedFromTemplateWithoutRip()
+		{
+			// arrange
+			int mainWorkspaceID = ValidateAndGetMainWorkspaceID();
 
-            // assert
-            VerifyRipIsInstalledCorrectlyInWorkspace(mainWorkspaceID);
-        }
+			// act
+			ApplicationManager.InstallApplicationFromLibrary(mainWorkspaceID, _RIP_GUID);
 
-        [Test]
-        [Order(20)]
-        public async Task ShouldInstallRipToWorkspaceCreatedFromTemplateWithRip()
-        {
-            // arrange
-            ValidateAndGetMainWorkspaceID();
-            string workspaceName = "RipInstallTest-CreatedFromTemplateWithRip";
+			// assert
+			VerifyRipIsInstalledCorrectlyInWorkspace(mainWorkspaceID);
+		}
 
-            // act
-            int workspaceID = await CreateWorkspaceAsync(workspaceName, _mainWorkspaceName).ConfigureAwait(false);
+		[Test]
+		[IdentifiedTest("db7f5e5b-6495-4b2a-88b3-44e8a641a759")]
+		[Order(20)]
+		public async Task ShouldInstallRipToWorkspaceCreatedFromTemplateWithRip()
+		{
+			// arrange
+			ValidateAndGetMainWorkspaceID();
+			string workspaceName = "RipInstallTest-CreatedFromTemplateWithRip";
 
-            // assert
-            VerifyRipIsInstalledCorrectlyInWorkspace(workspaceID);
-        }
+			// act
+			int workspaceID = await CreateWorkspaceAsync(workspaceName, _mainWorkspaceName).ConfigureAwait(false);
 
-        [Test]
-        [Order(30)]
-        public void ShouldInstallMyFirstProviderToWorkspaceWithRipInstalled()
-        {
-            // arrange
-            int mainWorkspaceID = ValidateAndGetMainWorkspaceID();
+			// assert
+			VerifyRipIsInstalledCorrectlyInWorkspace(workspaceID);
+		}
 
-            // act
-            ApplicationManager.InstallApplicationFromLibrary(mainWorkspaceID, _MY_FIRST_PROVIDER_GUID);
+		[Test]
+		[IdentifiedTest("a785ab16-a6f4-4e70-941c-d4fe1d026982")]
+		[Order(30)]
+		public void ShouldInstallMyFirstProviderToWorkspaceWithRipInstalled()
+		{
+			// arrange
+			int mainWorkspaceID = ValidateAndGetMainWorkspaceID();
 
-            // assert
-            IEnumerable<string> expectedSourceProviders = _ripInternalSourceProviders.Concat(new[] { _MY_FIRST_PROVIDER_SOURCE_PROVIDER_NAME });
-            VerifyRipIsInstalledCorrectlyInWorkspace(mainWorkspaceID, expectedSourceProviders);
-        }
+			// act
+			ApplicationManager.InstallApplicationFromLibrary(mainWorkspaceID, CustomProvidersConstants.MY_FIRST_PROVIDER_GUID);
 
-        [Test]
-        [Order(40)]
-        public void ShouldInstallJsonLoaderToWorkspaceWithRipInstalled()
-        {
-            // arrange
-            int mainWorkspaceID = ValidateAndGetMainWorkspaceID();
+			// assert
+			IEnumerable<string> expectedSourceProviders = _ripInternalSourceProviders.Concat(new[] { CustomProvidersConstants.MY_FIRST_PROVIDER_SOURCE_PROVIDER_NAME });
+			VerifyRipIsInstalledCorrectlyInWorkspace(mainWorkspaceID, expectedSourceProviders);
+		}
 
-            // act
-            ApplicationManager.InstallApplicationFromLibrary(mainWorkspaceID, _JSON_LOADER_GUID);
+		[Test]
+		[IdentifiedTest("cd114d25-c1b5-4549-a670-1f95a2b4d24a")]
+		[Order(40)]
+		public void ShouldInstallJsonLoaderToWorkspaceWithRipInstalled()
+		{
+			// arrange
+			int mainWorkspaceID = ValidateAndGetMainWorkspaceID();
 
-            // assert
-            IEnumerable<string> expectedCustomSourceProviders = new[]
-            {
-                _MY_FIRST_PROVIDER_SOURCE_PROVIDER_NAME,
-                _JSON_LOADER_SOURCE_PROVIDER_NAME
-            };
-            IEnumerable<string> expectedSourceProviders = _ripInternalSourceProviders.Concat(expectedCustomSourceProviders);
-            VerifyRipIsInstalledCorrectlyInWorkspace(mainWorkspaceID, expectedSourceProviders);
-        }
+			// act
+			ApplicationManager.InstallApplicationFromLibrary(mainWorkspaceID, _JSON_LOADER_GUID);
 
-        [Test]
-        [Order(50)]
-        public async Task ShouldCopySourceProviderToWorkspaceCreatedFromTemplateWithCustomProviders()
-        {
-            // arrange
-            ValidateAndGetMainWorkspaceID();
-            string workspaceName = "RipInstallTest-CopySourceProviderToWorkspace";
+			// assert
+			IEnumerable<string> expectedCustomSourceProviders = new[]
+			{
+				CustomProvidersConstants.MY_FIRST_PROVIDER_SOURCE_PROVIDER_NAME,
+				_JSON_LOADER_SOURCE_PROVIDER_NAME
+			};
+			IEnumerable<string> expectedSourceProviders = _ripInternalSourceProviders.Concat(expectedCustomSourceProviders);
+			VerifyRipIsInstalledCorrectlyInWorkspace(mainWorkspaceID, expectedSourceProviders);
+		}
 
-            // act
-            int workspaceID = await CreateWorkspaceAsync(workspaceName, _mainWorkspaceName).ConfigureAwait(false);
+		[Test]
+		[IdentifiedTest("846b2a03-48d5-4ca2-8707-17eb8313eecb")]
+		[Order(50)]
+		public async Task ShouldCopySourceProviderToWorkspaceCreatedFromTemplateWithCustomProviders()
+		{
+			// arrange
+			ValidateAndGetMainWorkspaceID();
+			string workspaceName = "RipInstallTest-CopySourceProviderToWorkspace";
 
-            // assert
-            IEnumerable<string> expectedCustomSourceProviders = new[]
-            {
-                _MY_FIRST_PROVIDER_SOURCE_PROVIDER_NAME,
-                _JSON_LOADER_SOURCE_PROVIDER_NAME
-            };
-            IEnumerable<string> expectedSourceProviders = _ripInternalSourceProviders.Concat(expectedCustomSourceProviders);
-            VerifyRipIsInstalledCorrectlyInWorkspace(workspaceID, expectedSourceProviders);
-        }
+			// act
+			int workspaceID = await CreateWorkspaceAsync(workspaceName, _mainWorkspaceName).ConfigureAwait(false);
 
-        private async Task<int> CreateWorkspaceAsync(string workspaceName, string templateName)
-        {
-            int workspaceID = await Workspace.CreateWorkspaceAsync(workspaceName, templateName).ConfigureAwait(false);
-            _createdWorkspaces.Add(workspaceID);
-            return workspaceID;
-        }
+			// assert
+			IEnumerable<string> expectedCustomSourceProviders = new[]
+			{
+				CustomProvidersConstants.MY_FIRST_PROVIDER_SOURCE_PROVIDER_NAME,
+				_JSON_LOADER_SOURCE_PROVIDER_NAME
+			};
+			IEnumerable<string> expectedSourceProviders = _ripInternalSourceProviders.Concat(expectedCustomSourceProviders);
+			VerifyRipIsInstalledCorrectlyInWorkspace(workspaceID, expectedSourceProviders);
+		}
 
-        private int ValidateAndGetMainWorkspaceID()
-        {
-            return _mainWorkspaceID ?? throw new TestSetupException("Workspace with RIP installed is not available.");
-        }
+		private async Task<int> CreateWorkspaceAsync(string workspaceName, string templateName)
+		{
+			int workspaceID = await Workspace.CreateWorkspaceAsync(workspaceName, templateName).ConfigureAwait(false);
+			_createdWorkspaces.Add(workspaceID);
+			return workspaceID;
+		}
 
-        private void VerifyRipIsInstalledCorrectlyInWorkspace(int workspaceID)
-        {
-            VerifyRipIsInstalledCorrectlyInWorkspace(workspaceID, _ripInternalSourceProviders);
-        }
+		private int ValidateAndGetMainWorkspaceID()
+		{
+			return _mainWorkspaceID ?? throw new TestSetupException("Workspace with RIP installed is not available.");
+		}
 
-        private void VerifyRipIsInstalledCorrectlyInWorkspace(int workspaceID, IEnumerable<string> expectedSourceProviders)
-        {
-            var loggerMock = new Mock<IAPILog>
-            {
-                DefaultValue = DefaultValue.Mock
-            };
+		private void VerifyRipIsInstalledCorrectlyInWorkspace(int workspaceID)
+		{
+			VerifyRipIsInstalledCorrectlyInWorkspace(workspaceID, _ripInternalSourceProviders);
+		}
 
-            IRelativityObjectManager objectManager = ObjectManagerFactory.CreateRelativityObjectManager(workspaceID);
-            var sourceProviderRepository = new SourceProviderRepository(objectManager);
-            var destinationProviderRepository = new DestinationProviderRepository(loggerMock.Object, objectManager);
+		private void VerifyRipIsInstalledCorrectlyInWorkspace(int workspaceID, IEnumerable<string> expectedSourceProviders)
+		{
+			var loggerMock = new Mock<IAPILog>
+			{
+				DefaultValue = DefaultValue.Mock
+			};
 
-            IList<SourceProvider> sourceProviders = sourceProviderRepository.GetAll().ToList();
-            IList<DestinationProvider> destinationProviders = destinationProviderRepository.GetAll().ToList();
+			IRelativityObjectManager objectManager = ObjectManagerFactory.CreateRelativityObjectManager(workspaceID);
+			var sourceProviderRepository = new SourceProviderRepository(objectManager);
+			var destinationProviderRepository = new DestinationProviderRepository(loggerMock.Object, objectManager);
 
-            sourceProviders.Select(x => x.Name).Should().BeEquivalentTo(expectedSourceProviders);
-            destinationProviders.Select(x => x.Name).Should().BeEquivalentTo(_ripInternalDestinationProviders);
-        }
+			IList<SourceProvider> sourceProviders = sourceProviderRepository.GetAll().ToList();
+			IList<DestinationProvider> destinationProviders = destinationProviderRepository.GetAll().ToList();
 
-        private async Task ImportMyFirstProviderToLibraryAsync()
-        {
-            string applicationFilePath = SharedVariables.MyFirstProviderRapFilePath;
-            await ApplicationManager.ImportApplicationToLibraryAsync(_MY_FIRST_PROVIDER_APPLICATION_NAME, applicationFilePath).ConfigureAwait(false);
-        }
+			sourceProviders.Select(x => x.Name).Should().BeEquivalentTo(expectedSourceProviders);
+			destinationProviders.Select(x => x.Name).Should().BeEquivalentTo(_ripInternalDestinationProviders);
+		}
 
-        private async Task ImportJsonLoaderToLibraryAsync()
-        {
-            string applicationFilePath = SharedVariables.JsonLoaderRapFilePath;
-            await ApplicationManager.ImportApplicationToLibraryAsync(_JSON_LOADER_APPLICATION_NAME, applicationFilePath).ConfigureAwait(false);
-        }
-    }
+		private Task ImportMyFirstProviderToLibraryAsync()
+		{
+			string applicationFilePath = SharedVariables.MyFirstProviderRapFilePath;
+			return ApplicationManager.ImportApplicationToLibraryAsync(CustomProvidersConstants.MY_FIRST_PROVIDER_APPLICATION_NAME, applicationFilePath);
+		}
+
+		private Task ImportJsonLoaderToLibraryAsync()
+		{
+			string applicationFilePath = SharedVariables.JsonLoaderRapFilePath;
+			return ApplicationManager.ImportApplicationToLibraryAsync(_JSON_LOADER_APPLICATION_NAME, applicationFilePath);
+		}
+	}
 }

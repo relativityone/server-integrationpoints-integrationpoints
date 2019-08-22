@@ -1,10 +1,14 @@
-﻿Polly
+﻿kCura.Relativity.Client
+Polly
 Relativity.API
 Relativity.Kepler
 Relativity.Kepler.Client
+Relativity.Services.Interfaces
 
 group TestPackages
 	FluentAssertions
 	Moq
+	Newtonsoft.Json
 	NUnit
+	Relativity.Testing.Identification
 	Serilog
