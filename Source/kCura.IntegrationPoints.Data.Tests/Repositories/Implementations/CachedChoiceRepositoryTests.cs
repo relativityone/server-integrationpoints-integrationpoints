@@ -2,25 +2,25 @@
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using kCura.IntegrationPoints.Core.Services.Exporter.Sanitization;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.DTO;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using Moq;
 using NUnit.Framework;
 
-namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
+namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 {
 	[TestFixture]
-	internal sealed class ChoiceCacheTests
+	public class CachedChoiceRepositoryTests
 	{
 		private Mock<IChoiceRepository> _choiceRepositoryMock;
-		private ChoiceCache _sut;
+		private CachedChoiceRepository _sut;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_choiceRepositoryMock = new Mock<IChoiceRepository>();
-			_sut = new ChoiceCache(_choiceRepositoryMock.Object);
+			_sut = new CachedChoiceRepository(_choiceRepositoryMock.Object);
 		}
 
 		[Test]
@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 
 			// act
 			IList<ChoiceWithParentInfoDto> choicesWithParentInfo =
-				await _sut.GetChoicesWithParentInfoAsync(allChoices).ConfigureAwait(false);
+				await _sut.QueryChoiceWithParentInfoAsync(allChoices, allChoices).ConfigureAwait(false);
 
 			// assert
 			_choiceRepositoryMock.Verify();
@@ -73,9 +73,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 
 			// act
 			IList<ChoiceWithParentInfoDto> firstResult =
-				await _sut.GetChoicesWithParentInfoAsync(choiceList).ConfigureAwait(false);
+				await _sut.QueryChoiceWithParentInfoAsync(choiceList, choiceList).ConfigureAwait(false);
 			IList<ChoiceWithParentInfoDto> secondResult =
-				await _sut.GetChoicesWithParentInfoAsync(choiceList).ConfigureAwait(false);
+				await _sut.QueryChoiceWithParentInfoAsync(choiceList, choiceList).ConfigureAwait(false);
 
 			// assert
 			secondResult.Should().Equal(firstResult);

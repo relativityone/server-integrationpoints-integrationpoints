@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using Castle.Core;
+﻿using Castle.Core;
 using Castle.MicroKernel.Registration;
+using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core.FluentAssertions;
@@ -32,14 +32,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Installers.Registrations
 				.HaveRegisteredSingleComponent<IChoiceTreeToStringConverter>()
 				.Which.Should().BeRegisteredWithLifestyle(LifestyleType.Transient);
 			_sut.Should()
-				.HaveRegisteredSingleComponent<IChoiceCache>()
+				.HaveRegisteredSingleComponent<ISanitizationDeserializer>()
 				.Which.Should().BeRegisteredWithLifestyle(LifestyleType.Transient);
 			_sut.Should()
-				.HaveRegisteredSingleComponent<ISanitizationHelper>()
-				.Which.Should().BeRegisteredWithLifestyle(LifestyleType.Transient);
-			_sut.Should()
-				.HaveRegisteredSingleComponent<IEnumerable<IExportFieldSanitizer>>()
-				.Which.Should().BeRegisteredWithLifestyle(LifestyleType.Transient);
+				.HaveRegisteredMultipleComponents<IExportFieldSanitizer>()
+				.And.AllWithLifestyle(LifestyleType.Transient);
 			_sut.Should()
 				.HaveRegisteredSingleComponent<IExportDataSanitizer>()
 				.Which.Should().BeRegisteredWithLifestyle(LifestyleType.Transient);
@@ -52,11 +49,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Installers.Registrations
 			_sut.Should()
 				.HaveRegisteredProperImplementation<IChoiceTreeToStringConverter, ChoiceTreeToStringConverter>();
 			_sut.Should()
-				.HaveRegisteredProperImplementation<IChoiceCache, ChoiceCache>();
+				.HaveRegisteredProperImplementation<ISanitizationDeserializer, SanitizationDeserializer>();
 			_sut.Should()
-				.HaveRegisteredProperImplementation<ISanitizationHelper, SanitizationHelper>();
-			_sut.Should()
-				.HaveRegisteredFactoryMethod<IEnumerable<IExportFieldSanitizer>>();
+				.HaveRegisteredMultipleComponents<IExportFieldSanitizer>()
+				.And.OneOfThemWithImplementation<SingleObjectFieldSanitizer>()
+				.And.OneOfThemWithImplementation<MultipleObjectFieldSanitizer>()
+				.And.OneOfThemWithImplementation<SingleChoiceFieldSanitizer>()
+				.And.OneOfThemWithImplementation<MultipleChoiceFieldSanitizer>();
 			_sut.Should()
 				.HaveRegisteredProperImplementation<IExportDataSanitizer, ExportDataSanitizer>();
 		}
@@ -71,17 +70,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Installers.Registrations
 			_sut.Should()
 				.ResolveWithoutThrowing<IChoiceTreeToStringConverter>();
 			_sut.Should()
-				.ResolveWithoutThrowing<IChoiceCache>();
-			_sut.Should()
-				.ResolveWithoutThrowing<ISanitizationHelper>();
-			_sut.Should()
-				.ResolveWithoutThrowing<IEnumerable<IExportFieldSanitizer>>();
+				.ResolveWithoutThrowing<ISanitizationDeserializer>();
 			_sut.Should()
 				.ResolveWithoutThrowing<IExportDataSanitizer>();
 		}
 
 		private static void RegisterDependencies(IWindsorContainer container)
 		{
+			container.Kernel.Resolver.AddSubResolver(new CollectionResolver(container.Kernel));
+
 			IRegistration[] dependencies =
 			{
 				CreateDummyObjectRegistration<IChoiceRepository>(),

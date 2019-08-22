@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			ICollection<ChoiceDto> choicesToQuery, 
 			ICollection<ChoiceDto> allChoices)
 		{
-			string condition = BuildCondition(choicesToQuery);
+			string condition = BuildChoiceArtifactIDCondition(choicesToQuery);
 
 			var queryRequest = new QueryRequest
 			{
@@ -34,23 +34,19 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			List<ChoiceWithParentInfoDto> choiceWithParentInfoDtos = new List<ChoiceWithParentInfoDto>();
 
-			foreach (var choiceObject in choiceObjects)
-			{
-				int? parentArtifactID = choiceObject.ParentObject.ArtifactID;
-				if (allChoices.All(x => x.ArtifactID != parentArtifactID))
+			return choiceObjects.Select(choiceObject => new
 				{
-					parentArtifactID = null;
-				}
-
-				string name = choicesToQuery.Single(x => x.ArtifactID == choiceObject.ArtifactID).Name;
-				var choiceWithParentInfo = new ChoiceWithParentInfoDto(parentArtifactID, choiceObject.ArtifactID, name);
-				choiceWithParentInfoDtos.Add(choiceWithParentInfo);
-			}
-
-			return choiceWithParentInfoDtos;
+					choiceObject.ArtifactID,
+					choicesToQuery.Single(x => x.ArtifactID == choiceObject.ArtifactID).Name,
+					ParentArtifactID = allChoices.All(x => x.ArtifactID != choiceObject.ParentObject.ArtifactID)
+						? null
+						: (int?) choiceObject.ParentObject.ArtifactID
+				})
+				.Select(x => new ChoiceWithParentInfoDto(x.ParentArtifactID, x.ArtifactID, x.Name))
+				.ToList();
 		}
 
-		private static string BuildCondition(IEnumerable<ChoiceDto> choices)
+		private static string BuildChoiceArtifactIDCondition(IEnumerable<ChoiceDto> choices)
 		{
 			IEnumerable<string> singleConditions = choices.Select(x => $"(('Artifact ID' == {x.ArtifactID}))");
 			string condition = string.Join(" OR ", singleConditions);

@@ -64,6 +64,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		[Test]
 		public async Task ItShouldQueryChoiceWithParentUsingObjectManager()
 		{
+			// arrange
 			const int choiceArtifactID = 1;
 			const int parentArtifactID = 2;
 			ChoiceDto choice = new ChoiceDto(choiceArtifactID, string.Empty);
@@ -101,6 +102,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		[Test]
 		public async Task ItShouldQueryMultipleChoicesUsingObjectManager()
 		{
+			// arrange
 			const int childArtifactID = 1;
 			const int parentArtifactID = 2;
 			const int singleArtifactID = 3;

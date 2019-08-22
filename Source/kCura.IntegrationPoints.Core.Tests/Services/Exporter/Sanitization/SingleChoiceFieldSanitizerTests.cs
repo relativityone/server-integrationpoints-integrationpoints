@@ -14,12 +14,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 	[TestFixture]
 	internal sealed class SingleChoiceFieldSanitizerTests
 	{
-		private Mock<ISanitizationHelper> _sanitizationHelper;
+		private Mock<ISanitizationDeserializer> _sanitizationHelper;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_sanitizationHelper = new Mock<ISanitizationHelper>();
+			_sanitizationHelper = new Mock<ISanitizationDeserializer>();
 			var jsonSerializer = new JSONSerializer();
 			_sanitizationHelper
 				.Setup(x => x.DeserializeAndValidateExportFieldValue<ChoiceDto>(
