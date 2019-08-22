@@ -25,6 +25,7 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<SyncObjectTypeManager>().As<ISyncObjectTypeManager>();
 			builder.RegisterType<SyncFieldManager>().As<ISyncFieldManager>();
 			builder.RegisterType<SourceWorkspaceTagRepository>().As<ISourceWorkspaceTagRepository>();
+			builder.RegisterType<DocumentTagRepository>().As<IDocumentTagRepository>();
 			builder.RegisterType<DestinationWorkspaceTagLinker>().As<IDestinationWorkspaceTagsLinker>();
 			builder.RegisterType<FederatedInstance>().As<IFederatedInstance>();
 			builder.RegisterType<WorkspaceNameQuery>().As<IWorkspaceNameQuery>();
