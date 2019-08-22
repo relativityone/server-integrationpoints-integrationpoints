@@ -51,7 +51,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		public sealed override void Execute()
 		{
-			NotifyAgentTab(10, LogCategory.Info, "Started.");
+			NotifyAgentTab(10, LogCategory.Debug, "Started.");
 
 			bool isPreExecuteSuccessful = PreExecute();
 			if (isPreExecuteSuccessful)
