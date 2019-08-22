@@ -19,9 +19,6 @@
 .PARAMETER JiraNumber
 	JIRA ticket number that update refers to
 
-.PARAMETER SkipStashing
-	Skips stashing not commited changes
-
 .PARAMETER SkipPullRequest
 	Skips creating a PR to $OnBranch
 
@@ -46,8 +43,6 @@ Param(
 	[Parameter(Mandatory=$False)]
 	[string]$JiraNumber,
 	[Parameter(Mandatory=$False)]
-	[switch]$SkipStashing,
-	[Parameter(Mandatory=$False)]
 	[switch]$SkipPullRequest,
 	[Parameter(Mandatory=$False)]
 	[pscredential]$Credential
@@ -58,6 +53,78 @@ Begin
 	. ".\Utils.ps1"
 
 	Write-Verbose "Beginning of Begin block in UpdateRelativityInRip.ps1"
+
+	function CreateJiraWithSubtasks($Credential, $BranchName)
+	{
+		$currentDate = Get-Date -Uformat "%D"
+		$parentJiraSummary = "Update RIP <-> Relativity on $BranchName $currentDate"
+		$parentJiraDescription = "$parentJiraSummary. $AutoPackageUpgradeAdnotation"
+		$parentJiraKey = .\Jira\CreateJira.ps1 -Credential $Credential -Project REL -Summary $parentJiraSummary -Description $parentJiraDescription -Product "Data Transfer" -Feature "Integration Points" -Team $TeamName -IssueType Maintenance -Label $MainJiraLabel -Assignee $JiraAssignee
+		$ripUpdateJiraNumber = .\Jira\CreateOrGetIfExistsJiraSubtask.ps1 -Credential $Credential -Project REL -ParentIssueKey $parentJiraKey -Summary "Update Relativity in RIP on $BranchName" -Description $AutoPackageUpgradeAdnotation -IssueType DEV -Label $RipUpdateJiraLabel -Assignee $JiraAssignee
+		$relativityUpdateJiraNumber = .\Jira\CreateOrGetIfExistsJiraSubtask.ps1 -Credential $Credential -Project REL -ParentIssueKey $parentJiraKey -Summary "Update RIP in Relativity on $BranchName" -Description $AutoPackageUpgradeAdnotation -IssueType DEV -Label $RelativityUpdateJiraLabel -Assignee $JiraAssignee
+		return $ripUpdateJiraNumber
+	}
+
+	function ArePackagesUpToDate($Credential, $ToPackageVersions, $OnBranch, $RipSourceCodePath)
+	{
+		Write-Host "Checking if packages are up to date."
+
+		# $pullRequestAuthor = $JiraAssignee
+		# $updatePullRequestExists = .\Bitbucket\CheckIfPullRequestAlreadyExists.ps1 -Credential $Credential -Title $commitMessage -Author $pullRequestAuthor -Project "IN" -Repository IntegrationPoints
+		# if($updatePullRequestExists -eq $true)
+		# {
+		# 	Write-Host "Pull request containing updated Relativity packages to $ToRelativityVersion on $OnBranch is already created!" -ForegroundColor Cyan
+		# 	return $falses
+		# }	
+
+		$initialBranchName = .\Git\GetCurrentBranchName.ps1 -Path $RipSourceCodePath
+		$stashName = "Saved changes before checking packages"
+    	.\Git\Stash.ps1 -StashName $stashName -Path $RipSourceCodePath
+		.\Git\Checkout.ps1 -BranchName $OnBranch -Path $RipSourceCodePath
+		
+		$areRipDependenciesOutOfDate = ($ToPackageVersions | Where-Object { (.\PackageUpdate\IsPackageInRipUpToDate.ps1 -PackageName $_.name -NewVersion $_.version -RipSourceCodePath $RipSourceCodePath) }).Count -gt 0
+
+		.\Git\Checkout.ps1 -BranchName $initialBranchName -Path $RipSourceCodePath
+		.\Git\PopStashIfExistsOnTop.ps1 -StashName $stashName -Path $RipSourceCodePath
+
+		if($areRipDependenciesOutOfDate -eq $false)
+		{
+			Write-Host "Dependencies in RIP are same or higher! Upgrade not needed." -ForegroundColor Cyan
+			return $true
+		}
+
+		Write-Host "Packages are out of date. Updating..." -ForegroundColor Cyan
+
+		return $false 
+	}
+
+	function GetPackageVersionsToBeUpdated($Credential, $ToRelativityVersion, $OnBranch)
+	{
+		try 
+		{
+			$packageVersions = @( 
+				(New-Object PSObject -Property @{ name = "kCura"; version = .\Proget\GetLatestPackageVersion.ps1 -PackageName "kCura" }),
+				(New-Object PSObject -Property @{ name = "kCura.Agent"; version = $ToRelativityVersion }),
+				(New-Object PSObject -Property @{ name = "kCura.EventHandler"; version = $ToRelativityVersion }),
+				(New-Object PSObject -Property @{ name = "kCura.Relativity.Client"; version = $ToRelativityVersion }),
+				(New-Object PSObject -Property @{ name = "Relativity.Authentication"; version = $ToRelativityVersion }),
+				(New-Object PSObject -Property @{ name = "Relativity.CustomPages"; version = $ToRelativityVersion }),
+				(New-Object PSObject -Property @{ name = "Relativity.Data"; version = $ToRelativityVersion }),
+				(New-Object PSObject -Property @{ name = "Relativity.DataExchange.Client.SDK"; version = .\Proget\GetLatestPackageVersion.ps1 -PackageName "Relativity.DataExchange.Client.SDK" }),
+				(New-Object PSObject -Property @{ name = "Relativity.Services.Interfaces"; version = $ToRelativityVersion }),
+				(New-Object PSObject -Property @{ name = "Relativity.Services.Interfaces.Private"; version = $ToRelativityVersion }),
+				(New-Object PSObject -Property @{ name = "Relativity.Services.DataContracts"; version = $ToRelativityVersion }),
+				(New-Object PSObject -Property @{ name = "Relativity.Sync"; version = .\Jenkins\GetLastSuccessfulBuildVersion.ps1 -Credential $Credential -Category DataTransfer -SubCategory RelativitySync -Pipeline RelativitySync -Branch $OnBranch }),
+				(New-Object PSObject -Property @{ name = "Relativity.API"; version = .\Proget\GetLatestPackageVersion.ps1 -PackageName "Relativity.API" })
+			)
+		}
+		catch 
+		{
+			Write-Error "Fetching package versions failed with $($_.Exception.Message)" -ErrorAction Stop
+		}
+		
+		return $packageVersions
+	}
 
 	[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
@@ -72,19 +139,14 @@ Begin
 		$ToVersion = MapJenkinsBuildVersionToRelativityPackageVersion -BuildVersion $buildVersion
 	}
 
-	$commitMessage = "Relativity packages updated to $ToVersion on $OnBranch"
+	$packagesVersions = GetPackageVersionsToBeUpdated -Credential $Credential -ToRelativityVersion $ToVersion -OnBranch $OnBranch
 
-	$updatePullRequestExists = .\Bitbucket\CheckIfPullRequestAlreadyExists.ps1 -Credential $Credential -Title $commitMessage -Author $JiraAssignee -Project "IN" -Repository IntegrationPoints
-	if($updatePullRequestExists -eq $true)
-	{
-		Write-Host "Pull request containing updated Relativity packages to $ToVersion on $OnBranch is already created!" -ForegroundColor Cyan
-		break
-	}
+	Write-Host "Going to upgrade RIP to the following package versions:" -ForegroundColor Cyan
+	$packagesVersions | ForEach-Object { Write-Host $_.name, $_.version -ForegroundColor Cyan }
 
-	$arePackagesUpToDate = .\PackageUpdate\AreRelativityPackagesInRipUpToDate.ps1 -NewVersion $ToVersion -OnBranch $OnBranch -RipSourceCodePath $RipSourceCodePath
-	if($arePackagesUpToDate -eq $true)
+	$shouldUpdate = ArePackagesUpToDate -Credential $Credential -ToPackageVersions $packagesVersions -OnBranch $OnBranch -RipSourceCodePath $RipSourceCodePath
+	if($shouldUpdate -eq $false)
 	{
-		Write-Host "Relativity packages in RIP - $ToVersion - is same or higher!" -ForegroundColor Cyan
 		break
 	}
 
@@ -92,12 +154,7 @@ Begin
 	if(!$JiraNumber)
 	{
 		$changeIssueStatusEnabled = $true
-		$currentDate = Get-Date -Uformat "%D"
-		$parentJiraSummary = "Update RIP <-> Relativity on $OnBranch $currentDate"
-		$parentJiraDescription = "$parentJiraSummary. $AutoPackageUpgradeAdnotation"
-		$parentJiraKey = .\Jira\CreateJira.ps1 -Credential $Credential -Project REL -Summary $parentJiraSummary -Description $parentJiraDescription -Product "Data Transfer" -Feature "Integration Points" -Team $TeamName -IssueType Maintenance -Label $MainJiraLabel -Assignee $JiraAssignee
-		$JiraNumber = .\Jira\CreateOrGetIfExistsJiraSubtask.ps1 -Credential $Credential -Project REL -ParentIssueKey $parentJiraKey -Summary "Update Relativity in RIP on $OnBranch" -Description $AutoPackageUpgradeAdnotation -IssueType DEV -Label $RipUpdateJiraLabel -Assignee $JiraAssignee
-		.\Jira\CreateOrGetIfExistsJiraSubtask.ps1 -Credential $Credential -Project REL -ParentIssueKey $parentJiraKey -Summary "Update RIP in Relativity on $OnBranch" -Description $AutoPackageUpgradeAdnotation -IssueType DEV -Label $RelativityUpdateJiraLabel -Assignee $JiraAssignee
+		$JiraNumber = CreateJiraWithSubtasks -Credential $Credential -BranchName $OnBranch
 	}
 
 	Write-Verbose "End of Begin block in UpdateRelativityInRip.ps1"
@@ -106,36 +163,30 @@ Process
 {
 	Write-Verbose "Beginning of Process block in UpdateRelativityInRip.ps1"
 
-	$initialBranchName = .\Git\GetCurrentBranchName.ps1 -Path $RipSourceCodePath
 	$updateBranchName = "$JiraNumber-update-relativity-in-rip"
 	$stashName = "Saved changes before auto package upgrade"
+	$commitMessage = "Relativity packages updated to $ToVersion on $OnBranch"
+	$initialBranchName = .\Git\GetCurrentBranchName.ps1 -Path $RipSourceCodePath
 
-	if(!$SkipStashing)
-	{
-		.\Git\Stash.ps1 -StashName $stashName -Path $RipSourceCodePath
-	}
+	.\Git\Stash.ps1 -StashName $stashName -Path $RipSourceCodePath
 	if($changeIssueStatusEnabled -eq $true)
 	{
 		.\Jira\ChangeIssueStatus.ps1 -Credential $Credential -JiraNumber $JiraNumber -StatusName "In Progress"
 	}
 	.\Git\CreateBranch.ps1 -ParentBranch $OnBranch -BranchName $updateBranchName -Path $RipSourceCodePath
-	$upgradeLogs = .\PackageUpdate\UpdateRelativityPackagesInRip.ps1 -ToVersion $ToVersion -RipSourceCodePath $RipSourceCodePath -WithLatestkCura -WithLatestRelativityApi -WithLatestRelativityDataExchange
+	$upgradeLogs = .\PackageUpdate\UpdateRelativityPackagesInRip.ps1 -ToPackagesVersions $packagesVersions -RipSourceCodePath $RipSourceCodePath
 	.\Git\Commit.ps1 -JiraNumber $JiraNumber -Message $commitMessage -Path $RipSourceCodePath
 	.\Git\Push.ps1 -BranchName $updateBranchName -Path $RipSourceCodePath
 	if(!$SkipPullRequest)
 	{
-		$pullRequestDescription = 'This PR was created automatically by AutoPackagesUpgrade script. \n\nPACKAGE UPGRADE LOGS:\n ```'+$upgradeLogs+'```'
-		.\Bitbucket\CreatePullRequest.ps1 -Credential $Credential -FromBranch $updateBranchName -ToBranch $OnBranch -Reviewers $PRreviewers -Project "IN" -Repository IntegrationPoints -Title "$JiraNumber $commitMessage" -Description $pullRequestDescription
+		.\Bitbucket\CreatePullRequest.ps1 -Credential $Credential -FromBranch $updateBranchName -ToBranch $OnBranch -Reviewers $PRreviewers -Project "IN" -Repository IntegrationPoints -Title "$JiraNumber $commitMessage"
 	}
 	if($changeIssueStatusEnabled -eq $true)
 	{
 		.\Jira\ChangeIssueStatus.ps1 -Credential $Credential -JiraNumber $JiraNumber -StatusName Review
 	}
 	.\Git\Checkout.ps1 -BranchName $initialBranchName -Path $RipSourceCodePath
-	if(!$SkipStashing)
-	{
-		.\Git\PopStashIfExistsOnTop.ps1 -StashName $stashName -Path $RipSourceCodePath
-	}
+	.\Git\PopStashIfExistsOnTop.ps1 -StashName $stashName -Path $RipSourceCodePath
 
 	Write-Host "Relativity version in RIP updated successfully to $ToVersion!" -ForegroundColor Green
 	

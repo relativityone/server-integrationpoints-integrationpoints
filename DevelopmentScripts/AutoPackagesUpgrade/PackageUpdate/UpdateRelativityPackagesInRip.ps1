@@ -9,33 +9,19 @@
 [CmdletBinding()]
 Param(
 	[Parameter(Mandatory=$True)]
-	[string]$ToVersion,
+	$ToPackagesVersions,
 	[Parameter(Mandatory=$True)]
-	[string]$RipSourceCodePath,
-	[Parameter(Mandatory=$True)]
-	[switch]$WithLatestkCura,
-	[Parameter(Mandatory=$True)]
-	[switch]$WithLatestRelativityApi,
-	[Parameter(Mandatory=$True)]
-	[switch]$WithLatestRelativityDataExchange
+	[string]$RipSourceCodePath
 )
 Begin
 {
     . ".\Config.ps1" 
 	. ".\Utils.ps1"	
 
-	function UpdatePackageToLatestReleaseVersion($PaketDependenciesAsText, $PackageName)
+	function UpdatePackage($PaketDependenciesAsText, $PackageName, $ToVersion)
 	{
 		$oldVersion = GetCurrentPackageVersionInRip -PaketDependenciesAsText $PaketDependenciesAsText -PackageName $PackageName
-		$newVersion = .\Proget\GetLatestPackageVersion.ps1 -PackageName $PackageName
-		return ReplacePackageVersionInRip -PaketDependenciesAsText $PaketDependenciesAsText -PackageName $PackageName -OldVersion $oldVersion -NewVersion $NewVersion 
-	}
-
-	function UpdateRelativityPackages($PaketDependenciesAsText, $OldVersion, $NewVersion)
-	{
-		Write-Host "Updating Relativity packages in paket.dependencies from $oldVersion to $NewVersion..." -ForegroundColor Cyan
-
-		return ReplacePackageVersionInRip -PaketDependenciesAsText $PaketDependenciesAsText -PackageName "" -OldVersion $OldVersion -NewVersion $NewVersion
+		return ReplacePackageVersionInRip -PaketDependenciesAsText $PaketDependenciesAsText -PackageName $PackageName -OldVersion $oldVersion -NewVersion $ToVersion 
 	}
 
 	function ReplacePackageVersionInRip($PaketDependenciesAsText, $PackageName, $OldVersion, $NewVersion)
@@ -60,22 +46,8 @@ Process
 	$paketExePath = Join-Path "$RipSourceCodePath" ".paket\paket.exe"
 	
 	$packages = Get-Content -Path $paketDependenciesPath
-	$oldVersion = GetCurrentRelativityVersionInRip -PaketDependenciesAsText $packages
 
-	$packages = UpdateRelativityPackages -PaketDependenciesAsText $packages -OldVersion $oldVersion -NewVersion $ToVersion
-	if($WithLatestkCura)
-	{
-		$packages = UpdatePackageToLatestReleaseVersion -PaketDependenciesAsText $packages -PackageName "kCura"
-		$packages = UpdatePackageToLatestReleaseVersion -PaketDependenciesAsText $packages -PackageName "kCura.Agent"
-	}
-	if($WithLatestRelativityApi)
-	{
-		$packages = UpdatePackageToLatestReleaseVersion -PaketDependenciesAsText $packages -PackageName "Relativity.API"
-	}
-	if($WithLatestRelativityDataExchange)
-	{
-		$packages = UpdatePackageToLatestReleaseVersion -PaketDependenciesAsText $packages -PackageName "Relativity.DataExchange.Client.SDK"
-	}
+	$ToPackagesVersions | ForEach-Object { $packages = UpdatePackage -PaketDependenciesAsText $packages -PackageName $_.name -ToVersion $_.version }
 
 	try 
 	{
@@ -103,6 +75,8 @@ Process
 
 	Write-Host $paketLogs
 
+	Write-Host "Relativity version in RIP updated successfully in paket.dependencies from $oldVersion to $ToVersion" -ForegroundColor Cyan
+
 	Pop-Location
 
 	try 
@@ -116,14 +90,28 @@ Process
 		Write-Error "Staging paket files failed with $($_.Exception.Message)" -ErrorAction Stop
 	}
 
-	Write-Host "Relativity version in RIP updated successfully in paket.dependencies from $oldVersion to $ToVersion" -ForegroundColor Cyan
-	
-	Write-Verbose "End of UpdateRelativityPackagesInRip.ps1"
-	
-	if($paketLogs.Length -le $LogCharsLimit)
+	try
 	{
-		return $paketLogs
+		$unstagedFiles = @(git diff --name-only)
+		if($unstagedFiles.Length -gt 0)
+		{
+			Write-Host "Unstaged files found. $unstagedFiles" -ForegroundColor Yellow
+			$logs = "\n\nUNSTAGED FILES:\n\n$unstagedFiles\n\n"
+		}
+	}
+	catch
+	{
+		Write-Error "Determining unstaged files failed with $($_.Exception.Message)" -ErrorAction Stop
 	}
 
-	return $paketLogs.Substring($paketLogs.Length - $LogCharsLimit)
+	if($paketLogs.Length -ge $LogCharsLimit)
+	{
+		$paketLogs = $paketLogs.Substring($paketLogs.Length - $LogCharsLimit)
+	}
+
+	$logs += $paketLogs
+
+	Write-Verbose "End of UpdateRelativityPackagesInRip.ps1"
+	
+	return $logs
 }

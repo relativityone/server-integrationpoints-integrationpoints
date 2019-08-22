@@ -8,7 +8,7 @@
 	By default it will create a PR and put all BVCC members on it.
 
 .PARAMETER ToVersion
-	Version of Relativity to be updated
+	Version of RIP to be updated
 
 .PARAMETER RelativitySourceCodePath
 	Path to Relativity's source code
@@ -18,9 +18,6 @@
 
 .PARAMETER OnBranch
 	Branch name that needs to be updated
-
-.PARAMETER SkipStashing
-	Skips stashing not commited changes
 
 .PARAMETER SkipPullRequest
 	Skips creating a PR to $OnBranch
@@ -77,7 +74,23 @@ Begin
 		$JiraNumber = .\Jira\CreateOrGetIfExistsJiraSubtask.ps1 -Credential $Credential -Project REL -ParentIssueKey $lastRipUpdatePackageJira.parent -Summary "Update RIP in Relativity on $OnBranch" -Description $AutoPackageUpgradeAdnotation -IssueType DEV -Label $RelativityUpdateJiraLabel -Assignee $JiraAssignee
 	}
 
-	$isPackageUpToDate = .\PackageUpdate\IsRipPackageInRelativityUpToDate.ps1 -NewVersion $ToVersion -OnBranch $OnBranch -RelativitySourceCodePath $RelativitySourceCodePath
+	$commitMessage = "RIP packages updated to $ToVersion"
+
+	$pullRequestAuthor = $JiraAssignee
+	$updatePullRequestExists = .\Bitbucket\CheckIfPullRequestAlreadyExists.ps1 -Credential $Credential -Title $commitMessage -Author $pullRequestAuthor -Project REL -Repository Relativity
+	if($updatePullRequestExists -eq $true)
+	{
+		Write-Host "Pull request containing updated RIP packages to $ToVersion on $OnBranch is already created!" -ForegroundColor Cyan
+		break
+	}
+
+	$stashName = "Saved changes before checking packages"
+    $initialBranchName = .\Git\GetCurrentBranchName.ps1 -Path $RelativitySourceCodePath
+    .\Git\Stash.ps1 -StashName $stashName -Path $RelativitySourceCodePath
+    .\Git\Checkout.ps1 -BranchName $OnBranch -Path $RelativitySourceCodePath
+	$isPackageUpToDate = .\PackageUpdate\IsRipPackageInRelativityUpToDate.ps1 -NewVersion $ToVersion -RelativitySourceCodePath $RelativitySourceCodePath
+	.\Git\Checkout.ps1 -BranchName $initialBranchName -Path $RelativitySourceCodePath
+	.\Git\PopStashIfExistsOnTop.ps1 -StashName $stashName -Path $RelativitySourceCodePath
 	if($isPackageUpToDate -eq $true)
 	{
 		Write-Host "RIP package in Relativity - $ToVersion - is same or higher!" -ForegroundColor Cyan
@@ -86,7 +99,7 @@ Begin
 
 	if(!$JiraNumber)
 	{
-		Write-Error "Specify the Jira issue key!" -ErrorAction Stop
+		Write-Error "Jira issue key not specified!" -ErrorAction Stop
 	}
 
 	Write-Verbose "End of Begin block in UpdateRipInRelativity.ps1"
@@ -95,15 +108,10 @@ Process
 {
 	Write-Verbose "Beginning of Process block in UpdateRipInRelativity.ps1"
 
-	$initialBranchName = .\Git\GetCurrentBranchName.ps1 -Path $RelativitySourceCodePath
 	$updateBranchName = "$JiraNumber-update-rip-in-relativity"
 	$stashName = "Saved changes before auto package upgrade"
-	$commitMessage = "RIP packages updated to $ToVersion"
-
-	if(!$SkipStashing)
-	{
-		.\Git\Stash.ps1 -StashName $stashName -Path $RelativitySourceCodePath
-	}
+	
+	.\Git\Stash.ps1 -StashName $stashName -Path $RelativitySourceCodePath
 	if($changeIssueStatus -eq $true)
 	{
 		.\Jira\ChangeIssueStatus.ps1 -Credential $Credential -JiraNumber $JiraNumber -StatusName "In Progress"
@@ -121,10 +129,7 @@ Process
 		.\Jira\ChangeIssueStatus.ps1 -Credential $Credential -JiraNumber $JiraNumber -StatusName Review
 	}
 	.\Git\Checkout.ps1 -BranchName $initialBranchName -Path $RelativitySourceCodePath
-	if(!$SkipStashing)
-	{
-		.\Git\PopStashIfExistsOnTop.ps1 -StashName $stashName -Path $RelativitySourceCodePath
-	}
+	.\Git\PopStashIfExistsOnTop.ps1 -StashName $stashName -Path $RelativitySourceCodePath
 
 	Write-Host "RIP version in Relativity updated successfully to $ToVersion!" -ForegroundColor Green
 	

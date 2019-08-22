@@ -59,7 +59,7 @@ Process
  
 	[String] $body = '{ 
 		"title": "'+$Title+'", 
-		"description": "'+$Description+'", 
+		"description": "'+$Description.Replace("`r`n", "\n")+'", 
 		"state": "OPEN", 
 		"open": true, 
 		"closed": false, 

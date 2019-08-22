@@ -82,21 +82,26 @@ function MapRipPackageVersionToSystemVersion($PackageVersion)
 
 function MapRelativityPackageVersionToSystemVersion($PackageVersion)
 {
-    $isGoldVersion = !$PackageVersion.Contains("DEV")
+    $isDevVersion = $PackageVersion.Contains("DEV")
+    $isBetaVersion = $PackageVersion.Contains("beta")
 
-    Write-Verbose "Going to map Relativity package version $PackageVersion to system version - isGold: $isGoldVersion"
+    Write-Verbose "Going to map Relativity package version $PackageVersion to system version"
     try
     {
-        if($isGoldVersion -eq $true)
+        if($isDevVersion -eq $true)
         {
-            $systemVersion = [System.Version]$PackageVersion
+            $version = $PackageVersion.Replace("-DEV", "")
+        }
+        elseif($isBetaVersion -eq $true)
+        {
+            $version = $PackageVersion.Replace("-beta", ".")
         }
         else
         {
-            $versionSegments = $PackageVersion.Split("-")
-            $version = $versionSegments[0]
-            $systemVersion = [System.Version]$version
+            $version = $PackageVersion
         }
+
+        $systemVersion = [System.Version]$version
     }
     catch
     {
@@ -123,7 +128,7 @@ function GetCurrentPackageVersionInRip($PaketDependenciesAsText, $PackageName)
 function GetCurrentRelativityVersionInRip($PaketDependenciesAsText)
 {
     Write-Host $PaketDependenciesAsText
-    return GetCurrentPackageVersionInRip -PaketDependenciesAsText $PaketDependenciesAsText -PackageName "Relativity.Data"
+    return GetCurrentPackageVersionInRip -PaketDependenciesAsText $PaketDependenciesAsText -PackageName Relativity.Data
 }
 
 function GetCurrentRipVersionInRelativity($PackagesConfigAsText, $RipPackageRowSegment)

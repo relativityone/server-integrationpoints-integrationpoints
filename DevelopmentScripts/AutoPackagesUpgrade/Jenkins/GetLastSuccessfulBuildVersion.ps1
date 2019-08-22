@@ -11,7 +11,9 @@ Param(
     [Parameter(Mandatory=$True)]  
 	[pscredential]$Credential,
 	[Parameter(Mandatory=$True)]
-	[string]$Category,
+    [string]$Category,
+    [Parameter(Mandatory=$False)]
+	[string]$SubCategory,
 	[Parameter(Mandatory=$True)]
     [string]$Pipeline,
     [Parameter(Mandatory=$True)]
@@ -26,7 +28,14 @@ Process
 {
     Write-Verbose "Beginning of GetLastSuccessfulBuildVersion.ps1"
 	
-	$getJobUri = "$JenkinsApiUri/job/$Category/job/$Pipeline/job/$Branch/api/json"
+    $getJobUri = "$JenkinsApiUri/job/$Category"
+    
+    if($SubCategory)
+    {
+        $getJobUri += "/job/$SubCategory"
+    }
+
+    $getJobUri += "/job/$Pipeline/job/$Branch/api/json"
   
 	Write-Verbose $getJobUri
   
