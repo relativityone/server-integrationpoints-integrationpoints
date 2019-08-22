@@ -1,12 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Relativity.Sync.Configuration;
-
-namespace Relativity.Sync.Executors
+﻿namespace Relativity.Sync.Executors
 {
-	internal interface ISourceWorkspaceTagRepository
+	internal interface ISourceWorkspaceTagRepository : IWorkspaceTagRepository<string>
 	{
-		Task<IList<TagDocumentsResult<string>>> TagDocumentsAsync(ISynchronizationConfiguration synchronizationConfiguration, IList<string> documentIdentifiers, CancellationToken token);
 	}
 }

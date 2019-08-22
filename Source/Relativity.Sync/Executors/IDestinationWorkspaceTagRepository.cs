@@ -1,18 +1,14 @@
-﻿using System.Collections.Generic;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Executors
 {
-	internal interface IDestinationWorkspaceTagRepository
+	internal interface IDestinationWorkspaceTagRepository : IWorkspaceTagRepository<int>
 	{
 		Task<DestinationWorkspaceTag> ReadAsync(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId, CancellationToken token);
 
 		Task<DestinationWorkspaceTag> CreateAsync(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId, string destinationWorkspaceName);
 
 		Task UpdateAsync(int sourceWorkspaceArtifactId, DestinationWorkspaceTag destinationWorkspaceTag);
-
-		Task<IList<TagDocumentsResult<int>>> TagDocumentsAsync(ISynchronizationConfiguration synchronizationConfiguration, IList<int> documentArtifactIds, CancellationToken token);
 	}
 }
