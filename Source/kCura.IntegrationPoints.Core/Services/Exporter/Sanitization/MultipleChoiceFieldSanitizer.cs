@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.DTO;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using Relativity;
@@ -15,17 +16,17 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
 	/// </summary>
 	internal sealed class MultipleChoiceFieldSanitizer : IExportFieldSanitizer
 	{
-		private readonly IChoiceCache _choiceCache;
+		private readonly IChoiceRepository _choiceCache;
 		private readonly IChoiceTreeToStringConverter _choiceTreeConverter;
-		private readonly ISanitizationHelper _sanitizationHelper;
+		private readonly ISanitizationDeserializer _sanitizationDeserializer;
 		private readonly char _multiValueDelimiter;
 		private readonly char _nestedValueDelimiter;
 
-		public MultipleChoiceFieldSanitizer(IChoiceCache choiceCache, IChoiceTreeToStringConverter choiceTreeConverter, ISanitizationHelper sanitizationHelper)
+		public MultipleChoiceFieldSanitizer(IChoiceRepository choiceCache, IChoiceTreeToStringConverter choiceTreeConverter, ISanitizationDeserializer sanitizationDeserializer)
 		{
 			_choiceCache = choiceCache;
 			_choiceTreeConverter = choiceTreeConverter;
-			_sanitizationHelper = sanitizationHelper;
+			_sanitizationDeserializer = sanitizationDeserializer;
 			_multiValueDelimiter = IntegrationPoints.Domain.Constants.MULTI_VALUE_DELIMITER;
 			_nestedValueDelimiter = IntegrationPoints.Domain.Constants.NESTED_VALUE_DELIMITER;
 		}
@@ -40,7 +41,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
 			}
 
 			// We have to re-serialize and deserialize the value from Export API due to REL-250554.
-			ChoiceDto[] choices = _sanitizationHelper.DeserializeAndValidateExportFieldValue<ChoiceDto[]>(
+			ChoiceDto[] choices = _sanitizationDeserializer.DeserializeAndValidateExportFieldValue<ChoiceDto[]>(
 				itemIdentifier, 
 				sanitizingSourceFieldName, 
 				initialValue);
@@ -65,7 +66,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
 					$"delimiter ('{_nestedValueDelimiter}'). Rename these choices or choose a different delimiter: {violatingNameList}.");
 			}
 
-			IList<ChoiceWithParentInfoDto> choicesFlatList = await _choiceCache.GetChoicesWithParentInfoAsync(choices).ConfigureAwait(false);
+			IList<ChoiceWithParentInfoDto> choicesFlatList = await _choiceCache.QueryChoiceWithParentInfoAsync(choices, choices).ConfigureAwait(false);
 			IList<ChoiceWithChildInfoDto> choicesTree = BuildChoiceTree(choicesFlatList, null); // start with null to designate the roots of the tree
 
 			string treeString = _choiceTreeConverter.ConvertTreeToString(choicesTree);

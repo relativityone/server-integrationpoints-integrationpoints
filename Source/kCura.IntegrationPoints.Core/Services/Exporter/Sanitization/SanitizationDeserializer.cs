@@ -4,11 +4,11 @@ using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
 {
-	internal class SanitizationHelper : ISanitizationHelper
+	internal class SanitizationDeserializer : ISanitizationDeserializer
 	{
 		private readonly ISerializer _serializer;
 
-		public SanitizationHelper(ISerializer serializer)
+		public SanitizationDeserializer(ISerializer serializer)
 		{
 			_serializer = serializer;
 		}

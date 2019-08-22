@@ -11,11 +11,11 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
 	/// </summary>
 	internal sealed class SingleObjectFieldSanitizer : IExportFieldSanitizer
 	{
-		private readonly ISanitizationHelper _sanitizationHelper;
+		private readonly ISanitizationDeserializer _sanitizationDeserializer;
 
-		public SingleObjectFieldSanitizer(ISanitizationHelper sanitizationHelper)
+		public SingleObjectFieldSanitizer(ISanitizationDeserializer sanitizationDeserializer)
 		{
-			_sanitizationHelper = sanitizationHelper;
+			_sanitizationDeserializer = sanitizationDeserializer;
 		}
 
 		public FieldTypeHelper.FieldType SupportedType => FieldTypeHelper.FieldType.Object;
@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
 
 			// We have to re-serialize and deserialize the value from Export API due to REL-250554.
 			RelativityObjectValue objectValue =
-				_sanitizationHelper.DeserializeAndValidateExportFieldValue<RelativityObjectValue>(
+				_sanitizationDeserializer.DeserializeAndValidateExportFieldValue<RelativityObjectValue>(
 					itemIdentifier,
 					sanitizingSourceFieldName, 
 					initialValue);

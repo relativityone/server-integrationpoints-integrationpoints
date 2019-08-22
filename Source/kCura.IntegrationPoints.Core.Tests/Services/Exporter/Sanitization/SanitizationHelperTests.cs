@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 	{
 		private Mock<ISerializer> _serializerMock;
 		private JSONSerializer _jsonSerializer;
-		private ISanitizationHelper _sut;
+		private ISanitizationDeserializer _sut;
 
 		[SetUp]
 		public void SetUp()
@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 			SetupSerializerMock<Choice>();
 			SetupSerializerMock<RelativityObjectValue>();
 
-			_sut = new SanitizationHelper(_serializerMock.Object);
+			_sut = new SanitizationDeserializer(_serializerMock.Object);
 		}
 
 		private void SetupSerializerMock<T>()

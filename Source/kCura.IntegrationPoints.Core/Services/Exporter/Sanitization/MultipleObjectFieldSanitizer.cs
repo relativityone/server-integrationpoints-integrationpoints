@@ -14,12 +14,12 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
 	/// </summary>
 	internal sealed class MultipleObjectFieldSanitizer : IExportFieldSanitizer
 	{
-		private readonly ISanitizationHelper _sanitizationHelper;
+		private readonly ISanitizationDeserializer _sanitizationDeserializer;
 		private readonly char _multiValueDelimiter;
 
-		public MultipleObjectFieldSanitizer(ISanitizationHelper sanitizationHelper)
+		public MultipleObjectFieldSanitizer(ISanitizationDeserializer sanitizationDeserializer)
 		{
-			_sanitizationHelper = sanitizationHelper;
+			_sanitizationDeserializer = sanitizationDeserializer;
 			_multiValueDelimiter = IntegrationPoints.Domain.Constants.MULTI_VALUE_DELIMITER;
 		}
 
@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
 
 			// We have to re-serialize and deserialize the value from Export API due to REL-250554.
 			RelativityObjectValue[] objectValues =
-				_sanitizationHelper.DeserializeAndValidateExportFieldValue<RelativityObjectValue[]>(
+				_sanitizationDeserializer.DeserializeAndValidateExportFieldValue<RelativityObjectValue[]>(
 					itemIdentifier,
 					sanitizingSourceFieldName, 
 					initialValue);

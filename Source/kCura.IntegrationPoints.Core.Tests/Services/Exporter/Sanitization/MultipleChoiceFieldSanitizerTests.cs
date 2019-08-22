@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Services.Exporter.Sanitization;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.DTO;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using Moq;
@@ -17,9 +18,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 	[TestFixture]
 	internal class MultipleChoiceFieldSanitizerTests
 	{
-		private Mock<IChoiceCache> _choiceCache;
+		private Mock<IChoiceRepository> _choiceCache;
 		private Mock<IChoiceTreeToStringConverter> _choiceTreeToStringConverter;
-		private Mock<ISanitizationHelper> _sanitizationHelper;
+		private Mock<ISanitizationDeserializer> _sanitizationHelper;
 		private MultipleChoiceFieldSanitizer _sut;
 
 		private const char _NESTED_VALUE = IntegrationPoints.Domain.Constants.NESTED_VALUE_DELIMITER;
@@ -28,9 +29,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 		[SetUp]
 		public void SetUp()
 		{
-			_choiceCache = new Mock<IChoiceCache>();
+			_choiceCache = new Mock<IChoiceRepository>();
 			_choiceTreeToStringConverter = new Mock<IChoiceTreeToStringConverter>();
-			_sanitizationHelper = new Mock<ISanitizationHelper>();
+			_sanitizationHelper = new Mock<ISanitizationDeserializer>();
 			var jsonSerializer = new JSONSerializer();
 			_sanitizationHelper
 				.Setup(x => x.DeserializeAndValidateExportFieldValue<ChoiceDto[]>(
@@ -91,7 +92,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 		[Test]
 		public async Task ItShouldReturnEmptyString()
 		{
-			_choiceCache.Setup(x => x.GetChoicesWithParentInfoAsync(It.IsAny<ICollection<ChoiceDto>>())).ReturnsAsync(new List<ChoiceWithParentInfoDto>());
+			_choiceCache
+				.Setup(
+					x => x.QueryChoiceWithParentInfoAsync(It.IsAny<ICollection<ChoiceDto>>(), It.IsAny<ICollection<ChoiceDto>>()))
+				.ReturnsAsync(new List<ChoiceWithParentInfoDto>());
 			_choiceTreeToStringConverter.Setup(x => x.ConvertTreeToString(It.IsAny<IList<ChoiceWithChildInfoDto>>())).Returns(string.Empty);
 
 			// Act

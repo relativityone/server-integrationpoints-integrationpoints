@@ -125,8 +125,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Installers
 		{
 			// assert
 			_sut.Should()
-				.HaveRegisteredSingleComponent<IChoiceRepository>()
-				.Which.Should().BeRegisteredWithLifestyle(LifestyleType.Transient);
+				.HaveRegisteredMultipleComponents<IChoiceRepository>()
+				.And.AllWithLifestyle(LifestyleType.Transient);
 		}
 
 		[Test]
@@ -142,7 +142,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Installers
 		{
 			// assert
 			_sut.Should()
-				.HaveRegisteredProperImplementation<IChoiceRepository, ChoiceRepository>();
+				.HaveRegisteredMultipleComponents<IChoiceRepository>()
+				.And.OneOfThemWithImplementation<ChoiceRepository>()
+				.And.OneOfThemWithImplementation<CachedChoiceRepository>();
 		}
 
 		[Test]
@@ -164,7 +166,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Installers
 
 			// assert
 			_sut.Should()
-				.ResolveWithoutThrowing<IChoiceRepository>();
+				.ResolveImplementationWithoutThrowing<IChoiceRepository, CachedChoiceRepository>();
 		}
 
 		[Test]

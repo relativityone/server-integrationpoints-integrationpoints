@@ -34,6 +34,10 @@ namespace kCura.IntegrationPoints.Data.Installers
 					.LifestyleTransient(),
 				Component
 					.For<IChoiceRepository>()
+					.ImplementedBy<CachedChoiceRepository>()
+					.LifestyleTransient(),
+				Component
+					.For<IChoiceRepository>()
 					.ImplementedBy<ChoiceRepository>()
 					.LifestyleTransient(),
 				Component

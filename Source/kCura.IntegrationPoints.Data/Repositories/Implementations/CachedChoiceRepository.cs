@@ -1,28 +1,29 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.DTO;
 
-namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
+namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
-	internal sealed class ChoiceCache : IChoiceCache
+	public class CachedChoiceRepository : IChoiceRepository
 	{
-		private readonly IChoiceRepository _choiceRepository;
+		private readonly IChoiceRepository _innerChoiceRepository;
 		private readonly IDictionary<int, ChoiceWithParentInfoDto> _cache;
 
-		public ChoiceCache(IChoiceRepository choiceRepository)
+		public CachedChoiceRepository(IChoiceRepository innerChoiceRepository)
 		{
-			_choiceRepository = choiceRepository;
+			_innerChoiceRepository = innerChoiceRepository;
 			_cache = new Dictionary<int, ChoiceWithParentInfoDto>();
 		}
 
-		public async Task<IList<ChoiceWithParentInfoDto>> GetChoicesWithParentInfoAsync(ICollection<ChoiceDto> choices)
+		public async Task<IList<ChoiceWithParentInfoDto>> QueryChoiceWithParentInfoAsync(
+			ICollection<ChoiceDto> choicesToQuery,
+			ICollection<ChoiceDto> allChoices)
 		{
 			var choicesWithParentInfo = new List<ChoiceWithParentInfoDto>();
 			var choicesMissingFromCache = new List<ChoiceDto>();
 
-			foreach (ChoiceDto choice in choices)
+			foreach (ChoiceDto choice in choicesToQuery)
 			{
 				if (_cache.ContainsKey(choice.ArtifactID))
 				{
@@ -38,7 +39,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
 			if (choicesMissingFromCache.Any())
 			{
 				IList<ChoiceWithParentInfoDto> choicesWithParentInfoMissingFromCache =
-					await QueryMissingChoicesAsync(choicesMissingFromCache, choices).ConfigureAwait(false);
+					await QueryMissingChoicesAsync(choicesMissingFromCache, allChoices).ConfigureAwait(false);
 				choicesWithParentInfo.AddRange(choicesWithParentInfoMissingFromCache);
 			}
 
@@ -50,7 +51,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
 			ICollection<ChoiceDto> allChoices)
 		{
 			IList<ChoiceWithParentInfoDto> missingChoicesWithParentInfo =
-				await _choiceRepository.QueryChoiceWithParentInfoAsync(missingChoices, allChoices).ConfigureAwait(false);
+				await _innerChoiceRepository.QueryChoiceWithParentInfoAsync(missingChoices, allChoices).ConfigureAwait(false);
 
 			foreach (var choice in missingChoicesWithParentInfo)
 			{

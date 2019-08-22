@@ -11,11 +11,11 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
 	/// </summary>
 	internal sealed class SingleChoiceFieldSanitizer : IExportFieldSanitizer
 	{
-		private readonly ISanitizationHelper _sanitizationHelper;
+		private readonly ISanitizationDeserializer _sanitizationDeserializer;
 
-		public SingleChoiceFieldSanitizer(ISanitizationHelper sanitizationHelper)
+		public SingleChoiceFieldSanitizer(ISanitizationDeserializer sanitizationDeserializer)
 		{
-			_sanitizationHelper = sanitizationHelper;
+			_sanitizationDeserializer = sanitizationDeserializer;
 		}
 
 		public FieldTypeHelper.FieldType SupportedType => FieldTypeHelper.FieldType.Code;
@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
 			}
 
 			// We have to re-serialize and deserialize the value from Export API due to REL-250554.
-			ChoiceDto choice = _sanitizationHelper.DeserializeAndValidateExportFieldValue<ChoiceDto>(
+			ChoiceDto choice = _sanitizationDeserializer.DeserializeAndValidateExportFieldValue<ChoiceDto>(
 				itemIdentifier, 
 				sanitizingSourceFieldName, 
 				initialValue);
