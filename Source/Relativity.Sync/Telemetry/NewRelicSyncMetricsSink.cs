@@ -1,22 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Relativity.Sync.Telemetry
+﻿namespace Relativity.Sync.Telemetry
 {
 	/// <summary>
-	///     Logs <see cref="Metric"/>s to New Relic. Metrics are aggregated and sent in a single call
-	///     when the object is disposed, which should be at the end of the Sync job.
+	///     Logs <see cref="Metric"/>s to New Relic.
 	/// </summary>
-	internal sealed class NewRelicSyncMetricsSink : ISyncMetricsSink, IDisposable
+	internal sealed class NewRelicSyncMetricsSink : ISyncMetricsSink
 	{
-		// See comment in Dispose(bool).
-		private bool _disposed = false;
-
-		private const string _METRIC_NAME = "Relativity.Sync.JobComplete";
+		private const string _NEW_RELIC_INDEX_NAME = "Relativity.Sync";
 
 		private readonly IAPMClient _apmClient;
-		private readonly List<Metric> _metrics;
 
 		/// <summary>
 		///     Creates a new instance of <see cref="NewRelicSyncMetricsSink"/>.
@@ -25,50 +16,12 @@ namespace Relativity.Sync.Telemetry
 		public NewRelicSyncMetricsSink(IAPMClient apmClient)
 		{
 			_apmClient = apmClient;
-			_metrics = new List<Metric>();
 		}
 
 		/// <inheritdoc />
 		public void Log(Metric metric)
 		{
-			_metrics.Add(metric);
-		}
-
-		/// <summary>
-		///     Sends accumulated <see cref="Metric"/>s to the APM endpoint.
-		/// </summary>
-		/// <param name="disposing">Indicates whether this method is being called from <see cref="Dispose()"/> (true) or from the finalizer (false).</param>
-		private void Dispose(bool disposing)
-		{
-			if (!_disposed)
-			{
-				if (disposing)
-				{
-					Dictionary<string, object> payload = BuildPayload(_metrics);
-					_apmClient.Log(_METRIC_NAME, payload);
-				}
-
-				// This isn't meant to ensure thread-safety, just safety from repeated calls to Dispose.
-				// If this _should_ be thread-safe, consider locking or marking the field `volatile`.
-				_disposed = true;
-			}
-		}
-
-		/// <summary>
-		///     Builds a customData payload for APM so we can send all metrics in one call.
-		///     Keys are random IDs and values are dictionaries mapping public Metric properties
-		///     to their values, i.e.: {(guid) => {(property) => (property_val)}}
-		/// </summary>
-		private static Dictionary<string, object> BuildPayload(IEnumerable<Metric> metrics)
-		{
-			Dictionary<string, object> payload = metrics.ToDictionary(m => Guid.NewGuid().ToString(), m => (object)m.ToDictionary());
-			return payload;
-		}
-
-		/// <inheritdoc />
-		public void Dispose()
-		{
-			Dispose(true);
+			_apmClient.Log(_NEW_RELIC_INDEX_NAME, metric.ToDictionary());
 		}
 	}
 }
