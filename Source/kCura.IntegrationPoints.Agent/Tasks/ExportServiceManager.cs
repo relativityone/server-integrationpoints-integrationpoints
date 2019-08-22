@@ -313,11 +313,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IQueryFieldLookupRepository destinationQueryFieldLookupRepository =
 				_repositoryFactory.GetQueryFieldLookupRepository(configuration.TargetWorkspaceArtifactId);
 
-			FieldMap longTextField = fieldMap.FirstOrDefault(fm => IsLongTextWithDgEnabled(sourceQueryFieldLookupRepository.GetFieldByArtifactId(int.Parse(fm.SourceField.FieldIdentifier))));
+			FieldMap longTextField = fieldMap.FirstOrDefault(fm => IsLongTextWithDgEnabled(sourceQueryFieldLookupRepository.GetFieldByArtifactID(int.Parse(fm.SourceField.FieldIdentifier))));
 
 			if (longTextField?.DestinationField?.FieldIdentifier != null && IsSingleDataGridField(fieldMap, sourceQueryFieldLookupRepository))
 			{
-				ViewFieldInfo destinationField = destinationQueryFieldLookupRepository.GetFieldByArtifactId(int.Parse(longTextField.DestinationField.FieldIdentifier));
+				ViewFieldInfo destinationField = destinationQueryFieldLookupRepository.GetFieldByArtifactID(int.Parse(longTextField.DestinationField.FieldIdentifier));
 				return destinationField != null && !destinationField.EnableDataGrid;
 			}
 
@@ -331,7 +331,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private bool IsSingleDataGridField(IEnumerable<FieldMap> fieldMap, IQueryFieldLookupRepository source)
 		{
-			return fieldMap.Count(field => source.GetFieldByArtifactId(int.Parse(field.SourceField.FieldIdentifier)).EnableDataGrid) == 1;
+			return fieldMap.Count(field => source.GetFieldByArtifactID(int.Parse(field.SourceField.FieldIdentifier)).EnableDataGrid) == 1;
 		}
 
 		protected override void JobHistoryErrorManagerSetup(Job job)

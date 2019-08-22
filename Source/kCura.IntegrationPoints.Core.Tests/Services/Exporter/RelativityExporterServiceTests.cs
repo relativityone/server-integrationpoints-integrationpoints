@@ -104,14 +104,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 					ArtifactId = 123,
 					Value = _CONTROL_NUMBER_VALUE,
 					Name = _CONTROL_NUMBER,
-					FieldType = FieldTypeHelper.FieldType.Empty.ToString()
+					FieldType = FieldTypeHelper.FieldType.Empty
 				},
 				new ArtifactFieldDTO()
 				{
 					ArtifactId = 456,
 					Value = _EMAIL_VALUE,
 					Name = _EMAIL,
-					FieldType = FieldTypeHelper.FieldType.Empty.ToString()
+					FieldType = FieldTypeHelper.FieldType.Empty
 				},
 			});
 
@@ -123,10 +123,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 
 			_queryFieldLookupRepository = new Mock<IQueryFieldLookupRepository>();
 			var viewFieldInfo = new ViewFieldInfo("", "", FieldTypeHelper.FieldType.Empty);
-			_queryFieldLookupRepository.Setup(x => x.GetFieldByArtifactId(_FIELD_IDENTIFIER)).Returns(viewFieldInfo);
+			_queryFieldLookupRepository.Setup(x => x.GetFieldByArtifactID(_FIELD_IDENTIFIER)).Returns(viewFieldInfo);
 			foreach (var artifactFieldDto in _goldFlowExpectedDto.Fields)
 			{
-				_queryFieldLookupRepository.Setup(x => x.GetFieldByArtifactId(artifactFieldDto.ArtifactId)).Returns(viewFieldInfo);
+				_queryFieldLookupRepository.Setup(x => x.GetFieldByArtifactID(artifactFieldDto.ArtifactId)).Returns(viewFieldInfo);
 			}
 			_sourceRepositoryFactory.Setup(x => x.GetQueryFieldLookupRepository(_SOURCE_WORKSPACE_ARTIFACT_ID))
 				.Returns(_queryFieldLookupRepository.Object);
@@ -143,7 +143,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			SetupInitializationResultAndTestInstance(0);
 
 			_queryFieldLookupRepository
-				.Setup(x => x.GetFieldByArtifactId(It.IsAny<int>()))
+				.Setup(x => x.GetFieldByArtifactID(It.IsAny<int>()))
 				.Returns(new ViewFieldInfo(string.Empty, string.Empty, FieldTypeHelper.FieldType.Code));
 
 			// act
@@ -165,12 +165,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 				.ReturnsAsync(_goldFlowRetrievableData);
 
 			_queryFieldLookupRepository
-				.Setup(x => x.GetFieldByArtifactId(It.IsAny<int>()))
+				.Setup(x => x.GetFieldByArtifactID(It.IsAny<int>()))
 				.Returns(new ViewFieldInfo(string.Empty, string.Empty, FieldTypeHelper.FieldType.Empty));
 
 			_queryFieldLookupRepository
-				.Setup(x => x.GetFieldTypeByArtifactId(It.IsAny<int>()))
-				.Returns(FieldTypeHelper.FieldType.Empty.ToString());
+				.Setup(x => x.GetFieldTypeByArtifactID(It.IsAny<int>()))
+				.Returns(FieldTypeHelper.FieldType.Empty);
 
 			// act
 			ArtifactDTO[] retrievedData = _instance.RetrieveData(1);
@@ -248,24 +248,24 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 					ArtifactId = 123,
 					Value = _CONTROL_NUMBER_VALUE,
 					Name = _CONTROL_NUMBER,
-					FieldType = FieldTypeHelper.FieldType.Empty.ToString()
+					FieldType = FieldTypeHelper.FieldType.Empty
 				},
 				new ArtifactFieldDTO
 				{
 					ArtifactId = 456,
 					Value = _EMAIL_VALUE,
 					Name = _EMAIL,
-					FieldType = FieldTypeHelper.FieldType.Empty.ToString()
+					FieldType = FieldTypeHelper.FieldType.Empty
 				},
 			});
 
 			_queryFieldLookupRepository
-				.Setup(x => x.GetFieldByArtifactId(It.IsAny<int>()))
+				.Setup(x => x.GetFieldByArtifactID(It.IsAny<int>()))
 				.Returns(new ViewFieldInfo(string.Empty, string.Empty, FieldTypeHelper.FieldType.Empty));
 
 			_queryFieldLookupRepository
-				.Setup(x => x.GetFieldTypeByArtifactId(It.IsAny<int>()))
-				.Returns(FieldTypeHelper.FieldType.Empty.ToString());
+				.Setup(x => x.GetFieldTypeByArtifactID(It.IsAny<int>()))
+				.Returns(FieldTypeHelper.FieldType.Empty);
 
 			// Act
 			ArtifactDTO[] data = _instance.RetrieveData(1);

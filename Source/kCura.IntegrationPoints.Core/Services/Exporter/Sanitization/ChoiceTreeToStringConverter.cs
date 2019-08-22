@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using kCura.IntegrationPoints.Data.Repositories.DTO;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
 {
@@ -15,11 +16,11 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
 			_nestedValueDelimiter = IntegrationPoints.Domain.Constants.NESTED_VALUE_DELIMITER;
 		}
 
-		public string ConvertTreeToString(IList<ChoiceWithChildInfo> tree)
+		public string ConvertTreeToString(IList<ChoiceWithChildInfoDto> choiceTree)
 		{
 			var treePaths = new List<StringBuilder>();
 
-			foreach (ChoiceWithChildInfo choice in tree)
+			foreach (ChoiceWithChildInfoDto choice in choiceTree)
 			{
 				var path = new StringBuilder();
 				Traverse(choice, treePaths, path);
@@ -29,7 +30,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
 			return merged;
 		}
 
-		private void Traverse(ChoiceWithChildInfo choice, IList<StringBuilder> paths, StringBuilder path)
+		private void Traverse(ChoiceWithChildInfoDto choice, IList<StringBuilder> paths, StringBuilder path)
 		{
 			path.Append(choice.Name);
 
@@ -39,7 +40,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
 			}
 			else
 			{
-				foreach (ChoiceWithChildInfo child in choice.Children)
+				foreach (ChoiceWithChildInfoDto child in choice.Children)
 				{
 					var newPath = new StringBuilder(path.ToString());
 					newPath.Append(_nestedValueDelimiter);

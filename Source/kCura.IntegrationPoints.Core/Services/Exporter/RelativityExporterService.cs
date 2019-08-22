@@ -11,6 +11,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
+using Relativity;
 using Relativity.API;
 using ArtifactType = kCura.Relativity.Client.ArtifactType;
 
@@ -93,7 +94,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				int documentArtifactID = data.ArtifactID;
 
 				string itemIdentifier = data.FieldValues[IdentifierField.ActualName].ToString();
-				SetupBaseFields(data.FieldValues.Values.ToArray(), fields, itemIdentifier);
+				SetupBaseFieldsAsync(data.FieldValues.Values.ToArray(), fields, itemIdentifier).GetAwaiter().GetResult();
 
 				// TODO: replace String.empty
 				string textIdentifier = string.Empty;
@@ -107,16 +108,16 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			return result.ToArray();
 		}
 
-		private void SetupBaseFields(object[] fieldsValue, List<ArtifactFieldDTO> fields, string itemIdentifier)
+		private async Task SetupBaseFieldsAsync(object[] fieldsValue, List<ArtifactFieldDTO> fields, string itemIdentifier)
 		{
 			for (int index = 0; index < FieldArtifactIds.Length; index++)
 			{
 				string fieldName = ExportJobInfo.FieldNames[index];
 				int artifactID = FieldArtifactIds[index];
-				string fieldType = QueryFieldLookupRepository.GetFieldTypeByArtifactId(artifactID);
+				FieldTypeHelper.FieldType fieldType = QueryFieldLookupRepository.GetFieldTypeByArtifactID(artifactID);
 				object initialValue = fieldsValue[index];
 
-				object value = SanitizeFieldIfNeededAsync(fieldName, fieldType, initialValue, itemIdentifier).GetAwaiter().GetResult();
+				object value = await SanitizeFieldIfNeededAsync(fieldName, fieldType, initialValue, itemIdentifier);
 
 				fields.Add(new ArtifactFieldDTO
 				{
@@ -128,25 +129,23 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			}
 		}
 
-		private async Task<object> SanitizeFieldIfNeededAsync(string fieldName, string fieldType, object initialValue, string itemIdentifier)
+		private Task<object> SanitizeFieldIfNeededAsync(string fieldName, FieldTypeHelper.FieldType fieldType, object initialValue, string itemIdentifier)
 		{
 			int sourceWorkspaceArtifactID = SourceConfiguration.SourceWorkspaceArtifactId;
-			object sanitizedValue = initialValue;
 
 			if (_exportDataSanitizer.ShouldSanitize(fieldType))
 			{
-				sanitizedValue = await _exportDataSanitizer
+				return _exportDataSanitizer
 					.SanitizeAsync(
 						sourceWorkspaceArtifactID,
 						IdentifierField.ActualName,
 						itemIdentifier,
 						fieldName,
 						fieldType,
-						initialValue)
-					.ConfigureAwait(false);
+						initialValue);
 			}
 
-			return sanitizedValue;
+			return Task.FromResult(initialValue);
 		}
 	}
 }

@@ -1,10 +1,11 @@
 ﻿using System.Threading.Tasks;
+using Relativity;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
 {
 	internal interface IExportFieldSanitizer
 	{
-		string SupportedType { get; }
+		FieldTypeHelper.FieldType SupportedType { get; }
 
 		Task<object> SanitizeAsync(
 			int workspaceArtifactID, 

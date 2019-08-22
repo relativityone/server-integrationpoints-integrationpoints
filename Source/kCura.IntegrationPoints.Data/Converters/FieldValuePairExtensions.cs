@@ -1,5 +1,6 @@
 ﻿using System;
 using kCura.IntegrationPoints.Domain.Models;
+using Relativity;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Converters
@@ -24,7 +25,7 @@ namespace kCura.IntegrationPoints.Data.Converters
 			{
 				Name = fieldValuePair.Field.Name,
 				ArtifactId = fieldValuePair.Field.ArtifactID,
-				FieldType = fieldValuePair.Field.FieldType.ToString(),
+				FieldType = (FieldTypeHelper.FieldType) fieldValuePair.Field.FieldType,
 				Value = fieldValuePair.Value
 			};
 		}

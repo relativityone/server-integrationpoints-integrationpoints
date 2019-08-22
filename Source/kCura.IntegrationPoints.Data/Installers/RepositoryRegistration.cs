@@ -33,6 +33,10 @@ namespace kCura.IntegrationPoints.Data.Installers
 					.ImplementedBy<KeplerDocumentRepository>()
 					.LifestyleTransient(),
 				Component
+					.For<IChoiceRepository>()
+					.ImplementedBy<ChoiceRepository>()
+					.LifestyleTransient(),
+				Component
 					.For<IRepositoryFactory>()
 					.ImplementedBy<RepositoryFactory>()
 					.LifestyleTransient(),

@@ -226,7 +226,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 					Name = artifact.Name,
 					ArtifactId = artifact.ArtifactID,
 					Value = artifact.Value,
-					FieldType = QueryFieldLookupRepository.GetFieldTypeByArtifactId(artifact.ArtifactID)
+					FieldType = QueryFieldLookupRepository.GetFieldTypeByArtifactID(artifact.ArtifactID)
 				});
 
 			fields.AddRange(baseFields);

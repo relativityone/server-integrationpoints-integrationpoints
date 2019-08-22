@@ -4,137 +4,83 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoints.Core.Services.Exporter.Sanitization;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.DTO;
 using Moq;
 using NUnit.Framework;
-using Relativity.API;
-using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 {
 	[TestFixture]
 	internal sealed class ChoiceCacheTests
 	{
-		private Mock<IRelativityObjectManager> _objectManagerMock;
+		private Mock<IChoiceRepository> _choiceRepositoryMock;
 		private ChoiceCache _sut;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_objectManagerMock = new Mock<IRelativityObjectManager>();
-			_sut = new ChoiceCache(_objectManagerMock.Object);
+			_choiceRepositoryMock = new Mock<IChoiceRepository>();
+			_sut = new ChoiceCache(_choiceRepositoryMock.Object);
 		}
 
 		[Test]
-		public async Task ItShouldQueryChoiceUsingObjectManager()
+		public async Task ItShouldQueryChoiceWithParentUsingChoiceRepository()
 		{
 			// arrange
 			const int choiceArtifactID = 1;
 			const int parentArtifactID = 2;
-			Choice choice = new Choice
+			ChoiceDto choice = new ChoiceDto(choiceArtifactID, string.Empty);
+			ChoiceDto parent = new ChoiceDto(parentArtifactID, string.Empty);
+			ICollection<ChoiceDto> allChoices = new List<ChoiceDto> { choice, parent };
+			var expectedResult = new List<ChoiceWithParentInfoDto>
 			{
-				ArtifactID = choiceArtifactID
+				new ChoiceWithParentInfoDto(parentArtifactID, choiceArtifactID, string.Empty),
+				new ChoiceWithParentInfoDto(null, parentArtifactID, string.Empty)
 			};
-			List<RelativityObject> queryResult = new List<RelativityObject>
-			{
-				new RelativityObject
-				{
-					ArtifactID = choiceArtifactID,
-					ParentObject = new RelativityObjectRef
-					{
-						ArtifactID = parentArtifactID
-					}
-				}
-			};
+			const int expectedNumberOfChoices = 2;
 
-			_objectManagerMock
-				.Setup(x => x.QueryAsync(It.IsAny<QueryRequest>(), It.IsAny<ExecutionIdentity>()))
-				.ReturnsAsync(queryResult)
+			_choiceRepositoryMock
+				.Setup(x => x.QueryChoiceWithParentInfoAsync(allChoices, allChoices))
+				.ReturnsAsync(expectedResult)
 				.Verifiable();
 
 			// act
-			IList<ChoiceWithParentInfo> choicesWithParentInfo =
-				await _sut.GetChoicesWithParentInfoAsync(new List<Choice> {choice}).ConfigureAwait(false);
+			IList<ChoiceWithParentInfoDto> choicesWithParentInfo =
+				await _sut.GetChoicesWithParentInfoAsync(allChoices).ConfigureAwait(false);
 
 			// assert
-			_objectManagerMock.Verify();
-			choicesWithParentInfo.Count.Should().Be(1);
-			choicesWithParentInfo.First().ArtifactID.Should().Be(choiceArtifactID);
-			choicesWithParentInfo.First().ParentArtifactID.Should().BeNull();
-		}
-
-		[Test]
-		public async Task ItShouldQueryChoiceWithParentUsingObjectManager()
-		{
-			const int choiceArtifactID = 1;
-			const int parentArtifactID = 2;
-			Choice choice = new Choice
-			{
-				ArtifactID = choiceArtifactID
-			};
-			Choice parent = new Choice
-			{
-				ArtifactID = parentArtifactID
-			};
-			List<RelativityObject> queryResult = new List<RelativityObject>
-			{
-				new RelativityObject
-				{
-					ArtifactID = choiceArtifactID,
-					ParentObject = new RelativityObjectRef
-					{
-						ArtifactID = parentArtifactID
-					}
-				}
-			};
-
-			_objectManagerMock
-				.Setup(x => x.QueryAsync(It.IsAny<QueryRequest>(), It.IsAny<ExecutionIdentity>()))
-				.ReturnsAsync(queryResult)
-				.Verifiable();
-
-			// act
-			IList<ChoiceWithParentInfo> choicesWithParentInfo =
-				await _sut.GetChoicesWithParentInfoAsync(new List<Choice> {choice, parent}).ConfigureAwait(false);
-
-			// assert
-			_objectManagerMock.Verify();
-			const int numberOfChoices = 2;
-			choicesWithParentInfo.Count.Should().Be(numberOfChoices);
+			_choiceRepositoryMock.Verify();
+			choicesWithParentInfo.Count.Should().Be(expectedNumberOfChoices);
 			choicesWithParentInfo.First(x => x.ArtifactID == choiceArtifactID).ParentArtifactID.Should().Be(parentArtifactID);
 		}
 
 		[Test]
 		public async Task ItShouldReturnChoiceFromCache()
 		{
+			// arrange
 			const int choiceArtifactID = 1;
 			const int parentArtifactID = 2;
-			Choice choice = new Choice
+			ChoiceDto choice = new ChoiceDto(choiceArtifactID, string.Empty);
+			ICollection<ChoiceDto> choiceList = new List<ChoiceDto> { choice };
+			var expectedResult = new List<ChoiceWithParentInfoDto>
 			{
-				ArtifactID = choiceArtifactID
-			};
-			List<RelativityObject> queryResult = new List<RelativityObject>
-			{
-				new RelativityObject
-				{
-					ArtifactID = choiceArtifactID,
-					ParentObject = new RelativityObjectRef
-					{
-						ArtifactID = parentArtifactID
-					}
-				}
+				new ChoiceWithParentInfoDto(parentArtifactID, choiceArtifactID, string.Empty)
 			};
 
-			_objectManagerMock
-				.Setup(x => x.QueryAsync(It.IsAny<QueryRequest>(), It.IsAny<ExecutionIdentity>()))
-				.ReturnsAsync(queryResult)
-				.Verifiable();
+			_choiceRepositoryMock
+				.Setup(x => x.QueryChoiceWithParentInfoAsync(choiceList, choiceList))
+				.ReturnsAsync(expectedResult);
 
 			// act
-			await _sut.GetChoicesWithParentInfoAsync(new List<Choice> { choice }).ConfigureAwait(false);
-			await _sut.GetChoicesWithParentInfoAsync(new List<Choice> { choice }).ConfigureAwait(false);
+			IList<ChoiceWithParentInfoDto> firstResult =
+				await _sut.GetChoicesWithParentInfoAsync(choiceList).ConfigureAwait(false);
+			IList<ChoiceWithParentInfoDto> secondResult =
+				await _sut.GetChoicesWithParentInfoAsync(choiceList).ConfigureAwait(false);
 
 			// assert
-			_objectManagerMock.Verify(x => x.QueryAsync(It.IsAny<QueryRequest>(), It.IsAny<ExecutionIdentity>()), Times.Once);
+			secondResult.Should().Equal(firstResult);
+			_choiceRepositoryMock.Verify(
+				x => x.QueryChoiceWithParentInfoAsync(It.IsAny<ICollection<ChoiceDto>>(), It.IsAny<ICollection<ChoiceDto>>()), Times.Once);
 		}
 	}
 }

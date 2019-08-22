@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using FluentAssertions;
 using kCura.IntegrationPoints.Core.Services.Exporter.Sanitization;
+using kCura.IntegrationPoints.Data.Repositories.DTO;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
@@ -23,38 +25,41 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 		[Test]
 		public void ItShouldProperlyConvertOneRootChoice()
 		{
-			var choice = new ChoiceWithChildInfo(2, "Hot", Array.Empty<ChoiceWithChildInfo>());
+			// arrange
+			var choice = new ChoiceWithChildInfoDto(2, "Hot", Array.Empty<ChoiceWithChildInfoDto>());
 
 			// act
-			string actual = _sut.ConvertTreeToString(new List<ChoiceWithChildInfo> { choice });
+			string actual = _sut.ConvertTreeToString(new List<ChoiceWithChildInfoDto> { choice });
 
 			// assert
 			string expected = $"Hot{_multiValueDelimiter}";
-			Assert.AreEqual(expected, actual);
+			actual.Should().Be(expected);
 		}
 
 		[Test]
 		public void ItShouldProperlyConvertRootAndChild()
 		{
+			// arrange
 			const string childName = "Child";
 			const int childArtifactId = 103556;
-			var child = new ChoiceWithChildInfo(childArtifactId, childName, Array.Empty<ChoiceWithChildInfo>());
+			var child = new ChoiceWithChildInfoDto(childArtifactId, childName, Array.Empty<ChoiceWithChildInfoDto>());
 
 			const string parentName = "Root";
 			const int parentArtifactId = 104334;
-			var root = new ChoiceWithChildInfo(parentArtifactId, parentName, new List<ChoiceWithChildInfo> { child });
+			var root = new ChoiceWithChildInfoDto(parentArtifactId, parentName, new List<ChoiceWithChildInfoDto> { child });
 
 			// act
-			string actual = _sut.ConvertTreeToString(new List<ChoiceWithChildInfo> { root });
+			string actual = _sut.ConvertTreeToString(new List<ChoiceWithChildInfoDto> { root });
 
 			// assert
 			string expected = $"Root{_nestedValueDelimiter}Child{_multiValueDelimiter}";
-			Assert.AreEqual(expected, actual);
+			actual.Should().Be(expected);
 		}
 
 		[Test]
 		public void ItShouldProperlyConvertMultipleParentsAndChildren()
 		{
+			// arrange
 			/*
 			 *		1
 			 *			2
@@ -63,12 +68,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 			 *		5
 			 *			6
 			 */
-			var choice1 = new ChoiceWithChildInfo(0, "1", new List<ChoiceWithChildInfo>());
-			var choice2 = new ChoiceWithChildInfo(0, "2", new List<ChoiceWithChildInfo>());
-			var choice3 = new ChoiceWithChildInfo(0, "3", new List<ChoiceWithChildInfo>());
-			var choice4 = new ChoiceWithChildInfo(0, "4", new List<ChoiceWithChildInfo>());
-			var choice5 = new ChoiceWithChildInfo(0, "5", new List<ChoiceWithChildInfo>());
-			var choice6 = new ChoiceWithChildInfo(0, "6", new List<ChoiceWithChildInfo>());
+			var choice1 = new ChoiceWithChildInfoDto(0, "1", new List<ChoiceWithChildInfoDto>());
+			var choice2 = new ChoiceWithChildInfoDto(0, "2", new List<ChoiceWithChildInfoDto>());
+			var choice3 = new ChoiceWithChildInfoDto(0, "3", new List<ChoiceWithChildInfoDto>());
+			var choice4 = new ChoiceWithChildInfoDto(0, "4", new List<ChoiceWithChildInfoDto>());
+			var choice5 = new ChoiceWithChildInfoDto(0, "5", new List<ChoiceWithChildInfoDto>());
+			var choice6 = new ChoiceWithChildInfoDto(0, "6", new List<ChoiceWithChildInfoDto>());
 
 			choice1.Children.Add(choice2);
 			choice1.Children.Add(choice4);
@@ -80,10 +85,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 				$"{_multiValueDelimiter}5{_nestedValueDelimiter}6{_multiValueDelimiter}";
 
 			// act
-			string actual = _sut.ConvertTreeToString(new List<ChoiceWithChildInfo> { choice1, choice5 });
+			string actual = _sut.ConvertTreeToString(new List<ChoiceWithChildInfoDto> { choice1, choice5 });
 
 			// assert
-			Assert.AreEqual(expected, actual);
+			actual.Should().Be(expected);
 		}
 	}
 }
