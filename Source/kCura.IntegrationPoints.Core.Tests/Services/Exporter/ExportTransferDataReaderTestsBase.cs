@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
+using Relativity;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 {
@@ -61,7 +62,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 				new ArtifactFieldDTO()
 				{
 					ArtifactId = _FIELD_IDENTIFIER,
-					FieldType = "Fixed Length",
+					FieldType = FieldTypeHelper.FieldType.Varchar,
 					Name = "Control Number",
 					Value = _CONTROL_NUMBER
 				}

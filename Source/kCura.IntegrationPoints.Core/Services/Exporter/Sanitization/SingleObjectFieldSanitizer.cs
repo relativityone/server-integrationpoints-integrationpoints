@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using kCura.Apps.Common.Utils.Serializers;
-using Newtonsoft.Json;
+﻿using System.Threading.Tasks;
 using Relativity;
 using Relativity.Services.Objects.DataContracts;
 
@@ -14,14 +11,14 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
 	/// </summary>
 	internal sealed class SingleObjectFieldSanitizer : IExportFieldSanitizer
 	{
-		private readonly ISerializer _serializer;
+		private readonly ISanitizationHelper _sanitizationHelper;
 
-		public SingleObjectFieldSanitizer(ISerializer serializer)
+		public SingleObjectFieldSanitizer(ISanitizationHelper sanitizationHelper)
 		{
-			_serializer = serializer;
+			_sanitizationHelper = sanitizationHelper;
 		}
 
-		public string SupportedType => FieldTypeHelper.FieldType.Object.ToString();
+		public FieldTypeHelper.FieldType SupportedType => FieldTypeHelper.FieldType.Object;
 
 		public Task<object> SanitizeAsync(int workspaceArtifactID, string itemIdentifierSourceFieldName, string itemIdentifier, string sanitizingSourceFieldName, object initialValue)
 		{
@@ -31,19 +28,11 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
 			}
 
 			// We have to re-serialize and deserialize the value from Export API due to REL-250554.
-			RelativityObjectValue objectValue;
-			try
-			{
-				objectValue = _serializer.Deserialize<RelativityObjectValue>(initialValue.ToString());
-			}
-			catch (Exception ex) when (ex is JsonSerializationException || ex is JsonReaderException)
-			{
-				throw new InvalidExportFieldValueException(
-					itemIdentifier, 
-					sanitizingSourceFieldName,
-					$"Expected value to be deserializable to {typeof(RelativityObjectValue)}, but instead type was {initialValue.GetType()}.",
-					ex);
-			}
+			RelativityObjectValue objectValue =
+				_sanitizationHelper.DeserializeAndValidateExportFieldValue<RelativityObjectValue>(
+					itemIdentifier,
+					sanitizingSourceFieldName, 
+					initialValue);
 
 			// If a Single Object field is not set, Object Manager returns a valid object with an ArtifactID of 0 instead of a null value.
 			if (objectValue.ArtifactID == default(int))

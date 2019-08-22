@@ -1,4 +1,5 @@
-﻿using Castle.Core;
+﻿using System.Collections.Generic;
+using Castle.Core;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using kCura.Apps.Common.Utils.Serializers;
@@ -34,7 +35,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Installers.Registrations
 				.HaveRegisteredSingleComponent<IChoiceCache>()
 				.Which.Should().BeRegisteredWithLifestyle(LifestyleType.Transient);
 			_sut.Should()
-				.HaveRegisteredSingleComponent<IExportFieldSanitizerProvider>()
+				.HaveRegisteredSingleComponent<ISanitizationHelper>()
+				.Which.Should().BeRegisteredWithLifestyle(LifestyleType.Transient);
+			_sut.Should()
+				.HaveRegisteredSingleComponent<IEnumerable<IExportFieldSanitizer>>()
 				.Which.Should().BeRegisteredWithLifestyle(LifestyleType.Transient);
 			_sut.Should()
 				.HaveRegisteredSingleComponent<IExportDataSanitizer>()
@@ -50,7 +54,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Installers.Registrations
 			_sut.Should()
 				.HaveRegisteredProperImplementation<IChoiceCache, ChoiceCache>();
 			_sut.Should()
-				.HaveRegisteredProperImplementation<IExportFieldSanitizerProvider, ExportFieldSanitizerProvider>();
+				.HaveRegisteredProperImplementation<ISanitizationHelper, SanitizationHelper>();
+			_sut.Should()
+				.HaveRegisteredFactoryMethod<IEnumerable<IExportFieldSanitizer>>();
 			_sut.Should()
 				.HaveRegisteredProperImplementation<IExportDataSanitizer, ExportDataSanitizer>();
 		}
@@ -67,7 +73,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Installers.Registrations
 			_sut.Should()
 				.ResolveWithoutThrowing<IChoiceCache>();
 			_sut.Should()
-				.ResolveWithoutThrowing<IExportFieldSanitizerProvider>();
+				.ResolveWithoutThrowing<ISanitizationHelper>();
+			_sut.Should()
+				.ResolveWithoutThrowing<IEnumerable<IExportFieldSanitizer>>();
 			_sut.Should()
 				.ResolveWithoutThrowing<IExportDataSanitizer>();
 		}
@@ -76,8 +84,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Installers.Registrations
 		{
 			IRegistration[] dependencies =
 			{
-				CreateDummyObjectRegistration<IRelativityObjectManager>(),
-				CreateDummyObjectRegistration<ISerializer>()
+				CreateDummyObjectRegistration<IChoiceRepository>(),
+				CreateDummyObjectRegistration<ISerializer>(),
 			};
 
 			container.Register(dependencies);

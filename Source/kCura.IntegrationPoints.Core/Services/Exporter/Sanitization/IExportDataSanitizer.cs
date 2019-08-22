@@ -1,16 +1,17 @@
 ﻿using System.Threading.Tasks;
+using Relativity;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
 {
 	public interface IExportDataSanitizer
 	{
-		bool ShouldSanitize(string dataType);
+		bool ShouldSanitize(FieldTypeHelper.FieldType fieldType);
 		Task<object> SanitizeAsync(
 			int workspaceArtifactID, 
 			string itemIdentifierSourceFieldName, 
 			string itemIdentifier, 
-			string fieldName, 
-			string fieldType, 
+			string fieldName,
+			FieldTypeHelper.FieldType fieldType, 
 			object initialValue);
 	}
 }

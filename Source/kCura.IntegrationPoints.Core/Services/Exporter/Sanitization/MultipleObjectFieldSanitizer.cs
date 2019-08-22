@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Domain.Exceptions;
-using Newtonsoft.Json;
 using Relativity;
 using Relativity.Services.Objects.DataContracts;
 
@@ -17,16 +14,16 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
 	/// </summary>
 	internal sealed class MultipleObjectFieldSanitizer : IExportFieldSanitizer
 	{
-		private readonly ISerializer _serializer;
+		private readonly ISanitizationHelper _sanitizationHelper;
 		private readonly char _multiValueDelimiter;
 
-		public MultipleObjectFieldSanitizer(ISerializer serializer)
+		public MultipleObjectFieldSanitizer(ISanitizationHelper sanitizationHelper)
 		{
-			_serializer = serializer;
+			_sanitizationHelper = sanitizationHelper;
 			_multiValueDelimiter = IntegrationPoints.Domain.Constants.MULTI_VALUE_DELIMITER;
 		}
 
-		public string SupportedType => FieldTypeHelper.FieldType.Objects.ToString();
+		public FieldTypeHelper.FieldType SupportedType => FieldTypeHelper.FieldType.Objects;
 
 		public Task<object> SanitizeAsync(int workspaceArtifactID, string itemIdentifierSourceFieldName, string itemIdentifier, string sanitizingSourceFieldName, object initialValue)
 		{
@@ -36,19 +33,11 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
 			}
 
 			// We have to re-serialize and deserialize the value from Export API due to REL-250554.
-			RelativityObjectValue[] objectValues;
-			try
-			{
-				objectValues = _serializer.Deserialize<RelativityObjectValue[]>(initialValue.ToString());
-			}
-			catch (Exception ex) when (ex is JsonSerializationException || ex is JsonReaderException)
-			{
-				throw new InvalidExportFieldValueException(
-					itemIdentifier, 
-					sanitizingSourceFieldName,
-					$"Expected value to be deserializable to {typeof(RelativityObjectValue[])}, but instead type was {initialValue.GetType()}.",
-					ex);
-			}
+			RelativityObjectValue[] objectValues =
+				_sanitizationHelper.DeserializeAndValidateExportFieldValue<RelativityObjectValue[]>(
+					itemIdentifier,
+					sanitizingSourceFieldName, 
+					initialValue);
 
 			if (objectValues.Any(x => string.IsNullOrWhiteSpace(x.Name)))
 			{

@@ -86,9 +86,9 @@
     <Compile Include="Services\Exporter\Sanitization\ChoiceCacheTests.cs" />
     <Compile Include="Services\Exporter\Sanitization\ChoiceTreeToStringConverterTests.cs" />
     <Compile Include="Services\Exporter\Sanitization\ExportDataSanitizerTests.cs" />
-    <Compile Include="Services\Exporter\Sanitization\ExportFieldSanitizerProviderTests.cs" />
     <Compile Include="Services\Exporter\Sanitization\MultipleChoiceFieldSanitizerTests.cs" />
     <Compile Include="Services\Exporter\Sanitization\MultipleObjectFieldSanitizerTests.cs" />
+    <Compile Include="Services\Exporter\Sanitization\SanitizationHelperTests.cs" />
     <Compile Include="Services\Exporter\Sanitization\SanitizationTestUtils.cs" />
     <Compile Include="Services\Exporter\Sanitization\SingleChoiceFieldSanitizerTests.cs" />
     <Compile Include="Services\Exporter\Sanitization\SingleObjectFieldSanitizerTests.cs" />

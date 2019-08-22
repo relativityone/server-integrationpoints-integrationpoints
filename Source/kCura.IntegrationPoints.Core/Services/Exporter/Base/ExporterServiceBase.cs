@@ -120,7 +120,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 			foreach (FieldEntry source in mappedFields.Select(f => f.SourceField))
 			{
 				int artifactID = Convert.ToInt32(source.FieldIdentifier);
-				ViewFieldInfo fieldInfo = QueryFieldLookupRepository.GetFieldByArtifactId(artifactID);
+				ViewFieldInfo fieldInfo = QueryFieldLookupRepository.GetFieldByArtifactID(artifactID);
 
 				switch (fieldInfo.FieldType)
 				{

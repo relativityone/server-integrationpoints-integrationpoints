@@ -9,9 +9,11 @@ using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
+using Relativity;
 using Relativity.API;
 using Relativity.Services.FieldManager;
 using Relativity.Services.Objects.DataContracts;
+using ArtifactType = kCura.Relativity.Client.ArtifactType;
 using Field = kCura.Relativity.Client.DTOs.Field;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
@@ -52,7 +54,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				.ConfigureAwait(false);
 
 			ArtifactFieldDTO[] fieldDtos = relativityObjects
-				.Select(x => ConvertRelativityObjectToArtifactFieldDto(x, longTextFieldName))
+				.Select(x => ConvertRelativityObjectToArtifactFieldDto(x, FieldTypeHelper.FieldType.Text))
 				.ToArray();
 
 			return fieldDtos;
@@ -147,12 +149,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		private string GetObjectTypeCondition(int rdoTypeID) => $"'Object Type Artifact Type Id' == OBJECT {rdoTypeID}";
 
-		private static ArtifactFieldDTO ConvertRelativityObjectToArtifactFieldDto(RelativityObject relativityObject, string fieldTypeName)
+		private static ArtifactFieldDTO ConvertRelativityObjectToArtifactFieldDto(RelativityObject relativityObject, FieldTypeHelper.FieldType fieldType)
 		{
 			return new ArtifactFieldDTO
 			{
 				ArtifactId = relativityObject.ArtifactID,
-				FieldType = fieldTypeName,
+				FieldType = fieldType,
 				Name = relativityObject.Name,
 				Value = null // Field RDO's don't have values...setting this to NULL to be explicit
 			};

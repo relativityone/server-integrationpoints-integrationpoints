@@ -5,13 +5,12 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Services.Exporter.Sanitization;
+using kCura.IntegrationPoints.Data.Repositories.DTO;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using Moq;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using Relativity;
-using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 {
@@ -20,7 +19,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 	{
 		private Mock<IChoiceCache> _choiceCache;
 		private Mock<IChoiceTreeToStringConverter> _choiceTreeToStringConverter;
-		private Mock<ISerializer> _serializer;
+		private Mock<ISanitizationHelper> _sanitizationHelper;
 		private MultipleChoiceFieldSanitizer _sut;
 
 		private const char _NESTED_VALUE = IntegrationPoints.Domain.Constants.NESTED_VALUE_DELIMITER;
@@ -31,47 +30,29 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 		{
 			_choiceCache = new Mock<IChoiceCache>();
 			_choiceTreeToStringConverter = new Mock<IChoiceTreeToStringConverter>();
-			_serializer = new Mock<ISerializer>();
+			_sanitizationHelper = new Mock<ISanitizationHelper>();
 			var jsonSerializer = new JSONSerializer();
-			_serializer
-				.Setup(x => x.Deserialize<Choice[]>(It.IsAny<string>()))
-				.Returns((string serializedString) => jsonSerializer.Deserialize<Choice[]>(serializedString));
-			_sut = new MultipleChoiceFieldSanitizer(_choiceCache.Object, _choiceTreeToStringConverter.Object, _serializer.Object);
+			_sanitizationHelper
+				.Setup(x => x.DeserializeAndValidateExportFieldValue<ChoiceDto[]>(
+					It.IsAny<string>(),
+					It.IsAny<string>(), 
+					It.IsAny<object>()))
+				.Returns((string x, string y, object serializedObject) =>
+					jsonSerializer.Deserialize<ChoiceDto[]>(serializedObject.ToString()));
+			_sut = new MultipleChoiceFieldSanitizer(
+				_choiceCache.Object, 
+				_choiceTreeToStringConverter.Object,
+				_sanitizationHelper.Object);
 		}
 
 		[Test]
 		public void ItShouldSupportMultipleChoice()
 		{
 			// Act
-			string supportedType = _sut.SupportedType;
+			FieldTypeHelper.FieldType supportedType = _sut.SupportedType;
 
 			// Assert
-			supportedType.Should().Be(FieldTypeHelper.FieldType.MultiCode.ToString());
-		}
-
-		[TestCaseSource(nameof(ThrowExceptionWhenDeserializationFailsTestCases))]
-		public void ItShouldThrowInvalidExportFieldValueExceptionWithTypeNamesWhenDeserializationFails(object initialValue)
-		{
-			// Act
-			Func<Task> action = async () => await _sut.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
-
-			// Assert
-			action.ShouldThrow<InvalidExportFieldValueException>()
-				.Which.Message.Should()
-				.Contain(typeof(Choice[]).Name).And
-				.Contain(initialValue.GetType().Name);
-		}
-
-		[TestCaseSource(nameof(ThrowExceptionWhenDeserializationFailsTestCases))]
-		public void ItShouldThrowInvalidExportFieldValueExceptionWithInnerExceptionWhenDeserializationFails(object initialValue)
-		{
-			// Act
-			Func<Task> action = async () => await _sut.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
-
-			// Assert
-			action.ShouldThrow<InvalidExportFieldValueException>()
-				.Which.InnerException.Should()
-				.Match(ex => ex is JsonReaderException || ex is JsonSerializationException);	
+			supportedType.Should().Be(FieldTypeHelper.FieldType.MultiCode);
 		}
 
 		[TestCaseSource(nameof(ThrowExceptionWhenAnyElementsAreInvalidTestCases))]
@@ -83,11 +64,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 			// Assert
 			action.ShouldThrow<InvalidExportFieldValueException>()
 				.Which.Message.Should()
-				.Contain(typeof(Choice).Name);
+				.Contain(typeof(ChoiceDto).Name);
 		}
 
-		[TestCaseSource(nameof(ThrowSyncExceptionWhenNameContainsDelimiterTestCases))]
-		public void ItShouldThrowSyncExceptionWhenNameContainsDelimiter(object initialValue, string expectedViolators)
+		[TestCaseSource(nameof(ThrowIPExceptionWhenNameContainsDelimiterTestCases))]
+		public void ItShouldThrowIPExceptionWhenNameContainsDelimiter(object initialValue, string expectedViolators)
 		{
 			// Act
 			Func<Task> action = async () => await _sut.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
@@ -110,8 +91,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 		[Test]
 		public async Task ItShouldReturnEmptyString()
 		{
-			_choiceCache.Setup(x => x.GetChoicesWithParentInfoAsync(It.IsAny<ICollection<Choice>>())).ReturnsAsync(new List<ChoiceWithParentInfo>());
-			_choiceTreeToStringConverter.Setup(x => x.ConvertTreeToString(It.IsAny<IList<ChoiceWithChildInfo>>())).Returns(string.Empty);
+			_choiceCache.Setup(x => x.GetChoicesWithParentInfoAsync(It.IsAny<ICollection<ChoiceDto>>())).ReturnsAsync(new List<ChoiceWithParentInfoDto>());
+			_choiceTreeToStringConverter.Setup(x => x.ConvertTreeToString(It.IsAny<IList<ChoiceWithChildInfoDto>>())).Returns(string.Empty);
 
 			// Act
 			object result = await _sut.SanitizeAsync(0, "foo", "bar", "baz", ChoiceJArrayFromNames().ToString()).ConfigureAwait(false);
@@ -127,7 +108,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 			yield return new TestCaseData(SanitizationTestUtils.DeserializeJson("[ { \"ArtifactID\": 101, \"Name\": \"Cool Choice\" }, { \"test\": 1 }, { \"ArtifactID\": 102, \"Name\": \"Cool Choice 2\" } ]"));
 		}
 
-		private static IEnumerable<TestCaseData> ThrowSyncExceptionWhenNameContainsDelimiterTestCases()
+		private static IEnumerable<TestCaseData> ThrowIPExceptionWhenNameContainsDelimiterTestCases()
 		{
 			yield return new TestCaseData(
 				ChoiceJArrayFromNames($"{_MULTI_VALUE} Sick Choice"),
@@ -175,17 +156,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 			};
 		}
 
-		private static IEnumerable<TestCaseData> ThrowExceptionWhenDeserializationFailsTestCases()
-		{
-			yield return new TestCaseData(1);
-			yield return new TestCaseData("foo");
-			yield return new TestCaseData(new object());
-			yield return new TestCaseData(SanitizationTestUtils.DeserializeJson("{ \"not\": \"an array\" }"));
-		}
-
 		private static JArray ChoiceJArrayFromNames(params string[] names)
 		{
-			Choice[] choices = names.Select(x => new Choice { Name = x }).ToArray();
+			ChoiceDto[] choices = names.Select(x => new ChoiceDto(artifactID: 0, name: x)).ToArray();
 			return SanitizationTestUtils.ToJToken<JArray>(choices);
 		}
 	}

@@ -19,17 +19,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 		{
 			// Arrange
 			var sanitizer1 = new Mock<IExportFieldSanitizer>();
-			sanitizer1.SetupGet(x => x.SupportedType).Returns(FieldTypeHelper.FieldType.Currency.ToString());
+			sanitizer1.SetupGet(x => x.SupportedType).Returns(FieldTypeHelper.FieldType.Currency);
 			var sanitizer2 = new Mock<IExportFieldSanitizer>();
-			sanitizer2.SetupGet(x => x.SupportedType).Returns(FieldTypeHelper.FieldType.Date.ToString());
+			sanitizer2.SetupGet(x => x.SupportedType).Returns(FieldTypeHelper.FieldType.Date);
 			var sanitizer3 = new Mock<IExportFieldSanitizer>();
-			sanitizer3.SetupGet(x => x.SupportedType).Returns(FieldTypeHelper.FieldType.Currency.ToString());
-			Mock<IExportFieldSanitizerProvider> sanitizerProvider = new Mock<IExportFieldSanitizerProvider>();
+			sanitizer3.SetupGet(x => x.SupportedType).Returns(FieldTypeHelper.FieldType.Currency);
 			IList<IExportFieldSanitizer> sanitizers = new[] {sanitizer1.Object, sanitizer2.Object, sanitizer3.Object};
-			sanitizerProvider.Setup(x => x.GetExportFieldSanitizers()).Returns(sanitizers);
 
 			// Act
-			Action action = () => new ExportDataSanitizer(sanitizerProvider.Object);
+			Action action = () => new ExportDataSanitizer(sanitizers);
 
 			// Assert
 			action.ShouldThrow<IntegrationPointsException>()
@@ -40,12 +38,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 		public void ItShouldCorrectlyCheckForDataTypesToSanitize(IList<IExportFieldSanitizer> sanitizers, bool expectedResult)
 		{
 			// Arrange
-			Mock<IExportFieldSanitizerProvider> sanitizerProvider = new Mock<IExportFieldSanitizerProvider>();
-			sanitizerProvider.Setup(x => x.GetExportFieldSanitizers()).Returns(sanitizers);
-			var sut = new ExportDataSanitizer(sanitizerProvider.Object);
+			var sut = new ExportDataSanitizer(sanitizers);
 
 			// Act
-			bool result = sut.ShouldSanitize(FieldTypeHelper.FieldType.Currency.ToString());
+			bool result = sut.ShouldSanitize(FieldTypeHelper.FieldType.Currency);
 
 			// Assert
 			result.Should().Be(expectedResult);
@@ -55,12 +51,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 		public void ItShouldThrowExceptionForUnregisteredDataType(IList<IExportFieldSanitizer> sanitizers)
 		{
 			// Arrange
-			Mock<IExportFieldSanitizerProvider> sanitizerProvider = new Mock<IExportFieldSanitizerProvider>();
-			sanitizerProvider.Setup(x => x.GetExportFieldSanitizers()).Returns(sanitizers);
-			var sut = new ExportDataSanitizer(sanitizerProvider.Object);
+			var sut = new ExportDataSanitizer(sanitizers);
 
 			// Act
-			string fieldType = FieldTypeHelper.FieldType.Currency.ToString();
+			FieldTypeHelper.FieldType fieldType = FieldTypeHelper.FieldType.Currency;
 			Func<Task> action = async () =>
 				await sut.SanitizeAsync(0, "foo", "bar", "src", fieldType, "test")
 					.ConfigureAwait(false);
@@ -75,25 +69,23 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 			// Arrange
 			Guid matchingResult = Guid.NewGuid();
 			var matchingSanitizer = new Mock<IExportFieldSanitizer>();
-			matchingSanitizer.Setup(x => x.SupportedType).Returns(FieldTypeHelper.FieldType.Currency.ToString());
+			matchingSanitizer.Setup(x => x.SupportedType).Returns(FieldTypeHelper.FieldType.Currency);
 			matchingSanitizer
 				.Setup(x => x.SanitizeAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>()))
 				.ReturnsAsync(matchingResult);
 
 			Guid nonMatchingResult = Guid.NewGuid();
 			var nonMatchingSanitizer = new Mock<IExportFieldSanitizer>();
-			nonMatchingSanitizer.Setup(x => x.SupportedType).Returns(FieldTypeHelper.FieldType.Date.ToString());
+			nonMatchingSanitizer.Setup(x => x.SupportedType).Returns(FieldTypeHelper.FieldType.Date);
 			nonMatchingSanitizer
 				.Setup(x => x.SanitizeAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>()))
 				.ReturnsAsync(nonMatchingResult);
 
-			Mock<IExportFieldSanitizerProvider> sanitizerProvider = new Mock<IExportFieldSanitizerProvider>();
 			IList<IExportFieldSanitizer> sanitizers = new[] {matchingSanitizer.Object, nonMatchingSanitizer.Object};
-			sanitizerProvider.Setup(x => x.GetExportFieldSanitizers()).Returns(sanitizers);
-			var sut = new ExportDataSanitizer(sanitizerProvider.Object);
+			var sut = new ExportDataSanitizer(sanitizers);
 
 			// Act
-			string fieldType = FieldTypeHelper.FieldType.Currency.ToString();
+			FieldTypeHelper.FieldType fieldType = FieldTypeHelper.FieldType.Currency;
 			object result =
 				await sut.SanitizeAsync(0, "foo", "bar", "src", fieldType, "test")
 					.ConfigureAwait(false);
@@ -107,18 +99,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 		{
 			// Arrange
 			var sanitizer = new Mock<IExportFieldSanitizer>();
-			sanitizer.Setup(x => x.SupportedType).Returns(FieldTypeHelper.FieldType.Currency.ToString());
+			sanitizer.Setup(x => x.SupportedType).Returns(FieldTypeHelper.FieldType.Currency);
 			sanitizer
 				.Setup(x => x.SanitizeAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>()))
 				.Throws<IntegrationPointsException>();
 
-			Mock<IExportFieldSanitizerProvider> sanitizerProvider = new Mock<IExportFieldSanitizerProvider>();
 			IList<IExportFieldSanitizer> sanitizers = new[] { sanitizer.Object };
-			sanitizerProvider.Setup(x => x.GetExportFieldSanitizers()).Returns(sanitizers);
-			var sut = new ExportDataSanitizer(sanitizerProvider.Object);
+			var sut = new ExportDataSanitizer(sanitizers);
 
 			// Act
-			string fieldType = FieldTypeHelper.FieldType.Currency.ToString();
+			FieldTypeHelper.FieldType fieldType = FieldTypeHelper.FieldType.Currency;
 			Func<Task> action = async () =>
 				await sut.SanitizeAsync(0, "foo", "bar", "src", fieldType, "test")
 					.ConfigureAwait(false);
@@ -130,13 +120,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 		private static IEnumerable<TestCaseData> CorrectlyCheckForDataTypesToSanitizeTestCases()
 		{
 			var matchingSanitizer1 = new Mock<IExportFieldSanitizer>();
-			matchingSanitizer1.SetupGet(x => x.SupportedType).Returns(FieldTypeHelper.FieldType.Currency.ToString());
+			matchingSanitizer1.SetupGet(x => x.SupportedType).Returns(FieldTypeHelper.FieldType.Currency);
 
 			var matchingSanitizer2 = new Mock<IExportFieldSanitizer>();
-			matchingSanitizer2.SetupGet(x => x.SupportedType).Returns(FieldTypeHelper.FieldType.Currency.ToString());
+			matchingSanitizer2.SetupGet(x => x.SupportedType).Returns(FieldTypeHelper.FieldType.Currency);
 
 			var nonMatchingSanitizer = new Mock<IExportFieldSanitizer>();
-			nonMatchingSanitizer.SetupGet(x => x.SupportedType).Returns(FieldTypeHelper.FieldType.Date.ToString());
+			nonMatchingSanitizer.SetupGet(x => x.SupportedType).Returns(FieldTypeHelper.FieldType.Date);
 
 			yield return new TestCaseData(null, false)
 			{
@@ -163,7 +153,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 		private static IEnumerable<TestCaseData> ThrowExceptionForUnregisteredDataTypeTestCases()
 		{
 			var nonMatchingSanitizer = new Mock<IExportFieldSanitizer>();
-			nonMatchingSanitizer.SetupGet(x => x.SupportedType).Returns(FieldTypeHelper.FieldType.Date.ToString());
+			nonMatchingSanitizer.SetupGet(x => x.SupportedType).Returns(FieldTypeHelper.FieldType.Date);
 
 			yield return new TestCaseData(null)
 			{

@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 
 			IQueryFieldLookupRepository queryFieldLookupRepository = Substitute.For<IQueryFieldLookupRepository>();
 			var viewFieldInfo = new ViewFieldInfo("", "", FieldTypeHelper.FieldType.Empty);
-			queryFieldLookupRepository.GetFieldByArtifactId(_FIELD_IDENTIFIER).Returns(viewFieldInfo);
+			queryFieldLookupRepository.GetFieldByArtifactID(_FIELD_IDENTIFIER).Returns(viewFieldInfo);
 			_sourceRepositoryFactory.GetQueryFieldLookupRepository(_SOURCE_WORKSPACE_ARTIFACT_ID).Returns(queryFieldLookupRepository);
 
 			_fileRepository = Substitute.For<IFileRepository>();

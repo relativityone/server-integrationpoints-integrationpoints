@@ -2,66 +2,62 @@
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data.Repositories;
-using Relativity.Services.Objects.DataContracts;
+using kCura.IntegrationPoints.Data.Repositories.DTO;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
 {
 	internal sealed class ChoiceCache : IChoiceCache
 	{
-		private const int _CHOICE_ARTIFACT_TYPE_ID = 7;
+		private readonly IChoiceRepository _choiceRepository;
+		private readonly IDictionary<int, ChoiceWithParentInfoDto> _cache;
 
-		private readonly IRelativityObjectManager _objectManager;
-		private readonly IDictionary<int, ChoiceWithParentInfo> _cache;
-
-		public ChoiceCache(IRelativityObjectManager objectManager)
+		public ChoiceCache(IChoiceRepository choiceRepository)
 		{
-			_objectManager = objectManager;
-			_cache = new Dictionary<int, ChoiceWithParentInfo>();
+			_choiceRepository = choiceRepository;
+			_cache = new Dictionary<int, ChoiceWithParentInfoDto>();
 		}
 
-		public async Task<IList<ChoiceWithParentInfo>> GetChoicesWithParentInfoAsync(ICollection<Choice> choices)
+		public async Task<IList<ChoiceWithParentInfoDto>> GetChoicesWithParentInfoAsync(ICollection<ChoiceDto> choices)
 		{
-			var choicesWithParentInfo = new List<ChoiceWithParentInfo>();
+			var choicesWithParentInfo = new List<ChoiceWithParentInfoDto>();
+			var choicesMissingFromCache = new List<ChoiceDto>();
 
-			foreach (Choice choice in choices)
+			foreach (ChoiceDto choice in choices)
 			{
-				ChoiceWithParentInfo choiceWithParentInfo;
-
 				if (_cache.ContainsKey(choice.ArtifactID))
 				{
-					choiceWithParentInfo = _cache[choice.ArtifactID];
+					ChoiceWithParentInfoDto choiceWithParentInfo = _cache[choice.ArtifactID];
+					choicesWithParentInfo.Add(choiceWithParentInfo);
 				}
 				else
 				{
-					choiceWithParentInfo = await QueryChoiceWithParentInfoAsync(choice, choices).ConfigureAwait(false);
-					_cache.Add(choice.ArtifactID, choiceWithParentInfo);
+					choicesMissingFromCache.Add(choice);
 				}
+			}
 
-				choicesWithParentInfo.Add(choiceWithParentInfo);
+			if (choicesMissingFromCache.Any())
+			{
+				IList<ChoiceWithParentInfoDto> choicesWithParentInfoMissingFromCache =
+					await QueryMissingChoicesAsync(choicesMissingFromCache, choices).ConfigureAwait(false);
+				choicesWithParentInfo.AddRange(choicesWithParentInfoMissingFromCache);
 			}
 
 			return choicesWithParentInfo;
 		}
 
-		private async Task<ChoiceWithParentInfo> QueryChoiceWithParentInfoAsync(Choice choice, ICollection<Choice> choices)
+		private async Task<IList<ChoiceWithParentInfoDto>> QueryMissingChoicesAsync(
+			ICollection<ChoiceDto> missingChoices,
+			ICollection<ChoiceDto> allChoices)
 		{
-			var queryRequest = new QueryRequest
-			{
-				ObjectType = new ObjectTypeRef {ArtifactTypeID = _CHOICE_ARTIFACT_TYPE_ID},
-				Fields = new FieldRef[0],
-				Condition = $"(('Artifact ID' == {choice.ArtifactID}))"
-			};
+			IList<ChoiceWithParentInfoDto> missingChoicesWithParentInfo =
+				await _choiceRepository.QueryChoiceWithParentInfoAsync(missingChoices, allChoices);
 
-			List<RelativityObject> result = await _objectManager.QueryAsync(queryRequest).ConfigureAwait(false);
-			RelativityObject choiceObject = result.Single();
-
-			int? parentArtifactId = choiceObject.ParentObject.ArtifactID;
-			if (choices.All(x => x.ArtifactID != parentArtifactId))
+			foreach (var choice in missingChoicesWithParentInfo)
 			{
-				parentArtifactId = null;
+				_cache.Add(choice.ArtifactID, choice);
 			}
-			var choiceWithParentInfo = new ChoiceWithParentInfo(parentArtifactId, choice.ArtifactID, choice.Name);
-			return choiceWithParentInfo;
+
+			return missingChoicesWithParentInfo;
 		}
 	}
 }

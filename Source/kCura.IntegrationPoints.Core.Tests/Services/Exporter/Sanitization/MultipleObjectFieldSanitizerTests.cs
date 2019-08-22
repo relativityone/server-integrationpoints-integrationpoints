@@ -7,7 +7,6 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Services.Exporter.Sanitization;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using Moq;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using Relativity;
@@ -18,70 +17,41 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 	[TestFixture]
 	internal class MultipleObjectFieldSanitizerTests
 	{
-		private Mock<ISerializer> _serializer;
+		private Mock<ISanitizationHelper> _sanitizationHelper;
 		private const char _MUTLI_DELIM = IntegrationPoints.Domain.Constants.MULTI_VALUE_DELIMITER;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_serializer = new Mock<ISerializer>();
+			_sanitizationHelper = new Mock<ISanitizationHelper>();
 			var jsonSerializer = new JSONSerializer();
-			_serializer
-				.Setup(x => x.Deserialize<RelativityObjectValue[]>(It.IsAny<string>()))
-				.Returns((string serializedString) => jsonSerializer.Deserialize<RelativityObjectValue[]>(serializedString));
+			_sanitizationHelper
+				.Setup(x => x.DeserializeAndValidateExportFieldValue<RelativityObjectValue[]>(
+					It.IsAny<string>(),
+					It.IsAny<string>(), 
+					It.IsAny<object>()))
+				.Returns((string x, string y, object serializedObject) =>
+					jsonSerializer.Deserialize<RelativityObjectValue[]>(serializedObject.ToString()));
 		}
 
 		[Test]
 		public void ItShouldSupportMultipleObject()
 		{
 			// Arrange
-			var sut = new MultipleObjectFieldSanitizer(_serializer.Object);
+			var sut = new MultipleObjectFieldSanitizer(_sanitizationHelper.Object);
 
 			// Act
-			string supportedType = sut.SupportedType;
+			FieldTypeHelper.FieldType supportedType = sut.SupportedType;
 
 			// Assert
-			supportedType.Should().Be(FieldTypeHelper.FieldType.Objects.ToString());
-		}
-
-		[TestCaseSource(nameof(ThrowInvalidExportFieldValueExceptionWhenDeserializationFailsTestCases))]
-		public void ItShouldThrowInvalidExportFieldValueExceptionWithTypeNamesWhenDeserializationFails(object initialValue)
-		{
-			// Arrange
-			var sut = new MultipleObjectFieldSanitizer(_serializer.Object);
-
-			// Act
-			Func<Task> action = async () =>
-				await sut.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
-
-			// Assert
-			action.ShouldThrow<InvalidExportFieldValueException>()
-				.Which.Message.Should()
-				.Contain(typeof(RelativityObjectValue[]).Name).And
-				.Contain(initialValue.GetType().Name);
-		}
-
-		[TestCaseSource(nameof(ThrowInvalidExportFieldValueExceptionWhenDeserializationFailsTestCases))]
-		public void ItShouldThrowInvalidExportFieldValueExceptionWithInnerExceptionWhenDeserializationFails(object initialValue)
-		{
-			// Arrange
-			var sut = new MultipleObjectFieldSanitizer(_serializer.Object);
-
-			// Act
-			Func<Task> action = async () =>
-				await sut.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
-
-			// Assert
-			action.ShouldThrow<InvalidExportFieldValueException>()
-				.Which.InnerException.Should()
-				.Match(ex => ex is JsonReaderException || ex is JsonSerializationException);
+			supportedType.Should().Be(FieldTypeHelper.FieldType.Objects);
 		}
 
 		[TestCaseSource(nameof(ThrowInvalidExportFieldValueExceptionWhenAnyElementsAreInvalidTestCases))]
 		public void ItShouldThrowInvalidExportFieldValueExceptionWhenAnyElementsAreInvalid(object initialValue)
 		{
 			// Arrange
-			var sut = new MultipleObjectFieldSanitizer(_serializer.Object);
+			var sut = new MultipleObjectFieldSanitizer(_sanitizationHelper.Object);
 
 			// Act
 			Func<Task> action = async () =>
@@ -97,7 +67,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 		public void ItShouldThrowSyncExceptionWhenNameContainsMultiValueDelimiter(object initialValue, string expectedViolators)
 		{
 			// Arrange
-			var sut = new MultipleObjectFieldSanitizer(_serializer.Object);
+			var sut = new MultipleObjectFieldSanitizer(_sanitizationHelper.Object);
 
 			// Act
 			Func<Task> action = async () => await sut.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
@@ -111,21 +81,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 		public async Task ItShouldCombineNamesIntoReturnValue(object initialValue, string expectedResult)
 		{
 			// Arrange
-			var sut = new MultipleObjectFieldSanitizer(_serializer.Object);
+			var sut = new MultipleObjectFieldSanitizer(_sanitizationHelper.Object);
 
 			// Act
 			object result = await sut.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
 
 			// Assert
 			result.Should().Be(expectedResult);
-		}
-
-		private static IEnumerable<TestCaseData> ThrowInvalidExportFieldValueExceptionWhenDeserializationFailsTestCases()
-		{
-			yield return new TestCaseData(1);
-			yield return new TestCaseData("foo");
-			yield return new TestCaseData(new object());
-			yield return new TestCaseData(SanitizationTestUtils.DeserializeJson("{ \"not\": \"an array\" }"));
 		}
 
 		private static IEnumerable<TestCaseData> ThrowInvalidExportFieldValueExceptionWhenAnyElementsAreInvalidTestCases()

@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Data.Repositories.DTO;
 using kCura.IntegrationPoints.Domain.Exceptions;
-using Newtonsoft.Json;
 using Relativity;
-using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
 {
 	/// <summary>
 	/// Returns a scalar representation of the selected choices' names given the value of the field,
-	/// which is this case is assumed to be an array of <see cref="Choice"/>. Import API expects a
+	/// which is this case is assumed to be an array of <see cref="ChoiceDto"/>. Import API expects a
 	/// string where each choice is separated by a multi-value delimiter and each parent/child choice
 	/// is separated by a nested-value delimiter.
 	/// </summary>
@@ -20,20 +17,20 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
 	{
 		private readonly IChoiceCache _choiceCache;
 		private readonly IChoiceTreeToStringConverter _choiceTreeConverter;
-		private readonly ISerializer _serializer;
+		private readonly ISanitizationHelper _sanitizationHelper;
 		private readonly char _multiValueDelimiter;
 		private readonly char _nestedValueDelimiter;
 
-		public MultipleChoiceFieldSanitizer(IChoiceCache choiceCache, IChoiceTreeToStringConverter choiceTreeConverter, ISerializer serializer)
+		public MultipleChoiceFieldSanitizer(IChoiceCache choiceCache, IChoiceTreeToStringConverter choiceTreeConverter, ISanitizationHelper sanitizationHelper)
 		{
 			_choiceCache = choiceCache;
 			_choiceTreeConverter = choiceTreeConverter;
-			_serializer = serializer;
+			_sanitizationHelper = sanitizationHelper;
 			_multiValueDelimiter = IntegrationPoints.Domain.Constants.MULTI_VALUE_DELIMITER;
 			_nestedValueDelimiter = IntegrationPoints.Domain.Constants.NESTED_VALUE_DELIMITER;
 		}
 
-		public string SupportedType => FieldTypeHelper.FieldType.MultiCode.ToString();
+		public FieldTypeHelper.FieldType SupportedType => FieldTypeHelper.FieldType.MultiCode;
 
 		public async Task<object> SanitizeAsync(int workspaceArtifactID, string itemIdentifierSourceFieldName, string itemIdentifier, string sanitizingSourceFieldName, object initialValue)
 		{
@@ -43,26 +40,17 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
 			}
 
 			// We have to re-serialize and deserialize the value from Export API due to REL-250554.
-			Choice[] choices;
-			try
-			{
-				choices = _serializer.Deserialize<Choice[]>(initialValue.ToString());
-			}
-			catch (Exception ex) when (ex is JsonSerializationException || ex is JsonReaderException)
-			{
-				throw new InvalidExportFieldValueException(
-					itemIdentifier, 
-					sanitizingSourceFieldName,
-					$"Expected value to be deserializable to {typeof(Choice[])}, but instead type was {initialValue.GetType()}.",
-					ex);
-			}
+			ChoiceDto[] choices = _sanitizationHelper.DeserializeAndValidateExportFieldValue<ChoiceDto[]>(
+				itemIdentifier, 
+				sanitizingSourceFieldName, 
+				initialValue);
 
 			if (choices.Any(x => string.IsNullOrWhiteSpace(x.Name)))
 			{
 				throw new InvalidExportFieldValueException(
 					itemIdentifier, 
 					sanitizingSourceFieldName,
-					$"Expected elements of input to be deserializable to type {typeof(Choice)}.");
+					$"Expected elements of input to be deserializable to type {typeof(ChoiceDto)}.");
 			}
 
 			bool ContainsDelimiter(string x) => x.Contains(_multiValueDelimiter) || x.Contains(_nestedValueDelimiter);
@@ -77,20 +65,20 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
 					$"delimiter ('{_nestedValueDelimiter}'). Rename these choices or choose a different delimiter: {violatingNameList}.");
 			}
 
-			IList<ChoiceWithParentInfo> choicesFlatList = await _choiceCache.GetChoicesWithParentInfoAsync(choices).ConfigureAwait(false);
-			IList<ChoiceWithChildInfo> choicesTree = BuildChoiceTree(choicesFlatList, null); // start with null to designate the roots of the tree
+			IList<ChoiceWithParentInfoDto> choicesFlatList = await _choiceCache.GetChoicesWithParentInfoAsync(choices).ConfigureAwait(false);
+			IList<ChoiceWithChildInfoDto> choicesTree = BuildChoiceTree(choicesFlatList, null); // start with null to designate the roots of the tree
 
 			string treeString = _choiceTreeConverter.ConvertTreeToString(choicesTree);
 			return treeString;
 		}
 
-		private IList<ChoiceWithChildInfo> BuildChoiceTree(IList<ChoiceWithParentInfo> flatList, int? parentArtifactID)
+		private IList<ChoiceWithChildInfoDto> BuildChoiceTree(IList<ChoiceWithParentInfoDto> flatList, int? parentArtifactID)
 		{
-			var tree = new List<ChoiceWithChildInfo>();
-			foreach (ChoiceWithParentInfo choice in flatList.Where(x => x.ParentArtifactID == parentArtifactID))
+			var tree = new List<ChoiceWithChildInfoDto>();
+			foreach (ChoiceWithParentInfoDto choice in flatList.Where(x => x.ParentArtifactID == parentArtifactID))
 			{
-				IList<ChoiceWithChildInfo> choiceChildren = BuildChoiceTree(flatList, choice.ArtifactID);
-				var choiceWithChildren = new ChoiceWithChildInfo(choice.ArtifactID, choice.Name, choiceChildren);
+				IList<ChoiceWithChildInfoDto> choiceChildren = BuildChoiceTree(flatList, choice.ArtifactID);
+				var choiceWithChildren = new ChoiceWithChildInfoDto(choice.ArtifactID, choice.Name, choiceChildren);
 				tree.Add(choiceWithChildren);
 			}
 			return tree;
