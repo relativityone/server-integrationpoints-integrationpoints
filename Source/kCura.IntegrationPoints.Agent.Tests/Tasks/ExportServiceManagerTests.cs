@@ -36,6 +36,7 @@ using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
 using Choice = kCura.Relativity.Client.DTOs.Choice;
@@ -58,7 +59,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private IBatchStatus _updateJobHistoryStatus;
 		private ICaseServiceContext _caseContext;
 		private IContextContainerFactory _contextContainerFactory;
-		private IDataSynchronizer _synchornizer;
+		private IDataSynchronizer _synchronizer;
 		private IDocumentRepository _documentRepository;
 		private IEnumerable<IBatchStatus> _batchStatuses;
 		private IExporterFactory _exporterFactory;
@@ -81,6 +82,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private IScheduleRuleFactory _scheduleRuleFactory;
 		private ISerializer _serializer;
 		private IExportDataSanitizer _exportDataSanitizer;
+		private IAPILog _logger;
 	
 		private Job _job;
 		private JobHistory _jobHistory;
@@ -105,6 +107,11 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		{
 			_job = job;
 			_helper = Substitute.For<IHelper>();
+			_logger = Substitute.For<IAPILog>();
+			ILogFactory logFactory = Substitute.For<ILogFactory>();
+			logFactory.GetLogger().Returns(_logger);
+			_helper.GetLoggerFactory().Returns(logFactory);
+			_logger.ForContext<ServiceManagerBase>().Returns(_logger);
 			_helperFactory = Substitute.For<IHelperFactory>();
 			_caseContext = Substitute.For<ICaseServiceContext>();
 			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
@@ -140,7 +147,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_repositoryFactory.GetWorkspaceRepository().Returns(workspaceRepository);
 			_jobHistoryErrorRepository = Substitute.For<IJobHistoryErrorRepository>();
 			_exportServiceObserver = Substitute.For<IBatchStatus>();
-			_synchornizer = Substitute.For<IDataSynchronizer>();
+			_synchronizer = Substitute.For<IDataSynchronizer>();
 			_historyManager = Substitute.For<IJobHistoryManager>();
 			_agentValidator = Substitute.For<IAgentValidator>();
 			_jobStatisticsService = Substitute.For<JobStatisticsService>();
@@ -203,7 +210,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_savedSearchQueryRepository.RetrieveSavedSearch(_configuration.SavedSearchArtifactId).Returns(new SavedSearchDTO());
 			_repositoryFactory.GetJobHistoryErrorRepository(_configuration.SourceWorkspaceArtifactId).Returns(_jobHistoryErrorRepository);
 			_jobHistoryErrorManager.CreateItemLevelErrorsSavedSearch(job, _configuration.SavedSearchArtifactId).Returns(_RETRY_SAVEDSEARCHID);
-			synchronizerFactory.CreateSynchronizer(Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID, _integrationPoint.DestinationConfiguration, _integrationPoint.SecuredConfiguration).Returns(_synchornizer);
+			synchronizerFactory.CreateSynchronizer(Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID, _integrationPoint.DestinationConfiguration, _integrationPoint.SecuredConfiguration).Returns(_synchronizer);
 			_managerFactory.CreateJobStopManager(_jobService, _jobHistoryService, _taskParameters.BatchInstance, job.JobId, true).Returns(_jobStopManager);
 
 			ImportSettings settings = new ImportSettings();
@@ -424,17 +431,42 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_instance.Execute(_job);
 
 			// ASSERT
-			_exporterFactory.Received(1).BuildExporter(
-				_jobStopManager, 
+			AssertRetrySavedSearch(expectToCreate: true);
+		}
+
+		[Test]
+		public void Execute_ItemLevelErrorSavedSearchIsNotDeletedWhenItFailsToCreateOne()
+		{
+			// ARRANGE
+			_updateStatusType.ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly;
+			_updateStatusType.JobType = JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors;
+
+			var exception = new Exception();
+			_jobHistoryErrorManager
+				.CreateItemLevelErrorsSavedSearch(_job, _configuration.SavedSearchArtifactId)
+				.Throws(exception);
+
+			// ACT
+			_instance.Execute(_job);
+
+			// ASSERT
+			_jobHistoryErrorManager.Received(1).CreateItemLevelErrorsSavedSearch(_job, _configuration.SavedSearchArtifactId);
+			_exporterFactory.Received(0).BuildExporter(
+				_jobStopManager,
 				Arg.Any<FieldMap[]>(),
 				_integrationPoint.SourceConfiguration,
-				_RETRY_SAVEDSEARCHID, 
-				_job.SubmittedBy, 
+				_RETRY_SAVEDSEARCHID,
+				_job.SubmittedBy,
 				_IMPORTSETTINGS_WITH_USERID,
 				_documentRepository,
 				_serializer,
 				_exportDataSanitizer);
-			AssertRetrySavedSearch(true);
+			_jobHistoryErrorRepository.Received(0).DeleteItemLevelErrorsSavedSearch(Arg.Any<int>());
+			_logger.LogError(
+				exception, 
+				"Failed to delete temp Saved Search {SavedSearchArtifactId}.",
+				_configuration.SavedSearchArtifactId
+			);
 		}
 
 		[TestCase(JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.None, JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.Run)]
@@ -454,7 +486,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_instance.Execute(_job);
 
 			// ASSERT
-			AssertRetrySavedSearch(false);
+			AssertRetrySavedSearch(expectToCreate: false);
 		}
 
 		[Test]
@@ -636,7 +668,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_instance.Execute(_job);
 
 			// ASSERT
-			_synchornizer.Received(1).SyncData(Arg.Any<IDataTransferContext>(), Arg.Any<List<FieldMap>>(), Arg.Any<string>());
+			_synchronizer.Received(1).SyncData(Arg.Any<IDataTransferContext>(), Arg.Any<List<FieldMap>>(), Arg.Any<string>());
 		}
 
 		[Test]

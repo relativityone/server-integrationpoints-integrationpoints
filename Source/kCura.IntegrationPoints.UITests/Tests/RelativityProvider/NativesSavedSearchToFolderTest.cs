@@ -5,6 +5,8 @@ using kCura.IntegrationPoints.UITests.Components;
 using kCura.IntegrationPoints.UITests.NUnitExtensions;
 using kCura.IntegrationPoints.UITests.Pages;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
 using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
@@ -13,13 +15,25 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 	[Category(TestCategory.EXPORT_TO_RELATIVITY)]
 	public class NativesSavedSearchToFolderTest : RelativityProviderTestsBase
 	{
+		private static readonly List<Tuple<string, string>> DefaultFieldsMapping = new List<Tuple<string, string>>
+		{
+			new Tuple<string, string>("Control Number", "Control Number"),
+			new Tuple<string, string>("Extracted Text", "Extracted Text"),
+			new Tuple<string, string>("Title", "Title")
+		};
+
 		private RelativityProviderModel CreateRelativityProviderModelWithNatives()
 		{
-			var model = new RelativityProviderModel(NUnit.Framework.TestContext.CurrentContext.Test.Name);
-			model.Source = RelativityProviderModel.SourceTypeEnum.SavedSearch;
-			model.RelativityInstance = "This Instance";
-			model.DestinationWorkspace = $"{DestinationContext.WorkspaceName} - {DestinationContext.WorkspaceId}";
-			model.CopyNativeFiles = RelativityProviderModel.CopyNativeFilesEnum.PhysicalFiles;
+			var model = new RelativityProviderModel(NUnit.Framework.TestContext.CurrentContext.Test.Name)
+			{
+				Source = RelativityProviderModel.SourceTypeEnum.SavedSearch,
+				RelativityInstance = "This Instance",
+				SavedSearch = "All documents",
+				DestinationWorkspace = $"{DestinationContext.WorkspaceName} - {DestinationContext.WorkspaceId}",
+				CopyNativeFiles = RelativityProviderModel.CopyNativeFilesEnum.PhysicalFiles,
+				FieldMapping = DefaultFieldsMapping
+			};
+
 			return model;
 		}
 

@@ -731,6 +731,11 @@
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
+        <Reference Include="itextsharp">
+          <HintPath>..\..\packages\Relativity.DataExchange.Client.SDK\lib\net462\itextsharp.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
       </ItemGroup>
     </When>
   </Choose>

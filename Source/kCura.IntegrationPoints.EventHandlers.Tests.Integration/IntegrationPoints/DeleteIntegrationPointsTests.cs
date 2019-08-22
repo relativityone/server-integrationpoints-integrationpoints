@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoint.Tests.Core.TestCategories;
+using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -56,6 +58,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 		}
 
 		[IdentifiedTest("e9f2a23c-3eb8-4abc-ba8d-6fe32cfa7d60")]
+		[TestInQuarantine(TestQuarantineState.DetectsDefectInExternalDependency, "cannot update packages due to DEVOPS-64283")]
 		public void ItShouldDeleteIntegrationPointWithJobHistory()
 		{
 			// ACT
@@ -70,6 +73,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 		}
 
 		[IdentifiedTest("8c13cfb5-42d1-47de-91fb-6c7cc1858432")]
+		[TestInQuarantine(TestQuarantineState.DetectsDefectInExternalDependency, "cannot update packages due to DEVOPS-64283")]
 		public void ItShouldDeleteIntegrationPointWithoutJobHistory()
 		{
 			IntegrationPointModel integrationPointModel = CreateDefaultIntegrationPointModel(
