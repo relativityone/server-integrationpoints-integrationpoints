@@ -74,7 +74,7 @@ namespace Rip.E2ETests.CustomProviders
 			int integrationPointID = await CreateMyFirstProviderIntegrationPointAsync(testCase).ConfigureAwait(false);
 
 			// Act
-			await IntegrationPointsRepository
+			await IntegrationPointsTestHelper
 				.RunIntegrationPointAsync(
 					TestHelper,
 					_workspaceID,
@@ -89,7 +89,7 @@ namespace Rip.E2ETests.CustomProviders
 		private async Task<int> CreateMyFirstProviderIntegrationPointAsync(MyFirstProviderTestCase testCase)
 		{
 			CreateIntegrationPointRequest integrationPointCreateRequest = await BuildCreateIntegrationPointRequestAsync(testCase).ConfigureAwait(false);
-			return await IntegrationPointsRepository
+			return await IntegrationPointsTestHelper
 				.SaveIntegrationPointAsync(
 					TestHelper,
 					_objectManager,
@@ -131,7 +131,7 @@ namespace Rip.E2ETests.CustomProviders
 
 		private async Task<List<FieldMap>> BuildFieldMappingAsync(MyFirstProviderTestCase testCase)
 		{
-			Dictionary<string, int> fieldNamesToArtifactIDMapping = await FieldsRepository
+			Dictionary<string, int> fieldNamesToArtifactIDMapping = await FieldsTestHelper
 							.GetIdentifiersForFieldsAsync(
 								_objectManager,
 								testCase.TargetRdoArtifactID,
@@ -161,7 +161,7 @@ namespace Rip.E2ETests.CustomProviders
 
 		private async Task AssertJobHistoryIsValidAsync(int integrationPointID, MyFirstProviderTestCase testCase)
 		{
-			JobHistory jobHistory = await JobHistoryRepository.GetCompletedJobHistoryAsync(_objectManager, integrationPointID, testCase.MaximumExecutionTime).ConfigureAwait(false);
+			JobHistory jobHistory = await JobHistoryTestHelper.GetCompletedJobHistoryAsync(_objectManager, integrationPointID, testCase.MaximumExecutionTime).ConfigureAwait(false);
 
 			jobHistory.JobStatus.Name.Should().Be(testCase.ExpectedStatus.Name);
 			jobHistory.ItemsTransferred.Should().Be(testCase.ExpectedItemsTransferred);
@@ -170,7 +170,11 @@ namespace Rip.E2ETests.CustomProviders
 
 		private async Task AssertDocumentsAreImportedAsync(MyFirstProviderTestCase testCase)
 		{
-			Dictionary<string, string> controlNumberToExtractedTextDictionary = await DocumentsRepository.GetExtractedTextForDocumentsAsync(_objectManager, testCase.ExpectedDocumentsIdentifiers).ConfigureAwait(false);
+			IDictionary<string, string> controlNumberToExtractedTextDictionary = await DocumentsTestHelper
+				.GetExtractedTextForDocumentsAsync(
+					_objectManager,
+					testCase.ExpectedDocumentsIdentifiers)
+				.ConfigureAwait(false);
 
 			foreach (string documentIdentifier in testCase.ExpectedDocumentsIdentifiers)
 			{
@@ -180,7 +184,7 @@ namespace Rip.E2ETests.CustomProviders
 			}
 		}
 
-		private async Task InitializeWorkspaceSpecificIdentifiersAsync()
+		private Task InitializeWorkspaceSpecificIdentifiersAsync()
 		{
 			Task[] initializeTasks =
 			{
@@ -190,7 +194,7 @@ namespace Rip.E2ETests.CustomProviders
 				InitializeAppendOverlayChoiceArtifactIDAsync(),
 				InitializeRootFolderArtifactIDAsync()
 			};
-			await Task.WhenAll(initializeTasks).ConfigureAwait(false);
+			return Task.WhenAll(initializeTasks);
 		}
 
 		private async Task InitializeMyFirstProviderArtifactIDAsync()
@@ -216,7 +220,7 @@ namespace Rip.E2ETests.CustomProviders
 
 		private async Task InitializeAppendOverlayChoiceArtifactIDAsync()
 		{
-			_appendOverlayChoiceArtifactID = await ChoiceRepository
+			_appendOverlayChoiceArtifactID = await ChoiceTestHelper
 				.GetIntegrationPointsChoiceArtifactIDAsync(
 					_objectManager,
 					OverwriteFieldsChoices.IntegrationPointAppendOverlayGuid)

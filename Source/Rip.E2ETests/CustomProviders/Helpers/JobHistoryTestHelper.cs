@@ -9,7 +9,7 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace Rip.E2ETests.CustomProviders.Helpers
 {
-	internal static class JobHistoryRepository
+	internal static class JobHistoryTestHelper
 	{
 		public static Task<JobHistory> GetCompletedJobHistoryAsync(
 			IRelativityObjectManager objectManager,
@@ -66,7 +66,7 @@ namespace Rip.E2ETests.CustomProviders.Helpers
 				.QueryAsync<JobHistory>(qr)
 				.ConfigureAwait(false);
 
-			return jobHistoriesForIntegrationPoint.Single(); // we expect single job history
+			return jobHistoriesForIntegrationPoint.Single();
 		}
 	}
 }

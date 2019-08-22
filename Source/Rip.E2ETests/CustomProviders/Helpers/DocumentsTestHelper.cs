@@ -7,7 +7,7 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace Rip.E2ETests.CustomProviders.Helpers
 {
-	internal static class DocumentsRepository
+	internal static class DocumentsTestHelper
 	{
 		public static async Task<Dictionary<string, string>> GetExtractedTextForDocumentsAsync(
 			IRelativityObjectManager objectManager,

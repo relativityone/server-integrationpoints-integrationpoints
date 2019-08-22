@@ -7,7 +7,7 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace Rip.E2ETests.CustomProviders.Helpers
 {
-	internal static class FieldsRepository
+	internal static class FieldsTestHelper
 	{
 		public static async Task<Dictionary<string, int>> GetIdentifiersForFieldsAsync(
 			IRelativityObjectManager objectManager, 

@@ -9,7 +9,7 @@ namespace Rip.E2ETests.CustomProviders.Helpers
 		public static Dictionary<string, string> GetNameToTextForInputFilesMapping(string inputFilePath)
 		{
 			XElement myFirstProviderInputData = XElement.Load(inputFilePath);
-			var zzzz = myFirstProviderInputData
+			var testRecords = myFirstProviderInputData
 				.Descendants("document")
 				.Select(document => new
 				{
@@ -18,15 +18,25 @@ namespace Rip.E2ETests.CustomProviders.Helpers
 				});
 
 			var nameToTextDictionary = new Dictionary<string, string>();
-			foreach (var x in zzzz)
+			foreach (var testRecord in testRecords)
 			{
-				if (!nameToTextDictionary.ContainsKey(x.Name)) // we want to skip duplicate entries
-				{
-					nameToTextDictionary[x.Name] = x.Text;
-				}
+				AddTestRecordsToDictionarySkippingDuplicates(
+					nameToTextDictionary,
+					testRecord.Name,
+					testRecord.Text);
 			}
-
 			return nameToTextDictionary;
+		}
+
+		private static void AddTestRecordsToDictionarySkippingDuplicates(
+			IDictionary<string, string> nameToTextDictionary,
+			string name,
+			string text)
+		{
+			if (!nameToTextDictionary.ContainsKey(name))
+			{
+				nameToTextDictionary[name] = text;
+			}
 		}
 	}
 }

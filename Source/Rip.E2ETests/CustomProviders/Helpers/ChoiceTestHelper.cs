@@ -8,7 +8,7 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace Rip.E2ETests.CustomProviders.Helpers
 {
-	internal static class ChoiceRepository
+	internal static class ChoiceTestHelper
 	{
 		public static async Task<int> GetIntegrationPointsChoiceArtifactIDAsync(
 			IRelativityObjectManager objectManager,

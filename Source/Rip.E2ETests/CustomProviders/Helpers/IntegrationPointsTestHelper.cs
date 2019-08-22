@@ -8,7 +8,7 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace Rip.E2ETests.CustomProviders.Helpers
 {
-	internal static class IntegrationPointsRepository
+	internal static class IntegrationPointsTestHelper
 	{
 		public static async Task<int> SaveIntegrationPointAsync(
 			ITestHelper testHelper,

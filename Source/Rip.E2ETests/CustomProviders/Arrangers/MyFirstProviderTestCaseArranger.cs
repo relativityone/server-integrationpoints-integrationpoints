@@ -21,7 +21,7 @@ namespace Rip.E2ETests.CustomProviders.Arrangers
 				"E2ETestData",
 				"MyFirstProviderInput.xml");
 
-			string inputFilePathInRelativity = DataTransferDirectoryRepository.CopyFileToImportFolder(workspaceID, sourceInputFilePath);
+			string inputFilePathInRelativity = DataTransferDirectoryTestHelper.CopyFileToImportFolder(workspaceID, sourceInputFilePath);
 			Dictionary<string, string> nameToTextDictionary = MyFirstProviderInputFileParser.GetNameToTextForInputFilesMapping(sourceInputFilePath);
 			var workspaceFieldsToFileFieldsMapping = new Dictionary<string, string>
 			{

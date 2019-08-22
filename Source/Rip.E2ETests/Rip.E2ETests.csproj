@@ -43,12 +43,12 @@
     </Compile>
     <Compile Include="Constants\CustomProvidersConstants.cs" />
     <Compile Include="CustomProviders\Arrangers\MyFirstProviderTestCaseArranger.cs" />
-    <Compile Include="CustomProviders\Helpers\ChoiceRepository.cs" />
-    <Compile Include="CustomProviders\Helpers\DataTransferDirectoryRepository.cs" />
-    <Compile Include="CustomProviders\Helpers\DocumentsRepository.cs" />
-    <Compile Include="CustomProviders\Helpers\FieldsRepository.cs" />
-    <Compile Include="CustomProviders\Helpers\IntegrationPointsRepository.cs" />
-    <Compile Include="CustomProviders\Helpers\JobHistoryRepository.cs" />
+    <Compile Include="CustomProviders\Helpers\ChoiceTestHelper.cs" />
+    <Compile Include="CustomProviders\Helpers\DataTransferDirectoryTestHelper.cs" />
+    <Compile Include="CustomProviders\Helpers\DocumentsTestHelper.cs" />
+    <Compile Include="CustomProviders\Helpers\FieldsTestHelper.cs" />
+    <Compile Include="CustomProviders\Helpers\IntegrationPointsTestHelper.cs" />
+    <Compile Include="CustomProviders\Helpers\JobHistoryTestHelper.cs" />
     <Compile Include="CustomProviders\Helpers\ListOfFieldValuePairExtensions.cs" />
     <Compile Include="CustomProviders\Helpers\MyFirstProviderInputFileParser.cs" />
     <Compile Include="CustomProviders\MyFirstProviderTests.cs" />

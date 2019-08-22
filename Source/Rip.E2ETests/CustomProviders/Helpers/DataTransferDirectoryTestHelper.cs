@@ -3,7 +3,7 @@ using kCura.IntegrationPoint.Tests.Core;
 
 namespace Rip.E2ETests.CustomProviders.Helpers
 {
-	internal static class DataTransferDirectoryRepository
+	internal static class DataTransferDirectoryTestHelper
 	{
 		public static string CopyFileToImportFolder(int workspaceID, string inputFile)
 		{
