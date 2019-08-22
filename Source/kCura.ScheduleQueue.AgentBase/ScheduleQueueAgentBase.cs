@@ -82,20 +82,20 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		private void CompleteExecution()
 		{
-			NotifyAgentTab(10, LogCategory.Info, "Completed.");
+			NotifyAgentTab(10, LogCategory.Debug, "Completed.");
 			LogExecuteComplete();
 		}
 
 		private void InitializeManagerConfigSettingsFactory()
 		{
-			NotifyAgentTab(20, LogCategory.Info, "Initialize Config Settings factory");
+			NotifyAgentTab(20, LogCategory.Debug, "Initialize Config Settings factory");
 			LogOnInitializeManagerConfigSettingsFactory();
 			Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
 		}
 
 		private void CheckQueueTable()
 		{
-			NotifyAgentTab(20, LogCategory.Info, "Check Schedule Agent Queue table exists");
+			NotifyAgentTab(20, LogCategory.Debug, "Check Schedule Agent Queue table exists");
 
 			AgentService.InstallQueueTable();
 		}
@@ -155,7 +155,7 @@ namespace kCura.ScheduleQueue.AgentBase
 				NotifyAgentTab(20, LogCategory.Info, "Agent was disabled. Terminating job processing task.");
 				return null;
 			}
-			NotifyAgentTab(20, LogCategory.Info, "Checking for active jobs in Schedule Agent Queue table");
+			NotifyAgentTab(20, LogCategory.Debug, "Checking for active jobs in Schedule Agent Queue table");
 
 			try
 			{
@@ -171,7 +171,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		private void CleanupQueueJobs()
 		{
-			NotifyAgentTab(20, LogCategory.Info, "Cleanup jobs");
+			NotifyAgentTab(20, LogCategory.Debug, "Cleanup jobs");
 			LogOnCleanupJobs();
 
 			try
@@ -191,15 +191,19 @@ namespace kCura.ScheduleQueue.AgentBase
 			string msg = message.Substring(0, Math.Min(message.Length, _MAX_MESSAGE_LENGTH));
 			switch (category)
 			{
-				case LogCategory.Info:
 				case LogCategory.Debug:
-					RaiseMessage(msg, level);
+					//We do not want to log using RaiseMessage as they get always logged at INFO level
+					RaiseMessageNoLogging(msg, level);
+					Logger.LogDebug(message);
 					break;
-				case LogCategory.Exception:
-					RaiseError(msg, detailmessage);
+				case LogCategory.Info:
+					RaiseMessage(msg, level);
 					break;
 				case LogCategory.Warn:
 					RaiseWarning(msg);
+					break;
+				case LogCategory.Exception:
+					RaiseError(msg, detailmessage);
 					break;
 				default:
 					throw new ArgumentOutOfRangeException("category");
@@ -213,18 +217,18 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		private void LogOnInitializeManagerConfigSettingsFactory()
 		{
-			Logger.LogInformation("Attempting to initialize Config Settings factory in {TypeName}",
+			Logger.LogDebug("Attempting to initialize Config Settings factory in {TypeName}",
 				nameof(ScheduleQueueAgentBase));
 		}
 
 		private void LogOnCleanupJobs()
 		{
-			Logger.LogInformation("Attempting to cleanup jobs in {TypeName}", nameof(ScheduleQueueAgentBase));
+			Logger.LogDebug("Attempting to cleanup jobs in {TypeName}", nameof(ScheduleQueueAgentBase));
 		}
 
 		private void LogExecuteComplete()
 		{
-			Logger.LogInformation("Execution of scheduled jobs completed in {TypeName}", nameof(ScheduleQueueAgentBase));
+			Logger.LogDebug("Execution of scheduled jobs completed in {TypeName}", nameof(ScheduleQueueAgentBase));
 		}
 
 		private void LogExecuteError(Exception ex)
