@@ -50,7 +50,7 @@ namespace Relativity.Sync.Executors
 		public async Task<ExecutionResult> ExecuteAsync(IDestinationWorkspaceObjectTypesCreationConfiguration configuration, CancellationToken token)
 		{
 			int destinationWorkspaceArtifactId = configuration.DestinationWorkspaceArtifactId;
-			_logger.LogVerbose("Creating object types and fields in destination workspace Artifact ID: {destinationWorkspaceArtifactId}", destinationWorkspaceArtifactId);
+			_logger.LogInformation("Creating object types and fields in destination workspace Artifact ID: {destinationWorkspaceArtifactId}", destinationWorkspaceArtifactId);
 
 			try
 			{

@@ -47,6 +47,8 @@ namespace Relativity.Sync.Executors
 
 		public async Task<ExecutionResult> ExecuteAsync(INotificationConfiguration configuration, CancellationToken token)
 		{
+			_logger.LogInformation("Sending notifications.");
+
 			try
 			{
 				EmailNotificationRequest emailRequest = await GetEmailNotificationRequest(configuration, token).ConfigureAwait(false);

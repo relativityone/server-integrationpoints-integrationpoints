@@ -18,8 +18,8 @@ namespace Relativity.Sync.Executors
 		private const int _BATCH_SIZE_FOR_NATIVES_SIZE_QUERIES = 10000;
 		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int) ArtifactType.Document;
 		private const string _RELATIVITY_NATIVE_TYPE_FIELD_NAME = "RelativityNativeType";
-
 		private const string _SUPPORTED_BY_VIEWER_FIELD_NAME = "SupportedByViewer";
+
 		private readonly IFieldManager _fieldManager;
 		private readonly IJobProgressUpdaterFactory _jobProgressUpdaterFactory;
 		private readonly INativeFileRepository _nativeFileRepository;
@@ -40,7 +40,7 @@ namespace Relativity.Sync.Executors
 
 		public async Task<ExecutionResult> ExecuteAsync(IDataSourceSnapshotConfiguration configuration, CancellationToken token)
 		{
-			_logger.LogVerbose("Initializing export in workspace {workspaceId} with saved search {savedSearchId} and fields {fields}.", configuration.SourceWorkspaceArtifactId,
+			_logger.LogInformation("Initializing export in workspace {workspaceId} with saved search {savedSearchId} and fields {fields}.", configuration.SourceWorkspaceArtifactId,
 				configuration.DataSourceArtifactId, configuration.FieldMappings);
 
 			_logger.LogVerbose("Including following system fields to export {supportedByViewer}, {nativeType}.", _SUPPORTED_BY_VIEWER_FIELD_NAME, _RELATIVITY_NATIVE_TYPE_FIELD_NAME);

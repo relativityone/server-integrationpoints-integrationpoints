@@ -20,7 +20,7 @@ namespace Relativity.Sync.Executors
 
 		public async Task<ExecutionResult> ExecuteAsync(IDestinationWorkspaceSavedSearchCreationConfiguration configuration, CancellationToken token)
 		{
-			_logger.LogVerbose("Creating saved search in destination workspace artifact ID: {destinationWorkspaceArtifactId}", configuration.DestinationWorkspaceArtifactId);
+			_logger.LogInformation("Creating saved search in destination workspace artifact ID: {destinationWorkspaceArtifactId}", configuration.DestinationWorkspaceArtifactId);
 
 			ExecutionResult result = ExecutionResult.Success();
 
