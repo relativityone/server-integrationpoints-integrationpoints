@@ -1,6 +1,4 @@
-﻿#pragma warning disable CA1031
-
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
@@ -17,6 +15,7 @@ using Relativity.Telemetry.APM;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
+#pragma warning disable CA1031
 	public sealed class RelativitySyncAdapter
 	{
 		private readonly IExtendedJob _job;
@@ -76,7 +75,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 				await MarkJobAsValidationFailedAsync(ex).ConfigureAwait(false);
 				taskResult = new TaskResult() { Status = TaskStatusEnum.Fail };
 			}
-			#pragma warning disable CA1031
+#pragma warning disable CA1031
 			catch (Exception e)
 			{
 				await MarkJobAsFailedAsync(e).ConfigureAwait(false);
@@ -231,5 +230,5 @@ namespace kCura.IntegrationPoints.RelativitySync
 			return container;
 		}
 	}
-}
 #pragma warning restore CA1031
+}
