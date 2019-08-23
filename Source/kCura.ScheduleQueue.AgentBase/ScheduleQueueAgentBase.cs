@@ -16,8 +16,8 @@ namespace kCura.ScheduleQueue.AgentBase
 		private const int _MAX_MESSAGE_LENGTH = 10000;
 		private readonly Guid _agentGuid;
 		private static readonly Dictionary<LogCategory, int> _logCategoryDictionary = new Dictionary<LogCategory, int>{{LogCategory.Debug, 20}, {LogCategory.Info, 10}};
-
 		protected IAPILog Logger { get; set; }
+
 		public ScheduleQueueAgentBase(Guid agentGuid,
 			IAgentService agentService = null, IJobService jobService = null,
 			IScheduleRuleFactory scheduleRuleFactory = null)

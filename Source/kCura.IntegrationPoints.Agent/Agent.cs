@@ -207,7 +207,7 @@ namespace kCura.IntegrationPoints.Agent
 
 		public void NotifyAgent(int level, LogCategory category, string message)
 		{
-			NotifyAgentTab(level, category, message);
+			NotifyAgentTab(category, message);
 		}
 
 		protected override void LogJobState(Job job, JobLogState state, Exception exception = null, string details = null)
