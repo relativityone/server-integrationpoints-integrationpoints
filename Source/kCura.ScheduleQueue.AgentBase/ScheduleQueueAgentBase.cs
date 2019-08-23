@@ -196,7 +196,7 @@ namespace kCura.ScheduleQueue.AgentBase
 			switch (category)
 			{
 				case LogCategory.Debug:
-					RaiseMessageNoLogging(msg, _logCategoryToLogLevelMapping[LogCategory.Info]);
+					RaiseMessageNoLogging(msg, _logCategoryToLogLevelMapping[LogCategory.Debug]);
 					Logger.LogDebug(message);
 					break;
 				case LogCategory.Info:
