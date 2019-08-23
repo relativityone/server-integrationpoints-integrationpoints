@@ -205,7 +205,7 @@ namespace kCura.IntegrationPoints.Agent
 			}
 		}
 
-		public void NotifyAgent(int level, LogCategory category, string message)
+		public void NotifyAgent(LogCategory category, string message)
 		{
 			NotifyAgentTab(category, message);
 		}

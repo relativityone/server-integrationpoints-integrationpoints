@@ -15,7 +15,11 @@ namespace kCura.ScheduleQueue.AgentBase
 		private IJobService _jobService;
 		private const int _MAX_MESSAGE_LENGTH = 10000;
 		private readonly Guid _agentGuid;
-		private static readonly Dictionary<LogCategory, int> _logCategoryDictionary = new Dictionary<LogCategory, int>{{LogCategory.Debug, 20}, {LogCategory.Info, 10}};
+		private static readonly Dictionary<LogCategory, int> _logCategoryToLogLevelMapping = new Dictionary<LogCategory, int>
+		{
+			[LogCategory.Debug] = 20,
+			[LogCategory.Info] = 10
+		};
 		protected IAPILog Logger { get; set; }
 
 		public ScheduleQueueAgentBase(Guid agentGuid,
@@ -192,11 +196,11 @@ namespace kCura.ScheduleQueue.AgentBase
 			switch (category)
 			{
 				case LogCategory.Debug:
-					RaiseMessageNoLogging(msg, _logCategoryDictionary[LogCategory.Info]);
+					RaiseMessageNoLogging(msg, _logCategoryToLogLevelMapping[LogCategory.Info]);
 					Logger.LogDebug(message);
 					break;
 				case LogCategory.Info:
-					RaiseMessage(msg, _logCategoryDictionary[LogCategory.Info]);
+					RaiseMessage(msg, _logCategoryToLogLevelMapping[LogCategory.Info]);
 					break;
 				case LogCategory.Warn:
 					RaiseWarning(msg);
