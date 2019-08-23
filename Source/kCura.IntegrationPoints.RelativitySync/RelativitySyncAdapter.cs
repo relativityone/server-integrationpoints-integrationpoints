@@ -1,4 +1,6 @@
-﻿using System;
+﻿#pragma warning disable CA1031
+
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
@@ -80,7 +82,6 @@ namespace kCura.IntegrationPoints.RelativitySync
 				await MarkJobAsFailedAsync(e).ConfigureAwait(false);
 				taskResult = new TaskResult { Status = TaskStatusEnum.Fail };
 			}
-			#pragma warning restore CA1031
 			finally
 			{
 				metrics.SendMetric(_correlationId, taskResult);
@@ -96,12 +97,10 @@ namespace kCura.IntegrationPoints.RelativitySync
 			{
 				await JobHistoryHelper.MarkJobAsValidationFailedAsync(ex, _job, helper).ConfigureAwait(false);
 			}
-#pragma warning disable CA1031
 			catch (Exception e)
 			{
 				helper.GetLoggerFactory().GetLogger().LogError(e, "Failed to mark job as validation failed.");
 			}
-#pragma warning restore CA1031
 		}
 
 		private async Task UpdateJobStatusAsync(string status)
@@ -111,12 +110,10 @@ namespace kCura.IntegrationPoints.RelativitySync
 			{
 				await JobHistoryHelper.UpdateJobStatusAsync(status, _job, helper).ConfigureAwait(false);
 			}
-#pragma warning disable CA1031
 			catch (Exception e)
 			{
 				helper.GetLoggerFactory().GetLogger().LogError(e, "Failed to mark job as stopped.");
 			}
-#pragma warning restore CA1031
 		}
 
 		private async Task MarkJobAsStartedAsync()
@@ -126,12 +123,10 @@ namespace kCura.IntegrationPoints.RelativitySync
 			{
 				await JobHistoryHelper.MarkJobAsStartedAsync(_job, helper).ConfigureAwait(false);
 			}
-#pragma warning disable CA1031
 			catch (Exception e)
 			{
 				helper.GetLoggerFactory().GetLogger().LogError(e, "Failed to mark job as stopped.");
 			}
-#pragma warning restore CA1031
 		}
 
 		private async Task MarkJobAsCompletedAsync()
@@ -141,12 +136,10 @@ namespace kCura.IntegrationPoints.RelativitySync
 			{
 				await JobHistoryHelper.MarkJobAsCompletedAsync(_job, helper).ConfigureAwait(false);
 			}
-#pragma warning disable CA1031
 			catch (Exception e)
 			{
 				helper.GetLoggerFactory().GetLogger().LogError(e, "Failed to mark job as stopped.");
 			}
-#pragma warning restore CA1031
 		}
 
 		private async Task MarkJobAsStoppedAsync()
@@ -156,12 +149,10 @@ namespace kCura.IntegrationPoints.RelativitySync
 			{
 				await JobHistoryHelper.MarkJobAsStoppedAsync(_job, helper).ConfigureAwait(false);
 			}
-#pragma warning disable CA1031
 			catch (Exception e)
 			{
 				_logger.LogError(e, "Failed to mark job as stopped.");
 			}
-#pragma warning restore CA1031
 		}
 
 		private async Task MarkJobAsFailedAsync(Exception exception)
@@ -171,12 +162,10 @@ namespace kCura.IntegrationPoints.RelativitySync
 			{
 				await JobHistoryHelper.MarkJobAsFailedAsync(_job, exception, helper).ConfigureAwait(false);
 			}
-#pragma warning disable CA1031
 			catch (Exception e)
 			{
 				_logger.LogError(e, "Failed to mark job as failed.");
 			}
-#pragma warning restore CA1031
 		}
 
 		private async Task<ISyncJob> CreateSyncJob(IContainer container, SyncConfiguration syncConfiguration)
@@ -243,3 +232,4 @@ namespace kCura.IntegrationPoints.RelativitySync
 		}
 	}
 }
+#pragma warning restore CA1031

@@ -78,6 +78,23 @@ namespace kCura.IntegrationPoints.RelativitySync
 			return "None";
 		}
 
+		private static async Task<string> GetFolderPathSourceFieldNameAsync(int artifactId, int workspaceId, IObjectManager objectManager)
+		{
+			if (artifactId == 0)
+			{
+				return string.Empty;
+			}
+
+			var request = new QueryRequest()
+			{
+				ObjectType = new ObjectTypeRef {Name = "Field"},
+				Condition = $"\"ArtifactID\" == {artifactId}",
+				Fields = new[] {new FieldRef {Name = "Name"}}
+			};
+			QueryResultSlim result = await objectManager.QuerySlimAsync(workspaceId, request, 0, 1).ConfigureAwait(false);
+			return result.Objects[0].Values[0].ToString();
+		}
+
 		private async Task<CreateRequest> PrepareCreateRequestAsync(IExtendedJob job, SourceConfiguration sourceConfiguration, ImportSettings importSettings, FolderConf folderConf, IObjectManager objectManager)
 		{
 			return new CreateRequest
@@ -214,23 +231,6 @@ namespace kCura.IntegrationPoints.RelativitySync
 					}
 				}
 			};
-		}
-
-		private static async Task<string> GetFolderPathSourceFieldNameAsync(int artifactId, int workspaceId, IObjectManager objectManager)
-		{
-			if (artifactId == 0)
-			{
-				return string.Empty;
-			}
-
-			var request = new QueryRequest()
-			{
-				ObjectType = new ObjectTypeRef {Name = "Field"},
-				Condition = $"\"ArtifactID\" == {artifactId}",
-				Fields = new[] {new FieldRef {Name = "Name"}}
-			};
-			QueryResultSlim result = await objectManager.QuerySlimAsync(workspaceId, request, 0, 1).ConfigureAwait(false);
-			return result.Objects[0].Values[0].ToString();
 		}
 	}
 }
