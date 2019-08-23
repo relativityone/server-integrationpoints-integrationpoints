@@ -151,8 +151,8 @@ namespace Relativity.Sync.Tests.Integration
 			// Assert
 			result.Status.Should().Be(ExecutionStatus.Completed);
 
-			string expectedLogMessage = $"Failed to query {nameof(DestinationWorkspaceTag)} object: {{request}}";
-			_syncLog.Verify(x => x.LogError(It.IsAny<ServiceNotFoundException>(), expectedLogMessage, It.IsAny<QueryRequest>()), Times.AtLeastOnce);
+			string expectedLogMessage = "Failed to query {TagObject} object: {Request}.";
+			_syncLog.Verify(x => x.LogError(It.IsAny<ServiceNotFoundException>(), expectedLogMessage, nameof(DestinationWorkspaceTag), It.IsAny<QueryRequest>()), Times.AtLeastOnce);
 
 			_emailNotificationsManager.Verify(x =>
 				x.SendEmailNotificationAsync(It.Is<EmailNotificationRequest>(e => e.Subject.StartsWith("Relativity Job successfully completed for", StringComparison.InvariantCulture))));
