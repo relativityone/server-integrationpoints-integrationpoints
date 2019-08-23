@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoints.Data.Repositories;
 using CoreConstants = kCura.IntegrationPoints.Core.Constants;
 
@@ -34,7 +35,7 @@ namespace Rip.E2ETests.Installation
         private const string _JSON_LOADER_GUID = "57151c17-cd92-4a6e-800c-a75bf807d097";
         private const string _RIP_GUID = CoreConstants.IntegrationPoints.APPLICATION_GUID_STRING;
         
-        private const string _WORKSPACE_TEMPLATE_WITHOUT_RIP = SourceProviderTemplate.WorkspaceTemplates.NEW_CASE_TEMPLATE;
+        private const string _WORKSPACE_TEMPLATE_WITHOUT_RIP = WorkspaceTemplateNames.NEW_CASE_TEMPLATE;
         private readonly string _mainWorkspaceName = $"RipInstallTest{Guid.NewGuid()}";
 
         private int? _mainWorkspaceID;

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
@@ -43,7 +43,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.Relativity
 		public void OneTimeSetUp()
 		{
 			string workspaceName = GetWorkspaceRandomizedName();
-			_workspaceId = Workspace.CreateWorkspace(workspaceName, SourceProviderTemplate.WorkspaceTemplates.NEW_CASE_TEMPLATE);
+			_workspaceId = Workspace.CreateWorkspace(workspaceName);
 			_importHelper = new ImportHelper();
 			_workspaceService = new WorkspaceService(_importHelper);
 			_helper = new TestHelper();

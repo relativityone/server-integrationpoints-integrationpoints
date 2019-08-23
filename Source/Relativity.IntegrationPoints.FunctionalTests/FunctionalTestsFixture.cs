@@ -1,0 +1,53 @@
+﻿using System.Threading.Tasks;
+using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.Constants;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using NUnit.Framework;
+
+namespace Relativity.IntegrationPoints.FunctionalTests
+{
+	[TestFixture]
+	public class FunctionalTestsFixture
+	{
+		private ITestHelper _testHelper;
+
+		[OneTimeSetUp]
+	    public async Task InitializeFixtureAsync()
+	    {
+		    _testHelper = new TestHelper();
+
+		    await CreateTemplateWorkspaceAsync().ConfigureAwait(false);
+	    }
+
+	    private async Task CreateTemplateWorkspaceAsync()
+	    {
+		    bool templateExists = Workspace.CheckIfWorkspaceExists(
+			    WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME
+		    );
+
+		    if (templateExists)
+		    {
+			    return;
+		    }
+
+			int workspaceTemplateID = Workspace.CreateWorkspace(
+			    WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME,
+			    WorkspaceTemplateNames.RELATIVITY_STARTER_TEMPLATE_NAME
+			);
+
+		    var applicationManager = new RelativityApplicationManager(_testHelper);
+		    if (SharedVariables.UseIpRapFile())
+		    {
+			    await applicationManager.ImportRipToLibraryAsync().ConfigureAwait(false);
+		    }
+
+		    applicationManager.InstallApplicationFromLibrary(workspaceTemplateID);
+	    }
+
+		[Test]
+	    public void Test()
+	    {
+			Assert.IsTrue(true);
+	    }
+	}
+}

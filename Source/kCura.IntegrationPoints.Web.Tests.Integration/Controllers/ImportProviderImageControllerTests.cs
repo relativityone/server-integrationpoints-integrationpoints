@@ -7,8 +7,7 @@ using System.Web.Services.Protocols;
 using Castle.Windsor;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoint.Tests.Core.Templates;
-using kCura.IntegrationPoint.Tests.Core.TestCategories;
+using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using kCura.IntegrationPoints.Web.Tests.Integration.Helpers;
@@ -38,7 +37,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Controllers
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
-			_workspaceId = Workspace.CreateWorkspace(_WORKSPACE_NAME, SourceProviderTemplate.WorkspaceTemplates.NEW_CASE_TEMPLATE);
+			_workspaceId = Workspace.CreateWorkspace(_WORKSPACE_NAME);
 		}
 
 		[OneTimeTearDown]

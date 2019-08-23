@@ -1,0 +1,7 @@
+﻿Relativity.API
+
+group TestPackages
+	FluentAssertions
+	Moq
+	NUnit
+	Serilog

@@ -8,6 +8,7 @@ using Castle.Windsor;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using kCura.IntegrationPoints.Core.Factories;
@@ -25,8 +26,6 @@ namespace Rip.SystemTests
 	[SetUpFixture]
 	public class SystemTestsFixture
 	{
-		private const string _RELATIVITY_STARTER_TEMPLATE_NAME = "Relativity Starter Template";
-
 		public static IWindsorContainer Container { get; private set; }
 		public static IConfigurationStore ConfigurationStore { get; private set; }
 		public static ITestHelper TestHelper { get; private set; }
@@ -35,36 +34,28 @@ namespace Rip.SystemTests
 		public static int DestinationWorkspaceID { get; private set; }
 
 		[OneTimeSetUp]
-		public async Task InitializeFixtureAsync()
+		public void InitializeFixtureAsync()
 		{
 			Container = new WindsorContainer();
 			ConfigurationStore = new DefaultConfigurationStore();
 			TestHelper = new TestHelper();
 
-			await CreateAndConfigureWorkspaces().ConfigureAwait(false);
+			CreateAndConfigureWorkspaces();
 			InitializeContainer();
 
 			InitializeRelativityInstanceSettingsClient();
 		}
 		
-		private static async Task CreateAndConfigureWorkspaces()
+		private static void CreateAndConfigureWorkspaces()
 		{
 			WorkspaceID = Workspace.CreateWorkspace(
 				workspaceName: $"Rip.SystemTests-{DateTime.Now.Ticks}",
-				templateName: _RELATIVITY_STARTER_TEMPLATE_NAME
+				templateName: WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME
 			);
-
-			var applicationManager = new RelativityApplicationManager(TestHelper);
-			if (SharedVariables.UseIpRapFile())
-			{
-				await applicationManager.ImportRipToLibraryAsync().ConfigureAwait(false);
-			}
-
-			applicationManager.InstallApplicationFromLibrary(WorkspaceID);
 
 			DestinationWorkspaceID = Workspace.CreateWorkspace(
 				workspaceName: $"Rip.SystemTests.Destination-{DateTime.Now.Ticks}",
-				templateName: _RELATIVITY_STARTER_TEMPLATE_NAME
+				templateName: WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME
 			);
 		}
 

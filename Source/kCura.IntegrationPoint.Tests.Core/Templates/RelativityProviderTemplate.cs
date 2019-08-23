@@ -11,6 +11,7 @@ using NUnit.Framework;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
@@ -38,11 +39,11 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		public int TypeOfExport { get; set; }
 		public int FolderArtifactID { get; set; }
 
-		public RelativityProviderTemplate(
+		protected RelativityProviderTemplate(
 			string sourceWorkspaceName,
 			string targetWorkspaceName,
-			string sourceWorkspaceTemplate = WorkspaceTemplates.NEW_CASE_TEMPLATE,
-			string targetWorkspaceTemplate = WorkspaceTemplates.NEW_CASE_TEMPLATE)
+			string sourceWorkspaceTemplate = WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME,
+			string targetWorkspaceTemplate = WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME)
 			: base(sourceWorkspaceName, sourceWorkspaceTemplate)
 		{
 			_targetWorkspaceName = targetWorkspaceName;
@@ -52,7 +53,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		protected RelativityProviderTemplate(
 			int sourceWorkspaceArtifactID,
 			string targetWorkspaceName,
-			string targetWorkspaceTemplate = WorkspaceTemplates.NEW_CASE_TEMPLATE)
+			string targetWorkspaceTemplate = WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME)
 			: base(sourceWorkspaceArtifactID)
 		{
 			_targetWorkspaceName = targetWorkspaceName;

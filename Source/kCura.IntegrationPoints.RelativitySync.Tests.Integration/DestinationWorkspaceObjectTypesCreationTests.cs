@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.RelativitySync.Adapters;
 using kCura.IntegrationPoints.RelativitySync.Tests.Integration.Stubs;
@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 		[SetUp]
 		public void SetUp()
 		{
-			_workspaceId = Workspace.CreateWorkspace(Guid.NewGuid().ToString(), SourceProviderTemplate.WorkspaceTemplates.NEW_CASE_TEMPLATE);
+			_workspaceId = Workspace.CreateWorkspace(Guid.NewGuid().ToString());
 
 			IWindsorContainer container = new WindsorContainer();
 			container.Register(Component.For<IHelper>().Instance(Helper));

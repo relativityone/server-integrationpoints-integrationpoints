@@ -6,10 +6,11 @@
           appbase="lib/UnitTests/"
           binpath="lib/UnitTests/" 
           processModel="Single">
+    <assembly path="Relativity.IntegrationPoints.FunctionalTests.dll"/>
     <assembly path="kCura.IntegrationPoints.Agent.Tests.Integration.dll"/>
     <assembly path="kCura.IntegrationPoints.Core.Tests.Integration.dll"/>
     <assembly path="kCura.IntegrationPoints.Data.Tests.Integration.dll"/>
-	<assembly path="kCura.IntegrationPoints.Domain.Tests.Integration.dll"/>	
+    <assembly path="kCura.IntegrationPoints.Domain.Tests.Integration.dll"/>	
     <assembly path="kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration.dll"/>
     <assembly path="kCura.IntegrationPoints.EventHandlers.Tests.Integration.dll"/>
     <assembly path="kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.dll"/>
@@ -19,13 +20,14 @@
     <assembly path="kCura.IntegrationPoints.RelativitySync.Tests.Integration.dll"/>
     <assembly path="kCura.IntegrationPoints.Web.Tests.Integration.dll"/>
     <assembly path="kCura.ScheduleQueue.Core.Tests.Integration.dll"/>
-	<assembly path="Rip.E2ETests.dll"/>
-	<assembly path="Rip.SystemTests.dll"/>
+    <assembly path="Rip.E2ETests.dll"/>
+    <assembly path="Rip.SystemTests.dll"/>
   </Config>
   <Config name="UITests"
           appbase="lib/UnitTests/"
           binpath="lib/UnitTests/" 
           processModel="Single">
+    <assembly path="Relativity.IntegrationPoints.FunctionalTests.dll"/>
     <assembly path="kCura.IntegrationPoints.UITests.dll"/>
   </Config>
 </NUnitProject>
