@@ -192,7 +192,6 @@ namespace kCura.ScheduleQueue.AgentBase
 			switch (category)
 			{
 				case LogCategory.Debug:
-					//We do not want to log using RaiseMessage as they get always logged at INFO level
 					RaiseMessageNoLogging(msg, level);
 					Logger.LogDebug(message);
 					break;
