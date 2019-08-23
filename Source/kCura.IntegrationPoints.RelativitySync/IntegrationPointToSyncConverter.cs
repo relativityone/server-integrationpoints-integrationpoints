@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 		}
 
-		private string DestinationFolderStructureBehavior(FolderConf folderConf)
+		private static string DestinationFolderStructureBehavior(FolderConf folderConf)
 		{
 			if (!folderConf.UseDynamicFolderPath && !folderConf.UseFolderPathInformation)
 			{
@@ -63,7 +63,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			return "ReadFromField";
 		}
 
-		private string NativesBehavior(ImportNativeFileCopyModeEnum mode)
+		private static string NativesBehavior(ImportNativeFileCopyModeEnum mode)
 		{
 			if (mode == ImportNativeFileCopyModeEnum.CopyFiles)
 			{
@@ -216,7 +216,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			};
 		}
 
-		private async Task<string> GetFolderPathSourceFieldNameAsync(int artifactId, int workspaceId, IObjectManager objectManager)
+		private static async Task<string> GetFolderPathSourceFieldNameAsync(int artifactId, int workspaceId, IObjectManager objectManager)
 		{
 			if (artifactId == 0)
 			{
