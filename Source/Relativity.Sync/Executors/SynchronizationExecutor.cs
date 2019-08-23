@@ -35,7 +35,7 @@ namespace Relativity.Sync.Executors
 
 		public async Task<ExecutionResult> ExecuteAsync(ISynchronizationConfiguration configuration, CancellationToken token)
 		{
-			_logger.LogVerbose("Creating settings for ImportAPI.");
+			_logger.LogInformation("Creating settings for ImportAPI.");
 			UpdateImportSettings(configuration);
 
 			ExecutionResult importAndTagResult = ExecutionResult.Success();
@@ -46,7 +46,7 @@ namespace Relativity.Sync.Executors
 
 			try
 			{
-				_logger.LogVerbose("Gathering batches to execute.");
+				_logger.LogInformation("Gathering batches to execute.");
 				IEnumerable<int> batchesIds = await _batchRepository.GetAllNewBatchesIdsAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId).ConfigureAwait(false);
 
 				foreach (int batchId in batchesIds)
@@ -58,7 +58,7 @@ namespace Relativity.Sync.Executors
 						break;
 					}
 
-					_logger.LogVerbose("Processing batch ID: {batchId}", batchId);
+					_logger.LogInformation("Processing batch ID: {batchId}", batchId);
 					IBatch batch = await _batchRepository.GetAsync(configuration.SourceWorkspaceArtifactId, batchId).ConfigureAwait(false);
 					using (IImportJob importJob = await _importJobFactory.CreateImportJobAsync(configuration, batch, token).ConfigureAwait(false))
 					{
