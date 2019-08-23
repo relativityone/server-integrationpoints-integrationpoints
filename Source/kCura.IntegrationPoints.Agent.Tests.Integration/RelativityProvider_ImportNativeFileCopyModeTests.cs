@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.Exporter.Sanitization;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Validation;
@@ -20,7 +21,6 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using NUnit.Framework;
@@ -84,6 +84,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			IAPILog logger = Container.Resolve<IAPILog>();
 			IDateTimeHelper dateTimeHelper = Container.Resolve<IDateTimeHelper>();
 			IDocumentRepository documentRepository = Container.Resolve<IDocumentRepository>();
+			IExportDataSanitizer exportDataSanitizer = Container.Resolve<IExportDataSanitizer>();
 			var jobHistoryUpdater = new JobHistoryBatchUpdateStatus(
 				jobStatusUpdater,
 				jobHistoryService,
@@ -111,7 +112,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				null,
 				agentValidator,
 				IntegrationPointRepository,
-				documentRepository
+				documentRepository,
+				exportDataSanitizer
 			);
 
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();

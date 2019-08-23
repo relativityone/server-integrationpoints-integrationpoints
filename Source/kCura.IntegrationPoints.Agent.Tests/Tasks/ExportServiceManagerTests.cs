@@ -14,6 +14,7 @@ using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter;
+using kCura.IntegrationPoints.Core.Services.Exporter.Sanitization;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
@@ -80,6 +81,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private ISavedSearchQueryRepository _savedSearchQueryRepository;
 		private IScheduleRuleFactory _scheduleRuleFactory;
 		private ISerializer _serializer;
+		private IExportDataSanitizer _exportDataSanitizer;
 		private IAPILog _logger;
 	
 		private Job _job;
@@ -123,6 +125,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_managerFactory = Substitute.For<IManagerFactory>();
 			_integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
 			_documentRepository = Substitute.For<IDocumentRepository>();
+			_exportDataSanitizer = Substitute.For<IExportDataSanitizer>();
 
 			_sendingEmailNotification = Substitute.For<IBatchStatus>();
 			_updateJobHistoryStatus = Substitute.For<IBatchStatus>();
@@ -224,7 +227,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 					job.SubmittedBy,
 					_IMPORTSETTINGS_WITH_USERID,
 					_documentRepository,
-					_serializer)
+					_serializer,
+					_exportDataSanitizer)
 				.Returns(_exporterService);
 
 			_exporterService.TotalRecordsFound.Returns(_EXPORT_DOC_COUNT);
@@ -257,7 +261,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				toggleProvider: null,
 				agentValidator: _agentValidator,
 				integrationPointRepository: _integrationPointRepository,
-				documentRepository: _documentRepository);
+				documentRepository: _documentRepository,
+				exportDataSanitizer: _exportDataSanitizer);
 			_managerFactory.CreateJobHistoryManager(contextContainer).Returns(_historyManager);
 		}
 
@@ -454,7 +459,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				_job.SubmittedBy,
 				_IMPORTSETTINGS_WITH_USERID,
 				_documentRepository,
-				_serializer);
+				_serializer,
+				_exportDataSanitizer);
 			_jobHistoryErrorRepository.Received(0).DeleteItemLevelErrorsSavedSearch(Arg.Any<int>());
 			_logger.LogError(
 				exception, 
@@ -515,7 +521,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				null,
 				_agentValidator,
 				_integrationPointRepository,
-				_documentRepository);
+				_documentRepository,
+				_exportDataSanitizer);
 			try
 			{
 				instance.Execute(_job);
@@ -580,7 +587,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				Arg.Any<int>(), 
 				_IMPORTSETTINGS_WITH_USERID,
 				Arg.Any<IDocumentRepository>(),
-				Arg.Any<ISerializer>());
+				Arg.Any<ISerializer>(),
+				Arg.Any<IExportDataSanitizer>());
 
 			_sendingEmailNotification.Received(1).OnJobComplete(_job);
 			_updateJobHistoryStatus.Received(1).OnJobStart(_job);
@@ -777,7 +785,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 					_job.SubmittedBy, 
 					_IMPORTSETTINGS_WITH_USERID,
 					_documentRepository,
-					_serializer);
+					_serializer,
+					_exportDataSanitizer);
 				_jobHistoryErrorManager.Received(1).CreateItemLevelErrorsSavedSearch(_job, _configuration.SavedSearchArtifactId);
 				_jobHistoryErrorRepository.Received(1).DeleteItemLevelErrorsSavedSearch(_RETRY_SAVEDSEARCHID);
 			}
@@ -791,7 +800,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 					_job.SubmittedBy, 
 					_IMPORTSETTINGS_WITH_USERID,
 					_documentRepository,
-					_serializer);
+					_serializer,
+					_exportDataSanitizer);
 				_jobHistoryErrorManager.DidNotReceive().CreateItemLevelErrorsSavedSearch(_job, _configuration.SavedSearchArtifactId);
 				_jobHistoryErrorRepository.DidNotReceive().DeleteItemLevelErrorsSavedSearch(_RETRY_SAVEDSEARCHID);
 			}

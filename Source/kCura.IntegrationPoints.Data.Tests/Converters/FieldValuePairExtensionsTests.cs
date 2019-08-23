@@ -3,6 +3,7 @@ using FluentAssertions;
 using kCura.IntegrationPoints.Data.Converters;
 using kCura.IntegrationPoints.Domain.Models;
 using NUnit.Framework;
+using Relativity;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Tests.Converters
@@ -64,7 +65,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Converters
 			// assert
 			result.ArtifactId.Should().Be(fieldArtifactID);
 			result.Name.Should().Be(fieldName);
-			result.FieldType.Should().Be(nameof(FieldType.MultipleChoice));
+			result.FieldType.Should().Be(FieldTypeHelper.FieldType.MultiCode);
 			result.Value.Should().Be(value);
 		}
 

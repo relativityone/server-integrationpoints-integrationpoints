@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter.Validators;
@@ -10,6 +12,7 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
+using Relativity;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
@@ -28,7 +31,9 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 		protected readonly IRelativityObjectManager RelativityObjectManager;
 		protected readonly IJobStopManager JobStopManager;
 		protected readonly IFileRepository FileRepository;
+		protected readonly ISerializer Serializer;
 		protected readonly int[] FieldArtifactIds;
+		protected readonly FieldEntry IdentifierField;
 
 		protected IDataTransferContext Context { get; set; }
 		protected int RetrievedDataCount { get; set; }
@@ -41,6 +46,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 			IJobStopManager jobStopManager,
 			IHelper helper,
 			IFileRepository fileRepository,
+			ISerializer serializer,
 			FieldMap[] mappedFields,
 			int startAt,
 			SourceConfiguration sourceConfiguration,
@@ -50,12 +56,15 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 
 			DocumentRepository = documentRepository;
 			FileRepository = fileRepository;
+			Serializer = serializer;
 			RelativityObjectManager = relativityObjectManager;
 			SourceConfiguration = sourceConfiguration;
 
 			ValidateDestinationFields(targetRepositoryFactory, mappedFields);
 
 			QueryFieldLookupRepository = sourceRepositoryFactory.GetQueryFieldLookupRepository(SourceConfiguration.SourceWorkspaceArtifactId);
+
+			ValidateSourceFields(sourceRepositoryFactory, mappedFields);
 
 			try
 			{
@@ -83,6 +92,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 			JobStopManager = jobStopManager;
 			Logger = helper.GetLoggerFactory().GetLogger().ForContext<RelativityExporterService>();
 			FieldArtifactIds = mappedFields.Select(field => int.Parse(field.SourceField.FieldIdentifier)).ToArray();
+			IdentifierField = mappedFields.First(x => x.SourceField.IsIdentifier).SourceField;
 		}
 
 		public virtual bool HasDataToRetrieve => (TotalRecordsFound > RetrievedDataCount) && !JobStopManager.IsStopRequested();
@@ -100,6 +110,40 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 				Context.DataReader.Dispose();
 				Context.DataReader = null;
 				Context = null;
+			}
+		}
+
+		private void ValidateSourceFields(IRepositoryFactory sourceRepositoryFactory, IEnumerable<FieldMap> mappedFields)
+		{
+			var nestedAndMultiValuesValidator = new NestedAndMultiValuesFieldValidator(Logger);
+
+			foreach (FieldEntry source in mappedFields.Select(f => f.SourceField))
+			{
+				int artifactID = Convert.ToInt32(source.FieldIdentifier);
+				ViewFieldInfo fieldInfo = QueryFieldLookupRepository.GetFieldByArtifactID(artifactID);
+
+				switch (fieldInfo.FieldType)
+				{
+					case FieldTypeHelper.FieldType.Objects:
+						IFieldQueryRepository fieldQueryRepository = sourceRepositoryFactory.GetFieldQueryRepository(SourceConfiguration.SourceWorkspaceArtifactId);
+						ArtifactDTO identifierField = fieldQueryRepository.RetrieveIdentifierField(fieldInfo.AssociativeArtifactTypeID);
+						string identifierFieldName = (string) identifierField.Fields.First(field => field.Name == "Name").Value;
+						IObjectRepository objectRepository =
+							sourceRepositoryFactory.GetObjectRepository(
+								SourceConfiguration.SourceWorkspaceArtifactId,
+								fieldInfo.AssociativeArtifactTypeID);
+						ArtifactDTO[] objects = objectRepository.GetFieldsFromObjects(new[] {identifierFieldName})
+							.GetAwaiter().GetResult();
+						nestedAndMultiValuesValidator.VerifyObjectField(fieldInfo.DisplayName, objects);
+						break;
+
+					case FieldTypeHelper.FieldType.MultiCode:
+						ICodeRepository codeRepository =
+							sourceRepositoryFactory.GetCodeRepository(SourceConfiguration.SourceWorkspaceArtifactId);
+						ArtifactDTO[] codes = codeRepository.RetrieveCodeAsync(fieldInfo.DisplayName).GetAwaiter().GetResult();
+						nestedAndMultiValuesValidator.VerifyChoiceField(fieldInfo.DisplayName, codes);
+						break;
+				}
 			}
 		}
 

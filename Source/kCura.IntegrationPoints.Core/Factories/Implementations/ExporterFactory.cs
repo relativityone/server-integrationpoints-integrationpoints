@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Core.Services.Exporter.Images;
+using kCura.IntegrationPoints.Core.Services.Exporter.Sanitization;
 using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -54,10 +55,10 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			int onBehalfOfUser,
 			string userImportApiSettings,
 			IDocumentRepository documentRepository,
-			ISerializer serializer)
+			ISerializer serializer,
+			IExportDataSanitizer exportDataSanitizer)
 		{
 			LogBuildExporterExecutionWithParameters(mappedFields, serializedSourceConfiguration, savedSearchArtifactID, onBehalfOfUser, userImportApiSettings);
-			ClaimsPrincipal claimsPrincipal = GetClaimsPrincipal(onBehalfOfUser);
 
 			ImportSettings settings = JsonConvert.DeserializeObject<ImportSettings>(userImportApiSettings);
 			SourceConfiguration sourceConfiguration = JsonConvert.DeserializeObject<SourceConfiguration>(serializedSourceConfiguration);
@@ -69,7 +70,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 					savedSearchArtifactID,
 					settings,
 					sourceConfiguration,
-					documentRepository) :
+					documentRepository,
+					serializer) :
 				CreateRelativityExporterService(
 					jobStopManager,
 					mappedFields,
@@ -77,7 +79,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 					savedSearchArtifactID,
 					settings,
 					documentRepository,
-					serializer);
+					serializer,
+					exportDataSanitizer);
 			return exporter;
 		}
 		
@@ -88,7 +91,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			int savedSearchArtifactID,
 			ImportSettings settings,
 			IDocumentRepository documentRepository,
-			ISerializer serializer)
+			ISerializer serializer,
+			IExportDataSanitizer exportDataSanitizer)
 		{
 			SourceConfiguration sourceConfiguration = serializer.Deserialize<SourceConfiguration>(serializedSourceConfiguration);
 			int workspaceArtifactID = sourceConfiguration.SourceWorkspaceArtifactId;
@@ -105,6 +109,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				_helper,
 				folderPathReader,
 				_fileRepository,
+				serializer,
+				exportDataSanitizer,
 				mappedFields,
 				startAtRecord,
 				sourceConfiguration,
@@ -117,7 +123,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			int savedSearchArtifactId,
 			ImportSettings settings,
 			SourceConfiguration sourceConfiguration,
-			IDocumentRepository documentRepository)
+			IDocumentRepository documentRepository,
+			ISerializer serializer)
 		{
 			int searchArtifactId;
 			if (sourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.SavedSearch)
@@ -138,6 +145,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				_fileRepository,
 				jobStopManager,
 				_helper,
+				serializer,
 				mappedFiles,
 				startAtRecord,
 				sourceConfiguration,

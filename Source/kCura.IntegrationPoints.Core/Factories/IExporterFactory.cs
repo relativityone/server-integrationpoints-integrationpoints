@@ -1,6 +1,7 @@
 ﻿using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter;
+using kCura.IntegrationPoints.Core.Services.Exporter.Sanitization;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 
@@ -16,6 +17,7 @@ namespace kCura.IntegrationPoints.Core.Factories
 			int onBehalfOfUser, 
 			string userImportApiSettings,
 			IDocumentRepository documentRepository,
-			ISerializer serializer);
+			ISerializer serializer,
+			IExportDataSanitizer exportDataSanitizer);
 	}
 }
