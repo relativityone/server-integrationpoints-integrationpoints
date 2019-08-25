@@ -197,14 +197,18 @@ namespace kCura.IntegrationPoints.Data.RSAPIClient
 		public ProcessOperationResult InstallApplication(APIOptions apiOpt, AppInstallRequest appInstallRequest)
 		{
 			return LogAndRethrowException(() => 
+#pragma warning disable CS0618 // Type or member is obsolete
 				_rsapiClient.InstallApplication(apiOpt, appInstallRequest)
+#pragma warning restore CS0618 // Type or member is obsolete
 			);
 		}
 
 		public ResultSet InstallLibraryApplication(APIOptions apiOpt, AppInstallRequest appInstallRequest)
 		{
 			return LogAndRethrowException(() => 
+#pragma warning disable CS0618 // Type or member is obsolete
 				_rsapiClient.InstallLibraryApplication(apiOpt, appInstallRequest)
+#pragma warning restore CS0618 // Type or member is obsolete
 			);
 		}
 
