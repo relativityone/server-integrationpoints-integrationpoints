@@ -1,12 +1,10 @@
-﻿using Castle.Windsor;
+﻿using System;
+using System.Collections.Generic;
+using Castle.Windsor;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Core.Agent;
-using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
 using Relativity.Sync.Configuration;
-using System;
-using System.Collections.Generic;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
@@ -27,9 +25,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 			try
 			{
-				SourceConfiguration sourceConfiguration = serializer.Deserialize<SourceConfiguration>(job.IntegrationPointModel.SourceConfiguration);
 				ImportSettings destinationConfiguration = serializer.Deserialize<ImportSettings>(job.IntegrationPointModel.DestinationConfiguration);
-				List<string> emailRecipients = IntegrationPointTaskBase.GetRecipientEmails(job.IntegrationPointModel, logger);
 
 				ImportSettingsDto importSettingsDto = new ImportSettingsDto()
 				{
@@ -54,13 +50,13 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 				if (destinationConfiguration.ObjectFieldIdListContainsArtifactId != null)
 				{
-					foreach (int artifactID in destinationConfiguration.ObjectFieldIdListContainsArtifactId)
+					foreach (int artifactId in destinationConfiguration.ObjectFieldIdListContainsArtifactId)
 					{
-						importSettingsDto.ObjectFieldIdListContainsArtifactId.Add(artifactID);
+						importSettingsDto.ObjectFieldIdListContainsArtifactId.Add(artifactId);
 					}
 				}
 
-				return new SyncConfiguration(job.SubmittedById, sourceConfiguration, destinationConfiguration, emailRecipients, importSettingsDto);
+				return new SyncConfiguration(job.SubmittedById, destinationConfiguration, importSettingsDto);
 			}
 			catch (Exception e)
 			{
