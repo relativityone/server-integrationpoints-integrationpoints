@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync
@@ -21,31 +20,27 @@ namespace Relativity.Sync
 			_logger = logger;
 		}
 
-		public async Task<bool> CanExecuteAsync(CancellationToken token)
+		public Task<bool> CanExecuteAsync(CancellationToken token)
 		{
 			_logger.LogInformation("Checking if can execute step '{StepName}'", typeof(T).Name);
 			TryLogConfiguration();
-			return await _executionConstrains.CanExecuteAsync(_configuration, token).ConfigureAwait(false);
+			return _executionConstrains.CanExecuteAsync(_configuration, token);
 		}
 
-		public async Task<ExecutionResult> ExecuteAsync(CancellationToken token)
+		public Task<ExecutionResult> ExecuteAsync(CancellationToken token)
 		{
-			return await _executor.ExecuteAsync(_configuration, token).ConfigureAwait(false);
+			return _executor.ExecuteAsync(_configuration, token);
 		}
 
 		private void TryLogConfiguration()
 		{
 			try
 			{
-				string configurationJson = JsonConvert.SerializeObject(_configuration, new JsonSerializerSettings()
-				{
-					NullValueHandling = NullValueHandling.Ignore
-				});
-				_logger.LogInformation("Configuration properties of step '{StepName}': {Configuration}", typeof(T).Name, configurationJson);
+				_logger.LogInformation("Configuration properties of step '{StepName}': {@Configuration}", typeof(T).Name, _configuration);
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, "Error while serializing configuration in step '{StepName}'", typeof(T).Name);
+				_logger.LogError(ex, "Error while logging configuration in step '{StepName}'", typeof(T).Name);
 			}
 		}
 	}

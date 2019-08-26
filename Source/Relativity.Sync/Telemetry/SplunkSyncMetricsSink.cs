@@ -1,5 +1,4 @@
 ﻿using System;
-using Newtonsoft.Json;
 
 namespace Relativity.Sync.Telemetry
 {
@@ -28,12 +27,7 @@ namespace Relativity.Sync.Telemetry
 		{
 			try
 			{
-				string propertiesJson = JsonConvert.SerializeObject(metric, new JsonSerializerSettings()
-				{
-					NullValueHandling = NullValueHandling.Ignore
-				});
-				_logger.LogInformation("Sending metric {MetricName} with properties: {MetricProperties}",
-					metric.Name, propertiesJson);
+				_logger.LogInformation("Sending metric {MetricName} with properties: {@MetricProperties}", metric.Name, metric);
 			}
 			catch (Exception ex)
 			{

@@ -16,83 +16,99 @@ namespace Relativity.Sync.Logging
 
 		public void LogVerbose(string messageTemplate, params object[] propertyValues)
 		{
-			_logger.LogVerbose(ModifyTemplate(messageTemplate), ExtendPropertyValues(propertyValues));
+			InvokeWithJobInfo(_logger.LogVerbose, messageTemplate, propertyValues);
 		}
 
 		public void LogVerbose(Exception exception, string messageTemplate, params object[] propertyValues)
 		{
-			_logger.LogVerbose(exception, ModifyTemplate(messageTemplate), ExtendPropertyValues(propertyValues));
+			InvokeWithJobInfo(_logger.LogVerbose, exception, messageTemplate, propertyValues);
 		}
 
 		public void LogDebug(string messageTemplate, params object[] propertyValues)
 		{
-			_logger.LogDebug(ModifyTemplate(messageTemplate), ExtendPropertyValues(propertyValues));
+			InvokeWithJobInfo(_logger.LogDebug, messageTemplate, propertyValues);
 		}
 
 		public void LogDebug(Exception exception, string messageTemplate, params object[] propertyValues)
 		{
-			_logger.LogDebug(exception, ModifyTemplate(messageTemplate), ExtendPropertyValues(propertyValues));
+			InvokeWithJobInfo(_logger.LogDebug, exception, messageTemplate, propertyValues);
 		}
 
 		public void LogInformation(string messageTemplate, params object[] propertyValues)
 		{
-			_logger.LogInformation(ModifyTemplate(messageTemplate), ExtendPropertyValues(propertyValues));
+			InvokeWithJobInfo(_logger.LogInformation, messageTemplate, propertyValues);
 		}
 
 		public void LogInformation(Exception exception, string messageTemplate, params object[] propertyValues)
 		{
-			_logger.LogInformation(exception, ModifyTemplate(messageTemplate), ExtendPropertyValues(propertyValues));
+			InvokeWithJobInfo(_logger.LogInformation, exception, messageTemplate, propertyValues);
 		}
 
 		public void LogWarning(string messageTemplate, params object[] propertyValues)
 		{
-			_logger.LogWarning(ModifyTemplate(messageTemplate), ExtendPropertyValues(propertyValues));
+			InvokeWithJobInfo(_logger.LogWarning, messageTemplate, propertyValues);
 		}
 
 		public void LogWarning(Exception exception, string messageTemplate, params object[] propertyValues)
 		{
-			_logger.LogWarning(exception, ModifyTemplate(messageTemplate), ExtendPropertyValues(propertyValues));
+			InvokeWithJobInfo(_logger.LogWarning, exception, messageTemplate, propertyValues);
 		}
 
 		public void LogError(string messageTemplate, params object[] propertyValues)
 		{
-			_logger.LogError(ModifyTemplate(messageTemplate), ExtendPropertyValues(propertyValues));
+			InvokeWithJobInfo(_logger.LogError, messageTemplate, propertyValues);
 		}
 
 		public void LogError(Exception exception, string messageTemplate, params object[] propertyValues)
 		{
-			_logger.LogError(exception, ModifyTemplate(messageTemplate), ExtendPropertyValues(propertyValues));
+			InvokeWithJobInfo(_logger.LogError, exception, messageTemplate, propertyValues);
 		}
 
 		public void LogFatal(string messageTemplate, params object[] propertyValues)
 		{
-			_logger.LogFatal(ModifyTemplate(messageTemplate), ExtendPropertyValues(propertyValues));
+			InvokeWithJobInfo(_logger.LogFatal, messageTemplate, propertyValues);
 		}
 
 		public void LogFatal(Exception exception, string messageTemplate, params object[] propertyValues)
 		{
-			_logger.LogFatal(exception, ModifyTemplate(messageTemplate), ExtendPropertyValues(propertyValues));
+			InvokeWithJobInfo(_logger.LogFatal, exception, messageTemplate, propertyValues);
 		}
 
-		private object[] ExtendPropertyValues(object[] propertyValues)
+		private void InvokeWithJobInfo(Action<Exception, string, object[]> logAction, Exception exception, string messageTemplate, object[] propertyValues)
 		{
-			List<object> properties = new List<object>(propertyValues)
+			string messageTemplateWithJobInfo = ModifyTemplate(messageTemplate);
+			object[] propertyValuesExtendedByJobParams = AddJobParamtersToPropertyValues(propertyValues);
+			logAction(exception, messageTemplateWithJobInfo, propertyValuesExtendedByJobParams);
+		}
+
+		private void InvokeWithJobInfo(Action<string, object[]> logAction, string messageTemplate, object[] propertyValues)
+		{
+			string messageTemplateWithJobInfo = ModifyTemplate(messageTemplate);
+			object[] propertyValuesExtendedByJobParams = AddJobParamtersToPropertyValues(propertyValues);
+			logAction(messageTemplateWithJobInfo, propertyValuesExtendedByJobParams);
+		}
+
+		private object[] AddJobParamtersToPropertyValues(object[] propertyValues)
+		{
+			List<object> properties = new List<object>();
+			properties.AddRange(propertyValues);
+			properties.AddRange(new object[]
 			{
 				_jobParameters.CorrelationId,
 				_jobParameters.SyncConfigurationArtifactId,
 				_jobParameters.WorkspaceId,
 				_jobParameters.IntegrationPointArtifactId
-			};
+			});
 			return properties.ToArray();
 		}
 
-		private string ModifyTemplate(string messageTemplate)
+		private static string ModifyTemplate(string messageTemplate)
 		{
 			return messageTemplate += " Sync job properties: " +
-				"CorrelationId: {CorrelationId} " +
-				"SyncConfigurationArtifactId: {SyncConfigurationArtifactId} " +
-				"WorkspaceId: {WorkspaceId} " +
-				"IntegrationPointArtifactId: {IntegrationPointArtifactId}";
+				$"{nameof(SyncJobParameters.CorrelationId)}: {{{nameof(SyncJobParameters.CorrelationId)}}} " +
+				$"{nameof(SyncJobParameters.SyncConfigurationArtifactId)}: {{{nameof(SyncJobParameters.SyncConfigurationArtifactId)}}} " +
+				$"{nameof(SyncJobParameters.WorkspaceId)}: {{{nameof(SyncJobParameters.WorkspaceId)}}} " +
+				$"{nameof(SyncJobParameters.IntegrationPointArtifactId)}: {{{nameof(SyncJobParameters.IntegrationPointArtifactId)}}}";
 		}
 	}
 }
