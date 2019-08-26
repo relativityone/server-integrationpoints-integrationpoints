@@ -84,8 +84,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			// Assert
 			string serializedModel = httpResponse.Content.ReadAsStringAsync().GetAwaiter().GetResult();
 			IntegrationPointModel integrationPointModel = JsonConvert.DeserializeObject<IntegrationPointModel>(serializedModel);
-			integrationPointModel.SourceConfiguration.Should().BeNullOrEmpty();
-			
+			integrationPointModel.SourceConfiguration.Should().BeNull();
+
 		}
 
 		[Test]

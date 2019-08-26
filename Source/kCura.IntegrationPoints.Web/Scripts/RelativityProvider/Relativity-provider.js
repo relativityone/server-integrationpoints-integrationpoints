@@ -2,6 +2,7 @@
 	//Create a new communication object that talks to the host page.
 	var message = IP.frameMessaging(); // handle into the global Integration point framework
 	var savedSearchService = new SavedSearchService();
+	const ThisInstanceArtifactID = 0;
 
 	ko.validation.configure({
 		registerExtenders: true,
@@ -227,7 +228,7 @@
 					type: "POST",
 					url: IP.utils.generateWebAPIURL("SearchFolder/GetStructure",
 						destinationWorkspaceId,
-						params.id != "#" ? params.id : "0", 0),
+						params.id != "#" ? params.id : "0", ThisInstanceArtifactID),
 					data: self.SecuredConfiguration()
 				}).then(function (result) {
 					onSuccess(result);
@@ -271,7 +272,7 @@
 				type: "POST",
 				url: IP.utils.generateWebAPIURL("SearchFolder/GetFullPathList",
 					destinationWorkspaceId,
-					folderArtifactId, 0),
+					folderArtifactId, ThisInstanceArtifactID),
 				async: true,
 				data: self.SecuredConfiguration()
 			})
@@ -363,7 +364,6 @@
 		};
 
 		self.updateSecuredConfiguration = function () {
-			self.SecuredConfiguration(null);
 			self.updateWorkspaces();
 		}
 
