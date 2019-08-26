@@ -17,7 +17,7 @@ namespace Relativity.Sync.Transfer
 		private readonly Func<ISearchManager> _searchManagerFactory;
 		private readonly ISyncLog _logger;
 
-		public NativeFileRepository(Func<ISearchManager> searchManagerFactory, ISyncLog logger)
+		public NativeFileRepository(Func<ISearchManager> searchManagerFactory,ISyncLog logger)
 		{
 			_searchManagerFactory = searchManagerFactory;
 			_logger = logger;

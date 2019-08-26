@@ -15,13 +15,16 @@ namespace Relativity.Sync.Executors.SumReporting
 		private readonly IJobEndMetricsConfiguration _configuration;
 		private readonly IFieldManager _fieldManager;
 		private readonly ISyncMetrics _syncMetrics;
+		private readonly IJobStatisticsContainer _jobStatisticsContainer;
 		private readonly ISyncLog _logger;
 
-		public JobEndMetricsService(IBatchRepository batchRepository, IJobEndMetricsConfiguration configuration, IFieldManager fieldManager, ISyncMetrics syncMetrics, ISyncLog logger)
+		public JobEndMetricsService(IBatchRepository batchRepository, IJobEndMetricsConfiguration configuration, IFieldManager fieldManager, IJobStatisticsContainer jobStatisticsContainer,
+			ISyncMetrics syncMetrics, ISyncLog logger)
 		{
 			_batchRepository = batchRepository;
 			_configuration = configuration;
 			_fieldManager = fieldManager;
+			_jobStatisticsContainer = jobStatisticsContainer;
 			_syncMetrics = syncMetrics;
 			_logger = logger;
 		}
@@ -30,6 +33,7 @@ namespace Relativity.Sync.Executors.SumReporting
 		{
 			try
 			{
+				string workflowId = _configuration.WorkflowId;
 				int totalTransferred = 0;
 				int totalFailed = 0;
 				int totalRequested = 0;
@@ -42,14 +46,22 @@ namespace Relativity.Sync.Executors.SumReporting
 					totalRequested += batch.TotalItemsCount;
 				}
 
-				_syncMetrics.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_TRANSFERRED, totalTransferred, _configuration.WorkflowId);
-				_syncMetrics.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_FAILED, totalFailed, _configuration.WorkflowId);
-				_syncMetrics.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_TOTAL_REQUESTED, totalRequested, _configuration.WorkflowId);
+				_syncMetrics.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_TRANSFERRED, totalTransferred, workflowId);
+				_syncMetrics.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_FAILED, totalFailed, workflowId);
+				_syncMetrics.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_TOTAL_REQUESTED, totalRequested, workflowId);
 
-				_syncMetrics.LogPointInTimeString(TelemetryConstants.MetricIdentifiers.JOB_END_STATUS, jobExecutionStatus.GetDescription(), _configuration.WorkflowId);
+				_syncMetrics.LogPointInTimeString(TelemetryConstants.MetricIdentifiers.JOB_END_STATUS, jobExecutionStatus.GetDescription(), workflowId);
 
 				IReadOnlyList<FieldInfoDto> fields = await _fieldManager.GetAllFieldsAsync(CancellationToken.None).ConfigureAwait(false);
-				_syncMetrics.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_FIELDS_MAPPED, fields.Count, _configuration.WorkflowId);
+				_syncMetrics.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_FIELDS_MAPPED, fields.Count, workflowId);
+
+				if (_jobStatisticsContainer.TotalBytesTransferred != 0) // if IAPI job has failed, then it reports 0 bytes transferred and we don't want to send such metric.
+				{
+					_syncMetrics.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_TOTAL_TRANSFERRED, _jobStatisticsContainer.TotalBytesTransferred, workflowId);
+				}
+
+				long allNativesSize = await _jobStatisticsContainer.NativesBytesRequested.ConfigureAwait(false);
+				_syncMetrics.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_NATIVES_REQUESTED, allNativesSize, workflowId);
 			}
 			catch (Exception e)
 			{

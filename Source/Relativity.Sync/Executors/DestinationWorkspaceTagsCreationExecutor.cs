@@ -20,6 +20,8 @@ namespace Relativity.Sync.Executors
 
 		public async Task<ExecutionResult> ExecuteAsync(IDestinationWorkspaceTagsCreationConfiguration configuration, CancellationToken token)
 		{
+			_logger.LogInformation("Creating tags in destination workspace (workspace artifact id: {destinationWorkspaceArtifactId})", configuration.DestinationWorkspaceArtifactId);
+
 			ExecutionResult result = ExecutionResult.Success();
 
 			try

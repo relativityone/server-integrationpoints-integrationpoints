@@ -9,5 +9,8 @@ namespace Relativity.Sync
 	{
 		/// <inheritdoc cref="System.DateTime"/>
 		DateTime Now { get; }
+
+		/// <inheritdoc cref="System.DateTime"/>
+		DateTime UtcNow { get; }
 	}
 }

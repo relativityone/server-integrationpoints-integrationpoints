@@ -87,10 +87,11 @@ namespace Relativity.Sync.Transfer
 		{
 			using (var folderManager = await _serviceFactory.CreateProxyAsync<IFolderManager>().ConfigureAwait(false))
 			{
+				List<FolderPath> result;
+				List<int> foldersWithIds = folderIds.ToList(); 
 				try
 				{
-					List<FolderPath> result = await folderManager.GetFullPathListAsync(workspaceArtifactId, folderIds.ToList()).ConfigureAwait(false);
-					return result.ToDictionary(f => f.ArtifactID, f => RemoveUnnecessarySpaces(f.FullPath));
+					result = await folderManager.GetFullPathListAsync(workspaceArtifactId, foldersWithIds).ConfigureAwait(false);
 				}
 				catch (ServiceException ex)
 				{
@@ -102,6 +103,15 @@ namespace Relativity.Sync.Transfer
 					_logger.LogError(ex, "Failed to get folders in workspace: {workspaceArtifactId}", workspaceArtifactId);
 					throw new SyncKeplerException($"Failed to get folders in workspace {workspaceArtifactId}", ex);
 				}
+				if (result.Count != foldersWithIds.Count)
+				{
+					List<int> differentValues = foldersWithIds.Except(result.Select(x => x.ArtifactID)).ToList();
+					const int maxSubset = 50;
+					int subsetCount = Math.Min(differentValues.Count, maxSubset);
+					string subsetArtifactIds = string.Join(",", differentValues.Take(subsetCount));
+					throw new SyncException($"Could not find folders with IDs {subsetArtifactIds} in workspace {workspaceArtifactId}.");
+				}
+				return result.ToDictionary(f => f.ArtifactID, f => RemoveUnnecessarySpaces(f.FullPath));
 			}
 		}
 

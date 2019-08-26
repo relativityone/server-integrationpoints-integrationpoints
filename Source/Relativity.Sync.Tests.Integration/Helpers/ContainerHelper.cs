@@ -64,11 +64,11 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 			return containerBuilder;
 		}
 
-		public static IContainer CreateContainer(Action<ContainerBuilder> containerBuilderAction)
+		public static IContainer CreateContainer(Action<ContainerBuilder> containerBuilderAction = null)
 		{
 			ContainerBuilder containerBuilder = CreateInitializedContainerBuilder();
 
-			containerBuilderAction(containerBuilder);
+			containerBuilderAction?.Invoke(containerBuilder);
 
 			return containerBuilder.Build();
 		}
