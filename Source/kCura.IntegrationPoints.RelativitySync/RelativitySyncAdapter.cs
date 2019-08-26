@@ -75,7 +75,6 @@ namespace kCura.IntegrationPoints.RelativitySync
 				await MarkJobAsValidationFailedAsync(ex).ConfigureAwait(false);
 				taskResult = new TaskResult() { Status = TaskStatusEnum.Fail };
 			}
-#pragma warning disable CA1031
 			catch (Exception e)
 			{
 				await MarkJobAsFailedAsync(e).ConfigureAwait(false);
