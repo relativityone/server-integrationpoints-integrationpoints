@@ -8,6 +8,7 @@ Relativity.Data
 Relativity.Telemetry.APM
 Relativity.OAuth2Client
 Relativity.Services.Interfaces
+Relativity.Toggles
 
 group TestPackages
 	FluentAssertions

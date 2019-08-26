@@ -6,48 +6,42 @@ using NUnit.Framework;
 
 namespace Relativity.IntegrationPoints.FunctionalTests
 {
-	[TestFixture]
+	[SetUpFixture]
 	public class FunctionalTestsFixture
 	{
 		private ITestHelper _testHelper;
 
 		[OneTimeSetUp]
-	    public async Task InitializeFixtureAsync()
-	    {
-		    _testHelper = new TestHelper();
+		public async Task InitializeFixtureAsync()
+		{
+			_testHelper = new TestHelper();
 
-		    await CreateTemplateWorkspaceAsync().ConfigureAwait(false);
-	    }
+			await CreateTemplateWorkspaceAsync().ConfigureAwait(false);
+		}
 
-	    private async Task CreateTemplateWorkspaceAsync()
-	    {
-		    bool templateExists = Workspace.CheckIfWorkspaceExists(
-			    WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME
-		    );
-
-		    if (templateExists)
-		    {
-			    return;
-		    }
-
-			int workspaceTemplateID = Workspace.CreateWorkspace(
-			    WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME,
-			    WorkspaceTemplateNames.RELATIVITY_STARTER_TEMPLATE_NAME
+		private async Task CreateTemplateWorkspaceAsync()
+		{
+			bool templateExists = Workspace.CheckIfWorkspaceExists(
+				WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME
 			);
 
-		    var applicationManager = new RelativityApplicationManager(_testHelper);
-		    if (SharedVariables.UseIpRapFile())
-		    {
-			    await applicationManager.ImportRipToLibraryAsync().ConfigureAwait(false);
-		    }
+			if (templateExists)
+			{
+				return;
+			}
 
-		    applicationManager.InstallApplicationFromLibrary(workspaceTemplateID);
-	    }
+			int workspaceTemplateID = Workspace.CreateWorkspace(
+				WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME,
+				WorkspaceTemplateNames.RELATIVITY_STARTER_TEMPLATE_NAME
+			);
 
-		[Test]
-	    public void Test()
-	    {
-			Assert.IsTrue(true);
-	    }
+			var applicationManager = new RelativityApplicationManager(_testHelper);
+			if (SharedVariables.UseIpRapFile())
+			{
+				await applicationManager.ImportRipToLibraryAsync().ConfigureAwait(false);
+			}
+
+			applicationManager.InstallApplicationFromLibrary(workspaceTemplateID);
+		}
 	}
 }
