@@ -11,7 +11,6 @@ using Relativity.API;
 using Relativity.Sync;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.Validation;
-using Relativity.Sync.Telemetry;
 using Relativity.Telemetry.APM;
 
 namespace kCura.IntegrationPoints.RelativitySync
@@ -206,10 +205,6 @@ namespace kCura.IntegrationPoints.RelativitySync
 				.As<IExecutionConstrains<IDestinationWorkspaceObjectTypesCreationConfiguration>>();
 			containerBuilder.RegisterInstance(new ValidationExecutorFactory(_ripContainer)).As<IValidationExecutorFactory>();
 			containerBuilder.RegisterInstance(new RdoRepository(_ripContainer)).As<IRdoRepository>();
-
-			containerBuilder.Register(context => new PermissionsCheck(_ripContainer, context.Resolve<IValidationExecutorFactory>(), context.Resolve<IRdoRepository>()))
-				.As<IExecutor<IPermissionsCheckConfiguration>>()
-				.As<IExecutionConstrains<IPermissionsCheckConfiguration>>();
 
 			containerBuilder.RegisterType<DataDestinationFinalization>()
 				.As<IExecutor<IDataDestinationFinalizationConfiguration>>()

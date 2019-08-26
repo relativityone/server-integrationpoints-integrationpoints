@@ -10,6 +10,7 @@ Relativity.Services.DataContracts
 Relativity.Services.Interfaces
 Relativity.Telemetry.APM
 Relativity.Toggles
+System.ValueTuple
 
 group TestPackages
 	FluentAssertions
