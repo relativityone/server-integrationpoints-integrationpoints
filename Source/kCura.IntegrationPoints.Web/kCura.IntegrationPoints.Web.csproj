@@ -644,7 +644,6 @@
     <Content Include="Views\IntegrationPoints\SchedulerSummaryPage.cshtml" />
     <Content Include="Views\ThirdPartyProviders\ThirdPartyProviderSummaryPage.cshtml" />
     <Content Include="Views\Tooltip\TooltipView.cshtml" />
-    <Content Include="Views\Modals\AuthenticationModalView.cshtml" />
     <Content Include="Views\Modals\ExportRenamedFieldsView.cshtml" />
     <Content Include="Views\Modals\ExportFileNamingOptionView.cshtml" />
     <Content Include="Views\Modals\CreateProductionSetModalView.cshtml" />
