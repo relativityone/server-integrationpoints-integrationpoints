@@ -63,7 +63,7 @@
   
    <Message Name="FederatedInstanceNotSupported">
     <errorCode>20.014</errorCode>
-    <shortMessage>Instance to instance is not supported.</shortMessage>
+    <shortMessage>Federated instance transfers are currently not supported.  Please update the Integration Point job to use a destination workspace within the same instance.</shortMessage>
     <troubleshooting>Instance to instance is not supported.</troubleshooting>
   </Message>
 

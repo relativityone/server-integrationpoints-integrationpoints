@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.Core.Validation
 		);
 		public static ValidationMessage FederatedInstanceNotSupported => new ValidationMessage(
 			errorCode: $"20.014",
-			shortMessage: $"Instance to instance is not supported."
+			shortMessage: $"Federated instance transfers are currently not supported.  Please update the Integration Point job to use a destination workspace within the same instance."
 		);
 		#endregion
 	}

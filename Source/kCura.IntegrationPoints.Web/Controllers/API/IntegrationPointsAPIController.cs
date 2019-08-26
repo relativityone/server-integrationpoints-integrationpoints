@@ -117,10 +117,10 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 		public IntegrationPointModel RemoveInstanceToInstanceSettingsFromModel(IntegrationPointModel model)
 		{
-			//We need to reset the values ​​from the database that have federated instance other than null.
+			//We need to reset the values from the database that have federated instance other than null.
 			//We do not want to forward the federated instance to the user interface.
 			if (!model.SourceConfiguration.Contains("\"FederatedInstanceArtifactId\":null") &&
-			    model.SourceConfiguration.Contains("FederatedInstanceArtifactId"))
+				model.SourceConfiguration.Contains("FederatedInstanceArtifactId"))
 			{
 				model.SourceConfiguration = null;
 			}
