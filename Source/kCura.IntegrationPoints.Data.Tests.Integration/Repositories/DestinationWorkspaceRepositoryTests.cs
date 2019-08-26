@@ -86,7 +86,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 				federatedInstanceArtifactId: -1);
 
 			//Assert
-			Assert.Fail();
 			queriedDestinationWorkspaceDto.Should().BeNull();
 		}
 

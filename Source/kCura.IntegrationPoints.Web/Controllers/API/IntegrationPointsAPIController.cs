@@ -58,17 +58,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				{
 					model.DestinationProvider = _provider.GetRdoSynchronizerId();
 				}
-				//We need to reset the values ​​from the database that have federated instance other than null.
-				//We do not want to forward the federated instance to the user interface.
-				if (!model.SourceConfiguration.Contains("\"FederatedInstanceArtifactId\":null") &&
-				    model.SourceConfiguration.Contains("FederatedInstanceArtifactId"))
-				{
-					model.SourceConfiguration = null;
-				}
-				else if (model.SourceConfiguration.Contains("\"FederatedInstanceArtifactId\":null"))
-				{
-					model.SourceConfiguration = JsonUtils.RemovePropertyName(model.SourceConfiguration, "FederatedInstanceArtifactId");
-				}
+
+				model = RemoveInstanceToInstanceSettingsFromModel(model);
 
 				return Request.CreateResponse(HttpStatusCode.Accepted, model);
 			}
@@ -122,6 +113,23 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 					}
 				}
 			}
+		}
+
+		public IntegrationPointModel RemoveInstanceToInstanceSettingsFromModel(IntegrationPointModel model)
+		{
+			//We need to reset the values ​​from the database that have federated instance other than null.
+			//We do not want to forward the federated instance to the user interface.
+			if (!model.SourceConfiguration.Contains("\"FederatedInstanceArtifactId\":null") &&
+			    model.SourceConfiguration.Contains("FederatedInstanceArtifactId"))
+			{
+				model.SourceConfiguration = null;
+			}
+			else if (model.SourceConfiguration.Contains("\"FederatedInstanceArtifactId\":null"))
+			{
+				model.SourceConfiguration = JsonUtils.RemoveProperty(model.SourceConfiguration, "FederatedInstanceArtifactId");
+			}
+
+			return model;
 		}
 	}
 }

@@ -228,7 +228,8 @@
 					type: "POST",
 					url: IP.utils.generateWebAPIURL("SearchFolder/GetStructure",
 						destinationWorkspaceId,
-						params.id !== "#" ? params.id : "0", thisInstanceArtifactId),
+						params.id !== "#" ? params.id : "0",
+						thisInstanceArtifactId),
 					data: self.SecuredConfiguration()
 				}).then(function (result) {
 					onSuccess(result);
@@ -272,7 +273,8 @@
 				type: "POST",
 				url: IP.utils.generateWebAPIURL("SearchFolder/GetFullPathList",
 					destinationWorkspaceId,
-					folderArtifactId, thisInstanceArtifactId),
+					folderArtifactId,
+					thisInstanceArtifactId),
 				async: true,
 				data: self.SecuredConfiguration()
 			})
@@ -379,25 +381,6 @@
 					self.ProductionArtifactId(state.ProductionArtifactId);
 				});
 			}
-		};
-
-		var authenticateModalViewModel = new AuthenticateViewModel(
-			function () {
-				self.AuthenticationFailed(true);
-				self.workspaces([]);
-				self.TargetWorkspaceArtifactId(null);
-				self.FolderArtifactId(null);
-				self.TargetFolder(null);
-				self.TargetFolder.isModified(false);
-				self.locationSelector.reload([]);
-			}
-		);
-
-		Picker.create("Modals", "authenticate-modal", "AuthenticationModalView", authenticateModalViewModel);
-
-		self.openAuthenticateModal = function () {
-			self.AuthenticationFailed(false);
-			authenticateModalViewModel.open(self.SecuredConfiguration());
 		};
 
 		var creatingProductionSetModalViewModel = new CreatingProductionSetViewModel(
