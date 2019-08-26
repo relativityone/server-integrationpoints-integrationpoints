@@ -5,11 +5,18 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.RelativityServices
 {
+	[Serializable]
 	internal class RetriableCPHelperProxy : ICPHelper
 	{
+		[NonSerialized]
+		private IAPILog _logger; // logger implementation is non serializable
+
 		private const int _RETRY_LIMIT = 2;
 		private readonly ICPHelper _baseCpHelper;
-		private readonly IAPILog _logger;
+
+		private IAPILog Logger =>
+			_logger
+			?? (_logger = GetLoggerFactory().GetLogger().ForContext<RetriableCPHelperProxy>());
 
 		public RetriableCPHelperProxy(ICPHelper baseCpHelper)
 		{
@@ -19,7 +26,6 @@ namespace kCura.IntegrationPoints.Web.RelativityServices
 			}
 
 			_baseCpHelper = baseCpHelper;
-			_logger = GetLoggerFactory().GetLogger().ForContext<RetriableCPHelperProxy>();
 		}
 
 		public int GetActiveCaseID()
@@ -101,10 +107,10 @@ namespace kCura.IntegrationPoints.Web.RelativityServices
 		{
 			return Policy
 				.HandleResult<T>(result => result.Equals(onResult))
-				.Retry(_RETRY_LIMIT, (result, retryCount) => 
-					_logger.LogError("Error while calling {0} with result: {1}. Retrying {1}...", 
-						func.Method.Name, 
-						result.Result, 
+				.Retry(_RETRY_LIMIT, (result, retryCount) =>
+					Logger.LogError("Error while calling {0} with result: {1}. Retrying {1}...",
+						func.Method.Name,
+						result.Result,
 						retryCount))
 				.Execute(func);
 		}
