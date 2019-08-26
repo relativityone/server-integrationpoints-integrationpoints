@@ -6,6 +6,7 @@ using System.Web.Http;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Core.Utils;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web.Attributes;
@@ -63,6 +64,10 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				    model.SourceConfiguration.Contains("FederatedInstanceArtifactId"))
 				{
 					model.SourceConfiguration = null;
+				}
+				else if (model.SourceConfiguration.Contains("\"FederatedInstanceArtifactId\":null"))
+				{
+					model.SourceConfiguration = JsonUtils.RemovePropertyName(model.SourceConfiguration, "FederatedInstanceArtifactId");
 				}
 
 				return Request.CreateResponse(HttpStatusCode.Accepted, model);

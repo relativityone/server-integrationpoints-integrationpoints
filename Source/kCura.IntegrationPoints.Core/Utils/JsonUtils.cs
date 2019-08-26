@@ -19,5 +19,14 @@ namespace kCura.IntegrationPoints.Core.Utils
 
 			return JsonConvert.SerializeObject(sourceObject, Formatting.None);
 		}
+
+		public static string RemovePropertyName(string json, string value)
+		{
+			JObject sourceObject = JObject.Parse(json);
+
+			sourceObject.Remove(value);
+
+			return JsonConvert.SerializeObject(sourceObject, Formatting.None);
+		}
 	}
 }

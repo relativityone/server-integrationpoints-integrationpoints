@@ -4,12 +4,10 @@ kCura.Apps.Common.Data
 kCura.Apps.Common.Utils
 kCura.EventHandler
 kCura.Relativity.Client
-Polly
 Relativity.Data
 Relativity.Telemetry.APM
 Relativity.OAuth2Client
 Relativity.Services.Interfaces
-Relativity.Toggles
 
 group TestPackages
 	FluentAssertions

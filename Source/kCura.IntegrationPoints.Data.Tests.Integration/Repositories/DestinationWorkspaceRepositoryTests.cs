@@ -86,6 +86,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 				federatedInstanceArtifactId: -1);
 
 			//Assert
+			Assert.Fail();
 			queriedDestinationWorkspaceDto.Should().BeNull();
 		}
 
@@ -120,7 +121,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			//Arrange
 			var integrationModel = new IntegrationPointModel
 			{
-				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly, null),
+				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = RelativityDestinationProviderArtifactId,
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),

@@ -2,7 +2,9 @@
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Http;
+using Castle.Core.Internal;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Factories;
@@ -28,7 +30,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 	[TestFixture]
 	public class IntegrationPointsAPIControllerTests : TestBase
 	{
-		private IntegrationPointsAPIController _instance;
+		private IntegrationPointsAPIController _sut;
 		private IServiceFactory _serviceFactory;
 		private IIntegrationPointService _integrationPointService;
 		private IRelativityUrlHelper _relativityUrlHelper;
@@ -39,6 +41,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		private IServicesMgr _svcMgr;
 
 		private const int _WORKSPACE_ID = 23432;
+		private const int _INTEGRATION_POINT_ID = 23432;
 		private const string _CREDENTIALS = "{}";
 
 		[SetUp]
@@ -57,15 +60,15 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			_svcMgr.CreateProxy<IMetricsManager>(Arg.Any<ExecutionIdentity>())
 				.Returns(Substitute.For<IMetricsManager>());
 
-			_instance = new IntegrationPointsAPIController(_serviceFactory, _relativityUrlHelper,
+			_sut = new IntegrationPointsAPIController(_serviceFactory, _relativityUrlHelper,
 				_rdoSynchronizerProvider, _cpHelper, _helperFactory) {Request = new HttpRequestMessage()};
 
-			_instance.Request.SetConfiguration(new HttpConfiguration());
+			_sut.Request.SetConfiguration(new HttpConfiguration());
 		}
 
 
 		[Test]
-		public void GetModel_WithFederatedInstanceHasValue_ReturnEmptySourceConfiguration()
+		public async Task Get_WhenFederatedInstanceIsSetUp_ShouldReturnNullSourceConfiguration()
 		{
 			// Arrange
 			var model = new IntegrationPointModel()
@@ -79,17 +82,15 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			_integrationPointService.ReadIntegrationPointModel(Arg.Any<int>()).Returns(model);
 
 			// Act
-			HttpResponseMessage httpResponse = _instance.Get(_WORKSPACE_ID);
+			HttpResponseMessage httpResponse = _sut.Get(_INTEGRATION_POINT_ID);
 
 			// Assert
-			string serializedModel = httpResponse.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-			IntegrationPointModel integrationPointModel = JsonConvert.DeserializeObject<IntegrationPointModel>(serializedModel);
+			IntegrationPointModel integrationPointModel = await GetIntegrationPointModelFromHttpResponse(httpResponse).ConfigureAwait(false);
 			integrationPointModel.SourceConfiguration.Should().BeNull();
-
 		}
 
 		[Test]
-		public void GetModel_FederatedInstanceHasNull_ReturnSourceConfiguration()
+		public async Task Get_WhenFederatedInstanceIsNotSetUp_ShouldReturnValidSourceConfiguration()
 		{
 			// Arrange
 			var model = new IntegrationPointModel()
@@ -103,12 +104,11 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			_integrationPointService.ReadIntegrationPointModel(Arg.Any<int>()).Returns(model);
 
 			// Act
-			HttpResponseMessage httpResponse = _instance.Get(_WORKSPACE_ID);
+			HttpResponseMessage httpResponse = _sut.Get(_INTEGRATION_POINT_ID);
 
 			// Assert
-			string serializedModel = httpResponse.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-			IntegrationPointModel integrationPointModel = JsonConvert.DeserializeObject<IntegrationPointModel>(serializedModel);
-			integrationPointModel.SourceConfiguration.Should().Contain("\"FederatedInstanceArtifactId\":null");
+			IntegrationPointModel integrationPointModel = await GetIntegrationPointModelFromHttpResponse(httpResponse).ConfigureAwait(false);
+			integrationPointModel.SourceConfiguration.Should().NotContain("FederatedInstanceArtifactId");
 		}
 
 		[TestCase(null)]
@@ -138,7 +138,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 				.Returns(url);
 
 			// Act
-			HttpResponseMessage response = _instance.Update(_WORKSPACE_ID, model);
+			HttpResponseMessage response = _sut.Update(_WORKSPACE_ID, model);
 
 			// Assert
 			Assert.IsNotNull(response, "Response should not be null");
@@ -173,7 +173,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			_integrationPointService.SaveIntegration(Arg.Any<IntegrationPointModel>()).Throws(expectException);
 
 			// Act
-			HttpResponseMessage response = _instance.Update(_WORKSPACE_ID, model);
+			HttpResponseMessage response = _sut.Update(_WORKSPACE_ID, model);
 
 			Assert.IsNotNull(response);
 			String actual = response.Content.ReadAsStringAsync().Result;
@@ -183,6 +183,12 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 
 			Assert.AreEqual(validationResult.MessageTexts.First(), actualResult.Errors.Single().Message);
 			Assert.AreEqual(HttpStatusCode.NotAcceptable, response.StatusCode);
+		}
+
+		private async Task<IntegrationPointModel> GetIntegrationPointModelFromHttpResponse(HttpResponseMessage httpResponse)
+		{
+			string serializedModel = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+			return JsonConvert.DeserializeObject<IntegrationPointModel>(serializedModel);
 		}
 	}
 }

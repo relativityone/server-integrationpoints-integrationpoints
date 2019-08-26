@@ -2,7 +2,7 @@
 	//Create a new communication object that talks to the host page.
 	var message = IP.frameMessaging(); // handle into the global Integration point framework
 	var savedSearchService = new SavedSearchService();
-	const ThisInstanceArtifactID = 0;
+	const thisInstanceArtifactId = 0;
 
 	ko.validation.configure({
 		registerExtenders: true,
@@ -228,7 +228,7 @@
 					type: "POST",
 					url: IP.utils.generateWebAPIURL("SearchFolder/GetStructure",
 						destinationWorkspaceId,
-						params.id != "#" ? params.id : "0", ThisInstanceArtifactID),
+						params.id !== "#" ? params.id : "0", thisInstanceArtifactId),
 					data: self.SecuredConfiguration()
 				}).then(function (result) {
 					onSuccess(result);
@@ -272,7 +272,7 @@
 				type: "POST",
 				url: IP.utils.generateWebAPIURL("SearchFolder/GetFullPathList",
 					destinationWorkspaceId,
-					folderArtifactId, ThisInstanceArtifactID),
+					folderArtifactId, thisInstanceArtifactId),
 				async: true,
 				data: self.SecuredConfiguration()
 			})
@@ -309,8 +309,7 @@
 
 			var retrieveWorkspacesPromise = IP.data.ajax({
 				type: 'POST',
-				url: IP.utils.generateWebAPIURL('WorkspaceFinder', null),
-				data: self.SecuredConfiguration(),
+				url: IP.utils.generateWebAPIURL('WorkspaceFinder'),
 				async: true
 			}).fail(function () {
 				IP.frameMessaging().dFrame.IP.message.error.raise("Unable to retrieve the workspace information. Please contact your system administrator.");
@@ -363,9 +362,6 @@
 			savedSearchPickerViewModel.open(self.SavedSearchArtifactId());
 		};
 
-		self.updateSecuredConfiguration = function () {
-			self.updateWorkspaces();
-		}
 
 		self.getDestinationProductionSets = function (targetWorkspaceId) {
 			if (targetWorkspaceId) {
@@ -386,9 +382,6 @@
 		};
 
 		var authenticateModalViewModel = new AuthenticateViewModel(
-			function () {
-				self.updateSecuredConfiguration();
-			},
 			function () {
 				self.AuthenticationFailed(true);
 				self.workspaces([]);
@@ -419,7 +412,7 @@
 
 		var createProductionSetModalViewModel = new CreateProductionSetViewModel(
 			function (newProductionSetName, positionLeft) {
-				creatingProductionSetModalViewModel.open(newProductionSetName, self.TargetWorkspaceArtifactId(), self.SecuredConfiguration(), null, positionLeft);
+				creatingProductionSetModalViewModel.open(newProductionSetName, self.TargetWorkspaceArtifactId(), self.SecuredConfiguration(), positionLeft);
 			}
 		);
 
