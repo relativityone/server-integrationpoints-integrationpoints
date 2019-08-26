@@ -103,7 +103,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 
 			// assert
 			validationResult.IsValid.Should().BeFalse();
-			validationResult.Messages.First().ShortMessage.Should().Be("Instance to instance is not supported.");
+			validationResult.Messages.First().ShortMessage.Should().Be(
+				"Federated instance transfers are currently not supported. Please update the Integration Point job to use a destination workspace within the same instance.");
 			validationResult.Messages.First().ErrorCode.Should().Be("20.014");
 		}
 
