@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
 			ClaimsPrincipal.ClaimsPrincipalSelector += () =>
 			{
 				var factory = new ClaimsPrincipalFactory();
-				return factory.CreateClaimsPrincipal2(_ADMIN_USER_ID, _testContext.Helper);
+				return factory.CreateClaimsPrincipal(_ADMIN_USER_ID, _testContext.Helper);
 			};
 
 			UserModel userModel = User.CreateUser("RIP", $"Test_User_{timeStamp}", $"RIP_Test_User_{timeStamp}@relativity.com");

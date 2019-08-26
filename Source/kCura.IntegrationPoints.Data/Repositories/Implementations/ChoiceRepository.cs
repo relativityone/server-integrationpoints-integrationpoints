@@ -31,9 +31,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			};
 
 			List<RelativityObject> choiceObjects = await _objectManager.QueryAsync(queryRequest).ConfigureAwait(false);
-
-			List<ChoiceWithParentInfoDto> choiceWithParentInfoDtos = new List<ChoiceWithParentInfoDto>();
-
+			
 			return choiceObjects.Select(choiceObject => new
 				{
 					choiceObject.ArtifactID,

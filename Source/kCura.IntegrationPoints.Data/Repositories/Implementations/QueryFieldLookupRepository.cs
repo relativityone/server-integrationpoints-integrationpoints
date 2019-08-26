@@ -44,13 +44,13 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		}
 
 		/// <inheritdoc />
-		public virtual ViewFieldInfo RunQueryForViewFieldInfo(int fieldArtifactId)
+		public virtual ViewFieldInfo RunQueryForViewFieldInfo(int fieldArtifactID)
 		{
 			IExternalServiceSimpleInstrumentation instrumentation = _instrumentationProvider.CreateSimple(
 				ExternalServiceTypes.RELATIVITY_DATA, 
 				nameof(IQueryFieldLookup), 
 				nameof(IQueryFieldLookup.GetFieldByArtifactID));
-			ViewFieldInfo viewFieldInfo = instrumentation.Execute(() => _queryFieldLookup.GetFieldByArtifactID(fieldArtifactId));
+			ViewFieldInfo viewFieldInfo = instrumentation.Execute(() => _queryFieldLookup.GetFieldByArtifactID(fieldArtifactID));
 			return viewFieldInfo;
 		}
 	}

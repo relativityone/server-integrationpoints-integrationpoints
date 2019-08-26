@@ -112,7 +112,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			ClaimsPrincipal.ClaimsPrincipalSelector += () =>
 			{
 				var factory = new ClaimsPrincipalFactory();
-				return factory.CreateClaimsPrincipal2(ADMIN_USER_ID, Helper);
+				return factory.CreateClaimsPrincipal(ADMIN_USER_ID, Helper);
 			};
 		}
 	}

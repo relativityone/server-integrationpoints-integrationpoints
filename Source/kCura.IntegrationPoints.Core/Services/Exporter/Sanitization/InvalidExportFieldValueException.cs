@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Serialization;
 using kCura.IntegrationPoints.Domain.Exceptions;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
@@ -41,6 +42,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
 
 		/// <inheritdoc />
 		public InvalidExportFieldValueException(string message, Exception innerException) : base(message, innerException) { }
+
+		private InvalidExportFieldValueException(SerializationInfo info, StreamingContext context) : base(info, context) { }
 
 		private static string GetMessage(string sourceObjectName, string sourceFieldName, string message)
 		{

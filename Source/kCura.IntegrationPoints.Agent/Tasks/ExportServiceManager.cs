@@ -17,7 +17,6 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Core.Validation;
-using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
@@ -66,7 +65,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			ISynchronizerFactory synchronizerFactory,
 			IExporterFactory exporterFactory,
 			IExportServiceObserversFactory exportServiceObserversFactory,
-			IOnBehalfOfUserClaimsPrincipalFactory onBehalfOfUserClaimsPrincipalFactory,
 			IRepositoryFactory repositoryFactory,
 			IManagerFactory managerFactory,
 			IEnumerable<IBatchStatus> statuses,
@@ -91,7 +89,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				contextContainerFactory,
 				statuses,
 				caseServiceContext,
-				onBehalfOfUserClaimsPrincipalFactory,
 				statisticsService,
 				synchronizerFactory,
 				agentValidator,
@@ -204,10 +201,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				MappedFields.ToArray(),
 				IntegrationPointDto.SourceConfiguration,
 				savedSearchID,
-				job.SubmittedBy,
 				userImportApiSettings,
 				_documentRepository,
-				Serializer,
 				_exportDataSanitizer))
 			{
 				LogPushingDocumentsStart(job);

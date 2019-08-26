@@ -56,8 +56,6 @@
     <Compile Include="Attributes\DynamicFieldAttribute.cs" />
     <Compile Include="Attributes\DynamicObjectAttribute.cs" />
     <Compile Include="ChoiceQuery.cs" />
-    <Compile Include="Contexts\IOnBehalfOfUserClaimsPrincipalFactory.cs" />
-    <Compile Include="Contexts\OnBehalfOfUserClaimsPrincipalFactory.cs" />
     <Compile Include="Converters\FieldRefExtensions.cs" />
     <Compile Include="Converters\FieldUpdateRequestDtoExtensions.cs" />
     <Compile Include="Converters\FieldValuePairExtensions.cs" />

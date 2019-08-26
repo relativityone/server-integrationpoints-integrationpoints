@@ -16,7 +16,6 @@ using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -79,7 +78,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			ISynchronizerFactory synchronizerFactory = Container.Resolve<ISynchronizerFactory>();
 			IExporterFactory exporterFactory = Container.Resolve<IExporterFactory>();
 			IExportServiceObserversFactory exportServiceObserversFactory= Container.Resolve<IExportServiceObserversFactory>();
-			IOnBehalfOfUserClaimsPrincipalFactory onBehalfOfUserClaimsPrincipalFactory = Container.Resolve<IOnBehalfOfUserClaimsPrincipalFactory>();
 			IRepositoryFactory repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			IManagerFactory managerFactory = Container.Resolve<IManagerFactory>();
 			ISerializer serializer = Container.Resolve<ISerializer>();
@@ -104,12 +102,14 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				dateTimeHelper);
 
 
-			_exportManager = new ExportServiceManager(Helper, helperFactory,
-				_caseContext, contextContainerFactory,
+			_exportManager = new ExportServiceManager(
+				Helper, 
+				helperFactory,
+				_caseContext, 
+				contextContainerFactory,
 				synchronizerFactory,
 				exporterFactory,
 				exportServiceObserversFactory,
-				onBehalfOfUserClaimsPrincipalFactory,
 				repositoryFactory,
 				managerFactory,
 				new[] { jobHistoryUpdater },
