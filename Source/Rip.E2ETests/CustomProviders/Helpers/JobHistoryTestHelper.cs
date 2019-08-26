@@ -11,6 +11,8 @@ namespace Rip.E2ETests.CustomProviders.Helpers
 {
 	internal static class JobHistoryTestHelper
 	{
+		private static readonly TimeSpan _delayBetweenChecks = TimeSpan.FromMilliseconds(500);
+
 		public static Task<JobHistory> GetCompletedJobHistoryAsync(
 			IRelativityObjectManager objectManager,
 			int integrationPointID,
@@ -43,10 +45,16 @@ namespace Rip.E2ETests.CustomProviders.Helpers
 				}
 
 				JobHistory jobHistory = await GetSingleJobHistoryForIntegrationPointAsync(objectManager, integrationPointID).ConfigureAwait(false);
-				if (jobCompletedStatuses.Contains(jobHistory.JobStatus.Name))
+
+				string jobStatusName = jobHistory?.JobStatus?.Name; // jobHistory or jobHistoryStatus might not exists yet
+				if (jobCompletedStatuses.Contains(jobStatusName))
 				{
 					return jobHistory;
 				}
+
+				await Task
+					.Delay(_delayBetweenChecks, cancellationToken)
+					.ConfigureAwait(false);
 			}
 		}
 
