@@ -206,10 +206,6 @@ namespace kCura.IntegrationPoints.RelativitySync
 			containerBuilder.RegisterInstance(new ValidationExecutorFactory(_ripContainer)).As<IValidationExecutorFactory>();
 			containerBuilder.RegisterInstance(new RdoRepository(_ripContainer)).As<IRdoRepository>();
 
-			containerBuilder.Register(context => new PermissionsCheck(_ripContainer, context.Resolve<IValidationExecutorFactory>(), context.Resolve<IRdoRepository>()))
-				.As<IExecutor<IPermissionsCheckConfiguration>>()
-				.As<IExecutionConstrains<IPermissionsCheckConfiguration>>();
-
 			containerBuilder.RegisterType<DataDestinationFinalization>()
 				.As<IExecutor<IDataDestinationFinalizationConfiguration>>()
 				.As<IExecutionConstrains<IDataDestinationFinalizationConfiguration>>();

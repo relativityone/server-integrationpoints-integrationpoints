@@ -91,6 +91,8 @@ namespace kCura.IntegrationPoints.RelativitySync
 		public int DestinationWorkspaceArtifactId { get; }
 		public int SavedSearchArtifactId => _savedSearchArtifactId.Value;
 		public int DestinationFolderArtifactId { get; set; }
+		public int IntegrationPointArtifactId { get; }
+		public int SourceProviderArtifactId { get; }
 		public ImportOverwriteMode ImportOverwriteMode { get; set; }
 		public FieldOverlayBehavior FieldOverlayBehavior { get; set; }
 		public DestinationFolderStructureBehavior DestinationFolderStructureBehavior { get; set; }
