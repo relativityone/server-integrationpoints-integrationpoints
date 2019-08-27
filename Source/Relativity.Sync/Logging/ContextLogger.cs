@@ -1,89 +1,110 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Relativity.Sync.Logging
 {
 	internal sealed class ContextLogger : ISyncLog
 	{
-		private readonly CorrelationId _id;
+		private readonly SyncJobParameters _jobParameters;
 		private readonly ISyncLog _logger;
 
-		public ContextLogger(CorrelationId id, ISyncLog logger)
+		public ContextLogger(SyncJobParameters jobParameters, ISyncLog logger)
 		{
-			_id = id;
+			_jobParameters = jobParameters;
 			_logger = logger;
 		}
 
 		public void LogVerbose(string messageTemplate, params object[] propertyValues)
 		{
-			_logger.LogVerbose(FormatMessage(messageTemplate), ModifyPropertyValues(propertyValues));
+			InvokeWithJobInfo(_logger.LogVerbose, messageTemplate, propertyValues);
 		}
 
 		public void LogVerbose(Exception exception, string messageTemplate, params object[] propertyValues)
 		{
-			_logger.LogVerbose(exception, FormatMessage(messageTemplate), ModifyPropertyValues(propertyValues));
+			InvokeWithJobInfo(_logger.LogVerbose, exception, messageTemplate, propertyValues);
 		}
 
 		public void LogDebug(string messageTemplate, params object[] propertyValues)
 		{
-			_logger.LogDebug(FormatMessage(messageTemplate), ModifyPropertyValues(propertyValues));
+			InvokeWithJobInfo(_logger.LogDebug, messageTemplate, propertyValues);
 		}
 
 		public void LogDebug(Exception exception, string messageTemplate, params object[] propertyValues)
 		{
-			_logger.LogDebug(exception, FormatMessage(messageTemplate), ModifyPropertyValues(propertyValues));
+			InvokeWithJobInfo(_logger.LogDebug, exception, messageTemplate, propertyValues);
 		}
 
 		public void LogInformation(string messageTemplate, params object[] propertyValues)
 		{
-			_logger.LogInformation(FormatMessage(messageTemplate), ModifyPropertyValues(propertyValues));
+			InvokeWithJobInfo(_logger.LogInformation, messageTemplate, propertyValues);
 		}
 
 		public void LogInformation(Exception exception, string messageTemplate, params object[] propertyValues)
 		{
-			_logger.LogInformation(exception, FormatMessage(messageTemplate), ModifyPropertyValues(propertyValues));
+			InvokeWithJobInfo(_logger.LogInformation, exception, messageTemplate, propertyValues);
 		}
 
 		public void LogWarning(string messageTemplate, params object[] propertyValues)
 		{
-			_logger.LogWarning(FormatMessage(messageTemplate), ModifyPropertyValues(propertyValues));
+			InvokeWithJobInfo(_logger.LogWarning, messageTemplate, propertyValues);
 		}
 
 		public void LogWarning(Exception exception, string messageTemplate, params object[] propertyValues)
 		{
-			_logger.LogWarning(exception, FormatMessage(messageTemplate), ModifyPropertyValues(propertyValues));
+			InvokeWithJobInfo(_logger.LogWarning, exception, messageTemplate, propertyValues);
 		}
 
 		public void LogError(string messageTemplate, params object[] propertyValues)
 		{
-			_logger.LogError(FormatMessage(messageTemplate), ModifyPropertyValues(propertyValues));
+			InvokeWithJobInfo(_logger.LogError, messageTemplate, propertyValues);
 		}
 
 		public void LogError(Exception exception, string messageTemplate, params object[] propertyValues)
 		{
-			_logger.LogError(exception, FormatMessage(messageTemplate), ModifyPropertyValues(propertyValues));
+			InvokeWithJobInfo(_logger.LogError, exception, messageTemplate, propertyValues);
 		}
 
 		public void LogFatal(string messageTemplate, params object[] propertyValues)
 		{
-			_logger.LogFatal(FormatMessage(messageTemplate), ModifyPropertyValues(propertyValues));
+			InvokeWithJobInfo(_logger.LogFatal, messageTemplate, propertyValues);
 		}
 
 		public void LogFatal(Exception exception, string messageTemplate, params object[] propertyValues)
 		{
-			_logger.LogFatal(exception, FormatMessage(messageTemplate), ModifyPropertyValues(propertyValues));
+			InvokeWithJobInfo(_logger.LogFatal, exception, messageTemplate, propertyValues);
 		}
 
-		private static string FormatMessage(string messageTemplate)
+		private void InvokeWithJobInfo(Action<Exception, string, object[]> logAction, Exception exception, string messageTemplate, object[] propertyValues)
 		{
-			return $"{{key}} {messageTemplate}";
+			string messageTemplateWithJobInfo = ModifyTemplate(messageTemplate);
+			object[] propertyValuesExtendedByJobParams = AddJobParamtersToPropertyValues(propertyValues);
+			logAction(exception, messageTemplateWithJobInfo, propertyValuesExtendedByJobParams);
 		}
 
-		private object[] ModifyPropertyValues(params object[] propertyValues)
+		private void InvokeWithJobInfo(Action<string, object[]> logAction, string messageTemplate, object[] propertyValues)
 		{
-			object[] newValues = new object[propertyValues.Length + 1];
-			newValues[0] = _id.Value;
-			propertyValues.CopyTo(newValues, 1);
-			return newValues;
+			string messageTemplateWithJobInfo = ModifyTemplate(messageTemplate);
+			object[] propertyValuesExtendedByJobParams = AddJobParamtersToPropertyValues(propertyValues);
+			logAction(messageTemplateWithJobInfo, propertyValuesExtendedByJobParams);
+		}
+
+		private object[] AddJobParamtersToPropertyValues(object[] propertyValues)
+		{
+			List<object> properties = new List<object>();
+			properties.AddRange(propertyValues);
+			properties.AddRange(new object[]
+			{
+				_jobParameters.CorrelationId,
+				_jobParameters.SyncConfigurationArtifactId
+			});
+			return properties.ToArray();
+		}
+
+		private static string ModifyTemplate(string messageTemplate)
+		{
+			return messageTemplate += " Sync job properties: " +
+				$"{nameof(SyncJobParameters.CorrelationId)}: {{{nameof(SyncJobParameters.CorrelationId)}}} " +
+				$"{nameof(SyncJobParameters.SyncConfigurationArtifactId)}: {{{nameof(SyncJobParameters.SyncConfigurationArtifactId)}}} ";
 		}
 	}
 }

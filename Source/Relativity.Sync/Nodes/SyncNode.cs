@@ -33,7 +33,7 @@ namespace Relativity.Sync.Nodes
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, "Uncaught exception when checking whether step '{step}' should execute.", Id);
+				_logger.LogError(ex, "Uncaught exception when checking whether step '{stepName}' should execute.", Id);
 				context.Subject.Progress.ReportFailure(Id, ParallelGroupName, ex);
 				throw;
 			}

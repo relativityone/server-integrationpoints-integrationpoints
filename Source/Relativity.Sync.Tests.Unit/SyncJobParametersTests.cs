@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using FluentAssertions;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
@@ -44,7 +44,7 @@ namespace Relativity.Sync.Tests.Unit
 			SyncJobParameters syncJobParameters = new SyncJobParameters(jobId, 1, _importSettingsDto);
 
 			// ASSERT
-			syncJobParameters.JobId.Should().Be(jobId);
+			syncJobParameters.SyncConfigurationArtifactId.Should().Be(jobId);
 		}
 
 		[Test]

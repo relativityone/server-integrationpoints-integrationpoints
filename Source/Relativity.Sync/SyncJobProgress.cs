@@ -19,7 +19,7 @@ namespace Relativity.Sync
 			ISyncLog logger)
 		{
 			_sourceWorkspaceArtifactId = jobParameters.WorkspaceId;
-			_syncConfigurationArtifactId = jobParameters.JobId;
+			_syncConfigurationArtifactId = jobParameters.SyncConfigurationArtifactId;
 			_progressRepository = progressRepository;
 			_counter = counter;
 			_logger = logger;

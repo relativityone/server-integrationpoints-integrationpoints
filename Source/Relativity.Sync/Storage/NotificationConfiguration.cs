@@ -39,6 +39,6 @@ namespace Relativity.Sync.Storage
 
 		public string SourceWorkspaceTag => _cache.GetFieldValue<string>(SourceWorkspaceTagNameGuid);
 
-		public int SyncConfigurationArtifactId => _syncJobParameters.JobId;
+		public int SyncConfigurationArtifactId => _syncJobParameters.SyncConfigurationArtifactId;
 	}
 }

@@ -25,7 +25,7 @@ namespace Relativity.Sync
 			containerBuilder.RegisterType<SyncJob>().Named(syncJob, typeof(ISyncJob));
 			containerBuilder.RegisterDecorator<ISyncJob>((context, job) => new SyncJobWithUnhandledExceptionLogging(job, context.Resolve<IAppDomain>(), context.Resolve<ISyncLog>()), syncJob);
 
-			containerBuilder.RegisterInstance(new ContextLogger(correlationId, logger)).As<ISyncLog>();
+			containerBuilder.RegisterInstance(new ContextLogger(syncJobParameters, logger)).As<ISyncLog>();
 			containerBuilder.RegisterInstance(syncJobParameters).As<SyncJobParameters>();
 			containerBuilder.RegisterInstance(correlationId).As<CorrelationId>();
 			containerBuilder.RegisterInstance(configuration).As<SyncJobExecutionConfiguration>();

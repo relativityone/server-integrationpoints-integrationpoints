@@ -5,6 +5,7 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Logging;
 
 namespace Relativity.Sync.Tests.Unit
 {
@@ -24,7 +25,7 @@ namespace Relativity.Sync.Tests.Unit
 			_executionConstrains = new Mock<IExecutionConstrains<IConfiguration>>();
 			_executor = new Mock<IExecutor<IConfiguration>>();
 
-			_command = new Command<IConfiguration>(_configuration, _executionConstrains.Object, _executor.Object);
+			_command = new Command<IConfiguration>(_configuration, _executionConstrains.Object, _executor.Object, new EmptyLogger());
 		}
 
 		[Test]
