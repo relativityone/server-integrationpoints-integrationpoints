@@ -4,11 +4,6 @@ namespace kCura.IntegrationPoints.Web.Controllers
 {
 	public class ModalsController : Controller
 	{
-		public ActionResult AuthenticationModalView()
-		{
-			return PartialView();
-		}
-
 		public ActionResult ExportRenamedFieldsView()
 		{
 			return PartialView();
