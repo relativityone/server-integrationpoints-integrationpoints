@@ -106,11 +106,10 @@ namespace kCura.IntegrationPoints.Agent
 
 						try
 						{
-							var jobHistoryHelper = new JobHistoryHelper();
 							IExtendedJob syncJob = ripContainerForSync.Resolve<IExtendedJob>();
 							if (syncJob != null)
 							{
-								jobHistoryHelper.MarkJobAsFailedAsync(syncJob, e, _helper).ConfigureAwait(false).GetAwaiter().GetResult();
+								JobHistoryHelper.MarkJobAsFailedAsync(syncJob, e, _helper).ConfigureAwait(false).GetAwaiter().GetResult();
 							}
 						}
 						catch (Exception ie)

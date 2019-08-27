@@ -106,16 +106,6 @@
 			return array.join('/');
 		};
 
-		utils.generateCredentialsData = function (federatedInstanceArtifactId, clientId, clientSecret) {
-			if (federatedInstanceArtifactId == null) {
-				return null;
-			}
-			return JSON.stringify({
-				ClientId: clientId,
-				ClientSecret: clientSecret
-			});
-		};
-
 		utils.getParameterByName = function (name, w) {
 			w = w || window;
 			name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");

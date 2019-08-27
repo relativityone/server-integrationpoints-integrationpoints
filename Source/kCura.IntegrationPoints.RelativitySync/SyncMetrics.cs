@@ -44,10 +44,12 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 				_apm.TimedOperation(RELATIVITY_SYNC_APM_METRIC_NAME, totalElapsedTimeMs, correlationID: correlationId.ToString(), customData: _data);
 			}
+#pragma warning disable CA1031
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "Could not send metrics data for job with correlation id {CorrelationId}.", correlationId);
 			}
+#pragma warning restore CA1031
 		}
 	}
 }

@@ -114,14 +114,13 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			updatedDestinationWorkspaceDto.DestinationWorkspaceName.Should().Be(expectedWorkspaceName);
 		}
 
-		[IdentifiedTestCase("78ae6365-1ea7-420b-bb82-42d1e59c6b40", null)]
-		[IdentifiedTestCase("1556dd98-4abf-424e-8a20-e9b1301422d8", 1000)]
-		public void Link_JobHistoryErrorToDestinationWorkspace_Success(int? federatedInstanceArtifactId)
+		[IdentifiedTest("78ae6365-1ea7-420b-bb82-42d1e59c6b40")]
+		public void Link_JobHistoryErrorToDestinationWorkspace_Success()
 		{
 			//Arrange
 			var integrationModel = new IntegrationPointModel
 			{
-				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly, federatedInstanceArtifactId),
+				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = RelativityDestinationProviderArtifactId,
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
