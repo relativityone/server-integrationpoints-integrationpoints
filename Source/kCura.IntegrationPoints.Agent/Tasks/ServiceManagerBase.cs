@@ -13,7 +13,6 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
@@ -45,7 +44,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		protected List<IBatchStatus> BatchStatus { get; }
 		protected ICaseServiceContext CaseServiceContext { get; }
 		protected IIntegrationPointRepository IntegrationPointRepository { get; }
-		protected IOnBehalfOfUserClaimsPrincipalFactory OnBehalfOfUserClaimsPrincipalFactory { get; }
 		protected JobStatisticsService StatisticsService { get; }
 		protected ISynchronizerFactory SynchronizerFactory { get; }
 		protected IJobStopManager JobStopManager { get; set; }
@@ -64,7 +62,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IContextContainerFactory contextContainerFactory,
 			IEnumerable<IBatchStatus> statuses,
 			ICaseServiceContext caseServiceContext,
-			IOnBehalfOfUserClaimsPrincipalFactory onBehalfOfUserClaimsPrincipalFactory,
 			JobStatisticsService statisticsService,
 			ISynchronizerFactory synchronizerFactory,
 			IAgentValidator agentValidator,
@@ -83,7 +80,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			BatchStatus = statuses.ToList();
 			CaseServiceContext = caseServiceContext;
 			IntegrationPointRepository = integrationPointRepository;
-			OnBehalfOfUserClaimsPrincipalFactory = onBehalfOfUserClaimsPrincipalFactory;
 			StatisticsService = statisticsService;
 			SynchronizerFactory = synchronizerFactory;
 			Result = new TaskResult();

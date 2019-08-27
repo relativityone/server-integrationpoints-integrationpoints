@@ -13,7 +13,6 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
@@ -67,7 +66,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			ICaseServiceContext caseContext = Substitute.For<ICaseServiceContext>();
 			IContextContainerFactory contextContainerFactory = Substitute.For<IContextContainerFactory>();
 			ISynchronizerFactory synchronizerFactory = Substitute.For<ISynchronizerFactory>();
-			IOnBehalfOfUserClaimsPrincipalFactory claimPrincipleFactory = Substitute.For<IOnBehalfOfUserClaimsPrincipalFactory>();
 			IManagerFactory managerFactory = Substitute.For<IManagerFactory>();
 			IIntegrationPointRepository integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
 
@@ -151,13 +149,25 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			serializer.Deserialize<TaskParameters>(job.JobDetails)
 				.Returns(_taskParameters);
 			jobHistoryService.GetRdo(Arg.Is<Guid>( guid => guid == _taskParameters.BatchInstance)).Returns(jobHistory);
-			_instance = new ImportServiceManager(helper, caseContext, contextContainerFactory, synchronizerFactory,
-				claimPrincipleFactory, managerFactory, batchStatuses, serializer, jobService, scheduleRuleFactory,
-				jobHistoryService, _jobHistoryErrorService, jobStatisticsService, dataReaderFactory, importFileLocationService,
-				agentValidator, integrationPointRepository);
+			_instance = new ImportServiceManager(
+				helper, 
+				caseContext, 
+				contextContainerFactory, 
+				synchronizerFactory,
+				managerFactory, 
+				batchStatuses, 
+				serializer, 
+				jobService, 
+				scheduleRuleFactory,
+				jobHistoryService, 
+				_jobHistoryErrorService, 
+				jobStatisticsService, 
+				dataReaderFactory, 
+				importFileLocationService,
+				agentValidator, 
+				integrationPointRepository);
 		}
-
-
+		
 		[Test]
 		public void Execute_GoldFlow_CreateDataReaderAndPassItToSynchronizer()
 		{

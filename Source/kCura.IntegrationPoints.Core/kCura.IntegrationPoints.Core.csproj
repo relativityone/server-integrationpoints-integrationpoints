@@ -73,6 +73,7 @@
     <Compile Include="BatchStatusCommands\Implementations\TargetDocumentsTaggingManagerFactory.cs" />
     <Compile Include="BatchStatusCommands\Implementations\TempTableReader.cs" />
     <Compile Include="Extensions\DictionaryExtensions.cs" />
+    <Compile Include="Installers\Registrations\ExportSanitizerRegistration.cs" />
     <Compile Include="Interfaces\TextSanitizer\SanitizationResult.cs" />
     <Compile Include="Interfaces\TextSanitizer\ITextSanitizer.cs" />
     <Compile Include="Factories\IExportServiceObserversFactory.cs" />
@@ -88,6 +89,18 @@
     <Compile Include="Provider\IRipProviderUninstaller.cs" />
     <Compile Include="Provider\RipProviderInstaller.cs" />
     <Compile Include="Provider\RipProviderUninstaller.cs" />
+    <Compile Include="Services\Exporter\Sanitization\ChoiceTreeToStringConverter.cs" />
+    <Compile Include="Services\Exporter\Sanitization\ExportDataSanitizer.cs" />
+    <Compile Include="Services\Exporter\Sanitization\IChoiceTreeToStringConverter.cs" />
+    <Compile Include="Services\Exporter\Sanitization\IExportDataSanitizer.cs" />
+    <Compile Include="Services\Exporter\Sanitization\IExportFieldSanitizer.cs" />
+    <Compile Include="Services\Exporter\Sanitization\InvalidExportFieldValueException.cs" />
+    <Compile Include="Services\Exporter\Sanitization\ISanitizationDeserializer.cs" />
+    <Compile Include="Services\Exporter\Sanitization\MultipleChoiceFieldSanitizer.cs" />
+    <Compile Include="Services\Exporter\Sanitization\MultipleObjectFieldSanitizer.cs" />
+    <Compile Include="Services\Exporter\Sanitization\SanitizationDeserializer.cs" />
+    <Compile Include="Services\Exporter\Sanitization\SingleChoiceFieldSanitizer.cs" />
+    <Compile Include="Services\Exporter\Sanitization\SingleObjectFieldSanitizer.cs" />
     <Compile Include="Services\ISecretStoreMigrationService.cs" />
     <Compile Include="Services\SecretStoreMigrationService.cs" />
     <Compile Include="Services\SourceTypes\SourceType.cs" />

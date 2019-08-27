@@ -1,5 +1,4 @@
-﻿using kCura.IntegrationPoints.Data.Repositories.Implementations;
-using Relativity;
+﻿using Relativity;
 
 namespace kCura.IntegrationPoints.Data.Repositories
 {
@@ -8,23 +7,23 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <summary>
 		/// Returns cached ViewFieldInfo object.
 		/// </summary>
-		/// <param name="fieldArtifactId"></param>
+		/// <param name="fieldArtifactID"></param>
 		/// <returns></returns>
-		ViewFieldInfo GetFieldByArtifactId(int fieldArtifactId);
+		ViewFieldInfo GetFieldByArtifactID(int fieldArtifactID);
 
 		/// <summary>
 		/// Returns cached ViewField type as string.
 		/// </summary>
-		/// <param name="fieldArtifactId"></param>
+		/// <param name="fieldArtifactID"></param>
 		/// <returns></returns>
-		string GetFieldTypeByArtifactId(int fieldArtifactId);
+		FieldTypeHelper.FieldType GetFieldTypeByArtifactID(int fieldArtifactID);
 
 		/// <summary>
-		/// Returns uncached ViewFieldInfoFieldTypeExtender.
+		/// Returns uncached ViewFieldInfo.
 		/// </summary>
-		/// <param name="fieldArtifactId"></param>
+		/// <param name="fieldArtifactID"></param>
 		/// <returns></returns>
-		ViewFieldInfoFieldTypeExtender RunQueryForViewFieldInfo(int fieldArtifactId);
+		ViewFieldInfo RunQueryForViewFieldInfo(int fieldArtifactID);
 
 	}
 }

@@ -121,11 +121,30 @@ namespace kCura.IntegrationPoints.Data.Tests.Installers
 		}
 
 		[Test]
+		public void ChoiceRepository_ShouldBeRegisteredWithProperLifestyle()
+		{
+			// assert
+			_sut.Should()
+				.HaveRegisteredMultipleComponents<IChoiceRepository>()
+				.And.AllWithLifestyle(LifestyleType.Transient);
+		}
+
+		[Test]
 		public void DocumentRepository_ShouldBeRegisteredWithProperImplementation()
 		{
 			// assert
 			_sut.Should()
 				.HaveRegisteredProperImplementation<IDocumentRepository, KeplerDocumentRepository>();
+		}
+
+		[Test]
+		public void ChoiceRepository_ShouldBeRegisteredWithProperImplementation()
+		{
+			// assert
+			_sut.Should()
+				.HaveRegisteredMultipleComponents<IChoiceRepository>()
+				.And.OneOfThemWithImplementation<ChoiceRepository>()
+				.And.OneOfThemWithImplementation<CachedChoiceRepository>();
 		}
 
 		[Test]
@@ -137,6 +156,17 @@ namespace kCura.IntegrationPoints.Data.Tests.Installers
 			// assert
 			_sut.Should()
 				.ResolveWithoutThrowing<IDocumentRepository>();
+		}
+
+		[Test]
+		public void ChoiceRepository_ShouldBeResolvedWithoutThrowing()
+		{
+			// arrange
+			RegisterDependencies(_sut);
+
+			// assert
+			_sut.Should()
+				.ResolveImplementationWithoutThrowing<IChoiceRepository, CachedChoiceRepository>();
 		}
 
 		[Test]
