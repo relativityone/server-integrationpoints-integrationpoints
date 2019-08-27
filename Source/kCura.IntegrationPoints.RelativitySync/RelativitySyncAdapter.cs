@@ -15,9 +15,9 @@ using Relativity.Telemetry.APM;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
+#pragma warning disable CA1031
 	public sealed class RelativitySyncAdapter
 	{
-		private readonly JobHistoryHelper _jobHistoryHelper;
 		private readonly IExtendedJob _job;
 		private readonly IWindsorContainer _ripContainer;
 		private readonly IAPILog _logger;
@@ -27,7 +27,6 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 		public RelativitySyncAdapter(IExtendedJob job, IWindsorContainer ripContainer, IAPILog logger, IAPM apmMetrics, IntegrationPointToSyncConverter converter)
 		{
-			_jobHistoryHelper = new JobHistoryHelper();
 			_job = job;
 			_ripContainer = ripContainer;
 			_logger = logger;
@@ -94,7 +93,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			IHelper helper = _ripContainer.Resolve<IHelper>();
 			try
 			{
-				await _jobHistoryHelper.MarkJobAsValidationFailedAsync(ex, _job, helper).ConfigureAwait(false);
+				await JobHistoryHelper.MarkJobAsValidationFailedAsync(ex, _job, helper).ConfigureAwait(false);
 			}
 			catch (Exception e)
 			{
@@ -107,7 +106,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			IHelper helper = _ripContainer.Resolve<IHelper>();
 			try
 			{
-				await _jobHistoryHelper.UpdateJobStatusAsync(status, _job, helper).ConfigureAwait(false);
+				await JobHistoryHelper.UpdateJobStatusAsync(status, _job, helper).ConfigureAwait(false);
 			}
 			catch (Exception e)
 			{
@@ -120,7 +119,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			IHelper helper = _ripContainer.Resolve<IHelper>();
 			try
 			{
-				await _jobHistoryHelper.MarkJobAsStartedAsync(_job, helper).ConfigureAwait(false);
+				await JobHistoryHelper.MarkJobAsStartedAsync(_job, helper).ConfigureAwait(false);
 			}
 			catch (Exception e)
 			{
@@ -133,7 +132,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			IHelper helper = _ripContainer.Resolve<IHelper>();
 			try
 			{
-				await _jobHistoryHelper.MarkJobAsCompletedAsync(_job, helper).ConfigureAwait(false);
+				await JobHistoryHelper.MarkJobAsCompletedAsync(_job, helper).ConfigureAwait(false);
 			}
 			catch (Exception e)
 			{
@@ -146,7 +145,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			IHelper helper = _ripContainer.Resolve<IHelper>();
 			try
 			{
-				await _jobHistoryHelper.MarkJobAsStoppedAsync(_job, helper).ConfigureAwait(false);
+				await JobHistoryHelper.MarkJobAsStoppedAsync(_job, helper).ConfigureAwait(false);
 			}
 			catch (Exception e)
 			{
@@ -159,7 +158,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			IHelper helper = _ripContainer.Resolve<IHelper>();
 			try
 			{
-				await _jobHistoryHelper.MarkJobAsFailedAsync(_job, exception, helper).ConfigureAwait(false);
+				await JobHistoryHelper.MarkJobAsFailedAsync(_job, exception, helper).ConfigureAwait(false);
 			}
 			catch (Exception e)
 			{
@@ -226,4 +225,5 @@ namespace kCura.IntegrationPoints.RelativitySync
 			return container;
 		}
 	}
+#pragma warning restore CA1031
 }

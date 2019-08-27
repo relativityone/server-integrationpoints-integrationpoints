@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Globalization;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data;
 using Relativity.API;
@@ -10,9 +10,9 @@ using Relativity.Sync.Executors.Validation;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
-	internal sealed class JobHistoryHelper
+	internal static class JobHistoryHelper
 	{
-		public async Task UpdateJobStatusAsync(string syncStatus, IExtendedJob job, IHelper helper)
+		public static async Task UpdateJobStatusAsync(string syncStatus, IExtendedJob job, IHelper helper)
 		{
 			using (IObjectManager manager = helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 		}
 
-		public async Task MarkJobAsValidationFailedAsync(ValidationException ex, IExtendedJob job, IHelper helper)
+		public static async Task MarkJobAsValidationFailedAsync(ValidationException ex, IExtendedJob job, IHelper helper)
 		{
 			using (IObjectManager manager = helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 		}
 
-		public async Task MarkJobAsStoppedAsync(IExtendedJob job, IHelper helper)
+		public static async Task MarkJobAsStoppedAsync(IExtendedJob job, IHelper helper)
 		{
 			using (IObjectManager manager = helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
@@ -70,7 +70,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 		}
 
-		public async Task MarkJobAsFailedAsync(IExtendedJob job, IHelper helper)
+		public static async Task MarkJobAsFailedAsync(IExtendedJob job, IHelper helper)
 		{
 			using (IObjectManager manager = helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
@@ -78,7 +78,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 		}
 
-		public async Task MarkJobAsFailedAsync(IExtendedJob job, Exception e, IHelper helper)
+		public static async Task MarkJobAsFailedAsync(IExtendedJob job, Exception e, IHelper helper)
 		{
 			using (IObjectManager manager = helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
@@ -87,7 +87,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 		}
 
-		public async Task MarkJobAsStartedAsync(IExtendedJob job, IHelper helper)
+		public static async Task MarkJobAsStartedAsync(IExtendedJob job, IHelper helper)
 		{
 			using (IObjectManager manager = helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
@@ -104,7 +104,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 						new FieldRefValuePair
 						{
 							Field = JobIdRef(),
-							Value = job.JobId.ToString()
+							Value = job.JobId.ToString(CultureInfo.InvariantCulture)
 						}
 					}
 				};
@@ -112,7 +112,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 		}
 
-		public async Task MarkJobAsCompletedAsync(IExtendedJob job, IHelper helper)
+		public static async Task MarkJobAsCompletedAsync(IExtendedJob job, IHelper helper)
 		{
 			using (IObjectManager manager = helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
@@ -311,7 +311,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			};
 		}
 
-		private async Task AddJobHistoryErrorAsync(IExtendedJob job, IObjectManager manager, Exception e)
+		private static async Task AddJobHistoryErrorAsync(IExtendedJob job, IObjectManager manager, Exception e)
 		{
 			CreateRequest createRequest = new CreateRequest
 			{
@@ -330,7 +330,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			};
 		}
 
-		private IEnumerable<FieldRefValuePair> JobHistoryErrorFields(Exception e)
+		private static IEnumerable<FieldRefValuePair> JobHistoryErrorFields(Exception e)
 		{
 			return new[]
 			{
@@ -342,7 +342,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			};
 		}
 
-		private FieldRefValuePair ErrorField(Exception e)
+		private static FieldRefValuePair ErrorField(Exception e)
 		{
 			return new FieldRefValuePair
 			{
@@ -354,7 +354,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			};
 		}
 
-		private FieldRefValuePair ErrorStatus()
+		private static FieldRefValuePair ErrorStatus()
 		{
 			return new FieldRefValuePair
 			{
@@ -369,7 +369,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			};
 		}
 
-		private FieldRefValuePair ErrorType()
+		private static FieldRefValuePair ErrorType()
 		{
 			return new FieldRefValuePair
 			{
@@ -384,7 +384,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			};
 		}
 
-		private FieldRefValuePair StackTrace(Exception e)
+		private static FieldRefValuePair StackTrace(Exception e)
 		{
 			return new FieldRefValuePair
 			{
@@ -396,7 +396,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			};
 		}
 
-		private FieldRefValuePair Name()
+		private static FieldRefValuePair Name()
 		{
 			return new FieldRefValuePair
 			{
