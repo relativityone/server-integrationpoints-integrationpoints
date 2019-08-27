@@ -1,7 +1,6 @@
 ﻿using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.Storage;
 using System;
 using System.Collections.Generic;
@@ -18,7 +17,6 @@ namespace kCura.IntegrationPoints.RelativitySync
 		private int? _sourceJobTagArtifactId;
 		private int? _sourceWorkspaceTagArtifactId;
 		private int? _destinationWorkspaceTagArtifactId;
-		private Guid? _exportRunId;
 
 		public SyncConfiguration(int submittedBy, SourceConfiguration sourceConfiguration, ImportSettings destinationConfiguration, List<string> emailRecipients, ImportSettingsDto importSettings)
 		{
@@ -41,7 +39,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 		public string FolderPathSourceFieldName { get; set; }
 
-		public bool IsSnapshotCreated => _exportRunId.HasValue;
+		public bool IsSnapshotCreated => false;
 
 		public int DataDestinationArtifactId { get; set; }
 
@@ -110,7 +108,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 		public int TotalRecordsCount { get; private set; }
 		public int BatchSize => int.MaxValue;
 
-		public Guid ExportRunId => _exportRunId.Value;
+		public Guid ExportRunId => throw new InvalidOperationException();
 
 		public int ExecutingUserId { get; private set; }
 
