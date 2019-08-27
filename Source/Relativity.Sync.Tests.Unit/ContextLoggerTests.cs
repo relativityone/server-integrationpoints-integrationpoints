@@ -23,10 +23,7 @@ namespace Relativity.Sync.Tests.Unit
 		private const int _PARAM1 = 1;
 
 		private const string _MESSAGE = "message template {param1}";
-		private const string _EXPECTED_MESSAGE = "message template {param1} " +
-			"Sync job properties: CorrelationId: {CorrelationId} SyncConfigurationArtifactId:" +
-			" {SyncConfigurationArtifactId} WorkspaceId: {WorkspaceId}" +
-			" IntegrationPointArtifactId: {IntegrationPointArtifactId}";
+		private const string _EXPECTED_MESSAGE = "message template {param1} Sync job properties: CorrelationId: {CorrelationId} SyncConfigurationArtifactId: {SyncConfigurationArtifactId} ";
 		private readonly Exception _exception = new IOException();
 
 		private readonly object[] _params = { _PARAM1 };
@@ -44,9 +41,7 @@ namespace Relativity.Sync.Tests.Unit
 			{
 				_PARAM1,
 				_syncJobParameters.CorrelationId,
-				_syncJobParameters.SyncConfigurationArtifactId,
-				_syncJobParameters.WorkspaceId,
-				_syncJobParameters.IntegrationPointArtifactId
+				_syncJobParameters.SyncConfigurationArtifactId
 			};
 			_instance = new ContextLogger(_syncJobParameters, _logger.Object);
 		}

@@ -95,9 +95,7 @@ namespace Relativity.Sync.Logging
 			properties.AddRange(new object[]
 			{
 				_jobParameters.CorrelationId,
-				_jobParameters.SyncConfigurationArtifactId,
-				_jobParameters.WorkspaceId,
-				_jobParameters.IntegrationPointArtifactId
+				_jobParameters.SyncConfigurationArtifactId
 			});
 			return properties.ToArray();
 		}
@@ -106,9 +104,7 @@ namespace Relativity.Sync.Logging
 		{
 			return messageTemplate += " Sync job properties: " +
 				$"{nameof(SyncJobParameters.CorrelationId)}: {{{nameof(SyncJobParameters.CorrelationId)}}} " +
-				$"{nameof(SyncJobParameters.SyncConfigurationArtifactId)}: {{{nameof(SyncJobParameters.SyncConfigurationArtifactId)}}} " +
-				$"{nameof(SyncJobParameters.WorkspaceId)}: {{{nameof(SyncJobParameters.WorkspaceId)}}} " +
-				$"{nameof(SyncJobParameters.IntegrationPointArtifactId)}: {{{nameof(SyncJobParameters.IntegrationPointArtifactId)}}}";
+				$"{nameof(SyncJobParameters.SyncConfigurationArtifactId)}: {{{nameof(SyncJobParameters.SyncConfigurationArtifactId)}}} ";
 		}
 	}
 }
