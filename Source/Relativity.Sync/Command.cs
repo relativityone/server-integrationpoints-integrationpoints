@@ -23,25 +23,13 @@ namespace Relativity.Sync
 		public Task<bool> CanExecuteAsync(CancellationToken token)
 		{
 			_logger.LogInformation("Checking if can execute step '{StepName}'", typeof(T).Name);
-			TryLogConfiguration();
+			_logger.LogInformation("Configuration properties of step '{StepName}': {@Configuration}", typeof(T).Name, _configuration);
 			return _executionConstrains.CanExecuteAsync(_configuration, token);
 		}
 
 		public Task<ExecutionResult> ExecuteAsync(CancellationToken token)
 		{
 			return _executor.ExecuteAsync(_configuration, token);
-		}
-
-		private void TryLogConfiguration()
-		{
-			try
-			{
-				_logger.LogInformation("Configuration properties of step '{StepName}': {@Configuration}", typeof(T).Name, _configuration);
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "Error while logging configuration in step '{StepName}'", typeof(T).Name);
-			}
 		}
 	}
 }

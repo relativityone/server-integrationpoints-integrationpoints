@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Relativity.Sync.Telemetry
+﻿namespace Relativity.Sync.Telemetry
 {
 	/// <summary>
 	///     Logs <see cref="Metric"/>s to Splunk. Uses the Relativity <see cref="ISyncLog"/>
@@ -25,14 +23,7 @@ namespace Relativity.Sync.Telemetry
 		/// <inheritdoc />
 		public void Log(Metric metric)
 		{
-			try
-			{
-				_logger.LogInformation("Sending metric {MetricName} with properties: {@MetricProperties}", metric.Name, metric);
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "Failed to send metric {MetricName}.", metric.Name);
-			}
+			_logger.LogInformation("Sending metric {MetricName} with properties: {@MetricProperties}", metric.Name, metric);
 		}
 	}
 }
