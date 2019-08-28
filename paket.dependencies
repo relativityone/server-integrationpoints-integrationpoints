@@ -11,7 +11,7 @@ nuget kCura.Relativity.Client 10.3.109.3
 nuget Relativity.Authentication 10.3.109.3
 nuget Relativity.CustomPages 10.3.109.3
 nuget Relativity.Data 10.3.109.3
-nuget Relativity.DataExchange.Client.SDK 1.1.0
+nuget Relativity.DataExchange.Client.SDK 1.4.4
 nuget Relativity.Services.Interfaces 10.3.109.3
 nuget Relativity.Services.Interfaces.Private 10.3.109.3
 
@@ -35,7 +35,7 @@ nuget Relativity.Toggles 1.0.0.100
 nuget Relativity.Vfs.IO 1.0.24
 
 //Relativity transient packages
-nuget kCura.OutsideIn.FI.Win32 ~> 2019.2.2 content: none 		//Relativity.DataExchange.Client.SDK
+nuget kCura.OutsideIn.FI.Win32 2019.3 content: none
 
 //Other packages
 nuget AutoMapper 4.2.1

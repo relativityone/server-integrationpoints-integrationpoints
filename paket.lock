@@ -35,7 +35,7 @@ NUGET
     kCura.FreeImage (3.17.0.1)
     kCura.Injection (10.3.109.3)
     kCura.LongPath (1.0.20)
-    kCura.OutsideIn.FI.Win32 (2019.2.2) - content: none
+    kCura.OutsideIn.FI.Win32 (2019.3.0) - content: none
     kCura.Relativity.Client (10.3.109.3)
     LanguageExt.Core (3.1.15)
       Microsoft.CSharp (>= 4.5)
@@ -139,8 +139,8 @@ NUGET
     Relativity.Authentication.Interfaces (10.3.109.3)
     Relativity.CustomPages (10.3.109.3)
     Relativity.Data (10.3.109.3)
-    Relativity.DataExchange.Client.SDK (1.1.0)
-      kCura.OutsideIn.FI.Win32 (>= 2019.2.2)
+    Relativity.DataExchange.Client.SDK (1.4.4)
+      kCura.OutsideIn.FI.Win32 (>= 2019.3)
       Newtonsoft.Json (>= 6.0.8)
       Polly (>= 5.3.1)
       Relativity.DataTransfer.MessageService (>= 10.2)
