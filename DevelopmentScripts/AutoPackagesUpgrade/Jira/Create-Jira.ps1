@@ -13,13 +13,19 @@ Param(
 	[Parameter(Mandatory=$True)]  
 	[string]$Summary, 
 	[Parameter(Mandatory=$True)]  
-    [string]$Project,
-    [Parameter(Mandatory=$True)]
-	[string]$ParentIssueKey,  
+	[string]$Project,  
 	[Parameter(Mandatory=$True)]  
-	[string]$Description,
+	[string]$Description,  
+	[Parameter(Mandatory=$True)]  
+	[string]$Product,  
+    [Parameter(Mandatory=$True)]  
+	[string]$Feature,  
+	[Parameter(Mandatory=$True)]  
+    [string]$Team,  
 	[Parameter(Mandatory=$True)]  
 	[string]$IssueType,
+	[Parameter(Mandatory=$False)]
+	[string]$SprintId,
 	[Parameter(Mandatory=$False)]
 	[string]$Label,
 	[Parameter(Mandatory=$False)]
@@ -30,6 +36,11 @@ Begin
 	. ".\Config.ps1"  
 	. ".\Utils.ps1" 
 
+	if(!$SprintId)
+	{
+		$SprintId = .\Jira\Get-ActiveSprintId.ps1 -Credential $Credential -BoardName $Team
+	}
+
 	if($Label)
 	{
 		$Label = '"'+$Label+'"'
@@ -37,22 +48,17 @@ Begin
 }
 Process  
 {    
-	Write-Verbose "Beginning of CreateOrGetIfExistsJiraSubtask.ps1"  
+	Write-Verbose "Beginning of Create-Jira.ps1"  
 
 	$createJiraUri = "$JiraApiUri/api/2/issue/"
-	$getJiraUri = "$JiraApiUri/api/2/search?jql=parent=$ParentIssueKey+AND+labels=$Label&fields=key"
   
-	Write-Verbose $createJiraUri
-	Write-Verbose $getJiraUri
+	Write-Verbose $createJiraUri  
 
 	[String] $body = '{  
 		"fields":{  
 		   "project":{  
 			  "key":"'+$Project+'"
 		   },
-		   "parent":{
-			"key":"'+$ParentIssueKey+'"
-		    },
 		   "issuetype":{  
 			  "name":"'+$IssueType+'"
 		   },
@@ -61,6 +67,16 @@ Process
 		   "priority":{  
 			  "name":"P3"
 		   },
+		   "customfield_11312":[  
+			  "'+$Team+'"
+		   ],
+		   "customfield_11311":[  
+			  "'+$Product+'"
+		   ],
+		   "customfield_11313":[  
+			  "'+$Feature+'"
+		   ],
+		   "customfield_10005":'+$SprintId+',
 		   "labels": [
 			   '+$Label+'
 		   ],
@@ -70,28 +86,20 @@ Process
 	
 	Write-Verbose $body  
   
-	$headers = GetBasicAuthJsonHttpHeaders -Credential $Credential
+	$headers = Get-BasicAuthJsonHttpHeaders -Credential $Credential
 	try 
 	{  	 
-		$response = Invoke-RestMethod -Uri $getJiraUri -Method GET -Headers $headers -UseBasicParsing
-		
-		if($response.issues -and $response.issues.length -gt 0)
-		{
-			$response = $response.issues[0]
-		}
-		else
-		{
-			Write-Verbose "Subtask does not exist - attempting to create a new one"
-			$response = Invoke-RestMethod -Uri $createJiraUri -Method POST -Headers $headers -Body $body -UseBasicParsing
-		}    
-		$jiraKey = $($response.key)
+		$response = Invoke-RestMethod -Uri $createJiraUri -Method POST -Headers $headers -Body $body -UseBasicParsing      
+		$jiraKey = $($response.key)  
 	}  
 	catch 
 	{  
 		Write-Warning "Remote Server Response: $($_.Exception.Message)"  
 		Write-Output "Status Code: $($_.Exception.Response.StatusCode)"  
-		Write-Error "Creating Jira Subtask failed" -ErrorAction Stop
+		Write-Error "Creating Jira failed" -ErrorAction Stop
 	}  
-	Write-Verbose "End of CreateOrGetIfExistsJiraSubtask.ps1"  
-	return $jiraKey  
+
+	Write-Verbose "End of Create-Jira.ps1"  
+
+	$jiraKey  
 }

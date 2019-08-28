@@ -20,10 +20,10 @@ Begin
 }
 Process
 {
-	Write-Verbose "Beginning of GetCurrentBranchName.ps1"
+	Write-Verbose "Beginning of Get-CurrentBranchName.ps1"
 
 	$currentBranch = git -C $Path rev-parse --abbrev-ref HEAD
 	
-	Write-Verbose "End of GetCurrentBranchName.ps1"
-	return $currentBranch
+	Write-Verbose "End of Get-CurrentBranchName.ps1"
+	$currentBranch
 }

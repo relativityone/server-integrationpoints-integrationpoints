@@ -19,15 +19,15 @@ Begin
 }
 Process
 {
-	Write-Verbose "Beginning of IsRipPackageInRelativityUpToDate.ps1"
+	Write-Verbose "Beginning of Is-RipPackageInRelativityUpToDate.ps1"
 
 	$packagesConfigPath = Join-Path $RelativitySourceCodePath "kCura\DevelopmentScripts\NuGet\LibraryApplications\packages.config"
 	$ripPackageRowSegment = '<package id="kCura.IntegrationPoints" version="'
 	$packages = Get-Content -Path $packagesConfigPath
-	$oldVersion = GetCurrentRipVersionInRelativity -PackagesConfigAsText $packages -RipPackageRowSegment $ripPackageRowSegment
+	$oldVersion = Get-CurrentRipVersionInRelativity -PackagesConfigAsText $packages -RipPackageRowSegment $ripPackageRowSegment
 
-    $newSystemVersion = MapRipPackageVersionToSystemVersion -PackageVersion $NewVersion
-    $oldSystemVersion = MapRipPackageVersionToSystemVersion -PackageVersion $oldVersion
+    $newSystemVersion = Map-RipPackageVersionToSystemVersion -PackageVersion $NewVersion
+    $oldSystemVersion = Map-RipPackageVersionToSystemVersion -PackageVersion $oldVersion
 
     $isUpToDate = $newSystemVersion -le $oldSystemVersion
 
@@ -36,7 +36,7 @@ Process
         Write-Host "RIP version in Relativity is up to date." -ForegroundColor Cyan
     }
 	
-    Write-Verbose "End of IsRipPackageInRelativityUpToDate.ps1"
+    Write-Verbose "End of Is-RipPackageInRelativityUpToDate.ps1"
     
-    return $isUpToDate
+    $isUpToDate
 }

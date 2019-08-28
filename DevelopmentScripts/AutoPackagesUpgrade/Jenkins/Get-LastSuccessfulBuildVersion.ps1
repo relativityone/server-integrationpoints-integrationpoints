@@ -26,7 +26,7 @@ Begin
 }
 Process
 {
-    Write-Verbose "Beginning of GetLastSuccessfulBuildVersion.ps1"
+    Write-Verbose "Beginning of Get-LastSuccessfulBuildVersion.ps1"
 	
     $getJobUri = "$JenkinsApiUri/job/$Category"
     
@@ -39,7 +39,7 @@ Process
   
 	Write-Verbose $getJobUri
   
-	$headers = GetBasicAuthJsonHttpHeaders -Credential $Credential
+	$headers = Get-BasicAuthJsonHttpHeaders -Credential $Credential
     try 
     {
         $response = Invoke-RestMethod -Uri $getJobUri -Method GET -Headers $headers -UseBasicParsing
@@ -51,10 +51,10 @@ Process
     {  
 		Write-Warning "Remote Server Response: $($_.Exception.Message)"  
         Write-Output "Status Code: $($_.Exception.Response.StatusCode)" 
-        Write-Error "GetLastSuccessfulBuildVersion failed" -ErrorAction Stop 
+        Write-Error "Get-LastSuccessfulBuildVersion failed" -ErrorAction Stop 
 	}  
-    Write-Verbose "End of GetLastSuccessfulBuildVersion.ps1"
+    Write-Verbose "End of Get-LastSuccessfulBuildVersion.ps1"
 
-    return $version
+    $version
 }
 

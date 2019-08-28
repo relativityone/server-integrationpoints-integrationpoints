@@ -22,14 +22,14 @@ Begin
 } 
 Process  
 {  
-	Write-Verbose "Beginning of ChangeIssueStatus.ps1"
+	Write-Verbose "Beginning of Change-IssueStatus.ps1"
 
     $changeStatusJiraUri = "$JiraApiUri/api/2/issue/$JiraNumber/transitions"
 	$statusJiraUri = "$JiraApiUri/api/2/issue/$JiraNumber/transitions?expand=transitions.fields"
   
     Write-Verbose $statusJiraUri
     
-	$headers = GetBasicAuthJsonHttpHeaders -Credential $Credential
+	$headers = Get-BasicAuthJsonHttpHeaders -Credential $Credential
 	try 
 	{  
         $response = Invoke-RestMethod -Uri $statusJiraUri -Method GET -Headers $headers -UseBasicParsing  
@@ -50,8 +50,8 @@ Process
 	{  
 		Write-Warning "Remote Server Response: $($_.Exception.Message)"  
 		Write-Output "Status Code: $($_.Exception.Response.StatusCode)"  
-		Write-Error "ChangeIssueStatus failed" -ErrorAction Stop
+		Write-Error "Change-IssueStatus failed" -ErrorAction Stop
     }  
     
-	Write-Verbose "End of ChangeIssueStatus.ps1"
+	Write-Verbose "End of Change-IssueStatus.ps1"
 }

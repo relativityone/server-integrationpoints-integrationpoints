@@ -42,7 +42,7 @@ Begin
 }
 Process  
 {  
-	Write-Verbose "Beginning of CreatePullRequest.ps1"  
+	Write-Verbose "Beginning of Create-PullRequest.ps1"  
 	  
 	$uri = "$BitbucketApiUri/projects/$Project/repos/$Repository/pull-requests" 
 	  
@@ -95,7 +95,7 @@ Process
 	}';  
 	Write-Verbose $body  
  
-	$headers = GetBasicAuthJsonHttpHeaders -Credential $Credential
+	$headers = Get-BasicAuthJsonHttpHeaders -Credential $Credential
 	try 
 	{   
 		Invoke-RestMethod -Uri $uri -Method POST -Headers $headers -Body $body -UseBasicParsing 
@@ -104,8 +104,8 @@ Process
 	{
 		Write-Warning "Remote Server Response: $($_.Exception.Message)"  
 		Write-Output "Status Code: $($_.Exception.Response.StatusCode)" 
-		Write-Error "Creating pull request failed" -ErrorAction Stop
+		Write-Error "Create-PullRequest failed" -ErrorAction Stop
 	}  
 	 
-	Write-Verbose "End of CreatePullRequest.ps1" 
+	Write-Verbose "End of Create-PullRequest.ps1" 
 }

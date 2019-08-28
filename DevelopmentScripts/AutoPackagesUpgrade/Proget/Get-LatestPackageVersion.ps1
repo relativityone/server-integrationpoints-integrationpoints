@@ -13,11 +13,11 @@ Param(
 )
 Process
 {
-	Write-Verbose "Beginning of GetLatestPackageVersion.ps1"
+	Write-Verbose "Beginning of Get-LatestPackageVersion.ps1"
 	
 	$package = Find-Package $PackageName -Source ProGet
 	
-	Write-Verbose "End of GetLatestPackageVersion.ps1"
+	Write-Verbose "End of Get-LatestPackageVersion.ps1"
 
-	return $package.Version
+	$package.Version
 }

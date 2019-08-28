@@ -20,13 +20,13 @@ Begin
 }
 Process
 {
-	Write-Verbose "Beginning of UpdateRipPackagesInRelativity.ps1"
+	Write-Verbose "Beginning of Update-RipPackagesInRelativity.ps1"
 
 	$packagesConfigPath = Join-Path $RelativitySourceCodePath "kCura\DevelopmentScripts\NuGet\LibraryApplications\packages.config"
 
 	$ripPackageRowSegment = '<package id="kCura.IntegrationPoints" version="'
 	$packages = Get-Content -Path $packagesConfigPath
-	$oldVersion = GetCurrentRipVersionInRelativity -PackagesConfigAsText $packages -RipPackageRowSegment $ripPackageRowSegment
+	$oldVersion = Get-CurrentRipVersionInRelativity -PackagesConfigAsText $packages -RipPackageRowSegment $ripPackageRowSegment
 
 	Write-Host "Updating RIP packages in packages.config from $oldVersion to $ToVersion..." -ForegroundColor Cyan
 
@@ -52,5 +52,5 @@ Process
 
 	Write-Host "RIP version in Relativity updated successfully in packages.config from $oldVersion to $ToVersion" -ForegroundColor Cyan
 	
-	Write-Verbose "End of UpdateRipPackagesInRelativity.ps1"
+	Write-Verbose "End of Update-RipPackagesInRelativity.ps1"
 }

@@ -26,13 +26,13 @@ Begin
 }
 Process  
 {  
-	Write-Verbose "Beginning of CheckIfPullRequestAlreadyExists.ps1"  
+	Write-Verbose "Beginning of Check-IfPullRequestAlreadyExists.ps1"  
       
     $uri = "$BitbucketApiUri/projects/$Project/repos/$Repository/pull-requests?username.1=$Author&role.1=AUTHOR&order=NEWEST&state=ALL"
 
 	Write-Verbose $uri  
  
-	$headers = GetBasicAuthJsonHttpHeaders -Credential $Credential
+	$headers = Get-BasicAuthJsonHttpHeaders -Credential $Credential
 
     try 
     {  
@@ -55,12 +55,12 @@ Process
     {  
 		Write-Warning "Remote Server Response: $($_.Exception.Message)"  
 		Write-Output "Status Code: $($_.Exception.Response.StatusCode)" 
-		Write-Error "CheckIfPullRequestAlreadyExists failed" -ErrorAction Stop
+		Write-Error "Check-IfPullRequestAlreadyExists failed" -ErrorAction Stop
     } 
     
     $exists = ($pullRequests | Select-Object -ExpandProperty title | Where-Object { $_.Contains($Title) }).Count -gt 0
      
-    Write-Verbose "End of CheckIfPullRequestAlreadyExists.ps1" 
+    Write-Verbose "End of Check-IfPullRequestAlreadyExists.ps1" 
     
-    return $exists
+    $exists
 }

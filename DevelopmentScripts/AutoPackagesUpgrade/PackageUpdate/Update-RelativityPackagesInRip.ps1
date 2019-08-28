@@ -18,17 +18,17 @@ Begin
     . ".\Config.ps1" 
 	. ".\Utils.ps1"	
 
-	function UpdatePackage($PaketDependenciesAsText, $PackageName, $ToVersion)
+	function Update-Package($PaketDependenciesAsText, $PackageName, $ToVersion)
 	{
-		$oldVersion = GetCurrentPackageVersionInRip -PaketDependenciesAsText $PaketDependenciesAsText -PackageName $PackageName
-		return ReplacePackageVersionInRip -PaketDependenciesAsText $PaketDependenciesAsText -PackageName $PackageName -OldVersion $oldVersion -NewVersion $ToVersion 
+		$oldVersion = Get-CurrentPackageVersionInRip -PaketDependenciesAsText $PaketDependenciesAsText -PackageName $PackageName
+		Set-PackageVersionInRip -PaketDependenciesAsText $PaketDependenciesAsText -PackageName $PackageName -OldVersion $oldVersion -NewVersion $ToVersion 
 	}
 
-	function ReplacePackageVersionInRip($PaketDependenciesAsText, $PackageName, $OldVersion, $NewVersion)
+	function Set-PackageVersionInRip($PaketDependenciesAsText, $PackageName, $OldVersion, $NewVersion)
 	{
 		try
 		{
-			return $PaketDependenciesAsText.replace("$PackageName $oldVersion", "$PackageName $NewVersion")
+			$PaketDependenciesAsText.replace("$PackageName $oldVersion", "$PackageName $NewVersion")
 		}
 		catch
 		{
@@ -38,7 +38,7 @@ Begin
 }
 Process
 {
-	Write-Verbose "Beginning of UpdateRelativityPackagesInRip.ps1"
+	Write-Verbose "Beginning of Update-RelativityPackagesInRip.ps1"
 
 	$paketDependenciesPath = Join-Path "$RipSourceCodePath" "paket.dependencies"
 	$paketLockPath = Join-Path "$RipSourceCodePath" "paket.lock"
@@ -47,7 +47,7 @@ Process
 	
 	$packages = Get-Content -Path $paketDependenciesPath
 
-	$ToPackagesVersions | ForEach-Object { $packages = UpdatePackage -PaketDependenciesAsText $packages -PackageName $_.name -ToVersion $_.version }
+	$ToPackagesVersions | ForEach-Object { $packages = Update-Package -PaketDependenciesAsText $packages -PackageName $_.name -ToVersion $_.version }
 
 	try 
 	{
@@ -111,7 +111,7 @@ Process
 
 	$logs += $paketLogs
 
-	Write-Verbose "End of UpdateRelativityPackagesInRip.ps1"
+	Write-Verbose "End of Update-RelativityPackagesInRip.ps1"
 	
-	return $logs
+	$logs
 }

@@ -22,15 +22,15 @@ Begin
 }
 Process
 {
-	Write-Verbose "Beginning of IsPackageInRipUpToDate.ps1"
+	Write-Verbose "Beginning of Is-PackageInRipUpToDate.ps1"
 
 	$paketDependenciesPath = Join-Path $RipSourceCodePath "paket.dependencies"
 	
 	$packages = Get-Content -Path $paketDependenciesPath
-	$oldVersion = GetCurrentPackageVersionInRip -PaketDependenciesAsText $packages -PackageName $PackageName
+	$oldVersion = Get-CurrentPackageVersionInRip -PaketDependenciesAsText $packages -PackageName $PackageName
 
-    $newSystemVersion = MapRelativityPackageVersionToSystemVersion -PackageVersion $NewVersion
-    $oldSystemVersion = MapRelativityPackageVersionToSystemVersion -PackageVersion $oldVersion
+    $newSystemVersion = Map-RelativityPackageVersionToSystemVersion -PackageVersion $NewVersion
+    $oldSystemVersion = Map-RelativityPackageVersionToSystemVersion -PackageVersion $oldVersion
 
     $isUpToDate = $newSystemVersion -le $oldSystemVersion
 
@@ -39,7 +39,7 @@ Process
         Write-Host "$PackageName version ($oldVersion) in RIP is up to date ($NewVersion)." -ForegroundColor Cyan
     }
 	
-    Write-Verbose "End of IsPackageInRipUpToDate.ps1"
+    Write-Verbose "End of Is-PackageInRipUpToDate.ps1"
     
-    return $isUpToDate
+    $isUpToDate
 }

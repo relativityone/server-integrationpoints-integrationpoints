@@ -24,7 +24,7 @@ Begin
 }
 Process
 {
-	Write-Verbose "Beginning of CreateBranch.ps1"
+	Write-Verbose "Beginning of Create-Branch.ps1"
 	
 	try
 	{
@@ -46,5 +46,5 @@ Process
 		Write-Error "Creating branch failed with $($_.Exception.Message)" -ErrorAction Stop
 	}
 	
-	Write-Verbose "End of CreateBranch.ps1"
+	Write-Verbose "End of Create-Branch.ps1"
 }

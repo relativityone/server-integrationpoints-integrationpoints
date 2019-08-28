@@ -21,7 +21,7 @@ Param(
 )
 Begin
 {
-    function GetFirstBuildContainingPrChanges($JiraKey, $Branch, $BuildsUri, $Headers)
+    function Get-FirstBuildContainingPrChanges($JiraKey, $Branch, $BuildsUri, $Headers)
     {
         $commitMessageRegex = "Merge pull request(?s:.)*$JiraKey(?s:.)* to $Branch"
 
@@ -35,18 +35,18 @@ Begin
 
             if($containsPullRequest -eq $true)
             {
-                return $build
+                $build
             }
         }
 
         throw "Cannot find build containing PR changes: $JiraKey to $Branch"
     }
 
-    function GetFirstSuccessfulBuildAfter($Build, $BuildsNumberAndUri, $Headers)
+    function Get-FirstSuccessfulBuildAfter($Build, $BuildsNumberAndUri, $Headers)
     {
         if($Build.result -eq "SUCCESS")
         {
-            return $Build
+            $Build
         }
 
         $firstBuildIndex = ($BuildsNumberAndUri | Select-Object -ExpandProperty number).IndexOf($Build.number)
@@ -59,7 +59,7 @@ Begin
             throw "There is no successful build containing specified PR changes: $JiraKey to $Branch"
         }
 
-        return $nextSuccessfulBuilds | Select-Object -First 1
+        $nextSuccessfulBuilds | Select-Object -First 1
     }
 
     . ".\Config.ps1"  
@@ -67,14 +67,14 @@ Begin
 }
 Process
 {    
-    Write-Verbose "Beginning of GetFirstSuccessfulBuildVersionContainingPrChanges.ps1"
+    Write-Verbose "Beginning of Get-FirstSuccessfulBuildVersionContainingPrChanges.ps1"
     
     $apiUriSegment = "api/json"
 	$getJobUri = "$JenkinsApiUri/job/$Category/job/$Pipeline/job/$Branch/$apiUriSegment"
   
     Write-Verbose $getJobUri
     
-    $headers = GetBasicAuthJsonHttpHeaders -Credential $Credential
+    $headers = Get-BasicAuthJsonHttpHeaders -Credential $Credential
     try 
     {
         $response = Invoke-RestMethod -Uri $getJobUri -Method GET -Headers $headers -UseBasicParsing
@@ -82,9 +82,9 @@ Process
         $buildsNumberAndUri = $response.builds | Select-Object -Property number,url | ForEach-Object { $_.url += $apiUriSegment; $_ }
 
         $buildsUri = $buildsNumberAndUri | Select-Object -ExpandProperty url
-        $buildContainingPrChanges = GetFirstBuildContainingPrChanges -JiraKey $JiraKey -Branch $Branch -BuildsUri $buildsUri -Headers $headers
+        $buildContainingPrChanges = Get-FirstBuildContainingPrChanges -JiraKey $JiraKey -Branch $Branch -BuildsUri $buildsUri -Headers $headers
 
-        $firstSuccessfulBuildContainingPrChanges = GetFirstSuccessfulBuildAfter -Build $buildContainingPrChanges -BuildsNumberAndUri $buildsNumberAndUri -Headers $headers
+        $firstSuccessfulBuildContainingPrChanges = Get-FirstSuccessfulBuildAfter -Build $buildContainingPrChanges -BuildsNumberAndUri $buildsNumberAndUri -Headers $headers
 
         $version = $firstSuccessfulBuildContainingPrChanges.displayName
 	}  
@@ -92,10 +92,11 @@ Process
     {  
 		Write-Warning "Remote Server Response: $($_.Exception.Message)"  
         Write-Output "Status Code: $($_.Exception.Response.StatusCode)" 
-        Write-Error "GetFirstSuccessfulBuildVersionContainingPrChanges failed" -ErrorAction Stop 
-	}  
-    Write-Verbose "End of GetFirstSuccessfulBuildVersionContainingPrChanges.ps1"
+        Write-Error "Get-FirstSuccessfulBuildVersionContainingPrChanges failed" -ErrorAction Stop 
+    }  
+    
+    Write-Verbose "End of Get-FirstSuccessfulBuildVersionContainingPrChanges.ps1"
 
-    return $version
+    $version
 }
 

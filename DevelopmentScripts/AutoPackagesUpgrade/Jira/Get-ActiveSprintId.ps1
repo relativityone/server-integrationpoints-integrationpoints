@@ -20,9 +20,9 @@ Begin
 }
 Process  
 {  
-	Write-Verbose "Beginning of GetActiveSprintId.ps1"  
+	Write-Verbose "Beginning of Get-ActiveSprintId.ps1"  
     
-    $board = .\Jira\GetBoard.ps1 -Credential $Credential -BoardName $BoardName
+    $board = .\Jira\Get-Board.ps1 -Credential $Credential -BoardName $BoardName
     $boardId = $board.id
 
     Write-Verbose $boardId
@@ -31,7 +31,7 @@ Process
   
 	Write-Verbose $getActiveSprintJiraUri  
   
-	$headers = GetBasicAuthJsonHttpHeaders -Credential $Credential
+	$headers = Get-BasicAuthJsonHttpHeaders -Credential $Credential
     try 
     {  	 
         $response = Invoke-RestMethod -Uri $getActiveSprintJiraUri -Method GET -Headers $headers -UseBasicParsing
@@ -40,8 +40,10 @@ Process
     {  
 		Write-Warning "Remote Server Response: $($_.Exception.Message)"  
         Write-Output "Status Code: $($_.Exception.Response.StatusCode)"  
-        Write-Error "GetActiveSprintId failed" -ErrorAction Stop
-	}  
-    Write-Verbose "End of GetActiveSprintId.ps1"
-    return $response.values.id
+        Write-Error "Get-ActiveSprintId failed" -ErrorAction Stop
+    }  
+    
+    Write-Verbose "End of Get-ActiveSprintId.ps1"
+
+    $response.values.id
 }

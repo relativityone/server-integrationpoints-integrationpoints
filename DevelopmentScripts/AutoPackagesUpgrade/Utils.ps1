@@ -1,33 +1,36 @@
-function ConvertTo-Base64($string) { 
-    $bytes = [System.Text.Encoding]::UTF8.GetBytes($string); 
-    $encoded = [System.Convert]::ToBase64String($bytes); 
-    return $encoded; 
+function ConvertTo-Base64($string) 
+{ 
+    $bytes = [System.Text.Encoding]::UTF8.GetBytes($string)
+    $encoded = [System.Convert]::ToBase64String($bytes)
+    $encoded; 
 } 
  
-function ConvertFrom-Base64($string) { 
-    $bytes = [System.Convert]::FromBase64String($string); 
-    $decoded = [System.Text.Encoding]::UTF8.GetString($bytes); 
-    return $decoded; 
+function ConvertFrom-Base64($string) 
+{ 
+    $bytes = [System.Convert]::FromBase64String($string)
+    $decoded = [System.Text.Encoding]::UTF8.GetString($bytes);
+    $decoded; 
 }
 
-function ConvertToPlainPassword($securedPassword) { 
+function ConvertTo-PlainPassword($securedPassword) 
+{ 
     $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($securedPassword)
     $unsecuredPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
-    return $unsecuredPassword
+    $unsecuredPassword
 }
 
-function GetBasicAuthJsonHttpHeaders($Credential)
+function Get-BasicAuthJsonHttpHeaders($Credential)
 {
-    $password = ConvertToPlainPassword($Credential.Password); 
+    $password = ConvertTo-PlainPassword($Credential.Password); 
  
 	$b64 = ConvertTo-Base64($Credential.Username + ":" + $password);  
-    return @{  
+    @{  
         "Authorization" = "Basic $b64";
         "Content-Type"="application/json"  
     }
 }
 
-function MapJenkinsBuildVersionToRelativityPackageVersion($BuildVersion)
+function Map-JenkinsBuildVersionToRelativityPackageVersion($BuildVersion)
 {
     $split = $BuildVersion.Split("-")
     $buildType = $split[0]
@@ -37,10 +40,10 @@ function MapJenkinsBuildVersionToRelativityPackageVersion($BuildVersion)
     {
         return $version
     }
-    return "$version-DEV"
+    "$version-DEV"
 }
 
-function MapJenkinsBuildVersionToRipPackageVersion($BuildVersion)
+function Map-JenkinsBuildVersionToRipPackageVersion($BuildVersion)
 {
     $split = $BuildVersion.Split("-")
     $buildType = $split[0]
@@ -51,10 +54,10 @@ function MapJenkinsBuildVersionToRipPackageVersion($BuildVersion)
     {
         return $baseVersion
     }
-    return "$baseVersion-DEV-" + $versionSegments[3]
+    "$baseVersion-DEV-" + $versionSegments[3]
 }
 
-function MapRipPackageVersionToSystemVersion($PackageVersion)
+function Map-RipPackageVersionToSystemVersion($PackageVersion)
 {
     $isGoldVersion = !$PackageVersion.Contains("DEV")
 
@@ -77,10 +80,10 @@ function MapRipPackageVersionToSystemVersion($PackageVersion)
         Write-Error "Mapping RIP package version failed with $($_.Exception.Message)" -ErrorAction Stop
     }
 
-    return $systemVersion
+    $systemVersion
 }
 
-function MapRelativityPackageVersionToSystemVersion($PackageVersion)
+function Map-RelativityPackageVersionToSystemVersion($PackageVersion)
 {
     $isDevVersion = $PackageVersion.Contains("DEV")
     $isBetaVersion = $PackageVersion.Contains("beta")
@@ -108,10 +111,10 @@ function MapRelativityPackageVersionToSystemVersion($PackageVersion)
         Write-Error "Mapping Relativity package version failed with $($_.Exception.Message)" -ErrorAction Stop
     }
 
-    return $systemVersion
+    $systemVersion
 }
 
-function GetCurrentPackageVersionInRip($PaketDependenciesAsText, $PackageName)
+function Get-CurrentPackageVersionInRip($PaketDependenciesAsText, $PackageName)
 {
     try 
 	{
@@ -122,16 +125,10 @@ function GetCurrentPackageVersionInRip($PaketDependenciesAsText, $PackageName)
 		Write-Error "Retrieving version of $PackageName failed with $($_.Exception.Message)" -ErrorAction Stop
     }
     
-    return $version
+    $version
 }
 
-function GetCurrentRelativityVersionInRip($PaketDependenciesAsText)
-{
-    Write-Host $PaketDependenciesAsText
-    return GetCurrentPackageVersionInRip -PaketDependenciesAsText $PaketDependenciesAsText -PackageName Relativity.Data
-}
-
-function GetCurrentRipVersionInRelativity($PackagesConfigAsText, $RipPackageRowSegment)
+function Get-CurrentRipVersionInRelativity($PackagesConfigAsText, $RipPackageRowSegment)
 {
 	try 
 	{
@@ -143,5 +140,5 @@ function GetCurrentRipVersionInRelativity($PackagesConfigAsText, $RipPackageRowS
 		Write-Error "Retrieving old version of RIP failed with $($_.Exception.Message)" -ErrorAction Stop
     }
 
-    return $ripVersion
+    $ripVersion
  }

@@ -17,7 +17,7 @@ Param(
 )  
 Begin
 {
-    function GetIssueWithLastMergedPullRequest($Issues)
+    function Get-IssueWithLastMergedPullRequest($Issues)
     {
         foreach($issue in $Issues)
         {
@@ -25,12 +25,14 @@ Begin
             $jsonString = ($summaryField -split "devSummaryJson=")[-1]
             $json = $jsonString.Substring(0, $jsonString.Length-1) | ConvertFrom-Json
             $pullRequestState = $json.cachedValue.summary.pullrequest.overall.state
+
             if($pullRequestState -eq "MERGED")
             {
-                return $issue
+                $issue
             }
         }
-        return $null
+
+        $null
     }
 
 	. ".\Config.ps1"  
@@ -38,13 +40,13 @@ Begin
 }
 Process  
 {  
-	Write-Verbose "Beginning of GetLastIssueWithMergedPrToBranchByLabel.ps1"  
+	Write-Verbose "Beginning of Get-LastIssueWithMergedPrToBranchByLabel.ps1"  
 	
 	$jiraUri = "$JiraApiUri/api/2/search?jql=labels=$LabelName+AND+summary~$BranchName+order+by+created&maxResults=30&fields=key,customfield_15000,parent"
   
 	Write-Verbose $jiraUri  
   
-	$headers = GetBasicAuthJsonHttpHeaders -Credential $Credential
+	$headers = Get-BasicAuthJsonHttpHeaders -Credential $Credential
     try 
     {  
         $response = Invoke-RestMethod -Uri $jiraUri -Method GET -Headers $headers -UseBasicParsing
@@ -54,7 +56,7 @@ Process
     {  
 		Write-Warning "Remote Server Response: $($_.Exception.Message)"  
         Write-Output "Status Code: $($_.Exception.Response.StatusCode)" 
-        Write-Error "GetLastIssueWithMergedPrToBranchByLabel failed" -ErrorAction Stop 
+        Write-Error "Get-LastIssueWithMergedPrToBranchByLabel failed" -ErrorAction Stop 
 	}  
     
     if(!$response.issues -or $response.issues.Length -eq 0)
@@ -65,15 +67,15 @@ Process
     {
         try
         {
-            $issue = GetIssueWithLastMergedPullRequest -Issues $response.issues
+            $issue = Get-IssueWithLastMergedPullRequest -Issues $response.issues
         }
         catch
         {
-            Write-Error "Finding last merged PR failed in GetLastIssueWithMergedPrToBranchByLabel with $($_.Exception.Message)" -ErrorAction Stop 
+            Write-Error "Finding last merged PR failed in Get-LastIssueWithMergedPrToBranchByLabel with $($_.Exception.Message)" -ErrorAction Stop 
         }
     }
 
-    Write-Verbose "End of GetLastIssueWithMergedPrToBranchByLabel.ps1"
+    Write-Verbose "End of Get-LastIssueWithMergedPrToBranchByLabel.ps1"
 
-    return $issue
+    $issue
 }
