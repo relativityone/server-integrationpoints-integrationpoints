@@ -192,18 +192,11 @@ namespace kCura.IntegrationPoints.RelativitySync
 			// We are registering types directly related to adapting the new Relativity Sync workflow to the
 			// existing RIP workflow. The Autofac container we are building will only resolve adapters and related
 			// wrappers, and the Windsor container will only resolve existing RIP classes.
-
 			var containerBuilder = new ContainerBuilder();
 
 			_ripContainer.Register(Component.For<SyncConfiguration>().Instance(syncConfiguration));
 
 			containerBuilder.RegisterInstance(syncConfiguration).AsImplementedInterfaces().SingleInstance();
-
-			containerBuilder.RegisterInstance(new DestinationWorkspaceObjectTypesCreation(_ripContainer))
-				.As<IExecutor<IDestinationWorkspaceObjectTypesCreationConfiguration>>()
-				.As<IExecutionConstrains<IDestinationWorkspaceObjectTypesCreationConfiguration>>();
-			containerBuilder.RegisterInstance(new ValidationExecutorFactory(_ripContainer)).As<IValidationExecutorFactory>();
-			containerBuilder.RegisterInstance(new RdoRepository(_ripContainer)).As<IRdoRepository>();
 
 			containerBuilder.RegisterType<DataDestinationFinalization>()
 				.As<IExecutor<IDataDestinationFinalizationConfiguration>>()
