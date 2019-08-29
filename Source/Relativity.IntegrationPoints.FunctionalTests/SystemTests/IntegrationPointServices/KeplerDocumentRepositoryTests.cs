@@ -13,22 +13,21 @@ using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Data.DTO;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.Relativity.Client;
 using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Search;
 using Relativity.Testing.Identification;
 using Rip.TestUtilities;
 
-namespace Rip.SystemTests.IntegrationPointServices
+namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.IntegrationPointServices
 {
 	[TestFixture]
 	public class KeplerDocumentRepositoryTests
 	{
 		private const string LONG_DATA_SET_EMBEDDED_DATA_INFO_VALUE = "KEPLER_DOCUMENT_REPOSITORY_LONG";
 
-		private int _workspaceID => SystemTestsFixture.WorkspaceID;
-		private IWindsorContainer _container => SystemTestsFixture.Container;
+		private int _workspaceID => SystemTestsSetupFixture.WorkspaceID;
+		private IWindsorContainer _container => SystemTestsSetupFixture.Container;
 		private ITestHelper _testHelper;
 		private IDocumentRepository _documentRepository;
 		private IRelativityObjectManager _relativityObjectManager;
@@ -237,7 +236,7 @@ namespace Rip.SystemTests.IntegrationPointServices
 		{
 			var queryRequest = new QueryRequest
 			{
-				ObjectType = new ObjectTypeRef {ArtifactTypeID = (int) ArtifactType.Field},
+				ObjectType = new ObjectTypeRef {ArtifactTypeID = (int) kCura.Relativity.Client.ArtifactType.Field},
 				Fields = new List<FieldRef>(),
 				Condition = $"((('Object Type' IN ['Document']))) AND ((('Name' LIKE ['{fieldName}'])))"
 			};
@@ -252,7 +251,7 @@ namespace Rip.SystemTests.IntegrationPointServices
 				.ToList();
 			var request = new QueryRequest
 			{
-				ObjectType = new ObjectTypeRef {ArtifactTypeID = (int) ArtifactType.Document},
+				ObjectType = new ObjectTypeRef {ArtifactTypeID = (int) kCura.Relativity.Client.ArtifactType.Document},
 				Fields = fields,
 				Condition = $"'ArtifactId' IN SAVEDSEARCH {searchArtifactID}"
 			};

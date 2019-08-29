@@ -1,6 +1,4 @@
-﻿using NUnit.Framework;
-using System;
-using System.Threading.Tasks;
+﻿using System;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.Resolvers;
 using Castle.MicroKernel.SubSystems.Configuration;
@@ -19,12 +17,13 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Installers;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.Relativity.Client;
+using NUnit.Framework;
 using Relativity.API;
 
-namespace Rip.SystemTests
+namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
 {
 	[SetUpFixture]
-	public class SystemTestsFixture
+	public class SystemTestsSetupFixture
 	{
 		public static IWindsorContainer Container { get; private set; }
 		public static IConfigurationStore ConfigurationStore { get; private set; }
