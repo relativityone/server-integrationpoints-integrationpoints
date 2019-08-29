@@ -27,15 +27,10 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 
 		public IDataSynchronizer CreateSynchronizer(Guid identifier, string options)
 		{
-			return CreateSynchronizer(identifier, options, null);
-		}
-
-		public IDataSynchronizer CreateSynchronizer(Guid identifier, string options, string credentials)
-		{
 			ImportSettings importSettings = JsonConvert.DeserializeObject<ImportSettings>(options);
 
 			return importSettings.IsRelativityProvider()
-				? _relativityRdoSynchronizerFactory.CreateSynchronizer(credentials, importSettings, SourceProvider)
+				? _relativityRdoSynchronizerFactory.CreateSynchronizer(importSettings, SourceProvider)
 				: _importProviderRdoSynchronizerFactory.CreateSynchronizer(importSettings, TaskJobSubmitter);
 		}
 	}

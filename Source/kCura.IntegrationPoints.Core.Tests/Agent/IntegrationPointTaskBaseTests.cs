@@ -228,17 +228,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
 
 			Job job = JobHelper.GetJob(jobIdValue, null, null, 0, 0, 0, 0, TaskType.SyncWorker, DateTime.Now, null,
 				jobDetailsText, 0, DateTime.Now, 0, String.Empty, String.Empty);
-
-			const string emptySecuredConfiguration = "{}";
-			_integrationPointRepository.GetSecuredConfiguration(Arg.Any<int>()).Returns(emptySecuredConfiguration);
-
+			
 			_serializer.Deserialize<TaskParameters>(Arg.Is<string>(x => x.Equals(jobDetailsText))).Returns(taskParameters);
 
 			_managerFactory.CreateJobStopManager(Arg.Is(_jobService), Arg.Is(_jobHistoryService),
 				Arg.Is(taskParameters.BatchInstance), jobIdValue, true)
 				.Returns(jobStopManager);
 
-			_appDomainRdoSynchronizerFactoryFactory.CreateSynchronizer(Arg.Is(new Guid(destinationProvider.Identifier)), Arg.Is(configuration), Arg.Is(emptySecuredConfiguration))
+			_appDomainRdoSynchronizerFactoryFactory.CreateSynchronizer(Arg.Is(new Guid(destinationProvider.Identifier)), Arg.Is(configuration))
 				.Returns(expectedDataSynchronizer);
 
 			// ACT
@@ -246,7 +243,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
 
 			// ASSERT
 			Assert.AreEqual(expectedDataSynchronizer, result);
-			_appDomainRdoSynchronizerFactoryFactory.Received(1).CreateSynchronizer(Arg.Is(new Guid(destinationProvider.Identifier)), Arg.Is(configuration), Arg.Is(emptySecuredConfiguration));
+			_appDomainRdoSynchronizerFactoryFactory.Received(1).CreateSynchronizer(Arg.Is(new Guid(destinationProvider.Identifier)), Arg.Is(configuration));
 		}
 	}
 

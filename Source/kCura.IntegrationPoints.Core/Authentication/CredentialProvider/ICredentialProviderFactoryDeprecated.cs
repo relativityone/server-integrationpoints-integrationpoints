@@ -1,6 +1,6 @@
 ﻿namespace kCura.IntegrationPoints.Core.Authentication.CredentialProvider
 {
-	public interface ICredentialProviderFactory_Deprecated
+	public interface ICredentialProviderFactoryDeprecated
 	{
 		ICredentialProvider Create();
 	}

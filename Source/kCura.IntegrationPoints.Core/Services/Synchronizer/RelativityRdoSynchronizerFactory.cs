@@ -18,9 +18,9 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 			_container = container;
 		}
 
-		public IDataSynchronizer CreateSynchronizer(string credentials, ImportSettings importSettings, SourceProvider sourceProvider)
+		public IDataSynchronizer CreateSynchronizer(ImportSettings importSettings, SourceProvider sourceProvider)
 		{
-			Dictionary<string, RelativityFieldQuery> rdoSynchronizerParametersDictionary = CreateRdoSynchronizerParametersDictionary(credentials, importSettings);
+			Dictionary<string, RelativityFieldQuery> rdoSynchronizerParametersDictionary = CreateRdoSynchronizerParametersDictionary(importSettings);
 
 			IDataSynchronizer synchronizer = _container.Kernel.Resolve<IDataSynchronizer>(typeof(RdoSynchronizer).AssemblyQualifiedName, rdoSynchronizerParametersDictionary);
 			RdoSynchronizer syncBase = (RdoSynchronizer)synchronizer;
@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 			return syncBase;
 		}
 
-		private Dictionary<string, RelativityFieldQuery> CreateRdoSynchronizerParametersDictionary(string credentials, ImportSettings importSettings)
+		private Dictionary<string, RelativityFieldQuery> CreateRdoSynchronizerParametersDictionary(ImportSettings importSettings)
 		{
 			IHelper sourceInstanceHelper = _container.Resolve<IHelper>();
 			IRSAPIClient client = CreateRsapiClient(importSettings);

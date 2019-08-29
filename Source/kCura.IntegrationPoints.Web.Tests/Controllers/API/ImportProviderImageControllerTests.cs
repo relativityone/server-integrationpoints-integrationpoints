@@ -9,7 +9,6 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
-using Relativity.API;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.DataExchange.Service;
@@ -22,7 +21,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		private ImportProviderImageController _controller;
 		private IManagerFactory _managerFactory;
 		private IFieldManager _fieldManager;
-		private ICPHelper _helper;
 		private ICredentialProvider _credentialProvider;
 		private ICaseManagerFactory _caseManagerFactory;
 		private WinEDDS.Service.Export.ICaseManager _caseManager;
@@ -35,7 +33,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		public override void SetUp()
 		{
 			_managerFactory = Substitute.For<IManagerFactory>();
-			_helper = Substitute.For<ICPHelper>();
 			_fieldManager = Substitute.For<IFieldManager>();
 			_credentialProvider = Substitute.For<ICredentialProvider>();
 			_caseManagerFactory = Substitute.For<ICaseManagerFactory>();
@@ -44,7 +41,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			_managerFactory.CreateFieldManager().Returns(_fieldManager);
 			_caseManagerFactory.Create(null, null).ReturnsForAnyArgs(_caseManager);
 
-			_controller = new ImportProviderImageController(_managerFactory, _helper, _credentialProvider, _caseManagerFactory);
+			_controller = new ImportProviderImageController(_managerFactory, _credentialProvider, _caseManagerFactory);
 		}
 
 		[Test]

@@ -57,9 +57,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Authentication\AuthProvider.cs" />
-    <Compile Include="Authentication\CredentialProvider\CredentialProviderFactory_Deprecated.cs" />
+    <Compile Include="Authentication\CredentialProvider\CredentialProviderFactoryDeprecated.cs" />
     <Compile Include="Authentication\CredentialProvider\CredentialProviderRetryDecorator.cs" />
-    <Compile Include="Authentication\CredentialProvider\ICredentialProviderFactory_Deprecated.cs" />
+    <Compile Include="Authentication\CredentialProvider\ICredentialProviderFactoryDeprecated.cs" />
     <Compile Include="Authentication\ICredentialProvider.cs" />
     <Compile Include="Authentication\ITokenProviderFactoryFactory.cs" />
     <Compile Include="Authentication\OAuth2TokenGenerator.cs" />

@@ -7,13 +7,13 @@ namespace kCura.IntegrationPoints.Core.Authentication.CredentialProvider
 	/// <summary>
 	/// This factory can be used to retrieve instance of <see cref="ICredentialProvider"/> when resolving it from IoC container is not possible
 	/// </summary>
-	public class CredentialProviderFactory_Deprecated : ICredentialProviderFactory_Deprecated
+	public class CredentialProviderFactoryDeprecated : ICredentialProviderFactoryDeprecated
 	{
 		private readonly IAPILog _logger;
 
-		public CredentialProviderFactory_Deprecated(IAPILog logger)
+		public CredentialProviderFactoryDeprecated(IAPILog logger)
 		{
-			_logger = logger.ForContext<CredentialProviderFactory_Deprecated>();
+			_logger = logger.ForContext<CredentialProviderFactoryDeprecated>();
 		}
 
 		public ICredentialProvider Create()

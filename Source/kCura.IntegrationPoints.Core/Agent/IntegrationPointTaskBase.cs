@@ -121,8 +121,7 @@ namespace kCura.IntegrationPoints.Core.Agent
 				factory.TaskJobSubmitter = new TaskJobSubmitter(JobManager, job, TaskType.SyncEntityManagerWorker, BatchInstance);
 				factory.SourceProvider = SourceProvider;
 			}
-			string securedConfiguration = IntegrationPointRepository.GetSecuredConfiguration(job.RelatedObjectArtifactID);
-			IDataSynchronizer sourceProvider = AppDomainRdoSynchronizerFactoryFactory.CreateSynchronizer(providerGuid, configuration, securedConfiguration);
+			IDataSynchronizer sourceProvider = AppDomainRdoSynchronizerFactoryFactory.CreateSynchronizer(providerGuid, configuration);
 			LogGetDestinationProviderSuccesfulEnd(job, sourceProvider);
 			return sourceProvider;
 		}

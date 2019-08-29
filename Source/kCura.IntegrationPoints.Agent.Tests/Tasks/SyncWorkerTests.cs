@@ -108,7 +108,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				new Guid(sourceProvider.Identifier)).Returns(dataSourceProvider);
 			dataSourceProvider.GetData(Arg.Any<List<FieldEntry>>(), (List<string>) _taskParams.BatchParameters, new DataSourceProviderConfiguration(_integrationPoint.SourceConfiguration, _integrationPoint.SecuredConfiguration)).Returns(sourceDataReader);
 			appDomainRdoSynchronizerFactory.CreateSynchronizer(new Guid(destinationProvider.Identifier),
-				_integrationPoint.DestinationConfiguration, _integrationPoint.SecuredConfiguration).Returns(_dataSynchronizer);
+				_integrationPoint.DestinationConfiguration).Returns(_dataSynchronizer);
 			_jobManager.CheckBatchOnJobComplete(_job, _taskParams.BatchInstance.ToString()).Returns(true);
 			_jobManager.GetJobsByBatchInstanceId(_integrationPoint.ArtifactId, _taskParams.BatchInstance)
 				.Returns(associatedJobs);

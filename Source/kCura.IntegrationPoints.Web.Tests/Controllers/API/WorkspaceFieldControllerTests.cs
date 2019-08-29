@@ -76,7 +76,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		public void ItShouldGetFields()
 		{
             // Arrange
-		    _synchronizerFactoryMock.CreateSynchronizer( Guid.Empty, _synchronizerSettings.Settings, _synchronizerSettings.Credentials).Returns(_dataSynchronizerMock);
+		    _synchronizerFactoryMock.CreateSynchronizer( Guid.Empty, _synchronizerSettings.Settings).Returns(_dataSynchronizerMock);
 		    _dataSynchronizerMock.GetFields(Arg.Any<DataSourceProviderConfiguration>()).Returns(_fields);
 
             // Act

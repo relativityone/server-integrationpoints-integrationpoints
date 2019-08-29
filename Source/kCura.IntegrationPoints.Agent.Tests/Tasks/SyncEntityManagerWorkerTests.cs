@@ -237,7 +237,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			repositoryFactory.GetFieldQueryRepository(workspaceArtifactId).Returns(fieldQueryRepository);
 			fieldQueryRepository.Read(Arg.Any<Field>()).Returns(fieldResultSet);
 			appDomainRdoSynchronizerFactory.CreateSynchronizer(new Guid(destinationProvider.Identifier),
-				Arg.Any<string>(), _integrationPoint.SecuredConfiguration).Returns(_dataSynchronizer);
+				Arg.Any<string>()).Returns(_dataSynchronizer);
 			jobManager.CheckBatchOnJobComplete(_job, taskParams.BatchInstance.ToString()).Returns(true);
 			jobManager.GetJobsByBatchInstanceId(_integrationPoint.ArtifactId, taskParams.BatchInstance)
 				.Returns(associatedJobs);

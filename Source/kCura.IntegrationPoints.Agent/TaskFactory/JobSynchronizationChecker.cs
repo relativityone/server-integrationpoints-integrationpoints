@@ -13,7 +13,6 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 	internal class JobSynchronizationChecker : IJobSynchronizationChecker
 	{
 		private readonly IAPILog _logger;
-		private readonly IAgentHelper _helper;
 		private readonly IJobService _jobService;
 		private readonly IManagerFactory _managerFactory;
 		private readonly ITaskFactoryJobHistoryServiceFactory _jobHistoryServicesFactory;
@@ -24,7 +23,6 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 			IManagerFactory managerFactory, 
 			ITaskFactoryJobHistoryServiceFactory jobHistoryServicesFactory)
 		{
-			_helper = helper;
 			_jobService = jobService;
 			_managerFactory = managerFactory;
 			_jobHistoryServicesFactory = jobHistoryServicesFactory;

@@ -122,7 +122,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			jobHistoryService.GetOrCreateScheduledRunHistoryRdo(_integrationPoint, _taskParameters.BatchInstance, Arg.Any<DateTime>()).Returns(jobHistory);
 			caseContext.RsapiService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider.Value).Returns(sourceProvider);
 			serializer.Deserialize<List<FieldMap>>(_integrationPoint.FieldMappings).Returns(mappings);
-			synchronizerFactory.CreateSynchronizer(Arg.Any<Guid>(), Arg.Any<string>(), Arg.Any<string>()).Returns(_synchronizer);
+			synchronizerFactory.CreateSynchronizer(Arg.Any<Guid>(), Arg.Any<string>()).Returns(_synchronizer);
 			managerFactory.CreateJobStopManager(jobService, jobHistoryService, _taskParameters.BatchInstance, job.JobId, true).Returns(jobStopManager);
 
 			ImportSettings imageSettings = new ImportSettings();

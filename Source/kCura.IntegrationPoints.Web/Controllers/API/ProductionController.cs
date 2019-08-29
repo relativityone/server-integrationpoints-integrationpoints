@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 		[HttpPost]
 		[LogApiExceptionFilter(Message = "Unable to create new production.")]
-		public HttpResponseMessage CreateProductionSet(string productionName, int workspaceArtifactId, [FromBody] object credentials, int? federatedInstanceId = null) // TODO can we call it with not null federatedInstanceId???
+		public HttpResponseMessage CreateProductionSet(string productionName, int workspaceArtifactId, [FromBody] object credentials, int? federatedInstanceId = null)
 		{
 			var numbering = new PageLevelNumbering()
 			{

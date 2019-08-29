@@ -86,7 +86,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 				_windsorContainer.Resolve<IImportApiFactory>(),
 				_windsorContainer.Resolve<IImportJobFactory>(),
 				helper, SharedVariables.RelativityWebApiUrl, true, true);
-			synchronizerFactory.CreateSynchronizer(Arg.Any<Guid>(), Arg.Any<string>(), Arg.Any<string>()).Returns(synchronizer);
+			synchronizerFactory.CreateSynchronizer(Arg.Any<Guid>(), Arg.Any<string>()).Returns(synchronizer);
 
 			//RSAPI
 

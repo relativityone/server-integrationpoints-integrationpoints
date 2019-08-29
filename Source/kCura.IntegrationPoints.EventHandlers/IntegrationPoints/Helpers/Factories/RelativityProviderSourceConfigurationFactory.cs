@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factor
 		{
 			IConfigFactory configFactory = new ConfigFactory();
 			IAPILog logger = helper.GetLoggerFactory().GetLogger();
-			ICredentialProviderFactory_Deprecated credentialProviderFactory = new CredentialProviderFactory_Deprecated(logger);
+			ICredentialProviderFactoryDeprecated credentialProviderFactory = new CredentialProviderFactoryDeprecated(logger);
 			ICredentialProvider credentialProvider = credentialProviderFactory.Create();
 			ISqlServiceFactory sqlServiceFactory = new HelperConfigSqlServiceFactory(helper);
 			IServiceManagerProvider serviceManagerProvider = new ServiceManagerProvider(configFactory, credentialProvider, sqlServiceFactory);

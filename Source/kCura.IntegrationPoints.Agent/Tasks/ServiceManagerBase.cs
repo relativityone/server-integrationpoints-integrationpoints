@@ -157,8 +157,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 			try
 			{
-				IDataSynchronizer synchronizer = SynchronizerFactory.CreateSynchronizer(
-					Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID, configuration, IntegrationPointDto.SecuredConfiguration);
+				IDataSynchronizer synchronizer = SynchronizerFactory.CreateSynchronizer(Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID, configuration);
 
 				return synchronizer;
 			}
