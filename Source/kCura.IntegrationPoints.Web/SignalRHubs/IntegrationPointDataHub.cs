@@ -4,10 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
-using kCura.Apps.Common.Data;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core;
-using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Helpers;
@@ -24,7 +21,6 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
-using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Domain.Models;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
@@ -40,8 +36,8 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 		private static ConcurrentDictionary<IntegrationPointDataHubKey, HashSet<string>> _tasks;
 		private static Timer _updateTimer;
 
+		private readonly ICPHelper _helper;
 		private readonly IAPILog _logger;
-		private readonly IContextContainer _contextContainer;
 		private readonly IHelperClassFactory _helperClassFactory;
 		private readonly IIntegrationPointPermissionValidator _permissionValidator;
 		private readonly IJobHistoryManager _jobHistoryManager;
@@ -51,29 +47,21 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 		private readonly IQueueManager _queueManager;
 		private readonly IStateManager _stateManager;
 
-		public IntegrationPointDataHub() : this(new ContextContainer(ConnectionHelper.Helper()), new HelperClassFactory())
+		public IntegrationPointDataHub() : this(ConnectionHelper.Helper(), new HelperClassFactory())
 		{
-			IHelper helper = ConnectionHelper.Helper();
-			_logger = helper.GetLoggerFactory().GetLogger();
-			ISqlServiceFactory sqlServiceFactory = new HelperConfigSqlServiceFactory(helper);
-			IAuthProvider authProvider = new AuthProvider();
-			IAuthTokenGenerator authTokenGenerator = new ClaimsTokenGenerator();
-			ICredentialProvider credentialProvider = new TokenCredentialProvider(authProvider, authTokenGenerator, helper);
-			IServiceManagerProvider serviceManagerProvider = new ServiceManagerProvider(new ConfigFactory(),
-				credentialProvider, new JSONSerializer(),
-				new RelativityCoreTokenProvider(), sqlServiceFactory);
+			_logger = _helper.GetLoggerFactory().GetLogger();
 
-			_managerFactory = new ManagerFactory(helper, serviceManagerProvider);
-			_queueManager = _managerFactory.CreateQueueManager(_contextContainer);
-			_jobHistoryManager = _managerFactory.CreateJobHistoryManager(_contextContainer);
+			_managerFactory = new ManagerFactory(_helper);
+			_queueManager = _managerFactory.CreateQueueManager();
+			_jobHistoryManager = _managerFactory.CreateJobHistoryManager();
 			_stateManager = _managerFactory.CreateStateManager();
-			IRepositoryFactory repositoryFactory = new RepositoryFactory(helper, helper.GetServicesManager());
+			IRepositoryFactory repositoryFactory = new RepositoryFactory(_helper, _helper.GetServicesManager());
 			_permissionValidator = new IntegrationPointPermissionValidator(new[] { new ViewErrorsPermissionValidator(repositoryFactory) }, new IntegrationPointSerializer(_logger));
 		}
 
-		internal IntegrationPointDataHub(IContextContainer contextContainer, IHelperClassFactory helperClassFactory)
+		internal IntegrationPointDataHub(ICPHelper helper, IHelperClassFactory helperClassFactory)
 		{
-			_contextContainer = contextContainer;
+			_helper = helper;
 			_helperClassFactory = helperClassFactory;
 
 			if (_tasks == null)
@@ -108,7 +96,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 
 		public void GetIntegrationPointUpdate(int workspaceId, int artifactId)
 		{
-			int userId = ((ICPHelper)_contextContainer.Helper).GetAuthenticationManager().UserInfo.ArtifactID;
+			int userId = _helper.GetAuthenticationManager().UserInfo.ArtifactID;
 			IntegrationPointDataHubKey key = new IntegrationPointDataHubKey(workspaceId, artifactId, userId);
 
 			AddTask(key);
@@ -201,7 +189,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 				};
 
 				IOnClickEventConstructor onClickEventHelper =
-					_helperClassFactory.CreateOnClickEventHelper(_managerFactory, _contextContainer);
+					_helperClassFactory.CreateOnClickEventHelper(_managerFactory);
 
 				ButtonStateDTO buttonStates = buttonStateBuilder.CreateButtonState(key.WorkspaceId, key.IntegrationPointId);
 				OnClickEventDTO onClickEvents = onClickEventHelper.GetOnClickEvents(key.WorkspaceId, key.IntegrationPointId,
@@ -234,7 +222,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			IAPILog logger)
 		{
 			return new IntegrationPointRepository(
-				relativityObjectManager, 
+				relativityObjectManager,
 				serializer,
 				secretsRepository,
 				logger);

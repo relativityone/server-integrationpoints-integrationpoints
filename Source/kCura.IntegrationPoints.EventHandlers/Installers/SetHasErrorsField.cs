@@ -2,11 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using kCura.Apps.Common.Data;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.EventHandler.CustomAttributes;
-using kCura.IntegrationPoints.Core;
-using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
@@ -26,7 +22,6 @@ using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain;
-using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
@@ -78,7 +73,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 
 		internal void ExecuteInstanced()
 		{
-			
+
 			IList<Data.IntegrationPoint> integrationPoints = GetIntegrationPoints();
 
 			foreach (Data.IntegrationPoint integrationPoint in integrationPoints)
@@ -115,24 +110,15 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			IMessageService messageService = new MessageService();
 
 			_jobHistoryService = new JobHistoryService(
-				caseServiceContext.RsapiService.RelativityObjectManager, 
-				federatedInstanceManager, 
-				workspaceManager, 
-				Helper, 
-				integrationPointSerializer, 
-				providerTypeService, 
+				caseServiceContext.RsapiService.RelativityObjectManager,
+				federatedInstanceManager,
+				workspaceManager,
+				Helper,
+				integrationPointSerializer,
+				providerTypeService,
 				messageService);
-			IContextContainerFactory contextContainerFactory = new ContextContainerFactory();
 
-			IConfigFactory configFactory = new ConfigFactory();
-			IAuthProvider authProvider = new AuthProvider();
-			IAuthTokenGenerator authTokenGenerator = new ClaimsTokenGenerator();
-			ICredentialProvider credentialProvider = new TokenCredentialProvider(authProvider, authTokenGenerator, Helper);
-			ITokenProvider tokenProvider = new RelativityCoreTokenProvider();
-			ISerializer serializer = new JSONSerializer();
-			ISqlServiceFactory sqlServiceFactory = new HelperConfigSqlServiceFactory(Helper);
-			IServiceManagerProvider serviceManagerProvider = new ServiceManagerProvider(configFactory, credentialProvider, serializer, tokenProvider, sqlServiceFactory);
-			IManagerFactory managerFactory = new ManagerFactory(Helper, serviceManagerProvider);
+			IManagerFactory managerFactory = new ManagerFactory(Helper);
 
 			_caseServiceContext = caseServiceContext;
 			IIntegrationPointProviderValidator ipValidator = new IntegrationPointProviderValidator(Enumerable.Empty<IValidator>(), integrationPointSerializer);
@@ -140,7 +126,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			IValidationExecutor validationExecutor = new ValidationExecutor(ipValidator, permissionValidator, Helper);
 
 			ISecretsRepository secretsRepository = new SecretsRepository(
-				SecretStoreFacadeFactory_Deprecated.Create(Helper.GetSecretStore, Logger), 
+				SecretStoreFacadeFactory_Deprecated.Create(Helper.GetSecretStore, Logger),
 				Logger
 			);
 			IIntegrationPointRepository integrationPointRepository = new IntegrationPointRepository(
@@ -151,9 +137,19 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 
 			IJobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(caseServiceContext, Helper, integrationPointRepository);
 
-			_integrationPointService = new IntegrationPointService(Helper, caseServiceContext, contextContainerFactory,
-				integrationPointSerializer, choiceQuery, jobManager, _jobHistoryService, jobHistoryErrorService, managerFactory,
-				validationExecutor, providerTypeService, messageService, integrationPointRepository,
+			_integrationPointService = new IntegrationPointService(
+				Helper, 
+				caseServiceContext,
+				integrationPointSerializer, 
+				choiceQuery, 
+				jobManager, 
+				_jobHistoryService, 
+				jobHistoryErrorService, 
+				managerFactory,
+				validationExecutor, 
+				providerTypeService, 
+				messageService, 
+				integrationPointRepository,
 				caseServiceContext.RsapiService.RelativityObjectManager);
 		}
 

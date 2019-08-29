@@ -42,8 +42,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		private ICaseServiceContext _caseServiceContext;
 		private IRelativityObjectManager _objectManager;
 		private IChoiceQuery _choiceQuery;
-		private IContextContainer _contextContainer;
-		private IContextContainerFactory _contextContainerFactory;
 		private IErrorManager _errorManager;
 		private IHelper _helper;
 		private IIntegrationPointRepository _integrationPointRepository;
@@ -86,8 +84,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
 			_sourcePermissionRepository = Substitute.For<IPermissionRepository>();
 			_targetPermissionRepository = Substitute.For<IPermissionRepository>();
-			_contextContainer = Substitute.For<IContextContainer>();
-			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
 			_serializer = Substitute.For<IIntegrationPointSerializer>();
 			_jobManager = Substitute.For<IJobManager>();
 			_jobHistoryService = Substitute.For<IJobHistoryService>();
@@ -97,7 +93,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_choiceQuery = Substitute.For<IChoiceQuery>();
 			_errorManager = Substitute.For<IErrorManager>();
 			_jobHistoryManager = Substitute.For<IJobHistoryManager>();
-			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
 			_providerTypeService = Substitute.For<IProviderTypeService>();
 			_messageService = Substitute.For<IMessageService>();
 			_integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
@@ -107,7 +102,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_instance = Substitute.ForPartsOf<IntegrationPointService>(
 				_helper,
 				_caseServiceContext,
-				_contextContainerFactory,
 				_serializer,
 				_choiceQuery,
 				_jobManager,
@@ -126,8 +120,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			_repositoryFactory.GetPermissionRepository(_sourceWorkspaceArtifactId).Returns(_sourcePermissionRepository);
 			_repositoryFactory.GetPermissionRepository(_targetWorkspaceArtifactId).Returns(_targetPermissionRepository);
-			_managerFactory.CreateErrorManager(Arg.Is(_contextContainer)).Returns(_errorManager);
-			_managerFactory.CreateJobHistoryManager(Arg.Is(_contextContainer)).Returns(_jobHistoryManager);
+			_managerFactory.CreateErrorManager().Returns(_errorManager);
+			_managerFactory.CreateJobHistoryManager().Returns(_jobHistoryManager);
 
 			_integrationPoint = new Data.IntegrationPoint
 			{
@@ -207,7 +201,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			_jobHistoryService.Received(1).CreateRdo(_integrationPoint, Arg.Any<Guid>(), JobTypeChoices.JobHistoryRun, null);
 			_jobManager.Received(1).CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), TaskType.ExportService, _sourceWorkspaceArtifactId, _integrationPoint.ArtifactId, _userId);
-			_managerFactory.Received().CreateQueueManager(_contextContainer);
+			_managerFactory.Received().CreateQueueManager();
 		}
 
 		[Test]
@@ -657,7 +651,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_sourceProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID;
 			_destinationProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID;
 
-			_managerFactory.CreateQueueManager(_contextContainer).Returns(_queueManager);
+			_managerFactory.CreateQueueManager().Returns(_queueManager);
 
 
 			_queueManager.HasJobsExecutingOrInQueue(_sourceWorkspaceArtifactId, _integrationPointArtifactId).Returns(true);
@@ -679,7 +673,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_queueManager.Received(1).HasJobsExecutingOrInQueue(_sourceWorkspaceArtifactId, _integrationPointArtifactId);
 			_jobHistoryService.DidNotReceive().GetOrCreateScheduledRunHistoryRdo(Arg.Any<Data.IntegrationPoint>(), Arg.Any<Guid>(), null);
 			_jobManager.DidNotReceive().CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), Arg.Any<TaskType>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>());
-			_managerFactory.Received().CreateQueueManager(_contextContainer);
+			_managerFactory.Received().CreateQueueManager();
 		}
 
 		[Test]
@@ -945,7 +939,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			const string errorMessage = "KHAAAAAANN!!!";
 			var exception = new Exception(errorMessage);
 			_integrationPointRepository.ReadWithFieldMappingAsync(0).ThrowsForAnyArgs(exception);
-			_managerFactory.CreateErrorManager(_contextContainer).Returns(_errorManager);
+			_managerFactory.CreateErrorManager().Returns(_errorManager);
 
 			// Assert
 			Assert.Throws<Exception>(() => _instance.SaveIntegration(model), Core.Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_SAVE_INTEGRATION_POINT_USER_MESSAGE);
@@ -1041,7 +1035,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 						)))
 				.Do(x => { throw new PermissionException(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_MESSAGE); });
 
-			_managerFactory.CreateErrorManager(_contextContainer).Returns(_errorManager);
+			_managerFactory.CreateErrorManager().Returns(_errorManager);
 
 			var expectedError = new ErrorDTO()
 			{

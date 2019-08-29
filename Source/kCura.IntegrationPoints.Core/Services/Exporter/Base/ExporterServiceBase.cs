@@ -41,8 +41,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 		internal ExporterServiceBase(
 			IDocumentRepository documentRepository,
 			IRelativityObjectManager relativityObjectManager,
-			IRepositoryFactory sourceRepositoryFactory,
-			IRepositoryFactory targetRepositoryFactory,
+			IRepositoryFactory repositoryFactory,
 			IJobStopManager jobStopManager,
 			IHelper helper,
 			IFileRepository fileRepository,
@@ -60,11 +59,11 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 			RelativityObjectManager = relativityObjectManager;
 			SourceConfiguration = sourceConfiguration;
 
-			ValidateDestinationFields(targetRepositoryFactory, mappedFields);
+			ValidateDestinationFields(repositoryFactory, mappedFields);
 
-			QueryFieldLookupRepository = sourceRepositoryFactory.GetQueryFieldLookupRepository(SourceConfiguration.SourceWorkspaceArtifactId);
+			QueryFieldLookupRepository = repositoryFactory.GetQueryFieldLookupRepository(SourceConfiguration.SourceWorkspaceArtifactId);
 
-			ValidateSourceFields(sourceRepositoryFactory, mappedFields);
+			ValidateSourceFields(repositoryFactory, mappedFields);
 
 			try
 			{

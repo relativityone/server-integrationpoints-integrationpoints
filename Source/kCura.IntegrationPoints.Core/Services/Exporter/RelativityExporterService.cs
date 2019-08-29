@@ -25,8 +25,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		public RelativityExporterService(
 			IDocumentRepository documentRepository, 
 			IRelativityObjectManager relativityObjectManager,
-			IRepositoryFactory sourceRepositoryFactory, 
-			IRepositoryFactory targetRepositoryFactory, 
+			IRepositoryFactory repositoryFactory,
 			IJobStopManager jobStopManager, 
 			IHelper helper,
 			IFolderPathReader folderPathReader,
@@ -40,8 +39,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			: base(
 				documentRepository,
 				relativityObjectManager,
-				sourceRepositoryFactory, 
-				targetRepositoryFactory, 
+				repositoryFactory,
 				jobStopManager, 
 				helper,
 				fileRepository,

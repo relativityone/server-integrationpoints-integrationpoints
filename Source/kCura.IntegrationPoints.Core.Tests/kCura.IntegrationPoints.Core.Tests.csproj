@@ -58,7 +58,6 @@
     <Compile Include="Authentication\TokenCredentialProviderTests.cs" />
     <Compile Include="Extensions\DictionaryExtensionsTests.cs" />
     <Compile Include="Extensions\StringExtensionsTests.cs" />
-    <Compile Include="Factories\HelperFactoryTests.cs" />
     <Compile Include="Helpers\ButtonStateBuilderTests.cs" />
     <Compile Include="Helpers\MatchHelper.cs" />
     <Compile Include="Helpers\RelativePathDirectoryTreeProviderTests.cs" />
@@ -419,6 +418,17 @@
         </Reference>
         <Reference Include="itextsharp">
           <HintPath>..\..\packages\Relativity.DataExchange.Client.SDK\lib\net462\itextsharp.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.DataGrid">
+          <HintPath>..\..\packages\Relativity.DataGrid\lib\net462\Relativity.DataGrid.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

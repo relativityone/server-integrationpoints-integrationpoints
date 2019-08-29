@@ -28,7 +28,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 		public void SetUp(Data.IntegrationPoint ip = null)
 		{
 			var helper = Substitute.For<IHelper>();
-			var helperFactory = Substitute.For<IHelperFactory>();
 			var serializer = Substitute.For<IIntegrationPointSerializer>();
 			serializer.Deserialize<DestinationConfiguration>(Arg.Any<string>()).Returns(new DestinationConfiguration());
 			serializer.Deserialize<TaskParameters>(Arg.Any<string>()).Returns(new TaskParameters());
@@ -36,14 +35,13 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 			_jobHistoryService = Substitute.For<IJobHistoryService>();
 
 			var serviceFactory = Substitute.For<IServiceFactory>();
-			serviceFactory.CreateJobHistoryService(Arg.Any<IHelper>(), Arg.Any<IHelper>()).Returns(_jobHistoryService);
+			serviceFactory.CreateJobHistoryService(Arg.Any<IHelper>()).Returns(_jobHistoryService);
 			_jobHistoryErrorService = Substitute.For<IJobHistoryErrorService>();
 			_integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
 
 			ip = ip ?? GetDefaultIntegrationPoint();
 			_sut = new TaskFactoryJobHistoryService(
 				helper, 
-				helperFactory, 
 				serializer, 
 				serviceFactory, 
 				_jobHistoryErrorService, 

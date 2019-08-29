@@ -1,6 +1,4 @@
 ﻿using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Core;
-using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Validation.Helpers;
@@ -42,9 +40,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 		private readonly IExportInitProcessService _exportInitProcessService;
 		private readonly IExportFileBuilder _exportFileBuilder;
 		private readonly IRepositoryFactory _repositoryFactory;
-		private readonly IHelper _helper;
-		private readonly IContextContainerFactory _contextContainerFactory;
-		private readonly IManagerFactory _managerFactory;
+		private readonly IProductionManager _productionManager;
 		private readonly IViewService _viewService;
 		private readonly IExportFieldsService _exportFieldsService;
 		private readonly IArtifactService _artifactService;
@@ -57,8 +53,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 			IExportFileBuilder exportFileBuilder,
 			IRepositoryFactory repositoryFactory,
 			IHelper helper,
-			IContextContainerFactory contextContainerFactory,
-			IManagerFactory managerFactory,
+			IProductionManager productionManager,
 			IViewService viewService,
 			IExportFieldsService exportFieldsService,
 			IArtifactService artifactService,
@@ -70,9 +65,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 			_exportInitProcessService = exportInitProcessService;
 			_exportFileBuilder = exportFileBuilder;
 			_repositoryFactory = repositoryFactory;
-			_helper = helper;
-			_contextContainerFactory = contextContainerFactory;
-			_managerFactory = managerFactory;
+			_productionManager = productionManager;
 			_viewService = viewService;
 			_exportFieldsService = exportFieldsService;
 			_artifactService = artifactService;
@@ -108,10 +101,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 
 		public ExportProductionValidator CreateExportProductionValidator()
 		{
-			IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(_helper);
-			IProductionManager productionManager = _managerFactory.CreateProductionManager(contextContainer);
-
-			return new ExportProductionValidator(productionManager);
+			return new ExportProductionValidator(_productionManager);
 		}
 
 		public ArtifactValidator CreateArtifactValidator(int workspaceArtifactId, string artifactTypeName)

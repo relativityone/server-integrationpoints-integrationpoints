@@ -16,7 +16,6 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 	public class ServiceFactory : IServiceFactory
 	{
 		private readonly ICaseServiceContext _caseServiceContext;
-		private readonly IContextContainerFactory _contextContainerFactory;
 		private readonly IIntegrationPointSerializer _serializer;
 		private readonly IChoiceQuery _choiceQuery;
 		private readonly IJobManager _jobService;
@@ -25,14 +24,13 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		private readonly IProviderTypeService _providerTypeService;
 		private readonly IMessageService _messageService;
 
-		public ServiceFactory(ICaseServiceContext caseServiceContext, 
-			IContextContainerFactory contextContainerFactory,
-			IIntegrationPointSerializer serializer, 
+		public ServiceFactory(ICaseServiceContext caseServiceContext,
+			IIntegrationPointSerializer serializer,
 			IChoiceQuery choiceQuery,
-			IJobManager jobService, 
+			IJobManager jobService,
 			IManagerFactory managerFactory,
-			IValidationExecutor validationExecutor, 
-			IProviderTypeService providerTypeService, 
+			IValidationExecutor validationExecutor,
+			IProviderTypeService providerTypeService,
 			IMessageService messageService)
 		{
 			_managerFactory = managerFactory;
@@ -42,33 +40,31 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			_jobService = jobService;
 			_choiceQuery = choiceQuery;
 			_serializer = serializer;
-			_contextContainerFactory = contextContainerFactory;
 			_caseServiceContext = caseServiceContext;
 		}
 
-		public IIntegrationPointService CreateIntegrationPointService(IHelper helper, IHelper targetHelper)
+		public IIntegrationPointService CreateIntegrationPointService(IHelper helper)
 		{
 			IAPILog logger = helper.GetLoggerFactory().GetLogger();
-			IJobHistoryService jobHistoryService = CreateJobHistoryService(helper, targetHelper);
+			IJobHistoryService jobHistoryService = CreateJobHistoryService(helper);
 			ISecretsRepository secretsRepository = new SecretsRepository(
 				SecretStoreFacadeFactory_Deprecated.Create(helper.GetSecretStore, logger),
 				logger
 			);
 			IIntegrationPointRepository integrationPointRepository = new IntegrationPointRepository(
-				_caseServiceContext.RsapiService.RelativityObjectManager, 
+				_caseServiceContext.RsapiService.RelativityObjectManager,
 				_serializer,
 				secretsRepository,
 				logger
 			);
 			IJobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(
-				_caseServiceContext, 
-				helper, 
+				_caseServiceContext,
+				helper,
 				integrationPointRepository
 			);
 			return new IntegrationPointService(
 				helper,
 				_caseServiceContext,
-				_contextContainerFactory,
 				_serializer,
 				_choiceQuery,
 				_jobService,
@@ -87,20 +83,15 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			return new FieldCatalogService(targetHelper);
 		}
 
-		public IJobHistoryService CreateJobHistoryService(IHelper helper, IHelper targetHelper)
+		public IJobHistoryService CreateJobHistoryService(IHelper helper)
 		{
-			IContextContainer sourceContextContainer = _contextContainerFactory
-				.CreateContextContainer(helper);
-			IContextContainer targetContextContainer = _contextContainerFactory
-				.CreateContextContainer(helper, targetHelper.GetServicesManager());
-
 			IJobHistoryService jobHistoryService = new JobHistoryService(
-				_caseServiceContext.RsapiService.RelativityObjectManager, 
-				_managerFactory.CreateFederatedInstanceManager(sourceContextContainer),
-				_managerFactory.CreateWorkspaceManager(targetContextContainer), 
-				helper, 
-				_serializer, 
-				_providerTypeService, 
+				_caseServiceContext.RsapiService.RelativityObjectManager,
+				_managerFactory.CreateFederatedInstanceManager(),
+				_managerFactory.CreateWorkspaceManager(),
+				helper,
+				_serializer,
+				_providerTypeService,
 				_messageService);
 
 			return jobHistoryService;

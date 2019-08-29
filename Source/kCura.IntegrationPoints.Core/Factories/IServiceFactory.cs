@@ -7,11 +7,10 @@ namespace kCura.IntegrationPoints.Core.Factories
 {
 	public interface IServiceFactory
 	{
-		IIntegrationPointService CreateIntegrationPointService(IHelper helper,
-			IHelper targetHelper);
+		IIntegrationPointService CreateIntegrationPointService(IHelper helper);
 
 		IFieldCatalogService CreateFieldCatalogService(IHelper targetHelper);
 
-		IJobHistoryService CreateJobHistoryService(IHelper helper, IHelper targetHelper);
+		IJobHistoryService CreateJobHistoryService(IHelper helper);
 	}
 }

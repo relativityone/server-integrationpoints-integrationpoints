@@ -57,13 +57,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Authentication\AuthProvider.cs" />
+    <Compile Include="Authentication\CredentialProvider\CredentialProviderFactory_Deprecated.cs" />
+    <Compile Include="Authentication\CredentialProvider\CredentialProviderRetryDecorator.cs" />
+    <Compile Include="Authentication\CredentialProvider\ICredentialProviderFactory_Deprecated.cs" />
     <Compile Include="Authentication\ICredentialProvider.cs" />
     <Compile Include="Authentication\ITokenProviderFactoryFactory.cs" />
     <Compile Include="Authentication\OAuth2TokenGenerator.cs" />
     <Compile Include="Authentication\IAuthProvider.cs" />
     <Compile Include="Authentication\IOAuth2ClientFactory.cs" />
     <Compile Include="Authentication\OAuth2ClientFactory.cs" />
-    <Compile Include="Authentication\TokenCredentialProvider.cs" />
+    <Compile Include="Authentication\CredentialProvider\TokenCredentialProvider.cs" />
     <Compile Include="Authentication\TokenProviderFactoryFactory.cs" />
     <Compile Include="BatchEmail.cs" />
     <Compile Include="BatchStatusCommands\Implementations\SourceWorkspaceTagCreator.cs" />
@@ -79,7 +82,6 @@
     <Compile Include="Factories\IExportServiceObserversFactory.cs" />
     <Compile Include="Factories\Implementations\ExportServiceObserversFactory.cs" />
     <Compile Include="Installers\Registrations\SecretStoreMigrationRegistration.cs" />
-    <Compile Include="FederatedInstanceServicesManager.cs" />
     <Compile Include="Provider\Internals\ApplicationGuidFinder.cs" />
     <Compile Include="Provider\Internals\DataProviderFactoryFactory.cs" />
     <Compile Include="Provider\Internals\IApplicationGuidFinder.cs" />
@@ -108,7 +110,6 @@
     <Compile Include="Tagging\SourceDocumentsTagger.cs" />
     <Compile Include="Validation\IAgentValidator.cs" />
     <Compile Include="Constants.cs" />
-    <Compile Include="ContextContainer.cs" />
     <Compile Include="Helpers\Implementations\DateTimeUtcHelper.cs" />
     <Compile Include="Helpers\JSONHelper.cs" />
     <Compile Include="Helpers\Logging\LogHelper.cs" />
@@ -125,13 +126,10 @@
     <Compile Include="Factories\IServiceManagerFactory.cs" />
     <Compile Include="Factories\IStreamFactory.cs" />
     <Compile Include="Factories\IHelperClassFactory.cs" />
-    <Compile Include="Factories\IHelperFactory.cs" />
-    <Compile Include="Factories\Implementations\ContextContainerFactory.cs" />
     <Compile Include="Factories\IManagerFactory.cs" />
     <Compile Include="Factories\Implementations\DataTransferLocationServiceFactory.cs" />
     <Compile Include="Factories\Implementations\StreamFactory.cs" />
     <Compile Include="Factories\Implementations\HelperClassFactory.cs" />
-    <Compile Include="Factories\Implementations\HelperFactory.cs" />
     <Compile Include="Factories\Implementations\ManagerFactory.cs" />
     <Compile Include="Helpers\IArtifactTreeCreator.cs" />
     <Compile Include="Helpers\IButtonStateBuilder.cs" />
@@ -168,8 +166,6 @@
     <Compile Include="Monitoring\MessageSink\ExternalCalls\ExternalCallsSink.cs" />
     <Compile Include="Queries\IGetSourceProviderRdoByIdentifier.cs" />
     <Compile Include="ServiceManagerProvider.cs" />
-    <Compile Include="IContextContainer.cs" />
-    <Compile Include="Factories\IContextContainerFactory.cs" />
     <Compile Include="Installers\ValidationInstaller.cs" />
     <Compile Include="Managers\Implementations\FederatedInstanceManager.cs" />
     <Compile Include="Managers\Implementations\InstanceSettingsManager.cs" />
@@ -227,7 +223,6 @@
     <Compile Include="Tagging\Tagger.cs" />
     <Compile Include="Managers\IPermissionManager.cs" />
     <Compile Include="Managers\IProductionManager.cs" />
-    <Compile Include="OAuthHelper.cs" />
     <Compile Include="Managers\Implementations\AuditManager.cs" />
     <Compile Include="Managers\IArtifactGuidManager.cs" />
     <Compile Include="Managers\IJobStopManager.cs" />
@@ -277,7 +272,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>JobStatusMessages.resx</DependentUpon>
     </Compile>
-    <Compile Include="RelativityCoreTokenProvider.cs" />
     <Compile Include="ServiceContextHelperForLoadFileReader.cs" />
     <Compile Include="Services\ArtifactService.cs" />
     <Compile Include="Services\DataTransferLocationService.cs" />

@@ -64,7 +64,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_job = job;
 			IHelper helper = Substitute.For<IHelper>();
 			ICaseServiceContext caseContext = Substitute.For<ICaseServiceContext>();
-			IContextContainerFactory contextContainerFactory = Substitute.For<IContextContainerFactory>();
 			ISynchronizerFactory synchronizerFactory = Substitute.For<ISynchronizerFactory>();
 			IManagerFactory managerFactory = Substitute.For<IManagerFactory>();
 			IIntegrationPointRepository integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
@@ -79,9 +78,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			IJobHistoryService jobHistoryService = Substitute.For<IJobHistoryService>();
 			_jobHistoryErrorService = Substitute.For<IJobHistoryErrorService>();
 
-			IContextContainer contextContainer = Substitute.For<IContextContainer>();
 			IJobStopManager jobStopManager = Substitute.For<IJobStopManager>();
-			contextContainerFactory.CreateContextContainer(helper).Returns(contextContainer);
 			_synchronizer = Substitute.For<IDataSynchronizer>();
 			IDataReaderFactory dataReaderFactory = Substitute.For<IDataReaderFactory>();
 			IImportFileLocationService importFileLocationService = Substitute.For<IImportFileLocationService>();
@@ -151,8 +148,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			jobHistoryService.GetRdo(Arg.Is<Guid>( guid => guid == _taskParameters.BatchInstance)).Returns(jobHistory);
 			_instance = new ImportServiceManager(
 				helper, 
-				caseContext, 
-				contextContainerFactory, 
+				caseContext,
 				synchronizerFactory,
 				managerFactory, 
 				batchStatuses, 

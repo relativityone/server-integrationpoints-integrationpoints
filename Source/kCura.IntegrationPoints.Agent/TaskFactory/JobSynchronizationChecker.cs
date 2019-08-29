@@ -1,7 +1,6 @@
 ﻿using System;
 using kCura.IntegrationPoints.Agent.Attributes;
 using kCura.IntegrationPoints.Agent.Exceptions;
-using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Data;
@@ -15,16 +14,17 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 	{
 		private readonly IAPILog _logger;
 		private readonly IAgentHelper _helper;
-		private readonly IContextContainerFactory _contextContainerFactory;
 		private readonly IJobService _jobService;
 		private readonly IManagerFactory _managerFactory;
 		private readonly ITaskFactoryJobHistoryServiceFactory _jobHistoryServicesFactory;
 
-		public JobSynchronizationChecker(IAgentHelper helper, IContextContainerFactory contextContainerFactory,
-			IJobService jobService, IManagerFactory managerFactory, ITaskFactoryJobHistoryServiceFactory jobHistoryServicesFactory)
+		public JobSynchronizationChecker(
+			IAgentHelper helper,
+			IJobService jobService, 
+			IManagerFactory managerFactory, 
+			ITaskFactoryJobHistoryServiceFactory jobHistoryServicesFactory)
 		{
 			_helper = helper;
-			_contextContainerFactory = contextContainerFactory;
 			_jobService = jobService;
 			_managerFactory = managerFactory;
 			_jobHistoryServicesFactory = jobHistoryServicesFactory;
@@ -50,8 +50,7 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 
 		internal bool HasOtherJobsExecuting(Job job)
 		{
-			IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(_helper);
-			IQueueManager queueManager = _managerFactory.CreateQueueManager(contextContainer);
+			IQueueManager queueManager = _managerFactory.CreateQueueManager();
 
 			bool hasOtherJobsExecuting = queueManager.HasJobsExecuting(job.WorkspaceID, job.RelatedObjectArtifactID, job.JobId, job.NextRunTime);
 

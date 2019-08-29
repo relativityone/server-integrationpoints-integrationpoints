@@ -28,21 +28,11 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factor
 				secretsRepository,
 				logger);
 
-			IFederatedInstanceModelFactory federatedInstanceModelFactory;
-			if (integrationPointBaseFieldsConstants.Name == IntegrationPointFieldGuids.Name)
-			{
-				federatedInstanceModelFactory = new IntegrationPointFederatedInstanceModelFactory(integrationPointRepository);
-			}
-			else
-			{
-				federatedInstanceModelFactory = new IntegrationPointProfileFederatedInstanceModelFactory();
-			}
-			
 			IRepositoryFactory repositoryFactory = new RepositoryFactory(helper, helper.GetServicesManager());
 			Domain.Managers.IFederatedInstanceManager federatedInstanceManager = new FederatedInstanceManager(repositoryFactory);
 			Domain.Managers.IInstanceSettingsManager instanceSettingsManager =new InstanceSettingsManager(repositoryFactory);
 			IRelativityProviderConfiguration relativityProviderSourceConfiguration =
-				RelativityProviderSourceConfigurationFactory.Create(helper, federatedInstanceModelFactory, instanceSettingsManager);
+				RelativityProviderSourceConfigurationFactory.Create(helper, instanceSettingsManager);
 
 			IRelativityProviderConfiguration relativityProviderDestinationConfiguration =
 				new RelativityProviderDestinationConfiguration(helper, federatedInstanceManager, repositoryFactory);

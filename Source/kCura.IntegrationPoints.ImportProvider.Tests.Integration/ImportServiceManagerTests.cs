@@ -61,7 +61,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 
 			IHelper helper = Substitute.For<IHelper>();
 			ICaseServiceContext caseServiceContext = Substitute.For<ICaseServiceContext>();
-			IContextContainerFactory contextContainerFactory = Substitute.For<IContextContainerFactory>();
 			ISynchronizerFactory synchronizerFactory = Substitute.For<ISynchronizerFactory>();
 			IManagerFactory managerFactory = Substitute.For<IManagerFactory>();
 			IEnumerable<IBatchStatus> statuses = Substitute.For<IEnumerable<IBatchStatus>>();
@@ -147,7 +146,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 
 			_instanceUnderTest = new ImportServiceManager(helper,
 				caseServiceContext,
-				contextContainerFactory,
 				synchronizerFactory,
 				managerFactory,
 				statuses,

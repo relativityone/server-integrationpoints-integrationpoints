@@ -24,27 +24,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			Name = "This Instance",
 			ArtifactId = null
 		};
-
-		public FederatedInstanceDto RetrieveFederatedInstanceByName(string instanceName)
-		{
-			if (instanceName.Equals(LocalInstance.Name, StringComparison.Ordinal))
-			{
-				return LocalInstance;
-			}
-
-			IFederatedInstanceRepository federatedInstanceRepository = GetFederatedInstanceRepository();
-
-			FederatedInstanceDto federatedInstance =
-				federatedInstanceRepository.RetrieveFederatedInstance(instanceName);
-
-			if (federatedInstance != null)
-			{
-				LoadUrl(federatedInstance);
-			}
-
-			return federatedInstance;
-		}
-
+		
 		public FederatedInstanceDto RetrieveFederatedInstanceByArtifactId(int? artifactId)
 		{
 			if (artifactId.HasValue)

@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Threading;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.ScheduleQueue.Core;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Factories
 {
@@ -23,21 +19,21 @@ namespace kCura.IntegrationPoints.Core.Factories
 		/// </summary>
 		/// <param name="contextContainer">Container containing necessary contexts</param>
 		/// <returns>Artifact GUID manager</returns>
-		IArtifactGuidManager CreateArtifactGuidManager(IContextContainer contextContainer);
+		IArtifactGuidManager CreateArtifactGuidManager();
 
 		/// <summary>
 		/// Creates field manager.
 		/// </summary>
 		/// <param name="contextContainer">Container containing necessary contexts</param>
 		/// <returns>Field manager</returns>
-		IFieldManager CreateFieldManager(IContextContainer contextContainer);
+		IFieldManager CreateFieldManager();
 
 		/// <summary>
 		/// Creates Job History manager
 		/// </summary>
 		/// <param name="contextContainer">Container containing necessary contexts</param>
 		/// <returns>Job History manager</returns>
-		IJobHistoryManager CreateJobHistoryManager(IContextContainer contextContainer);
+		IJobHistoryManager CreateJobHistoryManager();
 
 		/// <summary>
 		/// Creates Job History Error manager
@@ -46,21 +42,21 @@ namespace kCura.IntegrationPoints.Core.Factories
 		/// <param name="sourceWorkspaceArtifactId">Artifact id of the source workspace</param>
 		/// <param name="uniqueJobId">Unique job id created using the id of the job and the guid identifier</param>
 		/// <returns>Job History Error manager</returns>
-		IJobHistoryErrorManager CreateJobHistoryErrorManager(IContextContainer contextContainer, int sourceWorkspaceArtifactId, string uniqueJobId);
+		IJobHistoryErrorManager CreateJobHistoryErrorManager(int sourceWorkspaceArtifactId, string uniqueJobId);
 
 		/// <summary>
 		/// Creates Object Type manager
 		/// </summary>
 		/// <param name="contextContainer">Container containing necessary contexts</param>
 		/// <returns>Object Type manager</returns>
-		IObjectTypeManager CreateObjectTypeManager(IContextContainer contextContainer);
+		IObjectTypeManager CreateObjectTypeManager();
 
 		/// <summary>
 		/// Creates Queue Manager
 		/// </summary>
 		/// <param name="contextContainer">Container containing necessary contexts</param>
 		/// <returns>A queue manager</returns>
-		IQueueManager CreateQueueManager(IContextContainer contextContainer);
+		IQueueManager CreateQueueManager();
 		
 		/// <summary>
 		/// Create State manager.
@@ -73,14 +69,14 @@ namespace kCura.IntegrationPoints.Core.Factories
 		/// </summary>
 		/// <param name="contextContainer">Container containing necessary contexts</param>
 		/// <returns>Source provider manager</returns>
-		ISourceProviderManager CreateSourceProviderManager(IContextContainer contextContainer);
+		ISourceProviderManager CreateSourceProviderManager();
 
 		/// <summary>
 		/// Creates an error manager.
 		/// </summary>
 		/// <param name="contextContainer"></param>
 		/// <returns>Error Manager</returns>
-		IErrorManager CreateErrorManager(IContextContainer contextContainer);
+		IErrorManager CreateErrorManager();
 
 		/// <summary>
 		/// Creates a job stop manager to handle the stopping signal of the job.
@@ -100,32 +96,25 @@ namespace kCura.IntegrationPoints.Core.Factories
 		/// <param name="contextContainer">Container containing necessary contexts</param>
 		/// <param name="workspaceArtifactId">Artifact id of a workspace</param>
 		/// <returns>Audit Manager</returns>
-		IAuditManager CreateAuditManager(IContextContainer contextContainer, int workspaceArtifactId);
+		IAuditManager CreateAuditManager(int workspaceArtifactId);
 
-		IFederatedInstanceManager CreateFederatedInstanceManager(IContextContainer contextContainer);
+		IFederatedInstanceManager CreateFederatedInstanceManager();
 
-		IWorkspaceManager CreateWorkspaceManager(IContextContainer contextContainer);
+		IWorkspaceManager CreateWorkspaceManager();
 
-		IPermissionManager CreatePermissionManager(IContextContainer contextContainer);
+		IPermissionManager CreatePermissionManager();
 
-		ITagsCreator CreateTagsCreator(IContextContainer contextContainer);
+		ITagsCreator CreateTagsCreator();
 
 		/// <summary>
 		/// Creates a Instance Settings Manager
 		/// </summary>
 		/// <param name="contextContainer">Container containing necessary contexts</param>
 		/// <returns>Instance of Instance Settings Manager</returns>
-		IInstanceSettingsManager CreateInstanceSettingsManager(IContextContainer contextContainer);
-
-		/// <summary>
-		/// Creates a Production Manager
-		/// </summary>
-		/// <param name="contextContainer"></param>
-		/// <returns>Instance of Production Manager</returns>
-		IProductionManager CreateProductionManager(IContextContainer contextContainer);
+		IInstanceSettingsManager CreateInstanceSettingsManager();
 		
-		ITagSavedSearchManager CreateTaggingSavedSearchManager(IContextContainer contextContainer);
+		ITagSavedSearchManager CreateTaggingSavedSearchManager();
 
-		ISourceWorkspaceTagCreator CreateSourceWorkspaceTagsCreator(IContextContainer contextContainer, IHelper targetHelper, SourceConfiguration sourceConfiguration);
+		ISourceWorkspaceTagCreator CreateSourceWorkspaceTagsCreator(SourceConfiguration sourceConfiguration);
 	}
 }

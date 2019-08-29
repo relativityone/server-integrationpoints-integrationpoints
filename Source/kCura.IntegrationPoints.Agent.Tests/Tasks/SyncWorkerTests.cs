@@ -60,20 +60,18 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_batchStatus = Substitute.For<IBatchStatus>();
 			JobStatisticsService statisticsService = Substitute.For<JobStatisticsService>();
 			IManagerFactory managerFactory = Substitute.For<IManagerFactory>();
-			IContextContainerFactory contextContainerFactory = Substitute.For<IContextContainerFactory>();
 			_jobService = Substitute.For<IJobService>();
 			_jobStopManager = Substitute.For<IJobStopManager>();
 			IDataSourceProvider dataSourceProvider = Substitute.For<IDataSourceProvider>();
 			IDataReader sourceDataReader = Substitute.For<IDataReader>();
 			_dataSynchronizer = Substitute.For<IDataSynchronizer>();
-			IContextContainer contextContainer = Substitute.For<IContextContainer>();
 			_jobHistoryManager = Substitute.For<IJobHistoryManager>();
 			IProviderTypeService providerTypeService = Substitute.For<IProviderTypeService>();
 			IIntegrationPointRepository integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
 
 			_instance = new SyncWorker(_caseServiceContext, helper, dataProviderFactory, serializer, 
 				appDomainRdoSynchronizerFactory, jobHistoryService, _jobHistoryErrorService, _jobManager, new IBatchStatus[] { _batchStatus },
-				statisticsService, managerFactory, contextContainerFactory, _jobService, providerTypeService, integrationPointRepository);
+				statisticsService, managerFactory, _jobService, providerTypeService, integrationPointRepository);
 
 			_job = JobHelper.GetJob(1, null, null, 1, 1, 111, 222, TaskType.SyncEntityManagerWorker, new DateTime(), null, "detail",
 				0, new DateTime(), 1, null, null);
@@ -114,7 +112,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_jobManager.CheckBatchOnJobComplete(_job, _taskParams.BatchInstance.ToString()).Returns(true);
 			_jobManager.GetJobsByBatchInstanceId(_integrationPoint.ArtifactId, _taskParams.BatchInstance)
 				.Returns(associatedJobs);
-			contextContainerFactory.CreateContextContainer(helper).Returns(contextContainer);
 		}
 
 		[Test]

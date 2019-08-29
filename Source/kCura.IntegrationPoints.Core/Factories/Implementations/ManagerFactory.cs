@@ -21,56 +21,61 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 	public class ManagerFactory : IManagerFactory
 	{
 		private readonly IHelper _helper;
+		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly IAPILog _logger;
-		private readonly IServiceManagerProvider _serviceManagerProvider;
 
-		public ManagerFactory(IHelper helper, IServiceManagerProvider serviceManagerProvider)
+		public ManagerFactory(IHelper helper)
+			: this(
+				helper,
+				new RepositoryFactory(helper, helper.GetServicesManager()))
+		{ }
+
+		public ManagerFactory(IHelper helper, IRepositoryFactory repositoryFactory)
 		{
 			_helper = helper;
-			_serviceManagerProvider = serviceManagerProvider;
-
+			_repositoryFactory = repositoryFactory;
 			_logger = _helper.GetLoggerFactory().GetLogger();
 		}
 
-		public IArtifactGuidManager CreateArtifactGuidManager(IContextContainer contextContainer)
+		public IArtifactGuidManager CreateArtifactGuidManager()
 		{
-			return new ArtifactGuidManager(CreateRepositoryFactory(contextContainer));
+			return new ArtifactGuidManager(_repositoryFactory);
 		}
 
-		public IFieldManager CreateFieldManager(IContextContainer contextContainer)
+		public IFieldManager CreateFieldManager()
 		{
-			return new FieldManager(CreateRepositoryFactory(contextContainer));
+			return new FieldManager(_repositoryFactory);
 		}
 
-		public IJobHistoryManager CreateJobHistoryManager(IContextContainer contextContainer)
+		public IJobHistoryManager CreateJobHistoryManager()
 		{
 			var massUpdateHelper = new MassUpdateHelper(Config.Config.Instance, _logger);
-			return new JobHistoryManager(CreateRepositoryFactory(contextContainer), _logger, massUpdateHelper);
+			return new JobHistoryManager(_repositoryFactory, _logger, massUpdateHelper);
 		}
 
-		public IJobHistoryErrorManager CreateJobHistoryErrorManager(IContextContainer contextContainer, int sourceWorkspaceArtifactId, string uniqueJobId)
+		public IJobHistoryErrorManager CreateJobHistoryErrorManager(int sourceWorkspaceArtifactId, string uniqueJobId)
 		{
-			return new JobHistoryErrorManager(CreateRepositoryFactory(contextContainer), _helper, sourceWorkspaceArtifactId, uniqueJobId);
+			return new JobHistoryErrorManager(_repositoryFactory, _helper, sourceWorkspaceArtifactId, uniqueJobId);
 		}
 
-		public IObjectTypeManager CreateObjectTypeManager(IContextContainer contextContainer)
+		public IObjectTypeManager CreateObjectTypeManager()
 		{
-			return new ObjectTypeManager(CreateRepositoryFactory(contextContainer));
+			return new ObjectTypeManager(_repositoryFactory);
 		}
 
-		public IQueueManager CreateQueueManager(IContextContainer contextContainer)
+		public IQueueManager CreateQueueManager()
 		{
-			return new QueueManager(CreateRepositoryFactory(contextContainer));
+			return new QueueManager(_repositoryFactory);
 		}
 
-		public ISourceProviderManager CreateSourceProviderManager(IContextContainer contextContainer)
+		public ISourceProviderManager CreateSourceProviderManager()
 		{
-			return new SourceProviderManager(CreateRepositoryFactory(contextContainer));
+			return new SourceProviderManager(_repositoryFactory);
 		}
 
-		public IErrorManager CreateErrorManager(IContextContainer contextContainer)
+		public IErrorManager CreateErrorManager()
 		{
-			return new ErrorManager(CreateRepositoryFactory(contextContainer));
+			return new ErrorManager(_repositoryFactory);
 		}
 
 		public IJobStopManager CreateJobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, Guid jobIdentifier, long jobId, bool isStoppableJob, CancellationTokenSource cancellationTokenSource = null)
@@ -87,10 +92,9 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			return manager;
 		}
 
-		public IAuditManager CreateAuditManager(IContextContainer contextContainer, int workspaceArtifactId)
+		public IAuditManager CreateAuditManager(int workspaceArtifactId)
 		{
-			IRepositoryFactory repositoryFactory = CreateRepositoryFactory(contextContainer);
-			IRelativityAuditRepository relativityAuditRepository = repositoryFactory.GetRelativityAuditRepository(workspaceArtifactId);
+			IRelativityAuditRepository relativityAuditRepository = _repositoryFactory.GetRelativityAuditRepository(workspaceArtifactId);
 			return new AuditManager(relativityAuditRepository);
 		}
 
@@ -99,73 +103,52 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			return new StateManager();
 		}
 
-		public IFederatedInstanceManager CreateFederatedInstanceManager(IContextContainer contextContainer)
+		public IFederatedInstanceManager CreateFederatedInstanceManager()
 		{
-			IFederatedInstanceManager manager = new FederatedInstanceManager(CreateRepositoryFactory(contextContainer));
+			IFederatedInstanceManager manager = new FederatedInstanceManager(_repositoryFactory);
 
 			return manager;
 		}
 
-		public IWorkspaceManager CreateWorkspaceManager(IContextContainer contextContainer)
+		public IWorkspaceManager CreateWorkspaceManager()
 		{
-			IWorkspaceManager workspaceManager = new WorkspaceManager(CreateRepositoryFactory(contextContainer));
+			IWorkspaceManager workspaceManager = new WorkspaceManager(_repositoryFactory);
 			return workspaceManager;
 		}
 
-		public IPermissionManager CreatePermissionManager(IContextContainer contextContainer)
+		public IPermissionManager CreatePermissionManager()
 		{
-			IPermissionManager permissionManager = new PermissionManager(CreateRepositoryFactory(contextContainer));
+			IPermissionManager permissionManager = new PermissionManager(_repositoryFactory);
 			return permissionManager;
 		}
 
-		public ITagsCreator CreateTagsCreator(IContextContainer contextContainer)
+		public ITagsCreator CreateTagsCreator()
 		{
-			var repositoryFactory = CreateRepositoryFactory(contextContainer);
-			ISourceJobManager sourceJobManager = new SourceJobManager(repositoryFactory, _helper);
-			ISourceWorkspaceManager sourceWorkspaceManager = new SourceWorkspaceManager(repositoryFactory, _helper);
-			var relativitySourceRdoHelpersFactory = new RelativitySourceRdoHelpersFactory(repositoryFactory);
-			IRelativitySourceJobRdoInitializer sourceJobRdoInitializer = new RelativitySourceJobRdoInitializer(_helper, repositoryFactory, relativitySourceRdoHelpersFactory);
-			IRelativitySourceWorkspaceRdoInitializer sourceWorkspaceRdoInitializer = new RelativitySourceWorkspaceRdoInitializer(_helper, repositoryFactory, relativitySourceRdoHelpersFactory);
+			ISourceJobManager sourceJobManager = new SourceJobManager(_repositoryFactory, _helper);
+			ISourceWorkspaceManager sourceWorkspaceManager = new SourceWorkspaceManager(_repositoryFactory, _helper);
+			var relativitySourceRdoHelpersFactory = new RelativitySourceRdoHelpersFactory(_repositoryFactory);
+			IRelativitySourceJobRdoInitializer sourceJobRdoInitializer = new RelativitySourceJobRdoInitializer(_helper, _repositoryFactory, relativitySourceRdoHelpersFactory);
+			IRelativitySourceWorkspaceRdoInitializer sourceWorkspaceRdoInitializer = new RelativitySourceWorkspaceRdoInitializer(_helper, _repositoryFactory, relativitySourceRdoHelpersFactory);
 			return new TagsCreator(sourceJobManager, sourceWorkspaceManager, sourceJobRdoInitializer, sourceWorkspaceRdoInitializer, _helper);
 		}
 
-		public IInstanceSettingsManager CreateInstanceSettingsManager(IContextContainer contextContainer)
+		public IInstanceSettingsManager CreateInstanceSettingsManager()
 		{
-			IRepositoryFactory repositoryFactory = CreateRepositoryFactory(contextContainer);
-			return new InstanceSettingsManager(repositoryFactory);
+			return new InstanceSettingsManager(_repositoryFactory);
 		}
 
-		public IProductionManager CreateProductionManager(IContextContainer contextContainer)
+		public ITagSavedSearchManager CreateTaggingSavedSearchManager()
 		{
-			IRepositoryFactory repositoryFactory = CreateRepositoryFactory(contextContainer);
-			IFederatedInstanceManager federatedInstanceManager = CreateFederatedInstanceManager(contextContainer);
-			IAPILog logger = _helper.GetLoggerFactory().GetLogger();
-			return new ProductionManager(logger, repositoryFactory, _serviceManagerProvider, federatedInstanceManager);
-		}
-
-		public ITagSavedSearchManager CreateTaggingSavedSearchManager(IContextContainer contextContainer)
-		{
-			IRepositoryFactory repositoryFactory = CreateRepositoryFactory(contextContainer);
-			ITagSavedSearch tagSavedSearch = new TagSavedSearch(repositoryFactory, new MultiObjectSavedSearchCondition(), _helper);
-			ITagSavedSearchFolder tagSavedSearchFolder = new TagSavedSearchFolder(repositoryFactory, _helper);
+			ITagSavedSearch tagSavedSearch = new TagSavedSearch(_repositoryFactory, new MultiObjectSavedSearchCondition(), _helper);
+			ITagSavedSearchFolder tagSavedSearchFolder = new TagSavedSearchFolder(_repositoryFactory, _helper);
 			return new TagSavedSearchManager(tagSavedSearch, tagSavedSearchFolder);
 		}
 
-		public ISourceWorkspaceTagCreator CreateSourceWorkspaceTagsCreator(IContextContainer contextContainer, IHelper targetHelper, SourceConfiguration sourceConfiguration)
+		public ISourceWorkspaceTagCreator CreateSourceWorkspaceTagsCreator(SourceConfiguration sourceConfiguration)
 		{
-			IFederatedInstanceManager federatedInstanceManager = CreateFederatedInstanceManager(contextContainer);
-			var targetRepositoryFactory = new RepositoryFactory(targetHelper, targetHelper.GetServicesManager());
-			return new SourceWorkspaceTagCreator(targetRepositoryFactory.GetDestinationWorkspaceRepository(sourceConfiguration.SourceWorkspaceArtifactId),
-				CreateRepositoryFactory(contextContainer).GetWorkspaceRepository(), federatedInstanceManager, _helper.GetLoggerFactory().GetLogger());
+			IFederatedInstanceManager federatedInstanceManager = CreateFederatedInstanceManager();
+			return new SourceWorkspaceTagCreator(_repositoryFactory.GetDestinationWorkspaceRepository(sourceConfiguration.SourceWorkspaceArtifactId),
+				_repositoryFactory.GetWorkspaceRepository(), federatedInstanceManager, _helper.GetLoggerFactory().GetLogger());
 		}
-
-		#region Private Helpers
-
-		private IRepositoryFactory CreateRepositoryFactory(IContextContainer contextContainer)
-		{
-			return new RepositoryFactory(contextContainer.Helper, contextContainer.ServicesMgr);
-		}
-
-		#endregion
 	}
 }

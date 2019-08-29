@@ -1,12 +1,13 @@
-﻿using kCura.Apps.Common.Data;
-using kCura.Apps.Common.Utils.Serializers;
+﻿using System;
+using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Authentication;
+using kCura.IntegrationPoints.Core.Authentication.CredentialProvider;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
-using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Domain;
-using kCura.IntegrationPoints.Domain.Authentication;
+using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Managers.Implementations;
+using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
 using Relativity.API;
@@ -15,23 +16,20 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factor
 {
 	public static class RelativityProviderSourceConfigurationFactory
 	{
-		public static IRelativityProviderConfiguration Create(IEHHelper helper, IFederatedInstanceModelFactory federatedInstanceModelFactory, IInstanceSettingsManager federatedInstanceManager)
+		public static IRelativityProviderConfiguration Create(IEHHelper helper, IInstanceSettingsManager federatedInstanceManager)
 		{
 			IConfigFactory configFactory = new ConfigFactory();
-			IAuthProvider authProvider = new AuthProvider();
-			IAuthTokenGenerator authTokenGenerator = new ClaimsTokenGenerator();
-			ICredentialProvider credentialProvider = new TokenCredentialProvider(authProvider, authTokenGenerator, helper);
-			ISerializer serializer = new JSONSerializer();
-			ITokenProvider tokenProvider = new RelativityCoreTokenProvider();
+			IAPILog logger = helper.GetLoggerFactory().GetLogger();
+			ICredentialProviderFactory_Deprecated credentialProviderFactory = new CredentialProviderFactory_Deprecated(logger);
+			ICredentialProvider credentialProvider = credentialProviderFactory.Create();
 			ISqlServiceFactory sqlServiceFactory = new HelperConfigSqlServiceFactory(helper);
-			IServiceManagerProvider serviceManagerProvider = new ServiceManagerProvider(configFactory, credentialProvider,serializer, tokenProvider, sqlServiceFactory);
+			IServiceManagerProvider serviceManagerProvider = new ServiceManagerProvider(configFactory, credentialProvider, sqlServiceFactory);
 
-			IManagerFactory managerFactory = new ManagerFactory(helper, serviceManagerProvider);
-			IContextContainerFactory contextContainerFactory = new ContextContainerFactory();
-			IIntegrationPointSerializer integrationPointSerializer = new IntegrationPointSerializer(helper.GetLoggerFactory().GetLogger());
-			IHelperFactory helperFactory = new HelperFactory(managerFactory, contextContainerFactory, tokenProvider, integrationPointSerializer);
-			
-			return new RelativityProviderSourceConfiguration(helper, helperFactory, managerFactory, contextContainerFactory, federatedInstanceModelFactory, federatedInstanceManager);
+			IManagerFactory managerFactory = new ManagerFactory(helper);
+			var repositoryFactory = new RepositoryFactory(helper, helper.GetServicesManager());
+			Func<IProductionManager> productionManagerFactory = () => new ProductionManager(logger, repositoryFactory, serviceManagerProvider);
+
+			return new RelativityProviderSourceConfiguration(helper, productionManagerFactory, managerFactory, federatedInstanceManager);
 		}
 	}
 }

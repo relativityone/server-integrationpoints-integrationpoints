@@ -24,8 +24,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 		public ImageExporterService(
 			IDocumentRepository documentRepository,
 			IRelativityObjectManager relativityObjectManager,
-			IRepositoryFactory sourceRepositoryFactory,
-			IRepositoryFactory targetRepositoryFactory,
+			IRepositoryFactory repositoryFactory,
 			IFileRepository fileRepository,
 			IJobStopManager jobStopManager,
 			IHelper helper,
@@ -38,8 +37,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 			: base(
 				documentRepository,
 				relativityObjectManager,
-				sourceRepositoryFactory,
-				targetRepositoryFactory,
+				repositoryFactory,
 				jobStopManager,
 				helper,
 				fileRepository,

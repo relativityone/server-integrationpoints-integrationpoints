@@ -32,7 +32,6 @@ using Relativity.API;
 using Constants = kCura.IntegrationPoints.Core.Constants;
 using Relativity.Telemetry.MetricsCollection;
 using APMClient = Relativity.Telemetry.APM.Client;
-using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.RelativitySync;
 using kCura.IntegrationPoints.RelativitySync.RipOverride;
 using Relativity;
@@ -45,11 +44,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private int _sourceSavedSearchArtifactID;
 		private int? _itemLevelErrorSavedSearchArtifactID;
 		private List<IBatchStatus> _exportServiceJobObservers;
-		private readonly IContextContainerFactory _contextContainerFactory;
 		private readonly IExportServiceObserversFactory _exportServiceObserversFactory;
 		private readonly IExporterFactory _exporterFactory;
 		private readonly IHelper _helper;
-		private readonly IHelperFactory _helperFactory;
 		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly IToggleProvider _toggleProvider;
 		private readonly IDocumentRepository _documentRepository;
@@ -59,9 +56,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		public ExportServiceManager(
 			IHelper helper,
-			IHelperFactory helperFactory,
 			ICaseServiceContext caseServiceContext,
-			IContextContainerFactory contextContainerFactory,
 			ISynchronizerFactory synchronizerFactory,
 			IExporterFactory exporterFactory,
 			IExportServiceObserversFactory exportServiceObserversFactory,
@@ -86,7 +81,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				jobHistoryErrorService,
 				scheduleRuleFactory,
 				managerFactory,
-				contextContainerFactory,
 				statuses,
 				caseServiceContext,
 				statisticsService,
@@ -94,13 +88,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				agentValidator,
 				integrationPointRepository)
 		{
-			_contextContainerFactory = contextContainerFactory;
 			_repositoryFactory = repositoryFactory;
 			_toggleProvider = toggleProvider;
 			_exportServiceObserversFactory = exportServiceObserversFactory;
 			_exporterFactory = exporterFactory;
 			_helper = helper;
-			_helperFactory = helperFactory;
 			_documentRepository = documentRepository;
 			_exportDataSanitizer = exportDataSanitizer;
 			Logger = helper.GetLoggerFactory().GetLogger().ForContext<ExportServiceManager>();
@@ -279,15 +271,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			if (importSettings.FederatedInstanceArtifactId.HasValue)
 			{
-				IHelper targetHelper = _helperFactory.CreateTargetHelper(_helper, importSettings.FederatedInstanceArtifactId,
-					importSettings.FederatedInstanceCredentials);
-				IContextContainer contextContainer = ContextContainerFactory.CreateContextContainer(targetHelper);
-				IInstanceSettingsManager instanceSettingsManager = ManagerFactory.CreateInstanceSettingsManager(contextContainer);
-
-				if (!instanceSettingsManager.RetrieveAllowNoSnapshotImport())
-				{
-					importSettings.ImportAuditLevel = ImportAuditLevelEnum.FullAudit;
-				}
+				throw new InvalidOperationException("i2i is not supported");
 			}
 		}
 
@@ -341,7 +325,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			//Load Job History Errors if any
 			string uniqueJobId = GetUniqueJobId(job);
 			JobHistoryErrorManager =
-				ManagerFactory.CreateJobHistoryErrorManager(ContextContainer, SourceConfiguration.SourceWorkspaceArtifactId,
+				ManagerFactory.CreateJobHistoryErrorManager(SourceConfiguration.SourceWorkspaceArtifactId,
 					uniqueJobId);
 			UpdateStatusType = JobHistoryErrorManager.StageForUpdatingErrors(job, JobHistory.JobType);
 
@@ -401,19 +385,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private void InitializeExportServiceObservers(Job job, string userImportApiSettings)
 		{
 			LogInitializeExportServiceObserversStart(job);
-			IHelper targetHelper = _helperFactory.CreateTargetHelper(
-				_helper,
-				SourceConfiguration.FederatedInstanceArtifactId,
-				IntegrationPointDto.SecuredConfiguration);
-			IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(
-				_helper,
-				targetHelper.GetServicesManager());
-			ITagsCreator tagsCreator = ManagerFactory.CreateTagsCreator(contextContainer);
-			ITagSavedSearchManager tagSavedSearchManager = ManagerFactory.CreateTaggingSavedSearchManager(contextContainer);
-			ISourceWorkspaceTagCreator sourceWorkspaceTagsCreator = ManagerFactory.CreateSourceWorkspaceTagsCreator(
-				contextContainer,
-				targetHelper,
-				SourceConfiguration);
+			ITagsCreator tagsCreator = ManagerFactory.CreateTagsCreator();
+			ITagSavedSearchManager tagSavedSearchManager = ManagerFactory.CreateTaggingSavedSearchManager();
+			ISourceWorkspaceTagCreator sourceWorkspaceTagsCreator = ManagerFactory.CreateSourceWorkspaceTagsCreator(SourceConfiguration);
 
 			_exportServiceJobObservers = _exportServiceObserversFactory.InitializeExportServiceJobObservers(
 				job,

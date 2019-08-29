@@ -39,8 +39,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		protected IJobHistoryErrorService JobHistoryErrorService { get; }
 		protected IScheduleRuleFactory ScheduleRuleFactory { get; }
 		protected IManagerFactory ManagerFactory { get; }
-		protected IContextContainer ContextContainer { get; }
-		protected IContextContainerFactory ContextContainerFactory { get; }
 		protected List<IBatchStatus> BatchStatus { get; }
 		protected ICaseServiceContext CaseServiceContext { get; }
 		protected IIntegrationPointRepository IntegrationPointRepository { get; }
@@ -59,7 +57,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IJobHistoryErrorService jobHistoryErrorService,
 			IScheduleRuleFactory scheduleRuleFactory,
 			IManagerFactory managerFactory,
-			IContextContainerFactory contextContainerFactory,
 			IEnumerable<IBatchStatus> statuses,
 			ICaseServiceContext caseServiceContext,
 			JobStatisticsService statisticsService,
@@ -75,8 +72,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			JobHistoryErrorService = jobHistoryErrorService;
 			ScheduleRuleFactory = scheduleRuleFactory;
 			ManagerFactory = managerFactory;
-			ContextContainer = contextContainerFactory.CreateContextContainer(helper);
-			ContextContainerFactory = contextContainerFactory;
 			BatchStatus = statuses.ToList();
 			CaseServiceContext = caseServiceContext;
 			IntegrationPointRepository = integrationPointRepository;
@@ -254,7 +249,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			try
 			{
-				IJobHistoryManager jobHistoryManager = ManagerFactory.CreateJobHistoryManager(ContextContainer);
+				IJobHistoryManager jobHistoryManager = ManagerFactory.CreateJobHistoryManager();
 				jobHistoryManager.SetErrorStatusesToExpired(CaseServiceContext.WorkspaceID, JobHistory.ArtifactId);
 			}
 			catch (Exception e)

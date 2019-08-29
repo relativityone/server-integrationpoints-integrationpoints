@@ -5,7 +5,6 @@ using System.Web.Http.Results;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Web.Controllers.API;
@@ -20,13 +19,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 	[TestFixture, Category("ImportProvider")]
 	public class ImportProviderImageControllerTests : TestBase
 	{
-
 		private ImportProviderImageController _controller;
-		private IContextContainerFactory _contextContainerFactory;
 		private IManagerFactory _managerFactory;
 		private IFieldManager _fieldManager;
 		private ICPHelper _helper;
-		private IContextContainer _contextContainer;
 		private ICredentialProvider _credentialProvider;
 		private ICaseManagerFactory _caseManagerFactory;
 		private WinEDDS.Service.Export.ICaseManager _caseManager;
@@ -38,20 +34,17 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		[SetUp]
 		public override void SetUp()
 		{
-			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
 			_managerFactory = Substitute.For<IManagerFactory>();
 			_helper = Substitute.For<ICPHelper>();
-			_contextContainer = Substitute.For<IContextContainer>();
 			_fieldManager = Substitute.For<IFieldManager>();
 			_credentialProvider = Substitute.For<ICredentialProvider>();
 			_caseManagerFactory = Substitute.For<ICaseManagerFactory>();
 			_caseManager = Substitute.For<WinEDDS.Service.Export.ICaseManager>();
 
-			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
-			_managerFactory.CreateFieldManager(_contextContainer).Returns(_fieldManager);
+			_managerFactory.CreateFieldManager().Returns(_fieldManager);
 			_caseManagerFactory.Create(null, null).ReturnsForAnyArgs(_caseManager);
 
-			_controller = new ImportProviderImageController(_contextContainerFactory, _managerFactory, _helper, _credentialProvider, _caseManagerFactory);
+			_controller = new ImportProviderImageController(_managerFactory, _helper, _credentialProvider, _caseManagerFactory);
 		}
 
 		[Test]

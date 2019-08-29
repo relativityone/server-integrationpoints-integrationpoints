@@ -32,7 +32,6 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
 			IJobHistoryErrorService jobHistoryErrorService,
 			IJobManager jobManager,
 			IManagerFactory managerFactory,
-			IContextContainerFactory contextContainerFactory,
 			IJobService jobService,
 			IIntegrationPointRepository integrationPointRepository)
 			: base(caseServiceContext,
@@ -44,7 +43,6 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
 				jobHistoryErrorService,
 				jobManager,
 				managerFactory,
-				contextContainerFactory,
 				jobService,
 				integrationPointRepository)
 		{

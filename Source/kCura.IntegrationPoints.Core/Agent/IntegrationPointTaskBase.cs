@@ -28,7 +28,6 @@ namespace kCura.IntegrationPoints.Core.Agent
 		private readonly IAPILog _logger;
 
 		protected ICaseServiceContext CaseServiceContext;
-		protected IContextContainerFactory ContextContainerFactory;
 		protected IDataProviderFactory DataProviderFactory;
 		protected IJobHistoryErrorService JobHistoryErrorService;
 		protected IJobHistoryService JobHistoryService;
@@ -51,7 +50,6 @@ namespace kCura.IntegrationPoints.Core.Agent
 			IJobHistoryErrorService jobHistoryErrorService,
 			IJobManager jobManager,
 			IManagerFactory managerFactory,
-			IContextContainerFactory contextContainerFactory,
 			IJobService jobService,
 			IIntegrationPointRepository integrationPointRepository)
 		{
@@ -65,7 +63,6 @@ namespace kCura.IntegrationPoints.Core.Agent
 			JobManager = jobManager;
 			ManagerFactory = managerFactory;
 			JobService = jobService;
-			ContextContainerFactory = contextContainerFactory;
 			IntegrationPointRepository = integrationPointRepository;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<IntegrationPointTaskBase>();
 		}

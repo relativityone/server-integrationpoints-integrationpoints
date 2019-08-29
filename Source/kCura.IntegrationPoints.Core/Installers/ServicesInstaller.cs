@@ -54,6 +54,7 @@ using System;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Core.Installers.Registrations;
+using kCura.IntegrationPoints.Core.Authentication.CredentialProvider;
 using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data.Installers;
 using IFederatedInstanceManager = kCura.IntegrationPoints.Domain.Managers.IFederatedInstanceManager;
@@ -79,7 +80,6 @@ namespace kCura.IntegrationPoints.Core.Installers
 				return new ObjectTypeRepository(contextHelper.WorkspaceID, helper.GetServicesManager(), helper, objectManager);
 			}).LifestyleTransient());
 
-			container.Register(Component.For<IContextContainerFactory>().ImplementedBy<ContextContainerFactory>().LifestyleTransient());
 			container.Register(Component.For<ObjectTypeService>().ImplementedBy<ObjectTypeService>().LifestyleTransient());
 			container.Register(Component.For<IPluginProvider>().ImplementedBy<DefaultSourcePluginProvider>().LifestyleTransient());
 			container.Register(Component.For<IWindsorContainerSetup>().ImplementedBy<WindsorContainerSetup>().LifestyleSingleton());
@@ -135,11 +135,11 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<RelativityFeaturePathService>().ImplementedBy<RelativityFeaturePathService>().LifestyleTransient());
 
 			container.Register(Component.For<IConfigFactory>().ImplementedBy<ConfigFactory>().LifestyleSingleton());
-			container.Register(Component.For<ITokenProvider>().ImplementedBy<RelativityCoreTokenProvider>().LifestyleTransient());
 			container.Register(Component.For<ISqlServiceFactory>().ImplementedBy<HelperConfigSqlServiceFactory>().LifestyleSingleton());
 			container.Register(Component.For<IServiceManagerProvider>().ImplementedBy<ServiceManagerProvider>().LifestyleTransient());
 			container.Register(Component.For<IManagerFactory>().ImplementedBy<ManagerFactory>().LifestyleTransient());
 
+			container.Register(Component.For<IProductionManager>().ImplementedBy<ProductionManager>().LifestyleTransient());
 			container.Register(Component.For<ISourceWorkspaceManager>().ImplementedBy<SourceWorkspaceManager>().LifestyleTransient());
 			container.Register(Component.For<ISourceJobManager>().ImplementedBy<SourceJobManager>().LifestyleTransient());
 			container.Register(Component.For<ISavedSearchesTreeService>().ImplementedBy<SavedSearchesTreeService>().LifestyleTransient());
@@ -178,32 +178,26 @@ namespace kCura.IntegrationPoints.Core.Installers
 				.LifestyleSingleton()
 			);
 
-			container.Register(Component.For<IFederatedInstanceManager>().UsingFactoryMethod(k =>
-			{
-				IManagerFactory managerFactory = k.Resolve<IManagerFactory>();
-				IContextContainerFactory contextContainerFactory = k.Resolve<IContextContainerFactory>();
-				IHelper helper = k.Resolve<IHelper>();
-				IContextContainer contextContainer = contextContainerFactory.CreateContextContainer(helper);
-				IFederatedInstanceManager federatedInstanceManager = managerFactory.CreateFederatedInstanceManager(contextContainer);
-
-				return federatedInstanceManager;
-			}).LifestyleTransient());
+			container.Register(Component
+				.For<IFederatedInstanceManager>()
+				.ImplementedBy<FederatedInstanceManager>()
+				.LifestyleTransient());
 
 			container.Register(Component.For<IServiceFactory>().ImplementedBy<ServiceFactory>().LifestyleTransient());
 			container.Register(Component.For<IArtifactServiceFactory>().ImplementedBy<ArtifactServiceFactory>().LifestyleTransient());
-			container.Register(Component.For<IHelperFactory>().ImplementedBy<HelperFactory>().LifestyleSingleton());
 			container.Register(Component.For<IAPM>().UsingFactoryMethod(k => Client.APMClient, managedExternally: true).LifestyleTransient());
 			container.Register(Component.For<IAuthProvider>().ImplementedBy<AuthProvider>().LifestyleSingleton());
 			container.Register(Component.For<IOAuth2ClientFactory>().ImplementedBy<OAuth2ClientFactory>().LifestyleTransient());
 
-			container.Register(Component.For<ICredentialProvider>().UsingFactoryMethod(kernel =>
-			{
-				IHelper helper = kernel.Resolve<IHelper>();
-				IAuthProvider authProvider = kernel.Resolve<IAuthProvider>();
-				IAuthTokenGenerator tokenGenerator = kernel.Resolve<IAuthTokenGenerator>();
-
-				return new TokenCredentialProvider(authProvider, tokenGenerator, helper);
-			}).LifestyleTransient());
+			// TODO extract this registration to separate class & write tests
+			container.Register(Component
+				.For<ICredentialProvider>()
+				.ImplementedBy<CredentialProviderRetryDecorator>()
+				.LifestyleTransient());
+			container.Register(Component
+				.For<ICredentialProvider>()
+				.ImplementedBy<TokenCredentialProvider>()
+				.LifestyleTransient());
 
 			container.Register(Component.For<ITokenProviderFactoryFactory>().ImplementedBy<TokenProviderFactoryFactory>()
 				.LifestyleSingleton());

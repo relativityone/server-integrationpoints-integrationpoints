@@ -77,7 +77,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			IManagerQueueService managerQueueService = Substitute.For<IManagerQueueService>();
 			JobStatisticsService statisticsService = Substitute.For<JobStatisticsService>();
 			IManagerFactory managerFactory = Substitute.For<IManagerFactory>();
-			IContextContainerFactory contextContainerFactory = Substitute.For<IContextContainerFactory>();
 			_jobService = Substitute.For<IJobService>();
 			IProviderTypeService providerTypeService = Substitute.For<IProviderTypeService>();
 			_integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
@@ -87,7 +86,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			IFieldQueryRepository fieldQueryRepository = Substitute.For<IFieldQueryRepository>();
 
-			var helperFactory = Substitute.For<IHelperFactory>();
 			IRelativityObjectManager relativityObjectManager = Substitute.For<IRelativityObjectManager>();
 
 			int workspaceArtifactId = 12345;
@@ -103,10 +101,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				managerQueueService,
 				statisticsService,
 				managerFactory,
-				contextContainerFactory,
 				_jobService,
 				repositoryFactory,
-				helperFactory,
 				relativityObjectManager,
 				providerTypeService,
 				_integrationPointRepository);
@@ -220,7 +216,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 					}
 				}
 			};
-			
+
 			var associatedJobs = new List<Job> { _job };
 			var fieldsMap = new List<FieldMap>();
 			_integrationPointRepository.ReadWithFieldMappingAsync(_job.RelatedObjectArtifactID).Returns(_integrationPoint);
@@ -288,7 +284,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			//ARRANGE
 			Job job = GetJob(_jsonParam1);
 			SyncEntityManagerWorker task =
-				new SyncEntityManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+				new SyncEntityManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null, null);
 
 			//ACT
 			MethodInfo dynMethod = task.GetType().GetMethod("GetParameters",
@@ -321,10 +317,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		{
 			//ARRANGE
 			SyncEntityManagerWorker task =
-				new SyncEntityManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+				new SyncEntityManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null, null);
 			_integrationPoint.DestinationConfiguration = _jsonParam2;
 			task.GetType().GetProperty("IntegrationPoint", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).SetValue(task, _integrationPoint);
-			
+
 			//ACT
 			MethodInfo dynMethod = task.GetType().GetMethod("ReconfigureImportAPISettings",
 				BindingFlags.NonPublic | BindingFlags.Instance);

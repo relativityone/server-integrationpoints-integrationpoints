@@ -19,9 +19,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Helpers
 		{
 			var container = new WindsorContainer();
 
-			container.Register(Component.For<IContextContainerFactory>()
-				.Instance(Substitute.For<IContextContainerFactory>())
-				.LifestyleTransient());
 			container.Register(Component.For<IManagerFactory>()
 				.Instance(Substitute.For<IManagerFactory>())
 				.LifestyleTransient());
