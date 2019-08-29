@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.RelativitySync.Adapters;
 using kCura.IntegrationPoints.RelativitySync.Tests.Integration.Stubs;
@@ -103,10 +102,10 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 
 		private async Task AssertSourceWorkspaceFields()
 		{
-			List<RelativityObject> sourceWorkspaceObjectFields = await GetObjectFields(Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME).ConfigureAwait(false);
+			List<RelativityObject> sourceWorkspaceObjectFields = await GetObjectFieldsAsync(Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME).ConfigureAwait(false);
 
-			//System Fields (6) + Relativity Source Case, Source Instance Name, Source Workspace Artifact ID, Source Workspace Name
-			Assert.AreEqual(sourceWorkspaceObjectFields.Count, 10);
+			//System Fields (6) + Relativity Source Case, Source Instance Name, Source Workspace Artifact ID, Source Workspace Name, Relativity Source Case::Relativity Image Count
+			Assert.AreEqual(11, sourceWorkspaceObjectFields.Count);
 
 			Assert.IsTrue(sourceWorkspaceObjectFields.Any(x => x.Guids.Any(y => y == SourceWorkspaceDTO.Fields.CaseIdFieldNameGuid)));
 			Assert.IsTrue(sourceWorkspaceObjectFields.Any(x => x.Guids.Any(y => y == SourceWorkspaceDTO.Fields.CaseNameFieldNameGuid)));
@@ -115,10 +114,10 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 
 		private async Task AssertSourceJobFields()
 		{
-			List<RelativityObject> sourceJobObjectFields = await GetObjectFields(Constants.SPECIAL_SOURCEJOB_FIELD_NAME).ConfigureAwait(false);
+			List<RelativityObject> sourceJobObjectFields = await GetObjectFieldsAsync(Constants.SPECIAL_SOURCEJOB_FIELD_NAME).ConfigureAwait(false);
 
-			//System Fields (6) + Job History Artifact ID, Job History Name, Relativity Source Job, RelativitySourceCase
-			Assert.AreEqual(sourceJobObjectFields.Count, 10);
+			//System Fields (6) + Job History Artifact ID, Job History Name, Relativity Source Job, RelativitySourceCase, Relativity Source Job::Relativity Image Count
+			Assert.AreEqual(11, sourceJobObjectFields.Count);
 
 			Assert.IsTrue(sourceJobObjectFields.Any(x => x.Guids.Any(y => y == SourceJobDTO.Fields.JobHistoryIdFieldGuid)));
 			Assert.IsTrue(sourceJobObjectFields.Any(x => x.Guids.Any(y => y == SourceJobDTO.Fields.JobHistoryNameFieldGuid)));
@@ -126,13 +125,13 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 
 		private async Task AssertDocumentFields()
 		{
-			List<RelativityObject> documentFields = await GetObjectFields("Document").ConfigureAwait(false);
+			List<RelativityObject> documentFields = await GetObjectFieldsAsync("Document").ConfigureAwait(false);
 
 			Assert.IsTrue(documentFields.Any(x => x.Guids.Any(y => y == SourceJobDTO.Fields.JobHistoryFieldOnDocumentGuid)));
 			Assert.IsTrue(documentFields.Any(x => x.Guids.Any(y => y == SourceWorkspaceDTO.Fields.SourceWorkspaceFieldOnDocumentGuid)));
 		}
 
-		private async Task<List<RelativityObject>> GetObjectFields(string objectName)
+		private async Task<List<RelativityObject>> GetObjectFieldsAsync(string objectName)
 		{
 			using (IObjectManager objectManager = Helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
@@ -155,7 +154,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 					},
 					Condition = $"('Object Type' IN ['{objectName}'])"
 				};
-				QueryResult result = await objectManager.QueryAsync(_workspaceId, request, 0, 100).ConfigureAwait(false);
+				QueryResult result = await objectManager.QueryAsync(_workspaceId, request, 0, 200).ConfigureAwait(false);
 				return result.Objects;
 			}
 		}
