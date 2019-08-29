@@ -9,7 +9,6 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
-using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
@@ -34,7 +33,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			ICaseServiceContext caseServiceContext,
 			IContextContainerFactory contextContainerFactory,
 			ISynchronizerFactory synchronizerFactory,
-			IOnBehalfOfUserClaimsPrincipalFactory onBehalfOfUserClaimsPrincipalFactory,
 			IManagerFactory managerFactory,
 			IEnumerable<IBatchStatus> statuses,
 			ISerializer serializer,
@@ -57,7 +55,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				contextContainerFactory,
 				statuses,
 				caseServiceContext,
-				onBehalfOfUserClaimsPrincipalFactory,
 				statisticsService,
 				synchronizerFactory,
 				agentValidator,

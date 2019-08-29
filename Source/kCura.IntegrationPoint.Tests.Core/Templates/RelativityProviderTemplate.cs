@@ -119,14 +119,14 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			return Container.Resolve<ISerializer>().Serialize(sourceConfiguration);
 		}
 
-		protected string CreateDestinationConfig(ImportOverwriteModeEnum overwriteMode, int? federatedInstanceArtifactId = null)
+		protected string CreateDestinationConfig(ImportOverwriteModeEnum overwriteMode)
 		{
-			return CreateSerializedDestinationConfigWithTargetWorkspace(overwriteMode, SourceWorkspaceArtifactID, federatedInstanceArtifactId);
+			return CreateSerializedDestinationConfigWithTargetWorkspace(overwriteMode, SourceWorkspaceArtifactID);
 		}
 
-		protected string CreateSerializedDestinationConfigWithTargetWorkspace(ImportOverwriteModeEnum overwriteMode, int targetWorkspaceId, int? federatedInstanceArtifactId = null)
+		protected string CreateSerializedDestinationConfigWithTargetWorkspace(ImportOverwriteModeEnum overwriteMode, int targetWorkspaceId)
 		{
-			ImportSettings destinationConfig = CreateDestinationConfigWithTargetWorkspace(overwriteMode, targetWorkspaceId, federatedInstanceArtifactId);
+			ImportSettings destinationConfig = CreateDestinationConfigWithTargetWorkspace(overwriteMode, targetWorkspaceId);
 			return Container.Resolve<ISerializer>().Serialize(destinationConfig);
 		}
 

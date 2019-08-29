@@ -56,8 +56,6 @@
     <Compile Include="Attributes\DynamicFieldAttribute.cs" />
     <Compile Include="Attributes\DynamicObjectAttribute.cs" />
     <Compile Include="ChoiceQuery.cs" />
-    <Compile Include="Contexts\IOnBehalfOfUserClaimsPrincipalFactory.cs" />
-    <Compile Include="Contexts\OnBehalfOfUserClaimsPrincipalFactory.cs" />
     <Compile Include="Converters\FieldRefExtensions.cs" />
     <Compile Include="Converters\FieldUpdateRequestDtoExtensions.cs" />
     <Compile Include="Converters\FieldValuePairExtensions.cs" />
@@ -70,7 +68,6 @@
     <Compile Include="DTO\SavedSearchQueryResult.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\FieldExtensions.cs" />
-    <Compile Include="Extensions\ObjectQueryResultSetExtensions.cs" />
     <Compile Include="Extensions\ResultSetExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Facades\ObjectManager\DTOs\FieldValueMap.cs" />
@@ -125,6 +122,9 @@
     <Compile Include="Repositories\ApplicationRepository.cs" />
     <Compile Include="Repositories\DTO\ArtifactRef.cs" />
     <Compile Include="Repositories\DTO\AuditRecord.cs" />
+    <Compile Include="Repositories\DTO\ChoiceDto.cs" />
+    <Compile Include="Repositories\DTO\ChoiceWithChildInfoDto.cs" />
+    <Compile Include="Repositories\DTO\ChoiceWithParentInfoDto.cs" />
     <Compile Include="Repositories\DTO\FieldUpdateRequestDto.cs" />
     <Compile Include="Repositories\DTO\FileDto.cs" />
     <Compile Include="Repositories\DTO\IFieldValueDto.cs" />
@@ -135,8 +135,11 @@
     <Compile Include="Repositories\IApplicationRepository.cs" />
     <Compile Include="Repositories\IAuditRepository.cs" />
     <Compile Include="Repositories\ICaseRepository.cs" />
+    <Compile Include="Repositories\IChoiceRepository.cs" />
     <Compile Include="Repositories\IFileRepository.cs" />
     <Compile Include="Repositories\IFoundationRepositoryFactory.cs" />
+    <Compile Include="Repositories\Implementations\CachedChoiceRepository.cs" />
+    <Compile Include="Repositories\Implementations\ChoiceRepository.cs" />
     <Compile Include="Repositories\Implementations\SecretsRepository.cs" />
     <Compile Include="Repositories\IRepositoryWithMassUpdate.cs" />
     <Compile Include="Repositories\IRepository.cs" />
@@ -147,7 +150,6 @@
     <Compile Include="Repositories\Implementations\Repository.cs" />
     <Compile Include="Repositories\Implementations\FileRepository.cs" />
     <Compile Include="Repositories\Implementations\IntegrationPointRepository.cs" />
-    <Compile Include="Repositories\Implementations\ViewFieldInfoFieldTypeExtender.cs" />
     <Compile Include="Repositories\Implementations\FoundationRepositoryFactory.cs" />
     <Compile Include="Repositories\Implementations\ProductionRepository.cs" />
     <Compile Include="Repositories\Implementations\QueryFieldLookupRepository.cs" />

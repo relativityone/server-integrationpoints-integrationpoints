@@ -12,10 +12,10 @@ using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.Exporter.Sanitization;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Validation;
-using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
@@ -69,7 +69,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			ISynchronizerFactory synchronizerFactory = Container.Resolve<ISynchronizerFactory>();
 			IExporterFactory exporterFactory = Container.Resolve<IExporterFactory>();
 			IExportServiceObserversFactory exportServiceObserversFactory = Container.Resolve<IExportServiceObserversFactory>();
-			IOnBehalfOfUserClaimsPrincipalFactory onBehalfOfUserClaimsPrincipalFactory = Container.Resolve<IOnBehalfOfUserClaimsPrincipalFactory>();
 			IRepositoryFactory repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			IManagerFactory managerFactory = Container.Resolve<IManagerFactory>();
 			ISerializer serializer = Container.Resolve<ISerializer>();
@@ -83,6 +82,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			IAPILog logger = Container.Resolve<IAPILog>();
 			IDateTimeHelper dateTimeHelper = Container.Resolve<IDateTimeHelper>();
 			IDocumentRepository documentRepository = Container.Resolve<IDocumentRepository>();
+			IExportDataSanitizer exportDataSanitizer = Container.Resolve<IExportDataSanitizer>();
 			var jobHistoryUpdater = new JobHistoryBatchUpdateStatus(
 				jobStatusUpdater,
 				jobHistoryService,
@@ -97,7 +97,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				synchronizerFactory,
 				exporterFactory,
 				exportServiceObserversFactory,
-				onBehalfOfUserClaimsPrincipalFactory,
 				repositoryFactory,
 				managerFactory,
 				new[] { jobHistoryUpdater },
@@ -110,7 +109,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				null,
 				agentValidator,
 				IntegrationPointRepository,
-				documentRepository
+				documentRepository,
+				exportDataSanitizer
 			);
 
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();

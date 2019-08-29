@@ -6,6 +6,7 @@ using System.Web.Http;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Core.Utils;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web.Attributes;
@@ -57,6 +58,9 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				{
 					model.DestinationProvider = _provider.GetRdoSynchronizerId();
 				}
+
+				model = RemoveInstanceToInstanceSettingsFromModel(model);
+
 				return Request.CreateResponse(HttpStatusCode.Accepted, model);
 			}
 			catch (Exception exception)
@@ -109,6 +113,23 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 					}
 				}
 			}
+		}
+
+		private IntegrationPointModel RemoveInstanceToInstanceSettingsFromModel(IntegrationPointModel model)
+		{
+			//We need to reset the values from the database that have federated instance other than null.
+			//We do not want to forward the federated instance to the user interface.
+			if (!model.SourceConfiguration.Contains("\"FederatedInstanceArtifactId\":null") &&
+				model.SourceConfiguration.Contains("FederatedInstanceArtifactId"))
+			{
+				model.SourceConfiguration = null;
+			}
+			else if (model.SourceConfiguration.Contains("\"FederatedInstanceArtifactId\":null"))
+			{
+				model.SourceConfiguration = JsonUtils.RemoveProperty(model.SourceConfiguration, "FederatedInstanceArtifactId");
+			}
+
+			return model;
 		}
 	}
 }

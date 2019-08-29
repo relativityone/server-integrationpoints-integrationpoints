@@ -124,7 +124,6 @@
     <Compile Include="Controllers\API\GetAvailableEncodingsController.cs" />
     <Compile Include="Controllers\API\FolderPathController.cs" />
     <Compile Include="Controllers\API\FtpProviderAPIController.cs" />
-    <Compile Include="Controllers\API\InstanceFinderController.cs" />
     <Compile Include="Controllers\API\ProductionController.cs" />
     <Compile Include="Controllers\API\RelativityController.cs" />
     <Compile Include="Controllers\API\FieldMapController.cs" />
@@ -392,7 +391,6 @@
     <Content Include="Scripts\jquery.signalR-2.3.0.js" />
     <Content Include="Scripts\jquery.signalR-2.3.0.min.js" />
     <Content Include="Scripts\modals\create-production-set-modal-vm.js" />
-    <Content Include="Scripts\modals\authenticate-modal-vm.js" />
     <Content Include="Scripts\integration-point\tooltip-view-model.js" />
     <Content Include="Scripts\integration-point\profile.js" />
     <Content Include="Scripts\integration-point\scheduler-summary-page.js" />
@@ -646,7 +644,6 @@
     <Content Include="Views\IntegrationPoints\SchedulerSummaryPage.cshtml" />
     <Content Include="Views\ThirdPartyProviders\ThirdPartyProviderSummaryPage.cshtml" />
     <Content Include="Views\Tooltip\TooltipView.cshtml" />
-    <Content Include="Views\Modals\AuthenticationModalView.cshtml" />
     <Content Include="Views\Modals\ExportRenamedFieldsView.cshtml" />
     <Content Include="Views\Modals\ExportFileNamingOptionView.cshtml" />
     <Content Include="Views\Modals\CreateProductionSetModalView.cshtml" />

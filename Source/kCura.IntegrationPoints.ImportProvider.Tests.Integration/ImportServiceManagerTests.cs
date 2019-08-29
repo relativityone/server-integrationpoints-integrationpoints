@@ -21,7 +21,6 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
@@ -65,7 +64,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 			ICaseServiceContext caseServiceContext = Substitute.For<ICaseServiceContext>();
 			IContextContainerFactory contextContainerFactory = Substitute.For<IContextContainerFactory>();
 			ISynchronizerFactory synchronizerFactory = Substitute.For<ISynchronizerFactory>();
-			IOnBehalfOfUserClaimsPrincipalFactory onBehalfOfUserClaimsPrincipalFactory = Substitute.For<IOnBehalfOfUserClaimsPrincipalFactory>();
 			IManagerFactory managerFactory = Substitute.For<IManagerFactory>();
 			IEnumerable<IBatchStatus> statuses = Substitute.For<IEnumerable<IBatchStatus>>();
 			IJobService jobService = Substitute.For<IJobService>();
@@ -142,7 +140,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 				caseServiceContext,
 				contextContainerFactory,
 				synchronizerFactory,
-				onBehalfOfUserClaimsPrincipalFactory,
 				managerFactory,
 				statuses,
 				_serializer,

@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private readonly int _workspaceArtifactID;
 		private readonly IQueryFieldLookupRepository _fieldLookupRepository;
 		private readonly IRelativityObjectManager _relativityObjectManager;
-		private readonly string[] _textTypeFields = { FieldTypeHelper.FieldType.Text.ToString(), FieldTypeHelper.FieldType.OffTableText.ToString() };
+		private readonly FieldTypeHelper.FieldType[] _textTypeFields = { FieldTypeHelper.FieldType.Text, FieldTypeHelper.FieldType.OffTableText };
 
 		public DocumentTransferDataReader(
 			IExporterService relativityExportService,
@@ -163,7 +163,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private Stream GetLongTextStreamFromField(int fieldArtifactId)
 		{
 			var fieldRef = new FieldRef { ArtifactID = fieldArtifactId };
-			ViewFieldInfo field = _fieldLookupRepository.GetFieldByArtifactId(fieldArtifactId);
+			ViewFieldInfo field = _fieldLookupRepository.GetFieldByArtifactID(fieldArtifactId);
 
 			return field.IsUnicodeEnabled
 				? _relativityObjectManager.StreamUnicodeLongText(CurrentArtifact.ArtifactId, fieldRef)
