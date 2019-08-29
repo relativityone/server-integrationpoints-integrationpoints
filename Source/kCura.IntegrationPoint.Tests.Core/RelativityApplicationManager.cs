@@ -11,6 +11,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 {
 	using global::Relativity.Services.ApplicationInstallManager.Models;
 
+#pragma warning disable CS0618 // Type or member is obsolete
 	public class RelativityApplicationManager
 	{
 		private const string _RIP_GUID_STRING = IntegrationPoints.Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING;
@@ -71,4 +72,5 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return Path.Combine(SharedVariables.LatestRapLocationFromBuildPackages, SharedVariables.ApplicationPath, SharedVariables.RipRapFilePath);
 		}
 	}
+#pragma warning restore CS0618 // Type or member is obsolete
 }

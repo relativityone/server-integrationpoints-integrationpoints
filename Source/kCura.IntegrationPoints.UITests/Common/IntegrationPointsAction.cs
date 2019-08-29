@@ -488,7 +488,7 @@ namespace kCura.IntegrationPoints.UITests.Common
 			switch (sourceType)
 			{
 				case RelativityProviderModel.SourceTypeEnum.SavedSearch:
-					secondPage.SelectSavedSearch(model.SavedSearch);
+					secondPage.SelectSavedSearch(model.GetValueOrDefault(m => m.SavedSearch));
 					break;
 				case RelativityProviderModel.SourceTypeEnum.Production:
 					secondPage.SelectSourceProduction(model.SourceProductionName);

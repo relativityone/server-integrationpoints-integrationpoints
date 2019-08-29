@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 		}
 
-		private string DestinationFolderStructureBehavior(FolderConf folderConf)
+		private static string DestinationFolderStructureBehavior(FolderConf folderConf)
 		{
 			if (!folderConf.UseDynamicFolderPath && !folderConf.UseFolderPathInformation)
 			{
@@ -63,7 +63,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			return "ReadFromField";
 		}
 
-		private string NativesBehavior(ImportNativeFileCopyModeEnum mode)
+		private static string NativesBehavior(ImportNativeFileCopyModeEnum mode)
 		{
 			if (mode == ImportNativeFileCopyModeEnum.CopyFiles)
 			{
@@ -76,6 +76,23 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 
 			return "None";
+		}
+
+		private static async Task<string> GetFolderPathSourceFieldNameAsync(int artifactId, int workspaceId, IObjectManager objectManager)
+		{
+			if (artifactId == 0)
+			{
+				return string.Empty;
+			}
+
+			var request = new QueryRequest()
+			{
+				ObjectType = new ObjectTypeRef {Name = "Field"},
+				Condition = $"\"ArtifactID\" == {artifactId}",
+				Fields = new[] {new FieldRef {Name = "Name"}}
+			};
+			QueryResultSlim result = await objectManager.QuerySlimAsync(workspaceId, request, 0, 1).ConfigureAwait(false);
+			return result.Objects[0].Values[0].ToString();
 		}
 
 		private async Task<CreateRequest> PrepareCreateRequestAsync(IExtendedJob job, SourceConfiguration sourceConfiguration, ImportSettings importSettings, FolderConf folderConf, IObjectManager objectManager)
@@ -214,23 +231,6 @@ namespace kCura.IntegrationPoints.RelativitySync
 					}
 				}
 			};
-		}
-
-		private async Task<string> GetFolderPathSourceFieldNameAsync(int artifactId, int workspaceId, IObjectManager objectManager)
-		{
-			if (artifactId == 0)
-			{
-				return string.Empty;
-			}
-
-			var request = new QueryRequest()
-			{
-				ObjectType = new ObjectTypeRef {Name = "Field"},
-				Condition = $"\"ArtifactID\" == {artifactId}",
-				Fields = new[] {new FieldRef {Name = "Name"}}
-			};
-			QueryResultSlim result = await objectManager.QuerySlimAsync(workspaceId, request, 0, 1).ConfigureAwait(false);
-			return result.Objects[0].Values[0].ToString();
 		}
 	}
 }

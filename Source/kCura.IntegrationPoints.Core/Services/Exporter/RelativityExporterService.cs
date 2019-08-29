@@ -1,15 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter.Base;
+using kCura.IntegrationPoints.Core.Services.Exporter.Sanitization;
 using kCura.IntegrationPoints.Data.DTO;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
+using Relativity;
 using Relativity.API;
 using ArtifactType = kCura.Relativity.Client.ArtifactType;
 
@@ -18,6 +20,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 	public class RelativityExporterService : ExporterServiceBase
 	{
 		private readonly IFolderPathReader _folderPathReader;
+		private readonly IExportDataSanitizer _exportDataSanitizer;
 
 		public RelativityExporterService(
 			IDocumentRepository documentRepository, 
@@ -28,6 +31,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			IHelper helper,
 			IFolderPathReader folderPathReader,
 			IFileRepository fileRepository,
+			ISerializer serializer,
+			IExportDataSanitizer exportDataSanitizer,
 			FieldMap[] mappedFields, 
 			int startAt, 
 			SourceConfiguration sourceConfiguration, 
@@ -40,12 +45,14 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				jobStopManager, 
 				helper,
 				fileRepository,
+				serializer,
 				mappedFields, 
 				startAt, 
 				sourceConfiguration, 
 				searchArtifactId)
 		{
 			_folderPathReader = folderPathReader;
+			_exportDataSanitizer = exportDataSanitizer;
 		}
 
 		public override IDataTransferContext GetDataTransferContext(IExporterTransferConfiguration transferConfiguration)
@@ -86,7 +93,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 				int documentArtifactID = data.ArtifactID;
 
-				SetupBaseFields(data.FieldValues.Values.ToArray(), fields);
+				string itemIdentifier = data.FieldValues[IdentifierField.ActualName].ToString();
+				SetupBaseFieldsAsync(data.FieldValues.Values.ToArray(), fields, itemIdentifier).GetAwaiter().GetResult();
 
 				// TODO: replace String.empty
 				string textIdentifier = string.Empty;
@@ -100,40 +108,45 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			return result.ToArray();
 		}
 
-
-		private void SetupBaseFields(object[] fieldsValue, List<ArtifactFieldDTO> fields)
+		private async Task SetupBaseFieldsAsync(object[] fieldsValue, List<ArtifactFieldDTO> fields, string itemIdentifier)
 		{
 			for (int index = 0; index < FieldArtifactIds.Length; index++)
 			{
-				int artifactId = FieldArtifactIds[index];
-				object value = fieldsValue[index];
+				string fieldName = ExportJobInfo.FieldNames[index];
+				int artifactID = FieldArtifactIds[index];
+				FieldTypeHelper.FieldType fieldType = QueryFieldLookupRepository.GetFieldTypeByArtifactID(artifactID);
+				object initialValue = fieldsValue[index];
 
-				Exception exception = null;
-				try
-				{
-					if (MultipleObjectFieldArtifactIds.Contains(artifactId))
-					{
-						value = ExportApiDataHelper.SanitizeMultiObjectField(value);
-					}
-					else if (SingleChoiceFieldsArtifactIds.Contains(artifactId))
-					{
-						value = ExportApiDataHelper.SanitizeSingleChoiceField(value);
-					}
-				}
-				catch (Exception ex)
-				{
-					LogRetrievingDataError(ex);
-					exception = new IntegrationPointsException($"Error occured while sanitizing  field value in {nameof(RelativityExporterService)}", ex);
-				}
+				object value = await SanitizeFieldIfNeededAsync(fieldName, fieldType, initialValue, itemIdentifier)
+					.ConfigureAwait(false);
 
-				fields.Add(new LazyExceptArtifactFieldDto(exception)
+				fields.Add(new ArtifactFieldDTO
 				{
-					Name = ExportJobInfo.FieldNames[index],
-					ArtifactId = artifactId,
+					Name = fieldName,
+					ArtifactId = artifactID,
 					Value = value,
-					FieldType = QueryFieldLookupRepository.GetFieldTypeByArtifactId(artifactId)
+					FieldType = fieldType
 				});
 			}
+		}
+
+		private Task<object> SanitizeFieldIfNeededAsync(string fieldName, FieldTypeHelper.FieldType fieldType, object initialValue, string itemIdentifier)
+		{
+			int sourceWorkspaceArtifactID = SourceConfiguration.SourceWorkspaceArtifactId;
+
+			if (_exportDataSanitizer.ShouldSanitize(fieldType))
+			{
+				return _exportDataSanitizer
+					.SanitizeAsync(
+						sourceWorkspaceArtifactID,
+						IdentifierField.ActualName,
+						itemIdentifier,
+						fieldName,
+						fieldType,
+						initialValue);
+			}
+
+			return Task.FromResult(initialValue);
 		}
 	}
 }

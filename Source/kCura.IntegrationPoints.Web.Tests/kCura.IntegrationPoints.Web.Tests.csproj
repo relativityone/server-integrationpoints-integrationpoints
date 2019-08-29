@@ -64,7 +64,6 @@
     <Compile Include="Controllers\API\ImportPrevewControllerTests.cs" />
     <Compile Include="Controllers\API\ImportProviderDocumentControllerTests.cs" />
     <Compile Include="Controllers\API\ImportProviderImageControllerTests.cs" />
-    <Compile Include="Controllers\API\InstanceFinderControllerTests.cs" />
     <Compile Include="Controllers\API\IntegrationPointsAPIControllerTests.cs" />
     <Compile Include="Controllers\API\ProductionControllerTests.cs" />
     <Compile Include="Controllers\API\RdoFilterControllerTests.cs" />
@@ -444,6 +443,11 @@
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
+        <Reference Include="itextsharp">
+          <HintPath>..\..\packages\Relativity.DataExchange.Client.SDK\lib\net462\itextsharp.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
       </ItemGroup>
     </When>
   </Choose>
@@ -675,6 +679,17 @@
         <Reference Include="mscorlib">
           <Paket>True</Paket>
         </Reference>
+        <Reference Include="System.Data.SqlClient">
+          <HintPath>..\..\packages\System.Data.SqlClient\lib\net461\System.Data.SqlClient.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="System.ValueTuple">
           <HintPath>..\..\packages\System.ValueTuple\lib\net461\System.ValueTuple.dll</HintPath>
           <Private>True</Private>

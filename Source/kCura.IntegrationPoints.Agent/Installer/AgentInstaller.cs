@@ -16,7 +16,6 @@ using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Domain;
@@ -156,8 +155,6 @@ namespace kCura.IntegrationPoints.Agent.Installer
 			container.Register(Component.For<Core.Factories.IExporterFactory>().UsingFactoryMethod(
 				k =>
 				{
-					IOnBehalfOfUserClaimsPrincipalFactory claimsPrincipalFactory =
-						k.Resolve<IOnBehalfOfUserClaimsPrincipalFactory>();
 					IRepositoryFactory sourceRepositoryFactory = k.Resolve<IRepositoryFactory>();
 					JobContextProvider jobContextProvider = k.Resolve<JobContextProvider>();
 					int integrationPointId = jobContextProvider.Job.RelatedObjectArtifactID;
@@ -187,13 +184,13 @@ namespace kCura.IntegrationPoints.Agent.Installer
 					IRelativityObjectManager relativityObjectManager = k.Resolve<IRelativityObjectManager>();
 					IFileRepository fileRepository = k.Resolve<IFileRepository>();
 					return new ExporterFactory(
-						claimsPrincipalFactory,
 						sourceRepositoryFactory,
 						targetRepositoryFactory,
 						sourceHelper,
 						folderPathReaderFactory,
 						relativityObjectManager,
-						fileRepository);
+						fileRepository,
+						serializer);
 				}).LifestyleTransient());
 
 			container.Register(Component.For<IRsapiClientWithWorkspaceFactory>().ImplementedBy<ExtendedRsapiClientWithWorkspaceFactory>().LifestyleTransient());

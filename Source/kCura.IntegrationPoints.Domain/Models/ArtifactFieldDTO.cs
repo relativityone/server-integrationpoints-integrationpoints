@@ -1,4 +1,5 @@
 ﻿using System;
+using Relativity;
 
 namespace kCura.IntegrationPoints.Domain.Models
 {
@@ -16,7 +17,7 @@ namespace kCura.IntegrationPoints.Domain.Models
 		/// <summary>
 		/// Gets or sets the type of the field.
 		/// </summary>
-		public string FieldType { get; set; }
+		public FieldTypeHelper.FieldType FieldType { get; set; }
 
 		/// <summary>
 		/// Gets or sets the name of the field.

@@ -56,8 +56,6 @@
     <Compile Include="Attributes\DynamicFieldAttribute.cs" />
     <Compile Include="Attributes\DynamicObjectAttribute.cs" />
     <Compile Include="ChoiceQuery.cs" />
-    <Compile Include="Contexts\IOnBehalfOfUserClaimsPrincipalFactory.cs" />
-    <Compile Include="Contexts\OnBehalfOfUserClaimsPrincipalFactory.cs" />
     <Compile Include="Converters\FieldRefExtensions.cs" />
     <Compile Include="Converters\FieldUpdateRequestDtoExtensions.cs" />
     <Compile Include="Converters\FieldValuePairExtensions.cs" />
@@ -70,7 +68,6 @@
     <Compile Include="DTO\SavedSearchQueryResult.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\FieldExtensions.cs" />
-    <Compile Include="Extensions\ObjectQueryResultSetExtensions.cs" />
     <Compile Include="Extensions\ResultSetExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Facades\ObjectManager\DTOs\FieldValueMap.cs" />
@@ -125,6 +122,9 @@
     <Compile Include="Repositories\ApplicationRepository.cs" />
     <Compile Include="Repositories\DTO\ArtifactRef.cs" />
     <Compile Include="Repositories\DTO\AuditRecord.cs" />
+    <Compile Include="Repositories\DTO\ChoiceDto.cs" />
+    <Compile Include="Repositories\DTO\ChoiceWithChildInfoDto.cs" />
+    <Compile Include="Repositories\DTO\ChoiceWithParentInfoDto.cs" />
     <Compile Include="Repositories\DTO\FieldUpdateRequestDto.cs" />
     <Compile Include="Repositories\DTO\FileDto.cs" />
     <Compile Include="Repositories\DTO\IFieldValueDto.cs" />
@@ -135,8 +135,11 @@
     <Compile Include="Repositories\IApplicationRepository.cs" />
     <Compile Include="Repositories\IAuditRepository.cs" />
     <Compile Include="Repositories\ICaseRepository.cs" />
+    <Compile Include="Repositories\IChoiceRepository.cs" />
     <Compile Include="Repositories\IFileRepository.cs" />
     <Compile Include="Repositories\IFoundationRepositoryFactory.cs" />
+    <Compile Include="Repositories\Implementations\CachedChoiceRepository.cs" />
+    <Compile Include="Repositories\Implementations\ChoiceRepository.cs" />
     <Compile Include="Repositories\Implementations\SecretsRepository.cs" />
     <Compile Include="Repositories\IRepositoryWithMassUpdate.cs" />
     <Compile Include="Repositories\IRepository.cs" />
@@ -147,7 +150,6 @@
     <Compile Include="Repositories\Implementations\Repository.cs" />
     <Compile Include="Repositories\Implementations\FileRepository.cs" />
     <Compile Include="Repositories\Implementations\IntegrationPointRepository.cs" />
-    <Compile Include="Repositories\Implementations\ViewFieldInfoFieldTypeExtender.cs" />
     <Compile Include="Repositories\Implementations\FoundationRepositoryFactory.cs" />
     <Compile Include="Repositories\Implementations\ProductionRepository.cs" />
     <Compile Include="Repositories\Implementations\QueryFieldLookupRepository.cs" />
@@ -331,9 +333,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="LICENSE.txt">
-      <Paket>True</Paket>
-    </Content>
     <Content Include="Resources\AddReplaceWebAPIWithExportCoreSetting.sql" />
     <Content Include="Resources\AddWebApiConfig.sql" />
     <Content Include="Resources\GetJobsCount.sql" />
@@ -376,8 +375,8 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="BCrypt.Net">
-          <HintPath>..\..\packages\BCrypt-Official\lib\BCrypt.Net.dll</HintPath>
+        <Reference Include="BCrypt.Net-Core">
+          <HintPath>..\..\packages\BCrypt.Net-Core\lib\net452\BCrypt.Net-Core.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -531,6 +530,11 @@
         </Reference>
         <Reference Include="Relativity.DataExchange.Client.SDK">
           <HintPath>..\..\packages\Relativity.DataExchange.Client.SDK\lib\net462\Relativity.DataExchange.Client.SDK.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="itextsharp">
+          <HintPath>..\..\packages\Relativity.DataExchange.Client.SDK\lib\net462\itextsharp.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -800,6 +804,79 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="System.Drawing">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="mscorlib">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Configuration.ConfigurationManager">
+          <HintPath>..\..\packages\System.Configuration.ConfigurationManager\lib\net461\System.Configuration.ConfigurationManager.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="System.Data.SqlClient">
+          <HintPath>..\..\packages\System.Data.SqlClient\lib\net461\System.Data.SqlClient.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="System.Security.AccessControl">
+          <HintPath>..\..\packages\System.Security.AccessControl\lib\net461\System.Security.AccessControl.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="System.Data.OracleClient">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Net">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.ServiceProcess">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Transactions">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Security.Permissions">
+          <HintPath>..\..\packages\System.Security.Permissions\lib\net461\System.Security.Permissions.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="System.Security.Principal.Windows">
+          <HintPath>..\..\packages\System.Security.Principal.Windows\lib\net461\System.Security.Principal.Windows.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="ZetaLongPaths">
           <HintPath>..\..\packages\ZetaLongPaths\lib\net40-full\ZetaLongPaths.dll</HintPath>
           <Private>True</Private>
@@ -808,7 +885,6 @@
       </ItemGroup>
     </When>
   </Choose>
-  <Import Project="..\..\packages\kCura\build\kCura.targets" Condition="Exists('..\..\packages\kCura\build\kCura.targets')" Label="Paket" />
   <Import Project="..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets')" Label="Paket" />
   <Import Project="..\..\packages\Relativity.DataExchange.Client.SDK\build\Relativity.DataExchange.Client.SDK.targets" Condition="Exists('..\..\packages\Relativity.DataExchange.Client.SDK\build\Relativity.DataExchange.Client.SDK.targets')" Label="Paket" />
 </Project>
