@@ -14,7 +14,6 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.Relativity.Client;
 using NUnit.Framework;
 using Relativity.Services.Folder;
 using Relativity.Services.Interfaces.Field;
@@ -23,9 +22,9 @@ using Relativity.Services.Interfaces.Shared.Models;
 using Relativity.Services.Search;
 using Relativity.Testing.Identification;
 using Rip.TestUtilities;
-using Constants = kCura.IntegrationPoints.Core.Constants;
+using CoreConstants = kCura.IntegrationPoints.Core.Constants;
 
-namespace Rip.SystemTests.IntegrationPointServices
+namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.IntegrationPointServices
 {
 	[TestFixture]
 	public class IntegrationPointServiceTests
@@ -34,13 +33,13 @@ namespace Rip.SystemTests.IntegrationPointServices
 		private const int _VERY_LONG_FIELD_NAME_COUNT = 500;
 		private const string _ALL_DOCUMENTS_SAVED_SEARCH_NAME = "All documents";
 
-		private int _sourceWorkspaceID => SystemTestsFixture.WorkspaceID;
-		private int _destinationWorkspaceID => SystemTestsFixture.DestinationWorkspaceID;
+		private int _sourceWorkspaceID => SystemTestsSetupFixture.WorkspaceID;
+		private int _destinationWorkspaceID => SystemTestsSetupFixture.DestinationWorkspaceID;
 		private int _savedSearchArtifactID;
 		private int _integrationPointExportType;
 
-		private IWindsorContainer _container => SystemTestsFixture.Container;
-		private ITestHelper _testHelper => SystemTestsFixture.TestHelper;
+		private IWindsorContainer _container => SystemTestsSetupFixture.Container;
+		private ITestHelper _testHelper => SystemTestsSetupFixture.TestHelper;
 		private IIntegrationPointService _integrationPointService;
 		private IIntegrationPointRepository _integrationPointRepository;
 		private IRepositoryFactory _repositoryFactory;
@@ -69,7 +68,7 @@ namespace Rip.SystemTests.IntegrationPointServices
 
 			IIntegrationPointTypeService typeService = _container.Resolve<IIntegrationPointTypeService>();
 			_integrationPointExportType = typeService
-				.GetIntegrationPointType(Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid)
+				.GetIntegrationPointType(kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid)
 				.ArtifactId;
 
 			_integrationPointArtifactIds = new List<int>();
@@ -156,9 +155,9 @@ namespace Rip.SystemTests.IntegrationPointServices
 			IntegrationPointModel integrationPointModel = builder
 				.WithType(_integrationPointExportType)
 				.WithName(name)
-				.WithSourceProvider(Constants.IntegrationPoints.RELATIVITY_PROVIDER_NAME)
+				.WithSourceProvider(CoreConstants.IntegrationPoints.RELATIVITY_PROVIDER_NAME)
 				.WithSourceConfiguration(CreateRelativityProviderSavedSearchSourceConfiguration())
-				.WithDestinationProvider(Constants.IntegrationPoints.RELATIVITY_PROVIDER_NAME)
+				.WithDestinationProvider(CoreConstants.IntegrationPoints.RELATIVITY_PROVIDER_NAME)
 				.WithDestinationConfiguration(CreateRelativityProviderDestinationConfiguration())
 				.WithFieldMapping(fieldMapping)
 				.WithOverwriteMode(ImportOverwriteModeEnum.AppendOnly)
@@ -188,14 +187,14 @@ namespace Rip.SystemTests.IntegrationPointServices
 			{
 				ArtifactTypeId = (int) ArtifactType.Document,
 				CaseArtifactId = _destinationWorkspaceID,
-				Provider = Constants.IntegrationPoints.RELATIVITY_PROVIDER_NAME,
+				Provider = CoreConstants.IntegrationPoints.RELATIVITY_PROVIDER_NAME,
 				ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly,
 				ImportNativeFile = false,
 				ExtractedTextFieldContainsFilePath = false,
 				FieldOverlayBehavior = ImportSettings.FIELDOVERLAYBEHAVIOR_DEFAULT,
 				RelativityUsername = SharedVariables.RelativityUserName,
 				RelativityPassword = SharedVariables.RelativityPassword,
-				DestinationProviderType = Constants.IntegrationPoints.DestinationProviders.RELATIVITY,
+				DestinationProviderType = CoreConstants.IntegrationPoints.DestinationProviders.RELATIVITY,
 				DestinationFolderArtifactId = GetDestinationWorkspaceRootFolderID().GetAwaiter().GetResult(),
 				FederatedInstanceArtifactId = null
 			};

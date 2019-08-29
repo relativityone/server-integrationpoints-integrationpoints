@@ -313,7 +313,7 @@ task copy_test_dlls_to_lib_dir -depends create_lib_dir -precondition { return -n
             "Source\kCura.IntegrationPoints.Common.Tests\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.Common.Tests\bin\x64\*.xml",
             "Source\kCura.IntegrationPoints.Common.Tests\bin\x64\*.config",
-            "Source\Relativity.IntegrationPoints.FunctionalTests\SystemTestData",
+            "Source\Relativity.IntegrationPoints.FunctionalTests\SystemTests\SystemTestData",
             "Source\kCura.IntegrationPoint.Tests.Core\ExternalDependencies",
             "Source\kCura.IntegrationPoint.Tests.Core\TestData",
             "Source\kCura.IntegrationPoint.Tests.Core\TestDataExtended",
