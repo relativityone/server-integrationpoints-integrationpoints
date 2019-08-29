@@ -1,6 +1,6 @@
-﻿using System;
-using System.Net;
-using Relativity.API;
+﻿using System.Net;
+using kCura.IntegrationPoints.Common;
+using kCura.IntegrationPoints.Common.Handlers;
 
 namespace kCura.IntegrationPoints.Core.Authentication.CredentialProvider
 {
@@ -8,28 +8,21 @@ namespace kCura.IntegrationPoints.Core.Authentication.CredentialProvider
 	{
 		private readonly ICredentialProvider _credentialProvider;
 
-		private readonly IAPILog _logger;
+		private readonly IRetryHandler _retryHandler;
 
 		public CredentialProviderRetryDecorator(
 			ICredentialProvider credentialProvider,
-			IAPILog logger)
+			IRetryHandlerFactory retryHandlerFactory)
 		{
 			_credentialProvider = credentialProvider;
-			_logger = logger;
+			_retryHandler = retryHandlerFactory.Create();
 		}
 
 		public NetworkCredential Authenticate(CookieContainer cookieContainer)
 		{
-			// TODO implement retries
-			try
-			{
-				return _credentialProvider.Authenticate(cookieContainer);
-			}
-			catch (Exception e)
-			{
-				_logger.LogError(e, "Error occured while authenticating user. Details: {Message}", e.Message);
-				throw;
-			}
+			return _retryHandler.ExecuteWithRetries(
+				() => _credentialProvider.Authenticate(cookieContainer)
+			);
 		}
 	}
 }

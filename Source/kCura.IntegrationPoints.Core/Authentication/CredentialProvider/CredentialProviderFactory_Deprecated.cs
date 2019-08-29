@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.Domain.Authentication;
+﻿using kCura.IntegrationPoints.Common;
+using kCura.IntegrationPoints.Domain.Authentication;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Authentication.CredentialProvider
@@ -17,11 +18,22 @@ namespace kCura.IntegrationPoints.Core.Authentication.CredentialProvider
 
 		public ICredentialProvider Create()
 		{
-			IAuthProvider authProvider = new AuthProvider();
-			IAuthTokenGenerator tokenGenerator = new ClaimsTokenGenerator();
-			ICredentialProvider credentialProvider = new TokenCredentialProvider(authProvider, tokenGenerator);
-			ICredentialProvider credentialProviderRetryDecorator = new CredentialProviderRetryDecorator(credentialProvider, _logger);
+			ICredentialProvider tokenCredentialProvider = CreteTokenCredentialProvider();
+			ICredentialProvider credentialProviderRetryDecorator = CreateCredentialProviderRetryDecorator(tokenCredentialProvider);
 			return credentialProviderRetryDecorator;
+		}
+
+		private ICredentialProvider CreteTokenCredentialProvider()
+		{
+			var authProvider = new AuthProvider();
+			var tokenGenerator = new ClaimsTokenGenerator();
+			return new TokenCredentialProvider(authProvider, tokenGenerator);
+		}
+
+		private ICredentialProvider CreateCredentialProviderRetryDecorator(ICredentialProvider credentialProvider)
+		{
+			var retryHandlerFactory = new RetryHandlerFactory(_logger);
+			return new CredentialProviderRetryDecorator(credentialProvider, retryHandlerFactory);
 		}
 	}
 }
