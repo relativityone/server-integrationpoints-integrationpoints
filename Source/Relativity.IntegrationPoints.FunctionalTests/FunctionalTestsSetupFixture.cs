@@ -4,6 +4,8 @@ using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using NUnit.Framework;
 
+//It is intended that this fixture is not surrounded by namespace
+//since NUnit requires it to execute such SetUpFixture for whole assembly
 [SetUpFixture]
 public class FunctionalTestsSetupFixture
 {
