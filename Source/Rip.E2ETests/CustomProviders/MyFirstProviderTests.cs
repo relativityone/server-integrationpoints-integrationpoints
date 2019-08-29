@@ -65,7 +65,6 @@ namespace Rip.E2ETests.CustomProviders
 			Workspace.DeleteWorkspace(_workspaceID);
 		}
 
-		[Test]
 		[IdentifiedTest("5b2b2176-c771-49fa-a273-db33701e954a")]
 		public async Task ShouldImportDocumentsUsingMyFirstProvider()
 		{

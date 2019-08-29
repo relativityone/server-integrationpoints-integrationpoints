@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using NUnit.Framework;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration
 {
@@ -39,7 +40,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 			_jobManager.DeleteJob(_jobId);
 		}
 
-		[TestCase]
+		[IdentifiedTestCase("2BAA15BB-05D8-4B0F-B3F7-97018024D6BB")]
 		public void ShouldChangeScheduledJobStopState()
 		{
 			const int delayInMiliseconds = 100;
@@ -68,7 +69,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 		}
 
 
-		[TestCase]
+		[IdentifiedTestCase("DCD3D6A2-96D8-4F79-BD7A-D0C3049A662B")]
 		public void ShouldChangeScheduledJobNextRunTime()
 		{
 			const int delayInMiliseconds = 500;
