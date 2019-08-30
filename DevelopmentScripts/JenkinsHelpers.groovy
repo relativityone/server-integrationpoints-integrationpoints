@@ -959,12 +959,12 @@ private withUiTestsByTypeTestFilter(testType)
 
 private withUiTestsNamespace()
 {
-	return "namespace =~ ^(($Constants.UI_TESTS_NAMESPACE_REGEX).*)"
+	return "namespace =~ /^(($Constants.UI_TESTS_NAMESPACE_REGEX).*)/"
 }
 
 private exceptUiTestsNamespace()
 {
-	return "namespace =~ ^((?!$Constants.UI_TESTS_NAMESPACE_REGEX).*)"
+	return "namespace =~ /^((?!$Constants.UI_TESTS_NAMESPACE_REGEX).*)/"
 }
 
 /*
