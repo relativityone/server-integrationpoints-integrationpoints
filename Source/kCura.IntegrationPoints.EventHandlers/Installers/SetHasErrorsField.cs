@@ -105,7 +105,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			IIntegrationPointSerializer integrationPointSerializer = new IntegrationPointSerializer(Logger);
 			IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, Helper, integrationPointSerializer, jobTracker);
 			IWorkspaceManager workspaceManager = new WorkspaceManager(repositoryFactory);
-			IFederatedInstanceManager federatedInstanceManager = new FederatedInstanceManager(repositoryFactory);
+			IFederatedInstanceManager federatedInstanceManager = new FederatedInstanceManager();
 			IProviderTypeService providerTypeService = new ProviderTypeService(CreateObjectManager(Helper, caseServiceContext.WorkspaceID));
 			IMessageService messageService = new MessageService();
 

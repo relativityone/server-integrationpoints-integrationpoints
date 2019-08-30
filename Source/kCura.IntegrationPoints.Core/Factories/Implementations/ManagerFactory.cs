@@ -105,9 +105,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 
 		public IFederatedInstanceManager CreateFederatedInstanceManager()
 		{
-			IFederatedInstanceManager manager = new FederatedInstanceManager(_repositoryFactory);
-
-			return manager;
+			return new FederatedInstanceManager();
 		}
 
 		public IWorkspaceManager CreateWorkspaceManager()

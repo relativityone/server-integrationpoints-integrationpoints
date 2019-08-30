@@ -6,7 +6,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Authentication.AuthProvider
 {
-	internal class AuthProviderFactoryDeprecated
+	internal static class AuthProviderFactoryDeprecated
 	{
 		public static IAuthProvider Create(IAPILog apiLog)
 		{
