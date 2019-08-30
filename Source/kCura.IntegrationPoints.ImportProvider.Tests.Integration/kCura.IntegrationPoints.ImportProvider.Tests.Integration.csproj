@@ -150,11 +150,6 @@
     <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\..\packages\kCura.FreeImage\lib\net45\FreeImage.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="TestDataForImport\CsvWithMetadata.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
