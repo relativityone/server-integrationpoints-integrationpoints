@@ -1,5 +1,5 @@
 ﻿using System.Net;
-using kCura.IntegrationPoints.Core.Authentication;
+using kCura.IntegrationPoints.Core.Authentication.CredentialProvider;
 using kCura.WinEDDS.Api;
 
 namespace kCura.IntegrationPoint.Tests.Core.TestHelpers

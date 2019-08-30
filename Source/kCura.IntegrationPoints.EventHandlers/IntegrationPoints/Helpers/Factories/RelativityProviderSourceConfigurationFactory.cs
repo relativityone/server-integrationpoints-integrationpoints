@@ -1,7 +1,6 @@
 ﻿using System;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Core;
-using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Authentication.CredentialProvider;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
@@ -20,8 +19,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factor
 		{
 			IConfigFactory configFactory = new ConfigFactory();
 			IAPILog logger = helper.GetLoggerFactory().GetLogger();
-			ICredentialProviderFactoryDeprecated credentialProviderFactory = new CredentialProviderFactoryDeprecated(logger);
-			ICredentialProvider credentialProvider = credentialProviderFactory.Create();
+			ICredentialProvider credentialProvider = CredentialProviderFactoryDeprecated.Create(logger);
 			ISqlServiceFactory sqlServiceFactory = new HelperConfigSqlServiceFactory(helper);
 			IServiceManagerProvider serviceManagerProvider = new ServiceManagerProvider(configFactory, credentialProvider, sqlServiceFactory);
 

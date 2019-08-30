@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Config;
-using kCura.IntegrationPoints.Core.Authentication;
+using kCura.IntegrationPoints.Core.Authentication.CredentialProvider;
 using kCura.IntegrationPoints.Core.Factories;
 
 namespace kCura.IntegrationPoints.Core

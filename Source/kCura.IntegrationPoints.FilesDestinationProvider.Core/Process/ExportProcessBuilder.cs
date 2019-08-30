@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using FileNaming.CustomFileNaming;
+using kCura.IntegrationPoints.Core.Authentication.CredentialProvider;
 using kCura.Relativity.Client;
 using Relativity.DataExchange.Io;
 using IExporter = kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary.IExporter;

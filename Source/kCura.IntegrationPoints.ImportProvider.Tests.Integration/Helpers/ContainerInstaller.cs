@@ -8,7 +8,7 @@ using NUnit.Framework;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Config;
-using kCura.IntegrationPoints.Core.Authentication;
+using kCura.IntegrationPoints.Core.Authentication.CredentialProvider;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Domain.Authentication;

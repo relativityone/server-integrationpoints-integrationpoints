@@ -55,7 +55,7 @@
     </Compile>
     <Compile Include="Authentication\OAuth2ClientFactoryTests.cs" />
     <Compile Include="Authentication\OAuth2TokenGeneratorTests.cs" />
-    <Compile Include="Authentication\TokenCredentialProviderTests.cs" />
+    <Compile Include="Authentication\CredentialProvider\TokenCredentialProviderTests.cs" />
     <Compile Include="Extensions\DictionaryExtensionsTests.cs" />
     <Compile Include="Extensions\StringExtensionsTests.cs" />
     <Compile Include="Helpers\ButtonStateBuilderTests.cs" />

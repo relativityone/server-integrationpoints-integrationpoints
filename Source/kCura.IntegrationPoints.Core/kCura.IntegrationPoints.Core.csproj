@@ -56,14 +56,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Authentication\AuthProvider.cs" />
+    <Compile Include="Authentication\AuthProvider\AuthProvider.cs" />
+    <Compile Include="Authentication\AuthProvider\AuthProviderFactoryDeprecated.cs" />
+    <Compile Include="Authentication\AuthProvider\AuthProviderInstrumentationDecorator.cs" />
+    <Compile Include="Authentication\AuthProvider\AuthProviderRetryDecorator.cs" />
     <Compile Include="Authentication\CredentialProvider\CredentialProviderFactoryDeprecated.cs" />
-    <Compile Include="Authentication\CredentialProvider\CredentialProviderRetryDecorator.cs" />
-    <Compile Include="Authentication\CredentialProvider\ICredentialProviderFactoryDeprecated.cs" />
-    <Compile Include="Authentication\ICredentialProvider.cs" />
+    <Compile Include="Authentication\CredentialProvider\ICredentialProvider.cs" />
     <Compile Include="Authentication\ITokenProviderFactoryFactory.cs" />
     <Compile Include="Authentication\OAuth2TokenGenerator.cs" />
-    <Compile Include="Authentication\IAuthProvider.cs" />
+    <Compile Include="Authentication\AuthProvider\IAuthProvider.cs" />
     <Compile Include="Authentication\IOAuth2ClientFactory.cs" />
     <Compile Include="Authentication\OAuth2ClientFactory.cs" />
     <Compile Include="Authentication\CredentialProvider\TokenCredentialProvider.cs" />
@@ -76,6 +77,7 @@
     <Compile Include="BatchStatusCommands\Implementations\TargetDocumentsTaggingManagerFactory.cs" />
     <Compile Include="BatchStatusCommands\Implementations\TempTableReader.cs" />
     <Compile Include="Extensions\DictionaryExtensions.cs" />
+    <Compile Include="Installers\Registrations\AuthProviderRegistration.cs" />
     <Compile Include="Installers\Registrations\ExportSanitizerRegistration.cs" />
     <Compile Include="Interfaces\TextSanitizer\SanitizationResult.cs" />
     <Compile Include="Interfaces\TextSanitizer\ITextSanitizer.cs" />

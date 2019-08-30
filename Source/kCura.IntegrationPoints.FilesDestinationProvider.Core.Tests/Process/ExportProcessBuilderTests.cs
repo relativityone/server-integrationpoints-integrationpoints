@@ -1,7 +1,6 @@
 ﻿using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -22,6 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using kCura.IntegrationPoints.Core.Authentication.CredentialProvider;
 using kCura.WinEDDS;
 using Relativity.DataExchange.Io;
 using Relativity.DataExchange.Service;

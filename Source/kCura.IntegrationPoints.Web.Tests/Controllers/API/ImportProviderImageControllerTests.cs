@@ -6,7 +6,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Core.Authentication;
+using kCura.IntegrationPoints.Core.Authentication.CredentialProvider;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using NSubstitute;

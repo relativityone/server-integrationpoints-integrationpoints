@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using kCura.WinEDDS.Api;
 
-namespace kCura.IntegrationPoints.Core.Authentication
+namespace kCura.IntegrationPoints.Core.Authentication.AuthProvider
 {
 	internal class AuthProvider : IAuthProvider
 	{

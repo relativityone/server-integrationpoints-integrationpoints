@@ -15,7 +15,7 @@ using kCura.ScheduleQueue.Core;
 using Castle.Windsor;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoints.Core;
-using kCura.IntegrationPoints.Core.Authentication;
+using kCura.IntegrationPoints.Core.Authentication.CredentialProvider;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Process.Internals;

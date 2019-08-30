@@ -1,10 +1,10 @@
-﻿using System.Net;
-using Castle.MicroKernel.Registration;
+﻿using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core;
-using kCura.IntegrationPoints.Core.Authentication;
+using kCura.IntegrationPoints.Core.Authentication.CredentialProvider;
 using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Installers.Registrations;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.IntegrationPoints.Web.Controllers.API;
@@ -28,9 +28,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Helpers
 			container.Register(Component.For<ICPHelper, IHelper>()
 				.Instance(new TestHelper())
 				.LifestyleTransient());
-			container.Register(Component.For<IAuthProvider>()
-				.ImplementedBy<AuthProvider>()
-				.LifestyleSingleton());
 			container.Register(Component.For<IAuthTokenGenerator>()
 				.ImplementedBy<ClaimsTokenGenerator>()
 				.LifestyleTransient());
@@ -45,6 +42,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Helpers
 				.LifestyleTransient());
 			container.Register(Component.For<ImportProviderImageController>()
 				.LifestyleTransient());
+
+			container.AddAuthProvider();
 
 			return container;
 		}

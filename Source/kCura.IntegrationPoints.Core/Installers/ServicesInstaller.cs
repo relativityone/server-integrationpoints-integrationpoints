@@ -37,7 +37,6 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Data.RSAPIClient;
 using kCura.IntegrationPoints.Domain;
-using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -53,6 +52,7 @@ using Relativity.Toggles.Providers;
 using System;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Core.Authentication.AuthProvider;
 using kCura.IntegrationPoints.Core.Installers.Registrations;
 using kCura.IntegrationPoints.Core.Authentication.CredentialProvider;
 using kCura.IntegrationPoints.Core.Tagging;
@@ -186,14 +186,9 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IServiceFactory>().ImplementedBy<ServiceFactory>().LifestyleTransient());
 			container.Register(Component.For<IArtifactServiceFactory>().ImplementedBy<ArtifactServiceFactory>().LifestyleTransient());
 			container.Register(Component.For<IAPM>().UsingFactoryMethod(k => Client.APMClient, managedExternally: true).LifestyleTransient());
-			container.Register(Component.For<IAuthProvider>().ImplementedBy<AuthProvider>().LifestyleSingleton());
+
 			container.Register(Component.For<IOAuth2ClientFactory>().ImplementedBy<OAuth2ClientFactory>().LifestyleTransient());
 
-			// TODO extract this registration to separate class & write tests
-			container.Register(Component
-				.For<ICredentialProvider>()
-				.ImplementedBy<CredentialProviderRetryDecorator>()
-				.LifestyleTransient());
 			container.Register(Component
 				.For<ICredentialProvider>()
 				.ImplementedBy<TokenCredentialProvider>()
@@ -222,6 +217,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.AddHelpers();
 			container.AddRepositories();
 			container.AddExportSanitizer();
+			container.AddAuthProvider();
 		}
 
 		private SqlServerToggleProvider CreateSqlServerToggleProvider(IHelper helper)

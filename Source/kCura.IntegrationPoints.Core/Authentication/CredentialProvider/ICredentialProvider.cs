@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace kCura.IntegrationPoints.Core.Authentication
+namespace kCura.IntegrationPoints.Core.Authentication.CredentialProvider
 {
 	public interface ICredentialProvider
 	{

@@ -6,7 +6,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
-using kCura.IntegrationPoints.Core.Authentication;
+using kCura.IntegrationPoints.Core.Authentication.CredentialProvider;
 using Relativity.DataExchange.Service;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
