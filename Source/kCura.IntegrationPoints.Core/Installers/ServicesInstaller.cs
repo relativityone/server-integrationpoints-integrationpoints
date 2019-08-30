@@ -52,9 +52,7 @@ using Relativity.Toggles.Providers;
 using System;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Core.Authentication.AuthProvider;
 using kCura.IntegrationPoints.Core.Installers.Registrations;
-using kCura.IntegrationPoints.Core.Authentication.CredentialProvider;
 using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data.Installers;
 using IFederatedInstanceManager = kCura.IntegrationPoints.Domain.Managers.IFederatedInstanceManager;
@@ -188,12 +186,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IAPM>().UsingFactoryMethod(k => Client.APMClient, managedExternally: true).LifestyleTransient());
 
 			container.Register(Component.For<IOAuth2ClientFactory>().ImplementedBy<OAuth2ClientFactory>().LifestyleTransient());
-
-			container.Register(Component
-				.For<ICredentialProvider>()
-				.ImplementedBy<TokenCredentialProvider>()
-				.LifestyleTransient());
-
+			
 			container.Register(Component.For<ITokenProviderFactoryFactory>().ImplementedBy<TokenProviderFactoryFactory>()
 				.LifestyleSingleton());
 
@@ -217,7 +210,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.AddHelpers();
 			container.AddRepositories();
 			container.AddExportSanitizer();
-			container.AddAuthProvider();
+			container.AddWebApiLoginService();
 		}
 
 		private SqlServerToggleProvider CreateSqlServerToggleProvider(IHelper helper)

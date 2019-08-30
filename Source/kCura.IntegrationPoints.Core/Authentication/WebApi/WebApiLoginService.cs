@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Net;
-using kCura.IntegrationPoints.Core.Authentication.AuthProvider;
+using kCura.IntegrationPoints.Core.Authentication.WebApi.LoginHelperFacade;
 using kCura.IntegrationPoints.Domain.Authentication;
 using Relativity.API;
 
-namespace kCura.IntegrationPoints.Core.Authentication.CredentialProvider
+namespace kCura.IntegrationPoints.Core.Authentication.WebApi
 {
-	public class TokenCredentialProvider : ICredentialProvider
+	internal class WebApiLoginService : IWebApiLoginService
 	{
-		private readonly IAuthProvider _authProvider;
+		private readonly ILoginHelperFacade _authProvider;
 		private readonly IAuthTokenGenerator _tokenGenerator;
 		private readonly IAPILog _logger;
 
-		public TokenCredentialProvider(
-			IAuthProvider authProvider,
+		public WebApiLoginService(
+			ILoginHelperFacade authProvider,
 			IAuthTokenGenerator tokenGenerator,
 			IAPILog logger)
 		{

@@ -55,7 +55,9 @@
     </Compile>
     <Compile Include="Authentication\OAuth2ClientFactoryTests.cs" />
     <Compile Include="Authentication\OAuth2TokenGeneratorTests.cs" />
-    <Compile Include="Authentication\CredentialProvider\TokenCredentialProviderTests.cs" />
+    <Compile Include="Authentication\WebApi\LoginHelperFacade\LoginHelperRetryDecoratorTests.cs" />
+    <Compile Include="Authentication\WebApi\LoginHelperFacade\LoginHelperInstrumentationDecoratorTests.cs" />
+    <Compile Include="Authentication\WebApi\WebApiLoginServiceTests.cs" />
     <Compile Include="Extensions\DictionaryExtensionsTests.cs" />
     <Compile Include="Extensions\StringExtensionsTests.cs" />
     <Compile Include="Helpers\ButtonStateBuilderTests.cs" />
@@ -63,6 +65,7 @@
     <Compile Include="Helpers\RelativePathDirectoryTreeProviderTests.cs" />
     <Compile Include="Helpers\SavedSearchesTreeTestHelper.cs" />
     <Compile Include="Installers\Registrations\ExportSanitizerRegistrationTests.cs" />
+    <Compile Include="Installers\Registrations\WebApiLoginServiceRegistrationTests.cs" />
     <Compile Include="JobLifetimeMetricBatchStatusTests.cs" />
     <Compile Include="Managers\InstanceSettingsManagerTests.cs" />
     <Compile Include="Managers\FederatedInstanceManagerTests.cs" />

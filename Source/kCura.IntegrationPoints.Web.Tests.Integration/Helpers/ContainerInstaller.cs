@@ -2,9 +2,8 @@
 using Castle.Windsor;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core;
-using kCura.IntegrationPoints.Core.Authentication.CredentialProvider;
+using kCura.IntegrationPoints.Core.Authentication.WebApi;
 using kCura.IntegrationPoints.Core.Factories;
-using kCura.IntegrationPoints.Core.Installers.Registrations;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.IntegrationPoints.Web.Controllers.API;
@@ -34,7 +33,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Helpers
 			container.Register(Component.For<IAPILog>()
 				.UsingFactoryMethod(k => k.Resolve<IHelper>().GetLoggerFactory().GetLogger())
 				.LifestyleTransient());
-			container.Register(Component.For<ICredentialProvider>()
+			container.Register(Component.For<IWebApiLoginService>()
 				.ImplementedBy<UserPasswordCredentialProvider>()
 				.LifestyleTransient());
 			container.Register(Component.For<ICaseManagerFactory>()
@@ -42,8 +41,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Helpers
 				.LifestyleTransient());
 			container.Register(Component.For<ImportProviderImageController>()
 				.LifestyleTransient());
-
-			container.AddAuthProvider();
 
 			return container;
 		}

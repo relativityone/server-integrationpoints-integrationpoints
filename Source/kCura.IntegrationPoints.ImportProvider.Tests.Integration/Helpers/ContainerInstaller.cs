@@ -8,7 +8,7 @@ using NUnit.Framework;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Config;
-using kCura.IntegrationPoints.Core.Authentication.CredentialProvider;
+using kCura.IntegrationPoints.Core.Authentication.WebApi;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Domain.Authentication;
@@ -103,11 +103,11 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers
 
 		private static void RegisterCredentialProvider(WindsorContainer windsorContainer)
 		{
-			ICredentialProvider credProvider = Substitute.For<ICredentialProvider>();
+			IWebApiLoginService credProvider = Substitute.For<IWebApiLoginService>();
 			NetworkCredential temp = new NetworkCredential(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword);
 			NetworkCredential authorizedCredential = temp.GetCredential(SharedVariables.RelativityInstanceHostname, 8990, "password");
 			credProvider.Authenticate(Arg.Any<CookieContainer>()).Returns(authorizedCredential);
-			windsorContainer.Register(Component.For<ICredentialProvider>().Instance(credProvider));
+			windsorContainer.Register(Component.For<IWebApiLoginService>().Instance(credProvider));
 		}
 
 		private static void RegisterParserClasses(WindsorContainer windsorContainer)

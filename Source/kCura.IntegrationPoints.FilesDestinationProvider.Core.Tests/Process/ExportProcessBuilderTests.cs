@@ -21,7 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using kCura.IntegrationPoints.Core.Authentication.CredentialProvider;
+using kCura.IntegrationPoints.Core.Authentication.WebApi;
 using kCura.WinEDDS;
 using Relativity.DataExchange.Io;
 using Relativity.DataExchange.Service;
@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 
 		#region Fields
 
-		private ICredentialProvider _credentialProvider;
+		private IWebApiLoginService _credentialProvider;
 		private IExtendedExporterFactory _exporterFactory;
 		private ExtendedExportFile _exportFile;
 		private ExportDataContext _exportDataContext;
@@ -88,7 +88,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		[SetUp]
 		public override void SetUp()
 		{
-			_credentialProvider = Substitute.For<ICredentialProvider>();
+			_credentialProvider = Substitute.For<IWebApiLoginService>();
 			_exporterFactory = Substitute.For<IExtendedExporterFactory>();
 			_exportFileBuilder = Substitute.For<IExportFileBuilder>();
 			_loggingMediator = Substitute.For<ICompositeLoggingMediator>();

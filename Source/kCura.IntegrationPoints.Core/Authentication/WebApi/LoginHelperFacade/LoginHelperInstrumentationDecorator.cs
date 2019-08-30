@@ -3,14 +3,14 @@ using kCura.IntegrationPoints.Common.Constants;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using kCura.WinEDDS.Api;
 
-namespace kCura.IntegrationPoints.Core.Authentication.AuthProvider
+namespace kCura.IntegrationPoints.Core.Authentication.WebApi.LoginHelperFacade
 {
-	internal class AuthProviderInstrumentationDecorator : IAuthProvider // TODO unit tests
+	internal class LoginHelperInstrumentationDecorator : ILoginHelperFacade
 	{
-		private readonly IAuthProvider _authProvider;
+		private readonly ILoginHelperFacade _authProvider;
 		private readonly IExternalServiceInstrumentationProvider _instrumentationProvider;
 
-		public AuthProviderInstrumentationDecorator(IAuthProvider authProvider, IExternalServiceInstrumentationProvider instrumentationProvider)
+		public LoginHelperInstrumentationDecorator(ILoginHelperFacade authProvider, IExternalServiceInstrumentationProvider instrumentationProvider)
 		{
 			_authProvider = authProvider;
 			_instrumentationProvider = instrumentationProvider;

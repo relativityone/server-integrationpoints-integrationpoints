@@ -2,17 +2,17 @@
 using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Handlers;
 
-namespace kCura.IntegrationPoints.Core.Authentication.AuthProvider
+namespace kCura.IntegrationPoints.Core.Authentication.WebApi.LoginHelperFacade
 {
-	internal class AuthProviderRetryDecorator : IAuthProvider // TODO unit tests
+	internal class LoginHelperRetryDecorator : ILoginHelperFacade
 	{
 		private const ushort _MAX_NUMBER_OF_RETRIES = 3;
 		private const ushort _EXPONENTIAL_WAIT_TIME_BASE_IN_SEC = 3;
 
-		private readonly IAuthProvider _authProvider;
+		private readonly ILoginHelperFacade _authProvider;
 		private readonly IRetryHandler _retryHandler;
 
-		public AuthProviderRetryDecorator(IAuthProvider authProvider, IRetryHandlerFactory retryHandlerFactory)
+		public LoginHelperRetryDecorator(ILoginHelperFacade authProvider, IRetryHandlerFactory retryHandlerFactory)
 		{
 			_authProvider = authProvider;
 			_retryHandler = retryHandlerFactory.Create(

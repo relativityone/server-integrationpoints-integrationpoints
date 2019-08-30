@@ -1,9 +1,9 @@
 ﻿using System.Net;
 using kCura.WinEDDS.Api;
 
-namespace kCura.IntegrationPoints.Core.Authentication.AuthProvider
+namespace kCura.IntegrationPoints.Core.Authentication.WebApi.LoginHelperFacade
 {
-	internal class AuthProvider : IAuthProvider
+	internal class LoginHelperFacade : ILoginHelperFacade
 	{
 		private const string _RELATIVITY_BEARER_USERNAME = "XxX_BearerTokenCredentials_XxX";
 		

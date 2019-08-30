@@ -6,7 +6,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Core.Authentication.CredentialProvider;
+using kCura.IntegrationPoints.Core.Authentication.WebApi;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using NSubstitute;
@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		private ImportProviderImageController _controller;
 		private IManagerFactory _managerFactory;
 		private IFieldManager _fieldManager;
-		private ICredentialProvider _credentialProvider;
+		private IWebApiLoginService _credentialProvider;
 		private ICaseManagerFactory _caseManagerFactory;
 		private WinEDDS.Service.Export.ICaseManager _caseManager;
 		private CaseInfo _caseInfo;
@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		{
 			_managerFactory = Substitute.For<IManagerFactory>();
 			_fieldManager = Substitute.For<IFieldManager>();
-			_credentialProvider = Substitute.For<ICredentialProvider>();
+			_credentialProvider = Substitute.For<IWebApiLoginService>();
 			_caseManagerFactory = Substitute.For<ICaseManagerFactory>();
 			_caseManager = Substitute.For<WinEDDS.Service.Export.ICaseManager>();
 

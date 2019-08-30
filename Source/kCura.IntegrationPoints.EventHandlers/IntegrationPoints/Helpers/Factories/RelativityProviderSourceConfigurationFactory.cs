@@ -1,7 +1,7 @@
 ﻿using System;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Core;
-using kCura.IntegrationPoints.Core.Authentication.CredentialProvider;
+using kCura.IntegrationPoints.Core.Authentication.WebApi;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Managers;
@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factor
 		{
 			IConfigFactory configFactory = new ConfigFactory();
 			IAPILog logger = helper.GetLoggerFactory().GetLogger();
-			ICredentialProvider credentialProvider = CredentialProviderFactoryDeprecated.Create(logger);
+			IWebApiLoginService credentialProvider = WebApiLoginServiceFactoryDeprecated.Create(logger);
 			ISqlServiceFactory sqlServiceFactory = new HelperConfigSqlServiceFactory(helper);
 			IServiceManagerProvider serviceManagerProvider = new ServiceManagerProvider(configFactory, credentialProvider, sqlServiceFactory);
 

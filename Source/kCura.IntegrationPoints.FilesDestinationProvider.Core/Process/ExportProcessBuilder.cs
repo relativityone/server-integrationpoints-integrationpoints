@@ -19,7 +19,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using FileNaming.CustomFileNaming;
-using kCura.IntegrationPoints.Core.Authentication.CredentialProvider;
+using kCura.IntegrationPoints.Core.Authentication.WebApi;
 using kCura.Relativity.Client;
 using Relativity.DataExchange.Io;
 using IExporter = kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary.IExporter;
@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 	public class ExportProcessBuilder : IExportProcessBuilder
 	{
 		private readonly IConfigFactory _configFactory;
-		private readonly ICredentialProvider _credentialProvider;
+		private readonly IWebApiLoginService _credentialProvider;
 		private readonly IExtendedExporterFactory _extendedExporterFactory;
 		private readonly IExportFileBuilder _exportFileBuilder;
 		private readonly JobStatisticsService _jobStatisticsService;
@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			ICompositeLoggingMediator loggingMediator,
 			IUserMessageNotification userMessageNotification, 
 			IUserNotification userNotification,
-			ICredentialProvider credentialProvider, 
+			IWebApiLoginService credentialProvider, 
 			IExtendedExporterFactory extendedExporterFactory,
 			IExportFileBuilder exportFileBuilder, 
 			IHelper helper, 

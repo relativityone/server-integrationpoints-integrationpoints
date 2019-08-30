@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Config;
-using kCura.IntegrationPoints.Core.Authentication.CredentialProvider;
+using kCura.IntegrationPoints.Core.Authentication.WebApi;
 using kCura.IntegrationPoints.Core.Factories;
 
 namespace kCura.IntegrationPoints.Core
@@ -9,11 +9,11 @@ namespace kCura.IntegrationPoints.Core
 	public class ServiceManagerProvider : IServiceManagerProvider
 	{
 		private readonly IConfig _config;
-		private readonly ICredentialProvider _credentialProvider;
+		private readonly IWebApiLoginService _credentialProvider;
 
 		public ServiceManagerProvider(
 			IConfigFactory configFactory,
-			ICredentialProvider credentialProvider,
+			IWebApiLoginService credentialProvider,
 			ISqlServiceFactory sqlServiceFactory)
 		{
 			Apps.Common.Config.Manager.Settings.Factory = sqlServiceFactory;

@@ -1,12 +1,12 @@
 ﻿using System.Linq;
 using System.Net;
 using System.Web.Http;
+using kCura.IntegrationPoints.Core.Authentication.WebApi;
 using kCura.WinEDDS.Service.Export;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
-using kCura.IntegrationPoints.Core.Authentication.CredentialProvider;
 using Relativity.DataExchange.Service;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
@@ -16,11 +16,11 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 		private readonly IManagerFactory _managerFactory;
 		private readonly ICaseManagerFactory _caseManagerFactory;
-		private readonly ICredentialProvider _credential;
+		private readonly IWebApiLoginService _credential;
 
 		public ImportProviderImageController(
 			IManagerFactory managerFactory,
-			ICredentialProvider credential,
+			IWebApiLoginService credential,
 			ICaseManagerFactory caseManagerFactory)
 		{
 			_managerFactory = managerFactory;

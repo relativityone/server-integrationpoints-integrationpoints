@@ -15,7 +15,7 @@ using kCura.ScheduleQueue.Core;
 using Castle.Windsor;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoints.Core;
-using kCura.IntegrationPoints.Core.Authentication.CredentialProvider;
+using kCura.IntegrationPoints.Core.Authentication.WebApi;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Process.Internals;
@@ -140,7 +140,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 				loggingMediator,
 				exportUserNotification,
 				userNotification,
-				_windsorContainer.Resolve<ICredentialProvider>(),
+				_windsorContainer.Resolve<IWebApiLoginService>(),
 				_windsorContainer.Resolve<IExtendedExporterFactory>(),
 				new ExportFileBuilder(new DelimitersBuilder(), new VolumeInfoBuilder(),
 					new ExportedObjectBuilder(new ExportedArtifactNameRepository(_windsorContainer.Resolve<IRSAPIClient>(), _windsorContainer.Resolve<IServiceManagerProvider>()))

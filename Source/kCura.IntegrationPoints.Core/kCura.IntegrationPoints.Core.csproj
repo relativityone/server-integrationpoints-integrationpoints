@@ -56,18 +56,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Authentication\AuthProvider\AuthProvider.cs" />
-    <Compile Include="Authentication\AuthProvider\AuthProviderFactoryDeprecated.cs" />
-    <Compile Include="Authentication\AuthProvider\AuthProviderInstrumentationDecorator.cs" />
-    <Compile Include="Authentication\AuthProvider\AuthProviderRetryDecorator.cs" />
-    <Compile Include="Authentication\CredentialProvider\CredentialProviderFactoryDeprecated.cs" />
-    <Compile Include="Authentication\CredentialProvider\ICredentialProvider.cs" />
+    <Compile Include="Authentication\WebApi\LoginHelperFacade\LoginHelperFacade.cs" />
+    <Compile Include="Authentication\WebApi\LoginHelperFacade\LoginHelperFacadeFactoryDeprecated.cs" />
+    <Compile Include="Authentication\WebApi\LoginHelperFacade\LoginHelperInstrumentationDecorator.cs" />
+    <Compile Include="Authentication\WebApi\LoginHelperFacade\LoginHelperRetryDecorator.cs" />
+    <Compile Include="Authentication\WebApi\WebApiLoginServiceFactoryDeprecated.cs" />
+    <Compile Include="Authentication\WebApi\IWebApiLoginService.cs" />
     <Compile Include="Authentication\ITokenProviderFactoryFactory.cs" />
     <Compile Include="Authentication\OAuth2TokenGenerator.cs" />
-    <Compile Include="Authentication\AuthProvider\IAuthProvider.cs" />
+    <Compile Include="Authentication\WebApi\LoginHelperFacade\ILoginHelperFacade.cs" />
     <Compile Include="Authentication\IOAuth2ClientFactory.cs" />
     <Compile Include="Authentication\OAuth2ClientFactory.cs" />
-    <Compile Include="Authentication\CredentialProvider\TokenCredentialProvider.cs" />
+    <Compile Include="Authentication\WebApi\WebApiLoginService.cs" />
     <Compile Include="Authentication\TokenProviderFactoryFactory.cs" />
     <Compile Include="BatchEmail.cs" />
     <Compile Include="BatchStatusCommands\Implementations\SourceWorkspaceTagCreator.cs" />
@@ -77,7 +77,7 @@
     <Compile Include="BatchStatusCommands\Implementations\TargetDocumentsTaggingManagerFactory.cs" />
     <Compile Include="BatchStatusCommands\Implementations\TempTableReader.cs" />
     <Compile Include="Extensions\DictionaryExtensions.cs" />
-    <Compile Include="Installers\Registrations\AuthProviderRegistration.cs" />
+    <Compile Include="Installers\Registrations\WebApiLoginServiceRegistration.cs" />
     <Compile Include="Installers\Registrations\ExportSanitizerRegistration.cs" />
     <Compile Include="Interfaces\TextSanitizer\SanitizationResult.cs" />
     <Compile Include="Interfaces\TextSanitizer\ITextSanitizer.cs" />

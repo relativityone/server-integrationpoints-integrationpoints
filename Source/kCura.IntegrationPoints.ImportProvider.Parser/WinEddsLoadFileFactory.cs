@@ -6,18 +6,18 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Config;
-using kCura.IntegrationPoints.Core.Authentication.CredentialProvider;
+using kCura.IntegrationPoints.Core.Authentication.WebApi;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
 	public class WinEddsLoadFileFactory : IWinEddsLoadFileFactory
 	{
-		private ICredentialProvider _credentialProvider;
+		private IWebApiLoginService _credentialProvider;
 		private IDataTransferLocationServiceFactory _locationServiceFactory;
 		private IWebApiConfig _webApiConfig;
 
-		public WinEddsLoadFileFactory(ICredentialProvider credentialProvider, IDataTransferLocationServiceFactory locationServiceFactory, IWebApiConfig webApiConfig)
+		public WinEddsLoadFileFactory(IWebApiLoginService credentialProvider, IDataTransferLocationServiceFactory locationServiceFactory, IWebApiConfig webApiConfig)
 		{
 			_credentialProvider = credentialProvider;
 			_locationServiceFactory = locationServiceFactory;

@@ -1,8 +1,8 @@
 ﻿using System.Net;
 
-namespace kCura.IntegrationPoints.Core.Authentication.AuthProvider
+namespace kCura.IntegrationPoints.Core.Authentication.WebApi.LoginHelperFacade
 {
-	public interface IAuthProvider
+	internal interface ILoginHelperFacade
 	{
 		NetworkCredential LoginUsingAuthToken(string token, CookieContainer cookieContainer);
 	}
