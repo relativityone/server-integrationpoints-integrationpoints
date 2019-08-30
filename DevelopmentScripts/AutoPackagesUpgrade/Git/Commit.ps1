@@ -17,6 +17,9 @@ Param(
 )
 Begin
 {
+	. ".\Config.ps1"  
+	. ".\Utils.ps1"
+
 	if(!$Path)
 	{
 		$Path = "."
@@ -29,5 +32,7 @@ Process
 	$commitMessage = "$JiraNumber $Message"
 	git -C $Path commit -m $commitMessage
 	
+	Fail-OnAnyErrors -CommandName "Commit.ps1"
+
 	Write-Verbose "End of Commit.ps1"
 }

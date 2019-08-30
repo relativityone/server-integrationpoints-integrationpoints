@@ -29,6 +29,8 @@ Process
 	$packages = Get-Content -Path $paketDependenciesPath
 	$oldVersion = Get-CurrentPackageVersionInRip -PaketDependenciesAsText $packages -PackageName $PackageName
 
+    Write-Verbose "Comparing versions [$NewVersion] to [$oldVersion] of $PackageName"
+
     $newSystemVersion = Map-RelativityPackageVersionToSystemVersion -PackageVersion $NewVersion
     $oldSystemVersion = Map-RelativityPackageVersionToSystemVersion -PackageVersion $oldVersion
 

@@ -15,6 +15,9 @@ Param(
 )
 Begin
 {
+	. ".\Config.ps1"  
+	. ".\Utils.ps1"
+
 	if(!$Path)
 	{
 		$Path = "."
@@ -36,6 +39,8 @@ Process
 			git -C $Path stash pop 'stash@{0}'
 		}
 	}
+
+	Fail-OnAnyErrors -CommandName "Pop-StashIfExistsOnTop.ps1"
 	
 	Write-Verbose "End of Pop-StashIfExistsOnTop.ps1"
 }

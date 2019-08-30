@@ -45,5 +45,17 @@ Process
     
     Write-Verbose "End of Get-ActiveSprintId.ps1"
 
-    $response.values.id
+    $sprintId = $response.values | Where-Object { $_.originBoardId -eq $boardId } | Select-Object -ExpandProperty id
+
+    if($sprintId.Length -eq 0)
+    {
+        Write-Error "Get-ActiveSprintId failed with active sprint not found" -ErrorAction Stop
+    }
+
+    if($sprintId.Length -gt 1)
+    {
+        Write-Error "Get-ActiveSprintId failed with multiple active sprints found" -ErrorAction Stop
+    }
+
+    $sprintId
 }

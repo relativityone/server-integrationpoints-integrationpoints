@@ -74,6 +74,7 @@ Begin
 		$stashName = "Saved changes before checking packages"
     	.\Git\Stash.ps1 -StashName $stashName -Path $RipSourceCodePath
 		.\Git\Checkout.ps1 -BranchName $OnBranch -Path $RipSourceCodePath
+		.\Git\Pull.ps1 -Path $RipSourceCodePath
 		
 		$areRipDependenciesOutOfDate = ($ToPackageVersions | Where-Object { (.\PackageUpdate\Is-PackageInRipUpToDate.ps1 -PackageName $_.name -NewVersion $_.version -RipSourceCodePath $RipSourceCodePath) }).Count -gt 0
 

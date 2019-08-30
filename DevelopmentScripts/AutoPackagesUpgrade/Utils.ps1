@@ -142,3 +142,11 @@ function Get-CurrentRipVersionInRelativity($PackagesConfigAsText, $RipPackageRow
 
     $ripVersion
  }
+
+ function Fail-OnAnyErrors($CommandName)
+ {
+    if (-not $?) 
+	{
+        Write-Error "Error $CommandName!" -ErrorAction Stop
+    }
+ }

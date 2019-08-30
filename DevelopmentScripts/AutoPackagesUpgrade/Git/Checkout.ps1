@@ -15,6 +15,9 @@ Param(
 )
 Begin
 {
+	. ".\Config.ps1"  
+	. ".\Utils.ps1"
+
 	if(!$Path)
 	{
 		$Path = "."
@@ -26,5 +29,7 @@ Process
 	
 	git -C $Path checkout $BranchName
 	
+	Fail-OnAnyErrors -CommandName "Checkout.ps1"
+
 	Write-Verbose "End of Checkout.ps1"
 }
