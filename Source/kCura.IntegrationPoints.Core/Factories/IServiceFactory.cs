@@ -11,6 +11,6 @@ namespace kCura.IntegrationPoints.Core.Factories
 
 		IFieldCatalogService CreateFieldCatalogService(IHelper targetHelper);
 
-		IJobHistoryService CreateJobHistoryService(IHelper helper);
+		IJobHistoryService CreateJobHistoryService(IAPILog logger);
 	}
 }

@@ -8,20 +8,20 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 {
 	internal class TaskFactoryJobHistoryServiceFactory : ITaskFactoryJobHistoryServiceFactory
 	{
-		private readonly IHelper _helper;
+		private readonly IAPILog _logger;
 		private readonly IIntegrationPointSerializer _serializer;
 		private readonly IServiceFactory _serviceFactory;
 		private readonly IJobHistoryErrorService _jobHistoryErrorService;
 		private readonly IIntegrationPointRepository _integrationPointRepository;
 
 		public TaskFactoryJobHistoryServiceFactory(
-			IHelper helper, 
-			IIntegrationPointSerializer serializer, 
-			IServiceFactory serviceFactory, 
+			IAPILog logger,
+			IIntegrationPointSerializer serializer,
+			IServiceFactory serviceFactory,
 			IJobHistoryErrorService jobHistoryErrorService,
 			IIntegrationPointRepository integrationPointRepository)
 		{
-			_helper = helper;
+			_logger = logger;
 			_serializer = serializer;
 			_serviceFactory = serviceFactory;
 			_jobHistoryErrorService = jobHistoryErrorService;
@@ -31,11 +31,11 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 		public ITaskFactoryJobHistoryService CreateJobHistoryService(IntegrationPoint integrationPoint)
 		{
 			return new TaskFactoryJobHistoryService(
-				_helper, 
-				_serializer, 
-				_serviceFactory, 
+				_logger,
+				_serializer,
+				_serviceFactory,
 				_jobHistoryErrorService,
-				_integrationPointRepository, 
+				_integrationPointRepository,
 				integrationPoint);
 		}
 	}

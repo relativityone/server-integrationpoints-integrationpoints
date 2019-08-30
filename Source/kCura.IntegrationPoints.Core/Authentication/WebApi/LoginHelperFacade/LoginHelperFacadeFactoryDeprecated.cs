@@ -8,6 +8,11 @@ namespace kCura.IntegrationPoints.Core.Authentication.WebApi.LoginHelperFacade
 {
 	internal static class LoginHelperFacadeFactoryDeprecated
 	{
+		/// <summary>
+		///  This method can be used to retrieve instance of <see cref="ILoginHelperFacade"/> when resolving it from IoC container is not possible
+		/// </summary>
+		/// <param name="logger"></param>
+		/// <returns></returns>
 		public static ILoginHelperFacade Create(IAPILog apiLog)
 		{
 			var retryHandlerFactory = new RetryHandlerFactory(apiLog);

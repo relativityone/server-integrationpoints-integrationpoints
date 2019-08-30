@@ -113,7 +113,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 				caseServiceContext.RsapiService.RelativityObjectManager,
 				federatedInstanceManager,
 				workspaceManager,
-				Helper,
+				Logger,
 				integrationPointSerializer,
 				providerTypeService,
 				messageService);

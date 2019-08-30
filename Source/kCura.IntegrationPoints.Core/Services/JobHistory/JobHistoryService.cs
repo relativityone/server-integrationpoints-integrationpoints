@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			IRelativityObjectManager relativityObjectManager,
 			IFederatedInstanceManager federatedInstanceManager,
 			IWorkspaceManager workspaceManager,
-			IHelper helper,
+			IAPILog logger,
 			IIntegrationPointSerializer serializer,
 			IProviderTypeService providerTypeService,
 			IMessageService messageService)
@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			_relativityObjectManager = relativityObjectManager;
 			_federatedInstanceManager = federatedInstanceManager;
 			_workspaceManager = workspaceManager;
-			_logger = helper.GetLoggerFactory().GetLogger().ForContext<JobHistoryService>();
+			_logger = logger.ForContext<JobHistoryService>();
 			_serializer = serializer;
 			_providerTypeService = providerTypeService;
 			_messageService = messageService;

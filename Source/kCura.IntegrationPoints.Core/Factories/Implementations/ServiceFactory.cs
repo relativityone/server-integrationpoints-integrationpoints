@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		public IIntegrationPointService CreateIntegrationPointService(IHelper helper)
 		{
 			IAPILog logger = helper.GetLoggerFactory().GetLogger();
-			IJobHistoryService jobHistoryService = CreateJobHistoryService(helper);
+			IJobHistoryService jobHistoryService = CreateJobHistoryService(logger);
 			ISecretsRepository secretsRepository = new SecretsRepository(
 				SecretStoreFacadeFactory_Deprecated.Create(helper.GetSecretStore, logger),
 				logger
@@ -83,13 +83,13 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			return new FieldCatalogService(targetHelper);
 		}
 
-		public IJobHistoryService CreateJobHistoryService(IHelper helper)
+		public IJobHistoryService CreateJobHistoryService(IAPILog logger)
 		{
 			IJobHistoryService jobHistoryService = new JobHistoryService(
 				_caseServiceContext.RsapiService.RelativityObjectManager,
 				_managerFactory.CreateFederatedInstanceManager(),
 				_managerFactory.CreateWorkspaceManager(),
-				helper,
+				logger,
 				_serializer,
 				_providerTypeService,
 				_messageService);

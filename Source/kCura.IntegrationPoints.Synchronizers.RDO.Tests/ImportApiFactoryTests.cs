@@ -1,4 +1,5 @@
 ﻿using System;
+using FluentAssertions;
 using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Domain.Exceptions;
@@ -60,15 +61,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			Action createImportApiAction = () => CreateExtendedImportAPIForSettings(settings);
 
 			// assert
-			try // TODO use Fluent Assertions
-			{
-				createImportApiAction();
-				Assert.Fail();
-			}
-			catch (Exception)
-			{
-				Assert.Pass();
-			}
+			createImportApiAction.ShouldThrow<Exception>();
 		}
 
 		[Test]
@@ -107,7 +100,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			TestDelegate createIAPIAction = () => CreateExtendedImportAPIForSettings(settings);
 
 			// assert
-			Assert.Throws<InvalidOperationException>(createIAPIAction);
+			Assert.Throws<NotSupportedException>(createIAPIAction);
 		}
 
 

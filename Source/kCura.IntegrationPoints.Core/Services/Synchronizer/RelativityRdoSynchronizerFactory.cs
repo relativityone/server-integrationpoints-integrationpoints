@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 
 			if (importSettings.IsFederatedInstance())
 			{
-				throw new InvalidOperationException("i2i is not supported");
+				throw new NotSupportedException("i2i is not supported");
 			}
 			else
 			{

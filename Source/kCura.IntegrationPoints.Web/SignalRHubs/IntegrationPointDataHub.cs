@@ -48,7 +48,13 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 		private readonly IStateManager _stateManager;
 
 		public IntegrationPointDataHub() : this(ConnectionHelper.Helper(), new HelperClassFactory())
+		{ }
+
+		internal IntegrationPointDataHub(ICPHelper helper, IHelperClassFactory helperClassFactory)
 		{
+			_helper = helper;
+			_helperClassFactory = helperClassFactory;
+
 			_logger = _helper.GetLoggerFactory().GetLogger();
 
 			_managerFactory = new ManagerFactory(_helper);
@@ -57,12 +63,6 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			_stateManager = _managerFactory.CreateStateManager();
 			IRepositoryFactory repositoryFactory = new RepositoryFactory(_helper, _helper.GetServicesManager());
 			_permissionValidator = new IntegrationPointPermissionValidator(new[] { new ViewErrorsPermissionValidator(repositoryFactory) }, new IntegrationPointSerializer(_logger));
-		}
-
-		internal IntegrationPointDataHub(ICPHelper helper, IHelperClassFactory helperClassFactory)
-		{
-			_helper = helper;
-			_helperClassFactory = helperClassFactory;
 
 			if (_tasks == null)
 			{

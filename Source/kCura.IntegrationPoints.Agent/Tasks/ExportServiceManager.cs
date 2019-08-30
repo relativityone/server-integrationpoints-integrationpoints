@@ -271,7 +271,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			if (importSettings.FederatedInstanceArtifactId.HasValue)
 			{
-				throw new InvalidOperationException("i2i is not supported");
+				throw new NotSupportedException("i2i is not supported");
 			}
 		}
 

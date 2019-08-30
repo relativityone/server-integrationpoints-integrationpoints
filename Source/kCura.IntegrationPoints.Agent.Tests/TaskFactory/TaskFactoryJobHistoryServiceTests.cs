@@ -27,25 +27,25 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 
 		public void SetUp(Data.IntegrationPoint ip = null)
 		{
-			var helper = Substitute.For<IHelper>();
-			var serializer = Substitute.For<IIntegrationPointSerializer>();
+			IAPILog logger = Substitute.For<IAPILog>();
+			IIntegrationPointSerializer serializer = Substitute.For<IIntegrationPointSerializer>();
 			serializer.Deserialize<DestinationConfiguration>(Arg.Any<string>()).Returns(new DestinationConfiguration());
 			serializer.Deserialize<TaskParameters>(Arg.Any<string>()).Returns(new TaskParameters());
 
 			_jobHistoryService = Substitute.For<IJobHistoryService>();
 
 			var serviceFactory = Substitute.For<IServiceFactory>();
-			serviceFactory.CreateJobHistoryService(Arg.Any<IHelper>()).Returns(_jobHistoryService);
+			serviceFactory.CreateJobHistoryService(Arg.Any<IAPILog>()).Returns(_jobHistoryService);
 			_jobHistoryErrorService = Substitute.For<IJobHistoryErrorService>();
 			_integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
 
 			ip = ip ?? GetDefaultIntegrationPoint();
 			_sut = new TaskFactoryJobHistoryService(
-				helper, 
-				serializer, 
-				serviceFactory, 
-				_jobHistoryErrorService, 
-				_integrationPointRepository, 
+				logger,
+				serializer,
+				serviceFactory,
+				_jobHistoryErrorService,
+				_integrationPointRepository,
 				ip
 			);
 		}
@@ -238,7 +238,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 			// Assert
 			Assert.AreEqual(integrationPointArtifactId, _jobHistoryErrorService.IntegrationPoint.ArtifactId);
 			Assert.AreEqual(jobHistoryArtifactId, _jobHistoryErrorService.JobHistory.ArtifactId);
-			_jobHistoryErrorService.Received().AddError(Arg.Is<Choice>(x=>x.Name == ErrorTypeChoices.JobHistoryErrorJob.Name), exception);
+			_jobHistoryErrorService.Received().AddError(Arg.Is<Choice>(x => x.Name == ErrorTypeChoices.JobHistoryErrorJob.Name), exception);
 		}
 
 		private Data.IntegrationPoint GetDefaultIntegrationPoint()

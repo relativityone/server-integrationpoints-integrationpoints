@@ -43,7 +43,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			IHelper helper = Substitute.For<IHelper>();
 			IRelativityFieldQuery relativityFieldQuery = Substitute.For<IRelativityFieldQuery>();
 
-			var pusher = new RdoSynchronizer(relativityFieldQuery, factory, jobFactory, helper);
+			var rdoSynchronizer = new RdoSynchronizer(relativityFieldQuery, factory, jobFactory, helper);
 
 			var mapIdentifier = new FieldMap
 			{
@@ -66,7 +66,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			DataTableReader reader = importTable.CreateDataReader();
 			var context = new DefaultTransferContext(reader);
-			pusher.SyncData(context, allFieldMaps, settings);
+			rdoSynchronizer.SyncData(context, allFieldMaps, settings);
 		}
 
 		public static DataTable GetImportTable(string documentPrefix, int numberOfDocuments)

@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		{
 			if (settings.FederatedInstanceArtifactId != null)
 			{
-				throw new InvalidOperationException("i2i is not supported");
+				throw new NotSupportedException("i2i is not supported");
 			}
 
 			string username;

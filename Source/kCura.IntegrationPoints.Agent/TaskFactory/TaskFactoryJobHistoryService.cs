@@ -25,20 +25,20 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 		private readonly IntegrationPoint _integrationPoint;
 
 		public TaskFactoryJobHistoryService(
-			IHelper helper, 
+			IAPILog logger, 
 			IIntegrationPointSerializer serializer, 
 			IServiceFactory serviceFactory, 
 			IJobHistoryErrorService jobHistoryErrorService,
 			IIntegrationPointRepository integrationPointRepository,
 			IntegrationPoint integrationPoint)
 		{
-			_logger = helper.GetLoggerFactory().GetLogger().ForContext<TaskFactoryJobHistoryService>();
+			_logger = logger.ForContext<TaskFactoryJobHistoryService>();
 			_serializer = serializer;
 			_jobHistoryErrorService = jobHistoryErrorService;
 			_integrationPointRepository = integrationPointRepository;
 
 			_integrationPoint = integrationPoint;
-			_jobHistoryService = serviceFactory.CreateJobHistoryService(helper);
+			_jobHistoryService = serviceFactory.CreateJobHistoryService(_logger);
 		}
 		
 		public void SetJobIdOnJobHistory(Job job)

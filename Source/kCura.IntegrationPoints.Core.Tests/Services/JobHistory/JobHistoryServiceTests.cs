@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		private IRelativityObjectManager _relativityObjectManager;
 		private IWorkspaceManager _workspaceManager;
 		private IFederatedInstanceManager _federatedInstanceManager;
-		private IHelper _helper;
+		private IAPILog _logger;
 		private IProviderTypeService _providerTypeService;
 		private IMessageService _messageService;
 
@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			_relativityObjectManager = Substitute.For<IRelativityObjectManager>();
 			_workspaceManager = Substitute.For<IWorkspaceManager>();
 			_federatedInstanceManager = Substitute.For<IFederatedInstanceManager>();
-			_helper = Substitute.For<IHelper>();
+			_logger = Substitute.For<IAPILog>();
 			_serializer = Substitute.For<IIntegrationPointSerializer>();
 			_providerTypeService = Substitute.For<IProviderTypeService>();
 			_messageService = Substitute.For<IMessageService>();
@@ -74,7 +74,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 				_relativityObjectManager,
 				_federatedInstanceManager,
 				_workspaceManager,
-				_helper,
+				_logger,
 				_serializer,
 				_providerTypeService,
 				_messageService);
