@@ -25,7 +25,7 @@ interface Constants
 	final String UI_TESTS_RESULTS_REPORT_PATH = "$ARTIFACTS_PATH/UITestsResults.xml"
 	final String INTEGRATION_TESTS_IN_QUARANTINE_RESULTS_REPORT_PATH = "$ARTIFACTS_PATH/QuarantineIntegrationTestsResults.xml"
 	final String JEEVES_KNIFE_PATH = 'C:\\Python27\\Lib\\site-packages\\jeeves\\knife.rb'
-	final String UI_TESTS_NAMESPACE_REGEX = "(kCura\.IntegrationPoints\.UITests($|\.))"
+	final String UI_TESTS_NAMESPACE_REGEX = "(kCura\\.IntegrationPoints\\.UITests($|\\.))"
 }
 
 class RIPPipelineState
