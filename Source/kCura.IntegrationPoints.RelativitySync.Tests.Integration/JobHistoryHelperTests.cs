@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.Templates;
@@ -124,7 +125,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			IList<JobHistory> jobHistories = Container.Resolve<IJobHistoryService>().GetJobHistory(new[] {_jobHistory.ArtifactId});
 			Assert.AreEqual(jobHistories.Count, 1);
 			Assert.IsTrue(jobHistories[0].StartTimeUTC.HasValue);
-			Assert.AreEqual(jobHistories[0].JobID, jobId.ToString());
+			Assert.AreEqual(jobHistories[0].JobID, jobId.ToString(CultureInfo.InvariantCulture));
 		}
 
 		[IdentifiedTest("d7b641d0-11c1-4b74-831f-b0d05c417f3f")]
@@ -228,9 +229,9 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			return relativityObjectManager.Query<JobHistoryError>(queryRequest);
 		}
 
-		private string CreateCondition(IEnumerable<int> historiesId)
+		private static string CreateCondition(IEnumerable<int> historiesId)
 		{
-			string historiesIdList = string.Join(",", historiesId.Select(x => x.ToString()));
+			string historiesIdList = string.Join(",", historiesId.Select(x => x.ToString(CultureInfo.InvariantCulture)));
 			return $"'{JobHistoryErrorFields.JobHistory}' IN OBJECT [{historiesIdList}]";
 		}
 	}
