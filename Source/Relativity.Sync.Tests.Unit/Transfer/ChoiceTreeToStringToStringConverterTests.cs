@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Moq;
 using NUnit.Framework;
-using Relativity.Sync.Configuration;
+using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.Unit.Transfer
@@ -12,17 +11,14 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 	{
 #pragma warning disable RG2009 // Hardcoded Numeric Value
 
-		private ImportSettingsDto _importSettings;
-		private Mock<ISynchronizationConfiguration> _config;
+		private ConfigurationStub _config;
 		private ChoiceTreeToStringConverter _instance;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_config = new Mock<ISynchronizationConfiguration>();
-			_importSettings = new ImportSettingsDto();
-			_config.SetupGet(x => x.ImportSettings).Returns(_importSettings);
-			_instance = new ChoiceTreeToStringConverter(_config.Object);
+			_config = new ConfigurationStub();
+			_instance = new ChoiceTreeToStringConverter(_config);
 		}
 
 		[Test]
@@ -34,7 +30,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			string actual = _instance.ConvertTreeToString(new List<ChoiceWithChildInfo> { choice });
 
 			// assert
-			string expected = $"Hot{_importSettings.MultiValueDelimiter}";
+			string expected = $"Hot{_config.MultiValueDelimiter}";
 			Assert.AreEqual(expected, actual);
 		}
 
@@ -53,7 +49,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			string actual = _instance.ConvertTreeToString(new List<ChoiceWithChildInfo> { root });
 
 			// assert
-			string expected = $"Root{_importSettings.NestedValueDelimiter}Child{_importSettings.MultiValueDelimiter}";
+			string expected = $"Root{_config.NestedValueDelimiter}Child{_config.MultiValueDelimiter}";
 			Assert.AreEqual(expected, actual);
 		}
 
@@ -80,9 +76,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			choice2.Children.Add(choice3);
 			choice5.Children.Add(choice6);
 
-			string expected = $"1{_importSettings.NestedValueDelimiter}2{_importSettings.NestedValueDelimiter}3" +
-				$"{_importSettings.MultiValueDelimiter}1{_importSettings.NestedValueDelimiter}4" +
-				$"{_importSettings.MultiValueDelimiter}5{_importSettings.NestedValueDelimiter}6{_importSettings.MultiValueDelimiter}";
+			string expected = $"1{_config.NestedValueDelimiter}2{_config.NestedValueDelimiter}3" +
+				$"{_config.MultiValueDelimiter}1{_config.NestedValueDelimiter}4" +
+				$"{_config.MultiValueDelimiter}5{_config.NestedValueDelimiter}6{_config.MultiValueDelimiter}";
 
 			// act
 			string actual = _instance.ConvertTreeToString(new List<ChoiceWithChildInfo> { choice1, choice5 });

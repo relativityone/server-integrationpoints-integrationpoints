@@ -57,8 +57,8 @@ namespace Relativity.Sync.Transfer
 					$"Expected elements of input to be deserializable to type {typeof(Choice)}.");
 			}
 
-			char multiValueDelimiter = _configuration.ImportSettings.MultiValueDelimiter;
-			char nestedValueDelimiter = _configuration.ImportSettings.NestedValueDelimiter;
+			char multiValueDelimiter = _configuration.MultiValueDelimiter;
+			char nestedValueDelimiter = _configuration.NestedValueDelimiter;
 			bool ContainsDelimiter(string x) => x.Contains(multiValueDelimiter) || x.Contains(nestedValueDelimiter);
 
 			List<string> names = choices.Select(x => x.Name).ToList();

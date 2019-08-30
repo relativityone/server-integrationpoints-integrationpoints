@@ -29,28 +29,22 @@ namespace Relativity.Sync
 		public int IntegrationPointArtifactId { get; }
 
 		/// <summary>
-		/// Import settings.
-		/// </summary>
-		public ImportSettingsDto ImportSettings { get; }
-
-		/// <summary>
 		/// Constructor for testing only
 		/// </summary>
-		internal SyncJobParameters(int syncConfigurationArtifactId, int workspaceId, ImportSettingsDto importSettings) : 
-			this(syncConfigurationArtifactId, workspaceId, int.MaxValue, Guid.NewGuid().ToString(), importSettings)
+		internal SyncJobParameters(int syncConfigurationArtifactId, int workspaceId) : 
+			this(syncConfigurationArtifactId, workspaceId, int.MaxValue, Guid.NewGuid().ToString())
 		{
 		}
 
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		public SyncJobParameters(int syncConfigurationArtifactId, int workspaceId, int integrationPointArtifactId, string correlationId, ImportSettingsDto importSettings)
+		public SyncJobParameters(int syncConfigurationArtifactId, int workspaceId, int integrationPointArtifactId, string correlationId)
 		{
 			CorrelationId = correlationId;
 			SyncConfigurationArtifactId = syncConfigurationArtifactId;
 			WorkspaceId = workspaceId;
 			IntegrationPointArtifactId = integrationPointArtifactId;
-			ImportSettings = importSettings;
 		}
 	}
 }

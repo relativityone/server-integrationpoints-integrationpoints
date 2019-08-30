@@ -24,6 +24,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private Mock<IJobProgressUpdaterFactory> _jobProgressUpdaterFactory;
 		private Mock<ISourceWorkspaceDataReaderFactory> _dataReaderFactory;
 		private Mock<IJobHistoryErrorRepository> _jobHistoryErrorRepository;
+		private Mock<IWebApiPathQuery> _webApiPathQuery;
 
 		private Mock<IBatch> _batch;
 
@@ -41,6 +42,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_dataReaderFactory = new Mock<ISourceWorkspaceDataReaderFactory>();
 			_dataReaderFactory.Setup(x => x.CreateSourceWorkspaceDataReader(It.IsAny<IBatch>(), It.IsAny<CancellationToken>())).Returns(dataReader.Object);
 			_jobHistoryErrorRepository = new Mock<IJobHistoryErrorRepository>();
+			_webApiPathQuery = new Mock<IWebApiPathQuery>();
+			_webApiPathQuery.Setup(x => x.GetWebApiPathAsync()).ReturnsAsync("http://fake.uri");
 
 			_logger = new EmptyLogger();
 
@@ -52,7 +55,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		{
 			// Arrange
 			var configuration = new Mock<ISynchronizationConfiguration>(MockBehavior.Loose);
-			configuration.SetupGet(x => x.ImportSettings).Returns(() => new ImportSettingsDto());
 			
 			Mock<IImportApiFactory> importApiFactory = GetImportAPIFactoryMock();
 			ImportJobFactory instance = GetTestInstance(importApiFactory);
@@ -69,14 +71,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		public async Task CreateImportJobHasExtractedFieldPathTest()
 		{
 			// Arrange
-			var importSettingsDto = new ImportSettingsDto
-			{
-				ExtractedTextFieldContainsFilePath = true,
-				ExtractedTextFileEncoding = Encoding.Unicode.EncodingName
-			};
 
 			var configuration = new Mock<ISynchronizationConfiguration>(MockBehavior.Loose);
-			configuration.SetupGet(x => x.ImportSettings).Returns(importSettingsDto);
 
 			Mock<IImportApiFactory> importApiFactory = GetImportAPIFactoryMock();
 			ImportJobFactory instance = GetTestInstance(importApiFactory);
@@ -107,7 +103,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		{
 			var instance = new ImportJobFactory(importApiFactory.Object, _dataReaderFactory.Object, _batchProgressHandlerFactory.Object, 
 				_jobProgressHandlerFactory.Object, _jobProgressUpdaterFactory.Object,
-				_jobHistoryErrorRepository.Object, _logger);
+				_jobHistoryErrorRepository.Object, _webApiPathQuery.Object, _logger);
 			return instance;
 		}
 	}

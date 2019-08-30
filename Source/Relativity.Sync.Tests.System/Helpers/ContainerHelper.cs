@@ -18,7 +18,7 @@ namespace Relativity.Sync.Tests.System.Helpers
 			ContainerBuilder containerBuilder = new ContainerBuilder();
 
 			ContainerFactory factory = new ContainerFactory();
-			SyncJobParameters syncParameters = new SyncJobParameters(configuration.SyncConfigurationArtifactId, configuration.SourceWorkspaceArtifactId, new ImportSettingsDto());
+			SyncJobParameters syncParameters = new SyncJobParameters(configuration.SyncConfigurationArtifactId, configuration.SourceWorkspaceArtifactId);
 
 			IAPM apm = new NullAPM();
 			Func<ISearchManager> searchManagerFactory = () => new SearchManager(new NetworkCredential(AppSettings.RelativityUserName, AppSettings.RelativityUserPassword),

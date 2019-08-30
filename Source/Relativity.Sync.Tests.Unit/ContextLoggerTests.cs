@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using Moq;
 using NUnit.Framework;
-using Relativity.Sync.Configuration;
 using Relativity.Sync.Logging;
 
 namespace Relativity.Sync.Tests.Unit
@@ -14,7 +13,6 @@ namespace Relativity.Sync.Tests.Unit
 		private Mock<ISyncLog> _logger;
 		
 		private ContextLogger _instance;
-		private ImportSettingsDto _importSettingsDto;
 		private object[] _expectedParams;
 
 		private SyncJobParameters _syncJobParameters;
@@ -34,8 +32,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			_logger = new Mock<ISyncLog>();
 
-			_importSettingsDto = new ImportSettingsDto();
-			_syncJobParameters = new SyncJobParameters(_JOB_ID, _WORKSPACE_ID, _importSettingsDto);
+			_syncJobParameters = new SyncJobParameters(_JOB_ID, _WORKSPACE_ID);
 
 			_expectedParams = new object[]
 			{

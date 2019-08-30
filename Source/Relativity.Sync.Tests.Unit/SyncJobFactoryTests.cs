@@ -26,7 +26,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			_container = new Mock<IContainer>();
 
-			_syncJobParameters = new SyncJobParameters(1, 1, new ImportSettingsDto());
+			_syncJobParameters = new SyncJobParameters(1, 1);
 			_relativityServices = new RelativityServices(Mock.Of<IAPM>(), Mock.Of<IServicesMgr>(), Mock.Of<ISearchManager>,
 				new Uri("http://localhost", UriKind.RelativeOrAbsolute));
 			_configuration = new SyncJobExecutionConfiguration();

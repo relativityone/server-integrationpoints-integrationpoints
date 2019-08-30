@@ -175,9 +175,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 		private static ISynchronizationConfiguration CreateConfiguration()
 		{
-			var config = new Mock<ISynchronizationConfiguration>();
-			config.SetupGet(x => x.ImportSettings).Returns(new ImportSettingsDto());
-			return config.Object;
+			return new ConfigurationStub();
 		}
 
 		private static JArray ObjectValueJArrayFromNames(params string[] names)

@@ -80,15 +80,9 @@ namespace Relativity.Sync.Tests.System
 				TotalRecordsCount = totalRecordsCount,
 				BatchSize = batchSize,
 				SyncConfigurationArtifactId = syncConfigurationArtifactId,
-
-				ImportSettings = new ImportSettingsDto()
-				{
-					CaseArtifactId = destinationWorkspaceArtifactId,
-					ImportOverwriteMode = ImportOverwriteMode.AppendOverlay,
-					FieldOverlayBehavior = FieldOverlayBehavior.UseFieldSettings,
-					ImportNativeFileCopyMode = ImportNativeFileCopyMode.CopyFiles,
-					RelativityWebServiceUrl = AppSettings.RelativityWebApiUrl
-				}
+				ImportOverwriteMode = ImportOverwriteMode.AppendOverlay,
+				FieldOverlayBehavior = FieldOverlayBehavior.UseFieldSettings,
+				ImportNativeFileCopyMode = ImportNativeFileCopyMode.CopyFiles,
 			};
 
 			IContainer container = ContainerHelper.Create(configuration,

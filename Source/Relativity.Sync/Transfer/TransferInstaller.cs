@@ -30,6 +30,7 @@ namespace Relativity.Sync.Transfer
 				.Where(t => !t.IsAbstract && t.IsAssignableTo<IExportFieldSanitizer>())
 				.ToArray()).As<IExportFieldSanitizer>();
 			builder.RegisterType<RetriableLongTextStreamBuilderFactory>().As<IRetriableStreamBuilderFactory>();
+			builder.RegisterType<WebApiPathQuery>().As<IWebApiPathQuery>();
 		}
 	}
 }

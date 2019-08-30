@@ -13,7 +13,6 @@ namespace Relativity.Sync.Tests.Unit
 	internal sealed class SynchronizationConfigurationTests
 	{
 		private Mock<Sync.Storage.IConfiguration> _cache;
-		private ImportSettingsDto _importSettings;
 		private SynchronizationConfiguration _syncConfig;
 
 		private const int _JOB_ID = 2;
@@ -31,19 +30,8 @@ namespace Relativity.Sync.Tests.Unit
 		public void SetUp()
 		{
 			_cache = new Mock<Sync.Storage.IConfiguration>();
-			_importSettings = new ImportSettingsDto();
-			SyncJobParameters syncJobParameters = new SyncJobParameters(_JOB_ID, _SOURCE_WORKSPACE_ARTIFACT_ID, _importSettings);
+			SyncJobParameters syncJobParameters = new SyncJobParameters(_JOB_ID, _SOURCE_WORKSPACE_ARTIFACT_ID);
 			_syncConfig = new SynchronizationConfiguration(_cache.Object, syncJobParameters, new EmptyLogger());
-		}
-
-		[Test]
-		public void ItShouldReturnImportSettings()
-		{
-			// act
-			ImportSettingsDto importSettings = _syncConfig.ImportSettings;
-
-			// assert
-			importSettings.Should().Be(_importSettings);
 		}
 
 		[Test]
