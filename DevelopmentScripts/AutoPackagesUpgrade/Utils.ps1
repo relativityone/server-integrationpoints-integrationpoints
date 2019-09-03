@@ -54,7 +54,10 @@ function Map-JenkinsBuildVersionToRipPackageVersion($BuildVersion)
     {
         return $baseVersion
     }
-    "$baseVersion-DEV-" + $versionSegments[3]
+
+    $minorVersion = "{0:000}" -f [int]$versionSegments[3]
+
+    "$baseVersion-DEV-$minorVersion"
 }
 
 function Map-RipPackageVersionToSystemVersion($PackageVersion)

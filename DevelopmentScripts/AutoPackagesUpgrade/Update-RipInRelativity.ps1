@@ -37,7 +37,7 @@ Param(
 	[string]$OnBranch,
 	[Parameter(Mandatory=$True)]
 	[string]$RelativitySourceCodePath,
-	[Parameter(Mandatory=$True)]
+	[Parameter(Mandatory=$False)]
 	[string]$JiraNumber,
 	[Parameter(Mandatory=$False)]
 	[switch]$SkipStashing,
@@ -49,6 +49,7 @@ Param(
 Begin
 {
 	. ".\Config.ps1" 
+	. ".\Utils.ps1"
 
 	Write-Verbose "Beginning of Begin block in Update-RipInRelativity.ps1"
 
@@ -71,7 +72,7 @@ Begin
 		$changeIssueStatus = $true
 		$buildVersion = .\Jenkins\Get-FirstSuccessfulBuildVersionContainingPrChanges.ps1 -Credential $Credential -JiraKey $lastRipUpdatePackageJira.key -Category DataTransfer -Pipeline IntegrationPoints -Branch $OnBranch
 		$ToVersion = Map-JenkinsBuildVersionToRipPackageVersion -BuildVersion $buildVersion
-		$JiraNumber = .\Jira\Create-OrGetIfExistsJiraSubtask.ps1 -Credential $Credential -Project REL -ParentIssueKey $lastRipUpdatePackageJira.parent -Summary "Update RIP in Relativity on $OnBranch" -Description $AutoPackageUpgradeAdnotation -IssueType DEV -Label $RelativityUpdateJiraLabel -Assignee $JiraAssignee
+		$JiraNumber = .\Jira\Create-OrGetIfExistsJiraSubtask.ps1 -Credential $Credential -Project REL -ParentIssueKey $lastRipUpdatePackageJira.fields.parent.key -Summary "Update RIP in Relativity on $OnBranch" -Description $AutoPackageUpgradeAdnotation -IssueType DEV -Label $RelativityUpdateJiraLabel -Assignee $JiraAssignee
 	}
 
 	$commitMessage = "RIP packages updated to $ToVersion"

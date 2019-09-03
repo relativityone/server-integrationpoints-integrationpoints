@@ -23,7 +23,7 @@ Begin
 {
     function Get-FirstBuildContainingPrChanges($JiraKey, $Branch, $BuildsUri, $Headers)
     {
-        $commitMessageRegex = "Merge pull request(?s:.)*$JiraKey(?s:.)* to $Branch"
+        $commitMessageRegex = "(?s:.)*$JiraKey(?s:.)*$Branch"
 
         foreach($buildUri in $BuildsUri)
         {
@@ -35,11 +35,17 @@ Begin
 
             if($containsPullRequest -eq $true)
             {
-                $build
+                $buildContainingPullRequest = $build
+                break
             }
         }
 
-        throw "Cannot find build containing PR changes: $JiraKey to $Branch"
+        if(!$buildContainingPullRequest)
+        {
+            throw "Cannot find build containing PR changes: $JiraKey to $Branch"
+        }
+
+        $buildContainingPullRequest
     }
 
     function Get-FirstSuccessfulBuildAfter($Build, $BuildsNumberAndUri, $Headers)
@@ -50,9 +56,16 @@ Begin
         }
 
         $firstBuildIndex = ($BuildsNumberAndUri | Select-Object -ExpandProperty number).IndexOf($Build.number)
-        $nextBuilds = [array]::Reverse($BuildsNumberAndUri[0..$firstBuildIndex])
+        $nextBuilds = $BuildsNumberAndUri[0..$firstBuildIndex]
+        [array]::Reverse($nextBuilds)
 
-        $nextSuccessfulBuilds = $nextBuilds | Where-Object { result -eq "SUCCESS" }
+        $nextSuccessfulBuilds = @()
+        foreach($nextBuild in $nextBuilds)
+        {
+            $nextSuccessfulBuilds += Invoke-RestMethod -Uri $nextBuild.url -Method GET -Headers $Headers -UseBasicParsing
+        }
+
+        $nextSuccessfulBuilds = @($nextSuccessfulBuilds | Where-Object { $_.result -eq "SUCCESS" })
         
         if($nextSuccessfulBuilds.length -eq 0)
         {

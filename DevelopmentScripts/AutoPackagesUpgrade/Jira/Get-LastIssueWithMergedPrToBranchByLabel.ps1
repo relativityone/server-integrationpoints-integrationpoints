@@ -28,11 +28,12 @@ Begin
 
             if($pullRequestState -eq "MERGED")
             {
-                $issue
+                $issueWithLastMergedPullRequest = $issue
+                break
             }
         }
 
-        $null
+        $issueWithLastMergedPullRequest
     }
 
 	. ".\Config.ps1"  
