@@ -32,7 +32,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			_cache = new Mock<Sync.Storage.IConfiguration>();
 			_fieldMappings = new Mock<IFieldMappings>();
-			SyncJobParameters jobParameters = new SyncJobParameters(1, _WORKSPACE_ID, new ImportSettingsDto());
+			SyncJobParameters jobParameters = new SyncJobParameters(1, _WORKSPACE_ID);
 			_configuration = new ValidationConfiguration(_cache.Object, _fieldMappings.Object, jobParameters);
 		}
 

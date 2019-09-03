@@ -52,7 +52,7 @@ namespace Relativity.Sync.Transfer
 					$"Expected elements of input to be deserializable to type {typeof(RelativityObjectValue)}.");
 			}
 
-			char multiValueDelimiter = _configuration.ImportSettings.MultiValueDelimiter;
+			char multiValueDelimiter = _configuration.MultiValueDelimiter;
 			bool ContainsDelimiter(string x) => x.Contains(multiValueDelimiter);
 
 			List<string> names = objectValues.Select(x => x.Name).ToList();

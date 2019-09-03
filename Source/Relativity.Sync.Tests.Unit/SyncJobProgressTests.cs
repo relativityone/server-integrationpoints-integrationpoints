@@ -22,7 +22,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			const int syncConfigurationArtifactId = 1010000;
 			const int sourceWorkspaceArtifactId = 1020000;
-			_jobParameters = new SyncJobParameters(syncConfigurationArtifactId, sourceWorkspaceArtifactId, new ImportSettingsDto());
+			_jobParameters = new SyncJobParameters(syncConfigurationArtifactId, sourceWorkspaceArtifactId);
 			_progressRepository = new ProgressRepositoryStub();
 			_counter = new ProgressStateCounter();
 			_instance = new SyncJobProgress(_jobParameters, _progressRepository, _counter, Mock.Of<ISyncLog>());

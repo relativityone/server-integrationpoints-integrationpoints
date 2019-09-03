@@ -49,7 +49,7 @@ namespace Relativity.Sync.Tests.Unit
 			_workspaceGuidService = new Mock<IWorkspaceGuidService>();
 			_workspaceGuid = Guid.NewGuid();
 			_workspaceGuidService.Setup(x => x.GetWorkspaceGuidAsync(It.IsAny<int>())).ReturnsAsync(_workspaceGuid);
-			_syncJobParameters = new SyncJobParameters(0, 0, new ImportSettingsDto());
+			_syncJobParameters = new SyncJobParameters(0, 0);
 
 			_servicesManager.Setup(x => x.CreateProxy<IMetricsManager>(It.IsAny<ExecutionIdentity>()))
 				.Returns(_metricsManager.Object);

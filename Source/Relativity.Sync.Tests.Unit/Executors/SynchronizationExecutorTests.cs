@@ -59,7 +59,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_documentTagRepository = new Mock<IDocumentTagRepository>();
 			_config = new Mock<ISynchronizationConfiguration>();
 
-			_config.SetupGet(x => x.ImportSettings).Returns(new ImportSettingsDto());
 			_fieldMappings.Setup(x => x.GetFieldMappings()).Returns(new List<FieldMap>
 			{
 				new FieldMap
@@ -94,12 +93,12 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
 
 			// assert
-			Assert.AreEqual(_FOLDER_PATH_FROM_WORKSPACE_DISPLAY_NAME, _config.Object.ImportSettings.FolderPathSourceFieldName);
-			Assert.AreEqual(_NATIVE_FILE_SIZE_DISPLAY_NAME, _config.Object.ImportSettings.FileSizeColumn);
-			Assert.AreEqual(_NATIVE_FILE_LOCATION_DISPLAY_NAME, _config.Object.ImportSettings.NativeFilePathSourceFieldName);
-			Assert.AreEqual(_NATIVE_FILE_FILENAME_DISPLAY_NAME, _config.Object.ImportSettings.FileNameColumn);
-			Assert.AreEqual(_RELATIVITY_NATIVE_TYPE_DISPLAY_NAME, _config.Object.ImportSettings.OiFileTypeColumnName);
-			Assert.AreEqual(_SUPPORTED_BY_VIEWER_DISPLAY_NAME, _config.Object.ImportSettings.SupportedByViewerColumn);
+			_config.VerifySet(x => x.FolderPathSourceFieldName = _FOLDER_PATH_FROM_WORKSPACE_DISPLAY_NAME, Times.Once);
+			_config.VerifySet(x => x.FileSizeColumn = _NATIVE_FILE_SIZE_DISPLAY_NAME, Times.Once);
+			_config.VerifySet(x => x.NativeFilePathSourceFieldName = _NATIVE_FILE_LOCATION_DISPLAY_NAME, Times.Once);
+			_config.VerifySet(x => x.FileNameColumn = _NATIVE_FILE_FILENAME_DISPLAY_NAME, Times.Once);
+			_config.VerifySet(x => x.OiFileTypeColumnName = _RELATIVITY_NATIVE_TYPE_DISPLAY_NAME, Times.Once);
+			_config.VerifySet(x => x.SupportedByViewerColumn = _SUPPORTED_BY_VIEWER_DISPLAY_NAME, Times.Once);
 		}
 
 
@@ -139,7 +138,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Task<ExecutionResult> executionResult = null;
 
 			SetUpDocumentsTagRepository(executionResult);
-		
 
 			//Act
 			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
@@ -169,12 +167,12 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
 
 			// assert
-			Assert.AreEqual(null, _config.Object.ImportSettings.FolderPathSourceFieldName);
-			Assert.AreEqual(_NATIVE_FILE_SIZE_DISPLAY_NAME, _config.Object.ImportSettings.FileSizeColumn);
-			Assert.AreEqual(_NATIVE_FILE_LOCATION_DISPLAY_NAME, _config.Object.ImportSettings.NativeFilePathSourceFieldName);
-			Assert.AreEqual(_NATIVE_FILE_FILENAME_DISPLAY_NAME, _config.Object.ImportSettings.FileNameColumn);
-			Assert.AreEqual(_RELATIVITY_NATIVE_TYPE_DISPLAY_NAME, _config.Object.ImportSettings.OiFileTypeColumnName);
-			Assert.AreEqual(_SUPPORTED_BY_VIEWER_DISPLAY_NAME, _config.Object.ImportSettings.SupportedByViewerColumn);
+			_config.VerifySet(x => x.FolderPathSourceFieldName = It.IsAny<string>(), Times.Never);
+			_config.VerifySet(x => x.FileSizeColumn = _NATIVE_FILE_SIZE_DISPLAY_NAME, Times.Once);
+			_config.VerifySet(x => x.NativeFilePathSourceFieldName = _NATIVE_FILE_LOCATION_DISPLAY_NAME, Times.Once);
+			_config.VerifySet(x => x.FileNameColumn = _NATIVE_FILE_FILENAME_DISPLAY_NAME, Times.Once);
+			_config.VerifySet(x => x.OiFileTypeColumnName = _RELATIVITY_NATIVE_TYPE_DISPLAY_NAME, Times.Once);
+			_config.VerifySet(x => x.SupportedByViewerColumn = _SUPPORTED_BY_VIEWER_DISPLAY_NAME, Times.Once);
 		}
 
 		[Test]

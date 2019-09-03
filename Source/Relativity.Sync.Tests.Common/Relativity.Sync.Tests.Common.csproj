@@ -8,7 +8,7 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-	<ResolveNugetPackages>true</ResolveNugetPackages>
+    <ResolveNugetPackages>true</ResolveNugetPackages>
   </PropertyGroup>
   <Import Project="..\..\scripts\Build.AssemblyInfo.targets" />
   <ItemGroup>

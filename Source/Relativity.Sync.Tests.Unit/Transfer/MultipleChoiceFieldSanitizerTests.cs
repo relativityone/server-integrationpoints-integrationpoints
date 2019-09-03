@@ -22,14 +22,15 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		private Mock<IChoiceTreeToStringConverter> _choiceTreeToStringConverter;
 		private MultipleChoiceFieldSanitizer _instance;
 
-		private const char _NESTED_VALUE = (char) 29;
-		private const char _MULTI_VALUE = (char) 30;
+		private const char _NESTED_VALUE = (char)29;
+		private const char _MULTI_VALUE = (char)30;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_config = new Mock<ISynchronizationConfiguration>();
-			_config.SetupGet(x => x.ImportSettings).Returns(new ImportSettingsDto());
+			_config.SetupGet(x => x.NestedValueDelimiter).Returns(_NESTED_VALUE);
+			_config.SetupGet(x => x.MultiValueDelimiter).Returns(_MULTI_VALUE);
 			_choiceCache = new Mock<IChoiceCache>();
 			_choiceTreeToStringConverter = new Mock<IChoiceTreeToStringConverter>();
 			_instance = new MultipleChoiceFieldSanitizer(_config.Object, _choiceCache.Object, _choiceTreeToStringConverter.Object);
@@ -136,7 +137,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			{
 				TestName = "NestedValue - Many violating names in larger collection"
 			};
-			
+
 			yield return new TestCaseData(
 				ChoiceJArrayFromNames("Okay Name", $"Cool{_NESTED_VALUE} Name", $"Awesome{_MULTI_VALUE} Name"),
 				$"'Cool{_NESTED_VALUE} Name', 'Awesome{_MULTI_VALUE} Name'")
@@ -165,7 +166,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			// Assert
 			result.Should().BeNull();
 		}
-		
+
 		[Test]
 		public async Task ItShouldReturnEmptyString()
 		{
@@ -181,7 +182,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 		private static JArray ChoiceJArrayFromNames(params string[] names)
 		{
-			Choice[] choices = names.Select(x => new Choice {Name = x}).ToArray();
+			Choice[] choices = names.Select(x => new Choice { Name = x }).ToArray();
 			return JsonHelpers.ToJToken<JArray>(choices);
 		}
 	}

@@ -12,8 +12,8 @@ namespace Relativity.Sync.Transfer
 
 		public ChoiceTreeToStringConverter(ISynchronizationConfiguration config)
 		{
-			_multiValueDelimiter = config.ImportSettings.MultiValueDelimiter;
-			_nestedValueDelimiter = config.ImportSettings.NestedValueDelimiter;
+			_multiValueDelimiter = config.MultiValueDelimiter;
+			_nestedValueDelimiter = config.NestedValueDelimiter;
 		}
 
 		public string ConvertTreeToString(IList<ChoiceWithChildInfo> tree)

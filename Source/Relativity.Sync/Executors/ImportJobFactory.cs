@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using kCura.EDDS.WebAPI.BulkImportManagerBase;
@@ -15,17 +15,19 @@ namespace Relativity.Sync.Executors
 {
 	internal sealed class ImportJobFactory : IImportJobFactory
 	{
-		private readonly IImportApiFactory _importApiFactory;
-		private readonly ISourceWorkspaceDataReaderFactory _dataReaderFactory;
 		private readonly IBatchProgressHandlerFactory _batchProgressHandlerFactory;
+		private readonly IImportApiFactory _importApiFactory;
+		private readonly IJobHistoryErrorRepository _jobHistoryErrorRepository;
 		private readonly IJobProgressHandlerFactory _jobProgressHandlerFactory;
 		private readonly IJobProgressUpdaterFactory _jobProgressUpdaterFactory;
-		private readonly IJobHistoryErrorRepository _jobHistoryErrorRepository;
+		private readonly IWebApiPathQuery _webApiPathQuery;
+		private readonly ISourceWorkspaceDataReaderFactory _dataReaderFactory;
 		private readonly ISyncLog _logger;
 
 		public ImportJobFactory(IImportApiFactory importApiFactory, ISourceWorkspaceDataReaderFactory dataReaderFactory, 
 			IBatchProgressHandlerFactory batchProgressHandlerFactory, IJobProgressHandlerFactory jobProgressHandlerFactory, 
-			IJobProgressUpdaterFactory jobProgressUpdaterFactory, IJobHistoryErrorRepository jobHistoryErrorRepository, ISyncLog logger)
+			IJobProgressUpdaterFactory jobProgressUpdaterFactory, IJobHistoryErrorRepository jobHistoryErrorRepository,
+			IWebApiPathQuery webApiPathQuery, ISyncLog logger)
 		{
 			_importApiFactory = importApiFactory;
 			_dataReaderFactory = dataReaderFactory;
@@ -33,6 +35,7 @@ namespace Relativity.Sync.Executors
 			_jobProgressHandlerFactory = jobProgressHandlerFactory;
 			_jobProgressUpdaterFactory = jobProgressUpdaterFactory;
 			_jobHistoryErrorRepository = jobHistoryErrorRepository;
+			_webApiPathQuery = webApiPathQuery;
 			_logger = logger;
 		}
 
@@ -61,89 +64,50 @@ namespace Relativity.Sync.Executors
 
 		private async Task<ImportBulkArtifactJob> CreateImportBulkArtifactJobAsync(ISynchronizationConfiguration configuration, int startingIndex, ISourceWorkspaceDataReader dataReader)
 		{
-			IImportAPI importApi = await _importApiFactory.CreateImportApiAsync(configuration.ImportSettings.RelativityWebServiceUrl).ConfigureAwait(false);
+			string webApiPath = await _webApiPathQuery.GetWebApiPathAsync().ConfigureAwait(false);
+			var webApiUri = new Uri(webApiPath);
+			IImportAPI importApi = await _importApiFactory.CreateImportApiAsync(webApiUri).ConfigureAwait(false);
 			ImportBulkArtifactJob importJob = await Task.Run(() => importApi.NewNativeDocumentImportJob()).ConfigureAwait(false);
+
 			importJob.SourceData.SourceData = dataReader;
-
-			// Default values
-			importJob.Settings.ArtifactTypeId = configuration.ImportSettings.ArtifactTypeId;
-			importJob.Settings.AuditLevel = configuration.ImportSettings.AuditLevel;
-			importJob.Settings.MaximumErrorCount = configuration.ImportSettings.MaximumErrorCount;
-			importJob.Settings.MultiValueDelimiter = configuration.ImportSettings.MultiValueDelimiter;
-			importJob.Settings.NestedValueDelimiter = configuration.ImportSettings.NestedValueDelimiter;
-
-			// Base values
-			importJob.Settings.CaseArtifactId = configuration.ImportSettings.CaseArtifactId;
-
-			importJob.Settings.Billable = configuration.ImportSettings.Billable;
-			importJob.Settings.CopyFilesToDocumentRepository = configuration.ImportSettings.CopyFilesToDocumentRepository;
-
-			importJob.Settings.DisableExtractedTextEncodingCheck = configuration.ImportSettings.DisableExtractedTextEncodingCheck;
-			importJob.Settings.DisableUserSecurityCheck = configuration.ImportSettings.DisableUserSecurityCheck;
-			importJob.Settings.ExtractedTextFieldContainsFilePath = configuration.ImportSettings.ExtractedTextFieldContainsFilePath;
-			importJob.Settings.IdentityFieldId = configuration.ImportSettings.IdentityFieldId;
-			importJob.Settings.NativeFileCopyMode = (NativeFileCopyModeEnum)configuration.ImportSettings.ImportNativeFileCopyMode;
-			importJob.Settings.ObjectFieldIdListContainsArtifactId = configuration.ImportSettings.ObjectFieldIdListContainsArtifactId;
-			importJob.Settings.OverlayBehavior = (OverlayBehavior)configuration.ImportSettings.FieldOverlayBehavior;
-			importJob.Settings.OverwriteMode = (OverwriteModeEnum)configuration.ImportSettings.ImportOverwriteMode;
-			importJob.Settings.ParentObjectIdSourceFieldName = configuration.ImportSettings.ParentObjectIdSourceFieldName;
-			importJob.Settings.SendEmailOnLoadCompletion = configuration.ImportSettings.SendEmailOnLoadCompletion;
+			importJob.Settings.MaximumErrorCount = int.MaxValue - 1; // From IAPI docs: This must be greater than 0 and less than Int32.MaxValue.
 			importJob.Settings.StartRecordNumber = startingIndex;
+			importJob.Settings.ArtifactTypeId = configuration.RdoArtifactTypeId;
+			importJob.Settings.AuditLevel = kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel.FullAudit;
+			importJob.Settings.MultiValueDelimiter = configuration.MultiValueDelimiter;
+			importJob.Settings.NestedValueDelimiter = configuration.NestedValueDelimiter;
+			importJob.Settings.CaseArtifactId = configuration.DestinationWorkspaceArtifactId;
+			importJob.Settings.DestinationFolderArtifactID = configuration.DestinationFolderArtifactId;
+			importJob.Settings.MoveDocumentsInAppendOverlayMode = configuration.ImportOverwriteMode != ImportOverwriteMode.AppendOnly &&
+				configuration.MoveExistingDocuments && !string.IsNullOrEmpty(configuration.FolderPathSourceFieldName);
+			importJob.Settings.Billable = configuration.ImportNativeFileCopyMode == ImportNativeFileCopyMode.CopyFiles;
 
-			// Configured values
-			importJob.Settings.BulkLoadFileFieldDelimiter = configuration.ImportSettings.BulkLoadFileFieldDelimiter;
-			importJob.Settings.DestinationFolderArtifactID = configuration.ImportSettings.DestinationFolderArtifactId;
-			importJob.Settings.DisableControlNumberCompatibilityMode = configuration.ImportSettings.DisableControlNumberCompatibilityMode;
-			importJob.Settings.DisableExtractedTextFileLocationValidation = configuration.ImportSettings.DisableExtractedTextFileLocationValidation;
-			if (configuration.ImportSettings.ImportNativeFileCopyMode == ImportNativeFileCopyMode.SetFileLinks)
-			{
-				importJob.Settings.DisableNativeLocationValidation = true;
-			}
-			else
-			{
-				importJob.Settings.DisableNativeLocationValidation = configuration.ImportSettings.DisableNativeLocationValidation;
-			}
-			importJob.Settings.FileNameColumn = configuration.ImportSettings.FileNameColumn;
-			importJob.Settings.FileSizeColumn = configuration.ImportSettings.FileSizeColumn;
-			importJob.Settings.FolderPathSourceFieldName = configuration.ImportSettings.FolderPathSourceFieldName;
-			importJob.Settings.LoadImportedFullTextFromServer = configuration.ImportSettings.LoadImportedFullTextFromServer;
-			importJob.Settings.MoveDocumentsInAppendOverlayMode = configuration.ImportSettings.MoveDocumentsInAnyOverlayMode;
+			importJob.Settings.NativeFileCopyMode = (NativeFileCopyModeEnum)configuration.ImportNativeFileCopyMode;
+			importJob.Settings.OverlayBehavior = (OverlayBehavior)configuration.FieldOverlayBehavior;
+			importJob.Settings.OverwriteMode = (OverwriteModeEnum)configuration.ImportOverwriteMode;
+			importJob.Settings.IdentityFieldId = configuration.IdentityFieldId;
+			importJob.Settings.FolderPathSourceFieldName = configuration.FolderPathSourceFieldName;
+			importJob.Settings.FileSizeColumn = configuration.FileSizeColumn;
+			importJob.Settings.FileNameColumn = configuration.FileNameColumn;
+			importJob.Settings.OIFileTypeColumnName = configuration.OiFileTypeColumnName;
+			importJob.Settings.SupportedByViewerColumn = configuration.SupportedByViewerColumn;
 
-			if (configuration.ImportSettings.ImportNativeFileCopyMode != ImportNativeFileCopyMode.DoNotImportNativeFiles)
+			if (configuration.ImportNativeFileCopyMode != ImportNativeFileCopyMode.DoNotImportNativeFiles)
 			{
-				importJob.Settings.NativeFilePathSourceFieldName = configuration.ImportSettings.NativeFilePathSourceFieldName;
+				importJob.Settings.NativeFilePathSourceFieldName = configuration.NativeFilePathSourceFieldName;
 				importJob.Settings.OIFileIdMapped = true;
 				importJob.Settings.FileSizeMapped = true;
 				importJob.Settings.DisableNativeValidation = true;
 			}
-			else
+			if (configuration.ImportNativeFileCopyMode == ImportNativeFileCopyMode.SetFileLinks)
 			{
-				importJob.Settings.OIFileIdMapped = configuration.ImportSettings.OiFileIdMapped;
-				importJob.Settings.FileSizeMapped = configuration.ImportSettings.FileSizeMapped;
-				importJob.Settings.DisableNativeValidation = configuration.ImportSettings.DisableNativeValidation;
+				importJob.Settings.DisableNativeLocationValidation = true;
 			}
-
-			importJob.Settings.OIFileIdColumnName = configuration.ImportSettings.OiFileIdColumnName;
-			importJob.Settings.OIFileTypeColumnName = configuration.ImportSettings.OiFileTypeColumnName;
-			importJob.Settings.SupportedByViewerColumn = configuration.ImportSettings.SupportedByViewerColumn;
-
-			// Extended configurations
-			if (importJob.Settings.ExtractedTextFieldContainsFilePath)
-			{
-				importJob.Settings.ExtractedTextEncoding = GetTextEncoding(configuration.ImportSettings.ExtractedTextFileEncoding);
-				importJob.Settings.LongTextColumnThatContainsPathToFullText = configuration.ImportSettings.LongTextColumnThatContainsPathToFullText;
-			}
-
+			
 			importJob.Settings.SelectedIdentifierFieldName = await GetSelectedIdentifierFieldNameAsync(
-				importApi, configuration.ImportSettings.CaseArtifactId, configuration.ImportSettings.ArtifactTypeId, configuration.ImportSettings.IdentityFieldId).ConfigureAwait(false);
+				importApi, configuration.DestinationWorkspaceArtifactId, configuration.RdoArtifactTypeId, configuration.IdentityFieldId).ConfigureAwait(false);
 
 			return importJob;
-		}
-
-		private static Encoding GetTextEncoding(string textEncoding)
-		{
-			Encoding encoding = Encoding.GetEncoding(textEncoding);
-			return encoding;
 		}
 
 		private static async Task<string> GetSelectedIdentifierFieldNameAsync(IImportAPI importApi, int workspaceArtifactId, int artifactTypeId, int identityFieldArtifactId)
