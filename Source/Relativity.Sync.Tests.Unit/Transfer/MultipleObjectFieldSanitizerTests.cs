@@ -18,6 +18,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 	[Parallelizable(ParallelScope.All)]
 	internal class MultipleObjectFieldSanitizerTests
 	{
+		private const char _NESTED_DELIM = (char) 29;
 		private const char _MUTLI_DELIM = (char) 30;
 
 		[Test]
@@ -175,7 +176,10 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 		private static ISynchronizationConfiguration CreateConfiguration()
 		{
-			return new ConfigurationStub();
+			var config = new Mock<ISynchronizationConfiguration>();
+			config.SetupGet(x => x.NestedValueDelimiter).Returns(_NESTED_DELIM);
+			config.SetupGet(x => x.MultiValueDelimiter).Returns(_MUTLI_DELIM);
+			return config.Object;
 		}
 
 		private static JArray ObjectValueJArrayFromNames(params string[] names)

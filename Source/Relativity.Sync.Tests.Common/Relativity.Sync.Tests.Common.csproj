@@ -8,7 +8,7 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-	<ResolveNugetPackages>true</ResolveNugetPackages>
+    <ResolveNugetPackages>true</ResolveNugetPackages>
   </PropertyGroup>
   <Import Project="..\..\scripts\Build.AssemblyInfo.targets" />
   <ItemGroup>
@@ -24,9 +24,6 @@
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
       <_Parameter1>Relativity.Sync.Tests.System</_Parameter1>
     </AssemblyAttribute>
-	  <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-		  <_Parameter1>Relativity.Sync.Tests.Unit</_Parameter1>
-	  </AssemblyAttribute>
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

@@ -1,24 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
+using FluentAssertions;
+using Moq;
 using NUnit.Framework;
-using Relativity.Sync.Tests.Common;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.Unit.Transfer
 {
 	[TestFixture]
-	internal sealed class ChoiceTreeToStringToStringConverterTests
+	internal sealed class ChoiceTreeToStringConverterTests
 	{
 #pragma warning disable RG2009 // Hardcoded Numeric Value
-
-		private ConfigurationStub _config;
+		private Mock<ISynchronizationConfiguration> _config;
 		private ChoiceTreeToStringConverter _instance;
+
+		private const char _NESTED_VALUE_DELIMITER = (char)29;
+		private const char _MULTI_VALUE_DELIMITER = (char)30;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_config = new ConfigurationStub();
-			_instance = new ChoiceTreeToStringConverter(_config);
+			_config = new Mock<ISynchronizationConfiguration>();
+			_config.SetupGet(x => x.NestedValueDelimiter).Returns(_NESTED_VALUE_DELIMITER);
+			_config.SetupGet(x => x.MultiValueDelimiter).Returns(_MULTI_VALUE_DELIMITER);
+			_instance = new ChoiceTreeToStringConverter(_config.Object);
 		}
 
 		[Test]
@@ -30,7 +36,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			string actual = _instance.ConvertTreeToString(new List<ChoiceWithChildInfo> { choice });
 
 			// assert
-			string expected = $"Hot{_config.MultiValueDelimiter}";
+			string expected = $"Hot{_MULTI_VALUE_DELIMITER}";
 			Assert.AreEqual(expected, actual);
 		}
 
@@ -49,7 +55,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			string actual = _instance.ConvertTreeToString(new List<ChoiceWithChildInfo> { root });
 
 			// assert
-			string expected = $"Root{_config.NestedValueDelimiter}Child{_config.MultiValueDelimiter}";
+			string expected = $"Root{_NESTED_VALUE_DELIMITER}Child{_MULTI_VALUE_DELIMITER}";
 			Assert.AreEqual(expected, actual);
 		}
 
@@ -76,17 +82,16 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			choice2.Children.Add(choice3);
 			choice5.Children.Add(choice6);
 
-			string expected = $"1{_config.NestedValueDelimiter}2{_config.NestedValueDelimiter}3" +
-				$"{_config.MultiValueDelimiter}1{_config.NestedValueDelimiter}4" +
-				$"{_config.MultiValueDelimiter}5{_config.NestedValueDelimiter}6{_config.MultiValueDelimiter}";
+			string expected = $"1{_NESTED_VALUE_DELIMITER}2{_NESTED_VALUE_DELIMITER}3" +
+				$"{_MULTI_VALUE_DELIMITER}1{_NESTED_VALUE_DELIMITER}4" +
+				$"{_MULTI_VALUE_DELIMITER}5{_NESTED_VALUE_DELIMITER}6{_MULTI_VALUE_DELIMITER}";
 
 			// act
 			string actual = _instance.ConvertTreeToString(new List<ChoiceWithChildInfo> { choice1, choice5 });
 
 			// assert
-			Assert.AreEqual(expected, actual);
+			actual.Should().Be(expected);
 		}
-
 #pragma warning restore RG2009 // Hardcoded Numeric Value
 	}
 }

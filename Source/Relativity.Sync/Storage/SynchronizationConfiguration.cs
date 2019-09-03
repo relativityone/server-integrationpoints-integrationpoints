@@ -35,8 +35,8 @@ namespace Relativity.Sync.Storage
 			_syncLog = syncLog;
 		}
 
-		public char MultiValueDelimiter => (char) _ASCII_RECORD_SEPARATOR;
-		public char NestedValueDelimiter => (char)_ASCII_GROUP_SEPARATOR;
+		public char MultiValueDelimiter => (char)_ASCII_RECORD_SEPARATOR;
+		public char NestedValueDelimiter => (char) _ASCII_GROUP_SEPARATOR;
 		public int DestinationWorkspaceArtifactId => _cache.GetFieldValue<int>(DestinationWorkspaceArtifactIdGuid);
 		public int DestinationFolderArtifactId => _cache.GetFieldValue<int>(DataDestinationArtifactIdGuid);
 		public int DestinationWorkspaceTagArtifactId => _cache.GetFieldValue<int>(DestinationWorkspaceTagArtifactIdGuid);
@@ -56,7 +56,6 @@ namespace Relativity.Sync.Storage
 			}
 		}
 
-
 		public int JobHistoryArtifactId => _cache.GetFieldValue<RelativityObjectValue>(JobHistoryGuid).ArtifactID;
 		public int SourceJobTagArtifactId => _cache.GetFieldValue<int>(SourceJobTagArtifactIdGuid);
 		public int SourceWorkspaceArtifactId => _syncJobParameters.WorkspaceId;
@@ -70,7 +69,7 @@ namespace Relativity.Sync.Storage
 		public ImportOverwriteMode ImportOverwriteMode => (ImportOverwriteMode)(Enum.Parse(typeof(ImportOverwriteMode), _cache.GetFieldValue<string>(ImportOverwriteModeGuid)));
 		public FieldOverlayBehavior FieldOverlayBehavior => _cache.GetFieldValue<string>(FieldOverlayBehaviorGuid).GetEnumFromDescription<FieldOverlayBehavior>();
 		public ImportNativeFileCopyMode ImportNativeFileCopyMode => _cache.GetFieldValue<string>(NativesBehaviorGuid).GetEnumFromDescription<ImportNativeFileCopyMode>();
-		
+
 		// Below settings are set in SynchronizationExecutor.
 
 		public int IdentityFieldId { get; set; }

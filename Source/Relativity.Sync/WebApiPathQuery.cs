@@ -21,26 +21,21 @@ namespace Relativity.Sync
 		{
 			using (IInstanceSettingManager instanceSettingManager = await _serviceFactory.CreateProxyAsync<IInstanceSettingManager>().ConfigureAwait(false))
 			{
-				Services.Query query = new Services.Query()
+				var query = new Services.Query
 				{
 					Condition = $"'Name' == '{_WEB_API_PATH_SETTING_NAME}' AND 'Section' == '{_WEB_API_PATH_SETTING_SECTION}'"
 				};
 				InstanceSettingQueryResultSet resultSet = await instanceSettingManager.QueryAsync(query).ConfigureAwait(false);
-				if (resultSet.Success)
-				{
-					if (resultSet.Results.Count > 0)
-					{
-						return resultSet.Results.First().Artifact.Value;
-					}
-					else
-					{
-						throw new SyncException($"Query for '{_WEB_API_PATH_SETTING_NAME}' instance setting from section '{_WEB_API_PATH_SETTING_SECTION}' returned empty results. Make sure instance setting exists.");
-					}
-				}
-				else
+
+				if (resultSet.Success == false)
 				{
 					throw new SyncException($"Failed to query for '{_WEB_API_PATH_SETTING_NAME}' instance setting. Response message: {resultSet.Message}");
 				}
+				if (resultSet.TotalCount <= 0)
+				{
+					throw new SyncException($"Query for '{_WEB_API_PATH_SETTING_NAME}' instance setting from section '{_WEB_API_PATH_SETTING_SECTION}' returned empty results. Make sure instance setting exists.");
+				}
+				return resultSet.Results.First().Artifact.Value;
 			}
 		}
 	}

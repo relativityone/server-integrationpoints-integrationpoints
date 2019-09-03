@@ -33,15 +33,16 @@ namespace Relativity.Sync.Tests.Unit
 		public async Task ItShouldSuccessfullyReturnWebApiPath()
 		{
 			const string expectedValue = "My Value";
-			InstanceSettingQueryResultSet resultSet = new InstanceSettingQueryResultSet()
+			var resultSet = new InstanceSettingQueryResultSet
 			{
 				Success = true,
-				Results = new List<Result<Services.InstanceSetting.InstanceSetting>>()
+				TotalCount = 1,
+				Results = new List<Result<Services.InstanceSetting.InstanceSetting>>
 				{
-					new Result<Services.InstanceSetting.InstanceSetting>()
+					new Result<Services.InstanceSetting.InstanceSetting>
 					{
 						Success = true,
-						Artifact = new Services.InstanceSetting.InstanceSetting()
+						Artifact = new Services.InstanceSetting.InstanceSetting
 						{
 							Value = expectedValue
 						}
@@ -61,9 +62,10 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public void ItShouldThrowExceptionWhenInstanceSettingNotFound()
 		{
-			InstanceSettingQueryResultSet resultSet = new InstanceSettingQueryResultSet()
+			var resultSet = new InstanceSettingQueryResultSet
 			{
 				Success = true,
+				TotalCount = 0,
 				Results = new List<Result<Services.InstanceSetting.InstanceSetting>>()
 			};
 			_instanceSettingManager.Setup(x => x.QueryAsync(It.Is<Services.Query>(q =>
@@ -73,18 +75,18 @@ namespace Relativity.Sync.Tests.Unit
 			Func<Task> action = async () => await _instance.GetWebApiPathAsync().ConfigureAwait(false);
 
 			// assert
-			action.Should().Throw<SyncException>().Which.Message
-				.Equals($"Query for '{_WEB_API_PATH_SETTING_NAME}' instance setting from section '{_WEB_API_PATH_SETTING_SECTION}' returned empty results. Make sure instance setting exists.",
-					StringComparison.InvariantCulture);
+			action.Should().Throw<SyncException>()
+				.And.Message.Should().Be($"Query for '{_WEB_API_PATH_SETTING_NAME}' instance setting from section '{_WEB_API_PATH_SETTING_SECTION}' returned empty results. Make sure instance setting exists.");
 		}
 
 		[Test]
 		public void ItShouldThrowExceptionWhenQueryReturnNoSuccess()
 		{
 			const string errorMessage = "Catastrophic failure.";
-			InstanceSettingQueryResultSet resultSet = new InstanceSettingQueryResultSet()
+			var resultSet = new InstanceSettingQueryResultSet
 			{
 				Success = false,
+				TotalCount = 0,
 				Message = errorMessage
 			};
 			_instanceSettingManager.Setup(x => x.QueryAsync(It.Is<Services.Query>(q =>
@@ -94,9 +96,8 @@ namespace Relativity.Sync.Tests.Unit
 			Func<Task> action = async () => await _instance.GetWebApiPathAsync().ConfigureAwait(false);
 
 			// assert
-			action.Should().Throw<SyncException>().Which.Message
-				.Equals($"Failed to query for '{_WEB_API_PATH_SETTING_NAME}' instance setting. Response message: {resultSet.Message}",
-					StringComparison.InvariantCulture);
+			action.Should().Throw<SyncException>()
+				.And.Message.Should().Be($"Failed to query for '{_WEB_API_PATH_SETTING_NAME}' instance setting. Response message: {resultSet.Message}");
 		}
 
 		[Test]
