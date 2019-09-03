@@ -27,7 +27,7 @@ namespace Relativity.Sync
 				};
 				InstanceSettingQueryResultSet resultSet = await instanceSettingManager.QueryAsync(query).ConfigureAwait(false);
 
-				if (resultSet.Success == false)
+				if (!resultSet.Success)
 				{
 					throw new SyncException($"Failed to query for '{_WEB_API_PATH_SETTING_NAME}' instance setting. Response message: {resultSet.Message}");
 				}
