@@ -31,7 +31,6 @@ using kCura.IntegrationPoints.Core.Services.SourceTypes;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Core.Services.Tabs;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -54,6 +53,7 @@ using Relativity.Toggles.Providers;
 using System;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Core.Installers.Registrations;
 using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data.Installers;
 using IFederatedInstanceManager = kCura.IntegrationPoints.Domain.Managers.IFederatedInstanceManager;
@@ -142,7 +142,6 @@ namespace kCura.IntegrationPoints.Core.Installers
 
 			container.Register(Component.For<ISourceWorkspaceManager>().ImplementedBy<SourceWorkspaceManager>().LifestyleTransient());
 			container.Register(Component.For<ISourceJobManager>().ImplementedBy<SourceJobManager>().LifestyleTransient());
-			container.Register(Component.For<IOnBehalfOfUserClaimsPrincipalFactory>().ImplementedBy<OnBehalfOfUserClaimsPrincipalFactory>().LifestyleTransient());
 			container.Register(Component.For<ISavedSearchesTreeService>().ImplementedBy<SavedSearchesTreeService>().LifestyleTransient());
 			container.Register(Component.For<IDirectoryTreeCreator<JsTreeItemDTO>>().ImplementedBy<DirectoryTreeCreator<JsTreeItemDTO>>().LifestyleTransient());
 			container.Register(Component.For<IRelativePathDirectoryTreeCreator<JsTreeItemDTO>>().ImplementedBy<RelativePathDirectoryTreeCreator<JsTreeItemDTO>>().LifestyleTransient());
@@ -228,6 +227,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.AddRetryingMechanism();
 			container.AddHelpers();
 			container.AddRepositories();
+			container.AddExportSanitizer();
 		}
 
 		private SqlServerToggleProvider CreateSqlServerToggleProvider(IHelper helper)

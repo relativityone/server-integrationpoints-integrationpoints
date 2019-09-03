@@ -153,7 +153,9 @@
     <Compile Include="Models\SecretPathTests.cs" />
     <Compile Include="Repositories\DTO\SingleChoiceReferenceDtoTests.cs" />
     <Compile Include="Repositories\Implementations\AuditRepositoryTests.cs" />
+    <Compile Include="Repositories\Implementations\CachedChoiceRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\CaseRepositoryTests.cs" />
+    <Compile Include="Repositories\Implementations\ChoiceRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\CommonTests\MassUpdateTests.cs" />
     <Compile Include="Repositories\Implementations\FieldRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\FileRepositoryTests.cs" />
@@ -598,6 +600,17 @@
         <Reference Include="mscorlib">
           <Paket>True</Paket>
         </Reference>
+        <Reference Include="System.Data.SqlClient">
+          <HintPath>..\..\packages\System.Data.SqlClient\lib\net461\System.Data.SqlClient.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="System.ValueTuple">
           <HintPath>..\..\packages\System.ValueTuple\lib\net461\System.ValueTuple.dll</HintPath>
           <Private>True</Private>

@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts.Interfaces;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 
 namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts
 {
@@ -26,31 +27,30 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 		public override ValidationResult Validate(IntegrationPointProviderValidationModel model)
 		{
 			var result = new ValidationResult();
-            result.Add(ValidateFederatedInstanceConnection(model));
-		    if (result.IsValid)
-		    {
-		        result.Add(ValidateSourceWorkspacePermission());
-		        result.Add(ValidateDestinationWorkspacePermission(model));
-		        result.Add(ValidateSourceWorkspaceProductionPermission(model));
-		    }
-		    return result;
+			result.Add(ValidateInstanceToInstanceIsNotUsed(model));
+			if (result.IsValid)
+			{
+				result.Add(ValidateSourceWorkspacePermission());
+				result.Add(ValidateDestinationWorkspacePermission(model));
+				result.Add(ValidateSourceWorkspaceProductionPermission(model));
+			}
+			return result;
 		}
 
-	    private ValidationResult ValidateFederatedInstanceConnection(IntegrationPointProviderValidationModel model)
-	    {
-	        var result = new ValidationResult();
+		private ValidationResult ValidateInstanceToInstanceIsNotUsed(IntegrationPointProviderValidationModel model)
+		{
+			var result = new ValidationResult();
+			ImportSettings importSettings = Serializer.Deserialize<ImportSettings>(model.DestinationConfiguration);
 
-            SourceConfiguration sourceConfiguration = Serializer.Deserialize<SourceConfiguration>(model.SourceConfiguration);
-	        if (sourceConfiguration.FederatedInstanceArtifactId.HasValue)
-	        {
-	            IFederatedInstanceConnectionValidator validator = _validatorsFactory.CreateFederatedInstanceConnectionValidator(
-	                sourceConfiguration.FederatedInstanceArtifactId, model.SecuredConfiguration);
-                result.Add(validator.Validate());
-	        }
-	        return result;
-	    }
+			if (importSettings.FederatedInstanceArtifactId != null)
+			{
+				result.Add(ValidationMessages.FederatedInstanceNotSupported);
+			}
 
-	    private ValidationResult ValidateSourceWorkspacePermission()
+			return result;
+		}
+
+		private ValidationResult ValidateSourceWorkspacePermission()
 		{
 			IRelativityProviderSourceWorkspacePermissionValidator sourceWorkspacePermissionValidator = _validatorsFactory.CreateSourceWorkspacePermissionValidator();
 			return sourceWorkspacePermissionValidator.Validate(ContextHelper.WorkspaceID);
@@ -58,13 +58,13 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 
 		private ValidationResult ValidateDestinationWorkspacePermission(IntegrationPointProviderValidationModel model)
 		{
-		    var result = new ValidationResult();
+			var result = new ValidationResult();
 
-            SourceConfiguration sourceConfiguration = Serializer.Deserialize<SourceConfiguration>(model.SourceConfiguration);
-		    DestinationConfigurationPermissionValidationModel destinationConfiguration = Serializer.Deserialize<DestinationConfigurationPermissionValidationModel>(model.DestinationConfiguration);
+			SourceConfiguration sourceConfiguration = Serializer.Deserialize<SourceConfiguration>(model.SourceConfiguration);
+			DestinationConfigurationPermissionValidationModel destinationConfiguration = Serializer.Deserialize<DestinationConfigurationPermissionValidationModel>(model.DestinationConfiguration);
 
 
-		    IRelativityProviderDestinationWorkspaceExistenceValidator destinationWorkspaceExistenceValidator = _validatorsFactory.CreateDestinationWorkspaceExistenceValidator(
+			IRelativityProviderDestinationWorkspaceExistenceValidator destinationWorkspaceExistenceValidator = _validatorsFactory.CreateDestinationWorkspaceExistenceValidator(
 				sourceConfiguration.FederatedInstanceArtifactId, model.SecuredConfiguration);
 			result.Add(destinationWorkspaceExistenceValidator.Validate(sourceConfiguration));
 			if (!result.IsValid)

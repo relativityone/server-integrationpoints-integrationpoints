@@ -7,9 +7,10 @@ using kCura.IntegrationPoints.Data.Converters;
 using kCura.IntegrationPoints.Data.DTO;
 using kCura.IntegrationPoints.Data.Repositories.DTO;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.Relativity.Client;
+using Relativity;
 using Relativity.Services.DataContracts.DTOs.Results;
 using Relativity.Services.Objects.DataContracts;
+using ArtifactType = kCura.Relativity.Client.ArtifactType;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
@@ -127,7 +128,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return new ArtifactFieldDTO
 			{
 				ArtifactId = field.Field.ArtifactID,
-				FieldType = field.Field.FieldType.ToString(),
+				FieldType = (FieldTypeHelper.FieldType) field.Field.FieldType,
 				Name = field.Field.Name,
 				Value = field.Value
 			};

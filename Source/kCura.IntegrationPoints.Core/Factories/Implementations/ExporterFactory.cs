@@ -1,48 +1,45 @@
-﻿using System.Security.Claims;
-using System.Text;
+﻿using System.Text;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Core.Services.Exporter.Images;
-using kCura.IntegrationPoints.Data.Contexts;
+using kCura.IntegrationPoints.Core.Services.Exporter.Sanitization;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using Newtonsoft.Json;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Factories.Implementations
 {
 	public class ExporterFactory : IExporterFactory
 	{
-		private const int _ADMIN_USER_ID = 9;
-		private readonly IOnBehalfOfUserClaimsPrincipalFactory _claimsPrincipalFactory;
 		private readonly IRepositoryFactory _sourceRepositoryFactory;
 		private readonly IRepositoryFactory _targetRepositoryFactory;
 		private readonly IHelper _helper;
 		private readonly IFolderPathReaderFactory _folderPathReaderFactory;
 		private readonly IRelativityObjectManager _relativityObjectManager;
 		private readonly IFileRepository _fileRepository;
+		private readonly ISerializer _serializer;
 		private readonly IAPILog _logger;
 
 		public ExporterFactory(
-			IOnBehalfOfUserClaimsPrincipalFactory claimsPrincipalFactory,
 			IRepositoryFactory sourceRepositoryFactory,
 			IRepositoryFactory targetRepositoryFactory,
 			IHelper helper,
 			IFolderPathReaderFactory folderPathReaderFactory,
 			IRelativityObjectManager relativityObjectManager,
-			IFileRepository fileRepository)
+			IFileRepository fileRepository,
+			ISerializer serializer)
 		{
-			_claimsPrincipalFactory = claimsPrincipalFactory;
 			_sourceRepositoryFactory = sourceRepositoryFactory;
 			_targetRepositoryFactory = targetRepositoryFactory;
 			_helper = helper;
 			_folderPathReaderFactory = folderPathReaderFactory;
 			_relativityObjectManager = relativityObjectManager;
 			_fileRepository = fileRepository;
+			_serializer = serializer;
 			_logger = _helper.GetLoggerFactory().GetLogger().ForContext<ExporterFactory>();
 		}
 
@@ -51,16 +48,14 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			FieldMap[] mappedFields,
 			string serializedSourceConfiguration,
 			int savedSearchArtifactID,
-			int onBehalfOfUser,
 			string userImportApiSettings,
 			IDocumentRepository documentRepository,
-			ISerializer serializer)
+			IExportDataSanitizer exportDataSanitizer)
 		{
-			LogBuildExporterExecutionWithParameters(mappedFields, serializedSourceConfiguration, savedSearchArtifactID, onBehalfOfUser, userImportApiSettings);
-			ClaimsPrincipal claimsPrincipal = GetClaimsPrincipal(onBehalfOfUser);
+			LogBuildExporterExecutionWithParameters(mappedFields, serializedSourceConfiguration, savedSearchArtifactID, userImportApiSettings);
 
-			ImportSettings settings = JsonConvert.DeserializeObject<ImportSettings>(userImportApiSettings);
-			SourceConfiguration sourceConfiguration = JsonConvert.DeserializeObject<SourceConfiguration>(serializedSourceConfiguration);
+			ImportSettings settings = _serializer.Deserialize<ImportSettings>(userImportApiSettings);
+			SourceConfiguration sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(serializedSourceConfiguration);
 
 			IExporterService exporter = settings.ImageImport ?
 				CreateImageExporterService(
@@ -77,7 +72,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 					savedSearchArtifactID,
 					settings,
 					documentRepository,
-					serializer);
+					exportDataSanitizer);
 			return exporter;
 		}
 		
@@ -88,9 +83,9 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			int savedSearchArtifactID,
 			ImportSettings settings,
 			IDocumentRepository documentRepository,
-			ISerializer serializer)
+			IExportDataSanitizer exportDataSanitizer)
 		{
-			SourceConfiguration sourceConfiguration = serializer.Deserialize<SourceConfiguration>(serializedSourceConfiguration);
+			SourceConfiguration sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(serializedSourceConfiguration);
 			int workspaceArtifactID = sourceConfiguration.SourceWorkspaceArtifactId;
 			bool useDynamicFolderPath = settings.UseDynamicFolderPath;
 			IFolderPathReader folderPathReader = _folderPathReaderFactory.Create(workspaceArtifactID, useDynamicFolderPath);
@@ -105,6 +100,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				_helper,
 				folderPathReader,
 				_fileRepository,
+				_serializer,
+				exportDataSanitizer,
 				mappedFields,
 				startAtRecord,
 				sourceConfiguration,
@@ -138,35 +135,24 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				_fileRepository,
 				jobStopManager,
 				_helper,
+				_serializer,
 				mappedFiles,
 				startAtRecord,
 				sourceConfiguration,
 				searchArtifactId,
 				settings);
 		}
-
-		private ClaimsPrincipal GetClaimsPrincipal(int onBehalfOfUser)
-		{
-			if (onBehalfOfUser == 0)
-			{
-				onBehalfOfUser = _ADMIN_USER_ID;
-			}
-			ClaimsPrincipal claimsPrincipal = _claimsPrincipalFactory.CreateClaimsPrincipal(onBehalfOfUser);
-			return claimsPrincipal;
-		}
-
+		
 		private void LogBuildExporterExecutionWithParameters(
 			FieldMap[] mappedFields,
 			string config,
 			int savedSearchArtifactId,
-			int onBehalfOfUser,
 			string userImportApiSettings)
 		{
 			var msgBuilder = new StringBuilder("Building Exporter with parameters: \n");
 			msgBuilder.AppendLine("mappedFields {@mappedFields} ");
 			msgBuilder.AppendLine("config {config} ");
 			msgBuilder.AppendLine("savedSearchArtifactId {savedSearchArtifactId} ");
-			msgBuilder.AppendLine("onBehalfOfUser: {onBehalfOfUser} ");
 			msgBuilder.AppendLine("userImportApiSettings {userImportApiSettings}");
 			string msgTemplate = msgBuilder.ToString();
 			_logger.LogDebug(
@@ -174,7 +160,6 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				mappedFields,
 				config,
 				savedSearchArtifactId,
-				onBehalfOfUser,
 				userImportApiSettings);
 		}
 	}

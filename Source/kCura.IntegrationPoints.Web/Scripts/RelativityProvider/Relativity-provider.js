@@ -2,6 +2,7 @@
 	//Create a new communication object that talks to the host page.
 	var message = IP.frameMessaging(); // handle into the global Integration point framework
 	var savedSearchService = new SavedSearchService();
+	const thisInstanceArtifactId = 0;
 
 	ko.validation.configure({
 		registerExtenders: true,
@@ -67,7 +68,6 @@
 		var stepModel = IP.frameMessaging().dFrame.IP.points.steps.steps[1].model;
 		var destinationJson = stepModel.destination;
 		var destination = JSON.parse(destinationJson);
-		destination.FederatedInstanceArtifactId = viewModel.FederatedInstanceArtifactId();
 		destination.CreateSavedSearchForTagging = viewModel.CreateSavedSearchForTagging();
 		destination.CaseArtifactId = viewModel.TargetWorkspaceArtifactId();
 		destination.DestinationFolderArtifactId = viewModel.FolderArtifactId();
@@ -113,9 +113,7 @@
 		var self = this;
 		self.SavedSearchService = new SavedSearchService();
 
-		self.federatedInstances = ko.observableArray(state.federatedInstances);
 		self.workspaces = ko.observableArray(state.workspaces);
-		self.FederatedInstanceArtifactId = ko.observable(state.FederatedInstanceArtifactId);
 		self.TargetWorkspaceArtifactId = ko.observable(state.TargetWorkspaceArtifactId);
 		self.DestinationFolder = ko.observable(state.DestinationFolder);
 		self.FolderArtifactId = ko.observable(state.FolderArtifactId);
@@ -210,55 +208,11 @@
 			return "";
 		};
 
-		if (self.federatedInstances.length === 0) {
-			IP.data.ajax({
-				type: 'GET',
-				url: IP.utils.generateWebAPIURL('InstanceFinder'),
-				async: true,
-				success: function (result) {
-					//TODO hack for now - remove this after enabling I2I in profiles
-					if (parent.IP.data.params['apiControllerName'] == 'IntegrationPointProfilesAPI') {
-						result = result.filter(function (value) { return value.artifactId == null; });
-					}
-					self.federatedInstances(result);
-
-					if (state.FederatedInstanceArtifactId != undefined) {
-						self.FederatedInstanceArtifactId(state.FederatedInstanceArtifactId);
-					} else {
-						self.FederatedInstanceArtifactId(self.federatedInstances()[0].artifactId);
-					}
-					self.updateWorkspaces();
-					self.ShowAuthentiactionButton(self.FederatedInstanceArtifactId() != null);
-					self.FederatedInstanceArtifactId.subscribe(function (value) {
-						var isRemoteInstance = value != null;
-						self.AuthenticationFailed(false);
-						self.SecuredConfiguration(null);
-						if (state.TargetWorkspaceArtifactId != null) {
-							state.TargetWorkspaceArtifactId = null;
-							state.FolderArtifactId = null;
-						}
-						if (isRemoteInstance) {
-							self.openAuthenticateModal();
-						} else {
-							self.updateWorkspaces();
-						}
-						self.ShowAuthentiactionButton(isRemoteInstance);
-					});
-					self.ShowRelativityInstance(result.length >= 2);
-				},
-				error: function () {
-					IP.frameMessaging().dFrame.IP.message.error.raise("Unable to retrieve Relativity instances. Please contact your system administrator.");
-					self.federatedInstances([]);
-				}
-			});
-		}
-
 		self.validateProductionAddPermissions = function (destinationWorkspaceId) {
 			IP.data.ajax({
 				type: "POST",
 				url: IP.utils.generateWebAPIURL("Production/CheckProductionAddPermission",
-					destinationWorkspaceId,
-					self.FederatedInstanceArtifactId() ? self.FederatedInstanceArtifactId() : 0),
+					destinationWorkspaceId),
 				data: self.SecuredConfiguration()
 			}).then(function (result) {
 				self.ShowProductionAddButton(result);
@@ -274,8 +228,8 @@
 					type: "POST",
 					url: IP.utils.generateWebAPIURL("SearchFolder/GetStructure",
 						destinationWorkspaceId,
-						params.id != "#" ? params.id : "0",
-						self.FederatedInstanceArtifactId() ? self.FederatedInstanceArtifactId() : 0),
+						params.id !== "#" ? params.id : "0",
+						thisInstanceArtifactId),
 					data: self.SecuredConfiguration()
 				}).then(function (result) {
 					onSuccess(result);
@@ -320,7 +274,7 @@
 				url: IP.utils.generateWebAPIURL("SearchFolder/GetFullPathList",
 					destinationWorkspaceId,
 					folderArtifactId,
-					self.FederatedInstanceArtifactId() ? self.FederatedInstanceArtifactId() : 0),
+					thisInstanceArtifactId),
 				async: true,
 				data: self.SecuredConfiguration()
 			})
@@ -357,8 +311,7 @@
 
 			var retrieveWorkspacesPromise = IP.data.ajax({
 				type: 'POST',
-				url: IP.utils.generateWebAPIURL('WorkspaceFinder', self.FederatedInstanceArtifactId()),
-				data: self.SecuredConfiguration(),
+				url: IP.utils.generateWebAPIURL('WorkspaceFinder'),
 				async: true
 			}).fail(function () {
 				IP.frameMessaging().dFrame.IP.message.error.raise("Unable to retrieve the workspace information. Please contact your system administrator.");
@@ -411,16 +364,12 @@
 			savedSearchPickerViewModel.open(self.SavedSearchArtifactId());
 		};
 
-		self.updateSecuredConfiguration = function (clientId, clientSecret) {
-			self.SecuredConfiguration(IP.utils.generateCredentialsData(self.FederatedInstanceArtifactId(), clientId, clientSecret));
-			self.updateWorkspaces();
-		}
 
 		self.getDestinationProductionSets = function (targetWorkspaceId) {
 			if (targetWorkspaceId) {
 				var productionSetsPromise = IP.data.ajax({
 					type: "POST",
-					url: IP.utils.generateWebAPIURL("Production/GetProductionsForImport", targetWorkspaceId, self.FederatedInstanceArtifactId()),
+					url: IP.utils.generateWebAPIURL("Production/GetProductionsForImport", targetWorkspaceId),
 					data: self.SecuredConfiguration()
 				}).fail(function (error) {
 					IP.message.error.raise("No production sets were returned for target workspace.");
@@ -432,28 +381,6 @@
 					self.ProductionArtifactId(state.ProductionArtifactId);
 				});
 			}
-		};
-
-		var authenticateModalViewModel = new AuthenticateViewModel(
-			function (clientId, clientSecret) {
-				self.updateSecuredConfiguration(clientId, clientSecret);
-			},
-			function () {
-				self.AuthenticationFailed(true);
-				self.workspaces([]);
-				self.TargetWorkspaceArtifactId(null);
-				self.FolderArtifactId(null);
-				self.TargetFolder(null);
-				self.TargetFolder.isModified(false);
-				self.locationSelector.reload([]);
-			}
-		);
-
-		Picker.create("Modals", "authenticate-modal", "AuthenticationModalView", authenticateModalViewModel);
-
-		self.openAuthenticateModal = function () {
-			self.AuthenticationFailed(false);
-			authenticateModalViewModel.open(self.SecuredConfiguration());
 		};
 
 		var creatingProductionSetModalViewModel = new CreatingProductionSetViewModel(
@@ -468,7 +395,7 @@
 
 		var createProductionSetModalViewModel = new CreateProductionSetViewModel(
 			function (newProductionSetName, positionLeft) {
-				creatingProductionSetModalViewModel.open(newProductionSetName, self.TargetWorkspaceArtifactId(), self.SecuredConfiguration(), self.FederatedInstanceArtifactId(), positionLeft);
+				creatingProductionSetModalViewModel.open(newProductionSetName, self.TargetWorkspaceArtifactId(), self.SecuredConfiguration(), positionLeft);
 			}
 		);
 
@@ -561,7 +488,6 @@
 		this.errors = ko.validation.group(this, { deep: true });
 		this.getSelectedOption = function () {
 			return {
-				"FederatedInstanceArtifactId": self.FederatedInstanceArtifactId(),
 				"SavedSearchArtifactId": self.SavedSearchArtifactId(),
 				"TypeOfExport": self.TypeOfExport(),
 				"ProductionImport": self.ProductionImport(),

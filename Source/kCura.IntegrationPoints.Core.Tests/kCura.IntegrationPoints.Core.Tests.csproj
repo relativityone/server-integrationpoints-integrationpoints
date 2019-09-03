@@ -50,9 +50,6 @@
     <Reference Include="System.Xml.Serialization" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="LICENSE.txt">
-      <Paket>True</Paket>
-    </Content>
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
@@ -66,6 +63,7 @@
     <Compile Include="Helpers\MatchHelper.cs" />
     <Compile Include="Helpers\RelativePathDirectoryTreeProviderTests.cs" />
     <Compile Include="Helpers\SavedSearchesTreeTestHelper.cs" />
+    <Compile Include="Installers\Registrations\ExportSanitizerRegistrationTests.cs" />
     <Compile Include="JobLifetimeMetricBatchStatusTests.cs" />
     <Compile Include="Managers\InstanceSettingsManagerTests.cs" />
     <Compile Include="Managers\FederatedInstanceManagerTests.cs" />
@@ -82,6 +80,14 @@
     <Compile Include="RelativitySourceRdo\RelativitySourceRdoFieldsTests.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceRdoObjectTypeTests.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceWorkspaceRdoInitializerTests.cs" />
+    <Compile Include="Services\Exporter\Sanitization\ChoiceTreeToStringConverterTests.cs" />
+    <Compile Include="Services\Exporter\Sanitization\ExportDataSanitizerTests.cs" />
+    <Compile Include="Services\Exporter\Sanitization\MultipleChoiceFieldSanitizerTests.cs" />
+    <Compile Include="Services\Exporter\Sanitization\MultipleObjectFieldSanitizerTests.cs" />
+    <Compile Include="Services\Exporter\Sanitization\SanitizationHelperTests.cs" />
+    <Compile Include="Services\Exporter\Sanitization\SanitizationTestUtils.cs" />
+    <Compile Include="Services\Exporter\Sanitization\SingleChoiceFieldSanitizerTests.cs" />
+    <Compile Include="Services\Exporter\Sanitization\SingleObjectFieldSanitizerTests.cs" />
     <Compile Include="Services\FieldServiceTests.cs" />
     <Compile Include="Services\ChoiceServiceTests.cs" />
     <Compile Include="Services\Domain\DataProviderBuilderTests.cs" />
@@ -163,7 +169,6 @@
     <Compile Include="Validation\NameValidatorTests.cs" />
     <Compile Include="Validation\ProductionValidatorTests.cs" />
     <Compile Include="Validation\RelativityProviderValidator\FieldMappingsValidatorTest.cs" />
-    <Compile Include="Validation\RelativityProviderValidator\Parts\FederatedInstanceConnectionValidatorTests.cs" />
     <Compile Include="Validation\RelativityProviderValidator\Parts\RelativityProviderDestinationFolderPermissionValidatorTests.cs" />
     <Compile Include="Validation\RelativityProviderValidator\Parts\RelativityProviderDestinationWorkspacePermissionValidatorTests.cs" />
     <Compile Include="Validation\RelativityProviderValidator\RelativityProviderConfigurationValidatorTests.cs" />
@@ -245,8 +250,8 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="BCrypt.Net">
-          <HintPath>..\..\packages\BCrypt-Official\lib\BCrypt.Net.dll</HintPath>
+        <Reference Include="BCrypt.Net-Core">
+          <HintPath>..\..\packages\BCrypt.Net-Core\lib\net452\BCrypt.Net-Core.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -686,6 +691,73 @@
         <Reference Include="mscorlib">
           <Paket>True</Paket>
         </Reference>
+        <Reference Include="System.Configuration.ConfigurationManager">
+          <HintPath>..\..\packages\System.Configuration.ConfigurationManager\lib\net461\System.Configuration.ConfigurationManager.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="System.Data.SqlClient">
+          <HintPath>..\..\packages\System.Data.SqlClient\lib\net461\System.Data.SqlClient.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="System.Security.AccessControl">
+          <HintPath>..\..\packages\System.Security.AccessControl\lib\net461\System.Security.AccessControl.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="System.Data.OracleClient">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Net">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.ServiceProcess">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Transactions">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Security.Permissions">
+          <HintPath>..\..\packages\System.Security.Permissions\lib\net461\System.Security.Permissions.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="System.Security.Principal.Windows">
+          <HintPath>..\..\packages\System.Security.Principal.Windows\lib\net461\System.Security.Principal.Windows.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="System.ValueTuple">
           <HintPath>..\..\packages\System.ValueTuple\lib\net461\System.ValueTuple.dll</HintPath>
           <Private>True</Private>
@@ -768,7 +840,6 @@
       </ItemGroup>
     </When>
   </Choose>
-  <Import Project="..\..\packages\kCura\build\kCura.targets" Condition="Exists('..\..\packages\kCura\build\kCura.targets')" Label="Paket" />
   <Import Project="..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets')" Label="Paket" />
   <Import Project="..\..\packages\Relativity.DataExchange.Client.SDK\build\Relativity.DataExchange.Client.SDK.targets" Condition="Exists('..\..\packages\Relativity.DataExchange.Client.SDK\build\Relativity.DataExchange.Client.SDK.targets')" Label="Paket" />
 </Project>

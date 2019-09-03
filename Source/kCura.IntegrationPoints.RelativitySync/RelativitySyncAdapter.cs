@@ -11,14 +11,13 @@ using Relativity.API;
 using Relativity.Sync;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.Validation;
-using Relativity.Sync.Telemetry;
 using Relativity.Telemetry.APM;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
+#pragma warning disable CA1031
 	public sealed class RelativitySyncAdapter
 	{
-		private readonly JobHistoryHelper _jobHistoryHelper;
 		private readonly IExtendedJob _job;
 		private readonly IWindsorContainer _ripContainer;
 		private readonly IAPILog _logger;
@@ -28,7 +27,6 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 		public RelativitySyncAdapter(IExtendedJob job, IWindsorContainer ripContainer, IAPILog logger, IAPM apmMetrics, IntegrationPointToSyncConverter converter)
 		{
-			_jobHistoryHelper = new JobHistoryHelper();
 			_job = job;
 			_ripContainer = ripContainer;
 			_logger = logger;
@@ -95,7 +93,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			IHelper helper = _ripContainer.Resolve<IHelper>();
 			try
 			{
-				await _jobHistoryHelper.MarkJobAsValidationFailedAsync(ex, _job, helper).ConfigureAwait(false);
+				await JobHistoryHelper.MarkJobAsValidationFailedAsync(ex, _job, helper).ConfigureAwait(false);
 			}
 			catch (Exception e)
 			{
@@ -108,7 +106,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			IHelper helper = _ripContainer.Resolve<IHelper>();
 			try
 			{
-				await _jobHistoryHelper.UpdateJobStatusAsync(status, _job, helper).ConfigureAwait(false);
+				await JobHistoryHelper.UpdateJobStatusAsync(status, _job, helper).ConfigureAwait(false);
 			}
 			catch (Exception e)
 			{
@@ -121,7 +119,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			IHelper helper = _ripContainer.Resolve<IHelper>();
 			try
 			{
-				await _jobHistoryHelper.MarkJobAsStartedAsync(_job, helper).ConfigureAwait(false);
+				await JobHistoryHelper.MarkJobAsStartedAsync(_job, helper).ConfigureAwait(false);
 			}
 			catch (Exception e)
 			{
@@ -134,7 +132,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			IHelper helper = _ripContainer.Resolve<IHelper>();
 			try
 			{
-				await _jobHistoryHelper.MarkJobAsCompletedAsync(_job, helper).ConfigureAwait(false);
+				await JobHistoryHelper.MarkJobAsCompletedAsync(_job, helper).ConfigureAwait(false);
 			}
 			catch (Exception e)
 			{
@@ -147,7 +145,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			IHelper helper = _ripContainer.Resolve<IHelper>();
 			try
 			{
-				await _jobHistoryHelper.MarkJobAsStoppedAsync(_job, helper).ConfigureAwait(false);
+				await JobHistoryHelper.MarkJobAsStoppedAsync(_job, helper).ConfigureAwait(false);
 			}
 			catch (Exception e)
 			{
@@ -160,7 +158,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			IHelper helper = _ripContainer.Resolve<IHelper>();
 			try
 			{
-				await _jobHistoryHelper.MarkJobAsFailedAsync(_job, exception, helper).ConfigureAwait(false);
+				await JobHistoryHelper.MarkJobAsFailedAsync(_job, exception, helper).ConfigureAwait(false);
 			}
 			catch (Exception e)
 			{
@@ -194,22 +192,11 @@ namespace kCura.IntegrationPoints.RelativitySync
 			// We are registering types directly related to adapting the new Relativity Sync workflow to the
 			// existing RIP workflow. The Autofac container we are building will only resolve adapters and related
 			// wrappers, and the Windsor container will only resolve existing RIP classes.
-
 			var containerBuilder = new ContainerBuilder();
 
 			_ripContainer.Register(Component.For<SyncConfiguration>().Instance(syncConfiguration));
 
 			containerBuilder.RegisterInstance(syncConfiguration).AsImplementedInterfaces().SingleInstance();
-
-			containerBuilder.RegisterInstance(new DestinationWorkspaceObjectTypesCreation(_ripContainer))
-				.As<IExecutor<IDestinationWorkspaceObjectTypesCreationConfiguration>>()
-				.As<IExecutionConstrains<IDestinationWorkspaceObjectTypesCreationConfiguration>>();
-			containerBuilder.RegisterInstance(new ValidationExecutorFactory(_ripContainer)).As<IValidationExecutorFactory>();
-			containerBuilder.RegisterInstance(new RdoRepository(_ripContainer)).As<IRdoRepository>();
-
-			containerBuilder.Register(context => new PermissionsCheck(_ripContainer, context.Resolve<IValidationExecutorFactory>(), context.Resolve<IRdoRepository>()))
-				.As<IExecutor<IPermissionsCheckConfiguration>>()
-				.As<IExecutionConstrains<IPermissionsCheckConfiguration>>();
 
 			containerBuilder.RegisterType<DataDestinationFinalization>()
 				.As<IExecutor<IDataDestinationFinalizationConfiguration>>()
@@ -231,4 +218,5 @@ namespace kCura.IntegrationPoints.RelativitySync
 			return container;
 		}
 	}
+#pragma warning restore CA1031
 }

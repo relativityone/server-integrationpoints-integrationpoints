@@ -1,22 +1,14 @@
 ﻿using System.Security.Claims;
 using kCura.IntegrationPoints.Core.Authentication;
-using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Domain;
 using Relativity;
 using Relativity.API;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
-	public class ClaimsPrincipalFactory : IOnBehalfOfUserClaimsPrincipalFactory
+	public class ClaimsPrincipalFactory
 	{
-		public ClaimsPrincipal CreateClaimsPrincipal(int userArtifactId)
-		{
-			Claim[] claims = { new Claim(Claims.USER_ID, userArtifactId.ToString()) };
-			var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(claims));
-			return claimsPrincipal;
-		}
-
-		public ClaimsPrincipal CreateClaimsPrincipal2(int userArtifactId, IHelper helper)
+		public ClaimsPrincipal CreateClaimsPrincipal(int userArtifactId, IHelper helper)
 		{
 			var generator = new OAuth2TokenGenerator(
 				helper,

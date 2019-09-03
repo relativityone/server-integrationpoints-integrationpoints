@@ -12,11 +12,11 @@ using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.Exporter;
+using kCura.IntegrationPoints.Core.Services.Exporter.Sanitization;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Core.Validation;
-using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
@@ -53,6 +53,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly IToggleProvider _toggleProvider;
 		private readonly IDocumentRepository _documentRepository;
+		private readonly IExportDataSanitizer _exportDataSanitizer;
 		private IJobHistoryErrorManager JobHistoryErrorManager { get; set; }
 		private JobHistoryErrorDTO.UpdateStatusType UpdateStatusType { get; set; }
 
@@ -64,7 +65,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			ISynchronizerFactory synchronizerFactory,
 			IExporterFactory exporterFactory,
 			IExportServiceObserversFactory exportServiceObserversFactory,
-			IOnBehalfOfUserClaimsPrincipalFactory onBehalfOfUserClaimsPrincipalFactory,
 			IRepositoryFactory repositoryFactory,
 			IManagerFactory managerFactory,
 			IEnumerable<IBatchStatus> statuses,
@@ -77,7 +77,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IToggleProvider toggleProvider,
 			IAgentValidator agentValidator,
 			IIntegrationPointRepository integrationPointRepository,
-			IDocumentRepository documentRepository)
+			IDocumentRepository documentRepository,
+			IExportDataSanitizer exportDataSanitizer)
 			: base(helper,
 				jobService,
 				serializer,
@@ -88,7 +89,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				contextContainerFactory,
 				statuses,
 				caseServiceContext,
-				onBehalfOfUserClaimsPrincipalFactory,
 				statisticsService,
 				synchronizerFactory,
 				agentValidator,
@@ -102,6 +102,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_helper = helper;
 			_helperFactory = helperFactory;
 			_documentRepository = documentRepository;
+			_exportDataSanitizer = exportDataSanitizer;
 			Logger = helper.GetLoggerFactory().GetLogger().ForContext<ExportServiceManager>();
 		}
 
@@ -153,21 +154,20 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				HandleGenericException(ex, job);
 
 				IExtendedJob extendedJob = new ExtendedJob(job, JobHistoryService, IntegrationPointDto, Serializer, Logger);
-				JobHistoryHelper jobHistoryHelper = new JobHistoryHelper();
 				//this is last catch in push workflow, so we need to mark job as failed
 				//and we need to use object manager and update only one field.
 				//I'm not using RelativityObjectManager here because we need to do everything we can no to fail.
 				//any additional operation that is happening in RelativityObjectManager can potentially cause failures.
 				try
 				{
-					jobHistoryHelper.MarkJobAsFailedAsync(extendedJob, _helper).GetAwaiter().GetResult();
+					JobHistoryHelper.MarkJobAsFailedAsync(extendedJob, _helper).GetAwaiter().GetResult();
 				}
 				catch (Exception)
 				{
 					//one last chance
 					try
 					{
-						jobHistoryHelper.MarkJobAsFailedAsync(extendedJob, _helper).GetAwaiter().GetResult();
+						JobHistoryHelper.MarkJobAsFailedAsync(extendedJob, _helper).GetAwaiter().GetResult();
 					}
 					catch (Exception)
 					{
@@ -200,10 +200,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				MappedFields.ToArray(),
 				IntegrationPointDto.SourceConfiguration,
 				savedSearchID,
-				job.SubmittedBy,
 				userImportApiSettings,
 				_documentRepository,
-				Serializer))
+				_exportDataSanitizer))
 			{
 				LogPushingDocumentsStart(job);
 				IScratchTableRepository[] scratchTables = _exportServiceJobObservers.OfType<IConsumeScratchTableBatchStatus>()
@@ -315,11 +314,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IQueryFieldLookupRepository destinationQueryFieldLookupRepository =
 				_repositoryFactory.GetQueryFieldLookupRepository(configuration.TargetWorkspaceArtifactId);
 
-			FieldMap longTextField = fieldMap.FirstOrDefault(fm => IsLongTextWithDgEnabled(sourceQueryFieldLookupRepository.GetFieldByArtifactId(int.Parse(fm.SourceField.FieldIdentifier))));
+			FieldMap longTextField = fieldMap.FirstOrDefault(fm => IsLongTextWithDgEnabled(sourceQueryFieldLookupRepository.GetFieldByArtifactID(int.Parse(fm.SourceField.FieldIdentifier))));
 
 			if (longTextField?.DestinationField?.FieldIdentifier != null && IsSingleDataGridField(fieldMap, sourceQueryFieldLookupRepository))
 			{
-				ViewFieldInfo destinationField = destinationQueryFieldLookupRepository.GetFieldByArtifactId(int.Parse(longTextField.DestinationField.FieldIdentifier));
+				ViewFieldInfo destinationField = destinationQueryFieldLookupRepository.GetFieldByArtifactID(int.Parse(longTextField.DestinationField.FieldIdentifier));
 				return destinationField != null && !destinationField.EnableDataGrid;
 			}
 
@@ -333,7 +332,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private bool IsSingleDataGridField(IEnumerable<FieldMap> fieldMap, IQueryFieldLookupRepository source)
 		{
-			return fieldMap.Count(field => source.GetFieldByArtifactId(int.Parse(field.SourceField.FieldIdentifier)).EnableDataGrid) == 1;
+			return fieldMap.Count(field => source.GetFieldByArtifactID(int.Parse(field.SourceField.FieldIdentifier)).EnableDataGrid) == 1;
 		}
 
 		protected override void JobHistoryErrorManagerSetup(Job job)

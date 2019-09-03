@@ -76,16 +76,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 			return new ImportProductionValidator(workspaceArtifactId, importProductionManager, destinationPermissionManager, federatedInstanceArtifactId, credentials);
 		}
 
-	    public IFederatedInstanceConnectionValidator CreateFederatedInstanceConnectionValidator(
-	        int? federatedInstanceArtifactId, string credentials)
-	    {
-	        IHelper targetHelper = _helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId, credentials);
-	        IWorkspaceManager manager = _managerFactory.CreateWorkspaceManager(_contextContainerFactory.CreateContextContainer(_helper, targetHelper.GetServicesManager()));
-
-            return new FederatedInstanceConnectionValidator(targetHelper.GetServicesManager(), manager, _logger);
-	    }
-
-        public IRelativityProviderDestinationWorkspaceExistenceValidator CreateDestinationWorkspaceExistenceValidator(int? federatedInstanceArtifactId, string credentials)
+		public IRelativityProviderDestinationWorkspaceExistenceValidator CreateDestinationWorkspaceExistenceValidator(int? federatedInstanceArtifactId, string credentials)
 		{
 			IHelper targetHelper = _helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId, credentials);
 			IWorkspaceManager workspaceManager = _managerFactory.CreateWorkspaceManager(_contextContainerFactory.CreateContextContainer(_helper, targetHelper.GetServicesManager()));
