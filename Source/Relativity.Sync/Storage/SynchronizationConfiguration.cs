@@ -35,7 +35,7 @@ namespace Relativity.Sync.Storage
 			_syncLog = syncLog;
 		}
 
-		public char MultiValueDelimiter => (char)_ASCII_RECORD_SEPARATOR;
+		public char MultiValueDelimiter => (char) _ASCII_RECORD_SEPARATOR;
 		public char NestedValueDelimiter => (char) _ASCII_GROUP_SEPARATOR;
 		public int DestinationWorkspaceArtifactId => _cache.GetFieldValue<int>(DestinationWorkspaceArtifactIdGuid);
 		public int DestinationFolderArtifactId => _cache.GetFieldValue<int>(DataDestinationArtifactIdGuid);
