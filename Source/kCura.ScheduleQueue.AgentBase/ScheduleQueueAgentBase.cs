@@ -15,7 +15,11 @@ namespace kCura.ScheduleQueue.AgentBase
 		private IJobService _jobService;
 		private const int _MAX_MESSAGE_LENGTH = 10000;
 		private readonly Guid _agentGuid;
-
+		private static readonly Dictionary<LogCategory, int> _logCategoryToLogLevelMapping = new Dictionary<LogCategory, int>
+		{
+			[LogCategory.Debug] = 20,
+			[LogCategory.Info] = 10
+		};
 		protected IAPILog Logger { get; set; }
 
 		public ScheduleQueueAgentBase(Guid agentGuid,
@@ -36,7 +40,7 @@ namespace kCura.ScheduleQueue.AgentBase
 			//Logger cannot be initialized in constructor because Helper from Agent.Base is initialized later on
 			Logger = Helper.GetLoggerFactory().GetLogger().ForContext<ScheduleQueueAgentBase>();
 
-			NotifyAgentTab(20, LogCategory.Debug, "Initialize Agent core services");
+			NotifyAgentTab(LogCategory.Debug, "Initialize Agent core services");
 
 			if (AgentService == null)
 			{
@@ -51,7 +55,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		public sealed override void Execute()
 		{
-			NotifyAgentTab(10, LogCategory.Debug, "Started.");
+			NotifyAgentTab(LogCategory.Debug, "Started.");
 
 			bool isPreExecuteSuccessful = PreExecute();
 			if (isPreExecuteSuccessful)
@@ -73,7 +77,7 @@ namespace kCura.ScheduleQueue.AgentBase
 			}
 			catch (Exception ex)
 			{
-				NotifyAgentTab(20, LogCategory.Warn, $"{ex.Message} {ex.StackTrace}");
+				NotifyAgentTab(LogCategory.Warn, $"{ex.Message} {ex.StackTrace}");
 				LogExecuteError(ex);
 				return false;
 			}
@@ -82,20 +86,20 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		private void CompleteExecution()
 		{
-			NotifyAgentTab(10, LogCategory.Debug, "Completed.");
+			NotifyAgentTab(LogCategory.Debug, "Completed.");
 			LogExecuteComplete();
 		}
 
 		private void InitializeManagerConfigSettingsFactory()
 		{
-			NotifyAgentTab(20, LogCategory.Debug, "Initialize Config Settings factory");
+			NotifyAgentTab(LogCategory.Debug, "Initialize Config Settings factory");
 			LogOnInitializeManagerConfigSettingsFactory();
 			Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
 		}
 
 		private void CheckQueueTable()
 		{
-			NotifyAgentTab(20, LogCategory.Debug, "Check Schedule Agent Queue table exists");
+			NotifyAgentTab(LogCategory.Debug, "Check Schedule Agent Queue table exists");
 
 			AgentService.InstallQueueTable();
 		}
@@ -152,10 +156,10 @@ namespace kCura.ScheduleQueue.AgentBase
 		{
 			if (!Enabled)
 			{
-				NotifyAgentTab(20, LogCategory.Info, "Agent was disabled. Terminating job processing task.");
+				NotifyAgentTab(LogCategory.Info, "Agent was disabled. Terminating job processing task.");
 				return null;
 			}
-			NotifyAgentTab(20, LogCategory.Debug, "Checking for active jobs in Schedule Agent Queue table");
+			NotifyAgentTab(LogCategory.Debug, "Checking for active jobs in Schedule Agent Queue table");
 
 			try
 			{
@@ -164,14 +168,14 @@ namespace kCura.ScheduleQueue.AgentBase
 			catch (Exception ex)
 			{
 				LogGetNextQueueJobException(ex);
-				NotifyAgentTab(20, LogCategory.Exception, "Exception while getting next job from queue.");
+				NotifyAgentTab(LogCategory.Exception, "Exception while getting next job from queue.");
 				return null;
 			}
 		}
 
 		private void CleanupQueueJobs()
 		{
-			NotifyAgentTab(20, LogCategory.Debug, "Cleanup jobs");
+			NotifyAgentTab(LogCategory.Debug, "Cleanup jobs");
 			LogOnCleanupJobs();
 
 			try
@@ -180,24 +184,23 @@ namespace kCura.ScheduleQueue.AgentBase
 			}
 			catch (Exception ex)
 			{
-				NotifyAgentTab(20, LogCategory.Warn, $"An error occured cleaning jobs queue. {ex.Message} {ex.StackTrace}");
+				NotifyAgentTab(LogCategory.Warn, $"An error occured cleaning jobs queue. {ex.Message} {ex.StackTrace}");
 				LogCleanupError(ex);
 			}
 		}
 
-		protected void NotifyAgentTab(int level, LogCategory category, string message,
+		protected void NotifyAgentTab(LogCategory category, string message,
 			string detailmessage = null)
 		{
 			string msg = message.Substring(0, Math.Min(message.Length, _MAX_MESSAGE_LENGTH));
 			switch (category)
 			{
 				case LogCategory.Debug:
-					//We do not want to log using RaiseMessage as they get always logged at INFO level
-					RaiseMessageNoLogging(msg, level);
+					RaiseMessageNoLogging(msg, _logCategoryToLogLevelMapping[LogCategory.Debug]);
 					Logger.LogDebug(message);
 					break;
 				case LogCategory.Info:
-					RaiseMessage(msg, level);
+					RaiseMessage(msg, _logCategoryToLogLevelMapping[LogCategory.Info]);
 					break;
 				case LogCategory.Warn:
 					RaiseWarning(msg);
@@ -206,7 +209,7 @@ namespace kCura.ScheduleQueue.AgentBase
 					RaiseError(msg, detailmessage);
 					break;
 				default:
-					throw new ArgumentOutOfRangeException("category");
+					throw new ArgumentOutOfRangeException(nameof(category));
 			}
 		}
 
