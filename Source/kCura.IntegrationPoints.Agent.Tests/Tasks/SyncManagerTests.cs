@@ -39,7 +39,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private readonly Guid _jobGuidValue = new Guid("0D01AF2F-5AF5-4F4D-820C-90471AD75750");
 
 		private IManagerFactory _managerFactory;
-		private IContextContainerFactory _contextContainerFactory;
 		private ICaseServiceContext _caseServiceContext;
 		private IJobManager _jobManager;
 		private IJobService _jobService;
@@ -77,14 +76,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_jobHistoryService = Substitute.For<IJobHistoryService>();
 			IScheduleRuleFactory scheduleRuleFactory = Substitute.For<IScheduleRuleFactory>();
 			_managerFactory = Substitute.For<IManagerFactory>();
-			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
 			_batchStatus = Substitute.For<IBatchStatus>();
 			List<IBatchStatus> batchStatuses = new List<IBatchStatus>() { _batchStatus };
 			IDataSourceProvider dataSourceProvider = Substitute.For<IDataSourceProvider>();
 			_jobHistoryErrorService = Substitute.For<IJobHistoryErrorService>();
 			_dataReader = Substitute.For<IDataReader>();
 			_jobStopManager = Substitute.For<IJobStopManager>();
-			IContextContainer contextContainer = Substitute.For<IContextContainer>();
 			_jobHistoryManager = Substitute.For<IJobHistoryManager>();
 			_agentValidator = Substitute.For<IAgentValidator>();
 
@@ -113,7 +110,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_instance = new SyncManager(_caseServiceContext, dataProviderFactory, _jobManager, _jobService, _helper,
 				_integrationPointService, _serializer, guidService, _jobHistoryService,
 				_jobHistoryErrorService, scheduleRuleFactory, _managerFactory,
-				_contextContainerFactory, batchStatuses, _agentValidator)
+				batchStatuses, _agentValidator)
 			{
 				BatchInstance = _batchInstance,
 				IntegrationPoint = _integrationPoint
@@ -122,7 +119,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_syncManagerEventHelper = new TestSyncManager(_caseServiceContext, dataProviderFactory, _jobManager, _jobService, _helper,
 			   _integrationPointService, _serializer, guidService, _jobHistoryService,
 			   _jobHistoryErrorService, scheduleRuleFactory, _managerFactory,
-			   _contextContainerFactory, batchStatuses, _agentValidator);
+			   batchStatuses, _agentValidator);
 
 			_data = "data";
 			_caseServiceContext.RsapiService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider.Value).Returns(_sourceProvider);
@@ -136,8 +133,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_managerFactory.CreateJobStopManager(_jobService, _jobHistoryService, _batchInstance, _job.JobId, true)
 				.Returns(_jobStopManager);
 			_jobService.GetJobNextUtcRunDateTime(_job, scheduleRuleFactory, Arg.Any<TaskResult>()).Returns(DateTime.Now);
-			_contextContainerFactory.CreateContextContainer(_helper).Returns(contextContainer);
-			_managerFactory.CreateJobHistoryManager(contextContainer).Returns(_jobHistoryManager);
+			_managerFactory.CreateJobHistoryManager().Returns(_jobHistoryManager);
 		}
 
 		[Test]
@@ -159,8 +155,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				jobHistoryService: null, 
 				jobHistoryErrorService: null, 
 				scheduleRuleFactory: null, 
-				managerFactory: _managerFactory, 
-				contextContainerFactory: _contextContainerFactory, 
+				managerFactory: _managerFactory,
 				batchStatuses: null,
 				agentValidator: _agentValidator);
 			Job job = GetJob(null);
@@ -191,8 +186,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				jobHistoryService: null,
 				jobHistoryErrorService: null, 
 				scheduleRuleFactory: null, 
-				managerFactory: _managerFactory, 
-				contextContainerFactory: _contextContainerFactory, 
+				managerFactory: _managerFactory,
 				batchStatuses: null, 
 				agentValidator: _agentValidator);
 			Job job = GetJob(serializer.Serialize(new TaskParameters() { BatchInstance = _jobGuidValue }));
@@ -224,7 +218,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				jobHistoryErrorService: null, 
 				scheduleRuleFactory: null, 
 				managerFactory: _managerFactory, 
-				contextContainerFactory: _contextContainerFactory, 
 				batchStatuses: null,
 				agentValidator: _agentValidator);
 			Job job = GetJob("BAD_GUID");
@@ -634,10 +627,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				IJobHistoryErrorService jobHistoryErrorService,
 				IScheduleRuleFactory scheduleRuleFactory,
 				IManagerFactory managerFactory,
-				IContextContainerFactory contextContainerFactory,
 				IEnumerable<IBatchStatus> batchStatuses,
 				IAgentValidator agentValidator) : base(caseServiceContext, providerFactory, jobManager, jobService, helper, integrationPointService, serializer, guidService,
-				jobHistoryService, jobHistoryErrorService, scheduleRuleFactory, managerFactory, contextContainerFactory, batchStatuses, agentValidator)
+				jobHistoryService, jobHistoryErrorService, scheduleRuleFactory, managerFactory, batchStatuses, agentValidator)
 			{
 			}
 

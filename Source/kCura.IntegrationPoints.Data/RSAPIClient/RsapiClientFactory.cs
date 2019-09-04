@@ -12,11 +12,6 @@ namespace kCura.IntegrationPoints.Data.RSAPIClient
 			return CreateClient(helper, ExecutionIdentity.System);
 		}
 
-		public IRSAPIClient CreateAdminClient(IServicesMgr servicesMgr, IAPILog logger)
-		{
-			return CreateClient(servicesMgr, logger, ExecutionIdentity.System);
-		}
-
 		public virtual IRSAPIClient CreateUserClient(IHelper helper)
 		{
 			return CreateClient(helper, ExecutionIdentity.CurrentUser);

@@ -1,8 +1,8 @@
 ﻿using System.Net;
 
-namespace kCura.IntegrationPoints.Core.Authentication
+namespace kCura.IntegrationPoints.Core.Authentication.WebApi
 {
-	public interface ICredentialProvider
+	public interface IWebApiLoginService
 	{
 		NetworkCredential Authenticate(CookieContainer cookieContainer);
 	}

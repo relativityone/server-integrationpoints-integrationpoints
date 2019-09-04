@@ -34,7 +34,6 @@ namespace kCura.IntegrationPoints.Core.Tests
 		private IJobStatusUpdater _jobStatusUpdater = null;
 		private KeywordConverter _converter = null;
 		private IManagerFactory _managerFactory;
-		private IContextContainerFactory _contextContainerFactory;
 		private IJobService _jobService;
 		private IIntegrationPointRepository _integrationPointRepository;
 
@@ -51,7 +50,6 @@ namespace kCura.IntegrationPoints.Core.Tests
 			_rsapiService = Substitute.For<IRSAPIService>();
 			_objectManager = Substitute.For<IRelativityObjectManager>();
 			_managerFactory = Substitute.For<IManagerFactory>();
-			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
 			_jobService = Substitute.For<IJobService>();
 			_integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
 
@@ -70,7 +68,6 @@ namespace kCura.IntegrationPoints.Core.Tests
 				_jobStatusUpdater,
 				_converter,
 				_managerFactory,
-				_contextContainerFactory,
 				_jobService,
 				_integrationPointRepository);
 		}

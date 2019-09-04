@@ -1,9 +1,4 @@
-﻿using System;
-using kCura.Apps.Common.Data;
-using kCura.Apps.Common.Utils.Serializers;
-using kCura.EventHandler;
-using kCura.IntegrationPoints.Core;
-using kCura.IntegrationPoints.Core.Authentication;
+﻿using kCura.EventHandler;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Helpers;
@@ -19,8 +14,6 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
-using kCura.IntegrationPoints.Domain;
-using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
@@ -31,16 +24,15 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
 	public class ConsoleEventHandler : EventHandler.ConsoleEventHandler
 	{
-		private readonly IConsoleBuilder _consoleBuilder;
-		private readonly IContextContainerFactory _contextContainerFactory;
-		private readonly IHelperClassFactory _helperClassFactory;
 		private IButtonStateBuilder _buttonStateBuilder;
 		private IManagerFactory _managerFactory;
 		private IOnClickEventConstructor _onClickEventConstructor;
 
+		private readonly IConsoleBuilder _consoleBuilder;
+		private readonly IHelperClassFactory _helperClassFactory;
+		
 		public ConsoleEventHandler()
 		{
-			_contextContainerFactory = new ContextContainerFactory();
 			_helperClassFactory = new HelperClassFactory();
 			_consoleBuilder = new ConsoleBuilder();
 		}
@@ -77,16 +69,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			{
 				if (_managerFactory == null)
 				{
-					IConfigFactory configFactory = new ConfigFactory();
-					IAuthProvider authProvider = new AuthProvider();
-					IAuthTokenGenerator authTokenGenerator = new ClaimsTokenGenerator();
-					ICredentialProvider credentialProvider = new TokenCredentialProvider(authProvider, authTokenGenerator, Helper);
-					ISerializer serializer = new JSONSerializer();
-					ITokenProvider tokenProvider = new RelativityCoreTokenProvider();
-					ISqlServiceFactory sqlServiceFactory = new HelperConfigSqlServiceFactory(Helper);
-					IServiceManagerProvider serviceManagerProvider = new ServiceManagerProvider(configFactory, credentialProvider,
-						serializer, tokenProvider, sqlServiceFactory);
-					_managerFactory = new ManagerFactory(Helper, serviceManagerProvider);
+					_managerFactory = new ManagerFactory(Helper);
 				}
 				return _managerFactory;
 			}
@@ -102,20 +85,19 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 					IRelativityObjectManager objectManager = CreateObjectManager(Helper, Helper.GetActiveCaseID());
 					IIntegrationPointSerializer integrationPointSerializer = CreateIntegrationPointSerializer(logger);
 					ISecretsRepository secretsRepository = new SecretsRepository(
-						SecretStoreFacadeFactory_Deprecated.Create(Helper.GetSecretStore, logger), 
+						SecretStoreFacadeFactory_Deprecated.Create(Helper.GetSecretStore, logger),
 						logger
 					);
 					IIntegrationPointRepository integrationPointRepository =
 						CreateIntegrationPointRepository(objectManager, integrationPointSerializer, secretsRepository, logger);
 
-					IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(Helper);
-					IQueueManager queueManager = ManagerFactory.CreateQueueManager(contextContainer);
-					IJobHistoryManager jobHistoryManager = ManagerFactory.CreateJobHistoryManager(contextContainer);
+					IQueueManager queueManager = ManagerFactory.CreateQueueManager();
+					IJobHistoryManager jobHistoryManager = ManagerFactory.CreateJobHistoryManager();
 					IStateManager stateManager = ManagerFactory.CreateStateManager();
 					IRepositoryFactory repositoryFactory = new RepositoryFactory(Helper, Helper.GetServicesManager());
 					IIntegrationPointPermissionValidator permissionValidator =
-						new IntegrationPointPermissionValidator(new[] 
-							{ new ViewErrorsPermissionValidator(repositoryFactory) }, 
+						new IntegrationPointPermissionValidator(new[]
+							{ new ViewErrorsPermissionValidator(repositoryFactory) },
 							new IntegrationPointSerializer(logger));
 					IPermissionRepository permissionRepository = new PermissionRepository(Helper, Helper.GetActiveCaseID());
 					IProviderTypeService providerTypeService = new ProviderTypeService(objectManager);
@@ -137,8 +119,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		}
 
 		private IIntegrationPointRepository CreateIntegrationPointRepository(
-			IRelativityObjectManager objectManager, 
-			IIntegrationPointSerializer serializer, 
+			IRelativityObjectManager objectManager,
+			IIntegrationPointSerializer serializer,
 			ISecretsRepository secretsRepository,
 			IAPILog logger)
 		{
@@ -151,8 +133,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			{
 				if (_onClickEventConstructor == null)
 				{
-					IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(Helper);
-					_onClickEventConstructor = _helperClassFactory.CreateOnClickEventHelper(ManagerFactory, contextContainer);
+					_onClickEventConstructor = _helperClassFactory.CreateOnClickEventHelper(ManagerFactory);
 				}
 				return _onClickEventConstructor;
 			}

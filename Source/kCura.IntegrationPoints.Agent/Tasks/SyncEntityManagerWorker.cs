@@ -19,6 +19,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
+using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -40,7 +41,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private readonly IAPILog _logger;
 		private readonly IManagerQueueService _managerQueueService;
 		private readonly IRepositoryFactory _repositoryFactory;
-		private readonly IHelperFactory _helperFactory;
 		private readonly IRelativityObjectManager _relativityObjectManager;
 		private IEnumerable<FieldMap> _entityManagerFieldMap;
 		private List<EntityManagerMap> _entityManagerMap;
@@ -62,10 +62,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IManagerQueueService managerQueueService, 
 			JobStatisticsService statisticsService, 
 			IManagerFactory managerFactory,
-			IContextContainerFactory contextContainerFactory,
 			IJobService jobService, 
 			IRepositoryFactory repositoryFactory, 
-			IHelperFactory helperFactory, 
 			IRelativityObjectManager relativityObjectManager,
 			IProviderTypeService providerTypeService,
 			IIntegrationPointRepository integrationPointRepository)
@@ -79,14 +77,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				null, 
 				statisticsService, 
 				managerFactory,
-				contextContainerFactory, 
 				jobService, 
 				providerTypeService,
 				integrationPointRepository)
 		{
 			_managerQueueService = managerQueueService;
 			_repositoryFactory = repositoryFactory;
-			_helperFactory = helperFactory;
 			_relativityObjectManager = relativityObjectManager;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<SyncEntityManagerWorker>();
 		}
@@ -388,9 +384,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			if (importSettings.IsFederatedInstance())
 			{
-				var targetHelper = _helperFactory.CreateTargetHelper(Helper, importSettings.FederatedInstanceArtifactId, importSettings.FederatedInstanceCredentials);
-				var contextContainer = ContextContainerFactory.CreateContextContainer(targetHelper);
-				var instanceSettingsManager = ManagerFactory.CreateInstanceSettingsManager(contextContainer);
+				IInstanceSettingsManager instanceSettingsManager = ManagerFactory.CreateInstanceSettingsManager();
 
 				if (!instanceSettingsManager.RetrieveAllowNoSnapshotImport())
 				{

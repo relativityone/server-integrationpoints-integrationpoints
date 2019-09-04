@@ -149,11 +149,6 @@
     <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\..\packages\kCura.FreeImage\lib\net45\FreeImage.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="TestDataForImport\CsvWithMetadata.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -306,11 +301,6 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="FreeImage">
-          <HintPath>..\..\packages\kCura.FreeImage\lib\net45\FreeImage.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
         <Reference Include="FreeImageNET">
           <HintPath>..\..\packages\kCura.FreeImage\lib\net45\FreeImageNET.dll</HintPath>
           <Private>True</Private>

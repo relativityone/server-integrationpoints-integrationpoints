@@ -24,7 +24,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 		protected IIntegrationPointSerializer Serializer;
 		protected ICaseServiceContext Context;
-		protected IContextContainer SourceContextContainer;
 
 		protected IChoiceQuery ChoiceQuery;
 		protected IManagerFactory ManagerFactory;
@@ -42,7 +41,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			IChoiceQuery choiceQuery,
 			IIntegrationPointSerializer serializer,
 			IManagerFactory managerFactory,
-			IContextContainerFactory contextContainerFactory,
 			IValidationExecutor validationExecutor,
 			IRelativityObjectManager objectManager)
 		{
@@ -52,7 +50,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			ManagerFactory = managerFactory;
 			_validationExecutor = validationExecutor;
 			_helper = helper;
-			SourceContextContainer = contextContainerFactory.CreateContextContainer(helper);
 			ObjectManager = objectManager;
 		}
 
@@ -225,7 +222,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 		protected void CreateRelativityError(string message, string fullText)
 		{
-			IErrorManager errorManager = ManagerFactory.CreateErrorManager(SourceContextContainer);
+			IErrorManager errorManager = ManagerFactory.CreateErrorManager();
 			var error = new ErrorDTO()
 			{
 				Message = message,

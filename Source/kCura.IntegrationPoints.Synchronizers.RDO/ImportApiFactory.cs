@@ -1,15 +1,8 @@
 ﻿using System;
-using System.Linq;
 using System.Security.Authentication;
-using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Logging;
-using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Domain.Exceptions;
-using kCura.IntegrationPoints.Domain.Managers;
-using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.Synchronizers.RDO.Model.Serializer;
 using kCura.IntegrationPoints.Synchronizers.RDO.Properties;
 using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Enumeration;
@@ -19,23 +12,20 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
 	public class ImportApiFactory : IImportApiFactory
 	{
-		protected readonly ITokenProvider _externalTokenProvider;
-		protected readonly IFederatedInstanceManager _federatedInstanceManager;
-		protected readonly ISystemEventLoggingService _systemEventLoggingService;
-		protected readonly IAPILog _logger;
-		protected readonly ISerializer _serializer;
-	    protected readonly IAuthTokenGenerator _authTokenGenerator; 
-
 		private const string _RELATIVITY_BEARER_USERNAME = "XxX_BearerTokenCredentials_XxX";
 
-		public ImportApiFactory(ITokenProvider externalTokenProvider, IAuthTokenGenerator authTokenGenerator, IFederatedInstanceManager federatedInstanceManager, IHelper helper, ISystemEventLoggingService systemEventLoggingService, ISerializer serializer)
+		protected readonly ISystemEventLoggingService _systemEventLoggingService;
+		protected readonly IAPILog _logger;
+		protected readonly IAuthTokenGenerator _authTokenGenerator;
+
+		public ImportApiFactory(
+			IAuthTokenGenerator authTokenGenerator,
+			IAPILog logger,
+			ISystemEventLoggingService systemEventLoggingService)
 		{
-			_externalTokenProvider = externalTokenProvider;
-		    _authTokenGenerator = authTokenGenerator;
-			_federatedInstanceManager = federatedInstanceManager;
+			_authTokenGenerator = authTokenGenerator;
 			_systemEventLoggingService = systemEventLoggingService;
-			_serializer = serializer;
-			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ImportApiFactory>();
+			_logger = logger.ForContext<ImportApiFactory>();
 		}
 
 		public virtual IExtendedImportAPI GetImportAPI(ImportSettings settings)
@@ -43,13 +33,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			LogImportSettings(settings);
 			IExtendedImportAPI importApi;
 			try
-            {
-                importApi = CreateExtendedImportAPIForSettings(settings);
-                // ExtendedImportAPI extends ImportAPI so the following cast is acceptable
-                Relativity.ImportAPI.ImportAPI concreteImplementation = (Relativity.ImportAPI.ImportAPI)importApi;
-                concreteImplementation.ExecutionSource = ExecutionSourceEnum.RIP;
-            }
-            catch (Exception ex)
+			{
+				importApi = CreateExtendedImportAPIForSettings(settings);
+				// ExtendedImportAPI extends ImportAPI so the following cast is acceptable
+				var concreteImplementation = (Relativity.ImportAPI.ImportAPI)importApi;
+				concreteImplementation.ExecutionSource = ExecutionSourceEnum.RIP;
+			}
+			catch (Exception ex)
 			{
 				if (string.Equals(ex.Message, "Login failed."))
 				{
@@ -62,66 +52,44 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			return importApi;
 		}
 
-        protected IExtendedImportAPI CreateExtendedImportAPIForSettings(ImportSettings settings)
-        {
-            string username;
-            string webServiceUrl;
-            string token;
-
-            if (RelativityCredentialsProvided(settings))
-            {
-                LogCreatingImportApiWithPassword(settings.WebServiceURL);
-                username = settings.RelativityUsername;
-                token = settings.RelativityPassword;
-                webServiceUrl = settings.WebServiceURL;
-            }
-            else
-            {
-                LogCreatingImportApiWithToken(settings.WebServiceURL);
-                username = _RELATIVITY_BEARER_USERNAME;
-                webServiceUrl = GetWebServiceUrl(settings);
-                token = GetToken(settings);
-            }
-
-            return CreateExtendedImportAPI(username, token, webServiceUrl);
-        }
-
-	    protected virtual IExtendedImportAPI CreateExtendedImportAPI(string username, string token, string webServiceUrl)
-        {
-            return new ExtendedImportAPI(username, token, webServiceUrl);
-        }
-
-	    private bool RelativityCredentialsProvided(ImportSettings settings)
-	    {
-	        return settings.RelativityUsername != null && settings.RelativityPassword != null;
-	    }
-
-	    private string GetToken(ImportSettings settings)
+		protected IExtendedImportAPI CreateExtendedImportAPIForSettings(ImportSettings settings)
 		{
-			if (settings.FederatedInstanceArtifactId == null)
+			if (settings.FederatedInstanceArtifactId != null)
 			{
-			    return _authTokenGenerator.GetAuthToken();
+				throw new NotSupportedException("i2i is not supported");
 			}
 
-			OAuthClientDto oAuthClientDto = _serializer.Deserialize<OAuthClientDto>(settings.FederatedInstanceCredentials);
-			FederatedInstanceDto federatedInstance =
-				_federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(settings.FederatedInstanceArtifactId.Value);
+			string username;
+			string webServiceUrl;
+			string token;
 
-			return _externalTokenProvider.GetExternalSystemToken(oAuthClientDto.ClientId, oAuthClientDto.ClientSecret,
-				new Uri(federatedInstance.InstanceUrl));
+			if (RelativityCredentialsProvided(settings))
+			{
+				LogCreatingImportApiWithPassword(settings.WebServiceURL);
+				username = settings.RelativityUsername;
+				token = settings.RelativityPassword;
+				webServiceUrl = settings.WebServiceURL;
+			}
+			else
+			{
+				LogCreatingImportApiWithToken(settings.WebServiceURL);
+				username = _RELATIVITY_BEARER_USERNAME;
+				webServiceUrl = settings.WebServiceURL;
+
+				token = _authTokenGenerator.GetAuthToken();
+			}
+
+			return CreateExtendedImportAPI(username, token, webServiceUrl);
 		}
 
-	    private string GetWebServiceUrl(ImportSettings settings)
+		protected virtual IExtendedImportAPI CreateExtendedImportAPI(string username, string token, string webServiceUrl)
 		{
-			if (settings.FederatedInstanceArtifactId == null)
-			{
-				return settings.WebServiceURL;
-			}
+			return new ExtendedImportAPI(username, token, webServiceUrl);
+		}
 
-			FederatedInstanceDto federatedInstance =
-				_federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(settings.FederatedInstanceArtifactId.Value);
-
-			return federatedInstance.WebApiUrl;
+		private bool RelativityCredentialsProvided(ImportSettings settings)
+		{
+			return settings.RelativityUsername != null && settings.RelativityPassword != null;
 		}
 
 		private void ThrowAuthenticationException(ImportSettings settings, Exception ex)
@@ -140,9 +108,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		private void LogImportSettings(ImportSettings importSettings)
 		{
-			var serializer = new ImportSettingsForLogSerializer();
-			var serializedSettings = serializer.Serialize(importSettings);
-			_logger.LogInformation("ImportSettings: {serializedSettings}", serializedSettings);
+			_logger.LogInformation("ImportSettings: {@importSettings}", importSettings);
 		}
 
 		private void LogCreatingImportApiWithPassword(string url)

@@ -15,14 +15,5 @@ namespace kCura.IntegrationPoints.Domain
 		/// <param name="options">The options specific to the current integration point identifier.</param>
 		/// <returns>A new instance of the data synchronizer.</returns>
 		IDataSynchronizer CreateSynchronizer(Guid identifier, string options);
-
-		/// <summary>
-		/// Creates a new synchronizer based on an identifier and the options. Used between instances
-		/// </summary>
-		/// <param name="identifier">A GUID identifying the synchronizer.</param>
-		/// <param name="options">The options specific to the current integration point identifier.</param>
-		/// <param name="credentials"></param>
-		/// <returns>A new instance of the data synchronizer.</returns>
-		IDataSynchronizer CreateSynchronizer(Guid identifier, string options, string credentials);
 	}
 }

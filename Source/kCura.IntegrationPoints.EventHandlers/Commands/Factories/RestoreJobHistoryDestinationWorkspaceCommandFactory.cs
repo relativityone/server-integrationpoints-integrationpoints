@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 		{
 			IRelativityObjectManager objectManager = CreateObjectManager(helper, workspaceArtifactId);
 			var repositoryFactory = new RepositoryFactory(helper, helper.GetServicesManager());
-			IFederatedInstanceManager federatedInstanceManager = new FederatedInstanceManager(repositoryFactory);
+			IFederatedInstanceManager federatedInstanceManager = new FederatedInstanceManager();
 			IWorkspaceManager workspaceManager = new WorkspaceManager(repositoryFactory);
 			var parser = new JobHistoryDestinationWorkspaceParser(workspaceArtifactId, federatedInstanceManager, workspaceManager);
 			return new RestoreJobHistoryDestinationWorkspaceCommand(objectManager, parser);

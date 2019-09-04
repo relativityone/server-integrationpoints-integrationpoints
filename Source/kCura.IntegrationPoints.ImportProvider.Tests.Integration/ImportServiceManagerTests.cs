@@ -62,7 +62,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 			//Substitutes
 			IHelper helper = Substitute.For<IHelper>();
 			ICaseServiceContext caseServiceContext = Substitute.For<ICaseServiceContext>();
-			IContextContainerFactory contextContainerFactory = Substitute.For<IContextContainerFactory>();
 			ISynchronizerFactory synchronizerFactory = Substitute.For<ISynchronizerFactory>();
 			IManagerFactory managerFactory = Substitute.For<IManagerFactory>();
 			IEnumerable<IBatchStatus> statuses = Substitute.For<IEnumerable<IBatchStatus>>();
@@ -86,7 +85,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 				_windsorContainer.Resolve<IImportApiFactory>(),
 				_windsorContainer.Resolve<IImportJobFactory>(),
 				helper, SharedVariables.RelativityWebApiUrl, true, true);
-			synchronizerFactory.CreateSynchronizer(Arg.Any<Guid>(), Arg.Any<string>(), Arg.Any<string>()).Returns(synchronizer);
+			synchronizerFactory.CreateSynchronizer(Arg.Any<Guid>(), Arg.Any<string>()).Returns(synchronizer);
 
 			//RSAPI
 			IRSAPIService rsapiServiceMock = Substitute.For<IRSAPIService>();
@@ -138,7 +137,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 			_instanceUnderTest = new ImportServiceManager(
 				helper,
 				caseServiceContext,
-				contextContainerFactory,
 				synchronizerFactory,
 				managerFactory,
 				statuses,

@@ -57,7 +57,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private IBatchStatus _sendingEmailNotification;
 		private IBatchStatus _updateJobHistoryStatus;
 		private ICaseServiceContext _caseContext;
-		private IContextContainerFactory _contextContainerFactory;
 		private IDataSynchronizer _synchronizer;
 		private IDocumentRepository _documentRepository;
 		private IEnumerable<IBatchStatus> _batchStatuses;
@@ -65,7 +64,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private IExportServiceObserversFactory _exportServiceObserversFactory;
 		private IExporterService _exporterService;
 		private IHelper _helper;
-		private IHelperFactory _helperFactory;
 		private IIntegrationPointRepository _integrationPointRepository;
 		private IJobHistoryErrorManager _jobHistoryErrorManager;
 		private IJobHistoryErrorRepository _jobHistoryErrorRepository;
@@ -81,7 +79,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private ISerializer _serializer;
 		private IExportDataSanitizer _exportDataSanitizer;
 		private IAPILog _logger;
-	
+
 		private Job _job;
 		private JobHistory _jobHistory;
 		private JobHistoryErrorDTO.UpdateStatusType _updateStatusType;
@@ -110,9 +108,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			logFactory.GetLogger().Returns(_logger);
 			_helper.GetLoggerFactory().Returns(logFactory);
 			_logger.ForContext<ServiceManagerBase>().Returns(_logger);
-			_helperFactory = Substitute.For<IHelperFactory>();
 			_caseContext = Substitute.For<ICaseServiceContext>();
-			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
 			ISynchronizerFactory synchronizerFactory = Substitute.For<ISynchronizerFactory>();
 			_exporterFactory = Substitute.For<IExporterFactory>();
 			_exportServiceObserversFactory = Substitute.For<IExportServiceObserversFactory>();
@@ -134,12 +130,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_jobHistoryErrorService = Substitute.For<IJobHistoryErrorService>();
 
 			_jobHistoryErrorManager = Substitute.For<IJobHistoryErrorManager>();
-			IContextContainer contextContainer = Substitute.For<IContextContainer>();
 			_savedSearchQueryRepository = Substitute.For<ISavedSearchQueryRepository>();
 			_jobStopManager = Substitute.For<IJobStopManager>();
 			IDocumentRepository documentRepository = Substitute.For<IDocumentRepository>();
 			IWorkspaceRepository workspaceRepository = Substitute.For<IWorkspaceRepository>();
-			_contextContainerFactory.CreateContextContainer(_helper).Returns(contextContainer);
 			_exporterService = Substitute.For<IExporterService>();
 			_repositoryFactory.GetWorkspaceRepository().Returns(workspaceRepository);
 			_jobHistoryErrorRepository = Substitute.For<IJobHistoryErrorRepository>();
@@ -201,13 +195,13 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_jobHistoryService.GetOrCreateScheduledRunHistoryRdo(_integrationPoint, _taskParameters.BatchInstance, Arg.Any<DateTime>()).Returns(_jobHistory);
 			_caseContext.RsapiService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider.Value).Returns(_sourceProvider);
 			_serializer.Deserialize<List<FieldMap>>(_integrationPoint.FieldMappings).Returns(mappings);
-			_managerFactory.CreateJobHistoryErrorManager(contextContainer, _configuration.SourceWorkspaceArtifactId, GetUniqueJobId(job, _taskParameters.BatchInstance)).Returns(_jobHistoryErrorManager);
+			_managerFactory.CreateJobHistoryErrorManager(_configuration.SourceWorkspaceArtifactId, GetUniqueJobId(job, _taskParameters.BatchInstance)).Returns(_jobHistoryErrorManager);
 			_jobHistoryErrorManager.StageForUpdatingErrors(job, Arg.Is<Choice>(obj => obj.EqualsToChoice(JobTypeChoices.JobHistoryRun))).Returns(_updateStatusType);
 			_repositoryFactory.GetSavedSearchQueryRepository(_configuration.SourceWorkspaceArtifactId).Returns(_savedSearchQueryRepository);
 			_savedSearchQueryRepository.RetrieveSavedSearch(_configuration.SavedSearchArtifactId).Returns(new SavedSearchDTO());
 			_repositoryFactory.GetJobHistoryErrorRepository(_configuration.SourceWorkspaceArtifactId).Returns(_jobHistoryErrorRepository);
 			_jobHistoryErrorManager.CreateItemLevelErrorsSavedSearch(job, _configuration.SavedSearchArtifactId).Returns(_RETRY_SAVEDSEARCHID);
-			synchronizerFactory.CreateSynchronizer(Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID, _integrationPoint.DestinationConfiguration, _integrationPoint.SecuredConfiguration).Returns(_synchronizer);
+			synchronizerFactory.CreateSynchronizer(Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID, _integrationPoint.DestinationConfiguration).Returns(_synchronizer);
 			_managerFactory.CreateJobStopManager(_jobService, _jobHistoryService, _taskParameters.BatchInstance, job.JobId, true).Returns(_jobStopManager);
 
 			ImportSettings settings = new ImportSettings();
@@ -232,14 +226,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				.Returns(_taskParameters);
 			_jobHistoryService.GetRdo(Arg.Is<Guid>(guid => guid == _taskParameters.BatchInstance)).Returns(_jobHistory);
 
-			_managerFactory.CreateTagsCreator(Arg.Any<IContextContainer>()).Returns(tagsCreator);
-			_managerFactory.CreateTaggingSavedSearchManager(Arg.Any<IContextContainer>()).Returns(tagSavedSearchManager);
-			_managerFactory.CreateSourceWorkspaceTagsCreator(Arg.Any<IContextContainer>(), Arg.Any<IHelper>(), Arg.Any<SourceConfiguration>()).Returns(sourceWorkspaceTagsCreator);
+			_managerFactory.CreateTagsCreator().Returns(tagsCreator);
+			_managerFactory.CreateTaggingSavedSearchManager().Returns(tagSavedSearchManager);
+			_managerFactory.CreateSourceWorkspaceTagsCreator(Arg.Any<SourceConfiguration>()).Returns(sourceWorkspaceTagsCreator);
 
 			_instance = new ExportServiceManager(_helper,
-				_helperFactory,
 				_caseContext,
-				_contextContainerFactory,
 				synchronizerFactory,
 				_exporterFactory,
 				_exportServiceObserversFactory,
@@ -257,7 +249,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				integrationPointRepository: _integrationPointRepository,
 				documentRepository: _documentRepository,
 				exportDataSanitizer: _exportDataSanitizer);
-			_managerFactory.CreateJobHistoryManager(contextContainer).Returns(_historyManager);
+			_managerFactory.CreateJobHistoryManager().Returns(_historyManager);
 		}
 
 		[Test]
@@ -455,7 +447,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				_exportDataSanitizer);
 			_jobHistoryErrorRepository.Received(0).DeleteItemLevelErrorsSavedSearch(Arg.Any<int>());
 			_logger.LogError(
-				exception, 
+				exception,
 				"Failed to delete temp Saved Search {SavedSearchArtifactId}.",
 				_configuration.SavedSearchArtifactId
 			);
@@ -488,15 +480,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			// ARRANGE
 			IWindsorContainer windsorContainer = Substitute.For<IWindsorContainer>();
 			IObjectTypeRepository objectTypeRepository = Substitute.For<IObjectTypeRepository>();
-			IRsapiClientFactory rsapiClientFactory = Substitute.For<IRsapiClientFactory>();
-			ISynchronizerFactory synchronizerFactory = Substitute.For<GeneralWithEntityRdoSynchronizerFactory>(windsorContainer, objectTypeRepository, rsapiClientFactory);
+			ISynchronizerFactory synchronizerFactory = Substitute.For<GeneralWithEntityRdoSynchronizerFactory>(windsorContainer, objectTypeRepository);
 
 			// ACT
 			ExportServiceManager instance = new ExportServiceManager(
 				_helper,
-				_helperFactory,
 				_caseContext,
-				_contextContainerFactory,
 				synchronizerFactory,
 				_exporterFactory,
 				_exportServiceObserversFactory,
