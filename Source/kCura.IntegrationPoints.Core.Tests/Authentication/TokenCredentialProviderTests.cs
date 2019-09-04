@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Authentication
 		[Test]
 		public void ItShould_LogError()
 		{
-			_authProvider.When(x => x.LoginUsingAuthToken(Arg.Any<string>(), Arg.Any<CookieContainer>())).Throw<Exception>();
+			_tokenGenerator.When(x => x.GetAuthToken()).Throw<Exception>();
 
 			try
 			{
