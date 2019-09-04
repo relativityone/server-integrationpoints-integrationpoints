@@ -174,6 +174,7 @@
           <Assembly>lib\UnitTests\SexyProxy.dll</Assembly>
           <Assembly>lib\UnitTests\SexyProxy.Emit.dll</Assembly>
           <Assembly>lib\UnitTests\itextsharp.dll</Assembly>
+          <Assembly>packages\System.Reactive\lib\net46\System.Reactive.dll</Assembly>
         </Assemblies>
         <ResourceFiles />
         <CustomPages>
