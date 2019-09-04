@@ -31,7 +31,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		public ImportServiceManager(IHelper helper,
 			ICaseServiceContext caseServiceContext,
-			IContextContainerFactory contextContainerFactory,
 			ISynchronizerFactory synchronizerFactory,
 			IManagerFactory managerFactory,
 			IEnumerable<IBatchStatus> statuses,
@@ -52,7 +51,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				jobHistoryErrorService,
 				scheduleRuleFactory,
 				managerFactory,
-				contextContainerFactory,
 				statuses,
 				caseServiceContext,
 				statisticsService,

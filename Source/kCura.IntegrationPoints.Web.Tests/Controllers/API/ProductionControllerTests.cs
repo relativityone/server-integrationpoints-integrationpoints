@@ -3,7 +3,6 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Hosting;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Data;
@@ -12,30 +11,24 @@ using kCura.IntegrationPoints.Web.Controllers.API;
 using kCura.Relativity.Client;
 using NSubstitute;
 using NUnit.Framework;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
 	[TestFixture]
 	public class ProductionControllerTests : TestBase
 	{
-		private ProductionController _controller;
-		private IContextContainerFactory _contextContainerFactory;
+		private ProductionController _sut;
+		private IProductionManager _productionManager;
 		private IManagerFactory _managerFactory;
-		private ICPHelper _helper;
-	    private IHelperFactory _helperFactory;
 
-        [SetUp]
+		[SetUp]
 		public override void SetUp()
 		{
-			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
-			_contextContainerFactory.CreateContextContainer(Arg.Any<ICPHelper>()).Returns((IContextContainer) null);
 			_managerFactory = Substitute.For<IManagerFactory>();
-			_helper = Substitute.For<ICPHelper>();
-		    _helperFactory = Substitute.For<IHelperFactory>();
-            _controller = new ProductionController(_contextContainerFactory, _managerFactory, _helper, _helperFactory);
-			_controller.Request = new HttpRequestMessage();
-			_controller.Request.Properties.Add(HttpPropertyKeys.HttpConfigurationKey, new HttpConfiguration());
+			_productionManager = Substitute.For<IProductionManager>();
+			_sut = new ProductionController(_managerFactory, _productionManager);
+			_sut.Request = new HttpRequestMessage();
+			_sut.Request.Properties.Add(HttpPropertyKeys.HttpConfigurationKey, new HttpConfiguration());
 		}
 
 		[Test]
@@ -52,16 +45,15 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 				ArtifactID = "2",
 				DisplayName = "B"
 			};
-			var expectedResult = new List<ProductionDTO> {production1, production2};
+			var expectedResult = new List<ProductionDTO> { production1, production2 };
 
-			var productions = new List<ProductionDTO> {production2, production1};
+			var productions = new List<ProductionDTO> { production2, production1 };
 
-			var productionManager = Substitute.For<Core.Managers.IProductionManager>();
-			productionManager.GetProductionsForExport(0).ReturnsForAnyArgs(productions);
-			_managerFactory.CreateProductionManager(Arg.Any<IContextContainer>()).Returns(productionManager);
-			
+
+			_productionManager.GetProductionsForExport(0).ReturnsForAnyArgs(productions);
+
 			// Act
-			HttpResponseMessage responseMessage = _controller.GetProductionsForExport(0);
+			HttpResponseMessage responseMessage = _sut.GetProductionsForExport(0);
 			IEnumerable<ProductionDTO> actualResult = ExtractResponse(responseMessage);
 
 			// Assert
@@ -94,12 +86,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 
 			var productions = new List<ProductionDTO> { production2, production1, production3 };
 
-			var productionManager = Substitute.For<Core.Managers.IProductionManager>();
-			productionManager.GetProductionsForImport(0).ReturnsForAnyArgs(productions);
-			_managerFactory.CreateProductionManager(Arg.Any<IContextContainer>()).Returns(productionManager);
+			_productionManager.GetProductionsForImport(0).ReturnsForAnyArgs(productions);
 
 			// Act
-			var responseMessage = _controller.GetProductionsForImport(0, null);
+			var responseMessage = _sut.GetProductionsForImport(0, null);
 			var actualResult = ExtractResponse(responseMessage);
 
 			// Assert
@@ -124,12 +114,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 
 			var productions = new List<ProductionDTO> { production2, production1 };
 
-			var productionManager = Substitute.For<Core.Managers.IProductionManager>();
-			productionManager.GetProductionsForExport(0).ReturnsForAnyArgs(productions);
-			_managerFactory.CreateProductionManager(Arg.Any<IContextContainer>()).Returns(productionManager);
+			_productionManager.GetProductionsForExport(0).ReturnsForAnyArgs(productions);
 
 			// Act
-			var responseMessage = _controller.GetProductionsForExport(0);
+			var responseMessage = _sut.GetProductionsForExport(0);
 			var actualResult = ExtractResponse(responseMessage);
 
 			// Assert
@@ -143,10 +131,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			// Arrange
 			IPermissionManager permissionManager = Substitute.For<IPermissionManager>();
 			permissionManager.UserHasArtifactTypePermission(Arg.Any<int>(), (int)ArtifactType.Production, ArtifactPermission.Create).Returns(hasPermission);
-			_managerFactory.CreatePermissionManager(Arg.Any<IContextContainer>()).Returns(permissionManager);
+			_managerFactory.CreatePermissionManager().Returns(permissionManager);
 
 			// Act
-			HttpResponseMessage responseMessage = _controller.CheckProductionAddPermission(null, 0);
+			HttpResponseMessage responseMessage = _sut.CheckProductionAddPermission(null, 0);
 			var objectContent = responseMessage.Content as ObjectContent<bool>;
 			bool? actualResult = objectContent?.Value as bool?;
 
@@ -157,7 +145,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		private IEnumerable<ProductionDTO> ExtractResponse(HttpResponseMessage response)
 		{
 			var objectContent = response.Content as ObjectContent;
-			var list = (IEnumerable<ProductionDTO>) objectContent?.Value;
+			var list = (IEnumerable<ProductionDTO>)objectContent?.Value;
 
 			return list;
 		}

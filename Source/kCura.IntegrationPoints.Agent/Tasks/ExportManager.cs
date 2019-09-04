@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Agent.Validation;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
@@ -58,13 +57,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IJobHistoryErrorService jobHistoryErrorService,
 			IScheduleRuleFactory scheduleRuleFactory,
 			IManagerFactory managerFactory,
-			IContextContainerFactory contextContainer,
 			IEnumerable<IBatchStatus> batchStatuses,
 			IExportInitProcessService exportInitProcessService,
 			IAgentValidator agentValidator)
 			: base(
 				caseServiceContext, providerFactory, jobManager, jobService, helper, integrationPointService, serializer, guidService, jobHistoryService, jobHistoryErrorService,
-				scheduleRuleFactory, managerFactory, contextContainer, batchStatuses, agentValidator)
+				scheduleRuleFactory, managerFactory, batchStatuses, agentValidator)
 		{
 			_exportInitProcessService = exportInitProcessService;
 			_logger = Helper.GetLoggerFactory().GetLogger().ForContext<ExportManager>();

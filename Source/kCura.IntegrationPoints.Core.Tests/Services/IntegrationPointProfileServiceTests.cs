@@ -32,8 +32,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		private IHelper _helper;
 		private ICaseServiceContext _caseServiceContext;
 		private IRelativityObjectManager _objectManager;
-		private IContextContainer _contextContainer;
-		private IContextContainerFactory _contextContainerFactory;
 		private IIntegrationPointSerializer _serializer;
 		private IManagerFactory _managerFactory;
 		private IntegrationPointProfile _integrationPointProfile;
@@ -50,14 +48,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_helper = Substitute.For<IHelper>();
 			_caseServiceContext = Substitute.For<ICaseServiceContext>();
 			_objectManager = Substitute.For<IRelativityObjectManager>();
-			_contextContainer = Substitute.For<IContextContainer>();
-			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
 			_serializer = Substitute.For<IIntegrationPointSerializer>();
 			_managerFactory = Substitute.For<IManagerFactory>();
 			_choiceQuery = Substitute.For<IChoiceQuery>();
 			_integrationModelValidator = Substitute.For<IIntegrationPointProviderValidator>();
 			_permissionValidator = Substitute.For<IIntegrationPointPermissionValidator>();
-			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
 
 			_integrationModelValidator.Validate(Arg.Any<IntegrationPointModelBase>(), Arg.Any<SourceProvider>(), Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<Guid>()).Returns(new ValidationResult());
 
@@ -66,7 +61,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_instance = Substitute.ForPartsOf<IntegrationPointProfileService>(
 				_helper,
 				_caseServiceContext,
-				_contextContainerFactory,
 				_serializer,
 				_choiceQuery,
 				_managerFactory,

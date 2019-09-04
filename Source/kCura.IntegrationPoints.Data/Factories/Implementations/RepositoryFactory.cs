@@ -55,14 +55,6 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return new KeplerArtifactGuidRepository(workspaceArtifactId, _destinationServiceMgr);
 		}
 
-		public IArtifactTypeRepository GetArtifactTypeRepository()
-		{
-			IRelativityObjectManager relativityObject = CreateRelativityObjectManager(Constants.ADMIN_CASE_ID);
-			IArtifactTypeRepository artifactTypeRepository = new SqlArtifactTypeRepository(relativityObject);
-
-			return artifactTypeRepository;
-		}
-
 		public ICodeRepository GetCodeRepository(int workspaceArtifactId)
 		{
 			IRelativityObjectManager relativityObjectManager =
@@ -268,20 +260,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			IRetryHandlerFactory retryHandlerFactory = new RetryHandlerFactory(logger);
 			return new RelativityAuditRepository(foundationAuditRepository, InstrumentationProvider, retryHandlerFactory);
 		}
-
-		public IFederatedInstanceRepository GetFederatedInstanceRepository(int artifactTypeId)
-		{
-			IRelativityObjectManager relativityObjectManager =
-				CreateRelativityObjectManager(-1);
-
-			return new KeplerFederatedInstanceRepository(artifactTypeId, _helper, relativityObjectManager);
-		}
-
-		public IServiceUrlRepository GetServiceUrlRepository()
-		{
-			return new HardCodedServiceUrlRepository();
-		}
-
+		
 		public IResourcePoolRepository GetResourcePoolRepository()
 		{
 			return new ResourcePoolRepository(_helper);

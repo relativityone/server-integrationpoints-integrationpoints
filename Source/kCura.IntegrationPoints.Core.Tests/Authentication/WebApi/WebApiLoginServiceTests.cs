@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Net;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Core.Authentication;
+using kCura.IntegrationPoints.Core.Authentication.WebApi;
+using kCura.IntegrationPoints.Core.Authentication.WebApi.LoginHelperFacade;
 using kCura.IntegrationPoints.Domain.Authentication;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
 
-namespace kCura.IntegrationPoints.Core.Tests.Authentication
+namespace kCura.IntegrationPoints.Core.Tests.Authentication.WebApi
 {
-	public class TokenCredentialProviderTests : TestBase
+	public class WebApiLoginServiceTests : TestBase
 	{
-		private TokenCredentialProvider _instanceUnderTest;
-		private IAuthProvider _authProvider;
+		private WebApiLoginService _instanceUnderTest;
+		private ILoginHelperFacade _authProvider;
 		private IAuthTokenGenerator _tokenGenerator;
-		private IHelper _helper;
 		private IAPILog _logger;
 		private CookieContainer _cookieContainer;
 		private string _fakeAuthToken = "AUTH_TOKEN";
@@ -22,16 +22,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Authentication
 		[SetUp]
 		public override void SetUp()
 		{
-			_authProvider = Substitute.For<IAuthProvider>();
+			_authProvider = Substitute.For<ILoginHelperFacade>();
 			_tokenGenerator = Substitute.For<IAuthTokenGenerator>();
 			_tokenGenerator.GetAuthToken().Returns(_fakeAuthToken);
 			_logger = Substitute.For<IAPILog>();
-			_helper = Substitute.For<IHelper>();
-			_helper.GetLoggerFactory().GetLogger().ForContext<TokenCredentialProvider>().Returns(_logger);
-			
 			_cookieContainer = new CookieContainer();
 
-			_instanceUnderTest = new TokenCredentialProvider(_authProvider, _tokenGenerator, _helper);
+			_instanceUnderTest = new WebApiLoginService(_authProvider, _tokenGenerator, _logger);
 		}
 
 		[Test]

@@ -20,7 +20,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 	{
 		public IntegrationPointProfileService(IHelper helper,
 			ICaseServiceContext context,
-			IContextContainerFactory contextContainerFactory,
 			IIntegrationPointSerializer serializer,
 			IChoiceQuery choiceQuery,
 			IManagerFactory managerFactory,
@@ -31,7 +30,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 				choiceQuery, 
 				serializer, 
 				managerFactory, 
-				contextContainerFactory, 
 				validationExecutor, 
 				objectManager)
 		{

@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Castle.Windsor;
-using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.RSAPIClient;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
@@ -13,17 +12,15 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 	internal class RelativityRdoSynchronizerFactory
 	{
 		private readonly IWindsorContainer _container;
-		private readonly IRsapiClientFactory _rsapiClientFactory;
 
-		public RelativityRdoSynchronizerFactory(IWindsorContainer container, IRsapiClientFactory rsapiClientFactory)
+		public RelativityRdoSynchronizerFactory(IWindsorContainer container)
 		{
 			_container = container;
-			_rsapiClientFactory = rsapiClientFactory;
 		}
 
-		public IDataSynchronizer CreateSynchronizer(string credentials, ImportSettings importSettings, SourceProvider sourceProvider)
+		public IDataSynchronizer CreateSynchronizer(ImportSettings importSettings, SourceProvider sourceProvider)
 		{
-			Dictionary<string, RelativityFieldQuery> rdoSynchronizerParametersDictionary = CreateRdoSynchronizerParametersDictionary(credentials, importSettings);
+			Dictionary<string, RelativityFieldQuery> rdoSynchronizerParametersDictionary = CreateRdoSynchronizerParametersDictionary(importSettings);
 
 			IDataSynchronizer synchronizer = _container.Kernel.Resolve<IDataSynchronizer>(typeof(RdoSynchronizer).AssemblyQualifiedName, rdoSynchronizerParametersDictionary);
 			RdoSynchronizer syncBase = (RdoSynchronizer)synchronizer;
@@ -31,10 +28,10 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 			return syncBase;
 		}
 
-		private Dictionary<string, RelativityFieldQuery> CreateRdoSynchronizerParametersDictionary(string credentials, ImportSettings importSettings)
+		private Dictionary<string, RelativityFieldQuery> CreateRdoSynchronizerParametersDictionary(ImportSettings importSettings)
 		{
 			IHelper sourceInstanceHelper = _container.Resolve<IHelper>();
-			IRSAPIClient client = CreateRsapiClient(credentials, importSettings, sourceInstanceHelper);
+			IRSAPIClient client = CreateRsapiClient(importSettings);
 
 			return new Dictionary<string, RelativityFieldQuery>
 			{
@@ -42,15 +39,13 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 			};
 		}
 
-		private IRSAPIClient CreateRsapiClient(string credentials, ImportSettings importSettings, IHelper sourceInstanceHelper)
+		private IRSAPIClient CreateRsapiClient(ImportSettings importSettings)
 		{
 			IRSAPIClient client;
 
 			if (importSettings.IsFederatedInstance())
 			{
-				IHelperFactory helperFactory = _container.Resolve<IHelperFactory>();
-				IHelper targetHelper = helperFactory.CreateTargetHelper(sourceInstanceHelper, importSettings.FederatedInstanceArtifactId, credentials);
-				client = _rsapiClientFactory.CreateUserClient(targetHelper);
+				throw new NotSupportedException("i2i is not supported");
 			}
 			else
 			{

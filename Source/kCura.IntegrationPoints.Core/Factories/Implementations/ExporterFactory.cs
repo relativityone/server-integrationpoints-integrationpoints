@@ -15,8 +15,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 {
 	public class ExporterFactory : IExporterFactory
 	{
-		private readonly IRepositoryFactory _sourceRepositoryFactory;
-		private readonly IRepositoryFactory _targetRepositoryFactory;
+		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly IHelper _helper;
 		private readonly IFolderPathReaderFactory _folderPathReaderFactory;
 		private readonly IRelativityObjectManager _relativityObjectManager;
@@ -25,16 +24,14 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		private readonly IAPILog _logger;
 
 		public ExporterFactory(
-			IRepositoryFactory sourceRepositoryFactory,
-			IRepositoryFactory targetRepositoryFactory,
+			IRepositoryFactory repositoryFactory,
 			IHelper helper,
 			IFolderPathReaderFactory folderPathReaderFactory,
 			IRelativityObjectManager relativityObjectManager,
 			IFileRepository fileRepository,
 			ISerializer serializer)
 		{
-			_sourceRepositoryFactory = sourceRepositoryFactory;
-			_targetRepositoryFactory = targetRepositoryFactory;
+			_repositoryFactory = repositoryFactory;
 			_helper = helper;
 			_folderPathReaderFactory = folderPathReaderFactory;
 			_relativityObjectManager = relativityObjectManager;
@@ -75,7 +72,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 					exportDataSanitizer);
 			return exporter;
 		}
-		
+
 		private IExporterService CreateRelativityExporterService(
 			IJobStopManager jobStopManager,
 			FieldMap[] mappedFields,
@@ -94,8 +91,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			return new RelativityExporterService(
 				documentRepository,
 				_relativityObjectManager,
-				_sourceRepositoryFactory,
-				_targetRepositoryFactory,
+				_repositoryFactory,
 				jobStopManager,
 				_helper,
 				folderPathReader,
@@ -130,8 +126,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			return new ImageExporterService(
 				documentRepository,
 				_relativityObjectManager,
-				_sourceRepositoryFactory,
-				_targetRepositoryFactory,
+				_repositoryFactory,
 				_fileRepository,
 				jobStopManager,
 				_helper,

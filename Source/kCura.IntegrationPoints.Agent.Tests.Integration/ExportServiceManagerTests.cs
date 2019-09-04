@@ -73,8 +73,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		public override void TestSetup()
 		{
 			_caseContext = Container.Resolve<ICaseServiceContext>();
-			IHelperFactory helperFactory = Container.Resolve<IHelperFactory>();
-			IContextContainerFactory contextContainerFactory = Container.Resolve<IContextContainerFactory>();
 			ISynchronizerFactory synchronizerFactory = Container.Resolve<ISynchronizerFactory>();
 			IExporterFactory exporterFactory = Container.Resolve<IExporterFactory>();
 			IExportServiceObserversFactory exportServiceObserversFactory= Container.Resolve<IExportServiceObserversFactory>();
@@ -102,11 +100,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				dateTimeHelper);
 
 
-			_exportManager = new ExportServiceManager(
-				Helper, 
-				helperFactory,
-				_caseContext, 
-				contextContainerFactory,
+			_exportManager = new ExportServiceManager(Helper,
+				_caseContext,
 				synchronizerFactory,
 				exporterFactory,
 				exportServiceObserversFactory,

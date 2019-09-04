@@ -1,5 +1,4 @@
 ﻿using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Domain.Models;
@@ -25,16 +24,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		private WorkspaceFinderController _subjectUnderTest;
 
 		private IManagerFactory _managerFactoryMock;
-		private IContextContainerFactory _contextContainerFactoryMock;
 		private ITextSanitizer _htmlSanitizerManagerMock;
-		private ICPHelper _cpHelperMock;
-		private IHelperFactory _helperFactoryMock;
 		private IWorkspaceManager _workspaceManagerMock;
 		private IServicesMgr _servicesMgrMock;
-		private IContextContainer _contextContainerMock;
-		private IHelper _helperMock;
-
-
+		
 		private const int _CURRENT_WORKSPACE_ARTIFACT_ID = 10;
 		private const int _DESTINATION_WORKSPACE_1_ARTIFACT_ID = 1;
 		private const int _DESTINATION_WORKSPACE_2_ARTIFACT_ID = 2;
@@ -84,22 +77,14 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		public override void SetUp()
 		{
 			_managerFactoryMock = Substitute.For<IManagerFactory>();
-			_contextContainerFactoryMock = Substitute.For<IContextContainerFactory>();
 			_htmlSanitizerManagerMock = Substitute.For<ITextSanitizer>();
-			_cpHelperMock = Substitute.For<ICPHelper>();
-			_helperFactoryMock = Substitute.For<IHelperFactory>();
 			_workspaceManagerMock = Substitute.For<IWorkspaceManager>();
 			_servicesMgrMock = Substitute.For<IServicesMgr>();
-			_contextContainerMock = Substitute.For<IContextContainer>();
-			_helperMock = Substitute.For<IHelper>();
 			IWorkspaceContext workspaceIdProviderMock = CreateWorkspaceIdProviderMock();
 
 			_subjectUnderTest = new WorkspaceFinderController(
 				_managerFactoryMock,
-				_contextContainerFactoryMock,
 				_htmlSanitizerManagerMock,
-				_cpHelperMock,
-				_helperFactoryMock,
 				workspaceIdProviderMock)
 			{
 				Request = new HttpRequestMessage()
@@ -107,9 +92,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 
 			_subjectUnderTest.Request.SetConfiguration(new HttpConfiguration());
 
-			_helperMock.GetServicesManager().Returns(_servicesMgrMock);
-			_contextContainerFactoryMock.CreateContextContainer(_cpHelperMock, _servicesMgrMock).Returns(_contextContainerMock);
-			_managerFactoryMock.CreateWorkspaceManager(_contextContainerMock).Returns(_workspaceManagerMock);
+			_managerFactoryMock.CreateWorkspaceManager().Returns(_workspaceManagerMock);
 
 			_htmlSanitizerManagerMock
 				.Sanitize(Arg.Any<string>())
@@ -120,7 +103,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		public void ItShouldGetCurrentInstanceWorkspaces()
 		{
 			// Arrange
-			_cpHelperMock.GetServicesManager().Returns(_servicesMgrMock);
 			_workspaceManagerMock.GetUserAvailableDestinationWorkspaces(_CURRENT_WORKSPACE_ARTIFACT_ID).Returns(_localWorkspacesDTOs);
 
 			// Act
@@ -143,7 +125,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		public void ItShouldGetFederatedInstanceWorkspaces()
 		{
 			// Arrange
-			_helperFactoryMock.CreateTargetHelper(_cpHelperMock, _FEDERATED_INSTANCE_ID, _CREDENTIALS).Returns(_helperMock);
 			_workspaceManagerMock.GetUserActiveWorkspaces().Returns(_remoteWorkspacesDTOs);
 
 			// Act

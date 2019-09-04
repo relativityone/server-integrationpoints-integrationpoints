@@ -41,7 +41,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			JobStatisticsService statisticsService,
 			ExportProcessRunner exportProcessRunner,
 			IManagerFactory managerFactory,
-			IContextContainerFactory contextContainerFactory,
 			IJobService jobService,
 			IDataTransferLocationService dataTransferLocationService,
 			IProcessingSourceLocationService processingSourceLocationService,
@@ -59,7 +58,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				statuses,
 				statisticsService,
 				managerFactory,
-				contextContainerFactory,
 				jobService,
 				providerTypeService,
 				integrationPointRepository)
