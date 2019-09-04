@@ -58,7 +58,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			_testContextProvider.DeleteContext();
 		}
 
-		[Test]
 		[SmokeTest]
 		[TestCaseSource(nameof(ExportTestCaseSource))]
 		public void RunStableTestCase(IExportTestCase testCase)
@@ -66,7 +65,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			RunTestCase(testCase);
 		}
 
-		[Test]
 		[SmokeTest]
 		[TestCaseSource(nameof(InvalidFileshareExportTestCaseSource))]
 		public void RunInvalidFileshareTestCase(IInvalidFileshareExportTestCase testCase)
