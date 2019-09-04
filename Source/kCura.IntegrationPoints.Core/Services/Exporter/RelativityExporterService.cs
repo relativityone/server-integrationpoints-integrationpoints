@@ -124,7 +124,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				{
 					Name = fieldName,
 					ArtifactId = artifactID,
-					Value = value,
+					Value = value?.ToString(),
 					FieldType = fieldType
 				});
 			}

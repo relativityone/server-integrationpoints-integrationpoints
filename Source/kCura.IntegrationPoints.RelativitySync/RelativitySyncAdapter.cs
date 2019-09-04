@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 					metrics.MarkStartTime();
 					await MarkJobAsStartedAsync().ConfigureAwait(false);
 
-					ISyncJob syncJob = await CreateSyncJob(container, syncConfiguration).ConfigureAwait(false);
+					ISyncJob syncJob = await CreateSyncJob(container).ConfigureAwait(false);
 					Progress progress = new Progress();
 					progress.SyncProgress += (sender, syncProgress) => UpdateJobStatusAsync(syncProgress.Id).ConfigureAwait(false).GetAwaiter().GetResult();
 					await syncJob.ExecuteAsync(progress, cancellationToken).ConfigureAwait(false);
@@ -166,7 +166,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 		}
 
-		private async Task<ISyncJob> CreateSyncJob(IContainer container, SyncConfiguration syncConfiguration)
+		private async Task<ISyncJob> CreateSyncJob(IContainer container)
 		{
 			int syncConfigurationArtifactId;
 			try
@@ -180,7 +180,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 
 			SyncJobFactory jobFactory = new SyncJobFactory();
-			SyncJobParameters parameters = new SyncJobParameters(syncConfigurationArtifactId, _job.WorkspaceId, _job.IntegrationPointId, _correlationId.ToString(), syncConfiguration.ImportSettings);
+			SyncJobParameters parameters = new SyncJobParameters(syncConfigurationArtifactId, _job.WorkspaceId, _job.IntegrationPointId, _correlationId.ToString());
 			RelativityServices relativityServices = new RelativityServices(_apmMetrics, _ripContainer.Resolve<IHelper>().GetServicesManager(), _ripContainer.Resolve<Func<ISearchManager>>(), ExtensionPointServiceFinder.ServiceUriProvider.AuthenticationUri());
 			ISyncLog syncLog = new SyncLog(_logger);
 			ISyncJob syncJob = jobFactory.Create(container, parameters, relativityServices, syncLog);
