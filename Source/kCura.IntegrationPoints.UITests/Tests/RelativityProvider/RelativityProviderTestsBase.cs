@@ -83,7 +83,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		protected DocumentsValidator CreateDocumentsForRootValidator()
 		{
 			DocumentPathValidator documentPathValidator = DocumentPathValidator.CreateForRoot(
-				Context.GetWorkspaceId(),
+				DestinationContext.GetWorkspaceId(),
 				FolderManager);
 			return new PushDocumentsValidator(Context.GetWorkspaceId(), DestinationContext.GetWorkspaceId())
 				.ValidateWith(documentPathValidator);
@@ -92,7 +92,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		protected DocumentsValidator CreateDocumentsForRootWithFolderNameValidator()
 		{
 			DocumentPathValidator documentPathValidator = DocumentPathValidator.CreateForRoot(
-				Context.GetWorkspaceId(),
+				DestinationContext.GetWorkspaceId(),
 				FolderManager,
 				"NATIVES");
 			return new PushDocumentsValidator(Context.GetWorkspaceId(), DestinationContext.GetWorkspaceId())
