@@ -129,7 +129,7 @@
     <Content Include="Global.asax" />
     <Content Include="Scripts\first-provider.js" />
     <Content Include="Scripts\frame-messaging.js" />
-    <Content Include="Scripts\jquery-3.3.1.js" />
+    <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-postMessage.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
