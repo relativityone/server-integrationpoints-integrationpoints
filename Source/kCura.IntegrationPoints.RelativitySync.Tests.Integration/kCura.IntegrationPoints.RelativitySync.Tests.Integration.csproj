@@ -10,7 +10,7 @@
     <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
     <Platforms>AnyCPU;x64</Platforms>
     <NoWarn>NU1605</NoWarn>
-	  <Features>flow-analysis</Features>
+    <Features>flow-analysis</Features>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutputPath>bin\x64\</OutputPath>

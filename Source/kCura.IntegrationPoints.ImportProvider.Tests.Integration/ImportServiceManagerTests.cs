@@ -31,6 +31,7 @@ using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
+using Relativity.Testing.Identification;
 using WorkspaceService = kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers.WorkspaceService;
 
 namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
@@ -173,7 +174,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 			DocumentService.DeleteAllDocuments(_workspaceId);
 		}
 
-		[Test]
 		[SmokeTest]
 		[TestCaseSource(nameof(ImportTestCaseSource))]
 		public void RunStableTestCase(IImportTestCase testCase)
