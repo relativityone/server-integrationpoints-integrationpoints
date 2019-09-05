@@ -68,7 +68,6 @@ namespace Rip.E2ETests.Installation
 			}
 		}
 
-		[Test]
 		[IdentifiedTest("73fe58a5-087e-4071-8976-e54960dcbef1")]
 		[Order(10)]
 		public void ShouldInstallRipToWorkspaceCreatedFromTemplateWithoutRip()
@@ -83,7 +82,6 @@ namespace Rip.E2ETests.Installation
 			VerifyRipIsInstalledCorrectlyInWorkspace(mainWorkspaceID);
 		}
 
-		[Test]
 		[IdentifiedTest("db7f5e5b-6495-4b2a-88b3-44e8a641a759")]
 		[Order(20)]
 		public async Task ShouldInstallRipToWorkspaceCreatedFromTemplateWithRip()
@@ -99,7 +97,6 @@ namespace Rip.E2ETests.Installation
 			VerifyRipIsInstalledCorrectlyInWorkspace(workspaceID);
 		}
 
-		[Test]
 		[IdentifiedTest("a785ab16-a6f4-4e70-941c-d4fe1d026982")]
 		[Order(30)]
 		public void ShouldInstallMyFirstProviderToWorkspaceWithRipInstalled()
@@ -115,7 +112,6 @@ namespace Rip.E2ETests.Installation
 			VerifyRipIsInstalledCorrectlyInWorkspace(mainWorkspaceID, expectedSourceProviders);
 		}
 
-		[Test]
 		[IdentifiedTest("cd114d25-c1b5-4549-a670-1f95a2b4d24a")]
 		[Order(40)]
 		public void ShouldInstallJsonLoaderToWorkspaceWithRipInstalled()
@@ -136,7 +132,6 @@ namespace Rip.E2ETests.Installation
 			VerifyRipIsInstalledCorrectlyInWorkspace(mainWorkspaceID, expectedSourceProviders);
 		}
 
-		[Test]
 		[IdentifiedTest("846b2a03-48d5-4ca2-8707-17eb8313eecb")]
 		[Order(50)]
 		public async Task ShouldCopySourceProviderToWorkspaceCreatedFromTemplateWithCustomProviders()
