@@ -32,7 +32,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private ExportManager _instanceToTest;
 
 		private IJobManager _jobManagerMock;
-		private IContextContainerFactory _contextContainerFactoryMock;
 		private IHelper _helperMock;
 		private ISerializer _serializerMock;
 		private IExportInitProcessService _exportInitProcessService;
@@ -47,7 +46,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		[SetUp]
 		public override void SetUp()
 		{
-			_contextContainerFactoryMock = Substitute.For<IContextContainerFactory>();
 			_jobManagerMock = Substitute.For<IJobManager>();
 			ICaseServiceContext caseServiceContextMock = Substitute.For<ICaseServiceContext>();
 			_helperMock = Substitute.For<IHelper>();
@@ -74,7 +72,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 					_integrationPointRepositoryMock),
 				Substitute.For<IScheduleRuleFactory>(),
 				managerFactoryMock,
-				_contextContainerFactoryMock,
 				new List<IBatchStatus>(),
 				_exportInitProcessService,
 				agentValidator);
@@ -96,12 +93,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				SavedSearchArtifactId = 1,
 			};
 
-			IContextContainer contextContainerMock = Substitute.For<IContextContainer>();
-
 			_integrationPointService.ReadIntegrationPoint(_job.RelatedObjectArtifactID).Returns(integrationPoint);
 			_exportInitProcessService.CalculateDocumentCountToTransfer(sourceConfiguration, artifactTypeId).Returns(totalSavedSearchCount);
 
-			_contextContainerFactoryMock.CreateContextContainer(_helperMock).Returns(contextContainerMock);
 			_serializerMock.Deserialize<ExportUsingSavedSearchSettings>(integrationPoint.SourceConfiguration)
 				.Returns(sourceConfiguration);
 

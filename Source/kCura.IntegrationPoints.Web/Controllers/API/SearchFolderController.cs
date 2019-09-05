@@ -21,14 +21,12 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 	public class SearchFolderController : ApiController
 	{
 		private readonly ICPHelper _helper;
-		private readonly IHelperFactory _helperFactory;
 		private readonly IArtifactServiceFactory _artifactServiceFactory;
 		private readonly IFolderTreeBuilder _folderTreeCreator;
 
-		public SearchFolderController(IArtifactServiceFactory artifactServiceFactory, IHelperFactory helperFactory, ICPHelper helper, IFolderTreeBuilder folderTreeCreator)
+		public SearchFolderController(IArtifactServiceFactory artifactServiceFactory, ICPHelper helper, IFolderTreeBuilder folderTreeCreator)
 		{
 			_helper = helper;
-			_helperFactory = helperFactory;
 			_artifactServiceFactory = artifactServiceFactory;
 			_folderTreeCreator = folderTreeCreator;
 		}
@@ -37,7 +35,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[LogApiExceptionFilter(Message = "Unable to retrieve folders from destination workspace.")]
 		public HttpResponseMessage GetCurrentInstaceFolders(int destinationWorkspaceId)
 		{
-			var artifactService = _artifactServiceFactory.CreateArtifactService(_helper, _helper);
+			var artifactService = _artifactServiceFactory.CreateArtifactService(_helper);
 			return GetFolders(destinationWorkspaceId, artifactService);
 		}
 
@@ -45,8 +43,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[LogApiExceptionFilter(Message = "Unable to retrieve folders from destination workspace.")]
 		public HttpResponseMessage GetFederatedInstaceFolders(int destinationWorkspaceId, int federatedInstanceId, [FromBody] object credentials)
 		{
-			var targetHelper = _helperFactory.CreateTargetHelper(_helper, federatedInstanceId, credentials.ToString());
-			var artifactService = _artifactServiceFactory.CreateArtifactService(_helper, targetHelper);
+			var artifactService = _artifactServiceFactory.CreateArtifactService(_helper);
 			return GetFolders(destinationWorkspaceId, artifactService);
 		}
 
@@ -54,8 +51,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[LogApiExceptionFilter(Message = "")]
 		public async Task<HttpResponseMessage> GetFullPathList([FromBody] object credentials, int destinationWorkspaceId, int folderArtifactId, int federatedInstanceId)
 		{
-			var targetHelper = _helperFactory.CreateTargetHelper(_helper, federatedInstanceId, credentials?.ToString());
-			using (var folderManager = targetHelper.GetServicesManager().CreateProxy<IFolderManager>(ExecutionIdentity.CurrentUser))
+			using (var folderManager = _helper.GetServicesManager().CreateProxy<IFolderManager>(ExecutionIdentity.CurrentUser))
 			{
 				var result = await folderManager.GetFullPathListAsync(destinationWorkspaceId, new List<int> { folderArtifactId }).ConfigureAwait(true);
 
@@ -70,10 +66,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			Folder folder = null;
 			bool isRoot = false;
 
-			var targetHelper = _helperFactory.CreateTargetHelper(_helper, federatedInstanceId, credentials?.ToString());
-
-			using (IFolderManager folderManager = targetHelper.GetServicesManager()
-				.CreateProxy<IFolderManager>(ExecutionIdentity.CurrentUser))
+			using (IFolderManager folderManager = _helper.GetServicesManager().CreateProxy<IFolderManager>(ExecutionIdentity.CurrentUser))
 			{
 				var tree = new List<JsTreeItemDTO>();
 				var currentNodeId = 0;

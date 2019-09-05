@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Config;
@@ -14,14 +13,12 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using Castle.Windsor;
-using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
-using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.Authentication.WebApi;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Process.Internals;
-using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases;
 using kCura.WinEDDS.Exporters;
 using NSubstitute;
 using NUnit.Framework;
@@ -61,7 +58,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			_testContextProvider.DeleteContext();
 		}
 
-		[Test]
 		[SmokeTest]
 		[TestCaseSource(nameof(ExportTestCaseSource))]
 		public void RunStableTestCase(IExportTestCase testCase)
@@ -69,7 +65,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			RunTestCase(testCase);
 		}
 
-		[Test]
 		[SmokeTest]
 		[TestCaseSource(nameof(InvalidFileshareExportTestCaseSource))]
 		public void RunInvalidFileshareTestCase(IInvalidFileshareExportTestCase testCase)
@@ -111,7 +106,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		{
 			return _windsorContainer.ResolveAll<IInvalidFileshareExportTestCase>();
 		}
-		
+
 		private void InitializeSut()
 		{
 			IHelper helper = _windsorContainer.Resolve<IHelper>();
@@ -143,7 +138,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 				loggingMediator,
 				exportUserNotification,
 				userNotification,
-				new UserPasswordCredentialProvider(),
+				_windsorContainer.Resolve<IWebApiLoginService>(),
 				_windsorContainer.Resolve<IExtendedExporterFactory>(),
 				new ExportFileBuilder(new DelimitersBuilder(), new VolumeInfoBuilder(),
 					new ExportedObjectBuilder(new ExportedArtifactNameRepository(_windsorContainer.Resolve<IRSAPIClient>(), _windsorContainer.Resolve<IServiceManagerProvider>()))

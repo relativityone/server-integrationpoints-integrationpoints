@@ -61,9 +61,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			_serializer = Container.Resolve<ISerializer>();
 			_helper = Container.Resolve<IHelper>();
-			IServiceManagerProvider serviceManagerProvider = Container.Resolve<IServiceManagerProvider>();
-			var managerFactory = new ManagerFactory(_helper, serviceManagerProvider);
-			_tagsCreator = managerFactory.CreateTagsCreator(new ContextContainer(_helper));
+			var managerFactory = new ManagerFactory(_helper);
+			_tagsCreator = managerFactory.CreateTagsCreator();
 			_tagSavedSearchManager = new TagSavedSearchManager(
 				new TagSavedSearch(_repositoryFactory, new MultiObjectSavedSearchCondition(), _helper),
 				new TagSavedSearchFolder(_repositoryFactory, _helper));
@@ -73,7 +72,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 			_fieldMaps = GetDefaultFieldMap();
 		}
 
-		[Test]
 		[SmokeTest]
 		[IdentifiedTestCase("50d501dd-cc30-4882-8149-75bb0e8752f8", 499, "UnderBatch")]
 		[IdentifiedTestCase("360e1c73-0bf2-4066-ba2d-01a9f81f2888", 500, "EqualBatch")]

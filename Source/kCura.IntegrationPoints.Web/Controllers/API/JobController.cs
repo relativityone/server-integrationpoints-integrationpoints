@@ -6,8 +6,6 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Http;
-using kCura.IntegrationPoints.Core;
-using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
@@ -20,7 +18,6 @@ using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Models.Validation;
-using Newtonsoft.Json;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
@@ -34,23 +31,17 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 		private readonly IServiceFactory _serviceFactory;
 		private readonly ICPHelper _helper;
-		private readonly IHelperFactory _helperFactory;
-		private readonly IContextContainerFactory _contextContainerFactory;
 		private readonly IManagerFactory _managerFactory;
 		private readonly IIntegrationPointRepository _integrationPointRepository;
 
 		public JobController(
 			IServiceFactory serviceFactory, 
 			ICPHelper helper, 
-			IHelperFactory helperFactory,
-			IContextContainerFactory contextContainerFactory,
 			IManagerFactory managerFactory,
 			IIntegrationPointRepository integrationPointRepository)
 		{
 			_serviceFactory = serviceFactory;
 			_helper = helper;
-			_helperFactory = helperFactory;
-			_contextContainerFactory = contextContainerFactory;
 			_managerFactory = managerFactory;
 			_integrationPointRepository = integrationPointRepository;
 		}
@@ -65,8 +56,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			IntegrationPoint integrationPoint = await _integrationPointRepository
 				.ReadWithFieldMappingAsync(Convert.ToInt32(payload.ArtifactId))
 				.ConfigureAwait(false);
-			DestinationConfiguration importSettings = JsonConvert
-				.DeserializeObject<DestinationConfiguration>(integrationPoint.DestinationConfiguration);
 
 			// this validation was introduced due to an issue with ARMed workspaces (REL-171985)
 			// so far, ARM is not capable of copying SQL Secret Catalog records for integration points in workspace database
@@ -79,9 +68,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 													 "Please try to edit integration point configuration and reenter credentials.");
 			}
 
-			IHelper targetHelper = _helperFactory.CreateTargetHelper(_helper, importSettings.FederatedInstanceArtifactId, integrationPoint.SecuredConfiguration);
-
-			IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_helper, targetHelper);
+			IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_helper);
 
 			HttpResponseMessage httpResponseMessage = RunInternal(
 				payload.AppId, 
@@ -94,17 +81,11 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		// POST API/Job/Retry
 		[HttpPost]
 		[LogApiExceptionFilter(Message = "Unable to retry run of the transfer job.")]
-		public async Task<HttpResponseMessage> Retry(Payload payload)
+		public HttpResponseMessage Retry(Payload payload)
 		{
 			AuditAction(payload, _RETRY_AUDIT_MESSAGE);
-
-			IntegrationPoint integrationPoint = await _integrationPointRepository
-				.ReadWithFieldMappingAsync(Convert.ToInt32(payload.ArtifactId))
-				.ConfigureAwait(false);
-			DestinationConfiguration importSettings = JsonConvert.DeserializeObject<DestinationConfiguration>(integrationPoint.DestinationConfiguration);
-			IHelper targetHelper = _helperFactory.CreateTargetHelper(_helper, importSettings.FederatedInstanceArtifactId, integrationPoint.SecuredConfiguration);
-
-			IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_helper, targetHelper);
+			
+			IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_helper);
 
 			HttpResponseMessage httpResponseMessage = RunInternal(
 				payload.AppId, 
@@ -123,7 +104,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			string errorMessage = null;
 			HttpStatusCode httpStatusCode = HttpStatusCode.NoContent;
 
-			IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_helper, _helper);
+			IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_helper);
 
 			try
 			{
@@ -200,8 +181,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 		private void AuditAction(Payload payload, string auditMessage)
 		{
-			IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(_helper);
-			IAuditManager auditManager = _managerFactory.CreateAuditManager(contextContainer, payload.AppId);
+			IAuditManager auditManager = _managerFactory.CreateAuditManager(payload.AppId);
 			AuditElement audit = new AuditElement {AuditMessage = auditMessage};
 			auditManager.RelativityAuditRepository.CreateAuditRecord(payload.ArtifactId, audit);
 		}
@@ -224,8 +204,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 		private void CreateRelativityError(string message, string fullText, int workspaceArtifactId)
 		{
-			IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(_helper);
-			IErrorManager errorManager = _managerFactory.CreateErrorManager(contextContainer);
+			IErrorManager errorManager = _managerFactory.CreateErrorManager();
 
 			ErrorDTO error = new ErrorDTO()
 			{

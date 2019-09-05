@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Hosting;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
@@ -28,11 +27,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 	public class JobControllerTests : TestBase
 	{
 		private IAuditManager _auditManager;
-		private IContextContainer _contextContainer;
-		private IContextContainerFactory _contextContainerFactory;
 		private ICPHelper _helper;
-		private IHelper _targetHelper;
-		private IHelperFactory _helperFactory;
 		private IIntegrationPointRepository _integrationPointRepository;
 		private IIntegrationPointService _integrationPointService;
 		private IManagerFactory _managerFactory;
@@ -59,28 +54,21 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			
 			_integrationPointService = Substitute.For<IIntegrationPointService>();
 			_helper = Substitute.For<ICPHelper>();
-			_targetHelper = Substitute.For<IHelper>();
-			_helperFactory = Substitute.For<IHelperFactory>();
-			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
 			_auditManager = Substitute.For<IAuditManager>();
 			_managerFactory = Substitute.For<IManagerFactory>();
 			_auditRepository = Substitute.For<IRelativityAuditRepository>();
 			_serviceFactory = Substitute.For<IServiceFactory>();
-			_contextContainer = Substitute.For<IContextContainer>();
 			_integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
 
 			_helper.GetActiveCaseID().Returns(_WORKSPACE_ARTIFACT_ID);
-			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
-			_serviceFactory.CreateIntegrationPointService(_helper, _helper).Returns(_integrationPointService);
-			_serviceFactory.CreateIntegrationPointService(_helper, _targetHelper).Returns(_integrationPointService);
-			_managerFactory.CreateAuditManager(_contextContainer, _WORKSPACE_ARTIFACT_ID).Returns(_auditManager);
+			_serviceFactory.CreateIntegrationPointService(_helper).Returns(_integrationPointService);
+			_serviceFactory.CreateIntegrationPointService(_helper).Returns(_integrationPointService);
+			_managerFactory.CreateAuditManager(_WORKSPACE_ARTIFACT_ID).Returns(_auditManager);
 			_auditManager.RelativityAuditRepository.Returns(_auditRepository);
 
 			_instance = new JobController(
 				_serviceFactory, 
 				_helper,
-				_helperFactory,
-				_contextContainerFactory,
 				_managerFactory,
 				_integrationPointRepository)
 			{
@@ -102,8 +90,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			const string expectedErrorMessage = @"Unable to determine the user id. Please contact your system administrator.";
 
 			Exception exception = new Exception(expectedErrorMessage);
-
-			_helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId, _CREDENTIALS).Returns(_targetHelper);
 
 			_integrationPointRepository.ReadWithFieldMappingAsync(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
 
@@ -143,8 +129,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 				SecuredConfiguration = _EMPTY_SECURED_CONFIG
 			};
 
-			_helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId, _CREDENTIALS).Returns(_targetHelper);
-
 			_integrationPointRepository.ReadWithFieldMappingAsync(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
 
 			_integrationPointService.When(
@@ -170,7 +154,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 				SecuredConfiguration = _EMPTY_SECURED_CONFIG
 			};
 
-			_helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId, _CREDENTIALS).Returns(_targetHelper);
 			_integrationPointRepository.ReadWithFieldMappingAsync(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
 			_instance.User = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>(0)));
 
@@ -198,7 +181,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 				SecuredConfiguration = _EMPTY_SECURED_CONFIG
 			};
 
-			_helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId, _CREDENTIALS).Returns(_targetHelper);
 			_integrationPointRepository.ReadWithFieldMappingAsync(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
 			_instance.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
 
@@ -212,7 +194,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 
 		[TestCase(null)]
 		[TestCase(1000)]
-		public async Task RetryJob_UserIdExists_Succeeds_Test(int? federatedInstanceArtifactId)
+		public void RetryJob_UserIdExists_Succeeds_Test(int? federatedInstanceArtifactId)
 		{
 			// Arrange
 			var claims = new List<Claim>(1)
@@ -228,10 +210,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 
 			_instance.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
 			_integrationPointRepository.ReadWithFieldMappingAsync(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
-			_helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId, integrationPoint.SecuredConfiguration).Returns(_targetHelper);
 
 			// Act
-			HttpResponseMessage response = await _instance.Retry(_payload).ConfigureAwait(false);
+			HttpResponseMessage response = _instance.Retry(_payload);
 
 			// Assert
 			_auditRepository.Received(1)
@@ -243,7 +224,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 
 		[TestCase(null)]
 		[TestCase(1000)]
-		public async Task RetryJob_UserIdDoesNotExist_IntegrationPointServiceThrowsError_Test(int? federatedInstanceArtifactId)
+		public void RetryJob_UserIdDoesNotExist_IntegrationPointServiceThrowsError_Test(int? federatedInstanceArtifactId)
 		{
 			// Arrange
 			var integrationPoint = new Data.IntegrationPoint()
@@ -257,10 +238,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			_integrationPointService.When(x => x.RetryIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, 0))
 				.Throw(exception);
 			_integrationPointRepository.ReadWithFieldMappingAsync(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
-			_helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId, integrationPoint.SecuredConfiguration).Returns(_targetHelper);
 
 			// Act
-			HttpResponseMessage response = await _instance.Retry(_payload).ConfigureAwait(false);
+			HttpResponseMessage response = _instance.Retry(_payload);
 
 			// Assert
 			_auditRepository.Received(1)
@@ -313,7 +293,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			_integrationPointService
 				.When(x => x.MarkIntegrationPointToStopJobs(_payload.AppId, _payload.ArtifactId))
 				.Throw(aggregateException);
-			_managerFactory.CreateErrorManager(_contextContainer).Returns(errorManager);
+			_managerFactory.CreateErrorManager().Returns(errorManager);
 			errorManager.Create(Arg.Is<IEnumerable<ErrorDTO>>(x => x.First().Equals(error)));
 
 			// Act
@@ -352,7 +332,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			_integrationPointService
 				.When(x => x.MarkIntegrationPointToStopJobs(_payload.AppId, _payload.ArtifactId))
 				.Throw(exception);
-			_managerFactory.CreateErrorManager(_contextContainer).Returns(errorManager);
+			_managerFactory.CreateErrorManager().Returns(errorManager);
 			errorManager.Create(Arg.Is<IEnumerable<ErrorDTO>>(x => x.First().Equals(error)));
 
 			// Act

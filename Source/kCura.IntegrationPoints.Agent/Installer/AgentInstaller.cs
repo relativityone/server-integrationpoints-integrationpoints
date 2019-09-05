@@ -3,7 +3,6 @@ using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.Context;
 using kCura.IntegrationPoints.Agent.Monitoring;
 using kCura.IntegrationPoints.Agent.TaskFactory;
@@ -13,16 +12,12 @@ using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Factories;
-using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
-using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -33,7 +28,6 @@ using Castle.MicroKernel.Resolvers;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Agent.Installer.Components;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
-using kCura.IntegrationPoints.Data.Repositories;
 using ITaskFactory = kCura.IntegrationPoints.Agent.TaskFactory.ITaskFactory;
 
 namespace kCura.IntegrationPoints.Agent.Installer
@@ -134,15 +128,10 @@ namespace kCura.IntegrationPoints.Agent.Installer
 			container.Register(Component.For<ITaskFactoryJobHistoryServiceFactory>().ImplementedBy<TaskFactoryJobHistoryServiceFactory>().LifestyleTransient());
 			container.Register(Component.For<ITaskFactory>().ImplementedBy<TaskFactory.TaskFactory>().DependsOn(new { container }).LifestyleTransient());
 
-			container.Register(Component.For<IAuthTokenGenerator>().UsingFactoryMethod(kernel =>
-			{
-				var helper = kernel.Resolve<IHelper>();
-				var oauth2ClientFactory = kernel.Resolve<IOAuth2ClientFactory>();
-				var tokenProviderFactory = kernel.Resolve<ITokenProviderFactoryFactory>();
-				var contextUser = kernel.Resolve<CurrentUser>();
-
-				return new OAuth2TokenGenerator(helper, oauth2ClientFactory, tokenProviderFactory, contextUser);
-			}).LifestyleTransient());
+			container.Register(Component
+				.For<IAuthTokenGenerator>()
+				.ImplementedBy<OAuth2TokenGenerator>()
+				.LifestyleTransient());
 
 			container.Register(
 				Component
@@ -151,47 +140,11 @@ namespace kCura.IntegrationPoints.Agent.Installer
 					.LifestyleTransient()
 				);
 
-			// TODO: yea, we need a better way of getting the target IRepositoryFactory to the IExporterFactory -- biedrzycki: Sept 1, 2016
-			container.Register(Component.For<Core.Factories.IExporterFactory>().UsingFactoryMethod(
-				k =>
-				{
-					IRepositoryFactory sourceRepositoryFactory = k.Resolve<IRepositoryFactory>();
-					JobContextProvider jobContextProvider = k.Resolve<JobContextProvider>();
-					int integrationPointId = jobContextProvider.Job.RelatedObjectArtifactID;
-					IIntegrationPointRepository integrationPointRepository = k.Resolve<IIntegrationPointRepository>();
-					IntegrationPoint integrationPoint = integrationPointRepository.ReadWithFieldMappingAsync(integrationPointId).GetAwaiter().GetResult();
-					if (integrationPoint == null)
-					{
-						throw new ArgumentException("Failed to retrieved corresponding Integration Point.");
-					}
-
-					ISerializer serializer = k.Resolve<ISerializer>();
-					ImportSettings importSettings = serializer.Deserialize<ImportSettings>(integrationPoint.DestinationConfiguration);
-
-					IRepositoryFactory targetRepositoryFactory = null;
-					IHelper sourceHelper = k.Resolve<IHelper>();
-					if (importSettings.IsFederatedInstance())
-					{
-						IHelperFactory helperFactory = k.Resolve<IHelperFactory>();
-						IHelper targetHelper = helperFactory.CreateTargetHelper(sourceHelper, importSettings.FederatedInstanceArtifactId, integrationPoint.SecuredConfiguration);
-						targetRepositoryFactory = new RepositoryFactory(sourceHelper, targetHelper.GetServicesManager());
-					}
-					else
-					{
-						targetRepositoryFactory = sourceRepositoryFactory;
-					}
-					IFolderPathReaderFactory folderPathReaderFactory = k.Resolve<IFolderPathReaderFactory>();
-					IRelativityObjectManager relativityObjectManager = k.Resolve<IRelativityObjectManager>();
-					IFileRepository fileRepository = k.Resolve<IFileRepository>();
-					return new ExporterFactory(
-						sourceRepositoryFactory,
-						targetRepositoryFactory,
-						sourceHelper,
-						folderPathReaderFactory,
-						relativityObjectManager,
-						fileRepository,
-						serializer);
-				}).LifestyleTransient());
+			container.Register(Component
+				.For<Core.Factories.IExporterFactory>()
+				.ImplementedBy<ExporterFactory>()
+				.LifestyleTransient()
+			);
 
 			container.Register(Component.For<IRsapiClientWithWorkspaceFactory>().ImplementedBy<ExtendedRsapiClientWithWorkspaceFactory>().LifestyleTransient());
 			container.Register(Component

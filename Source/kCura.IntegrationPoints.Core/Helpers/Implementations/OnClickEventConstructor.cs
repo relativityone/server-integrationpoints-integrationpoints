@@ -9,13 +9,11 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 {
 	public class OnClickEventConstructor : IOnClickEventConstructor
 	{
-		private readonly IContextContainer _contextContainer;
 		private readonly IManagerFactory _managerFactory;
 
-		public OnClickEventConstructor(IContextContainer contextContainer, IManagerFactory managerFactory)
+		public OnClickEventConstructor(IManagerFactory managerFactory)
 		{
 			_managerFactory = managerFactory;
-			_contextContainer = contextContainer;
 		}
 
 		public OnClickEventDTO GetOnClickEvents(int workspaceId, int integrationPointId, string integrationPointName, ButtonStateDTO buttonStates)
@@ -65,10 +63,10 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
 		private string GetViewErrorsLinkEvent(int workspaceId, int integrationPointId)
 		{
-			IFieldManager fieldManager = _managerFactory.CreateFieldManager(_contextContainer);
-			IJobHistoryManager jobHistoryManager = _managerFactory.CreateJobHistoryManager(_contextContainer);
-			IArtifactGuidManager artifactGuidManager = _managerFactory.CreateArtifactGuidManager(_contextContainer);
-			IObjectTypeManager objectTypeManager = _managerFactory.CreateObjectTypeManager(_contextContainer);
+			IFieldManager fieldManager = _managerFactory.CreateFieldManager();
+			IJobHistoryManager jobHistoryManager = _managerFactory.CreateJobHistoryManager();
+			IArtifactGuidManager artifactGuidManager = _managerFactory.CreateArtifactGuidManager();
+			IObjectTypeManager objectTypeManager = _managerFactory.CreateObjectTypeManager();
 
 			var errorErrorStatusFieldGuid = new Guid(JobHistoryErrorFieldGuids.ErrorStatus);
 			var jobHistoryFieldGuid = new Guid(JobHistoryErrorFieldGuids.JobHistory);

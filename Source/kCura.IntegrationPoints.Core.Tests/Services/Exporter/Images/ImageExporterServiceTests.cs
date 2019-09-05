@@ -29,8 +29,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 
 		#region "Dependencies"
 		private IDocumentRepository _documentRepository;
-		private IRepositoryFactory _sourceRepositoryFactory;
-		private IRepositoryFactory _targetRepositoryFactory;
+		private IRepositoryFactory _repositoryFactoryMock;
 		private IJobStopManager _jobStopManager;
 		private IHelper _helper;
 		private FieldMap[] _mappedFields;
@@ -49,8 +48,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 		public override void SetUp()
 		{
 			_documentRepository = Substitute.For<IDocumentRepository>();
-			_sourceRepositoryFactory = Substitute.For<IRepositoryFactory>();
-			_targetRepositoryFactory = Substitute.For<IRepositoryFactory>();
+			_repositoryFactoryMock = Substitute.For<IRepositoryFactory>();
 			_jobStopManager = Substitute.For<IJobStopManager>();
 			_helper = Substitute.For<IHelper>();
 			_relativityObjectManager = Substitute.For<IRelativityObjectManager>();
@@ -81,7 +79,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 			IQueryFieldLookupRepository queryFieldLookupRepository = Substitute.For<IQueryFieldLookupRepository>();
 			var viewFieldInfo = new ViewFieldInfo("", "", FieldTypeHelper.FieldType.Empty);
 			queryFieldLookupRepository.GetFieldByArtifactID(_FIELD_IDENTIFIER).Returns(viewFieldInfo);
-			_sourceRepositoryFactory.GetQueryFieldLookupRepository(_SOURCE_WORKSPACE_ARTIFACT_ID).Returns(queryFieldLookupRepository);
+			_repositoryFactoryMock.GetQueryFieldLookupRepository(_SOURCE_WORKSPACE_ARTIFACT_ID).Returns(queryFieldLookupRepository);
 
 			_fileRepository = Substitute.For<IFileRepository>();
 		}
@@ -98,8 +96,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 			_instance = new ImageExporterService(
 				_documentRepository, 
 				_relativityObjectManager, 
-				_sourceRepositoryFactory,
-				_targetRepositoryFactory,
+				_repositoryFactoryMock,
 				_fileRepository,
 				_jobStopManager, 
 				_helper,
@@ -144,8 +141,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 			_instance = new ImageExporterService(
 				_documentRepository, 
 				_relativityObjectManager, 
-				_sourceRepositoryFactory, 
-				_targetRepositoryFactory,
+				_repositoryFactoryMock, 
 				_fileRepository,
 				_jobStopManager, 
 				_helper,
@@ -196,8 +192,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 			_instance = new ImageExporterService(
 				_documentRepository, 
 				_relativityObjectManager, 
-				_sourceRepositoryFactory, 
-				_targetRepositoryFactory,
+				_repositoryFactoryMock, 
 				_fileRepository,
 				_jobStopManager, 
 				_helper,

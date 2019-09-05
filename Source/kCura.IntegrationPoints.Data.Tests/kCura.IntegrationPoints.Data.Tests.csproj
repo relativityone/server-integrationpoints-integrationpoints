@@ -53,10 +53,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\kCura\lib\net462\kCura.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Core, Version=10.0.85.14, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Core.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -176,7 +172,6 @@
     <Compile Include="Repositories\Implementations\SecretsRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\SourceJobRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\SourceWorkspaceRepositoryTests.cs" />
-    <Compile Include="Repositories\Implementations\SqlArtifactTypeRepositoryTests.cs" />
     <Compile Include="ResourceDbProviderTests.cs" />
     <Compile Include="RetryHandlerFactoryTests.cs" />
     <Compile Include="RetryHandlerTests.cs" />

@@ -7,7 +7,6 @@ using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
-using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity.API;
 using Relativity.Productions.Services;
@@ -19,14 +18,15 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		private readonly IAPILog _logger;
 		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly IServiceManagerProvider _serviceManagerProvider;
-		private readonly IFederatedInstanceManager _federatedInstanceManager;
 
-		internal ProductionManager(IAPILog logger, IRepositoryFactory repositoryFactory, IServiceManagerProvider serviceManagerProvider, IFederatedInstanceManager federatedInstanceManager)
+		public ProductionManager(
+			IAPILog logger, 
+			IRepositoryFactory repositoryFactory, 
+			IServiceManagerProvider serviceManagerProvider)
 		{
 			_logger = logger?.ForContext<ProductionManager>();
 			_repositoryFactory = repositoryFactory;
 			_serviceManagerProvider = serviceManagerProvider;
-			_federatedInstanceManager = federatedInstanceManager;
 		}
 
 		public ProductionDTO RetrieveProduction(int workspaceArtifactId, int productionArtifactId)
@@ -66,7 +66,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			try
 			{
 				WinEDDS.Service.Export.IProductionManager productionManager =
-					_serviceManagerProvider.Create<WinEDDS.Service.Export.IProductionManager, ProductionManagerFactory>(federatedInstanceId, federatedInstanceCredentials, _federatedInstanceManager);
+					_serviceManagerProvider.Create<WinEDDS.Service.Export.IProductionManager, ProductionManagerFactory>();
 				DataTable dt = productionManager.RetrieveImportEligibleByContextArtifactID(workspaceArtifactId).Tables[0];
 				return CreateProductionsCollection(dt);
 			}
@@ -86,7 +86,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			try
 			{
 				WinEDDS.Service.Export.IProductionManager productionManager =
-					_serviceManagerProvider.Create<WinEDDS.Service.Export.IProductionManager, ProductionManagerFactory>(federatedInstanceId, federatedInstanceCredentials, _federatedInstanceManager);
+					_serviceManagerProvider.Create<WinEDDS.Service.Export.IProductionManager, ProductionManagerFactory>();
 				ProductionInfo productionInfo = productionManager.Read(workspaceArtifactId, productionId);
 				return productionInfo != null;
 			}

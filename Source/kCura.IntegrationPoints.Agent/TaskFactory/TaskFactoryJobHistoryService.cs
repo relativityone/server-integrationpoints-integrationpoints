@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Monitoring;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -17,36 +16,29 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 {
 	internal class TaskFactoryJobHistoryService : ITaskFactoryJobHistoryService
 	{
-		private readonly IHelper _helper;
 		private readonly IAPILog _logger;
-		private readonly IHelperFactory _helperFactory;
 		private readonly IIntegrationPointSerializer _serializer;
 		private readonly IJobHistoryService _jobHistoryService;
-		private readonly IServiceFactory _serviceFactory;
 		private readonly IJobHistoryErrorService _jobHistoryErrorService;
 		private readonly IIntegrationPointRepository _integrationPointRepository;
 
 		private readonly IntegrationPoint _integrationPoint;
 
 		public TaskFactoryJobHistoryService(
-			IHelper helper, 
-			IHelperFactory helperFactory, 
+			IAPILog logger, 
 			IIntegrationPointSerializer serializer, 
 			IServiceFactory serviceFactory, 
 			IJobHistoryErrorService jobHistoryErrorService,
 			IIntegrationPointRepository integrationPointRepository,
 			IntegrationPoint integrationPoint)
 		{
-			_helper = helper;
-			_logger = _helper.GetLoggerFactory().GetLogger().ForContext<TaskFactoryJobHistoryService>();
-			_helperFactory = helperFactory;
+			_logger = logger.ForContext<TaskFactoryJobHistoryService>();
 			_serializer = serializer;
-			_serviceFactory = serviceFactory;
 			_jobHistoryErrorService = jobHistoryErrorService;
 			_integrationPointRepository = integrationPointRepository;
 
 			_integrationPoint = integrationPoint;
-			_jobHistoryService = CreateJobHistoryService(_integrationPoint);
+			_jobHistoryService = serviceFactory.CreateJobHistoryService(_logger);
 		}
 		
 		public void SetJobIdOnJobHistory(Job job)
@@ -117,14 +109,7 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 			LogGetJobHistorySuccesfulEnd(job);
 			return jobHistory;
 		}
-
-		private IJobHistoryService CreateJobHistoryService(IntegrationPoint integrationPoint)
-		{
-			DestinationConfiguration destinationConfiguration = _serializer.Deserialize<DestinationConfiguration>(integrationPoint.DestinationConfiguration);
-			var targetHelper = _helperFactory.CreateTargetHelper(_helper, destinationConfiguration.FederatedInstanceArtifactId, integrationPoint.SecuredConfiguration);
-			return _serviceFactory.CreateJobHistoryService(_helper, targetHelper);
-		}
-
+		
 		#region logging
 
 		private void LogRemoveJobHistoryFromIntegrationPointSuccesfulEnd()

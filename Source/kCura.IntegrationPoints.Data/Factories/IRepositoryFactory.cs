@@ -15,12 +15,6 @@ namespace kCura.IntegrationPoints.Data.Factories
 		IArtifactGuidRepository GetArtifactGuidRepository(int workspaceArtifactId);
 
 		/// <summary>
-		/// Returns a class implementing the IArtifactTypeRepository interface.
-		/// </summary>
-		/// <returns>A class implementing the IArtifactTypeRepository interface.</returns>
-		IArtifactTypeRepository GetArtifactTypeRepository();
-
-		/// <summary>
 		/// Returns a class implementing the ICodeRepository interface
 		/// </summary>
 		/// <param name="workspaceArtifactId">The workspace artifact id</param>
@@ -193,19 +187,6 @@ namespace kCura.IntegrationPoints.Data.Factories
 		/// <returns>A class implementing the IResourcePoolRepository interface.</returns>
 		IResourcePoolRepository GetResourcePoolRepository();
 		
-		/// <summary>
-		/// Returns a class implementing the IFederatedInstanceRepository interface.
-		/// </summary>
-		/// <param name="artifactTypeId">Federated instance artifact id.</param>
-		/// <returns>A class implementing the IFederatedInstanceRepository interface.</returns>
-		IFederatedInstanceRepository GetFederatedInstanceRepository(int artifactTypeId);
-
-		/// <summary>
-		/// Returns a class implementing the IServiceUrlRepository interface.
-		/// </summary>
-		/// <returns>A class implementing the IServiceUrlRepository interface.</returns>
-		IServiceUrlRepository GetServiceUrlRepository();
-
 		IKeywordSearchRepository GetKeywordSearchRepository();
 
         /// <summary>

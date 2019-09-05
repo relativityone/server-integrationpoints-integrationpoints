@@ -34,7 +34,6 @@ namespace kCura.IntegrationPoints.Core
 			IJobStatusUpdater jobStatusUpdater,
 			KeywordConverter converter,
 			IManagerFactory managerFactory,
-			IContextContainerFactory contextContainerFactory,
 			IJobService jobService,
 			IIntegrationPointRepository integrationPointRepository)
 			: base(caseServiceContext,
@@ -46,7 +45,6 @@ namespace kCura.IntegrationPoints.Core
 				jobHistoryErrorService,
 				jobManager,
 				managerFactory,
-				contextContainerFactory,
 				jobService,
 				integrationPointRepository)
 		{

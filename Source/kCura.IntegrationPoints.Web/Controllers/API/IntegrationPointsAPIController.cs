@@ -8,11 +8,9 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Utils;
 using kCura.IntegrationPoints.Core.Validation;
-using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Helpers;
 using kCura.IntegrationPoints.Web.Models.Validation;
-using Newtonsoft.Json;
 using Relativity.API;
 using Relativity.Telemetry.Services.Interface;
 using Relativity.Telemetry.Services.Metrics;
@@ -25,20 +23,17 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly IRelativityUrlHelper _urlHelper;
 		private readonly Core.Services.Synchronizer.IRdoSynchronizerProvider _provider;
 		private readonly ICPHelper _cpHelper;
-		private readonly IHelperFactory _helperFactory;
 
 		public IntegrationPointsAPIController(
 			IServiceFactory serviceFactory,
 			IRelativityUrlHelper urlHelper,
 			Core.Services.Synchronizer.IRdoSynchronizerProvider provider,
-			ICPHelper cpHelper,
-			IHelperFactory helperFactory)
+			ICPHelper cpHelper)
 		{
 			_serviceFactory = serviceFactory;
 			_urlHelper = urlHelper;
 			_provider = provider;
 			_cpHelper = cpHelper;
-			_helperFactory = helperFactory;
 		}
 
 		[HttpGet]
@@ -51,7 +46,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				model.ArtifactID = id;
 				if (id > 0)
 				{
-					IIntegrationPointService integrationPointService =  _serviceFactory.CreateIntegrationPointService(_cpHelper, _cpHelper);
+					IIntegrationPointService integrationPointService =  _serviceFactory.CreateIntegrationPointService(_cpHelper);
 					model = integrationPointService.ReadIntegrationPointModel(id);
 				}
 				if (model.DestinationProvider == 0)
@@ -89,10 +84,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 						using (metricManager.LogDuration(Core.Constants.IntegrationPoints.Telemetry.BUCKET_INTEGRATION_POINT_REC_SAVE_DURATION_METRIC_COLLECTOR,
 							Guid.Empty, model.Name))
 						{
-							ImportSettings importSettings = JsonConvert.DeserializeObject<ImportSettings>(model.Destination);
-							IHelper targetHelper = _helperFactory.CreateTargetHelper(_cpHelper, importSettings.FederatedInstanceArtifactId, model.SecuredConfiguration);
-
-							IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_cpHelper, targetHelper);
+							IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_cpHelper);
 
 							int createdId;
 							try

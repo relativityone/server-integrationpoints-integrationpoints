@@ -27,8 +27,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		private ExportInitializationResultsDto _exportApiResult;
 		private Mock<IDocumentRepository> _documentRepository;
 		private Mock<IFileRepository> _fileRepository;
-		private Mock<IRepositoryFactory> _sourceRepositoryFactory;
-		private Mock<IRepositoryFactory> _targetRepositoryFactory;
+		private Mock<IRepositoryFactory> _repositoryFactoryMock;
 		private Mock<IFolderPathReader> _folderPathReader;
 		private Mock<IHelper> _helper;
 		private Mock<IJobStopManager> _jobStopManager;
@@ -59,10 +58,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 				.Returns(apiLogMock.Object);
 			_documentRepository = new Mock<IDocumentRepository>();
 			_fileRepository = new Mock<IFileRepository>();
-			_sourceRepositoryFactory = new Mock<IRepositoryFactory>();
+			_repositoryFactoryMock = new Mock<IRepositoryFactory>();
 			Mock<IFieldQueryRepository> fieldQueryRepositoryMock = new Mock<IFieldQueryRepository>();
-			_targetRepositoryFactory = new Mock<IRepositoryFactory>();
-			_targetRepositoryFactory.Setup(x => x.GetFieldQueryRepository(It.IsAny<int>()))
+			_repositoryFactoryMock.Setup(x => x.GetFieldQueryRepository(It.IsAny<int>()))
 				.Returns(fieldQueryRepositoryMock.Object);
 
 			// source identifier is the only thing that matters
@@ -128,7 +126,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			{
 				_queryFieldLookupRepository.Setup(x => x.GetFieldByArtifactID(artifactFieldDto.ArtifactId)).Returns(viewFieldInfo);
 			}
-			_sourceRepositoryFactory.Setup(x => x.GetQueryFieldLookupRepository(_SOURCE_WORKSPACE_ARTIFACT_ID))
+			_repositoryFactoryMock.Setup(x => x.GetQueryFieldLookupRepository(_SOURCE_WORKSPACE_ARTIFACT_ID))
 				.Returns(_queryFieldLookupRepository.Object);
 
 			_relativityObjectManager = new Mock<IRelativityObjectManager>();
@@ -159,7 +157,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		{
 			// arrange
 			SetupInitializationResultAndTestInstance(1);
-			
+
 			_documentRepository
 				.Setup(x => x.RetrieveResultsBlockFromExportAsync(_exportApiResult, 1, 0))
 				.ReturnsAsync(_goldFlowRetrievableData);
@@ -241,7 +239,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 				.Setup(x => x.RetrieveResultsBlockFromExportAsync(_exportApiResult, 1, 0))
 				.ReturnsAsync(obj);
 
-			ArtifactDTO expectedDto = new ArtifactDTO(1111, 10, "Document", new []
+			ArtifactDTO expectedDto = new ArtifactDTO(1111, 10, "Document", new[]
 			{
 				new ArtifactFieldDTO
 				{
@@ -332,8 +330,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			_instance = new RelativityExporterService(
 				_documentRepository.Object,
 				_relativityObjectManager.Object,
-				_sourceRepositoryFactory.Object,
-				_targetRepositoryFactory.Object,
+				_repositoryFactoryMock.Object,
 				_jobStopManager.Object,
 				_helper.Object,
 				_folderPathReader.Object,

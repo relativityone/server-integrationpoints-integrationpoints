@@ -16,7 +16,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 	public class OnClickEventConstructorTests : TestBase
 	{
 		private IManagerFactory _managerFactory;
-		private IContextContainer _contextContainer;
 		private IFieldManager _fieldManager;
 		private IJobHistoryManager _jobHistoryManager;
 		private IArtifactGuidManager _artifactGuidManager;
@@ -31,18 +30,17 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 		public override void SetUp()
 		{
 			_managerFactory = Substitute.For<IManagerFactory>();
-			_contextContainer = Substitute.For<IContextContainer>();
 			_fieldManager = Substitute.For<IFieldManager>();
 			_jobHistoryManager = Substitute.For<IJobHistoryManager>();
 			_artifactGuidManager = Substitute.For<IArtifactGuidManager>();
 			_objectTypeManager = Substitute.For<IObjectTypeManager>();
 
-			_managerFactory.CreateFieldManager(_contextContainer).Returns(_fieldManager);
-			_managerFactory.CreateJobHistoryManager(_contextContainer).Returns(_jobHistoryManager);
-			_managerFactory.CreateArtifactGuidManager(_contextContainer).Returns(_artifactGuidManager);
-			_managerFactory.CreateObjectTypeManager(_contextContainer).Returns(_objectTypeManager);
+			_managerFactory.CreateFieldManager().Returns(_fieldManager);
+			_managerFactory.CreateJobHistoryManager().Returns(_jobHistoryManager);
+			_managerFactory.CreateArtifactGuidManager().Returns(_artifactGuidManager);
+			_managerFactory.CreateObjectTypeManager().Returns(_objectTypeManager);
 
-			_instance = new OnClickEventConstructor(_contextContainer, _managerFactory);
+			_instance = new OnClickEventConstructor(_managerFactory);
 		}
 
 		[Test]
