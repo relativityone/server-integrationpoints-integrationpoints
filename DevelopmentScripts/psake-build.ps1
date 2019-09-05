@@ -291,7 +291,8 @@ task copy_dlls_to_lib_dir -depends create_lib_dir {
             "Source\JsonLoader\bin\*.dll",
             "Source\JsonLoader\bin\*.config",
             "Source\JsonLoader\bin\*.xml",
-            "Source\JsonLoader\bin\*.pdb"
+            "Source\JsonLoader\bin\*.pdb",
+			"packages\System.Reactive\lib\net46\System.Reactive.dll"
 
     
 
