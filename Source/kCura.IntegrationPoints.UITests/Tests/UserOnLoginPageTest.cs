@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			loginPage.Login(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword);
 
 			// Act / Assert
-			generalPage.ChooseWorkspace(Context.WorkspaceName);
+			generalPage.ChooseWorkspace(SourceContext.WorkspaceName);
 		}
 	}
 }

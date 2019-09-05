@@ -25,19 +25,19 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		[OneTimeSetUp]
 		public virtual void OneTimeSetUp()
 		{
-			Context.ExecuteRelativityFolderPathScript();
-			FolderManager = Context.Helper.CreateProxy<IFolderManager>();
-			NativesService = new NativesService(Context.Helper);
-			ImageService = new ImagesService(Context.Helper);
-			ProductionImageService = new ProductionImagesService(Context.Helper);
-			ObjectManagerFactory = new RelativityObjectManagerFactory(Context.Helper);
+			SourceContext.ExecuteRelativityFolderPathScript();
+			FolderManager = SourceContext.Helper.CreateProxy<IFolderManager>();
+			NativesService = new NativesService(SourceContext.Helper);
+			ImageService = new ImagesService(SourceContext.Helper);
+			ProductionImageService = new ProductionImagesService(SourceContext.Helper);
+			ObjectManagerFactory = new RelativityObjectManagerFactory(SourceContext.Helper);
 		}
 
 		[SetUp]
 		public virtual void SetUp()
 		{
 			DestinationContext = new TestContext().CreateTestWorkspace();
-			PointsAction = new IntegrationPointsAction(Driver, Context);
+			PointsAction = new IntegrationPointsAction(Driver, SourceContext);
 		}
 
 		[TearDown]
@@ -56,27 +56,27 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 		protected DocumentsValidator CreateDocumentsEmptyValidator()
 		{
-			return new PushDocumentsValidator(Context.GetWorkspaceId(), DestinationContext.GetWorkspaceId());
+			return new PushDocumentsValidator(SourceContext.GetWorkspaceId(), DestinationContext.GetWorkspaceId());
 		}
 
 		protected DocumentsValidator CreateOnlyDocumentsWithImagesValidator()
 		{
-			return new PushOnlyWithImagesValidator(Context.GetWorkspaceId(), DestinationContext.GetWorkspaceId());
+			return new PushOnlyWithImagesValidator(SourceContext.GetWorkspaceId(), DestinationContext.GetWorkspaceId());
 		}
 
 		protected DocumentsValidator CreateDocumentsForFieldValidator()
 		{
-			return new PushDocumentsValidator(Context.GetWorkspaceId(), DestinationContext.GetWorkspaceId())
+			return new PushDocumentsValidator(SourceContext.GetWorkspaceId(), DestinationContext.GetWorkspaceId())
 				.ValidateWith(DocumentPathValidator.CreateForField(DestinationContext.GetWorkspaceId(), FolderManager));
 		}
 
 		protected DocumentsValidator CreateDocumentsForFolderTreeValidator()
 		{
 			DocumentPathValidator documentPathValidator = DocumentPathValidator.CreateForFolderTree(
-				Context.GetWorkspaceId(),
+				SourceContext.GetWorkspaceId(),
 				DestinationContext.GetWorkspaceId(),
 				FolderManager);
-			return new PushDocumentsValidator(Context.GetWorkspaceId(), DestinationContext.GetWorkspaceId())
+			return new PushDocumentsValidator(SourceContext.GetWorkspaceId(), DestinationContext.GetWorkspaceId())
 				.ValidateWith(documentPathValidator);
 		}
 
@@ -85,7 +85,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			DocumentPathValidator documentPathValidator = DocumentPathValidator.CreateForRoot(
 				DestinationContext.GetWorkspaceId(),
 				FolderManager);
-			return new PushDocumentsValidator(Context.GetWorkspaceId(), DestinationContext.GetWorkspaceId())
+			return new PushDocumentsValidator(SourceContext.GetWorkspaceId(), DestinationContext.GetWorkspaceId())
 				.ValidateWith(documentPathValidator);
 		}
 
@@ -95,7 +95,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 				DestinationContext.GetWorkspaceId(),
 				FolderManager,
 				"NATIVES");
-			return new PushDocumentsValidator(Context.GetWorkspaceId(), DestinationContext.GetWorkspaceId())
+			return new PushDocumentsValidator(SourceContext.GetWorkspaceId(), DestinationContext.GetWorkspaceId())
 				.ValidateWith(documentPathValidator);
 		}
 	}

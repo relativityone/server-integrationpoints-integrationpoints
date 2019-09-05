@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FTPProvider
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
-			Install(Context.WorkspaceId.Value);
+			Install(SourceContext.WorkspaceId.Value);
 			_service = Container.Resolve<IRSAPIService>();
 		}
 
@@ -64,7 +64,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FTPProvider
 			};
 
 			// Act
-			new ImportDocumentsFromFtpActions(Driver, Context, model).Setup();
+			new ImportDocumentsFromFtpActions(Driver, SourceContext, model).Setup();
 
 			var detailsPage = new IntegrationPointDetailsPage(Driver);
 			detailsPage.RunIntegrationPoint();
