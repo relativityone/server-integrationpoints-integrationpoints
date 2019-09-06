@@ -70,7 +70,7 @@ namespace Rip.E2ETests.Installation
             }
         }
 
-        [[IdentifiedTest("73fe58a5-087e-4071-8976-e54960dcbef1")]
+        [IdentifiedTest("73fe58a5-087e-4071-8976-e54960dcbef1")]
         [Order(10)]
         public void ShouldInstallRipToWorkspaceCreatedFromTemplateWithoutRip()
         {
