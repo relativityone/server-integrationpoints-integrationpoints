@@ -54,7 +54,7 @@ set @sdk-dlls[3]=kCura.IntegrationPoints.Domain.dll
 
 set @sdk-web-scripts-count=2
 set @sdk-web-scripts[0]=frame-messaging.js
-set @sdk-web-scripts[1]=jquery-3.3.1.js
+set @sdk-web-scripts[1]=jquery-3.4.1.js
 set @sdk-web-scripts[2]=jquery-postMessage.js
 
 ::jsonloader
