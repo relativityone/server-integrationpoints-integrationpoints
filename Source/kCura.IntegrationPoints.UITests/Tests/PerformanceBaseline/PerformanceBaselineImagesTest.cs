@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.UITests.Pages;
 using kCura.IntegrationPoints.UITests.Tests.RelativityProvider;
 using kCura.IntegrationPoints.UITests.Validation.RelativityProviderValidation;
 using NUnit.Framework;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.UITests.Tests.PerformanceBaseline
 {
@@ -17,7 +18,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.PerformanceBaseline
 		private const string _WORKSPACE_NAME = "[Do Not Delete] [RIP Sync] Performance Images";
 		private const string _SAVEDSEARCH = "All documents";
 
-		[Test]
+		[IdentifiedTest("0e76772e-03cb-4918-ac55-8fcdf1034655")]
 		[RetryOnError]
 		public void PerfromanceBaseline_100k_Images_Links_01() // we want to run each test two times to have more data; as long as we need to read result manually we use different name of each test
 		{
@@ -37,7 +38,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.PerformanceBaseline
 			validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, expectErrors: false);
 		}
 
-		[Test]
+		[IdentifiedTest("c1543a0d-0630-4a23-8403-98f825d00fa4")]
 		[RetryOnError]
 		public void PerfromanceBaseline_100k_Images_Links_02() // we want to run each test two times to have more data; as long as we need to read result manually we use different name of each test
 		{
@@ -57,7 +58,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.PerformanceBaseline
 			validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, expectErrors: false);
 		}
 
-		[Test]
+		[IdentifiedTest("512b6951-132f-4795-b8d0-792a632f4e82")]
 		[RetryOnError]
 		public void PerfromanceBaseline_100k_Images_Copy_01() // we want to run each test two times to have more data; as long as we need to read result manually we use different name of each test
 		{
@@ -77,7 +78,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.PerformanceBaseline
 			validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, expectErrors: false);
 		}
 
-		[Test]
+		[IdentifiedTest("bf5afb96-4f52-4f42-9c12-7d0d4523425e")]
 		[RetryOnError]
 		public void PerfromanceBaseline_100k_Images_Copy_02() // we want to run each test two times to have more data; as long as we need to read result manually we use different name of each test
 		{
