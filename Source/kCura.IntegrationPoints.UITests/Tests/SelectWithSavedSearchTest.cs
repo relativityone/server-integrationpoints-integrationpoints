@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		{
 			// Arrange
 			var generalPage = new GeneralPage(Driver);
-			generalPage.ChooseWorkspace(Context.WorkspaceName);
+			generalPage.ChooseWorkspace(SourceContext.WorkspaceName);
 
 			// Act
 			IntegrationPointsPage ipPage = generalPage.GoToIntegrationPointsPage();
