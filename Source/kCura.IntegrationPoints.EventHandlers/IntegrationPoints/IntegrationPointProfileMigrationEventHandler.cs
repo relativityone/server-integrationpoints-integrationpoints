@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using kCura.EventHandler.CustomAttributes;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using Polly;
-using Polly.Retry;
 using Relativity.API;
 using Relativity.Services;
 using Relativity.Services.Objects;
