@@ -29,12 +29,12 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		protected override async Task CreateWorkspaceAsync()
 		{
 			await base.CreateWorkspaceAsync().ConfigureAwait(false);
-			Context.EnableDataGrid("Extracted Text");
+			SourceContext.EnableDataGrid("Extracted Text");
 		}
 
 		protected override Task ImportDocumentsAsync()
 		{
-			return Context.ImportDocumentsWithLargeTextAsync();
+			return SourceContext.ImportDocumentsWithLargeTextAsync();
 		}
 
 		[IdentifiedTest("950ec6af-46a5-42de-9602-685367407032")]
