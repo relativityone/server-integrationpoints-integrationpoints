@@ -56,7 +56,7 @@ Write-Verbose "Running unit tests..."
 & $dotCover cover /TargetExecutable=$nunitConsoleRunner `
     /Output=$coverageReportPath `
     /ReportType="HTML" `
-    /TargetArguments="$unitTestsDlls --skipnontestassemblies --work=$logsDir" `
+    /TargetArguments="$unitTestsDlls --skipnontestassemblies --work=$logsDir --workers=1" `
     /Filters="+:$projectName*;-:$projectName*.Tests*" `
     /AttributeFilters=System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute
 
