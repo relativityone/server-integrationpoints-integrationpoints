@@ -4,6 +4,8 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using kCura.EventHandler.CustomAttributes;
 using kCura.IntegrationPoints.Domain.Exceptions;
+using Polly;
+using Polly.Retry;
 using Relativity.API;
 using Relativity.Services;
 using Relativity.Services.Objects;
@@ -28,11 +30,30 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 		protected override void Run()
 		{
+			const int maxRetries = 3;
+			const double exponentialWaitBase = 2;
+
+			TimeSpan SleepDurationProvider(int i) =>
+				TimeSpan.FromSeconds(Math.Pow(exponentialWaitBase, i));
+
+			void OnRetry(Exception exception, TimeSpan timeSpan, int retryCount, Polly.Context ctx) =>
+				Logger.LogWarning(exception, "Migration of the Integration Point Profiles failed for {n} time. Waiting for {seconds} seconds.", retryCount, timeSpan.TotalSeconds);
+
+			Policy
+				.Handle<Exception>()
+				.WaitAndRetry(maxRetries, SleepDurationProvider, OnRetry)
+				.ExecuteAsync(MigrateProfiles)
+				.GetAwaiter()
+				.GetResult();
+		}
+
+		private async Task MigrateProfiles()
+		{
 			using (IObjectManager objectManager = CreateObjectManager())
 			{
-				int syncDestinationProviderArtifactId = GetSyncDestinationProviderArtifactId(objectManager).GetAwaiter().GetResult();
+				int syncDestinationProviderArtifactId = await GetSyncDestinationProviderArtifactId(objectManager).ConfigureAwait(false);
 
-				DeleteNonSyncProfiles(syncDestinationProviderArtifactId, objectManager).GetAwaiter().GetResult();
+				await DeleteNonSyncProfiles(syncDestinationProviderArtifactId, objectManager).ConfigureAwait(false);
 			}
 		}
 
