@@ -31,6 +31,7 @@ nuget Relativity.Productions.Services.Interfaces 10.3.2
 nuget Relativity.Telemetry.APM 2019.1.1 
 nuget Relativity.Telemetry.MetricsCollection  2018.12.2
 nuget Relativity.Telemetry.Services.Interface 2019.1.1
+nuget relativity.Testing.Identification 1.6.0
 nuget Relativity.Toggles 1.0.0.100
 nuget Relativity.Vfs.IO 1.0.24
 
