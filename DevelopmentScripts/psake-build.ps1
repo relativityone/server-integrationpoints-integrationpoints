@@ -24,8 +24,8 @@ task build_initalize {
     ''
 
     'Time: ' + (Get-Date -Format 'yyyy-MM-dd HH:mm:ss')
-    
-    'Build Type and Server Type result in sign set to ' + ($build_type -ne 'DEV' -and $server_type -ne 'local')  
+
+    'Build Type and Server Type result in sign set to ' + ($build_type -ne 'DEV' -and $server_type -ne 'local')
 
     if([System.IO.Directory]::Exists($buildlogs_directory)) {Remove-Item $buildlogs_directory -Recurse}
     [System.IO.Directory]::CreateDirectory($buildlogs_directory)
@@ -37,56 +37,56 @@ task check_configureawait -depends get_configureawait_checker -precondition { re
 
 task get_configureawait_checker {  
     if (![System.IO.File]::Exists($configureawait_checker_pkg)) {
-        exec {   
+        exec {
             & $nuget_exe @('install', 'ConfigureAwaitChecker.v9', '-ExcludeVersion', '-Version', $configureawait_checker_version, '-OutputDirectory', $package_root_directory)
-        }    
+        }
     }
     if (![System.IO.File]::Exists($resharper_commandlinetools_exe)) {
-        exec { 
+        exec {
             & $nuget_exe @('install', 'JetBrains.ReSharper.CommandLineTools', '-ExcludeVersion', '-Version', $resharper_commandlinetools_version, '-OutputDirectory', $package_root_directory)
         }
     }
 }
 
-task get_sonarqube -precondition { (-not [System.IO.File]::Exists($sonarCube_exe)) } {    
+task get_sonarqube -precondition { (-not [System.IO.File]::Exists($sonarCube_exe)) } {
     exec {
     & $nuget_exe @('install', 'MSBuild.SonarQube.Runner.Tool', '-ExcludeVersion', '-Version', $sonarqube_version)
-    }      
+    }
 }
 
 task get_buildhelper -precondition { (-not [System.IO.File]::Exists($buildhelper_exe)) } {
     exec {
         & $nuget_exe @('install', 'kCura.BuildHelper', '-ExcludeVersion', '-Source', $proget_server)
-    }      
+    }
     Copy-Item ([System.IO.Path]::Combine($development_scripts_directory, 'kCura.BuildHelper', 'lib', 'kCura.BuildHelper.exe')) $development_scripts_directory
 }
 
 task restore_nuget {
 
     foreach($o in Get-ChildItem $source_directory){
-       
+
        if($o.Extension -ne '.sln') {continue}
 
         exec {
             & $nuget_exe @('restore', $o.FullName)
-        } 
-    }   
+        }
+    }
 } 
 
 task configure_paket {
 
-	if (Get-ChildItem ENV:PaketUserName -ErrorAction SilentlyContinue) {
-		exec {
-			
-			Write-Host 'Configuring credentials for ProGet server.'
-			
-			Remove-Item $paket_config_directory\*
-			
-			& $paket_exe config add-credentials $proget_server --username $ENV:PaketUserName --password $ENV:PaketPassword --authtype ntlm --log-file $paket_logfile --verbose
-		} 
-	} else {
-		Write-Host 'Configuring credentials for ProGet server will be skipped'
-	}
+    if (Get-ChildItem ENV:PaketUserName -ErrorAction SilentlyContinue) {
+        exec {
+
+            Write-Host 'Configuring credentials for ProGet server.'
+
+            Remove-Item $paket_config_directory\*
+
+            & $paket_exe config add-credentials $proget_server --username $ENV:PaketUserName --password $ENV:PaketPassword --authtype ntlm --log-file $paket_logfile --verbose
+        }
+    } else {
+        Write-Host 'Configuring credentials for ProGet server will be skipped'
+    }
 }
 
 task build_integration_points -depends restore_nuget, configure_paket {
@@ -97,7 +97,7 @@ task build_integration_points -depends restore_nuget, configure_paket {
         {
             New-Item -Path $buildlogs_directory -ItemType Directory -Force
         }
-        
+
         & $msbuild_exe @((Join-Path $source_directory 'kCura.IntegrationPoints.sln'),
                          ("/property:Configuration=${build_config}"),
                          ("/property:PublishWebProjects=True"),
@@ -110,8 +110,8 @@ task build_integration_points -depends restore_nuget, configure_paket {
                          #('/dfl'), # ???
                          ('/flp:LogFile=' + $logfile + ';Verbosity=Normal'), # TODO: configurable
                          ('/flp2:warningsonly;LogFile=' + $logfilewarn),
-                         ('/flp3:errorsonly;LogFile=' + $logfileerror))       
-    } 
+                         ('/flp3:errorsonly;LogFile=' + $logfileerror))
+    }
 }
 task build_my_first_provider -depends restore_nuget, configure_paket {
     exec {
@@ -121,7 +121,7 @@ task build_my_first_provider -depends restore_nuget, configure_paket {
         {
             New-Item -Path $buildlogs_directory -ItemType Directory -Force
         }
-        
+
         & $msbuild_exe @((Join-Path $source_directory 'MyFirstProvider.sln'),
                          ("/property:Configuration=${build_config}"),
                          ("/property:PublishWebProjects=True"),
@@ -134,8 +134,8 @@ task build_my_first_provider -depends restore_nuget, configure_paket {
                          #('/dfl'), # ???
                          ('/flp:LogFile=' + $logfile + ';Verbosity=Normal'), # TODO: configurable
                          ('/flp2:warningsonly;LogFile=' + $logfilewarn),
-                         ('/flp3:errorsonly;LogFile=' + $logfileerror))       
-    } 
+                         ('/flp3:errorsonly;LogFile=' + $logfileerror))
+    }
 }
 task build_json_loader -depends restore_nuget, configure_paket {
     exec {
@@ -145,7 +145,7 @@ task build_json_loader -depends restore_nuget, configure_paket {
         {
             New-Item -Path $buildlogs_directory -ItemType Directory -Force
         }
-        
+
         & $msbuild_exe @((Join-Path $source_directory 'JsonLoader.sln'),
                          ("/property:Configuration=${build_config}"),
                          ("/property:PublishWebProjects=True"),
@@ -158,7 +158,7 @@ task build_json_loader -depends restore_nuget, configure_paket {
                          #('/dfl'), # ???
                          ('/flp:LogFile=' + $logfile + ';Verbosity=Normal'), # TODO: configurable
                          ('/flp2:warningsonly;LogFile=' + $logfilewarn),
-                         ('/flp3:errorsonly;LogFile=' + $logfileerror))       
+                         ('/flp3:errorsonly;LogFile=' + $logfileerror))
     } 
 }
 
@@ -291,16 +291,17 @@ task copy_dlls_to_lib_dir -depends create_lib_dir {
             "Source\JsonLoader\bin\*.dll",
             "Source\JsonLoader\bin\*.config",
             "Source\JsonLoader\bin\*.xml",
-            "Source\JsonLoader\bin\*.pdb"
+            "Source\JsonLoader\bin\*.pdb",
+            "packages\System.Reactive\lib\net46\System.Reactive.dll"
 
-    
+
 
     foreach ($file in $files)
     {
-        $tmpPath = Join-Path -Path $root -ChildPath $file        
+        $tmpPath = Join-Path -Path $root -ChildPath $file
         Copy-Item -path $tmpPath -Destination $tests_directory -Recurse -Force
     }
-   
+
     $oiPathSrc = Join-Path -Path $root -ChildPath "Source\kCura.IntegrationPoint.Tests.Core\bin\x64\oi\*"
     $oiPathDest = Join-Path -Path $tests_directory -ChildPath "oi\"
     New-Item -Path $oiPathDest -ItemType "directory"
@@ -366,10 +367,10 @@ task copy_test_dlls_to_lib_dir -depends create_lib_dir -precondition { return -n
             "Source\kCura.IntegrationPoints.Domain.Tests\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.Domain.Tests\bin\x64\*.config",
             "Source\kCura.IntegrationPoints.Domain.Tests\bin\x64\*.xml",
-			"Source\kCura.IntegrationPoints.Domain.Tests.Integration\bin\x64\*.dll",
-			"Source\kCura.IntegrationPoints.Domain.Tests.Integration\bin\x64\*.pdb",
-			"Source\kCura.IntegrationPoints.Domain.Tests.Integration\bin\x64\*.config",
-			"Source\kCura.IntegrationPoints.Domain.Tests.Integration\bin\x64\*.xml",
+            "Source\kCura.IntegrationPoints.Domain.Tests.Integration\bin\x64\*.dll",
+            "Source\kCura.IntegrationPoints.Domain.Tests.Integration\bin\x64\*.pdb",
+            "Source\kCura.IntegrationPoints.Domain.Tests.Integration\bin\x64\*.config",
+            "Source\kCura.IntegrationPoints.Domain.Tests.Integration\bin\x64\*.xml",
             "Source\kCura.IntegrationPoints.Email.Tests\bin\x64\*.dll",
             "Source\kCura.IntegrationPoints.Email.Tests\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.Email.Tests\bin\x64\*.config",
@@ -468,14 +469,14 @@ task copy_test_dlls_to_lib_dir -depends create_lib_dir -precondition { return -n
             "Source\kCura.ScheduleQueue.Core.Tests.Integration\bin\x64\*.pdb",
             "Source\kCura.ScheduleQueue.Core.Tests.Integration\bin\x64\*.config",
             "Source\kCura.ScheduleQueue.Core.Tests.Integration\bin\x64\*.xml",
-			"Source\Rip.E2ETests\bin\x64\*.dll",
-			"Source\Rip.E2ETests\bin\x64\*.pdb",
-			"Source\Rip.E2ETests\bin\x64\*.config",
-			"Source\Rip.E2ETests\bin\x64\*.xml",
-			"Source\Rip.SystemTests\bin\x64\*.dll",
-			"Source\Rip.SystemTests\bin\x64\*.pdb",
-			"Source\Rip.SystemTests\bin\x64\*.config",
-			"Source\Rip.SystemTests\bin\x64\*.xml",
+            "Source\Rip.E2ETests\bin\x64\*.dll",
+            "Source\Rip.E2ETests\bin\x64\*.pdb",
+            "Source\Rip.E2ETests\bin\x64\*.config",
+            "Source\Rip.E2ETests\bin\x64\*.xml",
+            "Source\Rip.SystemTests\bin\x64\*.dll",
+            "Source\Rip.SystemTests\bin\x64\*.pdb",
+            "Source\Rip.SystemTests\bin\x64\*.config",
+            "Source\Rip.SystemTests\bin\x64\*.xml",
             "Source\kCura.IntegrationPoints.SourceProviderInstaller.Tests\bin\x64\*.dll",
             "Source\kCura.IntegrationPoints.SourceProviderInstaller.Tests\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.SourceProviderInstaller.Tests\bin\x64\*.config",
@@ -494,8 +495,8 @@ task copy_test_dlls_to_lib_dir -depends create_lib_dir -precondition { return -n
 }
 
 task copy_web_drivers -depends create_lib_dir, build_integration_points -precondition { return -not $skip_tests } {
-	Copy-Item -path $chromedriver_path -Destination $tests_directory
-	Copy-Item -path $geckodriver_path -Destination $tests_directory
+    Copy-Item -path $chromedriver_path -Destination $tests_directory
+    Copy-Item -path $geckodriver_path -Destination $tests_directory
 }
 
 task start_sonar -depends get_sonarqube -precondition { return $RUN_SONARQUBE } {
@@ -509,7 +510,7 @@ task start_sonar -depends get_sonarqube -precondition { return $RUN_SONARQUBE } 
         ("/d:sonar.branch.target=""$sq_target_branch"""),
         ("/d:sonar.cs.nunit.reportsPaths=""$NUnit_TestOutputFile"""),
         ("/d:sonar.cs.dotcover.reportsPaths=""$dotCover_result"""))
-    & $sonarqube_exe $args    
+    & $sonarqube_exe $args
 }
 
 task stop_sonar -precondition { return $RUN_SONARQUBE }{
@@ -522,7 +523,7 @@ task stop_sonar -precondition { return $RUN_SONARQUBE }{
 task get_dotcover -precondition { (-not [System.IO.File]::Exists($dotCover_exe)) }{
     exec {
         & $nuget_exe @('install', 'JetBrains.dotCover.CommandLineTools', '-ExcludeVersion')
-    }    
+    }
 }
 
 task run_coverage -depends get_dotcover, get_testrunner, get_nunit, test_initalize -precondition { return $RUN_SONARQUBE } -ContinueOnError {
@@ -539,7 +540,7 @@ task run_coverage -depends get_dotcover, get_testrunner, get_nunit, test_initali
         & $dotCover_exe $arg
         Write-Host "Coverage complete"
 
-    }    
+    }
 }
 
 task generate_validation_message_table{
