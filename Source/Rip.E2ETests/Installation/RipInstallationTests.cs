@@ -33,7 +33,7 @@ namespace Rip.E2ETests.Installation
 		private const string _JSON_LOADER_GUID = "57151c17-cd92-4a6e-800c-a75bf807d097";
 		private const string _RIP_GUID = CoreConstants.IntegrationPoints.APPLICATION_GUID_STRING;
 
-		private const string _WORKSPACE_TEMPLATE_WITHOUT_RIP = WorkspaceTemplateNames.NEW_CASE_TEMPLATE;
+		private const string _WORKSPACE_TEMPLATE_WITHOUT_RIP = WorkspaceTemplateNames.NEW_CASE_TEMPLATE_NAME;
 		private readonly string _mainWorkspaceName = $"RipInstallTest{Guid.NewGuid()}";
 
 		private int? _mainWorkspaceID;

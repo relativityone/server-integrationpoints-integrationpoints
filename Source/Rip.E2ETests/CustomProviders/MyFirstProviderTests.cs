@@ -26,7 +26,7 @@ namespace Rip.E2ETests.CustomProviders
 	[TestFixture]
 	public class MyFirstProviderTests
 	{
-		private const string _WORKSPACE_TEMPLATE_WITHOUT_RIP = WorkspaceTemplateNames.NEW_CASE_TEMPLATE;
+		private const string _WORKSPACE_TEMPLATE_WITHOUT_RIP = WorkspaceTemplateNames.NEW_CASE_TEMPLATE_NAME;
 
 		private int _workspaceID;
 		private int _myFirstProviderArtifactID;
