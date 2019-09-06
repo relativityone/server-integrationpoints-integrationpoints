@@ -530,7 +530,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.PerformanceBaseline
 
 		private RelativityProviderModel CreateRelativityProviderModel()
 		{
-			Context.WorkspaceName = _WORKSPACE_NAME;
+			SourceContext.WorkspaceName = _WORKSPACE_NAME;
 
 			var model = new RelativityProviderModel(TestContext.CurrentContext.Test.Name);
 			{

@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.PerformanceBaseline
 
 			// Assert
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
-			validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, expectErrors: false);
+			validator.ValidateSummaryPage(generalProperties, model, SourceContext, DestinationContext, expectErrors: false);
 		}
 
 		[Test]
@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.PerformanceBaseline
 
 			// Assert
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
-			validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, expectErrors: false);
+			validator.ValidateSummaryPage(generalProperties, model, SourceContext, DestinationContext, expectErrors: false);
 		}
 
 		[Test]
@@ -74,7 +74,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.PerformanceBaseline
 
 			// Assert
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
-			validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, expectErrors: false);
+			validator.ValidateSummaryPage(generalProperties, model, SourceContext, DestinationContext, expectErrors: false);
 		}
 
 		[Test]
@@ -94,12 +94,12 @@ namespace kCura.IntegrationPoints.UITests.Tests.PerformanceBaseline
 
 			// Assert
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
-			validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, expectErrors: false);
+			validator.ValidateSummaryPage(generalProperties, model, SourceContext, DestinationContext, expectErrors: false);
 		}
 
 		private RelativityProviderModel CreateRelativityProviderModelWithImages()
 		{
-			Context.WorkspaceName = _WORKSPACE_NAME;
+			SourceContext.WorkspaceName = _WORKSPACE_NAME;
 
 			var model = new RelativityProviderModel(TestContext.CurrentContext.Test.Name)
 			{

@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			// Assert
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
-			validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, false);
+			validator.ValidateSummaryPage(generalProperties, model, SourceContext, DestinationContext, false);
 			ValidateOriginalImages(model.GetValueOrDefault(x => x.CopyFilesToRepository));
 		}
 
@@ -78,7 +78,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			// Assert
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
-			validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, false);
+			validator.ValidateSummaryPage(generalProperties, model, SourceContext, DestinationContext, false);
 			ValidateOriginalImages(model.GetValueOrDefault(x => x.CopyFilesToRepository));
 		}
 
@@ -102,7 +102,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			// Assert
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
-			validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, false);
+			validator.ValidateSummaryPage(generalProperties, model, SourceContext, DestinationContext, false);
 			ValidateOriginalImages(model.GetValueOrDefault(x => x.CopyFilesToRepository));
 		}
 
@@ -127,7 +127,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			// Assert
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
-			validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, false);
+			validator.ValidateSummaryPage(generalProperties, model, SourceContext, DestinationContext, false);
 			ValidateOriginalImages(model.GetValueOrDefault(x => x.CopyFilesToRepository));
 		}
 
@@ -149,7 +149,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			// Assert
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
-			validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, false);
+			validator.ValidateSummaryPage(generalProperties, model, SourceContext, DestinationContext, false);
 			ValidateOriginalImages(model.GetValueOrDefault(x => x.CopyFilesToRepository));
 		}
 
@@ -171,7 +171,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			// Assert
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
-			validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, false);
+			validator.ValidateSummaryPage(generalProperties, model, SourceContext, DestinationContext, false);
 			ValidateOriginalImages(model.GetValueOrDefault(x => x.CopyFilesToRepository));
 		}
 
@@ -187,7 +187,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.IncludeOriginalImagesIfNotProduced = false;
 			model.CopyFilesToRepository = false;
 
-			Context.CreateAndRunProduction(model.SourceProductionName);
+			SourceContext.CreateAndRunProduction(model.SourceProductionName);
 
 			// Act
 			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
@@ -214,7 +214,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.IncludeOriginalImagesIfNotProduced = false;
 			model.CopyFilesToRepository = true;
 
-			Context.CreateAndRunProduction(model.SourceProductionName);
+			SourceContext.CreateAndRunProduction(model.SourceProductionName);
 
 			// Act
 			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
@@ -243,7 +243,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.IncludeOriginalImagesIfNotProduced = false;
 			model.CopyFilesToRepository = false;
 
-			Context.CreateAndRunProduction(model.SourceProductionName);
+			SourceContext.CreateAndRunProduction(model.SourceProductionName);
 			DestinationContext.CreateAndRunProduction(model.SourceProductionName);
 
 			// Act
@@ -273,7 +273,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.IncludeOriginalImagesIfNotProduced = false;
 			model.CopyFilesToRepository = true;
 
-			Context.CreateAndRunProduction(model.SourceProductionName);
+			SourceContext.CreateAndRunProduction(model.SourceProductionName);
 			DestinationContext.CreateAndRunProduction(model.SourceProductionName);
 
 			// Act
@@ -300,7 +300,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.IncludeOriginalImagesIfNotProduced = false;
 			model.CopyFilesToRepository = false;
 
-			Context.CreateAndRunProduction(model.SourceProductionName);
+			SourceContext.CreateAndRunProduction(model.SourceProductionName);
 			// Act
 			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			detailsPage.RunIntegrationPoint();
@@ -325,7 +325,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.IncludeOriginalImagesIfNotProduced = false;
 			model.CopyFilesToRepository = true;
 
-			Context.CreateAndRunProduction(model.SourceProductionName);
+			SourceContext.CreateAndRunProduction(model.SourceProductionName);
 
 			// Act
 			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
@@ -352,7 +352,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.IncludeOriginalImagesIfNotProduced = true;
 			model.CopyFilesToRepository = true;
 
-			Context.CreateAndRunProduction(model.SourceProductionName);
+			SourceContext.CreateAndRunProduction(model.SourceProductionName);
 
 			// Act
 			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
