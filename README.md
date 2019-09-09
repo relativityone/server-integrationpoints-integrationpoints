@@ -140,3 +140,7 @@ Relativity Sync also has other pipelines, in particular a nightly one for execut
     1. There should also be basic **integration test** coverage over golden flows and negative scenarios.
     1. If you are updating or creating a new workflow or new widely-used class, then you may need to create **system tests** to cover that as well.
 1. Push up your branch, and create a PR into `develop`. Add members of the Codigo o Plomo team to the PR. You will be able to merge once the pipeline is green.
+
+## Miscellaneous
+
+You can find more information about this project including troubleshooting steps and limitations on [Einstein](https://einstein.kcura.com/x/TSO3C).
