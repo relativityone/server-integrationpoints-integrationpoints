@@ -85,7 +85,6 @@ namespace Rip.SystemTests.IntegrationPointServices
 			}
 		}
 
-		[Test]
 		[IdentifiedTest("b30513bf-e6b8-4680-a74b-d77b17976d20")]
 		public async Task IntegrationPointShouldBeSavedAndRetrievedProperly_WhenFieldMappingJsonIsLongerThan10000()
 		{
