@@ -129,7 +129,11 @@
     <Content Include="Global.asax" />
     <Content Include="Scripts\first-provider.js" />
     <Content Include="Scripts\frame-messaging.js" />
-    <Content Include="Scripts\jquery-3.3.1.js" />
+    <None Include="Scripts\jquery-3.4.1.intellisense.js" />
+    <Content Include="Scripts\jquery-3.4.1.js" />
+    <Content Include="Scripts\jquery-3.4.1.min.js" />
+    <Content Include="Scripts\jquery-3.4.1.slim.js" />
+    <Content Include="Scripts\jquery-3.4.1.slim.min.js" />
     <Content Include="Scripts\jquery-postMessage.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -150,6 +154,8 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="Properties\PublishProfiles\default.pubxml" />
+    <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
+    <Content Include="Scripts\jquery-3.4.1.min.map" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

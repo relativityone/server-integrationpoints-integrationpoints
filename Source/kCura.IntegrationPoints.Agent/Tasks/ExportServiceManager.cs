@@ -188,7 +188,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				: _sourceSavedSearchArtifactID;
 
 			using (IExporterService exporter = _exporterFactory.BuildExporter(
-				JobStopManager, 
+				JobStopManager,
 				MappedFields.ToArray(),
 				IntegrationPointDto.SourceConfiguration,
 				savedSearchID,
@@ -437,17 +437,19 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			try
 			{
 				//we can delete the temp saved search (only gets called on retry for item-level only errors)
-				if (UpdateStatusType != null && UpdateStatusType.IsItemLevelErrorRetry())
+				if (UpdateStatusType == null || !UpdateStatusType.IsItemLevelErrorRetry())
 				{
-					if (!_itemLevelErrorSavedSearchArtifactID.HasValue)
-					{
-						throw new ArgumentNullException("Item level error saved search has not been created, so it cannot be deleted.");
-					}
-
-					IJobHistoryErrorRepository jobHistoryErrorRepository =
-						_repositoryFactory.GetJobHistoryErrorRepository(SourceConfiguration.SourceWorkspaceArtifactId);
-					jobHistoryErrorRepository.DeleteItemLevelErrorsSavedSearch(_itemLevelErrorSavedSearchArtifactID.Value);
+					return;
 				}
+				if (!_itemLevelErrorSavedSearchArtifactID.HasValue)
+				{
+					throw new InvalidOperationException(
+						"Item level error saved search has not been created, so it cannot be deleted.");
+				}
+
+				IJobHistoryErrorRepository jobHistoryErrorRepository =
+					_repositoryFactory.GetJobHistoryErrorRepository(SourceConfiguration.SourceWorkspaceArtifactId);
+				jobHistoryErrorRepository.DeleteItemLevelErrorsSavedSearch(_itemLevelErrorSavedSearchArtifactID.Value);
 			}
 			catch (Exception e)
 			{

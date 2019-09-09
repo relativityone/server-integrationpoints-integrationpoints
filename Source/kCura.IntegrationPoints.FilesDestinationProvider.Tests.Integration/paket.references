@@ -10,6 +10,7 @@ Relativity.Services.DataContracts
 Relativity.Services.Interfaces
 Relativity.Telemetry.MetricsCollection
 Relativity.Productions.Services.Interfaces
+Relativity.Toggles
 
 group TestPackages
 	NUnit

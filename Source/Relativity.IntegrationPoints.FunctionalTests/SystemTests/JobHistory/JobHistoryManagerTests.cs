@@ -16,14 +16,14 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Testing.Identification;
 using Choice = kCura.Relativity.Client.DTOs.Choice;
 
-namespace Rip.SystemTests.JobHistory
+namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.JobHistory
 {
 	[TestFixture]
 	public class JobHistoryManagerTests
 	{
 		private JobHistoryManager _sut;
 
-		private int _workspaceID => SystemTestsFixture.WorkspaceID;
+		private int _workspaceID => SystemTestsSetupFixture.WorkspaceID;
 		private IRelativityObjectManager _objectManager;
 
 		private List<int> _artifactsIDsToDelete;
@@ -31,7 +31,7 @@ namespace Rip.SystemTests.JobHistory
 		[OneTimeSetUp]
 		public void OneTimeSetup()
 		{
-			IWindsorContainer container = SystemTestsFixture.Container;
+			IWindsorContainer container = SystemTestsSetupFixture.Container;
 
 			IRelativityObjectManagerFactory objectManagerFactory = container.Resolve<IRelativityObjectManagerFactory>();
 			_objectManager = objectManagerFactory.CreateRelativityObjectManager(_workspaceID);

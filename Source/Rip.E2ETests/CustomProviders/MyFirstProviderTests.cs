@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data;
@@ -26,7 +26,7 @@ namespace Rip.E2ETests.CustomProviders
 	[TestFixture]
 	public class MyFirstProviderTests
 	{
-		private const string _WORKSPACE_TEMPLATE_WITHOUT_RIP = SourceProviderTemplate.WorkspaceTemplates.NEW_CASE_TEMPLATE;
+		private const string _WORKSPACE_TEMPLATE_WITHOUT_RIP = WorkspaceTemplateNames.NEW_CASE_TEMPLATE_NAME;
 
 		private int _workspaceID;
 		private int _myFirstProviderArtifactID;

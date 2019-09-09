@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 
 		protected TestConfiguration Configuration { get; set; }
 
-		protected TestContext Context { get; set; }
+		protected TestContext SourceContext { get; set; }
 
 		/// <summary>
 		/// Value is assigned during SetUp phase, before each test is executed.
@@ -89,8 +89,8 @@ namespace kCura.IntegrationPoints.UITests.Tests
 				.SetupConfiguration()
 				.LogConfiguration();
 
-			Context = new TestContext();
-			Context.InitUser();
+			SourceContext = new TestContext();
+			SourceContext.InitUser();
 			Task agentSetupTask = Agent.CreateIntegrationPointAgentIfNotExistsAsync();
 			Task workspaceSetupTask = SetupWorkspaceAsync();
 
@@ -120,13 +120,13 @@ namespace kCura.IntegrationPoints.UITests.Tests
 				{
 					Relativity.Client.DTOs.Workspace workspace =
 						Workspace.FindWorkspaceByName(proxy, SharedVariables.UiUseThisExistingWorkspace);
-					Context.WorkspaceId = workspace.ArtifactID;
+					SourceContext.WorkspaceId = workspace.ArtifactID;
 				}
-				Context.WorkspaceName = SharedVariables.UiUseThisExistingWorkspace;
-				Log.Information("ID of workspace '{WorkspaceName}': {WorkspaceId}.", Context.WorkspaceName, Context.WorkspaceId);
+				SourceContext.WorkspaceName = SharedVariables.UiUseThisExistingWorkspace;
+				Log.Information("ID of workspace '{WorkspaceName}': {WorkspaceId}.", SourceContext.WorkspaceName, SourceContext.WorkspaceId);
 			}
 
-			Task installIntegrationPointsTask = Context.InstallIntegrationPointsAsync();
+			Task installIntegrationPointsTask = SourceContext.InstallIntegrationPointsAsync();
 
 			if (!SharedVariables.UiSkipDocumentImport)
 			{
@@ -138,12 +138,12 @@ namespace kCura.IntegrationPoints.UITests.Tests
 
 		protected virtual Task CreateWorkspaceAsync()
 		{
-			return Context.CreateTestWorkspaceAsync();
+			return SourceContext.CreateTestWorkspaceAsync();
 		}
 
 		protected virtual Task ImportDocumentsAsync()
 		{
-			return Context.ImportDocumentsAsync();
+			return SourceContext.ImportDocumentsAsync();
 		}
 
 		[TearDown]
@@ -239,11 +239,11 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		{
 			try
 			{
-				Context.TearDown();
+				SourceContext.TearDown();
 			}
 			catch (Exception ex)
 			{
-				Log.Error(ex, "Error in Context TearDown.");
+				Log.Error(ex, "Error in SourceContext TearDown.");
 			}
 		}
 
@@ -251,9 +251,9 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		{
 			try
 			{
-				if (string.IsNullOrEmpty(SharedVariables.UiUseThisExistingWorkspace) && Context.WorkspaceId != null)
+				if (string.IsNullOrEmpty(SharedVariables.UiUseThisExistingWorkspace) && SourceContext.WorkspaceId != null)
 				{
-					Workspace.DeleteWorkspace(Context.GetWorkspaceId());
+					Workspace.DeleteWorkspace(SourceContext.GetWorkspaceId());
 				}
 			}
 			catch (Exception ex)
@@ -273,7 +273,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 
 			if (loginPage.IsOnLoginPage())
 			{
-				loginPage.Login(Context.User.Email, Context.User.Password);
+				loginPage.Login(SourceContext.User.Email, SourceContext.User.Password);
 			}
 			else
 			{

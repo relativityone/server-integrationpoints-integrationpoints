@@ -166,6 +166,7 @@
     <Compile Include="IntegrationPoints\IntegrationPointDataTransferLocationMigrationEventHandler.cs" />
     <Compile Include="IntegrationPoints\IntegrationPointPageInteractionEventHandler.cs" />
     <Compile Include="IntegrationPoints\IntegrationPointPreLoadEventHandler.cs" />
+    <Compile Include="IntegrationPoints\IntegrationPointProfileMigrationEventHandler.cs" />
     <Compile Include="IntegrationPoints\IntegrationPointProfilePageInteractionEventHandler.cs" />
     <Compile Include="IntegrationPoints\IntegrationPointProfilePreLoadEventHandler.cs" />
     <Compile Include="IntegrationPoints\IntegrationPointTypesMigrationEventHandler.cs" />

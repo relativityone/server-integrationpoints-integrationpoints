@@ -31,8 +31,6 @@ using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
-using Relativity.Testing.Identification;
-using WorkspaceService = kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers.WorkspaceService;
 
 namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 {
@@ -56,10 +54,11 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 		{
 			_testDataDirectory = CopyTestData();
 
-			_workspaceId = WorkspaceService.CreateWorkspace(DateTime.UtcNow.ToString("yyyyMMdd_HHmmss"));
+			_workspaceId = Workspace.CreateWorkspace(
+				$"{nameof(ImportServiceManagerTests)} {DateTime.UtcNow.ToString("yyyyMMdd_HHmmss")}"
+			);
 
 			//Substitutes
-
 			IHelper helper = Substitute.For<IHelper>();
 			ICaseServiceContext caseServiceContext = Substitute.For<ICaseServiceContext>();
 			ISynchronizerFactory synchronizerFactory = Substitute.For<ISynchronizerFactory>();
@@ -74,7 +73,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 			IIntegrationPointRepository integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
 
 			//Data Transfer Location
-
 			IDataTransferLocationServiceFactory lsFactory = Substitute.For<IDataTransferLocationServiceFactory>();
 			IDataTransferLocationService ls = Substitute.For<IDataTransferLocationService>();
 			ls.GetWorkspaceFileLocationRootPath(Arg.Any<int>()).Returns(_testDataDirectory);
@@ -82,7 +80,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 			_windsorContainer.Register(Component.For<IDataTransferLocationServiceFactory>().Instance(lsFactory));
 
 			//TestRdoSynchronizer
-
 			TestRdoSynchronizer synchronizer = new TestRdoSynchronizer(_windsorContainer.Resolve<IRelativityFieldQuery>(),
 				_windsorContainer.Resolve<IImportApiFactory>(),
 				_windsorContainer.Resolve<IImportJobFactory>(),
@@ -90,15 +87,12 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 			synchronizerFactory.CreateSynchronizer(Arg.Any<Guid>(), Arg.Any<string>()).Returns(synchronizer);
 
 			//RSAPI
-
 			IRSAPIService rsapiServiceMock = Substitute.For<IRSAPIService>();
 			caseServiceContext.RsapiService.Returns(rsapiServiceMock);
 
 			//Source library
-
 			IRelativityObjectManager objectManager = Substitute.For<IRelativityObjectManager>();
 			rsapiServiceMock.RelativityObjectManager.Returns(objectManager);
-
 
 			SourceProvider p = new SourceProvider();
 			p.Configuration = "{}";
@@ -109,8 +103,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 			objectManager.Read<SourceProvider>(Arg.Any<int>()).Returns(p);
 
 			//IpLibrary
-
-
 			_ip = new Data.IntegrationPoint();
 			_ip.SecuredConfiguration = "";
 			_ip.SourceProvider = -1;
@@ -118,7 +110,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 			integrationPointRepository.ReadWithFieldMappingAsync(Arg.Any<int>()).Returns(_ip);
 
 			//JobStopManager
-
 			IJobStopManager stopManager = Substitute.For<IJobStopManager>();
 			object syncRoot = new object();
 			stopManager.SyncRoot.Returns(syncRoot);
@@ -126,14 +117,12 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 				Arg.Any<IJobHistoryService>(), Arg.Any<Guid>(), Arg.Any<long>(), Arg.Any<bool>()).Returns(stopManager);
 
 			//Job History Service
-
 			JobHistory jobHistoryDto = new JobHistory();
 			jobHistoryService.GetOrCreateScheduledRunHistoryRdo(Arg.Any<Data.IntegrationPoint>(), Arg.Any<Guid>(), Arg.Any<DateTime>())
 				.Returns(jobHistoryDto);
 			jobHistoryService.GetRdo(Arg.Any<Guid>()).Returns(jobHistoryDto);
 
 			//Logging
-
 			IAPILog logger = Substitute.For<IAPILog>();
 			ILogFactory loggerFactory = Substitute.For<ILogFactory>();
 			helper.GetLoggerFactory().Returns(loggerFactory);
@@ -141,11 +130,11 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 			logger.ForContext<ImportService>().Returns(logger);
 
 			//Resolve concrete implementations
-
 			_serializer = _windsorContainer.Resolve<ISerializer>();
 			IDataReaderFactory dataReaderFactory = _windsorContainer.Resolve<IDataReaderFactory>();
 
-			_instanceUnderTest = new ImportServiceManager(helper,
+			_instanceUnderTest = new ImportServiceManager(
+				helper,
 				caseServiceContext,
 				synchronizerFactory,
 				managerFactory,
@@ -159,13 +148,14 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 				dataReaderFactory,
 				_importFileLocationService,
 				agentValidator,
-				integrationPointRepository);
+				integrationPointRepository
+			);
 		}
 
 		[OneTimeTearDown]
 		public void CleanUp()
 		{
-			WorkspaceService.DeleteWorkspace(_workspaceId);
+			Workspace.DeleteWorkspace(_workspaceId);
 		}
 
 		[TearDown]
