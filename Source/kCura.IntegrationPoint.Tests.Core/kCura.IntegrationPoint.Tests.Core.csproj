@@ -69,6 +69,7 @@
     <Compile Include="AgentTypeInformationHelper.cs" />
     <Compile Include="AuditHelper.cs" />
     <Compile Include="ClaimsPrincipalFactory.cs" />
+    <Compile Include="Constants\WorkspaceTemplateNames.cs" />
     <Compile Include="DBContextMockBuilder.cs" />
     <Compile Include="DocumentService.cs" />
     <Compile Include="DocumentTestDataBuilder.cs" />

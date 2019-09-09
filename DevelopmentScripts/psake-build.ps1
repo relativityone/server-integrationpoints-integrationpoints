@@ -314,7 +314,7 @@ task copy_test_dlls_to_lib_dir -depends create_lib_dir -precondition { return -n
             "Source\kCura.IntegrationPoints.Common.Tests\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.Common.Tests\bin\x64\*.xml",
             "Source\kCura.IntegrationPoints.Common.Tests\bin\x64\*.config",
-            "Source\Rip.SystemTests\SystemTestData",
+            "Source\Relativity.IntegrationPoints.FunctionalTests\SystemTests\SystemTestData",
             "Source\Rip.E2ETests\E2ETestData",
             "Source\kCura.IntegrationPoint.Tests.Core\ExternalDependencies",
             "Source\kCura.IntegrationPoint.Tests.Core\TestData",
@@ -469,18 +469,18 @@ task copy_test_dlls_to_lib_dir -depends create_lib_dir -precondition { return -n
             "Source\kCura.ScheduleQueue.Core.Tests.Integration\bin\x64\*.pdb",
             "Source\kCura.ScheduleQueue.Core.Tests.Integration\bin\x64\*.config",
             "Source\kCura.ScheduleQueue.Core.Tests.Integration\bin\x64\*.xml",
-            "Source\Rip.E2ETests\bin\x64\*.dll",
-            "Source\Rip.E2ETests\bin\x64\*.pdb",
-            "Source\Rip.E2ETests\bin\x64\*.config",
-            "Source\Rip.E2ETests\bin\x64\*.xml",
-            "Source\Rip.SystemTests\bin\x64\*.dll",
-            "Source\Rip.SystemTests\bin\x64\*.pdb",
-            "Source\Rip.SystemTests\bin\x64\*.config",
-            "Source\Rip.SystemTests\bin\x64\*.xml",
+			"Source\Rip.E2ETests\bin\x64\*.dll",
+			"Source\Rip.E2ETests\bin\x64\*.pdb",
+			"Source\Rip.E2ETests\bin\x64\*.config",
+			"Source\Rip.E2ETests\bin\x64\*.xml",
             "Source\kCura.IntegrationPoints.SourceProviderInstaller.Tests\bin\x64\*.dll",
             "Source\kCura.IntegrationPoints.SourceProviderInstaller.Tests\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.SourceProviderInstaller.Tests\bin\x64\*.config",
-            "Source\kCura.IntegrationPoints.SourceProviderInstaller.Tests\bin\x64\*.xml"
+            "Source\kCura.IntegrationPoints.SourceProviderInstaller.Tests\bin\x64\*.xml",
+			"Source\Relativity.IntegrationPoints.FunctionalTests\bin\x64\*.dll",
+            "Source\Relativity.IntegrationPoints.FunctionalTests\bin\x64\*.pdb",
+            "Source\Relativity.IntegrationPoints.FunctionalTests\bin\x64\*.config",
+            "Source\Relativity.IntegrationPoints.FunctionalTests\bin\x64\*.xml"
 
     foreach ($file in $test_files)
     {

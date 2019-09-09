@@ -25,7 +25,7 @@ interface Constants
 	final String UI_TESTS_RESULTS_REPORT_PATH = "$ARTIFACTS_PATH/UITestsResults.xml"
 	final String INTEGRATION_TESTS_IN_QUARANTINE_RESULTS_REPORT_PATH = "$ARTIFACTS_PATH/QuarantineIntegrationTestsResults.xml"
 	final String JEEVES_KNIFE_PATH = 'C:\\Python27\\Lib\\site-packages\\jeeves\\knife.rb'
-
+	final String UI_TESTS_NAMESPACE_REGEX = "(kCura\\.IntegrationPoints\\.UITests(\$|\\.))"
 }
 
 class RIPPipelineState
@@ -121,6 +121,11 @@ def isUISyncToggleOn()
 def isUISyncToggleOff()
 {
 	return env.JOB_NAME.contains(Constants.UI_SYNC_TOGGLE_OFF_JOB_NAME)
+}
+
+def isUITest(testType)
+{
+	return testType in [TestType.uiImportExport, TestType.uiSyncToggleOn, TestType.uiSyncToggleOff]
 }
 
 def getUITestType()
@@ -952,6 +957,16 @@ private withUiTestsByTypeTestFilter(testType)
 	}
 }
 
+private withUiTestsNamespace()
+{
+	return "namespace =~ /^(($Constants.UI_TESTS_NAMESPACE_REGEX).*)/"
+}
+
+private exceptUiTestsNamespace()
+{
+	return "namespace =~ /^((?!$Constants.UI_TESTS_NAMESPACE_REGEX).*)/"
+}
+
 /*
  * Get NUnit filter for particular test based also on the pipeline type - whether it is nightly or not
  * @param - testType - string value which should be equal to one of the values from TestType interface
@@ -963,9 +978,12 @@ private getTestsFilter(testType, params)
 	paramsTestsFilter = isQuarantine(testType)
 		? unionTestFilters(paramsTestsFilter, withQuarantinedTestFilter())
 		: unionTestFilters(paramsTestsFilter, exceptQuarantinedTestFilter())
-	paramsTestsFilter = testType in [TestType.uiImportExport, TestType.uiSyncToggleOn, TestType.uiSyncToggleOff]
+	paramsTestsFilter = isUITest(testType)
 		? unionTestFilters(paramsTestsFilter, withUiTestsByTypeTestFilter(testType))
 		: paramsTestsFilter
+	paramsTestsFilter = isUITest(testType)
+		? unionTestFilters(paramsTestsFilter, withUiTestsNamespace())
+		: unionTestFilters(paramsTestsFilter, exceptUiTestsNamespace())
 	return paramsTestsFilter
 }
 
