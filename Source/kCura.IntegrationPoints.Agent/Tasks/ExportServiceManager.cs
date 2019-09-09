@@ -188,7 +188,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				: _sourceSavedSearchArtifactID;
 
 			using (IExporterService exporter = _exporterFactory.BuildExporter(
-				JobStopManager, 
+				JobStopManager,
 				MappedFields.ToArray(),
 				IntegrationPointDto.SourceConfiguration,
 				savedSearchID,
@@ -443,10 +443,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				}
 				if (!_itemLevelErrorSavedSearchArtifactID.HasValue)
 				{
-					throw new ArgumentNullException(
-						nameof(_itemLevelErrorSavedSearchArtifactID), 
-						"Item level error saved search has not been created, so it cannot be deleted."
-					);
+					throw new InvalidOperationException(
+						"Item level error saved search has not been created, so it cannot be deleted.");
 				}
 
 				IJobHistoryErrorRepository jobHistoryErrorRepository =

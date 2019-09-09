@@ -95,14 +95,15 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		private static void SetupConfigValues()
 		{
-			//Data.RowDataGateway.Config.MockConfigurationValue("LongRunningQueryTimeout", 100);
 			Config.Config.SetConnectionString(SharedVariables.EddsConnectionString);
 			global::Relativity.Data.Config.InjectConfigSettings(new Dictionary<string, object>()
 			{
 				{"connectionString", SharedVariables.EddsConnectionString}
 			});
+
+			Data.RowDataGateway.Config.MockConfigurationValue("LongRunningQueryTimeout", 100);
 		}
-		
+
 		private void SetupAuthentication()
 		{
 			IProvideServiceUris serviceUrisProvider = Substitute.For<IProvideServiceUris>();
