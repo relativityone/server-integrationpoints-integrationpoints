@@ -9,7 +9,7 @@ using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Testing.Identification;
 
-namespace Rip.SystemTests.Repositories
+namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.Repositories
 {
 	[TestFixture]
 	public class IntegrationPointRepositoryTests
@@ -20,8 +20,8 @@ namespace Rip.SystemTests.Repositories
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
-			_sut = SystemTestsFixture.Container.Resolve<IIntegrationPointRepository>();
-			_objectManager = SystemTestsFixture.Container.Resolve<IRelativityObjectManager>();
+			_sut = SystemTestsSetupFixture.Container.Resolve<IIntegrationPointRepository>();
+			_objectManager = SystemTestsSetupFixture.Container.Resolve<IRelativityObjectManager>();
 		}
 
 		[IdentifiedTest("e9f2a23c-3eb8-4abc-ba8d-6fe32cfa7d60")]

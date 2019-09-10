@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoint.Tests.Core.Exceptions;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
@@ -10,6 +12,16 @@ namespace kCura.IntegrationPoint.Tests.Core
 {
 	public static class Workspace
 	{
+		public static int CreateWorkspace(string workspaceName)
+		{
+			return CreateWorkspace(workspaceName, WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME);
+		}
+
+		public static async Task<int> CreateWorkspaceAsync(string workspaceName, string templateName, ILogger log = null)
+		{
+			return await Task.Run(() => CreateWorkspace(workspaceName, templateName, log)).ConfigureAwait(false);
+		}
+
 		public static int CreateWorkspace(string workspaceName, string templateName, ILogger log = null)
 		{
 			if (string.IsNullOrEmpty(workspaceName))
@@ -32,7 +44,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 					if (!result.Success)
 					{
-						throw new Exception($"Failed creating workspace {workspaceName}. Result Message: {result.Message} [{Environment.CurrentDirectory}]");
+						throw new Exception(
+							$"Failed creating workspace {workspaceName}. Result Message: {result.Message} [{Environment.CurrentDirectory}]"
+						);
 					}
 
 					Status.WaitForProcessToComplete(proxy, result.ProcessID, log: log);
@@ -41,11 +55,32 @@ namespace kCura.IntegrationPoint.Tests.Core
 				}
 				catch (Exception ex)
 				{
-					throw new Exception($"An error occurred while creating workspace {workspaceName}. Error Message: {ex.Message}, error type: {ex.GetType()}", ex);
+					throw new Exception(
+						$"An error occurred while creating workspace {workspaceName}. Error Message: {ex.Message}, error type: {ex.GetType()}",
+						ex
+					);
 				}
 			}
 
 			return workspaceId;
+		}
+
+		public static bool CheckIfWorkspaceExists(string workspaceName)
+		{
+			if (string.IsNullOrEmpty(workspaceName))
+			{
+				throw new ArgumentException("Workspace name is not provided.");
+			}
+
+			using (IRSAPIClient proxy = Rsapi.CreateRsapiClient())
+			{
+				QueryResultSet<Relativity.Client.DTOs.Workspace> queryResult = QueryWorkspaceByName(
+					proxy,
+					workspaceName
+				);
+
+				return queryResult.Results != null && queryResult.Results.Any();
+			}
 		}
 
 		public static void EnableDataGrid(int workspaceId)
@@ -67,11 +102,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 					throw new Exception($"An error occurred while updating workspace {workspaceId}. Error Message: {ex.Message}, error type: {ex.GetType()}", ex);
 				}
 			}
-		}
-
-		public static async Task<int> CreateWorkspaceAsync(string workspaceName, string templateName, ILogger log = null)
-		{
-			return await Task.Run(() => CreateWorkspace(workspaceName, templateName, log)).ConfigureAwait(false);
 		}
 
 		public static void DeleteWorkspace(int workspaceArtifactId)
@@ -98,14 +128,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 			try
 			{
-				var workspaceNameCondition = new TextCondition(WorkspaceFieldNames.Name, TextConditionEnum.EqualTo, workspaceName);
-				var query = new Query<Relativity.Client.DTOs.Workspace>
-				{
-					Condition = workspaceNameCondition
-				};
-				query.Fields.Add(new FieldValue(WorkspaceFieldNames.Name));
-				Relativity.Client.DTOs.Workspace workspace = QueryWorkspace(proxy, query, 0).Results[0].Artifact;
-				return workspace;
+				return QueryWorkspaceByName(proxy, workspaceName).Results.Single().Artifact;
 			}
 			catch (Exception ex)
 			{
@@ -139,7 +162,18 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		public static QueryResultSet<Relativity.Client.DTOs.Workspace> QueryWorkspace(IRSAPIClient proxy, Query<Relativity.Client.DTOs.Workspace> query, int results)
+		private static QueryResultSet<Relativity.Client.DTOs.Workspace> QueryWorkspaceByName(IRSAPIClient proxy, string workspaceName)
+		{
+			var workspaceNameCondition = new TextCondition(WorkspaceFieldNames.Name, TextConditionEnum.EqualTo, workspaceName);
+			var query = new Query<Relativity.Client.DTOs.Workspace>
+			{
+				Condition = workspaceNameCondition
+			};
+			query.Fields.Add(new FieldValue(WorkspaceFieldNames.Name));
+			return QueryWorkspace(proxy, query, 0);
+		}
+
+		private static QueryResultSet<Relativity.Client.DTOs.Workspace> QueryWorkspace(IRSAPIClient proxy, Query<Relativity.Client.DTOs.Workspace> query, int results)
 		{
 			try
 			{
