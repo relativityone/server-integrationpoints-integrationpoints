@@ -3,6 +3,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using kCura.EventHandler.CustomAttributes;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using Polly;
 using Relativity.API;
@@ -16,6 +17,9 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 	[Guid("DC9F2F04-5095-4FAC-96A5-7D8A213A1463")]
 	public class IntegrationPointProfileMigrationEventHandler : IntegrationPointMigrationEventHandlerBase
 	{
+		private const int _MAX_RETRIES = 3;
+		private const double _EXPONENTIAL_SLEEP_BASE = 2;
+
 		private readonly Guid _integrationPointProfileObjectTypeGuid = Guid.Parse("6DC915A9-25D7-4500-97F7-07CB98A06F64");
 		private readonly Guid _destinationProviderObjectTypeGuid = Guid.Parse("d014f00d-f2c0-4e7a-b335-84fcb6eae980");
 
@@ -24,23 +28,28 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 		private readonly Guid _relativityDestinationProviderTypeGuid = Guid.Parse("74A863B9-00EC-4BB7-9B3E-1E22323010C6");
 
+		private readonly Func<int, TimeSpan> _sleepDurationProvider = i => TimeSpan.FromSeconds(Math.Pow(_EXPONENTIAL_SLEEP_BASE, i));
+
 		protected override string SuccessMessage => "Integration Point Profiles migrated successfully.";
 		protected override string GetFailureMessage(Exception ex) => $"Failed to migrate the Integration Point Profiles, because: {ex.Message}";
 
+
+		public IntegrationPointProfileMigrationEventHandler()
+		{
+		}
+
+		public IntegrationPointProfileMigrationEventHandler(IErrorService errorService, Func<int, TimeSpan> sleepDurationProvider) : base(errorService)
+		{
+			_sleepDurationProvider = sleepDurationProvider;
+		}
+
 		protected override void Run()
 		{
-			const int maxRetries = 3;
-			const double exponentialWaitBase = 2;
-
-			TimeSpan SleepDurationProvider(int i) =>
-				TimeSpan.FromSeconds(Math.Pow(exponentialWaitBase, i));
-
-			void OnRetry(Exception exception, TimeSpan timeSpan, int retryCount, Polly.Context ctx) =>
-				Logger.LogWarning(exception, "Migration of the Integration Point Profiles failed for {n} time. Waiting for {seconds} seconds.", retryCount, timeSpan.TotalSeconds);
-
 			Policy
 				.Handle<Exception>()
-				.WaitAndRetry(maxRetries, SleepDurationProvider, OnRetry)
+				.WaitAndRetryAsync(_MAX_RETRIES, _sleepDurationProvider, (exception, timeSpan, retryCount, ctx) =>
+					Logger.LogWarning(exception, "Migration of the Integration Point Profiles failed for {n} time. Waiting for {seconds} seconds.",
+						retryCount, timeSpan.TotalSeconds))
 				.ExecuteAsync(MigrateProfiles)
 				.GetAwaiter()
 				.GetResult();
