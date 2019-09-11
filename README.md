@@ -3,6 +3,8 @@
 This repository should serve as the template when migrating your project to Library CD or creating a new project using Library CD.
 Note: If you are going to start your project's repository using this template, you must replace the contents of this document with information specific to your project. For information on what your documentation should look like, refer to [this Einstein page](https://einstein.kcura.com/x/RglUB)
 
+test change
+
 ## Build Tasks
 
 This repository builds with Powershell through the `.\build.ps1` script. 
