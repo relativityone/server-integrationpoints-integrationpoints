@@ -1,19 +1,25 @@
-# Library Repository Template
+# Integration Points - Kepler Services Interfaces
 
-This repository should serve as the template when migrating your project to Library CD or creating a new project using Library CD.
-Note: If you are going to start your project's repository using this template, you must replace the contents of this document with information specific to your project. For information on what your documentation should look like, refer to [this Einstein page](https://einstein.kcura.com/x/RglUB)
+This repository contains interfaces for Kepler services provided by the Relativity Integration Points.
+Work on adjusting the repository to Trident is in progress and the README file shall be updated soon as a part of this effort.
 
-test change
-
-## Build Tasks
+## How to Build
 
 This repository builds with Powershell through the `.\build.ps1` script. 
 It supports standard tasks like `.\build.ps1 compile`, `.\build.ps1 test`, and `.\build.ps1 package`.
 
-## Online Documentation
+## How to Test
 
-For more information on Library CD, [view the documentation in Einstein](https://einstein.kcura.com/x/Kj-bC)
+TODO: <Instructions on how to run any local unit or integration tests. Which scripts to run, which environment variables are required, etc.>
+
+## Build Artifacts
+
+TODO: <List of artifacts that this repository publishes. E.g. a NuGet package, a RAP file, installers, etc.>
 
 ## Maintainers
 
-This repository is owned by the Tools Team. Please send any issues or feature requests to tools-support@relativity.com
+Buena Vista Coding Club
+
+## Miscellaneous
+  
+TODO: <Any other information you feel is necessary>
