@@ -38,7 +38,7 @@
 		<copy todir="${sdk.directory}\Web">
 			<fileset basedir="${source.provider.includes.directory}">
 				<include name="frame-messaging.js" />
-				<include name="jquery-3.3.1.js" />
+				<include name="jquery-3.4.1.js" />
 				<include name="jquery-postMessage.js" />
 			</fileset>
 		</copy>

@@ -13,6 +13,7 @@ Relativity.Telemetry.APM
 relativity.transfer.client
 Relativity.OAuth2Client
 Relativity.Toggles
+Relativity.Logging.Interfaces
 
 group TestPackages
 	FluentAssertions

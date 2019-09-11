@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
@@ -84,8 +85,8 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 				BatchInstance = new Guid().ToString(),
 				JobType = JobTypeChoices.JobHistoryRun,
 				JobStatus = testData.JobHistoryStatus,
-				ItemsTransferred = testData.DocsTransfered,
-				TotalItems = testData.DocsTransfered,
+				ItemsTransferred = testData.DocsTransferred,
+				TotalItems = testData.DocsTransferred,
 				ItemsWithErrors = 0,
 				DestinationWorkspace = testData.FullName,
 				DestinationInstance = FederatedInstanceManager.LocalInstance.Name,
@@ -125,13 +126,13 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			};
 			var jobHistory = client.GetJobHistoryAsync(request).Result;
 
-			Assert.That(jobHistory.TotalDocumentsPushed, Is.EqualTo(_expectedResult.Sum(x => x.DocsTransfered)));
+			Assert.That(jobHistory.TotalDocumentsPushed, Is.EqualTo(_expectedResult.Sum(x => x.DocsTransferred)));
 			Assert.That(jobHistory.TotalAvailable, Is.EqualTo(_expectedResult.Count));
 			Assert.That(jobHistory.Data.Length, Is.EqualTo(_expectedResult.Count));
 
 			foreach (var jobHistoryModel in jobHistory.Data)
 			{
-				Assert.That(_expectedResult.Any(x => x.DocsTransfered == jobHistoryModel.ItemsTransferred));
+				Assert.That(_expectedResult.Any(x => x.DocsTransferred == jobHistoryModel.ItemsTransferred));
 			}
 		}
 
@@ -148,13 +149,13 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			};
 			var jobHistory = client.GetJobHistoryAsync(request).Result;
 
-			Assert.That(jobHistory.TotalDocumentsPushed, Is.EqualTo(_expectedResult.Sum(x => x.DocsTransfered)));
+			Assert.That(jobHistory.TotalDocumentsPushed, Is.EqualTo(_expectedResult.Sum(x => x.DocsTransferred)));
 			Assert.That(jobHistory.TotalAvailable, Is.EqualTo(_expectedResult.Count));
 			Assert.That(jobHistory.Data.Length, Is.EqualTo(1));
 
 			var expectedTestData = _expectedResult[1];
 			Assert.That(jobHistory.Data[0].DestinationWorkspace, Is.EqualTo(expectedTestData.FullName));
-			Assert.That(jobHistory.Data[0].ItemsTransferred, Is.EqualTo(expectedTestData.DocsTransfered));
+			Assert.That(jobHistory.Data[0].ItemsTransferred, Is.EqualTo(expectedTestData.DocsTransferred));
 		}
 
 		[IdentifiedTest("c736309c-1f09-4a69-a436-ebd109610b0d")]
@@ -170,7 +171,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			};
 			var jobHistory = client.GetJobHistoryAsync(request).Result;
 
-			Assert.That(jobHistory.TotalDocumentsPushed, Is.EqualTo(_expectedResult.Sum(x => x.DocsTransfered)));
+			Assert.That(jobHistory.TotalDocumentsPushed, Is.EqualTo(_expectedResult.Sum(x => x.DocsTransferred)));
 			Assert.That(jobHistory.TotalAvailable, Is.EqualTo(_expectedResult.Count));
 			Assert.That(jobHistory.Data.Length, Is.EqualTo(0));
 		}
@@ -190,13 +191,13 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 
 			var testDataAfterPermission = _expectedResult.Where(x => !x.PreventUserAccess).ToList();
 
-			Assert.That(jobHistory.TotalDocumentsPushed, Is.EqualTo(testDataAfterPermission.Sum(x => x.DocsTransfered)));
+			Assert.That(jobHistory.TotalDocumentsPushed, Is.EqualTo(testDataAfterPermission.Sum(x => x.DocsTransferred)));
 			Assert.That(jobHistory.TotalAvailable, Is.EqualTo(testDataAfterPermission.Count));
 			Assert.That(jobHistory.Data.Length, Is.EqualTo(testDataAfterPermission.Count));
 
 			foreach (var jobHistoryModel in jobHistory.Data)
 			{
-				Assert.That(testDataAfterPermission.Any(x => x.DocsTransfered == jobHistoryModel.ItemsTransferred));
+				Assert.That(testDataAfterPermission.Any(x => x.DocsTransferred == jobHistoryModel.ItemsTransferred));
 			}
 		}
 
@@ -233,7 +234,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 		{
 			public int WorkspaceId { get; private set; }
 			private string WorkspaceName { get; set; }
-			public int DocsTransfered { get; private set; }
+			public int DocsTransferred { get; private set; }
 			public string FullName => $"{FederatedInstanceManager.LocalInstance.Name} - {WorkspaceName} - {WorkspaceId}";
 			public bool PreventUserAccess { get; set; }
 			public bool DeletedAfterRun { get; set; }
@@ -243,16 +244,16 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			public static IList<TestData> Create(int sourceWorkspaceId)
 			{
 				var workspaceName = $"target_1_{Utils.FormattedDateTimeNow}";
-				var workspaceId = Workspace.CreateWorkspace(workspaceName, WorkspaceTemplates.NEW_CASE_TEMPLATE);
+				var workspaceId = Workspace.CreateWorkspace(workspaceName);
 
 				var workspaceNoAccessName = $"target_2_{Utils.FormattedDateTimeNow}";
-				var workspaceNoAccessId = Workspace.CreateWorkspace(workspaceNoAccessName, WorkspaceTemplates.NEW_CASE_TEMPLATE);
+				var workspaceNoAccessId = Workspace.CreateWorkspace(workspaceNoAccessName);
 
 				var testCase1 = new TestData
 				{
 					WorkspaceName = workspaceNoAccessName,
 					WorkspaceId = workspaceNoAccessId,
-					DocsTransfered = 17,
+					DocsTransferred = 17,
 					JobHistoryStatus = JobStatusChoices.JobHistoryCompleted,
 					PreventUserAccess = true
 				};
@@ -260,14 +261,14 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 				{
 					WorkspaceName = workspaceName,
 					WorkspaceId = workspaceId,
-					DocsTransfered = 11,
+					DocsTransferred = 11,
 					JobHistoryStatus = JobStatusChoices.JobHistoryCompletedWithErrors
 				};
 				var testCase3 = new TestData
 				{
 					WorkspaceName = workspaceName,
 					WorkspaceId = workspaceId,
-					DocsTransfered = 31,
+					DocsTransferred = 31,
 					JobHistoryStatus = JobStatusChoices.JobHistoryCompletedWithErrors,
 					DeletedAfterRun = true
 				};
@@ -275,49 +276,49 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 				{
 					WorkspaceName = workspaceName,
 					WorkspaceId = workspaceId,
-					DocsTransfered = 23,
+					DocsTransferred = 23,
 					JobHistoryStatus = JobStatusChoices.JobHistoryCompleted
 				};
 				var testCase5 = new TestData
 				{
 					WorkspaceName = workspaceName,
 					WorkspaceId = workspaceId,
-					DocsTransfered = 59,
+					DocsTransferred = 59,
 					JobHistoryStatus = JobStatusChoices.JobHistoryStopped
 				};
 				var testCase6 = new TestData
 				{
 					WorkspaceName = workspaceName,
 					WorkspaceId = workspaceId,
-					DocsTransfered = 47,
+					DocsTransferred = 47,
 					JobHistoryStatus = JobStatusChoices.JobHistoryStopping
 				};
 				var testCase7 = new TestData
 				{
 					WorkspaceName = workspaceName,
 					WorkspaceId = workspaceId,
-					DocsTransfered = 41,
+					DocsTransferred = 41,
 					JobHistoryStatus = JobStatusChoices.JobHistoryErrorJobFailed
 				};
 				var testCase8 = new TestData
 				{
 					WorkspaceName = workspaceName,
 					WorkspaceId = workspaceId,
-					DocsTransfered = 61,
+					DocsTransferred = 61,
 					JobHistoryStatus = JobStatusChoices.JobHistoryPending
 				};
 				var testCase9 = new TestData
 				{
 					WorkspaceName = workspaceName,
 					WorkspaceId = workspaceId,
-					DocsTransfered = 53,
+					DocsTransferred = 53,
 					JobHistoryStatus = JobStatusChoices.JobHistoryProcessing
 				};
 				var testCase10 = new TestData
 				{
 					WorkspaceName = "workspace",
 					WorkspaceId = sourceWorkspaceId,
-					DocsTransfered = 29,
+					DocsTransferred = 29,
 					JobHistoryStatus = JobStatusChoices.JobHistoryCompleted,
 					IsLdapProvider = true
 				};
