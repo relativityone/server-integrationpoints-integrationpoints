@@ -15,14 +15,19 @@ namespace kCura.ScheduleQueue.AgentBase
 		private IJobService _jobService;
 		private const int _MAX_MESSAGE_LENGTH = 10000;
 		private readonly Guid _agentGuid;
+		private readonly Lazy<IAPILog> _loggerLazy;
 		private static readonly Dictionary<LogCategory, int> _logCategoryToLogLevelMapping = new Dictionary<LogCategory, int>
 		{
 			[LogCategory.Debug] = 20,
 			[LogCategory.Info] = 10
 		};
-		protected IAPILog Logger { get; set; }
 
-		public ScheduleQueueAgentBase(Guid agentGuid,
+		protected IAPILog Logger
+		{
+			get { return _loggerLazy.Value; }
+		}
+
+		protected ScheduleQueueAgentBase(Guid agentGuid,
 			IAgentService agentService = null, IJobService jobService = null,
 			IScheduleRuleFactory scheduleRuleFactory = null)
 		{
@@ -30,16 +35,14 @@ namespace kCura.ScheduleQueue.AgentBase
 			AgentService = agentService;
 			_jobService = jobService;
 			ScheduleRuleFactory = scheduleRuleFactory ?? new DefaultScheduleRuleFactory();
+			_loggerLazy = new Lazy<IAPILog>(InitializeLogger);
 		}
 
-		public IAgentService AgentService { get; private set; }
-		public IScheduleRuleFactory ScheduleRuleFactory { get; private set; }
+		private IAgentService AgentService { get; set; }
+		public IScheduleRuleFactory ScheduleRuleFactory { get; }
 
 		protected virtual void Initialize()
 		{
-			//Logger cannot be initialized in constructor because Helper from Agent.Base is initialized later on
-			Logger = Helper.GetLoggerFactory().GetLogger().ForContext<ScheduleQueueAgentBase>();
-
 			NotifyAgentTab(LogCategory.Debug, "Initialize Agent core services");
 
 			if (AgentService == null)
@@ -55,9 +58,10 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		public sealed override void Execute()
 		{
-			NotifyAgentTab(LogCategory.Debug, "Started.");
 
 			bool isPreExecuteSuccessful = PreExecute();
+			NotifyAgentTab(LogCategory.Debug, "Started.");
+
 			if (isPreExecuteSuccessful)
 			{
 				ProcessQueueJobs();
@@ -109,7 +113,7 @@ namespace kCura.ScheduleQueue.AgentBase
 			return GetResourceGroupIDs();
 		}
 
-		public void ProcessQueueJobs()
+		private void ProcessQueueJobs()
 		{
 			try
 			{
@@ -197,7 +201,7 @@ namespace kCura.ScheduleQueue.AgentBase
 			{
 				case LogCategory.Debug:
 					RaiseMessageNoLogging(msg, _logCategoryToLogLevelMapping[LogCategory.Debug]);
-					Logger?.LogDebug(message);
+					Logger.LogDebug(message);
 					break;
 				case LogCategory.Info:
 					RaiseMessage(msg, _logCategoryToLogLevelMapping[LogCategory.Info]);
@@ -215,6 +219,16 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		protected abstract void LogJobState(Job job, JobLogState state, Exception exception = null,
 			string details = null);
+
+		private IAPILog InitializeLogger()
+		{
+			if (Helper == null)
+			{
+				NotifyAgentTab(LogCategory.Exception, "Logger initialization failed. Helper is null.");
+			}
+
+			return Helper.GetLoggerFactory().GetLogger().ForContext<ScheduleQueueAgentBase>();
+		}
 
 		#region Logging
 
