@@ -12,7 +12,7 @@ namespace LibraryTemplate
 
 		public Class1(string name)
 		{
-			Name = name;fail!
+			Name = name;
 		}
 
 		public string GetName()
