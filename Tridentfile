@@ -1,5 +1,5 @@
 @Library('ProjectMayhem@v1') _
 
 libraryCD {
-    slackChannel = "librarytemplate"
+    slackChannel = "cd_rip_kepler_services_interfaces"
 }
