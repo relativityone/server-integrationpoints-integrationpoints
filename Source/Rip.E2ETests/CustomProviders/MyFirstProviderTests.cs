@@ -9,7 +9,6 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Services;
 using NUnit.Framework;
 using Relativity.Services.Folder;
@@ -142,13 +141,13 @@ namespace Rip.E2ETests.CustomProviders
 				FieldMapType = mapping.Key == testCase.IdentifierFieldName
 					? FieldMapTypeEnum.Identifier
 					: FieldMapTypeEnum.None,
-				SourceField = new FieldEntry
+				SourceField = new kCura.IntegrationPoints.Services.FieldEntry
 				{
 					FieldIdentifier = mapping.Value,
 					DisplayName = mapping.Value,
 					IsIdentifier = mapping.Key == testCase.IdentifierFieldName
 				},
-				DestinationField = new FieldEntry
+				DestinationField = new kCura.IntegrationPoints.Services.FieldEntry
 				{
 					FieldIdentifier = fieldNamesToArtifactIDMapping[mapping.Key].ToString(),
 					DisplayName = mapping.Key,

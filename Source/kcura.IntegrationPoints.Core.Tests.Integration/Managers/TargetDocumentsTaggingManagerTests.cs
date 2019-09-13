@@ -8,6 +8,7 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
@@ -27,6 +28,7 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Testing.Identification;
+using FieldType = kCura.IntegrationPoints.Contracts.Models.FieldType;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 {
@@ -40,7 +42,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 		private ISynchronizerFactory _synchronizerFactory;
 		private IJobHistoryService _jobHistoryService;
 		private IFieldQueryRepository _fieldQueryRepository;
-		private FieldMap[] _fieldMaps;
+		private IntegrationPoints.Services.FieldMap[] _fieldMaps;
 		private ISerializer _serializer;
 		private IHelper _helper;
 		private const int _ADMIN_USER_ID = 9;
@@ -92,6 +94,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 
 			SourceConfiguration sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(serializedSourceConfig);
 			string destinationConfig = AppendWebAPIPathToImportSettings(integrationPoint.DestinationConfiguration);
+			FieldMap[] fieldMaps = ConvertFieldMaps(_fieldMaps);
 			var targetDocumentsTaggingManagerFactory = new TargetDocumentsTaggingManagerFactory(
 				_repositoryFactory,
 				_tagsCreator,
@@ -100,7 +103,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 				_synchronizerFactory,
 				_helper,
 				_serializer,
-				_fieldMaps,
+				fieldMaps,
 				sourceConfiguration,
 				destinationConfig,
 				jobHistory.ArtifactId,
@@ -123,6 +126,44 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 					jobHistory.Name,
 					expectedRelativitySourceCase)
 				.ConfigureAwait(false);
+		}
+
+		private FieldMap[] ConvertFieldMaps(IntegrationPoints.Services.FieldMap[] oldMaps)
+		{
+			return oldMaps.Select(ConvertFieldMap).ToArray();
+		}
+
+		private FieldMap ConvertFieldMap(IntegrationPoints.Services.FieldMap fieldMap)
+		{
+			return new FieldMap
+			{
+				DestinationField = ConvertFieldEntry(fieldMap.DestinationField),
+				FieldMapType = ConvertFieldMapType(fieldMap.FieldMapType),
+				SourceField = ConvertFieldEntry(fieldMap.SourceField)
+			};
+		}
+
+		private FieldEntry ConvertFieldEntry(IntegrationPoints.Services.FieldEntry fieldEntry)
+		{
+			return new FieldEntry()
+			{
+				DisplayName = fieldEntry.DisplayName,
+				FieldIdentifier = fieldEntry.FieldIdentifier,
+				FieldType = ConvertFieldType(fieldEntry.FieldType),
+				IsIdentifier = fieldEntry.IsIdentifier,
+				IsRequired = fieldEntry.IsRequired,
+				Type = fieldEntry.Type
+			};
+		}
+
+		private FieldType ConvertFieldType(IntegrationPoints.Services.FieldType fieldType)
+		{
+			return (FieldType) Enum.Parse(typeof(FieldType), fieldType.ToString());
+		}
+
+		private FieldMapTypeEnum ConvertFieldMapType(IntegrationPoints.Services.FieldMapTypeEnum fieldMapTypeEnum)
+		{
+			return (FieldMapTypeEnum)Enum.Parse(typeof(FieldMapTypeEnum), fieldMapTypeEnum.ToString());
 		}
 
 		private Task<Data.IntegrationPoint> CreateAndGetIntegrationPoint(string serializedSourceConfig)
