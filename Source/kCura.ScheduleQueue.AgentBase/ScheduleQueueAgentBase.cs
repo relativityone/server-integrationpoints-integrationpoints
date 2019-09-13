@@ -12,6 +12,8 @@ namespace kCura.ScheduleQueue.AgentBase
 {
 	public abstract class ScheduleQueueAgentBase : Agent.AgentBase
 	{
+
+		private IAgentService _agentService;
 		private IJobService _jobService;
 		private const int _MAX_MESSAGE_LENGTH = 10000;
 		private readonly Guid _agentGuid;
@@ -32,27 +34,25 @@ namespace kCura.ScheduleQueue.AgentBase
 			IScheduleRuleFactory scheduleRuleFactory = null)
 		{
 			_agentGuid = agentGuid;
-			AgentService = agentService;
+			_agentService = agentService;
 			_jobService = jobService;
 			ScheduleRuleFactory = scheduleRuleFactory ?? new DefaultScheduleRuleFactory();
 			_loggerLazy = new Lazy<IAPILog>(InitializeLogger);
 		}
-
-		private IAgentService AgentService { get; set; }
 		public IScheduleRuleFactory ScheduleRuleFactory { get; }
 
 		protected virtual void Initialize()
 		{
 			NotifyAgentTab(LogCategory.Debug, "Initialize Agent core services");
 
-			if (AgentService == null)
+			if (_agentService == null)
 			{
-				AgentService = new AgentService(Helper, _agentGuid);
+				_agentService = new AgentService(Helper, _agentGuid);
 			}
 
 			if (_jobService == null)
 			{
-				_jobService = new JobService(AgentService, new JobServiceDataProvider(AgentService, Helper), Helper);
+				_jobService = new JobService(_agentService, new JobServiceDataProvider(_agentService, Helper), Helper);
 			}
 		}
 
@@ -105,7 +105,7 @@ namespace kCura.ScheduleQueue.AgentBase
 		{
 			NotifyAgentTab(LogCategory.Debug, "Check Schedule Agent Queue table exists");
 
-			AgentService.InstallQueueTable();
+			_agentService.InstallQueueTable();
 		}
 
 		protected virtual IEnumerable<int> GetListOfResourceGroupIDs() // this method was added for unit testing purpose
