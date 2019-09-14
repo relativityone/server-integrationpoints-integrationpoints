@@ -30,7 +30,9 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
 		public static ITestHelper TestHelper { get; private set; }
 
 		public static int WorkspaceID { get; private set; }
+		public static string WorkspaceName { get; private set; }
 		public static int DestinationWorkspaceID { get; private set; }
+		public static string DestinationWorkspaceName { get; private set; }
 
 		[OneTimeSetUp]
 		public void InitializeFixtureAsync()
@@ -47,13 +49,15 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
 		
 		private static void CreateAndConfigureWorkspaces()
 		{
+			WorkspaceName= $"Rip.SystemTests-{DateTime.Now.Ticks}";
 			WorkspaceID = Workspace.CreateWorkspace(
-				workspaceName: $"Rip.SystemTests-{DateTime.Now.Ticks}",
+				workspaceName: WorkspaceName,
 				templateName: WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME
 			);
 
+			DestinationWorkspaceName = $"Rip.SystemTests.Destination-{DateTime.Now.Ticks}";
 			DestinationWorkspaceID = Workspace.CreateWorkspace(
-				workspaceName: $"Rip.SystemTests.Destination-{DateTime.Now.Ticks}",
+				workspaceName: DestinationWorkspaceName,
 				templateName: WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME
 			);
 		}
