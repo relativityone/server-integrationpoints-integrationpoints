@@ -79,7 +79,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 			_teardownActions.Add(() => Workspace.DeleteWorkspace(workspaceArtifactId));
 
 			// Assert
-			await VerifyProfilesInDestinationWorkspaceAreAllSyncOnlyAndHaveProperValuesSet(workspaceArtifactId).ConfigureAwait(false);
+			await VerifyAllProfilesInDestinationWorkspaceAreSyncOnlyAndHaveProperValuesSet(workspaceArtifactId).ConfigureAwait(false);
 		}
 
 		[TearDown]
@@ -91,7 +91,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 			}
 		}
 
-		private static async Task VerifyProfilesInDestinationWorkspaceAreAllSyncOnlyAndHaveProperValuesSet(int targetWorkspaceId)
+		private static async Task VerifyAllProfilesInDestinationWorkspaceAreSyncOnlyAndHaveProperValuesSet(int targetWorkspaceId)
 		{
 			var objectManager = CreateRelativityObjectManagerForWorkspace(targetWorkspaceId);
 
