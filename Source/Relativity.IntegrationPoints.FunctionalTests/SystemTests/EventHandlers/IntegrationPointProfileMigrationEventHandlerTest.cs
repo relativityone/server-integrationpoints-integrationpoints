@@ -260,12 +260,12 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 
 		private static IRelativityObjectManager CreateRelativityObjectManagerForWorkspace(int workspaceId) =>
 			SystemTestsSetupFixture.Container.Resolve<IRelativityObjectManagerFactory>().CreateRelativityObjectManager(workspaceId);
-	}
 
-	internal class ProfileConfig
-	{
-		public string SourceProviderGuid { get; set; }
-		public string DestinationProviderGuid { get; set; }
-		public string TypeName { get; set; }
+		private class ProfileConfig
+		{
+			public string SourceProviderGuid { get; set; }
+			public string DestinationProviderGuid { get; set; }
+			public string TypeName { get; set; }
+		}
 	}
 }
