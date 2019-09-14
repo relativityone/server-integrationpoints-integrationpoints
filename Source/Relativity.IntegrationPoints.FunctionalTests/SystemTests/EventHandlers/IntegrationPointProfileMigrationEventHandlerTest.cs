@@ -85,9 +85,9 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 		[TearDown]
 		public void TearDown()
 		{
-			foreach (var teardownTask in _teardownActions)
+			foreach (var teardownAction in _teardownActions)
 			{
-				teardownTask();
+				teardownAction();
 			}
 		}
 
