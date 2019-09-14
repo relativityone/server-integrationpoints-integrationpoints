@@ -26,25 +26,33 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 		private Mock<IEHHelper> _eventHandlerHelper;
 		private Mock<IObjectManager> _objectManager;
 		private Mock<IServicesMgr> _servicesManager;
+		private List<int> _nonSyncProfilesArtifactIds;
 
-		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 100111;
-		private const int _DESTINATION_WORKSPACE_ARTIFACT_ID = 100222;
-		private const int _DESTINATION_PROVIDER_ARTIFACT_ID = 100333;
 		private const string _TEST_EXCEPTION_GUID = "EED05107-CB7F-4916-BC1C-C8DB3C8597C8";
+		private const int _TEMPLATE_WORKSPACE_ARTIFACT_ID = 100111;
+		private const int _CREATED_WORKSPACE_ARTIFACT_ID = 200111;
+		private const int _DESTINATION_PROVIDER_IN_TEMPLATE_WORKSPACE_ARTIFACT_ID = 100222;
+		private const int _SOURCE_PROVIDER_IN_TEMPLATE_WORKSPACE_ARTIFACT_ID = 100333;
+		private const int _STARTING_ARTIFACT_ID_OF_CREATED_PROFILES = 300444;
 		private const int _RETRY_TIMES = 3;
+		private const int _TOTAL_PROFILES_COUNT = 5;
 
-		private readonly Guid _destinationProviderFieldOnProfileObjectGuid = Guid.Parse("7d9e7944-bf13-4c4f-a9eb-5f60e683ec0c");
-		private readonly Guid _integrationPointProfileObjectTypeGuid = Guid.Parse("6DC915A9-25D7-4500-97F7-07CB98A06F64");
+		private static readonly Guid _integrationPointProfileObjectTypeGuid = Guid.Parse("6DC915A9-25D7-4500-97F7-07CB98A06F64");
+		private static readonly Guid _destinationProviderObjectTypeGuid = Guid.Parse("d014f00d-f2c0-4e7a-b335-84fcb6eae980");
+		private static readonly Guid _sourceProviderObjectTypeGuid = Guid.Parse("5BE4A1F7-87A8-4CBE-A53F-5027D4F70B80");
 
 		private static readonly Func<ServiceException> CreateTestException = () => new ServiceException(_TEST_EXCEPTION_GUID);
 
 		public static IEnumerable<Action<IntegrationPointProfileMigrationEventHandlerTests>> ServicesFailureSetups { get; } = new Action<IntegrationPointProfileMigrationEventHandlerTests>[]
 		{
 			ctx => ctx._objectManager
-				.Setup(x => x.QueryAsync(_DESTINATION_WORKSPACE_ARTIFACT_ID, It.IsAny<QueryRequest>(), 0, 1))
+				.Setup(x => x.QueryAsync(_TEMPLATE_WORKSPACE_ARTIFACT_ID, It.IsAny<QueryRequest>(), 0, 1))
 				.ThrowsAsync(CreateTestException()),
 			ctx => ctx._objectManager
-				.Setup(x => x.DeleteAsync(_DESTINATION_WORKSPACE_ARTIFACT_ID, It.IsAny<MassDeleteByCriteriaRequest>()))
+				.Setup(x => x.QueryAsync(_TEMPLATE_WORKSPACE_ARTIFACT_ID, It.IsAny<QueryRequest>(), 0, int.MaxValue))
+				.ThrowsAsync(CreateTestException()),
+			ctx => ctx._objectManager
+				.Setup(x => x.DeleteAsync(_CREATED_WORKSPACE_ARTIFACT_ID, It.IsAny<MassDeleteByCriteriaRequest>()))
 				.ThrowsAsync(CreateTestException()),
 			ctx => ctx._servicesManager
 				.Setup(x => x.CreateProxy<IObjectManager>(It.IsAny<ExecutionIdentity>()))
@@ -56,8 +64,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 
 		public static IEnumerable<Action<IntegrationPointProfileMigrationEventHandlerTests>> InvalidResultsSetups { get; } = new Action<IntegrationPointProfileMigrationEventHandlerTests>[]
 		{
-			ctx => ctx.SetUpObjectManagerQueryCall(0),
-			ctx => ctx.SetUpObjectManagerDeleteCall(false)
+			ctx => ctx.SetUpObjectManagerQueryForSingleObjectCall(_TEMPLATE_WORKSPACE_ARTIFACT_ID, _destinationProviderObjectTypeGuid, _DESTINATION_PROVIDER_IN_TEMPLATE_WORKSPACE_ARTIFACT_ID, false),
+			ctx => ctx.SetUpObjectManagerQueryForSingleObjectCall(_TEMPLATE_WORKSPACE_ARTIFACT_ID, _sourceProviderObjectTypeGuid, _SOURCE_PROVIDER_IN_TEMPLATE_WORKSPACE_ARTIFACT_ID, false),
+			ctx => ctx.SetUpObjectManagerMassDeleteCall(false)
 		};
 
 		[SetUp]
@@ -72,7 +81,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 			_eventHandler = new IntegrationPointProfileMigrationEventHandler(_errorService.Object, i => TimeSpan.Zero)
 			{
 				Helper = _eventHandlerHelper.Object,
-				TemplateWorkspaceID = _SOURCE_WORKSPACE_ARTIFACT_ID
+				TemplateWorkspaceID = _TEMPLATE_WORKSPACE_ARTIFACT_ID
 			};
 
 			var loggerFactory = new Mock<ILogFactory>();
@@ -88,7 +97,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 
 			_eventHandlerHelper
 				.Setup(x => x.GetActiveCaseID())
-				.Returns(_DESTINATION_WORKSPACE_ARTIFACT_ID);
+				.Returns(_CREATED_WORKSPACE_ARTIFACT_ID);
 
 			_eventHandlerHelper
 				.Setup(x => x.GetServicesManager())
@@ -98,12 +107,14 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 				.Setup(x => x.CreateProxy<IObjectManager>(It.IsAny<ExecutionIdentity>()))
 				.Returns(_objectManager.Object);
 
-			SetUpObjectManagerQueryCall();
+			SetUpObjectManagerQueryForSingleObjectCall(_TEMPLATE_WORKSPACE_ARTIFACT_ID, _destinationProviderObjectTypeGuid, _DESTINATION_PROVIDER_IN_TEMPLATE_WORKSPACE_ARTIFACT_ID);
+			SetUpObjectManagerQueryForSingleObjectCall(_TEMPLATE_WORKSPACE_ARTIFACT_ID, _sourceProviderObjectTypeGuid, _SOURCE_PROVIDER_IN_TEMPLATE_WORKSPACE_ARTIFACT_ID);
+			SetUpObjectManagerQueryForNonSyncProfilesCall(_TEMPLATE_WORKSPACE_ARTIFACT_ID, _TOTAL_PROFILES_COUNT);
 
-			SetUpObjectManagerDeleteCall(true);
+			SetUpObjectManagerMassDeleteCall(true);
 		}
 
-		private void SetUpObjectManagerDeleteCall(bool isSuccessful)
+		private void SetUpObjectManagerMassDeleteCall(bool isSuccessful)
 		{
 			var massDeleteResult = new MassDeleteResult
 			{
@@ -111,26 +122,50 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 			};
 
 			_objectManager
-				.Setup(x => x.DeleteAsync(_DESTINATION_WORKSPACE_ARTIFACT_ID, It.IsAny<MassDeleteByCriteriaRequest>()))
+				.Setup(x => x.DeleteAsync(_CREATED_WORKSPACE_ARTIFACT_ID, It.IsAny<MassDeleteByCriteriaRequest>()))
 				.ReturnsAsync(massDeleteResult);
 		}
 
-		private void SetUpObjectManagerQueryCall(int totalCount = 1)
+		private void SetUpObjectManagerQueryForSingleObjectCall(int workspaceId, Guid objectTypeGuid, int relativityObjectArtifactId, bool isSuccessful = true)
 		{
-			const int length = 1;
-			int resultCount = Math.Min(length, totalCount);
-			var destinationProviderObject = new RelativityObject { ArtifactID = _DESTINATION_PROVIDER_ARTIFACT_ID };
-			var relativityObjects = new List<RelativityObject> { destinationProviderObject };
+			var destinationProviderObject = new RelativityObject { ArtifactID = relativityObjectArtifactId };
+			var relativityObjects = new List<RelativityObject>();
+
+			if (isSuccessful)
+			{
+				relativityObjects.Add(destinationProviderObject);
+			}
 
 			var syncDestinationProviderQueryResult = new QueryResult
 			{
-				Objects = relativityObjects.Take(resultCount).ToList(),
-				ResultCount = resultCount,
+				Objects = relativityObjects,
+				ResultCount = relativityObjects.Count,
+				TotalCount = relativityObjects.Count
+			};
+
+			_objectManager
+				.Setup(x => x.QueryAsync(workspaceId, It.Is<QueryRequest>(request => request.ObjectType.Guid.Equals(objectTypeGuid)), 0, 1))
+				.ReturnsAsync(syncDestinationProviderQueryResult);
+		}
+
+		private void SetUpObjectManagerQueryForNonSyncProfilesCall(int workspaceId, int totalCount)
+		{
+			_nonSyncProfilesArtifactIds = Enumerable
+				.Range(_STARTING_ARTIFACT_ID_OF_CREATED_PROFILES, totalCount)
+				.ToList();
+			List<RelativityObject> relativityObjects = _nonSyncProfilesArtifactIds
+				.Select(i => new RelativityObject { ArtifactID = i })
+				.ToList();
+
+			var syncDestinationProviderQueryResult = new QueryResult
+			{
+				Objects = relativityObjects,
+				ResultCount = totalCount,
 				TotalCount = totalCount
 			};
 
 			_objectManager
-				.Setup(x => x.QueryAsync(_DESTINATION_WORKSPACE_ARTIFACT_ID, It.IsAny<QueryRequest>(), 0, length))
+				.Setup(x => x.QueryAsync(workspaceId, It.Is<QueryRequest>(request => request.ObjectType.Guid.Equals(_integrationPointProfileObjectTypeGuid)), 0, int.MaxValue))
 				.ReturnsAsync(syncDestinationProviderQueryResult);
 		}
 
@@ -193,7 +228,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 			}
 
 			_objectManager
-				.Setup(x => x.DeleteAsync(_DESTINATION_WORKSPACE_ARTIFACT_ID, It.IsAny<MassDeleteByCriteriaRequest>()))
+				.Setup(x => x.DeleteAsync(_CREATED_WORKSPACE_ARTIFACT_ID, It.IsAny<MassDeleteByCriteriaRequest>()))
 				.Returns(() => Task.FromResult(CreateResult()));
 
 			// Act
@@ -217,20 +252,42 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 		}
 
 		[Test]
+		public void ItShouldDoNothingWhenThereAreNoNonSyncProfiles()
+		{
+			// Arrange
+			SetUpObjectManagerQueryForNonSyncProfilesCall(_TEMPLATE_WORKSPACE_ARTIFACT_ID, 0);
+
+			// Act
+			Response response = _eventHandler.Execute();
+
+			// Assert
+			response.Success.Should().BeTrue("handler should have completed successfully");
+			response.Exception.Should().BeNull("there was no failure");
+
+			_objectManager
+				.Verify(x => x.DeleteAsync(_CREATED_WORKSPACE_ARTIFACT_ID,
+					It.Is<MassDeleteByCriteriaRequest>(request =>
+						request.ObjectIdentificationCriteria.ObjectType.Guid.Equals(_integrationPointProfileObjectTypeGuid))),
+					Times.Never);
+		}
+
+		[Test]
 		public void ItShouldMassDeleteNonSyncProfiles()
 		{
 			// Act
 			Response response = _eventHandler.Execute();
 
 			//Assert
-			response.Success.Should().BeTrue("handler should completed successfully");
+			response.Success.Should().BeTrue("handler should have completed successfully");
 			response.Exception.Should().BeNull("there was no failure");
 
-			string deleteNonSyncProfilesCondition = new ObjectCondition(_destinationProviderFieldOnProfileObjectGuid, ObjectConditionEnum.EqualTo, _DESTINATION_PROVIDER_ARTIFACT_ID).Negate().ToQueryString();
+			Condition expectedCondition = new WholeNumberCondition("ArtifactID", NumericConditionEnum.In, _nonSyncProfilesArtifactIds);
 			_objectManager
-				.Verify(x => x.DeleteAsync(_DESTINATION_WORKSPACE_ARTIFACT_ID,
-						It.Is<MassDeleteByCriteriaRequest>(request => request.ObjectIdentificationCriteria.Condition.Equals(deleteNonSyncProfilesCondition, StringComparison.OrdinalIgnoreCase) &&
-																	  request.ObjectIdentificationCriteria.ObjectType.Guid.Equals(_integrationPointProfileObjectTypeGuid))), Times.Once);
+				.Verify(x => x.DeleteAsync(_CREATED_WORKSPACE_ARTIFACT_ID,
+						It.Is<MassDeleteByCriteriaRequest>(request =>
+							request.ObjectIdentificationCriteria.ObjectType.Guid.Equals(_integrationPointProfileObjectTypeGuid) &&
+							request.ObjectIdentificationCriteria.Condition.Equals(expectedCondition.ToQueryString(), StringComparison.OrdinalIgnoreCase))),
+					Times.Once);
 		}
 	}
 }
