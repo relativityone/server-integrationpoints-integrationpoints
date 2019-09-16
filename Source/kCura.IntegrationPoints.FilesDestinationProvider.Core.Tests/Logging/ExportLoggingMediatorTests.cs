@@ -10,6 +10,7 @@ using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.DataExchange.Process;
+using Relativity.DataExchange.Transfer;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 {
@@ -42,11 +43,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 		[Test]
 		public void ItShouldLogFileTransferModeChangeAsInfo()
 		{
-			const string newMode = "new_mode";
+			_exporterStatusNotification.FileTransferMultiClientModeChangeEvent += Raise.Event<IExporterStatusNotification.FileTransferMultiClientModeChangeEventEventHandler>(this, new TapiMultiClientEventArgs(TapiClient.Aspera));
 
-			_exporterStatusNotification.FileTransferModeChangeEvent += Raise.Event<IExporterStatusNotification.FileTransferModeChangeEventEventHandler>(newMode);
-
-			_apiLog.Received().LogInformation(_fileTransferTemplateMessage, newMode);
+			_apiLog.Received().LogInformation(_fileTransferTemplateMessage, TapiClient.Aspera.ToString());
 		}
 
 		[Test]
