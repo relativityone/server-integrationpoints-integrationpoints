@@ -94,7 +94,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 
 			SourceConfiguration sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(serializedSourceConfig);
 			string destinationConfig = AppendWebAPIPathToImportSettings(integrationPoint.DestinationConfiguration);
-			FieldMap[] fieldMaps = ConvertFieldMaps(_fieldMaps);
+			FieldMap[] fieldMaps = ConvertFromServicesToDomainFieldMaps(_fieldMaps);
 			var targetDocumentsTaggingManagerFactory = new TargetDocumentsTaggingManagerFactory(
 				_repositoryFactory,
 				_tagsCreator,
@@ -128,42 +128,42 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 				.ConfigureAwait(false);
 		}
 
-		private FieldMap[] ConvertFieldMaps(IntegrationPoints.Services.FieldMap[] oldMaps)
+		private FieldMap[] ConvertFromServicesToDomainFieldMaps(IntegrationPoints.Services.FieldMap[] servicesFieldMaps)
 		{
-			return oldMaps.Select(ConvertFieldMap).ToArray();
+			return servicesFieldMaps.Select(ConvertFromServicesToDomainFieldMap).ToArray();
 		}
 
-		private FieldMap ConvertFieldMap(IntegrationPoints.Services.FieldMap fieldMap)
+		private FieldMap ConvertFromServicesToDomainFieldMap(IntegrationPoints.Services.FieldMap servicesFieldMap)
 		{
 			return new FieldMap
 			{
-				DestinationField = ConvertFieldEntry(fieldMap.DestinationField),
-				FieldMapType = ConvertFieldMapType(fieldMap.FieldMapType),
-				SourceField = ConvertFieldEntry(fieldMap.SourceField)
+				DestinationField = ConvertFromServicesToDomainFieldEntry(servicesFieldMap.DestinationField),
+				FieldMapType = ConvertFromServicesToDomainFieldMapType(servicesFieldMap.FieldMapType),
+				SourceField = ConvertFromServicesToDomainFieldEntry(servicesFieldMap.SourceField)
 			};
 		}
 
-		private FieldEntry ConvertFieldEntry(IntegrationPoints.Services.FieldEntry fieldEntry)
+		private FieldEntry ConvertFromServicesToDomainFieldEntry(IntegrationPoints.Services.FieldEntry servicesFieldEntry)
 		{
 			return new FieldEntry()
 			{
-				DisplayName = fieldEntry.DisplayName,
-				FieldIdentifier = fieldEntry.FieldIdentifier,
-				FieldType = ConvertFieldType(fieldEntry.FieldType),
-				IsIdentifier = fieldEntry.IsIdentifier,
-				IsRequired = fieldEntry.IsRequired,
-				Type = fieldEntry.Type
+				DisplayName = servicesFieldEntry.DisplayName,
+				FieldIdentifier = servicesFieldEntry.FieldIdentifier,
+				FieldType = ConvertFromServicesToDomainFieldType(servicesFieldEntry.FieldType),
+				IsIdentifier = servicesFieldEntry.IsIdentifier,
+				IsRequired = servicesFieldEntry.IsRequired,
+				Type = servicesFieldEntry.Type
 			};
 		}
 
-		private FieldType ConvertFieldType(IntegrationPoints.Services.FieldType fieldType)
+		private FieldType ConvertFromServicesToDomainFieldType(IntegrationPoints.Services.FieldType servicesFieldType)
 		{
-			return (FieldType) Enum.Parse(typeof(FieldType), fieldType.ToString());
+			return (FieldType) Enum.Parse(typeof(FieldType), servicesFieldType.ToString());
 		}
 
-		private FieldMapTypeEnum ConvertFieldMapType(IntegrationPoints.Services.FieldMapTypeEnum fieldMapTypeEnum)
+		private FieldMapTypeEnum ConvertFromServicesToDomainFieldMapType(IntegrationPoints.Services.FieldMapType servicesFieldMapType)
 		{
-			return (FieldMapTypeEnum)Enum.Parse(typeof(FieldMapTypeEnum), fieldMapTypeEnum.ToString());
+			return (FieldMapTypeEnum)Enum.Parse(typeof(FieldMapTypeEnum), servicesFieldMapType.ToString());
 		}
 
 		private Task<Data.IntegrationPoint> CreateAndGetIntegrationPoint(string serializedSourceConfig)

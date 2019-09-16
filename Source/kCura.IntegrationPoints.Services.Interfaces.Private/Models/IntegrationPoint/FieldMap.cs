@@ -16,8 +16,8 @@
 		public FieldEntry DestinationField { get; set; }
 
 		/// <summary>
-		/// Gets or sets the FieldMapTypeEnum, which indicates the type of mapping.
+		/// Gets or sets the FieldMapType, which indicates the type of mapping.
 		/// </summary>
-		public FieldMapTypeEnum FieldMapType { get; set; }
+		public FieldMapType FieldMapType { get; set; }
 	}
 }

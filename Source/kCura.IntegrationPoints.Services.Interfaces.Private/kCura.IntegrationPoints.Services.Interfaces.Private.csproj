@@ -59,10 +59,10 @@
     <Compile Include="IProviderManager.cs" />
     <Compile Include="IStatisticsManager.cs" />
     <Compile Include="Models\BaseModel.cs" />
-    <Compile Include="Models\FieldEntry.cs" />
-    <Compile Include="Models\FieldMap.cs" />
-    <Compile Include="Models\FieldMapTypeEnum.cs" />
-    <Compile Include="Models\FieldType.cs" />
+    <Compile Include="Models\IntegrationPoint\FieldEntry.cs" />
+    <Compile Include="Models\IntegrationPoint\FieldMap.cs" />
+    <Compile Include="Models\IntegrationPoint\FieldMapTypeEnum.cs" />
+    <Compile Include="Models\IntegrationPoint\FieldType.cs" />
     <Compile Include="Models\HistoricalPromotionStatusModel.cs" />
     <Compile Include="Models\HistoricalPromotionStatusSummaryModel.cs" />
     <Compile Include="Models\CurrentPromotionStatusModel.cs" />

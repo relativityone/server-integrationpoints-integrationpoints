@@ -139,8 +139,8 @@ namespace Rip.E2ETests.CustomProviders
 			List<FieldMap> fieldMapping = testCase.WorkspaceFieldsToFileFieldsMapping.Select(mapping => new FieldMap
 			{
 				FieldMapType = mapping.Key == testCase.IdentifierFieldName
-					? FieldMapTypeEnum.Identifier
-					: FieldMapTypeEnum.None,
+					? FieldMapType.Identifier
+					: FieldMapType.None,
 				SourceField = new kCura.IntegrationPoints.Services.FieldEntry
 				{
 					FieldIdentifier = mapping.Value,

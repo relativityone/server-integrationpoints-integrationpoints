@@ -173,7 +173,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 						DisplayName = sourceDto.Fields.First(field => field.Name == "Name").Value as string + " [Object Identifier]",
 						IsIdentifier = true,
 					},
-					FieldMapType = IntegrationPoints.Services.FieldMapTypeEnum.Identifier,
+					FieldMapType = IntegrationPoints.Services.FieldMapType.Identifier,
 					DestinationField = new IntegrationPoints.Services.FieldEntry
 					{
 						FieldIdentifier = targetDto.ArtifactId.ToString(),

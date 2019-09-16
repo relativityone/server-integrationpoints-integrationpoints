@@ -7,8 +7,6 @@ namespace kCura.IntegrationPoints.Services
 	[Serializable]
 	public class FieldEntry
 	{
-		private string _actualName;
-
 		/// <summary>
 		/// Initializes new instance of FieldEntry.
 		/// </summary>
@@ -25,22 +23,6 @@ namespace kCura.IntegrationPoints.Services
 		/// Gets or sets a field identifier used when mapping data source fields to workspace fields.
 		/// </summary>
 		public string FieldIdentifier { get; set; }
-
-		/// <summary>
-		/// Gets or sets the name of the field used in the source code.
-		/// </summary>
-		/// <remarks>The value for this property is frequently the display name for a field without spaces.</remarks>
-		public string ActualName
-		{
-			get
-			{
-				if (_actualName == null)
-				{
-					_actualName = IsIdentifier ? DisplayName.Replace(" [Object Identifier]", String.Empty) : DisplayName;
-				}
-				return _actualName;
-			}
-		}
 
 		/// <summary>
 		/// Gets or sets the field type. 
