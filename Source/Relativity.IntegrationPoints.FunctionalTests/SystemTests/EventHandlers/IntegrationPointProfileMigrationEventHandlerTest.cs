@@ -69,8 +69,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 		[Test]
 		public async Task ItShouldCopyOnlySyncProfiles()
 		{
-			List<int> createdProfilesArtifactIds = await CreateTestProfiles(SystemTestsSetupFixture.WorkspaceID).ConfigureAwait(false);
-			_teardownActions.Add(() => DeleteTestProfiles(SystemTestsSetupFixture.WorkspaceID, createdProfilesArtifactIds).GetAwaiter().GetResult());
+			List<int> createdProfilesArtifactIds = await CreateTestProfilesAsync(SystemTestsSetupFixture.WorkspaceID).ConfigureAwait(false);
+			_teardownActions.Add(() => DeleteTestProfilesAsync(SystemTestsSetupFixture.WorkspaceID, createdProfilesArtifactIds).GetAwaiter().GetResult());
 
 			// Act
 			int workspaceArtifactId = await Workspace.CreateWorkspaceAsync(
@@ -80,7 +80,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 			_teardownActions.Add(() => Workspace.DeleteWorkspace(workspaceArtifactId));
 
 			// Assert
-			await VerifyAllProfilesInDestinationWorkspaceAreSyncOnlyAndHaveProperValuesSet(workspaceArtifactId).ConfigureAwait(false);
+			await VerifyAllProfilesInDestinationWorkspaceAreSyncOnlyAndHaveProperValuesSetAsync(workspaceArtifactId).ConfigureAwait(false);
 		}
 
 		[TearDown]
@@ -92,7 +92,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 			}
 		}
 
-		private static async Task VerifyAllProfilesInDestinationWorkspaceAreSyncOnlyAndHaveProperValuesSet(int targetWorkspaceId)
+		private static async Task VerifyAllProfilesInDestinationWorkspaceAreSyncOnlyAndHaveProperValuesSetAsync(int targetWorkspaceId)
 		{
 			var objectManager = CreateRelativityObjectManagerForWorkspace(targetWorkspaceId);
 
@@ -104,19 +104,19 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 			// NOTE: The assertions below should fail until completion of REL-351468
 
 			// verify destination provider id
-			int syncDestinationProviderArtifactId = await GetSyncDestinationProviderArtifactId(targetWorkspaceId)
+			int syncDestinationProviderArtifactId = await GetSyncDestinationProviderArtifactIdAsync(targetWorkspaceId)
 				.ConfigureAwait(false);
 			targetWorkspaceProfiles.Select(p => p.DestinationProvider)
 				.ShouldAllBeEquivalentTo(syncDestinationProviderArtifactId);
 
 			// verify source provider id
-			int syncSourceProviderArtifactId = await GetSyncSourceProviderArtifactId(targetWorkspaceId)
+			int syncSourceProviderArtifactId = await GetSyncSourceProviderArtifactIdAsync(targetWorkspaceId)
 				.ConfigureAwait(false);
 			targetWorkspaceProfiles.Select(p => p.SourceProvider)
 				.ShouldAllBeEquivalentTo(syncSourceProviderArtifactId);
 
 			// verify integration point type id
-			int exportIntegrationPointTypeArtifactId = await GetTypeArtifactId(targetWorkspaceId, IntegrationPointTypes.ExportName)
+			int exportIntegrationPointTypeArtifactId = await GetTypeArtifactIdAsync(targetWorkspaceId, IntegrationPointTypes.ExportName)
 				.ConfigureAwait(false);
 			targetWorkspaceProfiles.Select(p => p.Type)
 				.ShouldBeEquivalentTo(exportIntegrationPointTypeArtifactId);
@@ -134,15 +134,15 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 				.Should().OnlyContain(p => p == null || p.Value<int>() == 0);
 		}
 
-		private static async Task<int> GetSyncSourceProviderArtifactId(int workspaceId) =>
-			await GetObjectArtifactIdByGuidFieldValue(workspaceId, _sourceProviderObjectTypeGuid, _identifierFieldOnSourceProviderObjectGuid, _relativitySourceProviderTypeGuid)
+		private static async Task<int> GetSyncSourceProviderArtifactIdAsync(int workspaceId) =>
+			await GetObjectArtifactIdByGuidFieldValueAsync(workspaceId, _sourceProviderObjectTypeGuid, _identifierFieldOnSourceProviderObjectGuid, _relativitySourceProviderTypeGuid)
 				.ConfigureAwait(false);
 
-		private static async Task<int> GetSyncDestinationProviderArtifactId(int workspaceId) =>
-			await GetObjectArtifactIdByGuidFieldValue(workspaceId, _destinationProviderObjectTypeGuid, _identifierFieldOnDestinationProviderObjectGuid, _relativityDestinationProviderTypeGuid)
+		private static async Task<int> GetSyncDestinationProviderArtifactIdAsync(int workspaceId) =>
+			await GetObjectArtifactIdByGuidFieldValueAsync(workspaceId, _destinationProviderObjectTypeGuid, _identifierFieldOnDestinationProviderObjectGuid, _relativityDestinationProviderTypeGuid)
 				.ConfigureAwait(false);
 
-		private static async Task<int> GetObjectArtifactIdByGuidFieldValue(int workspaceId, Guid objectTypeGuid, Guid fieldGuid, Guid value)
+		private static async Task<int> GetObjectArtifactIdByGuidFieldValueAsync(int workspaceId, Guid objectTypeGuid, Guid fieldGuid, Guid value)
 		{
 			using (var objectManager = SystemTestsSetupFixture.TestHelper.CreateProxy<IObjectManager>())
 			{
@@ -169,13 +169,13 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 			}
 		}
 
-		private static async Task<List<int>> CreateTestProfiles(int workspaceId)
+		private static async Task<List<int>> CreateTestProfilesAsync(int workspaceId)
 		{
 			var objectManager = CreateRelativityObjectManagerForWorkspace(workspaceId);
 
 			IList<Task<IntegrationPointProfile>> profileCreationTasks = _testProfilesConfigs
 				.Zip(Enumerable.Range(0, _testProfilesConfigs.Count()), (config, i) => new { Config = config, Number = i })
-				.Select(x => CreateProfileRdo(workspaceId, x.Number, x.Config))
+				.Select(x => CreateProfileRdoAsync(workspaceId, x.Number, x.Config))
 				.ToList();
 
 			await Task.WhenAll(profileCreationTasks).ConfigureAwait(false);
@@ -188,14 +188,14 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 			return createdProfilesArtifactIds;
 		}
 
-		private static async Task<IntegrationPointProfile> CreateProfileRdo(int workspaceId, int profileNumber, ProfileConfig config)
+		private static async Task<IntegrationPointProfile> CreateProfileRdoAsync(int workspaceId, int profileNumber, ProfileConfig config)
 		{
 			var integrationPointProfile = new IntegrationPointProfile
 			{
 				Name = $"Profile{profileNumber}",
-				SourceProvider = await GetSourceProviderArtifactId(workspaceId, config.SourceProviderGuid).ConfigureAwait(false),
-				DestinationProvider = await GetDestinationProviderArtifactId(workspaceId, config.DestinationProviderGuid).ConfigureAwait(false),
-				Type = await GetTypeArtifactId(workspaceId, config.TypeName).ConfigureAwait(false),
+				SourceProvider = await GetSourceProviderArtifactIdAsync(workspaceId, config.SourceProviderGuid).ConfigureAwait(false),
+				DestinationProvider = await GetDestinationProviderArtifactIdAsync(workspaceId, config.DestinationProviderGuid).ConfigureAwait(false),
+				Type = await GetTypeArtifactIdAsync(workspaceId, config.TypeName).ConfigureAwait(false),
 				SourceConfiguration = IsSyncProfile(config) ? CreateSourceConfiguration(workspaceId, _SAVED_SEARCH_ARTIFACT_ID) : string.Empty
 			};
 			return integrationPointProfile;
@@ -214,7 +214,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 			return sourceConfiguration.ToString();
 		}
 
-		private static async Task DeleteTestProfiles(int workspaceId, IEnumerable<int> profilesArtifactIdsToDelete)
+		private static async Task DeleteTestProfilesAsync(int workspaceId, IEnumerable<int> profilesArtifactIdsToDelete)
 		{
 			using (var objectManager = SystemTestsSetupFixture.TestHelper.CreateProxy<IObjectManager>())
 			{
@@ -228,7 +228,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 			}
 		}
 
-		public static async Task<int> GetTypeArtifactId(int workspaceId, string typeName)
+		public static async Task<int> GetTypeArtifactIdAsync(int workspaceId, string typeName)
 		{
 			using (var typeClient = SystemTestsSetupFixture.TestHelper.CreateProxy<IIntegrationPointTypeManager>())
 			{
@@ -243,7 +243,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 			}
 		}
 
-		private static async Task<int> GetSourceProviderArtifactId(int workspaceId, string guid)
+		private static async Task<int> GetSourceProviderArtifactIdAsync(int workspaceId, string guid)
 		{
 			using (var providerClient = SystemTestsSetupFixture.TestHelper.CreateProxy<IProviderManager>())
 			{
@@ -251,7 +251,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 			}
 		}
 
-		private static async Task<int> GetDestinationProviderArtifactId(int workspaceId, string guid)
+		private static async Task<int> GetDestinationProviderArtifactIdAsync(int workspaceId, string guid)
 		{
 			using (var providerClient = SystemTestsSetupFixture.TestHelper.CreateProxy<IProviderManager>())
 			{
