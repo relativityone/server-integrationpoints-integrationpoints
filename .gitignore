@@ -93,3 +93,4 @@ DevelopmentScripts/*Results.html
 /DevelopmentScripts/MSBuild.SonarQube.Runner.Tool/tools
 /DevelopmentScripts/chromeLog.txt
 Artifacts
+.ionide

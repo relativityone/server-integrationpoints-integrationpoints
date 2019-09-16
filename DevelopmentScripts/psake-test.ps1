@@ -79,6 +79,7 @@ function run_tests($test_type, $config_section, $where_string, $is_in_quarantine
         & $NUnit3 @($tests_project_file,
                     "--config=$config_section",
                     '--inprocess',
+                    '--labels=All',
                     $where_string,
                     "--result=$result_file")
     }
