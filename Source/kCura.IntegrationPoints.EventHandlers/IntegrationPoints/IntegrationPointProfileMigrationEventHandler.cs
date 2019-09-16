@@ -43,7 +43,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		{
 		}
 
-		public IntegrationPointProfileMigrationEventHandler(IErrorService errorService, Func<int, TimeSpan> sleepDurationProvider) : base(errorService)
+		internal IntegrationPointProfileMigrationEventHandler(IErrorService errorService, Func<int, TimeSpan> sleepDurationProvider) : base(errorService)
 		{
 			_sleepDurationProvider = sleepDurationProvider;
 		}
