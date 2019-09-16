@@ -3,6 +3,9 @@ strategy: min
 
 source https://proget.kcura.corp/nuget/NuGet
 
+//RIP packages
+nuget kCura.IntegrationPoints.Services.Interfaces.Private 10.3.18-DEV-029
+
 //Main Relativity packages
 nuget kCura 12.0.0
 nuget kCura.Agent 11.0.58.1
