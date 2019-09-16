@@ -75,7 +75,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 			// Act
 			int workspaceArtifactId = await Workspace.CreateWorkspaceAsync(
 				$"Rip.SystemTests.ProfileMigration-{DateTime.Now.Millisecond}",
-				SystemTestsSetupFixture.WorkspaceName);
+				SystemTestsSetupFixture.WorkspaceName)
+				.ConfigureAwait(false);
 			_teardownActions.Add(() => Workspace.DeleteWorkspace(workspaceArtifactId));
 
 			// Assert
@@ -223,7 +224,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 						.Select(aid => new RelativityObjectRef { ArtifactID = aid })
 						.ToList()
 				};
-				await objectManager.DeleteAsync(workspaceId, request);
+				await objectManager.DeleteAsync(workspaceId, request).ConfigureAwait(false);
 			}
 		}
 
