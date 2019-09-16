@@ -39,12 +39,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 			add { _exporter.StatusMessage += value; }
 			remove { _exporter.StatusMessage -= value; }
 		}
-
-		public event IExporterStatusNotification.FileTransferModeChangeEventEventHandler FileTransferModeChangeEvent
+		
+		public event IExporterStatusNotification.FileTransferMultiClientModeChangeEventEventHandler FileTransferMultiClientModeChangeEvent
 
 		{
-			add { _exporter.FileTransferModeChangeEvent += value; }
-			remove { _exporter.FileTransferModeChangeEvent -= value; }
+			add { _exporter.FileTransferMultiClientModeChangeEvent += value; }
+			remove { _exporter.FileTransferMultiClientModeChangeEvent -= value; }
 		}
 
 		public bool ExportSearch()
