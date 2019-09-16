@@ -35,7 +35,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
 		public static string DestinationWorkspaceName { get; private set; }
 
 		[OneTimeSetUp]
-		public void InitializeFixtureAsync()
+		public void InitializeFixture()
 		{
 			Container = new WindsorContainer();
 			ConfigurationStore = new DefaultConfigurationStore();
