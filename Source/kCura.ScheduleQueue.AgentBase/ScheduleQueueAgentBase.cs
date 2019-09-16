@@ -12,48 +12,56 @@ namespace kCura.ScheduleQueue.AgentBase
 {
 	public abstract class ScheduleQueueAgentBase : Agent.AgentBase
 	{
+
+		private IAgentService _agentService;
 		private IJobService _jobService;
 		private const int _MAX_MESSAGE_LENGTH = 10000;
 		private readonly Guid _agentGuid;
+		private readonly Lazy<IAPILog> _loggerLazy;
+		private static readonly Dictionary<LogCategory, int> _logCategoryToLogLevelMapping = new Dictionary<LogCategory, int>
+		{
+			[LogCategory.Debug] = 20,
+			[LogCategory.Info] = 10
+		};
 
-		protected IAPILog Logger { get; set; }
+		protected IAPILog Logger
+		{
+			get { return _loggerLazy.Value; }
+		}
 
-		public ScheduleQueueAgentBase(Guid agentGuid,
+		protected ScheduleQueueAgentBase(Guid agentGuid,
 			IAgentService agentService = null, IJobService jobService = null,
 			IScheduleRuleFactory scheduleRuleFactory = null)
 		{
 			_agentGuid = agentGuid;
-			AgentService = agentService;
+			_agentService = agentService;
 			_jobService = jobService;
 			ScheduleRuleFactory = scheduleRuleFactory ?? new DefaultScheduleRuleFactory();
+			_loggerLazy = new Lazy<IAPILog>(InitializeLogger);
 		}
-
-		public IAgentService AgentService { get; private set; }
-		public IScheduleRuleFactory ScheduleRuleFactory { get; private set; }
+		public IScheduleRuleFactory ScheduleRuleFactory { get; }
 
 		protected virtual void Initialize()
 		{
-			//Logger cannot be initialized in constructor because Helper from Agent.Base is initialized later on
-			Logger = Helper.GetLoggerFactory().GetLogger().ForContext<ScheduleQueueAgentBase>();
+			NotifyAgentTab(LogCategory.Debug, "Initialize Agent core services");
 
-			NotifyAgentTab(20, LogCategory.Debug, "Initialize Agent core services");
-
-			if (AgentService == null)
+			if (_agentService == null)
 			{
-				AgentService = new AgentService(Helper, _agentGuid);
+				_agentService = new AgentService(Helper, _agentGuid);
 			}
 
 			if (_jobService == null)
 			{
-				_jobService = new JobService(AgentService, new JobServiceDataProvider(AgentService, Helper), Helper);
+				_jobService = new JobService(_agentService, new JobServiceDataProvider(_agentService, Helper), Helper);
 			}
 		}
 
 		public sealed override void Execute()
 		{
-			NotifyAgentTab(10, LogCategory.Info, "Started.");
 
 			bool isPreExecuteSuccessful = PreExecute();
+			NotifyAgentTab(LogCategory.Debug, "Started.");
+
 			if (isPreExecuteSuccessful)
 			{
 				ProcessQueueJobs();
@@ -73,7 +81,7 @@ namespace kCura.ScheduleQueue.AgentBase
 			}
 			catch (Exception ex)
 			{
-				NotifyAgentTab(20, LogCategory.Warn, $"{ex.Message} {ex.StackTrace}");
+				NotifyAgentTab(LogCategory.Warn, $"{ex.Message} {ex.StackTrace}");
 				LogExecuteError(ex);
 				return false;
 			}
@@ -82,22 +90,22 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		private void CompleteExecution()
 		{
-			NotifyAgentTab(10, LogCategory.Info, "Completed.");
+			NotifyAgentTab(LogCategory.Debug, "Completed.");
 			LogExecuteComplete();
 		}
 
 		private void InitializeManagerConfigSettingsFactory()
 		{
-			NotifyAgentTab(20, LogCategory.Info, "Initialize Config Settings factory");
+			NotifyAgentTab(LogCategory.Debug, "Initialize Config Settings factory");
 			LogOnInitializeManagerConfigSettingsFactory();
 			Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
 		}
 
 		private void CheckQueueTable()
 		{
-			NotifyAgentTab(20, LogCategory.Info, "Check Schedule Agent Queue table exists");
+			NotifyAgentTab(LogCategory.Debug, "Check Schedule Agent Queue table exists");
 
-			AgentService.InstallQueueTable();
+			_agentService.InstallQueueTable();
 		}
 
 		protected virtual IEnumerable<int> GetListOfResourceGroupIDs() // this method was added for unit testing purpose
@@ -105,7 +113,7 @@ namespace kCura.ScheduleQueue.AgentBase
 			return GetResourceGroupIDs();
 		}
 
-		public void ProcessQueueJobs()
+		private void ProcessQueueJobs()
 		{
 			try
 			{
@@ -152,10 +160,10 @@ namespace kCura.ScheduleQueue.AgentBase
 		{
 			if (!Enabled)
 			{
-				NotifyAgentTab(20, LogCategory.Info, "Agent was disabled. Terminating job processing task.");
+				NotifyAgentTab(LogCategory.Info, "Agent was disabled. Terminating job processing task.");
 				return null;
 			}
-			NotifyAgentTab(20, LogCategory.Info, "Checking for active jobs in Schedule Agent Queue table");
+			NotifyAgentTab(LogCategory.Debug, "Checking for active jobs in Schedule Agent Queue table");
 
 			try
 			{
@@ -164,14 +172,14 @@ namespace kCura.ScheduleQueue.AgentBase
 			catch (Exception ex)
 			{
 				LogGetNextQueueJobException(ex);
-				NotifyAgentTab(20, LogCategory.Exception, "Exception while getting next job from queue.");
+				NotifyAgentTab(LogCategory.Exception, "Exception while getting next job from queue.");
 				return null;
 			}
 		}
 
 		private void CleanupQueueJobs()
 		{
-			NotifyAgentTab(20, LogCategory.Info, "Cleanup jobs");
+			NotifyAgentTab(LogCategory.Debug, "Cleanup jobs");
 			LogOnCleanupJobs();
 
 			try
@@ -180,51 +188,64 @@ namespace kCura.ScheduleQueue.AgentBase
 			}
 			catch (Exception ex)
 			{
-				NotifyAgentTab(20, LogCategory.Warn, $"An error occured cleaning jobs queue. {ex.Message} {ex.StackTrace}");
+				NotifyAgentTab(LogCategory.Warn, $"An error occured cleaning jobs queue. {ex.Message} {ex.StackTrace}");
 				LogCleanupError(ex);
 			}
 		}
 
-		protected void NotifyAgentTab(int level, LogCategory category, string message,
+		protected void NotifyAgentTab(LogCategory category, string message,
 			string detailmessage = null)
 		{
 			string msg = message.Substring(0, Math.Min(message.Length, _MAX_MESSAGE_LENGTH));
 			switch (category)
 			{
-				case LogCategory.Info:
 				case LogCategory.Debug:
-					RaiseMessage(msg, level);
+					RaiseMessageNoLogging(msg, _logCategoryToLogLevelMapping[LogCategory.Debug]);
+					Logger.LogDebug(message);
 					break;
-				case LogCategory.Exception:
-					RaiseError(msg, detailmessage);
+				case LogCategory.Info:
+					RaiseMessage(msg, _logCategoryToLogLevelMapping[LogCategory.Info]);
 					break;
 				case LogCategory.Warn:
 					RaiseWarning(msg);
 					break;
+				case LogCategory.Exception:
+					RaiseError(msg, detailmessage);
+					break;
 				default:
-					throw new ArgumentOutOfRangeException("category");
+					throw new ArgumentOutOfRangeException(nameof(category));
 			}
 		}
 
 		protected abstract void LogJobState(Job job, JobLogState state, Exception exception = null,
 			string details = null);
 
+		private IAPILog InitializeLogger()
+		{
+			if (Helper == null)
+			{
+				NotifyAgentTab(LogCategory.Exception, "Logger initialization failed. Helper is null.");
+			}
+
+			return Helper.GetLoggerFactory().GetLogger().ForContext<ScheduleQueueAgentBase>();
+		}
+
 		#region Logging
 
 		private void LogOnInitializeManagerConfigSettingsFactory()
 		{
-			Logger.LogInformation("Attempting to initialize Config Settings factory in {TypeName}",
+			Logger.LogDebug("Attempting to initialize Config Settings factory in {TypeName}",
 				nameof(ScheduleQueueAgentBase));
 		}
 
 		private void LogOnCleanupJobs()
 		{
-			Logger.LogInformation("Attempting to cleanup jobs in {TypeName}", nameof(ScheduleQueueAgentBase));
+			Logger.LogDebug("Attempting to cleanup jobs in {TypeName}", nameof(ScheduleQueueAgentBase));
 		}
 
 		private void LogExecuteComplete()
 		{
-			Logger.LogInformation("Execution of scheduled jobs completed in {TypeName}", nameof(ScheduleQueueAgentBase));
+			Logger.LogDebug("Execution of scheduled jobs completed in {TypeName}", nameof(ScheduleQueueAgentBase));
 		}
 
 		private void LogExecuteError(Exception ex)

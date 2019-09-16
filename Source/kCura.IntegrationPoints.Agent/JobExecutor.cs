@@ -120,7 +120,7 @@ namespace kCura.IntegrationPoints.Agent
 
 					LogJobState(job, JobLogState.Finished);
 					string msg = string.Format(FINISHED_PROCESSING_JOB_MESSAGE_TEMPLATE, job.JobId, job.WorkspaceID, job.TaskType);
-					_agentNotifier.NotifyAgent(1, LogCategory.Info, msg);
+					_agentNotifier.NotifyAgent(LogCategory.Info, msg);
 					LogFinishingExecuteTask(job);
 
 					return new TaskResult { Status = TaskStatusEnum.Success, Exceptions = null };
@@ -141,7 +141,7 @@ namespace kCura.IntegrationPoints.Agent
 		{
 			string agentMessage = string.Format(START_PROCESSING_JOB_MESSAGE_TEMPLATE, job.JobId, job.WorkspaceID,
 				job.TaskType);
-			_agentNotifier.NotifyAgent(1, LogCategory.Info, agentMessage);
+			_agentNotifier.NotifyAgent(LogCategory.Info, agentMessage);
 			LogOnStartJobProcessing(agentMessage, job.JobId, job.WorkspaceID, job.TaskType);
 		}
 
