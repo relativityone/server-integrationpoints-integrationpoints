@@ -55,35 +55,36 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				.WaitAndRetryAsync(_MAX_RETRIES, _sleepDurationProvider, (exception, timeSpan, retryCount, ctx) =>
 					Logger.LogWarning(exception, "Migration of the Integration Point Profiles failed for {n} time. Waiting for {seconds} seconds.",
 						retryCount, timeSpan.TotalSeconds))
-				.ExecuteAsync(MigrateProfiles)
+				.ExecuteAsync(MigrateProfilesAsync)
 				.GetAwaiter()
 				.GetResult();
 		}
 
-		private async Task MigrateProfiles()
+		private async Task MigrateProfilesAsync()
 		{
 			using (IObjectManager objectManager = CreateObjectManager())
 			{
-				int syncDestinationProviderArtifactId = await GetSyncDestinationProviderArtifactIdInTemplateWorkspace(objectManager).ConfigureAwait(false);
-				int syncSourceProviderArtifactId = await GetSyncSourceProviderArtifactIdInTemplateWorkspace(objectManager).ConfigureAwait(false);
+				int syncDestinationProviderArtifactId = await GetSyncDestinationProviderArtifactIdInTemplateWorkspaceAsync(objectManager).ConfigureAwait(false);
+				int syncSourceProviderArtifactId = await GetSyncSourceProviderArtifactIdInTemplateWorkspaceAsync(objectManager).ConfigureAwait(false);
 
-				List<int> nonSyncProfilesArtifactIds = await GetNonSyncProfilesArtifactIdsFromTemplateWorkspace(syncDestinationProviderArtifactId, syncSourceProviderArtifactId, objectManager).ConfigureAwait(false);
+				List<int> nonSyncProfilesArtifactIds = await GetNonSyncProfilesArtifactIdsFromTemplateWorkspaceAsync(syncDestinationProviderArtifactId, syncSourceProviderArtifactId, objectManager)
+					.ConfigureAwait(false);
 				if (nonSyncProfilesArtifactIds.Any())
 				{
-					await DeleteNonSyncProfilesInCreatedWorkspace(nonSyncProfilesArtifactIds, objectManager).ConfigureAwait(false);
+					await DeleteNonSyncProfilesInCreatedWorkspaceAsync(nonSyncProfilesArtifactIds, objectManager).ConfigureAwait(false);
 				}
 			}
 		}
 
-		private async Task<int> GetSyncDestinationProviderArtifactIdInTemplateWorkspace(IObjectManager objectManager) =>
-			await GetObjectArtifactIdByGuidFieldValue(objectManager, _destinationProviderObjectTypeGuid, _identifierFieldOnDestinationProviderObjectGuid, _relativityDestinationProviderTypeGuid)
+		private async Task<int> GetSyncDestinationProviderArtifactIdInTemplateWorkspaceAsync(IObjectManager objectManager) =>
+			await GetObjectArtifactIdByGuidFieldValueAsync(objectManager, _destinationProviderObjectTypeGuid, _identifierFieldOnDestinationProviderObjectGuid, _relativityDestinationProviderTypeGuid)
 				.ConfigureAwait(false);
 
-		private async Task<int> GetSyncSourceProviderArtifactIdInTemplateWorkspace(IObjectManager objectManager) =>
-			await GetObjectArtifactIdByGuidFieldValue(objectManager, _sourceProviderObjectTypeGuid, _identifierFieldOnSourceProviderObjectGuid, _relativitySourceProviderTypeGuid)
+		private async Task<int> GetSyncSourceProviderArtifactIdInTemplateWorkspaceAsync(IObjectManager objectManager) =>
+			await GetObjectArtifactIdByGuidFieldValueAsync(objectManager, _sourceProviderObjectTypeGuid, _identifierFieldOnSourceProviderObjectGuid, _relativitySourceProviderTypeGuid)
 				.ConfigureAwait(false);
 
-		private async Task<int> GetObjectArtifactIdByGuidFieldValue(IObjectManager objectManager, Guid objectTypeGuid, Guid fieldGuid, Guid value)
+		private async Task<int> GetObjectArtifactIdByGuidFieldValueAsync(IObjectManager objectManager, Guid objectTypeGuid, Guid fieldGuid, Guid value)
 		{
 			Condition searchCondition = new TextCondition(fieldGuid, TextConditionEnum.EqualTo, value.ToString());
 
@@ -106,7 +107,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			return artifactId;
 		}
 
-		private async Task<List<int>> GetNonSyncProfilesArtifactIdsFromTemplateWorkspace(int syncDestinationProviderArtifactId, int syncSourceProviderArtifactId, IObjectManager objectManager)
+		private async Task<List<int>> GetNonSyncProfilesArtifactIdsFromTemplateWorkspaceAsync(int syncDestinationProviderArtifactId, int syncSourceProviderArtifactId, IObjectManager objectManager)
 		{
 			Condition destinationProviderIsRelativity = new ObjectCondition(_destinationProviderFieldOnProfileObjectGuid, ObjectConditionEnum.EqualTo, syncDestinationProviderArtifactId);
 			Condition sourceProviderIsRelativity = new ObjectCondition(_sourceProviderFieldOnProfileObjectGuid, ObjectConditionEnum.EqualTo, syncSourceProviderArtifactId);
@@ -126,7 +127,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			return nonSyncProfilesArtifactIds;
 		}
 
-		private async Task DeleteNonSyncProfilesInCreatedWorkspace(List<int> nonSyncProfilesArtifactIds, IObjectManager objectManager)
+		private async Task DeleteNonSyncProfilesInCreatedWorkspaceAsync(List<int> nonSyncProfilesArtifactIds, IObjectManager objectManager)
 		{
 			Condition deleteNonSyncProfilesCondition = new WholeNumberCondition("ArtifactID", NumericConditionEnum.In, nonSyncProfilesArtifactIds);
 
