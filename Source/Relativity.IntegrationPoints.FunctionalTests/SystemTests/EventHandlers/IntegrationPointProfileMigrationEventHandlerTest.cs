@@ -73,11 +73,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 			_teardownActions.AddLast(() => DeleteTestProfilesAsync(SystemTestsSetupFixture.WorkspaceID, createdProfilesArtifactIds).GetAwaiter().GetResult());
 
 			// Act
-			int workspaceArtifactId = await Workspace.CreateWorkspaceAsync(
-				$"Rip.SystemTests.ProfileMigration-{DateTime.Now.Millisecond}",
-				SystemTestsSetupFixture.WorkspaceName)
+			int workspaceArtifactId = await SystemTestsSetupFixture.CreateManagedWorkspaceWithDefaultName(SystemTestsSetupFixture.WorkspaceName)
 				.ConfigureAwait(false);
-			_teardownActions.AddLast(() => Workspace.DeleteWorkspace(workspaceArtifactId));
 
 			// Assert
 			await VerifyAllProfilesInDestinationWorkspaceAreSyncOnlyAndHaveProperValuesSetAsync(workspaceArtifactId).ConfigureAwait(false);
@@ -96,7 +93,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 			// get all profiles from the created workspace
 			var targetWorkspaceProfiles = await objectManager.QueryAsync<IntegrationPointProfile>(new QueryRequest())
 					.ConfigureAwait(false);
-			targetWorkspaceProfiles.Should().HaveCount(1);
+			int expectedSyncProfilesCount = _testProfilesConfigs.Count(IsSyncProfile);
+			targetWorkspaceProfiles.Should().HaveCount(expectedSyncProfilesCount);
 
 			// NOTE: The assertions below should fail until completion of REL-351468
 

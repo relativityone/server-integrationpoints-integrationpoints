@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.Resolvers;
 using Castle.MicroKernel.SubSystems.Configuration;
@@ -21,6 +22,7 @@ using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.Relativity.Client;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Services.Workspace;
 
 namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
 {
@@ -35,6 +37,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
 		public static string WorkspaceName { get; private set; }
 		public static int DestinationWorkspaceID { get; private set; }
 		public static string DestinationWorkspaceName { get; private set; }
+
+		private static readonly IList<int> _managedWorkspaces = new List<int>();
 
 		[OneTimeSetUp]
 		public static void InitializeFixture()
@@ -120,8 +124,30 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
 			Manager.Settings.Factory = new HelperConfigSqlServiceFactory(TestHelper);
 		}
 
+		public static async Task<int> CreateManagedWorkspaceWithDefaultName(string templateName = WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME)
+		{
+			return await CreateManagedWorkspace($"Rip.SystemTests.Managed-{DateTime.Now.Ticks}", templateName).ConfigureAwait(false);
+		}
+
+		public static async Task<int> CreateManagedWorkspace(string workspaceName, string templateName = WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME)
+		{
+			int workspaceId = await Workspace.CreateWorkspaceAsync(workspaceName, templateName).ConfigureAwait(false);
+			_managedWorkspaces.Add(workspaceId);
+			return workspaceId;
+		}
+
 		[OneTimeTearDown]
 		public static void TearDownFixture()
+		{
+			DeleteSourceAndDestinationWorkspaces();
+
+			foreach (int workspaceId in _managedWorkspaces)
+			{
+				Workspace.DeleteWorkspace(workspaceId);
+			}
+		}
+
+		private static void DeleteSourceAndDestinationWorkspaces()
 		{
 			Workspace.DeleteWorkspace(WorkspaceID);
 			Workspace.DeleteWorkspace(DestinationWorkspaceID);
@@ -139,7 +165,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
 
 			var timer = Stopwatch.StartNew();
 
-			TearDownFixture();
+			DeleteSourceAndDestinationWorkspaces();
 			InitializeFixture();
 
 			timer.Stop();
