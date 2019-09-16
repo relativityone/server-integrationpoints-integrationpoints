@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Exceptions;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
