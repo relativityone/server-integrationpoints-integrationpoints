@@ -64,20 +64,20 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 			}
 		};
 
-		private readonly IList<Action> _teardownActions = new List<Action>();
+		private readonly LinkedList<Action> _teardownActions = new LinkedList<Action>();
 
 		[Test]
 		public async Task ItShouldCopyOnlySyncProfiles()
 		{
 			List<int> createdProfilesArtifactIds = await CreateTestProfilesAsync(SystemTestsSetupFixture.WorkspaceID).ConfigureAwait(false);
-			_teardownActions.Add(() => DeleteTestProfilesAsync(SystemTestsSetupFixture.WorkspaceID, createdProfilesArtifactIds).GetAwaiter().GetResult());
+			_teardownActions.AddLast(() => DeleteTestProfilesAsync(SystemTestsSetupFixture.WorkspaceID, createdProfilesArtifactIds).GetAwaiter().GetResult());
 
 			// Act
 			int workspaceArtifactId = await Workspace.CreateWorkspaceAsync(
 				$"Rip.SystemTests.ProfileMigration-{DateTime.Now.Millisecond}",
 				SystemTestsSetupFixture.WorkspaceName)
 				.ConfigureAwait(false);
-			_teardownActions.Add(() => Workspace.DeleteWorkspace(workspaceArtifactId));
+			_teardownActions.AddLast(() => Workspace.DeleteWorkspace(workspaceArtifactId));
 
 			// Assert
 			await VerifyAllProfilesInDestinationWorkspaceAreSyncOnlyAndHaveProperValuesSetAsync(workspaceArtifactId).ConfigureAwait(false);
@@ -86,10 +86,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 		[TearDown]
 		public void TearDown()
 		{
-			foreach (var teardownAction in _teardownActions)
-			{
-				teardownAction();
-			}
+			SystemTestsSetupFixture.InvokeActionsAndResetFixtureOnException(_teardownActions);
 		}
 
 		private static async Task VerifyAllProfilesInDestinationWorkspaceAreSyncOnlyAndHaveProperValuesSetAsync(int targetWorkspaceId)

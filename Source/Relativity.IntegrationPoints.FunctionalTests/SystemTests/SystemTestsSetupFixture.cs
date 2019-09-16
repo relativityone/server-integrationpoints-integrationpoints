@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.Resolvers;
 using Castle.MicroKernel.SubSystems.Configuration;
@@ -35,7 +37,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
 		public static string DestinationWorkspaceName { get; private set; }
 
 		[OneTimeSetUp]
-		public void InitializeFixture()
+		public static void InitializeFixture()
 		{
 			Container = new WindsorContainer();
 			ConfigurationStore = new DefaultConfigurationStore();
@@ -46,10 +48,10 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
 
 			InitializeRelativityInstanceSettingsClient();
 		}
-		
+
 		private static void CreateAndConfigureWorkspaces()
 		{
-			WorkspaceName= $"Rip.SystemTests-{DateTime.Now.Ticks}";
+			WorkspaceName = $"Rip.SystemTests-{DateTime.Now.Ticks}";
 			WorkspaceID = Workspace.CreateWorkspace(
 				workspaceName: WorkspaceName,
 				templateName: WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME
@@ -113,17 +115,55 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
 			}
 		}
 
-		private void InitializeRelativityInstanceSettingsClient()
+		private static void InitializeRelativityInstanceSettingsClient()
 		{
 			Manager.Settings.Factory = new HelperConfigSqlServiceFactory(TestHelper);
 		}
 
 		[OneTimeTearDown]
-		public void TearDownFixture()
+		public static void TearDownFixture()
 		{
 			Workspace.DeleteWorkspace(WorkspaceID);
 			Workspace.DeleteWorkspace(DestinationWorkspaceID);
 		}
 
+		public static void Log(string message) => Console.WriteLine($@"[{nameof(SystemTestsSetupFixture)}] {message}");
+
+		public static void ResetFixture(Exception cause = null)
+		{
+			Log($"Resetting fixture... (Caused by {TestContext.CurrentContext.Test.FullName})");
+			if (cause != null)
+			{
+				Log($"[CAUSE] {cause}");
+			}
+
+			var timer = Stopwatch.StartNew();
+
+			TearDownFixture();
+			InitializeFixture();
+
+			timer.Stop();
+			Log($"Resetting fixture done in {timer.Elapsed.TotalSeconds} seconds");
+		}
+
+		public static void InvokeActionsAndResetFixtureOnException(params Action[] actions)
+		{
+			InvokeActionsAndResetFixtureOnException((IEnumerable<Action>)actions);
+		}
+
+		public static void InvokeActionsAndResetFixtureOnException(IEnumerable<Action> actions)
+		{
+			try
+			{
+				foreach (var action in actions)
+				{
+					action();
+				}
+			}
+			catch (Exception e)
+			{
+				ResetFixture(e);
+			}
+		}
 	}
 }
