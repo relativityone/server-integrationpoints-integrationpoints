@@ -48,7 +48,7 @@ properties([
             description: 'Set Relativity version on which RIP will be tested. Leave blank to set the latest version.'
         ),
         booleanParam(
-            name: 'skipIntegrationTests', 
+            name: 'importBuiltRAP', 
             defaultValue: true, 
             description: 'Check if you want to skip Integrations Tests stage.'
         ),
@@ -155,7 +155,13 @@ timestamps
                 {
                     jenkinsHelpers.unstashTestsArtifacts()
                 }
-                    
+                
+                stage ('Import Integration Points RAP'){
+                    if(params.importBuiltRAP){
+                        jenkinsHelpers.importRAP()
+                    }        
+                }
+
                 try
                 {
                     stage ('UI Tests')
