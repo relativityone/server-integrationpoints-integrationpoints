@@ -4,6 +4,6 @@ namespace kCura.IntegrationPoints.RelativitySync.RipOverride
 {
 	internal interface ISendEmailWorker
 	{
-		void Execute(EmailMessage details, long jobId);
+		void Execute(EmailJobParameters details, long jobId);
 	}
 }

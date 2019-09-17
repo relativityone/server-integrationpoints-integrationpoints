@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 		private ISerializer _serializer;
 		private IJobManager _jobManager;
 		private SendEmailManager _sendEmailManager;
-		private EmailMessage _emailMessage;
+		private EmailJobParameters _emailJobParameters;
 		private string _serializedEmailMessage;
 		private static object[] _emailLists = new object[]
 		{
@@ -37,13 +37,13 @@ namespace kCura.IntegrationPoints.Agent.Tests
 			IHelper helper = Substitute.For<IHelper>();
 			_sendEmailManager = new SendEmailManager(_serializer, _jobManager, helper);
 
-			_emailMessage = new EmailMessage()
+			_emailJobParameters = new EmailJobParameters()
 			{
 				Subject = "email test",
 				MessageBody = "hello."
 			};
 
-			_serializedEmailMessage = JsonConvert.SerializeObject(_emailMessage);
+			_serializedEmailMessage = JsonConvert.SerializeObject(_emailJobParameters);
 		}
 
 		[Test]
@@ -61,13 +61,13 @@ namespace kCura.IntegrationPoints.Agent.Tests
 				.WithRelatedObjectArtifactId(1)
 				.WithJobDetails(_serializedEmailMessage)
 				.Build();
-			_serializer.Deserialize<EmailMessage>(job.JobDetails).Returns(JsonConvert.DeserializeObject<EmailMessage>(job.JobDetails));
+			_serializer.Deserialize<EmailJobParameters>(job.JobDetails).Returns(JsonConvert.DeserializeObject<EmailJobParameters>(job.JobDetails));
 
 			// act
 			_sendEmailManager.CreateBatchJob(job, list);
 
 			// assert
-			this._jobManager.Received(1).CreateJob(job, Arg.Is<EmailMessage>(email => email.Emails.SequenceEqual(list) && email.Subject.Equals(_emailMessage.Subject) && email.MessageBody.Equals(_emailMessage.MessageBody)), TaskType.SendEmailWorker);
+			this._jobManager.Received(1).CreateJob(job, Arg.Is<EmailJobParameters>(email => email.Emails.SequenceEqual(list) && email.Subject.Equals(_emailJobParameters.Subject) && email.MessageBody.Equals(_emailJobParameters.MessageBody)), TaskType.SendEmailWorker);
 		}
 	}
 }

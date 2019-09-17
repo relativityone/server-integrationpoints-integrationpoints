@@ -109,7 +109,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 		private void AddSendingEmailJobToQueue(int integrationPointArtifactId)
 		{
-			var message = new EmailMessage
+			var message = new EmailJobParameters
 			{
 				Subject = _EMAIL_SUBJECT,
 				MessageBody = _EMAIL_BODY,

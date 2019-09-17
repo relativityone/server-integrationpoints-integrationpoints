@@ -101,11 +101,11 @@ namespace kCura.IntegrationPoints.Core.Tests
 		public void GenerateEmail(Relativity.Client.DTOs.Choice jobStatus, string expectedSubject, string expectedBody)
 		{
 			// ACT
-			EmailMessage message = BatchEmail.GenerateEmail(jobStatus);
+			EmailJobParameters jobParameters = BatchEmail.GenerateEmail(jobStatus);
 
 			// ASSERT
-			Assert.AreEqual(expectedSubject, message.Subject);
-			Assert.AreEqual(expectedBody, message.MessageBody);
+			Assert.AreEqual(expectedSubject, jobParameters.Subject);
+			Assert.AreEqual(expectedBody, jobParameters.MessageBody);
 		}
 
 		private Job GetTestJob()

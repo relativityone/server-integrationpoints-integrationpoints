@@ -7,6 +7,8 @@ using kCura.IntegrationPoints.Email;
 using kCura.IntegrationPoints.RelativitySync.RipOverride;
 using kCura.IntegrationPoints.Email.Dto;
 using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Core;
+using Newtonsoft.Json.Linq;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
@@ -29,12 +31,16 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			var jobId = job.JobId;
 			LogExecuteStart(jobId);
 
-			EmailMessage details = _serializer.Deserialize<EmailMessage>(job.JobDetails);
+			TaskParameters emailTaskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
+
+			EmailJobParameters details = emailTaskParameters.BatchParameters is JObject 
+				? ((JObject)emailTaskParameters.BatchParameters).ToObject<EmailJobParameters>() 
+				: _serializer.Deserialize<EmailJobParameters>(job.JobDetails);
 
 			Execute(details, jobId);
 		}
 
-		public void Execute(EmailMessage details, long jobId)
+		public void Execute(EmailJobParameters details, long jobId)
 		{
 			var exceptions = new List<Exception>();
 			IEnumerable<string> emails = details.Emails;
@@ -67,16 +73,16 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		#region Logging
 
-	    private void LogExecuteStart(long jobId)
-	    {
-	        _logger.LogInformation("Started executing send email worker, job: {JobId}", jobId);
-	    }
-	    private void LogExecuteSuccesfulEnd(long jobId)
-	    {
-	        _logger.LogInformation("Succesfully sent email in worker, job: {JobId}", jobId);
-	    }
+		private void LogExecuteStart(long jobId)
+		{
+			_logger.LogInformation("Started executing send email worker, job: {JobId}", jobId);
+		}
+		private void LogExecuteSuccesfulEnd(long jobId)
+		{
+			_logger.LogInformation("Succesfully sent email in worker, job: {JobId}", jobId);
+		}
 
-        private void LogSendingEmailError(long jobId, Exception e, string email)
+		private void LogSendingEmailError(long jobId, Exception e, string email)
 		{
 			_logger.LogError(e, "Failed to send message to {Email} for job {JobId}.", email, jobId);
 		}

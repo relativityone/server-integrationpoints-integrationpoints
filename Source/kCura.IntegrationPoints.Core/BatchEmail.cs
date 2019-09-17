@@ -65,50 +65,51 @@ namespace kCura.IntegrationPoints.Core
 				TaskParameters taskParameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
 				Relativity.Client.DTOs.Choice choice = _jobStatusUpdater.GenerateStatus(taskParameters.BatchInstance);
 
-				EmailMessage message = GenerateEmail(choice);
+				EmailJobParameters jobParameters = GenerateEmail(choice);
+				ConvertMessage(jobParameters, emails, _converter);
+				
+				TaskParameters emailTaskParameters = new TaskParameters
+				{
+					BatchInstance = taskParameters.BatchInstance,
+					BatchParameters = jobParameters
+				};
 
-				SendEmail(job, message, emails);
+				JobManager.CreateJob(job, emailTaskParameters, TaskType.SendEmailWorker);
 			}
 		}
 
-		public static EmailMessage GenerateEmail(Relativity.Client.DTOs.Choice choice)
+		public static EmailJobParameters GenerateEmail(Relativity.Client.DTOs.Choice choice)
 		{
-			EmailMessage message = new EmailMessage();
+			EmailJobParameters jobParameters = new EmailJobParameters();
 
 			if (choice.EqualsToChoice(Data.JobStatusChoices.JobHistoryCompletedWithErrors))
 			{
-				message.Subject = Properties.JobStatusMessages.JOB_COMPLETED_WITH_ERRORS_SUBJECT;
-				message.MessageBody = Properties.JobStatusMessages.JOB_COMPLETED_WITH_ERRORS_BODY;
+				jobParameters.Subject = Properties.JobStatusMessages.JOB_COMPLETED_WITH_ERRORS_SUBJECT;
+				jobParameters.MessageBody = Properties.JobStatusMessages.JOB_COMPLETED_WITH_ERRORS_BODY;
 			}
 			else if (choice.EqualsToChoice(Data.JobStatusChoices.JobHistoryErrorJobFailed))
 			{
-				message.Subject = Properties.JobStatusMessages.JOB_FAILED_SUBJECT;
-				message.MessageBody = Properties.JobStatusMessages.JOB_FAILED_BODY;
+				jobParameters.Subject = Properties.JobStatusMessages.JOB_FAILED_SUBJECT;
+				jobParameters.MessageBody = Properties.JobStatusMessages.JOB_FAILED_BODY;
 			}
 			else if (choice.EqualsToChoice(Data.JobStatusChoices.JobHistoryStopped))
 			{
-				message.Subject = Properties.JobStatusMessages.JOB_STOPPED_SUBJECT;
-				message.MessageBody = Properties.JobStatusMessages.JOB_STOPPED_BODY;
+				jobParameters.Subject = Properties.JobStatusMessages.JOB_STOPPED_SUBJECT;
+				jobParameters.MessageBody = Properties.JobStatusMessages.JOB_STOPPED_BODY;
 			}
 			else
 			{
-				message.Subject = Properties.JobStatusMessages.JOB_COMPLETED_SUCCESS_SUBJECT;
-				message.MessageBody = Properties.JobStatusMessages.JOB_COMPLETED_SUCCESS_BODY;
+				jobParameters.Subject = Properties.JobStatusMessages.JOB_COMPLETED_SUCCESS_SUBJECT;
+				jobParameters.MessageBody = Properties.JobStatusMessages.JOB_COMPLETED_SUCCESS_BODY;
 			}
-			return message;
+			return jobParameters;
 		}
 
-		private void SendEmail(Job parentJob, EmailMessage message, IEnumerable<string> emails)
+		public static void ConvertMessage(EmailJobParameters jobParameters, IEnumerable<string> emails, KeywordConverter converter)
 		{
-			ConvertMessage(message, emails, _converter);
-			JobManager.CreateJob(parentJob, message, TaskType.SendEmailManager);
-		}
-
-		public static void ConvertMessage(EmailMessage message, IEnumerable<string> emails, KeywordConverter converter)
-		{
-			message.Emails = emails;
-			message.Subject = converter.Convert(message.Subject);
-			message.MessageBody = converter.Convert(message.MessageBody);
+			jobParameters.Emails = emails;
+			jobParameters.Subject = converter.Convert(jobParameters.Subject);
+			jobParameters.MessageBody = converter.Convert(jobParameters.MessageBody);
 		}
 	}
 }

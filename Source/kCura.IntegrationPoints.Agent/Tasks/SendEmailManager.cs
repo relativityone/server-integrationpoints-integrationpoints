@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			if (!string.IsNullOrEmpty(job?.JobDetails))
 			{
 				LogGettingUnbatchedIDs(job);
-				return _serializer.Deserialize<EmailMessage>(job.JobDetails).Emails;
+				return _serializer.Deserialize<EmailJobParameters>(job.JobDetails).Emails;
 			}
 			return new List<string>();
 		}
@@ -33,9 +33,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		public override void CreateBatchJob(Job job, List<string> batchIDs)
 		{
 			LogCreateBatchJobStart(job, batchIDs);
-			EmailMessage message = _serializer.Deserialize<EmailMessage>(job.JobDetails);
-			message.Emails = batchIDs;
-			_jobManager.CreateJob(job, message, TaskType.SendEmailWorker);
+			EmailJobParameters jobParameters = _serializer.Deserialize<EmailJobParameters>(job.JobDetails);
+			jobParameters.Emails = batchIDs;
+			_jobManager.CreateJob(job, jobParameters, TaskType.SendEmailWorker);
 			LogCreateBatchJobEnd(job, batchIDs);
 		}
 

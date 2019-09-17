@@ -6,6 +6,6 @@ namespace kCura.IntegrationPoints.Core.Models
 	{
 		public string Subject { get; set; }
 		public string MessageBody { get; set; }
-		public IEnumerable<string> Emails { get; set; }
+		public IEnumerable<string> Emails { get; set; } 
 	}
 }
