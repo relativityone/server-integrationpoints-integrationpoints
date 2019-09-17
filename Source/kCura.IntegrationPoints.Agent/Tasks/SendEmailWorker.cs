@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			_serializer = serializer;
 			_emailSender = emailSender;
-			_logger = helper.GetLoggerFactory().GetLogger().ForContext<SendEmailManager>();
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<SendEmailWorker>();
 		}
 
 		public void Execute(Job job)
