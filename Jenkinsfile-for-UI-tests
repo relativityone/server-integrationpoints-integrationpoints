@@ -48,7 +48,7 @@ properties([
             description: 'Set Relativity version on which RIP will be tested. Leave blank to set the latest version.'
         ),
         booleanParam(
-            name: 'importBuiltRAP', 
+            name: 'skipIntegrationTests', 
             defaultValue: true, 
             description: 'Check if you want to skip Integrations Tests stage.'
         ),
