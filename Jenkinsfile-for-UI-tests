@@ -160,13 +160,7 @@ timestamps
                 {
                     jenkinsHelpers.unstashTestsArtifacts()
                 }
-                
-                stage ('Import Integration Points RAP'){
-                    if(params.importBuiltRAP){
-                        jenkinsHelpers.importRAP()
-                    }        
-                }
-
+                    
                 try
                 {
                     stage ('UI Tests')

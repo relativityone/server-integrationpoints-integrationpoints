@@ -665,20 +665,6 @@ def switchSyncToggle(toggleValue)
 	'''
 }
 
-def importRAP(){
-	def sutCredentials = usernamePassword(
-		credentialsId: 'cd_sut_svc',
-		passwordVariable: 'sutPassword',
-		usernameVariable: 'sutUsername'
-	)
-	withCredentials([sutCredentials]){
-		def command = """. ./DevelopbentScripts/importRap.ps1 -ServerName "${ripPipelineState.sut.name}" -RAPPath "./Applications/RelativityIntegrationPoints.Auto.rap" -AdminUserName "${sutUsername}" -AdminPwd "${sutPassword}" """
-		def result = powershell returnStdout: true, script: command
-		
-		echo "Imported RIP RAP: $result."
-	}
-}
-
 
 /*****************
  **** PRIVATE ****
