@@ -50,6 +50,26 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
 				x => x.DeleteAsync(workspaceArtifactID, request));
 		}
 
+		public async Task<MassDeleteResult> DeleteAsync(int workspaceArtifactID, MassDeleteByObjectIdentifiersRequest request)
+		{
+			IExternalServiceInstrumentationStarted instrumentation = StartInstrumentation();
+			MassDeleteResult result = await ExecuteAsync(
+					x => x.DeleteAsync(workspaceArtifactID, request),
+					instrumentation)
+				.ConfigureAwait(false);
+			
+			if (result.Success)
+			{
+				instrumentation.Completed();
+			}
+			else
+			{
+				instrumentation.Failed(result.Message);
+			}
+
+			return result;
+		}
+
 		public Task<QueryResult> QueryAsync(int workspaceArtifactID, QueryRequest request, int start, int length)
 		{
 			return ExecuteAsync(
