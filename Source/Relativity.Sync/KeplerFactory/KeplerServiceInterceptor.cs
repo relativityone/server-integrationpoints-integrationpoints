@@ -109,7 +109,9 @@ namespace Relativity.Sync.KeplerFactory
 					});
 
 				PolicyWrap policy = Policy.WrapAsync(httpExceptionsPolicy, authTokenPolicy);
-				
+
+				// Below we are setting "currentInterceptorIndex" to 0 because otherwise Proceed() causes infinite-loop.
+				// More details: https://github.com/JSkimming/Castle.Core.AsyncInterceptor/issues/25#issuecomment-339945097
 				if (GetDelegateType(invocation) == MethodType.AsyncAction)
 				{
 					await policy.ExecuteAsync(async () =>
