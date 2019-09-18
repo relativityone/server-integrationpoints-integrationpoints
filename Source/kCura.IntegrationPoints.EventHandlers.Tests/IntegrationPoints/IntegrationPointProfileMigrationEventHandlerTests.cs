@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.EventHandler;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints;
 using Moq;
@@ -26,6 +29,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 		private Mock<IEHHelper> _eventHandlerHelper;
 		private Mock<IObjectManager> _objectManager;
 		private Mock<IServicesMgr> _servicesManager;
+		private Mock<IRelativityObjectManagerFactory> _relativityObjectManagerFactory;
+		private Mock<IRelativityObjectManager> _relativityObjectManager;
+		private Mock<RetryHandler> _retryHandler;
 		private List<int> _nonSyncProfilesArtifactIds;
 
 		private const string _TEST_EXCEPTION_GUID = "EED05107-CB7F-4916-BC1C-C8DB3C8597C8";
@@ -77,8 +83,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 			_servicesManager = new Mock<IServicesMgr>();
 			_logger = new Mock<IAPILog>();
 			_errorService = new Mock<IErrorService>();
+			_relativityObjectManagerFactory = new Mock<IRelativityObjectManagerFactory>();
+			_relativityObjectManager = new Mock<IRelativityObjectManager>();
+			_retryHandler = new Mock<RetryHandler>();
 
-			_eventHandler = new IntegrationPointProfileMigrationEventHandler(_errorService.Object, i => TimeSpan.Zero)
+			_eventHandler = new IntegrationPointProfileMigrationEventHandler(_errorService.Object, () => _relativityObjectManagerFactory.Object)
 			{
 				Helper = _eventHandlerHelper.Object,
 				TemplateWorkspaceID = _TEMPLATE_WORKSPACE_ARTIFACT_ID
