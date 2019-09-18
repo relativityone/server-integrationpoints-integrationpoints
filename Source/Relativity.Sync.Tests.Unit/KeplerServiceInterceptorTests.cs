@@ -18,6 +18,7 @@ namespace Relativity.Sync.Tests.Unit
 		private IStubForInterception _instance;
 
 		private Mock<IStubForInterception> _stubForInterception;
+		private Mock<Func<IStubForInterception>> _stubForInterceptionFactory;
 		private Mock<ISyncMetrics> _syncMetrics;
 
 		private readonly TimeSpan _executionTime = TimeSpan.FromMinutes(1);
@@ -26,13 +27,16 @@ namespace Relativity.Sync.Tests.Unit
 		public void SetUp()
 		{
 			_stubForInterception = new Mock<IStubForInterception>();
+			_stubForInterceptionFactory = new Mock<Func<IStubForInterception>>();
+			_stubForInterceptionFactory.Setup(x => x.Invoke()).Returns(new Mock<IStubForInterception>().Object);
+
 			_syncMetrics = new Mock<ISyncMetrics>();
 
 			Mock<IStopwatch> stopwatch = new Mock<IStopwatch>();
 			stopwatch.Setup(x => x.Elapsed).Returns(_executionTime);
 
 			IDynamicProxyFactory dynamicProxyFactory = new DynamicProxyFactory(_syncMetrics.Object, stopwatch.Object, new EmptyLogger());
-			_instance = dynamicProxyFactory.WrapKeplerService(_stubForInterception.Object);
+			_instance = dynamicProxyFactory.WrapKeplerService(_stubForInterception.Object, _stubForInterceptionFactory.Object);
 		}
 
 		[Test]

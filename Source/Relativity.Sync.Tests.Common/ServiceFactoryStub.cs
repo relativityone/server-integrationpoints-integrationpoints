@@ -14,7 +14,7 @@ namespace Relativity.Sync.Tests.Common
 			_serviceFactory = serviceFactory;
 		}
 
-		public async Task<T> CreateProxyAsync<T>() where T : IDisposable
+		public async Task<T> CreateProxyAsync<T>() where T : class, IDisposable
 		{
 			await Task.Yield();
 

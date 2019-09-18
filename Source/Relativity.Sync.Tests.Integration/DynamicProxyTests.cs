@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Autofac;
 using FluentAssertions;
 using Moq;
@@ -39,9 +40,10 @@ namespace Relativity.Sync.Tests.Integration
 			IObjectManager objectManager = Mock.Of<IObjectManager>();
 			_wrappedObjectManager = Mock.Of<IObjectManager>();
 
+
 			servicesMgr.Setup(x => x.CreateProxy<IObjectManager>(ExecutionIdentity.System)).Returns(objectManager);
 			serviceFactory.Setup(x => x.CreateProxy<IObjectManager>()).Returns(objectManager);
-			dynamicProxyFactory.Setup(x => x.WrapKeplerService(objectManager)).Returns(_wrappedObjectManager);
+			dynamicProxyFactory.Setup(x => x.WrapKeplerService(objectManager, It.IsAny<Func<IObjectManager>>())).Returns(_wrappedObjectManager);
 		}
 
 		[Test]

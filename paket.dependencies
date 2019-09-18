@@ -26,9 +26,9 @@ nuget Polly ~> 5.3.1
 nuget Banzai ~> 3.0
 nuget Banzai.AUtofac ~> 3.0
 nuget Newtonsoft.Json ~> 6.0 redirects: force
-nuget Castle.Core 3.3.0
+nuget Castle.Core
 
 // Tests
 nuget NUnit 3.11
 nuget FluentAssertions ~> 5.4
-nuget Moq
+nuget Moq ~> 4.10
