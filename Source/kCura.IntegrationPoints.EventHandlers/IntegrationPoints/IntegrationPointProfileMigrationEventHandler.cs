@@ -64,12 +64,13 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 		private async Task<(List<int> nonSyncProfilesArtifactIds, List<int> syncProfilesArtifactIds)> GetSyncAndNonSyncProfilesArtifactIdsAsync()
 		{
-			int syncDestinationProviderArtifactIdInTemplateWorkspace = await GetSyncDestinationProviderArtifactIdAsync(TemplateWorkspaceID).ConfigureAwait(false);
-			int syncSourceProviderArtifactIdInTemplateWorkspace = await GetSyncSourceProviderArtifactIdAsync(TemplateWorkspaceID).ConfigureAwait(false);
+			Task<int> syncDestinationProviderArtifactIdTask = GetSyncDestinationProviderArtifactIdAsync(TemplateWorkspaceID);
+			Task<int> syncSourceProviderArtifactIdTask = GetSyncSourceProviderArtifactIdAsync(TemplateWorkspaceID);
+			await Task.WhenAll(syncSourceProviderArtifactIdTask, syncDestinationProviderArtifactIdTask).ConfigureAwait(false);
 
 			bool IsSyncProfile(IntegrationPointProfile integrationPointProfile) =>
-				integrationPointProfile.DestinationProvider == syncDestinationProviderArtifactIdInTemplateWorkspace &&
-				integrationPointProfile.SourceProvider == syncSourceProviderArtifactIdInTemplateWorkspace;
+				integrationPointProfile.DestinationProvider == syncDestinationProviderArtifactIdTask.Result &&
+				integrationPointProfile.SourceProvider == syncSourceProviderArtifactIdTask.Result;
 
 			List<IntegrationPointProfile> allProfiles = await GetProfilesWithProvidersFromTemplateWorkspaceAsync().ConfigureAwait(false);
 
