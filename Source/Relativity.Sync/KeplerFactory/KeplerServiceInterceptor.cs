@@ -120,7 +120,7 @@ namespace Relativity.Sync.KeplerFactory
 						invocation.Proceed();
 						await ((Task)invocation.ReturnValue).ConfigureAwait(false);
 					}).ConfigureAwait(false);
-					return default;
+					return default(TResult);
 				}
 				else
 				{
