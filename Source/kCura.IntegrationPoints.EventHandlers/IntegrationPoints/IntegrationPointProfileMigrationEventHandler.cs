@@ -10,6 +10,7 @@ using kCura.IntegrationPoints.Common.Extensions.DotNet;
 using kCura.IntegrationPoints.Common.Handlers;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
@@ -25,7 +26,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 	[Guid("DC9F2F04-5095-4FAC-96A5-7D8A213A1463")]
 	public class IntegrationPointProfileMigrationEventHandler : IntegrationPointMigrationEventHandlerBase
 	{
-		private readonly Lazy<RelativityObjectManagerFactory> _relativityObjectManagerFactory;
+		private readonly Lazy<IRelativityObjectManagerFactory> _relativityObjectManagerFactory;
 		private readonly Lazy<IRetryHandler> _retryHandler;
 
 		protected override string SuccessMessage => "Integration Point Profiles migrated successfully.";
@@ -33,15 +34,15 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 		public IntegrationPointProfileMigrationEventHandler()
 		{
-			_relativityObjectManagerFactory = new Lazy<RelativityObjectManagerFactory>(() => new RelativityObjectManagerFactory(Helper));
+			_relativityObjectManagerFactory = new Lazy<IRelativityObjectManagerFactory>(() => new RelativityObjectManagerFactory(Helper));
 			RetryHandlerFactory retryHandlerFactory = new RetryHandlerFactory(Helper.GetLoggerFactory().GetLogger().ForContext<IntegrationPointProfileMigrationEventHandler>());
 			_retryHandler = new Lazy<IRetryHandler>(() => retryHandlerFactory.Create());
 		}
 
-		internal IntegrationPointProfileMigrationEventHandler(IErrorService errorService, Func<RelativityObjectManagerFactory> relativityObjectManagerFactoryProvider,
+		internal IntegrationPointProfileMigrationEventHandler(IErrorService errorService, Func<IRelativityObjectManagerFactory> relativityObjectManagerFactoryProvider,
 			Func<IRetryHandler> retryHandlerFactory) : base(errorService)
 		{
-			_relativityObjectManagerFactory = new Lazy<RelativityObjectManagerFactory>(relativityObjectManagerFactoryProvider);
+			_relativityObjectManagerFactory = new Lazy<IRelativityObjectManagerFactory>(relativityObjectManagerFactoryProvider);
 			_retryHandler = new Lazy<IRetryHandler>(retryHandlerFactory);
 		}
 
