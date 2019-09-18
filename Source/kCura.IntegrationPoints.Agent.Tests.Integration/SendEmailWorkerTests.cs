@@ -15,6 +15,7 @@ using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using kCura.ScheduleQueue.Core.Core;
 using Relativity.Testing.Identification;
 using InstanceSetting = Relativity.Services.InstanceSetting.InstanceSetting;
 
@@ -73,13 +74,66 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				FakeSmtpMessage receivedMessage = await fakeSmtpServer.GetFirstMessage(_emailReceivedTimeout)
 					.ConfigureAwait(false);
 
-				receivedMessage.Should().NotBeNull();
-				receivedMessage.FromAddress.Should().Be(_EMAIL_FROM_ADDRESS);
-				receivedMessage.ToAddresses.Should().ContainSingle()
-					.Which.Should().Be(_EMAIL_TO_ADDRESS);
-				receivedMessage.Subject.Should().Be(_EMAIL_SUBJECT);
-				receivedMessage.Data.Should().Contain(_EMAIL_BODY);
+				VerifyReceivedMessage(receivedMessage);
 			}
+		}
+
+		[IdentifiedTest("21C7BC9A-5291-4B69-9F7C-A3E3A1ED609A")]
+		[ConnectivityToTestRunnerRequiredTest]
+		public async Task ShouldSendEmailWithBatchInstanceIdToSmtpServer()
+		{
+			// arrange
+			await EnsureAgentIsEnabledAsync().ConfigureAwait(false);
+			int integrationPointArtifactId = CreateDummyIntegrationPoint();
+
+			using (FakeSmtpServer fakeSmtpServer = FakeSmtpServer.Start(_SMTP_PORT))
+			{
+				// act
+				AddSendingEmailWithBatchInstanceIdJobToQueue(integrationPointArtifactId);
+
+				// assert
+				FakeSmtpMessage receivedMessage = await fakeSmtpServer.GetFirstMessage(_emailReceivedTimeout)
+					.ConfigureAwait(false);
+
+				VerifyReceivedMessage(receivedMessage);
+			}
+		}
+
+		private void AddSendingEmailWithBatchInstanceIdJobToQueue(int integrationPointArtifactId)
+		{
+			var message = new EmailJobParameters
+			{
+				Subject = _EMAIL_SUBJECT,
+				MessageBody = _EMAIL_BODY,
+				Emails = new[] { _EMAIL_TO_ADDRESS }
+			};
+
+			TaskParameters taskParameters = new TaskParameters
+			{
+				BatchInstance = Guid.NewGuid(),
+				BatchParameters = message
+			};
+
+			_jobService.CreateJob(
+				workspaceID: WorkspaceArtifactId,
+				relatedObjectArtifactID: integrationPointArtifactId,
+				taskType: TaskType.SendEmailWorker.ToString(),
+				nextRunTime: DateTime.UtcNow,
+				jobDetails: Newtonsoft.Json.JsonConvert.SerializeObject(taskParameters),
+				SubmittedBy: 9,
+				rootJobID: null,
+				parentJobID: null
+			);
+		}
+
+		private static void VerifyReceivedMessage(FakeSmtpMessage receivedMessage)
+		{
+			receivedMessage.Should().NotBeNull();
+			receivedMessage.FromAddress.Should().Be(_EMAIL_FROM_ADDRESS);
+			receivedMessage.ToAddresses.Should().ContainSingle()
+				.Which.Should().Be(_EMAIL_TO_ADDRESS);
+			receivedMessage.Subject.Should().Be(_EMAIL_SUBJECT);
+			receivedMessage.Data.Should().Contain(_EMAIL_BODY);
 		}
 
 		private int CreateDummyIntegrationPoint([CallerMemberName] string testName = "")

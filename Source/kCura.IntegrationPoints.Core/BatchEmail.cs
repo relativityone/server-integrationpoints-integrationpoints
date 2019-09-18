@@ -60,22 +60,26 @@ namespace kCura.IntegrationPoints.Core
 
 			List<string> emails = GetRecipientEmails();
 
-			if (emails != null && emails.Any())
+			if (emails == null || !emails.Any()) return;
+
+			SendEmails(job, emails);
+		}
+
+		private void SendEmails(Job job, List<string> emails)
+		{
+			TaskParameters taskParameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
+			Relativity.Client.DTOs.Choice choice = _jobStatusUpdater.GenerateStatus(taskParameters.BatchInstance);
+
+			EmailJobParameters jobParameters = GenerateEmail(choice);
+			ConvertMessage(jobParameters, emails, _converter);
+
+			TaskParameters emailTaskParameters = new TaskParameters
 			{
-				TaskParameters taskParameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
-				Relativity.Client.DTOs.Choice choice = _jobStatusUpdater.GenerateStatus(taskParameters.BatchInstance);
+				BatchInstance = taskParameters.BatchInstance,
+				BatchParameters = jobParameters
+			};
 
-				EmailJobParameters jobParameters = GenerateEmail(choice);
-				ConvertMessage(jobParameters, emails, _converter);
-				
-				TaskParameters emailTaskParameters = new TaskParameters
-				{
-					BatchInstance = taskParameters.BatchInstance,
-					BatchParameters = jobParameters
-				};
-
-				JobManager.CreateJob(job, emailTaskParameters, TaskType.SendEmailWorker);
-			}
+			JobManager.CreateJob(job, emailTaskParameters, TaskType.SendEmailWorker);
 		}
 
 		public static EmailJobParameters GenerateEmail(Relativity.Client.DTOs.Choice choice)
