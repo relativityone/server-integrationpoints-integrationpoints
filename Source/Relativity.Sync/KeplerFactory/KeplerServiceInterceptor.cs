@@ -25,8 +25,9 @@ namespace Relativity.Sync.KeplerFactory
 		private readonly IStopwatch _stopwatch;
 		private readonly ISyncLog _logger;
 		private readonly Func<TService> _keplerServiceFactory;
+		private readonly System.Reflection.FieldInfo _currentInterceptorIndexField;
 
-		private static readonly MethodInfo handleAsyncMethodInfo = typeof(KeplerServiceInterceptor<TService>).GetMethod(nameof(HandleAsyncWithResult), BindingFlags.Instance | BindingFlags.NonPublic);
+		private static readonly MethodInfo _handleAsyncMethodInfo = typeof(KeplerServiceInterceptor<TService>).GetMethod(nameof(HandleAsyncWithResult), BindingFlags.Instance | BindingFlags.NonPublic);
 
 		public KeplerServiceInterceptor(ISyncMetrics syncMetrics, IStopwatch stopwatch, Func<TService> keplerServiceFactory, ISyncLog logger)
 		{
@@ -34,6 +35,7 @@ namespace Relativity.Sync.KeplerFactory
 			_stopwatch = stopwatch;
 			_keplerServiceFactory = keplerServiceFactory;
 			_logger = logger;
+			_currentInterceptorIndexField = typeof(AbstractInvocation).GetField("currentInterceptorIndex", BindingFlags.NonPublic | BindingFlags.Instance);
 		}
 
 		public void Intercept(IInvocation invocation)
@@ -44,29 +46,35 @@ namespace Relativity.Sync.KeplerFactory
 				return;
 			}
 
-			if (IsAsyncFunction(invocation))
+			MethodType delegateType = GetDelegateType(invocation);
+			if (delegateType == MethodType.AsyncAction)
+			{
+				invocation.ReturnValue = HandleAsync(invocation);
+			}
+			if (delegateType == MethodType.AsyncFunction)
 			{
 				ExecuteHandleAsyncWithResultUsingReflection(invocation);
-			}
-			else
-			{
-				throw new SyncException($"Cannot proxy invocation of non-async Kepler method.");
 			}
 		}
 
 		private void ExecuteHandleAsyncWithResultUsingReflection(IInvocation invocation)
 		{
 			Type resultType = invocation.Method.ReturnType.GetGenericArguments()[0];
-			MethodInfo mi = handleAsyncMethodInfo.MakeGenericMethod(resultType);
+			MethodInfo mi = _handleAsyncMethodInfo.MakeGenericMethod(resultType);
 			invocation.ReturnValue = mi.Invoke(this, new[] { invocation });
+		}
+
+		private async Task HandleAsync(IInvocation invocation)
+		{
+			await HandleExceptionsAsync<object>(invocation).ConfigureAwait(false);
 		}
 
 		private async Task<T> HandleAsyncWithResult<T>(IInvocation invocation)
 		{
-			return await HandleExceptions<T>(invocation).ConfigureAwait(false);
+			return await HandleExceptionsAsync<T>(invocation).ConfigureAwait(false);
 		}
 
-		private async Task<T> HandleExceptions<T>(IInvocation invocation)
+		private async Task<TResult> HandleExceptionsAsync<TResult>(IInvocation invocation)
 		{
 			ExecutionStatus status = ExecutionStatus.Completed;
 			Exception exception = null;
@@ -96,17 +104,31 @@ namespace Relativity.Sync.KeplerFactory
 						}
 						else
 						{
-							throw new SyncException($"Cannot change proxy target. Make sure Castle's Dynamic Proxy is created properly.");
+							throw new SyncException($"Cannot change proxy target. Make sure ProxyGenerator is created using CreateInterfaceProxyWithTargetInterface method.");
 						}
 					});
 
 				PolicyWrap policy = Policy.WrapAsync(httpExceptionsPolicy, authTokenPolicy);
-
-				return await policy.ExecuteAsync(async () =>
+				
+				if (GetDelegateType(invocation) == MethodType.AsyncAction)
 				{
-					invocation.Proceed();
-					return await ((Task<T>)invocation.ReturnValue).ConfigureAwait(false);
-				}).ConfigureAwait(false);
+					await policy.ExecuteAsync(async () =>
+					{
+						_currentInterceptorIndexField.SetValue(invocation, 0);
+						invocation.Proceed();
+						await ((Task)invocation.ReturnValue).ConfigureAwait(false);
+					}).ConfigureAwait(false);
+					return default;
+				}
+				else
+				{
+					return await policy.ExecuteAsync(async () =>
+					{
+						_currentInterceptorIndexField.SetValue(invocation, 0);
+						invocation.Proceed();
+						return await ((Task<TResult>) invocation.ReturnValue).ConfigureAwait(false);
+					}).ConfigureAwait(false);
+				}
 			}
 			catch (Exception e)
 			{
@@ -128,10 +150,26 @@ namespace Relativity.Sync.KeplerFactory
 			}
 		}
 
-		private bool IsAsyncFunction(IInvocation invocation)
+		private static MethodType GetDelegateType(IInvocation invocation)
 		{
 			Type returnType = invocation.Method.ReturnType;
-			return returnType.IsGenericType && returnType.GetGenericTypeDefinition() == typeof(Task<>);
+			if (returnType == typeof(Task))
+			{
+				return MethodType.AsyncAction;
+			}
+
+			if (returnType.IsGenericType && returnType.GetGenericTypeDefinition() == typeof(Task<>))
+			{
+				return MethodType.AsyncFunction;
+			}
+			return MethodType.Synchronous;
+		}
+
+		private enum MethodType
+		{
+			Synchronous,
+			AsyncAction,
+			AsyncFunction
 		}
 
 		private static Dictionary<string, object> CreateCustomData(int numberOfHttpRetries, int authTokenExpirationCount, Exception exception)

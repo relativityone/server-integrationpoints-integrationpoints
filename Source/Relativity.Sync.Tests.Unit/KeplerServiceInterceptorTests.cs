@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.Services.Exceptions;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Telemetry;
@@ -23,12 +24,18 @@ namespace Relativity.Sync.Tests.Unit
 
 		private readonly TimeSpan _executionTime = TimeSpan.FromMinutes(1);
 
+		private readonly IDictionary<Type, string> _exceptionTypeToMetricNameDictionary = new Dictionary<Type, string>()
+		{
+			{typeof(HttpRequestException), "KeplerRetries"},
+			{typeof(NotAuthorizedException), "AuthTokenRetries"}
+		};
+
 		[SetUp]
 		public void SetUp()
 		{
 			_stubForInterception = new Mock<IStubForInterception>();
 			_stubForInterceptionFactory = new Mock<Func<IStubForInterception>>();
-			_stubForInterceptionFactory.Setup(x => x.Invoke()).Returns(new Mock<IStubForInterception>().Object);
+			_stubForInterceptionFactory.Setup(x => x.Invoke()).Returns(_stubForInterception.Object);
 
 			_syncMetrics = new Mock<ISyncMetrics>();
 
@@ -135,6 +142,7 @@ namespace Relativity.Sync.Tests.Unit
 		private static IEnumerable<Type> ExceptionsToRetry()
 		{
 			yield return typeof(HttpRequestException);
+			yield return typeof(NotAuthorizedException);
 		}
 
 		[Test]
@@ -183,10 +191,34 @@ namespace Relativity.Sync.Tests.Unit
 			Func<Task> action = async () => await _instance.ExecuteAsync().ConfigureAwait(false);
 
 			// ASSERT
+			string metricName = _exceptionTypeToMetricNameDictionary[exceptionType];
 			action.Should().NotThrow();
 			_syncMetrics.Verify(
 				x => x.TimedOperation(GetMetricName(nameof(IStubForInterception.ExecuteAsync)), _executionTime, ExecutionStatus.Completed,
-					It.Is<Dictionary<string, object>>(dict => dict["KeplerRetries"].Equals(expectedRetries))), Times.Once);
+					It.Is<Dictionary<string, object>>(dict => dict[metricName].Equals(expectedRetries))), Times.Once);
+		}
+
+		[Test]
+		public void ItShouldChangeInvocationTarget()
+		{
+			Mock<IStubForInterception> badService = new Mock<IStubForInterception>();
+			badService.Setup(x => x.ExecuteAsync()).Throws<NotAuthorizedException>();
+
+			Mock<IStubForInterception> newService = new Mock<IStubForInterception>();
+			IStubForInterception ServiceFactory() => newService.Object;
+
+			Mock<IStopwatch> stopwatch = new Mock<IStopwatch>();
+			stopwatch.Setup(x => x.Elapsed).Returns(_executionTime);
+			IDynamicProxyFactory dynamicProxyFactory = new DynamicProxyFactory(_syncMetrics.Object, stopwatch.Object, new EmptyLogger());
+			IStubForInterception instance = dynamicProxyFactory.WrapKeplerService(badService.Object, ServiceFactory);
+
+			// ACT
+			Func<Task> action = async () => await instance.ExecuteAsync().ConfigureAwait(false);
+
+			// ASSERT
+			action.Should().NotThrow();
+			badService.Verify(x => x.ExecuteAsync(), Times.Once());
+			newService.Verify(x => x.ExecuteAsync(), Times.Once());
 		}
 
 		private static string GetMetricName(string methodName)
