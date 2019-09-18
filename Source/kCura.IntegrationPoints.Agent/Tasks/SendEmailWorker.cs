@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Agent.Utils;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Email;
 using kCura.IntegrationPoints.RelativitySync.RipOverride;
 using kCura.IntegrationPoints.Email.Dto;
 using kCura.ScheduleQueue.Core;
-using kCura.ScheduleQueue.Core.Core;
-using Newtonsoft.Json.Linq;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
@@ -28,14 +27,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		public void Execute(Job job)
 		{
-			var jobId = job.JobId;
+			long jobId = job.JobId;
 			LogExecuteStart(jobId);
 
-			TaskParameters emailTaskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
-
-			EmailJobParameters details = emailTaskParameters.BatchParameters is JObject 
-				? ((JObject)emailTaskParameters.BatchParameters).ToObject<EmailJobParameters>() 
-				: _serializer.Deserialize<EmailJobParameters>(job.JobDetails);
+			EmailJobParameters details = JobParametersDeserializationUtils.Deserialize<EmailJobParameters>(job, _serializer);
 
 			Execute(details, jobId);
 		}

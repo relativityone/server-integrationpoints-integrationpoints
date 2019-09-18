@@ -92,6 +92,7 @@
     <Compile Include="Tasks\SyncManager.cs" />
     <Compile Include="Tasks\SyncWorker.cs" />
     <Compile Include="TaskFactory\TaskFactory.cs" />
+    <Compile Include="Utils\JobParametersDeserializationUtils.cs" />
     <Compile Include="Validation\AgentValidator.cs" />
     <Compile Include="Tasks\TurnOnDgOptimizationToggle.cs" />
     <Compile Include="Tasks\AgentExceptionHelper.cs" />
