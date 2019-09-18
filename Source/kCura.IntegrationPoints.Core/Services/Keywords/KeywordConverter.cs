@@ -5,7 +5,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Services.Keywords
 {
-	public class KeywordConverter
+	public class KeywordConverter : IKeywordConverter
 	{
 		private readonly KeywordFactory _factory;
 		private readonly IAPILog _logger;

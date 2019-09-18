@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 		private JobHistoryErrorService _jobHistoryErrorService = null;
 		private IJobManager _jobManager = null;
 		private IJobStatusUpdater _jobStatusUpdater = null;
-		private KeywordConverter _converter = null;
+		private IKeywordConverter _converter = null;
 		private IManagerFactory _managerFactory;
 		private IJobService _jobService;
 		private IIntegrationPointRepository _integrationPointRepository;

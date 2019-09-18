@@ -106,6 +106,7 @@
     <Compile Include="Services\Exporter\Sanitization\SingleChoiceFieldSanitizer.cs" />
     <Compile Include="Services\Exporter\Sanitization\SingleObjectFieldSanitizer.cs" />
     <Compile Include="Services\ISecretStoreMigrationService.cs" />
+    <Compile Include="Services\Keywords\IKeywordConverter.cs" />
     <Compile Include="Services\SecretStoreMigrationService.cs" />
     <Compile Include="Services\SourceTypes\SourceType.cs" />
     <Compile Include="Tagging\ISourceDocumentsTagger.cs" />
