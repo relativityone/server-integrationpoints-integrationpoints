@@ -1,16 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using kCura.EventHandler.CustomAttributes;
+using kCura.IntegrationPoints.Common;
+using kCura.IntegrationPoints.Common.Extensions.DotNet;
+using kCura.IntegrationPoints.Common.Handlers;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories.Implementations;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
+using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
 using Polly;
 using Relativity.API;
 using Relativity.Services;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
@@ -18,139 +27,136 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 	[Guid("DC9F2F04-5095-4FAC-96A5-7D8A213A1463")]
 	public class IntegrationPointProfileMigrationEventHandler : IntegrationPointMigrationEventHandlerBase
 	{
-		private const int _MAX_RETRIES = 3;
-		private const double _EXPONENTIAL_SLEEP_BASE = 2;
-
-		private readonly Guid _integrationPointProfileObjectTypeGuid = Guid.Parse("6DC915A9-25D7-4500-97F7-07CB98A06F64");
-		private readonly Guid _destinationProviderObjectTypeGuid = Guid.Parse("d014f00d-f2c0-4e7a-b335-84fcb6eae980");
-		private readonly Guid _sourceProviderObjectTypeGuid = Guid.Parse("5BE4A1F7-87A8-4CBE-A53F-5027D4F70B80");
-
-		private readonly Guid _destinationProviderFieldOnProfileObjectGuid = Guid.Parse("7d9e7944-bf13-4c4f-a9eb-5f60e683ec0c");
-		private readonly Guid _sourceProviderFieldOnProfileObjectGuid = Guid.Parse("60d3de54-f0d5-4744-a23f-a17609edc537");
-		private readonly Guid _identifierFieldOnDestinationProviderObjectGuid = Guid.Parse("9fa104ac-13ea-4868-b716-17d6d786c77a");
-		private readonly Guid _identifierFieldOnSourceProviderObjectGuid = Guid.Parse("d0ecc6c9-472c-4296-83e1-0906f0c0fbb9");
-
-		private readonly Guid _relativityDestinationProviderTypeGuid = Guid.Parse("74A863B9-00EC-4BB7-9B3E-1E22323010C6");
-		private readonly Guid _relativitySourceProviderTypeGuid = Guid.Parse("423b4d43-eae9-4e14-b767-17d629de4bb2");
-
-		private readonly Func<int, TimeSpan> _sleepDurationProvider = i => TimeSpan.FromSeconds(Math.Pow(_EXPONENTIAL_SLEEP_BASE, i));
+		private readonly Lazy<RelativityObjectManagerFactory> _relativityObjectManagerFactory;
+		private readonly Lazy<IRetryHandler> _retryHandler;
 
 		protected override string SuccessMessage => "Integration Point Profiles migrated successfully.";
 		protected override string GetFailureMessage(Exception ex) => $"Failed to migrate the Integration Point Profiles, because: {ex.Message}";
 
-
 		public IntegrationPointProfileMigrationEventHandler()
 		{
+			_relativityObjectManagerFactory = new Lazy<RelativityObjectManagerFactory>(() => new RelativityObjectManagerFactory(Helper));
+			RetryHandlerFactory retryHandlerFactory = new RetryHandlerFactory(Helper.GetLoggerFactory().GetLogger().ForContext<IntegrationPointProfileMigrationEventHandler>());
+			_retryHandler = new Lazy<IRetryHandler>(() => retryHandlerFactory.Create());
 		}
 
-		internal IntegrationPointProfileMigrationEventHandler(IErrorService errorService, Func<int, TimeSpan> sleepDurationProvider) : base(errorService)
+		internal IntegrationPointProfileMigrationEventHandler(IErrorService errorService, Func<RelativityObjectManagerFactory> relativityObjectManagerFactoryProvider,
+			Func<IRetryHandler> retryHandlerFactory) : base(errorService)
 		{
-			_sleepDurationProvider = sleepDurationProvider;
+			_relativityObjectManagerFactory = new Lazy<RelativityObjectManagerFactory>(relativityObjectManagerFactoryProvider);
+			_retryHandler = new Lazy<IRetryHandler>(retryHandlerFactory);
 		}
 
 		protected override void Run()
 		{
-			Policy
-				.Handle<Exception>()
-				.WaitAndRetryAsync(_MAX_RETRIES, _sleepDurationProvider, (exception, timeSpan, retryCount, ctx) =>
-					Logger.LogWarning(exception, "Migration of the Integration Point Profiles failed for {n} time. Waiting for {seconds} seconds.",
-						retryCount, timeSpan.TotalSeconds))
-				.ExecuteAsync(MigrateProfilesAsync)
-				.GetAwaiter()
-				.GetResult();
+			MigrateProfilesAsync().GetAwaiter().GetResult();
 		}
 
 		private async Task MigrateProfilesAsync()
 		{
+			var (nonSyncProfilesArtifactIds, syncProfilesArtifactIds) = await GetSyncAndNonSyncProfilesArtifactIdsAsync().ConfigureAwait(false);
+
+			await Task.WhenAll(
+					_retryHandler.Value.ExecuteWithRetriesAsync(() => DeleteNonSyncProfilesIfAnyInCreatedWorkspaceAsync(nonSyncProfilesArtifactIds)),
+					ModifyExistingSyncProfilesIfAnyInCreatedWorkspaceAsync(syncProfilesArtifactIds)
+				).ConfigureAwait(false);
+		}
+
+		private async Task<(List<int> nonSyncProfilesArtifactIds, List<int> syncProfilesArtifactIds)> GetSyncAndNonSyncProfilesArtifactIdsAsync()
+		{
+			int syncDestinationProviderArtifactIdInTemplateWorkspace = await GetSyncDestinationProviderArtifactIdAsync(TemplateWorkspaceID).ConfigureAwait(false);
+			int syncSourceProviderArtifactIdInTemplateWorkspace = await GetSyncSourceProviderArtifactIdAsync(TemplateWorkspaceID).ConfigureAwait(false);
+
+			bool IsSyncProfile(IntegrationPointProfile integrationPointProfile) =>
+				integrationPointProfile.DestinationProvider == syncDestinationProviderArtifactIdInTemplateWorkspace &&
+				integrationPointProfile.SourceProvider == syncSourceProviderArtifactIdInTemplateWorkspace;
+
+			List<IntegrationPointProfile> allProfiles = await GetProfilesWithProvidersFromTemplateWorkspaceAsync().ConfigureAwait(false);
+
+			List<int> nonSyncProfilesArtifactIds = allProfiles
+				.Where(p => !IsSyncProfile(p))
+				.Select(p => p.ArtifactId)
+				.ToList();
+			List<int> syncProfilesArtifactIds = allProfiles
+				.Where(p => IsSyncProfile(p))
+				.Select(p => p.ArtifactId)
+				.ToList();
+			return (nonSyncProfilesArtifactIds, syncProfilesArtifactIds);
+		}
+
+		private async Task DeleteNonSyncProfilesIfAnyInCreatedWorkspaceAsync(IReadOnlyCollection<int> nonSyncProfilesArtifactIds)
+		{
+			if (nonSyncProfilesArtifactIds.IsNullOrEmpty())
+			{
+				return;
+			}
 			using (IObjectManager objectManager = CreateObjectManager())
 			{
-				int syncDestinationProviderArtifactId = await GetSyncDestinationProviderArtifactIdInTemplateWorkspaceAsync(objectManager).ConfigureAwait(false);
-				int syncSourceProviderArtifactId = await GetSyncSourceProviderArtifactIdInTemplateWorkspaceAsync(objectManager).ConfigureAwait(false);
+				MassDeleteResult massDeleteResult =
+					await objectManager.MassDeleteObjectsByArtifactIds(WorkspaceId, ObjectTypeGuids.IntegrationPointProfileGuid, nonSyncProfilesArtifactIds).ConfigureAwait(false);
 
-				List<int> nonSyncProfilesArtifactIds = await GetNonSyncProfilesArtifactIdsFromTemplateWorkspaceAsync(syncDestinationProviderArtifactId, syncSourceProviderArtifactId, objectManager)
-					.ConfigureAwait(false);
-				if (nonSyncProfilesArtifactIds.Any())
+				if (!massDeleteResult.Success)
 				{
-					await DeleteNonSyncProfilesInCreatedWorkspaceAsync(nonSyncProfilesArtifactIds, objectManager).ConfigureAwait(false);
+					throw new IntegrationPointsException("Deleting non Sync Integration Point profiles failed");
 				}
 			}
 		}
 
-		private async Task<int> GetSyncDestinationProviderArtifactIdInTemplateWorkspaceAsync(IObjectManager objectManager) =>
-			await GetObjectArtifactIdByGuidFieldValueAsync(objectManager, _destinationProviderObjectTypeGuid, _identifierFieldOnDestinationProviderObjectGuid, _relativityDestinationProviderTypeGuid)
-				.ConfigureAwait(false);
-
-		private async Task<int> GetSyncSourceProviderArtifactIdInTemplateWorkspaceAsync(IObjectManager objectManager) =>
-			await GetObjectArtifactIdByGuidFieldValueAsync(objectManager, _sourceProviderObjectTypeGuid, _identifierFieldOnSourceProviderObjectGuid, _relativitySourceProviderTypeGuid)
-				.ConfigureAwait(false);
-
-		private async Task<int> GetObjectArtifactIdByGuidFieldValueAsync(IObjectManager objectManager, Guid objectTypeGuid, Guid fieldGuid, Guid value)
+		private async Task ModifyExistingSyncProfilesIfAnyInCreatedWorkspaceAsync(IEnumerable<int> syncProfilesArtifactIds)
 		{
-			Condition searchCondition = new TextCondition(fieldGuid, TextConditionEnum.EqualTo, value.ToString());
-
-			QueryRequest queryRequest = new QueryRequest
+			if (syncProfilesArtifactIds.IsNullOrEmpty())
 			{
-				ObjectType = new ObjectTypeRef
-				{
-					Guid = objectTypeGuid
-				},
-				Condition = searchCondition.ToQueryString()
-			};
-			QueryResult queryResult = await objectManager.QueryAsync(TemplateWorkspaceID, queryRequest, 0, 1).ConfigureAwait(false);
-
-			if (queryResult.TotalCount < 1)
-			{
-				throw new IntegrationPointsException($"Relativity object of type {objectTypeGuid} with field {fieldGuid} of value {value} in workspace {WorkspaceId} was not found");
+				return;
 			}
+			await Task.Yield(); // NOTE: To be implemented in REL-351468
+		}
 
-			int artifactId = queryResult.Objects.First().ArtifactID;
+		private Task<int> GetSyncDestinationProviderArtifactIdAsync(int workspaceId) =>
+			GetSingleObjectArtifactIdByStringFieldValueAsync<DestinationProvider>(workspaceId,
+				destinationProvider => destinationProvider.Identifier,
+				Constants.IntegrationPoints.DestinationProviders.RELATIVITY);
+
+		private Task<int> GetSyncSourceProviderArtifactIdAsync(int workspaceId) =>
+			GetSingleObjectArtifactIdByStringFieldValueAsync<SourceProvider>(workspaceId,
+				sourceProvider => sourceProvider.Identifier,
+				Constants.IntegrationPoints.SourceProviders.RELATIVITY);
+
+		private async Task<int> GetSingleObjectArtifactIdByStringFieldValueAsync<TSource>(int workspaceId, Expression<Func<TSource, string>> propertySelector, string fieldValue)
+			where TSource : BaseRdo, new()
+		{
+			IRelativityObjectManager objectManager = CreateRelativityObjectManager(workspaceId);
+
+			List<int> objectsArtifactIds = await objectManager.GetObjectArtifactIdsByStringFieldValueAsync(propertySelector, fieldValue).ConfigureAwait(false);
+
+			int artifactId = objectsArtifactIds.Single();
 			return artifactId;
 		}
 
-		private async Task<List<int>> GetNonSyncProfilesArtifactIdsFromTemplateWorkspaceAsync(int syncDestinationProviderArtifactId, int syncSourceProviderArtifactId, IObjectManager objectManager)
+		private async Task<List<IntegrationPointProfile>> GetProfilesWithProvidersFromTemplateWorkspaceAsync()
 		{
-			Condition destinationProviderIsRelativity = new ObjectCondition(_destinationProviderFieldOnProfileObjectGuid, ObjectConditionEnum.EqualTo, syncDestinationProviderArtifactId);
-			Condition sourceProviderIsRelativity = new ObjectCondition(_sourceProviderFieldOnProfileObjectGuid, ObjectConditionEnum.EqualTo, syncSourceProviderArtifactId);
-			Condition deleteNonSyncProfilesCondition = new CompositeCondition(destinationProviderIsRelativity, CompositeConditionEnum.And, sourceProviderIsRelativity).Negate();
-
+			IRelativityObjectManager objectManager = CreateRelativityObjectManager(TemplateWorkspaceID);
 			var queryRequest = new QueryRequest
 			{
-				ObjectType = new ObjectTypeRef
+				Fields = new[]
 				{
-					Guid = _integrationPointProfileObjectTypeGuid
-				},
-				Condition = deleteNonSyncProfilesCondition.ToQueryString()
-			};
-			QueryResult queryResult = await objectManager.QueryAsync(TemplateWorkspaceID, queryRequest, 0, int.MaxValue).ConfigureAwait(false);
-
-			List<int> nonSyncProfilesArtifactIds = queryResult.Objects.Select(o => o.ArtifactID).ToList();
-			return nonSyncProfilesArtifactIds;
-		}
-
-		private async Task DeleteNonSyncProfilesInCreatedWorkspaceAsync(List<int> nonSyncProfilesArtifactIds, IObjectManager objectManager)
-		{
-			Condition deleteNonSyncProfilesCondition = new WholeNumberCondition("ArtifactID", NumericConditionEnum.In, nonSyncProfilesArtifactIds);
-
-			var massDeleteByCriteriaRequest = new MassDeleteByCriteriaRequest
-			{
-				ObjectIdentificationCriteria = new ObjectIdentificationCriteria
-				{
-					ObjectType = new ObjectTypeRef
+					new FieldRef
 					{
-						Guid = _integrationPointProfileObjectTypeGuid
+						Guid = IntegrationPointProfileFieldGuids.DestinationProviderGuid
 					},
-					Condition = deleteNonSyncProfilesCondition.ToQueryString()
+					new FieldRef
+					{
+						Guid = IntegrationPointProfileFieldGuids.SourceProviderGuid
+					}
 				}
 			};
-			MassDeleteResult massDeleteResult = await objectManager.DeleteAsync(WorkspaceId, massDeleteByCriteriaRequest).ConfigureAwait(false);
+			List<IntegrationPointProfile> integrationPointProfiles = await objectManager.QueryAsync<IntegrationPointProfile>(queryRequest);
 
-			if (!massDeleteResult.Success)
-			{
-				throw new IntegrationPointsException("Deleting non Sync Integration Point profiles failed");
-			}
+			return integrationPointProfiles;
 		}
 
 		private IObjectManager CreateObjectManager() => Helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System);
+
+		private IRelativityObjectManager CreateRelativityObjectManager(int workspaceId) => _relativityObjectManagerFactory.Value.CreateRelativityObjectManager(workspaceId);
 
 		private int WorkspaceId => Helper.GetActiveCaseID();
 	}
