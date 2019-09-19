@@ -1,20 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using kCura.EventHandler.CustomAttributes;
 using kCura.IntegrationPoints.Common.Extensions.DotNet;
 using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
-using Relativity.Services.Objects.DataContracts;
-using Constants = kCura.IntegrationPoints.Core.Constants;
+using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
@@ -23,6 +19,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 	public class IntegrationPointProfileMigrationEventHandler : IntegrationPointMigrationEventHandlerBase
 	{
 		private readonly Lazy<IRelativityObjectManagerFactory> _relativityObjectManagerFactory;
+		private readonly IIntegrationPointProfilesQuery _integrationPointProfilesQuery;
 
 		protected override string SuccessMessage => "Integration Point Profiles migrated successfully.";
 		protected override string GetFailureMessage(Exception ex) => $"Failed to migrate the Integration Point Profiles, because: {ex.Message}";
@@ -30,12 +27,15 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		public IntegrationPointProfileMigrationEventHandler()
 		{
 			_relativityObjectManagerFactory = new Lazy<IRelativityObjectManagerFactory>(() => new RelativityObjectManagerFactory(Helper));
+			_integrationPointProfilesQuery = new IntegrationPointProfilesQuery(_relativityObjectManagerFactory);
 		}
 
-		internal IntegrationPointProfileMigrationEventHandler(IErrorService errorService, Func<IRelativityObjectManagerFactory> relativityObjectManagerFactoryProvider)
-			: base(errorService)
+		internal IntegrationPointProfileMigrationEventHandler(IErrorService errorService,
+			Func<IRelativityObjectManagerFactory> relativityObjectManagerFactoryProvider,
+			IIntegrationPointProfilesQuery integrationPointProfilesQuery) : base(errorService)
 		{
 			_relativityObjectManagerFactory = new Lazy<IRelativityObjectManagerFactory>(relativityObjectManagerFactoryProvider);
+			_integrationPointProfilesQuery = integrationPointProfilesQuery;
 		}
 
 		protected override void Run()
@@ -45,41 +45,14 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 		private async Task MigrateProfilesAsync()
 		{
-			var (nonSyncProfilesArtifactIds, syncProfilesArtifactIds) = await GetSyncAndNonSyncProfilesArtifactIdsAsync()
+			var (nonSyncProfilesArtifactIds, syncProfilesArtifactIds) = await _integrationPointProfilesQuery
+				.GetSyncAndNonSyncProfilesArtifactIdsAsync(TemplateWorkspaceID)
 				.ConfigureAwait(false);
 
 			await Task.WhenAll(
 					DeleteNonSyncProfilesIfAnyInCreatedWorkspaceAsync(nonSyncProfilesArtifactIds),
 					ModifyExistingSyncProfilesIfAnyInCreatedWorkspaceAsync(syncProfilesArtifactIds)
 				).ConfigureAwait(false);
-		}
-
-		private async Task<(List<int> nonSyncProfilesArtifactIds, List<int> syncProfilesArtifactIds)> GetSyncAndNonSyncProfilesArtifactIdsAsync()
-		{
-			Task<int> syncDestinationProviderArtifactIdTask = GetSyncDestinationProviderArtifactIdAsync(TemplateWorkspaceID);
-			Task<int> syncSourceProviderArtifactIdTask = GetSyncSourceProviderArtifactIdAsync(TemplateWorkspaceID);
-			Task<List<IntegrationPointProfile>> getProfilesWithProvidersFromTemplateWorkspaceTask = GetProfilesWithProvidersFromTemplateWorkspaceAsync();
-			await Task.WhenAll(
-					syncSourceProviderArtifactIdTask,
-					syncDestinationProviderArtifactIdTask,
-					getProfilesWithProvidersFromTemplateWorkspaceTask)
-				.ConfigureAwait(false);
-
-			bool IsSyncProfile(IntegrationPointProfile integrationPointProfile) =>
-				integrationPointProfile.DestinationProvider == syncDestinationProviderArtifactIdTask.Result &&
-				integrationPointProfile.SourceProvider == syncSourceProviderArtifactIdTask.Result;
-
-			List<IntegrationPointProfile> allProfiles = getProfilesWithProvidersFromTemplateWorkspaceTask.Result;
-
-			List<int> nonSyncProfilesArtifactIds = allProfiles
-				.Where(p => !IsSyncProfile(p))
-				.Select(p => p.ArtifactId)
-				.ToList();
-			List<int> syncProfilesArtifactIds = allProfiles
-				.Where(p => IsSyncProfile(p))
-				.Select(p => p.ArtifactId)
-				.ToList();
-			return (nonSyncProfilesArtifactIds, syncProfilesArtifactIds);
 		}
 
 		private async Task DeleteNonSyncProfilesIfAnyInCreatedWorkspaceAsync(IReadOnlyCollection<int> nonSyncProfilesArtifactIds)
@@ -106,50 +79,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			}
 
 			await Task.Yield(); // NOTE: To be implemented in REL-351468
-		}
-
-		private Task<int> GetSyncDestinationProviderArtifactIdAsync(int workspaceId) =>
-			GetSingleObjectArtifactIdByStringFieldValueAsync<DestinationProvider>(workspaceId,
-				destinationProvider => destinationProvider.Identifier,
-				Constants.IntegrationPoints.DestinationProviders.RELATIVITY);
-
-		private Task<int> GetSyncSourceProviderArtifactIdAsync(int workspaceId) =>
-			GetSingleObjectArtifactIdByStringFieldValueAsync<SourceProvider>(workspaceId,
-				sourceProvider => sourceProvider.Identifier,
-				Constants.IntegrationPoints.SourceProviders.RELATIVITY);
-
-		private async Task<int> GetSingleObjectArtifactIdByStringFieldValueAsync<TSource>(int workspaceId,
-			Expression<Func<TSource, string>> propertySelector, string fieldValue) where TSource : BaseRdo, new()
-		{
-			List<int> objectsArtifactIds = await CreateRelativityObjectManager(workspaceId)
-				.GetObjectArtifactIdsByStringFieldValueAsync(propertySelector, fieldValue)
-				.ConfigureAwait(false);
-
-			int artifactId = objectsArtifactIds.Single();
-			return artifactId;
-		}
-
-		private async Task<List<IntegrationPointProfile>> GetProfilesWithProvidersFromTemplateWorkspaceAsync()
-		{
-			var queryRequest = new QueryRequest
-			{
-				Fields = new[]
-				{
-					new FieldRef
-					{
-						Guid = IntegrationPointProfileFieldGuids.DestinationProviderGuid
-					},
-					new FieldRef
-					{
-						Guid = IntegrationPointProfileFieldGuids.SourceProviderGuid
-					}
-				}
-			};
-			List<IntegrationPointProfile> integrationPointProfiles = await CreateRelativityObjectManager(TemplateWorkspaceID)
-				.QueryAsync<IntegrationPointProfile>(queryRequest)
-				.ConfigureAwait(false);
-
-			return integrationPointProfiles;
 		}
 
 		private IRelativityObjectManager CreateRelativityObjectManager(int workspaceId) =>
