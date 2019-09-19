@@ -1,6 +1,7 @@
 Castle.Windsor
 CSharpGuidelineAnalyzer
 kCura.Agent
+kCura.IntegrationPoints.Services.Interfaces.Private
 kCura.Relativity.Client
 Relativity.Authentication
 Relativity.Telemetry.APM

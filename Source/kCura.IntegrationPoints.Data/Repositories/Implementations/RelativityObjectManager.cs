@@ -152,6 +152,20 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				executionIdentity);
 		}
 
+		public Task<bool> MassDeleteAsync(IEnumerable<int> objectsIDs, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
+		{
+			List<RelativityObjectRef> objectsToDelete = objectsIDs
+				.Select(x => new RelativityObjectRef { ArtifactID = x })
+				.ToList();
+
+			var massDeleteByCriteriaRequest = new MassDeleteByObjectIdentifiersRequest
+			{
+				Objects = objectsToDelete
+			};
+
+			return SendMassDeleteRequestAsync(massDeleteByCriteriaRequest, executionIdentity);
+		}
+
 		public bool Delete<T>(T rdo, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
 			where T : BaseRdo, new()
 		{
@@ -436,8 +450,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public async Task<RelativityObjectSlim[]> RetrieveResultsBlockFromExportAsync(
 			Guid runID,
-			int resultsBlockSize, 
-			int exportIndexID, 
+			int resultsBlockSize,
+			int exportIndexID,
 			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
 		{
 			try
@@ -606,8 +620,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		private T SendReadRequest<T>(ReadRequest request, 
-			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) 
+		private T SendReadRequest<T>(ReadRequest request,
+			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
 			where T : BaseRdo, new()
 		{
 			try
@@ -725,6 +739,29 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			catch (Exception ex)
 			{
 				HandleObjectManagerException(ex, message: GetErrorMessage<DeleteRequest>(rdoType));
+				throw;
+			}
+		}
+
+		private async Task<bool> SendMassDeleteRequestAsync(MassDeleteByObjectIdentifiersRequest request, ExecutionIdentity executionIdentity)
+		{
+			try
+			{
+				using (IObjectManagerFacade client = _objectManagerFacadeFactory.Create(executionIdentity))
+				{
+					MassDeleteResult result = await client
+						.DeleteAsync(_workspaceArtifactId, request)
+						.ConfigureAwait(false);
+					return result.Success;
+				}
+			}
+			catch (IntegrationPointsException)
+			{
+				throw;
+			}
+			catch (Exception ex)
+			{
+				HandleObjectManagerException(ex, message: GetErrorMessage<DeleteRequest>(_UNKNOWN_OBJECT_TYPE));
 				throw;
 			}
 		}
