@@ -22,7 +22,6 @@ using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.Relativity.Client;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Services.Workspace;
 
 namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
 {
