@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Agent.Utils;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
@@ -200,7 +199,15 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			TaskParameters taskParameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
 			BatchInstance = taskParameters.BatchInstance;
-			EntityManagerJobParameters jobParameters = JobParametersDeserializationUtils.Deserialize<EntityManagerJobParameters>(job, Serializer);
+			EntityManagerJobParameters jobParameters;
+			if (taskParameters.BatchParameters is JObject)
+			{
+				jobParameters = ((JObject)taskParameters.BatchParameters).ToObject<EntityManagerJobParameters>();
+			}
+			else
+			{
+				jobParameters = (EntityManagerJobParameters)taskParameters.BatchParameters;
+			}
 			_entityManagerMap = jobParameters.EntityManagerMap.Select(
 				x => new EntityManagerMap { EntityID = x.Key, OldManagerID = x.Value }).ToList();
 
