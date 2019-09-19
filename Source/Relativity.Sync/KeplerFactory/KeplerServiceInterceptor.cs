@@ -24,12 +24,12 @@ namespace Relativity.Sync.KeplerFactory
 		private readonly ISyncMetrics _syncMetrics;
 		private readonly IStopwatch _stopwatch;
 		private readonly ISyncLog _logger;
-		private readonly Func<TService> _keplerServiceFactory;
+		private readonly Func<Task<TService>> _keplerServiceFactory;
 		private readonly System.Reflection.FieldInfo _currentInterceptorIndexField;
 
 		private static readonly MethodInfo _handleAsyncMethodInfo = typeof(KeplerServiceInterceptor<TService>).GetMethod(nameof(HandleAsyncWithResult), BindingFlags.Instance | BindingFlags.NonPublic);
 
-		public KeplerServiceInterceptor(ISyncMetrics syncMetrics, IStopwatch stopwatch, Func<TService> keplerServiceFactory, ISyncLog logger)
+		public KeplerServiceInterceptor(ISyncMetrics syncMetrics, IStopwatch stopwatch, Func<Task<TService>> keplerServiceFactory, ISyncLog logger)
 		{
 			_syncMetrics = syncMetrics;
 			_stopwatch = stopwatch;
@@ -93,13 +93,13 @@ namespace Relativity.Sync.KeplerFactory
 				RetryPolicy authTokenPolicy = Policy
 					.Handle<NotAuthorizedException>() // Thrown when token expired
 					.RetryAsync(_MAX_NUMBER_OF_RETRIES,
-						(ex, retryCount, context) =>
+						async (ex, retryCount, context) =>
 					{
 						authTokenRetries = retryCount;
 						IChangeProxyTarget changeProxyTarget = invocation as IChangeProxyTarget;
 						if (changeProxyTarget != null)
 						{
-							TService newKeplerServiceInstance = _keplerServiceFactory();
+							TService newKeplerServiceInstance = await _keplerServiceFactory().ConfigureAwait(false);
 							changeProxyTarget.ChangeInvocationTarget(newKeplerServiceInstance);
 						}
 						else

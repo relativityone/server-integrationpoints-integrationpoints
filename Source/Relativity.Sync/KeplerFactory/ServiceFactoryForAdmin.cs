@@ -17,9 +17,8 @@ namespace Relativity.Sync.KeplerFactory
 
 		public async Task<T> CreateProxyAsync<T>() where T : class, IDisposable
 		{
-			await Task.Yield();
-			T KeplerServiceFactory() => _servicesMgr.CreateProxy<T>(ExecutionIdentity.System);
-			T keplerService = KeplerServiceFactory();
+			Task<T> KeplerServiceFactory() => Task.FromResult(_servicesMgr.CreateProxy<T>(ExecutionIdentity.System));
+			T keplerService = await KeplerServiceFactory().ConfigureAwait(false);
 			return _proxyFactory.WrapKeplerService(keplerService, KeplerServiceFactory);
 		}
 	}

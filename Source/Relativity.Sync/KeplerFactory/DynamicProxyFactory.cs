@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Castle.DynamicProxy;
 using Relativity.Sync.Telemetry;
 
@@ -17,7 +18,7 @@ namespace Relativity.Sync.KeplerFactory
 			_logger = logger;
 		}
 
-		public T WrapKeplerService<T>(T keplerService, Func<T> keplerServiceFactory) where T : class
+		public T WrapKeplerService<T>(T keplerService, Func<Task<T>> keplerServiceFactory) where T : class
 		{
 			KeplerServiceInterceptor<T> interceptor = new KeplerServiceInterceptor<T>(_syncMetrics, _stopwatch, keplerServiceFactory, _logger);
 			ProxyGenerator proxyGenerator = new ProxyGenerator();

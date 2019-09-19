@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading.Tasks;
+using Castle.DynamicProxy;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -10,6 +12,7 @@ using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Tests.Unit.Stubs;
+using IInvocation = Castle.DynamicProxy.IInvocation;
 
 namespace Relativity.Sync.Tests.Unit
 {
@@ -19,7 +22,7 @@ namespace Relativity.Sync.Tests.Unit
 		private IStubForInterception _instance;
 
 		private Mock<IStubForInterception> _stubForInterception;
-		private Mock<Func<IStubForInterception>> _stubForInterceptionFactory;
+		private Mock<Func<Task<IStubForInterception>>> _stubForInterceptionFactory;
 		private Mock<ISyncMetrics> _syncMetrics;
 
 		private readonly TimeSpan _executionTime = TimeSpan.FromMinutes(1);
@@ -34,8 +37,9 @@ namespace Relativity.Sync.Tests.Unit
 		public void SetUp()
 		{
 			_stubForInterception = new Mock<IStubForInterception>();
-			_stubForInterceptionFactory = new Mock<Func<IStubForInterception>>();
-			_stubForInterceptionFactory.Setup(x => x.Invoke()).Returns(_stubForInterception.Object);
+			_stubForInterceptionFactory = new Mock<Func<Task<IStubForInterception>>>();
+			_stubForInterceptionFactory.Setup(x => x.Invoke()).Returns(Task.FromResult(_stubForInterception.Object));
+
 
 			_syncMetrics = new Mock<ISyncMetrics>();
 
@@ -205,7 +209,7 @@ namespace Relativity.Sync.Tests.Unit
 			badService.Setup(x => x.ExecuteAsync()).Throws<NotAuthorizedException>();
 
 			Mock<IStubForInterception> newService = new Mock<IStubForInterception>();
-			IStubForInterception ServiceFactory() => newService.Object;
+			Task<IStubForInterception> ServiceFactory() => Task.FromResult(newService.Object);
 
 			Mock<IStopwatch> stopwatch = new Mock<IStopwatch>();
 			stopwatch.Setup(x => x.Elapsed).Returns(_executionTime);
@@ -219,6 +223,16 @@ namespace Relativity.Sync.Tests.Unit
 			action.Should().NotThrow();
 			badService.Verify(x => x.ExecuteAsync(), Times.Once());
 			newService.Verify(x => x.ExecuteAsync(), Times.Once());
+		}
+
+		[Test]
+		public void InvocationObjectHasRequiredField()
+		{
+			// act
+			System.Reflection.FieldInfo field = typeof(AbstractInvocation).GetField("currentInterceptorIndex", BindingFlags.NonPublic | BindingFlags.Instance);
+
+			// assert
+			field.Should().NotBeNull();
 		}
 
 		private static string GetMetricName(string methodName)

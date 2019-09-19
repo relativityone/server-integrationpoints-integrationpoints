@@ -45,9 +45,9 @@ namespace Relativity.Sync.KeplerFactory
 				_serviceFactory = await CreateServiceFactoryAsync().ConfigureAwait(false);
 			}
 
-			return _dynamicProxyFactory.WrapKeplerService(_serviceFactory.CreateProxy<T>(), () =>
+			return _dynamicProxyFactory.WrapKeplerService(_serviceFactory.CreateProxy<T>(), async () =>
 			{
-				_serviceFactory = CreateServiceFactoryAsync().GetAwaiter().GetResult();
+				_serviceFactory = await CreateServiceFactoryAsync().ConfigureAwait(false);
 				return _serviceFactory.CreateProxy<T>();
 			});
 		}

@@ -43,7 +43,7 @@ namespace Relativity.Sync.Tests.Integration
 
 			servicesMgr.Setup(x => x.CreateProxy<IObjectManager>(ExecutionIdentity.System)).Returns(objectManager);
 			serviceFactory.Setup(x => x.CreateProxy<IObjectManager>()).Returns(objectManager);
-			dynamicProxyFactory.Setup(x => x.WrapKeplerService(objectManager, It.IsAny<Func<IObjectManager>>())).Returns(_wrappedObjectManager);
+			dynamicProxyFactory.Setup(x => x.WrapKeplerService(objectManager, It.IsAny<Func<Task<IObjectManager>>>())).Returns(_wrappedObjectManager);
 		}
 
 		[Test]
