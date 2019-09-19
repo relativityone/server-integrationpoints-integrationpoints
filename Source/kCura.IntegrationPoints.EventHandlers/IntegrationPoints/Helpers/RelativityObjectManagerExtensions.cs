@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers
 				.Single()
 				.FieldGuid;
 
-			Condition searchCondition = new TextCondition(fieldGuid, TextConditionEnum.EqualTo, fieldValue); // indicate text only or generify
+			Condition searchCondition = new TextCondition(fieldGuid, TextConditionEnum.EqualTo, fieldValue);
 
 			var queryRequest = new QueryRequest
 			{
