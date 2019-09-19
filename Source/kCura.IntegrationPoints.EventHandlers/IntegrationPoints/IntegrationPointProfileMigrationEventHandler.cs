@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		public IntegrationPointProfileMigrationEventHandler()
 		{
 			_relativityObjectManagerFactory = new Lazy<IRelativityObjectManagerFactory>(() => new RelativityObjectManagerFactory(Helper));
-			_integrationPointProfilesQuery = new IntegrationPointProfilesQuery(_relativityObjectManagerFactory);
+			_integrationPointProfilesQuery = new IntegrationPointProfilesQuery(CreateRelativityObjectManager);
 		}
 
 		internal IntegrationPointProfileMigrationEventHandler(IErrorService errorService,

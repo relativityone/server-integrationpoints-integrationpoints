@@ -10,12 +10,19 @@ using kCura.IntegrationPoints.Data.Repositories;
 using Relativity.Services;
 using Relativity.Services.Objects.DataContracts;
 
-namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers
+namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations
 {
-	internal static class RelativityObjectManagerExtensions
+	public class ObjectArtifactIdsByStringFieldValueQuery : IObjectArtifactIdsByStringFieldValueQuery
 	{
-		public static async Task<List<int>> GetObjectArtifactIdsByStringFieldValueAsync<TSource>(this IRelativityObjectManager objectManager,
-			Expression<Func<TSource, string>> propertySelector, string fieldValue) where TSource : BaseRdo, new()
+		private readonly Func<int, IRelativityObjectManager> _createRelativityObjectManager;
+
+		public ObjectArtifactIdsByStringFieldValueQuery(Func<int, IRelativityObjectManager> createRelativityObjectManager)
+		{
+			_createRelativityObjectManager = createRelativityObjectManager;
+		}
+
+		public async Task<List<int>> QueryForObjectArtifactIdsByStringFieldValueAsync<TSource>(int workspaceId, Expression<Func<TSource, string>> propertySelector, string fieldValue)
+			where TSource : BaseRdo, new()
 		{
 			PropertyInfo propertyInfo = GetPropertyInfo(propertySelector);
 			Guid fieldGuid = propertyInfo
@@ -24,13 +31,14 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers
 				.Single()
 				.FieldGuid;
 
-			Condition searchCondition = new TextCondition(fieldGuid, TextConditionEnum.EqualTo, fieldValue); // indicate text only or generify
+			Condition searchCondition = new TextCondition(fieldGuid, TextConditionEnum.EqualTo, fieldValue);
 
 			var queryRequest = new QueryRequest
 			{
 				Condition = searchCondition.ToQueryString()
 			};
-			List<TSource> relativityObjects = await objectManager.QueryAsync<TSource>(queryRequest, true).ConfigureAwait(false);
+			List<TSource> relativityObjects = await _createRelativityObjectManager(workspaceId)
+				.QueryAsync<TSource>(queryRequest, true).ConfigureAwait(false);
 			List<int> objectsArtifactIds = relativityObjects.Select(o => o.ArtifactId).ToList();
 			return objectsArtifactIds;
 		}
