@@ -17,6 +17,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 		private Mock<IObjectManager> _objectManagerMock;
 		private ObjectManagerFacade _sut;
 
+		private const int _WORKSPACE_ID = 101;
+
 		[SetUp]
 		public void SetUp()
 		{
@@ -28,7 +30,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 		public async Task CreateAsync_ShouldReturnSameResultAsObjectManager()
 		{
 			//arrange
-			const int workspaceId = 101;
 			var request = new CreateRequest();
 			var expectedResult = new CreateResult();
 
@@ -39,7 +40,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 
 			//act
 			CreateResult actualResult = await _sut
-				.CreateAsync(workspaceId, request)
+				.CreateAsync(_WORKSPACE_ID, request)
 				.ConfigureAwait(false);
 
 			//assert
@@ -50,7 +51,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 		public async Task ReadAsync_ShouldReturnSameResultAsObjectManager()
 		{
 			//arrange
-			const int workspaceId = 101;
 			var request = new ReadRequest();
 			var expectedResult = new ReadResult();
 
@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 
 			//act
 			ReadResult actualResult = await _sut
-				.ReadAsync(workspaceId, request)
+				.ReadAsync(_WORKSPACE_ID, request)
 				.ConfigureAwait(false);
 
 			//assert
@@ -72,7 +72,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 		public async Task UpdateAsync_ShouldReturnSameResultAsObjectManager()
 		{
 			//arrange
-			const int workspaceId = 101;
 			var request = new UpdateRequest();
 			var expectedResult = new UpdateResult();
 
@@ -83,7 +82,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 
 			//act
 			UpdateResult actualResult = await _sut
-				.UpdateAsync(workspaceId, request)
+				.UpdateAsync(_WORKSPACE_ID, request)
 				.ConfigureAwait(false);
 
 			//assert
@@ -94,7 +93,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 		public async Task QueryAsync_ShouldReturnSameResultAsObjectManager()
 		{
 			//arrange
-			const int workspaceId = 101;
 			const int start = 0;
 			const int length = 1;
 			var request = new QueryRequest();
@@ -109,7 +107,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 
 			//act
 			QueryResult actualResult = await _sut
-				.QueryAsync(workspaceId, request, start, length)
+				.QueryAsync(_WORKSPACE_ID, request, start, length)
 				.ConfigureAwait(false);
 
 			//assert
@@ -120,7 +118,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 		public async Task DeleteAsync_ShouldReturnSameResultAsObjectManager()
 		{
 			//arrange
-			const int workspaceId = 101;
 			var request = new DeleteRequest();
 			var expectedResult = new DeleteResult();
 
@@ -131,7 +128,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 
 			//act
 			DeleteResult actualResult = await _sut
-				.DeleteAsync(workspaceId, request)
+				.DeleteAsync(_WORKSPACE_ID, request)
 				.ConfigureAwait(false);
 
 			//assert
@@ -139,10 +136,27 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 		}
 
 		[Test]
+		public async Task MassDeleteAsync_ShouldReturnSameResultAsObjectManager()
+		{
+			var request = new MassDeleteByObjectIdentifiersRequest();
+			var expectedResult = new MassDeleteResult();
+
+			_objectManagerMock.Setup(x => x.DeleteAsync(
+					It.IsAny<int>(),
+					It.IsAny<MassDeleteByObjectIdentifiersRequest>()))
+				.ReturnsAsync(expectedResult);
+
+			// act
+			MassDeleteResult actualResult = await _sut.DeleteAsync(_WORKSPACE_ID, request).ConfigureAwait(false);
+
+			// assert
+			actualResult.Should().Be(expectedResult);
+		}
+
+		[Test]
 		public async Task StreamLongTextAsync_ShouldReturnSameResultAsObjectManager()
 		{
 			//arrange
-			const int workspaceId = 101;
 			var relativityObjectRef = new RelativityObjectRef();
 			var fieldRef = new FieldRef();
 			IKeplerStream expectedResult = new Mock<IKeplerStream>().Object;
@@ -155,7 +169,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 
 			//act
 			IKeplerStream actualResult = await _sut
-				.StreamLongTextAsync(workspaceId, relativityObjectRef, fieldRef)
+				.StreamLongTextAsync(_WORKSPACE_ID, relativityObjectRef, fieldRef)
 				.ConfigureAwait(false);
 
 			//assert
@@ -166,24 +180,23 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 		public async Task InitializeExportAsync_ShouldReturnSameResultAsObjectManager()
 		{
 			//arrange
-			const int workspaceID = 101;
 			var queryRequest = new QueryRequest();
 			const int start = 5;
 			ExportInitializationResults expectedResult = new ExportInitializationResults();
 
 			_objectManagerMock.Setup(x => x.InitializeExportAsync(
-					workspaceID,
+					_WORKSPACE_ID,
 					queryRequest,
 					start))
 				.ReturnsAsync(expectedResult);
 
 			//act
 			ExportInitializationResults actualResult = await _sut
-				.InitializeExportAsync(workspaceID, queryRequest, start)
+				.InitializeExportAsync(_WORKSPACE_ID, queryRequest, start)
 				.ConfigureAwait(false);
 
 			//assert
-			_objectManagerMock.Verify(x => x.InitializeExportAsync(workspaceID, queryRequest, start), Times.Once);
+			_objectManagerMock.Verify(x => x.InitializeExportAsync(_WORKSPACE_ID, queryRequest, start), Times.Once);
 			actualResult.Should().Be(expectedResult);
 		}
 
@@ -191,7 +204,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 		public async Task RetrieveResultsBlockFromExportAsync_ShouldReturnSameResultAsObjectManager()
 		{
 			//arrange
-			const int workspaceID = 101;
 			Guid runID = Guid.Parse("EA150180-3A58-4DFF-AA6C-6385075FCFD3");
 			const int resultsBlockSize = 5;
 			const int exportIndexID = 0;
@@ -199,7 +211,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 			RelativityObjectSlim[] expectedResult = {relativityObjectSlim};
 
 			_objectManagerMock.Setup(x => x.RetrieveResultsBlockFromExportAsync(
-					workspaceID,
+					_WORKSPACE_ID,
 					runID,
 					resultsBlockSize,
 					exportIndexID))
@@ -207,11 +219,11 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 
 			//act
 			RelativityObjectSlim[] actualResult = await _sut
-				.RetrieveResultsBlockFromExportAsync(workspaceID, runID, resultsBlockSize, exportIndexID)
+				.RetrieveResultsBlockFromExportAsync(_WORKSPACE_ID, runID, resultsBlockSize, exportIndexID)
 				.ConfigureAwait(false);
 
 			//assert
-			_objectManagerMock.Verify(x => x.RetrieveResultsBlockFromExportAsync(workspaceID, runID, resultsBlockSize, exportIndexID), Times.Once);
+			_objectManagerMock.Verify(x => x.RetrieveResultsBlockFromExportAsync(_WORKSPACE_ID, runID, resultsBlockSize, exportIndexID), Times.Once);
 			actualResult.Should().BeSameAs(expectedResult);
 		}
 
@@ -219,14 +231,13 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 		public void CreateAsync_ShouldThrowWhenObjectManagerNotInitialized()
 		{
 			//arrange
-			const int workspaceId = 101;
 			var request = new CreateRequest();
 
 			_sut = new ObjectManagerFacade(() => null);
 
 			//act
 			Func<Task> action = async () => await _sut
-				.CreateAsync(workspaceId, request)
+				.CreateAsync(_WORKSPACE_ID, request)
 				.ConfigureAwait(false);
 
 			//assert
@@ -237,14 +248,13 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 		public void ReadAsync_ShouldThrowWhenObjectManagerNotInitialized()
 		{
 			//arrange
-			const int workspaceId = 101;
 			var request = new ReadRequest();
 
 			_sut = new ObjectManagerFacade(() => null);
 
 			//act
 			Func<Task> action = async () => await _sut
-				.ReadAsync(workspaceId, request)
+				.ReadAsync(_WORKSPACE_ID, request)
 				.ConfigureAwait(false);
 
 			//assert
@@ -255,14 +265,13 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 		public void UpdateAsync_ShouldThrowWhenObjectManagerNotInitialized()
 		{
 			//arrange
-			const int workspaceId = 101;
 			var request = new UpdateRequest();
 
 			_sut = new ObjectManagerFacade(() => null);
 
 			//act
 			Func<Task> action = async () => await _sut
-				.UpdateAsync(workspaceId, request)
+				.UpdateAsync(_WORKSPACE_ID, request)
 				.ConfigureAwait(false);
 
 			//assert
@@ -273,7 +282,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 		public void QueryAsync_ShouldThrowWhenObjectManagerNotInitialized()
 		{
 			//arrange
-			const int workspaceId = 101;
 			const int start = 0;
 			const int length = 1;
 			var request = new QueryRequest();
@@ -282,7 +290,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 
 			//act
 			Func<Task> action = async () => await _sut
-				.QueryAsync(workspaceId, request, start, length)
+				.QueryAsync(_WORKSPACE_ID, request, start, length)
 				.ConfigureAwait(false);
 
 			//assert
@@ -293,14 +301,13 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 		public void DeleteAsync_ShouldThrowWhenObjectManagerNotInitialized()
 		{
 			//arrange
-			const int workspaceId = 101;
 			var request = new DeleteRequest();
 
 			_sut = new ObjectManagerFacade(() => null);
 
 			//act
 			Func<Task> action = async () => await _sut
-				.DeleteAsync(workspaceId, request)
+				.DeleteAsync(_WORKSPACE_ID, request)
 				.ConfigureAwait(false);
 
 			//assert
@@ -311,7 +318,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 		public void StreamLongTextAsync_ShouldThrowWhenObjectManagerNotInitialized()
 		{
 			//arrange
-			const int workspaceArtifactID = 101;
 			var relativityObjectRef = new RelativityObjectRef();
 			var fieldRef = new FieldRef();
 
@@ -319,7 +325,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 
 			//act
 			Func<Task> action = async () => await _sut
-				.StreamLongTextAsync(workspaceArtifactID, relativityObjectRef, fieldRef)
+				.StreamLongTextAsync(_WORKSPACE_ID, relativityObjectRef, fieldRef)
 				.ConfigureAwait(false);
 
 			//assert
@@ -330,18 +336,17 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 		public async Task UpdateAsync_MassUpdate_ShouldReturnSameResultAsObjectManager()
 		{
 			//arrange
-			const int workspaceId = 101;
 			var request = new MassUpdateByObjectIdentifiersRequest();
 			var options = new MassUpdateOptions();
 			var expectedResult = new MassUpdateResult();
 
 			_objectManagerMock
-				.Setup(x => x.UpdateAsync(workspaceId, request, options))
+				.Setup(x => x.UpdateAsync(_WORKSPACE_ID, request, options))
 				.ReturnsAsync(expectedResult);
 
 			//act
 			MassUpdateResult actualResult = await _sut
-				.UpdateAsync(workspaceId, request, options)
+				.UpdateAsync(_WORKSPACE_ID, request, options)
 				.ConfigureAwait(false);
 
 			//assert
@@ -352,7 +357,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 		public void InitializeExportAsync_ShouldThrowWhenObjectManagerNotInitialized()
 		{
 			//arrange
-			const int workspaceID = 101;
 			var queryRequest = new QueryRequest();
 			const int start = 5;
 
@@ -360,7 +364,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 
 			//act
 			Func<Task> action = () => _sut
-				.InitializeExportAsync(workspaceID, queryRequest, start);
+				.InitializeExportAsync(_WORKSPACE_ID, queryRequest, start);
 
 			//assert
 			action.ShouldThrow<NullReferenceException>();
@@ -370,17 +374,16 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 		public void UpdateAsync_MassUpdate_ShouldThrowWhenObjectManagerNotInitialized()
 		{
 			//arrange
-			const int workspaceId = 101;
 			var request = new MassUpdateByObjectIdentifiersRequest();
 			var options = new MassUpdateOptions();
 			var exceptionToThrow = new Exception();
 
 			_objectManagerMock
-				.Setup(x => x.UpdateAsync(workspaceId, request, options))
+				.Setup(x => x.UpdateAsync(_WORKSPACE_ID, request, options))
 				.Throws(exceptionToThrow);
 
 			//act
-			Func<Task> massUpdateAction = () => _sut.UpdateAsync(workspaceId, request, options);
+			Func<Task> massUpdateAction = () => _sut.UpdateAsync(_WORKSPACE_ID, request, options);
 
 			//assert
 			massUpdateAction.ShouldThrow<Exception>()
@@ -391,7 +394,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 		public void RetrieveResultsBlockFromExportAsync_ShouldThrowWhenObjectManagerNotInitialized()
 		{
 			//arrange
-			const int workspaceID = 101;
 			Guid runID = Guid.Parse("EA150180-3A58-4DFF-AA6C-6385075FCFD3");
 			const int resultsBlockSize = 5;
 			const int exportIndexID = 0;
@@ -400,7 +402,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 
 			//act
 			Func<Task> action = () => _sut
-				.RetrieveResultsBlockFromExportAsync(workspaceID, runID, resultsBlockSize, exportIndexID);
+				.RetrieveResultsBlockFromExportAsync(_WORKSPACE_ID, runID, resultsBlockSize, exportIndexID);
 
 			//assert
 			action.ShouldThrow<NullReferenceException>();
@@ -410,10 +412,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 		public async Task This_ShouldDisposeObjectManagerWhenItsAlreadyCreated()
 		{
 			//arrange
-			const int workspaceId = 101;
 			ReadRequest request = new ReadRequest();
 			await _sut
-				.ReadAsync(workspaceId, request)
+				.ReadAsync(_WORKSPACE_ID, request)
 				.ConfigureAwait(false);
 
 			//act
@@ -437,10 +438,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 		public async Task This_ShouldDisposeObjectManagerOnlyOnceWhenItsAlreadyCreated()
 		{
 			//arrange
-			const int workspaceId = 101;
 			ReadRequest request = new ReadRequest();
 			await _sut
-				.ReadAsync(workspaceId, request)
+				.ReadAsync(_WORKSPACE_ID, request)
 				.ConfigureAwait(false);
 
 			//act

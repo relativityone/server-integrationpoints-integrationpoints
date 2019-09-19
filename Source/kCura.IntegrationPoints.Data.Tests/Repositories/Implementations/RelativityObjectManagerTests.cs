@@ -203,6 +203,79 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		}
 
 		[Test]
+		public void MassDeleteAsync_ShouldRethrowIntegrationPointsException()
+		{
+			IntegrationPointsException expectedException = new IntegrationPointsException();
+			_objectManagerFacadeMock
+				.Setup(x => x.DeleteAsync(It.IsAny<int>(), It.IsAny<MassDeleteByObjectIdentifiersRequest>()))
+				.Throws(expectedException);
+
+			// act
+			Func<Task> massDeleteAction = () => _sut.MassDeleteAsync(Enumerable.Empty<int>(), ExecutionIdentity.System);
+			
+			// assert
+			massDeleteAction.ShouldThrow<IntegrationPointsException>()
+				.Which.Should().Be(expectedException);
+		}
+
+		[Test]
+		public void MassDeleteAsync_ShouldWrapExceptionInIntegrationPointException()
+		{
+			Exception expectedInnerException = new Exception();
+			_objectManagerFacadeMock
+				.Setup(x => x.DeleteAsync(It.IsAny<int>(), It.IsAny<MassDeleteByObjectIdentifiersRequest>()))
+				.Throws(expectedInnerException);
+
+			// act
+			Func<Task> massDeleteAction = () => _sut.MassDeleteAsync(Enumerable.Empty<int>(), ExecutionIdentity.System);
+
+			// assert
+			massDeleteAction.ShouldThrow<IntegrationPointsException>()
+				.Which.InnerException.Should().Be(expectedInnerException);
+		}
+
+		[TestCase(true)]
+		[TestCase(false)]
+		public async Task MassDeleteAsync_ShouldReturnValueFromObjectManagerFacade(bool isSuccess)
+		{
+			var massDeleteResult = new MassDeleteResult()
+			{
+				Success = isSuccess
+			};
+			_objectManagerFacadeMock
+				.Setup(x => x.DeleteAsync(It.IsAny<int>(), It.IsAny<MassDeleteByObjectIdentifiersRequest>()))
+				.ReturnsAsync(massDeleteResult);
+
+			// act
+			bool acutalResult = await _sut.MassDeleteAsync(Enumerable.Empty<int>(), ExecutionIdentity.System).ConfigureAwait(false);
+
+			// assert
+			acutalResult.Should().Be(isSuccess);
+		}
+
+		[Test]
+		public async Task MassDeleteAsync_ShouldSendProperRequest()
+		{
+			var massDeleteResult = new MassDeleteResult()
+			{
+				Success = true
+			};
+			_objectManagerFacadeMock
+				.Setup(x => x.DeleteAsync(It.IsAny<int>(), It.IsAny<MassDeleteByObjectIdentifiersRequest>()))
+				.ReturnsAsync(massDeleteResult);
+			IList<int> ids = Enumerable.Range(0, 3).ToList();
+
+			// act
+			await _sut.MassDeleteAsync(ids, ExecutionIdentity.System).ConfigureAwait(false);
+
+			// assert
+			Func<MassDeleteByObjectIdentifiersRequest, bool> requestVerifier = request => request.Objects.Select(item => item.ArtifactID).ToList().SequenceEqual(ids);
+			_objectManagerFacadeMock.Verify(x => x.DeleteAsync(
+				_WORKSPACE_ARTIFACT_ID,
+				It.Is<MassDeleteByObjectIdentifiersRequest>(request => requestVerifier(request))));
+		}
+
+		[Test]
 		public void MassUpdateAsync_ShouldRethrowIntegrationPointException()
 		{
 			// arrange
