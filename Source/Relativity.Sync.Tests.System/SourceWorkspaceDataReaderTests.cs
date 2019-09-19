@@ -16,15 +16,17 @@ using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Helpers;
 using Relativity.Sync.Transfer;
+using Relativity.Testing.Identification;
 
 namespace Relativity.Sync.Tests.System
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints.Sync]
 	internal sealed class SourceWorkspaceDataReaderTests : SystemTest
 	{
 		private static readonly Dataset Dataset = Dataset.NativesAndExtractedText;
 
-		[Test]
+		[IdentifiedTest("789d730f-1d5a-403e-83c8-b0f7bfae8a1a")]
 		public async Task ItShouldPassGoldFlow()
 		{
 			const string folderInfoFieldName = "Document Folder Path";

@@ -10,6 +10,7 @@ using Relativity.Testing.Identification;
 namespace Relativity.Sync.Tests.System
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints.Sync]
 	public sealed class BatchRdoTests : SystemTest
 	{
 		private BatchRepository _repository;

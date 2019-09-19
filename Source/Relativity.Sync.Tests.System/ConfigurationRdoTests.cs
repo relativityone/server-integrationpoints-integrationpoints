@@ -19,6 +19,7 @@ using Relativity.Testing.Identification;
 namespace Relativity.Sync.Tests.System
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints.Sync]
 	public sealed class ConfigurationRdoTests : SystemTest
 	{
 		private ISourceServiceFactoryForAdmin _serviceFactory;
