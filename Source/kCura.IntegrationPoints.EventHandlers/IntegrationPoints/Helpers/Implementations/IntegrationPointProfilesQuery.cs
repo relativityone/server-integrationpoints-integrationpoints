@@ -13,11 +13,13 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 {
 	internal class IntegrationPointProfilesQuery : IIntegrationPointProfilesQuery
 	{
-		private readonly Lazy<IRelativityObjectManagerFactory> _relativityObjectManagerFactory;
+		private readonly Func<int, IRelativityObjectManager> _createRelativityObjectManager;
+		private readonly IObjectArtifactIdsByStringFieldValueQuery _objectArtifactIdsByStringFieldValueQuery;
 
-		public IntegrationPointProfilesQuery(Lazy<IRelativityObjectManagerFactory> relativityObjectManagerFactory)
+		public IntegrationPointProfilesQuery(Func<int, IRelativityObjectManager> createRelativityObjectManager)
 		{
-			_relativityObjectManagerFactory = relativityObjectManagerFactory;
+			_createRelativityObjectManager = createRelativityObjectManager;
+			_objectArtifactIdsByStringFieldValueQuery = new ObjectArtifactIdsByStringFieldValueQuery(createRelativityObjectManager);
 		}
 
 		public async Task<(List<int> nonSyncProfilesArtifactIds, List<int> syncProfilesArtifactIds)> GetSyncAndNonSyncProfilesArtifactIdsAsync(int workspaceId)
@@ -61,9 +63,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 		private async Task<int> GetSingleObjectArtifactIdByStringFieldValueAsync<TSource>(int workspaceId,
 			Expression<Func<TSource, string>> propertySelector, string fieldValue) where TSource : BaseRdo, new()
 		{
-			List<int> objectsArtifactIds = await CreateRelativityObjectManager(workspaceId)
-				.GetObjectArtifactIdsByStringFieldValueAsync(propertySelector, fieldValue)
-				.ConfigureAwait(false);
+			List<int> objectsArtifactIds = await _objectArtifactIdsByStringFieldValueQuery
+				.QueryForObjectArtifactIdsByStringFieldValueAsync(workspaceId, propertySelector, fieldValue);
 
 			int artifactId = objectsArtifactIds.Single();
 			return artifactId;
@@ -85,14 +86,11 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 					}
 				}
 			};
-			List<IntegrationPointProfile> integrationPointProfiles = await CreateRelativityObjectManager(workspaceId)
+			List<IntegrationPointProfile> integrationPointProfiles = await _createRelativityObjectManager(workspaceId)
 				.QueryAsync<IntegrationPointProfile>(queryRequest)
 				.ConfigureAwait(false);
 
 			return integrationPointProfiles;
 		}
-
-		private IRelativityObjectManager CreateRelativityObjectManager(int workspaceId) =>
-			_relativityObjectManagerFactory.Value.CreateRelativityObjectManager(workspaceId);
 	}
 }
