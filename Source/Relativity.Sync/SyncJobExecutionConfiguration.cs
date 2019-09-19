@@ -7,7 +7,7 @@ namespace Relativity.Sync
 	/// </summary>
 	public sealed class SyncJobExecutionConfiguration
 	{
-		private int _batchSize = int.MaxValue;
+		private int _batchSize = 250;
 
 		/// <summary>
 		///     Defines size of a single batch
