@@ -134,6 +134,7 @@
     <Compile Include="IntegrationPoints\Helpers\Factories\IntegrationPointSecretDeleteFactory.cs" />
     <Compile Include="IntegrationPoints\Helpers\Factories\IntegrationPointViewPreLoadFactory.cs" />
     <Compile Include="IntegrationPoints\Helpers\Factories\RelativityProviderSourceConfigurationFactory.cs" />
+    <Compile Include="IntegrationPoints\Helpers\IIntegrationPointProfilesQuery.cs" />
     <Compile Include="IntegrationPoints\Helpers\IIntegrationPointSecretDelete.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\CorrespondingJobDelete.cs" />
     <Compile Include="IntegrationPoints\Helpers\IConsoleBuilder.cs" />
@@ -148,6 +149,7 @@
     <Compile Include="IntegrationPoints\Helpers\IFolderPathInformation.cs" />
     <Compile Include="IntegrationPoints\Helpers\IDataTransferLocationMigrationHelper.cs" />
     <Compile Include="IntegrationPoints\Helpers\IDataTransferLocationMigration.cs" />
+    <Compile Include="IntegrationPoints\Helpers\Implementations\IntegrationPointProfilesQuery.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\IntegrationPointViewPreLoad.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\RelativityProviderConfiguration.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\RelativityProviderDestinationConfiguration.cs" />
