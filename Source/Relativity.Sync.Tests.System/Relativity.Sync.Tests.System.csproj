@@ -1,78 +1,77 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
-		<TargetFramework>net462</TargetFramework>
-		<OutputPath>bin\</OutputPath>
-		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-		<WarningLevel>4</WarningLevel>
-		<CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-		<CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
-		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-		<ResolveNugetPackages>true</ResolveNugetPackages>
-	</PropertyGroup>
-	<Import Project="..\..\scripts\Build.AssemblyInfo.targets" />
-	<ItemGroup>
-		<ProjectReference Include="..\Relativity.Sync.Tests.Common\Relativity.Sync.Tests.Common.csproj" />
-		<ProjectReference Include="..\Relativity.Sync\Relativity.Sync.csproj" />
-	</ItemGroup>
-	<ItemGroup>
-		<Folder Include="Resources\" />
-	</ItemGroup>
-	<ItemGroup>
-	  <Reference Include="System.Web.Services" />
-	</ItemGroup>
-	<ItemGroup>
-		<None Update="Data\NativesAndExtractedText\IMAGES\AMEYERS_0000757.tif">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\NativesAndExtractedText\IMAGES\AMEYERS_0000975.tif">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\NativesAndExtractedText\IMAGES\AMEYERS_0001185.tif">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\NativesAndExtractedText\IMAGES\AMEYERS_0001185_001.tif">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\NativesAndExtractedText\NATIVES\AMEYERS_0000757.htm">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\NativesAndExtractedText\NATIVES\AMEYERS_0000975.pdf">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\NativesAndExtractedText\NATIVES\AMEYERS_0001185.xls">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\NativesAndExtractedText\NATIVES\AZIPPER_0011318.msg">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\NativesAndExtractedText\NATIVES\REL0000above.htm">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\NativesAndExtractedText\NATIVES\REL0000below.htm">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\NativesAndExtractedText\TEXT\AMEYERS_0000757.txt">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\NativesAndExtractedText\TEXT\AMEYERS_0000975.txt">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\NativesAndExtractedText\TEXT\AMEYERS_0001185.txt">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\NativesAndExtractedText\TEXT\AZIPPER_0011318.txt">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\NativesAndExtractedText\TEXT\REL0000above.txt">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\NativesAndExtractedText\TEXT\REL0000below.txt">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Resources\Relativity_Sync_Test_Helper.xml">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
-	</ItemGroup>
-	<Import Project="..\..\.paket\Paket.Restore.targets" />
+  <PropertyGroup>
+    <TargetFramework>net462</TargetFramework>
+    <OutputPath>bin\</OutputPath>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <ResolveNugetPackages>true</ResolveNugetPackages>
+    <IsTestProject>false</IsTestProject>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Relativity.Sync.Tests.Common\Relativity.Sync.Tests.Common.csproj" />
+    <ProjectReference Include="..\Relativity.Sync\Relativity.Sync.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Web.Services" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Data\NativesAndExtractedText\IMAGES\AMEYERS_0000757.tif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\NativesAndExtractedText\IMAGES\AMEYERS_0000975.tif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\NativesAndExtractedText\IMAGES\AMEYERS_0001185.tif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\NativesAndExtractedText\IMAGES\AMEYERS_0001185_001.tif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\NativesAndExtractedText\NATIVES\AMEYERS_0000757.htm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\NativesAndExtractedText\NATIVES\AMEYERS_0000975.pdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\NativesAndExtractedText\NATIVES\AMEYERS_0001185.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\NativesAndExtractedText\NATIVES\AZIPPER_0011318.msg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\NativesAndExtractedText\NATIVES\REL0000above.htm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\NativesAndExtractedText\NATIVES\REL0000below.htm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\NativesAndExtractedText\TEXT\AMEYERS_0000757.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\NativesAndExtractedText\TEXT\AMEYERS_0000975.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\NativesAndExtractedText\TEXT\AMEYERS_0001185.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\NativesAndExtractedText\TEXT\AZIPPER_0011318.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\NativesAndExtractedText\TEXT\REL0000above.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\NativesAndExtractedText\TEXT\REL0000below.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Relativity_Sync_Test_Helper.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

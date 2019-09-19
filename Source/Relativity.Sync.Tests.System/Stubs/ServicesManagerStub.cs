@@ -6,6 +6,7 @@ namespace Relativity.Sync.Tests.System.Stubs
 {
 	public class ServicesManagerStub : IServicesMgr
 	{
+#pragma warning disable CA1024 // Use properties where appropriate
 		public Uri GetServicesURL()
 		{
 			return AppSettings.RelativityServicesUrl;
@@ -24,4 +25,6 @@ namespace Relativity.Sync.Tests.System.Stubs
 			return userServiceFactory.CreateProxy<T>();
 		}
 	}
+#pragma warning restore CA1024 // Use properties where appropriate
+
 }

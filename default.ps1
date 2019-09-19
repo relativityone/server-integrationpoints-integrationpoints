@@ -26,7 +26,7 @@ properties {
     $projectName = "Relativity.Sync"
 }
 
-task default -depends restorePackages, checkConfigureAwait, build, runUnitTests, packNuget
+task default -depends restorePackages, build, runUnitTests, packNuget
 
 task sign {
     & (Join-Path $scriptsDir "get-certificate-thumbprint.ps1") -certName $certName
@@ -44,10 +44,6 @@ task restorePackages {
     & (Join-Path $scriptsDir "restore-packages.ps1") -paketExe $paketExe
 }
 
-task checkConfigureAwait -depends restorePackages {
-    & (Join-Path $scriptsDir "check-configureawait.ps1") -sourceDir $sourceDir -toolsDir $toolsDir -logsDir $logsDir
-}
-
 task findMsbuild {
     & (Join-Path $scriptsDir "find-msbuild.ps1")
 }
@@ -60,7 +56,7 @@ task buildAndSign -depends sign, build {
 }
 
 task packNuget {
-    & (Join-Path $scriptsDir "pack-nuget.ps1") -packageVersion $packageVersion -paketExe $paketExe -nugetOutput $nugetOutput
+    & (Join-Path $scriptsDir "pack-paket.ps1") -packageVersion $packageVersion -paketExe $paketExe -nugetOutput $nugetOutput
 }
 
 task publishNuget {

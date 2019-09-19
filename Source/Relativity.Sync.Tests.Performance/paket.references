@@ -3,5 +3,6 @@ CSharpGuidelineAnalyzer
 
 Polly
 Autofac
-
+coverlet.msbuild
 NUnit
+NunitXml.TestLogger

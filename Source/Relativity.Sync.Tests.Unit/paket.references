@@ -15,5 +15,7 @@ Autofac
 SexyProxy.Emit
 
 NUnit
+NunitXml.TestLogger
+coverlet.msbuild
 FluentAssertions
 Moq

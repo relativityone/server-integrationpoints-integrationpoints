@@ -1,0 +1,10 @@
+<!-- This file will be overwritten on the CI server -->
+<!-- Local customization of build version numbers happens here -->
+<Project>
+    <PropertyGroup>
+        <CodeAnalysisRuleSet>../rulesets/SyncRules.ruleset</CodeAnalysisRuleSet>
+    </PropertyGroup>
+
+    <!-- This will merge top level Directory.Build.props -->
+    <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+</Project>

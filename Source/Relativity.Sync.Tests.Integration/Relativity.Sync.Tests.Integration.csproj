@@ -5,12 +5,17 @@
     <OutputPath>bin\</OutputPath>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <IsTestProject>true</IsTestProject>
 	<ResolveNugetPackages>true</ResolveNugetPackages>
   </PropertyGroup>
-  <Import Project="..\..\scripts\Build.AssemblyInfo.targets" />
+  <ItemGroup>
+    <None Remove="coverage.cobertura.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Relativity.Sync.Tests.Common\Relativity.Sync.Tests.Common.csproj" />
     <ProjectReference Include="..\Relativity.Sync\Relativity.Sync.csproj" />
