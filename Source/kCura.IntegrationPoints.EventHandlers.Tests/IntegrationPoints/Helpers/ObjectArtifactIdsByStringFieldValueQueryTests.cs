@@ -63,40 +63,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			VerifyQueryCall(Times.Once);
 		}
 
-		[Test]
-		public void ItShouldFailOnMethodExpression()
-		{
-			// Act
-			Func<Task> run = () => _query
-				.QueryForObjectArtifactIdsByStringFieldValueAsync<RdoStub>(_WORKSPACE_ID,
-					stub => stub.GetString(), _FIELD_VALUE);
-
-			// Assert
-			run
-				.ShouldThrowExactly<ArgumentException>()
-				.And
-				.Message.Should().EndWith("refers to a method, not a property.");
-
-			VerifyQueryCall(Times.Never);
-		}
-
-		[Test]
-		public void ItShouldFailOnFieldExpression()
-		{
-			// Act
-			Func<Task> run = () => _query
-				.QueryForObjectArtifactIdsByStringFieldValueAsync<RdoStub>(_WORKSPACE_ID,
-					stub => stub.field, _FIELD_VALUE);
-
-			// Assert
-			run
-				.ShouldThrowExactly<ArgumentException>()
-				.And
-				.Message.Should().EndWith("refers to a field, not a property.");
-
-			VerifyQueryCall(Times.Never);
-		}
-
 		private void VerifyQueryCall(Func<Times> times)
 		{
 			_relativityObjectManager
@@ -108,24 +74,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		[DynamicObject(@"Rdo Stub", "Whatever", "", @"d014f00d-f2c0-4e7a-b335-84fcb6eae980")]
 		private class RdoStub : BaseRdo
 		{
-			public string field = "field";
-
-			public string GetString()
-			{
-				return @"string";
-			}
-
 			[DynamicField(@"Property", _FIELD_GUID, "Fixed Length Text", 255)]
 			public string Property
 			{
-				get
-				{
-					return GetField<string>(new System.Guid(_FIELD_GUID));
-				}
-				set
-				{
-					SetField<string>(new System.Guid(_FIELD_GUID), value);
-				}
+				get => GetField<string>(new System.Guid(_FIELD_GUID));
+				set => SetField<string>(new System.Guid(_FIELD_GUID), value);
 			}
 			private static System.Collections.Generic.Dictionary<Guid, DynamicFieldAttribute> _fieldMetadata;
 			public override System.Collections.Generic.Dictionary<Guid, DynamicFieldAttribute> FieldMetadata
