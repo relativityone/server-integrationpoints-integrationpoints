@@ -26,7 +26,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.IntegrationPo
 	{
 		private const string LONG_DATA_SET_EMBEDDED_DATA_INFO_VALUE = "KEPLER_DOCUMENT_REPOSITORY_LONG";
 
-		private int _workspaceID => SystemTestsSetupFixture.WorkspaceID;
+		private int _workspaceID => SystemTestsSetupFixture.SourceWorkspaceID;
 		private IWindsorContainer _container => SystemTestsSetupFixture.Container;
 		private ITestHelper _testHelper;
 		private IDocumentRepository _documentRepository;

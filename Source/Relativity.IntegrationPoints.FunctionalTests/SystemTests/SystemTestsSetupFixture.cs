@@ -32,8 +32,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
 		public static IConfigurationStore ConfigurationStore { get; private set; }
 		public static ITestHelper TestHelper { get; private set; }
 
-		public static int WorkspaceID { get; private set; }
-		public static string WorkspaceName { get; private set; }
+		public static int SourceWorkspaceID { get; private set; }
+		public static string SourceWorkspaceName { get; private set; }
 		public static int DestinationWorkspaceID { get; private set; }
 		public static string DestinationWorkspaceName { get; private set; }
 
@@ -54,9 +54,9 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
 
 		private static void CreateAndConfigureWorkspaces()
 		{
-			WorkspaceName = $"Rip.SystemTests-{DateTime.Now.Ticks}";
-			WorkspaceID = Workspace.CreateWorkspace(
-				workspaceName: WorkspaceName,
+			SourceWorkspaceName = $"Rip.SystemTests-{DateTime.Now.Ticks}";
+			SourceWorkspaceID = Workspace.CreateWorkspace(
+				workspaceName: SourceWorkspaceName,
 				templateName: WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME
 			);
 
@@ -80,23 +80,23 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
 				.UsingFactoryMethod(k =>
 				{
 					IHelper helper = k.Resolve<IHelper>();
-					return new TestServiceContextHelper(helper, WorkspaceID);
+					return new TestServiceContextHelper(helper, SourceWorkspaceID);
 				}));
 			Container.Register(
 				Component.For<IWorkspaceDBContext>()
 					.ImplementedBy<WorkspaceDBContext>()
-					.UsingFactoryMethod(k => new WorkspaceDBContext(k.Resolve<IHelper>().GetDBContext(WorkspaceID)))
+					.UsingFactoryMethod(k => new WorkspaceDBContext(k.Resolve<IHelper>().GetDBContext(SourceWorkspaceID)))
 					.LifeStyle.Transient);
 			Container.Register(
 				Component.For<IRSAPIClient>()
 					.UsingFactoryMethod(k =>
 					{
 						IRSAPIClient client = Rsapi.CreateRsapiClient();
-						client.APIOptions.WorkspaceID = WorkspaceID;
+						client.APIOptions.WorkspaceID = SourceWorkspaceID;
 						return client;
 					})
 					.LifeStyle.Transient);
-			Container.Register(Component.For<IRSAPIService>().Instance(new RSAPIService(Container.Resolve<IHelper>(), WorkspaceID)).LifestyleTransient());
+			Container.Register(Component.For<IRSAPIService>().Instance(new RSAPIService(Container.Resolve<IHelper>(), SourceWorkspaceID)).LifestyleTransient());
 			Container.Register(Component.For<IExporterFactory>().ImplementedBy<ExporterFactory>());
 			Container.Register(Component.For<IExportServiceObserversFactory>().ImplementedBy<IExportServiceObserversFactory>());
 			Container.Register(Component.For<IAuthTokenGenerator>().ImplementedBy<ClaimsTokenGenerator>().LifestyleTransient());
@@ -146,7 +146,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
 
 		private static void DeleteSourceAndDestinationWorkspaces()
 		{
-			Workspace.DeleteWorkspace(WorkspaceID);
+			Workspace.DeleteWorkspace(SourceWorkspaceID);
 			Workspace.DeleteWorkspace(DestinationWorkspaceID);
 		}
 
