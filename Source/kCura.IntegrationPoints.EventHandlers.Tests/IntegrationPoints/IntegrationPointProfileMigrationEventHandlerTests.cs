@@ -33,17 +33,19 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 		private const int _FIRST_SYNC_PROFILE_ARTIFACT_ID = 300444;
 		private const int _FIRST_NON_SYNC_PROFILE_ARTIFACT_ID = 400444;
 
-		public static IEnumerable<Action<IntegrationPointProfileMigrationEventHandlerTests>> ServicesFailureSetups { get; } = new Action<IntegrationPointProfileMigrationEventHandlerTests>[]
+		private static ServiceException TestException => new ServiceException(_TEST_EXCEPTION_GUID);
+
+		private static IEnumerable<Action<IntegrationPointProfileMigrationEventHandlerTests>> ServicesFailureSetups { get; } = new Action<IntegrationPointProfileMigrationEventHandlerTests>[]
 		{
 			ctx => ctx._createdWorkspaceRelativityObjectManager
 				.Setup(x => x.MassDeleteAsync(It.IsAny<IEnumerable<int>>(), It.IsAny<ExecutionIdentity>()))
-				.Throws(CreateTestException()),
+				.Throws(TestException),
 			ctx => ctx._integrationPointProfilesQuery
 				.Setup(x => x.GetSyncAndNonSyncProfilesArtifactIdsAsync(_TEMPLATE_WORKSPACE_ARTIFACT_ID))
-				.Throws(CreateTestException())
+				.Throws(TestException)
 		};
 
-		public static IEnumerable<Action<IntegrationPointProfileMigrationEventHandlerTests>> InvalidResultsSetups { get; } = new Action<IntegrationPointProfileMigrationEventHandlerTests>[]
+		private static IEnumerable<Action<IntegrationPointProfileMigrationEventHandlerTests>> InvalidResultsSetups { get; } = new Action<IntegrationPointProfileMigrationEventHandlerTests>[]
 		{
 			ctx => ctx._createdWorkspaceRelativityObjectManager
 				.Setup(x => x.MassDeleteAsync(It.IsAny<IEnumerable<int>>(), It.IsAny<ExecutionIdentity>()))
@@ -101,7 +103,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 
 		[Test]
 		[TestCaseSource(nameof(ServicesFailureSetups))]
-		public void ItShouldFailOnRelativityObjectManagerFailures(Action<IntegrationPointProfileMigrationEventHandlerTests> serviceFailureSetup)
+		public void ItShouldFailOnServicesFailures(Action<IntegrationPointProfileMigrationEventHandlerTests> serviceFailureSetup)
 		{
 			// Arrange
 			const int syncProfilesCount = 1;
@@ -191,8 +193,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 				.Verify(x => x.MassDeleteAsync(It.Is<List<int>>(l => l.SequenceEqual(NonSyncProfilesArtifactIds(nonSyncProfilesCount))), It.IsAny<ExecutionIdentity>()),
 					Times.Once);
 		}
-
-		private static ServiceException CreateTestException() => new ServiceException(_TEST_EXCEPTION_GUID);
 
 		private static List<int> SyncProfilesArtifactIds(int count) => Enumerable
 			.Range(_FIRST_SYNC_PROFILE_ARTIFACT_ID, count)
