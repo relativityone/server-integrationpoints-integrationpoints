@@ -72,11 +72,12 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 			_teardownActions.AddLast(() => DeleteTestProfilesAsync(SystemTestsSetupFixture.SourceWorkspace.ArtifactId, createdProfilesArtifactIds).GetAwaiter().GetResult());
 
 			// Act
-			int workspaceArtifactId = await SystemTestsSetupFixture.CreateManagedWorkspaceWithDefaultName(SystemTestsSetupFixture.SourceWorkspace.Name)
+			TestWorkspace createdWorkspace = await SystemTestsSetupFixture.CreateManagedWorkspaceWithDefaultName(SystemTestsSetupFixture.SourceWorkspace.Name)
 				.ConfigureAwait(false);
 
 			// Assert
-			await VerifyAllProfilesInDestinationWorkspaceAreSyncOnlyAndHaveProperValuesSetAsync(workspaceArtifactId).ConfigureAwait(false);
+			await VerifyAllProfilesInDestinationWorkspaceAreSyncOnlyAndHaveProperValuesSetAsync(createdWorkspace.ArtifactId)
+				.ConfigureAwait(false);
 		}
 
 		[TearDown]

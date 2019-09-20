@@ -123,14 +123,15 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
 			Manager.Settings.Factory = new HelperConfigSqlServiceFactory(TestHelper);
 		}
 
-		public static Task<int> CreateManagedWorkspaceWithDefaultName(string templateName = WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME) =>
+		public static Task<TestWorkspace> CreateManagedWorkspaceWithDefaultName(string templateName = WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME) =>
 			CreateManagedWorkspace($"Rip.SystemTests.Managed-{DateTime.Now.Ticks}", templateName);
 
-		public static async Task<int> CreateManagedWorkspace(string workspaceName, string templateName = WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME)
+		public static async Task<TestWorkspace> CreateManagedWorkspace(string workspaceName, string templateName = WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME)
 		{
 			int workspaceId = await Workspace.CreateWorkspaceAsync(workspaceName, templateName).ConfigureAwait(false);
 			_managedWorkspaces.Add(workspaceId);
-			return workspaceId;
+			TestWorkspace newWorkspace = new TestWorkspace(workspaceId, workspaceName);
+			return newWorkspace;
 		}
 
 		[OneTimeTearDown]

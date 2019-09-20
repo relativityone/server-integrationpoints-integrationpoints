@@ -46,6 +46,7 @@
     <Compile Include="SystemTests\JobHistory\JobHistoryManagerTests.cs" />
     <Compile Include="SystemTests\Repositories\IntegrationPointRepositoryTests.cs" />
     <Compile Include="SystemTests\SystemTestsSetupFixture.cs" />
+    <Compile Include="SystemTests\TestWorkspace.cs" />
     <Compile Include="UiTests\DummyUiTests.cs" />
   </ItemGroup>
   <ItemGroup>
