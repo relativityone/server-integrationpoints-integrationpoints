@@ -71,14 +71,14 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			}
 		}
 
-		private async Task ModifyExistingSyncProfilesIfAnyInCreatedWorkspaceAsync(IEnumerable<int> syncProfilesArtifactIds)
+		private Task ModifyExistingSyncProfilesIfAnyInCreatedWorkspaceAsync(IEnumerable<int> syncProfilesArtifactIds)
 		{
 			if (syncProfilesArtifactIds.IsNullOrEmpty())
 			{
-				return;
+				return Task.CompletedTask;
 			}
 
-			await Task.Yield(); // NOTE: To be implemented in REL-351468
+			return Task.CompletedTask; // NOTE: To be implemented in REL-351468
 		}
 
 		private IRelativityObjectManager CreateRelativityObjectManager(int workspaceId) =>
