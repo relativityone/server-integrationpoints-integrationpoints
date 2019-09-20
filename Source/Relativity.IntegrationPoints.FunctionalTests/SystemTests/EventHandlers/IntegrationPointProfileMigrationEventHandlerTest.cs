@@ -18,7 +18,6 @@ using static kCura.IntegrationPoints.Core.Constants.IntegrationPoints;
 namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 {
 	[TestFixture]
-	[Ignore("The test shouldn't pass until completion of REL-351468 and should be unignored then.")]
 	public class IntegrationPointProfileMigrationEventHandlerTest
 	{
 		private const int _SAVED_SEARCH_ARTIFACT_ID = 123456;
