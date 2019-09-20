@@ -40,7 +40,10 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			List<TSource> relativityObjects = await _createRelativityObjectManager(workspaceId)
 				.QueryAsync<TSource>(queryRequest, true)
 				.ConfigureAwait(false);
-			List<int> objectsArtifactIds = relativityObjects.Select(o => o.ArtifactId).ToList();
+
+			List<int> objectsArtifactIds = relativityObjects
+				.Select(o => o.ArtifactId)
+				.ToList();
 			return objectsArtifactIds;
 		}
 
