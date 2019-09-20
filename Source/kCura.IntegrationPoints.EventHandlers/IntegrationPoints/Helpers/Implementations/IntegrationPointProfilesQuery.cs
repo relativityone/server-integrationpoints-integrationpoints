@@ -4,7 +4,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using Relativity.Services.Objects.DataContracts;
 using Constants = kCura.IntegrationPoints.Core.Constants;
@@ -64,7 +63,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			Expression<Func<TSource, string>> propertySelector, string fieldValue) where TSource : BaseRdo, new()
 		{
 			List<int> objectsArtifactIds = await _objectArtifactIdsByStringFieldValueQuery
-				.QueryForObjectArtifactIdsByStringFieldValueAsync(workspaceId, propertySelector, fieldValue);
+				.QueryForObjectArtifactIdsByStringFieldValueAsync(workspaceId, propertySelector, fieldValue)
+				.ConfigureAwait(false);
 
 			int artifactId = objectsArtifactIds.Single();
 			return artifactId;
