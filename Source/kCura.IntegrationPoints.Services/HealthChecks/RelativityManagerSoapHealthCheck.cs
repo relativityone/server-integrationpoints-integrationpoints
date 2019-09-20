@@ -20,11 +20,11 @@ namespace kCura.IntegrationPoints.Services
 
 		public async Task<HealthCheckOperationResult> Check()
 		{
-			RelativityManagerSoap relativityManagerSoapFactory =
-				_container.Resolve<IRelativityManagerSoapFactory>().Create(_webApiPathGetter());
+			string webApiPath = _webApiPathGetter();
+			RelativityManagerSoap relativityManagerSoap = GetRelativityManagerSoap(webApiPath);
 			try
 			{
-				string relativityUrl = await relativityManagerSoapFactory.GetRelativityUrlAsync().ConfigureAwait(false);
+				string relativityUrl = await relativityManagerSoap.GetRelativityUrlAsync().ConfigureAwait(false);
 				if (string.IsNullOrWhiteSpace(relativityUrl))
 				{
 					return new HealthCheckOperationResult(false, "RelativityUrl has no value");
@@ -32,10 +32,18 @@ namespace kCura.IntegrationPoints.Services
 			}
 			catch (Exception e)
 			{
-				return new HealthCheckOperationResult(false, "Relativity WebApi call failed", e);
+				string errorMessage = $"Relativity WebApi call to '{webApiPath}' failed";
+				return new HealthCheckOperationResult(false, errorMessage, e);
 			}
 
 			return new HealthCheckOperationResult(true, "HealthCheck for: RelativityManager call Result: OK");
+		}
+
+		private RelativityManagerSoap GetRelativityManagerSoap(string webApiPath)
+		{
+			IRelativityManagerSoapFactory relativityManagerSoapFactory = _container.Resolve<IRelativityManagerSoapFactory>();
+			RelativityManagerSoap relativityManagerSoap = relativityManagerSoapFactory.Create(webApiPath);
+			return relativityManagerSoap;
 		}
 	}
 }
