@@ -23,7 +23,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.JobHistory
 	{
 		private JobHistoryManager _sut;
 
-		private int _workspaceID => SystemTestsSetupFixture.SourceWorkspaceID;
+		private int _workspaceID => SystemTestsSetupFixture.SourceWorkspace.ArtifactId;
 		private IRelativityObjectManager _objectManager;
 
 		private List<int> _artifactsIDsToDelete;
