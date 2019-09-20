@@ -123,10 +123,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
 			Manager.Settings.Factory = new HelperConfigSqlServiceFactory(TestHelper);
 		}
 
-		public static async Task<int> CreateManagedWorkspaceWithDefaultName(string templateName = WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME)
-		{
-			return await CreateManagedWorkspace($"Rip.SystemTests.Managed-{DateTime.Now.Ticks}", templateName).ConfigureAwait(false);
-		}
+		public static Task<int> CreateManagedWorkspaceWithDefaultName(string templateName = WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME) =>
+			CreateManagedWorkspace($"Rip.SystemTests.Managed-{DateTime.Now.Ticks}", templateName);
 
 		public static async Task<int> CreateManagedWorkspace(string workspaceName, string templateName = WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME)
 		{
@@ -152,7 +150,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
 			Workspace.DeleteWorkspace(DestinationWorkspaceID);
 		}
 
-		public static void Log(string message) => Console.WriteLine($@"[{nameof(SystemTestsSetupFixture)}] {message}");
+		public static void Log(string message) =>
+			Console.WriteLine($@"[{nameof(SystemTestsSetupFixture)}] {message}");
 
 		public static void ResetFixture(Exception cause = null)
 		{
@@ -171,10 +170,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
 			Log($"Resetting fixture done in {timer.Elapsed.TotalSeconds} seconds");
 		}
 
-		public static void InvokeActionsAndResetFixtureOnException(params Action[] actions)
-		{
+		public static void InvokeActionsAndResetFixtureOnException(params Action[] actions) =>
 			InvokeActionsAndResetFixtureOnException((IEnumerable<Action>)actions);
-		}
 
 		public static void InvokeActionsAndResetFixtureOnException(IEnumerable<Action> actions)
 		{
