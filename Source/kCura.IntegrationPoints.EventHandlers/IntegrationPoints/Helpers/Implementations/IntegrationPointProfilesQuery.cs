@@ -43,7 +43,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 				.Select(p => p.ArtifactId)
 				.ToList();
 			List<int> syncProfilesArtifactIds = allProfiles
-				.Where(p => IsSyncProfile(p))
+				.Where(IsSyncProfile)
 				.Select(p => p.ArtifactId)
 				.ToList();
 			return (nonSyncProfilesArtifactIds, syncProfilesArtifactIds);
