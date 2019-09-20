@@ -101,7 +101,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 
 		[Test]
 		[TestCaseSource(nameof(ServicesFailureSetups))]
-		public void ItShouldFailOnRelativityObjectManagerFailures(Action<IntegrationPointProfileMigrationEventHandlerTests> serviceFailureSetup)
+		public void ItShouldFailOnServicesFailures(Action<IntegrationPointProfileMigrationEventHandlerTests> serviceFailureSetup)
 		{
 			// Arrange
 			const int syncProfilesCount = 1;
