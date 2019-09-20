@@ -177,7 +177,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 		}
 
 		[Test]
-		public void ItShouldMassDeleteNonSyncProfiles()
+		public void ItShouldMassDeleteNonSyncProfilesAndModifySyncProfiles()
 		{
 			// Arrange
 			const int syncProfilesCount = 5;
@@ -194,6 +194,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 			_createdWorkspaceRelativityObjectManager
 				.Verify(x => x.MassDeleteAsync(It.Is<List<int>>(l => l.SequenceEqual(NonSyncProfilesArtifactIds(nonSyncProfilesCount))), It.IsAny<ExecutionIdentity>()),
 					Times.Once);
+
+			// TODO: make assertions after implementing REL-351468
 		}
 
 		private static List<int> SyncProfilesArtifactIds(int count) => Enumerable
