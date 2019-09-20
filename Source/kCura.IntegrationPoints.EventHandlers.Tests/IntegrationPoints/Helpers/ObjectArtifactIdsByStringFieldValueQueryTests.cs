@@ -77,31 +77,17 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			[DynamicField(@"Property", _FIELD_GUID, "Fixed Length Text", 255)]
 			public string Property
 			{
-				get => GetField<string>(new System.Guid(_FIELD_GUID));
-				set => SetField<string>(new System.Guid(_FIELD_GUID), value);
+				get => GetField<string>(new Guid(_FIELD_GUID));
+				set => SetField<string>(new Guid(_FIELD_GUID), value);
 			}
-			private static System.Collections.Generic.Dictionary<Guid, DynamicFieldAttribute> _fieldMetadata;
-			public override System.Collections.Generic.Dictionary<Guid, DynamicFieldAttribute> FieldMetadata
-			{
-				get
-				{
-					if (!(_fieldMetadata == null))
-						return _fieldMetadata;
-					_fieldMetadata = GetFieldMetadata(typeof(RdoStub));
-					return _fieldMetadata;
-				}
-			}
+
+			private static Dictionary<Guid, DynamicFieldAttribute> _fieldMetadata;
+			public override Dictionary<Guid, DynamicFieldAttribute> FieldMetadata =>
+				_fieldMetadata ?? (_fieldMetadata = GetFieldMetadata(typeof(RdoStub)));
+
 			private static DynamicObjectAttribute _objectMetadata;
-			public override DynamicObjectAttribute ObjectMetadata
-			{
-				get
-				{
-					if (!(_objectMetadata == null))
-						return _objectMetadata;
-					_objectMetadata = GetObjectMetadata(typeof(RdoStub));
-					return _objectMetadata;
-				}
-			}
+			public override DynamicObjectAttribute ObjectMetadata =>
+				_objectMetadata ?? (_objectMetadata = GetObjectMetadata(typeof(RdoStub)));
 		}
 	}
 }
