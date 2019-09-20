@@ -67,10 +67,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		public void ItShouldFailOnMethodExpression()
 		{
 			// Act
-			Action run = () => _query
+			Func<Task> run = () => _query
 				.QueryForObjectArtifactIdsByStringFieldValueAsync<RdoStub>(_WORKSPACE_ID,
-					stub => stub.GetString(), _FIELD_VALUE)
-				.GetAwaiter().GetResult();
+					stub => stub.GetString(), _FIELD_VALUE);
 
 			// Assert
 			run
@@ -85,10 +84,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		public void ItShouldFailOnFieldExpression()
 		{
 			// Act
-			Action run = () => _query
+			Func<Task> run = () => _query
 				.QueryForObjectArtifactIdsByStringFieldValueAsync<RdoStub>(_WORKSPACE_ID,
-					stub => stub.field, _FIELD_VALUE)
-				.GetAwaiter().GetResult();
+					stub => stub.field, _FIELD_VALUE);
 
 			// Assert
 			run
