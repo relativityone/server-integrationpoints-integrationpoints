@@ -96,6 +96,8 @@ else {
     throw "Invalid version $global:nextVersion format"
 }
 
+$patch = "{0:000}" -f $patch
+
 if ($buildType -eq "GOLD") {
     $global:version = "$major.$minor.$patch"
     $global:packageVersion = "$major.$minor.$patch"
@@ -104,3 +106,5 @@ else {
     $global:version = "$major.$minor.$patch.$build"
     $global:packageVersion = "$major.$minor.$patch-$suffix$build"
 }
+
+Write-Host "Package version from get-version: " + $global:packageVersion
