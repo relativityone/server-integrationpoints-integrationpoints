@@ -41,6 +41,6 @@ public class FunctionalTestsSetupFixture
 			await applicationManager.ImportRipToLibraryAsync().ConfigureAwait(false);
 		}
 
-		applicationManager.InstallApplicationFromLibrary(workspaceTemplateID);
+		await applicationManager.InstallRipFromLibraryAsync(workspaceTemplateID).ConfigureAwait(false);
 	}
 }

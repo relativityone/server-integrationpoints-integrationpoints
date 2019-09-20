@@ -242,15 +242,15 @@ namespace Rip.E2ETests.CustomProviders
 			_workspaceID = await Workspace.CreateWorkspaceAsync(workspaceName, _WORKSPACE_TEMPLATE_WITHOUT_RIP).ConfigureAwait(false);
 
 			Task importingMyFirstProviderToLibraryTask = ImportMyFirstProviderToLibraryAsync();
-			ApplicationManager.InstallApplicationFromLibrary(_workspaceID, CoreConstants.IntegrationPoints.APPLICATION_GUID_STRING);
+			await ApplicationManager.InstallRipFromLibraryAsync(_workspaceID).ConfigureAwait(false);
 			await importingMyFirstProviderToLibraryTask.ConfigureAwait(false);
-			ApplicationManager.InstallApplicationFromLibrary(_workspaceID, CustomProvidersConstants.MY_FIRST_PROVIDER_GUID);
+			await ApplicationManager.InstallApplicationFromLibraryAsync(_workspaceID, CustomProvidersConstants.MyFirstProviderGuid).ConfigureAwait(false);
 		}
 
 		private Task ImportMyFirstProviderToLibraryAsync()
 		{
 			string applicationFilePath = SharedVariables.MyFirstProviderRapFilePath;
-			return ApplicationManager.ImportApplicationToLibraryAsync(CustomProvidersConstants.MY_FIRST_PROVIDER_APPLICATION_NAME, applicationFilePath);
+			return ApplicationManager.ImportApplicationToLibraryAsync(applicationFilePath);
 		}
 	}
 }

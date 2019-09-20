@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 		[OneTimeSetUp]
 		public async Task OneTimeSetup()
 		{
-			SourceContext.AddEntityObjectToWorkspace();
+			await SourceContext.AddEntityObjectToWorkspaceAsync().ConfigureAwait(false);
 			await SourceContext.CreateEntityViewAsync(_VIEW_NAME).ConfigureAwait(false);
 
 			Install(SourceContext.WorkspaceId.Value);

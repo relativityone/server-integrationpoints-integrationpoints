@@ -12,6 +12,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Security;
+using System.Threading.Tasks;
 using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
@@ -25,9 +26,9 @@ namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 		private IntegrationPointsImportLdapAction _integrationPointsAction;
 
 		[OneTimeSetUp]
-		public void OneTimeSetUp()
+		public async Task OneTimeSetUpAsync()
 		{
-			SourceContext.AddEntityObjectToWorkspace();
+			await SourceContext.AddEntityObjectToWorkspaceAsync().ConfigureAwait(false);
 
 			Install(SourceContext.WorkspaceId.Value);
 			_service = Container.Resolve<IRSAPIService>();
