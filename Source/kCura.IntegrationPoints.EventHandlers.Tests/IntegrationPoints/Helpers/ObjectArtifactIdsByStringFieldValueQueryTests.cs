@@ -17,7 +17,7 @@ using Relativity.Services.Objects.DataContracts;
 namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 {
 	[TestFixture]
-	public class IntegrationPointProfilesQueryTests
+	public class ObjectArtifactIdsByStringFieldValueQueryTests
 	{
 		private IObjectArtifactIdsByStringFieldValueQuery _query;
 		private Mock<IRelativityObjectManager> _relativityObjectManager;
