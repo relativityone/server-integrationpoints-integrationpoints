@@ -137,7 +137,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 
 			// Assert
 
-			response.Success.Should().BeFalse("handler should have failed for 3 times");
+			response.Success.Should().BeFalse("handler should have failed");
 			response.Exception.Should().BeAssignableTo<Exception>();
 		}
 
