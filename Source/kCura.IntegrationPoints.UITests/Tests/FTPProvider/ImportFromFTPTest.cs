@@ -16,6 +16,7 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.UITests.Tests.FTPProvider
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	[Category(TestCategory.IMPORT_FROM_FTP_AND_LDAP)]
 	[Category(TestCategory.NOT_WORKING_ON_REGRESSION_ENVIRONMENT)] // no access to FTP from R1
 	public class ImportFromFtpTest : UiTest

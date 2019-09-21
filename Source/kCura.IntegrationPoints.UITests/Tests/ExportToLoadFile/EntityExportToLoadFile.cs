@@ -17,6 +17,7 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	[Category(TestCategory.EXPORT_TO_LOAD_FILE)]
 	public class EntityExportToLoadFile : UiTest
 	{

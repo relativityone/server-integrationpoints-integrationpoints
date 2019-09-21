@@ -33,6 +33,7 @@ using FieldType = kCura.IntegrationPoints.Contracts.Models.FieldType;
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class TargetDocumentsTaggingManagerTests : RelativityProviderTemplate
 	{
 		private IRepositoryFactory _repositoryFactory;

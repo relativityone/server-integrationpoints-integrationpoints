@@ -19,6 +19,7 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class TaskFactoryTestsForOtherProviders : OtherProvidersTemplate
 	{
 		private IJobService _jobService;

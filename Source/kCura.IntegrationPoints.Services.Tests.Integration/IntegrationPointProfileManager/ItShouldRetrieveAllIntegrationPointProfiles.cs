@@ -11,6 +11,7 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointProfileManager
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class ItShouldRetrieveAllIntegrationPointProfiles : RelativityProviderTemplate
 	{
 		public ItShouldRetrieveAllIntegrationPointProfiles() : base($"KeplerService_{Utils.FormattedDateTimeNow}", $"KeplerService_Target_{Utils.FormattedDateTimeNow}")

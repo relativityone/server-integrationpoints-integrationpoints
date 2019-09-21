@@ -15,6 +15,7 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class SetTypeOfExportDefaultValueCommandTests : RelativityProviderTemplate
 	{
 		private IEHHelper _ehHelper;

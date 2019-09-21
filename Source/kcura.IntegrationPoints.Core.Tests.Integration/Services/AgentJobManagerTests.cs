@@ -19,6 +19,7 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class AgentJobManagerTests : RelativityProviderTemplate
 	{
 		private const int _ADMIN_USER_ID = 9;
