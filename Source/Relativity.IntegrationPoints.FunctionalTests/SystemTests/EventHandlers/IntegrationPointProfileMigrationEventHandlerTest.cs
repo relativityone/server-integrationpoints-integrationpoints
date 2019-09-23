@@ -16,7 +16,6 @@ using NUnit.Framework;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using static kCura.IntegrationPoints.Core.Constants.IntegrationPoints;
-using RelativityProviderSourceConfiguration = kCura.IntegrationPoints.Services.RelativityProviderSourceConfiguration;
 
 namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 {
@@ -60,7 +59,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 		};
 
 		private readonly LinkedList<Action> _teardownActions = new LinkedList<Action>();
-		private readonly IObjectArtifactIdsByStringFieldValueQuery _objectArtifactIdsByStringFieldValueQuery = 
+		private readonly IObjectArtifactIdsByStringFieldValueQuery _objectArtifactIdsByStringFieldValueQuery =
 			new ObjectArtifactIdsByStringFieldValueQuery(CreateRelativityObjectManagerForWorkspace);
 
 		[Test]
@@ -118,12 +117,13 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 				.Select(JObject.Parse)
 				.ToList();
 			// verify source workspace id in source configuration
-			sourceConfigurations.Select(c => c[nameof(RelativityProviderSourceConfiguration.SourceWorkspaceArtifactId)])
+			sourceConfigurations.Select(c => c[nameof(kCura.IntegrationPoints.Services.RelativityProviderSourceConfiguration.SourceWorkspaceArtifactId)])
 				.Select(t => t.ToObject<int>())
 				.ShouldAllBeEquivalentTo(targetWorkspaceId);
 
 			// verify saved search id in source configuration
-			sourceConfigurations.Select(c => c.Properties().FirstOrDefault(p => p.Name.Equals(nameof(RelativityProviderSourceConfiguration.SavedSearchArtifactId), StringComparison.OrdinalIgnoreCase)))
+			sourceConfigurations.Select(c => c.Properties().FirstOrDefault(p =>
+					p.Name.Equals(nameof(kCura.IntegrationPoints.Services.RelativityProviderSourceConfiguration.SavedSearchArtifactId), StringComparison.OrdinalIgnoreCase)))
 				.Should().OnlyContain(p => p == null || p.Value<int>() == 0);
 		}
 
@@ -187,8 +187,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 		{
 			var sourceConfiguration = new JObject
 			{
-				[nameof(RelativityProviderSourceConfiguration.SourceWorkspaceArtifactId)] = workspaceId,
-				[nameof(RelativityProviderSourceConfiguration.SavedSearchArtifactId)] = savedSearchArtifactId
+				[nameof(kCura.IntegrationPoints.Services.RelativityProviderSourceConfiguration.SourceWorkspaceArtifactId)] = workspaceId,
+				[nameof(kCura.IntegrationPoints.Services.RelativityProviderSourceConfiguration.SavedSearchArtifactId)] = savedSearchArtifactId
 			};
 			return sourceConfiguration.ToString();
 		}
