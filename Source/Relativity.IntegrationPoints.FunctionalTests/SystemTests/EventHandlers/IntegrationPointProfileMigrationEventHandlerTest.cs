@@ -21,7 +21,7 @@ using RelativityProviderSourceConfiguration = kCura.IntegrationPoints.Services.R
 namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 {
 	[TestFixture]
-	//[Ignore("The test shouldn't pass until completion of REL-351468 and should be unignored then.")]
+	[Ignore("The test shouldn't pass until completion of REL-351468 and should be unignored then.")]
 	public class IntegrationPointProfileMigrationEventHandlerTest
 	{
 		private const int _SAVED_SEARCH_ARTIFACT_ID = 123456;
