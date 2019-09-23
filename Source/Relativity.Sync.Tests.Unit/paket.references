@@ -12,7 +12,6 @@ CSharpGuidelineAnalyzer
 
 Polly
 Autofac
-SexyProxy.Emit
 
 NUnit
 FluentAssertions

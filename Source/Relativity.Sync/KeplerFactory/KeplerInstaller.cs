@@ -16,10 +16,12 @@ namespace Relativity.Sync.KeplerFactory
 			builder.RegisterType<TokenProviderFactoryFactory>().As<ITokenProviderFactoryFactory>();
 			builder.RegisterType<ServiceFactoryForUser>()
 				.As<ISourceServiceFactoryForUser>()
-				.As<IDestinationServiceFactoryForUser>();
+				.As<IDestinationServiceFactoryForUser>()
+				.SingleInstance();
 			builder.RegisterType<ServiceFactoryForAdmin>()
 				.As<ISourceServiceFactoryForAdmin>()
-				.As<IDestinationServiceFactoryForAdmin>();
+				.As<IDestinationServiceFactoryForAdmin>()
+				.SingleInstance();
 
 			builder.RegisterType<DynamicProxyFactory>().As<IDynamicProxyFactory>();
 

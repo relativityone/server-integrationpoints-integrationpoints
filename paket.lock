@@ -96,7 +96,6 @@ NUGET
       Polly (>= 5.3.1)
       relativity.faspmanager (3.7.2)
       SSH.NET (2016.0)
-    SexyProxy.Emit (2.0.97)
     SSH.NET (2016.0.0)
     System.Data.SqlClient (4.6.1)
     System.Runtime.CompilerServices.Unsafe (4.5.2)

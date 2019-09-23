@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading.Tasks;
+using Castle.DynamicProxy;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.Services.Exceptions;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Tests.Unit.Stubs;
+using IInvocation = Castle.DynamicProxy.IInvocation;
 
 namespace Relativity.Sync.Tests.Unit
 {
@@ -18,21 +22,32 @@ namespace Relativity.Sync.Tests.Unit
 		private IStubForInterception _instance;
 
 		private Mock<IStubForInterception> _stubForInterception;
+		private Mock<Func<Task<IStubForInterception>>> _stubForInterceptionFactory;
 		private Mock<ISyncMetrics> _syncMetrics;
 
 		private readonly TimeSpan _executionTime = TimeSpan.FromMinutes(1);
+
+		private readonly IDictionary<Type, string> _exceptionTypeToMetricNameDictionary = new Dictionary<Type, string>()
+		{
+			{typeof(HttpRequestException), "KeplerRetries"},
+			{typeof(NotAuthorizedException), "AuthTokenRetries"}
+		};
 
 		[SetUp]
 		public void SetUp()
 		{
 			_stubForInterception = new Mock<IStubForInterception>();
+			_stubForInterceptionFactory = new Mock<Func<Task<IStubForInterception>>>();
+			_stubForInterceptionFactory.Setup(x => x.Invoke()).Returns(Task.FromResult(_stubForInterception.Object));
+
+
 			_syncMetrics = new Mock<ISyncMetrics>();
 
 			Mock<IStopwatch> stopwatch = new Mock<IStopwatch>();
 			stopwatch.Setup(x => x.Elapsed).Returns(_executionTime);
 
 			IDynamicProxyFactory dynamicProxyFactory = new DynamicProxyFactory(_syncMetrics.Object, stopwatch.Object, new EmptyLogger());
-			_instance = dynamicProxyFactory.WrapKeplerService(_stubForInterception.Object);
+			_instance = dynamicProxyFactory.WrapKeplerService(_stubForInterception.Object, _stubForInterceptionFactory.Object);
 		}
 
 		[Test]
@@ -131,6 +146,7 @@ namespace Relativity.Sync.Tests.Unit
 		private static IEnumerable<Type> ExceptionsToRetry()
 		{
 			yield return typeof(HttpRequestException);
+			yield return typeof(NotAuthorizedException);
 		}
 
 		[Test]
@@ -179,10 +195,44 @@ namespace Relativity.Sync.Tests.Unit
 			Func<Task> action = async () => await _instance.ExecuteAsync().ConfigureAwait(false);
 
 			// ASSERT
+			string metricName = _exceptionTypeToMetricNameDictionary[exceptionType];
 			action.Should().NotThrow();
 			_syncMetrics.Verify(
 				x => x.TimedOperation(GetMetricName(nameof(IStubForInterception.ExecuteAsync)), _executionTime, ExecutionStatus.Completed,
-					It.Is<Dictionary<string, object>>(dict => dict["KeplerRetries"].Equals(expectedRetries))), Times.Once);
+					It.Is<Dictionary<string, object>>(dict => dict[metricName].Equals(expectedRetries))), Times.Once);
+		}
+
+		[Test]
+		public void ItShouldChangeInvocationTarget()
+		{
+			Mock<IStubForInterception> badService = new Mock<IStubForInterception>();
+			badService.Setup(x => x.ExecuteAsync()).Throws<NotAuthorizedException>();
+
+			Mock<IStubForInterception> newService = new Mock<IStubForInterception>();
+			Task<IStubForInterception> ServiceFactory() => Task.FromResult(newService.Object);
+
+			Mock<IStopwatch> stopwatch = new Mock<IStopwatch>();
+			stopwatch.Setup(x => x.Elapsed).Returns(_executionTime);
+			IDynamicProxyFactory dynamicProxyFactory = new DynamicProxyFactory(_syncMetrics.Object, stopwatch.Object, new EmptyLogger());
+			IStubForInterception instance = dynamicProxyFactory.WrapKeplerService(badService.Object, ServiceFactory);
+
+			// ACT
+			Func<Task> action = async () => await instance.ExecuteAsync().ConfigureAwait(false);
+
+			// ASSERT
+			action.Should().NotThrow();
+			badService.Verify(x => x.ExecuteAsync(), Times.Once());
+			newService.Verify(x => x.ExecuteAsync(), Times.Once());
+		}
+
+		[Test]
+		public void InvocationObjectHasRequiredField()
+		{
+			// act
+			System.Reflection.FieldInfo field = typeof(AbstractInvocation).GetField("currentInterceptorIndex", BindingFlags.NonPublic | BindingFlags.Instance);
+
+			// assert
+			field.Should().NotBeNull();
 		}
 
 		private static string GetMetricName(string methodName)
