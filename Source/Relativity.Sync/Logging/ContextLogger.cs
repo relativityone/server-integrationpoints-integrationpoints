@@ -102,7 +102,8 @@ namespace Relativity.Sync.Logging
 
 		private static string ModifyTemplate(string messageTemplate)
 		{
-			return messageTemplate += " Sync job properties: " +
+			return messageTemplate +
+				" Sync job properties: " +
 				$"{nameof(SyncJobParameters.CorrelationId)}: {{{nameof(SyncJobParameters.CorrelationId)}}} " +
 				$"{nameof(SyncJobParameters.SyncConfigurationArtifactId)}: {{{nameof(SyncJobParameters.SyncConfigurationArtifactId)}}} ";
 		}
