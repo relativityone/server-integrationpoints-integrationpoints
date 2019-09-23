@@ -1,19 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core.Exceptions;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
+using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
 using kCura.IntegrationPoints.Services;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using Relativity.Services;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using static kCura.IntegrationPoints.Core.Constants.IntegrationPoints;
+using RelativityProviderSourceConfiguration = kCura.IntegrationPoints.Services.RelativityProviderSourceConfiguration;
 
 namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 {
@@ -21,12 +24,6 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 	public class IntegrationPointProfileMigrationEventHandlerTest
 	{
 		private const int _SAVED_SEARCH_ARTIFACT_ID = 123456;
-		private static readonly Guid _destinationProviderObjectTypeGuid = Guid.Parse("d014f00d-f2c0-4e7a-b335-84fcb6eae980");
-		private static readonly Guid _identifierFieldOnDestinationProviderObjectGuid = Guid.Parse("9fa104ac-13ea-4868-b716-17d6d786c77a");
-		private static readonly Guid _relativityDestinationProviderTypeGuid = Guid.Parse("74A863B9-00EC-4BB7-9B3E-1E22323010C6");
-		private static readonly Guid _sourceProviderObjectTypeGuid = Guid.Parse("5BE4A1F7-87A8-4CBE-A53F-5027D4F70B80");
-		private static readonly Guid _identifierFieldOnSourceProviderObjectGuid = Guid.Parse("d0ecc6c9-472c-4296-83e1-0906f0c0fbb9");
-		private static readonly Guid _relativitySourceProviderTypeGuid = Guid.Parse("423b4d43-eae9-4e14-b767-17d629de4bb2");
 
 		private static readonly IEnumerable<ProfileConfig> _testProfilesConfigs = new[]
 		{
@@ -63,6 +60,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 		};
 
 		private readonly LinkedList<Action> _teardownActions = new LinkedList<Action>();
+		private readonly IObjectArtifactIdsByStringFieldValueQuery _objectArtifactIdsByStringFieldValueQuery = 
+			new ObjectArtifactIdsByStringFieldValueQuery(CreateRelativityObjectManagerForWorkspace);
 
 		[Test]
 		public async Task ItShouldCopyOnlySyncProfiles()
@@ -85,7 +84,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 			SystemTestsSetupFixture.InvokeActionsAndResetFixtureOnException(_teardownActions);
 		}
 
-		private static async Task VerifyAllProfilesInDestinationWorkspaceAreSyncOnlyAndHaveProperValuesSetAsync(int targetWorkspaceId)
+		private async Task VerifyAllProfilesInDestinationWorkspaceAreSyncOnlyAndHaveProperValuesSetAsync(int targetWorkspaceId)
 		{
 			var objectManager = CreateRelativityObjectManagerForWorkspace(targetWorkspaceId);
 
@@ -128,39 +127,25 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 				.Should().OnlyContain(p => p == null || p.Value<int>() == 0);
 		}
 
-		private static async Task<int> GetSyncSourceProviderArtifactIdAsync(int workspaceId) =>
-			await GetObjectArtifactIdByGuidFieldValueAsync(workspaceId, _sourceProviderObjectTypeGuid, _identifierFieldOnSourceProviderObjectGuid, _relativitySourceProviderTypeGuid)
-				.ConfigureAwait(false);
+		private Task<int> GetSyncDestinationProviderArtifactIdAsync(int workspaceId) =>
+			GetSingleObjectArtifactIdByStringFieldValueAsync<DestinationProvider>(workspaceId,
+				destinationProvider => destinationProvider.Identifier,
+				kCura.IntegrationPoints.Core.Constants.IntegrationPoints.DestinationProviders.RELATIVITY);
 
-		private static async Task<int> GetSyncDestinationProviderArtifactIdAsync(int workspaceId) =>
-			await GetObjectArtifactIdByGuidFieldValueAsync(workspaceId, _destinationProviderObjectTypeGuid, _identifierFieldOnDestinationProviderObjectGuid, _relativityDestinationProviderTypeGuid)
-				.ConfigureAwait(false);
+		private Task<int> GetSyncSourceProviderArtifactIdAsync(int workspaceId) =>
+			GetSingleObjectArtifactIdByStringFieldValueAsync<SourceProvider>(workspaceId,
+				sourceProvider => sourceProvider.Identifier,
+				kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.RELATIVITY);
 
-		private static async Task<int> GetObjectArtifactIdByGuidFieldValueAsync(int workspaceId, Guid objectTypeGuid, Guid fieldGuid, Guid value)
+		private async Task<int> GetSingleObjectArtifactIdByStringFieldValueAsync<TSource>(int workspaceId,
+			Expression<Func<TSource, string>> propertySelector, string fieldValue) where TSource : BaseRdo, new()
 		{
-			using (var objectManager = SystemTestsSetupFixture.TestHelper.CreateProxy<IObjectManager>())
-			{
-				Condition searchCondition = new TextCondition(fieldGuid, TextConditionEnum.EqualTo, value.ToString());
+			List<int> objectsArtifactIds = await _objectArtifactIdsByStringFieldValueQuery
+				.QueryForObjectArtifactIdsByStringFieldValueAsync(workspaceId, propertySelector, fieldValue)
+				.ConfigureAwait(false);
 
-				QueryRequest queryRequest = new QueryRequest
-				{
-					ObjectType = new ObjectTypeRef
-					{
-						Guid = objectTypeGuid
-					},
-					Condition = searchCondition.ToQueryString()
-				};
-				QueryResult queryResult = await objectManager.QueryAsync(workspaceId, queryRequest, 0, 1)
-					.ConfigureAwait(false);
-
-				if (queryResult.TotalCount < 1)
-				{
-					throw new TestException($"Relativity object type {objectTypeGuid} with field {fieldGuid} of value {value} in workspace of id {workspaceId} was not found");
-				}
-
-				int artifactId = queryResult.Objects.First().ArtifactID;
-				return artifactId;
-			}
+			int artifactId = objectsArtifactIds.Single();
+			return artifactId;
 		}
 
 		private static async Task<List<int>> CreateTestProfilesAsync(int workspaceId)
