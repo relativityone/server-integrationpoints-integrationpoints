@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Data.Attributes;
 using kCura.Relativity.Client.DTOs;
 using NUnit.Framework;
 using Choice = kCura.Relativity.Client.DTOs.Choice;
@@ -15,7 +17,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 		[SetUp]
 		public override void SetUp()
 		{
-			
+
 		}
 
 		private Guid guidChoice1 = Guid.Parse("E68EF4BE-EB69-4CB6-94FC-D205F2096411");
@@ -93,7 +95,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			int[] multiObjectIDs = new int[]
 			{
 				111,
-				222 
+				222
 			};
 			TestBaseRdo baseRdo = new TestBaseRdo();
 
@@ -153,7 +155,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			int[] multiObjectIDs = new int[]
 			{
 				111,
-				222 
+				222
 			};
 			TestBaseRdo baseRdo = new TestBaseRdo();
 
@@ -174,7 +176,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			int[] multiObjectIDs = new int[]
 			{
 				111,
-				222 
+				222
 			};
 			TestBaseRdo baseRdo = new TestBaseRdo();
 
@@ -209,10 +211,67 @@ namespace kCura.IntegrationPoints.Data.Tests
 			Assert.AreEqual(123, ((int[])returnValue)[0]);
 			Assert.AreEqual(456, ((int[])returnValue)[1]);
 		}
+
+		[Test]
+		public void GetFieldGuid_ShouldGetFieldGuidSuccessfully()
+		{
+			// Act
+			Guid fieldGuid = BaseRdo.GetFieldGuid((TestBaseRdo rdo) => rdo.Property);
+
+			// Assert
+			fieldGuid.Should().Be(Guid.Parse(TestBaseRdo._RELATIVITY_FIELD_GUID));
+		}
+
+		[Test]
+		public void GetFieldGuid_ShouldFailOnProvidingMethodExpression()
+		{
+			// Act
+			Action run = () => BaseRdo.GetFieldGuid((TestBaseRdo rdo) => rdo.GetString());
+
+			// Assert
+			run
+				.ShouldThrowExactly<ArgumentException>()
+				.And
+				.Message.Should().EndWith("refers to a method, not a property.");
+		}
+
+		[Test]
+		public void GetFieldGuid_ShouldFailOnProvidingFieldExpression()
+		{
+			// Act
+			Action run = () => BaseRdo.GetFieldGuid((TestBaseRdo rdo) => rdo.Field);
+
+			// Assert
+			run
+				.ShouldThrowExactly<ArgumentException>()
+				.And
+				.Message.Should().EndWith("refers to a field, not a property.");
+		}
 	}
 
 	internal class TestBaseRdo : BaseRdo
 	{
+		public const string _RELATIVITY_FIELD_GUID = "085CB84B-4DAA-400F-B28F-18DE267BD7EA";
+		public string Field = "field";
+
+		public string GetString()
+		{
+			return @"string";
+		}
+
+		[DynamicField(@"Property", _RELATIVITY_FIELD_GUID, "Fixed Length Text", 255)]
+		public string Property
+		{
+			get
+			{
+				return GetField<string>(new System.Guid(_RELATIVITY_FIELD_GUID));
+			}
+			set
+			{
+				SetField<string>(new System.Guid(_RELATIVITY_FIELD_GUID), value);
+			}
+		}
+
 		public override System.Collections.Generic.Dictionary<System.Guid, Attributes.DynamicFieldAttribute> FieldMetadata
 		{
 			get { throw new System.NotImplementedException(); }

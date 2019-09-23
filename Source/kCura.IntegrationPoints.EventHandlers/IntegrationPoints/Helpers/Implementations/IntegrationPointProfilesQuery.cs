@@ -15,16 +15,16 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 		private readonly Func<int, IRelativityObjectManager> _createRelativityObjectManager;
 		private readonly IObjectArtifactIdsByStringFieldValueQuery _objectArtifactIdsByStringFieldValueQuery;
 
-		public IntegrationPointProfilesQuery(Func<int, IRelativityObjectManager> createRelativityObjectManager)
+		public IntegrationPointProfilesQuery(Func<int, IRelativityObjectManager> createRelativityObjectManager, IObjectArtifactIdsByStringFieldValueQuery objectArtifactIdsByStringFieldValueQuery)
 		{
 			_createRelativityObjectManager = createRelativityObjectManager;
-			_objectArtifactIdsByStringFieldValueQuery = new ObjectArtifactIdsByStringFieldValueQuery(createRelativityObjectManager);
+			_objectArtifactIdsByStringFieldValueQuery = objectArtifactIdsByStringFieldValueQuery;
 		}
 
 		public async Task<(List<int> nonSyncProfilesArtifactIds, List<int> syncProfilesArtifactIds)> GetSyncAndNonSyncProfilesArtifactIdsAsync(int workspaceId)
 		{
-			Task<int> syncDestinationProviderArtifactIdTask = GetSyncDestinationProviderArtifactIdAsync(workspaceId);
 			Task<int> syncSourceProviderArtifactIdTask = GetSyncSourceProviderArtifactIdAsync(workspaceId);
+			Task<int> syncDestinationProviderArtifactIdTask = GetSyncDestinationProviderArtifactIdAsync(workspaceId);
 			Task<List<IntegrationPointProfile>> getProfilesWithProvidersFromTemplateWorkspaceTask = GetProfilesWithProvidersFromWorkspaceAsync(workspaceId);
 			await Task.WhenAll(
 					syncSourceProviderArtifactIdTask,

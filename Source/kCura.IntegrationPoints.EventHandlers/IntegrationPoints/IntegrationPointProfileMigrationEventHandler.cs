@@ -42,7 +42,9 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		public IntegrationPointProfileMigrationEventHandler()
 		{
 			_relativityObjectManagerFactory = new Lazy<IRelativityObjectManagerFactory>(() => new RelativityObjectManagerFactory(Helper));
-			_integrationPointProfilesQuery = new IntegrationPointProfilesQuery(CreateRelativityObjectManager);
+			Func<int, IRelativityObjectManager> createRelativityObjectManager = CreateRelativityObjectManager;
+			var objectArtifactIdsByStringFieldValueQuery = new ObjectArtifactIdsByStringFieldValueQuery(createRelativityObjectManager);
+			_integrationPointProfilesQuery = new IntegrationPointProfilesQuery(createRelativityObjectManager, objectArtifactIdsByStringFieldValueQuery);
 		}
 
 		internal IntegrationPointProfileMigrationEventHandler(IErrorService errorService,

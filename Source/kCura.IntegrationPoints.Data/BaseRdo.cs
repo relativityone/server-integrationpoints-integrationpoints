@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using kCura.IntegrationPoints.Data.Attributes;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
@@ -68,7 +70,7 @@ namespace kCura.IntegrationPoints.Data
 					{
 						return ((IEnumerable<Artifact>)value).Select(x => x.ArtifactID).ToArray();
 					}
-					return new int[]{};
+					return new int[] { };
 				case FieldTypes.SingleObject:
 					var a = value as Artifact;
 					if (a != null)
@@ -80,7 +82,7 @@ namespace kCura.IntegrationPoints.Data
 					var choice = value as Relativity.Client.DTOs.Choice;
 					if (choice != null)
 					{
-						return new Choice(choice.ArtifactID) {Name = choice.Name, Guids = choice.Guids };
+						return new Choice(choice.ArtifactID) { Name = choice.Name, Guids = choice.Guids };
 					}
 					return value;
 				default:
@@ -130,10 +132,10 @@ namespace kCura.IntegrationPoints.Data
 					if (value is Choice)
 					{
 						singleChoice = (Choice)value;
-						
+
 						if (singleChoice.ArtifactID > 0 || singleChoice.Guids.Any())
 						{
-							newValue = new Choice(singleChoice.ArtifactID) {Name = singleChoice.Name, Guids = singleChoice.Guids};
+							newValue = new Choice(singleChoice.ArtifactID) { Name = singleChoice.Name, Guids = singleChoice.Guids };
 						}
 						else
 						{
@@ -171,15 +173,50 @@ namespace kCura.IntegrationPoints.Data
 		public static Dictionary<Guid, DynamicFieldAttribute> GetFieldMetadata(Type t)
 		{
 			return (from pi in t.GetProperties()
-							select pi.GetCustomAttributes(typeof(DynamicFieldAttribute), true)
+					select pi.GetCustomAttributes(typeof(DynamicFieldAttribute), true)
 								into attributes
-								where attributes.Any()
-								select (DynamicFieldAttribute)attributes.First()).ToDictionary(attribute => attribute.FieldGuid);
+					where attributes.Any()
+					select (DynamicFieldAttribute)attributes.First()).ToDictionary(attribute => attribute.FieldGuid);
 		}
 
 		public static DynamicObjectAttribute GetObjectMetadata(Type t)
 		{
 			return (DynamicObjectAttribute)t.GetCustomAttributes(typeof(DynamicObjectAttribute), false).First();
+		}
+
+		public static Guid GetFieldGuid<TRdo, TProperty>(Expression<Func<TRdo, TProperty>> propertySelector)
+			where TRdo : BaseRdo
+		{
+			Guid fieldGuid = GetPropertyInfo(propertySelector)
+				.GetCustomAttributes(typeof(DynamicFieldAttribute), true)
+				.Cast<DynamicFieldAttribute>()
+				.Single()
+				.FieldGuid;
+
+			return fieldGuid;
+		}
+
+		private static PropertyInfo GetPropertyInfo<TSource, TProperty>(Expression<Func<TSource, TProperty>> propertyLambda)
+		{
+			Type type = typeof(TSource);
+
+			if (!(propertyLambda.Body is MemberExpression member))
+			{
+				throw new ArgumentException($"Expression '{propertyLambda}' refers to a method, not a property.");
+			}
+
+			PropertyInfo propInfo = member.Member as PropertyInfo;
+			if (propInfo == null)
+			{
+				throw new ArgumentException($"Expression '{propertyLambda}' refers to a field, not a property.");
+			}
+
+			if (propInfo.ReflectedType != null && type != propInfo.ReflectedType && !type.IsSubclassOf(propInfo.ReflectedType))
+			{
+				throw new ArgumentException($"Expression '{propertyLambda}' refers to a property that is not from type {type}.");
+			}
+
+			return propInfo;
 		}
 
 		public int ArtifactId

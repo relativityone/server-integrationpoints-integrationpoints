@@ -4,151 +4,165 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Attributes;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Services;
 using Relativity.Services.Objects.DataContracts;
+using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 {
 	[TestFixture]
 	public class IntegrationPointProfilesQueryTests
 	{
-		private IObjectArtifactIdsByStringFieldValueQuery _query;
+		private IntegrationPointProfilesQuery _query;
 		private Mock<IRelativityObjectManager> _relativityObjectManager;
-		private string _expectedCondition;
+		private Mock<IObjectArtifactIdsByStringFieldValueQuery> _objectArtifactIdsQuery;
+		private List<IntegrationPointProfile> _profilesList;
+		private List<int> _relativitySourceProvidersList;
+		private List<int> _relativityDestinationProvidersList;
+		private const int _WORKSPACE_ID = 100111;
 
-		private const string _FIELD_GUID = "085CB84B-4DAA-400F-B28F-18DE267BD7EA";
-		private const string _FIELD_VALUE = "valid value";
-		private const int _WORKSPACE_ID = 100000;
-		private const int _OBJECT_COUNT = 5;
-		private const int _RDO_STUB_ARTIFACT_ID = 0;
+		private const int _RELATIVITY_DESTINATION_PROVIDER_ID = 500111;
+		private const int _RELATIVITY_SOURCE_PROVIDER_ID = 500222;
+		private const int _NON_RELATIVITY_DESTINATION_PROVIDER_ID = 600111;
+		private const int _NON_RELATIVITY_SOURCE_PROVIDER_ID = 600222;
+
+		private const int _SYNC_PROFILE_ID = 900111;
+		private const int _NON_SYNC_PROFILE_ID = 900222;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_relativityObjectManager = new Mock<IRelativityObjectManager>();
-			_query = new ObjectArtifactIdsByStringFieldValueQuery(workspaceId => _relativityObjectManager.Object);
+			_objectArtifactIdsQuery = new Mock<IObjectArtifactIdsByStringFieldValueQuery>();
 
-			List<RdoStub> rdoStubs = Enumerable
-				.Repeat(new RdoStub() { ArtifactId = _RDO_STUB_ARTIFACT_ID }, _OBJECT_COUNT)
-				.ToList();
+			_query = new IntegrationPointProfilesQuery(
+				workspaceId => _relativityObjectManager.Object,
+				_objectArtifactIdsQuery.Object);
+
+			_profilesList = new List<IntegrationPointProfile>();
+			_relativitySourceProvidersList = new List<int>();
+			_relativityDestinationProvidersList = new List<int>();
 
 			_relativityObjectManager
-				.Setup(x => x.QueryAsync<RdoStub>(It.IsAny<QueryRequest>(), true, It.IsAny<ExecutionIdentity>()))
-				.ReturnsAsync(rdoStubs);
+				.Setup(x => x.QueryAsync<IntegrationPointProfile>(
+					It.IsAny<QueryRequest>(), false, It.IsAny<ExecutionIdentity>()))
+				.ReturnsAsync(_profilesList);
 
-			Condition condition = new TextCondition(_FIELD_GUID, TextConditionEnum.EqualTo, _FIELD_VALUE);
-			_expectedCondition = condition.ToQueryString();
+			_objectArtifactIdsQuery
+				.Setup(x => x.QueryForObjectArtifactIdsByStringFieldValueAsync(_WORKSPACE_ID,
+					(DestinationProvider p) => p.Identifier,
+					Constants.IntegrationPoints.DestinationProviders.RELATIVITY))
+				.ReturnsAsync(_relativityDestinationProvidersList);
+
+			_objectArtifactIdsQuery
+				.Setup(x => x.QueryForObjectArtifactIdsByStringFieldValueAsync(_WORKSPACE_ID,
+					(SourceProvider p) => p.Identifier,
+					Constants.IntegrationPoints.SourceProviders.RELATIVITY))
+				.ReturnsAsync(_relativitySourceProvidersList);
 		}
 
 		[Test]
-		public async Task ItShouldConstructProperConditionBasedOnParameters()
+		public async Task ItShouldQueryAndDivideProfilesCorrectly(
+			[Range(0, 2)] int syncProfilesCount, [Range(0, 4)] int nonSyncProfilesCount)
 		{
+			// Arrange
+			SetUpSyncProviders();
+			SetUpProfiles(syncProfilesCount, nonSyncProfilesCount);
+
 			// Act
-			List<int> artifactIds = await _query
-				.QueryForObjectArtifactIdsByStringFieldValueAsync<RdoStub>(_WORKSPACE_ID,
-					stub => stub.Property, _FIELD_VALUE)
+			var (nonSyncProfilesArtifactIds, syncProfilesArtifactIds) = await _query
+				.GetSyncAndNonSyncProfilesArtifactIdsAsync(_WORKSPACE_ID)
 				.ConfigureAwait(false);
 
 			// Assert
-			artifactIds.ShouldAllBeEquivalentTo(_RDO_STUB_ARTIFACT_ID);
-			artifactIds.Should().HaveCount(_OBJECT_COUNT);
-
-			VerifyQueryCall(Times.Once);
+			nonSyncProfilesArtifactIds.ShouldAllBeEquivalentTo(_NON_SYNC_PROFILE_ID);
+			syncProfilesArtifactIds.ShouldAllBeEquivalentTo(_SYNC_PROFILE_ID);
 		}
 
 		[Test]
-		public void ItShouldFailOnMethodExpression()
+		public void ItShouldFailOnWrongNumberOfProviders(
+			[Values(0, 2)] int relativitySourceProviderCount, [Values(0, 2)] int relativityDestinationProviderCount)
 		{
+			// Arrange
+			SetUpSyncProviders(relativitySourceProviderCount, relativityDestinationProviderCount);
+
 			// Act
-			Func<Task> run = () => _query
-				.QueryForObjectArtifactIdsByStringFieldValueAsync<RdoStub>(_WORKSPACE_ID,
-					stub => stub.GetString(), _FIELD_VALUE);
+			Func<Task<(List<int> nonSyncProfilesArtifactIds, List<int> syncProfilesArtifactIds)>> run =
+				() => _query.GetSyncAndNonSyncProfilesArtifactIdsAsync(_WORKSPACE_ID);
 
 			// Assert
-			run
-				.ShouldThrowExactly<ArgumentException>()
-				.And
-				.Message.Should().EndWith("refers to a method, not a property.");
-
-			VerifyQueryCall(Times.Never);
+			run.ShouldThrowExactly<InvalidOperationException>();
 		}
 
-		[Test]
-		public void ItShouldFailOnFieldExpression()
+		private void SetUpProfiles(int syncProfilesCount, int nonSyncProfilesCount)
 		{
-			// Act
-			Func<Task> run = () => _query
-				.QueryForObjectArtifactIdsByStringFieldValueAsync<RdoStub>(_WORKSPACE_ID,
-					stub => stub.field, _FIELD_VALUE);
+			IntegrationPointProfile CreateSyncProfile() => new IntegrationPointProfile
+			{
+				ArtifactId = _SYNC_PROFILE_ID,
+				SourceProvider = _RELATIVITY_SOURCE_PROVIDER_ID,
+				DestinationProvider = _RELATIVITY_DESTINATION_PROVIDER_ID
+			};
 
-			// Assert
-			run
-				.ShouldThrowExactly<ArgumentException>()
-				.And
-				.Message.Should().EndWith("refers to a field, not a property.");
+			IntegrationPointProfile CreateNonSyncProfile(bool isImportProvider)
+			{
+				var profile = new IntegrationPointProfile
+				{
+					ArtifactId = _NON_SYNC_PROFILE_ID,
+					SourceProvider = isImportProvider
+						? _NON_RELATIVITY_SOURCE_PROVIDER_ID
+						: _RELATIVITY_SOURCE_PROVIDER_ID,
+					DestinationProvider = isImportProvider
+						? _RELATIVITY_DESTINATION_PROVIDER_ID
+						: _NON_RELATIVITY_DESTINATION_PROVIDER_ID
+				};
+				return profile;
+			}
 
-			VerifyQueryCall(Times.Never);
+			// create non sync profiles
+			// half of them should be import, half export
+			int importProvidersCount = nonSyncProfilesCount / 2;
+			IEnumerable<IntegrationPointProfile> nonSyncProfiles = Enumerable
+				.Range(0, nonSyncProfilesCount)
+				.Select(i => CreateNonSyncProfile(i < importProvidersCount));
+			var queue = new Queue<IntegrationPointProfile>(nonSyncProfiles);
+
+			// randomly distribute profiles
+			IEnumerable<IntegrationPointProfile> profiles =
+				GenerateShuffledIntSequence(syncProfilesCount + nonSyncProfilesCount)
+					.Select(x => (x < syncProfilesCount) ? CreateSyncProfile() : queue.Dequeue());
+
+			_profilesList.AddRange(profiles);
 		}
 
-		private void VerifyQueryCall(Func<Times> times)
+		private static IEnumerable<int> GenerateShuffledIntSequence(int count)
 		{
-			_relativityObjectManager
-				.Verify(x => x.QueryAsync<RdoStub>(
-					It.Is<QueryRequest>(request => request.Condition.Equals(_expectedCondition, StringComparison.OrdinalIgnoreCase)),
-					true, It.IsAny<ExecutionIdentity>()), times);
+			int[] deck = Enumerable
+				.Range(0, count)
+				.ToArray();
+			var r = new Random();
+
+			// Fisher-Yates algorithm
+			for (int n = deck.Length - 1; n > 0; --n)
+			{
+				int k = r.Next(n + 1);
+				int temp = deck[n];
+				deck[n] = deck[k];
+				deck[k] = temp;
+			}
+			return deck;
 		}
 
-		[DynamicObject(@"Rdo Stub", "Whatever", "", @"d014f00d-f2c0-4e7a-b335-84fcb6eae980")]
-		private class RdoStub : BaseRdo
+		private void SetUpSyncProviders(int relativitySourceProviderCount = 1, int relativityDestinationProviderCount = 1)
 		{
-			public string field = "field";
-
-			public string GetString()
-			{
-				return @"string";
-			}
-
-			[DynamicField(@"Property", _FIELD_GUID, "Fixed Length Text", 255)]
-			public string Property
-			{
-				get
-				{
-					return GetField<string>(new System.Guid(_FIELD_GUID));
-				}
-				set
-				{
-					SetField<string>(new System.Guid(_FIELD_GUID), value);
-				}
-			}
-			private static System.Collections.Generic.Dictionary<Guid, DynamicFieldAttribute> _fieldMetadata;
-			public override System.Collections.Generic.Dictionary<Guid, DynamicFieldAttribute> FieldMetadata
-			{
-				get
-				{
-					if (!(_fieldMetadata == null))
-						return _fieldMetadata;
-					_fieldMetadata = GetFieldMetadata(typeof(RdoStub));
-					return _fieldMetadata;
-				}
-			}
-			private static DynamicObjectAttribute _objectMetadata;
-			public override DynamicObjectAttribute ObjectMetadata
-			{
-				get
-				{
-					if (!(_objectMetadata == null))
-						return _objectMetadata;
-					_objectMetadata = GetObjectMetadata(typeof(RdoStub));
-					return _objectMetadata;
-				}
-			}
+			_relativitySourceProvidersList.AddRange(Enumerable
+				.Repeat(_RELATIVITY_SOURCE_PROVIDER_ID, relativitySourceProviderCount));
+			_relativityDestinationProvidersList.AddRange(Enumerable
+				.Repeat(_RELATIVITY_DESTINATION_PROVIDER_ID, relativityDestinationProviderCount));
 		}
 	}
 }
