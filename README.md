@@ -61,10 +61,10 @@ The main solution is `Source\Relativity.Sync.sln`. It references all projects in
   - `Source\Relativity.Sync.Tests.Unit\`
     - Project containing unit tests for Relativity Sync.
 - **Scripts**
-  - `build.ps1`
+  - `build_jenkins.ps1`
     - Build script for Relativity Sync. Wrapper around `default.ps1`.
   - `default.ps1`
-    - PSake task file for running build-related tasks in the repository. Should be called through `build.ps1`.
+    - PSake task file for running build-related tasks in the repository. Should be called through `build_jenkins.ps1`.
   - `Jenkinsfile`
     - Defines the Jenkins build pipeline for Relativity Sync. See the [Build Pipeline](#build-pipeline) section for more details.
   - `Jenkinsfile.*`
@@ -88,8 +88,8 @@ The main solution is `Source\Relativity.Sync.sln`. It references all projects in
 
 ## Build Tasks
 
-This repository builds with Powershell through the `.\build.ps1` script. 
-It supports standard tasks like `.\build.ps1 compile`, `.\build.ps1 test`, and `.\build.ps1 package`.
+This repository builds with Powershell through the `.\build_jenkins.ps1` script. 
+It supports standard tasks like `.\build_jenkins.ps1 compile`, `.\build_jenkins.ps1 test`, and `.\build_jenkins.ps1 package`.
 
 ## Online Documentation
 
@@ -104,15 +104,15 @@ Sync defines three kinds of tests - unit, integration, and system.
 
 Unit tests are run as part of the default build; otherwise, you can run them in Visual Studio or using the `runUnitTests` build task:
 
-    > .\build.ps1 runUnitTests
+    > .\build_jenkins.ps1 runUnitTests
 
 You can run integration tests in Visual Studio or using the `runIntegrationTests` build task:
 
-    > .\build.ps1 runIntegrationTests
+    > .\build_jenkins.ps1 runIntegrationTests
 
 To run system tests, you can update the SUT hostname in `app.config` in Relativity.Sync.Tests.System to run them in Visual Studio, or run the `runSystemTests` build tasks with the `-sutAddress` parameter:
 
-    > .\build.ps1 runSystemTests -sutAddress p-dv-vm-dog2bog
+    > .\build_jenkins.ps1 runSystemTests -sutAddress p-dv-vm-dog2bog
 
 ### Artifacts
 
