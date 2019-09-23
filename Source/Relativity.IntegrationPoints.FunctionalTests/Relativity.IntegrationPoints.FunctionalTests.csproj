@@ -92,6 +92,10 @@
       <Project>{5d5b52b4-8769-431a-9743-b96f15fed5fd}</Project>
       <Name>kCura.IntegrationPoints.Domain</Name>
     </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.EventHandlers\kCura.IntegrationPoints.EventHandlers.csproj">
+      <Project>{6571B092-1582-4FEC-9101-F510E7E573BC}</Project>
+      <Name>kCura.IntegrationPoints.EventHandlers</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Services.Interfaces.Private\kCura.IntegrationPoints.Services.Interfaces.Private.csproj">
       <Project>{B8BF6D01-E190-4C2C-B07F-3B627FFC1BFC}</Project>
       <Name>kCura.IntegrationPoints.Services.Interfaces.Private</Name>
