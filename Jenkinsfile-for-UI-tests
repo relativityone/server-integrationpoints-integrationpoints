@@ -81,6 +81,11 @@ properties([
             name: 'chromiumVersion', 
             defaultValue: '72.0.3626.0', 
             description: 'Set chromium version to be installed for UI tests.'
+        ),
+        booleanParam(
+            name: 'importBuiltRAP', 
+            defaultValue: true, 
+            description: 'Check if you want to deploy built Integration Points RAP'
         )
     ])
 ])
@@ -125,6 +130,10 @@ timestamps
 
             if (jenkinsHelpers.testingVMsAreRequired(params))
             {
+                stage ('Download RAP Tools')
+                {
+                    jenkinsHelpers.downloadRAPTools()
+                }
                 stage ('Stash Tests Artifacts')
                 {
                     jenkinsHelpers.stashTestsArtifacts()
@@ -155,7 +164,15 @@ timestamps
                 {
                     jenkinsHelpers.unstashTestsArtifacts()
                 }
-                    
+                
+                stage ('Import Integration Points RAP')
+                {
+                    if(params.importBuiltRAP)
+                    {
+                        jenkinsHelpers.importRAP()
+                    }        
+                }
+
                 try
                 {
                     stage ('UI Tests')
