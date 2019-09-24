@@ -629,7 +629,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			catch (Exception ex)
 			{
 				string rdoType = GetRdoType(new T());
-				HandleObjectManagerException(ex, GetErrorMessage<DeleteRequest>(rdoType));
+				HandleObjectManagerException(ex, GetErrorMessage<CreateRequest>(rdoType));
 				throw;
 			}
 		}
@@ -654,7 +654,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 			catch (Exception ex)
 			{
-				HandleObjectManagerException(ex, GetErrorMessage<DeleteRequest>("[RelativityObject]"));
+				HandleObjectManagerException(ex, GetErrorMessage<CreateRequest>("[RelativityObject]"));
 				throw;
 			}
 		}
@@ -677,7 +677,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 			catch (Exception ex)
 			{
-				HandleObjectManagerException(ex, GetErrorMessage<DeleteRequest>(rdoType));
+				HandleObjectManagerException(ex, GetErrorMessage<UpdateRequest>(rdoType));
 				throw;
 			}
 		}
@@ -703,7 +703,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 			catch (Exception ex)
 			{
-				HandleObjectManagerException(ex, GetErrorMessage<DeleteRequest>(_UNKNOWN_OBJECT_TYPE));
+				HandleObjectManagerException(ex, GetErrorMessage<UpdateRequest>(_UNKNOWN_OBJECT_TYPE));
 				throw;
 			}
 		}
