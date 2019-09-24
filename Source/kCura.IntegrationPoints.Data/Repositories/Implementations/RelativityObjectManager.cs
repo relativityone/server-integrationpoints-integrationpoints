@@ -468,6 +468,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					return results.ToArray();
 				}
 			}
+			catch (IntegrationPointsException)
+			{
+				throw;
+			}
 			catch (Exception ex)
 			{
 				string errorMessage = GetRetrieveNextResultsBlockFromExportErrorMessage(
