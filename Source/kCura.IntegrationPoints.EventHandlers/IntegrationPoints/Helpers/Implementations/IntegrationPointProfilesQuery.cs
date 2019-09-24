@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using Relativity.Services.Objects.DataContracts;
-using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations
 {
@@ -52,12 +51,12 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 		private Task<int> GetSyncDestinationProviderArtifactIdAsync(int workspaceId) =>
 			GetSingleObjectArtifactIdByStringFieldValueAsync<DestinationProvider>(workspaceId,
 				destinationProvider => destinationProvider.Identifier,
-				Constants.IntegrationPoints.DestinationProviders.RELATIVITY);
+				kCura.IntegrationPoints.Core.Constants.IntegrationPoints.DestinationProviders.RELATIVITY);
 
 		private Task<int> GetSyncSourceProviderArtifactIdAsync(int workspaceId) =>
 			GetSingleObjectArtifactIdByStringFieldValueAsync<SourceProvider>(workspaceId,
 				sourceProvider => sourceProvider.Identifier,
-				Constants.IntegrationPoints.SourceProviders.RELATIVITY);
+				kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.RELATIVITY);
 
 		private async Task<int> GetSingleObjectArtifactIdByStringFieldValueAsync<TSource>(int workspaceId,
 			Expression<Func<TSource, string>> propertySelector, string fieldValue) where TSource : BaseRdo, new()

@@ -254,12 +254,9 @@ namespace kCura.IntegrationPoints.Data.Tests
 		public const string _RELATIVITY_FIELD_GUID = "085CB84B-4DAA-400F-B28F-18DE267BD7EA";
 		public string Field = "field";
 
-		public string GetString()
-		{
-			return @"string";
-		}
+		public string GetString() => "string";
 
-		[DynamicField(@"Property", _RELATIVITY_FIELD_GUID, "Fixed Length Text", 255)]
+		[DynamicField("Property", _RELATIVITY_FIELD_GUID, "Fixed Length Text", 255)]
 		public string Property
 		{
 			get

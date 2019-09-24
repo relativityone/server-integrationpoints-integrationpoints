@@ -368,14 +368,15 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 			catch (Exception ex)
 			{
-				string CreateMessage() => GetStreamLongTextErrorMessage(
+				string errorMessage = GetStreamLongTextErrorMessage(
 					nameof(StreamUnicodeLongText),
 					_workspaceArtifactId,
 					relativityObjectArtifactId,
 					longTextFieldRef,
 					executionIdentity);
 
-				throw HandleObjectManagerException(ex, CreateMessage);
+				HandleObjectManagerException(ex, errorMessage);
+				throw;
 			}
 		}
 
@@ -399,14 +400,15 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 			catch (Exception ex)
 			{
-				string CreateMessage() => GetStreamLongTextErrorMessage(
+				string errorMessage = GetStreamLongTextErrorMessage(
 					nameof(StreamNonUnicodeLongText),
 					_workspaceArtifactId,
 					relativityObjectArtifactId,
 					longTextFieldRef,
 					executionIdentity);
 
-				throw HandleObjectManagerException(ex, CreateMessage);
+				HandleObjectManagerException(ex, errorMessage);
+				throw;
 			}
 		}
 
@@ -426,13 +428,14 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 			catch (Exception ex)
 			{
-				string CreateMessage() => GetInitializeExportErrorMessage(
+				string errorMessage = GetInitializeExportErrorMessage(
 					_workspaceArtifactId,
 					queryRequest.Condition,
 					start,
 					executionIdentity);
 
-				throw HandleObjectManagerException(ex, CreateMessage);
+				HandleObjectManagerException(ex, errorMessage);
+				throw;
 			}
 		}
 
@@ -467,14 +470,15 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 			catch (Exception ex)
 			{
-				string CreateMessage() => GetRetrieveNextResultsBlockFromExportErrorMessage(
+				string errorMessage = GetRetrieveNextResultsBlockFromExportErrorMessage(
 					_workspaceArtifactId,
 					runID.ToString(),
 					resultsBlockSize,
 					exportIndexID,
 					executionIdentity);
 
-				throw HandleObjectManagerException(ex, CreateMessage);
+				HandleObjectManagerException(ex, errorMessage);
+				throw;
 			}
 		}
 
@@ -593,9 +597,14 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					return await queryAction(client).ConfigureAwait(false);
 				}
 			}
+			catch (IntegrationPointsException)
+			{
+				throw;
+			}
 			catch (Exception ex)
 			{
-				throw HandleObjectManagerException(ex, () => GetQueryErrorMessage(q, GetRdoType(rdo)));
+				HandleObjectManagerException(ex, GetQueryErrorMessage(q, GetRdoType(rdo)));
+				throw;
 			}
 		}
 
@@ -613,10 +622,15 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					return result.Object.ToRDO<T>();
 				}
 			}
+			catch (IntegrationPointsException)
+			{
+				throw;
+			}
 			catch (Exception ex)
 			{
 				string rdoType = GetRdoType(new T());
-				throw HandleObjectManagerException(ex, () => GetErrorMessage<ReadRequest>(rdoType));
+				HandleObjectManagerException(ex, GetErrorMessage<DeleteRequest>(rdoType));
+				throw;
 			}
 		}
 
@@ -634,9 +648,14 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					return artifactId;
 				}
 			}
+			catch (IntegrationPointsException)
+			{
+				throw;
+			}
 			catch (Exception ex)
 			{
-				throw HandleObjectManagerException(ex, () => GetErrorMessage<CreateRequest>("[RelativityObject]"));
+				HandleObjectManagerException(ex, GetErrorMessage<DeleteRequest>("[RelativityObject]"));
+				throw;
 			}
 		}
 
@@ -652,9 +671,14 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					return result.EventHandlerStatuses.All(x => x.Success);
 				}
 			}
+			catch (IntegrationPointsException)
+			{
+				throw;
+			}
 			catch (Exception ex)
 			{
-				throw HandleObjectManagerException(ex, () => GetErrorMessage<UpdateRequest>(rdoType));
+				HandleObjectManagerException(ex, GetErrorMessage<DeleteRequest>(rdoType));
+				throw;
 			}
 		}
 
@@ -673,9 +697,14 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					return result.Success;
 				}
 			}
+			catch (IntegrationPointsException)
+			{
+				throw;
+			}
 			catch (Exception ex)
 			{
-				throw HandleObjectManagerException(ex, () => GetErrorMessage<UpdateRequest>(_UNKNOWN_OBJECT_TYPE));
+				HandleObjectManagerException(ex, GetErrorMessage<DeleteRequest>(_UNKNOWN_OBJECT_TYPE));
+				throw;
 			}
 		}
 
@@ -691,9 +720,14 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					return result.Report.DeletedItems.Any();
 				}
 			}
+			catch (IntegrationPointsException)
+			{
+				throw;
+			}
 			catch (Exception ex)
 			{
-				throw HandleObjectManagerException(ex, () => GetErrorMessage<DeleteRequest>(rdoType));
+				HandleObjectManagerException(ex, GetErrorMessage<DeleteRequest>(rdoType));
+				throw;
 			}
 		}
 
@@ -709,9 +743,14 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					return result.Success;
 				}
 			}
+			catch (IntegrationPointsException)
+			{
+				throw;
+			}
 			catch (Exception ex)
 			{
-				throw HandleObjectManagerException(ex, () => GetErrorMessage<DeleteRequest>(_UNKNOWN_OBJECT_TYPE));
+				HandleObjectManagerException(ex, GetErrorMessage<DeleteRequest>(_UNKNOWN_OBJECT_TYPE));
+				throw;
 			}
 		}
 
@@ -748,21 +787,14 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		private IntegrationPointsException HandleObjectManagerException(Exception ex, Func<string> createMessage)
+		private void HandleObjectManagerException(Exception ex, string message)
 		{
-			if (ex is IntegrationPointsException integrationPointsException)
-			{
-				return integrationPointsException;
-			}
-
-			string message = createMessage();
 			_logger.LogError(ex, message);
-			var wrappingException = new IntegrationPointsException(message, ex)
+			throw new IntegrationPointsException(message, ex)
 			{
 				ShouldAddToErrorsTab = true,
 				ExceptionSource = IntegrationPointsExceptionSource.KEPLER
 			};
-			return wrappingException;
 		}
 
 		private string GetOperationNameForRequestType<T>()

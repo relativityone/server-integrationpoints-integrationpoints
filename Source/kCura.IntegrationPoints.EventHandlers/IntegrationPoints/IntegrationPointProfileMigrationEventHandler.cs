@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		private readonly IIntegrationPointProfilesQuery _integrationPointProfilesQuery;
 
 		protected override string SuccessMessage => "Integration Point Profiles migrated successfully.";
-		protected override string GetFailureMessage(Exception ex) => $"Failed to migrate the Integration Point Profiles, because: {ex.Message}";
+		protected override string GetFailureMessage(Exception ex) => "Failed to migrate the Integration Point Profiles.";
 
 		public IntegrationPointProfileMigrationEventHandler()
 		{
@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 		private async Task MigrateProfilesAsync()
 		{
-			var (nonSyncProfilesArtifactIds, syncProfilesArtifactIds) = await _integrationPointProfilesQuery
+			(List<int> nonSyncProfilesArtifactIds, List<int> syncProfilesArtifactIds) = await _integrationPointProfilesQuery
 				.GetSyncAndNonSyncProfilesArtifactIdsAsync(TemplateWorkspaceID)
 				.ConfigureAwait(false);
 

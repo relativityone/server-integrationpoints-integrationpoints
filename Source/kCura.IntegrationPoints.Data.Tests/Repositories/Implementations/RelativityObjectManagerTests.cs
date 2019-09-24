@@ -205,6 +205,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		[Test]
 		public void MassDeleteAsync_ShouldRethrowIntegrationPointsException()
 		{
+			// arrange
 			IntegrationPointsException expectedException = new IntegrationPointsException();
 			_objectManagerFacadeMock
 				.Setup(x => x.DeleteAsync(It.IsAny<int>(), It.IsAny<MassDeleteByObjectIdentifiersRequest>()))
@@ -221,6 +222,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		[Test]
 		public void MassDeleteAsync_ShouldWrapExceptionInIntegrationPointException()
 		{
+			// arrange
 			Exception expectedInnerException = new Exception();
 			_objectManagerFacadeMock
 				.Setup(x => x.DeleteAsync(It.IsAny<int>(), It.IsAny<MassDeleteByObjectIdentifiersRequest>()))
@@ -238,6 +240,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		[TestCase(false)]
 		public async Task MassDeleteAsync_ShouldReturnValueFromObjectManagerFacade(bool isSuccess)
 		{
+			// arrange
 			var massDeleteResult = new MassDeleteResult()
 			{
 				Success = isSuccess
@@ -247,15 +250,16 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				.ReturnsAsync(massDeleteResult);
 
 			// act
-			bool acutalResult = await _sut.MassDeleteAsync(Enumerable.Empty<int>(), ExecutionIdentity.System).ConfigureAwait(false);
+			bool actualResult = await _sut.MassDeleteAsync(Enumerable.Empty<int>(), ExecutionIdentity.System).ConfigureAwait(false);
 
 			// assert
-			acutalResult.Should().Be(isSuccess);
+			actualResult.Should().Be(isSuccess);
 		}
 
 		[Test]
 		public async Task MassDeleteAsync_ShouldSendProperRequest()
 		{
+			// arrange
 			var massDeleteResult = new MassDeleteResult()
 			{
 				Success = true
