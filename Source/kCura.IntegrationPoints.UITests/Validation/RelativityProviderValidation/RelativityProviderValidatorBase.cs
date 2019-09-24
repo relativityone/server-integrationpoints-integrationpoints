@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoints.UITests.Validation.RelativityProviderValidatio
 				expectedStr += "Images;";
 			}
 
-			if (model.CopyFilesToRepository == true && model.CopyNativeFiles != RelativityProviderModel.CopyNativeFilesEnum.No)
+			if (model.CopyFilesToRepository == true || model.CopyNativeFiles != null && model.CopyNativeFiles != RelativityProviderModel.CopyNativeFilesEnum.No)
 			{
 				expectedStr += "Natives;";
 			}
