@@ -21,6 +21,7 @@ using Relativity.Testing.Identification;
 namespace Relativity.Sync.Tests.System
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints.Sync]
 	public sealed class ServiceFactoryForUserTests : SystemTest
 	{
 		private ServicesManagerStub _servicesManager;

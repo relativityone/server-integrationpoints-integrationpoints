@@ -16,10 +16,12 @@ using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Helpers;
 using Relativity.Sync.Tests.System.Stubs;
+using Relativity.Testing.Identification;
 
 namespace Relativity.Sync.Tests.System
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints.Sync]
 	internal sealed class SynchronizationExecutorTests : SystemTest
 	{
 		private static readonly Dataset Dataset = Dataset.NativesAndExtractedText;
@@ -27,7 +29,7 @@ namespace Relativity.Sync.Tests.System
 		private static readonly Guid ErrorMessageField = new Guid("4112B894-35B0-4E53-AB99-C9036D08269D");
 		private static readonly Guid StackTraceField = new Guid("0353DBDE-9E00-4227-8A8F-4380A8891CFF");
 
-		[Test]
+		[IdentifiedTest("f9311c70-7094-4bed-a66e-90b1313fcd47")]
 		public async Task ItShouldPassGoldFlow()
 		{
 			const int batchSize = 1000;

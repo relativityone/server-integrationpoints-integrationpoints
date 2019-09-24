@@ -33,7 +33,7 @@ namespace Relativity.Sync.Tests.Unit
 			IObjectManager wrappedObjectManager = Mock.Of<IObjectManager>();
 
 			_servicesMgr.Setup(x => x.CreateProxy<IObjectManager>(ExecutionIdentity.System)).Returns(objectManager);
-			_proxyFactory.Setup(x => x.WrapKeplerService(objectManager)).Returns(wrappedObjectManager);
+			_proxyFactory.Setup(x => x.WrapKeplerService(objectManager, It.IsAny<Func<Task<IObjectManager>>>())).Returns(wrappedObjectManager);
 
 			// ACT
 			IObjectManager actualObjectManager = await _instance.CreateProxyAsync<IObjectManager>().ConfigureAwait(false);
