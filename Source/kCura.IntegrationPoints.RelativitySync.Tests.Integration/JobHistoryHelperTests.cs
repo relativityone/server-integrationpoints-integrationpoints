@@ -18,7 +18,7 @@ using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 {
-	[Feature.DataTransfer.IntegrationPoints.Sync]
+	[Feature.DataTransfer.IntegrationPoints]
 	internal sealed class JobHistoryHelperTests : RelativityProviderTemplate
 	{
 		private JobHistory _jobHistory;
