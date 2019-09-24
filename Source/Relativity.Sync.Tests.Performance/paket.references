@@ -5,4 +5,5 @@ Polly
 Autofac
 coverlet.msbuild
 NUnit
+NUnit3TestAdapter
 NunitXml.TestLogger

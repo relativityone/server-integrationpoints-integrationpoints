@@ -6,6 +6,7 @@ Autofac
 Newtonsoft.Json
 
 NUnit
+NUnit3TestAdapter
 coverlet.msbuild
 NunitXml.TestLogger
 FluentAssertions

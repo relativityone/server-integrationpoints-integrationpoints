@@ -31,6 +31,7 @@ nuget Castle.Core
 // Tests
 nuget NUnit 3.11
 nuget NunitXml.TestLogger
+nuget NUnit3TestAdapter
 nuget coverlet.msbuild
 nuget FluentAssertions ~> 5.4
 nuget Moq ~> 4.10

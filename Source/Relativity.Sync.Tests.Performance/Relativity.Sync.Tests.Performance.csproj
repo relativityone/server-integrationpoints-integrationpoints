@@ -1,20 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net462</TargetFramework>
-    <OutputPath>bin\</OutputPath>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <WarningLevel>4</WarningLevel>
-    <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <ResolveNugetPackages>true</ResolveNugetPackages>
-    <IsTestProject>true</IsTestProject>
-  </PropertyGroup>
-  <ItemGroup>
-    <None Remove="coverage.cobertura.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
-  </ItemGroup>
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
+	<PropertyGroup>
+		<TargetFramework>net462</TargetFramework>
+		<OutputPath>bin\</OutputPath>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<WarningLevel>4</WarningLevel>
+		<CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
+		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+		<ResolveNugetPackages>true</ResolveNugetPackages>
+		<IsTestProject>true</IsTestProject>
+	</PropertyGroup>
+	<ItemGroup>
+		<None Remove="coverage.cobertura.xml" />
+	</ItemGroup>
+	<Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

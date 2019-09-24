@@ -1,28 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net462</TargetFramework>
-    <OutputPath>bin\</OutputPath>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <WarningLevel>4</WarningLevel>
-    <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <ResolveNugetPackages>true</ResolveNugetPackages>
-    <IsTestProject>false</IsTestProject>
-  </PropertyGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Relativity.Sync\Relativity.Sync.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-      <_Parameter1>DynamicProxyGenAssembly2</_Parameter1>
-    </AssemblyAttribute>
-    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-      <_Parameter1>Relativity.Sync.Tests.Integration</_Parameter1>
-    </AssemblyAttribute>
-    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-      <_Parameter1>Relativity.Sync.Tests.System</_Parameter1>
-    </AssemblyAttribute>
-  </ItemGroup>
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
+	<PropertyGroup>
+		<TargetFramework>net462</TargetFramework>
+		<OutputPath>bin\</OutputPath>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<WarningLevel>4</WarningLevel>
+		<CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
+		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+		<ResolveNugetPackages>true</ResolveNugetPackages>
+		<IsTestProject>false</IsTestProject>
+	</PropertyGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Relativity.Sync\Relativity.Sync.csproj" />
+	</ItemGroup>
+	<Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
