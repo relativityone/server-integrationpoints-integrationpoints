@@ -12,7 +12,6 @@
 		<GenerateAssemblyInfo>true</GenerateAssemblyInfo>
 
 		<!-- Nuspec properties -->
-
 		<PackageId>Relativity.Sync</PackageId>
 		<Title>Relativity Sync</Title>
 		<Authors>Relativity ODA LLC</Authors>
@@ -29,4 +28,5 @@
 
 	<Import Project="..\..\scripts\Build.Sign.targets" />
 	<Import Project="..\..\.paket\Paket.Restore.targets" />
+
 </Project>
