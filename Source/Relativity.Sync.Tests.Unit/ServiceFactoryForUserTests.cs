@@ -44,7 +44,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			IObjectManager wrappedObjectManager = Mock.Of<IObjectManager>();
 
-			_dynamicProxyFactory.Setup(x => x.WrapKeplerService(It.IsAny<IObjectManager>())).Returns(wrappedObjectManager);
+			_dynamicProxyFactory.Setup(x => x.WrapKeplerService(It.IsAny<IObjectManager>(), It.IsAny<Func<Task<IObjectManager>>>())).Returns(wrappedObjectManager);
 
 			// ACT
 			IObjectManager actualObjectManager = await _instance.CreateProxyAsync<IObjectManager>().ConfigureAwait(false);

@@ -1,4 +1,7 @@
-﻿using Relativity.Sync.Telemetry;
+﻿using System;
+using System.Threading.Tasks;
+using Castle.DynamicProxy;
+using Relativity.Sync.Telemetry;
 
 namespace Relativity.Sync.KeplerFactory
 {
@@ -15,10 +18,12 @@ namespace Relativity.Sync.KeplerFactory
 			_logger = logger;
 		}
 
-		public T WrapKeplerService<T>(T keplerService)
+		public T WrapKeplerService<T>(T keplerService, Func<Task<T>> keplerServiceFactory) where T : class
 		{
-			KeplerServiceInterceptor dynamicProxy = new KeplerServiceInterceptor(_syncMetrics, _stopwatch, _logger);
-			return SexyProxy.Proxy.CreateProxy(keplerService, dynamicProxy.InvocationHandler);
+			KeplerServiceInterceptor<T> interceptor = new KeplerServiceInterceptor<T>(_syncMetrics, _stopwatch, keplerServiceFactory, _logger);
+			ProxyGenerator proxyGenerator = new ProxyGenerator();
+			T proxy = proxyGenerator.CreateInterfaceProxyWithTargetInterface<T>(keplerService, interceptor);
+			return proxy;
 		}
 	}
 }

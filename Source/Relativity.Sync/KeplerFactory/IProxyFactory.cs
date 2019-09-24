@@ -5,6 +5,6 @@ namespace Relativity.Sync.KeplerFactory
 {
 	internal interface IProxyFactory
 	{
-		Task<T> CreateProxyAsync<T>() where T : IDisposable;
+		Task<T> CreateProxyAsync<T>() where T : class, IDisposable;
 	}
 }

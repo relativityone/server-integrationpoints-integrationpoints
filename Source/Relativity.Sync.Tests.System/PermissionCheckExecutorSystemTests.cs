@@ -14,10 +14,12 @@ using Relativity.Services.Workspace;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Helpers;
+using Relativity.Testing.Identification;
 
 namespace Relativity.Sync.Tests.System
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints.Sync]
 	internal class PermissionCheckExecutorSystemTests : SystemTest
 	{
 		private WorkspaceRef _sourceWorkspace;
@@ -144,7 +146,7 @@ namespace Relativity.Sync.Tests.System
 			await AddGroupToWorkspaceAsync(_destinationWorkspace.ArtifactID, _group).ConfigureAwait(false);
 		}
 
-		[Test]
+		[IdentifiedTest("bdf02167-6dba-48e1-a2ba-2c14defeb581")]
 		public async Task ItShouldValidatePermission()
 		{
 			_configurationStub = new ConfigurationStub

@@ -15,6 +15,7 @@ using Relativity.Testing.Identification;
 namespace Relativity.Sync.Tests.System
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints.Sync]
 	public sealed class DestinationWorkspaceTagsCreationExecutorTests : SystemTest
 	{
 		private WorkspaceRef _destinationWorkspace;

@@ -38,15 +38,18 @@ namespace Relativity.Sync.KeplerFactory
 			_dynamicProxyFactory = dynamicProxyFactory;
 		}
 
-		public async Task<T> CreateProxyAsync<T>() where T : IDisposable
+		public async Task<T> CreateProxyAsync<T>() where T : class, IDisposable
 		{
 			if (_serviceFactory == null)
 			{
 				_serviceFactory = await CreateServiceFactoryAsync().ConfigureAwait(false);
 			}
 
-			T keplerService = _serviceFactory.CreateProxy<T>();
-			return _dynamicProxyFactory.WrapKeplerService(keplerService);
+			return _dynamicProxyFactory.WrapKeplerService(_serviceFactory.CreateProxy<T>(), async () =>
+			{
+				_serviceFactory = await CreateServiceFactoryAsync().ConfigureAwait(false);
+				return _serviceFactory.CreateProxy<T>();
+			});
 		}
 
 		private async Task<IServiceFactory> CreateServiceFactoryAsync()
