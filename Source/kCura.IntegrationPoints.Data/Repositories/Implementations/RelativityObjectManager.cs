@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Data.Facades;
 using kCura.IntegrationPoints.Data.Transformers;
 using kCura.IntegrationPoints.Data.UtilityDTO;
 using kCura.IntegrationPoints.Domain.Exceptions;
@@ -142,7 +143,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			try
 			{
-				using (var client = _servicesMgr.CreateProxy<IObjectManager>(executionIdentity))
+				using (var client = CreateObjectManagerFacade(executionIdentity))
 				{
 					var request = new DeleteRequest { Object = rdo.ToObjectRef() };
 
@@ -168,7 +169,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			try
 			{
-				using (var client = _servicesMgr.CreateProxy<IObjectManager>(executionIdentity))
+				using (var client = CreateObjectManagerFacade(executionIdentity))
 				{
 					DeleteRequest request = new DeleteRequest()
 					{
@@ -206,7 +207,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				BootstrapQuery<T>(q, noFields);
 
-				using (var client = _servicesMgr.CreateProxy<IObjectManager>(executionIdentity))
+				using (var client = CreateObjectManagerFacade(executionIdentity))
 				{
 					// ReSharper disable AccessToDisposedClosure
 					QueryResult queryResults = await _retryHandler.ExecuteWithRetriesAsync(
@@ -243,7 +244,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				BootstrapQuery<T>(q, noFields);
 
-				using (var client = _servicesMgr.CreateProxy<IObjectManager>(executionIdentity))
+				using (var client = CreateObjectManagerFacade(executionIdentity))
 				{
 					List<T> output = null;
 					int retrievedResults = 0;
@@ -305,7 +306,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			try
 			{
-				using (var client = _servicesMgr.CreateProxy<IObjectManager>(executionIdentity))
+				using (var client = CreateObjectManagerFacade(executionIdentity))
 				{
 					List<RelativityObject> output = null;
 					int retrievedResults = 0;
@@ -354,7 +355,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			try
 			{
-				using (var client = _servicesMgr.CreateProxy<IObjectManager>(executionIdentity))
+				using (var client = CreateObjectManagerFacade(executionIdentity))
 				{
 					// ReSharper disable AccessToDisposedClosure
 					QueryResult result = await _retryHandler.ExecuteWithRetriesAsync(
@@ -385,7 +386,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			try
 			{
-				using (var client = _servicesMgr.CreateProxy<IObjectManager>(executionIdentity))
+				using (var client = CreateObjectManagerFacade(executionIdentity))
 				{
 					// ReSharper disable AccessToDisposedClosure
 					QueryResult result = await _retryHandler.ExecuteWithRetriesAsync(
@@ -427,7 +428,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			try
 			{
-				using (var client = _servicesMgr.CreateProxy<IObjectManager>(executionIdentity))
+				using (var client = CreateObjectManagerFacade(executionIdentity))
 				{
 					_secretStoreHelper.SetEncryptedSecuredConfigurationForNewRdo(createRequest.FieldValues);
 
@@ -463,7 +464,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			try
 			{
-				using (var client = _servicesMgr.CreateProxy<IObjectManager>(executionIdentity))
+				using (var client = CreateObjectManagerFacade(executionIdentity))
 				{
 					// ReSharper disable AccessToDisposedClosure
 					ReadResult result = _retryHandler.ExecuteWithRetries(
@@ -487,7 +488,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			try
 			{
-				using (var client = _servicesMgr.CreateProxy<IObjectManager>(executionIdentity))
+				using (var client = CreateObjectManagerFacade(executionIdentity))
 				{
 					// ReSharper disable AccessToDisposedClosure
 					UpdateResult result = _retryHandler.ExecuteWithRetries(
@@ -543,6 +544,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					ArtifactID = rdo.ParentArtifactId.Value
 				};
 			}
+		}
+
+		private ObjectManagerFacadeWithRetries CreateObjectManagerFacade(ExecutionIdentity executionIdentity)
+		{
+			IObjectManager objectManager = _servicesMgr.CreateProxy<IObjectManager>(executionIdentity);
+			return new ObjectManagerFacadeWithRetries(objectManager, _logger);
 		}
 
 		private IntegrationPointsException LogServiceNotFoundException(string operationName, ServiceNotFoundException ex)

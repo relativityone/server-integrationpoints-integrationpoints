@@ -65,6 +65,7 @@
     <Compile Include="Extensions\ObjectQueryResultSetExtensions.cs" />
     <Compile Include="Extensions\ResultSetExtensions.cs" />
     <Compile Include="Extensions\TaskExtension.cs" />
+    <Compile Include="Facades\ObjectManagerFacadeWithRetries.cs" />
     <Compile Include="Factories\Implementations\RelativityObjectManagerFactory.cs" />
     <Compile Include="Factories\IRelativityObjectManagerFactory.cs" />
     <Compile Include="Factories\IRSAPIServiceFactory.cs" />
@@ -344,6 +345,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Facades\Internals\" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
