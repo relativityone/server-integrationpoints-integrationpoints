@@ -19,6 +19,7 @@ using Workspace = kCura.IntegrationPoint.Tests.Core.Workspace;
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.RelativityObjectManager
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class StreamLongTextAsyncTests
 	{
 		private int _workspaceId;

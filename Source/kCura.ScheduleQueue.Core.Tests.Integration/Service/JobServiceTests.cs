@@ -16,6 +16,7 @@ using Relativity.Testing.Identification;
 namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class JobServiceTests
 	{
 		private IAgentService _agentService;

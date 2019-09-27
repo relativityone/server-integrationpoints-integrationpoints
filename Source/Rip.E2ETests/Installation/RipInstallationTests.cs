@@ -21,6 +21,7 @@ using CoreConstants = kCura.IntegrationPoints.Core.Constants;
 namespace Rip.E2ETests.Installation
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class RipInstallationTests
 	{
 		private RelativityApplicationManager ApplicationManager { get; }

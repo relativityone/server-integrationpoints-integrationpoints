@@ -19,6 +19,7 @@ using Choice = kCura.Relativity.Client.DTOs.Choice;
 namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.JobHistory
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class JobHistoryManagerTests
 	{
 		private JobHistoryManager _sut;

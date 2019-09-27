@@ -9,6 +9,7 @@ using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.Services.Tests.Integration.StatisticsManager
 {
+	[Feature.DataTransfer.IntegrationPoints]
 	public class StatisticsManagerTests : SourceProviderTemplate
 	{
 		private TestCaseSettings _testCaseSettings;

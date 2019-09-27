@@ -12,6 +12,7 @@ using Relativity.Testing.Identification;
 namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.Repositories
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class IntegrationPointRepositoryTests
 	{
 		private IIntegrationPointRepository _sut;

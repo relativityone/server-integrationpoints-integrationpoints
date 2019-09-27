@@ -7,6 +7,7 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointManager
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class ItShouldRetrieveIntegrationPointArtifactTypeId : SourceProviderTemplate
 	{
 		public ItShouldRetrieveIntegrationPointArtifactTypeId() : base($"KeplerService_{Utils.FormattedDateTimeNow}")

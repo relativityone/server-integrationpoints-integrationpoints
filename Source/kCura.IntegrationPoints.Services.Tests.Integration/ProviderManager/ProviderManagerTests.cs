@@ -10,6 +10,7 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.Services.Tests.Integration.ProviderManager
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class ProviderManagerTests : SourceProviderTemplate
 	{
 		public ProviderManagerTests() : base($"KeplerService_{Utils.FormattedDateTimeNow}")
