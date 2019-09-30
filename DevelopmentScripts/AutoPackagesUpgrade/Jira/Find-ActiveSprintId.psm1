@@ -43,9 +43,7 @@ function Find-ActiveSprintId
     }  
     catch 
     {  
-        Write-Warning "Remote Server Response: $($_.Exception.Message)"  
-        Write-Output "Status Code: $($_.Exception.Response.StatusCode)"  
-        Write-Error "$($MyInvocation.MyCommand.Name) failed" -ErrorAction Stop
+        Exit-AndLogHttpError -CmdName $MyInvocation.MyCommand.Name
     }  
     
     Write-Host "End of $($MyInvocation.MyCommand.Name)"

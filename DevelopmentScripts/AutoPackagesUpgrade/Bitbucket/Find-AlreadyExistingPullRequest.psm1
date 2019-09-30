@@ -48,6 +48,8 @@ function Find-AlreadyExistingPullRequest
     Import-Module -Name $PSScriptRoot\..\Import-Config
     Import-Module -Name $PSScriptRoot\..\Import-Utils
 
+    Set-Variable pullRequestsPageLimit -option Constant -value 50
+
     $uri = "$BitbucketApiUri/projects/$Project/repos/$Repository/pull-requests?username.1=$Author&role.1=AUTHOR&order=NEWEST&state=ALL" 
 
     $headers = Find-BasicAuthJsonHttpHeaders -Credential $Credential
@@ -55,25 +57,19 @@ function Find-AlreadyExistingPullRequest
     try 
     {
         $pullRequests = @()
-        $pageLimit = 0
-        for($pageIndex = 0; $pageIndex -lt 50; $pageIndex += $pageLimit)
-        { 
+        $pageIndex = 0
+        do
+        {
             $pullRequestUri = "$uri&start=$pageIndex"
             $response = Invoke-RestMethod -Uri $pullRequestUri -Method GET -Headers $headers -UseBasicParsing 
 
             $pullRequests = $response.values + $pullRequests
-            $pageLimit = $response.limit
-            if($response.isLastPage)
-            {
-                break
-            }
-        }
+            $pageIndex += $response.limit
+        }while((-n $response.isLastPage) -and $pageIndex -lt $pullRequestsPageLimit)
     }
     catch 
-    {  
-        Write-Warning "Remote Server Response: $($_.Exception.Message)"  
-        Write-Output "Status Code: $($_.Exception.Response.StatusCode)" 
-        Write-Error "$($MyInvocation.MyCommand.Name) failed" -ErrorAction Stop
+    {
+        Exit-AndLogHttpError -CmdName $MyInvocation.MyCommand.Name
     }
 
     $pullRequestsFilteredByTitle = $pullRequests | Select-Object -ExpandProperty title | Where-Object { $_.Contains($Title) }

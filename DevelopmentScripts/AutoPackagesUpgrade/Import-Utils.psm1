@@ -140,6 +140,13 @@ function Find-CurrentRipVersionInRelativity($PackagesConfigAsText, $RipPackageRo
     $ripVersion
  }
 
+ function Exit-AndLogHttpError($CmdName)
+ {
+    Write-Warning "Remote Server Response: $($_.Exception.Message)"  
+    Write-Output "Status Code: $($_.Exception.Response.StatusCode)" 
+    Write-Error "$($CmdName) failed" -ErrorAction Stop
+ }
+
  function Exit-OnAnyErrors($CommandName)
  {
     if (-not $?) 
