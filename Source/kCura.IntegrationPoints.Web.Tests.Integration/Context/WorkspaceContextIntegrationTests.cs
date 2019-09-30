@@ -19,6 +19,7 @@ using kCura.IntegrationPoints.Common.Context;
 namespace kCura.IntegrationPoints.Web.Tests.Integration.Context
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class WorkspaceContextIntegrationTests
 	{
 		private IWindsorContainer _container;

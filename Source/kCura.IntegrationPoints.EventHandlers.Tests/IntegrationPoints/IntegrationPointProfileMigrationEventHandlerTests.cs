@@ -27,13 +27,13 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 		private Mock<IRelativityObjectManager> _createdWorkspaceRelativityObjectManager;
 		private Mock<IIntegrationPointProfilesQuery> _integrationPointProfilesQuery;
 
-		private const string _TEST_EXCEPTION_MESSAGE = "EED05107-CB7F-4916-BC1C-C8DB3C8597C8";
+		private const string _TEST_ERROR_MESSAGE = "Failed to migrate the Integration Point Profiles.";
 		private const int _TEMPLATE_WORKSPACE_ARTIFACT_ID = 100111;
 		private const int _CREATED_WORKSPACE_ARTIFACT_ID = 200111;
 		private const int _FIRST_SYNC_PROFILE_ARTIFACT_ID = 300444;
 		private const int _FIRST_NON_SYNC_PROFILE_ARTIFACT_ID = 400444;
 
-		private static ServiceException TestException => new ServiceException(_TEST_EXCEPTION_MESSAGE);
+		private static ServiceException TestException => new ServiceException(_TEST_ERROR_MESSAGE);
 
 		private static IEnumerable<Action<IntegrationPointProfileMigrationEventHandlerTests>> ServicesFailureSetups { get; } = new Action<IntegrationPointProfileMigrationEventHandlerTests>[]
 		{
@@ -118,8 +118,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 			response.Success.Should().BeFalse("handler should have failed");
 			response
 				.Exception.Should().BeAssignableTo<Exception>()
-				.Which.Message.Should().Be(_TEST_EXCEPTION_MESSAGE); // to make sure, that this is the exact exception that we are looking for
-			response.Message.Should().EndWith(_TEST_EXCEPTION_MESSAGE);
+				.Which.Message.Should().Be(_TEST_ERROR_MESSAGE); // to make sure, that this is the exact exception that we are looking for
+			response.Message.Should().Be(_TEST_ERROR_MESSAGE);
 		}
 
 		[Test]

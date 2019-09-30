@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		private static readonly Guid _relativitySourceProviderTypeGuid = Guid.Parse("423b4d43-eae9-4e14-b767-17d629de4bb2");
 
 		protected override string SuccessMessage => "Integration Point Profiles migrated successfully.";
-		protected override string GetFailureMessage(Exception ex) => $"Failed to migrate the Integration Point Profiles, because: {ex.Message}";
+		protected override string GetFailureMessage(Exception ex) => "Failed to migrate the Integration Point Profiles.";
 
 		public IntegrationPointProfileMigrationEventHandler()
 		{
@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 		private async Task MigrateProfilesAsync()
 		{
-			var (nonSyncProfilesArtifactIds, syncProfilesArtifactIds) = await _integrationPointProfilesQuery
+			(List<int> nonSyncProfilesArtifactIds, List<int> syncProfilesArtifactIds) = await _integrationPointProfilesQuery
 				.GetSyncAndNonSyncProfilesArtifactIdsAsync(TemplateWorkspaceID)
 				.ConfigureAwait(false);
 

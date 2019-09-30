@@ -29,6 +29,7 @@ using Constants = kCura.IntegrationPoints.Core.Constants;
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoints
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class DataTransferMigrationTests : SourceProviderTemplate
 	{
 		private IDataTransferLocationMigration _dataTransferLocationMigration;

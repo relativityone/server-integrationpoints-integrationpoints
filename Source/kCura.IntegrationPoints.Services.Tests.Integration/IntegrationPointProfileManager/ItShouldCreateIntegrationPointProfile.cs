@@ -11,6 +11,7 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointProfileManager
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class ItShouldCreateIntegrationPointProfile : RelativityProviderTemplate
 	{
 		public ItShouldCreateIntegrationPointProfile() : base($"create_s_{Utils.FormattedDateTimeNow}", $"create_d_{Utils.FormattedDateTimeNow}")

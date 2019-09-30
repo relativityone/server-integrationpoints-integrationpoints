@@ -19,6 +19,7 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class DestinationWorkspaceRepositoryTests : RelativityProviderTemplate
 	{
 		private IDestinationWorkspaceRepository _destinationWorkspaceRepository;

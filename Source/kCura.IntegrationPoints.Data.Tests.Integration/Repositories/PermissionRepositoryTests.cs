@@ -24,6 +24,7 @@ using User = kCura.IntegrationPoint.Tests.Core.User;
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class PermissionRepositoryTests : RelativityProviderTemplate
 	{
 		private PermissionRepository _userPermissionRepository;

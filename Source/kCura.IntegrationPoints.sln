@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28803.352
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2041
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{A7EC186E-BC93-4A69-92F7-778E2206D33F}"
 	ProjectSection(SolutionItems) = preProject
@@ -91,8 +91,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Core.Contracts.Tests", "kCura.IntegrationPoints.Core.Contracts.Tests\kCura.IntegrationPoints.Core.Contracts.Tests.csproj", "{A6490515-F92D-4157-BF25-5DCC481AA14D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Services", "kCura.IntegrationPoints.Services\kCura.IntegrationPoints.Services.csproj", "{FD2C5DB6-8FD6-40D6-8E50-3641B7D89D9D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Services.Interfaces.Private", "kCura.IntegrationPoints.Services.Interfaces.Private\kCura.IntegrationPoints.Services.Interfaces.Private.csproj", "{B8BF6D01-E190-4C2C-B07F-3B627FFC1BFC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ImportProvider", "ImportProvider", "{16E36871-2EC6-48BB-ADAA-A9CD481F3337}"
 EndProject
@@ -476,14 +474,6 @@ Global
 		{FD2C5DB6-8FD6-40D6-8E50-3641B7D89D9D}.Release|Any CPU.Build.0 = Release|x64
 		{FD2C5DB6-8FD6-40D6-8E50-3641B7D89D9D}.Release|x64.ActiveCfg = Release|x64
 		{FD2C5DB6-8FD6-40D6-8E50-3641B7D89D9D}.Release|x64.Build.0 = Release|x64
-		{B8BF6D01-E190-4C2C-B07F-3B627FFC1BFC}.Debug|Any CPU.ActiveCfg = Debug|x64
-		{B8BF6D01-E190-4C2C-B07F-3B627FFC1BFC}.Debug|Any CPU.Build.0 = Debug|x64
-		{B8BF6D01-E190-4C2C-B07F-3B627FFC1BFC}.Debug|x64.ActiveCfg = Debug|x64
-		{B8BF6D01-E190-4C2C-B07F-3B627FFC1BFC}.Debug|x64.Build.0 = Debug|x64
-		{B8BF6D01-E190-4C2C-B07F-3B627FFC1BFC}.Release|Any CPU.ActiveCfg = Release|x64
-		{B8BF6D01-E190-4C2C-B07F-3B627FFC1BFC}.Release|Any CPU.Build.0 = Release|x64
-		{B8BF6D01-E190-4C2C-B07F-3B627FFC1BFC}.Release|x64.ActiveCfg = Release|x64
-		{B8BF6D01-E190-4C2C-B07F-3B627FFC1BFC}.Release|x64.Build.0 = Release|x64
 		{835F7005-E106-4C29-AD9C-FE8BD5CF8280}.Debug|Any CPU.ActiveCfg = Debug|x64
 		{835F7005-E106-4C29-AD9C-FE8BD5CF8280}.Debug|Any CPU.Build.0 = Debug|x64
 		{835F7005-E106-4C29-AD9C-FE8BD5CF8280}.Debug|x64.ActiveCfg = Debug|x64

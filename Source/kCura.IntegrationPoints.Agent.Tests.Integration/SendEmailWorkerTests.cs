@@ -21,6 +21,7 @@ using InstanceSetting = Relativity.Services.InstanceSetting.InstanceSetting;
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class SendEmailWorkerTests : SourceProviderTemplate
 	{
 		private IInstanceSettingManager _instanceSettingsManager;
