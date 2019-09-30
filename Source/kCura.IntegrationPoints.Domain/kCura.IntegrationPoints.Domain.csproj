@@ -82,7 +82,6 @@
     <Compile Include="IPermissionValidator.cs" />
     <Compile Include="IPluginProvider.cs" />
     <Compile Include="ISynchronizerFactory.cs" />
-    <Compile Include="ITokenProvider.cs" />
     <Compile Include="IValidator.cs" />
     <Compile Include="IWindsorContainerSetup.cs" />
     <Compile Include="Logging\AgentCorrelationContext.cs" />
@@ -116,7 +115,6 @@
     <Compile Include="Models\InstanceUrlCollectionDTO.cs" />
     <Compile Include="Models\JobHistoryErrorDTO.cs" />
     <Compile Include="Models\JsTreeItemIconEnum.cs" />
-    <Compile Include="Models\OAuthClientDto.cs" />
     <Compile Include="Models\ObjectTypeDTO.cs" />
     <Compile Include="Models\OnClickEventDTO.cs" />
     <Compile Include="Models\ProductionDTO.cs" />

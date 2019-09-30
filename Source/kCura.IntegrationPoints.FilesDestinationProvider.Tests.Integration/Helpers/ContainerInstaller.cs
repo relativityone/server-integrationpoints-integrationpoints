@@ -13,12 +13,11 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using kCura.IntegrationPoints.Core;
-using kCura.IntegrationPoints.Core.Authentication;
+using kCura.IntegrationPoints.Core.Authentication.WebApi;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers.FileNaming;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Process.Internals;
@@ -40,10 +39,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 		private const int _EXPORT_ERROR_NUMBER_OF_RETRIES = 2;
 		private const int _EXPORT_ERROR_WAIT_TIME = 10;
 
-		private const bool _FORCE_PARALLELISM_IN_NEW_EXPORT = true;
-		private const int _MAX_NUMBER_OF_FILE_EXPORT_TASKS = 2;
-		private const int _MAXIMUM_FILES_FOR_TAPI_BRIDGE = 1000;
-		private const int _TAPI_BRIDGE_EXPORT_TRANSFER_WAITING_TIME_IN_SECONDS = 600;
 		private const bool _TAPI_FORCE_HTTP_CLIENT = false;
 
 		private const bool _USE_OLD_EXPORT = false;
@@ -63,7 +58,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 			RegisterConfig(testConfiguration, testContext, windsorContainer);
 			RegisterRSAPIClient(windsorContainer);
 
-			windsorContainer.Register(Component.For<ICredentialProvider>().ImplementedBy<UserPasswordCredentialProvider>());
+			windsorContainer.Register(Component.For<IWebApiLoginService>().ImplementedBy<UserPasswordCredentialProvider>());
 			windsorContainer.Register(Component.For<ISqlServiceFactory>().ImplementedBy<HelperConfigSqlServiceFactory>().LifestyleSingleton());
 			windsorContainer.Register(Component.For<IServiceManagerProvider>().ImplementedBy<ServiceManagerProvider>().LifestyleTransient());
 			windsorContainer.Register(Component.For<IHelper>().Instance(new TestHelper()).LifestyleTransient());
@@ -82,7 +77,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 				.LifestyleTransient());
 
 			windsorContainer.Register(Component.For<ISerializer>().Instance(Substitute.For<ISerializer>()).LifestyleTransient());
-			windsorContainer.Register(Component.For<ITokenProvider>().Instance(Substitute.For<ITokenProvider>()).LifestyleTransient());
 			windsorContainer.Register(Component.For<IFileNameProvidersDictionaryBuilder>().ImplementedBy<FileNameProvidersDictionaryBuilder>().LifestyleTransient());
 			windsorContainer.Register(Component.For<IRepositoryFactory>().ImplementedBy<RepositoryFactory>());
 
@@ -139,10 +133,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 			exportConfig.ExportErrorNumberOfRetries.Returns(_EXPORT_ERROR_NUMBER_OF_RETRIES);
 			exportConfig.ExportErrorWaitTime.Returns(_EXPORT_ERROR_WAIT_TIME);
 
-			exportConfig.ForceParallelismInNewExport.Returns(_FORCE_PARALLELISM_IN_NEW_EXPORT);
-			exportConfig.MaxNumberOfFileExportTasks.Returns(_MAX_NUMBER_OF_FILE_EXPORT_TASKS);
-			exportConfig.MaximumFilesForTapiBridge.Returns(_MAXIMUM_FILES_FOR_TAPI_BRIDGE);
-			exportConfig.TapiBridgeExportTransferWaitingTimeInSeconds.Returns(_TAPI_BRIDGE_EXPORT_TRANSFER_WAITING_TIME_IN_SECONDS);
 			exportConfig.TapiForceHttpClient.Returns(_TAPI_FORCE_HTTP_CLIENT);
 
 			exportConfig.UseOldExport.Returns(_USE_OLD_EXPORT);

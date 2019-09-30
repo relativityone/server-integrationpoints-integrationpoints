@@ -1,6 +1,5 @@
 ﻿using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
-using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
@@ -12,6 +11,7 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	[Ignore("It's currently impossible to instantiate any repository from Relativity.API.Foundation in integration (system) tests. " +
 	        "Doing so requires using classes from Relativity.APIHelper project, which is only available via RelativityCore package " +
 	        "or via Helper instances which are passed to agent or custom page from Relativity and are not available in tests. " +
@@ -30,9 +30,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		public void SetUp()
 		{
 			IManagerFactory factory = Container.Resolve<IManagerFactory>();
-			IContextContainerFactory contextFactory = Container.Resolve<IContextContainerFactory>();
-			IContextContainer contextContainer = contextFactory.CreateContextContainer(Helper);
-			_auditManager = factory.CreateAuditManager(contextContainer, WorkspaceArtifactId);
+			_auditManager = factory.CreateAuditManager(WorkspaceArtifactId);
 		}
 
 		[IdentifiedTest("ee83c2e2-8d78-472d-be47-a29fe34cf9f5")]

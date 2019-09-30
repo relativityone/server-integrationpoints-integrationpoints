@@ -13,6 +13,7 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.UITests.Tests.Profile
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	[Category(TestCategory.PROFILE)]
 	internal class CreateAndApplyProfilesTest : RelativityProviderTestsBase
 	{
@@ -48,7 +49,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 		public override void SetUp()
 		{
 			base.SetUp();
-			_profileAction = new IntegrationPointProfileAction(Driver, Context);
+			_profileAction = new IntegrationPointProfileAction(Driver, SourceContext);
 		}
 
 		[IdentifiedTest("77d6c730-3f8f-4d18-83e4-640b09e16a75")]
@@ -75,7 +76,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 				integrationPointCreatedFromProfileDetailsPage.SelectGeneralPropertiesTable();
 			RelativityProviderModel expectedModel = CreateRelativityProviderModel(profileModelName);
 			SavedSearchToFolderValidator validator = new SavedSearchToFolderValidator();
-			validator.ValidateSummaryPage(generalProperties, expectedModel, Context, DestinationContext, false);
+			validator.ValidateSummaryPage(generalProperties, expectedModel, SourceContext, DestinationContext, false);
 		}
 
 		[IdentifiedTest("e4d45cc5-3b75-405d-b6e0-caf151136d02")]
@@ -100,7 +101,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 			PropertiesTable generalProperties = integrationPointDetailsPage.SelectGeneralPropertiesTable();
 			RelativityProviderModel expectedModel = CreateRelativityProviderModel(profileModelName);
 			SavedSearchToFolderValidator validator = new SavedSearchToFolderValidator();
-			validator.ValidateSummaryPage(generalProperties, expectedModel, Context, DestinationContext, false);
+			validator.ValidateSummaryPage(generalProperties, expectedModel, SourceContext, DestinationContext, false);
 		}
 	}
 }

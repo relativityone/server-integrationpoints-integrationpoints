@@ -30,6 +30,7 @@ using Workspace = kCura.IntegrationPoint.Tests.Core.Workspace;
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class RelativityProvider_ImportNativeFileCopyModeTests : RelativityProviderTemplate
 	{
 		private ExportServiceManager _exportManager;
@@ -64,8 +65,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 		public override void TestSetup()
 		{
-			IHelperFactory helperFactory = Container.Resolve<IHelperFactory>();
-			IContextContainerFactory contextContainerFactory = Container.Resolve<IContextContainerFactory>();
 			ISynchronizerFactory synchronizerFactory = Container.Resolve<ISynchronizerFactory>();
 			IExporterFactory exporterFactory = Container.Resolve<IExporterFactory>();
 			IExportServiceObserversFactory exportServiceObserversFactory = Container.Resolve<IExportServiceObserversFactory>();
@@ -91,9 +90,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				logger,
 				dateTimeHelper);
 
-			_exportManager = new ExportServiceManager(Helper, helperFactory,
+			_exportManager = new ExportServiceManager(Helper,
 				CaseContext,
-				contextContainerFactory,
 				synchronizerFactory,
 				exporterFactory,
 				exportServiceObserversFactory,

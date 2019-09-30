@@ -69,6 +69,7 @@
     <Compile Include="AgentTypeInformationHelper.cs" />
     <Compile Include="AuditHelper.cs" />
     <Compile Include="ClaimsPrincipalFactory.cs" />
+    <Compile Include="Constants\WorkspaceTemplateNames.cs" />
     <Compile Include="DBContextMockBuilder.cs" />
     <Compile Include="DocumentService.cs" />
     <Compile Include="DocumentTestDataBuilder.cs" />
@@ -7819,6 +7820,17 @@
       <ItemGroup>
         <Reference Include="kCura.Injection">
           <HintPath>..\..\packages\kCura.Injection\lib\net462\kCura.Injection.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="kCura.IntegrationPoints.Services.Interfaces.Private">
+          <HintPath>..\..\packages\kCura.IntegrationPoints.Services.Interfaces.Private\lib\net462\kCura.IntegrationPoints.Services.Interfaces.Private.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

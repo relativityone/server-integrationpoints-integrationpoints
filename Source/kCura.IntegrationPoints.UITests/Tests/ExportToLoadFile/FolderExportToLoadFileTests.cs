@@ -19,6 +19,7 @@ using IntegrationPointType = kCura.IntegrationPoint.Tests.Core.Models.Integratio
 namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	[Category(TestCategory.EXPORT_TO_LOAD_FILE)]
 	public class FolderExportToLoadFileTests : ExportToLoadFileTests
 	{
@@ -35,7 +36,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 		[SetUp]
 		public void SetUp()
 		{
-			_integrationPointsAction = new IntegrationPointsAction(Driver, Context);
+			_integrationPointsAction = new IntegrationPointsAction(Driver, SourceContext);
 		}
 
 		[IdentifiedTest("9968a2a9-148f-48b9-b5c0-71b6269c8d8b")]
@@ -174,7 +175,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 
 		private async Task CreateDocumentViewAsync()
 		{
-			int workspaceID = Context.GetWorkspaceId();
+			int workspaceID = SourceContext.GetWorkspaceId();
 
 			try
 			{

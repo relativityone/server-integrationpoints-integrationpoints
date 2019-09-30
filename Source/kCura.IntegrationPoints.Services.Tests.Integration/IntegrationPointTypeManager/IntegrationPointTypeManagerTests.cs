@@ -10,6 +10,7 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointTypeManager
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class IntegrationPointTypeManagerTests : SourceProviderTemplate
 	{
 		public IntegrationPointTypeManagerTests() : base($"IPType_{Utils.FormattedDateTimeNow}")

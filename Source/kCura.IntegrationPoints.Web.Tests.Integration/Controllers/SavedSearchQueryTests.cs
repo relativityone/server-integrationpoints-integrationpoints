@@ -13,6 +13,7 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.Web.Tests.Integration.Controllers
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class SavedSearchQueryTests : SourceProviderTemplate
 	{
 		private List<int> _savedSearchesArtifactIds;

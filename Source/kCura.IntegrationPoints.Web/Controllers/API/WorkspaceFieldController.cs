@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			ImportSettings importSettings = _serializer.Deserialize<ImportSettings>(settings.Settings);
 			importSettings.FederatedInstanceCredentials = settings.Credentials;
 			_apiLog.LogDebug($"Import Settings has been extracted successfully for workspace field retival process: {_serializer.Serialize(importSettings)}");
-			IDataSynchronizer synchronizer = _appDomainRdoSynchronizerFactory.CreateSynchronizer(Guid.Empty, settings.Settings, settings.Credentials);
+			IDataSynchronizer synchronizer = _appDomainRdoSynchronizerFactory.CreateSynchronizer(Guid.Empty, settings.Settings);
 			var fields = synchronizer.GetFields(new DataSourceProviderConfiguration(_serializer.Serialize(importSettings), settings.Credentials)).ToList();
 			return Request.CreateResponse(HttpStatusCode.OK, fields, Configuration.Formatters.JsonFormatter);
 		}

@@ -13,6 +13,7 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	[Category(TestCategory.EXPORT_TO_RELATIVITY)]
 	public class LinksSavedSearchToFolderTest: RelativityProviderTestsBase
 	{
@@ -55,7 +56,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			detailsPage.RunIntegrationPoint();
 
 			// Assert
-			validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, false);
+			validator.ValidateSummaryPage(generalProperties, model, SourceContext, DestinationContext, false);
 
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
@@ -78,7 +79,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			detailsPage.RunIntegrationPoint();
 
 			// Assert
-			validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, false);
+			validator.ValidateSummaryPage(generalProperties, model, SourceContext, DestinationContext, false);
 
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
@@ -101,7 +102,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			detailsPage.RunIntegrationPoint();
 
 			// Assert
-			validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, false);
+			validator.ValidateSummaryPage(generalProperties, model, SourceContext, DestinationContext, false);
 
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
@@ -126,7 +127,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			detailsPage.RunIntegrationPoint();
 
 			// Assert
-			validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, false);
+			validator.ValidateSummaryPage(generalProperties, model, SourceContext, DestinationContext, false);
 
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
@@ -152,7 +153,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			detailsPage.RunIntegrationPoint();
 
 			// Assert
-			validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, false);
+			validator.ValidateSummaryPage(generalProperties, model, SourceContext, DestinationContext, false);
 
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
@@ -204,7 +205,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			detailsPage.RunIntegrationPoint();
 
 			// Assert
-			validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, false);
+			validator.ValidateSummaryPage(generalProperties, model, SourceContext, DestinationContext, false);
 
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
@@ -230,7 +231,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			detailsPage.RunIntegrationPoint();
 
 			// Assert
-			//validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, false);
+			//validator.ValidateSummaryPage(generalProperties, model, SourceContext, DestinationContext, false);
 			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
 
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
@@ -256,7 +257,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			detailsPage.RunIntegrationPoint();
 
 			// Assert
-			//validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, false);
+			//validator.ValidateSummaryPage(generalProperties, model, SourceContext, DestinationContext, false);
 			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
 
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
@@ -283,7 +284,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			detailsPage.RunIntegrationPoint();
 
 			// Assert
-			//validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, false);
+			//validator.ValidateSummaryPage(generalProperties, model, SourceContext, DestinationContext, false);
 			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
 
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
@@ -310,7 +311,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			detailsPage.RunIntegrationPoint();
 
 			// Assert
-			//validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, false);
+			//validator.ValidateSummaryPage(generalProperties, model, SourceContext, DestinationContext, false);
 			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
 
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
@@ -337,7 +338,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			detailsPage.RunIntegrationPoint();
 
 			// Assert
-			//validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, false);
+			//validator.ValidateSummaryPage(generalProperties, model, SourceContext, DestinationContext, false);
 			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
 
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
@@ -364,7 +365,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			detailsPage.RunIntegrationPoint();
 
 			// Assert
-			//validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, false);
+			//validator.ValidateSummaryPage(generalProperties, model, SourceContext, DestinationContext, false);
 			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
 
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
@@ -375,7 +376,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		private void ValidateDocumentsForField()
 		{
 			DocumentsValidator documentsValidator = CreateDocumentsForFieldValidator()
-				.ValidateWith(new DocumentHasNativesAndInRepositoryValidator(NativesService, Context.GetWorkspaceId(), DestinationContext.GetWorkspaceId(), true, false));
+				.ValidateWith(new DocumentHasNativesAndInRepositoryValidator(NativesService, SourceContext.GetWorkspaceId(), DestinationContext.GetWorkspaceId(), true, false));
 
 			documentsValidator.Validate();
 		}
@@ -383,7 +384,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		private void ValidateDocumentsForFolderTree()
 		{
 			DocumentsValidator documentsValidator = CreateDocumentsForFolderTreeValidator()
-				.ValidateWith(new DocumentHasNativesAndInRepositoryValidator(NativesService, Context.GetWorkspaceId(), DestinationContext.GetWorkspaceId(), true, false));
+				.ValidateWith(new DocumentHasNativesAndInRepositoryValidator(NativesService, SourceContext.GetWorkspaceId(), DestinationContext.GetWorkspaceId(), true, false));
 
 			documentsValidator.Validate();
 		}
@@ -391,7 +392,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		private void ValidateDocumentsForRootWithFolderName()
 		{
 			DocumentsValidator documentsValidator = CreateDocumentsForRootWithFolderNameValidator()
-				.ValidateWith(new DocumentHasNativesAndInRepositoryValidator(NativesService, Context.GetWorkspaceId(), DestinationContext.GetWorkspaceId(), true, false));
+				.ValidateWith(new DocumentHasNativesAndInRepositoryValidator(NativesService, SourceContext.GetWorkspaceId(), DestinationContext.GetWorkspaceId(), true, false));
 
 			documentsValidator.Validate();
 		}
@@ -399,7 +400,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		private void ValidateDocumentsForRoot()
 		{
 			DocumentsValidator documentsValidator = CreateDocumentsForRootValidator()
-				.ValidateWith(new DocumentHasNativesAndInRepositoryValidator(NativesService, Context.GetWorkspaceId(), DestinationContext.GetWorkspaceId(), true, false));
+				.ValidateWith(new DocumentHasNativesAndInRepositoryValidator(NativesService, SourceContext.GetWorkspaceId(), DestinationContext.GetWorkspaceId(), true, false));
 
 			documentsValidator.Validate();
 		}

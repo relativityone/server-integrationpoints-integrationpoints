@@ -22,13 +22,14 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	[Category(TestCategory.IMPORT_FROM_LOAD_FILE)]
 	public class ImportFromLoadFileTest : UiTest
 	{
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
-			Install(Context.GetWorkspaceId());
+			Install(SourceContext.GetWorkspaceId());
 			CopyFilesToFileshare();
 		}
 
@@ -41,14 +42,14 @@ namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 				const int tapiTimeoutInSeconds = 60 * 3;
 				FileCopier.UploadToImportDirectory(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestDataImportFromLoadFile"),
 					SharedVariables.RelativityBaseAdressUrlValue,
-					Context.GetWorkspaceId(),
+					SourceContext.GetWorkspaceId(),
 					SharedVariables.RelativityUserName,
 					SharedVariables.RelativityPassword,
 					tapiTimeoutInSeconds);
 			}
 			else
 			{
-				string workspaceFolderName = $"EDDS{Context.GetWorkspaceId()}";
+				string workspaceFolderName = $"EDDS{SourceContext.GetWorkspaceId()}";
 				string destinationLocation =
 					Path.Combine(SharedVariables.FileshareLocation, workspaceFolderName, "DataTransfer", "Import");
 				FileCopier.CopyDirectory(sourceLocation, destinationLocation);
@@ -66,7 +67,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 				LoadFileSettings =
 				{
 					ImportType = ImportType.DocumentLoadFile,
-					WorkspaceDestinationFolder = Context.WorkspaceName,
+					WorkspaceDestinationFolder = SourceContext.WorkspaceName,
 					ImportSource = @"Small Salt.dat",
 					StartLine = 0
 				},
@@ -91,7 +92,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 			};
 
 			// Act
-			new ImportDocumentsFromLoadFileActions(Driver, Context, model).Setup();
+			new ImportDocumentsFromLoadFileActions(Driver, SourceContext, model).Setup();
 
 			var detailsPage = new IntegrationPointDetailsPage(Driver);
 			detailsPage.RunIntegrationPoint();
@@ -112,7 +113,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 				LoadFileSettings =
 				{
 					ImportType = ImportType.ImageLoadFile,
-					WorkspaceDestinationFolder = Context.WorkspaceName,
+					WorkspaceDestinationFolder = SourceContext.WorkspaceName,
 					ImportSource = @"Small Salt Images.opt",
 					StartLine = 0
 				},
@@ -126,7 +127,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 			};
 
 			// Act
-			new ImportImagesFromLoadFileActions(Driver, Context, model).Setup();
+			new ImportImagesFromLoadFileActions(Driver, SourceContext, model).Setup();
 
 			var detailsPage = new IntegrationPointDetailsPage(Driver);
 			detailsPage.RunIntegrationPoint();
@@ -143,14 +144,14 @@ namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 		{
 			// Arrange
 			string productionSetName = $"Production set {Now}";
-			Context.CreateProductionSet(productionSetName);
+			SourceContext.CreateProductionSet(productionSetName);
 
 			var model = new ImportProductionsFromLoadFileModel($"Import Productions from load file ({Now})", TransferredObjectConstants.DOCUMENT)
 			{
 				LoadFileSettings =
 				{
 					ImportType = ImportType.ProductionLoadFile,
-					WorkspaceDestinationFolder = Context.WorkspaceName,
+					WorkspaceDestinationFolder = SourceContext.WorkspaceName,
 					ImportSource = @"Small Salt Productions.opt",
 					StartLine = 0
 				},
@@ -164,7 +165,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 			};
 
 			// Act
-			new ImportProductionsFromLoadFileActions(Driver, Context, model).Setup();
+			new ImportProductionsFromLoadFileActions(Driver, SourceContext, model).Setup();
 
 			var detailsPage = new IntegrationPointDetailsPage(Driver);
 			detailsPage.RunIntegrationPoint();

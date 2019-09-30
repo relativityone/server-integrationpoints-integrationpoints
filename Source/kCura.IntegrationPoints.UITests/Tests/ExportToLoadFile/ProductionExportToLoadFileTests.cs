@@ -14,6 +14,7 @@ using IntegrationPointType = kCura.IntegrationPoint.Tests.Core.Models.Integratio
 namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	[Category(TestCategory.EXPORT_TO_LOAD_FILE)]
 	public class ProductionExportToLoadFileTests : ExportToLoadFileTests
 	{
@@ -24,14 +25,14 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
-			Context.CreateAndRunProduction(SAVED_SEARCH_NAME, PRODUCTION_NAME_SMALL);
-			Context.CreateAndRunProduction(SAVED_SEARCH_NAME, PRODUCTION_NAME_BIG);
+			SourceContext.CreateAndRunProduction(SAVED_SEARCH_NAME, PRODUCTION_NAME_SMALL);
+			SourceContext.CreateAndRunProduction(SAVED_SEARCH_NAME, PRODUCTION_NAME_BIG);
 		}
 
 		[SetUp]
 		public void SetUp()
 		{
-			_integrationPointsAction = new IntegrationPointsAction(Driver, Context);
+			_integrationPointsAction = new IntegrationPointsAction(Driver, SourceContext);
 		}
 
 		[IdentifiedTest("a2decb84-72e3-484a-b966-846d6db24b91")]

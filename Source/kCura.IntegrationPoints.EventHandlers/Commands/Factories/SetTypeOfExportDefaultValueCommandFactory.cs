@@ -1,8 +1,4 @@
-﻿using kCura.Apps.Common.Data;
-using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Core;
-using kCura.IntegrationPoints.Core.Authentication;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
+﻿using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Managers;
@@ -19,7 +15,6 @@ using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
-using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
@@ -41,9 +36,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 			IRsapiClientWithWorkspaceFactory rsapiClientFactory = new RsapiClientWithWorkspaceFactory(helper);
 			IServiceContextHelper serviceContextHelper = new ServiceContextHelperForEventHandlers(helper, helper.GetActiveCaseID());
 			ICaseServiceContext caseServiceContext = new CaseServiceContext(serviceContextHelper);
-
-			IContextContainerFactory contextContainerFactory = new ContextContainerFactory();
-
+			
 			IAPILog logger = helper.GetLoggerFactory().GetLogger();
 			IIntegrationPointSerializer integrationPointSerializer = new IntegrationPointSerializer(logger);
 
@@ -59,7 +52,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 			IWorkspaceDBContext workspaceDbContext = new WorkspaceDBContext(dbContext);
 			IJobResourceTracker jobResourceTracker = new JobResourceTracker(repositoryFactory, workspaceDbContext);
 			IJobTracker jobTracker = new JobTracker(jobResourceTracker);
-			IFederatedInstanceManager federatedInstanceManager = new FederatedInstanceManager(repositoryFactory);
+			IFederatedInstanceManager federatedInstanceManager = new FederatedInstanceManager();
 			IWorkspaceManager workspaceManager = new WorkspaceManager(repositoryFactory);
 			IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, helper, integrationPointSerializer, jobTracker);
 			IRelativityObjectManager objectManager =
@@ -71,20 +64,12 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 				caseServiceContext.RsapiService.RelativityObjectManager, 
 				federatedInstanceManager, 
 				workspaceManager, 
-				helper, 
+				logger, 
 				integrationPointSerializer, 
 				providerTypeService, 
 				messageService);
 
-			IConfigFactory configFactory = new ConfigFactory();
-			IAuthProvider authProvider = new AuthProvider();
-			IAuthTokenGenerator tokenGenerator = new ClaimsTokenGenerator();
-			ICredentialProvider credentialProvider = new TokenCredentialProvider(authProvider, tokenGenerator, helper);
-			ITokenProvider tokenProvider = new RelativityCoreTokenProvider();
-			ISerializer serializer = new JSONSerializer();
-			ISqlServiceFactory sqlServiceFactory = new HelperConfigSqlServiceFactory(helper);
-			IServiceManagerProvider serviceManagerProvider = new ServiceManagerProvider(configFactory, credentialProvider, serializer, tokenProvider, sqlServiceFactory);
-			IManagerFactory managerFactory = new ManagerFactory(helper, serviceManagerProvider);
+			IManagerFactory managerFactory = new ManagerFactory(helper);
 
 			IIntegrationPointProviderValidator ipValidator = new IntegrationPointProviderValidator(Enumerable.Empty<IValidator>(), integrationPointSerializer);
 
@@ -103,12 +88,18 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 				logger);
 			IJobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(caseServiceContext, helper, integrationPointRepository);
 			IIntegrationPointService integrationPointService = new IntegrationPointService(helper, caseServiceContext,
-				contextContainerFactory, integrationPointSerializer, choiceQuery, jobManager, jobHistoryService,
+				integrationPointSerializer, choiceQuery, jobManager, jobHistoryService,
 				jobHistoryErrorService, managerFactory, validationExecutor, providerTypeService, messageService, integrationPointRepository,
 				caseServiceContext.RsapiService.RelativityObjectManager);
 
-			IIntegrationPointProfileService integrationPointProfileService = new IntegrationPointProfileService(helper,
-				caseServiceContext, contextContainerFactory, integrationPointSerializer, choiceQuery, managerFactory, validationExecutor, objectManager);
+			IIntegrationPointProfileService integrationPointProfileService = new IntegrationPointProfileService(
+				helper,
+				caseServiceContext, 
+				integrationPointSerializer, 
+				choiceQuery,
+				managerFactory, 
+				validationExecutor, 
+				objectManager);
 
 			ISourceConfigurationTypeOfExportUpdater sourceConfigurationTypeOfExpertUpdater = new SourceConfigurationTypeOfExportUpdater(providerTypeService);
 

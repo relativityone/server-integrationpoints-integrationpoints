@@ -8,6 +8,7 @@ Relativity.Kepler.Client
 Relativity.Telemetry.APM
 
 group TestPackages
+	FluentAssertions
 	Moq
 	NUnit
 	NSubstitute

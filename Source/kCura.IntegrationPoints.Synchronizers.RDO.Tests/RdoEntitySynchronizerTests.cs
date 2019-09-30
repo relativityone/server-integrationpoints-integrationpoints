@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.Entity;
-using kCura.IntegrationPoints.Data.Logging;
-using kCura.IntegrationPoints.Domain;
-using kCura.IntegrationPoints.Domain.Authentication;
-using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations;
 using kCura.Relativity.Client;
@@ -33,7 +28,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 		private RelativityFieldQuery _fieldQuery;
 		private IImportJobFactory _importJobFactory;
 
-		public static ImportApiFactory GetMockAPI(RelativityFieldQuery query)
+		public static IImportApiFactory GetMockAPI(RelativityFieldQuery query)
 		{
 			var import = Substitute.For<Relativity.ImportAPI.IExtendedImportAPI>();
 			var result = query.GetFieldsForRdo(0);
@@ -48,8 +43,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 
 			import.GetWorkspaceFields(Arg.Any<int>(), Arg.Any<int>()).Returns(list);
 
-			var mock = Substitute.For<ImportApiFactory>(Substitute.For<ITokenProvider>(), Substitute.For<IAuthTokenGenerator>(), Substitute.For<IFederatedInstanceManager>(),
-				Substitute.For<IHelper>(), Substitute.For<ISystemEventLoggingService>(), Substitute.For<ISerializer>());
+			IImportApiFactory mock = Substitute.For<IImportApiFactory>();
 			mock.GetImportAPI(Arg.Any<ImportSettings>()).Returns(import);
 			return mock;
 		}

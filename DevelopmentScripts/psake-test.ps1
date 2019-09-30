@@ -39,7 +39,7 @@ task get_testrunner -precondition { (-not [System.IO.File]::Exists($testrunner_e
 
 task get_nunit -precondition { (-not [System.IO.File]::Exists($NUnit3)) }  {
     exec {
-        & $nuget_exe @('install', 'NUnit.Console', '-Version', '3.4.1', '-ExcludeVersion')
+        & $nuget_exe @('install', 'NUnit.Console', '-Version', '3.7.0', '-ExcludeVersion')
     } 
 }
 
@@ -79,6 +79,7 @@ function run_tests($test_type, $config_section, $where_string, $is_in_quarantine
         & $NUnit3 @($tests_project_file,
                     "--config=$config_section",
                     '--inprocess',
+                    '--labels=All',
                     $where_string,
                     "--result=$result_file")
     }

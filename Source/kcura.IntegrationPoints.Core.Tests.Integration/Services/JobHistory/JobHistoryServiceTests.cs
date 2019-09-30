@@ -20,6 +20,7 @@ using Choice = kCura.Relativity.Client.DTOs.Choice;
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Services.JobHistory
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class JobHistoryServiceTests : RelativityProviderTemplate
 	{
 		private JobHistoryService _sut;
@@ -36,7 +37,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services.JobHistory
 			IRelativityObjectManager relativityObjectManager = Container.Resolve<IRelativityObjectManager>();
 			IFederatedInstanceManager federatedInstanceManager = Container.Resolve<IFederatedInstanceManager>();
 			IWorkspaceManager workspaceManager = Container.Resolve<IWorkspaceManager>();
-			IHelper helper = Container.Resolve<IHelper>();
+			IAPILog logger = Container.Resolve<IAPILog>();
 			IIntegrationPointSerializer serializer = Container.Resolve<IIntegrationPointSerializer>();
 			IProviderTypeService providerTypeService = Container.Resolve<IProviderTypeService>();
 			IMessageService messageService = Container.Resolve<IMessageService>();
@@ -45,7 +46,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services.JobHistory
 				relativityObjectManager,
 				federatedInstanceManager,
 				workspaceManager,
-				helper,
+				logger,
 				serializer,
 				providerTypeService,
 				messageService

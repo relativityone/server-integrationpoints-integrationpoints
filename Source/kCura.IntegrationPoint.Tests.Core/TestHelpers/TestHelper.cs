@@ -6,7 +6,6 @@ using Relativity.Data;
 using Relativity.Services.ArtifactGuid;
 using Relativity.Services.Folder;
 using Relativity.Services.InstanceSetting;
-using Relativity.Services.ObjectQuery;
 using Relativity.Services.Objects;
 using Relativity.Services.Permission;
 using Relativity.Services.ResourceServer;
@@ -46,8 +45,6 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			_serviceManager.CreateProxy<IRSAPIClient>(Arg.Any<ExecutionIdentity>()).Returns(_ => Rsapi.CreateRsapiClient());
 			RegisterProxyInServiceManagerMock<IPermissionManager>(ExecutionIdentity.CurrentUser);
 			RegisterProxyInServiceManagerMock<IPermissionManager>(ExecutionIdentity.System);
-			RegisterProxyInServiceManagerMock<IObjectQueryManager>(ExecutionIdentity.CurrentUser);
-			RegisterProxyInServiceManagerMock<IObjectQueryManager>(ExecutionIdentity.System);
 			RegisterProxyInServiceManagerMock<IKeywordSearchManager>(ExecutionIdentity.CurrentUser);
 			RegisterProxyInServiceManagerMock<IKeywordSearchManager>(ExecutionIdentity.System);
 			RegisterProxyInServiceManagerMock<IObjectManager>(ExecutionIdentity.CurrentUser);

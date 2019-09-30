@@ -11,31 +11,21 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Utils;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Models;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
 	public class WorkspaceFinderController : ApiController
 	{
-		private readonly IContextContainerFactory _contextContainerFactory;
-		private readonly ICPHelper _helper;
-		private readonly IHelperFactory _helperFactory;
 		private readonly ITextSanitizer _textSanitizer;
 		private readonly IManagerFactory _managerFactory;
 		private readonly IWorkspaceContext _workspaceIdProvider;
 
 		public WorkspaceFinderController(
 			IManagerFactory managerFactory,
-			IContextContainerFactory contextContainerFactory,
 			ITextSanitizer textSanitizer,
-			ICPHelper helper,
-			IHelperFactory helperFactory,
 			IWorkspaceContext workspaceIdProvider)
 		{
 			_managerFactory = managerFactory;
-			_contextContainerFactory = contextContainerFactory;
-			_helper = helper;
-			_helperFactory = helperFactory;
 			_textSanitizer = textSanitizer;
 			_workspaceIdProvider = workspaceIdProvider;
 		}
@@ -44,8 +34,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[LogApiExceptionFilter(Message = "Unable to retrieve the workspace information.")]
 		public HttpResponseMessage GetCurrentInstanceWorkspaces()
 		{
-			IWorkspaceManager workspaceManager =
-				_managerFactory.CreateWorkspaceManager(_contextContainerFactory.CreateContextContainer(_helper, _helper.GetServicesManager()));
+			IWorkspaceManager workspaceManager = _managerFactory.CreateWorkspaceManager();
 			return GetWorkspaces(workspaceManager);
 		}
 
@@ -53,9 +42,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[LogApiExceptionFilter(Message = "Unable to retrieve the workspace information.")]
 		public HttpResponseMessage GetFederatedInstanceWorkspaces(int federatedInstanceId, [FromBody] object credentials)
 		{
-			var targetHelper = _helperFactory.CreateTargetHelper(_helper, federatedInstanceId, credentials.ToString());
-			IWorkspaceManager workspaceManager =
-				_managerFactory.CreateWorkspaceManager(_contextContainerFactory.CreateContextContainer(_helper, targetHelper.GetServicesManager()));
+			IWorkspaceManager workspaceManager = _managerFactory.CreateWorkspaceManager();
 			return GetWorkspacesFromFederatedInstance(workspaceManager);
 		}
 

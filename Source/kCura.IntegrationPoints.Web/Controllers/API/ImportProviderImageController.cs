@@ -1,37 +1,29 @@
 ﻿using System.Linq;
 using System.Net;
 using System.Web.Http;
+using kCura.IntegrationPoints.Core.Authentication.WebApi;
 using kCura.WinEDDS.Service.Export;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
-using kCura.IntegrationPoints.Core;
-using kCura.IntegrationPoints.Core.Authentication;
-using Relativity.API;
 using Relativity.DataExchange.Service;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
-    public class ImportProviderImageController : ApiController
-    {
+	public class ImportProviderImageController : ApiController
+	{
 
-		private readonly IContextContainerFactory _contextContainerFactory;
 		private readonly IManagerFactory _managerFactory;
 		private readonly ICaseManagerFactory _caseManagerFactory;
-		private readonly ICPHelper _helper;
-		private readonly ICredentialProvider _credential;
+		private readonly IWebApiLoginService _credential;
 
 		public ImportProviderImageController(
-			IContextContainerFactory contextContainerFactory, 
-			IManagerFactory managerFactory, 
-			ICPHelper helper, 
-			ICredentialProvider credential, 
+			IManagerFactory managerFactory,
+			IWebApiLoginService credential,
 			ICaseManagerFactory caseManagerFactory)
 		{
 			_managerFactory = managerFactory;
-			_contextContainerFactory = contextContainerFactory;
-			_helper = helper;
 			_credential = credential;
 			_caseManagerFactory = caseManagerFactory;
 		}
@@ -40,9 +32,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[LogApiExceptionFilter(Message = "Unable to retrieve list of Overlay Identifier values.")]
 		public IHttpActionResult GetOverlayIdentifierFields(int workspaceArtifactId)
 		{
-			IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(_helper);
-			Core.Managers.IFieldManager fieldManager = _managerFactory.CreateFieldManager(contextContainer);
-			
+			Core.Managers.IFieldManager fieldManager = _managerFactory.CreateFieldManager();
+
 			ArtifactFieldDTO[] fieldResults = fieldManager.RetrieveBeginBatesFields(workspaceArtifactId);
 			return Json(fieldResults);
 		}
@@ -53,7 +44,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		{
 			CookieContainer cookieContainer = new CookieContainer();
 			ICaseManager caseManager = _caseManagerFactory.Create(_credential.Authenticate(cookieContainer), cookieContainer);
-			
+
 			CaseInfo caseInfo = caseManager.Read(workspaceArtifactId);
 			string[] fileRepos = caseManager.GetAllDocumentFolderPathsForCase(caseInfo.ArtifactID).OrderBy(x => x).ToArray(); ;
 

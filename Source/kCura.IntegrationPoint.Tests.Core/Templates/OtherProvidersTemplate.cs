@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
@@ -18,7 +19,9 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 	{
 		protected SourceProvider LdapProvider;
 
-		public OtherProvidersTemplate(string workspaceName, string workspaceTemplate = WorkspaceTemplates.NEW_CASE_TEMPLATE)
+		protected OtherProvidersTemplate(
+			string workspaceName, 
+			string workspaceTemplate = WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME)
 			: base(workspaceName, workspaceTemplate)
 		{
 		}

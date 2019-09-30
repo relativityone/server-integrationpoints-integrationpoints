@@ -3,13 +3,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Services;
 using NUnit.Framework;
 using Relativity.Services.Folder;
@@ -24,9 +23,10 @@ using CoreConstants = kCura.IntegrationPoints.Core.Constants;
 namespace Rip.E2ETests.CustomProviders
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class MyFirstProviderTests
 	{
-		private const string _WORKSPACE_TEMPLATE_WITHOUT_RIP = SourceProviderTemplate.WorkspaceTemplates.NEW_CASE_TEMPLATE;
+		private const string _WORKSPACE_TEMPLATE_WITHOUT_RIP = WorkspaceTemplateNames.NEW_CASE_TEMPLATE_NAME;
 
 		private int _workspaceID;
 		private int _myFirstProviderArtifactID;
@@ -65,7 +65,6 @@ namespace Rip.E2ETests.CustomProviders
 			Workspace.DeleteWorkspace(_workspaceID);
 		}
 
-		[Test]
 		[IdentifiedTest("5b2b2176-c771-49fa-a273-db33701e954a")]
 		public async Task ShouldImportDocumentsUsingMyFirstProvider()
 		{
@@ -141,15 +140,15 @@ namespace Rip.E2ETests.CustomProviders
 			List<FieldMap> fieldMapping = testCase.WorkspaceFieldsToFileFieldsMapping.Select(mapping => new FieldMap
 			{
 				FieldMapType = mapping.Key == testCase.IdentifierFieldName
-					? FieldMapTypeEnum.Identifier
-					: FieldMapTypeEnum.None,
-				SourceField = new FieldEntry
+					? FieldMapType.Identifier
+					: FieldMapType.None,
+				SourceField = new kCura.IntegrationPoints.Services.FieldEntry
 				{
 					FieldIdentifier = mapping.Value,
 					DisplayName = mapping.Value,
 					IsIdentifier = mapping.Key == testCase.IdentifierFieldName
 				},
-				DestinationField = new FieldEntry
+				DestinationField = new kCura.IntegrationPoints.Services.FieldEntry
 				{
 					FieldIdentifier = fieldNamesToArtifactIDMapping[mapping.Key].ToString(),
 					DisplayName = mapping.Key,

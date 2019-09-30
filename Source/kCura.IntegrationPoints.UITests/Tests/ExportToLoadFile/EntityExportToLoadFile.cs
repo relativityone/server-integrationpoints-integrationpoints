@@ -17,6 +17,7 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	[Category(TestCategory.EXPORT_TO_LOAD_FILE)]
 	public class EntityExportToLoadFile : UiTest
 	{
@@ -30,10 +31,10 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 		[OneTimeSetUp]
 		public async Task OneTimeSetup()
 		{
-			Context.AddEntityObjectToWorkspace();
-			await Context.CreateEntityViewAsync(_VIEW_NAME).ConfigureAwait(false);
+			SourceContext.AddEntityObjectToWorkspace();
+			await SourceContext.CreateEntityViewAsync(_VIEW_NAME).ConfigureAwait(false);
 
-			Install(Context.WorkspaceId.Value);
+			Install(SourceContext.WorkspaceId.Value);
 			_rsapiService = Container.Resolve<IRSAPIService>();
 
 			SetupEntities();
@@ -42,7 +43,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 		[SetUp]
 		public void Setup()
 		{
-			_integrationPointsAction = new IntegrationPointsAction(Driver, Context);
+			_integrationPointsAction = new IntegrationPointsAction(Driver, SourceContext);
 		}
 
 		[IdentifiedTest("a244081a-1ead-4a55-a504-1842e89784c8")]

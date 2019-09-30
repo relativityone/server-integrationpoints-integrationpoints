@@ -24,6 +24,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration.Monitoring
 {
 	[SmokeTest]
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class ExternalServiceInstrumentationProviderWithJobContextTests
 	{
 		private Mock<IConfig> _configMock;

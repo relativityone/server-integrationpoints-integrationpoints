@@ -36,18 +36,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
 		protected ISynchronizerFactory _appDomainRdoSynchronizerFactoryFactory;
 		protected IJobManager _jobManager;
 		protected IManagerFactory _managerFactory;
-		protected IContextContainerFactory _contextContainerFactory;
 		protected IJobService _jobService;
 		protected IIntegrationPointRepository _integrationPointRepository;
 
-		protected IContextContainer _contextContainer;
 
 		[SetUp]
 		public override void SetUp()
 		{
 			_caseServiceContext = Substitute.For<ICaseServiceContext>();
-			_contextContainer = Substitute.For<IContextContainer>();
-			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
 			_helper = Substitute.For<IHelper>();
 			_jobService = Substitute.For<IJobService>();
 			_managerFactory = Substitute.For<IManagerFactory>();
@@ -57,8 +53,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
 			_integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
 
 			// Stubs
-			_contextContainerFactory.CreateContextContainer(Arg.Is(_helper)).Returns(_contextContainer);
-
 			_testInstance = new TestClass(_caseServiceContext,
 				_helper,
 				_dataProviderFactory,
@@ -68,7 +62,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
 				_jobHistoryErrorService,
 				_jobManager,
 				_managerFactory,
-				_contextContainerFactory,
 				_jobService,
 				_integrationPointRepository);
 		}
@@ -235,17 +228,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
 
 			Job job = JobHelper.GetJob(jobIdValue, null, null, 0, 0, 0, 0, TaskType.SyncWorker, DateTime.Now, null,
 				jobDetailsText, 0, DateTime.Now, 0, String.Empty, String.Empty);
-
-			const string emptySecuredConfiguration = "{}";
-			_integrationPointRepository.GetSecuredConfiguration(Arg.Any<int>()).Returns(emptySecuredConfiguration);
-
+			
 			_serializer.Deserialize<TaskParameters>(Arg.Is<string>(x => x.Equals(jobDetailsText))).Returns(taskParameters);
 
 			_managerFactory.CreateJobStopManager(Arg.Is(_jobService), Arg.Is(_jobHistoryService),
 				Arg.Is(taskParameters.BatchInstance), jobIdValue, true)
 				.Returns(jobStopManager);
 
-			_appDomainRdoSynchronizerFactoryFactory.CreateSynchronizer(Arg.Is(new Guid(destinationProvider.Identifier)), Arg.Is(configuration), Arg.Is(emptySecuredConfiguration))
+			_appDomainRdoSynchronizerFactoryFactory.CreateSynchronizer(Arg.Is(new Guid(destinationProvider.Identifier)), Arg.Is(configuration))
 				.Returns(expectedDataSynchronizer);
 
 			// ACT
@@ -253,7 +243,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
 
 			// ASSERT
 			Assert.AreEqual(expectedDataSynchronizer, result);
-			_appDomainRdoSynchronizerFactoryFactory.Received(1).CreateSynchronizer(Arg.Is(new Guid(destinationProvider.Identifier)), Arg.Is(configuration), Arg.Is(emptySecuredConfiguration));
+			_appDomainRdoSynchronizerFactoryFactory.Received(1).CreateSynchronizer(Arg.Is(new Guid(destinationProvider.Identifier)), Arg.Is(configuration));
 		}
 	}
 
@@ -268,11 +258,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
 			JobHistoryErrorService jobHistoryErrorService,
 			IJobManager jobManager,
 			IManagerFactory managerFactory,
-			IContextContainerFactory contextContainerFactory,
 			IJobService jobService,
 			IIntegrationPointRepository integrationPointRepository)
 			: base(caseServiceContext, helper, dataProviderFactory, serializer, appDomainRdoSynchronizerFactoryFactory,
-				jobHistoryService, jobHistoryErrorService, jobManager, managerFactory, contextContainerFactory, jobService,
+				jobHistoryService, jobHistoryErrorService, jobManager, managerFactory, jobService,
 				integrationPointRepository)
 		{
 		}

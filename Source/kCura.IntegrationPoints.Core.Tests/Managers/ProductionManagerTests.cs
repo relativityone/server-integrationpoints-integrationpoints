@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 	{
 		private IRepositoryFactory _repositoryFactory;
 		private IProductionRepository _productionRepository;
-		private IProductionManager _instance;
+		private IProductionManager _sut;
 		private IServiceManagerProvider _serviceManagerProvider;
 		private WinEDDS.Service.Export.IProductionManager _productionManagerService;
 
@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_serviceManagerProvider = Substitute.For<IServiceManagerProvider>();
 			IAPILog logger = Substitute.For<IAPILog>();
 
-			_instance = new ProductionManager(logger, _repositoryFactory, _serviceManagerProvider, Substitute.For<Domain.Managers.IFederatedInstanceManager>());
+			_sut = new ProductionManager(logger, _repositoryFactory, _serviceManagerProvider);
 		}
 
 		[Test]
@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_repositoryFactory.GetProductionRepository(_WORKSPACE_ARTIFACT_ID).Returns(_productionRepository);
 
 			// Act 
-			ProductionDTO actual = _instance.RetrieveProduction(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
+			ProductionDTO actual = _sut.RetrieveProduction(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
 
 			// Assert
 			Assert.That(actual.ArtifactID, Is.EqualTo(expectedArtifactId));
@@ -72,7 +72,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_repositoryFactory.GetProductionRepository(_WORKSPACE_ARTIFACT_ID).Returns(_productionRepository);
 
 			// Act & Assert
-			Assert.Throws<Exception>(() => _instance.RetrieveProduction(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID));
+			Assert.Throws<Exception>(() => _sut.RetrieveProduction(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID));
 		}
 
 		[Test]
@@ -85,7 +85,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_repositoryFactory.GetProductionRepository(_WORKSPACE_ARTIFACT_ID).Returns(_productionRepository);
 
 			// Act
-			int actualResult = _instance.CreateSingle(_WORKSPACE_ARTIFACT_ID, production);
+			int actualResult = _sut.CreateSingle(_WORKSPACE_ARTIFACT_ID, production);
 
 			// Assert
 			Assert.That(actualResult, Is.EqualTo(expectedResult));
@@ -100,7 +100,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_repositoryFactory.GetProductionRepository(_WORKSPACE_ARTIFACT_ID).Returns(_productionRepository);
 
 			// Act & Assert
-			Assert.Throws<Exception>(() => _instance.CreateSingle(_WORKSPACE_ARTIFACT_ID, production),
+			Assert.Throws<Exception>(() => _sut.CreateSingle(_WORKSPACE_ARTIFACT_ID, production),
 				"Unable to create production");
 		}
 
@@ -117,7 +117,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 				.Returns(_productionManagerService);
 
 			// Act
-			List<ProductionDTO> actualProductionDto = _instance.GetProductionsForExport(_WORKSPACE_ARTIFACT_ID).ToList();
+			List<ProductionDTO> actualProductionDto = _sut.GetProductionsForExport(_WORKSPACE_ARTIFACT_ID).ToList();
 
 			// Assert
 			Assert.That(actualProductionDto.Count, Is.EqualTo(1));
@@ -135,11 +135,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 
 			_productionManagerService.RetrieveImportEligibleByContextArtifactID(_WORKSPACE_ARTIFACT_ID).Returns(expectedResult);
 			_serviceManagerProvider
-				.Create<WinEDDS.Service.Export.IProductionManager, ProductionManagerFactory>(Arg.Any<int?>(), Arg.Any<string>(), Arg.Any<IntegrationPoints.Domain.Managers.IFederatedInstanceManager>())
+				.Create<WinEDDS.Service.Export.IProductionManager, ProductionManagerFactory>()
 				.Returns(_productionManagerService);
 
 			// Act
-			List<ProductionDTO> actualProductionDto = _instance.GetProductionsForImport(_WORKSPACE_ARTIFACT_ID).ToList();
+			List<ProductionDTO> actualProductionDto = _sut.GetProductionsForImport(_WORKSPACE_ARTIFACT_ID).ToList();
 
 			// Assert
 			Assert.That(actualProductionDto.Count, Is.EqualTo(1));
@@ -154,11 +154,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			var productionInfo = new ProductionInfo();
 			_productionManagerService.Read(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID).Returns(productionInfo);
 			_serviceManagerProvider
-				.Create<WinEDDS.Service.Export.IProductionManager, ProductionManagerFactory>(Arg.Any<int?>(), Arg.Any<string>(), Arg.Any<Domain.Managers.IFederatedInstanceManager>())
+				.Create<WinEDDS.Service.Export.IProductionManager, ProductionManagerFactory>()
 				.Returns(_productionManagerService);
 
 			// act
-			bool result = _instance.IsProductionInDestinationWorkspaceAvailable(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
+			bool result = _sut.IsProductionInDestinationWorkspaceAvailable(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
 
 			// assert
 			Assert.IsTrue(result);
@@ -171,11 +171,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			ProductionInfo productionInfo = null;
 			_productionManagerService.Read(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID).Returns(productionInfo);
 			_serviceManagerProvider
-				.Create<WinEDDS.Service.Export.IProductionManager, ProductionManagerFactory>(Arg.Any<int?>(), Arg.Any<string>(), Arg.Any<Domain.Managers.IFederatedInstanceManager>())
+				.Create<WinEDDS.Service.Export.IProductionManager, ProductionManagerFactory>()
 				.Returns(_productionManagerService);
 
 			// act
-			bool result = _instance.IsProductionInDestinationWorkspaceAvailable(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
+			bool result = _sut.IsProductionInDestinationWorkspaceAvailable(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
 
 			// assert
 			Assert.IsFalse(result);
@@ -186,11 +186,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		{
 			_productionManagerService.Read(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID).Throws<Exception>();
 			_serviceManagerProvider
-				.Create<WinEDDS.Service.Export.IProductionManager, ProductionManagerFactory>(Arg.Any<int?>(), Arg.Any<string>(), Arg.Any<Domain.Managers.IFederatedInstanceManager>())
+				.Create<WinEDDS.Service.Export.IProductionManager, ProductionManagerFactory>()
 				.Returns(_productionManagerService);
 
 			// act
-			bool result = _instance.IsProductionInDestinationWorkspaceAvailable(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
+			bool result = _sut.IsProductionInDestinationWorkspaceAvailable(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
 
 			// assert
 			Assert.IsFalse(result);
@@ -203,11 +203,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			DataSet expectedResult = CreateNewProductionDataTable(_PRODUCTION_ARTIFACT_ID);
 			_productionManagerService.RetrieveImportEligibleByContextArtifactID(_WORKSPACE_ARTIFACT_ID).Returns(expectedResult);
 			_serviceManagerProvider
-				.Create<WinEDDS.Service.Export.IProductionManager, ProductionManagerFactory>(Arg.Any<int?>(), Arg.Any<string>(), Arg.Any<IntegrationPoints.Domain.Managers.IFederatedInstanceManager>())
+				.Create<WinEDDS.Service.Export.IProductionManager, ProductionManagerFactory>()
 				.Returns(_productionManagerService);
 
 			// Act
-			bool result = _instance.IsProductionEligibleForImport(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
+			bool result = _sut.IsProductionEligibleForImport(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
 
 			// Assert
 			Assert.IsTrue(result);
@@ -220,11 +220,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			DataSet expectedResult = CreateEmptyProductionDataSet();
 			_productionManagerService.RetrieveImportEligibleByContextArtifactID(_WORKSPACE_ARTIFACT_ID).Returns(expectedResult);
 			_serviceManagerProvider
-				.Create<WinEDDS.Service.Export.IProductionManager, ProductionManagerFactory>(Arg.Any<int?>(), Arg.Any<string>(), Arg.Any<IntegrationPoints.Domain.Managers.IFederatedInstanceManager>())
+				.Create<WinEDDS.Service.Export.IProductionManager, ProductionManagerFactory>()
 				.Returns(_productionManagerService);
 
 			// Act
-			bool result = _instance.IsProductionEligibleForImport(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
+			bool result = _sut.IsProductionEligibleForImport(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
 
 			// Assert
 			Assert.IsFalse(result);
@@ -237,11 +237,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			DataSet expectedResult = CreateNewProductionDataTable(_PRODUCTION_ARTIFACT_ID + 1);
 			_productionManagerService.RetrieveImportEligibleByContextArtifactID(_WORKSPACE_ARTIFACT_ID).Returns(expectedResult);
 			_serviceManagerProvider
-				.Create<WinEDDS.Service.Export.IProductionManager, ProductionManagerFactory>(Arg.Any<int?>(), Arg.Any<string>(), Arg.Any<IntegrationPoints.Domain.Managers.IFederatedInstanceManager>())
+				.Create<WinEDDS.Service.Export.IProductionManager, ProductionManagerFactory>()
 				.Returns(_productionManagerService);
 
 			// Act
-			bool result = _instance.IsProductionEligibleForImport(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
+			bool result = _sut.IsProductionEligibleForImport(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
 
 			// Assert
 			Assert.IsFalse(result);
@@ -253,11 +253,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_productionManagerService.RetrieveImportEligibleByContextArtifactID(_WORKSPACE_ARTIFACT_ID)
 				.Throws<Exception>();
 			_serviceManagerProvider
-				.Create<WinEDDS.Service.Export.IProductionManager, ProductionManagerFactory>(Arg.Any<int?>(), Arg.Any<string>(), Arg.Any<IntegrationPoints.Domain.Managers.IFederatedInstanceManager>())
+				.Create<WinEDDS.Service.Export.IProductionManager, ProductionManagerFactory>()
 				.Returns(_productionManagerService);
 
 			// Act
-			bool result = _instance.IsProductionEligibleForImport(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
+			bool result = _sut.IsProductionEligibleForImport(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
 
 			// Assert
 			Assert.IsFalse(result);

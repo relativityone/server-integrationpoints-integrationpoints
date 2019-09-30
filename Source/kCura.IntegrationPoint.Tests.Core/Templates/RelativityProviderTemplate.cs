@@ -1,19 +1,19 @@
 ﻿using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using NUnit.Framework;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using Relativity.Services.Folder;
 using Relativity.Toggles;
@@ -38,11 +38,11 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		public int TypeOfExport { get; set; }
 		public int FolderArtifactID { get; set; }
 
-		public RelativityProviderTemplate(
+		protected RelativityProviderTemplate(
 			string sourceWorkspaceName,
 			string targetWorkspaceName,
-			string sourceWorkspaceTemplate = WorkspaceTemplates.NEW_CASE_TEMPLATE,
-			string targetWorkspaceTemplate = WorkspaceTemplates.NEW_CASE_TEMPLATE)
+			string sourceWorkspaceTemplate = WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME,
+			string targetWorkspaceTemplate = WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME)
 			: base(sourceWorkspaceName, sourceWorkspaceTemplate)
 		{
 			_targetWorkspaceName = targetWorkspaceName;
@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		protected RelativityProviderTemplate(
 			int sourceWorkspaceArtifactID,
 			string targetWorkspaceName,
-			string targetWorkspaceTemplate = WorkspaceTemplates.NEW_CASE_TEMPLATE)
+			string targetWorkspaceTemplate = WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME)
 			: base(sourceWorkspaceArtifactID)
 		{
 			_targetWorkspaceName = targetWorkspaceName;
@@ -150,11 +150,11 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		protected string CreateDefaultFieldMap()
 		{
-			FieldMap[] map = GetDefaultFieldMap();
+			IntegrationPoints.Services.FieldMap[] map = GetDefaultFieldMap();
 			return Container.Resolve<ISerializer>().Serialize(map);
 		}
 
-		protected FieldMap[] GetDefaultFieldMap()
+		protected IntegrationPoints.Services.FieldMap[] GetDefaultFieldMap()
 		{
 			IRepositoryFactory repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			IFieldQueryRepository sourceFieldQueryRepository = repositoryFactory.GetFieldQueryRepository(SourceWorkspaceArtifactID);
@@ -163,18 +163,18 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			ArtifactDTO sourceDto = sourceFieldQueryRepository.RetrieveIdentifierField((int)global::kCura.Relativity.Client.ArtifactType.Document);
 			ArtifactDTO targetDto = destinationFieldQueryRepository.RetrieveIdentifierField((int)global::kCura.Relativity.Client.ArtifactType.Document);
 
-			FieldMap[] map = new[]
+			IntegrationPoints.Services.FieldMap[] map =
 			{
-				new FieldMap()
+				new IntegrationPoints.Services.FieldMap
 				{
-					SourceField = new FieldEntry()
+					SourceField = new IntegrationPoints.Services.FieldEntry
 					{
 						FieldIdentifier = sourceDto.ArtifactId.ToString(),
 						DisplayName = sourceDto.Fields.First(field => field.Name == "Name").Value as string + " [Object Identifier]",
 						IsIdentifier = true,
 					},
-					FieldMapType = FieldMapTypeEnum.Identifier,
-					DestinationField = new FieldEntry()
+					FieldMapType = IntegrationPoints.Services.FieldMapType.Identifier,
+					DestinationField = new IntegrationPoints.Services.FieldEntry
 					{
 						FieldIdentifier = targetDto.ArtifactId.ToString(),
 						DisplayName = targetDto.Fields.First(field => field.Name == "Name").Value as string + " [Object Identifier]",

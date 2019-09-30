@@ -18,6 +18,7 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class SendEmailManagerTests : RelativityProviderTemplate
 	{
 		private ISerializer _serializer;

@@ -8,36 +8,27 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoint.Tests.Core.Exceptions;
-using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.UtilityDTO;
-using Relativity.Services.Objects.DataContracts;
 using FieldRef = Relativity.Services.Field.FieldRef;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
 	public class WorkspaceService
 	{
-		private const string _LEGACY_TEMPLATE_WORKSPACE_NAME = "kCura Starter Template";
 		private const string _SAVED_SEARCH_FOLDER = "Testing Folder";
-		private const string _TEMPLATE_WORKSPACE_NAME = "Relativity Starter Template";
-
 		private readonly ImportHelper _importHelper;
-
-		internal const int _PRODUCTION_PLACEHOLDER_ARTIFACT_TYPE_ID = 1000035;
 
 		public WorkspaceService(ImportHelper importHelper)
 		{
 			_importHelper = importHelper;
 		}
 
-		public static string StarterTemplateName => SharedVariables.UseLegacyTemplateName()
-			? _LEGACY_TEMPLATE_WORKSPACE_NAME
-			: _TEMPLATE_WORKSPACE_NAME;
-
-		public int CreateWorkspace(string name, string template = null)
+		public int CreateWorkspace(string name)
 		{
-			string templateName = template ?? StarterTemplateName;
+			string templateName = SharedVariables.UseLegacyTemplateName()
+				? WorkspaceTemplateNames.LEGACY_TEMPLATE_WORKSPACE_NAME
+				: WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME;
 			return Workspace.CreateWorkspace(name, templateName);
 		}
 
@@ -158,26 +149,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 			var productionModel = new ProductionCreateResultDto(productionSetArtifactID, dataSourceArtifactID);
 
 			return productionModel;
-		}
-
-		public async Task<int> GetDefaultProductionPlaceholderArtifactIDAsync(IRelativityObjectManager objectManager)
-		{
-			ResultSet<RelativityObject> result = await objectManager.QueryAsync(new QueryRequest
-				{
-					ObjectType = new ObjectTypeRef
-					{
-						ArtifactTypeID = _PRODUCTION_PLACEHOLDER_ARTIFACT_TYPE_ID
-					},
-					Fields = new[]
-					{
-						new global::Relativity.Services.Objects.DataContracts.FieldRef
-						{
-							Name = "Default"
-						}
-					}
-				}, 1, 1)
-				.ConfigureAwait(false);
-			return result.Items.Single().ArtifactID;
 		}
 
 		public int GetView(int workspaceID, string viewName)

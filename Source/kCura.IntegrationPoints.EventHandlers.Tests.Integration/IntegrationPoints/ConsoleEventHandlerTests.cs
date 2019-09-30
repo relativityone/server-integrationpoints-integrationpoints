@@ -25,6 +25,7 @@ using Constants = kCura.IntegrationPoints.Core.Constants;
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoints
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class ConsoleEventHandlerTests
 	{
 		[SetUp]
@@ -32,9 +33,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 		{
 			_managerFactory = Substitute.For<IManagerFactory>();
 			_providerTypeService = Substitute.For<IProviderTypeService>();
-			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
 			_helperClassFactory = Substitute.For<IHelperClassFactory>();
-			_contextContainer = Substitute.For<IContextContainer>();
 			_helper = Substitute.For<IEHHelper>();
 			_helper.GetActiveCaseID().Returns(_APPLICATION_ID);
 			_stateManager = Substitute.For<IStateManager>();
@@ -78,9 +77,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 		private IIntegrationPointRepository _integrationPointRepository;
 		private IManagerFactory _managerFactory;
 		private IProviderTypeService _providerTypeService;
-		private IContextContainerFactory _contextContainerFactory;
 		private IHelperClassFactory _helperClassFactory;
-		private IContextContainer _contextContainer;
 		private IEHHelper _helper;
 		private IStateManager _stateManager;
 		private IQueueManager _queueManager;
@@ -121,14 +118,13 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 
 			string[] viewErrorMessages = {Constants.IntegrationPoints.PermissionErrors.JOB_HISTORY_NO_VIEW};
 			ProviderType providerType = ProviderType.Relativity;
-			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
 			_managerFactory.CreateStateManager().Returns(_stateManager);
-			_managerFactory.CreateQueueManager(_contextContainer).Returns(_queueManager);
-			_managerFactory.CreateJobHistoryManager(_contextContainer).Returns(_jobHistoryManager);
+			_managerFactory.CreateQueueManager().Returns(_queueManager);
+			_managerFactory.CreateJobHistoryManager().Returns(_jobHistoryManager);
 
 			_permissionRepository.UserHasArtifactTypePermission(Arg.Any<Guid>(), ArtifactPermission.Create).Returns(hasProfileAddPermission);
 
-			_helperClassFactory.CreateOnClickEventHelper(_managerFactory, _contextContainer).Returns(_onClickEventHelper);
+			_helperClassFactory.CreateOnClickEventHelper(_managerFactory).Returns(_onClickEventHelper);
 
 			_integrationPointRepository.ReadWithFieldMappingAsync(_ARTIFACT_ID).Returns(integrationPoint);
 			_providerTypeService.GetProviderType(integrationPoint.SourceProvider.Value, integrationPoint.DestinationProvider.Value).Returns(providerType);
@@ -152,7 +148,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 
 			if (!hasRunPermissions || !hasViewErrorsPermissions)
 			{
-				_managerFactory.CreateErrorManager(_contextContainer).Returns(_errorManager);
+				_managerFactory.CreateErrorManager().Returns(_errorManager);
 			}
 
 			ButtonStateDTO buttonStates = null;
@@ -299,12 +295,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 				DestinationConfiguration = _serializer.Serialize(importSettings)
 			};
 			
-			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
 			_managerFactory.CreateStateManager().Returns(_stateManager);
-			_managerFactory.CreateQueueManager(_contextContainer).Returns(_queueManager);
-			_managerFactory.CreateJobHistoryManager(_contextContainer).Returns(_jobHistoryManager);
+			_managerFactory.CreateQueueManager().Returns(_queueManager);
+			_managerFactory.CreateJobHistoryManager().Returns(_jobHistoryManager);
 
-			_helperClassFactory.CreateOnClickEventHelper(_managerFactory, _contextContainer).Returns(_onClickEventHelper);
+			_helperClassFactory.CreateOnClickEventHelper(_managerFactory).Returns(_onClickEventHelper);
 
 			_permissionRepository.UserHasArtifactTypePermission(Arg.Any<Guid>(), ArtifactPermission.Create).Returns(true);
 

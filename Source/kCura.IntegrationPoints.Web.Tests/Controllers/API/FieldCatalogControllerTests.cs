@@ -1,12 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Web.Http;
-using System.Web.Http.Results;
 using System.Web.Http.Controllers;
 using System.Web.Http.Hosting;
 using System.Web.Http.Routing;
 using kCura.IntegrationPoints.Core.Factories;
-using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using Relativity.Services.FieldMapping;
@@ -23,7 +20,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		private ExternalMapping[] _externalMappingArray;
 		private HttpConfiguration _configuration;
 		private ICPHelper _helper;
-		private IHelperFactory _helperFactory;
 		private IServiceFactory _serviceFactory;
 		private const int ARRAY_SIZE = 5;
 
@@ -33,10 +29,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			_service = Substitute.For<IFieldCatalogService>();
 			_configuration = Substitute.For<HttpConfiguration>();
 			_helper = Substitute.For<ICPHelper>();
-			_helperFactory = Substitute.For<IHelperFactory>();
 			_serviceFactory = Substitute.For<IServiceFactory>();
 
-			_helperFactory.CreateTargetHelper(_helper, null, null).Returns(_helper);
 			_serviceFactory.CreateFieldCatalogService(_helper).Returns(_service);
 
 			HttpConfiguration config = new HttpConfiguration();

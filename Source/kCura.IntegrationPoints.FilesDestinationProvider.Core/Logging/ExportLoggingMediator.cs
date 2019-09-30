@@ -4,6 +4,7 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.WinEDDS;
 using Relativity.API;
 using Relativity.DataExchange.Process;
+using Relativity.DataExchange.Transfer;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 {
@@ -22,7 +23,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 			userMessageNotification.UserFatalMessageEvent += OnUserFatalMessage;
 			userMessageNotification.UserWarningMessageEvent += OnUserWarningMessage;
 			exporterStatusNotification.FatalErrorEvent += OnFatalError;
-			exporterStatusNotification.FileTransferModeChangeEvent += OnFileTransferModeChange;
+			exporterStatusNotification.FileTransferMultiClientModeChangeEvent += OnFileTransferModeChange;
 			exporterStatusNotification.StatusMessage += OnStatusMessage;
 		}
 
@@ -36,9 +37,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 			_apiLog.LogWarning(userMessageEventArgs.Message);
 		}
 
-		private void OnFileTransferModeChange(string newMode)
+		private void OnFileTransferModeChange(object sender, TapiMultiClientEventArgs args)
 		{
-			_apiLog.LogInformation("File transfer mode has been changed: {mode}", newMode);
+			string mode = string.Join(",", args.TransferClients);
+			_apiLog.LogInformation("File transfer mode has been changed: {mode}", mode);
 		}
 
 		private void OnFatalError(string message, Exception exception)

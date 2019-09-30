@@ -43,7 +43,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private readonly IAPILog _logger;
 		private readonly IDataProviderFactory _providerFactory;
 		private readonly IScheduleRuleFactory _scheduleRuleFactory;
-		protected readonly IContextContainerFactory ContextContainerFactory;
 
 		protected IIntegrationPointService IntegrationPointService { get; }
 		protected readonly IHelper Helper;
@@ -65,7 +64,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IJobHistoryErrorService jobHistoryErrorService,
 			IScheduleRuleFactory scheduleRuleFactory,
 			IManagerFactory managerFactory,
-			IContextContainerFactory contextContainerFactory,
 			IEnumerable<IBatchStatus> batchStatuses,
 			IAgentValidator agentValidator) : base(helper)
 		{
@@ -81,7 +79,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_jobHistoryErrorService = jobHistoryErrorService;
 			_scheduleRuleFactory = scheduleRuleFactory;
 			ManagerFactory = managerFactory;
-			ContextContainerFactory = contextContainerFactory;
 			RaiseJobPreExecute += JobPreExecute;
 			RaiseJobPostExecute += JobPostExecute;
 			BatchJobCount = 0;
@@ -376,8 +373,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				if ((JobHistory != null) && JobStopManager.IsStopRequested())
 				{
-					IContextContainer contextContainer = ContextContainerFactory.CreateContextContainer(Helper);
-					IJobHistoryManager jobHistoryManager = ManagerFactory.CreateJobHistoryManager(contextContainer);
+					IJobHistoryManager jobHistoryManager = ManagerFactory.CreateJobHistoryManager();
 					jobHistoryManager.SetErrorStatusesToExpired(_caseServiceContext.WorkspaceID, JobHistory.ArtifactId);
 				}
 			}

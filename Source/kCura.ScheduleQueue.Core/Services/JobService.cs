@@ -327,7 +327,7 @@ namespace kCura.ScheduleQueue.Core.Services
 
 		public void LogOnGetAllScheduledJob()
 		{
-			_log.LogInformation("Attempting to get all scheduledJobs in {TypeName}.", nameof(JobService));
+			_log.LogDebug("Attempting to get all scheduledJobs in {TypeName}.", nameof(JobService));
 		}
 
 		public void LogOnUpdateJobStopStateError(StopState state, IList<long> jobIds)
@@ -352,7 +352,7 @@ namespace kCura.ScheduleQueue.Core.Services
 
 		public void LogOnCleanJobQueTable()
 		{
-			_log.LogInformation("Attempting to Cleanup Job queue table in {TypeName}", nameof(JobService));
+			_log.LogDebug("Attempting to Cleanup Job queue table in {TypeName}", nameof(JobService));
 		}
 
 		#endregion

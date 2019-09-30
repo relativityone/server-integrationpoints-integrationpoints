@@ -38,7 +38,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 		public IntegrationPointService(
 			IHelper helper,
 			ICaseServiceContext context,
-			IContextContainerFactory contextContainerFactory,
 			IIntegrationPointSerializer serializer,
 			IChoiceQuery choiceQuery,
 			IJobManager jobService,
@@ -50,7 +49,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			IMessageService messageService,
 			IIntegrationPointRepository integrationPointRepository,
 			IRelativityObjectManager objectManager)
-			: base(helper, context, choiceQuery, serializer, managerFactory, contextContainerFactory, validationExecutor, objectManager)
+			: base(helper, context, choiceQuery, serializer, managerFactory, validationExecutor, objectManager)
 		{
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<IntegrationPointService>();
 			_jobService = jobService;
@@ -242,7 +241,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 		public IList<Data.IntegrationPoint> GetAllForSourceProvider(string sourceProviderGuid)
 		{
-			ISourceProviderManager sourceProviderManager = ManagerFactory.CreateSourceProviderManager(SourceContextContainer);
+			ISourceProviderManager sourceProviderManager = ManagerFactory.CreateSourceProviderManager();
 			int relativityProviderArtifactId = sourceProviderManager.GetArtifactIdFromSourceProviderTypeGuidIdentifier(Context.WorkspaceID, sourceProviderGuid);
 			return _integrationPointRepository.GetIntegrationPointsWithAllFields(new List<int> { relativityProviderArtifactId });
 		}
@@ -256,7 +255,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 		{
 			CheckStopPermission(integrationPointArtifactId);
 
-			IJobHistoryManager jobHistoryManager = ManagerFactory.CreateJobHistoryManager(SourceContextContainer);
+			IJobHistoryManager jobHistoryManager = ManagerFactory.CreateJobHistoryManager();
 			StoppableJobCollection stoppableJobCollection = jobHistoryManager.GetStoppableJobCollection(workspaceArtifactId, integrationPointArtifactId);
 			IList<int> allStoppableJobArtifactIds = stoppableJobCollection.PendingJobArtifactIds.Concat(stoppableJobCollection.ProcessingJobArtifactIds).ToList();
 			IDictionary<Guid, List<Job>> jobs = _jobService.GetScheduledAgentJobMapedByBatchInstance(integrationPointArtifactId);
@@ -313,7 +312,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			Data.JobHistory lastJobHistory = null;
 			try
 			{
-				IJobHistoryManager jobHistoryManager = ManagerFactory.CreateJobHistoryManager(SourceContextContainer);
+				IJobHistoryManager jobHistoryManager = ManagerFactory.CreateJobHistoryManager();
 				int lastJobHistoryArtifactId = jobHistoryManager.GetLastJobHistoryArtifactId(workspaceArtifactId, integrationPointArtifactId);
 				lastJobHistory = ObjectManager.Read<Data.JobHistory>(lastJobHistoryArtifactId);
 			}
@@ -448,7 +447,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 		{
 			if (taskType == TaskType.ExportService || taskType == TaskType.SyncManager || taskType == TaskType.ExportManager)
 			{
-				IQueueManager queueManager = ManagerFactory.CreateQueueManager(SourceContextContainer);
+				IQueueManager queueManager = ManagerFactory.CreateQueueManager();
 				bool jobsExecutingOrInQueue = queueManager.HasJobsExecutingOrInQueue(workspaceArtifactId, integrationPointArtifactId);
 
 				if (jobsExecutingOrInQueue)

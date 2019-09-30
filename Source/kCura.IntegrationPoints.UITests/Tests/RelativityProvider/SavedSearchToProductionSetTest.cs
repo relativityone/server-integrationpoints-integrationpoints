@@ -15,6 +15,7 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	[Category(TestCategory.EXPORT_TO_RELATIVITY)]
 	public class SavedSearchToProductionSetTest : RelativityProviderTestsBase
 	{
@@ -192,7 +193,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.IncludeOriginalImagesIfNotProduced = false;
 			model.CopyFilesToRepository = false;
 
-			Context.CreateAndRunProduction(model.SourceProductionName);
+			SourceContext.CreateAndRunProduction(model.SourceProductionName);
 			DestinationContext.CreateProductionSet(model.DestinationProductionName);
 
 			//Act
@@ -218,7 +219,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.IncludeOriginalImagesIfNotProduced = false;
 			model.CopyFilesToRepository = true;
 
-			Context.CreateAndRunProduction(model.SourceProductionName);
+			SourceContext.CreateAndRunProduction(model.SourceProductionName);
 			DestinationContext.CreateProductionSet(model.DestinationProductionName);
 
 			//Act
@@ -244,7 +245,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.IncludeOriginalImagesIfNotProduced = false;
 			model.CopyFilesToRepository = false;
 
-			Context.CreateAndRunProduction(model.SourceProductionName);
+			SourceContext.CreateAndRunProduction(model.SourceProductionName);
 			DestinationContext.CreateAndRunProduction(model.DestinationProductionName);
 			DestinationContext.CreateProductionSet("Import" + model.DestinationProductionName);
 
@@ -272,7 +273,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.IncludeOriginalImagesIfNotProduced = false;
 			model.CopyFilesToRepository = true;
 
-			Context.CreateAndRunProduction(model.SourceProductionName);
+			SourceContext.CreateAndRunProduction(model.SourceProductionName);
 			DestinationContext.CreateAndRunProduction(model.DestinationProductionName);
 			DestinationContext.CreateProductionSet("Import" + model.DestinationProductionName);
 
@@ -300,7 +301,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.CopyFilesToRepository = false;
 
 			DestinationContext.CreateProductionSet("Import" + model.DestinationProductionName);
-			Context.CreateAndRunProduction(model.SourceProductionName);
+			SourceContext.CreateAndRunProduction(model.SourceProductionName);
 
 			//Act
 			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
@@ -326,7 +327,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.CopyFilesToRepository = true;
 
 			DestinationContext.CreateProductionSet("Import" + model.DestinationProductionName);
-			Context.CreateAndRunProduction(model.SourceProductionName);
+			SourceContext.CreateAndRunProduction(model.SourceProductionName);
 
 			//Act
 			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
@@ -352,7 +353,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.CopyFilesToRepository = true;
 
 			DestinationContext.CreateProductionSet("Import" + model.DestinationProductionName);
-			Context.CreateAndRunProduction(model.SourceProductionName);
+			SourceContext.CreateAndRunProduction(model.SourceProductionName);
 
 			//Act
 			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);

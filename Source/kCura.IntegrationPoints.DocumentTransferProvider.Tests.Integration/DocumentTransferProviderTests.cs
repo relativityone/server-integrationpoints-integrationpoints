@@ -16,6 +16,7 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class DocumentTransferProviderTests : SourceProviderTemplate
 	{
 		private DocumentTransferProvider _documentTransferProvider;

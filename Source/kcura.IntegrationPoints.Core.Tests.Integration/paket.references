@@ -2,6 +2,7 @@ Castle.Windsor
 CSharpGuidelineAnalyzer
 kCura.Apps.Common.Data
 kCura.Apps.Common.Utils
+kCura.IntegrationPoints.Services.Interfaces.Private
 kCura.OutsideIn.FI.Win32
 kCura.Relativity.Client
 Relativity
@@ -10,6 +11,8 @@ Relativity.OAuth2Client
 Relativity.Telemetry.APM
 relativity.transfer.client
 Relativity.Services.Interfaces
+Relativity.Toggles
+Relativity.Kepler
 
 group TestPackages
 	FluentAssertions

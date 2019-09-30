@@ -18,6 +18,7 @@ using Permission = kCura.IntegrationPoint.Tests.Core.Permission;
 
 namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 {
+	[Feature.DataTransfer.IntegrationPoints]
 	public class JobHistoryPermissionTests : RelativityProviderTemplate
 	{
 		private int _groupId;

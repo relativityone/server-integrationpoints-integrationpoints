@@ -3,7 +3,6 @@ using kCura.IntegrationPoints.Data.RSAPIClient;
 using kCura.Relativity.Client;
 using Relativity.API;
 
-
 namespace kCura.IntegrationPoints.Core.Factories.Implementations
 {
 	public class ArtifactServiceFactory : IArtifactServiceFactory
@@ -15,9 +14,9 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			_rsapiClientFactory = rsapiClientFactory;
 		}
 
-		public IArtifactService CreateArtifactService(IHelper helper, IHelper targetHelper)
+		public IArtifactService CreateArtifactService(IHelper helper)
 		{
-			IRSAPIClient rsapiClientWithLogging = _rsapiClientFactory.CreateUserClient(targetHelper);
+			IRSAPIClient rsapiClientWithLogging = _rsapiClientFactory.CreateUserClient(helper);
 
 			return new ArtifactService(rsapiClientWithLogging, helper);
 		}

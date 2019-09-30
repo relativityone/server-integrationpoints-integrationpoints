@@ -12,6 +12,7 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	[Category(TestCategory.EXPORT_TO_RELATIVITY)]
 	public class ImagesProductionToProductionSetTests : RelativityProviderTestsBase
 	{
@@ -43,7 +44,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOnly;
 			model.CopyFilesToRepository = false;
 
-			Context.CreateAndRunProduction(model.SourceProductionName);
+			SourceContext.CreateAndRunProduction(model.SourceProductionName);
 			DestinationContext.CreateProductionSet(model.DestinationProductionName);
 
 			//Act
@@ -65,7 +66,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOnly;
 			model.CopyFilesToRepository = true;
 
-			Context.CreateAndRunProduction(model.SourceProductionName);
+			SourceContext.CreateAndRunProduction(model.SourceProductionName);
 			DestinationContext.CreateProductionSet(model.DestinationProductionName);
 
 			//Act
@@ -87,7 +88,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.OverlayOnly;
 			model.CopyFilesToRepository = false;
 
-			Context.CreateAndRunProduction(model.SourceProductionName);
+			SourceContext.CreateAndRunProduction(model.SourceProductionName);
 
 			DestinationContext.ImportDocuments();
 			DestinationContext.CreateProductionSet(model.DestinationProductionName);
@@ -111,7 +112,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.OverlayOnly;
 			model.CopyFilesToRepository = true;
 
-			Context.CreateAndRunProduction(model.SourceProductionName);
+			SourceContext.CreateAndRunProduction(model.SourceProductionName);
 
 			DestinationContext.ImportDocuments();
 			DestinationContext.CreateProductionSet(model.DestinationProductionName);
@@ -135,7 +136,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
 			model.CopyFilesToRepository = false;
 
-			Context.CreateAndRunProduction(model.SourceProductionName);
+			SourceContext.CreateAndRunProduction(model.SourceProductionName);
 			DestinationContext.CreateProductionSet(model.DestinationProductionName);
 
 			//Act
@@ -157,7 +158,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
 			model.CopyFilesToRepository = true;
 
-			Context.CreateAndRunProduction(model.SourceProductionName);
+			SourceContext.CreateAndRunProduction(model.SourceProductionName);
 			DestinationContext.CreateProductionSet(model.DestinationProductionName);
 
 			//Act

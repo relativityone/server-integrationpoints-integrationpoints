@@ -27,6 +27,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using Castle.MicroKernel.Resolvers;
+using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
@@ -56,8 +57,9 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		protected int WorkspaceArtifactId { get; private set; }
 		protected int AgentArtifactId { get; private set; }
 
-		protected SourceProviderTemplate(string workspaceName,
-			string workspaceTemplate = WorkspaceTemplates.NEW_CASE_TEMPLATE)
+		protected SourceProviderTemplate(
+			string workspaceName,
+			string workspaceTemplate = WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME)
 		{
 			_workspaceName = workspaceName;
 			_workspaceTemplate = workspaceTemplate;
@@ -108,11 +110,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				Agent.DeleteAgentAsync(AgentArtifactId).GetAwaiter().GetResult();
 			}
 			base.SuiteTeardown();
-		}
-
-		public static class WorkspaceTemplates
-		{
-			public const string NEW_CASE_TEMPLATE = "New Case Template";
 		}
 
 		protected virtual void InitializeIocContainer()
@@ -344,19 +341,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		private async Task SetupAsync()
 		{
-			var applicationManagerLazy = new Lazy<RelativityApplicationManager>(() => new RelativityApplicationManager(Helper));
-
 			await AddAgentServerToResourcePool().ConfigureAwait(false);
-
-			if (SharedVariables.UseIpRapFile())
-			{
-				await applicationManagerLazy.Value.ImportRipToLibraryAsync().ConfigureAwait(false);
-			}
-
-			if (CreatingWorkspaceEnabled)
-			{
-				applicationManagerLazy.Value.InstallApplicationFromLibrary(WorkspaceArtifactId);
-			}
 
 			if (CreatingAgentEnabled)
 			{

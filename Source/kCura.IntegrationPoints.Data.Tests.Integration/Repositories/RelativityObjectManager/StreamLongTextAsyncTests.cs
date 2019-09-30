@@ -5,8 +5,6 @@ using System.Linq;
 using System.Text;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoint.Tests.Core.Templates;
-using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
@@ -21,6 +19,7 @@ using Workspace = kCura.IntegrationPoint.Tests.Core.Workspace;
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.RelativityObjectManager
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class StreamLongTextAsyncTests
 	{
 		private int _workspaceId;
@@ -43,7 +42,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.Relativity
 		public void OneTimeSetUp()
 		{
 			string workspaceName = GetWorkspaceRandomizedName();
-			_workspaceId = Workspace.CreateWorkspace(workspaceName, SourceProviderTemplate.WorkspaceTemplates.NEW_CASE_TEMPLATE);
+			_workspaceId = Workspace.CreateWorkspace(workspaceName);
 			_importHelper = new ImportHelper();
 			_workspaceService = new WorkspaceService(_importHelper);
 			_helper = new TestHelper();
@@ -64,15 +63,14 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.Relativity
 			ExecuteTest(bytes, controlNumber);
 		}
 
-		[IdentifiedTest("d1e9a3e4-943a-42aa-993e-9d8933883a1e")]
+		//This test has been changed from 1500MB to 200MB
+		//Change it back to 1500MB after IAPI removes 10 minutes timeout per item in import
+		//JIRA: REL-358031
 		[StressTest]
-		[TestInQuarantine(TestQuarantineState.FailsContinuously,
-			@"Review: develop (07/04/2019 - 21/04/2019)
-			Status changed to: FailsContinuously from: ShowsInstability
-			REL-307474 - It randomly throws System.IO.IOException and System.InvalidOperationException from LINQ")]
-		public void ItShouldFetchDocumentWith1500MBExtractedText()
+		[IdentifiedTest("d1e9a3e4-943a-42aa-993e-9d8933883a1e")]
+		public void ItShouldFetchDocumentWith200MBExtractedText()
 		{
-			int bytes = GetBytesFromMB(1500);
+			int bytes = GetBytesFromMB(200);
 			string controlNumber = _CONTROL_NUMBERS_POOL[1];
 			ExecuteTest(bytes, controlNumber);
 		}

@@ -8,6 +8,7 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.UITests.Tests
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	[Category(TestCategory.MISCELLANEOUS)]
 	public class UserOnLoginPageTest : UiTest
 	{
@@ -40,7 +41,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			loginPage.Login(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword);
 
 			// Act / Assert
-			generalPage.ChooseWorkspace(Context.WorkspaceName);
+			generalPage.ChooseWorkspace(SourceContext.WorkspaceName);
 		}
 	}
 }

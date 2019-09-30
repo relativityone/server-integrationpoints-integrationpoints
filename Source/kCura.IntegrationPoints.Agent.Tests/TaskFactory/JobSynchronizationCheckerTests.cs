@@ -6,7 +6,6 @@ using kCura.IntegrationPoints.Agent.Attributes;
 using kCura.IntegrationPoints.Agent.Exceptions;
 using kCura.IntegrationPoints.Agent.TaskFactory;
 using kCura.IntegrationPoints.Agent.Tasks;
-using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.ScheduleQueue.AgentBase;
@@ -35,17 +34,16 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 
 			_jobService = Substitute.For<IJobService>();
 			var helper = Substitute.For<IAgentHelper>();
-			var contextProviderFactory = Substitute.For<IContextContainerFactory>();
 			var managerFactory = Substitute.For<IManagerFactory>();
 			_queueManager = Substitute.For<IQueueManager>();
-			managerFactory.CreateQueueManager(Arg.Any<IContextContainer>()).Returns(_queueManager);
+			managerFactory.CreateQueueManager().Returns(_queueManager);
 
 			var taskFactoryJobHistoryServiceFactory = Substitute.For<ITaskFactoryJobHistoryServiceFactory>();
 			_jobHistoryService = Substitute.For<ITaskFactoryJobHistoryService>();
 			taskFactoryJobHistoryServiceFactory.CreateJobHistoryService(Arg.Any<Data.IntegrationPoint>())
 				.Returns(_jobHistoryService);
 
-			_sut = new JobSynchronizationChecker(helper, contextProviderFactory, _jobService, managerFactory, taskFactoryJobHistoryServiceFactory);
+			_sut = new JobSynchronizationChecker(helper, _jobService, managerFactory, taskFactoryJobHistoryServiceFactory);
 		}
 
 		[TestCaseSource(nameof(GetAllTasksWithSynchronizedAttribute))]
