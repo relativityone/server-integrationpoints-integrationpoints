@@ -21,6 +21,7 @@ using Workspace = kCura.IntegrationPoint.Tests.Core.Workspace;
 namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class ItShouldRetrieveJobHistory : RelativityProviderTemplate
 	{
 		public ItShouldRetrieveJobHistory() : base($"SourceWorkspace_{Utils.FormattedDateTimeNow}", $"TargetWorkspace_{Utils.FormattedDateTimeNow}")

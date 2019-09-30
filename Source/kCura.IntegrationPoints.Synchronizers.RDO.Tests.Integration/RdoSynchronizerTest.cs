@@ -22,6 +22,7 @@ using FieldType = kCura.IntegrationPoints.Contracts.Models.FieldType;
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class RdoSynchronizerTest : SourceProviderTemplate
 	{
 		private IRelativityFieldQuery _fieldQuery;

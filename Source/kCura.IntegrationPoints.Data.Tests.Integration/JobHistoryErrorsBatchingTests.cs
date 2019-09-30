@@ -28,6 +28,7 @@ using Choice = kCura.Relativity.Client.DTOs.Choice;
 namespace kCura.IntegrationPoints.Data.Tests.Integration
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class JobHistoryErrorsBatchingTests : RelativityProviderTemplate
 	{
 		private Mock<IAPILog> _loggerMock;

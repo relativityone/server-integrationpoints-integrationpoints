@@ -30,6 +30,7 @@ using Workspace = kCura.IntegrationPoint.Tests.Core.Workspace;
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class RelativityProvider_ImportNativeFileCopyModeTests : RelativityProviderTemplate
 	{
 		private ExportServiceManager _exportManager;

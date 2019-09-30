@@ -27,6 +27,7 @@ using CoreConstants = kCura.IntegrationPoints.Core.Constants;
 namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.IntegrationPointServices
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class IntegrationPointServiceTests
 	{
 		private const string _VERY_LONG_FIELD_NAME_PREFIX = "Very_Long_Field_Name_0000000000000000000000000";

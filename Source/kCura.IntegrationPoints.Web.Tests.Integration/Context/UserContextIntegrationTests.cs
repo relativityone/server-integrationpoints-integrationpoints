@@ -19,6 +19,7 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.Web.Tests.Integration.Context
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class UserContextIntegrationTests
 	{
 		private IWindsorContainer _container;
