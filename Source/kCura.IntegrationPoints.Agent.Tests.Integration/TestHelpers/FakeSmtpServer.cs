@@ -1,14 +1,12 @@
 ﻿using kCura.IntegrationPoint.Tests.Core.Exceptions;
 using netDumbster.smtp;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration.TestHelpers
 {
-	internal class FakeSmtpServer : IDisposable
+	internal sealed class FakeSmtpServer : IDisposable
 	{
 		private bool _isDisposed = false;
 
@@ -58,9 +56,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration.TestHelpers
 			_receivedEmail.TrySetResult(e.Message);
 		}
 
-		protected virtual void Dispose(bool disposing)
+		private void Dispose(bool disposing)
 		{
-			if (!_isDisposed)
+			if (_isDisposed)
 			{
 				return;
 			}
