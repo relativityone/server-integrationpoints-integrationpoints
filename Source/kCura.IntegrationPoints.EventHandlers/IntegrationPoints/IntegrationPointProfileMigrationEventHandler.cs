@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using kCura.EventHandler.CustomAttributes;
 using kCura.IntegrationPoints.Common.Extensions.DotNet;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -47,9 +49,13 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 		private async Task MigrateProfilesAsync()
 		{
-			(List<int> nonSyncProfilesArtifactIds, List<int> syncProfilesArtifactIds) = await _integrationPointProfilesQuery
-				.GetSyncAndNonSyncProfilesArtifactIdsAsync(TemplateWorkspaceID)
-				.ConfigureAwait(false);
+			int sourceProviderArtifactId = await _integrationPointProfilesQuery.GetSyncSourceProviderArtifactIdAsync(TemplateWorkspaceID).ConfigureAwait(false);
+			int destinationProviderArtifactId = await _integrationPointProfilesQuery.GetSyncDestinationProviderArtifactIdAsync(TemplateWorkspaceID).ConfigureAwait(false);
+			List<IntegrationPointProfile> allProfiles = (await _integrationPointProfilesQuery.GetAllProfilesAsync(TemplateWorkspaceID).ConfigureAwait(false)).ToList();
+			List<int> syncProfilesArtifactIds = (await _integrationPointProfilesQuery
+				.GetSyncProfilesAsync(allProfiles, sourceProviderArtifactId, destinationProviderArtifactId).ConfigureAwait(false)).ToList();
+			List<int> nonSyncProfilesArtifactIds = (await _integrationPointProfilesQuery
+				.GetNonSyncProfilesAsync(allProfiles, sourceProviderArtifactId, destinationProviderArtifactId).ConfigureAwait(false)).ToList();
 
 			await Task.WhenAll(
 					DeleteNonSyncProfilesIfAnyInCreatedWorkspaceAsync(nonSyncProfilesArtifactIds),

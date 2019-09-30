@@ -4,6 +4,7 @@ using System.Linq;
 using FluentAssertions;
 using kCura.EventHandler;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints;
@@ -41,7 +42,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 				.Setup(x => x.MassDeleteAsync(It.IsAny<IEnumerable<int>>(), It.IsAny<ExecutionIdentity>()))
 				.Throws(TestException),
 			ctx => ctx._integrationPointProfilesQuery
-				.Setup(x => x.GetSyncAndNonSyncProfilesArtifactIdsAsync(_TEMPLATE_WORKSPACE_ARTIFACT_ID))
+				.Setup(x => x.GetAllProfilesAsync(_TEMPLATE_WORKSPACE_ARTIFACT_ID))
 				.Throws(TestException)
 		};
 
@@ -136,9 +137,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 			Response response = _eventHandler.Execute();
 
 			// Assert
-
 			response.Success.Should().BeFalse("handler should have failed");
-			response.Exception.Should().BeAssignableTo<Exception>();
 		}
 
 		[Test]
@@ -191,29 +190,51 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 			response.Success.Should().BeTrue("handler should have completed successfully");
 			response.Exception.Should().BeNull("there was no failure");
 
+			List<int> nonSyncProfilesArtifactIds = NonSyncProfilesArtifactIds(nonSyncProfilesCount).Select(x => x.ArtifactId).ToList();
+
 			_createdWorkspaceRelativityObjectManager
-				.Verify(x => x.MassDeleteAsync(It.Is<List<int>>(l => l.SequenceEqual(NonSyncProfilesArtifactIds(nonSyncProfilesCount))), It.IsAny<ExecutionIdentity>()),
+				.Verify(x => x.MassDeleteAsync(It.Is<List<int>>(l => l.SequenceEqual(nonSyncProfilesArtifactIds)), It.IsAny<ExecutionIdentity>()),
 					Times.Once);
 
 			// TODO: make assertions after implementing REL-351468
 		}
 
-		private static List<int> SyncProfilesArtifactIds(int count) => Enumerable
-			.Range(_FIRST_SYNC_PROFILE_ARTIFACT_ID, count)
-			.ToList();
+		private static List<IntegrationPointProfile> SyncProfilesArtifactIds(int count)
+		{
+			return Enumerable
+				.Range(_FIRST_SYNC_PROFILE_ARTIFACT_ID, count)
+				.Select(x => new IntegrationPointProfile())
+				.ToList();
+		}
 
-		private static List<int> NonSyncProfilesArtifactIds(int count) => Enumerable
-			.Range(_FIRST_NON_SYNC_PROFILE_ARTIFACT_ID, count)
-			.ToList();
-
-		private static (List<int> nonSyncProfilesArtifactIds, List<int> syncProfilesArtifactIds) ProfilesLists(int nonSyncProfilesCount, int syncProfilesCount) =>
-			(NonSyncProfilesArtifactIds(nonSyncProfilesCount), SyncProfilesArtifactIds(syncProfilesCount));
+		private static List<IntegrationPointProfile> NonSyncProfilesArtifactIds(int count)
+		{
+			return Enumerable
+				.Range(_FIRST_NON_SYNC_PROFILE_ARTIFACT_ID, count)
+				.Select(x => new IntegrationPointProfile())
+				.ToList();
+		}
 
 		private void SetUpProfilesQuery(int nonSyncProfilesCount, int syncProfilesCount)
 		{
+			IEnumerable<IntegrationPointProfile> syncProfiles = SyncProfilesArtifactIds(syncProfilesCount);
+			IEnumerable<IntegrationPointProfile> nonSyncProfiles = NonSyncProfilesArtifactIds(nonSyncProfilesCount);
+
+			List<IntegrationPointProfile> allProfiles = new List<IntegrationPointProfile>();
+			allProfiles.AddRange(syncProfiles);
+			allProfiles.AddRange(nonSyncProfiles);
+
 			_integrationPointProfilesQuery
-				.Setup(x => x.GetSyncAndNonSyncProfilesArtifactIdsAsync(_TEMPLATE_WORKSPACE_ARTIFACT_ID))
-				.ReturnsAsync(ProfilesLists(nonSyncProfilesCount, syncProfilesCount));
+				.Setup(x => x.GetAllProfilesAsync(_TEMPLATE_WORKSPACE_ARTIFACT_ID))
+				.ReturnsAsync(allProfiles);
+
+			_integrationPointProfilesQuery
+				.Setup(x => x.GetSyncProfilesAsync(It.IsAny<IEnumerable<IntegrationPointProfile>>(), It.IsAny<int>(), It.IsAny<int>()))
+				.ReturnsAsync(syncProfiles.Select(x => x.ArtifactId));
+
+			_integrationPointProfilesQuery
+				.Setup(x => x.GetNonSyncProfilesAsync(It.IsAny<IEnumerable<IntegrationPointProfile>>(), It.IsAny<int>(), It.IsAny<int>()))
+				.ReturnsAsync(nonSyncProfiles.Select(x => x.ArtifactId));
 		}
 	}
 }

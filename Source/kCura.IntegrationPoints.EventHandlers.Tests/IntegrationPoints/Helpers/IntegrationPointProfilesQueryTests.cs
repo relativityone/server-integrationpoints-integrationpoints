@@ -67,36 +67,102 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		}
 
 		[Test]
-		public async Task ItShouldQueryAndDivideProfilesCorrectly(
-			[Range(0, 2)] int syncProfilesCount, [Range(0, 4)] int nonSyncProfilesCount)
+		public async Task ItShouldReturnAllProfiles()
 		{
 			// Arrange
 			SetUpSyncProviders();
-			SetUpProfiles(syncProfilesCount, nonSyncProfilesCount);
+			SetUpProfiles(1, 1);
 
 			// Act
-			var (nonSyncProfilesArtifactIds, syncProfilesArtifactIds) = await _query
-				.GetSyncAndNonSyncProfilesArtifactIdsAsync(_WORKSPACE_ID)
-				.ConfigureAwait(false);
+			List<IntegrationPointProfile> allProfiles = (await _query
+				.GetAllProfilesAsync(_WORKSPACE_ID)
+				.ConfigureAwait(false)).ToList();
 
 			// Assert
-			nonSyncProfilesArtifactIds.ShouldAllBeEquivalentTo(_NON_SYNC_PROFILE_ID);
-			syncProfilesArtifactIds.ShouldAllBeEquivalentTo(_SYNC_PROFILE_ID);
+			IntegrationPointProfile syncProfile = allProfiles.FirstOrDefault(x => x.ArtifactId == _SYNC_PROFILE_ID);
+			syncProfile.Should().NotBeNull();
+			IntegrationPointProfile nonSyncProfile = allProfiles.FirstOrDefault(x => x.ArtifactId == _NON_SYNC_PROFILE_ID);
+			nonSyncProfile.Should().NotBeNull();
 		}
 
 		[Test]
-		public void ItShouldFailOnWrongNumberOfProviders(
-			[Values(0, 2)] int relativitySourceProviderCount, [Values(0, 2)] int relativityDestinationProviderCount)
+		public async Task ItShouldReturnSyncSourceProviderArtifactId()
 		{
 			// Arrange
-			SetUpSyncProviders(relativitySourceProviderCount, relativityDestinationProviderCount);
+			SetUpSyncProviders();
 
 			// Act
-			Func<Task<(List<int> nonSyncProfilesArtifactIds, List<int> syncProfilesArtifactIds)>> run =
-				() => _query.GetSyncAndNonSyncProfilesArtifactIdsAsync(_WORKSPACE_ID);
+			int sourceProviderId = await _query.GetSyncSourceProviderArtifactIdAsync(_WORKSPACE_ID);
+
+			// Assert
+			sourceProviderId.Should().Be(_RELATIVITY_SOURCE_PROVIDER_ID);
+		}
+
+		[Test]
+		public async Task ItShouldReturnNonSyncSourceProviderArtifactId()
+		{
+			// Arrange
+			SetUpSyncProviders();
+
+			// Act
+			int destinationProviderArtifactId = await _query.GetSyncDestinationProviderArtifactIdAsync(_WORKSPACE_ID);
+
+			// Assert
+			destinationProviderArtifactId.Should().Be(_RELATIVITY_DESTINATION_PROVIDER_ID);
+		}
+
+		[Test]
+		public void ItShouldFailOnWrongNumberOfSourceProviders([Values(0, 2)] int relativitySourceProviderCount)
+		{
+			// Arrange
+			SetUpSyncProviders(relativitySourceProviderCount);
+
+			// Act
+			Func<Task<int>> run = () => _query.GetSyncSourceProviderArtifactIdAsync(_WORKSPACE_ID);
 
 			// Assert
 			run.ShouldThrowExactly<InvalidOperationException>();
+		}
+
+		[Test]
+		public void ItShouldFailOnWrongNumberOfDestinationProviders([Values(0, 2)] int relativityDestinationProviderCount)
+		{
+			// Arrange
+			SetUpSyncProviders(relativityDestinationProviderCount: relativityDestinationProviderCount);
+
+			// Act
+			Func<Task<int>> run = () => _query.GetSyncDestinationProviderArtifactIdAsync(_WORKSPACE_ID);
+
+			// Assert
+			run.ShouldThrowExactly<InvalidOperationException>();
+		}
+
+		[Test]
+		public async Task ItShouldGetOnlySyncProfiles()
+		{
+			// Arrange
+			SetUpSyncProviders();
+			SetUpProfiles(1, 1);
+
+			// Act
+			List<int> syncProfiles = (await _query.GetSyncProfilesAsync(_profilesList, _RELATIVITY_SOURCE_PROVIDER_ID, _RELATIVITY_DESTINATION_PROVIDER_ID)).ToList();
+
+			// Assert
+			syncProfiles.Should().ContainSingle(x => x == _SYNC_PROFILE_ID);
+		}
+
+		[Test]
+		public async Task ItShouldGetOnlyNonSyncProfiles()
+		{
+			// Arrange
+			SetUpSyncProviders();
+			SetUpProfiles(1, 1);
+
+			// Act
+			List<int> nonSyncProfiles = (await _query.GetNonSyncProfilesAsync(_profilesList, _RELATIVITY_SOURCE_PROVIDER_ID, _RELATIVITY_DESTINATION_PROVIDER_ID)).ToList();
+
+			// Assert
+			nonSyncProfiles.Should().ContainSingle(x => x == _NON_SYNC_PROFILE_ID);
 		}
 
 		private void SetUpProfiles(int syncProfilesCount, int nonSyncProfilesCount)
