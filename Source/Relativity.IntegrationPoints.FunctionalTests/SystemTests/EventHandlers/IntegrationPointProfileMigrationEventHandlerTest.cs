@@ -140,7 +140,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 		private async Task<int> GetSingleObjectArtifactIdByStringFieldValueAsync<TSource>(int workspaceId,
 			Expression<Func<TSource, string>> propertySelector, string fieldValue) where TSource : BaseRdo, new()
 		{
-			List<int> objectsArtifactIds = await _objectArtifactIdsByStringFieldValueQuery
+			IEnumerable<int> objectsArtifactIds = await _objectArtifactIdsByStringFieldValueQuery
 				.QueryForObjectArtifactIdsByStringFieldValueAsync(workspaceId, propertySelector, fieldValue)
 				.ConfigureAwait(false);
 
