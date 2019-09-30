@@ -21,7 +21,6 @@ namespace kCura.IntegrationPoints.Data.Tests
 		}
 
 		private Guid guidChoice1 = Guid.Parse("E68EF4BE-EB69-4CB6-94FC-D205F2096411");
-
 		private Guid guidChoice2 = Guid.Parse("5F8731F3-C899-4419-BA0F-7E05E4F739DF");
 
 		[Test]
@@ -29,13 +28,11 @@ namespace kCura.IntegrationPoints.Data.Tests
 		{
 			//ARRANGE
 			TestBaseRdo baseRdo = new TestBaseRdo();
-
-
+			
 			//ACT
 			MethodInfo dynMethod = baseRdo.GetType().GetMethod("ConvertValue", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
 			object returnValue = dynMethod.Invoke(baseRdo, new object[] { FieldTypes.MultipleChoice, null });
-
-
+			
 			//ASSERT 
 			Assert.IsNull(returnValue);
 		}
@@ -51,13 +48,11 @@ namespace kCura.IntegrationPoints.Data.Tests
 				new Choice(){Guids= new List<Guid>(){guidChoice2}, Name= "bbb" }
 			};
 			TestBaseRdo baseRdo = new TestBaseRdo();
-
-
+			
 			//ACT
 			MethodInfo dynMethod = baseRdo.GetType().GetMethod("ConvertValue", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
 			object returnValue = dynMethod.Invoke(baseRdo, new object[] { FieldTypes.MultipleChoice, choices });
-
-
+			
 			//ASSERT 
 			Assert.IsTrue(returnValue is MultiChoiceFieldValueList);
 			MultiChoiceFieldValueList returnedChoices = (MultiChoiceFieldValueList)returnValue;
@@ -74,13 +69,11 @@ namespace kCura.IntegrationPoints.Data.Tests
 			//ARRANGE
 			Choice myChoice = new Choice() { Guids = new List<Guid>() { guidChoice1 }, Name = "AAA" };
 			TestBaseRdo baseRdo = new TestBaseRdo();
-
-
+			
 			//ACT
 			MethodInfo dynMethod = baseRdo.GetType().GetMethod("ConvertValue", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
 			object returnValue = dynMethod.Invoke(baseRdo, new object[] { FieldTypes.SingleChoice, myChoice });
-
-
+			
 			//ASSERT 
 			Assert.IsTrue(returnValue is Relativity.Client.DTOs.Choice);
 			Relativity.Client.DTOs.Choice returnedChoice = (Relativity.Client.DTOs.Choice)returnValue;
@@ -98,13 +91,11 @@ namespace kCura.IntegrationPoints.Data.Tests
 				222
 			};
 			TestBaseRdo baseRdo = new TestBaseRdo();
-
-
+			
 			//ACT
 			MethodInfo dynMethod = baseRdo.GetType().GetMethod("ConvertValue", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
 			object returnValue = dynMethod.Invoke(baseRdo, new object[] { FieldTypes.MultipleObject, multiObjectIDs });
-
-
+			
 			//ASSERT 
 			Assert.IsTrue(returnValue is FieldValueList<RDO>);
 			FieldValueList<RDO> returnedObjects = (FieldValueList<RDO>)returnValue;
@@ -114,16 +105,17 @@ namespace kCura.IntegrationPoints.Data.Tests
 		}
 
 		// ConvertForGet
-
-
+		
 		[Test]
 		public void ConvertForGet_MultipleChoiceFieldValueNull_CorrectValue()
 		{
 			//ARRANGE
 			TestBaseRdo baseRdo = new TestBaseRdo();
+
 			//ACT
 			MethodInfo dynMethod = baseRdo.GetType().GetMethod("ConvertForGet", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
 			object returnValue = dynMethod.Invoke(baseRdo, new object[] { FieldTypes.MultipleChoice, null });
+			
 			//ASSERT 
 			Assert.IsNull(returnValue);
 		}
@@ -134,13 +126,11 @@ namespace kCura.IntegrationPoints.Data.Tests
 			//ARRANGE
 			Choice myChoice = new Choice(111) { Name = "AAA" };
 			TestBaseRdo baseRdo = new TestBaseRdo();
-
-
+			
 			//ACT
 			MethodInfo dynMethod = baseRdo.GetType().GetMethod("ConvertForGet", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
 			object returnValue = dynMethod.Invoke(baseRdo, new object[] { FieldTypes.SingleChoice, myChoice });
-
-
+			
 			//ASSERT 
 			Assert.IsTrue(returnValue is kCura.Relativity.Client.DTOs.Choice);
 			var returnedChoice = (kCura.Relativity.Client.DTOs.Choice)returnValue;
@@ -158,13 +148,11 @@ namespace kCura.IntegrationPoints.Data.Tests
 				222
 			};
 			TestBaseRdo baseRdo = new TestBaseRdo();
-
-
+			
 			//ACT
 			MethodInfo dynMethod = baseRdo.GetType().GetMethod("ConvertForGet", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
 			object returnValue = dynMethod.Invoke(baseRdo, new object[] { FieldTypes.MultipleObject, multiObjectIDs });
-
-
+			
 			//ASSERT 
 			Assert.IsTrue(returnValue is System.Int32[]);
 		}
@@ -179,8 +167,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 				222
 			};
 			TestBaseRdo baseRdo = new TestBaseRdo();
-
-
+			
 			//ACT
 			MethodInfo dynMethod = baseRdo.GetType().GetMethod("ConvertForGet", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
 			object returnValue = dynMethod.Invoke(baseRdo, new object[] { FieldTypes.MultipleObject, multiObjectIDs });
@@ -200,8 +187,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			};
 
 			TestBaseRdo baseRdo = new TestBaseRdo();
-
-
+			
 			//ACT
 			MethodInfo dynMethod = baseRdo.GetType().GetMethod("ConvertForGet", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
 			object returnValue = dynMethod.Invoke(baseRdo, new object[] { FieldTypes.MultipleObject, fieldList });
@@ -215,20 +201,20 @@ namespace kCura.IntegrationPoints.Data.Tests
 		[Test]
 		public void GetFieldGuid_ShouldGetFieldGuidSuccessfully()
 		{
-			// Act
+			//ACT
 			Guid fieldGuid = BaseRdo.GetFieldGuid((TestBaseRdo rdo) => rdo.Property);
 
-			// Assert
+			//ASSERT
 			fieldGuid.Should().Be(Guid.Parse(TestBaseRdo._RELATIVITY_FIELD_GUID));
 		}
 
 		[Test]
 		public void GetFieldGuid_ShouldFailOnProvidingMethodExpression()
 		{
-			// Act
+			//ACT
 			Action run = () => BaseRdo.GetFieldGuid((TestBaseRdo rdo) => rdo.GetString());
 
-			// Assert
+			//ASSERT
 			run
 				.ShouldThrowExactly<ArgumentException>()
 				.And
@@ -238,10 +224,10 @@ namespace kCura.IntegrationPoints.Data.Tests
 		[Test]
 		public void GetFieldGuid_ShouldFailOnProvidingFieldExpression()
 		{
-			// Act
+			//ACT
 			Action run = () => BaseRdo.GetFieldGuid((TestBaseRdo rdo) => rdo.Field);
 
-			// Assert
+			//ASSERT
 			run
 				.ShouldThrowExactly<ArgumentException>()
 				.And

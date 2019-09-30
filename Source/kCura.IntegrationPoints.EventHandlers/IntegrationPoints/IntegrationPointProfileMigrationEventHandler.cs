@@ -62,25 +62,29 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 		private async Task MigrateProfilesAsync()
 		{
-			(List<int> nonSyncProfilesArtifactIds, List<int> syncProfilesArtifactIds) = await _integrationPointProfilesQuery
-				.GetSyncAndNonSyncProfilesArtifactIdsAsync(TemplateWorkspaceID)
-				.ConfigureAwait(false);
+			int sourceProviderArtifactID = await _integrationPointProfilesQuery.GetSyncSourceProviderArtifactIdAsync(TemplateWorkspaceID).ConfigureAwait(false);
+			int destinationProviderArtifactID = await _integrationPointProfilesQuery.GetSyncDestinationProviderArtifactIdAsync(TemplateWorkspaceID).ConfigureAwait(false);
+			List<IntegrationPointProfile> allProfiles = (await _integrationPointProfilesQuery.GetAllProfilesAsync(TemplateWorkspaceID).ConfigureAwait(false)).ToList();
+			List<int> syncProfilesArtifactIDs = (await _integrationPointProfilesQuery
+				.GetSyncProfilesAsync(allProfiles, sourceProviderArtifactID, destinationProviderArtifactID).ConfigureAwait(false)).ToList();
+			List<int> nonSyncProfilesArtifactIDs = (await _integrationPointProfilesQuery
+				.GetNonSyncProfilesAsync(allProfiles, sourceProviderArtifactID, destinationProviderArtifactID).ConfigureAwait(false)).ToList();
 
 			await Task.WhenAll(
-					DeleteNonSyncProfilesIfAnyInCreatedWorkspaceAsync(nonSyncProfilesArtifactIds),
-					ModifyExistingSyncProfilesIfAnyInCreatedWorkspaceAsync(syncProfilesArtifactIds)
+					DeleteNonSyncProfilesIfAnyInCreatedWorkspaceAsync(nonSyncProfilesArtifactIDs),
+					ModifyExistingSyncProfilesIfAnyInCreatedWorkspaceAsync(syncProfilesArtifactIDs)
 				).ConfigureAwait(false);
 		}
 
-		private async Task DeleteNonSyncProfilesIfAnyInCreatedWorkspaceAsync(IReadOnlyCollection<int> nonSyncProfilesArtifactIds)
+		private async Task DeleteNonSyncProfilesIfAnyInCreatedWorkspaceAsync(IReadOnlyCollection<int> nonSyncProfilesArtifactIDs)
 		{
-			if (nonSyncProfilesArtifactIds.IsNullOrEmpty())
+			if (nonSyncProfilesArtifactIDs.IsNullOrEmpty())
 			{
 				return;
 			}
 
-			bool success = await CreateRelativityObjectManager(WorkspaceId)
-				.MassDeleteAsync(nonSyncProfilesArtifactIds)
+			bool success = await CreateRelativityObjectManager(WorkspaceID)
+				.MassDeleteAsync(nonSyncProfilesArtifactIDs)
 				.ConfigureAwait(false);
 			if (!success)
 			{
@@ -88,9 +92,9 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			}
 		}
 
-		private async Task ModifyExistingSyncProfilesIfAnyInCreatedWorkspaceAsync(IEnumerable<int> syncProfilesArtifactIds)
+		private Task ModifyExistingSyncProfilesIfAnyInCreatedWorkspaceAsync(IEnumerable<int> syncProfilesArtifactIDs)
 		{
-			if (syncProfilesArtifactIds.IsNullOrEmpty())
+			if (syncProfilesArtifactIDs.IsNullOrEmpty())
 			{
 				return;
 			}
@@ -161,57 +165,9 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			}
 		}
 
-		private string UpdateSourceConfiguration(string sourceConfiguration)
-		{
-			JObject configJson = JObject.Parse(sourceConfiguration);
-			configJson.Property("SavedSearchArtifactId").Value = null;
-			configJson.Property("SourceWorkspaceArtifactId").Value = WorkspaceId;
-			return configJson.ToString();
-		}
+		private IRelativityObjectManager CreateRelativityObjectManager(int workspaceID) =>
+			_relativityObjectManagerFactory.Value.CreateRelativityObjectManager(workspaceID);
 
-		private async Task<int> GetSourceProviderArtifactIdAsync(IRelativityObjectManager objectManager)
-		{
-			return await GetArtifactIdByGuidAsync(objectManager, _sourceProviderObjectTypeGuid, _identifierFieldOnSourceProviderObjectGuid, _relativitySourceProviderTypeGuid).ConfigureAwait(false);
-		}
-
-		private async Task<int> GetDestinationProviderArtifactIdAsync(IRelativityObjectManager objectManager)
-		{
-			return await GetArtifactIdByGuidAsync(objectManager, _destinationProviderObjectTypeGuid, _identifierFieldOnDestinationProviderObjectGuid, _relativityDestinationProviderTypeGuid).ConfigureAwait(false);
-		}
-
-		private async Task<int> GetIntegrationPointTypeArtifactIdAsync(IRelativityObjectManager objectManager)
-		{
-			return await GetArtifactIdByGuidAsync(objectManager, ObjectTypeGuids.IntegrationPointTypeGuid, IntegrationPointTypeFieldGuids.IdentifierGuid,
-				Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ConfigureAwait(false);
-		}
-
-		private async Task<int> GetArtifactIdByGuidAsync(IRelativityObjectManager objectManager, Guid objectTypeGuid, Guid fieldGuid, Guid value)
-		{
-			Condition searchCondition = new TextCondition(fieldGuid, TextConditionEnum.EqualTo, value.ToString());
-
-			QueryRequest queryRequest = new QueryRequest
-			{
-				ObjectType = new ObjectTypeRef
-				{
-					Guid = objectTypeGuid
-				},
-				Condition = searchCondition.ToQueryString()
-			};
-
-			ResultSet<RelativityObject> queryResult = await objectManager.QueryAsync(queryRequest, 0, 1).ConfigureAwait(false);
-
-			if (queryResult.TotalCount < 1)
-			{
-				throw new IntegrationPointsException($"Relativity object type {objectTypeGuid} with field {fieldGuid} of value {value} in workspace of id {WorkspaceId} was not found");
-			}
-
-			int artifactId = queryResult.Items.First().ArtifactID;
-			return artifactId;
-		}
-
-		private IRelativityObjectManager CreateRelativityObjectManager(int workspaceId) =>
-			_relativityObjectManagerFactory.Value.CreateRelativityObjectManager(workspaceId);
-
-		private int WorkspaceId => Helper.GetActiveCaseID();
+		private int WorkspaceID => Helper.GetActiveCaseID();
 	}
 }

@@ -27,7 +27,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.IntegrationPo
 	{
 		private const string LONG_DATA_SET_EMBEDDED_DATA_INFO_VALUE = "KEPLER_DOCUMENT_REPOSITORY_LONG";
 
-		private int _workspaceID => SystemTestsSetupFixture.SourceWorkspace.ArtifactId;
+		private int _workspaceID => SystemTestsSetupFixture.SourceWorkspace.ArtifactID;
 		private IWindsorContainer _container => SystemTestsSetupFixture.Container;
 		private ITestHelper _testHelper;
 		private IDocumentRepository _documentRepository;
@@ -254,7 +254,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.IntegrationPo
 			{
 				ObjectType = new ObjectTypeRef {ArtifactTypeID = (int) kCura.Relativity.Client.ArtifactType.Document},
 				Fields = fields,
-				Condition = $"'ArtifactId' IN SAVEDSEARCH {searchArtifactID}"
+				Condition = $"'ArtifactID' IN SAVEDSEARCH {searchArtifactID}"
 			};
 			IList<RelativityObject> result = await _relativityObjectManager.QueryAsync(request).ConfigureAwait(false);
 			return result;
