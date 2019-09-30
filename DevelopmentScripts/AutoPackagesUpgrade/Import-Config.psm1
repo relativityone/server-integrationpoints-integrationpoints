@@ -9,3 +9,5 @@ $RipUpdateJiraLabel = "rip-packages-update"
 $RelativityUpdateJiraLabel = "rel-packages-update"
 $LogCharsLimit = 8000
 $AutoPackageUpgradeAdnotation = "This Jira was created automatically by AutoPackagesUpgrade script."
+
+Export-ModuleMember -Variable *
