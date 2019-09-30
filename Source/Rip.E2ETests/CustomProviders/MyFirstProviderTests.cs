@@ -23,6 +23,7 @@ using CoreConstants = kCura.IntegrationPoints.Core.Constants;
 namespace Rip.E2ETests.CustomProviders
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class MyFirstProviderTests
 	{
 		private const string _WORKSPACE_TEMPLATE_WITHOUT_RIP = WorkspaceTemplateNames.NEW_CASE_TEMPLATE_NAME;

@@ -17,6 +17,7 @@ using Constants = kCura.IntegrationPoints.Core.Constants;
 namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointManager
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class ItShouldCreateIntegrationPoint : RelativityProviderTemplate
 	{
 		public ItShouldCreateIntegrationPoint() : base($"create_s_{Utils.FormattedDateTimeNow}", $"create_d_{Utils.FormattedDateTimeNow}")

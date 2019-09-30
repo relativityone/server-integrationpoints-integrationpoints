@@ -22,6 +22,7 @@ using Rip.TestUtilities;
 namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.IntegrationPointServices
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class KeplerDocumentRepositoryTests
 	{
 		private const string LONG_DATA_SET_EMBEDDED_DATA_INFO_VALUE = "KEPLER_DOCUMENT_REPOSITORY_LONG";

@@ -13,6 +13,7 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class IntegrationPointServiceTestsForOtherProviders : OtherProvidersTemplate
 	{
 		private IIntegrationPointService _integrationPointService;

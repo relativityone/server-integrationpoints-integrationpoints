@@ -20,6 +20,7 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class QueueRepositoryTests : RelativityProviderTemplate
 	{
 		private ITestHelper _helper;

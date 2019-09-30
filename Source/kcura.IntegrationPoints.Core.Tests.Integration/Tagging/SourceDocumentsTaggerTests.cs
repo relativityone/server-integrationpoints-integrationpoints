@@ -28,6 +28,7 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Tagging
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class SourceDocumentsTaggerTests : RelativityProviderTemplate
 	{
 		private ISourceDocumentsTagger _sut;

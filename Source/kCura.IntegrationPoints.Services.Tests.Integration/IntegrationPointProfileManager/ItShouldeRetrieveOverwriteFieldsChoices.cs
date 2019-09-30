@@ -10,6 +10,7 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointProfileManager
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class ItShouldeRetrieveOverwriteFieldsChoices : SourceProviderTemplate
 	{
 		public ItShouldeRetrieveOverwriteFieldsChoices() : base($"choices_{Utils.FormattedDateTimeNow}")

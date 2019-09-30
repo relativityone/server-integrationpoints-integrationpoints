@@ -37,6 +37,7 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class ExportServiceManagerTests : RelativityProviderTemplate
 	{
 		private ExportServiceManager _exportManager;

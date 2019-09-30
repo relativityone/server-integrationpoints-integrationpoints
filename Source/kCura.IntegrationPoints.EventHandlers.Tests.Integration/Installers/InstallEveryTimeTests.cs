@@ -9,6 +9,7 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class InstallEveryTimeTests
 	{
 		private class TestHelper : IServiceContextHelper

@@ -11,6 +11,7 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	[Ignore("It's currently impossible to instantiate any repository from Relativity.API.Foundation in integration (system) tests. " +
 	        "Doing so requires using classes from Relativity.APIHelper project, which is only available via RelativityCore package " +
 	        "or via Helper instances which are passed to agent or custom page from Relativity and are not available in tests. " +
