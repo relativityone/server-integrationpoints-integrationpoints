@@ -20,56 +20,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			_objectArtifactIdsByStringFieldValueQuery = objectArtifactIdsByStringFieldValueQuery;
 		}
 
-		public async Task<IEnumerable<IntegrationPointProfile>> GetAllProfilesAsync(int workspaceID)
-		{
-			Task<int> syncSourceProviderArtifactIdTask = GetSyncSourceProviderArtifactIdAsync(workspaceId);
-			Task<int> syncDestinationProviderArtifactIdTask = GetSyncDestinationProviderArtifactIdAsync(workspaceId);
-			Task<List<IntegrationPointProfile>> getProfilesWithProvidersFromTemplateWorkspaceTask = GetProfilesWithProvidersFromWorkspaceAsync(workspaceId);
-			await Task.WhenAll(
-					syncSourceProviderArtifactIdTask,
-					syncDestinationProviderArtifactIdTask,
-					getProfilesWithProvidersFromTemplateWorkspaceTask)
-				.ConfigureAwait(false);
-
-			bool IsSyncProfile(IntegrationPointProfile integrationPointProfile) =>
-				integrationPointProfile.DestinationProvider == syncDestinationProviderArtifactIdTask.Result &&
-				integrationPointProfile.SourceProvider == syncSourceProviderArtifactIdTask.Result;
-
-			List<IntegrationPointProfile> allProfiles = getProfilesWithProvidersFromTemplateWorkspaceTask.Result;
-
-			List<int> nonSyncProfilesArtifactIds = allProfiles
-				.Where(p => !IsSyncProfile(p))
-				.Select(p => p.ArtifactId)
-				.ToList();
-			List<int> syncProfilesArtifactIds = allProfiles
-				.Where(IsSyncProfile)
-				.Select(p => p.ArtifactId)
-				.ToList();
-			return (nonSyncProfilesArtifactIds, syncProfilesArtifactIds);
-		}
-
-		private Task<int> GetSyncDestinationProviderArtifactIdAsync(int workspaceId) =>
-			GetSingleObjectArtifactIdByStringFieldValueAsync<DestinationProvider>(workspaceId,
-				destinationProvider => destinationProvider.Identifier,
-				kCura.IntegrationPoints.Core.Constants.IntegrationPoints.DestinationProviders.RELATIVITY);
-
-		private Task<int> GetSyncSourceProviderArtifactIdAsync(int workspaceId) =>
-			GetSingleObjectArtifactIdByStringFieldValueAsync<SourceProvider>(workspaceId,
-				sourceProvider => sourceProvider.Identifier,
-				kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.RELATIVITY);
-
-		private async Task<int> GetSingleObjectArtifactIdByStringFieldValueAsync<TSource>(int workspaceId,
-			Expression<Func<TSource, string>> propertySelector, string fieldValue) where TSource : BaseRdo, new()
-		{
-			List<int> objectsArtifactIds = await _objectArtifactIdsByStringFieldValueQuery
-				.QueryForObjectArtifactIdsByStringFieldValueAsync(workspaceId, propertySelector, fieldValue)
-				.ConfigureAwait(false);
-
-			int artifactId = objectsArtifactIds.Single();
-			return artifactId;
-		}
-
-		private async Task<List<IntegrationPointProfile>> GetProfilesWithProvidersFromWorkspaceAsync(int workspaceId)
+		public async Task<IEnumerable<IntegrationPointProfile>> GetAllProfilesAsync(int workspaceId)
 		{
 			var queryRequest = new QueryRequest
 			{
@@ -85,36 +36,36 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 					}
 				}
 			};
-			IList<IntegrationPointProfile> integrationPointProfiles = await _createRelativityObjectManager(workspaceID)
+			IList<IntegrationPointProfile> integrationPointProfiles = await _createRelativityObjectManager(workspaceId)
 				.QueryAsync<IntegrationPointProfile>(queryRequest)
 				.ConfigureAwait(false);
 
 			return integrationPointProfiles;
 		}
 
-		public Task<int> GetSyncDestinationProviderArtifactIdAsync(int workspaceID)
+		public Task<int> GetSyncDestinationProviderArtifactIdAsync(int workspaceId)
 		{
-			return GetSingleObjectArtifactIdByStringFieldValueAsync<DestinationProvider>(workspaceID,
+			return GetSingleObjectArtifactIdByStringFieldValueAsync<DestinationProvider>(workspaceId,
 				destinationProvider => destinationProvider.Identifier,
 				kCura.IntegrationPoints.Core.Constants.IntegrationPoints.DestinationProviders.RELATIVITY);
 		}
 
-		public Task<int> GetSyncSourceProviderArtifactIdAsync(int workspaceID)
+		public Task<int> GetSyncSourceProviderArtifactIdAsync(int workspaceId)
 		{
-			return GetSingleObjectArtifactIdByStringFieldValueAsync<SourceProvider>(workspaceID,
+			return GetSingleObjectArtifactIdByStringFieldValueAsync<SourceProvider>(workspaceId,
 				sourceProvider => sourceProvider.Identifier,
 				kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.RELATIVITY);
 		}
 
-		public Task<IEnumerable<int>> GetSyncProfilesAsync(IEnumerable<IntegrationPointProfile> profiles, int syncSourceProviderArtifactID, int syncDestinationProviderArtifactID)
+		public Task<IEnumerable<int>> GetSyncProfilesAsync(IEnumerable<IntegrationPointProfile> profiles, int syncSourceProviderArtifactId, int syncDestinationProviderArtifactId)
 		{
-			IEnumerable<int> nonSyncProfiles = FilterProfiles(profiles, (profile) => IsSyncProfile(profile, syncSourceProviderArtifactID, syncDestinationProviderArtifactID));
+			IEnumerable<int> nonSyncProfiles = FilterProfiles(profiles, (profile) => IsSyncProfile(profile, syncSourceProviderArtifactId, syncDestinationProviderArtifactId));
 			return Task.FromResult(nonSyncProfiles);
 		}
 
-		public Task<IEnumerable<int>> GetNonSyncProfilesAsync(IEnumerable<IntegrationPointProfile> profiles, int syncSourceProviderArtifactID, int syncDestinationProviderArtifactID)
+		public Task<IEnumerable<int>> GetNonSyncProfilesAsync(IEnumerable<IntegrationPointProfile> profiles, int syncSourceProviderArtifactId, int syncDestinationProviderArtifactId)
 		{
-			IEnumerable<int> nonSyncProfiles = FilterProfiles(profiles, (profile) => !IsSyncProfile(profile, syncSourceProviderArtifactID, syncDestinationProviderArtifactID));
+			IEnumerable<int> nonSyncProfiles = FilterProfiles(profiles, (profile) => !IsSyncProfile(profile, syncSourceProviderArtifactId, syncDestinationProviderArtifactId));
 			return Task.FromResult(nonSyncProfiles);
 		}
 
@@ -127,20 +78,20 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			return filteredProfiles;
 		}
 
-		private bool IsSyncProfile(IntegrationPointProfile integrationPointProfile, int syncSourceProviderArtifactID, int syncDestinationProviderArtifactID)
+		private bool IsSyncProfile(IntegrationPointProfile integrationPointProfile, int syncSourceProviderArtifactId, int syncDestinationProviderArtifactId)
 		{
-			return integrationPointProfile.DestinationProvider == syncDestinationProviderArtifactID &&
-			       integrationPointProfile.SourceProvider == syncSourceProviderArtifactID;
+			return integrationPointProfile.DestinationProvider == syncDestinationProviderArtifactId &&
+				   integrationPointProfile.SourceProvider == syncSourceProviderArtifactId;
 		}
 
-		private async Task<int> GetSingleObjectArtifactIdByStringFieldValueAsync<TSource>(int workspaceID,
+		private async Task<int> GetSingleObjectArtifactIdByStringFieldValueAsync<TSource>(int workspaceId,
 			Expression<Func<TSource, string>> propertySelector, string fieldValue) where TSource : BaseRdo, new()
 		{
-			IEnumerable<int> objectsArtifactIDs = await _objectArtifactIdsByStringFieldValueQuery
-				.QueryForObjectArtifactIdsByStringFieldValueAsync(workspaceID, propertySelector, fieldValue)
+			IEnumerable<int> objectsArtifactIds = await _objectArtifactIdsByStringFieldValueQuery
+				.QueryForObjectArtifactIdsByStringFieldValueAsync(workspaceId, propertySelector, fieldValue)
 				.ConfigureAwait(false);
 
-			int artifactId = objectsArtifactIDs.Single();
+			int artifactId = objectsArtifactIds.Single();
 			return artifactId;
 		}
 

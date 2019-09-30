@@ -92,7 +92,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			}
 		}
 
-		private Task ModifyExistingSyncProfilesIfAnyInCreatedWorkspaceAsync(IEnumerable<int> syncProfilesArtifactIDs)
+		private async Task ModifyExistingSyncProfilesIfAnyInCreatedWorkspaceAsync(IEnumerable<int> syncProfilesArtifactIDs)
 		{
 			if (syncProfilesArtifactIDs.IsNullOrEmpty())
 			{
@@ -128,7 +128,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				}
 			};
 
-			IRelativityObjectManager objectManager = CreateRelativityObjectManager(WorkspaceId);
+			IRelativityObjectManager objectManager = CreateRelativityObjectManager(WorkspaceID);
 			List<IntegrationPointProfile> integrationPointProfiles = await objectManager
 				.QueryAsync<IntegrationPointProfile>(queryRequest)
 				.ConfigureAwait(false);
@@ -163,6 +163,54 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 					}
 				}, FieldUpdateBehavior.Replace).ConfigureAwait(false);
 			}
+		}
+
+		private string UpdateSourceConfiguration(string sourceConfiguration)
+		{
+			JObject configJson = JObject.Parse(sourceConfiguration);
+			configJson.Property("SavedSearchArtifactId").Value = null;
+			configJson.Property("SourceWorkspaceArtifactId").Value = WorkspaceID;
+			return configJson.ToString();
+		}
+		
+		private async Task<int> GetSourceProviderArtifactIdAsync(IRelativityObjectManager objectManager) 
+		{ 
+			return await GetArtifactIdByGuidAsync(objectManager, _sourceProviderObjectTypeGuid, _identifierFieldOnSourceProviderObjectGuid, _relativitySourceProviderTypeGuid).ConfigureAwait(false); 
+		} 
+ 
+		private async Task<int> GetDestinationProviderArtifactIdAsync(IRelativityObjectManager objectManager) 
+		{ 
+			return await GetArtifactIdByGuidAsync(objectManager, _destinationProviderObjectTypeGuid, _identifierFieldOnDestinationProviderObjectGuid, _relativityDestinationProviderTypeGuid).ConfigureAwait(false); 
+		} 
+ 
+		private async Task<int> GetIntegrationPointTypeArtifactIdAsync(IRelativityObjectManager objectManager)
+		{
+			return await GetArtifactIdByGuidAsync(objectManager, ObjectTypeGuids.IntegrationPointTypeGuid, IntegrationPointTypeFieldGuids.IdentifierGuid,
+				Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ConfigureAwait(false);
+		}
+
+		private async Task<int> GetArtifactIdByGuidAsync(IRelativityObjectManager objectManager, Guid objectTypeGuid, Guid fieldGuid, Guid value)
+		{
+			Condition searchCondition = new TextCondition(fieldGuid, TextConditionEnum.EqualTo, value.ToString());
+
+			QueryRequest queryRequest = new QueryRequest
+			{
+				ObjectType = new ObjectTypeRef
+				{
+					Guid = objectTypeGuid
+				},
+				Condition = searchCondition.ToQueryString()
+			};
+
+			ResultSet<RelativityObject> queryResult = await objectManager.QueryAsync(queryRequest, 0, 1).ConfigureAwait(false);
+
+			if (queryResult.TotalCount < 1)
+			{
+				throw new IntegrationPointsException($"Relativity object type {objectTypeGuid} with field {fieldGuid} of value {value} in workspace of id {WorkspaceID} was not found");
+			}
+
+			int artifactId = queryResult.Items.First().ArtifactID;
+			return artifactId;
 		}
 
 		private IRelativityObjectManager CreateRelativityObjectManager(int workspaceID) =>

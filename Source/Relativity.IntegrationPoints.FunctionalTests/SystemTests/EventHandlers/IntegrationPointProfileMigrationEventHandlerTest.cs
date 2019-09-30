@@ -96,35 +96,35 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 			// NOTE: The assertions below should fail until completion of REL-351468
 
 			// verify destination provider id
-			//int syncDestinationProviderArtifactId = await GetSyncDestinationProviderArtifactIdAsync(targetWorkspaceId)
-			//	.ConfigureAwait(false);
-			//targetWorkspaceProfiles.Select(p => p.DestinationProvider)
-			//	.ShouldAllBeEquivalentTo(syncDestinationProviderArtifactId);
+			int syncDestinationProviderArtifactId = await GetSyncDestinationProviderArtifactIdAsync(targetWorkspaceId)
+				.ConfigureAwait(false);
+			targetWorkspaceProfiles.Select(p => p.DestinationProvider)
+				.ShouldAllBeEquivalentTo(syncDestinationProviderArtifactId);
 
-			//// verify source provider id
-			//int syncSourceProviderArtifactId = await GetSyncSourceProviderArtifactIdAsync(targetWorkspaceId)
-			//	.ConfigureAwait(false);
-			//targetWorkspaceProfiles.Select(p => p.SourceProvider)
-			//	.ShouldAllBeEquivalentTo(syncSourceProviderArtifactId);
+			// verify source provider id
+			int syncSourceProviderArtifactId = await GetSyncSourceProviderArtifactIdAsync(targetWorkspaceId)
+				.ConfigureAwait(false);
+			targetWorkspaceProfiles.Select(p => p.SourceProvider)
+				.ShouldAllBeEquivalentTo(syncSourceProviderArtifactId);
 
-			//// verify integration point type id
-			//int exportIntegrationPointTypeArtifactId = await GetTypeArtifactIdAsync(targetWorkspaceId, IntegrationPointTypes.ExportName)
-			//	.ConfigureAwait(false);
-			//targetWorkspaceProfiles.Select(p => p.Type)
-			//	.ShouldBeEquivalentTo(exportIntegrationPointTypeArtifactId);
+			// verify integration point type id
+			int exportIntegrationPointTypeArtifactId = await GetTypeArtifactIdAsync(targetWorkspaceId, IntegrationPointTypes.ExportName)
+				.ConfigureAwait(false);
+			targetWorkspaceProfiles.Select(p => p.Type)
+				.ShouldBeEquivalentTo(exportIntegrationPointTypeArtifactId);
 
-			//var sourceConfigurations = targetWorkspaceProfiles.Select(p => p.SourceConfiguration)
-			//	.Select(JObject.Parse)
-			//	.ToList();
-			//// verify source workspace id in source configuration
-			//sourceConfigurations.Select(c => c[nameof(kCura.IntegrationPoints.Services.RelativityProviderSourceConfiguration.SourceWorkspaceArtifactId)])
-			//	.Select(t => t.ToObject<int>())
-			//	.ShouldAllBeEquivalentTo(targetWorkspaceId);
+			var sourceConfigurations = targetWorkspaceProfiles.Select(p => p.SourceConfiguration)
+				.Select(JObject.Parse)
+				.ToList();
+			// verify source workspace id in source configuration
+			sourceConfigurations.Select(c => c[nameof(kCura.IntegrationPoints.Services.RelativityProviderSourceConfiguration.SourceWorkspaceArtifactId)])
+				.Select(t => t.ToObject<int>())
+				.ShouldAllBeEquivalentTo(targetWorkspaceId);
 
-			//// verify saved search id in source configuration
-			//sourceConfigurations.Select(c => c.Properties().FirstOrDefault(p =>
-			//		p.Name.Equals(nameof(kCura.IntegrationPoints.Services.RelativityProviderSourceConfiguration.SavedSearchArtifactId), StringComparison.OrdinalIgnoreCase)))
-			//	.Should().OnlyContain(p => p == null || p.Value<int>() == 0);
+			// verify saved search id in source configuration
+			sourceConfigurations.Select(c => c.Properties().FirstOrDefault(p =>
+					p.Name.Equals(nameof(kCura.IntegrationPoints.Services.RelativityProviderSourceConfiguration.SavedSearchArtifactId), StringComparison.OrdinalIgnoreCase)))
+				.Should().OnlyContain(p => p == null || p.Value<int>() == 0);
 		}
 
 		private Task<int> GetSyncDestinationProviderArtifactIdAsync(int workspaceId) =>
@@ -140,7 +140,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 		private async Task<int> GetSingleObjectArtifactIdByStringFieldValueAsync<TSource>(int workspaceId,
 			Expression<Func<TSource, string>> propertySelector, string fieldValue) where TSource : BaseRdo, new()
 		{
-			List<int> objectsArtifactIds = await _objectArtifactIdsByStringFieldValueQuery
+			IEnumerable<int> objectsArtifactIds = await _objectArtifactIdsByStringFieldValueQuery
 				.QueryForObjectArtifactIdsByStringFieldValueAsync(workspaceId, propertySelector, fieldValue)
 				.ConfigureAwait(false);
 
