@@ -28,6 +28,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		}
 		public ExportEntityToFileSecondPage(RemoteWebDriver driver) : base(driver)
 		{
+			WaitForPage();
 			PageFactory.InitElements(driver, this);
 		}
 
