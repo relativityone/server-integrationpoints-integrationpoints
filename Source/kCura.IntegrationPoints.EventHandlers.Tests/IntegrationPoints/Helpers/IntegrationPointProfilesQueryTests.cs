@@ -92,7 +92,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			SetUpSyncProviders();
 
 			// Act
-			int sourceProviderId = await _query.GetSyncSourceProviderArtifactIdAsync(_WORKSPACE_ID);
+			int sourceProviderId = await _query.GetSyncSourceProviderArtifactIdAsync(_WORKSPACE_ID).ConfigureAwait(false);
 
 			// Assert
 			sourceProviderId.Should().Be(_RELATIVITY_SOURCE_PROVIDER_ID);
@@ -105,7 +105,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			SetUpSyncProviders();
 
 			// Act
-			int destinationProviderArtifactId = await _query.GetSyncDestinationProviderArtifactIdAsync(_WORKSPACE_ID);
+			int destinationProviderArtifactId = await _query.GetSyncDestinationProviderArtifactIdAsync(_WORKSPACE_ID).ConfigureAwait(false);
 
 			// Assert
 			destinationProviderArtifactId.Should().Be(_RELATIVITY_DESTINATION_PROVIDER_ID);
@@ -145,7 +145,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			SetUpProfiles(1, 1);
 
 			// Act
-			List<int> syncProfiles = (await _query.GetSyncProfilesAsync(_profilesList, _RELATIVITY_SOURCE_PROVIDER_ID, _RELATIVITY_DESTINATION_PROVIDER_ID)).ToList();
+			List<int> syncProfiles = (await _query.GetSyncProfilesAsync(_profilesList, _RELATIVITY_SOURCE_PROVIDER_ID, _RELATIVITY_DESTINATION_PROVIDER_ID).ConfigureAwait(false)).ToList();
 
 			// Assert
 			syncProfiles.Should().ContainSingle(x => x == _SYNC_PROFILE_ID);
@@ -159,7 +159,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			SetUpProfiles(1, 1);
 
 			// Act
-			List<int> nonSyncProfiles = (await _query.GetNonSyncProfilesAsync(_profilesList, _RELATIVITY_SOURCE_PROVIDER_ID, _RELATIVITY_DESTINATION_PROVIDER_ID)).ToList();
+			List<int> nonSyncProfiles = (await _query.GetNonSyncProfilesAsync(_profilesList, _RELATIVITY_SOURCE_PROVIDER_ID, _RELATIVITY_DESTINATION_PROVIDER_ID).ConfigureAwait(false)).ToList();
 
 			// Assert
 			nonSyncProfiles.Should().ContainSingle(x => x == _NON_SYNC_PROFILE_ID);
