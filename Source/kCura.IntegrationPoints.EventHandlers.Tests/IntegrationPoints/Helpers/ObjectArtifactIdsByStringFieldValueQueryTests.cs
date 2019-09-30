@@ -51,10 +51,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		public async Task ItShouldConstructProperConditionBasedOnParameters()
 		{
 			// Act
-			List<int> artifactIds = await _query
+			List<int> artifactIds = (await _query
 				.QueryForObjectArtifactIdsByStringFieldValueAsync<RdoStub>(_WORKSPACE_ID,
 					stub => stub.Property, _FIELD_VALUE)
-				.ConfigureAwait(false);
+				.ConfigureAwait(false)).ToList();
 
 			// Assert
 			artifactIds.ShouldAllBeEquivalentTo(_RDO_STUB_ARTIFACT_ID);

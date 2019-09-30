@@ -2,12 +2,12 @@
 {
 	public class TestWorkspace
 	{
-		public int ArtifactId { get; }
+		public int ArtifactID { get; }
 		public string Name { get; }
 
-		public TestWorkspace(int artifactId, string name)
+		public TestWorkspace(int artifactID, string name)
 		{
-			ArtifactId = artifactId;
+			ArtifactID = artifactID;
 			Name = name;
 		}
 	}

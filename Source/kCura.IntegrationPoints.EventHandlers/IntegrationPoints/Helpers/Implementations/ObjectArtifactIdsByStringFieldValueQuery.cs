@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			_createRelativityObjectManager = createRelativityObjectManager;
 		}
 
-		public async Task<List<int>> QueryForObjectArtifactIdsByStringFieldValueAsync<TSource>(int workspaceId,
+		public async Task<IEnumerable<int>> QueryForObjectArtifactIdsByStringFieldValueAsync<TSource>(int workspaceID,
 			Expression<Func<TSource, string>> propertySelector, string fieldValue) where TSource : BaseRdo, new()
 		{
 			Guid fieldGuid = BaseRdo.GetFieldGuid(propertySelector);
@@ -29,14 +29,13 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			{
 				Condition = searchCondition.ToQueryString()
 			};
-			List<TSource> relativityObjects = await _createRelativityObjectManager(workspaceId)
-				.QueryAsync<TSource>(queryRequest, true)
+			List<TSource> relativityObjects = await _createRelativityObjectManager(workspaceID)
+				.QueryAsync<TSource>(queryRequest, noFields: true)
 				.ConfigureAwait(false);
 
-			List<int> objectsArtifactIds = relativityObjects
-				.Select(o => o.ArtifactId)
-				.ToList();
-			return objectsArtifactIds;
+			IEnumerable<int> objectsArtifactIDs = relativityObjects
+				.Select(relativityObject => relativityObject.ArtifactId);
+			return objectsArtifactIDs;
 		}
 	}
 }

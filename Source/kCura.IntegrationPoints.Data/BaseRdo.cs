@@ -170,16 +170,21 @@ namespace kCura.IntegrationPoints.Data
 			return newValue;
 		}
 
-		public static Dictionary<Guid, DynamicFieldAttribute> GetFieldMetadata(Type t)
+		public static Dictionary<Guid, DynamicFieldAttribute> GetFieldMetadata(Type type)
 		{
-			return (from pi in t.GetProperties()
-					select pi.GetCustomAttributes(typeof(DynamicFieldAttribute), true)
-								into attributes
-					where attributes.Any()
-					select (DynamicFieldAttribute)attributes.First()).ToDictionary(attribute => attribute.FieldGuid);
+			IEnumerable<DynamicFieldAttribute> dynamicFieldAttributes = type
+				.GetProperties()
+				.Select(propertyInfo => propertyInfo.GetCustomAttributes(typeof(DynamicFieldAttribute), inherit: true))
+				.Where(attributes => attributes.Any())
+				.Select(attributes => (DynamicFieldAttribute) attributes.First());
+
+			Dictionary<Guid, DynamicFieldAttribute> dynamicFieldAttributesDictionary = dynamicFieldAttributes
+				.ToDictionary(attribute => attribute.FieldGuid);
+
+			return dynamicFieldAttributesDictionary;
 		}
 
-		public static DynamicObjectAttribute GetObjectMetadata(Type t)
+		protected static DynamicObjectAttribute GetObjectMetadata(Type t)
 		{
 			return (DynamicObjectAttribute)t.GetCustomAttributes(typeof(DynamicObjectAttribute), false).First();
 		}
@@ -188,7 +193,7 @@ namespace kCura.IntegrationPoints.Data
 			where TRdo : BaseRdo
 		{
 			Guid fieldGuid = GetPropertyInfo(propertySelector)
-				.GetCustomAttributes(typeof(DynamicFieldAttribute), true)
+				.GetCustomAttributes(typeof(DynamicFieldAttribute), inherit:true)
 				.Cast<DynamicFieldAttribute>()
 				.Single()
 				.FieldGuid;

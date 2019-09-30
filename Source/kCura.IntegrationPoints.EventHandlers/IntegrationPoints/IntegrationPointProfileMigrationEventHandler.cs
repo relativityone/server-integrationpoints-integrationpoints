@@ -49,29 +49,29 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 		private async Task MigrateProfilesAsync()
 		{
-			int sourceProviderArtifactId = await _integrationPointProfilesQuery.GetSyncSourceProviderArtifactIdAsync(TemplateWorkspaceID).ConfigureAwait(false);
-			int destinationProviderArtifactId = await _integrationPointProfilesQuery.GetSyncDestinationProviderArtifactIdAsync(TemplateWorkspaceID).ConfigureAwait(false);
+			int sourceProviderArtifactID = await _integrationPointProfilesQuery.GetSyncSourceProviderArtifactIdAsync(TemplateWorkspaceID).ConfigureAwait(false);
+			int destinationProviderArtifactID = await _integrationPointProfilesQuery.GetSyncDestinationProviderArtifactIdAsync(TemplateWorkspaceID).ConfigureAwait(false);
 			List<IntegrationPointProfile> allProfiles = (await _integrationPointProfilesQuery.GetAllProfilesAsync(TemplateWorkspaceID).ConfigureAwait(false)).ToList();
-			List<int> syncProfilesArtifactIds = (await _integrationPointProfilesQuery
-				.GetSyncProfilesAsync(allProfiles, sourceProviderArtifactId, destinationProviderArtifactId).ConfigureAwait(false)).ToList();
-			List<int> nonSyncProfilesArtifactIds = (await _integrationPointProfilesQuery
-				.GetNonSyncProfilesAsync(allProfiles, sourceProviderArtifactId, destinationProviderArtifactId).ConfigureAwait(false)).ToList();
+			List<int> syncProfilesArtifactIDs = (await _integrationPointProfilesQuery
+				.GetSyncProfilesAsync(allProfiles, sourceProviderArtifactID, destinationProviderArtifactID).ConfigureAwait(false)).ToList();
+			List<int> nonSyncProfilesArtifactIDs = (await _integrationPointProfilesQuery
+				.GetNonSyncProfilesAsync(allProfiles, sourceProviderArtifactID, destinationProviderArtifactID).ConfigureAwait(false)).ToList();
 
 			await Task.WhenAll(
-					DeleteNonSyncProfilesIfAnyInCreatedWorkspaceAsync(nonSyncProfilesArtifactIds),
-					ModifyExistingSyncProfilesIfAnyInCreatedWorkspaceAsync(syncProfilesArtifactIds)
+					DeleteNonSyncProfilesIfAnyInCreatedWorkspaceAsync(nonSyncProfilesArtifactIDs),
+					ModifyExistingSyncProfilesIfAnyInCreatedWorkspaceAsync(syncProfilesArtifactIDs)
 				).ConfigureAwait(false);
 		}
 
-		private async Task DeleteNonSyncProfilesIfAnyInCreatedWorkspaceAsync(IReadOnlyCollection<int> nonSyncProfilesArtifactIds)
+		private async Task DeleteNonSyncProfilesIfAnyInCreatedWorkspaceAsync(IReadOnlyCollection<int> nonSyncProfilesArtifactIDs)
 		{
-			if (nonSyncProfilesArtifactIds.IsNullOrEmpty())
+			if (nonSyncProfilesArtifactIDs.IsNullOrEmpty())
 			{
 				return;
 			}
 
-			bool success = await CreateRelativityObjectManager(WorkspaceId)
-				.MassDeleteAsync(nonSyncProfilesArtifactIds)
+			bool success = await CreateRelativityObjectManager(WorkspaceID)
+				.MassDeleteAsync(nonSyncProfilesArtifactIDs)
 				.ConfigureAwait(false);
 			if (!success)
 			{
@@ -79,9 +79,9 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			}
 		}
 
-		private Task ModifyExistingSyncProfilesIfAnyInCreatedWorkspaceAsync(IEnumerable<int> syncProfilesArtifactIds)
+		private Task ModifyExistingSyncProfilesIfAnyInCreatedWorkspaceAsync(IEnumerable<int> syncProfilesArtifactIDs)
 		{
-			if (syncProfilesArtifactIds.IsNullOrEmpty())
+			if (syncProfilesArtifactIDs.IsNullOrEmpty())
 			{
 				return Task.CompletedTask;
 			}
@@ -89,9 +89,9 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			return Task.CompletedTask; // NOTE: To be implemented in REL-351468
 		}
 
-		private IRelativityObjectManager CreateRelativityObjectManager(int workspaceId) =>
-			_relativityObjectManagerFactory.Value.CreateRelativityObjectManager(workspaceId);
+		private IRelativityObjectManager CreateRelativityObjectManager(int workspaceID) =>
+			_relativityObjectManagerFactory.Value.CreateRelativityObjectManager(workspaceID);
 
-		private int WorkspaceId => Helper.GetActiveCaseID();
+		private int WorkspaceID => Helper.GetActiveCaseID();
 	}
 }

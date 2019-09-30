@@ -65,15 +65,15 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 		[Test]
 		public async Task ItShouldCopyOnlySyncProfiles()
 		{
-			List<int> createdProfilesArtifactIds = await CreateTestProfilesAsync(SystemTestsSetupFixture.SourceWorkspace.ArtifactId).ConfigureAwait(false);
-			_teardownActions.AddLast(() => DeleteTestProfilesAsync(SystemTestsSetupFixture.SourceWorkspace.ArtifactId, createdProfilesArtifactIds).GetAwaiter().GetResult());
+			List<int> createdProfilesArtifactIds = await CreateTestProfilesAsync(SystemTestsSetupFixture.SourceWorkspace.ArtifactID).ConfigureAwait(false);
+			_teardownActions.AddLast(() => DeleteTestProfilesAsync(SystemTestsSetupFixture.SourceWorkspace.ArtifactID, createdProfilesArtifactIds).GetAwaiter().GetResult());
 
 			// Act
 			TestWorkspace createdWorkspace = await SystemTestsSetupFixture.CreateManagedWorkspaceWithDefaultName(SystemTestsSetupFixture.SourceWorkspace.Name)
 				.ConfigureAwait(false);
 
 			// Assert
-			await VerifyAllProfilesInDestinationWorkspaceAreSyncOnlyAndHaveProperValuesSetAsync(createdWorkspace.ArtifactId)
+			await VerifyAllProfilesInDestinationWorkspaceAreSyncOnlyAndHaveProperValuesSetAsync(createdWorkspace.ArtifactID)
 				.ConfigureAwait(false);
 		}
 

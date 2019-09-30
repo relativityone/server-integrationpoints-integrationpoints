@@ -154,6 +154,22 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 		}
 
 		[Test]
+		public void MassDeleteAsync_ShouldThrowWhenObjectManagerNotInitialized()
+		{
+			//arrange
+			var request = new MassDeleteByObjectIdentifiersRequest();
+
+			_sut = new ObjectManagerFacade(() => null);
+
+			//act
+			Func<Task> action = () => _sut
+				.DeleteAsync(_WORKSPACE_ID, request);
+
+			//assert
+			action.ShouldThrow<NullReferenceException>();
+		}
+
+		[Test]
 		public async Task StreamLongTextAsync_ShouldReturnSameResultAsObjectManager()
 		{
 			//arrange
