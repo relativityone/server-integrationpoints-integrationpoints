@@ -57,6 +57,13 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 				kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.RELATIVITY);
 		}
 
+		public Task<int> GetIntegrationPointExportTypeArtifactIdAsync(int workspaceId)
+		{
+			return GetSingleObjectArtifactIdByStringFieldValueAsync<IntegrationPointType>(workspaceId,
+				type => type.Identifier,
+				kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString());
+		}
+
 		public Task<IEnumerable<int>> GetSyncProfilesAsync(IEnumerable<IntegrationPointProfile> profiles, int syncSourceProviderArtifactId, int syncDestinationProviderArtifactId)
 		{
 			IEnumerable<int> nonSyncProfiles = FilterProfiles(profiles, (profile) => IsSyncProfile(profile, syncSourceProviderArtifactId, syncDestinationProviderArtifactId));

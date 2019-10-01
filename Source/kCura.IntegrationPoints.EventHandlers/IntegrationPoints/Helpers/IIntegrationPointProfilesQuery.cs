@@ -9,6 +9,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers
 		Task<IEnumerable<IntegrationPointProfile>> GetAllProfilesAsync(int workspaceID);
 		Task<int> GetSyncDestinationProviderArtifactIdAsync(int workspaceID);
 		Task<int> GetSyncSourceProviderArtifactIdAsync(int workspaceID);
+		Task<int> GetIntegrationPointExportTypeArtifactIdAsync(int workspaceId);
 		Task<IEnumerable<int>> GetSyncProfilesAsync(IEnumerable<IntegrationPointProfile> profiles, int syncSourceProviderArtifactID, int syncDestinationProviderArtifactID);
 		Task<IEnumerable<int>> GetNonSyncProfilesAsync(IEnumerable<IntegrationPointProfile> profiles, int syncSourceProviderArtifactID, int syncDestinationProviderArtifactID);
 	}

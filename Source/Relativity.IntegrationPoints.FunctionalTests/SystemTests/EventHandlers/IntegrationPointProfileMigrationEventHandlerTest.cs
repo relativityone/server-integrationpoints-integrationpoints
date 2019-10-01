@@ -93,8 +93,6 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 			int expectedSyncProfilesCount = _testProfilesConfigs.Count(IsSyncProfile);
 			targetWorkspaceProfiles.Should().HaveCount(expectedSyncProfilesCount);
 
-			// NOTE: The assertions below should fail until completion of REL-351468
-
 			// verify destination provider id
 			int syncDestinationProviderArtifactId = await GetSyncDestinationProviderArtifactIdAsync(targetWorkspaceId)
 				.ConfigureAwait(false);
@@ -110,8 +108,10 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 			// verify integration point type id
 			int exportIntegrationPointTypeArtifactId = await GetTypeArtifactIdAsync(targetWorkspaceId, IntegrationPointTypes.ExportName)
 				.ConfigureAwait(false);
+			targetWorkspaceProfiles.Select(p => p.Type.HasValue)
+				.ShouldAllBeEquivalentTo(true);
 			targetWorkspaceProfiles.Select(p => p.Type)
-				.ShouldBeEquivalentTo(exportIntegrationPointTypeArtifactId);
+				.ShouldAllBeEquivalentTo(exportIntegrationPointTypeArtifactId);
 
 			var sourceConfigurations = targetWorkspaceProfiles.Select(p => p.SourceConfiguration)
 				.Select(JObject.Parse)
@@ -122,9 +122,9 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 				.ShouldAllBeEquivalentTo(targetWorkspaceId);
 
 			// verify saved search id in source configuration
-			sourceConfigurations.Select(c => c.Properties().FirstOrDefault(p =>
-					p.Name.Equals(nameof(kCura.IntegrationPoints.Services.RelativityProviderSourceConfiguration.SavedSearchArtifactId), StringComparison.OrdinalIgnoreCase)))
-				.Should().OnlyContain(p => p == null || p.Value<int>() == 0);
+			sourceConfigurations
+				.Select(c => c[nameof(kCura.IntegrationPoints.Services.RelativityProviderSourceConfiguration.SavedSearchArtifactId)].Type)
+				.ShouldAllBeEquivalentTo(JTokenType.Null);
 		}
 
 		private Task<int> GetSyncDestinationProviderArtifactIdAsync(int workspaceId) =>
