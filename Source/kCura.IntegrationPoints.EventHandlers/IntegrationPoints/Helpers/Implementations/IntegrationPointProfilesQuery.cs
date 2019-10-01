@@ -26,13 +26,24 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			{
 				Fields = new[]
 				{
-					new FieldRef
+					new FieldRef()
 					{
-						Guid = IntegrationPointProfileFieldGuids.DestinationProviderGuid
+						Guid = IntegrationPointProfileFieldGuids.SourceConfigurationGuid
+
 					},
-					new FieldRef
+					new FieldRef()
 					{
 						Guid = IntegrationPointProfileFieldGuids.SourceProviderGuid
+
+					},
+					new FieldRef()
+					{
+						Guid = IntegrationPointProfileFieldGuids.DestinationProviderGuid
+
+					},
+					new FieldRef()
+					{
+						Guid = IntegrationPointProfileFieldGuids.TypeGuid
 					}
 				}
 			};
@@ -41,6 +52,32 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 				.ConfigureAwait(false);
 
 			return integrationPointProfiles;
+		}
+
+		public Task<IEnumerable<IntegrationPointProfile>> GetSyncProfilesAsync(IEnumerable<IntegrationPointProfile> profiles, int syncSourceProviderArtifactId, int syncDestinationProviderArtifactId)
+		{
+			IEnumerable<IntegrationPointProfile> nonSyncProfiles = FilterProfiles(profiles, (profile) => IsSyncProfile(profile, syncSourceProviderArtifactId, syncDestinationProviderArtifactId));
+			return Task.FromResult(nonSyncProfiles);
+		}
+
+		public Task<IEnumerable<IntegrationPointProfile>> GetNonSyncProfilesAsync(IEnumerable<IntegrationPointProfile> profiles, int syncSourceProviderArtifactId, int syncDestinationProviderArtifactId)
+		{
+			IEnumerable<IntegrationPointProfile> nonSyncProfiles = FilterProfiles(profiles, (profile) => !IsSyncProfile(profile, syncSourceProviderArtifactId, syncDestinationProviderArtifactId));
+			return Task.FromResult(nonSyncProfiles);
+		}
+
+		private List<IntegrationPointProfile> FilterProfiles(IEnumerable<IntegrationPointProfile> profiles, Func<IntegrationPointProfile, bool> filter)
+		{
+			List<IntegrationPointProfile> filteredProfiles = profiles
+				.Where(filter)
+				.ToList();
+			return filteredProfiles;
+		}
+
+		private bool IsSyncProfile(IntegrationPointProfile integrationPointProfile, int syncSourceProviderArtifactId, int syncDestinationProviderArtifactId)
+		{
+			return integrationPointProfile.DestinationProvider == syncDestinationProviderArtifactId &&
+				   integrationPointProfile.SourceProvider == syncSourceProviderArtifactId;
 		}
 
 		public Task<int> GetSyncDestinationProviderArtifactIdAsync(int workspaceId)
@@ -62,33 +99,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			return GetSingleObjectArtifactIdByStringFieldValueAsync<IntegrationPointType>(workspaceId,
 				type => type.Identifier,
 				kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString());
-		}
-
-		public Task<IEnumerable<int>> GetSyncProfilesAsync(IEnumerable<IntegrationPointProfile> profiles, int syncSourceProviderArtifactId, int syncDestinationProviderArtifactId)
-		{
-			IEnumerable<int> nonSyncProfiles = FilterProfiles(profiles, (profile) => IsSyncProfile(profile, syncSourceProviderArtifactId, syncDestinationProviderArtifactId));
-			return Task.FromResult(nonSyncProfiles);
-		}
-
-		public Task<IEnumerable<int>> GetNonSyncProfilesAsync(IEnumerable<IntegrationPointProfile> profiles, int syncSourceProviderArtifactId, int syncDestinationProviderArtifactId)
-		{
-			IEnumerable<int> nonSyncProfiles = FilterProfiles(profiles, (profile) => !IsSyncProfile(profile, syncSourceProviderArtifactId, syncDestinationProviderArtifactId));
-			return Task.FromResult(nonSyncProfiles);
-		}
-
-		private List<int> FilterProfiles(IEnumerable<IntegrationPointProfile> profiles, Func<IntegrationPointProfile, bool> filter)
-		{
-			List<int> filteredProfiles = profiles
-				.Where(filter)
-				.Select(profile => profile.ArtifactId)
-				.ToList();
-			return filteredProfiles;
-		}
-
-		private bool IsSyncProfile(IntegrationPointProfile integrationPointProfile, int syncSourceProviderArtifactId, int syncDestinationProviderArtifactId)
-		{
-			return integrationPointProfile.DestinationProvider == syncDestinationProviderArtifactId &&
-				   integrationPointProfile.SourceProvider == syncSourceProviderArtifactId;
 		}
 
 		private async Task<int> GetSingleObjectArtifactIdByStringFieldValueAsync<TSource>(int workspaceId,

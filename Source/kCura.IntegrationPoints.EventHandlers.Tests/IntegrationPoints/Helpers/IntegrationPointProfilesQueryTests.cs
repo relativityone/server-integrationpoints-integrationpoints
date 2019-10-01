@@ -145,10 +145,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			SetUpProfiles(1, 1);
 
 			// Act
-			List<int> syncProfiles = (await _query.GetSyncProfilesAsync(_profilesList, _RELATIVITY_SOURCE_PROVIDER_ID, _RELATIVITY_DESTINATION_PROVIDER_ID).ConfigureAwait(false)).ToList();
+			List<IntegrationPointProfile> syncProfiles = (await _query.GetSyncProfilesAsync(_profilesList, _RELATIVITY_SOURCE_PROVIDER_ID, _RELATIVITY_DESTINATION_PROVIDER_ID).ConfigureAwait(false)).ToList();
 
 			// Assert
-			syncProfiles.Should().ContainSingle(x => x == _SYNC_PROFILE_ID);
+			syncProfiles.Should().ContainSingle(x => x.ArtifactId == _SYNC_PROFILE_ID);
 		}
 
 		[Test]
@@ -159,10 +159,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			SetUpProfiles(1, 1);
 
 			// Act
-			List<int> nonSyncProfiles = (await _query.GetNonSyncProfilesAsync(_profilesList, _RELATIVITY_SOURCE_PROVIDER_ID, _RELATIVITY_DESTINATION_PROVIDER_ID).ConfigureAwait(false)).ToList();
+			List<IntegrationPointProfile> nonSyncProfiles = (await _query.GetNonSyncProfilesAsync(_profilesList, _RELATIVITY_SOURCE_PROVIDER_ID, _RELATIVITY_DESTINATION_PROVIDER_ID).ConfigureAwait(false)).ToList();
 
 			// Assert
-			nonSyncProfiles.Should().ContainSingle(x => x == _NON_SYNC_PROFILE_ID);
+			nonSyncProfiles.Should().ContainSingle(x => x.ArtifactId == _NON_SYNC_PROFILE_ID);
 		}
 
 		private void SetUpProfiles(int syncProfilesCount, int nonSyncProfilesCount)
