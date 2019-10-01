@@ -149,17 +149,26 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 					new FieldRefValuePair()
 					{
 						Field = sourceProviderField,
-						Value = sourceProviderArtifactId
+						Value = new RelativityObjectRef()
+						{
+							ArtifactID = sourceProviderArtifactId
+						}
 					},
 					new FieldRefValuePair()
 					{
 						Field = destinationProviderField,
-						Value = destinationProviderArtifactId
+						Value = new RelativityObjectRef()
+						{
+							ArtifactID = destinationProviderArtifactId
+						}
 					}, 
 					new FieldRefValuePair()
 					{
 						Field = typeField,
-						Value = integrationPointTypeArtifactId
+						Value = new RelativityObjectRef()
+						{
+							ArtifactID = integrationPointTypeArtifactId
+						}
 					}
 				}, FieldUpdateBehavior.Replace).ConfigureAwait(false);
 			}
