@@ -66,11 +66,10 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			return Task.FromResult(nonSyncProfiles);
 		}
 
-		private List<IntegrationPointProfile> FilterProfiles(IEnumerable<IntegrationPointProfile> profiles, Func<IntegrationPointProfile, bool> filter)
+		private IEnumerable<IntegrationPointProfile> FilterProfiles(IEnumerable<IntegrationPointProfile> profiles, Func<IntegrationPointProfile, bool> filter)
 		{
-			List<IntegrationPointProfile> filteredProfiles = profiles
-				.Where(filter)
-				.ToList();
+			IEnumerable<IntegrationPointProfile> filteredProfiles = profiles
+				.Where(filter);
 			return filteredProfiles;
 		}
 

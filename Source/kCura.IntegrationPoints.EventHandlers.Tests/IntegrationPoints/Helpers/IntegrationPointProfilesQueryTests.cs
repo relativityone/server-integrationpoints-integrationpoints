@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		{
 			// Arrange
 			SetUpSyncProviders();
-			SetUpProfiles(1, 1);
+			SetUpProfiles(syncProfilesCount: 1, nonSyncProfilesCount: 1);
 
 			// Act
 			List<IntegrationPointProfile> allProfiles = (await _query
@@ -127,10 +127,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			SetUpSyncProviders(integrationPointTypesCount: integrationPointTypesCount);
 
 			// Act
-			Func<Task<int>> run = () => _query.GetIntegrationPointExportTypeArtifactIDAsync(_WORKSPACE_ID);
+			Func<Task<int>> sut = () => _query.GetIntegrationPointExportTypeArtifactIDAsync(_WORKSPACE_ID);
 
 			// Assert
-			run.ShouldThrowExactly<InvalidOperationException>();
+			AssertWrongNumberOfArtifactIDsInCollection(sut);
 		}
 
 		[Test]
@@ -153,10 +153,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			SetUpSyncProviders(relativitySourceProviderCount);
 
 			// Act
-			Func<Task<int>> run = () => _query.GetSyncSourceProviderArtifactIDAsync(_WORKSPACE_ID);
+			Func<Task<int>> sut = () => _query.GetSyncSourceProviderArtifactIDAsync(_WORKSPACE_ID);
 
 			// Assert
-			run.ShouldThrowExactly<InvalidOperationException>();
+			AssertWrongNumberOfArtifactIDsInCollection(sut);
 		}
 
 		[Test]
@@ -166,10 +166,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			SetUpSyncProviders(relativityDestinationProviderCount: relativityDestinationProviderCount);
 
 			// Act
-			Func<Task<int>> run = () => _query.GetSyncDestinationProviderArtifactIDAsync(_WORKSPACE_ID);
+			Func<Task<int>> sut = () => _query.GetSyncDestinationProviderArtifactIDAsync(_WORKSPACE_ID);
 
 			// Assert
-			run.ShouldThrowExactly<InvalidOperationException>();
+			AssertWrongNumberOfArtifactIDsInCollection(sut);
 		}
 
 		[Test]
@@ -177,10 +177,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		{
 			// Arrange
 			SetUpSyncProviders();
-			SetUpProfiles(1, 1);
+			SetUpProfiles(syncProfilesCount: 1, nonSyncProfilesCount: 1);
 
 			// Act
-			List<IntegrationPointProfile> syncProfiles = (await _query.GetSyncProfilesAsync(_profilesList, _RELATIVITY_SOURCE_PROVIDER_ID, _RELATIVITY_DESTINATION_PROVIDER_ID).ConfigureAwait(false)).ToList();
+			IEnumerable<IntegrationPointProfile> syncProfiles = await _query
+				.GetSyncProfilesAsync(_profilesList, _RELATIVITY_SOURCE_PROVIDER_ID, _RELATIVITY_DESTINATION_PROVIDER_ID).ConfigureAwait(false);
 
 			// Assert
 			syncProfiles.Should().ContainSingle(x => x.ArtifactId == _SYNC_PROFILE_ID);
@@ -191,13 +192,20 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		{
 			// Arrange
 			SetUpSyncProviders();
-			SetUpProfiles(1, 1);
+			SetUpProfiles(syncProfilesCount: 1, nonSyncProfilesCount: 1);
 
 			// Act
-			List<IntegrationPointProfile> nonSyncProfiles = (await _query.GetNonSyncProfilesAsync(_profilesList, _RELATIVITY_SOURCE_PROVIDER_ID, _RELATIVITY_DESTINATION_PROVIDER_ID).ConfigureAwait(false)).ToList();
+			IEnumerable<IntegrationPointProfile> nonSyncProfiles = await _query
+				.GetNonSyncProfilesAsync(_profilesList, _RELATIVITY_SOURCE_PROVIDER_ID, _RELATIVITY_DESTINATION_PROVIDER_ID).ConfigureAwait(false);
 
 			// Assert
 			nonSyncProfiles.Should().ContainSingle(x => x.ArtifactId == _NON_SYNC_PROFILE_ID);
+		}
+
+		private static void AssertWrongNumberOfArtifactIDsInCollection(Func<Task<int>> sut)
+		{
+			sut.ShouldThrowExactly<InvalidOperationException>().Which.Message.Should()
+				.BeOneOf("Sequence contains more than one element", "Sequence contains no elements");
 		}
 
 		private void SetUpProfiles(int syncProfilesCount, int nonSyncProfilesCount)

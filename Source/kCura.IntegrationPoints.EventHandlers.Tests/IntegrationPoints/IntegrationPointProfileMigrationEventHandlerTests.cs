@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.EventHandler;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
@@ -252,11 +253,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 				.ToList();
 		}
 
-		private static IntegrationPointProfile CreateProfileMock(int artifactId)
+		private static IntegrationPointProfile CreateProfileMock(int artifactID)
 		{
 			return new IntegrationPointProfile()
 			{
-				ArtifactId = artifactId,
+				ArtifactId = artifactID,
 				SourceConfiguration = "{\"SavedSearchArtifactId\": 123234,\n  \"TypeOfExport\": 3,\n  \"SourceWorkspaceArtifactId\": 1017953}"
 			};
 		}
