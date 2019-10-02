@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 	{
 		private IntegrationPointProfilesQuery _query;
 		private Mock<IRelativityObjectManager> _relativityObjectManager;
-		private Mock<IObjectArtifactIdsByStringFieldValueQuery> _objectArtifactIdsQuery;
+		private Mock<IObjectArtifactIdsByStringFieldValueQuery> _objectArtifactIDsQuery;
 		private List<IntegrationPointProfile> _profilesList;
 		private List<int> _relativitySourceProvidersList;
 		private List<int> _relativityDestinationProvidersList;
@@ -40,11 +40,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		public void SetUp()
 		{
 			_relativityObjectManager = new Mock<IRelativityObjectManager>();
-			_objectArtifactIdsQuery = new Mock<IObjectArtifactIdsByStringFieldValueQuery>();
+			_objectArtifactIDsQuery = new Mock<IObjectArtifactIdsByStringFieldValueQuery>();
 
 			_query = new IntegrationPointProfilesQuery(
-				workspaceId => _relativityObjectManager.Object,
-				_objectArtifactIdsQuery.Object);
+				workspaceID => _relativityObjectManager.Object,
+				_objectArtifactIDsQuery.Object);
 
 			_profilesList = new List<IntegrationPointProfile>();
 			_relativitySourceProvidersList = new List<int>();
@@ -56,19 +56,19 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 					It.IsAny<QueryRequest>(), false, It.IsAny<ExecutionIdentity>()))
 				.ReturnsAsync(_profilesList);
 
-			_objectArtifactIdsQuery
+			_objectArtifactIDsQuery
 				.Setup(x => x.QueryForObjectArtifactIdsByStringFieldValueAsync(_WORKSPACE_ID,
 					(DestinationProvider provider) => provider.Identifier,
 					Constants.IntegrationPoints.DestinationProviders.RELATIVITY))
 				.ReturnsAsync(_relativityDestinationProvidersList);
 
-			_objectArtifactIdsQuery
+			_objectArtifactIDsQuery
 				.Setup(x => x.QueryForObjectArtifactIdsByStringFieldValueAsync(_WORKSPACE_ID,
 					(SourceProvider provider) => provider.Identifier,
 					Constants.IntegrationPoints.SourceProviders.RELATIVITY))
 				.ReturnsAsync(_relativitySourceProvidersList);
 
-			_objectArtifactIdsQuery
+			_objectArtifactIDsQuery
 				.Setup(x => x.QueryForObjectArtifactIdsByStringFieldValueAsync(_WORKSPACE_ID,
 					(IntegrationPointType integrationPointType) => integrationPointType.Identifier,
 					kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString()))
@@ -95,55 +95,55 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		}
 
 		[Test]
-		public async Task ItShouldReturnSyncSourceProviderArtifactId()
+		public async Task ItShouldReturnSyncSourceProviderArtifactID()
 		{
 			// Arrange
 			SetUpSyncProviders();
 
 			// Act
-			int sourceProviderId = await _query.GetSyncSourceProviderArtifactIdAsync(_WORKSPACE_ID).ConfigureAwait(false);
+			int sourceProviderID = await _query.GetSyncSourceProviderArtifactIDAsync(_WORKSPACE_ID).ConfigureAwait(false);
 
 			// Assert
-			sourceProviderId.Should().Be(_RELATIVITY_SOURCE_PROVIDER_ID);
+			sourceProviderID.Should().Be(_RELATIVITY_SOURCE_PROVIDER_ID);
 		}
 
 		[Test]
-		public async Task ItShouldReturnIntegrationPointExportTypeArtifactId()
+		public async Task ItShouldReturnIntegrationPointExportTypeArtifactID()
 		{
 			// Arrange
 			SetUpSyncProviders();
 
 			// Act
-			int sourceProviderId = await _query.GetIntegrationPointExportTypeArtifactIdAsync(_WORKSPACE_ID).ConfigureAwait(false);
+			int sourceProviderID = await _query.GetIntegrationPointExportTypeArtifactIDAsync(_WORKSPACE_ID).ConfigureAwait(false);
 
 			// Assert
-			sourceProviderId.Should().Be(_INTEGRATION_POINT_EXPORT_TYPE_ID);
+			sourceProviderID.Should().Be(_INTEGRATION_POINT_EXPORT_TYPE_ID);
 		}
 
 		[Test]
-		public void ItShouldFailOnWrongNumberOfIntegrationPointExportTypeArtifactId([Values(0, 2)] int integrationPointTypesCount)
+		public void ItShouldFailOnWrongNumberOfIntegrationPointExportTypeArtifactID([Values(0, 2)] int integrationPointTypesCount)
 		{
 			// Arrange
 			SetUpSyncProviders(integrationPointTypesCount: integrationPointTypesCount);
 
 			// Act
-			Func<Task<int>> run = () => _query.GetIntegrationPointExportTypeArtifactIdAsync(_WORKSPACE_ID);
+			Func<Task<int>> run = () => _query.GetIntegrationPointExportTypeArtifactIDAsync(_WORKSPACE_ID);
 
 			// Assert
 			run.ShouldThrowExactly<InvalidOperationException>();
 		}
 
 		[Test]
-		public async Task ItShouldReturnNonSyncSourceProviderArtifactId()
+		public async Task ItShouldReturnNonSyncSourceProviderArtifactID()
 		{
 			// Arrange
 			SetUpSyncProviders();
 
 			// Act
-			int destinationProviderArtifactId = await _query.GetSyncDestinationProviderArtifactIdAsync(_WORKSPACE_ID).ConfigureAwait(false);
+			int destinationProviderArtifactID = await _query.GetSyncDestinationProviderArtifactIDAsync(_WORKSPACE_ID).ConfigureAwait(false);
 
 			// Assert
-			destinationProviderArtifactId.Should().Be(_RELATIVITY_DESTINATION_PROVIDER_ID);
+			destinationProviderArtifactID.Should().Be(_RELATIVITY_DESTINATION_PROVIDER_ID);
 		}
 
 		[Test]
@@ -153,7 +153,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			SetUpSyncProviders(relativitySourceProviderCount);
 
 			// Act
-			Func<Task<int>> run = () => _query.GetSyncSourceProviderArtifactIdAsync(_WORKSPACE_ID);
+			Func<Task<int>> run = () => _query.GetSyncSourceProviderArtifactIDAsync(_WORKSPACE_ID);
 
 			// Assert
 			run.ShouldThrowExactly<InvalidOperationException>();
@@ -166,7 +166,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			SetUpSyncProviders(relativityDestinationProviderCount: relativityDestinationProviderCount);
 
 			// Act
-			Func<Task<int>> run = () => _query.GetSyncDestinationProviderArtifactIdAsync(_WORKSPACE_ID);
+			Func<Task<int>> run = () => _query.GetSyncDestinationProviderArtifactIDAsync(_WORKSPACE_ID);
 
 			// Assert
 			run.ShouldThrowExactly<InvalidOperationException>();

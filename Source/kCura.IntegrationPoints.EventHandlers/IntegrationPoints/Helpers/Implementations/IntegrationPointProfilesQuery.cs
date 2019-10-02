@@ -80,21 +80,21 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 				   integrationPointProfile.SourceProvider == syncSourceProviderArtifactID;
 		}
 
-		public Task<int> GetSyncDestinationProviderArtifactIdAsync(int workspaceID)
+		public Task<int> GetSyncDestinationProviderArtifactIDAsync(int workspaceID)
 		{
 			return GetSingleObjectArtifactIdByStringFieldValueAsync<DestinationProvider>(workspaceID,
 				destinationProvider => destinationProvider.Identifier,
 				kCura.IntegrationPoints.Core.Constants.IntegrationPoints.DestinationProviders.RELATIVITY);
 		}
 
-		public Task<int> GetSyncSourceProviderArtifactIdAsync(int workspaceID)
+		public Task<int> GetSyncSourceProviderArtifactIDAsync(int workspaceID)
 		{
 			return GetSingleObjectArtifactIdByStringFieldValueAsync<SourceProvider>(workspaceID,
 				sourceProvider => sourceProvider.Identifier,
 				kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.RELATIVITY);
 		}
 
-		public Task<int> GetIntegrationPointExportTypeArtifactIdAsync(int workspaceID)
+		public Task<int> GetIntegrationPointExportTypeArtifactIDAsync(int workspaceID)
 		{
 			return GetSingleObjectArtifactIdByStringFieldValueAsync<IntegrationPointType>(workspaceID,
 				type => type.Identifier,

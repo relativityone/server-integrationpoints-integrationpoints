@@ -51,8 +51,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 		private async Task MigrateProfilesAsync()
 		{
-			int sourceProviderArtifactID = await _integrationPointProfilesQuery.GetSyncSourceProviderArtifactIdAsync(TemplateWorkspaceID).ConfigureAwait(false);
-			int destinationProviderArtifactID = await _integrationPointProfilesQuery.GetSyncDestinationProviderArtifactIdAsync(TemplateWorkspaceID).ConfigureAwait(false);
+			int sourceProviderArtifactID = await _integrationPointProfilesQuery.GetSyncSourceProviderArtifactIDAsync(TemplateWorkspaceID).ConfigureAwait(false);
+			int destinationProviderArtifactID = await _integrationPointProfilesQuery.GetSyncDestinationProviderArtifactIDAsync(TemplateWorkspaceID).ConfigureAwait(false);
 			List<IntegrationPointProfile> allProfiles = (await _integrationPointProfilesQuery.GetAllProfilesAsync(TemplateWorkspaceID).ConfigureAwait(false)).ToList();
 			List<IntegrationPointProfile> syncProfiles = (await _integrationPointProfilesQuery
 				.GetSyncProfilesAsync(allProfiles, sourceProviderArtifactID, destinationProviderArtifactID).ConfigureAwait(false)).ToList();
@@ -90,9 +90,9 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 			IRelativityObjectManager objectManager = CreateRelativityObjectManager(WorkspaceID);
 
-			int sourceProviderArtifactID = await _integrationPointProfilesQuery.GetSyncSourceProviderArtifactIdAsync(WorkspaceID).ConfigureAwait(false);
-			int destinationProviderArtifactID = await _integrationPointProfilesQuery.GetSyncDestinationProviderArtifactIdAsync(WorkspaceID).ConfigureAwait(false);
-			int integrationPointTypeArtifactID = await _integrationPointProfilesQuery.GetIntegrationPointExportTypeArtifactIdAsync(WorkspaceID).ConfigureAwait(false);
+			int sourceProviderArtifactID = await _integrationPointProfilesQuery.GetSyncSourceProviderArtifactIDAsync(WorkspaceID).ConfigureAwait(false);
+			int destinationProviderArtifactID = await _integrationPointProfilesQuery.GetSyncDestinationProviderArtifactIDAsync(WorkspaceID).ConfigureAwait(false);
+			int integrationPointTypeArtifactID = await _integrationPointProfilesQuery.GetIntegrationPointExportTypeArtifactIDAsync(WorkspaceID).ConfigureAwait(false);
 
 			foreach (IntegrationPointProfile profile in syncProfiles)
 			{
