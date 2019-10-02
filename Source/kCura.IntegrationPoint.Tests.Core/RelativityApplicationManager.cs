@@ -10,19 +10,13 @@ using kCura.IntegrationPoint.Tests.Core.Exceptions;
 using Relativity.Services.Exceptions;
 using Relativity.Services.Interfaces.LibraryApplication;
 using Relativity.Services.Interfaces.LibraryApplication.Models;
-using File = System.IO.File;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
 	public class RelativityApplicationManager
 	{
-		private const int _APP_INSTALATION_TIMEOUT_IN_MINUTES = 15;
+		private const int _APP_INSTALLATION_TIMEOUT_IN_MINUTES = 15;
 		private const int _ADMIN_CASE_ID = -1;
-		private InstallStatusCode[] NotCompletedInstallStatuses => new[]
-		{
-			InstallStatusCode.Pending,
-			InstallStatusCode.InProgress
-		};
 
 		private readonly ITestHelper _helper;
 
@@ -31,12 +25,12 @@ namespace kCura.IntegrationPoint.Tests.Core
 			_helper = helper;
 		}
 
-		public async Task ImportRipToLibraryAsync()
+		public Task ImportRipToLibraryAsync()
 		{
 			string applicationFilePath = SharedVariables.UseLocalRap
 				? GetLocalRipRapPath()
 				: GetBuildPackagesRipRapPath();
-			await ImportApplicationToLibraryAsync(applicationFilePath).ConfigureAwait(false);
+			return ImportApplicationToLibraryAsync(applicationFilePath);
 		}
 
 		public async Task ImportApplicationToLibraryAsync(string appPath)
@@ -47,22 +41,22 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		public Task InstallRipFromLibraryAsync(int workspaceArtifactId)
+		public Task InstallRipFromLibraryAsync(int workspaceArtifactID)
 		{
 			Guid ripGuid = Guid.Parse(IntegrationPoints.Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING);
-			return InstallApplicationFromLibraryAsync(workspaceArtifactId, ripGuid);
+			return InstallApplicationFromLibraryAsync(workspaceArtifactID, ripGuid);
 		}
 
-		public async Task InstallApplicationFromLibraryAsync(int workspaceArtifactId, Guid appGuid)
+		public async Task InstallApplicationFromLibraryAsync(int workspaceArtifactID, Guid appGuid)
 		{
-			await ThrowTestSetupExceptionWhenAppIsNotInLibraryAsync(workspaceArtifactId, appGuid).ConfigureAwait(false);
+			await ThrowWhenAppIsNotInLibraryAsync(workspaceArtifactID, appGuid).ConfigureAwait(false);
 			using (var applicationInstallManager = _helper.CreateProxy<IApplicationInstallManager>())
 			{
 				var installApplicationRequest = new InstallApplicationRequest
 				{
 					ConflictResolutions = new List<ApplicationInstallConflictResolution>(),
 					UnlockApplications = false,
-					WorkspaceIDs = new List<int> { workspaceArtifactId }
+					WorkspaceIDs = new List<int> { workspaceArtifactID }
 				};
 				InstallApplicationResponse installResponse = await applicationInstallManager
 					.InstallApplicationAsync(_ADMIN_CASE_ID, appGuid, installApplicationRequest)
@@ -71,9 +65,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 				InstallApplicationResult installInWorkspaceResult = installResponse.Results.Single();
 				int applicationInstallID = installInWorkspaceResult.ApplicationInstallID;
 
-				Func<Task<GetInstallStatusResponse>> getCurrentInstallStatusFunction =
+				Func<Task<GetInstallStatusResponse>> currentInstallStatusGetter =
 					() => applicationInstallManager.GetStatusAsync(_ADMIN_CASE_ID, appGuid, applicationInstallID);
-				await WaitForInstallToCompleteWithTimeoutAsync(getCurrentInstallStatusFunction).ConfigureAwait(false);
+				await WaitForInstallCompletionWithinTimeoutAsync(currentInstallStatusGetter).ConfigureAwait(false);
 			}
 		}
 
@@ -90,12 +84,13 @@ namespace kCura.IntegrationPoint.Tests.Core
 						.GetAllInstallStatusAsync(_ADMIN_CASE_ID, guid, currentIndex, batchSize)
 						.ConfigureAwait(false);
 
-					foreach (GetInstallStatusResponse getInstallStatusResponse in installStatusResponse.Results)
+					GetInstallStatusResponse installStatusResponseForWorkspace = installStatusResponse
+						.Results
+						.FirstOrDefault(x => x.WorkspaceIdentifier.ArtifactID == workspaceArtifactID);
+
+					if (installStatusResponseForWorkspace != null)
 					{
-						if (getInstallStatusResponse.WorkspaceIdentifier.ArtifactID == workspaceArtifactID)
-						{
-							return IsInstallCompleted(getInstallStatusResponse.InstallStatus);
-						}
+						return IsInstallSuccessfullyCompleted(installStatusResponseForWorkspace.InstallStatus);
 					}
 
 					currentIndex += batchSize;
@@ -126,19 +121,19 @@ namespace kCura.IntegrationPoint.Tests.Core
 			{
 				using (var keplerStream = new KeplerStream(fileStream))
 				{
-					int appID = await SendUpdateAppRequest(libraryApplicationManager, keplerStream)
+					int appID = await SendUpdateAppRequestAsync(libraryApplicationManager, keplerStream)
 						.ConfigureAwait(false);
 
-					Func<Task<GetInstallStatusResponse>> getCurrentInstallStatusFunction =
+					Func<Task<GetInstallStatusResponse>> currentInstallStatusGetter =
 						() => libraryApplicationManager.GetLibraryInstallStatusAsync(_ADMIN_CASE_ID, appID);
 
-					await WaitForInstallToCompleteWithTimeoutAsync(getCurrentInstallStatusFunction)
+					await WaitForInstallCompletionWithinTimeoutAsync(currentInstallStatusGetter)
 						.ConfigureAwait(false);
 				}
 			}
 		}
 
-		private static async Task<int> SendUpdateAppRequest(ILibraryApplicationManager libraryApplicationManager, KeplerStream rapStream)
+		private static async Task<int> SendUpdateAppRequestAsync(ILibraryApplicationManager libraryApplicationManager, KeplerStream rapStream)
 		{
 			var request = new UpdateLibraryApplicationRequest
 			{
@@ -153,10 +148,10 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return appID;
 		}
 
-		private async Task WaitForInstallToCompleteWithTimeoutAsync(Func<Task<GetInstallStatusResponse>> getCurrentStatus)
+		private async Task WaitForInstallCompletionWithinTimeoutAsync(Func<Task<GetInstallStatusResponse>> getCurrentStatus)
 		{
 			var cancellationTokenSource = new CancellationTokenSource();
-			cancellationTokenSource.CancelAfter(TimeSpan.FromMinutes(_APP_INSTALATION_TIMEOUT_IN_MINUTES));
+			cancellationTokenSource.CancelAfter(TimeSpan.FromMinutes(_APP_INSTALLATION_TIMEOUT_IN_MINUTES));
 
 			try
 			{
@@ -165,7 +160,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 			catch (OperationCanceledException)
 			{
-				string errorMessage = $"Application install did not complete within the timeout period ({_APP_INSTALATION_TIMEOUT_IN_MINUTES} minutes).";
+				string errorMessage = $"Application install did not complete within the timeout period ({_APP_INSTALLATION_TIMEOUT_IN_MINUTES} minutes).";
 				throw new TestSetupException(errorMessage);
 			}
 		}
@@ -182,21 +177,21 @@ namespace kCura.IntegrationPoint.Tests.Core
 				GetInstallStatusResponse installStatusResponse = await getCurrentStatus().ConfigureAwait(false);
 				installStatus = installStatusResponse.InstallStatus;
 			}
-			while (NotCompletedInstallStatuses.Contains(installStatus.Code));
+			while (IsInstallIncomplete(installStatus));
 
-			if (!IsInstallCompleted(installStatus))
+			if (!IsInstallSuccessfullyCompleted(installStatus))
 			{
 				string errorMessage = $"Error occured while installing application. Install status: {installStatus.Code}, message: {installStatus.Message}";
 				throw new TestSetupException(errorMessage);
 			}
 		}
 
-		private async Task ThrowTestSetupExceptionWhenAppIsNotInLibraryAsync(int workspaceArtifactId, Guid appGuid)
+		private async Task ThrowWhenAppIsNotInLibraryAsync(int workspaceArtifactID, Guid appGuid)
 		{
 			bool isAppInstalledInLibrary = await IsAppInstalledInLibraryAsync(appGuid).ConfigureAwait(false);
 			if (!isAppInstalledInLibrary)
 			{
-				string errorMessage = $"Cannot install app {appGuid} in workspace {workspaceArtifactId}, because it is not installed in library";
+				string errorMessage = $"Cannot install app {appGuid} in workspace {workspaceArtifactID}, because it is not installed in library";
 				throw new TestSetupException(errorMessage);
 			}
 		}
@@ -221,11 +216,22 @@ namespace kCura.IntegrationPoint.Tests.Core
 					.GetLibraryInstallStatusAsync(_ADMIN_CASE_ID, appGuid)
 					.ConfigureAwait(false);
 
-				return IsInstallCompleted(installStatusResponse.InstallStatus);
+				return IsInstallSuccessfullyCompleted(installStatusResponse.InstallStatus);
 			}
 		}
 
-		private bool IsInstallCompleted(InstallStatus installStatus)
+		private bool IsInstallSuccessfullyCompleted(InstallStatus installStatus)
 			=> installStatus.Code == InstallStatusCode.Completed;
+
+		private bool IsInstallIncomplete(InstallStatus installStatus)
+		{
+			InstallStatusCode[] notCompletedInstallStatuses =
+			{
+				InstallStatusCode.Pending,
+				InstallStatusCode.InProgress
+			};
+
+			return notCompletedInstallStatuses.Contains(installStatus.Code);
+		}
 	}
 }
