@@ -18,7 +18,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 	{
 		private Mock<IObjectManager> _objectManager;
 		private Mock<ISourceServiceFactoryForUser> _userServiceFactory;
-		
+
 		[SetUp]
 		public void SetUp()
 		{
@@ -69,6 +69,27 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			secondResultsBlock.Result.Length.Should().Be(totalItemsCount - maxResultsBlockSize);
 		}
 
+
+		[Test]
+		public async Task ShouldNotCallObjectManagerWhenRemainingItemsIsZero()
+		{
+			const int totalItemsCount = 10;
+
+
+			SetupRetrieveResultsBlock(totalItemsCount);
+
+			Mock<IBatch> batch = new Mock<IBatch>();
+			batch.SetupGet(x => x.StartingIndex).Returns(0);
+			batch.SetupGet(x => x.TotalItemsCount).Returns(0);
+
+			RelativityExportBatcher batcher = new RelativityExportBatcher(_userServiceFactory.Object, batch.Object, Guid.Empty, 0);
+
+			RelativityObjectSlim[] batches = await batcher.GetNextItemsFromBatchAsync().ConfigureAwait(false);
+
+			_objectManager.Verify(x => x.RetrieveResultsBlockFromExportAsync(0, Guid.Empty, 0, It.IsAny<int>()), Times.Never);
+			Assert.IsFalse(batches.Any());
+		}
+
 		private void SetupRetrieveResultsBlock(int maxResultSize)
 		{
 			_objectManager.Setup(x =>
@@ -79,7 +100,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 		private static IEnumerable<RelativityObjectSlim> CreateBatch(int startingIndex, int length)
 		{
-			return Enumerable.Range(startingIndex, length).Select(x => new RelativityObjectSlim {ArtifactID = x});
+			return Enumerable.Range(startingIndex, length).Select(x => new RelativityObjectSlim { ArtifactID = x });
 		}
 	}
 }
