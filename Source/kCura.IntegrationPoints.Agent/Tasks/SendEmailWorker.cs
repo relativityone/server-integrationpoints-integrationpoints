@@ -19,11 +19,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private readonly IEmailSender _emailSender;
 		private readonly ISerializer _serializer;
 
-		public SendEmailWorker(ISerializer serializer, IEmailSender emailSender, IHelper helper)
+		public SendEmailWorker(ISerializer serializer, IEmailSender emailSender, IAPILog logger)
 		{
 			_serializer = serializer;
 			_emailSender = emailSender;
-			_logger = helper.GetLoggerFactory().GetLogger().ForContext<SendEmailWorker>();
+			_logger = logger;
 		}
 
 		public void Execute(Job job)
@@ -33,8 +33,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			TaskParameters emailTaskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
 
-			EmailJobParameters details = emailTaskParameters.BatchParameters is JObject 
-				? ((JObject)emailTaskParameters.BatchParameters).ToObject<EmailJobParameters>() 
+			//We need this 'if' here to provide backwards compatibility with older email jobs
+			//after changing the way EmailJobParameters are send here. JIRA: REL-354651
+			EmailJobParameters details = emailTaskParameters.BatchParameters is JObject
+				? ((JObject)emailTaskParameters.BatchParameters).ToObject<EmailJobParameters>()
 				: _serializer.Deserialize<EmailJobParameters>(job.JobDetails);
 
 			Execute(details, jobId);

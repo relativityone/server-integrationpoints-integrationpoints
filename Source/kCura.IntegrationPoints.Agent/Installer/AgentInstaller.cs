@@ -25,9 +25,11 @@ using kCura.WinEDDS.Service.Export;
 using Relativity.API;
 using System;
 using Castle.MicroKernel.Resolvers;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Agent.Installer.Components;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
+using kCura.IntegrationPoints.Email;
 using ITaskFactory = kCura.IntegrationPoints.Agent.TaskFactory.ITaskFactory;
 
 namespace kCura.IntegrationPoints.Agent.Installer
@@ -117,6 +119,15 @@ namespace kCura.IntegrationPoints.Agent.Installer
 			container.Register(Component.For<ITaskExceptionService>().ImplementedBy<TaskExceptionService>().LifestyleTransient());
 			container.Register(Component.For<ITaskExceptionMediator>().ImplementedBy<TaskExceptionMediator>().LifestyleTransient());
 			container.Register(Component.For<SendEmailWorker>().ImplementedBy<SendEmailWorker>().LifestyleTransient());
+			container.Register(Component.For<SendEmailWorker>().UsingFactoryMethod(k =>
+			{
+				IAPILog apiLog = k.Resolve<IHelper>().GetLoggerFactory().GetLogger().ForContext<SendEmailWorker>();
+				return new SendEmailWorker(
+					k.Resolve<ISerializer>(),
+					k.Resolve<EmailSender>(),
+					apiLog);
+			}
+			).LifestyleTransient());
 			container.Register(Component.For<ExportManager>().ImplementedBy<ExportManager>().LifestyleTransient());
 			container.Register(Component.For<ExportWorker>().ImplementedBy<ExportWorker>().LifestyleTransient());
 			container.Register(Component.For<JobHistoryErrorServiceProvider>().ImplementedBy<JobHistoryErrorServiceProvider>().LifeStyle.BoundTo<ExportWorker>());

@@ -62,6 +62,7 @@
     <Compile Include="Tasks\ExportServiceManagerTests.cs" />
     <Compile Include="Tasks\ImportServiceManagerTests.cs" />
     <Compile Include="TaskFactory\TaskFactoryTests.cs" />
+    <Compile Include="Tasks\SendEmailWorkerTests.cs" />
     <Compile Include="Tasks\SyncEntityManagerWorkerTests.cs" />
     <Compile Include="Tasks\SyncManagerTests.cs" />
     <Compile Include="Tasks\SyncWorkerTests.cs" />
