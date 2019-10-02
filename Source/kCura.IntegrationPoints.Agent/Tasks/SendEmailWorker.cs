@@ -28,8 +28,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		public void Execute(Job job)
 		{
-			var jobId = job.JobId;
-			LogExecuteStart(jobId);
+			var jobID = job.JobId;
+			LogExecuteStart(jobID);
 
 			TaskParameters emailTaskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
 
@@ -39,10 +39,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				? ((JObject)emailTaskParameters.BatchParameters).ToObject<EmailJobParameters>()
 				: _serializer.Deserialize<EmailJobParameters>(job.JobDetails);
 
-			Execute(details, jobId);
+			Execute(details, jobID);
 		}
 
-		public void Execute(EmailJobParameters details, long jobId)
+		public void Execute(EmailJobParameters details, long jobID)
 		{
 			var exceptions = new List<Exception>();
 			IEnumerable<string> emails = details.Emails;
@@ -57,41 +57,41 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					);
 					_emailSender.Send(message);
 
-					LogExecuteSuccesfulEnd(jobId);
+					LogExecuteSuccesfulEnd(jobID);
 				}
 				catch (Exception e)
 				{
-					LogSendingEmailError(jobId, e, email);
+					LogSendingEmailError(jobID, e, email);
 					exceptions.Add(new Exception(string.Format("Failed to send message to {0}", email), e));
 				}
 			}
 
 			if (exceptions.Any())
 			{
-				LogErrorsDuringEmailSending(jobId);
+				LogErrorsDuringEmailSending(jobID);
 				throw new AggregateException(exceptions);
 			}
 		}
 
 		#region Logging
 
-		private void LogExecuteStart(long jobId)
+		private void LogExecuteStart(long jobID)
 		{
-			_logger.LogInformation("Started executing send email worker, job: {JobId}", jobId);
+			_logger.LogInformation("Started executing send email worker, job: {JobId}", jobID);
 		}
-		private void LogExecuteSuccesfulEnd(long jobId)
+		private void LogExecuteSuccesfulEnd(long jobID)
 		{
-			_logger.LogInformation("Succesfully sent email in worker, job: {JobId}", jobId);
-		}
-
-		private void LogSendingEmailError(long jobId, Exception e, string email)
-		{
-			_logger.LogError(e, "Failed to send message to {Email} for job {JobId}.", email, jobId);
+			_logger.LogInformation("Succesfully sent email in worker, job: {JobId}", jobID);
 		}
 
-		private void LogErrorsDuringEmailSending(long jobId)
+		private void LogSendingEmailError(long jobID, Exception e, string email)
 		{
-			_logger.LogError("Failed to send emails in SendEmailWorker for job {JobId}.", jobId);
+			_logger.LogError(e, "Failed to send message to {Email} for job {JobId}.", email, jobID);
+		}
+
+		private void LogErrorsDuringEmailSending(long jobID)
+		{
+			_logger.LogError("Failed to send emails in SendEmailWorker for job {JobId}.", jobID);
 		}
 
 		#endregion
