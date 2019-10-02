@@ -169,7 +169,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 		}
 
 		[Test]
-		[Ignore("To be implemented in REL-351468")]
 		public void ItShouldNotUpdateProfilesWhenThereAreNoSyncProfiles()
 		{
 			// Arrange
@@ -178,9 +177,14 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 			SetUpProfilesQuery(nonSyncProfilesCount, syncProfilesCount);
 
 			// Act
+			Response response = _eventHandler.Execute();
 
 			// Assert
-			Assert.Fail();
+			response.Success.Should().BeTrue("handler should have completed successfully");
+			response.Exception.Should().BeNull("there was no failure");
+			_createdWorkspaceRelativityObjectManager
+				.Verify(x => x.MassUpdateAsync(It.IsAny<IEnumerable<int>>(), It.IsAny<IEnumerable<FieldRefValuePair>>(),
+						It.IsAny<FieldUpdateBehavior>(), It.IsAny<ExecutionIdentity>()), Times.Never);
 		}
 
 		[Test]
@@ -206,13 +210,19 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 		}
 
 		[Test]
-		[Ignore("To be implemented in REL-351468")]
 		public void ItShouldModifySyncProfiles()
 		{
 			// Arrange
 			const int syncProfilesCount = 5;
 			const int nonSyncProfilesCount = 0;
 			SetUpProfilesQuery(nonSyncProfilesCount, syncProfilesCount);
+			_createdWorkspaceRelativityObjectManager.Setup(x =>
+					x.MassUpdateAsync(
+						It.IsAny<IEnumerable<int>>(),
+						It.IsAny<IEnumerable<FieldRefValuePair>>(),
+						It.IsAny<FieldUpdateBehavior>(),
+						It.IsAny<ExecutionIdentity>()))
+				.ReturnsAsync(true);
 
 			// Act
 			Response response = _eventHandler.Execute();
@@ -221,7 +231,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 			response.Success.Should().BeTrue("handler should have completed successfully");
 			response.Exception.Should().BeNull("there was no failure");
 
-			// TODO
+			_createdWorkspaceRelativityObjectManager
+				.Verify(x => x.MassUpdateAsync(It.IsAny<IEnumerable<int>>(), It.IsAny<IEnumerable<FieldRefValuePair>>(),
+					It.IsAny<FieldUpdateBehavior>(), It.IsAny<ExecutionIdentity>()), Times.Exactly(syncProfilesCount));
 		}
 
 		private static List<IntegrationPointProfile> SyncProfilesArtifactIds(int count)

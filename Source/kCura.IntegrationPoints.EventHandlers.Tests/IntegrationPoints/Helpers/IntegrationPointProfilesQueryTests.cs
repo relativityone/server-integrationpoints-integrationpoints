@@ -24,12 +24,14 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		private List<IntegrationPointProfile> _profilesList;
 		private List<int> _relativitySourceProvidersList;
 		private List<int> _relativityDestinationProvidersList;
+		private List<int> _integrationPointTypesList;
 		private const int _WORKSPACE_ID = 100111;
 
 		private const int _RELATIVITY_DESTINATION_PROVIDER_ID = 500111;
 		private const int _RELATIVITY_SOURCE_PROVIDER_ID = 500222;
 		private const int _NON_RELATIVITY_DESTINATION_PROVIDER_ID = 600111;
 		private const int _NON_RELATIVITY_SOURCE_PROVIDER_ID = 600222;
+		private const int _INTEGRATION_POINT_EXPORT_TYPE_ID = 7000333;
 
 		private const int _SYNC_PROFILE_ID = 900111;
 		private const int _NON_SYNC_PROFILE_ID = 900222;
@@ -47,6 +49,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			_profilesList = new List<IntegrationPointProfile>();
 			_relativitySourceProvidersList = new List<int>();
 			_relativityDestinationProvidersList = new List<int>();
+			_integrationPointTypesList = new List<int>();
 
 			_relativityObjectManager
 				.Setup(x => x.QueryAsync<IntegrationPointProfile>(
@@ -55,15 +58,21 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 
 			_objectArtifactIdsQuery
 				.Setup(x => x.QueryForObjectArtifactIdsByStringFieldValueAsync(_WORKSPACE_ID,
-					(DestinationProvider p) => p.Identifier,
+					(DestinationProvider provider) => provider.Identifier,
 					Constants.IntegrationPoints.DestinationProviders.RELATIVITY))
 				.ReturnsAsync(_relativityDestinationProvidersList);
 
 			_objectArtifactIdsQuery
 				.Setup(x => x.QueryForObjectArtifactIdsByStringFieldValueAsync(_WORKSPACE_ID,
-					(SourceProvider p) => p.Identifier,
+					(SourceProvider provider) => provider.Identifier,
 					Constants.IntegrationPoints.SourceProviders.RELATIVITY))
 				.ReturnsAsync(_relativitySourceProvidersList);
+
+			_objectArtifactIdsQuery
+				.Setup(x => x.QueryForObjectArtifactIdsByStringFieldValueAsync(_WORKSPACE_ID,
+					(IntegrationPointType integrationPointType) => integrationPointType.Identifier,
+					kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString()))
+				.ReturnsAsync(_integrationPointTypesList);
 		}
 
 		[Test]
@@ -96,6 +105,32 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 
 			// Assert
 			sourceProviderId.Should().Be(_RELATIVITY_SOURCE_PROVIDER_ID);
+		}
+
+		[Test]
+		public async Task ItShouldReturnIntegrationPointExportTypeArtifactId()
+		{
+			// Arrange
+			SetUpSyncProviders();
+
+			// Act
+			int sourceProviderId = await _query.GetIntegrationPointExportTypeArtifactIdAsync(_WORKSPACE_ID).ConfigureAwait(false);
+
+			// Assert
+			sourceProviderId.Should().Be(_INTEGRATION_POINT_EXPORT_TYPE_ID);
+		}
+
+		[Test]
+		public void ItShouldFailOnWrongNumberOfIntegrationPointExportTypeArtifactId([Values(0, 2)] int integrationPointTypesCount)
+		{
+			// Arrange
+			SetUpSyncProviders(integrationPointTypesCount: integrationPointTypesCount);
+
+			// Act
+			Func<Task<int>> run = () => _query.GetIntegrationPointExportTypeArtifactIdAsync(_WORKSPACE_ID);
+
+			// Assert
+			run.ShouldThrowExactly<InvalidOperationException>();
 		}
 
 		[Test]
@@ -223,12 +258,14 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			return deck;
 		}
 
-		private void SetUpSyncProviders(int relativitySourceProviderCount = 1, int relativityDestinationProviderCount = 1)
+		private void SetUpSyncProviders(int relativitySourceProviderCount = 1, int relativityDestinationProviderCount = 1, int integrationPointTypesCount = 1)
 		{
 			_relativitySourceProvidersList.AddRange(Enumerable
 				.Repeat(_RELATIVITY_SOURCE_PROVIDER_ID, relativitySourceProviderCount));
 			_relativityDestinationProvidersList.AddRange(Enumerable
 				.Repeat(_RELATIVITY_DESTINATION_PROVIDER_ID, relativityDestinationProviderCount));
+			_integrationPointTypesList.AddRange(Enumerable
+				.Repeat(_INTEGRATION_POINT_EXPORT_TYPE_ID, integrationPointTypesCount));
 		}
 	}
 }

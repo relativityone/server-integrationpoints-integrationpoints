@@ -90,9 +90,9 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 			IRelativityObjectManager objectManager = CreateRelativityObjectManager(WorkspaceID);
 
-			int sourceProviderArtifactId = await _integrationPointProfilesQuery.GetSyncSourceProviderArtifactIdAsync(WorkspaceID).ConfigureAwait(false);
-			int destinationProviderArtifactId = await _integrationPointProfilesQuery.GetSyncDestinationProviderArtifactIdAsync(WorkspaceID).ConfigureAwait(false);
-			int integrationPointTypeArtifactId = await _integrationPointProfilesQuery.GetIntegrationPointExportTypeArtifactIdAsync(WorkspaceID).ConfigureAwait(false);
+			int sourceProviderArtifactID = await _integrationPointProfilesQuery.GetSyncSourceProviderArtifactIdAsync(WorkspaceID).ConfigureAwait(false);
+			int destinationProviderArtifactID = await _integrationPointProfilesQuery.GetSyncDestinationProviderArtifactIdAsync(WorkspaceID).ConfigureAwait(false);
+			int integrationPointTypeArtifactID = await _integrationPointProfilesQuery.GetIntegrationPointExportTypeArtifactIdAsync(WorkspaceID).ConfigureAwait(false);
 
 			foreach (IntegrationPointProfile profile in syncProfiles)
 			{
@@ -114,7 +114,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 						},
 						Value = new RelativityObjectRef()
 						{
-							ArtifactID = sourceProviderArtifactId
+							ArtifactID = sourceProviderArtifactID
 						}
 					},
 					new FieldRefValuePair()
@@ -125,7 +125,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 						},
 						Value = new RelativityObjectRef()
 						{
-							ArtifactID = destinationProviderArtifactId
+							ArtifactID = destinationProviderArtifactID
 						}
 					}, 
 					new FieldRefValuePair()
@@ -136,7 +136,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 						},
 						Value = new RelativityObjectRef()
 						{
-							ArtifactID = integrationPointTypeArtifactId
+							ArtifactID = integrationPointTypeArtifactID
 						}
 					}
 				}, FieldUpdateBehavior.Replace).ConfigureAwait(false);
@@ -150,9 +150,11 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 		private string UpdateSourceConfiguration(string sourceConfiguration)
 		{
+			const string savedSearchPropertyName = nameof(kCura.IntegrationPoints.Core.Contracts.Configuration.SourceConfiguration.SavedSearchArtifactId);
+			const string sourceWorkspacePropertyName = nameof(kCura.IntegrationPoints.Core.Contracts.Configuration.SourceConfiguration.SourceWorkspaceArtifactId);
 			JObject configJson = JObject.Parse(sourceConfiguration);
-			configJson.Property(nameof(kCura.IntegrationPoints.Core.Contracts.Configuration.SourceConfiguration.SavedSearchArtifactId)).Value = null;
-			configJson.Property(nameof(kCura.IntegrationPoints.Core.Contracts.Configuration.SourceConfiguration.SourceWorkspaceArtifactId)).Value = WorkspaceID;
+			configJson.Property(savedSearchPropertyName).Value = null;
+			configJson.Property(sourceWorkspacePropertyName).Value = WorkspaceID;
 			return configJson.ToString();
 		}
 		
