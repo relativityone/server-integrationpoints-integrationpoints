@@ -14,6 +14,7 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class JobHistoryErrorRepositoryTests : RelativityProviderTemplate
 	{
 		private IJobHistoryErrorRepository _instance;

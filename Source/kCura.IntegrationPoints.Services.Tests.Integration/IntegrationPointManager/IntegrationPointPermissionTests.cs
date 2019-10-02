@@ -8,6 +8,7 @@ using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointManager
 {
+	[Feature.DataTransfer.IntegrationPoints]
 	public class IntegrationPointPermissionTests : KeplerServicePermissionsTestsBase
 	{
 		[IdentifiedTest("8fa4103c-1fa3-4538-acd5-d292072d4f46")]

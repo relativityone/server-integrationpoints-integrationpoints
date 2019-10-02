@@ -19,11 +19,12 @@ using Choice = kCura.Relativity.Client.DTOs.Choice;
 namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.JobHistory
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class JobHistoryManagerTests
 	{
 		private JobHistoryManager _sut;
 
-		private int _workspaceID => SystemTestsSetupFixture.WorkspaceID;
+		private int _workspaceID => SystemTestsSetupFixture.SourceWorkspace.ArtifactID;
 		private IRelativityObjectManager _objectManager;
 
 		private List<int> _artifactsIDsToDelete;

@@ -15,7 +15,6 @@ using Relativity.Telemetry.APM;
 
 namespace kCura.IntegrationPoints.Services.Tests.Managers
 {
-
 	public class IntegrationPointHealthCheckManagerTests : TestBase
 	{
 		private IntegrationPointHealthCheckManager _integrationPointHealthCheckManager;
@@ -23,6 +22,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Managers
 		private IWindsorContainer _container;
 		private IAPM _apmClient;
 
+		private const string _WEB_API_PATH_VALUE = "http://apimock.corp";
 		private const int _WORKSPACE_ID = 819434;
 
 		public override void SetUp()
@@ -58,7 +58,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Managers
 		public void ShouldReturnExceptionIfWebApiCallFails()
 		{
 			// Arrange
-			SubstitureWebApiPath("http://apimock.corp");
+			SubstitureWebApiPath(_WEB_API_PATH_VALUE);
 			RelativityManagerSoap relativityManagerSoap = SubstituteRelativityManagerSoap();
 			relativityManagerSoap.GetRelativityUrlAsync().Throws(new Exception("the reason"));
 
@@ -69,7 +69,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Managers
 			Assert.IsFalse(result.IsHealthy);
 			relativityManagerSoap.Received().GetRelativityUrlAsync();
 			Assert.NotNull(result.Exception);
-			Assert.AreEqual("Relativity WebApi call failed", result.Message);
+			Assert.AreEqual($"Relativity WebApi call to '{_WEB_API_PATH_VALUE}' failed", result.Message);
 			Assert.AreEqual("the reason", result.Exception.Message);
 		}
 
@@ -77,7 +77,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Managers
 		public void ItShouldCallWebApi()
 		{
 			// Arrange
-			SubstitureWebApiPath("http://apimock.corp");
+			SubstitureWebApiPath(_WEB_API_PATH_VALUE);
 			RelativityManagerSoap relativityManagerSoap = SubstituteRelativityManagerSoap();
 			relativityManagerSoap.GetRelativityUrlAsync().Returns(Task.FromResult("mock"));
 
@@ -93,7 +93,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Managers
 		public void ShouldLogSuccess()
 		{
 			// Arrange
-			SubstitureWebApiPath("http://apimock.corp");
+			SubstitureWebApiPath(_WEB_API_PATH_VALUE);
 			SubstituteRelativityManagerSoap().GetRelativityUrlAsync().Returns(Task.FromResult("mock"));
 
 			// Act
@@ -107,21 +107,22 @@ namespace kCura.IntegrationPoints.Services.Tests.Managers
 		public void ShouldLogError()
 		{
 			// Arrange
-			SubstitureWebApiPath("http://apimock.corp");
+			SubstitureWebApiPath(_WEB_API_PATH_VALUE);
 			SubstituteRelativityManagerSoap().GetRelativityUrlAsync().Throws(new Exception("the reason"));
 
 			// Act
 			_integrationPointHealthCheckManager.RunHealthChecksAsync().Wait();
 
 			// Assert
-			_logger.Received().LogError(Arg.Is<string>(msg => msg.Equals("Relativity WebApi call failed")));
+			string expectedErrorMessage = $"Relativity WebApi call to '{_WEB_API_PATH_VALUE}' failed";
+			_logger.Received().LogError(Arg.Is<string>(msg => msg.Equals(expectedErrorMessage)));
 		}
 
 		[Test]
 		public void ShouldWriteHealthMeasure()
 		{
 			// Arrange
-			SubstitureWebApiPath("http://apimock.corp");
+			SubstitureWebApiPath(_WEB_API_PATH_VALUE);
 
 			SubstituteRelativityManagerSoap().GetRelativityUrlAsync().Throws(new Exception("the reason"));
 

@@ -21,6 +21,7 @@ namespace kCura.IntegrationPoints.Domain.Tests.Integration.DataProviderBuilderTe
 	/// <see cref="IDataSourceProvider"/> and <see cref="IDataReader"/>;
 	/// </summary>
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class DataProviderBuilderTests
 	{
 		private DataProviderBuilder _sut;

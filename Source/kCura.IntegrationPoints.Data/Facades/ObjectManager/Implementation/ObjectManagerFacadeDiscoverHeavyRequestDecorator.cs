@@ -108,6 +108,19 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
 			return _objectManager.DeleteAsync(workspaceArtifactID, request);
 		}
 
+		public Task<MassDeleteResult> DeleteAsync(int workspaceArtifactID, MassDeleteByObjectIdentifiersRequest request)
+		{
+			Func<string> getWarningMessage =
+				() => GetWarningMessageHeader<MassDeleteByObjectIdentifiersRequest>(
+					workspaceArtifactID,
+					rdoArtifactId: _UNKNOWN,
+					rdoType: _UNKNOWN);
+
+			AnalyzeMassDeleteObjectsCollection(getWarningMessage, request);
+
+			return _objectManager.DeleteAsync(workspaceArtifactID, request);
+		}
+
 		public async Task<QueryResult> QueryAsync(int workspaceArtifactID, QueryRequest request, int start, int length)
 		{
 			Func<string> getWarningMessageHeader =
@@ -166,6 +179,18 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
 										$" - {request.Objects.Count}, when allowed is {_MAX_COUNT_OF_COLLECTION_IN_REQUEST}";
 
 				string[] warningsToLog = { getWarningMessageHeader(), massUpdateWarningMessage };
+				LogWarnings(warningsToLog);
+			}
+		}
+
+		private void AnalyzeMassDeleteObjectsCollection(Func<string> getWarningMessageHeader, MassDeleteByObjectIdentifiersRequest request)
+		{
+			if (request.Objects.Count > _MAX_COUNT_OF_COLLECTION_IN_REQUEST)
+			{
+				string massDeleteWarningMessage = "Requested mass delete operation exceeded max collection count" +
+				                                  $" - {request.Objects.Count}, when allowed is {_MAX_COUNT_OF_COLLECTION_IN_REQUEST}";
+
+				string[] warningsToLog = { getWarningMessageHeader(), massDeleteWarningMessage };
 				LogWarnings(warningsToLog);
 			}
 		}

@@ -30,6 +30,7 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class IntegrationPointServiceTests : RelativityProviderTemplate
 	{
 		private const string _SOURCECONFIG = "Source Config";

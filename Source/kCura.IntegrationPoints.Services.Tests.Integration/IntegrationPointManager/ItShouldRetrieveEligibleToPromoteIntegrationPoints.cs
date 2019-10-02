@@ -10,6 +10,7 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointManager
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class ItShouldRetrieveEligibleToPromoteIntegrationPoints : RelativityProviderTemplate
 	{
 		public ItShouldRetrieveEligibleToPromoteIntegrationPoints()

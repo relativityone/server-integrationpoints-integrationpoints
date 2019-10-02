@@ -20,6 +20,7 @@ using Rip.E2ETests.Constants;
 namespace Rip.E2ETests.Installation
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class RipInstallationTests
 	{
 		private RelativityApplicationManager ApplicationManager { get; }

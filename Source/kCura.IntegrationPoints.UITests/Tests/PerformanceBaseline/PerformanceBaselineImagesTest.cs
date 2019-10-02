@@ -12,6 +12,7 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.UITests.Tests.PerformanceBaseline
 {
 	[TestFixture, Explicit]
+	[Feature.DataTransfer.IntegrationPoints]
 	[Category(TestCategory.PERFORMANCE_BASELINE)]
 	public class PerformanceBaselineImagesTest : RelativityProviderTestsBase
 	{

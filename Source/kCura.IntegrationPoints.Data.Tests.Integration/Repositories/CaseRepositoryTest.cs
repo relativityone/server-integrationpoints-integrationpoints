@@ -18,6 +18,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 	/// This suite tests integration between RIP and ResourceServerManager kepler service
 	/// </summary>
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class CaseRepositoryTest
 	{
 		private int _workspaceId;

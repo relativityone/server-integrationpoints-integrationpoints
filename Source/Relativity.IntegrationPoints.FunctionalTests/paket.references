@@ -1,6 +1,7 @@
 ﻿Castle.Windsor
 kCura
 kCura.Apps.Common.Config
+kCura.IntegrationPoints.Services.Interfaces.Private
 kCura.Relativity.Client
 Polly
 Relativity

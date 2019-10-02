@@ -34,11 +34,17 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
 			return _retryHandler.ExecuteWithRetriesAsync(
 					() => _objectManager.CreateAsync(workspaceArtifactID, createRequest));
 		}
-		
+
 		public Task<DeleteResult> DeleteAsync(int workspaceArtifactID, DeleteRequest request)
 		{
 			return _retryHandler.ExecuteWithRetriesAsync(
 					() => _objectManager.DeleteAsync(workspaceArtifactID, request));
+		}
+
+		public Task<MassDeleteResult> DeleteAsync(int workspaceArtifactID, MassDeleteByObjectIdentifiersRequest request)
+		{
+			return _retryHandler.ExecuteWithRetriesAsync(
+				() => _objectManager.DeleteAsync(workspaceArtifactID, request));
 		}
 
 		public Task<QueryResult> QueryAsync(int workspaceArtifactID, QueryRequest request, int start, int length)
@@ -92,8 +98,8 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
 		{
 			return _retryHandler.ExecuteWithRetriesAsync(
 				() => _objectManager.RetrieveResultsBlockFromExportAsync(
-					workspaceArtifactID, 
-					runID, 
+					workspaceArtifactID,
+					runID,
 					resultsBlockSize,
 					exportIndexID));
 		}
