@@ -32,8 +32,7 @@ namespace kCura.IntegrationPoints.Core.Authentication
 			{
 				OAuth2Client oauth2Client = _oAuth2ClientFactory.GetOauth2Client(_contextUser.ID);
 				ITokenProvider tokenProvider = CreateTokenProvider(oauth2Client);
-				string token = tokenProvider.GetAccessTokenAsync().ConfigureAwait(false)
-					.GetAwaiter().GetResult();
+				string token = tokenProvider.GetAccessTokenAsync().GetAwaiter().GetResult();
 
 				return token;
 			}
