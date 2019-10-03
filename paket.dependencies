@@ -30,7 +30,7 @@ nuget Relativity.Kepler.Client 2.0.7
 nuget Relativity.Logging 2018.11.8
 nuget Relativity.Logging.Interfaces 2018.11.8
 nuget Relativity.OAuth2Client 1.0.27
-nuget Relativity.Productions.Services.Interfaces 10.3.2
+nuget Relativity.Productions.Services.Interfaces 10.3.38
 nuget Relativity.Telemetry.APM 2019.1.1 
 nuget Relativity.Telemetry.MetricsCollection  2018.12.2
 nuget Relativity.Telemetry.Services.Interface 2019.1.1
