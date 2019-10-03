@@ -141,9 +141,9 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			return this;
 		}
 
-		public TestContext AddEntityObjectToWorkspace()
+		public async Task<TestContext> AddEntityObjectToWorkspaceAsync()
 		{
-			EntityObjectTypeHelper.AddEntityObjectToWorkspace();
+			await EntityObjectTypeHelper.AddEntityObjectToWorkspaceAsync().ConfigureAwait(false);
 			return this;
 		}
 
@@ -154,9 +154,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 		public  Task InstallIntegrationPointsAsync()
 		{
-			return Task.Run(() =>
-				ApplicationInstallationHelper.InstallIntegrationPoints()
-			);
+			return ApplicationInstallationHelper.InstallIntegrationPointsAsync();
 		}
 
 		public TestContext ImportDocumentsToRoot()
