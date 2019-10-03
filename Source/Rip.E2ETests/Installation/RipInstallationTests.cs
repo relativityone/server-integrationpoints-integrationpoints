@@ -16,7 +16,6 @@ using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoints.Data.Repositories;
 using Relativity.Testing.Identification;
 using Rip.E2ETests.Constants;
-using CoreConstants = kCura.IntegrationPoints.Core.Constants;
 
 namespace Rip.E2ETests.Installation
 {
@@ -29,10 +28,8 @@ namespace Rip.E2ETests.Installation
 
 		private readonly string[] _ripInternalSourceProviders = { "LDAP", "FTP (CSV File)", "Load File", "Relativity" };
 		private readonly string[] _ripInternalDestinationProviders = { "Relativity", "Load File" };
-		private const string _JSON_LOADER_APPLICATION_NAME = "JsonLoader";
 		private const string _JSON_LOADER_SOURCE_PROVIDER_NAME = "JSON";
-		private const string _JSON_LOADER_GUID = "57151c17-cd92-4a6e-800c-a75bf807d097";
-		private const string _RIP_GUID = CoreConstants.IntegrationPoints.APPLICATION_GUID_STRING;
+		private static Guid _JsonLoaderGuid => Guid.Parse("57151c17-cd92-4a6e-800c-a75bf807d097");
 
 		private const string _WORKSPACE_TEMPLATE_WITHOUT_RIP = WorkspaceTemplateNames.NEW_CASE_TEMPLATE_NAME;
 		private readonly string _mainWorkspaceName = $"RipInstallTest{Guid.NewGuid()}";
@@ -52,10 +49,6 @@ namespace Rip.E2ETests.Installation
 		{
 			_mainWorkspaceID = await CreateWorkspaceAsync(_mainWorkspaceName, _WORKSPACE_TEMPLATE_WITHOUT_RIP).ConfigureAwait(false);
 
-			if (SharedVariables.UseIpRapFile())
-			{
-				await ApplicationManager.ImportRipToLibraryAsync().ConfigureAwait(false);
-			}
 			await ImportMyFirstProviderToLibraryAsync().ConfigureAwait(false);
 			await ImportJsonLoaderToLibraryAsync().ConfigureAwait(false);
 		}
@@ -71,13 +64,14 @@ namespace Rip.E2ETests.Installation
 
 		[IdentifiedTest("73fe58a5-087e-4071-8976-e54960dcbef1")]
 		[Order(10)]
-		public void ShouldInstallRipToWorkspaceCreatedFromTemplateWithoutRip()
+		public async Task ShouldInstallRipToWorkspaceCreatedFromTemplateWithoutRip()
 		{
 			// arrange
 			int mainWorkspaceID = ValidateAndGetMainWorkspaceID();
 
 			// act
-			ApplicationManager.InstallApplicationFromLibrary(mainWorkspaceID, _RIP_GUID);
+
+			await ApplicationManager.InstallRipFromLibraryAsync(mainWorkspaceID).ConfigureAwait(false);
 
 			// assert
 			VerifyRipIsInstalledCorrectlyInWorkspace(mainWorkspaceID);
@@ -100,13 +94,13 @@ namespace Rip.E2ETests.Installation
 
 		[IdentifiedTest("a785ab16-a6f4-4e70-941c-d4fe1d026982")]
 		[Order(30)]
-		public void ShouldInstallMyFirstProviderToWorkspaceWithRipInstalled()
+		public async Task ShouldInstallMyFirstProviderToWorkspaceWithRipInstalled()
 		{
 			// arrange
 			int mainWorkspaceID = ValidateAndGetMainWorkspaceID();
 
 			// act
-			ApplicationManager.InstallApplicationFromLibrary(mainWorkspaceID, CustomProvidersConstants.MY_FIRST_PROVIDER_GUID);
+			await ApplicationManager.InstallApplicationFromLibraryAsync(mainWorkspaceID, CustomProvidersConstants.MyFirstProviderGuid).ConfigureAwait(false);
 
 			// assert
 			IEnumerable<string> expectedSourceProviders = _ripInternalSourceProviders.Concat(new[] { CustomProvidersConstants.MY_FIRST_PROVIDER_SOURCE_PROVIDER_NAME });
@@ -115,13 +109,13 @@ namespace Rip.E2ETests.Installation
 
 		[IdentifiedTest("cd114d25-c1b5-4549-a670-1f95a2b4d24a")]
 		[Order(40)]
-		public void ShouldInstallJsonLoaderToWorkspaceWithRipInstalled()
+		public async Task ShouldInstallJsonLoaderToWorkspaceWithRipInstalled()
 		{
 			// arrange
 			int mainWorkspaceID = ValidateAndGetMainWorkspaceID();
 
 			// act
-			ApplicationManager.InstallApplicationFromLibrary(mainWorkspaceID, _JSON_LOADER_GUID);
+			await ApplicationManager.InstallApplicationFromLibraryAsync(mainWorkspaceID, _JsonLoaderGuid).ConfigureAwait(false);
 
 			// assert
 			IEnumerable<string> expectedCustomSourceProviders = new[]
@@ -192,13 +186,13 @@ namespace Rip.E2ETests.Installation
 		private Task ImportMyFirstProviderToLibraryAsync()
 		{
 			string applicationFilePath = SharedVariables.MyFirstProviderRapFilePath;
-			return ApplicationManager.ImportApplicationToLibraryAsync(CustomProvidersConstants.MY_FIRST_PROVIDER_APPLICATION_NAME, applicationFilePath);
+			return ApplicationManager.ImportApplicationToLibraryAsync(applicationFilePath);
 		}
 
 		private Task ImportJsonLoaderToLibraryAsync()
 		{
 			string applicationFilePath = SharedVariables.JsonLoaderRapFilePath;
-			return ApplicationManager.ImportApplicationToLibraryAsync(_JSON_LOADER_APPLICATION_NAME, applicationFilePath);
+			return ApplicationManager.ImportApplicationToLibraryAsync(applicationFilePath);
 		}
 	}
 }

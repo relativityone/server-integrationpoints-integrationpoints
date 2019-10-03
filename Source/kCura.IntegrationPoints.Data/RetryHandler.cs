@@ -4,6 +4,7 @@ using Relativity.API;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Common.Handlers;
 
@@ -47,7 +48,7 @@ namespace kCura.IntegrationPoints.Data
 
 		public T ExecuteWithRetries<T>(Func<T> function, [CallerMemberName] string callerName = "")
 		{
-			return _retryPolicy.Execute(function, CreateContextData(callerName));
+			return _retryPolicy.Execute((context, token) => function(), CreateContextData(callerName), CancellationToken.None);
 		}
 
 		private Dictionary<string, object> CreateContextData(string callerName)

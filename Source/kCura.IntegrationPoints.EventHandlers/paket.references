@@ -9,3 +9,4 @@ Relativity.Data
 Relativity.Services.Interfaces
 SystemWrapper.Interfaces
 Relativity.DataTransfer.MessageService
+Polly

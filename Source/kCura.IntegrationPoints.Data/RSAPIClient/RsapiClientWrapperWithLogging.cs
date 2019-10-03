@@ -33,84 +33,84 @@ namespace kCura.IntegrationPoints.Data.RSAPIClient
 
 		public string TokenLogin(string sessionToken)
 		{
-			return LogAndRethrowException(() => 
+			return LogAndRethrowException(() =>
 				_rsapiClient.TokenLogin(sessionToken)
 			);
 		}
 
 		public ReadResult GenerateRelativityAuthenticationToken(APIOptions apiOpt)
 		{
-			return LogAndRethrowException(() => 
+			return LogAndRethrowException(() =>
 				_rsapiClient.GenerateRelativityAuthenticationToken(apiOpt)
 			);
 		}
 
 		public ReadResult GetAuthenticationToken(APIOptions apiOpt, string onBehalfOfUserName)
 		{
-			return LogAndRethrowException(() => 
+			return LogAndRethrowException(() =>
 				_rsapiClient.GetAuthenticationToken(apiOpt, onBehalfOfUserName)
 			);
 		}
 
 		public void Logout(APIOptions apiOpt)
 		{
-			LogAndRethrowException(() => 
+			LogAndRethrowException(() =>
 				_rsapiClient.Logout(apiOpt)
 			);
 		}
 
 		public string LoginWithCredentials(string username, string password)
 		{
-			return LogAndRethrowException(() => 
+			return LogAndRethrowException(() =>
 				_rsapiClient.LoginWithCredentials(username, password)
 			);
 		}
 
 		public ResultSet Create(APIOptions apiOpt, List<ArtifactRequest> artifactRequests)
 		{
-			return LogAndRethrowException(() => 
+			return LogAndRethrowException(() =>
 				_rsapiClient.Create(apiOpt, artifactRequests)
 			);
 		}
 
 		public ReadResultSet Read(APIOptions apiOpt, List<ArtifactRequest> artifactRequests)
 		{
-			return LogAndRethrowException(() => 
+			return LogAndRethrowException(() =>
 				_rsapiClient.Read(apiOpt, artifactRequests)
 			);
 		}
 
 		public ResultSet Update(APIOptions apiOpt, List<ArtifactRequest> artifactRequests)
 		{
-			return LogAndRethrowException(() => 
+			return LogAndRethrowException(() =>
 				_rsapiClient.Update(apiOpt, artifactRequests)
 			);
 		}
 
 		public ResultSet Delete(APIOptions apiOpt, List<ArtifactRequest> artifactRequests)
 		{
-			return LogAndRethrowException(() => 
+			return LogAndRethrowException(() =>
 				_rsapiClient.Delete(apiOpt, artifactRequests)
 			);
 		}
 
 		public Dictionary<AdminChoice, int> GetAdminChoiceTypes(APIOptions apiOpt)
 		{
-			return LogAndRethrowException(() => 
+			return LogAndRethrowException(() =>
 				_rsapiClient.GetAdminChoiceTypes(apiOpt)
 			);
 		}
 
 		public MassEditResult MassEdit(APIOptions apiOpt, ArtifactRequest templateArtifactRequest, List<int> artifactIDs)
 		{
-			return LogAndRethrowException(() => 
+			return LogAndRethrowException(() =>
 				_rsapiClient.MassEdit(apiOpt, templateArtifactRequest, artifactIDs)
 			);
 		}
 
 		public MassCreateResult MassCreate(APIOptions apiOpt, ArtifactRequest templateArtifactRequest, List<ArtifactRequest> artifactRequests)
 		{
-			return LogAndRethrowException(() => 
+			return LogAndRethrowException(() =>
 				_rsapiClient.MassCreate(apiOpt, templateArtifactRequest, artifactRequests)
 			);
 		}
@@ -118,7 +118,7 @@ namespace kCura.IntegrationPoints.Data.RSAPIClient
 		public MassCreateResult MassCreateWithDetails(APIOptions apiOpt, ArtifactRequest templateArtifactRequest,
 			List<ArtifactRequest> artifactRequests)
 		{
-			return LogAndRethrowException(() => 
+			return LogAndRethrowException(() =>
 				_rsapiClient.MassCreateWithDetails(apiOpt, templateArtifactRequest, artifactRequests)
 			);
 		}
@@ -126,137 +126,135 @@ namespace kCura.IntegrationPoints.Data.RSAPIClient
 		public MassCreateResult MassCreateWithAPIParameters(APIOptions apiOpt, ArtifactRequest templateArtifactRequest,
 			List<ArtifactRequest> artifactRequests, List<APIParameters> apiParms)
 		{
-			return LogAndRethrowException(() => 
+			return LogAndRethrowException(() =>
 				_rsapiClient.MassCreateWithAPIParameters(apiOpt, templateArtifactRequest, artifactRequests, apiParms)
 			);
 		}
 
 		public ResultSet MassDelete(APIOptions apiOpt, MassDeleteOptions options, List<int> artifactIDs)
 		{
-			return LogAndRethrowException(() => 
+			return LogAndRethrowException(() =>
 				_rsapiClient.MassDelete(apiOpt, options, artifactIDs)
 			);
 		}
 
 		public ResultSet MassDeleteAllObjects(APIOptions apiOpt, MassDeleteOptions options)
 		{
-			return LogAndRethrowException(() => 
+			return LogAndRethrowException(() =>
 				_rsapiClient.MassDeleteAllObjects(apiOpt, options)
 			);
 		}
 
 		public ResultSet MassDeleteDocuments(APIOptions apiOpt, DocumentMassDeleteOptions options, List<int> artifactIDs)
 		{
-			return LogAndRethrowException(() => 
+			return LogAndRethrowException(() =>
 				_rsapiClient.MassDeleteDocuments(apiOpt, options, artifactIDs)
 			);
 		}
 
 		public ResultSet MassDeleteAllDocuments(APIOptions apiOpt, DocumentMassDeleteOptions options)
 		{
-			return LogAndRethrowException(() => 
+			return LogAndRethrowException(() =>
 				_rsapiClient.MassDeleteAllDocuments(apiOpt, options)
 			);
 		}
 
 		public ProcessInformation GetProcessState(APIOptions apiOpt, Guid processID)
 		{
-			return LogAndRethrowException(() => 
+			return LogAndRethrowException(() =>
 				_rsapiClient.GetProcessState(apiOpt, processID)
 			);
 		}
 
 		public ProcessOperationResult FlagProcessForCancellationAsync(APIOptions apiOpt, Guid processID)
 		{
-			return LogAndRethrowException(() => 
+			return LogAndRethrowException(() =>
 				_rsapiClient.FlagProcessForCancellationAsync(apiOpt, processID)
 			);
 		}
 
 		public ProcessOperationResult CreateBatchesForBatchSetAsync(APIOptions apiOpt, int batchSetArtifactID)
 		{
-			return LogAndRethrowException(() => 
+			return LogAndRethrowException(() =>
 				_rsapiClient.CreateBatchesForBatchSetAsync(apiOpt, batchSetArtifactID)
 			);
 		}
 
 		public ProcessOperationResult PurgeBatchesOfBatchSetAsync(APIOptions apiOpt, int batchSetArtifactID)
 		{
-			return LogAndRethrowException(() => 
+			return LogAndRethrowException(() =>
 				_rsapiClient.PurgeBatchesOfBatchSetAsync(apiOpt, batchSetArtifactID)
 			);
 		}
 
 		public SerialLicense GetLicense(APIOptions apiOpt, Guid appGuid, string password)
 		{
-			return LogAndRethrowException(() => 
+			return LogAndRethrowException(() =>
 				_rsapiClient.GetLicense(apiOpt, appGuid, password)
 			);
 		}
 
+		[Obsolete("This method is deprecated in IRSAPIClient")]
 		public ProcessOperationResult InstallApplication(APIOptions apiOpt, AppInstallRequest appInstallRequest)
 		{
-			return LogAndRethrowException(() => 
-#pragma warning disable CS0618 // Type or member is obsolete
+			return LogAndRethrowException(() =>
 				_rsapiClient.InstallApplication(apiOpt, appInstallRequest)
-#pragma warning restore CS0618 // Type or member is obsolete
 			);
 		}
 
+		[Obsolete("This method is deprecated in IRSAPIClient")]
 		public ResultSet InstallLibraryApplication(APIOptions apiOpt, AppInstallRequest appInstallRequest)
 		{
-			return LogAndRethrowException(() => 
-#pragma warning disable CS0618 // Type or member is obsolete
-				_rsapiClient.InstallLibraryApplication(apiOpt, appInstallRequest)
-#pragma warning restore CS0618 // Type or member is obsolete
+			return LogAndRethrowException(() =>
+					_rsapiClient.InstallLibraryApplication(apiOpt, appInstallRequest)
 			);
 		}
 
 		public ResultSet ExportApplication(APIOptions apiOpt, AppExportRequest appExportRequest)
 		{
-			return LogAndRethrowException(() => 
+			return LogAndRethrowException(() =>
 				_rsapiClient.ExportApplication(apiOpt, appExportRequest)
 			);
 		}
 
 		public ResultSet PushResourceFiles(APIOptions apiOpt, List<ResourceFileRequest> rfPushRequests)
 		{
-			return LogAndRethrowException(() => 
+			return LogAndRethrowException(() =>
 				_rsapiClient.PushResourceFiles(apiOpt, rfPushRequests)
 			);
 		}
 
 		public void Clear(FileRequest fileRequest)
 		{
-			LogAndRethrowException(() => 
+			LogAndRethrowException(() =>
 				_rsapiClient.Clear(fileRequest)
 			);
 		}
 
 		public KeyValuePair<DownloadResponse, Stream> Download(FileRequest fileRequest)
 		{
-			return LogAndRethrowException(() => 
+			return LogAndRethrowException(() =>
 				_rsapiClient.Download(fileRequest)
 			);
 		}
 
 		public DownloadResponse Download(FileRequest fileRequest, string outputPath)
 		{
-			return LogAndRethrowException(() => 
+			return LogAndRethrowException(() =>
 				_rsapiClient.Download(fileRequest, outputPath)
 			);
 		}
 
 		public void Upload(UploadRequest uploadRequest)
 		{
-			LogAndRethrowException(() => 
+			LogAndRethrowException(() =>
 				_rsapiClient.Upload(uploadRequest)
 			);
 		}
 
 		public DownloadURLResponse GetFileFieldDownloadURL(DownloadURLRequest downloadUrlRequest)
 		{
-			return LogAndRethrowException(() => 
+			return LogAndRethrowException(() =>
 				_rsapiClient.GetFileFieldDownloadURL(downloadUrlRequest)
 			);
 		}
@@ -298,35 +296,35 @@ namespace kCura.IntegrationPoints.Data.RSAPIClient
 
 		public QueryResult QuerySubset(APIOptions apiOpt, string queryToken, int start, int length)
 		{
-			return LogAndRethrowException(() => 
+			return LogAndRethrowException(() =>
 				_rsapiClient.QuerySubset(apiOpt, queryToken, start, length)
 			);
 		}
 
 		public ExecuteBatchResultSet ExecuteBatch(APIOptions apiOpt, List<Command> commands, TransactionType transType)
 		{
-			return LogAndRethrowException(() => 
+			return LogAndRethrowException(() =>
 				_rsapiClient.ExecuteBatch(apiOpt, commands, transType)
 			);
 		}
 
 		public RelativityScriptResult ExecuteRelativityScript(APIOptions apiOpt, int scriptArtifactID, List<RelativityScriptInput> inputs)
 		{
-			return LogAndRethrowException(() => 
+			return LogAndRethrowException(() =>
 				_rsapiClient.ExecuteRelativityScript(apiOpt, scriptArtifactID, inputs)
 			);
 		}
 
 		public List<RelativityScriptInputDetails> GetRelativityScriptInputs(APIOptions apiOpt, int scriptArtifactID)
 		{
-			return LogAndRethrowException(() => 
+			return LogAndRethrowException(() =>
 				_rsapiClient.GetRelativityScriptInputs(apiOpt, scriptArtifactID)
 			);
 		}
 
 		public ProcessOperationResult MonitorProcessState(APIOptions apiOpt, Guid processID)
 		{
-			return LogAndRethrowException(() => 
+			return LogAndRethrowException(() =>
 				_rsapiClient.MonitorProcessState(apiOpt, processID)
 			);
 		}
@@ -363,21 +361,21 @@ namespace kCura.IntegrationPoints.Data.RSAPIClient
 
 		public void Dispose()
 		{
-			LogAndRethrowException(() => 
+			LogAndRethrowException(() =>
 				_rsapiClient.Dispose()
 			);
 		}
 
 		public OperationResult ValidateEndpoint()
 		{
-			return LogAndRethrowException(() => 
+			return LogAndRethrowException(() =>
 				_rsapiClient.ValidateEndpoint()
 			);
 		}
 
 		public List<RelativityScriptInput> ConvertToScriptInputList(List<RelativityScriptInputDetails> inputDetails)
 		{
-			return LogAndRethrowException(() => 
+			return LogAndRethrowException(() =>
 				_rsapiClient.ConvertToScriptInputList(inputDetails)
 			);
 		}
