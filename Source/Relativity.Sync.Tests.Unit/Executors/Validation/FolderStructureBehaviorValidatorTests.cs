@@ -62,7 +62,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
 			// Assert
-			Assert.IsTrue(actualResult.IsValid);
+			actualResult.IsValid.Should().BeTrue();
 
 			VerifyObjectManagerQueryRequest();
 
@@ -84,9 +84,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
 			// Assert
-			Assert.IsFalse(actualResult.IsValid);
-			Assert.IsNotEmpty(actualResult.Messages);
-			Assert.AreEqual(1, actualResult.Messages.Count());
+			actualResult.IsValid.Should().BeFalse();
+			actualResult.Messages.Should().HaveCount(1);
 
 			VerifyObjectManagerQueryRequest();
 
@@ -108,9 +107,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
 			// Assert
-			Assert.IsFalse(actualResult.IsValid);
-			Assert.IsNotEmpty(actualResult.Messages);
-			Assert.AreEqual(1, actualResult.Messages.Count());
+			actualResult.IsValid.Should().BeFalse();
+			actualResult.Messages.Should().HaveCount(1);
 
 			VerifyObjectManagerQueryRequest();
 
@@ -128,9 +126,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
 			// Assert
-			Assert.IsFalse(actualResult.IsValid);
-			Assert.IsNotEmpty(actualResult.Messages);
-			Assert.AreEqual(1, actualResult.Messages.Count());
+			actualResult.IsValid.Should().BeFalse();
+			actualResult.Messages.Should().HaveCount(1);
 
 			Mock.VerifyAll(_sourceServiceFactoryForUser, _objectManager);
 		}
@@ -148,9 +145,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
 			// Assert
-			Assert.IsFalse(actualResult.IsValid);
-			Assert.IsNotEmpty(actualResult.Messages);
-			Assert.AreEqual(1, actualResult.Messages.Count());
+			actualResult.IsValid.Should().BeFalse();
+			actualResult.Messages.Should().HaveCount(1);
 
 			Mock.VerifyAll(_sourceServiceFactoryForUser, _objectManager);
 			_objectManager.Verify(x => x.Dispose(), Times.Once);
@@ -206,15 +202,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 
 		private QueryResult BuildQueryResult(params string[] testFieldValues)
 		{
-			var field = new Field
-			{
-				Name = _EXPECTED_QUERY_FIELD_TYPE
-			};
-			List<FieldValuePair> fieldValues = testFieldValues.Select(value => new FieldValuePair
-			{
-				Field = field,
-				Value = value
-			}).ToList();
+			List<FieldValuePair> fieldValues = BuildResultFieldValues(testFieldValues);
 
 			var queryResult = new QueryResult
 			{
@@ -227,6 +215,20 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 				}
 			};
 			return queryResult;
+		}
+
+		private static List<FieldValuePair> BuildResultFieldValues(IEnumerable<string> testFieldValues)
+		{
+			var field = new Field
+			{
+				Name = _EXPECTED_QUERY_FIELD_TYPE
+			};
+			List<FieldValuePair> fieldValues = testFieldValues.Select(value => new FieldValuePair
+			{
+				Field = field,
+				Value = value
+			}).ToList();
+			return fieldValues;
 		}
 
 		private void VerifyObjectManagerQueryRequest()
