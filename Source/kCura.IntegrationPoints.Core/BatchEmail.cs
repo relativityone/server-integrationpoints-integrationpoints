@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 using kCura.IntegrationPoints.Common.Extensions.DotNet;
 using kCura.IntegrationPoints.Core.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
@@ -66,14 +66,24 @@ namespace kCura.IntegrationPoints.Core
 				SendEmails(job, emails);
 			}
 		}
+		public EmailJobParameters GenerateEmailJobParameters(Relativity.Client.DTOs.Choice choice, List<string> emails)
+		{
+			Tuple<string, string> subjectAndBody = GetEmailSubjectAndBodyForJobStatus(choice);
+			EmailJobParameters jobParameters = new EmailJobParameters
+			{
+				Subject = subjectAndBody.Item1,
+				MessageBody = subjectAndBody.Item2
+			};
+			ConvertMessage(jobParameters, emails, _converter);
+			return jobParameters;
+		}
 
 		private void SendEmails(Job job, List<string> emails)
 		{
 			TaskParameters taskParameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
 			Relativity.Client.DTOs.Choice choice = _jobStatusUpdater.GenerateStatus(taskParameters.BatchInstance);
 
-			EmailJobParameters jobParameters = GenerateEmailJobParameters(choice);
-			ConvertMessage(jobParameters, emails, _converter);
+			EmailJobParameters jobParameters = GenerateEmailJobParameters(choice, emails);
 
 			TaskParameters emailTaskParameters = new TaskParameters
 			{
@@ -83,31 +93,32 @@ namespace kCura.IntegrationPoints.Core
 			JobManager.CreateJob(job, emailTaskParameters, TaskType.SendEmailWorker);
 		}
 
-		public static EmailJobParameters GenerateEmailJobParameters(Relativity.Client.DTOs.Choice choice)
+		public static Tuple<string, string> GetEmailSubjectAndBodyForJobStatus(Relativity.Client.DTOs.Choice choice)
 		{
-			EmailJobParameters jobParameters = new EmailJobParameters();
-
+			string messageBody;
+			string messageSubject;
 			if (choice.EqualsToChoice(Data.JobStatusChoices.JobHistoryCompletedWithErrors))
 			{
-				jobParameters.Subject = Properties.JobStatusMessages.JOB_COMPLETED_WITH_ERRORS_SUBJECT;
-				jobParameters.MessageBody = Properties.JobStatusMessages.JOB_COMPLETED_WITH_ERRORS_BODY;
+				messageSubject = Properties.JobStatusMessages.JOB_COMPLETED_WITH_ERRORS_SUBJECT;
+				messageBody = Properties.JobStatusMessages.JOB_COMPLETED_WITH_ERRORS_BODY;
 			}
 			else if (choice.EqualsToChoice(Data.JobStatusChoices.JobHistoryErrorJobFailed))
 			{
-				jobParameters.Subject = Properties.JobStatusMessages.JOB_FAILED_SUBJECT;
-				jobParameters.MessageBody = Properties.JobStatusMessages.JOB_FAILED_BODY;
+				messageSubject = Properties.JobStatusMessages.JOB_FAILED_SUBJECT;
+				messageBody = Properties.JobStatusMessages.JOB_FAILED_BODY;
 			}
 			else if (choice.EqualsToChoice(Data.JobStatusChoices.JobHistoryStopped))
 			{
-				jobParameters.Subject = Properties.JobStatusMessages.JOB_STOPPED_SUBJECT;
-				jobParameters.MessageBody = Properties.JobStatusMessages.JOB_STOPPED_BODY;
+				messageSubject = Properties.JobStatusMessages.JOB_STOPPED_SUBJECT;
+				messageBody = Properties.JobStatusMessages.JOB_STOPPED_BODY;
 			}
 			else
 			{
-				jobParameters.Subject = Properties.JobStatusMessages.JOB_COMPLETED_SUCCESS_SUBJECT;
-				jobParameters.MessageBody = Properties.JobStatusMessages.JOB_COMPLETED_SUCCESS_BODY;
+				messageSubject = Properties.JobStatusMessages.JOB_COMPLETED_SUCCESS_SUBJECT;
+				messageBody = Properties.JobStatusMessages.JOB_COMPLETED_SUCCESS_BODY;
 			}
-			return jobParameters;
+
+			return new Tuple<string, string>(messageSubject, messageBody);
 		}
 
 		private static void ConvertMessage(EmailJobParameters jobParameters, IEnumerable<string> emails, IEmailFormatter converter)
