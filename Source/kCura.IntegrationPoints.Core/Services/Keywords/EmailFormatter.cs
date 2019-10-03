@@ -5,20 +5,20 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Services.Keywords
 {
-	public class KeywordConverter : IKeywordConverter
+	public class EmailFormatter : IEmailFormatter
 	{
-		private readonly KeywordFactory _factory;
+		private readonly EmailKeywordFactory _factory;
 		private readonly IAPILog _logger;
 
-		public KeywordConverter(IHelper helper, KeywordFactory factory)
+		public EmailFormatter(IHelper helper, EmailKeywordFactory factory)
 		{
 			_factory = factory;
-			_logger = helper.GetLoggerFactory().GetLogger().ForContext<KeywordConverter>();
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<EmailFormatter>();
 		}
 
-		public string Convert(string textToConvert)
+		public string Format(string textToFormat)
 		{
-			string returnValue = textToConvert;
+			string returnValue = textToFormat;
 			if (string.IsNullOrEmpty(returnValue))
 			{
 				return returnValue;
@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
 			var dictionary = _factory.GetKeywords().ToDictionary(x => x.KeywordName.ToUpperInvariant());
 			var matchPattern = string.Join("|", dictionary.Keys);
 			var expression = new Regex(matchPattern, RegexOptions.IgnoreCase);
-			var matches = expression.Matches(textToConvert);
+			var matches = expression.Matches(textToFormat);
 			//only replace the keys found
 			foreach (Match match in matches)
 			{
@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
 				}
 				catch (Exception e)
 				{
-					LogConvertingError(textToConvert, e);
+					LogFormattingError(textToFormat, e);
 					//eat
 				}
 				if (!string.IsNullOrEmpty(replacementValue))
@@ -62,9 +62,9 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
 
 		#region Logging
 
-		private void LogConvertingError(string textToConvert, Exception e)
+		private void LogFormattingError(string textToFormat, Exception e)
 		{
-			_logger.LogError(e, "Error occurred during text convertion ({TextToConvert})", textToConvert);
+			_logger.LogError(e, "Error occurred during text formatting ({textToFormat})", textToFormat);
 		}
 
 		#endregion

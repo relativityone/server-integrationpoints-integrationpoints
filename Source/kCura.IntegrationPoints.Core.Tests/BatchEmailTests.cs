@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 		private Mock<IJobManager> _jobManager;
 		private Mock<IJobService> _jobService;
 		private Mock<IJobStatusUpdater> _jobStatusUpdater;
-		private Mock<IKeywordConverter> _converter;
+		private Mock<IEmailFormatter> _converter;
 		private Mock<IManagerFactory> _managerFactory;
 		private Mock<IRelativityObjectManager> _objectManager;
 		private Mock<IRSAPIService> _rsapiService;
@@ -57,7 +57,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 		public override void SetUp()
 		{
 			_helper = new Mock<IHelper>(MockBehavior.Loose) { DefaultValue = DefaultValue.Mock };
-			_converter = new Mock<IKeywordConverter>();
+			_converter = new Mock<IEmailFormatter>();
 			_caseServiceContext = new Mock<ICaseServiceContext>();
 			_jobStatusUpdater = new Mock<IJobStatusUpdater>();
 			_rsapiService = new Mock<IRSAPIService>();
@@ -124,7 +124,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 			_jobStatusUpdater
 				.Setup(x => x.GenerateStatus(It.IsAny<Guid>()))
 				.Returns(JobStatusChoices.JobHistoryCompleted);
-			_converter.Setup(x => x.Convert(It.IsAny<string>())).Returns<string>(y => y);
+			_converter.Setup(x => x.Format(It.IsAny<string>())).Returns<string>(y => y);
 			JSONSerializer serializer = new JSONSerializer();
 			string taskParametersSerialized = serializer.Serialize(taskParameters);
 			job.JobDetails = taskParametersSerialized;

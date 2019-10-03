@@ -2,10 +2,10 @@
 
 namespace kCura.IntegrationPoints.Core.Services.Keywords
 {
-	public class KeywordFactory
+	public class EmailKeywordFactory
 	{
 		private readonly IEnumerable<IKeyword> _keywords;
-		public KeywordFactory(IEnumerable<IKeyword> keywords)
+		public EmailKeywordFactory(IEnumerable<IKeyword> keywords)
 		{
 			_keywords = keywords;
 		}

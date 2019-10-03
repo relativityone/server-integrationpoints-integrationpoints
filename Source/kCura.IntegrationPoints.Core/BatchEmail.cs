@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Core
 	public class BatchEmail : IntegrationPointTaskBase, IBatchStatus
 	{
 		private readonly IJobStatusUpdater _jobStatusUpdater;
-		private readonly IKeywordConverter _converter;
+		private readonly IEmailFormatter _converter;
 
 		public BatchEmail(ICaseServiceContext caseServiceContext,
 			IHelper helper,
@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.Core
 			IJobHistoryErrorService jobHistoryErrorService,
 			IJobManager jobManager,
 			IJobStatusUpdater jobStatusUpdater,
-			IKeywordConverter converter,
+			IEmailFormatter converter,
 			IManagerFactory managerFactory,
 			IJobService jobService,
 			IIntegrationPointRepository integrationPointRepository)
@@ -110,11 +110,11 @@ namespace kCura.IntegrationPoints.Core
 			return jobParameters;
 		}
 
-		private static void ConvertMessage(EmailJobParameters jobParameters, IEnumerable<string> emails, IKeywordConverter converter)
+		private static void ConvertMessage(EmailJobParameters jobParameters, IEnumerable<string> emails, IEmailFormatter converter)
 		{
 			jobParameters.Emails = emails;
-			jobParameters.Subject = converter.Convert(jobParameters.Subject);
-			jobParameters.MessageBody = converter.Convert(jobParameters.MessageBody);
+			jobParameters.Subject = converter.Format(jobParameters.Subject);
+			jobParameters.MessageBody = converter.Format(jobParameters.MessageBody);
 		}
 	}
 }
