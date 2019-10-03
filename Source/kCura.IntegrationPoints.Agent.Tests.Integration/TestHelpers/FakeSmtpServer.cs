@@ -73,6 +73,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration.TestHelpers
 		public void Dispose()
 		{
 			Dispose(true);
+			GC.SuppressFinalize(this);
 		}
 	}
 }

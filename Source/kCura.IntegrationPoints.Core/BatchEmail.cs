@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Common.Extensions.DotNet;
 using kCura.IntegrationPoints.Core.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
@@ -60,12 +61,10 @@ namespace kCura.IntegrationPoints.Core
 
 			List<string> emails = GetRecipientEmails();
 
-			if (emails == null || !emails.Any())
+			if (!emails.IsNullOrEmpty())
 			{
-				return;
+				SendEmails(job, emails);
 			}
-
-			SendEmails(job, emails);
 		}
 
 		private void SendEmails(Job job, List<string> emails)
@@ -73,7 +72,7 @@ namespace kCura.IntegrationPoints.Core
 			TaskParameters taskParameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
 			Relativity.Client.DTOs.Choice choice = _jobStatusUpdater.GenerateStatus(taskParameters.BatchInstance);
 
-			EmailJobParameters jobParameters = GenerateEmail(choice);
+			EmailJobParameters jobParameters = GenerateEmailJobParameters(choice);
 			ConvertMessage(jobParameters, emails, _converter);
 
 			TaskParameters emailTaskParameters = new TaskParameters
@@ -81,11 +80,10 @@ namespace kCura.IntegrationPoints.Core
 				BatchInstance = taskParameters.BatchInstance,
 				BatchParameters = jobParameters
 			};
-
 			JobManager.CreateJob(job, emailTaskParameters, TaskType.SendEmailWorker);
 		}
 
-		public static EmailJobParameters GenerateEmail(Relativity.Client.DTOs.Choice choice)
+		public static EmailJobParameters GenerateEmailJobParameters(Relativity.Client.DTOs.Choice choice)
 		{
 			EmailJobParameters jobParameters = new EmailJobParameters();
 

@@ -31,13 +31,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			var jobID = job.JobId;
 			LogExecuteStart(jobID);
 
-			TaskParameters emailTaskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
-
-			//We need this 'if' here to provide backwards compatibility with older email jobs
-			//after changing the way EmailJobParameters are send here. JIRA: REL-354651
-			EmailJobParameters details = emailTaskParameters.BatchParameters is JObject
-				? ((JObject)emailTaskParameters.BatchParameters).ToObject<EmailJobParameters>()
-				: _serializer.Deserialize<EmailJobParameters>(job.JobDetails);
+			EmailJobParameters details = GetEmailJobParametersFromJob(job);
 
 			Execute(details, jobID);
 		}
@@ -71,6 +65,19 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				LogErrorsDuringEmailSending(jobID);
 				throw new AggregateException(exceptions);
 			}
+		}
+
+
+		private EmailJobParameters GetEmailJobParametersFromJob(Job job)
+		{
+			TaskParameters emailTaskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
+
+			//We need this 'if' here to provide backwards compatibility with older email jobs
+			//after changing the way EmailJobParameters are send here. JIRA: REL-354651
+			EmailJobParameters details = emailTaskParameters.BatchParameters is JObject
+				? ((JObject)emailTaskParameters.BatchParameters).ToObject<EmailJobParameters>()
+				: _serializer.Deserialize<EmailJobParameters>(job.JobDetails);
+			return details;
 		}
 
 		#region Logging

@@ -56,7 +56,6 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="BatchEmailTests.cs" />
     <Compile Include="Managers\TargetDocumentsTaggingManagerTests.cs" />
     <Compile Include="ScheduledJobTests.cs" />
     <Compile Include="Services\AgentJobManagerTests.cs" />
