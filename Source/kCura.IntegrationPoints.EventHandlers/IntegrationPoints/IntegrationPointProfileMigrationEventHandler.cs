@@ -58,10 +58,10 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			int sourceProviderArtifactID = await _integrationPointProfilesQuery.GetSyncSourceProviderArtifactIDAsync(TemplateWorkspaceID).ConfigureAwait(false);
 			int destinationProviderArtifactID = await _integrationPointProfilesQuery.GetSyncDestinationProviderArtifactIDAsync(TemplateWorkspaceID).ConfigureAwait(false);
 			List<IntegrationPointProfile> allProfiles = (await _integrationPointProfilesQuery.GetAllProfilesAsync(TemplateWorkspaceID).ConfigureAwait(false)).ToList();
-			List<IntegrationPointProfile> syncProfiles = (await _integrationPointProfilesQuery
-				.GetSyncProfilesAsync(allProfiles, sourceProviderArtifactID, destinationProviderArtifactID).ConfigureAwait(false)).ToList();
-			List<IntegrationPointProfile> nonSyncProfiles = (await _integrationPointProfilesQuery
-				.GetNonSyncProfilesAsync(allProfiles, sourceProviderArtifactID, destinationProviderArtifactID).ConfigureAwait(false)).ToList();
+			List<IntegrationPointProfile> syncProfiles = _integrationPointProfilesQuery
+				.GetSyncProfiles(allProfiles, sourceProviderArtifactID, destinationProviderArtifactID).ToList();
+			List<IntegrationPointProfile> nonSyncProfiles = _integrationPointProfilesQuery
+				.GetNonSyncProfiles(allProfiles, sourceProviderArtifactID, destinationProviderArtifactID).ToList();
 
 			await Task.WhenAll(
 					DeleteNonSyncProfilesIfAnyInCreatedWorkspaceAsync(nonSyncProfiles.Select(x => x.ArtifactId).ToList()),

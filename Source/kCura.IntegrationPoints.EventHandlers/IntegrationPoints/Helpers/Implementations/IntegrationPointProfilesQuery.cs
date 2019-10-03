@@ -54,16 +54,16 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			return integrationPointProfiles;
 		}
 
-		public Task<IEnumerable<IntegrationPointProfile>> GetSyncProfilesAsync(IEnumerable<IntegrationPointProfile> profiles, int syncSourceProviderArtifactID, int syncDestinationProviderArtifactID)
+		public IEnumerable<IntegrationPointProfile> GetSyncProfiles(IEnumerable<IntegrationPointProfile> profiles, int syncSourceProviderArtifactID, int syncDestinationProviderArtifactID)
 		{
 			IEnumerable<IntegrationPointProfile> nonSyncProfiles = FilterProfiles(profiles, (profile) => IsSyncProfile(profile, syncSourceProviderArtifactID, syncDestinationProviderArtifactID));
-			return Task.FromResult(nonSyncProfiles);
+			return nonSyncProfiles;
 		}
 
-		public Task<IEnumerable<IntegrationPointProfile>> GetNonSyncProfilesAsync(IEnumerable<IntegrationPointProfile> profiles, int syncSourceProviderArtifactID, int syncDestinationProviderArtifactID)
+		public IEnumerable<IntegrationPointProfile> GetNonSyncProfiles(IEnumerable<IntegrationPointProfile> profiles, int syncSourceProviderArtifactID, int syncDestinationProviderArtifactID)
 		{
 			IEnumerable<IntegrationPointProfile> nonSyncProfiles = FilterProfiles(profiles, (profile) => !IsSyncProfile(profile, syncSourceProviderArtifactID, syncDestinationProviderArtifactID));
-			return Task.FromResult(nonSyncProfiles);
+			return nonSyncProfiles;
 		}
 
 		private IEnumerable<IntegrationPointProfile> FilterProfiles(IEnumerable<IntegrationPointProfile> profiles, Func<IntegrationPointProfile, bool> filter)

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.EventHandler;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
@@ -276,12 +275,12 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 				.ReturnsAsync(allProfiles);
 
 			_integrationPointProfilesQuery
-				.Setup(x => x.GetSyncProfilesAsync(It.IsAny<IEnumerable<IntegrationPointProfile>>(), It.IsAny<int>(), It.IsAny<int>()))
-				.ReturnsAsync(syncProfiles);
+				.Setup(x => x.GetSyncProfiles(It.IsAny<IEnumerable<IntegrationPointProfile>>(), It.IsAny<int>(), It.IsAny<int>()))
+				.Returns(syncProfiles);
 
 			_integrationPointProfilesQuery
-				.Setup(x => x.GetNonSyncProfilesAsync(It.IsAny<IEnumerable<IntegrationPointProfile>>(), It.IsAny<int>(), It.IsAny<int>()))
-				.ReturnsAsync(nonSyncProfiles);
+				.Setup(x => x.GetNonSyncProfiles(It.IsAny<IEnumerable<IntegrationPointProfile>>(), It.IsAny<int>(), It.IsAny<int>()))
+				.Returns(nonSyncProfiles);
 		}
 	}
 }
