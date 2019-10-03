@@ -161,7 +161,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		private string UpdateSourceConfiguration(string sourceConfigurationJson)
 		{
 			SourceConfiguration sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(sourceConfigurationJson);
-			sourceConfiguration.SavedSearch = null;
+			sourceConfiguration.SavedSearchArtifactId = 0;
 			sourceConfiguration.SourceWorkspaceArtifactId = WorkspaceID;
 			return _serializer.Serialize(sourceConfiguration);
 		}

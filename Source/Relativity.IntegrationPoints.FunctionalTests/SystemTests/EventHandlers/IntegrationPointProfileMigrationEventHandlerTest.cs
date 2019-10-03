@@ -4,7 +4,9 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using FluentAssertions;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core.Exceptions;
+using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -113,18 +115,20 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 			targetWorkspaceProfiles.Select(p => p.Type)
 				.ShouldAllBeEquivalentTo(exportIntegrationPointTypeArtifactID);
 
-			var sourceConfigurations = targetWorkspaceProfiles.Select(p => p.SourceConfiguration)
-				.Select(JObject.Parse)
+			ISerializer serializer = new JSONSerializer();
+			List<SourceConfiguration> sourceConfigurations = targetWorkspaceProfiles
+				.Select(profile => profile.SourceConfiguration)
+				.Select(sourceConfigJson => serializer.Deserialize<SourceConfiguration>(sourceConfigJson))
 				.ToList();
+
 			// verify source workspace id in source configuration
-			sourceConfigurations.Select(c => c[nameof(kCura.IntegrationPoints.Services.RelativityProviderSourceConfiguration.SourceWorkspaceArtifactId)])
-				.Select(t => t.ToObject<int>())
+			sourceConfigurations.Select(config => config.SourceWorkspaceArtifactId)
 				.ShouldAllBeEquivalentTo(targetWorkspaceID);
 
 			// verify saved search id in source configuration
 			sourceConfigurations
-				.Select(c => c[nameof(kCura.IntegrationPoints.Services.RelativityProviderSourceConfiguration.SavedSearchArtifactId)].Type)
-				.ShouldAllBeEquivalentTo(JTokenType.Null);
+				.Select(config => config.SavedSearchArtifactId)
+				.ShouldAllBeEquivalentTo(0);
 		}
 
 		private Task<int> GetSyncDestinationProviderArtifactIDAsync(int workspaceID) =>
