@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Authentication
 		{
 			// ARRANGE
 			var expectedToken = "ExpectedTokenString_1234";
-			_tokenProvider.GetAccessTokenAsync(Arg.Any<CancellationToken>()).Returns(Task.FromResult(expectedToken));
+			_tokenProvider.GetAccessTokenAsync().Returns(Task.FromResult(expectedToken));
 			_oAuth2ClientFactory.GetOauth2Client(_currentUser.ID)
 				.Returns(new OAuth2Client() { ContextUser = _currentUser.ID, Secret = _CLIENTSECRETSTRING, Id = _CLIENTID });
 			_tokenProviderFactory.Create(Arg.Any<Uri>(), _CLIENTID, _CLIENTSECRETSTRING)
@@ -64,22 +64,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Authentication
 
 			// ASSERT
 			Assert.AreEqual(expectedToken, result);
-		}
-
-		[Test]
-		public void ItShouldPassEmptyCancellationTokenToTokenProvider()
-		{
-			// ARRANGE
-			_oAuth2ClientFactory.GetOauth2Client(_currentUser.ID)
-				.Returns(new OAuth2Client() { ContextUser = _currentUser.ID, Secret = _CLIENTSECRETSTRING, Id = _CLIENTID });
-			_tokenProviderFactory.Create(Arg.Any<Uri>(), _CLIENTID, _CLIENTSECRETSTRING)
-				.GetTokenProvider(Arg.Any<string>(), Arg.Any<IEnumerable<string>>()).Returns(_tokenProvider);
-
-			// ACT
-			_instance.GetAuthToken();
-
-			// ASSERT
-			_tokenProvider.GetAccessTokenAsync(Arg.Is(CancellationToken.None));
 		}
 
 		[Test]
