@@ -4,8 +4,8 @@ using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Email;
-using kCura.IntegrationPoints.RelativitySync.RipOverride;
 using kCura.IntegrationPoints.Email.Dto;
+using kCura.IntegrationPoints.Email.Exceptions;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using Newtonsoft.Json.Linq;
@@ -13,7 +13,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
-	public class SendEmailWorker : ITask, ISendEmailWorker
+	public class SendEmailWorker : ITask
 	{
 		private readonly IAPILog _logger;
 		private readonly IEmailSender _emailSender;
@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			Execute(jobParameters, jobID);
 		}
 
-		public void Execute(EmailJobParameters details, long jobID)
+		private void Execute(EmailJobParameters details, long jobID)
 		{
 			var exceptions = new List<Exception>();
 			IEnumerable<string> emails = details.Emails;
@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 					LogExecuteSuccessfulEnd(jobID);
 				}
-				catch (Exception e)
+				catch (SendEmailException e)
 				{
 					LogSendingEmailError(jobID, e, email);
 					exceptions.Add(new Exception(string.Format("Failed to send message to {0}", email), e));

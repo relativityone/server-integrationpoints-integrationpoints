@@ -12,6 +12,8 @@ using Relativity.API;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using FluentAssertions;
+using kCura.IntegrationPoints.Email.Exceptions;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 {
@@ -22,6 +24,11 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private Mock<IEmailSender> _emailSender;
 		private readonly ISerializer _serializer = new JSONSerializer();
 		private readonly JobBuilder _jobBuilder = new JobBuilder();
+		private readonly List<string> _emails = new List<string>
+		{
+			"first@email.rip",
+			"second@email.rip"
+		};
 
 		[SetUp]
 		public void SetUp()
@@ -45,8 +52,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				BatchInstance = guid,
 				BatchParameters = emailJobParameters
 			};
-			string serializedJobDetails = _serializer.Serialize(taskParameters);
-			Job job = _jobBuilder.WithJobDetails(serializedJobDetails).Build();
+			Job job = CreateSendEmailJob(emailJobParameters);
 
 			//ACT
 			_sut.Execute(job);
@@ -60,8 +66,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		{
 			//ARRANGE
 			EmailJobParameters emailJobParameters = GenerateEmailJobParameters();
-			string serializedJobDetails = _serializer.Serialize(emailJobParameters);
-			Job job = _jobBuilder.WithJobDetails(serializedJobDetails).Build();
+			Job job = CreateSendEmailJob(emailJobParameters);
 
 			//ACT
 			_sut.Execute(job);
@@ -70,19 +75,73 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			VerifyEmailHasBeenSent(emailJobParameters);
 		}
 
-		private static EmailJobParameters GenerateEmailJobParameters()
+		[Test]
+		public void ShouldCatchEmailExceptionAndProceedWithSendingOtherEmails()
+		{
+			//ARRANGE
+			EmailJobParameters emailJobParameters = GenerateEmailJobParameters(_emails);
+			string emailToPass = _emails.First();
+			string emailToFail = _emails.Skip(1).First();
+			Job job = CreateSendEmailJob(emailJobParameters);
+			_emailSender
+				.Setup(x => x.Send(It.Is<EmailMessageDto>(y => y.ToAddress == emailToFail)))
+				.Throws(new SendEmailException(""));
+			
+			//ACT
+			Action act = () => _sut.Execute(job);
+
+			//ASSERT
+			act.ShouldThrowExactly<AggregateException>().Where(x => x.InnerExceptions.Count == 1);
+			_emailSender.Verify(x => x.Send(It.Is<EmailMessageDto>(y => y.ToAddress == emailToPass)));
+		}
+
+		[Test]
+		public void ShouldNotCatchGenericExceptionAndStopExecution()
+		{
+			//ARRANGE
+			EmailJobParameters emailJobParameters = GenerateEmailJobParameters(_emails);
+			string emailToFail = _emails.First();
+			Job job = CreateSendEmailJob(emailJobParameters);
+			_emailSender
+				.Setup(x => x.Send(It.Is<EmailMessageDto>(y => y.ToAddress == emailToFail)))
+				.Throws<NullReferenceException>();
+
+			//ACT
+			Action act = () => _sut.Execute(job);
+
+			//ASSERT
+			act.ShouldThrowExactly<NullReferenceException>();
+			_emailSender.Verify(x => x.Send(
+				It.IsAny<EmailMessageDto>()),
+				Times.Once,
+				"We expected single call to emailSender because that call threw an unexpected exception.'"
+				);
+		}
+		private Job CreateSendEmailJob(EmailJobParameters emailJobParameters)
+		{
+			string serializedJobDetails = _serializer.Serialize(emailJobParameters);
+			Job job = _jobBuilder.WithJobDetails(serializedJobDetails).Build();
+			return job;
+		}
+
+		private EmailJobParameters GenerateEmailJobParameters(List<string> emails)
 		{
 			string emailSubject = "emailSubject";
 			string emailMessage = "emailMessage";
-			string emailAddress = "emailAddress@rip.com";
 
 			EmailJobParameters emailJobParameters = new EmailJobParameters()
 			{
-				Emails = new List<string> {emailAddress},
+				Emails = emails,
 				MessageBody = emailMessage,
 				Subject = emailSubject
 			};
 			return emailJobParameters;
+		}
+
+		private EmailJobParameters GenerateEmailJobParameters()
+		{
+
+			return GenerateEmailJobParameters(_emails.Take(1).ToList());
 		}
 
 		private void VerifyEmailHasBeenSent(EmailJobParameters emailJobParameters)
