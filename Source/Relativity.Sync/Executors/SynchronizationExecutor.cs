@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using kCura.EDDS.WebAPI.FileManagerBase;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
@@ -21,7 +22,7 @@ namespace Relativity.Sync.Executors
 		private readonly IDocumentTagRepository _documentsTagRepository;
 
 		public SynchronizationExecutor(IImportJobFactory importJobFactory, IBatchRepository batchRepository,
-			IDocumentTagRepository documentsTagRepository, IFieldManager fieldManager, IFieldMappings fieldMappings, 
+			IDocumentTagRepository documentsTagRepository, IFieldManager fieldManager, IFieldMappings fieldMappings,
 			IJobStatisticsContainer jobStatisticsContainer, ISyncLog logger)
 		{
 			_batchRepository = batchRepository;
@@ -48,13 +49,16 @@ namespace Relativity.Sync.Executors
 			{
 				_logger.LogInformation("Gathering batches to execute.");
 				IEnumerable<int> batchesIds = await _batchRepository.GetAllNewBatchesIdsAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId).ConfigureAwait(false);
+				List<ImportJobResult> batchJobsResults = new List<ImportJobResult>();
+
 
 				foreach (int batchId in batchesIds)
 				{
+					ExecutionResult currentBatchResult = ExecutionResult.Success();
 					if (token.IsCancellationRequested)
 					{
 						_logger.LogInformation("Import job has been canceled.");
-						importAndTagResult = ExecutionResult.Canceled();
+						batchJobsResults.Add( new ImportJobResult(ExecutionResult.Canceled(),  0));
 						break;
 					}
 
@@ -63,7 +67,8 @@ namespace Relativity.Sync.Executors
 					using (IImportJob importJob = await _importJobFactory.CreateImportJobAsync(configuration, batch, token).ConfigureAwait(false))
 					{
 						ImportJobResult importJobResult = await importJob.RunAsync(token).ConfigureAwait(false);
-						importAndTagResult = importJobResult.ExecutionResult;
+						batchJobsResults.Add(importJobResult);
+
 						_jobStatisticsContainer.TotalBytesTransferred += importJobResult.JobSizeInBytes;
 
 						IEnumerable<int> pushedDocumentArtifactIds = await importJob.GetPushedDocumentArtifactIds().ConfigureAwait(false);
@@ -73,10 +78,18 @@ namespace Relativity.Sync.Executors
 						IEnumerable<string> pushedDocumentIdentifiers = await importJob.GetPushedDocumentIdentifiers().ConfigureAwait(false);
 						Task<ExecutionResult> sourceTaggingResult = _documentsTagRepository.TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(configuration, pushedDocumentIdentifiers, token);
 						sourceTaggingTasks.Add(sourceTaggingResult);
+
+						if (currentBatchResult.Status == ExecutionStatus.Failed)
+						{
+							_logger.LogError(importJobResult.ExecutionResult.Exception, "Batch ID: {batchId} processing failed with error: {error}", batchId, importJobResult.ExecutionResult.Message);
+							break;
+						}
 					}
 
 					_logger.LogInformation("Batch ID: {batchId} processed successfully.", batchId);
 				}
+
+				importAndTagResult = AggregateBatchExecutionResults(batchJobsResults);
 			}
 			catch (ImportFailedException ex)
 			{
@@ -132,6 +145,28 @@ namespace Relativity.Sync.Executors
 				executionResult = new ExecutionResult(resultStatus, resultMessage, resultException);
 			}
 			return executionResult;
+		}
+
+		private ExecutionResult AggregateBatchExecutionResults(List<ImportJobResult> batchJobsResults)
+		{
+			if (batchJobsResults.Any(x => x.ExecutionResult.Status == ExecutionStatus.Canceled))
+			{
+				return ExecutionResult.Canceled();
+			}
+
+			if (batchJobsResults.Any(x => x.ExecutionResult.Status == ExecutionStatus.Failed))
+			{
+				return batchJobsResults.Single(x => x.ExecutionResult.Status == ExecutionStatus.Failed).ExecutionResult;
+			}
+
+			IEnumerable<ImportJobResult> completedWithErrorsBatchJobResults =
+				batchJobsResults.Where(x => x.ExecutionResult.Status == ExecutionStatus.CompletedWithErrors).ToArray();
+			if (completedWithErrorsBatchJobResults.Any())
+			{
+				return ExecutionResult.SuccessWithErrors(new AggregateException(completedWithErrorsBatchJobResults.Select(x => x.ExecutionResult.Exception)));
+			}
+
+			return ExecutionResult.Success();
 		}
 
 		private void UpdateImportSettings(ISynchronizationConfiguration configuration)

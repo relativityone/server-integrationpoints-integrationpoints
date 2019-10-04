@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.Services.Interfaces.Scripts.Models;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
 using Relativity.Sync.Logging;
@@ -47,6 +49,22 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			FieldInfoDto.SupportedByViewerField()
 		};
 
+		public static (object[] BatchResults, object ExpectedResult)[] AggregationTestCaseSource { get; } =
+		{
+			(new object[]{ ExecutionStatus.Completed,ExecutionStatus.Completed, ExecutionStatus.Completed},
+				ExecutionStatus.Completed),
+
+			(new object[]{ ExecutionStatus.Completed, ExecutionStatus.Failed},
+				ExecutionStatus.Failed),
+
+			(new object[]{ ExecutionStatus.Completed, ExecutionStatus.CompletedWithErrors},
+				ExecutionStatus.CompletedWithErrors),
+
+			(new object[]{ ExecutionStatus.Completed, ExecutionStatus.CompletedWithErrors, ExecutionStatus.Canceled},
+				ExecutionStatus.Canceled)
+		};
+
+
 		[SetUp]
 		public void SetUp()
 		{
@@ -71,19 +89,22 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			});
 
 			_importJob = new Mock<Sync.Executors.IImportJob>();
-			_importJobFactory.Setup(x => x.CreateImportJobAsync(It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IBatch>(), It.IsAny<CancellationToken>())).ReturnsAsync(_importJob.Object);
+			_importJobFactory.Setup(x => x.CreateImportJobAsync(It.IsAny<ISynchronizationConfiguration>(),
+				It.IsAny<IBatch>(), It.IsAny<CancellationToken>())).ReturnsAsync(_importJob.Object);
 
 			_fieldManager.Setup(x => x.GetSpecialFields()).Returns(_specialFields);
 
-			_synchronizationExecutor = new SynchronizationExecutor(_importJobFactory.Object, _batchRepository.Object, 
-				_documentTagRepository.Object,_fieldManager.Object, _fieldMappings.Object, _jobStatisticsContainer.Object, new EmptyLogger());
+			_synchronizationExecutor = new SynchronizationExecutor(_importJobFactory.Object, _batchRepository.Object,
+				_documentTagRepository.Object, _fieldManager.Object, _fieldMappings.Object,
+				_jobStatisticsContainer.Object, new EmptyLogger());
 		}
 
 		[Test]
 		public async Task ItShouldSetImportApiSettings()
 		{
 			SetupBatchRepository(1);
-			_config.SetupGet(x => x.DestinationFolderStructureBehavior).Returns(DestinationFolderStructureBehavior.ReadFromField);
+			_config.SetupGet(x => x.DestinationFolderStructureBehavior)
+				.Returns(DestinationFolderStructureBehavior.ReadFromField);
 			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(CreateSuccessfulResult());
 
 			Task<ExecutionResult> executionResult = ReturnTaggingCompletedResultAsync();
@@ -107,7 +128,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		{
 			const long jobSize = 12L;
 			SetupBatchRepository(1);
-			_config.SetupGet(x => x.DestinationFolderStructureBehavior).Returns(DestinationFolderStructureBehavior.None);
+			_config.SetupGet(x => x.DestinationFolderStructureBehavior)
+				.Returns(DestinationFolderStructureBehavior.None);
 			ImportJobResult importJob = new ImportJobResult(ExecutionResult.Success(), jobSize);
 			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(importJob);
 
@@ -118,7 +140,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			SetUpDocumentsTagRepository(executionResult);
 
 			//Act
-			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None)
+				.ConfigureAwait(false);
 
 			//Assert
 			result.Message.Should()
@@ -131,7 +154,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		{
 			const long jobSize = 12L;
 			SetupBatchRepository(1);
-			_config.SetupGet(x => x.DestinationFolderStructureBehavior).Returns(DestinationFolderStructureBehavior.None);
+			_config.SetupGet(x => x.DestinationFolderStructureBehavior)
+				.Returns(DestinationFolderStructureBehavior.None);
 			ImportJobResult importJob = new ImportJobResult(ExecutionResult.Success(), jobSize);
 			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(importJob);
 
@@ -140,7 +164,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			SetUpDocumentsTagRepository(executionResult);
 
 			//Act
-			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None)
+				.ConfigureAwait(false);
 
 			//Assert
 			result.Message.Should()
@@ -154,7 +179,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			//Arrange
 			const long jobSize = 12L;
 			SetupBatchRepository(1);
-			_config.SetupGet(x => x.DestinationFolderStructureBehavior).Returns(DestinationFolderStructureBehavior.None);
+			_config.SetupGet(x => x.DestinationFolderStructureBehavior)
+				.Returns(DestinationFolderStructureBehavior.None);
 			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(CreateSuccessfulResult());
 			ImportJobResult importJob = new ImportJobResult(ExecutionResult.Success(), jobSize);
 			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(importJob);
@@ -182,7 +208,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_fieldMappings.Setup(x => x.GetFieldMappings()).Returns(new List<FieldMap>());
 
 			// act
-			Func<Task> action = async () => await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
+			Func<Task> action = async () => await _synchronizationExecutor
+				.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			string errorMessage = "Cannot find destination identifier field in field mappings.";
@@ -193,9 +220,11 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		public void ItShouldThrowExceptionWhenSpecialFieldIsNotFound()
 		{
 			SpecialFieldType missingSpecialField = SpecialFieldType.NativeFileSize;
-			List<FieldInfoDto> specialFields = _specialFields.Where(x => x.SpecialFieldType != missingSpecialField).ToList();
+			List<FieldInfoDto> specialFields =
+				_specialFields.Where(x => x.SpecialFieldType != missingSpecialField).ToList();
 			_fieldManager.Setup(x => x.GetSpecialFields()).Returns(specialFields);
-			Func<Task> action = async () => await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
+			Func<Task> action = async () => await _synchronizationExecutor
+				.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
 
 			// act
 			action();
@@ -221,7 +250,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			SetUpDocumentsTagRepository(executionResult);
 
 			// act
-			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None)
+				.ConfigureAwait(false);
 
 			// assert
 			_batchRepository.Verify(x => x.GetAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Exactly(numberOfBatches));
@@ -239,7 +269,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			tokenSource.Cancel();
 
 			// act
-			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(_config.Object, tokenSource.Token).ConfigureAwait(false);
+			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(_config.Object, tokenSource.Token)
+				.ConfigureAwait(false);
 
 			// assert
 			result.Status.Should().Be(ExecutionStatus.Canceled);
@@ -270,7 +301,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).Throws<ImportFailedException>();
 
 			// act
-			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None)
+				.ConfigureAwait(false);
 
 			result.Message.Should().Be("Fatal exception occurred while executing import job.");
 			result.Exception.Should().BeOfType<ImportFailedException>();
@@ -285,7 +317,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).Throws<InvalidOperationException>();
 
 			// act
-			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None)
+				.ConfigureAwait(false);
 
 			result.Message.Should().Be("Unexpected exception occurred while executing synchronization.");
 			result.Exception.Should().BeOfType<InvalidOperationException>();
@@ -303,7 +336,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			SetUpDocumentsTagRepository(executionResult);
 
 			// act
-			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None)
+				.ConfigureAwait(false);
 
 			result.Status.Should().Be(ExecutionStatus.Failed);
 		}
@@ -311,16 +345,60 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[Test]
 		public async Task ItShouldProperlyHandleImportAndTagDocumentExceptions()
 		{
-			const int numberOfBatches = 1;
+			const int numberOfBatches = 2;
 			SetupBatchRepository(numberOfBatches);
 			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).Throws<InvalidOperationException>();
 
 			// act
-			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _synchronizationExecutor.ExecuteAsync(_config.Object, CancellationToken.None)
+				.ConfigureAwait(false);
 
 			result.Message.Should().Be("Unexpected exception occurred while executing synchronization.");
 			result.Exception.Should().BeOfType<InvalidOperationException>();
 			result.Status.Should().Be(ExecutionStatus.Failed);
+		}
+
+
+		[Test, TestCaseSource(typeof(SynchronizationExecutorTests), nameof(AggregationTestCaseSource))]
+		public async Task ItShouldCorrectlyAggregateBatchJobResults((object[] batchJobResultsObject, object expectedResultStatus) testCase)
+		{
+			Queue<ImportJobResult> batchJobResults = new Queue<ImportJobResult>(testCase.batchJobResultsObject.Select(x => GetJobResult((ExecutionStatus)x, exception: new Exception())));
+			SetupBatchRepository(testCase.batchJobResultsObject.Length);
+			SetUpDocumentsTagRepository(ReturnTaggingCompletedResultAsync());
+
+			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>()))
+				.ReturnsAsync(() => batchJobResults.Dequeue());
+
+			// act
+			ExecutionResult result = await _synchronizationExecutor
+				.ExecuteAsync(_config.Object, CancellationToken.None)
+				.ConfigureAwait(false);
+
+
+			result.Status.Should().Be(testCase.expectedResultStatus);
+		}
+
+		[Test]
+		public async Task ItShouldRespectCancellationBetweenBatches()
+		{
+			const int batchCount = 2;
+			SetupBatchRepository(batchCount);
+			SetUpDocumentsTagRepository(ReturnTaggingCompletedResultAsync());
+
+			CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+
+			_importJob.Setup(x => x.RunAsync(It.IsAny<CancellationToken>()))
+				.ReturnsAsync(CreateSuccessfulResult)
+				.Callback(cancellationTokenSource.Cancel);
+
+			// act
+			ExecutionResult result = await _synchronizationExecutor
+				.ExecuteAsync(_config.Object, cancellationTokenSource.Token)
+				.ConfigureAwait(false);
+
+
+			result.Status.Should().Be(ExecutionStatus.Canceled);
+			_importJob.Verify(x => x.RunAsync(cancellationTokenSource.Token), Times.Once);
 		}
 
 		private void SetupBatchRepository(int numberOfBatches)
@@ -364,6 +442,11 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private ImportJobResult CreateSuccessfulResult()
 		{
 			return new ImportJobResult(ExecutionResult.Success(), 1);
+		}
+
+		private static ImportJobResult GetJobResult(ExecutionStatus status, string message = null, Exception exception = null, int jobSize = 1)
+		{
+			return new ImportJobResult(new ExecutionResult(status, message ?? exception?.Message, exception), jobSize);
 		}
 	}
 }
