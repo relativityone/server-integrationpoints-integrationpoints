@@ -110,6 +110,13 @@ namespace kCura.IntegrationPoints.Agent.Installer
 
 			container.Register(Component.For<IScheduleRuleFactory>().UsingFactoryMethod(k => _scheduleRuleFactory, true).LifestyleTransient());
 			container.Register(Component.For<IHelper>().UsingFactoryMethod(k => _agentHelper, true).LifestyleTransient());
+			container.Register(Component.For<IAPILog>()
+				.UsingFactoryMethod(k =>
+				{
+					IHelper helper = k.Resolve<IHelper>();
+					return helper.GetLoggerFactory().GetLogger();
+				}).LifestyleTransient());
+
 			container.Register(Component.For<IAgentHelper>().UsingFactoryMethod(k => _agentHelper, true).LifestyleTransient());
 			container.Register(Component.For<SyncWorker>().ImplementedBy<SyncWorker>().LifestyleTransient());
 			container.Register(Component.For<SyncManager>().ImplementedBy<SyncManager>().LifestyleTransient());
@@ -119,15 +126,6 @@ namespace kCura.IntegrationPoints.Agent.Installer
 			container.Register(Component.For<ITaskExceptionService>().ImplementedBy<TaskExceptionService>().LifestyleTransient());
 			container.Register(Component.For<ITaskExceptionMediator>().ImplementedBy<TaskExceptionMediator>().LifestyleTransient());
 			container.Register(Component.For<SendEmailWorker>().ImplementedBy<SendEmailWorker>().LifestyleTransient());
-			container.Register(Component.For<SendEmailWorker>().UsingFactoryMethod(k =>
-			{
-				IAPILog apiLog = k.Resolve<IHelper>().GetLoggerFactory().GetLogger().ForContext<SendEmailWorker>();
-				return new SendEmailWorker(
-					k.Resolve<ISerializer>(),
-					k.Resolve<EmailSender>(),
-					apiLog);
-			}
-			).LifestyleTransient());
 			container.Register(Component.For<ExportManager>().ImplementedBy<ExportManager>().LifestyleTransient());
 			container.Register(Component.For<ExportWorker>().ImplementedBy<ExportWorker>().LifestyleTransient());
 			container.Register(Component.For<JobHistoryErrorServiceProvider>().ImplementedBy<JobHistoryErrorServiceProvider>().LifeStyle.BoundTo<ExportWorker>());

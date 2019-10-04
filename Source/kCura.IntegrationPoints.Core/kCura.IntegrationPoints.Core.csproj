@@ -394,7 +394,6 @@
     <Compile Include="Services\Keywords\ErrorKeyword.cs" />
     <Compile Include="Services\Keywords\IKeyword.cs" />
     <Compile Include="Services\Keywords\EmailFormatter.cs" />
-    <Compile Include="Services\Keywords\EmailKeywordFactory.cs" />
     <Compile Include="Services\Keywords\DestinationEmailBodyDataKeyword.cs" />
     <Compile Include="Services\Keywords\SourceEmailBodyDataKeyword.cs" />
     <Compile Include="Services\Keywords\RipNameKeyword.cs" />

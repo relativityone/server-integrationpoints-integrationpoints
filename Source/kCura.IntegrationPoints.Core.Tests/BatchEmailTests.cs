@@ -165,11 +165,12 @@ namespace kCura.IntegrationPoints.Core.Tests
 		public void GenerateEmail(Choice jobStatus, string expectedSubject, string expectedBody)
 		{
 			// ACT
-			Tuple<string, string> jobParameters = BatchEmail.GetEmailSubjectAndBodyForJobStatus(jobStatus);
+			_emailFormatterMock.Setup(x => x.Format(It.IsAny<string>())).Returns<string>(y => y);
+			(string Subject, string MessageBody) jobParameters = _sut.GetEmailSubjectAndBodyForJobStatus(jobStatus);
 
 			// ASSERT
-			expectedSubject.Should().Be(jobParameters.Item1);
-			expectedBody.Should().Be(jobParameters.Item2);
+			jobParameters.Subject.Should().Be(expectedSubject);
+			jobParameters.MessageBody.Should().Be(expectedBody);
 		}
 
 		private Job GetTestJob()

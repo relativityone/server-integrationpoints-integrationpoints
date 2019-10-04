@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Web.Query.Dynamic;
-using kCura.Apps.Common.Utils.Serializers;
+﻿using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Agent.Tasks;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Tests;
 using kCura.IntegrationPoints.Email;
 using kCura.IntegrationPoints.Email.Dto;
 using kCura.ScheduleQueue.Core;
@@ -16,6 +9,9 @@ using kCura.ScheduleQueue.Core.Core;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 {
@@ -25,11 +21,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private SendEmailWorker _sut;
 		private Mock<IEmailSender> _emailSender;
 		private readonly ISerializer _serializer = new JSONSerializer();
+		private readonly JobBuilder _jobBuilder = new JobBuilder();
 
 		[SetUp]
 		public void SetUp()
 		{
-			Mock<IAPILog> logger = new Mock<IAPILog>(MockBehavior.Loose);
+			Mock<IAPILog> logger = new Mock<IAPILog>(MockBehavior.Loose){DefaultValue = DefaultValue.Mock};
 			_emailSender = new Mock<IEmailSender>();
 			_sut = new SendEmailWorker(
 				_serializer,
@@ -38,11 +35,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		}
 
 		[Test]
-		public void Execute_ShouldProperlySerializeEmailJobDetailsFromTaskParameters()
+		public void ShouldSendEmailWIthDetailsFromTaskParameters()
 		{
 			//ARRANGE
 			EmailJobParameters emailJobParameters = GenerateEmailJobParameters();
-
 			Guid guid = Guid.NewGuid();
 			TaskParameters taskParameters = new TaskParameters
 			{
@@ -50,27 +46,28 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				BatchParameters = emailJobParameters
 			};
 			string serializedJobDetails = _serializer.Serialize(taskParameters);
-			Job job = JobHelper.CreateJob(1, 0, 0, 0, 0, 0, 0, TaskType.SendEmailWorker, DateTime.UtcNow, null,
-				serializedJobDetails, 0, DateTime.UtcNow, 9, null, null, StopState.None);
+			Job job = _jobBuilder.WithJobDetails(serializedJobDetails).Build();
+
 			//ACT
 			_sut.Execute(job);
+			
 			//ASSERT
-			_emailSender.Verify(x => x.Send(It.Is<EmailMessageDto>(actual => ValidateEmailsAreSame(emailJobParameters, actual))));
-		}		
-		
+			VerifyEmailHasBeenSent(emailJobParameters);
+		}
+
 		[Test]
-		public void Execute_ShouldProperlySerializeEmailJobDetails()
+		public void ShouldSendEmailWithDetailsFromEmailJobDetails()
 		{
 			//ARRANGE
 			EmailJobParameters emailJobParameters = GenerateEmailJobParameters();
-
 			string serializedJobDetails = _serializer.Serialize(emailJobParameters);
-			Job job = JobHelper.CreateJob(1, 0, 0, 0, 0, 0, 0, TaskType.SendEmailWorker, DateTime.UtcNow, null,
-				serializedJobDetails, 0, DateTime.UtcNow, 9, null, null, StopState.None);
+			Job job = _jobBuilder.WithJobDetails(serializedJobDetails).Build();
+
 			//ACT
 			_sut.Execute(job);
+
 			//ASSERT
-			_emailSender.Verify(x => x.Send(It.Is<EmailMessageDto>(actual => ValidateEmailsAreSame(emailJobParameters, actual))));
+			VerifyEmailHasBeenSent(emailJobParameters);
 		}
 
 		private static EmailJobParameters GenerateEmailJobParameters()
@@ -86,6 +83,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				Subject = emailSubject
 			};
 			return emailJobParameters;
+		}
+
+		private void VerifyEmailHasBeenSent(EmailJobParameters emailJobParameters)
+		{
+			_emailSender.Verify(
+				x => x.Send(It.Is<EmailMessageDto>(actual => ValidateEmailsAreSame(emailJobParameters, actual))));
 		}
 
 		private bool ValidateEmailsAreSame(EmailJobParameters expected, EmailMessageDto actual)

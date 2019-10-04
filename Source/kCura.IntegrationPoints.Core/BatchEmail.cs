@@ -66,17 +66,6 @@ namespace kCura.IntegrationPoints.Core
 				SendEmails(job, emails);
 			}
 		}
-		public EmailJobParameters GenerateEmailJobParameters(Relativity.Client.DTOs.Choice choice, List<string> emails)
-		{
-			Tuple<string, string> subjectAndBody = GetEmailSubjectAndBodyForJobStatus(choice);
-			EmailJobParameters jobParameters = new EmailJobParameters
-			{
-				Subject = subjectAndBody.Item1,
-				MessageBody = subjectAndBody.Item2
-			};
-			ConvertMessage(jobParameters, emails, _converter);
-			return jobParameters;
-		}
 
 		private void SendEmails(Job job, List<string> emails)
 		{
@@ -93,7 +82,19 @@ namespace kCura.IntegrationPoints.Core
 			JobManager.CreateJob(job, emailTaskParameters, TaskType.SendEmailWorker);
 		}
 
-		public static Tuple<string, string> GetEmailSubjectAndBodyForJobStatus(Relativity.Client.DTOs.Choice choice)
+		private EmailJobParameters GenerateEmailJobParameters(Relativity.Client.DTOs.Choice choice, List<string> emails)
+		{
+			(string Subject, string MessageBody) subjectAndBody = GetEmailSubjectAndBodyForJobStatus(choice);
+			EmailJobParameters jobParameters = new EmailJobParameters
+			{
+				Emails = emails,
+				Subject = subjectAndBody.Subject,
+				MessageBody = subjectAndBody.MessageBody
+			};
+			return jobParameters;
+		}
+
+		public (string Subject, string MessageBody) GetEmailSubjectAndBodyForJobStatus(Relativity.Client.DTOs.Choice choice)
 		{
 			string messageBody;
 			string messageSubject;
@@ -118,14 +119,10 @@ namespace kCura.IntegrationPoints.Core
 				messageBody = Properties.JobStatusMessages.JOB_COMPLETED_SUCCESS_BODY;
 			}
 
-			return new Tuple<string, string>(messageSubject, messageBody);
-		}
+			messageSubject = _converter.Format(messageSubject);
+			messageBody = _converter.Format(messageBody);
 
-		private static void ConvertMessage(EmailJobParameters jobParameters, IEnumerable<string> emails, IEmailFormatter converter)
-		{
-			jobParameters.Emails = emails;
-			jobParameters.Subject = converter.Format(jobParameters.Subject);
-			jobParameters.MessageBody = converter.Format(jobParameters.MessageBody);
+			return (Subject: messageSubject, MessageBody: messageBody);
 		}
 	}
 }

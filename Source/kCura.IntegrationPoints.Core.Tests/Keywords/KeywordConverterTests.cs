@@ -28,8 +28,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Keywords
 			{
 				new mockKeyword(keyword, Environment.NewLine + "Great")
 			};
-			EmailKeywordFactory emailKeywordFactory = new EmailKeywordFactory(keywords);
-			EmailFormatter emailFormatter = new EmailFormatter(_helper, emailKeywordFactory);
+			EmailFormatter emailFormatter = new EmailFormatter(_helper, keywords);
 
 
 			//ACT
@@ -52,8 +51,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Keywords
 				new mockKeyword(keyword, string.Empty)
 			};
 
-			EmailKeywordFactory emailKeywordFactory = new EmailKeywordFactory(keywords);
-			EmailFormatter emailFormatter = new EmailFormatter(_helper, emailKeywordFactory);
+			EmailFormatter emailFormatter = new EmailFormatter(_helper, keywords);
 
 
 			//ACT
@@ -74,8 +72,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Keywords
 			{
 				new mockKeyword(keyword, string.Empty)
 			};
-			EmailKeywordFactory emailKeywordFactory = new EmailKeywordFactory(keywords);
-			EmailFormatter emailFormatter = new EmailFormatter(_helper, emailKeywordFactory);
+			EmailFormatter emailFormatter = new EmailFormatter(_helper, keywords);
 
 
 			//ACT
@@ -98,8 +95,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Keywords
 				new mockKeyword(keyword, string.Empty)
 			};
 
-			EmailKeywordFactory emailKeywordFactory = new EmailKeywordFactory(keywords);
-			EmailFormatter emailFormatter = new EmailFormatter(_helper, emailKeywordFactory);
+			EmailFormatter emailFormatter = new EmailFormatter(_helper, keywords);
 
 
 			//ACT

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Relativity.API;
@@ -7,12 +8,12 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
 {
 	public class EmailFormatter : IEmailFormatter
 	{
-		private readonly EmailKeywordFactory _factory;
+		private readonly IEnumerable<IKeyword> _keywords;
 		private readonly IAPILog _logger;
 
-		public EmailFormatter(IHelper helper, EmailKeywordFactory factory)
+		public EmailFormatter(IHelper helper, IEnumerable<IKeyword> keywords)
 		{
-			_factory = factory;
+			_keywords = keywords;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<EmailFormatter>();
 		}
 
@@ -23,7 +24,7 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
 			{
 				return returnValue;
 			}
-			var dictionary = _factory.GetKeywords().ToDictionary(x => x.KeywordName.ToUpperInvariant());
+			var dictionary = _keywords.ToDictionary(x => x.KeywordName.ToUpperInvariant());
 			var matchPattern = string.Join("|", dictionary.Keys);
 			var expression = new Regex(matchPattern, RegexOptions.IgnoreCase);
 			var matches = expression.Matches(textToFormat);

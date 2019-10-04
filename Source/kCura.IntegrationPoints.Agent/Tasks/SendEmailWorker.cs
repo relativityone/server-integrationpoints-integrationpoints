@@ -23,17 +23,17 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			_serializer = serializer;
 			_emailSender = emailSender;
-			_logger = logger;
+			_logger = logger.ForContext<SendEmailWorker>();
 		}
 
 		public void Execute(Job job)
 		{
-			var jobID = job.JobId;
+			long jobID = job.JobId;
 			LogExecuteStart(jobID);
 
-			EmailJobParameters details = GetEmailJobParametersFromJob(job);
+			EmailJobParameters jobParameters = GetEmailJobParametersFromJob(job);
 
-			Execute(details, jobID);
+			Execute(jobParameters, jobID);
 		}
 
 		public void Execute(EmailJobParameters details, long jobID)
@@ -44,14 +44,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				try
 				{
-					var message = new EmailMessageDto(
+					EmailMessageDto message = new EmailMessageDto(
 						subject: details.Subject,
 						body: details.MessageBody,
 						toAddress: email
 					);
 					_emailSender.Send(message);
 
-					LogExecuteSuccesfulEnd(jobID);
+					LogExecuteSuccessfulEnd(jobID);
 				}
 				catch (Exception e)
 				{
@@ -86,9 +86,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			_logger.LogInformation("Started executing send email worker, job: {JobId}", jobID);
 		}
-		private void LogExecuteSuccesfulEnd(long jobID)
+		private void LogExecuteSuccessfulEnd(long jobID)
 		{
-			_logger.LogInformation("Succesfully sent email in worker, job: {JobId}", jobID);
+			_logger.LogInformation("Successfully sent email in worker, job: {JobId}", jobID);
 		}
 
 		private void LogSendingEmailError(long jobID, Exception e, string email)

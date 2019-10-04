@@ -152,7 +152,6 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<JobStatisticsService>().ImplementedBy<JobStatisticsService>().LifestyleTransient());
 			container.Register(Component.For<IFileSizesStatisticsService>().ImplementedBy<FileSizesStatisticsService>().LifestyleTransient());
 			container.Register(Component.For<IEmailFormatter>().ImplementedBy<EmailFormatter>().LifestyleTransient());
-			container.Register(Component.For<EmailKeywordFactory>().ImplementedBy<EmailKeywordFactory>().LifestyleTransient());
 			container.Register(Component.For<IFieldCatalogService>().ImplementedBy<FieldCatalogService>().LifestyleTransient());
 			container.Register(Component.For<IImportTypeService>().ImplementedBy<ImportTypeService>().LifestyleTransient());
 			container.Register(Component.For<IArtifactService>().ImplementedBy<ArtifactService>().LifestyleTransient());
