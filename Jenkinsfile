@@ -7,7 +7,7 @@ library 'SlackHelpers@3.0.0'
 library 'TestTrackerHelpers@2.0.0'
 
 properties([
-	pipelineTriggers(env.JOB_NAME.contains("IntegrationPointsNightly") ? [cron('H 16 * * *')] : []),
+	pipelineTriggers(env.JOB_NAME.contains("IntegrationPointsNightly") ? [cron('H 20 * * *')] : []),
 	[$class: 'BuildDiscarderProperty', strategy: [
 			$class: 'LogRotator',
 			artifactDaysToKeepStr: '30',
