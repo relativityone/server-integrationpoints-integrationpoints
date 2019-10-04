@@ -25,11 +25,9 @@ using kCura.WinEDDS.Service.Export;
 using Relativity.API;
 using System;
 using Castle.MicroKernel.Resolvers;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Agent.Installer.Components;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
-using kCura.IntegrationPoints.Email;
 using ITaskFactory = kCura.IntegrationPoints.Agent.TaskFactory.ITaskFactory;
 
 namespace kCura.IntegrationPoints.Agent.Installer
@@ -110,13 +108,6 @@ namespace kCura.IntegrationPoints.Agent.Installer
 
 			container.Register(Component.For<IScheduleRuleFactory>().UsingFactoryMethod(k => _scheduleRuleFactory, true).LifestyleTransient());
 			container.Register(Component.For<IHelper>().UsingFactoryMethod(k => _agentHelper, true).LifestyleTransient());
-			container.Register(Component.For<IAPILog>()
-				.UsingFactoryMethod(k =>
-				{
-					IHelper helper = k.Resolve<IHelper>();
-					return helper.GetLoggerFactory().GetLogger();
-				}).LifestyleTransient());
-
 			container.Register(Component.For<IAgentHelper>().UsingFactoryMethod(k => _agentHelper, true).LifestyleTransient());
 			container.Register(Component.For<SyncWorker>().ImplementedBy<SyncWorker>().LifestyleTransient());
 			container.Register(Component.For<SyncManager>().ImplementedBy<SyncManager>().LifestyleTransient());
