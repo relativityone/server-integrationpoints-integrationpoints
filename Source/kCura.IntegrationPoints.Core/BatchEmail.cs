@@ -70,9 +70,9 @@ namespace kCura.IntegrationPoints.Core
 		private void SendEmails(Job job, List<string> emails)
 		{
 			TaskParameters taskParameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
-			Relativity.Client.DTOs.Choice choice = _jobStatusUpdater.GenerateStatus(taskParameters.BatchInstance);
+			Relativity.Client.DTOs.Choice jobStatus = _jobStatusUpdater.GenerateStatus(taskParameters.BatchInstance);
 
-			EmailJobParameters jobParameters = GenerateEmailJobParameters(choice, emails);
+			EmailJobParameters jobParameters = GenerateEmailJobParameters(jobStatus, emails);
 
 			TaskParameters emailTaskParameters = new TaskParameters
 			{
