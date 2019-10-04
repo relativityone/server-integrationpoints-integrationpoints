@@ -49,7 +49,7 @@ namespace Relativity.Sync.Executors
 			{
 				_logger.LogInformation("Gathering batches to execute.");
 				IEnumerable<int> batchesIds = await _batchRepository.GetAllNewBatchesIdsAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId).ConfigureAwait(false);
-				List<ImportJobResult> batchJobsResults = new List<ImportJobResult>();
+				Dictionary<int,ImportJobResult> batchJobsResults = new Dictionary<int, ImportJobResult>();
 
 
 				foreach (int batchId in batchesIds)
@@ -58,7 +58,7 @@ namespace Relativity.Sync.Executors
 					if (token.IsCancellationRequested)
 					{
 						_logger.LogInformation("Import job has been canceled.");
-						batchJobsResults.Add( new ImportJobResult(ExecutionResult.Canceled(),  0));
+						batchJobsResults[batchId]=new ImportJobResult(ExecutionResult.Canceled(), 0);
 						break;
 					}
 
@@ -67,7 +67,7 @@ namespace Relativity.Sync.Executors
 					using (IImportJob importJob = await _importJobFactory.CreateImportJobAsync(configuration, batch, token).ConfigureAwait(false))
 					{
 						ImportJobResult importJobResult = await importJob.RunAsync(token).ConfigureAwait(false);
-						batchJobsResults.Add(importJobResult);
+						batchJobsResults[batchId]=importJobResult;
 
 						_jobStatisticsContainer.TotalBytesTransferred += importJobResult.JobSizeInBytes;
 
@@ -147,23 +147,25 @@ namespace Relativity.Sync.Executors
 			return executionResult;
 		}
 
-		private ExecutionResult AggregateBatchExecutionResults(List<ImportJobResult> batchJobsResults)
+		private ExecutionResult AggregateBatchExecutionResults(Dictionary<int, ImportJobResult> batchJobsResults)
 		{
-			if (batchJobsResults.Any(x => x.ExecutionResult.Status == ExecutionStatus.Canceled))
+			if (batchJobsResults.Values.Any(x => x.ExecutionResult.Status == ExecutionStatus.Canceled))
 			{
 				return ExecutionResult.Canceled();
 			}
 
-			if (batchJobsResults.Any(x => x.ExecutionResult.Status == ExecutionStatus.Failed))
+			if (batchJobsResults.Values.Any(x => x.ExecutionResult.Status == ExecutionStatus.Failed))
 			{
-				return batchJobsResults.Single(x => x.ExecutionResult.Status == ExecutionStatus.Failed).ExecutionResult;
+				return batchJobsResults.Single(x => x.Value.ExecutionResult.Status == ExecutionStatus.Failed).Value.ExecutionResult;
 			}
 
-			IEnumerable<ImportJobResult> completedWithErrorsBatchJobResults =
-				batchJobsResults.Where(x => x.ExecutionResult.Status == ExecutionStatus.CompletedWithErrors).ToArray();
+			KeyValuePair<int, ImportJobResult>[] completedWithErrorsBatchJobResults =
+				batchJobsResults.Where(x => x.Value.ExecutionResult.Status == ExecutionStatus.CompletedWithErrors).ToArray();
 			if (completedWithErrorsBatchJobResults.Any())
 			{
-				return ExecutionResult.SuccessWithErrors(new AggregateException(completedWithErrorsBatchJobResults.Select(x => x.ExecutionResult.Exception)));
+				return ExecutionResult.SuccessWithErrors(new AggregateException(string.Join(Environment.NewLine,completedWithErrorsBatchJobResults.Select(x => $"BatchID: {x.Key} {{x.ExecutionResult.Message}}")),
+					completedWithErrorsBatchJobResults.Select(x => x.Value.ExecutionResult.Exception).Where(x => x != null)
+						));
 			}
 
 			return ExecutionResult.Success();
