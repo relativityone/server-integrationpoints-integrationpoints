@@ -13,6 +13,7 @@ using Moq;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Exceptions;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 {
@@ -147,6 +148,13 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 			const int syncProfilesCount = 5;
 			const int nonSyncProfilesCount = 0;
 			SetUpProfilesQuery(nonSyncProfilesCount, syncProfilesCount);
+			_createdWorkspaceRelativityObjectManager.Setup(x => 
+					x.MassUpdateAsync(
+						It.IsAny<IEnumerable<int>>(),
+						It.IsAny<IEnumerable<FieldRefValuePair>>(), 
+						It.IsAny<FieldUpdateBehavior>(),
+						It.IsAny<ExecutionIdentity>()))
+				.ReturnsAsync(true);
 
 			// Act
 			Response response = _eventHandler.Execute();
@@ -161,7 +169,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 		}
 
 		[Test]
-		[Ignore("To be implemented in REL-351468")]
 		public void ItShouldNotUpdateProfilesWhenThereAreNoSyncProfiles()
 		{
 			// Arrange
@@ -170,16 +177,21 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 			SetUpProfilesQuery(nonSyncProfilesCount, syncProfilesCount);
 
 			// Act
+			Response response = _eventHandler.Execute();
 
 			// Assert
-			Assert.Fail();
+			response.Success.Should().BeTrue("handler should have completed successfully");
+			response.Exception.Should().BeNull("there was no failure");
+			_createdWorkspaceRelativityObjectManager
+				.Verify(x => x.MassUpdateAsync(It.IsAny<IEnumerable<int>>(), It.IsAny<IEnumerable<FieldRefValuePair>>(),
+						It.IsAny<FieldUpdateBehavior>(), It.IsAny<ExecutionIdentity>()), Times.Never);
 		}
 
 		[Test]
 		public void ItShouldMassDeleteNonSyncProfilesAndModifySyncProfiles()
 		{
 			// Arrange
-			const int syncProfilesCount = 5;
+			const int syncProfilesCount = 0;
 			const int nonSyncProfilesCount = 5;
 			SetUpProfilesQuery(nonSyncProfilesCount, syncProfilesCount);
 
@@ -193,17 +205,42 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 			List<int> nonSyncProfilesArtifactIds = NonSyncProfilesArtifactIds(nonSyncProfilesCount).Select(x => x.ArtifactId).ToList();
 
 			_createdWorkspaceRelativityObjectManager
-				.Verify(x => x.MassDeleteAsync(It.Is<List<int>>(l => l.SequenceEqual(nonSyncProfilesArtifactIds)), It.IsAny<ExecutionIdentity>()),
+				.Verify(x => x.MassDeleteAsync(It.Is<IEnumerable<int>>(l => l.SequenceEqual(nonSyncProfilesArtifactIds)), It.IsAny<ExecutionIdentity>()),
 					Times.Once);
+		}
 
-			// TODO: make assertions after implementing REL-351468
+		[Test]
+		public void ItShouldModifySyncProfiles()
+		{
+			// Arrange
+			const int syncProfilesCount = 5;
+			const int nonSyncProfilesCount = 0;
+			SetUpProfilesQuery(nonSyncProfilesCount, syncProfilesCount);
+			_createdWorkspaceRelativityObjectManager.Setup(x =>
+					x.MassUpdateAsync(
+						It.IsAny<IEnumerable<int>>(),
+						It.IsAny<IEnumerable<FieldRefValuePair>>(),
+						It.IsAny<FieldUpdateBehavior>(),
+						It.IsAny<ExecutionIdentity>()))
+				.ReturnsAsync(true);
+
+			// Act
+			Response response = _eventHandler.Execute();
+
+			//Assert
+			response.Success.Should().BeTrue("handler should have completed successfully");
+			response.Exception.Should().BeNull("there was no failure");
+
+			_createdWorkspaceRelativityObjectManager
+				.Verify(x => x.MassUpdateAsync(It.IsAny<IEnumerable<int>>(), It.IsAny<IEnumerable<FieldRefValuePair>>(),
+					It.IsAny<FieldUpdateBehavior>(), It.IsAny<ExecutionIdentity>()), Times.Exactly(syncProfilesCount));
 		}
 
 		private static List<IntegrationPointProfile> SyncProfilesArtifactIds(int count)
 		{
 			return Enumerable
 				.Range(_FIRST_SYNC_PROFILE_ARTIFACT_ID, count)
-				.Select(x => new IntegrationPointProfile())
+				.Select(CreateProfileMock)
 				.ToList();
 		}
 
@@ -211,8 +248,17 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 		{
 			return Enumerable
 				.Range(_FIRST_NON_SYNC_PROFILE_ARTIFACT_ID, count)
-				.Select(x => new IntegrationPointProfile())
+				.Select(CreateProfileMock)
 				.ToList();
+		}
+
+		private static IntegrationPointProfile CreateProfileMock(int artifactID)
+		{
+			return new IntegrationPointProfile()
+			{
+				ArtifactId = artifactID,
+				SourceConfiguration = "{\"SavedSearchArtifactId\": 123234,\n  \"TypeOfExport\": 3,\n  \"SourceWorkspaceArtifactId\": 1017953}"
+			};
 		}
 
 		private void SetUpProfilesQuery(int nonSyncProfilesCount, int syncProfilesCount)
@@ -229,12 +275,12 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 				.ReturnsAsync(allProfiles);
 
 			_integrationPointProfilesQuery
-				.Setup(x => x.GetSyncProfilesAsync(It.IsAny<IEnumerable<IntegrationPointProfile>>(), It.IsAny<int>(), It.IsAny<int>()))
-				.ReturnsAsync(syncProfiles.Select(x => x.ArtifactId));
+				.Setup(x => x.GetSyncProfiles(It.IsAny<IEnumerable<IntegrationPointProfile>>(), It.IsAny<int>(), It.IsAny<int>()))
+				.Returns(syncProfiles);
 
 			_integrationPointProfilesQuery
-				.Setup(x => x.GetNonSyncProfilesAsync(It.IsAny<IEnumerable<IntegrationPointProfile>>(), It.IsAny<int>(), It.IsAny<int>()))
-				.ReturnsAsync(nonSyncProfiles.Select(x => x.ArtifactId));
+				.Setup(x => x.GetNonSyncProfiles(It.IsAny<IEnumerable<IntegrationPointProfile>>(), It.IsAny<int>(), It.IsAny<int>()))
+				.Returns(nonSyncProfiles);
 		}
 	}
 }
