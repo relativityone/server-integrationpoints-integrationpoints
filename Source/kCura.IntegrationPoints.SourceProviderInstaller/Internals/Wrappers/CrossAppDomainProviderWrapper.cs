@@ -1,17 +1,18 @@
-﻿using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Contracts.Provider;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Runtime.Remoting;
+using kCura.IntegrationPoints.Contracts.Internals;
+using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Contracts.Provider;
 
-namespace kCura.IntegrationPoints.Domain.Wrappers
+namespace kCura.IntegrationPoints.SourceProviderInstaller.Internals.Wrappers
 {
 	/// <summary>
 	/// This class wraps <see cref="IDataSourceProvider"/> from another AppDomain
 	/// <see cref="CrossAppDomainProviderWrapper"/> objects shouldn't be used directly in parent's AppDomain because of issues
-	/// with multiple calls to <see cref="Dispose"/>. Proxy in parent AppDomain tries to call Dispose in child AppDomain
+	/// with multiple calls to <see cref="Dispose()"/>. Proxy in parent AppDomain tries to call Dispose in child AppDomain
 	/// but this objects was already disposed there, so <see cref="ObjectDisposedException"/> is thrown. Instead we should
 	/// use <see cref="SafeDisposingProviderWrapper"/> which guarantees proper IDisposable implementation.
 	/// </summary>

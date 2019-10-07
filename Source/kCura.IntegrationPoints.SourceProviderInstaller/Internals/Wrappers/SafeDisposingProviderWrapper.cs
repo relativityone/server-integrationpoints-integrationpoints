@@ -1,14 +1,16 @@
-﻿using kCura.IntegrationPoints.Contracts.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using kCura.IntegrationPoints.Contracts;
+using kCura.IntegrationPoints.Contracts.Internals;
+using kCura.IntegrationPoints.Contracts.Models;
 
-namespace kCura.IntegrationPoints.Domain.Wrappers
+namespace kCura.IntegrationPoints.SourceProviderInstaller.Internals.Wrappers
 {
 	/// <summary>
-	/// This wrapper guarantees that <see cref="Dispose"/> method on wrapped <see cref="IProviderAggregatedInterfaces"/>
+	/// This wrapper guarantees that <see cref="Dispose()"/> method on wrapped <see cref="IProviderAggregatedInterfaces"/>
 	/// object will not be called more than once. All returned <see cref="IDataReader"/> are guarenteed 
-	/// to have proper <see cref="Dispose"/> implementation as well.
+	/// to have proper <see cref="Dispose()"/> implementation as well.
 	/// </summary>
 	internal class SafeDisposingProviderWrapper : IProviderAggregatedInterfaces
 	{
@@ -61,6 +63,7 @@ namespace kCura.IntegrationPoints.Domain.Wrappers
 		public void Dispose()
 		{
 			Dispose(true);
+			GC.SuppressFinalize(this);
 		}
 		#endregion
 	}

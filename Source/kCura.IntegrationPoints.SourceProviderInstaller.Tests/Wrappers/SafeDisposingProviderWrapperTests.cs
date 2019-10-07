@@ -1,13 +1,15 @@
-﻿using FluentAssertions;
-using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Domain.Wrappers;
-using Moq;
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using FluentAssertions;
+using kCura.IntegrationPoints.Contracts;
+using kCura.IntegrationPoints.Contracts.Internals;
+using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.SourceProviderInstaller.Internals.Wrappers;
+using Moq;
+using NUnit.Framework;
 
-namespace kCura.IntegrationPoints.Domain.Tests.Wrappers
+namespace kCura.IntegrationPoints.SourceProviderInstaller.Tests.Wrappers
 {
 	[TestFixture]
 	public class SafeDisposingProviderWrapperTests

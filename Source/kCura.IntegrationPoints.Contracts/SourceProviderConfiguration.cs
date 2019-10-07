@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.IntegrationPoints.Contracts.Internals;
 using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Contracts

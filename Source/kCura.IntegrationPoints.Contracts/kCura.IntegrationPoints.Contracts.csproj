@@ -22,7 +22,7 @@
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>bin\x64\kCura.IntegrationPoints.Contracts.XML</DocumentationFile>
+    <DocumentationFile>bin\x64\kCura.IntegrationPoints.Contracts.xml</DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -50,7 +50,11 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="DataSourceProviderAttribute.cs" />
-    <Compile Include="ImportSettingVisibility.cs" />
+    <Compile Include="Internals\Exceptions\NoProvidersFoundException.cs" />
+    <Compile Include="Internals\Exceptions\TooManyProvidersFoundException.cs" />
+    <Compile Include="Internals\IEmailBodyData.cs" />
+    <Compile Include="Internals\ImportSettingVisibility.cs" />
+    <Compile Include="Internals\IProviderAggregatedInterfaces.cs" />
     <Compile Include="IProviderFactory.cs" />
     <Compile Include="IStartUp.cs" />
     <Compile Include="Models\FieldEntry.cs" />
@@ -71,6 +75,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -82,6 +87,9 @@
     <Analyzer Include="..\..\packages\CSharpGuidelineAnalyzer\analyzers\dotnet\cs\CSharpGuidelineAnalyzer.dll">
       <Paket>True</Paket>
     </Analyzer>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Exceptions\" />
   </ItemGroup>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">

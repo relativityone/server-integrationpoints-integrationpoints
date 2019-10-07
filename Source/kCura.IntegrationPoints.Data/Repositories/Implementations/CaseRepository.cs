@@ -4,6 +4,7 @@ using kCura.IntegrationPoints.Data.Repositories.DTO;
 using kCura.IntegrationPoints.Data.Repositories.Implementations.DTO;
 using Relativity.Services.ResourceServer;
 using System;
+using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Domain.Exceptions;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations

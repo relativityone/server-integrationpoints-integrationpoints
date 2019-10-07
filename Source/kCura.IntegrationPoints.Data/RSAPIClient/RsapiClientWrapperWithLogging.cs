@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
+using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.Repositories;

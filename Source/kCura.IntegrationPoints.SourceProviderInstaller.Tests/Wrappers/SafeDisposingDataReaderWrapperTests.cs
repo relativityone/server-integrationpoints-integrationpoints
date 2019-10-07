@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Data;
 using FluentAssertions;
-using kCura.IntegrationPoints.Domain.Wrappers;
+using kCura.IntegrationPoints.SourceProviderInstaller.Internals.Wrappers;
 using Moq;
 using NUnit.Framework;
 
-namespace kCura.IntegrationPoints.Domain.Tests.Wrappers
+namespace kCura.IntegrationPoints.SourceProviderInstaller.Tests.Wrappers
 {
 	[TestFixture]
 	public class SafeDisposingDataReaderWrapperTests

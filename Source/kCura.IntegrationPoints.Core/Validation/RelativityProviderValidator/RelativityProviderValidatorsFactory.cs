@@ -1,5 +1,6 @@
 ﻿using System;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;

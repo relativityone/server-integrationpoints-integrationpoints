@@ -224,6 +224,10 @@
       <Project>{5d5b52b4-8769-431a-9743-b96f15fed5fd}</Project>
       <Name>kCura.IntegrationPoints.Domain</Name>
     </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.SourceProviderInstaller\kCura.IntegrationPoints.SourceProviderInstaller.csproj">
+      <Project>{fcaf52cd-0f8f-4d71-ac61-b7591a181a08}</Project>
+      <Name>kCura.IntegrationPoints.SourceProviderInstaller</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
       <Project>{B91CC4ED-ABF3-4409-8DF3-46A3C26EB4AA}</Project>
       <Name>kCura.IntegrationPoints.Synchronizers.RDO</Name>

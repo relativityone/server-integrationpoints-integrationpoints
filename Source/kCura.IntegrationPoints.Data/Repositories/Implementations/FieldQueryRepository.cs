@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Data.Converters;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.RSAPIClient;

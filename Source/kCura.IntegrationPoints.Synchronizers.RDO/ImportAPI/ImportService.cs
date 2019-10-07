@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Readers;

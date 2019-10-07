@@ -70,7 +70,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		private void CreateAndImportTestData()
 		{
 			_testContext.DocumentsTestData = DocumentTestDataBuilder.BuildTestData();
-			_workspaceService.TryImportData(_testContext.WorkspaceID, _testContext.DocumentsTestData);
+			_workspaceService.ImportData(_testContext.WorkspaceID, _testContext.DocumentsTestData);
 			_folderIDRetriever.UpdateFolderIdsAsync(_testContext.WorkspaceID, _testContext.DocumentsTestData.Documents)
 				.GetAwaiter().GetResult();
 		}
