@@ -1,4 +1,5 @@
 ﻿using System;
+using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.Relativity.Client;
 using Relativity.API;

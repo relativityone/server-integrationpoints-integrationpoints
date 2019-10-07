@@ -1,5 +1,6 @@
 ﻿using System;
 using kCura.IntegrationPoints.Contracts.Provider;
+using kCura.IntegrationPoints.SourceProviderInstaller;
 
 namespace kCura.IntegrationPoints.Domain.Tests.Integration.DataProviderBuilderTests.Mocks
 {

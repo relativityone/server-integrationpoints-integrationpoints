@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Contracts.Internals;
 using static LanguageExt.Prelude;
 using SourceProvider = kCura.IntegrationPoints.Contracts.SourceProvider;
 

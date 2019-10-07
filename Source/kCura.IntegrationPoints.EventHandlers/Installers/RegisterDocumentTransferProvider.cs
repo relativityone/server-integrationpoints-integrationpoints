@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using kCura.IntegrationPoints.Contracts;
+using kCura.IntegrationPoints.Contracts.Internals;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints;
 
 namespace kCura.IntegrationPoints.EventHandlers.Installers

@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Common.Constants;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
+using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using Relativity.API;
 using Relativity.Kepler.Exceptions;
