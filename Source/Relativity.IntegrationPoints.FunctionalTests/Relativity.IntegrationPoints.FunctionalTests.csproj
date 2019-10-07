@@ -40,11 +40,13 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="FunctionalTestsSetupFixture.cs" />
+    <Compile Include="SystemTests\EventHandlers\IntegrationPointProfileMigrationEventHandlerTest.cs" />
     <Compile Include="SystemTests\IntegrationPointServices\IntegrationPointServiceTests.cs" />
     <Compile Include="SystemTests\IntegrationPointServices\KeplerDocumentRepositoryTests.cs" />
     <Compile Include="SystemTests\JobHistory\JobHistoryManagerTests.cs" />
     <Compile Include="SystemTests\Repositories\IntegrationPointRepositoryTests.cs" />
     <Compile Include="SystemTests\SystemTestsSetupFixture.cs" />
+    <Compile Include="SystemTests\TestWorkspace.cs" />
     <Compile Include="UiTests\DummyUiTests.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -90,6 +92,18 @@
       <Project>{5d5b52b4-8769-431a-9743-b96f15fed5fd}</Project>
       <Name>kCura.IntegrationPoints.Domain</Name>
     </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.EventHandlers\kCura.IntegrationPoints.EventHandlers.csproj">
+      <Project>{6571B092-1582-4FEC-9101-F510E7E573BC}</Project>
+      <Name>kCura.IntegrationPoints.EventHandlers</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Services.Interfaces.Private\kCura.IntegrationPoints.Services.Interfaces.Private.csproj">
+      <Project>{B8BF6D01-E190-4C2C-B07F-3B627FFC1BFC}</Project>
+      <Name>kCura.IntegrationPoints.Services.Interfaces.Private</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Services\kCura.IntegrationPoints.Services.csproj">
+      <Project>{fd2c5db6-8fd6-40d6-8e50-3641b7d89d9d}</Project>
+      <Name>kCura.IntegrationPoints.Services</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
       <Project>{b91cc4ed-abf3-4409-8df3-46a3c26eb4aa}</Project>
       <Name>kCura.IntegrationPoints.Synchronizers.RDO</Name>
@@ -108,6 +122,17 @@
   </Target>
   -->
   <Import Project="..\..\.paket\paket.targets" />
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="BCrypt.Net-Core">
+          <HintPath>..\..\packages\BCrypt.Net-Core\lib\net452\BCrypt.Net-Core.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
@@ -130,6 +155,17 @@
         </Reference>
         <Reference Include="Castle.Windsor">
           <HintPath>..\..\packages\Castle.Windsor\lib\net45\Castle.Windsor.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="kCura">
+          <HintPath>..\..\packages\kCura\lib\net462\kCura.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -163,6 +199,28 @@
       <ItemGroup>
         <Reference Include="kCura.Apps.Common.Utils">
           <HintPath>..\..\packages\kCura.Apps.Common.Utils\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="kCura.Injection">
+          <HintPath>..\..\packages\kCura.Injection\lib\net462\kCura.Injection.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="kCura.IntegrationPoints.Services.Interfaces.Private">
+          <HintPath>..\..\packages\kCura.IntegrationPoints.Services.Interfaces.Private\lib\net462\kCura.IntegrationPoints.Services.Interfaces.Private.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -495,11 +553,73 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="System.Configuration">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Drawing">
+          <Paket>True</Paket>
+        </Reference>
         <Reference Include="mscorlib">
           <Paket>True</Paket>
         </Reference>
+        <Reference Include="System.Configuration.ConfigurationManager">
+          <HintPath>..\..\packages\System.Configuration.ConfigurationManager\lib\net461\System.Configuration.ConfigurationManager.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="System.Data.SqlClient">
           <HintPath>..\..\packages\System.Data.SqlClient\lib\net461\System.Data.SqlClient.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="System.Security.AccessControl">
+          <HintPath>..\..\packages\System.Security.AccessControl\lib\net461\System.Security.AccessControl.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="System.Data.OracleClient">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Net">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.ServiceProcess">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Transactions">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Security.Permissions">
+          <HintPath>..\..\packages\System.Security.Permissions\lib\net461\System.Security.Permissions.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="System.Security.Principal.Windows">
+          <HintPath>..\..\packages\System.Security.Principal.Windows\lib\net461\System.Security.Principal.Windows.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

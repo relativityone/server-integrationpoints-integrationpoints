@@ -21,6 +21,8 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager
 
 		Task<DeleteResult> DeleteAsync(int workspaceArtifactID, DeleteRequest request);
 
+		Task<MassDeleteResult> DeleteAsync(int workspaceArtifactID, MassDeleteByObjectIdentifiersRequest request);
+
 		Task<QueryResult> QueryAsync(
 			int workspaceArtifactID,
 			QueryRequest request,

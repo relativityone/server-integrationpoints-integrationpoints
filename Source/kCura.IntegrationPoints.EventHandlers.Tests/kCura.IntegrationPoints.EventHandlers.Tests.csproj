@@ -36,6 +36,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Polly, Version=5.9.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Polly\lib\net45\Polly.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -82,10 +86,13 @@
     <Compile Include="IntegrationPoints\Helpers\DataTransferLocationMigrationHelperTests.cs" />
     <Compile Include="IntegrationPoints\Helpers\FolderPathInformationTests.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\InProcessSourceProviderInstallerTests.cs" />
+    <Compile Include="IntegrationPoints\Helpers\IntegrationPointProfilesQueryTests.cs" />
+    <Compile Include="IntegrationPoints\Helpers\ObjectArtifactIdsByStringFieldValueQueryTests.cs" />
     <Compile Include="IntegrationPoints\Helpers\IntegrationPointSecretDeleteTests.cs" />
     <Compile Include="IntegrationPoints\Helpers\RelativityProviderDestinationConfigurationTests.cs" />
     <Compile Include="IntegrationPoints\Helpers\RelativityProviderSourceConfigurationTests.cs" />
     <Compile Include="IntegrationPoints\Helpers\Scripts\CommonScriptsTests.cs" />
+    <Compile Include="IntegrationPoints\IntegrationPointProfileMigrationEventHandlerTests.cs" />
     <Compile Include="IntegrationPoints\InternalSourceProviderInstallerTests.cs" />
     <Compile Include="IntegrationPoints\Validators\PreCascadeDeleteEventHandlerValidatorTests.cs" />
   </ItemGroup>

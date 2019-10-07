@@ -8,6 +8,7 @@ using Moq;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementation
 {
@@ -71,7 +72,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 			IObjectManagerFacade createdInstance = _sut.Create(executionIdentity);
 
 			// act
-			await createdInstance.DeleteAsync(0, null).ConfigureAwait(false);
+			await createdInstance.DeleteAsync(0, (DeleteRequest) null).ConfigureAwait(false);
 
 			// assert
 			_servicesManager.Verify(x => x.CreateProxy<IObjectManager>(executionIdentity));

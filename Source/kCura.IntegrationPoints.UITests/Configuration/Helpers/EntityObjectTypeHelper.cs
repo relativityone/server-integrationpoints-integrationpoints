@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
 			_testContext = testContext;
 		}
 
-		public void AddEntityObjectToWorkspace()
+		public async Task AddEntityObjectToWorkspaceAsync()
 		{
 			string workspaceName = _testContext.WorkspaceName;
 			int? workspaceID = _testContext.WorkspaceId;
@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
 			Log.Information("Adding Entity object to '{WorkspaceName}' ({WorkspaceId}).", workspaceName, workspaceID);
 			if (!EntityObjectTypeArtifactID.HasValue)
 			{
-				_testContext.ApplicationInstallationHelper.InstallLegalHold();
+				await _testContext.ApplicationInstallationHelper.InstallLegalHoldAsync().ConfigureAwait(false);
 
 				if (!EntityObjectTypeArtifactID.HasValue)
 				{

@@ -11,13 +11,12 @@ using ITokenProvider = Relativity.OAuth2Client.Interfaces.ITokenProvider;
 
 namespace kCura.IntegrationPoints.Core.Authentication
 {
-	public class OAuth2TokenGenerator : IAuthTokenGenerator, IDisposable
+	public class OAuth2TokenGenerator : IAuthTokenGenerator
 	{
 		private readonly IAPILog _logger;
 		private readonly IOAuth2ClientFactory _oAuth2ClientFactory;
 		private readonly ITokenProviderFactoryFactory _tokenProviderFactory;
 		private readonly CurrentUser _contextUser;
-		private readonly CancellationTokenSource _cancellationTokenSource;
 
 		public OAuth2TokenGenerator(IHelper helper, IOAuth2ClientFactory oAuth2ClientFactory, ITokenProviderFactoryFactory tokenProviderFactory, CurrentUser contextUser)
 		{
@@ -25,7 +24,6 @@ namespace kCura.IntegrationPoints.Core.Authentication
 			_contextUser = contextUser;
 			_tokenProviderFactory = tokenProviderFactory;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<OAuth2TokenGenerator>();
-			_cancellationTokenSource = new CancellationTokenSource();
 		}
 
 		public string GetAuthToken()
@@ -34,8 +32,7 @@ namespace kCura.IntegrationPoints.Core.Authentication
 			{
 				OAuth2Client oauth2Client = _oAuth2ClientFactory.GetOauth2Client(_contextUser.ID);
 				ITokenProvider tokenProvider = CreateTokenProvider(oauth2Client);
-				string token = tokenProvider.GetAccessTokenAsync(_cancellationTokenSource.Token).ConfigureAwait(false)
-					.GetAwaiter().GetResult();
+				string token = tokenProvider.GetAccessTokenAsync().GetAwaiter().GetResult();
 
 				return token;
 			}
@@ -72,11 +69,6 @@ namespace kCura.IntegrationPoints.Core.Authentication
 		{
 			_logger.LogError(exception,
 				$"Failed to get Authentication Token for user with ID: {_contextUser}. Details: {exception.Message}");
-		}
-
-		public void Dispose()
-		{
-			_cancellationTokenSource.Dispose();
 		}
 	}
 }

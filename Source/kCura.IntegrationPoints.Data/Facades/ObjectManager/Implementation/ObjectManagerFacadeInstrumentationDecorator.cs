@@ -10,8 +10,8 @@ using Relativity.API;
 using Relativity.Kepler.Exceptions;
 using Relativity.Kepler.Transport;
 using Relativity.Services.DataContracts.DTOs.Results;
+using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
-using IObjectManager = Relativity.Services.Objects.IObjectManager;
 
 namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
 {
@@ -48,6 +48,14 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
 		{
 			return ExecuteAsync(
 				x => x.DeleteAsync(workspaceArtifactID, request));
+		}
+
+		public async Task<MassDeleteResult> DeleteAsync(int workspaceArtifactID, MassDeleteByObjectIdentifiersRequest request)
+		{
+			MassDeleteResult result = await ExecuteAsync(
+					x => x.DeleteAsync(workspaceArtifactID, request))
+				.ConfigureAwait(false);
+			return result;
 		}
 
 		public Task<QueryResult> QueryAsync(int workspaceArtifactID, QueryRequest request, int start, int length)
