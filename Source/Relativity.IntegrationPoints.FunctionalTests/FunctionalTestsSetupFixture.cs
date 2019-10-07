@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoint.Tests.Core;
+﻿using System.Threading.Tasks;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using NUnit.Framework;
@@ -11,13 +12,13 @@ public class FunctionalTestsSetupFixture
 	private ITestHelper _testHelper;
 
 	[OneTimeSetUp]
-	public void InitializeFixture()
+	public async Task InitializeFixtureAsync()
 	{
 		_testHelper = new TestHelper();
-		CreateTemplateWorkspace();
+		await CreateTemplateWorkspaceAsync().ConfigureAwait(false);
 	}
 
-	private void CreateTemplateWorkspace()
+	private async Task CreateTemplateWorkspaceAsync()
 	{
 		bool templateExists = Workspace.CheckIfWorkspaceExists(
 			WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME
