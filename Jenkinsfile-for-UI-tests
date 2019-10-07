@@ -130,6 +130,10 @@ timestamps
 
             if (jenkinsHelpers.testingVMsAreRequired(params))
             {
+                stage ('Download RAP Tools')
+                {
+                    jenkinsHelpers.downloadRAPTools()
+                }
                 stage ('Stash Tests Artifacts')
                 {
                     jenkinsHelpers.stashTestsArtifacts()
@@ -165,7 +169,6 @@ timestamps
                 {
                     if(params.importBuiltRAP)
                     {
-                        jenkinsHelpers.downloadRAPTools()
                         jenkinsHelpers.importRAP()
                     }        
                 }
