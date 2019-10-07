@@ -32,23 +32,21 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return Workspace.CreateWorkspace(name, templateName);
 		}
 
-		public bool TryImportData(int workspaceArtifactID, DocumentsTestData documentsTestData)
-		{
-			return _importHelper.ImportData(workspaceArtifactID, documentsTestData);
-		}
-
 		public void ImportData(int workspaceID, DocumentsTestData documentsTestData)
 		{
-			bool importSucceeded = TryImportData(workspaceID, documentsTestData);
+			bool importSucceeded = _importHelper.ImportData(workspaceID, documentsTestData);
 			if (!importSucceeded)
 			{
-				throw new TestException("Importing documents does not succeeded.");
+				string errorsDetails = _importHelper.ErrorMessages.Any()
+					? " Error messages: " + string.Join("; ", _importHelper.ErrorMessages)
+					: " No error messages.";
+				throw new TestException("Importing documents does not succeeded." + errorsDetails);
 			}
 		}
 
 		public bool ImportSingleExtractedText(int workspaceArtifactID, string controlNumber, string extractedTextFilePath)
 		{
-			System.Data.DataTable documentData = 
+			System.Data.DataTable documentData =
 				DocumentTestDataBuilder.GetSingleExtractedTextDocument(controlNumber, extractedTextFilePath);
 			return _importHelper.ImportMetadataFromFileWithExtractedTextInFile(workspaceArtifactID, documentData);
 		}
@@ -62,7 +60,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		public int CreateSavedSearch(FieldEntry[] fieldEntries,  int workspaceID, string savedSearchName)
+		public int CreateSavedSearch(FieldEntry[] fieldEntries, int workspaceID, string savedSearchName)
 		{
 			List<FieldRef> fields = fieldEntries
 				.Select(x => new FieldRef(x.DisplayName))
