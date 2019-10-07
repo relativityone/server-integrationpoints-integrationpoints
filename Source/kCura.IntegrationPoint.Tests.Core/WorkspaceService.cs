@@ -37,8 +37,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 			bool importSucceeded = _importHelper.ImportData(workspaceID, documentsTestData);
 			if (!importSucceeded)
 			{
-				string errorsDetails = _importHelper.ErrorMessages.Any()
-					? " Error messages: " + string.Join("; ", _importHelper.ErrorMessages)
+				string errorsDetails = _importHelper.ErrorMessages.Any() 
+					? $" Error messages: {string.Join("; ", _importHelper.ErrorMessages)}"
 					: " No error messages.";
 				throw new TestException("Importing documents does not succeeded." + errorsDetails);
 			}
