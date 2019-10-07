@@ -10,8 +10,17 @@ namespace kCura.IntegrationPoints.UITests.DummyUiTests
 	[TestFixture]
 	public class DummyUiTests
 	{
+		private const string _EXPORT_TO_RELATIVITY_TEST_CATEGORY = "ExportToRelativity";
+
 		[Test]
 		public void DummyTest()
+		{
+			true.Should().BeTrue();
+		}
+
+		[Test]
+		[Category(_EXPORT_TO_RELATIVITY_TEST_CATEGORY)]
+		public void DummyExportToRelativityTest()
 		{
 			true.Should().BeTrue();
 		}

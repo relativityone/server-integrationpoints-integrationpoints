@@ -71,6 +71,11 @@ properties([
 			name: 'enableCheckConfigureAwait',
 			defaultValue: true,
 			description: 'Enable checking if configureAwait is present everywhere it needs to be.'
+		),
+		booleanParam(
+			name: 'importBuiltRAP', 
+			defaultValue: true, 
+			description: 'Check if you want to deploy built Integration Points RAP'
 		)
 	])
 ])
@@ -119,6 +124,13 @@ timestamps
 
 			if (jenkinsHelpers.testingVMsAreRequired(params))
 			{
+				stage ('Download RAP Tools')
+                {
+					if(params.importBuiltRAP)
+					{
+                    	jenkinsHelpers.downloadRAPTools()
+					}
+                }
 				stage ('Stash Tests and Package Artifacts')
 				{
 					jenkinsHelpers.stashTestsAndPackageArtifacts()
@@ -159,6 +171,14 @@ timestamps
 				stage ('Unstash Tests Artifacts')
 				{
 					jenkinsHelpers.unstashTestsArtifacts()
+				}
+
+				stage ('Import Integration Points RAP')
+				{
+					if(params.importBuiltRAP)
+					{
+						jenkinsHelpers.importRAP()
+					}        
 				}
 
 				try
