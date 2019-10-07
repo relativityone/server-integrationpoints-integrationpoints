@@ -38,8 +38,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 			Messages.Clear();
 			ErrorMessages.Clear();
 
-			WinEDDS.Config.ConfigSettings[nameof(WinEDDS.Config.TapiForceHttpClient)] = true.ToString();
-			WinEDDS.Config.ConfigSettings[nameof(WinEDDS.Config.TapiForceBcpHttpClient)] = true.ToString();
 			var importApi = new ImportAPI(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword,
 				SharedVariables.RelativityWebApiUrl);
 
@@ -57,10 +55,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 			Messages.Clear();
 			ErrorMessages.Clear();
-
-			WinEDDS.Config.ConfigSettings[nameof(WinEDDS.Config.TapiForceHttpClient)] = true.ToString();
-			WinEDDS.Config.ConfigSettings[nameof(WinEDDS.Config.TapiForceBcpHttpClient)] = true.ToString();
-
+			
 			var importApi = 
 				new ImportAPI(
 					SharedVariables.RelativityUserName, 
