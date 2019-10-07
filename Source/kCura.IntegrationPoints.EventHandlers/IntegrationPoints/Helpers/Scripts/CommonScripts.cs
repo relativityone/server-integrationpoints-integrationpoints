@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Script
 
 		public virtual IList<string> LinkedScripts()
 		{
-			List<string> listOfLinkedScripts = new List<string>
+			var scripts = new List<string>
 			{
 				"/Scripts/knockout-3.4.0.js",
 				"/Scripts/knockout.validation.js",
@@ -51,9 +51,9 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Script
 				"/Scripts/integration-point/save-as-profile-modal-vm.js"
 			};
 
-			if (!IsIntegrationPointProfilePage())
+			if (IsIntegrationPointPage())
 			{
-				listOfLinkedScripts.AddRange(new[]
+				scripts.AddRange(new[]
 				{
 					"/Scripts/jquery.signalR-2.3.0.js",
 					"/signalr/hubs",
@@ -61,13 +61,13 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Script
 				});
 			}
 
-			listOfLinkedScripts.AddRange(new[]
+			scripts.AddRange(new[]
 			{
 				"/Scripts/EventHandlers/integration-points-view-destination.js",
 				"/Scripts/EventHandlers/integration-points-summary-page-view.js"
 			});
 
-			return listOfLinkedScripts;
+			return scripts;
 		}
 
 		public virtual IList<string> ScriptBlocks()
@@ -136,7 +136,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Script
 			return string.Format($"IP.{name} = '{value}';");
 		}
 
-		private bool IsIntegrationPointProfilePage() =>
-			ScriptsHelper.GetAPIControllerName() == "IntegrationPointProfilesAPI";
+		private bool IsIntegrationPointPage() =>
+			ScriptsHelper.GetAPIControllerName() == "IntegrationPointsAPI";
 	}
 }

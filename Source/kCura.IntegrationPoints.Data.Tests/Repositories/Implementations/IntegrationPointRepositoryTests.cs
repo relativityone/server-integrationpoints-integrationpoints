@@ -115,9 +115,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			// Arrange
 			_integrationPoint = CreateTestIntegrationPoint();
 
-			_objectManagerMock.Setup(x => x.Read<IntegrationPoint>(_ARTIFACT_ID, ExecutionIdentity.CurrentUser)).Returns(_integrationPoint);
-
-			IntegrationPoint expectedResult = CreateTestIntegrationPoint();
+			_objectManagerMock.Setup(x => x.Read<IntegrationPoint>(_ARTIFACT_ID,ExecutionIdentity.CurrentUser)).Returns(_integrationPoint);
 
 			// Act
 			IntegrationPoint actualResult = await _sut.ReadEncryptedAsync(_ARTIFACT_ID).ConfigureAwait(false);
@@ -130,7 +128,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 					It.IsAny<string>(),
 					It.IsAny<object[]>()),
 				Times.Never);
-			AreIntegrationPointsEqual(expectedResult, actualResult).Should().BeTrue();
+			actualResult.Should().Be(_integrationPoint);
 		}
 
 		[Test]

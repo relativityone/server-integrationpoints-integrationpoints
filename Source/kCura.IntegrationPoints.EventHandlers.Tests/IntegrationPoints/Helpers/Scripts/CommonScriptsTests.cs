@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using FluentAssertions;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Scripts;
@@ -11,9 +13,42 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
 
 	public class CommonScriptsTests
 	{
-		private CommonScripts _instance;
+		private CommonScripts _sut;
 		private Mock<IScriptsHelper> _scriptsHelper;
 		private Mock<IIntegrationPointBaseFieldGuidsConstants> _integrationPointBaseFieldGuidsConstants;
+
+		private const string _INTEGRATION_POINTS_CONTROLLER_NAME = "IntegrationPointsAPI";
+		private const string _INTEGRATION_POINTS_PROFILE_CONTROLLER_NAME = "IntegrationPointProfilesAPI";
+
+		private readonly List<string> _listWithAllScripts = new List<string>
+		{
+			"/Scripts/knockout-3.4.0.js",
+			"/Scripts/knockout.validation.js",
+			"/Scripts/route.js",
+			"/Scripts/date.js",
+			"/Scripts/q.js",
+			"/Scripts/core/messaging.js",
+			"/Scripts/loading-modal.js",
+			"/Scripts/dragon/dragon-dialogs.js",
+			"/Scripts/core/data.js",
+			"/Scripts/core/utils.js",
+			"/Scripts/integration-point/time-utils.js",
+			"/Scripts/integration-point/picker.js",
+			"/Scripts/Export/export-validation.js",
+			"/Scripts/integration-point/save-as-profile-modal-vm.js",
+			"/Scripts/jquery.signalR-2.3.0.js",
+			"/signalr/hubs",
+			"/Scripts/hubs/integrationPointHub.js",
+			"/Scripts/EventHandlers/integration-points-view-destination.js",
+			"/Scripts/EventHandlers/integration-points-summary-page-view.js"
+		};
+
+		private readonly List<string> _hubAndSignalrScripts = new List<string>
+		{
+			"/Scripts/jquery.signalR-2.3.0.js",
+			"/signalr/hubs",
+			"/Scripts/hubs/integrationPointHub.js",
+		};
 
 		[SetUp]
 		public void SetUp()
@@ -21,84 +56,33 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
 			_scriptsHelper = new Mock<IScriptsHelper>();
 			_integrationPointBaseFieldGuidsConstants = new Mock<IIntegrationPointBaseFieldGuidsConstants>();
 
-			_instance = new CommonScripts(_scriptsHelper.Object, _integrationPointBaseFieldGuidsConstants.Object);
+			_sut = new CommonScripts(_scriptsHelper.Object, _integrationPointBaseFieldGuidsConstants.Object);
 		}
 
 		[Test]
-		public void ItShouldReturnListOfLinkedScriptsWithSignalrAndHub()
+		public void ItShouldReturnAllScriptsFroIntegrationPointPage()
 		{
 			//Arrange
-			_scriptsHelper.Setup(x => x.GetAPIControllerName()).Returns("IntegrationPointsAPI");
+			_scriptsHelper.Setup(x => x.GetAPIControllerName()).Returns(_INTEGRATION_POINTS_CONTROLLER_NAME);
 
 			//Act
-			IList<string> listOfLinkedScripts = _instance.LinkedScripts();
+			IList<string> listOfLinkedScripts = _sut.LinkedScripts();
 
 			//Assert
-			listOfLinkedScripts.Count.Should().Be(19);
-			listOfLinkedScripts.Should().Equal(listWithAllScripts());
+			listOfLinkedScripts.Should().Equal(_listWithAllScripts);
 		}
 
 		[Test]
-		public void ItShouldReturnListOfLinkedScriptsWithoutSignalrAndHub()
+		public void ItShouldReturnAllScriptsFroIntegrationPointProfilePage()
 		{
 			//Arrange
-			_scriptsHelper.Setup(x => x.GetAPIControllerName()).Returns("IntegrationPointProfilesAPI");
+			_scriptsHelper.Setup(x => x.GetAPIControllerName()).Returns(_INTEGRATION_POINTS_PROFILE_CONTROLLER_NAME);
 
 			//Act
-			IList<string> listOfLinkedScripts = _instance.LinkedScripts();
+			IList<string> listOfLinkedScripts = _sut.LinkedScripts();
 
 			//Assert
-			listOfLinkedScripts.Count.Should().Be(16);
-			listOfLinkedScripts.Should().Equal(listWithoutHubAndSignalrSCripts());
-		}
-
-		public IList<string> listWithAllScripts()
-		{
-			return new List<string>
-			{
-				"/Scripts/knockout-3.4.0.js",
-				"/Scripts/knockout.validation.js",
-				"/Scripts/route.js",
-				"/Scripts/date.js",
-				"/Scripts/q.js",
-				"/Scripts/core/messaging.js",
-				"/Scripts/loading-modal.js",
-				"/Scripts/dragon/dragon-dialogs.js",
-				"/Scripts/core/data.js",
-				"/Scripts/core/utils.js",
-				"/Scripts/integration-point/time-utils.js",
-				"/Scripts/integration-point/picker.js",
-				"/Scripts/Export/export-validation.js",
-				"/Scripts/integration-point/save-as-profile-modal-vm.js",
-				"/Scripts/jquery.signalR-2.3.0.js",
-				"/signalr/hubs",
-				"/Scripts/hubs/integrationPointHub.js",
-				"/Scripts/EventHandlers/integration-points-view-destination.js",
-				"/Scripts/EventHandlers/integration-points-summary-page-view.js"
-			};
-		}
-
-		public IList<string> listWithoutHubAndSignalrSCripts()
-		{
-			return new List<string>
-			{
-				"/Scripts/knockout-3.4.0.js",
-				"/Scripts/knockout.validation.js",
-				"/Scripts/route.js",
-				"/Scripts/date.js",
-				"/Scripts/q.js",
-				"/Scripts/core/messaging.js",
-				"/Scripts/loading-modal.js",
-				"/Scripts/dragon/dragon-dialogs.js",
-				"/Scripts/core/data.js",
-				"/Scripts/core/utils.js",
-				"/Scripts/integration-point/time-utils.js",
-				"/Scripts/integration-point/picker.js",
-				"/Scripts/Export/export-validation.js",
-				"/Scripts/integration-point/save-as-profile-modal-vm.js",
-				"/Scripts/EventHandlers/integration-points-view-destination.js",
-				"/Scripts/EventHandlers/integration-points-summary-page-view.js"
-			};
+			listOfLinkedScripts.Should().Equal(_listWithAllScripts.Where(x => !_hubAndSignalrScripts.Contains(x)).ToList());
 		}
 	}
 }
