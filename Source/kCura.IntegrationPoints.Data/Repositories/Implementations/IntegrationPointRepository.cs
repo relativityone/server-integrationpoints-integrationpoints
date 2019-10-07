@@ -50,6 +50,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return ReadAsync(integrationPointArtifactID, IntegrationPointQueryOptions.All().Decrypted().WithFieldMapping());
 		}
 
+		public Task<IntegrationPoint> ReadEncryptedAsync(int integrationPointArtifactID)
+		{
+			return ReadAsync(integrationPointArtifactID, IntegrationPointQueryOptions.All());
+		}
+
 		public async Task<IEnumerable<FieldMap>> GetFieldMappingAsync(int integrationPointArtifactID)
 		{
 			IEnumerable<FieldMap> fieldMapping = new List<FieldMap>();

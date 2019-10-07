@@ -173,7 +173,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 					_stateManager, permissionRepository, _permissionValidator, integrationPointRepository);
 
 				IntegrationPoint integrationPoint = await integrationPointRepository
-					.ReadWithFieldMappingAsync(key.IntegrationPointId)
+					.ReadEncryptedAsync(key.IntegrationPointId)
 					.ConfigureAwait(false);
 
 				ProviderType providerType = providerTypeService.GetProviderType(

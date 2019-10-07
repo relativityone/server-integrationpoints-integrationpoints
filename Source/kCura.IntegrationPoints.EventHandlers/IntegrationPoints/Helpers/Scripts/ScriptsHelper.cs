@@ -6,7 +6,7 @@ using kCura.IntegrationPoints.Data.Extensions;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Scripts
 {
-	public class ScriptsHelper
+	public class ScriptsHelper : IScriptsHelper
 	{
 		private readonly string _apiControllerName;
 		private readonly ICaseServiceContext _context;
