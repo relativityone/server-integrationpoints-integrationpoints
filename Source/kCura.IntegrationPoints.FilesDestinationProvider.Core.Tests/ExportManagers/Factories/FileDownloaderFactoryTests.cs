@@ -2,7 +2,6 @@
 using FluentAssertions;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers.Factories;
 using kCura.WinEDDS;
-using kCura.WinEDDS.Service.Export;
 using NUnit.Framework;
 using Relativity.DataExchange.Service;
 
@@ -12,29 +11,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 	public class FileDownloaderFactoryTests
 	{
 		private const string _DOWNLOAD_HANDLER_URL = "http://relativity.com/download";
-
-		[Test]
-		public void ShouldReturnInstanceOfFileDownloader()
-		{
-			// arrange
-			var exportFile = new ExportFile(0)
-			{
-				CaseInfo = new CaseInfo()
-				{
-					DownloadHandlerURL = _DOWNLOAD_HANDLER_URL,
-					DocumentPath = string.Empty,
-					ArtifactID = 0
-				}
-			};
-
-			var sut = new FileDownloaderFactory();
-
-			// act
-			IExportFileDownloader actualResult = sut.Create(exportFile);
-
-			// assert
-			actualResult.Should().BeOfType<FileDownloader>();
-		}
 
 		[TestCase("abc", 4332, @"abc\EDDS4332")]
 		[TestCase(@"abc\xyz", 0, @"abc\xyz\EDDS0")]

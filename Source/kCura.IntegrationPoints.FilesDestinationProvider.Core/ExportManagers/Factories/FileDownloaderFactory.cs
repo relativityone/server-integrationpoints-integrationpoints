@@ -2,7 +2,6 @@
 using System.IO;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Service.Export;
-using Relativity;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers.Factories
 {
