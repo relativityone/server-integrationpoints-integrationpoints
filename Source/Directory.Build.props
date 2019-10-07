@@ -1,8 +1,4 @@
 <Project>
-	<PropertyGroup>
-		<CodeAnalysisRuleSet>../rulesets/SyncRules.ruleset</CodeAnalysisRuleSet>
-	</PropertyGroup>
-
 	<ItemGroup>
 		<Compile Include="..\AssemblyInfo.InternalsVisibileTo.cs" Link="Properties\AssemblyInfo.InternalsVisibileTo.cs" />
 	</ItemGroup>
