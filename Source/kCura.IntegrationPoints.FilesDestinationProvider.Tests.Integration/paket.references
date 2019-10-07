@@ -11,6 +11,7 @@ Relativity.Services.Interfaces
 Relativity.Telemetry.MetricsCollection
 Relativity.Productions.Services.Interfaces
 Relativity.Toggles
+System.Reactive
 
 group TestPackages
 	NUnit
