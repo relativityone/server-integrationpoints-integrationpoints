@@ -1,6 +1,6 @@
 ﻿using System;
 using kCura.IntegrationPoints.Contracts.Provider;
-using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.SourceProviderInstaller;
 
 namespace JsonLoader
 {

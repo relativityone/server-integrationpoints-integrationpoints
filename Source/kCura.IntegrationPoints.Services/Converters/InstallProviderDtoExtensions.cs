@@ -1,4 +1,5 @@
 ﻿using kCura.IntegrationPoints.Contracts;
+using kCura.IntegrationPoints.Contracts.Internals;
 
 namespace kCura.IntegrationPoints.Services.Converters
 {

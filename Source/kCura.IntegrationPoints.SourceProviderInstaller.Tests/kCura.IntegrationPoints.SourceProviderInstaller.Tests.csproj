@@ -48,6 +48,10 @@
     <Compile Include="Internals\IntegrationPointSourceProviderUninstallerInternalTests.cs" />
     <Compile Include="Internals\KeplerRequestHelperTests.cs" />
     <Compile Include="Internals\KeplerSourceProviderInstallerTests.cs" />
+    <Compile Include="Wrappers\CrossAppDomainDataReaderWrapperTests.cs" />
+    <Compile Include="Wrappers\CrossAppDomainProviderWrapperTests.cs" />
+    <Compile Include="Wrappers\SafeDisposingDataReaderWrapperTests.cs" />
+    <Compile Include="Wrappers\SafeDisposingProviderWrapperTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="paket.references" />

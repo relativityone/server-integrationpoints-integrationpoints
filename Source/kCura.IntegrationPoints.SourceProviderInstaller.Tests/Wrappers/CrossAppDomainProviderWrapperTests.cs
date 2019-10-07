@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Runtime.Remoting;
-using System.Text;
-using System.Threading.Tasks;
 using FluentAssertions;
+using kCura.IntegrationPoints.Contracts;
+using kCura.IntegrationPoints.Contracts.Internals;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
-using kCura.IntegrationPoints.Domain.Wrappers;
+using kCura.IntegrationPoints.SourceProviderInstaller.Internals.Wrappers;
 using Moq;
 using NUnit.Framework;
 
-namespace kCura.IntegrationPoints.Domain.Tests.Wrappers
+namespace kCura.IntegrationPoints.SourceProviderInstaller.Tests.Wrappers
 {
 	[TestFixture]
 	public class CrossAppDomainProviderWrapperTests
