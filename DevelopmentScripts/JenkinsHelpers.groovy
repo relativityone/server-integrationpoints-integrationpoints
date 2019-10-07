@@ -665,7 +665,8 @@ def switchSyncToggle(toggleValue)
 	'''
 }
 
-def importRAP(){
+def importRAP()
+{
 	withCredentials([usernamePassword(credentialsId: 'RelativityAdmin', passwordVariable: 'relativityPassword', usernameVariable: 'relativityUserName')])
 	{
 		def command = """. ./DevelopmentScripts/importRap.ps1 -ServerName "${ripPipelineState.sut.name}" -RAPPath "./Applications/RelativityIntegrationPoints.Auto.rap" -AdminUserName "${relativityUserName}" -AdminPwd "${relativityPassword}" """
@@ -675,7 +676,8 @@ def importRAP(){
 	}
 }
 
-def downloadRAPTools(){
+def downloadRAPTools()
+{
 	withCredentials([usernamePassword(credentialsId: 'proget_ci', passwordVariable: 'ProgetPassword', usernameVariable: 'ProgetUserName')])
 	{
 		def command = "./DevelopmentScripts/importRapTools.ps1"
