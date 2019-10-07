@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
 		private const string _INTEGRATION_POINTS_CONTROLLER_NAME = "IntegrationPointsAPI";
 		private const string _INTEGRATION_POINTS_PROFILE_CONTROLLER_NAME = "IntegrationPointProfilesAPI";
 
-		private readonly List<string> _listWithAllScripts = new List<string>
+		private readonly List<string> _allScripts = new List<string>
 		{
 			"/Scripts/knockout-3.4.0.js",
 			"/Scripts/knockout.validation.js",
@@ -66,10 +66,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
 			_scriptsHelper.Setup(x => x.GetAPIControllerName()).Returns(_INTEGRATION_POINTS_CONTROLLER_NAME);
 
 			//Act
-			IList<string> listOfLinkedScripts = _sut.LinkedScripts();
+			IList<string> linkedScripts = _sut.LinkedScripts();
 
 			//Assert
-			listOfLinkedScripts.Should().Equal(_listWithAllScripts);
+			linkedScripts.Should().Equal(_allScripts);
 		}
 
 		[Test]
@@ -79,10 +79,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
 			_scriptsHelper.Setup(x => x.GetAPIControllerName()).Returns(_INTEGRATION_POINTS_PROFILE_CONTROLLER_NAME);
 
 			//Act
-			IList<string> listOfLinkedScripts = _sut.LinkedScripts();
+			IList<string> linkedScripts = _sut.LinkedScripts();
 
 			//Assert
-			listOfLinkedScripts.Should().Equal(_listWithAllScripts.Where(x => !_hubAndSignalrScripts.Contains(x)).ToList());
+			linkedScripts.Should().Equal(_allScripts.Except(_hubAndSignalrScripts));
 		}
 	}
 }
