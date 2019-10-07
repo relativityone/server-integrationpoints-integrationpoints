@@ -1137,6 +1137,7 @@ private unstashPackageOnlyArtifacts()
 
 private stashTestsOnlyArtifacts()
 {
+	stash allowEmpty: true, includes: 'DevelopmentScripts/RAPTools/**', name: 'rapTools'
 	stash includes: 'lib/UnitTests/**', name: 'testdlls'
 	stash includes: 'DynamicallyLoadedDLLs/Search-Standard/*', name: 'dynamicallyLoadedDLLs'
 	stash includes: 'Applications/*.rap', name: 'applicationRaps'
@@ -1147,6 +1148,7 @@ private stashTestsOnlyArtifacts()
 
 private unstashTestsOnlyArtifacts()
 {
+	unstash 'rapTools'
 	unstash 'testdlls'
 	unstash 'dynamicallyLoadedDLLs'
 	unstash 'applicationRaps'
