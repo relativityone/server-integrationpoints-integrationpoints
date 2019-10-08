@@ -71,7 +71,12 @@ properties([
 			name: 'enableCheckConfigureAwait',
 			defaultValue: true,
 			description: 'Enable checking if configureAwait is present everywhere it needs to be.'
-		)
+		),
+		booleanParam(
+            name: 'importBuiltRAP', 
+            defaultValue: true, 
+            description: 'Check if you want to deploy built Integration Points RAP'
+        )
 	])
 ])
 
@@ -178,10 +183,11 @@ timestamps
 					{
 						withEnv([
 							"UITestsBrowser=$params.UITestsBrowser"
-							]) {
+						]) 
+						{
 							jenkinsHelpers.downloadAndSetUpBrowser()
 							jenkinsHelpers.runUiTests()
-							}
+						}
 					}
 				}
 				finally

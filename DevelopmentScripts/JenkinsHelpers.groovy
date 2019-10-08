@@ -665,25 +665,6 @@ def switchSyncToggle(toggleValue)
 	'''
 }
 
-def importRAP(){
-	withCredentials([usernamePassword(credentialsId: 'RelativityAdmin', passwordVariable: 'relativityPassword', usernameVariable: 'relativityUserName')])
-	{
-		def command = """. ./DevelopmentScripts/importRap.ps1 -ServerName "${ripPipelineState.sut.name}" -RAPPath "./Applications/RelativityIntegrationPoints.Auto.rap" -AdminUserName "${relativityUserName}" -AdminPwd "${relativityPassword}" """
-		def result = powershell returnStdout: true, script: command
-		
-		echo "Imported RIP RAP: $result."
-	}
-}
-
-def downloadRAPTools(){
-	withCredentials([usernamePassword(credentialsId: 'proget_ci', passwordVariable: 'ProgetPassword', usernameVariable: 'ProgetUserName')])
-	{
-		def command = "./DevelopmentScripts/importRapTools.ps1"
-		powershell returnStdout: true, script: command
-	}
-}
-
-
 /*****************
  **** PRIVATE ****
 /*****************
@@ -1011,10 +992,16 @@ private getTestsFilter(testType, params)
  */
 private runTests(testType, params)
 {
-	configureNunitTests(ripPipelineState.sut)
-	def cmdOptions = testCmdOptions(testType)
-	def currentFilter = getTestsFilter(testType, params)
-	def result = powershell returnStatus: true, script: "./build.ps1 -ci -sk $cmdOptions \"\"\"$currentFilter\"\"\""
+	withEnv([
+		"JenkinsUseIPRapFile=$params.importBuiltRAP"
+	])
+	{
+		echo "Value of JenkinsUseIPRapFile: $params.importBuiltRAP"
+		configureNunitTests(ripPipelineState.sut)
+		def cmdOptions = testCmdOptions(testType)
+		def currentFilter = getTestsFilter(testType, params)
+		def result = powershell returnStatus: true, script: "./build.ps1 -ci -sk $cmdOptions \"\"\"$currentFilter\"\"\""
+	}
 	return result
 }
 
@@ -1135,7 +1122,6 @@ private unstashPackageOnlyArtifacts()
 
 private stashTestsOnlyArtifacts()
 {
-	stash allowEmpty: true, includes: 'DevelopmentScripts/RAPTools/**', name: 'rapTools'
 	stash includes: 'lib/UnitTests/**', name: 'testdlls'
 	stash includes: 'DynamicallyLoadedDLLs/Search-Standard/*', name: 'dynamicallyLoadedDLLs'
 	stash includes: 'Applications/*.rap', name: 'applicationRaps'
@@ -1146,7 +1132,6 @@ private stashTestsOnlyArtifacts()
 
 private unstashTestsOnlyArtifacts()
 {
-	unstash 'rapTools'
 	unstash 'testdlls'
 	unstash 'dynamicallyLoadedDLLs'
 	unstash 'applicationRaps'
