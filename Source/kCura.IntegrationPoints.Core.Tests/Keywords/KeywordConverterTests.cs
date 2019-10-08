@@ -28,12 +28,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Keywords
 			{
 				new mockKeyword(keyword, Environment.NewLine + "Great")
 			};
-			KeywordFactory keywordFactory = new KeywordFactory(keywords);
-			KeywordConverter keywordConverter = new KeywordConverter(_helper, keywordFactory);
+			EmailFormatter emailFormatter = new EmailFormatter(_helper, keywords);
 
 
 			//ACT
-			string output = keywordConverter.Convert(input);
+			string output = emailFormatter.Format(input);
 
 
 			//ASSERT
@@ -52,12 +51,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Keywords
 				new mockKeyword(keyword, string.Empty)
 			};
 
-			KeywordFactory keywordFactory = new KeywordFactory(keywords);
-			KeywordConverter keywordConverter = new KeywordConverter(_helper, keywordFactory);
+			EmailFormatter emailFormatter = new EmailFormatter(_helper, keywords);
 
 
 			//ACT
-			string output = keywordConverter.Convert(input);
+			string output = emailFormatter.Format(input);
 
 
 			//ASSERT
@@ -74,12 +72,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Keywords
 			{
 				new mockKeyword(keyword, string.Empty)
 			};
-			KeywordFactory keywordFactory = new KeywordFactory(keywords);
-			KeywordConverter keywordConverter = new KeywordConverter(_helper, keywordFactory);
+			EmailFormatter emailFormatter = new EmailFormatter(_helper, keywords);
 
 
 			//ACT
-			string output = keywordConverter.Convert(input);
+			string output = emailFormatter.Format(input);
 
 
 			//ASSERT
@@ -98,12 +95,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Keywords
 				new mockKeyword(keyword, string.Empty)
 			};
 
-			KeywordFactory keywordFactory = new KeywordFactory(keywords);
-			KeywordConverter keywordConverter = new KeywordConverter(_helper, keywordFactory);
+			EmailFormatter emailFormatter = new EmailFormatter(_helper, keywords);
 
 
 			//ACT
-			string output = keywordConverter.Convert(input);
+			string output = emailFormatter.Format(input);
 
 
 			//ASSERT

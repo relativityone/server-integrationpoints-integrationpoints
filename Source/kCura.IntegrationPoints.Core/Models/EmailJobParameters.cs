@@ -2,7 +2,7 @@
 
 namespace kCura.IntegrationPoints.Core.Models
 {
-	public class EmailMessage
+	public class EmailJobParameters
 	{
 		public string Subject { get; set; }
 		public string MessageBody { get; set; }

@@ -86,7 +86,6 @@ namespace kCura.IntegrationPoints.Agent
 						ripContainerForSync.Register(Castle.MicroKernel.Registration.Component.For<IExtendedJob>().ImplementedBy<ExtendedJob>());
 						ripContainerForSync.Register(Castle.MicroKernel.Registration.Component.For<RelativitySyncAdapter>().ImplementedBy<RelativitySyncAdapter>());
 						ripContainerForSync.Register(Castle.MicroKernel.Registration.Component.For<IWindsorContainer>().Instance(ripContainerForSync));
-						ripContainerForSync.Register(Castle.MicroKernel.Registration.Component.For<ISendEmailWorker>().UsingFactoryMethod(k => k.Resolve<SendEmailWorker>()));
 						ripContainerForSync.Register(Castle.MicroKernel.Registration.Component.For<IExportServiceManager>().ImplementedBy<ExportServiceManager>().Named(Guid.NewGuid().ToString()).IsDefault());
 						ripContainerForSync.Register(Castle.MicroKernel.Registration.Component.For<IntegrationPointToSyncConverter>().ImplementedBy<IntegrationPointToSyncConverter>());
 

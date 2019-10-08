@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Security.Authentication;
+using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Domain.Exceptions;

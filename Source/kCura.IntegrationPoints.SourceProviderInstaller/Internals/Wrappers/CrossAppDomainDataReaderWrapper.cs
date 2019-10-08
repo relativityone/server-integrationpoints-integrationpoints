@@ -2,12 +2,12 @@
 using System.Data;
 using System.Runtime.Remoting;
 
-namespace kCura.IntegrationPoints.Domain.Wrappers
+namespace kCura.IntegrationPoints.SourceProviderInstaller.Internals.Wrappers
 {
 	/// <summary>
 	/// This class wraps <see cref="IDataReader"/> from another AppDomain
 	/// <see cref="CrossAppDomainDataReaderWrapper"/> objects shouldn't be used directly in parent's AppDomain because of issues
-	/// with multiple calls to <see cref="Dispose"/>. Proxy in parent AppDomain tries to call Dispose in child AppDomain
+	/// with multiple calls to <see cref="Dispose()"/>. Proxy in parent AppDomain tries to call Dispose in child AppDomain
 	/// but this objects was already disposed there, so <see cref="ObjectDisposedException"/> is thrown. Instead we should
 	/// use <see cref="SafeDisposingDataReaderWrapper"/> which guarantees proper IDisposable implementation.
 	/// </summary>

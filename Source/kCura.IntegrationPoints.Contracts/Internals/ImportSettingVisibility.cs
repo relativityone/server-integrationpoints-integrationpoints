@@ -1,10 +1,17 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace kCura.IntegrationPoints.Contracts
+namespace kCura.IntegrationPoints.Contracts.Internals
 {
+	/// <summary>
+	/// This type is only for internal use in Integration Points.
+	/// </summary>
+	///
+	/// This class is public because we do not want to add 'Internals Visible To' to many projects
+	/// since it would force us to generate new sdk every time we would want to use it in new project.
+	/// https://einstein.kcura.com/display/DV/Internal+classes+in+RIP+SDK
 	[DataContract]
-	internal class ImportSettingVisibility
+	public class ImportSettingVisibility
 	{
 		[NonSerialized]
 		private bool _allowUserToMapNativeFileField = true;

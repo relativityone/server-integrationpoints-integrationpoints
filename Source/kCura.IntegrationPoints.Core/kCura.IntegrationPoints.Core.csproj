@@ -84,6 +84,7 @@
     <Compile Include="Factories\IExportServiceObserversFactory.cs" />
     <Compile Include="Factories\Implementations\ExportServiceObserversFactory.cs" />
     <Compile Include="Installers\Registrations\SecretStoreMigrationRegistration.cs" />
+    <Compile Include="Models\EmailJobParameters.cs" />
     <Compile Include="Provider\Internals\ApplicationGuidFinder.cs" />
     <Compile Include="Provider\Internals\DataProviderFactoryFactory.cs" />
     <Compile Include="Provider\Internals\IApplicationGuidFinder.cs" />
@@ -106,6 +107,7 @@
     <Compile Include="Services\Exporter\Sanitization\SingleChoiceFieldSanitizer.cs" />
     <Compile Include="Services\Exporter\Sanitization\SingleObjectFieldSanitizer.cs" />
     <Compile Include="Services\ISecretStoreMigrationService.cs" />
+    <Compile Include="Services\Keywords\IEmailFormatter.cs" />
     <Compile Include="Services\SecretStoreMigrationService.cs" />
     <Compile Include="Services\SourceTypes\SourceType.cs" />
     <Compile Include="Tagging\ISourceDocumentsTagger.cs" />
@@ -260,7 +262,6 @@
     <Compile Include="Managers\IObjectTypeManager.cs" />
     <Compile Include="Managers\IStateManager.cs" />
     <Compile Include="Managers\IWorkspaceManager.cs" />
-    <Compile Include="Models\EmailMessage.cs" />
     <Compile Include="Models\ExportSettings.cs" />
     <Compile Include="Models\ImportType.cs" />
     <Compile Include="Models\IntegrationPointModelBase.cs" />
@@ -392,8 +393,7 @@
     <Compile Include="Services\JobTracker.cs" />
     <Compile Include="Services\Keywords\ErrorKeyword.cs" />
     <Compile Include="Services\Keywords\IKeyword.cs" />
-    <Compile Include="Services\Keywords\KeywordConverter.cs" />
-    <Compile Include="Services\Keywords\KeywordFactory.cs" />
+    <Compile Include="Services\Keywords\EmailFormatter.cs" />
     <Compile Include="Services\Keywords\DestinationEmailBodyDataKeyword.cs" />
     <Compile Include="Services\Keywords\SourceEmailBodyDataKeyword.cs" />
     <Compile Include="Services\Keywords\RipNameKeyword.cs" />
@@ -496,6 +496,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
       <Project>{5d5b52b4-8769-431a-9743-b96f15fed5fd}</Project>
       <Name>kCura.IntegrationPoints.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.SourceProviderInstaller\kCura.IntegrationPoints.SourceProviderInstaller.csproj">
+      <Project>{FCAF52CD-0F8F-4D71-AC61-B7591A181A08}</Project>
+      <Name>kCura.IntegrationPoints.SourceProviderInstaller</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
       <Project>{b91cc4ed-abf3-4409-8df3-46a3c26eb4aa}</Project>

@@ -62,10 +62,6 @@
     <Compile Include="Models\SourceWorkspaceDTOTests.cs" />
     <Compile Include="StackOfDisposablesTests.cs" />
     <Compile Include="Utils\WorkspaceAndJobNameUtilsTests.cs" />
-    <Compile Include="Wrappers\CrossAppDomainDataReaderWrapperTests.cs" />
-    <Compile Include="Wrappers\SafeDisposingDataReaderWrapperTests.cs" />
-    <Compile Include="Wrappers\CrossAppDomainProviderWrapperTests.cs" />
-    <Compile Include="Wrappers\SafeDisposingProviderWrapperTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -83,6 +79,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
+    <Folder Include="Wrappers\" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

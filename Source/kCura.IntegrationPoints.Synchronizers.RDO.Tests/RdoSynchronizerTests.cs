@@ -18,6 +18,7 @@ using Relativity.API;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Contracts.Internals;
 using Artifact = kCura.Relativity.Client.Artifact;
 using Assert = NUnit.Framework.Assert;
 using Constants = kCura.IntegrationPoints.Domain.Constants;
