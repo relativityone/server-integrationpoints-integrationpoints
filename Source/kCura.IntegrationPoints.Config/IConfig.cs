@@ -25,6 +25,11 @@ namespace kCura.IntegrationPoints.Config
 		int BatchSize { get; }
 
 		/// <summary>
+		/// Timeout for Relativity Web API.
+		/// </summary>
+		TimeSpan? RelativityWebApiTimeout { get; }
+
+		/// <summary>
 		/// Throttling value for metrics
 		/// </summary>
 		TimeSpan MetricsThrottling { get; }
