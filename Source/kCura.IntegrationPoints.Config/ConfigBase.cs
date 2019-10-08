@@ -7,11 +7,18 @@ namespace kCura.IntegrationPoints.Config
 {
 	public abstract class ConfigBase
 	{
-		protected Lazy<IDictionary> _instanceSettings;
+		protected readonly Lazy<IDictionary> _instanceSettings;
 
 		protected ConfigBase()
 		{
 			_instanceSettings = new Lazy<IDictionary>(ReadInstanceSettings);
+		}
+
+		protected T GetValue<T>(string instanceSettingName)
+		{
+			object instanceSetting = _instanceSettings.Value[instanceSettingName];
+			T value = ConfigHelper.GetValue<T>(instanceSetting);
+			return value;
 		}
 
 		protected T GetValue<T>(string instanceSettingName, T defaultValue)
