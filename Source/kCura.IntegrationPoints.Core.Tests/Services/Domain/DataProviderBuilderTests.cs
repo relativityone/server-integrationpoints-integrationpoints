@@ -3,10 +3,11 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core.Services.Domain;
-using kCura.IntegrationPoints.Domain.Wrappers;
 using Moq;
 using NUnit.Framework;
 using System;
+using kCura.IntegrationPoints.Contracts.Internals;
+using kCura.IntegrationPoints.SourceProviderInstaller.Internals.Wrappers;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.Domain
 {

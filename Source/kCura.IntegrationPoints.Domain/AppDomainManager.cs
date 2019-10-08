@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Contracts;
+using kCura.IntegrationPoints.SourceProviderInstaller;
+using kCura.IntegrationPoints.SourceProviderInstaller.Internals;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Domain

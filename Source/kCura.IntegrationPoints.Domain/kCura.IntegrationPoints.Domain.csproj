@@ -60,12 +60,10 @@
     </Compile>
     <Compile Include="ApplicationBinary.cs" />
     <Compile Include="AssemblyDomainLoader.cs" />
-    <Compile Include="AssemblyExtension.cs" />
     <Compile Include="Authentication\IAuthTokenGenerator.cs" />
     <Compile Include="Authentication\ClaimsTokenGenerator.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="CurrentUser.cs" />
-    <Compile Include="Wrappers\CrossAppDomainDataReaderWrapper.cs" />
     <Compile Include="DefaultProviderFactory.cs" />
     <Compile Include="AppDomainHelper.cs" />
     <Compile Include="Exceptions\IntegrationPointsException.cs" />
@@ -77,7 +75,6 @@
     <Compile Include="Extensions\IAPILogExtensions.cs" />
     <Compile Include="IAppDomainHelper.cs" />
     <Compile Include="IAppDomainManager.cs" />
-    <Compile Include="IEmailBodyData.cs" />
     <Compile Include="InternalProviderFactory.cs" />
     <Compile Include="IPermissionValidator.cs" />
     <Compile Include="IPluginProvider.cs" />
@@ -125,10 +122,6 @@
     <Compile Include="Models\ViewDTO.cs" />
     <Compile Include="Models\WorkspaceDTO.cs" />
     <Compile Include="AppDomainManager.cs" />
-    <Compile Include="ProviderFactoryBase.cs" />
-    <Compile Include="Wrappers\SafeDisposingDataReaderWrapper.cs" />
-    <Compile Include="Wrappers\IProviderAggregatedInterfaces.cs" />
-    <Compile Include="Wrappers\CrossAppDomainProviderWrapper.cs" />
     <Compile Include="Readers\DataColumnWithValue.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -141,10 +134,10 @@
     <Compile Include="Synchronizer\IDataSynchronizer.cs" />
     <Compile Include="Utils\WorkspaceAndJobNameUtils.cs" />
     <Compile Include="WindsorContainerSetup.cs" />
-    <Compile Include="Wrappers\SafeDisposingProviderWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
+    <Folder Include="Wrappers\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -155,6 +148,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
       <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>
       <Name>kCura.IntegrationPoints.Contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.SourceProviderInstaller\kCura.IntegrationPoints.SourceProviderInstaller.csproj">
+      <Project>{FCAF52CD-0F8F-4D71-AC61-B7591A181A08}</Project>
+      <Name>kCura.IntegrationPoints.SourceProviderInstaller</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

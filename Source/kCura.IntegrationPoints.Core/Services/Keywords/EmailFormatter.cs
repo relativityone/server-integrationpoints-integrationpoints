@@ -1,32 +1,33 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Services.Keywords
 {
-	public class KeywordConverter
+	public class EmailFormatter : IEmailFormatter
 	{
-		private readonly KeywordFactory _factory;
+		private readonly IEnumerable<IKeyword> _keywords;
 		private readonly IAPILog _logger;
 
-		public KeywordConverter(IHelper helper, KeywordFactory factory)
+		public EmailFormatter(IHelper helper, IEnumerable<IKeyword> keywords)
 		{
-			_factory = factory;
-			_logger = helper.GetLoggerFactory().GetLogger().ForContext<KeywordConverter>();
+			_keywords = keywords;
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<EmailFormatter>();
 		}
 
-		public string Convert(string textToConvert)
+		public string Format(string textToFormat)
 		{
-			string returnValue = textToConvert;
+			string returnValue = textToFormat;
 			if (string.IsNullOrEmpty(returnValue))
 			{
 				return returnValue;
 			}
-			var dictionary = _factory.GetKeywords().ToDictionary(x => x.KeywordName.ToUpperInvariant());
+			var dictionary = _keywords.ToDictionary(x => x.KeywordName.ToUpperInvariant());
 			var matchPattern = string.Join("|", dictionary.Keys);
 			var expression = new Regex(matchPattern, RegexOptions.IgnoreCase);
-			var matches = expression.Matches(textToConvert);
+			var matches = expression.Matches(textToFormat);
 			//only replace the keys found
 			foreach (Match match in matches)
 			{
@@ -42,7 +43,7 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
 				}
 				catch (Exception e)
 				{
-					LogConvertingError(textToConvert, e);
+					LogFormattingError(textToFormat, e);
 					//eat
 				}
 				if (!string.IsNullOrEmpty(replacementValue))
@@ -62,9 +63,9 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
 
 		#region Logging
 
-		private void LogConvertingError(string textToConvert, Exception e)
+		private void LogFormattingError(string textToFormat, Exception e)
 		{
-			_logger.LogError(e, "Error occurred during text convertion ({TextToConvert})", textToConvert);
+			_logger.LogError(e, "Error occurred during text formatting ({textToFormat})", textToFormat);
 		}
 
 		#endregion

@@ -56,7 +56,6 @@
     <Compile Include="TestingAgent.cs" />
     <Compile Include="ExportServiceManagerTests.cs" />
     <Compile Include="RelativityProvider_ImportNativeFileCopyModeTests.cs" />
-    <Compile Include="SendEmailManagerTests.cs" />
     <Compile Include="TaskFactoryTestsForOtherProviders.cs" />
   </ItemGroup>
   <ItemGroup>

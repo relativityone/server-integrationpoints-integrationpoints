@@ -2,7 +2,9 @@
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Contracts.Provider;
-using kCura.IntegrationPoints.Domain.Wrappers;
+using kCura.IntegrationPoints.Domain.Exceptions;
+using kCura.IntegrationPoints.SourceProviderInstaller;
+using kCura.IntegrationPoints.SourceProviderInstaller.Internals.Wrappers;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Domain
@@ -27,10 +29,10 @@ namespace kCura.IntegrationPoints.Domain
 		}
 
 		/// <summary>
-        /// Creates a new instance of the provider type using the Activator with an empty constructor.
+		/// Creates a new instance of the provider type using the Activator with an empty constructor.
 		/// </summary>
 		/// <param name="providerType">The type of the provider to create.</param>
-        /// <returns>A new instance of a data source provider.</returns>
+		/// <returns>A new instance of a data source provider.</returns>
 		public override IDataSourceProvider CreateInstance(Type providerType)
 		{
 			IDataSourceProvider provider = null;
@@ -50,7 +52,7 @@ namespace kCura.IntegrationPoints.Domain
 			{
 				var message = string.Format(Contracts.Properties.Resources.CouldNotCreateProvider, providerType);
 				LogProviderCreationError(ex, message);
-			    throw new Exception(message);
+				throw new IntegrationPointsException(message);
 			}
 
 			return new CrossAppDomainProviderWrapper(provider);

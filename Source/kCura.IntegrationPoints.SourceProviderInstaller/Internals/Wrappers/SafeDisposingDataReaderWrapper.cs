@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Data;
 
-namespace kCura.IntegrationPoints.Domain.Wrappers
+namespace kCura.IntegrationPoints.SourceProviderInstaller.Internals.Wrappers
 {
 	/// <summary>
-	/// This wrapper guarantees that <see cref="Dispose"/> method on wrapped <see cref="IDataReader"/>
+	/// This wrapper guarantees that <see cref="Dispose()"/> method on wrapped <see cref="IDataReader"/>
 	/// object will not be called more than once
 	/// </summary>
 	/// <inheritdoc cref="IDataReader"/>
@@ -181,6 +181,7 @@ namespace kCura.IntegrationPoints.Domain.Wrappers
 		public void Dispose()
 		{
 			Dispose(true);
+			GC.SuppressFinalize(this);
 		}
 		#endregion
 	}

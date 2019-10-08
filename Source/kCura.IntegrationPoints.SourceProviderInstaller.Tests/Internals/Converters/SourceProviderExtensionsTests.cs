@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.SourceProviderInstaller.Internals.Converters;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using kCura.IntegrationPoints.Contracts.Internals;
 
 namespace kCura.IntegrationPoints.SourceProviderInstaller.Tests.Internals.Converters
 {

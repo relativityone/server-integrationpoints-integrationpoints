@@ -1,4 +1,6 @@
 ﻿using System;
+using FluentAssertions;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
@@ -11,8 +13,10 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
+using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core;
-using NSubstitute;
+using kCura.ScheduleQueue.Core.Core;
+using Moq;
 using NUnit.Framework;
 using Relativity.API;
 
@@ -21,55 +25,63 @@ namespace kCura.IntegrationPoints.Core.Tests
 	[TestFixture]
 	public class BatchEmailTests : TestBase
 	{
-		private BatchEmail _testInstance;
+		private BatchEmail _sut;
 
-		private ICaseServiceContext _caseServiceContext;
-		private IHelper _helper;
-		private IDataProviderFactory _dataProviderFactory = null;
-		private Apps.Common.Utils.Serializers.ISerializer _serializer = null;
-		private ISynchronizerFactory _appDomainRdoSynchronizerFactoryFactory = null;
-		private IJobHistoryService _jobHistoryService = null;
-		private JobHistoryErrorService _jobHistoryErrorService = null;
-		private IJobManager _jobManager = null;
-		private IJobStatusUpdater _jobStatusUpdater = null;
-		private KeywordConverter _converter = null;
-		private IManagerFactory _managerFactory;
-		private IJobService _jobService;
-		private IIntegrationPointRepository _integrationPointRepository;
+		private Mock<ICaseServiceContext> _caseServiceContextMock;
+		private Mock<IEmailFormatter> _emailFormatterMock;
+		private Mock<IHelper> _helperMock;
+		private Mock<IIntegrationPointRepository> _integrationPointRepositoryMock;
+		private Mock<IJobManager> _jobManagerMock;
+		private Mock<IJobService> _jobServiceMock;
+		private Mock<IJobStatusUpdater> _jobStatusUpdaterMock;
+		private Mock<IManagerFactory> _managerFactoryMock;
+		private Mock<IRelativityObjectManager> _objectManagerMock;
+		private Mock<IRSAPIService> _rsapiServiceMock;
 
-		private IRSAPIService _rsapiService;
-		private IRelativityObjectManager _objectManager;
+		private static object[] _generateEmailSource =
+		{
+			new object[] { JobStatusChoices.JobHistoryCompletedWithErrors, Properties.JobStatusMessages.JOB_COMPLETED_WITH_ERRORS_SUBJECT, Properties.JobStatusMessages.JOB_COMPLETED_WITH_ERRORS_BODY },
+			new object[] { JobStatusChoices.JobHistoryErrorJobFailed, Properties.JobStatusMessages.JOB_FAILED_SUBJECT, Properties.JobStatusMessages.JOB_FAILED_BODY },
+			new object[] { JobStatusChoices.JobHistoryStopped, Properties.JobStatusMessages.JOB_STOPPED_SUBJECT, Properties.JobStatusMessages.JOB_STOPPED_BODY },
+			new object[] { JobStatusChoices.JobHistoryCompleted, Properties.JobStatusMessages.JOB_COMPLETED_SUCCESS_SUBJECT, Properties.JobStatusMessages.JOB_COMPLETED_SUCCESS_BODY },
+		};
 
 		private const int _INTEGRATION_POINT_ID = 1337;
+		private readonly IDataProviderFactory _dataProviderFactory = null;
+		private readonly IJobHistoryService _jobHistoryService = null;
+		private readonly ISynchronizerFactory _appDomainRdoSynchronizerFactoryFactory = null;
+		private readonly JobHistoryErrorService _jobHistoryErrorService = null;
+		private readonly JSONSerializer _jsonSerializer = new JSONSerializer();
 
 		[SetUp]
 		public override void SetUp()
 		{
-			_helper = Substitute.For<IHelper>();
-			_caseServiceContext = Substitute.For<ICaseServiceContext>();
-			_rsapiService = Substitute.For<IRSAPIService>();
-			_objectManager = Substitute.For<IRelativityObjectManager>();
-			_managerFactory = Substitute.For<IManagerFactory>();
-			_jobService = Substitute.For<IJobService>();
-			_integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
+			_helperMock = new Mock<IHelper>(MockBehavior.Loose) { DefaultValue = DefaultValue.Mock };
+			_emailFormatterMock = new Mock<IEmailFormatter>();
+			_caseServiceContextMock = new Mock<ICaseServiceContext>();
+			_jobStatusUpdaterMock = new Mock<IJobStatusUpdater>();
+			_rsapiServiceMock = new Mock<IRSAPIService>();
+			_objectManagerMock = new Mock<IRelativityObjectManager>();
+			_managerFactoryMock = new Mock<IManagerFactory>();
+			_jobServiceMock = new Mock<IJobService>();
+			_integrationPointRepositoryMock = new Mock<IIntegrationPointRepository>();
+			_jobManagerMock = new Mock<IJobManager>();
+			_rsapiServiceMock.Setup(x => x.RelativityObjectManager).Returns(_objectManagerMock.Object);
+			_caseServiceContextMock.Setup(x => x.RsapiService).Returns(_rsapiServiceMock.Object);
 
-			_rsapiService.RelativityObjectManager.Returns(_objectManager);
-			_caseServiceContext.RsapiService.Returns(_rsapiService);
-
-
-			_testInstance = new BatchEmail(_caseServiceContext,
-				_helper,
-				_dataProviderFactory, 
-				_serializer, 
-				_appDomainRdoSynchronizerFactoryFactory, 
-				_jobHistoryService, 
-				_jobHistoryErrorService, 
-				_jobManager,
-				_jobStatusUpdater,
-				_converter,
-				_managerFactory,
-				_jobService,
-				_integrationPointRepository);
+			_sut = new BatchEmail(_caseServiceContextMock.Object,
+				_helperMock.Object,
+				_dataProviderFactory,
+				_jsonSerializer,
+				_appDomainRdoSynchronizerFactoryFactory,
+				_jobHistoryService,
+				_jobHistoryErrorService,
+				_jobManagerMock.Object,
+				_jobStatusUpdaterMock.Object,
+				_emailFormatterMock.Object,
+				_managerFactoryMock.Object,
+				_jobServiceMock.Object,
+				_integrationPointRepositoryMock.Object);
 		}
 
 		[Test]
@@ -78,34 +90,87 @@ namespace kCura.IntegrationPoints.Core.Tests
 			// ARRANGE
 			Job job = GetTestJob();
 
-			var integrationPoint = new Data.IntegrationPoint
+			Data.IntegrationPoint integrationPoint = new Data.IntegrationPoint
 			{
 				EmailNotificationRecipients = string.Empty,
 			};
 
-			_integrationPointRepository.ReadWithFieldMappingAsync(_INTEGRATION_POINT_ID).Returns(integrationPoint);
+			_integrationPointRepositoryMock.Setup(x => x.ReadWithFieldMappingAsync(_INTEGRATION_POINT_ID)).ReturnsAsync(integrationPoint);
 
 			// ACT + ASSERT
-			Assert.DoesNotThrow(()=> { _testInstance.OnJobComplete(job); }, "Sending of email logic should have been skipped");
+			Assert.DoesNotThrow(() =>
+			{
+				_sut.OnJobComplete(job);
+			}
+			, "Sending of email logic should have been skipped");
 		}
 
-		public static object[] GenerateEmailSource = new object[]
+		[Test]
+		public void OnJobComplete_Emails_Test()
 		{
-			new object[] { JobStatusChoices.JobHistoryCompletedWithErrors, Properties.JobStatusMessages.JOB_COMPLETED_WITH_ERRORS_SUBJECT, Properties.JobStatusMessages.JOB_COMPLETED_WITH_ERRORS_BODY },
-			new object[] { JobStatusChoices.JobHistoryErrorJobFailed, Properties.JobStatusMessages.JOB_FAILED_SUBJECT, Properties.JobStatusMessages.JOB_FAILED_BODY },
-			new object[] { JobStatusChoices.JobHistoryStopped, Properties.JobStatusMessages.JOB_STOPPED_SUBJECT, Properties.JobStatusMessages.JOB_STOPPED_BODY },
-			new object[] { JobStatusChoices.JobHistoryCompleted, Properties.JobStatusMessages.JOB_COMPLETED_SUCCESS_SUBJECT, Properties.JobStatusMessages.JOB_COMPLETED_SUCCESS_BODY },
-		};
+			//ARRANGE
+			string emailAddresses = "adr1@rip.com";
+			Data.IntegrationPoint integrationPoint = new Data.IntegrationPoint
+			{
+				EmailNotificationRecipients = emailAddresses,
+			};
 
-		[TestCaseSource(nameof(GenerateEmailSource))]
-		public void GenerateEmail(Relativity.Client.DTOs.Choice jobStatus, string expectedSubject, string expectedBody)
+			Job job = GetTestJob();
+			TaskParameters taskParameters = new TaskParameters
+			{
+				BatchInstance = Guid.NewGuid()
+			};
+			_jobStatusUpdaterMock
+				.Setup(x => x.GenerateStatus(It.IsAny<Guid>()))
+				.Returns(JobStatusChoices.JobHistoryCompleted);
+
+			_emailFormatterMock.Setup(x => x.Format(It.IsAny<string>())).Returns<string>(y => y);
+			string taskParametersSerialized = _jsonSerializer.Serialize(taskParameters);
+			job.JobDetails = taskParametersSerialized;
+
+			_integrationPointRepositoryMock.Setup(x => x.ReadWithFieldMappingAsync(_INTEGRATION_POINT_ID)).ReturnsAsync(integrationPoint);
+			//ACT
+			_sut.OnJobComplete(job);
+			//ASSERT
+			_jobManagerMock.Verify(x => x.CreateJob(job, It.IsAny<TaskParameters>(), TaskType.SendEmailWorker));
+		}
+
+		[Test]
+		public void EmailJobParametersShouldHaveTheSameBatchInstanceAsParentJob()
+		{
+			//ARRANGE
+			Data.IntegrationPoint integrationPoint = new Data.IntegrationPoint();
+			integrationPoint.EmailNotificationRecipients = "email@email.com";
+			_integrationPointRepositoryMock
+				.Setup(x => x.ReadWithFieldMappingAsync(It.IsAny<int>()))
+				.ReturnsAsync(integrationPoint);
+
+			Guid batchInstanceGuid = Guid.NewGuid();
+			string jobDetails = $"{{\"BatchInstance\":\"{batchInstanceGuid.ToString()}\"}}";
+			_jobStatusUpdaterMock.Setup(x => x.GenerateStatus(It.IsAny<Guid>()))
+				.Returns(Data.JobStatusChoices.JobHistoryCompletedWithErrors);
+			Job parentJob = GetTestJob();
+			parentJob.JobDetails = jobDetails;
+			//ACT
+			_sut.OnJobComplete(parentJob);
+
+			//ASSERT
+			_jobManagerMock.Verify(x => x.CreateJob(
+				parentJob,
+				It.Is<TaskParameters>(y => y.BatchInstance == batchInstanceGuid), TaskType.SendEmailWorker)
+			);
+		}
+
+		[TestCaseSource(nameof(_generateEmailSource))]
+		public void GenerateEmail(Choice jobStatus, string expectedSubject, string expectedBody)
 		{
 			// ACT
-			EmailMessage message = BatchEmail.GenerateEmail(jobStatus);
+			_emailFormatterMock.Setup(x => x.Format(It.IsAny<string>())).Returns<string>(y => y);
+			(string Subject, string MessageBody) jobParameters = _sut.GetEmailSubjectAndBodyForJobStatus(jobStatus);
 
 			// ASSERT
-			Assert.AreEqual(expectedSubject, message.Subject);
-			Assert.AreEqual(expectedBody, message.MessageBody);
+			jobParameters.Subject.Should().Be(expectedSubject);
+			jobParameters.MessageBody.Should().Be(expectedBody);
 		}
 
 		private Job GetTestJob()

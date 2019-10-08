@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Reflection;
 
-namespace kCura.IntegrationPoints.Contracts
+namespace kCura.IntegrationPoints.SourceProviderInstaller.Internals
 {
 	/// <summary>
 	/// A helper class reponsible for loading assemblies and their types.

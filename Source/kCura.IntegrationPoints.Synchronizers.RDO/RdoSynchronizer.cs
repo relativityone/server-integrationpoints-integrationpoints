@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using kCura.IntegrationPoints.Contracts;
+using kCura.IntegrationPoints.Contracts.Internals;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
@@ -41,7 +42,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		protected readonly IRelativityFieldQuery FieldQuery;
 
-		public SourceProvider SourceProvider { get; set; }
+		public Data.SourceProvider SourceProvider { get; set; }
 		private ImportSettings ImportSettings { get; set; }
 
 		private NativeFileImportService NativeFileImportService { get; set; }

@@ -1,11 +1,11 @@
-﻿using FluentAssertions;
-using kCura.IntegrationPoints.Domain.Wrappers;
+﻿using System.Data;
+using System.Runtime.Remoting;
+using FluentAssertions;
+using kCura.IntegrationPoints.SourceProviderInstaller.Internals.Wrappers;
 using Moq;
 using NUnit.Framework;
-using System.Data;
-using System.Runtime.Remoting;
 
-namespace kCura.IntegrationPoints.Domain.Tests.Wrappers
+namespace kCura.IntegrationPoints.SourceProviderInstaller.Tests.Wrappers
 {
 	[TestFixture]
 	public class CrossAppDomainDataReaderWrapperTests : SafeDisposingDataReaderWrapperTests

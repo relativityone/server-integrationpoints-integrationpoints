@@ -53,6 +53,7 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Internals\AssemblyExtension.cs" />
     <Compile Include="IntegrationPointSourceProviderUninstaller.cs" />
     <Compile Include="IntegrationPointSourceProviderInstaller.cs" />
     <Compile Include="Internals\Converters\SourceProviderExtensions.cs" />
@@ -64,6 +65,11 @@
     <Compile Include="InvalidSourceProviderException.cs" />
     <Compile Include="Internals\KeplerSourceProviderInstaller.cs" />
     <Compile Include="Properties\LocalAssemblyInfo.cs" />
+    <Compile Include="ProviderFactoryBase.cs" />
+    <Compile Include="Internals\Wrappers\CrossAppDomainDataReaderWrapper.cs" />
+    <Compile Include="Internals\Wrappers\CrossAppDomainProviderWrapper.cs" />
+    <Compile Include="Internals\Wrappers\SafeDisposingDataReaderWrapper.cs" />
+    <Compile Include="Internals\Wrappers\SafeDisposingProviderWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="paket.references" />
@@ -80,6 +86,9 @@
     <Analyzer Include="..\..\packages\CSharpGuidelineAnalyzer\analyzers\dotnet\cs\CSharpGuidelineAnalyzer.dll">
       <Paket>True</Paket>
     </Analyzer>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Wrappers\" />
   </ItemGroup>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
