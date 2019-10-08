@@ -8,7 +8,6 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
@@ -26,9 +25,9 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.IntegrationPoints.Services;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Testing.Identification;
-using FieldType = kCura.IntegrationPoints.Contracts.Models.FieldType;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 {
@@ -43,7 +42,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 		private ISynchronizerFactory _synchronizerFactory;
 		private IJobHistoryService _jobHistoryService;
 		private IFieldQueryRepository _fieldQueryRepository;
-		private IntegrationPoints.Services.FieldMap[] _fieldMaps;
+		private global::Relativity.IntegrationPoints.Services.FieldMap[] _fieldMaps;
 		private ISerializer _serializer;
 		private IHelper _helper;
 		private const int _ADMIN_USER_ID = 9;
@@ -95,7 +94,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 
 			SourceConfiguration sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(serializedSourceConfig);
 			string destinationConfig = AppendWebAPIPathToImportSettings(integrationPoint.DestinationConfiguration);
-			FieldMap[] fieldMaps = ConvertFromServicesToDomainFieldMaps(_fieldMaps);
+			Domain.Models.FieldMap[] fieldMaps = ConvertFromServicesToDomainFieldMaps(_fieldMaps);
 			var targetDocumentsTaggingManagerFactory = new TargetDocumentsTaggingManagerFactory(
 				_repositoryFactory,
 				_tagsCreator,
@@ -129,14 +128,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 				.ConfigureAwait(false);
 		}
 
-		private FieldMap[] ConvertFromServicesToDomainFieldMaps(IntegrationPoints.Services.FieldMap[] servicesFieldMaps)
+		private Domain.Models.FieldMap[] ConvertFromServicesToDomainFieldMaps(global::Relativity.IntegrationPoints.Services.FieldMap[] servicesFieldMaps)
 		{
 			return servicesFieldMaps.Select(ConvertFromServicesToDomainFieldMap).ToArray();
 		}
 
-		private FieldMap ConvertFromServicesToDomainFieldMap(IntegrationPoints.Services.FieldMap servicesFieldMap)
+		private Domain.Models.FieldMap ConvertFromServicesToDomainFieldMap(global::Relativity.IntegrationPoints.Services.FieldMap servicesFieldMap)
 		{
-			return new FieldMap
+			return new Domain.Models.FieldMap
 			{
 				DestinationField = ConvertFromServicesToDomainFieldEntry(servicesFieldMap.DestinationField),
 				FieldMapType = ConvertFromServicesToDomainFieldMapType(servicesFieldMap.FieldMapType),
@@ -144,9 +143,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 			};
 		}
 
-		private FieldEntry ConvertFromServicesToDomainFieldEntry(IntegrationPoints.Services.FieldEntry servicesFieldEntry)
+		private IntegrationPoints.Contracts.Models.FieldEntry ConvertFromServicesToDomainFieldEntry(FieldEntry servicesFieldEntry)
 		{
-			return new FieldEntry()
+			return new IntegrationPoints.Contracts.Models.FieldEntry
 			{
 				DisplayName = servicesFieldEntry.DisplayName,
 				FieldIdentifier = servicesFieldEntry.FieldIdentifier,
@@ -157,19 +156,21 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 			};
 		}
 
-		private FieldType ConvertFromServicesToDomainFieldType(IntegrationPoints.Services.FieldType servicesFieldType)
+		private IntegrationPoints.Contracts.Models.FieldType ConvertFromServicesToDomainFieldType(
+			global::Relativity.IntegrationPoints.Services.FieldType servicesFieldType)
 		{
-			return (FieldType) Enum.Parse(typeof(FieldType), servicesFieldType.ToString());
+			return (IntegrationPoints.Contracts.Models.FieldType) Enum.Parse(
+				typeof(global::Relativity.IntegrationPoints.Services.FieldType), servicesFieldType.ToString());
 		}
 
-		private FieldMapTypeEnum ConvertFromServicesToDomainFieldMapType(IntegrationPoints.Services.FieldMapType servicesFieldMapType)
+		private FieldMapTypeEnum ConvertFromServicesToDomainFieldMapType(FieldMapType servicesFieldMapType)
 		{
 			return (FieldMapTypeEnum)Enum.Parse(typeof(FieldMapTypeEnum), servicesFieldMapType.ToString());
 		}
 
 		private Task<Data.IntegrationPoint> CreateAndGetIntegrationPoint(string serializedSourceConfig)
 		{
-			var integrationModel = new IntegrationPointModel
+			var integrationModel = new Core.Models.IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = RelativityDestinationProviderArtifactId,
@@ -183,9 +184,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 					EnableScheduler = false
 				},
 				Map = CreateDefaultFieldMap(),
-				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
+				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
 			};
-			IntegrationPointModel integrationModelCreated = CreateOrUpdateIntegrationPoint(integrationModel);
+			Core.Models.IntegrationPointModel integrationModelCreated = CreateOrUpdateIntegrationPoint(integrationModel);
 			return IntegrationPointRepository.ReadAsync(integrationModelCreated.ArtifactID);
 		}
 

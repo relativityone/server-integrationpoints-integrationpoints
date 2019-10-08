@@ -10,11 +10,13 @@
     <releaseNotes>Release</releaseNotes>
     <copyright>Copyright (c) 2018, Relativity ODA LLC</copyright>
     <tags>Relativity IntegrationPoints Office365 O365 Custom Provider Import</tags>
+	<dependencies>
+		<dependency id="Relativity.IntegrationPoints.Services.Interfaces.Private" version="1.0.0" />
+	</dependencies>
   </metadata>
   <files>
     <file src="..\..\lib\UnitTests\kCura.IntegrationPoints.Contracts.dll" target="lib" />   
     <file src="..\..\lib\UnitTests\kCura.IntegrationPoints.SourceProviderInstaller.dll" target="lib" />
-    <file src="..\..\lib\UnitTests\kCura.IntegrationPoints.Services.Interfaces.Private.dll" target="lib" />
     <file src="..\..\lib\UnitTests\kCura.IntegrationPoints.Domain.dll" target="lib" />
   </files>
 </package>

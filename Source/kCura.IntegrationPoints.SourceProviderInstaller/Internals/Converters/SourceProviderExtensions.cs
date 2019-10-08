@@ -1,5 +1,5 @@
 ﻿using kCura.IntegrationPoints.Contracts;
-using kCura.IntegrationPoints.Services;
+using Relativity.IntegrationPoints.Services;
 
 namespace kCura.IntegrationPoints.SourceProviderInstaller.Internals.Converters
 {

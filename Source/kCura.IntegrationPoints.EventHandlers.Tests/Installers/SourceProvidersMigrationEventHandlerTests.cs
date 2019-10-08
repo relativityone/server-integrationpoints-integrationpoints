@@ -6,7 +6,6 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Provider;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints;
-using kCura.IntegrationPoints.Services;
 using LanguageExt;
 using Moq;
 using NUnit.Framework;
@@ -15,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Relativity.IntegrationPoints.Services;
 using static LanguageExt.Prelude;
 using SourceProvider = kCura.IntegrationPoints.Contracts.SourceProvider;
 

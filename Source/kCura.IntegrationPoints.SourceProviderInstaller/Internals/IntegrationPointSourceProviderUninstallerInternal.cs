@@ -1,7 +1,7 @@
 ﻿using kCura.EventHandler;
-using kCura.IntegrationPoints.Services;
 using System;
 using System.Threading.Tasks;
+using Relativity.IntegrationPoints.Services;
 
 namespace kCura.IntegrationPoints.SourceProviderInstaller.Internals
 {

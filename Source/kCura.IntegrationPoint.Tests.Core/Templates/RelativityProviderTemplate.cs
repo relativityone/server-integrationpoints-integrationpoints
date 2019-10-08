@@ -15,6 +15,7 @@ using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
+using Relativity.IntegrationPoints.Services;
 using Relativity.Services.Folder;
 using Relativity.Toggles;
 
@@ -150,31 +151,31 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		protected string CreateDefaultFieldMap()
 		{
-			IntegrationPoints.Services.FieldMap[] map = GetDefaultFieldMap();
+			global::Relativity.IntegrationPoints.Services.FieldMap[] map = GetDefaultFieldMap();
 			return Container.Resolve<ISerializer>().Serialize(map);
 		}
 
-		protected IntegrationPoints.Services.FieldMap[] GetDefaultFieldMap()
+		protected global::Relativity.IntegrationPoints.Services.FieldMap[] GetDefaultFieldMap()
 		{
 			IRepositoryFactory repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			IFieldQueryRepository sourceFieldQueryRepository = repositoryFactory.GetFieldQueryRepository(SourceWorkspaceArtifactID);
 			IFieldQueryRepository destinationFieldQueryRepository = repositoryFactory.GetFieldQueryRepository(TargetWorkspaceArtifactID);
 
-			ArtifactDTO sourceDto = sourceFieldQueryRepository.RetrieveIdentifierField((int)global::kCura.Relativity.Client.ArtifactType.Document);
-			ArtifactDTO targetDto = destinationFieldQueryRepository.RetrieveIdentifierField((int)global::kCura.Relativity.Client.ArtifactType.Document);
+			ArtifactDTO sourceDto = sourceFieldQueryRepository.RetrieveIdentifierField((int) Relativity.Client.ArtifactType.Document);
+			ArtifactDTO targetDto = destinationFieldQueryRepository.RetrieveIdentifierField((int) Relativity.Client.ArtifactType.Document);
 
-			IntegrationPoints.Services.FieldMap[] map =
+			global::Relativity.IntegrationPoints.Services.FieldMap[] map =
 			{
-				new IntegrationPoints.Services.FieldMap
+				new global::Relativity.IntegrationPoints.Services.FieldMap
 				{
-					SourceField = new IntegrationPoints.Services.FieldEntry
+					SourceField = new FieldEntry
 					{
 						FieldIdentifier = sourceDto.ArtifactId.ToString(),
 						DisplayName = sourceDto.Fields.First(field => field.Name == "Name").Value as string + " [Object Identifier]",
 						IsIdentifier = true,
 					},
-					FieldMapType = IntegrationPoints.Services.FieldMapType.Identifier,
-					DestinationField = new IntegrationPoints.Services.FieldEntry
+					FieldMapType = FieldMapType.Identifier,
+					DestinationField = new FieldEntry
 					{
 						FieldIdentifier = targetDto.ArtifactId.ToString(),
 						DisplayName = targetDto.Fields.First(field => field.Name == "Name").Value as string + " [Object Identifier]",
@@ -195,9 +196,9 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			TypeOfExport = (int)SourceConfiguration.ExportType.SavedSearch;
 		}
 
-		protected IntegrationPointModel CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum overwriteMode, string name, string overwrite, bool promoteEligible = true)
+		protected IntegrationPoints.Core.Models.IntegrationPointModel CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum overwriteMode, string name, string overwrite, bool promoteEligible = true)
 		{
-			IntegrationPointModel integrationModel = new IntegrationPointModel();
+			IntegrationPoints.Core.Models.IntegrationPointModel integrationModel = new IntegrationPoints.Core.Models.IntegrationPointModel();
 			SetIntegrationPointBaseModelProperties(integrationModel, overwriteMode, name, overwrite, promoteEligible);
 			return integrationModel;
 		}
@@ -222,7 +223,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			modelBase.Map = CreateDefaultFieldMap();
 			modelBase.Type =
 				Container.Resolve<IIntegrationPointTypeService>()
-					.GetIntegrationPointType(kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid)
+					.GetIntegrationPointType(IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid)
 					.ArtifactId;
 			modelBase.PromoteEligible = promoteEligible;
 		}
@@ -235,12 +236,12 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			}
 		}
 
-		protected IntegrationPointModel CreateDefaultIntegrationPointModelScheduled(ImportOverwriteModeEnum overwriteMode, string name, string overwrite, string startDate, string endDate, ScheduleInterval interval)
+		protected IntegrationPoints.Core.Models.IntegrationPointModel CreateDefaultIntegrationPointModelScheduled(ImportOverwriteModeEnum overwriteMode, string name, string overwrite, string startDate, string endDate, ScheduleInterval interval)
 		{
 			const int offsetInSeconds = 30;
 			DateTime newScheduledTime = DateTime.UtcNow.AddSeconds(offsetInSeconds);
 
-			var integrationModel = new IntegrationPointModel
+			var integrationModel = new IntegrationPoints.Core.Models.IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(overwriteMode),
 				DestinationProvider = RelativityDestinationProviderArtifactId,

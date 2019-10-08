@@ -1,0 +1,17 @@
+Castle.Windsor
+CSharpGuidelineAnalyzer
+kCura.Relativity.Client
+LanguageExt.Core
+Relativity.API
+Relativity.IntegrationPoints.Services.Interfaces.Private
+Relativity.Kepler
+Newtonsoft.Json
+Relativity.Services.Interfaces
+Relativity.Logging.Interfaces
+Relativity.Telemetry.APM
+
+group TestPackages
+	FluentAssertions
+	Moq
+	NUnit
+	NSubstitute

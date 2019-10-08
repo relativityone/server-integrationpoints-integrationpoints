@@ -1,17 +1,7 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
-
-[assembly: InternalsVisibleTo("kCura.IntegrationPoints.FtpProvider.Helpers")]
-[assembly: InternalsVisibleTo("kCura.IntegrationPoints.LDAPProvider")]
-[assembly: InternalsVisibleTo("kCura.IntegrationPoints")] //ILMerged dll
-[assembly: InternalsVisibleTo("kCura.IntegrationPoints.Core")]
-[assembly: InternalsVisibleTo("kCura.IntegrationPoints.Web")]
-[assembly: InternalsVisibleTo("kCura.IntegrationPoints.Data")]
-[assembly: InternalsVisibleTo("kCura.IntegrationPoints.Services.Tests.Integration")]
-[assembly: InternalsVisibleTo("kCura.IntegrationPoints.Security.Tests")]
 
 namespace kCura.IntegrationPoints.Security
 {

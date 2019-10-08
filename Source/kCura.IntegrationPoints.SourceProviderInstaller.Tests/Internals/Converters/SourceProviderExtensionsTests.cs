@@ -1,11 +1,11 @@
 ﻿using FluentAssertions;
 using kCura.IntegrationPoints.Contracts;
-using kCura.IntegrationPoints.Services;
 using kCura.IntegrationPoints.SourceProviderInstaller.Internals.Converters;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using kCura.IntegrationPoints.Contracts.Internals;
+using Relativity.IntegrationPoints.Services;
 
 namespace kCura.IntegrationPoints.SourceProviderInstaller.Tests.Internals.Converters
 {

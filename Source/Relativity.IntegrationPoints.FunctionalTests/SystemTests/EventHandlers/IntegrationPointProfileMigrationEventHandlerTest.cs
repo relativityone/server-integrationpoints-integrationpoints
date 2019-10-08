@@ -12,9 +12,9 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
-using kCura.IntegrationPoints.Services;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using Relativity.IntegrationPoints.Services;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using static kCura.IntegrationPoints.Core.Constants.IntegrationPoints;
@@ -191,8 +191,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 		{
 			var sourceConfiguration = new JObject
 			{
-				[nameof(kCura.IntegrationPoints.Services.RelativityProviderSourceConfiguration.SourceWorkspaceArtifactId)] = workspaceID,
-				[nameof(kCura.IntegrationPoints.Services.RelativityProviderSourceConfiguration.SavedSearchArtifactId)] = savedSearchArtifactId
+				[nameof(Services.RelativityProviderSourceConfiguration.SourceWorkspaceArtifactId)] = workspaceID,
+				[nameof(Services.RelativityProviderSourceConfiguration.SavedSearchArtifactId)] = savedSearchArtifactId
 			};
 			return sourceConfiguration.ToString();
 		}

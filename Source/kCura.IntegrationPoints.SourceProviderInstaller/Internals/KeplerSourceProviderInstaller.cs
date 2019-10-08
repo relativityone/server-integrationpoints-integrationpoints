@@ -1,10 +1,10 @@
 ﻿using kCura.IntegrationPoints.Contracts;
-using kCura.IntegrationPoints.Services;
 using kCura.IntegrationPoints.SourceProviderInstaller.Internals.Converters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Relativity.IntegrationPoints.Services;
 
 namespace kCura.IntegrationPoints.SourceProviderInstaller.Internals
 {

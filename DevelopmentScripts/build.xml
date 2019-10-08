@@ -95,7 +95,7 @@
       <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.FtpProvider.Helpers.Tests.dll</DLL>
       <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.FtpProvider.Parser.Tests.dll</DLL>
       <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.FtpProvider.Tests.dll</DLL>
-      <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.Services.Tests.dll</DLL>
+      <DLL type="x64">lib\UnitTests\Relativity.IntegrationPoints.Services.Tests.dll</DLL>
       <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.Management.Tests.dll</DLL>
       <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.ImportProvider.Parser.Tests.dll</DLL>
       <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.LDAPProvider.Tests.dll</DLL>
@@ -106,7 +106,7 @@
     </DLLs>
     <WhiteList>
       <allow>kCura.IntegrationPoints.Agent.Tests.Tasks.SyncCustodianManagerWorkerTests.Execute_GoldFlow</allow>
-      <allow>kCura.IntegrationPoints.Services.Tests.IntegrationPointRepositoryLoggingTests.ItShouldLogErrorFromCreateIntegrationPointAsync</allow>
+      <allow>Relativity.IntegrationPoints.Services.Tests.IntegrationPointRepositoryLoggingTests.ItShouldLogErrorFromCreateIntegrationPointAsync</allow>
     </WhiteList>
   </TestRunner>
   <RAPBuilder>
@@ -140,8 +140,8 @@
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.ImportProvider.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.ImportProvider.Parser.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.LDAPProvider.dll</Assembly>
-          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Services.dll</Assembly>
-          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Services.Interfaces.Private.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.IntegrationPoints.Services.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.IntegrationPoints.Services.Interfaces.Private.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.SourceProviderInstaller.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.Synchronizers.RDO.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.RelativitySync.dll</Assembly>
@@ -188,7 +188,7 @@
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.Contracts.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.SourceProviderInstaller.dll</Assembly>
           <Assembly>lib\UnitTests\Provider.dll</Assembly>
-          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Services.Interfaces.Private.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.IntegrationPoints.Services.Interfaces.Private.dll</Assembly>
         </Assemblies>
         <ResourceFiles />
         <CustomPages>
@@ -204,7 +204,7 @@
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.SourceProviderInstaller.dll</Assembly>
           <Assembly>lib\UnitTests\JsonLoader.dll</Assembly>
           <Assembly>lib\UnitTests\Newtonsoft.Json.dll</Assembly>
-          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Services.Interfaces.Private.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.IntegrationPoints.Services.Interfaces.Private.dll</Assembly>
         </Assemblies>
         <ResourceFiles />
         <CustomPages>

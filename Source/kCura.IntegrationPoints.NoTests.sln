@@ -68,7 +68,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Ftp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Domain", "kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj", "{5D5B52B4-8769-431A-9743-B96F15FED5FD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Services", "kCura.IntegrationPoints.Services\kCura.IntegrationPoints.Services.csproj", "{FD2C5DB6-8FD6-40D6-8E50-3641B7D89D9D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.IntegrationPoints.Services", "Relativity.IntegrationPoints.Services\Relativity.IntegrationPoints.Services.csproj", "{FD2C5DB6-8FD6-40D6-8E50-3641B7D89D9D}"
 	ProjectSection(ProjectDependencies) = postProject
 		{BFA5641B-AA6F-4FA5-A20D-6F42B484CAE4} = {BFA5641B-AA6F-4FA5-A20D-6F42B484CAE4}
 		{599D771D-2AE7-4321-9BAC-BE06F827CE0A} = {599D771D-2AE7-4321-9BAC-BE06F827CE0A}

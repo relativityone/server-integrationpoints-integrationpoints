@@ -1,6 +1,6 @@
 ﻿CSharpGuidelineAnalyzer
 kCura.EventHandler
-kCura.IntegrationPoints.Services.Interfaces.Private
+Relativity.IntegrationPoints.Services.Interfaces.Private
 Relativity.Kepler
 
 group TestPackages

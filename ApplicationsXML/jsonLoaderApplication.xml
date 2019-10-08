@@ -81,7 +81,7 @@
 	<Assembly>
       <ArtifactId>4702051</ArtifactId>
       <Keywords />
-      <Name>kCura.IntegrationPoints.Services.Interfaces.Private.dll</Name>
+      <Name>Relativity.IntegrationPoints.Services.Interfaces.Private.dll</Name>
       <Notes />
     </Assembly>
   </Assemblies>

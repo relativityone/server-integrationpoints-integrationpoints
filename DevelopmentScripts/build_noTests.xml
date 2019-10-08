@@ -87,12 +87,12 @@
             <Platform>x64</Platform>
           </Platforms>
         </Project>
-        <Project path="Source\kCura.IntegrationPoints.Services\kCura.IntegrationPoints.Services.csproj">
+        <Project path="Source\Relativity.IntegrationPoints.Services\Relativity.IntegrationPoints.Services.csproj">
           <Platforms>
             <Platform>x64</Platform>
           </Platforms>
         </Project>
-        <Project path="Source\kCura.IntegrationPoints.Services.Interfaces.Private\kCura.IntegrationPoints.Services.Interfaces.Private.csproj">
+        <Project path="Source\Relativity.IntegrationPoints.Services.Interfaces.Private\Relativity.IntegrationPoints.Services.Interfaces.Private.csproj">
           <Platforms>
             <Platform>x64</Platform>
           </Platforms>
@@ -211,8 +211,8 @@
         <Project path="Source\kCura.IntegrationPoints.Management.Tests\kCura.IntegrationPoints.Management.Tests.csproj" />
         <Project path="Source\kCura.IntegrationPoints.PerformanceTestingFramework\kCura.IntegrationPoints.PerformanceTestingFramework.csproj" />
         <Project path="Source\kCura.IntegrationPoints.PerformanceTests\kCura.IntegrationPoints.PerformanceTests.csproj" />
-        <Project path="Source\kCura.IntegrationPoints.Services.Tests\kCura.IntegrationPoints.Services.Tests.csproj" />
-        <Project path="Source\kCura.IntegrationPoints.Services.Tests.Integration\kCura.IntegrationPoints.Services.Tests.Integration.csproj" />
+        <Project path="Source\Relativity.IntegrationPoints.Services.Tests\Relativity.IntegrationPoints.Services.Tests.csproj" />
+        <Project path="Source\Relativity.IntegrationPoints.Services.Tests.Integration\Relativity.IntegrationPoints.Services.Tests.Integration.csproj" />
         <Project path="Source\kCura.IntegrationPoints.Synchronizers.RDO.Tests\kCura.IntegrationPoints.Synchronizers.RDO.Tests.csproj" />
         <Project path="Source\kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration\kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration.csproj" />
         <Project path="Source\kCura.IntegrationPoints.RelativitySync.Tests.Integration\kCura.IntegrationPoints.RelativitySync.Tests.Integration.csproj" />
@@ -333,8 +333,8 @@
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.ImportProvider.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.ImportProvider.Parser.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.LDAPProvider.dll</Assembly>
-          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Services.dll</Assembly>
-          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Services.Interfaces.Private.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.IntegrationPoints.Services.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.IntegrationPoints.Services.Interfaces.Private.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.SourceProviderInstaller.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.Synchronizers.RDO.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.LongPath.dll</Assembly>

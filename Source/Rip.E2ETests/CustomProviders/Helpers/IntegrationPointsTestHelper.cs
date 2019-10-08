@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Services;
+using Relativity.IntegrationPoints.Services;
 using Relativity.Services.Objects.DataContracts;
 
 namespace Rip.E2ETests.CustomProviders.Helpers

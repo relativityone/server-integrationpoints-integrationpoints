@@ -1527,13 +1527,13 @@
     <Assembly>
       <ArtifactId>1016741</ArtifactId>
       <Keywords />
-      <Name>kCura.IntegrationPoints.Services.dll</Name>
+      <Name>Relativity.IntegrationPoints.Services.dll</Name>
       <Notes />
     </Assembly>
     <Assembly>
       <ArtifactId>1016742</ArtifactId>
       <Keywords />
-      <Name>kCura.IntegrationPoints.Services.Interfaces.Private.dll</Name>
+      <Name>Relativity.IntegrationPoints.Services.Interfaces.Private.dll</Name>
       <Notes />
     </Assembly>
     <Assembly>

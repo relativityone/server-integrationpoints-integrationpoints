@@ -5,12 +5,11 @@ using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Services;
 using NUnit.Framework;
+using Relativity.IntegrationPoints.Services;
 using Relativity.Services.Folder;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Testing.Identification;
@@ -19,6 +18,7 @@ using Rip.E2ETests.CustomProviders.Arrangers;
 using Rip.E2ETests.CustomProviders.Helpers;
 using Rip.E2ETests.CustomProviders.TestCases;
 using CoreConstants = kCura.IntegrationPoints.Core.Constants;
+using FieldEntry = Relativity.IntegrationPoints.Services.FieldEntry;
 
 namespace Rip.E2ETests.CustomProviders
 {
@@ -142,13 +142,13 @@ namespace Rip.E2ETests.CustomProviders
 				FieldMapType = mapping.Key == testCase.IdentifierFieldName
 					? FieldMapType.Identifier
 					: FieldMapType.None,
-				SourceField = new kCura.IntegrationPoints.Services.FieldEntry
+				SourceField = new FieldEntry
 				{
 					FieldIdentifier = mapping.Value,
 					DisplayName = mapping.Value,
 					IsIdentifier = mapping.Key == testCase.IdentifierFieldName
 				},
-				DestinationField = new kCura.IntegrationPoints.Services.FieldEntry
+				DestinationField = new FieldEntry
 				{
 					FieldIdentifier = fieldNamesToArtifactIDMapping[mapping.Key].ToString(),
 					DisplayName = mapping.Key,

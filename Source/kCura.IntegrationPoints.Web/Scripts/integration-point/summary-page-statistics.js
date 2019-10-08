@@ -67,7 +67,7 @@ var SavedSearchStatistics = function (sourceConfiguration, destinationConfigurat
 	function getDocsTotalForSavedSearch(workspaceId, savedSearchId) {
 		$.ajax(jQuery.extend(self.defaultSettings(), {
 			data: JSON.stringify({ WorkspaceArtifactId: workspaceId, savedSearchId: savedSearchId }),
-			url: ("/Relativity.Rest/api/kCura.IntegrationPoints.Services.IIntegrationPointsModule/Statistics%20Manager/GetDocumentsTotalForSavedSearchAsync"),
+			url: ("/Relativity.Rest/api/Relativity.IntegrationPoints.Services.IIntegrationPointsModule/Statistics%20Manager/GetDocumentsTotalForSavedSearchAsync"),
 			success: self.documents,
 			error: function (err) {
 				console.log(err);
@@ -78,7 +78,7 @@ var SavedSearchStatistics = function (sourceConfiguration, destinationConfigurat
 	function getDocsTotalForProduction(workspaceId, productionId) {
 		$.ajax(jQuery.extend(self.defaultSettings(), {
 			data: JSON.stringify({ WorkspaceArtifactId: workspaceId, productionSetId: productionId }),
-			url: ("/Relativity.Rest/api/kCura.IntegrationPoints.Services.IIntegrationPointsModule/Statistics%20Manager/GetDocumentsTotalForProductionAsync"),
+			url: ("/Relativity.Rest/api/Relativity.IntegrationPoints.Services.IIntegrationPointsModule/Statistics%20Manager/GetDocumentsTotalForProductionAsync"),
 			success: self.documents,
 			error: function (err) {
 				console.log(err);
@@ -89,7 +89,7 @@ var SavedSearchStatistics = function (sourceConfiguration, destinationConfigurat
 	function getNativesTotal(workspaceId, savedSearchId) {
 		$.ajax(jQuery.extend(self.defaultSettings(), {
 			data: JSON.stringify({ WorkspaceArtifactId: workspaceId, savedSearchId: savedSearchId }),
-			url: ("/Relativity.Rest/api/kCura.IntegrationPoints.Services.IIntegrationPointsModule/Statistics%20Manager/GetNativesTotalForSavedSearchAsync"),
+			url: ("/Relativity.Rest/api/Relativity.IntegrationPoints.Services.IIntegrationPointsModule/Statistics%20Manager/GetNativesTotalForSavedSearchAsync"),
 			success: self.nativesTotal,
 			error: function (err) {
 				console.log(err);
@@ -100,7 +100,7 @@ var SavedSearchStatistics = function (sourceConfiguration, destinationConfigurat
 	function getNativesSize(workspaceId, savedSearchId) {
 		$.ajax(jQuery.extend(self.defaultSettings(), {
 			data: JSON.stringify({ WorkspaceArtifactId: workspaceId, savedSearchId: savedSearchId }),
-			url: ("/Relativity.Rest/api/kCura.IntegrationPoints.Services.IIntegrationPointsModule/Statistics%20Manager/GetNativesFileSizeForSavedSearchAsync"),
+			url: ("/Relativity.Rest/api/Relativity.IntegrationPoints.Services.IIntegrationPointsModule/Statistics%20Manager/GetNativesFileSizeForSavedSearchAsync"),
 			success: self.nativesSize,
 			error: function (err) {
 				console.log(err);
@@ -111,7 +111,7 @@ var SavedSearchStatistics = function (sourceConfiguration, destinationConfigurat
 	function getImagesTotal(workspaceId, savedSearchId) {
 		$.ajax(jQuery.extend(self.defaultSettings(), {
 			data: JSON.stringify({ WorkspaceArtifactId: workspaceId, savedSearchId: savedSearchId }),
-			url: ("/Relativity.Rest/api/kCura.IntegrationPoints.Services.IIntegrationPointsModule/Statistics%20Manager/GetImagesTotalForSavedSearchAsync"),
+			url: ("/Relativity.Rest/api/Relativity.IntegrationPoints.Services.IIntegrationPointsModule/Statistics%20Manager/GetImagesTotalForSavedSearchAsync"),
 			success: self.imagesTotal,
 			error: function (err) {
 				console.log(err);
@@ -122,7 +122,7 @@ var SavedSearchStatistics = function (sourceConfiguration, destinationConfigurat
 	function getImagesTotalForProduction(workspaceId, productionId) {
 		$.ajax(jQuery.extend(self.defaultSettings(), {
 			data: JSON.stringify({ WorkspaceArtifactId: workspaceId, productionSetId: productionId }),
-			url: ("/Relativity.Rest/api/kCura.IntegrationPoints.Services.IIntegrationPointsModule/Statistics%20Manager/GetImagesTotalForProductionAsync"),
+			url: ("/Relativity.Rest/api/Relativity.IntegrationPoints.Services.IIntegrationPointsModule/Statistics%20Manager/GetImagesTotalForProductionAsync"),
 			success: self.imagesTotal,
 			error: function (err) {
 				console.log(err);
@@ -133,7 +133,7 @@ var SavedSearchStatistics = function (sourceConfiguration, destinationConfigurat
 	function getImagesSize(workspaceId, savedSearchId) {
 		$.ajax(jQuery.extend(self.defaultSettings(), {
 			data: JSON.stringify({ WorkspaceArtifactId: workspaceId, savedSearchId: savedSearchId }),
-			url: ("/Relativity.Rest/api/kCura.IntegrationPoints.Services.IIntegrationPointsModule/Statistics%20Manager/GetImagesFileSizeForSavedSearchAsync"),
+			url: ("/Relativity.Rest/api/Relativity.IntegrationPoints.Services.IIntegrationPointsModule/Statistics%20Manager/GetImagesFileSizeForSavedSearchAsync"),
 			success: self.imagesSize,
 			error: function (err) {
 				console.log(err);
@@ -144,7 +144,7 @@ var SavedSearchStatistics = function (sourceConfiguration, destinationConfigurat
 	function getImagesSizeForProduction(workspaceId, productionId) {
 		$.ajax(jQuery.extend(self.defaultSettings(), {
 			data: JSON.stringify({ WorkspaceArtifactId: workspaceId, productionSetId: productionId }),
-			url: ("/Relativity.Rest/api/kCura.IntegrationPoints.Services.IIntegrationPointsModule/Statistics%20Manager/GetImagesFileSizeForProductionAsync"),
+			url: ("/Relativity.Rest/api/Relativity.IntegrationPoints.Services.IIntegrationPointsModule/Statistics%20Manager/GetImagesFileSizeForProductionAsync"),
 			success: self.imagesSize,
 			error: function (err) {
 				console.log(err);

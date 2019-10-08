@@ -1,7 +1,7 @@
-﻿kCura.IntegrationPoints.Services.Interfaces.Private
-kCura.Relativity.Client
+﻿kCura.Relativity.Client
 Polly
 Relativity.API
+Relativity.IntegrationPoints.Services.Interfaces.Private
 Relativity.Kepler
 Relativity.Kepler.Client
 Relativity.Services.Interfaces

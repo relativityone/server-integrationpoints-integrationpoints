@@ -1,0 +1,13 @@
+AutoMapper
+Castle.Windsor
+CSharpGuidelineAnalyzer
+kCura.Relativity.Client
+LanguageExt.Core
+Newtonsoft.Json
+Relativity.API
+Relativity.IntegrationPoints.Services.Interfaces.Private
+Relativity.Kepler
+Relativity.Services.Interfaces
+Relativity.Toggles
+Relativity.Logging.Interfaces
+Relativity.Telemetry.APM

@@ -1,7 +1,6 @@
 ﻿using FluentAssertions;
 using kCura.EventHandler;
 using kCura.IntegrationPoints.Contracts;
-using kCura.IntegrationPoints.Services;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
@@ -9,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Relativity.IntegrationPoints.Services;
 
 namespace kCura.IntegrationPoints.SourceProviderInstaller.Tests
 {

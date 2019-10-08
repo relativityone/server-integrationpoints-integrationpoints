@@ -49,7 +49,7 @@ set @source-web-scripts=%@source-dir%\Web\Scripts
 set @sdk-dlls-count=3
 set @sdk-dlls[0]=kCura.IntegrationPoints.Contracts.dll
 set @sdk-dlls[1]=kCura.IntegrationPoints.SourceProviderInstaller.dll
-set @sdk-dlls[2]=kCura.IntegrationPoints.Services.Interfaces.Private.dll
+set @sdk-dlls[2]=Relativity.IntegrationPoints.Services.Interfaces.Private.dll
 set @sdk-dlls[3]=kCura.IntegrationPoints.Domain.dll
 
 set @sdk-web-scripts-count=2
