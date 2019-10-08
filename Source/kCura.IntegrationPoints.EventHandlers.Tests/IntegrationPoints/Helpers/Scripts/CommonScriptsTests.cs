@@ -43,7 +43,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
 			"/Scripts/EventHandlers/integration-points-summary-page-view.js"
 		};
 
-		private readonly List<string> _hubAndSignalrScripts = new List<string>
+		private readonly List<string> _signalRScripts = new List<string>
 		{
 			"/Scripts/jquery.signalR-2.3.0.js",
 			"/signalr/hubs",
@@ -82,7 +82,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
 			IList<string> linkedScripts = _sut.LinkedScripts();
 
 			//Assert
-			linkedScripts.Should().Equal(_allScripts.Except(_hubAndSignalrScripts));
+			linkedScripts.Should().Equal(_allScripts.Except(_signalRScripts));
 		}
 	}
 }
