@@ -47,7 +47,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Integration.StatisticsMana
 
 			_testCaseSettings.DocumentsTestData = DocumentTestDataBuilder.BuildTestData();
 
-			workspaceService.TryImportData(WorkspaceArtifactId, _testCaseSettings.DocumentsTestData);
+			workspaceService.ImportData(WorkspaceArtifactId, _testCaseSettings.DocumentsTestData);
 
 			folderWithDocumentsIdRetriever.UpdateFolderIdsAsync(WorkspaceArtifactId, _testCaseSettings.DocumentsTestData.Documents)
 				.GetAwaiter()

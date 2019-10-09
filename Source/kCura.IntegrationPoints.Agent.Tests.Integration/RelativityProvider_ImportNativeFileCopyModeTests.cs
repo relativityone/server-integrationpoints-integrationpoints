@@ -217,7 +217,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			var workspaceService = new WorkspaceService(new ImportHelper(withNatives));
 
 			DocumentsTestData documentsTestData = DocumentTestDataBuilder.BuildTestData(withNatives: withNatives);
-			workspaceService.TryImportData(workspaceId, documentsTestData);
+			workspaceService.ImportData(workspaceId, documentsTestData);
 		}
 
 		private void VerifyHasNativeForAllDocuments(int workspaceID, bool expectedHasNative)
