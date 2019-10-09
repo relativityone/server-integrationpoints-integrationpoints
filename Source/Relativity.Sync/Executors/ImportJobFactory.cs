@@ -97,12 +97,10 @@ namespace Relativity.Sync.Executors
 				importJob.Settings.NativeFilePathSourceFieldName = configuration.NativeFilePathSourceFieldName;
 				importJob.Settings.OIFileIdMapped = true;
 				importJob.Settings.FileSizeMapped = true;
-				importJob.Settings.DisableNativeValidation = true;
+				importJob.Settings.DisableNativeValidation = false;
 			}
-			if (configuration.ImportNativeFileCopyMode == ImportNativeFileCopyMode.SetFileLinks)
-			{
-				importJob.Settings.DisableNativeLocationValidation = true;
-			}
+
+			importJob.Settings.DisableNativeLocationValidation = configuration.ImportNativeFileCopyMode == ImportNativeFileCopyMode.SetFileLinks;
 			
 			importJob.Settings.SelectedIdentifierFieldName = await GetSelectedIdentifierFieldNameAsync(
 				importApi, configuration.DestinationWorkspaceArtifactId, configuration.RdoArtifactTypeId, configuration.IdentityFieldId).ConfigureAwait(false);
