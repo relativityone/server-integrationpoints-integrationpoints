@@ -18,6 +18,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.PerformanceBaseline
 		private const string _WORKSPACE_NAME = "[Do Not Delete] [RIP Sync] Performance Images";
 		private const string _SAVEDSEARCH = "All documents";
 
+        [Test]
 		public void PerfromanceBaseline_100k_Images_Links_01() // we want to run each test two times to have more data; as long as we need to read result manually we use different name of each test
 		{
 			//Arrange
@@ -36,7 +37,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.PerformanceBaseline
 			validator.ValidateSummaryPage(generalProperties, model, SourceContext, DestinationContext, expectErrors: false);
 		}
 
-		public void PerfromanceBaseline_100k_Images_Links_02() // we want to run each test two times to have more data; as long as we need to read result manually we use different name of each test
+        [Test]
+        public void PerfromanceBaseline_100k_Images_Links_02() // we want to run each test two times to have more data; as long as we need to read result manually we use different name of each test
 		{
 			//Arrange
 			ImagesSavedSearchToFolderValidator validator = new ImagesSavedSearchToFolderValidator();
@@ -54,7 +56,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.PerformanceBaseline
 			validator.ValidateSummaryPage(generalProperties, model, SourceContext, DestinationContext, expectErrors: false);
 		}
 
-		public void PerfromanceBaseline_100k_Images_Copy_01() // we want to run each test two times to have more data; as long as we need to read result manually we use different name of each test
+        [Test]
+        public void PerfromanceBaseline_100k_Images_Copy_01() // we want to run each test two times to have more data; as long as we need to read result manually we use different name of each test
 		{
 			//Arrange
 			ImagesSavedSearchToFolderValidator validator = new ImagesSavedSearchToFolderValidator();
@@ -72,7 +75,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.PerformanceBaseline
 			validator.ValidateSummaryPage(generalProperties, model, SourceContext, DestinationContext, expectErrors: false);
 		}
 
-		public void PerfromanceBaseline_100k_Images_Copy_02() // we want to run each test two times to have more data; as long as we need to read result manually we use different name of each test
+        [Test]
+        public void PerfromanceBaseline_100k_Images_Copy_02() // we want to run each test two times to have more data; as long as we need to read result manually we use different name of each test
 		{
 			//Arrange
 			ImagesSavedSearchToFolderValidator validator = new ImagesSavedSearchToFolderValidator();
