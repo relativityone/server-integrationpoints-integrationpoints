@@ -12,6 +12,8 @@ namespace Relativity.Sync.Executors.Validation
 {
 	internal sealed class FolderStructureBehaviorValidator : IValidator
 	{
+		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int) ArtifactType.Document;
+
 		private readonly ISourceServiceFactoryForUser _sourceServiceFactoryForUser;
 		private readonly ISyncLog _logger;
 
@@ -35,7 +37,7 @@ namespace Relativity.Sync.Executors.Validation
 				}
 				catch (Exception ex)
 				{
-					string message = $"Exception occurred when validating folder structure behavior";
+					string message = "Exception occurred when validating folder structure behavior";
 					_logger.LogError(ex, message);
 					result.Add(message);
 				}
@@ -58,7 +60,7 @@ namespace Relativity.Sync.Executors.Validation
 					{
 						Name = "Field"
 					},
-					Condition = $"(('Name' == '{configuration.FolderPathSourceFieldName}'))",
+					Condition = $"(('FieldArtifactTypeID' == {_DOCUMENT_ARTIFACT_TYPE_ID} AND 'Name' == '{configuration.FolderPathSourceFieldName}'))",
 					Fields = new[]
 					{
 						new FieldRef() {Name = fieldType},
@@ -70,7 +72,7 @@ namespace Relativity.Sync.Executors.Validation
 					new EmptyProgress<ProgressReport>()).ConfigureAwait(false);
 				if (queryResult.Objects.Count > 0)
 				{
-					string fieldTypeName = queryResult.Objects.First()[fieldType].Value.ToString();
+					string fieldTypeName = queryResult.Objects.Single()[fieldType].Value.ToString();
 					if (longText != fieldTypeName)
 					{
 						result.Add($"Folder Path Source Field has invalid type: '{fieldTypeName}' but expected '{longText}'");

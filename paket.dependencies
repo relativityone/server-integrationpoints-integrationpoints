@@ -17,7 +17,7 @@ nuget Relativity.Kepler.Client ~> 2.0.7
 nuget Relativity.Telemetry.APM ~> 2019.1.1
 nuget Relativity.Telemetry.Services.Interface ~> 2019.1.1
 nuget Relativity.Testing.Identification 1.11.0
-nuget relativity.transfer.client ~> 6.0
+nuget relativity.transfer.client ~> 6.3
 
 nuget Microsoft.CodeAnalysis.FxCopAnalyzers 2.9.2
 nuget CSharpGuidelineAnalyzer ~> 2.3
