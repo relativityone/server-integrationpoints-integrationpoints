@@ -40,13 +40,13 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 			detailsPage.RunIntegrationPoint();
 
-			// Assert
-			validator.ValidateSummaryPage(generalProperties, model, SourceContext, DestinationContext, false);
+            // Assert
+            Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
 
-			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
+            WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
-			ValidateDocumentsForRoot();
-		}
+            ValidateDocumentsForRootWithFolderName();
+        }
 
 		[IdentifiedTest("4b2768a9-b44b-431e-bd26-cdb6d604bb47")]
 		[RetryOnError]
@@ -63,13 +63,13 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 			detailsPage.RunIntegrationPoint();
 
-			// Assert
-			validator.ValidateSummaryPage(generalProperties, model, SourceContext, DestinationContext, false);
+            // Assert
+            Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
 
-			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
+            WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
-			ValidateDocumentsForField();
-		}
+            ValidateDocumentsForRootWithFolderName();
+        }
 
 		[IdentifiedTest("09a3fe30-360b-40d1-867d-c56e5751c452")]
 		[RetryOnError]
@@ -86,13 +86,13 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 			detailsPage.RunIntegrationPoint();
 
-			// Assert
-			validator.ValidateSummaryPage(generalProperties, model, SourceContext, DestinationContext, false);
+            // Assert
+            Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
 
-			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
+            WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
-			ValidateDocumentsForFolderTree();
-		}
+            ValidateDocumentsForRootWithFolderName();
+        }
 
 		[IdentifiedTest("32e2afff-cef3-4592-a079-f7f8d49090e9")]
 		[RetryOnError]
@@ -113,11 +113,12 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 			// Assert
 			validator.ValidateSummaryPage(generalProperties, model, SourceContext, DestinationContext, false);
+            Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
 
-			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
+            WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
-			ValidateDocumentsForRootWithFolderName();
-		}
+            ValidateDocumentsForRootWithFolderName();
+        }
 
 		[IdentifiedTest("9137f4ad-8f73-4a7c-9099-35c386dc11c9")]
 		[RetryOnError]
@@ -137,13 +138,13 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 			detailsPage.RunIntegrationPoint();
 
-			// Assert
-			validator.ValidateSummaryPage(generalProperties, model, SourceContext, DestinationContext, false);
+            // Assert
+            Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
 
-			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
+            WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
-			ValidateDocumentsForRootWithFolderName();
-		}
+            ValidateDocumentsForRootWithFolderName();
+        }
 
 		[IdentifiedTest("f9d043f0-c826-4f22-83b1-bae372fb1c51")]
 		[RetryOnError]
@@ -189,13 +190,13 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 			detailsPage.RunIntegrationPoint();
 
-			// Assert
-			validator.ValidateSummaryPage(generalProperties, model, SourceContext, DestinationContext, false);
+            // Assert
+            Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
 
-			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
+            WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
-			ValidateDocumentsForField();
-		}
+            ValidateDocumentsForRootWithFolderName();
+        }
 
 		[IdentifiedTest("cf864914-f6ff-437a-99a3-c2db2658851a")]
 		[RetryOnError]
