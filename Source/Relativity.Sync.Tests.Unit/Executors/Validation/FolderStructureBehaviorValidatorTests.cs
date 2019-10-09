@@ -27,6 +27,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 
 		private FolderStructureBehaviorValidator _instance;
 
+		private const int _DOCUMENT_ARTIFACT_TYPE_ID = 10;
 		private const string _TEST_FOLDER_NAME = "folder name";
 		private const int _TEST_WORKSPACE_ARTIFACT_ID = 101202;
 		private const string _EXPECTED_QUERY_FIELD_TYPE = "Field Type";
@@ -61,7 +62,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
 			// Assert
-			Assert.IsTrue(actualResult.IsValid);
+			actualResult.IsValid.Should().BeTrue();
 
 			VerifyObjectManagerQueryRequest();
 
@@ -83,9 +84,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
 			// Assert
-			Assert.IsFalse(actualResult.IsValid);
-			Assert.IsNotEmpty(actualResult.Messages);
-			Assert.AreEqual(1, actualResult.Messages.Count());
+			actualResult.IsValid.Should().BeFalse();
+			actualResult.Messages.Should().HaveCount(1);
 
 			VerifyObjectManagerQueryRequest();
 
@@ -107,9 +107,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
 			// Assert
-			Assert.IsFalse(actualResult.IsValid);
-			Assert.IsNotEmpty(actualResult.Messages);
-			Assert.AreEqual(1, actualResult.Messages.Count());
+			actualResult.IsValid.Should().BeFalse();
+			actualResult.Messages.Should().HaveCount(1);
 
 			VerifyObjectManagerQueryRequest();
 
@@ -127,9 +126,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
 			// Assert
-			Assert.IsFalse(actualResult.IsValid);
-			Assert.IsNotEmpty(actualResult.Messages);
-			Assert.AreEqual(1, actualResult.Messages.Count());
+			actualResult.IsValid.Should().BeFalse();
+			actualResult.Messages.Should().HaveCount(1);
 
 			Mock.VerifyAll(_sourceServiceFactoryForUser, _objectManager);
 		}
@@ -147,9 +145,30 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
 			// Assert
-			Assert.IsFalse(actualResult.IsValid);
-			Assert.IsNotEmpty(actualResult.Messages);
-			Assert.AreEqual(1, actualResult.Messages.Count());
+			actualResult.IsValid.Should().BeFalse();
+			actualResult.Messages.Should().HaveCount(1);
+
+			Mock.VerifyAll(_sourceServiceFactoryForUser, _objectManager);
+			_objectManager.Verify(x => x.Dispose(), Times.Once);
+		}
+
+		[Test]
+		public async Task ValidateAsyncObjectManagerReturnsMoreThanOneResultTest()
+		{
+			// Arrange
+			QueryResult queryResult = BuildQueryResult("Different Field Value", _TEST_FOLDER_NAME);
+			_sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object).Verifiable();
+
+			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(),
+					It.IsAny<int>(), It.IsAny<CancellationToken>(), It.IsAny<IProgress<ProgressReport>>()))
+					.ReturnsAsync(queryResult);
+
+			// Act
+			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+
+			// Assert
+			actualResult.IsValid.Should().BeFalse();
+			actualResult.Messages.Should().Contain(m => m.ShortMessage == "Exception occurred when validating folder structure behavior");
 
 			Mock.VerifyAll(_sourceServiceFactoryForUser, _objectManager);
 			_objectManager.Verify(x => x.Dispose(), Times.Once);
@@ -181,34 +200,40 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			actualResult.IsValid.Should().Be(true);
 		}
 
-		private QueryResult BuildQueryResult(string testFieldValue)
+		private QueryResult BuildQueryResult(params string[] testFieldValues)
 		{
+			List<FieldValuePair> fieldValues = BuildResultFieldValues(testFieldValues);
+
 			var queryResult = new QueryResult
 			{
 				Objects = new List<RelativityObject>
 				{
 					new RelativityObject
 					{
-						FieldValues = new List<FieldValuePair>
-						{
-							new FieldValuePair
-							{
-								Field = new Field
-								{
-									Name = _EXPECTED_QUERY_FIELD_TYPE
-								},
-								Value = testFieldValue
-							}
-						}
+						FieldValues = fieldValues
 					}
 				}
 			};
 			return queryResult;
 		}
 
+		private static List<FieldValuePair> BuildResultFieldValues(IEnumerable<string> testFieldValues)
+		{
+			var field = new Field
+			{
+				Name = _EXPECTED_QUERY_FIELD_TYPE
+			};
+			List<FieldValuePair> fieldValues = testFieldValues.Select(value => new FieldValuePair
+			{
+				Field = field,
+				Value = value
+			}).ToList();
+			return fieldValues;
+		}
+
 		private void VerifyObjectManagerQueryRequest()
 		{
-			string expectedQueryCondition = $"(('Name' == '{_TEST_FOLDER_NAME}'))";
+			string expectedQueryCondition = $"(('FieldArtifactTypeID' == {_DOCUMENT_ARTIFACT_TYPE_ID} AND 'Name' == '{_TEST_FOLDER_NAME}'))";
 
 			_objectManager.Verify(x => x.QueryAsync(It.Is<int>(y => y == _TEST_WORKSPACE_ARTIFACT_ID),
 					It.Is<QueryRequest>(y => y.ObjectType.Name == "Field" && y.Condition == expectedQueryCondition && y.Fields.First().Name == _EXPECTED_QUERY_FIELD_TYPE),
