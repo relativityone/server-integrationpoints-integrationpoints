@@ -131,6 +131,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.PerformanceBaseline
 				.ToList();
 		}
 
+        [Test]
         public void PerfromanceBaseline_10k_Copy_Natives_01()
 		{
 			//Arrange
@@ -152,7 +153,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.PerformanceBaseline
 		}
 
 		[Category(TestCategory.SMOKE)]
-		public void PerfromanceBaseline_10k_Copy_Natives_02()
+        [Test]
+        public void PerfromanceBaseline_10k_Copy_Natives_02()
 		{
 			//Arrange
 			RelativityProviderModel model = CreateRelativityProviderModel();
@@ -172,7 +174,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.PerformanceBaseline
 			generalProperties.Properties["Source Details:"].Should().Be("Saved Search: 10k");
 		}
 
-		public void PerfromanceBaseline_10k_Links_01()
+        [Test]
+        public void PerfromanceBaseline_10k_Links_01()
 		{
 			//Arrange
 			RelativityProviderModel model = CreateRelativityProviderModel();
@@ -192,7 +195,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.PerformanceBaseline
 			generalProperties.Properties["Source Details:"].Should().Be("Saved Search: 10k");
 		}
 
-		public void PerfromanceBaseline_10k_Links_02()
+        [Test]
+        public void PerfromanceBaseline_10k_Links_02()
 		{
 			//Arrange
 			RelativityProviderModel model = CreateRelativityProviderModel();
@@ -212,7 +216,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.PerformanceBaseline
 			generalProperties.Properties["Source Details:"].Should().Be("Saved Search: 10k");
 		}
 
-		public void PerfromanceBaseline_100k_Copy_Natives_01()
+        [Test]
+        public void PerfromanceBaseline_100k_Copy_Natives_01()
 		{
 			//Arrange
 			RelativityProviderModel model = CreateRelativityProviderModel();
@@ -232,7 +237,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.PerformanceBaseline
 			generalProperties.Properties["Source Details:"].Should().Be("Saved Search: 100k");
 		}
 
-		public void PerfromanceBaseline_100k_Copy_Natives_02()
+        [Test]
+        public void PerfromanceBaseline_100k_Copy_Natives_02()
 		{
 			//Arrange
 			RelativityProviderModel model = CreateRelativityProviderModel();
@@ -252,7 +258,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.PerformanceBaseline
 			generalProperties.Properties["Source Details:"].Should().Be("Saved Search: 100k");
 		}
 
-		public void PerfromanceBaseline_100k_Links_01()
+        [Test]
+        public void PerfromanceBaseline_100k_Links_01()
 		{
 			//Arrange
 			RelativityProviderModel model = CreateRelativityProviderModel();
@@ -272,7 +279,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.PerformanceBaseline
 			generalProperties.Properties["Source Details:"].Should().Be("Saved Search: 100k");
 		}
 
-		public void PerfromanceBaseline_100k_Links_02()
+        [Test]
+        public void PerfromanceBaseline_100k_Links_02()
 		{
 			//Arrange
 			RelativityProviderModel model = CreateRelativityProviderModel();
@@ -292,7 +300,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.PerformanceBaseline
 			generalProperties.Properties["Source Details:"].Should().Be("Saved Search: 100k");
 		}
 
-		public void PerfromanceBaseline_100k_Metadata_Only_01()
+        [Test]
+        public void PerfromanceBaseline_100k_Metadata_Only_01()
 		{
 			//Arrange
 			RelativityProviderModel model = CreateRelativityProviderModel();
@@ -312,7 +321,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.PerformanceBaseline
 			generalProperties.Properties["Source Details:"].Should().Be("Saved Search: 100k");
 		}
 
-		public void PerfromanceBaseline_100k_Metadata_Only_02()
+        [Test]
+        public void PerfromanceBaseline_100k_Metadata_Only_02()
 		{
 			//Arrange
 			RelativityProviderModel model = CreateRelativityProviderModel();
@@ -332,7 +342,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.PerformanceBaseline
 			generalProperties.Properties["Source Details:"].Should().Be("Saved Search: 100k");
 		}
 
-		public void PerfromanceBaseline_500k_Copy_Natives_01()
+        [Test]
+        public void PerfromanceBaseline_500k_Copy_Natives_01()
 		{
 			//Arrange
 			RelativityProviderModel model = CreateRelativityProviderModel();
@@ -352,7 +363,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.PerformanceBaseline
 			generalProperties.Properties["Source Details:"].Should().Be("Saved Search: 500k");
 		}
 
-		public void PerfromanceBaseline_500k_Copy_Natives_02()
+        [Test]
+        public void PerfromanceBaseline_500k_Copy_Natives_02()
 		{
 			//Arrange
 			RelativityProviderModel model = CreateRelativityProviderModel();
@@ -372,27 +384,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.PerformanceBaseline
 			generalProperties.Properties["Source Details:"].Should().Be("Saved Search: 500k");
 		}
 
-		public void PerfromanceBaseline_500k_Links_01()
-		{
-			//Arrange
-			RelativityProviderModel model = CreateRelativityProviderModel();
-
-			model.SavedSearch = "500k";
-			model.CopyNativeFiles = RelativityProviderModel.CopyNativeFilesEnum.LinksOnly;
-
-			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOnly;
-			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.No;
-
-			//Act
-			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
-			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
-			detailsPage.RunIntegrationPoint();
-
-			// Assert
-			generalProperties.Properties["Source Details:"].Should().Be("Saved Search: 500k");
-		}
-
-		public void PerfromanceBaseline_500k_Links_02()
+        [Test]
+        public void PerfromanceBaseline_500k_Links_01()
 		{
 			//Arrange
 			RelativityProviderModel model = CreateRelativityProviderModel();
@@ -412,7 +405,29 @@ namespace kCura.IntegrationPoints.UITests.Tests.PerformanceBaseline
 			generalProperties.Properties["Source Details:"].Should().Be("Saved Search: 500k");
 		}
 
-		public void PerfromanceBaseline_1000k_Copy_01()
+        [Test]
+        public void PerfromanceBaseline_500k_Links_02()
+		{
+			//Arrange
+			RelativityProviderModel model = CreateRelativityProviderModel();
+
+			model.SavedSearch = "500k";
+			model.CopyNativeFiles = RelativityProviderModel.CopyNativeFilesEnum.LinksOnly;
+
+			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOnly;
+			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.No;
+
+			//Act
+			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
+			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
+			detailsPage.RunIntegrationPoint();
+
+			// Assert
+			generalProperties.Properties["Source Details:"].Should().Be("Saved Search: 500k");
+		}
+
+        [Test]
+        public void PerfromanceBaseline_1000k_Copy_01()
 		{
 			//Arrange
 			RelativityProviderModel model = CreateRelativityProviderModel();
@@ -432,7 +447,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.PerformanceBaseline
 			generalProperties.Properties["Source Details:"].Should().Be("Saved Search: All Documents");
 		}
 
-		public void PerfromanceBaseline_1000k_Copy_02()
+        [Test]
+        public void PerfromanceBaseline_1000k_Copy_02()
 		{
 			//Arrange
 			RelativityProviderModel model = CreateRelativityProviderModel();
@@ -452,7 +468,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.PerformanceBaseline
 			generalProperties.Properties["Source Details:"].Should().Be("Saved Search: All Documents");
 		}
 
-		public void PerfromanceBaseline_1000k_Links_01()
+        [Test]
+        public void PerfromanceBaseline_1000k_Links_01()
 		{
 			//Arrange
 			RelativityProviderModel model = CreateRelativityProviderModel();
@@ -472,7 +489,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.PerformanceBaseline
 			generalProperties.Properties["Source Details:"].Should().Be("Saved Search: All Documents");
 		}
 
-		public void PerfromanceBaseline_1000k_Links_02()
+        [Test]
+        public void PerfromanceBaseline_1000k_Links_02()
 		{
 			//Arrange
 			RelativityProviderModel model = CreateRelativityProviderModel();
