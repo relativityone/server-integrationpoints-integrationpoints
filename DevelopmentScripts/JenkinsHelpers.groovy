@@ -992,16 +992,10 @@ private getTestsFilter(testType, params)
  */
 private runTests(testType, params)
 {
-	withEnv([
-		"JenkinsUseIPRapFile=$params.importBuiltRAP"
-	])
-	{
-		echo "Value of JenkinsUseIPRapFile: $params.importBuiltRAP"
-		configureNunitTests(ripPipelineState.sut)
-		def cmdOptions = testCmdOptions(testType)
-		def currentFilter = getTestsFilter(testType, params)
-		def result = powershell returnStatus: true, script: "./build.ps1 -ci -sk $cmdOptions \"\"\"$currentFilter\"\"\""
-	}
+	configureNunitTests(ripPipelineState.sut)
+	def cmdOptions = testCmdOptions(testType)
+	def currentFilter = getTestsFilter(testType, params)
+	def result = powershell returnStatus: true, script: "./build.ps1 -ci -sk $cmdOptions \"\"\"$currentFilter\"\"\""
 	return result
 }
 
