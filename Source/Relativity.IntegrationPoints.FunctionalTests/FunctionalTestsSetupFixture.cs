@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
@@ -38,6 +39,7 @@ public class FunctionalTestsSetupFixture
 		var applicationManager = new RelativityApplicationManager(_testHelper);
 		if (SharedVariables.UseIpRapFile())
 		{
+			Console.WriteLine("Importing RIP RAP to Library...");
 			await applicationManager.ImportRipToLibraryAsync().ConfigureAwait(false);
 		}
 

@@ -71,7 +71,12 @@ properties([
 			name: 'enableCheckConfigureAwait',
 			defaultValue: true,
 			description: 'Enable checking if configureAwait is present everywhere it needs to be.'
-		)
+		),
+		booleanParam(
+            name: 'importBuiltRAP', 
+            defaultValue: true, 
+            description: 'Check if you want to deploy built Integration Points RAP'
+        )
 	])
 ])
 
@@ -165,23 +170,38 @@ timestamps
 				{
 					stage ('Integration Tests')
 					{
-						jenkinsHelpers.runIntegrationTests()
+						withEnv([
+							"JenkinsUseIPRapFile=$params.importBuiltRAP"
+						])
+						{
+							jenkinsHelpers.runIntegrationTests()
+						}
 					}
 					if (jenkinsHelpers.isNightly())
 					{
 						stage ('Integration Tests in Quarantine')
 						{
-							jenkinsHelpers.runIntegrationTestsInQuarantine()
+							withEnv([
+								"JenkinsUseIPRapFile=$params.importBuiltRAP"
+							])
+							{
+								jenkinsHelpers.runIntegrationTestsInQuarantine()
+							}
 						}
 					}
 					stage ('UI Tests')
 					{
 						withEnv([
-							"UITestsBrowser=$params.UITestsBrowser"
-							]) {
+							"UITestsBrowser=$params.UITestsBrowser",
+							"JenkinsUseIPRapFile=$params.importBuiltRAP"
+						]) 
+						{
+							echo "Browser used for running UI Tests: $params.UITestsBrowser"
+							echo "Value of JenkinsUseIPRapFile: $params.importBuiltRAP"
+							
 							jenkinsHelpers.downloadAndSetUpBrowser()
 							jenkinsHelpers.runUiTests()
-							}
+						}
 					}
 				}
 				finally
