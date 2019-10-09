@@ -22,13 +22,18 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		protected readonly ITokenProvider _externalTokenProvider;
 		protected readonly IFederatedInstanceManager _federatedInstanceManager;
 		protected readonly ISystemEventLoggingService _systemEventLoggingService;
-		protected readonly IAPILog _logger;
 		protected readonly ISerializer _serializer;
-	    protected readonly IAuthTokenGenerator _authTokenGenerator; 
+	    protected readonly IAuthTokenGenerator _authTokenGenerator;
+	    protected readonly IAPILog _logger;
 
 		private const string _RELATIVITY_BEARER_USERNAME = "XxX_BearerTokenCredentials_XxX";
 
-		public ImportApiFactory(ITokenProvider externalTokenProvider, IAuthTokenGenerator authTokenGenerator, IFederatedInstanceManager federatedInstanceManager, IHelper helper, ISystemEventLoggingService systemEventLoggingService, ISerializer serializer)
+		public ImportApiFactory(ITokenProvider externalTokenProvider, 
+			IAuthTokenGenerator authTokenGenerator, 
+			IFederatedInstanceManager federatedInstanceManager, 
+			IHelper helper, 
+			ISystemEventLoggingService systemEventLoggingService,
+			ISerializer serializer)
 		{
 			_externalTokenProvider = externalTokenProvider;
 		    _authTokenGenerator = authTokenGenerator;
@@ -43,8 +48,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			LogImportSettings(settings);
 			IExtendedImportAPI importApi;
 			try
-            {
-                importApi = CreateExtendedImportAPIForSettings(settings);
+			{
+				importApi = CreateExtendedImportAPIForSettings(settings);
                 // ExtendedImportAPI extends ImportAPI so the following cast is acceptable
                 Relativity.ImportAPI.ImportAPI concreteImplementation = (Relativity.ImportAPI.ImportAPI)importApi;
                 concreteImplementation.ExecutionSource = ExecutionSourceEnum.RIP;

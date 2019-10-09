@@ -76,6 +76,8 @@ namespace kCura.IntegrationPoints.Agent
 
 		protected override TaskResult ProcessJob(Job job)
 		{
+			SetWebApiTimeout();
+
 			using (IWindsorContainer ripContainerForSync = CreateAgentLevelContainer())
 			using (ripContainerForSync.Resolve<JobContextProvider>().StartJobContext(job))
 			{
@@ -136,6 +138,17 @@ namespace kCura.IntegrationPoints.Agent
 				SendJobStartedMessage(job);
 
 				return _jobExecutor.ProcessJob(job);
+			}
+		}
+
+		private void SetWebApiTimeout()
+		{
+			TimeSpan? timeout = Config.Config.Instance.RelativityWebApiTimeout;
+			if (timeout.HasValue)
+			{
+				int timeoutMs = (int)timeout.Value.TotalMilliseconds;
+				kCura.WinEDDS.Service.Settings.DefaultTimeOut = timeoutMs;
+				Logger.LogInformation("Relativity WebAPI timeout set to {timeout}ms.", timeoutMs);
 			}
 		}
 

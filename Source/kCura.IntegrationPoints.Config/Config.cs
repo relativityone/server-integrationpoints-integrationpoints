@@ -14,6 +14,9 @@ namespace kCura.IntegrationPoints.Config
 		private const string _RIP_METRICS_MEASURE_EXTERNAL_CALLS_DURATION = "MeasureDurationOfExternalCalls";
 		private const string _MASS_UPDATE_BATCH_SIZE = "MassUpdateBatchSize";
 		private const int _MASS_UPDATE_BATCH_SIZE_DEFAULT = 10000;
+		
+		private const string _RELATIVITY_WEBAPI_TIMEOUT_SETTING_NAME = "RelativityWebApiTimeout";
+
 		private static readonly Lazy<Config> _instance = new Lazy<Config>(() => new Config());
 
 		protected Config()
@@ -27,6 +30,21 @@ namespace kCura.IntegrationPoints.Config
 		public bool DisableNativeLocationValidation => GetValue(_DISABLE_NATIVE_LOCATION_VALIDATION, false);
 
 		public bool DisableNativeValidation => GetValue(_DISABLE_NATIVE_VALIDATION, false);
+
+		public TimeSpan? RelativityWebApiTimeout
+		{
+			get
+			{
+				if (_instanceSettings.Value.Contains(_RELATIVITY_WEBAPI_TIMEOUT_SETTING_NAME))
+				{
+					return TimeSpan.FromSeconds(GetValue<int>(_RELATIVITY_WEBAPI_TIMEOUT_SETTING_NAME));
+				}
+				else
+				{
+					return null;
+				}
+			}
+		}
 
 		public TimeSpan MetricsThrottling => TimeSpan.FromSeconds(GetValue(_RIP_METRICS_THROTTLING, 30));
 
