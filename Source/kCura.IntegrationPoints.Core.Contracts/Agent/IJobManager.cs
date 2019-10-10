@@ -27,6 +27,7 @@ namespace kCura.IntegrationPoints.Core.Contracts.Agent
 		void CreateJob<T>(T jobDetails, TaskType task, int workspaceId, int integrationPointId, long? rootJobId = null, long? parentJobId = null) where T : class;
 		void CreateJob<T>(Job parentJob, T jobDetails, TaskType task) where T : class;
 		void DeleteJob(long jobID);
+		void CleanUpJobTable();
 		Job GetJob(int workspaceID, int relatedObjectArtifactID, string taskName);
 		void CreateJobWithTracker<T>(Job parentJob, T jobDetails, TaskType type, string batchId) where T : class;
 		bool CheckBatchOnJobComplete(Job job, string batchId);

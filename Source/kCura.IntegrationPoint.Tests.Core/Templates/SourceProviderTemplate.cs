@@ -313,22 +313,31 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			List<Job> pickedUpJobs = new List<Job>();
 			try
 			{
-				Job job;
+				Task<Job> job;
 				do
 				{
-					job = jobServiceManager.GetNextQueueJob(resourcePool, jobServiceManager.AgentTypeInformation.AgentTypeID);
-
-					if (job != null)
+					job = Task.Run(() =>
+						jobServiceManager.GetNextQueueJob(resourcePool,
+							jobServiceManager.AgentTypeInformation.AgentTypeID));
+					if (job.Wait(TimeSpan.FromSeconds(1000)))
+					{ 
+						if (job.Result != null)
+						{
+							// pick up job
+							if (job.Result.RelatedObjectArtifactID == integrationPointID &&
+							    job.Result.WorkspaceID == workspaceID)
+							{
+								return job.Result;
+							}
+							else
+							{
+								pickedUpJobs.Add(job.Result);
+							}
+						}
+					}
+					else
 					{
-						// pick up job
-						if (job.RelatedObjectArtifactID == integrationPointID && job.WorkspaceID == workspaceID)
-						{
-							return job;
-						}
-						else
-						{
-							pickedUpJobs.Add(job);
-						}
+						throw new TestException("Timed out");
 					}
 				} while (job != null);
 			}
