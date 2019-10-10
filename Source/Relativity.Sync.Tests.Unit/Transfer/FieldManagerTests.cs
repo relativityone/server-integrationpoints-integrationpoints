@@ -40,8 +40,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		{
 			_documentArtifactIds = new[] {_FIRST_DOCUMENT, _SECOND_DOCUMENT, _THIRD_DOCUMENT};
 
-			FieldInfoDto documentIdentifierField = FieldInfoDto.DocumentField(_DOCUMENT_IDENTIFIER_FIELD_NAME, _DOCUMENT_IDENTIFIER_FIELD_NAME, isIdentifier: true);
-			FieldInfoDto documentSpecialField = FieldInfoDto.DocumentField(_DOCUMENT_SPECIAL_FIELD_NAME, _DOCUMENT_SPECIAL_FIELD_NAME, isIdentifier: false);
+			FieldInfoDto documentIdentifierField = FieldInfoDto.DocumentField(_DOCUMENT_IDENTIFIER_FIELD_NAME, _DOCUMENT_IDENTIFIER_FIELD_NAME, true);
+			FieldInfoDto documentSpecialField = FieldInfoDto.DocumentField(_DOCUMENT_SPECIAL_FIELD_NAME, _DOCUMENT_SPECIAL_FIELD_NAME, false);
 			FieldInfoDto nonDocumentSpecialField1 = FieldInfoDto.GenericSpecialField(SpecialFieldType.None, _NON_DOCUMENT_SPECIAL_FIELD_1_NAME, _NON_DOCUMENT_SPECIAL_FIELD_1_NAME);
 			FieldInfoDto nonDocumentSpecialField2 = FieldInfoDto.GenericSpecialField(SpecialFieldType.None, _NON_DOCUMENT_SPECIAL_FIELD_2_NAME, _NON_DOCUMENT_SPECIAL_FIELD_2_NAME);
 
@@ -194,7 +194,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			MockFieldMappingsToReturnOneMapping(_MAPPED_FIELD_1_SOURCE_NAME, _MAPPED_FIELD_1_DESTINATION_NAME);
 
-			FieldInfoDto specialField = new FieldInfoDto(specialFieldType, _MAPPED_FIELD_1_SOURCE_NAME, _MAPPED_FIELD_1_DESTINATION_NAME, isIdentifier: false, isSpecialDocumentField);
+			FieldInfoDto specialField = new FieldInfoDto(specialFieldType, _MAPPED_FIELD_1_SOURCE_NAME, _MAPPED_FIELD_1_DESTINATION_NAME, false, isSpecialDocumentField);
 			Mock<ISpecialFieldBuilder> builder = CreateSpecialFieldBuilderMockWithBuildColumnsReturning(new[] { specialField });
 
 			_instance = new FieldManager(_configuration.Object, _documentFieldRepository.Object, new[] { builder.Object });
@@ -263,7 +263,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			MockFieldMappingsToReturnOneMapping(_MAPPED_FIELD_1_SOURCE_NAME, _MAPPED_FIELD_1_DESTINATION_NAME);
 
-			FieldInfoDto specialField = new FieldInfoDto(SpecialFieldType.None, _MAPPED_FIELD_1_SOURCE_NAME, _MAPPED_FIELD_1_DESTINATION_NAME, isIdentifier: false, isSpecialDocumentField);
+			FieldInfoDto specialField = new FieldInfoDto(SpecialFieldType.None, _MAPPED_FIELD_1_SOURCE_NAME, _MAPPED_FIELD_1_DESTINATION_NAME, false, isSpecialDocumentField);
 			Mock<ISpecialFieldBuilder> builder = CreateSpecialFieldBuilderMockWithBuildColumnsReturning(new[] {specialField});
 
 			_instance = new FieldManager(_configuration.Object, _documentFieldRepository.Object, new[] { builder.Object });
@@ -283,7 +283,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			MockFieldMappingsToReturnOneMapping(_MAPPED_FIELD_1_SOURCE_NAME, _MAPPED_FIELD_1_DESTINATION_NAME);
 
-			FieldInfoDto specialField = new FieldInfoDto(SpecialFieldType.None, _MAPPED_FIELD_1_SOURCE_NAME, _MAPPED_FIELD_1_SOURCE_NAME, isIdentifier: false, isSpecialDocumentField);
+			FieldInfoDto specialField = new FieldInfoDto(SpecialFieldType.None, _MAPPED_FIELD_1_SOURCE_NAME, _MAPPED_FIELD_1_SOURCE_NAME, false, isSpecialDocumentField);
 			Mock<ISpecialFieldBuilder> builder = CreateSpecialFieldBuilderMockWithBuildColumnsReturning(new[] {specialField});
 
 			_instance = new FieldManager(_configuration.Object, _documentFieldRepository.Object, new[] { builder.Object });
