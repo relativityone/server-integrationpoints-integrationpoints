@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using Moq;
 using NUnit.Framework;
 
@@ -12,6 +14,7 @@ namespace Relativity.Sync.Tests.Unit
 		private Mock<IDateTime> _dateTime;
 
 		private JobProgressHandler _instance;
+		private static PropertyInfo _jobReportTotalRowsProperty;
 
 		private const int _THROTTLE_SECONDS = 5;
 
@@ -54,11 +57,12 @@ namespace Relativity.Sync.Tests.Unit
 		[TestCase(0, 0, 0)]
 		[TestCase(2, 2, 0)]
 		[TestCase(3, 0, 3)]
-		[TestCase(0, 4, 0)]
 		[TestCase(3, 2, 1)]
-		[Ignore("Cannot mock JobReport IAPI class, so these tests won't work.")]
 		public void ItShouldReportProperNumberOfItems(int numberOfItemProcessedEvents, int numberOfItemErrorEvents, int expectedNumberOfItemsProcessed)
 		{
+			// arrange
+			JobReport jobReport = CreateConfiguredJobReport(numberOfItemProcessedEvents, numberOfItemErrorEvents);
+
 			// act
 			for (int i = 0; i < numberOfItemProcessedEvents; i++)
 			{
@@ -68,7 +72,7 @@ namespace Relativity.Sync.Tests.Unit
 			{
 				_instance.HandleItemError(new Dictionary<int, int>());
 			}
-			_instance.HandleProcessComplete(CreateJobReport());
+			_instance.HandleProcessComplete(jobReport);
 
 			// assert
 			_jobProgressUpdater.Verify(x => x.UpdateJobProgressAsync(expectedNumberOfItemsProcessed, numberOfItemErrorEvents));
@@ -92,6 +96,24 @@ namespace Relativity.Sync.Tests.Unit
 
 			// assert
 			_jobProgressUpdater.Verify(x => x.UpdateJobProgressAsync(It.IsAny<int>(), It.IsAny<int>()));
+		}
+
+		private static JobReport CreateConfiguredJobReport(int numberOfItemProcessedEvents, int numberOfItemErrorEvents)
+		{
+			JobReport jobReport = CreateJobReport();
+			var jobError = new JobReport.RowError(0, "", "");
+			for (int i = 0; i < numberOfItemErrorEvents; i++)
+			{
+				jobReport.ErrorRows.Add(jobError);
+			}
+
+			if (_jobReportTotalRowsProperty == null)
+			{
+				_jobReportTotalRowsProperty = typeof(JobReport).GetProperty(nameof(JobReport.TotalRows));
+			}
+
+			_jobReportTotalRowsProperty?.SetValue(jobReport, numberOfItemProcessedEvents);
+			return jobReport;
 		}
 
 		private static JobReport CreateJobReport()
