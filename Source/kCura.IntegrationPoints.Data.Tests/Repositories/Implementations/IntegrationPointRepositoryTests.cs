@@ -115,7 +115,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		{
 			// Arrange
 			_integrationPoint = CreateTestIntegrationPoint();
-
 			_objectManagerMock.Setup(x => x.Read<IntegrationPoint>(_ARTIFACT_ID,ExecutionIdentity.CurrentUser)).Returns(_integrationPoint);
 
 			// Act
@@ -123,6 +122,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 
 			// Assert
 			_secretsRepositoryMock.Verify(x => x.DecryptAsync(It.IsAny<SecretPath>()), Times.Never);
+			_objectManagerMock.Verify(x => x.StreamUnicodeLongText(It.IsAny<int>(), It.IsAny<FieldRef>(), ExecutionIdentity.CurrentUser), Times.Never);
 			_objectManagerMock.Verify(x => x.Read<IntegrationPoint>(_ARTIFACT_ID, ExecutionIdentity.CurrentUser), Times.Once);
 			_internalLoggerMock.Verify(
 				x => x.LogError(
