@@ -71,7 +71,7 @@ namespace Relativity.Sync.Transfer
 			if (_allFields == null)
 			{
 				IList<FieldInfoDto> specialFields = GetSpecialFields();
-				List<FieldInfoDto> mappedDocumentFields = await GetMappedDocumentFieldsAsync(token).ConfigureAwait(false);
+				IList<FieldInfoDto> mappedDocumentFields = await GetMappedDocumentFieldsAsync(token).ConfigureAwait(false);
 				List<FieldInfoDto> allFields = MergeFieldCollections(specialFields, mappedDocumentFields);
 				_allFields = EnrichDocumentFieldsWithIndex(allFields);
 			}
@@ -113,11 +113,13 @@ namespace Relativity.Sync.Transfer
 			foreach (var specialField in specialFields)
 			{
 				FieldInfoDto documentField =
-					mappedDocumentFields.FirstOrDefault(mdf => mdf.DestinationFieldName == specialField.DestinationFieldName);
+					mappedDocumentFields.SingleOrDefault(mdf => mdf.DestinationFieldName == specialField.DestinationFieldName);
 				if (documentField != null && (!specialField.IsDocumentField || specialField.SourceFieldName != documentField.SourceFieldName))
 				{
-					throw new InvalidOperationException(
-						"Special field destination name conflicts with mapped field destination name.");
+					string specialFieldParams = $"{nameof(specialField.SpecialFieldType)}: {specialField.SpecialFieldType}; {specialField.IsDocumentField}: {specialField.IsDocumentField};";
+					string documentFieldParams = $"{nameof(documentField.IsIdentifier)}: {documentField.IsIdentifier}";
+					string message = $"Special field destination name conflicts with mapped field destination name. Special field params: {specialFieldParams} Document field params: {documentFieldParams}";
+					throw new InvalidOperationException(message);
 				}
 			}
 		}
