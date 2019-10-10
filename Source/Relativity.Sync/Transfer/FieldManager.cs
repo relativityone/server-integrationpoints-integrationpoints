@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,7 +30,7 @@ namespace Relativity.Sync.Transfer
 			_specialFieldBuilders = specialFieldBuilders.OrderBy(b => b.GetType().FullName).ToList();
 		}
 
-		public IEnumerable<FieldInfoDto> GetSpecialFields()
+		public IList<FieldInfoDto> GetSpecialFields()
 		{
 			return _specialFields ?? (_specialFields = _specialFieldBuilders.SelectMany(b => b.BuildColumns()).ToList());
 		}
@@ -69,13 +70,69 @@ namespace Relativity.Sync.Transfer
 		{
 			if (_allFields == null)
 			{
-				IEnumerable<FieldInfoDto> specialFields = GetSpecialFields();
-				IEnumerable<FieldInfoDto> mappedDocumentFields = await GetMappedDocumentFieldsAsync(token).ConfigureAwait(false);
-				List<FieldInfoDto> allFields = mappedDocumentFields.Concat(specialFields).ToList();
+				IList<FieldInfoDto> specialFields = GetSpecialFields();
+				IList<FieldInfoDto> mappedDocumentFields = await GetMappedDocumentFieldsAsync(token).ConfigureAwait(false);
+				List<FieldInfoDto> allFields = MergeFieldCollections(specialFields, mappedDocumentFields);
 				_allFields = EnrichDocumentFieldsWithIndex(allFields);
 			}
 
 			return _allFields;
+		}
+
+		private List<FieldInfoDto> MergeFieldCollections(IList<FieldInfoDto> specialFields, IList<FieldInfoDto> mappedDocumentFields)
+		{
+			ThrowIfSpecialFieldsInvalid(specialFields, mappedDocumentFields);
+
+			List<FieldInfoDto> remainingSpecialFields = new List<FieldInfoDto>(specialFields);
+			var result = new List<FieldInfoDto>();
+
+			foreach (FieldInfoDto mappedDocumentField in mappedDocumentFields)
+			{
+				FieldInfoDto matchingSpecialField = remainingSpecialFields.FirstOrDefault(f => FieldInfosHaveSameSourceAndDestination(f, mappedDocumentField));
+
+				if (matchingSpecialField != null)
+				{
+					var fieldInfoDto = new FieldInfoDto(matchingSpecialField.SpecialFieldType,
+						mappedDocumentField.SourceFieldName, mappedDocumentField.DestinationFieldName,
+						mappedDocumentField.IsIdentifier, mappedDocumentField.IsDocumentField);
+					result.Add(fieldInfoDto);
+					remainingSpecialFields.Remove(matchingSpecialField);
+				}
+				else
+				{
+					result.Add(mappedDocumentField);
+				}
+			}
+			result.AddRange(remainingSpecialFields);
+
+			return result;
+		}
+
+		private static void ThrowIfSpecialFieldsInvalid(IList<FieldInfoDto> specialFields, IList<FieldInfoDto> mappedDocumentFields)
+		{
+			FieldInfoDto invalidSpecialField = specialFields
+				.Select(specialField => new
+				{
+					SpecialField = specialField,
+					DocumentField = mappedDocumentFields.SingleOrDefault(mdf =>
+						mdf.DestinationFieldName == specialField.DestinationFieldName)
+				})
+				.FirstOrDefault(field =>
+					field.DocumentField != null && (!field.SpecialField.IsDocumentField ||
+					                                field.SpecialField.SourceFieldName !=
+					                                field.DocumentField.SourceFieldName))?.SpecialField;
+
+			if (invalidSpecialField != null)
+			{
+				string specialFieldParams = $"{nameof(invalidSpecialField.SpecialFieldType)}: {invalidSpecialField.SpecialFieldType}; {invalidSpecialField.IsDocumentField}: {invalidSpecialField.IsDocumentField};";
+				string message = $"Special field destination name conflicts with mapped field destination name. Special field params: {specialFieldParams}";
+				throw new InvalidOperationException(message);
+			}
+		}
+
+		private static bool FieldInfosHaveSameSourceAndDestination(FieldInfoDto first, FieldInfoDto second)
+		{ 
+			return first.SourceFieldName == second.SourceFieldName && first.DestinationFieldName == second.DestinationFieldName;
 		}
 
 		private List<FieldInfoDto> EnrichDocumentFieldsWithIndex(List<FieldInfoDto> fields)
@@ -93,7 +150,7 @@ namespace Relativity.Sync.Transfer
 			return fields;
 		}
 
-		private async Task<IEnumerable<FieldInfoDto>> GetMappedDocumentFieldsAsync(CancellationToken token)
+		private async Task<List<FieldInfoDto>> GetMappedDocumentFieldsAsync(CancellationToken token)
 		{
 			if (_mappedDocumentFields == null)
 			{

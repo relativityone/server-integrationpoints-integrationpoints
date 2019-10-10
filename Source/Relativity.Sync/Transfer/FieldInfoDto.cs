@@ -15,7 +15,7 @@ namespace Relativity.Sync.Transfer
 
 		#endregion
 
-		private FieldInfoDto(SpecialFieldType specialFieldType, string sourceFieldName, string destinationFieldName, bool isIdentifier, bool isDocumentField)
+		internal FieldInfoDto(SpecialFieldType specialFieldType, string sourceFieldName, string destinationFieldName, bool isIdentifier, bool isDocumentField)
 		{
 			if (isDocumentField && string.IsNullOrWhiteSpace(sourceFieldName))
 			{
