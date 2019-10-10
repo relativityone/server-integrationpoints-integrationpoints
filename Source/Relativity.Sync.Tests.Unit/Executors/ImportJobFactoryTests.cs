@@ -73,7 +73,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		{
 			// Arrange
 
-			var configuration = new Mock<ISynchronizationConfiguration>(MockBehavior.Loose);
+			var configuration = new Mock<ISynchronizationConfiguration>();
 
 			Mock<IImportApiFactory> importApiFactory = GetImportAPIFactoryMock();
 			ImportJobFactory instance = GetTestInstance(importApiFactory);
@@ -90,7 +90,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[Test]
 		public async Task ItShouldCreateBulkJobWithStartingIndexAlwaysEqualTo0()
 		{
-			Mock<ISynchronizationConfiguration> configuration = new Mock<ISynchronizationConfiguration>(MockBehavior.Loose);
+			Mock<ISynchronizationConfiguration> configuration = new Mock<ISynchronizationConfiguration>();
 			Mock<IImportAPI> importApi = new Mock<IImportAPI>(MockBehavior.Loose);
 			Mock<IImportApiFactory> importApiFactory = new Mock<IImportApiFactory>();
 			ImportBulkArtifactJob importBulkArtifactJob = new ImportBulkArtifactJob();
