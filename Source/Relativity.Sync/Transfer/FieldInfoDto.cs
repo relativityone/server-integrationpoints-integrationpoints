@@ -6,7 +6,7 @@ namespace Relativity.Sync.Transfer
 	{
 		#region Display name constants
 
-		private const string _FOLDER_PATH_FROM_WORKSPACE_DISPLAY_NAME = "76B270CB-7CA9-4121-B9A1-BC0D655E5B2D";
+		private const string _FOLDER_PATH_DESTINATION_DISPLAY_NAME = "76B270CB-7CA9-4121-B9A1-BC0D655E5B2D";
 		private const string _NATIVE_FILE_FILENAME_DISPLAY_NAME = "NativeFileFilename";
 		private const string _NATIVE_FILE_SIZE_DISPLAY_NAME = "NativeFileSize";
 		private const string _NATIVE_FILE_LOCATION_DISPLAY_NAME = "NativeFileLocation";
@@ -97,12 +97,12 @@ namespace Relativity.Sync.Transfer
 
 		public static FieldInfoDto FolderPathFieldFromDocumentField(string displayName)
 		{
-			return new FieldInfoDto(SpecialFieldType.FolderPath, displayName, displayName, false, true);
+			return new FieldInfoDto(SpecialFieldType.FolderPath, displayName, _FOLDER_PATH_DESTINATION_DISPLAY_NAME, false, true);
 		}
 
 		public static FieldInfoDto FolderPathFieldFromSourceWorkspaceStructure()
 		{
-			return new FieldInfoDto(SpecialFieldType.FolderPath, string.Empty, _FOLDER_PATH_FROM_WORKSPACE_DISPLAY_NAME, false, false);
+			return new FieldInfoDto(SpecialFieldType.FolderPath, string.Empty, _FOLDER_PATH_DESTINATION_DISPLAY_NAME, false, false);
 		}
 
 		public static FieldInfoDto NativeFileFilenameField()
