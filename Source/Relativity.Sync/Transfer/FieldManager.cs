@@ -84,9 +84,9 @@ namespace Relativity.Sync.Transfer
 			ThrowIfSpecialFieldsInvalid(specialFields, mappedDocumentFields);
 
 			List<FieldInfoDto> remainingSpecialFields = new List<FieldInfoDto>(specialFields);
-			List<FieldInfoDto> result = new List<FieldInfoDto>();
+			var result = new List<FieldInfoDto>();
 
-			foreach (var mappedDocumentField in mappedDocumentFields)
+			foreach (FieldInfoDto mappedDocumentField in mappedDocumentFields)
 			{
 				FieldInfoDto matchingSpecialField = remainingSpecialFields.FirstOrDefault(f => FieldInfosHaveSameSourceAndDestination(f, mappedDocumentField));
 
@@ -110,17 +110,23 @@ namespace Relativity.Sync.Transfer
 
 		private static void ThrowIfSpecialFieldsInvalid(IList<FieldInfoDto> specialFields, IList<FieldInfoDto> mappedDocumentFields)
 		{
-			foreach (var specialField in specialFields)
-			{
-				FieldInfoDto documentField =
-					mappedDocumentFields.SingleOrDefault(mdf => mdf.DestinationFieldName == specialField.DestinationFieldName);
-				if (documentField != null && (!specialField.IsDocumentField || specialField.SourceFieldName != documentField.SourceFieldName))
+			FieldInfoDto invalidSpecialField = specialFields
+				.Select(specialField => new
 				{
-					string specialFieldParams = $"{nameof(specialField.SpecialFieldType)}: {specialField.SpecialFieldType}; {specialField.IsDocumentField}: {specialField.IsDocumentField};";
-					string documentFieldParams = $"{nameof(documentField.IsIdentifier)}: {documentField.IsIdentifier}";
-					string message = $"Special field destination name conflicts with mapped field destination name. Special field params: {specialFieldParams} Document field params: {documentFieldParams}";
-					throw new InvalidOperationException(message);
-				}
+					SpecialField = specialField,
+					DocumentField = mappedDocumentFields.SingleOrDefault(mdf =>
+						mdf.DestinationFieldName == specialField.DestinationFieldName)
+				})
+				.FirstOrDefault(field =>
+					field.DocumentField != null && (!field.SpecialField.IsDocumentField ||
+					                                field.SpecialField.SourceFieldName !=
+					                                field.DocumentField.SourceFieldName))?.SpecialField;
+
+			if (invalidSpecialField != null)
+			{
+				string specialFieldParams = $"{nameof(invalidSpecialField.SpecialFieldType)}: {invalidSpecialField.SpecialFieldType}; {invalidSpecialField.IsDocumentField}: {invalidSpecialField.IsDocumentField};";
+				string message = $"Special field destination name conflicts with mapped field destination name. Special field params: {specialFieldParams}";
+				throw new InvalidOperationException(message);
 			}
 		}
 
