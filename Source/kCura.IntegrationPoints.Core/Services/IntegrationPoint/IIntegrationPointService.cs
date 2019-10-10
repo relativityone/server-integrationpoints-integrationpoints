@@ -82,5 +82,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 		/// <param name="workspaceArtifactId">Workspace artifact id of the integration point.</param>
 		/// <param name="integrationPointArtifactId">Integration point artifact id.</param>
 		void MarkIntegrationPointToStopJobs(int workspaceArtifactId, int integrationPointArtifactId);
+
+		void RunCleanUpTable();
 	}
 }
