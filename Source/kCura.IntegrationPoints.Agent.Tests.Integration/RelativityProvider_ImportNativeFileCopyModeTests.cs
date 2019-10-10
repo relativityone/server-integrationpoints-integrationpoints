@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Castle.MicroKernel.Registration;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
@@ -150,13 +151,20 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				importNativeFile,
 				importNativeFileCopyMode);
 
+			_integrationPointService.RunCleanUpTable();
+
 			_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactID, integrationPointModel.ArtifactID, _ADMIN_USER_ID); // add job to schedule queue
+
+
+
 			Job job = null;
 			try
 			{
 				int[] resourcePools = { _sourceWorkspaceDto.ResourcePoolID.Value };
 				job = GetNextJobInScheduleQueue(resourcePools, integrationPointModel.ArtifactID, SourceWorkspaceArtifactID);
 
+				Console.WriteLine($" ParentJobId: {job.ParentJobId} RootJobId: {job.RootJobId} AgentTypeId: {job.AgentTypeID} " + $" JobDetails: {job.JobDetails}  JobParentID: {job.ParentJobId}");
+				
 				// act
 				_exportManager.Execute(job); // run the job
 

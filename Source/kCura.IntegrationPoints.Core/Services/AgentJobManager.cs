@@ -98,6 +98,19 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 		}
 
+		public void CleanUpJobTable()
+		{
+			try
+			{
+				_jobService.CleanupJobQueueTable();
+			}
+			catch (AgentNotFoundException anfe)
+			{
+				LogDeletingJobError(0, anfe);
+				throw new Exception(ErrorMessages.NoAgentInstalled, anfe);
+			}
+		}
+
 		public IDictionary<Guid, List<Job>> GetScheduledAgentJobMapedByBatchInstance(long integrationPointId)
 		{
 			IDictionary<Guid, List<Job>> results = new Dictionary<Guid, List<Job>>();
