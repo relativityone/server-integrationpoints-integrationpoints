@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Castle.MicroKernel.Resolvers;
@@ -307,42 +308,39 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		{
 			IJobService jobServiceManager = Container.Resolve<IJobService>();
 
-			List<Job> pickedUpJobs = new List<Job>();
+			List<int> agentIdToUnlocks = new List<int>();
 			try
 			{
-				Task<Job> job;
+				Stopwatch stopWatch = new Stopwatch();
+				stopWatch.Start();
+				Job job;
+				int currentAgentID = 0;
 				do
 				{
-					job = Task.Run(() =>
-						jobServiceManager.GetNextQueueJob(resourcePool,
-							jobServiceManager.AgentTypeInformation.AgentTypeID));
-					if (job.Wait(TimeSpan.FromSeconds(1000)))
-					{ 
-						if (job.Result != null)
-						{
-							// pick up job
-							if (job.Result.RelatedObjectArtifactID == integrationPointID &&
-							    job.Result.WorkspaceID == workspaceID)
-							{
-								return job.Result;
-							}
-							else
-							{
-								pickedUpJobs.Add(job.Result);
-							}
-						}
-					}
-					else
+					job = jobServiceManager.GetNextQueueJob(resourcePool, currentAgentID);
+					if (job != null)
 					{
-						throw new TestException("Timed out");
+						// pick up job
+						if (job.RelatedObjectArtifactID == integrationPointID &&
+						    job.WorkspaceID == workspaceID)
+						{
+							return job;
+						}
+						else
+						{
+							agentIdToUnlocks.Add(currentAgentID);
+						}
+						System.Threading.Thread.Sleep(TimeSpan.FromSeconds(1));
+						currentAgentID++;
 					}
-				} while (job != null);
+				} while (job != null && stopWatch.Elapsed < TimeSpan.FromSeconds(10));
+				stopWatch.Stop();
 			}
 			finally
 			{
-				foreach (var pickedUpJob in pickedUpJobs)
+				foreach (var agentIdToUnlock in agentIdToUnlocks)
 				{
-					jobServiceManager.UnlockJobs(pickedUpJob.AgentTypeID);
+					jobServiceManager.UnlockJobs(agentIdToUnlock);
 				}
 			}
 			throw new TestException("Unable to find the job. Please check the integration point agent and make sure that it is turned off.");
