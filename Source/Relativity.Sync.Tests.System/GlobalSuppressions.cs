@@ -8,5 +8,6 @@
 
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Internal classes here are either instantiated by NUnit (fixtures) or by a container (stubs/mocks)", Scope = "module")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA5359:Do Not Disable Certificate Validation", Justification = "<Pending>", Scope = "member", Target = "~M:Relativity.Sync.Tests.System.SystemTestsSetup.SuppressCertificateCheckingIfConfigured")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "CA1024:Use properties where appropriate", Justification = "Not important in stubs and mocks", Scope = "module")]
 
 #pragma warning restore RG2001 // Character Per Line

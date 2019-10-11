@@ -1,12 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28010.2041
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29230.47
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Relativity.Sync", "Relativity.Sync\Relativity.Sync.csproj", "{A3456AED-70A0-4451-8C77-138ACD77C88C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E69BB707-2273-4EB3-91BE-07F1F1D412D9}"
 	ProjectSection(SolutionItems) = preProject
+		..\Directory.Build.props = ..\Directory.Build.props
+		..\Directory.Build.targets = ..\Directory.Build.targets
+		..\LICENSE.txt = ..\LICENSE.txt
 		..\paket.dependencies = ..\paket.dependencies
 	EndProjectSection
 EndProject
@@ -20,7 +23,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Relativity.Sync.Tests.Perfo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Relativity.Sync.Tests.System", "Relativity.Sync.Tests.System\Relativity.Sync.Tests.System.csproj", "{3EC97119-47A5-467C-A3F1-7730A539F837}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.Sync.Tests.Common", "Relativity.Sync.Tests.Common\Relativity.Sync.Tests.Common.csproj", "{8A904822-C8C5-450C-83EA-69936710C190}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Relativity.Sync.Tests.Common", "Relativity.Sync.Tests.Common\Relativity.Sync.Tests.Common.csproj", "{8A904822-C8C5-450C-83EA-69936710C190}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

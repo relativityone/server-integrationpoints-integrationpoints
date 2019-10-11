@@ -335,11 +335,15 @@ buildlogs/*
 # Ignore everything in BuildTools
 buildtools/*
 
+
 # But not these files...
 !buildtools/packages.config
+!buildtools/BuildHelpers.psm1
 
 # Sonar Scanner
 .sonarqube/*
 
 # Ignore vscode
 .vscode/*
+coverage.cobertura.xml
+/nuget

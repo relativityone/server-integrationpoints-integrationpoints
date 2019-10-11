@@ -28,7 +28,7 @@ timestamps
                 {
                     withCredentials([usernamePassword(credentialsId: 'TCBuildVersionCredentials', passwordVariable: 'DBPASSWORD', usernameVariable: 'DBUSER')])
                     {
-                        def outputString = powershell(returnStdout: true, script: ".\\build.ps1 getVersion -buildType ${params.buildType} -branchName ${env.BRANCH_NAME} -databaseUser $DBUSER -databasePassword $DBPASSWORD").trim()
+                        def outputString = powershell(returnStdout: true, script: ".\\build_jenkins.ps1 getVersion -buildType ${params.buildType} -branchName ${env.BRANCH_NAME} -databaseUser $DBUSER -databasePassword $DBPASSWORD").trim()
                         version = extractValue("VERSION", outputString)
                         packageVersion = extractValue("PACKAGE_VERSION", outputString)
                         if (!outputString || !version || !packageVersion)
@@ -39,34 +39,31 @@ timestamps
                         currentBuild.displayName = packageVersion
                     }            
                 }
-                stage ('ConfigureAwait check')
-                {
-                    powershell ".\\build.ps1 checkConfigureAwait"
-                }
+          
                 stage ('Build')
                 {
-                    powershell ".\\build.ps1 buildAndSign -buildConfig Release -version $version -packageVersion $packageVersion"
+                    powershell ".\\build_jenkins.ps1 buildAndSign -buildConfig Release -version $version -packageVersion $packageVersion"
                 }
                 stage ('Unit Tests')
                 {
-                    powershell ".\\build.ps1 runUnitTests"
+                    powershell ".\\build_jenkins.ps1 runUnitTests"
                 }
                 stage ('Integration Tests')
                 {
-                    powershell ".\\build.ps1 runIntegrationTests"
+                    powershell ".\\build_jenkins.ps1 runIntegrationTests"
                 }
                 stage ('NuGet publish')
                 {
-                    powershell ".\\build.ps1 packNuget -packageVersion $packageVersion"
+                    powershell ".\\build_jenkins.ps1 packNuget -packageVersion $packageVersion"
 
                     withCredentials([string(credentialsId: 'ProgetNugetApiKey', variable: 'key')])
                     {
-                        powershell ".\\build.ps1 publishNuget -progetApiKey $key"
+                        powershell ".\\build_jenkins.ps1 publishNuget -progetApiKey $key"
                     }
                 }
                 stage ('SonarQube')
                 {
-                    powershell ".\\build.ps1 runSonarScanner -version $version -branchName ${env.BRANCH_NAME}"
+                    powershell ".\\build_jenkins.ps1 runSonarScanner -version $version -branchName ${env.BRANCH_NAME}"
                 }
 
                 currentBuild.result = 'SUCCESS'

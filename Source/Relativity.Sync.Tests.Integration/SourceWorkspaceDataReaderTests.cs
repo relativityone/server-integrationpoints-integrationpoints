@@ -76,6 +76,7 @@ namespace Relativity.Sync.Tests.Integration
 		public void Dispose()
 		{
 			_instance?.Dispose();
+			_container?.Dispose();
 		}
 
 		private IRelativityExportBatcher CreateExporterForGivenBatchSize(int batchSize)
