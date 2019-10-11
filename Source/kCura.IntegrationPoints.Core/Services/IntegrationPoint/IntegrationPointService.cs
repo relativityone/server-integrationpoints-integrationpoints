@@ -212,11 +212,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			CreateJob(integrationPoint, sourceProvider, destinationProvider, jobDetails, workspaceArtifactId, userId);
 		}
 
-		public void RunCleanUpTable()
-		{
-			_jobService.CleanUpJobTable();
-		}
-
 		public void RetryIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId, int userId)
 		{
 			Data.IntegrationPoint integrationPoint;
@@ -408,11 +403,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 				CheckForOtherJobsExecutingOrInQueue(jobTaskType, workspaceArtifactId, integrationPoint.ArtifactId);
 				_jobService.CreateJobOnBehalfOfAUser(jobDetails, jobTaskType, workspaceArtifactId, integrationPoint.ArtifactId, userId);
 			}
-		}
-
-		private void CleanUpJobTable()
-		{
-			_jobService.CleanUpJobTable();
 		}
 
 		private Data.JobHistory CreateJobHistory(Data.IntegrationPoint integrationPoint, TaskParameters taskParameters, Choice jobType)

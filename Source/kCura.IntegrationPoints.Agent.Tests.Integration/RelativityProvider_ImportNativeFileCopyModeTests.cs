@@ -156,12 +156,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				areNativesPresentInTarget,
 				importNativeFile,
 				importNativeFileCopyMode);
-
-			_integrationPointService.RunCleanUpTable();
-
+			
 			_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactID, integrationPointModel.ArtifactID, _ADMIN_USER_ID); // add job to schedule queue
-
-
 
 			Job job = null;
 			try
