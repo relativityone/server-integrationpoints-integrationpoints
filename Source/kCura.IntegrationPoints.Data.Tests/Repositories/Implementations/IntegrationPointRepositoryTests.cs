@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Data.Models;
+using kCura.IntegrationPoints.Data.QueryOptions;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain.Models;
@@ -105,6 +108,29 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 					It.IsAny<object[]>()),
 				Times.Never);
 			AreIntegrationPointsEqual(expectedResult, actualResult).Should().BeTrue();
+		}
+
+		[Test]
+		public async Task ReadEncryptedAsync_ShouldReturnValidIntegrationPoint()
+		{
+			// Arrange
+			_integrationPoint = CreateTestIntegrationPoint();
+			_objectManagerMock.Setup(x => x.Read<IntegrationPoint>(_ARTIFACT_ID,ExecutionIdentity.CurrentUser)).Returns(_integrationPoint);
+
+			// Act
+			IntegrationPoint actualResult = await _sut.ReadEncryptedAsync(_ARTIFACT_ID).ConfigureAwait(false);
+
+			// Assert
+			_secretsRepositoryMock.Verify(x => x.DecryptAsync(It.IsAny<SecretPath>()), Times.Never);
+			_objectManagerMock.Verify(x => x.StreamUnicodeLongText(It.IsAny<int>(), It.IsAny<FieldRef>(), ExecutionIdentity.CurrentUser), Times.Never);
+			_objectManagerMock.Verify(x => x.Read<IntegrationPoint>(_ARTIFACT_ID, ExecutionIdentity.CurrentUser), Times.Once);
+			_internalLoggerMock.Verify(
+				x => x.LogError(
+					It.IsAny<Exception>(),
+					It.IsAny<string>(),
+					It.IsAny<object[]>()),
+				Times.Never);
+			actualResult.Should().Be(_integrationPoint);
 		}
 
 		[Test]

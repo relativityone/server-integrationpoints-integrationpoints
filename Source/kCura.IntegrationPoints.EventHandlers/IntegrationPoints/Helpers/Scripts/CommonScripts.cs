@@ -6,10 +6,10 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Script
 {
 	public class CommonScripts : ICommonScripts
 	{
-		protected readonly ScriptsHelper ScriptsHelper;
+		protected readonly IScriptsHelper ScriptsHelper;
 		private readonly IIntegrationPointBaseFieldGuidsConstants _guidsConstants;
 
-		public CommonScripts(ScriptsHelper scriptsHelper, IIntegrationPointBaseFieldGuidsConstants guidsConstants)
+		public CommonScripts(IScriptsHelper scriptsHelper, IIntegrationPointBaseFieldGuidsConstants guidsConstants)
 		{
 			ScriptsHelper = scriptsHelper;
 			_guidsConstants = guidsConstants;
@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Script
 
 		public virtual IList<string> LinkedScripts()
 		{
-			return new List<string>
+			var scripts = new List<string>
 			{
 				"/Scripts/knockout-3.4.0.js",
 				"/Scripts/knockout.validation.js",
@@ -47,14 +47,27 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Script
 				"/Scripts/core/utils.js",
 				"/Scripts/integration-point/time-utils.js",
 				"/Scripts/integration-point/picker.js",
-                "/Scripts/Export/export-validation.js",
-				"/Scripts/integration-point/save-as-profile-modal-vm.js",
-				"/Scripts/jquery.signalR-2.3.0.js",
-				"/signalr/hubs",
-				"/Scripts/hubs/integrationPointHub.js",
+				"/Scripts/Export/export-validation.js",
+				"/Scripts/integration-point/save-as-profile-modal-vm.js"
+			};
+
+			if (IsIntegrationPointPage())
+			{
+				scripts.AddRange(new[]
+				{
+					"/Scripts/jquery.signalR-2.3.0.js",
+					"/signalr/hubs",
+					"/Scripts/hubs/integrationPointHub.js"
+				});
+			}
+
+			scripts.AddRange(new[]
+			{
 				"/Scripts/EventHandlers/integration-points-view-destination.js",
 				"/Scripts/EventHandlers/integration-points-summary-page-view.js"
-			};
+			});
+
+			return scripts;
 		}
 
 		public virtual IList<string> ScriptBlocks()
@@ -122,5 +135,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Script
 		{
 			return string.Format($"IP.{name} = '{value}';");
 		}
+
+		private bool IsIntegrationPointPage() =>
+			ScriptsHelper.GetAPIControllerName() == "IntegrationPointsAPI";
 	}
 }
