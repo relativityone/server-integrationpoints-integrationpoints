@@ -160,8 +160,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				int[] resourcePools = { _sourceWorkspaceDto.ResourcePoolID.Value };
 				job = GetNextJobInScheduleQueue(resourcePools, integrationPointModel.ArtifactID, SourceWorkspaceArtifactID);
 
-				Console.WriteLine($" ParentJobId: {job.ParentJobId} RootJobId: {job.RootJobId} AgentTypeId: {job.AgentTypeID} " + $" JobDetails: {job.JobDetails}  JobParentID: {job.ParentJobId}");
-				
 				// act
 				_exportManager.Execute(job); // run the job
 
