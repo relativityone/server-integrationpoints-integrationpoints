@@ -322,7 +322,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 					{
 						// pick up job
 						if (job.RelatedObjectArtifactID == integrationPointID &&
-						    job.WorkspaceID == workspaceID)
+							job.WorkspaceID == workspaceID)
 						{
 							return job;
 						}
