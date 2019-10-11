@@ -1843,18 +1843,6 @@
       <Notes />
     </Assembly>
     <Assembly>
-      <ArtifactId>4702007</ArtifactId>
-      <Keywords />
-      <Name>SexyProxy.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>4702008</ArtifactId>
-      <Keywords />
-      <Name>SexyProxy.Emit.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
       <ArtifactId>4702137</ArtifactId>
       <Keywords />
       <Name>Relativity.DataExchange.Client.SDK.dll</Name>
