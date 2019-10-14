@@ -312,14 +312,13 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			IJobService jobServiceManager = Container.Resolve<IJobService>();
 
 			var agentsIDsToUnlock = new List<int>();
-			string exceptionMessage = "Timeout during search the job.";
+			Job job;
 			try
 			{
 				var stopWatch = new Stopwatch();
 				stopWatch.Start();
-				Job job;
 				int currentAgentID = 0;
-				const int SECONDS_TO_TIMEOUT = 10;
+				const int jobPickingUpTimeoutInSec = 10;
 				do
 				{
 					job = jobServiceManager.GetNextQueueJob(resourcePool, currentAgentID);
@@ -341,22 +340,20 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 						}
 						currentAgentID++;
 					}
-				} while (job != null && stopWatch.Elapsed < TimeSpan.FromSeconds(SECONDS_TO_TIMEOUT));
+				} while (job != null && stopWatch.Elapsed < TimeSpan.FromSeconds(jobPickingUpTimeoutInSec));
 				stopWatch.Stop();
-				if (job != null)
-				{
-					exceptionMessage =
-						"Unable to find the job. Please check the integration point agent and make sure that it is turned off.";
-				}
 			}
 			finally
 			{
 				UnlockJobs(jobServiceManager, agentsIDsToUnlock);
 			}
+			string exceptionMessage = job == null
+				? "Unable to find the job. Please check the integration point agent and make sure that it is turned off."
+				: "Timeout during search the job.";
 			throw new TestException(exceptionMessage);
 		}
 
-		private void UnlockJobs(IJobService jobServiceManager, List<int> agentsIDsToUnlock)
+		private void UnlockJobs(IJobService jobServiceManager, IList<int> agentsIDsToUnlock)
 		{
 			foreach (var agentIdToUnlock in agentsIDsToUnlock)
 			{
