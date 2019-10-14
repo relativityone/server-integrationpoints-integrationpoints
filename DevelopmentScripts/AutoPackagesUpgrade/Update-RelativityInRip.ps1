@@ -133,6 +133,7 @@ Begin
                 (New-Object PSObject -Property @{ name = "Relativity.Authentication"; version = $ToRelativityVersion }),
                 (New-Object PSObject -Property @{ name = "Relativity.CustomPages"; version = $ToRelativityVersion }),
                 (New-Object PSObject -Property @{ name = "Relativity.Data"; version = $ToRelativityVersion }),
+                #We need to follow this Einstein page https://einstein.kcura.com/display/DTV/Data+Transfer+SDK+-+Releases to verify if resolved DataExchange package is appropriate
                 (New-Object PSObject -Property @{ name = "Relativity.DataExchange.Client.SDK"; version = Find-LatestPackageVersion -PackageName "Relativity.DataExchange.Client.SDK" }),
                 (New-Object PSObject -Property @{ name = "Relativity.Services.Interfaces"; version = $ToRelativityVersion }),
                 (New-Object PSObject -Property @{ name = "Relativity.Services.Interfaces.Private"; version = $ToRelativityVersion }),

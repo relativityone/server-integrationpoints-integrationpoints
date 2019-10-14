@@ -33,6 +33,7 @@ function New-Checkout
     Write-Host "Beginning of $($MyInvocation.MyCommand.Name)"
     
     git -C $Path rev-parse --verify --quiet $BranchName
+    git -C $Path checkout -- .
 
     if($? -eq $true)
     {
