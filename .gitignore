@@ -343,3 +343,4 @@ buildtools/*
 
 # Ignore vscode
 .vscode/*
+coverage.cobertura.xml

@@ -42,7 +42,7 @@ namespace Relativity.Sync.Executors
 		public async Task<IImportJob> CreateImportJobAsync(ISynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
 		{
 			ISourceWorkspaceDataReader sourceWorkspaceDataReader = _dataReaderFactory.CreateSourceWorkspaceDataReader(batch, token);
-			ImportBulkArtifactJob importBulkArtifactJob = await CreateImportBulkArtifactJobAsync(configuration, 0, sourceWorkspaceDataReader).ConfigureAwait(false);
+			ImportBulkArtifactJob importBulkArtifactJob = await CreateImportBulkArtifactJobAsync(configuration, sourceWorkspaceDataReader).ConfigureAwait(false);
 			var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importBulkArtifactJob, sourceWorkspaceDataReader.ItemStatusMonitor);
 
 			_batchProgressHandlerFactory.CreateBatchProgressHandler(batch, importBulkArtifactJob);
@@ -62,7 +62,7 @@ namespace Relativity.Sync.Executors
 			importBulkArtifactJob.OnFatalException += jobProgressHandler.HandleFatalException;
 		}
 
-		private async Task<ImportBulkArtifactJob> CreateImportBulkArtifactJobAsync(ISynchronizationConfiguration configuration, int startingIndex, ISourceWorkspaceDataReader dataReader)
+		private async Task<ImportBulkArtifactJob> CreateImportBulkArtifactJobAsync(ISynchronizationConfiguration configuration, ISourceWorkspaceDataReader dataReader, int startingIndex = 0)
 		{
 			string webApiPath = await _webApiPathQuery.GetWebApiPathAsync().ConfigureAwait(false);
 			var webApiUri = new Uri(webApiPath);
