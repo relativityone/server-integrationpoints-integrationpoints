@@ -311,19 +311,24 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		{
 			IJobService jobServiceManager = Container.Resolve<IJobService>();
 
-			List<int> agentIdToUnlocks = new List<int>();
+			var agentsIDsToUnlock = new List<int>();
+			string exceptionMessage = "Timeout during search the job.";
 			try
 			{
-				Stopwatch stopWatch = new Stopwatch();
+				var stopWatch = new Stopwatch();
 				stopWatch.Start();
 				Job job;
 				int currentAgentID = 0;
+				const int SECONDS_TO_TIMEOUT = 10;
 				do
 				{
 					job = jobServiceManager.GetNextQueueJob(resourcePool, currentAgentID);
-					if (job != null)
+					if (job == null)
 					{
-						// pick up job
+						continue;
+					}
+					else
+					{
 						if (job.RelatedObjectArtifactID == integrationPointID &&
 							job.WorkspaceID == workspaceID)
 						{
@@ -331,22 +336,32 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 						}
 						else
 						{
-							agentIdToUnlocks.Add(currentAgentID);
+							agentsIDsToUnlock.Add(currentAgentID);
+							Console.WriteLine("In the queue we have other jobs, that might means that in other tests something is not working correctly");
 						}
-						System.Threading.Thread.Sleep(TimeSpan.FromSeconds(1));
 						currentAgentID++;
 					}
-				} while (job != null && stopWatch.Elapsed < TimeSpan.FromSeconds(10));
+				} while (job != null && stopWatch.Elapsed < TimeSpan.FromSeconds(SECONDS_TO_TIMEOUT));
 				stopWatch.Stop();
+				if (job != null)
+				{
+					exceptionMessage =
+						"Unable to find the job. Please check the integration point agent and make sure that it is turned off.";
+				}
 			}
 			finally
 			{
-				foreach (var agentIdToUnlock in agentIdToUnlocks)
-				{
-					jobServiceManager.UnlockJobs(agentIdToUnlock);
-				}
+				UnlockJobs(jobServiceManager, agentsIDsToUnlock);
 			}
-			throw new TestException("Unable to find the job. Please check the integration point agent and make sure that it is turned off.");
+			throw new TestException(exceptionMessage);
+		}
+
+		private void UnlockJobs(IJobService jobServiceManager, List<int> agentsIDsToUnlock)
+		{
+			foreach (var agentIdToUnlock in agentsIDsToUnlock)
+			{
+				jobServiceManager.UnlockJobs(agentIdToUnlock);
+			}
 		}
 
 		private async Task SetupAsync()
