@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,7 +30,7 @@ namespace Relativity.Sync.Transfer
 			_specialFieldBuilders = specialFieldBuilders.OrderBy(b => b.GetType().FullName).ToList();
 		}
 
-		public IEnumerable<FieldInfoDto> GetSpecialFields()
+		public IList<FieldInfoDto> GetSpecialFields()
 		{
 			return _specialFields ?? (_specialFields = _specialFieldBuilders.SelectMany(b => b.BuildColumns()).ToList());
 		}
@@ -69,13 +70,61 @@ namespace Relativity.Sync.Transfer
 		{
 			if (_allFields == null)
 			{
-				IEnumerable<FieldInfoDto> specialFields = GetSpecialFields();
-				IEnumerable<FieldInfoDto> mappedDocumentFields = await GetMappedDocumentFieldsAsync(token).ConfigureAwait(false);
-				List<FieldInfoDto> allFields = mappedDocumentFields.Concat(specialFields).ToList();
+				IList<FieldInfoDto> specialFields = GetSpecialFields();
+				List<FieldInfoDto> mappedDocumentFields = await GetMappedDocumentFieldsAsync(token).ConfigureAwait(false);
+				List<FieldInfoDto> allFields = MergeFieldCollections(specialFields, mappedDocumentFields);
 				_allFields = EnrichDocumentFieldsWithIndex(allFields);
 			}
 
 			return _allFields;
+		}
+
+		private List<FieldInfoDto> MergeFieldCollections(IList<FieldInfoDto> specialFields, IList<FieldInfoDto> mappedDocumentFields)
+		{
+			ThrowIfSpecialFieldsInvalid(specialFields, mappedDocumentFields);
+
+			List<FieldInfoDto> remainingSpecialFields = new List<FieldInfoDto>(specialFields);
+			List<FieldInfoDto> result = new List<FieldInfoDto>();
+
+			foreach (var mappedDocumentField in mappedDocumentFields)
+			{
+				FieldInfoDto matchingSpecialField = remainingSpecialFields.FirstOrDefault(f => FieldInfosHaveSameSourceAndDestination(f, mappedDocumentField));
+
+				if (matchingSpecialField != null)
+				{
+					var fieldInfoDto = new FieldInfoDto(matchingSpecialField.SpecialFieldType,
+						mappedDocumentField.SourceFieldName, mappedDocumentField.DestinationFieldName,
+						mappedDocumentField.IsIdentifier, mappedDocumentField.IsDocumentField);
+					result.Add(fieldInfoDto);
+					remainingSpecialFields.Remove(matchingSpecialField);
+				}
+				else
+				{
+					result.Add(mappedDocumentField);
+				}
+			}
+			result.AddRange(remainingSpecialFields);
+
+			return result;
+		}
+
+		private static void ThrowIfSpecialFieldsInvalid(IList<FieldInfoDto> specialFields, IList<FieldInfoDto> mappedDocumentFields)
+		{
+			foreach (var specialField in specialFields)
+			{
+				FieldInfoDto documentField =
+					mappedDocumentFields.FirstOrDefault(mdf => mdf.DestinationFieldName == specialField.DestinationFieldName);
+				if (documentField != null && (!specialField.IsDocumentField || specialField.SourceFieldName != documentField.SourceFieldName))
+				{
+					throw new InvalidOperationException(
+						"Special field destination name conflicts with mapped field destination name.");
+				}
+			}
+		}
+
+		private static bool FieldInfosHaveSameSourceAndDestination(FieldInfoDto first, FieldInfoDto second)
+		{ 
+			return first.SourceFieldName == second.SourceFieldName && first.DestinationFieldName == second.DestinationFieldName;
 		}
 
 		private List<FieldInfoDto> EnrichDocumentFieldsWithIndex(List<FieldInfoDto> fields)
@@ -93,7 +142,7 @@ namespace Relativity.Sync.Transfer
 			return fields;
 		}
 
-		private async Task<IEnumerable<FieldInfoDto>> GetMappedDocumentFieldsAsync(CancellationToken token)
+		private async Task<List<FieldInfoDto>> GetMappedDocumentFieldsAsync(CancellationToken token)
 		{
 			if (_mappedDocumentFields == null)
 			{
