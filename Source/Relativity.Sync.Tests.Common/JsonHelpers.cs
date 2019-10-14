@@ -1,9 +1,11 @@
-﻿using System.IO;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Relativity.Sync.Tests.Common
 {
+	[ExcludeFromCodeCoverage]
 	public static class JsonHelpers
 	{
 		/// <summary>

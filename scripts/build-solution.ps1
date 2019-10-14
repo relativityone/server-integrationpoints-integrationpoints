@@ -36,7 +36,7 @@ param(
 Get-ChildItem -Path $sourceDir -Filter *.sln -File | ForEach-Object {
     & dotnet restore $_.FullName
 
-    & $global:msbuild_exe $_.FullName "/p:Configuration=$buildConf" "/p:Version=$version" "/p:InformationalVersion=$packageVersion" `
+    & $global:msbuild_exe $_.FullName "/p:Configuration=$buildConf" "/p:Version=$version" "/p:InformationalVersion=$packageVersion" "/p:FileVersion=$version" `
         "/p:CertificateThumbprint=$certThumbprint" "/p:SignToolPath=$signToolPath" "/nologo" "/nodereuse:false" "/maxcpucount"
 
     if ($LASTEXITCODE -ne 0) {

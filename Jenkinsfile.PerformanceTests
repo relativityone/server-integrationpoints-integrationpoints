@@ -19,11 +19,11 @@ timestamps
                 }
                 stage ('Build')
                 {            
-                    powershell ".\\build.ps1 build -buildConfig Release"
+                    powershell ".\\build_jenkins.ps1 build -buildConfig Release"
                 }            
                 stage ('Performance Tests')
                 {
-                    powershell ".\\build.ps1 runPerformanceTests"
+                    powershell ".\\build_jenkins.ps1 runPerformanceTests"
                 }
 
                 currentBuild.result = 'SUCCESS'

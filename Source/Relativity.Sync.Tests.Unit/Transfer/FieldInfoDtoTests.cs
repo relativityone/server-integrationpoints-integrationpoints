@@ -73,7 +73,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			//Assert
 			result.SpecialFieldType.Should().Be(SpecialFieldType.FolderPath);
 			result.SourceFieldName.Should().Be(fieldName);
-			result.DestinationFieldName.Should().Be(fieldName);
+			result.DestinationFieldName.Should().Be("76B270CB-7CA9-4121-B9A1-BC0D655E5B2D");
 			result.IsDocumentField.Should().BeTrue();
 			result.IsIdentifier.Should().BeFalse();
 		}

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Relativity.Sync.Storage;
@@ -9,6 +10,7 @@ namespace Relativity.Sync.Tests.Common
 	/// <summary>
 	///     Small stub for testing classes with a dependency on <see cref="IProgressRepository"/>. Stores RDOs in a list.
 	/// </summary>
+	[ExcludeFromCodeCoverage]
 	internal sealed class ProgressRepositoryStub : IProgressRepository
 	{
 		public List<ProgressStub> ProgressObjects { get; } = new List<ProgressStub>();

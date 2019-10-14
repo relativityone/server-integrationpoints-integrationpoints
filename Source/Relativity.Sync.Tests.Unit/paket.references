@@ -14,5 +14,8 @@ Polly
 Autofac
 
 NUnit
+NUnit3TestAdapter
+NunitXml.TestLogger
+coverlet.msbuild
 FluentAssertions
 Moq

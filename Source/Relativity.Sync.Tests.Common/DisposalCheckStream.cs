@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
 namespace Relativity.Sync.Tests.Common
@@ -7,6 +8,7 @@ namespace Relativity.Sync.Tests.Common
 	/// Needed to directly check if a class disposes a <see cref="Stream"/>,
 	/// since <see cref="Stream.Dispose"/> is not virtual.
 	/// </summary>
+	[ExcludeFromCodeCoverage]
 	public sealed class DisposalCheckStream : Stream
 	{
 		private bool _canRead;

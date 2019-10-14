@@ -10,6 +10,7 @@ Polly
 Autofac
 Newtonsoft.Json
 NUnit
+NunitXml.TestLogger
 FluentAssertions
 Moq
 relativity.testing.identification

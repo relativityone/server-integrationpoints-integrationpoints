@@ -192,8 +192,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			const bool isSpecialDocumentField = true;
 			const SpecialFieldType specialFieldType = SpecialFieldType.FolderPath;
 
-			FieldMap mapping = CreateFieldMapping(_MAPPED_FIELD_1_SOURCE_NAME, _MAPPED_FIELD_1_DESTINATION_NAME);
-			_configuration.Setup(c => c.FieldMappings).Returns(new[] { mapping });
+			MockFieldMappingsToReturnOneMapping(_MAPPED_FIELD_1_SOURCE_NAME, _MAPPED_FIELD_1_DESTINATION_NAME);
 
 			FieldInfoDto specialField = new FieldInfoDto(specialFieldType, _MAPPED_FIELD_1_SOURCE_NAME, _MAPPED_FIELD_1_DESTINATION_NAME, false, isSpecialDocumentField);
 			Mock<ISpecialFieldBuilder> builder = CreateSpecialFieldBuilderMockWithBuildColumnsReturning(new[] { specialField });
@@ -204,13 +203,11 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			IReadOnlyList<FieldInfoDto> result = await _instance.GetAllFieldsAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
-			result.Should().HaveCount(1);
-			result.Should()
-				.Contain(f =>
-					f.SourceFieldName == _MAPPED_FIELD_1_SOURCE_NAME &&
-					f.DestinationFieldName == _MAPPED_FIELD_1_DESTINATION_NAME &&
-					f.IsDocumentField == isSpecialDocumentField &&
-					f.SpecialFieldType == SpecialFieldType.FolderPath);
+			FieldInfoDto returnedField = result.Single();
+			returnedField.SourceFieldName.Should().Be(_MAPPED_FIELD_1_SOURCE_NAME);
+			returnedField.DestinationFieldName.Should().Be(_MAPPED_FIELD_1_DESTINATION_NAME);
+			returnedField.IsDocumentField.Should().Be(isSpecialDocumentField);
+			returnedField.SpecialFieldType.Should().Be(SpecialFieldType.FolderPath);
 		}
 
 		[Test]
@@ -220,8 +217,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			const int expectedFieldCount = 2;
 			const bool isSpecialDocumentField = true;
 
-			FieldMap mapping = CreateFieldMapping(_MAPPED_FIELD_1_SOURCE_NAME, _MAPPED_FIELD_1_DESTINATION_NAME);
-			_configuration.Setup(c => c.FieldMappings).Returns(new[] { mapping });
+			MockFieldMappingsToReturnOneMapping(_MAPPED_FIELD_1_SOURCE_NAME, _MAPPED_FIELD_1_DESTINATION_NAME);
 
 			FieldInfoDto specialField = new FieldInfoDto(SpecialFieldType.FolderPath, _MAPPED_FIELD_1_SOURCE_NAME, _DOCUMENT_SPECIAL_FIELD_NAME, false, isSpecialDocumentField);
 			Mock<ISpecialFieldBuilder> builder = CreateSpecialFieldBuilderMockWithBuildColumnsReturning(new[] { specialField });
@@ -245,8 +241,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public async Task ItShouldThrowWhenSpecialFieldAndDocumentFieldHasSameDestinationNameAndDifferentSourceNames()
 		{
 			// Arrange
-			FieldMap mapping = CreateFieldMapping(_MAPPED_FIELD_1_SOURCE_NAME, _MAPPED_FIELD_1_DESTINATION_NAME);
-			_configuration.Setup(c => c.FieldMappings).Returns(new[] { mapping });
+			MockFieldMappingsToReturnOneMapping(_MAPPED_FIELD_1_SOURCE_NAME, _MAPPED_FIELD_1_DESTINATION_NAME);
 
 			FieldInfoDto specialField = FieldInfoDto.GenericSpecialField(SpecialFieldType.None, _DOCUMENT_SPECIAL_FIELD_NAME, _MAPPED_FIELD_1_DESTINATION_NAME);
 			Mock<ISpecialFieldBuilder> builder = CreateSpecialFieldBuilderMockWithBuildColumnsReturning(new[] {specialField});
@@ -257,7 +252,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			Func<Task<IReadOnlyList<FieldInfoDto>>> action = () => _instance.GetAllFieldsAsync(CancellationToken.None);
 
 			// Assert
-			await action.Should().ThrowAsync<InvalidOperationException>().ConfigureAwait(false);
+			(await action.Should().ThrowAsync<InvalidOperationException>().ConfigureAwait(false)).Which.Message.Should().StartWith("Special field destination name conflicts with mapped field destination name.");
 		}
 
 		[Test]
@@ -266,8 +261,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			// Arrange
 			const bool isSpecialDocumentField = false;
 
-			FieldMap mapping = CreateFieldMapping(_MAPPED_FIELD_1_SOURCE_NAME, _MAPPED_FIELD_1_DESTINATION_NAME);
-			_configuration.Setup(c => c.FieldMappings).Returns(new[] { mapping });
+			MockFieldMappingsToReturnOneMapping(_MAPPED_FIELD_1_SOURCE_NAME, _MAPPED_FIELD_1_DESTINATION_NAME);
 
 			FieldInfoDto specialField = new FieldInfoDto(SpecialFieldType.None, _MAPPED_FIELD_1_SOURCE_NAME, _MAPPED_FIELD_1_DESTINATION_NAME, false, isSpecialDocumentField);
 			Mock<ISpecialFieldBuilder> builder = CreateSpecialFieldBuilderMockWithBuildColumnsReturning(new[] {specialField});
@@ -278,7 +272,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			Func<Task<IReadOnlyList<FieldInfoDto>>> action = () => _instance.GetAllFieldsAsync(CancellationToken.None);
 
 			// Assert
-			await action.Should().ThrowAsync<InvalidOperationException>().ConfigureAwait(false);
+			(await action.Should().ThrowAsync<InvalidOperationException>().ConfigureAwait(false)).Which.Message.Should().StartWith("Special field destination name conflicts with mapped field destination name.");
 		}
 
 		[Test]
@@ -287,8 +281,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			// Arrange
 			const bool isSpecialDocumentField = true;
 
-			FieldMap mapping = CreateFieldMapping(_MAPPED_FIELD_1_SOURCE_NAME, _MAPPED_FIELD_1_SOURCE_NAME);
-			_configuration.Setup(c => c.FieldMappings).Returns(new[] { mapping });
+			MockFieldMappingsToReturnOneMapping(_MAPPED_FIELD_1_SOURCE_NAME, _MAPPED_FIELD_1_DESTINATION_NAME);
 
 			FieldInfoDto specialField = new FieldInfoDto(SpecialFieldType.None, _MAPPED_FIELD_1_SOURCE_NAME, _MAPPED_FIELD_1_SOURCE_NAME, false, isSpecialDocumentField);
 			Mock<ISpecialFieldBuilder> builder = CreateSpecialFieldBuilderMockWithBuildColumnsReturning(new[] {specialField});
@@ -344,12 +337,22 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			// Assert
 			await action.Should().NotThrowAsync().ConfigureAwait(false);
 		}
-		
+
+		private void MockFieldMappingsToReturnOneMapping(string sourceFieldName, string destinationFieldName)
+		{
+			FieldMap mapping = CreateFieldMapping(sourceFieldName, destinationFieldName);
+			_configuration.Setup(c => c.FieldMappings).Returns(new[] { mapping });
+		}
+
 		private static FieldMap CreateFieldMapping(string sourceFieldName, string destinationFieldName)
 		{
-			return new FieldMap { SourceField = new FieldEntry { DisplayName = sourceFieldName }, DestinationField = new FieldEntry { DisplayName = destinationFieldName } };
+			return new FieldMap
+			{
+				SourceField = new FieldEntry { DisplayName = sourceFieldName },
+				DestinationField = new FieldEntry { DisplayName = destinationFieldName }
+			};
 		}
-		
+
 		private static Mock<ISpecialFieldBuilder> CreateSpecialFieldBuilderMockWithBuildColumnsReturning(IEnumerable<FieldInfoDto> fieldsToReturn)
 		{
 			Mock<ISpecialFieldBuilder> builder = new Mock<ISpecialFieldBuilder>();

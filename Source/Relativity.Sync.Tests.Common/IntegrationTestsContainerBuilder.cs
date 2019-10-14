@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using Autofac;
@@ -10,6 +11,7 @@ using Relativity.Sync.Telemetry;
 
 namespace Relativity.Sync.Tests.Common
 {
+	[ExcludeFromCodeCoverage]
 	public static class IntegrationTestsContainerBuilder
 	{
 		public static void MockReporting(ContainerBuilder containerBuilder)

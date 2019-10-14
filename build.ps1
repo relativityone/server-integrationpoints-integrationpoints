@@ -1,92 +1,72 @@
-#Requires -Version 5.0
+##########################################################################
+# This is the Psake bootstrapper script for PowerShell.
+##########################################################################
 
 <#
 .SYNOPSIS
-    Runs specified tasks.
+This is a Powershell script to bootstrap a Psake build.
 
 .DESCRIPTION
-    Downloads nuget.exe in case it's missing.
-    Restore all buildtools dependencies.
-    Imports required powershell modules.
-    Runs specified tasks.
+This Powershell script will download NuGet if missing, restore build tools using Nuget
+and execute your build tasks with the parameters you provide.
 
-.PARAMETER taskList
-    List of tasks to run
+.PARAMETER TaskList
+List of build tasks to execute.
 
-.PARAMETER buildConfig
-    Build configuration - Debug or Release
+.PARAMETER Configuration
+The build configuration to use. Either Debug or Release. Defaults to Debug.
 
-.PARAMETER buildType
-    Build type - DEV or GOLD
+.LINK
 
-.PARAMETER branchName
-    Current branch name
-
-.PARAMETER version
-    Assemblies version (1.2.3.4)
-
-.PARAMETER packageVersion
-    Package version (1.2.3.-dev-4)
-
-.PARAMETER progetApiKey
-    API-key used to authenticate to proget server
-
-.PARAMETER databaseUser
-    Username to connect to TCBuildVersion database
-
-.PARAMETER databasePassword
-    Password to connect to TCBuildVersion database
-
-.PARAMETER sutAddress
-    Address of Server Under Test instance
 #>
 
 [CmdletBinding()]
 param(
     [string[]]$taskList = @(),
 
+    [Parameter(Mandatory=$False)]
     [ValidateSet("Debug","Release")]
-    [string]$buildConfig = "Debug",
-    
-    [ValidateSet("DEV", "GOLD")]
-    [string]$buildType = "DEV",
-
-    [string]$branchName,
-    [string]$version = "0.0.0.0",
-    [string]$packageVersion = "0.0-dev-0",
-    [string]$progetApiKey,
-    [string]$databaseUser,
-    [string]$databasePassword,
-	[string]$sutAddress
+    [string]$Configuration = "Debug"
 )
 
-$BASE_DIR = Resolve-Path .
-$TOOLS_DIR = Join-Path $BASE_DIR "buildtools"
-$SCRIPTS_DIR = Join-Path $BASE_DIR "scripts"
-$NUGET_EXE = Join-Path $TOOLS_DIR "nuget.exe"
+Set-StrictMode -Version 2.0
 
-Write-Verbose "Restoring buildtools..."
-& (Join-Path $SCRIPTS_DIR "restore-buildtools.ps1") -toolsDir $TOOLS_DIR -nugetExe $NUGET_EXE
+$ToolsDir = Join-Path $PSScriptRoot "buildtools"
+$ReportGenerator = Join-Path $ToolsDir "reportgenerator.exe"
+Import-Module -Force "$ToolsDir\BuildHelpers.psm1" -ErrorAction Stop
+Assert-Module -Name PSBuildTools -Version 0.7.0 -Path $ToolsDir
+Assert-Module -Name psake -Version 4.7.4 -Path $ToolsDir
+if (-not (Test-Path $ReportGenerator))
+{
+    & dotnet tool install dotnet-reportgenerator-globaltool --version 4.1.5 --tool-path $ToolsDir
+    if ($LASTEXITCODE -ne 0) { throw "An error occured while restoring build tools." }
+}
 
-Write-Verbose "Importing powershell modules..."
-& (Join-Path $SCRIPTS_DIR "import-build-modules.ps1") -toolsDir $TOOLS_DIR
+$Params = @{
+    taskList = $TaskList
+    nologo = $true
+    parameters = @{	
+        BuildConfig = $Configuration
+        ReportGenerator = $ReportGenerator
+    }
+    Verbose = $VerbosePreference
+    Debug = $DebugPreference
+}
 
-Write-Verbose "Executing build..."
-Invoke-PSake "default.ps1" `
-	-parameters @{	'root' = $BASE_DIR;
-                    'toolsDir' = $TOOLS_DIR;
-                    'scriptsDir' = $SCRIPTS_DIR;
-                    'buildConfig' = $buildConfig;
-                    'buildType' = $buildType;
-                    'branchName' = $branchName;
-                    'version' = $version;
-                    'packageVersion' = $packageVersion;
-                    'nugetExe' = $NUGET_EXE;
-                    'progetApiKey' = $progetApiKey;
-                    'databaseUser' = $databaseUser;
-                    'databasePassword' = $databasePassword;
-                    'sutAddress' =  $sutAddress }`
-        -nologo `
-	-taskList $taskList `
+Try
+{
+    Invoke-PSake @Params
+}
+Finally
+{
+    $ExitCode = 0
+    If ($psake.build_success -eq $False)
+    {
+        $ExitCode = 1
+    }
 
-exit ( [int]( -not $psake.build_success ) )
+    Remove-Module PSake -Force -ErrorAction SilentlyContinue
+    Remove-Module PSBuildTools -Force -ErrorAction SilentlyContinue
+}
+
+Exit $ExitCode
