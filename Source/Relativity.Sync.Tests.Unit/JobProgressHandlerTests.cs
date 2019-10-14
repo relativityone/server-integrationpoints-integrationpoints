@@ -10,13 +10,14 @@ namespace Relativity.Sync.Tests.Unit
 	[TestFixture]
 	public class JobProgressHandlerTests
 	{
-		private Mock<IJobProgressUpdater> _jobProgressUpdater;
-		private Mock<IDateTime> _dateTime;
 
 		private JobProgressHandler _instance;
-		private static PropertyInfo _jobReportTotalRowsProperty;
+		private Mock<IDateTime> _dateTime;
+		private Mock<IJobProgressUpdater> _jobProgressUpdater;
 
 		private const int _THROTTLE_SECONDS = 5;
+
+		private static readonly Lazy<PropertyInfo> _jobReportTotalRowsProperty = new Lazy<PropertyInfo>(GetJobReportTotalRowsPropertyInfo);
 
 		[SetUp]
 		public void SetUp()
@@ -106,14 +107,13 @@ namespace Relativity.Sync.Tests.Unit
 			{
 				jobReport.ErrorRows.Add(jobError);
 			}
-
-			if (_jobReportTotalRowsProperty == null)
-			{
-				_jobReportTotalRowsProperty = typeof(JobReport).GetProperty(nameof(JobReport.TotalRows));
-			}
-
-			_jobReportTotalRowsProperty?.SetValue(jobReport, numberOfItemProcessedEvents);
+			_jobReportTotalRowsProperty.Value.SetValue(jobReport, numberOfItemProcessedEvents);
 			return jobReport;
+		}
+
+		private static PropertyInfo GetJobReportTotalRowsPropertyInfo()
+		{
+			return typeof(JobReport).GetProperty(nameof(JobReport.TotalRows));
 		}
 
 		private static JobReport CreateJobReport()
