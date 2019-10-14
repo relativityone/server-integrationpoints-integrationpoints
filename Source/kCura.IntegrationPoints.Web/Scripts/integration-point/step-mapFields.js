@@ -838,7 +838,9 @@ ko.validation.insertValidationMessage = function (element) {
 
 					if ((self.sourceField()[i].isIdentifier && self.workspaceFields()[j].isIdentifier) 
 						|| 
-						(self.sourceField()[i].name === self.workspaceFields()[j].name))
+                        (self.sourceField()[i].name === self.workspaceFields()[j].name)
+                        ||
+					    (self.sourceField()[i].name + " [Object Identifier]" === self.workspaceFields()[j].name))
 					{
 						sourceFieldToAdd.push(self.sourceField()[i]);
 						wspaceFieldToAdd.push(self.workspaceFields()[j]);
