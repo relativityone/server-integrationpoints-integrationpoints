@@ -1,4 +1,5 @@
 AutoMapper
+Castle.Core
 Castle.Windsor
 CSharpGuidelineAnalyzer
 kCura.Relativity.Client

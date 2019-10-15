@@ -1,7 +1,8 @@
+Castle.Core
+Castle.Windsor
 CSharpGuidelineAnalyzer
 kCura.Relativity.Client
 Relativity.API
 Relativity.DataExchange.Client.SDK
-Castle.Windsor
 Relativity.Services.Interfaces
 Relativity.DataGrid

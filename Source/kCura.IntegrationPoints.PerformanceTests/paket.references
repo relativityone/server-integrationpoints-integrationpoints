@@ -1,8 +1,9 @@
+Castle.Core
+Castle.Windsor
 CSharpGuidelineAnalyzer
 kCura.Relativity.Client
 Relativity.Kepler.Client
 Relativity.Telemetry.APM
-Castle.Windsor
 
 group TestPackages
 	BenchmarkDotNet
