@@ -17,6 +17,7 @@ nuget Relativity.Data 11.0.104.1
 nuget Relativity.DataExchange.Client.SDK 1.7.1
 nuget Relativity.Services.Interfaces 11.0.104.1
 nuget Relativity.Services.Interfaces.Private 11.0.104.1
+nuget Relativity.API 12.0.1
 
 //Other Relativity packages
 nuget kCura.Apps.Common.Config 2.1.1
@@ -38,10 +39,11 @@ nuget Relativity.Toggles 1.0.0.100
 nuget Relativity.Vfs.IO 1.0.24
 
 //Relativity transient packages
-nuget kCura.OutsideIn.FI.Win32 ~> 2019.3.0 content: none 		//Relativity.DataExchange.Client.SDK
+nuget kCura.OutsideIn.FI.Win32 ~> 2019.4.0 content: none 		//Relativity.DataExchange.Client.SDK
 
 //Other packages
 nuget AutoMapper 4.2.1
+nuget Castle.Core 4.4.0
 nuget Castle.Windsor 3.3.0
 nuget LanguageExt.Core 3.1.15
 nuget Microsoft.AspNet.Mvc 5.2.3
@@ -81,9 +83,8 @@ group Sync
 	framework: auto-detect
 	strategy: min
 	source https://proget.kcura.corp/nuget/NuGet
-	nuget Relativity.Sync 0.1.10-beta1
+	nuget Relativity.Sync 0.1.10-beta10
 	nuget Autofac 4.9.2.0
-	nuget Relativity.API 12.0.1
 	nuget Relativity.Services.DataContracts 11.0.104.1
 	nuget Relativity.Services.Interfaces 11.0.104.1
 	nuget Relativity.Services.Interfaces.Private 11.0.104.1
