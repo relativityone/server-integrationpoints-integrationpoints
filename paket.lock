@@ -274,7 +274,7 @@ STRATEGY: MIN
 RESTRICTION: == net462
 NUGET
   remote: https://proget.kcura.corp/nuget/NuGet
-    Autofac (4.9.2)
+    Autofac (4.9.4)
     Banzai (3.0.2)
     Banzai.Autofac (3.0.2)
     Castle.Core (4.4.0)
