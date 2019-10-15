@@ -16,12 +16,25 @@ function Find-LatestPackageVersion
     )
 
     Write-Host "Beginning of $($MyInvocation.MyCommand.Name)"
+
+    Install-PackagesSourceIfNotExist
     
-    $package = Find-Package $PackageName -Source ProGet
+    $package = Find-Package $PackageName -Source kCuraArtifactoryNuGet
     
     Write-Host "End of $($MyInvocation.MyCommand.Name)"
 
-    $package.Version
+    $package.Version | Select-Object -First 1
+}
+
+function Install-PackagesSourceIfNotExist
+{
+    $sourceLocation = "https://relativity.jfrog.io/relativity/api/nuget/proget-nuget-remote"
+    $repository = Get-PSRepository | Where-Object {$_.SourceLocation -eq $sourceLocation }
+
+    if (-not $repository) 
+    {
+        Register-PSRepository -Name kCuraArtifactoryNuGet -InstallationPolicy Trusted -SourceLocation $sourceLocation -PublishLocation $sourceLocation
+    }
 }
 
 Export-ModuleMember -Function Find-LatestPackageVersion
