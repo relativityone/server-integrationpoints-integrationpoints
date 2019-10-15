@@ -818,32 +818,37 @@ ko.validation.insertValidationMessage = function (element) {
 
 			var sourceFieldToAdd = ko.observableArray([]);
 			var wspaceFieldToAdd = ko.observableArray([]);
-			for (var i = 0; i < self.sourceField().length; i++) {
+            for (var i = 0; i < self.sourceField().length; i++) {
+                var currentSourceField = self.sourceField()[i];
+                var currentWorkspaceField;
 				var fieldAlreadyMatched = false;
 
 				if (matchOnlyIdentifierFields) {
-					if (!self.sourceField()[i].isIdentifier) {
+                    if (!currentSourceField.isIdentifier) {
 						continue;
 					}
-					matchOnlyIdentifierFields(self.sourceField()[i]);
+                    matchOnlyIdentifierFields(currentSourceField);
 				}
 
+                var objectIdentifierFieldSuffix = " [Object Identifier]";
 
 				//check for a match b/w the source and destination fields by identifier flag or name
-				for (var j = 0; j < self.workspaceFields().length; j++) {
+                for (var j = 0; j < self.workspaceFields().length; j++) {
+                    currentWorkspaceField = self.workspaceFields()[j];
+
 					//check to make sure that we ignore any workspace field that's already added
-					if (wspaceFieldToAdd().indexOf(self.workspaceFields()[j]) != -1) {
+                    if (wspaceFieldToAdd().indexOf(currentWorkspaceField) != -1) {
 						continue;
 					}
 
-					if ((self.sourceField()[i].isIdentifier && self.workspaceFields()[j].isIdentifier) 
+                    if ((currentSourceField.isIdentifier && currentWorkspaceField.isIdentifier) 
 						|| 
-                        (self.sourceField()[i].name === self.workspaceFields()[j].name)
+                        (currentSourceField.name === currentWorkspaceField.name)
                         ||
-					    (self.sourceField()[i].name + " [Object Identifier]" === self.workspaceFields()[j].name))
+                        (currentSourceField.name + objectIdentifierFieldSuffix === currentWorkspaceField.name))
 					{
-						sourceFieldToAdd.push(self.sourceField()[i]);
-						wspaceFieldToAdd.push(self.workspaceFields()[j]);
+                        sourceFieldToAdd.push(currentSourceField);
+                        wspaceFieldToAdd.push(currentWorkspaceField);
 						fieldAlreadyMatched = true;
 						break;
 					}
@@ -851,22 +856,24 @@ ko.validation.insertValidationMessage = function (element) {
 
 				//if we haven't found a match for the current source field by name, now check the field catalog
 				if (!fieldAlreadyMatched) {
-					for (var k = 0; k < self.workspaceFields().length; k++) {
+                    for (var k = 0; k < self.workspaceFields().length; k++) {
+                        currentWorkspaceField = self.workspaceFields()[k];
+
 						//check to make sure that we ignore any workspace field that's already added
-						if (wspaceFieldToAdd().indexOf(self.workspaceFields()[k]) != -1) {
+                        if (wspaceFieldToAdd().indexOf(currentWorkspaceField) != -1) {
 							continue;
 						}
 
 						var isCatalogFieldMatchResult;
 						if (self.IsRelativityProvider()) {
-							isCatalogFieldMatchResult = isCatalogFieldMatch(self.sourceField()[i].identifer, self.workspaceFields()[k].name);
+                            isCatalogFieldMatchResult = isCatalogFieldMatch(currentSourceField.identifer, currentWorkspaceField.name);
 						} else {
-							isCatalogFieldMatchResult = isCatalogFieldMatch(self.workspaceFields()[k].identifer, self.sourceField()[i].name);
+                            isCatalogFieldMatchResult = isCatalogFieldMatch(currentWorkspaceField.identifer, currentSourceField.name);
 						}
 
 						if (isCatalogFieldMatchResult) {
-							sourceFieldToAdd.push(self.sourceField()[i]);
-							wspaceFieldToAdd.push(self.workspaceFields()[k]);
+                            sourceFieldToAdd.push(currentSourceField);
+                            wspaceFieldToAdd.push(currentWorkspaceField);
 							break;
 						}
 					}
