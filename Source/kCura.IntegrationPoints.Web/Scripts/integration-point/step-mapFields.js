@@ -831,6 +831,7 @@ ko.validation.insertValidationMessage = function (element) {
 				}
 
                 var objectIdentifierFieldSuffix = " [Object Identifier]";
+                var currentSourceFieldNameAsIdentifier = currentSourceField.name + objectIdentifierFieldSuffix;
 
 				//check for a match b/w the source and destination fields by identifier flag or name
                 for (var j = 0; j < self.workspaceFields().length; j++) {
@@ -845,7 +846,7 @@ ko.validation.insertValidationMessage = function (element) {
 						|| 
                         (currentSourceField.name === currentWorkspaceField.name)
                         ||
-                        (currentSourceField.name + objectIdentifierFieldSuffix === currentWorkspaceField.name))
+                        (currentSourceFieldNameAsIdentifier === currentWorkspaceField.name))
 					{
                         sourceFieldToAdd.push(currentSourceField);
                         wspaceFieldToAdd.push(currentWorkspaceField);
