@@ -33,8 +33,7 @@ namespace kCura.IntegrationPoints.ImportProvider
 				{
 					DisplayName = fieldName,
 					FieldIdentifier = idx.ToString(),
-					FieldType = FieldType.String,
-					IsIdentifier = idx == 0
+					FieldType = FieldType.String
 				});
 				idx++;
 			}
