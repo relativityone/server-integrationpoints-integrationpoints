@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using kCura.Utility;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.Exceptions;
@@ -103,9 +102,8 @@ namespace Relativity.Sync.Tests.Unit
 			const double progress = 3.1;
 			const string lockedBy = "id 2";
 
-			ReadResult readResult = PrepareReadResult(totalItemsCount, startingIndex, statusDescription, failedItemsCount, transferredItemsCount, new decimal(progress), lockedBy);
-
-			_objectManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<ReadRequest>())).ReturnsAsync(readResult);
+			QueryResult queryResult = PrepareQueryResult(totalItemsCount, startingIndex, statusDescription, failedItemsCount, transferredItemsCount, new decimal(progress), lockedBy);
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(queryResult);
 
 			// ACT
 			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
@@ -120,9 +118,25 @@ namespace Relativity.Sync.Tests.Unit
 			batch.Progress.Should().Be(progress);
 			batch.LockedBy.Should().Be(lockedBy);
 
-			_objectManager.Verify(x => x.ReadAsync(_WORKSPACE_ID, It.Is<ReadRequest>(rr => AssertReadRequest(rr))), Times.Once);
+			_objectManager.Verify(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(queryRequest => AssertQueryRequest(queryRequest)), 0, 1), Times.Once);
 		}
 
+		[Test]
+		public void ItShouldThrowWhenBatchNotFound()
+		{
+			QueryResult queryResult = new QueryResult()
+			{
+				Objects = new List<RelativityObject>()
+			};
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, 1)).ReturnsAsync(queryResult);
+
+			// ACT
+			Func<Task> action = () => _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID);
+
+			// ASSERT
+			action.Should().Throw<SyncException>().Which.Message.Should().Be($"Batch ArtifactID: {_ARTIFACT_ID} not found.");
+		}
+		
 		[Test]
 		public async Task ItShouldHandleNullValues()
 		{
@@ -133,9 +147,8 @@ namespace Relativity.Sync.Tests.Unit
 			decimal? progress = null;
 			const string lockedBy = null;
 
-			ReadResult readResult = PrepareReadResult(failedItemsCount: failedItemsCount, transferredItemsCount: transferredItemsCount, progress: progress, lockedBy: lockedBy);
-
-			_objectManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<ReadRequest>())).ReturnsAsync(readResult);
+			QueryResult queryResult = PrepareQueryResult(failedItemsCount: failedItemsCount, transferredItemsCount: transferredItemsCount, progress: progress, lockedBy: lockedBy);
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, 1)).ReturnsAsync(queryResult);
 
 			// ACT
 			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
@@ -149,12 +162,15 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 #pragma warning disable RG2011 // Method Argument Count Analyzer
-		private static ReadResult PrepareReadResult(int totalItemsCount = 1, int startingIndex = 1, string status = "Started", int? failedItemsCount = 1, int? transferredItemsCount = 1,
+		private static QueryResult PrepareQueryResult(int totalItemsCount = 1, int startingIndex = 1, string status = "Started", int? failedItemsCount = 1, int? transferredItemsCount = 1,
 			decimal? progress = 1, string lockedBy = "id")
 		{
-			ReadResult readResult = new ReadResult
+			QueryResult readResult = new QueryResult
 			{
-				Object = PrepareObject(totalItemsCount, startingIndex, status, failedItemsCount, transferredItemsCount, progress, lockedBy)
+				Objects = new List<RelativityObject>()
+				{
+					PrepareObject(totalItemsCount, startingIndex, status, failedItemsCount, transferredItemsCount, progress, lockedBy)
+				}
 			};
 			return readResult;
 		}
@@ -259,10 +275,10 @@ namespace Relativity.Sync.Tests.Unit
 			};
 		}
 
-		private bool AssertReadRequest(ReadRequest readRequest)
+		private bool AssertQueryRequest(QueryRequest queryRequest)
 		{
-			readRequest.Object.ArtifactID.Should().Be(_ARTIFACT_ID);
-			IList<FieldRef> fields = readRequest.Fields.ToList();
+			queryRequest.Condition.Should().Be($"'ArtifactID' == {_ARTIFACT_ID}");
+			IList<FieldRef> fields = queryRequest.Fields.ToList();
 			AssertReadFields(fields);
 			return true;
 		}
@@ -285,8 +301,8 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			const int failedItemsCount = 9876;
 
-			ReadResult readResult = PrepareReadResult();
-			_objectManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<ReadRequest>())).ReturnsAsync(readResult);
+			QueryResult queryResult = PrepareQueryResult();
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, 1)).ReturnsAsync(queryResult);
 
 			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
 
@@ -304,8 +320,8 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			const int transferredItemsCount = 849170;
 
-			ReadResult readResult = PrepareReadResult();
-			_objectManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<ReadRequest>())).ReturnsAsync(readResult);
+			QueryResult queryResult = PrepareQueryResult();
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, 1)).ReturnsAsync(queryResult);
 
 			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
 
@@ -323,8 +339,8 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			const string lockedBy = "worker 1";
 
-			ReadResult readResult = PrepareReadResult();
-			_objectManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<ReadRequest>())).ReturnsAsync(readResult);
+			QueryResult queryResult = PrepareQueryResult();
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, 1)).ReturnsAsync(queryResult);
 
 			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
 
@@ -342,8 +358,8 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			const double progress = 55.5;
 
-			ReadResult readResult = PrepareReadResult();
-			_objectManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<ReadRequest>())).ReturnsAsync(readResult);
+			QueryResult queryResult = PrepareQueryResult();
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, 1)).ReturnsAsync(queryResult);
 
 			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
 
@@ -362,8 +378,8 @@ namespace Relativity.Sync.Tests.Unit
 			const BatchStatus status = BatchStatus.InProgress;
 			const string expectedStatusDescription = "In Progress";
 
-			ReadResult readResult = PrepareReadResult();
-			_objectManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<ReadRequest>())).ReturnsAsync(readResult);
+			QueryResult queryResult = PrepareQueryResult();
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, 1)).ReturnsAsync(queryResult);
 
 			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
 
@@ -381,8 +397,8 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			const int newValue = 876536;
 
-			ReadResult readResult = PrepareReadResult();
-			_objectManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<ReadRequest>())).ReturnsAsync(readResult);
+			QueryResult queryResult = PrepareQueryResult();
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, 1)).ReturnsAsync(queryResult);
 			_objectManager.Setup(x => x.UpdateAsync(_WORKSPACE_ID, It.IsAny<UpdateRequest>())).Throws<ArgumentNullException>();
 
 			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
@@ -403,8 +419,8 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			const int newValue = 85743;
 
-			ReadResult readResult = PrepareReadResult();
-			_objectManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<ReadRequest>())).ReturnsAsync(readResult);
+			QueryResult queryResult = PrepareQueryResult();
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, 1)).ReturnsAsync(queryResult);
 			_objectManager.Setup(x => x.UpdateAsync(_WORKSPACE_ID, It.IsAny<UpdateRequest>())).Throws<ArgumentNullException>();
 
 			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
@@ -425,8 +441,8 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			const string newValue = "worker 2";
 
-			ReadResult readResult = PrepareReadResult();
-			_objectManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<ReadRequest>())).ReturnsAsync(readResult);
+			QueryResult queryResult = PrepareQueryResult();
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, 1)).ReturnsAsync(queryResult);
 			_objectManager.Setup(x => x.UpdateAsync(_WORKSPACE_ID, It.IsAny<UpdateRequest>())).Throws<ArgumentNullException>();
 
 			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
@@ -447,8 +463,8 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			const BatchStatus newValue = BatchStatus.Completed;
 
-			ReadResult readResult = PrepareReadResult();
-			_objectManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<ReadRequest>())).ReturnsAsync(readResult);
+			QueryResult queryResult = PrepareQueryResult();
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, 1)).ReturnsAsync(queryResult);
 			_objectManager.Setup(x => x.UpdateAsync(_WORKSPACE_ID, It.IsAny<UpdateRequest>())).Throws<ArgumentNullException>();
 
 			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
@@ -469,8 +485,8 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			const double newValue = 99.9;
 
-			ReadResult readResult = PrepareReadResult();
-			_objectManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<ReadRequest>())).ReturnsAsync(readResult);
+			QueryResult queryResult = PrepareQueryResult();
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, 1)).ReturnsAsync(queryResult);
 			_objectManager.Setup(x => x.UpdateAsync(_WORKSPACE_ID, It.IsAny<UpdateRequest>())).Throws<ArgumentNullException>();
 
 			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
@@ -597,12 +613,12 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			const int syncConfigurationArtifactId = 634;
 
-			QueryResultSlim queryResult = PrepareQueryResultSlim();
-			queryResult.TotalCount = queryResult.Objects.Count;
-			_objectManager.Setup(x => x.QuerySlimAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, int.MaxValue)).ReturnsAsync(queryResult);
+			QueryResultSlim queryResultSlim = PrepareQueryResultSlim();
+			queryResultSlim.TotalCount = queryResultSlim.Objects.Count;
+			_objectManager.Setup(x => x.QuerySlimAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, int.MaxValue)).ReturnsAsync(queryResultSlim);
 
-			ReadResult readResult = PrepareReadResult();
-			_objectManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<ReadRequest>())).ReturnsAsync(readResult);
+			QueryResult queryResult = PrepareQueryResult();
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, 1)).ReturnsAsync(queryResult);
 
 			// ACT
 			IEnumerable<IBatch> batches = await _batchRepository.GetAllAsync(_WORKSPACE_ID, syncConfigurationArtifactId).ConfigureAwait(false);

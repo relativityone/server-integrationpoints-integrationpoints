@@ -42,7 +42,7 @@ namespace Relativity.Sync.Storage
 			Status = status;
 		}
 
-		public Progress(ISourceServiceFactoryForAdmin serviceFactory, ISyncLog logger, int workspaceArtifactId, int artifactId)
+		private Progress(ISourceServiceFactoryForAdmin serviceFactory, ISyncLog logger, int workspaceArtifactId, int artifactId)
 		{
 			_serviceFactory = serviceFactory;
 			_logger = logger;
@@ -51,7 +51,7 @@ namespace Relativity.Sync.Storage
 			ArtifactId = artifactId;
 		}
 
-		public Progress(ISourceServiceFactoryForAdmin serviceFactory, ISyncLog logger, int workspaceArtifactId, int syncConfigurationArtifactId, string name)
+		private Progress(ISourceServiceFactoryForAdmin serviceFactory, ISyncLog logger, int workspaceArtifactId, int syncConfigurationArtifactId, string name)
 		{
 			_serviceFactory = serviceFactory;
 			_logger = logger;
@@ -144,19 +144,23 @@ namespace Relativity.Sync.Storage
 
 		private async Task ReadAsync()
 		{
-			var request = new ReadRequest
-			{
-				Object = new RelativityObjectRef
-				{
-					ArtifactID = ArtifactId
-				},
-				Fields = GetFieldRefsForQuery()
-			};
-
 			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
-				ReadResult result = await objectManager.ReadAsync(_workspaceArtifactId, request).ConfigureAwait(false);
-				PopulateProgressProperties(result.Object);
+				QueryRequest request = new QueryRequest()
+				{
+					ObjectType = new ObjectTypeRef()
+					{
+						Guid = ProgressObjectTypeGuid
+					},
+					Fields = GetFieldRefsForQuery(),
+					Condition = $"'ArtifactID' == {ArtifactId}"
+				};
+				QueryResult queryResult = await objectManager.QueryAsync(_workspaceArtifactId, request, 0, 1).ConfigureAwait(false);
+				if (!queryResult.Objects.Any())
+				{
+					throw new SyncException($"Progress ArtifactID: {ArtifactId} not found.");
+				}
+				PopulateProgressProperties(queryResult.Objects.First());
 			}
 		}
 

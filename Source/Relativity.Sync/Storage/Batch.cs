@@ -227,16 +227,21 @@ namespace Relativity.Sync.Storage
 			ArtifactId = artifactId;
 			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
-				ReadRequest request = new ReadRequest
+				QueryRequest request = new QueryRequest()
 				{
-					Object = new RelativityObjectRef
+					ObjectType = new ObjectTypeRef()
 					{
-						ArtifactID = ArtifactId
+						Guid = BatchObjectTypeGuid
 					},
-					Fields = GetFieldsToRead()
+					Fields = GetFieldsToRead(),
+					Condition = $"'ArtifactID' == {artifactId}"
 				};
-				ReadResult readResult = await objectManager.ReadAsync(_workspaceArtifactId, request).ConfigureAwait(false);
-				PopulateBatchProperties(readResult.Object);
+				QueryResult queryResult = await objectManager.QueryAsync(workspaceArtifactId, request, 0, 1).ConfigureAwait(false);
+				if (!queryResult.Objects.Any())
+				{
+					throw new SyncException($"Batch ArtifactID: {artifactId} not found.");
+				}
+				PopulateBatchProperties(queryResult.Objects.First());
 			}
 		}
 
