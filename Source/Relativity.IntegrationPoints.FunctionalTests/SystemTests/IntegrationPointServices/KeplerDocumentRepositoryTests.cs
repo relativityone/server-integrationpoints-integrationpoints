@@ -68,7 +68,9 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.IntegrationPo
 				LONG_DATA_SET_EMBEDDED_DATA_INFO_VALUE);
 
 			_smallDataSetProductionCreateResult = _productionHelper.CreateAndRunProduction(_smallDataSetSearchArtifactID);
-			_largeDataSetProductionCreateResult = _productionHelper.CreateAndRunProduction(_largeDataSetSearchArtifactID);
+			_largeDataSetProductionCreateResult = _productionHelper.CreateAndRunProduction(
+				_largeDataSetSearchArtifactID,
+				Productions.Services.ProductionType.ImagesOnly);
 		}
 
 		[OneTimeTearDown]

@@ -103,24 +103,35 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return Production.Create(workspaceArtifactID, productionSetName);
 		}
 
-		public ProductionCreateResultDto CreateAndRunProduction(int workspaceArtifactID, int savedSearchID, string productionName)
+		public ProductionCreateResultDto CreateAndRunProduction(int workspaceArtifactID, int savedSearchID, string productionName, ProductionType productionType)
 		{
 			string placeHolderFilePath = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\DefaultPlaceholder.tif");
 
-			return CreateAndRunProduction(workspaceArtifactID, savedSearchID, productionName, placeHolderFilePath);
+			return CreateAndRunProduction(workspaceArtifactID, savedSearchID, productionName, placeHolderFilePath, productionType);
 		}
 
-		public ProductionCreateResultDto CreateAndRunProduction(int workspaceArtifactID, int savedSearchID, string productionName, string placeHolderFilePath)
+		public ProductionCreateResultDto CreateAndRunProduction(
+			int workspaceArtifactID, 
+			int savedSearchID,
+			string productionName, 
+			string placeHolderFilePath, 
+			ProductionType productionType)
 		{
 			return CreateAndRunProductionAsync(
-					workspaceArtifactID,
-					savedSearchID,
-					productionName,
-					placeHolderFilePath
-				).GetAwaiter().GetResult();
+				workspaceArtifactID,
+				savedSearchID,
+				productionName,
+				placeHolderFilePath,
+				productionType
+			).GetAwaiter().GetResult();
 		}
 
-		public async Task<ProductionCreateResultDto> CreateAndRunProductionAsync(int workspaceArtifactID, int savedSearchID, string productionName, string placeHolderFilePath)
+		public async Task<ProductionCreateResultDto> CreateAndRunProductionAsync(
+			int workspaceArtifactID, 
+			int savedSearchID,
+			string productionName, 
+			string placeHolderFilePath, 
+			ProductionType productionType)
 		{
 			byte[] placeHolderFileDataBytes = File.ReadAllBytes(placeHolderFilePath);
 			int productionSetArtifactID = CreateProductionSet(workspaceArtifactID, productionName);
@@ -130,28 +141,44 @@ namespace kCura.IntegrationPoint.Tests.Core
 				workspaceArtifactID,
 				productionSetArtifactID,
 				savedSearchID,
+				productionType,
 				UseImagePlaceholderOption.WhenNoImageExists,
 				placeholderID
 			).ConfigureAwait(false);
 
-			await Production.StageAndWaitForCompletionAsync(
-				workspaceArtifactID,
-				productionSetArtifactID
-			).ConfigureAwait(false);
+			await StageProductionAsync(workspaceArtifactID, productionName, productionSetArtifactID).ConfigureAwait(false);
+			await RunProductionAsync(workspaceArtifactID, productionName, productionSetArtifactID).ConfigureAwait(false);
 
-			await Production.RunAndWaitForCompletionAsync(
-				workspaceArtifactID,
-				productionSetArtifactID
-			).ConfigureAwait(false);
-
-			var productionModel = new ProductionCreateResultDto(productionSetArtifactID, dataSourceArtifactID);
-
-			return productionModel;
+			return new ProductionCreateResultDto(productionSetArtifactID, dataSourceArtifactID);
 		}
 
 		public int GetView(int workspaceID, string viewName)
 		{
 			return View.QueryView(workspaceID, viewName);
+		}
+
+		private static async Task StageProductionAsync(int workspaceArtifactID, string productionName, int productionSetArtifactID)
+		{
+			bool wasStagedSuccessfully = await Production.StageAndWaitForCompletionAsync(
+				workspaceArtifactID,
+				productionSetArtifactID
+			).ConfigureAwait(false);
+			if (!wasStagedSuccessfully)
+			{
+				throw new TestException($"Error occured while staging production: {productionName}");
+			}
+		}
+
+		private static async Task RunProductionAsync(int workspaceArtifactID, string productionName, int productionSetArtifactID)
+		{
+			bool wasRanSuccessfully = await Production.RunAndWaitForCompletionAsync(
+				workspaceArtifactID,
+				productionSetArtifactID
+			).ConfigureAwait(false);
+			if (!wasRanSuccessfully)
+			{
+				throw new TestException($"Error occured while running production: {productionName}");
+			}
 		}
 	}
 }

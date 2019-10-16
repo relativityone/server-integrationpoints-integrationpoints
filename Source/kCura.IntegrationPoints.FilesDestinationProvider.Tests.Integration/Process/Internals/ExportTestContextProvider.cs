@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.Utility;
 using Relativity.DataExchange.Service;
+using Relativity.Productions.Services;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Process.Internals
 {
@@ -101,7 +102,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			ProductionCreateResultDto productionCreateResult = _workspaceService.CreateAndRunProduction(
 				_testContext.WorkspaceID,
 				_testContext.ExportedObjArtifactID,
-				_testConfiguration.ProductionArtifactName);
+				_testConfiguration.ProductionArtifactName,
+				ProductionType.ImagesAndNatives);
 
 			_testContext.ProductionArtifactID = productionCreateResult.ProductionArtifactID;
 		}

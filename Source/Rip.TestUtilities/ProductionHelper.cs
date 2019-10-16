@@ -2,6 +2,7 @@
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.Data.Repositories;
+using Relativity.Productions.Services;
 
 namespace Rip.TestUtilities
 {
@@ -21,10 +22,12 @@ namespace Rip.TestUtilities
 			_workspaceService = workspaceService;
 		}
 
-		public ProductionCreateResultDto CreateAndRunProduction(int searchArtifactID)
+		public ProductionCreateResultDto CreateAndRunProduction(
+			int searchArtifactID,
+			ProductionType productionType = ProductionType.ImagesAndNatives)
 		{
 			string productionName = Guid.NewGuid().ToString();
-			return _workspaceService.CreateAndRunProduction(_workspaceID, searchArtifactID, productionName);
+			return _workspaceService.CreateAndRunProduction(_workspaceID, searchArtifactID, productionName, productionType);
 		}
 
 		public void DeleteProduction(ProductionCreateResultDto productionCreateResult)

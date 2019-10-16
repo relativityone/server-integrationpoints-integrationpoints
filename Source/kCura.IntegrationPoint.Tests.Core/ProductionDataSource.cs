@@ -13,6 +13,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			int workspaceId,
 			int productionId,
 			int savedSearchId,
+			ProductionType productionType,
 			UseImagePlaceholderOption useImagePlaceholder,
 			int placeholderId)
 		{
@@ -22,7 +23,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			{
 				var productionDataSource = new global::Relativity.Productions.Services.ProductionDataSource
 				{
-					ProductionType = ProductionType.ImagesAndNatives,
+					ProductionType = productionType,
 					SavedSearch = new SavedSearchRef(savedSearchId),
 					UseImagePlaceholder = useImagePlaceholder,
 					Placeholder = new ProductionPlaceholderRef(placeholderId) { Name = "CustomPlaceholder" },

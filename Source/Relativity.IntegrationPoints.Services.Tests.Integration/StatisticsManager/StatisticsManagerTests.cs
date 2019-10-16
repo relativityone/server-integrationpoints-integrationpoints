@@ -58,7 +58,11 @@ namespace Relativity.IntegrationPoints.Services.Tests.Integration.StatisticsMana
 			_testCaseSettings.FolderId = _testCaseSettings.DocumentsTestData.Documents.Last().FolderId.GetValueOrDefault();
 
 			_testCaseSettings.ProductionId = workspaceService
-				.CreateAndRunProduction(WorkspaceArtifactId, _testCaseSettings.SavedSearchId, "Production")
+				.CreateAndRunProduction(
+					WorkspaceArtifactId, 
+					_testCaseSettings.SavedSearchId, 
+					"Production",
+					Productions.Services.ProductionType.ImagesAndNatives)
 				.ProductionArtifactID;
 		}
 
