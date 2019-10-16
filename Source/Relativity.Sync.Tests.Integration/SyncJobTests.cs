@@ -32,7 +32,7 @@ namespace Relativity.Sync.Tests.Integration
 				ExecutionResult.SuccessWithErrors(new ArgumentException("foo")));
 			RegisterExecutorMock<IDataDestinationFinalizationConfiguration>(_containerBuilder,
 				ExecutionResult.Success());
-			RegisterExecutorMock<IJobCleanupConfiguration>(_containerBuilder,
+			RegisterExecutorMock<IValidationConfiguration>(_containerBuilder,
 				ExecutionResult.Failure(new InvalidOperationException("bar")));
 			SyncJob job = CreateSyncJob(_containerBuilder);
 

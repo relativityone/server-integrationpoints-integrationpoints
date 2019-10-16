@@ -16,6 +16,8 @@ namespace Relativity.Sync.Tests.Integration
 		private List<Type> _executorTypes;
 		private ContainerBuilder _containerBuilder;
 
+		protected virtual bool ShouldStopExecution { get; } = true;
+
 		[SetUp]
 		public void SetUp()
 		{
@@ -38,7 +40,14 @@ namespace Relativity.Sync.Tests.Integration
 			Func<Task> action = async () => await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			action.Should().Throw<SyncException>();
+			if (ShouldStopExecution)
+			{
+				action.Should().Throw<SyncException>(); 
+			}
+			else
+			{
+				action().GetAwaiter().GetResult();
+			}
 
 			_executorTypes.Count.Should().Be(ExpectedNumberOfExecutedSteps());
 

@@ -12,38 +12,23 @@ using Relativity.Sync.Tests.Integration.Helpers;
 namespace Relativity.Sync.Tests.Integration
 {
 	[TestFixture]
-	internal sealed class NotificationStepTests
+	internal sealed class NotificationStepTests : FailingStepsBase<INotificationConfiguration>
 	{
-		private List<Type> _executorTypes;
-		private ContainerBuilder _containerBuilder;
+		protected override bool ShouldStopExecution { get; } = false;
 
-		[SetUp]
-		public void SetUp()
+		protected override void AssertExecutedSteps(List<Type> executorTypes)
 		{
-			_executorTypes = new List<Type>();
-			_containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
-			IntegrationTestsContainerBuilder.RegisterStubsForPipelineBuilderTests(_containerBuilder, _executorTypes);
-			IntegrationTestsContainerBuilder.MockReporting(_containerBuilder);
+			// nothing special to assert
 		}
 
-		[Test]
-		public void ItShouldHandleExceptionAndStopExecutionAfterStepConstrainsCheckFails()
+		protected override int ExpectedNumberOfExecutedSteps()
 		{
-			IExecutionConstrains<INotificationConfiguration> executionConstrains = new FailingExecutionConstrainsStub<INotificationConfiguration>();
-
-			_containerBuilder.RegisterInstance(executionConstrains).As<IExecutionConstrains<INotificationConfiguration>>();
-
-			ISyncJob syncJob = _containerBuilder.Build().Resolve<ISyncJob>();
-
-			// ACT
-			Func<Task> action = async () => await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
-
-			// ASSERT
-			action.Should().Throw<SyncException>();
-
-			const int expectedNumberOfSteps = 14;
-			_executorTypes.Count.Should().Be(expectedNumberOfSteps);
-			_executorTypes.Should().NotContain(x => x == typeof(INotificationConfiguration));
+			// validation, permissions, object types, snapshot,
+			// source tags, dest tags, data destination init, sum reporting,
+			// saved search, snapshot partition, sync, data destination finalization,
+			// job status consolidation, job cleanup
+			const int expectedNumberOfExecutedSteps = 14;
+			return expectedNumberOfExecutedSteps;
 		}
 	}
 }

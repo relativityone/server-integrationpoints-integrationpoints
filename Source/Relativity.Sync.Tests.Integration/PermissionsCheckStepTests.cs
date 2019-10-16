@@ -15,8 +15,8 @@ namespace Relativity.Sync.Tests.Integration
 
 		protected override int ExpectedNumberOfExecutedSteps()
 		{
-			// Notification/root
-			const int expectedNumberOfExecutedSteps = 1;
+			// Notification, cleanup, job status consolidation
+			const int expectedNumberOfExecutedSteps = 3;
 			return expectedNumberOfExecutedSteps;
 		}
 	}

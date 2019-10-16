@@ -17,7 +17,13 @@ namespace Relativity.Sync.Tests.Common
 		public static void MockReporting(ContainerBuilder containerBuilder)
 		{
 			containerBuilder.RegisterInstance(Mock.Of<ISyncMetrics>()).As<ISyncMetrics>();
-			containerBuilder.RegisterInstance(Mock.Of<IJobEndMetricsService>()).As<IJobEndMetricsService>();
+
+			var jobEndMetricsService = new Mock<IJobEndMetricsService>();
+			jobEndMetricsService
+				.Setup(x => x.ExecuteAsync(It.IsAny<ExecutionStatus>()))
+				.ReturnsAsync(ExecutionResult.Success);
+			containerBuilder.RegisterInstance(jobEndMetricsService.Object).As<IJobEndMetricsService>();
+
 			containerBuilder.RegisterInstance(Mock.Of<IProgress<SyncJobState>>()).As<IProgress<SyncJobState>>();
 		}
 

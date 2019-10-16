@@ -15,10 +15,10 @@ namespace Relativity.Sync.Tests.Integration
 
 		protected override int ExpectedNumberOfExecutedSteps()
 		{
-			// validation, permissions, object types, snapshot, source tags, dest tags,
-			// data destination init, snapshot partition, sync, saved search,
-			// data destination finalization, notification
-			const int expectedNumberOfExecutedSteps = 13;
+			// validation, permissions, object types, snapshot,
+			// source tags, dest tags, data destination init, sum reporting
+			// saved search, snapshot partition, sync, data destination finalization,
+			const int expectedNumberOfExecutedSteps = 12;
 			return expectedNumberOfExecutedSteps;
 		}
 	}

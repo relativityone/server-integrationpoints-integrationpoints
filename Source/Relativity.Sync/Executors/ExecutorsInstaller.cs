@@ -60,6 +60,8 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<SynchronizationExecutor>().As<IExecutor<ISynchronizationConfiguration>>();
 			builder.RegisterType<NotificationExecutionConstrains>().As<IExecutionConstrains<INotificationConfiguration>>();
 			builder.RegisterType<NotificationExecutor>().As<IExecutor<INotificationConfiguration>>();
+			builder.RegisterType<JobStatusConsolidationExecutionConstrains>().As<IExecutionConstrains<IJobStatusConsolidationConfiguration>>();
+			builder.RegisterType<JobStatusConsolidationExecutor>().As<IExecutor<IJobStatusConsolidationConfiguration>>();
 			builder.RegisterTypes(Assembly.GetExecutingAssembly().GetTypes().Where(t => !t.IsAbstract && t.IsAssignableTo<IPermissionCheck>()).ToArray()).As<IPermissionCheck>();
 
 			builder.RegisterType<BatchRepository>().As<IBatchRepository>();

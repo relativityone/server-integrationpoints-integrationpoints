@@ -8,6 +8,8 @@ namespace Relativity.Sync.Tests.Integration
 	[TestFixture]
 	internal sealed class JobCleanupStepTests : FailingStepsBase<IJobCleanupConfiguration>
 	{
+		protected override bool ShouldStopExecution { get; } = false;
+
 		protected override void AssertExecutedSteps(List<Type> executorTypes)
 		{
 			// nothing special to assert
@@ -15,9 +17,10 @@ namespace Relativity.Sync.Tests.Integration
 
 		protected override int ExpectedNumberOfExecutedSteps()
 		{
-			// validation, permissions, object types, snapshot, source tags, dest tags,
-			// data destination init, snapshot partition, sync, saved search,
-			// data destination finalization, status consolidation, notification
+			// validation, permissions, object types, snapshot,
+			// source tags, dest tags, data destination init, sum reporting,
+			// saved search, snapshot partition, sync, data destination finalization,
+			// job status consolidation, notification
 			const int expectedNumberOfExecutedSteps = 14;
 			return expectedNumberOfExecutedSteps;
 		}

@@ -25,12 +25,23 @@ namespace Relativity.Sync.Tests.Integration
 		{
 			ContainerBuilder containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
 			IntegrationTestsContainerBuilder.MockAllSteps(containerBuilder);
-			containerBuilder.RegisterInstance(Mock.Of<ISyncMetrics>()).As<ISyncMetrics>();
-			containerBuilder.RegisterInstance(Mock.Of<IJobEndMetricsService>()).As<IJobEndMetricsService>();
+			MockReporting(containerBuilder);
 			_progressRepository = new ProgressRepositoryStub();
 			containerBuilder.RegisterInstance(_progressRepository).As<IProgressRepository>();
 			_container = containerBuilder.Build();
 			_instance = _container.Resolve<ISyncJob>();
+		}
+
+		private static void MockReporting(ContainerBuilder containerBuilder)
+		{
+			containerBuilder.RegisterInstance(Mock.Of<ISyncMetrics>()).As<ISyncMetrics>();
+
+			var jobEndMetricsService = new Mock<IJobEndMetricsService>();
+			jobEndMetricsService
+				.Setup(x => x.ExecuteAsync(It.IsAny<ExecutionStatus>()))
+				.ReturnsAsync(ExecutionResult.Success);
+
+			containerBuilder.RegisterInstance(jobEndMetricsService.Object).As<IJobEndMetricsService>();
 		}
 
 		[Test]
