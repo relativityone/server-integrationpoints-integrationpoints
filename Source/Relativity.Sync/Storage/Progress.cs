@@ -26,35 +26,26 @@ namespace Relativity.Sync.Storage
 		private static readonly Guid ParentArtifactGuid = new Guid("E0188DD7-4B1B-454D-AFA4-3CCC7F9DC001");
 
 		private Progress(ISourceServiceFactoryForAdmin serviceFactory, ISyncLog logger, int workspaceArtifactId, int syncConfigurationArtifactId, string name, int order, SyncJobStatus status)
-			: this(serviceFactory, logger, workspaceArtifactId, syncConfigurationArtifactId, name)
 		{
-			Order = order;
-			Status = status;
-		}
-
-		private Progress(ISourceServiceFactoryForAdmin serviceFactory, ISyncLog logger, int workspaceArtifactId, int artifactId)
-		{
-			_serviceFactory = serviceFactory;
-			_logger = logger;
-			_workspaceArtifactId = workspaceArtifactId;
-
-			ArtifactId = artifactId;
-		}
-
-		private Progress(ISourceServiceFactoryForAdmin serviceFactory, ISyncLog logger, int workspaceArtifactId, int syncConfigurationArtifactId, string name)
-		{
-			if (string.IsNullOrWhiteSpace(name))
-			{
-				throw new ArgumentNullException(nameof(name));
-			}
-
-			Name = name;
-
 			_serviceFactory = serviceFactory;
 			_logger = logger;
 			_workspaceArtifactId = workspaceArtifactId;
 			_syncConfigurationArtifactId = syncConfigurationArtifactId;
 
+			Name = name;
+			Order = order;
+			Status = status;
+		}
+
+		private Progress(ISourceServiceFactoryForAdmin serviceFactory, ISyncLog logger, int workspaceArtifactId, int artifactId)
+			: this(serviceFactory, logger, workspaceArtifactId, 0, string.Empty, 0, SyncJobStatus.New)
+		{
+			ArtifactId = artifactId;
+		}
+
+		private Progress(ISourceServiceFactoryForAdmin serviceFactory, ISyncLog logger, int workspaceArtifactId, int syncConfigurationArtifactId, string name)
+			: this(serviceFactory, logger, workspaceArtifactId, syncConfigurationArtifactId, name, 0, SyncJobStatus.New)
+		{
 		}
 
 		public int ArtifactId { get; private set; }

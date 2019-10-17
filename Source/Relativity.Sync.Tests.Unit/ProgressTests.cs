@@ -406,21 +406,6 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		[TestCase(null)]
-		[TestCase("")]
-		public void ItShouldThrowOnEmptyName(string name)
-		{
-			const int order = 1;
-			const SyncJobStatus status = SyncJobStatus.New;
-
-			// ACT
-			Func<Task> action = async () => await _progressRepository.CreateAsync(_WORKSPACE_ID, 1, name, order, status).ConfigureAwait(false);
-
-			// ASSERT
-			action.Should().Throw<ArgumentNullException>();
-		}
-
-		[Test]
 		public async Task ItShouldQueryAllProgressTests()
 		{
 			//Arrange
