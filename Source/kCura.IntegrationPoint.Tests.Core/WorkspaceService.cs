@@ -19,6 +19,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 		private const string _SAVED_SEARCH_FOLDER = "Testing Folder";
 		private readonly ImportHelper _importHelper;
 
+		public const int PRODUCTION_MAX_RETRIES_COUNT = 100;
+
 		public WorkspaceService(ImportHelper importHelper)
 		{
 			_importHelper = importHelper;
@@ -103,11 +105,22 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return Production.Create(workspaceArtifactID, productionSetName);
 		}
 
-		public ProductionCreateResultDto CreateAndRunProduction(int workspaceArtifactID, int savedSearchID, string productionName, ProductionType productionType)
+		public ProductionCreateResultDto CreateAndRunProduction(
+			int workspaceArtifactID, 
+			int savedSearchID, 
+			string productionName, 
+			ProductionType productionType, 
+			int retriesCount = PRODUCTION_MAX_RETRIES_COUNT)
 		{
 			string placeHolderFilePath = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\DefaultPlaceholder.tif");
 
-			return CreateAndRunProduction(workspaceArtifactID, savedSearchID, productionName, placeHolderFilePath, productionType);
+			return CreateAndRunProduction(
+				workspaceArtifactID, 
+				savedSearchID, 
+				productionName, 
+				placeHolderFilePath,
+				productionType, 
+				retriesCount);
 		}
 
 		public ProductionCreateResultDto CreateAndRunProduction(
@@ -115,14 +128,16 @@ namespace kCura.IntegrationPoint.Tests.Core
 			int savedSearchID,
 			string productionName, 
 			string placeHolderFilePath, 
-			ProductionType productionType)
+			ProductionType productionType,
+			int retriesCount = PRODUCTION_MAX_RETRIES_COUNT)
 		{
 			return CreateAndRunProductionAsync(
 				workspaceArtifactID,
 				savedSearchID,
 				productionName,
 				placeHolderFilePath,
-				productionType
+				productionType,
+				retriesCount
 			).GetAwaiter().GetResult();
 		}
 
@@ -131,7 +146,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 			int savedSearchID,
 			string productionName, 
 			string placeHolderFilePath, 
-			ProductionType productionType)
+			ProductionType productionType,
+			int retriesCount)
 		{
 			byte[] placeHolderFileDataBytes = File.ReadAllBytes(placeHolderFilePath);
 			int productionSetArtifactID = CreateProductionSet(workspaceArtifactID, productionName);
@@ -146,8 +162,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 				placeholderID
 			).ConfigureAwait(false);
 
-			await StageProductionAsync(workspaceArtifactID, productionName, productionSetArtifactID).ConfigureAwait(false);
-			await RunProductionAsync(workspaceArtifactID, productionName, productionSetArtifactID).ConfigureAwait(false);
+			await StageProductionAsync(workspaceArtifactID, productionName, productionSetArtifactID, retriesCount).ConfigureAwait(false);
+			await RunProductionAsync(workspaceArtifactID, productionName, productionSetArtifactID, retriesCount).ConfigureAwait(false);
 
 			return new ProductionCreateResultDto(productionSetArtifactID, dataSourceArtifactID);
 		}
@@ -157,11 +173,12 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return View.QueryView(workspaceID, viewName);
 		}
 
-		private static async Task StageProductionAsync(int workspaceArtifactID, string productionName, int productionSetArtifactID)
+		private static async Task StageProductionAsync(int workspaceArtifactID, string productionName, int productionSetArtifactID, int retriesCount)
 		{
 			bool wasStagedSuccessfully = await Production.StageAndWaitForCompletionAsync(
 				workspaceArtifactID,
-				productionSetArtifactID
+				productionSetArtifactID,
+				retriesCount
 			).ConfigureAwait(false);
 			if (!wasStagedSuccessfully)
 			{
@@ -169,11 +186,12 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		private static async Task RunProductionAsync(int workspaceArtifactID, string productionName, int productionSetArtifactID)
+		private static async Task RunProductionAsync(int workspaceArtifactID, string productionName, int productionSetArtifactID, int retriesCount)
 		{
 			bool wasRanSuccessfully = await Production.RunAndWaitForCompletionAsync(
 				workspaceArtifactID,
-				productionSetArtifactID
+				productionSetArtifactID,
+				retriesCount
 			).ConfigureAwait(false);
 			if (!wasRanSuccessfully)
 			{

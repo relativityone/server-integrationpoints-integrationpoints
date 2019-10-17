@@ -17,6 +17,5 @@
   <files>
     <file src="..\..\lib\UnitTests\kCura.IntegrationPoints.Contracts.dll" target="lib" />   
     <file src="..\..\lib\UnitTests\kCura.IntegrationPoints.SourceProviderInstaller.dll" target="lib" />
-    <file src="..\..\lib\UnitTests\kCura.IntegrationPoints.Domain.dll" target="lib" />
   </files>
 </package>
