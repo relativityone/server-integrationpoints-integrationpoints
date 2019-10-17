@@ -337,6 +337,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 						{
 							agentsIDsToUnlock.Add(currentAgentID);
 							Console.WriteLine("In the queue we have other jobs, that might means that in other tests something is not working correctly");
+							Console.WriteLine($"IP: {integrationPointID}, workspaceID: {workspaceID}, jobIP: {job.RelatedObjectArtifactID}, jobWorkspaceID: {job.WorkspaceID}");
 						}
 						currentAgentID++;
 					}
