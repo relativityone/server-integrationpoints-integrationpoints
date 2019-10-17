@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Data;
 using System.Linq;
+using System.Threading;
+using System.Globalization;
 using System.Collections.Generic;
 using Relativity.Services.Objects.DataContracts;
-using System.Threading;
 
 namespace Relativity.Sync.Transfer
 {
@@ -21,14 +22,16 @@ namespace Relativity.Sync.Transfer
 
 		private readonly CancellationToken _cancellationToken;
 
+		private static readonly Type _typeOfString = typeof(string);
+
 		public object this[int i]
 		{
-			get { return _batchEnumerator.Current[i]; }
+			get { return GetValue(i); }
 		}
 
 		public object this[string name]
 		{
-			get { return _batchEnumerator.Current[GetOrdinal(name)]; }
+			get { return GetValue(GetOrdinal(name)); }
 		}
 
 		public int Depth { get; } = 0;
@@ -97,7 +100,14 @@ namespace Relativity.Sync.Transfer
 
 		public object GetValue(int i)
 		{
-			return _batchEnumerator.Current[i];
+			object value = _batchEnumerator.Current[i];
+
+			if (value != null && GetFieldType(i) == _typeOfString)
+			{
+				return (value as string) ?? Convert.ToString(value, CultureInfo.InvariantCulture);
+			}
+
+			return value;
 		}
 
 		public int GetValues(object[] values)
