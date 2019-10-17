@@ -168,7 +168,7 @@ namespace Relativity.Sync.Storage
 					}
 				};
 
-				QueryResult result = await objectManager.QueryAsync(_workspaceArtifactId, queryRequest, 1, 1).ConfigureAwait(false);
+				QueryResult result = await objectManager.QueryAsync(_workspaceArtifactId, queryRequest, start: 1, length: 1).ConfigureAwait(false);
 
 				if (result.TotalCount == 0)
 				{
@@ -208,7 +208,7 @@ namespace Relativity.Sync.Storage
 					}
 				};
 
-				QueryResult result = await objectManager.QueryAsync(_workspaceArtifactId, queryRequest, 1, 1).ConfigureAwait(false);
+				QueryResult result = await objectManager.QueryAsync(_workspaceArtifactId, queryRequest, start: 1, length: 1).ConfigureAwait(false);
 
 				if (result.TotalCount == 0)
 				{
@@ -227,6 +227,7 @@ namespace Relativity.Sync.Storage
 			ArtifactId = artifactId;
 			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
+				// Do not use ReadAsync here. More details: REL-366692
 				QueryRequest request = new QueryRequest()
 				{
 					ObjectType = new ObjectTypeRef()
@@ -236,12 +237,12 @@ namespace Relativity.Sync.Storage
 					Fields = GetFieldsToRead(),
 					Condition = $"'ArtifactID' == {artifactId}"
 				};
-				QueryResult queryResult = await objectManager.QueryAsync(workspaceArtifactId, request, 0, 1).ConfigureAwait(false);
+				QueryResult queryResult = await objectManager.QueryAsync(workspaceArtifactId, request, start: 0, length: 1).ConfigureAwait(false);
 				if (!queryResult.Objects.Any())
 				{
 					throw new SyncException($"Batch ArtifactID: {artifactId} not found.");
 				}
-				PopulateBatchProperties(queryResult.Objects.First());
+				PopulateBatchProperties(queryResult.Objects.Single());
 			}
 		}
 
@@ -261,7 +262,7 @@ namespace Relativity.Sync.Storage
 					Condition = $"'{SyncConfigurationRelationGuid}' == OBJECT {syncConfigurationArtifactId} AND '{StatusGuid}' == '{BatchStatus.New.GetDescription()}'"
 				};
 
-				QueryResult result = await objectManager.QueryAsync(_workspaceArtifactId, queryRequest, 1, int.MaxValue).ConfigureAwait(false);
+				QueryResult result = await objectManager.QueryAsync(_workspaceArtifactId, queryRequest, start: 1, int.MaxValue).ConfigureAwait(false);
 				if (result.TotalCount > 0)
 				{
 					batchIds = result.Objects.Select(x => x.ArtifactID);
@@ -286,7 +287,7 @@ namespace Relativity.Sync.Storage
 					Condition = $"'{SyncConfigurationRelationGuid}' == OBJECT {syncConfigurationArtifactId}"
 				};
 
-				QueryResultSlim result = await objectManager.QuerySlimAsync(_workspaceArtifactId, queryRequest, 1, int.MaxValue).ConfigureAwait(false);
+				QueryResultSlim result = await objectManager.QuerySlimAsync(_workspaceArtifactId, queryRequest, start: 1, int.MaxValue).ConfigureAwait(false);
 				if (result.TotalCount > 0)
 				{
 					IEnumerable<int> batchIds = result.Objects.Select(x => x.ArtifactID);
