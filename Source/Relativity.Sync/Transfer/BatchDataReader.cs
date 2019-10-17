@@ -104,7 +104,7 @@ namespace Relativity.Sync.Transfer
 
 			if (value != null && GetFieldType(i) == _typeOfString)
 			{
-				return (value as string) ?? Convert.ToString(value, CultureInfo.InvariantCulture);
+				return (value as string) ?? value.ToString();
 			}
 
 			return value;
