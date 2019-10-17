@@ -25,6 +25,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.IntegrationPo
 	[Feature.DataTransfer.IntegrationPoints]
 	public class KeplerDocumentRepositoryTests
 	{
+		private const int _LARGE_DATA_SET_PRODUCTION_RETRY_COUNT = 500;
 		private const string LONG_DATA_SET_EMBEDDED_DATA_INFO_VALUE = "KEPLER_DOCUMENT_REPOSITORY_LONG";
 
 		private int _workspaceID => SystemTestsSetupFixture.SourceWorkspace.ArtifactID;
@@ -70,7 +71,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.IntegrationPo
 			_smallDataSetProductionCreateResult = _productionHelper.CreateAndRunProduction(_smallDataSetSearchArtifactID);
 			_largeDataSetProductionCreateResult = _productionHelper.CreateAndRunProduction(
 				_largeDataSetSearchArtifactID,
-				Productions.Services.ProductionType.ImagesOnly);
+				Productions.Services.ProductionType.ImagesOnly,
+				_LARGE_DATA_SET_PRODUCTION_RETRY_COUNT);
 		}
 
 		[OneTimeTearDown]

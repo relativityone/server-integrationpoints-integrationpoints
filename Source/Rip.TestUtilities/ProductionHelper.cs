@@ -24,10 +24,16 @@ namespace Rip.TestUtilities
 
 		public ProductionCreateResultDto CreateAndRunProduction(
 			int searchArtifactID,
-			ProductionType productionType = ProductionType.ImagesAndNatives)
+			ProductionType productionType = ProductionType.ImagesAndNatives,
+			int retriesCount = WorkspaceService.PRODUCTION_MAX_RETRIES_COUNT)
 		{
 			string productionName = Guid.NewGuid().ToString();
-			return _workspaceService.CreateAndRunProduction(_workspaceID, searchArtifactID, productionName, productionType);
+			return _workspaceService.CreateAndRunProduction(
+				_workspaceID, 
+				searchArtifactID, 
+				productionName, 
+				productionType,
+				retriesCount);
 		}
 
 		public void DeleteProduction(ProductionCreateResultDto productionCreateResult)

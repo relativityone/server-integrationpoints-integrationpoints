@@ -9,7 +9,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 {
 	public static class Production
 	{
-		private const int _MAX_RETRIES_COUNT = 100;
 		private const int _WAIT_TIME_BETWEEN_RETRIES_IN_MILLISECONDS = 1000;
 
 		private static ITestHelper Helper => new TestHelper();
@@ -57,27 +56,30 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		public static Task<bool> StageAndWaitForCompletionAsync(int workspaceID, int productionID)
+		public static Task<bool> StageAndWaitForCompletionAsync(int workspaceID, int productionID, int retriesCount)
 		{
 			Func<IProductionManager, Task<ProductionJobResult>> stageProduction =
 				productionManager => productionManager.StageProductionAsync(workspaceID, productionID);
 
-			return ExecuteAndWaitForCompletionAsync(workspaceID, productionID, stageProduction, expectedStatus: "Staged");
+			const string expectedStatus = "Staged";
+			return ExecuteAndWaitForCompletionAsync(workspaceID, productionID, stageProduction, expectedStatus, retriesCount);
 		}
 
-		public static Task<bool> RunAndWaitForCompletionAsync(int workspaceID, int productionID)
+		public static Task<bool> RunAndWaitForCompletionAsync(int workspaceID, int productionID, int retriesCount)
 		{
 			Func<IProductionManager, Task<ProductionJobResult>> runProduction =
 				productionManager => productionManager.RunProductionAsync(workspaceID, productionID, suppressWarnings: true);
 
-			return ExecuteAndWaitForCompletionAsync(workspaceID, productionID, runProduction, expectedStatus: "Produced");
+			const string expectedStatus = "Produced";
+			return ExecuteAndWaitForCompletionAsync(workspaceID, productionID, runProduction, expectedStatus, retriesCount);
 		}
 
 		private static async Task<bool> ExecuteAndWaitForCompletionAsync(
 			int workspaceID,
 			int productionID,
 			Func<IProductionManager, Task<ProductionJobResult>> functionToExecute,
-			string expectedStatus)
+			string expectedStatus,
+			int retriesCount)
 		{
 			using (var productionManager = Helper.CreateProxy<IProductionManager>())
 			{
@@ -87,11 +89,11 @@ namespace kCura.IntegrationPoint.Tests.Core
 					return false;
 				}
 			}
-			await WaitForProductionStatusAsync(workspaceID, productionID, expectedStatus).ConfigureAwait(false);
+			await WaitForProductionStatusAsync(workspaceID, productionID, expectedStatus, retriesCount).ConfigureAwait(false);
 			return true;
 		}
 
-		private static async Task WaitForProductionStatusAsync(int workspaceId, int productionId, string expectedStatus, int retriesCount = _MAX_RETRIES_COUNT)
+		private static async Task WaitForProductionStatusAsync(int workspaceId, int productionId, string expectedStatus, int retriesCount)
 		{
 			TimeSpan waitTimeBetweenRetries = TimeSpan.FromMilliseconds(_WAIT_TIME_BETWEEN_RETRIES_IN_MILLISECONDS);
 
