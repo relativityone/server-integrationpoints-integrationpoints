@@ -70,44 +70,33 @@
     <Reference Include="kCura.EventHandler">
       <HintPath>..\..\packages\kCura.EventHandler\lib\net462\kCura.EventHandler.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.IntegrationPoints.Config, Version=10.0.6.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\kCura.IntegrationPoints.SDK.10.0.6\lib\kCura.IntegrationPoints.Config.dll</HintPath>
+    <Reference Include="kCura.IntegrationPoints.Contracts, Version=11.0.7.129, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\kCura.IntegrationPoints.SDK.11.0.7\lib\kCura.IntegrationPoints.Contracts.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.IntegrationPoints.Contracts, Version=10.0.6.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\kCura.IntegrationPoints.SDK.10.0.6\lib\kCura.IntegrationPoints.Contracts.dll</HintPath>
+    <Reference Include="kCura.IntegrationPoints.SourceProviderInstaller, Version=11.0.7.129, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\kCura.IntegrationPoints.SDK.11.0.7\lib\kCura.IntegrationPoints.SourceProviderInstaller.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.IntegrationPoints.Core, Version=10.0.6.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\kCura.IntegrationPoints.SDK.10.0.6\lib\kCura.IntegrationPoints.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="kCura.IntegrationPoints.Core.Contracts, Version=10.0.6.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\kCura.IntegrationPoints.SDK.10.0.6\lib\kCura.IntegrationPoints.Core.Contracts.dll</HintPath>
-    </Reference>
-    <Reference Include="kCura.IntegrationPoints.Data, Version=10.0.6.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\kCura.IntegrationPoints.SDK.10.0.6\lib\kCura.IntegrationPoints.Data.dll</HintPath>
-    </Reference>
-    <Reference Include="kCura.IntegrationPoints.Domain, Version=10.0.6.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\kCura.IntegrationPoints.SDK.10.0.6\lib\kCura.IntegrationPoints.Domain.dll</HintPath>
-    </Reference>
-    <Reference Include="kCura.IntegrationPoints.SourceProviderInstaller, Version=10.0.6.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\kCura.IntegrationPoints.SDK.10.0.6\lib\kCura.IntegrationPoints.SourceProviderInstaller.dll</HintPath>
-    </Reference>
-    <Reference Include="kCura.IntegrationPoints.Synchronizers.RDO, Version=10.0.6.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\kCura.IntegrationPoints.SDK.10.0.6\lib\kCura.IntegrationPoints.Synchronizers.RDO.dll</HintPath>
-    </Reference>
-    <Reference Include="kCura.ScheduleQueue.Core, Version=10.0.6.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\kCura.IntegrationPoints.SDK.10.0.6\lib\kCura.ScheduleQueue.Core.dll</HintPath>
-    </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.6.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.API, Version=12.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.API.12.0.0\lib\net462\Relativity.API.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.DataTransfer.MessageService, Version=1.0.4.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.DataTransfer.MessageService.1.0.4\lib\Relativity.DataTransfer.MessageService.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Kepler, Version=1.0.1.445, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Kepler.1.0.1.445\lib\net462\Relativity.Kepler.dll</HintPath>
+    <Reference Include="Relativity.IntegrationPoints.Services.Interfaces.Private, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.IntegrationPoints.Services.Interfaces.Private.1.0.0\lib\net462\Relativity.IntegrationPoints.Services.Interfaces.Private.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Kepler, Version=2.0.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Kepler.2.0.7\lib\net462\Relativity.Kepler.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Services.ServiceProxy, Version=1.0.1.445, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Kepler.Client.1.0.1.445\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Telemetry.APM, Version=2019.1.1.81, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Telemetry.APM.2019.1.1\lib\net462\Relativity.Telemetry.APM.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=9.4.159.2, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.159\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
@@ -118,7 +107,13 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data.SqlClient, Version=4.5.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SqlClient.4.6.0\lib\net461\System.Data.SqlClient.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="SystemInterface, Version=0.19.0.115, Culture=neutral, PublicKeyToken=fbc3a63dd3cf8960, processorArchitecture=MSIL">
       <HintPath>..\packages\SystemWrapper.Interfaces.0.19.0.115\lib\net45\SystemInterface.dll</HintPath>
     </Reference>
@@ -139,6 +134,9 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\packages\CSharpGuidelineAnalyzer.1.0.3.0\analyzers\dotnet\cs\CSharpGuidelineAnalyzer.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
