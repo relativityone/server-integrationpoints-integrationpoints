@@ -2,6 +2,7 @@ Castle.Windsor
 CSharpGuidelineAnalyzer
 kCura
 kCura.Apps.Common.Config
+kCura.IntegrationPoints.SDK
 kCura.LongPath
 kCura.Relativity.Client
 LanguageExt.Core

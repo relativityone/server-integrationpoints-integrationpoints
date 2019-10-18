@@ -101,10 +101,6 @@
       <Project>{32BCB03B-4980-4434-9392-F72334E6E348}</Project>
       <Name>kCura.IntegrationPoints.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
-      <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>
-      <Name>kCura.IntegrationPoints.Contracts</Name>
-    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">
       <Project>{AD3E5540-FA39-4983-8A23-FCC756D51A32}</Project>
       <Name>kCura.IntegrationPoint.Tests.Core</Name>
@@ -132,10 +128,6 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.FtpProvider.Helpers\kCura.IntegrationPoints.FtpProvider.Helpers.csproj">
       <Project>{3e33dd7e-266f-48f8-86a2-3cdb836f2947}</Project>
       <Name>kCura.IntegrationPoints.FtpProvider.Helpers</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\kCura.IntegrationPoints.SourceProviderInstaller\kCura.IntegrationPoints.SourceProviderInstaller.csproj">
-      <Project>{fcaf52cd-0f8f-4d71-ac61-b7591a181a08}</Project>
-      <Name>kCura.IntegrationPoints.SourceProviderInstaller</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
       <Project>{B91CC4ED-ABF3-4409-8DF3-46A3C26EB4AA}</Project>
@@ -182,6 +174,22 @@
       <ItemGroup>
         <Reference Include="kCura.EventHandler">
           <HintPath>..\..\packages\kCura.EventHandler\lib\net462\kCura.EventHandler.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="kCura.IntegrationPoints.Contracts">
+          <HintPath>..\..\packages\kCura.IntegrationPoints.SDK\lib\kCura.IntegrationPoints.Contracts.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="kCura.IntegrationPoints.SourceProviderInstaller">
+          <HintPath>..\..\packages\kCura.IntegrationPoints.SDK\lib\kCura.IntegrationPoints.SourceProviderInstaller.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

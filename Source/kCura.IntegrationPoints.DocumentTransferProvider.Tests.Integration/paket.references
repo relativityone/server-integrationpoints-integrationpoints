@@ -1,5 +1,6 @@
 Castle.Windsor
 CSharpGuidelineAnalyzer
+kCura.IntegrationPoints.Contracts
 Newtonsoft.Json
 Polly
 Relativity.API

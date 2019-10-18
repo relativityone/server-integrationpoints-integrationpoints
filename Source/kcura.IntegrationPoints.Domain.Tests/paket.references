@@ -1,4 +1,5 @@
 CSharpGuidelineAnalyzer
+kCura.IntegrationPoints.Contracts
 Relativity.API
 Relativity.Services.Interfaces
 Relativity.Logging.Interfaces

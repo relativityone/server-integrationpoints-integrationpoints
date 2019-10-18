@@ -1,5 +1,6 @@
 CSharpGuidelineAnalyzer
 kCura.Apps.Common.Config
+kCura.IntegrationPoints.Contracts
 kCura.Relativity.Client
 Relativity.API
 Relativity.Data

@@ -4,6 +4,7 @@ kCura.Agent
 kCura.Apps.Common.Config
 kCura.Apps.Common.Data
 kCura.Apps.Common.Utils
+kCura.IntegrationPoints.Contracts
 kCura.Relativity.Client
 Relativity.Authentication
 Relativity.DataExchange.Client.SDK

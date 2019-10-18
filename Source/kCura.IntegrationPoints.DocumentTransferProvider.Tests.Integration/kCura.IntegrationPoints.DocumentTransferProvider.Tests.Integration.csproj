@@ -59,10 +59,6 @@
       <Project>{DEF928B5-37CE-4BF3-B663-F0B8912C9C3F}</Project>
       <Name>kCura.IntegrationPoints.Config</Name>
     </ProjectReference>
-    <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
-      <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>
-      <Name>kCura.IntegrationPoints.Contracts</Name>
-    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Core\kCura.IntegrationPoints.Core.csproj">
       <Project>{A1AE667B-1B6E-4BB9-AF1D-912620292283}</Project>
       <Name>kCura.IntegrationPoints.Core</Name>
@@ -125,6 +121,28 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="kCura.EventHandler">
+          <HintPath>..\..\packages\kCura.EventHandler\lib\net462\kCura.EventHandler.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="kCura.IntegrationPoints.Contracts">
+          <HintPath>..\..\packages\kCura.IntegrationPoints.Contracts\lib\kCura.IntegrationPoints.Contracts.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>

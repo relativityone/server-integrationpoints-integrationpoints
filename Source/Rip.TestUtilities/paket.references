@@ -1,4 +1,5 @@
 ﻿kCura.Apps.Common.Utils
+kCura.IntegrationPoints.Contracts
 kCura.Relativity.Client
 Relativity.API
 Relativity.Services.Interfaces

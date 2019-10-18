@@ -5,18 +5,20 @@ source https://proget.kcura.corp/nuget/NuGet
 
 //RIP packages
 nuget Relativity.IntegrationPoints.Services.Interfaces.Private 1.0.0
+nuget kCura.IntegrationPoints.Contracts 11.0.8-DEV-011
+nuget kCura.IntegrationPoints.SDK 11.0.8-DEV-011
 
 //Main Relativity packages
 nuget kCura 12.0.1
-nuget kCura.Agent 11.0.104.1
-nuget kCura.EventHandler 11.0.104.1
-nuget kCura.Relativity.Client 11.0.104.1
-nuget Relativity.Authentication 11.0.104.1
-nuget Relativity.CustomPages 11.0.104.1
-nuget Relativity.Data 11.0.104.1
+nuget kCura.Agent 11.0.100.1
+nuget kCura.EventHandler 11.0.100.1
+nuget kCura.Relativity.Client 11.0.100.1
+nuget Relativity.Authentication 11.0.100.1
+nuget Relativity.CustomPages 11.0.100.1
+nuget Relativity.Data 11.0.100.1
 nuget Relativity.DataExchange.Client.SDK 1.7.1
-nuget Relativity.Services.Interfaces 11.0.104.1
-nuget Relativity.Services.Interfaces.Private 11.0.104.1
+nuget Relativity.Services.Interfaces 11.0.100.1
+nuget Relativity.Services.Interfaces.Private 11.0.100.1
 nuget Relativity.API 12.0.1
 
 //Other Relativity packages
@@ -85,7 +87,7 @@ group Sync
 	nuget Relativity.Sync 0.1.10-beta13
 	nuget Autofac 4.9.4
 	nuget Castle.Core 3.3.0
-	nuget Relativity.Services.DataContracts 11.0.104.1
-	nuget Relativity.Services.Interfaces 11.0.104.1
-	nuget Relativity.Services.Interfaces.Private 11.0.104.1
+	nuget Relativity.Services.DataContracts 11.0.100.1
+	nuget Relativity.Services.Interfaces 11.0.100.1
+	nuget Relativity.Services.Interfaces.Private 11.0.100.1
 	nuget Relativity.Telemetry.DataContracts.Shared 9.4.159

@@ -1,6 +1,7 @@
 AutoMapper
 Castle.Windsor
 CSharpGuidelineAnalyzer
+kCura.IntegrationPoints.Contracts
 kCura.Relativity.Client
 LanguageExt.Core
 Newtonsoft.Json

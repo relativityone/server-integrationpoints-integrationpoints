@@ -1,6 +1,7 @@
 Castle.Windsor
 CSharpGuidelineAnalyzer
 kCura.Apps.Common.Utils
+kCura.IntegrationPoints.Contracts
 Relativity.DataExchange.Client.SDK
 Relativity.OAuth2Client
 SystemWrapper.Interfaces

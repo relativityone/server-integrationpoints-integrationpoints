@@ -1,6 +1,7 @@
 Castle.Windsor
 CSharpGuidelineAnalyzer
 kCura.Apps.Common.Utils
+kCura.IntegrationPoints.Contracts
 kCura.Relativity.Client
 LanguageExt.Core
 Microsoft.AspNet.Mvc

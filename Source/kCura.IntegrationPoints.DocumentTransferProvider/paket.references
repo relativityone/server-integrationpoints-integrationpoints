@@ -1,5 +1,6 @@
 Castle.Windsor
 CSharpGuidelineAnalyzer
+kCura.IntegrationPoints.Contracts
 kCura.Relativity.Client
 Relativity.API
 Relativity.DataExchange.Client.SDK
