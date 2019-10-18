@@ -36,7 +36,7 @@ namespace Relativity.Sync
 
 		private async Task<T> GetAsync<T>(string name, string section, T defaultValue)
 		{
-			InstanceSettingQueryResultSet resultSet = await ReadInstanceSetting(name, section).ConfigureAwait(false);
+			InstanceSettingQueryResultSet resultSet = await ReadInstanceSettingAsync(name, section).ConfigureAwait(false);
 
 			if (!resultSet.Success)
 			{
@@ -51,12 +51,12 @@ namespace Relativity.Sync
 			}
 
 			string value = resultSet.Results.First().Artifact.Value;
-			return ConvertValue<T>(value, out T outVal) ?
+			return TryConvertValue<T>(value, out T outVal) ?
 				outVal :
 				defaultValue;
 		}
 
-		private async Task<InstanceSettingQueryResultSet> ReadInstanceSetting(string name, string section)
+		private async Task<InstanceSettingQueryResultSet> ReadInstanceSettingAsync(string name, string section)
 		{
 			try
 			{
@@ -86,7 +86,7 @@ namespace Relativity.Sync
 			};
 		}
 
-		private bool ConvertValue<T>(object value, out T outVal)
+		private bool TryConvertValue<T>(object value, out T outVal)
 		{
 			outVal = default(T);
 			try
