@@ -16,5 +16,6 @@ namespace Relativity.Sync.Configuration
 		ImportOverwriteMode ImportOverwriteMode { get; }
 		FieldOverlayBehavior FieldOverlayBehavior { get; }
 		DestinationFolderStructureBehavior DestinationFolderStructureBehavior { get; }
+		ImportNativeFileCopyMode ImportNativeFileCopyMode { get; }
 	}
 }
