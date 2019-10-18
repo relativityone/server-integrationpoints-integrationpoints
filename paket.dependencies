@@ -3,7 +3,7 @@ framework: auto-detect
 source https://proget.kcura.corp/nuget/NuGet
 
 nuget Relativity ~> 11.0.0
-nuget Relativity.API ~> 12.0.1
+nuget Relativity.API 12.0.1
 nuget Relativity.DataExchange.Client.SDK 1.7.1
 nuget Relativity.Kepler ~> 2.0.7
 nuget Relativity.OAuth2Client ~> 1.0.0
@@ -26,7 +26,7 @@ nuget Polly ~> 5.3.1
 nuget Banzai ~> 3.0
 nuget Banzai.AUtofac ~> 3.0
 nuget Newtonsoft.Json ~> 6.0 redirects: force
-nuget Castle.Core 4.4.0
+nuget Castle.Core
 
 // Tests
 nuget NUnit 3.11
