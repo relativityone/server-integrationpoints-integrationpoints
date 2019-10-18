@@ -83,7 +83,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		{
 			//arrange
 			_configuration.Setup(c => c.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.SetFileLinks);
-			_instanceSettings.Setup(s => s.GetRestrictReferentialFileLinksOnImportAsync(default)).ReturnsAsync(true);
+			_instanceSettings.Setup(s => s.GetRestrictReferentialFileLinksOnImportAsync(default(bool))).ReturnsAsync(true);
 			_userContext.Setup(c => c.ExecutingUserId).Returns(_USER_IS_ADMIN_ID);
 
 			//act
@@ -99,7 +99,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		{
 			//arrange
 			_configuration.Setup(c => c.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.SetFileLinks);
-			_instanceSettings.Setup(s => s.GetRestrictReferentialFileLinksOnImportAsync(default)).ReturnsAsync(true);
+			_instanceSettings.Setup(s => s.GetRestrictReferentialFileLinksOnImportAsync(default(bool))).ReturnsAsync(true);
 			_userContext.Setup(c => c.ExecutingUserId).Returns(_USER_IS_NON_ADMIN_ID);
 
 			//act
@@ -117,7 +117,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		{
 			//arrange
 			_configuration.Setup(c => c.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.SetFileLinks);
-			_instanceSettings.Setup(s => s.GetRestrictReferentialFileLinksOnImportAsync(default)).ReturnsAsync(false);
+			_instanceSettings.Setup(s => s.GetRestrictReferentialFileLinksOnImportAsync(default(bool))).ReturnsAsync(false);
 			_userContext.Setup(c => c.ExecutingUserId).Returns(userId);
 
 			//act
@@ -135,7 +135,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		{
 			//arrange
 			_configuration.Setup(c => c.ImportNativeFileCopyMode).Returns(copyMode);
-			_instanceSettings.Setup(s => s.GetRestrictReferentialFileLinksOnImportAsync(default)).ReturnsAsync(false);
+			_instanceSettings.Setup(s => s.GetRestrictReferentialFileLinksOnImportAsync(default(bool))).ReturnsAsync(false);
 			_userContext.Setup(c => c.ExecutingUserId).Returns(_USER_IS_NON_ADMIN_ID);
 
 			//act

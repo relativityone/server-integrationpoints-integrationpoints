@@ -25,11 +25,11 @@ namespace Relativity.Sync
 			_logger = logger;
 		}
 
-		public async Task<string> GetWebApiPathAsync(string defaultValue = default) =>
+		public async Task<string> GetWebApiPathAsync(string defaultValue = default(string)) =>
 			await GetAsync<string>("WebAPIPath", _INTEGRATION_POINTS_SETTING_SECTION, defaultValue)
 				.ConfigureAwait(false);
 
-		public async Task<bool> GetRestrictReferentialFileLinksOnImportAsync(bool defaultValue = default) => 
+		public async Task<bool> GetRestrictReferentialFileLinksOnImportAsync(bool defaultValue = default(bool)) => 
 			await GetAsync<bool>("RestrictReferentialFileLinksOnImport", _RELATIVITY_CORE_SETTING_SECTION, defaultValue)
 				.ConfigureAwait(false);
 
@@ -88,7 +88,7 @@ namespace Relativity.Sync
 
 		private bool ConvertValue<T>(object value, out T outVal)
 		{
-			outVal = default;
+			outVal = default(T);
 			try
 			{
 				TypeConverter converter = TypeDescriptor.GetConverter(typeof(T));

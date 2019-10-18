@@ -4,8 +4,8 @@ namespace Relativity.Sync
 {
 	internal interface IInstanceSettings
 	{
-		Task<string> GetWebApiPathAsync(string defaultValue = default);
+		Task<string> GetWebApiPathAsync(string defaultValue = default(string));
 
-		Task<bool> GetRestrictReferentialFileLinksOnImportAsync(bool defaultValue = default);
+		Task<bool> GetRestrictReferentialFileLinksOnImportAsync(bool defaultValue = default(bool));
 	}
 }

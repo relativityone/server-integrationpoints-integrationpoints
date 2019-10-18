@@ -43,7 +43,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_dataReaderFactory.Setup(x => x.CreateSourceWorkspaceDataReader(It.IsAny<IBatch>(), It.IsAny<CancellationToken>())).Returns(dataReader.Object);
 			_jobHistoryErrorRepository = new Mock<IJobHistoryErrorRepository>();
 			_instanceSettings = new Mock<IInstanceSettings>();
-			_instanceSettings.Setup(x => x.GetWebApiPathAsync(default)).ReturnsAsync("http://fake.uri");
+			_instanceSettings.Setup(x => x.GetWebApiPathAsync(default(string))).ReturnsAsync("http://fake.uri");
 
 			_logger = new EmptyLogger();
 
