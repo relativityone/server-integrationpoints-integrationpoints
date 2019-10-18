@@ -14,7 +14,7 @@ namespace Relativity.Sync.Transfer
 	/// </summary>
 	internal sealed class SourceWorkspaceDataReader : ISourceWorkspaceDataReader
 	{
-		private string _identifierFieldName;
+		private FieldInfoDto _identifierField;
 		private IDataReader _currentReader;
 
 		private readonly IRelativityExportBatcher _exportBatcher;
@@ -44,16 +44,16 @@ namespace Relativity.Sync.Transfer
 			_currentReader = EmptyDataReader();
 		}
 
-		private string IdentifierFieldName
+		private FieldInfoDto IdentifierField
 		{
 			get
 			{
-				if (_identifierFieldName is null)
+				if (_identifierField is null)
 				{
-					_identifierFieldName = _fieldManager.GetObjectIdentifierFieldAsync(CancellationToken.None).GetAwaiter().GetResult().DestinationFieldName;
+					_identifierField = _fieldManager.GetObjectIdentifierFieldAsync(CancellationToken.None).GetAwaiter().GetResult();
 				}
 
-				return _identifierFieldName;
+				return _identifierField;
 			}
 		}
 
@@ -77,7 +77,7 @@ namespace Relativity.Sync.Transfer
 
 			if (dataRead)
 			{ 
-				string itemIdentifier = _currentReader[IdentifierFieldName].ToString();
+				string itemIdentifier = _currentReader[IdentifierField.DestinationFieldName].ToString();
 				ItemStatusMonitor.MarkItemAsRead(itemIdentifier);
 			}
 			else
@@ -123,7 +123,7 @@ namespace Relativity.Sync.Transfer
 			{
 				try
 				{
-					await CreateItemStatusRecordsAsync(batch).ConfigureAwait(false);
+					CreateItemStatusRecordsAsync(batch);
 					nextBatchReader = await _readerBuilder.BuildAsync(_configuration.SourceWorkspaceArtifactId, batch, CancellationToken.None).ConfigureAwait(false);
 					_logger.LogInformation("Created DataReader for next Export API batch.");
 				}
@@ -138,12 +138,11 @@ namespace Relativity.Sync.Transfer
 			return nextBatchReader;
 		}
 
-		private async Task CreateItemStatusRecordsAsync(RelativityObjectSlim[] batch)
+		private void CreateItemStatusRecordsAsync(RelativityObjectSlim[] batch)
 		{
 			foreach (var item in batch)
 			{
-				FieldInfoDto identifierField = await _fieldManager.GetObjectIdentifierFieldAsync(CancellationToken.None).ConfigureAwait(false);
-				int documentFieldIndex = identifierField.DocumentFieldIndex;
+				int documentFieldIndex = IdentifierField.DocumentFieldIndex;
 				string itemIdentifier = item.Values[documentFieldIndex].ToString();
 				int itemArtifactId = item.ArtifactID;
 				ItemStatusMonitor.AddItem(itemIdentifier, itemArtifactId);
