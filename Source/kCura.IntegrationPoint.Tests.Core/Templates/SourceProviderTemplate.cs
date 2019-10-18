@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Castle.MicroKernel.Resolvers;
@@ -307,36 +308,55 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		{
 			IJobService jobServiceManager = Container.Resolve<IJobService>();
 
-			List<Job> pickedUpJobs = new List<Job>();
+			var agentsIDsToUnlock = new List<int>();
+			Job job;
 			try
 			{
-				Job job;
+				var stopWatch = new Stopwatch();
+				stopWatch.Start();
+				int currentAgentID = 0;
+				const int jobPickingUpTimeoutInSec = 10;
 				do
 				{
-					job = jobServiceManager.GetNextQueueJob(resourcePool, jobServiceManager.AgentTypeInformation.AgentTypeID);
-
-					if (job != null)
+					job = jobServiceManager.GetNextQueueJob(resourcePool, currentAgentID);
+					if (job == null)
 					{
-						// pick up job
-						if (job.RelatedObjectArtifactID == integrationPointID && job.WorkspaceID == workspaceID)
+						continue;
+					}
+					else
+					{
+						if (job.RelatedObjectArtifactID == integrationPointID &&
+							job.WorkspaceID == workspaceID)
 						{
 							return job;
 						}
 						else
 						{
-							pickedUpJobs.Add(job);
+							agentsIDsToUnlock.Add(currentAgentID);
+							Console.WriteLine("In the queue we have other jobs, that might means that in other tests something is not working correctly");
+							Console.WriteLine($"IP: {integrationPointID}, workspaceID: {workspaceID}, jobIP: {job.RelatedObjectArtifactID}, jobWorkspaceID: {job.WorkspaceID}");
 						}
+						currentAgentID++;
 					}
-				} while (job != null);
+				} while (job != null && stopWatch.Elapsed < TimeSpan.FromSeconds(jobPickingUpTimeoutInSec));
+				stopWatch.Stop();
 			}
 			finally
 			{
-				foreach (var pickedUpJob in pickedUpJobs)
-				{
-					jobServiceManager.UnlockJobs(pickedUpJob.AgentTypeID);
-				}
+				UnlockJobs(jobServiceManager, agentsIDsToUnlock);
 			}
-			throw new TestException("Unable to find the job. Please check the integration point agent and make sure that it is turned off.");
+			string exceptionMessage = job == null
+				? "Unable to find the job. Please check the integration point agent and make sure that it is turned off."
+				: "Timeout during search the job.";
+			throw new TestException(exceptionMessage);
+		}
+
+		private void UnlockJobs(IJobService jobServiceManager, IList<int> agentsIDsToUnlock)
+		{
+			foreach (var agentIdToUnlock in agentsIDsToUnlock)
+			{
+				jobServiceManager.UnlockJobs(agentIdToUnlock);
+			}
 		}
 
 		private async Task SetupAsync()
