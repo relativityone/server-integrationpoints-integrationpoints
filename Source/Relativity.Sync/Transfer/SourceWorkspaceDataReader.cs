@@ -14,6 +14,7 @@ namespace Relativity.Sync.Transfer
 	/// </summary>
 	internal sealed class SourceWorkspaceDataReader : ISourceWorkspaceDataReader
 	{
+		private string _identifierFieldName;
 		private IDataReader _currentReader;
 
 		private readonly IRelativityExportBatcher _exportBatcher;
@@ -43,6 +44,19 @@ namespace Relativity.Sync.Transfer
 			_currentReader = EmptyDataReader();
 		}
 
+		private string IdentifierFieldName
+		{
+			get
+			{
+				if (_identifierFieldName is null)
+				{
+					_identifierFieldName = _fieldManager.GetObjectIdentifierFieldAsync(CancellationToken.None).GetAwaiter().GetResult().DestinationFieldName;
+				}
+
+				return _identifierFieldName;
+			}
+		}
+
 		public IItemStatusMonitor ItemStatusMonitor { get; }
 
 		public bool Read()
@@ -62,9 +76,8 @@ namespace Relativity.Sync.Transfer
 			}
 
 			if (dataRead)
-			{
-				string identifierFieldName = _fieldManager.GetObjectIdentifierFieldAsync(CancellationToken.None).GetAwaiter().GetResult().DestinationFieldName;
-				string itemIdentifier = _currentReader[identifierFieldName].ToString();
+			{ 
+				string itemIdentifier = _currentReader[IdentifierFieldName].ToString();
 				ItemStatusMonitor.MarkItemAsRead(itemIdentifier);
 			}
 			else

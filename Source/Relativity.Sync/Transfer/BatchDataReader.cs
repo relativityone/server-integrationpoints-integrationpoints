@@ -2,7 +2,6 @@
 using System.Data;
 using System.Linq;
 using System.Threading;
-using System.Globalization;
 using System.Collections.Generic;
 using Relativity.Services.Objects.DataContracts;
 
@@ -10,6 +9,8 @@ namespace Relativity.Sync.Transfer
 {
 	internal class BatchDataReader : IDataReader
 	{
+		private FieldInfoDto _identifierField;
+
 		private readonly DataTable _templateDataTable;
 
 		private readonly int _sourceWorkspaceArtifactId;
@@ -23,6 +24,19 @@ namespace Relativity.Sync.Transfer
 		private readonly CancellationToken _cancellationToken;
 
 		private static readonly Type _typeOfString = typeof(string);
+
+		private FieldInfoDto IdentifierField
+		{
+			get
+			{
+				if (_identifierField is null)
+				{
+					_identifierField = _fieldManager.GetObjectIdentifierFieldAsync(_cancellationToken).ConfigureAwait(false).GetAwaiter().GetResult();
+				}
+
+				return _identifierField;
+			}
+		}
 
 		public object this[int i]
 		{
@@ -90,7 +104,7 @@ namespace Relativity.Sync.Transfer
 
 		public int GetOrdinal(string name)
 		{
-			return _templateDataTable.Columns[name].Ordinal;
+			return _templateDataTable.Columns[name]?.Ordinal ?? throw new IndexOutOfRangeException($"The index of the {name} field wasn't found.");
 		}
 
 		public DataTable GetSchemaTable()
@@ -180,6 +194,8 @@ namespace Relativity.Sync.Transfer
 		{
 			object[] result = new object[_allFields.Count];
 
+			string itemIdentifier = batchItem.Values[IdentifierField.DocumentFieldIndex].ToString();
+
 			for (int i = 0; i < _allFields.Count; i++)
 			{
 				FieldInfoDto field = _allFields[i];
@@ -190,10 +206,8 @@ namespace Relativity.Sync.Transfer
 				}
 				else
 				{
-					FieldInfoDto identifierField = _fieldManager.GetObjectIdentifierFieldAsync(_cancellationToken).ConfigureAwait(false).GetAwaiter().GetResult();
-					string itemIdentifier = batchItem.Values[identifierField.DocumentFieldIndex].ToString();
 					object initialValue = batchItem.Values[field.DocumentFieldIndex];
-					result[i] = SanitizeFieldIfNeeded(identifierField.SourceFieldName, itemIdentifier, field, initialValue);
+					result[i] = SanitizeFieldIfNeeded(IdentifierField.SourceFieldName, itemIdentifier, field, initialValue);
 				}
 			}
 
