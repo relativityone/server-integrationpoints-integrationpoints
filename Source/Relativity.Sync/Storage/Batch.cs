@@ -221,7 +221,7 @@ namespace Relativity.Sync.Storage
 			}
 		}
 
-		private async Task ReadAsync(int workspaceArtifactId, int artifactId)
+		private async Task InitializeAsync(int workspaceArtifactId, int artifactId)
 		{
 			_workspaceArtifactId = workspaceArtifactId;
 			ArtifactId = artifactId;
@@ -262,7 +262,7 @@ namespace Relativity.Sync.Storage
 					Condition = $"'{SyncConfigurationRelationGuid}' == OBJECT {syncConfigurationArtifactId} AND '{StatusGuid}' == '{BatchStatus.New.GetDescription()}'"
 				};
 
-				QueryResult result = await objectManager.QueryAsync(_workspaceArtifactId, queryRequest, start: 1, int.MaxValue).ConfigureAwait(false);
+				QueryResult result = await objectManager.QueryAsync(_workspaceArtifactId, queryRequest, start: 1, length: int.MaxValue).ConfigureAwait(false);
 				if (result.TotalCount > 0)
 				{
 					batchIds = result.Objects.Select(x => x.ArtifactID);
@@ -287,7 +287,7 @@ namespace Relativity.Sync.Storage
 					Condition = $"'{SyncConfigurationRelationGuid}' == OBJECT {syncConfigurationArtifactId}"
 				};
 
-				QueryResultSlim result = await objectManager.QuerySlimAsync(_workspaceArtifactId, queryRequest, start: 1, int.MaxValue).ConfigureAwait(false);
+				QueryResultSlim result = await objectManager.QuerySlimAsync(_workspaceArtifactId, queryRequest, start: 1, length: int.MaxValue).ConfigureAwait(false);
 				if (result.TotalCount > 0)
 				{
 					IEnumerable<int> batchIds = result.Objects.Select(x => x.ArtifactID);
@@ -295,7 +295,7 @@ namespace Relativity.Sync.Storage
 					Parallel.ForEach(batchIds, batchArtifactId =>
 					{
 						var batch = new Batch(_serviceFactory);
-						batch.ReadAsync(workspaceArtifactId, batchArtifactId).ConfigureAwait(false).GetAwaiter().GetResult();
+						batch.InitializeAsync(workspaceArtifactId, batchArtifactId).ConfigureAwait(false).GetAwaiter().GetResult();
 						batches.Add(batch);
 					});
 				}
@@ -368,7 +368,7 @@ namespace Relativity.Sync.Storage
 		public static async Task<IBatch> GetAsync(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int artifactId)
 		{
 			Batch batch = new Batch(serviceFactory);
-			await batch.ReadAsync(workspaceArtifactId, artifactId).ConfigureAwait(false);
+			await batch.InitializeAsync(workspaceArtifactId, artifactId).ConfigureAwait(false);
 			return batch;
 		}
 
