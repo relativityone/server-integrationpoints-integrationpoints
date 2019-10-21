@@ -123,7 +123,7 @@ namespace Relativity.Sync.Transfer
 			{
 				try
 				{
-					CreateItemStatusRecordsAsync(batch);
+					CreateItemStatusRecords(batch);
 					nextBatchReader = await _readerBuilder.BuildAsync(_configuration.SourceWorkspaceArtifactId, batch, CancellationToken.None).ConfigureAwait(false);
 					_logger.LogInformation("Created DataReader for next Export API batch.");
 				}
