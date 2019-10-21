@@ -9,12 +9,8 @@ namespace Relativity.Sync
 {
 	internal sealed class InstanceSettings : IInstanceSettings
 	{
-		#region Sections
-
 		private const string _INTEGRATION_POINTS_SETTING_SECTION = "kCura.IntegrationPoints";
 		private const string _RELATIVITY_CORE_SETTING_SECTION = "Relativity.Core";
-		
-		#endregion
 		
 		private readonly ISourceServiceFactoryForAdmin _serviceFactory;
 		private readonly ISyncLog _logger;

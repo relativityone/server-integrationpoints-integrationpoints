@@ -20,9 +20,9 @@ using System.Threading.Tasks;
 namespace Relativity.Sync.Tests.Unit.Executors.Validation
 {
 	[TestFixture]
-	public sealed class NativeFileValidatorTests
+	public sealed class NativeCopyLinksValidatorTests
 	{
-		private NativeFileValidator _sut;
+		private NativeCopyLinksValidator _sut;
 
 		private Mock<IInstanceSettings> _instanceSettings;
 		private Mock<IUserContextConfiguration> _userContext;
@@ -58,7 +58,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			_userContext = new Mock<IUserContextConfiguration>();
 
 			_objectManager = new Mock<IObjectManager>();
-			_objectManager.Setup(m => m.QueryAsync(_SOURCE_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, Int32.MaxValue)).ReturnsAsync(_SOURCE_WORKSPACE_ADMIN_GROUPS);
+			_objectManager.Setup(m => m.QueryAsync(_SOURCE_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, It.IsAny<int>())).ReturnsAsync(_SOURCE_WORKSPACE_ADMIN_GROUPS);
 
 			_permissionManager = new Mock<IPermissionManager>();
 			_permissionManager.Setup(m => m.GetWorkspaceGroupUsersAsync(_SOURCE_WORKSPACE_ID, It.Is<GroupRef>(g => g.ArtifactID == _ADMIN_GROUP_ID)))
@@ -71,7 +71,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			_configuration = new Mock<IValidationConfiguration>();
 			_configuration.Setup(c => c.SourceWorkspaceArtifactId).Returns(_SOURCE_WORKSPACE_ID);
 
-			_sut = new NativeFileValidator(
+			_sut = new NativeCopyLinksValidator(
 				_instanceSettings.Object, 
 				_userContext.Object, 
 				_serviceFactory.Object, 
