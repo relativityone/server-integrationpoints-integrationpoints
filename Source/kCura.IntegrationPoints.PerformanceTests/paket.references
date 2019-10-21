@@ -1,4 +1,5 @@
 CSharpGuidelineAnalyzer
+kCura.IntegrationPoints.Contracts
 kCura.Relativity.Client
 Relativity.Kepler.Client
 Relativity.Telemetry.APM

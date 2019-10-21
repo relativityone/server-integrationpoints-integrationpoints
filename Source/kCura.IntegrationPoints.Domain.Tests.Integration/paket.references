@@ -1,4 +1,5 @@
 CSharpGuidelineAnalyzer
+kCura.IntegrationPoints.SDK
 
 group TestPackages
 	FluentAssertions

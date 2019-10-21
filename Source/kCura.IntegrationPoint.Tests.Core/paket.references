@@ -3,6 +3,7 @@ Castle.Windsor
 CSharpGuidelineAnalyzer
 kCura
 kCura.Apps.Common.Config
+kCura.IntegrationPoints.Contracts
 kCura.Relativity.Client
 LanguageExt.Core
 Relativity
