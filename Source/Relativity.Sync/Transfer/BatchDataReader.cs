@@ -31,7 +31,7 @@ namespace Relativity.Sync.Transfer
 			{
 				if (_identifierField is null)
 				{
-					_identifierField = _fieldManager.GetObjectIdentifierFieldAsync(_cancellationToken).ConfigureAwait(false).GetAwaiter().GetResult();
+					_identifierField = _fieldManager.GetObjectIdentifierFieldAsync(_cancellationToken).GetAwaiter().GetResult();
 				}
 
 				return _identifierField;
@@ -224,7 +224,7 @@ namespace Relativity.Sync.Transfer
 			object sanitizedValue = initialValue;
 			if (_exportDataSanitizer.ShouldSanitize(field.RelativityDataType))
 			{
-				sanitizedValue = _exportDataSanitizer.SanitizeAsync(_sourceWorkspaceArtifactId, itemIdentifierFieldName, itemIdentifier, field, initialValue).ConfigureAwait(false).GetAwaiter().GetResult();
+				sanitizedValue = _exportDataSanitizer.SanitizeAsync(_sourceWorkspaceArtifactId, itemIdentifierFieldName, itemIdentifier, field, initialValue).GetAwaiter().GetResult();
 			}
 
 			return sanitizedValue;
