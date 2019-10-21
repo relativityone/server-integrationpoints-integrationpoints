@@ -40,7 +40,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			//arrange
 			const string expectedValue = "My Value";
-			PrepareValidInstanceSettingResult(
+			SetupValidInstanceSettingResult(
 				_WEB_API_PATH_SETTING_SECTION,
 				_WEB_API_PATH_SETTING_NAME,
 				expectedValue);
@@ -62,7 +62,7 @@ namespace Relativity.Sync.Tests.Unit
 				TotalCount = 0,
 				Results = new List<Result<Services.InstanceSetting.InstanceSetting>>()
 			};
-			PrepareInstanceSettingResult(
+			SetupInstanceSettingResult(
 				_WEB_API_PATH_SETTING_SECTION,
 				_WEB_API_PATH_SETTING_NAME,
 				resultSet);
@@ -84,7 +84,7 @@ namespace Relativity.Sync.Tests.Unit
 				TotalCount = 0,
 				Message = "Catastrophic failure."
 			};
-			PrepareInstanceSettingResult(
+			SetupInstanceSettingResult(
 				_WEB_API_PATH_SETTING_SECTION,
 				_WEB_API_PATH_SETTING_NAME,
 				resultSet);
@@ -100,7 +100,7 @@ namespace Relativity.Sync.Tests.Unit
 		public async Task GetWebApiPathAsync_ShouldReturnExpectedDefault_WhenResultCanNotBeConvertedToExpectedType()
 		{
 			//arrange
-			PrepareValidInstanceSettingResult(
+			SetupValidInstanceSettingResult(
 				_RELATIVITY_CORE_SETTING_SECTION,
 				_RESTRICT_REF_FILE_LINKS_ON_IMPORT_NAME,
 				"Test");
@@ -129,7 +129,7 @@ namespace Relativity.Sync.Tests.Unit
 		public async Task GetRestrictReferentialFileLinksOnImportAsync_ShouldSuccessfullyReturnValue()
 		{
 			//arrange
-			PrepareValidInstanceSettingResult(
+			SetupValidInstanceSettingResult(
 				_RELATIVITY_CORE_SETTING_SECTION,
 				_RESTRICT_REF_FILE_LINKS_ON_IMPORT_NAME,
 				"True");
@@ -151,7 +151,7 @@ namespace Relativity.Sync.Tests.Unit
 				TotalCount = 0,
 				Results = new List<Result<Services.InstanceSetting.InstanceSetting>>()
 			};
-			PrepareInstanceSettingResult(
+			SetupInstanceSettingResult(
 				_RELATIVITY_CORE_SETTING_SECTION,
 				_RESTRICT_REF_FILE_LINKS_ON_IMPORT_NAME,
 				resultSet);
@@ -173,7 +173,7 @@ namespace Relativity.Sync.Tests.Unit
 				TotalCount = 0,
 				Message = "Catastrophic failure."
 			};
-			PrepareInstanceSettingResult(
+			SetupInstanceSettingResult(
 				_RELATIVITY_CORE_SETTING_SECTION,
 				_RESTRICT_REF_FILE_LINKS_ON_IMPORT_NAME,
 				resultSet);
@@ -189,7 +189,7 @@ namespace Relativity.Sync.Tests.Unit
 		public async Task GetRestrictReferentialFileLinksOnImportAsync_ShouldReturnExpectedDefault_WhenResultCanNotBeConvertedToExpectedType()
 		{
 			//arrange
-			PrepareValidInstanceSettingResult(
+			SetupValidInstanceSettingResult(
 				_RELATIVITY_CORE_SETTING_SECTION,
 				_RESTRICT_REF_FILE_LINKS_ON_IMPORT_NAME,
 				"Test");
@@ -214,7 +214,7 @@ namespace Relativity.Sync.Tests.Unit
 			actualValue.Should().Be(_DEFAULT_RESTRICT_REF_FILE_LINKS_ON_IMPORT);
 		}
 
-		private void PrepareValidInstanceSettingResult(
+		private void SetupValidInstanceSettingResult(
 			string section,
 			string name,
 			string value)
@@ -236,10 +236,10 @@ namespace Relativity.Sync.Tests.Unit
 				}
 			};
 
-			PrepareInstanceSettingResult(section, name, resultSet);
+			SetupInstanceSettingResult(section, name, resultSet);
 		}
 
-		private void PrepareInstanceSettingResult(
+		private void SetupInstanceSettingResult(
 			string section,
 			string name,
 			InstanceSettingQueryResultSet resultSet)
