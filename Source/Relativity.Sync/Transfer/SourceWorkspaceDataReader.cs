@@ -50,7 +50,7 @@ namespace Relativity.Sync.Transfer
 			{
 				if (_identifierField is null)
 				{
-					_identifierField = _fieldManager.GetObjectIdentifierFieldAsync(CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
+					_identifierField = _fieldManager.GetObjectIdentifierFieldAsync(CancellationToken.None).GetAwaiter().GetResult();
 				}
 
 				return _identifierField;
@@ -138,7 +138,7 @@ namespace Relativity.Sync.Transfer
 			return nextBatchReader;
 		}
 
-		private void CreateItemStatusRecordsAsync(RelativityObjectSlim[] batch)
+		private void CreateItemStatusRecords(RelativityObjectSlim[] batch)
 		{
 			foreach (var item in batch)
 			{

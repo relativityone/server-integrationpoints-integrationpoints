@@ -59,9 +59,13 @@ namespace Relativity.Sync.Transfer
 			get { return _templateDataTable.Columns.Count; }
 		}
 
-		public BatchDataReader(DataTable templateDataTable,
-			int sourceWorkspaceArtifactId, RelativityObjectSlim[] batch,
-			IReadOnlyList<FieldInfoDto> allFields, IFieldManager fieldManager, IExportDataSanitizer exportDataSanitizer,
+		public BatchDataReader(
+			DataTable templateDataTable,
+			int sourceWorkspaceArtifactId,
+			RelativityObjectSlim[] batch,
+			IReadOnlyList<FieldInfoDto> allFields,
+			IFieldManager fieldManager,
+			IExportDataSanitizer exportDataSanitizer,
 			CancellationToken cancellationToken)
 		{
 			_templateDataTable = templateDataTable;
@@ -75,16 +79,6 @@ namespace Relativity.Sync.Transfer
 			_exportDataSanitizer = exportDataSanitizer;
 
 			_cancellationToken = cancellationToken;
-		}
-
-		public void Close()
-		{
-			IsClosed = true;
-		}
-
-		public void Dispose()
-		{
-			_batchEnumerator.Dispose();
 		}
 
 		public string GetDataTypeName(int i)
@@ -143,14 +137,14 @@ namespace Relativity.Sync.Transfer
 
 		public bool NextResult()
 		{
-			IsClosedCheck();
+			ThrowIfIsClosed();
 
 			return false;
 		}
 
 		public bool Read()
 		{
-			IsClosedCheck();
+			ThrowIfIsClosed();
 
 			if (_cancellationToken.IsCancellationRequested)
 			{
@@ -160,7 +154,7 @@ namespace Relativity.Sync.Transfer
 			return _batchEnumerator.MoveNext();
 		}
 
-		private void IsClosedCheck()
+		private void ThrowIfIsClosed()
 		{
 			if (IsClosed)
 			{
@@ -174,9 +168,9 @@ namespace Relativity.Sync.Transfer
 			{
 				IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> specialFieldBuildersDictionary = CreateSpecialFieldRowValuesBuilders();
 
-				foreach (RelativityObjectSlim item in _batch)
+				foreach (RelativityObjectSlim batchItem in _batch)
 				{
-					yield return BuildRow(specialFieldBuildersDictionary, item);
+					yield return BuildRow(specialFieldBuildersDictionary, batchItem);
 				}
 			}
 		}
@@ -234,6 +228,16 @@ namespace Relativity.Sync.Transfer
 			}
 
 			return sanitizedValue;
+		}
+
+		public void Close()
+		{
+			IsClosed = true;
+		}
+
+		public void Dispose()
+		{
+			_batchEnumerator.Dispose();
 		}
 
 		#region Not Implemented
