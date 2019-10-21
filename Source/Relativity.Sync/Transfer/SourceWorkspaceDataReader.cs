@@ -50,7 +50,7 @@ namespace Relativity.Sync.Transfer
 			{
 				if (_identifierField is null)
 				{
-					_identifierField = _fieldManager.GetObjectIdentifierFieldAsync(CancellationToken.None).GetAwaiter().GetResult();
+					_identifierField = _fieldManager.GetObjectIdentifierFieldAsync(CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
 				}
 
 				return _identifierField;
