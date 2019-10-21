@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Relativity.Sync.Storage
@@ -19,6 +20,16 @@ namespace Relativity.Sync.Storage
 		/// Returns all batches belonging to the particular job.
 		/// </summary>
 		Task<IEnumerable<IBatch>> GetAllAsync(int workspaceArtifactId, int syncConfigurationArtifactId);
+
+		/// <summary>
+		/// Deletes all batches belonging to the particular job.
+		/// </summary>
+		Task DeleteAllForConfigurationAsync(int workspaceArtifactId, int syncConfigurationArtifactId);
+
+		/// <summary>
+		/// Deletes all batches older than specified time span, that are belonging to the particular job.
+		/// </summary>
+		Task DeleteAllOlderThanAsync(int workspaceArtifactId, TimeSpan olderThan);
 
 		/// <summary>
 		/// Returns batch with highest starting index, which is always the last batch. Null if no batches found.

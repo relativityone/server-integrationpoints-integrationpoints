@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Relativity.Sync.KeplerFactory;
 
@@ -7,40 +8,52 @@ namespace Relativity.Sync.Storage
 	internal sealed class BatchRepository : IBatchRepository
 	{
 		private readonly ISourceServiceFactoryForAdmin _serviceFactory;
+		private readonly IDateTime _dateTime;
 
-		public BatchRepository(ISourceServiceFactoryForAdmin serviceFactory)
+		public BatchRepository(ISourceServiceFactoryForAdmin serviceFactory, IDateTime dateTime)
 		{
 			_serviceFactory = serviceFactory;
+			_dateTime = dateTime;
 		}
 
-		public async Task<IBatch> CreateAsync(int workspaceArtifactId, int syncConfigurationArtifactId, int totalItemsCount, int startingIndex)
+		public Task<IBatch> CreateAsync(int workspaceArtifactId, int syncConfigurationArtifactId, int totalItemsCount, int startingIndex)
 		{
-			return await Batch.CreateAsync(_serviceFactory, workspaceArtifactId, syncConfigurationArtifactId, totalItemsCount, startingIndex).ConfigureAwait(false);
+			return Batch.CreateAsync(_serviceFactory, workspaceArtifactId, syncConfigurationArtifactId, totalItemsCount, startingIndex);
 		}
 
-		public async Task<IBatch> GetAsync(int workspaceArtifactId, int artifactId)
+		public Task<IBatch> GetAsync(int workspaceArtifactId, int artifactId)
 		{
-			return await Batch.GetAsync(_serviceFactory, workspaceArtifactId, artifactId).ConfigureAwait(false);
+			return Batch.GetAsync(_serviceFactory, workspaceArtifactId, artifactId);
 		}
 
-		public async Task<IEnumerable<IBatch>> GetAllAsync(int workspaceArtifactId, int syncConfigurationArtifactId)
+		public Task<IEnumerable<IBatch>> GetAllAsync(int workspaceArtifactId, int syncConfigurationArtifactId)
 		{
-			return await Batch.GetAllAsync(_serviceFactory, workspaceArtifactId, syncConfigurationArtifactId).ConfigureAwait(false);
+			return Batch.GetAllAsync(_serviceFactory, workspaceArtifactId, syncConfigurationArtifactId);
 		}
 
-		public async Task<IBatch> GetLastAsync(int workspaceArtifactId, int syncConfigurationId)
+		public Task DeleteAllForConfigurationAsync(int workspaceArtifactId, int syncConfigurationArtifactId)
 		{
-			return await Batch.GetLastAsync(_serviceFactory, workspaceArtifactId, syncConfigurationId).ConfigureAwait(false);
+			return Batch.DeleteAllForConfigurationAsync(_serviceFactory, workspaceArtifactId, syncConfigurationArtifactId);
 		}
 
-		public async Task<IEnumerable<int>> GetAllNewBatchesIdsAsync(int workspaceArtifactId, int syncConfigurationId)
+		public Task DeleteAllOlderThanAsync(int workspaceArtifactId, TimeSpan olderThan)
 		{
-			return await Batch.GetAllNewBatchIdsAsync(_serviceFactory, workspaceArtifactId, syncConfigurationId).ConfigureAwait(false);
+			return Batch.DeleteAllOlderThanAsync(_serviceFactory, _dateTime, workspaceArtifactId, olderThan);
 		}
 
-		public async Task<IBatch> GetNextAsync(int workspaceArtifactId, int syncConfigurationArtifactId, int startingIndex)
+		public Task<IBatch> GetLastAsync(int workspaceArtifactId, int syncConfigurationId)
 		{
-			return await Batch.GetNextAsync(_serviceFactory, workspaceArtifactId, syncConfigurationArtifactId, startingIndex).ConfigureAwait(false);
+			return Batch.GetLastAsync(_serviceFactory, workspaceArtifactId, syncConfigurationId);
+		}
+
+		public Task<IEnumerable<int>> GetAllNewBatchesIdsAsync(int workspaceArtifactId, int syncConfigurationId)
+		{
+			return Batch.GetAllNewBatchIdsAsync(_serviceFactory, workspaceArtifactId, syncConfigurationId);
+		}
+
+		public Task<IBatch> GetNextAsync(int workspaceArtifactId, int syncConfigurationArtifactId, int startingIndex)
+		{
+			return Batch.GetNextAsync(_serviceFactory, workspaceArtifactId, syncConfigurationArtifactId, startingIndex);
 		}
 	}
 }

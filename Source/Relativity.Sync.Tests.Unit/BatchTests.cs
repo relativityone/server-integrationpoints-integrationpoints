@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using kCura.Utility;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.Exceptions;
@@ -19,6 +18,7 @@ namespace Relativity.Sync.Tests.Unit
 	{
 		private BatchRepository _batchRepository;
 		private Mock<IObjectManager> _objectManager;
+		private Mock<IDateTime> _dateTime;
 
 		private const int _WORKSPACE_ID = 433;
 		private const int _ARTIFACT_ID = 416;
@@ -40,7 +40,8 @@ namespace Relativity.Sync.Tests.Unit
 		public void SetUp()
 		{
 			var serviceFactoryMock = new Mock<ISourceServiceFactoryForAdmin>();
-			_batchRepository = new BatchRepository(serviceFactoryMock.Object);
+			_dateTime = new Mock<IDateTime>();
+			_batchRepository = new BatchRepository(serviceFactoryMock.Object, _dateTime.Object);
 
 			_objectManager = new Mock<IObjectManager>();
 			serviceFactoryMock.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
@@ -612,6 +613,82 @@ namespace Relativity.Sync.Tests.Unit
 			batches.Should().NotContainNulls();
 
 			_objectManager.Verify(x => x.QuerySlimAsync(_WORKSPACE_ID, It.Is<QueryRequest>(rr => AssertQueryRequestSlim(rr, syncConfigurationArtifactId)), 1, int.MaxValue), Times.Once);
+		}
+
+		[Test]
+		public async Task DeleteAllForConfiguration_ShouldDeleteAllBatchesForGivenConfiguration()
+		{
+			const int syncConfigurationArtifactId = 634;
+
+			// ACT
+			await _batchRepository.DeleteAllForConfigurationAsync(_WORKSPACE_ID, syncConfigurationArtifactId).ConfigureAwait(false);
+
+			// ASSERT
+			_objectManager.Verify(x => x.DeleteAsync(_WORKSPACE_ID, It.Is<MassDeleteByCriteriaRequest>(request => AssertMassDeleteByCriteriaRequest(request, syncConfigurationArtifactId))));
+		}
+
+		[Test]
+		public async Task DeleteAllOlderThan_ShouldDeleteOnlyBatchesOlderThanSpecifiedTimespan()
+		{
+#pragma warning disable RG2009 // Hardcoded Numeric Value
+			DateTime utcNow = new DateTime(2019, 10, 21);
+			_dateTime.SetupGet(x => x.UtcNow).Returns(utcNow);
+
+			DateTime newBatchCreationDate = new DateTime(2019, 10, 20);
+			const int newConfigurationArtifactId = 222;
+
+			DateTime oldBatchCreationDate = new DateTime(2019, 9, 9);
+			const int oldConfigurationArtifactId = 111;
+
+			TimeSpan removeOlderThan = TimeSpan.FromDays(1);
+
+			RelativityObject CreateObject(int configurationArtifactId, DateTime date)
+			{
+				return new RelativityObject()
+				{
+					ArtifactID = configurationArtifactId,
+					FieldValues = new List<FieldValuePair>()
+					{
+						new FieldValuePair()
+						{
+							Field = new Field()
+							{
+								Name = "System Created On"
+							},
+							Value = date
+						}
+					}
+				};
+			}
+
+			QueryResult queryResult = new QueryResult()
+			{
+				Objects = new List<RelativityObject>()
+				{
+					CreateObject(oldConfigurationArtifactId, oldBatchCreationDate),
+					CreateObject(newConfigurationArtifactId, newBatchCreationDate)
+				}
+			};
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(queryResult);
+
+			// ACT
+			await _batchRepository.DeleteAllOlderThanAsync(_WORKSPACE_ID, removeOlderThan).ConfigureAwait(false);
+
+			// ASSERT
+			_objectManager.Verify(x => x.DeleteAsync(_WORKSPACE_ID, It.Is<MassDeleteByCriteriaRequest>(request => AssertMassDeleteByCriteriaRequest(request, oldConfigurationArtifactId))),
+				Times.Once);
+			_objectManager.Verify(x => x.DeleteAsync(_WORKSPACE_ID, It.Is<MassDeleteByCriteriaRequest>(request => AssertMassDeleteByCriteriaRequest(request, newConfigurationArtifactId))),
+				Times.Never);
+
+#pragma warning restore RG2009 // Hardcoded Numeric Value
+		}
+
+
+		private bool AssertMassDeleteByCriteriaRequest(MassDeleteByCriteriaRequest request, int syncConfigurationArtifactId)
+		{
+			return
+				request.ObjectIdentificationCriteria.ObjectType.Guid == BatchObjectTypeGuid &&
+				request.ObjectIdentificationCriteria.Condition == $"'{SyncConfigurationRelationGuid}' == OBJECT {syncConfigurationArtifactId}";
 		}
 
 		private bool AssertQueryAllNewRequest(QueryRequest queryRequest)
