@@ -27,6 +27,7 @@ using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Castle.Core.Internal;
 using Castle.MicroKernel.Resolvers;
 using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
@@ -319,12 +320,21 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				do
 				{
 					job = jobServiceManager.GetNextQueueJob(resourcePool, currentAgentID);
+
+					var jobsList = jobServiceManager.GetJobs(integrationPointID);
+
+					foreach (var jobElement in jobsList)
+					{
+						Console.WriteLine($"Current jobs in queue {jobElement.JobId}, workspace {jobElement.WorkspaceID}\n");
+					}
+
 					if (job == null)
 					{
 						continue;
 					}
 					else
 					{
+						Console.WriteLine($"Job to check: IP: {integrationPointID}, workspaceID: {workspaceID}, jobIP: {job.RelatedObjectArtifactID}, jobWorkspaceID: {job.WorkspaceID}");
 						if (job.RelatedObjectArtifactID == integrationPointID &&
 							job.WorkspaceID == workspaceID)
 						{
@@ -334,7 +344,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 						{
 							agentsIDsToUnlock.Add(currentAgentID);
 							Console.WriteLine("In the queue we have other jobs, that might means that in other tests something is not working correctly");
-							Console.WriteLine($"IP: {integrationPointID}, workspaceID: {workspaceID}, jobIP: {job.RelatedObjectArtifactID}, jobWorkspaceID: {job.WorkspaceID}");
+							Console.WriteLine($"Job which is wrong, IP: {integrationPointID}, workspaceID: {workspaceID}, jobIP: {job.RelatedObjectArtifactID}, jobWorkspaceID: {job.WorkspaceID}");
 						}
 						currentAgentID++;
 					}

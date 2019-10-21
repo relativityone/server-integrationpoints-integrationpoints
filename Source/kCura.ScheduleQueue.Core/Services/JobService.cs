@@ -205,6 +205,7 @@ namespace kCura.ScheduleQueue.Core.Services
 
 		public void DeleteJob(long jobID)
 		{
+			Console.WriteLine($"DeleteJob: {jobID}");
 			LogOnDeleteJob(jobID);
 			DataProvider.DeleteJob(jobID);
 		}
