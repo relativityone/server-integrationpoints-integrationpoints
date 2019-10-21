@@ -78,7 +78,7 @@ namespace Relativity.Sync.Tests.System
 		}
 
 		[IdentifiedTest("7e5348d7-dee0-4f20-9da7-888a62f7ee1a")]
-		public async Task DeleteAll_ShouldDeleteBatchesThatBelongToConfiguration()
+		public async Task DeleteAllForConfiguration_ShouldDeleteBatchesThatBelongToConfiguration()
 		{
 			const int startingIndex = 5;
 			const int totalRecords = 10;
