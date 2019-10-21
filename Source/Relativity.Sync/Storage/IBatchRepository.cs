@@ -4,10 +4,7 @@ using System.Threading.Tasks;
 
 namespace Relativity.Sync.Storage
 {
-	/// <summary>
-	/// Repository for Sync Batch objects.
-	/// </summary>
-	public interface IBatchRepository
+	internal interface IBatchRepository
 	{
 		/// <summary>
 		/// Creates batch for given sync configuration.
