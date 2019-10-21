@@ -32,7 +32,7 @@ namespace Relativity.Sync
 
 		private async Task<T> GetAsync<T>(string name, string section, T defaultValue)
 		{
-			InstanceSettingQueryResultSet resultSet = await ReadInstanceSettingAsync(name, section).ConfigureAwait(false);
+			InstanceSettingQueryResultSet resultSet = await TryReadInstanceSettingAsync(name, section).ConfigureAwait(false);
 
 			if (!resultSet.Success)
 			{
@@ -46,19 +46,19 @@ namespace Relativity.Sync
 				return defaultValue;
 			}
 
-			string value = resultSet.Results.First().Artifact.Value;
-			return TryConvertValue<T>(value, out T outVal) ?
-				outVal :
-				defaultValue;
+			string instanceSettingValue = resultSet.Results.Single().Artifact.Value;
+			return TryConvertValue<T>(instanceSettingValue, out T outVal)
+				? outVal
+				: defaultValue;
 		}
 
-		private async Task<InstanceSettingQueryResultSet> ReadInstanceSettingAsync(string name, string section)
+		private async Task<InstanceSettingQueryResultSet> TryReadInstanceSettingAsync(string name, string section)
 		{
 			try
 			{
 				using (IInstanceSettingManager instanceSettingManager = await _serviceFactory.CreateProxyAsync<IInstanceSettingManager>().ConfigureAwait(false))
 				{
-					Services.Query query = BuildQueryForInstanceSetting(name, section);
+					Services.Query query = BuildInstanceSettingQuery(name, section);
 					InstanceSettingQueryResultSet resultSet = await instanceSettingManager.QueryAsync(query).ConfigureAwait(false);
 
 					return resultSet;
@@ -74,7 +74,7 @@ namespace Relativity.Sync
 			}
 		}
 
-		private static Services.Query BuildQueryForInstanceSetting(string name, string section)
+		private static Services.Query BuildInstanceSettingQuery(string name, string section)
 		{
 			return new Services.Query
 			{
@@ -90,8 +90,9 @@ namespace Relativity.Sync
 				TypeConverter converter = TypeDescriptor.GetConverter(typeof(T));
 				outVal = (T)converter.ConvertFrom(value);
 			}
-			catch (FormatException)
+			catch (FormatException ex)
 			{
+				_logger.LogError(ex, $"Error occured while converting instance setting value ({value.GetType()} -> {typeof(T)})");
 				return false;
 			}
 

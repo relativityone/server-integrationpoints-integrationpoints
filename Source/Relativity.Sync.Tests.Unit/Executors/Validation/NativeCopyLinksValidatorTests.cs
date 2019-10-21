@@ -24,13 +24,13 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 	{
 		private NativeCopyLinksValidator _sut;
 
-		private Mock<IInstanceSettings> _instanceSettings;
-		private Mock<IUserContextConfiguration> _userContext;
-		private Mock<ISourceServiceFactoryForAdmin> _serviceFactory;
+		private Mock<IInstanceSettings> _instanceSettingsFake;
+		private Mock<IUserContextConfiguration> _userContextFake;
+		private Mock<ISourceServiceFactoryForAdmin> _serviceFactoryFake;
 
-		private Mock<IValidationConfiguration> _configuration;
-		private Mock<IObjectManager> _objectManager;
-		private Mock<IPermissionManager> _permissionManager;
+		private Mock<IValidationConfiguration> _configurationFake;
+		private Mock<IObjectManager> _objectManagerFake;
+		private Mock<IPermissionManager> _permissionManagerFake;
 
 		private const int _SOURCE_WORKSPACE_ID = 10000;
 		private const int _USER_IS_ADMIN_ID = 1;
@@ -53,28 +53,28 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		[SetUp]
 		public void SetUp()
 		{
-			_instanceSettings = new Mock<IInstanceSettings>();
+			_instanceSettingsFake = new Mock<IInstanceSettings>();
 
-			_userContext = new Mock<IUserContextConfiguration>();
+			_userContextFake = new Mock<IUserContextConfiguration>();
 
-			_objectManager = new Mock<IObjectManager>();
-			_objectManager.Setup(m => m.QueryAsync(_SOURCE_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, It.IsAny<int>())).ReturnsAsync(_SOURCE_WORKSPACE_ADMIN_GROUPS);
+			_objectManagerFake = new Mock<IObjectManager>();
+			_objectManagerFake.Setup(m => m.QueryAsync(_SOURCE_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, It.IsAny<int>())).ReturnsAsync(_SOURCE_WORKSPACE_ADMIN_GROUPS);
 
-			_permissionManager = new Mock<IPermissionManager>();
-			_permissionManager.Setup(m => m.GetWorkspaceGroupUsersAsync(_SOURCE_WORKSPACE_ID, It.Is<GroupRef>(g => g.ArtifactID == _ADMIN_GROUP_ID)))
+			_permissionManagerFake = new Mock<IPermissionManager>();
+			_permissionManagerFake.Setup(m => m.GetWorkspaceGroupUsersAsync(_SOURCE_WORKSPACE_ID, It.Is<GroupRef>(g => g.ArtifactID == _ADMIN_GROUP_ID)))
 				.ReturnsAsync(_USERS_IN_ADMIN_GROUP);
 
-			_serviceFactory = new Mock<ISourceServiceFactoryForAdmin>();
-			_serviceFactory.Setup(s => s.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
-			_serviceFactory.Setup(s => s.CreateProxyAsync<IPermissionManager>()).ReturnsAsync(_permissionManager.Object);
+			_serviceFactoryFake = new Mock<ISourceServiceFactoryForAdmin>();
+			_serviceFactoryFake.Setup(s => s.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManagerFake.Object);
+			_serviceFactoryFake.Setup(s => s.CreateProxyAsync<IPermissionManager>()).ReturnsAsync(_permissionManagerFake.Object);
 
-			_configuration = new Mock<IValidationConfiguration>();
-			_configuration.Setup(c => c.SourceWorkspaceArtifactId).Returns(_SOURCE_WORKSPACE_ID);
+			_configurationFake = new Mock<IValidationConfiguration>();
+			_configurationFake.Setup(c => c.SourceWorkspaceArtifactId).Returns(_SOURCE_WORKSPACE_ID);
 
 			_sut = new NativeCopyLinksValidator(
-				_instanceSettings.Object, 
-				_userContext.Object, 
-				_serviceFactory.Object, 
+				_instanceSettingsFake.Object, 
+				_userContextFake.Object, 
+				_serviceFactoryFake.Object, 
 				new EmptyLogger());
 		}
 
@@ -82,12 +82,12 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		public async Task ValidateAsync_ShouldHandleValidConfiguration_WhenConditionsAreMet()
 		{
 			//arrange
-			_configuration.Setup(c => c.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.SetFileLinks);
-			_instanceSettings.Setup(s => s.GetRestrictReferentialFileLinksOnImportAsync(default(bool))).ReturnsAsync(true);
-			_userContext.Setup(c => c.ExecutingUserId).Returns(_USER_IS_ADMIN_ID);
+			_configurationFake.Setup(c => c.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.SetFileLinks);
+			_instanceSettingsFake.Setup(s => s.GetRestrictReferentialFileLinksOnImportAsync(default(bool))).ReturnsAsync(true);
+			_userContextFake.Setup(c => c.ExecutingUserId).Returns(_USER_IS_ADMIN_ID);
 
 			//act
-			ValidationResult result = await _sut.ValidateAsync(_configuration.Object, CancellationToken.None).ConfigureAwait(false);
+			ValidationResult result = await _sut.ValidateAsync(_configurationFake.Object, CancellationToken.None).ConfigureAwait(false);
 
 			//assert
 			result.IsValid.Should().BeTrue();
@@ -98,12 +98,12 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		public async Task ValidateAsync_ShouldHandleInvalidConfiguration_WhenUserIsNonAdmin()
 		{
 			//arrange
-			_configuration.Setup(c => c.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.SetFileLinks);
-			_instanceSettings.Setup(s => s.GetRestrictReferentialFileLinksOnImportAsync(default(bool))).ReturnsAsync(true);
-			_userContext.Setup(c => c.ExecutingUserId).Returns(_USER_IS_NON_ADMIN_ID);
+			_configurationFake.Setup(c => c.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.SetFileLinks);
+			_instanceSettingsFake.Setup(s => s.GetRestrictReferentialFileLinksOnImportAsync(default(bool))).ReturnsAsync(true);
+			_userContextFake.Setup(c => c.ExecutingUserId).Returns(_USER_IS_NON_ADMIN_ID);
 
 			//act
-			ValidationResult result = await _sut.ValidateAsync(_configuration.Object, CancellationToken.None).ConfigureAwait(false);
+			ValidationResult result = await _sut.ValidateAsync(_configurationFake.Object, CancellationToken.None).ConfigureAwait(false);
 
 			//assert
 			result.IsValid.Should().BeFalse();
@@ -116,12 +116,12 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		public async Task ValidateAsync_ShouldSkipValidationIndependentOfUser_WhenResponsibleInstanceSettingIsFalse(int userId)
 		{
 			//arrange
-			_configuration.Setup(c => c.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.SetFileLinks);
-			_instanceSettings.Setup(s => s.GetRestrictReferentialFileLinksOnImportAsync(default(bool))).ReturnsAsync(false);
-			_userContext.Setup(c => c.ExecutingUserId).Returns(userId);
+			_configurationFake.Setup(c => c.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.SetFileLinks);
+			_instanceSettingsFake.Setup(s => s.GetRestrictReferentialFileLinksOnImportAsync(default(bool))).ReturnsAsync(false);
+			_userContextFake.Setup(c => c.ExecutingUserId).Returns(userId);
 
 			//act
-			ValidationResult result = await _sut.ValidateAsync(_configuration.Object, CancellationToken.None).ConfigureAwait(false);
+			ValidationResult result = await _sut.ValidateAsync(_configurationFake.Object, CancellationToken.None).ConfigureAwait(false);
 
 			//assert
 			result.IsValid.Should().BeTrue();
@@ -134,12 +134,12 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		public async Task ValidateAsync_ShouldSkipValidation_WhenNativeCopyModeIsNotFileLinks(ImportNativeFileCopyMode copyMode)
 		{
 			//arrange
-			_configuration.Setup(c => c.ImportNativeFileCopyMode).Returns(copyMode);
-			_instanceSettings.Setup(s => s.GetRestrictReferentialFileLinksOnImportAsync(default(bool))).ReturnsAsync(false);
-			_userContext.Setup(c => c.ExecutingUserId).Returns(_USER_IS_NON_ADMIN_ID);
+			_configurationFake.Setup(c => c.ImportNativeFileCopyMode).Returns(copyMode);
+			_instanceSettingsFake.Setup(s => s.GetRestrictReferentialFileLinksOnImportAsync(default(bool))).ReturnsAsync(false);
+			_userContextFake.Setup(c => c.ExecutingUserId).Returns(_USER_IS_NON_ADMIN_ID);
 
 			//act
-			ValidationResult result = await _sut.ValidateAsync(_configuration.Object, CancellationToken.None).ConfigureAwait(false);
+			ValidationResult result = await _sut.ValidateAsync(_configurationFake.Object, CancellationToken.None).ConfigureAwait(false);
 
 			//assert
 			result.IsValid.Should().BeTrue();

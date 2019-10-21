@@ -53,23 +53,7 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public async Task GetRestrictReferentialFileLinksOnImportAsync_ShouldSuccessfullyReturnValue()
-		{
-			//arrange
-			PrepareValidInstanceSettingResult(
-				_RELATIVITY_CORE_SETTING_SECTION,
-				_RESTRICT_REF_FILE_LINKS_ON_IMPORT_NAME,
-				"True");
-
-			//act
-			bool actualValue = await _sut.GetRestrictReferentialFileLinksOnImportAsync().ConfigureAwait(false);
-
-			//assert
-			actualValue.Should().Be(true);
-		}
-
-		[Test]
-		public async Task AnyInstanceSettingsMethod_ShouldReturnExpectedDefault_WhenInstanceSettingNotFound()
+		public async Task GetWebApiPathAsync_ShouldReturnExpectedDefault_WhenInstanceSettingNotFound()
 		{
 			//arrange
 			var resultSet = new InstanceSettingQueryResultSet
@@ -91,7 +75,7 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public async Task AnyInstanceSettingsMethod_ShouldReturnExpectedDefault_WhenQueryReturnNoSuccess()
+		public async Task GetWebApiPathAsync_ShouldReturnExpectedDefault_WhenQueryReturnNoSuccess()
 		{
 			//arrange
 			var resultSet = new InstanceSettingQueryResultSet
@@ -113,7 +97,7 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public async Task AnyInstanceSettingsMethod_ShouldThrowException_WhenResultCanNotBeConvertedToExpectedType()
+		public async Task GetWebApiPathAsync_ShouldReturnExpectedDefault_WhenResultCanNotBeConvertedToExpectedType()
 		{
 			//arrange
 			PrepareValidInstanceSettingResult(
@@ -129,7 +113,7 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public async Task AnyInstanceSettingsMethod_ShouldRethrow_WhenQueryFails()
+		public async Task GetWebApiPathAsync_ShouldReturnExpectedDefault_WhenQueryFails()
 		{
 			//arrange
 			_instanceSettingManager.Setup(x => x.QueryAsync(It.IsAny<Services.Query>())).Throws<InvalidOperationException>();
@@ -139,6 +123,95 @@ namespace Relativity.Sync.Tests.Unit
 
 			//assert
 			actualValue.Should().Be(_DEFAULT_WEB_API_PATH);
+		}
+
+		[Test]
+		public async Task GetRestrictReferentialFileLinksOnImportAsync_ShouldSuccessfullyReturnValue()
+		{
+			//arrange
+			PrepareValidInstanceSettingResult(
+				_RELATIVITY_CORE_SETTING_SECTION,
+				_RESTRICT_REF_FILE_LINKS_ON_IMPORT_NAME,
+				"True");
+
+			//act
+			bool actualValue = await _sut.GetRestrictReferentialFileLinksOnImportAsync().ConfigureAwait(false);
+
+			//assert
+			actualValue.Should().Be(true);
+		}
+
+		[Test]
+		public async Task GetRestrictReferentialFileLinksOnImportAsync_ShouldReturnExpectedDefault_WhenInstanceSettingNotFound()
+		{
+			//arrange
+			var resultSet = new InstanceSettingQueryResultSet
+			{
+				Success = true,
+				TotalCount = 0,
+				Results = new List<Result<Services.InstanceSetting.InstanceSetting>>()
+			};
+			PrepareInstanceSettingResult(
+				_RELATIVITY_CORE_SETTING_SECTION,
+				_RESTRICT_REF_FILE_LINKS_ON_IMPORT_NAME,
+				resultSet);
+
+			//act
+			bool actualValue = await _sut.GetRestrictReferentialFileLinksOnImportAsync(_DEFAULT_RESTRICT_REF_FILE_LINKS_ON_IMPORT).ConfigureAwait(false);
+
+			//assert
+			actualValue.Should().Be(_DEFAULT_RESTRICT_REF_FILE_LINKS_ON_IMPORT);
+		}
+
+		[Test]
+		public async Task GetRestrictReferentialFileLinksOnImportAsync_ShouldReturnExpectedDefault_WhenQueryReturnNoSuccess()
+		{
+			//arrange
+			var resultSet = new InstanceSettingQueryResultSet
+			{
+				Success = false,
+				TotalCount = 0,
+				Message = "Catastrophic failure."
+			};
+			PrepareInstanceSettingResult(
+				_RELATIVITY_CORE_SETTING_SECTION,
+				_RESTRICT_REF_FILE_LINKS_ON_IMPORT_NAME,
+				resultSet);
+
+			//act
+			bool actualValue = await _sut.GetRestrictReferentialFileLinksOnImportAsync(_DEFAULT_RESTRICT_REF_FILE_LINKS_ON_IMPORT).ConfigureAwait(false);
+
+			//assert
+			actualValue.Should().Be(_DEFAULT_RESTRICT_REF_FILE_LINKS_ON_IMPORT);
+		}
+
+		[Test]
+		public async Task GetRestrictReferentialFileLinksOnImportAsync_ShouldReturnExpectedDefault_WhenResultCanNotBeConvertedToExpectedType()
+		{
+			//arrange
+			PrepareValidInstanceSettingResult(
+				_RELATIVITY_CORE_SETTING_SECTION,
+				_RESTRICT_REF_FILE_LINKS_ON_IMPORT_NAME,
+				"Test");
+
+			//act
+			bool actualValue = await _sut.GetRestrictReferentialFileLinksOnImportAsync(_DEFAULT_RESTRICT_REF_FILE_LINKS_ON_IMPORT).ConfigureAwait(false);
+
+			//assert
+			actualValue.Should().Be(_DEFAULT_RESTRICT_REF_FILE_LINKS_ON_IMPORT);
+		}
+
+		[Test]
+		public async Task GetRestrictReferentialFileLinksOnImportAsync_ShouldReturnExpectedDefault_WhenQueryFails()
+		{
+			//arrange
+			_instanceSettingManager.Setup(x => x.QueryAsync(It.IsAny<Services.Query>())).Throws<InvalidOperationException>();
+
+			//act
+			bool actualValue = await _sut.GetRestrictReferentialFileLinksOnImportAsync(_DEFAULT_RESTRICT_REF_FILE_LINKS_ON_IMPORT).ConfigureAwait(false);
+
+			//assert
+			actualValue.Should().Be(_DEFAULT_RESTRICT_REF_FILE_LINKS_ON_IMPORT);
 		}
 
 		private void PrepareValidInstanceSettingResult(
