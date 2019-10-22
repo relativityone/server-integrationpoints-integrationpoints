@@ -7,7 +7,7 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
 
-namespace Relativity.Sync.Tests.Unit
+namespace Relativity.Sync.Tests.Unit.Storage
 {
 	[TestFixture]
 	public class ValidationConfigurationTests

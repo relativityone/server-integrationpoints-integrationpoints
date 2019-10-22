@@ -6,7 +6,7 @@ using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Storage;
 
-namespace Relativity.Sync.Tests.Unit
+namespace Relativity.Sync.Tests.Unit.Storage
 {
 	[TestFixture]
 	internal sealed class DestinationWorkspaceTagsCreationConfigurationTests
