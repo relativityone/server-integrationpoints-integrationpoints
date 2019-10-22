@@ -39,7 +39,8 @@ namespace Relativity.Sync
 				.AddChild<DestinationWorkspaceSavedSearchCreationNode>()
 				.AddChild<SnapshotPartitionNode>()
 				.AddChild<SynchronizationNode>()
-				.AddChild<DataDestinationFinalizationNode>();
+				.AddChild<DataDestinationFinalizationNode>()
+				.AddChild<JobCleanupNode>();
 
 			flowBuilder.Register();
 
