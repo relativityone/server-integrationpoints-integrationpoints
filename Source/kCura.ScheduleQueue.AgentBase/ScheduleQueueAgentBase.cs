@@ -126,6 +126,10 @@ namespace kCura.ScheduleQueue.AgentBase
 				{
 					TaskResult jobResult = ProcessJob(nextJob);
 					FinalizeJobExecution(nextJob, jobResult);
+					if (!Enabled)
+					{
+						Console.WriteLine("Agent is disabled");
+					}
 					nextJob = GetNextQueueJob(); // assumptions: it will not throws exception
 				}
 

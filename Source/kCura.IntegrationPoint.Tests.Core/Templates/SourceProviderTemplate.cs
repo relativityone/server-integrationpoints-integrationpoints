@@ -325,11 +325,19 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 					foreach (var jobElement in jobsList)
 					{
-						Console.WriteLine($"Current jobs in queue {jobElement.JobId}, workspace {jobElement.WorkspaceID}\n");
+						Console.WriteLine($"Current jobs in queue {jobElement.JobId}, workspace {jobElement.WorkspaceID}, LockedByAgent {jobElement.LockedByAgentID}\n");
+					}
+
+					var jobsList2 = jobServiceManager.GetAllScheduledJobs();
+
+					foreach (var jobElement in jobsList2)
+					{
+						Console.WriteLine($"GetAllScheduledJobs in queue {jobElement.JobId}, workspace {jobElement.WorkspaceID}, LockedByAgent {jobElement.LockedByAgentID}\n");
 					}
 
 					if (job == null)
 					{
+						Console.WriteLine(@"Continue statement");
 						continue;
 					}
 					else
