@@ -41,7 +41,7 @@ namespace Relativity.Sync.Tests.Integration
 			// ASSERT
 			await action.Should().ThrowAsync<SyncException>().ConfigureAwait(false);
 
-			PrintMissingAndRedundantStepsIfAny();
+			PrintInfoAboutExecutedStepsIfNeeded();
 			_executorTypes.Should().BeEquivalentTo(ExpectedExecutedSteps);
 			
 			// should contain steps run in parallel
@@ -67,14 +67,25 @@ namespace Relativity.Sync.Tests.Integration
 			// ASSERT
 			await action.Should().ThrowAsync<SyncException>().ConfigureAwait(false);
 
-			PrintMissingAndRedundantStepsIfAny();
+			PrintInfoAboutExecutedStepsIfNeeded();
 			_executorTypes.Should().BeEquivalentTo(ExpectedExecutedSteps);
 
 			_executorTypes.Should().NotContain(x => x == typeof(T));
 		}
 
-		private void PrintMissingAndRedundantStepsIfAny()
+		private void PrintInfoAboutExecutedStepsIfNeeded()
 		{
+			List<(Type type, int count)> duplicatedSteps = _executorTypes
+				.GroupBy(x => x)
+				.Where(group => group.Count() > 1)
+				.Select(group => (group.Key, group.Count()))
+				.ToList();
+			if (duplicatedSteps.Any())
+			{
+				IEnumerable<string> duplicatesWithCount = duplicatedSteps.Select(tc => $"{tc.type} ({tc.count})");
+				Console.WriteLine($"The duplicated steps are: {string.Join(", ", duplicatesWithCount)}");
+			}
+
 			List<Type> missingSteps = ExpectedExecutedSteps.Except(_executorTypes).ToList();
 			if (missingSteps.Any())
 			{
