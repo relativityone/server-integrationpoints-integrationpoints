@@ -5,5 +5,7 @@
 		int SourceWorkspaceArtifactId { get; }
 
 		int SyncConfigurationArtifactId { get; }
+
+		ExecutionResult SynchronizationExecutionResult { get; set; }
 	}
 }

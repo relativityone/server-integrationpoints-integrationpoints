@@ -11,5 +11,6 @@
 
 		public int SourceWorkspaceArtifactId => _syncJobParameters.WorkspaceId;
 		public int SyncConfigurationArtifactId => _syncJobParameters.SyncConfigurationArtifactId;
+		public ExecutionResult SynchronizationExecutionResult { get; set; }
 	}
 }
