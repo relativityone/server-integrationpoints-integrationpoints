@@ -13,6 +13,14 @@ namespace Relativity.Sync.Tests.Integration
 			// no need to check other steps
 		}
 
+		protected override ICollection<Type> ExpectedExecutedSteps { get; } = new[]
+		{
+			typeof(IPermissionsCheckConfiguration),
+			typeof(INotificationConfiguration),
+			typeof(IJobStatusConsolidationConfiguration),
+			typeof(IJobCleanupConfiguration)
+		};
+
 		protected override int ExpectedNumberOfExecutedSteps()
 		{
 			// permissions, notification, job status consolidation, cleanup

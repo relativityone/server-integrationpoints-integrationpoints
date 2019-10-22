@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
@@ -16,8 +17,6 @@ namespace Relativity.Sync.Tests.Integration
 		private List<Type> _executorTypes;
 		private ContainerBuilder _containerBuilder;
 
-		protected virtual bool ShouldStopExecution { get; } = true;
-
 		[SetUp]
 		public void SetUp()
 		{
@@ -28,7 +27,7 @@ namespace Relativity.Sync.Tests.Integration
 		}
 
 		[Test]
-		public void ItShouldHandleExceptionAndStopExecutionAfterStepExecutionFails()
+		public async Task ItShouldHandleExceptionAndStopExecutionAfterStepExecutionFails()
 		{
 			IExecutor<T> executor = new FailingExecutorStub<T>();
 
@@ -40,25 +39,21 @@ namespace Relativity.Sync.Tests.Integration
 			Func<Task> action = async () => await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			if (ShouldStopExecution)
-			{
-				action.Should().Throw<SyncException>(); 
-			}
-			else
-			{
-				action().GetAwaiter().GetResult();
-			}
+			await action.Should().ThrowAsync<SyncException>().ConfigureAwait(false);
 
-			_executorTypes.Count.Should().Be(ExpectedNumberOfExecutedSteps());
-
+			PrintMissingAndRedundantStepsIfAny();
+			_executorTypes.Should().BeEquivalentTo(ExpectedExecutedSteps);
+			
 			// should contain steps run in parallel
 			AssertExecutedSteps(_executorTypes);
 		}
 
 		protected abstract void AssertExecutedSteps(List<Type> executorTypes);
 
+		protected abstract ICollection<Type> ExpectedExecutedSteps { get; }
+
 		[Test]
-		public void ItShouldHandleExceptionAndStopExecutionAfterStepConstrainsCheckFails()
+		public async Task ItShouldHandleExceptionAndStopExecutionAfterStepConstrainsCheckFails()
 		{
 			IExecutionConstrains<T> executionConstrains = new FailingExecutionConstrainsStub<T>();
 
@@ -70,10 +65,27 @@ namespace Relativity.Sync.Tests.Integration
 			Func<Task> action = async () => await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			action.Should().Throw<SyncException>();
+			await action.Should().ThrowAsync<SyncException>().ConfigureAwait(false);
 
-			_executorTypes.Count.Should().Be(ExpectedNumberOfExecutedSteps());
+			PrintMissingAndRedundantStepsIfAny();
+			_executorTypes.Should().BeEquivalentTo(ExpectedExecutedSteps);
+
 			_executorTypes.Should().NotContain(x => x == typeof(T));
+		}
+
+		private void PrintMissingAndRedundantStepsIfAny()
+		{
+			List<Type> missingSteps = ExpectedExecutedSteps.Except(_executorTypes).ToList();
+			if (missingSteps.Any())
+			{
+				Console.WriteLine($"The missing steps are: {string.Join(", ", missingSteps)}");
+			}
+
+			List<Type> redundantSteps = _executorTypes.Except(ExpectedExecutedSteps).ToList();
+			if (redundantSteps.Any())
+			{
+				Console.WriteLine($"The redundant steps are: {string.Join(", ", redundantSteps)}");
+			}
 		}
 
 		protected abstract int ExpectedNumberOfExecutedSteps();

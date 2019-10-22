@@ -1,25 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Autofac;
-using FluentAssertions;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Tests.Common;
-using Relativity.Sync.Tests.Integration.Helpers;
 
 namespace Relativity.Sync.Tests.Integration
 {
 	[TestFixture]
 	internal sealed class NotificationStepTests : FailingStepsBase<INotificationConfiguration>
 	{
-		protected override bool ShouldStopExecution { get; } = false;
-
 		protected override void AssertExecutedSteps(List<Type> executorTypes)
 		{
 			// nothing special to assert
 		}
+
+		protected override ICollection<Type> ExpectedExecutedSteps { get; } = new[]
+		{
+			typeof(IValidationConfiguration),
+			typeof(IPermissionsCheckConfiguration),
+			typeof(IDestinationWorkspaceObjectTypesCreationConfiguration),
+			typeof(IDataSourceSnapshotConfiguration),
+			typeof(ISourceWorkspaceTagsCreationConfiguration),
+			typeof(IDestinationWorkspaceTagsCreationConfiguration),
+			typeof(IDataDestinationInitializationConfiguration),
+			typeof(ISumReporterConfiguration),
+			typeof(IDestinationWorkspaceSavedSearchCreationConfiguration),
+			typeof(ISnapshotPartitionConfiguration),
+			typeof(ISynchronizationConfiguration),
+			typeof(IDataDestinationFinalizationConfiguration),
+			typeof(IJobStatusConsolidationConfiguration),
+			typeof(IJobCleanupConfiguration)
+		};
 
 		protected override int ExpectedNumberOfExecutedSteps()
 		{
