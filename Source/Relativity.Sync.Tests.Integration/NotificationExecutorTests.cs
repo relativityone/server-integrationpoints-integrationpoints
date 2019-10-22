@@ -189,42 +189,45 @@ namespace Relativity.Sync.Tests.Integration
 				Objects = new List<RelativityObject> {new RelativityObject {ArtifactID = progressArtifactId } }
 			});
 
-			var readResult = new ReadResult
+			var queryResult = new QueryResult
 			{
-				Object = new RelativityObject
+				Objects = new List<RelativityObject>()
 				{
-					ArtifactID =  progressArtifactId,
-					FieldValues = new List<FieldValuePair>
+					new RelativityObject
 					{
-						new FieldValuePair
+						ArtifactID =  progressArtifactId,
+						FieldValues = new List<FieldValuePair>
 						{
-							Field = new Field {Guids = new List<Guid> {new Guid("AE2FCA2B-0E5C-4F35-948F-6C1654D5CF95") }},
-							Value = "Synchronization Step"
-						},
-						new FieldValuePair
-						{
-							Field = new Field {Guids = new List<Guid> {new Guid("610A1E44-7AAA-47FC-8FA0-92F8C8C8A94A") }},
-							Value = 1
-						},
-						new FieldValuePair
-						{
-							Field = new Field {Guids = new List<Guid> {new Guid("698E1BBE-13B7-445C-8A28-7D40FD232E1B") }},
-							Value = progressStatus
-						},
-						new FieldValuePair
-						{
-							Field = new Field {Guids = new List<Guid> {new Guid("2F2CFC2B-C9C0-406D-BD90-FB0133BCB939") }},
-							Value = string.Empty
-						},
-						new FieldValuePair
-						{
-							Field = new Field {Guids = new List<Guid> {new Guid("2E296F79-1B81-4BF6-98AD-68DA13F8DA44") }},
-							Value = string.Empty
+							new FieldValuePair
+							{
+								Field = new Field {Guids = new List<Guid> {new Guid("AE2FCA2B-0E5C-4F35-948F-6C1654D5CF95") }},
+								Value = "Synchronization Step"
+							},
+							new FieldValuePair
+							{
+								Field = new Field {Guids = new List<Guid> {new Guid("610A1E44-7AAA-47FC-8FA0-92F8C8C8A94A") }},
+								Value = 1
+							},
+							new FieldValuePair
+							{
+								Field = new Field {Guids = new List<Guid> {new Guid("698E1BBE-13B7-445C-8A28-7D40FD232E1B") }},
+								Value = progressStatus
+							},
+							new FieldValuePair
+							{
+								Field = new Field {Guids = new List<Guid> {new Guid("2F2CFC2B-C9C0-406D-BD90-FB0133BCB939") }},
+								Value = string.Empty
+							},
+							new FieldValuePair
+							{
+								Field = new Field {Guids = new List<Guid> {new Guid("2E296F79-1B81-4BF6-98AD-68DA13F8DA44") }},
+								Value = string.Empty
+							}
 						}
 					}
 				}
 			};
-			_objectManager.Setup(x => x.ReadAsync(_SOURCE_CASE_ARTIFACT_ID, It.Is<ReadRequest>(r => r.Object.ArtifactID == progressArtifactId))).ReturnsAsync(readResult);
+			_objectManager.Setup(x => x.QueryAsync(_SOURCE_CASE_ARTIFACT_ID, It.Is<QueryRequest>(r => r.Condition == $"'ArtifactID' == {progressArtifactId}"), 0, 1)).ReturnsAsync(queryResult);
 		}
 
 		private void SetUpDestinationWorkspaceTagExpectations()
