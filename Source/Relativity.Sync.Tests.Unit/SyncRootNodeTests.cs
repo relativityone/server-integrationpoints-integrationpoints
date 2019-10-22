@@ -16,16 +16,15 @@ namespace Relativity.Sync.Tests.Unit
 	{
 		private SyncRootNode _instance;
 
+		private SyncExecutionContext _syncExecutionContext;
 		private CancellationToken _token;
-
+		
 		private Mock<ICommand<IJobStatusConsolidationConfiguration>> _jobStatusConsolidationCommand;
 		private Mock<ICommand<INotificationConfiguration>> _notificationCommand;
 		private Mock<ICommand<IJobCleanupConfiguration>> _jobCleanupCommand;
 		private Mock<INode<SyncExecutionContext>> _childNode;
-
-		private SyncExecutionContext _syncExecutionContext;
 		private Mock<ISyncLog> _logger;
-
+		
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
