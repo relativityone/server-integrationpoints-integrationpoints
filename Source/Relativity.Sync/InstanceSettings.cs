@@ -40,9 +40,15 @@ namespace Relativity.Sync
 				return defaultValue;
 			}
 
-			if (resultSet.TotalCount <= 0)
+			if (resultSet.TotalCount == 0)
 			{
 				LogWarningRetrieveSettingValueFailed(name, $"Query for '{name}' instance setting from section '{section}' returned empty results. Make sure instance setting exists.");
+				return defaultValue;
+			}
+
+			if (resultSet.TotalCount < 0)
+			{
+				_logger.LogError($"Query for instance setting returned negative value ({resultSet.TotalCount}). It can potentially cause problems");
 				return defaultValue;
 			}
 
