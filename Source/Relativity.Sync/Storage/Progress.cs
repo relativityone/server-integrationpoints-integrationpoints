@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,40 +25,28 @@ namespace Relativity.Sync.Storage
 		private static readonly Guid MessageGuid = new Guid("2E296F79-1B81-4BF6-98AD-68DA13F8DA44");
 		private static readonly Guid ParentArtifactGuid = new Guid("E0188DD7-4B1B-454D-AFA4-3CCC7F9DC001");
 
-		private Progress(ISourceServiceFactoryForAdmin serviceFactory, ISyncLog logger, int workspaceArtifactId, int syncConfigurationArtifactId, string name, int order, SyncJobStatus status)
+		private Progress(ISourceServiceFactoryForAdmin serviceFactory, ISyncLog logger, int workspaceArtifactId, int syncConfigurationArtifactId, string name,
+			int artifactId, int order, SyncJobStatus status)
 		{
-			if (string.IsNullOrWhiteSpace(name))
-			{
-				throw new ArgumentNullException(nameof(name));
-			}
-
 			_serviceFactory = serviceFactory;
 			_logger = logger;
 			_workspaceArtifactId = workspaceArtifactId;
 			_syncConfigurationArtifactId = syncConfigurationArtifactId;
 
 			Name = name;
+			ArtifactId = artifactId;
 			Order = order;
 			Status = status;
 		}
 
-		public Progress(ISourceServiceFactoryForAdmin serviceFactory, ISyncLog logger, int workspaceArtifactId, int artifactId)
+		private Progress(ISourceServiceFactoryForAdmin serviceFactory, ISyncLog logger, int workspaceArtifactId, int artifactId)
+			: this(serviceFactory, logger, workspaceArtifactId, 0, string.Empty, artifactId, 0, SyncJobStatus.New)
 		{
-			_serviceFactory = serviceFactory;
-			_logger = logger;
-			_workspaceArtifactId = workspaceArtifactId;
-
-			ArtifactId = artifactId;
 		}
 
-		public Progress(ISourceServiceFactoryForAdmin serviceFactory, ISyncLog logger, int workspaceArtifactId, int syncConfigurationArtifactId, string name)
+		private Progress(ISourceServiceFactoryForAdmin serviceFactory, ISyncLog logger, int workspaceArtifactId, int syncConfigurationArtifactId, string name)
+			: this(serviceFactory, logger, workspaceArtifactId, syncConfigurationArtifactId, name, 0, 0, SyncJobStatus.New)
 		{
-			_serviceFactory = serviceFactory;
-			_logger = logger;
-			_workspaceArtifactId = workspaceArtifactId;
-			_syncConfigurationArtifactId = syncConfigurationArtifactId;
-
-			Name = name;
 		}
 
 		public int ArtifactId { get; private set; }
@@ -144,19 +132,24 @@ namespace Relativity.Sync.Storage
 
 		private async Task ReadAsync()
 		{
-			var request = new ReadRequest
-			{
-				Object = new RelativityObjectRef
-				{
-					ArtifactID = ArtifactId
-				},
-				Fields = GetFieldRefsForQuery()
-			};
-
 			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
-				ReadResult result = await objectManager.ReadAsync(_workspaceArtifactId, request).ConfigureAwait(false);
-				PopulateProgressProperties(result.Object);
+				// Do not use ReadAsync here. More details: REL-366692
+				QueryRequest request = new QueryRequest()
+				{
+					ObjectType = new ObjectTypeRef()
+					{
+						Guid = ProgressObjectTypeGuid
+					},
+					Fields = GetFieldRefsForQuery(),
+					Condition = $"'ArtifactID' == {ArtifactId}"
+				};
+				QueryResult queryResult = await objectManager.QueryAsync(_workspaceArtifactId, request, start: 0, length: 1).ConfigureAwait(false);
+				if (!queryResult.Objects.Any())
+				{
+					throw new SyncException($"Progress ArtifactID: {ArtifactId} not found.");
+				}
+				PopulateProgressProperties(queryResult.Objects.Single());
 			}
 		}
 
@@ -175,7 +168,7 @@ namespace Relativity.Sync.Storage
 			bool objectExists = false;
 			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
-				QueryResult result = await objectManager.QueryAsync(_workspaceArtifactId, request, 1, 1).ConfigureAwait(false);
+				QueryResult result = await objectManager.QueryAsync(_workspaceArtifactId, request, start: 1, length: 1).ConfigureAwait(false);
 				if (result.Objects.Count > 0)
 				{
 					PopulateProgressProperties(result.Objects[0]);
@@ -200,7 +193,7 @@ namespace Relativity.Sync.Storage
 			{
 				using (var objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 				{
-					QueryResult result = await objectManager.QueryAsync(_workspaceArtifactId, queryRequest, 1, int.MaxValue).ConfigureAwait(false);
+					QueryResult result = await objectManager.QueryAsync(_workspaceArtifactId, queryRequest, start: 1, length: int.MaxValue).ConfigureAwait(false);
 					if (result.TotalCount > 0)
 					{
 						IEnumerable<int> progressIds = result.Objects.Select(x => x.ArtifactID);
@@ -271,8 +264,8 @@ namespace Relativity.Sync.Storage
 
 		public static async Task<IProgress> CreateAsync(ISourceServiceFactoryForAdmin serviceFactory, ISyncLog logger, CreateProgressDto createProgressDto)
 		{
-			Progress progress = new Progress(serviceFactory, logger,
-				createProgressDto.WorkspaceArtifactId, createProgressDto.SyncConfigurationArtifactId, createProgressDto.Name, createProgressDto.Order, createProgressDto.Status);
+			Progress progress = new Progress(serviceFactory, logger, createProgressDto.WorkspaceArtifactId, createProgressDto.SyncConfigurationArtifactId, createProgressDto.Name,
+				0, createProgressDto.Order, createProgressDto.Status);
 			await progress.CreateAsync().ConfigureAwait(false);
 			return progress;
 		}

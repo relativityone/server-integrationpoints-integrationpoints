@@ -48,7 +48,7 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public async Task ItShouldCreateBatch()
+		public async Task CreateAsync_ShouldCreateBatch()
 		{
 			const int syncConfigurationArtifactId = 634;
 			const int totalItemsCount = 10000;
@@ -93,7 +93,7 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public async Task ItShouldReadBatch()
+		public async Task GetAsync_ShouldGetBatch()
 		{
 			const int totalItemsCount = 1123;
 			const int startingIndex = 532;
@@ -104,9 +104,8 @@ namespace Relativity.Sync.Tests.Unit
 			const double progress = 3.1;
 			const string lockedBy = "id 2";
 
-			ReadResult readResult = PrepareReadResult(totalItemsCount, startingIndex, statusDescription, failedItemsCount, transferredItemsCount, new decimal(progress), lockedBy);
-
-			_objectManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<ReadRequest>())).ReturnsAsync(readResult);
+			QueryResult queryResult = PrepareQueryResult(totalItemsCount, startingIndex, statusDescription, failedItemsCount, transferredItemsCount, new decimal(progress), lockedBy);
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(queryResult);
 
 			// ACT
 			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
@@ -121,11 +120,27 @@ namespace Relativity.Sync.Tests.Unit
 			batch.Progress.Should().Be(progress);
 			batch.LockedBy.Should().Be(lockedBy);
 
-			_objectManager.Verify(x => x.ReadAsync(_WORKSPACE_ID, It.Is<ReadRequest>(rr => AssertReadRequest(rr))), Times.Once);
+			_objectManager.Verify(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(queryRequest => AssertQueryRequest(queryRequest)), 0, 1), Times.Once);
 		}
 
 		[Test]
-		public async Task ItShouldHandleNullValues()
+		public void GetAsync_ShouldThrow_WhenBatchNotFound()
+		{
+			QueryResult queryResult = new QueryResult()
+			{
+				Objects = new List<RelativityObject>()
+			};
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, 1)).ReturnsAsync(queryResult);
+
+			// ACT
+			Func<Task> action = () => _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID);
+
+			// ASSERT
+			action.Should().Throw<SyncException>().Which.Message.Should().Be($"Batch ArtifactID: {_ARTIFACT_ID} not found.");
+		}
+		
+		[Test]
+		public async Task GetAsync_ShouldHandleNullValues()
 		{
 			// total items count and starting index are set during creation and cannot be modified
 			const BatchStatus status = BatchStatus.Started;
@@ -134,9 +149,8 @@ namespace Relativity.Sync.Tests.Unit
 			decimal? progress = null;
 			const string lockedBy = null;
 
-			ReadResult readResult = PrepareReadResult(failedItemsCount: failedItemsCount, transferredItemsCount: transferredItemsCount, progress: progress, lockedBy: lockedBy);
-
-			_objectManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<ReadRequest>())).ReturnsAsync(readResult);
+			QueryResult queryResult = PrepareQueryResult(failedItemsCount: failedItemsCount, transferredItemsCount: transferredItemsCount, progress: progress, lockedBy: lockedBy);
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, 1)).ReturnsAsync(queryResult);
 
 			// ACT
 			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
@@ -150,12 +164,15 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 #pragma warning disable RG2011 // Method Argument Count Analyzer
-		private static ReadResult PrepareReadResult(int totalItemsCount = 1, int startingIndex = 1, string status = "Started", int? failedItemsCount = 1, int? transferredItemsCount = 1,
+		private static QueryResult PrepareQueryResult(int totalItemsCount = 1, int startingIndex = 1, string status = "Started", int? failedItemsCount = 1, int? transferredItemsCount = 1,
 			decimal? progress = 1, string lockedBy = "id")
 		{
-			ReadResult readResult = new ReadResult
+			QueryResult readResult = new QueryResult
 			{
-				Object = PrepareObject(totalItemsCount, startingIndex, status, failedItemsCount, transferredItemsCount, progress, lockedBy)
+				Objects = new List<RelativityObject>()
+				{
+					PrepareObject(totalItemsCount, startingIndex, status, failedItemsCount, transferredItemsCount, progress, lockedBy)
+				}
 			};
 			return readResult;
 		}
@@ -260,10 +277,10 @@ namespace Relativity.Sync.Tests.Unit
 			};
 		}
 
-		private bool AssertReadRequest(ReadRequest readRequest)
+		private bool AssertQueryRequest(QueryRequest queryRequest)
 		{
-			readRequest.Object.ArtifactID.Should().Be(_ARTIFACT_ID);
-			IList<FieldRef> fields = readRequest.Fields.ToList();
+			queryRequest.Condition.Should().Be($"'ArtifactID' == {_ARTIFACT_ID}");
+			IList<FieldRef> fields = queryRequest.Fields.ToList();
 			AssertReadFields(fields);
 			return true;
 		}
@@ -282,12 +299,12 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public async Task ItShouldUpdateFailedItemsCount()
+		public async Task SetFailedItemsCountAsync_ShouldUpdateFailedItemsCount()
 		{
 			const int failedItemsCount = 9876;
 
-			ReadResult readResult = PrepareReadResult();
-			_objectManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<ReadRequest>())).ReturnsAsync(readResult);
+			QueryResult queryResult = PrepareQueryResult();
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, 1)).ReturnsAsync(queryResult);
 
 			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
 
@@ -301,12 +318,12 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public async Task ItShouldUpdateTransferredItemsCount()
+		public async Task SetTransferredItemsCountAsync_ShouldUpdateTransferredItemsCount()
 		{
 			const int transferredItemsCount = 849170;
 
-			ReadResult readResult = PrepareReadResult();
-			_objectManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<ReadRequest>())).ReturnsAsync(readResult);
+			QueryResult queryResult = PrepareQueryResult();
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, 1)).ReturnsAsync(queryResult);
 
 			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
 
@@ -320,12 +337,12 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public async Task ItShouldUpdateLockedBy()
+		public async Task SetLockedByAsync_ShouldUpdateLockedBy()
 		{
 			const string lockedBy = "worker 1";
 
-			ReadResult readResult = PrepareReadResult();
-			_objectManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<ReadRequest>())).ReturnsAsync(readResult);
+			QueryResult queryResult = PrepareQueryResult();
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, 1)).ReturnsAsync(queryResult);
 
 			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
 
@@ -339,12 +356,12 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public async Task ItShouldUpdateProgress()
+		public async Task SetProgressAsync_ShouldUpdateProgress()
 		{
 			const double progress = 55.5;
 
-			ReadResult readResult = PrepareReadResult();
-			_objectManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<ReadRequest>())).ReturnsAsync(readResult);
+			QueryResult queryResult = PrepareQueryResult();
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, 1)).ReturnsAsync(queryResult);
 
 			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
 
@@ -358,13 +375,13 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public async Task ItShouldUpdateStatus()
+		public async Task SetStatusAsync_ShouldUpdateStatus()
 		{
 			const BatchStatus status = BatchStatus.InProgress;
 			const string expectedStatusDescription = "In Progress";
 
-			ReadResult readResult = PrepareReadResult();
-			_objectManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<ReadRequest>())).ReturnsAsync(readResult);
+			QueryResult queryResult = PrepareQueryResult();
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, 1)).ReturnsAsync(queryResult);
 
 			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
 
@@ -378,20 +395,17 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public async Task ItShouldNotSetFailedItemsCountWhenUpdateFails()
+		public async Task SetFailedItemsCountAsync_ShouldNotSetFailedItemsCount_WhenUpdateFails()
 		{
 			const int newValue = 876536;
 
-			ReadResult readResult = PrepareReadResult();
-			_objectManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<ReadRequest>())).ReturnsAsync(readResult);
-			_objectManager.Setup(x => x.UpdateAsync(_WORKSPACE_ID, It.IsAny<UpdateRequest>())).Throws<ArgumentNullException>();
-
+			SetupObjectManagerForUpdatingBatchFields();
 			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
 
 			int oldValue = batch.FailedItemsCount;
 
 			// ACT
-			Func<Task> action = async () => await batch.SetFailedItemsCountAsync(newValue).ConfigureAwait(false);
+			Func<Task> action = () => batch.SetFailedItemsCountAsync(newValue);
 
 			// ASSERT
 			action.Should().Throw<ArgumentNullException>();
@@ -400,20 +414,17 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public async Task ItShouldNotSetTransferredItemsCountWhenUpdateFails()
+		public async Task SetTransferredItemsCountAsync_ShouldNotSetTransferredItemsCount_WhenUpdateFails()
 		{
 			const int newValue = 85743;
 
-			ReadResult readResult = PrepareReadResult();
-			_objectManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<ReadRequest>())).ReturnsAsync(readResult);
-			_objectManager.Setup(x => x.UpdateAsync(_WORKSPACE_ID, It.IsAny<UpdateRequest>())).Throws<ArgumentNullException>();
-
+			SetupObjectManagerForUpdatingBatchFields();
 			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
 
 			int oldValue = batch.TransferredItemsCount;
 
 			// ACT
-			Func<Task> action = async () => await batch.SetTransferredItemsCountAsync(newValue).ConfigureAwait(false);
+			Func<Task> action = () => batch.SetTransferredItemsCountAsync(newValue);
 
 			// ASSERT
 			action.Should().Throw<ArgumentNullException>();
@@ -422,20 +433,17 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public async Task ItShouldNotSetLockedByWhenUpdateFails()
+		public async Task SetLockedByAsync_ShouldNotSetLockedBy_WhenUpdateFails()
 		{
 			const string newValue = "worker 2";
 
-			ReadResult readResult = PrepareReadResult();
-			_objectManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<ReadRequest>())).ReturnsAsync(readResult);
-			_objectManager.Setup(x => x.UpdateAsync(_WORKSPACE_ID, It.IsAny<UpdateRequest>())).Throws<ArgumentNullException>();
-
+			SetupObjectManagerForUpdatingBatchFields();
 			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
 
 			string oldValue = batch.LockedBy;
 
 			// ACT
-			Func<Task> action = async () => await batch.SetLockedByAsync(newValue).ConfigureAwait(false);
+			Func<Task> action = () => batch.SetLockedByAsync(newValue);
 
 			// ASSERT
 			action.Should().Throw<ArgumentNullException>();
@@ -444,20 +452,17 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public async Task ItShouldNotSetStatusWhenUpdateFails()
+		public async Task SetStatusAsync_ShouldNotSetStatus_WhenUpdateFails()
 		{
 			const BatchStatus newValue = BatchStatus.Completed;
 
-			ReadResult readResult = PrepareReadResult();
-			_objectManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<ReadRequest>())).ReturnsAsync(readResult);
-			_objectManager.Setup(x => x.UpdateAsync(_WORKSPACE_ID, It.IsAny<UpdateRequest>())).Throws<ArgumentNullException>();
-
+			SetupObjectManagerForUpdatingBatchFields();
 			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
 
 			BatchStatus oldValue = batch.Status;
 
 			// ACT
-			Func<Task> action = async () => await batch.SetStatusAsync(newValue).ConfigureAwait(false);
+			Func<Task> action = () => batch.SetStatusAsync(newValue);
 
 			// ASSERT
 			action.Should().Throw<ArgumentNullException>();
@@ -466,25 +471,28 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public async Task ItShouldNotSetProgressWhenUpdateFails()
+		public async Task SetProgressAsync_ShouldNotSetProgress_WhenUpdateFails()
 		{
 			const double newValue = 99.9;
-
-			ReadResult readResult = PrepareReadResult();
-			_objectManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<ReadRequest>())).ReturnsAsync(readResult);
-			_objectManager.Setup(x => x.UpdateAsync(_WORKSPACE_ID, It.IsAny<UpdateRequest>())).Throws<ArgumentNullException>();
-
+			SetupObjectManagerForUpdatingBatchFields();
 			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
 
 			double oldValue = batch.Progress;
 
 			// ACT
-			Func<Task> action = async () => await batch.SetProgressAsync(newValue).ConfigureAwait(false);
+			Func<Task> action = () => batch.SetProgressAsync(newValue);
 
 			// ASSERT
 			action.Should().Throw<ArgumentNullException>();
 			batch.Progress.Should().Be(oldValue);
 			_objectManager.Verify(x => x.UpdateAsync(_WORKSPACE_ID, It.Is<UpdateRequest>(up => up.FieldValues.Any(f => f.Field.Guid == ProgressGuid))));
+		}
+
+		private void SetupObjectManagerForUpdatingBatchFields()
+		{
+			QueryResult queryResult = PrepareQueryResult();
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, 1)).ReturnsAsync(queryResult);
+			_objectManager.Setup(x => x.UpdateAsync(_WORKSPACE_ID, It.IsAny<UpdateRequest>())).Throws<ArgumentNullException>();
 		}
 
 		private bool AssertUpdateRequest<T>(UpdateRequest updateRequest, Guid fieldGuid, T value)
@@ -497,7 +505,7 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public async Task ItShouldReturnNullWhenNoBatchesFound()
+		public async Task GetLastAsync_ShouldReturnNull_WhenNoBatchesFound()
 		{
 			const int syncConfigurationArtifactId = 845967;
 
@@ -512,7 +520,7 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public async Task ItShouldReturnLastBatch()
+		public async Task GetLastAsync_ShouldReturnLastBatch()
 		{
 			const int syncConfigurationArtifactId = 845967;
 
@@ -546,7 +554,7 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public async Task ItShouldReturnAnyNewBatchIds()
+		public async Task GetAllNewBatchesIdsAsync_ShouldReturnAnyNewBatchIds()
 		{
 			// Arrange
 			QueryResult queryResult = PrepareQueryResult();
@@ -564,7 +572,7 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public async Task ItShouldReturnNoBatchIdsWhenNoNewBatchesExist()
+		public async Task GetAllNewBatchesIdsAsync_ShouldReturnNoBatchIds_WhenNoNewBatchesExist()
 		{
 			// Arrange
 			var queryResult = new QueryResult();
@@ -582,28 +590,28 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public void ItShouldThrowWhenItFailsToQueryForNewBatches()
+		public void GetAllNewBatchesIdsAsync_ShouldThrow_WhenItFailsToQueryForNewBatches()
 		{
 			// Arrange
 			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, int.MaxValue)).Throws<NotAuthorizedException>();
 
 			// Act & Assert
-			Assert.ThrowsAsync<NotAuthorizedException>(async () => await _batchRepository.GetAllNewBatchesIdsAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false));
+			Assert.ThrowsAsync<NotAuthorizedException>(() => _batchRepository.GetAllNewBatchesIdsAsync(_WORKSPACE_ID, _ARTIFACT_ID));
 
 			_objectManager.Verify(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(rr => AssertQueryAllNewRequest(rr)), 1, int.MaxValue), Times.Once);
 		}
 
 		[Test]
-		public async Task ItShouldReadAllBatches()
+		public async Task GetAllAsync_ShouldReadAllBatches()
 		{
 			const int syncConfigurationArtifactId = 634;
 
-			QueryResultSlim queryResult = PrepareQueryResultSlim();
-			queryResult.TotalCount = queryResult.Objects.Count;
-			_objectManager.Setup(x => x.QuerySlimAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, int.MaxValue)).ReturnsAsync(queryResult);
+			QueryResultSlim queryResultSlim = PrepareQueryResultSlim();
+			queryResultSlim.TotalCount = queryResultSlim.Objects.Count;
+			_objectManager.Setup(x => x.QuerySlimAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, int.MaxValue)).ReturnsAsync(queryResultSlim);
 
-			ReadResult readResult = PrepareReadResult();
-			_objectManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<ReadRequest>())).ReturnsAsync(readResult);
+			QueryResult queryResult = PrepareQueryResult();
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, 1)).ReturnsAsync(queryResult);
 
 			// ACT
 			IEnumerable<IBatch> batches = await _batchRepository.GetAllAsync(_WORKSPACE_ID, syncConfigurationArtifactId).ConfigureAwait(false);

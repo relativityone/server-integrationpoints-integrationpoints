@@ -169,7 +169,7 @@ namespace Relativity.Sync.Storage
 					}
 				};
 
-				QueryResult result = await objectManager.QueryAsync(_workspaceArtifactId, queryRequest, 1, 1).ConfigureAwait(false);
+				QueryResult result = await objectManager.QueryAsync(_workspaceArtifactId, queryRequest, start: 1, length: 1).ConfigureAwait(false);
 
 				if (result.TotalCount == 0)
 				{
@@ -209,7 +209,7 @@ namespace Relativity.Sync.Storage
 					}
 				};
 
-				QueryResult result = await objectManager.QueryAsync(_workspaceArtifactId, queryRequest, 1, 1).ConfigureAwait(false);
+				QueryResult result = await objectManager.QueryAsync(_workspaceArtifactId, queryRequest, start: 1, length: 1).ConfigureAwait(false);
 
 				if (result.TotalCount == 0)
 				{
@@ -222,22 +222,28 @@ namespace Relativity.Sync.Storage
 			}
 		}
 
-		private async Task ReadAsync(int workspaceArtifactId, int artifactId)
+		private async Task InitializeAsync(int workspaceArtifactId, int artifactId)
 		{
 			_workspaceArtifactId = workspaceArtifactId;
 			ArtifactId = artifactId;
 			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
-				ReadRequest request = new ReadRequest
+				// Do not use ReadAsync here. More details: REL-366692
+				QueryRequest request = new QueryRequest()
 				{
-					Object = new RelativityObjectRef
+					ObjectType = new ObjectTypeRef()
 					{
-						ArtifactID = ArtifactId
+						Guid = BatchObjectTypeGuid
 					},
-					Fields = GetFieldsToRead()
+					Fields = GetFieldsToRead(),
+					Condition = $"'ArtifactID' == {artifactId}"
 				};
-				ReadResult readResult = await objectManager.ReadAsync(_workspaceArtifactId, request).ConfigureAwait(false);
-				PopulateBatchProperties(readResult.Object);
+				QueryResult queryResult = await objectManager.QueryAsync(workspaceArtifactId, request, start: 0, length: 1).ConfigureAwait(false);
+				if (!queryResult.Objects.Any())
+				{
+					throw new SyncException($"Batch ArtifactID: {artifactId} not found.");
+				}
+				PopulateBatchProperties(queryResult.Objects.Single());
 			}
 		}
 
@@ -257,7 +263,7 @@ namespace Relativity.Sync.Storage
 					Condition = $"'{SyncConfigurationRelationGuid}' == OBJECT {syncConfigurationArtifactId} AND '{StatusGuid}' == '{BatchStatus.New.GetDescription()}'"
 				};
 
-				QueryResult result = await objectManager.QueryAsync(_workspaceArtifactId, queryRequest, 1, int.MaxValue).ConfigureAwait(false);
+				QueryResult result = await objectManager.QueryAsync(_workspaceArtifactId, queryRequest, start: 1, length: int.MaxValue).ConfigureAwait(false);
 				if (result.TotalCount > 0)
 				{
 					batchIds = result.Objects.Select(x => x.ArtifactID);
@@ -282,7 +288,7 @@ namespace Relativity.Sync.Storage
 					Condition = $"'{SyncConfigurationRelationGuid}' == OBJECT {syncConfigurationArtifactId}"
 				};
 
-				QueryResultSlim result = await objectManager.QuerySlimAsync(_workspaceArtifactId, queryRequest, 1, int.MaxValue).ConfigureAwait(false);
+				QueryResultSlim result = await objectManager.QuerySlimAsync(_workspaceArtifactId, queryRequest, start: 1, length: int.MaxValue).ConfigureAwait(false);
 				if (result.TotalCount > 0)
 				{
 					IEnumerable<int> batchIds = result.Objects.Select(x => x.ArtifactID);
@@ -290,7 +296,7 @@ namespace Relativity.Sync.Storage
 					Parallel.ForEach(batchIds, batchArtifactId =>
 					{
 						var batch = new Batch(_serviceFactory);
-						batch.ReadAsync(workspaceArtifactId, batchArtifactId).ConfigureAwait(false).GetAwaiter().GetResult();
+						batch.InitializeAsync(workspaceArtifactId, batchArtifactId).ConfigureAwait(false).GetAwaiter().GetResult();
 						batches.Add(batch);
 					});
 				}
@@ -363,7 +369,7 @@ namespace Relativity.Sync.Storage
 		public static async Task<IBatch> GetAsync(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int artifactId)
 		{
 			Batch batch = new Batch(serviceFactory);
-			await batch.ReadAsync(workspaceArtifactId, artifactId).ConfigureAwait(false);
+			await batch.InitializeAsync(workspaceArtifactId, artifactId).ConfigureAwait(false);
 			return batch;
 		}
 
