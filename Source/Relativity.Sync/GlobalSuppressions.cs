@@ -77,5 +77,6 @@
 
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "member", Target = "~M:Relativity.Sync.KeplerFactory.KeplerServiceInterceptor`1.HandleExceptionsAsync(Castle.DynamicProxy.IInvocation)~System.Threading.Tasks.Task")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "member", Target = "~M:Relativity.Sync.Executors.JobStatusConsolidationExecutor.ExecuteAsync(Relativity.Sync.Configuration.IJobStatusConsolidationConfiguration,System.Threading.CancellationToken)~System.Threading.Tasks.Task{Relativity.Sync.ExecutionResult}")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "member", Target = "~M:Relativity.Sync.Nodes.SyncRootNode.ExecuteCommandIfCanExecuteAsync``1(Relativity.Sync.ICommand{``0},Banzai.IExecutionContext{Relativity.Sync.SyncExecutionContext})~System.Threading.Tasks.Task{Relativity.Sync.ExecutionResult}")]
 
 #pragma warning restore RG2001 // Character Per Line

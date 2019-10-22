@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Banzai;
@@ -31,24 +32,24 @@ namespace Relativity.Sync.Nodes
 
 		protected override void OnAfterExecute(IExecutionContext<SyncExecutionContext> context)
 		{
-			RunJobStatusConsolidation(context);
+			ExecutionResult jobStatusConsolidationExecutionResult = RunJobStatusConsolidationAsync(context).GetAwaiter().GetResult();
+			LogFailures(jobStatusConsolidationExecutionResult);
 
 			ExecutionResult[] executionResults = ExecuteTasksInParallelWithContextSync(context,
 				ReportJobEndMetricsAsync,
 				RunNotificationCommandAsync,
 				RunJobCleanupAsync);
-
 			LogFailures(executionResults);
-		}
 
-		private void RunJobStatusConsolidation(IExecutionContext<SyncExecutionContext> context)
-		{
-			ExecutionResult executionResult = RunJobStatusConsolidationAsync(context).GetAwaiter().GetResult();
+			List<SyncException> syncExceptions = executionResults
+				.Concat(new[] {jobStatusConsolidationExecutionResult})
+				.Where(result => result.Status == ExecutionStatus.Failed)
+				.Select(result => new SyncException(result.Message, result.Exception))
+				.ToList();
 
-			LogFailures(executionResult);
-			if (executionResult.Status == ExecutionStatus.Failed)
+			if (syncExceptions.Any())
 			{
-				throw new SyncException(executionResult.Message, executionResult.Exception);
+				throw new SyncException("Failures occured when finalizing the job.", new AggregateException(syncExceptions));
 			}
 		}
 
@@ -111,11 +112,18 @@ namespace Relativity.Sync.Nodes
 
 		private static async Task<ExecutionResult> ExecuteCommandIfCanExecuteAsync<T>(ICommand<T> command, IExecutionContext<SyncExecutionContext> context) where T : IConfiguration
 		{
-			if (await command.CanExecuteAsync(context.Subject.CancellationToken).ConfigureAwait(false))
+			try
 			{
-				return await command.ExecuteAsync(context.Subject.CancellationToken).ConfigureAwait(false);
+				if (await command.CanExecuteAsync(context.Subject.CancellationToken).ConfigureAwait(false))
+				{
+					return await command.ExecuteAsync(context.Subject.CancellationToken).ConfigureAwait(false);
+				}
+				return ExecutionResult.Skipped();
 			}
-			return ExecutionResult.Skipped();
+			catch (Exception e)
+			{
+				return ExecutionResult.Failure($"Failed to execute command {command.GetType().Name}", e);
+			}
 		}
 	}
 }
