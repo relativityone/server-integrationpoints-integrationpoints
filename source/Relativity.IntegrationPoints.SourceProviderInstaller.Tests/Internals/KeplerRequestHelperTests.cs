@@ -113,14 +113,14 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Tests.Internals
 		}
 
 		private void VerifyWarningWasLogged<TException>()
-		where TException : Exception
+			where TException : Exception
 		{
 			_loggerMock.Verify(x =>
 				x.LogWarning(
 					It.IsAny<TException>(),
 					It.IsAny<string>(),
 					It.IsAny<object[]>())
-			);
+				);
 		}
 
 		public interface ITestService : IDisposable

@@ -6,7 +6,7 @@ namespace kCura.IntegrationPoints.Contracts.Provider
 	/// <summary>
 	/// Retrieves fields from a data source.
 	/// </summary>
-    public interface IFieldProvider
+	public interface IFieldProvider
 	{
 		/// <summary>
 		/// Retrieves the type of a field.

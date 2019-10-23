@@ -14,7 +14,9 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Tests.Wrappers
 		private CrossAppDomainDataReaderWrapper _sut;
 
 		[SetUp]
+#pragma warning disable RG1004 // New Inheritance Qualifier Rule
 		public new void SetUp()
+#pragma warning restore RG1004 // New Inheritance Qualifier Rule
 		{
 			base.SetUp();
 

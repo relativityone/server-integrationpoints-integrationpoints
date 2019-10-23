@@ -1,4 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("kCura.IntegrationPoints.SourceProviderInstaller.Tests")]
+[assembly: InternalsVisibleTo("Relativity.IntegrationPoints.SourceProviderInstaller.Tests")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.EventHandlers")]

@@ -10,7 +10,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Internals.Wrappers
 	/// <inheritdoc cref="IDataReader"/>
 	internal class SafeDisposingDataReaderWrapper : IDataReader
 	{
-		private bool isDisposed = false;
+		private bool _isDisposed;
 		private readonly IDataReader _dataReader;
 
 		internal SafeDisposingDataReaderWrapper(IDataReader dataReader)
@@ -165,7 +165,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Internals.Wrappers
 		#region IDisposable Support
 		protected virtual void Dispose(bool disposing)
 		{
-			if (isDisposed)
+			if (_isDisposed)
 			{
 				return;
 			}
@@ -175,7 +175,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Internals.Wrappers
 				_dataReader?.Dispose();
 			}
 
-			isDisposed = true;
+			_isDisposed = true;
 		}
 
 		public void Dispose()

@@ -2,4 +2,5 @@
 
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Core")]
 [assembly: InternalsVisibleTo("Relativity.IntegrationPoints.Services")]
-[assembly: InternalsVisibleTo("kCura.IntegrationPoints.SourceProviderInstaller.Tests")]
+[assembly: InternalsVisibleTo("Relativity.IntegrationPoints.SourceProviderInstaller")]
+[assembly: InternalsVisibleTo("Relativity.IntegrationPoints.SourceProviderInstaller.Tests")]

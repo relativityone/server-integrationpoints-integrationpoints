@@ -100,9 +100,10 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Tests.Internals
 			await _sut.InstallSourceProvidersAsync(_WORKSPACE_ID, sourceProvidersToInstall).ConfigureAwait(false);
 
 			// assert
+			const int callCount = 2;
 			_providerManager.Verify(x =>
 				x.InstallProviderAsync(It.Is<InstallProviderRequest>(request => AssertInstallProviderRequestIsValid(request, sourceProvidersToInstall))),
-				Times.Exactly(2)
+				Times.Exactly(callCount)
 			);
 		}
 

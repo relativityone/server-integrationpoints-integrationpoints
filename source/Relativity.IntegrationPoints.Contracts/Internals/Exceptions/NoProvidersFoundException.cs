@@ -7,16 +7,20 @@ namespace kCura.IntegrationPoints.Contracts.Internals.Exceptions
 	{
 		public Guid Identifier { get; }
 
-		public NoProvidersFoundException(Guid identifier): base()
+		public NoProvidersFoundException(Guid identifier)
 		{
 			Identifier = identifier;
+		}
+
+		public NoProvidersFoundException()
+		{
 		}
 
 		public NoProvidersFoundException(string message): base(message)
 		{
 		}
 
-		public NoProvidersFoundException(string message, System.Exception innerException): base(message, innerException)
+		public NoProvidersFoundException(string message, Exception innerException): base(message, innerException)
 		{
 		}
 
