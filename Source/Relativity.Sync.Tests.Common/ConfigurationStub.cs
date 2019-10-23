@@ -47,6 +47,7 @@ namespace Relativity.Sync.Tests.Common
 		public string NotificationEmails { get; set; }
 		public int SourceWorkspaceArtifactId { get; set; }
 		public int SyncConfigurationArtifactId { get; set; }
+		public ExecutionResult SynchronizationExecutionResult { get; set; }
 		public bool MoveExistingDocuments { get; set; }
 		public int RdoArtifactTypeId => (int) ArtifactType.Document;
 

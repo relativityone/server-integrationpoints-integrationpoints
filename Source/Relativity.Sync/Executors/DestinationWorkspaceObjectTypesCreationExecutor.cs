@@ -54,8 +54,8 @@ namespace Relativity.Sync.Executors
 
 			try
 			{
-				int sourceCaseObjectTypeArtifactId = await CreateSourceCaseObjectTypeAndFields(destinationWorkspaceArtifactId).ConfigureAwait(false);
-				await CreateSourceJobObjectTypeAndFields(sourceCaseObjectTypeArtifactId, destinationWorkspaceArtifactId).ConfigureAwait(false);
+				int sourceCaseObjectTypeArtifactId = await CreateSourceCaseObjectTypeAndFieldsAsync(destinationWorkspaceArtifactId).ConfigureAwait(false);
+				await CreateSourceJobObjectTypeAndFieldsAsync(sourceCaseObjectTypeArtifactId, destinationWorkspaceArtifactId).ConfigureAwait(false);
 			}
 			catch (Exception ex)
 			{
@@ -66,7 +66,7 @@ namespace Relativity.Sync.Executors
 			return ExecutionResult.Success();
 		}
 
-		private async Task<int> CreateSourceCaseObjectTypeAndFields(int destinationWorkspaceArtifactId)
+		private async Task<int> CreateSourceCaseObjectTypeAndFieldsAsync(int destinationWorkspaceArtifactId)
 		{
 			ObjectTypeRequest sourceCaseObjectTypeRequest = GetObjectTypeRequest(_SOURCE_WORKSPACE_OBJECT_TYPE_NAME);
 			sourceCaseObjectTypeRequest.ParentObjectType.Value.Name = "Workspace";
@@ -80,7 +80,7 @@ namespace Relativity.Sync.Executors
 			return sourceCaseObjectTypeArtifactId;
 		}
 
-		private async Task CreateSourceJobObjectTypeAndFields(int sourceCaseObjectTypeArtifactId, int destinationWorkspaceArtifactId)
+		private async Task CreateSourceJobObjectTypeAndFieldsAsync(int sourceCaseObjectTypeArtifactId, int destinationWorkspaceArtifactId)
 		{
 			ObjectTypeRequest sourceJobObjectTypeRequest = GetObjectTypeRequest(_SOURCE_JOB_OBJECT_TYPE_NAME);
 			sourceJobObjectTypeRequest.ParentObjectType.Value.ArtifactID = sourceCaseObjectTypeArtifactId;
