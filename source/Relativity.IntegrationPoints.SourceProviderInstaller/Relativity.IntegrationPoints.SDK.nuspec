@@ -5,7 +5,7 @@
     <version>$version$</version>
     <authors>Relativity ODA LLC</authors>
     <owners>Relativity ODA LLC</owners>
-    <license type="file">LICENSE.txt</LICENSE>
+    <license type="file">LICENSE.txt</license>
     <projectUrl>https://platform.relativity.com/index.html</projectUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>Relativity Integration Points SDK</description>
