@@ -15,43 +15,46 @@ namespace Relativity.Sync.Executors
 	{
 		private readonly IBatchRepository _batchRepository;
 		private readonly ISourceServiceFactoryForAdmin _serviceFactory;
-		private readonly ISyncLog _logger;
 
 		private static readonly Guid CompletedItemsCountGuid = new Guid("70680399-c8ea-4b12-b711-e9ecbc53cb1c");
 		private static readonly Guid FailedItemsCountGuid = new Guid("c224104f-c1ca-4caa-9189-657e01d5504e");
 		private static readonly Guid TotalItemsCountGuid = new Guid("576189a9-0347-4b20-9369-b16d1ac89b4b");
 
-		public JobStatusConsolidationExecutor(IBatchRepository batchRepository, ISourceServiceFactoryForAdmin serviceFactory, ISyncLog logger)
+		public JobStatusConsolidationExecutor(IBatchRepository batchRepository, ISourceServiceFactoryForAdmin serviceFactory)
 		{
 			_batchRepository = batchRepository;
 			_serviceFactory = serviceFactory;
-			_logger = logger;
 		}
 
 		public async Task<ExecutionResult> ExecuteAsync(IJobStatusConsolidationConfiguration configuration, CancellationToken token)
 		{
-			List<IBatch> batches = (await _batchRepository
-				.GetAllAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId)
-				.ConfigureAwait(false)).ToList();
-
-			int completedRecordsCount = batches
-				.Sum(batch => batch.TransferredItemsCount);
-
-			int totalItemsCount = batches
-				.Sum(batch => batch.TotalItemsCount);
-
-			int failedRecordsCount = batches
-				.Sum(batch => batch.FailedItemsCount);
-
 			UpdateResult updateResult;
 			try
 			{
+				List<IBatch> batches = (await _batchRepository
+					.GetAllAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId)
+					.ConfigureAwait(false)).ToList();
+
+				int completedRecordsCount = batches
+					.Sum(batch => batch.TransferredItemsCount);
+
+				int totalItemsCount = batches
+					.Sum(batch => batch.TotalItemsCount);
+
+				int failedRecordsCount = batches
+					.Sum(batch => batch.FailedItemsCount);
+
 				updateResult = await UpdateJobHistoryAsync(configuration, completedRecordsCount, failedRecordsCount, totalItemsCount)
 					.ConfigureAwait(false);
 			}
 			catch (Exception e)
 			{
 				return ExecutionResult.Failure("Failed to update Job History object.", e);
+			}
+
+			if (updateResult == null)
+			{
+				return ExecutionResult.Failure($"{nameof(updateResult)} is set to null.", null);
 			}
 
 			if (updateResult.EventHandlerStatuses.Any(status => !status.Success))
