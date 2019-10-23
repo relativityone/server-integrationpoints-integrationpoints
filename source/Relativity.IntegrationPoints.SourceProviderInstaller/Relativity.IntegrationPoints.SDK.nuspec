@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>Relativity.IntegrationPoints.SDK</id>
+    <version>$version$</version>
+    <authors>Relativity ODA LLC</authors>
+    <owners>Relativity ODA LLC</owners>
+    <license type="file">LICENSE.txt</license>
+    <projectUrl>https://platform.relativity.com/index.html</projectUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>Relativity Integration Points SDK</description>
+    <releaseNotes></releaseNotes>
+    <copyright>(c) Relativity</copyright>
+  </metadata>
+  <files>
+      <file src="$licensePath$" target="" />
+      <file src="bin\net462\Relativity.IntegrationPoints.Contracts.dll" target="lib\net462" />
+      <file src="bin\net462\Relativity.IntegrationPoints.SourceProviderInstaller.dll" target="lib\net462" />
+  </files>
+</package>

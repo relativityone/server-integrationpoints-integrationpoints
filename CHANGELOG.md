@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.1.1] - 2019-06-28
-### Changed
-- Enhanced Path Resolution to work with curent Powershell version and Powershell 6.0+
+## [1.0.0] - 2019-10-23
+### Added
+- Moved Relativity Integration Points SDK from the main Integration Points repository to this repository and renamed all projects and namespaces from 'kCura.' to 'Relativity.'.
+
