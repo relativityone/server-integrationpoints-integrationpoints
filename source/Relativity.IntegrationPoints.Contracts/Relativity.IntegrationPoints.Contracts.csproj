@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net462</TargetFrameworks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <OutputPath>bin\</OutputPath>
+    <IsTestProject>false</IsTestProject>
+    <IsPackable>true</IsPackable>
+	<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+ 
+  <ItemGroup>
+    <PackageReference Include="CSharpGuidelineAnalyzer" Version="3.0.1.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="8.0.1" />
+    <PackageReference Include="Relativity.Kepler" Version="2.0.7" />
+    <PackageReference Include="Relativity.Telemetry.APM" Version="2019.1.1" />
+  </ItemGroup> 
+
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.XML" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Compile Include="..\..\AssemblyInfo.cs">
+      <Link>AssemblyInfo.cs</Link>
+    </Compile>
+  </ItemGroup>
+  
+</Project>
