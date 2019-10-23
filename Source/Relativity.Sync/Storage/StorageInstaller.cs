@@ -22,7 +22,7 @@ namespace Relativity.Sync.Storage
 			builder.RegisterType<SynchronizationConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<DestinationWorkspaceTagsCreationConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<SourceWorkspaceTagsCreationConfiguration>().AsImplementedInterfaces();
-			builder.RegisterType<JobCleanupConfiguration>().AsImplementedInterfaces();
+			builder.RegisterType<JobCleanupConfiguration>().AsImplementedInterfaces().SingleInstance();
 			builder.RegisterType<JobEndMetricsConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<FieldMappings>().As<IFieldMappings>();
 			builder.RegisterType<JobHistoryErrorRepository>().As<IJobHistoryErrorRepository>();
