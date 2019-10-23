@@ -55,7 +55,7 @@ namespace Relativity.Sync.Transfer
 			char multiValueDelimiter = _configuration.MultiValueDelimiter;
 			bool ContainsDelimiter(string x) => x.Contains(multiValueDelimiter);
 
-			List<string> names = objectValues.Select(x => x.Name).ToList();
+			IEnumerable<string> names = objectValues.Select(x => x.Name);
 			if (names.Any(ContainsDelimiter))
 			{
 				string violatingNameList = string.Join(", ", names.Where(ContainsDelimiter).Select(x => $"'{x}'"));

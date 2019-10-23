@@ -6,7 +6,6 @@ using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync
 {
-	// TODO REL-292382 This is a temporary solution for updating job history, until we implement REL-292382.
 	internal sealed class JobProgressUpdater : IJobProgressUpdater
 	{
 		private readonly int _workspaceArtifactId;

@@ -215,6 +215,8 @@ namespace Relativity.Sync.Executors
 			return Task.FromResult(_syncImportBulkArtifactJob.ItemStatusMonitor.GetSuccessfulItemIdentifiers());
 		}
 
+		public ISyncImportBulkArtifactJob SyncImportBulkArtifactJob => _syncImportBulkArtifactJob;
+
 		public void Dispose()
 		{
 			_semaphoreSlim?.Dispose();

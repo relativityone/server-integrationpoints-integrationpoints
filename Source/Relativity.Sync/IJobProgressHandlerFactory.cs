@@ -1,7 +1,9 @@
-﻿namespace Relativity.Sync
+﻿using System.Reactive.Concurrency;
+
+namespace Relativity.Sync
 {
 	internal interface IJobProgressHandlerFactory
 	{
-		IJobProgressHandler CreateJobProgressHandler(IJobProgressUpdater jobProgressUpdater);
+		IJobProgressHandler CreateJobProgressHandler(IScheduler scheduler = null);
 	}
 }

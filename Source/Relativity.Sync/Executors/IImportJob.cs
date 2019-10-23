@@ -12,5 +12,6 @@ namespace Relativity.Sync.Executors
 		Task<IEnumerable<int>> GetPushedDocumentArtifactIds();
 
 		Task<IEnumerable<string>> GetPushedDocumentIdentifiers();
+		ISyncImportBulkArtifactJob SyncImportBulkArtifactJob { get; }
 	}
 }

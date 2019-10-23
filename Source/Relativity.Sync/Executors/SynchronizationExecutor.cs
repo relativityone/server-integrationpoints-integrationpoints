@@ -13,7 +13,9 @@ namespace Relativity.Sync.Executors
 {
 	internal sealed class SynchronizationExecutor : IExecutor<ISynchronizationConfiguration>
 	{
+		private readonly IJobProgressUpdaterFactory _jobProgressUpdaterFactory;
 		private readonly IBatchRepository _batchRepository;
+		private readonly IJobProgressHandlerFactory _jobProgressHandlerFactory;
 		private readonly IImportJobFactory _importJobFactory;
 		private readonly IFieldManager _fieldManager;
 		private readonly IFieldMappings _fieldMappings;
@@ -22,10 +24,13 @@ namespace Relativity.Sync.Executors
 		private readonly IDocumentTagRepository _documentsTagRepository;
 
 		public SynchronizationExecutor(IImportJobFactory importJobFactory, IBatchRepository batchRepository,
+			IJobProgressHandlerFactory jobProgressHandlerFactory, IJobProgressUpdaterFactory jobProgressUpdaterFactory,
 			IDocumentTagRepository documentsTagRepository, IFieldManager fieldManager, IFieldMappings fieldMappings,
 			IJobStatisticsContainer jobStatisticsContainer, ISyncLog logger)
 		{
 			_batchRepository = batchRepository;
+			_jobProgressHandlerFactory = jobProgressHandlerFactory;
+			_jobProgressUpdaterFactory = jobProgressUpdaterFactory;
 			_importJobFactory = importJobFactory;
 			_fieldManager = fieldManager;
 			_fieldMappings = fieldMappings;
@@ -49,44 +54,55 @@ namespace Relativity.Sync.Executors
 			{
 				_logger.LogInformation("Gathering batches to execute.");
 				IEnumerable<int> batchesIds = await _batchRepository.GetAllNewBatchesIdsAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId).ConfigureAwait(false);
-				Dictionary<int,ImportJobResult> batchJobsResults = new Dictionary<int, ImportJobResult>();
+				Dictionary<int, ImportJobResult> batchJobsResults = new Dictionary<int, ImportJobResult>();
 
-
-				foreach (int batchId in batchesIds)
+				using (IJobProgressHandler progressHandler = _jobProgressHandlerFactory.CreateJobProgressHandler())
 				{
-					ExecutionResult currentBatchResult = ExecutionResult.Success();
-					if (token.IsCancellationRequested)
+					foreach (int batchId in batchesIds)
 					{
-						_logger.LogInformation("Import job has been canceled.");
-						batchJobsResults[batchId]=new ImportJobResult(ExecutionResult.Canceled(), 0);
-						break;
-					}
-
-					_logger.LogInformation("Processing batch ID: {batchId}", batchId);
-					IBatch batch = await _batchRepository.GetAsync(configuration.SourceWorkspaceArtifactId, batchId).ConfigureAwait(false);
-					using (IImportJob importJob = await _importJobFactory.CreateImportJobAsync(configuration, batch, token).ConfigureAwait(false))
-					{
-						ImportJobResult importJobResult = await importJob.RunAsync(token).ConfigureAwait(false);
-						batchJobsResults[batchId]=importJobResult;
-
-						_jobStatisticsContainer.TotalBytesTransferred += importJobResult.JobSizeInBytes;
-
-						IEnumerable<int> pushedDocumentArtifactIds = await importJob.GetPushedDocumentArtifactIds().ConfigureAwait(false);
-						Task<ExecutionResult> destinationTaggingResult = _documentsTagRepository.TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(configuration, pushedDocumentArtifactIds, token);
-						destinationTaggingTasks.Add(destinationTaggingResult);
-
-						IEnumerable<string> pushedDocumentIdentifiers = await importJob.GetPushedDocumentIdentifiers().ConfigureAwait(false);
-						Task<ExecutionResult> sourceTaggingResult = _documentsTagRepository.TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(configuration, pushedDocumentIdentifiers, token);
-						sourceTaggingTasks.Add(sourceTaggingResult);
-
-						if (currentBatchResult.Status == ExecutionStatus.Failed)
+						if (token.IsCancellationRequested)
 						{
-							_logger.LogError(importJobResult.ExecutionResult.Exception, "Batch ID: {batchId} processing failed with error: {error}", batchId, importJobResult.ExecutionResult.Message);
+							_logger.LogInformation("Import job has been canceled.");
+							batchJobsResults[batchId] = new ImportJobResult(ExecutionResult.Canceled(), 0);
 							break;
 						}
-					}
 
-					_logger.LogInformation("Batch ID: {batchId} processed successfully.", batchId);
+						_logger.LogInformation("Processing batch ID: {batchId}", batchId);
+						IBatch batch = await _batchRepository.GetAsync(configuration.SourceWorkspaceArtifactId, batchId)
+							.ConfigureAwait(false);
+						using (IImportJob importJob = await _importJobFactory.CreateImportJobAsync(configuration, batch, token).ConfigureAwait(false))
+						using (progressHandler.AttachToImportJob(importJob.SyncImportBulkArtifactJob, batchId, batch.TotalItemsCount))
+						{
+							ImportJobResult importJobResult = await importJob.RunAsync(token).ConfigureAwait(false);
+							batchJobsResults[batchId] = importJobResult;
+
+							_jobStatisticsContainer.TotalBytesTransferred += importJobResult.JobSizeInBytes;
+
+							IEnumerable<int> pushedDocumentArtifactIds =
+								await importJob.GetPushedDocumentArtifactIds().ConfigureAwait(false);
+							Task<ExecutionResult> destinationTaggingResult =
+								_documentsTagRepository.TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(
+									configuration, pushedDocumentArtifactIds, token);
+							destinationTaggingTasks.Add(destinationTaggingResult);
+
+							IEnumerable<string> pushedDocumentIdentifiers =
+								await importJob.GetPushedDocumentIdentifiers().ConfigureAwait(false);
+							Task<ExecutionResult> sourceTaggingResult =
+								_documentsTagRepository.TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(
+									configuration, pushedDocumentIdentifiers, token);
+							sourceTaggingTasks.Add(sourceTaggingResult);
+
+							if (importJobResult.ExecutionResult.Status == ExecutionStatus.Failed)
+							{
+								_logger.LogError(importJobResult.ExecutionResult.Exception,
+									"Batch ID: {batchId} processing failed with error: {error}", batchId,
+									importJobResult.ExecutionResult.Message);
+								break;
+							}
+						}
+
+						_logger.LogInformation("Batch ID: {batchId} processed successfully.", batchId);
+					}
 				}
 
 				importAndTagResult = AggregateBatchExecutionResults(batchJobsResults);
@@ -163,7 +179,7 @@ namespace Relativity.Sync.Executors
 				batchJobsResults.Where(x => x.Value.ExecutionResult.Status == ExecutionStatus.CompletedWithErrors).ToArray();
 			if (completedWithErrorsBatchJobResults.Any())
 			{
-				return ExecutionResult.SuccessWithErrors(new AggregateException(string.Join(Environment.NewLine,completedWithErrorsBatchJobResults.Select(x => $"BatchID: {x.Key} {{x.ExecutionResult.Message}}")),
+				return ExecutionResult.SuccessWithErrors(new AggregateException(string.Join(Environment.NewLine, completedWithErrorsBatchJobResults.Select(x => $"BatchID: {x.Key} {{x.ExecutionResult.Message}}")),
 					completedWithErrorsBatchJobResults.Select(x => x.Value.ExecutionResult.Exception).Where(x => x != null)
 						));
 			}

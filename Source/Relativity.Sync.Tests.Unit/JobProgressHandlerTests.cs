@@ -1,103 +1,321 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Reactive.Concurrency;
+using kCura.Relativity.DataReaderClient;
+using Microsoft.Reactive.Testing;
 using Moq;
 using NUnit.Framework;
+using Relativity.Sync.Executors;
 
 namespace Relativity.Sync.Tests.Unit
 {
 	[TestFixture]
-	public class JobProgressHandlerTests
+	public sealed class JobProgressHandlerTests : IDisposable
 	{
-		private Mock<IJobProgressUpdater> _jobProgressUpdater;
-		private Mock<IDateTime> _dateTime;
+		private Mock<IJobProgressUpdater> _jobProgressUpdaterMock;
 
-		private JobProgressHandler _instance;
+		private JobProgressHandler _sut;
+		private TestScheduler _testScheduler;
 
 		private const int _THROTTLE_SECONDS = 5;
+
+		private static readonly Lazy<PropertyInfo> _jobReportTotalRowsProperty = new Lazy<PropertyInfo>(GetJobReportTotalRowsPropertyInfo);
 
 		[SetUp]
 		public void SetUp()
 		{
-			_dateTime = new Mock<IDateTime>();
-			_jobProgressUpdater = new Mock<IJobProgressUpdater>();
-			_instance = new JobProgressHandler(_jobProgressUpdater.Object, _dateTime.Object);
+			_jobProgressUpdaterMock = new Mock<IJobProgressUpdater>();
+			_testScheduler = new TestScheduler();
+			_sut = new JobProgressHandler(_jobProgressUpdaterMock.Object, _testScheduler);
 		}
 
-		[TestCase(0, 0, 0)]
-		[TestCase(0, 123 * _THROTTLE_SECONDS, 0)]
+		[TestCase(0, 0, 1)]
+		[TestCase(0, 123 * _THROTTLE_SECONDS, 1)]
 		[TestCase(1, 0, 1)]
 		[TestCase(1, 500 * _THROTTLE_SECONDS, 1)]
-		[TestCase(2, 500 * _THROTTLE_SECONDS, 1)]
+		[TestCase(2, 500 * _THROTTLE_SECONDS, 2)]
 		[TestCase(2, 1000 * _THROTTLE_SECONDS, 2)]
 		[TestCase(3, 500 * _THROTTLE_SECONDS, 2)]
-		[TestCase(4, 500 * _THROTTLE_SECONDS, 2)]
+		[TestCase(4, 500 * _THROTTLE_SECONDS, 3)]
 		[TestCase(4, 1000 * _THROTTLE_SECONDS, 4)]
 		[TestCase(5, 500 * _THROTTLE_SECONDS, 3)]
-		[TestCase(20, 500 * _THROTTLE_SECONDS, 10)]
-		public void ItShouldThrottleProgressEvents(int numberOfEvents, int delayBetweenEvents, int expectedNumberOfProgressUpdates)
+		[TestCase(20, 500 * _THROTTLE_SECONDS, 11)]
+		public void AttachToImportJob_ShouldThrottleProgressEvents(int numberOfEvents, int delayBetweenEvents, int expectedNumberOfProgressUpdates)
 		{
-			DateTime now = DateTime.Now;
+			var bulkImportJobStub = new Mock<ISyncImportBulkArtifactJob>();
 
-			// act
-			for (int i = 0; i < numberOfEvents; i++)
+			const int totalItemsInBatch = 10;
+			using (_sut.AttachToImportJob(bulkImportJobStub.Object, 1, totalItemsInBatch))
 			{
-				now += TimeSpan.FromMilliseconds(delayBetweenEvents);
-				_dateTime.SetupGet(x => x.Now).Returns(now);
-
-				_instance.HandleItemProcessed(i);
+				// act
+				for (int i = 0; i < numberOfEvents; i++)
+				{
+					_testScheduler.AdvanceBy(TimeSpan.FromMilliseconds(delayBetweenEvents).Ticks);
+					bulkImportJobStub.Raise(x => x.OnProgress += null, 0);
+				}
 			}
 
 			// assert
-			_jobProgressUpdater.Verify(x => x.UpdateJobProgressAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Exactly(expectedNumberOfProgressUpdates));
+			_jobProgressUpdaterMock.Verify(x => x.UpdateJobProgressAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Exactly(expectedNumberOfProgressUpdates));
 		}
 
 		[TestCase(0, 0, 0)]
 		[TestCase(2, 2, 0)]
 		[TestCase(3, 0, 3)]
-		[TestCase(0, 4, 0)]
 		[TestCase(3, 2, 1)]
-		[Ignore("Cannot mock JobReport IAPI class, so these tests won't work.")]
-		public void ItShouldReportProperNumberOfItems(int numberOfItemProcessedEvents, int numberOfItemErrorEvents, int expectedNumberOfItemsProcessed)
+		public void AttachToImportJob_ShouldReportProperNumberOfItems(int numberOfItemProcessedEvents, int numberOfItemErrorEvents, int expectedNumberOfItemsProcessed)
 		{
-			// act
-			for (int i = 0; i < numberOfItemProcessedEvents; i++)
+			var bulkImportJobStub = new Mock<ISyncImportBulkArtifactJob>();
+
+			using (_sut.AttachToImportJob(bulkImportJobStub.Object, 1, expectedNumberOfItemsProcessed))
 			{
-				_instance.HandleItemProcessed(i);
+				// act
+				for (int i = 0; i < numberOfItemProcessedEvents; i++)
+				{
+					bulkImportJobStub.Raise(x => x.OnProgress += null, i);
+				}
+
+				for (int i = 0; i < numberOfItemErrorEvents; i++)
+				{
+					bulkImportJobStub.Raise(x => x.OnError += null, new Dictionary<int, int>());
+				}
+
+				_testScheduler.AdvanceBy(TimeSpan.FromSeconds(_THROTTLE_SECONDS).Ticks);
 			}
-			for (int i = 0; i < numberOfItemErrorEvents; i++)
-			{
-				_instance.HandleItemError(new Dictionary<int, int>());
-			}
-			_instance.HandleProcessComplete(CreateJobReport());
 
 			// assert
-			_jobProgressUpdater.Verify(x => x.UpdateJobProgressAsync(expectedNumberOfItemsProcessed, numberOfItemErrorEvents));
+			_jobProgressUpdaterMock.Verify(x => x.UpdateJobProgressAsync(expectedNumberOfItemsProcessed, numberOfItemErrorEvents));
 		}
 
 		[Test]
-		public void ItShouldUpdateStatisticsWhenJobCompletes()
+		public void AttachToImportJob_ShouldUpdateStatisticsWhenBatchCompletes()
 		{
-			// act
-			_instance.HandleProcessComplete(CreateJobReport());
+			var bulkImportJobStub = new Mock<ISyncImportBulkArtifactJob>();
+
+			const int itemsProcessed = 10;
+			const int itemsWithErrors = 15;
+
+			using (_sut.AttachToImportJob(bulkImportJobStub.Object, 1, 1))
+			{
+				bulkImportJobStub.Raise(x => x.OnComplete += null, CreateJobReport(itemsProcessed, itemsWithErrors));
+			}
 
 			// assert
-			_jobProgressUpdater.Verify(x => x.UpdateJobProgressAsync(It.IsAny<int>(), It.IsAny<int>()));
+			_jobProgressUpdaterMock.Verify(x => x.UpdateJobProgressAsync(itemsProcessed, itemsWithErrors));
+		}
+
+
+
+		[Test]
+		public void AttachToImportJob_ShouldUpdateStatisticsWhenFatalExceptionOccurs()
+		{
+			var bulkImportJobStub = new Mock<ISyncImportBulkArtifactJob>();
+
+			const int itemsProcessed = 10;
+			const int itemsWithErrors = 10;
+
+			using (_sut.AttachToImportJob(bulkImportJobStub.Object, 1, 1))
+			{
+				bulkImportJobStub.Raise(x => x.OnFatalException += null, CreateJobReport(itemsProcessed, itemsWithErrors));
+			}
+
+
+			// assert
+			_jobProgressUpdaterMock.Verify(x => x.UpdateJobProgressAsync(itemsProcessed, itemsWithErrors));
 		}
 
 		[Test]
-		public void ItShouldUpdateStatisticsWhenFatalExceptionOccurrs()
+		public void AttachToImportJob_Should_AggregateProgressFromMultipleBatches()
 		{
-			// act
-			_instance.HandleFatalException(CreateJobReport());
+			const int batchCount = 150;
+			var bulkImportJobStub = new Mock<ISyncImportBulkArtifactJob>();
+
+
+			Mock<ISyncImportBulkArtifactJob>[] bulkImportJobs = Enumerable.Range(0, batchCount).Select(_ => bulkImportJobStub).ToArray();
+
+			int batchId = 0;
+			foreach (var bulkImportJob in bulkImportJobs)
+			{
+				using (_sut.AttachToImportJob(bulkImportJobStub.Object, batchId++, 1))
+				{
+					bulkImportJob.Raise(x => x.OnProgress += null, 0);
+
+					bulkImportJob.Raise(x => x.OnProgress += null, 0); // to cover for decrement in OnError handling
+					bulkImportJob.Raise(x => x.OnError += null, new Dictionary<int, int>());
+				}
+			}
+
+			_testScheduler.AdvanceBy(TimeSpan.FromSeconds(_THROTTLE_SECONDS).Ticks);
+
+			_jobProgressUpdaterMock.Verify(x => x.UpdateJobProgressAsync(batchCount, batchCount));
+		}
+
+		[Test]
+		public void AttachToImportJob_Should_AggregateProgressAndCompleteFromMultipleBatches()
+		{
+			var bulkImportJobStub = new Mock<ISyncImportBulkArtifactJob>();
+
+			using (_sut.AttachToImportJob(bulkImportJobStub.Object, 0, 1))
+			{
+				bulkImportJobStub.Raise(x => x.OnProgress += null, 0);
+
+				bulkImportJobStub.Raise(x => x.OnProgress += null, 0); // to cover for decrement in OnError handling
+				bulkImportJobStub.Raise(x => x.OnError += null, new Dictionary<int, int>());
+
+				bulkImportJobStub.Raise(x => x.OnComplete += null, CreateJobReport(1, 1));
+			}
+
+			using (_sut.AttachToImportJob(bulkImportJobStub.Object, 1, 1))
+			{
+				bulkImportJobStub.Raise(x => x.OnProgress += null, 0);
+			}
+
+			_testScheduler.AdvanceBy(TimeSpan.FromSeconds(_THROTTLE_SECONDS).Ticks);
+
+			const int expectedTransferredItemsCount = 2;
+			_jobProgressUpdaterMock.Verify(x => x.UpdateJobProgressAsync(expectedTransferredItemsCount, 1));
+		}
+
+		[Test]
+		public void Disposing_AttachToImportJob_ShouldRemoveAllEventHandlers()
+		{
+			const int batchCount = 5;
+			var bulkImportJobMock = new Mock<ISyncImportBulkArtifactJob>();
+			bulkImportJobMock.SetupAdd(m => m.OnProgress += (i) => { });
+			bulkImportJobMock.SetupAdd(m => m.OnError += (i) => { });
+			bulkImportJobMock.SetupAdd(m => m.OnComplete += (i) => { });
+			bulkImportJobMock.SetupAdd(m => m.OnFatalException += (i) => { });
+
+			Mock<ISyncImportBulkArtifactJob>[] bulkImportJobs =
+				Enumerable.Range(0, batchCount).Select(_ => bulkImportJobMock).ToArray();
+
+			int batchId = 0;
+			foreach (var bulkImportJob in bulkImportJobs)
+			{
+				using (_sut.AttachToImportJob(bulkImportJob.Object, batchId, 1))
+				{
+					batchId++;
+				}
+			}
 
 			// assert
-			_jobProgressUpdater.Verify(x => x.UpdateJobProgressAsync(It.IsAny<int>(), It.IsAny<int>()));
+			foreach (var jobMock in bulkImportJobs)
+			{
+				jobMock.VerifyRemove(m => m.OnProgress -= It.IsAny<IImportNotifier.OnProgressEventHandler>(), Times.Exactly(batchCount));
+				jobMock.VerifyRemove(m => m.OnError -= It.IsAny<ImportBulkArtifactJob.OnErrorEventHandler>(), Times.Exactly(batchCount));
+				jobMock.VerifyRemove(m => m.OnComplete -= It.IsAny<IImportNotifier.OnCompleteEventHandler>(), Times.Exactly(batchCount));
+				jobMock.VerifyRemove(m => m.OnFatalException -= It.IsAny<IImportNotifier.OnFatalExceptionEventHandler>(), Times.Exactly(batchCount));
+			}
 		}
+
+		[Test]
+		public void Dispose_ShouldCallProgressUpdaterWithFinalState()
+		{
+			var bulkImportJobStub = new Mock<ISyncImportBulkArtifactJob>();
+
+			using (_sut.AttachToImportJob(bulkImportJobStub.Object, 0, 1))
+			{
+				bulkImportJobStub.Raise(x => x.OnProgress += null, 0);
+				_testScheduler.AdvanceBy(TimeSpan.FromSeconds(_THROTTLE_SECONDS).Ticks - 1);
+			}
+
+			_sut.Dispose();
+
+			_jobProgressUpdaterMock.Verify(x => x.UpdateJobProgressAsync(1, 0), Times.Once());
+		}
+
+		[Test]
+		public void AttachToImportJob_ShouldNotStopReportingProgress_WhenProgressUpdaterThrows()
+		{
+			_jobProgressUpdaterMock.Setup(x => x.UpdateJobProgressAsync(It.IsAny<int>(), It.IsAny<int>()))
+				.Throws(new Exception());
+			var bulkImportJobStub = new Mock<ISyncImportBulkArtifactJob>();
+
+			using (_sut.AttachToImportJob(bulkImportJobStub.Object, 0, 1))
+			{
+				bulkImportJobStub.Raise(x => x.OnProgress += null, 0);
+				_testScheduler.AdvanceBy(TimeSpan.FromSeconds(_THROTTLE_SECONDS).Ticks);
+
+				bulkImportJobStub.Raise(x => x.OnProgress += null, 0);
+				_testScheduler.AdvanceBy(TimeSpan.FromSeconds(_THROTTLE_SECONDS).Ticks);
+			}
+
+
+			const int expectedReportCount = 3;
+			_jobProgressUpdaterMock.Verify(x => x.UpdateJobProgressAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Exactly(expectedReportCount));
+		}
+
+		[Test]
+		public void AttachToImportJob_ShouldReportReportCorrectValues_WhenProgressUpdaterThrows()
+		{
+			_jobProgressUpdaterMock.Setup(x => x.UpdateJobProgressAsync(It.IsAny<int>(), It.IsAny<int>()))
+				.Throws(new Exception());
+			var bulkImportJobStub = new Mock<ISyncImportBulkArtifactJob>();
+
+			using (_sut.AttachToImportJob(bulkImportJobStub.Object, 0, 1))
+			{
+				bulkImportJobStub.Raise(x => x.OnProgress += null, 0);
+				_testScheduler.AdvanceBy(TimeSpan.FromSeconds(_THROTTLE_SECONDS).Ticks);
+
+				bulkImportJobStub.Raise(x => x.OnProgress += null, 0);
+				_testScheduler.AdvanceBy(TimeSpan.FromSeconds(_THROTTLE_SECONDS).Ticks);
+			}
+
+
+			const int expectedReportCount = 2;
+			_jobProgressUpdaterMock.Verify(x => x.UpdateJobProgressAsync(expectedReportCount, 0), Times.AtLeastOnce);
+		}
+
+		[Test]
+		public void AttachToImportJob_ShouldNotReportNegativeProcessedItems()
+		{
+			var bulkImportJobStub = new Mock<ISyncImportBulkArtifactJob>();
+
+			using (_sut.AttachToImportJob(bulkImportJobStub.Object, 0, 1))
+			{
+				bulkImportJobStub.Raise(x => x.OnError += null, new Dictionary<int,int>());
+				_testScheduler.AdvanceBy(TimeSpan.FromSeconds(_THROTTLE_SECONDS).Ticks);
+			}
+
+			_jobProgressUpdaterMock.Verify(x => x.UpdateJobProgressAsync(0, 1));
+		}
+
+		[TearDown]
+		public void TearDown()
+		{
+			Dispose();
+		}
+
+		private static PropertyInfo GetJobReportTotalRowsPropertyInfo()
+		{
+			return typeof(JobReport).GetProperty(nameof(JobReport.TotalRows));
+		}
+
+
+		private static JobReport CreateJobReport(int itemsProcessed, int itemsWithErrors)
+		{
+			JobReport jobReport = CreateJobReport();
+			var jobError = new JobReport.RowError(0, "", "");
+			for (int i = 0; i < itemsWithErrors; i++)
+			{
+				jobReport.ErrorRows.Add(jobError);
+			}
+			_jobReportTotalRowsProperty.Value.SetValue(jobReport, itemsProcessed + itemsWithErrors);
+			return jobReport;
+		}
+
 
 		private static JobReport CreateJobReport()
 		{
 			JobReport jobReport = (JobReport)Activator.CreateInstance(typeof(JobReport), true);
 			return jobReport;
+		}
+
+		public void Dispose()
+		{
+			_sut?.Dispose();
 		}
 	}
 }

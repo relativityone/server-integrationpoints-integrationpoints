@@ -1,12 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using Relativity.Sync.Executors;
 
 namespace Relativity.Sync
 {
-	internal interface IJobProgressHandler
+	internal interface IJobProgressHandler : IDisposable
 	{
-		void HandleItemProcessed(long item);
-		void HandleItemError(IDictionary row);
-		void HandleProcessComplete(JobReport jobReport);
-		void HandleFatalException(JobReport jobReport);
+		IDisposable AttachToImportJob(ISyncImportBulkArtifactJob job, int batchId, int totalItemsInBatch);
 	}
 }

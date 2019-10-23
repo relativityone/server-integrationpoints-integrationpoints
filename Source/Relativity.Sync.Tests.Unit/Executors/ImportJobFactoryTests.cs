@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reactive.Concurrency;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -38,7 +39,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_jobProgressUpdaterFactory = new Mock<IJobProgressUpdaterFactory>();
 			Mock<IJobProgressHandler> jobProgressHandler = new Mock<IJobProgressHandler>();
 			_jobProgressHandlerFactory = new Mock<IJobProgressHandlerFactory>();
-			_jobProgressHandlerFactory.Setup(x => x.CreateJobProgressHandler(It.IsAny<IJobProgressUpdater>())).Returns(jobProgressHandler.Object);
+			_jobProgressHandlerFactory.Setup(x => x.CreateJobProgressHandler(It.IsAny<IScheduler>())).Returns(jobProgressHandler.Object);
 			Mock<ISourceWorkspaceDataReader> dataReader = new Mock<ISourceWorkspaceDataReader>();
 			_dataReaderFactory = new Mock<ISourceWorkspaceDataReaderFactory>();
 			_dataReaderFactory.Setup(x => x.CreateSourceWorkspaceDataReader(It.IsAny<IBatch>(), It.IsAny<CancellationToken>())).Returns(dataReader.Object);
@@ -131,8 +132,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 		private ImportJobFactory GetTestInstance(Mock<IImportApiFactory> importApiFactory)
 		{
-			var instance = new ImportJobFactory(importApiFactory.Object, _dataReaderFactory.Object, _batchProgressHandlerFactory.Object,
-				_jobProgressHandlerFactory.Object, _jobProgressUpdaterFactory.Object,
+			var instance = new ImportJobFactory(importApiFactory.Object, _dataReaderFactory.Object,
 				_jobHistoryErrorRepository.Object, _webApiPathQuery.Object, _logger);
 			return instance;
 		}
