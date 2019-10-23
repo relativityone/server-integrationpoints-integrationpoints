@@ -10,11 +10,13 @@ It supports standard tasks like `.\build.ps1 compile`, `.\build.ps1 test`, and `
 
 ## How to Test
 
-TODO: <Instructions on how to run any local unit or integration tests. Which scripts to run, which environment variables are required, etc.>
+This repository only contains unit tests. They can be run by executing `.\build.ps1 test`.
 
 ## Build Artifacts
 
-TODO: <List of artifacts that this repository publishes. E.g. a NuGet package, a RAP file, installers, etc.>
+Nuget packages:
+* Relativity.IntegrationPoints.Contracts
+* Relativity.IntegrationPoints.SDK
 
 ## Maintainers
 
@@ -22,4 +24,4 @@ Codigo o Plomo
 
 ## Miscellaneous
   
-TODO: <Any other information you feel is necessary>
+N/A
