@@ -201,12 +201,13 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			
 			_fieldManager.Setup(fm => fm.CreateSpecialFieldRowValueBuildersAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<ICollection<int>>())).ReturnsAsync(buildersDictionary);
 			var builder = new BatchDataReaderBuilder(_fieldManager.Object, _exportDataSanitizer.Object);
+			IDataReader reader = await builder.BuildAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _batch, CancellationToken.None).ConfigureAwait(false);
 
 			// Act
-			Func<Task<IDataReader>> action = () => builder.BuildAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _batch, CancellationToken.None);
+			Func<bool> action = () => reader.Read();
 
 			// Assert
-			await action.Should().ThrowAsync<SourceDataReaderException>().ConfigureAwait(false);
+			action.Should().Throw<SourceDataReaderException>();
 		}
 	}
 }

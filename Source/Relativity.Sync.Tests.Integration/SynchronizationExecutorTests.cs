@@ -414,30 +414,33 @@ namespace Relativity.Sync.Tests.Integration
 				.ReturnsAsync(queryResultForNewBatches)
 				.Verifiable();
 
-			ReadResult readResultForBatch = CreateReadResultForBatch(totalItemsCount);
+			QueryResult readResultForBatch = CreateReadResultForBatch(totalItemsCount);
 
-			_objectManagerMock.Setup(x => x.ReadAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.Is<ReadRequest>(r => r.Object.ArtifactID == newBatchArtifactId)))
+			_objectManagerMock.Setup(x => x.QueryAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.Is<QueryRequest>(r => r.Condition == $"'ArtifactID' == {newBatchArtifactId}"), 0, 1))
 				.ReturnsAsync(readResultForBatch)
 				.Verifiable();
 
 			return batch;
 		}
 
-		private static ReadResult CreateReadResultForBatch(int totalItemsCount)
+		private static QueryResult CreateReadResultForBatch(int totalItemsCount)
 		{
-			ReadResult readResultForBatch = new ReadResult()
+			QueryResult readResultForBatch = new QueryResult()
 			{
-				Object = new RelativityObject()
+				Objects = new List<RelativityObject>()
 				{
-					FieldValues = new List<FieldValuePair>()
+					new RelativityObject()
 					{
-						CreateFieldValuePair(TotalItemsCountGuid, totalItemsCount),
-						CreateFieldValuePair(StartingIndexGuid, 0),
-						CreateFieldValuePair(StatusGuid, BatchStatus.New.ToString()),
-						CreateFieldValuePair(FailedItemsCountGuid, 0),
-						CreateFieldValuePair(TransferredItemsCountGuid, 0),
-						CreateFieldValuePair(ProgressGuid, (decimal) 0),
-						CreateFieldValuePair(LockedByGuid, "locked by")
+						FieldValues = new List<FieldValuePair>()
+						{
+							CreateFieldValuePair(TotalItemsCountGuid, totalItemsCount),
+							CreateFieldValuePair(StartingIndexGuid, 0),
+							CreateFieldValuePair(StatusGuid, BatchStatus.New.ToString()),
+							CreateFieldValuePair(FailedItemsCountGuid, 0),
+							CreateFieldValuePair(TransferredItemsCountGuid, 0),
+							CreateFieldValuePair(ProgressGuid, (decimal) 0),
+							CreateFieldValuePair(LockedByGuid, "locked by")
+						}
 					}
 				}
 			};
