@@ -12,10 +12,9 @@
     <releaseNotes></releaseNotes>
     <copyright>(c) Relativity</copyright>
   </metadata>
-    <files>
+  <files>
       <file src="$licensePath" target="" />
       <file src="bin\net462\Relativity.IntegrationPoints.Contracts.dll" target="lib\net462" />
       <file src="bin\net462\Relativity.IntegrationPoints.SourceProviderInstaller.dll" target="lib\net462" />
-    </files>
-  </metadata>
+  </files>
 </package>
