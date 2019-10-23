@@ -1,7 +1,7 @@
 ﻿using System;
-using kCura.IntegrationPoints.Contracts.Provider;
+using Relativity.IntegrationPoints.Contracts.Provider;
 
-namespace kCura.IntegrationPoints.Contracts
+namespace Relativity.IntegrationPoints.Contracts
 {
 	/// <summary>
 	/// Provides a method for creating a data source provider in an external application domain.

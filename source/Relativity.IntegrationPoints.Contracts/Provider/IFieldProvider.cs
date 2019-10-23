@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using kCura.IntegrationPoints.Contracts.Models;
+using Relativity.IntegrationPoints.Contracts.Models;
 
-namespace kCura.IntegrationPoints.Contracts.Provider
+namespace Relativity.IntegrationPoints.Contracts.Provider
 {
 	/// <summary>
 	/// Retrieves fields from a data source.

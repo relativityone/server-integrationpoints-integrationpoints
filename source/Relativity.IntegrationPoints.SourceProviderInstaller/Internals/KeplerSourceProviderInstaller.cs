@@ -1,12 +1,12 @@
-﻿using kCura.IntegrationPoints.Contracts;
-using kCura.IntegrationPoints.SourceProviderInstaller.Internals.Converters;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Relativity.IntegrationPoints.Contracts;
 using Relativity.IntegrationPoints.Services;
+using Relativity.IntegrationPoints.SourceProviderInstaller.Internals.Converters;
 
-namespace kCura.IntegrationPoints.SourceProviderInstaller.Internals
+namespace Relativity.IntegrationPoints.SourceProviderInstaller.Internals
 {
 	internal class KeplerSourceProviderInstaller : ISourceProviderInstaller
 	{

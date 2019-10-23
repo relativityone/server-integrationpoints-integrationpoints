@@ -1,7 +1,7 @@
 ﻿using System;
-using kCura.IntegrationPoints.Contracts.Provider;
+using Relativity.IntegrationPoints.Contracts.Provider;
 
-namespace kCura.IntegrationPoints.Contracts.Internals
+namespace Relativity.IntegrationPoints.Contracts.Internals
 {
 	internal interface IProviderAggregatedInterfaces : IDataSourceProvider, IEmailBodyData, IDisposable
 	{

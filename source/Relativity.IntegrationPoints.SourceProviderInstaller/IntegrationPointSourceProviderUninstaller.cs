@@ -1,9 +1,9 @@
-﻿using kCura.EventHandler;
-using kCura.IntegrationPoints.SourceProviderInstaller.Internals;
+﻿using System;
+using kCura.EventHandler;
 using Relativity.API;
-using System;
+using Relativity.IntegrationPoints.SourceProviderInstaller.Internals;
 
-namespace kCura.IntegrationPoints.SourceProviderInstaller
+namespace Relativity.IntegrationPoints.SourceProviderInstaller
 {
 	/// <summary>
 	/// Occurs immediately before the execution of a Pre Uninstall event handler.

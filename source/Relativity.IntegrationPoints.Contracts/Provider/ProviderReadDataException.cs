@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace kCura.IntegrationPoints.Contracts.Provider
+namespace Relativity.IntegrationPoints.Contracts.Provider
 {
 	/// <summary>
 	/// Represents an error thrown by an IDataReader when a read failure occurs.

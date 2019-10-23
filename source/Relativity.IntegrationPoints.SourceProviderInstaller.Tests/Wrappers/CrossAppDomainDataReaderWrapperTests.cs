@@ -1,11 +1,11 @@
 ﻿using System.Data;
 using System.Runtime.Remoting;
 using FluentAssertions;
-using kCura.IntegrationPoints.SourceProviderInstaller.Internals.Wrappers;
 using Moq;
 using NUnit.Framework;
+using Relativity.IntegrationPoints.SourceProviderInstaller.Internals.Wrappers;
 
-namespace kCura.IntegrationPoints.SourceProviderInstaller.Tests.Wrappers
+namespace Relativity.IntegrationPoints.SourceProviderInstaller.Tests.Wrappers
 {
 	[TestFixture]
 	public class CrossAppDomainDataReaderWrapperTests : SafeDisposingDataReaderWrapperTests

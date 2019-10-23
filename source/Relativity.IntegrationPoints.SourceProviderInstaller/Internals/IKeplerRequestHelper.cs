@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace kCura.IntegrationPoints.SourceProviderInstaller.Internals
+namespace Relativity.IntegrationPoints.SourceProviderInstaller.Internals
 {
 	internal interface IKeplerRequestHelper
 	{

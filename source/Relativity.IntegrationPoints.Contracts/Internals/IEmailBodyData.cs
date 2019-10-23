@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using kCura.IntegrationPoints.Contracts.Models;
+using Relativity.IntegrationPoints.Contracts.Models;
 
-namespace kCura.IntegrationPoints.Contracts.Internals
+namespace Relativity.IntegrationPoints.Contracts.Internals
 {
 	/// <summary>
 	/// Represents text used for importing into the notification email body.

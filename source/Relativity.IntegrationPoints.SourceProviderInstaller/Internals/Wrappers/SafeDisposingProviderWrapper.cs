@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using kCura.IntegrationPoints.Contracts;
-using kCura.IntegrationPoints.Contracts.Internals;
-using kCura.IntegrationPoints.Contracts.Models;
+using Relativity.IntegrationPoints.Contracts.Internals;
+using Relativity.IntegrationPoints.Contracts.Models;
 
-namespace kCura.IntegrationPoints.SourceProviderInstaller.Internals.Wrappers
+namespace Relativity.IntegrationPoints.SourceProviderInstaller.Internals.Wrappers
 {
 	/// <summary>
 	/// This wrapper guarantees that <see cref="Dispose()"/> method on wrapped <see cref="IProviderAggregatedInterfaces"/>

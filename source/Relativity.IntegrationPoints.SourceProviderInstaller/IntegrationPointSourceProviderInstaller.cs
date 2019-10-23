@@ -1,11 +1,11 @@
-﻿using kCura.EventHandler;
-using kCura.IntegrationPoints.Contracts;
-using kCura.IntegrationPoints.SourceProviderInstaller.Internals;
-using Relativity.API;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using kCura.EventHandler;
+using Relativity.API;
+using Relativity.IntegrationPoints.Contracts;
+using Relativity.IntegrationPoints.SourceProviderInstaller.Internals;
 
-namespace kCura.IntegrationPoints.SourceProviderInstaller
+namespace Relativity.IntegrationPoints.SourceProviderInstaller
 {
 	/// <summary>
 	/// Occurs immediately before the execution of a Post Install event handler.

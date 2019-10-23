@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.Data;
 using System.Runtime.Remoting;
 using FluentAssertions;
-using kCura.IntegrationPoints.Contracts;
-using kCura.IntegrationPoints.Contracts.Internals;
-using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Contracts.Provider;
-using kCura.IntegrationPoints.SourceProviderInstaller.Internals.Wrappers;
 using Moq;
 using NUnit.Framework;
+using Relativity.IntegrationPoints.Contracts.Internals;
+using Relativity.IntegrationPoints.Contracts.Models;
+using Relativity.IntegrationPoints.Contracts.Provider;
+using Relativity.IntegrationPoints.SourceProviderInstaller.Internals.Wrappers;
 
-namespace kCura.IntegrationPoints.SourceProviderInstaller.Tests.Wrappers
+namespace Relativity.IntegrationPoints.SourceProviderInstaller.Tests.Wrappers
 {
 	[TestFixture]
 	public class CrossAppDomainProviderWrapperTests

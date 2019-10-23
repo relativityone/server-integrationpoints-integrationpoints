@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace kCura.IntegrationPoints.Contracts.Models
+namespace Relativity.IntegrationPoints.Contracts.Models
 {
 	
 	/// <summary>

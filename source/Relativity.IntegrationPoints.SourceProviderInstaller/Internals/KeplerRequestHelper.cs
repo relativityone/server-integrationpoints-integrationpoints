@@ -1,8 +1,8 @@
-﻿using Relativity.API;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using Relativity.API;
 
-namespace kCura.IntegrationPoints.SourceProviderInstaller.Internals
+namespace Relativity.IntegrationPoints.SourceProviderInstaller.Internals
 {
 	internal class KeplerRequestHelper : IKeplerRequestHelper
 	{

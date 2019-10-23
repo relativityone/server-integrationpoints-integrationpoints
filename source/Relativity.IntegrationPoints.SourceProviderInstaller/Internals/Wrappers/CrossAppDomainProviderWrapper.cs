@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Runtime.Remoting;
-using kCura.IntegrationPoints.Contracts.Internals;
-using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Contracts.Provider;
+using Relativity.IntegrationPoints.Contracts.Internals;
+using Relativity.IntegrationPoints.Contracts.Models;
+using Relativity.IntegrationPoints.Contracts.Provider;
 
-namespace kCura.IntegrationPoints.SourceProviderInstaller.Internals.Wrappers
+namespace Relativity.IntegrationPoints.SourceProviderInstaller.Internals.Wrappers
 {
 	/// <summary>
 	/// This class wraps <see cref="IDataSourceProvider"/> from another AppDomain

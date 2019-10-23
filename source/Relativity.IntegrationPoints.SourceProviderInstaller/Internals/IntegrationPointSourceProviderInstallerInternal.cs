@@ -1,12 +1,12 @@
-﻿using kCura.EventHandler;
-using kCura.IntegrationPoints.Contracts;
-using Relativity.API;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using kCura.EventHandler;
+using Relativity.API;
+using Relativity.IntegrationPoints.Contracts;
 
-namespace kCura.IntegrationPoints.SourceProviderInstaller.Internals
+namespace Relativity.IntegrationPoints.SourceProviderInstaller.Internals
 {
 	internal class IntegrationPointSourceProviderInstallerInternal
 	{

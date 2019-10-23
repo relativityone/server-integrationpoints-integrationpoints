@@ -1,15 +1,15 @@
-﻿using FluentAssertions;
-using kCura.IntegrationPoints.Contracts;
-using kCura.IntegrationPoints.SourceProviderInstaller.Internals;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using Relativity.IntegrationPoints.Contracts;
 using Relativity.IntegrationPoints.Services;
+using Relativity.IntegrationPoints.SourceProviderInstaller.Internals;
 
-namespace kCura.IntegrationPoints.SourceProviderInstaller.Tests.Internals
+namespace Relativity.IntegrationPoints.SourceProviderInstaller.Tests.Internals
 {
 	[TestFixture]
 	public class KeplerSourceProviderInstallerTests

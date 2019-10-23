@@ -1,9 +1,9 @@
-﻿using kCura.EventHandler;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using kCura.EventHandler;
 using Relativity.IntegrationPoints.Services;
 
-namespace kCura.IntegrationPoints.SourceProviderInstaller.Internals
+namespace Relativity.IntegrationPoints.SourceProviderInstaller.Internals
 {
 	internal class IntegrationPointSourceProviderUninstallerInternal
 	{

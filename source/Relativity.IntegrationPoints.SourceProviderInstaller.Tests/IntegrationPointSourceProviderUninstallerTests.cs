@@ -1,11 +1,11 @@
-﻿using FluentAssertions;
+﻿using System.Threading.Tasks;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
-using System.Threading.Tasks;
 using Relativity.IntegrationPoints.Services;
 
-namespace kCura.IntegrationPoints.SourceProviderInstaller.Tests
+namespace Relativity.IntegrationPoints.SourceProviderInstaller.Tests
 {
 	[TestFixture]
 	public class IntegrationPointSourceProviderUninstallerTests

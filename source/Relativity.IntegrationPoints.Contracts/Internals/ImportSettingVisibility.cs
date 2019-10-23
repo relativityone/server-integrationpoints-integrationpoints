@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace kCura.IntegrationPoints.Contracts.Internals
+namespace Relativity.IntegrationPoints.Contracts.Internals
 {
 	/// <summary>
 	/// This type is only for internal use in Integration Points.

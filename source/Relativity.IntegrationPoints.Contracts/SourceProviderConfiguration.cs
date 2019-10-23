@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using kCura.IntegrationPoints.Contracts.Internals;
 using Newtonsoft.Json;
+using Relativity.IntegrationPoints.Contracts.Internals;
 
-namespace kCura.IntegrationPoints.Contracts
+namespace Relativity.IntegrationPoints.Contracts
 {
 	/// <summary>
 	/// Represents configurations for a source provider.

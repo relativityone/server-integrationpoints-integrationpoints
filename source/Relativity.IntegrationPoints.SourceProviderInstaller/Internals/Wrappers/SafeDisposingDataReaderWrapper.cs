@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Data;
 
-namespace kCura.IntegrationPoints.SourceProviderInstaller.Internals.Wrappers
+namespace Relativity.IntegrationPoints.SourceProviderInstaller.Internals.Wrappers
 {
 	/// <summary>
 	/// This wrapper guarantees that <see cref="Dispose()"/> method on wrapped <see cref="IDataReader"/>

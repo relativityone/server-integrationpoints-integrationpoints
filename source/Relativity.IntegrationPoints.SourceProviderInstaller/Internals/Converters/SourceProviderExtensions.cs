@@ -1,7 +1,7 @@
-﻿using kCura.IntegrationPoints.Contracts;
+﻿using Relativity.IntegrationPoints.Contracts;
 using Relativity.IntegrationPoints.Services;
 
-namespace kCura.IntegrationPoints.SourceProviderInstaller.Internals.Converters
+namespace Relativity.IntegrationPoints.SourceProviderInstaller.Internals.Converters
 {
 	internal static class SourceProviderExtensions
 	{

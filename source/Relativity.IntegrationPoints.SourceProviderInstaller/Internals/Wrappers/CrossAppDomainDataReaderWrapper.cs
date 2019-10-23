@@ -2,7 +2,7 @@
 using System.Data;
 using System.Runtime.Remoting;
 
-namespace kCura.IntegrationPoints.SourceProviderInstaller.Internals.Wrappers
+namespace Relativity.IntegrationPoints.SourceProviderInstaller.Internals.Wrappers
 {
 	/// <summary>
 	/// This class wraps <see cref="IDataReader"/> from another AppDomain

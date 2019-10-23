@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using kCura.IntegrationPoints.Contracts;
-using kCura.IntegrationPoints.Contracts.Internals.Exceptions;
-using kCura.IntegrationPoints.Contracts.Provider;
-using kCura.IntegrationPoints.SourceProviderInstaller.Internals;
-using kCura.IntegrationPoints.SourceProviderInstaller.Internals.Wrappers;
+using Relativity.IntegrationPoints.Contracts;
+using Relativity.IntegrationPoints.Contracts.Internals.Exceptions;
+using Relativity.IntegrationPoints.Contracts.Provider;
+using Relativity.IntegrationPoints.SourceProviderInstaller.Internals;
+using Relativity.IntegrationPoints.SourceProviderInstaller.Internals.Wrappers;
 
-namespace kCura.IntegrationPoints.SourceProviderInstaller
+namespace Relativity.IntegrationPoints.SourceProviderInstaller
 {
 	/// <summary>
 	/// The abstract class from which all provider factory classes are derived.

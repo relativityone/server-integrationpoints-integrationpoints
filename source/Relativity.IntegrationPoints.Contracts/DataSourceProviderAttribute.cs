@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace kCura.IntegrationPoints.Contracts
+namespace Relativity.IntegrationPoints.Contracts
 {
 	/// <summary>
 	/// Used to determine the providers that exist in a specific application domain.

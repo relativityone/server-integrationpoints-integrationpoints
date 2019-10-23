@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace kCura.IntegrationPoints.SourceProviderInstaller
+namespace Relativity.IntegrationPoints.SourceProviderInstaller
 {
 	/// <summary>
 	/// This exception is thrown when an error occurs during the installation of a data source provider.

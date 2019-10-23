@@ -1,13 +1,13 @@
-﻿using FluentAssertions;
-using kCura.IntegrationPoints.Contracts;
-using kCura.IntegrationPoints.SourceProviderInstaller.Internals.Converters;
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using kCura.IntegrationPoints.Contracts.Internals;
+using FluentAssertions;
+using NUnit.Framework;
+using Relativity.IntegrationPoints.Contracts;
+using Relativity.IntegrationPoints.Contracts.Internals;
 using Relativity.IntegrationPoints.Services;
+using Relativity.IntegrationPoints.SourceProviderInstaller.Internals.Converters;
 
-namespace kCura.IntegrationPoints.SourceProviderInstaller.Tests.Internals.Converters
+namespace Relativity.IntegrationPoints.SourceProviderInstaller.Tests.Internals.Converters
 {
 	[TestFixture]
 	public class SourceProviderExtensionsTests

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace kCura.IntegrationPoints.Contracts.Internals.Exceptions
+namespace Relativity.IntegrationPoints.Contracts.Internals.Exceptions
 {
 	[Serializable]
 	internal class NoProvidersFoundException : Exception

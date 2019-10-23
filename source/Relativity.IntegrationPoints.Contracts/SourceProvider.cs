@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace kCura.IntegrationPoints.Contracts
+namespace Relativity.IntegrationPoints.Contracts
 {
 	/// <summary>
 	/// Provides the information for the registration of a data source provider.

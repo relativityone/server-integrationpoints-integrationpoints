@@ -1,4 +1,4 @@
-﻿namespace kCura.IntegrationPoints.Contracts
+﻿namespace Relativity.IntegrationPoints.Contracts
 {
 	/// <summary>
 	/// Makes an initial call into an application domain to perform setup work.

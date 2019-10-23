@@ -1,16 +1,16 @@
-﻿using FluentAssertions;
-using kCura.EventHandler;
-using kCura.IntegrationPoints.Contracts;
-using Moq;
-using NUnit.Framework;
-using Relativity.API;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
+using kCura.EventHandler;
+using Moq;
+using NUnit.Framework;
+using Relativity.API;
+using Relativity.IntegrationPoints.Contracts;
 using Relativity.IntegrationPoints.Services;
 
-namespace kCura.IntegrationPoints.SourceProviderInstaller.Tests
+namespace Relativity.IntegrationPoints.SourceProviderInstaller.Tests
 {
 	[TestFixture]
 	public class IntegrationPointSourceProviderInstallerTests

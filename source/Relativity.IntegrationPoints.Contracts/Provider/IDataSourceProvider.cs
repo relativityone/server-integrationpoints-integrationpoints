@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Data;
-using kCura.IntegrationPoints.Contracts.Models;
+using Relativity.IntegrationPoints.Contracts.Models;
 
-namespace kCura.IntegrationPoints.Contracts.Provider
+namespace Relativity.IntegrationPoints.Contracts.Provider
 {
 	/// <summary>
 	/// Represents a source provider used for importing data into the system.
