@@ -19,6 +19,7 @@ namespace Relativity.Sync.Storage
 		private static readonly Guid FolderPathSourceFieldNameGuid = new Guid("66A37443-EF92-47ED-BEEA-392464C853D3");
 		private static readonly Guid ImportOverwriteModeGuid = new Guid("1914D2A3-A1FF-480B-81DC-7A2AA563047A");
 		private static readonly Guid JobHistoryGuid = new Guid("5D8F7F01-25CF-4246-B2E2-C05882539BB2");
+		private static readonly Guid NativesBehaviorGuid = new Guid("D18F0199-7096-4B0C-AB37-4C9A3EA1D3D2");
 
 		public ValidationConfiguration(IConfiguration cache, IFieldMappings fieldMappings, SyncJobParameters syncJobParameters)
 		{
@@ -39,5 +40,7 @@ namespace Relativity.Sync.Storage
 		public FieldOverlayBehavior FieldOverlayBehavior => _cache.GetFieldValue<string>(FieldOverlayBehaviorGuid).GetEnumFromDescription<FieldOverlayBehavior>();
 		public DestinationFolderStructureBehavior DestinationFolderStructureBehavior =>
 			(DestinationFolderStructureBehavior)(Enum.Parse(typeof(DestinationFolderStructureBehavior), _cache.GetFieldValue<string>(DestinationFolderStructureBehaviorGuid)));
+		public ImportNativeFileCopyMode ImportNativeFileCopyMode => _cache.GetFieldValue<string>(NativesBehaviorGuid).GetEnumFromDescription<ImportNativeFileCopyMode>();
+
 	}
 }
