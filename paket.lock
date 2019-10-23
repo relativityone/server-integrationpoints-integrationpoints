@@ -297,7 +297,7 @@ NUGET
     Newtonsoft.Json (6.0.8)
     NuGetPowerTools (0.29)
     Polly (5.3.1)
-    Relativity (11.0.106.100)
+    Relativity (11.0.105.1)
     Relativity.API (12.0.1)
       System.Data.SqlClient (>= 4.6)
     Relativity.DataExchange.Client.SDK (1.7.1)
