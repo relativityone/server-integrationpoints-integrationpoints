@@ -4,7 +4,7 @@ using Relativity.Sync.Configuration;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
-	internal sealed class SyncConfiguration : IDataDestinationFinalizationConfiguration, IDataDestinationInitializationConfiguration, IJobCleanupConfiguration,
+	internal sealed class SyncConfiguration : IDataDestinationFinalizationConfiguration, IDataDestinationInitializationConfiguration, 
 		IJobStatusConsolidationConfiguration, IUserContextConfiguration
 	{
 		public SyncConfiguration(int submittedBy, ImportSettings destinationConfiguration)
