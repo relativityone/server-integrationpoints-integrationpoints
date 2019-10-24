@@ -98,7 +98,5 @@ namespace Relativity.Sync.Tests.Integration
 				Console.WriteLine($"The redundant steps are: {string.Join(", ", redundantSteps)}");
 			}
 		}
-
-		protected abstract int ExpectedNumberOfExecutedSteps();
 	}
 }

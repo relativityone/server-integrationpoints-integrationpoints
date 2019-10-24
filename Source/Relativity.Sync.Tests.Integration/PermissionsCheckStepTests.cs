@@ -19,12 +19,5 @@ namespace Relativity.Sync.Tests.Integration
 			typeof(IJobCleanupConfiguration),
 			typeof(IJobStatusConsolidationConfiguration)
 		};
-
-		protected override int ExpectedNumberOfExecutedSteps()
-		{
-			// Notification, cleanup, job status consolidation
-			const int expectedNumberOfExecutedSteps = 3;
-			return expectedNumberOfExecutedSteps;
-		}
 	}
 }

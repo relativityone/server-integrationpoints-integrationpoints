@@ -27,14 +27,5 @@ namespace Relativity.Sync.Tests.Integration
 			typeof(INotificationConfiguration),
 			typeof(IJobCleanupConfiguration)
 		};
-
-		protected override int ExpectedNumberOfExecutedSteps()
-		{
-			// permissions, validation, object types, snapshot
-			// sum reporting, source workspace tags, destination workspace tags, data destination initialization,
-			// job status consolidation, notification, job cleanup
-			const int expectedNumberOfExecutedSteps = 11;
-			return expectedNumberOfExecutedSteps;
-		}
 	}
 }

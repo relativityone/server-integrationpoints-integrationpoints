@@ -31,7 +31,5 @@ namespace Relativity.Sync.Tests.Integration
 			typeof(INotificationConfiguration),
 			typeof(IJobCleanupConfiguration)
 		};
-
-		protected override int ExpectedNumberOfExecutedSteps() => ExpectedExecutedSteps.Count;
 	}
 }
