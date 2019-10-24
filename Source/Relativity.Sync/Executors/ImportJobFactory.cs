@@ -20,14 +20,14 @@ namespace Relativity.Sync.Executors
 		private readonly IJobHistoryErrorRepository _jobHistoryErrorRepository;
 		private readonly IJobProgressHandlerFactory _jobProgressHandlerFactory;
 		private readonly IJobProgressUpdaterFactory _jobProgressUpdaterFactory;
-		private readonly IWebApiPathQuery _webApiPathQuery;
+		private readonly IInstanceSettings _instanceSettings;
 		private readonly ISourceWorkspaceDataReaderFactory _dataReaderFactory;
 		private readonly ISyncLog _logger;
 
 		public ImportJobFactory(IImportApiFactory importApiFactory, ISourceWorkspaceDataReaderFactory dataReaderFactory, 
 			IBatchProgressHandlerFactory batchProgressHandlerFactory, IJobProgressHandlerFactory jobProgressHandlerFactory, 
 			IJobProgressUpdaterFactory jobProgressUpdaterFactory, IJobHistoryErrorRepository jobHistoryErrorRepository,
-			IWebApiPathQuery webApiPathQuery, ISyncLog logger)
+			IInstanceSettings instanceSettings, ISyncLog logger)
 		{
 			_importApiFactory = importApiFactory;
 			_dataReaderFactory = dataReaderFactory;
@@ -35,7 +35,7 @@ namespace Relativity.Sync.Executors
 			_jobProgressHandlerFactory = jobProgressHandlerFactory;
 			_jobProgressUpdaterFactory = jobProgressUpdaterFactory;
 			_jobHistoryErrorRepository = jobHistoryErrorRepository;
-			_webApiPathQuery = webApiPathQuery;
+			_instanceSettings = instanceSettings;
 			_logger = logger;
 		}
 
@@ -64,7 +64,7 @@ namespace Relativity.Sync.Executors
 
 		private async Task<ImportBulkArtifactJob> CreateImportBulkArtifactJobAsync(ISynchronizationConfiguration configuration, int startingIndex, ISourceWorkspaceDataReader dataReader)
 		{
-			string webApiPath = await _webApiPathQuery.GetWebApiPathAsync().ConfigureAwait(false);
+			string webApiPath = await _instanceSettings.GetWebApiPathAsync().ConfigureAwait(false);
 			var webApiUri = new Uri(webApiPath);
 			IImportAPI importApi = await _importApiFactory.CreateImportApiAsync(webApiUri).ConfigureAwait(false);
 			ImportBulkArtifactJob importJob = await Task.Run(() => importApi.NewNativeDocumentImportJob()).ConfigureAwait(false);

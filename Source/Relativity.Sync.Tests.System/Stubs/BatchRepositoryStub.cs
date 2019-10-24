@@ -30,6 +30,16 @@ namespace Relativity.Sync.Tests.System.Stubs
 			throw new NotImplementedException();
 		}
 
+		public Task DeleteAllForConfigurationAsync(int workspaceArtifactId, int syncConfigurationArtifactId)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task DeleteAllOlderThanAsync(int workspaceArtifactId, TimeSpan olderThan)
+		{
+			throw new NotImplementedException();
+		}
+
 		public Task<IBatch> GetLastAsync(int workspaceArtifactId, int syncConfigurationId)
 		{
 			return Task.FromResult(_batches.Last());
