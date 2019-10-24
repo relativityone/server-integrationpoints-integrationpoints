@@ -13,7 +13,10 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using kCura.Relativity.DataReaderClient;
+using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using Relativity.IntegrationPoints.Services;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using static kCura.IntegrationPoints.Core.Constants.IntegrationPoints;
@@ -174,6 +177,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 			int relativityDestinationProviderArtifactID = await GetDestinationProviderArtifactIdAsync(workspaceID, DestinationProviders.RELATIVITY).ConfigureAwait(false);
 			int loadFileDestinationProviderArtifactID = await GetDestinationProviderArtifactIdAsync(workspaceID, DestinationProviders.LOADFILE).ConfigureAwait(false);
 
+			const string emptyJson = "{}";
+
 			List<IntegrationPointProfile> profiles = new List<IntegrationPointProfile>()
 			{
 				// Sync profile
@@ -221,13 +226,17 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 					Type = exportTypeArtifactID,
 					SourceProvider = relativitySourceProviderArtifactID,
 					DestinationProvider = loadFileDestinationProviderArtifactID,
+					SourceConfiguration = emptyJson,
+					DestinationConfiguration = emptyJson
 				},
 				new IntegrationPointProfile
 				{
 					Name = "import from ftp",
 					Type = importTypeArtifactID,
 					SourceProvider = ftpSourceProviderArtifactID,
-					DestinationProvider = relativityDestinationProviderArtifactID
+					DestinationProvider = relativityDestinationProviderArtifactID,
+					SourceConfiguration = emptyJson,
+					DestinationConfiguration = emptyJson
 				},
 				new IntegrationPointProfile
 				{
@@ -235,13 +244,17 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 					Type = importTypeArtifactID,
 					SourceProvider = loadFileSourceProviderArtifactID,
 					DestinationProvider = relativityDestinationProviderArtifactID,
+					SourceConfiguration = emptyJson,
+					DestinationConfiguration = emptyJson
 				},
 				new IntegrationPointProfile
 				{
 					Name = "import from ldap",
 					Type = importTypeArtifactID,
 					SourceProvider = ldapSourceProviderArtifactID,
-					DestinationProvider = relativityDestinationProviderArtifactID
+					DestinationProvider = relativityDestinationProviderArtifactID,
+					SourceConfiguration = emptyJson,
+					DestinationConfiguration = emptyJson
 				}
 			};
 
@@ -297,11 +310,11 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 
 		private string CreateDestinationConfiguration(bool exportToProduction)
 		{
-			ImportSettings destinationConfiguration = new ImportSettings()
+			JObject configuration = new JObject
 			{
-				ProductionImport = exportToProduction
+				["ProductionImport"] = exportToProduction
 			};
-			return _serializer.Serialize(destinationConfiguration);
+			return configuration.ToString();
 		}
 	}
 }
