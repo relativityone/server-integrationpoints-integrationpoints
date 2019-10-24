@@ -7,11 +7,12 @@
     <OutputPath>bin\</OutputPath>
     <IsTestProject>false</IsTestProject>
     <IsPackable>true</IsPackable>
+	<NuspecFile>Relativity.IntegrationPoints.Services.Interfaces.Private.nuspec</NuspecFile>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CSharpGuidelineAnalyzer" Version="1.0.3.0" />
+    <PackageReference Include="CSharpGuidelineAnalyzer" Version="3.1.0" />
     <PackageReference Include="Relativity.API" Version="12.0.0" />
     <PackageReference Include="Relativity.Kepler" Version="2.0.7" />
     <PackageReference Include="Relativity.Telemetry.APM" Version="2019.1.1" />

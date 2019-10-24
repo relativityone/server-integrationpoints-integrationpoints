@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.2] - 2019-10-24
+### Changed
+- Upgraded CSharpGuidelineAnalyzer dependency version to 3.1.0.
+- Switched from the automatically generated nuspec file to the static nuspec file for Relativity.IntegrationPoints.Services.Interfaces.Private project to avoid adding CSharpGuidelineAnalyzer as a nuget dependency.
+- Fixed inconsistent indentation in some of the C# source files.
+
 ## [1.0.1] - 2019-10-24
 ### Changed
 - Renamed project directories from 'kCura.' to 'Relativity.'.
