@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations
@@ -13,11 +16,13 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 	{
 		private readonly Func<int, IRelativityObjectManager> _createRelativityObjectManager;
 		private readonly IObjectArtifactIdsByStringFieldValueQuery _objectArtifactIdsByStringFieldValueQuery;
+		private readonly ISerializer _serializer;
 
-		public IntegrationPointProfilesQuery(Func<int, IRelativityObjectManager> createRelativityObjectManager, IObjectArtifactIdsByStringFieldValueQuery objectArtifactIdsByStringFieldValueQuery)
+		public IntegrationPointProfilesQuery(Func<int, IRelativityObjectManager> createRelativityObjectManager, IObjectArtifactIdsByStringFieldValueQuery objectArtifactIdsByStringFieldValueQuery, ISerializer serializer)
 		{
 			_createRelativityObjectManager = createRelativityObjectManager;
 			_objectArtifactIdsByStringFieldValueQuery = objectArtifactIdsByStringFieldValueQuery;
+			_serializer = serializer;
 		}
 
 		public async Task<IEnumerable<IntegrationPointProfile>> GetAllProfilesAsync(int workspaceID)
@@ -29,17 +34,18 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 					new FieldRef()
 					{
 						Guid = IntegrationPointProfileFieldGuids.SourceConfigurationGuid
-
+					},
+					new FieldRef()
+					{
+						Guid = IntegrationPointProfileFieldGuids.DestinationConfigurationGuid
 					},
 					new FieldRef()
 					{
 						Guid = IntegrationPointProfileFieldGuids.SourceProviderGuid
-
 					},
 					new FieldRef()
 					{
 						Guid = IntegrationPointProfileFieldGuids.DestinationProviderGuid
-
 					},
 					new FieldRef()
 					{
@@ -75,8 +81,17 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 
 		private bool IsSyncProfile(IntegrationPointProfile integrationPointProfile, int syncSourceProviderArtifactID, int syncDestinationProviderArtifactID)
 		{
+			SourceConfiguration sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(integrationPointProfile.SourceConfiguration);
+			bool isProductionAsSource = sourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.ProductionSet;
+			
+			ImportSettings destinationConfiguration = _serializer.Deserialize<ImportSettings>(integrationPointProfile.DestinationConfiguration);
+			bool isProductionAsDestination = destinationConfiguration.ProductionImport;
+
+			bool isProductionSelectedAsSourceOrDestination = isProductionAsSource || isProductionAsDestination;
+
 			return integrationPointProfile.DestinationProvider == syncDestinationProviderArtifactID &&
-				   integrationPointProfile.SourceProvider == syncSourceProviderArtifactID;
+			       integrationPointProfile.SourceProvider == syncSourceProviderArtifactID &&
+			       !isProductionSelectedAsSourceOrDestination;
 		}
 
 		public Task<int> GetSyncDestinationProviderArtifactIDAsync(int workspaceID)
