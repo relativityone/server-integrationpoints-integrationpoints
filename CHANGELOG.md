@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.1] - 2019-10-24
+### Changed
+- Fixed inconsistency in the README file.
+
 ## [1.0.0] - 2019-10-23
 ### Added
 - Moved Relativity Integration Points SDK from the main Integration Points repository to this repository and renamed all projects and namespaces from 'kCura.' to 'Relativity.'.
