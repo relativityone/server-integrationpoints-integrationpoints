@@ -26,7 +26,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private Mock<IJobProgressUpdaterFactory> _jobProgressUpdaterFactory;
 		private Mock<ISourceWorkspaceDataReaderFactory> _dataReaderFactory;
 		private Mock<IJobHistoryErrorRepository> _jobHistoryErrorRepository;
-		private Mock<IWebApiPathQuery> _webApiPathQuery;
+		private Mock<IInstanceSettings> _instanceSettings;
 
 		private Mock<IBatch> _batch;
 
@@ -44,8 +44,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_dataReaderFactory = new Mock<ISourceWorkspaceDataReaderFactory>();
 			_dataReaderFactory.Setup(x => x.CreateSourceWorkspaceDataReader(It.IsAny<IBatch>(), It.IsAny<CancellationToken>())).Returns(dataReader.Object);
 			_jobHistoryErrorRepository = new Mock<IJobHistoryErrorRepository>();
-			_webApiPathQuery = new Mock<IWebApiPathQuery>();
-			_webApiPathQuery.Setup(x => x.GetWebApiPathAsync()).ReturnsAsync("http://fake.uri");
+			_instanceSettings = new Mock<IInstanceSettings>();
+			_instanceSettings.Setup(x => x.GetWebApiPathAsync(default(string))).ReturnsAsync("http://fake.uri");
 
 			_logger = new EmptyLogger();
 
@@ -133,7 +133,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private ImportJobFactory GetTestInstance(Mock<IImportApiFactory> importApiFactory)
 		{
 			var instance = new ImportJobFactory(importApiFactory.Object, _dataReaderFactory.Object,
-				_jobHistoryErrorRepository.Object, _webApiPathQuery.Object, _logger);
+				_jobHistoryErrorRepository.Object, _instanceSettings.Object, _logger);
 			return instance;
 		}
 	}

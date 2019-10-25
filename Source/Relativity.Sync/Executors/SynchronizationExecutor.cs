@@ -20,13 +20,14 @@ namespace Relativity.Sync.Executors
 		private readonly IFieldManager _fieldManager;
 		private readonly IFieldMappings _fieldMappings;
 		private readonly IJobStatisticsContainer _jobStatisticsContainer;
-		private readonly ISyncLog _logger;
 		private readonly IDocumentTagRepository _documentsTagRepository;
+		private readonly IJobCleanupConfiguration _jobCleanupConfiguration;
+		private readonly ISyncLog _logger;
 
 		public SynchronizationExecutor(IImportJobFactory importJobFactory, IBatchRepository batchRepository,
 			IJobProgressHandlerFactory jobProgressHandlerFactory, IJobProgressUpdaterFactory jobProgressUpdaterFactory,
 			IDocumentTagRepository documentsTagRepository, IFieldManager fieldManager, IFieldMappings fieldMappings,
-			IJobStatisticsContainer jobStatisticsContainer, ISyncLog logger)
+			IJobStatisticsContainer jobStatisticsContainer, IJobCleanupConfiguration jobCleanupConfiguration, ISyncLog logger)
 		{
 			_batchRepository = batchRepository;
 			_jobProgressHandlerFactory = jobProgressHandlerFactory;
@@ -35,8 +36,9 @@ namespace Relativity.Sync.Executors
 			_fieldManager = fieldManager;
 			_fieldMappings = fieldMappings;
 			_jobStatisticsContainer = jobStatisticsContainer;
-			_logger = logger;
 			_documentsTagRepository = documentsTagRepository;
+			_jobCleanupConfiguration = jobCleanupConfiguration;
+			_logger = logger;
 		}
 
 		public async Task<ExecutionResult> ExecuteAsync(ISynchronizationConfiguration configuration, CancellationToken token)
@@ -160,6 +162,8 @@ namespace Relativity.Sync.Executors
 				ExecutionStatus resultStatus = token.IsCancellationRequested ? ExecutionStatus.Canceled : ExecutionStatus.Failed;
 				executionResult = new ExecutionResult(resultStatus, resultMessage, resultException);
 			}
+
+			_jobCleanupConfiguration.SynchronizationExecutionResult = executionResult;
 			return executionResult;
 		}
 

@@ -45,7 +45,7 @@ namespace Relativity.Sync.Tests.System
 			int jobHistoryId = await Rdos.CreateJobHistoryInstance(ServiceFactory, _workspaceId).ConfigureAwait(false);
 			_syncConfigurationId = await Rdos.CreateSyncConfigurationInstance(ServiceFactory, _workspaceId, jobHistoryId).ConfigureAwait(false);
 
-			_batchRepository = new BatchRepository(new ServiceFactoryStub(ServiceFactory));
+			_batchRepository = new BatchRepository(new ServiceFactoryStub(ServiceFactory), new DateTimeWrapper());
 			_instance = new SnapshotPartitionExecutor(_batchRepository, new EmptyLogger());
 		}
 

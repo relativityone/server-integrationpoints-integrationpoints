@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Relativity.Services.Objects;
@@ -39,7 +40,7 @@ namespace Relativity.Sync.Storage
 
 		public async Task SetFailedItemsCountAsync(int failedItemsCount)
 		{
-			await UpdateFieldValue(FailedItemsCountGuid, failedItemsCount).ConfigureAwait(false);
+			await UpdateFieldValueAsync(FailedItemsCountGuid, failedItemsCount).ConfigureAwait(false);
 			FailedItemsCount = failedItemsCount;
 		}
 
@@ -47,7 +48,7 @@ namespace Relativity.Sync.Storage
 
 		public async Task SetTransferredItemsCountAsync(int transferredItemsCount)
 		{
-			await UpdateFieldValue(TransferredItemsCountGuid, transferredItemsCount).ConfigureAwait(false);
+			await UpdateFieldValueAsync(TransferredItemsCountGuid, transferredItemsCount).ConfigureAwait(false);
 			TransferredItemsCount = transferredItemsCount;
 		}
 
@@ -59,7 +60,7 @@ namespace Relativity.Sync.Storage
 
 		public async Task SetLockedByAsync(string lockedBy)
 		{
-			await UpdateFieldValue(LockedByGuid, lockedBy).ConfigureAwait(false);
+			await UpdateFieldValueAsync(LockedByGuid, lockedBy).ConfigureAwait(false);
 			LockedBy = lockedBy;
 		}
 
@@ -67,7 +68,7 @@ namespace Relativity.Sync.Storage
 
 		public async Task SetProgressAsync(double progress)
 		{
-			await UpdateFieldValue(ProgressGuid, progress).ConfigureAwait(false);
+			await UpdateFieldValueAsync(ProgressGuid, progress).ConfigureAwait(false);
 			Progress = progress;
 		}
 
@@ -76,7 +77,7 @@ namespace Relativity.Sync.Storage
 		public async Task SetStatusAsync(BatchStatus status)
 		{
 			string statusDescription = status.GetDescription();
-			await UpdateFieldValue(StatusGuid, statusDescription).ConfigureAwait(false);
+			await UpdateFieldValueAsync(StatusGuid, statusDescription).ConfigureAwait(false);
 			Status = status;
 		}
 
@@ -349,7 +350,7 @@ namespace Relativity.Sync.Storage
 			LockedBy = (string) relativityObject[LockedByGuid].Value;
 		}
 
-		private async Task UpdateFieldValue<T>(Guid fieldGuid, T value)
+		private async Task UpdateFieldValueAsync<T>(Guid fieldGuid, T value)
 		{
 			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
@@ -377,6 +378,62 @@ namespace Relativity.Sync.Storage
 			Batch batch = new Batch(serviceFactory);
 			IEnumerable<IBatch> batches = await batch.ReadAllAsync(workspaceArtifactId, syncConfigurationArtifactId).ConfigureAwait(false);
 			return batches;
+		}
+		
+		public static async Task DeleteAllForConfigurationAsync(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int syncConfigurationArtifactId)
+		{
+			using (IObjectManager objectManager = await serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			{
+				var request = new MassDeleteByCriteriaRequest
+				{
+					ObjectIdentificationCriteria = new ObjectIdentificationCriteria()
+					{
+						ObjectType = new ObjectTypeRef
+						{
+							Guid = BatchObjectTypeGuid
+						},
+						Condition = $"'{SyncConfigurationRelationGuid}' == OBJECT {syncConfigurationArtifactId}"
+					}
+				};
+				await objectManager.DeleteAsync(workspaceArtifactId, request).ConfigureAwait(false);
+			}
+		}
+
+		public static async Task DeleteAllOlderThanAsync(ISourceServiceFactoryForAdmin serviceFactory, IDateTime dateTime, int workspaceArtifactId, TimeSpan olderThan)
+		{
+			IEnumerable<int> oldConfiguratiosArtifactIds = await GetConfigurationsOlderThanAsync(serviceFactory, dateTime, workspaceArtifactId, olderThan).ConfigureAwait(false);
+			IEnumerable<Task> deleteTasks = oldConfiguratiosArtifactIds.Select(configurationArtifactId => DeleteAllForConfigurationAsync(serviceFactory, workspaceArtifactId, configurationArtifactId));
+			await Task.WhenAll(deleteTasks).ConfigureAwait(false);
+		}
+
+		private static async Task<IEnumerable<int>> GetConfigurationsOlderThanAsync(ISourceServiceFactoryForAdmin serviceFactory, IDateTime dateTime, int workspaceArtifactId, TimeSpan olderThan)
+		{
+			DateTime createdBeforeDate = dateTime.UtcNow - olderThan;
+			DateTime ParseObjectCreationDate(RelativityObject relativityObject) => 
+				DateTime.Parse(relativityObject.FieldValues.Single().Value.ToString(), CultureInfo.InvariantCulture);
+
+			using (IObjectManager objectManager = await serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			{
+				var request = new QueryRequest()
+				{
+					ObjectType = new ObjectTypeRef()
+					{
+						Guid = SyncConfigurationRelationGuid
+					},
+					Fields = new[]
+					{
+						new FieldRef()
+						{
+							Name = "System Created On"
+						}
+					}
+				};
+
+				QueryResult queryResult = await objectManager.QueryAsync(workspaceArtifactId, request, 0, int.MaxValue).ConfigureAwait(false);
+				IEnumerable<RelativityObject> oldConfigurations = queryResult.Objects.Where(configurationObject =>
+					ParseObjectCreationDate(configurationObject) < createdBeforeDate);
+				return oldConfigurations.Select(x => x.ArtifactID);
+			}
 		}
 
 		public static async Task<IBatch> GetLastAsync(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int syncConfigurationArtifactId)

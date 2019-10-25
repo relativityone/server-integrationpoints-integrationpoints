@@ -33,7 +33,9 @@ namespace Relativity.Sync.Executors.Validation
 			}
 			catch (Exception ex)
 			{
-				throw new ValidationException("Exception occurred during validation. See inner exception for more details.", ex);
+				const string message = "Exception occurred during validation. See inner exception for more details.";
+				_logger.LogError(ex, message);
+				throw new ValidationException(message, ex);
 			}
 		}
 
