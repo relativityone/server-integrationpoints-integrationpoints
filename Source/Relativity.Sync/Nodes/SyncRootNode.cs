@@ -70,7 +70,7 @@ namespace Relativity.Sync.Nodes
 				.ForEach(result => _logger.LogWarning(result.Exception, "After execute task completed with errors: {message}", result.Message));
 		}
 
-		private async Task<ExecutionResult> ReportJobEndMetricsAsync(IExecutionContext<SyncExecutionContext> context)
+		private Task<ExecutionResult> ReportJobEndMetricsAsync(IExecutionContext<SyncExecutionContext> context)
 		{
 			if (context.ParentResult.ChildResults.Any())
 			{
@@ -98,10 +98,10 @@ namespace Relativity.Sync.Nodes
 						status = ExecutionStatus.Canceled;
 					}
 
-					return await _jobEndMetricsService.ExecuteAsync(status).ConfigureAwait(false);
+					return _jobEndMetricsService.ExecuteAsync(status);
 				}
 			}
-			return ExecutionResult.Skipped();
+			return Task.FromResult(ExecutionResult.Skipped());
 		}
 
 		private Task<ExecutionResult> RunNotificationCommandAsync(IExecutionContext<SyncExecutionContext> context) => ExecuteCommandIfCanExecuteAsync(_notificationCommand, context);
