@@ -186,11 +186,11 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			return updateResult;
 		}
 
-		private void SetUpBatches(int totalCount, int totalTransferred, int totalFailed)
+		private void SetUpBatches(int batchesTotalCount, int totalTransferred, int totalFailed)
 		{
-			if (totalCount > 0)
+			if (batchesTotalCount > 0)
 			{
-				_batches.AddRange(CreateBatches(totalCount, totalTransferred, totalFailed));
+				_batches.AddRange(CreateBatches(batchesTotalCount, totalTransferred, totalFailed));
 			}
 		}
 
