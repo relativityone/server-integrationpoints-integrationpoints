@@ -6,21 +6,21 @@
 
 		public string ErrorMessage { get; set; }
 
-	    /// <summary>
-	    /// Creates response which indicates success
-	    /// </summary>
-	    public InstallProviderResponse()
-	    {
-	        Success = true;
-	    }
+		/// <summary>
+		/// Creates response which indicates success
+		/// </summary>
+		public InstallProviderResponse()
+		{
+			Success = true;
+		}
 
-	    /// <summary>
-	    /// Creates response which indicates failure
-	    /// </summary>
-	    public InstallProviderResponse(string errorMessage)
-	    {
-	        Success = false;
-	        ErrorMessage = errorMessage;
-	    }
-    }
+		/// <summary>
+		/// Creates response which indicates failure
+		/// </summary>
+		public InstallProviderResponse(string errorMessage)
+		{
+			Success = false;
+			ErrorMessage = errorMessage;
+		}
+	}
 }
