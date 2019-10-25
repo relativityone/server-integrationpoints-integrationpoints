@@ -63,7 +63,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				.Setup(x => x.GetAllAsync(It.IsAny<int>(), It.IsAny<int>()))
 				.ReturnsAsync(_batches);
 
-			SetUpUpdateCall(true);
+			SetUpUpdateCall(success: true);
 
 			_sut = new JobStatusConsolidationExecutor(_batchRepository.Object, _serviceFactory.Object);
 		}
@@ -99,7 +99,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			const int totalFailedCount = 10;
 			SetUpBatches(totalBatchCount, totalTransferredCount, totalFailedCount);
 
-			SetUpUpdateCall(false);
+			SetUpUpdateCall(success: false);
 
 			// Act
 			ExecutionResult result = await _sut
@@ -141,7 +141,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			// Assert
 			result.Status.Should().Be(ExecutionStatus.Completed);
-			VerifyUpdateCall(0, 0, 0);
+			VerifyUpdateCall(transferredCount: 0, failedCount: 0, totalItemCount: 0);
 		}
 
 		[Test]
