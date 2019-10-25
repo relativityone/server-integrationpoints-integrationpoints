@@ -128,15 +128,7 @@ namespace Relativity.Sync.Tests.System
 			int transferredItemsCountPerBatch,
 			int failedItemsCountPerBatch)
 		{
-			int startingIndexCount = 0;
 			int itemsCountPerBatch = transferredItemsCountPerBatch + failedItemsCountPerBatch;
-
-			int GetStartingIndexCount()
-			{
-				int index = startingIndexCount;
-				startingIndexCount += itemsCountPerBatch;
-				return index;
-			}
 
 			IEnumerable<Task<IBatch>> batchCreationTasks = Enumerable
 				.Range(0, batchCount)
@@ -144,7 +136,7 @@ namespace Relativity.Sync.Tests.System
 					.CreateAsync(workspaceArtifactId,
 						syncConfigurationArtifactId,
 						itemsCountPerBatch,
-						GetStartingIndexCount()));
+						i * itemsCountPerBatch));
 
 			IBatch[] batches = await Task.WhenAll(batchCreationTasks).ConfigureAwait(false);
 
