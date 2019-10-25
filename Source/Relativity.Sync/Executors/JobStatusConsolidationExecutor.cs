@@ -35,16 +35,16 @@ namespace Relativity.Sync.Executors
 					.GetAllAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId)
 					.ConfigureAwait(false)).ToList();
 
-				int completedRecordsCount = batches
+				int completedItemsCount = batches
 					.Sum(batch => batch.TransferredItemsCount);
 
 				int totalItemsCount = batches
 					.Sum(batch => batch.TotalItemsCount);
 
-				int failedRecordsCount = batches
+				int failedItemsCount = batches
 					.Sum(batch => batch.FailedItemsCount);
 
-				updateResult = await UpdateJobHistoryAsync(configuration, completedRecordsCount, failedRecordsCount, totalItemsCount)
+				updateResult = await UpdateJobHistoryAsync(configuration, completedItemsCount, failedItemsCount, totalItemsCount)
 					.ConfigureAwait(false);
 			}
 			catch (Exception e)
@@ -68,7 +68,7 @@ namespace Relativity.Sync.Executors
 			return ExecutionResult.Success();
 		}
 
-		private async Task<UpdateResult> UpdateJobHistoryAsync(IJobStatusConsolidationConfiguration configuration, int completedRecordsCount, int failedRecordsCount, int totalItemsCount)
+		private async Task<UpdateResult> UpdateJobHistoryAsync(IJobStatusConsolidationConfiguration configuration, int completedItemsCount, int failedItemsCount, int totalItemsCount)
 		{
 			using (var objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
@@ -86,7 +86,7 @@ namespace Relativity.Sync.Executors
 							{
 								Guid = CompletedItemsCountGuid
 							},
-							Value = completedRecordsCount
+							Value = completedItemsCount
 						},
 						new FieldRefValuePair
 						{
@@ -94,7 +94,7 @@ namespace Relativity.Sync.Executors
 							{
 								Guid = FailedItemsCountGuid
 							},
-							Value = failedRecordsCount
+							Value = failedItemsCount
 						},
 						new FieldRefValuePair
 						{
