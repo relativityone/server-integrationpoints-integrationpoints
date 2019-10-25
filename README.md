@@ -1,7 +1,6 @@
-# Integration Points - Kepler Services Interfaces
+# Integration Points SDK
 
-This repository contains Relativity Integration Points SDK.
-Work on adjusting the repository to Trident is in progress and the README file shall be updated soon as a part of this effort.
+This repository contains Relativity Integration Points SDK that can be used to develop custom Integration Points providers.
 
 ## How to Build
 

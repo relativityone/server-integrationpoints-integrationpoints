@@ -7,6 +7,7 @@
     <OutputPath>bin\</OutputPath>
     <IsTestProject>false</IsTestProject>
     <IsPackable>true</IsPackable>
+	<NuspecFile>Relativity.IntegrationPoints.Contracts.nuspec</NuspecFile>
 	<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
  
