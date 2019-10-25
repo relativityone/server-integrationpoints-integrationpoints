@@ -77,7 +77,7 @@ namespace Relativity.Sync.Tests.System
 			const int expectedFailedItemsCount = failedItemsCountPerBatch * batchCount;
 			const int expectedTotalItemsCount = expectedTransferredItemsCount + expectedFailedItemsCount;
 
-			var (actualTransferredItemsCount, actualFailedItemsCount, actualTotalItemsCount) = await ReadJobHistory(_sourceWorkspace.ArtifactID, jobHistoryArtifactId)
+			var (actualTransferredItemsCount, actualFailedItemsCount, actualTotalItemsCount) = await ReadJobHistoryAsync(_sourceWorkspace.ArtifactID, jobHistoryArtifactId)
 				.ConfigureAwait(false);
 
 			actualTransferredItemsCount.Should().Be(expectedTransferredItemsCount);
@@ -85,7 +85,7 @@ namespace Relativity.Sync.Tests.System
 			actualTotalItemsCount.Should().Be(expectedTotalItemsCount);
 		}
 
-		private async Task<(int transferredItemsCount, int failedItemsCount, int totalItemsCount)> ReadJobHistory(int workspaceArtifactId, int jobHistoryArtifactId)
+		private async Task<(int transferredItemsCount, int failedItemsCount, int totalItemsCount)> ReadJobHistoryAsync(int workspaceArtifactId, int jobHistoryArtifactId)
 		{
 			using (var objectManager = ServiceFactory.CreateProxy<IObjectManager>())
 			{
