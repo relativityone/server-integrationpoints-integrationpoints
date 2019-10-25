@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Fixed inconsistency in the README file.
 - Upgraded Relativity.IntegrationPoints.Services.Interfaces.Private dependency version to 1.0.2.
+- Upgraded coverlet.msbuild dependency version to 2.6.3 to fix Jenkins build failure.
 - Switched from the automatically generated nuspec file to the static nuspec file for Relativity.IntegrationPoints.Contracts project to avoid adding CSharpGuidelineAnalyzer as a nuget dependency.
 
 ## [1.0.0] - 2019-10-23
