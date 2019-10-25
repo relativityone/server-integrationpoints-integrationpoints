@@ -59,7 +59,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
             WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
-            ValidateDocumentsForRootWithFolderName();
+            ValidateDocumentsForRoot();
         }
 
 		[IdentifiedTest("4b2768a9-b44b-431e-bd26-cdb6d604bb47")]
@@ -82,7 +82,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
             WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
-            ValidateDocumentsForRootWithFolderName();
+            ValidateDocumentsForField();
         }
 
 		[IdentifiedTest("09a3fe30-360b-40d1-867d-c56e5751c452")]
@@ -105,7 +105,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
             WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
-            ValidateDocumentsForRootWithFolderName();
+            ValidateDocumentsForFolderTree();
         }
 
 		[IdentifiedTest("32e2afff-cef3-4592-a079-f7f8d49090e9")]
@@ -209,7 +209,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
             WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
-            ValidateDocumentsForRootWithFolderName();
+            ValidateDocumentsForField();
         }
 
 		[IdentifiedTest("cf864914-f6ff-437a-99a3-c2db2658851a")]
