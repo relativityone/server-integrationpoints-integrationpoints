@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			_serializer = new JSONSerializer();
 
 			_syncProfiles = CreateSyncProfiles().ToList();
-			_nonSyncProfiles = CreateNonSyncProfiles().ToList();
+			_nonSyncProfiles = CreateNonFolderToFolderProfiles().ToList();
 			_allProfiles = new List<IntegrationPointProfile>();
 			_allProfiles.AddRange(_syncProfiles);
 			_allProfiles.AddRange(_nonSyncProfiles);
@@ -218,110 +218,78 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			{
 				SourceProvider = _RELATIVITY_SOURCE_PROVIDER_ID,
 				DestinationProvider = _RELATIVITY_DESTINATION_PROVIDER_ID,
-				SourceConfiguration = _serializer.Serialize(new SourceConfiguration()
-				{
-					TypeOfExport = SourceConfiguration.ExportType.SavedSearch
-				}),
-				DestinationConfiguration = _serializer.Serialize(new ImportSettings()
-				{
-					ProductionImport = false
-				})
+				SourceConfiguration = CreateSourceConfigurationJson(SourceConfiguration.ExportType.SavedSearch),
+				DestinationConfiguration = CreateDestinationConfigurationJson(false)
 			};
 		}
 
-		private IEnumerable<IntegrationPointProfile> CreateNonSyncProfiles()
+		private IEnumerable<IntegrationPointProfile> CreateNonFolderToFolderProfiles()
 		{
 			yield return new IntegrationPointProfile()
 			{
 				SourceProvider = _NON_RELATIVITY_SOURCE_PROVIDER_ID,
 				DestinationProvider = _NON_RELATIVITY_DESTINATION_PROVIDER_ID,
-				SourceConfiguration = _serializer.Serialize(new SourceConfiguration()
-				{
-					TypeOfExport = SourceConfiguration.ExportType.ProductionSet
-				}),
-				DestinationConfiguration = _serializer.Serialize(new ImportSettings()
-				{
-					ProductionImport = true
-				})
+				SourceConfiguration = CreateSourceConfigurationJson(SourceConfiguration.ExportType.ProductionSet),
+				DestinationConfiguration = CreateDestinationConfigurationJson(exportToProduction: true)
 			};
 			yield return new IntegrationPointProfile()
 			{
 				SourceProvider = _NON_RELATIVITY_SOURCE_PROVIDER_ID,
 				DestinationProvider = _NON_RELATIVITY_DESTINATION_PROVIDER_ID,
-				SourceConfiguration = _serializer.Serialize(new SourceConfiguration()
-				{
-					TypeOfExport = SourceConfiguration.ExportType.SavedSearch
-				}),
-				DestinationConfiguration = _serializer.Serialize(new ImportSettings()
-				{
-					ProductionImport = false
-				})
+				SourceConfiguration = CreateSourceConfigurationJson(SourceConfiguration.ExportType.SavedSearch),
+				DestinationConfiguration = CreateDestinationConfigurationJson(exportToProduction: false)
 			};
 			yield return new IntegrationPointProfile()
 			{
 				SourceProvider = _RELATIVITY_SOURCE_PROVIDER_ID,
 				DestinationProvider = _NON_RELATIVITY_DESTINATION_PROVIDER_ID,
-				SourceConfiguration = _serializer.Serialize(new SourceConfiguration()
-				{
-					TypeOfExport = SourceConfiguration.ExportType.SavedSearch
-				}),
-				DestinationConfiguration = _serializer.Serialize(new ImportSettings()
-				{
-					ProductionImport = false
-				})
+				SourceConfiguration = CreateSourceConfigurationJson(SourceConfiguration.ExportType.SavedSearch),
+				DestinationConfiguration = CreateDestinationConfigurationJson(exportToProduction: false)
 			};
 			yield return new IntegrationPointProfile()
 			{
 				SourceProvider = _NON_RELATIVITY_SOURCE_PROVIDER_ID,
 				DestinationProvider = _RELATIVITY_DESTINATION_PROVIDER_ID,
-				SourceConfiguration = _serializer.Serialize(new SourceConfiguration()
-				{
-					TypeOfExport = SourceConfiguration.ExportType.SavedSearch
-				}),
-				DestinationConfiguration = _serializer.Serialize(new ImportSettings()
-				{
-					ProductionImport = false
-				})
+				SourceConfiguration = CreateSourceConfigurationJson(SourceConfiguration.ExportType.SavedSearch),
+				DestinationConfiguration = CreateDestinationConfigurationJson(exportToProduction: false)
 			};
 			yield return new IntegrationPointProfile()
 			{
 				SourceProvider = _RELATIVITY_SOURCE_PROVIDER_ID,
 				DestinationProvider = _RELATIVITY_DESTINATION_PROVIDER_ID,
-				SourceConfiguration = _serializer.Serialize(new SourceConfiguration()
-				{
-					TypeOfExport = SourceConfiguration.ExportType.ProductionSet
-				}),
-				DestinationConfiguration = _serializer.Serialize(new ImportSettings()
-				{
-					ProductionImport = true
-				})
+				SourceConfiguration = CreateSourceConfigurationJson(SourceConfiguration.ExportType.ProductionSet),
+				DestinationConfiguration = CreateDestinationConfigurationJson(exportToProduction: true)
 			};
 			yield return new IntegrationPointProfile()
 			{
 				SourceProvider = _RELATIVITY_SOURCE_PROVIDER_ID,
 				DestinationProvider = _RELATIVITY_DESTINATION_PROVIDER_ID,
-				SourceConfiguration = _serializer.Serialize(new SourceConfiguration()
-				{
-					TypeOfExport = SourceConfiguration.ExportType.SavedSearch
-				}),
-				DestinationConfiguration = _serializer.Serialize(new ImportSettings()
-				{
-					ProductionImport = true
-				})
+				SourceConfiguration = CreateSourceConfigurationJson(SourceConfiguration.ExportType.SavedSearch),
+				DestinationConfiguration = CreateDestinationConfigurationJson(exportToProduction: true)
 			};
 			yield return new IntegrationPointProfile()
 			{
 				SourceProvider = _RELATIVITY_SOURCE_PROVIDER_ID,
 				DestinationProvider = _RELATIVITY_DESTINATION_PROVIDER_ID,
-				SourceConfiguration = _serializer.Serialize(new SourceConfiguration()
-				{
-					TypeOfExport = SourceConfiguration.ExportType.ProductionSet
-				}),
-				DestinationConfiguration = _serializer.Serialize(new ImportSettings()
-				{
-					ProductionImport = false
-				})
+				SourceConfiguration = CreateSourceConfigurationJson(SourceConfiguration.ExportType.ProductionSet),
+				DestinationConfiguration = CreateDestinationConfigurationJson(exportToProduction: false)
 			};
+		}
+
+		private string CreateSourceConfigurationJson(SourceConfiguration.ExportType exportType)
+		{
+			return _serializer.Serialize(new SourceConfiguration()
+			{
+				TypeOfExport = exportType
+			});
+		}
+
+		private string CreateDestinationConfigurationJson(bool exportToProduction)
+		{
+			return _serializer.Serialize(new ImportSettings()
+			{
+				ProductionImport = exportToProduction
+			});
 		}
 
 		private void SetUpSyncProviders(int relativitySourceProviderCount = 1, int relativityDestinationProviderCount = 1, int integrationPointTypesCount = 1)
