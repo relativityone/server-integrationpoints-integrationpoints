@@ -1,6 +1,7 @@
 ﻿using System;
+using Relativity.Sync.Configuration;
 
-namespace Relativity.Sync.Configuration
+namespace Relativity.Sync.Storage
 {
 	internal sealed class DestinationWorkspaceObjectTypesCreationConfiguration : IDestinationWorkspaceObjectTypesCreationConfiguration
 	{

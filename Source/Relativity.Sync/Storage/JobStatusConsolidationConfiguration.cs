@@ -1,7 +1,8 @@
 ﻿using System;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.Configuration;
 
-namespace Relativity.Sync.Configuration
+namespace Relativity.Sync.Storage
 {
 	internal class JobStatusConsolidationConfiguration : IJobStatusConsolidationConfiguration
 	{
