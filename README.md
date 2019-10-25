@@ -64,13 +64,8 @@ Running unit tests:
     * JsonLoader
 * NuGet packages on gold build
     * RelativityIntegrationPoints (Contains RelativityIntegrationPoints.Auto.rap)
-    * kCura.IntegrationPoints.Contracts
-    * kCura.IntegrationPoints.Services.Interfaces.Private
     * kCura.IntegrationPoints.Web
 * SDK
-    kCura.IntegrationPoints.Contracts.dll
-    kCura.IntegrationPonits.Domain.dll
-    kCura.IntegrationPonits.SourceProviderInstaller.dll
     frame-messaging.js
     jquery-3.4.1.js
     jquery-postMessage.js
