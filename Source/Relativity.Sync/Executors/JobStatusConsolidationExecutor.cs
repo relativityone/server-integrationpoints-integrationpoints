@@ -59,13 +59,19 @@ namespace Relativity.Sync.Executors
 
 			if (updateResult.EventHandlerStatuses.Any(status => !status.Success))
 			{
-				IEnumerable<string> eventHandlerMessages = updateResult.EventHandlerStatuses.Select(status => status.Message);
-				string joinedEventHandlerMessages = string.Join(", ", eventHandlerMessages);
-				string message = $"Event handlers failed when updating Job History object: {joinedEventHandlerMessages}.";
+				string message = CreateEventHandlersFailureMessage(updateResult);
 				return ExecutionResult.Failure(message, null);
 			}
 
 			return ExecutionResult.Success();
+		}
+
+		private static string CreateEventHandlersFailureMessage(UpdateResult updateResult)
+		{
+			IEnumerable<string> eventHandlerMessages = updateResult.EventHandlerStatuses.Select(status => status.Message);
+			string joinedEventHandlerMessages = string.Join(", ", eventHandlerMessages);
+			string message = $"Event handlers failed when updating Job History object: {joinedEventHandlerMessages}.";
+			return message;
 		}
 
 		private async Task<UpdateResult> UpdateJobHistoryAsync(IJobStatusConsolidationConfiguration configuration, int completedItemsCount, int failedItemsCount, int totalItemsCount)
