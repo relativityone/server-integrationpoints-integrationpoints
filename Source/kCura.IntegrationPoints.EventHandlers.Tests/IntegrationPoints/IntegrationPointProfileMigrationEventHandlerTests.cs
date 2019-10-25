@@ -202,10 +202,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 			response.Success.Should().BeTrue("handler should have completed successfully");
 			response.Exception.Should().BeNull("there was no failure");
 
-			List<int> nonSyncProfilesArtifactIds = NonSyncProfilesArtifactIds(nonSyncProfilesCount).Select(x => x.ArtifactId).ToList();
+			List<int> nonSyncProfilesArtifactIDs = NonSyncProfilesArtifactIDs(nonSyncProfilesCount).Select(x => x.ArtifactId).ToList();
 
 			_createdWorkspaceRelativityObjectManager
-				.Verify(x => x.MassDeleteAsync(It.Is<IEnumerable<int>>(l => l.SequenceEqual(nonSyncProfilesArtifactIds)), It.IsAny<ExecutionIdentity>()),
+				.Verify(x => x.MassDeleteAsync(It.Is<IEnumerable<int>>(l => l.SequenceEqual(nonSyncProfilesArtifactIDs)), It.IsAny<ExecutionIdentity>()),
 					Times.Once);
 		}
 
@@ -244,7 +244,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 				.ToList();
 		}
 
-		private static List<IntegrationPointProfile> NonSyncProfilesArtifactIds(int count)
+		private static List<IntegrationPointProfile> NonSyncProfilesArtifactIDs(int count)
 		{
 			return Enumerable
 				.Range(_FIRST_NON_SYNC_PROFILE_ARTIFACT_ID, count)
@@ -264,7 +264,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 		private void SetUpProfilesQuery(int nonSyncProfilesCount, int syncProfilesCount)
 		{
 			IEnumerable<IntegrationPointProfile> syncProfiles = SyncProfilesArtifactIds(syncProfilesCount);
-			IEnumerable<IntegrationPointProfile> nonSyncProfiles = NonSyncProfilesArtifactIds(nonSyncProfilesCount);
+			IEnumerable<IntegrationPointProfile> nonSyncProfiles = NonSyncProfilesArtifactIDs(nonSyncProfilesCount);
 
 			List<IntegrationPointProfile> allProfiles = new List<IntegrationPointProfile>();
 			allProfiles.AddRange(syncProfiles);

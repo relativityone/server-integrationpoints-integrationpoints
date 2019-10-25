@@ -22,8 +22,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 	public class IntegrationPointProfilesQueryTests
 	{
 		private IntegrationPointProfilesQuery _sut;
-		private Mock<IRelativityObjectManager> _fakeRelativityObjectManager;
-		private Mock<IObjectArtifactIdsByStringFieldValueQuery> _fakeObjectArtifactIDsQuery;
+		private Mock<IRelativityObjectManager> _relativityObjectManagerFake;
+		private Mock<IObjectArtifactIdsByStringFieldValueQuery> _objectArtifactIDsQueryFake;
 		private ISerializer _serializer;
 		private List<IntegrationPointProfile> _syncProfiles;
 		private List<IntegrationPointProfile> _nonSyncProfiles;
@@ -42,8 +42,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		[SetUp]
 		public void SetUp()
 		{
-			_fakeRelativityObjectManager = new Mock<IRelativityObjectManager>();
-			_fakeObjectArtifactIDsQuery = new Mock<IObjectArtifactIdsByStringFieldValueQuery>();
+			_relativityObjectManagerFake = new Mock<IRelativityObjectManager>();
+			_objectArtifactIDsQueryFake = new Mock<IObjectArtifactIdsByStringFieldValueQuery>();
 			_serializer = new JSONSerializer();
 
 			_syncProfiles = CreateSyncProfiles().ToList();
@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			_allProfiles.AddRange(_syncProfiles);
 			_allProfiles.AddRange(_nonSyncProfiles);
 
-			_fakeRelativityObjectManager
+			_relativityObjectManagerFake
 				.Setup(x => x.QueryAsync<IntegrationPointProfile>(
 					It.IsAny<QueryRequest>(), false, It.IsAny<ExecutionIdentity>()))
 				.ReturnsAsync(_allProfiles);
@@ -61,27 +61,27 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			_relativityDestinationProvidersList = new List<int>();
 			_integrationPointTypesList = new List<int>();
 
-			_fakeObjectArtifactIDsQuery
+			_objectArtifactIDsQueryFake
 				.Setup(x => x.QueryForObjectArtifactIdsByStringFieldValueAsync(_WORKSPACE_ID,
 					(DestinationProvider provider) => provider.Identifier,
 					Constants.IntegrationPoints.DestinationProviders.RELATIVITY))
 				.ReturnsAsync(_relativityDestinationProvidersList);
 
-			_fakeObjectArtifactIDsQuery
+			_objectArtifactIDsQueryFake
 				.Setup(x => x.QueryForObjectArtifactIdsByStringFieldValueAsync(_WORKSPACE_ID,
 					(SourceProvider provider) => provider.Identifier,
 					Constants.IntegrationPoints.SourceProviders.RELATIVITY))
 				.ReturnsAsync(_relativitySourceProvidersList);
 
-			_fakeObjectArtifactIDsQuery
+			_objectArtifactIDsQueryFake
 				.Setup(x => x.QueryForObjectArtifactIdsByStringFieldValueAsync(_WORKSPACE_ID,
 					(IntegrationPointType integrationPointType) => integrationPointType.Identifier,
 					kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString()))
 				.ReturnsAsync(_integrationPointTypesList);
 			
 			_sut = new IntegrationPointProfilesQuery(
-				workspaceID => _fakeRelativityObjectManager.Object,
-				_fakeObjectArtifactIDsQuery.Object,
+				workspaceID => _relativityObjectManagerFake.Object,
+				_objectArtifactIDsQueryFake.Object,
 				_serializer);
 		}
 
