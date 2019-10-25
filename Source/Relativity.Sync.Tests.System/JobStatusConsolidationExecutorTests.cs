@@ -49,6 +49,7 @@ namespace Relativity.Sync.Tests.System
 		[Test]
 		public async Task ItShouldConsolidateJobStatusAndUpdateJobHistory()
 		{
+			// Arrange
 			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, _sourceWorkspace.ArtifactID)
 				.ConfigureAwait(false);
 			int syncConfigurationArtifactId =
@@ -70,9 +71,11 @@ namespace Relativity.Sync.Tests.System
 				.ConfigureAwait(false);
 
 			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IJobStatusConsolidationConfiguration>(configuration);
-			await syncJob.ExecuteAsync(CancellationToken.None)
-				.ConfigureAwait(false);
+			
+			// Act
+			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
 
+			// Assert
 			const int expectedTransferredItemsCount = transferredItemsCountPerBatch * batchCount;
 			const int expectedFailedItemsCount = failedItemsCountPerBatch * batchCount;
 			const int expectedTotalItemsCount = expectedTransferredItemsCount + expectedFailedItemsCount;
