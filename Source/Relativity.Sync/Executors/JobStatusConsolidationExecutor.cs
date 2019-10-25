@@ -16,9 +16,9 @@ namespace Relativity.Sync.Executors
 		private readonly IBatchRepository _batchRepository;
 		private readonly ISourceServiceFactoryForAdmin _serviceFactory;
 
-		private static readonly Guid CompletedItemsCountGuid = new Guid("70680399-c8ea-4b12-b711-e9ecbc53cb1c");
-		private static readonly Guid FailedItemsCountGuid = new Guid("c224104f-c1ca-4caa-9189-657e01d5504e");
-		private static readonly Guid TotalItemsCountGuid = new Guid("576189a9-0347-4b20-9369-b16d1ac89b4b");
+		private static readonly Guid _COMPLETED_ITEMS_COUNT_GUID = new Guid("70680399-c8ea-4b12-b711-e9ecbc53cb1c");
+		private static readonly Guid _FAILED_ITEMS_COUNT_GUID = new Guid("c224104f-c1ca-4caa-9189-657e01d5504e");
+		private static readonly Guid _TOTAL_ITEMS_COUNT_GUID = new Guid("576189a9-0347-4b20-9369-b16d1ac89b4b");
 
 		public JobStatusConsolidationExecutor(IBatchRepository batchRepository, ISourceServiceFactoryForAdmin serviceFactory)
 		{
@@ -90,7 +90,7 @@ namespace Relativity.Sync.Executors
 						{
 							Field = new FieldRef
 							{
-								Guid = CompletedItemsCountGuid
+								Guid = _COMPLETED_ITEMS_COUNT_GUID
 							},
 							Value = completedItemsCount
 						},
@@ -98,7 +98,7 @@ namespace Relativity.Sync.Executors
 						{
 							Field = new FieldRef
 							{
-								Guid = FailedItemsCountGuid
+								Guid = _FAILED_ITEMS_COUNT_GUID
 							},
 							Value = failedItemsCount
 						},
@@ -106,7 +106,7 @@ namespace Relativity.Sync.Executors
 						{
 							Field = new FieldRef
 							{
-								Guid = TotalItemsCountGuid
+								Guid = _TOTAL_ITEMS_COUNT_GUID
 							},
 							Value = totalItemsCount
 						}
