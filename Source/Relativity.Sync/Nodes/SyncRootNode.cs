@@ -42,7 +42,7 @@ namespace Relativity.Sync.Nodes
 			LogFailures(executionResults);
 
 			List<SyncException> syncExceptions = executionResults
-				.Concat(new[] {jobStatusConsolidationExecutionResult})
+				.Concat(new[] { jobStatusConsolidationExecutionResult })
 				.Where(result => result.Status == ExecutionStatus.Failed)
 				.Select(result => new SyncException(result.Message, result.Exception))
 				.ToList();
@@ -114,11 +114,13 @@ namespace Relativity.Sync.Nodes
 		{
 			try
 			{
-				if (await command.CanExecuteAsync(context.Subject.CancellationToken).ConfigureAwait(false))
-				{
-					return await command.ExecuteAsync(context.Subject.CancellationToken).ConfigureAwait(false);
-				}
-				return ExecutionResult.Skipped();
+				bool canExecute = await command.CanExecuteAsync(context.Subject.CancellationToken).ConfigureAwait(false);
+
+				ExecutionResult executionResult = canExecute
+					? await command.ExecuteAsync(context.Subject.CancellationToken).ConfigureAwait(false)
+					: ExecutionResult.Skipped();
+
+				return executionResult;
 			}
 			catch (Exception e)
 			{
