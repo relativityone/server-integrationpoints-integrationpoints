@@ -13,7 +13,6 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.Relativity.DataReaderClient;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using Relativity.IntegrationPoints.Services;
@@ -27,28 +26,27 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 	public class IntegrationPointProfileMigrationEventHandlerTest
 	{
 		private ISerializer _serializer;
+		private IEnumerable<int> _createdProfilesArtifactIDs;
 
 		private const int _SAVED_SEARCH_ARTIFACT_ID = 123456;
 
-		private readonly LinkedList<Action> _teardownActions = new LinkedList<Action>();
-		private readonly IObjectArtifactIdsByStringFieldValueQuery _objectArtifactIdsByStringFieldValueQuery =
+		private readonly IObjectArtifactIdsByStringFieldValueQuery _objectArtifactIDsByStringFieldValueQuery =
 			new ObjectArtifactIdsByStringFieldValueQuery(CreateRelativityObjectManagerForWorkspace);
 
 		[OneTimeSetUp]
 		public async Task OneTimeSetUp()
 		{
 			_serializer = new JSONSerializer();
-			IEnumerable<int> createdProfilesArtifactIds = await CreateTestProfilesAsync(SystemTestsSetupFixture.SourceWorkspace.ArtifactID).ConfigureAwait(false);
-			_teardownActions.AddLast(() => DeleteTestProfilesAsync(SystemTestsSetupFixture.SourceWorkspace.ArtifactID, createdProfilesArtifactIds).GetAwaiter().GetResult());
+			_createdProfilesArtifactIDs = await CreateTestProfilesAsync(SystemTestsSetupFixture.SourceWorkspace.ArtifactID).ConfigureAwait(false);
 		}
 
-		private static async Task DeleteTestProfilesAsync(int workspaceID, IEnumerable<int> profilesArtifactIdsToDelete)
+		private static async Task DeleteTestProfilesAsync(int workspaceID, IEnumerable<int> profilesArtifactIDsToDelete)
 		{
 			using (var objectManager = SystemTestsSetupFixture.TestHelper.CreateProxy<IObjectManager>())
 			{
 				var request = new MassDeleteByObjectIdentifiersRequest
 				{
-					Objects = profilesArtifactIdsToDelete
+					Objects = profilesArtifactIDsToDelete
 						.Select(aid => new RelativityObjectRef { ArtifactID = aid })
 						.ToList()
 				};
@@ -71,7 +69,11 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 		[TearDown]
 		public void TearDown()
 		{
-			SystemTestsSetupFixture.InvokeActionsAndResetFixtureOnException(_teardownActions);
+			Action[] actions =
+			{
+				() => DeleteTestProfilesAsync(SystemTestsSetupFixture.SourceWorkspace.ArtifactID, _createdProfilesArtifactIDs).GetAwaiter().GetResult()
+			};
+			SystemTestsSetupFixture.InvokeActionsAndResetFixtureOnException(actions);
 		}
 
 		private async Task VerifyAllProfilesInDestinationWorkspaceAreSyncOnlyAndHaveProperValuesSetAsync(int targetWorkspaceID)
@@ -94,7 +96,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 				.ShouldAllBeEquivalentTo(syncSourceProviderArtifactID);
 
 			// verify integration point type id
-			int exportIntegrationPointTypeArtifactID = await GetTypeArtifactIdAsync(targetWorkspaceID, IntegrationPointTypes.ExportName)
+			int exportIntegrationPointTypeArtifactID = await GetTypeArtifactIDAsync(targetWorkspaceID, IntegrationPointTypes.ExportName)
 				.ConfigureAwait(false);
 			targetWorkspaceProfiles.Select(p => p.Type.HasValue)
 				.ShouldAllBeEquivalentTo(true);
@@ -147,7 +149,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 		private async Task<int> GetSingleObjectArtifactIDByStringFieldValueAsync<TSource>(int workspaceId,
 			Expression<Func<TSource, string>> propertySelector, string fieldValue) where TSource : BaseRdo, new()
 		{
-			IEnumerable<int> objectsArtifactIds = await _objectArtifactIdsByStringFieldValueQuery
+			IEnumerable<int> objectsArtifactIds = await _objectArtifactIDsByStringFieldValueQuery
 				.QueryForObjectArtifactIdsByStringFieldValueAsync(workspaceId, propertySelector, fieldValue)
 				.ConfigureAwait(false);
 
@@ -166,16 +168,16 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 
 		private async Task<List<IntegrationPointProfile>> GetProfilesToCreateAsync(int workspaceID)
 		{
-			int importTypeArtifactID = await GetTypeArtifactIdAsync(workspaceID, IntegrationPointTypes.ImportName).ConfigureAwait(false);
-			int exportTypeArtifactID = await GetTypeArtifactIdAsync(workspaceID, IntegrationPointTypes.ExportName).ConfigureAwait(false);
+			int importTypeArtifactID = await GetTypeArtifactIDAsync(workspaceID, IntegrationPointTypes.ImportName).ConfigureAwait(false);
+			int exportTypeArtifactID = await GetTypeArtifactIDAsync(workspaceID, IntegrationPointTypes.ExportName).ConfigureAwait(false);
 
-			int relativitySourceProviderArtifactID = await GetSourceProviderArtifactIdAsync(workspaceID, SourceProviders.RELATIVITY).ConfigureAwait(false);
-			int loadFileSourceProviderArtifactID = await GetSourceProviderArtifactIdAsync(workspaceID, SourceProviders.IMPORTLOADFILE).ConfigureAwait(false);
-			int ftpSourceProviderArtifactID = await GetSourceProviderArtifactIdAsync(workspaceID, SourceProviders.FTP).ConfigureAwait(false);
-			int ldapSourceProviderArtifactID = await GetSourceProviderArtifactIdAsync(workspaceID, SourceProviders.LDAP).ConfigureAwait(false);
+			int relativitySourceProviderArtifactID = await GetSourceProviderArtifactIDAsync(workspaceID, SourceProviders.RELATIVITY).ConfigureAwait(false);
+			int loadFileSourceProviderArtifactID = await GetSourceProviderArtifactIDAsync(workspaceID, SourceProviders.IMPORTLOADFILE).ConfigureAwait(false);
+			int ftpSourceProviderArtifactID = await GetSourceProviderArtifactIDAsync(workspaceID, SourceProviders.FTP).ConfigureAwait(false);
+			int ldapSourceProviderArtifactID = await GetSourceProviderArtifactIDAsync(workspaceID, SourceProviders.LDAP).ConfigureAwait(false);
 
-			int relativityDestinationProviderArtifactID = await GetDestinationProviderArtifactIdAsync(workspaceID, DestinationProviders.RELATIVITY).ConfigureAwait(false);
-			int loadFileDestinationProviderArtifactID = await GetDestinationProviderArtifactIdAsync(workspaceID, DestinationProviders.LOADFILE).ConfigureAwait(false);
+			int relativityDestinationProviderArtifactID = await GetDestinationProviderArtifactIDAsync(workspaceID, DestinationProviders.RELATIVITY).ConfigureAwait(false);
+			int loadFileDestinationProviderArtifactID = await GetDestinationProviderArtifactIDAsync(workspaceID, DestinationProviders.LOADFILE).ConfigureAwait(false);
 
 			const string emptyJson = "{}";
 
@@ -184,12 +186,12 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 				// Sync profile
 				new IntegrationPointProfile
 				{
-					Name = "Sync profile",
+					Name = "Sync saved search to folder",
 					Type = exportTypeArtifactID,
 					SourceProvider = relativitySourceProviderArtifactID,
 					DestinationProvider = relativityDestinationProviderArtifactID,
-					SourceConfiguration = CreateSourceConfiguration(SourceConfiguration.ExportType.SavedSearch),
-					DestinationConfiguration = CreateDestinationConfiguration(exportToProduction: false)
+					SourceConfiguration = CreateSourceConfigurationJson(SourceConfiguration.ExportType.SavedSearch),
+					DestinationConfiguration = CreateDestinationConfigurationJson(exportToProduction: false)
 				},
 
 				// Non-Sync profiles
@@ -199,8 +201,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 					Type = exportTypeArtifactID,
 					SourceProvider = relativitySourceProviderArtifactID,
 					DestinationProvider = relativityDestinationProviderArtifactID,
-					SourceConfiguration = CreateSourceConfiguration(SourceConfiguration.ExportType.ProductionSet),
-					DestinationConfiguration = CreateDestinationConfiguration(exportToProduction: true)
+					SourceConfiguration = CreateSourceConfigurationJson(SourceConfiguration.ExportType.ProductionSet),
+					DestinationConfiguration = CreateDestinationConfigurationJson(exportToProduction: true)
 				},
 				new IntegrationPointProfile
 				{
@@ -208,8 +210,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 					Type = exportTypeArtifactID,
 					SourceProvider = relativitySourceProviderArtifactID,
 					DestinationProvider = relativityDestinationProviderArtifactID,
-					SourceConfiguration = CreateSourceConfiguration(SourceConfiguration.ExportType.SavedSearch),
-					DestinationConfiguration = CreateDestinationConfiguration(exportToProduction: true)
+					SourceConfiguration = CreateSourceConfigurationJson(SourceConfiguration.ExportType.SavedSearch),
+					DestinationConfiguration = CreateDestinationConfigurationJson(exportToProduction: true)
 				},
 				new IntegrationPointProfile
 				{
@@ -217,8 +219,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 					Type = exportTypeArtifactID,
 					SourceProvider = relativitySourceProviderArtifactID,
 					DestinationProvider = relativityDestinationProviderArtifactID,
-					SourceConfiguration = CreateSourceConfiguration(SourceConfiguration.ExportType.ProductionSet),
-					DestinationConfiguration = CreateDestinationConfiguration(exportToProduction: false)
+					SourceConfiguration = CreateSourceConfigurationJson(SourceConfiguration.ExportType.ProductionSet),
+					DestinationConfiguration = CreateDestinationConfigurationJson(exportToProduction: false)
 				},
 				new IntegrationPointProfile
 				{
@@ -261,7 +263,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 			return profiles;
 		}
 
-		private static async Task<int> GetTypeArtifactIdAsync(int workspaceID, string typeName)
+		private static async Task<int> GetTypeArtifactIDAsync(int workspaceID, string typeName)
 		{
 			using (var typeClient = SystemTestsSetupFixture.TestHelper.CreateProxy<IIntegrationPointTypeManager>())
 			{
@@ -276,7 +278,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 			}
 		}
 
-		private static async Task<int> GetSourceProviderArtifactIdAsync(int workspaceID, string guid)
+		private static async Task<int> GetSourceProviderArtifactIDAsync(int workspaceID, string guid)
 		{
 			using (var providerClient = SystemTestsSetupFixture.TestHelper.CreateProxy<IProviderManager>())
 			{
@@ -284,7 +286,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 			}
 		}
 
-		private static async Task<int> GetDestinationProviderArtifactIdAsync(int workspaceID, string guid)
+		private static async Task<int> GetDestinationProviderArtifactIDAsync(int workspaceID, string guid)
 		{
 			using (var providerClient = SystemTestsSetupFixture.TestHelper.CreateProxy<IProviderManager>())
 			{
@@ -297,7 +299,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 			return SystemTestsSetupFixture.Container.Resolve<IRelativityObjectManagerFactory>().CreateRelativityObjectManager(workspaceID);
 		}
 
-		private string CreateSourceConfiguration(SourceConfiguration.ExportType exportType)
+		private string CreateSourceConfigurationJson(SourceConfiguration.ExportType exportType)
 		{
 			var sourceConfiguration = new SourceConfiguration()
 			{
@@ -308,7 +310,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 			return _serializer.Serialize(sourceConfiguration);
 		}
 
-		private string CreateDestinationConfiguration(bool exportToProduction)
+		private string CreateDestinationConfigurationJson(bool exportToProduction)
 		{
 			JObject configuration = new JObject
 			{

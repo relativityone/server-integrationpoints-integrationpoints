@@ -15,13 +15,14 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 	internal class IntegrationPointProfilesQuery : IIntegrationPointProfilesQuery
 	{
 		private readonly Func<int, IRelativityObjectManager> _createRelativityObjectManager;
-		private readonly IObjectArtifactIdsByStringFieldValueQuery _objectArtifactIdsByStringFieldValueQuery;
+		private readonly IObjectArtifactIdsByStringFieldValueQuery _objectArtifactIDsByStringFieldValueQuery;
 		private readonly ISerializer _serializer;
 
-		public IntegrationPointProfilesQuery(Func<int, IRelativityObjectManager> createRelativityObjectManager, IObjectArtifactIdsByStringFieldValueQuery objectArtifactIdsByStringFieldValueQuery, ISerializer serializer)
+		public IntegrationPointProfilesQuery(Func<int, IRelativityObjectManager> createRelativityObjectManager, IObjectArtifactIdsByStringFieldValueQuery objectArtifactIDsByStringFieldValueQuery,
+			ISerializer serializer)
 		{
 			_createRelativityObjectManager = createRelativityObjectManager;
-			_objectArtifactIdsByStringFieldValueQuery = objectArtifactIdsByStringFieldValueQuery;
+			_objectArtifactIDsByStringFieldValueQuery = objectArtifactIDsByStringFieldValueQuery;
 			_serializer = serializer;
 		}
 
@@ -96,29 +97,29 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 
 		public Task<int> GetSyncDestinationProviderArtifactIDAsync(int workspaceID)
 		{
-			return GetSingleObjectArtifactIdByStringFieldValueAsync<DestinationProvider>(workspaceID,
+			return GetSingleObjectArtifactIDByStringFieldValueAsync<DestinationProvider>(workspaceID,
 				destinationProvider => destinationProvider.Identifier,
 				kCura.IntegrationPoints.Core.Constants.IntegrationPoints.DestinationProviders.RELATIVITY);
 		}
 
 		public Task<int> GetSyncSourceProviderArtifactIDAsync(int workspaceID)
 		{
-			return GetSingleObjectArtifactIdByStringFieldValueAsync<SourceProvider>(workspaceID,
+			return GetSingleObjectArtifactIDByStringFieldValueAsync<SourceProvider>(workspaceID,
 				sourceProvider => sourceProvider.Identifier,
 				kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.RELATIVITY);
 		}
 
 		public Task<int> GetIntegrationPointExportTypeArtifactIDAsync(int workspaceID)
 		{
-			return GetSingleObjectArtifactIdByStringFieldValueAsync<IntegrationPointType>(workspaceID,
+			return GetSingleObjectArtifactIDByStringFieldValueAsync<IntegrationPointType>(workspaceID,
 				type => type.Identifier,
 				kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString());
 		}
 
-		private async Task<int> GetSingleObjectArtifactIdByStringFieldValueAsync<TSource>(int workspaceID,
+		private async Task<int> GetSingleObjectArtifactIDByStringFieldValueAsync<TSource>(int workspaceID,
 			Expression<Func<TSource, string>> propertySelector, string fieldValue) where TSource : BaseRdo, new()
 		{
-			IEnumerable<int> objectsArtifactIDs = await _objectArtifactIdsByStringFieldValueQuery
+			IEnumerable<int> objectsArtifactIDs = await _objectArtifactIDsByStringFieldValueQuery
 				.QueryForObjectArtifactIdsByStringFieldValueAsync(workspaceID, propertySelector, fieldValue)
 				.ConfigureAwait(false);
 
