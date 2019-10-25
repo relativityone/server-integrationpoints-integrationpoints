@@ -47,7 +47,7 @@ namespace Relativity.Sync.Tests.System
 		}
 
 		[Test]
-		public async Task ItShouldDoJob()
+		public async Task ItShouldConsolidateJobStatusAndUpdateJobHistory()
 		{
 			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, _sourceWorkspace.ArtifactID)
 				.ConfigureAwait(false);
