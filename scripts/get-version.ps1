@@ -107,5 +107,3 @@ else {
     $global:version = "$major.$minor.$patch.$build"
     $global:packageVersion = "$major.$minor.$patch-$suffix$build"
 }
-
-Write-Host "Package version from get-version: " + $global:packageVersion

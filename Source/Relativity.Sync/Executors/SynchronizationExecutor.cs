@@ -183,9 +183,13 @@ namespace Relativity.Sync.Executors
 				batchJobsResults.Where(x => x.Value.ExecutionResult.Status == ExecutionStatus.CompletedWithErrors).ToArray();
 			if (completedWithErrorsBatchJobResults.Any())
 			{
-				return ExecutionResult.SuccessWithErrors(new AggregateException(string.Join(Environment.NewLine, completedWithErrorsBatchJobResults.Select(x => $"BatchID: {x.Key} {{x.ExecutionResult.Message}}")),
+				string exceptionMessage = string.Join(Environment.NewLine, completedWithErrorsBatchJobResults.Select(x => $"BatchID: {x.Key} {{x.ExecutionResult.Message}}"));
+				AggregateException aggregateException = new AggregateException(
+					exceptionMessage,
 					completedWithErrorsBatchJobResults.Select(x => x.Value.ExecutionResult.Exception).Where(x => x != null)
-						));
+					);
+
+				return ExecutionResult.SuccessWithErrors(aggregateException);
 			}
 
 			return ExecutionResult.Success();
