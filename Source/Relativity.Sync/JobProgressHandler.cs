@@ -109,11 +109,6 @@ namespace Relativity.Sync
 
 		public void Dispose()
 		{
-			if (!_forceUpdateSignal.IsDisposed)
-			{
-				_forceUpdateSignal.OnNext(Unit.Default);
-			}
-
 			_changeSubjectBufferSubscription.Dispose();
 			_changeSignal.Dispose();
 			_forceUpdateSignal.Dispose();
