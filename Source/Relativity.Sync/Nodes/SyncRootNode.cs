@@ -105,9 +105,7 @@ namespace Relativity.Sync.Nodes
 		}
 
 		private Task<ExecutionResult> RunNotificationCommandAsync(IExecutionContext<SyncExecutionContext> context) => ExecuteCommandIfCanExecuteAsync(_notificationCommand, context);
-
 		private Task<ExecutionResult> RunJobStatusConsolidationAsync(IExecutionContext<SyncExecutionContext> context) => ExecuteCommandIfCanExecuteAsync(_jobStatusConsolidationCommand, context);
-
 		private Task<ExecutionResult> RunJobCleanupAsync(IExecutionContext<SyncExecutionContext> context) => ExecuteCommandIfCanExecuteAsync(_jobCleanupCommand, context);
 
 		private static async Task<ExecutionResult> ExecuteCommandIfCanExecuteAsync<T>(ICommand<T> command, IExecutionContext<SyncExecutionContext> context) where T : IConfiguration
