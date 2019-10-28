@@ -41,7 +41,7 @@ NUGET
     kCura.IntegrationPoints.SDK (11.0.8)
       Relativity.IntegrationPoints.Services.Interfaces.Private (>= 1.0)
     kCura.LongPath (1.0.20)
-    kCura.OutsideIn.FI.Win32 (2019.4.0) - content: none
+    kCura.OutsideIn.FI.Win32 (2019.4.1) - content: none
     kCura.Relativity.Client (11.0.105.1)
     LanguageExt.Core (3.1.15)
       Microsoft.CSharp (>= 4.5)
@@ -115,12 +115,9 @@ NUGET
     NuGetPowerTools (0.29)
     Owin (1.0)
     Polly (5.3.1)
-    Relativity (11.0.106.1)
+    Relativity (11.0.105.1)
     Relativity.API (12.0.1)
       System.Data.SqlClient (>= 4.6)
-    Relativity.Audit.Ingestion.Interface (1.5.0)
-    Relativity.Audit.SDK (1.5.0)
-      Relativity.Audit.Ingestion.Interface (1.5)
     Relativity.Authentication (11.0.105.1)
       IdentityModel (>= 1.6)
       kCura (>= 12.0)

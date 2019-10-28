@@ -5,7 +5,6 @@ kCura.Apps.Common.Data
 kCura.Apps.Common.Utils
 kCura.OutsideIn.FI.Win32
 kCura.Relativity.Client
-Relativity.Audit.SDK
 Relativity.API
 Relativity.Services.Interfaces
 Relativity.Services.Interfaces.Private
