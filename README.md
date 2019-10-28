@@ -65,7 +65,7 @@ Running unit tests:
 * NuGet packages on gold build
     * RelativityIntegrationPoints (Contains RelativityIntegrationPoints.Auto.rap)
     * kCura.IntegrationPoints.Web
-* SDK
+* SDK scripts
     frame-messaging.js
     jquery-3.4.1.js
     jquery-postMessage.js
