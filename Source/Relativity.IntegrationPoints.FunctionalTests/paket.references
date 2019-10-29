@@ -3,6 +3,7 @@ kCura
 kCura.Apps.Common.Config
 kCura.Relativity.Client
 Polly
+kCura.IntegrationPoints.Services.Interfaces.Private
 Relativity
 Relativity.API
 Relativity.DataExchange.Client.SDK
