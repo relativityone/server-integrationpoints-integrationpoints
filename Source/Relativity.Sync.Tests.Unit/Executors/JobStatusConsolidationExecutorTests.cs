@@ -144,29 +144,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			VerifyUpdateCall(transferredCount: 0, failedCount: 0, totalItemCount: 0);
 		}
 
-		[Test]
-		public async Task ItShouldReportFailureWhenUpdateResultIsNull()
-		{
-			// Arrange
-			const int totalBatchCount = 5;
-			const int totalTransferredCount = 1000;
-			const int totalFailedCount = 10;
-			SetUpBatches(totalBatchCount, totalTransferredCount, totalFailedCount);
-
-			_objectManager
-				.Setup(x => x.UpdateAsync(It.IsAny<int>(), It.IsAny<UpdateRequest>()))
-				.ReturnsAsync((UpdateResult) null);
-
-			// Act
-			ExecutionResult result = await _sut
-				.ExecuteAsync(_configuration.Object, CancellationToken.None)
-				.ConfigureAwait(false);
-
-			// Assert
-			result.Status.Should().Be(ExecutionStatus.Failed);
-			result.Exception.Should().Be(null);
-		}
-
 		private void SetUpUpdateCall(bool success)
 		{
 			_objectManager
