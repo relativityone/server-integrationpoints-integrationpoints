@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 	{
 
 		private Dictionary<int, Field> _idToFieldDictionary;
-		private IExtendedImportAPI _importApi;
+		private IImportAPI _importApi;
 		private int _lastJobStatusUpdate;
 		private int _totalRowsImported;
 		private int _totalRowsWithErrors;

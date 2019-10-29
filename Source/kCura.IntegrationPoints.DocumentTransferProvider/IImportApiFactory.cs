@@ -2,8 +2,8 @@
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider
 {
-	public interface IExtendedImportApiFactory
+	public interface IImportApiFactory
 	{
-		IExtendedImportAPI Create();
+		IImportAPI Create();
 	}
 }

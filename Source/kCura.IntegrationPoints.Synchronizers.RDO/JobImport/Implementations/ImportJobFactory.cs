@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 			_messageService = messageService;
 		}
 
-		public IJobImport Create(IExtendedImportAPI importApi, ImportSettings settings, IDataTransferContext context, IHelper helper)
+		public IJobImport Create(IImportAPI importApi, ImportSettings settings, IDataTransferContext context, IHelper helper)
 		{
 			IJobImport rv;
 			switch (GetJobContextType(settings))
