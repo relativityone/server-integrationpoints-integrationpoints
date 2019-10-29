@@ -39,7 +39,7 @@ NUGET
     kCura.IntegrationPoints.Services.Interfaces.Private (10.3.18-DEV-029)
       Relativity.Kepler (>= 1.0.1.333)
     kCura.LongPath (1.0.20)
-    kCura.OutsideIn.FI.Win32 (2019.3.5) - content: none
+    kCura.OutsideIn.FI.Win32 (2019.3.6) - content: none
     kCura.Relativity.Client (11.0.116.1)
     LanguageExt.Core (3.1.15)
       Microsoft.CSharp (>= 4.5)
@@ -113,7 +113,7 @@ NUGET
     NuGetPowerTools (0.29)
     Owin (1.0)
     Polly (5.9.0)
-    Relativity (11.0.93.78)
+    Relativity (11.0.116.1)
     Relativity.API (12.0.0)
       System.Data.SqlClient (>= 4.6)
     Relativity.Audit.Ingestion.Interface (1.5.0)
