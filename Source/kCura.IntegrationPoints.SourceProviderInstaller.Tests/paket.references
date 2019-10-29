@@ -1,9 +1,0 @@
-﻿CSharpGuidelineAnalyzer
-kCura.EventHandler
-Relativity.IntegrationPoints.Services.Interfaces.Private
-Relativity.Kepler
-
-group TestPackages
-	FluentAssertions
-	Moq
-	NUnit
