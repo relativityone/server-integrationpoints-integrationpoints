@@ -52,11 +52,6 @@ namespace Relativity.Sync.Executors
 				return ExecutionResult.Failure("Failed to update Job History object.", e);
 			}
 
-			if (updateResult == null)
-			{
-				return ExecutionResult.Failure($"{nameof(updateResult)} is set to null.", null);
-			}
-
 			if (updateResult.EventHandlerStatuses.Any(status => !status.Success))
 			{
 				string message = CreateEventHandlersFailureMessage(updateResult);
