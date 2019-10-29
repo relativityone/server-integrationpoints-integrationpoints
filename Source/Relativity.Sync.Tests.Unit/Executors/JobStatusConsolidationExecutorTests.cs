@@ -19,10 +19,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
 	[TestFixture]
 	internal class JobStatusConsolidationExecutorTests
 	{
-		private Mock<IObjectManager> _objectManager;
-		private Mock<IBatchRepository> _batchRepository;
-		private Mock<ISourceServiceFactoryForAdmin> _serviceFactory;
-		private Mock<IJobStatusConsolidationConfiguration> _configuration;
+		private Mock<IObjectManager> _objectManagerFake;
+		private Mock<IBatchRepository> _batchRepositoryStub;
+		private Mock<ISourceServiceFactoryForAdmin> _serviceFactoryStub;
+		private Mock<IJobStatusConsolidationConfiguration> _configurationStub;
 		private List<IBatch> _batches;
 
 		private IExecutor<IJobStatusConsolidationConfiguration> _sut;
@@ -34,13 +34,13 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 		public static IEnumerable<Action<JobStatusConsolidationExecutorTests>> ServiceFailures { get; } = new Action<JobStatusConsolidationExecutorTests>[]
 		{
-			ctx => ctx._serviceFactory
+			ctx => ctx._serviceFactoryStub
 				.Setup(x => x.CreateProxyAsync<IObjectManager>())
 				.ThrowsAsync(_EXCEPTION),
-			ctx => ctx._objectManager
+			ctx => ctx._objectManagerFake
 				.Setup(x => x.UpdateAsync(It.IsAny<int>(), It.IsAny<UpdateRequest>()))
 				.ThrowsAsync(_EXCEPTION),
-			ctx => ctx._batchRepository
+			ctx => ctx._batchRepositoryStub
 				.Setup(x => x.GetAllAsync(It.IsAny<int>(), It.IsAny<int>()))
 				.ThrowsAsync(_EXCEPTION)
 		};
@@ -48,24 +48,24 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[SetUp]
 		public void SetUp()
 		{
-			_objectManager = new Mock<IObjectManager>();
-			_batchRepository = new Mock<IBatchRepository>();
-			_configuration = new Mock<IJobStatusConsolidationConfiguration>();
+			_objectManagerFake = new Mock<IObjectManager>();
+			_batchRepositoryStub = new Mock<IBatchRepository>();
+			_configurationStub = new Mock<IJobStatusConsolidationConfiguration>();
 
-			_serviceFactory = new Mock<ISourceServiceFactoryForAdmin>();
-			_serviceFactory
+			_serviceFactoryStub = new Mock<ISourceServiceFactoryForAdmin>();
+			_serviceFactoryStub
 				.Setup(x => x.CreateProxyAsync<IObjectManager>())
-				.ReturnsAsync(_objectManager.Object);
+				.ReturnsAsync(_objectManagerFake.Object);
 
 			_batches = new List<IBatch>();
 
-			_batchRepository
+			_batchRepositoryStub
 				.Setup(x => x.GetAllAsync(It.IsAny<int>(), It.IsAny<int>()))
 				.ReturnsAsync(_batches);
 
 			SetUpUpdateCall(success: true);
 
-			_sut = new JobStatusConsolidationExecutor(_batchRepository.Object, _serviceFactory.Object);
+			_sut = new JobStatusConsolidationExecutor(_batchRepositoryStub.Object, _serviceFactoryStub.Object);
 		}
 
 		[Test]
@@ -82,7 +82,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			// Act
 			ExecutionResult result = await _sut
-				.ExecuteAsync(_configuration.Object, CancellationToken.None)
+				.ExecuteAsync(_configurationStub.Object, CancellationToken.None)
 				.ConfigureAwait(false);
 
 			// Assert
@@ -103,7 +103,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			// Act
 			ExecutionResult result = await _sut
-				.ExecuteAsync(_configuration.Object, CancellationToken.None)
+				.ExecuteAsync(_configurationStub.Object, CancellationToken.None)
 				.ConfigureAwait(false);
 
 			// Assert
@@ -123,7 +123,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			// Act
 			ExecutionResult result = await _sut
-				.ExecuteAsync(_configuration.Object, CancellationToken.None)
+				.ExecuteAsync(_configurationStub.Object, CancellationToken.None)
 				.ConfigureAwait(false);
 
 			// Assert
@@ -136,7 +136,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		{
 			// Act
 			ExecutionResult result = await _sut
-				.ExecuteAsync(_configuration.Object, CancellationToken.None)
+				.ExecuteAsync(_configurationStub.Object, CancellationToken.None)
 				.ConfigureAwait(false);
 
 			// Assert
@@ -146,7 +146,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 		private void SetUpUpdateCall(bool success)
 		{
-			_objectManager
+			_objectManagerFake
 				.Setup(x => x.UpdateAsync(It.IsAny<int>(), It.IsAny<UpdateRequest>()))
 				.ReturnsAsync(() => CreateUpdateResultStatuses(success));
 		}
@@ -209,7 +209,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 		private void VerifyUpdateCall(int transferredCount, int failedCount, int totalItemCount)
 		{
-			_objectManager
+			_objectManagerFake
 				.Verify(x => x.UpdateAsync(It.IsAny<int>(), It.Is<UpdateRequest>(r =>
 					(int)r.FieldValues.Single(fvp => fvp.Field.Guid.Equals(_COMPLETED_ITEMS_COUNT_GUID)).Value == transferredCount &&
 					(int)r.FieldValues.Single(fvp => fvp.Field.Guid.Equals(_FAILED_ITEMS_COUNT_GUID)).Value == failedCount &&
