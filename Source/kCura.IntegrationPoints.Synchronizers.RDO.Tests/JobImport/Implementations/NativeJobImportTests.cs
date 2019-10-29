@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport.Implementati
 	{
 		private NativeJobImport _instance;
 		private ImportSettings _importSettings;
-		private IExtendedImportAPI _importApi;
+		private IImportAPI _importApi;
 		private IImportSettingsBaseBuilder<Settings> _builder;
 		private IAPILog _loggerMock;
 		private IHelper _helperMock;
@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport.Implementati
 		public override void SetUp()
 		{
 			_importSettings = Substitute.For<ImportSettings>();
-			_importApi = Substitute.For<IExtendedImportAPI>();
+			_importApi = Substitute.For<IImportAPI>();
 			_builder = Substitute.For<IImportSettingsBaseBuilder<Settings>>();
 			IDataTransferContext context = Substitute.For<IDataTransferContext>();
 			_loggerMock = Substitute.For<IAPILog>();

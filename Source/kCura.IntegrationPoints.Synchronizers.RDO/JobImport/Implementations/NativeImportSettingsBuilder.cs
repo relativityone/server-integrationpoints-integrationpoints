@@ -9,7 +9,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 {
 	public class NativeImportSettingsBuilder : ImportSettingsBaseBuilder<Settings>
 	{
-		public NativeImportSettingsBuilder(IExtendedImportAPI importApi)
+		public NativeImportSettingsBuilder(IImportAPI importApi)
 			: base(importApi)
 		{
 		}

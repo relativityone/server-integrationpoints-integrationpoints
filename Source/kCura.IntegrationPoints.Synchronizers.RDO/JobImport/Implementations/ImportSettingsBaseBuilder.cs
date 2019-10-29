@@ -5,8 +5,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 {
 	public class ImportSettingsBaseBuilder<T> : IImportSettingsBaseBuilder<T> where T : ImportSettingsBase
 	{
-		protected IExtendedImportAPI _importApi;
-		protected ImportSettingsBaseBuilder(IExtendedImportAPI importApi)
+		protected IImportAPI _importApi;
+		protected ImportSettingsBaseBuilder(IImportAPI importApi)
 		{
 			_importApi = importApi;
 		}

@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport.Implementati
 		[SetUp]
 		public override void SetUp()
 		{
-			var importApi = Substitute.For<IExtendedImportAPI>();
+			var importApi = Substitute.For<IImportAPI>();
 			SystemUnderTest = new ImageImportSettingsBuilder(importApi);
 		}
 

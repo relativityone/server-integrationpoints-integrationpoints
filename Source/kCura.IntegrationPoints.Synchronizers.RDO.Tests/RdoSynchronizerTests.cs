@@ -583,7 +583,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 		{
 			var relativityFieldQuery = NSubstitute.Substitute.For<IRelativityFieldQuery>();
 			var importApiFactory = NSubstitute.Substitute.For<IImportApiFactory>();
-			var importApi = NSubstitute.Substitute.For<IExtendedImportAPI>();
+			var importApi = NSubstitute.Substitute.For<IImportAPI>();
 			var jobFactory = Substitute.For<IImportJobFactory>();
 			var helper = Substitute.For<IHelper>();
 			var rdoSynchronizerPush = new RdoSynchronizer(relativityFieldQuery, importApiFactory, jobFactory, helper);
