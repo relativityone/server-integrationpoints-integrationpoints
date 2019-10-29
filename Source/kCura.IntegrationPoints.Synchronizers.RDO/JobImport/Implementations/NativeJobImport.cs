@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 		private readonly IDataReader _sourceData;
 		private readonly IAPILog _logger;
 
-		public NativeJobImport(ImportSettings importSettings, IExtendedImportAPI importApi, IImportSettingsBaseBuilder<Settings> builder, IDataTransferContext context, IHelper helper) :
+		public NativeJobImport(ImportSettings importSettings, IImportAPI importApi, IImportSettingsBaseBuilder<Settings> builder, IDataTransferContext context, IHelper helper) :
 			base(importSettings, importApi, helper.GetLoggerFactory().GetLogger().ForContext<NativeJobImport>())
 		{
 			_builder = builder;

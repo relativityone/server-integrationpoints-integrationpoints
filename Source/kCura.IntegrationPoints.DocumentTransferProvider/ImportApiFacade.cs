@@ -8,19 +8,19 @@ using kCura.IntegrationPoints.Domain.Exceptions;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider
 {
-	public class ExtendedImportApiFacade : IExtendedImportApiFacade
+	public class ImportApiFacade : IImportApiFacade
 	{
-		private const string _IAPI_GET_WORKSPACE_FIELDS_EXC = "EC: 4.2 There was an error in Extended Import API when fetching workspace fields.";
+		private const string _IAPI_GET_WORKSPACE_FIELDS_EXC = "EC: 4.2 There was an error in Import API when fetching workspace fields.";
 		private const string _IAPI_GET_WORKSPACE_FIELDS_ERR =
-			"EC: 4.2 There was an error in Extended Import API when fetching workspace fields. workspaceArtifactId: {WorkspaceArtifactId}, artifactTypeID: {artifactTypeId}";
+			"EC: 4.2 There was an error in Import API when fetching workspace fields. workspaceArtifactId: {WorkspaceArtifactId}, artifactTypeID: {artifactTypeId}";
 
-		private readonly Lazy<IExtendedImportAPI> _extendedImportApi;
+		private readonly Lazy<IImportAPI> _importApi;
 		private readonly IAPILog _logger;
 
-		public ExtendedImportApiFacade(IExtendedImportApiFactory extendedImportApiFactory, IAPILog logger)
+		public ImportApiFacade(IImportApiFactory importApiFactory, IAPILog logger)
 		{
-			_extendedImportApi = new Lazy<IExtendedImportAPI>(extendedImportApiFactory.Create);
-			_logger = logger.ForContext<ExtendedImportApiFacade>();
+			_importApi = new Lazy<IImportAPI>(importApiFactory.Create);
+			_logger = logger.ForContext<ImportApiFacade>();
 		}
 
 		public HashSet<int> GetMappableArtifactIdsExcludeFields(int workspaceArtifactID, int artifactTypeID, HashSet<string> ignoredFields)
@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		{
 			try
 			{
-				return _extendedImportApi.Value.GetWorkspaceFields(workspaceArtifactID, artifactTypeID);
+				return _importApi.Value.GetWorkspaceFields(workspaceArtifactID, artifactTypeID);
 			}
 			catch (Exception e)
 			{

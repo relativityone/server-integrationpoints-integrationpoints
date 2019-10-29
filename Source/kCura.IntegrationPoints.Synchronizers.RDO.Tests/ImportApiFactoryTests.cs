@@ -1,10 +1,9 @@
 ﻿using System;
-using FluentAssertions;
 using kCura.IntegrationPoints.Data.Logging;
-using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.Relativity.ImportAPI;
-using NSubstitute;
+using kCura.WinEDDS.Exceptions;
+using Moq;
 using NUnit.Framework;
 using Relativity.API;
 
@@ -13,135 +12,72 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 	[TestFixture]
 	public class ImportApiFactoryTests : ImportApiFactory
 	{
-		private const string _localInstanceAddress = "http://instance-address.relativity.com/Relativity";
-		private const string _relativityUserName = "relativity.admin";
-		private const string _relativityPassword = "Password123";
-		private const int _federatedInstanceArtifactId = 666;
-		private const string _loginFailedExceptionMessage = "Login failed.";
-		private const string _localInstanceToken = "1234567890-asdfghjklzxcvbnmqwefertyuiop";
-		private string _usedToken { get; set; }
-		private bool _mockIExtendedImportAPI = true;
+		private const string _LOCAL_INSTANCE_ADDRESS = "http://instance-address.relativity.com/Relativity";
+		private const int _FEDERATED_INSTANCE_ARTIFACTID = 666;
+		private bool _shouldThrowInvalidLoginException;
+		private bool _shouldThrowInvalidOperationException;
 
-
-		[SetUp]
-		public void SetUp()
+		public ImportApiFactoryTests()
 		{
-			_authTokenGenerator.GetAuthToken()
-				.Returns(_localInstanceToken);
+			_systemEventLoggingService = new Mock<ISystemEventLoggingService>().Object;
+			_logger = new Mock<IAPILog>().Object;
 		}
 
 		[Test]
-		public void ShouldUseAuthTokenGeneratorForSameInstance()
+		public void GetImportAPI_ShouldThrowNotSupportedException_WhenInstanceToInstance()
 		{
 			// arrange
-			ClearTestCaseArtifacts();
-			_mockIExtendedImportAPI = true;
-			ImportSettings settings = new ImportSettings();
-			settings.WebServiceURL = _localInstanceAddress;
+			ImportSettings settings = new ImportSettings
+			{
+				WebServiceURL = _LOCAL_INSTANCE_ADDRESS,
+				FederatedInstanceArtifactId = _FEDERATED_INSTANCE_ARTIFACTID
+			};
 
 			// act 
-			CreateExtendedImportAPIForSettings(settings);
+			TestDelegate createImportApiAction = () => GetImportAPI(settings);
 
 			// assert
-			_authTokenGenerator.Received(1).GetAuthToken();
-			Assert.AreEqual(_usedToken, _localInstanceToken);
+			Assert.Throws<NotSupportedException>(createImportApiAction);
 		}
-
+		
 		[Test]
-		public void ShouldThrowExceptionForFederatedInstance()
+		public void GetImportAPI_ShouldThrowIntegrationPointsException_WhenIAPICannotLogIn()
 		{
 			// arrange
-			ClearTestCaseArtifacts();
-			_mockIExtendedImportAPI = true;
 			ImportSettings settings = new ImportSettings();
-			settings.WebServiceURL = _localInstanceAddress;
-			settings.FederatedInstanceArtifactId = _federatedInstanceArtifactId;
-
-			// act 
-			Action createImportApiAction = () => CreateExtendedImportAPIForSettings(settings);
-
-			// assert
-			createImportApiAction.ShouldThrow<Exception>();
-		}
-
-		[Test]
-		public void ShouldUseUsernameAndPasswordIfProvided()
-		{
-			// arrange
-			ClearTestCaseArtifacts();
-			_mockIExtendedImportAPI = true;
-			ImportSettings settings = new ImportSettings();
-			settings.WebServiceURL = _localInstanceAddress;
-			settings.RelativityUsername = _relativityUserName;
-			settings.RelativityPassword = _relativityPassword;
-
-			// act 
-			CreateExtendedImportAPIForSettings(settings);
-
-			// assert
-			_authTokenGenerator.Received(0).GetAuthToken();
-			Assert.AreEqual(_usedToken, _relativityPassword);
-		}
-
-
-		[Test]
-		public void ShouldThrowInvalidOperationExceptionForInstanceToInstance()
-		{
-			// arrange
-			ClearTestCaseArtifacts();
-			_mockIExtendedImportAPI = true;
-			ImportSettings settings = new ImportSettings();
-			settings.WebServiceURL = _localInstanceAddress;
-			settings.RelativityUsername = _relativityUserName;
-			settings.RelativityPassword = _relativityPassword;
-			settings.FederatedInstanceArtifactId = _federatedInstanceArtifactId;
-
-			// act 
-			TestDelegate createIAPIAction = () => CreateExtendedImportAPIForSettings(settings);
-
-			// assert
-			Assert.Throws<NotSupportedException>(createIAPIAction);
-		}
-
-
-		[Test]
-		public void ShouldThrowAuthorizationExceptionWhenIAPICannotLogIn()
-		{
-			// arrange
-			ClearTestCaseArtifacts();
-			_mockIExtendedImportAPI = false;
-			ImportSettings settings = new ImportSettings();
-			settings.WebServiceURL = _localInstanceAddress;
+			_shouldThrowInvalidLoginException = true;
+			_shouldThrowInvalidOperationException = false;
 
 			// act & assert
 			Assert.Throws<IntegrationPointsException>(() => GetImportAPI(settings));
 		}
 
-		protected override IExtendedImportAPI CreateExtendedImportAPI(string username, string token, string webServiceUrl)
+		[Test]
+		public void GetImportAPI_ShouldRethrowInvalidOperationException()
 		{
-			_usedToken = token;
-			if (_mockIExtendedImportAPI)
+			// arrange
+			ImportSettings settings = new ImportSettings();
+			_shouldThrowInvalidLoginException = false;
+			_shouldThrowInvalidOperationException = true;
+
+			// act & assert
+			Assert.Throws<InvalidOperationException>(() => GetImportAPI(settings));
+		}
+
+		protected override IImportAPI CreateImportAPI(string webServiceUrl)
+		{
+			if (_shouldThrowInvalidLoginException)
 			{
-				return Substitute.For<IExtendedImportAPI>();
+				throw new InvalidLoginException("Login failed.");
+			}
+			else if (_shouldThrowInvalidOperationException)
+			{
+				throw new InvalidOperationException();
 			}
 			else
 			{
-				throw new Exception(_loginFailedExceptionMessage);
+				return new Mock<IImportAPI>().Object;
 			}
-		}
-
-		public ImportApiFactoryTests()
-			: base(
-				Substitute.For<IAuthTokenGenerator>(),
-				Substitute.For<IAPILog>(),
-				Substitute.For<ISystemEventLoggingService>())
-		{
-		}
-
-		private void ClearTestCaseArtifacts()
-		{
-			_usedToken = string.Empty;
-			_authTokenGenerator.ClearReceivedCalls();
 		}
 	}
 }

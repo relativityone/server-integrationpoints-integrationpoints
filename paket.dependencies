@@ -16,7 +16,7 @@ nuget kCura.Relativity.Client 11.0.105.1
 nuget Relativity.Authentication 11.0.105.1
 nuget Relativity.CustomPages 11.0.105.1
 nuget Relativity.Data 11.0.105.1
-nuget Relativity.DataExchange.Client.SDK 1.7.1
+nuget Relativity.DataExchange.Client.SDK 1.7.2
 nuget Relativity.Services.Interfaces 11.0.105.1
 nuget Relativity.Services.Interfaces.Private 11.0.105.1
 nuget Relativity.API 12.0.1
@@ -84,7 +84,7 @@ group Sync
 	framework: auto-detect
 	strategy: min
 	source https://proget.kcura.corp/nuget/NuGet
-	nuget Relativity.Sync 0.1.10-beta13
+	nuget Relativity.Sync 0.1.11-beta13
 	nuget Autofac 4.9.4
 	nuget Castle.Core 3.3.0
 	nuget Relativity.Services.DataContracts 11.0.105.1

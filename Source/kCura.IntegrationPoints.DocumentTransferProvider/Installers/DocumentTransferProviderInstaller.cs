@@ -11,13 +11,13 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Installers
 		public void Install(IWindsorContainer container, IConfigurationStore store)
 		{
 			container.Register(Component
-				.For<IExtendedImportApiFactory>()
-				.ImplementedBy<ExtendedImportApiFactory>()
+				.For<IImportApiFactory>()
+				.ImplementedBy<ImportApiFactory>()
 				.LifestyleSingleton()
 			);
 			container.Register(Component
-				.For<IExtendedImportApiFacade>()
-				.ImplementedBy<ExtendedImportApiFacade>()
+				.For<IImportApiFacade>()
+				.ImplementedBy<ImportApiFacade>()
 				.LifestyleTransient()
 			);
 			container.Register(Component

@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Installers
 		public void IExtendedImportApiFactory_ShouldBeRegisteredWithProperLifestyle()
 		{
 			_sut.Should()
-				.HaveRegisteredSingleComponent<IExtendedImportApiFactory>()
+				.HaveRegisteredSingleComponent<IImportApiFactory>()
 				.Which.Should()
 				.BeRegisteredWithLifestyle(LifestyleType.Singleton);
 		}
@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Installers
 		[Test]
 		public void IExtendedImportApiFactory_ShouldBeRegisteredWithProperImplementation()
 		{
-			_sut.Should().HaveRegisteredProperImplementation<IExtendedImportApiFactory, ExtendedImportApiFactory>();
+			_sut.Should().HaveRegisteredProperImplementation<IImportApiFactory, ImportApiFactory>();
 		}
 
 		[Test]
@@ -47,14 +47,14 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Installers
 			RegisterInstallerDependencies(_sut);
 
 			//act & assert
-			_sut.Should().ResolveWithoutThrowing<IExtendedImportApiFactory>();
+			_sut.Should().ResolveWithoutThrowing<IImportApiFactory>();
 		}
 
 		[Test]
 		public void IExtendedImportApiFacade_ShouldBeRegisteredWithProperLifestyle()
 		{
 			_sut.Should()
-				.HaveRegisteredSingleComponent<IExtendedImportApiFacade>()
+				.HaveRegisteredSingleComponent<IImportApiFacade>()
 				.Which.Should()
 				.BeRegisteredWithLifestyle(LifestyleType.Transient);
 		}
@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Installers
 		[Test]
 		public void IExtendedImportApiFacade_ShouldBeRegisteredWithProperImplementation()
 		{
-			_sut.Should().HaveRegisteredProperImplementation<IExtendedImportApiFacade, ExtendedImportApiFacade>();
+			_sut.Should().HaveRegisteredProperImplementation<IImportApiFacade, ImportApiFacade>();
 		}
 
 		[Test]
@@ -72,7 +72,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Installers
 			RegisterInstallerDependencies(_sut);
 
 			//act & assert
-			_sut.Should().ResolveWithoutThrowing<IExtendedImportApiFacade>();
+			_sut.Should().ResolveWithoutThrowing<IImportApiFacade>();
 		}
 
 		[Test]
