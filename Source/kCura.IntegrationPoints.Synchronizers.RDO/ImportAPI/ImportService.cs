@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Readers;
@@ -18,7 +17,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 	{
 
 		private Dictionary<int, Field> _idToFieldDictionary;
-		private IExtendedImportAPI _importApi;
+		private IImportAPI _importApi;
 		private int _lastJobStatusUpdate;
 		private int _totalRowsImported;
 		private int _totalRowsWithErrors;

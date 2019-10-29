@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport
 {
 	public class ImportJobFactoryTests : TestBase
 	{
-		private IExtendedImportAPI _importApi;
+		private IImportAPI _importApi;
 		private IDataTransferContext _transferContext;
 		private ImportBulkArtifactJob _importBulkArtifactJob;
 		private ImageImportBulkArtifactJob _imageImportBulkArtifactJob;
@@ -26,11 +26,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport
 			base.FixtureSetUp();
 			_importBulkArtifactJob = new ImportBulkArtifactJob();
 			_imageImportBulkArtifactJob = new ImageImportBulkArtifactJob();
-			_importApi = Substitute.For<IExtendedImportAPI>();
+			_importApi = Substitute.For<IImportAPI>();
 			_importApi.NewProductionImportJob(1).ReturnsForAnyArgs(_imageImportBulkArtifactJob);
 			_importApi.NewImageImportJob().Returns(_imageImportBulkArtifactJob);
 			_importApi.NewNativeDocumentImportJob().Returns(_importBulkArtifactJob);
-			_importApi.NewNativeDocumentImportJob(string.Empty).ReturnsForAnyArgs(_importBulkArtifactJob);
 			_transferContext = Substitute.For<IDataTransferContext>();
 
 			_logger = Substitute.For<IAPILog>();

@@ -9,7 +9,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 	{
 		private readonly IAPILog _logger;
 
-		public ProductionImageJobImport(ImportSettings importSettings, IExtendedImportAPI importApi, IImportSettingsBaseBuilder<ImageSettings> builder, IDataTransferContext context, IHelper helper) :
+		public ProductionImageJobImport(ImportSettings importSettings, IImportAPI importApi, IImportSettingsBaseBuilder<ImageSettings> builder, IDataTransferContext context, IHelper helper) :
 			base(importSettings, importApi, builder, context, helper)
 		{
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ProductionImageJobImport>();

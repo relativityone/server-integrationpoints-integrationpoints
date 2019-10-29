@@ -5,7 +5,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 {
 	public class ImageRelativityToRelativityImportSettingsBuilder : ImageImportSettingsBuilder
 	{
-		public ImageRelativityToRelativityImportSettingsBuilder(IExtendedImportAPI importApi)
+		public ImageRelativityToRelativityImportSettingsBuilder(IImportAPI importApi)
 			: base(importApi)
 		{
 		}

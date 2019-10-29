@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 		private readonly IDataReader _sourceData;
 		public IDataTransferContext Context { get; set; }
 
-		public ImageJobImport(ImportSettings importSettings, IExtendedImportAPI importApi, IImportSettingsBaseBuilder<ImageSettings> builder, IDataTransferContext context, IHelper helper) :
+		public ImageJobImport(ImportSettings importSettings, IImportAPI importApi, IImportSettingsBaseBuilder<ImageSettings> builder, IDataTransferContext context, IHelper helper) :
 			base(importSettings, importApi, helper.GetLoggerFactory().GetLogger().ForContext<ImageJobImport>())
 		{
 			Context = context;

@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests
 			repositoryFactory.GetWorkspaceRepository().Returns(workspaceRepository);
 			workspaceRepository.Retrieve(Arg.Any<int>()).Returns(workspace);
 
-			var mockDocumentTransferProvider = new DocumentTransferProvider(Substitute.For<IExtendedImportApiFacade>(), repositoryFactory, Substitute.For<IAPILog>());
+			var mockDocumentTransferProvider = new DocumentTransferProvider(Substitute.For<IImportApiFacade>(), repositoryFactory, Substitute.For<IAPILog>());
 
 			var settings = new DocumentTransferSettings { SourceWorkspaceArtifactId = _WORKSPACE_ARTIFACT_ID };
 			var options = JsonConvert.SerializeObject(settings);
@@ -69,7 +69,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests
 			repositoryFactory.GetWorkspaceRepository().Returns(workspaceRepository);
 			workspaceRepository.Retrieve(Arg.Any<int>()).Returns(workspace);
 
-			var mockDocumentTransferProvider = new DocumentTransferProvider(Substitute.For<IExtendedImportApiFacade>(), Substitute.For<IRepositoryFactory>(), Substitute.For<IAPILog>());
+			var mockDocumentTransferProvider = new DocumentTransferProvider(Substitute.For<IImportApiFacade>(), Substitute.For<IRepositoryFactory>(), Substitute.For<IAPILog>());
 			var settings = new DocumentTransferSettings { SourceWorkspaceArtifactId = _WORKSPACE_ARTIFACT_ID };
 			var options = JsonConvert.SerializeObject(settings);
 			
@@ -105,14 +105,14 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests
 			return repositoryFactory;
 		}
 
-		private IExtendedImportApiFacade GetImportApiMock()
+		private IImportApiFacade GetImportApiMock()
 		{
-			IExtendedImportAPI importApi = Substitute.For<IExtendedImportAPI>();
+			IImportAPI importApi = Substitute.For<IImportAPI>();
 			importApi.GetWorkspaceFields(_WORKSPACE_ARTIFACT_ID, (int) ArtifactType.Field).Returns(_getWorkspaceFieldsResult);
-			IExtendedImportApiFactory importApiFactory = Substitute.For<IExtendedImportApiFactory>();
+			IImportApiFactory importApiFactory = Substitute.For<IImportApiFactory>();
 			importApiFactory.Create().Returns(importApi);
 			var logger = Substitute.For<IAPILog>();
-			IExtendedImportApiFacade importApiFacade = new ExtendedImportApiFacade(importApiFactory, logger);
+			IImportApiFacade importApiFacade = new ImportApiFacade(importApiFactory, logger);
 			return importApiFacade;
 		}
 
