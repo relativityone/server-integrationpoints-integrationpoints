@@ -209,27 +209,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			return newModel;
 		}
 
-		protected IDictionary<string, Tuple<string, string>> GetAuditDetailsFieldValues(Audit audit, HashSet<string> fieldNames)
-		{
-			var auditHelper = new AuditHelper(Helper);
-			IDictionary<string, Tuple<string, string>> fieldValues = auditHelper.GetAuditDetailFieldUpdates(audit, fieldNames);
-
-			return fieldValues;
-		}
-
-		protected IList<Audit> GetLastAuditsForIntegrationPoint(string integrationPointName, int take)
-		{
-			var auditHelper = new AuditHelper(Helper);
-
-			IList<Audit> audits = auditHelper.RetrieveLastAuditsForArtifact(
-				WorkspaceArtifactId,
-				IntegrationPoints.Core.Constants.IntegrationPoints.INTEGRATION_POINT_OBJECT_TYPE_NAME,
-				integrationPointName,
-				take);
-
-			return audits;
-		}
-
 		protected IntegrationPointModel RefreshIntegrationModel(IntegrationPointModel model)
 		{
 			IntegrationPoints.Data.IntegrationPoint ip = IntegrationPointRepository.ReadWithFieldMappingAsync(model.ArtifactID)
