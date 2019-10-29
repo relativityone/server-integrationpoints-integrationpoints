@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.2] - 2019-10-29
 ### Changed
 - Downgraded minimum required Newtonsoft.Json version to 6.0.1.
+- Upgraded Relativity.Kepler dependency version to 2.2.2.
 
 ## [1.0.1] - 2019-10-24
 ### Added
