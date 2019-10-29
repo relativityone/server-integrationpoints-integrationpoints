@@ -32,13 +32,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Con
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Synchronizers.RDO", "kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj", "{B91CC4ED-ABF3-4409-8DF3-46A3C26EB4AA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Contracts", "kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj", "{0CEDB7AF-DB89-47DE-9587-8CCD58621F2F}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.LDAPProvider", "kCura.IntegrationPoints.LDAPProvider\kCura.IntegrationPoints.LDAPProvider.csproj", "{8398B06F-3716-4834-9593-A017F2714261}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.ScheduleQueue.AgentBase", "kCura.ScheduleQueue.AgentBase\kCura.ScheduleQueue.AgentBase.csproj", "{6E7E31EA-393B-4B70-AA8F-51B12A7CA211}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.SourceProviderInstaller", "kCura.IntegrationPoints.SourceProviderInstaller\kCura.IntegrationPoints.SourceProviderInstaller.csproj", "{FCAF52CD-0F8F-4D71-AC61-B7591A181A08}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Core.Contracts", "kCura.IntegrationPoints.Core.Contracts\kCura.IntegrationPoints.Core.Contracts.csproj", "{30503682-E18D-49DF-A308-FE7996C4108E}"
 EndProject
@@ -79,7 +75,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.IntegrationPoint
 		{30503682-E18D-49DF-A308-FE7996C4108E} = {30503682-E18D-49DF-A308-FE7996C4108E}
 		{6571B092-1582-4FEC-9101-F510E7E573BC} = {6571B092-1582-4FEC-9101-F510E7E573BC}
 		{DEF928B5-37CE-4BF3-B663-F0B8912C9C3F} = {DEF928B5-37CE-4BF3-B663-F0B8912C9C3F}
-		{FCAF52CD-0F8F-4D71-AC61-B7591A181A08} = {FCAF52CD-0F8F-4D71-AC61-B7591A181A08}
 		{6E7E31EA-393B-4B70-AA8F-51B12A7CA211} = {6E7E31EA-393B-4B70-AA8F-51B12A7CA211}
 		{B91CC4ED-ABF3-4409-8DF3-46A3C26EB4AA} = {B91CC4ED-ABF3-4409-8DF3-46A3C26EB4AA}
 	EndProjectSection
@@ -156,13 +151,6 @@ Global
 		{B91CC4ED-ABF3-4409-8DF3-46A3C26EB4AA}.Release|Any CPU.ActiveCfg = Release|x64
 		{B91CC4ED-ABF3-4409-8DF3-46A3C26EB4AA}.Release|x64.ActiveCfg = Release|x64
 		{B91CC4ED-ABF3-4409-8DF3-46A3C26EB4AA}.Release|x64.Build.0 = Release|x64
-		{0CEDB7AF-DB89-47DE-9587-8CCD58621F2F}.Debug|Any CPU.ActiveCfg = Debug|x64
-		{0CEDB7AF-DB89-47DE-9587-8CCD58621F2F}.Debug|Any CPU.Build.0 = Debug|x64
-		{0CEDB7AF-DB89-47DE-9587-8CCD58621F2F}.Debug|x64.ActiveCfg = Debug|x64
-		{0CEDB7AF-DB89-47DE-9587-8CCD58621F2F}.Debug|x64.Build.0 = Debug|x64
-		{0CEDB7AF-DB89-47DE-9587-8CCD58621F2F}.Release|Any CPU.ActiveCfg = Release|x64
-		{0CEDB7AF-DB89-47DE-9587-8CCD58621F2F}.Release|x64.ActiveCfg = Release|x64
-		{0CEDB7AF-DB89-47DE-9587-8CCD58621F2F}.Release|x64.Build.0 = Release|x64
 		{8398B06F-3716-4834-9593-A017F2714261}.Debug|Any CPU.ActiveCfg = Debug|x64
 		{8398B06F-3716-4834-9593-A017F2714261}.Debug|Any CPU.Build.0 = Debug|x64
 		{8398B06F-3716-4834-9593-A017F2714261}.Debug|x64.ActiveCfg = Debug|x64
@@ -177,13 +165,6 @@ Global
 		{6E7E31EA-393B-4B70-AA8F-51B12A7CA211}.Release|Any CPU.ActiveCfg = Release|x64
 		{6E7E31EA-393B-4B70-AA8F-51B12A7CA211}.Release|x64.ActiveCfg = Release|x64
 		{6E7E31EA-393B-4B70-AA8F-51B12A7CA211}.Release|x64.Build.0 = Release|x64
-		{FCAF52CD-0F8F-4D71-AC61-B7591A181A08}.Debug|Any CPU.ActiveCfg = Debug|x64
-		{FCAF52CD-0F8F-4D71-AC61-B7591A181A08}.Debug|Any CPU.Build.0 = Debug|x64
-		{FCAF52CD-0F8F-4D71-AC61-B7591A181A08}.Debug|x64.ActiveCfg = Debug|x64
-		{FCAF52CD-0F8F-4D71-AC61-B7591A181A08}.Debug|x64.Build.0 = Debug|x64
-		{FCAF52CD-0F8F-4D71-AC61-B7591A181A08}.Release|Any CPU.ActiveCfg = Release|x64
-		{FCAF52CD-0F8F-4D71-AC61-B7591A181A08}.Release|x64.ActiveCfg = Release|x64
-		{FCAF52CD-0F8F-4D71-AC61-B7591A181A08}.Release|x64.Build.0 = Release|x64
 		{30503682-E18D-49DF-A308-FE7996C4108E}.Debug|Any CPU.ActiveCfg = Debug|x64
 		{30503682-E18D-49DF-A308-FE7996C4108E}.Debug|Any CPU.Build.0 = Debug|x64
 		{30503682-E18D-49DF-A308-FE7996C4108E}.Debug|x64.ActiveCfg = Debug|x64

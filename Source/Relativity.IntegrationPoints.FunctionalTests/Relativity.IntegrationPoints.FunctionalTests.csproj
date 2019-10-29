@@ -153,11 +153,6 @@
       </ItemGroup>
     </When>
   </Choose>
-  <ItemGroup>
-    <Analyzer Include="..\..\packages\CSharpGuidelineAnalyzer\analyzers\dotnet\cs\CSharpGuidelineAnalyzer.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-  </ItemGroup>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
