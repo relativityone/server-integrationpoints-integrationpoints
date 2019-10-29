@@ -22,7 +22,8 @@ namespace Relativity.Sync.Tests.Unit.Storage
 
 			IJobStatusConsolidationConfiguration sut = PrepareSut(c => c
 				.Setup(x => x.GetFieldValue<int>(It.Is<Guid>(g => g.Equals(_SOURCE_WORKSPACE_TAG_ARTIFACT_ID_GUID))))
-				.Returns(expected), 0);
+				.Returns(expected), 
+				syncConfigurationArtifactId: 0);
 
 			// Act
 			int sourceWorkspaceArtifactId = sut.SourceWorkspaceArtifactId;
@@ -36,7 +37,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			// Arrange
 			const int expected = 123456;
-			IJobStatusConsolidationConfiguration sut = PrepareSut(c => { }, expected);
+			IJobStatusConsolidationConfiguration sut = PrepareSut(c => { }, syncConfigurationArtifactId: expected);
 
 			// Act
 			int syncConfigurationArtifactId = sut.SyncConfigurationArtifactId;
@@ -52,7 +53,8 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			const int expected = 123456;
 			IJobStatusConsolidationConfiguration sut = PrepareSut(c => c
 				.Setup(x => x.GetFieldValue<RelativityObjectValue>(It.Is<Guid>(g => g.Equals(_JOB_HISTORY_GUID))))
-				.Returns(new RelativityObjectValue { ArtifactID = expected }), 0);
+				.Returns(new RelativityObjectValue { ArtifactID = expected }),
+				syncConfigurationArtifactId: 0);
 
 			// Act
 			int jobHistoryArtifactId = sut.JobHistoryArtifactId;
