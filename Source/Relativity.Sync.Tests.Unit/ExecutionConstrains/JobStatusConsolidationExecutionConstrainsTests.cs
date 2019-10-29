@@ -12,7 +12,7 @@ namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
 	internal class JobStatusConsolidationExecutionConstrainsTests
 	{
 		[Test]
-		public async Task ItShouldAlwaysReturnTrue()
+		public async Task CanExecuteAsync_ShouldAlwaysReturnTrue()
 		{
 			// Arrange
 			IExecutionConstrains<IJobStatusConsolidationConfiguration> sut = new JobStatusConsolidationExecutionConstrains();

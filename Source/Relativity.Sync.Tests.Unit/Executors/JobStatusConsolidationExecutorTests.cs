@@ -70,7 +70,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 		[Test]
 		[TestCaseSource(nameof(ServiceFailures))]
-		public async Task ItShouldReportFailureWhenAnyServiceThrow(Action<JobStatusConsolidationExecutorTests> setUpFailure)
+		public async Task ExecuteAsync_ShouldReportFailure_WhenAnyServiceThrow(Action<JobStatusConsolidationExecutorTests> setUpFailure)
 		{
 			// Arrange
 			const int totalBatchCount = 5;
@@ -91,7 +91,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		}
 
 		[Test]
-		public async Task ItShouldReportFailureWhenFailedToUpdateJobHistory()
+		public async Task ExecuteAsync_ShouldReportFailure_WhenFailedToUpdateJobHistory()
 		{
 			// Arrange
 			const int totalBatchCount = 5;
@@ -112,7 +112,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		}
 
 		[Test]
-		public async Task ItShouldAggregateStatisticsFromBatches(
+		public async Task ExecuteAsync_ShouldAggregateStatisticsFromBatches(
 			[Values(1, 2, 5, 8)] int batchCount,
 			[Values(0, 2, 10, 1000)] int transferredCount,
 			[Values(0, 2, 10, 1000)] int failedCount)
@@ -132,7 +132,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		}
 
 		[Test]
-		public async Task ItShouldUpdateWithZerosWhenThereAreNoBatches()
+		public async Task ExecuteAsync_ShouldUpdateWithZeros_WhenThereAreNoBatches()
 		{
 			// Act
 			ExecutionResult result = await _sut

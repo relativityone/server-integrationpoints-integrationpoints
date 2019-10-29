@@ -15,7 +15,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		private static readonly Guid _SOURCE_WORKSPACE_TAG_ARTIFACT_ID_GUID = new Guid("FEAB129B-AEEF-4AA4-BC91-9EAE9A4C35F6");
 
 		[Test]
-		public void ItShouldRetrieveSourceWorkspaceArtifactId()
+		public void GetSourceWorkspaceArtifactId_ShouldRetrieveSourceWorkspaceArtifactId()
 		{
 			// Arrange
 			const int expected = 123456;
@@ -32,7 +32,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		}
 
 		[Test]
-		public void ItShouldRetrieveSyncConfigurationArtifactId()
+		public void GetSyncConfigurationArtifactId_ShouldRetrieveSyncConfigurationArtifactId()
 		{
 			// Arrange
 			const int expected = 123456;
@@ -46,7 +46,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		}
 
 		[Test]
-		public void ItShouldRetrieveJobHistoryArtifactId()
+		public void GetJobHistoryArtifactId_ShouldRetrieveJobHistoryArtifactId()
 		{
 			// Arrange
 			const int expected = 123456;
