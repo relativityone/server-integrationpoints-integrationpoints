@@ -27,22 +27,22 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 		private IExecutor<IJobStatusConsolidationConfiguration> _sut;
 
-		private static readonly InvalidOperationException Exception = new InvalidOperationException();
-		private static readonly Guid CompletedItemsCountGuid = new Guid("70680399-c8ea-4b12-b711-e9ecbc53cb1c");
-		private static readonly Guid FailedItemsCountGuid = new Guid("c224104f-c1ca-4caa-9189-657e01d5504e");
-		private static readonly Guid TotalItemsCountGuid = new Guid("576189a9-0347-4b20-9369-b16d1ac89b4b");
+		private static readonly InvalidOperationException _EXCEPTION = new InvalidOperationException();
+		private static readonly Guid _COMPLETED_ITEMS_COUNT_GUID = new Guid("70680399-c8ea-4b12-b711-e9ecbc53cb1c");
+		private static readonly Guid _FAILED_ITEMS_COUNT_GUID = new Guid("c224104f-c1ca-4caa-9189-657e01d5504e");
+		private static readonly Guid _TOTAL_ITEMS_COUNT_GUID = new Guid("576189a9-0347-4b20-9369-b16d1ac89b4b");
 
 		public static IEnumerable<Action<JobStatusConsolidationExecutorTests>> ServiceFailures { get; } = new Action<JobStatusConsolidationExecutorTests>[]
 		{
 			ctx => ctx._serviceFactory
 				.Setup(x => x.CreateProxyAsync<IObjectManager>())
-				.ThrowsAsync(Exception),
+				.ThrowsAsync(_EXCEPTION),
 			ctx => ctx._objectManager
 				.Setup(x => x.UpdateAsync(It.IsAny<int>(), It.IsAny<UpdateRequest>()))
-				.ThrowsAsync(Exception),
+				.ThrowsAsync(_EXCEPTION),
 			ctx => ctx._batchRepository
 				.Setup(x => x.GetAllAsync(It.IsAny<int>(), It.IsAny<int>()))
-				.ThrowsAsync(Exception)
+				.ThrowsAsync(_EXCEPTION)
 		};
 
 		[SetUp]
@@ -87,7 +87,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			// Assert
 			result.Status.Should().Be(ExecutionStatus.Failed);
-			result.Exception.Should().Be(Exception);
+			result.Exception.Should().Be(_EXCEPTION);
 		}
 
 		[Test]
@@ -234,9 +234,9 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		{
 			_objectManager
 				.Verify(x => x.UpdateAsync(It.IsAny<int>(), It.Is<UpdateRequest>(r =>
-					(int)r.FieldValues.Single(fvp => fvp.Field.Guid.Equals(CompletedItemsCountGuid)).Value == transferredCount &&
-					(int)r.FieldValues.Single(fvp => fvp.Field.Guid.Equals(FailedItemsCountGuid)).Value == failedCount &&
-					(int)r.FieldValues.Single(fvp => fvp.Field.Guid.Equals(TotalItemsCountGuid)).Value == totalItemCount)),
+					(int)r.FieldValues.Single(fvp => fvp.Field.Guid.Equals(_COMPLETED_ITEMS_COUNT_GUID)).Value == transferredCount &&
+					(int)r.FieldValues.Single(fvp => fvp.Field.Guid.Equals(_FAILED_ITEMS_COUNT_GUID)).Value == failedCount &&
+					(int)r.FieldValues.Single(fvp => fvp.Field.Guid.Equals(_TOTAL_ITEMS_COUNT_GUID)).Value == totalItemCount)),
 					Times.Once);
 		}
 	}

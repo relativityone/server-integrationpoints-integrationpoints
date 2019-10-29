@@ -23,9 +23,9 @@ namespace Relativity.Sync.Tests.System
 
 		private IBatchRepository _batchRepository;
 
-		private static readonly Guid CompletedItemsCountGuid = new Guid("70680399-c8ea-4b12-b711-e9ecbc53cb1c");
-		private static readonly Guid FailedItemsCountGuid = new Guid("c224104f-c1ca-4caa-9189-657e01d5504e");
-		private static readonly Guid TotalItemsCountGuid = new Guid("576189a9-0347-4b20-9369-b16d1ac89b4b");
+		private static readonly Guid _COMPLETED_ITEMS_COUNT_GUID = new Guid("70680399-c8ea-4b12-b711-e9ecbc53cb1c");
+		private static readonly Guid _FAILED_ITEMS_COUNT_GUID = new Guid("c224104f-c1ca-4caa-9189-657e01d5504e");
+		private static readonly Guid _TOTAL_ITEMS_COUNT_GUID = new Guid("576189a9-0347-4b20-9369-b16d1ac89b4b");
 
 		protected override Task ChildSuiteSetup()
 		{
@@ -102,24 +102,24 @@ namespace Relativity.Sync.Tests.System
 					{
 						new FieldRef
 						{
-							Guid = TotalItemsCountGuid
+							Guid = _TOTAL_ITEMS_COUNT_GUID
 						},
 						new FieldRef
 						{
-							Guid = CompletedItemsCountGuid
+							Guid = _COMPLETED_ITEMS_COUNT_GUID
 						},
 						new FieldRef
 						{
-							Guid = FailedItemsCountGuid
+							Guid = _FAILED_ITEMS_COUNT_GUID
 						}
 					}
 				};
 				ReadResult readResult = await objectManager.ReadAsync(workspaceArtifactId, readRequest)
 					.ConfigureAwait(false);
 
-				int completedItemsCount = (int)readResult.Object[CompletedItemsCountGuid].Value;
-				int failedItemsCount = (int)readResult.Object[FailedItemsCountGuid].Value;
-				int totalItemsCount = (int)readResult.Object[TotalItemsCountGuid].Value;
+				int completedItemsCount = (int)readResult.Object[_COMPLETED_ITEMS_COUNT_GUID].Value;
+				int failedItemsCount = (int)readResult.Object[_FAILED_ITEMS_COUNT_GUID].Value;
+				int totalItemsCount = (int)readResult.Object[_TOTAL_ITEMS_COUNT_GUID].Value;
 
 				return (completedItemsCount, failedItemsCount, totalItemsCount);
 			}
