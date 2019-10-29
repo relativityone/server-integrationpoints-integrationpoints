@@ -58,10 +58,12 @@ namespace Relativity.Sync.Executors
 				IEnumerable<int> batchesIds = await _batchRepository.GetAllNewBatchesIdsAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId).ConfigureAwait(false);
 				Dictionary<int, ImportJobResult> batchJobsResults = new Dictionary<int, ImportJobResult>();
 
+
 				using (IJobProgressHandler progressHandler = _jobProgressHandlerFactory.CreateJobProgressHandler())
 				{
 					foreach (int batchId in batchesIds)
 					{
+						ExecutionResult currentBatchResult = ExecutionResult.Success();
 						if (token.IsCancellationRequested)
 						{
 							_logger.LogInformation("Import job has been canceled.");
@@ -105,6 +107,8 @@ namespace Relativity.Sync.Executors
 
 						_logger.LogInformation("Batch ID: {batchId} processed successfully.", batchId);
 					}
+
+					importAndTagResult = AggregateBatchExecutionResults(batchJobsResults);
 				}
 
 				importAndTagResult = AggregateBatchExecutionResults(batchJobsResults);

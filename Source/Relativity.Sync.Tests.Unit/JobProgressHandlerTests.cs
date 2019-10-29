@@ -125,7 +125,7 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public void AttachToImportJob_Should_AggregateProgressFromMultipleBatches()
+		public void AttachToImportJob_ShouldAggregateProgressFromMultipleBatches()
 		{
 			const int batchCount = 150;
 
@@ -149,7 +149,7 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public void AttachToImportJob_Should_AggregateProgressAndCompleteFromMultipleBatches()
+		public void AttachToImportJob_ShouldAggregateProgressAndCompleteFromMultipleBatches()
 		{
 			using (_sut.AttachToImportJob(_bulkImportJobStub.Object, 0, 1))
 			{

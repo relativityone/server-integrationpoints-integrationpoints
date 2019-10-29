@@ -53,7 +53,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		}
 
 		[Test]
-		public async Task CreateImportJobGoldFlowTest()
+		public async Task CreateImportJobAsync_ShouldPassGoldFlow()
 		{
 			// Arrange
 			var configuration = new Mock<ISynchronizationConfiguration>(MockBehavior.Loose);
@@ -70,7 +70,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		}
 
 		[Test]
-		public async Task CreateImportJobHasExtractedFieldPathTest()
+		public async Task CreateImportJobAsync_HasExtractedFieldPath()
 		{
 			// Arrange
 
@@ -89,30 +89,31 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 
 		[Test]
-		public async Task ItShouldCreateBulkJobWithStartingIndexAlwaysEqualTo0()
+		public async Task CreateImportJobAsync_ShouldCreateBulkJobWithStartingIndexAlwaysEqualTo0()
 		{
-			Mock<ISynchronizationConfiguration> configuration = new Mock<ISynchronizationConfiguration>();
-			Mock<IImportAPI> importApi = new Mock<IImportAPI>(MockBehavior.Loose);
-			Mock<IImportApiFactory> importApiFactory = new Mock<IImportApiFactory>();
-			ImportBulkArtifactJob importBulkArtifactJob = new ImportBulkArtifactJob();
-			Mock<Field> field = new Mock<Field>();
+			// Arrange
+			Mock<ISynchronizationConfiguration> configurationStub = new Mock<ISynchronizationConfiguration>();
+			Mock<IImportAPI> importApiStub = new Mock<IImportAPI>(MockBehavior.Loose);
+			Mock<IImportApiFactory> importApiFactoryStub = new Mock<IImportApiFactory>();
+			Mock<Field> fieldStub = new Mock<Field>();
+			ImportBulkArtifactJob importBulkArtifactJobMock = new ImportBulkArtifactJob();
 
 
-			importApi.Setup(x => x.NewNativeDocumentImportJob()).Returns(() => importBulkArtifactJob);
-			importApi.Setup(x => x.GetWorkspaceFields(It.IsAny<int>(), It.IsAny<int>())).Returns(() => new[] { field.Object });
-			importApiFactory.Setup(x => x.CreateImportApiAsync(It.IsAny<Uri>())).ReturnsAsync(importApi.Object);
+			importApiStub.Setup(x => x.NewNativeDocumentImportJob()).Returns(() => importBulkArtifactJobMock);
+			importApiStub.Setup(x => x.GetWorkspaceFields(It.IsAny<int>(), It.IsAny<int>())).Returns(() => new[] { fieldStub.Object });
+			importApiFactoryStub.Setup(x => x.CreateImportApiAsync(It.IsAny<Uri>())).ReturnsAsync(importApiStub.Object);
 
 			const int batchStartingIndex = 250;
 			_batch.SetupGet(x => x.StartingIndex).Returns(batchStartingIndex);
 
-			ImportJobFactory instance = GetTestInstance(importApiFactory);
+			ImportJobFactory instance = GetTestInstance(importApiFactoryStub);
 
 			// Act
-			Sync.Executors.IImportJob result = await instance.CreateImportJobAsync(configuration.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
+			Sync.Executors.IImportJob result = await instance.CreateImportJobAsync(configurationStub.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
 			result.Dispose();
 
 			// Assert
-			importBulkArtifactJob.Settings.StartRecordNumber.Should().Be(0);
+			importBulkArtifactJobMock.Settings.StartRecordNumber.Should().Be(0);
 		}
 
 

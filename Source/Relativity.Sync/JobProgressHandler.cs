@@ -38,23 +38,27 @@ namespace Relativity.Sync
 				.Subscribe();
 		}
 
-	
+
 
 		public IDisposable AttachToImportJob(ISyncImportBulkArtifactJob job, int batchId, int totalItemsInBatch)
 		{
 			SyncBatchProgress batchProgress = new SyncBatchProgress(batchId, totalItemsInBatch);
 
 			IDisposable itemProcessedSubscription = Observable
-				.FromEvent<IImportNotifier.OnProgressEventHandler, long>(x => job.OnProgress += x,
-					x => job.OnProgress -= x).Do(_ =>
+				.FromEvent<IImportNotifier.OnProgressEventHandler, long>(
+					handler => job.OnProgress += handler,
+					 handler => job.OnProgress -= handler)
+					.Do(_ =>
 				{
 					batchProgress.ItemsProcessed++;
 					_changeSignal.OnNext(Unit.Default);
 				}).Subscribe();
 
 			IDisposable itemFailedSubscription = Observable
-				.FromEvent<ImportBulkArtifactJob.OnErrorEventHandler, IDictionary>(x => job.OnError += x,
-					x => job.OnError -= x).Do(_ =>
+				.FromEvent<ImportBulkArtifactJob.OnErrorEventHandler, IDictionary>(
+					 handler => job.OnError += handler,
+					 handler => job.OnError -= handler)
+					.Do(_ =>
 				{
 					// Explanation of how IAPI works:
 					// IAPI processes items in batch one by one and fires OnProgress event after each item that was
@@ -71,8 +75,9 @@ namespace Relativity.Sync
 				}).Subscribe();
 
 			IObservable<JobReport> batchCompletedReports = Observable
-				.FromEvent<IImportNotifier.OnCompleteEventHandler, JobReport>(x => job.OnComplete += x,
-					x => job.OnComplete -= x)
+				.FromEvent<IImportNotifier.OnCompleteEventHandler, JobReport>(
+					handler => job.OnComplete += handler,
+					 handler => job.OnComplete -= handler)
 					.Do(_ =>
 				{
 					batchProgress.Completed = true;
@@ -81,12 +86,12 @@ namespace Relativity.Sync
 
 			IDisposable jobReportsSubscription = Observable
 				.FromEvent<IImportNotifier.OnFatalExceptionEventHandler, JobReport>(
-					x => job.OnFatalException += x,
-					x => job.OnFatalException -= x)
+					 handler => job.OnFatalException += handler,
+					 handler => job.OnFatalException -= handler)
 					.Merge(batchCompletedReports)
 					.Do(jobReport =>
 				{
-					batchProgress.ItemsProcessed = jobReport.TotalRows - jobReport.ErrorRowCount; 
+					batchProgress.ItemsProcessed = jobReport.TotalRows - jobReport.ErrorRowCount;
 					batchProgress.ItemsFailed = jobReport.ErrorRowCount;
 					_forceUpdateSignal.OnNext(Unit.Default);
 				})
@@ -98,7 +103,7 @@ namespace Relativity.Sync
 
 			return new CompositeDisposable(itemFailedSubscription, itemProcessedSubscription, jobReportsSubscription);
 		}
-	
+
 		private async Task UpdateProgress()
 		{
 			int totalProcessedItems = _batchProgresses.Values.Sum(x => x.ItemsProcessed);

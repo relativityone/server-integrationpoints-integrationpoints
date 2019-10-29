@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.Services.Interfaces.Scripts.Models;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
 using Relativity.Sync.Logging;
@@ -120,6 +121,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[Test]
 		public async Task Execute_ShouldSetImportApiSettings()
 		{
+			// arrange 
 			SetupBatchRepository(1);
 			_configFake.SetupGet(x => x.DestinationFolderStructureBehavior).Returns(DestinationFolderStructureBehavior.ReadFromField);
 			_importJobFake.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(CreateSuccessfulResult());
@@ -143,6 +145,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[Test]
 		public async Task Execute_ShouldCancelTaggingResultTest()
 		{
+			// arrange 
 			const long jobSize = 12L;
 			SetupBatchRepository(1);
 			_configFake.SetupGet(x => x.DestinationFolderStructureBehavior).Returns(DestinationFolderStructureBehavior.None);
@@ -155,10 +158,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Task<ExecutionResult> executionResult = ReturnTaggingCompletedResultAsync(tokenSource.Token);
 			SetUpDocumentsTagRepository(executionResult);
 
-			//Act
+			// act
 			ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, CancellationToken.None).ConfigureAwait(false);
 
-			//Assert
+			// assert
 			result.Message.Should()
 				.Be("Tagging synchronized documents in workspace was interrupted due to the job being canceled.");
 			result.Status.Should().Be(ExecutionStatus.Canceled);
@@ -167,6 +170,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[Test]
 		public async Task Execute_ShouldCatchExceptionTest()
 		{
+			// arrange 
 			const long jobSize = 12L;
 			SetupBatchRepository(1);
 			_configFake.SetupGet(x => x.DestinationFolderStructureBehavior).Returns(DestinationFolderStructureBehavior.None);
@@ -177,10 +181,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			SetUpDocumentsTagRepository(executionResult);
 
-			//Act
+			// act
 			ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, CancellationToken.None).ConfigureAwait(false);
 
-			//Assert
+			// assert
 			result.Message.Should()
 				.Be("Unexpected exception occurred while tagging synchronized documents in workspace.");
 			result.Status.Should().Be(ExecutionStatus.Failed);
@@ -216,12 +220,12 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[Test]
 		public void Execute_ShouldThrowException_WhenDestinationIdentityFieldNotExistsInFieldMappings()
 		{
+			// arrange 
 			SetupBatchRepository(1);
 			_fakeFieldMappings.Setup(x => x.GetFieldMappings()).Returns(new List<FieldMap>());
 
 			// act
 			Func<Task> action = async () => await _sut.ExecuteAsync(_configFake.Object, CancellationToken.None).ConfigureAwait(false);
-
 			// assert
 			string errorMessage = "Cannot find destination identifier field in field mappings.";
 			action.Should().Throw<SyncException>().Which.Message.Should().Be(errorMessage);
@@ -230,11 +234,12 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[Test]
 		public void Execute_ShouldThrowException_WhenSpecialFieldIsNotFound()
 		{
+			// arrange 
 			SpecialFieldType missingSpecialField = SpecialFieldType.NativeFileSize;
 			List<FieldInfoDto> specialFields = _specialFields.Where(x => x.SpecialFieldType != missingSpecialField).ToList();
 			_fieldManagerFake.Setup(x => x.GetSpecialFields()).Returns(specialFields);
 			Func<Task> action = async () => await _sut.ExecuteAsync(_configFake.Object, CancellationToken.None).ConfigureAwait(false);
-
+			
 			// act
 			action();
 
@@ -248,6 +253,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[TestCase(5)]
 		public async Task Execute_ShouldRunImportApiJobForEachBatch(int numberOfBatches)
 		{
+			// arrange 
 			const long jobSize = 12L;
 			SetupBatchRepository(numberOfBatches);
 			_importJobFake.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(CreateSuccessfulResult());
@@ -270,6 +276,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[Test]
 		public async Task Execute_ShouldCancelImportJob()
 		{
+			// arrange 
 			const int numberOfBatches = 1;
 			SetupBatchRepository(numberOfBatches);
 
@@ -286,6 +293,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[Test]
 		public async Task Execute_ShouldDisposeImportJob()
 		{
+			// arrange 
 			const int numberOfBatches = 1;
 			SetupBatchRepository(numberOfBatches);
 			_importJobFake.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(CreateSuccessfulResult());
@@ -303,13 +311,13 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[Test]
 		public async Task Execute_ShouldProperlyHandleImportSyncException()
 		{
+			// arrange 
 			const int numberOfBatches = 1;
 			SetupBatchRepository(numberOfBatches);
 			_importJobFake.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).Throws<ImportFailedException>();
 
 			// act
 			ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, CancellationToken.None).ConfigureAwait(false);
-
 			// assert
 			result.Message.Should().Be("Fatal exception occurred while executing import job.");
 			result.Exception.Should().BeOfType<ImportFailedException>();
@@ -319,6 +327,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[Test]
 		public async Task Execute_ShouldProperlyHandleAnyImportException()
 		{
+			// arrange 
 			const int numberOfBatches = 1;
 			SetupBatchRepository(numberOfBatches);
 			_importJobFake.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).Throws<InvalidOperationException>();
@@ -335,6 +344,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[Test]
 		public async Task Execute_ShouldReturnFailed()
 		{
+			// arrange 
 			const int numberOfBatches = 1;
 			SetupBatchRepository(numberOfBatches);
 			_importJobFake.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(CreateSuccessfulResult());
@@ -344,7 +354,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			// act
 			ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, CancellationToken.None).ConfigureAwait(false);
-
 			// assert
 			result.Status.Should().Be(ExecutionStatus.Failed);
 		}
@@ -352,7 +361,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[Test]
 		public async Task Execute_ShouldProperlyHandleImportAndTagDocumentExceptions()
 		{
-			const int numberOfBatches = 1;
+			// arrange 
+			const int numberOfBatches = 2;
 			SetupBatchRepository(numberOfBatches);
 			_importJobFake.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).Throws<InvalidOperationException>();
 
@@ -368,6 +378,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[Test]
 		public async Task Execute_ShouldSetExecutionResultForJobCleanupConfiguration_WhenCompletedSuccessfully()
 		{
+			// arrange 
 			const int numberOfBatches = 1;
 			SetupBatchRepository(numberOfBatches);
 			_importJobFake.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(CreateSuccessfulResult());
@@ -381,6 +392,30 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			// assert
 			_jobCleanupConfigurationMock.VerifySet(x => x.SynchronizationExecutionResult = result);
 		}
+
+		[Test, TestCaseSource(typeof(SynchronizationExecutorTests), nameof(AggregationTestCaseSource))]
+		public async Task Execute_ShouldCorrectlyAggregateBatchJobResults(
+			(object[] batchJobResultsObject, object expectedResultStatus) testCase)
+		{
+			// arrange 
+			Queue<ImportJobResult> batchJobResults = new Queue<ImportJobResult>(
+				testCase.batchJobResultsObject.Select(
+					x => GetJobResult((ExecutionStatus) x, exception: new Exception())));
+			SetupBatchRepository(testCase.batchJobResultsObject.Length);
+			SetUpDocumentsTagRepository(ReturnTaggingCompletedResultAsync());
+
+			_importJobFake.Setup(x => x.RunAsync(It.IsAny<CancellationToken>()))
+				.ReturnsAsync(() => batchJobResults.Dequeue());
+
+			// act
+			ExecutionResult result = await _sut
+				.ExecuteAsync(_configFake.Object, CancellationToken.None)
+				.ConfigureAwait(false);
+
+			// assert
+			result.Status.Should().Be(testCase.expectedResultStatus);
+		}
+
 
 		[Test]
 		public async Task Execute_ShouldSetExecutionResultForJobCleanupConfiguration_WhenFailed()
@@ -402,6 +437,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[Test]
 		public async Task Execute_ShouldRespectCancellationBetweenBatches()
 		{
+			// arrange
 			const int batchCount = 2;
 			SetupBatchRepository(batchCount);
 			SetUpDocumentsTagRepository(ReturnTaggingCompletedResultAsync());
@@ -417,7 +453,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				.ExecuteAsync(_configFake.Object, cancellationTokenSource.Token)
 				.ConfigureAwait(false);
 
-
+			// assert
 			result.Status.Should().Be(ExecutionStatus.Canceled);
 			_importJobFake.Verify(x => x.RunAsync(cancellationTokenSource.Token), Times.Once);
 		}
