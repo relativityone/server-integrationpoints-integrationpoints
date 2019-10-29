@@ -35,13 +35,8 @@ NUGET
     kCura.FreeImage (3.17.0.1)
     kCura.Injection (10.3.190.19)
     kCura.LongPath (1.0.20)
-<<<<<<< HEAD
     kCura.OutsideIn.FI.Win32 (2019.3.0) - content: none
     kCura.Relativity.Client (10.3.190.19)
-=======
-    kCura.OutsideIn.FI.Win32 (2019.4.1) - content: none
-    kCura.Relativity.Client (11.0.105.1)
->>>>>>> 725be96... REL-369894 got rid of audit helper in integration tests
     LanguageExt.Core (3.1.15)
       Microsoft.CSharp (>= 4.5)
       System.Reflection.Emit (>= 4.3)
@@ -117,19 +112,9 @@ NUGET
       NUnit (>= 3.11)
     Owin (1.0)
     Polly (5.3.1)
-<<<<<<< HEAD
     Relativity (10.3.190.19)
     Relativity.API (10.3.190.19)
-    Relativity.Audit.Ingestion.Interface (1.5.0)
-    Relativity.Audit.SDK (1.5.0)
-      Relativity.Audit.Ingestion.Interface (1.5)
     Relativity.Authentication (10.3.190.19)
-=======
-    Relativity (11.0.105.1)
-    Relativity.API (12.0.1)
-      System.Data.SqlClient (>= 4.6)
-    Relativity.Authentication (11.0.105.1)
->>>>>>> 725be96... REL-369894 got rid of audit helper in integration tests
       IdentityModel (>= 1.6)
       kCura (>= 10.3.190.19)
       Microsoft.AspNet.Identity.Core (>= 2.2.1)
@@ -277,8 +262,8 @@ RESTRICTION: == net462
 NUGET
   remote: https://proget.kcura.corp/nuget/NuGet
     Autofac (4.9.4)
-    Banzai (3.0.2)
-    Banzai.Autofac (3.0.2)
+    Banzai (3.0.0)
+    Banzai.Autofac (3.0.0)
     Castle.Core (3.3.0)
     kCura.Apps.Common.Utils (2.1.1)
       Newtonsoft.Json (>= 6.0)
@@ -363,7 +348,7 @@ NUGET
       Relativity.Telemetry.APM (>= 2019.1.1 < 2019.2)
     Relativity.Telemetry.APM (2019.1.1)
     Relativity.Telemetry.DataContracts.Shared (9.4.159)
-    Relativity.Telemetry.Services.Interface (9.6.94.2)
+    Relativity.Telemetry.Services.Interface (9.6.88.61)
     relativity.transfer.client (6.2.1)
       Newtonsoft.Json (>= 6.0.8)
       Polly (>= 5.3.1)
