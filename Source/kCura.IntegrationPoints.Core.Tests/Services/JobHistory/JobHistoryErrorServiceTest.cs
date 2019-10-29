@@ -49,6 +49,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		}
 
 		[Test]
+		[Ignore("REL-371040")]
 		public void CommitErrors_HasJobHistory_CommitsJobHistoryErrors_ForDocumentLevelErrors()
 		{
 			// Arrange
@@ -76,6 +77,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 
 
 		[Test]
+		[Ignore("REL-371040")]
 		public void AddError_CommitsJobHistoryErrors_ForJobLevelErrors()
 		{
 			// Arrange
@@ -94,6 +96,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 
 
 		[Test]
+		[Ignore("REL-371040")]
 		public void CommitErrors_HasJobHistory_NoErrorsToCommit()
 		{
 			// Arrange
@@ -109,6 +112,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		}
 
 		[Test]
+		[Ignore("REL-371040")]
 		public void CommitErrors_FailsCommit_ThrowsException_ItemLevelError()
 		{
 			// Arrange
@@ -126,6 +130,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		}
 
 		[Test]
+		[Ignore("REL-371040")]
 		public void CommitErrors_FailsCommit_ThrowsException_JobLevelError()
 		{
 			// Arrange
@@ -229,6 +234,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		}
 
 		[Test]
+		[Ignore("REL-371040")]
 		public void CommitErrors_SetHasErrorToFalseWhenStopAndNoErrorOccured()
 		{
 			// arrange
@@ -244,6 +250,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		}
 
 		[Test]
+		[Ignore("REL-371040")]
 		public void CommitErrors_SetHasErrorToFalseWhenRunningAndNoErrorOccured()
 		{
 			// arrange
@@ -258,6 +265,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		}
 
 		[Test]
+		[Ignore("REL-371040")]
 		public void CommitErrors_SetHasErrorToFalseWhenStopAndErrorsOccured()
 		{
 			// arrange
@@ -273,6 +281,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		}
 
 		[Test]
+		[Ignore("REL-371040")]
 		public void CommitErrors_SetHasErrorToTrueWhenRunningAndErrorsOccured()
 		{
 			// arrange

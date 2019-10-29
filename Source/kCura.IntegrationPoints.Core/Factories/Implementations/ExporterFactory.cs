@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System;
+using System.Security.Claims;
 using System.Text;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
@@ -11,6 +12,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using kCura.WinEDDS.Service.Export;
 using Newtonsoft.Json;
 using Relativity.API;
 
@@ -26,6 +28,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		private readonly IFolderPathReaderFactory _folderPathReaderFactory;
 		private readonly IRelativityObjectManager _relativityObjectManager;
 		private readonly IFileRepository _fileRepository;
+		private readonly Func<ISearchManager> _searchManager;
 		private readonly IAPILog _logger;
 
 		public ExporterFactory(
@@ -35,7 +38,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			IHelper helper,
 			IFolderPathReaderFactory folderPathReaderFactory,
 			IRelativityObjectManager relativityObjectManager,
-			IFileRepository fileRepository)
+			IFileRepository fileRepository, 
+			Func<ISearchManager> searchManager)
 		{
 			_claimsPrincipalFactory = claimsPrincipalFactory;
 			_sourceRepositoryFactory = sourceRepositoryFactory;
@@ -44,6 +48,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			_folderPathReaderFactory = folderPathReaderFactory;
 			_relativityObjectManager = relativityObjectManager;
 			_fileRepository = fileRepository;
+			_searchManager = searchManager;
 			_logger = _helper.GetLoggerFactory().GetLogger().ForContext<ExporterFactory>();
 		}
 
@@ -150,7 +155,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				startAtRecord,
 				sourceConfiguration,
 				searchArtifactId,
-				settings);
+				settings,
+				_searchManager);
 		}
 
 		private ClaimsPrincipal GetClaimsPrincipal(int onBehalfOfUser)
