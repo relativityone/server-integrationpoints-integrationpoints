@@ -39,13 +39,8 @@ NUGET
     kCura.IntegrationPoints.Services.Interfaces.Private (10.3.18-DEV-029)
       Relativity.Kepler (>= 1.0.1.333)
     kCura.LongPath (1.0.20)
-<<<<<<< HEAD
-    kCura.OutsideIn.FI.Win32 (2019.3.5) - content: none
+    kCura.OutsideIn.FI.Win32 (2019.3.6) - content: none
     kCura.Relativity.Client (11.0.116.1)
-=======
-    kCura.OutsideIn.FI.Win32 (2019.4.1) - content: none
-    kCura.Relativity.Client (11.0.105.1)
->>>>>>> 725be96... REL-369894 got rid of audit helper in integration tests
     LanguageExt.Core (3.1.15)
       Microsoft.CSharp (>= 4.5)
       System.Reflection.Emit (>= 4.3)
@@ -118,20 +113,10 @@ NUGET
     NuGetPowerTools (0.29)
     Owin (1.0)
     Polly (5.3.1)
-<<<<<<< HEAD
     Relativity (11.0.116.1)
     Relativity.API (12.0.0)
       System.Data.SqlClient (>= 4.6)
-    Relativity.Audit.Ingestion.Interface (1.5.0)
-    Relativity.Audit.SDK (1.5.0)
-      Relativity.Audit.Ingestion.Interface (1.5)
     Relativity.Authentication (11.0.116.1)
-=======
-    Relativity (11.0.105.1)
-    Relativity.API (12.0.1)
-      System.Data.SqlClient (>= 4.6)
-    Relativity.Authentication (11.0.105.1)
->>>>>>> 725be96... REL-369894 got rid of audit helper in integration tests
       IdentityModel (>= 1.6)
       kCura (>= 12.0)
       Microsoft.AspNet.Identity.Core (>= 2.2.1)
@@ -284,8 +269,8 @@ RESTRICTION: == net462
 NUGET
   remote: https://proget.kcura.corp/nuget/NuGet
     Autofac (4.9.4)
-    Banzai (3.0.2)
-    Banzai.Autofac (3.0.2)
+    Banzai (3.0.0)
+    Banzai.Autofac (3.0.0)
     Castle.Core (3.3.0)
     kCura.Apps.Common.Utils (2.1.1)
       Newtonsoft.Json (>= 6.0)
