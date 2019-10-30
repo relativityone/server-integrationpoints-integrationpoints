@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.3] - 2019-10-30
 ### Changed
-- Added InternalsVisibleTo for kCura.IntegrationPoints.Domain to SourceProviderInstaller project to allow RIP to build properly.
+- Added InternalsVisibleTo for kCura.IntegrationPoints.Domain to Contracts and SourceProviderInstaller projects to allow RIP to build properly.
 
 ## [1.0.2] - 2019-10-29
 ### Changed
