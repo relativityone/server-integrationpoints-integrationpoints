@@ -16,28 +16,29 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 	[TestFixture]
 	internal sealed class RelativityExportBatcherTests
 	{
-		private Mock<IObjectManager> _objectManager;
-		private Mock<ISourceServiceFactoryForUser> _userServiceFactory;
-		
+		private Mock<IObjectManager> _objectManagerMock;
+		private Mock<ISourceServiceFactoryForUser> _userServiceFactoryStub;
+
 		[SetUp]
 		public void SetUp()
 		{
-			_objectManager = new Mock<IObjectManager>();
+			_objectManagerMock = new Mock<IObjectManager>();
 
-			_userServiceFactory = new Mock<ISourceServiceFactoryForUser>();
-			_userServiceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>())
-				.ReturnsAsync(_objectManager.Object);
+			_userServiceFactoryStub = new Mock<ISourceServiceFactoryForUser>();
+			_userServiceFactoryStub.Setup(x => x.CreateProxyAsync<IObjectManager>())
+				.ReturnsAsync(_objectManagerMock.Object);
 		}
 
 		[Test]
-		public void ItShouldReturnAllItemsInOneBlock()
+		public void IGetNextItemsFromBatchAsync_ShouldReturnAllItemsInOneBlock()
 		{
+			// arrange
 			Mock<IBatch> batch = new Mock<IBatch>();
 			batch.SetupGet(x => x.StartingIndex).Returns(0);
 			const int totalItemsCount = 10;
 			batch.SetupGet(x => x.TotalItemsCount).Returns(totalItemsCount);
 			SetupRetrieveResultsBlock(totalItemsCount);
-			RelativityExportBatcher exportBatcher = new RelativityExportBatcher(_userServiceFactory.Object, batch.Object, Guid.Empty, 0);
+			RelativityExportBatcher exportBatcher = new RelativityExportBatcher(_userServiceFactoryStub.Object, batch.Object, Guid.Empty, 0);
 
 			// act
 			Task<RelativityObjectSlim[]> firstResultsBlock = exportBatcher.GetNextItemsFromBatchAsync();
@@ -49,14 +50,15 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		}
 
 		[Test]
-		public void ItShouldReturnItemsInTwoBlocks()
+		public void GetNextItemsFromBatchAsync_ShouldReturnItemsInTwoBlocks()
 		{
-			Mock<IBatch> batch = new Mock<IBatch>();
-			batch.SetupGet(x => x.StartingIndex).Returns(0);
+			// arrange
+			Mock<IBatch> batchStub = new Mock<IBatch>();
+			batchStub.SetupGet(x => x.StartingIndex).Returns(0);
 			const int totalItemsCount = 10;
 			const int maxResultsBlockSize = 7;
-			batch.SetupGet(x => x.TotalItemsCount).Returns(totalItemsCount);
-			RelativityExportBatcher exportBatcher = new RelativityExportBatcher(_userServiceFactory.Object, batch.Object, Guid.Empty, 0);
+			batchStub.SetupGet(x => x.TotalItemsCount).Returns(totalItemsCount);
+			RelativityExportBatcher exportBatcher = new RelativityExportBatcher(_userServiceFactoryStub.Object, batchStub.Object, Guid.Empty, 0);
 
 			// act
 			SetupRetrieveResultsBlock(maxResultsBlockSize);
@@ -69,9 +71,33 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			secondResultsBlock.Result.Length.Should().Be(totalItemsCount - maxResultsBlockSize);
 		}
 
+
+		[Test]
+		public async Task GetNextItemsFromBatchAsync_ShouldNotCallObjectManagerWhenRemainingItemsIsZero()
+		{
+			// arrange
+			const int totalItemsCount = 10;
+
+
+			SetupRetrieveResultsBlock(totalItemsCount);
+
+			Mock<IBatch> batchStub = new Mock<IBatch>();
+			batchStub.SetupGet(x => x.StartingIndex).Returns(0);
+			batchStub.SetupGet(x => x.TotalItemsCount).Returns(0);
+
+			RelativityExportBatcher batcher = new RelativityExportBatcher(_userServiceFactoryStub.Object, batchStub.Object, Guid.Empty, 0);
+
+			// act
+			RelativityObjectSlim[] batches = await batcher.GetNextItemsFromBatchAsync().ConfigureAwait(false);
+
+			// assert
+			_objectManagerMock.Verify(x => x.RetrieveResultsBlockFromExportAsync(0, Guid.Empty, 0, It.IsAny<int>()), Times.Never);
+			Assert.IsFalse(batches.Any());
+		}
+
 		private void SetupRetrieveResultsBlock(int maxResultSize)
 		{
-			_objectManager.Setup(x =>
+			_objectManagerMock.Setup(x =>
 				x.RetrieveResultsBlockFromExportAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<int>())
 			).ReturnsAsync<int, Guid, int, int, IObjectManager, RelativityObjectSlim[]>((a, b, len, ind) =>
 				CreateBatch(ind, len).Take(maxResultSize).ToArray());
@@ -79,7 +105,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 		private static IEnumerable<RelativityObjectSlim> CreateBatch(int startingIndex, int length)
 		{
-			return Enumerable.Range(startingIndex, length).Select(x => new RelativityObjectSlim {ArtifactID = x});
+			return Enumerable.Range(startingIndex, length).Select(x => new RelativityObjectSlim { ArtifactID = x });
 		}
 	}
 }

@@ -19,3 +19,6 @@ NunitXml.TestLogger
 coverlet.msbuild
 FluentAssertions
 Moq
+Microsoft.Reactive.Testing
+System.Reactive.Linq
+System.Reactive

@@ -96,6 +96,9 @@ else {
     throw "Invalid version $global:nextVersion format"
 }
 
+$build = $build / 1 # string to int
+$build = "{0:000}" -f $build
+
 if ($buildType -eq "GOLD") {
     $global:version = "$major.$minor.$patch"
     $global:packageVersion = "$major.$minor.$patch"

@@ -15,25 +15,18 @@ namespace Relativity.Sync.Executors
 {
 	internal sealed class ImportJobFactory : IImportJobFactory
 	{
-		private readonly IBatchProgressHandlerFactory _batchProgressHandlerFactory;
 		private readonly IImportApiFactory _importApiFactory;
 		private readonly IJobHistoryErrorRepository _jobHistoryErrorRepository;
-		private readonly IJobProgressHandlerFactory _jobProgressHandlerFactory;
-		private readonly IJobProgressUpdaterFactory _jobProgressUpdaterFactory;
 		private readonly IInstanceSettings _instanceSettings;
 		private readonly ISourceWorkspaceDataReaderFactory _dataReaderFactory;
 		private readonly ISyncLog _logger;
 
-		public ImportJobFactory(IImportApiFactory importApiFactory, ISourceWorkspaceDataReaderFactory dataReaderFactory, 
-			IBatchProgressHandlerFactory batchProgressHandlerFactory, IJobProgressHandlerFactory jobProgressHandlerFactory, 
-			IJobProgressUpdaterFactory jobProgressUpdaterFactory, IJobHistoryErrorRepository jobHistoryErrorRepository,
+		public ImportJobFactory(IImportApiFactory importApiFactory, ISourceWorkspaceDataReaderFactory dataReaderFactory,
+			IJobHistoryErrorRepository jobHistoryErrorRepository,
 			IInstanceSettings instanceSettings, ISyncLog logger)
 		{
 			_importApiFactory = importApiFactory;
 			_dataReaderFactory = dataReaderFactory;
-			_batchProgressHandlerFactory = batchProgressHandlerFactory;
-			_jobProgressHandlerFactory = jobProgressHandlerFactory;
-			_jobProgressUpdaterFactory = jobProgressUpdaterFactory;
 			_jobHistoryErrorRepository = jobHistoryErrorRepository;
 			_instanceSettings = instanceSettings;
 			_logger = logger;
@@ -42,27 +35,17 @@ namespace Relativity.Sync.Executors
 		public async Task<IImportJob> CreateImportJobAsync(ISynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
 		{
 			ISourceWorkspaceDataReader sourceWorkspaceDataReader = _dataReaderFactory.CreateSourceWorkspaceDataReader(batch, token);
-			ImportBulkArtifactJob importBulkArtifactJob = await CreateImportBulkArtifactJobAsync(configuration, batch.StartingIndex, sourceWorkspaceDataReader).ConfigureAwait(false);
+			ImportBulkArtifactJob importBulkArtifactJob = await CreateImportBulkArtifactJobAsync(configuration, sourceWorkspaceDataReader).ConfigureAwait(false);
 			var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importBulkArtifactJob, sourceWorkspaceDataReader.ItemStatusMonitor);
 
-			_batchProgressHandlerFactory.CreateBatchProgressHandler(batch, importBulkArtifactJob);
-			AttachJobProgressHandler(importBulkArtifactJob);
+
 
 			return new ImportJob(syncImportBulkArtifactJob, new SemaphoreSlimWrapper(new SemaphoreSlim(0, 1)), _jobHistoryErrorRepository,
 				configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, _logger);
 		}
 
-		private void AttachJobProgressHandler(ImportBulkArtifactJob importBulkArtifactJob)
-		{
-			IJobProgressUpdater jobProgressUpdater = _jobProgressUpdaterFactory.CreateJobProgressUpdater();
-			IJobProgressHandler jobProgressHandler = _jobProgressHandlerFactory.CreateJobProgressHandler(jobProgressUpdater);
-			importBulkArtifactJob.OnProgress += jobProgressHandler.HandleItemProcessed;
-			importBulkArtifactJob.OnError += jobProgressHandler.HandleItemError;
-			importBulkArtifactJob.OnComplete += jobProgressHandler.HandleProcessComplete;
-			importBulkArtifactJob.OnFatalException += jobProgressHandler.HandleFatalException;
-		}
-
-		private async Task<ImportBulkArtifactJob> CreateImportBulkArtifactJobAsync(ISynchronizationConfiguration configuration, int startingIndex, ISourceWorkspaceDataReader dataReader)
+	
+		private async Task<ImportBulkArtifactJob> CreateImportBulkArtifactJobAsync(ISynchronizationConfiguration configuration, ISourceWorkspaceDataReader dataReader, int startingIndex = 0)
 		{
 			string webApiPath = await _instanceSettings.GetWebApiPathAsync().ConfigureAwait(false);
 			var webApiUri = new Uri(webApiPath);
@@ -101,7 +84,7 @@ namespace Relativity.Sync.Executors
 			}
 
 			importJob.Settings.DisableNativeLocationValidation = configuration.ImportNativeFileCopyMode == ImportNativeFileCopyMode.SetFileLinks;
-			
+
 			importJob.Settings.SelectedIdentifierFieldName = await GetSelectedIdentifierFieldNameAsync(
 				importApi, configuration.DestinationWorkspaceArtifactId, configuration.RdoArtifactTypeId, configuration.IdentityFieldId).ConfigureAwait(false);
 

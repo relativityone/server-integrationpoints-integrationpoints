@@ -28,6 +28,12 @@ namespace Relativity.Sync.Transfer
 
 		public async Task<RelativityObjectSlim[]> GetNextItemsFromBatchAsync()
 		{
+			// calling RetrieveResultsBlockFromExportAsync with remainingItems = 0 deletes the snapshot table 
+			if (_remainingItems == 0)
+			{
+				return Array.Empty<RelativityObjectSlim>();
+			}
+
 			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				// Export API may not return all items in our batch (the actual results block size is configurable on the instance level),

@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Reactive.Concurrency;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentAssertions;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
@@ -37,8 +39,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_jobProgressUpdaterFactory = new Mock<IJobProgressUpdaterFactory>();
 			Mock<IJobProgressHandler> jobProgressHandler = new Mock<IJobProgressHandler>();
 			_jobProgressHandlerFactory = new Mock<IJobProgressHandlerFactory>();
-			_jobProgressHandlerFactory.Setup(x => x.CreateJobProgressHandler(It.IsAny<IJobProgressUpdater>())).Returns(jobProgressHandler.Object);
-			Mock<ISourceWorkspaceDataReader>  dataReader = new Mock<ISourceWorkspaceDataReader>();
+			_jobProgressHandlerFactory.Setup(x => x.CreateJobProgressHandler(It.IsAny<IScheduler>())).Returns(jobProgressHandler.Object);
+			Mock<ISourceWorkspaceDataReader> dataReader = new Mock<ISourceWorkspaceDataReader>();
 			_dataReaderFactory = new Mock<ISourceWorkspaceDataReaderFactory>();
 			_dataReaderFactory.Setup(x => x.CreateSourceWorkspaceDataReader(It.IsAny<IBatch>(), It.IsAny<CancellationToken>())).Returns(dataReader.Object);
 			_jobHistoryErrorRepository = new Mock<IJobHistoryErrorRepository>();
@@ -51,11 +53,11 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		}
 
 		[Test]
-		public async Task CreateImportJobGoldFlowTest()
+		public async Task CreateImportJobAsync_ShouldPassGoldFlow()
 		{
 			// Arrange
 			var configuration = new Mock<ISynchronizationConfiguration>(MockBehavior.Loose);
-			
+
 			Mock<IImportApiFactory> importApiFactory = GetImportAPIFactoryMock();
 			ImportJobFactory instance = GetTestInstance(importApiFactory);
 
@@ -68,11 +70,11 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		}
 
 		[Test]
-		public async Task CreateImportJobHasExtractedFieldPathTest()
+		public async Task CreateImportJobAsync_HasExtractedFieldPath()
 		{
 			// Arrange
 
-			var configuration = new Mock<ISynchronizationConfiguration>(MockBehavior.Loose);
+			var configuration = new Mock<ISynchronizationConfiguration>();
 
 			Mock<IImportApiFactory> importApiFactory = GetImportAPIFactoryMock();
 			ImportJobFactory instance = GetTestInstance(importApiFactory);
@@ -84,6 +86,36 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			// Assert
 			Assert.IsNotNull(result);
 		}
+
+
+		[Test]
+		public async Task CreateImportJobAsync_ShouldCreateBulkJobWithStartingIndexAlwaysEqualTo0()
+		{
+			// Arrange
+			Mock<ISynchronizationConfiguration> configurationStub = new Mock<ISynchronizationConfiguration>();
+			Mock<IImportAPI> importApiStub = new Mock<IImportAPI>(MockBehavior.Loose);
+			Mock<IImportApiFactory> importApiFactoryStub = new Mock<IImportApiFactory>();
+			Mock<Field> fieldStub = new Mock<Field>();
+			ImportBulkArtifactJob importBulkArtifactJobMock = new ImportBulkArtifactJob();
+
+
+			importApiStub.Setup(x => x.NewNativeDocumentImportJob()).Returns(() => importBulkArtifactJobMock);
+			importApiStub.Setup(x => x.GetWorkspaceFields(It.IsAny<int>(), It.IsAny<int>())).Returns(() => new[] { fieldStub.Object });
+			importApiFactoryStub.Setup(x => x.CreateImportApiAsync(It.IsAny<Uri>())).ReturnsAsync(importApiStub.Object);
+
+			const int batchStartingIndex = 250;
+			_batch.SetupGet(x => x.StartingIndex).Returns(batchStartingIndex);
+
+			ImportJobFactory instance = GetTestInstance(importApiFactoryStub);
+
+			// Act
+			Sync.Executors.IImportJob result = await instance.CreateImportJobAsync(configurationStub.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
+			result.Dispose();
+
+			// Assert
+			importBulkArtifactJobMock.Settings.StartRecordNumber.Should().Be(0);
+		}
+
 
 		private Mock<IImportApiFactory> GetImportAPIFactoryMock()
 		{
@@ -101,8 +133,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 		private ImportJobFactory GetTestInstance(Mock<IImportApiFactory> importApiFactory)
 		{
-			var instance = new ImportJobFactory(importApiFactory.Object, _dataReaderFactory.Object, _batchProgressHandlerFactory.Object, 
-				_jobProgressHandlerFactory.Object, _jobProgressUpdaterFactory.Object,
+			var instance = new ImportJobFactory(importApiFactory.Object, _dataReaderFactory.Object,
 				_jobHistoryErrorRepository.Object, _instanceSettings.Object, _logger);
 			return instance;
 		}

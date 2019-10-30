@@ -1,95 +1,122 @@
 ﻿using System;
 using System.Collections;
-using System.Threading;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reactive;
+using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using System.Threading.Tasks;
+using kCura.Relativity.DataReaderClient;
+using Relativity.Sync.Executors;
 
 namespace Relativity.Sync
 {
-	// TODO REL-292382 This is a temporary solution for updating job history, until we implement REL-292382.
 	internal sealed class JobProgressHandler : IJobProgressHandler
 	{
-		private DateTime _lastProgressEventTimestamp = DateTime.MinValue;
-		private int _itemsProcessedCount = 0;
-		private int _itemsFailedCount = 0;
-
-		private readonly object _lockObject = new object();
+		private readonly int _throttleForSeconds = 5;
 		private readonly IJobProgressUpdater _jobProgressUpdater;
-		private readonly IDateTime _dateTime;
-		private readonly TimeSpan _throttle = TimeSpan.FromSeconds(5);
+		private readonly Subject<Unit> _changeSignal = new Subject<Unit>();
+		private readonly Subject<Unit> _forceUpdateSignal = new Subject<Unit>();
+		private readonly IDisposable _changeSubjectBufferSubscription;
+		private readonly IDictionary<int, SyncBatchProgress> _batchProgresses = new ConcurrentDictionary<int, SyncBatchProgress>();
 
-		public JobProgressHandler(IJobProgressUpdater jobProgressUpdater, IDateTime dateTime)
+		public JobProgressHandler(IJobProgressUpdater jobProgressUpdater, IScheduler timerScheduler = null)
 		{
 			_jobProgressUpdater = jobProgressUpdater;
-			_dateTime = dateTime;
+
+			_changeSubjectBufferSubscription = _changeSignal.Buffer(TimeSpan.FromSeconds(_throttleForSeconds), timerScheduler ?? Scheduler.Default)
+				.Where(changesInTimeWindow => changesInTimeWindow.Any())
+				.Select(_ => Unit.Default)
+				.Merge(_forceUpdateSignal)
+				.Do(async (_) =>
+			{
+				await UpdateProgress().ConfigureAwait(false);
+			})
+				.Subscribe();
 		}
 
-		// Explanation of how IAPI works:
-		// IAPI processes items in batch one by one and fires OnProgress event after each item that was
-		// successfully read from data reader. OnProgress is not fired when IAPI fails to read record from
-		// data reader. This is handled in HandleItemProcessed method below, where we are incrementing number of processed items.
-		// When IAPI completes processing of batch, it checks each item if it was successfully processed. If not, it fires OnError event for each of the items.
-		// That's why in HandleItemError method, we are decrementing number of successfully processed items and
-		// incrementing number of failed items.
 
-		public void HandleItemProcessed(long item)
-		{
-			lock (_lockObject)
-			{
-				_itemsProcessedCount++;
-				UpdateProgressIfPossible();
-			}
-		}
 
-		public void HandleItemError(IDictionary row)
+		public IDisposable AttachToImportJob(ISyncImportBulkArtifactJob job, int batchId, int totalItemsInBatch)
 		{
-			lock (_lockObject)
-			{
-				_itemsFailedCount++;
-				if (_itemsProcessedCount > 0)
+			SyncBatchProgress batchProgress = new SyncBatchProgress(batchId, totalItemsInBatch);
+
+			IDisposable itemProcessedSubscription = Observable
+				.FromEvent<IImportNotifier.OnProgressEventHandler, long>(
+					handler => job.OnProgress += handler,
+					 handler => job.OnProgress -= handler)
+					.Do(_ =>
 				{
-					_itemsProcessedCount--;
+					batchProgress.ItemsProcessed++;
+					_changeSignal.OnNext(Unit.Default);
+				}).Subscribe();
+
+			IDisposable itemFailedSubscription = Observable
+				.FromEvent<ImportBulkArtifactJob.OnErrorEventHandler, IDictionary>(
+					 handler => job.OnError += handler,
+					 handler => job.OnError -= handler)
+					.Do(_ =>
+				{
+					// Explanation of how IAPI works:
+					// IAPI processes items in batch one by one and fires OnProgress event after each item that was
+					// successfully read from data reader. OnProgress is not fired when IAPI fails to read record from
+					// data reader. This is handled in subscription above.
+					// When IAPI completes processing of batch, it checks each item if it was successfully processed. If not, it fires OnError event for each of the items.
+					// That's why in HandleItemError method, we are decrementing number of successfully processed items and
+					// incrementing number of failed items.
+
+
+					batchProgress.ItemsFailed++;
+					batchProgress.ItemsProcessed--;
+					_changeSignal.OnNext(Unit.Default);
+				}).Subscribe();
+
+			IObservable<JobReport> batchCompletedReports = Observable
+				.FromEvent<IImportNotifier.OnCompleteEventHandler, JobReport>(
+					handler => job.OnComplete += handler,
+					 handler => job.OnComplete -= handler)
+					.Do(_ =>
+				{
+					batchProgress.Completed = true;
 				}
-				UpdateProgressIfPossible();
-			}
+					);
+
+			IDisposable jobReportsSubscription = Observable
+				.FromEvent<IImportNotifier.OnFatalExceptionEventHandler, JobReport>(
+					 handler => job.OnFatalException += handler,
+					 handler => job.OnFatalException -= handler)
+					.Merge(batchCompletedReports)
+					.Do(jobReport =>
+				{
+					batchProgress.ItemsProcessed = jobReport.TotalRows - jobReport.ErrorRowCount;
+					batchProgress.ItemsFailed = jobReport.ErrorRowCount;
+					_forceUpdateSignal.OnNext(Unit.Default);
+				})
+					.Subscribe();
+
+			_batchProgresses[batchId] = batchProgress;
+
+			_forceUpdateSignal.OnNext(Unit.Default);
+
+			return new CompositeDisposable(itemFailedSubscription, itemProcessedSubscription, jobReportsSubscription);
 		}
 
-		public void HandleProcessComplete(JobReport jobReport)
+		private async Task UpdateProgress()
 		{
-			UpdateJobStatistics(jobReport);
+			int totalProcessedItems = _batchProgresses.Values.Sum(x => x.ItemsProcessed);
+			int totalFailedItems = _batchProgresses.Values.Sum(x => x.ItemsFailed);
+
+			await _jobProgressUpdater.UpdateJobProgressAsync(totalProcessedItems, totalFailedItems).ConfigureAwait(false);
 		}
 
-		public void HandleFatalException(JobReport jobReport)
+		public void Dispose()
 		{
-			UpdateJobStatistics(jobReport);
-		}
-
-		private void UpdateJobStatistics(JobReport jobReport)
-		{
-			lock (_lockObject)
-			{
-				_itemsProcessedCount = jobReport.TotalRows - jobReport.ErrorRowCount;
-				_itemsFailedCount = jobReport.ErrorRowCount;
-				UpdateProgress();
-			}
-		}
-
-		private void UpdateProgressIfPossible()
-		{
-			bool canUpdate = CanUpdateProgress();
-			if (canUpdate)
-			{
-				UpdateProgress();
-			}
-		}
-
-		private bool CanUpdateProgress()
-		{
-			return _dateTime.Now >= _lastProgressEventTimestamp + _throttle;
-		}
-
-		private void UpdateProgress()
-		{
-			_jobProgressUpdater.UpdateJobProgressAsync(_itemsProcessedCount, _itemsFailedCount).ConfigureAwait(false).GetAwaiter().GetResult();
-			_lastProgressEventTimestamp = _dateTime.Now;
+			_changeSubjectBufferSubscription.Dispose();
+			_changeSignal.Dispose();
+			_forceUpdateSignal.Dispose();
 		}
 	}
 }

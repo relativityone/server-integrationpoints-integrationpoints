@@ -30,11 +30,12 @@ namespace Relativity.Sync.Tests.System
 		private static readonly Guid StackTraceField = new Guid("0353DBDE-9E00-4227-8A8F-4380A8891CFF");
 
 		[IdentifiedTest("f9311c70-7094-4bed-a66e-90b1313fcd47")]
-		public async Task ItShouldPassGoldFlow()
+		[TestCase(1000,1)]
+		[TestCase(1000,2000)]
+		[TestCase(1000,3500)]
+		public async Task ItShouldPassGoldFlow(int batchSize, int totalRecordsCount)
 		{
-			const int batchSize = 1000;
 			const int controlNumberFieldId = 1003667;
-			const int totalRecordsCount = 1;
 
 			string sourceWorkspaceName = $"Source.{Guid.NewGuid()}";
 			string destinationWorkspaceName = $"Destination.{Guid.NewGuid()}";
