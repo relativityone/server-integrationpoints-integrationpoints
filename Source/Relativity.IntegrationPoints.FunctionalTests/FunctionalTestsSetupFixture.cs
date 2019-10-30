@@ -37,11 +37,11 @@ public class FunctionalTestsSetupFixture
 		);
 
 		var applicationManager = new RelativityApplicationManager(_testHelper);
-//		if (SharedVariables.UseIpRapFile())
-//		{
-//			Console.WriteLine("Importing RIP RAP to Library...");
-//			await applicationManager.ImportRipToLibraryAsync().ConfigureAwait(false);
-//		}
+		if (SharedVariables.UseIpRapFile())
+		{
+			Console.WriteLine("Importing RIP RAP to Library...");
+			await applicationManager.ImportRipToLibraryAsync().ConfigureAwait(false);
+		}
 
 		await applicationManager.InstallRipFromLibraryAsync(workspaceTemplateID).ConfigureAwait(false);
 	}
