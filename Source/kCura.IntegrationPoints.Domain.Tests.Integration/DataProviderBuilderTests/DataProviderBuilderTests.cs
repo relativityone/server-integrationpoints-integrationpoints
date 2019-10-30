@@ -3,11 +3,11 @@ using System.Data;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core.Exceptions;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
-using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core.Services.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Tests.Integration.DataProviderBuilderTests.Mocks;
 using NUnit.Framework;
+using Relativity.IntegrationPoints.Contracts.Provider;
 using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.Domain.Tests.Integration.DataProviderBuilderTests

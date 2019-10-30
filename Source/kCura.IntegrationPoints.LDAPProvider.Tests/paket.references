@@ -1,8 +1,8 @@
 CSharpGuidelineAnalyzer
-kCura.IntegrationPoints.Contracts
+kCura.Apps.Common.Utils
 Newtonsoft.Json
 Relativity.API
-kCura.Apps.Common.Utils
+Relativity.IntegrationPoints.Contracts
 
 group TestPackages
 	FluentAssertions

@@ -143,9 +143,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 			};
 		}
 
-		private IntegrationPoints.Contracts.Models.FieldEntry ConvertFromServicesToDomainFieldEntry(FieldEntry servicesFieldEntry)
+		private global::Relativity.IntegrationPoints.Contracts.Models.FieldEntry ConvertFromServicesToDomainFieldEntry(FieldEntry servicesFieldEntry)
 		{
-			return new IntegrationPoints.Contracts.Models.FieldEntry
+			return new global::Relativity.IntegrationPoints.Contracts.Models.FieldEntry
 			{
 				DisplayName = servicesFieldEntry.DisplayName,
 				FieldIdentifier = servicesFieldEntry.FieldIdentifier,
@@ -156,10 +156,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 			};
 		}
 
-		private IntegrationPoints.Contracts.Models.FieldType ConvertFromServicesToDomainFieldType(
+		private global::Relativity.IntegrationPoints.Contracts.Models.FieldType ConvertFromServicesToDomainFieldType(
 			global::Relativity.IntegrationPoints.Services.FieldType servicesFieldType)
 		{
-			return (IntegrationPoints.Contracts.Models.FieldType) Enum.Parse(
+			return (global::Relativity.IntegrationPoints.Contracts.Models.FieldType) Enum.Parse(
 				typeof(global::Relativity.IntegrationPoints.Services.FieldType), servicesFieldType.ToString());
 		}
 

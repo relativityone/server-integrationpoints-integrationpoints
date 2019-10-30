@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using kCura.IntegrationPoints.Contracts;
-using kCura.IntegrationPoints.Contracts.Internals;
+using Relativity.IntegrationPoints.Contracts;
+using Relativity.IntegrationPoints.Contracts.Internals;
 
 namespace kCura.IntegrationPoints.Web.Models
 {

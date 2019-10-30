@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Data;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using NUnit.Framework;
+using Relativity.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 {

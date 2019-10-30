@@ -7,12 +7,11 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
-using kCura.IntegrationPoints.SourceProviderInstaller;
-using kCura.IntegrationPoints.SourceProviderInstaller.Internals;
 using LanguageExt;
 using Relativity.API;
+using Relativity.IntegrationPoints.SourceProviderInstaller;
+using Relativity.IntegrationPoints.SourceProviderInstaller.Internals;
 using static LanguageExt.Prelude;
-using SourceProvider = kCura.IntegrationPoints.Contracts.SourceProvider;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations
 {
@@ -32,7 +31,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			_ripProviderInstaller = ripProviderInstaller;
 		}
 
-		public Task InstallSourceProvidersAsync(int workspaceID, IEnumerable<SourceProvider> sourceProviders)
+		public Task InstallSourceProvidersAsync(int workspaceID, IEnumerable<global::Relativity.IntegrationPoints.Contracts.SourceProvider> sourceProviders)
 		{
 			_logger.LogInformation("Installing internal RIP source providers, providers: {@sourceProviders}", sourceProviders);
 
@@ -50,7 +49,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 
 		private static Either<string, Unit> InstallProviders(
 			IRipProviderInstaller providerInstaller,
-			IEnumerable<SourceProvider> sourceProviders)
+			IEnumerable<global::Relativity.IntegrationPoints.Contracts.SourceProvider> sourceProviders)
 		{
 			return providerInstaller.InstallProvidersAsync(sourceProviders).GetAwaiter().GetResult();
 		}

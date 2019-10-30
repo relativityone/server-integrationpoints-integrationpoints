@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 using Relativity.IntegrationPoints.Services.Helpers;
 using Relativity.IntegrationPoints.Services.Repositories;
 using static LanguageExt.Prelude;
-using ContractsSourceProvider = kCura.IntegrationPoints.Contracts.SourceProvider;
+using SourceProvider = Relativity.IntegrationPoints.Contracts.SourceProvider;
 
 namespace Relativity.IntegrationPoints.Services.Tests.Managers
 {
@@ -495,7 +495,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
         {
             var ripProviderInstallerMock = new Mock<IRipProviderInstaller>();
             ripProviderInstallerMock
-                .Setup(x => x.InstallProvidersAsync(It.IsAny<IEnumerable<ContractsSourceProvider>>()))
+                .Setup(x => x.InstallProvidersAsync(It.IsAny<IEnumerable<SourceProvider>>()))
                 .Returns(Task.FromResult(resultToReturn));
             _container
                 .Resolve<IRipProviderInstaller>()

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Core.Services.Exporter.Base;
@@ -13,6 +12,7 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity;
+using Relativity.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 {

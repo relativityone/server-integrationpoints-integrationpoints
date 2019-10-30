@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
-using kCura.IntegrationPoints.Domain.Models;
 using Relativity.API;
+using FieldEntry = Relativity.IntegrationPoints.Contracts.Models.FieldEntry;
+using FieldMap = kCura.IntegrationPoints.Domain.Models.FieldMap;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter.Validators
 {

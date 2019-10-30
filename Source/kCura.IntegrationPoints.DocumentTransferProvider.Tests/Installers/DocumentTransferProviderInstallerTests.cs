@@ -3,12 +3,12 @@ using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using kCura.IntegrationPoint.Tests.Core.FluentAssertions;
 using kCura.IntegrationPoints.Config;
-using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.DocumentTransferProvider.Installers;
 using NUnit.Framework;
 using Relativity.API;
 using System;
+using Relativity.IntegrationPoints.Contracts.Provider;
 using static kCura.IntegrationPoint.Tests.Core.TestHelpers.WindsorContainerTestHelpers;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Installers

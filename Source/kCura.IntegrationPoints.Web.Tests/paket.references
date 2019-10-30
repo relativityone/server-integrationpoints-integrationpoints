@@ -1,7 +1,6 @@
 Castle.Windsor
 CSharpGuidelineAnalyzer
 kCura.Apps.Common.Utils
-kCura.IntegrationPoints.Contracts
 kCura.Relativity.Client
 LanguageExt.Core
 Microsoft.AspNet.Mvc
@@ -10,6 +9,7 @@ Microsoft.AspNet.WebApi.Core
 Relativity.API
 Relativity.Data
 Relativity.DataExchange.Client.SDK
+Relativity.IntegrationPoints.Contracts
 Relativity.Kepler
 Relativity.Productions.Services.Interfaces
 Relativity.Services.Interfaces

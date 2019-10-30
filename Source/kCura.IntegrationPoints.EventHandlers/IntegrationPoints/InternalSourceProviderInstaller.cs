@@ -1,9 +1,9 @@
 ﻿using kCura.IntegrationPoints.Core.Provider;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
-using kCura.IntegrationPoints.SourceProviderInstaller;
-using kCura.IntegrationPoints.SourceProviderInstaller.Internals;
 using Relativity.API;
 using System;
+using Relativity.IntegrationPoints.SourceProviderInstaller;
+using Relativity.IntegrationPoints.SourceProviderInstaller.Internals;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {

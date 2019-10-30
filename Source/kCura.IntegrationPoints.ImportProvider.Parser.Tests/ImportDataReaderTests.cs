@@ -1,17 +1,12 @@
-﻿using System;
-using System.Data;
+﻿using System.Data;
 using System.IO;
 using System.Reflection;
-
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core;
 using NUnit.Framework;
 using NSubstitute;
-using kCura.IntegrationPoints.ImportProvider.Parser.Services;
-using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.WinEDDS.Api;
 

@@ -1,10 +1,10 @@
 Castle.Windsor
 CSharpGuidelineAnalyzer
-kCura.IntegrationPoints.Contracts
 kCura.Relativity.Client
 LanguageExt.Core
 Relativity.API
 Relativity.DataExchange.Client.SDK
+Relativity.IntegrationPoints.Contracts
 
 group TestPackages
 	FluentAssertions

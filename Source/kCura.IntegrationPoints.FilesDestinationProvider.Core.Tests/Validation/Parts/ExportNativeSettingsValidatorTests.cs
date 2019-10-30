@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
@@ -11,10 +10,10 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts;
 using kCura.WinEDDS;
 using NSubstitute;
 using NUnit.Framework;
-using Relativity;
 using Relativity.DataExchange.Service;
+using Relativity.IntegrationPoints.Contracts.Models;
 using ArtifactType = kCura.Relativity.Client.ArtifactType;
-using FieldType = kCura.IntegrationPoints.Contracts.Models.FieldType;
+using FieldType = Relativity.IntegrationPoints.Contracts.Models.FieldType;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation.Parts
 {

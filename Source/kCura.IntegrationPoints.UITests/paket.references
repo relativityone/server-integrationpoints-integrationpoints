@@ -1,11 +1,11 @@
 Castle.Windsor
 CSharpGuidelineAnalyzer
 kCura
-kCura.IntegrationPoints.Contracts
 Newtonsoft.Json
 Relativity
 Relativity.API
 Relativity.Data
+Relativity.IntegrationPoints.Contracts
 Relativity.Kepler.Client
 Relativity.Logging
 Relativity.Services.Interfaces

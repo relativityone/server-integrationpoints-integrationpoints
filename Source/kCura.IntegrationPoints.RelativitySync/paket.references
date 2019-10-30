@@ -1,7 +1,7 @@
 Castle.Windsor
 kCura.Apps.Common.Utils
-kCura.IntegrationPoints.Contracts
 Relativity.API
+Relativity.IntegrationPoints.Contracts
 Relativity.Services.Interfaces
 kCura.Relativity.Client
 Relativity.Telemetry.APM

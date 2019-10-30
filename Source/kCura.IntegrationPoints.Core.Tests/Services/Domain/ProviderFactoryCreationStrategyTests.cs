@@ -1,12 +1,12 @@
 ﻿using System;
 using Castle.Windsor;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Core.Services.Domain;
 using kCura.IntegrationPoints.Domain;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.IntegrationPoints.Contracts;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.Domain
 {

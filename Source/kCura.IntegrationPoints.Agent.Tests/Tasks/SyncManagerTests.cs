@@ -5,8 +5,6 @@ using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Agent.Tasks;
-using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Exceptions;
@@ -28,6 +26,8 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.IntegrationPoints.Contracts.Models;
+using Relativity.IntegrationPoints.Contracts.Provider;
 using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks

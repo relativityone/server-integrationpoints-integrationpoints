@@ -1,9 +1,9 @@
 Castle.Windsor
 CSharpGuidelineAnalyzer
-kCura.IntegrationPoints.Contracts
 Newtonsoft.Json
 Polly
 Relativity.API
+Relativity.IntegrationPoints.Contracts
 Relativity.Kepler.Client
 Relativity.Telemetry.APM
 Relativity.OAuth2Client

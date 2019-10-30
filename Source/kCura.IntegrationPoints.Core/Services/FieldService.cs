@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.Relativity.Client;
+using Relativity.IntegrationPoints.Contracts.Models;
 using Fields = kCura.IntegrationPoints.Core.Constants.Fields;
 
 namespace kCura.IntegrationPoints.Core.Services

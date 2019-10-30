@@ -4,7 +4,6 @@ using kCura.EventHandler.CustomAttributes;
 using kCura.IntegrationPoints.EventHandlers.Commands;
 using kCura.IntegrationPoints.EventHandlers.Commands.Context;
 using kCura.IntegrationPoints.EventHandlers.Commands.RenameCustodianToEntity;
-using kCura.IntegrationPoints.SourceProviderInstaller;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers.Installers

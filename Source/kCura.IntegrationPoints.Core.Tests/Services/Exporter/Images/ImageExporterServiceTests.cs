@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter;
@@ -18,6 +17,7 @@ using NSubstitute;
 using NUnit.Framework;
 using Relativity;
 using Relativity.API;
+using Relativity.IntegrationPoints.Contracts.Models;
 using ExportSettings = kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportSettings;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images

@@ -2,7 +2,6 @@ Castle.Windsor
 CSharpGuidelineAnalyzer
 kCura.Apps.Common.Config
 kCura.EventHandler
-kCura.IntegrationPoints.SDK
 kCura.Relativity.Client
 LanguageExt.Core
 Relativity
@@ -10,4 +9,5 @@ Relativity.Data
 Relativity.Services.Interfaces
 SystemWrapper.Interfaces
 Relativity.DataTransfer.MessageService
+Relativity.IntegrationPoints.SDK
 Polly

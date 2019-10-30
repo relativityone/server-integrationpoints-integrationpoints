@@ -1,11 +1,11 @@
 AutoMapper
 Castle.Windsor
 CSharpGuidelineAnalyzer
-kCura.IntegrationPoints.Contracts
 kCura.Relativity.Client
 LanguageExt.Core
 Newtonsoft.Json
 Relativity.API
+Relativity.IntegrationPoints.Contracts
 Relativity.IntegrationPoints.Services.Interfaces.Private
 Relativity.Kepler
 Relativity.Services.Interfaces

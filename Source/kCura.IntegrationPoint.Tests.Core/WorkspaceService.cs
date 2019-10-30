@@ -1,5 +1,4 @@
 ﻿using kCura.IntegrationPoint.Tests.Core.Models;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.Relativity.Client;
 using NUnit.Framework;
 using Relativity.Productions.Services;
@@ -10,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoint.Tests.Core.Exceptions;
+using Relativity.IntegrationPoints.Contracts.Models;
 using FieldRef = Relativity.Services.Field.FieldRef;
 
 namespace kCura.IntegrationPoint.Tests.Core

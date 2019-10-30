@@ -1,8 +1,8 @@
 ﻿using System;
 using Castle.Windsor;
-using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Domain;
 using Relativity.API;
+using Relativity.IntegrationPoints.Contracts;
 
 namespace kCura.IntegrationPoints.Core.Services.Domain
 {

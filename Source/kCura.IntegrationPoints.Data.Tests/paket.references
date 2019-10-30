@@ -1,11 +1,11 @@
 Castle.Windsor
 CSharpGuidelineAnalyzer
-kCura.IntegrationPoints.Contracts
 kCura.Relativity.Client
 LanguageExt.Core
 Polly
 Relativity
 Relativity.API
+Relativity.IntegrationPoints.Contracts
 Relativity.Productions.Services.Interfaces
 Relativity.Services.Interfaces.Private
 Relativity.DataExchange.Client.SDK

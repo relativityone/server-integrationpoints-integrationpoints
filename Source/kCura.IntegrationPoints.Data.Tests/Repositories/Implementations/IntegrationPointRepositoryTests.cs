@@ -5,17 +5,15 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using FluentAssertions;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Models;
-using kCura.IntegrationPoints.Data.QueryOptions;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain.Models;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.Services.Objects.DataContracts;
-using FieldType = kCura.IntegrationPoints.Contracts.Models.FieldType;
 
 namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 {
@@ -442,7 +440,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			{
 				DisplayName = "Control Number",
 				FieldIdentifier = "1000123",
-				FieldType = FieldType.String,
+				FieldType = global::Relativity.IntegrationPoints.Contracts.Models.FieldType.String,
 				IsIdentifier = true,
 				IsRequired = false,
 				Type = "Long Text"
@@ -452,7 +450,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			{
 				DisplayName = "Control Number",
 				FieldIdentifier = "1000456",
-				FieldType = FieldType.String,
+				FieldType = global::Relativity.IntegrationPoints.Contracts.Models.FieldType.String,
 				IsIdentifier = true,
 				IsRequired = false,
 				Type = "Long Text"
