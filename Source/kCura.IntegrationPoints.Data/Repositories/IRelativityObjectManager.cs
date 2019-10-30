@@ -30,6 +30,10 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		bool Delete<T>(T relativityObject, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new();
 		bool Delete(int artifactId, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser);
 
+		Task<bool> MassDeleteAsync(
+			IEnumerable<int> objectsIDs,
+			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser);
+
 		ResultSet<T> Query<T>(QueryRequest q, int start, int length, bool noFields = false, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new();
 		List<T> Query<T>(QueryRequest q, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new();
 		Task<List<T>> QueryAsync<T>(QueryRequest q, bool noFields = false, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new();

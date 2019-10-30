@@ -134,6 +134,7 @@
     <Compile Include="IntegrationPoints\Helpers\Factories\IntegrationPointSecretDeleteFactory.cs" />
     <Compile Include="IntegrationPoints\Helpers\Factories\IntegrationPointViewPreLoadFactory.cs" />
     <Compile Include="IntegrationPoints\Helpers\Factories\RelativityProviderSourceConfigurationFactory.cs" />
+    <Compile Include="IntegrationPoints\Helpers\IIntegrationPointProfilesQuery.cs" />
     <Compile Include="IntegrationPoints\Helpers\IIntegrationPointSecretDelete.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\CorrespondingJobDelete.cs" />
     <Compile Include="IntegrationPoints\Helpers\IConsoleBuilder.cs" />
@@ -148,11 +149,14 @@
     <Compile Include="IntegrationPoints\Helpers\IFolderPathInformation.cs" />
     <Compile Include="IntegrationPoints\Helpers\IDataTransferLocationMigrationHelper.cs" />
     <Compile Include="IntegrationPoints\Helpers\IDataTransferLocationMigration.cs" />
+    <Compile Include="IntegrationPoints\Helpers\Implementations\IntegrationPointProfilesQuery.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\IntegrationPointViewPreLoad.cs" />
+    <Compile Include="IntegrationPoints\Helpers\Implementations\ObjectArtifactIdsByStringFieldValueQuery.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\RelativityProviderConfiguration.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\RelativityProviderDestinationConfiguration.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\IntegrationPointTypeInstaller.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\IntegrationPointSecretDelete.cs" />
+    <Compile Include="IntegrationPoints\Helpers\IObjectArtifactIdsByStringFieldValueQuery.cs" />
     <Compile Include="IntegrationPoints\Helpers\IWorkspaceNameValidator.cs" />
     <Compile Include="IntegrationPoints\Helpers\IRelativityProviderConfiguration.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\RelativityProviderSourceConfiguration.cs" />
@@ -345,6 +349,17 @@
       <ItemGroup>
         <Reference Include="Newtonsoft.Json">
           <HintPath>..\..\packages\Newtonsoft.Json\lib\net45\Newtonsoft.Json.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Polly">
+          <HintPath>..\..\packages\Polly\lib\net45\Polly.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

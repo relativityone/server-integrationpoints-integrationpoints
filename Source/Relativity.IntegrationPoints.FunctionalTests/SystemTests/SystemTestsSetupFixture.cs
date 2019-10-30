@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading.Tasks;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.Resolvers;
 using Castle.MicroKernel.SubSystems.Configuration;
@@ -29,11 +32,13 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
 		public static IConfigurationStore ConfigurationStore { get; private set; }
 		public static ITestHelper TestHelper { get; private set; }
 
-		public static int WorkspaceID { get; private set; }
-		public static int DestinationWorkspaceID { get; private set; }
+		public static TestWorkspace SourceWorkspace { get; private set; }
+		public static TestWorkspace DestinationWorkspace { get; private set; }
+
+		private static readonly IList<int> _managedWorkspacesIDs = new List<int>();
 
 		[OneTimeSetUp]
-		public void InitializeFixtureAsync()
+		public static void InitializeFixture()
 		{
 			Container = new WindsorContainer();
 			ConfigurationStore = new DefaultConfigurationStore();
@@ -44,18 +49,22 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
 
 			InitializeRelativityInstanceSettingsClient();
 		}
-		
+
 		private static void CreateAndConfigureWorkspaces()
 		{
-			WorkspaceID = Workspace.CreateWorkspace(
-				workspaceName: $"Rip.SystemTests-{DateTime.Now.Ticks}",
-				templateName: WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME
-			);
+			string sourceWorkspaceName = $"Rip.SystemTests-{DateTime.Now.Ticks}";
+			int sourceWorkspaceID = Workspace.CreateWorkspace(
+				sourceWorkspaceName,
+				WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME);
 
-			DestinationWorkspaceID = Workspace.CreateWorkspace(
-				workspaceName: $"Rip.SystemTests.Destination-{DateTime.Now.Ticks}",
-				templateName: WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME
-			);
+			SourceWorkspace = new TestWorkspace(sourceWorkspaceID, sourceWorkspaceName);
+
+			string destinationWorkspaceName = $"Rip.SystemTests.Destination-{DateTime.Now.Ticks}";
+			int destinationWorkspaceID = Workspace.CreateWorkspace(
+				destinationWorkspaceName,
+				WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME);
+
+			DestinationWorkspace = new TestWorkspace(destinationWorkspaceID, destinationWorkspaceName);
 		}
 
 		private static void InitializeContainer()
@@ -71,23 +80,23 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
 				.UsingFactoryMethod(k =>
 				{
 					IHelper helper = k.Resolve<IHelper>();
-					return new TestServiceContextHelper(helper, WorkspaceID);
+					return new TestServiceContextHelper(helper, SourceWorkspace.ArtifactID);
 				}));
 			Container.Register(
 				Component.For<IWorkspaceDBContext>()
 					.ImplementedBy<WorkspaceDBContext>()
-					.UsingFactoryMethod(k => new WorkspaceDBContext(k.Resolve<IHelper>().GetDBContext(WorkspaceID)))
+					.UsingFactoryMethod(k => new WorkspaceDBContext(k.Resolve<IHelper>().GetDBContext(SourceWorkspace.ArtifactID)))
 					.LifeStyle.Transient);
 			Container.Register(
 				Component.For<IRSAPIClient>()
 					.UsingFactoryMethod(k =>
 					{
 						IRSAPIClient client = Rsapi.CreateRsapiClient();
-						client.APIOptions.WorkspaceID = WorkspaceID;
+						client.APIOptions.WorkspaceID = SourceWorkspace.ArtifactID;
 						return client;
 					})
 					.LifeStyle.Transient);
-			Container.Register(Component.For<IRSAPIService>().Instance(new RSAPIService(Container.Resolve<IHelper>(), WorkspaceID)).LifestyleTransient());
+			Container.Register(Component.For<IRSAPIService>().Instance(new RSAPIService(Container.Resolve<IHelper>(), SourceWorkspace.ArtifactID)).LifestyleTransient());
 			Container.Register(Component.For<IExporterFactory>().ImplementedBy<ExporterFactory>());
 			Container.Register(Component.For<IExportServiceObserversFactory>().ImplementedBy<IExportServiceObserversFactory>());
 			Container.Register(Component.For<IAuthTokenGenerator>().ImplementedBy<ClaimsTokenGenerator>().LifestyleTransient());
@@ -109,17 +118,72 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
 			}
 		}
 
-		private void InitializeRelativityInstanceSettingsClient()
+		private static void InitializeRelativityInstanceSettingsClient()
 		{
 			Manager.Settings.Factory = new HelperConfigSqlServiceFactory(TestHelper);
 		}
 
-		[OneTimeTearDown]
-		public void TearDownFixture()
+		public static Task<TestWorkspace> CreateManagedWorkspaceWithDefaultName(string templateName = WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME) =>
+			CreateManagedWorkspace($"Rip.SystemTests.Managed-{DateTime.Now.Ticks}", templateName);
+
+		public static async Task<TestWorkspace> CreateManagedWorkspace(string workspaceName, string templateName = WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME)
 		{
-			Workspace.DeleteWorkspace(WorkspaceID);
-			Workspace.DeleteWorkspace(DestinationWorkspaceID);
+			int workspaceID = await Workspace.CreateWorkspaceAsync(workspaceName, templateName).ConfigureAwait(false);
+			_managedWorkspacesIDs.Add(workspaceID);
+			TestWorkspace newWorkspace = new TestWorkspace(workspaceID, workspaceName);
+			return newWorkspace;
 		}
 
+		[OneTimeTearDown]
+		public static void TearDownFixture()
+		{
+			DeleteSourceAndDestinationWorkspaces();
+
+			foreach (int workspaceId in _managedWorkspacesIDs)
+			{
+				Workspace.DeleteWorkspace(workspaceId);
+			}
+		}
+
+		private static void DeleteSourceAndDestinationWorkspaces()
+		{
+			Workspace.DeleteWorkspace(SourceWorkspace.ArtifactID);
+			Workspace.DeleteWorkspace(DestinationWorkspace.ArtifactID);
+		}
+
+		public static void Log(string message) =>
+			Console.WriteLine($@"[{nameof(SystemTestsSetupFixture)}] {message}");
+
+		public static void ResetFixture(Exception cause = null)
+		{
+			Log($"Resetting fixture... (Caused by {TestContext.CurrentContext.Test.FullName})");
+			if (cause != null)
+			{
+				Log($"[CAUSE] {cause}");
+			}
+
+			var timer = Stopwatch.StartNew();
+
+			DeleteSourceAndDestinationWorkspaces();
+			InitializeFixture();
+
+			timer.Stop();
+			Log($"Resetting fixture done in {timer.Elapsed.TotalSeconds} seconds");
+		}
+
+		public static void InvokeActionsAndResetFixtureOnException(IEnumerable<Action> actions)
+		{
+			try
+			{
+				foreach (var action in actions)
+				{
+					action();
+				}
+			}
+			catch (Exception e)
+			{
+				ResetFixture(e);
+			}
+		}
 	}
 }
