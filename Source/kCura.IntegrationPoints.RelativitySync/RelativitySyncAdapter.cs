@@ -206,10 +206,6 @@ namespace kCura.IntegrationPoints.RelativitySync
 				.As<IExecutor<IDataDestinationInitializationConfiguration>>()
 				.As<IExecutionConstrains<IDataDestinationInitializationConfiguration>>();
 
-			containerBuilder.RegisterType<JobStatusConsolidation>()
-				.As<IExecutor<IJobStatusConsolidationConfiguration>>()
-				.As<IExecutionConstrains<IJobStatusConsolidationConfiguration>>();
-
 			IContainer container = containerBuilder.Build();
 			return container;
 		}
