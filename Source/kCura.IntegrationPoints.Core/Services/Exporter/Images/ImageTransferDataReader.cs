@@ -84,7 +84,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 		{
 			if (ReadEntriesCount % 500 == 0)
 			{
-				_logger.LogInformation("Read {ReadEntriesCount} documents.", ReadEntriesCount);
+				_logger.LogInformation("Read {ReadEntriesCount} images.", ReadEntriesCount);
 			}
 
 			return base.Read();
