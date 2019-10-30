@@ -70,7 +70,6 @@
     </Compile>
     <Compile Include="Agent.cs" />
     <Compile Include="AgentTypeInformationHelper.cs" />
-    <Compile Include="AuditHelper.cs" />
     <Compile Include="ClaimsPrincipalFactory.cs" />
     <Compile Include="DBContextMockBuilder.cs" />
     <Compile Include="DocumentService.cs" />
