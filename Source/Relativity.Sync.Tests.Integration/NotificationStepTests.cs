@@ -1,49 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Autofac;
-using FluentAssertions;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Tests.Common;
-using Relativity.Sync.Tests.Integration.Helpers;
 
 namespace Relativity.Sync.Tests.Integration
 {
 	[TestFixture]
-	internal sealed class NotificationStepTests
+	internal sealed class NotificationStepTests : FailingStepsBase<INotificationConfiguration>
 	{
-		private List<Type> _executorTypes;
-		private ContainerBuilder _containerBuilder;
-
-		[SetUp]
-		public void SetUp()
+		protected override void AssertExecutedSteps(List<Type> executorTypes)
 		{
-			_executorTypes = new List<Type>();
-			_containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
-			IntegrationTestsContainerBuilder.RegisterStubsForPipelineBuilderTests(_containerBuilder, _executorTypes);
-			IntegrationTestsContainerBuilder.MockReporting(_containerBuilder);
+			// nothing special to assert
 		}
 
-		[Test]
-		public void ItShouldHandleExceptionAndStopExecutionAfterStepConstrainsCheckFails()
+		protected override ICollection<Type> ExpectedExecutedSteps { get; } = new[]
 		{
-			IExecutionConstrains<INotificationConfiguration> executionConstrains = new FailingExecutionConstrainsStub<INotificationConfiguration>();
-
-			_containerBuilder.RegisterInstance(executionConstrains).As<IExecutionConstrains<INotificationConfiguration>>();
-
-			ISyncJob syncJob = _containerBuilder.Build().Resolve<ISyncJob>();
-
-			// ACT
-			Func<Task> action = async () => await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
-
-			// ASSERT
-			action.Should().Throw<SyncException>();
-
-			const int expectedNumberOfSteps = 14;
-			_executorTypes.Count.Should().Be(expectedNumberOfSteps);
-			_executorTypes.Should().NotContain(x => x == typeof(INotificationConfiguration));
-		}
+			typeof(IValidationConfiguration),
+			typeof(IPermissionsCheckConfiguration),
+			typeof(IDestinationWorkspaceObjectTypesCreationConfiguration),
+			typeof(IDataSourceSnapshotConfiguration),
+			typeof(ISourceWorkspaceTagsCreationConfiguration),
+			typeof(IDestinationWorkspaceTagsCreationConfiguration),
+			typeof(IDataDestinationInitializationConfiguration),
+			typeof(ISumReporterConfiguration),
+			typeof(IDestinationWorkspaceSavedSearchCreationConfiguration),
+			typeof(ISnapshotPartitionConfiguration),
+			typeof(ISynchronizationConfiguration),
+			typeof(IDataDestinationFinalizationConfiguration),
+			typeof(IJobStatusConsolidationConfiguration),
+			typeof(IJobCleanupConfiguration)
+		};
 	}
 }

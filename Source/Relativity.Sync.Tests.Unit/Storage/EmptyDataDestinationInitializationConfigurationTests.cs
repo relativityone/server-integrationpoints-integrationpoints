@@ -2,7 +2,7 @@
 using NUnit.Framework;
 using Relativity.Sync.Storage;
 
-namespace Relativity.Sync.Tests.Unit
+namespace Relativity.Sync.Tests.Unit.Storage
 {
 	[TestFixture]
 	public static class EmptyDataDestinationInitializationConfigurationTests

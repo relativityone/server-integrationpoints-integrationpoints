@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using NUnit.Framework;
+using Relativity.Services.Security;
 using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Tests.Integration
@@ -13,13 +14,22 @@ namespace Relativity.Sync.Tests.Integration
 			// nothing special to assert
 		}
 
-		protected override int ExpectedNumberOfExecutedSteps()
+		protected override ICollection<Type> ExpectedExecutedSteps { get; } = new[]
 		{
-			// validation, permissions, object types, snapshot, source tags, dest tags,
-			// data destination init, snapshot partition, sync, saved search,
-			// data destination finalization, notification
-			const int expectedNumberOfExecutedSteps = 13;
-			return expectedNumberOfExecutedSteps;
-		}
+			typeof(IValidationConfiguration),
+			typeof(IPermissionsCheckConfiguration),
+			typeof(IDestinationWorkspaceObjectTypesCreationConfiguration),
+			typeof(IDataSourceSnapshotConfiguration),
+			typeof(ISourceWorkspaceTagsCreationConfiguration),
+			typeof(IDestinationWorkspaceTagsCreationConfiguration),
+			typeof(IDataDestinationInitializationConfiguration),
+			typeof(ISumReporterConfiguration),
+			typeof(IDestinationWorkspaceSavedSearchCreationConfiguration),
+			typeof(ISnapshotPartitionConfiguration),
+			typeof(ISynchronizationConfiguration),
+			typeof(IDataDestinationFinalizationConfiguration),
+			typeof(INotificationConfiguration),
+			typeof(IJobCleanupConfiguration)
+		};
 	}
 }

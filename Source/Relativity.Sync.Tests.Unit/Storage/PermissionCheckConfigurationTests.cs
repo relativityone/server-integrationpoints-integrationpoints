@@ -5,12 +5,11 @@ using Moq;
 using NUnit.Framework;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Storage;
 using IConfiguration = Relativity.Sync.Storage.IConfiguration;
 
-namespace Relativity.Sync.Tests.Unit
+namespace Relativity.Sync.Tests.Unit.Storage
 {
 	[TestFixture]
 	public class PermissionCheckConfigurationTests

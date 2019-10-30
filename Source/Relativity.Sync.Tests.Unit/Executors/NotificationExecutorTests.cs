@@ -233,7 +233,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			ExecutionResult actualResult = await _instance.ExecuteAsync(configuration.Object, CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
-			actualResult.Status.Should().Be(ExecutionStatus.Completed);
+			actualResult.Status.Should().Be(ExecutionStatus.Failed);
 		}
 
 		private IMock<INotificationConfiguration> GetNotificationConfiguration()

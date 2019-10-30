@@ -2,11 +2,10 @@
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Relativity.Sync.Configuration;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 
-namespace Relativity.Sync.Tests.Unit
+namespace Relativity.Sync.Tests.Unit.Storage
 {
 	[TestFixture]
 	internal sealed class SnapshotPartitionConfigurationTests

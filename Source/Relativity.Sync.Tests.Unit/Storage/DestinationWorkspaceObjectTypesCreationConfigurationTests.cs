@@ -6,7 +6,7 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
 using IConfiguration = Relativity.Sync.Storage.IConfiguration;
 
-namespace Relativity.Sync.Tests.Unit
+namespace Relativity.Sync.Tests.Unit.Storage
 {
 	[TestFixture]
 	public sealed class DestinationWorkspaceObjectTypesCreationConfigurationTests

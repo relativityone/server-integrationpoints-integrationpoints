@@ -9,7 +9,7 @@ using Relativity.Sync.ExecutionConstrains;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 
-namespace Relativity.Sync.Tests.Unit
+namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
 {
 	[TestFixture]
 	internal sealed class SnapshotPartitionExecutionConstrainsTests

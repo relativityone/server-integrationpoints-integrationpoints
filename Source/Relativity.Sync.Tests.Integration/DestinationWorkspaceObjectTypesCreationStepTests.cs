@@ -13,11 +13,13 @@ namespace Relativity.Sync.Tests.Integration
 			// nothing special to assert
 		}
 
-		protected override int ExpectedNumberOfExecutedSteps()
+		protected override ICollection<Type> ExpectedExecutedSteps { get; } = new[]
 		{
-			// validation, permissions, notification
-			const int expectedNumberOfExecutedSteps = 3;
-			return expectedNumberOfExecutedSteps;
-		}
+			typeof(IValidationConfiguration),
+			typeof(IPermissionsCheckConfiguration),
+			typeof(IJobStatusConsolidationConfiguration),
+			typeof(INotificationConfiguration),
+			typeof(IJobCleanupConfiguration)
+		};
 	}
 }

@@ -19,18 +19,18 @@ namespace Relativity.Sync.Tests.Integration
 	[TestFixture]
 	public sealed class PipelineBuilderTests
 	{
-		private List<Type> _executorTypes;
+		private List<Type> _executorTypesInActualExecutionOrder;
 		private ContainerBuilder _containerBuilder;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_executorTypes = new List<Type>();
+			_executorTypesInActualExecutionOrder = new List<Type>();
 
 			_containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
 
 			IntegrationTestsContainerBuilder.MockReporting(_containerBuilder);
-			IntegrationTestsContainerBuilder.RegisterStubsForPipelineBuilderTests(_containerBuilder, _executorTypes);
+			IntegrationTestsContainerBuilder.RegisterStubsForPipelineBuilderTests(_containerBuilder, _executorTypesInActualExecutionOrder);
 		}
 
 		[Test]
@@ -44,7 +44,7 @@ namespace Relativity.Sync.Tests.Integration
 			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			AssertExecutionOrder(expectedOrder);
+			AssertExecutionOrder(expectedOrder, _executorTypesInActualExecutionOrder);
 		}
 
 		[Test]
@@ -56,7 +56,7 @@ namespace Relativity.Sync.Tests.Integration
 			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			_executorTypes.Should().Contain(typeof(INotificationConfiguration));
+			_executorTypesInActualExecutionOrder.Should().Contain(typeof(INotificationConfiguration));
 		}
 
 		[Test]
@@ -71,7 +71,7 @@ namespace Relativity.Sync.Tests.Integration
 
 			// ASSERT
 			action.Should().Throw<SyncException>();
-			_executorTypes.Should().Contain(typeof(INotificationConfiguration));
+			_executorTypesInActualExecutionOrder.Should().Contain(typeof(INotificationConfiguration));
 		}
 
 		[Test]
@@ -164,23 +164,17 @@ namespace Relativity.Sync.Tests.Integration
 			AssertNodesReportedCompletedWithErrors(progress, container.ResolveNode<IDataSourceSnapshotConfiguration>());
 		}
 
-		private void AssertExecutionOrder(List<Type[]> expectedOrder)
+		private static void AssertExecutionOrder(IReadOnlyCollection<Type[]> expectedExecutionOrder, IReadOnlyCollection<Type> actualExecutionOrder)
 		{
-			int counter = 0;
-			foreach (Type[] types in expectedOrder)
+			int offset = 0;
+			foreach (Type[] expectedSteps in expectedExecutionOrder)
 			{
-				foreach (var type in types)
-				{
-					bool isInOrder = false;
-					for (int j = 0; j < types.Length; j++)
-					{
-						isInOrder |= type == _executorTypes[j + counter];
-					}
+				IEnumerable<Type> actualStepsTypesSet = actualExecutionOrder
+					.Skip(offset).Take(expectedSteps.Length);
 
-					isInOrder.Should().BeTrue();
-				}
+				actualStepsTypesSet.Should().BeEquivalentTo(expectedSteps);
 
-				counter += types.Length;
+				offset += expectedSteps.Length;
 			}
 		}
 
@@ -204,8 +198,11 @@ namespace Relativity.Sync.Tests.Integration
 				new[] {typeof(ISynchronizationConfiguration)},
 				new[] {typeof(IDataDestinationFinalizationConfiguration)},
 				new[] {typeof(IJobStatusConsolidationConfiguration)},
-				new[] {typeof(IJobCleanupConfiguration)},
-				new[] {typeof(INotificationConfiguration)}
+				new[]
+				{
+					typeof(IJobCleanupConfiguration),
+					typeof(INotificationConfiguration)
+				}
 			};
 		}
 

@@ -13,12 +13,19 @@ namespace Relativity.Sync.Tests.Integration
 			// nothing special to assert
 		}
 
-		protected override int ExpectedNumberOfExecutedSteps()
+		protected override ICollection<Type> ExpectedExecutedSteps { get; } = new[]
 		{
-			// validation, permissions, object types, snapshot
-			// source workspace tags, destination workspace tags
-			const int expectedNumberOfExecutedSteps = 9;
-			return expectedNumberOfExecutedSteps;
-		}
+			typeof(IPermissionsCheckConfiguration),
+			typeof(IValidationConfiguration),
+			typeof(IDestinationWorkspaceObjectTypesCreationConfiguration),
+			typeof(IDataSourceSnapshotConfiguration),
+			typeof(ISumReporterConfiguration),
+			typeof(ISourceWorkspaceTagsCreationConfiguration),
+			typeof(IDestinationWorkspaceTagsCreationConfiguration),
+			typeof(IDataDestinationInitializationConfiguration),
+			typeof(IJobStatusConsolidationConfiguration),
+			typeof(INotificationConfiguration),
+			typeof(IJobCleanupConfiguration)
+		};
 	}
 }

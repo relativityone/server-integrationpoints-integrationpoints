@@ -13,11 +13,11 @@ namespace Relativity.Sync.Tests.Integration
 			// no need to check other steps
 		}
 
-		protected override int ExpectedNumberOfExecutedSteps()
+		protected override ICollection<Type> ExpectedExecutedSteps { get; } = new[]
 		{
-			// Notification/root
-			const int expectedNumberOfExecutedSteps = 1;
-			return expectedNumberOfExecutedSteps;
-		}
+			typeof(INotificationConfiguration),
+			typeof(IJobCleanupConfiguration),
+			typeof(IJobStatusConsolidationConfiguration)
+		};
 	}
 }

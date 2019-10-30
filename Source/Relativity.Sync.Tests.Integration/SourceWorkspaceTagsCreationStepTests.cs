@@ -40,12 +40,19 @@ namespace Relativity.Sync.Tests.Integration
 			executorTypes.Should().Contain(x => x == typeof(IDataDestinationInitializationConfiguration));
 		}
 
-		protected override int ExpectedNumberOfExecutedSteps()
+		protected override ICollection<Type> ExpectedExecutedSteps { get; } = new[]
 		{
-			// validation, permissions, object types, snapshot, destination workspace tags, data destination init, notification
-			const int expectedNumberOfExecutedSteps = 8;
-			return expectedNumberOfExecutedSteps;
-		}
+			typeof(IValidationConfiguration),
+			typeof(IPermissionsCheckConfiguration),
+			typeof(IDestinationWorkspaceObjectTypesCreationConfiguration),
+			typeof(IDataSourceSnapshotConfiguration),
+			typeof(IDestinationWorkspaceTagsCreationConfiguration),
+			typeof(IDataDestinationInitializationConfiguration),
+			typeof(ISumReporterConfiguration),
+			typeof(INotificationConfiguration),
+			typeof(IJobStatusConsolidationConfiguration),
+			typeof(IJobCleanupConfiguration)
+		};
 
 		[SetUp]
 		public void MySetUp()
