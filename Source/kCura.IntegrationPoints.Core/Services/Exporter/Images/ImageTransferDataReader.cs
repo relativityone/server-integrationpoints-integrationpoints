@@ -80,6 +80,16 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 			}
 		}
 
+		public override bool Read()
+		{
+			if (ReadEntriesCount % 500 == 0)
+			{
+				_logger.LogInformation("Read {ReadEntriesCount} documents.", ReadEntriesCount);
+			}
+
+			return base.Read();
+		}
+
 		private IntegrationPointsException LogGetValueError(Exception e, 
 			int i,
 			string fieldIdentifier,

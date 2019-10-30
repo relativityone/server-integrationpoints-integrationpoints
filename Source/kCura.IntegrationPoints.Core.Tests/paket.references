@@ -12,6 +12,7 @@ Relativity.Productions.Services.Interfaces
 Relativity.Services.Interfaces
 Relativity.Services.Interfaces.Private
 Relativity.Telemetry.APM
+Relativity.DataGrid
 SystemWrapper.Interfaces
 
 group TestPackages

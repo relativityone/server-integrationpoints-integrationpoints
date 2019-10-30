@@ -59,7 +59,7 @@ namespace kCura.IntegrationPoints.Core.Authentication
 
 		private void LogGetOAuth2ClientSuccess(int userId)
 		{
-			_logger.LogInformation($"OAuth2Client for user with id: {userId} created successfully");
+			_logger.LogInformation("OAuth2Client for user with id: {userId} created successfully", userId);
 		}
 	}
 }

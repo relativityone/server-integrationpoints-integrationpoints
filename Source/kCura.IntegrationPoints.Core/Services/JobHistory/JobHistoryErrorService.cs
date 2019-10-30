@@ -1,32 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.Crypto;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Extensions;
-using kCura.Relativity.Client.DTOs;
+using kCura.IntegrationPoints.Domain.Models;
 using Relativity.API;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
+using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
 	public class JobHistoryErrorService : IJobHistoryErrorService
 	{
-		public const int ERROR_BATCH_SIZE = 500;
+		public const int ERROR_BATCH_SIZE = 5000;
 		private readonly ICaseServiceContext _context;
 		private readonly IIntegrationPointRepository _integrationPointRepository;
 		private readonly List<JobHistoryError> _jobHistoryErrorList;
 		private readonly IAPILog _logger;
 		private bool _errorOccurredDuringJob;
 
+		private readonly IHelper _helper;
+
 		public JobHistoryErrorService(ICaseServiceContext context, IHelper helper, IIntegrationPointRepository integrationPointRepository)
 		{
 			_context = context;
 			_integrationPointRepository = integrationPointRepository;
+			_helper = helper;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<IJobHistoryErrorService>();
 			_jobHistoryErrorList = new List<JobHistoryError>();
 			_errorOccurredDuringJob = false;
@@ -34,6 +43,26 @@ namespace kCura.IntegrationPoints.Core.Services
 		}
 
 		internal int PendingErrorCount => _jobHistoryErrorList.Count;
+
+		private readonly Guid _jobHistoryErrorObject = new Guid("17E7912D-4F57-4890-9A37-ABC2B8A37BDB");
+
+		private readonly Guid _errorMessageField = new Guid("4112B894-35B0-4E53-AB99-C9036D08269D");
+		private readonly Guid _errorStatusField = new Guid("DE1A46D2-D615-427A-B9F2-C10769BC2678");
+		private readonly Guid _errorTypeField = new Guid("EEFFA5D3-82E3-46F8-9762-B4053D73F973");
+		private readonly Guid _nameField = new Guid("84E757CC-9DA2-435D-B288-0C21EC589E66");
+		private readonly Guid _sourceUniqueIdField = new Guid("5519435E-EE82-4820-9546-F1AF46121901");
+		private readonly Guid _stackTraceField = new Guid("0353DBDE-9E00-4227-8A8F-4380A8891CFF");
+		private readonly Guid _timestampUtcField = new Guid("B9CBA772-E7C9-493E-B7F8-8D605A6BFE1F");
+
+		private readonly Guid _errorStatusNew = new Guid("F881B199-8A67-4D49-B1C1-F9E68658FB5A");
+		private readonly Guid _errorStatusExpired = new Guid("AF01A8FA-B419-49B1-BD71-25296E221E57");
+		private readonly Guid _errorStatusInProgress = new Guid("E5EBD98C-C976-4FA2-936F-434E265EA0AA");
+		private readonly Guid _errorStatusRetried = new Guid("7D3D393D-384F-434E-9776-F9966550D29A");
+
+		private readonly Guid _errorTypeItem = new Guid("9DDC4914-FEF3-401F-89B7-2967CD76714B");
+		private readonly Guid _errorTypeJob = new Guid("FA8BB625-05E6-4BF7-8573-012146BAF19B");
+
+		private readonly Guid _jobHistoryRelationGuid = new Guid("8B747B91-0627-4130-8E53-2931FFC4135F");
 
 		public bool JobLevelErrorOccurred { get; private set; }
 
@@ -45,8 +74,8 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			if (batchReporter is IBatchReporter)
 			{
-				((IBatchReporter) batchReporter).OnJobError += OnJobError;
-				((IBatchReporter) batchReporter).OnDocumentError += OnRowError;
+				((IBatchReporter)batchReporter).OnJobError += OnJobError;
+				((IBatchReporter)batchReporter).OnDocumentError += OnRowError;
 			}
 		}
 
@@ -54,8 +83,45 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			lock (_jobHistoryErrorList)
 			{
+				if (!_jobHistoryErrorList.Any())
+				{
+					return;
+				}
+
 				try
 				{
+					_logger.LogInformation("Mass-creating item level errors count: {count}", _jobHistoryErrorList.Count);
+
+					IReadOnlyList<IReadOnlyList<object>> values = _jobHistoryErrorList.Select(x => new List<object>()
+					{
+						x.Error,
+						GetErrorStatusChoice(),
+						GetErrorTypeChoice(),
+						Guid.NewGuid().ToString(),
+						x.SourceUniqueID,
+						x.StackTrace,
+						DateTime.UtcNow
+					}).ToList();
+
+					using (IObjectManager objectManager = _helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
+					{
+						var request = new MassCreateRequest
+						{
+							ObjectType = GetObjectTypeRef(),
+							ParentObject = GetParentObject(_jobHistoryErrorList.FirstOrDefault()?.JobHistory ?? 0),
+							Fields = GetFields(),
+							ValueLists = values
+						};
+						MassCreateResult result = objectManager.CreateAsync(_context.WorkspaceID, request).GetAwaiter().GetResult();
+						if (!result.Success)
+						{
+							throw new IntegrationPointsException($"Mass creation of item level errors was not successful. Message: {result.Message}");
+						}
+
+						_logger.LogInformation("Successfully mass-created item level errors: {count}", _jobHistoryErrorList.Count);
+					}
+
+
 					if (_jobHistoryErrorList.Any())
 					{
 						_errorOccurredDuringJob = true;
@@ -65,13 +131,15 @@ namespace kCura.IntegrationPoints.Core.Services
 							IntegrationPoint.HasErrors = true;
 						}
 
-						_context.RsapiService.JobHistoryErrorLibrary.Create(_jobHistoryErrorList);
+						//	_context.RsapiService.JobHistoryErrorLibrary.Create(_jobHistoryErrorList);
 					}
 
-					if (IntegrationPoint!=null && !_errorOccurredDuringJob || (JobStopManager?.IsStopRequested() == true) )
+					if (IntegrationPoint != null && !_errorOccurredDuringJob || (JobStopManager?.IsStopRequested() == true))
 					{
 						IntegrationPoint.HasErrors = false;
 					}
+
+					_logger.LogInformation("Successfully mass-created item level errors count: {count}", _jobHistoryErrorList.Count);
 				}
 				catch (Exception ex)
 				{
@@ -86,7 +154,8 @@ namespace kCura.IntegrationPoints.Core.Services
 
 					LogCommittingErrorsFailed(ex, allErrors);
 
-					throw new Exception("Could not commit Job History Errors. These are uncommitted errors:" + Environment.NewLine + allErrors);
+					_logger.LogError("Could not commit Job History Errors. These are uncommitted errors: {allErrors}", allErrors);
+					//throw new Exception("Could not commit Job History Errors. These are uncommitted errors:" + Environment.NewLine + allErrors);
 				}
 				finally
 				{
@@ -96,17 +165,60 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 		}
 
+
+		private ObjectTypeRef GetObjectTypeRef()
+		{
+			return new ObjectTypeRef { Guid = _jobHistoryErrorObject };
+		}
+
+		private RelativityObjectRef GetParentObject(int jobHistoryArtifactId)
+		{
+			return new RelativityObjectRef { ArtifactID = jobHistoryArtifactId };
+		}
+
+		private FieldRef[] GetFields()
+		{
+			return new[]
+			{
+				new FieldRef { Guid = _errorMessageField },
+				new FieldRef { Guid = _errorStatusField },
+				new FieldRef { Guid = _errorTypeField },
+				new FieldRef { Guid = _nameField },
+				new FieldRef { Guid = _sourceUniqueIdField },
+				new FieldRef { Guid = _stackTraceField },
+				new FieldRef { Guid = _timestampUtcField }
+			};
+		}
+
+		private ChoiceRef GetErrorStatusChoice()
+		{
+			var errorStatusChoice = new ChoiceRef
+			{
+				Guid = _errorStatusNew
+			};
+			return errorStatusChoice;
+		}
+
+		private ChoiceRef GetErrorTypeChoice()
+		{
+			var errorTypeChoice = new ChoiceRef
+			{
+				Guid = _errorTypeItem
+			};
+			return errorTypeChoice;
+		}
+
 		public void AddError(Choice errorType, Exception ex)
 		{
 			string message = ex.FlattenErrorMessages();
 
 			if (ex is IntegrationPointValidationException)
 			{
-			    var ipException = ex as IntegrationPointValidationException;
-			    message = string.Join(Environment.NewLine, ipException.ValidationResult.MessageTexts);
+				var ipException = ex as IntegrationPointValidationException;
+				message = string.Join(Environment.NewLine, ipException.ValidationResult.MessageTexts);
 			}
 
-		    AddError(errorType, string.Empty, ex.Message, message);
+			AddError(errorType, string.Empty, ex.Message, message);
 		}
 
 		public void AddError(Choice errorType, string documentIdentifier, string errorMessage, string stackTrace)
@@ -136,8 +248,8 @@ namespace kCura.IntegrationPoints.Core.Services
 					{
 						JobLevelErrorOccurred = true;
 						CommitErrors();
-					} 
-					else if(_jobHistoryErrorList.Count == ERROR_BATCH_SIZE)
+					}
+					else if (_jobHistoryErrorList.Count == ERROR_BATCH_SIZE)
 					{
 						CommitErrors();
 					}
@@ -185,7 +297,7 @@ namespace kCura.IntegrationPoints.Core.Services
 				//The field may be out of state with the true job status, or subsequent Update calls may succeed.
 			}
 		}
-		
+
 		#region Logging
 
 		private void LogCommittingErrorsFailed(Exception ex, string allErrors)
@@ -197,7 +309,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			_logger.LogError("Failed to create Job History Error: Job History doesn't exists.");
 		}
-		
+
 		#endregion
 	}
 }
