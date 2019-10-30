@@ -4,9 +4,7 @@ using System.Globalization;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
-using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
@@ -36,7 +34,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		private const string _NAME = "Name";
 		private const string _FIELDMAP = "Map";
 		private const int _ADMIN_USER_ID = 9;
-		private const string _REALTIVITY_SERVICE_ACCOUNT_FULL_NAME = "Service Account, Relativity";
 		private const string _INTEGRATION_POINT_PROVIDER_VALIDATION_EXCEPTION_MESSAGE = "Integration Points provider validation failed, please review result property for the details.";
 		private DestinationProvider _destinationProvider;
 		private IIntegrationPointService _integrationPointService;
@@ -73,41 +70,45 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		[IdentifiedTest("8a8a2bf4-7fbf-4da8-a7d2-4e9eaa2cb55c")]
 		public void SaveIntegration_UpdateNothing()
 		{
+			//Arrange
 			const string name = "Resaved Rip";
 			IntegrationPointModel originalModel = CreateIntegrationPointThatIsAlreadyRunModel(name);
 			IntegrationPointModel defaultModel = CreateOrUpdateIntegrationPoint(originalModel);
+
+			//Act
 			IntegrationPointModel newModel = CreateOrUpdateIntegrationPoint(defaultModel);
 
+			//Assert
 			ValidateModel(originalModel, newModel, new string[0]);
 		}
 
 		[IdentifiedTest("be866088-3e84-4b04-9ac5-d7a68f1b021c")]
 		public void SaveIntegration_UpdateName_OnRanIp_ErrorCase()
 		{
+			//Arrange
 			const string name = "Update Name - OnRanIp";
 			IntegrationPointModel originalModel = CreateIntegrationPointThatIsAlreadyRunModel(name);
 			IntegrationPointModel defaultModel = CreateOrUpdateIntegrationPoint(originalModel);
-
 			defaultModel.Name = "newName";
 
+			//Act & Assert
 			Assert.Throws<Exception>(() => CreateOrUpdateIntegrationPoint(defaultModel));
 		}
 
 		[IdentifiedTest("a7e8ce95-14a3-4754-89fd-d629f1ef1f9c")]
 		public void SaveIntegration_UpdateMap_OnRanIp()
 		{
+			//Arrange
 			const string name = "Update Map - OnRanIp";
 			IntegrationPointModel originalModel = CreateIntegrationPointThatIsAlreadyRunModel(name);
 			IntegrationPointModel defaultModel = CreateOrUpdateIntegrationPoint(originalModel);
-
 			defaultModel.Map = CreateSampleFieldsMapWithLongTextField();
 
+			//Act
 			IntegrationPointModel newModel = CreateOrUpdateIntegrationPoint(defaultModel);
-			ValidateModel(originalModel, newModel, new string[] { _FIELDMAP });
 
-			Audit audit = this.GetLastAuditsForIntegrationPoint(defaultModel.Name, 1).First();
-			Assert.AreEqual(SharedVariables.UserFullName, audit.UserFullName, "The user should be correct.");
-			Assert.AreEqual("Update", audit.AuditAction, "The audit action should be correct.");
+			//Assert
+			ValidateModel(originalModel, newModel, new string[] { _FIELDMAP });
 		}
 
 		[IdentifiedTest("042b5825-71a0-47cc-b7dc-1fd203fd9d35")]
@@ -132,7 +133,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			const string name = "Update Name - OnNewRip";
 			IntegrationPointModel originalModel = CreateIntegrationPointThatIsAlreadyRunModel(name);
 			IntegrationPointModel defaultModel = CreateOrUpdateIntegrationPoint(originalModel);
-
 			defaultModel.Name = name + " 2";
 
 			//Act & Assert
@@ -154,59 +154,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 
 			//Assert
 			ValidateModel(originalModel, newModel, new[] { _FIELDMAP });
-
-			Audit audit = this.GetLastAuditsForIntegrationPoint(defaultModel.Name, 1).First();
-			Assert.AreEqual(SharedVariables.UserFullName, audit.UserFullName, "The user should be correct.");
-			Assert.AreEqual("Update", audit.AuditAction, "The audit action should be correct.");
-		}
-
-		[IdentifiedTest("c25b58f3-f049-4b61-adda-7dbf3c8e6be3")]
-		public void SaveIntegration_IntegrationPointWithNoSchedulerAndUpdateWithScheduler()
-		{
-			//Arrange
-			Import.ImportNewDocuments(SourceWorkspaceArtifactID, Import.GetImportTable("RunNow", 3));
-
-			IntegrationPointModel integrationModel = new IntegrationPointModel
-			{
-				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.OverlayOnly),
-				DestinationProvider = RelativityDestinationProviderArtifactId,
-				SourceProvider = RelativityProvider.ArtifactId,
-				SourceConfiguration = CreateDefaultSourceConfig(),
-				LogErrors = true,
-				Name = $"IntegrationPointServiceTest{DateTime.Now:yy-MM-dd HH-mm-ss}",
-				SelectedOverwrite = "Overlay Only",
-				Scheduler = new Scheduler()
-				{
-					EnableScheduler = false
-				},
-				Map = CreateDefaultFieldMap(),
-				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
-			};
-
-			//Act
-			IntegrationPointModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
-			integrationPoint.Scheduler = new Scheduler()
-			{
-				EnableScheduler = true,
-				StartDate = DateTime.UtcNow.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture),
-				EndDate = DateTime.UtcNow.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture),
-				ScheduledTime = DateTime.UtcNow.ToString("HH") + ":" + DateTime.UtcNow.AddMinutes(1).ToString("mm"),
-				Reoccur = 0,
-				SelectedFrequency = ScheduleInterval.None.ToString(),
-				TimeZoneId = TimeZoneInfo.Utc.Id
-			};
-			IntegrationPointModel modifiedIntegrationPoint = CreateOrUpdateIntegrationPoint(integrationPoint);
-			//We need to clean ScheduleAgentQueue table because this Integration Point is scheduled and RIP Application and workspace 
-			//will be deleted after test is finished
-			CleanScheduleAgentQueueFromAllRipJobs(integrationPoint.ArtifactID);
-
-			//Assert
-			Audit postRunAudit = this.GetLastAuditsForIntegrationPoint(modifiedIntegrationPoint.Name, 1).First();
-
-			Assert.AreEqual("Update", postRunAudit.AuditAction, "The audit action should be Update");
-			Assert.AreEqual(SharedVariables.UserFullName, postRunAudit.UserFullName, "The user should be correct");
-
-			AssertThatAuditDetailsChanged(postRunAudit, new HashSet<string>() { "Next Scheduled Runtime (UTC)", "Has Errors" });
 		}
 
 		#endregion UpdateProperties
@@ -250,22 +197,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Assert.AreEqual(0, jobHistory.ItemsWithErrors);
 			Assert.AreEqual(JobStatusChoices.JobHistoryCompleted.Name, jobHistory.JobStatus.Name);
 			Assert.AreEqual(JobTypeChoices.JobHistoryRun.Name, jobHistory.JobType.Name);
-
-			// Follow up story regarding audits: REL-327585
-			const int expectedNumberOfAudits = 1;
-			IList<Audit> postRunAudits = this.GetLastAuditsForIntegrationPoint(integrationModel.Name, expectedNumberOfAudits);
-			Assert.AreEqual(expectedNumberOfAudits, postRunAudits.Count, $"There should be {expectedNumberOfAudits} audits");
-			Assert.IsTrue(postRunAudits.All(x => x.AuditAction == "Update"));
-			Assert.IsTrue(postRunAudits.All(x => x.UserFullName == _REALTIVITY_SERVICE_ACCOUNT_FULL_NAME), "The user full name should match");
-
-			AssertThatAuditDetailsChanged(postRunAudits.First(), new HashSet<string>() { "Last Runtime (UTC)" });
 		}
 
 		[IdentifiedTest("8a1efb36-117e-4c96-814d-537209d04314")]
 		public void RetryIntegrationPoint_GoldFlow()
 		{
 			//Arrange
-
 			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
@@ -290,8 +227,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			//Create Errors by using Append Only
 			_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactID, integrationPoint.ArtifactID, _ADMIN_USER_ID);
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactID, integrationPoint.ArtifactID);
-			const int expectedNumberOfAudits = 2;
-			IList<Audit> postRunAudits = this.GetLastAuditsForIntegrationPoint(integrationModel.Name, expectedNumberOfAudits);
 
 			//Update Integration Point's SelectedOverWrite to "Overlay Only"
 			IntegrationPointModel integrationPointPostRun = _integrationPointService.ReadIntegrationPointModel(integrationPoint.ArtifactID);
@@ -315,17 +250,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Assert.AreEqual(0, jobHistory.ItemsWithErrors);
 			Assert.AreEqual(JobStatusChoices.JobHistoryCompleted.Name, jobHistory.JobStatus.Name);
 			Assert.AreEqual(JobTypeChoices.JobHistoryRetryErrors.Name, jobHistory.JobType.Name);
-
-			Assert.AreEqual(expectedNumberOfAudits, postRunAudits.Count, $"There should be {expectedNumberOfAudits} audits");
-			Assert.IsTrue(postRunAudits.All(x => x.AuditAction == "Update"));
-			Assert.IsTrue(postRunAudits.All(x => x.UserFullName == _REALTIVITY_SERVICE_ACCOUNT_FULL_NAME), "The user full name should match");
-			AssertThatAuditDetailsChanged(postRunAudits.First(), new HashSet<string>() { "Last Runtime (UTC)", "Has Errors" });
-
-			IList<Audit> postRetryAudits = this.GetLastAuditsForIntegrationPoint(integrationModel.Name, expectedNumberOfAudits);
-			Assert.AreEqual(expectedNumberOfAudits, postRetryAudits.Count, $"There should be {expectedNumberOfAudits} audits");
-			Assert.IsTrue(postRetryAudits.All(x => x.AuditAction == "Update"));
-			Assert.IsTrue(postRetryAudits.All(x => x.UserFullName == _REALTIVITY_SERVICE_ACCOUNT_FULL_NAME), "The user full name should match");
-			AssertThatAuditDetailsChanged(postRetryAudits.First(), new HashSet<string>() { "Last Runtime (UTC)", "Has Errors" });
 		}
 
 		[IdentifiedTest("7d479f10-b1fc-4a52-a081-18332ed91fc0")]
@@ -372,13 +296,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Assert.AreEqual(false, integrationPointPostRun.HasErrors);
 			Assert.IsNotNull(integrationPointPostRun.LastRun);
 			Assert.IsNotNull(integrationPointPostRun.NextRun);
-
-			Audit postRunAudit = this.GetLastAuditsForIntegrationPoint(integrationPointPostRun.Name, 1).First();
-
-			Assert.AreEqual("Update", postRunAudit.AuditAction, "The audit action should be Update");
-			Assert.AreEqual(_REALTIVITY_SERVICE_ACCOUNT_FULL_NAME, postRunAudit.UserFullName, "The user should be correct");
-
-			AssertThatAuditDetailsChanged(postRunAudit, new HashSet<string>() { "Next Scheduled Runtime (UTC)", "Last Runtime (UTC)" });
 
 			//We need to clean ScheduleAgentQueue table because this Integration Point is scheduled and RIP Application and workspace 
 			//will be deleted after test is finished
@@ -524,18 +441,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			foreach (Job job in jobs)
 			{
 				_jobService.DeleteJob(job.JobId);
-			}
-		}
-
-		private void AssertThatAuditDetailsChanged(Audit audit, HashSet<string> fieldNames)
-		{
-			IDictionary<string, Tuple<string, string>> auditDetailsFieldValueDictionary = this.GetAuditDetailsFieldValues(audit, fieldNames);
-
-			foreach (string key in auditDetailsFieldValueDictionary.Keys)
-			{
-				Tuple<string, string> auditDetailsFieldValueTuple = auditDetailsFieldValueDictionary[key];
-				Assert.IsNotNull(auditDetailsFieldValueTuple, "The audit should contain the field value changes");
-				Assert.AreNotEqual(auditDetailsFieldValueTuple.Item1, auditDetailsFieldValueTuple.Item2, "The field's values should have changed");
 			}
 		}
 
