@@ -7,7 +7,7 @@ namespace Relativity.Sync
 	{
 		private readonly IJobProgressUpdaterFactory _jobProgressUpdaterFactory;
 
-		public JobProgressHandlerFactory(IJobProgressUpdaterFactory jobProgressUpdaterFactory, IDateTime dateTime)
+		public JobProgressHandlerFactory(IJobProgressUpdaterFactory jobProgressUpdaterFactory)
 		{
 			_jobProgressUpdaterFactory = jobProgressUpdaterFactory;
 		}
