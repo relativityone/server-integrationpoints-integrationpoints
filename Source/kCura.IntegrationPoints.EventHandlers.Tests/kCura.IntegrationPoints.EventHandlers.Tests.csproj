@@ -63,6 +63,7 @@
     <Compile Include="Commands\JobHistoryDestinationWorkspaceParserTests.cs" />
     <Compile Include="Commands\MigrateSecretCatalogPathToSecretStorePathCommandTests.cs" />
     <Compile Include="Commands\PreCascadeDeleteIntegrationPointCommandTests.cs" />
+    <Compile Include="Commands\RemoveBatchesFromOldJobsCommandTests.cs" />
     <Compile Include="Commands\RenameCustodianToEntity\RenameCustodianToEntityForSourceProviderCommandTests.cs" />
     <Compile Include="Commands\RenameCustodianToEntity\RenameCustodianToEntityInIntegrationPointConfigurationCommandTests.cs" />
     <Compile Include="Commands\RestoreJobHistoryDestinationWorkspaceCommandTests.cs" />
@@ -128,6 +129,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.FtpProvider.Helpers\kCura.IntegrationPoints.FtpProvider.Helpers.csproj">
       <Project>{3e33dd7e-266f-48f8-86a2-3cdb836f2947}</Project>
       <Name>kCura.IntegrationPoints.FtpProvider.Helpers</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.RelativitySync\kCura.IntegrationPoints.RelativitySync.csproj">
+      <Project>{C2AADDB6-21AC-4372-924C-5B82ED014313}</Project>
+      <Name>kCura.IntegrationPoints.RelativitySync</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
       <Project>{B91CC4ED-ABF3-4409-8DF3-46A3C26EB4AA}</Project>
