@@ -149,10 +149,14 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 				RetrievedDataCount += retrievedData.Count;
 				_readDocumentsCounts += size;
 
-				Logger.LogInformation("Retrieved {numberOfImages} images for {numberOfDocuments} in ImageExporterService", imagesResult.Count, documentsWithImages.Count);
-				Context.TotalItemsFound = Context.TotalItemsFound.GetValueOrDefault() + imagesResult.Count;
+                if (_readDocumentsCounts > TotalRecordsFound)
+                {
+                    _readDocumentsCounts = TotalRecordsFound;
+                }
 
-				Logger.LogInformation("Read {readDocumentsCount} out of {totalDocumentCount}", _readDocumentsCounts, TotalRecordsFound);
+				Logger.LogInformation("Retrieved {numberOfImages} images for {numberOfDocuments} documents in ImageExporterService", imagesResult.Count, documentsWithImages.Count);
+				Context.TotalItemsFound = Context.TotalItemsFound.GetValueOrDefault() + imagesResult.Count;
+				Logger.LogInformation("Read {readDocumentsCount} out of {totalDocumentCount} documents", _readDocumentsCounts, TotalRecordsFound);
 
 				return imagesResult.ToArray();
 			}
