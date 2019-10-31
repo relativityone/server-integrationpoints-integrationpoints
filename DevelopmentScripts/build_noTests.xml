@@ -17,11 +17,6 @@
             <Platform>x64</Platform>
           </Platforms>
         </Project>
-        <Project path="Source\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
-          <Platforms>
-            <Platform>x64</Platform>
-          </Platforms>
-        </Project>
         <Project path="Source\kCura.IntegrationPoints.Core\kCura.IntegrationPoints.Core.csproj">
           <Platforms>
             <Platform>x64</Platform>
@@ -98,11 +93,6 @@
           </Platforms>
         </Project>
         <Project path="Source\kCura.IntegrationPoints.Management\kCura.IntegrationPoints.Management.csproj">
-          <Platforms>
-            <Platform>x64</Platform>
-          </Platforms>
-        </Project>
-        <Project path="Source\kCura.IntegrationPoints.SourceProviderInstaller\kCura.IntegrationPoints.SourceProviderInstaller.csproj">
           <Platforms>
             <Platform>x64</Platform>
           </Platforms>
@@ -231,14 +221,14 @@
       <Adds>
         <Add path="Source\Provider\Provider.csproj">
           <References>
-            <Reference>kCura.IntegrationPoints.SourceProviderInstaller.dll</Reference>
-            <Reference>kCura.IntegrationPoints.Contracts.dll</Reference>
+            <Reference>Relativity.IntegrationPoints.SourceProviderInstaller.dll</Reference>
+            <Reference>Relativity.IntegrationPoints.Contracts.dll</Reference>
           </References>
         </Add>
         <Add path="Source\JsonLoader\JsonLoader.csproj">
           <References>
-            <Reference>kCura.IntegrationPoints.SourceProviderInstaller.dll</Reference>
-            <Reference>kCura.IntegrationPoints.Contracts.dll</Reference>
+            <Reference>Relativity.IntegrationPoints.SourceProviderInstaller.dll</Reference>
+            <Reference>Relativity.IntegrationPoints.Contracts.dll</Reference>
             <Reference>kCura.IntegrationPoints.Domain.dll</Reference>
           </References>
         </Add>
@@ -316,7 +306,7 @@
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.Agent.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.Common.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.Config.dll</Assembly>
-          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Contracts.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.IntegrationPoints.Contracts.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.Core.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.Core.Contracts.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.Data.dll</Assembly>
@@ -335,7 +325,7 @@
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.LDAPProvider.dll</Assembly>
           <Assembly>lib\UnitTests\Relativity.IntegrationPoints.Services.dll</Assembly>
           <Assembly>lib\UnitTests\Relativity.IntegrationPoints.Services.Interfaces.Private.dll</Assembly>
-          <Assembly>lib\UnitTests\kCura.IntegrationPoints.SourceProviderInstaller.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.IntegrationPoints.SourceProviderInstaller.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.Synchronizers.RDO.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.LongPath.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.Relativity.Client.dll</Assembly>
@@ -373,12 +363,12 @@
           <Assembly>lib\UnitTests\kCura.Apps.Common.Utils.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.Common.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.Config.dll</Assembly>
-          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Contracts.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.IntegrationPoints.Contracts.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.Core.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.Core.Contracts.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.Data.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.Domain.dll</Assembly>
-          <Assembly>lib\UnitTests\kCura.IntegrationPoints.SourceProviderInstaller.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.IntegrationPoints.SourceProviderInstaller.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.Synchronizers.RDO.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.ScheduleQueue.Core.dll</Assembly>
           <Assembly>lib\UnitTests\Relativity.DataTransfer.MessageService.dll</Assembly>
@@ -399,12 +389,12 @@
           <Assembly>lib\UnitTests\kCura.Apps.Common.Utils.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.Common.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.Config.dll</Assembly>
-          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Contracts.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.IntegrationPoints.Contracts.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.Core.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.Core.Contracts.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.Data.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.Domain.dll</Assembly>
-          <Assembly>lib\UnitTests\kCura.IntegrationPoints.SourceProviderInstaller.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.IntegrationPoints.SourceProviderInstaller.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.Synchronizers.RDO.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.ScheduleQueue.Core.dll</Assembly>
           <Assembly>lib\UnitTests\Relativity.DataTransfer.MessageService.dll</Assembly>
