@@ -175,7 +175,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				.Returns((Func<DataSet> f, string s) => f.Invoke());
 
 			//act
-			List<string> result = _sut.GetImagesLocationForProductionDocuments(
+			ILookup<int, string> result = _sut.GetImagesLocationForProductionDocuments(
 				_WORKSPACE_ID,
 				productionID,
 				documentIDs
@@ -187,7 +187,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			);
 			AssertIfListsAreSameAsExpected(
 				_testProductionDocumentImageResponses.Select(x => x.Location).ToList(),
-				result
+				result.SelectMany(x => x).ToList()
 			);
 		}
 
@@ -218,14 +218,14 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			const int productionID = 1111;
 
 			//act
-			List<string> result = _sut.GetImagesLocationForProductionDocuments(
+			ILookup<int, string> result = _sut.GetImagesLocationForProductionDocuments(
 				_WORKSPACE_ID,
 				productionID,
 				documentIDs: new int[] { }
 			);
 
 			//assert
-			result.Should().BeEmpty();
+			result.SelectMany(x => x).Should().BeEmpty();
 			VerifyIfInstrumentationHasNeverBeenCalled<ProductionDocumentImageResponse[]>(
 				operationName: nameof(ISearchManager.RetrieveImagesForProductionDocuments)
 			);
@@ -268,7 +268,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				.Returns((Func<DataSet> f, string s) => f.Invoke());
 
 			//act
-			List<string> result = _sut.GetImagesLocationForDocuments(
+			ILookup<int, string> result = _sut.GetImagesLocationForDocuments(
 				_WORKSPACE_ID,
 				documentIDs
 			);
@@ -279,7 +279,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			);
 			AssertIfListsAreSameAsExpected(
 				_testDocumentImageResponses.Select(x => x.Location).ToList(),
-				result
+				result.SelectMany(x => x).ToList()
 			);
 		}
 
@@ -303,13 +303,13 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		public void GetImagesForDocuments_ShouldReturnEmptyArrayWhenEmptyArrayPassedAsDocumentIDs()
 		{
 			//act
-			List<string> result = _sut.GetImagesLocationForDocuments(
+			ILookup<int, string> result = _sut.GetImagesLocationForDocuments(
 				_WORKSPACE_ID,
 				documentIDs: new int[] { }
 			);
 
 			//assert
-			result.Should().BeEmpty();
+			result.SelectMany(x => x).Should().BeEmpty();
 			VerifyIfInstrumentationHasNeverBeenCalled<DocumentImageResponse[]>(
 				operationName: nameof(ISearchManager.RetrieveImagesForDocuments)
 			);
