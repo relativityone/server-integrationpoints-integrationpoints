@@ -30,7 +30,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		}
 
 		[Test]
-		public void IGetNextItemsFromBatchAsync_ShouldReturnAllItemsInOneBlock()
+		public void GetNextItemsFromBatchAsync_ShouldReturnAllItemsInOneBlock()
 		{
 			// arrange
 			Mock<IBatch> batch = new Mock<IBatch>();
@@ -77,8 +77,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		{
 			// arrange
 			const int totalItemsCount = 10;
-
-
+			
 			SetupRetrieveResultsBlock(totalItemsCount);
 
 			Mock<IBatch> batchStub = new Mock<IBatch>();
@@ -92,7 +91,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			// assert
 			_objectManagerMock.Verify(x => x.RetrieveResultsBlockFromExportAsync(0, Guid.Empty, 0, It.IsAny<int>()), Times.Never);
-			Assert.IsFalse(batches.Any());
+			batches.Any().Should().BeFalse();
 		}
 
 		private void SetupRetrieveResultsBlock(int maxResultSize)

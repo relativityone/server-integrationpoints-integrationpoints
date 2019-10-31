@@ -49,11 +49,12 @@ namespace Relativity.Sync.Tests.Unit
 		[TestCase(20, 500 * _THROTTLE_SECONDS, 11)]
 		public void AttachToImportJob_ShouldThrottleProgressEvents(int numberOfEvents, int delayBetweenEvents, int expectedNumberOfProgressUpdates)
 		{
-
+			// arrange
 			const int totalItemsInBatch = 10;
+
+			// act
 			using (_sut.AttachToImportJob(_bulkImportJobStub.Object, 1, totalItemsInBatch))
 			{
-				// act
 				for (int i = 0; i < numberOfEvents; i++)
 				{
 					_testScheduler.AdvanceBy(TimeSpan.FromMilliseconds(delayBetweenEvents).Ticks);
@@ -71,9 +72,9 @@ namespace Relativity.Sync.Tests.Unit
 		[TestCase(3, 2, 1)]
 		public void AttachToImportJob_ShouldReportProperNumberOfItems(int numberOfItemProcessedEvents, int numberOfItemErrorEvents, int expectedNumberOfItemsProcessed)
 		{
+			// act
 			using (_sut.AttachToImportJob(_bulkImportJobStub.Object, 1, expectedNumberOfItemsProcessed))
 			{
-				// act
 				for (int i = 0; i < numberOfItemProcessedEvents; i++)
 				{
 					_bulkImportJobStub.Raise(x => x.OnProgress += null, i);
@@ -94,9 +95,11 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public void AttachToImportJob_ShouldUpdateStatisticsWhenBatchCompletes()
 		{
+			// arrange
 			const int itemsProcessed = 10;
 			const int itemsWithErrors = 15;
 
+			// act
 			using (_sut.AttachToImportJob(_bulkImportJobStub.Object, 1, 1))
 			{
 				_bulkImportJobStub.Raise(x => x.OnComplete += null, CreateJobReport(itemsProcessed, itemsWithErrors));
@@ -105,15 +108,15 @@ namespace Relativity.Sync.Tests.Unit
 			// assert
 			_jobProgressUpdaterMock.Verify(x => x.UpdateJobProgressAsync(itemsProcessed, itemsWithErrors));
 		}
-
-
-
+		
 		[Test]
 		public void AttachToImportJob_ShouldUpdateStatisticsWhenFatalExceptionOccurs()
 		{
+			// arrange
 			const int itemsProcessed = 10;
 			const int itemsWithErrors = 10;
 
+			// act
 			using (_sut.AttachToImportJob(_bulkImportJobStub.Object, 1, 1))
 			{
 				_bulkImportJobStub.Raise(x => x.OnFatalException += null, CreateJobReport(itemsProcessed, itemsWithErrors));
@@ -127,11 +130,12 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public void AttachToImportJob_ShouldAggregateProgressFromMultipleBatches()
 		{
+			// arrange
 			const int batchCount = 150;
-
+			int batchId = 0;
 			Mock<ISyncImportBulkArtifactJob>[] bulkImportJobs = Enumerable.Range(0, batchCount).Select(_ => _bulkImportJobStub).ToArray();
 
-			int batchId = 0;
+			//act
 			foreach (var bulkImportJob in bulkImportJobs)
 			{
 				using (_sut.AttachToImportJob(_bulkImportJobStub.Object, batchId++, 1))
@@ -145,12 +149,14 @@ namespace Relativity.Sync.Tests.Unit
 
 			_testScheduler.AdvanceBy(TimeSpan.FromSeconds(_THROTTLE_SECONDS).Ticks);
 
+			// assert
 			_jobProgressUpdaterMock.Verify(x => x.UpdateJobProgressAsync(batchCount, batchCount));
 		}
 
 		[Test]
 		public void AttachToImportJob_ShouldAggregateProgressAndCompleteFromMultipleBatches()
 		{
+			// act
 			using (_sut.AttachToImportJob(_bulkImportJobStub.Object, 0, 1))
 			{
 				_bulkImportJobStub.Raise(x => x.OnProgress += null, 0);
@@ -168,6 +174,7 @@ namespace Relativity.Sync.Tests.Unit
 
 			_testScheduler.AdvanceBy(TimeSpan.FromSeconds(_THROTTLE_SECONDS).Ticks);
 
+			// assert
 			const int expectedTransferredItemsCount = 2;
 			_jobProgressUpdaterMock.Verify(x => x.UpdateJobProgressAsync(expectedTransferredItemsCount, 1));
 		}
@@ -175,8 +182,9 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public void Disposing_AttachToImportJob_ShouldRemoveAllEventHandlers()
 		{
+			// arrange
 			const int batchCount = 5;
-			
+
 			var bulkImportJobMock = new Mock<ISyncImportBulkArtifactJob>();
 
 			bulkImportJobMock.SetupAdd(m => m.OnProgress += (i) => { });
@@ -188,6 +196,8 @@ namespace Relativity.Sync.Tests.Unit
 				Enumerable.Range(0, batchCount).Select(_ => bulkImportJobMock).ToArray();
 
 			int batchId = 0;
+
+			// act
 			foreach (var bulkImportJob in bulkImportJobs)
 			{
 				using (_sut.AttachToImportJob(bulkImportJob.Object, batchId, 1))
@@ -205,14 +215,15 @@ namespace Relativity.Sync.Tests.Unit
 				jobMock.VerifyRemove(m => m.OnFatalException -= It.IsAny<IImportNotifier.OnFatalExceptionEventHandler>(), Times.Exactly(batchCount));
 			}
 		}
-
-	
+		
 		[Test]
 		public void AttachToImportJob_ShouldNotStopReportingProgress_WhenProgressUpdaterThrows()
 		{
+			// arrange
 			_jobProgressUpdaterMock.Setup(x => x.UpdateJobProgressAsync(It.IsAny<int>(), It.IsAny<int>()))
 				.Throws(new Exception());
 
+			// act
 			using (_sut.AttachToImportJob(_bulkImportJobStub.Object, 0, 1))
 			{
 				_bulkImportJobStub.Raise(x => x.OnProgress += null, 0);
@@ -222,17 +233,19 @@ namespace Relativity.Sync.Tests.Unit
 				_testScheduler.AdvanceBy(TimeSpan.FromSeconds(_THROTTLE_SECONDS).Ticks);
 			}
 
-
+			// assert
 			const int expectedReportCount = 3;
 			_jobProgressUpdaterMock.Verify(x => x.UpdateJobProgressAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Exactly(expectedReportCount));
 		}
 
 		[Test]
-		public void AttachToImportJob_ShouldReportReportCorrectValues_WhenProgressUpdaterThrows()
+		public void AttachToImportJob_ShouldReportCorrectValues_WhenProgressUpdaterThrows()
 		{
+			// arrange
 			_jobProgressUpdaterMock.Setup(x => x.UpdateJobProgressAsync(It.IsAny<int>(), It.IsAny<int>()))
 				.Throws(new Exception());
 
+			// act
 			using (_sut.AttachToImportJob(_bulkImportJobStub.Object, 0, 1))
 			{
 				_bulkImportJobStub.Raise(x => x.OnProgress += null, 0);
@@ -242,7 +255,7 @@ namespace Relativity.Sync.Tests.Unit
 				_testScheduler.AdvanceBy(TimeSpan.FromSeconds(_THROTTLE_SECONDS).Ticks);
 			}
 
-
+			// assert
 			const int expectedReportCount = 2;
 			_jobProgressUpdaterMock.Verify(x => x.UpdateJobProgressAsync(expectedReportCount, 0), Times.AtLeastOnce);
 		}
@@ -250,12 +263,14 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public void AttachToImportJob_ShouldNotReportNegativeProcessedItems()
 		{
+			// act
 			using (_sut.AttachToImportJob(_bulkImportJobStub.Object, 0, 1))
 			{
-				_bulkImportJobStub.Raise(x => x.OnError += null, new Dictionary<int,int>());
+				_bulkImportJobStub.Raise(x => x.OnError += null, new Dictionary<int, int>());
 				_testScheduler.AdvanceBy(TimeSpan.FromSeconds(_THROTTLE_SECONDS).Ticks);
 			}
 
+			//assert
 			_jobProgressUpdaterMock.Verify(x => x.UpdateJobProgressAsync(0, 1));
 		}
 
@@ -269,8 +284,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			return typeof(JobReport).GetProperty(nameof(JobReport.TotalRows));
 		}
-
-
+		
 		private static JobReport CreateJobReport(int itemsProcessed, int itemsWithErrors)
 		{
 			JobReport jobReport = CreateJobReport();
@@ -282,8 +296,7 @@ namespace Relativity.Sync.Tests.Unit
 			_jobReportTotalRowsProperty.Value.SetValue(jobReport, itemsProcessed + itemsWithErrors);
 			return jobReport;
 		}
-
-
+		
 		private static JobReport CreateJobReport()
 		{
 			JobReport jobReport = (JobReport)Activator.CreateInstance(typeof(JobReport), true);

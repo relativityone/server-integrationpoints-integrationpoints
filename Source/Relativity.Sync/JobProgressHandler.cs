@@ -16,7 +16,7 @@ namespace Relativity.Sync
 {
 	internal sealed class JobProgressHandler : IJobProgressHandler
 	{
-		private readonly int _throttleForSeconds = 5;
+		private const int _THOTTHLE_FOR_SECONDS = 5;
 		private readonly IJobProgressUpdater _jobProgressUpdater;
 		private readonly Subject<Unit> _changeSignal = new Subject<Unit>();
 		private readonly Subject<Unit> _forceUpdateSignal = new Subject<Unit>();
@@ -27,13 +27,13 @@ namespace Relativity.Sync
 		{
 			_jobProgressUpdater = jobProgressUpdater;
 
-			_changeSubjectBufferSubscription = _changeSignal.Buffer(TimeSpan.FromSeconds(_throttleForSeconds), timerScheduler ?? Scheduler.Default)
+			_changeSubjectBufferSubscription = _changeSignal.Buffer(TimeSpan.FromSeconds(_THOTTHLE_FOR_SECONDS), timerScheduler ?? Scheduler.Default)
 				.Where(changesInTimeWindow => changesInTimeWindow.Any())
 				.Select(_ => Unit.Default)
 				.Merge(_forceUpdateSignal)
 				.Do(async (_) =>
 			{
-				await UpdateProgress().ConfigureAwait(false);
+				await UpdateProgressAsync().ConfigureAwait(false);
 			})
 				.Subscribe();
 		}
@@ -104,19 +104,19 @@ namespace Relativity.Sync
 			return new CompositeDisposable(itemFailedSubscription, itemProcessedSubscription, jobReportsSubscription);
 		}
 
-		private async Task UpdateProgress()
+		private Task UpdateProgressAsync()
 		{
 			int totalProcessedItems = _batchProgresses.Values.Sum(x => x.ItemsProcessed);
 			int totalFailedItems = _batchProgresses.Values.Sum(x => x.ItemsFailed);
 
-			await _jobProgressUpdater.UpdateJobProgressAsync(totalProcessedItems, totalFailedItems).ConfigureAwait(false);
+			return _jobProgressUpdater.UpdateJobProgressAsync(totalProcessedItems, totalFailedItems);
 		}
 
 		public void Dispose()
 		{
-			_changeSubjectBufferSubscription.Dispose();
-			_changeSignal.Dispose();
-			_forceUpdateSignal.Dispose();
+			_changeSubjectBufferSubscription?.Dispose();
+			_changeSignal?.Dispose();
+			_forceUpdateSignal?.Dispose();
 		}
 	}
 }

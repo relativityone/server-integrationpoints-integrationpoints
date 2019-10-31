@@ -9,7 +9,6 @@ kCura.Apps.Common.Utils
 
 Microsoft.CodeAnalysis.FxCopAnalyzers
 CSharpGuidelineAnalyzer
-
 System.Reactive.Linq
 
 Polly
