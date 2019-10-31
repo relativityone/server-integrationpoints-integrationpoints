@@ -39,7 +39,7 @@ namespace Relativity.Sync.Authentication
 				}
 				catch (Exception ex)
 				{
-					_logger.LogError("Error occured while getting OAuth2Client: {ex.Message}", ex.Message);
+					_logger.LogError(ex, "Error occured while getting OAuth2Client: {ex.Message}", ex.Message);
 					throw new InvalidOperationException($"Failed to retrieve OAuth2Client for user with id: {userId}", ex);
 				}
 
