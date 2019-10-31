@@ -110,8 +110,6 @@ namespace Relativity.Sync.Executors
 
 					importAndTagResult = AggregateBatchExecutionResults(batchJobsResults);
 				}
-
-				importAndTagResult = AggregateBatchExecutionResults(batchJobsResults);
 			}
 			catch (ImportFailedException ex)
 			{
@@ -180,7 +178,7 @@ namespace Relativity.Sync.Executors
 
 			if (batchJobsResults.Values.Any(x => x.ExecutionResult.Status == ExecutionStatus.Failed))
 			{
-				return batchJobsResults.Single(x => x.Value.ExecutionResult.Status == ExecutionStatus.Failed).Value.ExecutionResult;
+				return batchJobsResults.First(x => x.Value.ExecutionResult.Status == ExecutionStatus.Failed).Value.ExecutionResult;
 			}
 
 			KeyValuePair<int, ImportJobResult>[] completedWithErrorsBatchJobResults =

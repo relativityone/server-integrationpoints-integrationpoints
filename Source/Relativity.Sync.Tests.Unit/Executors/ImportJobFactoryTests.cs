@@ -66,7 +66,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			result.Dispose();
 
 			// Assert
-			Assert.IsNotNull(result);
+			result.Should().NotBeNull();
 		}
 
 		[Test]
@@ -84,9 +84,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			result.Dispose();
 
 			// Assert
-			Assert.IsNotNull(result);
+			result.Should().NotBeNull();
 		}
-
 
 		[Test]
 		public async Task CreateImportJobAsync_ShouldCreateBulkJobWithStartingIndexAlwaysEqualTo0()
@@ -115,8 +114,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			// Assert
 			importBulkArtifactJobMock.Settings.StartRecordNumber.Should().Be(0);
 		}
-
-
+		
 		private Mock<IImportApiFactory> GetImportAPIFactoryMock()
 		{
 			var importApi = new Mock<IImportAPI>(MockBehavior.Loose);
