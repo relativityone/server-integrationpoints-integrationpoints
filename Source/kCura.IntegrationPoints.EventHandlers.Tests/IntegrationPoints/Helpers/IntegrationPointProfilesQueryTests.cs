@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
@@ -18,10 +21,13 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 	[TestFixture]
 	public class IntegrationPointProfilesQueryTests
 	{
-		private IntegrationPointProfilesQuery _query;
-		private Mock<IRelativityObjectManager> _relativityObjectManager;
-		private Mock<IObjectArtifactIdsByStringFieldValueQuery> _objectArtifactIDsQuery;
-		private List<IntegrationPointProfile> _profilesList;
+		private IntegrationPointProfilesQuery _sut;
+		private Mock<IRelativityObjectManager> _relativityObjectManagerFake;
+		private Mock<IObjectArtifactIdsByStringFieldValueQuery> _objectArtifactIDsQueryFake;
+		private ISerializer _serializer;
+		private List<IntegrationPointProfile> _syncProfiles;
+		private List<IntegrationPointProfile> _nonSyncProfiles;
+		private List<IntegrationPointProfile> _allProfiles;
 		private List<int> _relativitySourceProvidersList;
 		private List<int> _relativityDestinationProvidersList;
 		private List<int> _integrationPointTypesList;
@@ -33,46 +39,50 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		private const int _NON_RELATIVITY_SOURCE_PROVIDER_ID = 600222;
 		private const int _INTEGRATION_POINT_EXPORT_TYPE_ID = 7000333;
 
-		private const int _SYNC_PROFILE_ID = 900111;
-		private const int _NON_SYNC_PROFILE_ID = 900222;
-
 		[SetUp]
 		public void SetUp()
 		{
-			_relativityObjectManager = new Mock<IRelativityObjectManager>();
-			_objectArtifactIDsQuery = new Mock<IObjectArtifactIdsByStringFieldValueQuery>();
+			_relativityObjectManagerFake = new Mock<IRelativityObjectManager>();
+			_objectArtifactIDsQueryFake = new Mock<IObjectArtifactIdsByStringFieldValueQuery>();
+			_serializer = new JSONSerializer();
 
-			_query = new IntegrationPointProfilesQuery(
-				workspaceID => _relativityObjectManager.Object,
-				_objectArtifactIDsQuery.Object);
+			_syncProfiles = CreateSyncProfiles().ToList();
+			_nonSyncProfiles = CreateNonFolderToFolderProfiles().ToList();
+			_allProfiles = new List<IntegrationPointProfile>();
+			_allProfiles.AddRange(_syncProfiles);
+			_allProfiles.AddRange(_nonSyncProfiles);
 
-			_profilesList = new List<IntegrationPointProfile>();
+			_relativityObjectManagerFake
+				.Setup(x => x.QueryAsync<IntegrationPointProfile>(
+					It.IsAny<QueryRequest>(), false, It.IsAny<ExecutionIdentity>()))
+				.ReturnsAsync(_allProfiles);
+
 			_relativitySourceProvidersList = new List<int>();
 			_relativityDestinationProvidersList = new List<int>();
 			_integrationPointTypesList = new List<int>();
 
-			_relativityObjectManager
-				.Setup(x => x.QueryAsync<IntegrationPointProfile>(
-					It.IsAny<QueryRequest>(), false, It.IsAny<ExecutionIdentity>()))
-				.ReturnsAsync(_profilesList);
-
-			_objectArtifactIDsQuery
+			_objectArtifactIDsQueryFake
 				.Setup(x => x.QueryForObjectArtifactIdsByStringFieldValueAsync(_WORKSPACE_ID,
 					(DestinationProvider provider) => provider.Identifier,
 					Constants.IntegrationPoints.DestinationProviders.RELATIVITY))
 				.ReturnsAsync(_relativityDestinationProvidersList);
 
-			_objectArtifactIDsQuery
+			_objectArtifactIDsQueryFake
 				.Setup(x => x.QueryForObjectArtifactIdsByStringFieldValueAsync(_WORKSPACE_ID,
 					(SourceProvider provider) => provider.Identifier,
 					Constants.IntegrationPoints.SourceProviders.RELATIVITY))
 				.ReturnsAsync(_relativitySourceProvidersList);
 
-			_objectArtifactIDsQuery
+			_objectArtifactIDsQueryFake
 				.Setup(x => x.QueryForObjectArtifactIdsByStringFieldValueAsync(_WORKSPACE_ID,
 					(IntegrationPointType integrationPointType) => integrationPointType.Identifier,
 					kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString()))
 				.ReturnsAsync(_integrationPointTypesList);
+			
+			_sut = new IntegrationPointProfilesQuery(
+				workspaceID => _relativityObjectManagerFake.Object,
+				_objectArtifactIDsQueryFake.Object,
+				_serializer);
 		}
 
 		[Test]
@@ -80,18 +90,42 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		{
 			// Arrange
 			SetUpSyncProviders();
-			SetUpProfiles(syncProfilesCount: 1, nonSyncProfilesCount: 1);
 
 			// Act
-			List<IntegrationPointProfile> allProfiles = (await _query
+			List<IntegrationPointProfile> allProfiles = (await _sut
 				.GetAllProfilesAsync(_WORKSPACE_ID)
 				.ConfigureAwait(false)).ToList();
 
 			// Assert
-			IntegrationPointProfile syncProfile = allProfiles.FirstOrDefault(x => x.ArtifactId == _SYNC_PROFILE_ID);
-			syncProfile.Should().NotBeNull();
-			IntegrationPointProfile nonSyncProfile = allProfiles.FirstOrDefault(x => x.ArtifactId == _NON_SYNC_PROFILE_ID);
-			nonSyncProfile.Should().NotBeNull();
+			CollectionAssert.AreEquivalent(_allProfiles, allProfiles);
+		}
+
+		[Test]
+		public void ItShouldGetOnlySyncProfiles()
+		{
+			// Arrange
+			SetUpSyncProviders();
+
+			// Act
+			IEnumerable<IntegrationPointProfile> syncProfiles = _sut
+				.GetSyncProfiles(_allProfiles, _RELATIVITY_SOURCE_PROVIDER_ID, _RELATIVITY_DESTINATION_PROVIDER_ID);
+
+			// Assert
+			CollectionAssert.AreEquivalent(_syncProfiles, syncProfiles);
+		}
+
+		[Test]
+		public void ItShouldGetOnlyNonSyncProfiles()
+		{
+			// Arrange
+			SetUpSyncProviders();
+
+			// Act
+			IEnumerable<IntegrationPointProfile> nonSyncProfiles = _sut
+				.GetNonSyncProfiles(_allProfiles, _RELATIVITY_SOURCE_PROVIDER_ID, _RELATIVITY_DESTINATION_PROVIDER_ID);
+
+			// Assert
+			CollectionAssert.AreEquivalent(_nonSyncProfiles, nonSyncProfiles);
 		}
 
 		[Test]
@@ -101,7 +135,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			SetUpSyncProviders();
 
 			// Act
-			int sourceProviderID = await _query.GetSyncSourceProviderArtifactIDAsync(_WORKSPACE_ID).ConfigureAwait(false);
+			int sourceProviderID = await _sut.GetSyncSourceProviderArtifactIDAsync(_WORKSPACE_ID).ConfigureAwait(false);
 
 			// Assert
 			sourceProviderID.Should().Be(_RELATIVITY_SOURCE_PROVIDER_ID);
@@ -114,7 +148,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			SetUpSyncProviders();
 
 			// Act
-			int sourceProviderID = await _query.GetIntegrationPointExportTypeArtifactIDAsync(_WORKSPACE_ID).ConfigureAwait(false);
+			int sourceProviderID = await _sut.GetIntegrationPointExportTypeArtifactIDAsync(_WORKSPACE_ID).ConfigureAwait(false);
 
 			// Assert
 			sourceProviderID.Should().Be(_INTEGRATION_POINT_EXPORT_TYPE_ID);
@@ -127,10 +161,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			SetUpSyncProviders(integrationPointTypesCount: integrationPointTypesCount);
 
 			// Act
-			Func<Task<int>> sut = () => _query.GetIntegrationPointExportTypeArtifactIDAsync(_WORKSPACE_ID);
+			Func<Task<int>> action = () => _sut.GetIntegrationPointExportTypeArtifactIDAsync(_WORKSPACE_ID);
 
 			// Assert
-			AssertWrongNumberOfArtifactIDsInCollection(sut);
+			AssertWrongNumberOfArtifactIDsInCollection(action);
 		}
 
 		[Test]
@@ -140,7 +174,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			SetUpSyncProviders();
 
 			// Act
-			int destinationProviderArtifactID = await _query.GetSyncDestinationProviderArtifactIDAsync(_WORKSPACE_ID).ConfigureAwait(false);
+			int destinationProviderArtifactID = await _sut.GetSyncDestinationProviderArtifactIDAsync(_WORKSPACE_ID).ConfigureAwait(false);
 
 			// Assert
 			destinationProviderArtifactID.Should().Be(_RELATIVITY_DESTINATION_PROVIDER_ID);
@@ -153,10 +187,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			SetUpSyncProviders(relativitySourceProviderCount);
 
 			// Act
-			Func<Task<int>> sut = () => _query.GetSyncSourceProviderArtifactIDAsync(_WORKSPACE_ID);
+			Func<Task<int>> action = () => _sut.GetSyncSourceProviderArtifactIDAsync(_WORKSPACE_ID);
 
 			// Assert
-			AssertWrongNumberOfArtifactIDsInCollection(sut);
+			AssertWrongNumberOfArtifactIDsInCollection(action);
 		}
 
 		[Test]
@@ -166,40 +200,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			SetUpSyncProviders(relativityDestinationProviderCount: relativityDestinationProviderCount);
 
 			// Act
-			Func<Task<int>> sut = () => _query.GetSyncDestinationProviderArtifactIDAsync(_WORKSPACE_ID);
+			Func<Task<int>> action = () => _sut.GetSyncDestinationProviderArtifactIDAsync(_WORKSPACE_ID);
 
 			// Assert
-			AssertWrongNumberOfArtifactIDsInCollection(sut);
-		}
-
-		[Test]
-		public void ItShouldGetOnlySyncProfiles()
-		{
-			// Arrange
-			SetUpSyncProviders();
-			SetUpProfiles(syncProfilesCount: 1, nonSyncProfilesCount: 1);
-
-			// Act
-			IEnumerable<IntegrationPointProfile> syncProfiles = _query
-				.GetSyncProfiles(_profilesList, _RELATIVITY_SOURCE_PROVIDER_ID, _RELATIVITY_DESTINATION_PROVIDER_ID);
-
-			// Assert
-			syncProfiles.Should().ContainSingle(x => x.ArtifactId == _SYNC_PROFILE_ID);
-		}
-
-		[Test]
-		public void ItShouldGetOnlyNonSyncProfiles()
-		{
-			// Arrange
-			SetUpSyncProviders();
-			SetUpProfiles(syncProfilesCount: 1, nonSyncProfilesCount: 1);
-
-			// Act
-			IEnumerable<IntegrationPointProfile> nonSyncProfiles = _query
-				.GetNonSyncProfiles(_profilesList, _RELATIVITY_SOURCE_PROVIDER_ID, _RELATIVITY_DESTINATION_PROVIDER_ID);
-
-			// Assert
-			nonSyncProfiles.Should().ContainSingle(x => x.ArtifactId == _NON_SYNC_PROFILE_ID);
+			AssertWrongNumberOfArtifactIDsInCollection(action);
 		}
 
 		private static void AssertWrongNumberOfArtifactIDsInCollection(Func<Task<int>> sut)
@@ -208,62 +212,84 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 				.BeOneOf("Sequence contains more than one element", "Sequence contains no elements");
 		}
 
-		private void SetUpProfiles(int syncProfilesCount, int nonSyncProfilesCount)
+		private IEnumerable<IntegrationPointProfile> CreateSyncProfiles()
 		{
-			IntegrationPointProfile CreateSyncProfile() => new IntegrationPointProfile
+			yield return new IntegrationPointProfile
 			{
-				ArtifactId = _SYNC_PROFILE_ID,
 				SourceProvider = _RELATIVITY_SOURCE_PROVIDER_ID,
-				DestinationProvider = _RELATIVITY_DESTINATION_PROVIDER_ID
+				DestinationProvider = _RELATIVITY_DESTINATION_PROVIDER_ID,
+				SourceConfiguration = CreateSourceConfigurationJson(SourceConfiguration.ExportType.SavedSearch),
+				DestinationConfiguration = CreateDestinationConfigurationJson(false)
 			};
-
-			IntegrationPointProfile CreateNonSyncProfile(bool isImportProvider)
-			{
-				var profile = new IntegrationPointProfile
-				{
-					ArtifactId = _NON_SYNC_PROFILE_ID,
-					SourceProvider = isImportProvider
-						? _NON_RELATIVITY_SOURCE_PROVIDER_ID
-						: _RELATIVITY_SOURCE_PROVIDER_ID,
-					DestinationProvider = isImportProvider
-						? _RELATIVITY_DESTINATION_PROVIDER_ID
-						: _NON_RELATIVITY_DESTINATION_PROVIDER_ID
-				};
-				return profile;
-			}
-
-			// create non sync profiles
-			// half of them should be import, half export
-			int importProvidersCount = nonSyncProfilesCount / 2;
-			IEnumerable<IntegrationPointProfile> nonSyncProfiles = Enumerable
-				.Range(0, nonSyncProfilesCount)
-				.Select(i => CreateNonSyncProfile(i < importProvidersCount));
-			var queue = new Queue<IntegrationPointProfile>(nonSyncProfiles);
-
-			// randomly distribute profiles
-			IEnumerable<IntegrationPointProfile> profiles =
-				GenerateShuffledIntSequence(syncProfilesCount + nonSyncProfilesCount)
-					.Select(x => (x < syncProfilesCount) ? CreateSyncProfile() : queue.Dequeue());
-
-			_profilesList.AddRange(profiles);
 		}
 
-		private static IEnumerable<int> GenerateShuffledIntSequence(int count)
+		private IEnumerable<IntegrationPointProfile> CreateNonFolderToFolderProfiles()
 		{
-			int[] deck = Enumerable
-				.Range(0, count)
-				.ToArray();
-			var r = new Random();
-
-			// Fisher-Yates algorithm
-			for (int n = deck.Length - 1; n > 0; --n)
+			yield return new IntegrationPointProfile()
 			{
-				int k = r.Next(n + 1);
-				int temp = deck[n];
-				deck[n] = deck[k];
-				deck[k] = temp;
-			}
-			return deck;
+				SourceProvider = _NON_RELATIVITY_SOURCE_PROVIDER_ID,
+				DestinationProvider = _NON_RELATIVITY_DESTINATION_PROVIDER_ID,
+				SourceConfiguration = CreateSourceConfigurationJson(SourceConfiguration.ExportType.ProductionSet),
+				DestinationConfiguration = CreateDestinationConfigurationJson(exportToProduction: true)
+			};
+			yield return new IntegrationPointProfile()
+			{
+				SourceProvider = _NON_RELATIVITY_SOURCE_PROVIDER_ID,
+				DestinationProvider = _NON_RELATIVITY_DESTINATION_PROVIDER_ID,
+				SourceConfiguration = CreateSourceConfigurationJson(SourceConfiguration.ExportType.SavedSearch),
+				DestinationConfiguration = CreateDestinationConfigurationJson(exportToProduction: false)
+			};
+			yield return new IntegrationPointProfile()
+			{
+				SourceProvider = _RELATIVITY_SOURCE_PROVIDER_ID,
+				DestinationProvider = _NON_RELATIVITY_DESTINATION_PROVIDER_ID,
+				SourceConfiguration = CreateSourceConfigurationJson(SourceConfiguration.ExportType.SavedSearch),
+				DestinationConfiguration = CreateDestinationConfigurationJson(exportToProduction: false)
+			};
+			yield return new IntegrationPointProfile()
+			{
+				SourceProvider = _NON_RELATIVITY_SOURCE_PROVIDER_ID,
+				DestinationProvider = _RELATIVITY_DESTINATION_PROVIDER_ID,
+				SourceConfiguration = CreateSourceConfigurationJson(SourceConfiguration.ExportType.SavedSearch),
+				DestinationConfiguration = CreateDestinationConfigurationJson(exportToProduction: false)
+			};
+			yield return new IntegrationPointProfile()
+			{
+				SourceProvider = _RELATIVITY_SOURCE_PROVIDER_ID,
+				DestinationProvider = _RELATIVITY_DESTINATION_PROVIDER_ID,
+				SourceConfiguration = CreateSourceConfigurationJson(SourceConfiguration.ExportType.ProductionSet),
+				DestinationConfiguration = CreateDestinationConfigurationJson(exportToProduction: true)
+			};
+			yield return new IntegrationPointProfile()
+			{
+				SourceProvider = _RELATIVITY_SOURCE_PROVIDER_ID,
+				DestinationProvider = _RELATIVITY_DESTINATION_PROVIDER_ID,
+				SourceConfiguration = CreateSourceConfigurationJson(SourceConfiguration.ExportType.SavedSearch),
+				DestinationConfiguration = CreateDestinationConfigurationJson(exportToProduction: true)
+			};
+			yield return new IntegrationPointProfile()
+			{
+				SourceProvider = _RELATIVITY_SOURCE_PROVIDER_ID,
+				DestinationProvider = _RELATIVITY_DESTINATION_PROVIDER_ID,
+				SourceConfiguration = CreateSourceConfigurationJson(SourceConfiguration.ExportType.ProductionSet),
+				DestinationConfiguration = CreateDestinationConfigurationJson(exportToProduction: false)
+			};
+		}
+
+		private string CreateSourceConfigurationJson(SourceConfiguration.ExportType exportType)
+		{
+			return _serializer.Serialize(new SourceConfiguration()
+			{
+				TypeOfExport = exportType
+			});
+		}
+
+		private string CreateDestinationConfigurationJson(bool exportToProduction)
+		{
+			return _serializer.Serialize(new ImportSettings()
+			{
+				ProductionImport = exportToProduction
+			});
 		}
 
 		private void SetUpSyncProviders(int relativitySourceProviderCount = 1, int relativityDestinationProviderCount = 1, int integrationPointTypesCount = 1)

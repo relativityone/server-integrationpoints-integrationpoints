@@ -104,7 +104,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 
 		public void Dispose()
 		{
-			if (Context.DataReader != null)
+			if (Context?.DataReader != null)
 			{
 				Context.DataReader.Dispose();
 				Context.DataReader = null;
