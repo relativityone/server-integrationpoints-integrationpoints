@@ -12,18 +12,16 @@ namespace Relativity.Sync.Tests.Unit.Storage
 	internal class JobStatusConsolidationConfigurationTests
 	{
 		private static readonly Guid _JOB_HISTORY_GUID = new Guid("5D8F7F01-25CF-4246-B2E2-C05882539BB2");
-		private static readonly Guid _SOURCE_WORKSPACE_TAG_ARTIFACT_ID_GUID = new Guid("FEAB129B-AEEF-4AA4-BC91-9EAE9A4C35F6");
 
 		[Test]
 		public void GetSourceWorkspaceArtifactId_ShouldRetrieveSourceWorkspaceArtifactId()
 		{
 			// Arrange
-			const int expected = 123456;
+			const int expected = 567765;
 
-			IJobStatusConsolidationConfiguration sut = PrepareSut(c => c
-				.Setup(x => x.GetFieldValue<int>(It.Is<Guid>(g => g.Equals(_SOURCE_WORKSPACE_TAG_ARTIFACT_ID_GUID))))
-				.Returns(expected), 
-				syncConfigurationArtifactId: 0);
+			IJobStatusConsolidationConfiguration sut = PrepareSut(c => { },
+				syncConfigurationArtifactId: 0,
+				sourceWorkspaceId: expected);
 
 			// Act
 			int sourceWorkspaceArtifactId = sut.SourceWorkspaceArtifactId;
@@ -37,7 +35,11 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			// Arrange
 			const int expected = 123456;
-			IJobStatusConsolidationConfiguration sut = PrepareSut(c => { }, syncConfigurationArtifactId: expected);
+			const int sourceWorkspaceId = 567765;
+
+			IJobStatusConsolidationConfiguration sut = PrepareSut(c => { },
+				syncConfigurationArtifactId: expected,
+				sourceWorkspaceId: sourceWorkspaceId);
 
 			// Act
 			int syncConfigurationArtifactId = sut.SyncConfigurationArtifactId;
@@ -51,10 +53,13 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			// Arrange
 			const int expected = 123456;
+			const int sourceWorkspaceId = 567765;
+
 			IJobStatusConsolidationConfiguration sut = PrepareSut(c => c
 				.Setup(x => x.GetFieldValue<RelativityObjectValue>(It.Is<Guid>(g => g.Equals(_JOB_HISTORY_GUID))))
 				.Returns(new RelativityObjectValue { ArtifactID = expected }),
-				syncConfigurationArtifactId: 0);
+				syncConfigurationArtifactId: 0,
+				sourceWorkspaceId: sourceWorkspaceId);
 
 			// Act
 			int jobHistoryArtifactId = sut.JobHistoryArtifactId;
@@ -63,13 +68,12 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			jobHistoryArtifactId.Should().Be(expected);
 		}
 
-		public IJobStatusConsolidationConfiguration PrepareSut(Action<Mock<Sync.Storage.IConfiguration>> configurationMockConfiguration, int syncConfigurationArtifactId)
+		public IJobStatusConsolidationConfiguration PrepareSut(Action<Mock<Sync.Storage.IConfiguration>> configurationMockConfiguration, int syncConfigurationArtifactId, int sourceWorkspaceId)
 		{
 			Mock<Sync.Storage.IConfiguration> configuration = new Mock<Sync.Storage.IConfiguration>();
 			configurationMockConfiguration(configuration);
 
-			const int workspaceId = 999999;
-			var syncJobParameters = new SyncJobParameters(syncConfigurationArtifactId, workspaceId);
+			var syncJobParameters = new SyncJobParameters(syncConfigurationArtifactId, sourceWorkspaceId);
 			IJobStatusConsolidationConfiguration sut = new JobStatusConsolidationConfiguration(configuration.Object, syncJobParameters);
 			return sut;
 		}
