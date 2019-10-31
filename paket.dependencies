@@ -4,7 +4,7 @@ strategy: min
 source https://proget.kcura.corp/nuget/NuGet
 
 //RIP packages
-nuget Relativity.IntegrationPoints.Services.Interfaces.Private 1.0.0
+nuget Relativity.IntegrationPoints.Services.Interfaces.Private 1.0.2
 nuget kCura.IntegrationPoints.Contracts 11.0.8
 nuget kCura.IntegrationPoints.SDK 11.0.8
 
@@ -16,7 +16,7 @@ nuget kCura.Relativity.Client 11.0.105.1
 nuget Relativity.Authentication 11.0.105.1
 nuget Relativity.CustomPages 11.0.105.1
 nuget Relativity.Data 11.0.105.1
-nuget Relativity.DataExchange.Client.SDK 1.7.1
+nuget Relativity.DataExchange.Client.SDK 1.7.2
 nuget Relativity.Services.Interfaces 11.0.105.1
 nuget Relativity.Services.Interfaces.Private 11.0.105.1
 nuget Relativity.API 12.0.1
@@ -25,7 +25,6 @@ nuget Relativity.API 12.0.1
 nuget kCura.Apps.Common.Config 2.1.1
 nuget kCura.FreeImage 3.17.0.1
 nuget kCura.LongPath 1.0.20
-nuget Relativity.Audit.SDK 1.5.0
 nuget Relativity.DataGrid 14.0.0
 nuget Relativity.DataTransfer.MessageService ~> 10.2.0
 nuget Relativity.Kepler 2.0.7

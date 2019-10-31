@@ -10,7 +10,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 		private TJob _job;
 		private readonly IAPILog _logger;
 
-		protected JobImport(ImportSettings importSettings, IExtendedImportAPI importApi, IAPILog logger)
+		protected JobImport(ImportSettings importSettings, IImportAPI importApi, IAPILog logger)
 		{
 			ImportSettings = importSettings;
 			ImportApi = importApi;
@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 			}
 		}
 
-		protected IExtendedImportAPI ImportApi { get; }
+		protected IImportAPI ImportApi { get; }
 
 		protected ImportSettings ImportSettings { get; }
 

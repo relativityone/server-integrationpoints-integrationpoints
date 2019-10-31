@@ -5,7 +5,6 @@
 	<property name="source.code.directory" value="${root}\source" />
 	<property name="source.provider.includes.directory" value="${source.code.directory}\kCura.IntegrationPoints.Web\Scripts" />
 	<property name="lib.directory" value="${root}\lib" />
-	<property name="sdk.directory" value="${root}\documentation\sdk" />
 	<property name="examples.directory" value="${root}\documentation\sdk\Examples" />
 	
 	<!-- Log properties -->
@@ -13,35 +12,8 @@
 	<echo message="Build configuration: ${buildconfig}" />
 	<echo message="Lib directory ${lib.directory}" />
 	
-	<target name="package_documentation" description="Creates sdk and example packages">
-		<delete dir="${sdk.directory}" />
+	<target name="package_documentation" description="Creates example provider packages">
 		<delete dir="${examples.directory}" />
-		
-		<!-- Copy sdk -->
-		<copy todir="${sdk.directory}\Provider">
-			<fileset basedir="${lib.directory}">
-				<include name="kCura.Apps.Common.Config.dll" />
-				<include name="kCura.Apps.Common.Data.dll" />
-				<include name="kCura.Apps.Common.Utils.dll" />
-				<include name="kCura.IntegrationPoints.Contracts.dll" />
-				<include name="kCura.IntegrationPoints.Core.Contracts.dll" />
-				<include name="kCura.IntegrationPoints.Core.dll" />
-				<include name="kCura.IntegrationPoints.Data.dll" />
-				<include name="kCura.IntegrationPoints.Domain.dll" />
-				<include name="kCura.IntegrationPoints.Security.dll" />
-				<include name="kCura.IntegrationPoints.SourceProviderInstaller.dll" />
-				<include name="kCura.IntegrationPoints.Synchronizers.RDO.dll" />
-				<include name="kCura.ScheduleQueue.Core.dll" />
-				<include name="SystemInterface.dll" />
-			</fileset>
-		</copy>
-		<copy todir="${sdk.directory}\Web">
-			<fileset basedir="${source.provider.includes.directory}">
-				<include name="frame-messaging.js" />
-				<include name="jquery-3.4.1.js" />
-				<include name="jquery-postMessage.js" />
-			</fileset>
-		</copy>
 		
 		<!-- Copy MyFirstProvider example -->
 		<copy todir="${examples.directory}\MyFirstProvider\Provider">

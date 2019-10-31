@@ -56,10 +56,10 @@
     <Compile Include="Constants.cs" />
     <Compile Include="DocumentTransferProvider.cs" />
     <Compile Include="DocumentTransferSettings.cs" />
-    <Compile Include="ExtendedImportApiFacade.cs" />
-    <Compile Include="ExtendedImportApiFactory.cs" />
-    <Compile Include="IExtendedImportApiFacade.cs" />
-    <Compile Include="IExtendedImportApiFactory.cs" />
+    <Compile Include="ImportApiFacade.cs" />
+    <Compile Include="ImportApiFactory.cs" />
+    <Compile Include="IImportApiFacade.cs" />
+    <Compile Include="IImportApiFactory.cs" />
     <Compile Include="Installers\DocumentTransferProviderInstaller.cs" />
   </ItemGroup>
   <ItemGroup>

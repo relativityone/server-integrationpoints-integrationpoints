@@ -5,7 +5,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 {
 	public class ImageImportSettingsBuilder : ImportSettingsBaseBuilder<ImageSettings>
 	{
-		public ImageImportSettingsBuilder(IExtendedImportAPI importApi)
+		public ImageImportSettingsBuilder(IImportAPI importApi)
 			: base(importApi)
 		{
 		}

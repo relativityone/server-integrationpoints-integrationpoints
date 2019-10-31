@@ -2,7 +2,7 @@
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider
 {
-	public interface IExtendedImportApiFacade
+	public interface IImportApiFacade
 	{
 		HashSet<int> GetMappableArtifactIdsExcludeFields(int workspaceArtifactID, int artifactTypeID,
 			HashSet<string> ignoredFields);

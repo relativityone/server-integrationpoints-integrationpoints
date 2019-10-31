@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport.Implementati
 	public class ImageJobImportTests : TestBase
 	{
 		private IDataTransferContext _context;
-		private IExtendedImportAPI _importApi;
+		private IImportAPI _importApi;
 		private IImportSettingsBaseBuilder<ImageSettings> _builder;
 		private IAPILog _logger;
 
@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport.Implementati
 		public override void SetUp()
 		{
 			_importSettings = Substitute.For<ImportSettings>();
-			_importApi = Substitute.For<IExtendedImportAPI>();
+			_importApi = Substitute.For<IImportAPI>();
 			_builder = Substitute.For<IImportSettingsBaseBuilder<ImageSettings>>();
 			_context = Substitute.For<IDataTransferContext>();
 			_logger = Substitute.For<IAPILog>();
