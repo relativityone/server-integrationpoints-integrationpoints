@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.3] - 2019-11-04
+### Changed
+- Fixed package description in the nuspec file.
+
 ## [1.0.2] - 2019-10-24
 ### Changed
 - Upgraded CSharpGuidelineAnalyzer dependency version to 3.1.0.

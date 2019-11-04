@@ -8,7 +8,7 @@
     <license type="file">LICENSE.txt</license>
     <projectUrl>https://platform.relativity.com/index.html</projectUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
-    <description>Relativity Integration Points SDK</description>
+    <description>Relativity Integration Points Kepler Services Interfaces</description>
     <releaseNotes></releaseNotes>
     <copyright>(c) Relativity</copyright>
     <dependencies>
