@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
-namespace kCura.IntegrationPoints.Contracts.Domain
+namespace kCura.IntegrationPoints.Domain
 {
 	/// <summary>
 	/// Helper class used to load assemblies in the foreign app domain
@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Contracts.Domain
 			"kCura.ScheduleQueue.AgentBase",
 			"kCura.IntegrationPoints.Config",
 			"kCura.IntegrationPoints.Core",
-			"kCura.IntegrationPoints.SourceProviderInstaller",
+			"Relativity.IntegrationPoints.SourceProviderInstaller",
 			"kCura.IntegrationPoints.Synchronizers.RDO",
 			"kCura.IntegrationPoints.EventHandlers",
 			"kCura.IntegrationPoints.Agent",

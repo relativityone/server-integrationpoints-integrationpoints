@@ -1,7 +1,7 @@
 ﻿using System;
 using kCura.IntegrationPoint.Tests.Core.Exceptions;
-using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Core.Services.Domain;
+using Relativity.IntegrationPoints.Contracts;
 
 namespace kCura.IntegrationPoints.Domain.Tests.Integration.DataProviderBuilderTests.Mocks
 {

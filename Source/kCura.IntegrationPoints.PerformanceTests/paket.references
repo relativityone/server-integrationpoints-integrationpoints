@@ -1,10 +1,10 @@
 CSharpGuidelineAnalyzer
-kCura.IntegrationPoints.Contracts
 kCura.Relativity.Client
+Newtonsoft.Json
+Relativity.IntegrationPoints.Contracts
 Relativity.Kepler.Client
 Relativity.Telemetry.APM
 Castle.Windsor
 
 group TestPackages
 	BenchmarkDotNet
-	Newtonsoft.Json

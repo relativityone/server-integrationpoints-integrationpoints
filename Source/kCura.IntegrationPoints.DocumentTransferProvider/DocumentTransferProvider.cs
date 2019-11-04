@@ -3,10 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
-using kCura.IntegrationPoints.Contracts;
-using kCura.IntegrationPoints.Contracts.Internals;
-using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -15,10 +11,14 @@ using kCura.IntegrationPoints.Domain.Utils;
 using kCura.Relativity.Client;
 using Newtonsoft.Json;
 using Relativity.API;
+using Relativity.IntegrationPoints.Contracts;
+using Relativity.IntegrationPoints.Contracts.Internals;
+using Relativity.IntegrationPoints.Contracts.Models;
+using Relativity.IntegrationPoints.Contracts.Provider;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider
 {
-	[Contracts.DataSourceProvider(Domain.Constants.RELATIVITY_PROVIDER_GUID)]
+	[DataSourceProvider(Domain.Constants.RELATIVITY_PROVIDER_GUID)]
 	public class DocumentTransferProvider : IDataSourceProvider, IEmailBodyData
 	{
 		private readonly IImportApiFacade _importApiFacade;

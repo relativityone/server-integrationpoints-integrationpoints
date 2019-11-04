@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Core.Services.Domain;
 using NSubstitute;
 using NUnit.Framework;
-using NUnit.Framework.Internal;
+using Relativity.IntegrationPoints.Contracts;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.Domain
 {

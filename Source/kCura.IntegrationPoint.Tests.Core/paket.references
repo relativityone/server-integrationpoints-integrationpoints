@@ -3,7 +3,6 @@ Castle.Windsor
 CSharpGuidelineAnalyzer
 kCura
 kCura.Apps.Common.Config
-kCura.IntegrationPoints.Contracts
 kCura.Relativity.Client
 LanguageExt.Core
 Relativity
@@ -11,6 +10,7 @@ Relativity.API
 Relativity.Data
 Relativity.DataExchange.Client.SDK
 kCura.OutsideIn.FI.Win32
+Relativity.IntegrationPoints.Contracts
 Relativity.IntegrationPoints.Services.Interfaces.Private
 Relativity.Kepler.Client
 Relativity.Productions.Services.Interfaces

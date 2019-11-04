@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Data.Repositories;
+﻿using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.ScheduleQueue.Core;
 

@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Data;
-using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Contracts.Provider;
 using Moq;
+using Relativity.IntegrationPoints.Contracts;
+using Relativity.IntegrationPoints.Contracts.Models;
+using Relativity.IntegrationPoints.Contracts.Provider;
 
 namespace kCura.IntegrationPoints.Domain.Tests.Integration.DataProviderBuilderTests.Mocks
 {
-	[Contracts.DataSourceProvider(DataProviderBuilderTests.PROVIDER_GUID_AS_STRING)]
+	[DataSourceProvider(DataProviderBuilderTests.PROVIDER_GUID_AS_STRING)]
 	public class DataSourceProviderMock : IDataSourceProvider
 	{
 		public IEnumerable<FieldEntry> GetFields(DataSourceProviderConfiguration providerConfiguration)

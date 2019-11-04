@@ -2,11 +2,11 @@ Castle.Windsor
 CSharpGuidelineAnalyzer
 kCura.Apps.Common.Data
 kCura.Apps.Common.Utils
-kCura.IntegrationPoints.Contracts
 kCura.OutsideIn.FI.Win32
 kCura.Relativity.Client
 Relativity
 Relativity.API
+Relativity.IntegrationPoints.Contracts
 Relativity.IntegrationPoints.Services.Interfaces.Private
 Relativity.OAuth2Client
 Relativity.Telemetry.APM

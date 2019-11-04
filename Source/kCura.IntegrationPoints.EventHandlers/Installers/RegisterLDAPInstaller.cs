@@ -1,8 +1,8 @@
-﻿using kCura.IntegrationPoints.Contracts;
-using kCura.IntegrationPoints.EventHandlers.IntegrationPoints;
+﻿using kCura.IntegrationPoints.EventHandlers.IntegrationPoints;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using Relativity.IntegrationPoints.Contracts;
 
 namespace kCura.IntegrationPoints.EventHandlers.Installers
 {

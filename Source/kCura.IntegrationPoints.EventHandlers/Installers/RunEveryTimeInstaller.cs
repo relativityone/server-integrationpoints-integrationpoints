@@ -4,7 +4,6 @@ using kCura.EventHandler.CustomAttributes;
 using kCura.IntegrationPoints.Core.Telemetry;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Migrations;
-using kCura.IntegrationPoints.SourceProviderInstaller;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers.Installers

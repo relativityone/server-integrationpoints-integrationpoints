@@ -1,4 +1,4 @@
-﻿using kCura.IntegrationPoints.Contracts;
+﻿using Relativity.IntegrationPoints.Contracts;
 
 namespace kCura.IntegrationPoints.Domain
 {

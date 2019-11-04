@@ -5,7 +5,6 @@ using System.Net.Http;
 using System.Web.Http;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -13,6 +12,7 @@ using kCura.IntegrationPoints.Web.Controllers.API;
 using kCura.IntegrationPoints.Web.Models;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {

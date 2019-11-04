@@ -1,7 +1,6 @@
 Castle.Windsor
 CSharpGuidelineAnalyzer
 kCura.Apps.Common.Utils
-kCura.IntegrationPoints.Contracts
 kCura.Relativity.Client
 Relativity.API
 Relativity.Data
@@ -9,6 +8,7 @@ Relativity.Kepler
 relativity.transfer.client
 kCura.FreeImage
 Relativity.DataTransfer.MessageService
+Relativity.IntegrationPoints.Contracts
 kCura.OutsideIn.FI.Win32
 
 group TestPackages

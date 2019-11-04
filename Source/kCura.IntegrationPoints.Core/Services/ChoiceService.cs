@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.Relativity.Client;
+using Relativity.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.Core.Services
 {

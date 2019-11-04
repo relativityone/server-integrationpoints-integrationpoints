@@ -2,7 +2,6 @@ Castle.Windsor
 CSharpGuidelineAnalyzer
 kCura
 kCura.Apps.Common.Config
-kCura.IntegrationPoints.SDK
 kCura.LongPath
 kCura.Relativity.Client
 LanguageExt.Core
@@ -10,6 +9,7 @@ Mono.TextTransform
 Relativity.API
 Relativity.DataExchange.Client.SDK
 Relativity.DataTransfer.MessageService
+Relativity.IntegrationPoints.SDK
 Relativity.OAuth2Client
 Relativity.Productions.Services.Interfaces
 Relativity.Services.Interfaces

@@ -1,5 +1,5 @@
 ﻿using kCura.IntegrationPoint.Tests.Core.Models;
-using kCura.IntegrationPoints.Contracts.Models;
+using Relativity.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Process.Internals
 {

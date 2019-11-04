@@ -1,1 +1,1 @@
-kCura.IntegrationPoints.SourceProviderInstaller
+Relativity.IntegrationPoints.SourceProviderInstaller

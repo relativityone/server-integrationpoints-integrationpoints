@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using kCura.IntegrationPoints.Contracts.Domain;
+using kCura.IntegrationPoints.Domain;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data.Queries

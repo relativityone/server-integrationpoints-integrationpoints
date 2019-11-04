@@ -4,7 +4,6 @@ using Castle.Windsor;
 using kCura.Apps.Common.Data;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Config;
-using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
@@ -55,6 +54,7 @@ using System.Threading.Tasks;
 using kCura.IntegrationPoints.Core.Installers.Registrations;
 using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data.Installers;
+using Relativity.IntegrationPoints.Contracts;
 using IFederatedInstanceManager = kCura.IntegrationPoints.Domain.Managers.IFederatedInstanceManager;
 
 namespace kCura.IntegrationPoints.Core.Installers

@@ -1,5 +1,4 @@
-﻿using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Core.Factories;
+﻿using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -15,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Relativity.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 {

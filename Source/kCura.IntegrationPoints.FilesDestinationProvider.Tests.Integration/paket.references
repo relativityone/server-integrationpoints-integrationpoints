@@ -3,10 +3,10 @@ CSharpGuidelineAnalyzer
 kCura
 kCura.Apps.Common.Data
 kCura.Apps.Common.Utils
-kCura.IntegrationPoints.Contracts
 kCura.Relativity.Client
 Relativity.API
 Relativity.DataExchange.Client.SDK
+Relativity.IntegrationPoints.Contracts
 Relativity.Services.DataContracts
 Relativity.Services.Interfaces
 Relativity.Telemetry.MetricsCollection

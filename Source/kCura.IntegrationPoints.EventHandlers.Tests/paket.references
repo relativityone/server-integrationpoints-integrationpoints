@@ -1,9 +1,9 @@
 CSharpGuidelineAnalyzer
 kCura.Apps.Common.Utils
 kCura.EventHandler
-kCura.IntegrationPoints.SDK
 kCura.Relativity.Client
 LanguageExt.Core
+Relativity.IntegrationPoints.SDK
 Relativity.IntegrationPoints.Services.Interfaces.Private
 Relativity.Kepler
 Relativity.Productions.Services.Interfaces

@@ -70,12 +70,6 @@
     <Reference Include="kCura.EventHandler">
       <HintPath>..\..\packages\kCura.EventHandler\lib\net462\kCura.EventHandler.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.IntegrationPoints.Contracts, Version=11.0.7.129, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\kCura.IntegrationPoints.SDK.11.0.7\lib\kCura.IntegrationPoints.Contracts.dll</HintPath>
-    </Reference>
-    <Reference Include="kCura.IntegrationPoints.SourceProviderInstaller, Version=11.0.7.129, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\kCura.IntegrationPoints.SDK.11.0.7\lib\kCura.IntegrationPoints.SourceProviderInstaller.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.6.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -86,8 +80,14 @@
     <Reference Include="Relativity.DataTransfer.MessageService, Version=1.0.4.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.DataTransfer.MessageService.1.0.4\lib\Relativity.DataTransfer.MessageService.dll</HintPath>
     </Reference>
+    <Reference Include="Relativity.IntegrationPoints.Contracts">
+      <HintPath>..\packages\Relativity.IntegrationPoints.SDK.1.0.3\lib\net462\Relativity.IntegrationPoints.Contracts.dll</HintPath>
+    </Reference>
     <Reference Include="Relativity.IntegrationPoints.Services.Interfaces.Private, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.IntegrationPoints.Services.Interfaces.Private.1.0.0\lib\net462\Relativity.IntegrationPoints.Services.Interfaces.Private.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.IntegrationPoints.SourceProviderInstaller">
+      <HintPath>..\packages\Relativity.IntegrationPoints.SDK.1.0.3\lib\net462\Relativity.IntegrationPoints.SourceProviderInstaller.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Kepler, Version=2.0.7.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Kepler.2.0.7\lib\net462\Relativity.Kepler.dll</HintPath>

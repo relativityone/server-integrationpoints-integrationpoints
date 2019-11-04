@@ -6,11 +6,10 @@ using BenchmarkDotNet.Attributes.Columns;
 using BenchmarkDotNet.Attributes.Exporters;
 using BenchmarkDotNet.Attributes.Jobs;
 using kCura.IntegrationPoint.Tests.Core.Templates;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.Relativity.Client;
+using Relativity.IntegrationPoints.Contracts.Models;
 using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.PerformanceTests.TestCases
@@ -98,7 +97,7 @@ namespace kCura.IntegrationPoints.PerformanceTests.TestCases
 			OldGetTextFields(Convert.ToInt32(ArtifactType.Document), longTextFieldsOnly);
 		}
 
-		private List<FieldEntry> OldGetTextFields(int rdoTypeId, bool longTextFieldsOnly)
+		private void OldGetTextFields(int rdoTypeId, bool longTextFieldsOnly)
 		{
 			var rdoCondition = new ObjectCondition
 			{
@@ -145,7 +144,7 @@ namespace kCura.IntegrationPoints.PerformanceTests.TestCases
 				throw new Exception(result.Message);
 			}
 			List<FieldEntry> fieldEntries = _choiceService.ConvertToFieldEntries(result.QueryArtifacts);
-			return fieldEntries;
+			return;
 		}
 	}
 
