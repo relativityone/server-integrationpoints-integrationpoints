@@ -39,7 +39,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 			int startAt,
 			SourceConfiguration sourceConfiguration,
 			int searchArtifactId,
-			ImportSettings settings, Func<ISearchManager> searchManagerFunc)
+			ImportSettings settings,
+			Func<ISearchManager> searchManagerFunc)
 			: base(
 				documentRepository,
 				relativityObjectManager,
