@@ -53,16 +53,8 @@ namespace kCura.IntegrationPoints.Core.Services
 		private readonly Guid _sourceUniqueIdField = new Guid("5519435E-EE82-4820-9546-F1AF46121901");
 		private readonly Guid _stackTraceField = new Guid("0353DBDE-9E00-4227-8A8F-4380A8891CFF");
 		private readonly Guid _timestampUtcField = new Guid("B9CBA772-E7C9-493E-B7F8-8D605A6BFE1F");
-
 		private readonly Guid _errorStatusNew = new Guid("F881B199-8A67-4D49-B1C1-F9E68658FB5A");
-		private readonly Guid _errorStatusExpired = new Guid("AF01A8FA-B419-49B1-BD71-25296E221E57");
-		private readonly Guid _errorStatusInProgress = new Guid("E5EBD98C-C976-4FA2-936F-434E265EA0AA");
-		private readonly Guid _errorStatusRetried = new Guid("7D3D393D-384F-434E-9776-F9966550D29A");
-
 		private readonly Guid _errorTypeItem = new Guid("9DDC4914-FEF3-401F-89B7-2967CD76714B");
-		private readonly Guid _errorTypeJob = new Guid("FA8BB625-05E6-4BF7-8573-012146BAF19B");
-
-		private readonly Guid _jobHistoryRelationGuid = new Guid("8B747B91-0627-4130-8E53-2931FFC4135F");
 
 		public bool JobLevelErrorOccurred { get; private set; }
 
@@ -83,11 +75,6 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			lock (_jobHistoryErrorList)
 			{
-				if (!_jobHistoryErrorList.Any())
-				{
-					return;
-				}
-
 				try
 				{
 					_logger.LogInformation("Mass-creating item level errors count: {count}", _jobHistoryErrorList.Count);
@@ -102,26 +89,7 @@ namespace kCura.IntegrationPoints.Core.Services
 						x.StackTrace,
 						DateTime.UtcNow
 					}).ToList();
-
-					using (IObjectManager objectManager = _helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
-					{
-						var request = new MassCreateRequest
-						{
-							ObjectType = GetObjectTypeRef(),
-							ParentObject = GetParentObject(_jobHistoryErrorList.FirstOrDefault()?.JobHistory ?? 0),
-							Fields = GetFields(),
-							ValueLists = values
-						};
-						MassCreateResult result = objectManager.CreateAsync(_context.WorkspaceID, request).GetAwaiter().GetResult();
-						if (!result.Success)
-						{
-							throw new IntegrationPointsException($"Mass creation of item level errors was not successful. Message: {result.Message}");
-						}
-
-						_logger.LogInformation("Successfully mass-created item level errors: {count}", _jobHistoryErrorList.Count);
-					}
-
-
+					
 					if (_jobHistoryErrorList.Any())
 					{
 						_errorOccurredDuringJob = true;
@@ -130,8 +98,24 @@ namespace kCura.IntegrationPoints.Core.Services
 						{
 							IntegrationPoint.HasErrors = true;
 						}
+						
+						using (IObjectManager objectManager = _helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
+						{
+							var request = new MassCreateRequest
+							{
+								ObjectType = GetObjectTypeRef(),
+								ParentObject = GetParentObject(_jobHistoryErrorList.FirstOrDefault()?.JobHistory ?? 0),
+								Fields = GetFields(),
+								ValueLists = values
+							};
+							MassCreateResult result = objectManager.CreateAsync(_context.WorkspaceID, request).GetAwaiter().GetResult();
+							if (!result.Success)
+							{
+								throw new IntegrationPointsException($"Mass creation of item level errors was not successful. Message: {result.Message}");
+							}
 
-						//	_context.RsapiService.JobHistoryErrorLibrary.Create(_jobHistoryErrorList);
+							_logger.LogInformation("Successfully mass-created item level errors: {count}", _jobHistoryErrorList.Count);
+						}
 					}
 
 					if (IntegrationPoint != null && !_errorOccurredDuringJob || (JobStopManager?.IsStopRequested() == true))
