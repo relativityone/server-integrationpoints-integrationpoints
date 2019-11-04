@@ -43,9 +43,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 		[Test]
 		public void ItShouldLogFileTransferModeChangeAsInfo()
 		{
-			const string newMode = "new_mode";
-
-			_exporterStatusNotification.FileTransferMultiClientModeChangeEvent += Raise.Event<IExporterStatusNotification.FileTransferMultiClientModeChangeEventEventHandler>(newMode);
+			_exporterStatusNotification.FileTransferMultiClientModeChangeEvent +=
+				Raise.Event<IExporterStatusNotification.FileTransferMultiClientModeChangeEventEventHandler>(this, new TapiMultiClientEventArgs(TapiClient.Aspera));
 
 			_apiLog.Received().LogInformation(_fileTransferTemplateMessage, TapiClient.Aspera.ToString());
 		}
