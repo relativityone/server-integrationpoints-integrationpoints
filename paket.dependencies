@@ -11,7 +11,7 @@ nuget kCura.Relativity.Client 10.3.190.19
 nuget Relativity.Authentication 10.3.190.19
 nuget Relativity.CustomPages 10.3.190.19
 nuget Relativity.Data 10.3.190.19
-nuget Relativity.DataExchange.Client.SDK 1.4.4
+nuget Relativity.DataExchange.Client.SDK 1.5.1
 nuget Relativity.Services.Interfaces 10.3.190.19
 nuget Relativity.Services.Interfaces.Private 10.3.190.19
 
