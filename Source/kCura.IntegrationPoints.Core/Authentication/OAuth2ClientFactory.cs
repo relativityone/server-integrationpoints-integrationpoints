@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.Core.Authentication
 
 		private void LogGetOAuth2ClientError(Exception ex)
 		{
-			_logger.LogError(ex, "Error occured while getting OAuth2Client: {ex.Message}", ex.Message);
+			_logger.LogError(ex, "Error occured while getting OAuth2Client: {errorMessage}", ex.Message);
 		}
 
 		private void LogGetOAuth2ClientSuccess(int userId)
