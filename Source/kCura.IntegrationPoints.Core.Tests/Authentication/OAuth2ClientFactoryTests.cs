@@ -75,7 +75,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Authentication
 		{
 			_oAuth2ClientManager.ReadAllAsync().Throws<InvalidOperationException>();
 			Assert.Throws<InvalidOperationException>(() => _instance.GetOauth2Client(_contextUserId));
-			_logger.Received(1).LogError(Arg.Any<InvalidOperationException>(), Arg.Any<string>());
+			_logger.Received(1).LogError(Arg.Any<InvalidOperationException>(), Arg.Any<string>(), Arg.Any<string>());
 		}
 	}
 }
