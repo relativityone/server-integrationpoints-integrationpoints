@@ -105,12 +105,12 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 			
 			List<SourceConfiguration> sourceConfigurations = targetWorkspaceProfiles
 				.Select(profile => profile.SourceConfiguration)
-				.Select(sourceConfigJson => _serializer.Deserialize<SourceConfiguration>(sourceConfigJson))
+				.Select(sourceConfigurationJson => _serializer.Deserialize<SourceConfiguration>(sourceConfigurationJson))
 				.ToList();
 
 			List<ImportSettings> destinationConfigurations = targetWorkspaceProfiles
 				.Select(profile => profile.DestinationConfiguration)
-				.Select(destinationConfiguration => _serializer.Deserialize<ImportSettings>(destinationConfiguration))
+				.Select(destinationConfigurationJson => _serializer.Deserialize<ImportSettings>(destinationConfigurationJson))
 				.ToList();
 
 			// verify that source is saved search
@@ -130,6 +130,15 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 				.Select(config => config.SavedSearchArtifactId)
 				.ShouldAllBeEquivalentTo(0);
 
+			// verify destination folder id in source configuration
+			targetWorkspaceProfiles
+				.Select(x => JObject.Parse(x.SourceConfiguration)["FolderArtifactId"].Type)
+				.ShouldAllBeEquivalentTo(JTokenType.Null);
+
+			// verify image precedence in destination configuration
+			targetWorkspaceProfiles
+				.Select(x => JObject.Parse(x.DestinationConfiguration)["ImagePrecedence"].Type)
+				.ShouldAllBeEquivalentTo(JTokenType.Null);
 		}
 
 		private Task<int> GetSyncDestinationProviderArtifactIDAsync(int workspaceID)
@@ -183,7 +192,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 
 			List<IntegrationPointProfile> profiles = new List<IntegrationPointProfile>()
 			{
-				// Sync profile
+				// Profiles to preserve
 				new IntegrationPointProfile
 				{
 					Name = "Sync saved search to folder",
@@ -193,8 +202,17 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 					SourceConfiguration = CreateSourceConfigurationJson(SourceConfiguration.ExportType.SavedSearch),
 					DestinationConfiguration = CreateDestinationConfigurationJson(exportToProduction: false)
 				},
+				new IntegrationPointProfile()
+				{
+					Name = "Sync produced images from saved search to folder",
+					Type = exportTypeArtifactID,
+					SourceProvider =  relativitySourceProviderArtifactID,
+					DestinationProvider = relativityDestinationProviderArtifactID,
+					SourceConfiguration = CreateSourceConfigurationJson(SourceConfiguration.ExportType.SavedSearch),
+					DestinationConfiguration = CreateDestinationConfigurationJson(exportToProduction: false, copyImages: true, useImagePrecedence: true)
+				},
 
-				// Non-Sync profiles
+				// Profiles to delete
 				new IntegrationPointProfile
 				{
 					Name = "prod to prod",
@@ -310,12 +328,26 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 			return _serializer.Serialize(sourceConfiguration);
 		}
 
-		private string CreateDestinationConfigurationJson(bool exportToProduction)
+		private string CreateDestinationConfigurationJson(bool exportToProduction = false, bool copyImages = false, bool useImagePrecedence = false)
 		{
 			JObject configuration = new JObject
 			{
-				["ProductionImport"] = exportToProduction
+				["ProductionImport"] = exportToProduction,
+				["ImageImport"] = copyImages
 			};
+
+			if (useImagePrecedence)
+			{
+				configuration["ImagePrecedence"] = new JArray()
+				{
+					new JObject()
+					{
+						["displayName"] = "production 1",
+						["artifactID"] = 123
+					}
+				};
+			}
+
 			return configuration.ToString();
 		}
 	}

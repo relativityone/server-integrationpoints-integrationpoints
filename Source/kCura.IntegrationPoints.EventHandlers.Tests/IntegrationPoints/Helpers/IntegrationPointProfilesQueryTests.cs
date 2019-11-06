@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -108,7 +108,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 
 			// Act
 			IEnumerable<IntegrationPointProfile> syncProfiles = _sut
-				.GetSyncProfiles(_allProfiles, _RELATIVITY_SOURCE_PROVIDER_ID, _RELATIVITY_DESTINATION_PROVIDER_ID);
+				.GetProfilesToPreserve(_allProfiles, _RELATIVITY_SOURCE_PROVIDER_ID, _RELATIVITY_DESTINATION_PROVIDER_ID);
 
 			// Assert
 			CollectionAssert.AreEquivalent(_syncProfiles, syncProfiles);
@@ -122,7 +122,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 
 			// Act
 			IEnumerable<IntegrationPointProfile> nonSyncProfiles = _sut
-				.GetNonSyncProfiles(_allProfiles, _RELATIVITY_SOURCE_PROVIDER_ID, _RELATIVITY_DESTINATION_PROVIDER_ID);
+				.GetProfilesToDelete(_allProfiles, _RELATIVITY_SOURCE_PROVIDER_ID, _RELATIVITY_DESTINATION_PROVIDER_ID);
 
 			// Assert
 			CollectionAssert.AreEquivalent(_nonSyncProfiles, nonSyncProfiles);

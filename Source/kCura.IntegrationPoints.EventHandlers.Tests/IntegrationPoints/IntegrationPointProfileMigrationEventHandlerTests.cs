@@ -275,11 +275,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 				.ReturnsAsync(allProfiles);
 
 			_integrationPointProfilesQuery
-				.Setup(x => x.GetSyncProfiles(It.IsAny<IEnumerable<IntegrationPointProfile>>(), It.IsAny<int>(), It.IsAny<int>()))
+				.Setup(x => x.GetProfilesToPreserve(It.IsAny<IEnumerable<IntegrationPointProfile>>(), It.IsAny<int>(), It.IsAny<int>()))
 				.Returns(syncProfiles);
 
 			_integrationPointProfilesQuery
-				.Setup(x => x.GetNonSyncProfiles(It.IsAny<IEnumerable<IntegrationPointProfile>>(), It.IsAny<int>(), It.IsAny<int>()))
+				.Setup(x => x.GetProfilesToDelete(It.IsAny<IEnumerable<IntegrationPointProfile>>(), It.IsAny<int>(), It.IsAny<int>()))
 				.Returns(nonSyncProfiles);
 		}
 	}
