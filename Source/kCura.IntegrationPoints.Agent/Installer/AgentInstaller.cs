@@ -145,7 +145,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 				.ImplementedBy<ExporterFactory>()
 				.LifestyleTransient()
 			);
-
+				
 			container.Register(Component.For<IRsapiClientWithWorkspaceFactory>().ImplementedBy<ExtendedRsapiClientWithWorkspaceFactory>().LifestyleTransient());
 			container.Register(Component
 				.For<IExternalServiceInstrumentationProvider>()

@@ -77,7 +77,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				savedSearchName);
 		}
 
-		public int CreateSavedSearch(List<FieldRef> fields, int workspaceID, string savedSearchName)
+		private int CreateSavedSearch(List<FieldRef> fields, int workspaceID, string savedSearchName)
 		{
 			var folder = new SearchContainer
 			{
@@ -100,7 +100,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return CreateProductionSetAsync(workspaceArtifactID, productionSetName).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
-		public Task<int> CreateProductionSetAsync(int workspaceArtifactID, string productionSetName)
+		private Task<int> CreateProductionSetAsync(int workspaceArtifactID, string productionSetName)
 		{
 			return Production.Create(workspaceArtifactID, productionSetName);
 		}
@@ -122,7 +122,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				).GetAwaiter().GetResult();
 		}
 
-		public async Task<ProductionCreateResultDto> CreateAndRunProductionAsync(int workspaceArtifactID, int savedSearchID, string productionName, string placeHolderFilePath)
+		private async Task<ProductionCreateResultDto> CreateAndRunProductionAsync(int workspaceArtifactID, int savedSearchID, string productionName, string placeHolderFilePath)
 		{
 			byte[] placeHolderFileDataBytes = File.ReadAllBytes(placeHolderFilePath);
 			int productionSetArtifactID = CreateProductionSet(workspaceArtifactID, productionName);

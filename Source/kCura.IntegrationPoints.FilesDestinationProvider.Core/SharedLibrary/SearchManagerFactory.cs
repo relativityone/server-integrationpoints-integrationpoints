@@ -6,7 +6,7 @@ using kCura.WinEDDS.Service.Export;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 {
-    internal class SearchManagerFactory : IServiceManagerFactory<ISearchManager>
+    public class SearchManagerFactory : IServiceManagerFactory<ISearchManager>
     {
         public ISearchManager Create(ICredentials credentials, CookieContainer cookieContainer, string webServiceUrl = null)
         {
