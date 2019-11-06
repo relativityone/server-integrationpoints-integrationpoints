@@ -257,7 +257,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 			return new IntegrationPointProfile()
 			{
 				ArtifactId = artifactID,
-				SourceConfiguration = "{\"SavedSearchArtifactId\": 123234,\n  \"TypeOfExport\": 3,\n  \"SourceWorkspaceArtifactId\": 1017953}"
+				SourceConfiguration = "{\"SavedSearchArtifactId\": 123234,\n  \"TypeOfExport\": 3,\n  \"SourceWorkspaceArtifactId\": 1017953}",
+				DestinationConfiguration = "{\"DestinationFolderArtifactId\":\"1003697\",\"ProductionImport\":false,\"ImageImport\":\"true\",\"ProductionPrecedence\":1}"
 			};
 		}
 
