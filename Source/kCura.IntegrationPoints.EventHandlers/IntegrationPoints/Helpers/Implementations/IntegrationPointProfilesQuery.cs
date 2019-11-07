@@ -18,12 +18,11 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 		private readonly IObjectArtifactIdsByStringFieldValueQuery _objectArtifactIDsByStringFieldValueQuery;
 		private readonly ISerializer _serializer;
 
-		public IntegrationPointProfilesQuery(Func<int, IRelativityObjectManager> createRelativityObjectManager, IObjectArtifactIdsByStringFieldValueQuery objectArtifactIDsByStringFieldValueQuery,
-			ISerializer serializer)
+		public IntegrationPointProfilesQuery(Func<int, IRelativityObjectManager> createRelativityObjectManager, IObjectArtifactIdsByStringFieldValueQuery objectArtifactIDsByStringFieldValueQuery)
 		{
 			_createRelativityObjectManager = createRelativityObjectManager;
 			_objectArtifactIDsByStringFieldValueQuery = objectArtifactIDsByStringFieldValueQuery;
-			_serializer = serializer;
+			_serializer = new JSONSerializer();
 		}
 
 		public async Task<IEnumerable<IntegrationPointProfile>> GetAllProfilesAsync(int workspaceID)

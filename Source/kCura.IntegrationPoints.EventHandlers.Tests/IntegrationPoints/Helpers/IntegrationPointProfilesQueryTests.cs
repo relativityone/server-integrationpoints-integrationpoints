@@ -82,8 +82,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			
 			_sut = new IntegrationPointProfilesQuery(
 				workspaceID => _relativityObjectManagerFake.Object,
-				_objectArtifactIDsQueryFake.Object,
-				_serializer);
+				_objectArtifactIDsQueryFake.Object);
 		}
 
 		[Test]

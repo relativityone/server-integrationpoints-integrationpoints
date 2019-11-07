@@ -34,11 +34,10 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 		public IntegrationPointProfileMigrationEventHandler()
 		{
-			ISerializer serializer = new JSONSerializer();
 			_relativityObjectManagerFactory = new Lazy<IRelativityObjectManagerFactory>(() => new RelativityObjectManagerFactory(Helper));
 			Func<int, IRelativityObjectManager> createRelativityObjectManager = CreateRelativityObjectManager;
 			var objectArtifactIdsByStringFieldValueQuery = new ObjectArtifactIdsByStringFieldValueQuery(createRelativityObjectManager);
-			_integrationPointProfilesQuery = new IntegrationPointProfilesQuery(createRelativityObjectManager, objectArtifactIdsByStringFieldValueQuery, serializer);
+			_integrationPointProfilesQuery = new IntegrationPointProfilesQuery(createRelativityObjectManager, objectArtifactIdsByStringFieldValueQuery);
 		}
 
 		internal IntegrationPointProfileMigrationEventHandler(IErrorService errorService,
