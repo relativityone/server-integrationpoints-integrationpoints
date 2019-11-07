@@ -98,6 +98,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			int destinationProviderArtifactID = await _integrationPointProfilesQuery.GetSyncDestinationProviderArtifactIDAsync(WorkspaceID).ConfigureAwait(false);
 			int integrationPointTypeArtifactID = await _integrationPointProfilesQuery.GetIntegrationPointExportTypeArtifactIDAsync(WorkspaceID).ConfigureAwait(false);
 
+			List<IntegrationPointProfile> failedProfiles = new List<IntegrationPointProfile>();
+
 			foreach (IntegrationPointProfile profile in profilesToUpdate)
 			{
 				FieldRefValuePair[] fieldsToUpdate = GetFieldsToUpdate(profile, sourceProviderArtifactID, destinationProviderArtifactID, integrationPointTypeArtifactID);
@@ -105,8 +107,14 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 				if (!success)
 				{
-					throw new IntegrationPointsException($"Updating Integration Point Profile ArtifactID: {profile.ArtifactId} Name: {profile.Name} with ObjectManager failed.");
+					failedProfiles.Add(profile);
 				}
+			}
+
+			if (failedProfiles.Any())
+			{
+				string concatenatedProfiles = string.Join(",", failedProfiles.Select(profile => profile.ArtifactId));
+				throw new IntegrationPointsException($"Failed to migrate {failedProfiles.Count} profiles artifact IDs: {concatenatedProfiles}");
 			}
 		}
 
