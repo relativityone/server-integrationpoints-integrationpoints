@@ -60,7 +60,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			int destinationProviderArtifactID = await _integrationPointProfilesQuery.GetSyncDestinationProviderArtifactIDAsync(TemplateWorkspaceID).ConfigureAwait(false);
 			List<IntegrationPointProfile> allProfiles = (await _integrationPointProfilesQuery.GetAllProfilesAsync(TemplateWorkspaceID).ConfigureAwait(false)).ToList();
 			List<IntegrationPointProfile> profilesToPreserve = _integrationPointProfilesQuery
-				.GetProfilesToPreserve(allProfiles, sourceProviderArtifactID, destinationProviderArtifactID).ToList();
+				.GetProfilesToUpdate(allProfiles, sourceProviderArtifactID, destinationProviderArtifactID).ToList();
 			List<IntegrationPointProfile> profilesToDelete = _integrationPointProfilesQuery
 				.GetProfilesToDelete(allProfiles, sourceProviderArtifactID, destinationProviderArtifactID).ToList();
 
@@ -70,15 +70,15 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				).ConfigureAwait(false);
 		}
 
-		private async Task DeleteProfilesAsync(IReadOnlyCollection<int> nonSyncProfilesIDs)
+		private async Task DeleteProfilesAsync(IReadOnlyCollection<int> profilesIDs)
 		{
-			if (nonSyncProfilesIDs.IsNullOrEmpty())
+			if (profilesIDs.IsNullOrEmpty())
 			{
 				return;
 			}
 
 			bool success = await CreateRelativityObjectManager(WorkspaceID)
-				.MassDeleteAsync(nonSyncProfilesIDs)
+				.MassDeleteAsync(profilesIDs)
 				.ConfigureAwait(false);
 			if (!success)
 			{
@@ -86,9 +86,9 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			}
 		}
 
-		private async Task UpdateProfilesAsync(IReadOnlyCollection<IntegrationPointProfile> syncProfiles)
+		private async Task UpdateProfilesAsync(IReadOnlyCollection<IntegrationPointProfile> profilesToUpdate)
 		{
-			if (syncProfiles.IsNullOrEmpty())
+			if (profilesToUpdate.IsNullOrEmpty())
 			{
 				return;
 			}
@@ -99,7 +99,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			int destinationProviderArtifactID = await _integrationPointProfilesQuery.GetSyncDestinationProviderArtifactIDAsync(WorkspaceID).ConfigureAwait(false);
 			int integrationPointTypeArtifactID = await _integrationPointProfilesQuery.GetIntegrationPointExportTypeArtifactIDAsync(WorkspaceID).ConfigureAwait(false);
 
-			foreach (IntegrationPointProfile profile in syncProfiles)
+			foreach (IntegrationPointProfile profile in profilesToUpdate)
 			{
 				FieldRefValuePair[] fieldsToUpdate = GetFieldsToUpdate(profile, sourceProviderArtifactID, destinationProviderArtifactID, integrationPointTypeArtifactID);
 				bool success = await objectManager.MassUpdateAsync(new[] {profile.ArtifactId}, fieldsToUpdate, FieldUpdateBehavior.Replace).ConfigureAwait(false);

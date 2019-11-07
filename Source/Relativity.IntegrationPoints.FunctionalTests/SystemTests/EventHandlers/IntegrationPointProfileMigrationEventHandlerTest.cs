@@ -18,6 +18,7 @@ using NUnit.Framework;
 using Relativity.IntegrationPoints.Services;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Testing.Identification;
 using static kCura.IntegrationPoints.Core.Constants.IntegrationPoints;
 
 namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
@@ -54,8 +55,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 			}
 		}
 
-		[Test]
-		public async Task ItShouldCopyOnlySyncProfiles()
+		[IdentifiedTest("bd62499f-9f91-4aea-9330-0ccc7a3bc6e2")]
+		public async Task EventHandler_ShouldDeleteAndUpdateExistingProfiles()
 		{
 			// Act
 			TestWorkspace createdWorkspace = await SystemTestsSetupFixture.CreateManagedWorkspaceWithDefaultName(SystemTestsSetupFixture.SourceWorkspace.Name)

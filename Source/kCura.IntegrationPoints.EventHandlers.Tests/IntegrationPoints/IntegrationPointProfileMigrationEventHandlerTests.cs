@@ -20,14 +20,14 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 	[TestFixture]
 	public class IntegrationPointProfileMigrationEventHandlerTests
 	{
-		private IntegrationPointProfileMigrationEventHandler _eventHandler;
-		private Mock<IErrorService> _errorService;
-		private Mock<IAPILog> _logger;
-		private Mock<IEHHelper> _eventHandlerHelper;
-		private Mock<IRelativityObjectManagerFactory> _relativityObjectManagerFactory;
-		private Mock<IRelativityObjectManager> _templateWorkspaceRelativityObjectManager;
-		private Mock<IRelativityObjectManager> _createdWorkspaceRelativityObjectManager;
-		private Mock<IIntegrationPointProfilesQuery> _integrationPointProfilesQuery;
+		private IntegrationPointProfileMigrationEventHandler _sut;
+		private Mock<IErrorService> _errorServiceFake;
+		private Mock<IAPILog> _loggerFake;
+		private Mock<IEHHelper> _eventHandlerHelperFake;
+		private Mock<IRelativityObjectManagerFactory> _relativityObjectManagerFactoryFake;
+		private Mock<IRelativityObjectManager> _templateWorkspaceRelativityObjectManagerFake;
+		private Mock<IRelativityObjectManager> _createdWorkspaceRelativityObjectManagerMock;
+		private Mock<IIntegrationPointProfilesQuery> _integrationPointProfilesQueryFake;
 
 		private const string _TEST_ERROR_MESSAGE = "Failed to migrate the Integration Point Profiles.";
 		private const int _TEMPLATE_WORKSPACE_ARTIFACT_ID = 100111;
@@ -39,17 +39,17 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 
 		private static IEnumerable<Action<IntegrationPointProfileMigrationEventHandlerTests>> ServicesFailureSetups { get; } = new Action<IntegrationPointProfileMigrationEventHandlerTests>[]
 		{
-			ctx => ctx._createdWorkspaceRelativityObjectManager
+			ctx => ctx._createdWorkspaceRelativityObjectManagerMock
 				.Setup(x => x.MassDeleteAsync(It.IsAny<IEnumerable<int>>(), It.IsAny<ExecutionIdentity>()))
 				.Throws(TestException),
-			ctx => ctx._integrationPointProfilesQuery
+			ctx => ctx._integrationPointProfilesQueryFake
 				.Setup(x => x.GetAllProfilesAsync(_TEMPLATE_WORKSPACE_ARTIFACT_ID))
 				.Throws(TestException)
 		};
 
 		private static IEnumerable<Action<IntegrationPointProfileMigrationEventHandlerTests>> InvalidResultsSetups { get; } = new Action<IntegrationPointProfileMigrationEventHandlerTests>[]
 		{
-			ctx => ctx._createdWorkspaceRelativityObjectManager
+			ctx => ctx._createdWorkspaceRelativityObjectManagerMock
 				.Setup(x => x.MassDeleteAsync(It.IsAny<IEnumerable<int>>(), It.IsAny<ExecutionIdentity>()))
 				.ReturnsAsync(false)
 		};
@@ -57,20 +57,20 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 		[SetUp]
 		public void SetUp()
 		{
-			_logger = new Mock<IAPILog>();
-			_errorService = new Mock<IErrorService>();
-			_eventHandlerHelper = new Mock<IEHHelper>();
-			_templateWorkspaceRelativityObjectManager = new Mock<IRelativityObjectManager>();
-			_createdWorkspaceRelativityObjectManager = new Mock<IRelativityObjectManager>();
-			_relativityObjectManagerFactory = new Mock<IRelativityObjectManagerFactory>();
-			_integrationPointProfilesQuery = new Mock<IIntegrationPointProfilesQuery>();
+			_loggerFake = new Mock<IAPILog>();
+			_errorServiceFake = new Mock<IErrorService>();
+			_eventHandlerHelperFake = new Mock<IEHHelper>();
+			_templateWorkspaceRelativityObjectManagerFake = new Mock<IRelativityObjectManager>();
+			_createdWorkspaceRelativityObjectManagerMock = new Mock<IRelativityObjectManager>();
+			_relativityObjectManagerFactoryFake = new Mock<IRelativityObjectManagerFactory>();
+			_integrationPointProfilesQueryFake = new Mock<IIntegrationPointProfilesQuery>();
 
-			_eventHandler = new IntegrationPointProfileMigrationEventHandler(
-				_errorService.Object,
-				() => _relativityObjectManagerFactory.Object,
-				_integrationPointProfilesQuery.Object)
+			_sut = new IntegrationPointProfileMigrationEventHandler(
+				_errorServiceFake.Object,
+				() => _relativityObjectManagerFactoryFake.Object,
+				_integrationPointProfilesQueryFake.Object)
 			{
-				Helper = _eventHandlerHelper.Object,
+				Helper = _eventHandlerHelperFake.Object,
 				TemplateWorkspaceID = _TEMPLATE_WORKSPACE_ARTIFACT_ID
 			};
 
@@ -78,34 +78,34 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 			var loggerFactory = new Mock<ILogFactory>();
 			loggerFactory
 				.Setup(x => x.GetLogger())
-				.Returns(_logger.Object);
-			_logger
+				.Returns(_loggerFake.Object);
+			_loggerFake
 				.Setup(x => x.ForContext<DataTransferLocationMigrationEventHandler>())
-				.Returns(_logger.Object);
-			_eventHandlerHelper
+				.Returns(_loggerFake.Object);
+			_eventHandlerHelperFake
 				.Setup(x => x.GetLoggerFactory())
 				.Returns(loggerFactory.Object);
 
-			_eventHandlerHelper
+			_eventHandlerHelperFake
 				.Setup(x => x.GetActiveCaseID())
 				.Returns(_CREATED_WORKSPACE_ARTIFACT_ID);
 
-			_relativityObjectManagerFactory
+			_relativityObjectManagerFactoryFake
 				.Setup(x => x.CreateRelativityObjectManager(It.Is<int>(y => y == _TEMPLATE_WORKSPACE_ARTIFACT_ID)))
-				.Returns(_templateWorkspaceRelativityObjectManager.Object);
+				.Returns(_templateWorkspaceRelativityObjectManagerFake.Object);
 
-			_relativityObjectManagerFactory
+			_relativityObjectManagerFactoryFake
 				.Setup(x => x.CreateRelativityObjectManager(It.Is<int>(y => y == _CREATED_WORKSPACE_ARTIFACT_ID)))
-				.Returns(_createdWorkspaceRelativityObjectManager.Object);
+				.Returns(_createdWorkspaceRelativityObjectManagerMock.Object);
 
-			_createdWorkspaceRelativityObjectManager
+			_createdWorkspaceRelativityObjectManagerMock
 				.Setup(x => x.MassDeleteAsync(It.IsAny<IEnumerable<int>>(), It.IsAny<ExecutionIdentity>()))
 				.ReturnsAsync(true);
 		}
 
 		[Test]
 		[TestCaseSource(nameof(ServicesFailureSetups))]
-		public void ItShouldFailOnServicesFailures(Action<IntegrationPointProfileMigrationEventHandlerTests> serviceFailureSetup)
+		public void Execute_ShouldFail_WhenServicesFailures(Action<IntegrationPointProfileMigrationEventHandlerTests> serviceFailureSetup)
 		{
 			// Arrange
 			const int syncProfilesCount = 1;
@@ -114,7 +114,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 			serviceFailureSetup(this);
 
 			// Act
-			Response response = _eventHandler.Execute();
+			Response response = _sut.Execute();
 
 			// Assert
 			response.Success.Should().BeFalse("handler should have failed");
@@ -126,7 +126,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 
 		[Test]
 		[TestCaseSource(nameof(InvalidResultsSetups))]
-		public void ItShouldFailOnInvalidRelativityObjectManagerResults(Action<IntegrationPointProfileMigrationEventHandlerTests> invalidResultSetup)
+		public void Execute_ShouldFail_WhenInvalidRelativityObjectManagerResults(Action<IntegrationPointProfileMigrationEventHandlerTests> invalidResultSetup)
 		{
 			// Arrange
 			const int syncProfilesCount = 5;
@@ -135,20 +135,20 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 			invalidResultSetup(this);
 
 			// Act
-			Response response = _eventHandler.Execute();
+			Response response = _sut.Execute();
 
 			// Assert
 			response.Success.Should().BeFalse("handler should have failed");
 		}
 
 		[Test]
-		public void ItShouldNotDeleteProfilesWhenThereAreOnlySyncProfiles()
+		public void Execute_ShouldNotDeleteProfiles_WhenThereAreOnlySyncProfiles()
 		{
 			// Arrange
 			const int syncProfilesCount = 5;
 			const int nonSyncProfilesCount = 0;
 			SetUpProfilesQuery(nonSyncProfilesCount, syncProfilesCount);
-			_createdWorkspaceRelativityObjectManager.Setup(x => 
+			_createdWorkspaceRelativityObjectManagerMock.Setup(x => 
 					x.MassUpdateAsync(
 						It.IsAny<IEnumerable<int>>(),
 						It.IsAny<IEnumerable<FieldRefValuePair>>(), 
@@ -157,19 +157,19 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 				.ReturnsAsync(true);
 
 			// Act
-			Response response = _eventHandler.Execute();
+			Response response = _sut.Execute();
 
 			// Assert
 			response.Success.Should().BeTrue("handler should have completed successfully");
 			response.Exception.Should().BeNull("there was no failure");
 
-			_createdWorkspaceRelativityObjectManager
+			_createdWorkspaceRelativityObjectManagerMock
 				.Verify(x => x.MassDeleteAsync(It.IsAny<List<int>>(), It.IsAny<ExecutionIdentity>()),
 					Times.Never);
 		}
 
 		[Test]
-		public void ItShouldNotUpdateProfilesWhenThereAreNoSyncProfiles()
+		public void Execute_ShouldNotUpdateProfiles_WhenThereAreNoSyncProfiles()
 		{
 			// Arrange
 			const int syncProfilesCount = 0;
@@ -177,18 +177,18 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 			SetUpProfilesQuery(nonSyncProfilesCount, syncProfilesCount);
 
 			// Act
-			Response response = _eventHandler.Execute();
+			Response response = _sut.Execute();
 
 			// Assert
 			response.Success.Should().BeTrue("handler should have completed successfully");
 			response.Exception.Should().BeNull("there was no failure");
-			_createdWorkspaceRelativityObjectManager
+			_createdWorkspaceRelativityObjectManagerMock
 				.Verify(x => x.MassUpdateAsync(It.IsAny<IEnumerable<int>>(), It.IsAny<IEnumerable<FieldRefValuePair>>(),
 						It.IsAny<FieldUpdateBehavior>(), It.IsAny<ExecutionIdentity>()), Times.Never);
 		}
 
 		[Test]
-		public void ItShouldMassDeleteNonSyncProfilesAndModifySyncProfiles()
+		public void Execute_ShouldMassDeleteAndModifyProfiles()
 		{
 			// Arrange
 			const int syncProfilesCount = 0;
@@ -196,27 +196,27 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 			SetUpProfilesQuery(nonSyncProfilesCount, syncProfilesCount);
 
 			// Act
-			Response response = _eventHandler.Execute();
+			Response response = _sut.Execute();
 
 			//Assert
 			response.Success.Should().BeTrue("handler should have completed successfully");
 			response.Exception.Should().BeNull("there was no failure");
 
-			List<int> nonSyncProfilesArtifactIDs = NonSyncProfilesArtifactIDs(nonSyncProfilesCount).Select(x => x.ArtifactId).ToList();
+			List<int> nonSyncProfilesArtifactIDs = ProfilesToDeleteArtifactIDs(nonSyncProfilesCount).Select(x => x.ArtifactId).ToList();
 
-			_createdWorkspaceRelativityObjectManager
+			_createdWorkspaceRelativityObjectManagerMock
 				.Verify(x => x.MassDeleteAsync(It.Is<IEnumerable<int>>(l => l.SequenceEqual(nonSyncProfilesArtifactIDs)), It.IsAny<ExecutionIdentity>()),
 					Times.Once);
 		}
 
 		[Test]
-		public void ItShouldModifySyncProfiles()
+		public void Execute_ShouldModifyProfiles()
 		{
 			// Arrange
 			const int syncProfilesCount = 5;
 			const int nonSyncProfilesCount = 0;
 			SetUpProfilesQuery(nonSyncProfilesCount, syncProfilesCount);
-			_createdWorkspaceRelativityObjectManager.Setup(x =>
+			_createdWorkspaceRelativityObjectManagerMock.Setup(x =>
 					x.MassUpdateAsync(
 						It.IsAny<IEnumerable<int>>(),
 						It.IsAny<IEnumerable<FieldRefValuePair>>(),
@@ -225,18 +225,18 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 				.ReturnsAsync(true);
 
 			// Act
-			Response response = _eventHandler.Execute();
+			Response response = _sut.Execute();
 
 			//Assert
 			response.Success.Should().BeTrue("handler should have completed successfully");
 			response.Exception.Should().BeNull("there was no failure");
 
-			_createdWorkspaceRelativityObjectManager
+			_createdWorkspaceRelativityObjectManagerMock
 				.Verify(x => x.MassUpdateAsync(It.IsAny<IEnumerable<int>>(), It.IsAny<IEnumerable<FieldRefValuePair>>(),
 					It.IsAny<FieldUpdateBehavior>(), It.IsAny<ExecutionIdentity>()), Times.Exactly(syncProfilesCount));
 		}
 
-		private static List<IntegrationPointProfile> SyncProfilesArtifactIds(int count)
+		private static List<IntegrationPointProfile> ProfilesToModifyArtifactIds(int count)
 		{
 			return Enumerable
 				.Range(_FIRST_SYNC_PROFILE_ARTIFACT_ID, count)
@@ -244,7 +244,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 				.ToList();
 		}
 
-		private static List<IntegrationPointProfile> NonSyncProfilesArtifactIDs(int count)
+		private static List<IntegrationPointProfile> ProfilesToDeleteArtifactIDs(int count)
 		{
 			return Enumerable
 				.Range(_FIRST_NON_SYNC_PROFILE_ARTIFACT_ID, count)
@@ -262,26 +262,26 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 			};
 		}
 
-		private void SetUpProfilesQuery(int nonSyncProfilesCount, int syncProfilesCount)
+		private void SetUpProfilesQuery(int profilesToDeleteCount, int profilesToUpdateCount)
 		{
-			IEnumerable<IntegrationPointProfile> syncProfiles = SyncProfilesArtifactIds(syncProfilesCount);
-			IEnumerable<IntegrationPointProfile> nonSyncProfiles = NonSyncProfilesArtifactIDs(nonSyncProfilesCount);
+			IEnumerable<IntegrationPointProfile> profilesToUpdate = ProfilesToModifyArtifactIds(profilesToUpdateCount);
+			IEnumerable<IntegrationPointProfile> profilesToDelete = ProfilesToDeleteArtifactIDs(profilesToDeleteCount);
 
 			List<IntegrationPointProfile> allProfiles = new List<IntegrationPointProfile>();
-			allProfiles.AddRange(syncProfiles);
-			allProfiles.AddRange(nonSyncProfiles);
+			allProfiles.AddRange(profilesToUpdate);
+			allProfiles.AddRange(profilesToDelete);
 
-			_integrationPointProfilesQuery
+			_integrationPointProfilesQueryFake
 				.Setup(x => x.GetAllProfilesAsync(_TEMPLATE_WORKSPACE_ARTIFACT_ID))
 				.ReturnsAsync(allProfiles);
 
-			_integrationPointProfilesQuery
-				.Setup(x => x.GetProfilesToPreserve(It.IsAny<IEnumerable<IntegrationPointProfile>>(), It.IsAny<int>(), It.IsAny<int>()))
-				.Returns(syncProfiles);
+			_integrationPointProfilesQueryFake
+				.Setup(x => x.GetProfilesToUpdate(It.IsAny<IEnumerable<IntegrationPointProfile>>(), It.IsAny<int>(), It.IsAny<int>()))
+				.Returns(profilesToUpdate);
 
-			_integrationPointProfilesQuery
+			_integrationPointProfilesQueryFake
 				.Setup(x => x.GetProfilesToDelete(It.IsAny<IEnumerable<IntegrationPointProfile>>(), It.IsAny<int>(), It.IsAny<int>()))
-				.Returns(nonSyncProfiles);
+				.Returns(profilesToDelete);
 		}
 	}
 }

@@ -61,16 +61,18 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			return integrationPointProfiles;
 		}
 
-		public IEnumerable<IntegrationPointProfile> GetProfilesToPreserve(IEnumerable<IntegrationPointProfile> profiles, int syncSourceProviderArtifactID, int syncDestinationProviderArtifactID)
+		public IEnumerable<IntegrationPointProfile> GetProfilesToUpdate(IEnumerable<IntegrationPointProfile> profiles, int syncSourceProviderArtifactID, int syncDestinationProviderArtifactID)
 		{
-			IEnumerable<IntegrationPointProfile> nonSyncProfiles = FilterProfiles(profiles, (profile) => CanProfileBePreserved(profile, syncSourceProviderArtifactID, syncDestinationProviderArtifactID));
-			return nonSyncProfiles;
+			IEnumerable<IntegrationPointProfile> profilesToUpdate = FilterProfiles(profiles, (profile) =>
+				CanProfileBePreservedAndUpdated(profile, syncSourceProviderArtifactID, syncDestinationProviderArtifactID));
+			return profilesToUpdate;
 		}
 
 		public IEnumerable<IntegrationPointProfile> GetProfilesToDelete(IEnumerable<IntegrationPointProfile> profiles, int syncSourceProviderArtifactID, int syncDestinationProviderArtifactID)
 		{
-			IEnumerable<IntegrationPointProfile> nonSyncProfiles = FilterProfiles(profiles, (profile) => !CanProfileBePreserved(profile, syncSourceProviderArtifactID, syncDestinationProviderArtifactID));
-			return nonSyncProfiles;
+			IEnumerable<IntegrationPointProfile> profilesToDelete = FilterProfiles(profiles, (profile) =>
+				!CanProfileBePreservedAndUpdated(profile, syncSourceProviderArtifactID, syncDestinationProviderArtifactID));
+			return profilesToDelete;
 		}
 
 		private IEnumerable<IntegrationPointProfile> FilterProfiles(IEnumerable<IntegrationPointProfile> profiles, Func<IntegrationPointProfile, bool> filter)
@@ -80,7 +82,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			return filteredProfiles;
 		}
 
-		private bool CanProfileBePreserved(IntegrationPointProfile integrationPointProfile, int syncSourceProviderArtifactID, int syncDestinationProviderArtifactID)
+		private bool CanProfileBePreservedAndUpdated(IntegrationPointProfile integrationPointProfile, int syncSourceProviderArtifactID, int syncDestinationProviderArtifactID)
 		{
 			SourceConfiguration sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(integrationPointProfile.SourceConfiguration);
 			bool isProductionAsSource = sourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.ProductionSet;
