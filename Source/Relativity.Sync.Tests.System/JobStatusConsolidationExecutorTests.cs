@@ -24,9 +24,9 @@ namespace Relativity.Sync.Tests.System
 
 		private IBatchRepository _batchRepository;
 
-		private static readonly Guid _COMPLETED_ITEMS_COUNT_GUID = new Guid("70680399-c8ea-4b12-b711-e9ecbc53cb1c");
-		private static readonly Guid _FAILED_ITEMS_COUNT_GUID = new Guid("c224104f-c1ca-4caa-9189-657e01d5504e");
-		private static readonly Guid _TOTAL_ITEMS_COUNT_GUID = new Guid("576189a9-0347-4b20-9369-b16d1ac89b4b");
+		private static readonly Guid CompletedItemsCountGuid = new Guid("70680399-c8ea-4b12-b711-e9ecbc53cb1c");
+		private static readonly Guid FailedItemsCountGuid = new Guid("c224104f-c1ca-4caa-9189-657e01d5504e");
+		private static readonly Guid TotalItemsCountGuid = new Guid("576189a9-0347-4b20-9369-b16d1ac89b4b");
 
 		protected override Task ChildSuiteSetup()
 		{
@@ -60,7 +60,7 @@ namespace Relativity.Sync.Tests.System
 				SyncConfigurationArtifactId = syncConfigurationArtifactId
 			};
 
-			const int batchCount = 10;
+			const int batchCount = 3;
 			const int transferredItemsCountPerBatch = 10000;
 			const int failedItemsCountPerBatch = 500;
 			await CreateBatchesAsync(_sourceWorkspace.ArtifactID, syncConfigurationArtifactId, batchCount, transferredItemsCountPerBatch, failedItemsCountPerBatch).ConfigureAwait(false);
@@ -96,24 +96,24 @@ namespace Relativity.Sync.Tests.System
 					{
 						new FieldRef
 						{
-							Guid = _TOTAL_ITEMS_COUNT_GUID
+							Guid = TotalItemsCountGuid
 						},
 						new FieldRef
 						{
-							Guid = _COMPLETED_ITEMS_COUNT_GUID
+							Guid = CompletedItemsCountGuid
 						},
 						new FieldRef
 						{
-							Guid = _FAILED_ITEMS_COUNT_GUID
+							Guid = FailedItemsCountGuid
 						}
 					}
 				};
 
 				ReadResult readResult = await objectManager.ReadAsync(workspaceArtifactId, readRequest).ConfigureAwait(false);
 
-				int completedItemsCount = (int)readResult.Object[_COMPLETED_ITEMS_COUNT_GUID].Value;
-				int failedItemsCount = (int)readResult.Object[_FAILED_ITEMS_COUNT_GUID].Value;
-				int totalItemsCount = (int)readResult.Object[_TOTAL_ITEMS_COUNT_GUID].Value;
+				int completedItemsCount = (int)readResult.Object[CompletedItemsCountGuid].Value;
+				int failedItemsCount = (int)readResult.Object[FailedItemsCountGuid].Value;
+				int totalItemsCount = (int)readResult.Object[TotalItemsCountGuid].Value;
 
 				return (completedItemsCount, failedItemsCount, totalItemsCount);
 			}
@@ -137,10 +137,11 @@ namespace Relativity.Sync.Tests.System
 
 			IBatch[] batches = await Task.WhenAll(batchCreationTasks).ConfigureAwait(false);
 
-			IEnumerable<Task> setTransferredCountTasks = batches.Select(b => b.SetTransferredItemsCountAsync(transferredItemsCountPerBatch));
-			IEnumerable<Task> setFailedCountTasks = batches.Select(b => b.SetFailedItemsCountAsync(failedItemsCountPerBatch));
-
-			await Task.WhenAll(setTransferredCountTasks.Concat(setFailedCountTasks)).ConfigureAwait(false);
+			foreach (IBatch batch in batches)
+			{
+				await batch.SetTransferredItemsCountAsync(transferredItemsCountPerBatch).ConfigureAwait(false);
+				await batch.SetFailedItemsCountAsync(failedItemsCountPerBatch).ConfigureAwait(false);
+			}
 		}
 	}
 }
