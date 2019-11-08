@@ -24,6 +24,7 @@ namespace Relativity.Sync.Tests.System
 
 		private IBatchRepository _batchRepository;
 
+		private static readonly Guid JobHistoryGuid = new Guid("5D8F7F01-25CF-4246-B2E2-C05882539BB2");
 		private static readonly Guid CompletedItemsCountGuid = new Guid("70680399-c8ea-4b12-b711-e9ecbc53cb1c");
 		private static readonly Guid FailedItemsCountGuid = new Guid("c224104f-c1ca-4caa-9189-657e01d5504e");
 		private static readonly Guid TotalItemsCountGuid = new Guid("576189a9-0347-4b20-9369-b16d1ac89b4b");
@@ -86,12 +87,13 @@ namespace Relativity.Sync.Tests.System
 		{
 			using (var objectManager = ServiceFactory.CreateProxy<IObjectManager>())
 			{
-				var readRequest = new ReadRequest
+				var request = new QueryRequest
 				{
-					Object = new RelativityObjectRef
+					ObjectType = new ObjectTypeRef()
 					{
-						ArtifactID = jobHistoryArtifactId
+						Guid = JobHistoryGuid
 					},
+					Condition = $"'ArtifactID' == {jobHistoryArtifactId}",
 					Fields = new[]
 					{
 						new FieldRef
@@ -109,13 +111,21 @@ namespace Relativity.Sync.Tests.System
 					}
 				};
 
-				ReadResult readResult = await objectManager.ReadAsync(workspaceArtifactId, readRequest).ConfigureAwait(false);
+				QueryResult result = await objectManager.QueryAsync(workspaceArtifactId, request, start: 0, length: 1).ConfigureAwait(false);
 
-				int completedItemsCount = (int)readResult.Object[CompletedItemsCountGuid].Value;
-				int failedItemsCount = (int)readResult.Object[FailedItemsCountGuid].Value;
-				int totalItemsCount = (int)readResult.Object[TotalItemsCountGuid].Value;
+				if (!result.Objects.Any())
+				{
+					throw new SyncException($"Failed to query for job history artifact ID: {jobHistoryArtifactId}");
+				}
+				else
+				{
+					RelativityObject jobHistory = result.Objects.First();
+					int completedItemsCount = (int)jobHistory[CompletedItemsCountGuid].Value;
+					int failedItemsCount = (int)jobHistory[FailedItemsCountGuid].Value;
+					int totalItemsCount = (int)jobHistory[TotalItemsCountGuid].Value;
 
-				return (completedItemsCount, failedItemsCount, totalItemsCount);
+					return (completedItemsCount, failedItemsCount, totalItemsCount);
+				}
 			}
 		}
 
