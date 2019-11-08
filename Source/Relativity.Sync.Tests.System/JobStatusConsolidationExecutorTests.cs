@@ -24,7 +24,7 @@ namespace Relativity.Sync.Tests.System
 
 		private IBatchRepository _batchRepository;
 
-		private static readonly Guid JobHistoryGuid = new Guid("5D8F7F01-25CF-4246-B2E2-C05882539BB2");
+		private static readonly Guid JobHistoryGuid = new Guid("08F4B1F7-9692-4A08-94AB-B5F3A88B6CC9");
 		private static readonly Guid CompletedItemsCountGuid = new Guid("70680399-c8ea-4b12-b711-e9ecbc53cb1c");
 		private static readonly Guid FailedItemsCountGuid = new Guid("c224104f-c1ca-4caa-9189-657e01d5504e");
 		private static readonly Guid TotalItemsCountGuid = new Guid("576189a9-0347-4b20-9369-b16d1ac89b4b");
