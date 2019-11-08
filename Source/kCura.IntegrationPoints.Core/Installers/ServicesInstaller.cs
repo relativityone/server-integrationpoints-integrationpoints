@@ -175,10 +175,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 				.LifestyleSingleton()
 			);
 
-			container.Register(Component
-				.For<IFederatedInstanceManager>()
-				.ImplementedBy<FederatedInstanceManager>()
-				.LifestyleTransient());
+			container.Register(Component.For<IFederatedInstanceManager>().ImplementedBy<FederatedInstanceManager>().LifestyleTransient());
 
 			container.Register(Component.For<IServiceFactory>().ImplementedBy<ServiceFactory>().LifestyleTransient());
 			container.Register(Component.For<IArtifactServiceFactory>().ImplementedBy<ArtifactServiceFactory>().LifestyleTransient());

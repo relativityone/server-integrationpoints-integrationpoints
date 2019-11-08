@@ -167,6 +167,7 @@
     <Compile Include="Validation\IntegrationPointTypeValidatorTests.cs" />
     <Compile Include="Validation\ImportPermissionValidatorTests.cs" />
     <Compile Include="Validation\IntegrationPointPermissionValidatorTests.cs" />
+    <Compile Include="Validation\NativeCopyLinksValidatorTests.cs" />
     <Compile Include="Validation\PermissionValidatorTests.cs" />
     <Compile Include="Validation\NameValidatorTests.cs" />
     <Compile Include="Validation\ProductionValidatorTests.cs" />

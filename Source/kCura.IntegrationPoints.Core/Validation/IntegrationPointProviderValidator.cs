@@ -20,7 +20,8 @@ namespace kCura.IntegrationPoints.Core.Validation
 			SourceProvider sourceProvider,
 			DestinationProvider destinationProvider,
 			IntegrationPointType integrationPointType,
-			Guid objectTypeGuid)
+			Guid objectTypeGuid,
+			int userId)
 		{
 			var result = new ValidationResult();
 
@@ -42,7 +43,7 @@ namespace kCura.IntegrationPoints.Core.Validation
 				result.Add(validator.Validate(model.Name));
 			}
 
-			IntegrationPointProviderValidationModel validationModel = CreateValidationModel(model, sourceProvider, destinationProvider, integrationPointType, objectTypeGuid);
+			IntegrationPointProviderValidationModel validationModel = CreateValidationModel(model, sourceProvider, destinationProvider, integrationPointType, objectTypeGuid, userId);
 
 			foreach (IValidator validator in _validatorsMap[Constants.IntegrationPointProfiles.Validation.INTEGRATION_POINT_TYPE])
 			{
@@ -50,6 +51,11 @@ namespace kCura.IntegrationPoints.Core.Validation
 			}
 
 			foreach (IValidator validator in _validatorsMap[GetProviderValidatorKey(sourceProvider.Identifier, destinationProvider.Identifier)])
+			{
+				result.Add(validator.Validate(validationModel));
+			}
+
+			foreach (IValidator validator in _validatorsMap[Constants.IntegrationPointProfiles.Validation.NATIVE_COPY_LINKS_MODE])
 			{
 				result.Add(validator.Validate(validationModel));
 			}

@@ -313,6 +313,7 @@
     <Compile Include="Validation\IntegrationPointPermissionValidator.cs" />
     <Compile Include="Validation\IntegrationPointProviderValidationMessages.cs" />
     <Compile Include="Validation\Abstract\BasePermissionValidator.cs" />
+    <Compile Include="Validation\Parts\NativeCopyLinksValidator.cs" />
     <Compile Include="Validation\RelativityProviderValidator\DestinationConfigurationPermissionValidationModel.cs" />
     <Compile Include="Validation\RelativityProviderValidator\Parts\Interfaces\IRelativityProviderDestinationFolderPermissionValidator.cs" />
     <Compile Include="Validation\RelativityProviderValidator\Parts\Interfaces\IRelativityProviderDestinationWorkspaceExistenceValidator.cs" />

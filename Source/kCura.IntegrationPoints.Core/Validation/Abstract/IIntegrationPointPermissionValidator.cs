@@ -12,7 +12,8 @@ namespace kCura.IntegrationPoints.Core.Validation.Abstract
 			SourceProvider sourceProvider,
 			DestinationProvider destinationProvider,
 			IntegrationPointType integrationPointType,
-			Guid objectTypeGuid);
+			Guid objectTypeGuid,
+			int userId);
 
 		ValidationResult ValidateViewErrors(int workspaceArtifactId);
 
@@ -21,6 +22,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Abstract
 			SourceProvider sourceProvider,
 			DestinationProvider destinationProvider,
 			IntegrationPointType integrationPointType,
-			Guid objectTypeGuid);
+			Guid objectTypeGuid,
+			int UserId);
 	}
 }
