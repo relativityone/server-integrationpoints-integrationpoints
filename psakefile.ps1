@@ -29,7 +29,8 @@ Task Analyze -Description "Run build analysis" -depends RestoreAnaylyzeTools {
 Task Compile -Description "Compile code for this repo" {
     Initialize-Folder $ArtifactsDir -Safe
     Initialize-Folder $LogsDir -Safe
-
+    
+	dotnet --info
     exec { dotnet @("build", $Solution,
             ("/property:Configuration=$BuildConfig"),
             ("/consoleloggerparameters:Summary"),
@@ -73,7 +74,6 @@ Task Sign -Description "Sign all files" {
 
 Task Package -Description "Package up the build artifacts" {
     Initialize-Folder $ArtifactsDir -Safe
-    dotnet --version
     exec { dotnet @("pack", $Solution,
             ("--no-build"),
             ("/property:Configuration=$BuildConfig"),

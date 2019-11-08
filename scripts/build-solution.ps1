@@ -33,6 +33,8 @@ param(
     [string]$signToolPath
 )
 
+Remove-Item (Join-Path (Get-Item $sourceDir).Parent.FullName "global.json") -Force
+
 Get-ChildItem -Path $sourceDir -Filter *.sln -File | ForEach-Object {
     & dotnet restore $_.FullName
 
