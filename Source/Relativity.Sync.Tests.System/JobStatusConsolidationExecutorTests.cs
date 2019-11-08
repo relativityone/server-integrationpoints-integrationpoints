@@ -12,6 +12,7 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Helpers;
+using Relativity.Testing.Identification;
 
 namespace Relativity.Sync.Tests.System
 {
@@ -39,22 +40,17 @@ namespace Relativity.Sync.Tests.System
 			Task<WorkspaceRef> sourceWorkspaceCreationTask = Environment.CreateWorkspaceWithFieldsAsync();
 			Task<WorkspaceRef> destinationWorkspaceCreationTask = Environment.CreateWorkspaceAsync();
 
-			await Task.WhenAll(sourceWorkspaceCreationTask, destinationWorkspaceCreationTask)
-				.ConfigureAwait(false);
-
-			_sourceWorkspace = sourceWorkspaceCreationTask.Result;
-			_destinationWorkspace = destinationWorkspaceCreationTask.Result;
+			WorkspaceRef[] createdWorkspaces = await Task.WhenAll(sourceWorkspaceCreationTask, destinationWorkspaceCreationTask).ConfigureAwait(false);
+			_sourceWorkspace = createdWorkspaces[0];
+			_destinationWorkspace = createdWorkspaces[1];
 		}
 
-		[Test]
-		public async Task ItShouldConsolidateJobStatusAndUpdateJobHistory()
+		[IdentifiedTest("412f4e45-e76e-4aaf-abec-25d665a9e57d")]
+		public async Task SyncJob_ShouldConsolidateJobStatusAndUpdateJobHistory()
 		{
 			// Arrange
-			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, _sourceWorkspace.ArtifactID)
-				.ConfigureAwait(false);
-			int syncConfigurationArtifactId =
-				await Rdos.CreateSyncConfigurationInstance(ServiceFactory, _sourceWorkspace.ArtifactID, jobHistoryArtifactId)
-				.ConfigureAwait(false);
+			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, _sourceWorkspace.ArtifactID).ConfigureAwait(false);
+			int syncConfigurationArtifactId = await Rdos.CreateSyncConfigurationInstance(ServiceFactory, _sourceWorkspace.ArtifactID, jobHistoryArtifactId).ConfigureAwait(false);
 
 			var configuration = new ConfigurationStub
 			{
@@ -67,8 +63,7 @@ namespace Relativity.Sync.Tests.System
 			const int batchCount = 10;
 			const int transferredItemsCountPerBatch = 10000;
 			const int failedItemsCountPerBatch = 500;
-			await CreateBatchesAsync(_sourceWorkspace.ArtifactID, syncConfigurationArtifactId, batchCount, transferredItemsCountPerBatch, failedItemsCountPerBatch)
-				.ConfigureAwait(false);
+			await CreateBatchesAsync(_sourceWorkspace.ArtifactID, syncConfigurationArtifactId, batchCount, transferredItemsCountPerBatch, failedItemsCountPerBatch).ConfigureAwait(false);
 
 			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IJobStatusConsolidationConfiguration>(configuration);
 			
@@ -80,8 +75,7 @@ namespace Relativity.Sync.Tests.System
 			const int expectedFailedItemsCount = failedItemsCountPerBatch * batchCount;
 			const int expectedTotalItemsCount = expectedTransferredItemsCount + expectedFailedItemsCount;
 
-			var (actualTransferredItemsCount, actualFailedItemsCount, actualTotalItemsCount) = await ReadJobHistoryAsync(_sourceWorkspace.ArtifactID, jobHistoryArtifactId)
-				.ConfigureAwait(false);
+			var (actualTransferredItemsCount, actualFailedItemsCount, actualTotalItemsCount) = await ReadJobHistoryAsync(_sourceWorkspace.ArtifactID, jobHistoryArtifactId).ConfigureAwait(false);
 
 			actualTransferredItemsCount.Should().Be(expectedTransferredItemsCount);
 			actualFailedItemsCount.Should().Be(expectedFailedItemsCount);
@@ -114,8 +108,8 @@ namespace Relativity.Sync.Tests.System
 						}
 					}
 				};
-				ReadResult readResult = await objectManager.ReadAsync(workspaceArtifactId, readRequest)
-					.ConfigureAwait(false);
+
+				ReadResult readResult = await objectManager.ReadAsync(workspaceArtifactId, readRequest).ConfigureAwait(false);
 
 				int completedItemsCount = (int)readResult.Object[_COMPLETED_ITEMS_COUNT_GUID].Value;
 				int failedItemsCount = (int)readResult.Object[_FAILED_ITEMS_COUNT_GUID].Value;
@@ -146,8 +140,7 @@ namespace Relativity.Sync.Tests.System
 			IEnumerable<Task> setTransferredCountTasks = batches.Select(b => b.SetTransferredItemsCountAsync(transferredItemsCountPerBatch));
 			IEnumerable<Task> setFailedCountTasks = batches.Select(b => b.SetFailedItemsCountAsync(failedItemsCountPerBatch));
 
-			await Task.WhenAll(setTransferredCountTasks.Concat(setFailedCountTasks))
-				.ConfigureAwait(false);
+			await Task.WhenAll(setTransferredCountTasks.Concat(setFailedCountTasks)).ConfigureAwait(false);
 		}
 	}
 }
