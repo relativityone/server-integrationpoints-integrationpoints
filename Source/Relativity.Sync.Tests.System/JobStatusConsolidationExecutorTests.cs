@@ -115,7 +115,7 @@ namespace Relativity.Sync.Tests.System
 
 				if (!result.Objects.Any())
 				{
-					throw new SyncException($"Failed to query for job history artifact ID: {jobHistoryArtifactId}");
+					throw new SyncException($"Query for job history artifact ID: {jobHistoryArtifactId} returned empty results.");
 				}
 				else
 				{
