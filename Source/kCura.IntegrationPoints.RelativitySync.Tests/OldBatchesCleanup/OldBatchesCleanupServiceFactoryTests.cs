@@ -1,4 +1,7 @@
-﻿using kCura.IntegrationPoints.RelativitySync.OldBatchesCleanup;
+﻿using System;
+using FluentAssertions;
+using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.RelativitySync.OldBatchesCleanup;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
@@ -9,6 +12,8 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.OldBatchesCleanup
 	public class OldBatchesCleanupServiceFactoryTests
 	{
 		private IOldBatchesCleanupServiceFactory _sut;
+		private Mock<Lazy<IErrorService>> _errorServiceMock;
+		private Mock<IAPILog> _apiLogMock;
 
 		[SetUp]
 		public void SetUp()
@@ -20,17 +25,20 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.OldBatchesCleanup
 				.Setup(x => x.GetServicesManager())
 				.Returns(servicesMgrStub.Object);
 
-			_sut = new OldBatchesCleanupServiceFactory(helperStub.Object);
+			_errorServiceMock = new Mock<Lazy<IErrorService>>();
+			_apiLogMock = new Mock<IAPILog>();
+
+			_sut = new OldBatchesCleanupServiceFactory(helperStub.Object, _errorServiceMock.Object, _apiLogMock.Object);
 		}
 
 		[Test]
-		public void ItShouldDeleteBatchesOlderThan7Days()
+		public void Create_ShouldDeleteBatches_WhenOlderThanSevenDays()
 		{
 			// Act
 			IOldBatchesCleanupService oldBatchesCleanupService = _sut.Create();
 
 			// Assert
-			Assert.IsNotNull(oldBatchesCleanupService, "Factory returned null instance.");
+			oldBatchesCleanupService.Should().NotBeNull();
 		}
 	}
 }

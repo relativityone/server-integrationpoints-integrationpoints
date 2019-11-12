@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 		}
 
 		[Test]
-		public void Execute_ShouldCallOldBatchesCleanupService()
+		public void Execute_ShouldCallOldBatchesCleanupServiceOnce()
 		{
 			// Act
 			_sut.Execute();

@@ -4,6 +4,6 @@ namespace kCura.IntegrationPoints.RelativitySync.OldBatchesCleanup
 {
 	public interface IOldBatchesCleanupService
 	{
-		Task DeleteOldBatchesInWorkspaceAsync(int workspaceArtifactId);
+		Task DeleteOldBatchesInWorkspaceAsync(int workspaceArtifactID);
 	}
 }

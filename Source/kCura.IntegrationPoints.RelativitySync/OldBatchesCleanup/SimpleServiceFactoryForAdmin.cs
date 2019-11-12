@@ -14,11 +14,9 @@ namespace kCura.IntegrationPoints.RelativitySync.OldBatchesCleanup
 			_servicesMgr = servicesMgr;
 		}
 
-		public async Task<T> CreateProxyAsync<T>() where T : class, IDisposable
+		public Task<T> CreateProxyAsync<T>() where T : class, IDisposable
 		{
-			Task<T> KeplerServiceFactory() => Task.FromResult(_servicesMgr.CreateProxy<T>(ExecutionIdentity.System));
-			T keplerService = await KeplerServiceFactory().ConfigureAwait(false);
-			return keplerService;
+			return Task.FromResult(_servicesMgr.CreateProxy<T>(ExecutionIdentity.System));
 		}
 	}
 }
