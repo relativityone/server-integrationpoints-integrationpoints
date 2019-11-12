@@ -20,9 +20,10 @@ namespace kCura.IntegrationPoints.Core.Validation
 			SourceProvider sourceProvider,
 			DestinationProvider destinationProvider,
 			IntegrationPointType integrationPointType,
-			Guid objectTypeGuid)
+			Guid objectTypeGuid,
+			int userId)
 		{
-			IntegrationPointProviderValidationModel validationModel = CreateValidationModel(model, sourceProvider, destinationProvider, integrationPointType, objectTypeGuid);
+			IntegrationPointProviderValidationModel validationModel = CreateValidationModel(model, sourceProvider, destinationProvider, integrationPointType, objectTypeGuid, userId);
 			return Validate(validationModel, sourceProvider, destinationProvider, integrationPointType);
 		}
 
@@ -31,11 +32,12 @@ namespace kCura.IntegrationPoints.Core.Validation
 			SourceProvider sourceProvider,
 			DestinationProvider destinationProvider,
 			IntegrationPointType integrationPointType,
-			Guid objectTypeGuid)
+			Guid objectTypeGuid,
+			int userId)
 		{
 			var result = new ValidationResult();
 
-			IntegrationPointProviderValidationModel validationModel = CreateValidationModel(model, sourceProvider, destinationProvider, integrationPointType, objectTypeGuid);
+			IntegrationPointProviderValidationModel validationModel = CreateValidationModel(model, sourceProvider, destinationProvider, integrationPointType, objectTypeGuid, userId);
 
 			foreach (var validator in _validatorsMap[Constants.IntegrationPoints.Validation.SAVE])
 			{
@@ -64,11 +66,12 @@ namespace kCura.IntegrationPoints.Core.Validation
 			SourceProvider sourceProvider,
 			DestinationProvider destinationProvider,
 			IntegrationPointType integrationPointType,
-			Guid objectTypeGuid)
+			Guid objectTypeGuid,
+			int userId)
 		{
 			var result = new ValidationResult();
 
-			IntegrationPointProviderValidationModel validationModel = CreateValidationModel(model, sourceProvider, destinationProvider, integrationPointType, objectTypeGuid);
+			IntegrationPointProviderValidationModel validationModel = CreateValidationModel(model, sourceProvider, destinationProvider, integrationPointType, objectTypeGuid, userId);
 
 			foreach (var validator in _validatorsMap[Constants.IntegrationPoints.Validation.STOP])
 			{

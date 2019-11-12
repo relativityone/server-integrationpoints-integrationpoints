@@ -5,5 +5,7 @@
 		string RetriveCurrentInstanceFriendlyName();
 
 		bool RetrieveAllowNoSnapshotImport();
+
+		bool RetrieveRestrictReferentialFileLinksOnImport();
 	}
 }

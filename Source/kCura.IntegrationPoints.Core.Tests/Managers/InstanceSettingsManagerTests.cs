@@ -1,7 +1,9 @@
-﻿using kCura.IntegrationPoint.Tests.Core;
+﻿using FluentAssertions;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using Moq;
 using NSubstitute;
 using NUnit.Framework;
 
@@ -10,6 +12,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 	[TestFixture]
 	public class InstanceSettingsManagerTests : TestBase
 	{
+		private Mock<IRepositoryFactory> _repositoryFactoryFake;
+		private Mock<IInstanceSettingRepository> _instanceSettingRepositoryFake;
+		private InstanceSettingsManager _sut;
+
 		private const string _FRIENDLY_NAME = "Friendly Name";
 		private const string _RELATIVITY_AUTHENTICATION = "Relativity.Authentication";
 		private const string _FRIENDLY_INSTANCE_NAME = "FriendlyInstanceName";
@@ -17,32 +23,31 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		private const string _RELATIVITY_CORE = "Relativity.Core";
 		private const string _ALLOW_NO_SNAPSHOT_IMPORT = "AllowNoSnapshotImport";
 
-		private IRepositoryFactory _repositoryFactory;
-		private IInstanceSettingRepository _instanceSettingRepository;
-		private InstanceSettingsManager _instance;
+		private const string _RESTRICT_REFERENTIAL_FILE_LINKS_ON_IMPORT = "RestrictReferentialFileLinksOnImport";
 
 		[SetUp]
 		public override void SetUp()
 		{
-			_repositoryFactory = Substitute.For<IRepositoryFactory>();
-			_instanceSettingRepository = Substitute.For<IInstanceSettingRepository>();
+			_repositoryFactoryFake = new Mock<IRepositoryFactory>();
+			_instanceSettingRepositoryFake = new Mock<IInstanceSettingRepository>();
 			
-			_repositoryFactory.GetInstanceSettingRepository().Returns(_instanceSettingRepository);
+			_repositoryFactoryFake.Setup(m => m.GetInstanceSettingRepository()).Returns(_instanceSettingRepositoryFake.Object);
 
-			_instance = new InstanceSettingsManager(_repositoryFactory);
+			_sut = new InstanceSettingsManager(_repositoryFactoryFake.Object);
 		}
 
 		[Test]
 		public void TestRetriveCurrentInstanceFriendlyName()
 		{
 			//arrange
-			_instanceSettingRepository.GetConfigurationValue(_RELATIVITY_AUTHENTICATION,
-				_FRIENDLY_INSTANCE_NAME).Returns(_FRIENDLY_NAME);
+			_instanceSettingRepositoryFake.Setup(m => m.GetConfigurationValue(_RELATIVITY_AUTHENTICATION, _FRIENDLY_INSTANCE_NAME))
+				.Returns(_FRIENDLY_NAME);
 
 			//act
-			var instanceFriendlyName = _instance.RetriveCurrentInstanceFriendlyName();
+			string instanceFriendlyName = _sut.RetriveCurrentInstanceFriendlyName();
+
 			//assert
-			Assert.AreEqual(_FRIENDLY_NAME, instanceFriendlyName);
+			instanceFriendlyName.Should().Be(_FRIENDLY_NAME);
 		}
 
 		[Test]
@@ -52,14 +57,54 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		public void TestRetrieveAllowNoSnapshotImport(string allowNoSnapshotImport, bool expectedResult)
 		{
 			//arrange
-			_instanceSettingRepository.GetConfigurationValue(_RELATIVITY_CORE,
-				_ALLOW_NO_SNAPSHOT_IMPORT).Returns(allowNoSnapshotImport);
+			_instanceSettingRepositoryFake.Setup(m => m.GetConfigurationValue(_RELATIVITY_CORE, _ALLOW_NO_SNAPSHOT_IMPORT))
+				.Returns(allowNoSnapshotImport);
 
 			//act
-			var result = _instance.RetrieveAllowNoSnapshotImport();
+			bool result = _sut.RetrieveAllowNoSnapshotImport();
 
 			//assert
-			Assert.That(result, Is.EqualTo(expectedResult));
+			result.Should().Be(expectedResult);
+		}
+
+		[Test]
+		[TestCase("True", true)]
+		[TestCase("False", false)]
+		public void RetrieveRestrictReferentialFileLinksOnImport_ShouldReturnsValue_WhenSettingExists(string settingValue, bool expectedResult)
+		{
+			//arrange
+			_instanceSettingRepositoryFake.Setup(m => m.GetConfigurationValue(_RELATIVITY_CORE, _RESTRICT_REFERENTIAL_FILE_LINKS_ON_IMPORT))
+				.Returns(settingValue);
+
+			//act
+			bool result = _sut.RetrieveRestrictReferentialFileLinksOnImport();
+
+			//assert
+			result.Should().Be(expectedResult);
+		}
+
+		[Test]
+		public void RetrieveRestrictReferentialFileLinksOnImport_ShouldReturnsFalse_WhenSettingIsInvalid()
+		{
+			//arrange
+			_instanceSettingRepositoryFake.Setup(m => m.GetConfigurationValue(_RELATIVITY_CORE, _RESTRICT_REFERENTIAL_FILE_LINKS_ON_IMPORT))
+				.Returns("Test");
+
+			//act
+			bool result = _sut.RetrieveRestrictReferentialFileLinksOnImport();
+
+			//assert
+			result.Should().BeFalse();
+		}
+
+		[Test]
+		public void RetrieveRestrictReferentialFileLinksOnImport_ShouldReturnsFalse_WhenSettingDoesNotExist()
+		{
+			//act
+			bool result = _sut.RetrieveRestrictReferentialFileLinksOnImport();
+
+			//assert
+			result.Should().BeFalse();
 		}
 	}
 }

@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Net;
 using System.Web;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.Contracts;
 using kCura.WinEDDS;
-using kCura.WinEDDS.Api;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using System.Runtime.CompilerServices;
 using kCura.IntegrationPoints.ImportProvider.Parser.Helpers;

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
+using Relativity.IntegrationPoints.Contracts.Models;
+using Relativity.IntegrationPoints.Contracts.Provider;
 
 namespace kCura.IntegrationPoints.Domain.Synchronizer
 {

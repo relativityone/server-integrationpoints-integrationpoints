@@ -1,14 +1,13 @@
 ﻿using kCura.EventHandler;
 using kCura.IntegrationPoints.Core.Provider;
 using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.SourceProviderInstaller;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using SourceProvider = kCura.IntegrationPoints.Contracts.SourceProvider;
+using Relativity.IntegrationPoints.SourceProviderInstaller;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
@@ -30,7 +29,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
         protected override void Run()
         {
-            List<SourceProvider> sourceProviders = GetSourceProvidersToInstall();
+            List<global::Relativity.IntegrationPoints.Contracts.SourceProvider> sourceProviders = GetSourceProvidersToInstall();
             var migrationJob = new SourceProvidersMigration(sourceProviders, Helper, _ripProviderInstaller);
             Response migrationJobResult = migrationJob.Execute();
             if (!migrationJobResult.Success)
@@ -43,19 +42,20 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
         protected override string GetFailureMessage(Exception ex) => "Failed to migrate Source Provider.";
 
-        private List<SourceProvider> GetSourceProvidersToInstall()
+        private List<global::Relativity.IntegrationPoints.Contracts.SourceProvider> GetSourceProvidersToInstall()
         {
             List<Data.SourceProvider> sourceProviders = GetSourceProvidersFromPreviousWorkspace();
 
-            List<SourceProvider> results = sourceProviders.Select(provider => new SourceProvider
-            {
-                Name = provider.Name,
-                Url = provider.SourceConfigurationUrl,
-                ViewDataUrl = provider.ViewConfigurationUrl,
-                ApplicationGUID = new Guid(provider.ApplicationIdentifier),
-                GUID = new Guid(provider.Identifier),
-                Configuration = provider.Config
-            }).ToList();
+	        List<global::Relativity.IntegrationPoints.Contracts.SourceProvider> results = sourceProviders.Select(
+		        provider => new global::Relativity.IntegrationPoints.Contracts.SourceProvider
+		        {
+			        Name = provider.Name,
+			        Url = provider.SourceConfigurationUrl,
+			        ViewDataUrl = provider.ViewConfigurationUrl,
+			        ApplicationGUID = new Guid(provider.ApplicationIdentifier),
+			        GUID = new Guid(provider.Identifier),
+			        Configuration = provider.Config
+		        }).ToList();
 
             return results;
         }
@@ -77,16 +77,19 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
         [Guid("DDF4C569-AE1D-45F8-9E0F-740399BA059F")]
         private sealed class SourceProvidersMigration : InternalSourceProviderInstaller
         {
-            private readonly List<SourceProvider> _sourceProviders;
+            private readonly List<global::Relativity.IntegrationPoints.Contracts.SourceProvider> _sourceProviders;
 
-            public SourceProvidersMigration(List<SourceProvider> sourceProvidersToMigrate, IEHHelper helper, IRipProviderInstaller providerInstaller)
-            : base(providerInstaller)
-            {
-                _sourceProviders = sourceProvidersToMigrate;
-                Helper = helper;
-            }
+	        public SourceProvidersMigration(
+		        List<global::Relativity.IntegrationPoints.Contracts.SourceProvider> sourceProvidersToMigrate,
+		        IEHHelper helper, 
+		        IRipProviderInstaller providerInstaller)
+		        : base(providerInstaller)
+	        {
+		        _sourceProviders = sourceProvidersToMigrate;
+		        Helper = helper;
+	        }
 
-            public override IDictionary<Guid, SourceProvider> GetSourceProviders()
+	        public override IDictionary<Guid, global::Relativity.IntegrationPoints.Contracts.SourceProvider> GetSourceProviders()
             {
                 return _sourceProviders.ToDictionary(provider => provider.GUID);
             }

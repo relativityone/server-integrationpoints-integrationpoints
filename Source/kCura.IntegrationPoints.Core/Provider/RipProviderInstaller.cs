@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ContractsSourceProvider = kCura.IntegrationPoints.Contracts.SourceProvider;
 
 namespace kCura.IntegrationPoints.Core.Provider
 {
@@ -34,7 +33,7 @@ namespace kCura.IntegrationPoints.Core.Provider
             _sourceProviderRepository = sourceProviderRepository;
         }
 
-        public async Task<Either<string, Unit>> InstallProvidersAsync(IEnumerable<ContractsSourceProvider> providersToInstall)
+        public async Task<Either<string, Unit>> InstallProvidersAsync(IEnumerable<global::Relativity.IntegrationPoints.Contracts.SourceProvider> providersToInstall)
         {
             if (providersToInstall == null)
             {
@@ -54,7 +53,7 @@ namespace kCura.IntegrationPoints.Core.Provider
         }
 
         private Task<Either<string, Unit>> InstallProvidersInternalAsync(
-            IEnumerable<ContractsSourceProvider> providersToInstall)
+            IEnumerable<global::Relativity.IntegrationPoints.Contracts.SourceProvider> providersToInstall)
         {
             return _dataProviderFactoryFactory
                 .CreateProviderFactoryVendor()
@@ -63,7 +62,7 @@ namespace kCura.IntegrationPoints.Core.Provider
 
         private async Task<Either<string, Unit>> InstallProvidersOneByOneAsync(
             ProviderFactoryVendor providerFactoryVendor,
-            IEnumerable<ContractsSourceProvider> providersToInstall)
+            IEnumerable<global::Relativity.IntegrationPoints.Contracts.SourceProvider> providersToInstall)
         {
             using (providerFactoryVendor)
             {
@@ -74,9 +73,9 @@ namespace kCura.IntegrationPoints.Core.Provider
 
         private async Task<Either<string, Unit>> InstallProvidersOneByOneAsync(
             IDataProviderFactory dataProviderFactory,
-            IEnumerable<ContractsSourceProvider> providersToInstall)
+            IEnumerable<global::Relativity.IntegrationPoints.Contracts.SourceProvider> providersToInstall)
         {
-            foreach (ContractsSourceProvider provider in providersToInstall)
+            foreach (global::Relativity.IntegrationPoints.Contracts.SourceProvider provider in providersToInstall)
             {
                 Either<string, Unit> installProviderResult = await InstallProviderAsync(dataProviderFactory, provider).ConfigureAwait(false);
                 if (installProviderResult.IsLeft)
@@ -89,23 +88,23 @@ namespace kCura.IntegrationPoints.Core.Provider
 
         private Task<Either<string, Unit>> InstallProviderAsync(
             IDataProviderFactory dataProviderFactory,
-            ContractsSourceProvider provider)
+            global::Relativity.IntegrationPoints.Contracts.SourceProvider provider)
         {
             return UpdateApplicationGuidIfMissing(provider)
                 .Bind(providerWithAppGuid => ValidateProvider(dataProviderFactory, providerWithAppGuid))
                 .BindAsync(AddOrUpdateProvider);
         }
 
-        private Either<string, ContractsSourceProvider> ValidateProvider(
+        private Either<string, global::Relativity.IntegrationPoints.Contracts.SourceProvider> ValidateProvider(
             IDataProviderFactory dataProviderFactory,
-            ContractsSourceProvider provider)
+            global::Relativity.IntegrationPoints.Contracts.SourceProvider provider)
         {
             return TryLoadingProvider(dataProviderFactory, provider);
         }
 
-        private Either<string, ContractsSourceProvider> TryLoadingProvider(
+        private Either<string, global::Relativity.IntegrationPoints.Contracts.SourceProvider> TryLoadingProvider(
             IDataProviderFactory dataProviderFactory,
-            ContractsSourceProvider provider)
+            global::Relativity.IntegrationPoints.Contracts.SourceProvider provider)
         {
             try
             {
@@ -119,7 +118,7 @@ namespace kCura.IntegrationPoints.Core.Provider
             }
         }
 
-        private async Task<Either<string, Unit>> AddOrUpdateProvider(ContractsSourceProvider provider)
+        private async Task<Either<string, Unit>> AddOrUpdateProvider(global::Relativity.IntegrationPoints.Contracts.SourceProvider provider)
         {
             IDictionary<Guid, SourceProvider> installedRdoProviderDict = await GetInstalledRdoProviders(provider).ConfigureAwait(false);
 
@@ -131,7 +130,7 @@ namespace kCura.IntegrationPoints.Core.Provider
             return AddProvider(provider);
         }
 
-        private async Task<IDictionary<Guid, SourceProvider>> GetInstalledRdoProviders(ContractsSourceProvider provider)
+        private async Task<IDictionary<Guid, SourceProvider>> GetInstalledRdoProviders(global::Relativity.IntegrationPoints.Contracts.SourceProvider provider)
         {
             List<SourceProvider> installedRdoProviders = await _sourceProviderRepository
                 .GetSourceProviderRdoByApplicationIdentifierAsync(provider.ApplicationGUID)
@@ -142,7 +141,7 @@ namespace kCura.IntegrationPoints.Core.Provider
             return installedRdoProviderDict;
         }
 
-        private Either<string, Unit> UpdateExistingProvider(SourceProvider existingProviderDto, ContractsSourceProvider provider)
+        private Either<string, Unit> UpdateExistingProvider(SourceProvider existingProviderDto, global::Relativity.IntegrationPoints.Contracts.SourceProvider provider)
         {
             existingProviderDto.Name = provider.Name;
             existingProviderDto.SourceConfigurationUrl = provider.Url;
@@ -162,7 +161,7 @@ namespace kCura.IntegrationPoints.Core.Provider
             }
         }
 
-        private Either<string, Unit> AddProvider(ContractsSourceProvider newProvider)
+        private Either<string, Unit> AddProvider(global::Relativity.IntegrationPoints.Contracts.SourceProvider newProvider)
         {
             if (newProvider == null)
             {
@@ -191,20 +190,22 @@ namespace kCura.IntegrationPoints.Core.Provider
             }
         }
 
-        private Either<string, ContractsSourceProvider> UpdateApplicationGuidIfMissing(ContractsSourceProvider provider)
-        {
-            // when we migrate providers, we should already know which app does the provider belong to.
-            if (provider.ApplicationGUID == Guid.Empty)
-            {
-                return _applicationGuidFinder
-                    .GetApplicationGuid(provider.ApplicationID)
-                    .Map(applicationGuid => UpdateApplicationGuid(provider, applicationGuid));
-            }
-            return provider;
-        }
+	    private Either<string, global::Relativity.IntegrationPoints.Contracts.SourceProvider>
+		    UpdateApplicationGuidIfMissing(global::Relativity.IntegrationPoints.Contracts.SourceProvider provider)
+	    {
+		    // when we migrate providers, we should already know which app does the provider belong to.
+		    if (provider.ApplicationGUID == Guid.Empty)
+		    {
+			    return _applicationGuidFinder
+				    .GetApplicationGuid(provider.ApplicationID)
+				    .Map(applicationGuid => UpdateApplicationGuid(provider, applicationGuid));
+		    }
 
-        private ContractsSourceProvider UpdateApplicationGuid(
-            ContractsSourceProvider provider, Guid newApplicationGuid)
+		    return provider;
+	    }
+
+	    private global::Relativity.IntegrationPoints.Contracts.SourceProvider UpdateApplicationGuid(
+		    global::Relativity.IntegrationPoints.Contracts.SourceProvider provider, Guid newApplicationGuid)
         {
             provider.ApplicationGUID = newApplicationGuid;
             return provider;

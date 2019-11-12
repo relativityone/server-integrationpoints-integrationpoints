@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.WinEDDS;
 using NUnit.Framework;
 using Relativity.DataExchange.Service;
-using FieldType = kCura.IntegrationPoints.Contracts.Models.FieldType;
+using Relativity.IntegrationPoints.Contracts.Models;
 using ViewFieldInfo = kCura.WinEDDS.ViewFieldInfo;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibrary
@@ -39,7 +38,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 			InsertColumnWithValue(dt, _dr, "ConnectorFieldArtifactID", 666);
 			InsertColumnWithValue(dt, _dr, "SourceFieldArtifactTypeTableName", "TestSourceFieldArtifactTypeTableName");
 			InsertColumnWithValue(dt, _dr, "ConnectorFieldName", "TestConnectorFieldName");
-			InsertColumnWithValue(dt, _dr, "FieldTypeID", FieldType.String);
+			InsertColumnWithValue(dt, _dr, "FieldTypeID", global::Relativity.IntegrationPoints.Contracts.Models.FieldType.String);
 			InsertColumnWithValue(dt, _dr, "ConnectorFieldCategoryID", FieldCategory.Generic);
 			InsertColumnWithValue(dt, _dr, "IsLinked", false);
 			InsertColumnWithValue(dt, _dr, "FieldCodeTypeID", 666);

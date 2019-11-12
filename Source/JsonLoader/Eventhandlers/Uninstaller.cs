@@ -1,5 +1,5 @@
 ﻿using System.Runtime.InteropServices;
-using kCura.IntegrationPoints.SourceProviderInstaller;
+using Relativity.IntegrationPoints.SourceProviderInstaller;
 
 namespace JsonLoader.Eventhandlers
 {

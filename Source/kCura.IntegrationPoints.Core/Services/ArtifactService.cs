@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.Relativity.Client;
 using Relativity.API;

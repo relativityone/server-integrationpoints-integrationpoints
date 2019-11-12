@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using kCura.IntegrationPoints.Contracts.Domain;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Domain
@@ -27,11 +26,11 @@ namespace kCura.IntegrationPoints.Domain
 			//loads the contracts dll into the app domain so we have reference 
 			var assemblyLocalPath = new Uri(typeof(AssemblyDomainLoader).Assembly.CodeBase).LocalPath;
 			var assemblyLocalDirectory = Path.GetDirectoryName(assemblyLocalPath);
-			var assemblyPath = Path.Combine(assemblyLocalDirectory, "kCura.IntegrationPoints.Contracts.dll");
+			var assemblyPath = Path.Combine(assemblyLocalDirectory, "Relativity.IntegrationPoints.Contracts.dll");
 			if (!File.Exists(assemblyPath))
 			{
 				throw new FileNotFoundException(
-					$"Required file kCura.IntegrationPoints.Contracts.dll is missing in {assemblyLocalDirectory}.");
+					$"Required file Relativity.IntegrationPoints.Contracts.dll is missing in {assemblyLocalDirectory}.");
 			}
 			var stream = File.ReadAllBytes(assemblyPath);
 			var dir = Path.Combine(domain.BaseDirectory, new FileInfo(assemblyPath).Name);

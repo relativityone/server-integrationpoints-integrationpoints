@@ -1,7 +1,7 @@
 CSharpGuidelineAnalyzer
-kCura.IntegrationPoints.Contracts
 Newtonsoft.Json
 Relativity.API
+Relativity.IntegrationPoints.Contracts
 
 group TestPackages
 	NUnit

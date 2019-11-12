@@ -38,8 +38,11 @@ namespace Rip.TestUtilities
 
 		public void DeleteProduction(ProductionCreateResultDto productionCreateResult)
 		{
-			_relativityObjectManager.Delete(productionCreateResult.ProductionArtifactID);
-			_relativityObjectManager.Delete(productionCreateResult.ProductionDataSourceArtifactID);
+			if (productionCreateResult != null)
+			{
+				_relativityObjectManager.Delete(productionCreateResult.ProductionArtifactID);
+				_relativityObjectManager.Delete(productionCreateResult.ProductionDataSourceArtifactID);
+			}
 		}
 	}
 }

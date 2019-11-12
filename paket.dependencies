@@ -5,8 +5,8 @@ source https://proget.kcura.corp/nuget/NuGet
 
 //RIP packages
 nuget Relativity.IntegrationPoints.Services.Interfaces.Private 1.0.2
-nuget kCura.IntegrationPoints.Contracts 11.0.8
-nuget kCura.IntegrationPoints.SDK 11.0.8
+nuget Relativity.IntegrationPoints.Contracts 1.0.5
+nuget Relativity.IntegrationPoints.SDK 1.0.5
 
 //Main Relativity packages
 nuget kCura 12.0.1
@@ -32,7 +32,7 @@ nuget Relativity.Kepler.Client 2.0.7
 nuget Relativity.Logging 2018.11.8
 nuget Relativity.Logging.Interfaces 2018.11.8
 nuget Relativity.OAuth2Client 1.0.27
-nuget Relativity.Productions.Services.Interfaces 10.3.38
+nuget Relativity.Productions.Services.Interfaces 11.0.7
 nuget Relativity.Telemetry.APM 2019.1.1 
 nuget Relativity.Telemetry.MetricsCollection  2018.12.2
 nuget Relativity.Telemetry.Services.Interface 2019.1.1
@@ -88,5 +88,6 @@ group Sync
 	nuget Castle.Core 3.3.0
 	nuget Relativity.Services.DataContracts 11.1.8.1
 	nuget Relativity.Services.Interfaces 11.1.8.1
+	nuget Relativity.IntegrationPoints.Contracts 1.0.5
 	nuget Relativity.Services.Interfaces.Private 11.0.105.1
 	nuget Relativity.Telemetry.DataContracts.Shared 9.4.159

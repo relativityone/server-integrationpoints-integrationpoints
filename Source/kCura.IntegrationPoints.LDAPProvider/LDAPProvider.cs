@@ -4,13 +4,14 @@ using System.Data;
 using System.DirectoryServices;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Contracts.Provider;
 using Relativity.API;
+using Relativity.IntegrationPoints.Contracts;
+using Relativity.IntegrationPoints.Contracts.Models;
+using Relativity.IntegrationPoints.Contracts.Provider;
 
 namespace kCura.IntegrationPoints.LDAPProvider
 {
-	[Contracts.DataSourceProvider("5bf1f2c2-9670-4d6e-a3e9-dbc83db6c232")]
+	[DataSourceProvider("5bf1f2c2-9670-4d6e-a3e9-dbc83db6c232")]
 	public class LDAPProvider : IDataSourceProvider
 	{
 		private readonly IAPILog _logger;

@@ -6,7 +6,6 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Hosting;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Controllers.API;
@@ -14,6 +13,7 @@ using kCura.IntegrationPoints.Web.DataStructures;
 using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.IntegrationPoints.Contracts.Models;
 using ExportSettings = kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportSettings;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API

@@ -167,6 +167,7 @@
     <Compile Include="Validation\IntegrationPointTypeValidatorTests.cs" />
     <Compile Include="Validation\ImportPermissionValidatorTests.cs" />
     <Compile Include="Validation\IntegrationPointPermissionValidatorTests.cs" />
+    <Compile Include="Validation\NativeCopyLinksValidatorTests.cs" />
     <Compile Include="Validation\PermissionValidatorTests.cs" />
     <Compile Include="Validation\NameValidatorTests.cs" />
     <Compile Include="Validation\ProductionValidatorTests.cs" />
@@ -308,8 +309,8 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="kCura.Injection">
-          <HintPath>..\..\packages\kCura.Injection\lib\net462\kCura.Injection.dll</HintPath>
+        <Reference Include="kCura.EventHandler">
+          <HintPath>..\..\packages\kCura.EventHandler\lib\net462\kCura.EventHandler.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -319,13 +320,8 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="kCura.IntegrationPoints.Contracts">
-          <HintPath>..\..\packages\kCura.IntegrationPoints.SDK\lib\kCura.IntegrationPoints.Contracts.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="kCura.IntegrationPoints.SourceProviderInstaller">
-          <HintPath>..\..\packages\kCura.IntegrationPoints.SDK\lib\kCura.IntegrationPoints.SourceProviderInstaller.dll</HintPath>
+        <Reference Include="kCura.Injection">
+          <HintPath>..\..\packages\kCura.Injection\lib\net462\kCura.Injection.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -475,6 +471,22 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="Relativity.IntegrationPoints.Contracts">
+          <HintPath>..\..\packages\Relativity.IntegrationPoints.SDK\lib\net462\Relativity.IntegrationPoints.Contracts.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.IntegrationPoints.SourceProviderInstaller">
+          <HintPath>..\..\packages\Relativity.IntegrationPoints.SDK\lib\net462\Relativity.IntegrationPoints.SourceProviderInstaller.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="System.Data.DataSetExtensions">
           <Paket>True</Paket>
         </Reference>
@@ -580,12 +592,12 @@
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="Relativity.Productions.Services.Interfaces">
-          <HintPath>..\..\packages\Relativity.Productions.Services.Interfaces\lib\net45\Relativity.Productions.Services.Interfaces.dll</HintPath>
+          <HintPath>..\..\packages\Relativity.Productions.Services.Interfaces\lib\net462\Relativity.Productions.Services.Interfaces.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
         <Reference Include="Relativity.Productions.Services.Interfaces.Private">
-          <HintPath>..\..\packages\Relativity.Productions.Services.Interfaces\lib\net45\Relativity.Productions.Services.Interfaces.Private.dll</HintPath>
+          <HintPath>..\..\packages\Relativity.Productions.Services.Interfaces\lib\net462\Relativity.Productions.Services.Interfaces.Private.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

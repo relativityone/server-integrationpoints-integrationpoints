@@ -60,7 +60,7 @@ namespace kCura.IntegrationPoints.Core.Validation
 		private ValidationResult ValidateExecutionConstraints(ValidationContext validationContext, OperationType operationType)
 		{
 			ValidationResult validationResult = _integrationModelValidator.Validate(validationContext.Model, validationContext.SourceProvider, validationContext.DestinationProvider,
-				validationContext.IntegrationPointType, validationContext.ObjectTypeGuid);
+				validationContext.IntegrationPointType, validationContext.ObjectTypeGuid, validationContext.UserId);
 
 			LogValidationErrors(operationType, validationResult);
 			return validationResult;
@@ -87,16 +87,16 @@ namespace kCura.IntegrationPoints.Core.Validation
 			switch (operationType)
 			{
 				case OperationType.Stop:
-					validationResult = _permissionValidator.ValidateStop(validationContext.Model, validationContext.SourceProvider,
-						validationContext.DestinationProvider, validationContext.IntegrationPointType, validationContext.ObjectTypeGuid);
+					validationResult = _permissionValidator.ValidateStop(validationContext.Model, validationContext.SourceProvider, validationContext.DestinationProvider,
+						validationContext.IntegrationPointType, validationContext.ObjectTypeGuid, validationContext.UserId);
 					break;
 				case OperationType.Save:
-					validationResult = _permissionValidator.ValidateSave(validationContext.Model, validationContext.SourceProvider,
-						validationContext.DestinationProvider, validationContext.IntegrationPointType, validationContext.ObjectTypeGuid);
+					validationResult = _permissionValidator.ValidateSave(validationContext.Model, validationContext.SourceProvider, validationContext.DestinationProvider,
+						validationContext.IntegrationPointType, validationContext.ObjectTypeGuid, validationContext.UserId);
 					break;
 				default:
-					validationResult = _permissionValidator.Validate(validationContext.Model, validationContext.SourceProvider,
-						validationContext.DestinationProvider, validationContext.IntegrationPointType, validationContext.ObjectTypeGuid);
+					validationResult = _permissionValidator.Validate(validationContext.Model, validationContext.SourceProvider, validationContext.DestinationProvider,
+						validationContext.IntegrationPointType, validationContext.ObjectTypeGuid, validationContext.UserId);
 					break;
 			}
 

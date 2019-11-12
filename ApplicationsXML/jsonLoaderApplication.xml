@@ -63,13 +63,13 @@
     <Assembly>
       <ArtifactId>1062241</ArtifactId>
       <Keywords />
-      <Name>kCura.IntegrationPoints.Contracts.dll</Name>
+      <Name>Relativity.IntegrationPoints.Contracts.dll</Name>
       <Notes />
     </Assembly>
     <Assembly>
       <ArtifactId>1062242</ArtifactId>
       <Keywords />
-      <Name>kCura.IntegrationPoints.SourceProviderInstaller.dll</Name>
+      <Name>Relativity.IntegrationPoints.SourceProviderInstaller.dll</Name>
       <Notes />
     </Assembly>
     <Assembly>

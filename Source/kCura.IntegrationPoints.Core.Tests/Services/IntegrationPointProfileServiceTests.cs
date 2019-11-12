@@ -54,7 +54,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_integrationModelValidator = Substitute.For<IIntegrationPointProviderValidator>();
 			_permissionValidator = Substitute.For<IIntegrationPointPermissionValidator>();
 
-			_integrationModelValidator.Validate(Arg.Any<IntegrationPointModelBase>(), Arg.Any<SourceProvider>(), Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<Guid>()).Returns(new ValidationResult());
+			_integrationModelValidator.Validate(
+				Arg.Any<IntegrationPointModelBase>(), Arg.Any<SourceProvider>(), Arg.Any<DestinationProvider>(),
+				Arg.Any<IntegrationPointType>(), Arg.Any<Guid>(), Arg.Any<int>()).Returns(new ValidationResult());
 
 			_validationExecutor = Substitute.For<IValidationExecutor>();
 
@@ -97,15 +99,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			_integrationModelValidator.Validate(
 				Arg.Any<IntegrationPointModelBase>(), Arg.Any<SourceProvider>(), Arg.Any<DestinationProvider>(),
-				Arg.Any<IntegrationPointType>(), Arg.Any<Guid>()).Returns(new ValidationResult());
+				Arg.Any<IntegrationPointType>(), Arg.Any<Guid>(), Arg.Any<int>()).Returns(new ValidationResult());
 
 			_permissionValidator.Validate(
 				Arg.Any<IntegrationPointModelBase>(), Arg.Any<SourceProvider>(), Arg.Any<DestinationProvider>(),
-				Arg.Any<IntegrationPointType>(), Arg.Any<Guid>()).Returns(new ValidationResult());
+				Arg.Any<IntegrationPointType>(), Arg.Any<Guid>(), Arg.Any<int>()).Returns(new ValidationResult());
 
 			_permissionValidator.ValidateSave(
 				Arg.Any<IntegrationPointModelBase>(), Arg.Any<SourceProvider>(), Arg.Any<DestinationProvider>(),
-				Arg.Any<IntegrationPointType>(), Arg.Any<Guid>()).Returns(new ValidationResult());
+				Arg.Any<IntegrationPointType>(), Arg.Any<Guid>(), Arg.Any<int>()).Returns(new ValidationResult());
 		}
 
 		[TestCase(true)]

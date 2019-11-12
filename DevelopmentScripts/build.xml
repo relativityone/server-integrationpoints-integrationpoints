@@ -9,14 +9,14 @@
       <Adds>
         <Add path="Source\Provider\Provider.csproj">
           <References>
-            <Reference>kCura.IntegrationPoints.SourceProviderInstaller.dll</Reference>
-            <Reference>kCura.IntegrationPoints.Contracts.dll</Reference>
+            <Reference>Relativity.IntegrationPoints.SourceProviderInstaller.dll</Reference>
+            <Reference>Relativity.IntegrationPoints.Contracts.dll</Reference>
           </References>
         </Add>
         <Add path="Source\JsonLoader\JsonLoader.csproj">
           <References>
-            <Reference>kCura.IntegrationPoints.SourceProviderInstaller.dll</Reference>
-            <Reference>kCura.IntegrationPoints.Contracts.dll</Reference>
+            <Reference>Relativity.IntegrationPoints.SourceProviderInstaller.dll</Reference>
+            <Reference>Relativity.IntegrationPoints.Contracts.dll</Reference>
             <Reference>kCura.IntegrationPoints.Domain.dll</Reference>
           </References>
         </Add>
@@ -122,7 +122,7 @@
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.Agent.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.Common.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.Config.dll</Assembly>
-          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Contracts.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.IntegrationPoints.Contracts.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.Core.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.Core.Contracts.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.Data.dll</Assembly>
@@ -141,7 +141,7 @@
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.LDAPProvider.dll</Assembly>
           <Assembly>lib\UnitTests\Relativity.IntegrationPoints.Services.dll</Assembly>
           <Assembly>lib\UnitTests\Relativity.IntegrationPoints.Services.Interfaces.Private.dll</Assembly>
-          <Assembly>lib\UnitTests\kCura.IntegrationPoints.SourceProviderInstaller.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.IntegrationPoints.SourceProviderInstaller.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.Synchronizers.RDO.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.RelativitySync.dll</Assembly>
           <Assembly>lib\UnitTests\Relativity.Sync.dll</Assembly>
@@ -182,8 +182,8 @@
         <Destination>Applications\MyFirstProvider.rap</Destination>
         <ApplicationSchema>ApplicationsXML\myFirstProviderApplication.xml</ApplicationSchema>
         <Assemblies>
-          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Contracts.dll</Assembly>
-          <Assembly>lib\UnitTests\kCura.IntegrationPoints.SourceProviderInstaller.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.IntegrationPoints.Contracts.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.IntegrationPoints.SourceProviderInstaller.dll</Assembly>
           <Assembly>lib\UnitTests\Provider.dll</Assembly>
           <Assembly>lib\UnitTests\Relativity.IntegrationPoints.Services.Interfaces.Private.dll</Assembly>
         </Assemblies>
@@ -196,9 +196,9 @@
         <Destination>Applications\JsonLoader.rap</Destination>
         <ApplicationSchema>ApplicationsXML\jsonLoaderApplication.xml</ApplicationSchema>
         <Assemblies>
-          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Contracts.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.IntegrationPoints.Contracts.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.Domain.dll</Assembly>
-          <Assembly>lib\UnitTests\kCura.IntegrationPoints.SourceProviderInstaller.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.IntegrationPoints.SourceProviderInstaller.dll</Assembly>
           <Assembly>lib\UnitTests\JsonLoader.dll</Assembly>
           <Assembly>lib\UnitTests\Newtonsoft.Json.dll</Assembly>
           <Assembly>lib\UnitTests\Relativity.IntegrationPoints.Services.Interfaces.Private.dll</Assembly>

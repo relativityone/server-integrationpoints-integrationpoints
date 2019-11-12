@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
-using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.Relativity.Client;
@@ -14,10 +12,10 @@ using kCura.Relativity.Client.DTOs;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.Testing.Identification;
 using Assert = NUnit.Framework.Assert;
 using Document = kCura.Relativity.Client.DTOs.Document;
-using FieldType = kCura.IntegrationPoints.Contracts.Models.FieldType;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 {
@@ -151,20 +149,50 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 			{
 				new FieldMap()
 				{
-					SourceField = new FieldEntry(){DisplayName = _INPUT_DATA_EXTRACTED_TEXT,FieldIdentifier = _INPUT_DATA_EXTRACTED_TEXT,FieldType = FieldType.String},
-					DestinationField    = new FieldEntry(){DisplayName = "",FieldIdentifier = fieldIdExtractedText.ToString(),FieldType = FieldType.String},
+					SourceField = new FieldEntry()
+					{
+						DisplayName = _INPUT_DATA_EXTRACTED_TEXT,
+						FieldIdentifier = _INPUT_DATA_EXTRACTED_TEXT,
+						FieldType = global::Relativity.IntegrationPoints.Contracts.Models.FieldType.String
+					},
+					DestinationField = new FieldEntry()
+					{
+						DisplayName = "",
+						FieldIdentifier = fieldIdExtractedText.ToString(),
+						FieldType = global::Relativity.IntegrationPoints.Contracts.Models.FieldType.String
+					},
 					FieldMapType = FieldMapTypeEnum.None
 				},
 				new FieldMap()
 				{
-					SourceField = new FieldEntry(){DisplayName = _INPUT_DATA_GROUP_ID,FieldIdentifier = _INPUT_DATA_GROUP_ID,FieldType = FieldType.String},
-					DestinationField    = new FieldEntry(){DisplayName = "",FieldIdentifier = fieldIdGroupIdentifier.ToString(),FieldType = FieldType.String},
+					SourceField = new FieldEntry()
+					{
+						DisplayName = _INPUT_DATA_GROUP_ID,
+						FieldIdentifier = _INPUT_DATA_GROUP_ID,
+						FieldType = global::Relativity.IntegrationPoints.Contracts.Models.FieldType.String
+					},
+					DestinationField = new FieldEntry()
+					{
+						DisplayName = "",
+						FieldIdentifier = fieldIdGroupIdentifier.ToString(),
+						FieldType = global::Relativity.IntegrationPoints.Contracts.Models.FieldType.String
+					},
 					FieldMapType = FieldMapTypeEnum.None
 				},
 				new FieldMap()
 				{
-					SourceField = new FieldEntry(){DisplayName = _INPUT_DATA_CONTROL_NUMBER,FieldIdentifier = _INPUT_DATA_CONTROL_NUMBER,FieldType = FieldType.String},
-					DestinationField    = new FieldEntry(){DisplayName = "",FieldIdentifier = fieldIdUniqueId.ToString(),FieldType = FieldType.String},
+					SourceField = new FieldEntry()
+					{
+						DisplayName = _INPUT_DATA_CONTROL_NUMBER,
+						FieldIdentifier = _INPUT_DATA_CONTROL_NUMBER,
+						FieldType = global::Relativity.IntegrationPoints.Contracts.Models.FieldType.String
+					},
+					DestinationField = new FieldEntry()
+					{
+						DisplayName = "",
+						FieldIdentifier = fieldIdUniqueId.ToString(),
+						FieldType = global::Relativity.IntegrationPoints.Contracts.Models.FieldType.String
+					},
 					FieldMapType = FieldMapTypeEnum.Identifier
 				}
 			};
@@ -177,29 +205,92 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 				new Dictionary<FieldEntry, object>()
 				{
 					{
-						new FieldEntry() {DisplayName = _INPUT_DATA_CONTROL_NUMBER, FieldIdentifier = _INPUT_DATA_CONTROL_NUMBER, FieldType = FieldType.String},
+						new FieldEntry()
+						{
+							DisplayName = _INPUT_DATA_CONTROL_NUMBER,
+							FieldIdentifier = _INPUT_DATA_CONTROL_NUMBER,
+							FieldType = global::Relativity.IntegrationPoints.Contracts.Models.FieldType.String
+						},
 						Guid.Parse("6703F851-C653-40E0-B249-AB4A7C879E6B")
 					},
-					{new FieldEntry() {DisplayName = _INPUT_DATA_EXTRACTED_TEXT, FieldIdentifier = _INPUT_DATA_EXTRACTED_TEXT, FieldType = FieldType.String}, "Art"},
-					{new FieldEntry() {DisplayName = _INPUT_DATA_GROUP_ID, FieldIdentifier = _INPUT_DATA_GROUP_ID, FieldType = FieldType.String}, "DEV"}
+					{
+						new FieldEntry()
+						{
+							DisplayName = _INPUT_DATA_EXTRACTED_TEXT,
+							FieldIdentifier = _INPUT_DATA_EXTRACTED_TEXT,
+							FieldType = global::Relativity.IntegrationPoints.Contracts.Models.FieldType.String
+						},
+						"Art"
+					},
+					{
+						new FieldEntry()
+						{
+							DisplayName = _INPUT_DATA_GROUP_ID,
+							FieldIdentifier = _INPUT_DATA_GROUP_ID,
+							FieldType = global::Relativity.IntegrationPoints.Contracts.Models.FieldType.String
+						},
+						"DEV"
+					}
 				},
 				new Dictionary<FieldEntry, object>()
 				{
 					{
-						new FieldEntry() {DisplayName = _INPUT_DATA_CONTROL_NUMBER, FieldIdentifier = _INPUT_DATA_CONTROL_NUMBER, FieldType = FieldType.String},
+						new FieldEntry()
+						{
+							DisplayName = _INPUT_DATA_CONTROL_NUMBER,
+							FieldIdentifier = _INPUT_DATA_CONTROL_NUMBER,
+							FieldType = global::Relativity.IntegrationPoints.Contracts.Models.FieldType.String
+						},
 						Guid.Parse("7703F851-C653-40E0-B249-AB4A7C879E6B")
 					},
-					{new FieldEntry() {DisplayName = _INPUT_DATA_EXTRACTED_TEXT, FieldIdentifier = _INPUT_DATA_EXTRACTED_TEXT, FieldType = FieldType.String}, "Chad"},
-					{new FieldEntry() {DisplayName = _INPUT_DATA_GROUP_ID, FieldIdentifier = _INPUT_DATA_GROUP_ID, FieldType = FieldType.String}, "IT"}
+					{
+						new FieldEntry()
+						{
+							DisplayName = _INPUT_DATA_EXTRACTED_TEXT,
+							FieldIdentifier = _INPUT_DATA_EXTRACTED_TEXT,
+							FieldType = global::Relativity.IntegrationPoints.Contracts.Models.FieldType.String
+						},
+						"Chad"
+					},
+					{
+						new FieldEntry()
+						{
+							DisplayName = _INPUT_DATA_GROUP_ID,
+							FieldIdentifier = _INPUT_DATA_GROUP_ID,
+							FieldType = global::Relativity.IntegrationPoints.Contracts.Models.FieldType.String
+						},
+						"IT"
+					}
 				},
 				new Dictionary<FieldEntry, object>()
 				{
 					{
-						new FieldEntry() {DisplayName = _INPUT_DATA_CONTROL_NUMBER, FieldIdentifier = _INPUT_DATA_CONTROL_NUMBER, FieldType = FieldType.String},
+						new FieldEntry()
+						{
+							DisplayName = _INPUT_DATA_CONTROL_NUMBER,
+							FieldIdentifier = _INPUT_DATA_CONTROL_NUMBER,
+							FieldType = global::Relativity.IntegrationPoints.Contracts.Models.FieldType.String
+						},
 						Guid.Parse("8703F851-C653-40E0-B249-AB4A7C879E6B")
 					},
-					{new FieldEntry() {DisplayName = _INPUT_DATA_EXTRACTED_TEXT, FieldIdentifier = _INPUT_DATA_EXTRACTED_TEXT, FieldType = FieldType.String}, "New"},
-					{new FieldEntry() {DisplayName = _INPUT_DATA_GROUP_ID, FieldIdentifier = _INPUT_DATA_GROUP_ID, FieldType = FieldType.String}, "HR"}
+					{
+						new FieldEntry()
+						{
+							DisplayName = _INPUT_DATA_EXTRACTED_TEXT,
+							FieldIdentifier = _INPUT_DATA_EXTRACTED_TEXT,
+							FieldType = global::Relativity.IntegrationPoints.Contracts.Models.FieldType.String
+						},
+						"New"
+					},
+					{
+						new FieldEntry()
+						{
+							DisplayName = _INPUT_DATA_GROUP_ID,
+							FieldIdentifier = _INPUT_DATA_GROUP_ID,
+							FieldType = global::Relativity.IntegrationPoints.Contracts.Models.FieldType.String
+						},
+						"HR"
+					}
 				}
 			};
 

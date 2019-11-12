@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core.Constants;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
@@ -12,6 +11,7 @@ using kCura.IntegrationPoints.LDAPProvider;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Newtonsoft.Json;
 using Relativity;
+using Relativity.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoint.Tests.Core.Templates
 {
@@ -95,7 +95,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 						IsIdentifier = false
 					},
 					FieldMapType = FieldMapTypeEnum.Identifier,
-					DestinationField = new FieldEntry()
+					DestinationField = new FieldEntry
 					{
 						FieldIdentifier = documentDto.ArtifactId.ToString(),
 						DisplayName = documentDto.Fields.First(field => field.Name == "Name").Value as string + " [Object Identifier]",

@@ -71,5 +71,11 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			var permissionRepository = _repositoryFactory.GetPermissionRepository(workspaceArtifactId);
 			return permissionRepository.UserHasPermissionToAccessWorkspace();
 		}
+
+		public bool UserBelongsToGroup(int workspaceArtifactID, int userArtifactID, int groupArtifactID)
+		{
+			IPermissionRepository permissionRepository = _repositoryFactory.GetPermissionRepository(workspaceArtifactID);
+			return permissionRepository.UserBelongsToGroup(userArtifactID, groupArtifactID);
+		}
 	}
 }

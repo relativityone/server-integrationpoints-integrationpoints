@@ -5,7 +5,6 @@ using System.Reflection;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Agent.Tasks;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
@@ -29,6 +28,7 @@ using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.Services.Objects.DataContracts;
 using Field = kCura.Relativity.Client.DTOs.Field;
 

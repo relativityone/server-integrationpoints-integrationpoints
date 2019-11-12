@@ -33,7 +33,8 @@ namespace kCura.IntegrationPoints.Core.Validation.Abstract
 			SourceProvider sourceProvider,
 			DestinationProvider destinationProvider,
 			IntegrationPointType integrationPointType,
-			Guid objectTypeGuid)
+			Guid objectTypeGuid,
+			int userId)
 		{
 			ImportSettings destinationConfiguration = _serializer.Deserialize<ImportSettings>(model.Destination);
 
@@ -41,6 +42,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Abstract
 			{
 				ArtifactId = model.ArtifactID,
 				ArtifactTypeId = destinationConfiguration.ArtifactTypeId,
+				UserId = userId,
 				SourceProviderIdentifier = sourceProvider.Identifier,
 				SourceProviderArtifactId = sourceProvider.ArtifactId,
 				SourceConfiguration = model.SourceConfiguration,
@@ -61,6 +63,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Abstract
 			SourceProvider sourceProvider,
 			DestinationProvider destinationProvider,
 			IntegrationPointType integrationPointType,
-			Guid objectTypeGuid);
+			Guid objectTypeGuid,
+			int userId);
 	}
 }

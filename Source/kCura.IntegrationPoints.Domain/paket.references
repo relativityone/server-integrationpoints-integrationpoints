@@ -1,8 +1,8 @@
 CSharpGuidelineAnalyzer
-kCura.IntegrationPoints.SDK
 kCura.Relativity.Client
 Relativity.API
 Relativity.DataExchange.Client.SDK
+Relativity.IntegrationPoints.SDK
 Castle.Windsor
 Relativity.Services.Interfaces
 Relativity.DataGrid

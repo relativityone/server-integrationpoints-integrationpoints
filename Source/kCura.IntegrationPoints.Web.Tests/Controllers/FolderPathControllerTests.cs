@@ -16,9 +16,9 @@ using NSubstitute;
 using NUnit.Framework;
 using System.Collections.Generic;
 using kCura.IntegrationPoints.Common.Context;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using Relativity.API;
+using Relativity.IntegrationPoints.Contracts.Models;
 using Field = kCura.Relativity.ImportAPI.Data.Field;
 using Query = kCura.Relativity.Client.Query;
 
@@ -113,7 +113,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 	        _choiceService.GetChoiceFields(Arg.Any<int>()).Returns(listOfFields);
 	     
 			IImportAPI importApi = Substitute.For<IImportAPI>();
-			_choiceService.ConvertToFieldEntries(null).ReturnsForAnyArgs(new List<Contracts.Models.FieldEntry>());
+			_choiceService.ConvertToFieldEntries(null).ReturnsForAnyArgs(new List<FieldEntry>());
 
 			_config.WebApiPath.Returns(webServiceUrl);
 

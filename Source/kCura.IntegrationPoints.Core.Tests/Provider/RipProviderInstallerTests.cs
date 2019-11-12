@@ -1,7 +1,5 @@
 ﻿using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core.FluentAssertions;
-using kCura.IntegrationPoints.Contracts;
-using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core.Provider;
 using kCura.IntegrationPoints.Core.Provider.Internals;
 using kCura.IntegrationPoints.Core.Services.Domain;
@@ -16,9 +14,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Contracts.Internals;
+using Relativity.IntegrationPoints.Contracts;
+using Relativity.IntegrationPoints.Contracts.Internals;
+using Relativity.IntegrationPoints.Contracts.Provider;
 using static LanguageExt.Prelude;
-using SourceProvider = kCura.IntegrationPoints.Contracts.SourceProvider;
 
 namespace kCura.IntegrationPoints.Core.Tests.Provider
 {
@@ -32,7 +31,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider
 		private RipProviderInstaller _sut;
 
 		private SourceProvider _sourceProviderToCreate;
-		private SourceProvider[] _sourceProvidersToCreate;
+		private global::Relativity.IntegrationPoints.Contracts.SourceProvider[] _sourceProvidersToCreate;
 		private Guid _existingProviderApplicationGuid;
 
 		[SetUp]

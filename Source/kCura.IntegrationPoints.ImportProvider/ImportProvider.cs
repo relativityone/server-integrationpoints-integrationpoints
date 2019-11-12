@@ -2,14 +2,16 @@
 using System.Collections.Generic;
 using System.Data;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
+using Relativity.IntegrationPoints.Contracts;
+using Relativity.IntegrationPoints.Contracts.Models;
+using Relativity.IntegrationPoints.Contracts.Provider;
 
 namespace kCura.IntegrationPoints.ImportProvider
 {
-	[Contracts.DataSourceProvider(Constants.Guids.ImportProviderEventHandler)]
-	public class ImportProvider : Contracts.Provider.IDataSourceProvider
+	[DataSourceProvider(Constants.Guids.ImportProviderEventHandler)]
+	public class ImportProvider : IDataSourceProvider
 	{
 		private readonly IFieldParserFactory _fieldParserFactory;
 		private readonly ISerializer _serializer;

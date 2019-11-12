@@ -1,5 +1,4 @@
 ﻿using System.Data;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
@@ -10,6 +9,7 @@ using Newtonsoft.Json;
 using NSubstitute;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
+using Relativity.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {

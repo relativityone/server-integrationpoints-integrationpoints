@@ -1,11 +1,12 @@
 ﻿using System;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
-using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Domain.Exceptions;
-using kCura.IntegrationPoints.SourceProviderInstaller;
-using kCura.IntegrationPoints.SourceProviderInstaller.Internals.Wrappers;
 using Relativity.API;
+using Relativity.IntegrationPoints.Contracts.Properties;
+using Relativity.IntegrationPoints.Contracts.Provider;
+using Relativity.IntegrationPoints.SourceProviderInstaller;
+using Relativity.IntegrationPoints.SourceProviderInstaller.Internals.Wrappers;
 
 namespace kCura.IntegrationPoints.Domain
 {
@@ -50,7 +51,7 @@ namespace kCura.IntegrationPoints.Domain
 			} 
 			catch(Exception ex)
 			{
-				var message = string.Format(Contracts.Properties.Resources.CouldNotCreateProvider, providerType);
+				var message = string.Format(Resources.CouldNotCreateProvider, providerType);
 				LogProviderCreationError(ex, message);
 				throw new IntegrationPointsException(message);
 			}

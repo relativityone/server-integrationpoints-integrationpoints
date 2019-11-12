@@ -1,12 +1,12 @@
 ﻿Castle.Windsor
 kCura
 kCura.Apps.Common.Config
-kCura.IntegrationPoints.Contracts
 kCura.Relativity.Client
 Polly
 Relativity
 Relativity.API
 Relativity.DataExchange.Client.SDK
+Relativity.IntegrationPoints.Contracts
 Relativity.IntegrationPoints.Services.Interfaces.Private
 Relativity.Productions.Services.Interfaces
 Relativity.Services.DataContracts

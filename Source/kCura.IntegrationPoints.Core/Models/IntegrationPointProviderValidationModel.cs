@@ -22,6 +22,8 @@ namespace kCura.IntegrationPoints.Core.Models
 
 		public int ArtifactTypeId { get; set; }
 
+		public int UserId { get; set; }
+
 		public int Type { get; set; }
 
 		public string FieldsMap { get; set; }

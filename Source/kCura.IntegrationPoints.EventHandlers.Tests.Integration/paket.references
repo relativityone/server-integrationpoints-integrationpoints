@@ -3,10 +3,10 @@ CSharpGuidelineAnalyzer
 kCura.Apps.Common.Data
 kCura.Apps.Common.Utils
 kCura.EventHandler
-kCura.IntegrationPoints.SDK
 kCura.Relativity.Client
 Polly
 Relativity.Data
+Relativity.IntegrationPoints.SDK
 Relativity.Telemetry.APM
 Relativity.OAuth2Client
 Relativity.Services.Interfaces

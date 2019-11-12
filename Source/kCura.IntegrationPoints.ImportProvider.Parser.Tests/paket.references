@@ -1,8 +1,8 @@
 CSharpGuidelineAnalyzer
 kCura.Apps.Common.Utils
-kCura.IntegrationPoints.Contracts
 Relativity.Data
 Relativity.DataExchange.Client.SDK
+Relativity.IntegrationPoints.Contracts
 SystemWrapper.Interfaces
 
 group TestPackages

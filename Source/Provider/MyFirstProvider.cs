@@ -2,7 +2,9 @@
 using System.Data;
 using System.Linq;
 using System.Xml;
-using kCura.IntegrationPoints.Contracts.Models;
+using Relativity.IntegrationPoints.Contracts;
+using Relativity.IntegrationPoints.Contracts.Models;
+using Relativity.IntegrationPoints.Contracts.Provider;
 
 namespace Provider
 {
@@ -10,8 +12,8 @@ namespace Provider
     /// This code is a sample fully operational Integration Point Provider
     /// for demonstration purposes only
     /// </summary>
-    [kCura.IntegrationPoints.Contracts.DataSourceProvider(GlobalConstants.FIRST_PROVIDER_GUID)]
-    public class MyFirstProvider : kCura.IntegrationPoints.Contracts.Provider.IDataSourceProvider
+    [DataSourceProvider(GlobalConstants.FIRST_PROVIDER_GUID)]
+    public class MyFirstProvider : IDataSourceProvider
     {
 		public IEnumerable<FieldEntry> GetFields(DataSourceProviderConfiguration providerConfiguration)
 		{
