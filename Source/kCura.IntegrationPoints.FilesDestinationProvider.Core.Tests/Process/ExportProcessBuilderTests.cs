@@ -1,6 +1,5 @@
 ﻿using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -25,6 +24,7 @@ using kCura.IntegrationPoints.Core.Authentication.WebApi;
 using kCura.WinEDDS;
 using Relativity.DataExchange.Io;
 using Relativity.DataExchange.Service;
+using Relativity.IntegrationPoints.Contracts.Models;
 using IExporter = kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary.IExporter;
 using IServiceFactory = kCura.WinEDDS.Service.Export.IServiceFactory;
 using ViewFieldInfo = kCura.WinEDDS.ViewFieldInfo;

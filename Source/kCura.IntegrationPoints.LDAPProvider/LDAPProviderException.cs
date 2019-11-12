@@ -1,7 +1,6 @@
 ﻿using kCura.IntegrationPoints.Domain.Exceptions;
 using System;
 using System.Runtime.Serialization;
-using kCura.IntegrationPoints.Contracts;
 
 namespace kCura.IntegrationPoints.LDAPProvider
 {

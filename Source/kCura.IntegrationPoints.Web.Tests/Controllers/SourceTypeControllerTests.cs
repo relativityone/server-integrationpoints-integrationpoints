@@ -9,8 +9,6 @@ using System.Web.Http.Routing;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Contracts;
-using kCura.IntegrationPoints.Contracts.Internals;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.SourceTypes;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -18,6 +16,8 @@ using kCura.IntegrationPoints.Web.Controllers.API;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.IntegrationPoints.Contracts;
+using Relativity.IntegrationPoints.Contracts.Internals;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers
 {

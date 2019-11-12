@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Domain.Models;
+using Relativity.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 {
@@ -57,7 +57,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 		/// <summary>
 		/// Updates an integration point.
 		/// </summary>
-		/// <param name="model">The integration point.</param>
+		/// <param name="integrationPoint">The integration point.</param>
 		void UpdateIntegrationPoint(Data.IntegrationPoint integrationPoint);
 
 		/// <summary>

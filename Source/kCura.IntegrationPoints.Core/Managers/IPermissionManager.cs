@@ -26,5 +26,7 @@ namespace kCura.IntegrationPoints.Core.Managers
 		bool UserHasArtifactTypePermissions(int workspaceArtifactId, int artifactTypeId, IEnumerable<ArtifactPermission> artifactPermissions);
 
 		bool UserHasPermissionToAccessWorkspace(int workspaceArtifactId);
+
+		bool UserBelongsToGroup(int workspaceArtifactID, int userArtifactID, int groupArtifactID);	
 	}
 }

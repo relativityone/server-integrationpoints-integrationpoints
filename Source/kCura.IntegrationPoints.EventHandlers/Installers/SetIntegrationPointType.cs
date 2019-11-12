@@ -9,7 +9,6 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Facades.SecretStore.Implementation;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
-using kCura.IntegrationPoints.SourceProviderInstaller;
 using Relativity.API;
 using Constants = kCura.IntegrationPoints.Domain.Constants;
 

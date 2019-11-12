@@ -1,5 +1,4 @@
 ﻿using kCura.IntegrationPoint.Tests.Core.Models;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.Relativity.Client;
 using NUnit.Framework;
 using Relativity.Productions.Services;
@@ -10,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoint.Tests.Core.Exceptions;
+using Relativity.IntegrationPoints.Contracts.Models;
 using FieldRef = Relativity.Services.Field.FieldRef;
 
 namespace kCura.IntegrationPoint.Tests.Core
@@ -77,7 +77,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				savedSearchName);
 		}
 
-		public int CreateSavedSearch(List<FieldRef> fields, int workspaceID, string savedSearchName)
+		private int CreateSavedSearch(List<FieldRef> fields, int workspaceID, string savedSearchName)
 		{
 			var folder = new SearchContainer
 			{
@@ -100,7 +100,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return CreateProductionSetAsync(workspaceArtifactID, productionSetName).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
-		public Task<int> CreateProductionSetAsync(int workspaceArtifactID, string productionSetName)
+		private Task<int> CreateProductionSetAsync(int workspaceArtifactID, string productionSetName)
 		{
 			return Production.Create(workspaceArtifactID, productionSetName);
 		}

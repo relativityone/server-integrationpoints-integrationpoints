@@ -5,8 +5,8 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using NUnit.Framework;
 using NSubstitute;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
+using Relativity.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.ImportProvider.Tests
 {

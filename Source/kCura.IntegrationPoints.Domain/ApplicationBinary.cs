@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace kCura.IntegrationPoints.Contracts.Domain
+namespace kCura.IntegrationPoints.Domain
 {
     public class ApplicationBinary : IComparer<ApplicationBinary>
     {

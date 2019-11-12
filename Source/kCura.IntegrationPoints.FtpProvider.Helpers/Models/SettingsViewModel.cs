@@ -1,7 +1,6 @@
-﻿using kCura.IntegrationPoints.Contracts.Models;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
+using Relativity.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.FtpProvider.Helpers.Models
 {

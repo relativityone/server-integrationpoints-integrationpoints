@@ -10,14 +10,16 @@ using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services;
+using Relativity.Services.Group;
 using Relativity.Services.Permission;
+using Relativity.Services.User;
 
 namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 {
 	[TestFixture]
 	public class PermissionRepositoryTests : TestBase
 	{
-		private IPermissionRepository _instance;
+		private IPermissionRepository _sut;
 		private IHelper _helper;
 		private IServicesMgr _servicesMgr;
 		private IPermissionManager _permissionManager;
@@ -34,7 +36,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			_helper.GetServicesManager().Returns(_servicesMgr);
 			_servicesMgr.CreateProxy<IPermissionManager>(Arg.Is(ExecutionIdentity.CurrentUser)).Returns(_permissionManager);
 
-			_instance = new PermissionRepository(_helper, _WORKSPACE_ID);
+			_sut = new PermissionRepository(_helper, _WORKSPACE_ID);
 		}
 
 		[Test]
@@ -65,7 +67,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				.Returns(permissionValues);
 
 			// Act
-			bool result = _instance.UserHasPermissionToAccessWorkspace();
+			bool result = _sut.UserHasPermissionToAccessWorkspace();
 
 			// Assert
 			Assert.IsTrue(result);
@@ -98,7 +100,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				.Throws(new Exception("LEEEDDLE LEEEDDLE LEEELE"));
 
 			// Act
-			bool result = _instance.UserHasPermissionToAccessWorkspace();
+			bool result = _sut.UserHasPermissionToAccessWorkspace();
 
 			// Assert
 			Assert.IsFalse(result);
@@ -139,7 +141,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				.Returns(permissionValues);
 
 			// Act
-			bool result = _instance.UserHasPermissionToAccessWorkspace();
+			bool result = _sut.UserHasPermissionToAccessWorkspace();
 
 			// Assert
 			Assert.IsFalse(result);
@@ -176,7 +178,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				.Returns(permissionValues);
 
 			// Act
-			bool result = _instance.UserHasPermissionToAccessWorkspace();
+			bool result = _sut.UserHasPermissionToAccessWorkspace();
 
 			// Assert
 			Assert.IsFalse(result);
@@ -219,7 +221,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				.Returns(permissionValues);
 
 			// Act
-			bool result = _instance.UserHasArtifactInstancePermission(artifactGuid, artifactId, ArtifactPermission.View);
+			bool result = _sut.UserHasArtifactInstancePermission(artifactGuid, artifactId, ArtifactPermission.View);
 
 			// Assert
 			Assert.IsTrue(result);
@@ -254,7 +256,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				.Throws(new Exception("SQUAREPANTS"));
 
 			// Act
-			bool result = _instance.UserHasArtifactInstancePermission(artifactGuid, artifactId, ArtifactPermission.View);
+			bool result = _sut.UserHasArtifactInstancePermission(artifactGuid, artifactId, ArtifactPermission.View);
 
 			// Assert
 			Assert.IsFalse(result);
@@ -295,7 +297,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				.Returns(permissionValues);
 
 			// Act
-			bool result = _instance.UserHasArtifactTypePermissions(artifactTypeId, new [] { ArtifactPermission.View });
+			bool result = _sut.UserHasArtifactTypePermissions(artifactTypeId, new [] { ArtifactPermission.View });
 
 			// Assert
 			Assert.IsTrue(result);
@@ -327,7 +329,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				.Throws(new Exception("Patrick"));
 
 			// Act
-			bool result = _instance.UserHasArtifactTypePermissions(artifactTypeId, new[] { ArtifactPermission.View });
+			bool result = _sut.UserHasArtifactTypePermissions(artifactTypeId, new[] { ArtifactPermission.View });
 
 			// Assert
 			Assert.IsFalse(result);
@@ -355,7 +357,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				.Throws(new Exception("Patrick"));
 
 			// Act
-			bool result = _instance.UserHasArtifactTypePermissions(artifactTypeId, new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Create });
+			bool result = _sut.UserHasArtifactTypePermissions(artifactTypeId, new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Create });
 
 			// Assert
 			Assert.IsFalse(result);
@@ -396,7 +398,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				.Returns(permissionValues);
 
 			// Act
-			bool result = _instance.UserHasArtifactTypePermission(artifactGuid, ArtifactPermission.View );
+			bool result = _sut.UserHasArtifactTypePermission(artifactGuid, ArtifactPermission.View );
 
 			// Assert
 			Assert.IsTrue(result);
@@ -428,7 +430,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				.Throws(new Exception("Squidward"));
 
 			// Act
-			bool result = _instance.UserHasArtifactTypePermission(artifactGuid, ArtifactPermission.View);
+			bool result = _sut.UserHasArtifactTypePermission(artifactGuid, ArtifactPermission.View);
 
 			// Assert
 			Assert.IsFalse(result);
@@ -459,7 +461,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				.Returns(new List<PermissionValue>() { permissionValue });
 
 			// Act
-			bool result = _instance.UserCanImport();
+			bool result = _sut.UserCanImport();
 
 			// Assert
 			Assert.IsTrue(result);
@@ -484,7 +486,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				.Throws(new Exception("Pearl"));
 
 			// Act
-			bool result = _instance.UserCanImport();
+			bool result = _sut.UserCanImport();
 
 			// Assert
 			Assert.IsFalse(result);
@@ -514,7 +516,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				.Returns(new List<PermissionValue>() { permissionValue });
 
 			// Act
-			bool result = _instance.UserCanExport();
+			bool result = _sut.UserCanExport();
 
 			// Assert
 			Assert.IsTrue(result);
@@ -539,7 +541,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				.Throws(new Exception("Mr. Krabs"));
 
 			// Act
-			bool result = _instance.UserCanExport();
+			bool result = _sut.UserCanExport();
 
 			// Assert
 			Assert.IsFalse(result);
@@ -569,7 +571,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				.Returns(new List<PermissionValue>() { permissionValue });
 
 			// Act
-			bool result = _instance.UserCanEditDocuments();
+			bool result = _sut.UserCanEditDocuments();
 
 			// Assert
 			Assert.IsTrue(result);
@@ -594,7 +596,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				.Throws(new Exception("Mr. Krabs"));
 
 			// Act
-			bool result = _instance.UserCanEditDocuments();
+			bool result = _sut.UserCanEditDocuments();
 
 			// Assert
 			Assert.IsFalse(result);
@@ -603,6 +605,50 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				Arg.Is<List<PermissionRef>>(
 					x => x.Count() == 1
 						 && x.First().PermissionID == permissionId));
+		}
+
+		[Test]
+		public void UserBelongsToGroup_ShouldReturnsTrue_WhenUserBelongsToGroup()
+		{
+			//arrange
+			GroupRef group = new GroupRef(100);
+			List<UserRef> usersInGroup = new List<UserRef>()
+			{
+				new UserRef(1),
+				new UserRef(2),
+				new UserRef(3)
+			};
+
+			_permissionManager.GetWorkspaceGroupUsersAsync(_WORKSPACE_ID, Arg.Any<GroupRef>())
+				.Returns(usersInGroup);
+
+			//act
+			var result = _sut.UserBelongsToGroup(2, 100);
+
+			//assert
+			Assert.IsTrue(result);
+		}
+
+		[Test]
+		public void UserBelongsToGroup_ShouldReturnsFalse_WhenUserDoesNotBelongToGroup()
+		{
+			//arrange
+			GroupRef group = new GroupRef(100);
+			List<UserRef> usersInGroup = new List<UserRef>()
+			{
+				new UserRef(1),
+				new UserRef(2),
+				new UserRef(3)
+			};
+
+			_permissionManager.GetWorkspaceGroupUsersAsync(_WORKSPACE_ID, Arg.Any<GroupRef>())
+				.Returns(usersInGroup);
+
+			//act
+			var result = _sut.UserBelongsToGroup(5, 100);
+
+			//assert
+			Assert.IsFalse(result);
 		}
 	}
 }

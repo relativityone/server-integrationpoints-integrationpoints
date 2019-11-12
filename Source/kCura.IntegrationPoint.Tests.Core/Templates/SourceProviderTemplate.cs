@@ -298,12 +298,17 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				do
 				{
 					job = jobServiceManager.GetNextQueueJob(resourcePool, currentAgentID);
+
+					LogJobsInQueue(jobServiceManager, integrationPointID);
+
 					if (job == null)
 					{
+						Console.WriteLine(@"Continue statement");
 						continue;
 					}
 					else
 					{
+						Console.WriteLine($"Job to check: IP: {integrationPointID}, workspaceID: {workspaceID}, jobIP: {job.RelatedObjectArtifactID}, jobWorkspaceID: {job.WorkspaceID}");
 						if (job.RelatedObjectArtifactID == integrationPointID &&
 							job.WorkspaceID == workspaceID)
 						{
@@ -313,7 +318,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 						{
 							agentsIDsToUnlock.Add(currentAgentID);
 							Console.WriteLine("In the queue we have other jobs, that might means that in other tests something is not working correctly");
-							Console.WriteLine($"IP: {integrationPointID}, workspaceID: {workspaceID}, jobIP: {job.RelatedObjectArtifactID}, jobWorkspaceID: {job.WorkspaceID}");
+							Console.WriteLine($"Job which is wrong, IP: {integrationPointID}, workspaceID: {workspaceID}, jobIP: {job.RelatedObjectArtifactID}, jobWorkspaceID: {job.WorkspaceID}");
 						}
 						currentAgentID++;
 					}
@@ -335,6 +340,23 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			foreach (var agentIdToUnlock in agentsIDsToUnlock)
 			{
 				jobServiceManager.UnlockJobs(agentIdToUnlock);
+			}
+		}
+
+		private void LogJobsInQueue(IJobService jobServiceManager, int integrationPointID)
+		{
+			var jobsList = jobServiceManager.GetJobs(integrationPointID);
+
+			foreach (var jobElement in jobsList)
+			{
+				Console.WriteLine($"Current jobs in queue {jobElement.JobId}, workspace {jobElement.WorkspaceID}, LockedByAgent {jobElement.LockedByAgentID}\n");
+			}
+
+			var jobsList2 = jobServiceManager.GetAllScheduledJobs();
+
+			foreach (var jobElement in jobsList2)
+			{
+				Console.WriteLine($"GetAllScheduledJobs in queue {jobElement.JobId}, workspace {jobElement.WorkspaceID}, LockedByAgent {jobElement.LockedByAgentID}\n");
 			}
 		}
 

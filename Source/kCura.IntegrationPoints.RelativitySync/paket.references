@@ -1,11 +1,11 @@
 Castle.Windsor
 kCura.Apps.Common.Utils
-kCura.IntegrationPoints.Contracts
 Relativity.API
 Relativity.Services.Interfaces
 kCura.Relativity.Client
 Relativity.Telemetry.APM
 
 group Sync
+	Relativity.IntegrationPoints.Contracts
 	Relativity.Sync
 	Autofac

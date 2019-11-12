@@ -1,6 +1,5 @@
 ﻿using FluentAssertions;
 using kCura.EventHandler;
-using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Core.Provider;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints;
 using LanguageExt;
@@ -11,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Relativity.IntegrationPoints.Contracts;
 using static LanguageExt.Prelude;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints

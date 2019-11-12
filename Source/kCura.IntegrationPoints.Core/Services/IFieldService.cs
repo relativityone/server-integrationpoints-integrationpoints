@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using kCura.IntegrationPoints.Contracts.Models;
+using Relativity.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.Core.Services
 {

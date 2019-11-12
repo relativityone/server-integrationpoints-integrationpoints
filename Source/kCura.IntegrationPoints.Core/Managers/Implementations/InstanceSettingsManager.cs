@@ -12,6 +12,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 		private const string _RELATIVITY_CORE = "Relativity.Core";
 		private const string _ALLOW_NO_SNAPSHOT_IMPORT = "AllowNoSnapshotImport";
+		private const string _RESTRICT_REFERENTIAL_FILE_LINKS_ON_IMPORT = "RestrictReferentialFileLinksOnImport";
 
 		public InstanceSettingsManager(IRepositoryFactory repositoryFactory)
 		{
@@ -27,13 +28,23 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		public bool RetrieveAllowNoSnapshotImport()
 		{
 			IInstanceSettingRepository instanceSettingRepository = _repositoryFactory.GetInstanceSettingRepository();
-			var allowNoSnapshotImportSetting = instanceSettingRepository.GetConfigurationValue(_RELATIVITY_CORE, _ALLOW_NO_SNAPSHOT_IMPORT);
+			string allowNoSnapshotImportSetting = instanceSettingRepository.GetConfigurationValue(_RELATIVITY_CORE, _ALLOW_NO_SNAPSHOT_IMPORT);
 			if (allowNoSnapshotImportSetting == null)
 			{
 				return false;
 			}
-			bool allowNoSnapshotImport;
-			return bool.TryParse(allowNoSnapshotImportSetting, out allowNoSnapshotImport) && allowNoSnapshotImport;
+			return bool.TryParse(allowNoSnapshotImportSetting, out bool allowNoSnapshotImport) && allowNoSnapshotImport;
+		}
+
+		public bool RetrieveRestrictReferentialFileLinksOnImport()
+		{
+			IInstanceSettingRepository instanceSettingRepository = _repositoryFactory.GetInstanceSettingRepository();
+			string restrictReferentialFileLinksSetting = instanceSettingRepository.GetConfigurationValue(_RELATIVITY_CORE, _RESTRICT_REFERENTIAL_FILE_LINKS_ON_IMPORT);
+			if (restrictReferentialFileLinksSetting == null)
+			{
+				return false;
+			}
+			return bool.TryParse(restrictReferentialFileLinksSetting, out bool restrictReferentialFileLinks) && restrictReferentialFileLinks;
 		}
 	}
 }

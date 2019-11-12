@@ -1,6 +1,8 @@
-﻿namespace JsonLoader
+﻿using Relativity.IntegrationPoints.Contracts;
+
+namespace JsonLoader
 {
-	public class StartUp : kCura.IntegrationPoints.Contracts.IStartUp
+	public class StartUp : IStartUp
 	{
 		public void Execute()
 		{

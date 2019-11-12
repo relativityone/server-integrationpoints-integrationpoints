@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using JsonLoader.Models;
-using kCura.IntegrationPoints.Contracts.Models;
 using Newtonsoft.Json;
+using Relativity.IntegrationPoints.Contracts;
+using Relativity.IntegrationPoints.Contracts.Models;
+using Relativity.IntegrationPoints.Contracts.Provider;
 
 namespace JsonLoader
 {
-	[kCura.IntegrationPoints.Contracts.DataSourceProvider(Constants.JSON_SOURCE_PROVIDER_GUID)]
-	public class JsonProvider : kCura.IntegrationPoints.Contracts.Provider.IDataSourceProvider
+	[DataSourceProvider(Constants.JSON_SOURCE_PROVIDER_GUID)]
+	public class JsonProvider : IDataSourceProvider
 	{
 		private readonly JsonHelper _helper;
 

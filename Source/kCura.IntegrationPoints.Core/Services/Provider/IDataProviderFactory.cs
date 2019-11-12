@@ -1,6 +1,5 @@
 ﻿using System;
-using kCura.IntegrationPoints.Contracts.Provider;
-using Relativity.API;
+using Relativity.IntegrationPoints.Contracts.Provider;
 
 namespace kCura.IntegrationPoints.Core.Services.Provider
 {

@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using kCura.Relativity.Client;
 using Relativity.API;
 using Relativity.Services;
+using Relativity.Services.Group;
 using Relativity.Services.Permission;
+using Relativity.Services.User;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
@@ -154,6 +156,15 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		public bool UserHasArtifactTypePermission(int artifactTypeId, ArtifactPermission artifactPermission)
 		{
 			return UserHasArtifactTypePermissions(artifactTypeId, new[] { artifactPermission });
+		}
+
+		public bool UserBelongsToGroup(int userArtifactId, int groupArtifactId)
+		{
+			using (IPermissionManager proxy = _helper.GetServicesManager().CreateProxy<IPermissionManager>(ExecutionIdentity.CurrentUser))
+			{
+				List<UserRef> users = proxy.GetWorkspaceGroupUsersAsync(_workspaceArtifactId, new GroupRef(groupArtifactId)).GetAwaiter().GetResult();
+				return users.Any(x => x.ArtifactID == userArtifactId);
+			}
 		}
 
 		private bool UserHasArtifactTypePermissions(Guid artifactTypeGuid, IEnumerable<ArtifactPermission> artifactPermissions)

@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using Castle.Windsor;
-using kCura.IntegrationPoints.Contracts;
-using kCura.IntegrationPoints.SourceProviderInstaller;
-using kCura.IntegrationPoints.SourceProviderInstaller.Internals;
 using Relativity.API;
+using Relativity.IntegrationPoints.Contracts;
+using Relativity.IntegrationPoints.SourceProviderInstaller;
+using Relativity.IntegrationPoints.SourceProviderInstaller.Internals;
 
 namespace kCura.IntegrationPoints.Domain
 {

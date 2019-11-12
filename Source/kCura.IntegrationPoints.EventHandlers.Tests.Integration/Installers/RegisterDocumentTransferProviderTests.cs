@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
-using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.EventHandlers.Installers;
 using NUnit.Framework;
+using Relativity.IntegrationPoints.Contracts;
 using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers

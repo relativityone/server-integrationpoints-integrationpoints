@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Net;
 using System.Web.Http;
 using System.Web.Mvc;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.FtpProvider.Connection.Interfaces;
 using kCura.IntegrationPoints.FtpProvider.Helpers;
 using kCura.IntegrationPoints.FtpProvider.Helpers.Interfaces;
 using kCura.IntegrationPoints.FtpProvider.Helpers.Models;
 using kCura.IntegrationPoints.Web.Models;
+using Relativity.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.Web.Controllers
 {

@@ -1,17 +1,16 @@
 ﻿using FluentAssertions;
-using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Core.Provider;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
-using kCura.IntegrationPoints.SourceProviderInstaller;
 using LanguageExt;
 using Moq;
 using NUnit.Framework;
-using NUnit.Framework.Internal;
 using Relativity.API;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Relativity.IntegrationPoints.Contracts;
+using Relativity.IntegrationPoints.SourceProviderInstaller;
 using static LanguageExt.Prelude;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.Implementations

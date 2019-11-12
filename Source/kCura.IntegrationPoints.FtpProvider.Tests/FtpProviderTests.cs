@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.FtpProvider.Connection.Interfaces;
 using kCura.IntegrationPoints.FtpProvider.Helpers;
 using kCura.IntegrationPoints.FtpProvider.Helpers.Interfaces;
@@ -9,6 +8,7 @@ using kCura.IntegrationPoints.FtpProvider.Parser;
 using kCura.IntegrationPoints.FtpProvider.Parser.Interfaces;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.FtpProvider.Tests
 {

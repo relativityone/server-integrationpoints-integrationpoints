@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
@@ -9,6 +10,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using kCura.WinEDDS.Service.Export;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Factories.Implementations
@@ -21,6 +23,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		private readonly IRelativityObjectManager _relativityObjectManager;
 		private readonly IFileRepository _fileRepository;
 		private readonly ISerializer _serializer;
+		private readonly Func<ISearchManager> _searchManager;
 		private readonly IAPILog _logger;
 
 		public ExporterFactory(
@@ -29,6 +32,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			IFolderPathReaderFactory folderPathReaderFactory,
 			IRelativityObjectManager relativityObjectManager,
 			IFileRepository fileRepository,
+			Func<ISearchManager> searchManager,
 			ISerializer serializer)
 		{
 			_repositoryFactory = repositoryFactory;
@@ -36,6 +40,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			_folderPathReaderFactory = folderPathReaderFactory;
 			_relativityObjectManager = relativityObjectManager;
 			_fileRepository = fileRepository;
+			_searchManager = searchManager;
 			_serializer = serializer;
 			_logger = _helper.GetLoggerFactory().GetLogger().ForContext<ExporterFactory>();
 		}
@@ -135,7 +140,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				startAtRecord,
 				sourceConfiguration,
 				searchArtifactId,
-				settings);
+				settings,
+				_searchManager);
 		}
 		
 		private void LogBuildExporterExecutionWithParameters(

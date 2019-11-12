@@ -104,7 +104,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 			DateTime startDate = StartDate ?? StartDate.GetValueOrDefault(DateTime.UtcNow);
 			DateTime clientTimeLocal = startDate.Date.AddMinutes(LocalTimeOfDay.GetValueOrDefault().TotalMinutes);
 			TimeSpan clientUtcOffset = clientTimeZoneInfo.GetUtcOffset(clientTimeLocal);
-			DateTime clientTimeUtc = clientTimeLocal.AddMinutes(-clientUtcOffset.TotalMinutes);
+			DateTime clientTimeUtc = DateTime.SpecifyKind(clientTimeLocal.AddMinutes(-clientUtcOffset.TotalMinutes), DateTimeKind.Utc);
 
 			DaysOfWeek? daysToRunUtc = AdjustDaysShiftBetweenLocalAndUtc(clientTimeLocal, clientTimeUtc);
 			int? dayOfMonth = AdjustDayOfMonthsShiftBetweenLocalAndUtc(clientTimeLocal, clientTimeUtc);

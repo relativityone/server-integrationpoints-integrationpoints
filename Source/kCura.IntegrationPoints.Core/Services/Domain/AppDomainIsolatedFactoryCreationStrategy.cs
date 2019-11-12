@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Domain;
+using Relativity.IntegrationPoints.Contracts;
 
 namespace kCura.IntegrationPoints.Core.Services.Domain
 {

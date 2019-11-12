@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using kCura.IntegrationPoints.Contracts.Domain;
 
 namespace kCura.IntegrationPoints.Domain
 {
