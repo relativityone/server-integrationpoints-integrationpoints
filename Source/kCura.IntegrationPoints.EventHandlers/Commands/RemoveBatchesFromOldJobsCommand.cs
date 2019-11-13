@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 		public void Execute()
 		{
 			int workspaceArtifactId = _context.Helper.GetActiveCaseID();
-			_batchesCleanupService.DeleteOldBatchesInWorkspaceAsync(workspaceArtifactId).GetAwaiter().GetResult();
+			_batchesCleanupService.TryToDeleteOldBatchesInWorkspaceAsync(workspaceArtifactId).GetAwaiter().GetResult();
 		}
 	}
 }

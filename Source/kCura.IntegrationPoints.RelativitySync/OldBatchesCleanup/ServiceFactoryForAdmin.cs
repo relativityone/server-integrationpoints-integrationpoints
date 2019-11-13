@@ -5,11 +5,11 @@ using Relativity.Sync.KeplerFactory;
 
 namespace kCura.IntegrationPoints.RelativitySync.OldBatchesCleanup
 {
-	internal class SimpleServiceFactoryForAdmin : ISourceServiceFactoryForAdmin
+	internal class ServiceFactoryForAdmin : ISourceServiceFactoryForAdmin
 	{
 		private readonly IServicesMgr _servicesMgr;
 
-		public SimpleServiceFactoryForAdmin(IServicesMgr servicesMgr)
+		public ServiceFactoryForAdmin(IServicesMgr servicesMgr)
 		{
 			_servicesMgr = servicesMgr;
 		}

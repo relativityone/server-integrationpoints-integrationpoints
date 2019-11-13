@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 
 			// Assert
 			_oldBatchesCleanupServiceMock
-				.Verify(x => x.DeleteOldBatchesInWorkspaceAsync(_WORKSPACE_ID), Times.Once);
+				.Verify(x => x.TryToDeleteOldBatchesInWorkspaceAsync(_WORKSPACE_ID), Times.Once);
 		}
 	}
 }

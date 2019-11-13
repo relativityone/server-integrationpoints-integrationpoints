@@ -12,8 +12,8 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.OldBatchesCleanup
 	public class OldBatchesCleanupServiceFactoryTests
 	{
 		private IOldBatchesCleanupServiceFactory _sut;
-		private Mock<Lazy<IErrorService>> _errorServiceMock;
-		private Mock<IAPILog> _apiLogMock;
+		private Mock<Lazy<IErrorService>> _errorServiceFake;
+		private Mock<IAPILog> _apiLogFake;
 
 		[SetUp]
 		public void SetUp()
@@ -25,10 +25,10 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.OldBatchesCleanup
 				.Setup(x => x.GetServicesManager())
 				.Returns(servicesMgrStub.Object);
 
-			_errorServiceMock = new Mock<Lazy<IErrorService>>();
-			_apiLogMock = new Mock<IAPILog>();
+			_errorServiceFake = new Mock<Lazy<IErrorService>>();
+			_apiLogFake = new Mock<IAPILog>();
 
-			_sut = new OldBatchesCleanupServiceFactory(helperStub.Object, _errorServiceMock.Object, _apiLogMock.Object);
+			_sut = new OldBatchesCleanupServiceFactory(helperStub.Object, _errorServiceFake.Object, _apiLogFake.Object);
 		}
 
 		[Test]
