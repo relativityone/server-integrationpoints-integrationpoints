@@ -15,6 +15,9 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
+using kCura.IntegrationPoints.Synchronizers.RDO;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
@@ -25,25 +28,22 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 	{
 		private readonly Lazy<IRelativityObjectManagerFactory> _relativityObjectManagerFactory;
 		private readonly IIntegrationPointProfilesQuery _integrationPointProfilesQuery;
-		private readonly ISerializer _serializer;
 
 		protected override string SuccessMessage => "Integration Point Profiles migrated successfully.";
 		protected override string GetFailureMessage(Exception ex) => "Failed to migrate the Integration Point Profiles.";
 
 		public IntegrationPointProfileMigrationEventHandler()
 		{
-			_serializer = new JSONSerializer();
 			_relativityObjectManagerFactory = new Lazy<IRelativityObjectManagerFactory>(() => new RelativityObjectManagerFactory(Helper));
 			Func<int, IRelativityObjectManager> createRelativityObjectManager = CreateRelativityObjectManager;
 			var objectArtifactIdsByStringFieldValueQuery = new ObjectArtifactIdsByStringFieldValueQuery(createRelativityObjectManager);
-			_integrationPointProfilesQuery = new IntegrationPointProfilesQuery(createRelativityObjectManager, objectArtifactIdsByStringFieldValueQuery, _serializer);
+			_integrationPointProfilesQuery = new IntegrationPointProfilesQuery(createRelativityObjectManager, objectArtifactIdsByStringFieldValueQuery);
 		}
 
 		internal IntegrationPointProfileMigrationEventHandler(IErrorService errorService,
 			Func<IRelativityObjectManagerFactory> relativityObjectManagerFactoryProvider,
 			IIntegrationPointProfilesQuery integrationPointProfilesQuery) : base(errorService)
 		{
-			_serializer = new JSONSerializer();
 			_relativityObjectManagerFactory = new Lazy<IRelativityObjectManagerFactory>(relativityObjectManagerFactoryProvider);
 			_integrationPointProfilesQuery = integrationPointProfilesQuery;
 		}
@@ -58,36 +58,36 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			int sourceProviderArtifactID = await _integrationPointProfilesQuery.GetSyncSourceProviderArtifactIDAsync(TemplateWorkspaceID).ConfigureAwait(false);
 			int destinationProviderArtifactID = await _integrationPointProfilesQuery.GetSyncDestinationProviderArtifactIDAsync(TemplateWorkspaceID).ConfigureAwait(false);
 			List<IntegrationPointProfile> allProfiles = (await _integrationPointProfilesQuery.GetAllProfilesAsync(TemplateWorkspaceID).ConfigureAwait(false)).ToList();
-			List<IntegrationPointProfile> syncProfiles = _integrationPointProfilesQuery
-				.GetSyncProfiles(allProfiles, sourceProviderArtifactID, destinationProviderArtifactID).ToList();
-			List<IntegrationPointProfile> nonSyncProfiles = _integrationPointProfilesQuery
-				.GetNonSyncProfiles(allProfiles, sourceProviderArtifactID, destinationProviderArtifactID).ToList();
+			List<IntegrationPointProfile> profilesToPreserve = _integrationPointProfilesQuery
+				.GetProfilesToUpdate(allProfiles, sourceProviderArtifactID, destinationProviderArtifactID).ToList();
+			List<IntegrationPointProfile> profilesToDelete = _integrationPointProfilesQuery
+				.GetProfilesToDelete(allProfiles, sourceProviderArtifactID, destinationProviderArtifactID).ToList();
 
 			await Task.WhenAll(
-					DeleteNonSyncProfilesIfAnyInCreatedWorkspaceAsync(nonSyncProfiles.Select(x => x.ArtifactId).ToList()),
-					ModifyExistingSyncProfilesIfAnyInCreatedWorkspaceAsync(syncProfiles)
+					DeleteProfilesAsync(profilesToDelete.Select(x => x.ArtifactId).ToList()),
+					UpdateProfilesAsync(profilesToPreserve)
 				).ConfigureAwait(false);
 		}
 
-		private async Task DeleteNonSyncProfilesIfAnyInCreatedWorkspaceAsync(IReadOnlyCollection<int> nonSyncProfilesIDs)
+		private async Task DeleteProfilesAsync(IReadOnlyCollection<int> profilesIDs)
 		{
-			if (nonSyncProfilesIDs.IsNullOrEmpty())
+			if (profilesIDs.IsNullOrEmpty())
 			{
 				return;
 			}
 
 			bool success = await CreateRelativityObjectManager(WorkspaceID)
-				.MassDeleteAsync(nonSyncProfilesIDs)
+				.MassDeleteAsync(profilesIDs)
 				.ConfigureAwait(false);
 			if (!success)
 			{
-				throw new IntegrationPointsException("Deleting non Sync Integration Point profiles failed");
+				throw new IntegrationPointsException("Deleting Integration Point profiles failed.");
 			}
 		}
 
-		private async Task ModifyExistingSyncProfilesIfAnyInCreatedWorkspaceAsync(IReadOnlyCollection<IntegrationPointProfile> syncProfiles)
+		private async Task UpdateProfilesAsync(IReadOnlyCollection<IntegrationPointProfile> profilesToUpdate)
 		{
-			if (syncProfiles.IsNullOrEmpty())
+			if (profilesToUpdate.IsNullOrEmpty())
 			{
 				return;
 			}
@@ -98,15 +98,23 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			int destinationProviderArtifactID = await _integrationPointProfilesQuery.GetSyncDestinationProviderArtifactIDAsync(WorkspaceID).ConfigureAwait(false);
 			int integrationPointTypeArtifactID = await _integrationPointProfilesQuery.GetIntegrationPointExportTypeArtifactIDAsync(WorkspaceID).ConfigureAwait(false);
 
-			foreach (IntegrationPointProfile profile in syncProfiles)
+			List<IntegrationPointProfile> failedProfiles = new List<IntegrationPointProfile>();
+
+			foreach (IntegrationPointProfile profile in profilesToUpdate)
 			{
 				FieldRefValuePair[] fieldsToUpdate = GetFieldsToUpdate(profile, sourceProviderArtifactID, destinationProviderArtifactID, integrationPointTypeArtifactID);
 				bool success = await objectManager.MassUpdateAsync(new[] {profile.ArtifactId}, fieldsToUpdate, FieldUpdateBehavior.Replace).ConfigureAwait(false);
 
 				if (!success)
 				{
-					throw new IntegrationPointsException($"Updating Integration Point Profile ArtifactID: {profile.ArtifactId} Name: {profile.Name} with ObjectManager failed.");
+					failedProfiles.Add(profile);
 				}
+			}
+
+			if (failedProfiles.Any())
+			{
+				string concatenatedProfiles = string.Join(",", failedProfiles.Select(profile => profile.ArtifactId));
+				throw new IntegrationPointsException($"Failed to migrate {failedProfiles.Count} profiles artifact IDs: {concatenatedProfiles}");
 			}
 		}
 
@@ -121,6 +129,14 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 						Guid = IntegrationPointProfileFieldGuids.SourceConfigurationGuid
 					},
 					Value = UpdateSourceConfiguration(profile.SourceConfiguration)
+				},
+				new FieldRefValuePair()
+				{
+					Field = new FieldRef()
+					{
+						Guid = IntegrationPointProfileFieldGuids.DestinationConfigurationGuid
+					},
+					Value = UpdateDestinationConfiguration(profile.DestinationConfiguration)
 				},
 				new FieldRefValuePair()
 				{
@@ -160,10 +176,22 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 		private string UpdateSourceConfiguration(string sourceConfigurationJson)
 		{
-			SourceConfiguration sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(sourceConfigurationJson);
-			sourceConfiguration.SavedSearchArtifactId = 0;
-			sourceConfiguration.SourceWorkspaceArtifactId = WorkspaceID;
-			return _serializer.Serialize(sourceConfiguration);
+			const string destinationFolderArtifactIdPropertyName = "FolderArtifactId";
+
+			JObject sourceConfiguration = JObject.Parse(sourceConfigurationJson);
+			sourceConfiguration[nameof(SourceConfiguration.SavedSearchArtifactId)] = 0;
+			sourceConfiguration[nameof(SourceConfiguration.SourceWorkspaceArtifactId)] = WorkspaceID;
+			sourceConfiguration[destinationFolderArtifactIdPropertyName] = null;
+			string updatedSourceConfiguration = sourceConfiguration.ToString(Formatting.None);
+			return updatedSourceConfiguration;
+		}
+
+		private string UpdateDestinationConfiguration(string destinationConfigurationJson)
+		{
+			JObject destinationConfiguration = JObject.Parse(destinationConfigurationJson);
+			destinationConfiguration[nameof(ImportSettings.ImagePrecedence)] = null;
+			string updatedDestinationConfiguration = destinationConfiguration.ToString(Formatting.None);
+			return updatedDestinationConfiguration;
 		}
 		
 		private IRelativityObjectManager CreateRelativityObjectManager(int workspaceID) =>
