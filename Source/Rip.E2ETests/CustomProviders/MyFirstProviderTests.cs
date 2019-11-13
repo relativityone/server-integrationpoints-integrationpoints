@@ -31,6 +31,7 @@ namespace Rip.E2ETests.CustomProviders
 		private int _workspaceID;
 		private int _myFirstProviderArtifactID;
 		private int _relativityDestinationProviderArtifactID;
+		private int _targetObjectTypeArtifactID;
 		private int _importIntegrationPointTypeArtifactID;
 		private int _rootFolderID;
 		private int _appendOverlayChoiceArtifactID;
@@ -69,7 +70,7 @@ namespace Rip.E2ETests.CustomProviders
 		public async Task ShouldImportDocumentsUsingMyFirstProvider()
 		{
 			// Arrange
-			MyFirstProviderTestCase testCase = MyFirstProviderTestCaseArranger.GetTestCase(_workspaceID);
+			CustomProviderTestCase testCase = MyFirstProviderTestCaseArranger.GetTestCase(_workspaceID);
 			int integrationPointID = await CreateMyFirstProviderIntegrationPointAsync(testCase).ConfigureAwait(false);
 
 			// Act
@@ -85,22 +86,29 @@ namespace Rip.E2ETests.CustomProviders
 			await AssertDocumentsAreImportedAsync(testCase).ConfigureAwait(false);
 		}
 
-		private async Task<int> CreateMyFirstProviderIntegrationPointAsync(MyFirstProviderTestCase testCase)
+		private async Task<int> CreateMyFirstProviderIntegrationPointAsync(CustomProviderTestCase testCase)
 		{
-			CreateIntegrationPointRequest integrationPointCreateRequest = await BuildCreateIntegrationPointRequestAsync(testCase).ConfigureAwait(false);
+			CreateIntegrationPointRequest integrationPointCreateRequest =
+				await BuildCreateIntegrationPointRequestAsync(testCase).ConfigureAwait(false);
 			return await IntegrationPointsTestHelper
 				.SaveIntegrationPointAsync(
 					TestHelper,
 					_objectManager,
-					integrationPointCreateRequest)
+					integrationPointCreateRequest,
+					testCase)
 				.ConfigureAwait(false);
 		}
 
-		private async Task<CreateIntegrationPointRequest> BuildCreateIntegrationPointRequestAsync(MyFirstProviderTestCase testCase)
+		private async Task<CreateIntegrationPointRequest> BuildCreateIntegrationPointRequestAsync(
+			CustomProviderTestCase testCase)
 		{
+			_targetObjectTypeArtifactID = await ObjectTypeHelper
+				.GetObjectTypeArtifactIdByNameAsync(_objectManager, testCase.TargetRdoArtifactName)
+				.ConfigureAwait(false);
+
 			var destinationConfiguration = new
 			{
-				artifactTypeID = testCase.TargetRdoArtifactID,
+				artifactTypeID = _targetObjectTypeArtifactID,
 				destinationProviderType = CoreConstants.IntegrationPoints.DestinationProviders.RELATIVITY,
 				CaseArtifactId = _workspaceID,
 				DestinationFolderArtifactId = _rootFolderID,
@@ -122,20 +130,20 @@ namespace Rip.E2ETests.CustomProviders
 					SourceConfiguration = testCase.InputFilePath,
 					DestinationConfiguration = destinationConfiguration,
 					OverwriteFieldsChoiceId = _appendOverlayChoiceArtifactID,
-					ScheduleRule = new ScheduleModel { EnableScheduler = false }
+					ScheduleRule = new ScheduleModel {EnableScheduler = false}
 				}
 			};
 			return integrationPointCreateRequest;
 		}
 
-		private async Task<List<FieldMap>> BuildFieldMappingAsync(MyFirstProviderTestCase testCase)
+		private async Task<List<FieldMap>> BuildFieldMappingAsync(CustomProviderTestCase testCase)
 		{
 			Dictionary<string, int> fieldNamesToArtifactIDMapping = await FieldsTestHelper
-							.GetIdentifiersForFieldsAsync(
-								_objectManager,
-								testCase.TargetRdoArtifactID,
-								testCase.WorkspaceFieldsNames)
-							.ConfigureAwait(false);
+				.GetIdentifiersForFieldsAsync(
+					_objectManager,
+					_targetObjectTypeArtifactID,
+					testCase.WorkspaceFieldsNames)
+				.ConfigureAwait(false);
 
 			List<FieldMap> fieldMapping = testCase.WorkspaceFieldsToFileFieldsMapping.Select(mapping => new FieldMap
 			{
@@ -158,16 +166,18 @@ namespace Rip.E2ETests.CustomProviders
 			return fieldMapping;
 		}
 
-		private async Task AssertJobHistoryIsValidAsync(int integrationPointID, MyFirstProviderTestCase testCase)
+		private async Task AssertJobHistoryIsValidAsync(int integrationPointID, CustomProviderTestCase testCase)
 		{
-			JobHistory jobHistory = await JobHistoryTestHelper.GetCompletedJobHistoryAsync(_objectManager, integrationPointID, testCase.MaximumExecutionTime).ConfigureAwait(false);
+			JobHistory jobHistory = await JobHistoryTestHelper
+				.GetCompletedJobHistoryAsync(_objectManager, integrationPointID, testCase.MaximumExecutionTime)
+				.ConfigureAwait(false);
 
 			jobHistory.JobStatus.Name.Should().Be(testCase.ExpectedStatus.Name);
 			jobHistory.ItemsTransferred.Should().Be(testCase.ExpectedItemsTransferred);
 			jobHistory.TotalItems.Should().Be(testCase.ExpectedTotalItems);
 		}
 
-		private async Task AssertDocumentsAreImportedAsync(MyFirstProviderTestCase testCase)
+		private async Task AssertDocumentsAreImportedAsync(CustomProviderTestCase testCase)
 		{
 			IDictionary<string, string> controlNumberToExtractedTextDictionary = await DocumentsTestHelper
 				.GetExtractedTextForDocumentsAsync(
@@ -178,7 +188,8 @@ namespace Rip.E2ETests.CustomProviders
 			foreach (string documentIdentifier in testCase.ExpectedDocumentsIdentifiers)
 			{
 				controlNumberToExtractedTextDictionary.Should().ContainKey(documentIdentifier);
-				string expectedExtractedText = testCase.ExpectedDocumentsIdentifiersToExtractedTextMapping[documentIdentifier];
+				string expectedExtractedText =
+					testCase.ExpectedDocumentsIdentifiersToExtractedTextMapping[documentIdentifier];
 				controlNumberToExtractedTextDictionary[documentIdentifier].Should().Be(expectedExtractedText);
 			}
 		}
@@ -198,21 +209,26 @@ namespace Rip.E2ETests.CustomProviders
 
 		private async Task InitializeMyFirstProviderArtifactIDAsync()
 		{
-			List<SourceProvider> sourceProviders = await _objectManager.QueryAsync<SourceProvider>(new QueryRequest()).ConfigureAwait(false);
-			SourceProvider myFirstProvider = sourceProviders.Single(x => x.Name == CustomProvidersConstants.MY_FIRST_PROVIDER_SOURCE_PROVIDER_NAME);
+			List<SourceProvider> sourceProviders =
+				await _objectManager.QueryAsync<SourceProvider>(new QueryRequest()).ConfigureAwait(false);
+			SourceProvider myFirstProvider = sourceProviders.Single(x =>
+				x.Name == CustomProvidersConstants.MY_FIRST_PROVIDER_SOURCE_PROVIDER_NAME);
 			_myFirstProviderArtifactID = myFirstProvider.ArtifactId;
 		}
 
 		private async Task InitializeRelativityDestinationProviderArtifactIDAsync()
 		{
-			List<DestinationProvider> destinationProviders = await _objectManager.QueryAsync<DestinationProvider>(new QueryRequest()).ConfigureAwait(false);
-			DestinationProvider relativityDestinationProvider = destinationProviders.Single(x => x.Name == "Relativity");
+			List<DestinationProvider> destinationProviders =
+				await _objectManager.QueryAsync<DestinationProvider>(new QueryRequest()).ConfigureAwait(false);
+			DestinationProvider relativityDestinationProvider =
+				destinationProviders.Single(x => x.Name == "Relativity");
 			_relativityDestinationProviderArtifactID = relativityDestinationProvider.ArtifactId;
 		}
 
 		private async Task InitializeImportIntegrationPointTypeArtifatIDAsync()
 		{
-			List<IntegrationPointType> integrationPointTypes = await _objectManager.QueryAsync<IntegrationPointType>(new QueryRequest()).ConfigureAwait(false);
+			List<IntegrationPointType> integrationPointTypes =
+				await _objectManager.QueryAsync<IntegrationPointType>(new QueryRequest()).ConfigureAwait(false);
 			IntegrationPointType importIntegrationPointType = integrationPointTypes.Single(x => x.Name == "Import");
 			_importIntegrationPointTypeArtifactID = importIntegrationPointType.ArtifactId;
 		}
@@ -240,12 +256,15 @@ namespace Rip.E2ETests.CustomProviders
 		private async Task CreateWorkspaceWithMyFirstProviderAsync()
 		{
 			string workspaceName = nameof(MyFirstProviderTests);
-			_workspaceID = await Workspace.CreateWorkspaceAsync(workspaceName, _WORKSPACE_TEMPLATE_WITHOUT_RIP).ConfigureAwait(false);
+			_workspaceID = await Workspace.CreateWorkspaceAsync(workspaceName, _WORKSPACE_TEMPLATE_WITHOUT_RIP)
+				.ConfigureAwait(false);
 
 			Task importingMyFirstProviderToLibraryTask = ImportMyFirstProviderToLibraryAsync();
 			await ApplicationManager.InstallRipFromLibraryAsync(_workspaceID).ConfigureAwait(false);
 			await importingMyFirstProviderToLibraryTask.ConfigureAwait(false);
-			await ApplicationManager.InstallApplicationFromLibraryAsync(_workspaceID, CustomProvidersConstants.MyFirstProviderGuid).ConfigureAwait(false);
+			await ApplicationManager
+				.InstallApplicationFromLibraryAsync(_workspaceID, CustomProvidersConstants.MyFirstProviderGuid)
+				.ConfigureAwait(false);
 		}
 
 		private Task ImportMyFirstProviderToLibraryAsync()

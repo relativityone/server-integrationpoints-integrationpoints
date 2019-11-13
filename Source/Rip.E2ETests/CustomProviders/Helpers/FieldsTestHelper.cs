@@ -10,8 +10,8 @@ namespace Rip.E2ETests.CustomProviders.Helpers
 	internal static class FieldsTestHelper
 	{
 		public static async Task<Dictionary<string, int>> GetIdentifiersForFieldsAsync(
-			IRelativityObjectManager objectManager, 
-			int targetRdoArtifactID, 
+			IRelativityObjectManager objectManager,
+			int targetRdoArtifactID,
 			IEnumerable<string> fieldNames)
 		{
 			IEnumerable<string> escapedFieldNames = fieldNames.Select(x => $"'{x}'");
@@ -19,7 +19,7 @@ namespace Rip.E2ETests.CustomProviders.Helpers
 
 			var queryRequest = new QueryRequest
 			{
-				ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Field },
+				ObjectType = new ObjectTypeRef {ArtifactTypeID = (int) ArtifactType.Field},
 				Fields = new[]
 				{
 					new FieldRef
@@ -27,7 +27,8 @@ namespace Rip.E2ETests.CustomProviders.Helpers
 						Name = "Name"
 					}
 				},
-				Condition = $"'Object Type Artifact Type Id' == OBJECT {targetRdoArtifactID} AND 'Name' IN [{fieldNamesList}]"
+				Condition =
+					$"'Object Type Artifact Type Id' == OBJECT {targetRdoArtifactID} AND 'Name' IN [{fieldNamesList}]"
 			};
 			List<RelativityObject> fields = await objectManager.QueryAsync(queryRequest).ConfigureAwait(false);
 

@@ -28,9 +28,6 @@ namespace Rip.E2ETests.Installation
 
 		private readonly string[] _ripInternalSourceProviders = { "LDAP", "FTP (CSV File)", "Load File", "Relativity" };
 		private readonly string[] _ripInternalDestinationProviders = { "Relativity", "Load File" };
-		private const string _JSON_LOADER_SOURCE_PROVIDER_NAME = "JSON";
-		private static Guid _JsonLoaderGuid => Guid.Parse("57151c17-cd92-4a6e-800c-a75bf807d097");
-
 		private const string _WORKSPACE_TEMPLATE_WITHOUT_RIP = WorkspaceTemplateNames.NEW_CASE_TEMPLATE_NAME;
 		private readonly string _mainWorkspaceName = $"RipInstallTest{Guid.NewGuid()}";
 
@@ -115,13 +112,13 @@ namespace Rip.E2ETests.Installation
 			int mainWorkspaceID = ValidateAndGetMainWorkspaceID();
 
 			// act
-			await ApplicationManager.InstallApplicationFromLibraryAsync(mainWorkspaceID, _JsonLoaderGuid).ConfigureAwait(false);
+			await ApplicationManager.InstallApplicationFromLibraryAsync(mainWorkspaceID, CustomProvidersConstants.JsonLoaderGuid).ConfigureAwait(false);
 
 			// assert
 			IEnumerable<string> expectedCustomSourceProviders = new[]
 			{
 				CustomProvidersConstants.MY_FIRST_PROVIDER_SOURCE_PROVIDER_NAME,
-				_JSON_LOADER_SOURCE_PROVIDER_NAME
+				CustomProvidersConstants.JSON_LOADER_SOURCE_PROVIDER_NAME
 			};
 			IEnumerable<string> expectedSourceProviders = _ripInternalSourceProviders.Concat(expectedCustomSourceProviders);
 			VerifyRipIsInstalledCorrectlyInWorkspace(mainWorkspaceID, expectedSourceProviders);
@@ -142,7 +139,7 @@ namespace Rip.E2ETests.Installation
 			IEnumerable<string> expectedCustomSourceProviders = new[]
 			{
 				CustomProvidersConstants.MY_FIRST_PROVIDER_SOURCE_PROVIDER_NAME,
-				_JSON_LOADER_SOURCE_PROVIDER_NAME
+				CustomProvidersConstants.JSON_LOADER_SOURCE_PROVIDER_NAME
 			};
 			IEnumerable<string> expectedSourceProviders = _ripInternalSourceProviders.Concat(expectedCustomSourceProviders);
 			VerifyRipIsInstalledCorrectlyInWorkspace(workspaceID, expectedSourceProviders);

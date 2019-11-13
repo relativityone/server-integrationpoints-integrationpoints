@@ -13,8 +13,7 @@ namespace Rip.E2ETests.CustomProviders.Helpers
 			IRelativityObjectManager objectManager,
 			IEnumerable<string> identifiers)
 		{
-			IEnumerable<string> escapedIdentifiers = identifiers.Select(identifier => $"'{identifier}'");
-			string joinedIdentifiers = string.Join(",", escapedIdentifiers);
+			string joinedIdentifiers = JoinQuotedIdentifiers(identifiers);
 
 			var queryRequest = new QueryRequest
 			{
@@ -40,13 +39,53 @@ namespace Rip.E2ETests.CustomProviders.Helpers
 				.QueryAsync(queryRequest)
 				.ConfigureAwait(false);
 
-			return documents
-				.Select(document => new
+			return documents.ToDictionary(
+				document => document.FieldValues.GetTextFieldValue("Control Number"),
+				document => document.FieldValues.GetTextFieldValue("Extracted Text")
+			);
+		}
+
+		public static async Task<Dictionary<string, string>> GetSampleTextForJsonObjectsAsync(
+			IRelativityObjectManager objectManager,
+			int targetObjectTypeArtifactID,
+			IEnumerable<string> identifiers)
+		{
+			string joinedIdentifiers = JoinQuotedIdentifiers(identifiers);
+
+			var queryRequest = new QueryRequest
+			{
+				ObjectType = new ObjectTypeRef
 				{
-					ControlNumber = document.FieldValues.GetTextFieldValue("Control Number"),
-					ExtractedText = document.FieldValues.GetTextFieldValue("Extracted Text")
-				})
-				.ToDictionary(x => x.ControlNumber, x => x.ExtractedText);
+					ArtifactTypeID = targetObjectTypeArtifactID
+				},
+				Condition = $"'Name' IN [{joinedIdentifiers}]",
+				Fields = new[]
+				{
+					new FieldRef
+					{
+						Name = "Name"
+					},
+					new FieldRef
+					{
+						Name = "Sample Text Field"
+					}
+				}
+			};
+
+			List<RelativityObject> documents = await objectManager
+				.QueryAsync(queryRequest)
+				.ConfigureAwait(false);
+
+			return documents.ToDictionary(
+				document => document.FieldValues.GetTextFieldValue("Name"),
+				document => document.FieldValues.GetTextFieldValue("Sample Text Field")
+			);
+		}
+
+		private static string JoinQuotedIdentifiers(IEnumerable<string> identifiers)
+		{
+			IEnumerable<string> quotedIdentifiers = identifiers.Select(identifier => $"'{identifier}'");
+			return string.Join(",", quotedIdentifiers);
 		}
 	}
 }

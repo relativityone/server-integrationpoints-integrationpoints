@@ -6,5 +6,7 @@ namespace Rip.E2ETests.Constants
 	{
 		public const string MY_FIRST_PROVIDER_SOURCE_PROVIDER_NAME = "My First Provider";
 		public static Guid MyFirstProviderGuid => Guid.Parse("616c3c78-aa2c-46b9-b81c-21be354f323d");
+		public const string JSON_LOADER_SOURCE_PROVIDER_NAME = "JSON";
+		public static Guid JsonLoaderGuid => Guid.Parse("57151c17-cd92-4a6e-800c-a75bf807d097");
 	}
 }

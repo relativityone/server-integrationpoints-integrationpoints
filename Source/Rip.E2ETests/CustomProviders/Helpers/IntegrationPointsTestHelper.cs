@@ -5,6 +5,8 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using Relativity.IntegrationPoints.Services;
 using Relativity.Services.Objects.DataContracts;
+using Rip.E2ETests.Constants;
+using Rip.E2ETests.CustomProviders.TestCases;
 
 namespace Rip.E2ETests.CustomProviders.Helpers
 {
@@ -13,7 +15,8 @@ namespace Rip.E2ETests.CustomProviders.Helpers
 		public static async Task<int> SaveIntegrationPointAsync(
 			ITestHelper testHelper,
 			IRelativityObjectManager objectManager,
-			CreateIntegrationPointRequest integrationPointCreateRequest)
+			CreateIntegrationPointRequest integrationPointCreateRequest,
+			CustomProviderTestCase testCase)
 		{
 			IntegrationPointModel createdIntegrationPoint;
 			using (var integrationPointManager = testHelper.CreateProxy<IIntegrationPointManager>())
@@ -23,21 +26,23 @@ namespace Rip.E2ETests.CustomProviders.Helpers
 					.ConfigureAwait(false);
 			}
 
-			// workaround for serialization issue
-			var fieldsToUpdate = new List<FieldRefValuePair>
+			//workaround for serialization issue
+			if (testCase.CustomProviderName == CustomProvidersConstants.MY_FIRST_PROVIDER_SOURCE_PROVIDER_NAME)
 			{
-				new FieldRefValuePair
+				var fieldsToUpdate = new List<FieldRefValuePair>
 				{
-					Field = new FieldRef
+					new FieldRefValuePair
 					{
-						Guid = IntegrationPointFieldGuids.SourceConfigurationGuid
-					},
-					Value = integrationPointCreateRequest.IntegrationPoint.SourceConfiguration
-				}
-			};
+						Field = new FieldRef
+						{
+							Guid = IntegrationPointFieldGuids.SourceConfigurationGuid
+						},
+						Value = integrationPointCreateRequest.IntegrationPoint.SourceConfiguration
+					}
+				};
 
-			objectManager.Update(createdIntegrationPoint.ArtifactId, fieldsToUpdate);
-
+				objectManager.Update(createdIntegrationPoint.ArtifactId, fieldsToUpdate);
+			}
 
 			return createdIntegrationPoint.ArtifactId;
 		}

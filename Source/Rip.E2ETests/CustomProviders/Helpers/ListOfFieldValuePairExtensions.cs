@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Relativity.Services.Objects.DataContracts;
 
@@ -10,5 +11,10 @@ namespace Rip.E2ETests.CustomProviders.Helpers
 			=> fieldValues
 				.Single(fieldValuePair => fieldValuePair.Field.Name == fieldName)
 				.Value as string;
+
+		public static int GetNumericFieldValue(this IEnumerable<FieldValuePair> fieldValues, string fieldName)
+			=> (int) fieldValues
+				.Single(fieldValuePair => fieldValuePair.Field.Name == fieldName)
+				.Value;
 	}
 }

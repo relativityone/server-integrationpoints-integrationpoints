@@ -42,6 +42,7 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Constants\CustomProvidersConstants.cs" />
+    <Compile Include="CustomProviders\Arrangers\JsonLoaderTestCaseArranger.cs" />
     <Compile Include="CustomProviders\Arrangers\MyFirstProviderTestCaseArranger.cs" />
     <Compile Include="CustomProviders\Helpers\ChoiceTestHelper.cs" />
     <Compile Include="CustomProviders\Helpers\DataTransferDirectoryTestHelper.cs" />
@@ -49,10 +50,14 @@
     <Compile Include="CustomProviders\Helpers\FieldsTestHelper.cs" />
     <Compile Include="CustomProviders\Helpers\IntegrationPointsTestHelper.cs" />
     <Compile Include="CustomProviders\Helpers\JobHistoryTestHelper.cs" />
+    <Compile Include="CustomProviders\Helpers\JsonLoaderData.cs" />
     <Compile Include="CustomProviders\Helpers\ListOfFieldValuePairExtensions.cs" />
+    <Compile Include="CustomProviders\Helpers\JsonLoaderInputFileParser.cs" />
     <Compile Include="CustomProviders\Helpers\MyFirstProviderInputFileParser.cs" />
+    <Compile Include="CustomProviders\Helpers\ObjectTypeHelper.cs" />
+    <Compile Include="CustomProviders\JsonLoaderTests.cs" />
     <Compile Include="CustomProviders\MyFirstProviderTests.cs" />
-    <Compile Include="CustomProviders\TestCases\MyFirstProviderTestCase.cs" />
+    <Compile Include="CustomProviders\TestCases\CustomProviderTestCase.cs" />
     <Compile Include="Installation\RipInstallationTests.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -61,6 +66,12 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="E2ETestData\JsonLoaderData.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="E2ETestData\JsonLoaderFields.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
