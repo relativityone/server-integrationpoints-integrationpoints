@@ -9,7 +9,7 @@ using Relativity.API;
 namespace kCura.IntegrationPoints.RelativitySync.Tests.OldBatchesCleanup
 {
 	[TestFixture]
-	public class SimpleServiceFactoryForAdminTests
+	public class ServiceFactoryForAdminTests
 	{
 		private ServiceFactoryForAdmin _sut;
 		private Mock<IServicesMgr> _servicesMgrFake;
@@ -24,19 +24,12 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.OldBatchesCleanup
 		[Test]
 		public async Task CreateProxyAsync_ItShouldCreateProxy_WhenClassImplementsIDisposable()
 		{
-			ClassImplementsIDisposable classImplementsIDisposable = new ClassImplementsIDisposable();
-			_servicesMgrFake.Setup(x => x.CreateProxy<IDisposable>(ExecutionIdentity.System)).Returns(classImplementsIDisposable);
+			Mock<IDisposable> disposableObject = new Mock<IDisposable>();
+			_servicesMgrFake.Setup(x => x.CreateProxy<IDisposable>(ExecutionIdentity.System)).Returns(disposableObject.Object);
 
 			var result = await _sut.CreateProxyAsync<IDisposable>().ConfigureAwait(false);
 
-			result.Should().Be(classImplementsIDisposable);
-		}
-
-		private class ClassImplementsIDisposable : IDisposable
-		{
-			public void Dispose()
-			{
-			}
+			result.Should().Be(disposableObject.Object);
 		}
 	}
 }
