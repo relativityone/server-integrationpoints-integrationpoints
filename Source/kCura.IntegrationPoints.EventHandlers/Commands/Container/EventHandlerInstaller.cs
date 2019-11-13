@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using Castle.MicroKernel.Registration;
-using Castle.MicroKernel.Resolvers;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Common.Context;
@@ -13,8 +12,6 @@ using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.Logging;
-using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.EventHandlers.Commands.Context;
@@ -25,6 +22,7 @@ using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factories;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Validators;
+using kCura.IntegrationPoints.RelativitySync.OldBatchesCleanup;
 using kCura.IntegrationPoints.Security;
 using kCura.Relativity.Client;
 using Relativity.API;
@@ -118,6 +116,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
 			container.Register(Component.For<IArtifactsToDelete>().ImplementedBy<ArtifactsToDelete>().LifestyleTransient());
 			container.Register(Component.For<RenameCustodianToEntityInIntegrationPointConfigurationCommand>().ImplementedBy<RenameCustodianToEntityInIntegrationPointConfigurationCommand>().LifestyleTransient());
 			container.Register(Component.For<MigrateSecretCatalogPathToSecretStorePathCommand>().ImplementedBy<MigrateSecretCatalogPathToSecretStorePathCommand>().LifestyleTransient());
+
+			container.Register(Component.For<IOldBatchesCleanupServiceFactory>().ImplementedBy<OldBatchesCleanupServiceFactory>().LifestyleTransient());
+			container.Register(Component.For<IOldBatchesCleanupService>().UsingFactoryMethod(c => c.Resolve<IOldBatchesCleanupServiceFactory>().Create()).LifestyleTransient());
+			container.Register(Component.For<RemoveBatchesFromOldJobsCommand>().ImplementedBy<RemoveBatchesFromOldJobsCommand>().LifestyleTransient());
 
 			container.AddSecretStoreMigrator();
 		}
