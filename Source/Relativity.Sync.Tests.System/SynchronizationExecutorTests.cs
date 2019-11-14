@@ -28,6 +28,9 @@ namespace Relativity.Sync.Tests.System
 		private static readonly Guid JobHistoryErrorObject = new Guid("17E7912D-4F57-4890-9A37-ABC2B8A37BDB");
 		private static readonly Guid ErrorMessageField = new Guid("4112B894-35B0-4E53-AB99-C9036D08269D");
 		private static readonly Guid StackTraceField = new Guid("0353DBDE-9E00-4227-8A8F-4380A8891CFF");
+		private static readonly Guid BatchObject = new Guid("18C766EB-EB71-49E4-983E-FFDE29B1A44E");
+		private static readonly Guid TransferredItemsCountField = new Guid("B2D112CA-E81E-42C7-A6B2-C0E89F32F567");
+		private static readonly Guid SyncConfigurationRelation = new Guid("F673E67F-E606-4155-8E15-CA1C83931E16");
 
 		[IdentifiedTest("f9311c70-7094-4bed-a66e-90b1313fcd47")]
 		[TestCase(1000,1)]
@@ -126,8 +129,9 @@ namespace Relativity.Sync.Tests.System
 			ExecutionResult syncResult = await syncExecutor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			Assert.AreEqual(ExecutionStatus.Completed, syncResult.Status,
-				await AggregateJobHistoryErrorMessagesAsync(sourceWorkspaceArtifactId, jobHistoryArtifactId, syncResult).ConfigureAwait(false));
+			Assert.AreEqual(ExecutionStatus.Completed, syncResult.Status, await AggregateJobHistoryErrorMessagesAsync(sourceWorkspaceArtifactId, jobHistoryArtifactId, syncResult).ConfigureAwait(false));
+
+			Assert.AreEqual(dataTableWrapper.Data.Rows.Count, await GetBatchesTransferredItemsCountAsync(sourceWorkspaceArtifactId, syncConfigurationArtifactId).ConfigureAwait(false));
 		}
 
 		private async Task<int> CreateWorkspaceAsync(string workspaceName)
@@ -179,6 +183,55 @@ namespace Relativity.Sync.Tests.System
 
 				return results.SelectMany(x => x.Objects);
 			}
+		}
+
+		private async Task<int> GetBatchesTransferredItemsCountAsync(int workspaceArtifactId, int syncConfigurationArtifactId)
+		{
+			int batchesTransferredItemsCount = 0;
+
+			var serviceFactory = new ServiceFactoryStub(ServiceFactory);
+
+			using (IObjectManager objectManager = await serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			{
+				var batchesArtifactsIdsQueryRequest = new QueryRequest
+				{
+					ObjectType = new ObjectTypeRef
+					{
+						Guid = BatchObject
+					},
+					Condition = $"'{SyncConfigurationRelation}' == OBJECT {syncConfigurationArtifactId}"
+				};
+
+				QueryResultSlim batchesArtifactsIdsQueryResult = await objectManager.QuerySlimAsync(workspaceArtifactId, batchesArtifactsIdsQueryRequest, start: 1, length: int.MaxValue).ConfigureAwait(false);
+				if (batchesArtifactsIdsQueryResult.TotalCount > 0)
+				{
+					IEnumerable<int> batchesArtifactsIds = batchesArtifactsIdsQueryResult.Objects.Select(x => x.ArtifactID);
+
+					foreach(int batchArtifactId in batchesArtifactsIds)
+					{
+						QueryRequest transferredItemsCountQueryRequest = new QueryRequest
+						{
+							ObjectType = new ObjectTypeRef
+							{
+								Guid = BatchObject
+							},
+							Fields = new[]
+							{
+								new FieldRef
+								{
+									Guid = TransferredItemsCountField
+								}
+							},
+							Condition = $"'ArtifactID' == {batchArtifactId}"
+						};
+						QueryResult transferredItemsCountQueryResult = await objectManager.QueryAsync(workspaceArtifactId, transferredItemsCountQueryRequest, start: 0, length: 1).ConfigureAwait(false);
+
+						batchesTransferredItemsCount += (int) (transferredItemsCountQueryResult.Objects.Single()[TransferredItemsCountField].Value ?? default(int));
+					};
+				}
+			}
+
+			return batchesTransferredItemsCount;
 		}
 	}
 }

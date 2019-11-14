@@ -28,7 +28,6 @@
 			TotalItems = totalItems;
 		}
 
-
 		public int ItemsProcessed
 		{
 			get => _itemsProcessed;
@@ -43,9 +42,6 @@
 				}
 			}
 		}
-
-
-		
 
 		public int ItemsFailed
 		{
@@ -72,6 +68,7 @@
 		}
 
 		public int BatchId { get; }
+
 		public int TotalItems { get; }
 	}
 }
