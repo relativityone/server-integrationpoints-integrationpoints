@@ -4,7 +4,7 @@ source https://proget.kcura.corp/nuget/NuGet
 
 nuget Relativity ~> 11.0.0
 nuget Relativity.API 12.0.1
-nuget Relativity.DataExchange.Client.SDK 1.7.2
+nuget Relativity.DataExchange.Client.SDK 1.7.4
 nuget relativity.transfer.client ~> 6.3
 nuget Relativity.Kepler 2.2.2
 nuget Relativity.Kepler.Client 2.2.2
