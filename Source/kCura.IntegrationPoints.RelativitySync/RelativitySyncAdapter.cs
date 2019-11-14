@@ -4,12 +4,10 @@ using System.Threading.Tasks;
 using Autofac;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
-using kCura.IntegrationPoints.RelativitySync.Adapters;
 using kCura.ScheduleQueue.Core;
 using kCura.WinEDDS.Service.Export;
 using Relativity.API;
 using Relativity.Sync;
-using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Telemetry.APM;
 
@@ -42,7 +40,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			try
 			{
 				CancellationToken cancellationToken = CancellationAdapter.GetCancellationToken(_job, _ripContainer);
-				SyncConfiguration syncConfiguration = SyncConfigurationFactory.Create(_job, _ripContainer, _logger);
+				SyncConfiguration syncConfiguration = new SyncConfiguration(_job.SubmittedById);
 				using (IContainer container = InitializeSyncContainer(syncConfiguration))
 				{
 					metrics.MarkStartTime();
@@ -197,18 +195,6 @@ namespace kCura.IntegrationPoints.RelativitySync
 			_ripContainer.Register(Component.For<SyncConfiguration>().Instance(syncConfiguration));
 
 			containerBuilder.RegisterInstance(syncConfiguration).AsImplementedInterfaces().SingleInstance();
-
-			containerBuilder.RegisterType<DataDestinationFinalization>()
-				.As<IExecutor<IDataDestinationFinalizationConfiguration>>()
-				.As<IExecutionConstrains<IDataDestinationFinalizationConfiguration>>();
-
-			containerBuilder.RegisterType<DataDestinationInitialization>()
-				.As<IExecutor<IDataDestinationInitializationConfiguration>>()
-				.As<IExecutionConstrains<IDataDestinationInitializationConfiguration>>();
-
-			containerBuilder.RegisterType<JobStatusConsolidation>()
-				.As<IExecutor<IJobStatusConsolidationConfiguration>>()
-				.As<IExecutionConstrains<IJobStatusConsolidationConfiguration>>();
 
 			IContainer container = containerBuilder.Build();
 			return container;
