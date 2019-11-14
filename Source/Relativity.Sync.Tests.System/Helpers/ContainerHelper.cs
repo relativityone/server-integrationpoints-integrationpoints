@@ -3,8 +3,6 @@ using System.Net;
 using Autofac;
 using kCura.WinEDDS.Service;
 using kCura.WinEDDS.Service.Export;
-using Moq;
-using Relativity.Sync.Configuration;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Stubs;
 using Relativity.Telemetry.APM;
@@ -18,7 +16,8 @@ namespace Relativity.Sync.Tests.System.Helpers
 			ContainerBuilder containerBuilder = new ContainerBuilder();
 
 			ContainerFactory factory = new ContainerFactory();
-			SyncJobParameters syncParameters = new SyncJobParameters(configuration.SyncConfigurationArtifactId, configuration.SourceWorkspaceArtifactId);
+			SyncJobParameters syncParameters = new SyncJobParameters(configuration.SyncConfigurationArtifactId, configuration.SourceWorkspaceArtifactId,
+				configuration.IntegrationPointArtifactId, configuration.JobHistoryArtifactId);
 
 			IAPM apm = new NullAPM();
 			Func<ISearchManager> searchManagerFactory = () => new SearchManager(new NetworkCredential(AppSettings.RelativityUserName, AppSettings.RelativityUserPassword),

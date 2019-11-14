@@ -87,7 +87,7 @@ namespace Relativity.Sync.Tests.System
 				syncConfigurationArtifactId = result.Object.ArtifactID;
 			}
 
-			SyncJobParameters jobParameters = new SyncJobParameters(syncConfigurationArtifactId, _workspaceId);
+			SyncJobParameters jobParameters = new SyncJobParameters(syncConfigurationArtifactId, _workspaceId, int.MaxValue, _jobHistoryArtifactId);
 			Storage.IConfiguration configuration = await Storage.Configuration
 				.GetAsync(_serviceFactory, jobParameters, new EmptyLogger(), new SemaphoreSlimWrapper(new SemaphoreSlim(1))).ConfigureAwait(false);
 
@@ -144,7 +144,7 @@ namespace Relativity.Sync.Tests.System
 				syncConfigurationArtifactId = result.Object.ArtifactID;
 			}
 
-			SyncJobParameters jobParameters = new SyncJobParameters(syncConfigurationArtifactId, _workspaceId);
+			SyncJobParameters jobParameters = new SyncJobParameters(syncConfigurationArtifactId, _workspaceId, int.MaxValue, _jobHistoryArtifactId);
 			Storage.IConfiguration configuration = await Storage.Configuration
 				.GetAsync(_serviceFactory, jobParameters, new EmptyLogger(), new SemaphoreSlimWrapper(new SemaphoreSlim(1))).ConfigureAwait(false);
 
