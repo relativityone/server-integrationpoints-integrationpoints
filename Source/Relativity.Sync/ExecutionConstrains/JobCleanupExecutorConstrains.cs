@@ -8,7 +8,7 @@ namespace Relativity.Sync.ExecutionConstrains
 	{
 		public Task<bool> CanExecuteAsync(IJobCleanupConfiguration configuration, CancellationToken token)
 		{
-			bool canExecute = configuration.SynchronizationExecutionResult.Status == ExecutionStatus.Completed;
+			bool canExecute = configuration.SynchronizationExecutionResult?.Status == ExecutionStatus.Completed;
 			return Task.FromResult(canExecute);
 		}
 	}

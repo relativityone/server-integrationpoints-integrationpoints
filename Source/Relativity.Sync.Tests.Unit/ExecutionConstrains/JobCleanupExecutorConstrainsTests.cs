@@ -81,5 +81,17 @@ namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
 			// assert
 			canExecute.Should().Be(false);
 		}
+
+		[Test]
+		public async Task CanExecute_ShouldReturnFalse_WhenSynchronizationExecutionResultIsNull()
+		{
+			_fakeConfiguration.SetupGet(x => x.SynchronizationExecutionResult).Returns((ExecutionResult) null);
+
+			// act
+			bool canExecute = await _sut.CanExecuteAsync(_fakeConfiguration.Object, CancellationToken.None).ConfigureAwait(false);
+
+			// assert
+			canExecute.Should().Be(false);
+		}
 	}
 }
