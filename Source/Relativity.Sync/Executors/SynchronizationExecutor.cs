@@ -96,6 +96,9 @@ namespace Relativity.Sync.Executors
 									configuration, pushedDocumentIdentifiers, token);
 							sourceTaggingTasks.Add(sourceTaggingResult);
 
+							await batch.SetFailedItemsCountAsync(progressHandler.GetBatchItemsFailedCount(batchId)).ConfigureAwait(false);
+							await batch.SetTransferredItemsCountAsync(progressHandler.GetBatchItemsProcessedCount(batchId)).ConfigureAwait(false);
+
 							if (importJobResult.ExecutionResult.Status == ExecutionStatus.Failed)
 							{
 								_logger.LogError(importJobResult.ExecutionResult.Exception,
