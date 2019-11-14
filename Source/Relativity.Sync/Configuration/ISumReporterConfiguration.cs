@@ -2,6 +2,5 @@
 {
 	internal interface ISumReporterConfiguration : IConfiguration
 	{
-		string WorkflowId { get; }
 	}
 }

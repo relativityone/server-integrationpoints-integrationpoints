@@ -22,14 +22,14 @@ namespace Relativity.Sync.KeplerFactory
 		private const string _EXCEPTION_METRIC_NAME = "KeplerException";
 
 		private readonly ISyncMetrics _syncMetrics;
-		private readonly IStopwatch _stopwatch;
-		private readonly ISyncLog _logger;
+		private readonly Func<IStopwatch> _stopwatch;
 		private readonly Func<Task<TService>> _keplerServiceFactory;
+		private readonly ISyncLog _logger;
 		private readonly System.Reflection.FieldInfo _currentInterceptorIndexField;
 
 		private static readonly MethodInfo _handleAsyncMethodInfo = typeof(KeplerServiceInterceptor<TService>).GetMethod(nameof(HandleAsyncWithResult), BindingFlags.Instance | BindingFlags.NonPublic);
 
-		public KeplerServiceInterceptor(ISyncMetrics syncMetrics, IStopwatch stopwatch, Func<Task<TService>> keplerServiceFactory, ISyncLog logger)
+		public KeplerServiceInterceptor(ISyncMetrics syncMetrics, Func<IStopwatch> stopwatch, Func<Task<TService>> keplerServiceFactory, ISyncLog logger)
 		{
 			_syncMetrics = syncMetrics;
 			_stopwatch = stopwatch;
@@ -80,7 +80,8 @@ namespace Relativity.Sync.KeplerFactory
 			Exception exception = null;
 			int httpRetries = 0;
 			int authTokenRetries = 0;
-			_stopwatch.Start();
+			IStopwatch stopwatch = _stopwatch();
+			stopwatch.Start();
 
 			try
 			{
@@ -140,10 +141,10 @@ namespace Relativity.Sync.KeplerFactory
 			}
 			finally
 			{
-				_stopwatch.Stop();
+				stopwatch.Stop();
 				try
 				{
-					_syncMetrics.TimedOperation(GetMetricName(invocation), _stopwatch.Elapsed, status, CreateCustomData(httpRetries, authTokenRetries, exception));
+					_syncMetrics.TimedOperation(GetMetricName(invocation), stopwatch.Elapsed, status, CreateCustomData(httpRetries, authTokenRetries, exception));
 				}
 				catch (Exception e)
 				{

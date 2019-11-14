@@ -9,7 +9,6 @@ using NUnit.Framework;
 using Relativity.Kepler.Transport;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
@@ -37,7 +36,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			_testFieldGuid = Guid.NewGuid();
 			_syncLog = new EmptyLogger();
-			_syncJobParameters = new SyncJobParameters(_TEST_CONFIG_ARTIFACT_ID, _TEST_WORKSPACE_ID);
+			_syncJobParameters = new SyncJobParameters(_TEST_CONFIG_ARTIFACT_ID, _TEST_WORKSPACE_ID, 1, 1);
 		}
 
 		[SetUp]

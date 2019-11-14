@@ -2,7 +2,6 @@
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Sync.Configuration;
 using Relativity.Sync.Telemetry;
 using Relativity.Telemetry.Services.Metrics;
 
@@ -20,7 +19,6 @@ namespace Relativity.Sync.Tests.Unit
 		private Metric[] _expectedMetrics;
 
 		private const int _GAUGE_VALUE = 123;
-		private const string _CORRELATION_ID = "foobar";
 		private const string _UNIT_OF_MEASURE = "docs";
 		private const string _WORKFLOW_ID = "Sync_101654_102985";
 
@@ -31,12 +29,12 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			_expectedMetrics = new[]
 			{
-				Metric.TimedOperation("Test1", _timeSpan, ExecutionStatus.Canceled, _CORRELATION_ID),
-				Metric.CountOperation("Test2", ExecutionStatus.Completed, _CORRELATION_ID),
-				Metric.GaugeOperation("Test3", ExecutionStatus.Failed, _CORRELATION_ID, _GAUGE_VALUE, _UNIT_OF_MEASURE),
-				Metric.PointInTimeStringOperation("Test.String", "Sync", _WORKFLOW_ID, _CORRELATION_ID),
-				Metric.PointInTimeLongOperation("Test.Long", long.MaxValue, _WORKFLOW_ID, _CORRELATION_ID),
-				Metric.PointInTimeDoubleOperation("Test.Double", double.MaxValue, _WORKFLOW_ID, _CORRELATION_ID)
+				Metric.TimedOperation("Test1", _timeSpan, ExecutionStatus.Canceled, _WORKFLOW_ID),
+				Metric.CountOperation("Test2", ExecutionStatus.Completed, _WORKFLOW_ID),
+				Metric.GaugeOperation("Test3", ExecutionStatus.Failed, _WORKFLOW_ID, _GAUGE_VALUE, _UNIT_OF_MEASURE),
+				Metric.PointInTimeStringOperation("Test.String", "Sync", _WORKFLOW_ID),
+				Metric.PointInTimeLongOperation("Test.Long", long.MaxValue, _WORKFLOW_ID),
+				Metric.PointInTimeDoubleOperation("Test.Double", double.MaxValue, _WORKFLOW_ID)
 			};
 		}
 
@@ -49,7 +47,7 @@ namespace Relativity.Sync.Tests.Unit
 			_workspaceGuidService = new Mock<IWorkspaceGuidService>();
 			_workspaceGuid = Guid.NewGuid();
 			_workspaceGuidService.Setup(x => x.GetWorkspaceGuidAsync(It.IsAny<int>())).ReturnsAsync(_workspaceGuid);
-			_syncJobParameters = new SyncJobParameters(0, 0);
+			_syncJobParameters = new SyncJobParameters(0, 0, 0, 0);
 
 			_servicesManager.Setup(x => x.CreateProxy<IMetricsManager>(It.IsAny<ExecutionIdentity>()))
 				.Returns(_metricsManager.Object);
@@ -131,21 +129,21 @@ namespace Relativity.Sync.Tests.Unit
 			_metricsManager.Verify(x => x.LogTimerAsDoubleAsync(
 				It.Is<string>(y => y.Equals("Test1", StringComparison.Ordinal)),
 				It.Is<Guid>(y => y.Equals(_workspaceGuid)),
-				It.Is<string>(y => y.Equals(_CORRELATION_ID, StringComparison.Ordinal)),
+				It.Is<string>(y => y.Equals(_WORKFLOW_ID, StringComparison.Ordinal)),
 				It.Is<double>(y => y.Equals(_timeSpan.TotalMilliseconds))
 			), times);
 
 			_metricsManager.Verify(x => x.LogCountAsync(
 				It.Is<string>(y => y.Equals("Test2", StringComparison.Ordinal)),
 				It.Is<Guid>(y => y.Equals(_workspaceGuid)),
-				It.Is<string>(y => y.Equals(_CORRELATION_ID, StringComparison.Ordinal)),
+				It.Is<string>(y => y.Equals(_WORKFLOW_ID, StringComparison.Ordinal)),
 				It.Is<long>(y => y.Equals(1))
 			), times);
 
 			_metricsManager.Verify(x => x.LogGaugeAsync(
 				It.Is<string>(y => y.Equals("Test3", StringComparison.Ordinal)),
 				It.Is<Guid>(y => y.Equals(_workspaceGuid)),
-				It.Is<string>(y => y.Equals(_CORRELATION_ID, StringComparison.Ordinal)),
+				It.Is<string>(y => y.Equals(_WORKFLOW_ID, StringComparison.Ordinal)),
 				It.Is<long>(y => y.Equals(_GAUGE_VALUE))
 			), times);
 

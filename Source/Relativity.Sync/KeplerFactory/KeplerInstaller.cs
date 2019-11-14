@@ -23,7 +23,7 @@ namespace Relativity.Sync.KeplerFactory
 				.As<IDestinationServiceFactoryForAdmin>()
 				.SingleInstance();
 
-			builder.RegisterType<DynamicProxyFactory>().As<IDynamicProxyFactory>();
+			builder.RegisterType<DynamicProxyFactory>().As<IDynamicProxyFactory>().SingleInstance();
 
 			builder.RegisterType<ServiceFactoryFactory>().As<IServiceFactoryFactory>();
 		}

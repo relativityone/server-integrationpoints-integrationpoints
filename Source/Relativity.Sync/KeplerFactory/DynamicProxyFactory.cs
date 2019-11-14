@@ -8,7 +8,7 @@ namespace Relativity.Sync.KeplerFactory
 	internal sealed class DynamicProxyFactory : IDynamicProxyFactory
 	{
 		private readonly ISyncMetrics _syncMetrics;
-		private readonly IStopwatch _stopwatch;
+		private readonly Func<IStopwatch> _stopwatch;
 		private readonly ISyncLog _logger;
 
 		// If you have a long running process and you have to create many dynamic proxies, you should make sure to reuse the same ProxyGenerator instance.
@@ -16,7 +16,7 @@ namespace Relativity.Sync.KeplerFactory
 		// https://github.com/castleproject/Core/blob/master/docs/dynamicproxy.md
 		private static readonly ProxyGenerator _proxyGenerator = new ProxyGenerator();
 
-		public DynamicProxyFactory(ISyncMetrics syncMetrics, IStopwatch stopwatch, ISyncLog logger)
+		public DynamicProxyFactory(ISyncMetrics syncMetrics, Func<IStopwatch> stopwatch, ISyncLog logger)
 		{
 			_syncMetrics = syncMetrics;
 			_stopwatch = stopwatch;

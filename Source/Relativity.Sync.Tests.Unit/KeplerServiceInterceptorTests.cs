@@ -39,14 +39,14 @@ namespace Relativity.Sync.Tests.Unit
 			_stubForInterception = new Mock<IStubForInterception>();
 			_stubForInterceptionFactory = new Mock<Func<Task<IStubForInterception>>>();
 			_stubForInterceptionFactory.Setup(x => x.Invoke()).Returns(Task.FromResult(_stubForInterception.Object));
-
-
+			
 			_syncMetrics = new Mock<ISyncMetrics>();
 
-			Mock<IStopwatch> stopwatch = new Mock<IStopwatch>();
-			stopwatch.Setup(x => x.Elapsed).Returns(_executionTime);
+			Mock<IStopwatch> stopwatchFake = new Mock<IStopwatch>();
+			stopwatchFake.Setup(x => x.Elapsed).Returns(_executionTime);
+			Func<IStopwatch> stopwatchFactory = new Func<IStopwatch>(() => stopwatchFake.Object);
 
-			IDynamicProxyFactory dynamicProxyFactory = new DynamicProxyFactory(_syncMetrics.Object, stopwatch.Object, new EmptyLogger());
+			IDynamicProxyFactory dynamicProxyFactory = new DynamicProxyFactory(_syncMetrics.Object, stopwatchFactory, new EmptyLogger());
 			_instance = dynamicProxyFactory.WrapKeplerService(_stubForInterception.Object, _stubForInterceptionFactory.Object);
 		}
 
@@ -211,9 +211,10 @@ namespace Relativity.Sync.Tests.Unit
 			Mock<IStubForInterception> newService = new Mock<IStubForInterception>();
 			Task<IStubForInterception> ServiceFactory() => Task.FromResult(newService.Object);
 
-			Mock<IStopwatch> stopwatch = new Mock<IStopwatch>();
-			stopwatch.Setup(x => x.Elapsed).Returns(_executionTime);
-			IDynamicProxyFactory dynamicProxyFactory = new DynamicProxyFactory(_syncMetrics.Object, stopwatch.Object, new EmptyLogger());
+			Mock<IStopwatch> stopwatchFake = new Mock<IStopwatch>();
+			stopwatchFake.Setup(x => x.Elapsed).Returns(_executionTime);
+			Func<IStopwatch> stopwatchFactory = new Func<IStopwatch>(() => stopwatchFake.Object);
+			IDynamicProxyFactory dynamicProxyFactory = new DynamicProxyFactory(_syncMetrics.Object, stopwatchFactory, new EmptyLogger());
 			IStubForInterception instance = dynamicProxyFactory.WrapKeplerService(badService.Object, ServiceFactory);
 
 			// ACT

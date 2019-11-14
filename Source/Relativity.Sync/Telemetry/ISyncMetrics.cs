@@ -56,23 +56,20 @@ namespace Relativity.Sync.Telemetry
 		/// </summary>
 		/// <param name="name">Name of the metric.</param>
 		/// <param name="value">The value to report.</param>
-		/// <param name="workflowId">The ID which correlates the metric to a particular workflow.</param>
-		void LogPointInTimeString(string name, string value, string workflowId);
+		void LogPointInTimeString(string name, string value);
 
 		/// <summary>
 		/// Logs a single long metric.
 		/// </summary>
 		/// <param name="name">Name of the metric.</param>
 		/// <param name="value">The value to report.</param>
-		/// <param name="workflowId">The ID which correlates the metric to a particular workflow.</param>
-		void LogPointInTimeLong(string name, long value, string workflowId);
+		void LogPointInTimeLong(string name, long value);
 
 		/// <summary>
 		/// Logs a single double metric.
 		/// </summary>
 		/// <param name="name">Name of the metric.</param>
 		/// <param name="value">The value to report.</param>
-		/// <param name="workflowId">The ID which correlates the metric to a particular workflow.</param>
-		void LogPointInTimeDouble(string name, double value, string workflowId);
+		void LogPointInTimeDouble(string name, double value);
 	}
 }

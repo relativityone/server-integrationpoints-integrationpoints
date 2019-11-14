@@ -7,6 +7,7 @@ using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.SumReporting;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Transfer;
@@ -30,10 +31,9 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			Mock<IJobEndMetricsConfiguration> jobEndMetricsConfiguration = new Mock<IJobEndMetricsConfiguration>(MockBehavior.Loose);
 			_fieldManager = new Mock<IFieldManager>();
 			_syncMetrics = new Mock<ISyncMetrics>();
-			Mock<ISyncLog> logger = new Mock<ISyncLog>();
 			_jobStatisticsContainer = new Mock<IJobStatisticsContainer>();
 
-			_instance = new JobEndMetricsService(_batchRepository.Object, jobEndMetricsConfiguration.Object, _fieldManager.Object, _jobStatisticsContainer.Object, _syncMetrics.Object, logger.Object);
+			_instance = new JobEndMetricsService(_batchRepository.Object, jobEndMetricsConfiguration.Object, _fieldManager.Object, _jobStatisticsContainer.Object, _syncMetrics.Object, new EmptyLogger());
 		}
 
 		[Test]
@@ -69,13 +69,13 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			actualResult.Should().NotBeNull();
 			actualResult.Status.Should().Be(ExecutionStatus.Completed);
 
-			_syncMetrics.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_TRANSFERRED, completedItemsPerBatch * testBatches.Count, It.IsAny<string>()), Times.Once);
-			_syncMetrics.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_FAILED, failedItemsPerBatch * testBatches.Count, It.IsAny<string>()), Times.Once);
-			_syncMetrics.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_TOTAL_REQUESTED, totalItemsCountPerBatch * testBatches.Count, It.IsAny<string>()), Times.Once);
-			_syncMetrics.Verify(x => x.LogPointInTimeString(TelemetryConstants.MetricIdentifiers.JOB_END_STATUS, expectedStatusDescription, It.IsAny<string>()), Times.Once);
-			_syncMetrics.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_FIELDS_MAPPED, testNumberOfFields, It.IsAny<string>()), Times.Once);
-			_syncMetrics.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_TOTAL_TRANSFERRED, jobSize, It.IsAny<string>()), Times.Once);
-			_syncMetrics.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_NATIVES_REQUESTED, nativesSize, It.IsAny<string>()), Times.Once);
+			_syncMetrics.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_TRANSFERRED, completedItemsPerBatch * testBatches.Count), Times.Once);
+			_syncMetrics.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_FAILED, failedItemsPerBatch * testBatches.Count), Times.Once);
+			_syncMetrics.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_TOTAL_REQUESTED, totalItemsCountPerBatch * testBatches.Count), Times.Once);
+			_syncMetrics.Verify(x => x.LogPointInTimeString(TelemetryConstants.MetricIdentifiers.JOB_END_STATUS, expectedStatusDescription), Times.Once);
+			_syncMetrics.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_FIELDS_MAPPED, testNumberOfFields), Times.Once);
+			_syncMetrics.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_TOTAL_TRANSFERRED, jobSize), Times.Once);
+			_syncMetrics.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_NATIVES_REQUESTED, nativesSize), Times.Once);
 		}
 
 		[Test]
@@ -87,7 +87,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			// Assert
 			actualResult.Should().NotBeNull();
 			actualResult.Status.Should().Be(ExecutionStatus.Completed);
-			_syncMetrics.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_NATIVES_REQUESTED, It.IsAny<long>(), It.IsAny<string>()), Times.Never);
+			_syncMetrics.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_NATIVES_REQUESTED, It.IsAny<long>()), Times.Never);
 		}
 
 		[Test]
@@ -100,7 +100,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			ExecutionResult actualResult = await _instance.ExecuteAsync(expectedStatus).ConfigureAwait(false);
 
 			// Assert
-			_syncMetrics.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_TOTAL_TRANSFERRED, It.IsAny<long>(), It.IsAny<string>()), Times.Never);
+			_syncMetrics.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_TOTAL_TRANSFERRED, It.IsAny<long>()), Times.Never);
 		}
 
 		[Test]

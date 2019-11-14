@@ -7,6 +7,7 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Logging;
+using Relativity.Sync.Telemetry;
 using Relativity.Sync.Tests.Unit.Stubs;
 
 namespace Relativity.Sync.Tests.Unit
@@ -18,10 +19,13 @@ namespace Relativity.Sync.Tests.Unit
 
 		private NodeWithResultStub _pipeline;
 		private ISyncExecutionContextFactory _executionContextFactory;
-		private CorrelationId _correlationId;
+		private SyncJobParameters _syncJobParameters;
 		private ExecutionOptions _executionOptions;
 
-		private const string _CORRELATION_ID = "id";
+		private const int _INTEGRATIONPOINT_ARTIFACT_ID = 111;
+		private const int _JOB_HISTORY_ARTIFACT_ID = 111;
+		
+		private readonly string _WORKFLOW_ID = $"{TelemetryConstants.PROVIDER_NAME}_{_INTEGRATIONPOINT_ARTIFACT_ID}_{_JOB_HISTORY_ARTIFACT_ID}";
 
 		[SetUp]
 		public void SetUp()
@@ -35,8 +39,8 @@ namespace Relativity.Sync.Tests.Unit
 				ThrowOnError = true
 			};
 
-			_correlationId = new CorrelationId(_CORRELATION_ID);
-			_instance = new SyncJob(_pipeline, _executionContextFactory, _correlationId, new EmptyProgress<SyncJobState>(), new EmptyLogger());
+			_syncJobParameters = new SyncJobParameters(1, 1, _INTEGRATIONPOINT_ARTIFACT_ID, _JOB_HISTORY_ARTIFACT_ID);
+			_instance = new SyncJob(_pipeline, _executionContextFactory, _syncJobParameters, new EmptyProgress<SyncJobState>(), new EmptyLogger());
 		}
 
 		[TestCase(NodeResultStatus.Succeeded)]
@@ -61,14 +65,14 @@ namespace Relativity.Sync.Tests.Unit
 			Func<Task> action = async () => await _instance.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			action.Should().Throw<SyncException>().Which.CorrelationId.Should().Be(_CORRELATION_ID);
+			action.Should().Throw<SyncException>().Which.WorkflowId.Should().Be(_WORKFLOW_ID);
 		}
 
 		[Test]
 		public void ItShouldPassOperationCanceledException()
 		{
 			FailingNodeStub<OperationCanceledException> pipeline = new FailingNodeStub<OperationCanceledException>(_executionOptions);
-			SyncJob instance = new SyncJob(pipeline, _executionContextFactory, _correlationId, new EmptyProgress<SyncJobState>(), new EmptyLogger());
+			SyncJob instance = new SyncJob(pipeline, _executionContextFactory, _syncJobParameters, new EmptyProgress<SyncJobState>(), new EmptyLogger());
 
 			// ACT
 			Func<Task> action = async () => await instance.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
@@ -81,7 +85,7 @@ namespace Relativity.Sync.Tests.Unit
 		public void ItShouldPassSyncException()
 		{
 			FailingNodeStub<SyncException> pipeline = new FailingNodeStub<SyncException>(_executionOptions);
-			SyncJob instance = new SyncJob(pipeline, _executionContextFactory, _correlationId, new EmptyProgress<SyncJobState>(), new EmptyLogger());
+			SyncJob instance = new SyncJob(pipeline, _executionContextFactory, _syncJobParameters, new EmptyProgress<SyncJobState>(), new EmptyLogger());
 
 			// ACT
 			Func<Task> action = async () => await instance.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
@@ -94,13 +98,13 @@ namespace Relativity.Sync.Tests.Unit
 		public void ItShouldChangeExceptionToSyncException()
 		{
 			FailingNodeStub<IOException> pipeline = new FailingNodeStub<IOException>(_executionOptions);
-			SyncJob instance = new SyncJob(pipeline, _executionContextFactory, _correlationId, new EmptyProgress<SyncJobState>(), new EmptyLogger());
+			SyncJob instance = new SyncJob(pipeline, _executionContextFactory, _syncJobParameters, new EmptyProgress<SyncJobState>(), new EmptyLogger());
 
 			// ACT
 			Func<Task> action = async () => await instance.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			action.Should().Throw<SyncException>().Which.CorrelationId.Should().Be(_CORRELATION_ID);
+			action.Should().Throw<SyncException>().Which.WorkflowId.Should().Be(_WORKFLOW_ID);
 		}
 
 		[Test]
@@ -119,7 +123,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			INode<SyncExecutionContext> pipeline = new NodeWithProgressStub();
 			var syncProgressMock = new Mock<IProgress<SyncJobState>>();
-			_instance = new SyncJob(pipeline, _executionContextFactory, _correlationId, syncProgressMock.Object, new EmptyLogger());
+			_instance = new SyncJob(pipeline, _executionContextFactory, _syncJobParameters, syncProgressMock.Object, new EmptyLogger());
 
 			// ACT
 			await _instance.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
@@ -134,7 +138,7 @@ namespace Relativity.Sync.Tests.Unit
 			INode<SyncExecutionContext> pipeline = new NodeWithProgressStub();
 			var syncProgressMock = new Mock<IProgress<SyncJobState>>();
 			var customProgressMock = new Mock<IProgress<SyncJobState>>();
-			_instance = new SyncJob(pipeline, _executionContextFactory, _correlationId, syncProgressMock.Object, new EmptyLogger());
+			_instance = new SyncJob(pipeline, _executionContextFactory, _syncJobParameters, syncProgressMock.Object, new EmptyLogger());
 
 			// ACT
 			await _instance.ExecuteAsync(customProgressMock.Object, CancellationToken.None).ConfigureAwait(false);
@@ -150,7 +154,7 @@ namespace Relativity.Sync.Tests.Unit
 			INode<SyncExecutionContext> pipeline = new NodeWithProgressStub();
 			var progressMock = new Mock<IProgress<SyncJobState>>();
 			progressMock.Setup(x => x.Report(It.IsAny<SyncJobState>())).Throws<InvalidOperationException>();
-			_instance = new SyncJob(pipeline, _executionContextFactory, _correlationId, new EmptyProgress<SyncJobState>(), new EmptyLogger());
+			_instance = new SyncJob(pipeline, _executionContextFactory, _syncJobParameters, new EmptyProgress<SyncJobState>(), new EmptyLogger());
 
 			// ACT
 			await _instance.ExecuteAsync(progressMock.Object, CancellationToken.None).ConfigureAwait(false);
