@@ -38,7 +38,15 @@ namespace Relativity.Sync
 				.Subscribe();
 		}
 
+		public int GetBatchItemsProcessedCount(int batchId)
+		{
+			return _batchProgresses.ContainsKey(batchId) ? _batchProgresses[batchId].ItemsProcessed : 0;
+		}
 
+		public int GetBatchItemsFailedCount(int batchId)
+		{
+			return _batchProgresses.ContainsKey(batchId) ? _batchProgresses[batchId].ItemsFailed : 0;
+		}
 
 		public IDisposable AttachToImportJob(ISyncImportBulkArtifactJob job, int batchId, int totalItemsInBatch)
 		{
