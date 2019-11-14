@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,6 +7,7 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -25,11 +26,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		private Mock<IRelativityObjectManager> _relativityObjectManagerFake;
 		private Mock<IObjectArtifactIdsByStringFieldValueQuery> _objectArtifactIDsQueryFake;
 		private ISerializer _serializer;
-		private List<IntegrationPointProfile> _syncProfiles;
-		private List<IntegrationPointProfile> _nonSyncProfiles;
+		private List<IntegrationPointProfile> _profilesToUpdate;
+		private List<IntegrationPointProfile> _profilesToDelete;
 		private List<IntegrationPointProfile> _allProfiles;
-		private List<int> _relativitySourceProvidersList;
-		private List<int> _relativityDestinationProvidersList;
+		private List<int> _relativitySourceProviders;
+		private List<int> _relativityDestinationProviders;
 		private List<int> _integrationPointTypesList;
 		private const int _WORKSPACE_ID = 100111;
 
@@ -46,32 +47,32 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			_objectArtifactIDsQueryFake = new Mock<IObjectArtifactIdsByStringFieldValueQuery>();
 			_serializer = new JSONSerializer();
 
-			_syncProfiles = CreateSyncProfiles().ToList();
-			_nonSyncProfiles = CreateNonFolderToFolderProfiles().ToList();
+			_profilesToUpdate = CreateProfilesToUpdate().ToList();
+			_profilesToDelete = CreateProfilesToDelete().ToList();
 			_allProfiles = new List<IntegrationPointProfile>();
-			_allProfiles.AddRange(_syncProfiles);
-			_allProfiles.AddRange(_nonSyncProfiles);
+			_allProfiles.AddRange(_profilesToUpdate);
+			_allProfiles.AddRange(_profilesToDelete);
 
 			_relativityObjectManagerFake
 				.Setup(x => x.QueryAsync<IntegrationPointProfile>(
 					It.IsAny<QueryRequest>(), false, It.IsAny<ExecutionIdentity>()))
 				.ReturnsAsync(_allProfiles);
 
-			_relativitySourceProvidersList = new List<int>();
-			_relativityDestinationProvidersList = new List<int>();
+			_relativitySourceProviders = new List<int>();
+			_relativityDestinationProviders = new List<int>();
 			_integrationPointTypesList = new List<int>();
 
 			_objectArtifactIDsQueryFake
 				.Setup(x => x.QueryForObjectArtifactIdsByStringFieldValueAsync(_WORKSPACE_ID,
 					(DestinationProvider provider) => provider.Identifier,
 					Constants.IntegrationPoints.DestinationProviders.RELATIVITY))
-				.ReturnsAsync(_relativityDestinationProvidersList);
+				.ReturnsAsync(_relativityDestinationProviders);
 
 			_objectArtifactIDsQueryFake
 				.Setup(x => x.QueryForObjectArtifactIdsByStringFieldValueAsync(_WORKSPACE_ID,
 					(SourceProvider provider) => provider.Identifier,
 					Constants.IntegrationPoints.SourceProviders.RELATIVITY))
-				.ReturnsAsync(_relativitySourceProvidersList);
+				.ReturnsAsync(_relativitySourceProviders);
 
 			_objectArtifactIDsQueryFake
 				.Setup(x => x.QueryForObjectArtifactIdsByStringFieldValueAsync(_WORKSPACE_ID,
@@ -81,12 +82,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			
 			_sut = new IntegrationPointProfilesQuery(
 				workspaceID => _relativityObjectManagerFake.Object,
-				_objectArtifactIDsQueryFake.Object,
-				_serializer);
+				_objectArtifactIDsQueryFake.Object);
 		}
 
 		[Test]
-		public async Task ItShouldReturnAllProfiles()
+		public async Task GetAllProfilesAsync_ShouldReturnAllProfiles()
 		{
 			// Arrange
 			SetUpSyncProviders();
@@ -101,35 +101,35 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		}
 
 		[Test]
-		public void ItShouldGetOnlySyncProfiles()
+		public void GetProfilesToUpdate_ShouldReturnOnlyProfilesToUpdate()
 		{
 			// Arrange
 			SetUpSyncProviders();
 
 			// Act
 			IEnumerable<IntegrationPointProfile> syncProfiles = _sut
-				.GetSyncProfiles(_allProfiles, _RELATIVITY_SOURCE_PROVIDER_ID, _RELATIVITY_DESTINATION_PROVIDER_ID);
+				.GetProfilesToUpdate(_allProfiles, _RELATIVITY_SOURCE_PROVIDER_ID, _RELATIVITY_DESTINATION_PROVIDER_ID);
 
 			// Assert
-			CollectionAssert.AreEquivalent(_syncProfiles, syncProfiles);
+			CollectionAssert.AreEquivalent(_profilesToUpdate, syncProfiles);
 		}
 
 		[Test]
-		public void ItShouldGetOnlyNonSyncProfiles()
+		public void GetProfilesToDelete_ShouldReturnOnlyProfilesToDelete()
 		{
 			// Arrange
 			SetUpSyncProviders();
 
 			// Act
 			IEnumerable<IntegrationPointProfile> nonSyncProfiles = _sut
-				.GetNonSyncProfiles(_allProfiles, _RELATIVITY_SOURCE_PROVIDER_ID, _RELATIVITY_DESTINATION_PROVIDER_ID);
+				.GetProfilesToDelete(_allProfiles, _RELATIVITY_SOURCE_PROVIDER_ID, _RELATIVITY_DESTINATION_PROVIDER_ID);
 
 			// Assert
-			CollectionAssert.AreEquivalent(_nonSyncProfiles, nonSyncProfiles);
+			CollectionAssert.AreEquivalent(_profilesToDelete, nonSyncProfiles);
 		}
 
 		[Test]
-		public async Task ItShouldReturnSyncSourceProviderArtifactID()
+		public async Task GetSyncSourceProviderArtifactIDAsync_ShouldReturnProperArtifactID()
 		{
 			// Arrange
 			SetUpSyncProviders();
@@ -142,7 +142,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		}
 
 		[Test]
-		public async Task ItShouldReturnIntegrationPointExportTypeArtifactID()
+		public async Task GetIntegrationPointExportTypeArtifactIDAsync_ShouldReturnProperArtifactID()
 		{
 			// Arrange
 			SetUpSyncProviders();
@@ -155,7 +155,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		}
 
 		[Test]
-		public void ItShouldFailOnWrongNumberOfIntegrationPointExportTypeArtifactID([Values(0, 2)] int integrationPointTypesCount)
+		public void GetIntegrationPointExportTypeArtifactIDAsync_ShouldFail_WhenWrongNumberOfIntegrationPointExportTypeArtifactID([Values(0, 2)] int integrationPointTypesCount)
 		{
 			// Arrange
 			SetUpSyncProviders(integrationPointTypesCount: integrationPointTypesCount);
@@ -168,7 +168,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		}
 
 		[Test]
-		public async Task ItShouldReturnNonSyncSourceProviderArtifactID()
+		public async Task GetSyncDestinationProviderArtifactIDAsync_ShouldReturnNonSyncSourceProviderArtifactID()
 		{
 			// Arrange
 			SetUpSyncProviders();
@@ -181,7 +181,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		}
 
 		[Test]
-		public void ItShouldFailOnWrongNumberOfSourceProviders([Values(0, 2)] int relativitySourceProviderCount)
+		public void GetSyncSourceProviderArtifactIDAsync_ShouldFail_WhenWrongNumberOfSourceProviders([Values(0, 2)] int relativitySourceProviderCount)
 		{
 			// Arrange
 			SetUpSyncProviders(relativitySourceProviderCount);
@@ -194,7 +194,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		}
 
 		[Test]
-		public void ItShouldFailOnWrongNumberOfDestinationProviders([Values(0, 2)] int relativityDestinationProviderCount)
+		public void GetSyncDestinationProviderArtifactIDAsync_ShouldFail_WhenWrongNumberOfDestinationProviders([Values(0, 2)] int relativityDestinationProviderCount)
 		{
 			// Arrange
 			SetUpSyncProviders(relativityDestinationProviderCount: relativityDestinationProviderCount);
@@ -212,7 +212,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 				.BeOneOf("Sequence contains more than one element", "Sequence contains no elements");
 		}
 
-		private IEnumerable<IntegrationPointProfile> CreateSyncProfiles()
+		private IEnumerable<IntegrationPointProfile> CreateProfilesToUpdate()
 		{
 			yield return new IntegrationPointProfile
 			{
@@ -221,9 +221,17 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 				SourceConfiguration = CreateSourceConfigurationJson(SourceConfiguration.ExportType.SavedSearch),
 				DestinationConfiguration = CreateDestinationConfigurationJson(false)
 			};
+			yield return new IntegrationPointProfile
+			{
+				SourceProvider = _RELATIVITY_SOURCE_PROVIDER_ID,
+				DestinationProvider = _RELATIVITY_DESTINATION_PROVIDER_ID,
+				SourceConfiguration = CreateSourceConfigurationJson(SourceConfiguration.ExportType.SavedSearch),
+				DestinationConfiguration = CreateDestinationConfigurationJson(false, true, true)
+			};
+
 		}
 
-		private IEnumerable<IntegrationPointProfile> CreateNonFolderToFolderProfiles()
+		private IEnumerable<IntegrationPointProfile> CreateProfilesToDelete()
 		{
 			yield return new IntegrationPointProfile()
 			{
@@ -284,19 +292,28 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			});
 		}
 
-		private string CreateDestinationConfigurationJson(bool exportToProduction)
+		private string CreateDestinationConfigurationJson(bool exportToProduction = false, bool copyImages = false, bool useImagePrecedence = false)
 		{
-			return _serializer.Serialize(new ImportSettings()
+			var importSettings = new ImportSettings()
 			{
-				ProductionImport = exportToProduction
-			});
+				ProductionImport = exportToProduction,
+				ImageImport = copyImages
+			};
+			if (useImagePrecedence)
+			{
+				importSettings.ImagePrecedence = new List<ProductionDTO>()
+				{
+					new ProductionDTO()
+				};
+			}
+			return _serializer.Serialize(importSettings);
 		}
 
 		private void SetUpSyncProviders(int relativitySourceProviderCount = 1, int relativityDestinationProviderCount = 1, int integrationPointTypesCount = 1)
 		{
-			_relativitySourceProvidersList.AddRange(Enumerable
+			_relativitySourceProviders.AddRange(Enumerable
 				.Repeat(_RELATIVITY_SOURCE_PROVIDER_ID, relativitySourceProviderCount));
-			_relativityDestinationProvidersList.AddRange(Enumerable
+			_relativityDestinationProviders.AddRange(Enumerable
 				.Repeat(_RELATIVITY_DESTINATION_PROVIDER_ID, relativityDestinationProviderCount));
 			_integrationPointTypesList.AddRange(Enumerable
 				.Repeat(_INTEGRATION_POINT_EXPORT_TYPE_ID, integrationPointTypesCount));

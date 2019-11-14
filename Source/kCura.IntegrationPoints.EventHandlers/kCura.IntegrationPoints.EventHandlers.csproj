@@ -78,6 +78,7 @@
     <Compile Include="Commands\MigrateSecretCatalogPathToSecretStorePathCommand.cs" />
     <Compile Include="Commands\PreCascadeDeleteIntegrationPointCommand.cs" />
     <Compile Include="Commands\RemoveAgentJobLogTableCommand.cs" />
+    <Compile Include="Commands\RemoveBatchesFromOldJobsCommand.cs" />
     <Compile Include="Commands\RemoveSecuredConfigurationFromIntegrationPointService.cs" />
     <Compile Include="Commands\RenameCustodianToEntity\RenameCustodianToEntityInIntegrationPointConfigurationCommand.cs" />
     <Compile Include="Commands\RenameCustodianToEntity\RenameCustodianToEntityForSourceProviderCommand.cs" />
@@ -114,6 +115,7 @@
     <Compile Include="Installers\RegisterImportProvider.cs" />
     <Compile Include="Installers\RegisterIntegrationPointTypeInstaller.cs" />
     <Compile Include="Installers\RemoveAgentJobLogTableEventHandler.cs" />
+    <Compile Include="Installers\RemoveBatchesFromOldJobsEventHandler.cs" />
     <Compile Include="Installers\RemoveUnusedEventHandlers.cs" />
     <Compile Include="Installers\RenameCustodianToEntityInIntegrationPointConfigurationEventHandler.cs" />
     <Compile Include="Installers\RestoreJobHistoryDestinationWorkspaceEventHandler.cs" />
@@ -229,6 +231,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.LDAPProvider\kCura.IntegrationPoints.LDAPProvider.csproj">
       <Project>{8398B06F-3716-4834-9593-A017F2714261}</Project>
       <Name>kCura.IntegrationPoints.LDAPProvider</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.RelativitySync\kCura.IntegrationPoints.RelativitySync.csproj">
+      <Project>{C2AADDB6-21AC-4372-924C-5B82ED014313}</Project>
+      <Name>kCura.IntegrationPoints.RelativitySync</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
       <Project>{B91CC4ED-ABF3-4409-8DF3-46A3C26EB4AA}</Project>
