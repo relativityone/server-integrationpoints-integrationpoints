@@ -45,10 +45,7 @@ namespace Relativity.Sync.Tests.Integration
 			containerBuilder.RegisterInstance(serviceFactoryMock.Object).As<IDestinationServiceFactoryForUser>();
 			containerBuilder.RegisterType<DestinationWorkspaceSavedSearchCreationExecutor>().As<IExecutor<IDestinationWorkspaceSavedSearchCreationConfiguration>>();
 
-			CorrelationId correlationId = new CorrelationId(Guid.NewGuid().ToString());
-
 			containerBuilder.RegisterInstance(new EmptyLogger()).As<ISyncLog>();
-			containerBuilder.RegisterInstance(correlationId).As<CorrelationId>();
 
 			IContainer container = containerBuilder.Build();
 			_executor = container.Resolve<IExecutor<IDestinationWorkspaceSavedSearchCreationConfiguration>>();

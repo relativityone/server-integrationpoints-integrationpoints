@@ -80,8 +80,6 @@ namespace Relativity.Sync.Tests.Integration
 			containerBuilder.RegisterInstance(destinationServiceFactoryMock.Object).As<IDestinationServiceFactoryForUser>();
 			containerBuilder.RegisterType<SourceWorkspaceTagsCreationExecutor>().As<IExecutor<ISourceWorkspaceTagsCreationConfiguration>>();
 
-			var correlationId = new CorrelationId(_correlationId);
-			containerBuilder.RegisterInstance(correlationId).As<CorrelationId>();
 			containerBuilder.RegisterInstance(_logger).As<ISyncLog>();
 
 			var syncMetrics = new Mock<ISyncMetrics>();

@@ -24,7 +24,6 @@ namespace Relativity.Sync.Tests.Integration
 	[TestFixture]
 	public class NotificationExecutorTests
 	{
-		private CorrelationId _correlationId;
 		private CancellationToken _token;
 
 		private Mock<IEmailNotificationsManager> _emailNotificationsManager;
@@ -53,7 +52,6 @@ namespace Relativity.Sync.Tests.Integration
 		public void OneTimeSetUp()
 		{
 			string correlationGuid = Guid.NewGuid().ToString();
-			_correlationId = new CorrelationId(correlationGuid);
 
 			_syncLog = new Mock<ISyncLog>();
 			_syncMetrics = new Mock<ISyncMetrics>();
@@ -77,7 +75,6 @@ namespace Relativity.Sync.Tests.Integration
 			ContainerBuilder containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
 			IntegrationTestsContainerBuilder.MockStepsExcept<INotificationConfiguration>(containerBuilder);
 
-			containerBuilder.RegisterInstance(_correlationId).As<CorrelationId>();
 			containerBuilder.RegisterInstance(_syncLog.Object).As<ISyncLog>();
 			containerBuilder.RegisterInstance(_syncMetrics.Object).As<ISyncMetrics>();
 

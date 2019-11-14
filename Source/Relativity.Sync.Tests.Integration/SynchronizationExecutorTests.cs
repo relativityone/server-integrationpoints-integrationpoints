@@ -111,10 +111,7 @@ namespace Relativity.Sync.Tests.Integration
 			containerBuilder.RegisterInstance(sourceServiceFactoryForAdmin.Object).As<ISourceServiceFactoryForAdmin>();
 			containerBuilder.RegisterType<SynchronizationExecutor>().As<IExecutor<ISynchronizationConfiguration>>();
 
-			CorrelationId correlationId = new CorrelationId(Guid.NewGuid().ToString());
-
 			containerBuilder.RegisterInstance(new EmptyLogger()).As<ISyncLog>();
-			containerBuilder.RegisterInstance(correlationId).As<CorrelationId>();
 			containerBuilder.RegisterInstance(fieldMappings.Object).As<IFieldMappings>();
 
 			IContainer container = containerBuilder.Build();
