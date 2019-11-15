@@ -285,6 +285,21 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 
 			IntegrationPointModel integrationPointPreJobExecution = CreateOrUpdateIntegrationPoint(integrationModel);
 
+			Console.WriteLine($"Actual time: {utcNow}");
+			Console.WriteLine($"Scheduled time: {integrationModel.Scheduler.ScheduledTime}, {integrationModel.Scheduler.StartDate}");
+
+			var jobsList = _jobService.GetJobs(integrationModel.ArtifactID);
+			var jobsScheduledList = _jobService.GetAllScheduledJobs();
+
+			foreach (var jobElement in jobsList)
+			{
+				Console.WriteLine($"Current jobs in queue {jobElement.JobId}, workspace {jobElement.WorkspaceID}\n");
+			}
+
+			foreach (var jobElement in jobsScheduledList)
+			{
+				Console.WriteLine($"GetAllScheduledJobs in queue {jobElement.JobId}, workspace {jobElement.WorkspaceID}, LockedByAgent {jobElement.LockedByAgentID}\n");
+			}
 			//Act
 
 			//Create Errors by using Append Only
