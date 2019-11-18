@@ -21,7 +21,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 	[Parallelizable(ParallelScope.All)]
 	public class ImportJobFactoryTests
 	{
-		private Mock<IBatchProgressHandlerFactory> _batchProgressHandlerFactory;
 		private Mock<IJobProgressHandlerFactory> _jobProgressHandlerFactory;
 		private Mock<IJobProgressUpdaterFactory> _jobProgressUpdaterFactory;
 		private Mock<ISourceWorkspaceDataReaderFactory> _dataReaderFactory;
@@ -35,7 +34,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[SetUp]
 		public void SetUp()
 		{
-			_batchProgressHandlerFactory = new Mock<IBatchProgressHandlerFactory>();
 			_jobProgressUpdaterFactory = new Mock<IJobProgressUpdaterFactory>();
 			Mock<IJobProgressHandler> jobProgressHandler = new Mock<IJobProgressHandler>();
 			_jobProgressHandlerFactory = new Mock<IJobProgressHandlerFactory>();
