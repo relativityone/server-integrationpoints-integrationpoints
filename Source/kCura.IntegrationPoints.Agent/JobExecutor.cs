@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using kCura.IntegrationPoints.Agent.Interfaces;
 using kCura.IntegrationPoints.Agent.Logging;
 using kCura.IntegrationPoints.Domain.Exceptions;
@@ -15,6 +16,7 @@ namespace kCura.IntegrationPoints.Agent
 
 	internal class JobExecutor : IJobExecutor
 	{
+		private readonly string ExecutingAssemblyApplicationVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 		private const string PROCESSING_JOB_MESSAGE_TEMPLATE = "Processing Job ID : {0} : Workspace ID {1} : Job Type {2}";
 		private const string START_PROCESSING_JOB_MESSAGE_TEMPLATE = "Started : " + PROCESSING_JOB_MESSAGE_TEMPLATE;
 		private const string FINISHED_PROCESSING_JOB_MESSAGE_TEMPLATE = "Finished : " + PROCESSING_JOB_MESSAGE_TEMPLATE;
@@ -54,6 +56,7 @@ namespace kCura.IntegrationPoints.Agent
 
 			var correlationContext = new AgentCorrelationContext
 			{
+				ApplicationVersion = ExecutingAssemblyApplicationVersion,
 				JobId = job.JobId,
 				RootJobId = job.RootJobId,
 				WorkspaceId = job.WorkspaceID,
