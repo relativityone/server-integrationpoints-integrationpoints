@@ -56,7 +56,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			// Arrange
 			var configuration = new Mock<ISynchronizationConfiguration>(MockBehavior.Loose);
 
-			Mock<IImportApiFactory> importApiFactory = GetImportAPIFactoryMock();
+			Mock<IImportApiFactory> importApiFactory = GetImportAPIFactoryMock(new ImportBulkArtifactJob());
 			ImportJobFactory instance = GetTestInstance(importApiFactory);
 
 			// Act
@@ -74,7 +74,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			var configuration = new Mock<ISynchronizationConfiguration>();
 
-			Mock<IImportApiFactory> importApiFactory = GetImportAPIFactoryMock();
+			Mock<IImportApiFactory> importApiFactory = GetImportAPIFactoryMock(new ImportBulkArtifactJob());
 			ImportJobFactory instance = GetTestInstance(importApiFactory);
 
 			// Act
@@ -114,9 +114,82 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		}
 		
 		private Mock<IImportApiFactory> GetImportAPIFactoryMock()
+		[Test]
+		public async Task CreateImportJob_ShouldSetBillableToTrue_WhenCopyingNatives()
+		{
+			// Arrange
+			var importSettingsDto = new ImportSettingsDto
+			{
+				ImportNativeFileCopyMode = ImportNativeFileCopyMode.CopyFiles
+			};
+
+			var configuration = new Mock<ISynchronizationConfiguration>(MockBehavior.Loose);
+			configuration.SetupGet(x => x.ImportSettings).Returns(importSettingsDto);
+
+			var importBulkArtifactJob = new ImportBulkArtifactJob();
+			Mock<IImportApiFactory> importApiFactory = GetImportAPIFactoryMock(importBulkArtifactJob);
+
+			ImportJobFactory instance = GetTestInstance(importApiFactory);
+
+			// Act
+			await instance.CreateImportJobAsync(configuration.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			importBulkArtifactJob.Settings.Billable.Should().Be(true);
+		}
+
+		[Test]
+		public async Task CreateImportJob_ShouldSetBillableToFalse_WhenUsingLinksOnly()
+		{
+			// Arrange
+			var importSettingsDto = new ImportSettingsDto
+			{
+				ImportNativeFileCopyMode = ImportNativeFileCopyMode.SetFileLinks
+			};
+
+			var configuration = new Mock<ISynchronizationConfiguration>(MockBehavior.Loose);
+			configuration.SetupGet(x => x.ImportSettings).Returns(importSettingsDto);
+
+			var importBulkArtifactJob = new ImportBulkArtifactJob();
+			Mock<IImportApiFactory> importApiFactory = GetImportAPIFactoryMock(importBulkArtifactJob);
+
+			ImportJobFactory instance = GetTestInstance(importApiFactory);
+
+			// Act
+			await instance.CreateImportJobAsync(configuration.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			importBulkArtifactJob.Settings.Billable.Should().Be(false);
+		}
+
+		[Test]
+		public async Task CreateImportJob_ShouldSetBillableToTrue_WhenNotCopyingNatives()
+		{
+			// Arrange
+			var importSettingsDto = new ImportSettingsDto
+			{
+				ImportNativeFileCopyMode = ImportNativeFileCopyMode.DoNotImportNativeFiles
+			};
+
+			var configuration = new Mock<ISynchronizationConfiguration>(MockBehavior.Loose);
+			configuration.SetupGet(x => x.ImportSettings).Returns(importSettingsDto);
+
+			var importBulkArtifactJob = new ImportBulkArtifactJob();
+			Mock<IImportApiFactory> importApiFactory = GetImportAPIFactoryMock(importBulkArtifactJob);
+
+			ImportJobFactory instance = GetTestInstance(importApiFactory);
+
+			// Act
+			await instance.CreateImportJobAsync(configuration.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			importBulkArtifactJob.Settings.Billable.Should().Be(false);
+		}
+
+		private Mock<IImportApiFactory> GetImportAPIFactoryMock(ImportBulkArtifactJob importBulkArtifactJob)
 		{
 			var importApi = new Mock<IImportAPI>(MockBehavior.Loose);
-			importApi.Setup(x => x.NewNativeDocumentImportJob()).Returns(() => new ImportBulkArtifactJob());
+			importApi.Setup(x => x.NewNativeDocumentImportJob()).Returns(() => importBulkArtifactJob);
 
 			var field = new Mock<Field>();
 			importApi.Setup(x => x.GetWorkspaceFields(It.IsAny<int>(), It.IsAny<int>())).Returns(() => new[] { field.Object });
