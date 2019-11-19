@@ -135,7 +135,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 		[IdentifiedTest("8a5590f2-31e8-4ec9-9ddc-a4e3b7b9621e")]
 		[SmokeTest]
-		[TestInQuarantine(TestQuarantineState.UnderObservation)]
 		public void NativesShouldNotBeDeletedInTargetWorkspace_InDoNotImportNativesMode()
 		{
 			TestNativeFilesImport(false, true, false, ImportNativeFileCopyModeEnum.DoNotImportNativeFiles, true);
