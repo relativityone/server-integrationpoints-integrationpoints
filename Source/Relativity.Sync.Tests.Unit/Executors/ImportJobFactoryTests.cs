@@ -113,18 +113,13 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			importBulkArtifactJobMock.Settings.StartRecordNumber.Should().Be(0);
 		}
 		
-		private Mock<IImportApiFactory> GetImportAPIFactoryMock()
 		[Test]
 		public async Task CreateImportJob_ShouldSetBillableToTrue_WhenCopyingNatives()
 		{
 			// Arrange
-			var importSettingsDto = new ImportSettingsDto
-			{
-				ImportNativeFileCopyMode = ImportNativeFileCopyMode.CopyFiles
-			};
 
 			var configuration = new Mock<ISynchronizationConfiguration>(MockBehavior.Loose);
-			configuration.SetupGet(x => x.ImportSettings).Returns(importSettingsDto);
+			configuration.SetupGet(x => x.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.CopyFiles);
 
 			var importBulkArtifactJob = new ImportBulkArtifactJob();
 			Mock<IImportApiFactory> importApiFactory = GetImportAPIFactoryMock(importBulkArtifactJob);
@@ -142,13 +137,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		public async Task CreateImportJob_ShouldSetBillableToFalse_WhenUsingLinksOnly()
 		{
 			// Arrange
-			var importSettingsDto = new ImportSettingsDto
-			{
-				ImportNativeFileCopyMode = ImportNativeFileCopyMode.SetFileLinks
-			};
-
 			var configuration = new Mock<ISynchronizationConfiguration>(MockBehavior.Loose);
-			configuration.SetupGet(x => x.ImportSettings).Returns(importSettingsDto);
+			configuration.SetupGet(x => x.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.SetFileLinks);
 
 			var importBulkArtifactJob = new ImportBulkArtifactJob();
 			Mock<IImportApiFactory> importApiFactory = GetImportAPIFactoryMock(importBulkArtifactJob);
@@ -166,13 +156,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		public async Task CreateImportJob_ShouldSetBillableToTrue_WhenNotCopyingNatives()
 		{
 			// Arrange
-			var importSettingsDto = new ImportSettingsDto
-			{
-				ImportNativeFileCopyMode = ImportNativeFileCopyMode.DoNotImportNativeFiles
-			};
-
 			var configuration = new Mock<ISynchronizationConfiguration>(MockBehavior.Loose);
-			configuration.SetupGet(x => x.ImportSettings).Returns(importSettingsDto);
+			configuration.SetupGet(x => x.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.DoNotImportNativeFiles);
 
 			var importBulkArtifactJob = new ImportBulkArtifactJob();
 			Mock<IImportApiFactory> importApiFactory = GetImportAPIFactoryMock(importBulkArtifactJob);
