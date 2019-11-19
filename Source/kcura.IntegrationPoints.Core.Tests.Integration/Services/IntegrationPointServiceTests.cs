@@ -275,7 +275,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 					EnableScheduler = true,
 					StartDate = utcNow.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture),
 					EndDate = utcNow.AddDays(1).ToString("MM/dd/yyyy", CultureInfo.InvariantCulture),
-					ScheduledTime = utcNow.ToString("HH") + ":" + utcNow.AddMinutes(schedulerRunTimeDelayMinutes).ToString("mm"),
+					ScheduledTime = DateTime.UtcNow.AddMinutes(schedulerRunTimeDelayMinutes).ToString("HH:mm"),
 					SelectedFrequency = ScheduleInterval.Daily.ToString(),
 					TimeZoneId = TimeZoneInfo.Utc.Id
 				},
@@ -285,21 +285,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 
 			IntegrationPointModel integrationPointPreJobExecution = CreateOrUpdateIntegrationPoint(integrationModel);
 
-			Console.WriteLine($"Actual time: {utcNow}");
-			Console.WriteLine($"Scheduled time: {integrationModel.Scheduler.ScheduledTime}, {integrationModel.Scheduler.StartDate}");
-
-			var jobsList = _jobService.GetJobs(integrationModel.ArtifactID);
-			var jobsScheduledList = _jobService.GetAllScheduledJobs();
-
-			foreach (var jobElement in jobsList)
-			{
-				Console.WriteLine($"Current jobs in queue {jobElement.JobId}, workspace {jobElement.WorkspaceID}\n");
-			}
-
-			foreach (var jobElement in jobsScheduledList)
-			{
-				Console.WriteLine($"GetAllScheduledJobs in queue {jobElement.JobId}, workspace {jobElement.WorkspaceID}, LockedByAgent {jobElement.LockedByAgentID}\n");
-			}
 			//Act
 
 			//Create Errors by using Append Only
