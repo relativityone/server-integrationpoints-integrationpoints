@@ -274,7 +274,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 					EnableScheduler = true,
 					StartDate = utcNow.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture),
 					EndDate = utcNow.AddDays(1).ToString("MM/dd/yyyy", CultureInfo.InvariantCulture),
-					ScheduledTime = utcNow.ToString("HH") + ":" + utcNow.AddMinutes(schedulerRunTimeDelayMinutes).ToString("mm"),
+					ScheduledTime = utcNow.AddMinutes(schedulerRunTimeDelayMinutes).ToString("HH:mm"),
 					SelectedFrequency = ScheduleInterval.Daily.ToString(),
 					TimeZoneId = TimeZoneInfo.Utc.Id
 				},
