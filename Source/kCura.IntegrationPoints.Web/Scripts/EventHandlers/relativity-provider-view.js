@@ -136,15 +136,22 @@
 	};
 
 	root.saveAsProfile = function (integrationPointId, workspaceId, ipName) {
+		const SAVE_AS_PROFILE_ERR_PREFIX = "Failed to save integration point as profile.";
+
 		var saveAsProfileModalViewModel = new SaveAsProfileModalViewModel(function (value) {
-			IP.data.ajax({
+			var ajax = IP.data.ajax({
 				url: IP.utils.generateWebAPIURL('IntegrationPointProfilesAPI/SaveAsProfile', integrationPointId, value),
 				type: 'POST',
 				success: function () {
-					IP.message.notify("Profile has been saved", $("#customRDOWithConsoleWrapper"));
+					IP.message.info.raise("Profile has been saved", $("#customRDOWithConsoleWrapper"));
 				},
-				fail: function (error) {
-					IP.message.error.raise(error, $("#customRDOWithConsoleWrapper"));
+			});
+			ajax.fail(function (error) {
+				try {
+					const validationResultDto = JSON.parse(error.responseText);
+					IP.message.errorFormatted.raise(validationResultDto.errors, $(".cardContainer"), SAVE_AS_PROFILE_ERR_PREFIX);
+				} catch (e) {
+					IP.message.error.raise(SAVE_AS_PROFILE_ERR_PREFIX + " " + error.responseText, $(".cardContainer"));
 				}
 			});
 		});

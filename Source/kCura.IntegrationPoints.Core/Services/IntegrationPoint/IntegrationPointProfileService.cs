@@ -131,6 +131,13 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			{
 				throw;
 			}
+			catch (IntegrationPointValidationException validationException)
+			{
+				CreateRelativityError(
+					Constants.IntegrationPointProfiles.PermissionErrors.UNABLE_TO_SAVE_INTEGRATION_POINT_PROFILE_ADMIN_MESSAGE,
+					string.Join(Environment.NewLine, validationException.ValidationResult.MessageTexts));
+				throw;
+			}
 			catch (Exception e)
 			{
 				CreateRelativityError(

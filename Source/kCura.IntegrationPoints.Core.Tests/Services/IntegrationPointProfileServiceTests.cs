@@ -110,46 +110,20 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				Arg.Any<IntegrationPointType>(), Arg.Any<Guid>(), Arg.Any<int>()).Returns(new ValidationResult());
 		}
 
-		[TestCase(true)]
-		[TestCase(false)]
-		public void SaveIntegrationPointProfile_NoSchedule_GoldFlow(bool isRelativityProvider)
+		[Test]
+		public void SaveIntegrationPointProfile_NoSchedule_GoldFlow()
 		{
 			// Arrange
-			int targetWorkspaceArtifactId = 6543;
-			var model = new IntegrationPointProfileModel()
-			{
-				ArtifactID = 0,
-				SourceProvider = 9999,
-				DestinationProvider = 7553,
-				SourceConfiguration = JsonConvert.SerializeObject(new { TargetWorkspaceArtifactId = targetWorkspaceArtifactId }),
-				SelectedOverwrite = "SelectedOverwrite",
-				Scheduler = new Scheduler() { EnableScheduler = false },
-				Destination = JsonConvert.SerializeObject(new { DestinationProviderType = "" })
-			};
-
-			_choiceQuery.GetChoicesOnField(Guid.Parse(IntegrationPointProfileFieldGuids.OverwriteFields))
-				.Returns(new List<Choice>()
-				{
-					new Choice(5555)
-					{
-						Name = model.SelectedOverwrite
-					}
-				});
-
-			const int newIpProfileId = 389234;
-			_objectManager.Create(
-					Arg.Is<IntegrationPointProfile>(x => x.ArtifactId == 0))
-				.Returns(newIpProfileId);
-
-			_caseServiceContext.EddsUserID = 1232;
+			const int newIpProfileID = 389234;
+			IntegrationPointProfileModel model = PrepareValidProfileModel(newIpProfileID);
 
 			// Act
 			int result = _instance.SaveIntegration(model);
 
 			// Assert
-			Assert.AreEqual(newIpProfileId, result, "The resulting artifact id should match.");
+			Assert.AreEqual(newIpProfileID, result, "The resulting artifact id should match.");
 			_objectManager.Received(1)
-				.Create(Arg.Is<IntegrationPointProfile>(x => x.ArtifactId == newIpProfileId));
+				.Create(Arg.Is<IntegrationPointProfile>(x => x.ArtifactId == newIpProfileID));
 		}
 
 		[TestCase(true)]
@@ -286,6 +260,53 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_objectManager
 				.Received(1)
 				.Read<IntegrationPointProfile>(_integrationPointProfileArtifactId);
+		}
+
+		[Test]
+		public void SaveIntegration_ShouldThrowException_WhenValidationFails()
+		{
+			// arrange
+			const int newIPProfileID = 389234;
+			IntegrationPointProfileModel model = PrepareValidProfileModel(newIPProfileID);
+
+			_validationExecutor
+				.When(m => m.ValidateOnSave(Arg.Any<ValidationContext>()))
+				.Do(x => throw new IntegrationPointValidationException(new ValidationResult(false)));
+
+			// act
+			Assert.Throws<IntegrationPointValidationException>(() => _instance.SaveIntegration(model));
+		}
+
+		private IntegrationPointProfileModel PrepareValidProfileModel(int newIPprofileID)
+		{
+			const int targetWorkspaceArtifactID = 6543;
+			var model = new IntegrationPointProfileModel()
+			{
+				ArtifactID = 0,
+				SourceProvider = 9999,
+				DestinationProvider = 7553,
+				SourceConfiguration = JsonConvert.SerializeObject(new { TargetWorkspaceArtifactId = targetWorkspaceArtifactID }),
+				SelectedOverwrite = "SelectedOverwrite",
+				Scheduler = new Scheduler() { EnableScheduler = false },
+				Destination = JsonConvert.SerializeObject(new { DestinationProviderType = "" })
+			};
+
+			_choiceQuery.GetChoicesOnField(Guid.Parse(IntegrationPointProfileFieldGuids.OverwriteFields))
+				.Returns(new List<Choice>()
+				{
+					new Choice(5555)
+					{
+						Name = model.SelectedOverwrite
+					}
+				});
+
+			_objectManager.Create(
+					Arg.Is<IntegrationPointProfile>(x => x.ArtifactId == 0))
+				.Returns(newIPprofileID);
+
+			_caseServiceContext.EddsUserID = 1232;
+
+			return model;
 		}
 	}
 }
