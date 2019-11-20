@@ -147,6 +147,7 @@
     <Compile Include="Models\RelativityProviderModel.cs" />
     <Compile Include="Models\SchedulerModel.cs" />
     <Compile Include="Models\Shared\ImagePrecedence.cs" />
+    <Compile Include="TestRdoGenerator.cs" />
     <Compile Include="TestCategories\Attributes\ConnectivityToTestRunnerRequiredTestAttribute.cs" />
     <Compile Include="TestCategories\Attributes\StressTestAttribute.cs" />
     <Compile Include="TestCategories\TestQuarantineState.cs" />

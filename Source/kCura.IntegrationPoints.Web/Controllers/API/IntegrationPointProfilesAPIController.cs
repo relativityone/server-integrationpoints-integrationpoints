@@ -109,10 +109,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 						using (metricManager.LogDuration(Core.Constants.IntegrationPoints.Telemetry.BUCKET_INTEGRATION_POINT_PROFILE_SAVE_DURATION_METRIC_COLLECTOR,
 							Guid.Empty, model.Name))
 						{
-							int createdId = _profileService.SaveIntegration(model);
-							string result = _urlHelper.GetRelativityViewUrl(workspaceID, createdId, ObjectTypes.IntegrationPointProfile);
-
-							return Request.CreateResponse(HttpStatusCode.OK, new { returnURL = result });
+							return SaveIntegrationPointProfile(workspaceID, model);
 						}
 					}
 				}
@@ -142,14 +139,30 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 							IntegrationPoint integrationPoint = _integrationPointService.ReadIntegrationPoint(integrationPointArtifactId);
 							IntegrationPointProfileModel model = IntegrationPointProfileModel.FromIntegrationPoint(integrationPoint, profileName);
 
-							int createdId = _profileService.SaveIntegration(model);
-							string result = _urlHelper.GetRelativityViewUrl(workspaceID, createdId, ObjectTypes.IntegrationPointProfile);
-
-							return Request.CreateResponse(HttpStatusCode.OK, new { returnURL = result });
+							return SaveIntegrationPointProfile(workspaceID, model);
 						}
 					}
 				}
 			}
+		}
+
+		private HttpResponseMessage SaveIntegrationPointProfile(int workspaceID, IntegrationPointProfileModel model)
+		{
+			int createdID;
+			try
+			{
+				createdID = _profileService.SaveIntegration(model);
+			}
+			catch (IntegrationPointValidationException ex)
+			{
+				var validationResultMapper = new ValidationResultMapper();
+				ValidationResultDTO validationResultDto = validationResultMapper.Map(ex.ValidationResult);
+				return Request.CreateResponse(HttpStatusCode.NotAcceptable, validationResultDto);
+			}
+
+			string result = _urlHelper.GetRelativityViewUrl(workspaceID, createdID, ObjectTypes.IntegrationPointProfile);
+
+			return Request.CreateResponse(HttpStatusCode.OK, new { returnURL = result });
 		}
 
 		private ValidationResultDTO ValidateIntegrationPointProfile(IntegrationPointProfileModel model)

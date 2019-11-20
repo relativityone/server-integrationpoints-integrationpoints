@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 				var totalElapsedTimeMs = (DateTime.Now - _startTime).TotalMilliseconds;
 				if (taskResult != null)
 				{
-					_data[JOB_RESULT_KEY_NAME] = taskResult;
+					_data[JOB_RESULT_KEY_NAME] = taskResult.Status.ToString();
 					_data[TOTAL_ELAPSED_TIME_MS] = totalElapsedTimeMs;
 					_data[ALL_STEPS_ELAPSED_TIME_MS] = _elapsed.TotalMilliseconds;
 				}

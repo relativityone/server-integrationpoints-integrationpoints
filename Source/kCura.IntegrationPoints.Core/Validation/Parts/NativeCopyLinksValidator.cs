@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 	public class NativeCopyLinksValidator : IValidator
 	{
 		private const string _COPY_NATIVE_FILES_BY_LINKS_LACK_OF_PERMISSION =
-			"You do not have permission to perform this export because it uses referential links to files. " +
+			"You do not have permission to perform this operation because it uses referential links to files. " +
 			"You must either log in as a system administrator or change the settings to upload files.";
 
 		private readonly IAPILog _logger;
