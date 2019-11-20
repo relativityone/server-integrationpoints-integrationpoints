@@ -56,7 +56,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			// Arrange
 			var configuration = new Mock<ISynchronizationConfiguration>(MockBehavior.Loose);
 
-			Mock<IImportApiFactory> importApiFactory = GetImportAPIFactoryMock(new ImportBulkArtifactJob());
+			Mock<IImportApiFactory> importApiFactory = GetImportAPIFactoryMock();
 			ImportJobFactory instance = GetTestInstance(importApiFactory);
 
 			// Act
@@ -74,7 +74,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			var configuration = new Mock<ISynchronizationConfiguration>();
 
-			Mock<IImportApiFactory> importApiFactory = GetImportAPIFactoryMock(new ImportBulkArtifactJob());
+			Mock<IImportApiFactory> importApiFactory = GetImportAPIFactoryMock();
 			ImportJobFactory instance = GetTestInstance(importApiFactory);
 
 			// Act
@@ -94,8 +94,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Mock<IImportApiFactory> importApiFactoryStub = new Mock<IImportApiFactory>();
 			Mock<Field> fieldStub = new Mock<Field>();
 			ImportBulkArtifactJob importBulkArtifactJobMock = new ImportBulkArtifactJob();
-
-
+			
 			importApiStub.Setup(x => x.NewNativeDocumentImportJob()).Returns(() => importBulkArtifactJobMock);
 			importApiStub.Setup(x => x.GetWorkspaceFields(It.IsAny<int>(), It.IsAny<int>())).Returns(() => new[] { fieldStub.Object });
 			importApiFactoryStub.Setup(x => x.CreateImportApiAsync(It.IsAny<Uri>())).ReturnsAsync(importApiStub.Object);
@@ -171,10 +170,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			importBulkArtifactJob.Settings.Billable.Should().Be(false);
 		}
 
-		private Mock<IImportApiFactory> GetImportAPIFactoryMock(ImportBulkArtifactJob importBulkArtifactJob)
+		private Mock<IImportApiFactory> GetImportAPIFactoryMock(ImportBulkArtifactJob importBulkArtifactJob = null)
 		{
 			var importApi = new Mock<IImportAPI>(MockBehavior.Loose);
-			importApi.Setup(x => x.NewNativeDocumentImportJob()).Returns(() => importBulkArtifactJob);
+			importApi.Setup(x => x.NewNativeDocumentImportJob()).Returns(() => importBulkArtifactJob ?? new ImportBulkArtifactJob());
 
 			var field = new Mock<Field>();
 			importApi.Setup(x => x.GetWorkspaceFields(It.IsAny<int>(), It.IsAny<int>())).Returns(() => new[] { field.Object });
