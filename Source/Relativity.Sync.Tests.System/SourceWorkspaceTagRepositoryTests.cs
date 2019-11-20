@@ -98,7 +98,7 @@ namespace Relativity.Sync.Tests.System
 
 			// Act
 			var repository = new SourceWorkspaceTagRepository(serviceFactoryStub, logger,
-				new SyncMetrics(Enumerable.Empty<ISyncMetricsSink>(), new CorrelationId("SystemTests")),
+				new SyncMetrics(Enumerable.Empty<ISyncMetricsSink>(), new SyncJobParameters(int.MaxValue, testSourceCaseArtifactId, int.MaxValue, testJobHistoryArtifactId)),
 				fieldMappings.Object);
 
 			IList<TagDocumentsResult<string>> results = await repository.TagDocumentsAsync(configuration, documentsToTag, CancellationToken.None).ConfigureAwait(false);

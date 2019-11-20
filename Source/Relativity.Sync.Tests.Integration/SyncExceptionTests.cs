@@ -30,7 +30,7 @@ namespace Relativity.Sync.Tests.Integration
 			SyncException deserializedException = (SyncException) formatter.Deserialize(ms2);
 
 			// ASSERT
-			deserializedException.CorrelationId.Should().Be(originalException.CorrelationId);
+			deserializedException.WorkflowId.Should().Be(originalException.WorkflowId);
 			deserializedException.InnerException.Should().NotBeNull();
 			deserializedException.InnerException.Message.Should().Be(originalException.InnerException.Message);
 			deserializedException.Message.Should().Be(originalException.Message);
@@ -50,7 +50,7 @@ namespace Relativity.Sync.Tests.Integration
 			SyncException deserializedException = JsonConvert.DeserializeObject<SyncException>(json);
 
 			// ASSERT
-			deserializedException.CorrelationId.Should().Be(originalException.CorrelationId);
+			deserializedException.WorkflowId.Should().Be(originalException.WorkflowId);
 			deserializedException.InnerException.Should().NotBeNull();
 			deserializedException.InnerException.Message.Should().Be(originalException.InnerException.Message);
 			deserializedException.Message.Should().Be(originalException.Message);

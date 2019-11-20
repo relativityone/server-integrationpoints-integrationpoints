@@ -1,6 +1,5 @@
 ﻿using System.Threading;
 using Autofac;
-using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync.Storage
@@ -13,11 +12,11 @@ namespace Relativity.Sync.Storage
 
 			builder.RegisterType<ValidationConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<PermissionsCheckConfiguration>().AsImplementedInterfaces();
-			builder.RegisterType<SumReporterConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<DataSourceSnapshotConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<SnapshotPartitionConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<DestinationWorkspaceSavedSearchCreationConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<DestinationWorkspaceObjectTypesCreationConfiguration>().AsImplementedInterfaces();
+			builder.RegisterType<DataDestinationInitializationConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<DataDestinationFinalizationConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<SynchronizationConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<DestinationWorkspaceTagsCreationConfiguration>().AsImplementedInterfaces();

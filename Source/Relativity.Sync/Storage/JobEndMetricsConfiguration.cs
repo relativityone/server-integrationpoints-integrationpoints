@@ -2,11 +2,11 @@
 
 namespace Relativity.Sync.Storage
 {
-	internal sealed class JobEndMetricsConfiguration : SumReporterConfiguration, IJobEndMetricsConfiguration
+	internal sealed class JobEndMetricsConfiguration : IJobEndMetricsConfiguration
 	{
 		private readonly SyncJobParameters _syncJobParameters;
 
-		public JobEndMetricsConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters) : base(cache, syncJobParameters)
+		public JobEndMetricsConfiguration(SyncJobParameters syncJobParameters)
 		{
 			_syncJobParameters = syncJobParameters;
 		}

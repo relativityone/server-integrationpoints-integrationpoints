@@ -19,7 +19,6 @@ namespace Relativity.Sync.Tests.Integration
 	[TestFixture]
 	public class SnapshotPartitionExecutorTests
 	{
-		private CorrelationId _correlationId;
 		private CancellationToken _token;
 
 		private Mock<ISyncLog> _syncLog;
@@ -40,7 +39,6 @@ namespace Relativity.Sync.Tests.Integration
 		public void OneTimeSetUp()
 		{
 			string correlationGuid = Guid.NewGuid().ToString();
-			_correlationId = new CorrelationId(correlationGuid);
 
 			_token = CancellationToken.None;
 		}
@@ -56,7 +54,6 @@ namespace Relativity.Sync.Tests.Integration
 			IntegrationTestsContainerBuilder.MockStepsExcept<ISnapshotPartitionConfiguration>(containerBuilder);
 
 			containerBuilder.RegisterInstance(_syncLog.Object).As<ISyncLog>();
-			containerBuilder.RegisterInstance(_correlationId).As<CorrelationId>();
 
 			var serviceFactoryMock = new Mock<ISourceServiceFactoryForAdmin>();
 			serviceFactoryMock.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);

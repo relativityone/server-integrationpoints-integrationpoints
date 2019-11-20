@@ -11,9 +11,9 @@ namespace Relativity.Sync
 	public sealed class SyncException : Exception
 	{
 		/// <summary>
-		///     Sync job correlation ID
+		///     Sync job workflow ID
 		/// </summary>
-		public string CorrelationId { get; }
+		public string WorkflowId { get; }
 
 		/// <inheritdoc />
 		public SyncException()
@@ -23,7 +23,7 @@ namespace Relativity.Sync
 		/// <inheritdoc />
 		private SyncException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
-			CorrelationId = info.GetString(nameof(CorrelationId));
+			WorkflowId = info.GetString(nameof(WorkflowId));
 		}
 
 		/// <inheritdoc />
@@ -37,19 +37,19 @@ namespace Relativity.Sync
 		}
 
 		/// <summary>
-		///     Constructor with correlation ID
+		///     Constructor with workflow ID
 		/// </summary>
-		public SyncException(string message, string correlationId) : base(message)
+		public SyncException(string message, string workflowId) : base(message)
 		{
-			CorrelationId = correlationId;
+			WorkflowId = workflowId;
 		}
 
 		/// <summary>
-		///     Constructor with correlation ID
+		///     Constructor with workflow ID
 		/// </summary>
-		public SyncException(string message, Exception innerException, string correlationId) : base(message, innerException)
+		public SyncException(string message, Exception innerException, string workflowId) : base(message, innerException)
 		{
-			CorrelationId = correlationId;
+			WorkflowId = workflowId;
 		}
 
 		/// <summary>
@@ -62,7 +62,7 @@ namespace Relativity.Sync
 				throw new ArgumentNullException(nameof(info));
 			}
 
-			info.AddValue(nameof(CorrelationId), CorrelationId);
+			info.AddValue(nameof(WorkflowId), WorkflowId);
 			base.GetObjectData(info, context);
 		}
 	}

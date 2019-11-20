@@ -1,5 +1,5 @@
 ﻿using System;
-using Relativity.Sync.Configuration;
+using Relativity.Sync.Telemetry;
 
 namespace Relativity.Sync
 {
@@ -8,11 +8,6 @@ namespace Relativity.Sync
 	/// </summary>
 	public sealed class SyncJobParameters
 	{
-		/// <summary>
-		/// Job correlation ID
-		/// </summary>
-		public string CorrelationId { get; }
-
 		/// <summary>
 		/// Job ID
 		/// </summary>
@@ -29,22 +24,19 @@ namespace Relativity.Sync
 		public int IntegrationPointArtifactId { get; }
 
 		/// <summary>
-		/// Constructor for testing only
+		/// Workflow ID.
 		/// </summary>
-		internal SyncJobParameters(int syncConfigurationArtifactId, int workspaceId) : 
-			this(syncConfigurationArtifactId, workspaceId, int.MaxValue, Guid.NewGuid().ToString())
-		{
-		}
+		public Lazy<string> WorkflowId { get; }
 
 		/// <summary>
-		/// Constructor
+		/// Default constructor
 		/// </summary>
-		public SyncJobParameters(int syncConfigurationArtifactId, int workspaceId, int integrationPointArtifactId, string correlationId)
+		public SyncJobParameters(int syncConfigurationArtifactId, int workspaceId, int integrationPointArtifactId, int jobHistoryArtifactId)
 		{
-			CorrelationId = correlationId;
 			SyncConfigurationArtifactId = syncConfigurationArtifactId;
 			WorkspaceId = workspaceId;
 			IntegrationPointArtifactId = integrationPointArtifactId;
+			WorkflowId = new Lazy<string>(() => $"{TelemetryConstants.PROVIDER_NAME}_{integrationPointArtifactId}_{jobHistoryArtifactId}");
 		}
 	}
 }

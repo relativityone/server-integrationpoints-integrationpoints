@@ -57,12 +57,17 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<SnapshotPartitionExecutor>().As<IExecutor<ISnapshotPartitionConfiguration>>();
 			builder.RegisterType<SynchronizationExecutionConstrains>().As<IExecutionConstrains<ISynchronizationConfiguration>>();
 			builder.RegisterType<SynchronizationExecutor>().As<IExecutor<ISynchronizationConfiguration>>();
+			builder.RegisterType<DataDestinationInitializationExecutor>().As<IExecutor<IDataDestinationInitializationConfiguration>>();
+			builder.RegisterType<DataDestinationInitializationExecutionConstrains>().As<IExecutionConstrains<IDataDestinationInitializationConfiguration>>();
+			builder.RegisterType<DataDestinationFinalizationExecutor>().As<IExecutor<IDataDestinationFinalizationConfiguration>>();
+			builder.RegisterType<DataDestinationFinalizationExecutionConstrains>().As<IExecutionConstrains<IDataDestinationFinalizationConfiguration>>();
 			builder.RegisterType<NotificationExecutionConstrains>().As<IExecutionConstrains<INotificationConfiguration>>();
 			builder.RegisterType<NotificationExecutor>().As<IExecutor<INotificationConfiguration>>();
 			builder.RegisterType<JobStatusConsolidationExecutionConstrains>().As<IExecutionConstrains<IJobStatusConsolidationConfiguration>>();
 			builder.RegisterType<JobStatusConsolidationExecutor>().As<IExecutor<IJobStatusConsolidationConfiguration>>();
 			builder.RegisterType<JobCleanupExecutorConstrains>().As<IExecutionConstrains<IJobCleanupConfiguration>>();
 			builder.RegisterType<JobCleanupExecutor>().As<IExecutor<IJobCleanupConfiguration>>();
+
 			builder.RegisterTypes(Assembly.GetExecutingAssembly().GetTypes().Where(t => !t.IsAbstract && t.IsAssignableTo<IPermissionCheck>()).ToArray()).As<IPermissionCheck>();
 
 			builder.RegisterType<BatchRepository>().As<IBatchRepository>();

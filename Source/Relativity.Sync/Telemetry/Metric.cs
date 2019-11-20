@@ -29,12 +29,11 @@ namespace Relativity.Sync.Telemetry
 			PublicInstanceProperties
 				.Where(p => p.PropertyType == typeof(IDictionary<string, object>));
 
-		private Metric(string name, MetricType type, string correlationId)
+		private Metric(string name, MetricType type, string workflowId)
 		{
 			Name = name;
 			Type = type;
-			CorrelationId = correlationId;
-			WorkflowId = correlationId;
+			WorkflowId = workflowId;
 		}
 
 		/// <summary>
@@ -54,11 +53,6 @@ namespace Relativity.Sync.Telemetry
 		/// Type of metric this represents, e.g. a timed operation, a counter, etc.
 		/// </summary>
 		public MetricType Type { get; }
-
-		/// <summary>
-		/// ID that correlates logging and telemetry across a single job.
-		/// </summary>
-		public string CorrelationId { get; }
 
 		/// <summary>
 		/// ID that correlates the metric to a particular system usage workflow.
@@ -91,11 +85,11 @@ namespace Relativity.Sync.Telemetry
 		/// <param name="name">Name or bucket for the metric</param>
 		/// <param name="duration">Duration of the operation</param>
 		/// <param name="executionStatus">Result of the operation</param>
-		/// <param name="correlationId">ID which correlates all metrics across a job</param>
+		/// <param name="workflowId">The ID which correlates the metric to a particular workflow.</param>
 		/// <returns></returns>
-		public static Metric TimedOperation(string name, TimeSpan duration, ExecutionStatus executionStatus, string correlationId)
+		public static Metric TimedOperation(string name, TimeSpan duration, ExecutionStatus executionStatus, string workflowId)
 		{
-			return new Metric(name, MetricType.TimedOperation, correlationId)
+			return new Metric(name, MetricType.TimedOperation, workflowId)
 			{
 				Value = duration.TotalMilliseconds,
 				ExecutionStatus = executionStatus
@@ -107,11 +101,11 @@ namespace Relativity.Sync.Telemetry
 		/// </summary>
 		/// <param name="name">Name or bucket for the metric</param>
 		/// <param name="executionStatus">Result of the operation</param>
-		/// <param name="correlationId">ID which correlates all metrics across a job</param>
+		/// <param name="workflowId">The ID which correlates the metric to a particular workflow.</param>
 		/// <returns></returns>
-		public static Metric CountOperation(string name, ExecutionStatus executionStatus, string correlationId)
+		public static Metric CountOperation(string name, ExecutionStatus executionStatus, string workflowId)
 		{
-			return new Metric(name, MetricType.Counter, correlationId)
+			return new Metric(name, MetricType.Counter, workflowId)
 			{
 				ExecutionStatus = executionStatus
 			};
@@ -122,13 +116,13 @@ namespace Relativity.Sync.Telemetry
 		/// </summary>
 		/// <param name="name">Name or bucket for the metric</param>
 		/// <param name="executionStatus">Result of the operation</param>
-		/// <param name="correlationId">ID which correlates all metrics across a job</param>
+		/// <param name="workflowId">The ID which correlates the metric to a particular workflow.</param>
 		/// <param name="value">GaugeOperation value</param>
 		/// <param name="unitOfMeasure">Unit of measure describing a value (e.g. "document(s)")</param>
 		/// <returns></returns>
-		public static Metric GaugeOperation(string name, ExecutionStatus executionStatus, string correlationId, long value, string unitOfMeasure)
+		public static Metric GaugeOperation(string name, ExecutionStatus executionStatus, string workflowId, long value, string unitOfMeasure)
 		{
-			return new Metric(name, MetricType.GaugeOperation, correlationId)
+			return new Metric(name, MetricType.GaugeOperation, workflowId)
 			{
 				ExecutionStatus = executionStatus,
 				Value = value,
@@ -142,11 +136,10 @@ namespace Relativity.Sync.Telemetry
 		/// <param name="name">The name of the metric.</param>
 		/// <param name="value">The string value of the metric.</param>
 		/// <param name="workflowId">The ID which correlates the metric to a particular workflow.</param>
-		/// <param name="correlationId">The ID which correlates all metrics across a job.</param>
 		/// <returns>A <see cref="Metric"/> representation of the point in time string.</returns>
-		public static Metric PointInTimeStringOperation(string name, string value, string workflowId, string correlationId)
+		public static Metric PointInTimeStringOperation(string name, string value, string workflowId)
 		{
-			return PointInTimeOperation(name, value, workflowId, correlationId, MetricType.PointInTimeString);
+			return PointInTimeOperation(name, value, workflowId, MetricType.PointInTimeString);
 		}
 
 		/// <summary>
@@ -155,11 +148,10 @@ namespace Relativity.Sync.Telemetry
 		/// <param name="name">The name of the metric.</param>
 		/// <param name="value">The long value of the metric.</param>
 		/// <param name="workflowId">The ID which correlates the metric to a particular workflow.</param>
-		/// <param name="correlationId">The ID which correlates all metrics across a job.</param>
 		/// <returns>A <see cref="Metric"/> representation of the point in time long.</returns>
-		public static Metric PointInTimeLongOperation(string name, long value, string workflowId, string correlationId)
+		public static Metric PointInTimeLongOperation(string name, long value, string workflowId)
 		{
-			return PointInTimeOperation(name, value, workflowId, correlationId, MetricType.PointInTimeLong);
+			return PointInTimeOperation(name, value, workflowId, MetricType.PointInTimeLong);
 		}
 
 		/// <summary>
@@ -168,16 +160,15 @@ namespace Relativity.Sync.Telemetry
 		/// <param name="name">The name of the metric.</param>
 		/// <param name="value">The double value of the metric.</param>
 		/// <param name="workflowId">The ID which correlates the metric to a particular workflow.</param>
-		/// <param name="correlationId">The ID which correlates all metrics across a job.</param>
 		/// <returns>A <see cref="Metric"/> representation of the point in time double.</returns>
-		public static Metric PointInTimeDoubleOperation(string name, double value, string workflowId, string correlationId)
+		public static Metric PointInTimeDoubleOperation(string name, double value, string workflowId)
 		{
-			return PointInTimeOperation(name, value, workflowId, correlationId, MetricType.PointInTimeDouble);
+			return PointInTimeOperation(name, value, workflowId, MetricType.PointInTimeDouble);
 		}
 
-		private static Metric PointInTimeOperation(string name, object value, string workflowId, string correlationId, MetricType type)
+		private static Metric PointInTimeOperation(string name, object value, string workflowId, MetricType type)
 		{
-			return new Metric(name, type, correlationId)
+			return new Metric(name, type, workflowId)
 			{
 				Value = value,
 				WorkflowId = workflowId

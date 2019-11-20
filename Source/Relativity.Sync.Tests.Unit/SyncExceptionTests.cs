@@ -17,7 +17,7 @@ namespace Relativity.Sync.Tests.Unit
 			SyncException instance = new SyncException();
 
 			// ASSERT
-			instance.CorrelationId.Should().BeNull();
+			instance.WorkflowId.Should().BeNull();
 			instance.InnerException.Should().BeNull();
 			instance.Message.Should().Be(expectedMessage);
 		}
@@ -31,7 +31,7 @@ namespace Relativity.Sync.Tests.Unit
 			SyncException instance = new SyncException(expectedMessage);
 
 			// ASSERT
-			instance.CorrelationId.Should().BeNull();
+			instance.WorkflowId.Should().BeNull();
 			instance.InnerException.Should().BeNull();
 			instance.Message.Should().Be(expectedMessage);
 		}
@@ -46,38 +46,38 @@ namespace Relativity.Sync.Tests.Unit
 			SyncException instance = new SyncException(expectedMessage, innerEx);
 
 			// ASSERT
-			instance.CorrelationId.Should().BeNull();
+			instance.WorkflowId.Should().BeNull();
 			instance.InnerException.Should().Be(innerEx);
 			instance.Message.Should().Be(expectedMessage);
 		}
 
 		[Test]
-		public void ItShouldUseMessageAndCorrelationId()
+		public void ItShouldUseMessageAndWorkflowId()
 		{
 			const string expectedMessage = "message";
-			const string correlationId = "id";
+			const string workflowId = "id";
 
 			// ACT
-			SyncException instance = new SyncException(expectedMessage, correlationId);
+			SyncException instance = new SyncException(expectedMessage, workflowId);
 
 			// ASSERT
 			instance.InnerException.Should().BeNull();
-			instance.CorrelationId.Should().Be(correlationId);
+			instance.WorkflowId.Should().Be(workflowId);
 			instance.Message.Should().Be(expectedMessage);
 		}
 
 		[Test]
-		public void ItShouldUseErrorMessageAndInnerExceptionAndCorrelationId()
+		public void ItShouldUseErrorMessageAndInnerExceptionAndWorkflowId()
 		{
 			const string expectedMessage = "message";
-			const string correlationId = "id";
+			const string workflowId = "id";
 			Exception innerEx = new Exception("foo");
 
 			// ACT
-			SyncException instance = new SyncException(expectedMessage, innerEx, correlationId);
+			SyncException instance = new SyncException(expectedMessage, innerEx, workflowId);
 
 			// ASSERT
-			instance.CorrelationId.Should().Be(correlationId);
+			instance.WorkflowId.Should().Be(workflowId);
 			instance.InnerException.Should().Be(innerEx);
 			instance.Message.Should().Be(expectedMessage);
 		}
@@ -85,7 +85,7 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public void ItShouldThrowExceptionWhenInfoIsNull()
 		{
-			SyncException sut = new SyncException("message", "correlation id");
+			SyncException sut = new SyncException("message", "workflow id");
 
 			// ACT
 			Action action = () => sut.GetObjectData(null, new StreamingContext());

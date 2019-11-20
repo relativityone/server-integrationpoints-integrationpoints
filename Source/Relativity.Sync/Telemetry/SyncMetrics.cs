@@ -9,17 +9,17 @@ namespace Relativity.Sync.Telemetry
 	internal sealed class SyncMetrics : ISyncMetrics
 	{
 		private readonly IEnumerable<ISyncMetricsSink> _sinks;
-		private readonly CorrelationId _correlationId;
+		private readonly SyncJobParameters _syncJobParameters;
 
 		/// <summary>
 		///     Creates a new instance of <see cref="SyncMetrics" /> with the given sinks.
 		/// </summary>
 		/// <param name="sinks">Sinks to which metrics should be sent</param>
-		/// <param name="correlationId">ID which correlates all metrics across a job</param>
-		public SyncMetrics(IEnumerable<ISyncMetricsSink> sinks, CorrelationId correlationId)
+		/// <param name="syncJobParameters">ID which correlates all metrics across a job</param>
+		public SyncMetrics(IEnumerable<ISyncMetricsSink> sinks, SyncJobParameters syncJobParameters)
 		{
 			_sinks = sinks;
-			_correlationId = correlationId;
+			_syncJobParameters = syncJobParameters;
 		}
 
 		/// <inheritdoc />
@@ -27,7 +27,7 @@ namespace Relativity.Sync.Telemetry
 		{
 			foreach (ISyncMetricsSink sink in _sinks)
 			{
-				Metric metric = Metric.TimedOperation(name, duration, executionStatus, _correlationId.Value);
+				Metric metric = Metric.TimedOperation(name, duration, executionStatus, _syncJobParameters.WorkflowId.Value);
 				sink.Log(metric);
 			}
 		}
@@ -37,7 +37,7 @@ namespace Relativity.Sync.Telemetry
 		{
 			foreach (ISyncMetricsSink sink in _sinks)
 			{
-				Metric metric = Metric.TimedOperation(name, duration, executionStatus, _correlationId.Value);
+				Metric metric = Metric.TimedOperation(name, duration, executionStatus, _syncJobParameters.WorkflowId.Value);
 				foreach (KeyValuePair<string, object> keyValuePair in customData)
 				{
 					metric.CustomData.Add(keyValuePair);
@@ -52,7 +52,7 @@ namespace Relativity.Sync.Telemetry
 		{
 			foreach (ISyncMetricsSink sink in _sinks)
 			{
-				Metric metric = Metric.CountOperation(name, status, _correlationId.Value);
+				Metric metric = Metric.CountOperation(name, status, _syncJobParameters.WorkflowId.Value);
 				sink.Log(metric);
 			}
 		}
@@ -73,7 +73,7 @@ namespace Relativity.Sync.Telemetry
 		{
 			foreach (ISyncMetricsSink sink in _sinks)
 			{
-				Metric metric = Metric.GaugeOperation(name, executionStatus, _correlationId.Value, value, unitOfMeasure);
+				Metric metric = Metric.GaugeOperation(name, executionStatus, _syncJobParameters.WorkflowId.Value, value, unitOfMeasure);
 				foreach (KeyValuePair<string, object> keyValuePair in customData)
 				{
 					metric.CustomData.Add(keyValuePair);
@@ -83,29 +83,29 @@ namespace Relativity.Sync.Telemetry
 			}
 		}
 
-		public void LogPointInTimeString(string name, string value, string workflowId)
+		public void LogPointInTimeString(string name, string value)
 		{
 			foreach (ISyncMetricsSink sink in _sinks)
 			{
-				Metric metric = Metric.PointInTimeStringOperation(name, value, workflowId, _correlationId.Value);
+				Metric metric = Metric.PointInTimeStringOperation(name, value, _syncJobParameters.WorkflowId.Value);
 				sink.Log(metric);
 			}
 		}
 
-		public void LogPointInTimeLong(string name, long value, string workflowId)
+		public void LogPointInTimeLong(string name, long value)
 		{
 			foreach (ISyncMetricsSink sink in _sinks)
 			{
-				Metric metric = Metric.PointInTimeLongOperation(name, value, workflowId, _correlationId.Value);
+				Metric metric = Metric.PointInTimeLongOperation(name, value, _syncJobParameters.WorkflowId.Value);
 				sink.Log(metric);
 			}
 		}
 
-		public void LogPointInTimeDouble(string name, double value, string workflowId)
+		public void LogPointInTimeDouble(string name, double value)
 		{
 			foreach (ISyncMetricsSink sink in _sinks)
 			{
-				Metric metric = Metric.PointInTimeDoubleOperation(name, value, workflowId, _correlationId.Value);
+				Metric metric = Metric.PointInTimeDoubleOperation(name, value, _syncJobParameters.WorkflowId.Value);
 				sink.Log(metric);
 			}
 		}

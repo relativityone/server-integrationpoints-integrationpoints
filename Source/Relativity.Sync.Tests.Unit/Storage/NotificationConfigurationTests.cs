@@ -5,7 +5,6 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Tests.Unit.Storage
@@ -30,7 +29,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			string emailRecipients = string.Join(";", TestEmailRecipients);
 			cache.Setup(x => x.GetFieldValue<string>(EmailNotificationRecipientsGuid)).Returns(emailRecipients);
 
-			var syncJobParameters = new SyncJobParameters(int.MaxValue, int.MaxValue, int.MaxValue, string.Empty);
+			var syncJobParameters = new SyncJobParameters(int.MaxValue, int.MaxValue, int.MaxValue, int.MaxValue);
 			var instance = new NotificationConfiguration(cache.Object, syncJobParameters);
 
 			// Act
@@ -50,7 +49,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			string emailRecipients = string.Join(";", string.Empty);
 			cache.Setup(x => x.GetFieldValue<string>(EmailNotificationRecipientsGuid)).Returns(emailRecipients);
 
-			var syncJobParameters = new SyncJobParameters(int.MaxValue, int.MaxValue, int.MaxValue, string.Empty);
+			var syncJobParameters = new SyncJobParameters(int.MaxValue, int.MaxValue, int.MaxValue, int.MaxValue);
 			var instance = new NotificationConfiguration(cache.Object, syncJobParameters);
 
 			// Act
@@ -70,7 +69,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			string emailRecipients = string.Join(";", TestEmailRecipients);
 			cache.Setup(x => x.GetFieldValue<string>(EmailNotificationRecipientsGuid)).Returns(emailRecipients);
 
-			var syncJobParameters = new SyncJobParameters(int.MaxValue, int.MaxValue, int.MaxValue, string.Empty);
+			var syncJobParameters = new SyncJobParameters(int.MaxValue, int.MaxValue, int.MaxValue, int.MaxValue);
 			var instance = new NotificationConfiguration(cache.Object, syncJobParameters);
 
 			// Act
@@ -95,7 +94,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			string emailRecipients = string.Join(";", TestEmailRecipients);
 			cache.Setup(x => x.GetFieldValue<string>(EmailNotificationRecipientsGuid)).Returns(emailRecipients);
 
-			var syncJobParameters = new SyncJobParameters(int.MaxValue, int.MaxValue, int.MaxValue, string.Empty);
+			var syncJobParameters = new SyncJobParameters(int.MaxValue, int.MaxValue, int.MaxValue, int.MaxValue);
 			var instance = new NotificationConfiguration(cache.Object, syncJobParameters);
 
 			// Act
@@ -123,7 +122,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			cache.Setup(x => x.GetFieldValue<RelativityObjectValue>(JobHistoryGuid)).Returns(new RelativityObjectValue { ArtifactID = expectedJobHistoryArtifactId, Name = expectedJobName }).Verifiable();
 			cache.Setup(x => x.GetFieldValue<string>(SourceWorkspaceTagNameGuid)).Returns(expectedSourceWorkspaceTag).Verifiable();
 
-			var syncJobParameters = new SyncJobParameters(int.MaxValue, int.MaxValue, int.MaxValue, string.Empty);
+			var syncJobParameters = new SyncJobParameters(int.MaxValue, int.MaxValue, int.MaxValue, int.MaxValue);
 			var instance = new NotificationConfiguration(cache.Object, syncJobParameters);
 
 			// Act
@@ -145,7 +144,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			// Arrange
 			var cache = new Mock<Sync.Storage.IConfiguration>();
-			var syncJobParameters = new SyncJobParameters(int.MaxValue, int.MaxValue, int.MaxValue, string.Empty);
+			var syncJobParameters = new SyncJobParameters(int.MaxValue, int.MaxValue, int.MaxValue, int.MaxValue);
 			var instance = new NotificationConfiguration(cache.Object, syncJobParameters);
 
 			// Act

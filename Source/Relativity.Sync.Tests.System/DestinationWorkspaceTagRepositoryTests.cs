@@ -54,7 +54,7 @@ namespace Relativity.Sync.Tests.System
 				new FederatedInstance(),
 				new TagNameFormatter(new EmptyLogger()),
 				new EmptyLogger(),
-				new SyncMetrics(Enumerable.Empty<ISyncMetricsSink>(), new CorrelationId("SystemTests")));
+				new SyncMetrics(Enumerable.Empty<ISyncMetricsSink>(), new SyncJobParameters(int.MaxValue, _sourceWorkspaceArtifactId, int.MaxValue, jobHistoryId)));
 
 			IList<TagDocumentsResult<int>> results = await repository.TagDocumentsAsync(configuration, documentsToTag, CancellationToken.None).ConfigureAwait(false);
 

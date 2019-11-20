@@ -18,10 +18,12 @@ namespace Relativity.Sync.Tests.Unit
 		private SyncJobParameters _syncJobParameters;
 		private const int _JOB_ID = 234;
 		private const int _WORKSPACE_ID = 123;
+		private const int _INTEGRATION_POINT_ID = 435;
+		private const int _JOB_HISTORY_ID = 45645;
 		private const int _PARAM1 = 1;
 
 		private const string _MESSAGE = "message template {param1}";
-		private const string _EXPECTED_MESSAGE = "message template {param1} Sync job properties: CorrelationId: {CorrelationId} SyncConfigurationArtifactId: {SyncConfigurationArtifactId} ";
+		private const string _EXPECTED_MESSAGE = "message template {param1} Sync job properties: WorkflowId: {WorkflowId} SyncConfigurationArtifactId: {SyncConfigurationArtifactId} ";
 		private readonly Exception _exception = new IOException();
 
 		private readonly object[] _params = { _PARAM1 };
@@ -32,12 +34,12 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			_logger = new Mock<ISyncLog>();
 
-			_syncJobParameters = new SyncJobParameters(_JOB_ID, _WORKSPACE_ID);
+			_syncJobParameters = new SyncJobParameters(_JOB_ID, _WORKSPACE_ID, _INTEGRATION_POINT_ID, _JOB_HISTORY_ID);
 
 			_expectedParams = new object[]
 			{
 				_PARAM1,
-				_syncJobParameters.CorrelationId,
+				_syncJobParameters.WorkflowId,
 				_syncJobParameters.SyncConfigurationArtifactId
 			};
 			_instance = new ContextLogger(_syncJobParameters, _logger.Object);

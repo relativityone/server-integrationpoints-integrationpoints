@@ -29,12 +29,11 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void SetUp()
 		{
 			const int jobId = 50;
-			const string correlationId = "Sample_Correlation_ID";
 		
 			_sourceServiceFactory = new Mock<ISourceServiceFactoryForUser>();
 			_cache = new Mock<IConfiguration>();
 			_objectManager = new Mock<IObjectManager>();
-			_sycJobParameters = new SyncJobParameters(jobId, _WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, correlationId);
+			_sycJobParameters = new SyncJobParameters(jobId, _WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, 1);
 			_instance = new PermissionsCheckConfiguration(_cache.Object, _sycJobParameters,_sourceServiceFactory.Object);
 		}
 

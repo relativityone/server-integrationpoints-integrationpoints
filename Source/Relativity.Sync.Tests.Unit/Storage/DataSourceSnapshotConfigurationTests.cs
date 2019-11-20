@@ -32,7 +32,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			_cache = new Mock<IConfiguration>();
 			_fieldMappings = new Mock<IFieldMappings>();
 
-			_instance = new DataSourceSnapshotConfiguration(_cache.Object, _fieldMappings.Object, new SyncJobParameters(1, _WORKSPACE_ID));
+			_instance = new DataSourceSnapshotConfiguration(_cache.Object, _fieldMappings.Object, new SyncJobParameters(1, _WORKSPACE_ID, 1, 1));
 		}
 
 		[Test]

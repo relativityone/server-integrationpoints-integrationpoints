@@ -15,9 +15,10 @@ namespace Relativity.Sync.Tests.Unit
 		private Mock<ISyncMetricsSink> _sink1;
 		private Mock<ISyncMetricsSink> _sink2;
 
-		private const string _CORRELATION_ID = "id";
 		private const string _NAME = "name";
-		private const string _WORKFLOW_ID = "workflow.id";
+		private const int _INTEGRATION_POINT_ID = 111;
+		private const int _JOB_HISTORY_ID = 222;
+		private readonly string _workflowId = $"{TelemetryConstants.PROVIDER_NAME}_{_INTEGRATION_POINT_ID}_{_JOB_HISTORY_ID}";
 
 		[SetUp]
 		public void SetUp()
@@ -30,7 +31,7 @@ namespace Relativity.Sync.Tests.Unit
 				_sink1.Object,
 				_sink2.Object
 			};
-			_instance = new SyncMetrics(sinks, new CorrelationId(_CORRELATION_ID));
+			_instance = new SyncMetrics(sinks, new SyncJobParameters(1, 1, _INTEGRATION_POINT_ID, _JOB_HISTORY_ID));
 		}
 
 		[Test]
@@ -123,7 +124,7 @@ namespace Relativity.Sync.Tests.Unit
 			const string value = "test value";
 
 			// Act
-			_instance.LogPointInTimeString(_NAME, value, _WORKFLOW_ID);
+			_instance.LogPointInTimeString(_NAME, value);
 
 			// Assert
 			_sink1.Verify(x => x.Log(It.Is<Metric>(m => AssertPointInTimeOperation(m, value) && m.Type == MetricType.PointInTimeString)));
@@ -137,7 +138,7 @@ namespace Relativity.Sync.Tests.Unit
 			const long value = long.MaxValue;
 
 			// Act
-			_instance.LogPointInTimeLong(_NAME, value, _WORKFLOW_ID);
+			_instance.LogPointInTimeLong(_NAME, value);
 
 			// Assert
 			_sink1.Verify(x => x.Log(It.Is<Metric>(m => AssertPointInTimeOperation(m, value) && m.Type == MetricType.PointInTimeLong)));
@@ -151,18 +152,18 @@ namespace Relativity.Sync.Tests.Unit
 			const double value = double.MaxValue;
 
 			// Act
-			_instance.LogPointInTimeDouble(_NAME, value, _WORKFLOW_ID);
+			_instance.LogPointInTimeDouble(_NAME, value);
 
 			// Assert
 			_sink1.Verify(x => x.Log(It.Is<Metric>(m => AssertPointInTimeOperation(m, value) && m.Type == MetricType.PointInTimeDouble)));
 			_sink2.Verify(x => x.Log(It.Is<Metric>(m => AssertPointInTimeOperation(m, value) && m.Type == MetricType.PointInTimeDouble)));
 		}
 
-		private static bool AssertMetric(Metric metric, MetricType metricType, ExecutionStatus executionStatus, Dictionary<string, object> customData)
+		private bool AssertMetric(Metric metric, MetricType metricType, ExecutionStatus executionStatus, Dictionary<string, object> customData)
 		{
 			metric.Type.Should().Be(metricType);
 			metric.Name.Should().Be(_NAME);
-			metric.CorrelationId.Should().Be(_CORRELATION_ID);
+			metric.WorkflowId.Should().Be(_workflowId);
 			metric.ExecutionStatus.Should().Be(executionStatus);
 
 			if (customData != null)
@@ -173,7 +174,7 @@ namespace Relativity.Sync.Tests.Unit
 			return true;
 		}
 
-		private static bool AssertTimedOperationMetric(Metric metric, TimeSpan duration, ExecutionStatus executionStatus, Dictionary<string, object> customData)
+		private bool AssertTimedOperationMetric(Metric metric, TimeSpan duration, ExecutionStatus executionStatus, Dictionary<string, object> customData)
 		{
 			AssertMetric(metric, MetricType.TimedOperation, executionStatus, customData);
 
@@ -182,7 +183,7 @@ namespace Relativity.Sync.Tests.Unit
 			return true;
 		}
 
-		private static bool AssertGaugeOperationMetric(Metric metric, long gaugeValue, string unitOfMeasure, ExecutionStatus executionStatus, Dictionary<string, object> customData)
+		private bool AssertGaugeOperationMetric(Metric metric, long gaugeValue, string unitOfMeasure, ExecutionStatus executionStatus, Dictionary<string, object> customData)
 		{
 			const string unitOfMeasureKey = "unitOfMeasure";
 			if (customData.ContainsKey(unitOfMeasureKey))
@@ -201,13 +202,12 @@ namespace Relativity.Sync.Tests.Unit
 			return true;
 		}
 
-		private static bool AssertPointInTimeOperation<T>(Metric actualMetric, T value)
+		private bool AssertPointInTimeOperation<T>(Metric actualMetric, T value)
 		{
 			actualMetric.Name.Should().Be(_NAME);
 			actualMetric.Value.Should().BeOfType<T>();
 			actualMetric.Value.Should().Be(value);
-			actualMetric.WorkflowId.Should().Be(_WORKFLOW_ID);
-			actualMetric.CorrelationId.Should().Be(_CORRELATION_ID);
+			actualMetric.WorkflowId.Should().Be(_workflowId);
 			return true;
 		}
 	}

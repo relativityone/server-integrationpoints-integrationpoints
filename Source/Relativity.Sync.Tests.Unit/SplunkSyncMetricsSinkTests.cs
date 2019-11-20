@@ -27,10 +27,10 @@ namespace Relativity.Sync.Tests.Unit
 			const string metricName = "metricName";
 			TimeSpan duration = TimeSpan.MaxValue;
 			ExecutionStatus executionStatus = ExecutionStatus.Completed;
-			const string correlationId = "correlationId";
+			const string workflowId = "workflowId";
 			
 			// act
-			Metric metric = Metric.TimedOperation(metricName, duration, executionStatus, correlationId);
+			Metric metric = Metric.TimedOperation(metricName, duration, executionStatus, workflowId);
 			_sut.Log(metric);
 
 			// assert

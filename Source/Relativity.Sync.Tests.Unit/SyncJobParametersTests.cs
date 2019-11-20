@@ -1,6 +1,6 @@
-using System;
 using FluentAssertions;
 using NUnit.Framework;
+using Relativity.Sync.Telemetry;
 
 namespace Relativity.Sync.Tests.Unit
 {
@@ -8,23 +8,23 @@ namespace Relativity.Sync.Tests.Unit
 	public class SyncJobParametersTests
 	{
 		[Test]
-		public void CorrelationIdShouldNotBeEmpty()
+		public void WorkflowIdShouldNotBeEmpty()
 		{
-			SyncJobParameters syncJobParameters = new SyncJobParameters(1, 1);
+			SyncJobParameters syncJobParameters = new SyncJobParameters(1, 1, 1, 1);
 
 			// ASSERT
-			syncJobParameters.CorrelationId.Should().NotBeNullOrWhiteSpace();
+			syncJobParameters.WorkflowId.Value.Should().NotBeNullOrWhiteSpace();
 		}
 
 		[Test]
-		public void CorrelationIdShouldBeInitializedWithGivenValue()
+		public void WorkflowIdShouldBeInitializedWithGivenValue()
 		{
-			const string id = "example id";
+			string workflowId = $"{TelemetryConstants.PROVIDER_NAME}_1_1";
 
-			SyncJobParameters syncJobParameters = new SyncJobParameters(1, 1, 1, id);
+			SyncJobParameters syncJobParameters = new SyncJobParameters(1, 1, 1, 1);
 
 			// ASSERT
-			syncJobParameters.CorrelationId.Should().Be(id);
+			syncJobParameters.WorkflowId.Value.Should().Be(workflowId);
 		}
 
 		[Test]
@@ -32,7 +32,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			const int jobId = 801314;
 
-			SyncJobParameters syncJobParameters = new SyncJobParameters(jobId, 1);
+			SyncJobParameters syncJobParameters = new SyncJobParameters(jobId, 1, 1, 1);
 
 			// ASSERT
 			syncJobParameters.SyncConfigurationArtifactId.Should().Be(jobId);
@@ -43,30 +43,29 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			const int workspaceId = 172320;
 
-			SyncJobParameters syncJobParameters = new SyncJobParameters(1, workspaceId);
+			SyncJobParameters syncJobParameters = new SyncJobParameters(1, workspaceId, 1, 1);
 
 			// ASSERT
 			syncJobParameters.WorkspaceId.Should().Be(workspaceId);
 		}
 
 		[Test]
-		public void ItShouldCreateNonEmptyCorrelationId()
+		public void ItShouldCreateNonEmptyWorkflowId()
 		{
-			SyncJobParameters syncJobParameters = new SyncJobParameters(1, 1);
+			SyncJobParameters syncJobParameters = new SyncJobParameters(1, 1, 1, 1);
 
-			syncJobParameters.CorrelationId.Should().NotBeNullOrWhiteSpace();
-			syncJobParameters.CorrelationId.Should().NotBe(new Guid().ToString());
+			syncJobParameters.WorkflowId.Value.Should().NotBeNullOrWhiteSpace();
 		}
-
-
-
+		
 		[Test]
-		public void ItShouldCreateDifferentCorrelationIdsEveryTime()
+		public void ItShouldCreateDifferentWorkflowIdsForDifferentJobs()
 		{
-			SyncJobParameters firstSyncJobParameters = new SyncJobParameters(1, 1);
-			SyncJobParameters secondSyncJobParameters = new SyncJobParameters(1, 1);
+#pragma warning disable RG2009 // Hardcoded Numeric Value
+			SyncJobParameters firstSyncJobParameters = new SyncJobParameters(1, 1, 1, 1);
+			SyncJobParameters secondSyncJobParameters = new SyncJobParameters(1, 1, 1, 2);
 
-			firstSyncJobParameters.CorrelationId.Should().NotBe(secondSyncJobParameters.CorrelationId);
+			firstSyncJobParameters.WorkflowId.Value.Should().NotBe(secondSyncJobParameters.WorkflowId.Value);
+#pragma warning restore RG2009 // Hardcoded Numeric Value
 		}
 	}
 }
