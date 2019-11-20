@@ -1,4 +1,5 @@
-﻿using kCura.WinEDDS;
+﻿using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
+using kCura.WinEDDS;
 using kCura.WinEDDS.Exporters;
 using kCura.WinEDDS.Service.Export;
 
@@ -24,8 +25,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 			return new ExtendedExporter(exportFile, config.Controller, config.ServiceFactory, config.LoadFileFormatterFactory, config.ExportConfig)
 			{
 				NameTextAndNativesAfterBegBates = config.NameTextAndNativesAfterBegBates,
-				FileHelper = new global::Relativity.DataExchange.Io.LongPathFileHelper(),
-				DirectoryHelper = new global::Relativity.DataExchange.Io.LongPathDirectoryHelper(),
+				FileHelper = new LongPathFileHelper(),
+				DirectoryHelper = new LongPathDirectoryHelper(),
 				FileNameProvider = config.FileNameProvider
 			};
 		}
