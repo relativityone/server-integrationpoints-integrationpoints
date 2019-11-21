@@ -42,7 +42,7 @@ Task Compile -Description "Compile code for this repo" {
     }
 }
 
-Task Test -Description "Run unit tests that don't require a deployed environment." {
+Task Test -Description "Run tests that don't require a deployed environment." {
     $TestResultsPath = Join-Path $LogsDir "{assembly}.{framework}.TestResults.xml"
     $CoveragePath = Join-Path $LogsDir "Coverage.xml"
     exec { & dotnet @("test", $Solution,
@@ -59,6 +59,14 @@ Task Test -Description "Run unit tests that don't require a deployed environment
             ("-reporttypes:Cobertura"))
     }
     Move-Item (Join-Path $LogsDir Cobertura.xml) $CoveragePath -Force
+}
+
+Task UnitTest -Description "Run Unit Tests" {
+    Invoke-Tests -TestSuite Unit
+}
+
+Task IntegrationTest -Description "Run Integration Tests" {
+    Invoke-Tests -TestSuite Integration
 }
 
 Task Sign -Description "Sign all files" {
@@ -124,4 +132,26 @@ Task Rebuild -Description "Do a rebuild" {
 
 Task Help -Alias ? -Description "Display task information" {
     WriteDocumentation
+}
+
+#Custom Functionas
+function Invoke-Tests ($TestSuite) {
+    $TestProject = ((Get-ChildItem -Path $SourceDir -Filter "*Tests.$TestSuite.csproj" -File -Recurse)[0].FullName)
+
+    $TestResultsPath = Join-Path $LogsDir "{assembly}.{framework}.TestResults.xml"
+    $CoveragePath = Join-Path $LogsDir "Coverage.xml"
+    exec { & dotnet @("test", $TestProject,
+            ("/p:collectcoverage=true"),
+            ("/p:CoverletOutputFormat=cobertura"),
+            ("--logger:nunit;LogFilePath=$TestResultsPath"))
+    }
+
+    $coverageReports = [string]::Empty
+    Get-ChildItem $PSScriptRoot -Filter "coverage.cobertura.xml" -Recurse | ForEach-Object { $coverageReports += "$($_.FullName);" }
+    exec { & $ReportGenerator @(
+            ("-reports:$coverageReports"),
+            ("-targetdir:$LogsDir"),
+            ("-reporttypes:Cobertura"))
+    }
+    Move-Item (Join-Path $LogsDir Cobertura.xml) $CoveragePath -Force
 }
