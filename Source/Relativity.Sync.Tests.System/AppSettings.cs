@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NUnit.Framework;
+using System;
 using System.Configuration;
 
 namespace Relativity.Sync.Tests.System
@@ -10,15 +11,23 @@ namespace Relativity.Sync.Tests.System
 		private static Uri _relativityWebApiUrl;
 		private static Uri _relativityUrl;
 
-		private static string RelativityHostName => ConfigurationManager.AppSettings.Get(nameof(RelativityHostName));
+		private static string RelativityHostName => TestContext.Parameters.Exists("RelativityHostAddress")
+			? TestContext.Parameters["RelativityHostAddress"]
+			: ConfigurationManager.AppSettings.Get(nameof(RelativityHostName));
 
 		public static Uri RelativityUrl => _relativityUrl ?? (_relativityUrl = BuildUri("Relativity"));
-		public static Uri RelativityServicesUrl => _relativityServicesUrl ?? (_relativityServicesUrl = BuildUri(ConfigurationManager.AppSettings.Get(nameof(RelativityServicesUrl))));
-		public static Uri RelativityRestUrl => _relativityRestUrl ?? (_relativityRestUrl = BuildUri(ConfigurationManager.AppSettings.Get(nameof(RelativityRestUrl))));
-		public static Uri RelativityWebApiUrl => _relativityWebApiUrl ?? (_relativityWebApiUrl = BuildUri(ConfigurationManager.AppSettings.Get(nameof(RelativityWebApiUrl))));
-		public static string RelativityUserName => ConfigurationManager.AppSettings.Get(nameof(RelativityUserName));
-		public static string RelativityUserPassword => ConfigurationManager.AppSettings.Get(nameof(RelativityUserPassword));
-		public static bool SuppressCertificateCheck => bool.Parse(ConfigurationManager.AppSettings.Get(nameof(SuppressCertificateCheck)));
+
+		public static Uri RelativityServicesUrl => _relativityServicesUrl ?? (_relativityServicesUrl = BuildUri(GetConfigValue("RelativityServicesUrl")));
+
+		public static Uri RelativityRestUrl => _relativityRestUrl ?? (_relativityRestUrl = BuildUri(GetConfigValue("RelativityRestUrl")));
+
+		public static Uri RelativityWebApiUrl => _relativityWebApiUrl ?? (_relativityWebApiUrl = BuildUri(GetConfigValue("RelativityWebApiUrl")));
+
+		public static string RelativityUserName => GetConfigValue("AdminUsername");
+
+		public static string RelativityUserPassword => GetConfigValue("AdminPassword");
+
+		public static bool SuppressCertificateCheck => bool.Parse(GetConfigValue("SuppressCertificateCheck"));
 
 		private static Uri BuildUri(string path)
 		{
@@ -30,5 +39,9 @@ namespace Relativity.Sync.Tests.System
 			var uriBuilder = new UriBuilder("https", RelativityHostName, -1, path);
 			return uriBuilder.Uri;
 		}
+
+		private static string GetConfigValue(string name) => TestContext.Parameters.Exists(name)
+			? TestContext.Parameters[name]
+			: ConfigurationManager.AppSettings.Get(name);
 	}
 }
