@@ -205,12 +205,12 @@ namespace Relativity.Sync.Executors
 			return jobSize;
 		}
 
-		public Task<IEnumerable<int>> GetPushedDocumentArtifactIds()
+		public Task<IEnumerable<int>> GetPushedDocumentArtifactIdsAsync()
 		{
 			return Task.FromResult(_syncImportBulkArtifactJob.ItemStatusMonitor.GetSuccessfulItemArtifactIds());
 		}
 
-		public Task<IEnumerable<string>> GetPushedDocumentIdentifiers()
+		public Task<IEnumerable<string>> GetPushedDocumentIdentifiersAsync()
 		{
 			return Task.FromResult(_syncImportBulkArtifactJob.ItemStatusMonitor.GetSuccessfulItemIdentifiers());
 		}
