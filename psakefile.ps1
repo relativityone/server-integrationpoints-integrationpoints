@@ -135,8 +135,8 @@ function Invoke-Tests ($TestSuite, [switch] $NoCoverage) {
     {
         exec { & $NUnit $TestProject `
             "--config=$BuildConfig" `
-            "--result=$TestResultsPath" `
-            $TestSettings
+            "--result=$TestResultsPath" #`
+            #$TestSettings
         }
     }
     else
