@@ -1,0 +1,26 @@
+[
+    {
+        "DisplayName":  "ID",
+        "FieldIdentifier":  "ID0",
+        "FieldType":  1,
+        "IsIdentifier":  false
+    },
+    {
+        "DisplayName":  "Filename",
+        "FieldIdentifier":  "ID1",
+        "FieldType":  1,
+        "IsIdentifier":  false
+    },
+    {
+        "DisplayName":  "Author",
+        "FieldIdentifier":  "ID2",
+        "FieldType":  1,
+        "IsIdentifier":  false
+    },
+    {
+        "DisplayName":  "Type",
+        "FieldIdentifier":  "ID3",
+        "FieldType":  1,
+        "IsIdentifier":  false
+    }
+]
