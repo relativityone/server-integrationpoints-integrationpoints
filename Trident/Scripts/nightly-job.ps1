@@ -3,13 +3,15 @@
 This script will be used by nightly pipeline to complie and run RelativitySync tests
 #>
 
-$TaskRunner = Join-Path $env:workspace build.ps1;
+function Invoke-Task ($Task) {
+    $TaskRunner = Join-Path $env:workspace build.ps1;
+    &($TaskRunner) $Task -Configuration Release 
+}
 
-Write-Host "------- Executing: Compile RelativitySync -------"
-&($TaskRunner) Compile -Configuration Release 
+Invoke-Task Compile
 
-Write-Host "------- Executing: Run Unit Tests -------"
-&($TaskRunner) UnitTest
+Invoke-Task UnitTest
 
-Write-Host "------- Executing: Run Integration Tests -------"
-&($TaskRunner) IntegrationTest
+Invoke-Task IntegrationTest
+
+Invoke-Task SystemTest
