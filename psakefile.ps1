@@ -43,7 +43,7 @@ Task Compile -Description "Compile code for this repo" {
 }
 
 Task Test -Description "Run all tests with flag IsTestProject" {
-    Invoke-Tests
+    Invoke-Tests -NoCoverage
 }
 
 Task UnitTest -Description "Run Unit Tests" {
@@ -124,8 +124,8 @@ Task Help -Alias ? -Description "Display task information" {
 }
 
 #Custom Functionas
-function Invoke-Tests ($TestSuite) {
-    $TestSettings = "@$(Join-Path $PSScriptRoot FunctionalTestSettings)"
+function Invoke-Tests ($TestSuite, [switch] $NoCoverage) {
+    $TestSettings = Join-Path $PSScriptRoot FunctionalTestSettings
     
     $TestProject = $Solution
     if($TestSuite)
@@ -133,23 +133,35 @@ function Invoke-Tests ($TestSuite) {
         $TestProject = (Get-ChildItem -Path $SourceDir -Filter "*Tests.$TestSuite.csproj" -File -Recurse)[0].FullName
     }
 
-    $OpenCover = Resolve-Path (Join-Path $ToolsDir "opencover.*\tools\OpenCover.Console.exe")
     $NUnit = Resolve-Path (Join-Path $ToolsDir "NUnit.ConsoleRunner.*\tools\nunit3-console.exe")
     $TestResultsPath = Join-Path $LogsDir "$TestSuite.TestResults.xml"
 
-    exec { & $OpenCover -target:$NUnit `
+    $TestSettings = if($TestSettings) {"@$TestSettings"}
+    if($NoCoverage)
+    {
+        exec { & $NUnit $TestProject `
+            "--config=$BuildConfig" `
+            "--result=$TestResultsPath" `
+            $TestSettings
+        }
+    }
+    else
+    {
+        $OpenCover = Resolve-Path (Join-Path $ToolsDir "opencover.*\tools\OpenCover.Console.exe")
+        exec { & $OpenCover -target:$NUnit `
             -targetargs:"$TestProject --config=$BuildConfig --result=$TestResultsPath $TestSettings" `
             -output:"$LogsDir\OpenCover.xml" `
             -filter:"+[Relativity.Sync*]* -[Relativity.Sync.Tests*]*" `
             -register:path64 `
             -returntargetcode
+        }
+        exec { & $ReportGenerator `
+                -reports:"$LogsDir\OpenCover.xml" `
+                -targetdir:$LogsDir `
+                -reporttypes:Cobertura
+        }
+
+        $CoveragePath = Join-Path $LogsDir "Coverage.xml"
+        Move-Item (Join-Path $LogsDir Cobertura.xml) $CoveragePath -Force
     }
-    exec { & $ReportGenerator `
-            -reports:"$LogsDir\OpenCover.xml" `
-            -targetdir:$LogsDir `
-            -reporttypes:Cobertura
-    }
-    
-    $CoveragePath = Join-Path $LogsDir "Coverage.xml"
-    Move-Item (Join-Path $LogsDir Cobertura.xml) $CoveragePath -Force
 }
