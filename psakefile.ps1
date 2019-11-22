@@ -43,7 +43,8 @@ Task Compile -Description "Compile code for this repo" {
 }
 
 Task Test -Description "Run all tests with flag IsTestProject" {
-    Invoke-Tests -NoCoverage
+    Invoke-Tests -TestSuite Unit -NoCoverage
+    Invoke-Tests -TestSuite Integration -NoCoverage
 }
 
 Task UnitTest -Description "Run Unit Tests" {
@@ -66,8 +67,6 @@ Task Sign -Description "Sign all files" {
     | Select-Object -expand FullName `
     | Set-DigitalSignature -ErrorAction Stop
 }
-
-
 
 Task Package -Description "Package up the build artifacts" {
     Initialize-Folder $ArtifactsDir -Safe
@@ -126,17 +125,12 @@ Task Help -Alias ? -Description "Display task information" {
 #Custom Functionas
 function Invoke-Tests ($TestSuite, [switch] $NoCoverage) {
     $TestSettings = Join-Path $PSScriptRoot FunctionalTestSettings
+    $TestSettings = if(Test-Path $TestSettings) {"@$TestSettings"}
     
-    $TestProject = $Solution
-    if($TestSuite)
-    {
-        $TestProject = (Get-ChildItem -Path $SourceDir -Filter "*Tests.$TestSuite.csproj" -File -Recurse)[0].FullName
-    }
-
+    $TestProject = (Get-ChildItem -Path $SourceDir -Filter "*Tests.$TestSuite.csproj" -File -Recurse)[0].FullName
     $NUnit = Resolve-Path (Join-Path $ToolsDir "NUnit.ConsoleRunner.*\tools\nunit3-console.exe")
     $TestResultsPath = Join-Path $LogsDir "$TestSuite.TestResults.xml"
-
-    $TestSettings = if(Test-Path $TestSettings) {"@$TestSettings"}
+    
     if($NoCoverage)
     {
         exec { & $NUnit $TestProject `
