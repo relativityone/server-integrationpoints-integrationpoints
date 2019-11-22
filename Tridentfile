@@ -1,4 +1,5 @@
  @Library('ProjectMayhem@v1')_
 rapCD {
     slackChannel = "cd_rip_json"
+    sutTemplate = "aio-blazingstar-eau"
 }
