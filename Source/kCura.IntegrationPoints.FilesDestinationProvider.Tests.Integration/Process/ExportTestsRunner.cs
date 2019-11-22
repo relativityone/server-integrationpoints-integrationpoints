@@ -23,7 +23,6 @@ using kCura.WinEDDS.Exporters;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.DataExchange.Io;
 using DateTime = System.DateTime;
 using Directory = kCura.Utility.Directory;
 using ExportSettings = kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportSettings;
@@ -146,7 +145,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 				helper,
 				jobStats,
 				CreateJobInfoFactoryMock(),
-				new LongPathDirectoryHelper(),
+				new Core.Helpers.LongPathDirectoryHelper(),
 				exportServiceFactory,
 				repositoryFactory
 			);

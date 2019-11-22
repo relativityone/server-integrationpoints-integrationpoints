@@ -4,12 +4,10 @@ using System.Threading.Tasks;
 using Autofac;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
-using kCura.IntegrationPoints.RelativitySync.Adapters;
 using kCura.ScheduleQueue.Core;
 using kCura.WinEDDS.Service.Export;
 using Relativity.API;
 using Relativity.Sync;
-using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Telemetry.APM;
 
@@ -42,7 +40,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			try
 			{
 				CancellationToken cancellationToken = CancellationAdapter.GetCancellationToken(_job, _ripContainer);
-				SyncConfiguration syncConfiguration = SyncConfigurationFactory.Create(_job, _ripContainer, _logger);
+				SyncConfiguration syncConfiguration = new SyncConfiguration(_job.SubmittedById);
 				using (IContainer container = InitializeSyncContainer(syncConfiguration))
 				{
 					metrics.MarkStartTime();
@@ -180,7 +178,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 
 			SyncJobFactory jobFactory = new SyncJobFactory();
-			SyncJobParameters parameters = new SyncJobParameters(syncConfigurationArtifactId, _job.WorkspaceId, _job.IntegrationPointId, _correlationId.ToString());
+			SyncJobParameters parameters = new SyncJobParameters(syncConfigurationArtifactId, _job.WorkspaceId, _job.IntegrationPointId, _job.JobHistoryId);
 			RelativityServices relativityServices = new RelativityServices(_apmMetrics, _ripContainer.Resolve<IHelper>().GetServicesManager(), _ripContainer.Resolve<Func<ISearchManager>>(), ExtensionPointServiceFinder.ServiceUriProvider.AuthenticationUri());
 			ISyncLog syncLog = new SyncLog(_logger);
 			ISyncJob syncJob = jobFactory.Create(container, parameters, relativityServices, syncLog);
@@ -197,14 +195,6 @@ namespace kCura.IntegrationPoints.RelativitySync
 			_ripContainer.Register(Component.For<SyncConfiguration>().Instance(syncConfiguration));
 
 			containerBuilder.RegisterInstance(syncConfiguration).AsImplementedInterfaces().SingleInstance();
-
-			containerBuilder.RegisterType<DataDestinationFinalization>()
-				.As<IExecutor<IDataDestinationFinalizationConfiguration>>()
-				.As<IExecutionConstrains<IDataDestinationFinalizationConfiguration>>();
-
-			containerBuilder.RegisterType<DataDestinationInitialization>()
-				.As<IExecutor<IDataDestinationInitializationConfiguration>>()
-				.As<IExecutionConstrains<IDataDestinationInitializationConfiguration>>();
 
 			IContainer container = containerBuilder.Build();
 			return container;

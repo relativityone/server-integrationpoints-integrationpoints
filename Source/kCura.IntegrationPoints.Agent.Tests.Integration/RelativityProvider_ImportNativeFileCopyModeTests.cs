@@ -83,6 +83,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			IDateTimeHelper dateTimeHelper = Container.Resolve<IDateTimeHelper>();
 			IDocumentRepository documentRepository = Container.Resolve<IDocumentRepository>();
 			IExportDataSanitizer exportDataSanitizer = Container.Resolve<IExportDataSanitizer>();
+
 			var jobHistoryUpdater = new JobHistoryBatchUpdateStatus(
 				jobStatusUpdater,
 				jobHistoryService,
@@ -127,7 +128,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 		[IdentifiedTestCase("7256fb90-5742-4458-978d-94349eb287ef", ImportNativeFileCopyModeEnum.CopyFiles)]
 		[IdentifiedTestCase("1f31ef1c-9917-4712-98c4-4a97a067169d", ImportNativeFileCopyModeEnum.SetFileLinks)]
-		[TestInQuarantine(TestQuarantineState.UnderObservation)]
 		public void NativesShouldBeDeletedInTargetWorkspace_InImportNativesModes(ImportNativeFileCopyModeEnum importNativeFileCopyMode)
 		{
 			TestNativeFilesImport(false, true, true, importNativeFileCopyMode, false);
@@ -135,7 +135,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 		[IdentifiedTest("8a5590f2-31e8-4ec9-9ddc-a4e3b7b9621e")]
 		[SmokeTest]
-		[TestInQuarantine(TestQuarantineState.UnderObservation)]
 		public void NativesShouldNotBeDeletedInTargetWorkspace_InDoNotImportNativesMode()
 		{
 			TestNativeFilesImport(false, true, false, ImportNativeFileCopyModeEnum.DoNotImportNativeFiles, true);

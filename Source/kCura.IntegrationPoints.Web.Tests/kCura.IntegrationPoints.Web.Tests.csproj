@@ -52,6 +52,7 @@
     <Compile Include="Context\UserContext\RequestHeadersUserContextServiceTests.cs" />
     <Compile Include="Context\UserContext\SessionUserContextServiceTests.cs" />
     <Compile Include="Context\WorkspaceContext\NotFoundWorkspaceContextServiceTests.cs" />
+    <Compile Include="Controllers\API\IntegrationPointProfilesAPIControllerTests.cs" />
     <Compile Include="Extensions\HttpConfigurationExtensionsTests.cs" />
     <Compile Include="Extensions\RequestExtensionsTests.cs" />
     <Compile Include="Filters\ExceptionFilterTests.cs" />
@@ -502,17 +503,6 @@
       <ItemGroup>
         <Reference Include="Relativity.Services.ServiceProxy">
           <HintPath>..\..\packages\Relativity.Kepler.Client\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.Logging">
-          <HintPath>..\..\packages\Relativity.Logging\lib\net462\Relativity.Logging.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
