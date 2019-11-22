@@ -131,6 +131,14 @@ function Invoke-Tests ($TestSuite, [switch] $NoCoverage) {
     $NUnit = Resolve-Path (Join-Path $ToolsDir "NUnit.ConsoleRunner.*\tools\nunit3-console.exe")
     $TestResultsPath = Join-Path $LogsDir "$TestSuite.TestResults.xml"
     
+    Write-Host $NUnit
+    if(Test-Path $NUnit)
+    {
+        Write-Host "NUnit is installed"
+    }
+
+    Write-Host $TestProject
+
     if($NoCoverage)
     {
         exec { & $NUnit $TestProject `
