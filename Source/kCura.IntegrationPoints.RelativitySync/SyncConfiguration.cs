@@ -4,8 +4,8 @@ using Relativity.Sync.Configuration;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
-	internal sealed class SyncConfiguration : IDataDestinationFinalizationConfiguration, IDataDestinationInitializationConfiguration, IJobCleanupConfiguration,
-		IJobStatusConsolidationConfiguration, IUserContextConfiguration
+	internal sealed class SyncConfiguration : IDataDestinationFinalizationConfiguration, IDataDestinationInitializationConfiguration, 
+		IUserContextConfiguration
 	{
 		public SyncConfiguration(int submittedBy, ImportSettings destinationConfiguration)
 		{
@@ -19,8 +19,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 		// Currently unused properties
 		public string DataDestinationName => string.Empty;
-		public Guid ExportRunId => throw new InvalidOperationException();
+
 		public bool IsDataDestinationArtifactIdSet => false;
-		public int TotalRecordsCount { get; private set; }
 	}
 }

@@ -338,7 +338,7 @@ NUGET
     Relativity.Services.Layout.Interfaces (1.1.46)
       Relativity.Kepler (>= 1.0.1.297)
       Relativity.Services.DataContracts (>= 9.4.346.73)
-    Relativity.Sync (0.1.12)
+    Relativity.Sync (0.1.19)
       Autofac (>= 4.9 < 5.0)
       Banzai (>= 3.0 < 4.0)
       Banzai.Autofac (>= 3.0 < 4.0)
@@ -354,6 +354,7 @@ NUGET
       Relativity.Services.Interfaces (>= 11.0 < 11.1)
       Relativity.Services.Interfaces.Private (>= 11.0 < 11.1)
       Relativity.Telemetry.APM (>= 2019.1.1 < 2019.2)
+      System.Reactive.Linq (4.0)
     Relativity.Telemetry.APM (2019.1.1)
     Relativity.Telemetry.DataContracts.Shared (2019.9.1)
     Relativity.Telemetry.Services.Interface (9.6.88.61)
@@ -364,6 +365,9 @@ NUGET
       SSH.NET (2016.0)
     SSH.NET (2016.0.0)
     System.Data.SqlClient (4.6.0)
+    System.Reactive (4.0.0)
+    System.Reactive.Linq (4.0.0)
+      System.Reactive (>= 4.0)
     ZetaLongPaths (1.0.0.16)
 
 GROUP TestPackages
