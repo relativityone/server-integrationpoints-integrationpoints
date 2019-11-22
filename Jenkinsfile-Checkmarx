@@ -54,7 +54,7 @@ timestamps
 							osaEnabled: true,
 							osaInstallBeforeScan: false,
 							password: "$password",
-							preset: '100003',
+							preset: '100036',
 							projectName: 'Integration_Points', 
 							serverUrl: 'https://il1dpchmrxwb001.kcura.corp', 
 							sourceEncoding: '5',
