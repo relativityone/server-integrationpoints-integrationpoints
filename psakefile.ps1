@@ -127,7 +127,7 @@ function Invoke-Tests ($TestSuite, [switch] $NoCoverage) {
     $TestSettings = Join-Path $PSScriptRoot FunctionalTestSettings
     $TestSettings = if(Test-Path $TestSettings) {"@$TestSettings"}
     
-    $TestProject = (Get-ChildItem -Path $SourceDir -Filter "*Tests.$TestSuite.csproj" -File -Recurse)[0].FullName
+    $TestProject = (Get-ChildItem -Path $SourceDir -Filter "*Tests.$TestSuite.dll" -File -Recurse)[0].FullName
     $NUnit = Resolve-Path (Join-Path $ToolsDir "NUnit.ConsoleRunner.*\tools\nunit3-console.exe")
     $TestResultsPath = Join-Path $LogsDir "$TestSuite.TestResults.xml"
     
