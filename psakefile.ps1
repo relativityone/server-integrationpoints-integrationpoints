@@ -124,15 +124,22 @@ Task Help -Alias ? -Description "Display task information" {
 
 #Custom Functionas
 function Invoke-Tests ($TestSuite, [switch] $NoCoverage) {
+    Write-Host "In Invoke-Tests"
     $TestSettings = Join-Path $PSScriptRoot FunctionalTestSettings
+    Write-Host "TestSettings: $TestSettings"
     $TestSettings = if(Test-Path $TestSettings) {"@$TestSettings"}
+    Write-Host "TestSettings: $TestSettings"
     
     $TestProject = (Get-ChildItem -Path $SourceDir -Filter "*Tests.$TestSuite.dll" -File -Recurse)[0].FullName
-    $NUnit = Resolve-Path (Join-Path $ToolsDir "NUnit.ConsoleRunner.*\tools\nunit3-console.exe")
+    Write-Host "TestProject: $TestProject"
+
+    Write-Host $ToolsDir
+
+    Write-Host $(Get-ChildItem -Path $ToolsDir)
+
+    Write-Host "NUnit: $NUnit"
     $TestResultsPath = Join-Path $LogsDir "$TestSuite.TestResults.xml"
     
-    $extensions = & $NUnit --list-extensions
-    Write-Host $extensions
     Write-Host $NUnit
     if(Test-Path $NUnit)
     {
@@ -145,13 +152,38 @@ function Invoke-Tests ($TestSuite, [switch] $NoCoverage) {
     {
         exec { & $NUnit $TestProject `
             "--config=$BuildConfig" `
-            "--result=$TestResultsPath" #`
-            #$TestSettings
+            "--result=$TestResultsPath" `
+            $TestSettings
         }
     }
     else
     {
-        $OpenCover = Resolve-Path (Join-Path $ToolsDir "opencover.*\tools\OpenCover.Console.exe")
+        Write-Host $OpenCover
+        if(Test-Path $OpenCover)
+        {
+            Write-Host "OpenCover exists"
+        }
+
+        Write-Host $NUnit
+        if(Test-Path $NUnit)
+        {
+            Write-Host "NUnit exists"
+        }
+
+        Write-Host "TestProject: $TestProject"
+        Write-Host "BuildConfig: $BuildConfig"
+        Write-Host "TestResultsPath: $TestResultsPath"
+        Write-Host "TestSettings: $TestSettings"
+
+        if(Test-Path $TestSettings)
+        {
+            "TestSettings exists"
+        }
+
+        Write-Host "LogsDir: $LogsDir"
+
+        Write-Host "ReportGenerator: $ReportGenerator"
+
         exec { & $OpenCover -target:$NUnit `
             -targetargs:"$TestProject --config=$BuildConfig --result=$TestResultsPath $TestSettings" `
             -output:"$LogsDir\OpenCover.xml" `

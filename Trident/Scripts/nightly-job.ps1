@@ -4,8 +4,8 @@ This script will be used by nightly pipeline to complie and run RelativitySync t
 #>
 
 function Invoke-Task ($Task) {
-    $TaskRunner = Join-Path $env:workspace build.ps1;
-    &($TaskRunner) $Task -Configuration Release 
+    $TaskRunner = Join-Path $env:workspace build.ps1
+    &($TaskRunner) $Task -Configuration Release
 }
 
 Invoke-Task Compile
