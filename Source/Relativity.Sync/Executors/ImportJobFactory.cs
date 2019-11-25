@@ -15,8 +15,6 @@ namespace Relativity.Sync.Executors
 {
 	internal sealed class ImportJobFactory : IImportJobFactory
 	{
-		private const string _INVALID_WEB_API_PATH = "WebAPIPath is invalid or doesn't exist";
-
 		private readonly IImportApiFactory _importApiFactory;
 		private readonly IJobHistoryErrorRepository _jobHistoryErrorRepository;
 		private readonly IInstanceSettings _instanceSettings;
@@ -99,8 +97,11 @@ namespace Relativity.Sync.Executors
 			}
 			else
 			{
-				_logger.LogError(_INVALID_WEB_API_PATH);
-				throw new ImportFailedException(_INVALID_WEB_API_PATH);
+				string invalidWebAPIPathMessage = string.IsNullOrEmpty(webApiPath)
+					? "WebAPIPath doesn't exist"
+					: $"WebAPIPath {webApiPath} is invalid";
+				_logger.LogError(invalidWebAPIPathMessage);
+				throw new ImportFailedException(invalidWebAPIPathMessage);
 			}
 		}
 
