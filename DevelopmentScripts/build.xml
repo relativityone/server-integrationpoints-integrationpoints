@@ -1,0 +1,20 @@
+<BuildTools>
+  <RAPBuilder>
+    <Applications>
+      <Application name="MyFirstProvider" generatenuspec="true">
+        <Destination>Artifacts\MyFirstProvider.rap</Destination>
+        <ApplicationSchema>ApplicationsXML\application.xml</ApplicationSchema>
+        <Assemblies>
+          <Assembly>Source\Relativity.IntegrationPoints.MyFirstProvider.Provider\bin\Relativity.IntegrationPoints.Contracts.dll</Assembly>
+          <Assembly>Source\Relativity.IntegrationPoints.MyFirstProvider.Provider\bin\Relativity.IntegrationPoints.SourceProviderInstaller.dll</Assembly>
+          <Assembly>Source\Relativity.IntegrationPoints.MyFirstProvider.Provider\bin\Relativity.IntegrationPoints.MyFirstProvider.Provider.dll</Assembly>
+          <Assembly>Source\Relativity.IntegrationPoints.MyFirstProvider.Provider\bin\Relativity.IntegrationPoints.Services.Interfaces.Private.dll</Assembly>
+        </Assemblies>
+        <ResourceFiles />
+        <CustomPages>
+          <CustomPage guid="26cd78ff-d5a9-4469-af6b-1b81aa346b32">Source\CustomPages\MyFirstProvider</CustomPage>
+        </CustomPages>
+      </Application>
+    </Applications>
+  </RAPBuilder>
+</BuildTools>
