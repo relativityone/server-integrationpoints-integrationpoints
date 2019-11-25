@@ -486,34 +486,33 @@
 
 		this.ImageFileFormatList = ko.observableArray([]);
 
-		this._updateImageFileFormat = function () {
-			var setSelectedImageDataFileFormat = function () {
-				if (state.SelectedImageDataFileFormat === 0) {
+		this._updateImageFileFormat = function() {
+			var setSelectedImageDataFileFormat = function(selectedImageDataFileFormat) {
+				if (selectedImageDataFileFormat === 0) {
 					self.SelectedImageDataFileFormat("0");
-				}
-				else if (state.SelectedImageDataFileFormat === undefined) {
+				} else if (selectedImageDataFileFormat === undefined) {
 					self.SelectedImageDataFileFormat(self.ImageFileFormatList()[0].value.toString());
+				} else {
+					self.SelectedImageDataFileFormat(selectedImageDataFileFormat.toString());
 				}
-				else {
-					self.SelectedImageDataFileFormat(state.SelectedImageDataFileFormat.toString());
-				}
-			}
+			};
 
-			var formats = [ExportEnums.ImageDataFileFormats[0], ExportEnums.ImageDataFileFormats[1], ExportEnums.ImageDataFileFormats[2]];
+			var formats = [
+				ExportEnums.ImageDataFileFormats[0],
+				ExportEnums.ImageDataFileFormats[1],
+				ExportEnums.ImageDataFileFormats[2]
+			];
+
 			if (self.ExportImages()) {
 				var defaultOption = { key: "Select...", value: "" };
 				self.ImageFileFormatList([defaultOption].concat(formats));
-
-				setSelectedImageDataFileFormat();
-
+				setSelectedImageDataFileFormat(state.SelectedDataFileFormat);
 				self.SelectedImageDataFileFormat.isModified(false);
-			}
-			else {
+			} else {
 				self.ImageFileFormatList([ExportEnums.ImageDataFileFormats[3]].concat(formats));
-
-				setSelectedImageDataFileFormat();
+				setSelectedImageDataFileFormat(undefined);
 			}
-		}
+		};
 
 		this.IsProductionExport = ko.observable(state.ExportType === ExportEnums.SourceOptionsEnum.Production);
 
