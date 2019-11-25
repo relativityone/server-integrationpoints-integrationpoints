@@ -7,12 +7,6 @@
     <References>
       <Maps />
       <Adds>
-        <Add path="Source\Provider\Provider.csproj">
-          <References>
-            <Reference>Relativity.IntegrationPoints.SourceProviderInstaller.dll</Reference>
-            <Reference>Relativity.IntegrationPoints.Contracts.dll</Reference>
-          </References>
-        </Add>
         <Add path="Source\JsonLoader\JsonLoader.csproj">
           <References>
             <Reference>Relativity.IntegrationPoints.SourceProviderInstaller.dll</Reference>
@@ -176,20 +170,6 @@
         <ResourceFiles />
         <CustomPages>
           <CustomPage guid="c2c93191-7b15-4a9b-aa56-6a8c2dac5494">Source\CustomPages\IntegrationPoints</CustomPage>
-        </CustomPages>
-      </Application>
-      <Application name="MyFirstProvider">
-        <Destination>Applications\MyFirstProvider.rap</Destination>
-        <ApplicationSchema>ApplicationsXML\myFirstProviderApplication.xml</ApplicationSchema>
-        <Assemblies>
-          <Assembly>lib\UnitTests\Relativity.IntegrationPoints.Contracts.dll</Assembly>
-          <Assembly>lib\UnitTests\Relativity.IntegrationPoints.SourceProviderInstaller.dll</Assembly>
-          <Assembly>lib\UnitTests\Provider.dll</Assembly>
-          <Assembly>lib\UnitTests\Relativity.IntegrationPoints.Services.Interfaces.Private.dll</Assembly>
-        </Assemblies>
-        <ResourceFiles />
-        <CustomPages>
-          <CustomPage guid="26cd78ff-d5a9-4469-af6b-1b81aa346b32">Source\CustomPages\MyFirstProvider</CustomPage>
         </CustomPages>
       </Application>
       <Application name="JsonLoader">
