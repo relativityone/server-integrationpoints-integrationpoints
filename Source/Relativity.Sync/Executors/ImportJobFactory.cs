@@ -15,6 +15,8 @@ namespace Relativity.Sync.Executors
 {
 	internal sealed class ImportJobFactory : IImportJobFactory
 	{
+		private const string _INVALID_WEB_API_PATH = "WebAPIPath is invalid or doesn't exist";
+
 		private readonly IImportApiFactory _importApiFactory;
 		private readonly IJobHistoryErrorRepository _jobHistoryErrorRepository;
 		private readonly IInstanceSettings _instanceSettings;
@@ -38,8 +40,6 @@ namespace Relativity.Sync.Executors
 			ImportBulkArtifactJob importBulkArtifactJob = await CreateImportBulkArtifactJobAsync(configuration, sourceWorkspaceDataReader).ConfigureAwait(false);
 			var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importBulkArtifactJob, sourceWorkspaceDataReader.ItemStatusMonitor);
 
-
-
 			return new ImportJob(syncImportBulkArtifactJob, new SemaphoreSlimWrapper(new SemaphoreSlim(0, 1)), _jobHistoryErrorRepository,
 				configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, _logger);
 		}
@@ -47,9 +47,7 @@ namespace Relativity.Sync.Executors
 	
 		private async Task<ImportBulkArtifactJob> CreateImportBulkArtifactJobAsync(ISynchronizationConfiguration configuration, ISourceWorkspaceDataReader dataReader, int startingIndex = 0)
 		{
-			string webApiPath = await _instanceSettings.GetWebApiPathAsync().ConfigureAwait(false);
-			var webApiUri = new Uri(webApiPath);
-			IImportAPI importApi = await _importApiFactory.CreateImportApiAsync(webApiUri).ConfigureAwait(false);
+			IImportAPI importApi = await GetImportApiAsync().ConfigureAwait(false);
 			ImportBulkArtifactJob importJob = await Task.Run(() => importApi.NewNativeDocumentImportJob()).ConfigureAwait(false);
 
 			importJob.SourceData.SourceData = dataReader;
@@ -89,6 +87,21 @@ namespace Relativity.Sync.Executors
 				importApi, configuration.DestinationWorkspaceArtifactId, configuration.RdoArtifactTypeId, configuration.IdentityFieldId).ConfigureAwait(false);
 
 			return importJob;
+		}
+
+		private async Task<IImportAPI> GetImportApiAsync()
+		{
+			string webApiPath = await _instanceSettings.GetWebApiPathAsync().ConfigureAwait(false);
+			if(Uri.IsWellFormedUriString(webApiPath, UriKind.Absolute))
+			{
+				var webApiUri = new Uri(webApiPath);
+				return await _importApiFactory.CreateImportApiAsync(webApiUri).ConfigureAwait(false);
+			}
+			else
+			{
+				_logger.LogError(_INVALID_WEB_API_PATH);
+				throw new ImportFailedException(_INVALID_WEB_API_PATH);
+			}
 		}
 
 		private static async Task<string> GetSelectedIdentifierFieldNameAsync(IImportAPI importApi, int workspaceArtifactId, int artifactTypeId, int identityFieldArtifactId)

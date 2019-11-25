@@ -236,6 +236,7 @@ namespace Relativity.Sync.Tests.System
 			User user;
 			if (userArtifactId == 0)
 			{
+				EnableAdminToSetPassword();
 				user = UserHelpers.CreateUserWithPassword(Client, "Test", "Test", userName, "Relativity", password);
 			}
 			else
@@ -245,6 +246,12 @@ namespace Relativity.Sync.Tests.System
 
 			GroupHelpers.GroupAddUserIfNotInGroup(Client, group, user);
 			return user;
+		}
+
+		private void EnableAdminToSetPassword()
+		{
+			Environment.CreateInstanceSetting("AdminsCanSetPasswords", "Relativity.Authentication",
+				Services.InstanceSetting.ValueType.TrueFalse, "True").Wait();
 		}
 
 		private async Task AddGroupToWorkspaceAsync(int workspaceId, Group group)

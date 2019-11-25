@@ -18,6 +18,7 @@ namespace Relativity.Sync.Tests.System
 			Client = new RSAPIClient(AppSettings.RelativityServicesUrl, new kCura.Relativity.Client.UsernamePasswordCredentials(AppSettings.RelativityUserName, AppSettings.RelativityUserPassword));
 			ServiceFactory = new ServiceFactoryFromAppConfig().CreateServiceFactory();
 			Environment = new TestEnvironment();
+			await Environment.ConfigureImportAPI().ConfigureAwait(false);
 			await ChildSuiteSetup().ConfigureAwait(false);
 		}
 

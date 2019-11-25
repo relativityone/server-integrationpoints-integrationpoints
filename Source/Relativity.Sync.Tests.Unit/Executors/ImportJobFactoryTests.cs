@@ -85,6 +85,25 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			result.Should().NotBeNull();
 		}
 
+		[TestCase("relativeUri.com")]
+		[TestCase("")]
+		public async Task CreateImportJobAsync_ShouldThrowException_WhenWebAPIPathIsInvalid(string invalidWebAPIPath)
+		{
+			// Arrange
+			_instanceSettings.Setup(x => x.GetWebApiPathAsync(default(string))).ReturnsAsync(invalidWebAPIPath);
+
+			var configuration = new Mock<ISynchronizationConfiguration>();
+			Mock<IImportApiFactory> importApiFactory = GetImportAPIFactoryMock();
+			ImportJobFactory instance = GetTestInstance(importApiFactory);
+
+			// Act
+			Func<Task> action = async () => await instance.CreateImportJobAsync(configuration.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			(await action.Should().ThrowAsync<ImportFailedException>().ConfigureAwait(false))
+				.Which.Message.Should().Be("WebAPIPath is invalid or doesn't exist");
+		}
+
 		[Test]
 		public async Task CreateImportJobAsync_ShouldCreateBulkJobWithStartingIndexAlwaysEqualTo0()
 		{

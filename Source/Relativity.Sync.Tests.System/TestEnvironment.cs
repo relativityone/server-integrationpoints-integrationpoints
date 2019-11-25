@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using Relativity.Kepler.Transport;
 using Relativity.Services.Exceptions;
+using Relativity.Services.InstanceSetting;
 using Relativity.Services.Interfaces.LibraryApplication.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -29,6 +30,12 @@ namespace Relativity.Sync.Tests.System
 		public TestEnvironment()
 		{
 			_serviceFactory = new ServiceFactoryFromAppConfig().CreateServiceFactory();
+		}
+
+		public async Task ConfigureImportAPI()
+		{
+			await CreateInstanceSetting("WebAPIPath", "kCura.IntegrationPoints",
+				Services.InstanceSetting.ValueType.Text, AppSettings.RelativityWebApiUrl.AbsoluteUri).ConfigureAwait(false);
 		}
 
 		public async Task<WorkspaceRef> CreateWorkspaceAsync(string name = null, string templateWorkspaceName = "Relativity Starter Template")
@@ -125,6 +132,37 @@ namespace Relativity.Sync.Tests.System
 					installStatusCode = status.InstallStatus.Code;
 				}
 				while (installStatusCode == InstallStatusCode.Pending || installStatusCode == InstallStatusCode.InProgress);
+			}
+		}
+
+		public async Task<int> CreateInstanceSetting(string name, string section, Services.InstanceSetting.ValueType valueType, string value)
+		{
+			using (IInstanceSettingManager settingManager = _serviceFactory.CreateProxy<IInstanceSettingManager>())
+			{
+				Services.Query query = new Services.Query
+				{
+					Condition = $"'Name' == '{name}' AND 'Section' == '{section}'"
+				};
+				InstanceSettingQueryResultSet settingResult = await settingManager.QueryAsync(query).ConfigureAwait(false);
+
+				if (settingResult.TotalCount == 0)
+				{
+					Services.InstanceSetting.InstanceSetting setting = new Services.InstanceSetting.InstanceSetting()
+					{
+						Name = name,
+						Section = section,
+						ValueType = valueType,
+						Value = value
+					};
+					return await settingManager.CreateSingleAsync(setting).ConfigureAwait(false);
+				}
+				else
+				{
+					return settingResult.Results
+						.First()
+						.Artifact
+						.ArtifactID;
+				}
 			}
 		}
 
