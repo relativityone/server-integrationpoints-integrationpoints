@@ -174,58 +174,40 @@ def packageRIP()
 
 def stashTestsAndPackageArtifacts()
 {
-	timeout(time: 3, unit: 'MINUTES')
-	{
-		stashCommonArtifacts()
-		stashPackageOnlyArtifacts()
-		stashTestsOnlyArtifacts()
-	}
+	stashCommonArtifacts()
+	stashPackageOnlyArtifacts()
+	stashTestsOnlyArtifacts()
 }
 
 def unstashTestsAndPackageArtifacts()
 {
-	timeout(time: 3, unit: 'MINUTES')
-	{
-		unstashCommonArtifacts()
-		unstashPackageOnlyArtifacts()
-		unstashTestsOnlyArtifacts()
-	}
+	unstashCommonArtifacts()
+	unstashPackageOnlyArtifacts()
+	unstashTestsOnlyArtifacts()
 }
 
 def stashTestsArtifacts()
 {
-	timeout(time: 3, unit: 'MINUTES')
-	{
-		stashCommonArtifacts()
-		stashTestsOnlyArtifacts()
-	}
+	stashCommonArtifacts()
+	stashTestsOnlyArtifacts()
 }
 
 def unstashTestsArtifacts()
 {
-	timeout(time: 3, unit: 'MINUTES')
-	{
-		unstashCommonArtifacts()
-		unstashTestsOnlyArtifacts()
-	}
+	unstashCommonArtifacts()
+	unstashTestsOnlyArtifacts()
 }
 
 def stashPackageArtifacts()
 {
-	timeout(time: 3, unit: 'MINUTES')
-	{
-		stashCommonArtifacts()
-		stashPackageOnlyArtifacts()
-	}
+	stashCommonArtifacts()
+	stashPackageOnlyArtifacts()
 }
 
 def unstashPackageArtifacts()
 {
-	timeout(time: 3, unit: 'MINUTES')
-	{
-		unstashCommonArtifacts()
-		unstashPackageOnlyArtifacts()
-	}
+	unstashCommonArtifacts()
+	unstashPackageOnlyArtifacts()
 }
 
 def testingVMsAreRequired(params)
@@ -235,7 +217,7 @@ def testingVMsAreRequired(params)
 
 def raid()
 {
-	timeout(time: 90, unit: 'MINUTES')
+	timeout(time: 3, unit: 'HOURS')
 	{
 		ripPipelineState.getServerFromPool()
 		def sut = ripPipelineState.sut
