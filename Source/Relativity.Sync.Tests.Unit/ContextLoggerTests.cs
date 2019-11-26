@@ -24,7 +24,7 @@ namespace Relativity.Sync.Tests.Unit
 
 		private const string _MESSAGE = "message template {param1}";
 		private const string _EXPECTED_MESSAGE =
-			"message template {param1} Sync job properties: WorkflowId: {WorkflowId} SyncConfigurationArtifactId: {SyncConfigurationArtifactId} SyncVersion: {SyncVersion} ";
+			"message template {param1} Sync job properties: WorkflowId: {WorkflowId} SyncConfigurationArtifactId: {SyncConfigurationArtifactId} SyncBuildVersion: {SyncBuildVersion} ";
 		private readonly Exception _exception = new IOException();
 
 		private readonly object[] _params = { _PARAM1 };
