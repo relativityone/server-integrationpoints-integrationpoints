@@ -32,12 +32,6 @@ namespace Relativity.Sync.Tests.System
 			_serviceFactory = new ServiceFactoryFromAppConfig().CreateServiceFactory();
 		}
 
-		public async Task ConfigureImportAPI()
-		{
-			await CreateInstanceSetting("WebAPIPath", "kCura.IntegrationPoints",
-				Services.InstanceSetting.ValueType.Text, AppSettings.RelativityWebApiUrl.AbsoluteUri).ConfigureAwait(false);
-		}
-
 		public async Task<WorkspaceRef> CreateWorkspaceAsync(string name = null, string templateWorkspaceName = "Relativity Starter Template")
 		{
 			if (string.IsNullOrWhiteSpace(name))
@@ -135,7 +129,7 @@ namespace Relativity.Sync.Tests.System
 			}
 		}
 
-		public async Task<int> CreateInstanceSetting(string name, string section, Services.InstanceSetting.ValueType valueType, string value)
+		public async Task CreateInstanceSetting(string name, string section, Services.InstanceSetting.ValueType valueType, string value)
 		{
 			using (IInstanceSettingManager settingManager = _serviceFactory.CreateProxy<IInstanceSettingManager>())
 			{
@@ -154,14 +148,7 @@ namespace Relativity.Sync.Tests.System
 						ValueType = valueType,
 						Value = value
 					};
-					return await settingManager.CreateSingleAsync(setting).ConfigureAwait(false);
-				}
-				else
-				{
-					return settingResult.Results
-						.First()
-						.Artifact
-						.ArtifactID;
+					await settingManager.CreateSingleAsync(setting).ConfigureAwait(false);
 				}
 			}
 		}
