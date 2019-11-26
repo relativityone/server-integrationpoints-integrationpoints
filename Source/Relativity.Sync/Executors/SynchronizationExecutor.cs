@@ -83,14 +83,14 @@ namespace Relativity.Sync.Executors
 							_jobStatisticsContainer.TotalBytesTransferred += importJobResult.JobSizeInBytes;
 
 							IEnumerable<int> pushedDocumentArtifactIds =
-								await importJob.GetPushedDocumentArtifactIds().ConfigureAwait(false);
+								await importJob.GetPushedDocumentArtifactIdsAsync().ConfigureAwait(false);
 							Task<ExecutionResult> destinationTaggingResult =
 								_documentsTagRepository.TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(
 									configuration, pushedDocumentArtifactIds, token);
 							destinationTaggingTasks.Add(destinationTaggingResult);
 
 							IEnumerable<string> pushedDocumentIdentifiers =
-								await importJob.GetPushedDocumentIdentifiers().ConfigureAwait(false);
+								await importJob.GetPushedDocumentIdentifiersAsync().ConfigureAwait(false);
 							Task<ExecutionResult> sourceTaggingResult =
 								_documentsTagRepository.TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(
 									configuration, pushedDocumentIdentifiers, token);
