@@ -1,0 +1,21 @@
+<BuildTools>
+  <RAPBuilder>
+    <Applications>
+      <Application name="JsonLoader" generatenuspec="true">
+        <Destination>Artifacts\JsonLoader.rap</Destination>
+        <ApplicationSchema>ApplicationsXML\application.xml</ApplicationSchema>
+        <Assemblies>
+          <Assembly>Source\Relativity.IntegrationPoints.JsonLoader\bin\Relativity.IntegrationPoints.Contracts.dll</Assembly>
+          <Assembly>Source\Relativity.IntegrationPoints.JsonLoader\bin\Relativity.IntegrationPoints.SourceProviderInstaller.dll</Assembly>
+          <Assembly>Source\Relativity.IntegrationPoints.JsonLoader\bin\Relativity.IntegrationPoints.JsonLoader.dll</Assembly>
+          <Assembly>Source\Relativity.IntegrationPoints.JsonLoader\bin\Newtonsoft.Json.dll</Assembly>
+          <Assembly>Source\Relativity.IntegrationPoints.JsonLoader\bin\Relativity.IntegrationPoints.Services.Interfaces.Private.dll</Assembly>
+        </Assemblies>
+        <ResourceFiles />
+        <CustomPages>
+          <CustomPage guid="48dae441-8954-433e-9dcb-6513874f0271">Source\CustomPages\JsonLoader</CustomPage>
+        </CustomPages>
+      </Application>
+    </Applications>
+  </RAPBuilder>
+</BuildTools>
