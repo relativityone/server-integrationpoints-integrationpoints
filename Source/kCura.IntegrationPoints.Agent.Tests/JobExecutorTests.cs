@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 
 			ExecuteJob(0, 0, 0, 0);
 
-			_logger.Received().LogContextPushProperty($"{_RIP_PREFIX}{nameof(AgentCorrelationContext.ApplicationVersion)}", expectedVersion);
+			_logger.Received().LogContextPushProperty($"{_RIP_PREFIX}{nameof(AgentCorrelationContext.ApplicationBuildVersion)}", expectedVersion);
 
 		}
 
