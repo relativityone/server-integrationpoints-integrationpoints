@@ -42,7 +42,7 @@ namespace Relativity.Sync.Tests.Unit
 				_PARAM1,
 				_syncJobParameters.WorkflowId,
 				_syncJobParameters.SyncConfigurationArtifactId,
-				_syncJobParameters.SyncVersion
+				_syncJobParameters.SyncBuildVersion
 			};
 			_instance = new ContextLogger(_syncJobParameters, _logger.Object);
 		}
