@@ -97,7 +97,7 @@ namespace Relativity.Sync.Logging
 			{
 				_jobParameters.WorkflowId,
 				_jobParameters.SyncConfigurationArtifactId,
-				_jobParameters.SyncVersion
+				_jobParameters.SyncBuildVersion
 			});
 			return properties.ToArray();
 		}
@@ -108,7 +108,7 @@ namespace Relativity.Sync.Logging
 				" Sync job properties: " +
 				$"{nameof(SyncJobParameters.WorkflowId)}: {{{nameof(SyncJobParameters.WorkflowId)}}} " +
 				$"{nameof(SyncJobParameters.SyncConfigurationArtifactId)}: {{{nameof(SyncJobParameters.SyncConfigurationArtifactId)}}} " +
-				$"{nameof(SyncJobParameters.SyncVersion)}: {{{nameof(SyncJobParameters.SyncVersion)}}} ";
+				$"{nameof(SyncJobParameters.SyncBuildVersion)}: {{{nameof(SyncJobParameters.SyncBuildVersion)}}} ";
 		}
 	}
 }
