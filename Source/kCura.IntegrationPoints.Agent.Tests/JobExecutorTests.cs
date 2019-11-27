@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using kCura.IntegrationPoints.Agent.Interfaces;
 using kCura.IntegrationPoints.Core.Tests;
 using kCura.IntegrationPoints.Domain.Logging;
@@ -36,6 +37,17 @@ namespace kCura.IntegrationPoints.Agent.Tests
 
 			string expectedJobId = jobId.ToString();
 			_logger.Received().LogContextPushProperty($"{_RIP_PREFIX}{nameof(AgentCorrelationContext.JobId)}", expectedJobId);
+		}
+
+		[Test]
+		public void JobExecutor_ShouldPushApplicationVersionToLogContext()
+		{
+			string expectedVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+
+			ExecuteJob(0, 0, 0, 0);
+
+			_logger.Received().LogContextPushProperty($"{_RIP_PREFIX}{nameof(AgentCorrelationContext.ApplicationBuildVersion)}", expectedVersion);
+
 		}
 
 		[Test]

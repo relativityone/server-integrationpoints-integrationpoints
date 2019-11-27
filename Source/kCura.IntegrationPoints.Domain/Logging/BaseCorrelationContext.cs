@@ -1,18 +1,26 @@
 ﻿using System.Collections.Generic;
+using System.Reflection;
 
 namespace kCura.IntegrationPoints.Domain.Logging
 {
 	public class BaseCorrelationContext
 	{
 		public string ActionName { get; set; }
+		public string ApplicationBuildVersion { get; set; }
 		public int? WorkspaceId { get; set; }
 		public int? UserId { get; set; }
+
+		public BaseCorrelationContext()
+		{
+			ApplicationBuildVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+		}
 
 		public virtual Dictionary<string, object> ToDictionary()
 		{
 			return new Dictionary<string, object>
 			{
 				[nameof(ActionName)] = ActionName,
+				[nameof(ApplicationBuildVersion)] = ApplicationBuildVersion,
 				[nameof(WorkspaceId)] = WorkspaceId,
 				[nameof(UserId)] = UserId
 			};
@@ -25,6 +33,7 @@ namespace kCura.IntegrationPoints.Domain.Logging
 				return;
 			}
 			ActionName = GetValueOrDefault<string>(dictionary, nameof(ActionName));
+			ApplicationBuildVersion = GetValueOrDefault<string>(dictionary, nameof(ApplicationBuildVersion));
 			WorkspaceId = GetValueOrDefault<int?>(dictionary, nameof(WorkspaceId));
 			UserId = GetValueOrDefault<int?>(dictionary, nameof(UserId));
 		}
