@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -106,6 +107,18 @@ namespace Relativity.Sync.Tests.System
 			ImportDataTableWrapper dataTableWrapper = DataTableFactory.CreateImportDataTable(Dataset, extractedText: true, natives: true);
 			ImportJobErrors importJobErrors = await importHelper.ImportDataAsync(sourceWorkspaceArtifactId, dataTableWrapper).ConfigureAwait(false);
 			Assert.IsTrue(importJobErrors.Success, $"IAPI errors: {string.Join(global::System.Environment.NewLine, importJobErrors.Errors)}");
+
+			//Dirty Hack
+			using (SqlConnection connection = DBHelper.CreateConnectionFromAppConfig(sourceWorkspaceArtifactId))
+			{
+				connection.Open();
+
+				const string sqlStatement = @"UPDATE [File] SET Location = CONCAT(@LocalFilePath, '\NATIVES\',[Filename])";
+				SqlCommand command = new SqlCommand(sqlStatement, connection);
+				command.Parameters.AddWithValue("LocalFilePath", Dataset.FolderPath);
+
+				command.ExecuteNonQuery();
+			}
 
 			// Source tags creation in destination workspace
 			IExecutor<IDestinationWorkspaceTagsCreationConfiguration> destinationWorkspaceTagsCreationExecutor = container.Resolve<IExecutor<IDestinationWorkspaceTagsCreationConfiguration>>();

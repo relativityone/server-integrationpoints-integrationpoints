@@ -11,7 +11,7 @@ namespace Relativity.Sync.Tests.System
 		private static Uri _relativityWebApiUrl;
 		private static Uri _relativityUrl;
 
-		private static string RelativityHostName => TestContext.Parameters.Exists("RelativityHostAddress")
+		public static string RelativityHostName => TestContext.Parameters.Exists("RelativityHostAddress")
 			? TestContext.Parameters["RelativityHostAddress"]
 			: ConfigurationManager.AppSettings.Get(nameof(RelativityHostName));
 
@@ -26,6 +26,12 @@ namespace Relativity.Sync.Tests.System
 		public static string RelativityUserName => GetConfigValue("AdminUsername");
 
 		public static string RelativityUserPassword => GetConfigValue("AdminPassword");
+
+		public static string SqlServer => GetConfigValue("SqlServer");
+
+		public static string SqlUsername => GetConfigValue("SqlUsername");
+
+		public static string SqlPassword => GetConfigValue("SqlPassword");
 
 		public static bool SuppressCertificateCheck => bool.Parse(GetConfigValue("SuppressCertificateCheck"));
 

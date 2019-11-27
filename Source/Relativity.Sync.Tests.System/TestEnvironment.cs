@@ -129,7 +129,7 @@ namespace Relativity.Sync.Tests.System
 			}
 		}
 
-		public async Task CreateInstanceSetting(string name, string section, Services.InstanceSetting.ValueType valueType, string value)
+		public async Task<int> CreateInstanceSetting(string name, string section, Services.InstanceSetting.ValueType valueType, string value)
 		{
 			using (IInstanceSettingManager settingManager = _serviceFactory.CreateProxy<IInstanceSettingManager>())
 			{
@@ -148,7 +148,12 @@ namespace Relativity.Sync.Tests.System
 						ValueType = valueType,
 						Value = value
 					};
-					await settingManager.CreateSingleAsync(setting).ConfigureAwait(false);
+					return await settingManager.CreateSingleAsync(setting).ConfigureAwait(false);
+				}
+				else
+				{
+					return settingResult.Results
+						.First().Artifact.ArtifactID;
 				}
 			}
 		}

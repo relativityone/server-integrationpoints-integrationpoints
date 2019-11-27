@@ -250,8 +250,8 @@ namespace Relativity.Sync.Tests.System
 
 		private void EnableAdminToSetPassword()
 		{
-			Environment.CreateInstanceSetting("AdminsCanSetPasswords", "Relativity.Authentication",
-				Services.InstanceSetting.ValueType.TrueFalse, "True").Wait();
+			int settingID = Environment.CreateInstanceSetting("AdminsCanSetPasswords", "Relativity.Authentication",
+								Services.InstanceSetting.ValueType.TrueFalse, "True").Result;
 		}
 
 		private async Task AddGroupToWorkspaceAsync(int workspaceId, Group group)
