@@ -129,35 +129,6 @@ namespace Relativity.Sync.Tests.System
 			}
 		}
 
-		public async Task<int> CreateInstanceSetting(string name, string section, Services.InstanceSetting.ValueType valueType, string value)
-		{
-			using (IInstanceSettingManager settingManager = _serviceFactory.CreateProxy<IInstanceSettingManager>())
-			{
-				Services.Query query = new Services.Query
-				{
-					Condition = $"'Name' == '{name}' AND 'Section' == '{section}'"
-				};
-				InstanceSettingQueryResultSet settingResult = await settingManager.QueryAsync(query).ConfigureAwait(false);
-
-				if (settingResult.TotalCount == 0)
-				{
-					Services.InstanceSetting.InstanceSetting setting = new Services.InstanceSetting.InstanceSetting()
-					{
-						Name = name,
-						Section = section,
-						ValueType = valueType,
-						Value = value
-					};
-					return await settingManager.CreateSingleAsync(setting).ConfigureAwait(false);
-				}
-				else
-				{
-					return settingResult.Results
-						.First().Artifact.ArtifactID;
-				}
-			}
-		}
-
 		private async Task InstallHelperAppIfNeeded()
 		{
 			string appFilePath = GetHelperApplicationFilePath();

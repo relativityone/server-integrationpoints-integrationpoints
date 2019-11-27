@@ -27,7 +27,6 @@ namespace Relativity.Sync.Tests.System
 		private ConfigurationStub _configurationStub;
 		private Group _group;
 		private int _destinationFolderArtifactId;
-		private User _user;
 
 		private const string _DESTINATION_FOLDER_NAME = "folderName";
 
@@ -138,10 +137,7 @@ namespace Relativity.Sync.Tests.System
 			_destinationFolderArtifactId = await Rdos.CreateFolderInstance(ServiceFactory, _destinationWorkspace.ArtifactID, _DESTINATION_FOLDER_NAME).ConfigureAwait(false);
 
 			string groupName = Guid.NewGuid().ToString();
-			const string userName = "testuser@relativity.com";
-			const string password = "Test1234!";
 			_group = CreateGroup(groupName);
-			_user = CreateAndSetUpUser(userName, password, _group);
 			await AddGroupToWorkspaceAsync(_sourceWorkspace.ArtifactID, _group).ConfigureAwait(false);
 			await AddGroupToWorkspaceAsync(_destinationWorkspace.ArtifactID, _group).ConfigureAwait(false);
 		}
@@ -170,7 +166,6 @@ namespace Relativity.Sync.Tests.System
 		public void TearDown()
 		{
 			GroupHelpers.DeleteGroup(Client, _group);
-			UserHelpers.DeleteUser(Client, _user);
 		}
 
 		private async Task SetUpPermissionsInWorkspace(int workspaceArtifactId, IEnumerable<ObjectPermissionSelection> objectPermissionSelections, IEnumerable<string> selectedAdminPermissions)
@@ -227,31 +222,6 @@ namespace Relativity.Sync.Tests.System
 			}
 
 			return GroupHelpers.GroupGetByName(Client, name);
-		}
-
-		private User CreateAndSetUpUser(string userName, string password, Group group)
-		{
-			int userArtifactId = UserHelpers.FindUserArtifactID(Client, userName);
-
-			User user;
-			if (userArtifactId == 0)
-			{
-				EnableAdminToSetPassword();
-				user = UserHelpers.CreateUserWithPassword(Client, "Test", "Test", userName, "Relativity", password);
-			}
-			else
-			{
-				user = Client.Repositories.User.ReadSingle(userArtifactId);
-			}
-
-			GroupHelpers.GroupAddUserIfNotInGroup(Client, group, user);
-			return user;
-		}
-
-		private void EnableAdminToSetPassword()
-		{
-			int settingID = Environment.CreateInstanceSetting("AdminsCanSetPasswords", "Relativity.Authentication",
-								Services.InstanceSetting.ValueType.TrueFalse, "True").Result;
 		}
 
 		private async Task AddGroupToWorkspaceAsync(int workspaceId, Group group)

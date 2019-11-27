@@ -108,17 +108,13 @@ namespace Relativity.Sync.Tests.System
 			ImportJobErrors importJobErrors = await importHelper.ImportDataAsync(sourceWorkspaceArtifactId, dataTableWrapper).ConfigureAwait(false);
 			Assert.IsTrue(importJobErrors.Success, $"IAPI errors: {string.Join(global::System.Environment.NewLine, importJobErrors.Errors)}");
 
-			//Dirty Hack
-			using (SqlConnection connection = DBHelper.CreateConnectionFromAppConfig(sourceWorkspaceArtifactId))
-			{
-				connection.Open();
-
-				const string sqlStatement = @"UPDATE [File] SET Location = CONCAT(@LocalFilePath, '\NATIVES\',[Filename])";
-				SqlCommand command = new SqlCommand(sqlStatement, connection);
-				command.Parameters.AddWithValue("LocalFilePath", Dataset.FolderPath);
-
-				command.ExecuteNonQuery();
-			}
+			#region Hopper Instance workaround explanation
+			//This workaround was provided to omit Hopper Instance restrictions. IAPI which is executing on agent can't access file based on file location in database like '\\emttest\DefaultFileRepository\...'.
+			//Hopper is closed for outside traffic so there is no possibility to access fileshare from Trident Agent. Jira related to this https://jira.kcura.com/browse/DEVOPS-70257.
+			//If we decouple Sync from RIP and move it to RAP problem probably disappears. Right now as workaround we change on database this relative Fileshare path to local,
+			//where out test data are stored. So we assume in testing that push is working correctly, but whole flow (metadata, etc.) is under tests.
+			#endregion
+			UpdateNativeFilePathToLocal(sourceWorkspaceArtifactId);
 
 			// Source tags creation in destination workspace
 			IExecutor<IDestinationWorkspaceTagsCreationConfiguration> destinationWorkspaceTagsCreationExecutor = container.Resolve<IExecutor<IDestinationWorkspaceTagsCreationConfiguration>>();
@@ -245,6 +241,21 @@ namespace Relativity.Sync.Tests.System
 			}
 
 			return batchesTransferredItemsCount;
+		}
+
+
+		private void UpdateNativeFilePathToLocal(int sourceWorkspaceArtifactId)
+		{
+			using (SqlConnection connection = DBHelper.CreateConnectionFromAppConfig(sourceWorkspaceArtifactId))
+			{
+				connection.Open();
+
+				const string sqlStatement = @"UPDATE [File] SET Location = CONCAT(@LocalFilePath, '\NATIVES\',[Filename])";
+				SqlCommand command = new SqlCommand(sqlStatement, connection);
+				command.Parameters.AddWithValue("LocalFilePath", Dataset.FolderPath);
+
+				command.ExecuteNonQuery();
+			}
 		}
 	}
 }
