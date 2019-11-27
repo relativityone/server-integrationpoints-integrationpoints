@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using Relativity.Sync.Telemetry;
 
 namespace Relativity.Sync
@@ -24,6 +25,11 @@ namespace Relativity.Sync
 		public int IntegrationPointArtifactId { get; }
 
 		/// <summary>
+		/// Build version of sync
+		/// </summary>
+		public string SyncBuildVersion { get; }
+
+		/// <summary>
 		/// Workflow ID.
 		/// </summary>
 		public Lazy<string> WorkflowId { get; }
@@ -36,6 +42,7 @@ namespace Relativity.Sync
 			SyncConfigurationArtifactId = syncConfigurationArtifactId;
 			WorkspaceId = workspaceId;
 			IntegrationPointArtifactId = integrationPointArtifactId;
+			SyncBuildVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 			WorkflowId = new Lazy<string>(() => $"{TelemetryConstants.PROVIDER_NAME}_{integrationPointArtifactId}_{jobHistoryArtifactId}");
 		}
 	}

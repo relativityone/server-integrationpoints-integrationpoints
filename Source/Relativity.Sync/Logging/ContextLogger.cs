@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Relativity.Sync.Logging
 {
@@ -95,7 +96,8 @@ namespace Relativity.Sync.Logging
 			properties.AddRange(new object[]
 			{
 				_jobParameters.WorkflowId,
-				_jobParameters.SyncConfigurationArtifactId
+				_jobParameters.SyncConfigurationArtifactId,
+				_jobParameters.SyncBuildVersion
 			});
 			return properties.ToArray();
 		}
@@ -105,7 +107,8 @@ namespace Relativity.Sync.Logging
 			return messageTemplate +
 				" Sync job properties: " +
 				$"{nameof(SyncJobParameters.WorkflowId)}: {{{nameof(SyncJobParameters.WorkflowId)}}} " +
-				$"{nameof(SyncJobParameters.SyncConfigurationArtifactId)}: {{{nameof(SyncJobParameters.SyncConfigurationArtifactId)}}} ";
+				$"{nameof(SyncJobParameters.SyncConfigurationArtifactId)}: {{{nameof(SyncJobParameters.SyncConfigurationArtifactId)}}} " +
+				$"{nameof(SyncJobParameters.SyncBuildVersion)}: {{{nameof(SyncJobParameters.SyncBuildVersion)}}} ";
 		}
 	}
 }
