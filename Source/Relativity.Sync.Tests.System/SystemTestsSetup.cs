@@ -17,7 +17,7 @@ namespace Relativity.Sync.Tests.System
 		public void RunBeforeAnyTests()
 		{
 			SuppressCertificateCheckingIfConfigured();
-			ConfigureWebAPI();
+			ConfigureRequiredInstanceSettings();
 			OverrideBanzaiLogger();
 		}
 
@@ -34,11 +34,14 @@ namespace Relativity.Sync.Tests.System
 			LogWriter.SetFactory(new SyncLogWriterFactory(new EmptyLogger()));
 		}
 
-		private static void ConfigureWebAPI()
+		private  void ConfigureRequiredInstanceSettings()
 		{
-			const string name = "WebAPIPath";
-			const string section = "kCura.IntegrationPoints";
+			CreateInstanceSettingIfNotExist("WebAPIPath", "kCura.IntegrationPoints", ValueType.Text, AppSettings.RelativityWebApiUrl.AbsoluteUri);
+			CreateInstanceSettingIfNotExist("AdminsCanSetPasswords", "Relativity.Authentication", ValueType.TrueFalse, "True");
+		}
 
+		private static void CreateInstanceSettingIfNotExist(string name, string section, ValueType valueType, string value)
+		{
 			ServiceFactory serviceFactory = new ServiceFactoryFromAppConfig().CreateServiceFactory();
 			using (IInstanceSettingManager settingManager = serviceFactory.CreateProxy<IInstanceSettingManager>())
 			{
@@ -54,8 +57,8 @@ namespace Relativity.Sync.Tests.System
 					{
 						Name = name,
 						Section = section,
-						ValueType = ValueType.Text,
-						Value = AppSettings.RelativityWebApiUrl.AbsoluteUri
+						ValueType = valueType,
+						Value = value
 					};
 					settingManager.CreateSingleAsync(setting).Wait();
 				}
