@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
@@ -51,9 +52,15 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 
 		private int GetDestinationFolderArtifactId(ImportSettings importSettings)
 		{
-			Workspace currentWorkspace = _importApi.Workspaces().First(x => x.ArtifactID.Equals(importSettings.CaseArtifactId));
+			Workspace currentWorkspace = _importApi.Workspaces().FirstOrDefault(x => x.ArtifactID.Equals(importSettings.CaseArtifactId));
+
+			if (currentWorkspace == null)
+			{
+				throw new IntegrationPointsException($"No workspace (id: {importSettings.CaseArtifactId}) found among available workspaces.");
+			}
+
 			int rv = importSettings.DestinationFolderArtifactId;
-			if (currentWorkspace != null && rv == 0)
+			if (rv == 0)
 			{
 				rv = importSettings.ArtifactTypeId == (int) ArtifactType.Document ? currentWorkspace.RootFolderID : currentWorkspace.RootArtifactID;
 			}
