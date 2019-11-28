@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using System.Xml;
 using Relativity.Kepler.Transport;
 using Relativity.Services.Exceptions;
-using Relativity.Services.InstanceSetting;
 using Relativity.Services.Interfaces.LibraryApplication.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
