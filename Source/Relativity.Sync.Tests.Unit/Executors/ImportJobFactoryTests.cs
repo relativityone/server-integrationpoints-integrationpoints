@@ -91,12 +91,12 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			// Arrange
 			_instanceSettings.Setup(x => x.GetWebApiPathAsync(default(string))).ReturnsAsync(invalidWebAPIPath);
 
-			var configuration = new Mock<ISynchronizationConfiguration>();
-			Mock<IImportApiFactory> importApiFactory = GetImportAPIFactoryMock();
-			ImportJobFactory instance = GetTestInstance(importApiFactory);
+			var configurationStub = new Mock<ISynchronizationConfiguration>();
+			Mock<IImportApiFactory> importApiFactoryMock = GetImportAPIFactoryMock();
+			ImportJobFactory instance = GetTestInstance(importApiFactoryMock);
 
 			// Act
-			Func<Task> action = async () => await instance.CreateImportJobAsync(configuration.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
+			Func<Task> action = () => instance.CreateImportJobAsync(configurationStub.Object, _batch.Object, CancellationToken.None);
 
 			// Assert
 			(await action.Should().ThrowAsync<ImportFailedException>().ConfigureAwait(false))

@@ -38,7 +38,6 @@ $ToolsConfig = Join-Path $ToolsDir "packages.config"
 
 $NugetUrl = "https://relativity.jfrog.io/relativity/nuget-download/v5.3.0/nuget.exe"
 
-
 if (-not (Test-Path $Nuget -Verbose:$VerbosePreference))
 {
     Invoke-WebRequest $NugetUrl -OutFile $Nuget -Verbose:$VerbosePreference -ErrorAction Stop

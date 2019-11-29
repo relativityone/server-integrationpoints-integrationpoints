@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Threading.Tasks;
 using Banzai.Logging;
 using NUnit.Framework;
 using Relativity.Services.InstanceSetting;
@@ -14,10 +15,10 @@ namespace Relativity.Sync.Tests.System
 	public sealed class SystemTestsSetup
 	{
 		[OneTimeSetUp]
-		public void RunBeforeAnyTests()
+		public async Task RunBeforeAnyTests()
 		{
 			SuppressCertificateCheckingIfConfigured();
-			ConfigureRequiredInstanceSettings();
+			await ConfigureRequiredInstanceSettings().ConfigureAwait(false);
 			OverrideBanzaiLogger();
 		}
 
@@ -34,13 +35,13 @@ namespace Relativity.Sync.Tests.System
 			LogWriter.SetFactory(new SyncLogWriterFactory(new EmptyLogger()));
 		}
 
-		private static void ConfigureRequiredInstanceSettings()
+		private static async Task ConfigureRequiredInstanceSettings()
 		{
-			CreateInstanceSettingIfNotExist("WebAPIPath", "kCura.IntegrationPoints", ValueType.Text, AppSettings.RelativityWebApiUrl.AbsoluteUri);
-			CreateInstanceSettingIfNotExist("AdminsCanSetPasswords", "Relativity.Authentication", ValueType.TrueFalse, "True");
+			await CreateInstanceSettingIfNotExist("WebAPIPath", "kCura.IntegrationPoints", ValueType.Text, AppSettings.RelativityWebApiUrl.AbsoluteUri).ConfigureAwait(false);
+			await CreateInstanceSettingIfNotExist("AdminsCanSetPasswords", "Relativity.Authentication", ValueType.TrueFalse, "True").ConfigureAwait(false);
 		}
 
-		private static void CreateInstanceSettingIfNotExist(string name, string section, ValueType valueType, string value)
+		private static async Task CreateInstanceSettingIfNotExist(string name, string section, ValueType valueType, string value)
 		{
 			ServiceFactory serviceFactory = new ServiceFactoryFromAppConfig().CreateServiceFactory();
 			using (IInstanceSettingManager settingManager = serviceFactory.CreateProxy<IInstanceSettingManager>())
@@ -49,7 +50,7 @@ namespace Relativity.Sync.Tests.System
 				{
 					Condition = $"'Name' == '{name}' AND 'Section' == '{section}'"
 				};
-				InstanceSettingQueryResultSet settingResult = settingManager.QueryAsync(query).Result;
+				InstanceSettingQueryResultSet settingResult = await settingManager.QueryAsync(query).ConfigureAwait(false);
 
 				if (settingResult.TotalCount == 0)
 				{
@@ -60,7 +61,7 @@ namespace Relativity.Sync.Tests.System
 						ValueType = valueType,
 						Value = value
 					};
-					settingManager.CreateSingleAsync(setting).Wait();
+					await settingManager.CreateSingleAsync(setting).ConfigureAwait(false);
 				}
 			}
 		}
