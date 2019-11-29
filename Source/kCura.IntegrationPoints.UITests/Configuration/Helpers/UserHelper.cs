@@ -1,6 +1,7 @@
 ﻿using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using System.Security.Claims;
+using kCura.IntegrationPoints.Common;
 
 namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
 {
@@ -44,7 +45,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
 			ClaimsPrincipal.ClaimsPrincipalSelector += () =>
 			{
 				var factory = new ClaimsPrincipalFactory();
-				return factory.CreateClaimsPrincipal(_ADMIN_USER_ID, _testContext.Helper);
+				return factory.CreateClaimsPrincipal(_ADMIN_USER_ID, _testContext.Helper, new RetryHandlerFactory(_testContext.Helper.GetLoggerFactory().GetLogger().ForContext<RetryHandlerFactory>()));
 			};
 
 			UserModel userModel = User.CreateUser("RIP", $"Test_User_{timeStamp}", $"RIP_Test_User_{timeStamp}@relativity.com");
