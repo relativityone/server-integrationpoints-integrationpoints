@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.WinEDDS.Credentials;
@@ -30,7 +29,7 @@ namespace kCura.IntegrationPoints.Core.Authentication
 		{
 			try
 			{
-				OAuth2Client oauth2Client = _oAuth2ClientFactory.GetOauth2Client(_contextUser.ID);
+				OAuth2Client oauth2Client = _oAuth2ClientFactory.GetOauth2ClientAsync(_contextUser.ID).GetAwaiter().GetResult();
 				ITokenProvider tokenProvider = CreateTokenProvider(oauth2Client);
 				string token = tokenProvider.GetAccessTokenAsync().GetAwaiter().GetResult();
 

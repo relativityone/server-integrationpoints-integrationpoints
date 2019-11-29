@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Domain;
@@ -54,7 +52,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Authentication
 			// ARRANGE
 			var expectedToken = "ExpectedTokenString_1234";
 			_tokenProvider.GetAccessTokenAsync().Returns(expectedToken);
-			_oAuth2ClientFactory.GetOauth2Client(_currentUser.ID)
+			_oAuth2ClientFactory.GetOauth2ClientAsync(_currentUser.ID)
 				.Returns(new OAuth2Client() { ContextUser = _currentUser.ID, Secret = _CLIENTSECRETSTRING, Id = _CLIENTID });
 			_tokenProviderFactory.Create(Arg.Any<Uri>(), _CLIENTID, _CLIENTSECRETSTRING)
 				.GetTokenProvider(Arg.Any<string>(), Arg.Any<IEnumerable<string>>()).Returns(_tokenProvider);
@@ -70,7 +68,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Authentication
 		public void ItShouldLogErrorWhenTokenGenerationFails()
 		{
 			// ARRANGE
-			_oAuth2ClientFactory.GetOauth2Client(_currentUser.ID).Throws<Exception>();
+			_oAuth2ClientFactory.GetOauth2ClientAsync(_currentUser.ID).Throws<Exception>();
 
 			// ACT & ASSERT
 			Assert.Throws<Exception>(() => _instance.GetAuthToken());
