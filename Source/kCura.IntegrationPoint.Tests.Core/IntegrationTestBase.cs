@@ -5,6 +5,7 @@ using System.Security.Claims;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.Common;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
@@ -113,7 +114,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			ClaimsPrincipal.ClaimsPrincipalSelector += () =>
 			{
 				var factory = new ClaimsPrincipalFactory();
-				return factory.CreateClaimsPrincipal(ADMIN_USER_ID, Helper);
+				return factory.CreateClaimsPrincipal(ADMIN_USER_ID, Helper, new RetryHandlerFactory(Helper.GetLoggerFactory().GetLogger().ForContext<RetryHandlerFactory>()));
 			};
 		}
 	}
