@@ -55,7 +55,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Authentication
 		public async Task GetOauth2Client_ShouldReturnExistingOAuth2Client()
 		{
 			// Act
-			OAuth2Client result = await _instance.GetOauth2ClientAsync(_contextUserId);
+			OAuth2Client result = await _instance.GetOauth2ClientAsync(_contextUserId).ConfigureAwait(false);
 
 			// Assert
 			Assert.IsNotNull(result);
@@ -72,7 +72,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Authentication
 				.ReturnsAsync(_oauth2Client);
 
 			// Act
-			OAuth2Client result = await _instance.GetOauth2ClientAsync(_contextUserId);
+			OAuth2Client result = await _instance.GetOauth2ClientAsync(_contextUserId).ConfigureAwait(false);
 
 			// Assert
 			Assert.IsNotNull(result);
