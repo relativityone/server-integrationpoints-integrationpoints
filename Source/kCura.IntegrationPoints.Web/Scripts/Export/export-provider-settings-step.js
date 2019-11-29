@@ -764,7 +764,13 @@
 					return self.IsVolumeAndSubdirectioryDetailVisible();
 				},
 				params: 1
-			},
+            },
+            max: {
+                onlyIf: function () {
+                    return self.IsVolumeAndSubdirectioryDetailVisible();
+                },
+                params: Number.MAX_SAFE_INTEGER
+            },
 			nonNegativeNaturalNumber: {
 				onlyIf: function () {
 					return self.IsVolumeAndSubdirectioryDetailVisible();

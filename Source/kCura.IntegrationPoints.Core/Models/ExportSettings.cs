@@ -95,7 +95,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
 		public string VolumePrefix { get; set; }
 		public int VolumeStartNumber { get; set; }
 		public int VolumeDigitPadding { get; set; }
-		public int VolumeMaxSize { get; set; }
+		public long VolumeMaxSize { get; set; }
 		public FilePathType FilePath { get; set; }
 		public string UserPrefix { get; set; }
 		public bool ExportMultipleChoiceFieldsAsNested { get; set; }
