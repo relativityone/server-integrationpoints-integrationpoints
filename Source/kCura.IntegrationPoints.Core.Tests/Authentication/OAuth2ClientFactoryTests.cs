@@ -78,6 +78,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Authentication
 			Assert.IsNotNull(result);
 			Assert.AreEqual(_clientName, result.Name);
 			Assert.AreEqual(_contextUserId, result.ContextUser);
+			_retryHandlerMock.Verify(x => x.ExecuteWithRetriesAsync(It.IsAny<Func<Task<OAuth2Client>>>(), It.IsAny<string>()), Times.Once);
 		}
 
 		[Test]
