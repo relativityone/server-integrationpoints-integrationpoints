@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Domain;
 using Relativity;
@@ -8,11 +9,11 @@ namespace kCura.IntegrationPoint.Tests.Core
 {
 	public class ClaimsPrincipalFactory
 	{
-		public ClaimsPrincipal CreateClaimsPrincipal(int userArtifactId, IHelper helper)
+		public ClaimsPrincipal CreateClaimsPrincipal(int userArtifactId, IHelper helper, IRetryHandlerFactory retryHandlerFactory)
 		{
 			var generator = new OAuth2TokenGenerator(
 				helper,
-				new OAuth2ClientFactory(helper),
+				new OAuth2ClientFactory(retryHandlerFactory, helper),
 				new TokenProviderFactoryFactory(),
 				new CurrentUser(userID: userArtifactId));
 			string authToken = generator.GetAuthToken();
