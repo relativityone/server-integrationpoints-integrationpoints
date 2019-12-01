@@ -86,6 +86,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 		[TestCase("relativeUri.com", "WebAPIPath relativeUri.com is invalid")]
 		[TestCase("", "WebAPIPath doesn't exist")]
+		[TestCase(null, "WebAPIPath doesn't exist")]
 		public async Task CreateImportJobAsync_ShouldThrowException_WhenWebAPIPathIsInvalid(string invalidWebAPIPath, string expectedMessage)
 		{
 			// Arrange
