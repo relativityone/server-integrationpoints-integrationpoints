@@ -33,6 +33,21 @@ Set-StrictMode -Version 2.0
 
 $ToolsDir = Join-Path $PSScriptRoot "buildtools"
 $ReportGenerator = Join-Path $ToolsDir "reportgenerator.exe"
+$Nuget = Join-Path $ToolsDir "nuget.exe"
+$ToolsConfig = Join-Path $ToolsDir "packages.config"
+
+$NugetUrl = "https://relativity.jfrog.io/relativity/nuget-download/v5.3.0/nuget.exe"
+
+if (-not (Test-Path $Nuget -Verbose:$VerbosePreference))
+{
+    Invoke-WebRequest $NugetUrl -OutFile $Nuget -Verbose:$VerbosePreference -ErrorAction Stop
+}
+
+& $Nuget install $ToolsConfig -OutputDirectory $ToolsDir
+
+$NUnit = Resolve-Path (Join-Path $ToolsDir "NUnit.ConsoleRunner.*\tools\nunit3-console.exe")
+$OpenCover = Resolve-Path (Join-Path $ToolsDir "opencover.*\tools\OpenCover.Console.exe")
+
 Import-Module -Force "$ToolsDir\BuildHelpers.psm1" -ErrorAction Stop
 Assert-Module -Name PSBuildTools -Version 0.7.0 -Path $ToolsDir
 Assert-Module -Name psake -Version 4.7.4 -Path $ToolsDir
@@ -48,6 +63,8 @@ $Params = @{
     parameters = @{	
         BuildConfig = $Configuration
         ReportGenerator = $ReportGenerator
+        NUnit = $NUnit
+        OpenCover = $OpenCover
     }
     Verbose = $VerbosePreference
     Debug = $DebugPreference

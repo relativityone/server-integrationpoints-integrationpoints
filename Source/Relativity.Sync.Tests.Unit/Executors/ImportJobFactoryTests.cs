@@ -18,7 +18,6 @@ using Relativity.Sync.Transfer;
 namespace Relativity.Sync.Tests.Unit.Executors
 {
 	[TestFixture]
-	[Parallelizable(ParallelScope.All)]
 	public class ImportJobFactoryTests
 	{
 		private Mock<IJobProgressHandlerFactory> _jobProgressHandlerFactory;
@@ -83,6 +82,26 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			// Assert
 			result.Should().NotBeNull();
+		}
+
+		[TestCase("relativeUri.com", "WebAPIPath relativeUri.com is invalid")]
+		[TestCase("", "WebAPIPath doesn't exist")]
+		[TestCase(null, "WebAPIPath doesn't exist")]
+		public async Task CreateImportJobAsync_ShouldThrowException_WhenWebAPIPathIsInvalid(string invalidWebAPIPath, string expectedMessage)
+		{
+			// Arrange
+			_instanceSettings.Setup(x => x.GetWebApiPathAsync(default(string))).ReturnsAsync(invalidWebAPIPath);
+
+			var configurationStub = new Mock<ISynchronizationConfiguration>();
+			Mock<IImportApiFactory> importApiFactoryMock = GetImportAPIFactoryMock();
+			ImportJobFactory instance = GetTestInstance(importApiFactoryMock);
+
+			// Act
+			Func<Task> action = () => instance.CreateImportJobAsync(configurationStub.Object, _batch.Object, CancellationToken.None);
+
+			// Assert
+			(await action.Should().ThrowAsync<ImportFailedException>().ConfigureAwait(false))
+				.Which.Message.Should().Be(expectedMessage);
 		}
 
 		[Test]

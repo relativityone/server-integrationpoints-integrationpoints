@@ -29,7 +29,7 @@ Task Analyze -Description "Run build analysis" -depends RestoreAnaylyzeTools {
 Task Compile -Description "Compile code for this repo" {
     Initialize-Folder $ArtifactsDir -Safe
     Initialize-Folder $LogsDir -Safe
-    
+
 	dotnet --info
     exec { dotnet @("build", $Solution,
             ("/property:Configuration=$BuildConfig"),
@@ -42,23 +42,21 @@ Task Compile -Description "Compile code for this repo" {
     }
 }
 
-Task Test -Description "Run unit tests that don't require a deployed environment." {
-    $TestResultsPath = Join-Path $LogsDir "{assembly}.{framework}.TestResults.xml"
-    $CoveragePath = Join-Path $LogsDir "Coverage.xml"
-    exec { & dotnet @("test", $Solution,
-            ("/p:collectcoverage=true"),
-            ("/p:CoverletOutputFormat=cobertura"),
-            ("--logger:nunit;LogFilePath=$TestResultsPath"))
-    }
+Task Test -Description "Run Unit and Integration Tests without coverage" {
+    Invoke-Tests -TestSuite Unit -NoCoverage
+    Invoke-Tests -TestSuite Integration -NoCoverage
+}
 
-    $coverageReports = [string]::Empty
-    Get-ChildItem $PSScriptRoot -Filter "coverage.cobertura.xml" -Recurse | ForEach-Object { $coverageReports += "$($_.FullName);" }
-    exec { & $ReportGenerator @(
-            ("-reports:$coverageReports"),
-            ("-targetdir:$LogsDir"),
-            ("-reporttypes:Cobertura"))
-    }
-    Move-Item (Join-Path $LogsDir Cobertura.xml) $CoveragePath -Force
+Task UnitTest -Description "Run Unit Tests" {
+    Invoke-Tests -TestSuite Unit
+}
+
+Task IntegrationTest -Description "Run Integration Tests" {
+    Invoke-Tests -TestSuite Integration
+}
+
+Task SystemTest -Description "Run System Tests" {
+    Invoke-Tests -TestSuite System
 }
 
 Task Sign -Description "Sign all files" {
@@ -69,8 +67,6 @@ Task Sign -Description "Sign all files" {
     | Select-Object -expand FullName `
     | Set-DigitalSignature -ErrorAction Stop
 }
-
-
 
 Task Package -Description "Package up the build artifacts" {
     Initialize-Folder $ArtifactsDir -Safe
@@ -124,4 +120,40 @@ Task Rebuild -Description "Do a rebuild" {
 
 Task Help -Alias ? -Description "Display task information" {
     WriteDocumentation
+}
+
+#Custom Functionas
+function Invoke-Tests ($TestSuite, [switch] $NoCoverage) {
+    $TestSettings = Join-Path $PSScriptRoot FunctionalTestSettings
+    $TestSettings = if(Test-Path $TestSettings) {"@$TestSettings"}
+    
+    $TestProject = (Get-ChildItem -Path $SourceDir -Filter "*Tests.$TestSuite.dll" -File -Recurse)[0].FullName
+    $TestResultsPath = Join-Path $LogsDir "$TestSuite.TestResults.xml"
+
+    if($NoCoverage)
+    {
+        exec { & $NUnit $TestProject `
+            "--config=$BuildConfig" `
+            "--result=$TestResultsPath" `
+            $TestSettings
+        }
+    }
+    else
+    {
+        exec { & $OpenCover -target:$NUnit `
+            -targetargs:"$TestProject --config=$BuildConfig --result=$TestResultsPath $TestSettings" `
+            -output:"$LogsDir\OpenCover.xml" `
+            -filter:"+[Relativity.Sync*]* -[Relativity.Sync.Tests*]*" `
+            -register:path64 `
+            -returntargetcode
+        }
+        exec { & $ReportGenerator `
+                -reports:"$LogsDir\OpenCover.xml" `
+                -targetdir:$LogsDir `
+                -reporttypes:Cobertura
+        }
+
+        $CoveragePath = Join-Path $LogsDir "Coverage.xml"
+        Move-Item (Join-Path $LogsDir Cobertura.xml) $CoveragePath -Force
+    }
 }
