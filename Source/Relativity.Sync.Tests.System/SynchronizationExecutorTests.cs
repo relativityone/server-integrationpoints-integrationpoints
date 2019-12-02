@@ -259,7 +259,7 @@ namespace Relativity.Sync.Tests.System
 			}
 		}
 
-		public static SqlConnection CreateConnectionFromAppConfig(int workspaceArtifactID)
+		private static SqlConnection CreateConnectionFromAppConfig(int workspaceArtifactID)
 		{
 			SecureString password = new NetworkCredential("", AppSettings.SqlPassword).SecurePassword;
 			password.MakeReadOnly();
