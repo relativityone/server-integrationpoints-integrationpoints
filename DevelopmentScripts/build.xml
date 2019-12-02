@@ -4,18 +4,6 @@
       <Build />
       <Ignore />
     </Projects>
-    <References>
-      <Maps />
-      <Adds>
-        <Add path="Source\JsonLoader\JsonLoader.csproj">
-          <References>
-            <Reference>Relativity.IntegrationPoints.SourceProviderInstaller.dll</Reference>
-            <Reference>Relativity.IntegrationPoints.Contracts.dll</Reference>
-            <Reference>kCura.IntegrationPoints.Domain.dll</Reference>
-          </References>
-        </Add>
-      </Adds>
-    </References>
     <Rules>
       <Rule name="CommonAssemblyInfo">
         <Extensions>
@@ -170,22 +158,6 @@
         <ResourceFiles />
         <CustomPages>
           <CustomPage guid="c2c93191-7b15-4a9b-aa56-6a8c2dac5494">Source\CustomPages\IntegrationPoints</CustomPage>
-        </CustomPages>
-      </Application>
-      <Application name="JsonLoader">
-        <Destination>Applications\JsonLoader.rap</Destination>
-        <ApplicationSchema>ApplicationsXML\jsonLoaderApplication.xml</ApplicationSchema>
-        <Assemblies>
-          <Assembly>lib\UnitTests\Relativity.IntegrationPoints.Contracts.dll</Assembly>
-          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Domain.dll</Assembly>
-          <Assembly>lib\UnitTests\Relativity.IntegrationPoints.SourceProviderInstaller.dll</Assembly>
-          <Assembly>lib\UnitTests\JsonLoader.dll</Assembly>
-          <Assembly>lib\UnitTests\Newtonsoft.Json.dll</Assembly>
-          <Assembly>lib\UnitTests\Relativity.IntegrationPoints.Services.Interfaces.Private.dll</Assembly>
-        </Assemblies>
-        <ResourceFiles />
-        <CustomPages>
-          <CustomPage guid="48dae441-8954-433e-9dcb-6513874f0271">Source\CustomPages\JsonLoader</CustomPage>
         </CustomPages>
       </Application>
     </Applications>

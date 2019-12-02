@@ -15,7 +15,6 @@ using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoints.Data.Repositories;
 using Relativity.Testing.Identification;
-using Rip.E2ETests.Constants;
 
 namespace Rip.E2ETests.Installation
 {
@@ -45,8 +44,6 @@ namespace Rip.E2ETests.Installation
 		public async Task OneTimeSetUp()
 		{
 			_mainWorkspaceID = await CreateWorkspaceAsync(_mainWorkspaceName, _WORKSPACE_TEMPLATE_WITHOUT_RIP).ConfigureAwait(false);
-
-			await ImportJsonLoaderToLibraryAsync().ConfigureAwait(false);
 		}
 
 		[OneTimeTearDown]
@@ -88,45 +85,6 @@ namespace Rip.E2ETests.Installation
 			VerifyRipIsInstalledCorrectlyInWorkspace(workspaceID);
 		}
 
-		[IdentifiedTest("cd114d25-c1b5-4549-a670-1f95a2b4d24a")]
-		[Order(40)]
-		public async Task ShouldInstallJsonLoaderToWorkspaceWithRipInstalled()
-		{
-			// arrange
-			int mainWorkspaceID = ValidateAndGetMainWorkspaceID();
-
-			// act
-			await ApplicationManager.InstallApplicationFromLibraryAsync(mainWorkspaceID, CustomProvidersConstants.JsonLoaderGuid).ConfigureAwait(false);
-
-			// assert
-			IEnumerable<string> expectedCustomSourceProviders = new[]
-			{
-				CustomProvidersConstants.JSON_LOADER_SOURCE_PROVIDER_NAME
-			};
-			IEnumerable<string> expectedSourceProviders = _ripInternalSourceProviders.Concat(expectedCustomSourceProviders);
-			VerifyRipIsInstalledCorrectlyInWorkspace(mainWorkspaceID, expectedSourceProviders);
-		}
-
-		[IdentifiedTest("846b2a03-48d5-4ca2-8707-17eb8313eecb")]
-		[Order(50)]
-		public async Task ShouldCopySourceProviderToWorkspaceCreatedFromTemplateWithCustomProviders()
-		{
-			// arrange
-			ValidateAndGetMainWorkspaceID();
-			string workspaceName = "RipInstallTest-CopySourceProviderToWorkspace";
-
-			// act
-			int workspaceID = await CreateWorkspaceAsync(workspaceName, _mainWorkspaceName).ConfigureAwait(false);
-
-			// assert
-			IEnumerable<string> expectedCustomSourceProviders = new[]
-			{
-				CustomProvidersConstants.JSON_LOADER_SOURCE_PROVIDER_NAME
-			};
-			IEnumerable<string> expectedSourceProviders = _ripInternalSourceProviders.Concat(expectedCustomSourceProviders);
-			VerifyRipIsInstalledCorrectlyInWorkspace(workspaceID, expectedSourceProviders);
-		}
-
 		private async Task<int> CreateWorkspaceAsync(string workspaceName, string templateName)
 		{
 			int workspaceID = await Workspace.CreateWorkspaceAsync(workspaceName, templateName).ConfigureAwait(false);
@@ -160,12 +118,6 @@ namespace Rip.E2ETests.Installation
 
 			sourceProviders.Select(x => x.Name).Should().BeEquivalentTo(expectedSourceProviders);
 			destinationProviders.Select(x => x.Name).Should().BeEquivalentTo(_ripInternalDestinationProviders);
-		}
-
-		private Task ImportJsonLoaderToLibraryAsync()
-		{
-			string applicationFilePath = SharedVariables.JsonLoaderRapFilePath;
-			return ApplicationManager.ImportApplicationToLibraryAsync(applicationFilePath);
 		}
 	}
 }

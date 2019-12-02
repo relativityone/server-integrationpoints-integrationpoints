@@ -118,23 +118,6 @@
             <Platform>x64</Platform>
           </Platforms>
         </Project>
-        <Project path="Source\JsonLoader\JsonLoader.csproj">
-          <Platforms>
-            <Platform>AnyCPU</Platform>
-          </Platforms>
-          <IgnoreRules>
-            <IgnoreRule>CommonAssemblyInfo</IgnoreRule>
-          </IgnoreRules>
-        </Project>
-        <Project path="Source\JsonWeb\JsonWeb.csproj">
-          <Platforms>
-            <Platform>AnyCPU</Platform>
-          </Platforms>
-          <Publish>default.pubxml</Publish>
-          <IgnoreRules>
-            <IgnoreRule>CommonAssemblyInfo</IgnoreRule>
-          </IgnoreRules>
-        </Project>
         <Project path="Source\Provider\Provider.csproj">
           <Platforms>
             <Platform>AnyCPU</Platform>
@@ -168,10 +151,6 @@
         <Project path="Source\prototypes\GeneratorHelper\GeneratorHelper.vbproj" />
         <Project path="Source\prototypes\kCura.LDAPSync.prototype.dataSources\kCura.LDAPSync.prototype.dataSources\kCura.LDAPSync.prototype.dataSources.csproj" />
         <Project path="Source\Utilities\BuildPropertiesScrubber\BuildPropertiesScrubber\BuildPropertiesScrubber\BuildPropertiesScrubber.csproj" />
-        <Project path="documentation\sdk\examples\JsonLoader\JsonLoader\JsonLoader.csproj" />
-        <Project path="documentation\sdk\examples\JsonLoader\JsonWeb\JsonWeb.csproj" />
-        <Project path="documentation\sdk\examples\MyFirstProvider\Provider\Provider.csproj" />
-        <Project path="documentation\sdk\examples\MyFirstProvider\Web\Web.csproj" />
         <Project path="Source\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj" />
         <Project path="Source\kCura.IntegrationPoints.Agent.Tests\kCura.IntegrationPoints.Agent.Tests.csproj" />
         <Project path="Source\kCura.IntegrationPoints.Agent.Tests.Integration\kCura.IntegrationPoints.Agent.Tests.Integration.csproj" />
@@ -223,13 +202,6 @@
           <References>
             <Reference>Relativity.IntegrationPoints.SourceProviderInstaller.dll</Reference>
             <Reference>Relativity.IntegrationPoints.Contracts.dll</Reference>
-          </References>
-        </Add>
-        <Add path="Source\JsonLoader\JsonLoader.csproj">
-          <References>
-            <Reference>Relativity.IntegrationPoints.SourceProviderInstaller.dll</Reference>
-            <Reference>Relativity.IntegrationPoints.Contracts.dll</Reference>
-            <Reference>kCura.IntegrationPoints.Domain.dll</Reference>
           </References>
         </Add>
       </Adds>
@@ -380,7 +352,6 @@
           <CustomPage guid="26cd78ff-d5a9-4469-af6b-1b81aa346b32">Source\CustomPages\MyFirstProvider</CustomPage>
         </CustomPages>
       </Application>
-      <Application name="JsonLoader">
         <Destination>Applications\JsonLoader.rap</Destination>
         <ApplicationSchema>ApplicationsXML\jsonLoaderApplication.xml</ApplicationSchema>
         <Assemblies>
