@@ -298,8 +298,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 
         public static string RipRapFilePath => GetRapFilePath(AppSettingString("RipRapFileName"));
 
-		public static string MyFirstProviderRapFilePath => GetRapFilePath(AppSettingString("MyFirstProviderRapFileName"));
-
 		public static string JsonLoaderRapFilePath => GetRapFilePath(AppSettingString("JsonLoaderRapFileName"));
 
 		#endregion RAP File Settings

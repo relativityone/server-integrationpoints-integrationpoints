@@ -46,7 +46,6 @@ namespace Rip.E2ETests.Installation
 		{
 			_mainWorkspaceID = await CreateWorkspaceAsync(_mainWorkspaceName, _WORKSPACE_TEMPLATE_WITHOUT_RIP).ConfigureAwait(false);
 
-			await ImportMyFirstProviderToLibraryAsync().ConfigureAwait(false);
 			await ImportJsonLoaderToLibraryAsync().ConfigureAwait(false);
 		}
 
@@ -89,21 +88,6 @@ namespace Rip.E2ETests.Installation
 			VerifyRipIsInstalledCorrectlyInWorkspace(workspaceID);
 		}
 
-		[IdentifiedTest("a785ab16-a6f4-4e70-941c-d4fe1d026982")]
-		[Order(30)]
-		public async Task ShouldInstallMyFirstProviderToWorkspaceWithRipInstalled()
-		{
-			// arrange
-			int mainWorkspaceID = ValidateAndGetMainWorkspaceID();
-
-			// act
-			await ApplicationManager.InstallApplicationFromLibraryAsync(mainWorkspaceID, CustomProvidersConstants.MyFirstProviderGuid).ConfigureAwait(false);
-
-			// assert
-			IEnumerable<string> expectedSourceProviders = _ripInternalSourceProviders.Concat(new[] { CustomProvidersConstants.MY_FIRST_PROVIDER_SOURCE_PROVIDER_NAME });
-			VerifyRipIsInstalledCorrectlyInWorkspace(mainWorkspaceID, expectedSourceProviders);
-		}
-
 		[IdentifiedTest("cd114d25-c1b5-4549-a670-1f95a2b4d24a")]
 		[Order(40)]
 		public async Task ShouldInstallJsonLoaderToWorkspaceWithRipInstalled()
@@ -117,7 +101,6 @@ namespace Rip.E2ETests.Installation
 			// assert
 			IEnumerable<string> expectedCustomSourceProviders = new[]
 			{
-				CustomProvidersConstants.MY_FIRST_PROVIDER_SOURCE_PROVIDER_NAME,
 				CustomProvidersConstants.JSON_LOADER_SOURCE_PROVIDER_NAME
 			};
 			IEnumerable<string> expectedSourceProviders = _ripInternalSourceProviders.Concat(expectedCustomSourceProviders);
@@ -138,7 +121,6 @@ namespace Rip.E2ETests.Installation
 			// assert
 			IEnumerable<string> expectedCustomSourceProviders = new[]
 			{
-				CustomProvidersConstants.MY_FIRST_PROVIDER_SOURCE_PROVIDER_NAME,
 				CustomProvidersConstants.JSON_LOADER_SOURCE_PROVIDER_NAME
 			};
 			IEnumerable<string> expectedSourceProviders = _ripInternalSourceProviders.Concat(expectedCustomSourceProviders);
@@ -178,12 +160,6 @@ namespace Rip.E2ETests.Installation
 
 			sourceProviders.Select(x => x.Name).Should().BeEquivalentTo(expectedSourceProviders);
 			destinationProviders.Select(x => x.Name).Should().BeEquivalentTo(_ripInternalDestinationProviders);
-		}
-
-		private Task ImportMyFirstProviderToLibraryAsync()
-		{
-			string applicationFilePath = SharedVariables.MyFirstProviderRapFilePath;
-			return ApplicationManager.ImportApplicationToLibraryAsync(applicationFilePath);
 		}
 
 		private Task ImportJsonLoaderToLibraryAsync()

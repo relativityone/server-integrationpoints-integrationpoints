@@ -4,7 +4,7 @@
 task default -depends build
 
 
-task build -depends build_initalize, check_configureawait, start_sonar, build_integration_points, build_my_first_provider, build_json_loader, build_rip_documentation, copy_dlls_to_lib_dir, copy_test_dlls_to_lib_dir, copy_web_drivers, run_coverage, stop_sonar, generate_validation_message_table, sign {
+task build -depends build_initalize, check_configureawait, start_sonar, build_integration_points, build_json_loader, build_rip_documentation, copy_dlls_to_lib_dir, copy_test_dlls_to_lib_dir, copy_web_drivers, run_coverage, stop_sonar, generate_validation_message_table, sign {
  
 }
 
@@ -99,30 +99,6 @@ task build_integration_points -depends restore_nuget, configure_paket {
         }
 
         & $msbuild_exe @((Join-Path $source_directory 'kCura.IntegrationPoints.sln'),
-                         ("/property:Configuration=${build_config}"),
-                         ("/property:PublishWebProjects=True"),
-                         ('/nodereuse:false'),
-                         #('/target:BuildTiers'), # TODO: configurable
-                         ('/verbosity:normal'), # TODO: configurable
-                         ('/clp:ErrorsOnly'),
-                         ('/nologo'),
-                         ('/maxcpucount'), 
-                         #('/dfl'), # ???
-                         ('/flp:LogFile=' + $logfile + ';Verbosity=Normal'), # TODO: configurable
-                         ('/flp2:warningsonly;LogFile=' + $logfilewarn),
-                         ('/flp3:errorsonly;LogFile=' + $logfileerror))
-    }
-}
-task build_my_first_provider -depends restore_nuget, configure_paket {
-    exec {
-        Write-Host 'Using MSBuild' $msbuild_exe
-
-        If(!(test-path $buildlogs_directory))
-        {
-            New-Item -Path $buildlogs_directory -ItemType Directory -Force
-        }
-
-        & $msbuild_exe @((Join-Path $source_directory 'MyFirstProvider.sln'),
                          ("/property:Configuration=${build_config}"),
                          ("/property:PublishWebProjects=True"),
                          ('/nodereuse:false'),
@@ -272,10 +248,6 @@ task copy_dlls_to_lib_dir -depends create_lib_dir {
             "Source\kCura.ScheduleQueue.Core\bin\x64\*.config",
             "Source\kCura.ScheduleQueue.Core\bin\x64\*.pdb",
             "Source\kCura.ScheduleQueue.Core\bin\x64\*.xml",
-            "Source\Provider\bin\*.dll",
-            "Source\Provider\bin\*.config",
-            "Source\Provider\bin\*.xml",
-            "Source\Provider\bin\*.pdb",
             "Source\JsonLoader\bin\*.dll",
             "Source\JsonLoader\bin\*.config",
             "Source\JsonLoader\bin\*.xml",
