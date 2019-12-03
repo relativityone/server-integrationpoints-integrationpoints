@@ -288,18 +288,16 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			IJobService jobServiceManager = Container.Resolve<IJobService>();
 
 			var agentsIDsToUnlock = new List<int>();
-			Job job;
+			Job job = null;
 			try
 			{
 				var stopWatch = new Stopwatch();
 				stopWatch.Start();
 				int currentAgentID = 0;
-				const int jobPickingUpTimeoutInSec = 10;
+				const int jobPickingUpTimeoutInSec = 30;
 				do
 				{
 					job = jobServiceManager.GetNextQueueJob(resourcePool, currentAgentID);
-
-					LogJobsInQueue(jobServiceManager, integrationPointID);
 
 					if (job == null)
 					{
@@ -321,13 +319,18 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 						}
 						currentAgentID++;
 					}
-				} while (job != null && stopWatch.Elapsed < TimeSpan.FromSeconds(jobPickingUpTimeoutInSec));
+				} while (job == null && stopWatch.Elapsed < TimeSpan.FromSeconds(jobPickingUpTimeoutInSec));
 				stopWatch.Stop();
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e);
 			}
 			finally
 			{
 				UnlockJobs(jobServiceManager, agentsIDsToUnlock);
 			}
+
 			string exceptionMessage = job == null
 				? "Unable to find the job. Please check the integration point agent and make sure that it is turned off."
 				: "Timeout during search the job.";
@@ -339,16 +342,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			foreach (var agentIdToUnlock in agentsIDsToUnlock)
 			{
 				jobServiceManager.UnlockJobs(agentIdToUnlock);
-			}
-		}
-
-		private void LogJobsInQueue(IJobService jobServiceManager, int integrationPointID)
-		{
-			var jobsList = jobServiceManager.GetJobs(integrationPointID);
-
-			foreach (var jobElement in jobsList)
-			{
-				Console.WriteLine($"Current jobs in queue {jobElement.JobId}, workspace {jobElement.WorkspaceID}, LockedByAgent {jobElement.LockedByAgentID}");
 			}
 		}
 

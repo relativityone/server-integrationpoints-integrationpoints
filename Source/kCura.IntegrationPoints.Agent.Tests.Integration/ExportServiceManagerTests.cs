@@ -83,6 +83,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			_jobService = Container.Resolve<IJobService>();
 			IScheduleRuleFactory scheduleRuleFactory = new DefaultScheduleRuleFactory();
 			IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
+			IRelativityObjectManager relativityObjectManager = Container.Resolve<IRelativityObjectManager>();
 			IJobHistoryErrorService jobHistoryErrorService = Container.Resolve<IJobHistoryErrorService>();
 			JobStatisticsService jobStatisticsService = Container.Resolve<JobStatisticsService>();
 			IAgentValidator agentValidator = Container.Resolve<IAgentValidator>();
@@ -106,6 +107,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				synchronizerFactory,
 				exporterFactory,
 				exportServiceObserversFactory,
+				relativityObjectManager,
 				repositoryFactory,
 				managerFactory,
 				new[] { jobHistoryUpdater },
