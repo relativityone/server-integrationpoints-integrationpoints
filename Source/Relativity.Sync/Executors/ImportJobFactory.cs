@@ -19,16 +19,17 @@ namespace Relativity.Sync.Executors
 		private readonly IJobHistoryErrorRepository _jobHistoryErrorRepository;
 		private readonly IInstanceSettings _instanceSettings;
 		private readonly ISourceWorkspaceDataReaderFactory _dataReaderFactory;
+		private readonly SyncJobParameters _syncJobParameters;
 		private readonly ISyncLog _logger;
 
 		public ImportJobFactory(IImportApiFactory importApiFactory, ISourceWorkspaceDataReaderFactory dataReaderFactory,
-			IJobHistoryErrorRepository jobHistoryErrorRepository,
-			IInstanceSettings instanceSettings, ISyncLog logger)
+			IJobHistoryErrorRepository jobHistoryErrorRepository, IInstanceSettings instanceSettings, SyncJobParameters syncJobParameters, ISyncLog logger)
 		{
 			_importApiFactory = importApiFactory;
 			_dataReaderFactory = dataReaderFactory;
 			_jobHistoryErrorRepository = jobHistoryErrorRepository;
 			_instanceSettings = instanceSettings;
+			_syncJobParameters = syncJobParameters;
 			_logger = logger;
 		}
 
@@ -49,6 +50,7 @@ namespace Relativity.Sync.Executors
 			ImportBulkArtifactJob importJob = await Task.Run(() => importApi.NewNativeDocumentImportJob()).ConfigureAwait(false);
 
 			importJob.SourceData.SourceData = dataReader;
+			importJob.Settings.ApplicationName = _syncJobParameters.SyncApplicationName;
 			importJob.Settings.MaximumErrorCount = int.MaxValue - 1; // From IAPI docs: This must be greater than 0 and less than Int32.MaxValue.
 			importJob.Settings.StartRecordNumber = startingIndex;
 			importJob.Settings.ArtifactTypeId = configuration.RdoArtifactTypeId;
