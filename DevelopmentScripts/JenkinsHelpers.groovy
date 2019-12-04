@@ -158,7 +158,7 @@ def build()
 {
 	def sonarParameter = shouldRunSonar(params.enableSonarAnalysis, env.BRANCH_NAME)
 	def checkConfigureAwaitParameter = params.enableCheckConfigureAwait ? "-checkConfigureAwait" : ""
-	powershell "./build.ps1 $sonarParameter $ripPipelineState.commonBuildArgs $checkConfigureAwaitParameter"
+	powershell "./build-jenkins.ps1 $sonarParameter $ripPipelineState.commonBuildArgs $checkConfigureAwaitParameter"
 	archiveArtifacts artifacts: "DevelopmentScripts/*.html", fingerprint: true
 }
 
@@ -166,7 +166,7 @@ def unitTest()
 {
 	timeout(time: 3, unit: 'MINUTES')
 	{
-		powershell "./build.ps1 -sk -t $ripPipelineState.commonBuildArgs"
+		powershell "./build-jenkins.ps1 -sk -t $ripPipelineState.commonBuildArgs"
 		archiveArtifacts artifacts: "TestLogs/*", fingerprint: true
 		currentBuild.result = 'SUCCESS'
 	}
@@ -174,7 +174,7 @@ def unitTest()
 
 def packageRIP()
 {
-	powershell "./build.ps1 -sk -package -root ./BuildPackages $ripPipelineState.commonBuildArgs"
+	powershell "./build-jenkins.ps1 -sk -package -root ./BuildPackages $ripPipelineState.commonBuildArgs"
 }
 
 def stashTestsAndPackageArtifacts()
@@ -408,7 +408,7 @@ def publishToNuget()
 	{
 		retry(3)
 		{
-			powershell "./build.ps1 -sk -nuget $key $ripPipelineState.commonBuildArgs"
+			powershell "./build-jenkins.ps1 -sk -nuget $key $ripPipelineState.commonBuildArgs"
 		}
 	}
 }
@@ -977,7 +977,7 @@ private runTests(testType, params)
 	configureNunitTests(ripPipelineState.sut)
 	def cmdOptions = testCmdOptions(testType)
 	def currentFilter = getTestsFilter(testType, params)
-	def result = powershell returnStatus: true, script: "./build.ps1 -ci -sk $cmdOptions \"\"\"$currentFilter\"\"\""
+	def result = powershell returnStatus: true, script: "./build-jenkins.ps1 -ci -sk $cmdOptions \"\"\"$currentFilter\"\"\""
 	return result
 }
 
@@ -1068,7 +1068,7 @@ private stashCommonArtifacts()
 {
 	stash allowEmpty: true, includes: 'Artifacts/*', name: 'buildArtifacts'
 	stash includes: 'DevelopmentScripts/*.ps1', name: 'buildScripts'
-	stash includes: 'build.ps1', name: 'buildps1'
+	stash includes: 'build-jenkins.ps1', name: 'buildps1'
 	stash includes: 'Vendor/psake/tools/*', name: 'psake'
 	stash includes: 'Vendor/NuGet/NuGet.exe', name: 'nuget'
 	stash includes: 'Version/version.txt', name: 'version'
