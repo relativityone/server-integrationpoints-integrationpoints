@@ -25,9 +25,14 @@ namespace Relativity.Sync
 		public int IntegrationPointArtifactId { get; }
 
 		/// <summary>
-		/// Build version of sync
+		/// Build version of Sync
 		/// </summary>
 		public string SyncBuildVersion { get; }
+
+		/// <summary>
+		/// Name of the Sync application
+		/// </summary>
+		public string SyncApplicationName { get; set; } = "Relativity.Sync";
 
 		/// <summary>
 		/// Workflow ID.

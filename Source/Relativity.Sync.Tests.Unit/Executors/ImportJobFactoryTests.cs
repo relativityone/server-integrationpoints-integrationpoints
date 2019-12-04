@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Reactive.Concurrency;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -21,11 +20,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
 	public class ImportJobFactoryTests
 	{
 		private Mock<IJobProgressHandlerFactory> _jobProgressHandlerFactory;
-		private Mock<IJobProgressUpdaterFactory> _jobProgressUpdaterFactory;
 		private Mock<ISourceWorkspaceDataReaderFactory> _dataReaderFactory;
 		private Mock<IJobHistoryErrorRepository> _jobHistoryErrorRepository;
 		private Mock<IInstanceSettings> _instanceSettings;
-
+		private SyncJobParameters _syncJobParameters;
 		private Mock<IBatch> _batch;
 
 		private ISyncLog _logger;
@@ -33,7 +31,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[SetUp]
 		public void SetUp()
 		{
-			_jobProgressUpdaterFactory = new Mock<IJobProgressUpdaterFactory>();
 			Mock<IJobProgressHandler> jobProgressHandler = new Mock<IJobProgressHandler>();
 			_jobProgressHandlerFactory = new Mock<IJobProgressHandlerFactory>();
 			_jobProgressHandlerFactory.Setup(x => x.CreateJobProgressHandler(It.IsAny<IScheduler>())).Returns(jobProgressHandler.Object);
@@ -43,7 +40,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_jobHistoryErrorRepository = new Mock<IJobHistoryErrorRepository>();
 			_instanceSettings = new Mock<IInstanceSettings>();
 			_instanceSettings.Setup(x => x.GetWebApiPathAsync(default(string))).ReturnsAsync("http://fake.uri");
-
+			_syncJobParameters = new SyncJobParameters(0, 0, 0, 0)
+			{
+				SyncApplicationName = "Test App"
+			};
 			_logger = new EmptyLogger();
 
 			_batch = new Mock<IBatch>(MockBehavior.Loose);
@@ -189,6 +189,24 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			importBulkArtifactJob.Settings.Billable.Should().Be(false);
 		}
 
+		[Test]
+		public async Task CreateImportJob_ShouldSetApplicationName()
+		{
+			// Arrange
+			var configuration = new Mock<ISynchronizationConfiguration>(MockBehavior.Loose);
+
+			var importBulkArtifactJob = new ImportBulkArtifactJob();
+			Mock<IImportApiFactory> importApiFactory = GetImportAPIFactoryMock(importBulkArtifactJob);
+
+			ImportJobFactory instance = GetTestInstance(importApiFactory);
+
+			// Act
+			await instance.CreateImportJobAsync(configuration.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			importBulkArtifactJob.Settings.ApplicationName.Should().Be(_syncJobParameters.SyncApplicationName);
+		}
+
 		private Mock<IImportApiFactory> GetImportAPIFactoryMock(ImportBulkArtifactJob importBulkArtifactJob = null)
 		{
 			var importApi = new Mock<IImportAPI>(MockBehavior.Loose);
@@ -206,7 +224,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private ImportJobFactory GetTestInstance(Mock<IImportApiFactory> importApiFactory)
 		{
 			var instance = new ImportJobFactory(importApiFactory.Object, _dataReaderFactory.Object,
-				_jobHistoryErrorRepository.Object, _instanceSettings.Object, _logger);
+				_jobHistoryErrorRepository.Object, _instanceSettings.Object, _syncJobParameters, _logger);
 			return instance;
 		}
 	}
