@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using kCura.EDDS.WebAPI.FileManagerBase;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
@@ -13,7 +12,6 @@ namespace Relativity.Sync.Executors
 {
 	internal sealed class SynchronizationExecutor : IExecutor<ISynchronizationConfiguration>
 	{
-		private readonly IJobProgressUpdaterFactory _jobProgressUpdaterFactory;
 		private readonly IBatchRepository _batchRepository;
 		private readonly IJobProgressHandlerFactory _jobProgressHandlerFactory;
 		private readonly IImportJobFactory _importJobFactory;
@@ -22,22 +20,23 @@ namespace Relativity.Sync.Executors
 		private readonly IJobStatisticsContainer _jobStatisticsContainer;
 		private readonly IDocumentTagRepository _documentsTagRepository;
 		private readonly IJobCleanupConfiguration _jobCleanupConfiguration;
+		private readonly IAutomatedWorkflowTriggerConfiguration _automatedWorkflowTriggerConfiguration;
 		private readonly ISyncLog _logger;
 
 		public SynchronizationExecutor(IImportJobFactory importJobFactory, IBatchRepository batchRepository,
-			IJobProgressHandlerFactory jobProgressHandlerFactory, IJobProgressUpdaterFactory jobProgressUpdaterFactory,
-			IDocumentTagRepository documentsTagRepository, IFieldManager fieldManager, IFieldMappings fieldMappings,
-			IJobStatisticsContainer jobStatisticsContainer, IJobCleanupConfiguration jobCleanupConfiguration, ISyncLog logger)
+			IJobProgressHandlerFactory jobProgressHandlerFactory, IDocumentTagRepository documentsTagRepository,
+			IFieldManager fieldManager, IFieldMappings fieldMappings, IJobStatisticsContainer jobStatisticsContainer,
+			IJobCleanupConfiguration jobCleanupConfiguration, IAutomatedWorkflowTriggerConfiguration automatedWorkflowTriggerConfiguration, ISyncLog logger)
 		{
 			_batchRepository = batchRepository;
 			_jobProgressHandlerFactory = jobProgressHandlerFactory;
-			_jobProgressUpdaterFactory = jobProgressUpdaterFactory;
 			_importJobFactory = importJobFactory;
 			_fieldManager = fieldManager;
 			_fieldMappings = fieldMappings;
 			_jobStatisticsContainer = jobStatisticsContainer;
 			_documentsTagRepository = documentsTagRepository;
 			_jobCleanupConfiguration = jobCleanupConfiguration;
+			_automatedWorkflowTriggerConfiguration = automatedWorkflowTriggerConfiguration;
 			_logger = logger;
 		}
 
@@ -63,7 +62,6 @@ namespace Relativity.Sync.Executors
 				{
 					foreach (int batchId in batchesIds)
 					{
-						ExecutionResult currentBatchResult = ExecutionResult.Success();
 						if (token.IsCancellationRequested)
 						{
 							_logger.LogInformation("Import job has been canceled.");
@@ -169,6 +167,7 @@ namespace Relativity.Sync.Executors
 			}
 
 			_jobCleanupConfiguration.SynchronizationExecutionResult = executionResult;
+			_automatedWorkflowTriggerConfiguration.SynchronizationExecutionResult = executionResult;
 			return executionResult;
 		}
 

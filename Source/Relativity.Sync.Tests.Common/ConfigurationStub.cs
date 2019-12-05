@@ -11,8 +11,8 @@ namespace Relativity.Sync.Tests.Common
 	internal sealed class ConfigurationStub : IDataDestinationFinalizationConfiguration, IDataDestinationInitializationConfiguration, IDataSourceSnapshotConfiguration,
 		IDestinationWorkspaceObjectTypesCreationConfiguration, IDestinationWorkspaceSavedSearchCreationConfiguration, IDestinationWorkspaceTagsCreationConfiguration, IJobCleanupConfiguration,
 		IJobStatusConsolidationConfiguration, INotificationConfiguration, IPermissionsCheckConfiguration, ISnapshotPartitionConfiguration,
-		ISourceWorkspaceTagsCreationConfiguration, ISynchronizationConfiguration, IValidationConfiguration, IUserContextConfiguration, IFieldConfiguration, ISumReporterConfiguration,
-		IJobEndMetricsConfiguration
+		ISourceWorkspaceTagsCreationConfiguration, ISynchronizationConfiguration, IValidationConfiguration, IUserContextConfiguration, IFieldConfiguration,
+		IJobEndMetricsConfiguration, IAutomatedWorkflowTriggerConfiguration
 	{
 		private const int _ADMIN_ID = 9;
 		private const int _ASCII_GROUP_SEPARATOR = 29;
@@ -46,6 +46,7 @@ namespace Relativity.Sync.Tests.Common
 		public string JobName { get; set; }
 		public string NotificationEmails { get; set; }
 		public int SourceWorkspaceArtifactId { get; set; }
+		public string TriggerName { get; }
 		public int SyncConfigurationArtifactId { get; set; }
 		public ExecutionResult SynchronizationExecutionResult { get; set; }
 		public bool MoveExistingDocuments { get; set; }

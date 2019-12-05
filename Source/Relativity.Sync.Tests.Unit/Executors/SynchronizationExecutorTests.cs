@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Relativity.Services.Interfaces.Scripts.Models;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
 using Relativity.Sync.Logging;
@@ -31,6 +30,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private Mock<IJobProgressUpdaterFactory> _jobProgressUpdaterFactoryStub;
 		private Mock<IJobProgressHandler> _jobProgressHandlerFake;
 		private Mock<IJobProgressUpdater> _jobProgressUpdaterFake;
+		private Mock<IAutomatedWorkflowTriggerConfiguration> _automatedWorkflowTriggerConfigurationFake;
 
 
 		private Mock<Sync.Executors.IImportJob> _importJobFake;
@@ -86,6 +86,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_configFake = new Mock<ISynchronizationConfiguration>();
 			_jobProgressHandlerFactoryStub = new Mock<IJobProgressHandlerFactory>();
 			_jobCleanupConfigurationMock = new Mock<IJobCleanupConfiguration>();
+			_automatedWorkflowTriggerConfigurationFake = new Mock<IAutomatedWorkflowTriggerConfiguration>();
 			_jobProgressUpdaterFactoryStub = new Mock<IJobProgressUpdaterFactory>();
 
 			_jobProgressHandlerFake = new Mock<IJobProgressHandler>();
@@ -113,9 +114,9 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_fieldManagerFake.Setup(x => x.GetSpecialFields()).Returns(_specialFields);
 
 			_sut = new SynchronizationExecutor(_importJobFactoryFake.Object, _batchRepositoryMock.Object,
-				_jobProgressHandlerFactoryStub.Object, _jobProgressUpdaterFactoryStub.Object,
-				_documentTagRepositoryFake.Object, _fieldManagerFake.Object, _fakeFieldMappings.Object, _jobStatisticsContainerFake.Object,
-				_jobCleanupConfigurationMock.Object, new EmptyLogger());
+				_jobProgressHandlerFactoryStub.Object,_documentTagRepositoryFake.Object,
+				_fieldManagerFake.Object, _fakeFieldMappings.Object, _jobStatisticsContainerFake.Object,
+				_jobCleanupConfigurationMock.Object, _automatedWorkflowTriggerConfigurationFake.Object, new EmptyLogger());
 		}
 
 		[Test]

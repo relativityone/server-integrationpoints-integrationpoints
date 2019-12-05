@@ -18,7 +18,7 @@ nuget kCura.Relativity.Client ~> 11.0.0
 nuget Relativity.Telemetry.APM ~> 2019.1.1
 nuget Relativity.Telemetry.Services.Interface ~> 2019.1.1
 nuget Relativity.Testing.Identification 1.11.0
-nuget Relativity.AutomatedWorkflows.Services.Interfaces ~> 0.1.1-pre-4
+nuget Relativity.AutomatedWorkflows.Services.Interfaces 0.1.1-pre-4
 
 nuget Microsoft.CodeAnalysis.FxCopAnalyzers 2.9.2
 nuget CSharpGuidelineAnalyzer ~> 2.3

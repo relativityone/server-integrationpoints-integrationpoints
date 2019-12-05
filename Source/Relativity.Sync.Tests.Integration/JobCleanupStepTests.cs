@@ -23,7 +23,8 @@ namespace Relativity.Sync.Tests.Integration
 			typeof(ISynchronizationConfiguration),
 			typeof(IDataDestinationFinalizationConfiguration),
 			typeof(IJobStatusConsolidationConfiguration),
-			typeof(INotificationConfiguration)
+			typeof(INotificationConfiguration),
+			typeof(IAutomatedWorkflowTriggerConfiguration)
 		};
 
 		protected override void AssertExecutedSteps(List<Type> executorTypes)

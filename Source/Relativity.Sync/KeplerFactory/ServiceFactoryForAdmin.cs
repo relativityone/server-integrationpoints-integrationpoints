@@ -4,7 +4,7 @@ using Relativity.API;
 
 namespace Relativity.Sync.KeplerFactory
 {
-	internal sealed class ServiceFactoryForAdmin : ISourceServiceFactoryForAdmin, IDestinationServiceFactoryForAdmin
+	internal sealed class ServiceFactoryForAdmin : IServiceFactoryForAdmin
 	{
 		private readonly IServicesMgr _servicesMgr;
 		private readonly IDynamicProxyFactory _proxyFactory;
