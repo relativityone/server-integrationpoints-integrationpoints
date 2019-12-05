@@ -33,7 +33,6 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
-using Moq;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
@@ -65,7 +64,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private IExportServiceObserversFactory _exportServiceObserversFactory;
 		private IExporterService _exporterService;
 		private IHelper _helper;
-		private IRelativityObjectManager _relativityObjectManager;
 		private IIntegrationPointRepository _integrationPointRepository;
 		private IJobHistoryErrorManager _jobHistoryErrorManager;
 		private IJobHistoryErrorRepository _jobHistoryErrorRepository;
@@ -121,7 +119,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
 			_documentRepository = Substitute.For<IDocumentRepository>();
 			_exportDataSanitizer = Substitute.For<IExportDataSanitizer>();
-			_relativityObjectManager = Substitute.For<IRelativityObjectManager>();
 
 			_sendingEmailNotification = Substitute.For<IBatchStatus>();
 			_updateJobHistoryStatus = Substitute.For<IBatchStatus>();
@@ -238,7 +235,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				synchronizerFactory,
 				_exporterFactory,
 				_exportServiceObserversFactory,
-				_relativityObjectManager,
 				_repositoryFactory,
 				_managerFactory,
 				_batchStatuses,
@@ -493,7 +489,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				synchronizerFactory,
 				_exporterFactory,
 				_exportServiceObserversFactory,
-				_relativityObjectManager,
 				_repositoryFactory,
 				_managerFactory,
 				_batchStatuses,
@@ -701,23 +696,14 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				}
 			);
 
-			bool jobValidationFailedUpdated = false;
-			_jobHistoryService.When(x => x.UpdateRdo(Arg.Is<JobHistory>(jh => jh.JobStatus.Guids.First() == JobStatusChoices.JobHistoryErrorJobFailed.Guids.First()))).Do(item =>
-				{
-					jobValidationFailedUpdated = true;
-				}
-
-			);
 			// ACT
-			Assert.Throws<PermissionException>(() => _instance.Execute(_job));
+			Action action = () => _instance.Execute(_job);
 
 			// ASSERT
+			action.ShouldThrow<PermissionException>();
+
 			_agentValidator.Received(1).Validate(_integrationPoint, _job.SubmittedBy);
 
-			// job status shouldnt be changed
-			Assert.IsFalse(jobValidationFailedUpdated);
-
-			// we expect to first change state to Validating and then Validation Failed
 			_jobHistoryService.Received(2).UpdateRdo(Arg.Is<JobHistory>(x => x == _jobHistory));
 		}
 
@@ -731,23 +717,13 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				}
 			);
 
-			bool jobValidationFailedUpdated = false;
-			_jobHistoryService.When(x => x.UpdateRdo(Arg.Is<JobHistory>(jh => jh.JobStatus.Guids.First() == JobStatusChoices.JobHistoryValidationFailed.Guids.First()))).Do(item =>
-				{
-					jobValidationFailedUpdated = true;
-				}
-
-			);
 			// ACT
-			Assert.Throws<IntegrationPointValidationException>(() => _instance.Execute(_job));
+			Action action = () =>_instance.Execute(_job);
 
 			// ASSERT
+			action.ShouldThrow<IntegrationPointValidationException>();
+
 			_agentValidator.Received(1).Validate(_integrationPoint, _job.SubmittedBy);
-
-			// job status should be changed
-			jobValidationFailedUpdated.Should().BeTrue();
-
-			// we expect to first change state to Validating and then Validation Failed
 			_jobHistoryService.Received(2).UpdateRdo(Arg.Is<JobHistory>(x => x == _jobHistory));
 		}
 

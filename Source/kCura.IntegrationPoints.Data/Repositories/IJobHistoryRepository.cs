@@ -12,9 +12,9 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <returns>Artifact id of the most recent finished Job History objects</returns>
 		int GetLastJobHistoryArtifactId(int integrationPointArtifactId);
 
-		void MarkJobAsValidationFailedAsync(int jobHistoryID, int integrationPointID);
+		void MarkJobAsValidationFailed(int jobHistoryID, int integrationPointID, Func<DateTime> endTimeUtc);
 
-		void MarkJobAsFailedAsync(int jobHistoryID, int integrationPointID);
+		void MarkJobAsFailed(int jobHistoryID, int integrationPointID, Func<DateTime> endTimeUtc);
 
 		/// <summary>
 		/// Gets the stoppable Job History artifact ids for a given Integration Point.

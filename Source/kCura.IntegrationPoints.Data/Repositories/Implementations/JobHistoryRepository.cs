@@ -40,79 +40,26 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return result.Select(x => x.ArtifactId).FirstOrDefault();
 		}
 
-		public void MarkJobAsValidationFailedAsync(int jobHistoryID, int integrationPointID)
+		public void MarkJobAsValidationFailed(int jobHistoryID, int integrationPointID, Func<DateTime> endTimeUtc)
 		{
-			var currentTimeUtc = DateTime.UtcNow;
 			ChoiceRef status = new ChoiceRef
 			{
 				Guid = JobStatusChoices.JobHistoryValidationFailed.Guids[0]
 			};
 
-			UpdateJobHistory(jobHistoryID, status, currentTimeUtc);
-			UpdateIntegrationPoint(integrationPointID, currentTimeUtc);
+			UpdateJobHistoryStatusField(jobHistoryID, status, endTimeUtc);
+			UpdateIntegrationPointFields(integrationPointID, endTimeUtc);
 		}
 
-		public void MarkJobAsFailedAsync(int jobHistoryID, int integrationPointID)
+		public void MarkJobAsFailed(int jobHistoryID, int integrationPointID, Func<DateTime> endTimeUtc)
 		{
-			var currentTimeUtc = DateTime.UtcNow;
-
 			ChoiceRef status = new ChoiceRef
 			{
 				Guid = JobStatusChoices.JobHistoryErrorJobFailed.Guids[0]
 			};
 
-			UpdateJobHistory(jobHistoryID, status, currentTimeUtc);
-			UpdateIntegrationPoint(integrationPointID, currentTimeUtc);
-		}
-
-		private void UpdateJobHistory(int jobHistoryID, ChoiceRef status, DateTime currentTimeUtc)
-		{
-			var fieldValues = new List<FieldRefValuePair>
-			{
-				new FieldRefValuePair
-				{
-					Field = new FieldRef
-					{
-						Guid = JobHistoryFieldGuids.JobStatusGuid
-					},
-					Value = status
-				},
-				new FieldRefValuePair
-				{
-					Field = new FieldRef
-					{
-						Guid = JobHistoryFieldGuids.EndTimeUTCGuid
-					},
-					Value = currentTimeUtc
-				}
-			};
-
-			_relativityObjectManager.Update(jobHistoryID, fieldValues);
-		}
-
-		private void UpdateIntegrationPoint(int integrationPointID, DateTime currentTimeUtc)
-		{
-			var fieldValues = new List<FieldRefValuePair>
-			{
-				new FieldRefValuePair
-				{
-					Field = new FieldRef
-					{
-						Guid = IntegrationPointFieldGuids.LastRuntimeUTCGuid
-					},
-					Value = currentTimeUtc
-				},
-				new FieldRefValuePair
-				{
-					Field = new FieldRef
-					{
-						Guid = IntegrationPointFieldGuids.HasErrorsGuid
-					},
-					Value = true
-				}
-			};
-
-			_relativityObjectManager.Update(integrationPointID, fieldValues);
+			UpdateJobHistoryStatusField(jobHistoryID, status, endTimeUtc);
+			UpdateIntegrationPointFields(integrationPointID, endTimeUtc);
 		}
 
 		public IDictionary<Guid, int[]> GetStoppableJobHistoryArtifactIdsByStatus(int integrationPointArtifactId)
@@ -147,6 +94,56 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			IEnumerable<Guid> fieldsToRetrieve = new[] { Guid.Parse(JobHistoryFieldGuids.Name) };
 			JobHistory jobHistory = _relativityObjectManager.Read<JobHistory>(jobHistoryArtifactId, fieldsToRetrieve);
 			return jobHistory.Name;
+		}
+
+		private void UpdateJobHistoryStatusField(int jobHistoryID, ChoiceRef status,Func<DateTime> entTimeUtc)
+		{
+			var fieldValues = new List<FieldRefValuePair>
+			{
+				new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = JobHistoryFieldGuids.JobStatusGuid
+					},
+					Value = status
+				},
+				new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = JobHistoryFieldGuids.EndTimeUTCGuid
+					},
+					Value = entTimeUtc()
+				}
+			};
+
+			_relativityObjectManager.Update(jobHistoryID, fieldValues);
+		}
+
+		private void UpdateIntegrationPointFields(int integrationPointID, Func<DateTime> currentTimeUtc)
+		{
+			var fieldValues = new List<FieldRefValuePair>
+			{
+				new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = IntegrationPointFieldGuids.LastRuntimeUTCGuid
+					},
+					Value = currentTimeUtc()
+				},
+				new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = IntegrationPointFieldGuids.HasErrorsGuid
+					},
+					Value = true
+				}
+			};
+
+			_relativityObjectManager.Update(integrationPointID, fieldValues);
 		}
 
 		private List<JobHistory> GetStoppableJobHistoriesForIntegrationPoint(int integrationPointArtifactId)

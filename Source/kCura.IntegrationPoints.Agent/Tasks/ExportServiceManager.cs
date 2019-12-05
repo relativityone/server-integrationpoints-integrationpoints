@@ -19,7 +19,6 @@ using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
@@ -47,9 +46,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private List<IBatchStatus> _exportServiceJobObservers;
 		private readonly IExportServiceObserversFactory _exportServiceObserversFactory;
 		private readonly IExporterFactory _exporterFactory;
-		private readonly IHelper _helper;
 		private readonly IRepositoryFactory _repositoryFactory;
-		private readonly IRelativityObjectManager _relativityObjectManager;
 		private readonly IToggleProvider _toggleProvider;
 		private readonly IDocumentRepository _documentRepository;
 		private readonly IExportDataSanitizer _exportDataSanitizer;
@@ -62,7 +59,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			ISynchronizerFactory synchronizerFactory,
 			IExporterFactory exporterFactory,
 			IExportServiceObserversFactory exportServiceObserversFactory,
-			IRelativityObjectManager relativityObjectManager,
 			IRepositoryFactory repositoryFactory,
 			IManagerFactory managerFactory,
 			IEnumerable<IBatchStatus> statuses,
@@ -94,9 +90,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_repositoryFactory = repositoryFactory;
 			_toggleProvider = toggleProvider;
 			_exportServiceObserversFactory = exportServiceObserversFactory;
-			_relativityObjectManager = relativityObjectManager;
 			_exporterFactory = exporterFactory;
-			_helper = helper;
 			_documentRepository = documentRepository;
 			_exportDataSanitizer = exportDataSanitizer;
 			Logger = helper.GetLoggerFactory().GetLogger().ForContext<ExportServiceManager>();
@@ -149,19 +143,20 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 				IExtendedJob extendedJob =
 					new ExtendedJob(job, JobHistoryService, IntegrationPointDto, Serializer, Logger);
-				IJobHistoryRepository jobHistoryRepository = new JobHistoryRepository(_relativityObjectManager);
-
+				IJobHistoryRepository jobHistoryRepository =
+					_repositoryFactory.GetJobHistoryRepository(extendedJob.WorkspaceId);
 				try
 				{
+					
 					if (ex is IntegrationPointValidationException)
 					{
-						jobHistoryRepository.MarkJobAsValidationFailedAsync(extendedJob.JobHistoryId,
-							extendedJob.IntegrationPointId);
+						jobHistoryRepository.MarkJobAsValidationFailed(extendedJob.JobHistoryId,
+							extendedJob.IntegrationPointId, () => DateTime.UtcNow);
 					}
 					else
 					{
-						jobHistoryRepository.MarkJobAsFailedAsync(extendedJob.JobHistoryId,
-							extendedJob.IntegrationPointId);
+						jobHistoryRepository.MarkJobAsFailed(extendedJob.JobHistoryId,
+							extendedJob.IntegrationPointId, () => DateTime.UtcNow);
 					}
 				}
 				catch (Exception)
