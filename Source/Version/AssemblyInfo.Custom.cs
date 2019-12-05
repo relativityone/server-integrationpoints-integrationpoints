@@ -38,6 +38,3 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.RelativitySync.Tests")]
 [assembly: InternalsVisibleTo("Relativity.IntegrationPoints.FunctionalTests")]
 [assembly: InternalsVisibleTo("Relativity.IntegrationPoints.Services.Tests")]
-
-// The following GUID is for the ID of the typelib if this project is exposed to COM
-//[assembly: Guid("9808fab4-ae17-49c5-a74a-e34543378422")]
