@@ -94,3 +94,4 @@ DevelopmentScripts/*Results.html
 /DevelopmentScripts/chromeLog.txt
 Artifacts
 .ionide
+.vs/
