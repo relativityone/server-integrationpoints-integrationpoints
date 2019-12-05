@@ -11,6 +11,8 @@ namespace Relativity.Sync.Tests.System
 		private static Uri _relativityWebApiUrl;
 		private static Uri _relativityUrl;
 
+		public static bool IsTrident => bool.Parse(GetConfigValue("IsTrident"));
+
 		public static string RelativityHostName => TestContext.Parameters.Exists("RelativityHostAddress")
 			? TestContext.Parameters["RelativityHostAddress"]
 			: ConfigurationManager.AppSettings.Get(nameof(RelativityHostName));

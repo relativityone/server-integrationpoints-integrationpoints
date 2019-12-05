@@ -52,9 +52,13 @@ if ($sutAddress) {
             $configXml = [xml]$(Get-Content $configPath)
             $hostNode = $configXml.SelectSingleNode("//add[@key='RelativityHostName']")
             if($hostNode){
-                $hostNode.value = $sutAddress
-                $configXml.Save($configPath)
+                $hostNode.Value = $sutAddress
             }
+            $sqlServerNode = $configXml.SelectSingleNode("//add[@key='SqlServer']")
+            if($sqlServerNode){
+                $sqlServerNode.Value = "$sutAddress\EDDSINSTANCE001"
+            }
+            $configXml.Save($configPath)
         }
         else {
             Write-Verbose ".config file for '$dll' dll not found."
