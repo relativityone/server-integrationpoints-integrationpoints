@@ -81,7 +81,7 @@ namespace Relativity.Sync.Executors
 						using (progressHandler.AttachToImportJob(importJob.SyncImportBulkArtifactJob, batchId,
 							batch.TotalItemsCount))
 						{
-							var context = new BatchProcessingContext(importJob, batchId, configuration);
+							var context = new BatchProcessingContext(importJob, batchId, configuration, batch, progressHandler);
 
 							ExecutionResultContext batchProcessingResultContext =
 								await ProcessBatchAndHandleResult(context, batchesCompletedWithErrors, token).ConfigureAwait(false);
@@ -137,13 +137,18 @@ namespace Relativity.Sync.Executors
 		{
 			public readonly IImportJob ImportJob;
 			public readonly int BatchId;
+			public readonly IBatch Batch;
+			public readonly IJobProgressHandler ProgressHandler;
 			public readonly ISynchronizationConfiguration Configuration;
 
-			public BatchProcessingContext(IImportJob importJob, int batchId, ISynchronizationConfiguration configuration)
+			public BatchProcessingContext(IImportJob importJob, int batchId,
+				ISynchronizationConfiguration configuration, IBatch batch, IJobProgressHandler progressHandler)
 			{
 				ImportJob = importJob;
 				BatchId = batchId;
 				Configuration = configuration;
+				Batch = batch;
+				ProgressHandler = progressHandler;
 			}
 		}
 
@@ -163,9 +168,18 @@ namespace Relativity.Sync.Executors
 		{
 			ExecutionResult processBatchResult = await BatchProcessing(context.ImportJob, token).ConfigureAwait(false);
 
-			if (processBatchResult.Status == ExecutionStatus.CompletedWithErrors)
+			switch (processBatchResult.Status)
 			{
-				batchesCompletedWithErrors[context.BatchId] = processBatchResult;
+				case ExecutionStatus.CompletedWithErrors:
+					batchesCompletedWithErrors[context.BatchId] = processBatchResult;
+					break;
+				case ExecutionStatus.Failed:
+					int failedItemsCount = context.ProgressHandler.GetBatchItemsFailedCount(context.BatchId);
+					await context.Batch.SetFailedItemsCountAsync(failedItemsCount).ConfigureAwait(false);
+
+					int processedItemsCount = context.ProgressHandler.GetBatchItemsProcessedCount(context.BatchId);
+					await context.Batch.SetTransferredItemsCountAsync(processedItemsCount).ConfigureAwait(false);
+					break;
 			}
 
 			return HandleExecutionResult(processBatchResult, "processing", context.BatchId);
