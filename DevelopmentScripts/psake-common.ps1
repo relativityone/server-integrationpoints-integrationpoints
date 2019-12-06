@@ -131,7 +131,7 @@ properties {
 
     function validateVersions
     {
-        $version_file_path = [System.IO.Path]::Combine($root, 'version.txt')
+        $version_file_path = [System.IO.Path]::Combine($version_directory, 'version.txt')
 
         $version_text = Get-Content $version_file_path
 
