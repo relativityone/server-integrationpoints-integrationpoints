@@ -64,7 +64,6 @@ packages/*
 *.nupkg
 msbuild.targets
 dlls.txt
-version.txt
 DevelopmentScripts/NUnit*
 BuildLogs
 PDBs
