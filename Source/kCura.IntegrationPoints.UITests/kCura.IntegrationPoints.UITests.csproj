@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\..\packages\testpackages\NUnit\build\NUnit.props" Condition="Exists('..\..\packages\testpackages\NUnit\build\NUnit.props')" Label="Paket" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
@@ -189,6 +189,10 @@
     </None>
     <None Include="paket.references" />
     <None Include="Readme.md" />
+    <None Include="UiTestsConfig\Regression-A.config">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="UiTestsConfig\T005.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -220,10 +224,6 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="UiTestsConfig\PL4.config">
-      <SubType>Designer</SubType>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="UiTestsConfig\Reg-A.config">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
