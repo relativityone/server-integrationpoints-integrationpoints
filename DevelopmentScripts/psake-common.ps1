@@ -48,8 +48,8 @@ properties {
     $server = 'bld-mstr-01.kcura.corp'
     $database ='TCBuildVersion'
     $project = 'Development'
-    $major_version = (Get-Content ..\Version\version.txt).split(".")[0]
-    $minor_version = (Get-Content ..\Version\version.txt).split(".")[1]
+    $major_version = (Get-Content ..\Source\Version\version.txt).split(".")[0]
+    $minor_version = (Get-Content ..\Source\Version\version.txt).split(".")[1]
     
     $buildid = 0
 
