@@ -6,7 +6,6 @@ properties {
     $application_directory = [System.IO.Path]::Combine($root, 'Applications')
     $application_xml_directory = [System.IO.Path]::Combine($root, 'ApplicationsXML')
     $development_scripts_directory = [System.IO.Path]::Combine($root, 'DevelopmentScripts')
-    $version_directory = [System.IO.Path]::Combine($root, 'Source\Version')
     $vendor_directory = [System.IO.Path]::Combine($root, 'Vendor')
     $robot_directory = [System.IO.Path]::Combine($root, 'Robot')
     $testlog_directory = [System.IO.Path]::Combine($root, 'TestLogs')
@@ -48,8 +47,8 @@ properties {
     $server = 'bld-mstr-01.kcura.corp'
     $database ='TCBuildVersion'
     $project = 'Development'
-    $major_version = (Get-Content ..\Source\Version\version.txt).split(".")[0]
-    $minor_version = (Get-Content ..\Source\Version\version.txt).split(".")[1]
+    $major_version = (Get-Content version.txt).split(".")[0]
+    $minor_version = (Get-Content version.txt).split(".")[1]
     
     $buildid = 0
 
@@ -132,7 +131,7 @@ properties {
 
     function validateVersions
     {
-        $version_file_path = [System.IO.Path]::Combine($version_directory, 'version.txt')
+        $version_file_path = [System.IO.Path]::Combine($root, 'version.txt')
 
         $version_text = Get-Content $version_file_path
 
