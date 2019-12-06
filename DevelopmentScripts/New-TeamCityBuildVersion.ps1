@@ -36,7 +36,7 @@ process
 		}
 		else
 		{
-			$alternateVersionFilePath = Join-Path $PSScriptRoot 'version.txt'
+			$alternateVersionFilePath = Join-Path $PSScriptRoot '..\version.txt'
 			if ($VersionFilePath)
 			{
 				Write-Warning "Could not find version file '$VersionFilePath'; attempting to find in: '$alternateVersionFilePath'"
