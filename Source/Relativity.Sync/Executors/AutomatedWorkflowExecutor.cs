@@ -7,7 +7,7 @@ using Relativity.AutomatedWorkflows.Services.Interfaces.DataContracts.Triggers;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 
-namespace Relativity.Sync.Executors.AutomatedWorkflow
+namespace Relativity.Sync.Executors
 {
 	internal class AutomatedWorkflowExecutor : IExecutor<IAutomatedWorkflowTriggerConfiguration>
 	{
@@ -22,11 +22,10 @@ namespace Relativity.Sync.Executors.AutomatedWorkflow
 
 		public async Task<ExecutionResult> ExecuteAsync(IAutomatedWorkflowTriggerConfiguration configuration, CancellationToken token)
 		{
-			string state = configuration.SynchronizationExecutionResult.Status == ExecutionStatus.Completed ? "complete" : "complete-with-errors";
-			
-			_logger.LogInformation("For workspace artifact ID : {0} {1} trigger called with status {2}.", configuration.SourceWorkspaceArtifactId, configuration.TriggerName, state);
 			try
 			{
+				string state = configuration.SynchronizationExecutionResult.Status == ExecutionStatus.Completed ? "complete" : "complete-with-errors";
+				_logger.LogInformation("For workspace artifact ID : {0} {1} trigger called with status {2}.", configuration.SourceWorkspaceArtifactId, configuration.TriggerName, state);
 				SendTriggerBody body = new SendTriggerBody()
 				{
 					Inputs = new List<TriggerInput>
@@ -48,6 +47,7 @@ namespace Relativity.Sync.Executors.AutomatedWorkflow
 			{
 				string message = "Error occured while executing trigger : {0} for workspace artifact ID : {1}";
 				_logger.LogError(ex, message, configuration.TriggerName, configuration.SourceWorkspaceArtifactId);
+				return await Task.FromResult(ExecutionResult.Failure(ex)).ConfigureAwait(false);
 			}
 			_logger.LogInformation("For workspace : {0} trigger {1} finished sending.", configuration.SourceWorkspaceArtifactId, configuration.TriggerName);
 			return await Task.FromResult(ExecutionResult.Success()).ConfigureAwait(false);

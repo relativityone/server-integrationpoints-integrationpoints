@@ -5,7 +5,6 @@ using Autofac;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.ExecutionConstrains;
 using Relativity.Sync.ExecutionConstrains.SumReporting;
-using Relativity.Sync.Executors.AutomatedWorkflow;
 using Relativity.Sync.Executors.PermissionCheck;
 using Relativity.Sync.Executors.SumReporting;
 using Relativity.Sync.Executors.Validation;
