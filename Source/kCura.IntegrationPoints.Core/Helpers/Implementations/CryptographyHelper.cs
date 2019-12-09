@@ -9,7 +9,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
 		public string CalculateHash(string value)
 		{
-			if (value == null)
+			if (value is null)
 			{
 				return string.Empty;
 			}
