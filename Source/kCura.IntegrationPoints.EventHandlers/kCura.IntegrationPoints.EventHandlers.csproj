@@ -50,10 +50,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Version\AssemblyInfo.cs">
-        <Link>Properties\AssemblyInfo.cs</Link>
+      <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="..\Version\AssemblyInfo.Custom.cs">
-        <Link>Properties\AssemblyInfo.Custom.cs</Link>
+      <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
     <Compile Include="Commands\Container\EventHandlerInstaller.cs" />
     <Compile Include="Commands\DeleteIntegrationPointCommand.cs" />
@@ -196,7 +196,7 @@
     <Compile Include="IntegrationPoints\IntegrationPointMigrationEventHandlerBase.cs" />
     <Compile Include="PageInteractionHelper.cs" />
     <Compile Include="PostInstallEventHandlerBase.cs" />
-    <Compile Include="Properties\LocalAssemblyInfo.cs" />
+    <Compile Include="Properties\AssemblyInfo.Local.cs" />
     <Compile Include="TagBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
