@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Handlers;
@@ -35,11 +36,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Authentication
 			_loggerFake = new Mock<IAPILog>();
 			_helperFake = new Mock<IHelper>();
 			_retryHandlerMock = new Mock<IRetryHandler>();
-			_retryHandlerMock.Setup(x => x.ExecuteWithRetriesAsync(It.IsAny<Func<Task<OAuth2Client>>>(), It.IsAny<string>())).ReturnsAsync(_oauth2Client);
+
 			_retryHandlerFactoryFake = new Mock<IRetryHandlerFactory>();
-			_retryHandlerFactoryFake.Setup(x => x.Create(It.IsAny<ushort>(), It.IsAny<ushort>())).Returns(_retryHandlerMock.Object);
-			_helperFake.Setup(x => x.GetLoggerFactory().GetLogger().ForContext<OAuth2ClientFactory>()).Returns(_loggerFake.Object);
-			_helperFake.Setup(x => x.GetServicesManager().CreateProxy<IOAuth2ClientManager>(It.IsAny<ExecutionIdentity>()))
+			_retryHandlerFactoryFake
+				.Setup(x => x.Create(It.IsAny<ushort>(), It.IsAny<ushort>()))
+				.Returns(_retryHandlerMock.Object);
+			_helperFake
+				.Setup(x => x.GetLoggerFactory().GetLogger().ForContext<OAuth2ClientFactory>())
+				.Returns(_loggerFake.Object);
+			_helperFake
+				.Setup(x => x.GetServicesManager().CreateProxy<IOAuth2ClientManager>(It.IsAny<ExecutionIdentity>()))
 				.Returns(_oAuth2ClientManagerFake.Object);
 
 			_oauth2Client = new OAuth2Client()
@@ -54,42 +60,83 @@ namespace kCura.IntegrationPoints.Core.Tests.Authentication
 		[Test]
 		public async Task GetOauth2Client_ShouldReturnExistingOAuth2Client()
 		{
-			// Act
-			OAuth2Client result = await _instance.GetOauth2ClientAsync(_contextUserId).ConfigureAwait(false);
-
-			// Assert
-			Assert.IsNotNull(result);
-			Assert.AreEqual(_clientName, result.Name);
-			Assert.AreEqual(_contextUserId, result.ContextUser);
-			_retryHandlerMock.Verify(x => x.ExecuteWithRetriesAsync(It.IsAny<Func<Task<OAuth2Client>>>(), It.IsAny<string>()), Times.Once);
-		}
-
-		[Test]
-		public async Task GetOauth2Client_ShouldCreateNewOAuth2Client()
-		{
-			// Arrange
-			_oAuth2ClientManagerFake.Setup(x => x.CreateAsync(_clientName, OAuth2Flow.ClientCredentials, It.IsAny<IEnumerable<Uri>>(), _contextUserId))
+			//Arrange
+			_retryHandlerMock
+				.Setup(x => x.ExecuteWithRetriesAsync(It.IsAny<Func<Task<OAuth2Client>>>(), It.IsAny<string>()))
 				.ReturnsAsync(_oauth2Client);
 
 			// Act
 			OAuth2Client result = await _instance.GetOauth2ClientAsync(_contextUserId).ConfigureAwait(false);
 
 			// Assert
-			Assert.IsNotNull(result);
-			Assert.AreEqual(_clientName, result.Name);
-			Assert.AreEqual(_contextUserId, result.ContextUser);
-			_retryHandlerMock.Verify(x => x.ExecuteWithRetriesAsync(It.IsAny<Func<Task<OAuth2Client>>>(), It.IsAny<string>()), Times.Once);
+			result.Should().NotBeNull();
+			_clientName.Should().Be(result.Name);
+			_contextUserId.Should().Be(result.ContextUser);
+			_retryHandlerMock
+				.Verify(x => x.ExecuteWithRetriesAsync(It.IsAny<Func<Task<OAuth2Client>>>(), It.IsAny<string>()), Times.Once);
 		}
 
 		[Test]
-		public void GetOauth2Client_ShouldLogErrorWhenRetrievalFails()
+		public async Task GetOauth2Client_ShouldCreateNewOAuth2Client()
 		{
 			// Arrange
-			_retryHandlerMock.Setup(x => x.ExecuteWithRetriesAsync(It.IsAny<Func<Task<OAuth2Client>>>(), It.IsAny<string>())).ThrowsAsync(new InvalidOperationException());
+			_retryHandlerMock
+				.SetupSequence(x => x.ExecuteWithRetriesAsync(It.IsAny<Func<Task<OAuth2Client>>>(), It.IsAny<string>()))
+				.ReturnsAsync(null)
+				.ReturnsAsync(_oauth2Client);
 
-			// Act && Assert
-			Assert.ThrowsAsync<InvalidOperationException>(() => _instance.GetOauth2ClientAsync(_contextUserId));
-			_loggerFake.Verify(x => x.LogError(It.IsAny<Exception>(), It.IsAny<string>(), It.IsAny<object>()));
+			// Act
+			OAuth2Client result = await _instance.GetOauth2ClientAsync(_contextUserId).ConfigureAwait(false);
+
+			// Assert
+			result.Should().NotBeNull();
+			_clientName.Should().Be(result.Name);
+			_contextUserId.Should().Be(result.ContextUser);
+			_retryHandlerMock
+				.Verify(x => x.ExecuteWithRetriesAsync(It.IsAny<Func<Task<OAuth2Client>>>(), It.IsAny<string>()), Times.Exactly(2));
+		}
+
+		[Test]
+		public void GetOauth2Client_ShouldLogError_WhenCreatingAuthClientRetrievalFails()
+		{
+			// Arrange
+			var exception = new OutOfMemoryException("Test exception message");
+			_retryHandlerMock
+				.SetupSequence(x => x.ExecuteWithRetriesAsync(It.IsAny<Func<Task<OAuth2Client>>>(), It.IsAny<string>()))
+				.ReturnsAsync(null)
+				.ThrowsAsync(exception);
+
+			// Act
+			Func<Task> action = () => _instance.GetOauth2ClientAsync(_contextUserId);
+
+			//Assert
+			action
+				.ShouldThrow<InvalidOperationException>()
+				.WithMessage($"Failed to retrieve OAuth2Client for user with id: {_contextUserId}")
+				.WithInnerExceptionExactly<OutOfMemoryException>();
+			_loggerFake
+				.Verify(x => x.LogError($"IOAuth2ClientManager failed on CreateAsync with {exception.Message}"));
+		}
+
+		[Test]
+		public void GetOauth2Client_ShouldLogError_WhenReadingAuthClientRetrievalFails()
+		{
+			// Arrange
+			var exception = new OutOfMemoryException("Test exception message");
+			_retryHandlerMock
+				.Setup(x => x.ExecuteWithRetriesAsync(It.IsAny<Func<Task<OAuth2Client>>>(), It.IsAny<string>()))
+				.ThrowsAsync(exception);
+
+			// Act
+			Func<Task> action = () => _instance.GetOauth2ClientAsync(_contextUserId);
+
+			//Assert
+			action
+				.ShouldThrow<InvalidOperationException>()
+				.WithMessage($"Failed to retrieve OAuth2Client for user with id: {_contextUserId}")
+				.WithInnerExceptionExactly<OutOfMemoryException>();
+			_loggerFake
+				.Verify(x => x.LogError($"IOAuth2ClientManager failed on ReadAllAsync with { exception.Message}"));
 		}
 	}
 }
