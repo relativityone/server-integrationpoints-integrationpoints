@@ -708,7 +708,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		}
 
 		[Test]
-		public void Execute_ShouldHandleIntegrationPointValidationException_WhenWeThrowThatException()
+		public void Execute_ShouldThrowValidationException_WhenValidationFails()
 		{
 			// ARRANGE
 			_agentValidator.When(x => x.Validate(_integrationPoint, _job.SubmittedBy)).Do(x =>
