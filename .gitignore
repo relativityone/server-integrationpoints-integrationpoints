@@ -70,8 +70,6 @@ BuildLogs
 PDBs
 Applications/*.nuspec
 source/.vs/
-source/example/JsonLoader/.vs/
-source/example/MyFirstProvider/.vs/
 lib/
 documentation/examples
 documentation/sdk

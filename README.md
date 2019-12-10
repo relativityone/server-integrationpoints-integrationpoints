@@ -54,14 +54,10 @@ Running unit tests:
 ## Build artifacts
 * RAPs
     * RelativityIntegrationPoints.Auto.rap
-    * MyFirstProvider.rap
-    * JsonLoader.rap
 * DLLs
 * PDBs
 * Custom Pages
     * IntegrationPoints
-    * MyFirstProvider
-    * JsonLoader
 * NuGet packages on gold build
     * RelativityIntegrationPoints (Contains RelativityIntegrationPoints.Auto.rap)
     * kCura.IntegrationPoints.Web
@@ -69,14 +65,10 @@ Running unit tests:
     frame-messaging.js
     jquery-3.4.1.js
     jquery-postMessage.js
-* Example projects (Coming soon)
-    * MyFirstProvider.sln
-    * JsonLoader.sln
 * Workflow diagrams
 
 ## Maintainers
 * Codigo O Plomo team (codigooplomo@relativity.com)
-* Buena Vista Coding Club team (buenavistacodingclub@relativity.com>)
 
 ## Miscellaneous
 [Documentation](https://help.relativity.com/integrationpoints/Content/Relativity_Integration_Points/Integration_Points/Relativity_Integration_Points.htm)
