@@ -14,7 +14,7 @@ namespace Relativity.Sync.Executors
 		private readonly ISyncLog _logger;
 		private readonly IServiceFactoryForAdmin _factoryForAdmin;
 
-		internal AutomatedWorkflowExecutor(ISyncLog logger, IServiceFactoryForAdmin helper)
+		public AutomatedWorkflowExecutor(ISyncLog logger, IServiceFactoryForAdmin helper)
 		{
 			_logger = logger;
 			_factoryForAdmin = helper;
@@ -32,8 +32,8 @@ namespace Relativity.Sync.Executors
 					{
 						new TriggerInput()
 						{
-							ID = "rip-import",
-							Value = "RelativityIntegrationPoints"
+							ID = configuration.TriggerId,
+							Value = configuration.TriggerValue
 						}
 					},
 					State = state
@@ -47,7 +47,6 @@ namespace Relativity.Sync.Executors
 			{
 				string message = "Error occured while executing trigger : {0} for workspace artifact ID : {1}";
 				_logger.LogError(ex, message, configuration.TriggerName, configuration.SourceWorkspaceArtifactId);
-				return await Task.FromResult(ExecutionResult.Failure(ex)).ConfigureAwait(false);
 			}
 			_logger.LogInformation("For workspace : {0} trigger {1} finished sending.", configuration.SourceWorkspaceArtifactId, configuration.TriggerName);
 			return await Task.FromResult(ExecutionResult.Success()).ConfigureAwait(false);

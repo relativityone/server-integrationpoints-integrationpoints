@@ -12,7 +12,9 @@ namespace Relativity.Sync.Storage
 		}
 
 		public int SourceWorkspaceArtifactId => _syncJobParameters.WorkspaceId;
-		public string TriggerName => "relativity@sync-complete";
+		public string TriggerName => _syncJobParameters.TriggerName;
 		public ExecutionResult SynchronizationExecutionResult { get; set; } = new ExecutionResult(ExecutionStatus.None, string.Empty, null);
+		public string TriggerId => _syncJobParameters.TriggerId;
+		public string TriggerValue => _syncJobParameters.TriggerValue;
 	}
 }

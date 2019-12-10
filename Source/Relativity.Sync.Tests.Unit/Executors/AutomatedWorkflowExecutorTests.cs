@@ -34,7 +34,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		}
 
 		[Test]
-		public async Task ItShouldMakeCallToRawTriggerService()
+		public async Task ExecuteAsync_ShouldMakeCallToRawTriggerService()
 		{
 			await _instance.ExecuteAsync(_configuration.Object, CancellationToken.None).ConfigureAwait(false);
 			_triggerProcessorService.Verify(
@@ -42,45 +42,45 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		}
 
 		[Test]
-		public async Task ItShouldReturnCompletedIfTriggerServiceExecutesWithoutExceptions()
+		public async Task ExecuteAsync_ShouldReturnCompleted_WhenTriggerServiceExecutesWithoutExceptions()
 		{
 			ExecutionResult result = await _instance.ExecuteAsync(_configuration.Object, CancellationToken.None).ConfigureAwait(false);
 			result.Status.Should().Be(ExecutionStatus.Completed);
 		}
 
 		[Test]
-		public async Task ItShouldReturnFailureIfTriggerServiceThrowsException()
+		public async Task ExecuteAsync_ShouldReturnSuccess_WhenTriggerServiceThrowsException()
 		{
 			_triggerProcessorService
 				.Setup(m => m.SendTriggerAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<SendTriggerBody>()))
 				.Throws<Exception>();
 			ExecutionResult result = await _instance.ExecuteAsync(_configuration.Object, CancellationToken.None).ConfigureAwait(false);
-			result.Status.Should().Be(ExecutionStatus.Failed);
+			result.Status.Should().Be(ExecutionStatus.Completed);
 		}
 
 		[Test]
-		public async Task ItShouldReturnFailureIfSynchronisationResultIsNull()
+		public async Task ExecuteAsync_ShouldReturnSuccess_WhenSynchronisationResultIsNull()
 		{
 			_configuration.Setup(m => m.SynchronizationExecutionResult).Returns((ExecutionResult)null);
 			ExecutionResult result = await _instance.ExecuteAsync(_configuration.Object, CancellationToken.None).ConfigureAwait(false);
-			result.Status.Should().Be(ExecutionStatus.Failed);
+			result.Status.Should().Be(ExecutionStatus.Completed);
 		}
 
 		[Test]
-		public async Task ItShouldReturnFailureIfKeplerCanNotReturnAutomatedWorkflowsService()
+		public async Task ExecuteAsync_ShouldReturnSuccess_WhenKeplerCanNotReturnAutomatedWorkflowsService()
 		{
 			_serviceFactory.Setup(m => m.CreateProxyAsync<IAutomatedWorkflowsService>()).Throws<Exception>();
 			ExecutionResult result = await _instance.ExecuteAsync(_configuration.Object, CancellationToken.None)
 				.ConfigureAwait(false);
-			result.Status.Should().Be(ExecutionStatus.Failed);
+			result.Status.Should().Be(ExecutionStatus.Completed);
 		}
 
 		[Test]
-		public async Task ItShouldReturnFailureIfKeplerReturnsNullAutomatedWorkflowsService()
+		public async Task ExecuteAsync_ShouldReturnSuccess_WhenKeplerReturnsNullAutomatedWorkflowsService()
 		{
 			_serviceFactory.Setup(m => m.CreateProxyAsync<IAutomatedWorkflowsService>()).Returns(Task.FromResult((IAutomatedWorkflowsService)null)); 
 			ExecutionResult result = await _instance.ExecuteAsync(_configuration.Object, CancellationToken.None).ConfigureAwait(false);
-			result.Status.Should().Be(ExecutionStatus.Failed);
+			result.Status.Should().Be(ExecutionStatus.Completed);
 		}
 	}
 }

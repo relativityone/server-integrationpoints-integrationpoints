@@ -35,6 +35,21 @@ namespace Relativity.Sync
 		public string SyncApplicationName { get; set; } = "Relativity.Sync";
 
 		/// <summary>
+		/// Id for trigger input
+		/// </summary>
+		public string TriggerId { get; set; } = "sync-import";
+
+		/// <summary>
+		/// Value for RAW trigger input
+		/// </summary>
+		public string TriggerValue { get; set; } = "Relativity.Sync";
+
+		/// <summary>
+		/// Name for RAW trigger
+		/// </summary>
+		public string TriggerName { get; set; } = "relativity@sync-complete";
+
+		/// <summary>
 		/// Workflow ID.
 		/// </summary>
 		public Lazy<string> WorkflowId { get; }
