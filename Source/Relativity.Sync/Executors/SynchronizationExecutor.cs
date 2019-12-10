@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Concurrency;
 using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
@@ -78,34 +79,31 @@ namespace Relativity.Sync.Executors
 							.ConfigureAwait(false);
 						using (IImportJob importJob = await _importJobFactory
 							.CreateImportJobAsync(configuration, batch, token).ConfigureAwait(false))
-						using (progressHandler.AttachToImportJob(importJob.SyncImportBulkArtifactJob, batchId,
+						using (progressHandler.AttachToImportJob(importJob.SyncImportBulkArtifactJob, batch.ArtifactId,
 							batch.TotalItemsCount))
 						{
-							var context = new BatchProcessingContext(importJob, batchId, configuration, batch, progressHandler);
+							ExecutionResult batchProcessingResult = await ProcessBatch(importJob, batch, progressHandler, token).ConfigureAwait(false);
+							
+							Task<ExecutionResult> destinationDocumentsTaggingTask = DestinationDocumentsTagging(importJob, configuration, token);
+							Task<ExecutionResult> sourceDocumentsTaggingTask = SourceDocumentsTagging(importJob, configuration, token);
 
-							ExecutionResultContext batchProcessingResultContext =
-								await ProcessBatchAndHandleResult(context, batchesCompletedWithErrors, token).ConfigureAwait(false);
-							if (batchProcessingResultContext.ShouldReturn)
+							ExecutionResult sourceTaggingResult = await sourceDocumentsTaggingTask.ConfigureAwait(false);
+							ExecutionResult destinationTaggingResult = await destinationDocumentsTaggingTask.ConfigureAwait(false);
+
+							if (batchProcessingResult.Status == ExecutionStatus.CompletedWithErrors)
 							{
-								return batchProcessingResultContext.Result;
+								batchesCompletedWithErrors[batch.ArtifactId] = batchProcessingResult;
 							}
 
-							ExecutionResultContext sourceTaggingResultContext =
-								await TagSourceDocumentsAndHandleResult(context, token).ConfigureAwait(false);
-							if (sourceTaggingResultContext.ShouldReturn)
+							ExecutionResult failureResult = AggregateFailuresOrCancelled(batch.ArtifactId,
+								batchProcessingResult, sourceTaggingResult, destinationTaggingResult);
+							if (failureResult != null)
 							{
-								return sourceTaggingResultContext.Result;
-							}
-
-							ExecutionResultContext destinationTaggingResultContext =
-								await TagDestinationDocumentsAndHandleResult(context, token).ConfigureAwait(false);
-							if (destinationTaggingResultContext.ShouldReturn)
-							{
-								return destinationTaggingResultContext.Result;
+								return failureResult;
 							}
 						}
 
-						_logger.LogInformation("Batch ID: {batchId} processed successfully.", batchId);
+						_logger.LogInformation("Batch ID: {batchId} processed successfully.", batch.ArtifactId);
 					}
 
 					importAndTagResult = AggregateBatchesCompletedWithErrorsResults(batchesCompletedWithErrors);
@@ -133,85 +131,36 @@ namespace Relativity.Sync.Executors
 			return importAndTagResult;
 		}
 
-		private struct BatchProcessingContext
+		private static ExecutionResult AggregateFailuresOrCancelled(int batchId, params ExecutionResult[] executionResults)
 		{
-			public readonly IImportJob ImportJob;
-			public readonly int BatchId;
-			public readonly IBatch Batch;
-			public readonly IJobProgressHandler ProgressHandler;
-			public readonly ISynchronizationConfiguration Configuration;
-
-			public BatchProcessingContext(IImportJob importJob, int batchId,
-				ISynchronizationConfiguration configuration, IBatch batch, IJobProgressHandler progressHandler)
+			List<ExecutionResult> failedResults = executionResults.Where(x => x.Status == ExecutionStatus.Failed).ToList();
+			
+			if (failedResults.Any())
 			{
-				ImportJob = importJob;
-				BatchId = batchId;
-				Configuration = configuration;
-				Batch = batch;
-				ProgressHandler = progressHandler;
-			}
-		}
-
-		private struct ExecutionResultContext
-		{
-			public readonly bool ShouldReturn;
-			public readonly ExecutionResult Result;
-
-			public ExecutionResultContext(bool shouldReturn, ExecutionResult result)
-			{
-				ShouldReturn = shouldReturn;
-				Result = result;
-			}
-		}
-
-		private async Task<ExecutionResultContext> ProcessBatchAndHandleResult(BatchProcessingContext context, IDictionary<int, ExecutionResult> batchesCompletedWithErrors, CancellationToken token)
-		{
-			ExecutionResult processBatchResult = await BatchProcessing(context.ImportJob, token).ConfigureAwait(false);
-
-			if (processBatchResult.Status == ExecutionStatus.CompletedWithErrors)
-			{
-				batchesCompletedWithErrors[context.BatchId] = processBatchResult;
+				string message = $"Processing batch (id: {batchId}) failed: {string.Join(";", failedResults.Select(x => x.Message))}";
+				Exception exception = new AggregateException(failedResults.Select(x => x.Exception));
+				return ExecutionResult.Failure(message, exception);
 			}
 
-			int failedItemsCount = context.ProgressHandler.GetBatchItemsFailedCount(context.BatchId);
-			await context.Batch.SetFailedItemsCountAsync(failedItemsCount).ConfigureAwait(false);
-
-			int processedItemsCount = context.ProgressHandler.GetBatchItemsProcessedCount(context.BatchId);
-			await context.Batch.SetTransferredItemsCountAsync(processedItemsCount).ConfigureAwait(false);
-
-			return HandleExecutionResult(processBatchResult, "processing", context.BatchId);
-		}
-
-		private async Task<ExecutionResultContext> TagSourceDocumentsAndHandleResult(BatchProcessingContext context, CancellationToken token)
-		{
-			ExecutionResult sourceDocumentsTaggingResult = await SourceDocumentsTagging(context.Configuration, context.ImportJob, token).ConfigureAwait(false);
-
-			return HandleExecutionResult(sourceDocumentsTaggingResult, "source tagging", context.BatchId);
-
-		}
-
-		private async Task<ExecutionResultContext> TagDestinationDocumentsAndHandleResult(BatchProcessingContext context, CancellationToken token)
-		{
-			ExecutionResult destinationDocumentsTaggingResult = await DestinationDocumentsTagging(context.Configuration, context.ImportJob, token).ConfigureAwait(false);
-
-			return HandleExecutionResult(destinationDocumentsTaggingResult, "destination tagging", context.BatchId);
-		}
-
-		private ExecutionResultContext HandleExecutionResult(ExecutionResult result, string actionName, int batchId)
-		{
-			switch (result.Status)
+			if (executionResults.Any(x => x.Status == ExecutionStatus.Canceled))
 			{
-				case ExecutionStatus.Canceled:
-					return new ExecutionResultContext(true, result);
-				case ExecutionStatus.Failed:
-					_logger.LogError(result.Exception,
-						$"Batch ID: {{batchId}} {actionName} failed with error: {{error}}",
-						batchId, result.Message);
-
-					return new ExecutionResultContext(true, result);
+				return ExecutionResult.Canceled();
 			}
 
-			return new ExecutionResultContext(false, result);
+			return null;
+		}
+
+		private async Task<ExecutionResult> ProcessBatch(IImportJob importJob, IBatch batch, IJobProgressHandler progressHandler, CancellationToken token)
+		{
+			ExecutionResult processBatchResult = await BatchProcessing(importJob, token).ConfigureAwait(false);
+
+			int failedItemsCount = progressHandler.GetBatchItemsFailedCount(batch.ArtifactId);
+			await batch.SetFailedItemsCountAsync(failedItemsCount).ConfigureAwait(false);
+
+			int processedItemsCount = progressHandler.GetBatchItemsProcessedCount(batch.ArtifactId);
+			await batch.SetTransferredItemsCountAsync(processedItemsCount).ConfigureAwait(false);
+
+			return processBatchResult;
 		}
 
 		private async Task<ExecutionResult> BatchProcessing(IImportJob importJob, CancellationToken token)
@@ -223,7 +172,7 @@ namespace Relativity.Sync.Executors
 			return importJobResult.ExecutionResult;
 		}
 
-		private async Task<ExecutionResult> DestinationDocumentsTagging(ISynchronizationConfiguration configuration, IImportJob importJob,
+		private async Task<ExecutionResult> DestinationDocumentsTagging(IImportJob importJob, ISynchronizationConfiguration configuration,
 			CancellationToken token)
 		{
 			IEnumerable<string> pushedDocumentIdentifiers =
@@ -235,7 +184,7 @@ namespace Relativity.Sync.Executors
 			return sourceTaggingResult;
 		}
 
-		private async Task<ExecutionResult> SourceDocumentsTagging(ISynchronizationConfiguration configuration, IImportJob importJob,
+		private async Task<ExecutionResult> SourceDocumentsTagging(IImportJob importJob, ISynchronizationConfiguration configuration,
 			CancellationToken token)
 		{
 			IEnumerable<int> pushedDocumentArtifactIds =
