@@ -326,58 +326,5 @@
           <CustomPage guid="c2c93191-7b15-4a9b-aa56-6a8c2dac5494">Source\CustomPages\IntegrationPoints</CustomPage>
         </CustomPages>
       </Application>
-      <Application name="MyFirstProvider">
-        <Destination>Applications\MyFirstProvider.rap</Destination>
-        <ApplicationSchema>ApplicationsXML\myFirstProviderApplication.xml</ApplicationSchema>
-        <Assemblies>
-          <Assembly>lib\UnitTests\kCura.Apps.Common.Config.dll</Assembly>
-          <Assembly>lib\UnitTests\kCura.Apps.Common.Data.dll</Assembly>
-          <Assembly>lib\UnitTests\kCura.Apps.Common.Utils.dll</Assembly>
-          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Common.dll</Assembly>
-          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Config.dll</Assembly>
-          <Assembly>lib\UnitTests\Relativity.IntegrationPoints.Contracts.dll</Assembly>
-          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Core.dll</Assembly>
-          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Core.Contracts.dll</Assembly>
-          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Data.dll</Assembly>
-          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Domain.dll</Assembly>
-          <Assembly>lib\UnitTests\Relativity.IntegrationPoints.SourceProviderInstaller.dll</Assembly>
-          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Synchronizers.RDO.dll</Assembly>
-          <Assembly>lib\UnitTests\kCura.ScheduleQueue.Core.dll</Assembly>
-          <Assembly>lib\UnitTests\Relativity.DataTransfer.MessageService.dll</Assembly>
-          <Assembly>lib\UnitTests\SystemInterface.dll</Assembly>
-          <Assembly>lib\UnitTests\Provider.dll</Assembly>
-        </Assemblies>
-        <ResourceFiles />
-        <CustomPages>
-          <CustomPage guid="26cd78ff-d5a9-4469-af6b-1b81aa346b32">Source\CustomPages\MyFirstProvider</CustomPage>
-        </CustomPages>
-      </Application>
-        <Destination>Applications\JsonLoader.rap</Destination>
-        <ApplicationSchema>ApplicationsXML\jsonLoaderApplication.xml</ApplicationSchema>
-        <Assemblies>
-          <Assembly>lib\UnitTests\kCura.Apps.Common.Config.dll</Assembly>
-          <Assembly>lib\UnitTests\kCura.Apps.Common.Data.dll</Assembly>
-          <Assembly>lib\UnitTests\kCura.Apps.Common.Utils.dll</Assembly>
-          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Common.dll</Assembly>
-          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Config.dll</Assembly>
-          <Assembly>lib\UnitTests\Relativity.IntegrationPoints.Contracts.dll</Assembly>
-          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Core.dll</Assembly>
-          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Core.Contracts.dll</Assembly>
-          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Data.dll</Assembly>
-          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Domain.dll</Assembly>
-          <Assembly>lib\UnitTests\Relativity.IntegrationPoints.SourceProviderInstaller.dll</Assembly>
-          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Synchronizers.RDO.dll</Assembly>
-          <Assembly>lib\UnitTests\kCura.ScheduleQueue.Core.dll</Assembly>
-          <Assembly>lib\UnitTests\Relativity.DataTransfer.MessageService.dll</Assembly>
-          <Assembly>lib\UnitTests\SystemInterface.dll</Assembly>
-          <Assembly>lib\UnitTests\JsonLoader.dll</Assembly>
-          <Assembly>lib\UnitTests\Newtonsoft.Json.dll</Assembly>
-        </Assemblies>
-        <ResourceFiles />
-        <CustomPages>
-          <CustomPage guid="48dae441-8954-433e-9dcb-6513874f0271">Source\CustomPages\JsonLoader</CustomPage>
-        </CustomPages>
-      </Application>
-    </Applications>
   </RAPBuilder>
 </BuildTools>
