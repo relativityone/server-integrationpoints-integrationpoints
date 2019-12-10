@@ -5,6 +5,7 @@ using System.Reactive.Concurrency;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
+using kCura.Vendor.Castle.Core.Internal;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
@@ -318,10 +319,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 		[Test]
 		public async Task Execute_ShouldBreak_WhenPushingOrTaggingBrakes(
-			[ValueSource(nameof(BrakingExecutionResults))] ExecutionResult executionResult,
+			[ValueSource(nameof(BrakingExecutionResults))] ExecutionResult expectedExecutionResult,
 			[ValueSource(nameof(BrakingActionsSetups))] Action<SynchronizationExecutorTests, ExecutionResult> brakingActionSetup)
 		{
-			// arrange 
+			// arrange
 			const int numberOfBatches = 1;
 			SetupBatchRepository(numberOfBatches);
 
@@ -330,22 +331,65 @@ namespace Relativity.Sync.Tests.Unit.Executors
 					It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IEnumerable<int>>(),
 					It.IsAny<CancellationToken>()))
 					.ReturnsAsync(ExecutionResult.Success);
+
 			_documentTagRepositoryFake
 				.Setup(x => x.TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(
 					It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IEnumerable<string>>(),
 					It.IsAny<CancellationToken>()))
 					.ReturnsAsync(ExecutionResult.Success);
+
 			_importJobFake
 				.Setup(x => x.RunAsync(It.IsAny<CancellationToken>()))
 				.ReturnsAsync(new ImportJobResult(ExecutionResult.Success(), 1));
 
-			brakingActionSetup(this, executionResult);
+			brakingActionSetup(this, expectedExecutionResult);
 
 			// act
 			ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, CancellationToken.None).ConfigureAwait(false);
 
 			// assert
-			result.Should().Be(executionResult);
+			result.Status.Should().BeEquivalentTo(expectedExecutionResult.Status);
+		}
+
+		[Test]
+		[TestCaseSource(nameof(BrakingExecutionResults))]
+		public async Task Execute_ShouldRunTagging_WhenPushingBrakes(ExecutionResult expectedExecutionResult)
+		{
+			// arrange
+			const int numberOfBatches = 1;
+			SetupBatchRepository(numberOfBatches);
+
+			_documentTagRepositoryFake
+				.Setup(x => x.TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(
+					It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IEnumerable<int>>(),
+					It.IsAny<CancellationToken>()))
+					.ReturnsAsync(ExecutionResult.Success);
+
+			_documentTagRepositoryFake
+				.Setup(x => x.TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(
+					It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IEnumerable<string>>(),
+					It.IsAny<CancellationToken>()))
+					.ReturnsAsync(ExecutionResult.Success);
+
+			_importJobFake
+				.Setup(x => x.RunAsync(It.IsAny<CancellationToken>()))
+				.ReturnsAsync(new ImportJobResult(expectedExecutionResult, 1));
+
+			// act
+			ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, CancellationToken.None).ConfigureAwait(false);
+
+			// assert
+			result.Status.Should().BeEquivalentTo(expectedExecutionResult.Status);
+
+			_documentTagRepositoryFake
+				.Verify(x => x.TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(
+					It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IEnumerable<int>>(),
+					It.IsAny<CancellationToken>()), Times.Once);
+
+			_documentTagRepositoryFake
+				.Verify(x => x.TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(
+					It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IEnumerable<string>>(),
+					It.IsAny<CancellationToken>()), Times.Once);
 		}
 
 		[Test]
