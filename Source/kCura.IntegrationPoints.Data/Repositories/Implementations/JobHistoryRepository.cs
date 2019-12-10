@@ -40,26 +40,26 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return result.Select(x => x.ArtifactId).FirstOrDefault();
 		}
 
-		public void MarkJobAsValidationFailed(int jobHistoryID, int integrationPointID, Func<DateTime> endTimeUtc)
+		public void MarkJobAsValidationFailed(int jobHistoryID, int integrationPointID, DateTime jobEndTime)
 		{
 			ChoiceRef status = new ChoiceRef
 			{
 				Guid = JobStatusChoices.JobHistoryValidationFailed.Guids[0]
 			};
 
-			UpdateJobHistoryStatusField(jobHistoryID, status, endTimeUtc);
-			UpdateIntegrationPointFields(integrationPointID, endTimeUtc);
+			UpdateJobHistoryStatusField(jobHistoryID, status, jobEndTime);
+			UpdateIntegrationPointFields(integrationPointID, jobEndTime);
 		}
 
-		public void MarkJobAsFailed(int jobHistoryID, int integrationPointID, Func<DateTime> endTimeUtc)
+		public void MarkJobAsFailed(int jobHistoryID, int integrationPointID, DateTime jobEndTime)
 		{
 			ChoiceRef status = new ChoiceRef
 			{
 				Guid = JobStatusChoices.JobHistoryErrorJobFailed.Guids[0]
 			};
 
-			UpdateJobHistoryStatusField(jobHistoryID, status, endTimeUtc);
-			UpdateIntegrationPointFields(integrationPointID, endTimeUtc);
+			UpdateJobHistoryStatusField(jobHistoryID, status, jobEndTime);
+			UpdateIntegrationPointFields(integrationPointID, jobEndTime);
 		}
 
 		public IDictionary<Guid, int[]> GetStoppableJobHistoryArtifactIdsByStatus(int integrationPointArtifactId)
@@ -96,7 +96,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return jobHistory.Name;
 		}
 
-		private void UpdateJobHistoryStatusField(int jobHistoryID, ChoiceRef status,Func<DateTime> entTimeUtc)
+		private void UpdateJobHistoryStatusField(int jobHistoryID, ChoiceRef status, DateTime jobEndTime)
 		{
 			var fieldValues = new List<FieldRefValuePair>
 			{
@@ -114,14 +114,14 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					{
 						Guid = JobHistoryFieldGuids.EndTimeUTCGuid
 					},
-					Value = entTimeUtc()
+					Value = jobEndTime
 				}
 			};
 
 			_relativityObjectManager.Update(jobHistoryID, fieldValues);
 		}
 
-		private void UpdateIntegrationPointFields(int integrationPointID, Func<DateTime> currentTimeUtc)
+		private void UpdateIntegrationPointFields(int integrationPointID, DateTime jobEndTime)
 		{
 			var fieldValues = new List<FieldRefValuePair>
 			{
@@ -131,7 +131,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					{
 						Guid = IntegrationPointFieldGuids.LastRuntimeUTCGuid
 					},
-					Value = currentTimeUtc()
+					Value = jobEndTime
 				},
 				new FieldRefValuePair
 				{

@@ -151,12 +151,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					if (ex is IntegrationPointValidationException)
 					{
 						jobHistoryRepository.MarkJobAsValidationFailed(extendedJob.JobHistoryId,
-							extendedJob.IntegrationPointId, () => DateTime.UtcNow);
+							extendedJob.IntegrationPointId, DateTime.UtcNow);
 					}
 					else
 					{
 						jobHistoryRepository.MarkJobAsFailed(extendedJob.JobHistoryId,
-							extendedJob.IntegrationPointId, () => DateTime.UtcNow);
+							extendedJob.IntegrationPointId, DateTime.UtcNow);
 					}
 				}
 				catch (Exception)
