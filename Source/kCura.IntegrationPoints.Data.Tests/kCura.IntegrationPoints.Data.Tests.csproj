@@ -149,6 +149,7 @@
     <Compile Include="Repositories\Implementations\FileRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\FoundationRepositoryFactoryTests.cs" />
     <Compile Include="Repositories\Implementations\JobHistoryErrorRepositoryTests.cs" />
+    <Compile Include="Repositories\Implementations\JobHistoryRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\KeplerArtifactGuidRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\KeplerDocumentRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\PermissionRepositoryTests.cs" />

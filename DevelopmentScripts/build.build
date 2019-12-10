@@ -12,49 +12,4 @@
 	<echo message="Build configuration: ${buildconfig}" />
 	<echo message="Lib directory ${lib.directory}" />
 	
-	<target name="package_documentation" description="Creates example provider packages">
-		<delete dir="${examples.directory}" />
-		
-		<!-- Copy MyFirstProvider example -->
-		<copy todir="${examples.directory}\MyFirstProvider\Provider">
-			<fileset basedir="${source.code.directory}\Provider">
-				<include name="**/*" />
-				<exclude name="**/bin/**" />
-				<exclude name="**/obj/**" />
-			</fileset>
-		</copy>
-		<copy todir="${examples.directory}\MyFirstProvider\Web">
-			<fileset basedir="${source.code.directory}\Web">
-				<include name="**/*" />
-				<exclude name="**/bin/**" />
-				<exclude name="**/obj/**" />
-			</fileset>
-		</copy>
-		<copy todir="${examples.directory}\MyFirstProvider">
-			<fileset basedir="${source.code.directory}">
-				<include name="MyFirstProvider.sln" />
-			</fileset>
-		</copy>
-		
-		<!-- Copy JsonLoader example -->
-		<copy todir="${examples.directory}\JsonLoader\JsonLoader">
-			<fileset basedir="${source.code.directory}\JsonLoader">
-				<include name="**/*" />
-				<exclude name="**/bin/**" />
-				<exclude name="**/obj/**" />
-			</fileset>
-		</copy>
-		<copy todir="${examples.directory}\JsonLoader\JsonWeb">
-			<fileset basedir="${source.code.directory}\JsonWeb">
-				<include name="**/*" />
-				<exclude name="**/bin/**" />
-				<exclude name="**/obj/**" />
-			</fileset>
-		</copy>
-		<copy todir="${examples.directory}\JsonLoader">
-			<fileset basedir="${source.code.directory}">
-				<include name="JsonLoader.sln" />
-			</fileset>
-		</copy>
-	</target>
 </project>

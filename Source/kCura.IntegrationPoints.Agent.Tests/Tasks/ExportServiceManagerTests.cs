@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Castle.Windsor;
+using FluentAssertions;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
@@ -695,23 +696,34 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				}
 			);
 
-			bool jobValidationFailedUpdated = false;
-			_jobHistoryService.When(x => x.UpdateRdo(Arg.Is<JobHistory>(jh => jh.JobStatus.Guids.First() == JobStatusChoices.JobHistoryValidationFailed.Guids.First()))).Do(item =>
-				{
-					jobValidationFailedUpdated = true;
-				}
-
-			);
 			// ACT
-			Assert.Throws<PermissionException>(() => _instance.Execute(_job));
+			Action action = () => _instance.Execute(_job);
 
 			// ASSERT
+			action.ShouldThrow<PermissionException>();
+
 			_agentValidator.Received(1).Validate(_integrationPoint, _job.SubmittedBy);
 
-			// job status should be changed
-			Assert.That(jobValidationFailedUpdated);
+			_jobHistoryService.Received(2).UpdateRdo(Arg.Is<JobHistory>(x => x == _jobHistory));
+		}
 
-			// we expect to first change state to Validating and then Validation Failed
+		[Test]
+		public void Execute_ShouldThrowValidationException_WhenValidationFails()
+		{
+			// ARRANGE
+			_agentValidator.When(x => x.Validate(_integrationPoint, _job.SubmittedBy)).Do(x =>
+				{
+					throw new IntegrationPointValidationException(new ValidationResult());
+				}
+			);
+
+			// ACT
+			Action action = () =>_instance.Execute(_job);
+
+			// ASSERT
+			action.ShouldThrow<IntegrationPointValidationException>();
+
+			_agentValidator.Received(1).Validate(_integrationPoint, _job.SubmittedBy);
 			_jobHistoryService.Received(2).UpdateRdo(Arg.Is<JobHistory>(x => x == _jobHistory));
 		}
 

@@ -83,7 +83,7 @@ namespace kCura.IntegrationPoints.Core.Services
 					{
 						x.Error,
 						GetErrorStatusChoice(),
-						GetErrorTypeChoice(),
+						GetErrorTypeChoice(x.ErrorType),
 						Guid.NewGuid().ToString(),
 						x.SourceUniqueID,
 						x.StackTrace,
@@ -183,11 +183,11 @@ namespace kCura.IntegrationPoints.Core.Services
 			return errorStatusChoice;
 		}
 
-		private ChoiceRef GetErrorTypeChoice()
+		private ChoiceRef GetErrorTypeChoice(Choice errorType)
 		{
 			var errorTypeChoice = new ChoiceRef
 			{
-				Guid = _errorTypeItem
+				Guid = errorType.Guids.Single()
 			};
 			return errorTypeChoice;
 		}
