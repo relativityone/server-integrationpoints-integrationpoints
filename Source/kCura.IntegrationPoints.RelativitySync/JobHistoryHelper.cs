@@ -70,14 +70,6 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 		}
 
-		public static async Task MarkJobAsFailedAsync(IExtendedJob job, IHelper helper)
-		{
-			using (IObjectManager manager = helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
-			{
-				await MarkJobAsFailedAsync(job, manager).ConfigureAwait(false);
-			}
-		}
-
 		public static async Task MarkJobAsFailedAsync(IExtendedJob job, Exception e, IHelper helper)
 		{
 			using (IObjectManager manager = helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))

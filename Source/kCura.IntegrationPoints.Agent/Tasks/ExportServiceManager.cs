@@ -46,7 +46,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private List<IBatchStatus> _exportServiceJobObservers;
 		private readonly IExportServiceObserversFactory _exportServiceObserversFactory;
 		private readonly IExporterFactory _exporterFactory;
-		private readonly IHelper _helper;
 		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly IToggleProvider _toggleProvider;
 		private readonly IDocumentRepository _documentRepository;
@@ -92,7 +91,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_toggleProvider = toggleProvider;
 			_exportServiceObserversFactory = exportServiceObserversFactory;
 			_exporterFactory = exporterFactory;
-			_helper = helper;
 			_documentRepository = documentRepository;
 			_exportDataSanitizer = exportDataSanitizer;
 			Logger = helper.GetLoggerFactory().GetLogger().ForContext<ExportServiceManager>();
@@ -104,7 +102,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				LogExecuteStart(job);
 				InitializeService(job);
-
 				JobStopManager.ThrowIfStopRequested();
 
 				string destinationConfig = IntegrationPointDto.DestinationConfiguration;
@@ -112,7 +109,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				IDataSynchronizer synchronizer = CreateDestinationProvider(destinationConfig);
 
 				LogExecutingParameters(destinationConfig, userImportApiSettings);
-
 				try
 				{
 					JobStopManager.ThrowIfStopRequested();
@@ -145,27 +141,29 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				HandleGenericException(ex, job);
 
-				IExtendedJob extendedJob = new ExtendedJob(job, JobHistoryService, IntegrationPointDto, Serializer, Logger);
-				//this is last catch in push workflow, so we need to mark job as failed
-				//and we need to use object manager and update only one field.
-				//I'm not using RelativityObjectManager here because we need to do everything we can no to fail.
-				//any additional operation that is happening in RelativityObjectManager can potentially cause failures.
+				IExtendedJob extendedJob =
+					new ExtendedJob(job, JobHistoryService, IntegrationPointDto, Serializer, Logger);
+				IJobHistoryRepository jobHistoryRepository =
+					_repositoryFactory.GetJobHistoryRepository(extendedJob.WorkspaceId);
 				try
 				{
-					JobHistoryHelper.MarkJobAsFailedAsync(extendedJob, _helper).GetAwaiter().GetResult();
+					
+					if (ex is IntegrationPointValidationException)
+					{
+						jobHistoryRepository.MarkJobAsValidationFailed(extendedJob.JobHistoryId,
+							extendedJob.IntegrationPointId, DateTime.UtcNow);
+					}
+					else
+					{
+						jobHistoryRepository.MarkJobAsFailed(extendedJob.JobHistoryId,
+							extendedJob.IntegrationPointId, DateTime.UtcNow);
+					}
 				}
 				catch (Exception)
 				{
-					//one last chance
-					try
-					{
-						JobHistoryHelper.MarkJobAsFailedAsync(extendedJob, _helper).GetAwaiter().GetResult();
-					}
-					catch (Exception)
-					{
-						//now really eat the exception :(
-					}
+
 				}
+				
 				if (ex is PermissionException || ex is IntegrationPointValidationException || ex is IntegrationPointsException)
 				{
 					throw;
