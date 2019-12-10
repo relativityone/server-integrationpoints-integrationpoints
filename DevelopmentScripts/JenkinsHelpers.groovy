@@ -16,6 +16,7 @@ interface Constants
 	// This repo's package name for purposes of versioning & publishing
 	final String PACKAGE_NAME = 'IntegrationPoints'
 	final String NIGHTLY_JOB_NAME = "IntegrationPointsNightly"
+	final String NIGHTLY_SYNC_LATEST_JOB_NAME = "IntegrationPoints-SyncLatest"
 	final String UI_IMPORT_EXPORT_JOB_NAME = "IntegrationPointsUI-ImportExport"
 	final String UI_SYNC_TOGGLE_ON_JOB_NAME = "IntegrationPointsUI-SyncToggleOn"
 	final String UI_SYNC_TOGGLE_OFF_JOB_NAME = "IntegrationPointsUI-SyncToggleOff"
@@ -108,6 +109,11 @@ def isNightly()
 	return env.JOB_NAME.contains(Constants.NIGHTLY_JOB_NAME)
 }
 
+def isSyncLatestNightly()
+{
+	return env.JOB_NAME.contains(Constants.NIGHTLY_SYNC_LATEST_JOB_NAME)
+}
+
 def isUIImportExport()
 {
 	return env.JOB_NAME.contains(Constants.UI_IMPORT_EXPORT_JOB_NAME)
@@ -154,9 +160,16 @@ def getVersion()
 	echo "RIPPipeline::getVersion set commonBuildArgs to: $ripPipelineState.commonBuildArgs"
 }
 
-def build()
+def updatePackages()
 {
-	def sonarParameter = shouldRunSonar(params.enableSonarAnalysis, env.BRANCH_NAME)
+	echo "Started updating packages"
+	powershell "./.paket/paket.exe install"
+	echo "Finished updating packages"
+}
+
+def build()
+{	
+	def sonarParameter = shouldRunSonar(params.enableSonarAnalysis)
 	def checkConfigureAwaitParameter = params.enableCheckConfigureAwait ? "-checkConfigureAwait" : ""
 	powershell "./build-jenkins.ps1 $sonarParameter $ripPipelineState.commonBuildArgs $checkConfigureAwaitParameter"
 	archiveArtifacts artifacts: "DevelopmentScripts/*.html", fingerprint: true
@@ -677,7 +690,7 @@ private isPowershellResultTrue(s)
 	return s.trim() == "True"
 }
 
-private shouldRunSonar(Boolean enableSonarAnalysis, String branchName)
+private shouldRunSonar(Boolean enableSonarAnalysis)
 {
 	return (enableSonarAnalysis && !isNightly())
 			? "-sonarqube $ripPipelineState.relativityBranchFallback"
@@ -686,7 +699,7 @@ private shouldRunSonar(Boolean enableSonarAnalysis, String branchName)
 
 private getSlackChannelName()
 {
-	if(isNightly())
+	if(isNightly() || isSyncLatestNightly())
 	{
 		return "#cd_rip_nightly"
 	}
