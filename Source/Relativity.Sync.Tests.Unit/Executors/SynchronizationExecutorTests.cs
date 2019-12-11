@@ -5,7 +5,6 @@ using System.Reactive.Concurrency;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using kCura.Vendor.Castle.Core.Internal;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
@@ -109,7 +108,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_fieldManagerFake.Setup(x => x.GetSpecialFields()).Returns(_specialFields);
 
 			_sut = new SynchronizationExecutor(_importJobFactoryFake.Object, _batchRepositoryMock.Object,
-				_jobProgressHandlerFactoryStub.Object, _jobProgressUpdaterFactoryStub.Object,
+				_jobProgressHandlerFactoryStub.Object,
 				_documentTagRepositoryFake.Object, _fieldManagerFake.Object, _fakeFieldMappings.Object, _jobStatisticsContainerFake.Object,
 				_jobCleanupConfigurationMock.Object, new EmptyLogger());
 		}
