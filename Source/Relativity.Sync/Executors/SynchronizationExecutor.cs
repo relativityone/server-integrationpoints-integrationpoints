@@ -85,8 +85,8 @@ namespace Relativity.Sync.Executors
 							{
 								ExecutionResult batchProcessingResult = await ProcessBatchAsync(importJob, batch, progressHandler, token).ConfigureAwait(false);
 
-								Task<ExecutionResult> destinationDocumentsTaggingTask = DestinationDocumentsTaggingAsync(importJob, configuration, token);
-								Task<ExecutionResult> sourceDocumentsTaggingTask = SourceDocumentsTaggingAsync(importJob, configuration, token);
+								Task<ExecutionResult> destinationDocumentsTaggingTask = TagDestinationDocumentsAsync(importJob, configuration, token);
+								Task<ExecutionResult> sourceDocumentsTaggingTask = TagSourceDocumentsAsync(importJob, configuration, token);
 
 								ExecutionResult sourceTaggingResult = await sourceDocumentsTaggingTask.ConfigureAwait(false);
 								ExecutionResult destinationTaggingResult = await destinationDocumentsTaggingTask.ConfigureAwait(false);
@@ -174,7 +174,7 @@ namespace Relativity.Sync.Executors
 			return importJobResult.ExecutionResult;
 		}
 
-		private async Task<ExecutionResult> DestinationDocumentsTaggingAsync(IImportJob importJob, ISynchronizationConfiguration configuration,
+		private async Task<ExecutionResult> TagDestinationDocumentsAsync(IImportJob importJob, ISynchronizationConfiguration configuration,
 			CancellationToken token)
 		{
 			IEnumerable<string> pushedDocumentIdentifiers =
@@ -186,7 +186,7 @@ namespace Relativity.Sync.Executors
 			return sourceTaggingResult;
 		}
 
-		private async Task<ExecutionResult> SourceDocumentsTaggingAsync(IImportJob importJob, ISynchronizationConfiguration configuration,
+		private async Task<ExecutionResult> TagSourceDocumentsAsync(IImportJob importJob, ISynchronizationConfiguration configuration,
 			CancellationToken token)
 		{
 			IEnumerable<int> pushedDocumentArtifactIds =
