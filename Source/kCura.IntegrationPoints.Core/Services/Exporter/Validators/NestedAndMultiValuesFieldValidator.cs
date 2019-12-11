@@ -16,17 +16,17 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Validators
 			_logger = logger.ForContext<NestedAndMultiValuesFieldValidator>();
 		}
 
-		public void VerifyObjectField(string fieldName, ArtifactDTO[] dtos)
+		public void VerifyObjectField(int fieldArtifactId, string fieldName, ArtifactDTO[] dtos)
 		{
-			VerifyValidityOfTheNestedOrMultiValuesField(fieldName, dtos, Constants.IntegrationPoints.InvalidMultiObjectsValueFormat);
+			VerifyValidityOfTheNestedOrMultiValuesField(fieldArtifactId, fieldName, dtos, Constants.IntegrationPoints.InvalidMultiObjectsValueFormat);
 		}
 
-		public void VerifyChoiceField(string fieldName, ArtifactDTO[] dtos)
+		public void VerifyChoiceField(int fieldArtifactId, string fieldName, ArtifactDTO[] dtos)
 		{
-			VerifyValidityOfTheNestedOrMultiValuesField(fieldName, dtos, Constants.IntegrationPoints.InvalidMultiChoicesValueFormat);
+			VerifyValidityOfTheNestedOrMultiValuesField(fieldArtifactId, fieldName, dtos, Constants.IntegrationPoints.InvalidMultiChoicesValueFormat);
 		}
 
-		private void VerifyValidityOfTheNestedOrMultiValuesField(string fieldName, ArtifactDTO[] dtos, Regex invalidPattern)
+		private void VerifyValidityOfTheNestedOrMultiValuesField(int fieldArtifactId, string fieldName, ArtifactDTO[] dtos, Regex invalidPattern)
 		{
 			var exceptions = new List<Exception>();
 			foreach (ArtifactDTO dto in dtos)
@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Validators
 
 			if (exceptions.Any())
 			{
-				LogAndThrowValidationException(fieldName, exceptions);
+				LogAndThrowValidationException(fieldArtifactId, fieldName, exceptions);
 			}
 		}
 
@@ -50,12 +50,15 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Validators
 			return !string.IsNullOrWhiteSpace(name) && invalidPattern.IsMatch(name);
 		}
 
-		private void LogAndThrowValidationException(string fieldName, List<Exception> exceptions)
+		private void LogAndThrowValidationException(int fieldArtifactId, string fieldName, List<Exception> exceptions)
 		{
 			char multiValueDelimiter = IntegrationPoints.Domain.Constants.MULTI_VALUE_DELIMITER;
 			char nestedValueDelimiter = IntegrationPoints.Domain.Constants.NESTED_VALUE_DELIMITER;
 
-			_logger.LogError("Invalid field '{fieldName}' found. Please remove invalid character(s) - {multiValueDelimiter} or {nestedValueDelimiter}", fieldName, multiValueDelimiter, nestedValueDelimiter);
+			_logger.LogError("Invalid field '{fieldArtifactId}' found. Please remove invalid character(s) - {multiValueDelimiter} or {nestedValueDelimiter}", 
+				fieldArtifactId, 
+				multiValueDelimiter, 
+				nestedValueDelimiter);
 
 			string message = $"Invalid field '{fieldName}' found. Please remove invalid character(s) - {multiValueDelimiter} or {nestedValueDelimiter}";
 			var aggregatedException = new AggregateException(exceptions);

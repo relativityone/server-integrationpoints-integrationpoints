@@ -133,14 +133,14 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 								fieldInfo.AssociativeArtifactTypeID);
 						ArtifactDTO[] objects = objectRepository.GetFieldsFromObjects(new[] {identifierFieldName})
 							.GetAwaiter().GetResult();
-						nestedAndMultiValuesValidator.VerifyObjectField(fieldInfo.DisplayName, objects);
+						nestedAndMultiValuesValidator.VerifyObjectField(fieldInfo.FieldArtifactId, fieldInfo.DisplayName, objects);
 						break;
 
 					case FieldTypeHelper.FieldType.MultiCode:
 						ICodeRepository codeRepository =
 							sourceRepositoryFactory.GetCodeRepository(SourceConfiguration.SourceWorkspaceArtifactId);
 						ArtifactDTO[] codes = codeRepository.RetrieveCodeAsync(fieldInfo.DisplayName).GetAwaiter().GetResult();
-						nestedAndMultiValuesValidator.VerifyChoiceField(fieldInfo.DisplayName, codes);
+						nestedAndMultiValuesValidator.VerifyChoiceField(fieldInfo.FieldArtifactId, fieldInfo.DisplayName, codes);
 						break;
 				}
 			}
