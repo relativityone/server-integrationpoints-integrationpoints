@@ -8,7 +8,10 @@ namespace Relativity.Sync.ExecutionConstrains
 	{
 		public Task<bool> CanExecuteAsync(IAutomatedWorkflowTriggerConfiguration configuration, CancellationToken token)
 		{
-			return Task.FromResult(true);
+			return Task.FromResult(configuration.SynchronizationExecutionResult != null &&
+									(configuration.SynchronizationExecutionResult.Status == ExecutionStatus.Completed ||
+									configuration.SynchronizationExecutionResult.Status == ExecutionStatus.CompletedWithErrors ||
+									configuration.SynchronizationExecutionResult.Status == ExecutionStatus.Failed));
 		}
 	}
 }
