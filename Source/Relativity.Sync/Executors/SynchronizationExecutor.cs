@@ -79,29 +79,29 @@ namespace Relativity.Sync.Executors
 						_logger.LogInformation("Processing batch ID: {batchId}", batchId);
 						IBatch batch = await _batchRepository.GetAsync(configuration.SourceWorkspaceArtifactId, batchId)
 							.ConfigureAwait(false);
-						using (IImportJob importJob = await _importJobFactory
-							.CreateImportJobAsync(configuration, batch, token).ConfigureAwait(false))
-						using (progressHandler.AttachToImportJob(importJob.SyncImportBulkArtifactJob, batch.ArtifactId,
-							batch.TotalItemsCount))
+						using (IImportJob importJob = await _importJobFactory.CreateImportJobAsync(configuration, batch, token).ConfigureAwait(false))
 						{
-							ExecutionResult batchProcessingResult = await ProcessBatchAsync(importJob, batch, progressHandler, token).ConfigureAwait(false);
-
-							Task<ExecutionResult> destinationDocumentsTaggingTask = DestinationDocumentsTaggingAsync(importJob, configuration, token);
-							Task<ExecutionResult> sourceDocumentsTaggingTask = SourceDocumentsTaggingAsync(importJob, configuration, token);
-
-							ExecutionResult sourceTaggingResult = await sourceDocumentsTaggingTask.ConfigureAwait(false);
-							ExecutionResult destinationTaggingResult = await destinationDocumentsTaggingTask.ConfigureAwait(false);
-
-							if (batchProcessingResult.Status == ExecutionStatus.CompletedWithErrors)
+							using (progressHandler.AttachToImportJob(importJob.SyncImportBulkArtifactJob, batch.ArtifactId, batch.TotalItemsCount))
 							{
-								batchesCompletedWithErrors[batch.ArtifactId] = batchProcessingResult;
-							}
+								ExecutionResult batchProcessingResult = await ProcessBatchAsync(importJob, batch, progressHandler, token).ConfigureAwait(false);
 
-							ExecutionResult failureResult = AggregateFailuresOrCancelled(batch.ArtifactId,
-								batchProcessingResult, sourceTaggingResult, destinationTaggingResult);
-							if (failureResult != null)
-							{
-								return failureResult;
+								Task<ExecutionResult> destinationDocumentsTaggingTask = DestinationDocumentsTaggingAsync(importJob, configuration, token);
+								Task<ExecutionResult> sourceDocumentsTaggingTask = SourceDocumentsTaggingAsync(importJob, configuration, token);
+
+								ExecutionResult sourceTaggingResult = await sourceDocumentsTaggingTask.ConfigureAwait(false);
+								ExecutionResult destinationTaggingResult = await destinationDocumentsTaggingTask.ConfigureAwait(false);
+
+								if (batchProcessingResult.Status == ExecutionStatus.CompletedWithErrors)
+								{
+									batchesCompletedWithErrors[batch.ArtifactId] = batchProcessingResult;
+								}
+
+								ExecutionResult failureResult = AggregateFailuresOrCancelled(batch.ArtifactId,
+									batchProcessingResult, sourceTaggingResult, destinationTaggingResult);
+								if (failureResult != null)
+								{
+									return failureResult;
+								}
 							}
 						}
 
