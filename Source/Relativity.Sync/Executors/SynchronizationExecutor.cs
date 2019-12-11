@@ -12,7 +12,6 @@ namespace Relativity.Sync.Executors
 {
 	internal sealed class SynchronizationExecutor : IExecutor<ISynchronizationConfiguration>
 	{
-		private readonly IJobProgressUpdaterFactory _jobProgressUpdaterFactory;
 		private readonly IBatchRepository _batchRepository;
 		private readonly IJobProgressHandlerFactory _jobProgressHandlerFactory;
 		private readonly IImportJobFactory _importJobFactory;
@@ -23,14 +22,18 @@ namespace Relativity.Sync.Executors
 		private readonly IJobCleanupConfiguration _jobCleanupConfiguration;
 		private readonly ISyncLog _logger;
 
-		public SynchronizationExecutor(IImportJobFactory importJobFactory, IBatchRepository batchRepository,
-			IJobProgressHandlerFactory jobProgressHandlerFactory, IJobProgressUpdaterFactory jobProgressUpdaterFactory,
-			IDocumentTagRepository documentsTagRepository, IFieldManager fieldManager, IFieldMappings fieldMappings,
-			IJobStatisticsContainer jobStatisticsContainer, IJobCleanupConfiguration jobCleanupConfiguration, ISyncLog logger)
+		public SynchronizationExecutor(IImportJobFactory importJobFactory,
+			IBatchRepository batchRepository,
+			IJobProgressHandlerFactory jobProgressHandlerFactory,
+			IDocumentTagRepository documentsTagRepository,
+			IFieldManager fieldManager,
+			IFieldMappings fieldMappings,
+			IJobStatisticsContainer jobStatisticsContainer,
+			IJobCleanupConfiguration jobCleanupConfiguration,
+			ISyncLog logger)
 		{
 			_batchRepository = batchRepository;
 			_jobProgressHandlerFactory = jobProgressHandlerFactory;
-			_jobProgressUpdaterFactory = jobProgressUpdaterFactory;
 			_importJobFactory = importJobFactory;
 			_fieldManager = fieldManager;
 			_fieldMappings = fieldMappings;
@@ -51,7 +54,7 @@ namespace Relativity.Sync.Executors
 			return importAndTagResult;
 		}
 
-		public async Task<ExecutionResult> ExecuteSynchronizationAsync(ISynchronizationConfiguration configuration,
+		private async Task<ExecutionResult> ExecuteSynchronizationAsync(ISynchronizationConfiguration configuration,
 			CancellationToken token)
 		{
 			ExecutionResult importAndTagResult;
@@ -81,10 +84,10 @@ namespace Relativity.Sync.Executors
 						using (progressHandler.AttachToImportJob(importJob.SyncImportBulkArtifactJob, batch.ArtifactId,
 							batch.TotalItemsCount))
 						{
-							ExecutionResult batchProcessingResult = await ProcessBatch(importJob, batch, progressHandler, token).ConfigureAwait(false);
-							
-							Task<ExecutionResult> destinationDocumentsTaggingTask = DestinationDocumentsTagging(importJob, configuration, token);
-							Task<ExecutionResult> sourceDocumentsTaggingTask = SourceDocumentsTagging(importJob, configuration, token);
+							ExecutionResult batchProcessingResult = await ProcessBatchAsync(importJob, batch, progressHandler, token).ConfigureAwait(false);
+
+							Task<ExecutionResult> destinationDocumentsTaggingTask = DestinationDocumentsTaggingAsync(importJob, configuration, token);
+							Task<ExecutionResult> sourceDocumentsTaggingTask = SourceDocumentsTaggingAsync(importJob, configuration, token);
 
 							ExecutionResult sourceTaggingResult = await sourceDocumentsTaggingTask.ConfigureAwait(false);
 							ExecutionResult destinationTaggingResult = await destinationDocumentsTaggingTask.ConfigureAwait(false);
@@ -133,7 +136,7 @@ namespace Relativity.Sync.Executors
 		private static ExecutionResult AggregateFailuresOrCancelled(int batchId, params ExecutionResult[] executionResults)
 		{
 			List<ExecutionResult> failedResults = executionResults.Where(x => x.Status == ExecutionStatus.Failed).ToList();
-			
+
 			if (failedResults.Any())
 			{
 				string message = $"Processing batch (id: {batchId}) failed: {string.Join(";", failedResults.Select(x => x.Message))}";
@@ -149,9 +152,9 @@ namespace Relativity.Sync.Executors
 			return null;
 		}
 
-		private async Task<ExecutionResult> ProcessBatch(IImportJob importJob, IBatch batch, IJobProgressHandler progressHandler, CancellationToken token)
+		private async Task<ExecutionResult> ProcessBatchAsync(IImportJob importJob, IBatch batch, IJobProgressHandler progressHandler, CancellationToken token)
 		{
-			ExecutionResult processBatchResult = await BatchProcessing(importJob, token).ConfigureAwait(false);
+			ExecutionResult processBatchResult = await RunImportJobAsync(importJob, token).ConfigureAwait(false);
 
 			int failedItemsCount = progressHandler.GetBatchItemsFailedCount(batch.ArtifactId);
 			await batch.SetFailedItemsCountAsync(failedItemsCount).ConfigureAwait(false);
@@ -162,7 +165,7 @@ namespace Relativity.Sync.Executors
 			return processBatchResult;
 		}
 
-		private async Task<ExecutionResult> BatchProcessing(IImportJob importJob, CancellationToken token)
+		private async Task<ExecutionResult> RunImportJobAsync(IImportJob importJob, CancellationToken token)
 		{
 			ImportJobResult importJobResult = await importJob.RunAsync(token).ConfigureAwait(false);
 
@@ -171,7 +174,7 @@ namespace Relativity.Sync.Executors
 			return importJobResult.ExecutionResult;
 		}
 
-		private async Task<ExecutionResult> DestinationDocumentsTagging(IImportJob importJob, ISynchronizationConfiguration configuration,
+		private async Task<ExecutionResult> DestinationDocumentsTaggingAsync(IImportJob importJob, ISynchronizationConfiguration configuration,
 			CancellationToken token)
 		{
 			IEnumerable<string> pushedDocumentIdentifiers =
@@ -183,7 +186,7 @@ namespace Relativity.Sync.Executors
 			return sourceTaggingResult;
 		}
 
-		private async Task<ExecutionResult> SourceDocumentsTagging(IImportJob importJob, ISynchronizationConfiguration configuration,
+		private async Task<ExecutionResult> SourceDocumentsTaggingAsync(IImportJob importJob, ISynchronizationConfiguration configuration,
 			CancellationToken token)
 		{
 			IEnumerable<int> pushedDocumentArtifactIds =
