@@ -29,7 +29,7 @@ namespace Relativity.Sync.Tests.Common
 		{
 			await Task.Yield();
 			ExportRunId = runId;
-			TotalRecordsCount = (int)totalRecordsCount;
+			TotalRecordsCount = totalRecordsCount;
 			IsSnapshotCreated = true;
 		}
 
@@ -49,6 +49,8 @@ namespace Relativity.Sync.Tests.Common
 		public string TriggerName { get; }
 		public int SyncConfigurationArtifactId { get; set; }
 		public ExecutionResult SynchronizationExecutionResult { get; set; }
+		public string TriggerId { get; }
+		public string TriggerValue { get; }
 		public bool MoveExistingDocuments { get; set; }
 		public int RdoArtifactTypeId => (int) ArtifactType.Document;
 

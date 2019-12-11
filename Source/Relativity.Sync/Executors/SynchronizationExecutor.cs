@@ -23,10 +23,16 @@ namespace Relativity.Sync.Executors
 		private readonly IAutomatedWorkflowTriggerConfiguration _automatedWorkflowTriggerConfiguration;
 		private readonly ISyncLog _logger;
 
-		public SynchronizationExecutor(IImportJobFactory importJobFactory, IBatchRepository batchRepository,
-			IJobProgressHandlerFactory jobProgressHandlerFactory, IDocumentTagRepository documentsTagRepository,
-			IFieldManager fieldManager, IFieldMappings fieldMappings, IJobStatisticsContainer jobStatisticsContainer,
-			IJobCleanupConfiguration jobCleanupConfiguration, IAutomatedWorkflowTriggerConfiguration automatedWorkflowTriggerConfiguration, ISyncLog logger)
+		public SynchronizationExecutor(IImportJobFactory importJobFactory,
+			IBatchRepository batchRepository,
+			IJobProgressHandlerFactory jobProgressHandlerFactory,
+			IDocumentTagRepository documentsTagRepository,
+			IFieldManager fieldManager,
+			IFieldMappings fieldMappings,
+			IJobStatisticsContainer jobStatisticsContainer,
+			IJobCleanupConfiguration jobCleanupConfiguration,
+			IAutomatedWorkflowTriggerConfiguration automatedWorkflowTriggerConfiguration,
+			ISyncLog logger)
 		{
 			_batchRepository = batchRepository;
 			_jobProgressHandlerFactory = jobProgressHandlerFactory;
@@ -45,18 +51,24 @@ namespace Relativity.Sync.Executors
 			_logger.LogInformation("Creating settings for ImportAPI.");
 			UpdateImportSettings(configuration);
 
-			ExecutionResult importAndTagResult = ExecutionResult.Success();
-			var destinationTaggingTasks = new List<Task<ExecutionResult>>();
-			var sourceTaggingTasks = new List<Task<ExecutionResult>>();
-			ExecutionResult[] destinationTaggingResults = { ExecutionResult.Success() };
-			ExecutionResult[] sourceTaggingResults = { ExecutionResult.Success() };
+			ExecutionResult importAndTagResult = await ExecuteSynchronizationAsync(configuration, token).ConfigureAwait(false);
 
+			_jobCleanupConfiguration.SynchronizationExecutionResult = importAndTagResult;
+			_automatedWorkflowTriggerConfiguration.SynchronizationExecutionResult = importAndTagResult;
+			return importAndTagResult;
+		}
+
+		private async Task<ExecutionResult> ExecuteSynchronizationAsync(ISynchronizationConfiguration configuration,
+			CancellationToken token)
+		{
+			ExecutionResult importAndTagResult;
 			try
 			{
 				_logger.LogInformation("Gathering batches to execute.");
-				IEnumerable<int> batchesIds = await _batchRepository.GetAllNewBatchesIdsAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId).ConfigureAwait(false);
-				Dictionary<int, ImportJobResult> batchJobsResults = new Dictionary<int, ImportJobResult>();
-
+				IEnumerable<int> batchesIds = await _batchRepository
+					.GetAllNewBatchesIdsAsync(configuration.SourceWorkspaceArtifactId,
+						configuration.SyncConfigurationArtifactId).ConfigureAwait(false);
+				Dictionary<int, ExecutionResult> batchesCompletedWithErrors = new Dictionary<int, ExecutionResult>();
 
 				using (IJobProgressHandler progressHandler = _jobProgressHandlerFactory.CreateJobProgressHandler())
 				{
@@ -65,51 +77,42 @@ namespace Relativity.Sync.Executors
 						if (token.IsCancellationRequested)
 						{
 							_logger.LogInformation("Import job has been canceled.");
-							batchJobsResults[batchId] = new ImportJobResult(ExecutionResult.Canceled(), 0);
-							break;
+							return ExecutionResult.Canceled();
 						}
 
 						_logger.LogInformation("Processing batch ID: {batchId}", batchId);
 						IBatch batch = await _batchRepository.GetAsync(configuration.SourceWorkspaceArtifactId, batchId)
 							.ConfigureAwait(false);
 						using (IImportJob importJob = await _importJobFactory.CreateImportJobAsync(configuration, batch, token).ConfigureAwait(false))
-						using (progressHandler.AttachToImportJob(importJob.SyncImportBulkArtifactJob, batchId, batch.TotalItemsCount))
 						{
-							ImportJobResult importJobResult = await importJob.RunAsync(token).ConfigureAwait(false);
-							batchJobsResults[batchId] = importJobResult;
-
-							_jobStatisticsContainer.TotalBytesTransferred += importJobResult.JobSizeInBytes;
-
-							IEnumerable<int> pushedDocumentArtifactIds =
-								await importJob.GetPushedDocumentArtifactIdsAsync().ConfigureAwait(false);
-							Task<ExecutionResult> destinationTaggingResult =
-								_documentsTagRepository.TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(
-									configuration, pushedDocumentArtifactIds, token);
-							destinationTaggingTasks.Add(destinationTaggingResult);
-
-							IEnumerable<string> pushedDocumentIdentifiers =
-								await importJob.GetPushedDocumentIdentifiersAsync().ConfigureAwait(false);
-							Task<ExecutionResult> sourceTaggingResult =
-								_documentsTagRepository.TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(
-									configuration, pushedDocumentIdentifiers, token);
-							sourceTaggingTasks.Add(sourceTaggingResult);
-
-							await batch.SetFailedItemsCountAsync(progressHandler.GetBatchItemsFailedCount(batchId)).ConfigureAwait(false);
-							await batch.SetTransferredItemsCountAsync(progressHandler.GetBatchItemsProcessedCount(batchId)).ConfigureAwait(false);
-
-							if (importJobResult.ExecutionResult.Status == ExecutionStatus.Failed)
+							using (progressHandler.AttachToImportJob(importJob.SyncImportBulkArtifactJob, batch.ArtifactId, batch.TotalItemsCount))
 							{
-								_logger.LogError(importJobResult.ExecutionResult.Exception,
-									"Batch ID: {batchId} processing failed with error: {error}", batchId,
-									importJobResult.ExecutionResult.Message);
-								break;
+								ExecutionResult batchProcessingResult = await ProcessBatchAsync(importJob, batch, progressHandler, token).ConfigureAwait(false);
+
+								Task<ExecutionResult> destinationDocumentsTaggingTask = TagDestinationDocumentsAsync(importJob, configuration, token);
+								Task<ExecutionResult> sourceDocumentsTaggingTask = TagSourceDocumentsAsync(importJob, configuration, token);
+
+								ExecutionResult sourceTaggingResult = await sourceDocumentsTaggingTask.ConfigureAwait(false);
+								ExecutionResult destinationTaggingResult = await destinationDocumentsTaggingTask.ConfigureAwait(false);
+
+								if (batchProcessingResult.Status == ExecutionStatus.CompletedWithErrors)
+								{
+									batchesCompletedWithErrors[batch.ArtifactId] = batchProcessingResult;
+								}
+
+								ExecutionResult failureResult = AggregateFailuresOrCancelled(batch.ArtifactId,
+									batchProcessingResult, sourceTaggingResult, destinationTaggingResult);
+								if (failureResult != null)
+								{
+									return failureResult;
+								}
 							}
 						}
 
-						_logger.LogInformation("Batch ID: {batchId} processed successfully.", batchId);
+						_logger.LogInformation("Batch ID: {batchId} processed successfully.", batch.ArtifactId);
 					}
 
-					importAndTagResult = AggregateBatchExecutionResults(batchJobsResults);
+					importAndTagResult = AggregateBatchesCompletedWithErrorsResults(batchesCompletedWithErrors);
 				}
 			}
 			catch (ImportFailedException ex)
@@ -118,6 +121,12 @@ namespace Relativity.Sync.Executors
 				_logger.LogError(ex, message);
 				importAndTagResult = ExecutionResult.Failure(message, ex);
 			}
+			catch (OperationCanceledException oce)
+			{
+				const string taggingCanceledMessage = "Executing synchronization was interrupted due to the job being canceled.";
+				_logger.LogInformation(oce, taggingCanceledMessage);
+				importAndTagResult = new ExecutionResult(ExecutionStatus.Canceled, taggingCanceledMessage, oce);
+			}
 			catch (Exception ex)
 			{
 				const string message = "Unexpected exception occurred while executing synchronization.";
@@ -125,73 +134,81 @@ namespace Relativity.Sync.Executors
 				importAndTagResult = ExecutionResult.Failure(message, ex);
 			}
 
-			try
-			{
-				destinationTaggingResults =
-					await Task.WhenAll(destinationTaggingTasks).ConfigureAwait(false);
-				sourceTaggingResults = await Task.WhenAll(sourceTaggingTasks).ConfigureAwait(false);
-			}
-			catch (OperationCanceledException oce)
-			{
-				const string taggingCanceledMessage = "Tagging synchronized documents in workspace was interrupted due to the job being canceled.";
-				_logger.LogInformation(oce, taggingCanceledMessage);
-				importAndTagResult = new ExecutionResult(ExecutionStatus.Canceled, taggingCanceledMessage, oce);
-			}
-			catch (Exception ex)
-			{
-				const string message = "Unexpected exception occurred while tagging synchronized documents in workspace.";
-				_logger.LogError(ex, message);
-				importAndTagResult = ExecutionResult.Failure(message, ex);
-			}
-
-			ExecutionResult executionResult = importAndTagResult;
-
-			if (destinationTaggingResults.Any(x => x.Status == ExecutionStatus.Failed) ||
-				sourceTaggingResults.Any(x => x.Status == ExecutionStatus.Failed) || token.IsCancellationRequested)
-			{
-				ExecutionResult destinationTaggingResult = ExecutionResult.Success();
-				ExecutionResult sourceTaggingResult = ExecutionResult.Success();
-
-				if (!token.IsCancellationRequested)
-				{
-					destinationTaggingResult = destinationTaggingResults.First(x => x.Status == ExecutionStatus.Failed);
-					sourceTaggingResult = sourceTaggingResults.First(x => x.Status == ExecutionStatus.Failed);
-				}
-
-				string[] messages = { executionResult.Message, destinationTaggingResult.Message, sourceTaggingResult.Message };
-				string resultMessage = string.Join(" ", messages.Where(m => !string.IsNullOrEmpty(m)));
-				Exception[] exceptions = { executionResult.Exception, destinationTaggingResult.Exception, sourceTaggingResult.Exception };
-				Exception resultException = new AggregateException(exceptions.Where(e => e != null));
-				ExecutionStatus resultStatus = token.IsCancellationRequested ? ExecutionStatus.Canceled : ExecutionStatus.Failed;
-				executionResult = new ExecutionResult(resultStatus, resultMessage, resultException);
-			}
-
-			_jobCleanupConfiguration.SynchronizationExecutionResult = executionResult;
-			_automatedWorkflowTriggerConfiguration.SynchronizationExecutionResult = executionResult;
-			return executionResult;
+			return importAndTagResult;
 		}
 
-		private ExecutionResult AggregateBatchExecutionResults(Dictionary<int, ImportJobResult> batchJobsResults)
+		private static ExecutionResult AggregateFailuresOrCancelled(int batchId, params ExecutionResult[] executionResults)
 		{
-			if (batchJobsResults.Values.Any(x => x.ExecutionResult.Status == ExecutionStatus.Canceled))
+			List<ExecutionResult> failedResults = executionResults.Where(x => x.Status == ExecutionStatus.Failed).ToList();
+
+			if (failedResults.Any())
+			{
+				string message = $"Processing batch (id: {batchId}) failed: {string.Join(";", failedResults.Select(x => x.Message))}";
+				Exception exception = new AggregateException(failedResults.Select(x => x.Exception));
+				return ExecutionResult.Failure(message, exception);
+			}
+
+			if (executionResults.Any(x => x.Status == ExecutionStatus.Canceled))
 			{
 				return ExecutionResult.Canceled();
 			}
 
-			if (batchJobsResults.Values.Any(x => x.ExecutionResult.Status == ExecutionStatus.Failed))
-			{
-				return batchJobsResults.First(x => x.Value.ExecutionResult.Status == ExecutionStatus.Failed).Value.ExecutionResult;
-			}
+			return null;
+		}
 
-			KeyValuePair<int, ImportJobResult>[] completedWithErrorsBatchJobResults =
-				batchJobsResults.Where(x => x.Value.ExecutionResult.Status == ExecutionStatus.CompletedWithErrors).ToArray();
-			if (completedWithErrorsBatchJobResults.Any())
+		private async Task<ExecutionResult> ProcessBatchAsync(IImportJob importJob, IBatch batch, IJobProgressHandler progressHandler, CancellationToken token)
+		{
+			ExecutionResult processBatchResult = await RunImportJobAsync(importJob, token).ConfigureAwait(false);
+
+			int failedItemsCount = progressHandler.GetBatchItemsFailedCount(batch.ArtifactId);
+			await batch.SetFailedItemsCountAsync(failedItemsCount).ConfigureAwait(false);
+
+			int processedItemsCount = progressHandler.GetBatchItemsProcessedCount(batch.ArtifactId);
+			await batch.SetTransferredItemsCountAsync(processedItemsCount).ConfigureAwait(false);
+
+			return processBatchResult;
+		}
+
+		private async Task<ExecutionResult> RunImportJobAsync(IImportJob importJob, CancellationToken token)
+		{
+			ImportJobResult importJobResult = await importJob.RunAsync(token).ConfigureAwait(false);
+
+			_jobStatisticsContainer.TotalBytesTransferred += importJobResult.JobSizeInBytes;
+
+			return importJobResult.ExecutionResult;
+		}
+
+		private async Task<ExecutionResult> TagDestinationDocumentsAsync(IImportJob importJob, ISynchronizationConfiguration configuration,
+			CancellationToken token)
+		{
+			IEnumerable<string> pushedDocumentIdentifiers =
+				await importJob.GetPushedDocumentIdentifiersAsync().ConfigureAwait(false);
+			ExecutionResult sourceTaggingResult =
+				await _documentsTagRepository.TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(
+					configuration, pushedDocumentIdentifiers, token).ConfigureAwait(false);
+
+			return sourceTaggingResult;
+		}
+
+		private async Task<ExecutionResult> TagSourceDocumentsAsync(IImportJob importJob, ISynchronizationConfiguration configuration,
+			CancellationToken token)
+		{
+			IEnumerable<int> pushedDocumentArtifactIds =
+				await importJob.GetPushedDocumentArtifactIdsAsync().ConfigureAwait(false);
+			ExecutionResult destinationTaggingResult =
+				await _documentsTagRepository.TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(
+					configuration, pushedDocumentArtifactIds, token).ConfigureAwait(false);
+
+			return destinationTaggingResult;
+		}
+
+		private static ExecutionResult AggregateBatchesCompletedWithErrorsResults(Dictionary<int, ExecutionResult> batchesCompletedWithErrorsResults)
+		{
+			if (batchesCompletedWithErrorsResults.Any())
 			{
-				string exceptionMessage = string.Join(Environment.NewLine, completedWithErrorsBatchJobResults.Select(x => $"BatchID: {x.Key} {{x.ExecutionResult.Message}}"));
-				AggregateException aggregateException = new AggregateException(
-					exceptionMessage,
-					completedWithErrorsBatchJobResults.Select(x => x.Value.ExecutionResult.Exception).Where(x => x != null)
-					);
+				string exceptionMessage = string.Join(Environment.NewLine, batchesCompletedWithErrorsResults.Select(x => $"BatchID: {x.Key} {x.Value.Message}"));
+				AggregateException aggregateException = new AggregateException(exceptionMessage,
+					batchesCompletedWithErrorsResults.Select(x => x.Value.Exception).Where(x => x != null));
 
 				return ExecutionResult.SuccessWithErrors(aggregateException);
 			}
