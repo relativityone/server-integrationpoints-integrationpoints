@@ -139,7 +139,7 @@ namespace kCura.IntegrationPoints.Core.Services
 					LogCommittingErrorsFailed(ex, allErrors);
 
 					_logger.LogError("Could not commit Job History Errors. These are uncommitted errors: {allErrors}", allErrors);
-					//throw new Exception("Could not commit Job History Errors. These are uncommitted errors:" + Environment.NewLine + allErrors);
+					throw new Exception("Could not commit Job History Errors. These are uncommitted errors:" + Environment.NewLine + allErrors);
 				}
 				finally
 				{
