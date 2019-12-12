@@ -37,7 +37,7 @@ namespace Relativity.Sync
 		/// <summary>
 		/// Id for trigger input
 		/// </summary>
-		public string TriggerId { get; set; } = "sync-import";
+		public string TriggerId { get; set; } = "sync-export";
 
 		/// <summary>
 		/// Value for RAW trigger input
