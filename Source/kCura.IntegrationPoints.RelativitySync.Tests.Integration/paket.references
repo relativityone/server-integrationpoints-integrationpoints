@@ -11,3 +11,6 @@ group TestPackages
 	NUnit
 	relativity.testing.identification
 	Serilog
+
+group Sync
+	Relativity.Sync

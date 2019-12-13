@@ -1,6 +1,10 @@
 Relativity.API
+Relativity.IntegrationPoints.Contracts
 
 group TestPackages
 	FluentAssertions
 	Moq
 	NUnit
+
+group Sync
+	Relativity.Sync

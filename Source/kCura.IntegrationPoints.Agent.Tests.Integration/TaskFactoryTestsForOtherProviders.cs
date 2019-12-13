@@ -20,6 +20,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1001:Types that own disposable fields should be disposable", Justification = "<Pending>")]
 	public class TaskFactoryTestsForOtherProviders : OtherProvidersTemplate
 	{
 		private IJobService _jobService;
