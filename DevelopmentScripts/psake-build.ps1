@@ -68,7 +68,7 @@ task restore_nuget {
        if($o.Extension -ne '.sln') {continue}
 
         exec {
-            & $nuget_exe @('restore', $o.FullName)
+            & $paket_exe restore
         }
     }
 } 

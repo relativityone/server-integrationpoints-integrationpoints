@@ -1813,24 +1813,6 @@
       <Notes />
     </Assembly>
     <Assembly>
-      <ArtifactId>4663471</ArtifactId>
-      <Keywords />
-      <Name>netstandard.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>4663502</ArtifactId>
-      <Keywords />
-      <Name>Banzai.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>4663535</ArtifactId>
-      <Keywords />
-      <Name>Banzai.Autofac.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
       <ArtifactId>4702172</ArtifactId>
       <Keywords />
       <Name>Relativity.Telemetry.Services.Interface.dll</Name>
@@ -15149,7 +15131,7 @@
     </Object>
   </Objects>
   <ParentTabs />
-  <RelativityVersion>11.0.98.97</RelativityVersion>
+  <RelativityVersion>11.1.50.135</RelativityVersion>
   <Version>9.7.0.28</Version>
   <TabDisplay>true</TabDisplay>
   <OriginSignature>5e8b02a8-6e33-4426-a0f0-3594d83725d0</OriginSignature>
