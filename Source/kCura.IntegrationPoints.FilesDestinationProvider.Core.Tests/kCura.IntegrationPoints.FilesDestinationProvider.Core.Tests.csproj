@@ -635,17 +635,6 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="ZetaLongPaths">
-          <HintPath>..\..\packages\ZetaLongPaths\lib\net40-full\ZetaLongPaths.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
         <Reference Include="FluentAssertions">
           <HintPath>..\..\packages\testpackages\FluentAssertions\lib\net45\FluentAssertions.dll</HintPath>
           <Private>True</Private>
