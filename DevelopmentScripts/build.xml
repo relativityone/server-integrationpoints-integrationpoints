@@ -54,7 +54,7 @@
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\Newtonsoft.Json.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\Renci.SshNet.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\SystemInterface.dll</Assembly>
-          <Assembly>Source\kCura.IntegrationPoints.Core\bin\ZetaLongPaths.dll</Assembly>
+          <Assembly>Source\kCura.IntegrationPoints.Agent\bin\ZetaLongPaths.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\Relativity.Productions.Services.Interfaces.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\LanguageExt.Core.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\System.ValueTuple.dll</Assembly>
