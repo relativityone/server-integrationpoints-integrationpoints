@@ -12,9 +12,9 @@ namespace Relativity.Sync.Executors
 	internal class AutomatedWorkflowExecutor : IExecutor<IAutomatedWorkflowTriggerConfiguration>
 	{
 		private readonly ISyncLog _logger;
-		private readonly IServiceFactoryForAdmin _factoryForAdmin;
+		private readonly IDestinationServiceFactoryForAdmin _factoryForAdmin;
 
-		public AutomatedWorkflowExecutor(ISyncLog logger, IServiceFactoryForAdmin helper)
+		public AutomatedWorkflowExecutor(ISyncLog logger, IDestinationServiceFactoryForAdmin helper)
 		{
 			_logger = logger;
 			_factoryForAdmin = helper;
@@ -25,7 +25,7 @@ namespace Relativity.Sync.Executors
 			try
 			{
 				string state = configuration.SynchronizationExecutionResult.Status == ExecutionStatus.Completed ? "complete" : "complete-with-errors";
-				_logger.LogInformation("For workspace artifact ID : {0} {1} trigger called with status {2}.", configuration.SourceWorkspaceArtifactId, configuration.TriggerName, state);
+				_logger.LogInformation("For workspace artifact ID : {0} {1} trigger called with status {2}.", configuration.DestinationWorkspaceArtifactId, configuration.TriggerName, state);
 				SendTriggerBody body = new SendTriggerBody()
 				{
 					Inputs = new List<TriggerInput>
@@ -40,15 +40,15 @@ namespace Relativity.Sync.Executors
 				};
 				using (IAutomatedWorkflowsService triggerProcessor = await _factoryForAdmin.CreateProxyAsync<IAutomatedWorkflowsService>().ConfigureAwait(false))
 				{
-					await triggerProcessor.SendTriggerAsync(configuration.SourceWorkspaceArtifactId, configuration.TriggerName, body).ConfigureAwait(false);
+					await triggerProcessor.SendTriggerAsync(configuration.DestinationWorkspaceArtifactId, configuration.TriggerName, body).ConfigureAwait(false);
 				}
 			}
 			catch (Exception ex)
 			{
 				string message = "Error occured while executing trigger : {0} for workspace artifact ID : {1}";
-				_logger.LogError(ex, message, configuration.TriggerName, configuration.SourceWorkspaceArtifactId);
+				_logger.LogError(ex, message, configuration.TriggerName, configuration.DestinationWorkspaceArtifactId);
 			}
-			_logger.LogInformation("For workspace : {0} trigger {1} finished sending.", configuration.SourceWorkspaceArtifactId, configuration.TriggerName);
+			_logger.LogInformation("For workspace : {0} trigger {1} finished sending.", configuration.DestinationWorkspaceArtifactId, configuration.TriggerName);
 			return await Task.FromResult(ExecutionResult.Success()).ConfigureAwait(false);
 		}
 	}

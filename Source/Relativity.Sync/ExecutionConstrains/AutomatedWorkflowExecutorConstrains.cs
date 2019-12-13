@@ -10,8 +10,7 @@ namespace Relativity.Sync.ExecutionConstrains
 		{
 			return Task.FromResult(configuration.SynchronizationExecutionResult != null &&
 									(configuration.SynchronizationExecutionResult.Status == ExecutionStatus.Completed ||
-									configuration.SynchronizationExecutionResult.Status == ExecutionStatus.CompletedWithErrors ||
-									configuration.SynchronizationExecutionResult.Status == ExecutionStatus.Failed));
+									configuration.SynchronizationExecutionResult.Status == ExecutionStatus.CompletedWithErrors));
 		}
 	}
 }

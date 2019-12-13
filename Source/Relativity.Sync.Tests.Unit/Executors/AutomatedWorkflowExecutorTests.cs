@@ -17,7 +17,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 	internal sealed class AutomatedWorkflowExecutorTests
 	{
 		private AutomatedWorkflowExecutor _instance;
-		private Mock<IServiceFactoryForAdmin> _serviceFactory;
+		private Mock<IDestinationServiceFactoryForAdmin> _serviceFactory;
 		private Mock<IAutomatedWorkflowsService> _triggerProcessorService;
 		private Mock<IAutomatedWorkflowTriggerConfiguration> _configuration;
 
@@ -27,7 +27,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_configuration = new Mock<IAutomatedWorkflowTriggerConfiguration>();
 			_configuration.Setup(m => m.SynchronizationExecutionResult).Returns(ExecutionResult.Success());
 			_triggerProcessorService = new Mock<IAutomatedWorkflowsService>();
-			_serviceFactory = new Mock<IServiceFactoryForAdmin>();
+			_serviceFactory = new Mock<IDestinationServiceFactoryForAdmin>();
 			_serviceFactory.Setup(m => m.CreateProxyAsync<IAutomatedWorkflowsService>())
 				.Returns(Task.FromResult(_triggerProcessorService.Object));
 			_instance = new AutomatedWorkflowExecutor(new EmptyLogger(), _serviceFactory.Object);

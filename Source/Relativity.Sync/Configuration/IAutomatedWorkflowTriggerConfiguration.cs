@@ -2,7 +2,7 @@
 {
 	internal interface IAutomatedWorkflowTriggerConfiguration : IConfiguration
 	{
-		int SourceWorkspaceArtifactId { get; }
+		int DestinationWorkspaceArtifactId { get; }
 		string TriggerName { get; }
 		ExecutionResult SynchronizationExecutionResult { get; set; }
 		string TriggerId { get; }
