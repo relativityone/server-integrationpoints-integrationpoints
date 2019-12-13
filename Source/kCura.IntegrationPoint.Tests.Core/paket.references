@@ -9,6 +9,7 @@ Relativity
 Relativity.API
 Relativity.Data
 Relativity.DataExchange.Client.SDK
+Relativity.DataTransfer.MessageService
 kCura.OutsideIn.FI.Win32
 Relativity.IntegrationPoints.Contracts
 Relativity.IntegrationPoints.Services.Interfaces.Private

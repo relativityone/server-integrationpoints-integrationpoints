@@ -10,6 +10,7 @@ Relativity.Productions.Services.Interfaces
 Relativity.Services.Interfaces
 Relativity.Telemetry.MetricsCollection
 Relativity.DataExchange.Client.SDK
+Relativity.DataTransfer.MessageService
 
 group TestPackages
 	FluentAssertions
