@@ -459,8 +459,7 @@ namespace kCura.IntegrationPoints.Data.RSAPIClient
 
 		private void OnFailure(FailureEventArgs eventArgs)
 		{
-			TargetField targetField = eventArgs.TargetField;
-			_logger.LogError(eventArgs.Exception, "OnFailure event of RsapiClient was raised. Target fields: {@targetField}", targetField);
+			_logger.LogError(eventArgs.Exception, "OnFailure event of RsapiClient was raised.");
 		}
 
 		private void OnProcessCompleteWithError(object sender, ProcessCompleteWithErrorEventArgs eventArgs)

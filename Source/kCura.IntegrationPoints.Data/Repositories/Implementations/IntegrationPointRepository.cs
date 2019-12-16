@@ -326,7 +326,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 			catch (FieldNotFoundException ex)
 			{
-				_logger.LogWarning(ex, "Can not write Secured Configuration for Integration Point record during encryption process (Secret config: {securedConfiguration} )", integrationPoint.SecuredConfiguration);
+				_logger.LogWarning(ex, "Can not write Secured Configuration for Integration Point record during encryption process.");
 				//Ignore as Integration Point RDO doesn't always include SecuredConfiguration
 				//Any access to missing fieldGuid will throw FieldNotFoundException
 				return integrationPoint.SecuredConfiguration;

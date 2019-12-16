@@ -88,7 +88,7 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 			_jobHistoryService.UpdateRdo(jobHistory);
 			_jobHistoryService.DeleteRdo(jobHistory.ArtifactId);
 
-			LogRemoveJobHistoryFromIntegrationPointSuccesfulEnd();
+			LogRemoveJobHistoryFromIntegrationPointSuccessfulEnd();
 		}
 
 		private JobHistory GetJobHistory(Job job)
@@ -106,15 +106,15 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 					? JobTypeChoices.JobHistoryRun
 					: JobTypeChoices.JobHistoryScheduledRun, DateTime.Now);
 
-			LogGetJobHistorySuccesfulEnd(job);
+			LogGetJobHistorySuccessfulEnd(job);
 			return jobHistory;
 		}
 		
 		#region logging
 
-		private void LogRemoveJobHistoryFromIntegrationPointSuccesfulEnd()
+		private void LogRemoveJobHistoryFromIntegrationPointSuccessfulEnd()
 		{
-			_logger.LogInformation("Succesfully removed job history from integration point: {ArtifactId}",
+			_logger.LogInformation("Successfully removed job history from integration point: {ArtifactId}",
 				_integrationPoint.ArtifactId);
 		}
 
@@ -123,9 +123,9 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 			_logger.LogInformation("Removing job history from integration point: {ArtifactId}", _integrationPoint.ArtifactId);
 		}
 
-		private void LogGetJobHistorySuccesfulEnd(Job job)
+		private void LogGetJobHistorySuccessfulEnd(Job job)
 		{
-			_logger.LogInformation("Succesfully retrieved job history,  job: {JobId}, ArtifactId: {ArtifactId} ", job.JobId,
+			_logger.LogInformation("Successfully retrieved job history,  job: {JobId}, ArtifactId: {ArtifactId} ", job.JobId,
 				_integrationPoint.ArtifactId);
 		}
 
@@ -137,7 +137,7 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 
 		private void LogUpdateJobHistoryOnFailureSuccesfulEnd(Job job)
 		{
-			_logger.LogInformation("Succesfully updated job history on failure,  job: {Job}, ArtifactId: {ArtifactId} ", job, _integrationPoint.ArtifactId);
+			_logger.LogInformation("Successfully updated job history on failure,  job: {Job}, ArtifactId: {ArtifactId} ", job, _integrationPoint.ArtifactId);
 		}
 
 		private void LogUpdateJobHistoryOnFailureStart(Job job, Exception e)

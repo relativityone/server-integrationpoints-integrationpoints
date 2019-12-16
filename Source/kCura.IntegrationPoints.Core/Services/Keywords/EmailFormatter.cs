@@ -43,7 +43,7 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
 				}
 				catch (Exception e)
 				{
-					LogFormattingError(textToFormat, e);
+					LogFormattingError(e);
 					//eat
 				}
 				if (!string.IsNullOrEmpty(replacementValue))
@@ -63,9 +63,9 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
 
 		#region Logging
 
-		private void LogFormattingError(string textToFormat, Exception e)
+		private void LogFormattingError(Exception e)
 		{
-			_logger.LogError(e, "Error occurred during text formatting ({textToFormat})", textToFormat);
+			_logger.LogError(e, "Error occurred while formatting email text");
 		}
 
 		#endregion
