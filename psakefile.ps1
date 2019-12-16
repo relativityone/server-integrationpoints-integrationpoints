@@ -17,7 +17,7 @@ Task Analyze -Description "Run build analysis" {
 }
 
 Task NugetRestore -Description "Restore the packages needed for this build" {
-    exec { & $NugetExe @('restore', $Solution) }
+    exec { & $PaketExe restore }
 }
 
 Task Compile -Depends NugetRestore -Description "Compile code for this repo" {
