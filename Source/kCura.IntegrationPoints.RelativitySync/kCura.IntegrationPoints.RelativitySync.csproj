@@ -237,6 +237,28 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="Banzai">
+          <HintPath>..\..\packages\sync\Banzai\lib\netstandard2.0\Banzai.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Banzai.Autofac">
+          <HintPath>..\..\packages\sync\Banzai.Autofac\lib\netstandard2.0\Banzai.Autofac.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="oi">
           <HintPath>..\..\packages\sync\kCura.OutsideIn.FI.Win32\lib\net40\oi.dll</HintPath>
           <Private>True</Private>

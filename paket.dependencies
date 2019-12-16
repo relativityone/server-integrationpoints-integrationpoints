@@ -86,6 +86,8 @@ group Sync
 	source https://proget.kcura.corp/nuget/NuGet
 	nuget Relativity.Sync ~> 0.1.21
 	nuget Autofac 4.9.4
+	nuget Banzai ~> 3.0
+	nuget Banzai.Autofac ~> 3.0
 	nuget Castle.Core 3.3.0
 	nuget Relativity.IntegrationPoints.Contracts 1.0.5
 	nuget Relativity.Services.DataContracts 11.1.52.1

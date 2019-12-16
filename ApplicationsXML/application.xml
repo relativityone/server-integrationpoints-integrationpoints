@@ -1813,6 +1813,18 @@
       <Notes />
     </Assembly>
     <Assembly>
+      <ArtifactId>4663502</ArtifactId>
+      <Keywords />
+      <Name>Banzai.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>4663535</ArtifactId>
+      <Keywords />
+      <Name>Banzai.Autofac.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
       <ArtifactId>4702172</ArtifactId>
       <Keywords />
       <Name>Relativity.Telemetry.Services.Interface.dll</Name>

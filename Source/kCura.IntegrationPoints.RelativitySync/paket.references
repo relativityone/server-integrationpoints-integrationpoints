@@ -9,3 +9,5 @@ group Sync
 	Relativity.IntegrationPoints.Contracts
 	Relativity.Sync
 	Autofac
+	Banzai
+	Banzai.Autofac
