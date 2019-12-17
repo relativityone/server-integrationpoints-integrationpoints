@@ -40,6 +40,7 @@ NUGET
     Relativity (11.1.52.1)
     Relativity.API (12.0.1)
       System.Data.SqlClient (>= 4.6)
+    Relativity.AutomatedWorkflows.Services.Interfaces (0.1.1-pre-4)
     Relativity.DataExchange.Client.SDK (1.9.0)
       kCura.OutsideIn.FI.Win32 (>= 2019.5)
       Newtonsoft.Json (>= 6.0.8)

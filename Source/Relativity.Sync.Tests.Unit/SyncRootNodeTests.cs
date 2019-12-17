@@ -22,6 +22,7 @@ namespace Relativity.Sync.Tests.Unit
 		private Mock<ICommand<IJobStatusConsolidationConfiguration>> _jobStatusConsolidationCommandStub;
 		private Mock<ICommand<INotificationConfiguration>> _notificationCommandFake;
 		private Mock<ICommand<IJobCleanupConfiguration>> _jobCleanupCommandStub;
+		private Mock<ICommand<IAutomatedWorkflowTriggerConfiguration>> _automatedWfTriggerCommand;
 		private Mock<INode<SyncExecutionContext>> _childNodeStub;
 		private Mock<ISyncLog> _loggerStub;
 		
@@ -39,13 +40,19 @@ namespace Relativity.Sync.Tests.Unit
 			_notificationCommandFake = new Mock<ICommand<INotificationConfiguration>>();
 			_jobStatusConsolidationCommandStub = new Mock<ICommand<IJobStatusConsolidationConfiguration>>();
 			_jobCleanupCommandStub = new Mock<ICommand<IJobCleanupConfiguration>>();
+			_automatedWfTriggerCommand = new Mock<ICommand<IAutomatedWorkflowTriggerConfiguration>>();
 
 			_childNodeStub = new Mock<INode<SyncExecutionContext>>();
 
 			var progress = new Mock<IProgress<SyncJobState>>();
 			_syncExecutionContext = new SyncExecutionContext(progress.Object, _token);
 
-			_sut = new SyncRootNode(jobEndMetricsService.Object, _jobStatusConsolidationCommandStub.Object, _notificationCommandFake.Object, _jobCleanupCommandStub.Object, _loggerStub.Object);
+			_sut = new SyncRootNode(jobEndMetricsService.Object,
+				_jobStatusConsolidationCommandStub.Object,
+				_notificationCommandFake.Object,
+				_jobCleanupCommandStub.Object,
+				_automatedWfTriggerCommand.Object,
+				_loggerStub.Object);
 			_sut.AddChild(_childNodeStub.Object);
 		}
 

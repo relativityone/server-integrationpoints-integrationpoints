@@ -67,6 +67,8 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<JobStatusConsolidationExecutor>().As<IExecutor<IJobStatusConsolidationConfiguration>>();
 			builder.RegisterType<JobCleanupExecutorConstrains>().As<IExecutionConstrains<IJobCleanupConfiguration>>();
 			builder.RegisterType<JobCleanupExecutor>().As<IExecutor<IJobCleanupConfiguration>>();
+			builder.RegisterType<AutomatedWorkflowExecutorConstrains>().As<IExecutionConstrains<IAutomatedWorkflowTriggerConfiguration>>();
+			builder.RegisterType<AutomatedWorkflowExecutor>().As<IExecutor<IAutomatedWorkflowTriggerConfiguration>>();
 
 			builder.RegisterTypes(Assembly.GetExecutingAssembly().GetTypes().Where(t => !t.IsAbstract && t.IsAssignableTo<IPermissionCheck>()).ToArray()).As<IPermissionCheck>();
 

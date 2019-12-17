@@ -20,6 +20,7 @@ namespace Relativity.Sync.Executors
 		private readonly IJobStatisticsContainer _jobStatisticsContainer;
 		private readonly IDocumentTagRepository _documentsTagRepository;
 		private readonly IJobCleanupConfiguration _jobCleanupConfiguration;
+		private readonly IAutomatedWorkflowTriggerConfiguration _automatedWorkflowTriggerConfiguration;
 		private readonly ISyncLog _logger;
 
 		public SynchronizationExecutor(IImportJobFactory importJobFactory,
@@ -30,6 +31,7 @@ namespace Relativity.Sync.Executors
 			IFieldMappings fieldMappings,
 			IJobStatisticsContainer jobStatisticsContainer,
 			IJobCleanupConfiguration jobCleanupConfiguration,
+			IAutomatedWorkflowTriggerConfiguration automatedWorkflowTriggerConfiguration,
 			ISyncLog logger)
 		{
 			_batchRepository = batchRepository;
@@ -40,6 +42,7 @@ namespace Relativity.Sync.Executors
 			_jobStatisticsContainer = jobStatisticsContainer;
 			_documentsTagRepository = documentsTagRepository;
 			_jobCleanupConfiguration = jobCleanupConfiguration;
+			_automatedWorkflowTriggerConfiguration = automatedWorkflowTriggerConfiguration;
 			_logger = logger;
 		}
 
@@ -51,6 +54,7 @@ namespace Relativity.Sync.Executors
 			ExecutionResult importAndTagResult = await ExecuteSynchronizationAsync(configuration, token).ConfigureAwait(false);
 
 			_jobCleanupConfiguration.SynchronizationExecutionResult = importAndTagResult;
+			_automatedWorkflowTriggerConfiguration.SynchronizationExecutionResult = importAndTagResult;
 			return importAndTagResult;
 		}
 

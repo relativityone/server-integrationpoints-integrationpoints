@@ -29,7 +29,8 @@ namespace Relativity.Sync.Tests.Integration
 			typeof(ISynchronizationConfiguration),
 			typeof(IDataDestinationFinalizationConfiguration),
 			typeof(INotificationConfiguration),
-			typeof(IJobCleanupConfiguration)
+			typeof(IJobCleanupConfiguration),
+			typeof(IAutomatedWorkflowTriggerConfiguration)
 		};
 	}
 }

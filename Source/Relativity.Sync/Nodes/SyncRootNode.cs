@@ -13,6 +13,7 @@ namespace Relativity.Sync.Nodes
 		private readonly ICommand<IJobStatusConsolidationConfiguration> _jobStatusConsolidationCommand;
 		private readonly ICommand<INotificationConfiguration> _notificationCommand;
 		private readonly ICommand<IJobCleanupConfiguration> _jobCleanupCommand;
+		private readonly ICommand<IAutomatedWorkflowTriggerConfiguration> _automatedWfTriggerCommand;
 		private readonly IJobEndMetricsService _jobEndMetricsService;
 		private readonly ISyncLog _logger;
 
@@ -20,12 +21,14 @@ namespace Relativity.Sync.Nodes
 			ICommand<IJobStatusConsolidationConfiguration> jobStatusConsolidationCommand,
 			ICommand<INotificationConfiguration> notificationCommand,
 			ICommand<IJobCleanupConfiguration> jobCleanupCommand,
+			ICommand<IAutomatedWorkflowTriggerConfiguration> automatedWfTriggerCommand,
 			ISyncLog logger)
 		{
 			_jobEndMetricsService = jobEndMetricsService;
 			_jobStatusConsolidationCommand = jobStatusConsolidationCommand;
 			_notificationCommand = notificationCommand;
 			_jobCleanupCommand = jobCleanupCommand;
+			_automatedWfTriggerCommand = automatedWfTriggerCommand;
 			_logger = logger;
 			Id = "SyncRoot";
 		}
@@ -38,7 +41,8 @@ namespace Relativity.Sync.Nodes
 			ExecutionResult[] executionResults = ExecuteTasksInParallelWithContextSync(context,
 				ReportJobEndMetricsAsync,
 				RunNotificationCommandAsync,
-				RunJobCleanupAsync);
+				RunJobCleanupAsync,
+				RunJobAutomatedWorkflowTriggerAsync);
 			LogFailures(executionResults);
 
 			List<SyncException> syncExceptions = executionResults
@@ -107,6 +111,7 @@ namespace Relativity.Sync.Nodes
 		private Task<ExecutionResult> RunNotificationCommandAsync(IExecutionContext<SyncExecutionContext> context) => ExecuteCommandIfCanExecuteAsync(_notificationCommand, context);
 		private Task<ExecutionResult> RunJobStatusConsolidationAsync(IExecutionContext<SyncExecutionContext> context) => ExecuteCommandIfCanExecuteAsync(_jobStatusConsolidationCommand, context);
 		private Task<ExecutionResult> RunJobCleanupAsync(IExecutionContext<SyncExecutionContext> context) => ExecuteCommandIfCanExecuteAsync(_jobCleanupCommand, context);
+		private Task<ExecutionResult> RunJobAutomatedWorkflowTriggerAsync(IExecutionContext<SyncExecutionContext> context) => ExecuteCommandIfCanExecuteAsync(_automatedWfTriggerCommand, context);
 
 		private static async Task<ExecutionResult> ExecuteCommandIfCanExecuteAsync<T>(ICommand<T> command, IExecutionContext<SyncExecutionContext> context) where T : IConfiguration
 		{
