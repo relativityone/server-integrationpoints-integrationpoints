@@ -67,13 +67,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			_stopJobManagerFake = new Mock<IJobStopManager>();
 			_integrationPointRepositoryFake = new Mock<IIntegrationPointRepository>();
 			_objectManagerFake = new Mock<IObjectManager>();
-
-
+			
 			_helperFake.Setup(x => x.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
 				.Returns(_objectManagerFake.Object);
-
 			_errors = new List<JobHistoryError>();
-
 
 			_objectManagerFake.Setup(x => x.CreateAsync(It.IsAny<int>(), It.IsAny<MassCreateRequest>()))
 				.ReturnsAsync(new MassCreateResult
@@ -104,6 +101,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 					Success = true
 				})
 				.Callback<int, MassCreateRequest>((_, req) => request = req);
+
 			// act
 			_instance.CommitErrors();
 
@@ -157,20 +155,18 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		[Test]
 		public void CommitErrors_HasJobHistory_CommitsJobHistoryErrors_ForDocumentLevelErrors()
 		{
-			// Arrange
+			// arrange
 			_instance.AddError(ErrorTypeChoices.JobHistoryErrorItem, "MyIdentifier", "Fake item error.", "stack trace");
 			_instance.AddError(ErrorTypeChoices.JobHistoryErrorItem, "MyIdentifier2", "Fake item error2.", "stack trace2");
-
-
+			
 			_instance.IntegrationPoint.HasErrors = false;
 
-			// Act
+			// act
 			_instance.CommitErrors();
 
-			// Assert
+			// assert
 			_objectManagerFake.Verify(x => x.CreateAsync(_caseServiceContextFake.Object.WorkspaceID, It.IsAny<MassCreateRequest>()), Times.Once);
-
-
+			
 			Assert.AreEqual(2, _errors.Count);
 			Assert.AreEqual(ErrorTypeChoices.JobHistoryErrorItem.Name, _errors[0].ErrorType.Name);
 			Assert.AreEqual("Fake item error.", _errors[0].Error);
@@ -185,10 +181,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		[Test]
 		public void AddError_CommitsJobHistoryErrors_ForJobLevelErrors()
 		{
-			// Arrange
+			// arrange
 			_instance.IntegrationPoint.HasErrors = false;
 
-			// Act
+			// act
 			_instance.AddError(ErrorTypeChoices.JobHistoryErrorJob, "", "Fake job error.", "stack trace");
 			_instance.AddError(ErrorTypeChoices.JobHistoryErrorJob, "", "Fake job error2.", "stack trace2");
 
@@ -199,13 +195,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		[Test]
 		public void CommitErrors_HasJobHistory_NoErrorsToCommit()
 		{
-			// Arrange
+			// arrange
 			_instance.IntegrationPoint.HasErrors = true;
 
-			// Act
+			// act
 			_instance.CommitErrors();
 
-			// Assert
+			// assert
 			_objectManagerFake.Verify(x => x.CreateAsync(_caseServiceContextFake.Object.WorkspaceID, It.IsAny<MassCreateRequest>()), Times.Never);
 			Assert.IsNotNull(_instance.IntegrationPoint.HasErrors);
 			Assert.IsFalse(_instance.IntegrationPoint.HasErrors.Value);
@@ -214,7 +210,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		[Test]
 		public void CommitErrors_FailsCommit_ThrowsException_ItemLevelError()
 		{
-			// Arrange
+			// arrange
 			_instance.AddError(ErrorTypeChoices.JobHistoryErrorItem, "MyIdentifier", "Fake item error.", null);
 
 			_objectManagerFake.Setup(x => x.CreateAsync(_caseServiceContextFake.Object.WorkspaceID, It.IsAny<MassCreateRequest>()))
@@ -222,10 +218,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 
 			_instance.IntegrationPoint.HasErrors = false;
 
-			// Act
+			// act
 			Exception returnedException = Assert.Throws<Exception>(() => _instance.CommitErrors());
 
-			// Assert
+			// assert
 			_integrationPointRepositoryFake.Verify(x => x.Update(It.IsAny<Data.IntegrationPoint>()));
 
 			Assert.IsTrue(returnedException.Message.Contains("Could not commit Job History Errors. These are uncommitted errors:" + Environment.NewLine));
@@ -235,16 +231,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		[Test]
 		public void CommitErrors_FailsCommit_ThrowsException_JobLevelError()
 		{
-			// Arrange
+			// arrange
 			_objectManagerFake.Setup(x => x.CreateAsync(_caseServiceContextFake.Object.WorkspaceID, It.IsAny<MassCreateRequest>()))
 				.ThrowsAsync(new Exception());
 			_instance.IntegrationPoint.HasErrors = false;
 
-			// Act
+			// act
 			//Adding job level error automatically commits errors
 			Exception returnedException = Assert.Throws<Exception>(() => _instance.AddError(ErrorTypeChoices.JobHistoryErrorJob, "", "Fake job error.", null));
 
-			// Assert
+			// assert
 			_integrationPointRepositoryFake.Verify(x => x.Update(It.IsAny<Data.IntegrationPoint>()), Times.Once);
 			Assert.IsTrue(returnedException.Message.Contains("Could not commit Job History Errors. These are uncommitted errors:" + Environment.NewLine));
 			Assert.IsTrue(returnedException.Message.Contains("Type: Job    Error: Fake job error." + Environment.NewLine));
@@ -253,13 +249,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		[Test]
 		public void AddError_NoJobHistory_ThrowsException()
 		{
-			// Arrange
+			// arrange
 			_instance.JobHistory = null;
 
-			// Act
+			// act
 			Exception returnedException = Assert.Throws<Exception>(() => _instance.AddError(ErrorTypeChoices.JobHistoryErrorJob, "", "Fake job error.", null));
 
-			// Assert
+			// assert
 			_integrationPointRepositoryFake.Verify(x => x.Update(It.IsAny<Data.IntegrationPoint>()), Times.Never);
 			Assert.That(returnedException.Message, Is.EqualTo("Type:Job Id:  Error:Fake job error."));
 		}
@@ -268,16 +264,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		[Category(TestConstants.TestCategories.STOP_JOB)]
 		public void OnRowError_DoNotAddErrorWhenStopped()
 		{
-			// ARRANGE
+			// arrange
 			const string identifier = "identifier";
 			Reporter reporter = new Reporter();
 			_stopJobManagerFake.Setup(x => x.IsStopRequested()).Returns(true);
 
-			// ACT
+			// act
 			_instance.SubscribeToBatchReporterEvents(reporter);
 			reporter.RaiseDocumentError(identifier, identifier);
 
-			// ASSERT
+			// assert
 			_instance.PendingErrorCount.Should().Be(0);
 		}
 
@@ -285,23 +281,23 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		[Category(TestConstants.TestCategories.STOP_JOB)]
 		public void OnRowError_AddErrorWhenRunning()
 		{
-			// ARRANGE
+			// arrange
 			const string identifier = "identifier";
 			Reporter reporter = new Reporter();
 			_stopJobManagerFake.Setup(x => x.IsStopRequested()).Returns(false);
 
-			// ACT
+			// act
 			_instance.SubscribeToBatchReporterEvents(reporter);
 			reporter.RaiseDocumentError(identifier, identifier);
 
-			// ASSERT
+			// assert
 			_instance.PendingErrorCount.Should().Be(1);
 		}
 
 		[Test]
 		public void AddError_CommitErrorsByBatch()
 		{
-			// ARRANGE
+			// arrange
 			Exception exception = new Exception();
 			Reporter reporter = new Reporter();
 			_stopJobManagerFake.Setup(x => x.IsStopRequested()).Returns(true);
@@ -315,14 +311,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 				})
 				.Callback<int, MassCreateRequest>((_, req) => request = req);
 
-			// ACT
+			// act
 			_instance.SubscribeToBatchReporterEvents(reporter);
 			for (int i = 0; i < JobHistoryErrorService.ERROR_BATCH_SIZE; i++)
 			{
 				_instance.AddError(ErrorTypeChoices.JobHistoryErrorItem, exception);
 			}
 
-			// ASSERT 
+			// assert 
 			request.ValueLists.Count.Should().Be(JobHistoryErrorService.ERROR_BATCH_SIZE);
 		}
 
@@ -331,16 +327,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		[Category(TestConstants.TestCategories.STOP_JOB)]
 		public void OnJobError_AlwaysAddError(bool isStopped)
 		{
-			// ARRANGE
+			// arrange
 			Reporter reporter = new Reporter();
 			Exception exception = new Exception();
 			_stopJobManagerFake.Setup(x => x.IsStopRequested()).Returns(isStopped);
 			
-			// ACT
+			// act
 			_instance.SubscribeToBatchReporterEvents(reporter);
 			reporter.RaiseOnJobError(exception);
 
-			// ASSERT 
+			// assert 
 			Assert.IsTrue(_instance.JobLevelErrorOccurred);
 		}
 
@@ -405,12 +401,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		[Test]
 		public void CommitErrors_SuppressErrorOnUpdateHasErrorField()
 		{
-			// ARRANGE
+			// arrange
 			_integrationPointRepositoryFake
 				.Setup(x => x.Update(It.IsAny<Data.IntegrationPoint>()))
 				.Throws(new Exception());
 
-			// ACT & ASSERT
+			// act & assert
 			Assert.DoesNotThrow(() => _instance.CommitErrors());
 		}
 
