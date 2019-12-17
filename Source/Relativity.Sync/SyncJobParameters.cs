@@ -37,17 +37,17 @@ namespace Relativity.Sync
 		/// <summary>
 		/// Id for trigger input
 		/// </summary>
-		public string TriggerId { get; set; } = "sync-export";
+		public string TriggerId { get; set; } = "type";
 
 		/// <summary>
 		/// Value for RAW trigger input
 		/// </summary>
-		public string TriggerValue { get; set; } = "Relativity.Sync";
+		public string TriggerValue { get; set; } = "sync";
 
 		/// <summary>
 		/// Name for RAW trigger
 		/// </summary>
-		public string TriggerName { get; set; } = "relativity@sync-complete";
+		public string TriggerName { get; set; } = "relativity@on-new-documents-added";
 
 		/// <summary>
 		/// Workflow ID.
