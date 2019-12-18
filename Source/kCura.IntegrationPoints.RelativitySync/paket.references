@@ -4,6 +4,7 @@ Relativity.API
 Relativity.Services.Interfaces
 kCura.Relativity.Client
 Relativity.Telemetry.APM
+kCura.OutsideIn.FI.Win32
 
 group Sync
 	Relativity.IntegrationPoints.Contracts
