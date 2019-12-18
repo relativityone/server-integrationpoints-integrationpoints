@@ -1815,7 +1815,7 @@
     <Assembly>
       <ArtifactId>4663471</ArtifactId>
       <Keywords />
-      <Name>Netstandard.dll</Name>
+      <Name>netstandard.dll</Name>
       <Notes />
     </Assembly>
     <Assembly>

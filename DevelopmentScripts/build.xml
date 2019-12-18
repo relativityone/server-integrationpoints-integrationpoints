@@ -37,7 +37,7 @@
           <Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\kCura.IntegrationPoints.RelativitySync.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Relativity.Sync.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Autofac.dll</Assembly>
-          <Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Netstandard.dll</Assembly>
+          <Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\netstandard.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Banzai.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Banzai.Autofac.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\kCura.LongPath.dll</Assembly>
@@ -45,17 +45,17 @@
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\Relativity.DataExchange.Client.SDK.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\Relativity.DataTransfer.MessageService.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\Relativity.Telemetry.Services.Interface.dll</Assembly>
-          <Assembly>Source\kCura.IntegrationPoints.Core\bin\Relativity.Transfer.Client.Aspera.dll</Assembly>
-          <Assembly>Source\kCura.IntegrationPoints.Core\bin\Relativity.Transfer.Client.dll</Assembly>
-          <Assembly>Source\kCura.IntegrationPoints.Core\bin\Relativity.Transfer.Client.Core.dll</Assembly>
-          <Assembly>Source\kCura.IntegrationPoints.Core\bin\Relativity.Transfer.Client.FileShare.dll</Assembly>
-          <Assembly>Source\kCura.IntegrationPoints.Core\bin\Relativity.Transfer.Client.Http.dll</Assembly>
-          <Assembly>Source\kCura.IntegrationPoints.Core\bin\FaspManager.dll</Assembly>
-          <Assembly>Source\kCura.IntegrationPoints.Core\bin\Polly.dll</Assembly>
+          <Assembly>Source\kCura.IntegrationPoints.Agent\bin\Relativity.Transfer.Client.Aspera.dll</Assembly>
+          <Assembly>Source\kCura.IntegrationPoints.Agent\bin\Relativity.Transfer.Client.dll</Assembly>
+          <Assembly>Source\kCura.IntegrationPoints.Agent\bin\Relativity.Transfer.Client.Core.dll</Assembly>
+          <Assembly>Source\kCura.IntegrationPoints.Agent\bin\Relativity.Transfer.Client.FileShare.dll</Assembly>
+          <Assembly>Source\kCura.IntegrationPoints.Agent\bin\Relativity.Transfer.Client.Http.dll</Assembly>
+          <Assembly>Source\kCura.IntegrationPoints.Agent\bin\FaspManager.dll</Assembly>
+          <Assembly>Source\kCura.IntegrationPoints.Agent\bin\Polly.dll</Assembly>
           <Assembly>Source\kCura.ScheduleQueue.AgentBase\bin\kCura.ScheduleQueue.AgentBase.dll</Assembly>
           <Assembly>Source\kCura.ScheduleQueue.AgentBase\bin\kCura.ScheduleQueue.Core.dll</Assembly>
-          <Assembly>Source\kCura.IntegrationPoints.Core\bin\Newtonsoft.Json.dll</Assembly>
-          <Assembly>Source\kCura.IntegrationPoints.Core\bin\Renci.SshNet.dll</Assembly>
+          <Assembly>Source\kCura.IntegrationPoints.Agent\bin\Newtonsoft.Json.dll</Assembly>
+          <Assembly>Source\kCura.IntegrationPoints.Agent\bin\Renci.SshNet.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\SystemInterface.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.Agent\bin\ZetaLongPaths.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\Relativity.Productions.Services.Interfaces.dll</Assembly>
