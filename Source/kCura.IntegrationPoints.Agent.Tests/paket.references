@@ -8,10 +8,12 @@ LanguageExt.Core
 Relativity.Authentication
 Relativity.Data
 Relativity.DataExchange.Client.SDK
+Relativity.DataTransfer.MessageService
 Relativity.IntegrationPoints.Contracts
 Relativity.Telemetry.APM
 Relativity.Telemetry.MetricsCollection
 Relativity.Services.Interfaces
+Relativity.AutomatedWorkflows.Services.Interfaces
 
 group TestPackages
 	FluentAssertions

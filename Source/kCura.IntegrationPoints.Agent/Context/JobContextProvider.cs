@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.Agent.Context
 			{
 				if (_job == null)
 				{
-					throw new InvalidOperationException("Job is not present because contex wasn't initialized");
+					throw new InvalidOperationException("Job is not present because context wasn't initialized");
 				}
 				return _job;
 			}

@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
@@ -27,6 +28,8 @@ using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
+using Relativity.AutomatedWorkflows.Services.Interfaces;
+using Relativity.AutomatedWorkflows.Services.Interfaces.DataContracts.Triggers;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 {
@@ -42,6 +45,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 		private Job _job;
 		private TaskParameters _taskParameters;
+		private IHelper _helper;
+		private IAutomatedWorkflowsService _rawService;
+		private IJobStatusUpdater _jobStatusUpdater;
 		private const int _RECORD_COUNT = 42;
 		private const string _ERROR_FILE_PATH = "ErrorFilePath";
 		private const string _IMPORT_PROVIDER_SETTINGS_FOR_DOC = "DocumentImport";
@@ -62,7 +68,11 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private void SetUp(Job job)
 		{
 			_job = job;
-			IHelper helper = Substitute.For<IHelper>();
+			_helper = Substitute.For<IHelper>();
+			_rawService = Substitute.For<IAutomatedWorkflowsService>();
+			_helper.GetServicesManager().CreateProxy<IAutomatedWorkflowsService>(ExecutionIdentity.System).Returns(_rawService);
+			_jobStatusUpdater = Substitute.For<IJobStatusUpdater>();
+
 			ICaseServiceContext caseContext = Substitute.For<ICaseServiceContext>();
 			ISynchronizerFactory synchronizerFactory = Substitute.For<ISynchronizerFactory>();
 			IManagerFactory managerFactory = Substitute.For<IManagerFactory>();
@@ -147,7 +157,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				.Returns(_taskParameters);
 			jobHistoryService.GetRdo(Arg.Is<Guid>( guid => guid == _taskParameters.BatchInstance)).Returns(jobHistory);
 			_instance = new ImportServiceManager(
-				helper, 
+				_helper, 
 				caseContext,
 				synchronizerFactory,
 				managerFactory, 
@@ -161,7 +171,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				dataReaderFactory, 
 				importFileLocationService,
 				agentValidator, 
-				integrationPointRepository);
+				integrationPointRepository,
+				_jobStatusUpdater);
 		}
 		
 		[Test]
@@ -190,6 +201,146 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			// ASSERT
 			_jobHistoryErrorService.Received(1).SubscribeToBatchReporterEvents(_synchronizer);
+		}
+
+
+		[Test]
+		public void Execute_ShouldTriggerRawAsCompleted_WhenRunCompleted()
+		{
+			// ARRANGE
+			_integrationPoint.DestinationConfiguration = _IMPORTSETTINGS_FOR_DOC;
+			_integrationPoint.SourceConfiguration = _IMPORT_PROVIDER_SETTINGS_FOR_DOC;
+
+			_jobStatusUpdater.GenerateStatus(Arg.Any<JobHistory>()).Returns(JobStatusChoices.JobHistoryCompleted);
+
+			// ACT
+			_instance.Execute(_job);
+
+			_rawService.Received().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Is<SendTriggerBody>( stb => stb.State == ImportServiceManager.RAW_STATE_COMPLETE));
+		}
+
+
+		[Test]
+		public void Execute_ShouldTriggerRawAsCompletedWithErrors_WhenRunCompletedWithErrors()
+		{
+			// ARRANGE
+			_integrationPoint.DestinationConfiguration = _IMPORTSETTINGS_FOR_DOC;
+			_integrationPoint.SourceConfiguration = _IMPORT_PROVIDER_SETTINGS_FOR_DOC;
+
+			_jobStatusUpdater.GenerateStatus(Arg.Any<JobHistory>()).Returns(JobStatusChoices.JobHistoryCompletedWithErrors);
+
+			// ACT
+			_instance.Execute(_job);
+
+			_rawService.Received().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Is<SendTriggerBody>(stb => stb.State == ImportServiceManager.RAW_STATE_COMPLETE_WITH_ERRORS));
+		}
+
+
+		[Test]
+		public void Execute_ShouldNotTriggerRaw_WhenRunFailed()
+		{
+			// ARRANGE
+			_integrationPoint.DestinationConfiguration = _IMPORTSETTINGS_FOR_DOC;
+			_integrationPoint.SourceConfiguration = _IMPORT_PROVIDER_SETTINGS_FOR_DOC;
+
+			_jobStatusUpdater.GenerateStatus(Arg.Any<JobHistory>()).Returns(JobStatusChoices.JobHistoryErrorJobFailed);
+
+			// ACT
+			_instance.Execute(_job);
+
+			_rawService.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
+		}
+
+		[Test]
+		public void Execute_ShouldNotTriggerRaw_WhenRunPending()
+		{
+			// ARRANGE
+			_integrationPoint.DestinationConfiguration = _IMPORTSETTINGS_FOR_DOC;
+			_integrationPoint.SourceConfiguration = _IMPORT_PROVIDER_SETTINGS_FOR_DOC;
+
+			_jobStatusUpdater.GenerateStatus(Arg.Any<JobHistory>()).Returns(JobStatusChoices.JobHistoryPending);
+
+			// ACT
+			_instance.Execute(_job);
+
+			_rawService.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
+		}
+
+
+		[Test]
+		public void Execute_ShouldNotTriggerRaw_WhenRunProcessing()
+		{
+			// ARRANGE
+			_integrationPoint.DestinationConfiguration = _IMPORTSETTINGS_FOR_DOC;
+			_integrationPoint.SourceConfiguration = _IMPORT_PROVIDER_SETTINGS_FOR_DOC;
+
+			_jobStatusUpdater.GenerateStatus(Arg.Any<JobHistory>()).Returns(JobStatusChoices.JobHistoryProcessing);
+
+			// ACT
+			_instance.Execute(_job);
+
+			_rawService.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
+		}
+
+
+		[Test]
+		public void Execute_ShouldNotTriggerRaw_WhenRunStopped()
+		{
+			// ARRANGE
+			_integrationPoint.DestinationConfiguration = _IMPORTSETTINGS_FOR_DOC;
+			_integrationPoint.SourceConfiguration = _IMPORT_PROVIDER_SETTINGS_FOR_DOC;
+
+			_jobStatusUpdater.GenerateStatus(Arg.Any<JobHistory>()).Returns(JobStatusChoices.JobHistoryStopped);
+
+			// ACT
+			_instance.Execute(_job);
+
+			_rawService.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
+		}
+
+		[Test]
+		public void Execute_ShouldNotTriggerRaw_WhenRunStopping()
+		{
+			// ARRANGE
+			_integrationPoint.DestinationConfiguration = _IMPORTSETTINGS_FOR_DOC;
+			_integrationPoint.SourceConfiguration = _IMPORT_PROVIDER_SETTINGS_FOR_DOC;
+
+			_jobStatusUpdater.GenerateStatus(Arg.Any<JobHistory>()).Returns(JobStatusChoices.JobHistoryStopping);
+
+			// ACT
+			_instance.Execute(_job);
+
+			_rawService.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
+		}
+
+		[Test]
+		public void Execute_ShouldNotTriggerRaw_WhenRunValidating()
+		{
+			// ARRANGE
+			_integrationPoint.DestinationConfiguration = _IMPORTSETTINGS_FOR_DOC;
+			_integrationPoint.SourceConfiguration = _IMPORT_PROVIDER_SETTINGS_FOR_DOC;
+
+			_jobStatusUpdater.GenerateStatus(Arg.Any<JobHistory>()).Returns(JobStatusChoices.JobHistoryValidating);
+
+			// ACT
+			_instance.Execute(_job);
+
+			_rawService.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
+		}
+
+		[Test]
+		public void Execute_ShouldNotTriggerRaw_WhenRunValidationFailed()
+		{
+			// ARRANGE
+			_integrationPoint.DestinationConfiguration = _IMPORTSETTINGS_FOR_DOC;
+			_integrationPoint.SourceConfiguration = _IMPORT_PROVIDER_SETTINGS_FOR_DOC;
+
+			_jobStatusUpdater.GenerateStatus(Arg.Any<JobHistory>()).Returns(JobStatusChoices.JobHistoryValidationFailed);
+
+			// ACT
+			_instance.Execute(_job);
+
+			_rawService.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
 		}
 	}
 }

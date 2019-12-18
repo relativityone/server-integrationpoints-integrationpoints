@@ -178,7 +178,10 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 
 			SyncJobFactory jobFactory = new SyncJobFactory();
-			SyncJobParameters parameters = new SyncJobParameters(syncConfigurationArtifactId, _job.WorkspaceId, _job.IntegrationPointId, _job.JobHistoryId);
+			SyncJobParameters parameters = new SyncJobParameters(syncConfigurationArtifactId, _job.WorkspaceId, _job.IntegrationPointId, _job.JobHistoryId)
+											{
+												TriggerValue = "rip"
+											};
 			RelativityServices relativityServices = new RelativityServices(_apmMetrics, _ripContainer.Resolve<IHelper>().GetServicesManager(), _ripContainer.Resolve<Func<ISearchManager>>(), ExtensionPointServiceFinder.ServiceUriProvider.AuthenticationUri());
 			ISyncLog syncLog = new SyncLog(_logger);
 			ISyncJob syncJob = jobFactory.Create(container, parameters, relativityServices, syncLog);

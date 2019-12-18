@@ -64,8 +64,7 @@ namespace kCura.IntegrationPoints.Agent
 			using (_logger.LogContextPushProperties(correlationContext))
 			{
 				InitializeJobExecution(job);
-				TaskResult taskResult = ExecuteJob(job, correlationContext);
-				return taskResult;
+				return ExecuteJob(job, correlationContext);
 			}
 		}
 

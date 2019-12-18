@@ -80,8 +80,10 @@ namespace kCura.IntegrationPoint.Tests.Core
 				GetAllInstallStatusResponse installStatusResponse;
 				do
 				{
+#pragma warning disable CS0618 // Type or member is obsolete
 					installStatusResponse = await applicationInstallManager
 						.GetAllInstallStatusAsync(_ADMIN_CASE_ID, guid, currentIndex, batchSize)
+#pragma warning restore CS0618 // Type or member is obsolete
 						.ConfigureAwait(false);
 
 					GetInstallStatusResponse installStatusResponseForWorkspace = installStatusResponse

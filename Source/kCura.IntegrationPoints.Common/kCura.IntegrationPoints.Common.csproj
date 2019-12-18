@@ -11,23 +11,20 @@
     <AssemblyName>kCura.IntegrationPoints.Common</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <PlatformTarget>x64</PlatformTarget>
-    <OutputPath>bin\x64\</OutputPath>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <OutputPath>bin\</OutputPath>
     <DefineConstants>DEVENV,$(Injections)</DefineConstants>
     <DebugType>full</DebugType>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningLevel>4</WarningLevel>
     <LangVersion>6</LangVersion>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <PlatformTarget>x64</PlatformTarget>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <DefineConstants>$(Injections)</DefineConstants>
-    <OutputPath>bin\x64\</OutputPath>
+    <OutputPath>bin\</OutputPath>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <DebugSymbols>true</DebugSymbols>
@@ -47,6 +44,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Version\AssemblyInfo.cs">
+        <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\Version\AssemblyInfo.Custom.cs">
+        <Link>Properties\AssemblyInfo.Custom.cs</Link>
+    </Compile>  
     <Compile Include="Constants\ExternalServiceTypes.cs" />
     <Compile Include="Handlers\IRetryHandler.cs" />
     <Compile Include="Handlers\IRetryHandlerFactory.cs" />
@@ -64,9 +67,6 @@
     <Compile Include="Monitoring\Instrumentation\Model\InstrumentationServiceCallContext.cs" />
     <Compile Include="Monitoring\Messages\JobProgressStatisticsMessage.cs" />
     <Compile Include="Monitoring\UnitsOfMeasureConstants.cs" />
-    <Compile Include="..\..\Version\AssemblyInfo.cs">
-      <Link>Properties\AssemblyInfo.cs</Link>
-    </Compile>
     <Compile Include="Monitoring\Instrumentation\IExternalServiceInstrumentation.cs" />
     <Compile Include="Monitoring\Instrumentation\IExternalServiceInstrumentationStarted.cs" />
     <Compile Include="Monitoring\Messages\JobStatisticsMessage.cs" />

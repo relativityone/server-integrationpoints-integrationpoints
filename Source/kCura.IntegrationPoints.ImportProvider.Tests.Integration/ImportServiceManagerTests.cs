@@ -71,6 +71,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 			_importFileLocationService = Substitute.For<IImportFileLocationService>();
 			IAgentValidator agentValidator = Substitute.For<IAgentValidator>();
 			IIntegrationPointRepository integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
+			IJobStatusUpdater jobStatusUpdater = Substitute.For<IJobStatusUpdater>();
 
 			//Data Transfer Location
 			IDataTransferLocationServiceFactory lsFactory = Substitute.For<IDataTransferLocationServiceFactory>();
@@ -148,7 +149,8 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 				dataReaderFactory,
 				_importFileLocationService,
 				agentValidator,
-				integrationPointRepository
+				integrationPointRepository,
+				jobStatusUpdater
 			);
 		}
 
