@@ -1866,6 +1866,12 @@
       <Name>Relativity.IntegrationPoints.Services.dll</Name>
       <Notes />
     </Assembly>
+	<Assembly>
+      <ArtifactId>5321023</ArtifactId>
+      <Keywords />
+      <Name>Relativity.AutomatedWorkflows.Services.Interfaces.dll</Name>
+      <Notes />
+    </Assembly>
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
