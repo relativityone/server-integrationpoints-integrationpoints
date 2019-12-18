@@ -134,8 +134,8 @@ namespace kCura.IntegrationPoints.Agent
 				// instead of the agent process, and we won't have entirely accurate metrics. Therefore we send the
 				// same message here as well.
 				SendJobStartedMessage(job);
-
-				return _jobExecutor.ProcessJob(job);
+				TaskResult result = _jobExecutor.ProcessJob(job);
+				return result;
 			}
 		}
 
@@ -197,7 +197,6 @@ namespace kCura.IntegrationPoints.Agent
 
 			return false;
 		}
-
 
 		public ITask GetTask(Job job)
 		{

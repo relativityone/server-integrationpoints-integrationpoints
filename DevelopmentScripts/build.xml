@@ -154,6 +154,7 @@
           <Assembly>lib\UnitTests\System.ValueTuple.dll</Assembly>
           <Assembly>lib\UnitTests\itextsharp.dll</Assembly>
           <Assembly>lib\UnitTests\System.Reactive.dll</Assembly>
+		  <Assembly>lib\UnitTests\Relativity.AutomatedWorkflows.Services.Interfaces.dll</Assembly>
         </Assemblies>
         <ResourceFiles />
         <CustomPages>
