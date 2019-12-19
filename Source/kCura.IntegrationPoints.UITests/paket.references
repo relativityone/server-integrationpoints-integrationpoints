@@ -14,6 +14,12 @@ kCura.Relativity.Client
 Relativity.Telemetry.APM
 Polly
 Relativity.DataExchange.Client.SDK
+Relativity.Logging.Interfaces
+Relativity.OAuth2Client.Implicit
+relativity.faspmanager
+Relativity.Transfer.Client
+Relativity.Telemetry.Services.Interface
+Relativity.Telemetry.DataContracts.Shared
 
 group TestPackages
 	DotNetSeleniumExtras.PageObjects
