@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup Condition=" '$(PublishWebProjects)'!='' ">
@@ -74,11 +74,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Version\AssemblyInfo.cs">
-        <Link>Properties\AssemblyInfo.cs</Link>
+      <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="..\Version\AssemblyInfo.Custom.cs">
-        <Link>Properties\AssemblyInfo.Custom.cs</Link>
+      <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
+    <Compile Include="Controllers\API\FieldMappings\FieldClassificationResult.cs" />
+    <Compile Include="Controllers\API\FieldMappings\FieldClassifiers\NestedParentObjectFieldsClassifier.cs" />
+    <Compile Include="Controllers\API\FieldMappings\FieldClassifiers\NotSupportedByIAPIFieldsClassifier.cs" />
+    <Compile Include="Controllers\API\FieldMappings\FieldClassifiers\OpenToAssociationsFieldsClassifier.cs" />
+    <Compile Include="Controllers\API\FieldMappings\FieldClassifiers\RipFieldsClassifier.cs" />
+    <Compile Include="Controllers\API\FieldMappings\FieldClassifiers\SystemFieldsClassifier.cs" />
+    <Compile Include="Controllers\API\FieldMappings\FieldMappingsController.cs" />
+    <Compile Include="Controllers\API\FieldMappings\FieldClassifiers\IFieldsClassifier.cs" />
+    <Compile Include="Controllers\API\FieldMappings\ClassificationLevel.cs" />
+    <Compile Include="Controllers\API\FieldMappings\IFieldsClassifierRunner.cs" />
+    <Compile Include="Controllers\API\FieldMappings\FieldsClassifierRunner.cs" />
     <Compile Include="IntegrationPointsServices\TextSanitizer.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
@@ -692,6 +703,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
       <Project>{599D771D-2AE7-4321-9BAC-BE06F827CE0A}</Project>
       <Name>kCura.IntegrationPoints.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.DocumentTransferProvider\kCura.IntegrationPoints.DocumentTransferProvider.csproj">
+      <Project>{ca3d5b8b-b99c-4ba5-bb8b-44a0ba9aa0f7}</Project>
+      <Name>kCura.IntegrationPoints.DocumentTransferProvider</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
       <Project>{5d5b52b4-8769-431a-9743-b96f15fed5fd}</Project>
@@ -1330,6 +1345,26 @@
         </Reference>
         <Reference Include="System.Data.SqlClient">
           <HintPath>..\..\packages\System.Data.SqlClient\lib\net461\System.Data.SqlClient.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="System.Windows">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Windows.Forms">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="WindowsBase">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Reactive">
+          <HintPath>..\..\packages\System.Reactive\lib\net46\System.Reactive.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

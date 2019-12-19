@@ -231,6 +231,24 @@ namespace kCura.IntegrationPoints.Web
 				defaults: new {controller = "ImportProviderDocument", action = "GetAsciiDelimiters"}
 			);
 
+
+
+
+			config.Routes.MapHttpRoute(
+				name: "GetMappableFieldsFromSourceWorkspace",
+				routeTemplate: "{workspaceID}/api/FieldMappings/GetMappableFieldsFromSourceWorkspace",
+				defaults: new { controller = "FieldMappings", action = "GetMappableFieldsFromSourceWorkspace" }
+			);
+
+			config.Routes.MapHttpRoute(
+				name: "GetMappableFieldsFromDestinationWorkspace",
+				routeTemplate: "{workspaceID}/api/FieldMappings/GetMappableFieldsFromDestinationWorkspace",
+				defaults: new { controller = "FieldMappings", action = "GetMappableFieldsFromDestinationWorkspace" }
+			);
+
+
+
+
 			config.Routes.MapHttpRoute(
 				name: "LoadFileHeaders",
 				routeTemplate: "{workspaceID}/api/ImportProviderDocument/LoadFileHeaders",

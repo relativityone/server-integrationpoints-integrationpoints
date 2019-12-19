@@ -1,5 +1,6 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Web.Controllers.API.FieldMappings;
 using kCura.IntegrationPoints.Web.Helpers;
 
 namespace kCura.IntegrationPoints.Web.Installers
@@ -15,7 +16,11 @@ namespace kCura.IntegrationPoints.Web.Installers
 					.LifestyleTransient(),
 				Component
 					.For<SummaryPageSelector>()
-					.LifestyleSingleton()
+					.LifestyleSingleton(),
+				Component
+					.For<IFieldsClassifierRunner>()
+					.ImplementedBy<FieldsClassifierRunner>()
+					.LifestyleTransient()
 			);
 		}
 	}

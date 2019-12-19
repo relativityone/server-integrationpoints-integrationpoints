@@ -34,13 +34,15 @@ ko.validation.rules['identifierMustMappedWithAnotherIdentifier'] = {
 
 ko.validation.rules['uniqueIdIsMapped'] = {
 	validator: function (value, params) {
+		var selectedUniqueIdName = params[0]();
+		var rdoIdentifierName = params[1]();
 		var containsIdentifier = false;
 		var rdoIdentifierMapped = false;
 		$.each(value, function (index, item) {
 			if (item.isIdentifier === true) {
 				rdoIdentifierMapped = true;
 			}
-			if (item.name == params[1]()) {
+			if (item.name == rdoIdentifierName) {
 				containsIdentifier = true;
 			}
 		});
@@ -53,17 +55,17 @@ ko.validation.rules['uniqueIdIsMapped'] = {
 		if (!rdoIdentifierMapped || !containsIdentifier) {
 			var missingField = "";
 			if (!rdoIdentifierMapped && !containsIdentifier) {
-				if (params[1]() !== params[0]()) {
-					missingField = "The object identifier, " + params[1]() + ", and the unique identifier, " + params[0]();
+				if (rdoIdentifierName !== selectedUniqueIdName) {
+					missingField = "The object identifier, " + rdoIdentifierName + ", and the unique identifier, " + selectedUniqueIdName;
 				} else {
-					missingField = "The object identifier, " + params[1]();
+					missingField = "The object identifier, " + rdoIdentifierName;
 				}
 			}
 			if (!rdoIdentifierMapped && containsIdentifier) {
-				missingField = "The object identifier, " + params[1]();
+				missingField = "The object identifier, " + rdoIdentifierName;
 			}
 			if (rdoIdentifierMapped && !containsIdentifier) {
-				missingField = "The unique identifier, " + params[0]();
+				missingField = "The unique identifier, " + rdoIdentifierName;
 			}
 			IP.message.error.raise('<span id="uniquIdMissing"> ' + missingField + ', must be mapped.<span>');
 			return false;
@@ -129,28 +131,29 @@ ko.validation.insertValidationMessage = function (element) {
 
 
 (function (root, ko) {
-
-	function mapField(entry) {
-		var fieldDisplayName = entry.displayName;
-		if (!entry.isIdentifier && entry.type) {
-			fieldDisplayName = entry.displayName + " [" + entry.type + "]";
-		}
-
-		return {
-			name: entry.displayName,
-			displayName: fieldDisplayName,
-			type: entry.type,
-			identifer: entry.fieldIdentifier,
-			isIdentifier: entry.isIdentifier,
-			isRequired: entry.isRequired
-		};
-	}
+	
+	var objectIdentifierFieldSuffix = " [Object Identifier]";
 
 	var mapFields = function (result) {
-		return $.map(result, function (entry) {
-			return mapField(entry);
+		return $.map(result, function (field) {
+			var fieldDisplayName = field.name;
+			if (!field.isIdentifier && field.type) {
+				fieldDisplayName = field.name + " [" + field.type + "]";
+			}
+			else if (field.isIdentifier) {
+				fieldDisplayName = field.name + objectIdentifierFieldSuffix;
+			}
+			return {
+				name: field.name,
+				displayName: fieldDisplayName,
+				type: field.type,
+				identifer: field.fieldIdentifier,
+				isIdentifier: field.isIdentifier,
+				isRequired: field.isIdentifier
+			};
 		});
 	}
+
 	var viewModel = function (model) {
 		var self = this;
 
@@ -173,7 +176,7 @@ ko.validation.insertValidationMessage = function (element) {
 
 		this.AllowUserToMapNativeFileField = ko.observable(model.SourceProviderConfiguration.importSettingVisibility.allowUserToMapNativeFileField);
 
-		this.selectedUniqueId = ko.observable().extend({ required: true });
+		this.selectedUniqueId = ko.observable().extend({ required: {message: "Unique id required"} });
 		this.rdoIdentifier = ko.observable();
 		this.isAppendOverlay = ko.observable(true);
 		self.SecuredConfiguration = model.SecuredConfiguration;
@@ -302,7 +305,7 @@ ko.validation.insertValidationMessage = function (element) {
 				self.MoveExistingDocuments("false");
 				self.FolderPathSourceField(null);
 				self.autoFieldMapWithCustomOptions(function (identfier) {
-					var name = identfier.name.replace(" [Object Identifier]", "");
+					var name = identfier.name.replace(objectIdentifierFieldSuffix, "");
 					self.IdentifierField(name);
 				});
 			    self.ImportNativeFileCopyModeEnabled("false");
@@ -526,23 +529,16 @@ ko.validation.insertValidationMessage = function (element) {
 			self.showManager(result);
 		});
 
-		var workspaceFieldPromise = root.data.ajax({
-			type: 'POST', url: root.utils.generateWebAPIURL('WorkspaceField'), data: JSON.stringify({
-				settings: model.destination,
-				credentials: self.SecuredConfiguration
-			})
-		}).then(function (result) {
-			return result;
-		});
-
 		var sourceFieldPromise = root.data.ajax({
-			type: 'Post', url: root.utils.generateWebAPIURL('SourceFields'), data: JSON.stringify({
-				'options': model.sourceConfiguration,
-				'type': model.source.selectedType,
-				'credentials': self.SecuredConfiguration
-			})
+			type: 'GET', url: root.utils.generateWebAPIURL('FieldMappings/GetMappableFieldsFromSourceWorkspace')
 		}).fail(function (error) {
 			IP.message.error.raise("No attributes were returned from the source provider.");
+		});
+
+		var destinationFieldPromise = root.data.ajax({
+			type: 'GET', url: root.utils.generateWebURL(JSON.parse(model.destination).CaseArtifactId + '/api/FieldMappings/GetMappableFieldsFromDestinationWorkspace')
+		}).then(function (result) {
+			return result;
 		});
 
 		var destination = JSON.parse(model.destination);
@@ -558,17 +554,21 @@ ko.validation.insertValidationMessage = function (element) {
 			return {
 				exist: fieldFound,
 				type: fieldFound ? fields[0].type : null,
-				actualName: fieldFound ? fields[0].actualName : null,
-				displayName: fieldFound ? fields[0].displayName : null
+				name: fieldFound ? fields[0].name : null
 			};
 		};
 
 		self.updateFieldFromMapping = function(mappedField, fields) {
 			var field = self.findField(fields, mappedField);
 			if (field.exist) {
+				if (field.isIdentifier) {
+					mappedField.displayName = field.name + objectIdentifierFieldSuffix;
+				}
+				else {
+					mappedField.displayName = field.name + " [" + field.type + "]";
+				}
+				mappedField.name = field.name;
 				mappedField.type = field.type;
-				mappedField.actualName = field.actualName;
-				mappedField.displayName = field.displayName;
 				return mappedField;
 			}
 			return null;
@@ -585,7 +585,7 @@ ko.validation.insertValidationMessage = function (element) {
 			}
 		}
 
-		var promises = [workspaceFieldPromise, sourceFieldPromise, mappedSourcePromise];
+		var promises = [destinationFieldPromise, sourceFieldPromise, mappedSourcePromise];
 
 		var mapTypes = {
 			identifier: 'Identifier',
@@ -651,14 +651,14 @@ ko.validation.insertValidationMessage = function (element) {
 				self.overlay(destinationFields);
 				$.each(self.overlay(), function () {
 					if (this.isIdentifier) {
-						self.rdoIdentifier(this.displayName);
-						self.selectedUniqueId(this.displayName);
+						self.rdoIdentifier(this.name);
+						self.selectedUniqueId(this.name + objectIdentifierFieldSuffix);
 					}
 				});
 
 				$.each(self.overlay(), function () {
-					if (model.identifer == this.displayName) {
-						self.selectedUniqueId(this.displayName);
+					if (model.identifer == this.name) {
+						self.selectedUniqueId(this.name + objectIdentifierFieldSuffix);
 					}
 				});
 
@@ -666,7 +666,7 @@ ko.validation.insertValidationMessage = function (element) {
 				if (typeof (model.parentIdentifier) !== "undefined") {
 					$.each(self.parentField(), function () {
 						if (this.name === model.parentIdentifier) {
-							self.selectedIdentifier(this.name);
+							self.selectedIdentifier(this.name + objectIdentifierFieldSuffix);
 							return false;
 						}
 					});
@@ -830,7 +830,6 @@ ko.validation.insertValidationMessage = function (element) {
                     matchOnlyIdentifierFields(currentSourceField);
 				}
 
-                var objectIdentifierFieldSuffix = " [Object Identifier]";
                 var currentSourceFieldNameAsIdentifier = currentSourceField.name + objectIdentifierFieldSuffix;
 
 				//check for a match b/w the source and destination fields by identifier flag or name
@@ -1055,7 +1054,8 @@ ko.validation.insertValidationMessage = function (element) {
 		this.submit = function () {
 			var d = root.data.deferred().defer();
 			this.model.submit();
-			if (this.model.errors().length === 0) {
+			var modelErrors = this.model.errors();
+			if (modelErrors.length === 0) {
 				var mapping = ko.toJS(self.model);
 				var map = [];
 			    var allSourceField = mapping.sourceField.concat(mapping.sourceMapped);
