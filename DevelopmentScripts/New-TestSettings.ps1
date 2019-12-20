@@ -26,15 +26,7 @@ param (
 
     [Parameter()]
     [String]
-    $RestServicesHostAddress,
-
-    [Parameter()]
-    [String]
     $RsapiServicesHostAddress,
-
-    [Parameter()]
-    [String]
-    $WebApiHostAddress,
 
     [Parameter()]
     [String]
@@ -65,28 +57,28 @@ if($TestVMName)
 
     if(-not $SqlServer)
     {
-        $PSBoundParameters['SqlServer'] = "$TestVMName\EDDSINSTANCE001"
+        $PSBoundParameters['SQLServerAddress'] = "$TestVMName\EDDSINSTANCE001"
     }
 
     if(-not $SqlUsername)
     {
-        $PSBoundParameters['SqlUsername'] = "eddsdbo"
+        $PSBoundParameters['SQLUsername'] = "eddsdbo"
     }
 
     if(-not $SqlPassword)
     {
-        $PSBoundParameters['SqlPassword'] = $testvm.Box.Secrets.sqleddsdbopassword
+        $PSBoundParameters['SQLPassword'] = $testvm.Box.Secrets.sqleddsdbopassword
     }
 
     if(-not $RelativityHostAddress)
     {
         if($testvm.Box.Parameters.joinDomain -eq 0)
         {
-            $PSBoundParameters['RelativityHostAddress'] = "$TestVMName.kcura.corp"
+            $PSBoundParameters['RelativityInstanceAddress'] = "$TestVMName.kcura.corp"
         }
         else
         {
-            $PSBoundParameters['RelativityHostAddress'] = "$TestVMName"
+            $PSBoundParameters['RelativityInstanceAddress'] = "$TestVMName"
         }
     }
 
@@ -101,19 +93,9 @@ if($TestVMName)
     }
 }
 
-if(-not $RestServicesHostAddress)
-{
-    $PSBoundParameters['RestServicesHostAddress'] = "$($PSBoundParameters['RelativityHostAddress'])"
-}
-
 if(-not $RsapiServicesHostAddress)
 {
-    $PSBoundParameters['RsapiServicesHostAddress'] = "$($PSBoundParameters['RelativityHostAddress'])"
-}
-
-if (-not $WebApiHostAddress)
-{
-    $PSBoundParameters['WebApiHostAddress'] = "$($PSBoundParameters['RelativityHostAddress'])"
+    $PSBoundParameters['RSAPIServerAddress'] = "$($PSBoundParameters['RelativityInstanceAddress'])"
 }
 
 if(-not $RAPDirectory)
