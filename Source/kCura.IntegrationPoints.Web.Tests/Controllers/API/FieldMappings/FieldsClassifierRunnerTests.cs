@@ -168,7 +168,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 		}
 
 		[Test]
-		public async Task GetFilteredFieldsAsync_ShouldSortByNameThenByType()
+		public async Task GetFilteredFieldsAsync_ShouldSortByName()
 		{
 			// Arrange
 			List<RelativityObject> unsortedFields = new List<RelativityObject>()
