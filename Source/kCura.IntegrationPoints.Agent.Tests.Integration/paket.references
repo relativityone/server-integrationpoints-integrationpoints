@@ -21,3 +21,6 @@ group TestPackages
 	netDumbster
 	NUnit
 	relativity.testing.identification
+
+group Sync
+	Relativity.Sync

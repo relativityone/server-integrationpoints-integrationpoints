@@ -36,5 +36,6 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Email.Tests")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.PerformanceTests")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.RelativitySync.Tests")]
+[assembly: InternalsVisibleTo("kCura.IntegrationPoints.RelativitySync.Tests.Integration")]
 [assembly: InternalsVisibleTo("Relativity.IntegrationPoints.FunctionalTests")]
 [assembly: InternalsVisibleTo("Relativity.IntegrationPoints.Services.Tests")]

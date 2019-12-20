@@ -215,7 +215,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			return serializedDestinationConfig;
 		}
 
-		private void ImportDocumentsToWorkspace(int workspaceId, bool withNatives)
+		private static void ImportDocumentsToWorkspace(int workspaceId, bool withNatives)
 		{
 			var workspaceService = new WorkspaceService(new ImportHelper(withNatives));
 
@@ -223,7 +223,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			workspaceService.ImportData(workspaceId, documentsTestData);
 		}
 
-		private void VerifyHasNativeForAllDocuments(int workspaceID, bool expectedHasNative)
+		private static void VerifyHasNativeForAllDocuments(int workspaceID, bool expectedHasNative)
 		{
 			string[] documentFields = { TestConstants.FieldNames.HAS_NATIVES };
 

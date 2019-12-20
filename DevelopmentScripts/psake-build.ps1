@@ -68,7 +68,7 @@ task restore_nuget {
        if($o.Extension -ne '.sln') {continue}
 
         exec {
-            & $nuget_exe @('restore', $o.FullName)
+            & $paket_exe restore
         }
     }
 } 
@@ -204,6 +204,10 @@ task copy_dlls_to_lib_dir -depends create_lib_dir {
             "Source\kCura.IntegrationPoints.Management\bin\*.config",
             "Source\kCura.IntegrationPoints.Management\bin\*.pdb",
             "Source\kCura.IntegrationPoints.Management\bin\*.xml",
+            "Source\kCura.IntegrationPoints.RelativitySync\bin\*.dll",
+            "Source\kCura.IntegrationPoints.RelativitySync\bin\*.config",
+            "Source\kCura.IntegrationPoints.RelativitySync\bin\*.pdb",
+            "Source\kCura.IntegrationPoints.RelativitySync\bin\*.xml",
             "Source\Relativity.IntegrationPoints.Services\bin\*.dll",
             "Source\Relativity.IntegrationPoints.Services\bin\*.pdb",
             "Source\Relativity.IntegrationPoints.Services\bin\*.xml",

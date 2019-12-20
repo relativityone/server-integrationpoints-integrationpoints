@@ -27,8 +27,8 @@ nuget kCura.FreeImage 3.17.0.1
 nuget kCura.LongPath 1.0.20
 nuget Relativity.DataGrid 14.0.0
 nuget Relativity.DataTransfer.MessageService ~> 10.2.0
-nuget Relativity.Kepler 2.0.7
-nuget Relativity.Kepler.Client 2.0.7
+nuget Relativity.Kepler 2.2.2
+nuget Relativity.Kepler.Client 2.2.2
 nuget Relativity.Logging 2018.11.8
 nuget Relativity.Logging.Interfaces 2018.11.8
 nuget Relativity.OAuth2Client 1.0.27
@@ -87,6 +87,8 @@ group Sync
 	source https://proget.kcura.corp/nuget/NuGet
 	nuget Relativity.Sync ~> 0.1.22-dev002
 	nuget Autofac 4.9.4
+	nuget Banzai ~> 3.0
+	nuget Banzai.Autofac ~> 3.0
 	nuget Castle.Core 3.3.0
 	nuget Relativity.IntegrationPoints.Contracts 1.0.5
 	nuget Relativity.Services.DataContracts 11.1.52.1
