@@ -36,12 +36,12 @@ namespace Relativity.Sync.Executors
 					BaseFieldRequest fieldRequest = fieldRequests.Values.ElementAt(i);
 
 					bool guidExists = await artifactGuidManager.GuidExistsAsync(workspaceArtifactId, fieldGuid).ConfigureAwait(false);
-					_logger.LogVerbose("Field name '{fieldName}' with GUID: {guid} already exists.", fieldRequest.Name, fieldGuid);
+					_logger.LogVerbose("Field GUID {guid} already exists.", fieldGuid);
 					if (!guidExists)
 					{
 						int fieldArtifactId = await ReadOrCreateFieldAsync(workspaceArtifactId, fieldRequest).ConfigureAwait(false);
-						_logger.LogVerbose("Assigning GUID {fieldGuid} to field name '{fieldName}' with Artifact ID: {fieldArtifactId}",
-							fieldGuid, fieldRequest.Name, fieldArtifactId);
+						_logger.LogVerbose("Assigning GUID {fieldGuid} to field with Artifact ID {fieldArtifactId}",
+							fieldGuid, fieldArtifactId);
 						await artifactGuidManager.CreateSingleAsync(workspaceArtifactId, fieldArtifactId, new List<Guid>() { fieldGuid }).ConfigureAwait(false);
 					}
 				}
@@ -53,12 +53,13 @@ namespace Relativity.Sync.Executors
 			QueryResult queryByNameResult = await QueryFieldByNameAsync(workspaceArtifactId, fieldRequest.Name).ConfigureAwait(false);
 			if (queryByNameResult.Objects.Count > 0)
 			{
-				_logger.LogVerbose("Field name '{fieldName}' already exists, but may not have GUID assigned.", fieldRequest.Name);
-				return queryByNameResult.Objects.First().ArtifactID;
+				int fieldArtifactId = queryByNameResult.Objects.First().ArtifactID;
+				_logger.LogVerbose("Field already exists (Artifact ID {fieldArtifactId}), but may not have GUID assigned.", fieldArtifactId);
+				return fieldArtifactId;
 			}
 			else
 			{
-				_logger.LogVerbose("Creating field name '{fieldName}'", fieldRequest.Name);
+				_logger.LogVerbose("Creating field.");
 				using (Services.Interfaces.Field.IFieldManager fieldManager = await _serviceFactory.CreateProxyAsync<Services.Interfaces.Field.IFieldManager>().ConfigureAwait(false))
 				{
 					if (fieldRequest is WholeNumberFieldRequest wholeNumberFieldRequest)
@@ -85,7 +86,7 @@ namespace Relativity.Sync.Executors
 
 		private async Task<QueryResult> QueryFieldByNameAsync(int workspaceArtifactId, string fieldName)
 		{
-			_logger.LogVerbose("Querying for field name '{fieldName}'", fieldName);
+			_logger.LogVerbose("Querying for field.");
 			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				QueryRequest queryRequest = new QueryRequest()
