@@ -473,7 +473,7 @@ namespace Relativity.Sync.Tests.Integration
 			Assert.IsNotNull(result.Exception);
 			Assert.IsInstanceOf<SyncKeplerException>(result.Exception);
 			Assert.AreEqual(
-				$"Failed to create {nameof(DestinationWorkspaceTag)} '{destInstanceName} - {destWorkspaceName} - {destWorkspaceArtifactId}' in workspace {srcWorkspaceArtifactId}",
+				$"Failed to create {nameof(DestinationWorkspaceTag)} in workspace {srcWorkspaceArtifactId}",
 				result.Exception.Message);
 		}
 
