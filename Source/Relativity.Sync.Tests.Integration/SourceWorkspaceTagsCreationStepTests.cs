@@ -434,7 +434,6 @@ namespace Relativity.Sync.Tests.Integration
 			const int destWorkspaceArtifactId = 1015853;
 			const int jobArtifactId = 101000;
 			const string destWorkspaceName = "Cool Workspace";
-			const string destInstanceName = "This Instance";
 			var configuration = new ConfigurationStub
 			{
 				SourceWorkspaceArtifactId = srcWorkspaceArtifactId,
