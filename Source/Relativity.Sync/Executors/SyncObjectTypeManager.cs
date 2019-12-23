@@ -29,14 +29,14 @@ namespace Relativity.Sync.Executors
 				bool guidExists = await artifactGuidManager.GuidExistsAsync(workspaceArtifactId, objectTypeGuid).ConfigureAwait(false);
 				if (guidExists)
 				{
-					_logger.LogVerbose("Object type name '{objectTypeName}' with GUID: {objectTypeGuid} already exists.", objectTypeRequest.Name, objectTypeGuid);
+					_logger.LogVerbose("Object type with GUID {objectTypeGuid} already exists.", objectTypeGuid);
 					return await ReadObjectType(workspaceArtifactId, objectTypeGuid).ConfigureAwait(false);
 				}
 				else
 				{
 					int objectTypeArtifactId = await ReadOrCreateObjectTypeByNameAsync(workspaceArtifactId, objectTypeRequest).ConfigureAwait(false);
-					_logger.LogVerbose("Assigning GUID {objectTypeGuid} to object type name '{objectTypeName}' with Artifact ID: {objectTypeArtifactId}",
-						objectTypeGuid, objectTypeRequest.Name, objectTypeArtifactId);
+					_logger.LogVerbose("Assigning GUID {objectTypeGuid} to object type with Artifact ID {objectTypeArtifactId}",
+						objectTypeGuid, objectTypeArtifactId);
 					await artifactGuidManager.CreateSingleAsync(workspaceArtifactId, objectTypeArtifactId, new List<Guid>() { objectTypeGuid }).ConfigureAwait(false);
 					return objectTypeArtifactId;
 				}
@@ -48,12 +48,13 @@ namespace Relativity.Sync.Executors
 			QueryResult queryByNameResult = await QueryObjectTypeByNameAsync(workspaceArtifactId, objectTypeRequest.Name).ConfigureAwait(false);
 			if (queryByNameResult.Objects.Count > 0)
 			{
-				_logger.LogVerbose("Object type name '{objectTypeName}' already exists, but may not have GUID assigned.", objectTypeRequest.Name);
-				return queryByNameResult.Objects.First().ArtifactID;
+				int objectTypeArtifactId = queryByNameResult.Objects.First().ArtifactID;
+				_logger.LogVerbose("Object type with Artifact ID {objectTypeArtifactId} already exists, but may not have GUID assigned.", objectTypeArtifactId);
+				return objectTypeArtifactId;
 			}
 			else
 			{
-				_logger.LogVerbose("Creating object type name '{objectTypeName}'", objectTypeRequest.Name);
+				_logger.LogVerbose("Creating object type.'");
 				using (IObjectTypeManager objectTypeManager = await _serviceFactory.CreateProxyAsync<IObjectTypeManager>().ConfigureAwait(false))
 				{
 					int objectTypeArtifactId = await objectTypeManager.CreateAsync(workspaceArtifactId, objectTypeRequest).ConfigureAwait(false);
@@ -65,7 +66,7 @@ namespace Relativity.Sync.Executors
 
 		public async Task<QueryResult> QueryObjectTypeByNameAsync(int workspaceArtifactId, string name)
 		{
-			_logger.LogVerbose("Querying for object type name '{name}'", name);
+			_logger.LogVerbose("Querying for object type.");
 			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				QueryRequest queryRequest = new QueryRequest()
