@@ -17,7 +17,7 @@ namespace Relativity.Sync.Executors
 			string name = GetFormatForWorkspaceOrJobDisplay(federatedInstanceName, destinationWorkspaceName, destinationWorkspaceArtifactId);
 			if (name.Length > _NAME_MAX_LENGTH)
 			{
-				_logger.LogWarning("Relativity Source Case Name exceeded max length and has been shortened. Full name {name}.", name);
+				_logger.LogWarning("Relativity Source Case Name exceeded max length and has been shortened.");
 
 				int overflow = name.Length - _NAME_MAX_LENGTH;
 				string trimmedInstanceName = federatedInstanceName.Substring(0, federatedInstanceName.Length - overflow);
@@ -32,7 +32,7 @@ namespace Relativity.Sync.Executors
 			string name = GetFormatForSourceJobTagName(jobHistoryName, jobHistoryArtifactId);
 			if (name.Length > _NAME_MAX_LENGTH)
 			{
-				_logger.LogWarning("Relativity Source Job Name exceeded max length and has been shortened. Full name {name}.", name);
+				_logger.LogWarning("Relativity Source Job Name exceeded max length and has been shortened.");
 
 				int overflow = name.Length - _NAME_MAX_LENGTH;
 				string trimmedJobHistoryName = jobHistoryName.Substring(0, jobHistoryName.Length - overflow);
@@ -46,7 +46,7 @@ namespace Relativity.Sync.Executors
 			string name = GetFormatForSourceCaseTagName(instanceName, sourceWorkspaceName, workspaceArtifactId);
 			if (name.Length > _NAME_MAX_LENGTH)
 			{
-				_logger.LogWarning("Relativity Source Case Name exceeded max length and has been shortened. Full name {name}.", name);
+				_logger.LogWarning("Relativity Source Case Name exceeded max length and has been shortened.");
 
 				int overflow = name.Length - _NAME_MAX_LENGTH;
 				string trimmedInstanceName = instanceName.Substring(0, instanceName.Length - overflow);
