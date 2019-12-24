@@ -19,7 +19,7 @@ namespace Relativity.Sync.Executors.Validation
 									@"*([a-z]|\d|[00A0D7FFF900FDCFFDF0FFEF])))\.)+(([a-z]|[00A0D7FFF900FDCFFDF0FFEF])|(([a-z]|[00A0D7FFF900FDCFFDF0FFEF])" +
 									@"([a-z]|\d|-|\.|_|~|[00A0D7FFF900FDCFFDF0FFEF])*([a-z]|[00A0D7FFF900FDCFFDF0FFEF])))$";
 
-		private const string _INVALID_EMAIL_MESSAGE = "E-mail format is invalid: ";
+		private const string _INVALID_EMAIL_MESSAGE = "E-mail format is invalid";
 		private const string _MISSING_EMAIL_MESSAGE = "Missing email.";
 
 		private readonly ISyncLog _logger;
@@ -50,9 +50,8 @@ namespace Relativity.Sync.Executors.Validation
 					}
 					else if (!IsValidEmail(email))
 					{
-						string shortMessage = _INVALID_EMAIL_MESSAGE + email;
-						_logger.LogError(shortMessage);
-						validationResult.Add(shortMessage);
+						_logger.LogError(_INVALID_EMAIL_MESSAGE);
+						validationResult.Add(_INVALID_EMAIL_MESSAGE + ": " + email);
 					}
 				}
 			}
