@@ -15,18 +15,15 @@
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
-    <TargetFrameworkProfile />
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <PlatformTarget>x64</PlatformTarget>
-    <OutputPath>bin\x64\</OutputPath>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <OutputPath>bin\</OutputPath>
     <DebugType>full</DebugType>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <PlatformTarget>x64</PlatformTarget>
-    <OutputPath>bin\x64\</OutputPath>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <OutputPath>bin\</OutputPath>
     <DebugType>pdbonly</DebugType>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningLevel>4</WarningLevel>
@@ -36,8 +33,11 @@
     <Reference Include="System.Data.DataSetExtensions" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\Version\AssemblyInfo.cs">
-      <Link>AssemblyInfo.cs</Link>
+    <Compile Include="..\Version\AssemblyInfo.cs">
+      <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\Version\AssemblyInfo.Custom.cs">
+      <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
     <Compile Include="FunctionalTestsSetupFixture.cs" />
     <Compile Include="SystemTests\EventHandlers\IntegrationPointProfileMigrationEventHandlerTest.cs" />
@@ -94,7 +94,7 @@
     </ProjectReference>
     <ProjectReference Include="..\Relativity.IntegrationPoints.Services\Relativity.IntegrationPoints.Services.csproj">
       <Project>{fd2c5db6-8fd6-40d6-8e50-3641b7d89d9d}</Project>
-      <Name>kCura.IntegrationPoints.Services</Name>
+      <Name>Relativity.IntegrationPoints.Services</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
       <Project>{b91cc4ed-abf3-4409-8df3-46a3c26eb4aa}</Project>
@@ -638,17 +638,6 @@
       <ItemGroup>
         <Reference Include="System.ValueTuple">
           <HintPath>..\..\packages\System.ValueTuple\lib\net461\System.ValueTuple.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="ZetaLongPaths">
-          <HintPath>..\..\packages\ZetaLongPaths\lib\net40-full\ZetaLongPaths.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

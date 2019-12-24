@@ -4,7 +4,6 @@ kCura
 kCura.Relativity.Client
 kCura.Apps.Common.Utils
 Newtonsoft.Json
-Polly
 Relativity
 Relativity.API
 Relativity.Data
@@ -14,3 +13,10 @@ Relativity.Services.Interfaces.Private
 Relativity.Toggles
 Relativity.Services.Interfaces
 Relativity.DataExchange.Client.SDK
+Polly
+Relativity.Logging.Interfaces
+Relativity.OAuth2Client.Implicit
+relativity.faspmanager
+Relativity.Transfer.Client
+Relativity.Telemetry.Services.Interface
+Relativity.DataTransfer.MessageService

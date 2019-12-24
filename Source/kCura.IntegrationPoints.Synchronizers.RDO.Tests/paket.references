@@ -4,9 +4,15 @@ kCura.Relativity.Client
 Relativity.API
 Relativity.Data
 Relativity.DataExchange.Client.SDK
+Relativity.DataTransfer.MessageService
 Relativity.IntegrationPoints.Contracts
 Relativity.Kepler.Client
 Relativity.Telemetry.APM
+Polly
+Relativity.Logging.Interfaces
+Relativity.OAuth2Client.Implicit
+relativity.faspmanager
+Relativity.Transfer.Client
 
 group TestPackages
 	FluentAssertions

@@ -83,7 +83,7 @@ namespace kCura.IntegrationPoints.Core.Services
 					{
 						x.Error,
 						GetErrorStatusChoice(),
-						GetErrorTypeChoice(),
+						GetErrorTypeChoice(x.ErrorType),
 						Guid.NewGuid().ToString(),
 						x.SourceUniqueID,
 						x.StackTrace,
@@ -139,7 +139,7 @@ namespace kCura.IntegrationPoints.Core.Services
 					LogCommittingErrorsFailed(ex, allErrors);
 
 					_logger.LogError("Could not commit Job History Errors. These are uncommitted errors: {allErrors}", allErrors);
-					//throw new Exception("Could not commit Job History Errors. These are uncommitted errors:" + Environment.NewLine + allErrors);
+					throw new Exception("Could not commit Job History Errors. These are uncommitted errors:" + Environment.NewLine + allErrors);
 				}
 				finally
 				{
@@ -183,11 +183,11 @@ namespace kCura.IntegrationPoints.Core.Services
 			return errorStatusChoice;
 		}
 
-		private ChoiceRef GetErrorTypeChoice()
+		private ChoiceRef GetErrorTypeChoice(Choice errorType)
 		{
 			var errorTypeChoice = new ChoiceRef
 			{
-				Guid = _errorTypeItem
+				Guid = errorType.Guids.Single()
 			};
 			return errorTypeChoice;
 		}

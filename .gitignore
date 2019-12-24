@@ -64,14 +64,11 @@ packages/*
 *.nupkg
 msbuild.targets
 dlls.txt
-version.txt
 DevelopmentScripts/NUnit*
 BuildLogs
 PDBs
 Applications/*.nuspec
 source/.vs/
-source/example/JsonLoader/.vs/
-source/example/MyFirstProvider/.vs/
 lib/
 documentation/examples
 documentation/sdk
@@ -94,3 +91,6 @@ DevelopmentScripts/*Results.html
 /DevelopmentScripts/chromeLog.txt
 Artifacts
 .ionide
+.vs/
+buildtools/
+!buildtools/packages.config

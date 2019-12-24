@@ -1,6 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\..\packages\testpackages\NUnit\build\NUnit.props" Condition="Exists('..\..\packages\testpackages\NUnit\build\NUnit.props')" Label="Paket" />
+  <Import Project="..\..\packages\sync\Microsoft.NetFramework.Analyzers\build\Microsoft.NetFramework.Analyzers.props" Condition="Exists('..\..\packages\sync\Microsoft.NetFramework.Analyzers\build\Microsoft.NetFramework.Analyzers.props')" Label="Paket" />
+  <Import Project="..\..\packages\sync\Microsoft.NetCore.Analyzers\build\Microsoft.NetCore.Analyzers.props" Condition="Exists('..\..\packages\sync\Microsoft.NetCore.Analyzers\build\Microsoft.NetCore.Analyzers.props')" Label="Paket" />
+  <Import Project="..\..\packages\sync\Microsoft.CodeQuality.Analyzers\build\Microsoft.CodeQuality.Analyzers.props" Condition="Exists('..\..\packages\sync\Microsoft.CodeQuality.Analyzers\build\Microsoft.CodeQuality.Analyzers.props')" Label="Paket" />
+  <Import Project="..\..\packages\sync\Microsoft.CodeAnalysis.VersionCheckAnalyzer\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.props" Condition="Exists('..\..\packages\sync\Microsoft.CodeAnalysis.VersionCheckAnalyzer\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.props')" Label="Paket" />
+  <Import Project="..\..\packages\sync\Microsoft.CodeAnalysis.FxCopAnalyzers\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props" Condition="Exists('..\..\packages\sync\Microsoft.CodeAnalysis.FxCopAnalyzers\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props')" Label="Paket" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -19,16 +24,14 @@
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <PlatformTarget>x64</PlatformTarget>
-    <OutputPath>bin\x64\</OutputPath>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <OutputPath>bin\</OutputPath>
     <DebugType>full</DebugType>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <PlatformTarget>x64</PlatformTarget>
-    <OutputPath>bin\x64\</OutputPath>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <OutputPath>bin\</OutputPath>
     <DebugType>pdbonly</DebugType>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningLevel>4</WarningLevel>
@@ -46,9 +49,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\Version\AssemblyInfo.cs">
-      <Link>AssemblyInfo.cs</Link>
+    <Compile Include="..\Version\AssemblyInfo.cs">
+      <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="..\Version\AssemblyInfo.Custom.cs">
+      <Link>Properties\AssemblyInfo.Custom.cs</Link>
+    </Compile>
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Monitoring\ExternalServiceInstrumentationProviderWithJobContextTests.cs" />
     <Compile Include="SendEmailWorkerTests.cs" />
     <Compile Include="TestHelpers\FakeSmtpServer.cs" />
@@ -106,9 +113,6 @@
       <Project>{c831c856-e74f-48b4-aebc-1cf15576e082}</Project>
       <Name>kCura.ScheduleQueue.Core</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="paket.references">
@@ -874,6 +878,135 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="Autofac">
+          <HintPath>..\..\packages\sync\Autofac\lib\net45\Autofac.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Import Project="..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets')" Label="Paket" />
+  <ItemGroup>
+    <Analyzer Include="..\..\packages\sync\Microsoft.CodeAnalysis.VersionCheckAnalyzer\analyzers\dotnet\Microsoft.CodeAnalysis.VersionCheckAnalyzer.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\..\packages\sync\Microsoft.CodeQuality.Analyzers\analyzers\dotnet\cs\Humanizer.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\sync\Microsoft.CodeQuality.Analyzers\analyzers\dotnet\cs\Microsoft.CodeQuality.Analyzers.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\sync\Microsoft.CodeQuality.Analyzers\analyzers\dotnet\cs\Microsoft.CodeQuality.CSharp.Analyzers.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\..\packages\sync\Microsoft.NetCore.Analyzers\analyzers\dotnet\cs\Microsoft.NetCore.Analyzers.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\sync\Microsoft.NetCore.Analyzers\analyzers\dotnet\cs\Microsoft.NetCore.CSharp.Analyzers.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\..\packages\sync\Microsoft.NetFramework.Analyzers\analyzers\dotnet\cs\Microsoft.NetFramework.Analyzers.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\sync\Microsoft.NetFramework.Analyzers\analyzers\dotnet\cs\Microsoft.NetFramework.CSharp.Analyzers.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+  </ItemGroup>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.AutomatedWorkflows.Services.Interfaces">
+          <HintPath>..\..\packages\sync\Relativity.AutomatedWorkflows.Services.Interfaces\lib\net462\Relativity.AutomatedWorkflows.Services.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="FreeImageNET">
+          <HintPath>..\..\packages\sync\Relativity.DataExchange.Client.SDK\lib\net462\FreeImageNET.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.DataExchange.Client.SDK">
+          <HintPath>..\..\packages\sync\Relativity.DataExchange.Client.SDK\lib\net462\Relativity.DataExchange.Client.SDK.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="itextsharp">
+          <HintPath>..\..\packages\sync\Relativity.DataExchange.Client.SDK\lib\net462\itextsharp.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.OAuth2Client.Implicit">
+          <HintPath>..\..\packages\sync\Relativity.OAuth2Client.Implicit\lib\net462\Relativity.OAuth2Client.Implicit.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Sync">
+          <HintPath>..\..\packages\sync\Relativity.Sync\lib\net462\Relativity.Sync.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="System.Windows">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Windows.Forms">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="WindowsBase">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Reactive">
+          <HintPath>..\..\packages\sync\System.Reactive\lib\net46\System.Reactive.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="System.Reactive.Linq">
+          <HintPath>..\..\packages\sync\System.Reactive.Linq\lib\net46\System.Reactive.Linq.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="System.Xml.Linq">
           <Paket>True</Paket>
         </Reference>
@@ -945,5 +1078,5 @@
       </ItemGroup>
     </When>
   </Choose>
-  <Import Project="..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets')" Label="Paket" />
+  <Import Project="..\..\packages\sync\Relativity.DataExchange.Client.SDK\build\Relativity.DataExchange.Client.SDK.targets" Condition="Exists('..\..\packages\sync\Relativity.DataExchange.Client.SDK\build\Relativity.DataExchange.Client.SDK.targets')" Label="Paket" />
 </Project>

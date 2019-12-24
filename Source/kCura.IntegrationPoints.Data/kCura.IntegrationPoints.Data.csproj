@@ -11,21 +11,18 @@
     <AssemblyName>kCura.IntegrationPoints.Data</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <PlatformTarget>x64</PlatformTarget>
-    <OutputPath>bin\x64\</OutputPath>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <OutputPath>bin\</OutputPath>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <DebugType>full</DebugType>
     <WarningLevel>4</WarningLevel>
     <LangVersion>7</LangVersion>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <PlatformTarget>x64</PlatformTarget>
-    <OutputPath>bin\x64\</OutputPath>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <OutputPath>bin\</OutputPath>
     <DebugType>pdbonly</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <Optimize>true</Optimize>
@@ -52,6 +49,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Version\AssemblyInfo.cs">
+      <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\Version\AssemblyInfo.Custom.cs">
+      <Link>Properties\AssemblyInfo.Custom.cs</Link>
+    </Compile>
     <Compile Include="BaseRdo.cs" />
     <Compile Include="Attributes\DynamicFieldAttribute.cs" />
     <Compile Include="Attributes\DynamicObjectAttribute.cs" />
@@ -277,9 +280,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>GeneratedDTOs.tt</DependentUpon>
-    </Compile>
-    <Compile Include="..\..\Version\AssemblyInfo.cs">
-      <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="RSAPIServiceAdminAccess.cs" />
     <Compile Include="RSAPIService.cs" />
@@ -872,17 +872,6 @@
       <ItemGroup>
         <Reference Include="System.Security.Principal.Windows">
           <HintPath>..\..\packages\System.Security.Principal.Windows\lib\net461\System.Security.Principal.Windows.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="ZetaLongPaths">
-          <HintPath>..\..\packages\ZetaLongPaths\lib\net40-full\ZetaLongPaths.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

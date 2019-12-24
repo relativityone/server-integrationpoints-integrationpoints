@@ -30,22 +30,18 @@ namespace kCura.IntegrationPoints.Core.Authentication
 
 			try
 			{
-				OAuth2Client client = await _retryHandler.ExecuteWithRetriesAsync(async () =>
+				OAuth2Client client;
+				using (var oAuth2ClientManager = _helper.GetServicesManager().CreateProxy<IOAuth2ClientManager>(ExecutionIdentity.System))
 				{
-					using (var oAuth2ClientManager = _helper.GetServicesManager().CreateProxy<IOAuth2ClientManager>(ExecutionIdentity.System))
+					client = await ReadOAuth2ClientByNameAsyncWithRetries(oAuth2ClientManager, clientName)
+						.ConfigureAwait(false);
+
+					if (client == null)
 					{
-						IEnumerable<OAuth2Client> clients = await oAuth2ClientManager.ReadAllAsync().ConfigureAwait(false);
-						OAuth2Client newOAuth2Client = clients.SingleOrDefault(x => x.Name.Equals(clientName));
-
-						if (newOAuth2Client == null)
-						{
-							newOAuth2Client = await oAuth2ClientManager.CreateAsync(clientName, OAuth2Flow.ClientCredentials,
-								new List<Uri>(), userId).ConfigureAwait(false);
-						}
-
-						return newOAuth2Client;
+						client = await CreateNewOAuth2ClientAsyncWithRetries(oAuth2ClientManager, clientName, userId)
+							.ConfigureAwait(false);
 					}
-				}).ConfigureAwait(false);
+				}
 
 				LogGetOAuth2ClientSuccess(userId);
 				return client;
@@ -54,6 +50,44 @@ namespace kCura.IntegrationPoints.Core.Authentication
 			{
 				LogGetOAuth2ClientError(ex);
 				throw new InvalidOperationException($"Failed to retrieve OAuth2Client for user with id: {userId}", ex);
+			}
+		}
+
+		private async Task<OAuth2Client> ReadOAuth2ClientByNameAsyncWithRetries(IOAuth2ClientManager oAuth2ClientManager, string clientName)
+		{
+			try
+			{
+				return await _retryHandler.ExecuteWithRetriesAsync(
+					async () =>
+					{
+						IEnumerable<OAuth2Client> clients = await oAuth2ClientManager.ReadAllAsync()
+							.ConfigureAwait(false);
+						return clients.SingleOrDefault(x => x.Name.Equals(clientName));
+					}).ConfigureAwait(false);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError($"{nameof(IOAuth2ClientManager)} failed on {nameof(IOAuth2ClientManager.ReadAllAsync)} with {ex.Message}");
+				throw;
+			}
+		}
+
+		private async Task<OAuth2Client> CreateNewOAuth2ClientAsyncWithRetries(IOAuth2ClientManager oAuth2ClientManager, string clientName, int userId)
+		{
+			try
+			{
+				return await _retryHandler.ExecuteWithRetriesAsync(
+					() => oAuth2ClientManager.CreateAsync(
+							clientName,
+							OAuth2Flow.ClientCredentials,
+							new List<Uri>(),
+							userId)
+				).ConfigureAwait(false);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError($"{nameof(IOAuth2ClientManager)} failed on {nameof(IOAuth2ClientManager.CreateAsync)} with {ex.Message}");
+				throw;
 			}
 		}
 

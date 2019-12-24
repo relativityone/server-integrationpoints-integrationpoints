@@ -92,7 +92,14 @@ namespace kCura.IntegrationPoint.Tests.Core
 				return overridenValue;
 			}
 
-			return CustomConfig?.AppSettings.Settings[name]?.Value ?? ConfigurationManager.AppSettings[name];
+			return CustomConfig?.AppSettings.Settings[name]?.Value ?? GetRunSettingsParameter(name) ?? ConfigurationManager.AppSettings[name];
+		}
+
+		public static string GetRunSettingsParameter(string name)
+		{
+			return TestContext.Parameters.Exists(name)
+				? TestContext.Parameters[name]
+				: null;
 		}
 
 		public static int AppSettingInt(string name)
@@ -260,8 +267,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		private static string ServerBindingType => AppSettingString("ServerBindingType");
 
-		private static string RsapiServerAddress =>
-			GetAppSettingStringOrDefault("RSAPIServerAddress", () => RelativityInstanceHostname);
+		private static string RsapiServerAddress => GetAppSettingStringOrDefault("RSAPIServerAddress", () => RelativityInstanceHostname);
 
 		#endregion Relativity Settings
 
@@ -355,7 +361,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 			return true;
 		}
-
+		
 		public static bool UseLegacyTemplateName()
 		{
 			string environmentVariableName = AppSettingString("UseLegacyTemplateName");

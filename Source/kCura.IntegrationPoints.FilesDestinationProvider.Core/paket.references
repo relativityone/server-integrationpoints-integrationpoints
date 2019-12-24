@@ -4,9 +4,15 @@ kCura
 kCura.Apps.Common.Utils
 kCura.Relativity.Client
 Relativity.DataExchange.Client.SDK
+Relativity.DataTransfer.MessageService
 Relativity.API
 Relativity.IntegrationPoints.Contracts
 Relativity.Services.Interfaces
 Relativity.Toggles
 Relativity.Telemetry.MetricsCollection
 ZetaLongPaths
+Polly
+Relativity.Logging.Interfaces
+Relativity.OAuth2Client.Implicit
+relativity.faspmanager
+Relativity.Transfer.Client

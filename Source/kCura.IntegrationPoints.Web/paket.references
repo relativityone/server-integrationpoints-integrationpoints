@@ -17,3 +17,8 @@ Relativity.Telemetry.Services.Interface
 Relativity.Toggles
 Relativity.DataTransfer.MessageService
 SystemWrapper.Interfaces
+Polly
+Relativity.Logging.Interfaces
+Relativity.OAuth2Client.Implicit
+relativity.faspmanager
+Relativity.Transfer.Client

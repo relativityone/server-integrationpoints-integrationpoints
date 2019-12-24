@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
+using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
@@ -19,15 +23,27 @@ using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.WinEDDS.Api;
 using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
+using Relativity.AutomatedWorkflows.Services.Interfaces;
+using Relativity.AutomatedWorkflows.Services.Interfaces.DataContracts.Triggers;
+using kCura.Relativity.Client.DTOs;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
 	public class ImportServiceManager : ServiceManagerBase
 	{
+		private readonly IHelper _helper;
 		private readonly IDataReaderFactory _dataReaderFactory;
 		private readonly IImportFileLocationService _importFileLocationService;
+		private readonly IJobStatusUpdater _jobStatusUpdater;
+		public const string RAW_STATE_COMPLETE_WITH_ERRORS = "complete-with-errors";
+		public const string RAW_STATE_COMPLETE = "complete";
+		public const string RAW_RIP_TRIGGER_NAME = "relativity@on-new-documents-added";
+		public const string RAW_TRIGGER_INPUT_ID = "type";
+		public const string RAW_TRIGGER_INPUT_VALUE = "rip";
+
 
 		public ImportServiceManager(IHelper helper,
 			ICaseServiceContext caseServiceContext,
@@ -43,7 +59,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IDataReaderFactory dataReaderFactory,
 			IImportFileLocationService importFileLocationService,
 			IAgentValidator agentValidator,
-			IIntegrationPointRepository integrationPointRepository)
+			IIntegrationPointRepository integrationPointRepository,
+			IJobStatusUpdater jobStatusUpdater)
 			: base(helper,
 				jobService,
 				serializer,
@@ -58,12 +75,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				agentValidator,
 				integrationPointRepository)
 		{
-			Logger = helper.GetLoggerFactory().GetLogger().ForContext<ImportServiceManager>();
+			_helper = helper;
 			_dataReaderFactory = dataReaderFactory;
 			_importFileLocationService = importFileLocationService;
+			_jobStatusUpdater = jobStatusUpdater;
+			Logger = _helper.GetLoggerFactory().GetLogger().ForContext<ImportServiceManager>();
 		}
 
-		public override void Execute(Job job)
+		public override async void Execute(Job job)
 		{
 			try
 			{
@@ -112,7 +131,54 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				JobHistoryErrorService.CommitErrors();
 				FinalizeService(job);
 				LogExecuteFinalize(job);
+				await SendAutomationWorkflowTrigger(job).ConfigureAwait(false);
 			}
+		}
+
+		private async Task SendAutomationWorkflowTrigger(Job job)
+		{
+			TaskParameters taskParameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
+			JobHistory jobHistory = JobHistoryService.GetRdo(taskParameters.BatchInstance);
+			Choice status = _jobStatusUpdater.GenerateStatus(jobHistory);
+
+			if (status.EqualsToChoice(JobStatusChoices.JobHistoryCompleted))
+			{
+				await SendTriggerAsync(job.WorkspaceID, RAW_RIP_TRIGGER_NAME, RAW_STATE_COMPLETE).ConfigureAwait(false);
+			}
+			else if (status.EqualsToChoice(JobStatusChoices.JobHistoryCompletedWithErrors))
+			{
+				await SendTriggerAsync(job.WorkspaceID, RAW_RIP_TRIGGER_NAME, RAW_STATE_COMPLETE_WITH_ERRORS).ConfigureAwait(false);
+			}
+		}
+
+		private async Task SendTriggerAsync(int workSpaceId, string triggerName, string state)
+		{
+			try
+			{
+				Logger.LogInformation("For workspace artifact ID : {0} {1} trigger called with status {2}.", workSpaceId, triggerName, state);
+				SendTriggerBody body = new SendTriggerBody()
+				{
+					Inputs = new List<TriggerInput>
+					{
+						new TriggerInput()
+						{
+							ID = RAW_TRIGGER_INPUT_ID,
+							Value = RAW_TRIGGER_INPUT_VALUE
+						}
+					},
+					State = state
+				};
+				using (IAutomatedWorkflowsService triggerProcessor = _helper.GetServicesManager().CreateProxy<IAutomatedWorkflowsService>(ExecutionIdentity.System))
+				{
+					await triggerProcessor.SendTriggerAsync(workSpaceId, triggerName, body).ConfigureAwait(false);
+				}
+			}
+			catch (Exception ex)
+			{
+				string message = "Error occured while executing trigger : {0} for workspace artifact ID : {1}";
+				Logger.LogError(ex, message, triggerName, workSpaceId);
+			}
+			Logger.LogInformation("For workspace : {0} trigger {1} finished sending.", workSpaceId, triggerName);
 		}
 
 		private ImportSettings GetImportApiSettingsObjectForUser(Job job)

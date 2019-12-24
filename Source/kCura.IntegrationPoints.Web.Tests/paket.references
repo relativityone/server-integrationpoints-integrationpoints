@@ -17,6 +17,12 @@ Relativity.Telemetry.DataContracts.Shared
 Relativity.Telemetry.Services.Interface
 Relativity.Toggles
 SystemWrapper.Interfaces
+Polly
+Relativity.Logging.Interfaces
+Relativity.OAuth2Client.Implicit
+relativity.faspmanager
+Relativity.Transfer.Client
+Relativity.DataTransfer.MessageService
 
 group TestPackages
 	FluentAssertions

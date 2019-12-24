@@ -11,20 +11,17 @@
     <AssemblyName>kCura.IntegrationPoints.EventHandlers</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <PlatformTarget>x64</PlatformTarget>
-    <OutputPath>bin\x64\</OutputPath>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <OutputPath>bin\</OutputPath>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <DebugType>full</DebugType>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <PlatformTarget>x64</PlatformTarget>
-    <OutputPath>bin\x64\</OutputPath>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <OutputPath>bin\</OutputPath>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <DebugSymbols>true</DebugSymbols>
@@ -52,8 +49,11 @@
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\Version\AssemblyInfo.cs">
-      <Link>AssemblyInfo.cs</Link>
+    <Compile Include="..\Version\AssemblyInfo.cs">
+      <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\Version\AssemblyInfo.Custom.cs">
+      <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
     <Compile Include="Commands\Container\EventHandlerInstaller.cs" />
     <Compile Include="Commands\DeleteIntegrationPointCommand.cs" />
@@ -196,7 +196,7 @@
     <Compile Include="IntegrationPoints\IntegrationPointMigrationEventHandlerBase.cs" />
     <Compile Include="PageInteractionHelper.cs" />
     <Compile Include="PostInstallEventHandlerBase.cs" />
-    <Compile Include="Properties\LocalAssemblyInfo.cs" />
+    <Compile Include="Properties\AssemblyInfo.Local.cs" />
     <Compile Include="TagBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -233,7 +233,7 @@
       <Name>kCura.IntegrationPoints.LDAPProvider</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.RelativitySync\kCura.IntegrationPoints.RelativitySync.csproj">
-      <Project>{C2AADDB6-21AC-4372-924C-5B82ED014313}</Project>
+      <Project>{b606c8b4-d106-4a1f-a794-9ded7b02de3e}</Project>
       <Name>kCura.IntegrationPoints.RelativitySync</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">

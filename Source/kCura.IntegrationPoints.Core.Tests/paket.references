@@ -15,6 +15,11 @@ Relativity.Services.Interfaces.Private
 Relativity.Telemetry.APM
 Relativity.DataGrid
 SystemWrapper.Interfaces
+Polly
+Relativity.Logging.Interfaces
+Relativity.OAuth2Client.Implicit
+relativity.faspmanager
+Relativity.Transfer.Client
 
 group TestPackages
 	FluentAssertions

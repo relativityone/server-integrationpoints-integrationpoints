@@ -9,6 +9,7 @@ Relativity
 Relativity.API
 Relativity.Data
 Relativity.DataExchange.Client.SDK
+Relativity.DataTransfer.MessageService
 kCura.OutsideIn.FI.Win32
 Relativity.IntegrationPoints.Contracts
 Relativity.IntegrationPoints.Services.Interfaces.Private
@@ -18,6 +19,11 @@ Relativity.Services.Interfaces.Private
 Relativity.Telemetry.APM
 Relativity.Toggles
 Relativity.OAuth2Client
+Polly
+Relativity.Logging.Interfaces
+Relativity.OAuth2Client.Implicit
+relativity.faspmanager
+Relativity.Transfer.Client
 
 group TestPackages
 	FluentAssertions
