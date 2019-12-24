@@ -37,7 +37,7 @@ namespace Relativity.Sync.Storage
 			}
 			catch (Exception e)
 			{
-				_logger.LogError(e, "Unable to deserialize field mapping {fieldMap}.", fieldMap);
+				_logger.LogError(e, "Unable to deserialize field mapping.");
 				throw;
 			}
 		}

@@ -55,7 +55,7 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, "Long text stream creation failed for field {fieldName} (object: {relativityObjectArtifactId}) in workspace {workspaceArtifactId}.", _fieldName,
+				_logger.LogError(ex, "Long text stream creation failed for field (object: {relativityObjectArtifactId}) in workspace {workspaceArtifactId}.",
 					_relativityObjectArtifactId, _workspaceArtifactId);
 				throw;
 			}
