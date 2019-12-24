@@ -39,6 +39,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="kCura.Apps.Common.Utils, Version=2.1.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Users\patryk.spytkowski\.nuget\packages\kcura.apps.common.utils\2.1.1\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -54,6 +58,7 @@
     <Compile Include="Agent\IJobManager.cs" />
     <Compile Include="Agent\ITaskJobSubmitter.cs" />
     <Compile Include="Configuration\DestinationConfiguration.cs" />
+    <Compile Include="Configuration\SourceConfigurationForLogging.cs" />
     <Compile Include="Configuration\SourceConfiguration.cs" />
     <Compile Include="Entity\EntityConstants.cs" />
     <Compile Include="BatchReporter\IBatchReporter.cs" />

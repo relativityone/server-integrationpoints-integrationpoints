@@ -53,11 +53,11 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Extensions\ImportSettingsExtensions.cs" />
     <Compile Include="ImportAPI\IImportApiFacade.cs" />
     <Compile Include="ImportAPI\ImportApiFacade.cs" />
     <Compile Include="ImportAPI\JobProgressInfo.cs" />
     <Compile Include="ImportAPI\RelativityReaderDecorator.cs" />
+    <Compile Include="ImportSettingsForLogging.cs" />
     <Compile Include="JobImport\IImportJobFactory.cs" />
     <Compile Include="JobImport\IImportSettingsBaseBuilder.cs" />
     <Compile Include="JobImport\IJobImport.cs" />

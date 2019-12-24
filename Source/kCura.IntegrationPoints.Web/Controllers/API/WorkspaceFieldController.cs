@@ -8,7 +8,6 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.IntegrationPoints.Synchronizers.RDO.Extensions;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Models;
 using Relativity.API;
@@ -35,10 +34,18 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		{
 			ImportSettings importSettings = _serializer.Deserialize<ImportSettings>(settings.Settings);
 			importSettings.FederatedInstanceCredentials = settings.Credentials;
-			_apiLog.LogDebug($"Import Settings has been extracted successfully for workspace field retrieval process: {importSettings.SerializeWithoutSensitiveData(_serializer)}");
+
+			LogImportSettings(importSettings);
+
 			IDataSynchronizer synchronizer = _appDomainRdoSynchronizerFactory.CreateSynchronizer(Guid.Empty, settings.Settings);
 			List<FieldEntry> fields = synchronizer.GetFields(new DataSourceProviderConfiguration(_serializer.Serialize(importSettings), settings.Credentials)).ToList();
 			return Request.CreateResponse(HttpStatusCode.OK, fields, Configuration.Formatters.JsonFormatter);
+		}
+
+		private void LogImportSettings(ImportSettings importSettings)
+		{
+			var settingsForLogging = new ImportSettingsForLogging(importSettings);
+			_apiLog.LogDebug($"Import Settings has been extracted successfully for workspace field retrieval process: {settingsForLogging}");
 		}
 	}
 }
