@@ -22,5 +22,10 @@ namespace Relativity.Sync.Storage
 		/// Gets or sets the FieldMapType, which indicates the type of mapping.
 		/// </summary>
 		public FieldMapType FieldMapType { get; set; }
+
+		public override string ToString()
+		{
+			return FieldMapType + ": " + (SourceField?.FieldIdentifier ?? -1) + "<-->" + (DestinationField?.FieldIdentifier ?? -1);
+		}
 	}
 }
