@@ -41,7 +41,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			_objectManager = new Mock<IObjectManager>();
 			_validationConfiguration = new Mock<IValidationConfiguration>();
 
-			_validationConfiguration.SetupGet(x => x.FolderPathSourceFieldName).Returns(_TEST_FOLDER_NAME);
+			_validationConfiguration.Setup(x => x.GetFolderPathSourceFieldName()).Returns(_TEST_FOLDER_NAME);
 			_validationConfiguration.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(_TEST_WORKSPACE_ARTIFACT_ID);
 			_validationConfiguration.SetupGet(x => x.DestinationFolderStructureBehavior).Returns(DestinationFolderStructureBehavior.ReadFromField);
 

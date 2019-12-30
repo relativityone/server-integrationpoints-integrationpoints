@@ -83,13 +83,13 @@ namespace Relativity.Sync.Tests.Integration
 				}
 			};
 
-			_config = new ConfigurationStub()
+			_config = new ConfigurationStub
 			{
 				DestinationWorkspaceArtifactId = _DESTINATION_WORKSPACE_ARTIFACT_ID,
 				SourceWorkspaceArtifactId = _SOURCE_WORKSPACE_ARTIFACT_ID,
-				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure,
-				FieldMappings = fieldMaps
+				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure
 			};
+			_config.SetFieldMappings(fieldMaps);
 			containerBuilder.RegisterInstance(_config).AsImplementedInterfaces();
 
 			_objectManagerMock = new Mock<IObjectManager>();

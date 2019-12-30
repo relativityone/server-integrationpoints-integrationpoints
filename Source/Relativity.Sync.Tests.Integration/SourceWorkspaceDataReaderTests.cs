@@ -142,7 +142,7 @@ namespace Relativity.Sync.Tests.Integration
 			fields.Add(FieldConfiguration.Regular(sourceColumnName, destinationColumnName, dataType, initialValue));
 
 			DocumentImportJob importData = CreateDefaultDocumentImportJob(blockSize, CreateDocumentForGenericSchema, fields);
-			_configuration.FieldMappings = importData.FieldMappings;
+			_configuration.SetFieldMappings(importData.FieldMappings);
 			await _documentTransferServicesMocker.SetupServicesWithTestData(importData, blockSize).ConfigureAwait(false);
 
 			// Act
@@ -180,7 +180,7 @@ namespace Relativity.Sync.Tests.Integration
 			fields.Add(FieldConfiguration.Regular(columnName, columnName, RelativityDataType.LongText, bigTextShibboleth));
 
 			DocumentImportJob importData = CreateDefaultDocumentImportJob(batchSize, CreateDocumentForGenericSchema, fields);
-			_configuration.FieldMappings = importData.FieldMappings;
+			_configuration.SetFieldMappings(importData.FieldMappings);
 
 			await _documentTransferServicesMocker.SetupServicesWithTestData(importData, batchSize).ConfigureAwait(false);
 
@@ -233,7 +233,7 @@ namespace Relativity.Sync.Tests.Integration
 			fields.Add(FieldConfiguration.Regular(columnName, columnName, RelativityDataType.MultipleChoice, inputValue));
 
 			DocumentImportJob importData = CreateDefaultDocumentImportJob(batchSize, CreateDocumentForGenericSchema, fields);
-			_configuration.FieldMappings = importData.FieldMappings;
+			_configuration.SetFieldMappings(importData.FieldMappings);
 
 			await _documentTransferServicesMocker.SetupServicesWithTestData(importData, batchSize).ConfigureAwait(false);
 
@@ -276,7 +276,7 @@ namespace Relativity.Sync.Tests.Integration
 			SetUp(batchSize);
 
 			DocumentImportJob importData = CreateDefaultDocumentImportJob(batchSize, CreateDocumentForGenericSchema, DefaultIdentifierWithSpecialFields);
-			_configuration.FieldMappings = importData.FieldMappings;
+			_configuration.SetFieldMappings(importData.FieldMappings);
 			await _documentTransferServicesMocker.SetupServicesWithTestData(importData, blockSize).ConfigureAwait(false);
 
 			// Act/Assert

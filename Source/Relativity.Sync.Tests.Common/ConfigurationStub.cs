@@ -14,6 +14,8 @@ namespace Relativity.Sync.Tests.Common
 		ISourceWorkspaceTagsCreationConfiguration, ISynchronizationConfiguration, IValidationConfiguration, IUserContextConfiguration, IFieldConfiguration,
 		IJobEndMetricsConfiguration, IAutomatedWorkflowTriggerConfiguration
 	{
+		private IList<FieldMap> _fieldMappings = new List<FieldMap>();
+
 		private const int _ADMIN_ID = 9;
 		private const int _ASCII_GROUP_SEPARATOR = 29;
 		private const int _ASCII_RECORD_SEPARATOR = 30;
@@ -23,9 +25,12 @@ namespace Relativity.Sync.Tests.Common
 		public int DataDestinationArtifactId { get; set; }
 		public int DataSourceArtifactId { get; set; }
 
-		public IList<FieldMap> FieldMappings { get; set; } = new List<FieldMap>();
+		public IList<FieldMap> GetFieldMappings() => _fieldMappings;
 
-		public IList<FieldMap> GetFieldMappings() => FieldMappings;
+		public void SetFieldMappings(IList<FieldMap> fieldMappings)
+		{
+			_fieldMappings = fieldMappings;
+		}
 
 		public bool IsSnapshotCreated { get; set; }
 
@@ -48,7 +53,11 @@ namespace Relativity.Sync.Tests.Common
 		}
 
 		public string JobName { get; set; }
-		public string NotificationEmails { get; set; }
+
+		public string GetJobName() => JobName;
+
+		public string GetNotificationEmails() => String.Empty;
+
 		public int SourceWorkspaceArtifactId { get; set; }
 		public string TriggerName { get; }
 		public int SyncConfigurationArtifactId { get; set; }

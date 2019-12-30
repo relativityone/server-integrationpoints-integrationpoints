@@ -55,15 +55,14 @@ namespace Relativity.Sync.Tests.System
 				SourceWorkspaceArtifactId = expectedSourceWorkspaceArtifactId,
 				JobHistoryArtifactId = expectedJobHistoryArtifactId,
 				JobName = _JOB_HISTORY_NAME,
-				NotificationEmails = string.Empty,
 				SavedSearchArtifactId = savedSearchArtifactId,
 				DestinationFolderArtifactId = destinationFolderArtifactId,
-				FieldMappings = _serializer.Deserialize<List<FieldMap>>(fieldsMap),
 				FolderPathSourceFieldName = folderPathSourceFieldName,
 				ImportOverwriteMode = ImportOverwriteMode.AppendOverlay,
 				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.ReadFromField,
 				FieldOverlayBehavior = FieldOverlayBehavior.UseFieldSettings
 			};
+			configuration.SetFieldMappings(_serializer.Deserialize<List<FieldMap>>(fieldsMap));
 
 			// act
 			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IValidationConfiguration>(configuration);

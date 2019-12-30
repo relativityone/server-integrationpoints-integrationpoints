@@ -35,7 +35,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		{
 			// Arrange
 			var validationConfiguration = new Mock<IValidationConfiguration>();
-			validationConfiguration.SetupGet(x => x.JobName).Returns(testJobName).Verifiable();
+			validationConfiguration.Setup(x => x.GetJobName()).Returns(testJobName).Verifiable();
 
 			// Act
 			ValidationResult actualResult = await _instance.ValidateAsync(validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);

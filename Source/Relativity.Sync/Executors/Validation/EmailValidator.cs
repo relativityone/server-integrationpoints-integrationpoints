@@ -37,7 +37,7 @@ namespace Relativity.Sync.Executors.Validation
 
 			try
 			{
-				IEnumerable<string> emails = (configuration.NotificationEmails ?? string.Empty)
+				IEnumerable<string> emails = (configuration.GetNotificationEmails() ?? string.Empty)
 					.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
 					.Select(x => x.Trim());
 

@@ -85,9 +85,9 @@ namespace Relativity.Sync.Tests.System
 				SyncConfigurationArtifactId = syncConfigurationArtifactId,
 				DataSourceArtifactId = allDocumentsSavedSearchArtifactId,
 				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.ReadFromField,
-				FolderPathSourceFieldName = folderInfoFieldName,
-				FieldMappings = fieldMap
+				FolderPathSourceFieldName = folderInfoFieldName
 			};
+			configuration.SetFieldMappings(fieldMap);
 
 			// Import documents
 			var importHelper = new ImportHelper(ServiceFactory);

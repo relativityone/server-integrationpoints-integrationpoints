@@ -51,13 +51,13 @@ namespace Relativity.Sync.Tests.Integration
 			_configuration = new ConfigurationStub
 			{
 				// ISynchronizationConfiguration
-				FieldMappings = new List<FieldMap>(),
 				SourceWorkspaceArtifactId = 0,
 
 				// IFieldConfiguration
 				FolderPathSourceFieldName = _FOLDER_PATH_SOURCE_FIELD_NAME,
 				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.None
 			};
+			_configuration.SetFieldMappings(new List<FieldMap>());
 
 			_objectManager = new Mock<IObjectManager>();
 			_searchManager = new Mock<ISearchManager>();
@@ -286,7 +286,7 @@ namespace Relativity.Sync.Tests.Integration
 			List<KeyValuePair<string, RelativityDataType>> mappedDocumentFieldList = mappedDocumentFields.ToList();
 			List<KeyValuePair<string, RelativityDataType>> specialDocumentFieldLIst = SpecialDocumentFieldTypePairs().ToList();
 
-			_configuration.FieldMappings = mappedDocumentFieldList.Select(NameTypePairToFieldMap).ToList();
+			_configuration.SetFieldMappings(mappedDocumentFieldList.Select(NameTypePairToFieldMap).ToList());
 
 			SetupQuerySlimAsync(q => q.ObjectType.Name == "Field").ReturnsQueryResultSlimAsync(q =>
 			{

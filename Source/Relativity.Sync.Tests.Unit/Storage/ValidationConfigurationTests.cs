@@ -71,7 +71,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			const string expected = "email1@example.com;email2@example.com";
 			_cache.Setup(x => x.GetFieldValue<string>(EmailNotificationRecipientsGuid)).Returns(expected);
-			_configuration.NotificationEmails.Should().Be(expected);
+			_configuration.GetNotificationEmails().Should().Be(expected);
 		}
 
 		[Test]
@@ -79,7 +79,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			List<FieldMap> fieldMappings = new List<FieldMap>();
 			_fieldMappings.Setup(x => x.GetFieldMappings()).Returns(fieldMappings);
-			_configuration.FieldMappings.Should().BeSameAs(fieldMappings);
+			_configuration.GetFieldMappings().Should().BeSameAs(fieldMappings);
 		}
 
 		[Test]
@@ -95,7 +95,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			const string expected = "name";
 			_cache.Setup(x => x.GetFieldValue<string>(FolderPathSourceFieldNameGuid)).Returns(expected);
-			_configuration.FolderPathSourceFieldName.Should().Be(expected);
+			_configuration.GetFolderPathSourceFieldName().Should().Be(expected);
 		}
 
 		[Test]
@@ -119,7 +119,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			const string jobName = "Job name";
 			_cache.Setup(x => x.GetFieldValue<RelativityObjectValue>(JobHistoryGuid)).Returns(new RelativityObjectValue {Name = jobName});
-			_configuration.JobName.Should().Be(jobName);
+			_configuration.GetJobName().Should().Be(jobName);
 		}
 	}
 }

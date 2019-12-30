@@ -42,7 +42,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		{
 			// Arrange
 			var validationConfiguration = new Mock<IValidationConfiguration>();
-			validationConfiguration.SetupGet(x => x.NotificationEmails).Returns(testEmails).Verifiable();
+			validationConfiguration.Setup(x => x.GetNotificationEmails()).Returns(testEmails).Verifiable();
 
 			// Act
 			ValidationResult actualResult = await _instance.ValidateAsync(validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
@@ -66,7 +66,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		{
 			// Arrange
 			var validationConfiguration = new Mock<IValidationConfiguration>();
-			validationConfiguration.SetupGet(x => x.NotificationEmails).Returns(testEmails).Verifiable();
+			validationConfiguration.Setup(x => x.GetNotificationEmails()).Returns(testEmails).Verifiable();
 
 			// Act
 			ValidationResult actualResult = await _instance.ValidateAsync(validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
