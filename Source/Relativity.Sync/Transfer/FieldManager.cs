@@ -154,7 +154,7 @@ namespace Relativity.Sync.Transfer
 		{
 			if (_mappedDocumentFields == null)
 			{
-				List<FieldInfoDto> fieldInfos = _configuration.FieldMappings.Select(CreateFieldInfoFromFieldMap).ToList();
+				List<FieldInfoDto> fieldInfos = _configuration.GetFieldMappings().Select(CreateFieldInfoFromFieldMap).ToList();
 				_mappedDocumentFields = await EnrichDocumentFieldsWithRelativityDataTypesAsync(fieldInfos, token).ConfigureAwait(false);
 			}
 			return _mappedDocumentFields;

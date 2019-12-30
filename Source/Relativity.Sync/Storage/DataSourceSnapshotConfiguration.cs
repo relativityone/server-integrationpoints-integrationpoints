@@ -16,6 +16,15 @@ namespace Relativity.Sync.Storage
 		private static readonly Guid DestinationFolderStructureBehaviorGuid = new Guid("A1593105-BD99-4A15-A51A-3AA8D4195908");
 		private static readonly Guid FolderPathSourceFieldNameGuid = new Guid("66A37443-EF92-47ED-BEEA-392464C853D3");
 
+		public int SourceWorkspaceArtifactId { get; }
+
+		public int DataSourceArtifactId => _cache.GetFieldValue<int>(DataSourceArtifactIdGuid);
+
+		public DestinationFolderStructureBehavior DestinationFolderStructureBehavior =>
+			(DestinationFolderStructureBehavior)Enum.Parse(typeof(DestinationFolderStructureBehavior), _cache.GetFieldValue<string>(DestinationFolderStructureBehaviorGuid));
+
+		public bool IsSnapshotCreated => !string.IsNullOrWhiteSpace(_cache.GetFieldValue<string>(SnapshotIdGuid));
+
 		public DataSourceSnapshotConfiguration(IConfiguration cache, IFieldMappings fieldMappings, SyncJobParameters syncJobParameters)
 		{
 			_cache = cache;
@@ -23,17 +32,9 @@ namespace Relativity.Sync.Storage
 			SourceWorkspaceArtifactId = syncJobParameters.WorkspaceId;
 		}
 
-		public string FolderPathSourceFieldName => _cache.GetFieldValue<string>(FolderPathSourceFieldNameGuid);
+		public string GetFolderPathSourceFieldName() => _cache.GetFieldValue<string>(FolderPathSourceFieldNameGuid);
 
-		public int SourceWorkspaceArtifactId { get; }
-
-		public int DataSourceArtifactId => _cache.GetFieldValue<int>(DataSourceArtifactIdGuid);
-		public IList<FieldMap> FieldMappings => _fieldMappings.GetFieldMappings();
-
-		public DestinationFolderStructureBehavior DestinationFolderStructureBehavior =>
-			(DestinationFolderStructureBehavior) Enum.Parse(typeof(DestinationFolderStructureBehavior), _cache.GetFieldValue<string>(DestinationFolderStructureBehaviorGuid));
-		
-		public bool IsSnapshotCreated => !string.IsNullOrWhiteSpace(_cache.GetFieldValue<string>(SnapshotIdGuid));
+		public IList<FieldMap> GetFieldMappings() => _fieldMappings.GetFieldMappings();
 
 		public async Task SetSnapshotDataAsync(Guid runId, int totalRecordsCount)
 		{

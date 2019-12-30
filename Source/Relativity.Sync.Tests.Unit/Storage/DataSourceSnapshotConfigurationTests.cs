@@ -57,7 +57,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			List<FieldMap> fieldMappings = new List<FieldMap>();
 			_fieldMappings.Setup(x => x.GetFieldMappings()).Returns(fieldMappings);
 			
-			_instance.FieldMappings.Should().BeSameAs(fieldMappings);
+			_instance.GetFieldMappings().Should().BeSameAs(fieldMappings);
 		}
 
 		[Test]
@@ -77,7 +77,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 
 			_cache.Setup(x => x.GetFieldValue<string>(FolderPathSourceFieldNameGuid)).Returns(fieldName);
 
-			_instance.FolderPathSourceFieldName.Should().Be(fieldName);
+			_instance.GetFolderPathSourceFieldName().Should().Be(fieldName);
 		}
 
 		[Test]

@@ -22,7 +22,11 @@ namespace Relativity.Sync.Tests.Common
 		public bool IsDataDestinationArtifactIdSet { get; set; }
 		public int DataDestinationArtifactId { get; set; }
 		public int DataSourceArtifactId { get; set; }
+
 		public IList<FieldMap> FieldMappings { get; set; } = new List<FieldMap>();
+
+		public IList<FieldMap> GetFieldMappings() => FieldMappings;
+
 		public bool IsSnapshotCreated { get; set; }
 
 		public async Task SetSnapshotDataAsync(Guid runId, int totalRecordsCount)
@@ -62,7 +66,11 @@ namespace Relativity.Sync.Tests.Common
 		public int DestinationFolderArtifactId { get; set; }
 		public int IntegrationPointArtifactId { get; }
 		public int SourceProviderArtifactId { get; }
+
 		public string FolderPathSourceFieldName { get; set; }
+
+		public string GetFolderPathSourceFieldName() => FolderPathSourceFieldName;
+
 		public string FileSizeColumn { get; set; }
 		public string NativeFilePathSourceFieldName { get; set; }
 		public string FileNameColumn { get; set; }

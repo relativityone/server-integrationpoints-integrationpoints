@@ -19,7 +19,7 @@ namespace Relativity.Sync.Transfer
 		{
 			if (_fieldConfiguration.DestinationFolderStructureBehavior == DestinationFolderStructureBehavior.ReadFromField)
 			{
-				string folderPathFieldName = _fieldConfiguration.FolderPathSourceFieldName;
+				string folderPathFieldName = _fieldConfiguration.GetFolderPathSourceFieldName();
 				yield return FieldInfoDto.FolderPathFieldFromDocumentField(folderPathFieldName);
 			}
 			else if (_fieldConfiguration.DestinationFolderStructureBehavior == DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure)

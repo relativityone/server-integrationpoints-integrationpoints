@@ -48,7 +48,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_configuration = new Mock<IDataSourceSnapshotConfiguration>();
 			_configuration.Setup(x => x.SourceWorkspaceArtifactId).Returns(_WORKSPACE_ID);
 			_configuration.Setup(x => x.DataSourceArtifactId).Returns(_DATA_SOURCE_ID);
-			_configuration.Setup(x => x.FieldMappings).Returns(new List<FieldMap>());
+			_configuration.Setup(x => x.GetFieldMappings()).Returns(new List<FieldMap>());
 			
 			_nativeFileRepository = new Mock<INativeFileRepository>();
 			_jobStatisticsContainer = new JobStatisticsContainer();
@@ -159,7 +159,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_objectManager.Setup(x => x.InitializeExportAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1)).ReturnsAsync(exportInitializationResults);
 
 			_configuration.Setup(x => x.DestinationFolderStructureBehavior).Returns(destinationFolderStructureBehavior);
-			_configuration.Setup(x => x.FolderPathSourceFieldName).Returns(folderPathSourceFieldName);
+			_configuration.Setup(x => x.GetFolderPathSourceFieldName()).Returns(folderPathSourceFieldName);
 
 			// ACT
 			await _instance.ExecuteAsync(_configuration.Object, CancellationToken.None).ConfigureAwait(false);
