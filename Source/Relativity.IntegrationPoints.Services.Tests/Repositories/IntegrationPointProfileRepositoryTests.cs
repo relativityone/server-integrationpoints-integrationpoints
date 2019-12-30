@@ -12,6 +12,7 @@ using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 {
+	[TestFixture, Category("Unit")]
 	public class IntegrationPointProfileRepositoryTests : TestBase
 	{
 		private IntegrationPointProfileRepository _integrationPointProfileRepository;

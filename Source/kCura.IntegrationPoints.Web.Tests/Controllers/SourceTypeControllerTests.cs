@@ -21,7 +21,7 @@ using Relativity.IntegrationPoints.Contracts.Internals;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class SourceTypeControllerTests : WebControllerTestBase
 	{
 		private SourceTypeController _instance;

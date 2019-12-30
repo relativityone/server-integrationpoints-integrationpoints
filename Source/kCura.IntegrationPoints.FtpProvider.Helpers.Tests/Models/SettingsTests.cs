@@ -9,7 +9,7 @@ using kCura.IntegrationPoint.Tests.Core;
 
 namespace kCura.IntegrationPoints.FtpProvider.Helpers.Models.Tests
 {
-	[TestFixture()]
+	[TestFixture, Category("Unit")]
 	public class SettingsTests : TestBase
 	{
 		private Settings _settings;

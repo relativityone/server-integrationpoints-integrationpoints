@@ -15,7 +15,7 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementation
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ObjectManagerFacadeDiscoverHeavyRequestDecoratorTests
 	{
 		private Mock<IAPILog> _loggerMock;

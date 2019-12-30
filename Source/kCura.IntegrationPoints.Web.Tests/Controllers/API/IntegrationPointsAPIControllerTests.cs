@@ -26,7 +26,7 @@ using Relativity.Telemetry.Services.Metrics;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class IntegrationPointsAPIControllerTests : TestBase
 	{
 		private IntegrationPointsAPIController _sut;

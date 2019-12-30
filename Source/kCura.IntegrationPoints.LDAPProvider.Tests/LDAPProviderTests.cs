@@ -12,7 +12,7 @@ using Relativity.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.LDAPProvider.Tests
 {
-    [TestFixture]
+    [TestFixture, Category("Unit")]
     public class LDAPProviderTests : TestBase
     {
         private LDAPSettings _fullyFilledSettings;

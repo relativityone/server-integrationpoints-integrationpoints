@@ -9,7 +9,7 @@ using Enumerable = System.Linq.Enumerable;
 
 namespace kCura.IntegrationPoints.Data.Tests.Converters
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class FieldRefExtensionsTests
 	{
 		[Test]

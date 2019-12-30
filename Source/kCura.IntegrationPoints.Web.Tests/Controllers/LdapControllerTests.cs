@@ -10,8 +10,8 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers
 {
-	
-	[TestFixture(Description = "These tests are meant to mimic the way the ajax request will behave on the client side.")]
+	[TestFixture, Category("Unit"), Category("ImportProvider")]
+	[Description("These tests are meant to mimic the way the ajax request will behave on the client side.")]
 	public class LdapControllerTests : TestBase
 	{
 	    private const string _SERIALIZED_MODEL = "{ConnectionPath:'oiler.corp/OU=Employees,OU=Accounts,OU=oiler,DC=oiler,DC=oiler', ConnectionAuthenticationType:32}";

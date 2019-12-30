@@ -7,6 +7,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Validators
 {
+	[TestFixture, Category("Unit")]
 	public class PreCascadeDeleteEventHandlerValidatorTests : TestBase
 	{
 		#region Fields

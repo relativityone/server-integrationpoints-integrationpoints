@@ -13,7 +13,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Helpers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class DirectoryTreeCreatorTest : TestBase
 	{
 		private DirectoryTreeCreator<JsTreeItemDTO> _subjectUnderTest;

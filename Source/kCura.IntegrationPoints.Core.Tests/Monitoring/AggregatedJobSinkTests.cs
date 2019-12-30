@@ -12,7 +12,7 @@ using Relativity.DataTransfer.MessageService.MetricsManager.APM;
 
 namespace kCura.IntegrationPoints.Core.Tests.Monitoring
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class AggregatedJobSinkTests
 	{
 		private IAPILog _logger;

@@ -9,7 +9,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services
 {
-    [TestFixture]
+    [TestFixture, Category("Unit")]
     public class JobTrackerTests : TestBase
     {
         private Job _goldFlowJob;

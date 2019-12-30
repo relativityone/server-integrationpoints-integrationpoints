@@ -11,7 +11,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data.Tests.RSAPIClient
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class RsapiClientWrapperWithLoggingTests
 	{
 		[Test]

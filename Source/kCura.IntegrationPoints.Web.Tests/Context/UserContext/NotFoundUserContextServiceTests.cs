@@ -8,7 +8,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.Tests.Context.UserContext
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class NotFoundUserContextServiceTests
 	{
 		private Mock<IAPILog> _loggerMock;

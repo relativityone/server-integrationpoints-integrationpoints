@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Common.Tests.Monitoring.Instrumentation
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ExternalServiceSimpleInstrumentationTests
 	{
 		private IExternalServiceInstrumentation _instrumentation;

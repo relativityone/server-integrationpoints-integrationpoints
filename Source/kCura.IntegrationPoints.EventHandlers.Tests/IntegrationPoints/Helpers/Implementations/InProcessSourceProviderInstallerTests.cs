@@ -15,7 +15,7 @@ using static LanguageExt.Prelude;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.Implementations
 {
-    [TestFixture]
+    [TestFixture, Category("Unit")]
     public class InProcessSourceProviderInstallerTests
     {
         private Mock<IAPILog> _loggerMock;

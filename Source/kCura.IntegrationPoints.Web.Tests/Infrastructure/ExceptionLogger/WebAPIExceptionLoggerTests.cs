@@ -15,7 +15,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Web.Tests.Infrastructure.ExceptionLogger
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class WebAPIExceptionLoggerTests : TestBase
 	{
 		private IErrorService _errorService;

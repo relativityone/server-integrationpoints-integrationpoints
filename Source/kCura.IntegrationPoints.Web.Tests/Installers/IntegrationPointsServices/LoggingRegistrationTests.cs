@@ -8,7 +8,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Web.Tests.Installers.IntegrationPointsServices
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class LoggingRegistrationTests
 	{
 		private IWindsorContainer _sut;

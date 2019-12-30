@@ -9,10 +9,11 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.WinEDDS;
 using NSubstitute;
 using NUnit.Framework;
+using CategoryAttribute = NUnit.Framework.CategoryAttribute;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ExportFileBuilderTests : TestBase
 	{
 		private IExportedObjectBuilder _exportedObjectBuilder;

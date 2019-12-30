@@ -9,7 +9,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tests
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class TaskExceptionServiceTests
 	{
 		private TaskExceptionService _subjectUnderTest;

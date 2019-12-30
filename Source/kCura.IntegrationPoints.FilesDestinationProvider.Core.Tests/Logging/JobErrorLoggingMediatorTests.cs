@@ -11,7 +11,7 @@ using Relativity.DataExchange.Process;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class JobErrorLoggingMediatorTests : TestBase
 	{
 		private ICoreExporterStatusNotification _exporterStatusNotification;

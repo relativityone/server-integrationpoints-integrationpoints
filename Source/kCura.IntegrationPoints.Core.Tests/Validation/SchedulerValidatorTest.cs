@@ -12,7 +12,7 @@ using Assert = NUnit.Framework.Assert;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class SchedulerValidatorTest
 	{
 		private IValidator _instance;

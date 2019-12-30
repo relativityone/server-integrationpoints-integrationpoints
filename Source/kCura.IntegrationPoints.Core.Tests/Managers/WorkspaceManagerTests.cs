@@ -10,7 +10,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Managers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class WorkspaceManagerTests
 	{
 		private const int CurrentUserWorkspaceArtifactId = 1234;

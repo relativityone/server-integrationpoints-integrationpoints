@@ -19,7 +19,7 @@ using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class IntegrationPointProfileServiceTests : TestBase
 	{
 		private readonly int _sourceWorkspaceArtifactId = 1234;

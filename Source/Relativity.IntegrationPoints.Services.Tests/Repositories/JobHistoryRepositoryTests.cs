@@ -12,6 +12,7 @@ using Relativity.IntegrationPoints.Services.Repositories.Implementations;
 
 namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 {
+	[TestFixture, Category("Unit")]
 	public class JobHistoryRepositoryTests : TestBase
 	{
 		private IRelativityIntegrationPointsRepository _relativityIntegrationPointsRepository;

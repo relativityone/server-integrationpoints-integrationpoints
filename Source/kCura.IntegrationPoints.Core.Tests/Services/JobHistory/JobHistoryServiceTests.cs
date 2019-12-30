@@ -21,7 +21,7 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class JobHistoryServiceTests : TestBase
 	{
 		private IRelativityObjectManager _relativityObjectManager;

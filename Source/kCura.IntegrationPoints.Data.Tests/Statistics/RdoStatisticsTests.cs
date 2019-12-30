@@ -7,7 +7,7 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Tests.Statistics
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class RdoStatisticsTests : TestBase
 	{
 		private IRelativityObjectManager _relativityObjectManager;

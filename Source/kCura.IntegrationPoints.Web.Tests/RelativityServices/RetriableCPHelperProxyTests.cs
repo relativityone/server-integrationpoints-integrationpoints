@@ -8,6 +8,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.Tests.RelativityServices
 {
+	[TestFixture, Category("Unit")]
 	public class RetriableCPHelperProxyTests
 	{
 		[Test]

@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Email.Tests
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class SmtpClientFactoryTests
 	{
 		[Test]

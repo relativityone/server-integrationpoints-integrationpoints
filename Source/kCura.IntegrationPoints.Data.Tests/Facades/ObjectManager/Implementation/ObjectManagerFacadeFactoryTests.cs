@@ -12,7 +12,7 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementation
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ObjectManagerFacadeFactoryTests
 	{
 		private ObjectManagerFacadeFactory _sut;

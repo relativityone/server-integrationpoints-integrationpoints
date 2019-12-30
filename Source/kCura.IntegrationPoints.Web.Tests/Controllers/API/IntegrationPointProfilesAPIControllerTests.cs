@@ -20,7 +20,7 @@ using System.Net.Http;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class IntegrationPointProfilesAPIControllerTests : TestBase
 	{
 		private Mock<ICPHelper> _cpHelperFake;

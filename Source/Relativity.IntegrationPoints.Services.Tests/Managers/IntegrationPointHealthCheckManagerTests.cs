@@ -16,6 +16,7 @@ using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace Relativity.IntegrationPoints.Services.Tests.Managers
 {
+	[TestFixture, Category("Unit")]
 	public class IntegrationPointHealthCheckManagerTests : TestBase
 	{
 		private IntegrationPointHealthCheckManager _integrationPointHealthCheckManager;

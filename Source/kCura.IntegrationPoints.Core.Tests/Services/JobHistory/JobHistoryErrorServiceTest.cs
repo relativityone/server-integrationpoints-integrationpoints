@@ -28,7 +28,7 @@ using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class JobHistoryErrorServiceTest : TestBase
 	{
 		private Data.IntegrationPoint _integrationPoint;

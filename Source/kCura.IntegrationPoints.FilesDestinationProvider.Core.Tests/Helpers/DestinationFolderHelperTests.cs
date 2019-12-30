@@ -8,6 +8,7 @@ using Relativity.DataExchange.Io;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Helpers
 {
+	[TestFixture, Category("Unit")]
 	public class DestinationFolderHelperTests
 	{
 		private const string _FOLDER_PATH = @"\\localhost\Export";

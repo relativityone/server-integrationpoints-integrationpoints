@@ -14,11 +14,12 @@ using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.IntegrationPoints.Contracts.Models;
+using CategoryAttribute = NUnit.Framework.CategoryAttribute;
 using ExportSettings = kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportSettings;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ExportFieldsControllerTests : TestBase
 	{
 		private ExportFieldsController _instance;

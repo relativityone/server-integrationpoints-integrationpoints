@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation.Helpers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class NonValidCharactersValidatorTests
 	{
 		private const char _FIRST_NON_PRINTABLE_ASCII_CHARACTER = (char)0;

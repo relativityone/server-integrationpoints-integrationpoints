@@ -6,6 +6,7 @@ using kCura.WinEDDS.Api;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 {
+	[TestFixture, Category("Unit")]
 	public class LoadFileFieldParserTests : TestBase
 	{
 		private readonly string[] _HEADERS = new string[] { "Control Number", "Native File Path", "Extracted Text" };

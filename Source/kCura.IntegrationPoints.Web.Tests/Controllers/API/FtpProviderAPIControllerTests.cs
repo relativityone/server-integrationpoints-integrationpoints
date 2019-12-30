@@ -19,7 +19,7 @@ using Relativity.IntegrationPoints.Contracts.Provider;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class FtpProviderAPIControllerTests : TestBase
 	{
 		private FtpProviderAPIController _instance;

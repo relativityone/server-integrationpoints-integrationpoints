@@ -11,10 +11,11 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.DataExchange.Process;
 using Relativity.DataExchange.Transfer;
+using CategoryAttribute = NUnit.Framework.CategoryAttribute;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ExportLoggingMediatorTests : TestBase
 	{
 		private readonly string _errorMessageTemplate = "Error occured: {message}. Additional info: {@additionalInfo}.";

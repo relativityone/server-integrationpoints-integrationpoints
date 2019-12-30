@@ -14,7 +14,7 @@ using NSubstitute;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers
 {
-    [TestFixture]
+    [TestFixture, Category("Unit")]
     public class FtpProviderControllerTests : TestBase
     {
         private bool _testConnectionResult = false;

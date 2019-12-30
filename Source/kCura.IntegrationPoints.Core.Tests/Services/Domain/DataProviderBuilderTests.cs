@@ -11,7 +11,7 @@ using Relativity.IntegrationPoints.SourceProviderInstaller.Internals.Wrappers;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.Domain
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class DataProviderBuilderTests : TestBase
 	{
 		private Mock<IProviderFactory> _providerFactory;

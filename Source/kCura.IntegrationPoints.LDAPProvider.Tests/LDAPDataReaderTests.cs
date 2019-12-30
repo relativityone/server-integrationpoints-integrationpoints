@@ -9,7 +9,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.LDAPProvider.Tests
 {
-    [TestFixture]
+    [TestFixture, Category("Unit")]
     public class LDAPDataReaderTests
     {
         private List<string> _headers;

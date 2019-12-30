@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace kCura.IntegrationPoints.Core.Tests.Provider.Internals
 {
-    [TestFixture]
+    [TestFixture, Category("Unit")]
     public class IntegrationPointsRemoverTests : TestBase
     {
         private IDeleteHistoryService _deleteHistoryService;

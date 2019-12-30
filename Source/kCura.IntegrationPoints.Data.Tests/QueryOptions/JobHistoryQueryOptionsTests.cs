@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Data.Tests.QueryOptions
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class JobHistoryQueryOptionsTests
 	{
 		private readonly IDictionary<string, Guid> _jobHistoryFieldsGuids = new Dictionary<string, Guid>

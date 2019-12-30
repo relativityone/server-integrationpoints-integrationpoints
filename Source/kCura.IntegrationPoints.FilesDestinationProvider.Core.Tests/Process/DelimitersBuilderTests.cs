@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class DelimitersBuilderTests : TestBase
 	{
 		private DelimitersBuilder _delimitersBuilder;

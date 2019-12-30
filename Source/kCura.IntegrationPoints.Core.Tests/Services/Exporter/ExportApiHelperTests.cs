@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ExportApiHelperTests : TestBase
 	{
 		[SetUp]

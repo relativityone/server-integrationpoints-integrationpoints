@@ -29,7 +29,7 @@ using Relativity.IntegrationPoints.Contracts.Provider;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class SyncWorkerTests : TestBase
 	{
 		private ICaseServiceContext _caseServiceContext;

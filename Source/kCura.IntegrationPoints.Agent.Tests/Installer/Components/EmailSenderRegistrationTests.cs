@@ -10,7 +10,7 @@ using static kCura.IntegrationPoint.Tests.Core.TestHelpers.WindsorContainerTestH
 
 namespace kCura.IntegrationPoints.Agent.Tests.Installer.Components
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class EmailSenderRegistrationTests
 	{
 		private IWindsorContainer _sut;

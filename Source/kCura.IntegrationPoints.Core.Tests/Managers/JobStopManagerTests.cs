@@ -16,7 +16,7 @@ using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Core.Tests.Managers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class JobStopManagerTests : TestBase
 	{
 		private JobStopManager _instance;

@@ -17,7 +17,7 @@ using Relativity.Services.Interfaces.File.Models;
 
 namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class FileRepositoryTests
 	{
 		private Mock<ISearchManager> _searchManagerMock;

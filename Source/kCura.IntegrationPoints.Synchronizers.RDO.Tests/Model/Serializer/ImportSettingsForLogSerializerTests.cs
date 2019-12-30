@@ -3,6 +3,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Model.Serializer
 {
+	[TestFixture, Category("Unit")]
 	public class ImportSettingsForLogSerializerTests
 	{
 		[Test]

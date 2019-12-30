@@ -7,6 +7,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Tagging
 {
+	[TestFixture, Category("Unit")]
 	public class TagSavedSearchManagerTests : TestBase
 	{
 		private TagSavedSearchManager _instance;

@@ -12,7 +12,7 @@ using kCura.WinEDDS.Api;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 {
-	[TestFixture, Category("ImportProvider")]
+	[TestFixture, Category("Unit"), Category("ImportProvider")]
 	public class ImportDataReaderTests : TestBase
 	{
 		private const string _RESOURCE_STREAM_ROOT = "kCura.IntegrationPoints.ImportProvider.Parser.Tests.";

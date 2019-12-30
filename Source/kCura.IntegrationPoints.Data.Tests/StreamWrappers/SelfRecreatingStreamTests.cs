@@ -7,7 +7,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data.Tests.StreamWrappers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class SelfRecreatingStreamTests
 	{
 		private Mock<Stream> _readableInnerStreamMock;

@@ -15,7 +15,7 @@ using static kCura.IntegrationPoint.Tests.Core.TestHelpers.WindsorContainerTestH
 
 namespace kCura.IntegrationPoints.Core.Tests.Installers.Registrations
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class WebApiLoginServiceRegistrationTests
 	{
 		private IWindsorContainer _sut;

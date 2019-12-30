@@ -12,6 +12,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Helpers
 {
+	[TestFixture, Category("Unit")]
 	class RelativePathDirectoryTreeProviderTests : TestBase
 	{
 		private const int _WKSP_ID = 1234;

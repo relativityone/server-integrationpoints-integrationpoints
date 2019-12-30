@@ -9,6 +9,7 @@ using Relativity.Services.Search;
 
 namespace kCura.IntegrationPoints.Core.Tests.Tagging
 {
+	[TestFixture, Category("Unit")]
 	public class TagSavedSearchFolderTests : TestBase
 	{
 		private const int _WORKSPACE_ID = 513406;

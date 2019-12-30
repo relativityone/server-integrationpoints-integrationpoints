@@ -14,7 +14,7 @@ using Relativity.DataTransfer.MessageService;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	internal class StatisticsLoggingMediatorTest : TestBase
 	{
 		private StatisticsLoggingMediator _subjectUnderTest;

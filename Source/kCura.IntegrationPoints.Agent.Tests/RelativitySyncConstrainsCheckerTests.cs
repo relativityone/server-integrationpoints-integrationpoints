@@ -21,7 +21,7 @@ using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Agent.Tests
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class RelativitySyncConstrainsCheckerTests
 	{
 		private Mock<IToggleProvider> _toggleProvider;

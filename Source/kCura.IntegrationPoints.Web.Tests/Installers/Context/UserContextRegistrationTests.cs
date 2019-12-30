@@ -15,7 +15,7 @@ using static kCura.IntegrationPoint.Tests.Core.TestHelpers.WindsorContainerTestH
 
 namespace kCura.IntegrationPoints.Web.Tests.Installers.Context
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class UserContextRegistrationTests
 	{
 		[Test]

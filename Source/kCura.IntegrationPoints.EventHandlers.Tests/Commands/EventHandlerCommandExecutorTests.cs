@@ -12,6 +12,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 {
+	[TestFixture, Category("Unit")]
 	public class EventHandlerCommandExecutorTests : TestBase
 	{
 		private const string _SUCCESS_MESSAGE = "success_message_326";

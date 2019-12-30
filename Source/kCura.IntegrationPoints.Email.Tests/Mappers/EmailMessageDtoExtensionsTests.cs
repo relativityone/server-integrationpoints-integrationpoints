@@ -8,7 +8,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Email.Tests.Mappers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class EmailMessageDtoExtensionsTests
 	{
 		private readonly ValidEmailAddress validEmailAdress = new ValidEmailAddress("relativity.admin@kcura.com");

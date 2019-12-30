@@ -18,7 +18,7 @@ using System.Linq;
 
 namespace kCura.IntegrationPoints.Core.Tests
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class AgentJobManagerTest : TestBase
 	{
 		private AgentJobManager _manager;

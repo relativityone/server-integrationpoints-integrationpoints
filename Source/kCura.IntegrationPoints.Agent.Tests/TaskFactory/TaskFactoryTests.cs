@@ -18,7 +18,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class TaskFactoryTests : TestBase
 	{
 		private IAPILog _logger;

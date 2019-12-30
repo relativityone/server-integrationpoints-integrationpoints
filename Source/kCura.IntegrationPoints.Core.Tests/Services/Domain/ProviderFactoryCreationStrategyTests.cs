@@ -10,7 +10,7 @@ using Relativity.IntegrationPoints.Contracts;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.Domain
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ProviderFactoryCreationStrategyTests : TestBase
 	{
 		private IHelper _helper;

@@ -9,7 +9,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands.RenameCustodianToEntity
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class RenameCustodianToEntityForSourceProviderCommandTests
 	{
 		private Mock<IIntegrationPointForSourceService> _integrationPointForSourceService;

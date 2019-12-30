@@ -19,7 +19,7 @@ using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class IntegrationPointProfilesQueryTests
 	{
 		private IntegrationPointProfilesQuery _sut;

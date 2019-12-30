@@ -10,7 +10,7 @@ using Relativity.Services.Exceptions;
 
 namespace kCura.IntegrationPoints.Core.Tests.Helpers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ArtifactTreeCreatorTests : TestBase
 	{
 		private ArtifactTreeCreator _treeByParentIdCreator;

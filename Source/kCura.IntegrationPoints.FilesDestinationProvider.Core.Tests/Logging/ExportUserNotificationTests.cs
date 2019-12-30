@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ExportUserNotificationTests : TestBase
 	{
 		private ExportUserNotification _exportUserNotification;

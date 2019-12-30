@@ -16,7 +16,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Managers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class JobHistoryErrorManagerTests : TestBase
 	{
 		private IJobHistoryErrorManager _testInstance;

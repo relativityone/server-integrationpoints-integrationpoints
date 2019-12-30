@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.Domain
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class RelativityFeaturePathServiceTests : TestBase
 	{
 		[SetUp]

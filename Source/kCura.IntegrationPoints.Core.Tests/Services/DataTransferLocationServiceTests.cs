@@ -15,6 +15,7 @@ using Workspace = kCura.Relativity.Client.DTOs.Workspace;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services
 {
+	[TestFixture, Category("Unit")]
 	public class DataTransferLocationServiceTests : TestBase
 	{
 		class DataTransferLocationServiceTest : DataTransferLocationService

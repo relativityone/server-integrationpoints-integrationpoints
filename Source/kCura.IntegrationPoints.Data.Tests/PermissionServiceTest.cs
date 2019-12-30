@@ -12,7 +12,7 @@ using Relativity.Services.Permission;
 
 namespace kCura.IntegrationPoints.Data.Tests
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class PermissionServiceTest : TestBase
 	{
 		private IPermissionManager _permissionManager;

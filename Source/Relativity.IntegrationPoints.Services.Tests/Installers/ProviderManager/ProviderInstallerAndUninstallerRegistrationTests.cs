@@ -14,7 +14,7 @@ using static kCura.IntegrationPoint.Tests.Core.TestHelpers.WindsorContainerTestH
 
 namespace Relativity.IntegrationPoints.Services.Tests.Installers.ProviderManager
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ProviderInstallerAndUninstallerRegistrationTests
 	{
 		private IWindsorContainer _container;

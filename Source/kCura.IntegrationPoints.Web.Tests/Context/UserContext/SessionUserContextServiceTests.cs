@@ -12,7 +12,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Web.Tests.Context.UserContext
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class SessionUserContextServiceTests
 	{
 		private Mock<ISessionService> _sessionServiceMock;

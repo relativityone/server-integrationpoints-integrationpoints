@@ -8,7 +8,7 @@ using Relativity.DataExchange.Service;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 {
-	[TestFixture, Category("ImportProvider")]
+	[TestFixture, Category("Unit"), Category("ImportProvider")]
 	public class PreviewJobTests
 	{
 		private List<object> _arrList;

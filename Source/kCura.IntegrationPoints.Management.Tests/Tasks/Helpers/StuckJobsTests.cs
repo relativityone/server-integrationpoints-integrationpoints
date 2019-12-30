@@ -13,7 +13,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Management.Tests.Tasks.Helpers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class StuckJobsTests : TestBase
 	{
 		private IJobRepository _runningJobRepository;

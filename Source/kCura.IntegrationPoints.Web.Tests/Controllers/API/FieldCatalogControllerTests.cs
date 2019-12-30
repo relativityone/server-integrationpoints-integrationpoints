@@ -13,6 +13,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
+	[TestFixture, Category("Unit")]
 	public class FieldCatalogControllerTests
 	{
 		private FieldCatalogController _controller;

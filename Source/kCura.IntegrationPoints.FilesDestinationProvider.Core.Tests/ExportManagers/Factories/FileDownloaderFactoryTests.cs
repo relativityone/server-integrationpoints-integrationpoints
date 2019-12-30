@@ -7,7 +7,7 @@ using Relativity.DataExchange.Service;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportManagers.Factories
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class FileDownloaderFactoryTests
 	{
 		private const string _DOWNLOAD_HANDLER_URL = "http://relativity.com/download";

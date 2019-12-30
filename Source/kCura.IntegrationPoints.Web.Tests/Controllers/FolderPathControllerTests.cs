@@ -24,7 +24,7 @@ using Query = kCura.Relativity.Client.Query;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class FolderPathControllerTests : TestBase
 	{
 		private IRSAPIClient _client;

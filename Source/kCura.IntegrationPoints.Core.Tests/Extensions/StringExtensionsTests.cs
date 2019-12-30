@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Extensions
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class StringExtensionsTest
 	{
 		[TestCase(@"c:\foo", @"c:", ExpectedResult = true)]

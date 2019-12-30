@@ -16,7 +16,7 @@ using Relativity.API;
 
 namespace kCura.ScheduleQueue.Core.Tests
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class JobServiceTests : TestBase
 	{
 		private IAgentService _agentService;

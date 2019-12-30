@@ -6,6 +6,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Web.Tests.IntegrationPointsServices.Logging
 {
+	[TestFixture, Category("Unit")]
 	public class WebCorrelationContextProviderTests : TestBase
 	{
 		private WebActionContextProvider _subjectUnderTests;

@@ -15,7 +15,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Tagging
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class MassUpdateHelperTests
 	{
 		private MassUpdateHelper _sut;

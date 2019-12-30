@@ -32,7 +32,7 @@ using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class SyncManagerTests : TestBase
 	{
 		private readonly Guid _defaultGuidValue = new Guid("4258D67D-63D4-4902-A48A-B1B19649ABFA");

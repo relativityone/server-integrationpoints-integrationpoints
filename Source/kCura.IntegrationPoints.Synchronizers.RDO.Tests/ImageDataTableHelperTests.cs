@@ -5,6 +5,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 {
+	[TestFixture, Category("Unit")]
 	public class ImageDataTableHelperTests : TestBase
 	{
 		public override void SetUp()

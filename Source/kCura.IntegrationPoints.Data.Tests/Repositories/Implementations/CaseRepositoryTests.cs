@@ -11,7 +11,7 @@ using Relativity.Services.ResourceServer;
 
 namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class CaseRepositoryTests
 	{
 		private CaseRepository _sut;

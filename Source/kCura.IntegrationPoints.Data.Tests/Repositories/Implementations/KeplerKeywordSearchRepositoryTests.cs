@@ -10,6 +10,7 @@ using Relativity.Services.Search;
 
 namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 {
+	[TestFixture, Category("Unit")]
 	public class KeplerKeywordSearchRepositoryTests : TestBase
 	{
 		private const int _WORKSPACE_ID = 118503;

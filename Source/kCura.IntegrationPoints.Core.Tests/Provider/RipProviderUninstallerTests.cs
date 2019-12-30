@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.Core.Tests.Provider
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class RipProviderUninstallerTests
 	{
 		private Mock<IAPILog> _loggerMock;

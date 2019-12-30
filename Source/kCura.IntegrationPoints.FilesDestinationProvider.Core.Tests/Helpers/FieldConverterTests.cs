@@ -10,7 +10,7 @@ using FieldType = Relativity.API.Foundation.FieldType;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Helpers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class FieldConverterTests
 	{
 

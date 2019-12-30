@@ -12,6 +12,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.RelativitySourceRdo
 {
+	[TestFixture, Category("Unit")]
 	public class RelativitySourceJobRdoInitializerTests : TestBase
 	{
 		private const int _DESTINATION_WORKSPACE_ID = 416177;

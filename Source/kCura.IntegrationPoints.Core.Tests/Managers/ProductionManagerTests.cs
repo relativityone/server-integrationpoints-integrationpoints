@@ -17,7 +17,7 @@ using ProductionManager = kCura.IntegrationPoints.Core.Managers.Implementations.
 
 namespace kCura.IntegrationPoints.Core.Tests.Managers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ProductionManagerTests
 	{
 		private IRepositoryFactory _repositoryFactory;

@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace Relativity.IntegrationPoints.Services.Tests.Installers.Authentication
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class AuthTokenRegistrationTests
 	{
 		private IWindsorContainer _container;

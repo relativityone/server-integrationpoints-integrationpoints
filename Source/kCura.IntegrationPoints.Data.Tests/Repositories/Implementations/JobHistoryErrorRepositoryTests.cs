@@ -16,7 +16,7 @@ using Relativity.Services.Search;
 
 namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class JobHistoryErrorRepositoryTests : TestBase
 	{
 		private JobHistoryErrorRepository _sut;

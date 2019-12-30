@@ -16,7 +16,7 @@ using Artifact = kCura.Relativity.Client.Artifact;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class RdoEntitySynchronizerTests : TestBase
 	{
 

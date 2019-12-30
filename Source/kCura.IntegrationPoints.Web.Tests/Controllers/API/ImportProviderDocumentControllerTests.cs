@@ -21,7 +21,7 @@ using SystemInterface.IO;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ImportProviderDocumentControllerTests : TestBase
 	{
 		private int _MAX_FIELDS = 100;
