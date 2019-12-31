@@ -60,9 +60,9 @@ namespace Relativity.Sync.Tests.Integration
 			_notificationConfiguration = new Mock<INotificationConfiguration>();
 			_notificationConfiguration.SetupGet(x => x.DestinationWorkspaceArtifactId).Returns(_DEST_CASE_ARTIFACT_ID);
 			_notificationConfiguration.SetupGet(x => x.JobHistoryArtifactId).Returns(_JOB_HISTORY_ARTIFACT_ID);
-			_notificationConfiguration.SetupGet(x => x.JobName).Returns(_JOB_NAME);
+			_notificationConfiguration.Setup(x => x.GetJobName()).Returns(_JOB_NAME);
 			_notificationConfiguration.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(_SOURCE_CASE_ARTIFACT_ID);
-			_notificationConfiguration.SetupGet(x => x.SourceWorkspaceTag).Returns(_SOURCE_CASE_TAG);
+			_notificationConfiguration.Setup(x => x.GetSourceWorkspaceTag()).Returns(_SOURCE_CASE_TAG);
 			_notificationConfiguration.SetupGet(x => x.SyncConfigurationArtifactId).Returns(_SYNC_CONFIG_ARTIFACT_ID);
 		}
 

@@ -72,7 +72,7 @@ namespace Relativity.Sync.Executors
 		{
 			var emailRequest = new EmailNotificationRequest
 			{
-				Recipients = configuration.EmailRecipients,
+				Recipients = configuration.GetEmailRecipients(),
 				IsBodyHtml = false
 			};
 
@@ -91,13 +91,13 @@ namespace Relativity.Sync.Executors
 		{
 			async Task FillSubjectAndBody(string subject, string message)
 			{
-				emailRequest.Subject = string.Format(CultureInfo.InvariantCulture, subject, configuration.JobName);
+				emailRequest.Subject = string.Format(CultureInfo.InvariantCulture, subject, configuration.GetJobName());
 				emailRequest.Body = await GenerateMessage(configuration, message, token).ConfigureAwait(false);
 			}
 
 			async Task FillSubjectAndBodyForError(string subject)
 			{
-				emailRequest.Subject = string.Format(CultureInfo.InvariantCulture, subject, configuration.JobName);
+				emailRequest.Subject = string.Format(CultureInfo.InvariantCulture, subject, configuration.GetJobName());
 				emailRequest.Body = await GenerateErrorMessage(configuration, token).ConfigureAwait(false);
 			}
 
@@ -136,8 +136,8 @@ namespace Relativity.Sync.Executors
 
 		private async Task<string> GenerateJobInfoBody(INotificationConfiguration configuration, CancellationToken token)
 		{
-			string nameBody = string.Format(CultureInfo.InvariantCulture, _BODY_NAME, configuration.JobName);
-			string sourceBody = string.Format(CultureInfo.InvariantCulture, _BODY_SOURCE, configuration.SourceWorkspaceTag);
+			string nameBody = string.Format(CultureInfo.InvariantCulture, _BODY_NAME, configuration.GetJobName());
+			string sourceBody = string.Format(CultureInfo.InvariantCulture, _BODY_SOURCE, configuration.GetSourceWorkspaceTag());
 
 			string destinationInfo = await GetDestinationWorkspaceInformation(configuration, token).ConfigureAwait(false);
 			string destinationBody = string.Format(CultureInfo.InvariantCulture, _BODY_DESTINATION, destinationInfo);

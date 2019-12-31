@@ -15,10 +15,13 @@ namespace Relativity.Sync.Tests.Common
 		IJobEndMetricsConfiguration, IAutomatedWorkflowTriggerConfiguration
 	{
 		private IList<FieldMap> _fieldMappings = new List<FieldMap>();
+		private string _jobName = String.Empty;
 
 		private const int _ADMIN_ID = 9;
 		private const int _ASCII_GROUP_SEPARATOR = 29;
 		private const int _ASCII_RECORD_SEPARATOR = 30;
+
+		private readonly IEnumerable<string> _emailRecipients = new List<string>();
 
 		public string DataDestinationName { get; set; }
 		public bool IsDataDestinationArtifactIdSet { get; set; }
@@ -52,9 +55,12 @@ namespace Relativity.Sync.Tests.Common
 			await Task.Yield();
 		}
 
-		public string JobName { get; set; }
+		public string GetJobName() => _jobName;
 
-		public string GetJobName() => JobName;
+		public void SetJobName(string jobName)
+		{
+			_jobName = jobName;
+		}
 
 		public string GetNotificationEmails() => String.Empty;
 
@@ -67,7 +73,8 @@ namespace Relativity.Sync.Tests.Common
 		public bool MoveExistingDocuments { get; set; }
 		public int RdoArtifactTypeId => (int) ArtifactType.Document;
 
-		public string SourceWorkspaceTag { get; }
+		public string GetSourceWorkspaceTag() => String.Empty;
+
 		public char MultiValueDelimiter => (char)_ASCII_RECORD_SEPARATOR;
 		public char NestedValueDelimiter => (char)_ASCII_GROUP_SEPARATOR;
 		public int DestinationWorkspaceArtifactId { get; set; }
@@ -123,7 +130,9 @@ namespace Relativity.Sync.Tests.Common
 
 		public int ExecutingUserId => _ADMIN_ID;
 		public bool SendEmails { get; set; }
-		public IEnumerable<string> EmailRecipients { get; } = new List<string>();
+
+		public IEnumerable<string> GetEmailRecipients() => _emailRecipients;
+
 		public int TotalRecordsCount { get; set; }
 		public int BatchSize { get; set; }
 		public Guid ExportRunId { get; set; }

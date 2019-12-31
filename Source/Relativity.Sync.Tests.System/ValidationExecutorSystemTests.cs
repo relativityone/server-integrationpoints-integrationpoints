@@ -54,7 +54,6 @@ namespace Relativity.Sync.Tests.System
 				DestinationWorkspaceArtifactId = _destinationWorkspace.ArtifactID,
 				SourceWorkspaceArtifactId = expectedSourceWorkspaceArtifactId,
 				JobHistoryArtifactId = expectedJobHistoryArtifactId,
-				JobName = _JOB_HISTORY_NAME,
 				SavedSearchArtifactId = savedSearchArtifactId,
 				DestinationFolderArtifactId = destinationFolderArtifactId,
 				FolderPathSourceFieldName = folderPathSourceFieldName,
@@ -63,6 +62,7 @@ namespace Relativity.Sync.Tests.System
 				FieldOverlayBehavior = FieldOverlayBehavior.UseFieldSettings
 			};
 			configuration.SetFieldMappings(_serializer.Deserialize<List<FieldMap>>(fieldsMap));
+			configuration.SetJobName(_JOB_HISTORY_NAME);
 
 			// act
 			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IValidationConfiguration>(configuration);
