@@ -44,8 +44,11 @@ Task Test -Description "Run tests that don't require a deployed environment." {
 }
 
 Task FunctionalTest -Description "Run UI tests that require a deployed environment." {
+    $LogPath = Join-Path $LogsDir "UITestSetupResults.xml"
+    Invoke-Tests -WhereClause "cat == OneTimeTestsSetup" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
+    
     $LogPath = Join-Path $LogsDir "UITestResults.xml"
-    Invoke-Tests -WhereClause "cat != InQuarantine && cat != ExportToRelativity && namespace =~ /^(((kCura\.IntegrationPoints\.UITests($|\.))).*)/" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
+    Invoke-Tests -WhereClause "cat == WebImportExport" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
 }
 
 Task Sign -Description "Sign all files" {

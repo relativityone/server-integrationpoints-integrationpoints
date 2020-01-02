@@ -11,16 +11,21 @@ namespace kCura.IntegrationPoints.UITests.DummyUiTests
 	public class DummyUiTests
     {
         private const string _EXPORT_TO_RELATIVITY_TEST_CATEGORY = "ExportToRelativity";
+		private const string _WEB_IMPORT_EXPORT_TEST_CATEGORY = "WebImportExport";
+		private const string _ONE_TIME_TESTS_SETUP = "OneTimeTestsSetup";
 
-        [Test]
+		[Test]
+		[Category(_WEB_IMPORT_EXPORT_TEST_CATEGORY)]
+		[Category(_ONE_TIME_TESTS_SETUP)]
 		public void DummyTest()
 		{
 			true.Should().BeTrue();
 		}
 
 		[Test]
-        [Category(_EXPORT_TO_RELATIVITY_TEST_CATEGORY)]
-        public void DummyExportToRelativityTest()
+		[Category(_EXPORT_TO_RELATIVITY_TEST_CATEGORY)]
+		[Category(_ONE_TIME_TESTS_SETUP)]
+		public void DummyExportToRelativityTest()
 		{
 			true.Should().BeTrue();
 		}
