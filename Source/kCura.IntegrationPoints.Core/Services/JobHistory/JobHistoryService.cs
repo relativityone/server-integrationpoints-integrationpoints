@@ -96,8 +96,6 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 				jobHistory = CreateRdo(integrationPoint, batchInstance, JobTypeChoices.JobHistoryScheduledRun, startTimeUtc);
 
 				integrationPoint.JobHistory = integrationPoint?.JobHistory.Concat(new[] { jobHistory.ArtifactId }).ToArray();
-
-				OnBatchStart(integrationPoint, batchInstance);
 			}
 			return jobHistory;
 		}
@@ -168,8 +166,6 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			int artifactId = _relativityObjectManager.Create(jobHistory);
 			jobHistory.ArtifactId = artifactId;
 
-			OnBatchStart(integrationPoint, batchInstance);
-
 			return jobHistory;
 		}
 
@@ -234,15 +230,6 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			Data.JobHistory jobHistory = jobHistories.SingleOrDefault(); //there should only be one!
 
 			return jobHistory;
-		}
-
-		private void OnBatchStart(Data.IntegrationPoint integrationPoint, Guid batchInstanceId)
-		{
-			_messageService.Send(new JobStartedMessage
-			{
-				Provider = integrationPoint.GetProviderType(_providerTypeService).ToString(),
-				CorrelationID = batchInstanceId.ToString()
-			});
 		}
 
 		private IEnumerable<FieldRef> MapToFieldRefs(Guid[] rdoFieldGuids)

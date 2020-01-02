@@ -238,7 +238,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 
 			// ASSERT
 			ValidateJobHistory(jobHistory, JobTypeChoices.JobHistoryRun);
-			_messageService.Received().Send(Arg.Any<JobStartedMessage>());
 		}
 
 		[Test]
@@ -290,7 +289,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 
 			// ASSERT
 			ValidateJobHistory(returnedJobHistory, JobTypeChoices.JobHistoryScheduledRun);
-			_messageService.Received().Send(Arg.Any<JobStartedMessage>());
 		}
 
 		[Test]
