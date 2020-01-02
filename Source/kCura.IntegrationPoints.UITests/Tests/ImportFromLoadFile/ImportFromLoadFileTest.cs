@@ -23,6 +23,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints]
+	[Category(TestCategory.WEB_IMPORT_EXPORT)]
 	[Category(TestCategory.IMPORT_FROM_LOAD_FILE)]
 	public class ImportFromLoadFileTest : UiTest
 	{

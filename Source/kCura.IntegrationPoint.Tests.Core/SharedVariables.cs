@@ -213,76 +213,58 @@ namespace kCura.IntegrationPoint.Tests.Core
 		#region Relativity Settings
 
 		/// <summary>
-		/// Returns RelativityInstanceAddress value from config file
+		/// Returns RelativityHostAddress value from config file
 		/// </summary>
-		public static string RelativityInstanceHostname => AppSettingString("RelativityInstanceAddress");
+		public static string RelativityHostAddress => AppSettingString("RelativityHostAddress");
 
 		/// <summary>
 		/// Returns Relativity instance base URL
 		/// </summary>
-		/// <returns>
-		/// {ServerBindingType}://{RelativityInstanceAddress}
-		/// </returns>
-		public static string RelativityBaseAdressUrlValue => $"{ServerBindingType}://{RelativityInstanceHostname}";
+		public static string RelativityBaseAdressUrlValue => $"{ServerBindingType}://{RelativityHostAddress}";
 
 		/// <summary>
 		/// Returns Relativity fronted URL value
 		/// </summary>
-		/// <returns>
-		/// {ServerBindingType}://{RelativityInstanceAddress}/Relativity
-		/// </returns>
 		public static string RelativityFrontendUrlValue => $"{RelativityBaseAdressUrlValue}/Relativity";
 
 		/// <summary>
 		/// Returns Relativity fronted URI
 		/// </summary>
-		/// <returns>
-		/// {ServerBindingType}://{RelativityInstanceAddress}/Relativity
-		/// </returns>
 		public static Uri RelativityFrontedUri => new Uri(RelativityFrontendUrlValue);
 
 		/// <summary>
 		/// Returns RSAPI URL
 		/// </summary>
-		/// <returns>
-		/// {ServerBindingType}://{RSAPIServerAddress ?? RelativityInstanceAddress}/Relativity.Services/
-		/// </returns>
 		public static Uri RsapiUri => new Uri($"{ServerBindingType}://{RsapiServerAddress}/Relativity.Services/");
 
 		/// <summary>
 		/// Returns Relativity REST URL
 		/// </summary>
-		/// <returns>
-		/// {ServerBindingType}://{RelativityInstanceAddress}/Relativity.Rest/api
-		/// </returns>
 		public static Uri RelativityRestUri => new Uri($"{RelativityBaseAdressUrlValue}/Relativity.Rest/api");
 
 		/// <summary>
 		/// Returns Relativity WebAPI URL
 		/// </summary>
-		/// <returns>
-		/// {ServerBindingType}://{RelativityInstanceAddress}/RelativityWebAPI/
-		/// </returns>
 		public static string RelativityWebApiUrl => $"{RelativityBaseAdressUrlValue}/RelativityWebAPI/";
 
 		private static string ServerBindingType => AppSettingString("ServerBindingType");
 
-		private static string RsapiServerAddress => GetAppSettingStringOrDefault("RSAPIServerAddress", () => RelativityInstanceHostname);
+		private static string RsapiServerAddress => GetAppSettingStringOrDefault("RSAPIServerAddress", () => RelativityHostAddress);
 
 		#endregion Relativity Settings
 
 		#region ConnectionString Settings
 
 		public static string TargetDbHost => GetTargetDbHost();
-		public static string SqlServerAddress => AppSettingString("SQLServerAddress");
+		public static string SqlServer => AppSettingString("SqlServer");
 
-		public static string DatabaseUserId => AppSettingString("SQLUsername");
+		public static string DatabaseUserId => AppSettingString("SqlUsername");
 
-		public static string DatabasePassword => AppSettingString("SQLPassword");
+		public static string DatabasePassword => AppSettingString("SqlUsername");
 
-		public static string EddsConnectionString => string.Format(AppSettingString("connectionStringEDDS"), SqlServerAddress, DatabaseUserId, DatabasePassword);
+		public static string EddsConnectionString => string.Format(AppSettingString("connectionStringEDDS"), SqlServer, DatabaseUserId, DatabasePassword);
 
-		public static string WorkspaceConnectionStringFormat => string.Format(AppSettingString("connectionStringWorkspace"), "{0}", SqlServerAddress, DatabaseUserId, DatabasePassword);
+		public static string WorkspaceConnectionStringFormat => string.Format(AppSettingString("connectionStringWorkspace"), "{0}", SqlServer, DatabaseUserId, DatabasePassword);
 
 		public static int KeplerTimeout => AppSettingInt("keplerTimeout");
 
@@ -300,7 +282,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static bool UseLocalRap => bool.Parse(AppSettingString("UseLocalRAP"));
 
-        public static string LocalApplicationsRapFilesLocation => AppSettingString("LocalApplicationsRAPFilesLocation");
+        public static string LocalApplicationsRapFilesLocation => AppSettingString("RAPDirectory");
 
         public static string RipRapFilePath => GetRapFilePath(AppSettingString("RipRapFileName"));
 
@@ -331,7 +313,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		public static string FileshareLocation =>
 			GetAppSettingStringOrDefault(
 				"fileshareLocation",
-				() => $@"\\{RelativityInstanceHostname}\fileshare"
+				() => $@"\\{RelativityHostAddress}\fileshare"
 			);
 
 		#endregion
@@ -345,7 +327,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		}
 
 		private static string GetTargetDbHost() =>
-			GetAppSettingStringOrDefault("targetDbHost", () => RelativityInstanceHostname);
+			GetAppSettingStringOrDefault("targetDbHost", () => RelativityHostAddress);
 
 		public static bool UseIpRapFile()
 		{
