@@ -31,7 +31,7 @@ namespace Relativity.Sync.Executors.Validation
 			try
 			{
 				string workspaceName = await _workspaceNameQuery.GetWorkspaceNameAsync(_serviceFactory, configuration.DestinationWorkspaceArtifactId, token).ConfigureAwait(false);
-				bool isValidName = _workspaceNameValidator.Validate(workspaceName, token);
+				bool isValidName = _workspaceNameValidator.Validate(workspaceName, configuration.DestinationWorkspaceArtifactId, token);
 				if (!isValidName)
 				{
 					_logger.LogError("Source workspace name is invalid.");

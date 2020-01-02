@@ -55,12 +55,12 @@ namespace Relativity.Sync.Transfer
 				}
 				catch (ServiceException ex)
 				{
-					_logger.LogError(ex, "Service call failed while querying document field object: {request}", request);
+					_logger.LogError(ex, "Service call failed while querying document fields in workspace {workspaceArtifactId}", sourceWorkspaceArtifactId);
 					throw new SyncKeplerException($"Service call failed while querying document fields in workspace {sourceWorkspaceArtifactId}", ex);
 				}
 				catch (Exception ex)
 				{
-					_logger.LogError(ex, "Failed to query document field object: {request}", request);
+					_logger.LogError(ex, "Failed to query document fields in workspace {workspaceArtifactId}", sourceWorkspaceArtifactId);
 					throw new SyncKeplerException($"Failed to query document fields in workspace {sourceWorkspaceArtifactId}", ex);
 				}
 			}

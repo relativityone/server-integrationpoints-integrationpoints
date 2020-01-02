@@ -30,7 +30,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			var fieldConfiguration = new Mock<IFieldConfiguration>();
 			fieldConfiguration.SetupGet(x => x.DestinationFolderStructureBehavior).Returns(folderStructureBehavior);
-			fieldConfiguration.SetupGet(x => x.FolderPathSourceFieldName).Returns("foo");
+			fieldConfiguration.Setup(x => x.GetFolderPathSourceFieldName()).Returns("foo");
 
 			var instance = new FolderPathFieldBuilder(folderPathRetriever.Object, fieldConfiguration.Object);
 

@@ -30,9 +30,10 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		{
 			// Arrange
 			string testWorkspaceName = "GoodWorkspace Name";
+			int testWorkspaceArtifactId = 1;
 
 			// Act
-			bool actualResult = _instance.Validate(testWorkspaceName, _cancellationToken);
+			bool actualResult = _instance.Validate(testWorkspaceName, testWorkspaceArtifactId, _cancellationToken);
 
 			// Assert
 			Assert.IsTrue(actualResult);
@@ -44,15 +45,16 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		{
 			// Arrange
 			string testWorkspaceName = "My Bad; Workspace";
+			int testWorkspaceArtifactId = 1;
 
 			// Act
-			bool actualResult = _instance.Validate(testWorkspaceName, _cancellationToken);
+			bool actualResult = _instance.Validate(testWorkspaceName, testWorkspaceArtifactId, _cancellationToken);
 
 			// Assert
 			Assert.IsFalse(actualResult);
 			_syncLog.Verify(x => x.LogError(
-				It.Is<string>(y => y.StartsWith("Invalid workspace name:", StringComparison.InvariantCulture)),
-				It.Is<object[]>(y => (string)y[0] == testWorkspaceName)), Times.Once);
+				It.Is<string>(y => y.StartsWith("Invalid workspace name", StringComparison.InvariantCulture)),
+				It.Is<object[]>(y => (int)y[0] == testWorkspaceArtifactId)), Times.Once);
 		}
 	}
 }

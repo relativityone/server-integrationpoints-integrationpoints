@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,6 +12,9 @@ namespace Relativity.Sync.Executors
 {
 	internal sealed class RelativitySourceJobTagRepository : IRelativitySourceJobTagRepository
 	{
+		private const string _NAME_FIELD_NAME = "Name";
+		private const string _SENSITIVE_DATA_REMOVED = "[Sensitive user data has been removed]";
+
 		private readonly ISourceServiceFactoryForUser _sourceServiceFactoryForUser;
 		private readonly ISyncLog _logger;
 
@@ -26,7 +30,7 @@ namespace Relativity.Sync.Executors
 
 		public async Task<RelativitySourceJobTag> CreateAsync(int destinationWorkspaceArtifactId, RelativitySourceJobTag sourceJobTag, CancellationToken token)
 		{
-			_logger.LogVerbose($"Creating {nameof(RelativitySourceJobTag)} in destination workspace artifact ID: {{destinationWorkspaceArtifactId}} Source case tah artifact ID: {{sourceCaseTagArtifactId}}",
+			_logger.LogVerbose($"Creating {nameof(RelativitySourceJobTag)} in destination workspace artifact ID: {{destinationWorkspaceArtifactId}} Source case tag artifact ID: {{sourceCaseTagArtifactId}}",
 				destinationWorkspaceArtifactId, sourceJobTag.SourceCaseTagArtifactId);
 			using (IObjectManager objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
@@ -47,14 +51,15 @@ namespace Relativity.Sync.Executors
 				}
 				catch (ServiceException ex)
 				{
+					request.FieldValues = RemoveSensitiveUserData(request.FieldValues);
 					_logger.LogError(ex, $"Service call failed while creating {nameof(RelativitySourceJobTag)}: {{request}}", request);
 					throw new RelativitySourceJobTagRepositoryException($"Service call failed while creating {nameof(RelativitySourceJobTag)}: {request}", ex);
 				}
 				catch (Exception ex)
 				{
+					request.FieldValues = RemoveSensitiveUserData(request.FieldValues);
 					_logger.LogError(ex, $"Failed to create {nameof(RelativitySourceJobTag)}: {{request}}", request);
-					throw new RelativitySourceJobTagRepositoryException($"Failed to create {nameof(RelativitySourceJobTag)} '{sourceJobTag.Name}' in workspace {sourceJobTag.SourceCaseTagArtifactId}",
-						ex);
+					throw new RelativitySourceJobTagRepositoryException($"Failed to create {nameof(RelativitySourceJobTag)} in workspace {sourceJobTag.SourceCaseTagArtifactId}", ex);
 				}
 
 				RelativitySourceJobTag createdTag = new RelativitySourceJobTag()
@@ -76,7 +81,7 @@ namespace Relativity.Sync.Executors
 			{
 				new FieldRefValuePair
 				{
-					Field = new FieldRef {Name = "Name"},
+					Field = new FieldRef {Name = _NAME_FIELD_NAME},
 					Value = sourceJobTagName
 				},
 				new FieldRefValuePair
@@ -92,6 +97,14 @@ namespace Relativity.Sync.Executors
 			};
 
 			return pairs;
+		}
+
+		private IEnumerable<FieldRefValuePair> RemoveSensitiveUserData(IEnumerable<FieldRefValuePair> fieldValues)
+		{
+			fieldValues.First(fieldValue => fieldValue.Field.Name == _NAME_FIELD_NAME).Value = _SENSITIVE_DATA_REMOVED;
+			fieldValues.First(fieldValue => fieldValue.Field.Guid == JobHistoryNameGuid).Value = _SENSITIVE_DATA_REMOVED;
+
+			return fieldValues;
 		}
 	}
 }

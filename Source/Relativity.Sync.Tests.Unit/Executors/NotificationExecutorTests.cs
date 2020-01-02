@@ -239,13 +239,13 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private IMock<INotificationConfiguration> GetNotificationConfiguration()
 		{
 			var notificationConfiguration = new Mock<INotificationConfiguration>();
-			notificationConfiguration.SetupGet(x => x.JobName).Returns(_JOB_NAME);
+			notificationConfiguration.Setup(x => x.GetJobName()).Returns(_JOB_NAME);
 			notificationConfiguration.SetupGet(x => x.DestinationWorkspaceArtifactId).Returns(_DESTINATION_CASE_ARTIFACT_ID);
 			notificationConfiguration.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(_SOURCE_CASE_ARTIFACT_ID);
-			notificationConfiguration.SetupGet(x => x.SourceWorkspaceTag).Returns(_sourceCaseTag);
+			notificationConfiguration.Setup(x => x.GetSourceWorkspaceTag()).Returns(_sourceCaseTag);
 			notificationConfiguration.SetupGet(x => x.SyncConfigurationArtifactId).Returns(_SYNC_CONFIG_ARTIFACT_ID);
 			notificationConfiguration.SetupGet(x => x.JobHistoryArtifactId).Returns(_JOB_HISTORY_ARTIFACT_ID);
-			notificationConfiguration.SetupGet(x => x.EmailRecipients).Returns(_recipients);
+			notificationConfiguration.Setup(x => x.GetEmailRecipients()).Returns(_recipients);
 			return notificationConfiguration;
 		}
 

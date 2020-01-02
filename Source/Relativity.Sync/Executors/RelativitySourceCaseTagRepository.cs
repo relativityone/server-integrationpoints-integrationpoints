@@ -14,6 +14,9 @@ namespace Relativity.Sync.Executors
 {
 	internal sealed class RelativitySourceCaseTagRepository : IRelativitySourceCaseTagRepository
 	{
+		private const string _NAME_FIELD_NAME = "Name";
+		private const string _SENSITIVE_DATA_REMOVED = "[Sensitive user data has been removed]";
+
 		private readonly IDestinationServiceFactoryForUser _serviceFactoryForUser;
 		private readonly ISyncLog _logger;
 
@@ -31,8 +34,8 @@ namespace Relativity.Sync.Executors
 		public async Task<RelativitySourceCaseTag> ReadAsync(int destinationWorkspaceArtifactId, int sourceWorkspaceArtifactId, string sourceInstanceName, CancellationToken token)
 		{
 			_logger.LogVerbose(
-				"Reading {tagName}. Source workspace artifact ID: {sourceWorkspaceArtifactId} Destination workspace artifact ID: {destinationWorkspaceArtifactId} Source instance name: {sourceInstanceName}",
-				nameof(RelativitySourceCaseTag), sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, sourceInstanceName);
+				"Reading {tagName}. Source workspace artifact ID: {sourceWorkspaceArtifactId} Destination workspace artifact ID: {destinationWorkspaceArtifactId}",
+				nameof(RelativitySourceCaseTag), sourceWorkspaceArtifactId, destinationWorkspaceArtifactId);
 			RelativityObject tag = await QueryRelativityObjectTagAsync(destinationWorkspaceArtifactId, sourceWorkspaceArtifactId, sourceInstanceName, token).ConfigureAwait(false);
 
 			if (tag != null)
@@ -114,14 +117,15 @@ namespace Relativity.Sync.Executors
 				}
 				catch (ServiceException ex)
 				{
+					request.FieldValues = RemoveSensitiveUserData(request.FieldValues);
 					_logger.LogError(ex, "Service call failed while creating {tagName}: {request}", nameof(RelativitySourceCaseTag), request);
 					throw new RelativitySourceCaseTagRepositoryException($"Service call failed while creating {nameof(RelativitySourceCaseTag)}: {request}", ex);
 				}
 				catch (Exception ex)
 				{
+					request.FieldValues = RemoveSensitiveUserData(request.FieldValues);
 					_logger.LogError(ex, "Failed to create {tagName}: {request}", nameof(RelativitySourceCaseTag), request);
-					throw new RelativitySourceCaseTagRepositoryException($"Failed to create {nameof(RelativitySourceCaseTag)} '{sourceCaseTag.Name}' in workspace {destinationWorkspaceArtifactId}",
-						ex);
+					throw new RelativitySourceCaseTagRepositoryException($"Failed to create {nameof(RelativitySourceCaseTag)} in workspace {destinationWorkspaceArtifactId}", ex);
 				}
 
 				RelativitySourceCaseTag createdTag = new RelativitySourceCaseTag
@@ -153,6 +157,7 @@ namespace Relativity.Sync.Executors
 				}
 				catch (ServiceException ex)
 				{
+					request.FieldValues = RemoveSensitiveUserData(request.FieldValues);
 					_logger.LogError(ex, "Service call failed while updating {tagName}: {request}", nameof(RelativitySourceCaseTag), request);
 					throw new RelativitySourceCaseTagRepositoryException(
 						$"Failed to update {nameof(RelativitySourceCaseTag)} with id {sourceCaseTag.ArtifactId} in workspace {destinationWorkspaceArtifactId}",
@@ -160,6 +165,7 @@ namespace Relativity.Sync.Executors
 				}
 				catch (Exception ex)
 				{
+					request.FieldValues = RemoveSensitiveUserData(request.FieldValues);
 					_logger.LogError(ex, "Failed to update {tagName}: {request}", nameof(RelativitySourceCaseTag), request);
 					throw new RelativitySourceCaseTagRepositoryException(
 						$"Failed to update {nameof(RelativitySourceCaseTag)} with id {sourceCaseTag.ArtifactId} in workspace {destinationWorkspaceArtifactId}",
@@ -174,7 +180,7 @@ namespace Relativity.Sync.Executors
 			{
 				new FieldRefValuePair
 				{
-					Field = new FieldRef {Name = "Name"},
+					Field = new FieldRef {Name = _NAME_FIELD_NAME},
 					Value = sourceTagName
 				},
 				new FieldRefValuePair
@@ -195,6 +201,15 @@ namespace Relativity.Sync.Executors
 			};
 
 			return pairs;
+		}
+
+		private IEnumerable<FieldRefValuePair> RemoveSensitiveUserData(IEnumerable<FieldRefValuePair> fieldValues)
+		{
+			fieldValues.First(fieldValue => fieldValue.Field.Name == _NAME_FIELD_NAME).Value = _SENSITIVE_DATA_REMOVED;
+			fieldValues.First(fieldValue => fieldValue.Field.Guid == SourceWorkspaceNameFieldGuid).Value = _SENSITIVE_DATA_REMOVED;
+			fieldValues.First(fieldValue => fieldValue.Field.Guid == InstanceNameFieldGuid).Value = _SENSITIVE_DATA_REMOVED;
+
+			return fieldValues;
 		}
 	}
 }

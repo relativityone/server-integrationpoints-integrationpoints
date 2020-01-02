@@ -81,14 +81,15 @@ namespace Relativity.Sync.Tests.System
 					}
 				}
 			};
+
 			var configuration = new ConfigurationStub
 			{
 				DestinationWorkspaceArtifactId = _destinationWorkspaceArtifactId,
 				SourceWorkspaceTagArtifactId = sourceCaseTagId,
 				SourceJobTagArtifactId = sourceJobTagId,
-				FieldMappings = fieldMap,
 				SourceWorkspaceArtifactId = testSourceCaseArtifactId
 			};
+			configuration.SetFieldMappings(fieldMap);
 
 
 			var serviceFactoryStub = new ServiceFactoryStub(ServiceFactory);

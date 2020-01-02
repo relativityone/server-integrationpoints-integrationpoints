@@ -59,7 +59,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			builder2.Setup(b => b.BuildColumns()).Returns(new[] {nonDocumentSpecialField2});
 
 			_configuration = new Mock<IFieldConfiguration>();
-			_configuration.Setup(c => c.FieldMappings).Returns(new[] { mappedField1, mappedField2 });
+			_configuration.Setup(c => c.GetFieldMappings()).Returns(new[] { mappedField1, mappedField2 });
 			_configuration.Setup(c => c.SourceWorkspaceArtifactId).Returns(_SOURCE_WORKSPACE_ARTIFACT_ID);
 			_documentFieldRepository = new Mock<IDocumentFieldRepository>();
 			_documentFieldRepository.Setup(r => r.GetRelativityDataTypesForFieldsByFieldNameAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<ICollection<string>>(), CancellationToken.None))
@@ -300,7 +300,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		{
 			// Arrange
 			_configuration = new Mock<IFieldConfiguration>();
-			_configuration.Setup(c => c.FieldMappings).Returns(new List<FieldMap>(0));
+			_configuration.Setup(c => c.GetFieldMappings()).Returns(new List<FieldMap>(0));
 			_configuration.Setup(c => c.SourceWorkspaceArtifactId).Returns(_SOURCE_WORKSPACE_ARTIFACT_ID);
 
 			_instance = new FieldManager(_configuration.Object, _documentFieldRepository.Object, Enumerable.Empty<ISpecialFieldBuilder>());
@@ -341,7 +341,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		private void MockFieldMappingsToReturnOneMapping(string sourceFieldName, string destinationFieldName)
 		{
 			FieldMap mapping = CreateFieldMapping(sourceFieldName, destinationFieldName);
-			_configuration.Setup(c => c.FieldMappings).Returns(new[] { mapping });
+			_configuration.Setup(c => c.GetFieldMappings()).Returns(new[] { mapping });
 		}
 
 		private static FieldMap CreateFieldMapping(string sourceFieldName, string destinationFieldName)

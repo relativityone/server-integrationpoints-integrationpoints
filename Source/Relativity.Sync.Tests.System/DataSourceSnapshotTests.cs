@@ -55,7 +55,6 @@ namespace Relativity.Sync.Tests.System
 
 			ConfigurationStub configuration = new ConfigurationStub
 			{
-				FieldMappings = new List<FieldMap>(),
 				DataSourceArtifactId = _savedSearchArtifactId,
 				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.None,
 				SourceWorkspaceArtifactId = _workspace.ArtifactID,

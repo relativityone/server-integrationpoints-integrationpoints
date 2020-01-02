@@ -80,7 +80,6 @@ namespace Relativity.Sync.Tests.System
 				DestinationWorkspaceArtifactId = destinationWorkspaceArtifactId,
 				DataSourceArtifactId = allDocumentsSavedSearchArtifactId,
 				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure,
-				FieldMappings = fieldMap,
 
 				JobHistoryArtifactId = jobHistoryArtifactId,
 				DestinationFolderArtifactId = destinationFolderArtifactId,
@@ -93,6 +92,7 @@ namespace Relativity.Sync.Tests.System
 				FieldOverlayBehavior = FieldOverlayBehavior.UseFieldSettings,
 				ImportNativeFileCopyMode = ImportNativeFileCopyMode.CopyFiles,
 			};
+			configuration.SetFieldMappings(fieldMap);
 
 			IContainer container = ContainerHelper.Create(configuration,
 				containerBuilder => containerBuilder.RegisterInstance(new ImportApiFactoryStub()).As<IImportApiFactory>()

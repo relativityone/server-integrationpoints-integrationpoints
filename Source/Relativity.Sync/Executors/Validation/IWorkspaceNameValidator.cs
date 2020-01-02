@@ -4,6 +4,6 @@ namespace Relativity.Sync.Executors.Validation
 {
 	internal interface IWorkspaceNameValidator
 	{
-		bool Validate(string workspaceName, CancellationToken token);
+		bool Validate(string workspaceName, int workspaceArtifactId, CancellationToken token);
 	}
 }

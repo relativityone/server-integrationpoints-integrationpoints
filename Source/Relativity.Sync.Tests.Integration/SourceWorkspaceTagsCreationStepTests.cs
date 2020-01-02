@@ -434,7 +434,6 @@ namespace Relativity.Sync.Tests.Integration
 			const int destWorkspaceArtifactId = 1015853;
 			const int jobArtifactId = 101000;
 			const string destWorkspaceName = "Cool Workspace";
-			const string destInstanceName = "This Instance";
 			var configuration = new ConfigurationStub
 			{
 				SourceWorkspaceArtifactId = srcWorkspaceArtifactId,
@@ -473,7 +472,7 @@ namespace Relativity.Sync.Tests.Integration
 			Assert.IsNotNull(result.Exception);
 			Assert.IsInstanceOf<SyncKeplerException>(result.Exception);
 			Assert.AreEqual(
-				$"Failed to create {nameof(DestinationWorkspaceTag)} '{destInstanceName} - {destWorkspaceName} - {destWorkspaceArtifactId}' in workspace {srcWorkspaceArtifactId}",
+				$"Failed to create {nameof(DestinationWorkspaceTag)} in workspace {srcWorkspaceArtifactId}",
 				result.Exception.Message);
 		}
 

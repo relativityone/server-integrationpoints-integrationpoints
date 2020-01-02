@@ -20,17 +20,17 @@ namespace Relativity.Sync.Executors.Validation
 
 		public Task<ValidationResult> ValidateAsync(IValidationConfiguration configuration, CancellationToken token)
 		{
-			_logger.LogVerbose("Validating job name: {jobName}", configuration.JobName);
+			_logger.LogVerbose("Validating job name.");
 
 			ValidationResult result = new ValidationResult();
 
-			if (string.IsNullOrWhiteSpace(configuration.JobName))
+			if (string.IsNullOrWhiteSpace(configuration.GetJobName()))
 			{
 				result.Add(_ERROR_JOB_NAME_EMPTY);
 			}
 			else
 			{
-				bool areForbiddenCharactersPresent = configuration.JobName.Any(c => _allForbiddenCharacters.Contains(c));
+				bool areForbiddenCharactersPresent = configuration.GetJobName().Any(c => _allForbiddenCharacters.Contains(c));
 				if (areForbiddenCharactersPresent)
 				{
 					result.Add(_ERROR_JOB_NAME_INVALID);

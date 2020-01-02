@@ -5,17 +5,28 @@ namespace Relativity.Sync.Configuration
 {
 	internal interface IValidationConfiguration : IConfiguration
 	{
-		string JobName { get; }
-		string NotificationEmails { get; }
 		int SourceWorkspaceArtifactId { get; }
+
 		int DestinationWorkspaceArtifactId { get; }
+
 		int SavedSearchArtifactId { get; }
+
 		int DestinationFolderArtifactId { get; }
-		IList<FieldMap> FieldMappings { get; }
-		string FolderPathSourceFieldName { get; }
+
 		ImportOverwriteMode ImportOverwriteMode { get; }
+
 		FieldOverlayBehavior FieldOverlayBehavior { get; }
+
 		DestinationFolderStructureBehavior DestinationFolderStructureBehavior { get; }
+
 		ImportNativeFileCopyMode ImportNativeFileCopyMode { get; }
+
+		string GetJobName();
+
+		string GetNotificationEmails();
+
+		IList<FieldMap> GetFieldMappings();
+
+		string GetFolderPathSourceFieldName();
 	}
 }

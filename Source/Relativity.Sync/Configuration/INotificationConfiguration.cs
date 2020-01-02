@@ -6,18 +6,18 @@ namespace Relativity.Sync.Configuration
 	{
 		int DestinationWorkspaceArtifactId { get; }
 
-		IEnumerable<string> EmailRecipients { get; }
-
 		int JobHistoryArtifactId { get; }
-
-		string JobName { get; }
 
 		bool SendEmails { get; }
 
 		int SourceWorkspaceArtifactId { get; }
 
-		string SourceWorkspaceTag { get; }
-
 		int SyncConfigurationArtifactId { get; }
+
+		IEnumerable<string> GetEmailRecipients();
+
+		string GetJobName();
+
+		string GetSourceWorkspaceTag();
 	}
 }

@@ -77,7 +77,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			IEnumerable<string> actualEmailRecipients = Enumerable.Empty<string>();
 			for (int i = 0; i < numberOfCalls; i++)
 			{
-				actualEmailRecipients = instance.EmailRecipients;
+				actualEmailRecipients = instance.GetEmailRecipients();
 			}
 
 			// Assert
@@ -98,7 +98,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			var instance = new NotificationConfiguration(cache.Object, syncJobParameters);
 
 			// Act
-			IEnumerable<string> actualEmailRecipients = instance.EmailRecipients;
+			IEnumerable<string> actualEmailRecipients = instance.GetEmailRecipients();
 
 			// Assert
 			int expectedNumberOfRecipients = TestEmailRecipients.Length - 1;    // removing one empty entry
@@ -128,8 +128,8 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			// Act
 			int actualDestinationWorkspaceArtifactId = instance.DestinationWorkspaceArtifactId;
 			int actualJobHistoryArtifactId = instance.JobHistoryArtifactId;
-			string actualJobName = instance.JobName;
-			string actualSourceWorkspaceTag = instance.SourceWorkspaceTag;
+			string actualJobName = instance.GetJobName();
+			string actualSourceWorkspaceTag = instance.GetSourceWorkspaceTag();
 
 			// Assert
 			actualDestinationWorkspaceArtifactId.Should().Be(expectedDestinationWorkspaceArtifactId);

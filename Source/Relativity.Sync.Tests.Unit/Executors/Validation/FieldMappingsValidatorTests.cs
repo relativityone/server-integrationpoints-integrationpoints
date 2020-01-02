@@ -75,7 +75,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			_validationConfiguration = new Mock<IValidationConfiguration>();
 			_validationConfiguration.SetupGet(x => x.DestinationWorkspaceArtifactId).Returns(_TEST_DEST_WORKSPACE_ARTIFACT_ID).Verifiable();
 			_validationConfiguration.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(_TEST_SOURCE_WORKSPACE_ARTIFACT_ID).Verifiable();
-			_validationConfiguration.SetupGet(x => x.FieldMappings).Returns(_fieldMappings).Verifiable();
+			_validationConfiguration.Setup(x => x.GetFieldMappings()).Returns(_fieldMappings).Verifiable();
 			_validationConfiguration.SetupGet(x => x.ImportOverwriteMode).Returns(ImportOverwriteMode.AppendOverlay);
 			_validationConfiguration.SetupGet(x => x.FieldOverlayBehavior).Returns(FieldOverlayBehavior.UseFieldSettings);
 
@@ -102,7 +102,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		public async Task ValidateAsyncDeserializeThrowsExceptionTest()
 		{
 			// Arrange
-			_validationConfiguration.Setup(x => x.FieldMappings).Throws<InvalidOperationException>().Verifiable();
+			_validationConfiguration.Setup(x => x.GetFieldMappings()).Throws<InvalidOperationException>().Verifiable();
 
 			// Act
 			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
@@ -194,7 +194,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		{
 			// Arrange
 			List<FieldMap> fieldMap = _jsonSerializer.Deserialize<List<FieldMap>>(testInvalidFieldMap);
-			_validationConfiguration.SetupGet(x => x.FieldMappings).Returns(fieldMap).Verifiable();
+			_validationConfiguration.Setup(x => x.GetFieldMappings()).Returns(fieldMap).Verifiable();
 
 			// Act
 			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);

@@ -65,9 +65,8 @@ namespace Relativity.Sync.Executors
 		public async Task<DestinationWorkspaceTag> CreateAsync(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId, string destinationWorkspaceName)
 		{
 			_logger.LogVerbose($"Creating {nameof(DestinationWorkspaceTag)} in source workspace ID: {{sourceWorkspaceArtifactId}} " +
-					"Destination workspace ID: {destinationWorkspaceArtifactId} " +
-					"Destination workspace name: {destinationWorkspaceName}",
-					sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, destinationWorkspaceName);
+					"Destination workspace ID: {destinationWorkspaceArtifactId}",
+					sourceWorkspaceArtifactId, destinationWorkspaceArtifactId);
 			string federatedInstanceName = await _federatedInstance.GetInstanceNameAsync().ConfigureAwait(false);
 
 			int federatedInstanceId = await _federatedInstance.GetInstanceIdAsync().ConfigureAwait(false);
@@ -87,16 +86,15 @@ namespace Relativity.Sync.Executors
 				}
 				catch (ServiceException ex)
 				{
+					request.FieldValues = RemoveSensitiveUserData(request.FieldValues);
 					_logger.LogError(ex, $"Service call failed while creating {nameof(DestinationWorkspaceTag)}: {{request}}", request);
 					throw new SyncKeplerException($"Service call failed while creating {nameof(DestinationWorkspaceTag)}: {request}", ex);
 				}
 				catch (Exception ex)
 				{
+					request.FieldValues = RemoveSensitiveUserData(request.FieldValues);
 					_logger.LogError(ex, $"Failed to create {nameof(DestinationWorkspaceTag)}: {{request}}", request);
-					string tagName = request.FieldValues.First(x => x.Field.Guid == _nameGuid).Value.ToString();
-					throw new SyncKeplerException(
-						$"Failed to create {nameof(DestinationWorkspaceTag)} '{tagName}' in workspace {sourceWorkspaceArtifactId}",
-						ex);
+					throw new SyncKeplerException($"Failed to create {nameof(DestinationWorkspaceTag)} in workspace {sourceWorkspaceArtifactId}", ex);
 				}
 
 				var createdTag = new DestinationWorkspaceTag
@@ -130,11 +128,13 @@ namespace Relativity.Sync.Executors
 				}
 				catch (ServiceException ex)
 				{
+					request.FieldValues = RemoveSensitiveUserData(request.FieldValues);
 					_logger.LogError(ex, $"Service call failed while updating {nameof(DestinationWorkspaceTag)}: {{request}}", request);
 					throw new SyncKeplerException($"Failed to update {nameof(DestinationWorkspaceTag)} with id {destinationWorkspaceTag.ArtifactId} in workspace {sourceWorkspaceArtifactId}", ex);
 				}
 				catch (Exception ex)
 				{
+					request.FieldValues = RemoveSensitiveUserData(request.FieldValues);
 					_logger.LogError(ex, $"Failed to update {nameof(DestinationWorkspaceTag)}: {{request}}", request);
 					throw new SyncKeplerException($"Failed to update {nameof(DestinationWorkspaceTag)} with id {destinationWorkspaceTag.ArtifactId} in workspace {sourceWorkspaceArtifactId}", ex);
 				}
@@ -284,6 +284,13 @@ namespace Relativity.Sync.Executors
 				}
 			};
 			return pairs;
+		}
+
+		private IEnumerable<FieldRefValuePair> RemoveSensitiveUserData(IEnumerable<FieldRefValuePair> fieldValues)
+		{
+			fieldValues.First(fieldValue => fieldValue.Field.Guid == _nameGuid).Value = "[Sensitive user data has been removed]";
+
+			return fieldValues;
 		}
 	}
 }

@@ -42,7 +42,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		public async Task ItShouldHandleValidDestinationFolderName()
 		{
 			const bool workspaceNameValidationResult = true;
-			_workspaceNameValidatorMock.Setup(v => v.Validate(_WORKSPACE_NAME, CancellationToken.None)).Returns(workspaceNameValidationResult);
+			_workspaceNameValidatorMock.Setup(v => v.Validate(_WORKSPACE_NAME, _WORKSPACE_ARTIFACT_ID, CancellationToken.None)).Returns(workspaceNameValidationResult);
 
 			ValidationResult result = await _sut.ValidateAsync(_configurationMock.Object, CancellationToken.None).ConfigureAwait(false);
 
@@ -55,7 +55,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		public async Task ItShouldHandleInvalidDestinationFolderName()
 		{
 			const bool workspaceNameValidationResult = false;
-			_workspaceNameValidatorMock.Setup(v => v.Validate(_WORKSPACE_NAME, CancellationToken.None)).Returns(workspaceNameValidationResult);
+			_workspaceNameValidatorMock.Setup(v => v.Validate(_WORKSPACE_NAME, _WORKSPACE_ARTIFACT_ID, CancellationToken.None)).Returns(workspaceNameValidationResult);
 
 			ValidationResult result = await _sut.ValidateAsync(_configurationMock.Object, CancellationToken.None).ConfigureAwait(false);
 
@@ -66,7 +66,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		[Test]
 		public async Task ItShouldHandleExceptionDuringValidation()
 		{
-			_workspaceNameValidatorMock.Setup(x => x.Validate(_WORKSPACE_NAME, CancellationToken.None)).Throws<InvalidOperationException>();
+			_workspaceNameValidatorMock.Setup(x => x.Validate(_WORKSPACE_NAME, _WORKSPACE_ARTIFACT_ID, CancellationToken.None)).Throws<InvalidOperationException>();
 
 			ValidationResult result = await _sut.ValidateAsync(_configurationMock.Object, CancellationToken.None).ConfigureAwait(false);
 
