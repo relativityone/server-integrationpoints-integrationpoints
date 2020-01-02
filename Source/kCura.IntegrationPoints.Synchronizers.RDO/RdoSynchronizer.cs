@@ -27,8 +27,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
 	public class RdoSynchronizer : IDataSynchronizer, IBatchReporter, IEmailBodyData
 	{
-		private const string _SENSITIVE_DATA_REMOVED = "[Sensitive user data has been removed]";
-
 		private bool _isJobComplete;
 		private bool? _disableNativeLocationValidation;
 		private bool? _disableNativeValidation;
@@ -814,7 +812,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			{
 				FieldIdentifier = entry.FieldIdentifier,
 				FieldType = entry.FieldType,
-				DisplayName = _SENSITIVE_DATA_REMOVED
+				DisplayName = Constants.SENSITIVE_DATA_REMOVED_FOR_LOGGING
 			};
 			return newEntry;
 		}

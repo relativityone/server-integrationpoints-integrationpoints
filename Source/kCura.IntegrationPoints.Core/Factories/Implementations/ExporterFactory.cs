@@ -20,7 +20,6 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 {
 	public class ExporterFactory : IExporterFactory
 	{
-		private const string _SENSITIVE_DATA_REMOVED = "[Sensitive user data has been removed]";
 		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly IHelper _helper;
 		private readonly IFolderPathReaderFactory _folderPathReaderFactory;
@@ -181,7 +180,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			{
 				FieldIdentifier = entry.FieldIdentifier,
 				FieldType = entry.FieldType,
-				DisplayName = _SENSITIVE_DATA_REMOVED
+				DisplayName = Domain.Constants.SENSITIVE_DATA_REMOVED_FOR_LOGGING
 			};
 			return newEntry;
 		}
