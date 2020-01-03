@@ -44,8 +44,8 @@ Task Test -Description "Run tests that don't require a deployed environment." {
 }
 
 Task FunctionalTest -Depends OneTimeTestsSetup -Description "Run UI tests that require a deployed environment." {
-    $LogPath = Join-Path $LogsDir "UITestResults.xml"
-    Invoke-Tests -WhereClause "cat == WebImportExport" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
+    $LogPath = Join-Path $LogsDir "UIWebImportExportTestResults.xml"
+    Invoke-Tests -WhereClause "cat == WebImportExport && cat != NotWorkingOnTrident" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
 }
 
 Task Sign -Description "Sign all files" {
@@ -117,7 +117,7 @@ Task OneTimeTestsSetup -Description "Should be run always before running tests t
 
 Task UIWebImportExportTest -Depends OneTimeTestsSetup -Description "Run UI tests for Web Import/Export" {
     $LogPath = Join-Path $LogsDir "UIWebImportExportTestResults.xml"
-    Invoke-Tests -WhereClause "cat == WebImportExport" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
+    Invoke-Tests -WhereClause "cat == WebImportExport && cat != NotWorkingOnTrident" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
 }
 
 Task UIRelativitySyncTest -Depends OneTimeTestsSetup -Description "Run UI tests for RelativitySync toggle On/Off" {

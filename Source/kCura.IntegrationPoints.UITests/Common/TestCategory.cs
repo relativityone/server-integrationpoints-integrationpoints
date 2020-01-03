@@ -13,5 +13,6 @@
 		public const string PROFILE= "Profile";
 		public const string PERFORMANCE_BASELINE = "PerformanceBaseline";
 		public const string WEB_IMPORT_EXPORT = "WebImportExport";
+		public const string NOT_WORKING_ON_TRIDENT = "NotWorkingOnTrident";
 	}
 }
