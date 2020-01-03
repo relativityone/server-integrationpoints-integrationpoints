@@ -1,10 +1,13 @@
 ﻿using OpenQA.Selenium.Remote;
+using System;
+using System.IO;
 
 namespace kCura.IntegrationPoints.UITests.Driver
 {
 	public static class ChromiumDriverFactory
 	{
-		private const string CHROMIUM_EXE_LOCATION = "C:\\Program Files (x86)\\Chromium\\Application\\chrome.exe";
+		private static readonly string CHROMIUM_EXE_LOCATION = Path.GetFullPath(
+			Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\packages\testpackages\Relativity.Chromium.Portable\tools\Chrome.exe"));
 
 		public static RemoteWebDriver Create()
 		{
