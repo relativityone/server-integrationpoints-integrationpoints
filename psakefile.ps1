@@ -43,10 +43,7 @@ Task Test -Description "Run tests that don't require a deployed environment." {
     Invoke-Tests -WhereClause "cat == Unit" -OutputFile $LogPath -WithCoverage
 }
 
-Task FunctionalTest -Description "Run UI tests that require a deployed environment." {
-    $LogPath = Join-Path $LogsDir "UITestSetupResults.xml"
-    Invoke-Tests -WhereClause "cat == OneTimeTestsSetup" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
-    
+Task FunctionalTest -Depends OneTimeTestsSetup -Description "Run UI tests that require a deployed environment." {
     $LogPath = Join-Path $LogsDir "UITestResults.xml"
     Invoke-Tests -WhereClause "cat == WebImportExport" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
 }
@@ -110,6 +107,22 @@ Task Rebuild -Description "Do a rebuild" {
 
 Task Help -Alias ? -Description "Display task information" {
     WriteDocumentation
+}
+
+# Test Tasks
+Task OneTimeTestsSetup -Description "Should be run always before running tests that require a deployed environment." {
+    $LogPath = Join-Path $LogsDir "OneTimeTestsSetupResults.xml"
+    Invoke-Tests -WhereClause "cat == OneTimeTestsSetup" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
+}
+
+Task UIWebImportExportTest -Depends OneTimeTestsSetup -Description "Run UI tests for Web Import/Export" {
+    $LogPath = Join-Path $LogsDir "UIWebImportExportTestResults.xml"
+    Invoke-Tests -WhereClause "cat == WebImportExport" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
+}
+
+Task UIRelativitySyncTest -Depends OneTimeTestsSetup -Description "Run UI tests for RelativitySync toggle On/Off" {
+    $LogPath = Join-Path $LogsDir "UIRelativitySyncTestResults.xml"
+    Invoke-Tests -WhereClause "cat == ExportToRelativity" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
 }
 
 function Invoke-Tests
