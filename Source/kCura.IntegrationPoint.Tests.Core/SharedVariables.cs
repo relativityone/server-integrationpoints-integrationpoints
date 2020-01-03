@@ -178,6 +178,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static string UiBrowser => GetEnvVariableOrAppSettingString("UITestsBrowser", "UI.Browser");
 
+		public static string UiBrowserPath => AppSettingString("UI.BrowserPath");
+
 		public static int UiBrowserWidth => AppSettingInt("UI.BrowserWidth");
 
 		public static int UiBrowserHeight => AppSettingInt("UI.BrowserHeight");
