@@ -1,0 +1,5 @@
+<RunSettings>
+  <TestRunParameters>
+    <Parameter name="UI.BrowserPath" value="..\..\..\buildtools\Relativity.Chromium.Portable*\tools\Chrome.exe" />
+  </TestRunParameters>
+</RunSettings>
