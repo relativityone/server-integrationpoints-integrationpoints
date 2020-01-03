@@ -12,6 +12,7 @@ using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
 using Workspace = kCura.Relativity.Client.DTOs.Workspace;
+using kCura.IntegrationPoints.Core.Helpers;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services
 {
@@ -21,8 +22,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		class DataTransferLocationServiceTest : DataTransferLocationService
 		{
 			public DataTransferLocationServiceTest(IHelper helper, IIntegrationPointTypeService integrationPointTypeService,
-				IDirectory directory) : 
-                base(helper, integrationPointTypeService, directory)
+				IDirectory directory, ICryptographyHelper cryptographyHelper) : 
+                base(helper, integrationPointTypeService, directory, cryptographyHelper)
 			{
 			}
 
@@ -47,6 +48,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		private IHelper _helperMock;
 		private IIntegrationPointTypeService _integrationPointTypeServiceMock;
 		private IDirectory _directoryMock;
+		private ICryptographyHelper _cryptographyHelperMock;
 		private IAPILog _loggerMock;
 
 		private const int _WKSP_ID = 1234;
@@ -62,6 +64,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_helperMock = Substitute.For<IHelper>();
 			_integrationPointTypeServiceMock = Substitute.For<IIntegrationPointTypeService>();
 			_directoryMock = Substitute.For<IDirectory>();
+			_cryptographyHelperMock = Substitute.For<ICryptographyHelper>();
 			_loggerMock = Substitute.For<IAPILog>();
 
 			ILogFactory logFactoryMock = Substitute.For<ILogFactory>();
@@ -80,7 +83,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 						Name = _IMPORT_PROV_TYPE_NAME
 					}
 				});
-			_subjectUnderTest = new DataTransferLocationServiceTest(_helperMock, _integrationPointTypeServiceMock, _directoryMock );
+			_subjectUnderTest = new DataTransferLocationServiceTest(_helperMock, _integrationPointTypeServiceMock, _directoryMock, _cryptographyHelperMock);
 		}
 
 		[Test]

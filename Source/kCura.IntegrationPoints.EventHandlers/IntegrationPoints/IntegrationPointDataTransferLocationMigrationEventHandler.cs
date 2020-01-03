@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.EventHandler.CustomAttributes;
 using kCura.IntegrationPoints.Core.Helpers;
+using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Services;
@@ -108,7 +109,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				if (_dataTransferLocationService == null)
 				{
 					IIntegrationPointTypeService typeService = new IntegrationPointTypeService(Helper, CaseServiceContext);
-					_dataTransferLocationService = new DataTransferLocationService(Helper, typeService, new LongPathDirectory());
+					_dataTransferLocationService = new DataTransferLocationService(Helper, typeService, new LongPathDirectory(), new CryptographyHelper());
 				}
 
 				return _dataTransferLocationService;

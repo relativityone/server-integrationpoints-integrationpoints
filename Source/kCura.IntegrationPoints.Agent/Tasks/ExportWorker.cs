@@ -100,7 +100,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			PrepareDestinationLocation(sourceSettings);
 
 			_exportProcessRunner.StartWith(sourceSettings, fieldMap, destinationSettings.ArtifactTypeId, job);
-			LogExecuteImportSuccesfulEnd(job);
+			LogExecuteImportSuccessfulEnd(job);
 		}
 
 		private ExportUsingSavedSearchSettings DeserializeSourceSettings(string sourceConfiguration, Job job)
@@ -111,7 +111,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 			catch (Exception e)
 			{
-				LogDeserializationOfSourceSettingsError(job, sourceConfiguration, e);
+				LogDeserializationOfSourceSettingsError(job, e);
 				throw;
 			}
 		}
@@ -124,7 +124,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 			catch (Exception e)
 			{
-				LogDeserializationOfDestinationSettingsError(job, destinationConfiguration, e);
+				LogDeserializationOfDestinationSettingsError(job, e);
 				throw;
 			}
 		}
@@ -144,7 +144,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 			catch (Exception e)
 			{
-				LogDataTransferLocationPreparationError(settings?.Fileshare, e);
+				LogDataTransferLocationPreparationError(e);
 				throw;
 			}
 		}
@@ -160,24 +160,24 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		#region Logging
 
-		private void LogDeserializationOfSourceSettingsError(Job job, string sourceSettings, Exception e)
+		private void LogDeserializationOfSourceSettingsError(Job job, Exception e)
 		{
-			_logger.LogError(e, "Failed to deserialize source settings ({SourceSettings}) for job {JobId}.", sourceSettings, job.JobId);
+			_logger.LogError(e, "Failed to deserialize source settings for job {JobId}.", job.JobId);
 		}
 
-		private void LogDeserializationOfDestinationSettingsError(Job job, string destinationSettings, Exception e)
+		private void LogDeserializationOfDestinationSettingsError(Job job, Exception e)
 		{
-			_logger.LogError(e, "Failed to deserialize destination settings ({DestinationSettings}) for job {JobId}.", destinationSettings, job.JobId);
+			_logger.LogError(e, "Failed to deserialize destination settings for job {JobId}.", job.JobId);
 		}
 
-		private void LogDataTransferLocationPreparationError(string path, Exception e)
+		private void LogDataTransferLocationPreparationError(Exception e)
 		{
-			_logger.LogError(e, "Failed to create transfer location'sdirectory structure", path);
+			_logger.LogError(e, "Failed to create transfer location's directory structure");
 		}
 
-		private void LogExecuteImportSuccesfulEnd(Job job)
+		private void LogExecuteImportSuccessfulEnd(Job job)
 		{
-			_logger.LogInformation("Succesfully finished execution of import in Export Worker for: {JobId}.", job.JobId);
+			_logger.LogInformation("Successfully finished execution of import in Export Worker for: {JobId}.", job.JobId);
 		}
 
 		private void LogExecuteImportStart(Job job)

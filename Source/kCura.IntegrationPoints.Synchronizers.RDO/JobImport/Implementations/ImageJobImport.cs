@@ -72,10 +72,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 
 		private void LogJobSettings()
 		{
-			if (ImportJob.Settings != null)
+			if (ImportSettings != null)
 			{
-				string importApiSettings = JsonConvert.SerializeObject(ImportJob.Settings);
-				_logger.LogInformation("Import API image import settings: {importApiSettings}", importApiSettings);
+				var importSettingsForLogging = new ImportSettingsForLogging(ImportSettings);
+				_logger.LogInformation("Import API image import settings: {importApiSettings}", importSettingsForLogging);
 			}
 		}
 	}

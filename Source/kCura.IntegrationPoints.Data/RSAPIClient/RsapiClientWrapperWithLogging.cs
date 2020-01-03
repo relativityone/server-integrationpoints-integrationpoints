@@ -453,20 +453,18 @@ namespace kCura.IntegrationPoints.Data.RSAPIClient
 
 		private void OnProcessFailure(object sender, ProcessFailureEventArgs eventArgs)
 		{
-			ProcessInformation processInfo = eventArgs.ProcessInformation;
-			_logger.LogWarning("OnProcessFailure event of RsapiClient was raised. Process information: {@processInfo}", processInfo);
+			_logger.LogWarning("OnProcessFailure event of RsapiClient was raised.");
 		}
 
 		private void OnFailure(FailureEventArgs eventArgs)
 		{
-			TargetField targetField = eventArgs.TargetField;
-			_logger.LogError(eventArgs.Exception, "OnFailure event of RsapiClient was raised. Target fields: {@targetField}", targetField);
+			_logger.LogError(eventArgs.Exception, "OnFailure event of RsapiClient was raised.");
 		}
 
 		private void OnProcessCompleteWithError(object sender, ProcessCompleteWithErrorEventArgs eventArgs)
 		{
 			ProcessInformation processInfo = eventArgs.ProcessInformation;
-			_logger.LogWarning("OnProcessCompleteWithError event of RsapiClient was raised. Process information: {@processInfo}", processInfo);
+			_logger.LogWarning("OnProcessCompleteWithError event of RsapiClient was raised.");
 		}
 	}
 }

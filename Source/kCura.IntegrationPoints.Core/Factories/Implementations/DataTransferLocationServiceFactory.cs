@@ -4,6 +4,7 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using Relativity.API;
+using kCura.IntegrationPoints.Core.Helpers;
 
 namespace kCura.IntegrationPoints.Core.Factories.Implementations
 {
@@ -30,7 +31,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			dtService = new DataTransferLocationService(
 				_container.Resolve<IHelper>(),
 				_container.Resolve<IIntegrationPointTypeService>(),
-				_container.Resolve<SystemInterface.IO.IDirectory>());
+				_container.Resolve<SystemInterface.IO.IDirectory>(),
+				_container.Resolve<ICryptographyHelper>());
 			return dtService;
 		}
 	}

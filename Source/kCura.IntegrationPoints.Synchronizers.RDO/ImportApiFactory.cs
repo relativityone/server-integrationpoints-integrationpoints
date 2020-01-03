@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Synchronizers.RDO.Properties;
 using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Enumeration;
 using kCura.WinEDDS.Exceptions;
+using Newtonsoft.Json;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
@@ -77,7 +78,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		private void LogImportSettings(ImportSettings importSettings)
 		{
-			_logger.LogInformation("ImportSettings: {@importSettings}", importSettings);
+			var importSettingsForLogging = new ImportSettingsForLogging(importSettings);
+
+			_logger.LogInformation("ImportSettings: {@importSettings}", importSettingsForLogging);
 		}
 
 		private void LogCreatingImportApiError(Exception ex, string url)
