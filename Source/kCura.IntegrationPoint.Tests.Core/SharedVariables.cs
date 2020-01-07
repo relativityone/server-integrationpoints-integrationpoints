@@ -264,7 +264,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static string DatabaseUserId => AppSettingString("SqlUsername");
 
-		public static string DatabasePassword => AppSettingString("SqlUsername");
+		public static string DatabasePassword => AppSettingString("SqlPassword");
 
 		public static string EddsConnectionString => string.Format(AppSettingString("connectionStringEDDS"), SqlServer, DatabaseUserId, DatabasePassword);
 
