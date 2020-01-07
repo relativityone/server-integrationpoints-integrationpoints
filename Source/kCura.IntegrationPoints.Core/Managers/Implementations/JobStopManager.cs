@@ -43,17 +43,17 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				{
 					try
 					{
-						var job = _jobService.GetJob(_jobId);
+						Job job = _jobService.GetJob(_jobId);
 						if (job != null)
 						{
 							if (job.StopState.HasFlag(StopState.Stopping))
 							{
-								var jobHistory = _jobHistoryService.GetRdo(_jobBatchIdentifier);
+								JobHistory jobHistory = _jobHistoryService.GetRdoWithoutDocuments(_jobBatchIdentifier);
 								if ((jobHistory != null) && (jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryPending)
 															|| jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryProcessing)))
 								{
 									jobHistory.JobStatus = JobStatusChoices.JobHistoryStopping;
-									jobHistoryService.UpdateRdo(jobHistory);
+									jobHistoryService.UpdateRdoWithoutDocuments(jobHistory);
 								}
 
 								_cancellationTokenSource.Cancel();
