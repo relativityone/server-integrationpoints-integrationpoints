@@ -167,14 +167,35 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 			_objectManagerMock.Verify(x => x.QueryAsync(It.IsAny<int>(), It.Is<QueryRequest>(req => ValidateQueryRequest(req)), It.IsAny<int>(), It.IsAny<int>()));
 		}
 
-		private QueryResult CreateQueryResult(List<RelativityObject> fields)
+		[Test]
+		public async Task GetFilteredFieldsAsync_ShouldSortByName()
 		{
-			QueryResult queryResult = new QueryResult()
+			// Arrange
+			List<RelativityObject> unsortedFields = new List<RelativityObject>()
 			{
-				Objects = fields,
-				ResultCount = fields.Count
+				CreateField("Field C"),
+				CreateField("Field A"),
+				CreateField("Field B")
 			};
-			return queryResult;
+
+			List<RelativityObject> sortedFields = unsortedFields.OrderBy(x => x.Name).ToList();
+
+			SetupWorkspaceFields(unsortedFields);
+
+			Mock<IFieldsClassifier> classifier = new Mock<IFieldsClassifier>();
+			IEnumerable<FieldClassificationResult> classificationResult = unsortedFields.Select(x => new FieldClassificationResult()
+			{
+				Name = x.Name,
+				Type = x.FieldValues.Single(valuePair => valuePair.Field.Name == "Field Type").Value.ToString()
+			});
+
+			classifier.Setup(x => x.ClassifyAsync(It.IsAny<ICollection<RelativityObject>>(), It.IsAny<int>())).ReturnsAsync(classificationResult);
+
+			// Act
+			IList<FieldClassificationResult> filteredFields = await _sut.GetFilteredFieldsAsync(0, new List<IFieldsClassifier>() {classifier.Object}).ConfigureAwait(false);
+
+			// Assert
+			filteredFields.Select(x => x.Name).ShouldAllBeEquivalentTo(sortedFields.Select(x => x.Name));
 		}
 
 		private void SetupWorkspaceFields(List<RelativityObject> fields)
@@ -183,6 +204,16 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 				.SetupSequence(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))
 				.ReturnsAsync(CreateQueryResult(fields))
 				.ReturnsAsync(CreateQueryResult(new List<RelativityObject>()));
+		}
+
+		private QueryResult CreateQueryResult(List<RelativityObject> fields)
+		{
+			QueryResult queryResult = new QueryResult()
+			{
+				Objects = fields,
+				ResultCount = fields.Count
+			};
+			return queryResult;
 		}
 
 		private bool ValidateQueryRequest(QueryRequest request)

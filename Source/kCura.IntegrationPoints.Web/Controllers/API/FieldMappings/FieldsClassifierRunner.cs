@@ -29,7 +29,10 @@ namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 
 			IEnumerable<FieldClassificationResult> classifiedFields = await ClassifyFieldsAsync(fields, classifiers, workspaceID).ConfigureAwait(false);
 
-			IList<FieldClassificationResult> filteredFields = classifiedFields.Where(x => x.ClassificationLevel < ClassificationLevel.HideFromUser).ToList();
+			IList<FieldClassificationResult> filteredFields = classifiedFields
+				.Where(x => x.ClassificationLevel < ClassificationLevel.HideFromUser)
+				.OrderBy(x => x.Name)
+				.ToList();
 
 			return filteredFields;
 		}
