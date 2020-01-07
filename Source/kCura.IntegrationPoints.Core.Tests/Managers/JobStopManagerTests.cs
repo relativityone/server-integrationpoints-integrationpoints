@@ -80,14 +80,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			Job job = JobExtensions.CreateJob();
 			job = job.CopyJobWithStopState(StopState.Stopping);
 			_jobService.GetJob(_jobId).Returns(job);
-			_jobHistoryService.GetRdo(_guid).Returns(_jobHistory);
+			_jobHistoryService.GetRdoWithoutDocuments(_guid).Returns(_jobHistory);
 
 			// act
 			_instance.Callback.Invoke(null);
 			bool isStopRequested = _instance.IsStopRequested();
 
 			// assert
-			_jobHistoryService.Received(1).UpdateRdo(Arg.Is<JobHistory>(history => history.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryStopping)));
+			_jobHistoryService.Received(1).UpdateRdoWithoutDocuments(Arg.Is<JobHistory>(history => history.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryStopping)));
 			Assert.IsTrue(isStopRequested);
 		}
 
@@ -112,7 +112,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			Job job = JobExtensions.CreateJob();
 			job = job.CopyJobWithStopState (StopState.Stopping);
 			_jobService.GetJob(_jobId).Returns(job);
-			_jobHistoryService.GetRdo(_guid).Throws(new Exception("something"));
+			_jobHistoryService.GetRdoWithoutDocuments(_guid).Throws(new Exception("something"));
 
 			// act
 			_instance.Callback.Invoke(null);
