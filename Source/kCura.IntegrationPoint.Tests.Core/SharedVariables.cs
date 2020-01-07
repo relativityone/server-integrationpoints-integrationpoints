@@ -10,6 +10,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 {
 	public static class SharedVariables
 	{
+		private const string _NOT_APPLICABLE = "N/A";
+
 		private static readonly Dictionary<string, string> ConfigurationOverrides = new Dictionary<string, string>();
 
 		public static Configuration CustomConfig { get; set; }
@@ -317,6 +319,13 @@ namespace kCura.IntegrationPoint.Tests.Core
 				"fileshareLocation",
 				() => $@"\\{RelativityHostAddress}\fileshare"
 			);
+
+		#endregion
+
+		#region Sync Settings
+
+		public static bool IsSyncEnabled => AppSettingBool("SyncEnabled");
+		public static bool IsSyncApplicable => AppSettingString("SyncEnabled") != _NOT_APPLICABLE;
 
 		#endregion
 
