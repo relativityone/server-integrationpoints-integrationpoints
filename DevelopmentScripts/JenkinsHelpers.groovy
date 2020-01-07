@@ -136,19 +136,7 @@ def isUITest(testType)
 
 def getUITestType()
 {
-	if(isUIImportExport())
-	{
-		return TestType.uiImportExport
-	}
-	if(isUISyncToggleOn())
-	{
-		return TestType.uiSyncToggleOn
-	}
-	if(isUISyncToggleOff())
-	{
-		return TestType.uiSyncToggleOff
-	}
-	error "Unknown UI test type!"
+	return TestType.uiImportExport
 }
 
 def getVersion()
