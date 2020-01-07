@@ -43,9 +43,7 @@ Task Test -Description "Run tests that don't require a deployed environment." {
     Invoke-Tests -WhereClause "cat == Unit" -OutputFile $LogPath -WithCoverage
 }
 
-Task FunctionalTest -Depends OneTimeTestsSetup -Description "Run UI tests that require a deployed environment." {
-    $LogPath = Join-Path $LogsDir "UIWebImportExportTestResults.xml"
-    Invoke-Tests -WhereClause "cat == WebImportExport && cat != NotWorkingOnTrident" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
+Task FunctionalTest -Depends UIWebImportExportTest -Description "Run UI tests that require a deployed environment." {
 }
 
 Task Sign -Description "Sign all files" {
