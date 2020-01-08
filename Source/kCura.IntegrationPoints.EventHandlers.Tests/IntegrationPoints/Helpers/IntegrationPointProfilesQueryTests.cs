@@ -59,11 +59,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 				.Setup(x => x.QueryAsync<IntegrationPointProfile>(
 					It.IsAny<QueryRequest>(), false, It.IsAny<ExecutionIdentity>()))
 				.ReturnsAsync(_allProfiles);
-
+			
 			_relativityObjectManagerMock
 				.Setup(x => x.StreamUnicodeLongText(It.IsAny<int>(), It.IsAny<FieldRef>(),
 					It.IsAny<ExecutionIdentity>()))
-				.Returns(new MemoryStream(Encoding.Unicode.GetBytes("{}")));
+				.Returns(() => new MemoryStream(Encoding.Unicode.GetBytes("{}")));
 
 			_relativitySourceProviders = new List<int>();
 			_relativityDestinationProviders = new List<int>();
