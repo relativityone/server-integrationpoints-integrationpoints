@@ -17,7 +17,6 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		private static readonly Guid DestinationWorkspaceArtifactIdGuid = new Guid("15B88438-6CF7-47AB-B630-424633159C69");
 		private static readonly Guid SourceJobTagNameGuid = new Guid("DA0E1931-9460-4A61-9033-A8035697C1A4");
 		private static readonly Guid SourceJobTagArtifactIdGuid = new Guid("C0A63A29-ABAE-4BF4-A3F4-59E5BD87A33E");
-		private static readonly Guid SourceWorkspaceTagNameGuid = new Guid("D828B69E-AAAE-4639-91E2-416E35C163B1");
 		private static readonly Guid SourceWorkspaceTagArtifactIdGuid = new Guid("FEAB129B-AEEF-4AA4-BC91-9EAE9A4C35F6");
 		private static readonly Guid CreateSavedSearchInDestinationGuid = new Guid("BFAB4AF6-4704-4A12-A8CA-C96A1FBCB77D");
 		private static readonly Guid SavedSearchInDestinationArtifactIdGuid = new Guid("83F4DD7A-2231-4C54-BAAA-D1D5B0FE6E31");
@@ -47,7 +46,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 
 			_cache.Setup(x => x.GetFieldValue<string>(SourceJobTagNameGuid)).Returns(expectedValue);
 
-			_instance.SourceJobTagName.Should().Be(expectedValue);
+			_instance.GetSourceJobTagName().Should().Be(expectedValue);
 		}
 
 		[Test]
@@ -58,16 +57,6 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			_cache.Setup(x => x.GetFieldValue<int>(SourceJobTagArtifactIdGuid)).Returns(expectedValue);
 
 			_instance.SourceJobTagArtifactId.Should().Be(expectedValue);
-		}
-
-		[Test]
-		public void ItShouldRetrieveSourceWorkspaceTagName()
-		{
-			const string expectedValue = "tag name";
-
-			_cache.Setup(x => x.GetFieldValue<string>(SourceWorkspaceTagNameGuid)).Returns(expectedValue);
-
-			_instance.SourceWorkspaceTagName.Should().Be(expectedValue);
 		}
 
 		[Test]

@@ -44,10 +44,10 @@ namespace Relativity.Sync.Tests.System
 				CreateSavedSearchForTags = true,
 				DestinationWorkspaceArtifactId = _destinationWorkspace.ArtifactID,
 				SourceWorkspaceArtifactId = sourceWorkspaceArtifactId,
-				SourceJobTagArtifactId = sourceJobTagArtifactId,
-				SourceJobTagName = sourceJobTagName
+				SourceJobTagArtifactId = sourceJobTagArtifactId
 			};
-			
+			configuration.SetSourceJobTagName(sourceJobTagName);
+
 			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IDestinationWorkspaceSavedSearchCreationConfiguration>(configuration);
 			
 			// ACT

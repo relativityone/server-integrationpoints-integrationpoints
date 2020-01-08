@@ -16,6 +16,7 @@ namespace Relativity.Sync.Tests.Common
 	{
 		private IList<FieldMap> _fieldMappings = new List<FieldMap>();
 		private string _jobName = String.Empty;
+		private string _sourceJobTagName = String.Empty;
 
 		private const int _ADMIN_ID = 9;
 		private const int _ASCII_GROUP_SEPARATOR = 29;
@@ -97,7 +98,14 @@ namespace Relativity.Sync.Tests.Common
 		public ImportNativeFileCopyMode ImportNativeFileCopyMode { get; set; }
 		public int IdentityFieldId { get; set; }
 		public DestinationFolderStructureBehavior DestinationFolderStructureBehavior { get; set; }
-		public string SourceJobTagName { get; set; }
+
+		public string GetSourceJobTagName() => _sourceJobTagName;
+
+		public void SetSourceJobTagName(string sourceJobTagName)
+		{
+			_sourceJobTagName = sourceJobTagName;
+		}
+
 		public int SourceJobTagArtifactId { get; set; }
 		public int SourceWorkspaceTagArtifactId { get; set; }
 		public bool IsDestinationWorkspaceTagArtifactIdSet { get; set; }
@@ -113,12 +121,13 @@ namespace Relativity.Sync.Tests.Common
 
 		public bool IsSourceJobTagSet { get; set; }
 
-		public async Task SetSourceJobTagAsync(int artifactId, string name)
+		public Task SetSourceJobTagAsync(int artifactId, string name)
 		{
-			await Task.Yield();
 			SourceJobTagArtifactId = artifactId;
-			SourceJobTagName = name;
+			_sourceJobTagName = name;
 			IsSourceJobTagSet = true;
+
+			return Task.CompletedTask;
 		}
 
 		public async Task SetSourceWorkspaceTagAsync(int artifactId, string name)

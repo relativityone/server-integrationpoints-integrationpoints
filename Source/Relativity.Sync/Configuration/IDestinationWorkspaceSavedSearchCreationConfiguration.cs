@@ -6,13 +6,13 @@ namespace Relativity.Sync.Configuration
 	{
 		int DestinationWorkspaceArtifactId { get; }
 
-		string SourceJobTagName { get; }
-
 		int SourceJobTagArtifactId { get; }
 
 		bool CreateSavedSearchForTags { get; }
 
 		bool IsSavedSearchArtifactIdSet { get; }
+
+		string GetSourceJobTagName();
 
 		Task SetSavedSearchInDestinationArtifactIdAsync(int artifactId);
 	}

@@ -50,7 +50,7 @@ namespace Relativity.Sync.Executors
 		{
 			CriteriaCollection criteria = CreateWorkspaceAndJobCriteria(configuration);
 
-			string truncatedSourceJobTagName = StringExtensions.LimitLength(configuration.SourceJobTagName);
+			string truncatedSourceJobTagName = StringExtensions.LimitLength(configuration.GetSourceJobTagName());
 
 			var keywordSearchDto = new KeywordSearch
 			{

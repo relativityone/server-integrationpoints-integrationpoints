@@ -110,10 +110,8 @@ namespace Relativity.Sync.Tests.Integration
 			};
 			_searchContainerManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.Is<Services.Query>(q => VerifyQuery(q)))).ReturnsAsync(queryResult);
 			_keywordSearchManager.Setup(x => x.CreateSingleAsync(It.IsAny<int>(), It.IsAny<KeywordSearch>())).Throws<InvalidOperationException>();
-			var configuration = new ConfigurationStub()
-			{
-				SourceJobTagName = "Some name"
-			};
+			var configuration = new ConfigurationStub();
+			configuration.SetSourceJobTagName("Some name");
 
 			// act
 			ExecutionResult result = await _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
@@ -145,10 +143,8 @@ namespace Relativity.Sync.Tests.Integration
 			};
 			_searchContainerManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.Is<Services.Query>(q => VerifyQuery(q)))).ReturnsAsync(queryResult);
 			_keywordSearchManager.Setup(x => x.CreateSingleAsync(It.IsAny<int>(), It.Is<KeywordSearch>(k => VerifyKeywordSearch(k, folderArtifactId)))).ReturnsAsync(savedSearchId);
-			var configuration = new ConfigurationStub()
-			{
-				SourceJobTagName = "Some name"
-			};
+			var configuration = new ConfigurationStub();
+			configuration.SetSourceJobTagName("Some name");
 
 			// act
 			ExecutionResult result = await _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
