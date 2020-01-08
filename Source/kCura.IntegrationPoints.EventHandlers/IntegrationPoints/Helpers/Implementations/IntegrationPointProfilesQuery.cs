@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text;
 using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
@@ -18,6 +20,16 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 		private readonly IObjectArtifactIdsByStringFieldValueQuery _objectArtifactIDsByStringFieldValueQuery;
 		private readonly ISerializer _serializer;
 
+		private static readonly FieldRef SourceConfigurationField = new FieldRef()
+		{
+			Guid = IntegrationPointProfileFieldGuids.SourceConfigurationGuid
+		};
+
+		private static readonly FieldRef DestinationConfigurationField = new FieldRef()
+		{
+			Guid = IntegrationPointProfileFieldGuids.DestinationConfigurationGuid
+		};
+
 		public IntegrationPointProfilesQuery(Func<int, IRelativityObjectManager> createRelativityObjectManager, IObjectArtifactIdsByStringFieldValueQuery objectArtifactIDsByStringFieldValueQuery)
 		{
 			_createRelativityObjectManager = createRelativityObjectManager;
@@ -33,14 +45,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 				{
 					new FieldRef()
 					{
-						Guid = IntegrationPointProfileFieldGuids.SourceConfigurationGuid
-					},
-					new FieldRef()
-					{
-						Guid = IntegrationPointProfileFieldGuids.DestinationConfigurationGuid
-					},
-					new FieldRef()
-					{
 						Guid = IntegrationPointProfileFieldGuids.SourceProviderGuid
 					},
 					new FieldRef()
@@ -53,11 +57,33 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 					}
 				}
 			};
-			IList<IntegrationPointProfile> integrationPointProfiles = await _createRelativityObjectManager(workspaceID)
+
+			IRelativityObjectManager relativityObjectManager = _createRelativityObjectManager(workspaceID);
+
+			IList<IntegrationPointProfile> integrationPointProfiles = await relativityObjectManager
 				.QueryAsync<IntegrationPointProfile>(queryRequest)
 				.ConfigureAwait(false);
+			
+			foreach (IntegrationPointProfile profile in integrationPointProfiles)
+			{
+				profile.SourceConfiguration =
+					await GetUnicodeLongTextAsync(relativityObjectManager, profile.ArtifactId, SourceConfigurationField)
+						.ConfigureAwait(false);
+
+				profile.DestinationConfiguration =
+					await GetUnicodeLongTextAsync(relativityObjectManager, profile.ArtifactId, DestinationConfigurationField)
+						.ConfigureAwait(false);
+			}
 
 			return integrationPointProfiles;
+		}
+
+		private async Task<string> GetUnicodeLongTextAsync(IRelativityObjectManager relativityObjectManager, int artifactID, FieldRef field)
+		{
+			Stream stream = relativityObjectManager.StreamUnicodeLongText(artifactID, field);
+			var streamReader = new StreamReader(stream, Encoding.UTF8);
+			string text = await streamReader.ReadToEndAsync().ConfigureAwait(false);
+			return text;
 		}
 
 		public IEnumerable<IntegrationPointProfile> GetProfilesToUpdate(IEnumerable<IntegrationPointProfile> profiles, int syncSourceProviderArtifactID, int syncDestinationProviderArtifactID)
