@@ -570,6 +570,9 @@ def downloadAndSetUpBrowser()
 		case 'chrome':
 			updateChromeToLatestVersion()
 		break
+		case 'chromium-portable':
+			echo "Use Relativity.Chromium.Portable from Nuget with exe path specified in app.config file"
+		break
 		default:
 			echo "No browser selected. Using chrome"
 			updateChromeToLatestVersion()
