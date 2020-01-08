@@ -219,7 +219,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		/// <summary>
 		/// Returns RelativityHostAddress value from config file
 		/// </summary>
-		public static string RelativityHostAddress => AppSettingString("RelativityHostAddress");
+		public static string RelativityHostAddress => AppSettingBool("IsTrident") ? AppSettingString("RelativityHostAddress") : AppSettingString("RelativityInstanceAddress"); //REL-390973
 
 		/// <summary>
 		/// Returns Relativity instance base URL
@@ -253,18 +253,20 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		private static string ServerBindingType => AppSettingString("ServerBindingType");
 
-		private static string RsapiServerAddress => GetAppSettingStringOrDefault("RSAPIServerAddress", () => RelativityHostAddress);
+		private static string RsapiServerAddress => AppSettingBool("IsTrident") //REL-390973
+			? AppSettingString("RsapiServicesHostAddress")
+			: GetAppSettingStringOrDefault("RSAPIServerAddress", () => RelativityHostAddress);
 
 		#endregion Relativity Settings
 
 		#region ConnectionString Settings
 
 		public static string TargetDbHost => GetTargetDbHost();
-		public static string SqlServer => AppSettingString("SqlServer");
+		public static string SqlServer => AppSettingBool("IsTrident") ? AppSettingString("SqlServer") : AppSettingString("SQLServerAddress"); //REL-390973
 
-		public static string DatabaseUserId => AppSettingString("SqlUsername");
+		public static string DatabaseUserId => AppSettingBool("IsTrident") ? AppSettingString("SqlUsername") : AppSettingString("SQLUsername"); //REL-390973
 
-		public static string DatabasePassword => AppSettingString("SqlPassword");
+		public static string DatabasePassword => AppSettingBool("IsTrident") ? AppSettingString("SqlPassword") : AppSettingString("SQLPassword"); //REL-390973
 
 		public static string EddsConnectionString => string.Format(AppSettingString("connectionStringEDDS"), SqlServer, DatabaseUserId, DatabasePassword);
 
