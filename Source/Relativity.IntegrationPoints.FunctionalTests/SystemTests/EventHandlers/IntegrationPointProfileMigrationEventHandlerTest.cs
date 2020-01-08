@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -175,10 +175,12 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 
 		private async Task<string> GetUnicodeLongTextAsync(IRelativityObjectManager relativityObjectManager, int artifactID, FieldRef field)
 		{
-			Stream stream = relativityObjectManager.StreamUnicodeLongText(artifactID, field);
-			var streamReader = new StreamReader(stream, Encoding.UTF8);
-			string text = await streamReader.ReadToEndAsync().ConfigureAwait(false);
-			return text;
+			using (Stream stream = relativityObjectManager.StreamUnicodeLongText(artifactID, field))
+			using (var streamReader = new StreamReader(stream, Encoding.UTF8))
+			{
+				string text = await streamReader.ReadToEndAsync().ConfigureAwait(false);
+				return text;
+			}
 		}
 
 		private Task<int> GetSyncDestinationProviderArtifactIDAsync(int workspaceID)

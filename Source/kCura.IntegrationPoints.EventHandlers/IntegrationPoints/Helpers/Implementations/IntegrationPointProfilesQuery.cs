@@ -80,10 +80,12 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 
 		private async Task<string> GetUnicodeLongTextAsync(IRelativityObjectManager relativityObjectManager, int artifactID, FieldRef field)
 		{
-			Stream stream = relativityObjectManager.StreamUnicodeLongText(artifactID, field);
-			var streamReader = new StreamReader(stream, Encoding.UTF8);
-			string text = await streamReader.ReadToEndAsync().ConfigureAwait(false);
-			return text;
+			using (Stream stream = relativityObjectManager.StreamUnicodeLongText(artifactID, field))
+			using (var streamReader = new StreamReader(stream, Encoding.UTF8))
+			{
+				string text = await streamReader.ReadToEndAsync().ConfigureAwait(false);
+				return text;
+			}
 		}
 
 		public IEnumerable<IntegrationPointProfile> GetProfilesToUpdate(IEnumerable<IntegrationPointProfile> profiles, int syncSourceProviderArtifactID, int syncDestinationProviderArtifactID)
