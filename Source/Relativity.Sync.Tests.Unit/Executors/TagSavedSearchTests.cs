@@ -46,7 +46,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			_destinationWorkspaceSavedSearchCreationConfiguration = new Mock<IDestinationWorkspaceSavedSearchCreationConfiguration>();
 			_destinationWorkspaceSavedSearchCreationConfiguration.SetupGet(x => x.DestinationWorkspaceArtifactId).Returns(_TEST_DEST_WORKSPACE_ARTIFACT_ID);
-			_destinationWorkspaceSavedSearchCreationConfiguration.SetupGet(x => x.SourceJobTagName).Returns(_TEST_SOURCE_JOB_TAG_NAME);
+			_destinationWorkspaceSavedSearchCreationConfiguration.Setup(x => x.GetSourceJobTagName()).Returns(_TEST_SOURCE_JOB_TAG_NAME);
 			_destinationWorkspaceSavedSearchCreationConfiguration.SetupGet(x => x.SourceJobTagArtifactId).Returns(_TEST_SOURCE_JOB_TAG_ARTIFACT_ID);
 
 			_instance = new TagSavedSearch(_destinationServiceFactoryForUser.Object, _syncLog.Object);
