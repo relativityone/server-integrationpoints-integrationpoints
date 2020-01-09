@@ -6,6 +6,14 @@ namespace kCura.IntegrationPoints.Core.Extensions
 	public static class StringExtensions
 	{
 		/// <summary>
+		/// Returns null if <paramref name="value"/> is null or empty, otherwise it returns exact same string.
+		/// </summary>
+		public static string NullIfEmpty(this string value)
+		{
+			return string.IsNullOrEmpty(value) ? null : value;
+		}
+
+		/// <summary>
 		/// Returns true if <paramref name="path"/> starts with the path <paramref name="baseDirPath"/>.
 		/// The comparison is case-insensitive, handles / and \ slashes as folder separators and
 		/// only matches if the base dir folder name is matched exactly ("c:\foobar\file.txt" is not a sub path of "c:\foo").
