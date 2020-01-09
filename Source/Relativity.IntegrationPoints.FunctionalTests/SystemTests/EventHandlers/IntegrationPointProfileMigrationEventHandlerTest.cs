@@ -1,7 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.Apps.Common.Utils.Serializers;
@@ -10,6 +12,7 @@ using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
 using kCura.IntegrationPoints.Services;
@@ -33,6 +36,16 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 
 		private readonly IObjectArtifactIdsByStringFieldValueQuery _objectArtifactIDsByStringFieldValueQuery =
 			new ObjectArtifactIdsByStringFieldValueQuery(CreateRelativityObjectManagerForWorkspace);
+
+		private static readonly FieldRef SourceConfigurationField = new FieldRef()
+		{
+			Guid = IntegrationPointProfileFieldGuids.SourceConfigurationGuid
+		};
+
+		private static readonly FieldRef DestinationConfigurationField = new FieldRef()
+		{
+			Guid = IntegrationPointProfileFieldGuids.DestinationConfigurationGuid
+		};
 
 		[OneTimeSetUp]
 		public async Task OneTimeSetUp()
@@ -82,7 +95,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 			IRelativityObjectManager objectManager = CreateRelativityObjectManagerForWorkspace(targetWorkspaceID);
 
 			// get all profiles from the created workspace
-			List<IntegrationPointProfile> targetWorkspaceProfiles = await objectManager.QueryAsync<IntegrationPointProfile>(new QueryRequest()).ConfigureAwait(false);
+			List<IntegrationPointProfile> targetWorkspaceProfiles = await GetProfilesAsync(objectManager).ConfigureAwait(false);
 
 			// verify destination provider id
 			int syncDestinationProviderArtifactID = await GetSyncDestinationProviderArtifactIDAsync(targetWorkspaceID)
@@ -140,6 +153,34 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 			targetWorkspaceProfiles
 				.Select(x => JObject.Parse(x.DestinationConfiguration)["ImagePrecedence"].Type)
 				.ShouldAllBeEquivalentTo(JTokenType.Null);
+		}
+
+		private async Task<List<IntegrationPointProfile>> GetProfilesAsync(IRelativityObjectManager objectManager)
+		{
+			List<IntegrationPointProfile> profiles = await objectManager.QueryAsync<IntegrationPointProfile>(new QueryRequest()).ConfigureAwait(false);
+
+			foreach (IntegrationPointProfile profile in profiles)
+			{
+				profile.SourceConfiguration =
+					await GetUnicodeLongTextAsync(objectManager, profile.ArtifactId, SourceConfigurationField)
+						.ConfigureAwait(false);
+
+				profile.DestinationConfiguration =
+					await GetUnicodeLongTextAsync(objectManager, profile.ArtifactId, DestinationConfigurationField)
+						.ConfigureAwait(false);
+			}
+
+			return profiles;
+		}
+
+		private async Task<string> GetUnicodeLongTextAsync(IRelativityObjectManager relativityObjectManager, int artifactID, FieldRef field)
+		{
+			using (Stream stream = relativityObjectManager.StreamUnicodeLongText(artifactID, field))
+			using (var streamReader = new StreamReader(stream, Encoding.UTF8))
+			{
+				string text = await streamReader.ReadToEndAsync().ConfigureAwait(false);
+				return text;
+			}
 		}
 
 		private Task<int> GetSyncDestinationProviderArtifactIDAsync(int workspaceID)
@@ -331,25 +372,25 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 
 		private string CreateDestinationConfigurationJson(bool exportToProduction = false, bool copyImages = false, bool useImagePrecedence = false)
 		{
-			JObject configuration = new JObject
+			var destinationConfiguration = new ImportSettings()
 			{
-				["ProductionImport"] = exportToProduction,
-				["ImageImport"] = copyImages
+				ProductionImport = exportToProduction,
+				ImageImport = copyImages
 			};
 
 			if (useImagePrecedence)
 			{
-				configuration["ImagePrecedence"] = new JArray()
+				destinationConfiguration.ImagePrecedence = new[]
 				{
-					new JObject()
+					new ProductionDTO()
 					{
-						["displayName"] = "production 1",
-						["artifactID"] = 123
+						ArtifactID = "123",
+						DisplayName = "production 1"
 					}
 				};
 			}
 
-			return configuration.ToString();
+			return _serializer.Serialize(destinationConfiguration);
 		}
 	}
 }
