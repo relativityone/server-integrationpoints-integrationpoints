@@ -23,17 +23,18 @@ public class FunctionalTestsSetupFixture
 
 		if(SharedVariables.IsSyncApplicable)
 		{
-			await SetSyncToggle().ConfigureAwait(false);
+			await SetSyncToggleAsync().ConfigureAwait(false);
 		}
 
 		await CreateTemplateWorkspaceAsync().ConfigureAwait(false);
 	}
 
-	private async Task SetSyncToggle()
+	private Task SetSyncToggleAsync()
 	{
 		SqlConnection sqlConnection = _testHelper.GetDBContext(-1).GetConnection(true);
-		IToggleProvider toggleProvider = new SqlServerToggleProvider(() => sqlConnection, () => Task.Run(() => sqlConnection));
-		await toggleProvider.SetAsync<EnableSyncToggle>(SharedVariables.IsSyncEnabled);
+		IToggleProvider toggleProvider = new SqlServerToggleProvider(() => sqlConnection, () => Task.FromResult(sqlConnection));
+		
+		return toggleProvider.SetAsync<EnableSyncToggle>(SharedVariables.IsSyncEnabled);
 	}
 
 	private async Task CreateTemplateWorkspaceAsync()

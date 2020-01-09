@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Extensions
 		[TestCase("   ", "   ")]
 		[TestCase(null, null)]
 		[TestCase("", null)]
-		public void NullIfEmpty_RetrunsExpectedValue_WhenStringIsPassed(string str, string expectedResult)
+		public void NullIfEmpty_ReturnsExpectedValue_WhenStringIsPassed(string str, string expectedResult)
 		{
 			// act
 			string result = str.NullIfEmpty();
