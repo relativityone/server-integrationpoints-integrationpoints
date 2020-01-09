@@ -95,7 +95,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				return overridenValue;
 			}
 
-			return CustomConfig?.AppSettings.Settings[name]?.Value ?? GetRunSettingsParameter(name) ?? ConfigurationManager.AppSettings[name] ?? string.Empty;
+			return CustomConfig?.AppSettings.Settings[name]?.Value ?? GetRunSettingsParameter(name) ?? ConfigurationManager.AppSettings[name];
 		}
 
 		public static string GetRunSettingsParameter(string name)
