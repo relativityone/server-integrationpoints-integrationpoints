@@ -43,7 +43,7 @@ Task Test -Description "Run tests that don't require a deployed environment." {
     Invoke-Tests -WhereClause "cat == Unit" -OutputFile $LogPath -WithCoverage
 }
 
-Task FunctionalTest -Depends UIWebImportExportTest -Description "Run UI tests that require a deployed environment." {
+Task FunctionalTest -Description "Run UI tests that require a deployed environment." {
 }
 
 Task Sign -Description "Sign all files" {
@@ -119,10 +119,8 @@ Task UIWebImportExportTest -Depends OneTimeTestsSetup -Description "Run UI tests
 }
 
 Task UIRelativitySyncTest -Depends OneTimeTestsSetup -Description "Run UI tests for RelativitySync toggle On/Off" {
-    Set-TestSetting -Name SyncEnabled -Value true
-
     $LogPath = Join-Path $LogsDir "UIRelativitySyncTestResults.xml"
-    Invoke-Tests -WhereClause "cat == ExportToRelativity" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
+    Invoke-Tests -WhereClause "cat == ExportToRelativity && cat != NotWorkingOnTrident" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
 }
 
 function Invoke-Tests
@@ -162,32 +160,5 @@ function Invoke-Tests
             "--result=$OutputFile" `
             $settings
         }
-    }
-}
-
-function Set-TestSetting
-{
-    param (
-        [Parameter]
-        [String] $TestSettings,
-        [Parameter(Mandatory=$true)]
-        [String] $Name,
-        [Parameter(Mandatory=$true)]
-        [String] $Value
-    )
-
-    if(-not $TestSettings) {
-        [string]$TestSettings = Join-Path $PSScriptRoot FunctionalTestSettings
-    }
-
-    $regex = "--params `"$Name=(.*?)`"";
-    $param = "--params `"$Name=$Value`""
-
-    $settings = Get-Content $TestSettings
-    if($settings -match $regex) {
-        $settings -replace $regex, $param | Out-File $TestSettings -Encoding utf8;
-    }
-    else {
-        Add-Content $TestSettings $param;
     }
 }
