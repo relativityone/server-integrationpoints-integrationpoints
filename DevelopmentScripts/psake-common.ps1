@@ -6,7 +6,7 @@ properties {
     $application_directory = [System.IO.Path]::Combine($root, 'Applications')
     $application_xml_directory = [System.IO.Path]::Combine($root, 'ApplicationsXML')
     $development_scripts_directory = [System.IO.Path]::Combine($root, 'DevelopmentScripts')
-    $version_directory = [System.IO.Path]::Combine($root, 'Version')
+    $version_directory = [System.IO.Path]::Combine($source_directory, 'Version')
     $vendor_directory = [System.IO.Path]::Combine($root, 'Vendor')
     $robot_directory = [System.IO.Path]::Combine($root, 'Robot')
     $testlog_directory = [System.IO.Path]::Combine($root, 'TestLogs')
@@ -48,8 +48,8 @@ properties {
     $server = 'bld-mstr-01.kcura.corp'
     $database ='TCBuildVersion'
     $project = 'Development'
-    $major_version = (Get-Content ..\Version\version.txt).split(".")[0]
-    $minor_version = (Get-Content ..\Version\version.txt).split(".")[1]
+    $major_version = (Get-Content ..\Source\Version\version.txt).split(".")[0]
+    $minor_version = (Get-Content ..\Source\Version\version.txt).split(".")[1]
     
     $buildid = 0
 
