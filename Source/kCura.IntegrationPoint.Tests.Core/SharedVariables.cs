@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using kCura.IntegrationPoints.Core.Extensions;
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -94,7 +95,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				return overridenValue;
 			}
 
-			return CustomConfig?.AppSettings.Settings[name]?.Value ?? GetRunSettingsParameter(name) ?? ConfigurationManager.AppSettings[name];
+			return CustomConfig?.AppSettings.Settings[name]?.Value ?? GetRunSettingsParameter(name) ?? ConfigurationManager.AppSettings[name] ?? string.Empty;
 		}
 
 		public static string GetRunSettingsParameter(string name)
@@ -219,7 +220,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		/// <summary>
 		/// Returns RelativityHostAddress value from config file
 		/// </summary>
-		public static string RelativityHostAddress => AppSettingBool("IsTrident") ? AppSettingString("RelativityHostAddress") : AppSettingString("RelativityInstanceAddress"); //REL-390973
+		public static string RelativityHostAddress => AppSettingString("RelativityInstanceAddress").NullIfEmpty() ?? AppSettingString("RelativityHostAddress"); //REL-390973
 
 		/// <summary>
 		/// Returns Relativity instance base URL
@@ -253,20 +254,19 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		private static string ServerBindingType => AppSettingString("ServerBindingType");
 
-		private static string RsapiServerAddress => AppSettingBool("IsTrident") //REL-390973
-			? AppSettingString("RsapiServicesHostAddress")
-			: GetAppSettingStringOrDefault("RSAPIServerAddress", () => RelativityHostAddress);
+		private static string RsapiServerAddress =>
+			GetAppSettingStringOrDefault("RSAPIServerAddress", () => RelativityHostAddress).NullIfEmpty() ?? AppSettingString("RsapiServicesHostAddress"); //REL-390973
 
 		#endregion Relativity Settings
 
 		#region ConnectionString Settings
 
 		public static string TargetDbHost => GetTargetDbHost();
-		public static string SqlServer => AppSettingBool("IsTrident") ? AppSettingString("SqlServer") : AppSettingString("SQLServerAddress"); //REL-390973
+		public static string SqlServer => AppSettingString("SQLServerAddress").NullIfEmpty() ?? AppSettingString("SqlServer"); //REL-390973
 
-		public static string DatabaseUserId => AppSettingBool("IsTrident") ? AppSettingString("SqlUsername") : AppSettingString("SQLUsername"); //REL-390973
+		public static string DatabaseUserId => AppSettingString("SQLUsername").NullIfEmpty() ?? AppSettingString("SqlUsername"); //REL-390973
 
-		public static string DatabasePassword => AppSettingBool("IsTrident") ? AppSettingString("SqlPassword") : AppSettingString("SQLPassword"); //REL-390973
+		public static string DatabasePassword => AppSettingString("SQLPassword").NullIfEmpty() ?? AppSettingString("SqlPassword"); //REL-390973
 
 		public static string EddsConnectionString => string.Format(AppSettingString("connectionStringEDDS"), SqlServer, DatabaseUserId, DatabasePassword);
 
@@ -288,7 +288,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static bool UseLocalRap => bool.Parse(AppSettingString("UseLocalRAP"));
 
-        public static string LocalApplicationsRapFilesLocation => AppSettingBool("IsTrident") ? AppSettingString("RAPDirectory") : AppSettingString("LocalApplicationsRAPFilesLocation");
+        public static string LocalApplicationsRapFilesLocation => AppSettingString("LocalApplicationsRAPFilesLocation").NullIfEmpty() ?? AppSettingString("RAPDirectory");
 
         public static string RipRapFilePath => GetRapFilePath(AppSettingString("RipRapFileName"));
 
