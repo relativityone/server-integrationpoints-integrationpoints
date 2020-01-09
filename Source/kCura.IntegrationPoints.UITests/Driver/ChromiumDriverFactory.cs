@@ -7,11 +7,11 @@ namespace kCura.IntegrationPoints.UITests.Driver
 {
 	public static class ChromiumDriverFactory
 	{
-		private static readonly string CHROMIUM_EXE_LOCATION = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, SharedVariables.UiBrowserPath);
+		private static readonly string _chromium_exe_location = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, SharedVariables.UiBrowserPath);
 
 		public static RemoteWebDriver Create()
 		{
-			return ChromiumBasedDriverFactory.Create(CHROMIUM_EXE_LOCATION);
+			return ChromiumBasedDriverFactory.Create(_chromium_exe_location);
 		}
 	}
 }
