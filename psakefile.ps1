@@ -43,7 +43,7 @@ Task Test -Description "Run tests that don't require a deployed environment." {
     Invoke-Tests -WhereClause "cat == Unit" -OutputFile $LogPath -WithCoverage
 }
 
-Task FunctionalTest -Description "Run UI tests that require a deployed environment." {
+Task FunctionalTest -Description "Run functional tests that require a deployed environment." {
 }
 
 Task Sign -Description "Sign all files" {
@@ -107,7 +107,6 @@ Task Help -Alias ? -Description "Display task information" {
     WriteDocumentation
 }
 
-# Test Tasks
 Task OneTimeTestsSetup -Description "Should be run always before running tests that require a deployed environment." {
     $LogPath = Join-Path $LogsDir "OneTimeTestsSetupResults.xml"
     Invoke-Tests -WhereClause "cat == OneTimeTestsSetup" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
