@@ -53,5 +53,13 @@ namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 
 			return Request.CreateResponse(HttpStatusCode.OK, filteredFields, Configuration.Formatters.JsonFormatter);
 		}
+
+		[HttpPost]
+		[LogApiExceptionFilter(Message = "Error while auto mapping fields")]
+		public HttpResponseMessage AutoMapFields([FromBody] AutomapRequest request)
+		{
+			return Request.CreateResponse(HttpStatusCode.OK, AutomapRunner.MapFields(request.SourceFields, request.DestinationFields, request.MatchOnlyIdentifiers), Configuration.Formatters.JsonFormatter);
+		}
+
 	}
 }

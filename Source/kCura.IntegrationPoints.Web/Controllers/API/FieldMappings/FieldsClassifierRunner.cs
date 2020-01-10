@@ -31,7 +31,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 
 			IList<FieldClassificationResult> filteredFields = classifiedFields
 				.Where(x => x.ClassificationLevel < ClassificationLevel.HideFromUser)
-				.OrderBy(x => x.Name)
+				.OrderByDescending(x => x.IsIdentifier)
+				.ThenBy(x => x.Name)
 				.ToList();
 
 			return filteredFields;
@@ -51,6 +52,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 						FieldIdentifier = x.ArtifactID.ToString(),
 						Type = GetFieldTypeName(x),
 						IsIdentifier = IsIdentifier(x),
+						IsRequired = IsRequired(x),
+						Length = GetLength(x),
 						ClassificationLevel = ClassificationLevel.AutoMap
 					}), (accumulator, classificationResults) =>
 					{
@@ -70,9 +73,23 @@ namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 			return aggregatedFilteringResults.Values;
 		}
 
+		private static int GetLength(RelativityObject fieldObject)
+		{
+			FieldValuePair lengthFieldValuePair = fieldObject.FieldValues.SingleOrDefault(x => x.Field.Name == "Length");
+			return lengthFieldValuePair?.Value is int length ? length : 0;
+		}
+
 		private static string GetFieldTypeName(RelativityObject fieldObject)
 		{
 			FieldValuePair fieldType = fieldObject.FieldValues.SingleOrDefault(x => x.Field.Name == "Field Type");
+			var fixedLengthText = "Fixed-Length Text";
+			if (fieldType?.Value != null && fieldType.Value.Equals(fixedLengthText))
+			{
+				FieldValuePair fieldLength = fieldObject.FieldValues.SingleOrDefault(x => x.Field.Name == "Length");
+
+				return $"{fixedLengthText}({fieldLength?.Value})";
+			}
+
 			return fieldType?.Value.ToString();
 		}
 
@@ -80,6 +97,12 @@ namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 		{
 			FieldValuePair isIdentifierFieldValuePair = fieldObject.FieldValues.SingleOrDefault(x => x.Field.Name == "Is Identifier");
 			return isIdentifierFieldValuePair?.Value is bool isIdentifier && isIdentifier;
+		}
+
+		private static bool IsRequired(RelativityObject fieldObject)
+		{
+			FieldValuePair isRequiredFieldValuePair = fieldObject.FieldValues.SingleOrDefault(x => x.Field.Name == "Is Required");
+			return isRequiredFieldValuePair?.Value is bool isRequired && isRequired;
 		}
 
 		private async Task<IEnumerable<RelativityObject>> GetAllDocumentFieldsAsync(int workspaceID)
