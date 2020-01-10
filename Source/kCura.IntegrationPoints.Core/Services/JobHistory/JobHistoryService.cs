@@ -27,25 +27,19 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		private readonly IWorkspaceManager _workspaceManager;
 		private readonly IAPILog _logger;
 		private readonly IIntegrationPointSerializer _serializer;
-		private readonly IProviderTypeService _providerTypeService;
-		private readonly IMessageService _messageService;
 
 		public JobHistoryService(
 			IRelativityObjectManager relativityObjectManager,
 			IFederatedInstanceManager federatedInstanceManager,
 			IWorkspaceManager workspaceManager,
 			IAPILog logger,
-			IIntegrationPointSerializer serializer,
-			IProviderTypeService providerTypeService,
-			IMessageService messageService)
+			IIntegrationPointSerializer serializer)
 		{
 			_relativityObjectManager = relativityObjectManager;
 			_federatedInstanceManager = federatedInstanceManager;
 			_workspaceManager = workspaceManager;
 			_logger = logger.ForContext<JobHistoryService>();
 			_serializer = serializer;
-			_providerTypeService = providerTypeService;
-			_messageService = messageService;
 		}
 
 		public Data.JobHistory GetRdo(Guid batchInstance)
