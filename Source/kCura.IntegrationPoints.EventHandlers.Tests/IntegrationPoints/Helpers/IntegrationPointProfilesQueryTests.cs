@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.Apps.Common.Utils.Serializers;
@@ -23,7 +25,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 	public class IntegrationPointProfilesQueryTests
 	{
 		private IntegrationPointProfilesQuery _sut;
-		private Mock<IRelativityObjectManager> _relativityObjectManagerFake;
+		private Mock<IRelativityObjectManager> _relativityObjectManagerMock;
 		private Mock<IObjectArtifactIdsByStringFieldValueQuery> _objectArtifactIDsQueryFake;
 		private ISerializer _serializer;
 		private List<IntegrationPointProfile> _profilesToUpdate;
@@ -43,7 +45,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		[SetUp]
 		public void SetUp()
 		{
-			_relativityObjectManagerFake = new Mock<IRelativityObjectManager>();
+			_relativityObjectManagerMock = new Mock<IRelativityObjectManager>();
 			_objectArtifactIDsQueryFake = new Mock<IObjectArtifactIdsByStringFieldValueQuery>();
 			_serializer = new JSONSerializer();
 
@@ -53,10 +55,15 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			_allProfiles.AddRange(_profilesToUpdate);
 			_allProfiles.AddRange(_profilesToDelete);
 
-			_relativityObjectManagerFake
+			_relativityObjectManagerMock
 				.Setup(x => x.QueryAsync<IntegrationPointProfile>(
 					It.IsAny<QueryRequest>(), false, It.IsAny<ExecutionIdentity>()))
 				.ReturnsAsync(_allProfiles);
+			
+			_relativityObjectManagerMock
+				.Setup(x => x.StreamUnicodeLongText(It.IsAny<int>(), It.IsAny<FieldRef>(),
+					It.IsAny<ExecutionIdentity>()))
+				.Returns(() => new MemoryStream(Encoding.Unicode.GetBytes("{}")));
 
 			_relativitySourceProviders = new List<int>();
 			_relativityDestinationProviders = new List<int>();
@@ -79,9 +86,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 					(IntegrationPointType integrationPointType) => integrationPointType.Identifier,
 					kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString()))
 				.ReturnsAsync(_integrationPointTypesList);
-			
+
 			_sut = new IntegrationPointProfilesQuery(
-				workspaceID => _relativityObjectManagerFake.Object,
+				workspaceID => _relativityObjectManagerMock.Object,
 				_objectArtifactIDsQueryFake.Object);
 		}
 
@@ -98,6 +105,12 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 
 			// Assert
 			CollectionAssert.AreEquivalent(_allProfiles, allProfiles);
+			_relativityObjectManagerMock.Verify(
+				x => x.StreamUnicodeLongText(It.IsAny<int>(), It.Is<FieldRef>(fieldRef => fieldRef.Guid == IntegrationPointProfileFieldGuids.SourceConfigurationGuid), It.IsAny<ExecutionIdentity>()),
+				Times.Exactly(_allProfiles.Count));
+			_relativityObjectManagerMock.Verify(
+				x => x.StreamUnicodeLongText(It.IsAny<int>(), It.Is<FieldRef>(fieldRef => fieldRef.Guid == IntegrationPointProfileFieldGuids.DestinationConfigurationGuid), It.IsAny<ExecutionIdentity>()),
+				Times.Exactly(_allProfiles.Count));
 		}
 
 		[Test]
