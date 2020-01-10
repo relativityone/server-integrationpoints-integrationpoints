@@ -1,14 +1,14 @@
 ﻿using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.UITests.Common;
 using OpenQA.Selenium.Remote;
-using System;
 using System.IO;
+using System.Reflection;
 
 namespace kCura.IntegrationPoints.UITests.Driver
 {
 	public static class ChromiumDriverFactory
 	{
-		private static readonly string _chromium_exe_location = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, SharedVariables.UiBrowserPath);
+		private static readonly string _chromium_exe_location = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), SharedVariables.UiBrowserPath);
 
 		public static RemoteWebDriver Create()
 		{
