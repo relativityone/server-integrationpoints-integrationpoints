@@ -97,6 +97,8 @@ properties {
 	$paket_config_directory = [System.IO.Path]::Combine($ENV:APPDATA, 'Paket')
 
     #build tool variables    
+    $tools_directory = [System.IO.Path]::Combine($root, 'buildtools')
+    $tools_config = [System.IO.Path]::Combine($tools_directory, 'packages.config')
     $buildhelper_exe = [System.IO.Path]::Combine($development_scripts_directory, 'kCura.BuildHelper.exe')
     $rapbuilder_exe = [System.IO.Path]::Combine($development_scripts_directory, 'kCura.RAPBuilder.exe')
     $testrunner_exe = [System.IO.Path]::Combine($development_scripts_directory, 'kCura.TestRunner.exe')
@@ -126,6 +128,9 @@ properties {
 	
 	#geckodriver
     $geckodriver_path = [System.IO.Path]::Combine($nuget_test_packages_directory, 'Selenium.WebDriver.GeckoDriver', 'driver', 'win64', 'geckodriver.exe')
+
+    #chromium
+    $chromium_path = [System.IO.Path]::Combine($nuget_test_packages_directory, 'Relativity.Chromium.Portable', 'tools', 'chrome.exe')
     
     #test variables
     $tests_project_file = [System.IO.Path]::Combine($development_scripts_directory, 'IntegrationPointsTests.nunit')
