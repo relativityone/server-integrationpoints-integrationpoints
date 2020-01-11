@@ -59,7 +59,7 @@ if (-Not (Test-Path $NugetExe -Verbose:$VerbosePreference)) {
 
 Write-Progress "Restoring tools from NuGet..."
 $NuGetVerbosity = if ($VerbosePreference -gt "SilentlyContinue") { "normal" } else { "quiet" }
-& $NugetExe install $ToolsConfig -o $ToolsDir -Verbosity $NuGetVerbosity
+& $NugetExe install $ToolsConfig -o $ToolsDir -ExcludeVersion -Verbosity $NuGetVerbosity
 
 if ($LASTEXITCODE -ne 0) {
 	Throw "An error occured while restoring NuGet tools."
@@ -67,8 +67,8 @@ if ($LASTEXITCODE -ne 0) {
 
 Write-Progress "Importing required Powershell modules..."
 $ToolsDir = Join-Path $PSScriptRoot "buildtools"
-Import-Module (Join-Path $ToolsDir "psake.*\tools\psake\psake.psd1") -ErrorAction Stop
-Import-Module (Join-Path $ToolsDir "kCura.PSBuildTools.*\PSBuildTools.psd1") -ErrorAction Stop
+Import-Module (Join-Path $ToolsDir "psake\tools\psake\psake.psd1") -ErrorAction Stop
+Import-Module (Join-Path $ToolsDir "kCura.PSBuildTools\PSBuildTools.psd1") -ErrorAction Stop
 Install-Module VSSetup -Scope CurrentUser -Force
 
 $Params = @{

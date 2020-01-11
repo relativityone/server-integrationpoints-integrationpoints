@@ -1120,6 +1120,7 @@ private stashTestsOnlyArtifacts()
 	stash includes: 'DevelopmentScripts/IntegrationPointsTests.*', name: 'nunitProjectFiles'
 	stash includes: 'DevelopmentScripts/NUnit.ConsoleRunner/tools/*', name: 'nunitConsoleRunner'
 	stash includes: 'DevelopmentScripts/NUnit.Extension.NUnitProjectLoader/tools/*', name: 'nunitProjectLoader'
+	stash includes: 'buildtools/*', name: 'buildtools'
 }
 
 private unstashTestsOnlyArtifacts()
@@ -1130,6 +1131,7 @@ private unstashTestsOnlyArtifacts()
 	unstash 'nunitProjectFiles'
 	unstash 'nunitConsoleRunner'
 	unstash 'nunitProjectLoader'
+	unstash 'buildtools'
 }
 
 return this
