@@ -95,7 +95,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				return overridenValue;
 			}
 
-			return CustomConfig?.AppSettings.Settings[name]?.Value ?? GetRunSettingsParameter(name) ?? ConfigurationManager.AppSettings[name];
+			return GetRunSettingsParameter(name) ?? CustomConfig?.AppSettings.Settings[name]?.Value ?? ConfigurationManager.AppSettings[name];
 		}
 
 		public static string GetRunSettingsParameter(string name)
@@ -288,7 +288,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static bool UseLocalRap => bool.Parse(AppSettingString("UseLocalRAP"));
 
-        public static string LocalApplicationsRapFilesLocation => AppSettingString("LocalApplicationsRAPFilesLocation").NullIfEmpty() ?? AppSettingString("RAPDirectory");
+        public static string LocalApplicationsRapFilesLocation => GetRunSettingsParameter("RAPDirectory").NullIfEmpty() ?? AppSettingString("LocalApplicationsRAPFilesLocation");
 
         public static string RipRapFilePath => GetRapFilePath(AppSettingString("RipRapFileName"));
 
