@@ -288,7 +288,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static bool UseLocalRap => bool.Parse(AppSettingString("UseLocalRAP"));
 
-        public static string LocalApplicationsRapFilesLocation => AppSettingString("LocalApplicationsRAPFilesLocation").NullIfEmpty() ?? AppSettingString("RAPDirectory");
+        public static string LocalApplicationsRapFilesLocation => GetRunSettingsParameter("RAPDirectory").NullIfEmpty() ?? AppSettingString("LocalApplicationsRAPFilesLocation");
 
         public static string RipRapFilePath => GetRapFilePath(AppSettingString("RipRapFileName"));
 
