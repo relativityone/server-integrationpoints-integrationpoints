@@ -458,7 +458,6 @@ NUGET
     NUnit (3.11.0)
     NUnitExtras.HierarchicalCategories (1.1.0)
       NUnit (>= 3.11)
-    Relativity.Chromium.Portable (78.0.3904.108)
     Relativity.Testing.Identification (1.6.0)
       NUnit (>= 3.11)
       NUnitExtras.HierarchicalCategories (>= 1.1)

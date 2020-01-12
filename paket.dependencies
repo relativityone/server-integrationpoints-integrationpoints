@@ -78,7 +78,6 @@ group TestPackages
 	nuget Selenium.Support 3.141.0
 	nuget Selenium.WebDriver.ChromeDriver 78.0.3904.1100-beta
 	nuget Selenium.WebDriver.GeckoDriver 0.24.0
-	nuget Relativity.Chromium.Portable 78.0.3904.108
 	nuget Serilog 1.5.14	
 	nuget Serilog.Sinks.Seq 1.5.36
 	

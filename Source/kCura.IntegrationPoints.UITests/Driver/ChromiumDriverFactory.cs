@@ -14,17 +14,10 @@ namespace kCura.IntegrationPoints.UITests.Driver
 		{
 			if (File.Exists(_chromium_exe_location))
 			{
-				return ChromiumBasedDriverFactory.Create(_chromium_exe_location);
+				throw new UiTestException($"Specified chromium exe file {_chromium_exe_location} doesn't exist. Ensure that relative chromium path in app.config is correct.");
 			}
 
-			if (File.Exists("chrome.exe"))
-			{
-				return ChromiumBasedDriverFactory.Create("chrome.exe");
-			}
-
-			throw new UiTestException($"Specified chromium exe file {_chromium_exe_location} doesn't exist. Ensure that relative chromium path in app.config is correct.");
-
-			
+			return ChromiumBasedDriverFactory.Create(_chromium_exe_location);
 		}
 	}
 }
