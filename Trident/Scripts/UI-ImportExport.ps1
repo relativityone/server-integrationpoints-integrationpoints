@@ -11,3 +11,7 @@ function Invoke-Task ($Task) {
 Invoke-Task Compile
 
 Invoke-Task Test
+
+Invoke-Task Package
+
+Invoke-Task UIWebImportExportTest
