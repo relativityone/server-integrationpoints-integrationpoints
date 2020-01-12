@@ -135,14 +135,14 @@ function Invoke-Tests
         [Switch]$WithCoverage
     )
 
-    $NUnit = Resolve-Path (Join-Path $BuildToolsDir "NUnit.ConsoleRunner.*\tools\nunit3-console.exe")
+    $NUnit = Resolve-Path (Join-Path $BuildToolsDir "NUnit.ConsoleRunner\tools\nunit3-console.exe")
     $settings = if($TestSettings) { "@$TestSettings" }
     Initialize-Folder $ArtifactsDir -Safe
     Initialize-Folder $LogsDir -Safe
     if($WithCoverage)
     {
-        $OpenCover = Join-Path $BuildToolsDir "opencover.*\tools\OpenCover.Console.exe"
-        $ReportGenerator = Join-Path $BuildToolsDir "reportgenerator.*\tools\net47\ReportGenerator.exe"
+        $OpenCover = Join-Path $BuildToolsDir "opencover\tools\OpenCover.Console.exe"
+        $ReportGenerator = Join-Path $BuildToolsDir "reportgenerator\tools\net47\ReportGenerator.exe"
         $CoveragePath = Join-Path $LogsDir "Coverage.xml"
 
         exec { & $OpenCover -target:$NUnit -targetargs:"$Solution --where=\`"$WhereClause\`" --noheader --labels=On --skipnontestassemblies --result=$OutputFile $settings" -register:path64 -filter:"+[kCura*]* +[Relativity*]* -[*Tests*]*" -hideskipped:All -output:"$LogsDir\OpenCover.xml" -returntargetcode }
