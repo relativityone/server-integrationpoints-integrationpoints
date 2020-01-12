@@ -433,7 +433,6 @@ task copy_test_dlls_to_lib_dir -depends create_lib_dir -precondition { return -n
 task copy_web_drivers -depends create_lib_dir, build_integration_points -precondition { return -not $skip_tests } {
     Copy-Item -path $chromedriver_path -Destination $tests_directory
     Copy-Item -path $geckodriver_path -Destination $tests_directory
-    Copy-Item -Path $chromium_path -Destination $tests_directory
 }
 
 task start_sonar -depends get_sonarqube -precondition { return $RUN_SONARQUBE } {
