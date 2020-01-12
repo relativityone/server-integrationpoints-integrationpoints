@@ -1087,7 +1087,7 @@ private stashCommonArtifacts()
 	stash includes: 'build-jenkins.ps1', name: 'buildps1'
 	stash includes: 'Vendor/psake/tools/*', name: 'psake'
 	stash includes: 'Vendor/NuGet/NuGet.exe', name: 'nuget'
-	stash includes: 'Version/version.txt', name: 'version'
+	stash includes: 'Source/Version/version.txt', name: 'version'
 }
 
 private unstashCommonArtifacts()

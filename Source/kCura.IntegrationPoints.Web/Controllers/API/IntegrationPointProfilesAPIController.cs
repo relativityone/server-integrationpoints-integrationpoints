@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Validation;
@@ -28,9 +29,10 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly IRelativityUrlHelper _urlHelper;
 		private readonly IRelativityObjectManager _objectManager;
 		private readonly IValidationExecutor _validationExecutor;
+		private readonly ICryptographyHelper _cryptographyHelper;
 
 		public IntegrationPointProfilesAPIController(ICPHelper cpHelper, IIntegrationPointProfileService profileService, IIntegrationPointService integrationPointService,
-			IRelativityUrlHelper urlHelper, IRelativityObjectManager objectManager, IValidationExecutor validationExecutor)
+			IRelativityUrlHelper urlHelper, IRelativityObjectManager objectManager, IValidationExecutor validationExecutor, ICryptographyHelper cryptographyHelper)
 		{
 			_cpHelper = cpHelper;
 			_profileService = profileService;
@@ -38,6 +40,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			_urlHelper = urlHelper;
 			_objectManager = objectManager;
 			_validationExecutor = validationExecutor;
+			_cryptographyHelper = cryptographyHelper;
 		}
 
 		[HttpGet]
@@ -97,17 +100,18 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			{
 				using (IMetricsManager metricManager = _cpHelper.GetServicesManager().CreateProxy<IMetricsManager>(ExecutionIdentity.CurrentUser))
 				{
+					string nameHash = _cryptographyHelper.CalculateHash(model.Name);
 					var apmMetricProperties = new APMMetric
 					{
 						Name =
 							Core.Constants.IntegrationPoints.Telemetry
 								.BUCKET_INTEGRATION_POINT_PROFILE_SAVE_DURATION_METRIC_COLLECTOR,
-						CustomData = new Dictionary<string, object> { { Core.Constants.IntegrationPoints.Telemetry.CUSTOM_DATA_CORRELATIONID, model.Name } }
+						CustomData = new Dictionary<string, object> { { Core.Constants.IntegrationPoints.Telemetry.CUSTOM_DATA_CORRELATIONID, nameHash } }
 					};
 					using (apmManger.LogTimedOperation(apmMetricProperties))
 					{
 						using (metricManager.LogDuration(Core.Constants.IntegrationPoints.Telemetry.BUCKET_INTEGRATION_POINT_PROFILE_SAVE_DURATION_METRIC_COLLECTOR,
-							Guid.Empty, model.Name))
+							Guid.Empty, nameHash))
 						{
 							return SaveIntegrationPointProfile(workspaceID, model);
 						}
@@ -124,17 +128,18 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			{
 				using (IMetricsManager metricManager = _cpHelper.GetServicesManager().CreateProxy<IMetricsManager>(ExecutionIdentity.CurrentUser))
 				{
+					string profileNameHash = _cryptographyHelper.CalculateHash(profileName);
 					var apmMetricProperties = new APMMetric
 					{
 						Name =
 							Core.Constants.IntegrationPoints.Telemetry
 								.BUCKET_INTEGRATION_POINT_PROFILE_SAVE_AS_PROFILE_DURATION_METRIC_COLLECTOR,
-						CustomData = new Dictionary<string, object> { { Core.Constants.IntegrationPoints.Telemetry.CUSTOM_DATA_CORRELATIONID, profileName } }
+						CustomData = new Dictionary<string, object> { { Core.Constants.IntegrationPoints.Telemetry.CUSTOM_DATA_CORRELATIONID, profileNameHash } }
 					};
 					using (apmManger.LogTimedOperation(apmMetricProperties))
 					{
 						using (metricManager.LogDuration(Core.Constants.IntegrationPoints.Telemetry.BUCKET_INTEGRATION_POINT_PROFILE_SAVE_AS_PROFILE_DURATION_METRIC_COLLECTOR,
-							Guid.Empty, profileName))
+							Guid.Empty, profileNameHash))
 						{
 							IntegrationPoint integrationPoint = _integrationPointService.ReadIntegrationPoint(integrationPointArtifactId);
 							IntegrationPointProfileModel model = IntegrationPointProfileModel.FromIntegrationPoint(integrationPoint, profileName);

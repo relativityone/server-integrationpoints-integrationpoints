@@ -10,13 +10,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{3941F1C1-84BB-4966-A16F-6B3446D1E4E0}</ProjectGuid>
+    <ProjectGuid>{B5ED99A1-318E-4A34-9C2C-89564B04E493}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>kCura.IntegrationPoints.RelativitySync.Tests</RootNamespace>
     <AssemblyName>kCura.IntegrationPoints.RelativitySync.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+	<TestProjectType>UnitTest</TestProjectType>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

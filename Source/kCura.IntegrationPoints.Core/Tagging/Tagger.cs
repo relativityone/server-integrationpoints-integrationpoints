@@ -67,7 +67,7 @@ namespace kCura.IntegrationPoints.Core.Tagging
 
 		private void LogStartTaggingDocuments(FieldMap identifierField)
 		{
-			_logger.LogDebug("Start tagging documents. Identifier {identifierFieldName}", identifierField.SourceField.DisplayName);
+			_logger.LogDebug("Start tagging documents. Identifier field ID: {identifierFieldID}", identifierField.SourceField.FieldIdentifier);
 		}
 
 		private FieldMap GetIdentifierField()

@@ -10,7 +10,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{8F4C9360-81C6-45E8-BD34-BC0530EAC1E3}</ProjectGuid>
+    <ProjectGuid>{A2964AA8-8B79-4842-874B-30E1C015A3D2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>kCura.IntegrationPoints.RelativitySync.Tests.Integration</RootNamespace>

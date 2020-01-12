@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -33,10 +34,18 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		{
 			ImportSettings importSettings = _serializer.Deserialize<ImportSettings>(settings.Settings);
 			importSettings.FederatedInstanceCredentials = settings.Credentials;
-			_apiLog.LogDebug($"Import Settings has been extracted successfully for workspace field retival process: {_serializer.Serialize(importSettings)}");
+
+			LogImportSettings(importSettings);
+
 			IDataSynchronizer synchronizer = _appDomainRdoSynchronizerFactory.CreateSynchronizer(Guid.Empty, settings.Settings);
-			var fields = synchronizer.GetFields(new DataSourceProviderConfiguration(_serializer.Serialize(importSettings), settings.Credentials)).ToList();
+			List<FieldEntry> fields = synchronizer.GetFields(new DataSourceProviderConfiguration(_serializer.Serialize(importSettings), settings.Credentials)).ToList();
 			return Request.CreateResponse(HttpStatusCode.OK, fields, Configuration.Formatters.JsonFormatter);
+		}
+
+		private void LogImportSettings(ImportSettings importSettings)
+		{
+			var settingsForLogging = new ImportSettingsForLogging(importSettings);
+			_apiLog.LogDebug($"Import Settings has been extracted successfully for workspace field retrieval process: {settingsForLogging}");
 		}
 	}
 }

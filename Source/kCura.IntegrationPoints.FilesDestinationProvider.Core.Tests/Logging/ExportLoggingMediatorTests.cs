@@ -18,14 +18,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 	[TestFixture, Category("Unit")]
 	public class ExportLoggingMediatorTests : TestBase
 	{
-		private readonly string _errorMessageTemplate = "Error occured: {message}. Additional info: {@additionalInfo}.";
+		private readonly string _errorMessageTemplate = "Error occured: {message}.";
 		private readonly string _fileTransferTemplateMessage = "File transfer mode has been changed: {mode}";
 
-		private readonly string _progressMessageTemplate = "Progress update: {message}. Additional info: {@additionalInfo}.";
+		private readonly string _progressMessageTemplate = "Progress update: {message}.";
 
-		private readonly string _statusMessageTemplate = "Status update: {message}. Additional info: {@additionalInfo}.";
+		private readonly string _statusMessageTemplate = "Status update: {message}.";
 		private readonly string _unexpectedEventTypeTemplate = "Unexpected EventType.{event}. EventArgs: {@eventArgs}";
-		private readonly string _warningMessageTemplate = "Warning: {message}. Additional info: {@additionalInfo}.";
+		private readonly string _warningMessageTemplate = "Warning: {message}.";
 
 		private IAPILog _apiLog;
 		private ICoreExporterStatusNotification _exporterStatusNotification;
@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 
 			RaiseStatusMessage(exportEventArgs);
 
-			_apiLog.Received().LogError(_errorMessageTemplate, exportEventArgs.Message, exportEventArgs.AdditionalInfo);
+			_apiLog.Received().LogError(_errorMessageTemplate, exportEventArgs.Message);
 		}
 
 		[Test]
@@ -90,7 +90,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 
 			RaiseStatusMessage(exportEventArgs);
 
-			_apiLog.Received().LogWarning(_warningMessageTemplate, exportEventArgs.Message, exportEventArgs.AdditionalInfo);
+			_apiLog.Received().LogWarning(_warningMessageTemplate, exportEventArgs.Message);
 		}
 
 		[Test]
@@ -100,7 +100,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 
 			RaiseStatusMessage(exportEventArgs);
 
-			_apiLog.Received().LogVerbose(_statusMessageTemplate, exportEventArgs.Message, exportEventArgs.AdditionalInfo);
+			_apiLog.Received().LogVerbose(_statusMessageTemplate, exportEventArgs.Message);
 		}
 
 		[Test]
@@ -110,7 +110,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 
 			RaiseStatusMessage(exportEventArgs);
 
-			_apiLog.Received().LogVerbose(_progressMessageTemplate, exportEventArgs.Message, exportEventArgs.AdditionalInfo);
+			_apiLog.Received().LogVerbose(_progressMessageTemplate, exportEventArgs.Message);
 		}
 
 		[Test]
