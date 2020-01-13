@@ -75,9 +75,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 				_federatedInstanceManager,
 				_workspaceManager,
 				_logger,
-				_serializer,
-				_providerTypeService,
-				_messageService);
+				_serializer);
 		}
 
 		[Test]

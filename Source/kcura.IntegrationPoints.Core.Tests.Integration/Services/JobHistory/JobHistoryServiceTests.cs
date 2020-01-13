@@ -47,9 +47,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services.JobHistory
 				federatedInstanceManager,
 				workspaceManager,
 				logger,
-				serializer,
-				providerTypeService,
-				messageService
+				serializer
 			);
 
 			IntegrationPointModel integrationModel = new IntegrationPointModel
