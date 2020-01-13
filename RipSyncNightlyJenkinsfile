@@ -59,9 +59,9 @@ properties([
 		),
 		choice(
 			name: 'UITestsBrowser',
-			choices: ['chrome', 'chromium', 'firefox', 'chromium-portable'],
+			choices: ['chromium-portable', 'chrome', 'chromium', 'firefox'],
 			defaultValue: 'chromium-portable',
-			description: 'Name of browser the UI tests should be run on. Default: chrome'
+			description: 'Name of browser the UI tests should be run on. Default: chromium-portable'
 		),
 		string(
 			name: 'chromiumVersion', 

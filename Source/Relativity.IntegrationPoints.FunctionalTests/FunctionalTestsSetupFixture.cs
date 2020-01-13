@@ -33,7 +33,8 @@ public class FunctionalTestsSetupFixture
 	{
 		SqlConnection sqlConnection = _testHelper.GetDBContext(-1).GetConnection(true);
 		IToggleProvider toggleProvider = new SqlServerToggleProvider(() => sqlConnection, () => Task.FromResult(sqlConnection));
-		
+
+		Console.WriteLine($"Setting Sync Toggle to {SharedVariables.IsSyncEnabled}...");
 		return toggleProvider.SetAsync<EnableSyncToggle>(SharedVariables.IsSyncEnabled);
 	}
 
