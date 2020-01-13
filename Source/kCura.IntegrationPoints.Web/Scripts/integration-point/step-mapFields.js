@@ -727,15 +727,18 @@ ko.validation.insertValidationMessage = function (element) {
 							self.nativeFilePathValue(this.displayName);
 					});
 				}
-				for (var i = 0; i < mapping.length; i++) {
-					if (mapping[i].fieldMapType == mapTypes.identifier) {
-                        var identifierFromMapping = self.overlay().find(x => x.name == mapping[i].destinationField.displayName) || x.fieldIdentifier == mapping[i].destinationField.fieldIdentifier
+                for (var i = 0; i < mapping.length; i++) {
+                    if (mapping[i].fieldMapType == mapTypes.identifier) {
+                        var identifierFromMapping =
+                            self.overlay().find(x => x.name == mapping[i].destinationField.displayName) ||
+                                x.fieldIdentifier == mapping[i].destinationField.fieldIdentifier
                         if (identifierFromMapping) {
                             self.selectedUniqueId(identifierFromMapping.name);
-					}
-				}
+                        }
+                    }
+                }
 
-				mapping = $.map(mapping, function (value) {
+                mapping = $.map(mapping, function (value) {
 					// Drop auxiliary mapping entries that don't have destination field specified (such as FolderPathInformation or NativeFilePath) as they shouldn't be displayed in the UI
 					if (value.destinationField.fieldIdentifier === undefined && (value.fieldMapType === mapTypes.parent || value.fieldMapType === mapTypes.native)) {
 						return null;
