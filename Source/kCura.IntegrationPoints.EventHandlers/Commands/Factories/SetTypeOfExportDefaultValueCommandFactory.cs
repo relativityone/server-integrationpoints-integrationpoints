@@ -65,9 +65,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 				federatedInstanceManager, 
 				workspaceManager, 
 				logger, 
-				integrationPointSerializer, 
-				providerTypeService, 
-				messageService);
+				integrationPointSerializer);
 
 			IManagerFactory managerFactory = new ManagerFactory(helper);
 

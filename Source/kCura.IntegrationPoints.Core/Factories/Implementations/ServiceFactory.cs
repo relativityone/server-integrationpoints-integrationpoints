@@ -90,9 +90,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				_managerFactory.CreateFederatedInstanceManager(),
 				_managerFactory.CreateWorkspaceManager(),
 				logger,
-				_serializer,
-				_providerTypeService,
-				_messageService);
+				_serializer);
 
 			return jobHistoryService;
 		}
