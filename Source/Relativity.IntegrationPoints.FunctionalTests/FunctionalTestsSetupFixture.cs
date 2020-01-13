@@ -1,9 +1,13 @@
 ﻿using System;
+using System.Data.SqlClient;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.Agent.Toggles;
 using NUnit.Framework;
+using Relativity.Toggles;
+using Relativity.Toggles.Providers;
 
 //It is intended that this fixture is not surrounded by namespace
 //since NUnit requires it to execute such SetUpFixture for whole assembly
@@ -17,7 +21,20 @@ public class FunctionalTestsSetupFixture
 	{
 		_testHelper = new TestHelper();
 
+		if(SharedVariables.IsSyncApplicable)
+		{
+			await SetSyncToggleAsync().ConfigureAwait(false);
+		}
+
 		await CreateTemplateWorkspaceAsync().ConfigureAwait(false);
+	}
+
+	private Task SetSyncToggleAsync()
+	{
+		SqlConnection sqlConnection = _testHelper.GetDBContext(-1).GetConnection(true);
+		IToggleProvider toggleProvider = new SqlServerToggleProvider(() => sqlConnection, () => Task.FromResult(sqlConnection));
+		
+		return toggleProvider.SetAsync<EnableSyncToggle>(SharedVariables.IsSyncEnabled);
 	}
 
 	private async Task CreateTemplateWorkspaceAsync()

@@ -44,8 +44,6 @@ Task Test -Description "Run tests that don't require a deployed environment." {
 }
 
 Task FunctionalTest -Description "Run functional tests that require a deployed environment." {
-    # $LogPath = Join-Path $LogsDir "FunctionalTestResults.xml"
-    # Invoke-Tests -WhereClause "namespace =~ FunctionalTests && cat == 'TestType.CI'" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
 }
 
 Task Sign -Description "Sign all files" {
@@ -109,6 +107,21 @@ Task Help -Alias ? -Description "Display task information" {
     WriteDocumentation
 }
 
+Task OneTimeTestsSetup -Description "Should be run always before running tests that require a deployed environment." {
+    $LogPath = Join-Path $LogsDir "OneTimeTestsSetupResults.xml"
+    Invoke-Tests -WhereClause "cat == OneTimeTestsSetup" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
+}
+
+Task UIWebImportExportTest -Depends OneTimeTestsSetup -Description "Run UI tests for Web Import/Export" {
+    $LogPath = Join-Path $LogsDir "UIWebImportExportTestResults.xml"
+    Invoke-Tests -WhereClause "cat == WebImportExport && cat != NotWorkingOnTrident" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
+}
+
+Task UIRelativitySyncTest -Depends OneTimeTestsSetup -Description "Run UI tests for RelativitySync toggle On/Off" {
+    $LogPath = Join-Path $LogsDir "UIRelativitySyncTestResults.xml"
+    Invoke-Tests -WhereClause "cat == ExportToRelativity && cat != NotWorkingOnTrident" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
+}
+
 function Invoke-Tests
 {
     param (
@@ -122,14 +135,14 @@ function Invoke-Tests
         [Switch]$WithCoverage
     )
 
-    $NUnit = Resolve-Path (Join-Path $BuildToolsDir "NUnit.ConsoleRunner.*\tools\nunit3-console.exe")
+    $NUnit = Resolve-Path (Join-Path $BuildToolsDir "NUnit.ConsoleRunner\tools\nunit3-console.exe")
     $settings = if($TestSettings) { "@$TestSettings" }
     Initialize-Folder $ArtifactsDir -Safe
     Initialize-Folder $LogsDir -Safe
     if($WithCoverage)
     {
-        $OpenCover = Join-Path $BuildToolsDir "opencover.*\tools\OpenCover.Console.exe"
-        $ReportGenerator = Join-Path $BuildToolsDir "reportgenerator.*\tools\net47\ReportGenerator.exe"
+        $OpenCover = Join-Path $BuildToolsDir "opencover\tools\OpenCover.Console.exe"
+        $ReportGenerator = Join-Path $BuildToolsDir "reportgenerator\tools\net47\ReportGenerator.exe"
         $CoveragePath = Join-Path $LogsDir "Coverage.xml"
 
         exec { & $OpenCover -target:$NUnit -targetargs:"$Solution --where=\`"$WhereClause\`" --noheader --labels=On --skipnontestassemblies --result=$OutputFile $settings" -register:path64 -filter:"+[kCura*]* +[Relativity*]* -[*Tests*]*" -hideskipped:All -output:"$LogsDir\OpenCover.xml" -returntargetcode }

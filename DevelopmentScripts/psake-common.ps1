@@ -97,6 +97,8 @@ properties {
 	$paket_config_directory = [System.IO.Path]::Combine($ENV:APPDATA, 'Paket')
 
     #build tool variables    
+    $tools_directory = [System.IO.Path]::Combine($root, 'buildtools')
+    $tools_config = [System.IO.Path]::Combine($tools_directory, 'packages.config')
     $buildhelper_exe = [System.IO.Path]::Combine($development_scripts_directory, 'kCura.BuildHelper.exe')
     $rapbuilder_exe = [System.IO.Path]::Combine($development_scripts_directory, 'kCura.RAPBuilder.exe')
     $testrunner_exe = [System.IO.Path]::Combine($development_scripts_directory, 'kCura.TestRunner.exe')

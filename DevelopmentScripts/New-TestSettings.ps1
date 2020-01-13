@@ -57,28 +57,28 @@ if($TestVMName)
 
     if(-not $SqlServer)
     {
-        $PSBoundParameters['SQLServerAddress'] = "$TestVMName\EDDSINSTANCE001"
+        $PSBoundParameters['SqlServer'] = "$TestVMName\EDDSINSTANCE001"
     }
 
     if(-not $SqlUsername)
     {
-        $PSBoundParameters['SQLUsername'] = "eddsdbo"
+        $PSBoundParameters['SqlUsername'] = "eddsdbo"
     }
 
     if(-not $SqlPassword)
     {
-        $PSBoundParameters['SQLPassword'] = $testvm.Box.Secrets.sqleddsdbopassword
+        $PSBoundParameters['SqlPassword'] = $testvm.Box.Secrets.sqleddsdbopassword
     }
 
     if(-not $RelativityHostAddress)
     {
         if($testvm.Box.Parameters.joinDomain -eq 0)
         {
-            $PSBoundParameters['RelativityInstanceAddress'] = "$TestVMName.kcura.corp"
+            $PSBoundParameters['RelativityHostAddress'] = "$TestVMName.kcura.corp"
         }
         else
         {
-            $PSBoundParameters['RelativityInstanceAddress'] = "$TestVMName"
+            $PSBoundParameters['RelativityHostAddress'] = "$TestVMName"
         }
     }
 
@@ -95,7 +95,7 @@ if($TestVMName)
 
 if(-not $RsapiServicesHostAddress)
 {
-    $PSBoundParameters['RSAPIServerAddress'] = "$($PSBoundParameters['RelativityInstanceAddress'])"
+    $PSBoundParameters['RsapiServicesHostAddress'] = "$($PSBoundParameters['RelativityHostAddress'])"
 }
 
 if(-not $RAPDirectory)
