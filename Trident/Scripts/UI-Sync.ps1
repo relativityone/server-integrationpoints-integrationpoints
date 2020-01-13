@@ -13,6 +13,21 @@ function Invoke-Task ($Task) {
     &($TaskRunner) $Task -Configuration Release
 }
 
+Import-Module (Join-Path $PSScriptRoot Build-Util.psm1)
+
 Invoke-Task Compile
 
 Invoke-Task Test
+
+Invoke-Task Package
+
+if($Toggle -eq "On") {
+    Set-TestSetting -Name SyncEnabled -Value true
+}
+elseif($Toggle -eq "Off") {
+    Set-TestSetting -Name SyncEnabled -Value false
+}
+
+Invoke-Task UIRelativitySyncTest
+
+Remove-Module Build-Util
