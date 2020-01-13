@@ -262,11 +262,11 @@ namespace kCura.IntegrationPoint.Tests.Core
 		#region ConnectionString Settings
 
 		public static string TargetDbHost => GetTargetDbHost();
-		public static string SqlServer => AppSettingString("SQLServerAddress").NullIfEmpty() ?? AppSettingString("SqlServer"); //REL-390973
+		public static string SqlServer => GetRunSettingsParameter("SqlServer") ?? AppSettingString("SQLServerAddress"); //REL-390973
 
-		public static string DatabaseUserId => AppSettingString("SQLUsername").NullIfEmpty() ?? AppSettingString("SqlUsername"); //REL-390973
+		public static string DatabaseUserId => AppSettingString("SqlUsername"); //REL-390973
 
-		public static string DatabasePassword => AppSettingString("SQLPassword").NullIfEmpty() ?? AppSettingString("SqlPassword"); //REL-390973
+		public static string DatabasePassword => AppSettingString("SqlPassword"); //REL-390973
 
 		public static string EddsConnectionString => string.Format(AppSettingString("connectionStringEDDS"), SqlServer, DatabaseUserId, DatabasePassword);
 
