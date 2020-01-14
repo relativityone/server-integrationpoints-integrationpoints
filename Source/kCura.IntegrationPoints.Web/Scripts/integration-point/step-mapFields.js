@@ -834,9 +834,9 @@ ko.validation.insertValidationMessage = function (element) {
 			self.addAlltoSourceField();
 			self.addAlltoWorkspaceField();
 
-            var fieldForAutomap = function (field) {
+            var fieldForAutomap = function(field) {
                 return field.classificationLevel == 0;
-            }
+            };
 
             root.data.ajax({
                 type: 'POST', url: root.utils.generateWebURL('/api/FieldMappings/AutomapFields'),

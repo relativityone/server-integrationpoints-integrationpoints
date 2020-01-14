@@ -4,15 +4,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Controllers.API.FieldMappings;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class AutomapRunnerTests
 	{
+		private AutomapRunner _sut;
+
+		[SetUp]
+		public void Setup()
+		{
+			_sut = new AutomapRunner();
+		}
+
 		[Test]
 		public void MapFields_ShouldMapFieldsWithTheSameTypeAndName()
 		{
@@ -46,7 +55,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 			};
 
 			// Act
-			var mappedFields = AutomapRunner.MapFields(sourceFields, destinationFields).ToArray();
+			var mappedFields = _sut.MapFields(sourceFields, destinationFields).ToArray();
 
 			// Assert
 			mappedFields.Count().Should().Be(2);
@@ -93,7 +102,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 			};
 
 			// Act
-			var mappedFields = AutomapRunner.MapFields(sourceFields, destinationFields).ToArray();
+			var mappedFields = _sut.MapFields(sourceFields, destinationFields).ToArray();
 
 			// Assert
 			mappedFields.Count().Should().Be(0);
@@ -122,7 +131,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 			};
 
 			// Act
-			var mappedFields = AutomapRunner.MapFields(sourceFields, destinationFields).ToArray();
+			var mappedFields = _sut.MapFields(sourceFields, destinationFields).ToArray();
 
 			// Assert
 			mappedFields.Count().Should().Be(1);
@@ -156,7 +165,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 			};
 
 			// Act
-			var mappedFields = AutomapRunner.MapFields(sourceFields, destinationFields).ToArray();
+			var mappedFields = _sut.MapFields(sourceFields, destinationFields).ToArray();
 
 			// Assert
 			mappedFields.Count().Should().Be(1);
@@ -197,7 +206,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 			};
 
 			// Act
-			var mappedFields = AutomapRunner.MapFields(sourceFields, destinationFields).ToArray();
+			var mappedFields = _sut.MapFields(sourceFields, destinationFields).ToArray();
 
 			// Assert
 			mappedFields.Count().Should().Be(1);
@@ -207,7 +216,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 		}
 
 		[Test]
-		public void MapFields_ShouldMapOnlyIdentifiers_WhenParameterIsSet()
+		public void MapFields_ShouldMapOnlyIdentifiers_When_ParameterIsSet()
 		{
 			// Arrange
 			var sourceFields = new[]
@@ -241,7 +250,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 			};
 
 			// Act
-			var mappedFields = AutomapRunner.MapFields(sourceFields, destinationFields, true).ToArray();
+			var mappedFields = _sut.MapFields(sourceFields, destinationFields, true).ToArray();
 
 			// Assert
 			mappedFields.Count().Should().Be(1);
@@ -292,7 +301,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 			};
 
 			// Act
-			var mappedFields = AutomapRunner.MapFields(sourceFields, destinationFields).ToArray();
+			var mappedFields = _sut.MapFields(sourceFields, destinationFields).ToArray();
 
 			// Assert
 			mappedFields.Count().Should().Be(3);

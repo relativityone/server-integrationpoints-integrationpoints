@@ -20,7 +20,11 @@ namespace kCura.IntegrationPoints.Web.Installers
 				Component
 					.For<IFieldsClassifierRunner>()
 					.ImplementedBy<FieldsClassifierRunner>()
-					.LifestyleTransient()
+					.LifestyleTransient(),
+				Component
+					.For<IAutomapRunner>()
+					.ImplementedBy<AutomapRunner>()
+					.LifestyleSingleton()
 			);
 		}
 	}

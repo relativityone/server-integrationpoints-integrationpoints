@@ -7,9 +7,9 @@ using Relativity.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 {
-	public static class AutomapRunner
+	public class AutomapRunner : IAutomapRunner
 	{
-		public static IEnumerable<FieldMap> MapFields(IEnumerable<DocumentFieldInfo> sourceFields,
+		public IEnumerable<FieldMap> MapFields(IEnumerable<DocumentFieldInfo> sourceFields,
 			IEnumerable<DocumentFieldInfo> destinationFields, bool matchOnlyIdentifiers = false)
 		{
 			if (matchOnlyIdentifiers)
@@ -20,13 +20,13 @@ namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 
 			List<FieldMap> mapping = sourceFields.Join(destinationFields, x => x.Name, x => x.Name, (SourceField, DestinationField) => new { SourceField, DestinationField })
 			.Where(x => TypesMatchTest(x.SourceField, x.DestinationField))
-				.Select(x => new FieldMap
-				{
-					SourceField = GetFieldEntry(x.SourceField),
-					DestinationField = GetFieldEntry(x.DestinationField),
-					FieldMapType = (x.SourceField.IsIdentifier && x.DestinationField.IsIdentifier) ? FieldMapTypeEnum.Identifier : FieldMapTypeEnum.None
-				}
-				).ToList();
+			.Select(x => new FieldMap
+			{
+				SourceField = GetFieldEntry(x.SourceField),
+				DestinationField = GetFieldEntry(x.DestinationField),
+				FieldMapType = (x.SourceField.IsIdentifier && x.DestinationField.IsIdentifier) ? FieldMapTypeEnum.Identifier : FieldMapTypeEnum.None
+			}
+			).ToList();
 
 			EnsureIdentifiersMapped(mapping, sourceFields, destinationFields);
 
@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 				.ToArray();
 		}
 
-		private static void EnsureIdentifiersMapped(List<FieldMap> mappings, IEnumerable<DocumentFieldInfo> sourceFields, IEnumerable<DocumentFieldInfo> destinationFields)
+		private void EnsureIdentifiersMapped(List<FieldMap> mappings, IEnumerable<DocumentFieldInfo> sourceFields, IEnumerable<DocumentFieldInfo> destinationFields)
 		{
 			FieldMap identifierMap =
 				mappings.FirstOrDefault(m => m.FieldMapType == FieldMapTypeEnum.Identifier);
@@ -51,7 +51,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 					x.SourceField?.FieldIdentifier == sourceIdentifier?.FieldIdentifier ||
 					x.DestinationField?.FieldIdentifier == destinationIdentifier?.FieldIdentifier);
 
-
 					mappings.Add(new FieldMap
 					{
 						SourceField = GetFieldEntry(sourceIdentifier),
@@ -59,21 +58,20 @@ namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 						FieldMapType = FieldMapTypeEnum.Identifier
 					});
 				}
-
 			}
 		}
 
-
-		private static bool TypesMatchTest(DocumentFieldInfo sourceField, DocumentFieldInfo destinationField)
+		private bool TypesMatchTest(DocumentFieldInfo sourceField, DocumentFieldInfo destinationField)
 		{
+			const string fixedLengthText = "Fixed-Length Text";
+			const string longText = "Long Text";
 			return (sourceField.Type == destinationField.Type)
-				   || (sourceField.Type.StartsWith("Fixed-Length Text") &&
-					   (destinationField.Type.StartsWith("Fixed-Length Text") || destinationField.Type == "Long Text")
+				   || (sourceField.Type.StartsWith(fixedLengthText) &&
+					   (destinationField.Type.StartsWith(fixedLengthText) || destinationField.Type == longText)
 					   );
-
 		}
 
-		private static FieldEntry GetFieldEntry(DocumentFieldInfo fieldInfo)
+		private FieldEntry GetFieldEntry(DocumentFieldInfo fieldInfo)
 		{
 			return new FieldEntry
 			{

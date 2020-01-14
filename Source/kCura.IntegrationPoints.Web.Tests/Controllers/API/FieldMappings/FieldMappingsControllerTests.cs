@@ -19,18 +19,20 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 	{
 		private FieldMappingsController _sut;
 		private Mock<IFieldsClassifierRunner> _hideFromUserFieldsFilterMock;
+		private Mock<IAutomapRunner> _automapRunnerMock;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_hideFromUserFieldsFilterMock = new Mock<IFieldsClassifierRunner>();
+			_automapRunnerMock = new Mock<IAutomapRunner>();
 			_hideFromUserFieldsFilterMock
 				.Setup(x => x.GetFilteredFieldsAsync(It.IsAny<int>(), It.IsAny<IList<IFieldsClassifier>>()))
 				.ReturnsAsync(new List<FieldClassificationResult>());
 
 			var importApiFactoryStub = new Mock<IImportApiFactory>();
 
-			_sut = new FieldMappingsController(_hideFromUserFieldsFilterMock.Object, importApiFactoryStub.Object)
+			_sut = new FieldMappingsController(_hideFromUserFieldsFilterMock.Object, importApiFactoryStub.Object, _automapRunnerMock.Object)
 			{
 				Configuration = new HttpConfiguration(),
 				Request = new HttpRequestMessage()

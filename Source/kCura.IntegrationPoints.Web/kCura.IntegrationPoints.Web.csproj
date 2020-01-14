@@ -21,6 +21,12 @@
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Use64BitIISExpress />
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -79,7 +85,7 @@
     <Compile Include="..\Version\AssemblyInfo.Custom.cs">
       <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
-    <Compile Include="Controllers\API\AutomapRequest.cs" />
+    <Compile Include="Controllers\API\FieldMappings\AutomapRequest.cs" />
     <Compile Include="Controllers\API\FieldMappings\AutomapRunner.cs" />
     <Compile Include="Controllers\API\FieldMappings\DocumentFieldInfo.cs" />
     <Compile Include="Controllers\API\FieldMappings\FieldClassificationResult.cs" />
@@ -91,6 +97,7 @@
     <Compile Include="Controllers\API\FieldMappings\FieldMappingsController.cs" />
     <Compile Include="Controllers\API\FieldMappings\FieldClassifiers\IFieldsClassifier.cs" />
     <Compile Include="Controllers\API\FieldMappings\ClassificationLevel.cs" />
+    <Compile Include="Controllers\API\FieldMappings\IAutomapRunner.cs" />
     <Compile Include="Controllers\API\FieldMappings\IFieldsClassifierRunner.cs" />
     <Compile Include="Controllers\API\FieldMappings\FieldsClassifierRunner.cs" />
     <Compile Include="IntegrationPointsServices\TextSanitizer.cs" />
