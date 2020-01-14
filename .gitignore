@@ -11,4 +11,5 @@ FunctionalTest.runsettings
 *.jar
 *.exe
 *.bin
+*.user
 !vendor/*
