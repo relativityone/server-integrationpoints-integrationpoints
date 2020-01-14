@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup Condition=" '$(PublishWebProjects)'!='' ">
@@ -21,6 +21,12 @@
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Use64BitIISExpress />
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -79,6 +85,9 @@
     <Compile Include="..\Version\AssemblyInfo.Custom.cs">
       <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
+    <Compile Include="Controllers\API\FieldMappings\AutomapRequest.cs" />
+    <Compile Include="Controllers\API\FieldMappings\AutomapRunner.cs" />
+    <Compile Include="Controllers\API\FieldMappings\DocumentFieldInfo.cs" />
     <Compile Include="Controllers\API\FieldMappings\FieldClassificationResult.cs" />
     <Compile Include="Controllers\API\FieldMappings\FieldClassifiers\NestedParentObjectFieldsClassifier.cs" />
     <Compile Include="Controllers\API\FieldMappings\FieldClassifiers\NotSupportedByIAPIFieldsClassifier.cs" />
@@ -88,6 +97,7 @@
     <Compile Include="Controllers\API\FieldMappings\FieldMappingsController.cs" />
     <Compile Include="Controllers\API\FieldMappings\FieldClassifiers\IFieldsClassifier.cs" />
     <Compile Include="Controllers\API\FieldMappings\ClassificationLevel.cs" />
+    <Compile Include="Controllers\API\FieldMappings\IAutomapRunner.cs" />
     <Compile Include="Controllers\API\FieldMappings\IFieldsClassifierRunner.cs" />
     <Compile Include="Controllers\API\FieldMappings\FieldsClassifierRunner.cs" />
     <Compile Include="IntegrationPointsServices\TextSanitizer.cs" />

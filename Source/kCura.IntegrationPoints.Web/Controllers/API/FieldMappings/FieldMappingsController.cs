@@ -13,11 +13,13 @@ namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 	{
 		private readonly IFieldsClassifierRunner _fieldsClassifierRunner;
 		private readonly IImportApiFactory _importApiFactory;
+		private readonly IAutomapRunner _automapRunner;
 
-		public FieldMappingsController(IFieldsClassifierRunner fieldsClassifierRunner, IImportApiFactory importApiFactory)
+		public FieldMappingsController(IFieldsClassifierRunner fieldsClassifierRunner, IImportApiFactory importApiFactory, IAutomapRunner automapRunner)
 		{
 			_fieldsClassifierRunner = fieldsClassifierRunner;
 			_importApiFactory = importApiFactory;
+			_automapRunner = automapRunner;
 		}
 
 		[HttpGet]
@@ -53,5 +55,13 @@ namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 
 			return Request.CreateResponse(HttpStatusCode.OK, filteredFields, Configuration.Formatters.JsonFormatter);
 		}
+
+		[HttpPost]
+		[LogApiExceptionFilter(Message = "Error while auto mapping fields")]
+		public HttpResponseMessage AutoMapFields([FromBody] AutomapRequest request)
+		{
+			return Request.CreateResponse(HttpStatusCode.OK, _automapRunner.MapFields(request.SourceFields, request.DestinationFields, request.MatchOnlyIdentifiers), Configuration.Formatters.JsonFormatter);
+		}
+
 	}
 }

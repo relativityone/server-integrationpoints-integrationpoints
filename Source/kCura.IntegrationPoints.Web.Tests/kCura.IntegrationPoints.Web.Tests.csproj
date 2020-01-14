@@ -52,6 +52,7 @@
     <Compile Include="Context\UserContext\RequestHeadersUserContextServiceTests.cs" />
     <Compile Include="Context\UserContext\SessionUserContextServiceTests.cs" />
     <Compile Include="Context\WorkspaceContext\NotFoundWorkspaceContextServiceTests.cs" />
+    <Compile Include="Controllers\API\FieldMappings\AutomapRunnerTests.cs" />
     <Compile Include="Controllers\API\FieldMappings\FieldMappingsControllerTests.cs" />
     <Compile Include="Controllers\API\FieldMappings\FieldsClassifiers\RipFieldsClassifierTests.cs" />
     <Compile Include="Controllers\API\FieldMappings\FieldsClassifiers\NotSupportedByIAPIFieldsClassifierTests.cs" />
@@ -188,7 +189,6 @@
     <None Include="paket.references">
     </None>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
