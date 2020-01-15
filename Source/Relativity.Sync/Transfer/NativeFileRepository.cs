@@ -14,10 +14,10 @@ namespace Relativity.Sync.Transfer
 		private const string _FILENAME_COLUMN_NAME = "Filename";
 		private const string _SIZE_COLUMN_NAME = "Size";
 
-		private readonly Func<ISearchManager> _searchManagerFactory;
+		private readonly ISearchManagerFactory _searchManagerFactory;
 		private readonly ISyncLog _logger;
 
-		public NativeFileRepository(Func<ISearchManager> searchManagerFactory,ISyncLog logger)
+		public NativeFileRepository(ISearchManagerFactory searchManagerFactory,ISyncLog logger)
 		{
 			_searchManagerFactory = searchManagerFactory;
 			_logger = logger;
@@ -34,7 +34,7 @@ namespace Relativity.Sync.Transfer
 
 			_logger.LogInformation("Searching for native files. Documents count: {numberOfDocuments}", documentIds.Count);
 
-			using (ISearchManager searchManager = _searchManagerFactory())
+			using (ISearchManager searchManager = await _searchManagerFactory.CreateSearchManagerAsync().ConfigureAwait(false))
 			{
 				string concatenatedArtifactIds = string.Join(",", documentIds);
 				ISearchManager searchManagerForLambda = searchManager;

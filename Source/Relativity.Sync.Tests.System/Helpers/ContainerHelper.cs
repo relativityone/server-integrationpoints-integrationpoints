@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Net;
 using Autofac;
-using kCura.WinEDDS.Service;
-using kCura.WinEDDS.Service.Export;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Stubs;
 using Relativity.Telemetry.APM;
@@ -20,9 +17,7 @@ namespace Relativity.Sync.Tests.System.Helpers
 				configuration.IntegrationPointArtifactId, configuration.JobHistoryArtifactId);
 
 			IAPM apm = new NullAPM();
-			Func<ISearchManager> searchManagerFactory = () => new SearchManager(new NetworkCredential(AppSettings.RelativityUserName, AppSettings.RelativityUserPassword),
-				new CookieContainer(int.MaxValue));
-			RelativityServices relativityServices = new RelativityServices(apm, new ServicesManagerStub(), searchManagerFactory, AppSettings.RelativityUrl);
+			RelativityServices relativityServices = new RelativityServices(apm, new ServicesManagerStub(), AppSettings.RelativityUrl);
 
 			factory.RegisterSyncDependencies(containerBuilder, syncParameters, relativityServices, new SyncJobExecutionConfiguration(), new ConsoleLogger());
 
