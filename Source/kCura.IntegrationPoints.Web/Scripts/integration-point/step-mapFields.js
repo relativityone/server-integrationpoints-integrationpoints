@@ -689,6 +689,7 @@ ko.validation.insertValidationMessage = function (element) {
                 cancelText: "No",
                 showCancel: true,
                 messageAsHtml: true,
+                closeOnEscape: false,
                 success: function(calls) {
                     calls.close();
                     successCallback();
