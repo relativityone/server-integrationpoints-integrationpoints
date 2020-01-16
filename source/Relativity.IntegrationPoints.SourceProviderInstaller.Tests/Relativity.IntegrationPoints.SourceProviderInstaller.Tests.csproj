@@ -11,6 +11,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\Version\AssemblyInfo.cs" Link="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="CSharpGuidelineAnalyzer" Version="3.1.0" />
     <PackageReference Include="coverlet.msbuild" Version="2.6.3">
       <PrivateAssets>all</PrivateAssets>
@@ -20,7 +24,7 @@
     <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
     <PackageReference Include="NunitXml.TestLogger" Version="2.1.41" />
 	<PackageReference Include="kCura.EventHandler" Version="11.0.105.1" />
-	<PackageReference Include="Relativity.IntegrationPoints.Services.Interfaces.Private" Version="1.0.3" />
+	<PackageReference Include="Relativity.IntegrationPoints.Services.Interfaces.Private" Version="11.1.0" />
 	<PackageReference Include="Relativity.Kepler" Version="2.2.2" />
 	<PackageReference Include="FluentAssertions" Version="4.19.4" />
 	<PackageReference Include="Moq" Version="4.5.3" />
@@ -40,12 +44,6 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <Compile Include="..\..\AssemblyInfo.cs">
-      <Link>AssemblyInfo.cs</Link>
-    </Compile>
   </ItemGroup>
   
 </Project>
