@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -61,14 +61,14 @@
     <Reference Include="Relativity.DataTransfer.MessageService, Version=1.0.4.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.DataTransfer.MessageService.1.0.4\lib\Relativity.DataTransfer.MessageService.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.IntegrationPoints.Contracts">
-      <HintPath>..\packages\Relativity.IntegrationPoints.SDK.1.0.3\lib\net462\Relativity.IntegrationPoints.Contracts.dll</HintPath>
+    <Reference Include="Relativity.IntegrationPoints.Contracts, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.IntegrationPoints.SDK.1.0.7\lib\net462\Relativity.IntegrationPoints.Contracts.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.IntegrationPoints.Services.Interfaces.Private, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.IntegrationPoints.Services.Interfaces.Private.1.0.0\lib\net462\Relativity.IntegrationPoints.Services.Interfaces.Private.dll</HintPath>
+      <HintPath>..\packages\Relativity.IntegrationPoints.Services.Interfaces.Private.11.1.0\lib\net462\Relativity.IntegrationPoints.Services.Interfaces.Private.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.IntegrationPoints.SourceProviderInstaller">
-      <HintPath>..\packages\Relativity.IntegrationPoints.SDK.1.0.3\lib\net462\Relativity.IntegrationPoints.SourceProviderInstaller.dll</HintPath>
+    <Reference Include="Relativity.IntegrationPoints.SourceProviderInstaller, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.IntegrationPoints.SDK.1.0.7\lib\net462\Relativity.IntegrationPoints.SourceProviderInstaller.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Kepler, Version=2.0.7.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Kepler.2.0.7\lib\net462\Relativity.Kepler.dll</HintPath>
