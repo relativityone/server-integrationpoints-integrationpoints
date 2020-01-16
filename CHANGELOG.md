@@ -6,9 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.0.7] - 2019-12-10
+## [1.0.7] - 2019-01-16
 ### Added
 - make-sdk.bat for generating Relativity Integration Points SDK.
+- Upgraded Relativity.IntegrationPoints.Services.Interfaces.Private dependency version to 11.1.0 
 
 ## [1.0.6] - 2019-11-04
 ### Changed
