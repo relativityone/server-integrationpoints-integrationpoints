@@ -677,9 +677,12 @@ ko.validation.insertValidationMessage = function (element) {
             }
 
             var dialogContent = $('<div/>')
-                .html('<p>Some fields no longer can be mapped. Would you like to keep them in the mapping?</p>');
+                .html('<p>The below fields were skipped from mapping.</p>');
 
             tableDiv.appendTo(dialogContent);
+
+            $('<div/>')
+                .html('<p>Would you like to keep them in mapping anyway?</p>').appendTo(dialogContent)
 
             return window.Dragon.dialogs.showConfirmWithCancelHandler({
                 message: dialogContent.html(),
