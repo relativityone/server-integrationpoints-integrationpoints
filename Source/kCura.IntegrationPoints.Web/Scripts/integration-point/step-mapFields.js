@@ -591,7 +591,8 @@ ko.validation.insertValidationMessage = function (element) {
 			identifier: 'Identifier',
 			parent: 'FolderPathInformation',
 			native: 'NativeFilePath'
-		};
+        };
+
 		var mapHelper = (function () {
 			function find(fields, fieldMapping, key, func) {
 				return $.grep(fields,
@@ -609,12 +610,11 @@ ko.validation.insertValidationMessage = function (element) {
 						return func(remove);
 					});
             }
-
             
-
 			function getNotMapped(fields, fieldMapping, key) {
 				return find(fields, fieldMapping, key, function (r) { return !r });
-			}
+            }
+
 			function getMapped(sourceFields, destinationFields, fieldMapping, sourceKey, destinationKey) {
 				var sourceMapped = [];
                 var destinationMapped = [];
@@ -651,7 +651,6 @@ ko.validation.insertValidationMessage = function (element) {
             successCallback,
             cancelCallback) {
          
-
             var tableDiv = $('<div/>');
 
             function addColumn(description, elements) {
