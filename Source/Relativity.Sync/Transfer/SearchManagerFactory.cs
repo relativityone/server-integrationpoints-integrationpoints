@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Threading.Tasks;
 using kCura.WinEDDS.Service;
 using kCura.WinEDDS.Service.Export;
@@ -13,18 +14,26 @@ namespace Relativity.Sync.Transfer
 		private const string _RELATIVITY_BEARER_USERNAME = "XxX_BearerTokenCredentials_XxX";
 
 		private readonly IInstanceSettings _instanceSettings;
-		private readonly IUserContextConfiguration _userContextConfiguration;
 		private readonly IAuthTokenGenerator _tokenGenerator;
+		private readonly IUserContextConfiguration _userContextConfiguration;
+		private readonly Lazy<Task<ISearchManager>> _searchManagerFactoryLazy;
 
-		public SearchManagerFactory(IInstanceSettings instanceSettings, IUserContextConfiguration userContextConfiguration, IAuthTokenGenerator tokenGenerator)
+		public SearchManagerFactory(IInstanceSettings instanceSettings, IAuthTokenGenerator tokenGenerator, IUserContextConfiguration userContextConfiguration)
 		{
 			_instanceSettings = instanceSettings;
-			_userContextConfiguration = userContextConfiguration;
 			_tokenGenerator = tokenGenerator;
+			_userContextConfiguration = userContextConfiguration;
+
+			_searchManagerFactoryLazy = new Lazy<Task<ISearchManager>>(SearchManagerFactoryAsync);
 		}
 
-		public async Task<ISearchManager> CreateSearchManagerAsync()
-		{ 
+		public Task<ISearchManager> CreateSearchManagerAsync()
+		{
+			return _searchManagerFactoryLazy.Value;
+		}
+
+		public async Task<ISearchManager> SearchManagerFactoryAsync()
+		{
 			kCura.WinEDDS.Config.ProgrammaticServiceURL = await _instanceSettings.GetWebApiPathAsync().ConfigureAwait(false);
 
 			string authToken = await _tokenGenerator.GetAuthTokenAsync(_userContextConfiguration.ExecutingUserId).ConfigureAwait(false);

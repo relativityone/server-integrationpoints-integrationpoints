@@ -112,7 +112,7 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 			searchManagerFactory.Setup(x => x.CreateSearchManagerAsync())
 				.Returns(Task.FromResult(searchManager.Object));
 
-			containerBuilder.RegisterInstance(searchManagerFactory.Object).As<ISearchManagerFactory>();
+			containerBuilder.RegisterInstance(searchManagerFactory.Object).As<ISearchManagerFactory>().SingleInstance();
 		}
 	}
 }

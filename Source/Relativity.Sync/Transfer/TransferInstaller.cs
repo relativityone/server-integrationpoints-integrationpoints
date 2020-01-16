@@ -12,7 +12,7 @@ namespace Relativity.Sync.Transfer
 			builder.RegisterType<DocumentFieldRepository>().As<IDocumentFieldRepository>();
 			builder.RegisterType<BatchDataReaderBuilder>().As<IBatchDataReaderBuilder>();
 			builder.RegisterType<RelativityExportBatcher>().As<IRelativityExportBatcher>();
-			builder.RegisterType<SearchManagerFactory>().As<ISearchManagerFactory>();
+			builder.RegisterType<SearchManagerFactory>().As<ISearchManagerFactory>().SingleInstance();
 			builder.RegisterType<NativeFileRepository>().As<INativeFileRepository>();
 			builder.RegisterType<FieldManager>().As<IFieldManager>();
 			builder.RegisterType<ExportDataSanitizer>().As<IExportDataSanitizer>();
