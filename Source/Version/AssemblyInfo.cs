@@ -4,8 +4,8 @@ using System.Runtime.InteropServices;
 
 
 [assembly: ComVisibleAttribute(false)]
-[assembly: AssemblyVersionAttribute("0.1.0.0")]
-[assembly: AssemblyFileVersionAttribute("0.1.0.0")]
+[assembly: AssemblyVersionAttribute("1.0.0.0")]
+[assembly: AssemblyFileVersionAttribute("1.0.0.0")]
 [assembly: AssemblyCopyrightAttribute("Copyright (c) 2017, Relativity ODA LLC")]
 [assembly: AssemblyTitleAttribute("Relativity.IntegrationPoints.JsonLoader")]
 [assembly: AssemblyDescriptionAttribute("Relativity.IntegrationPoints.JsonLoader")]
