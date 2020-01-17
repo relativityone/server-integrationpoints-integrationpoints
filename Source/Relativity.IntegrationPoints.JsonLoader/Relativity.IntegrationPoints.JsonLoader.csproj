@@ -26,7 +26,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
-    <PlatformTarget>x64</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -37,7 +37,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
-    <PlatformTarget>x64</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup>
@@ -58,14 +58,14 @@
     <RunPostBuildEvent>Always</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="kCura.Apps.Common.Config, Version=2.1.3.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCura.Apps.Common.Config.2.1.3\lib\net462\kCura.Apps.Common.Config.dll</HintPath>
+    <Reference Include="kCura.Apps.Common.Config, Version=2.1.9.4, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.Apps.Common.Config.2.1.9\lib\net462\kCura.Apps.Common.Config.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.Apps.Common.Data, Version=2.1.3.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCura.Apps.Common.Data.2.1.3\lib\net462\kCura.Apps.Common.Data.dll</HintPath>
+    <Reference Include="kCura.Apps.Common.Data, Version=2.1.9.4, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.Apps.Common.Data.2.1.9\lib\net462\kCura.Apps.Common.Data.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.Apps.Common.Utils, Version=2.1.3.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCura.Apps.Common.Utils.2.1.3\lib\net462\kCura.Apps.Common.Utils.dll</HintPath>
+    <Reference Include="kCura.Apps.Common.Utils, Version=2.1.9.4, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.Apps.Common.Utils.2.1.9\lib\net462\kCura.Apps.Common.Utils.dll</HintPath>
     </Reference>
     <Reference Include="kCura.EventHandler, Version=11.0.105.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\kCura.EventHandler.11.0.105.1\lib\net462\kCura.EventHandler.dll</HintPath>
@@ -82,16 +82,16 @@
       <HintPath>..\packages\Relativity.DataTransfer.MessageService.1.0.4\lib\Relativity.DataTransfer.MessageService.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.IntegrationPoints.Contracts, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.IntegrationPoints.SDK.1.0.6\lib\net462\Relativity.IntegrationPoints.Contracts.dll</HintPath>
+      <HintPath>..\packages\Relativity.IntegrationPoints.SDK.1.0.7\lib\net462\Relativity.IntegrationPoints.Contracts.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.IntegrationPoints.Services.Interfaces.Private, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.IntegrationPoints.Services.Interfaces.Private.1.0.3\lib\net462\Relativity.IntegrationPoints.Services.Interfaces.Private.dll</HintPath>
+      <HintPath>..\packages\Relativity.IntegrationPoints.Services.Interfaces.Private.11.1.0\lib\net462\Relativity.IntegrationPoints.Services.Interfaces.Private.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.IntegrationPoints.SourceProviderInstaller, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.IntegrationPoints.SDK.1.0.6\lib\net462\Relativity.IntegrationPoints.SourceProviderInstaller.dll</HintPath>
+      <HintPath>..\packages\Relativity.IntegrationPoints.SDK.1.0.7\lib\net462\Relativity.IntegrationPoints.SourceProviderInstaller.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Kepler, Version=2.0.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Kepler.2.0.7\lib\net462\Relativity.Kepler.dll</HintPath>
+    <Reference Include="Relativity.Kepler, Version=2.3.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Kepler.2.3.4\lib\net462\Relativity.Kepler.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Services.ServiceProxy, Version=1.0.1.445, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Kepler.Client.1.0.1.445\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
@@ -120,6 +120,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Version\AssemblyInfo.cs">
+      <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Models\DataObject.cs" />
     <Compile Include="DIProviderFactory.cs" />
     <Compile Include="Constants.cs" />
