@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		{
 			Response response = new Response {Success = true};
 
-			string applicationPath = PageInteractionHelper.GetApplicationPath(Application.ApplicationUrl);
+			string applicationPath = PageInteractionHelper.GetApplicationRelativeUri();
 			RegisterLinkedClientScript(applicationPath + "/Scripts/EventHandlers/job-history.js");
 
 			return response;
