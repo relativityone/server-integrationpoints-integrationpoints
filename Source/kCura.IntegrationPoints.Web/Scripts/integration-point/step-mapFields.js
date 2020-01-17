@@ -591,7 +591,8 @@ ko.validation.insertValidationMessage = function (element) {
 			identifier: 'Identifier',
 			parent: 'FolderPathInformation',
 			native: 'NativeFilePath'
-		};
+        };
+
 		var mapHelper = (function () {
 			function find(fields, fieldMapping, key, func) {
 				return $.grep(fields,
@@ -608,11 +609,12 @@ ko.validation.insertValidationMessage = function (element) {
 							});
 						return func(remove);
 					});
-			}
-
+            }
+            
 			function getNotMapped(fields, fieldMapping, key) {
 				return find(fields, fieldMapping, key, function (r) { return !r });
-			}
+            }
+
 			function getMapped(sourceFields, destinationFields, fieldMapping, sourceKey, destinationKey) {
 				var sourceMapped = [];
                 var destinationMapped = [];
@@ -635,12 +637,8 @@ ko.validation.insertValidationMessage = function (element) {
                     }
                 });
 
-                // add fields without pairs to the bottom
-                sourceMapped = sourceMapped.concat(sourceWithoutPair);
-                destinationMapped = destinationMapped.concat(destinationWithoutPair);
-
-				return [destinationMapped, sourceMapped];
-			}
+                return [sourceMapped, destinationMapped, sourceWithoutPair, destinationWithoutPair];
+            }
 
 			return {
 				getNotMapped: getNotMapped,
@@ -648,20 +646,98 @@ ko.validation.insertValidationMessage = function (element) {
 			};
 		})();
 
+        function confirmRemovingNotMappedFields(notMappedSourceFields,
+            notMappedDestinationFields,
+            successCallback,
+            cancelCallback) {
+         
+            var tableDiv = $('<div/>');
 
-        this.applyMapping = function (mapping) {
+            function addColumn(description, elements) {
+                var columnDiv = $('<div/>').css({ "float": "left", "width": "50%" });
+                $('<p/>').html(description).appendTo(columnDiv);
+
+                var list = $('<ul/>').appendTo(columnDiv);
+
+                $.each(elements,
+                    function() {
+                        $('<li/>').html(this).appendTo(list);
+                    });
+
+                $(columnDiv).appendTo(tableDiv);
+            }
+
+            if (notMappedSourceFields.length) {
+                addColumn("Source:", notMappedSourceFields.map(x => x.name));
+            }
+
+            if (notMappedDestinationFields.length) {
+                addColumn("Destination:", notMappedDestinationFields.map(x => x.name));
+            }
+
+            var dialogContent = $('<div/>')
+                .html('<p>The below fields were skipped from mapping.</p>');
+
+            tableDiv.appendTo(dialogContent);
+
+            $('<div/>')
+                .html('<p>Would you like to keep them in mapping anyway?</p>').appendTo(dialogContent)
+
+            return window.Dragon.dialogs.showConfirmWithCancelHandler({
+                message: dialogContent.html(),
+                title: "Integration Point Mapping",
+                width: 450,
+                okText: "Yes, keep them",
+                cancelText: "No, skip them",
+                showCancel: true,
+                messageAsHtml: true,
+                closeOnEscape: false,
+                success: function(calls) {
+                    calls.close();
+                    successCallback();
+                },
+                cancel: function(calls) {
+                    calls.close();
+                    cancelCallback();
+                }
+            });
+        }
+
+        this.applyMapping = function(mapping) {
             var mapped = mapHelper.getMapped(self.sourceFields, self.destinationFields, mapping, 'sourceField', 'destinationField');
-            var destinationMapped = mapped[0];
-            var sourceMapped = mapped[1];
+            var sourceMapped  = mapped[0];
+            var destinationMapped = mapped[1];
             var destinationNotMapped = mapHelper.getNotMapped(self.destinationFields, mapping, 'destinationField');
             var sourceNotMapped = mapHelper.getNotMapped(self.sourceFields, mapping, 'sourceField');
 
-            self.workspaceFields(mapFields(destinationNotMapped));
-            self.mappedWorkspace(mapFields(destinationMapped));
-            self.sourceField(mapFields(sourceNotMapped));
-            self.sourceMapped(mapFields(sourceMapped));
+            var sourceWithoutPair = mapped[2];
+            var destinationWithoutPair = mapped[3];
 
-            self.populateExtractedText();
+            return new Promise(function (resolve, reject) {
+                if (!sourceWithoutPair.length && !destinationWithoutPair.length) {
+                    resolve();
+                } else {
+                    confirmRemovingNotMappedFields(sourceWithoutPair,
+                        destinationWithoutPair,
+                        () => {
+                            sourceMapped = sourceMapped.concat(sourceWithoutPair);
+                            destinationMapped = destinationMapped.concat(destinationWithoutPair);
+                            resolve();
+                        },
+                        () => {
+                            sourceNotMapped = sourceNotMapped.concat(sourceWithoutPair);
+                            destinationNotMapped = destinationNotMapped.concat(destinationWithoutPair);
+                            resolve();
+                        });
+                }
+            }).then(() => {
+                self.workspaceFields(mapFields(destinationNotMapped));
+                self.mappedWorkspace(mapFields(destinationMapped));
+                self.sourceField(mapFields(sourceNotMapped));
+                self.sourceMapped(mapFields(sourceMapped));
+
+                self.populateExtractedText();
+            });
         };
 
 		root.data.deferred().all(promises).then(
