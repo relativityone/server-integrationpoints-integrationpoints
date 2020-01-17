@@ -35,28 +35,6 @@
     <Prefer32Bit>false</Prefer32Bit>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x64\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <OutputPath>bin\x64\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="kCura.Apps.Common.Config, Version=2.1.3.2, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\kCura.Apps.Common.Config.2.1.3\lib\net462\kCura.Apps.Common.Config.dll</HintPath>
@@ -67,7 +45,7 @@
     <Reference Include="kCura.Apps.Common.Utils, Version=2.1.3.2, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\kCura.Apps.Common.Utils.2.1.3\lib\net462\kCura.Apps.Common.Utils.dll</HintPath>
     </Reference>
-	<Reference Include="kCura.EventHandler, Version=11.0.105.1, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="kCura.EventHandler, Version=11.0.105.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\kCura.EventHandler.11.0.105.1\lib\net462\kCura.EventHandler.dll</HintPath>
     </Reference>
     <Reference Include="kCura.EventHandler">
@@ -83,14 +61,14 @@
     <Reference Include="Relativity.DataTransfer.MessageService, Version=1.0.4.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.DataTransfer.MessageService.1.0.4\lib\Relativity.DataTransfer.MessageService.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.IntegrationPoints.Contracts">
-      <HintPath>..\packages\Relativity.IntegrationPoints.SDK.1.0.3\lib\net462\Relativity.IntegrationPoints.Contracts.dll</HintPath>
+    <Reference Include="Relativity.IntegrationPoints.Contracts, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.IntegrationPoints.SDK.1.0.7\lib\net462\Relativity.IntegrationPoints.Contracts.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.IntegrationPoints.Services.Interfaces.Private, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.IntegrationPoints.Services.Interfaces.Private.1.0.0\lib\net462\Relativity.IntegrationPoints.Services.Interfaces.Private.dll</HintPath>
+      <HintPath>..\packages\Relativity.IntegrationPoints.Services.Interfaces.Private.11.1.0\lib\net462\Relativity.IntegrationPoints.Services.Interfaces.Private.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.IntegrationPoints.SourceProviderInstaller">
-      <HintPath>..\packages\Relativity.IntegrationPoints.SDK.1.0.3\lib\net462\Relativity.IntegrationPoints.SourceProviderInstaller.dll</HintPath>
+    <Reference Include="Relativity.IntegrationPoints.SourceProviderInstaller, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.IntegrationPoints.SDK.1.0.7\lib\net462\Relativity.IntegrationPoints.SourceProviderInstaller.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Kepler, Version=2.0.7.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Kepler.2.0.7\lib\net462\Relativity.Kepler.dll</HintPath>
@@ -122,11 +100,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Version\AssemblyInfo.cs">
+      <Link>AssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="EventHandlers\RegisterNewIntegrationPoint.cs" />
     <Compile Include="EventHandlers\RemoveMyFirstProvider.cs" />
     <Compile Include="GlobalConstants.cs" />
     <Compile Include="MyFirstProvider.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="XMLDataReader.cs" />
   </ItemGroup>
   <ItemGroup>
