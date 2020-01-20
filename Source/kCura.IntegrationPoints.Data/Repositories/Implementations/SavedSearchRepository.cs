@@ -1,55 +1,71 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client.DTOs;
+using Relativity;
+using Relativity.Services.DataContracts.DTOs.Results;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class SavedSearchRepository : ISavedSearchRepository
 	{
-		private readonly IRelativityObjectManager _objectManager;
-		private readonly int _savedSearchId;
-		private readonly int _pageSize;
+		private Guid _runId;
 		private int _documentsRetrieved = 0;
 		private int _totalDocumentsRetrieved = 0;
-		public bool StartedRetrieving = false;
+		private bool _startedRetrieving = false;
+
+		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
+
+		private readonly IRelativityObjectManager _objectManager;
+		private readonly int _savedSearchId;
 
 		public SavedSearchRepository(
 			IRelativityObjectManager objectManager,
-			int savedSearchId,
-			int pageSize)
+			int savedSearchId)
 		{
 			_objectManager = objectManager;
 			_savedSearchId = savedSearchId;
-			_pageSize = pageSize;
 		}
 
-		public ArtifactDTO[] RetrieveNextDocuments()
+		public async Task<ArtifactDTO[]> RetrieveNextDocumentsAsync()
 		{
-			StartedRetrieving = true;
-
-			var request = new QueryRequest
+			if (!_startedRetrieving)
 			{
-				Fields = new List<FieldRef>
+				QueryRequest queryRequest = new QueryRequest
 				{
-					new FieldRef { Name = ArtifactFieldNames.TextIdentifier }
-				},
-				Condition = $"'ArtifactId' IN SAVEDSEARCH {_savedSearchId}"
-			};
+					ObjectType = new ObjectTypeRef
+					{
+						ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID
+					},
+					Fields = new List<FieldRef>
+					{
+						new FieldRef { Name = ArtifactFieldNames.TextIdentifier }
+					},
+					Condition = $"'ArtifactId' IN SAVEDSEARCH {_savedSearchId}"
+				};
 
-			UtilityDTO.ResultSet<Document> resultSet = _objectManager.Query<Document>(request, _documentsRetrieved, _pageSize);
 
-			if (resultSet != null && resultSet.Items.Any())
+				ExportInitializationResults export = await _objectManager.InitializeExportAsync(queryRequest, 1).ConfigureAwait(false);
+				_runId = export.RunID;
+				_totalDocumentsRetrieved = (int)export.RecordCount;
+				_startedRetrieving = true;
+			}
+
+			RelativityObjectSlim[] resultsBlock = await _objectManager
+				.RetrieveResultsBlockFromExportAsync(_runId, _totalDocumentsRetrieved - _documentsRetrieved, _documentsRetrieved)
+				.ConfigureAwait(false);
+
+			if (resultsBlock != null && resultsBlock.Any())
 			{
-				_totalDocumentsRetrieved = resultSet.Items.Count;
-
-				ArtifactDTO[] results = resultSet.Items.Select(
+				ArtifactDTO[] results = resultsBlock.Select(
 					x => new ArtifactDTO(
-						x.Rdo.ArtifactID,
-						x.Rdo.ArtifactTypeID.GetValueOrDefault(),
-						x.Rdo.TextIdentifier,
+						x.ArtifactID,
+						_DOCUMENT_ARTIFACT_TYPE_ID,
+						(string)x.Values[0],
 						new ArtifactFieldDTO[0])).ToArray();
 
 				_documentsRetrieved += results.Length;
@@ -65,7 +81,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public bool AllDocumentsRetrieved()
 		{
-			return StartedRetrieving && _totalDocumentsRetrieved == _documentsRetrieved;
+			return _startedRetrieving && _totalDocumentsRetrieved == _documentsRetrieved;
 		}
 	}
 }
