@@ -164,7 +164,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			while (!savedSearchRepository.AllDocumentsRetrieved())
 			{
 				var documentIdentifiersFromSavedSearch = new HashSet<string>();
-				ArtifactDTO[] artifactDtos = savedSearchRepository.RetrieveNextDocuments();
+				ArtifactDTO[] artifactDtos = savedSearchRepository.RetrieveNextDocumentsAsync().GetAwaiter().GetResult();
 
 				if (artifactDtos != null && artifactDtos.Any())
 				{

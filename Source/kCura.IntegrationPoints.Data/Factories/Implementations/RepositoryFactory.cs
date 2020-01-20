@@ -226,8 +226,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		{
 			ISavedSearchRepository repository = new SavedSearchRepository(
 				CreateRelativityObjectManager(workspaceArtifactId),
-				savedSearchArtifactId,
-				pageSize: 1000);
+				savedSearchArtifactId);
 			return repository;
 		}
 
