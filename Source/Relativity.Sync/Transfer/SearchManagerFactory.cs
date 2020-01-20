@@ -32,7 +32,7 @@ namespace Relativity.Sync.Transfer
 			return _searchManagerFactoryLazy.Value;
 		}
 
-		public async Task<ISearchManager> SearchManagerFactoryAsync()
+		private async Task<ISearchManager> SearchManagerFactoryAsync()
 		{
 			kCura.WinEDDS.Config.ProgrammaticServiceURL = await _instanceSettings.GetWebApiPathAsync().ConfigureAwait(false);
 
