@@ -39,12 +39,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				{
 					ObjectType = new ObjectTypeRef
 					{
-						// ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID
 						Guid = Guid.Parse(ObjectTypeGuids.Document)
 					},
 					Fields = new List<FieldRef>
 					{
-						//new FieldRef { Name = ArtifactFieldNames.TextIdentifier }
 						new FieldRef { Guid = Guid.Parse(DocumentFieldGuids.ControlNumber) }
 					},
 					Condition = $"'ArtifactId' IN SAVEDSEARCH {_savedSearchId}"
