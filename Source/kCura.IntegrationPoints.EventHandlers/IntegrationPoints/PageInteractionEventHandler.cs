@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 			if (PageMode == EventHandler.Helper.PageMode.View)
 			{
-				string applicationPath = PageInteractionHelper.GetApplicationPath(Application.ApplicationUrl);
+				string applicationPath = PageInteractionHelper.GetApplicationRelativeUri();
 
 				ICommonScripts commonScripts = CommonScriptsFactory.Create(this);
 
