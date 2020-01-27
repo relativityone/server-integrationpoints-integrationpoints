@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -8,6 +9,7 @@ using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web.Attributes;
+using kCura.IntegrationPoints.Web.Controllers.API.FieldMappings;
 using kCura.IntegrationPoints.Web.Models;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
@@ -36,7 +38,17 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			_apiLog.LogDebug($"Import Settings has been extracted successfully for workspace field retival process: {_serializer.Serialize(importSettings)}");
 			IDataSynchronizer synchronizer = _appDomainRdoSynchronizerFactory.CreateSynchronizer(Guid.Empty, settings.Settings);
 			var fields = synchronizer.GetFields(new DataSourceProviderConfiguration(_serializer.Serialize(importSettings), settings.Credentials)).ToList();
-			return Request.CreateResponse(HttpStatusCode.OK, fields, Configuration.Formatters.JsonFormatter);
+
+			List<FieldClassificationResult> result = fields.Select(x => new FieldClassificationResult
+			{
+				ClassificationLevel = ClassificationLevel.AutoMap,
+				FieldIdentifier = x.FieldIdentifier,
+				IsIdentifier = x.IsIdentifier,
+				IsRequired = x.IsRequired,
+				Name = x.ActualName
+			}).ToList();
+
+			return Request.CreateResponse(HttpStatusCode.OK, result, Configuration.Formatters.JsonFormatter);
 		}
 	}
 }

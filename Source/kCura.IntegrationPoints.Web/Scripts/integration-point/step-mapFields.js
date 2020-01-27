@@ -527,21 +527,62 @@ ko.validation.insertValidationMessage = function (element) {
 			type: 'GET', url: root.utils.generateWebAPIURL('Entity/' + artifactTypeId)
 		}).then(function (result) {
 			self.showManager(result);
-		});
+        });
 
-		var sourceFieldPromise = root.data.ajax({
-			type: 'GET', url: root.utils.generateWebAPIURL('FieldMappings/GetMappableFieldsFromSourceWorkspace')
-		}).fail(function (error) {
-			IP.message.error.raise("No attributes were returned from the source provider.");
-		});
+        function getCustomProviderSourceFields() {
+            return root.data.ajax({
+                type: 'Post',
+                url: root.utils.generateWebAPIURL('SourceFields'),
+                data: JSON.stringify({
+                    'options': model.sourceConfiguration,
+                    'type': model.source.selectedType,
+                    'credentials': self.SecuredConfiguration
+                })
+            })
+        }
 
-		var destinationFieldPromise = root.data.ajax({
-			type: 'GET', url: root.utils.generateWebURL(JSON.parse(model.destination).CaseArtifactId + '/api/FieldMappings/GetMappableFieldsFromDestinationWorkspace')
-		}).then(function (result) {
-			return result;
-		});
+        function getWorkspaceFieldPromise() {
+            return root.data.ajax({
+                type: 'POST',
+                url: root.utils.generateWebAPIURL('WorkspaceField'),
+                data: JSON.stringify({
+                    settings: model.destination,
+                    credentials: self.SecuredConfiguration
+                })
+            });
+        }
 
-		var destination = JSON.parse(model.destination);
+        function getSyncSourceFields() {
+            return root.data.ajax({
+                type: 'GET',
+                url: root.utils.generateWebAPIURL('FieldMappings/GetMappableFieldsFromSourceWorkspace')
+            });
+        }
+
+        function getSyncDestinationFields() {
+            return root.data.ajax({
+                type: 'GET',
+                url: root.utils.generateWebURL(JSON.parse(model.destination).CaseArtifactId +
+                    '/api/FieldMappings/GetMappableFieldsFromDestinationWorkspace')
+            }).then(function(result) {
+                return result;
+            });
+        }
+
+        var sourceFieldPromise =
+            (self.IsRelativityProvider()
+                    ? getSyncSourceFields()
+                    : getCustomProviderSourceFields())
+                .fail(function (error) {
+                    IP.message.error.raise("No attributes were returned from the source provider.");
+                });
+
+        var destinationPromise =
+            (self.IsRelativityProvider()
+                ? getSyncDestinationFields()
+                : getWorkspaceFieldPromise());
+
+        var destination = JSON.parse(model.destination);
 		root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('rdometa', destination.artifactTypeID) }).then(function (result) {
 			self.hasParent(result.hasParent);
 		});
@@ -585,7 +626,7 @@ ko.validation.insertValidationMessage = function (element) {
 			}
 		}
 
-		var promises = [destinationFieldPromise, sourceFieldPromise, mappedSourcePromise];
+        var promises = [destinationPromise, sourceFieldPromise, mappedSourcePromise];
 
 		var mapTypes = {
 			identifier: 'Identifier',
