@@ -8,6 +8,7 @@ Relativity.Kepler.Client
 Relativity.Telemetry.APM
 Relativity.OAuth2Client
 Relativity.Toggles
+Relativity.Logging.Interfaces
 
 group TestPackages
 	FluentAssertions

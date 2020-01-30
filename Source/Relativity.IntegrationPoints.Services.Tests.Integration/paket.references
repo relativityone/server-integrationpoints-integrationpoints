@@ -16,6 +16,7 @@ relativity.transfer.client
 Relativity.OAuth2Client
 Relativity.Toggles
 Relativity.Logging.Interfaces
+Relativity.Kepler.Client
 
 group TestPackages
 	FluentAssertions

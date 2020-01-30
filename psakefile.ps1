@@ -43,7 +43,15 @@ Task Test -Description "Run tests that don't require a deployed environment." {
     Invoke-Tests -WhereClause "cat == Unit" -OutputFile $LogPath -WithCoverage
 }
 
-Task FunctionalTest -Description "Run functional tests that require a deployed environment." {
+Task FunctionalTest -Depends OneTimeTestsSetup -Description "Run tests that require a deployed environment." {
+    $LogPath = Join-Path $LogsDir "FunctionalTestResults.xml"
+    Invoke-Tests -WhereClause "(namespace =~ FunctionalTests && cat != NotWorkingOnTrident)" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
+    
+    $LogPath = Join-Path $LogsDir "IntegrationTestResults.xml"
+    Invoke-Tests -WhereClause "namespace =~ /Tests\.Integration[\$\.]/ && cat != InQuarantine && cat != NotWorkingOnTrident" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
+    
+    $LogPath = Join-Path $LogsDir "E2ETestResults.xml"
+    Invoke-Tests -WhereClause "(namespace =~ E2ETests && cat != NotWorkingOnTrident)" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
 }
 
 Task Sign -Description "Sign all files" {

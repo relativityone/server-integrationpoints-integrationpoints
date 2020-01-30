@@ -324,6 +324,12 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		#endregion
 
+		#region System Tests Settings
+
+		public static string SystemTestDataLocation => AppSettingString("SystemTestData"); //REL-390973
+
+		#endregion
+
 		#region Sync Settings
 
 		public static bool IsSyncEnabled => AppSettingBool("SyncEnabled");

@@ -1,6 +1,7 @@
 CSharpGuidelineAnalyzer
 Relativity.API
 kCura
+Relativity.Logging.Interfaces
 
 group TestPackages
 	NUnit

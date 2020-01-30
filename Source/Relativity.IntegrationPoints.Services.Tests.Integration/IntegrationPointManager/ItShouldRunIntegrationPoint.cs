@@ -10,6 +10,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Integration.IntegrationPoi
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints]
+	[NotWorkingOnTrident]
 	public class ItShouldRunIntegrationPoint : RelativityProviderTemplate
 	{
 		public ItShouldRunIntegrationPoint() : base($"KeplerService_{Utils.FormattedDateTimeNow}", $"KeplerService_Target_{Utils.FormattedDateTimeNow}")

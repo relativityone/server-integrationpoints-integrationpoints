@@ -24,6 +24,7 @@ Relativity.Logging.Interfaces
 Relativity.OAuth2Client.Implicit
 relativity.faspmanager
 Relativity.Transfer.Client
+kCura.FreeImage
 
 group TestPackages
 	FluentAssertions

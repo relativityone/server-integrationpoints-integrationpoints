@@ -61,6 +61,9 @@ public class FunctionalTestsSetupFixture
 			await applicationManager.ImportRipToLibraryAsync().ConfigureAwait(false);
 		}
 
-		await applicationManager.InstallRipFromLibraryAsync(workspaceTemplateID).ConfigureAwait(false);
+		await applicationManager.InstallRipFromLibraryAsync(workspaceTemplateID)
+			.ContinueWith(t => 
+				InstanceSetting.CreateOrUpdateAsync("kCura.IntegrationPoints", "WebAPIPath", SharedVariables.RelativityWebApiUrl))
+			.ConfigureAwait(false);
 	}
 }

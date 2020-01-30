@@ -94,3 +94,5 @@ Artifacts
 .vs/
 buildtools/
 !buildtools/packages.config
+FunctionalTest.runsettings
+FunctionalTestSettings

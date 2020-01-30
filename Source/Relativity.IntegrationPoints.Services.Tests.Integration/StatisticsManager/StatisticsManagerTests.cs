@@ -2,6 +2,7 @@
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using NUnit.Framework;
 using Relativity.IntegrationPoints.Services.Tests.Integration.StatisticsManager.TestCase;
@@ -10,6 +11,7 @@ using Relativity.Testing.Identification;
 namespace Relativity.IntegrationPoints.Services.Tests.Integration.StatisticsManager
 {
 	[Feature.DataTransfer.IntegrationPoints]
+	[NotWorkingOnTrident]
 	public class StatisticsManagerTests : SourceProviderTemplate
 	{
 		private TestCaseSettings _testCaseSettings;
