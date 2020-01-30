@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Web.Controllers.API.FieldMappings.FieldClassifiers;
+using Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers;
 
-namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
+namespace Relativity.IntegrationPoints.FieldsMapping
 {
 	public interface IFieldsClassifierRunner
 	{

@@ -1,16 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Reactive.Threading.Tasks;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Web.Controllers.API.FieldMappings.FieldClassifiers;
-using kCura.Relativity.Client;
 using Relativity.API;
+using Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using QueryResult = Relativity.Services.Objects.DataContracts.QueryResult;
 
-namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
+namespace Relativity.IntegrationPoints.FieldsMapping
 {
 	public class FieldsClassifierRunner : IFieldsClassifierRunner
 	{

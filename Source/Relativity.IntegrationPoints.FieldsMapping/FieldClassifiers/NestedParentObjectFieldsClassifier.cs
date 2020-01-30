@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using kCura.Relativity.Client;
 using Relativity.API;
 using Relativity.Services.Interfaces.Field;
 using Relativity.Services.Interfaces.Field.Models;
@@ -10,7 +9,7 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using QueryResult = Relativity.Services.Objects.DataContracts.QueryResult;
 
-namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings.FieldClassifiers
+namespace Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers
 {
 	public class NestedParentObjectFieldsClassifier : IFieldsClassifier
 	{

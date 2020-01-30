@@ -1,4 +1,4 @@
-﻿namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
+﻿namespace Relativity.IntegrationPoints.FieldsMapping
 {
 	public class FieldClassificationResult : DocumentFieldInfo
 	{

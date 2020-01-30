@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using kCura.IntegrationPoints.Domain.Models;
 
-namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
+namespace Relativity.IntegrationPoints.FieldsMapping
 {
 	public interface IAutomapRunner
 	{

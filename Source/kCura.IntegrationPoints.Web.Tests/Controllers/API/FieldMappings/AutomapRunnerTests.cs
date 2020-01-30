@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.Web.Controllers.API.FieldMappings;
 using NUnit.Framework;
+using Relativity.IntegrationPoints.FieldsMapping;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 {

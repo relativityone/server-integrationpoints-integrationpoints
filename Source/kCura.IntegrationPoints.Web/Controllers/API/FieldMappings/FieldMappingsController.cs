@@ -5,7 +5,8 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using kCura.IntegrationPoints.DocumentTransferProvider;
 using kCura.IntegrationPoints.Web.Attributes;
-using kCura.IntegrationPoints.Web.Controllers.API.FieldMappings.FieldClassifiers;
+using Relativity.IntegrationPoints.FieldsMapping;
+using Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 {

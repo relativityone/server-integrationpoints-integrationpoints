@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Relativity.Services.Objects.DataContracts;
 
-namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings.FieldClassifiers
+namespace Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers
 {
 	public class OpenToAssociationsFieldsClassifier : IFieldsClassifier
 	{

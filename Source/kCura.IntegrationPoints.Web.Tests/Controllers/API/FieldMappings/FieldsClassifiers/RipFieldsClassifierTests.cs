@@ -2,9 +2,9 @@
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using kCura.IntegrationPoints.Web.Controllers.API.FieldMappings;
-using kCura.IntegrationPoints.Web.Controllers.API.FieldMappings.FieldClassifiers;
 using NUnit.Framework;
+using Relativity.IntegrationPoints.FieldsMapping;
+using Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings.FieldsClassifiers

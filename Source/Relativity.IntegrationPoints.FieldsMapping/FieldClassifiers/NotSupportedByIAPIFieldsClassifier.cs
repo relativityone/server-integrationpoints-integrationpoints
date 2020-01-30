@@ -2,12 +2,11 @@
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.DocumentTransferProvider;
-using kCura.Relativity.Client;
 using kCura.Relativity.ImportAPI;
 using Relativity.Services.Objects.DataContracts;
 using Field = kCura.Relativity.ImportAPI.Data.Field;
 
-namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings.FieldClassifiers
+namespace Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers
 {
 	public class NotSupportedByIAPIFieldsClassifier : IFieldsClassifier
 	{

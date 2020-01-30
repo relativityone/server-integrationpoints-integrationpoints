@@ -8,9 +8,10 @@ using System.Web.Http;
 using FluentAssertions;
 using kCura.IntegrationPoints.DocumentTransferProvider;
 using kCura.IntegrationPoints.Web.Controllers.API.FieldMappings;
-using kCura.IntegrationPoints.Web.Controllers.API.FieldMappings.FieldClassifiers;
 using Moq;
 using NUnit.Framework;
+using Relativity.IntegrationPoints.FieldsMapping;
+using Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 {

@@ -4,13 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoints.DocumentTransferProvider;
-using kCura.IntegrationPoints.Web.Controllers.API.FieldMappings;
-using kCura.IntegrationPoints.Web.Controllers.API.FieldMappings.FieldClassifiers;
 using kCura.Relativity.Client;
 using kCura.Relativity.ImportAPI;
 using Moq;
-using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
+using Relativity.IntegrationPoints.FieldsMapping;
+using Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers;
 using Relativity.Services.Objects.DataContracts;
 using Field = kCura.Relativity.ImportAPI.Data.Field;
 
