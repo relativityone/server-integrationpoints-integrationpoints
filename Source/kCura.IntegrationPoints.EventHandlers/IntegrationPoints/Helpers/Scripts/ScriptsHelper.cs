@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Script
 
 		public string GetApplicationPath()
 		{
-			return PageInteractionHelper.GetApplicationPath(_handler.Application.ApplicationUrl);
+			return PageInteractionHelper.GetApplicationRelativeUri();
 		}
 
 		public int GetApplicationId()
