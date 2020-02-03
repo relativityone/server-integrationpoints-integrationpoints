@@ -19,6 +19,7 @@ Relativity.Services.Interfaces.Private
 Relativity.Telemetry.APM
 Relativity.Toggles
 Relativity.OAuth2Client
+Relativity.Logging
 
 group TestPackages
 	FluentAssertions

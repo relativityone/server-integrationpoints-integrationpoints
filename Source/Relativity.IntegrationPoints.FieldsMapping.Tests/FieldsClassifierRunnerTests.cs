@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using kCura.Relativity.Client;
 using Moq;
 using NUnit.Framework;
+using Relativity;
 using Relativity.API;
 using Relativity.IntegrationPoints.FieldsMapping;
 using Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers;
@@ -80,9 +80,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 			IList<FieldClassificationResult> filteredFields = await _sut.GetFilteredFieldsAsync(It.IsAny<int>(), fieldsClassifiers.Select(x => x.Object).ToList()).ConfigureAwait(false);
 
 			// Assert
-			filteredFields.Exists(x => x.Name == autoMappedFieldName && x.Type == autoMappedFieldType && x.IsIdentifier).Should().BeTrue();
-			filteredFields.Exists(x => x.Name == excludedFromAutoMapFieldName).Should().BeTrue();
-			filteredFields.Exists(x => x.Name == notVisibleToUserFieldName).Should().BeFalse();
+			filteredFields.Any(x => x.Name == autoMappedFieldName && x.Type == autoMappedFieldType && x.IsIdentifier).Should().BeTrue();
+			filteredFields.Any(x => x.Name == excludedFromAutoMapFieldName).Should().BeTrue();
+			filteredFields.Any(x => x.Name == notVisibleToUserFieldName).Should().BeFalse();
 		}
 
 		[Test]

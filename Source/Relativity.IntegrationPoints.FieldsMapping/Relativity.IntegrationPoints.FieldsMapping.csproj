@@ -69,7 +69,7 @@
       <Name>kCura.IntegrationPoints.DocumentTransferProvider</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
-      <Project>{5D5B52B4-8769-431A-9743-B96F15FED5FD}</Project>
+      <Project>{5d5b52b4-8769-431a-9743-b96f15fed5fd}</Project>
       <Name>kCura.IntegrationPoints.Domain</Name>
     </ProjectReference>
   </ItemGroup>

@@ -4,4 +4,6 @@ kCura.Apps.Common.Utils
 Relativity.DataExchange.Client.SDK
 Relativity.IntegrationPoints.Contracts
 Relativity.OAuth2Client
+Relativity.Logging
+Relativity.Logging.Interfaces
 SystemWrapper.Interfaces

@@ -170,6 +170,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Version", "Version", "{1CDA
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.IntegrationPoints.FieldsMapping", "Relativity.IntegrationPoints.FieldsMapping\Relativity.IntegrationPoints.FieldsMapping.csproj", "{FAFF9DBE-B607-45B3-8392-469B5EEC5259}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.IntegrationPoints.FieldsMapping.Tests", "Relativity.IntegrationPoints.FieldsMapping.Tests\Relativity.IntegrationPoints.FieldsMapping.Tests.csproj", "{94473025-8D25-4B5A-928B-A8208C0C79B7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -448,6 +450,10 @@ Global
 		{FAFF9DBE-B607-45B3-8392-469B5EEC5259}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FAFF9DBE-B607-45B3-8392-469B5EEC5259}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FAFF9DBE-B607-45B3-8392-469B5EEC5259}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94473025-8D25-4B5A-928B-A8208C0C79B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94473025-8D25-4B5A-928B-A8208C0C79B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94473025-8D25-4B5A-928B-A8208C0C79B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94473025-8D25-4B5A-928B-A8208C0C79B7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -506,6 +512,7 @@ Global
 		{88F9B589-2AA4-4609-AF61-E0BADB5DE82E} = {0F6F16A2-C14A-412E-B399-3DCDF8DBEA96}
 		{92381E05-24E9-46F2-9D95-8B41518CD69C} = {1CF9A281-4FE6-4735-A66D-71C7E415EF69}
 		{C06A564D-5A92-4E12-AE32-ABBD197A45AD} = {0F6F16A2-C14A-412E-B399-3DCDF8DBEA96}
+		{94473025-8D25-4B5A-928B-A8208C0C79B7} = {1CF9A281-4FE6-4735-A66D-71C7E415EF69}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AB2FC964-D70B-48F6-BC3C-A447F2976738}
