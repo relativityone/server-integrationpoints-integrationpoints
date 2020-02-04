@@ -6,6 +6,7 @@ using kCura.WinEDDS.Service.Export;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Authentication;
 using kCura.WinEDDS.Api;
+using Castle.DynamicProxy;
 
 namespace Relativity.Sync.Transfer
 {
@@ -17,6 +18,11 @@ namespace Relativity.Sync.Transfer
 		private readonly IAuthTokenGenerator _tokenGenerator;
 		private readonly IUserContextConfiguration _userContextConfiguration;
 		private readonly Lazy<Task<ISearchManager>> _searchManagerFactoryLazy;
+
+		// If you have a long running process and you have to create many dynamic proxies, you should make sure to reuse the same ProxyGenerator instance.
+		// If not, be aware that you will then bypass the caching mechanism. Side effects are high CPU usage and constant increase in memory consumption.
+		// https://github.com/castleproject/Core/blob/master/docs/dynamicproxy.md
+		private static readonly ProxyGenerator _proxyGenerator = new ProxyGenerator();
 
 		public SearchManagerFactory(IInstanceSettings instanceSettings, IAuthTokenGenerator tokenGenerator, IUserContextConfiguration userContextConfiguration)
 		{
@@ -30,6 +36,14 @@ namespace Relativity.Sync.Transfer
 		public Task<ISearchManager> CreateSearchManagerAsync()
 		{
 			return _searchManagerFactoryLazy.Value;
+		}
+
+		private async Task<ISearchManager> WrappedSearchManagerFactoryAsync()
+		{
+			ISearchManager searchManager = await SearchManagerFactoryAsync().ConfigureAwait(false);
+			SearchManagerInterceptor searchManagerInterceptor = new SearchManagerInterceptor(SearchManagerFactoryAsync);
+
+			return _proxyGenerator.CreateInterfaceProxyWithTargetInterface<ISearchManager>(searchManager, searchManagerInterceptor);
 		}
 
 		private async Task<ISearchManager> SearchManagerFactoryAsync()
