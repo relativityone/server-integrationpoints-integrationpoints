@@ -8,6 +8,7 @@ using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
+using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Core.Tests.Tagging
 {

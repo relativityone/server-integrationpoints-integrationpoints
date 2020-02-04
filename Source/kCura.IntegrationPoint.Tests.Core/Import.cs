@@ -10,6 +10,7 @@ using NSubstitute;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 using Relativity.IntegrationPoints.Contracts.Models;
+using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {

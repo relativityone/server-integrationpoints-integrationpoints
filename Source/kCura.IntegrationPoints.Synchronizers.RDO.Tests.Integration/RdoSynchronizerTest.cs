@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
+using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Testing.Identification;
 using Assert = NUnit.Framework.Assert;
 using Document = kCura.Relativity.Client.DTOs.Document;

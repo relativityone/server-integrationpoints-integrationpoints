@@ -6,5 +6,4 @@ Relativity.API
 Relativity.DataExchange.Client.SDK
 kCura.Relativity.Client
 
-group Sync
-	Relativity.IntegrationPoints.Contracts
+Relativity.IntegrationPoints.Contracts

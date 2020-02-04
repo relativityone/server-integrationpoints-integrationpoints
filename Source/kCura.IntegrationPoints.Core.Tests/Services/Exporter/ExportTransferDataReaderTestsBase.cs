@@ -13,6 +13,7 @@ using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity;
 using Relativity.IntegrationPoints.Contracts.Models;
+using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 {

@@ -17,6 +17,7 @@ Relativity.Telemetry.DataContracts.Shared
 Relativity.Telemetry.Services.Interface
 Relativity.Toggles
 SystemWrapper.Interfaces
+Polly
 
 group TestPackages
 	FluentAssertions

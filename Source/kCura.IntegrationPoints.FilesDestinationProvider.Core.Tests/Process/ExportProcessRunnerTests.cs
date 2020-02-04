@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 {

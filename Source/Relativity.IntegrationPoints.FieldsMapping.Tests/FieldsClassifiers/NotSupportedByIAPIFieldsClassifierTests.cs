@@ -18,7 +18,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings.Fields
 	[TestFixture]
 	public class NotSupportedByIAPIFieldsClassifierTests
 	{
-		private Mock<IImportApiFactory> _importApiFactoryFake;
 		private Mock<IImportAPI> _importApiFake;
 		private NotSupportedByIAPIFieldsClassifier _sut;
 
@@ -26,9 +25,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings.Fields
 		public void SetUp()
 		{
 			_importApiFake = new Mock<IImportAPI>();
-			_importApiFactoryFake = new Mock<IImportApiFactory>();
-			_importApiFactoryFake.Setup(x => x.Create()).Returns(_importApiFake.Object);
-			_sut = new NotSupportedByIAPIFieldsClassifier(_importApiFactoryFake.Object);
+			_sut = new NotSupportedByIAPIFieldsClassifier(_importApiFake.Object);
 		}
 
 		[Test]

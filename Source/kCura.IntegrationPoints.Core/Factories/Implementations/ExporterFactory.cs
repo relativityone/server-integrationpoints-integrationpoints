@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.WinEDDS.Service.Export;
 using Relativity.API;
+using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Core.Factories.Implementations
 {

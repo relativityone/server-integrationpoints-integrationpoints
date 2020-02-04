@@ -5,6 +5,7 @@ using NSubstitute;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
+using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 {

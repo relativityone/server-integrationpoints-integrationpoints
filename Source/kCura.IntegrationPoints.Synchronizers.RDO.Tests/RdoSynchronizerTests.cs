@@ -18,6 +18,7 @@ using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using Relativity.IntegrationPoints.Contracts;
 using Relativity.IntegrationPoints.Contracts.Internals;
 using Relativity.IntegrationPoints.Contracts.Models;
+using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Artifact = kCura.Relativity.Client.Artifact;
 using Assert = NUnit.Framework.Assert;
 using Constants = kCura.IntegrationPoints.Domain.Constants;

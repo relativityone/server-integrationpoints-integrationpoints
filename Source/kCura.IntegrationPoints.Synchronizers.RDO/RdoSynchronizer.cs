@@ -19,6 +19,7 @@ using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Internals;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.Contracts.Provider;
+using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Artifact = kCura.Relativity.Client.Artifact;
 using Constants = kCura.IntegrationPoints.Domain.Constants;
 using Field = kCura.Relativity.Client.Field;

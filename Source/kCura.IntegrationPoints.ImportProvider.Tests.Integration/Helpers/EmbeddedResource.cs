@@ -5,6 +5,7 @@ using System.Reflection;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers
 {

@@ -9,6 +9,7 @@ using NUnit.Framework;
 using NSubstitute;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.WinEDDS.Api;
+using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 {

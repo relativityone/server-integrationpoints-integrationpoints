@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity.IntegrationPoints.Contracts.Models;
+using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace Relativity.IntegrationPoints.FieldsMapping
 { 

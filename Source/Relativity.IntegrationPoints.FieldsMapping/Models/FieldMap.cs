@@ -1,6 +1,7 @@
-﻿using Relativity.IntegrationPoints.Contracts.Models;
+﻿using kCura.IntegrationPoints.Domain.Models;
+using Relativity.IntegrationPoints.Contracts.Models;
 
-namespace kCura.IntegrationPoints.Domain.Models
+namespace Relativity.IntegrationPoints.FieldsMapping.Models
 {
 	/// <summary>
 	/// Defines the mapping of fields in the data source to fields in a workspace.

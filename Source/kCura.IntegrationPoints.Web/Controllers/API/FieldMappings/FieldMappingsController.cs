@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 			{
 				new RipFieldsClassifier(),
 				new SystemFieldsClassifier(),
-				new NotSupportedByIAPIFieldsClassifier(_importApiFactory)
+				new NotSupportedByIAPIFieldsClassifier(_importApiFactory.Create())
 			};
 
 			IList<FieldClassificationResult> filteredFields = await _fieldsClassifierRunner.GetFilteredFieldsAsync(workspaceID, sourceFieldsClassifiers).ConfigureAwait(false);
@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 			{
 				new RipFieldsClassifier(),
 				new SystemFieldsClassifier(),
-				new NotSupportedByIAPIFieldsClassifier(_importApiFactory),
+				new NotSupportedByIAPIFieldsClassifier(_importApiFactory.Create()),
 				new OpenToAssociationsFieldsClassifier(),
 				//new NestedParentObjectFieldsClassifier(_servicesMgr)
 			};

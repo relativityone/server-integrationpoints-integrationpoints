@@ -61,9 +61,6 @@
     <Compile Include="PreviewJobTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">
       <Project>{AD3E5540-FA39-4983-8A23-FCC756D51A32}</Project>
       <Name>kCura.IntegrationPoint.Tests.Core</Name>
@@ -87,6 +84,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
       <Project>{b91cc4ed-abf3-4409-8df3-46a3c26eb4aa}</Project>
       <Name>kCura.IntegrationPoints.Synchronizers.RDO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Relativity.IntegrationPoints.FieldsMapping\Relativity.IntegrationPoints.FieldsMapping.csproj">
+      <Project>{FAFF9DBE-B607-45B3-8392-469B5EEC5259}</Project>
+      <Name>Relativity.IntegrationPoints.FieldsMapping</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
