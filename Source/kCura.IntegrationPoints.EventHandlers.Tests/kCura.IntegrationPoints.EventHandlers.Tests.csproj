@@ -96,6 +96,7 @@
     <Compile Include="IntegrationPoints\IntegrationPointProfileMigrationEventHandlerTests.cs" />
     <Compile Include="IntegrationPoints\InternalSourceProviderInstallerTests.cs" />
     <Compile Include="IntegrationPoints\Validators\PreCascadeDeleteEventHandlerValidatorTests.cs" />
+    <Compile Include="PageInteractionHelperTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoints.Common\kCura.IntegrationPoints.Common.csproj">
