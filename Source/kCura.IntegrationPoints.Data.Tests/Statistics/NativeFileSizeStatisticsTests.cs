@@ -15,7 +15,7 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Tests.Statistics
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class NativeFileSizeStatisticsTests : TestBase
 	{
 		private const string _SQL_TEXT = "SELECT COALESCE(SUM([Size]),0) FROM [File] WHERE [Type] = @FileType AND [DocumentArtifactID] IN (SELECT * FROM @ArtifactIds)";

@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	internal sealed class ChoiceTreeToStringConverterTests
 	{
 		private ChoiceTreeToStringConverter _sut;

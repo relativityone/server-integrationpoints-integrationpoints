@@ -12,7 +12,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands.Helpers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ArtifactsToDeleteTests : TestBase
 	{
 		private const string _SQL = "SELECT ArtifactID FROM {0}.[{1}]";

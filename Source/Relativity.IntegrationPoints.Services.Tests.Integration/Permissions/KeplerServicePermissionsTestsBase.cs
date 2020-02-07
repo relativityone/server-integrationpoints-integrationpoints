@@ -3,9 +3,11 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using NUnit.Framework;
 
 namespace Relativity.IntegrationPoints.Services.Tests.Integration.Permissions
 {
+	[TestFixture]
 	public abstract class KeplerServicePermissionsTestsBase : SourceProviderTemplate
 	{
 		protected UserModel UserModel;

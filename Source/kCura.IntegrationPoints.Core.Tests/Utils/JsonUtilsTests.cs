@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Utils
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class JsonUtilsTests
 	{
 		private const string _OLD_PROPERTY_NAME = "Old";

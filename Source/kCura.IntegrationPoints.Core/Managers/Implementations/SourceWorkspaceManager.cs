@@ -43,13 +43,13 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 		private string GenerateSourceWorkspaceName(string instanceName, string workspaceName, int workspaceArtifactId)
 		{
-			var name = WorkspaceAndJobNameUtils.GetFormatForWorkspaceOrJobDisplay(instanceName, workspaceName, workspaceArtifactId);
+			string name = WorkspaceAndJobNameUtils.GetFormatForWorkspaceOrJobDisplay(instanceName, workspaceName, workspaceArtifactId);
 			if (name.Length > Data.Constants.DEFAULT_NAME_FIELD_LENGTH)
 			{
-				_logger.LogWarning("Relativity Source Case Name exceeded max length and has been shortened. Full name {name}.", name);
+				_logger.LogWarning("Relativity Source Case Name length {nameLength} exceeded max length and has been shortened. Workspace artifact id: {workspaceArtifactId}.", name.Length, workspaceArtifactId);
 
 				int overflow = name.Length - Data.Constants.DEFAULT_NAME_FIELD_LENGTH;
-				var trimmedInstanceName = instanceName.Substring(0, instanceName.Length - overflow);
+				string trimmedInstanceName = instanceName.Substring(0, instanceName.Length - overflow);
 				name = WorkspaceAndJobNameUtils.GetFormatForWorkspaceOrJobDisplay(trimmedInstanceName, workspaceName, workspaceArtifactId);
 			}
 			return name;

@@ -12,7 +12,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class TempTableReaderTests : TestBase
 	{
 		private const string ConstValue = "456";

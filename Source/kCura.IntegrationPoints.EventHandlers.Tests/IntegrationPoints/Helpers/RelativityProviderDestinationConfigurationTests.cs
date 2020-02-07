@@ -11,6 +11,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 {
+	[TestFixture, Category("Unit")]
 	public class RelativityProviderDestinationConfigurationTests
 	{
 		private RelativityProviderDestinationConfiguration _instace;

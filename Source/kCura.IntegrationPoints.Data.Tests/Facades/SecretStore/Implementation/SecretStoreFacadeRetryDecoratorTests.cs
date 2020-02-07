@@ -10,7 +10,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data.Tests.Facades.SecretStore.Implementation
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class SecretStoreFacadeRetryDecoratorTests
 	{
 		private SecretStoreFacadeRetryDecorator _sut;

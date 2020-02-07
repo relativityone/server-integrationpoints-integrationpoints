@@ -10,7 +10,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Managers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ArtifactGuidManagerTests : TestBase
 	{
 		private IArtifactGuidManager _testInstance;

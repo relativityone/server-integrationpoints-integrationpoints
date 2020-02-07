@@ -20,7 +20,7 @@ using FieldRef = Relativity.Services.Objects.DataContracts.FieldRef;
 
 namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class KeplerDocumentRepositoryTests
 	{
 		private Mock<IRelativityObjectManager> _objectManagerMock;

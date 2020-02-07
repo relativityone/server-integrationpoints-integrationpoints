@@ -12,6 +12,7 @@ using Relativity.DataTransfer.MessageService;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport
 {
+	[TestFixture, Category("Unit")]
 	public class ImportJobFactoryTests : TestBase
 	{
 		private IImportAPI _importApi;

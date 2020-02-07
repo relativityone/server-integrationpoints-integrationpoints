@@ -8,7 +8,7 @@ using System.Web;
 
 namespace kCura.IntegrationPoints.Web.Tests.Infrastructure.Session
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class SessionServiceFactoryTests
 	{
 		private Mock<IAPILog> _loggerMock;

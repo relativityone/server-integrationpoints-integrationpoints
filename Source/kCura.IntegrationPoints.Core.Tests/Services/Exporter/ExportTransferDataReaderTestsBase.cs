@@ -16,7 +16,7 @@ using Relativity.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public abstract class ExportTransferDataReaderTestsBase : TestBase 
 	{
 		protected IExporterService _exportService;

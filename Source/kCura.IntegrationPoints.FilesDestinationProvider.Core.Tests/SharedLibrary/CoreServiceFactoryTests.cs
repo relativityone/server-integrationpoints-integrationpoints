@@ -9,6 +9,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibrary
 {
+	[TestFixture, Category("Unit")]
 	public class CoreServiceFactoryTests
 	{
 		private CoreServiceFactory _sut;

@@ -9,7 +9,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Management.Tests
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class IntegrationPointsManagerAgentTests : TestBase
 	{
 		private IntegrationPointsManagerAgent _integrationPointsManagerAgent;

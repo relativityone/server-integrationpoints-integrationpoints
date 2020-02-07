@@ -12,7 +12,7 @@ using Relativity.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class FieldMapControllerTests : WebControllerTestBase
 	{
 		private FieldMapController _instance;

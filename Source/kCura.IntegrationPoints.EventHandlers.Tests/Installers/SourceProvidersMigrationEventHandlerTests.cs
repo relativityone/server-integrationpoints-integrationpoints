@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
     /// Objective : this test suite is to test the simulation of source provider install eventhandler during migration.
     /// These set of tests verify that all source providers are passed in to <see cref="IProviderManager"/> properly.
     /// </summary>
-    [TestFixture]
+    [TestFixture, Category("Unit")]
     public class SourceProvidersMigrationEventHandlerTests
     {
         private SubjectUnderTests _sut;

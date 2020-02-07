@@ -13,7 +13,7 @@ using Field = Relativity.Services.Objects.DataContracts.Field;
 
 namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class SavedSearchQueryRepositoryTests : TestBase
 	{
 		private IRelativityObjectManager _objectManager;

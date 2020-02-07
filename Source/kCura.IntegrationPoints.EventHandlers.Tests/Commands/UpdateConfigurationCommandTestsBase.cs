@@ -10,6 +10,7 @@ using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 {
+	[TestFixture, Category("Unit")]
 	public abstract class UpdateConfigurationCommandTestsBase : TestBase
 	{
 		protected abstract string ExpectedProviderType { get; }

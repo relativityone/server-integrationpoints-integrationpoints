@@ -8,7 +8,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data.Tests.Facades.SecretStore.Implementation
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class SecretStoreFacadeTests
 	{
 		private Mock<ISecretStore> _secretStoreMock;

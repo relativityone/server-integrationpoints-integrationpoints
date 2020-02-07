@@ -13,7 +13,7 @@ using IAuditRepository = Relativity.API.Foundation.Repositories.IAuditRepository
 
 namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class RelativityAuditRepositoryTests
 	{
 		private IRelativityAuditRepository _sut;

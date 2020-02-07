@@ -10,7 +10,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValidator.Parts
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class RelativityProviderDestinationWorkspacePermissionValidatorTests
 	{
 		private IPermissionManager _permissionManager;

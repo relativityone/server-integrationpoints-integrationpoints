@@ -9,7 +9,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ProductionValidatorTests
 	{
 		private const int _WORKSPACE_ARTIFACT_ID = 1;

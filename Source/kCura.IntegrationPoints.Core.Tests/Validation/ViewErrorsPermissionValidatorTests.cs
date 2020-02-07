@@ -12,6 +12,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation
 {
+	[TestFixture, Category("Unit")]
 	public class ViewErrorsPermissionValidatorTests : PermissionValidatorTestsBase
 	{
 		[TestCase(true, true)]

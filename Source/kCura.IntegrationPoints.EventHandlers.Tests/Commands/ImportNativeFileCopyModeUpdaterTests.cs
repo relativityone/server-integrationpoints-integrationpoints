@@ -10,6 +10,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 {
+	[TestFixture, Category("Unit")]
 	public class ImportNativeFileCopyModeUpdaterTests : TestBase
 	{
 		private IProviderTypeService _providerTypeService;

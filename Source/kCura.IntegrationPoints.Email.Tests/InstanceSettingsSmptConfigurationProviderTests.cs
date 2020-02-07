@@ -8,7 +8,7 @@ using System;
 
 namespace kCura.IntegrationPoints.Email.Tests
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	internal class InstanceSettingsSmptConfigurationProviderTests
 	{
 		private InstanceSettingsSmptConfigurationProvider _sut;

@@ -202,6 +202,8 @@ namespace kCura.IntegrationPoints.Core.Installers
 				.ImplementedBy<SourceDocumentsTagger>()
 				.LifestyleTransient());
 
+			container.Register(Component.For<ICryptographyHelper>().ImplementedBy<CryptographyHelper>().LifestyleTransient());
+
 			container.AddRetryingMechanism();
 			container.AddHelpers();
 			container.AddRepositories();

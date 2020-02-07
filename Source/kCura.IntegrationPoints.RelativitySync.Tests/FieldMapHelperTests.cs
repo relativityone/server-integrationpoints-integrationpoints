@@ -7,7 +7,7 @@ using Relativity.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.RelativitySync.Tests
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	internal sealed class FieldMapHelperTests
 	{
 		private ISerializer _serializer;

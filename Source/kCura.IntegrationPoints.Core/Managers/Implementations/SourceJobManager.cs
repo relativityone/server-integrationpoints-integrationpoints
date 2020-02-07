@@ -46,13 +46,13 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 		private string GenerateSourceJobName(string jobHistoryName, int jobHistoryArtifactId)
 		{
-			var name = WorkspaceAndJobNameUtils.GetFormatForWorkspaceOrJobDisplay(jobHistoryName, jobHistoryArtifactId);
+			string name = WorkspaceAndJobNameUtils.GetFormatForWorkspaceOrJobDisplay(jobHistoryName, jobHistoryArtifactId);
 			if (name.Length > Data.Constants.DEFAULT_NAME_FIELD_LENGTH)
 			{
-				_logger.LogWarning("Relativity Source Job Name exceeded max length and has been shortened. Full name {name}.", name);
+				_logger.LogWarning("Relativity Source Job Name length {nameLength} exceeded max length and has been shortened. Job history artifact id: {jobHistoryArtifactId}.", name.Length, jobHistoryArtifactId);
 
 				int overflow = name.Length - Data.Constants.DEFAULT_NAME_FIELD_LENGTH;
-				var trimmedJobHistoryName = jobHistoryName.Substring(0, jobHistoryName.Length - overflow);
+				string trimmedJobHistoryName = jobHistoryName.Substring(0, jobHistoryName.Length - overflow);
 				name = WorkspaceAndJobNameUtils.GetFormatForWorkspaceOrJobDisplay(trimmedJobHistoryName, jobHistoryArtifactId);
 			}
 			return name;

@@ -8,7 +8,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceContext
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class SessionWorkspaceContextServiceTests
 	{
 		private Mock<ISessionService> _sessionServiceMock;

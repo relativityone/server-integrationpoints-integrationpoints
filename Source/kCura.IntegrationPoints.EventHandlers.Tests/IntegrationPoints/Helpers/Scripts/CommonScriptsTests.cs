@@ -9,7 +9,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.Scripts
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 
 	public class CommonScriptsTests
 	{

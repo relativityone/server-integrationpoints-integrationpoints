@@ -14,7 +14,7 @@ using System.Web.Mvc;
 
 namespace kCura.IntegrationPoints.Web.Tests.Installers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ControllersRegistrationTests
 	{
 		private IWindsorContainer _sut;

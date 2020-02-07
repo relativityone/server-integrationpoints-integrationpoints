@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Data.Tests.Extensions
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class EnumerableExtensionsTests
 	{
 		private string[] _expectedColumnNames;

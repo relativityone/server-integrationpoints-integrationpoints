@@ -14,7 +14,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Management.Tests.Tasks.Helpers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class JobsWithInvalidStatusTests : TestBase
 	{
 		private const int _WORKSPACE_ID_A = 482698;

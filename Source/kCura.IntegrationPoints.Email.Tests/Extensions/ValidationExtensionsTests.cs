@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace kCura.IntegrationPoints.Email.Tests.Extensions
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ValidationExtensionsTests
 	{
 		private const int _VALID_VALUE = 7;

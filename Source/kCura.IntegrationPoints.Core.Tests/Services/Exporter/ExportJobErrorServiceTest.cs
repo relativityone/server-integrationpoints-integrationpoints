@@ -9,7 +9,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ExportJobErrorServiceTest : TestBase
 	{
 		private IScratchTableRepository _scratchTable;

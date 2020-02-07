@@ -23,7 +23,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class JobControllerTests : TestBase
 	{
 		private IAuditManager _auditManager;

@@ -105,7 +105,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers
 		{
 			IWebApiLoginService credProvider = Substitute.For<IWebApiLoginService>();
 			NetworkCredential temp = new NetworkCredential(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword);
-			NetworkCredential authorizedCredential = temp.GetCredential(SharedVariables.RelativityInstanceHostname, 8990, "password");
+			NetworkCredential authorizedCredential = temp.GetCredential(SharedVariables.RelativityHostAddress, 8990, "password");
 			credProvider.Authenticate(Arg.Any<CookieContainer>()).Returns(authorizedCredential);
 			windsorContainer.Register(Component.For<IWebApiLoginService>().Instance(credProvider));
 		}

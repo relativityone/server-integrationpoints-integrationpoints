@@ -11,7 +11,7 @@ using kCura.IntegrationPoints.Common.Monitoring.Instrumentation.Model;
 
 namespace kCura.IntegrationPoints.Core.Tests.Monitoring.MessageSink.ExternalCalls
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ExternalCallsSinkTests
 	{
 		private IAPILog _logger;

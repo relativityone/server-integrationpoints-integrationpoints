@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Email.Tests.Dto
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ValidEmailAddressTests
 	{
 		[Test]

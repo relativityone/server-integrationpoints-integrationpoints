@@ -15,7 +15,7 @@ using Relativity.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class DocumentTransferProviderTests : TestBase
 	{
 		private const int _WORKSPACE_ARTIFACT_ID = 1111111;

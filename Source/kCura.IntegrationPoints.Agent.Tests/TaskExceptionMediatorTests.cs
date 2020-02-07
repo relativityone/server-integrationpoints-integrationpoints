@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Agent.Tests
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class TaskExceptionMediatorTests
 	{
 		private TaskExceptionMediator _subjectUnderTest;

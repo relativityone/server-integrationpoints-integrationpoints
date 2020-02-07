@@ -11,6 +11,13 @@ Relativity.Kepler.Client
 Relativity.Telemetry.APM
 Relativity.Toggles
 Relativity.DataExchange.Client.SDK
+Polly
+Relativity.Logging.Interfaces
+Relativity.OAuth2Client.Implicit
+relativity.faspmanager
+Relativity.Transfer.Client
+Relativity.Telemetry.Services.Interface
+Relativity.Telemetry.DataContracts.Shared
 
 group TestPackages
 	FluentAssertions

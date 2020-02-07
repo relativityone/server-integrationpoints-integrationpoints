@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 {
+	[TestFixture, Category("Unit")]
 	public class ImportTransferDataContextTests : TestBase
 	{
 		private IDataReader _dataReader;

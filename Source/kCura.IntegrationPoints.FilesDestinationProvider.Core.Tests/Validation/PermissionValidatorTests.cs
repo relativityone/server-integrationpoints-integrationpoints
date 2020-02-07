@@ -11,7 +11,7 @@ using Relativity.DataExchange.Service;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class PermissionValidatorTests : PermissionValidatorTestsBase
 	{
 		[Test]

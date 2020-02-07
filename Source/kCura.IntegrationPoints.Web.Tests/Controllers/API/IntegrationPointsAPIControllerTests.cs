@@ -7,6 +7,7 @@ using System.Web.Http;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
@@ -26,7 +27,7 @@ using Relativity.Telemetry.Services.Metrics;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class IntegrationPointsAPIControllerTests : TestBase
 	{
 		private IntegrationPointsAPIController _sut;
@@ -35,6 +36,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		private IRelativityUrlHelper _relativityUrlHelper;
 		private IRdoSynchronizerProvider _rdoSynchronizerProvider;
 		private ICPHelper _cpHelper;
+		private ICryptographyHelper _cryptographyHelper;
 		private IServicesMgr _svcMgr;
 
 		private const int _WORKSPACE_ID = 23432;
@@ -49,6 +51,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			_rdoSynchronizerProvider = Substitute.For<IRdoSynchronizerProvider>();
 			_serviceFactory = Substitute.For<IServiceFactory>();
 			_cpHelper = Substitute.For<ICPHelper>();
+			_cryptographyHelper = Substitute.For<ICryptographyHelper>();
 			_svcMgr = Substitute.For<IServicesMgr>();
 
 			_cpHelper.GetServicesManager().Returns(_svcMgr);
@@ -59,7 +62,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 				_serviceFactory,
 				_relativityUrlHelper,
 				_rdoSynchronizerProvider,
-				_cpHelper)
+				_cpHelper,
+				_cryptographyHelper)
 			{
 				Request = new HttpRequestMessage()
 			};

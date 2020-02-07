@@ -9,6 +9,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 {
+	[TestFixture, Category("Unit")]
 	public class UpdateLdapConfigurationCommandTests : UpdateConfigurationCommandTestsBase
 	{
 		private IEncryptionManager _encryptionManager;

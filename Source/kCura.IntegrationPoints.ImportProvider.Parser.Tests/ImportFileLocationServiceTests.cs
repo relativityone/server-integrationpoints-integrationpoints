@@ -11,7 +11,7 @@ using SystemInterface.IO;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 {
-	[TestFixture, Category("ImportProvider")]
+	[TestFixture, Category("Unit"), Category("ImportProvider")]
 	public class ImportFileLocationServiceTests : TestBase
 	{
 		private const int _IP_ARTIFACT_ID = 1004242;

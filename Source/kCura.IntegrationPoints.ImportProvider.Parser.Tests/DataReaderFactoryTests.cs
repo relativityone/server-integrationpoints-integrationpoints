@@ -12,6 +12,7 @@ using kCura.Apps.Common.Utils.Serializers;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 {
+	[TestFixture, Category("Unit")]
 	public class DataReaderFactoryTests : TestBase
 	{
 		private DataReaderFactory _instance;

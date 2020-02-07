@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ImportSettingsTests : TestBase
 	{
 

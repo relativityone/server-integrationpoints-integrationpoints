@@ -108,7 +108,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				string userImportApiSettings = GetImportApiSettingsForUser(job, destinationConfig);
 				IDataSynchronizer synchronizer = CreateDestinationProvider(destinationConfig);
 
-				LogExecutingParameters(destinationConfig, userImportApiSettings);
 				try
 				{
 					JobStopManager.ThrowIfStopRequested();
@@ -457,12 +456,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		}
 
 		#region Logging
-
-		private void LogExecutingParameters(string destinationConfig, string userImportApiSettings)
-		{
-			Logger.LogDebug("Executing Export job with settings: \ndestinationConfig: {destinationConfig}\nuserImportApiSettings: {userImportApiSettings}",
-				destinationConfig, userImportApiSettings);
-		}
 
 		private void LogGetImportApiSettingsForUserStart(Job job)
 		{

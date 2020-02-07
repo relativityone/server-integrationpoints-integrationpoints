@@ -17,6 +17,7 @@ using NSubstitute.ExceptionExtensions;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers
 {
+	[TestFixture, Category("Unit")]
     public class IntegrationPointTypesControllerTests
     {
         [Test]

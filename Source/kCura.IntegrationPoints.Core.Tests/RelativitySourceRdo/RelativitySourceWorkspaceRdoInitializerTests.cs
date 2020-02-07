@@ -13,6 +13,7 @@ using Field = kCura.Relativity.Client.DTOs.Field;
 
 namespace kCura.IntegrationPoints.Core.Tests.RelativitySourceRdo
 {
+	[TestFixture, Category("Unit")]
 	public class RelativitySourceWorkspaceRdoInitializerTests : TestBase
 	{
 		private const int _DESTINATION_WORKSPACE_ID = 581555;

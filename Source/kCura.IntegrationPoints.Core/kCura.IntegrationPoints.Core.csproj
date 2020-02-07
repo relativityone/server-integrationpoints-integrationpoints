@@ -80,6 +80,8 @@
     <Compile Include="BatchStatusCommands\Implementations\TargetDocumentsTaggingManagerFactory.cs" />
     <Compile Include="BatchStatusCommands\Implementations\TempTableReader.cs" />
     <Compile Include="Extensions\DictionaryExtensions.cs" />
+    <Compile Include="Helpers\ICryptographyHelper.cs" />
+    <Compile Include="Helpers\Implementations\CryptographyHelper.cs" />
     <Compile Include="Installers\Registrations\WebApiLoginServiceRegistration.cs" />
     <Compile Include="Installers\Registrations\ExportSanitizerRegistration.cs" />
     <Compile Include="Interfaces\TextSanitizer\SanitizationResult.cs" />

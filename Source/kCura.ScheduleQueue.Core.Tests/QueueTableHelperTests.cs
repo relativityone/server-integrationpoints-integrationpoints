@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace kCura.ScheduleQueue.Core.Tests
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class QueueTableHelperTests : TestBase
 	{
 		private readonly string GetQueueTableNameException = "Could not retrieve Queue table name.";

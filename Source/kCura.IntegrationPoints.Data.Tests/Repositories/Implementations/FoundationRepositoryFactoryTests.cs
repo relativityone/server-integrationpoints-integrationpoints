@@ -12,7 +12,7 @@ using Relativity.API.Foundation.Repositories;
 
 namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	[Ignore("Waiting for making IWorkspaceGateway public or applying [assembly: InternalsVisibleTo('DynamicProxyGenAssembly2')] in Relativity.API project")]
 	public class FoundationRepositoryFactoryTests
 	{

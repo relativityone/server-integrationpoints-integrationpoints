@@ -13,7 +13,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Web.Tests
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class WindsorFilterProviderTests
 	{
 		private FilterFactoryMock _filterFactoryMock;

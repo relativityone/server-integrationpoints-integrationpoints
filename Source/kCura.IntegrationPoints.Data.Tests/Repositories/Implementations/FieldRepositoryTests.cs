@@ -12,7 +12,7 @@ using Relativity.API.Foundation;
 
 namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class FieldRepositoryTests
 	{
 		private IServicesMgr _servicesMgr;

@@ -16,7 +16,7 @@ using Relativity.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	internal class WorkspaceFieldControllerTests : WebControllerTestBase
 	{
 		#region Fields

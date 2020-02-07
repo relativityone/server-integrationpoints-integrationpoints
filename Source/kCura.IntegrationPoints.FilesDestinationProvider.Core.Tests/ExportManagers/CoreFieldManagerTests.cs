@@ -9,7 +9,7 @@ using FieldCategory = kCura.EDDS.WebAPI.FieldManagerBase.FieldCategory;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportManagers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class CoreFieldManagerTests
 	{
 		private IFieldRepository _fieldRepository;

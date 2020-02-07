@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.Synchronizer
 {
-    [TestFixture]
+    [TestFixture, Category("Unit")]
     public class RdoSynchronizerProviderTests
     {
         private Mock<IDestinationProviderRepository> _destinationProviderRepositoryMock;

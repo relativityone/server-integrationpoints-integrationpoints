@@ -266,7 +266,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				ManagerFieldMap = fieldMap
 			};
 
-			LogSubmitingJob(jobParameters);
+			LogSubmittingJob();
 			TaskJobSubmitter.SubmitJob(jobParameters);
 		}
 
@@ -327,9 +327,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			_logger.LogVerbose("Generating import row.");
 		}
 
-		private void LogSubmitingJob(object job)
+		private void LogSubmittingJob()
 		{
-			_logger.LogDebug($"Attempting to submit job {JsonConvert.SerializeObject(job)}");
+			_logger.LogDebug($"Attempting to submit job.");
 		}
 
 		private void LogMissingArguments()

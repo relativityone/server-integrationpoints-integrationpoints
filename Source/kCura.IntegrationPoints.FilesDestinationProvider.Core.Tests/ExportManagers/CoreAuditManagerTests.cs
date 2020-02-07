@@ -8,7 +8,7 @@ using ExportStatistics = Relativity.API.Foundation.ExportStatistics;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportManagers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class CoreAuditManagerTests
 	{
 		private IAuditRepository _auditRepository;

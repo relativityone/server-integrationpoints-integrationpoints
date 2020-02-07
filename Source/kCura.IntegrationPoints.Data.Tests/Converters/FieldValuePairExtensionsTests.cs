@@ -8,7 +8,7 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Tests.Converters
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class FieldValuePairExtensionsTests
 	{
 		[Test]

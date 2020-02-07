@@ -15,7 +15,7 @@ using Relativity.DataExchange.Service;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
-	[TestFixture, Category("ImportProvider")]
+	[TestFixture, Category("Unit"), Category("ImportProvider")]
 	public class ImportProviderImageControllerTests : TestBase
 	{
 		private ImportProviderImageController _controller;

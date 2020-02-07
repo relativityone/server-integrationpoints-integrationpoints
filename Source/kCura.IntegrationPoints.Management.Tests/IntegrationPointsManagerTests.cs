@@ -10,7 +10,7 @@ using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.Management.Tests
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class IntegrationPointsManagerTests : TestBase
 	{
 		private IntegrationPointsManager _instance;

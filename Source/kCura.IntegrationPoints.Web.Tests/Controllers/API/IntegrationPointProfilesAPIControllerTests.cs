@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Validation;
@@ -20,7 +21,7 @@ using System.Net.Http;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class IntegrationPointProfilesAPIControllerTests : TestBase
 	{
 		private Mock<ICPHelper> _cpHelperFake;
@@ -29,6 +30,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		private Mock<IRelativityUrlHelper> _urlHelperFake;
 		private Mock<IRelativityObjectManager> _objectManagerFake;
 		private Mock<IValidationExecutor> _validationExecutorFake;
+		private Mock<ICryptographyHelper> _cryptographyHelperFake;
 
 		private IntegrationPointProfilesAPIController _sut;
 
@@ -51,6 +53,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			_urlHelperFake = new Mock<IRelativityUrlHelper>();
 			_objectManagerFake = new Mock<IRelativityObjectManager>();
 			_validationExecutorFake = new Mock<IValidationExecutor>();
+			_cryptographyHelperFake = new Mock<ICryptographyHelper>();
 
 			_sut = new IntegrationPointProfilesAPIController(
 				_cpHelperFake.Object,
@@ -58,7 +61,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 				_integrationPointServiceFake.Object,
 				_urlHelperFake.Object,
 				_objectManagerFake.Object,
-				_validationExecutorFake.Object)
+				_validationExecutorFake.Object,
+				_cryptographyHelperFake.Object)
 			{
 				Request = new HttpRequestMessage()
 			};

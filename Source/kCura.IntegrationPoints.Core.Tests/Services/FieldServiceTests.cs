@@ -8,6 +8,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services
 {
+	[TestFixture, Category("Unit")]
     public class FieldServiceTests : TestBase
     {
 		private IRSAPIClient _client;

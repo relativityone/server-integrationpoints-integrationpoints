@@ -8,7 +8,7 @@ using Relativity.DataTransfer.MessageService;
 
 namespace kCura.IntegrationPoints.Common.Tests.Monitoring.Instrumentation
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ExternalServiceInstrumentationTests
 	{
 		private ExternalServiceInstrumentation _sut;

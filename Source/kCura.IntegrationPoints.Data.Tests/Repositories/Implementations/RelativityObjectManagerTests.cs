@@ -17,7 +17,7 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class RelativityObjectManagerTests
 	{
 		private Mock<IAPILog> _apiLogMock;

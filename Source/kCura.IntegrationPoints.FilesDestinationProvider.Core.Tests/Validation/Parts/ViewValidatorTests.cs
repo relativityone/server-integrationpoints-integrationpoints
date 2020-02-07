@@ -11,7 +11,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation.Parts
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ViewValidatorTests
 	{
 		[Test]

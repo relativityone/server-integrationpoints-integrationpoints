@@ -8,6 +8,7 @@ using Relativity.Telemetry.APM;
 
 namespace kCura.IntegrationPoints.Core.Tests.Monitoring
 {
+	[TestFixture, Category("Unit")]
 	public class HealthCheckTests : TestBase
 	{
 

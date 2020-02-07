@@ -12,7 +12,7 @@ using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.Management.Tests.Tasks
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class AlertStuckJobsTaskTests : TestBase
 	{
 		private const string _JOB_ID_1 = "1";

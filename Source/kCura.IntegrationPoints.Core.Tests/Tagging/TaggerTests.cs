@@ -11,6 +11,7 @@ using Relativity.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.Core.Tests.Tagging
 {
+	[TestFixture, Category("Unit")]
 	public class TaggerTests : TestBase
 	{
 		private Tagger _instance;

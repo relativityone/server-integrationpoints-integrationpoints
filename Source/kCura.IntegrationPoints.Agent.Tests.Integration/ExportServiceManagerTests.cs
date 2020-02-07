@@ -33,11 +33,13 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Testing.Identification;
+using kCura.IntegrationPoint.Tests.Core.TestCategories;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints]
+	[NotWorkingOnTrident]
 	public class ExportServiceManagerTests : RelativityProviderTemplate
 	{
 		private ExportServiceManager _exportManager;

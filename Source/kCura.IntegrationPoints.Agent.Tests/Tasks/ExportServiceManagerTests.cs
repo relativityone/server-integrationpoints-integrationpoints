@@ -42,7 +42,7 @@ using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	[Description("IMPORTANT" +
 				 "These existing tests will show that they cover majority of the code. " +
 				 "But the tests below are only consist of the stopping scenarios and regular gold flow." +

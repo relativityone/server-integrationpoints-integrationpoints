@@ -14,7 +14,7 @@ using kCura.WinEDDS;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibrary
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class FactoryConfigBuilderTests : TestBase
 	{
 		private FactoryConfigBuilder _factory;

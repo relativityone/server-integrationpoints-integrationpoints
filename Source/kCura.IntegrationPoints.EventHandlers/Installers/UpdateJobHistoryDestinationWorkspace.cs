@@ -90,9 +90,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 				federatedInstanceManager, 
 				workspaceManager, 
 				Logger, 
-				serializer, 
-				providerTypeService, 
-				messageService);
+				serializer);
 		}
 
 		private IRelativityObjectManager CreateObjectManager(IEHHelper helper, int workspaceId)

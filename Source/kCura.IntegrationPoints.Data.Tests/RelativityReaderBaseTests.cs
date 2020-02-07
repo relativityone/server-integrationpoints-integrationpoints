@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Data.Tests
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class RelativityReaderBaseTests : TestBase
 	{
 		private const string _TOKEN_FOR_MORE = "There are some more things to get";

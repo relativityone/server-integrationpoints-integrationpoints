@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Utils;
@@ -23,17 +24,20 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly IRelativityUrlHelper _urlHelper;
 		private readonly Core.Services.Synchronizer.IRdoSynchronizerProvider _provider;
 		private readonly ICPHelper _cpHelper;
+		private readonly ICryptographyHelper _cryptographyHelper;
 
 		public IntegrationPointsAPIController(
 			IServiceFactory serviceFactory,
 			IRelativityUrlHelper urlHelper,
 			Core.Services.Synchronizer.IRdoSynchronizerProvider provider,
-			ICPHelper cpHelper)
+			ICPHelper cpHelper,
+			ICryptographyHelper cryptographyHelper)
 		{
 			_serviceFactory = serviceFactory;
 			_urlHelper = urlHelper;
 			_provider = provider;
 			_cpHelper = cpHelper;
+			_cryptographyHelper = cryptographyHelper;
 		}
 
 		[HttpGet]
@@ -72,17 +76,18 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			{
 				using (IMetricsManager metricManager = _cpHelper.GetServicesManager().CreateProxy<IMetricsManager>(ExecutionIdentity.CurrentUser))
 				{
+					string nameHash = _cryptographyHelper.CalculateHash(model.Name);
 					var apmMetricProperties = new APMMetric
 					{
 						Name =
 							Core.Constants.IntegrationPoints.Telemetry
 								.BUCKET_INTEGRATION_POINT_REC_SAVE_DURATION_METRIC_COLLECTOR,
-						CustomData = new Dictionary<string, object> { { Core.Constants.IntegrationPoints.Telemetry.CUSTOM_DATA_CORRELATIONID, model.Name } }
+						CustomData = new Dictionary<string, object> { { Core.Constants.IntegrationPoints.Telemetry.CUSTOM_DATA_CORRELATIONID, nameHash } }
 					};
 					using (apmManger.LogTimedOperation(apmMetricProperties))
 					{
 						using (metricManager.LogDuration(Core.Constants.IntegrationPoints.Telemetry.BUCKET_INTEGRATION_POINT_REC_SAVE_DURATION_METRIC_COLLECTOR,
-							Guid.Empty, model.Name))
+							Guid.Empty, nameHash))
 						{
 							IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_cpHelper);
 

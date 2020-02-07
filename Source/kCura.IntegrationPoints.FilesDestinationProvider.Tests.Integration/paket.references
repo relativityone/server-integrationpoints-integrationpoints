@@ -13,6 +13,12 @@ Relativity.Telemetry.MetricsCollection
 Relativity.Productions.Services.Interfaces
 Relativity.Toggles
 System.Reactive
+Polly
+Relativity.Logging.Interfaces
+Relativity.OAuth2Client.Implicit
+relativity.faspmanager
+Relativity.Transfer.Client
+Relativity.Telemetry.Services.Interface
 
 group TestPackages
 	NUnit

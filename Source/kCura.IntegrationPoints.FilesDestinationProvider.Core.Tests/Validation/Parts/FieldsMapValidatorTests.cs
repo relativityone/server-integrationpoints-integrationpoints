@@ -12,7 +12,7 @@ using Relativity.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation.Parts
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class FieldsMapValidatorTests
 	{
 		private const string _EXPORTABLE_FIELDS = "[{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},{\"displayName\":\"Analytics Index\",\"isIdentifier\":true,\"fieldIdentifier\":\"1001009\",\"isRequired\":true}]";

@@ -5,7 +5,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data.Tests
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ResourceDbProviderTests
 	{
 		private IResourceDbProvider _sut;

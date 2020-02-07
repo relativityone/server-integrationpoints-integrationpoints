@@ -12,7 +12,7 @@ using ITokenProvider = Relativity.OAuth2Client.Interfaces.ITokenProvider;
 
 namespace kCura.IntegrationPoints.Core.Tests.Authentication
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class OAuth2TokenGeneratorTests : TestBase
 	{
 		private const string _CLIENTSECRETSTRING = "ClientSecret";

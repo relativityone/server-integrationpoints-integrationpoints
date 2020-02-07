@@ -79,27 +79,27 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 
 		private void LogStatitstics(ExportEventArgs exportEventArgs)
 		{
-			_apiLog.LogVerbose("Statistics update: {message}. Additional info: {@additionalInfo}.", exportEventArgs.Message, exportEventArgs.AdditionalInfo);
+			_apiLog.LogVerbose("Statistics update: {message}.", exportEventArgs.Message);
 		}
 
 		private void LogStatus(ExportEventArgs exportEventArgs)
 		{
-			_apiLog.LogVerbose("Status update: {message}. Additional info: {@additionalInfo}.", exportEventArgs.Message, exportEventArgs.AdditionalInfo);
+			_apiLog.LogVerbose("Status update: {message}.", exportEventArgs.Message);
 		}
 
 		private void LogProgress(ExportEventArgs exportEventArgs)
 		{
-			_apiLog.LogVerbose("Progress update: {message}. Additional info: {@additionalInfo}.", exportEventArgs.Message, exportEventArgs.AdditionalInfo);
+			_apiLog.LogVerbose("Progress update: {message}.", exportEventArgs.Message);
 		}
 
 		private void LogWarning(ExportEventArgs exportEventArgs)
 		{
-			_apiLog.LogWarning("Warning: {message}. Additional info: {@additionalInfo}.", exportEventArgs.Message, exportEventArgs.AdditionalInfo);
+			_apiLog.LogWarning("Warning: {message}.", exportEventArgs.Message);
 		}
 
 		private void LogError(ExportEventArgs exportEventArgs)
 		{
-			_apiLog.LogError("Error occured: {message}. Additional info: {@additionalInfo}.", exportEventArgs.Message, exportEventArgs.AdditionalInfo);
+			_apiLog.LogError("Error occured: {message}.", exportEventArgs.Message);
 		}
 
 		private void LogDebug(ExportEventArgs exportEventArgs)

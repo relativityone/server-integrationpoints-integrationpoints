@@ -9,7 +9,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ImportApiFactoryTests : ImportApiFactory
 	{
 		private const string _LOCAL_INSTANCE_ADDRESS = "http://instance-address.relativity.com/Relativity";

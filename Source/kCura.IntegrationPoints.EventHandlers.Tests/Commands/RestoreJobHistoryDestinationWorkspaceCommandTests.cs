@@ -14,6 +14,7 @@ using System.Collections.Generic;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 {
+	[TestFixture, Category("Unit")]
 	public class RestoreJobHistoryDestinationWorkspaceCommandTests : TestBase
 	{
 		private IRelativityObjectManager _objectManager;

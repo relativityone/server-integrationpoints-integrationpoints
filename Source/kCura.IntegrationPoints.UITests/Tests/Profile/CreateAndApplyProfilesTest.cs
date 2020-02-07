@@ -14,6 +14,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints]
+	[Category(TestCategory.WEB_IMPORT_EXPORT)]
 	[Category(TestCategory.PROFILE)]
 	internal class CreateAndApplyProfilesTest : RelativityProviderTestsBase
 	{

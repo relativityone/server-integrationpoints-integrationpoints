@@ -10,6 +10,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Authentication.WebApi
 {
+	[TestFixture, Category("Unit")]
 	public class WebApiLoginServiceTests : TestBase
 	{
 		private WebApiLoginService _instanceUnderTest;

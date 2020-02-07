@@ -21,7 +21,7 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class JobHistoryServiceTests : TestBase
 	{
 		private IRelativityObjectManager _relativityObjectManager;
@@ -75,9 +75,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 				_federatedInstanceManager,
 				_workspaceManager,
 				_logger,
-				_serializer,
-				_providerTypeService,
-				_messageService);
+				_serializer);
 		}
 
 		[Test]
@@ -238,7 +236,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 
 			// ASSERT
 			ValidateJobHistory(jobHistory, JobTypeChoices.JobHistoryRun);
-			_messageService.Received().Send(Arg.Any<JobStartedMessage>());
 		}
 
 		[Test]
@@ -290,7 +287,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 
 			// ASSERT
 			ValidateJobHistory(returnedJobHistory, JobTypeChoices.JobHistoryScheduledRun);
-			_messageService.Received().Send(Arg.Any<JobStartedMessage>());
 		}
 
 		[Test]

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Data.Extensions;
 using Relativity.Services;
@@ -12,31 +13,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 	{
 		private static ITestHelper Helper => new TestHelper();
 
-		public static int Create(string section, string name, string value, ValueType valueType)
-		{
-			using (IInstanceSettingManager instanceSettingManager = Helper.CreateProxy<IInstanceSettingManager>())
-			{
-				global::Relativity.Services.InstanceSetting.InstanceSetting instanceSetting = new global::Relativity.Services.InstanceSetting.InstanceSetting
-				{
-					Section = section,
-					Name = name,
-					Value = value,
-					ValueType = valueType
-				};
-
-				try
-				{
-					int artifactId = instanceSettingManager.CreateSingleAsync(instanceSetting).ConfigureAwait(false).GetAwaiter().GetResult();
-					return artifactId;
-				}
-				catch (Exception ex)
-				{
-					throw new Exception($"Error: Failed to create Instance Setting. Exception: {ex.Message}");
-				}
-			}
-		}
-
-		public static global::Relativity.Services.InstanceSetting.InstanceSetting Query(string section, string name)
+		public static async Task<global::Relativity.Services.InstanceSetting.InstanceSetting> QueryAsync(string section, string name)
 		{
 			using (IInstanceSettingManager instanceSettingManager = Helper.CreateProxy<IInstanceSettingManager>())
 			{
@@ -48,50 +25,69 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 				try
 				{
-					InstanceSettingQueryResultSet instanceSettingQueryResultSet = instanceSettingManager.QueryAsync(query).GetAwaiter().GetResult();
-					global::Relativity.Services.InstanceSetting.InstanceSetting instanceSetting = instanceSettingQueryResultSet.Results.FirstOrDefault()?.Artifact;
-					return instanceSetting;
+					InstanceSettingQueryResultSet instanceSettingQueryResultSet =
+						await instanceSettingManager.QueryAsync(query).ConfigureAwait(false);
+
+					return instanceSettingQueryResultSet.Results.FirstOrDefault()?.Artifact;
 				}
 				catch (Exception ex)
 				{
-					throw new Exception($"Error: Failed to query Instance Setting. Exception: {ex.Message}");
+					throw new Exception($"Error: Failed to query Instance Setting. Exception: {ex.Message}", ex);
 				}
 			}
 		}
 
-		public static string UpsertAndReturnOldValueIfExists(string section, string name, string value)
+		public static async Task CreateOrUpdateAsync(string section, string name, string value)
 		{
-			global::Relativity.Services.InstanceSetting.InstanceSetting instanceSetting = Query(section, name);
+			global::Relativity.Services.InstanceSetting.InstanceSetting instanceSetting =
+				await QueryAsync(section, name).ConfigureAwait(false);
 
 			if (instanceSetting == null)
 			{
-				Create(section, name, value, ValueType.TrueFalse);
-				return value;
+				await CreateAsync(section, name, value, ValueType.TrueFalse).ConfigureAwait(false);
 			}
-
-			if (string.Equals(instanceSetting.Value, value, StringComparison.OrdinalIgnoreCase))
+			else
 			{
-				return value;
+				instanceSetting.Value = value;
+				await UpdateAsync(instanceSetting).ConfigureAwait(false);
 			}
-
-			string oldValue = instanceSetting.Value;
-			instanceSetting.Value = value;
-			Update(instanceSetting);
-
-			return oldValue;
 		}
 
-		private static void Update(global::Relativity.Services.InstanceSetting.InstanceSetting instanceSetting)
+		private static Task<int> CreateAsync(string section, string name, string value, ValueType valueType)
+		{
+			using (IInstanceSettingManager instanceSettingManager = Helper.CreateProxy<IInstanceSettingManager>())
+			{
+				global::Relativity.Services.InstanceSetting.InstanceSetting instanceSetting =
+					new global::Relativity.Services.InstanceSetting.InstanceSetting
+					{
+						Section = section,
+						Name = name,
+						Value = value,
+						ValueType = valueType
+					};
+
+				try
+				{
+					return instanceSettingManager.CreateSingleAsync(instanceSetting);
+				}
+				catch (Exception ex)
+				{
+					throw new Exception($"Error: Failed to create Instance Setting. Exception: {ex.Message}", ex);
+				}
+			}
+		}
+
+		private static Task UpdateAsync(global::Relativity.Services.InstanceSetting.InstanceSetting instanceSetting)
 		{
 			using (IInstanceSettingManager instanceSettingManager = Helper.CreateProxy<IInstanceSettingManager>())
 			{
 				try
 				{
-					instanceSettingManager.UpdateSingleAsync(instanceSetting).ConfigureAwait(false).GetAwaiter().GetResult();
+					return instanceSettingManager.UpdateSingleAsync(instanceSetting);
 				}
 				catch (Exception ex)
 				{
-					throw new Exception($"Error: Failed to update Instance Setting. Exception: {ex.Message}");
+					throw new Exception($"Error: Failed to update Instance Setting. Exception: {ex.Message}", ex);
 				}
 			}
 		}

@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValidator
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class TransferredObjectValidatorTests
 	{
 		[Test]

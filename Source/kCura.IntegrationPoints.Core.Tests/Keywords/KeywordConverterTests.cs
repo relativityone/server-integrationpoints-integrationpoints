@@ -7,7 +7,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Keywords
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class KeywordConverterTests : TestBase
 	{
 		private IHelper _helper;

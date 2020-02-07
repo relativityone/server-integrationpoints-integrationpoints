@@ -16,7 +16,7 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementation
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ObjectManagerFacadeInstrumentationDecoratorTests
 	{
 		private Mock<IObjectManagerFacade> _objectManagerMock;

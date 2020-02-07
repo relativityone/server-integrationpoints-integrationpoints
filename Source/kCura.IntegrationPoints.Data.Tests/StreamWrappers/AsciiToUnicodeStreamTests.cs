@@ -8,7 +8,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Data.Tests.StreamWrappers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class AsciiToUnicodeStreamTests
 	{
 		private const string _SOME_TEXT = "Some text in English";

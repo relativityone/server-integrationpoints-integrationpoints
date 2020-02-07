@@ -9,7 +9,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class JobHistoryErrorServiceProviderTests : TestBase
 	{
 		[SetUp]

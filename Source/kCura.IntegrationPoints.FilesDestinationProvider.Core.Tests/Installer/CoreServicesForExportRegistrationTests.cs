@@ -16,7 +16,7 @@ using static kCura.IntegrationPoint.Tests.Core.TestHelpers.WindsorContainerTestH
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Installer
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class CoreServicesForExportRegistrationTests
 	{
 		[Test]

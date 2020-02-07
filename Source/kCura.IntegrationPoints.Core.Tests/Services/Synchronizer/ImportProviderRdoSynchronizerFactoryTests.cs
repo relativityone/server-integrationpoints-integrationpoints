@@ -15,7 +15,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.Synchronizer
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ImportProviderRdoSynchronizerFactoryTests
 	{
 		private ImportProviderRdoSynchronizerFactory _sut;

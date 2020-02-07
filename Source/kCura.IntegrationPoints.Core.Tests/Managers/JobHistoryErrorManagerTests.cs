@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Managers;
@@ -16,7 +17,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Managers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class JobHistoryErrorManagerTests : TestBase
 	{
 		private IJobHistoryErrorManager _testInstance;
@@ -325,11 +326,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 				new ArtifactDTO(documentId2, artifactTypeId, controlNumber2, new ArtifactFieldDTO[0]),
 			};
 
-			_savedSearchRepository.RetrieveNextDocuments().Returns(x => artifactDtos, x => new ArtifactDTO[0]);
+			_savedSearchRepository.RetrieveNextDocumentsAsync().Returns(
+				x => Task.FromResult(artifactDtos),
+				x => Task.FromResult(new ArtifactDTO[0])
+			);
 
 			_repositoryFactory.GetJobHistoryErrorRepository(_workspaceArtifactId).Returns(_jobHistoryErrorRepository);
 
-			Dictionary<int, string> itemLevelErrorsAndSourceUniqueIds = new Dictionary<int, string>()
+			Dictionary<int, string> itemLevelErrorsAndSourceUniqueIds = new Dictionary<int, string>
 			{
 				{error1, controlNumber2},
 				{error2, controlNumber3}
@@ -345,7 +349,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_testInstance.CreateErrorListTempTablesForItemLevelErrors(_job, savedSearchId);
 
 			// Assert
-			_savedSearchRepository.Received(2).RetrieveNextDocuments();
+			_savedSearchRepository.Received(2).RetrieveNextDocumentsAsync();
 			_savedSearchRepository.Received(3).AllDocumentsRetrieved();
 			_repositoryFactory.Received(1).GetSavedSearchRepository(_workspaceArtifactId, savedSearchId);
 			_repositoryFactory.Received(1).GetJobHistoryErrorRepository(_workspaceArtifactId);
@@ -389,7 +393,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_jobHistoryErrorRepository.RetrieveJobHistoryErrorIdsAndSourceUniqueIds(lastJobHistoryId, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(itemLevelErrorsAndSourceUniqueIds);
 			_repositoryFactory.GetSavedSearchRepository(_workspaceArtifactId, savedSearchId).Returns(_savedSearchRepository);
 			_savedSearchRepository.AllDocumentsRetrieved().Returns(false, false, true);
-			_savedSearchRepository.RetrieveNextDocuments().Returns(x => artifactDtoBatchOne, x => artifactDtoBatchTwo, x => new ArtifactDTO[0]);
+			_savedSearchRepository.RetrieveNextDocumentsAsync().Returns(
+				x => Task.FromResult(artifactDtoBatchOne),
+				x => Task.FromResult(artifactDtoBatchTwo),
+				x => Task.FromResult(new ArtifactDTO[0])
+			);
 
 			// Act
 			_testInstance.CreateErrorListTempTablesForItemLevelErrors(_job, savedSearchId);
@@ -401,7 +409,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_jobHistoryErrorRepository.Received(1).RetrieveJobHistoryErrorIdsAndSourceUniqueIds(lastJobHistoryId, JobHistoryErrorDTO.Choices.ErrorType.Values.Item);
 			_repositoryFactory.Received(1).GetSavedSearchRepository(_workspaceArtifactId, savedSearchId);
 			_savedSearchRepository.Received(3).AllDocumentsRetrieved();
-			_savedSearchRepository.Received(2).RetrieveNextDocuments();
+			_savedSearchRepository.Received(2).RetrieveNextDocumentsAsync();
 
 			_jobHistoryErrorJobStart.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
 			_jobHistoryErrorJobComplete.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
@@ -443,7 +451,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_jobHistoryErrorRepository.RetrieveJobHistoryErrorIdsAndSourceUniqueIds(lastJobHistoryId, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(itemLevelErrorsAndSourceUniqueIds);
 			_repositoryFactory.GetSavedSearchRepository(_workspaceArtifactId, savedSearchId).Returns(_savedSearchRepository);
 			_savedSearchRepository.AllDocumentsRetrieved().Returns(false, false, true);
-			_savedSearchRepository.RetrieveNextDocuments().Returns(x => artifactDtoBatchOne, x => artifactDtoBatchTwo, x => new ArtifactDTO[0]);
+			_savedSearchRepository.RetrieveNextDocumentsAsync().Returns(
+				x => Task.FromResult(artifactDtoBatchOne),
+				x => Task.FromResult(artifactDtoBatchTwo),
+				x => Task.FromResult(new ArtifactDTO[0])
+			);
 
 			// Act
 			_testInstance.CreateErrorListTempTablesForItemLevelErrors(_job, savedSearchId);
@@ -455,7 +467,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_jobHistoryErrorRepository.Received(1).RetrieveJobHistoryErrorIdsAndSourceUniqueIds(lastJobHistoryId, JobHistoryErrorDTO.Choices.ErrorType.Values.Item);
 			_repositoryFactory.Received(1).GetSavedSearchRepository(_workspaceArtifactId, savedSearchId);
 			_savedSearchRepository.Received(3).AllDocumentsRetrieved();
-			_savedSearchRepository.Received(2).RetrieveNextDocuments();
+			_savedSearchRepository.Received(2).RetrieveNextDocumentsAsync();
 
 			_jobHistoryErrorJobStart.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
 			_jobHistoryErrorJobComplete.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
@@ -501,7 +513,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_jobHistoryErrorRepository.RetrieveJobHistoryErrorIdsAndSourceUniqueIds(lastJobHistoryId, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(itemLevelErrorsAndSourceUniqueIds);
 			_repositoryFactory.GetSavedSearchRepository(_workspaceArtifactId, savedSearchId).Returns(_savedSearchRepository);
 			_savedSearchRepository.AllDocumentsRetrieved().Returns(false, false, true);
-			_savedSearchRepository.RetrieveNextDocuments().Returns(x => artifactDtoBatchOne, x => artifactDtoBatchTwo, x => new ArtifactDTO[0]);
+			_savedSearchRepository.RetrieveNextDocumentsAsync().Returns(
+				x => Task.FromResult(artifactDtoBatchOne),
+				x => Task.FromResult(artifactDtoBatchTwo),
+				x => Task.FromResult(new ArtifactDTO[0])
+			);
 
 			// Act
 			_testInstance.CreateErrorListTempTablesForItemLevelErrors(_job, savedSearchId);
@@ -513,7 +529,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_jobHistoryErrorRepository.Received(1).RetrieveJobHistoryErrorIdsAndSourceUniqueIds(lastJobHistoryId, JobHistoryErrorDTO.Choices.ErrorType.Values.Item);
 			_repositoryFactory.Received(1).GetSavedSearchRepository(_workspaceArtifactId, savedSearchId);
 			_savedSearchRepository.Received(3).AllDocumentsRetrieved();
-			_savedSearchRepository.Received(2).RetrieveNextDocuments();
+			_savedSearchRepository.Received(2).RetrieveNextDocumentsAsync();
 
 			_jobHistoryErrorJobStart.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
 			_jobHistoryErrorJobComplete.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());

@@ -9,7 +9,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Managers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ObjectTypeManagerTests : TestBase
 	{
 		private IObjectTypeManager _testInstance;

@@ -4,7 +4,7 @@ using kCura.IntegrationPoints.Domain.Utils;
 
 namespace kCura.IntegrationPoints.Domain.Tests
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class UtilsTests
 	{
 		[Test]

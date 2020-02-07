@@ -10,7 +10,7 @@ using Relativity.Productions.Services;
 
 namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ProductionRepositoryTests
 	{
 		private const int _WORKSPACE_ARTIFACT_ID = 1016868;

@@ -7,6 +7,7 @@ using Relativity.IntegrationPoints.Services.JobHistory;
 
 namespace Relativity.IntegrationPoints.Services.Tests.JobHistory
 {
+	[TestFixture, Category("Unit")]
 	public class JobHistoryAccessTests : TestBase
 	{
 		private JobHistoryAccess _jobHistoryAccess;

@@ -14,7 +14,7 @@ using Relativity.Services.Security.Models;
 
 namespace kCura.IntegrationPoints.Core.Tests.Authentication
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class OAuth2ClientFactoryTests : TestBase
 	{
 		private Mock<IHelper> _helperFake;

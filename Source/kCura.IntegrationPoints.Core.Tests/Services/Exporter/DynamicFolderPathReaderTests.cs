@@ -11,6 +11,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 {
+	[TestFixture, Category("Unit")]
 	public class DynamicFolderPathReaderTests : TestBase
 	{
 		private IDBContext _dbContext;

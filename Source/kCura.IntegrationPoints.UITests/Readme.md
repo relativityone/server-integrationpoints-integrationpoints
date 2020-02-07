@@ -17,8 +17,8 @@ Change `UI.Browser` in `app.config`. Currently Chrome and Firefox are supported 
 
 To run tests against chosen environment, either set `ripUiTestsConfig` system variable, or just set `_configName` in `kCura.IntegrationPoints.UITests.Configuration.TestConfiguration`. Its value should correspond to config file located in `kCura.IntegrationPoints.UITests\UiTestsConfig\`.
 In case of running against your TestVM, modify `testvm.config` file. Set proper values to:
-* RelativityInstanceAddress
-* RSAPIServerAddress
+* RelativityHostAddress
+* RsapiServicesHostAddress
 * ServerBindingType
 * AdminUsername
 * AdminPassword

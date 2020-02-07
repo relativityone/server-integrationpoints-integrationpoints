@@ -11,6 +11,7 @@ using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services
 {
+	[TestFixture, Category("Unit")]
     public class ChoiceServiceTests : TestBase
     {
         private List<Choice> _populatedChoicesList;

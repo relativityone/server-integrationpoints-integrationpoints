@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Domain.Tests
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class StackOfDisposablesTests
 	{
 		[Test]

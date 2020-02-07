@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class IntegrationPointSecretDeleteTests : TestBase
 	{
 		private IIntegrationPointRepository _integrationPointRepository;

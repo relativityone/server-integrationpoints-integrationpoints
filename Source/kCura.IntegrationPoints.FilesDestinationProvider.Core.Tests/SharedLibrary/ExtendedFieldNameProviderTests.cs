@@ -10,7 +10,7 @@ using ViewFieldInfo = kCura.WinEDDS.ViewFieldInfo;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibrary
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ExtendedFieldNameProviderTest : TestBase
 	{
 		private ExtendedFieldNameProvider _extendedFieldNameProvider;

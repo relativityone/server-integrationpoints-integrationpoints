@@ -12,6 +12,7 @@ using InstanceSetting = Relativity.Services.InstanceSetting.InstanceSetting;
 
 namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 {
+	[TestFixture, Category("Unit")]
 	public class KeplerInstanceSettingRepositoryTests : TestBase
 	{
 		private IInstanceSettingManager _instanceSettingManager;

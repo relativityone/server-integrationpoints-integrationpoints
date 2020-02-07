@@ -33,7 +33,7 @@ using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class IntegrationPointServiceTests : TestBase
 	{
 		private Data.IntegrationPoint _integrationPoint;

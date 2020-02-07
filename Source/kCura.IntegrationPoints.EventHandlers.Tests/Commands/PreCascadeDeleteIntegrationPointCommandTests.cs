@@ -12,7 +12,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class PreCascadeDeleteIntegrationPointCommandTests : TestBase
 	{
 		private const int _WORKSPACE_ID = 979307;

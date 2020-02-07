@@ -16,7 +16,7 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ObjectArtifactIdsByStringFieldValueQueryTests
 	{
 		private IObjectArtifactIdsByStringFieldValueQuery _query;

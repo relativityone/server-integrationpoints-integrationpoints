@@ -25,6 +25,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 {
+	[TestFixture, Category("Unit")]
 	public class ExportManagerTest : TestBase
 	{
 		#region Private Fields

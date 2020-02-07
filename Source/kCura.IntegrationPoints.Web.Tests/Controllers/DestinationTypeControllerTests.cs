@@ -19,7 +19,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	class DestinationTypeControllerTests : TestBase
 	{
 		private DestinationTypeController _instance;

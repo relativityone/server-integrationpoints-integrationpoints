@@ -8,7 +8,7 @@ using NUnit.Framework;
 
 namespace kCura.ScheduleQueue.Core.Tests
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	internal class PeriodicScheduleRuleTest : TestBase
 	{
 		#region SearchMonthForForwardOccuranceOfDay

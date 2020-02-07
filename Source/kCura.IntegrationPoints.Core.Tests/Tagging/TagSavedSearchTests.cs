@@ -12,6 +12,7 @@ using Relativity.Services.Search;
 
 namespace kCura.IntegrationPoints.Core.Tests.Tagging
 {
+	[TestFixture, Category("Unit")]
 	public class TagSavedSearchTests : TestBase
 	{
 		private IKeywordSearchRepository _keywordSearchRepository;

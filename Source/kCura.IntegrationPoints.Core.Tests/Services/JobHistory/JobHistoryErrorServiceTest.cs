@@ -1,148 +1,247 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.Extensions.Moq;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.Exceptions;
+using kCura.IntegrationPoints.Domain.Models;
+using kCura.Relativity.Client.DTOs;
+using Moq;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
+using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class JobHistoryErrorServiceTest : TestBase
 	{
 		private Data.IntegrationPoint _integrationPoint;
 		private Data.JobHistory _jobHistory;
-
-		private ICaseServiceContext _caseServiceContext;
-		private IHelper _helper;
-
+		private Mock<ICaseServiceContext> _caseServiceContextFake;
+		private Mock<IHelper> _helperFake;
 		private JobHistoryErrorService _instance;
-		private IJobStopManager _stopJobManager;
-		private IIntegrationPointRepository _integrationPointRepository;
+		private Mock<IJobStopManager> _stopJobManagerFake;
+		private Mock<IIntegrationPointRepository> _integrationPointRepositoryFake;
+		private Mock<IObjectManager> _objectManagerFake;
+		private List<JobHistoryError> _errors;
+
+		private readonly Guid _jobHistoryErrorObject = new Guid("17E7912D-4F57-4890-9A37-ABC2B8A37BDB");
+		private readonly Guid _errorMessageField = new Guid("4112B894-35B0-4E53-AB99-C9036D08269D");
+		private readonly Guid _errorStatusField = new Guid("DE1A46D2-D615-427A-B9F2-C10769BC2678");
+		private readonly Guid _errorTypeField = new Guid("EEFFA5D3-82E3-46F8-9762-B4053D73F973");
+		private readonly Guid _nameField = new Guid("84E757CC-9DA2-435D-B288-0C21EC589E66");
+		private readonly Guid _sourceUniqueIdField = new Guid("5519435E-EE82-4820-9546-F1AF46121901");
+		private readonly Guid _stackTraceField = new Guid("0353DBDE-9E00-4227-8A8F-4380A8891CFF");
+		private readonly Guid _timestampUtcField = new Guid("B9CBA772-E7C9-493E-B7F8-8D605A6BFE1F");
+		private readonly Guid _errorStatusNew = new Guid("F881B199-8A67-4D49-B1C1-F9E68658FB5A");
+		private readonly Guid _errorTypeItem = new Guid("9DDC4914-FEF3-401F-89B7-2967CD76714B");
+		
 
 		[SetUp]
 		public override void SetUp()
 		{
-			_integrationPoint = new Data.IntegrationPoint() {LogErrors = true};
+			_integrationPoint = new Data.IntegrationPoint() { LogErrors = true };
 			_jobHistory = new Data.JobHistory { ArtifactId = 111 };
 
-			_caseServiceContext = Substitute.For<ICaseServiceContext>();
-			_helper = Substitute.For<IHelper>();
-			_stopJobManager = Substitute.For<IJobStopManager>();
-			_integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
+			_caseServiceContextFake = new Mock<ICaseServiceContext>();
+			_helperFake = new Mock<IHelper>();
 
-			_instance = new JobHistoryErrorService(_caseServiceContext, _helper, _integrationPointRepository)
+			_helperFake.Setup(x => x.GetLoggerFactory().GetLogger().ForContext<IJobHistoryErrorService>()).Returns(new Mock<IAPILog>().Object);
+
+			_stopJobManagerFake = new Mock<IJobStopManager>();
+			_integrationPointRepositoryFake = new Mock<IIntegrationPointRepository>();
+			_objectManagerFake = new Mock<IObjectManager>();
+			
+			_helperFake.Setup(x => x.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
+				.Returns(_objectManagerFake.Object);
+			_errors = new List<JobHistoryError>();
+
+			_objectManagerFake.Setup(x => x.CreateAsync(It.IsAny<int>(), It.IsAny<MassCreateRequest>()))
+				.ReturnsAsync(new MassCreateResult
+				{
+					Success = true
+				})
+				.Callback<int, MassCreateRequest>((_, req) => _errors.AddRange(ExtractErrors(req.ValueLists)));
+
+			_instance = new JobHistoryErrorService(_caseServiceContextFake.Object, _helperFake.Object, _integrationPointRepositoryFake.Object)
 			{
 				IntegrationPoint = _integrationPoint,
 				JobHistory = _jobHistory,
-				JobStopManager = _stopJobManager
+				JobStopManager = _stopJobManagerFake.Object
 			};
 		}
 
 		[Test]
-		[Ignore("REL-371040")]
-		public void CommitErrors_HasJobHistory_CommitsJobHistoryErrors_ForDocumentLevelErrors()
+		public void CommitErrors_ShouldCallObjectManagerWithCorrectParameters()
 		{
-			// Arrange
+			// arrange
 			_instance.AddError(ErrorTypeChoices.JobHistoryErrorItem, "MyIdentifier", "Fake item error.", "stack trace");
-			_instance.AddError(ErrorTypeChoices.JobHistoryErrorItem, "MyIdentifier2", "Fake item error2.", "stack trace2");
-			List<JobHistoryError> errors = new List<JobHistoryError>();
-			_caseServiceContext.RsapiService.JobHistoryErrorLibrary.Create(Arg.Do<IEnumerable<JobHistoryError>>(x => errors.AddRange(x)));
-			_instance.IntegrationPoint.HasErrors = false;
+			MassCreateRequest request = null;
 
-			// Act
+			_objectManagerFake.Setup(x =>
+					x.CreateAsync(_caseServiceContextFake.Object.WorkspaceID, It.IsAny<MassCreateRequest>()))
+				.ReturnsAsync(new MassCreateResult
+				{
+					Success = true
+				})
+				.Callback<int, MassCreateRequest>((_, req) => request = req);
+
+			// act
 			_instance.CommitErrors();
 
-			// Assert
-			_caseServiceContext.RsapiService.JobHistoryErrorLibrary.Received(1).Create(Arg.Do<IEnumerable<JobHistoryError>>(x => errors.AddRange(x)));
-			Assert.AreEqual(2, errors.Count);
-			Assert.AreEqual(ErrorTypeChoices.JobHistoryErrorItem.Name, errors[0].ErrorType.Name);
-			Assert.AreEqual("Fake item error.", errors[0].Error);
-			Assert.AreEqual("stack trace", errors[0].StackTrace);
-			Assert.AreEqual(ErrorTypeChoices.JobHistoryErrorItem.Name, errors[1].ErrorType.Name);
-			Assert.AreEqual("Fake item error2.", errors[1].Error);
-			Assert.AreEqual("stack trace2", errors[1].StackTrace);
+			// assert
+			request.ObjectType.Guid.Should().Be(_jobHistoryErrorObject);
+			request.Fields.Select(x => x.Guid).Should().BeEquivalentTo(new[]
+			{
+				_errorMessageField,
+				_errorStatusField,
+				_errorTypeField,
+				_nameField,
+				_sourceUniqueIdField,
+				_stackTraceField,
+				_timestampUtcField
+			});
+		}
+		
+		[Test]
+		public void CommitErrors_ShouldThrowWhenMassCreateFails()
+		{
+			// arrange
+			var errorMessageFromObjectmanager = "Error message from ObjectManager";
+			_objectManagerFake.Setup(x =>
+					x.CreateAsync(_caseServiceContextFake.Object.WorkspaceID, It.IsAny<MassCreateRequest>()))
+				.ReturnsAsync(new MassCreateResult
+				{
+					Success = false,
+					Message = errorMessageFromObjectmanager
+				});
+
+			_instance.AddError(ErrorTypeChoices.JobHistoryErrorItem, "MyIdentifier", "Fake item error.", "stack trace");
+
+
+			// act & assert
+			new Action(() => _instance.CommitErrors()).ShouldThrow<Exception>();
+		}
+
+		[Test]
+		public void AddError_ShouldUseExceptionMessage()
+		{
+			// arrange
+			var errorMessages = new[] { "Message 1", "Message 2" };
+
+			// act 
+			_instance.AddError(ErrorTypeChoices.JobHistoryErrorJob, new IntegrationPointValidationException(new ValidationResult(errorMessages)));
+
+			// assert
+			_errors.Single().Error.Should().Be("Integration Point validation failed.\r\n" + string.Join(Environment.NewLine, errorMessages));
+		}
+
+		[Test]
+		public void CommitErrors_HasJobHistory_CommitsJobHistoryErrors_ForDocumentLevelErrors()
+		{
+			// arrange
+			_instance.AddError(ErrorTypeChoices.JobHistoryErrorItem, "MyIdentifier", "Fake item error.", "stack trace");
+			_instance.AddError(ErrorTypeChoices.JobHistoryErrorItem, "MyIdentifier2", "Fake item error2.", "stack trace2");
+			
+			_instance.IntegrationPoint.HasErrors = false;
+
+			// act
+			_instance.CommitErrors();
+
+			// assert
+			_objectManagerFake.Verify(x => x.CreateAsync(_caseServiceContextFake.Object.WorkspaceID, It.IsAny<MassCreateRequest>()), Times.Once);
+			
+			Assert.AreEqual(2, _errors.Count);
+			Assert.AreEqual(ErrorTypeChoices.JobHistoryErrorItem.Name, _errors[0].ErrorType.Name);
+			Assert.AreEqual("Fake item error.", _errors[0].Error);
+			Assert.AreEqual("stack trace", _errors[0].StackTrace);
+			Assert.AreEqual(ErrorTypeChoices.JobHistoryErrorItem.Name, _errors[1].ErrorType.Name);
+			Assert.AreEqual("Fake item error2.", _errors[1].Error);
+			Assert.AreEqual("stack trace2", _errors[1].StackTrace);
 			Assert.IsNotNull(_instance.IntegrationPoint.HasErrors);
 			Assert.IsTrue(_instance.IntegrationPoint.HasErrors.Value);
 		}
-
-
+		
 		[Test]
-		[Ignore("REL-371040")]
 		public void AddError_CommitsJobHistoryErrors_ForJobLevelErrors()
 		{
-			// Arrange
-			List<JobHistoryError> errors = new List<JobHistoryError>();
-			_caseServiceContext.RsapiService.JobHistoryErrorLibrary.Create(Arg.Do<IEnumerable<JobHistoryError>>(x => errors.AddRange(x)));
+			// arrange
 			_instance.IntegrationPoint.HasErrors = false;
 
-			// Act
+			// act
 			_instance.AddError(ErrorTypeChoices.JobHistoryErrorJob, "", "Fake job error.", "stack trace");
 			_instance.AddError(ErrorTypeChoices.JobHistoryErrorJob, "", "Fake job error2.", "stack trace2");
 
-			// Assert
-			_caseServiceContext.RsapiService.JobHistoryErrorLibrary.Received(2).Create(Arg.Do<IEnumerable<JobHistoryError>>(x => errors.AddRange(x)));
-			Assert.AreEqual(2, errors.Count);
+			_objectManagerFake.Verify(x => x.CreateAsync(_caseServiceContextFake.Object.WorkspaceID, It.IsAny<MassCreateRequest>()), Times.Exactly(2));
+			Assert.AreEqual(2, _errors.Count);
 		}
-
-
+		
 		[Test]
-		[Ignore("REL-371040")]
 		public void CommitErrors_HasJobHistory_NoErrorsToCommit()
 		{
-			// Arrange
+			// arrange
 			_instance.IntegrationPoint.HasErrors = true;
 
-			// Act
+			// act
 			_instance.CommitErrors();
 
-			// Assert
-			_caseServiceContext.RsapiService.JobHistoryErrorLibrary.DidNotReceive().Create(Arg.Any<IEnumerable<JobHistoryError>>());
+			// assert
+			_objectManagerFake.Verify(x => x.CreateAsync(_caseServiceContextFake.Object.WorkspaceID, It.IsAny<MassCreateRequest>()), Times.Never);
 			Assert.IsNotNull(_instance.IntegrationPoint.HasErrors);
 			Assert.IsFalse(_instance.IntegrationPoint.HasErrors.Value);
 		}
 
 		[Test]
-		[Ignore("REL-371040")]
 		public void CommitErrors_FailsCommit_ThrowsException_ItemLevelError()
 		{
-			// Arrange
+			// arrange
 			_instance.AddError(ErrorTypeChoices.JobHistoryErrorItem, "MyIdentifier", "Fake item error.", null);
-			_caseServiceContext.RsapiService.JobHistoryErrorLibrary.Create(Arg.Any<IEnumerable<JobHistoryError>>()).Throws(new Exception());
+
+			_objectManagerFake.Setup(x => x.CreateAsync(_caseServiceContextFake.Object.WorkspaceID, It.IsAny<MassCreateRequest>()))
+				.ThrowsAsync(new Exception());
+
 			_instance.IntegrationPoint.HasErrors = false;
 
-			// Act
+			// act
 			Exception returnedException = Assert.Throws<Exception>(() => _instance.CommitErrors());
 
-			// Assert
-			_integrationPointRepository.Received().Update(Arg.Any<Data.IntegrationPoint>());
+			// assert
+			_integrationPointRepositoryFake.Verify(x => x.Update(It.IsAny<Data.IntegrationPoint>()));
+
 			Assert.IsTrue(returnedException.Message.Contains("Could not commit Job History Errors. These are uncommitted errors:" + Environment.NewLine));
 			Assert.IsTrue(returnedException.Message.Contains("Type: Item    Identifier: MyIdentifier    Error: Fake item error."));
 		}
 
 		[Test]
-		[Ignore("REL-371040")]
 		public void CommitErrors_FailsCommit_ThrowsException_JobLevelError()
 		{
-			// Arrange
-			_caseServiceContext.RsapiService.JobHistoryErrorLibrary.Create(Arg.Any<IEnumerable<JobHistoryError>>()).Throws(new Exception());
+			// arrange
+			_objectManagerFake.Setup(x => x.CreateAsync(_caseServiceContextFake.Object.WorkspaceID, It.IsAny<MassCreateRequest>()))
+				.ThrowsAsync(new Exception());
 			_instance.IntegrationPoint.HasErrors = false;
 
-			// Act
+			// act
 			//Adding job level error automatically commits errors
 			Exception returnedException = Assert.Throws<Exception>(() => _instance.AddError(ErrorTypeChoices.JobHistoryErrorJob, "", "Fake job error.", null));
 
-			// Assert
-			_integrationPointRepository.Received().Update(Arg.Any<Data.IntegrationPoint>());
+			// assert
+			_integrationPointRepositoryFake.Verify(x => x.Update(It.IsAny<Data.IntegrationPoint>()), Times.Once);
 			Assert.IsTrue(returnedException.Message.Contains("Could not commit Job History Errors. These are uncommitted errors:" + Environment.NewLine));
 			Assert.IsTrue(returnedException.Message.Contains("Type: Job    Error: Fake job error." + Environment.NewLine));
 		}
@@ -150,15 +249,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		[Test]
 		public void AddError_NoJobHistory_ThrowsException()
 		{
-			// Arrange
+			// arrange
 			_instance.JobHistory = null;
 
-			// Act
+			// act
 			Exception returnedException = Assert.Throws<Exception>(() => _instance.AddError(ErrorTypeChoices.JobHistoryErrorJob, "", "Fake job error.", null));
 
-			// Assert
-			_integrationPointRepository.DidNotReceive().Update(Arg.Any<Data.IntegrationPoint>());
-			_caseServiceContext.RsapiService.JobHistoryErrorLibrary.DidNotReceive().Create(Arg.Any<IEnumerable<JobHistoryError>>());
+			// assert
+			_integrationPointRepositoryFake.Verify(x => x.Update(It.IsAny<Data.IntegrationPoint>()), Times.Never);
 			Assert.That(returnedException.Message, Is.EqualTo("Type:Job Id:  Error:Fake job error."));
 		}
 
@@ -166,53 +264,62 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		[Category(TestConstants.TestCategories.STOP_JOB)]
 		public void OnRowError_DoNotAddErrorWhenStopped()
 		{
-			// ARRANGE
+			// arrange
 			const string identifier = "identifier";
 			Reporter reporter = new Reporter();
-			_stopJobManager.IsStopRequested().Returns(true);
+			_stopJobManagerFake.Setup(x => x.IsStopRequested()).Returns(true);
 
-			// ACT
+			// act
 			_instance.SubscribeToBatchReporterEvents(reporter);
 			reporter.RaiseDocumentError(identifier, identifier);
 
-			// ASSERT
-			Assert.AreEqual(0, _instance.PendingErrorCount);
+			// assert
+			_instance.PendingErrorCount.Should().Be(0);
 		}
 
 		[Test]
 		[Category(TestConstants.TestCategories.STOP_JOB)]
 		public void OnRowError_AddErrorWhenRunning()
 		{
-			// ARRANGE
+			// arrange
 			const string identifier = "identifier";
 			Reporter reporter = new Reporter();
-			_stopJobManager.IsStopRequested().Returns(false);
+			_stopJobManagerFake.Setup(x => x.IsStopRequested()).Returns(false);
 
-			// ACT
+			// act
 			_instance.SubscribeToBatchReporterEvents(reporter);
 			reporter.RaiseDocumentError(identifier, identifier);
 
-			// ASSERT
-			Assert.AreEqual(1, _instance.PendingErrorCount);
+			// assert
+			_instance.PendingErrorCount.Should().Be(1);
 		}
 
 		[Test]
 		public void AddError_CommitErrorsByBatch()
 		{
-			// ARRANGE
+			// arrange
 			Exception exception = new Exception();
 			Reporter reporter = new Reporter();
-			_stopJobManager.IsStopRequested().Returns(true);
+			_stopJobManagerFake.Setup(x => x.IsStopRequested()).Returns(true);
+			MassCreateRequest request = null;
 
-			// ACT
+			_objectManagerFake.Setup(x =>
+					x.CreateAsync(_caseServiceContextFake.Object.WorkspaceID, It.IsAny<MassCreateRequest>()))
+				.ReturnsAsync(new MassCreateResult
+				{
+					Success = true
+				})
+				.Callback<int, MassCreateRequest>((_, req) => request = req);
+
+			// act
 			_instance.SubscribeToBatchReporterEvents(reporter);
-			for (int i = 0; i < JobHistoryErrorService.ERROR_BATCH_SIZE; i ++)
+			for (int i = 0; i < JobHistoryErrorService.ERROR_BATCH_SIZE; i++)
 			{
 				_instance.AddError(ErrorTypeChoices.JobHistoryErrorItem, exception);
 			}
 
-			// ASSERT 
-			_caseServiceContext.RsapiService.JobHistoryErrorLibrary.Create(Arg.Is<IEnumerable<JobHistoryError>>(errors => errors.Count() == JobHistoryErrorService.ERROR_BATCH_SIZE));
+			// assert 
+			request.ValueLists.Count.Should().Be(JobHistoryErrorService.ERROR_BATCH_SIZE);
 		}
 
 		[TestCase(true)]
@@ -220,91 +327,86 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		[Category(TestConstants.TestCategories.STOP_JOB)]
 		public void OnJobError_AlwaysAddError(bool isStopped)
 		{
-			// ARRANGE
+			// arrange
 			Reporter reporter = new Reporter();
 			Exception exception = new Exception();
-			_stopJobManager.IsStopRequested().Returns(isStopped);
-
-			// ACT
+			_stopJobManagerFake.Setup(x => x.IsStopRequested()).Returns(isStopped);
+			
+			// act
 			_instance.SubscribeToBatchReporterEvents(reporter);
 			reporter.RaiseOnJobError(exception);
 
-			// ASSERT 
+			// assert 
 			Assert.IsTrue(_instance.JobLevelErrorOccurred);
 		}
 
 		[Test]
-		[Ignore("REL-371040")]
 		public void CommitErrors_SetHasErrorToFalseWhenStopAndNoErrorOccured()
 		{
 			// arrange
-			_stopJobManager.IsStopRequested().Returns(true);
-
+			_stopJobManagerFake.Setup(x => x.IsStopRequested()).Returns(true);
+			
 			// act
 			_instance.CommitErrors();
 
 			// assert
 			Assert.IsFalse(_integrationPoint.HasErrors);
-			_integrationPointRepository.Received(1).Update(_integrationPoint);
-
+			_integrationPointRepositoryFake.Verify(x => x.Update(_integrationPoint), Times.Once);
 		}
 
 		[Test]
-		[Ignore("REL-371040")]
 		public void CommitErrors_SetHasErrorToFalseWhenRunningAndNoErrorOccured()
 		{
 			// arrange
-			_stopJobManager.IsStopRequested().Returns(false);
+			_stopJobManagerFake.Setup(x => x.IsStopRequested()).Returns(false);
 
 			// act
 			_instance.CommitErrors();
 
 			// assert
 			Assert.IsFalse(_integrationPoint.HasErrors);
-			_integrationPointRepository.Received(1).Update(_integrationPoint);
+			_integrationPointRepositoryFake.Verify(x => x.Update(_integrationPoint), Times.Once);
 		}
 
 		[Test]
-		[Ignore("REL-371040")]
 		public void CommitErrors_SetHasErrorToFalseWhenStopAndErrorsOccured()
 		{
 			// arrange
 			_instance.AddError(ErrorTypeChoices.JobHistoryErrorItem, new Exception());
-			_stopJobManager.IsStopRequested().Returns(true);
-
+			_stopJobManagerFake.Setup(x => x.IsStopRequested()).Returns(true);
+			
 			// act
 			_instance.CommitErrors();
 
 			// assert
 			Assert.IsFalse(_integrationPoint.HasErrors);
-			_integrationPointRepository.Received(1).Update(_integrationPoint);
+			_integrationPointRepositoryFake.Verify(x => x.Update(_integrationPoint), Times.Once);
 		}
 
 		[Test]
-		[Ignore("REL-371040")]
 		public void CommitErrors_SetHasErrorToTrueWhenRunningAndErrorsOccured()
 		{
 			// arrange
 			_instance.AddError(ErrorTypeChoices.JobHistoryErrorItem, new Exception());
-			_stopJobManager.IsStopRequested().Returns(false);
+			_stopJobManagerFake.Setup(x => x.IsStopRequested()).Returns(false);
 
 			// act
 			_instance.CommitErrors();
 
 			// assert
 			Assert.IsTrue(_integrationPoint.HasErrors);
-			_integrationPointRepository.Received(1).Update(_integrationPoint);
+			_integrationPointRepositoryFake.Verify(x => x.Update(_integrationPoint), Times.Once);
 		}
 
 		[Test]
 		public void CommitErrors_SuppressErrorOnUpdateHasErrorField()
 		{
-			// ARRANGE
-			_integrationPointRepository
-				.When(mock => mock.Update(Arg.Any<Data.IntegrationPoint>()))
-				.Do(call => throw new Exception());
+			// arrange
+			_integrationPointRepositoryFake
+				.Setup(x => x.Update(It.IsAny<Data.IntegrationPoint>()))
+				.Throws(new Exception());
 
-			// ACT & ASSERT
+			// act & assert
 			Assert.DoesNotThrow(() => _instance.CommitErrors());
 		}
 
@@ -327,6 +429,46 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			{
 				OnJobError?.Invoke(ex);
 			}
+		}
+
+		private IEnumerable<JobHistoryError> ExtractErrors(IReadOnlyCollection<IReadOnlyCollection<object>> values)
+		{
+			return values.Select(x => new JobHistoryError
+			{
+				Error = x.ElementAt(0).ToString(),
+				ErrorType = (x.ElementAt(2) as ChoiceRef).Guid.Value == ErrorTypeChoices.JobHistoryErrorItemGuid ? ErrorTypeChoices.JobHistoryErrorItem : ErrorTypeChoices.JobHistoryErrorJob,
+				SourceUniqueID = x.ElementAt(4).ToString(),
+				StackTrace = x.ElementAt(5).ToString(),
+			});
+		}
+
+		private MassCreateRequest GetObjectManagerRequestForErrors(IEnumerable<JobHistoryError> errors)
+		{
+			return new MassCreateRequest
+			{
+				ObjectType = new ObjectTypeRef { Guid = _jobHistoryErrorObject },
+				ParentObject = new RelativityObjectRef { ArtifactID = _jobHistory.ArtifactId },
+				Fields = new[]
+				{
+					new FieldRef { Guid = _errorMessageField },
+					new FieldRef { Guid = _errorStatusField },
+					new FieldRef { Guid = _errorTypeField },
+					new FieldRef { Guid = _nameField },
+					new FieldRef { Guid = _sourceUniqueIdField },
+					new FieldRef { Guid = _stackTraceField },
+					new FieldRef { Guid = _timestampUtcField }
+				},
+				ValueLists = errors.Select(x => new List<object>()
+				{
+					x.Error,
+					new ChoiceRef{Guid = _errorStatusNew},
+					new ChoiceRef{Guid = x.ErrorType.Guids.Single()},
+					Guid.NewGuid().ToString(),
+					x.SourceUniqueID,
+					x.StackTrace,
+					DateTime.UtcNow
+				}).ToList()
+			};
 		}
 	}
 }

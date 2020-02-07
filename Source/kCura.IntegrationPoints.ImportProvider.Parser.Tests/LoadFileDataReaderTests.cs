@@ -10,6 +10,7 @@ using NSubstitute.ExceptionExtensions;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 {
+	[TestFixture, Category("Unit")]
 	public class LoadFileDataReaderTests : TestBase
 	{
 		private int _currentArtifactIndex;

@@ -16,7 +16,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class JobHistoryBatchUpdateStatusTests : TestBase
 	{
 		private IJobStatusUpdater _updater;

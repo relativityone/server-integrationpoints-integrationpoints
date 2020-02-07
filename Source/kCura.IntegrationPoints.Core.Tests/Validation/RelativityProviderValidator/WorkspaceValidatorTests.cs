@@ -12,7 +12,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValidator
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class WorkspaceValidatorTests
 	{
 		[Test]

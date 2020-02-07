@@ -9,10 +9,11 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
+using CategoryAttribute = NUnit.Framework.CategoryAttribute;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ExportSettingsBuilderTests : TestBase
 	{
 		private ExportSettingsBuilder _exportSettingsBuilder;

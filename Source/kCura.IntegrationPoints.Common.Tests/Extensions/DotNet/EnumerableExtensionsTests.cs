@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Common.Tests.Extensions.DotNet
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class EnumerableExtensionsTests
 	{
 		[Test]

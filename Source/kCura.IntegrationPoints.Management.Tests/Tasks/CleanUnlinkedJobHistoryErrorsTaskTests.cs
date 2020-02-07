@@ -8,7 +8,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Management.Tests.Tasks
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class CleanUnlinkedJobHistoryErrorsTaskTests : TestBase
 	{
 		private CleanUnlinkedJobHistoryErrorsTask _instance;

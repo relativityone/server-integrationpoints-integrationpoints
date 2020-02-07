@@ -10,6 +10,7 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 {
+	[TestFixture, Category("Unit")]
 	public class IntegrationPointTypeRepositoryTests : TestBase
 	{
 		private IntegrationPointTypeRepository _integrationPointTypeRepository;

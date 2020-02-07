@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using kCura.IntegrationPoints.Core.Extensions;
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -10,6 +11,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 {
 	public static class SharedVariables
 	{
+		private const string _NOT_APPLICABLE = "N/A";
+
 		private static readonly Dictionary<string, string> ConfigurationOverrides = new Dictionary<string, string>();
 
 		public static Configuration CustomConfig { get; set; }
@@ -92,7 +95,14 @@ namespace kCura.IntegrationPoint.Tests.Core
 				return overridenValue;
 			}
 
-			return CustomConfig?.AppSettings.Settings[name]?.Value ?? ConfigurationManager.AppSettings[name];
+			return GetRunSettingsParameter(name) ?? CustomConfig?.AppSettings.Settings[name]?.Value ?? ConfigurationManager.AppSettings[name];
+		}
+
+		public static string GetRunSettingsParameter(string name)
+		{
+			return TestContext.Parameters.Exists(name)
+				? TestContext.Parameters[name]
+				: null;
 		}
 
 		public static int AppSettingInt(string name)
@@ -171,6 +181,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static string UiBrowser => GetEnvVariableOrAppSettingString("UITestsBrowser", "UI.Browser");
 
+		public static string UiBrowserPath => AppSettingString("UI.BrowserPath");
+
 		public static int UiBrowserWidth => AppSettingInt("UI.BrowserWidth");
 
 		public static int UiBrowserHeight => AppSettingInt("UI.BrowserHeight");
@@ -206,77 +218,59 @@ namespace kCura.IntegrationPoint.Tests.Core
 		#region Relativity Settings
 
 		/// <summary>
-		/// Returns RelativityInstanceAddress value from config file
+		/// Returns RelativityHostAddress value from config file
 		/// </summary>
-		public static string RelativityInstanceHostname => AppSettingString("RelativityInstanceAddress");
+		public static string RelativityHostAddress => AppSettingString("RelativityInstanceAddress").NullIfEmpty() ?? AppSettingString("RelativityHostAddress"); //REL-390973
 
 		/// <summary>
 		/// Returns Relativity instance base URL
 		/// </summary>
-		/// <returns>
-		/// {ServerBindingType}://{RelativityInstanceAddress}
-		/// </returns>
-		public static string RelativityBaseAdressUrlValue => $"{ServerBindingType}://{RelativityInstanceHostname}";
+		public static string RelativityBaseAdressUrlValue => $"{ServerBindingType}://{RelativityHostAddress}";
 
 		/// <summary>
 		/// Returns Relativity fronted URL value
 		/// </summary>
-		/// <returns>
-		/// {ServerBindingType}://{RelativityInstanceAddress}/Relativity
-		/// </returns>
 		public static string RelativityFrontendUrlValue => $"{RelativityBaseAdressUrlValue}/Relativity";
 
 		/// <summary>
 		/// Returns Relativity fronted URI
 		/// </summary>
-		/// <returns>
-		/// {ServerBindingType}://{RelativityInstanceAddress}/Relativity
-		/// </returns>
 		public static Uri RelativityFrontedUri => new Uri(RelativityFrontendUrlValue);
 
 		/// <summary>
 		/// Returns RSAPI URL
 		/// </summary>
-		/// <returns>
-		/// {ServerBindingType}://{RSAPIServerAddress ?? RelativityInstanceAddress}/Relativity.Services/
-		/// </returns>
 		public static Uri RsapiUri => new Uri($"{ServerBindingType}://{RsapiServerAddress}/Relativity.Services/");
 
 		/// <summary>
 		/// Returns Relativity REST URL
 		/// </summary>
-		/// <returns>
-		/// {ServerBindingType}://{RelativityInstanceAddress}/Relativity.Rest/api
-		/// </returns>
 		public static Uri RelativityRestUri => new Uri($"{RelativityBaseAdressUrlValue}/Relativity.Rest/api");
 
 		/// <summary>
 		/// Returns Relativity WebAPI URL
 		/// </summary>
-		/// <returns>
-		/// {ServerBindingType}://{RelativityInstanceAddress}/RelativityWebAPI/
-		/// </returns>
 		public static string RelativityWebApiUrl => $"{RelativityBaseAdressUrlValue}/RelativityWebAPI/";
 
 		private static string ServerBindingType => AppSettingString("ServerBindingType");
 
 		private static string RsapiServerAddress =>
-			GetAppSettingStringOrDefault("RSAPIServerAddress", () => RelativityInstanceHostname);
+			GetAppSettingStringOrDefault("RSAPIServerAddress", () => RelativityHostAddress).NullIfEmpty() ?? AppSettingString("RsapiServicesHostAddress"); //REL-390973
 
 		#endregion Relativity Settings
 
 		#region ConnectionString Settings
 
 		public static string TargetDbHost => GetTargetDbHost();
-		public static string SqlServerAddress => AppSettingString("SQLServerAddress");
+		public static string SqlServer => GetRunSettingsParameter("SqlServer") ?? AppSettingString("SQLServerAddress"); //REL-390973
 
-		public static string DatabaseUserId => AppSettingString("SQLUsername");
+		public static string DatabaseUserId => AppSettingString("SqlUsername"); //REL-390973
 
-		public static string DatabasePassword => AppSettingString("SQLPassword");
+		public static string DatabasePassword => AppSettingString("SqlPassword"); //REL-390973
 
-		public static string EddsConnectionString => string.Format(AppSettingString("connectionStringEDDS"), SqlServerAddress, DatabaseUserId, DatabasePassword);
+		public static string EddsConnectionString => string.Format(AppSettingString("connectionStringEDDS"), SqlServer, DatabaseUserId, DatabasePassword);
 
-		public static string WorkspaceConnectionStringFormat => string.Format(AppSettingString("connectionStringWorkspace"), "{0}", SqlServerAddress, DatabaseUserId, DatabasePassword);
+		public static string WorkspaceConnectionStringFormat => string.Format(AppSettingString("connectionStringWorkspace"), "{0}", SqlServer, DatabaseUserId, DatabasePassword);
 
 		public static int KeplerTimeout => AppSettingInt("keplerTimeout");
 
@@ -294,7 +288,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static bool UseLocalRap => bool.Parse(AppSettingString("UseLocalRAP"));
 
-        public static string LocalApplicationsRapFilesLocation => AppSettingString("LocalApplicationsRAPFilesLocation");
+        public static string LocalApplicationsRapFilesLocation => GetRunSettingsParameter("RAPDirectory").NullIfEmpty() ?? AppSettingString("LocalApplicationsRAPFilesLocation");
 
         public static string RipRapFilePath => GetRapFilePath(AppSettingString("RipRapFileName"));
 
@@ -325,8 +319,21 @@ namespace kCura.IntegrationPoint.Tests.Core
 		public static string FileshareLocation =>
 			GetAppSettingStringOrDefault(
 				"fileshareLocation",
-				() => $@"\\{RelativityInstanceHostname}\fileshare"
+				() => $@"\\{RelativityHostAddress}\fileshare"
 			);
+
+		#endregion
+
+		#region System Tests Settings
+
+		public static string SystemTestDataLocation => AppSettingString("SystemTestData"); //REL-390973
+
+		#endregion
+
+		#region Sync Settings
+
+		public static bool IsSyncEnabled => AppSettingBool("SyncEnabled");
+		public static bool IsSyncApplicable => AppSettingString("SyncEnabled") != _NOT_APPLICABLE;
 
 		#endregion
 
@@ -339,7 +346,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		}
 
 		private static string GetTargetDbHost() =>
-			GetAppSettingStringOrDefault("targetDbHost", () => RelativityInstanceHostname);
+			GetAppSettingStringOrDefault("targetDbHost", () => RelativityHostAddress);
 
 		public static bool UseIpRapFile()
 		{
@@ -355,7 +362,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 			return true;
 		}
-
+		
 		public static bool UseLegacyTemplateName()
 		{
 			string environmentVariableName = AppSettingString("UseLegacyTemplateName");

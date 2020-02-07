@@ -6,7 +6,7 @@ properties {
     $application_directory = [System.IO.Path]::Combine($root, 'Applications')
     $application_xml_directory = [System.IO.Path]::Combine($root, 'ApplicationsXML')
     $development_scripts_directory = [System.IO.Path]::Combine($root, 'DevelopmentScripts')
-    $version_directory = [System.IO.Path]::Combine($root, 'Version')
+    $version_directory = [System.IO.Path]::Combine($source_directory, 'Version')
     $vendor_directory = [System.IO.Path]::Combine($root, 'Vendor')
     $robot_directory = [System.IO.Path]::Combine($root, 'Robot')
     $testlog_directory = [System.IO.Path]::Combine($root, 'TestLogs')
@@ -48,8 +48,8 @@ properties {
     $server = 'bld-mstr-01.kcura.corp'
     $database ='TCBuildVersion'
     $project = 'Development'
-    $major_version = (Get-Content ..\Version\version.txt).split(".")[0]
-    $minor_version = (Get-Content ..\Version\version.txt).split(".")[1]
+    $major_version = (Get-Content ..\Source\Version\version.txt).split(".")[0]
+    $minor_version = (Get-Content ..\Source\Version\version.txt).split(".")[1]
     
     $buildid = 0
 
@@ -69,8 +69,8 @@ properties {
 
     #build variables
     $verbosity ="normal" 
-    $inputfile = [System.IO.Path]::Combine($development_scripts_directory, 'build.xml')
-    $inputfile_noTests = [System.IO.Path]::Combine($development_scripts_directory, 'build_noTests.xml')
+    $inputfile = [System.IO.Path]::Combine($development_scripts_directory, 'build-old-jenkins.xml')
+    $inputfile_noTests = [System.IO.Path]::Combine($development_scripts_directory, 'build_noTests-old-jenkins.xml')
     $targetsfile = [System.IO.Path]::Combine($development_scripts_directory, 'msbuild.targets')
     $dependencygraph = [System.IO.Path]::Combine($development_scripts_directory, 'DependencyGraph.xml')
     $internaldlls = [System.IO.Path]::Combine($development_scripts_directory, 'dlls.txt')
@@ -97,6 +97,8 @@ properties {
 	$paket_config_directory = [System.IO.Path]::Combine($ENV:APPDATA, 'Paket')
 
     #build tool variables    
+    $tools_directory = [System.IO.Path]::Combine($root, 'buildtools')
+    $tools_config = [System.IO.Path]::Combine($tools_directory, 'packages.config')
     $buildhelper_exe = [System.IO.Path]::Combine($development_scripts_directory, 'kCura.BuildHelper.exe')
     $rapbuilder_exe = [System.IO.Path]::Combine($development_scripts_directory, 'kCura.RAPBuilder.exe')
     $testrunner_exe = [System.IO.Path]::Combine($development_scripts_directory, 'kCura.TestRunner.exe')

@@ -8,7 +8,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.RelativitySync.Tests.OldBatchesCleanup
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class OldBatchesCleanupServiceFactoryTests
 	{
 		private IOldBatchesCleanupServiceFactory _sut;

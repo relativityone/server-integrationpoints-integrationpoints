@@ -13,7 +13,7 @@ using Workspace = kCura.Relativity.Client.DTOs.Workspace;
 
 namespace kCura.IntegrationPoints.Core.Tests.Managers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ResourcePoolManagerTests : TestBase
 	{
 		private class ResourcePoolManagerTestImpl : ResourcePoolManager

@@ -6,10 +6,11 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.Services;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
+using CategoryAttribute = NUnit.Framework.CategoryAttribute;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	internal class ExportInitProcessServiceTests : TestBase
 	{
 		private ExportInitProcessService _subjectUnderTests;

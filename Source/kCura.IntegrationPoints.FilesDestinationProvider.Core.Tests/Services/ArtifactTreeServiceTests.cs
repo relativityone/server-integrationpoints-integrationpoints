@@ -12,7 +12,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ArtifactTreeServiceTests : TestBase
 	{
 		private IRSAPIClient _client;

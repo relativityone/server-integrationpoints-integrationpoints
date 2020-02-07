@@ -15,6 +15,7 @@ using Workspace = kCura.Relativity.Client.DTOs.Workspace;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services
 {
+	[TestFixture, Category("Unit")]
     public class ProcessingSourceLocationServiceTests : TestBase
     {
         private const int _WORKSPACE_ID = 1;

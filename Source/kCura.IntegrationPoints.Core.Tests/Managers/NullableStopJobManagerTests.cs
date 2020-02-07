@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Managers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class NullableStopJobManagerTests : TestBase
 	{
 		private NullableStopJobManager _instance;

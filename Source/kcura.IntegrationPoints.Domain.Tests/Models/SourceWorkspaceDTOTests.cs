@@ -6,7 +6,7 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Domain.Tests.Models
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class SourceWorkspaceDTOTests
 	{
 		[TestCase]

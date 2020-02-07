@@ -8,7 +8,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class DocumentTransferDataReaderTests : ExportTransferDataReaderTestsBase
 	{
 		protected override ExportTransferDataReaderBase CreateDataReaderTestInstance()

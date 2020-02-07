@@ -15,7 +15,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class SetHasErrorsFieldTests : TestBase
 	{
 		private IIntegrationPointService _integrationPointService;

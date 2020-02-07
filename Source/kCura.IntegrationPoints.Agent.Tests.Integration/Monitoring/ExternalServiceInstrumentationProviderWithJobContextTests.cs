@@ -94,6 +94,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration.Monitoring
 		public async Task ItShouldSendMetricToApm_WhenItIsEnabled_FailedMessage()
 		{
 			// arrange
+			string errorMsg = "error message";
+
 			SetupMeasureOfExternallCallConfigValue(true);
 			SetupSendLiveApmMetricsConfigValue(true);
 
@@ -101,7 +103,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration.Monitoring
 			{
 				IExternalServiceInstrumentation instrumentation = _sut.Create(_SERVICE_TYPE, _SERVICE_NAME, _OPERATION_NAME);
 				IExternalServiceInstrumentationStarted startedInstrumentation = instrumentation.Started();
-				var exception = new ArgumentNullException();
+				var exception = new ArgumentNullException(errorMsg);
 
 				// act
 				startedInstrumentation.Failed(exception);
@@ -206,12 +208,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration.Monitoring
 			_configMock.Setup(x => x.SendLiveApmMetrics).Returns(value);
 		}
 
-		private bool VerifyMetadata(IMetricMetadata metadata)
+		private static bool VerifyMetadata(IMetricMetadata metadata)
 		{
 			return VerifyMetadata(metadata, failureReason: "");
 		}
 
-		private bool VerifyMetadata(IMetricMetadata metadata, string failureReason)
+		private static bool VerifyMetadata(IMetricMetadata metadata, string failureReason)
 		{
 			bool isValid = true;
 			isValid &= metadata.WorkspaceID == _WORKSPACE_ID;
@@ -229,7 +231,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration.Monitoring
 			return isValid;
 		}
 
-		private bool VerifySummaryMetadata(IMetricMetadata metadata, int totalCount)
+		private static bool VerifySummaryMetadata(IMetricMetadata metadata, int totalCount)
 		{
 			bool isValid = true;
 			isValid &= metadata.WorkspaceID == _WORKSPACE_ID;

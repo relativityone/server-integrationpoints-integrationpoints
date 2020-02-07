@@ -11,6 +11,7 @@ using Relativity.Services.InternalMetricsCollection;
 
 namespace kCura.IntegrationPoints.Core.Tests.Telemetry
 {
+	[TestFixture, Category("Unit")]
 	public class TelemetryMangerTest : TestBase
 	{
 		#region Fields

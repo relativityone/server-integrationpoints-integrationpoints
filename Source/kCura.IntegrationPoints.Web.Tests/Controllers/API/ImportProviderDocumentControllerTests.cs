@@ -21,7 +21,7 @@ using SystemInterface.IO;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ImportProviderDocumentControllerTests : TestBase
 	{
 		private int _MAX_FIELDS = 100;
@@ -44,6 +44,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		private ICPHelper _helper;
 		private ILogFactory _logFactory;
 		private IAPILog _logger;
+		private ICryptographyHelper _cryptographyHelper;
 
 		[SetUp]
 		public override void SetUp()
@@ -67,8 +68,17 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			_streamFactory.GetMemoryStream().Returns(_memoryStream);
 			_helper.GetLoggerFactory().Returns(_logFactory);
 			_logFactory.GetLogger().Returns(_logger);
+			_cryptographyHelper = Substitute.For<ICryptographyHelper>();
 
-			_controller = new ImportProviderDocumentController(_fieldParserFactory, _importTypeService, _serializer, _repositoryFactory, _importLocationService, _fileIo, _streamFactory, _helper);
+			_controller = new ImportProviderDocumentController(_fieldParserFactory,
+				_importTypeService,
+				_serializer,
+				_repositoryFactory,
+				_importLocationService,
+				_fileIo,
+				_streamFactory,
+				_helper,
+				_cryptographyHelper);
 		}
 
 		[Test]
@@ -117,7 +127,15 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		{
 			_repositoryFactory.GetInstanceSettingRepository().ReturnsForAnyArgs(_instanceSettingRepo);
 			_instanceSettingRepo.GetConfigurationValue(Domain.Constants.RELATIVITY_CORE_SECTION, Domain.Constants.CLOUD_INSTANCE_NAME).ReturnsForAnyArgs(instanceSettingValue);
-			_controller = new ImportProviderDocumentController(_fieldParserFactory, _importTypeService, _serializer, _repositoryFactory, _importLocationService, _fileIo, _streamFactory, _helper);
+			_controller = new ImportProviderDocumentController(_fieldParserFactory,
+				_importTypeService,
+				_serializer,
+				_repositoryFactory,
+				_importLocationService,
+				_fileIo,
+				_streamFactory,
+				_helper,
+				_cryptographyHelper);
 
 			JsonResult<string> result = _controller.IsCloudInstance() as JsonResult<string>;
 			string isCloudInstance = result.Content;

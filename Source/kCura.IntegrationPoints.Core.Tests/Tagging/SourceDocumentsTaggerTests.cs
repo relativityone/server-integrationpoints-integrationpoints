@@ -15,7 +15,7 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Core.Tests.Tagging
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class SourceDocumentsTaggerTests : TestBase
 	{
 		private Mock<IAPILog> _loggerMock;

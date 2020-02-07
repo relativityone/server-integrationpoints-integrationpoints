@@ -8,7 +8,7 @@
 
 	using NUnit.Framework;
 
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class SummaryPageSelectorTests : TestBase
 	{
 		private readonly IDictionary<ProviderType, string> _expectedMapping = new Dictionary<ProviderType, string>()

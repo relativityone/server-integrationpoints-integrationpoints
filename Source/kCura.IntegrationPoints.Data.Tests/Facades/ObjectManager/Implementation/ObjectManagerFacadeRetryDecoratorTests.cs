@@ -11,7 +11,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementation
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ObjectManagerFacadeRetryDecoratorTests
 	{
 		private ObjectManagerFacadeRetryDecorator _sut;

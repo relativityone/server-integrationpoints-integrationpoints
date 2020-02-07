@@ -14,7 +14,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ViewServiceTests : TestBase
 	{
 		private ViewService _subjectUnderTest;

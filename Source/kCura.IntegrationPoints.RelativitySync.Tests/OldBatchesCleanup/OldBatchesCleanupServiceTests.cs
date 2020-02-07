@@ -11,7 +11,7 @@ using Relativity.Sync.Storage;
 
 namespace kCura.IntegrationPoints.RelativitySync.Tests.OldBatchesCleanup
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class OldBatchesCleanupServiceTests
 	{
 		private const int WORKSPACE_ID = 123987;

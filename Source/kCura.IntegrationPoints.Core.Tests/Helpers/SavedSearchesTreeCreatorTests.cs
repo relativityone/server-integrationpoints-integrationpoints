@@ -9,7 +9,7 @@ using Relativity.Services.Search;
 
 namespace kCura.IntegrationPoints.Core.Tests.Helpers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class SavedSearchesTreeCreatorTests
 	{
 		[Test]

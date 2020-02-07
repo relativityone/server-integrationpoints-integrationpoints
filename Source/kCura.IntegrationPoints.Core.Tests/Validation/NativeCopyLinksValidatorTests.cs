@@ -24,7 +24,7 @@ using kCura.IntegrationPoints.Core.Factories;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class NativeCopyLinksValidatorTests
 	{
 		private NativeCopyLinksValidator _sut;

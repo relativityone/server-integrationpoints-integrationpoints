@@ -223,7 +223,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.IntegrationPo
 			const char quote = '^';
 
 			string testDirectory = TestContext.CurrentContext.TestDirectory;
-			string loadFilePath = Path.Combine(testDirectory, "SystemTestData", "KeplerDocumentRepository_Long.dat");
+			string loadFilePath = Path.Combine(testDirectory, SharedVariables.SystemTestDataLocation, "KeplerDocumentRepository_Long.dat");
 			Type[] columnTypes = {typeof(string), typeof(string), typeof(bool), typeof(DateTime), typeof(DateTime), typeof(string)};
 			_largeDocumentsTestData = _loadFileHelper.BuildDocumentTestDataFromLoadFile(
 				loadFilePath,
