@@ -61,6 +61,16 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 
 		public bool ForceParallelismInNewExport => GetValue(_FORCE_PARALLELISM_IN_NEW_EXPORT, _DEF_FORCE_PARALLELISM_IN_NEW_EXPORT);
 
+		public int ExportLongTextDataGridThreadCount { get; } = 4;
+
+		public bool ExportLongTextObjectManagerEnabled { get; } = true;
+
+		public int ExportLongTextSqlThreadCount { get; } = 2;
+
+		public int HttpErrorNumberOfRetries { get; } = 20;
+
+		public int HttpErrorWaitTimeInSeconds { get; } = 10;
+
 		public LoadFileExportConfig(IToggleProvider toggleProvider)
 		{
 			_toggleProvider = toggleProvider;
