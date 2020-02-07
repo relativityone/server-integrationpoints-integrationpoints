@@ -1872,6 +1872,12 @@
       <Name>Relativity.AutomatedWorkflows.Services.Interfaces.dll</Name>
       <Notes />
     </Assembly>
+	<Assembly>
+		<ArtifactId>5349076</ArtifactId>
+		<Keywords />
+		<Name>Relativity.IntegrationPoints.FieldsMapping.dll</Name>
+		<Notes />
+	</Assembly>
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />

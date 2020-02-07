@@ -405,7 +405,11 @@ task copy_test_dlls_to_lib_dir -depends create_lib_dir -precondition { return -n
 			"Source\Relativity.IntegrationPoints.FunctionalTests\bin\*.dll",
             "Source\Relativity.IntegrationPoints.FunctionalTests\bin\*.pdb",
             "Source\Relativity.IntegrationPoints.FunctionalTests\bin\*.config",
-            "Source\Relativity.IntegrationPoints.FunctionalTests\bin\*.xml"
+			"Source\Relativity.IntegrationPoints.FunctionalTests\bin\*.xml",
+			"Source\Relativity.IntegrationPoints.FieldsMapping.Tests\bin\*.dll",
+			"Source\Relativity.IntegrationPoints.FieldsMapping.Tests\bin\*.pdb",
+			"Source\Relativity.IntegrationPoints.FieldsMapping.Tests\bin\*.config",
+			"Source\Relativity.IntegrationPoints.FieldsMapping.Tests\bin\*.xml"
 
     foreach ($file in $test_files)
     {

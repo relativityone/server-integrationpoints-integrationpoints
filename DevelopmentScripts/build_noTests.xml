@@ -193,6 +193,7 @@
         <Project path="Source\kCura.ScheduleQueue.Core.Tests.Integration\kCura.ScheduleQueue.Core.Tests.Integration.csproj" />
 		<Project path="Source\Rip.E2ETests\Rip.E2ETests.csproj" />
 		<Project path="Source\Rip.SystemTests\Rip.SystemTests.csproj" />
+		<Project path="Source\Relativity.IntegrationPoints.FieldsMapping\Relativity.IntegrationPoints.FieldsMapping.csproj" />
       </Ignore>
     </Projects>
     <References>
@@ -320,6 +321,7 @@
           <Assembly>lib\UnitTests\SystemInterface.dll</Assembly>
           <Assembly>lib\UnitTests\ZetaLongPaths.dll</Assembly>
           <Assembly>lib\UnitTests\Relativity.Productions.Services.Interfaces.dll</Assembly>
+		  <Assembly>lib\UnitTests\Relativity.IntegrationPoints.FieldsMapping.dll</Assembly>
         </Assemblies>
         <ResourceFiles />
         <CustomPages>

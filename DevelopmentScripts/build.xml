@@ -84,6 +84,7 @@
       <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.Domain.Tests.dll</DLL>
       <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.Email.Tests.dll</DLL>
       <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.Common.Tests.dll</DLL>
+	  <DLL type="x64">lib\UnitTests\Relativity.IntegrationPoints.FieldsMapping.Tests.dll</DLL>
     </DLLs>
     <WhiteList>
       <allow>kCura.IntegrationPoints.Agent.Tests.Tasks.SyncCustodianManagerWorkerTests.Execute_GoldFlow</allow>
@@ -155,6 +156,7 @@
           <Assembly>lib\UnitTests\itextsharp.dll</Assembly>
           <Assembly>lib\UnitTests\System.Reactive.dll</Assembly>
 		  <Assembly>lib\UnitTests\Relativity.AutomatedWorkflows.Services.Interfaces.dll</Assembly>
+		  <Assembly>lib\UnitTests\Relativity.IntegrationPoints.FieldsMapping.dll</Assembly>
         </Assemblies>
         <ResourceFiles />
         <CustomPages>
