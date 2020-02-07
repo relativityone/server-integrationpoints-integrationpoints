@@ -30,7 +30,7 @@ namespace Relativity.Sync.Transfer
 			_tokenGenerator = tokenGenerator;
 			_userContextConfiguration = userContextConfiguration;
 
-			_searchManagerFactoryLazy = new Lazy<Task<ISearchManager>>(SearchManagerFactoryAsync);
+			_searchManagerFactoryLazy = new Lazy<Task<ISearchManager>>(WrappedSearchManagerFactoryAsync);
 		}
 
 		public Task<ISearchManager> CreateSearchManagerAsync()
