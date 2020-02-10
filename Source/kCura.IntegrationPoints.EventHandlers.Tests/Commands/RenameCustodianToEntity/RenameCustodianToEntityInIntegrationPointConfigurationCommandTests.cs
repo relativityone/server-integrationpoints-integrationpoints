@@ -7,7 +7,7 @@ using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands.RenameCustodianToEntity
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class RenameCustodianToEntityInIntegrationPointConfigurationCommandTests
 	{
 		private Mock<IIntegrationPointForSourceService> _integrationPointForSourceService;

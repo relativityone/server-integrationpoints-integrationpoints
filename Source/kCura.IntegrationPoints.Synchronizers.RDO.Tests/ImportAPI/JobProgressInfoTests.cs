@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.ImportAPI
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class JobProgressInfoTests
 	{
 		[Test]

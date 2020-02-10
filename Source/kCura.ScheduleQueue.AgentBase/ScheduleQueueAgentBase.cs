@@ -265,9 +265,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		private void LogFinalizeJob(Job job, FinalizeJobResult result)
 		{
-			string message = $"Finished Finalization of Job with ID: {job.JobId} in {nameof(ScheduleQueueAgentBase)}." +
-							 $"{Environment.NewLine}Job result: {result.JobState}," +
-							 $"{Environment.NewLine} Details: {result.Details}";
+			string message = $"Finished Finalization of Job with ID: {job.JobId} in {nameof(ScheduleQueueAgentBase)}." + $"{Environment.NewLine}Job result: {result.JobState}";
 
 			Logger.LogInformation(message);
 		}

@@ -6,7 +6,7 @@ using kCura.IntegrationPoints.Common.Handlers;
 
 namespace kCura.IntegrationPoints.Data.Tests
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class RetryHandlerFactoryTests
 	{
 		[Test]

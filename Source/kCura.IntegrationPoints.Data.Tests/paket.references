@@ -10,6 +10,13 @@ Relativity.Productions.Services.Interfaces
 Relativity.Services.Interfaces.Private
 Relativity.DataExchange.Client.SDK
 Newtonsoft.Json
+Relativity.Logging.Interfaces
+Relativity.OAuth2Client.Implicit
+relativity.faspmanager
+Relativity.Transfer.Client
+Relativity.Services.Interfaces
+Relativity.Kepler.Client
+Relativity.Telemetry.Services.Interface
 
 group TestPackages
 	FluentAssertions

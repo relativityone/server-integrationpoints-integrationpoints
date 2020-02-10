@@ -12,6 +12,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation
 {
+	[TestFixture, Category("Unit")]
 	public class ValidationExecutorTests : TestBase
 	{
 		#region Fields

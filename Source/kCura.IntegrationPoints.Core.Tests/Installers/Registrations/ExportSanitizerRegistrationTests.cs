@@ -12,7 +12,7 @@ using static kCura.IntegrationPoint.Tests.Core.TestHelpers.WindsorContainerTestH
 
 namespace kCura.IntegrationPoints.Core.Tests.Installers.Registrations
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ExportSanitizerRegistrationTests
 	{
 		private IWindsorContainer _sut;

@@ -5,6 +5,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 {
+	[TestFixture, Category("Unit")]
 	public class DestinationParserTests : TestBase
 	{
 		private DestinationParser _destinationParser;

@@ -9,6 +9,7 @@ using Relativity;
 
 namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 {
+	[TestFixture, Category("Unit")]
 	public class QueryFieldLookupRepositoryTests
 	{
 		private IQueryFieldLookup _queryFieldLookup;

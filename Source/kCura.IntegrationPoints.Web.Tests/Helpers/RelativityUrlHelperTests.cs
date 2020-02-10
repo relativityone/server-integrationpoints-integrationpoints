@@ -8,7 +8,7 @@ using System.Web;
 
 namespace kCura.IntegrationPoints.Web.Tests.Helpers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class RelativityUrlHelperTests
 	{
 		private const string _APPLICATION_ROOT_PATH = "/IntegrationPoints";

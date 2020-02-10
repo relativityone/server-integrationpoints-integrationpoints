@@ -7,7 +7,7 @@ using System;
 
 namespace kCura.IntegrationPoints.Web.Tests.Infrastructure.Session
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class SessionServiceTests
 	{
 		private SessionService _sut;

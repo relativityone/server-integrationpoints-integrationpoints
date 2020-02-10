@@ -10,7 +10,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ImportServiceTests : TestBase
 	{
 		private IHelper _helper;

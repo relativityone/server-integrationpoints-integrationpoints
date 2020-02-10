@@ -10,7 +10,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class DeleteIntegrationPointCommandTests : TestBase
 	{
 		private const int _ARTIFACT_ID = 757404;

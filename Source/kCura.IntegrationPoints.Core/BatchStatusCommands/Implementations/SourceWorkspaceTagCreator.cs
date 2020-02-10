@@ -31,12 +31,12 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 
 			if (destinationWorkspace == null)
 			{
-				LogCreatingDestinationWorkspace(destinationInstanceName, destinationWorkspaceId, federatedInstanceId);
+				LogCreatingDestinationWorkspace(destinationWorkspaceId, federatedInstanceId);
 				destinationWorkspace = _destinationWorkspaceRepository.Create(destinationWorkspaceId, destinationWorkspaceName, federatedInstanceId, destinationInstanceName);
 			}
 			else if (destinationWorkspaceName != destinationWorkspace.DestinationWorkspaceName || destinationInstanceName != destinationWorkspace.DestinationInstanceName)
 			{
-				LogDestinationWorkspaceUpdate(destinationWorkspace, destinationWorkspaceName, destinationInstanceName);
+				LogDestinationWorkspaceUpdate(destinationWorkspace, destinationWorkspaceId, federatedInstanceId);
 				destinationWorkspace.DestinationWorkspaceName = destinationWorkspaceName;
 				destinationWorkspace.DestinationInstanceName = destinationInstanceName;
 				_destinationWorkspaceRepository.Update(destinationWorkspace);
@@ -47,16 +47,16 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			return destinationWorkspaceTagArtifactId;
 		}
 
-		private void LogCreatingDestinationWorkspace(string destinationInstanceName, int destinationWorkspaceId, int? federatedInstanceId)
+		private void LogCreatingDestinationWorkspace(int destinationWorkspaceId, int? federatedInstanceId)
 		{
-			_logger.LogInformation("Creating destination workspace: {destinationWorkspaceName}, {_destinationWorkspaceId}. Destination instance: {destinationInstanceName},{_federatedInstanceId}",
-				destinationInstanceName, destinationWorkspaceId, destinationInstanceName, federatedInstanceId);
+			_logger.LogInformation("Creating destination workspace: {_destinationWorkspaceId}. Destination instance: {_federatedInstanceId}",
+				destinationWorkspaceId, federatedInstanceId);
 		}
 
-		private void LogDestinationWorkspaceUpdate(DestinationWorkspace destinationWorkspace, string destinationWorkspaceName, string destinationInstanceName)
+		private void LogDestinationWorkspaceUpdate(DestinationWorkspace destinationWorkspace, int destinationWorkspaceId, int? destinationInstanceId)
 		{
-			_logger.LogInformation("Updating destination workspace. Old:{oldInstace},{oldWorkspace}; new: {newInstance}, {newWorkspace}",
-				destinationWorkspace.DestinationInstanceName, destinationWorkspace.DestinationWorkspaceName, destinationInstanceName, destinationWorkspaceName);
+			_logger.LogInformation("Updating destination workspace. Old:{oldInstanceId}, {oldWorkspaceId}; New: {newInstanceId}, {newWorkspaceId}",
+				destinationWorkspace.DestinationInstanceArtifactID, destinationWorkspace.DestinationWorkspaceArtifactID, destinationInstanceId, destinationWorkspaceId);
 		}
 	}
 }

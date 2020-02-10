@@ -7,6 +7,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 {
+	[TestFixture, Category("Unit")]
 	public class RemoveBatchesFromOldJobsCommandTests
 	{
 		private RemoveBatchesFromOldJobsCommand _sut;

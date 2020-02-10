@@ -10,7 +10,7 @@ using Relativity.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.ImportProvider.Tests
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ImportProviderTests : TestBase
 	{
 

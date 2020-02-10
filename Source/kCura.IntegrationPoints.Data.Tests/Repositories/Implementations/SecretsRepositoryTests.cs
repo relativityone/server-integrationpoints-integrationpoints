@@ -11,7 +11,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class SecretsRepositoryTests
 	{
 		private Mock<IAPILog> _loggerMock;

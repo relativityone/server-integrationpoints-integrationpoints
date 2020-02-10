@@ -8,7 +8,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class NameValidatorTests
 	{
 		[Test]

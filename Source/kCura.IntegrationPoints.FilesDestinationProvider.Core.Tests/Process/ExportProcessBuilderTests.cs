@@ -31,7 +31,7 @@ using ViewFieldInfo = kCura.WinEDDS.ViewFieldInfo;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ExportProcessBuilderTests : TestBase
 	{
 		private readonly string JobName = "Name";

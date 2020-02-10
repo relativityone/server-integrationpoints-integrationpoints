@@ -11,7 +11,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport.Implementations
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class NativeImportSettingsBuilderTests
 	{
 		[Test]

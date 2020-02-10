@@ -88,7 +88,7 @@ namespace kCura.IntegrationPoints.LDAPProvider
 				}
 				catch
 				{
-                    LogFetchItemsUpTheTreeError(currentSearchRoot, filter);
+                    LogFetchItemsUpTheTreeError();
 				}
 			} while ((items == null || items.Count() == 0) && currentSearchRoot != null && isNewPath);
 
@@ -97,7 +97,7 @@ namespace kCura.IntegrationPoints.LDAPProvider
 
 		private IEnumerable<SearchResult> FetchItems(DirectoryEntry searchRoot, string filter, int? overrideSizeLimit)
 		{
-			LogFetchingItems(searchRoot.Path, filter);
+			LogFetchingItems();
 
 			using (DirectorySearcher searcher = new DirectorySearcher(searchRoot, filter))
 			{
@@ -159,18 +159,14 @@ namespace kCura.IntegrationPoints.LDAPProvider
 
 #region Logging
 
-		private void LogFetchingItems(string searchPath, string filter)
+		private void LogFetchingItems()
 		{
-			_logger.LogInformation(
-				"Attempting to fetch items in LDAP Service. Search path: ({SearchPath}), search filter: ({Filter})", searchPath,
-				filter);
+			_logger.LogInformation("Attempting to fetch items in LDAP Service.");
 		}
 
-	    private void LogFetchItemsUpTheTreeError(DirectoryEntry searchRoot, string filter)
+	    private void LogFetchItemsUpTheTreeError()
 	    {
-	        _logger.LogInformation(
-	            "Attempting to fetch items in LDAP Service. Search path: ({searchRoot}), search filter: ({filter})", searchRoot.Name,
-	            filter);
+	        _logger.LogInformation("Attempting to fetch items in LDAP Service.");
 	    }
         
 

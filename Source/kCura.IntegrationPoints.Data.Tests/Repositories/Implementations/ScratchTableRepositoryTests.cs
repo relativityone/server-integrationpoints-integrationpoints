@@ -10,7 +10,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ScratchTableRepositoryTests
 	{
 		private Mock<IDocumentRepository> _documentRepositoryMock;

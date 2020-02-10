@@ -10,10 +10,11 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
+using kCura.IntegrationPoints.Core.Helpers;
 
 namespace kCura.IntegrationPoints.Core.Tests.Helpers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class DirectoryTreeCreatorTest : TestBase
 	{
 		private DirectoryTreeCreator<JsTreeItemDTO> _subjectUnderTest;
@@ -40,7 +41,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 		{
 			_directoryMock = Substitute.For<IDirectory>();
 
-			_subjectUnderTest = new DirectoryTreeCreator<JsTreeItemDTO>(_directoryMock, Substitute.For<IHelper>());
+			_subjectUnderTest = new DirectoryTreeCreator<JsTreeItemDTO>(_directoryMock, Substitute.For<IHelper>(), Substitute.For<ICryptographyHelper>());
 		}
 
 		[Test]

@@ -8,7 +8,7 @@ using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 {
-	[TestFixture, Category("ImportProvider")]
+	[TestFixture, Category("Unit"), Category("ImportProvider")]
 	public class ImportPreviewServiceTests : TestBase
 	{
 		private IPreviewJob _previewJob;

@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace kCura.IntegrationPoints.Core.Tests
 {
-    [TestFixture]
+    [TestFixture, Category("Unit")]
     public class DeleteHistoryServiceTest : TestBase
     {
         private DeleteHistoryService _sut;

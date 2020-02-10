@@ -7,6 +7,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation
 {
+	[TestFixture, Category("Unit")]
 	public class ImportPermissionValidatorTests : PermissionValidatorTestsBase
 	{
 		[TestCase(true, true)]

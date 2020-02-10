@@ -10,7 +10,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation.Parts
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ExportFileValidatorTests
 	{
 		[Test]

@@ -8,19 +8,17 @@ namespace kCura.IntegrationPoints.UITests.DummyUiTests
 	//namespace. Remove it when any of UI test will be migrated to
 	//Relativity.IntegrationPoints.FunctionalTests project
 	[TestFixture]
+	[Category(_WEB_IMPORT_EXPORT_TEST_CATEGORY)]
+	[Category(_EXPORT_TO_RELATIVITY_TEST_CATEGORY)]
+	[Category(_ONE_TIME_TESTS_SETUP)]
 	public class DummyUiTests
     {
         private const string _EXPORT_TO_RELATIVITY_TEST_CATEGORY = "ExportToRelativity";
-
-        [Test]
-		public void DummyTest()
-		{
-			true.Should().BeTrue();
-		}
+		private const string _WEB_IMPORT_EXPORT_TEST_CATEGORY = "WebImportExport";
+		private const string _ONE_TIME_TESTS_SETUP = "OneTimeTestsSetup";
 
 		[Test]
-        [Category(_EXPORT_TO_RELATIVITY_TEST_CATEGORY)]
-        public void DummyExportToRelativityTest()
+		public void DummyTest()
 		{
 			true.Should().BeTrue();
 		}

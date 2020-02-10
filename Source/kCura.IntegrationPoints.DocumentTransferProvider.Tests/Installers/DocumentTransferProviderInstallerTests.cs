@@ -13,7 +13,7 @@ using static kCura.IntegrationPoint.Tests.Core.TestHelpers.WindsorContainerTestH
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Installers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class DocumentTransferProviderInstallerTests
 	{
 		private IWindsorContainer _sut;

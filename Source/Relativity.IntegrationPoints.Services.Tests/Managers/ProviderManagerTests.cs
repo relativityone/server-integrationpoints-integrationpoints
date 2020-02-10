@@ -21,6 +21,7 @@ using SourceProvider = Relativity.IntegrationPoints.Contracts.SourceProvider;
 
 namespace Relativity.IntegrationPoints.Services.Tests.Managers
 {
+	[TestFixture, Category("Unit")]
     public class ProviderManagerTests : TestBase
     {
         private const int _WORKSPACE_ID = 266818;

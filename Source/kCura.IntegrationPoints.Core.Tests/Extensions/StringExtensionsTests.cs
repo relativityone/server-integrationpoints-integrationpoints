@@ -1,9 +1,10 @@
-﻿using kCura.IntegrationPoints.Core.Extensions;
+﻿using FluentAssertions;
+using kCura.IntegrationPoints.Core.Extensions;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Extensions
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class StringExtensionsTest
 	{
 		[TestCase(@"c:\foo", @"c:", ExpectedResult = true)]
@@ -27,6 +28,19 @@ namespace kCura.IntegrationPoints.Core.Tests.Extensions
 		public bool IsSubPathOfTest(string path, string baseDirPath)
 		{
 			return path.IsSubPathOf(baseDirPath);
+		}
+
+		[TestCase("test", "test")]
+		[TestCase("   ", "   ")]
+		[TestCase(null, null)]
+		[TestCase("", null)]
+		public void NullIfEmpty_ReturnsExpectedValue_WhenStringIsPassed(string str, string expectedResult)
+		{
+			// act
+			string result = str.NullIfEmpty();
+
+			// assert
+			result.Should().Be(expectedResult);
 		}
 	}
 }

@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Data.Tests.Models
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class SecretPathTests
 	{
 		private const int _WORKSPACE_ID = 2002;

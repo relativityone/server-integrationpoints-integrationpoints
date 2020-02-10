@@ -25,7 +25,7 @@ using ExportSettings = kCura.IntegrationPoints.FilesDestinationProvider.Core.Exp
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ImageExporterServiceTests : TestBase
 	{
 		private ImageExporterService _instance;

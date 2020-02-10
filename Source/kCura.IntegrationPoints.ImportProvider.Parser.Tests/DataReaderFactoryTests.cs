@@ -13,6 +13,7 @@ using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 {
+	[TestFixture, Category("Unit")]
 	public class DataReaderFactoryTests : TestBase
 	{
 		private DataReaderFactory _instance;

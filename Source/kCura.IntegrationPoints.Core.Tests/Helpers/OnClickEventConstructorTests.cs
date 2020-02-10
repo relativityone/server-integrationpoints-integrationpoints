@@ -12,7 +12,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Helpers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class OnClickEventConstructorTests : TestBase
 	{
 		private IManagerFactory _managerFactory;

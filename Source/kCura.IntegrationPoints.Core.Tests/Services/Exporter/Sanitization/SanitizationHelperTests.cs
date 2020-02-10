@@ -10,7 +10,7 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	internal class SanitizationHelperTests
 	{
 		private Mock<ISerializer> _serializerMock;

@@ -8,6 +8,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Web.Tests.DataStructures
 {
+	[TestFixture, Category("Unit")]
 	public class FolderTreeTests : TestBase
 	{
 		private FolderTree _folderTree = new FolderTree();

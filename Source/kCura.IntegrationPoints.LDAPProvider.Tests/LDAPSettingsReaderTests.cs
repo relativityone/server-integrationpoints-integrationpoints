@@ -8,7 +8,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.LDAPProvider.Tests
 {
-    [TestFixture]
+    [TestFixture, Category("Unit")]
     public class LDAPSettingsReaderTests : TestBase
     {
         private LDAPSettings _fullyFilledSettings;

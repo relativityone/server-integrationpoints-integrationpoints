@@ -10,6 +10,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Validation
 {
+	[TestFixture, Category("Unit")]
 	public class AgentValidatorTests : TestBase
 	{
 		#region Fields

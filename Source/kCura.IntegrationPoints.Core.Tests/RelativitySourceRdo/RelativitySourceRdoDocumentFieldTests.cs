@@ -12,6 +12,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.RelativitySourceRdo
 {
+	[TestFixture, Category("Unit")]
 	public class RelativitySourceRdoDocumentFieldTests : TestBase
 	{
 		private const int _WORKSPACE_ID = 231293;

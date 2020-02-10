@@ -6,7 +6,7 @@ using FluentAssertions;
 
 namespace kCura.IntegrationPoints.Email.Tests.Mappers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class SmtpConfigurationInstanceSettingsExtensionsTests
 	{
 		[Test]

@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core;
@@ -357,6 +358,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		}
 
 		[IdentifiedTest("a69813c2-a1f4-4165-9d3d-efe28398bb4e")]
+		[NotWorkingOnTrident]
 		public void ExpectTempSavedSearchCreatedAndDeleted()
 		{
 			//Arrange

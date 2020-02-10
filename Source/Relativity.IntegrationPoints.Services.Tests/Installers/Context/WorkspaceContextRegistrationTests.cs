@@ -11,7 +11,7 @@ using Relativity.API;
 
 namespace Relativity.IntegrationPoints.Services.Tests.Installers.Context
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class WorkspaceContextRegistrationTests
 	{
 		private IWindsorContainer _container;

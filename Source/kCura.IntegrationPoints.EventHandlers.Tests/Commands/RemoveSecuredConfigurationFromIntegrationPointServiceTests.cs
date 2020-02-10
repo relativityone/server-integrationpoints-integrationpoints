@@ -3,6 +3,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 {
+	[TestFixture, Category("Unit")]
 	public class RemoveSecuredConfigurationFromIntegrationPointServiceTests
 	{
 		private const string SourceConfigurationWithSecuredConfiguration =

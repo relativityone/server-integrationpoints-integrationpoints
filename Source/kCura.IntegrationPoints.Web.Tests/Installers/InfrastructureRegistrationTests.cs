@@ -13,7 +13,7 @@ using static kCura.IntegrationPoint.Tests.Core.TestHelpers.WindsorContainerTestH
 
 namespace kCura.IntegrationPoints.Web.Tests.Installers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class InfrastructureRegistrationTests
 	{
 		private IWindsorContainer _sut;

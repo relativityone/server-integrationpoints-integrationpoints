@@ -9,7 +9,7 @@ using Relativity.API.Foundation.Repositories;
 
 namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class AuditRepositoryTests
 	{
 		private Mock<IExportAuditRepository> _exportAuditRepository;

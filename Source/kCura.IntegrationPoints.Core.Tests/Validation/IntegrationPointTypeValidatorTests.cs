@@ -11,7 +11,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class IntegrationPointTypeValidatorTests
 	{
 		private IRelativityObjectManager _objectManager;

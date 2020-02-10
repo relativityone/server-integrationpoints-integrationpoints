@@ -17,7 +17,7 @@ using kCura.IntegrationPoints.Common.Monitoring.Messages;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ExternalServiceInstrumentationProviderWithJobContextTests
 	{
 		private IDisposable _disposableJobContext;

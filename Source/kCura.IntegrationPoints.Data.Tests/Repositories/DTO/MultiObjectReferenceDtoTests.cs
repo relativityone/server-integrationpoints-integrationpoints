@@ -7,7 +7,7 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Tests.Repositories.DTO
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class MultiObjectReferenceDtoTest
 	{
 		[Test]

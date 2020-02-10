@@ -7,7 +7,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.Tests.Installers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class RelativityServicesRegistrationTests
 	{
 		private IWindsorContainer _sut;

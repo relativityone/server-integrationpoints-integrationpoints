@@ -9,7 +9,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Contracts.Tests.Agent
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class TaskJobSubmitterTests : TestBase
 	{
 		private TaskJobSubmitter _instance;

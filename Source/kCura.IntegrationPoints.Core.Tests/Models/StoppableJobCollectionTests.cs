@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Models
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class StoppableJobCollectionTests : TestBase
 	{
 		[SetUp]

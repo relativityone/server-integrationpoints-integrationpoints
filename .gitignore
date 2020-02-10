@@ -92,3 +92,7 @@ DevelopmentScripts/*Results.html
 Artifacts
 .ionide
 .vs/
+buildtools/
+!buildtools/packages.config
+FunctionalTest.runsettings
+FunctionalTestSettings

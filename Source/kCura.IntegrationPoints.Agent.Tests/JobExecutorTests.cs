@@ -10,7 +10,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tests
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class JobExecutorTests
 	{
 		private IAPILog _logger;

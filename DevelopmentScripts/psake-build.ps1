@@ -61,6 +61,13 @@ task get_buildhelper -precondition { (-not [System.IO.File]::Exists($buildhelper
     Copy-Item ([System.IO.Path]::Combine($development_scripts_directory, 'kCura.BuildHelper', 'lib', 'kCura.BuildHelper.exe')) $development_scripts_directory
 }
 
+task get_buildtools -precondition { ([System.IO.File]::Exists($tools_config)) } {
+    Write-Host "Restoring tools from NuGet."
+    exec {
+        & $nuget_exe @('install', $tools_config, '-OutputDirectory', $tools_directory, '-ExcludeVersion', '-Source', $proget_server)
+    }
+}
+
 task restore_nuget {
 
     foreach($o in Get-ChildItem $source_directory){
@@ -68,7 +75,7 @@ task restore_nuget {
        if($o.Extension -ne '.sln') {continue}
 
         exec {
-            & $nuget_exe @('restore', $o.FullName)
+            & $paket_exe restore
         }
     }
 } 
@@ -89,7 +96,7 @@ task configure_paket {
     }
 }
 
-task build_integration_points -depends restore_nuget, configure_paket {
+task build_integration_points -depends get_buildtools, restore_nuget, configure_paket {
     exec {
         Write-Host 'Using MSBuild' $msbuild_exe
 
@@ -204,6 +211,10 @@ task copy_dlls_to_lib_dir -depends create_lib_dir {
             "Source\kCura.IntegrationPoints.Management\bin\*.config",
             "Source\kCura.IntegrationPoints.Management\bin\*.pdb",
             "Source\kCura.IntegrationPoints.Management\bin\*.xml",
+            "Source\kCura.IntegrationPoints.RelativitySync\bin\*.dll",
+            "Source\kCura.IntegrationPoints.RelativitySync\bin\*.config",
+            "Source\kCura.IntegrationPoints.RelativitySync\bin\*.pdb",
+            "Source\kCura.IntegrationPoints.RelativitySync\bin\*.xml",
             "Source\Relativity.IntegrationPoints.Services\bin\*.dll",
             "Source\Relativity.IntegrationPoints.Services\bin\*.pdb",
             "Source\Relativity.IntegrationPoints.Services\bin\*.xml",

@@ -19,7 +19,7 @@ using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ResourcePoolControllerTests : TestBase
 	{
 		#region Fields

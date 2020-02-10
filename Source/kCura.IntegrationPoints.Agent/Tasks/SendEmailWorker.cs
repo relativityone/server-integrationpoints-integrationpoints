@@ -55,7 +55,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				}
 				catch (SendEmailException e)
 				{
-					LogSendingEmailError(jobID, e, email);
+					LogSendingEmailError(jobID, e);
 					exceptions.Add(new Exception(string.Format("Failed to send message to {0}", email), e));
 				}
 			}
@@ -91,9 +91,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_logger.LogInformation("Successfully sent email in worker, job: {JobId}", jobID);
 		}
 
-		private void LogSendingEmailError(long jobID, Exception e, string email)
+		private void LogSendingEmailError(long jobID, Exception e)
 		{
-			_logger.LogError(e, "Failed to send message to {Email} for job {JobId}.", email, jobID);
+			_logger.LogError(e, "Failed to send email message for job {JobId}.", jobID);
 		}
 
 		private void LogErrorsDuringEmailSending(long jobID)

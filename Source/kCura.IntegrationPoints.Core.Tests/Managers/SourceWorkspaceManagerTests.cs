@@ -10,7 +10,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Managers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class SourceWorkspaceManagerTests : TestBase
 	{
 		private const int _SOURCE_WORKSPACE_ID = 874817;

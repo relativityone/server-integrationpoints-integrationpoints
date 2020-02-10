@@ -5,7 +5,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.LDAPProvider.Tests
 {
-    [TestFixture]
+    [TestFixture, Category("Unit")]
     public class LDAPDataFormatterForBatchableIDsTests
     {
         private LDAPDataFormatterForBatchableIDs _formatter;

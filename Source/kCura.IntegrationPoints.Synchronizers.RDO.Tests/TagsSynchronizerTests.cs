@@ -12,6 +12,7 @@ using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 {
+	[TestFixture, Category("Unit")]
 	public class TagsSynchronizerTests : TestBase
 	{
 		private IEnumerable<FieldMap> _fieldMap;

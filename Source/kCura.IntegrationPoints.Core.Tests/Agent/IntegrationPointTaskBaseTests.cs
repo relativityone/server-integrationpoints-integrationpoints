@@ -22,7 +22,7 @@ using Relativity.IntegrationPoints.Contracts.Provider;
 
 namespace kCura.IntegrationPoints.Core.Tests.Agent
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class IntegrationPointTaskBaseTests : TestBase
 	{
 		private TestClass _testInstance;

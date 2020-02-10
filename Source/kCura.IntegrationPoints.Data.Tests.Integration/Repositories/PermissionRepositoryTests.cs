@@ -37,13 +37,11 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		public PermissionRepositoryTests() : base("PermissionRepositoryTests", null)
 		{ }
 
-		public override void SuiteSetup()
+		public async override void SuiteSetup()
 		{
 			base.SuiteSetup();
-			InstanceSetting.UpsertAndReturnOldValueIfExists(
-				section: "Relativity.Authentication",
-				name: "AdminsCanSetPasswords",
-				value: "True");
+			await InstanceSetting.CreateOrUpdateAsync("Relativity.Authentication", "AdminsCanSetPasswords", "True")
+				.ConfigureAwait(false);
 		}
 
 		[SetUp]

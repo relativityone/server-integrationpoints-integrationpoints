@@ -10,7 +10,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class JobStatusUpdaterTests : TestBase
 	{
 		private IJobHistoryService _jobHistoryService;

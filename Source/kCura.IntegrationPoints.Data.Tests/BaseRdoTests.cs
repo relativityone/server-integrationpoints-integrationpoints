@@ -11,7 +11,7 @@ using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Data.Tests
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class BaseRdoTests : TestBase
 	{
 		[SetUp]

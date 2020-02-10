@@ -38,8 +38,8 @@ namespace kCura.IntegrationPoints.Core.Tagging
 
 				SourceJobDTO sourceJobDto = _sourceJobManager.CreateSourceJobDto(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, jobHistoryArtifactId, sourceWorkspaceDto.ArtifactId);
 
-				_logger.LogDebug("Created TagsContainer for workspace {workspaceName} and job: {jobName}. Destination {destinationWorkspaceArtifactId}, instance: {federatedInstanceArtifactId}",
-					sourceWorkspaceDto.Name, sourceJobDto.Name, destinationWorkspaceArtifactId, federatedInstanceArtifactId);
+				_logger.LogDebug("Created TagsContainer for workspace {workspaceArtifactId} and job: {jobArtifactId}. Destination {destinationWorkspaceArtifactId}, instance: {federatedInstanceArtifactId}",
+					sourceWorkspaceDto.ArtifactId, sourceJobDto.ArtifactId, destinationWorkspaceArtifactId, federatedInstanceArtifactId);
 				return new TagsContainer(sourceJobDto, sourceWorkspaceDto);
 			}
 			catch (Exception e)

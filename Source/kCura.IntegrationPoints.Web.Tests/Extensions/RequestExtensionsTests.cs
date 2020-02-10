@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Web.Tests.Extensions
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class RequestExtensionsTests
 	{
 		private const string _DEFAULT_APPLICATION_PATH = "/Relativity";

@@ -15,7 +15,7 @@ using static LanguageExt.Prelude;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 {
-    [TestFixture]
+    [TestFixture, Category("Unit")]
     public class InternalSourceProviderInstallerTests
     {
         private Mock<IRipProviderInstaller> _ripProviderInstallerMock;

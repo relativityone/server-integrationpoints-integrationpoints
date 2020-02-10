@@ -18,6 +18,7 @@ using FieldType = Relativity.IntegrationPoints.Contracts.Models.FieldType;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation.Parts
 {
+	[TestFixture, Category("Unit")]
 	class ExportNativeSettingsValidatorTests
 	{
 		private const int _RDO_ARTIFACT_TYPE_ID = 1;

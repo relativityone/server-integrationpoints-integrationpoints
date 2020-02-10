@@ -10,7 +10,7 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Tests.Statistics
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class DocumentTotalStatisticsTests : TestBase
 	{
 		private const int _WORKSPACE_ID = 237273;

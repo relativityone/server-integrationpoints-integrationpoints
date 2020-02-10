@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System.Threading.Tasks;
 using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Data.Repositories
@@ -9,7 +9,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// Retrieves the next set of documents for the saved search
 		/// </summary>
 		/// <returns>The next set of documents for the saved search</returns>
-		ArtifactDTO[] RetrieveNextDocuments();
+		Task<ArtifactDTO[]> RetrieveNextDocumentsAsync();
 
 		/// <summary>
 		/// Checks to see if all documents have been retrieved

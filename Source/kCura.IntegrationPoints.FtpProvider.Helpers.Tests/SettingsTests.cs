@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FtpProvider.Helpers.Tests
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class SettingsTests : TestBase
 	{
 		private Settings _sut;

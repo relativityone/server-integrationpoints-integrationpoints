@@ -9,6 +9,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Tagging
 {
+	[TestFixture, Category("Unit")]
 	public class TagsCreatorTests : TestBase
 	{
 		private TagsCreator _instance;

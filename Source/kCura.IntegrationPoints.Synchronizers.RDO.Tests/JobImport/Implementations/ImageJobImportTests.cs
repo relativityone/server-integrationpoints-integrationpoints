@@ -10,7 +10,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport.Implementations
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ImageJobImportTests : TestBase
 	{
 		private IDataTransferContext _context;

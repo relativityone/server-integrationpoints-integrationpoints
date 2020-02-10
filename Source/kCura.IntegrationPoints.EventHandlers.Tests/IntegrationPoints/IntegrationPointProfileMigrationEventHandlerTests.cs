@@ -17,7 +17,7 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class IntegrationPointProfileMigrationEventHandlerTests
 	{
 		private IntegrationPointProfileMigrationEventHandler _sut;

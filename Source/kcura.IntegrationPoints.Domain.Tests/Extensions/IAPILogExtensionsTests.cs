@@ -6,7 +6,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Domain.Tests.Extensions
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class IAPILogExtensionsTests
 	{
 		private const string _RIP_PREFIX = "RIP.";

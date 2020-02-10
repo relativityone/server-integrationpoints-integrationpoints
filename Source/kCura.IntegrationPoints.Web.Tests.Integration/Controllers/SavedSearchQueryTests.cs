@@ -14,6 +14,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Controllers
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints]
+	[NotWorkingOnTrident]
 	public class SavedSearchQueryTests : SourceProviderTemplate
 	{
 		private List<int> _savedSearchesArtifactIds;
@@ -24,10 +25,11 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Controllers
 		{
 		}
 
-		public override void SuiteSetup()
+		public async override void SuiteSetup()
 		{
 			base.SuiteSetup();
-			InstanceSetting.UpsertAndReturnOldValueIfExists("Relativity.Authentication", "AdminsCanSetPasswords", "True");
+			await InstanceSetting.CreateOrUpdateAsync("Relativity.Authentication", "AdminsCanSetPasswords", "True")
+				.ConfigureAwait(false);
 		}
 
 		public override void TestSetup()

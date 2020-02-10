@@ -18,7 +18,7 @@ using Type = System.Type;
 
 namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class JobSynchronizationCheckerTests
 	{
 		private IJobSynchronizationChecker _sut;

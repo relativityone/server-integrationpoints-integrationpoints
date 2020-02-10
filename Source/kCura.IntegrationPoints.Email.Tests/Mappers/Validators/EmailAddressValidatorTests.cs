@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Email.Tests.Mappers.Validators
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class EmailAddressValidatorTests
 	{
 		[TestCase("relativity.admin@kcura.com")]

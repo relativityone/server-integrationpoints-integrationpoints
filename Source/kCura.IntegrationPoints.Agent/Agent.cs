@@ -129,10 +129,6 @@ namespace kCura.IntegrationPoints.Agent
 
 			using (JobContextProvider.StartJobContext(job))
 			{
-				// If the JobHistory object for this job has already been created by the API (e.g. if a user clicks
-				// the "Run" button on an IP), then the JobStarted message will have been raised in the web process
-				// instead of the agent process, and we won't have entirely accurate metrics. Therefore we send the
-				// same message here as well.
 				SendJobStartedMessage(job);
 				TaskResult result = _jobExecutor.ProcessJob(job);
 				return result;

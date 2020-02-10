@@ -9,7 +9,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Authentication.WebApi.LoginHelperFacade
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class LoginHelperRetryDecoratorTests
 	{
 		private LoginHelperRetryDecorator _sut;

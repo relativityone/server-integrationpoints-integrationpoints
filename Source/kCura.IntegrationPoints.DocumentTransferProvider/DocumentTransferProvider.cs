@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 
 		public IEnumerable<FieldEntry> GetFields(DataSourceProviderConfiguration providerConfiguration)
 		{
-			LogRetrievingFields(providerConfiguration.Configuration);
+			LogRetrievingFields();
 			var settings = JsonConvert.DeserializeObject<DocumentTransferSettings>(providerConfiguration.Configuration);
 			ArtifactDTO[] fields = GetRelativityFields(settings.SourceWorkspaceArtifactId, Convert.ToInt32(ArtifactType.Document));
 			IEnumerable<FieldEntry> fieldEntries = ParseFields(fields);
@@ -89,7 +89,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 			// TODO: Why we need to call Import API and RsAPI to check teh fields are correct???
 			ArtifactDTO[] filteredList = fieldArtifacts.Where(x => mappableArtifactIds.Contains(x.ArtifactId)).ToArray();
 
-			_logger.LogDebug("Relativity Fields retrieval process completed for workspace id: {sourceWorkspaceId}, Found fields: {@filteredList}",
+			_logger.LogDebug("Relativity Fields retrieval process completed for workspace id: {sourceWorkspaceId}",
 				sourceWorkspaceId, filteredList);
 			return filteredList;
 		}
@@ -151,7 +151,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		/// <returns>An IDataReader containing all of the saved search's document artifact ids</returns>
 		public IDataReader GetBatchableIds(FieldEntry identifier, DataSourceProviderConfiguration providerConfiguration)
 		{
-			LogRetrievingBatchableIdsErrorWithDetails(providerConfiguration.Configuration, identifier, new NotImplementedException());
+			LogRetrievingBatchableIdsErrorWithDetails(identifier, new NotImplementedException());
 			throw new NotImplementedException();
 		}
 
@@ -165,13 +165,13 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		/// <returns>An IDataReader that contains the Document RDO's for the entryIds</returns>
 		public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds, DataSourceProviderConfiguration providerConfiguration)
 		{
-			LogRetrievingDataErrorWithDetails(providerConfiguration.Configuration, entryIds, fields, new NotImplementedException());
+			LogRetrievingDataErrorWithDetails(entryIds, fields, new NotImplementedException());
 			throw new NotImplementedException();
 		}
 
 		public string GetEmailBodyData(IEnumerable<FieldEntry> fields, string options)
 		{
-			LogReceivingEmailBodyData(fields, options);
+			LogReceivingEmailBodyData(fields);
 			DocumentTransferSettings settings = GetSettings(options);
 
 			WorkspaceDTO sourceWorkspace = GetWorkspace(settings.SourceWorkspaceArtifactId);
@@ -199,33 +199,32 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 
 		#region Logging
 
-		private void LogReceivingEmailBodyData(IEnumerable<FieldEntry> fields, string options)
+		private void LogReceivingEmailBodyData(IEnumerable<FieldEntry> fields)
 		{
-			var fieldIdentifiers = fields?.Select(x => x.FieldIdentifier).ToList() ?? new List<string>();
-			_logger.LogInformation("Attempting to get email body data in Document Transfer Provider (with {Options}) and fields {fields}.", options, string.Join(",", fieldIdentifiers));
+			List<string> fieldIdentifiers = fields?.Select(x => x.FieldIdentifier).ToList() ?? new List<string>();
+			_logger.LogInformation("Attempting to get email body data in Document Transfer Provider for fields {fields}.", string.Join(", ", fieldIdentifiers));
 		}
 
-		private void LogRetrievingFields(string options)
+		private void LogRetrievingFields()
 		{
-			_logger.LogInformation("Attempting to get fields in Document Transfer Provider (with {Options}).", options);
+			_logger.LogInformation("Attempting to get fields in Document Transfer Provider.");
 		}
 
 		private void LogReceivingParsedFieldsError(IEnumerable<ArtifactDTO> fieldArtifacts, Exception ex)
 		{
-			var items = fieldArtifacts?.Select(x => x.TextIdentifier).ToList() ?? new List<string>();
-			_logger.LogError(ex, "Failed to retrieve parsed fields in Document Transfer Provider (with {fieldArtifacts}).", string.Join(",", items));
+			List<int> items = fieldArtifacts?.Select(x => x.ArtifactId).ToList() ?? new List<int>();
+			_logger.LogError(ex, "Failed to retrieve parsed fields in Document Transfer Provider (with {fieldArtifacts}).", string.Join(", ", items));
 		}
 
-		private void LogRetrievingBatchableIdsErrorWithDetails(string options, FieldEntry identifier, Exception ex)
+		private void LogRetrievingBatchableIdsErrorWithDetails(FieldEntry identifier, Exception ex)
 		{
-			_logger.LogError(ex, "Failed to retrieve batchable ids in Document Transfer Provider (with {Options}) for field {FieldIdentifier}.", 
-				options, identifier.FieldIdentifier);
+			_logger.LogError(ex, "Failed to retrieve batchable ids in Document Transfer Provider for field {FieldIdentifier}.", identifier.FieldIdentifier);
 		}
 
-		private void LogRetrievingDataErrorWithDetails(string options, IEnumerable<string> entryIds, IEnumerable<FieldEntry> fields, Exception ex)
+		private void LogRetrievingDataErrorWithDetails(IEnumerable<string> entryIds, IEnumerable<FieldEntry> fields, Exception ex)
 		{
-			var fieldIdentifiers = fields?.Select(x => x.FieldIdentifier).ToList() ?? new List<string>();
-			_logger.LogError(ex, "Failed to retrieve data in Document Transfer Provider (with {Options}) for ids {Ids} and fields {fields}.", options,
+			List<string> fieldIdentifiers = fields?.Select(x => x.FieldIdentifier).ToList() ?? new List<string>();
+			_logger.LogError(ex, "Failed to retrieve data in Document Transfer Provider for ids {Ids} and fields {fields}.",
 				string.Join(",", entryIds), string.Join(",", fieldIdentifiers));
 		}
 

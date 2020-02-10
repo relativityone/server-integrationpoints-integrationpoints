@@ -17,7 +17,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class TaskFactoryJobHistoryServiceTests
 	{
 		private ITaskFactoryJobHistoryService _sut;

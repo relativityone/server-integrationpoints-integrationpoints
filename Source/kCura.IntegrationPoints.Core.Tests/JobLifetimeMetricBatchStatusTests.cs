@@ -20,7 +20,7 @@ using Relativity.DataTransfer.MessageService;
 
 namespace kCura.IntegrationPoints.Core.Tests
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class JobLifetimeMetricBatchStatusTests : TestBase
 	{
 		private IMessageService _messageService;

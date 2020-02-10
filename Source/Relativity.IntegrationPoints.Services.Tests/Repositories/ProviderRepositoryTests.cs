@@ -11,6 +11,7 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 {
+	[TestFixture, Category("Unit")]
 	public class ProviderRepositoryTests : TestBase
 	{
 		private ProviderRepository _providerRepository;

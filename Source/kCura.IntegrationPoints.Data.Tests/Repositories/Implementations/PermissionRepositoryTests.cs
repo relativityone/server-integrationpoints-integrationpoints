@@ -16,7 +16,7 @@ using Relativity.Services.User;
 
 namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class PermissionRepositoryTests : TestBase
 	{
 		private IPermissionRepository _sut;

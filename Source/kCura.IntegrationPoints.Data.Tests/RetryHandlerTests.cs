@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.Data.Tests
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class RetryHandlerTests
 	{
 		private Mock<IAPILog> _logger;

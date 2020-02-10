@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Utilities
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class CommaSeparatedNumbersToArrayConverterTests
 	{
 		[Test]

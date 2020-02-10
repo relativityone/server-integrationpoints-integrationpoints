@@ -35,7 +35,7 @@ using Relativity.API;
 namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 {
 	[TestFixture]
-	public class ImportServiceManagerTests
+	public class ImportServiceManagerTests : IntegrationTestBase
 	{
 		private Data.IntegrationPoint _ip;
 		private IImportFileLocationService _importFileLocationService;

@@ -11,7 +11,7 @@ using Relativity;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	internal sealed class SingleChoiceFieldSanitizerTests
 	{
 		private Mock<ISanitizationDeserializer> _sanitizationHelper;

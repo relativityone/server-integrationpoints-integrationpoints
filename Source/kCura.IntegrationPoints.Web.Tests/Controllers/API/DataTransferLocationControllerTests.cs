@@ -19,7 +19,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class DataTransferLocationControllerTests : TestBase
 	{
 		private DataTransferLocationController _instance;

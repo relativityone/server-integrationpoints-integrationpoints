@@ -10,7 +10,7 @@ using Constants = kCura.IntegrationPoints.Domain.Constants;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibrary
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ExportServiceFactoryTests : TestBase
 	{
 		private ExportServiceFactory _sut;

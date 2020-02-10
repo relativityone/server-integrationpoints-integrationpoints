@@ -12,7 +12,7 @@ using Relativity.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.FtpProvider.Tests
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class FtpProviderTests : TestBase
 	{
 		private IConnectorFactory _connectorFactory;

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
@@ -13,6 +15,7 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.WinEDDS.Service.Export;
 using Relativity.API;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
+using Relativity.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.Core.Factories.Implementations
 {
@@ -151,6 +154,13 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			int savedSearchArtifactId,
 			string userImportApiSettings)
 		{
+			IEnumerable<FieldMap> mappedFieldsWithoutFieldNames = mappedFields.Select(mf => new FieldMap
+			{
+				SourceField = CreateFieldEntryWithoutName(mf.SourceField),
+				DestinationField = CreateFieldEntryWithoutName(mf.DestinationField),
+				FieldMapType = mf.FieldMapType
+			});
+
 			var msgBuilder = new StringBuilder("Building Exporter with parameters: \n");
 			msgBuilder.AppendLine("mappedFields {@mappedFields} ");
 			msgBuilder.AppendLine("config {config} ");
@@ -159,10 +169,21 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			string msgTemplate = msgBuilder.ToString();
 			_logger.LogDebug(
 				msgTemplate,
-				mappedFields,
+				mappedFieldsWithoutFieldNames,
 				config,
 				savedSearchArtifactId,
 				userImportApiSettings);
+		}
+
+		private FieldEntry CreateFieldEntryWithoutName(FieldEntry entry)
+		{
+			var newEntry = new FieldEntry
+			{
+				FieldIdentifier = entry.FieldIdentifier,
+				FieldType = entry.FieldType,
+				DisplayName = Domain.Constants.SENSITIVE_DATA_REMOVED_FOR_LOGGING
+			};
+			return newEntry;
 		}
 	}
 }

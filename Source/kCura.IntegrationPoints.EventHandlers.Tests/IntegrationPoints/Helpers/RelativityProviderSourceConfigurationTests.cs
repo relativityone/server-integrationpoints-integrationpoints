@@ -15,6 +15,7 @@ using Folder = Relativity.Services.Folder.Folder;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 {
+	[TestFixture, Category("Unit")]
 	public class RelativityProviderSourceConfigurationTests
 	{
 		private RelativityProviderSourceConfiguration _instance;

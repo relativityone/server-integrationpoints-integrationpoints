@@ -174,7 +174,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 				LinkManagers(job, newDestinationConfiguration, sourceData, managerLinkMap);
 				AddMissingManagersErrors(managersLookup, managerArtifactIDs);
-				LogExecuteTaskSuccesfulEnd(job);
+				LogExecuteTaskSuccessfulEnd(job);
 
 			}
 			catch (Exception ex)
@@ -315,7 +315,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private IDictionary<string, int> GetImportedManagerArtifactIDs(string uniqueFieldName, string[] managerUniqueIDs)
 		{
-			LogGetImportedManagerArtifactIDsStart(uniqueFieldName);
+			LogGetImportedManagerArtifactIDsStart();
 
 			string ids = string.Join(",", managerUniqueIDs.Select(x => $"'{x}'"));
 
@@ -348,7 +348,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			IDictionary<string, int> managerIDs =
 				result.ToDictionary(r => r.FieldValues.First(f => f.Field.Name == uniqueFieldName).Value?.ToString(), r => r.ArtifactID);
-			LogGetImportedManagerArtifactIDsSuccesfulEnd(uniqueFieldName, managerIDs);
+			LogGetImportedManagerArtifactIDsSuccessfulEnd(managerIDs);
 			return managerIDs;
 		}
 
@@ -369,7 +369,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 
 			int artifactID = resultSet.Results[0].Artifact.ArtifactID;
-			LogGetEntityManagerFieldArtifactIdSuccesfulEnd(artifactID);
+			LogGetEntityManagerFieldArtifactIdSuccessfulEnd(artifactID);
 			return artifactID;
 		}
 
@@ -394,7 +394,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 
 			string newDestinationConfiguration = JsonConvert.SerializeObject(importSettings);
-			LogReconfigureImportApiSettingsSuccesfulEnd(entityManagerFieldArtifactID, newDestinationConfiguration);
+			LogReconfigureImportApiSettingsSuccessfulEnd(entityManagerFieldArtifactID);
 			return newDestinationConfiguration;
 		}
 
@@ -465,9 +465,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_logger.LogInformation("Finalized execution of task in SyncEntityManagerWorker. job: {JobId}", job.JobId);
 		}
 
-		private void LogExecuteTaskSuccesfulEnd(Job job)
+		private void LogExecuteTaskSuccessfulEnd(Job job)
 		{
-			_logger.LogInformation("Succesfully executed task in SyncEntityManagerWorker. job: {JobId}", job.JobId);
+			_logger.LogInformation("Successfully executed task in SyncEntityManagerWorker. job: {JobId}", job.JobId);
 		}
 
 		private void LogExecuteTaskStart(Job job)
@@ -475,33 +475,33 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_logger.LogInformation("Starting execution of task in SyncEntityManagerWorker. job: {JobId}", job.JobId);
 		}
 
-		private void LogGetImportedManagerArtifactIDsStart(string uniqueFieldName)
+		private void LogGetImportedManagerArtifactIDsStart()
 		{
-			_logger.LogInformation("Started getting imported manager artifactIDs for uniqueFieldID: {uniqueFieldName}", uniqueFieldName);
+			_logger.LogInformation("Started getting imported manager artifactIDs.");
 		}
 
-		private void LogGetImportedManagerArtifactIDsSuccesfulEnd(string uniqueFieldName, IDictionary<string, int> managerIDs)
+		private void LogGetImportedManagerArtifactIDsSuccessfulEnd(IDictionary<string, int> managerIDs)
 		{
-			_logger.LogInformation("Succesfully rertieved imported manager artifactIDs for uniqueFieldName: {uniqueFieldName}", uniqueFieldName);
-			_logger.LogDebug("Retrieved manager artifactIDs for uniqueFieldName: {uniqueFieldName}, ids: {managerIDs}", uniqueFieldName, managerIDs.Values);
+			_logger.LogInformation("Successfully retrieved imported manager artifactIDs");
+			_logger.LogDebug("Retrieved manager artifactIDs manager ids: {managerIDs}", managerIDs.Values);
 		}
 
-		private void LogGetEntityManagerFieldArtifactIdSuccesfulEnd(int artifactID)
+		private void LogGetEntityManagerFieldArtifactIdSuccessfulEnd(int artifactID)
 		{
-			_logger.LogInformation("Succesfully retrieved entity manager field artifactID: {artifactID}", artifactID);
+			_logger.LogInformation("Successfully retrieved entity manager field artifactID: {artifactID}", artifactID);
 		}
 
 		private void LogGetEntityManagerFieldArtifactIdStart()
 		{
 			_logger.LogInformation("Getting entity manager field artifactID.");
 		}
-		private void LogReconfigureImportApiSettingsSuccesfulEnd(int entityManagerFieldArtifactID, string newDestinationConfiguration)
+		private void LogReconfigureImportApiSettingsSuccessfulEnd(int entityManagerFieldArtifactID)
 		{
-			_logger.LogInformation("Succesfully reconfigured import API settings for: {entityManagerFieldArtifactID}",
+			_logger.LogInformation("Successfully reconfigured import API settings for: {entityManagerFieldArtifactID}",
 				entityManagerFieldArtifactID);
 			_logger.LogDebug(
-				"Reconfigured import API settings for: {entityManagerFieldArtifactID}, new destination configuration: {newDestinationCOnfiguration}",
-				entityManagerFieldArtifactID, newDestinationConfiguration);
+				"Reconfigured import API settings for: {entityManagerFieldArtifactID}",
+				entityManagerFieldArtifactID);
 		}
 
 		private void LogReconfigureImportApiSettingsStart(int entityManagerFieldArtifactID)

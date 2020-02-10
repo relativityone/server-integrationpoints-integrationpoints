@@ -15,7 +15,7 @@ using kCura.IntegrationPoints.Common.Context;
 
 namespace kCura.IntegrationPoints.Web.Tests.Infrastructure.MessageHandlers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class CorrelationIdHandlerTests
 	{
 		private Mock<IAPILog> _loggerMock;

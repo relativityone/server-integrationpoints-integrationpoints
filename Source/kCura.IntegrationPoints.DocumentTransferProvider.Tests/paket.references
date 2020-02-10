@@ -5,6 +5,13 @@ LanguageExt.Core
 Relativity.API
 Relativity.DataExchange.Client.SDK
 Relativity.IntegrationPoints.Contracts
+Polly
+Relativity.Logging.Interfaces
+Relativity.OAuth2Client.Implicit
+relativity.faspmanager
+Relativity.Transfer.Client
+Relativity.Telemetry.Services.Interface
+Relativity.DataTransfer.MessageService
 
 group TestPackages
 	FluentAssertions

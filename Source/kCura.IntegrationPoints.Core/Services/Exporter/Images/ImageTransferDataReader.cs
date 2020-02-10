@@ -98,10 +98,10 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 			ArtifactFieldDTO retrievedField
 			)
 		{
-			var message = $"Error ocurred when getting value for index {i}, fieldIdentifier: {fieldIdentifier}, fieldArtifactId: {fieldArtifactId}, retrievedField: {retrievedField}";
-			var template = "Error ocurred when getting value for index {i}, fieldIdentifier: {fieldIdentifier}, fieldArtifactId: {fieldArtifactId}, retrievedField: {retrievedField}";
+			var message = $"Error ocurred when getting value for index {i}, fieldIdentifier: {fieldIdentifier}, fieldArtifactId: {fieldArtifactId}, retrievedField: {retrievedField.ArtifactId}";
+			var template = "Error ocurred when getting value for index {i}, fieldIdentifier: {fieldIdentifier}, fieldArtifactId: {fieldArtifactId}, retrievedField: {retrievedFieldArtifactId}";
 			var exc = new IntegrationPointsException(message, e);
-			_logger.LogError(exc, template, i, fieldIdentifier, fieldArtifactId, retrievedField);
+			_logger.LogError(exc, template, i, fieldIdentifier, fieldArtifactId, retrievedField.ArtifactId);
 			return exc;
 		}
 

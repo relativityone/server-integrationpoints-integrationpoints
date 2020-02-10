@@ -14,6 +14,7 @@ using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 {
+	[TestFixture, Category("Unit")]
 	public class IntegrationPointRepositoryTests : TestBase
 	{
 		private IIntegrationPointSerializer _serializer;

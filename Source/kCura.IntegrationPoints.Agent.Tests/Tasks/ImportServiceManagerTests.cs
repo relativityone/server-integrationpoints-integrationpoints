@@ -34,7 +34,7 @@ using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	[Description("These tests were modeled after unit tests in ExportServiceManagerTests")]
 	public class ImportServiceManagerTests : TestBase
 	{

@@ -16,7 +16,7 @@ using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class TargetDocumentsTaggingManagerFactoryTests : TestBase
 	{
 		private IRepositoryFactory _repositoryFactory;

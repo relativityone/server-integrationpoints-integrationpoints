@@ -7,3 +7,10 @@ Relativity.OAuth2Client
 Relativity.Logging
 Relativity.Logging.Interfaces
 SystemWrapper.Interfaces
+Polly
+Relativity.Logging.Interfaces
+Relativity.OAuth2Client.Implicit
+relativity.faspmanager
+Relativity.Transfer.Client
+Relativity.Telemetry.Services.Interface
+Relativity.DataTransfer.MessageService

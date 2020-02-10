@@ -7,7 +7,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Context
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class EventHandlerWorkspaceContextServiceTests
 	{
 		private Mock<IEHHelper> _helperMock;

@@ -9,7 +9,7 @@ using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class RelativityReaderDecoratorTests : TestBase
 	{
 		IDataReader _reader;

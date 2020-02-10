@@ -7,6 +7,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 {
+	[TestFixture, Category("Unit")]
 	public class DataTransferLocationMigrationHelperTests : TestBase
 	{
 		private const string SOURCECONFIGURATION_FILESHARE_KEY = "Fileshare";

@@ -8,7 +8,7 @@ using System.Web;
 
 namespace kCura.IntegrationPoints.Web.Tests.Context.UserContext
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class RequestHeadersUserContextServiceTests
 	{
 		private Mock<IUserContext> _nextUserContextServiceMock;

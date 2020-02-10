@@ -9,6 +9,7 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 {
+	[TestFixture, Category("Unit")]
 	public class SourceJobRepositoryTests : TestBase
 	{
 		private IObjectTypeRepository _objectTypeRepository;

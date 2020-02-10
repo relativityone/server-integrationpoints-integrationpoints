@@ -35,7 +35,7 @@ using Field = kCura.Relativity.Client.DTOs.Field;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class SyncEntityManagerWorkerTests : TestBase
 	{
 		private Data.IntegrationPoint _integrationPoint;

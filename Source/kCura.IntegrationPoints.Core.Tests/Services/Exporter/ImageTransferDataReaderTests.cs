@@ -10,7 +10,7 @@ using Relativity.IntegrationPoints.FieldsMapping.Models;
 namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 {
 
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ImageTransferDataReaderTests : ExportTransferDataReaderTestsBase
 	{
 		protected override ExportTransferDataReaderBase CreateDataReaderTestInstance()

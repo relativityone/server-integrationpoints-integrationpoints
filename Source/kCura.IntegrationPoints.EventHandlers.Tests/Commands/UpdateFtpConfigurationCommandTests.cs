@@ -9,6 +9,7 @@ using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 {
+	[TestFixture, Category("Unit")]
 	public class UpdateFtpConfigurationCommandTests : UpdateConfigurationCommandTestsBase
 	{
 		private IEncryptionManager _encryptionManager;

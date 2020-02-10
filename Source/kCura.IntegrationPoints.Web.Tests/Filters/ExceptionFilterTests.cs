@@ -16,7 +16,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.Tests.Filters
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ExceptionFilterTests
 	{
 		private Mock<Func<ITextSanitizer>> _textSanitizerFactoryMock;

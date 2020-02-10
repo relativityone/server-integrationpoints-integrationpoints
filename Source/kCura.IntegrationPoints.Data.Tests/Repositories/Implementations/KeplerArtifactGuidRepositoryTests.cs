@@ -10,7 +10,7 @@ using Relativity.Services.ArtifactGuid;
 
 namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class KeplerArtifactGuidRepositoryTests : TestBase
 	{
 		private const int _WORKSPACE_ARTIFACT_ID = 937936;

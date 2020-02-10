@@ -12,11 +12,13 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 	{
 		private readonly IAPILog _logger;
 		private readonly IDirectory _directory;
-		
-		public DirectoryTreeCreator(IDirectory directory, IHelper helper)
+		private readonly ICryptographyHelper _cryptographyHelper;
+
+		public DirectoryTreeCreator(IDirectory directory, IHelper helper, ICryptographyHelper cryptographyHelper)
 		{
 			_directory = directory;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<DirectoryTreeCreator<TTreeItem>>();
+			_cryptographyHelper = cryptographyHelper;
 		}
 		
 		public virtual List<TTreeItem> GetChildren(string path, bool isRoot, bool includeFiles = false)
@@ -181,7 +183,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 		#region Logging
 		private void LogMissingDirectoryCreation(string path)
 		{
-			_logger.LogWarning("Specified folder ({path}) does not exist. Re-creating missing directory.", path);
+			_logger.LogWarning("Specified folder ({path}) does not exist. Re-creating missing directory.", _cryptographyHelper.CalculateHash(path));
 		}
 
 		private void LogMissingPathArgument()
@@ -191,7 +193,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
 		private void LogUnauthorizedAccess(string path, UnauthorizedAccessException e)
 		{
-			_logger.LogWarning(e, "Unauthorized access to folder ({Path}) during directory discovery.", path);
+			_logger.LogWarning(e, "Unauthorized access to folder ({Path}) during directory discovery.", _cryptographyHelper.CalculateHash(path));
 		}
 		
 		#endregion

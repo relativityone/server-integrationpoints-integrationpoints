@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Validators
 		{
 			IDictionary<int, string> targetFields = RetrieveTargetFields(_fieldQueryRepository);
 
-			IList<string> missingFields = new List<string>();
+			IList<int> missingFields = new List<int>();
 			foreach (FieldMap mappedField in mappedFields)
 			{
 				AddFieldToListIfIsMissingInDestinationWorkspace(targetFields, missingFields, mappedField.DestinationField);
@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Validators
 				.ToDictionary(k => k.ArtifactId, v => v.TextIdentifier);
 		}
 
-		private void AddFieldToListIfIsMissingInDestinationWorkspace(IDictionary<int, string> targetFields, IList<string> missingFields, FieldEntry fieldEntry)
+		private void AddFieldToListIfIsMissingInDestinationWorkspace(IDictionary<int, string> targetFields, IList<int> missingFields, FieldEntry fieldEntry)
 		{
 			if (string.IsNullOrEmpty(fieldEntry?.FieldIdentifier))
 			{
@@ -62,13 +62,13 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Validators
 				if (!targetFields.TryGetValue(artifactId, out fieldName)
 					|| string.Equals(fieldEntry.ActualName, fieldName, StringComparison.OrdinalIgnoreCase))
 				{
-					missingFields.Add(fieldEntry.ActualName);
+					missingFields.Add(artifactId);
 				}
 			}
 		}
 
 		#region Logging
-		protected virtual void LogInvalidFieldMappingError(IEnumerable<string> missingFields)
+		protected virtual void LogInvalidFieldMappingError(IEnumerable<int> missingFields)
 		{
 			_logger.LogError("Job failed. Fields mapped may no longer be available. Please validate your field mapping settings. Missing Fields: {@missingFields}", missingFields);
 		}

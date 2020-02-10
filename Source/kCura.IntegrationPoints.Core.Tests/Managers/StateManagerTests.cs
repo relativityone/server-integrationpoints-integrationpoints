@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Managers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class StateManagerTests : TestBase
 	{
 		[SetUp]

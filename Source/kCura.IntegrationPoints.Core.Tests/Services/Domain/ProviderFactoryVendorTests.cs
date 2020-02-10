@@ -7,7 +7,7 @@ using Relativity.IntegrationPoints.Contracts;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.Domain
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ProviderFactoryVendorTests : TestBase
 	{
 		private IProviderFactory _providerFactoryMock;

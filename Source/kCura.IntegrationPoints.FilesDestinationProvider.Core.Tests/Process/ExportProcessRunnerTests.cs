@@ -11,7 +11,7 @@ using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	[Ignore("TODO: Broken test needs to be fixed!")]
 	public class ExportProcessRunnerTests : TestBase
 	{

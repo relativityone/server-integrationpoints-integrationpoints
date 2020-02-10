@@ -9,7 +9,7 @@ using ArtifactType = Relativity.ArtifactType;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValidator.Parts
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class RelativityProviderDestinationFolderPermissionValidatorTests
 	{
 		private IPermissionManager _permissionManager;

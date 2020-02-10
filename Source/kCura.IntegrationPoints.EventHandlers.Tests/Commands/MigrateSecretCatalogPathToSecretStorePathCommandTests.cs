@@ -13,7 +13,7 @@ using kCura.IntegrationPoints.Common.Context;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class MigrateSecretCatalogPathToSecretStorePathCommandTests
 	{
 		private MigrateSecretCatalogPathToSecretStorePathCommand _sut;

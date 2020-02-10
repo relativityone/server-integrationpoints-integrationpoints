@@ -183,18 +183,16 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		{
 			string message = $"Error occurred when getting value for index {index}, " +
 						  $"isFieldIdentifierNumeric: {isFieldIdentifierNumeric}, " +
-						  $"retrievedField: {retrievedField}, " +
-						  $"fieldIdentifier: {fieldIdentifier}, " +
+						  $"retrievedFieldArtifactId: {retrievedField.ArtifactId}, " +
 						  $"fieldArtifactId: {fieldArtifactId}, " +
 						  $"result: {result}";
 			string template = "Error occurred when getting value for index {index}, " +
 						  "isFieldIdentifierNumeric: {isFieldIdentifierNumeric}, " +
-						  "retrievedField: {@retrievedField}, " +
-						  "fieldIdentifier: {fieldIdentifier}, " +
+						  "retrievedFieldArtifactId: {@retrievedFieldArtifactId}, " +
 						  "fieldArtifactId: {fieldArtifactId}, " +
 						  "result: {@result}";
 			var exc = new IntegrationPointsException(message, e);
-			_logger.LogError(exc, template, index, isFieldIdentifierNumeric, retrievedField, fieldIdentifier, fieldArtifactId, result);
+			_logger.LogError(exc, template, index, isFieldIdentifierNumeric, retrievedField.ArtifactId, fieldArtifactId, result);
 			return exc;
 		}
 

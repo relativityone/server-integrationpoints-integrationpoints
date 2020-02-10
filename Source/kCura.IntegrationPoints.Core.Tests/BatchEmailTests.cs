@@ -22,7 +22,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class BatchEmailTests : TestBase
 	{
 		private BatchEmail _sut;

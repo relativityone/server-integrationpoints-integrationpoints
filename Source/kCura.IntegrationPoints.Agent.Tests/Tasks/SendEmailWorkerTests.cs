@@ -17,7 +17,7 @@ using kCura.IntegrationPoints.Email.Exceptions;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class SendEmailWorkerTests
 	{
 		private SendEmailWorker _sut;

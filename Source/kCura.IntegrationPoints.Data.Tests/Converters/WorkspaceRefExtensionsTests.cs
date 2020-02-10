@@ -8,7 +8,7 @@ using Relativity.Services.Workspace;
 
 namespace kCura.IntegrationPoints.Data.Tests.Converters
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class WorkspaceRefExtensionsTests
 	{
 		[Test]

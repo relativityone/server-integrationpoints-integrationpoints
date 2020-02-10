@@ -42,6 +42,7 @@
 		public const string CLOUD_INSTANCE_NAME = "CloudInstance";
 		public const char MULTI_VALUE_DELIMITER = ';';
 		public const char NESTED_VALUE_DELIMITER = '/';
+		public const string SENSITIVE_DATA_REMOVED_FOR_LOGGING = "[Sensitive user data has been removed]";
 
 		public static class IntegrationPoints
 		{

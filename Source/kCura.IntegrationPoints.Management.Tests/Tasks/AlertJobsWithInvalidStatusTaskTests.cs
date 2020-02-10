@@ -10,7 +10,7 @@ using Relativity.Telemetry.APM;
 
 namespace kCura.IntegrationPoints.Management.Tests.Tasks
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class AlertJobsWithInvalidStatusTaskTests : TestBase
 	{
 		private AlertJobsWithInvalidStatusTask _instance;

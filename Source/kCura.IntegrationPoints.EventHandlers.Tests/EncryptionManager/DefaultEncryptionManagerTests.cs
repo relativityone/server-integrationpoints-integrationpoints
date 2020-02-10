@@ -8,7 +8,7 @@ namespace kCura.IntegrationPoints.Security.Tests
 {
 	using NUnit.Framework;
 
-	[TestFixture]
+	[TestFixture, Category("Unit")]
     public class DefaultEncryptionManagerTests
 	{
 		private DefaultEncryptionManager _defaultEncryptionManager;

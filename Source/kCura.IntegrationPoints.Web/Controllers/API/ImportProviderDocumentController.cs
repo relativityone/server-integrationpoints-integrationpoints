@@ -30,6 +30,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly IFile _fileIo;
 		private readonly IStreamFactory _streamFactory;
 		private readonly IAPILog _logger;
+		private readonly ICryptographyHelper _cryptographyHelper;
 
 		public ImportProviderDocumentController(IFieldParserFactory fieldParserFactory,
 			IImportTypeService importTypeService,
@@ -38,7 +39,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			IImportFileLocationService importFileLocationService,
 			IFile fileIo,
 			IStreamFactory streamFactory,
-			ICPHelper helper)
+			ICPHelper helper,
+			ICryptographyHelper cryptographyHelper)
 		{
 			_fieldParserFactory = fieldParserFactory;
 			_importTypeService = importTypeService;
@@ -49,6 +51,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			_streamFactory = streamFactory;
 
 			_logger = helper.GetLoggerFactory().GetLogger();
+			_cryptographyHelper = cryptographyHelper;
 		}
 
 		[HttpGet]
@@ -130,7 +133,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			{
 				_logger.LogWarning(
 					"Error file for integration point {ArtifactId} in workspace {WorkspaceId} was not present; expected path was {ErrorFilePath}",
-					artifactId, workspaceId, errorFilePath);
+					artifactId, workspaceId, _cryptographyHelper.CalculateHash(errorFilePath));
 				return BadRequest();
 			}
 		}

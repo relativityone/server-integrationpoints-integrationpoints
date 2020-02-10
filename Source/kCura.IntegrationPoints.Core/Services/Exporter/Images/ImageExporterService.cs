@@ -94,7 +94,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 
 					if (productionPrecedenceType == ExportSettings.ProductionPrecedenceType.Produced)
 					{
-						Logger.LogInformation("Processing production precedences: {productionPrecedences}", string.Join(", ", _settings.ImagePrecedence.Select(x => x.DisplayName)));
+						Logger.LogInformation("Processing production precedences: {productionPrecedences}", string.Join(", ", _settings.ImagePrecedence.Select(x => x.ArtifactID)));
 
 						int[] productionsArtifactIds = _settings.ImagePrecedence.Select(x => Convert.ToInt32(x.ArtifactID)).ToArray();
 

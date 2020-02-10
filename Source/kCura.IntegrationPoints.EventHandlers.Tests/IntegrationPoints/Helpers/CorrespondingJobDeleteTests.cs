@@ -11,7 +11,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class CorrespondingJobDeleteTests : TestBase
 	{
 		private IJobService _jobService;

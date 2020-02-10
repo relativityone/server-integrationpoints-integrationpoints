@@ -221,7 +221,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					IntegrationPointDto.NextScheduledRuntimeUTC = JobService.GetJobNextUtcRunDateTime(job, ScheduleRuleFactory, Result);
 				}
 				IntegrationPointRepository.Update(IntegrationPointDto);
-				LogUpdateIntegrationPointRuntimesSuccesfulEnd(job);
+				LogUpdateIntegrationPointRuntimesSuccessfulEnd(job);
 			}
 			catch (Exception e)
 			{
@@ -279,7 +279,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				LogLoadingIntegrationPointDtoError(job);
 				throw new ArgumentException("Failed to retrieve corresponding Integration Point.");
 			}
-			LogLoadIntegrationPointDtoSuccesfulEnd(job);
+			LogLoadIntegrationPointDtoSuccessfulEnd(job);
 			return integrationPoint;
 		}
 
@@ -350,7 +350,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			LogBatchExceptions(job, exceptions);
 			ThrowNewExceptionIfAny(exceptions);
-			LogConfigureBatchExceptionsSuccesfulEnd(job);
+			LogConfigureBatchExceptionsSuccessfulEnd(job);
 		}
 
 		protected void HandleGenericException(Exception ex, Job job)
@@ -424,9 +424,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			Logger.LogInformation("Started finalizing service for job: {JobId}", job.JobId);
 		}
 
-		private void LogLoadIntegrationPointDtoSuccesfulEnd(Job job)
+		private void LogLoadIntegrationPointDtoSuccessfulEnd(Job job)
 		{
-			Logger.LogInformation("Succesfully loaded integration point DTO for job : {JobId}", job.JobId);
+			Logger.LogInformation("Successfully loaded integration point DTO for job : {JobId}", job.JobId);
 		}
 
 		private void LogLoadInformationPointDtoStart(Job job)
@@ -435,9 +435,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		}
 
 
-		private void LogUpdateIntegrationPointRuntimesSuccesfulEnd(Job job)
+		private void LogUpdateIntegrationPointRuntimesSuccessfulEnd(Job job)
 		{
-			Logger.LogInformation("Succesfully updated integration point runtimes for job: {JobId}", job.JobId);
+			Logger.LogInformation("Successfully updated integration point runtimes for job: {JobId}", job.JobId);
 		}
 
 		private void LogUpdateIntegrationPointRuntimesStart(Job job)
@@ -460,9 +460,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			Logger.LogInformation("Finished loading source provider in Service Manager Base.");
 		}
 
-		private void LogConfigureBatchExceptionsSuccesfulEnd(Job job)
+		private void LogConfigureBatchExceptionsSuccessfulEnd(Job job)
 		{
-			Logger.LogInformation("Succesfully configured batch exceptions for job: {JobId}", job.JobId);
+			Logger.LogInformation("Successfully configured batch exceptions for job: {JobId}", job.JobId);
 		}
 
 		private void LogConfigureBatchExceptionsStart(Job job)
@@ -472,17 +472,16 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private IntegrationPointsException LogCreateDestinationProviderError(Exception e, string configuration)
 		{
-			var message = $"Error ocurred when creating destination provider for configuration: {configuration}";
-			var template = "Error ocurred when creating destination provider for configuration: {configuration}";
+			string message = "Error occurred when creating destination provider";
 			var exc = new IntegrationPointsException(message, e);
-			Logger.LogError(exc, template, configuration);
+			Logger.LogError(exc, exc.Message);
 			return exc;
 		}
 
 		private IntegrationPointsException LogUpdateJobStatus(Exception e, JobHistory jobHistory)
 		{
-			var message = "Error ocurred when updating job status";
-			var template = "Error ocurred when updating job status. jobHistory: {@jobHistory}";
+			string message = $"Error occurred when updating job status for job with ID: {jobHistory.JobID}";
+			string template = "Error occurred when updating job status for job with ID: {JobID}";
 			var exc = new IntegrationPointsException(message, e);
 			Logger.LogError(exc, template, jobHistory);
 			return exc;

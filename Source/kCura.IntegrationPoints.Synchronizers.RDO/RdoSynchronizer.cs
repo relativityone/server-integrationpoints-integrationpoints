@@ -155,7 +155,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 			catch (Exception ex)
 			{
-				throw LogAndCreateGetFieldsException(ex, providerConfiguration.Configuration);
+				throw LogAndCreateGetFieldsException(ex);
 			}
 		}
 
@@ -257,7 +257,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				emailBody.AppendLine("");
 				string destinationWorkspaceAsString = WorkspaceAndJobNameUtils.GetFormatForWorkspaceOrJobDisplay(destinationWorkspace.Name, destinationWorkspace.Id);
 				emailBody.AppendFormat("Destination Workspace: {0}", destinationWorkspaceAsString);
-				LogDestinationWorkspaceAppendedToEmailBody(destinationWorkspaceAsString);
+				LogDestinationWorkspaceAppendedToEmailBody();
 			}
 			return emailBody.ToString();
 		}
@@ -418,13 +418,15 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				BootstrapFolderSettings(fieldMap, settings);
 				BootstrapDestinationIdentityFieldSettings(fieldMap, settings);
 
-				_logger.LogDebug($"Rip Import Settings:\n {JsonConvert.SerializeObject(settings)}");
+				var importSettingsForLogging = new ImportSettingsForLogging(settings);
+
+				_logger.LogDebug("Rip Import Settings:\n {importSettings}", importSettingsForLogging);
 				return settings;
 
 			}
 			catch (Exception ex)
 			{
-				throw LogAndCreateGetImportSettignsException(ex, options, fieldMap);
+				throw LogAndCreateGetImportSettignsException(ex, fieldMap);
 			}
 		}
 
@@ -638,24 +640,26 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		#region Logging
 
-		private IntegrationPointsException LogAndCreateGetImportSettignsException(Exception exception, string options, IEnumerable<FieldMap> fieldMap)
+		private IntegrationPointsException LogAndCreateGetImportSettignsException(Exception exception, IEnumerable<FieldMap> fieldMap)
 		{
-			string message = $"Error occured while preparing import settings.";
-			_logger.LogError("Error occured while preparing import settings\nOptions: {@options}\nFields: {@fieldMap}", options, fieldMap);
+			string message = "Error occured while preparing import settings.";
+			IEnumerable<FieldMap> fieldMapWithoutFieldNames = CreateFieldMapWithoutFieldNames(fieldMap);
+			_logger.LogError("Error occured while preparing import settings\nFields: {@fieldMap}", fieldMapWithoutFieldNames);
 			return new IntegrationPointsException(message, exception) { ShouldAddToErrorsTab = true };
 		}
 
-		private IntegrationPointsException LogAndCreateGetFieldsException(Exception exception, string options)
+		private IntegrationPointsException LogAndCreateGetFieldsException(Exception exception)
 		{
-			string message = $"Error occured while getting fields.";
-			_logger.LogError("Error getting fields. \nOptions: {@options}", options);
+			string message = "Error occured while getting fields.";
+			_logger.LogError("Error getting fields.");
 			return new IntegrationPointsException(message, exception) { ShouldAddToErrorsTab = true };
 		}
 
 		private IntegrationPointsException LogAndCreateSyncDataException(Exception ex, IEnumerable<FieldMap> fieldMap, string options)
 		{
-			string message = $"Error occured while syncing rdo.";
-			_logger.LogError("Error occured while syncing rdo. \nOptions: {@options} \nFields: {@fieldMap}", options, fieldMap);
+			string message = "Error occured while syncing rdo.";
+			IEnumerable<FieldMap> fieldMapWithoutFieldNames = CreateFieldMapWithoutFieldNames(fieldMap);
+			_logger.LogError("Error occured while syncing rdo. \nOptions: {@options} \nFields: {@fieldMap}", options, fieldMapWithoutFieldNames);
 			return new IntegrationPointsException(message, ex) { ShouldAddToErrorsTab = true };
 		}
 
@@ -748,9 +752,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			_logger.LogDebug("Number of items in fieldMap: {fieldMapLength}", fieldMaps.Length);
 		}
 
-		private void LogDestinationWorkspaceAppendedToEmailBody(string destinationWorkspaceAsString)
+		private void LogDestinationWorkspaceAppendedToEmailBody()
 		{
-			_logger.LogDebug("Adding destination workpsace to email body: {destinationWorkspace}", destinationWorkspaceAsString);
+			_logger.LogDebug("Adding destination workspace to email body.");
 		}
 
 		private void LogNumbersOfFieldAndMappableFields(List<Artifact> fields, List<Artifact> mappableFields)
@@ -765,7 +769,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		private void LogIdentifierFields(Artifact result)
 		{
-			_logger.LogDebug("Identifier field: {identifierFieldName}", result.Name);
+			_logger.LogDebug("Identifier field: {identifierFieldId}", result.ArtifactID);
 		}
 
 		private void LogNullWorkspaceReturnedByIAPI()
@@ -791,6 +795,27 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		private void LogLockingImportServiceInJobError()
 		{
 			_logger.LogDebug("Trying to lock _importService in JobError method of RdoSynchronizer");
+		}
+		private IEnumerable<FieldMap> CreateFieldMapWithoutFieldNames(IEnumerable<FieldMap> fieldMap)
+		{
+			IEnumerable<FieldMap> fieldMapWithoutFieldNames = fieldMap.Select(fm => new FieldMap
+			{
+				DestinationField = CreateFieldEntryWithoutName(fm.DestinationField),
+				SourceField = CreateFieldEntryWithoutName(fm.SourceField),
+				FieldMapType = fm.FieldMapType
+			});
+			return fieldMapWithoutFieldNames;
+		}
+
+		private FieldEntry CreateFieldEntryWithoutName(FieldEntry entry)
+		{
+			var newEntry = new FieldEntry
+			{
+				FieldIdentifier = entry.FieldIdentifier,
+				FieldType = entry.FieldType,
+				DisplayName = Constants.SENSITIVE_DATA_REMOVED_FOR_LOGGING
+			};
+			return newEntry;
 		}
 
 		#endregion

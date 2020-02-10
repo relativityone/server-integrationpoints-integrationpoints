@@ -8,14 +8,14 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class CachedIntegrationPointProviderTypeServiceTests
 	{
 		private const int _DESTINATION_PROVIDER_ID = 21;
 		private const int _SOURCE_PROVIDER_ID = 12;
 		private const int _DEFAULT_CACHE_REFRESH_DELAY = 30;
 
-		[TestFixture]
+		[TestFixture, Category("Unit")]
 		public class GetProviderTypeByIntegrationPointMethod
 		{
 			private CachedIntegrationPointProviderTypeService _service;
@@ -138,7 +138,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			}
 		}
 
-		[TestFixture]
+		[TestFixture, Category("Unit")]
 		public class GetProviderTypeByIdMethod
 		{
 			private CachedIntegrationPointProviderTypeService _service;

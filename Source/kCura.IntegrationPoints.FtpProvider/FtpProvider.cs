@@ -70,7 +70,7 @@ namespace kCura.IntegrationPoints.FtpProvider
 			{
 				if (ex is SftpPathNotFoundException || (ex is WebException && ex.ToString().Contains("(550) File unavailable")))
 				{
-					var message = $"Unable to access: {remoteLocation}{fileName} {ex}";
+					var message = $"Unable to access file on remote location. Exception: {ex}";
 					LogRetrievingFieldsErrorWithDetails(ex, message);
 					throw new Exception(message);
 				}
@@ -222,7 +222,7 @@ namespace kCura.IntegrationPoints.FtpProvider
 
 			if (!expectedColumns.Equals(fixedColumns, StringComparison.InvariantCultureIgnoreCase))
 			{
-				LogValidatingColumnsError(columns, expectedColumns);
+				LogValidatingColumnsError();
 				throw new Exceptions.ColumnsMissmatchException();
 			}
 		}
@@ -287,9 +287,9 @@ namespace kCura.IntegrationPoints.FtpProvider
 				string.Join(",", entryIds), message);
 		}
 
-		private void LogValidatingColumnsError(string columns, string expectedColumns)
+		private void LogValidatingColumnsError()
 		{
-			_logger.LogError("Invalid columns in input file. Expected columns: {ExpectedColumns}. Actual columns: {Columns}.", expectedColumns, columns);
+			_logger.LogError("Invalid columns in input file.");
 		}
 
 		#endregion

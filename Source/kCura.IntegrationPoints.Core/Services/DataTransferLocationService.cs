@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.Data.RSAPIClient;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using Relativity.API;
+using kCura.IntegrationPoints.Core.Helpers;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
@@ -24,17 +25,19 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		private readonly IIntegrationPointTypeService _integrationPointTypeService;
 		private readonly IDirectory _directoryService;
+		private readonly ICryptographyHelper _cryptographyHelper;
 		#endregion //Fields
 
 		#region Constructors
 
-		public DataTransferLocationService(IHelper helper, IIntegrationPointTypeService integrationPointTypeService, IDirectory directoryService)
+		public DataTransferLocationService(IHelper helper, IIntegrationPointTypeService integrationPointTypeService, IDirectory directoryService, ICryptographyHelper cryptographyHelper)
 		{
 			_helper = helper;
 			_logger = _helper.GetLoggerFactory().GetLogger().ForContext<DataTransferLocationService>();
 
 			_integrationPointTypeService = integrationPointTypeService;
 			_directoryService = directoryService;
+			_cryptographyHelper = cryptographyHelper;
 		}
 
 		#endregion //Constructors
@@ -139,7 +142,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		private void LogMissingDirectoryCreation(string path)
 		{
-			_logger.LogInformation("Creating missing directory: {path}", path);
+			_logger.LogInformation("Creating missing directory: {path}", _cryptographyHelper.CalculateHash(path));
 		}
 
 		#endregion

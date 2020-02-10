@@ -27,6 +27,7 @@ namespace kCura.IntegrationPoints.UITests.Driver
 					driver = ChromeDriverFactory.Create();
 					break;
 				case "chromium":
+				case "chromium-portable":
 					driver = ChromiumDriverFactory.Create();
 					break;
 				case "firefox":

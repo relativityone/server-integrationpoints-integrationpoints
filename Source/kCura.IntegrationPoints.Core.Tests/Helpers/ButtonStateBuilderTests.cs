@@ -15,6 +15,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Helpers
 {
+	[TestFixture, Category("Unit")]
 	public class ButtonStateBuilderTests : TestBase
 	{
 		private ButtonStateBuilder _buttonStateBuilder;

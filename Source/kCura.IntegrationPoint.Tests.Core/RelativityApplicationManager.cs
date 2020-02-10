@@ -140,6 +140,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			var request = new UpdateLibraryApplicationRequest
 			{
 				CreateIfMissing = true,
+				IgnoreVersion = true,
 				RefreshCustomPages = true
 			};
 

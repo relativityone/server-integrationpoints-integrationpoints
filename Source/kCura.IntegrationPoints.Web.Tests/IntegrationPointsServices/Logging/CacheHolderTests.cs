@@ -4,6 +4,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Web.Tests.IntegrationPointsServices.Logging
 {
+	[TestFixture, Category("Unit")]
 	public class CacheHolderTests : TestBase
 	{
 		private CacheHolder _cacheHolder;

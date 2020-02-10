@@ -15,7 +15,7 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Tests.Statistics
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ImageFileSizeStatisticsTests : TestBase
 	{
 		private const string _PRODUCTION_SQL = "SELECT COALESCE(SUM([Size]),0) FROM [{0}] AS PDF JOIN [File] AS F ON F.[FileID] = PDF.[ProducedFileID]";

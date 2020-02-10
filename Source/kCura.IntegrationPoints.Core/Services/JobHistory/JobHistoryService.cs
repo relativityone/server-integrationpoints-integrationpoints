@@ -27,25 +27,19 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		private readonly IWorkspaceManager _workspaceManager;
 		private readonly IAPILog _logger;
 		private readonly IIntegrationPointSerializer _serializer;
-		private readonly IProviderTypeService _providerTypeService;
-		private readonly IMessageService _messageService;
 
 		public JobHistoryService(
 			IRelativityObjectManager relativityObjectManager,
 			IFederatedInstanceManager federatedInstanceManager,
 			IWorkspaceManager workspaceManager,
 			IAPILog logger,
-			IIntegrationPointSerializer serializer,
-			IProviderTypeService providerTypeService,
-			IMessageService messageService)
+			IIntegrationPointSerializer serializer)
 		{
 			_relativityObjectManager = relativityObjectManager;
 			_federatedInstanceManager = federatedInstanceManager;
 			_workspaceManager = workspaceManager;
 			_logger = logger.ForContext<JobHistoryService>();
 			_serializer = serializer;
-			_providerTypeService = providerTypeService;
-			_messageService = messageService;
 		}
 
 		public Data.JobHistory GetRdo(Guid batchInstance)
@@ -96,8 +90,6 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 				jobHistory = CreateRdo(integrationPoint, batchInstance, JobTypeChoices.JobHistoryScheduledRun, startTimeUtc);
 
 				integrationPoint.JobHistory = integrationPoint?.JobHistory.Concat(new[] { jobHistory.ArtifactId }).ToArray();
-
-				OnBatchStart(integrationPoint, batchInstance);
 			}
 			return jobHistory;
 		}
@@ -168,8 +160,6 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			int artifactId = _relativityObjectManager.Create(jobHistory);
 			jobHistory.ArtifactId = artifactId;
 
-			OnBatchStart(integrationPoint, batchInstance);
-
 			return jobHistory;
 		}
 
@@ -234,15 +224,6 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			Data.JobHistory jobHistory = jobHistories.SingleOrDefault(); //there should only be one!
 
 			return jobHistory;
-		}
-
-		private void OnBatchStart(Data.IntegrationPoint integrationPoint, Guid batchInstanceId)
-		{
-			_messageService.Send(new JobStartedMessage
-			{
-				Provider = integrationPoint.GetProviderType(_providerTypeService).ToString(),
-				CorrelationID = batchInstanceId.ToString()
-			});
 		}
 
 		private IEnumerable<FieldRef> MapToFieldRefs(Guid[] rdoFieldGuids)

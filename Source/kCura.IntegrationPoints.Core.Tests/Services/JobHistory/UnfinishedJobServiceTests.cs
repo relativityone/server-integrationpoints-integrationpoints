@@ -13,7 +13,7 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class UnfinishedJobServiceTests : TestBase
 	{
 		private const int _WORKSPACE_ID = 551970;

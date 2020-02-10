@@ -18,7 +18,7 @@ using Relativity.Services.Search;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class SavedSearchesTreeServiceTests : TestBase
 	{
 		private readonly int workspaceArtifactId = 1042;

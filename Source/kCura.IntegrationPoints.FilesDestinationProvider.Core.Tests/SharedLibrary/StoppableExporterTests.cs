@@ -10,7 +10,7 @@ using IExporter = kCura.WinEDDS.IExporter;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibrary
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class StoppableExporterTests : TestBase
 	{
 		private ProcessContext _context;

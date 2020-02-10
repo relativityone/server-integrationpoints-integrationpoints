@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class EnumerableReaderTests : TestBase
 	{
 		[SetUp]

@@ -14,6 +14,7 @@ using Relativity.Logging;
 
 namespace Relativity.IntegrationPoints.Services.Tests.Managers
 {
+	[TestFixture, Category("Unit")]
 	public class IntegrationPointTypeManagerTests : TestBase
 	{
 		private const int _WORKSPACE_ID = 784838;

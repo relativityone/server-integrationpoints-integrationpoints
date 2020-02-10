@@ -9,7 +9,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.Tests.IntegrationPointsServices
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class TextSanitizerTests
 	{
 		private Mock<IStringSanitizer> _stringSanitizerMock;

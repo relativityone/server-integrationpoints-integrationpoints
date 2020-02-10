@@ -8,7 +8,7 @@ using kCura.IntegrationPoints.Common.Context;
 
 namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceContext
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class RequestContextWorkspaceContextServiceTests
 	{
 		private Mock<IWorkspaceContext> _nextWorkspaceContextServiceMock;

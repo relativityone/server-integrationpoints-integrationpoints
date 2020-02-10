@@ -12,7 +12,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class UpdateJobHistoryDestinationWorkspaceTests : TestBase
 	{
 		private IJobHistoryService _jobHistoryService;

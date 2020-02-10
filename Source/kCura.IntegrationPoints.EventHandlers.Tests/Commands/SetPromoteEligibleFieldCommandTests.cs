@@ -6,6 +6,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 {
+	[TestFixture, Category("Unit")]
 	public class SetPromoteEligibleFieldCommandTests : TestBase
 	{
 		private IDBContext _dbContext;

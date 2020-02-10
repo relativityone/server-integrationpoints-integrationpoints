@@ -23,7 +23,9 @@ namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints]
+	[Category(TestCategory.WEB_IMPORT_EXPORT)]
 	[Category(TestCategory.IMPORT_FROM_LOAD_FILE)]
+	[Category(TestCategory.NOT_WORKING_ON_TRIDENT)] //Remove when REL-391556
 	public class ImportFromLoadFileTest : UiTest
 	{
 		[OneTimeSetUp]

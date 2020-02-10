@@ -9,7 +9,7 @@ using NSubstitute;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class IntegrationPointPermissionValidatorTests
 	{
 		private IIntegrationPointSerializer _serializer;

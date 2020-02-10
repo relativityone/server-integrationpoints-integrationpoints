@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class CompositeLoggingMediatorTests : TestBase
 	{
 		private CompositeLoggingMediator _compositeLoggingMediator;

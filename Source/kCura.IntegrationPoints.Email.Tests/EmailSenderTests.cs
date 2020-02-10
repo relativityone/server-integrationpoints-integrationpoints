@@ -12,7 +12,7 @@ using static LanguageExt.Prelude;
 
 namespace kCura.IntegrationPoints.Email.Tests
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class EmailSenderTests
 	{
 		private Mock<ISmtpConfigurationProvider> _configurationFactory;

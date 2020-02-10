@@ -15,7 +15,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class SourceObjectBatchUpdateManagerTest : TestBase
 	{
 		private Mock<IScratchTableRepository> _scratchTableRepositoryMock;

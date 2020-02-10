@@ -8,6 +8,7 @@ using kCura.WinEDDS.Api;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 {
+	[TestFixture, Category("Unit")]
 	public class OpticonDataReaderTests : TestBase
 	{
 		private const string _LOAD_FILE_FULL_PATH = @"C:\LoadFileDirectory\ExampleLoadFile.opt";

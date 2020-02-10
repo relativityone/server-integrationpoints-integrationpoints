@@ -13,3 +13,8 @@ Relativity.Telemetry.MetricsCollection
 Relativity.Logging
 Relativity.Logging.Interfaces
 ZetaLongPaths
+Polly
+Relativity.Logging.Interfaces
+Relativity.OAuth2Client.Implicit
+relativity.faspmanager
+Relativity.Transfer.Client
