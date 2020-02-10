@@ -61,8 +61,11 @@ namespace Relativity.Sync.Tests.Integration
 
 			_objectManager = new Mock<IObjectManager>();
 			_searchManager = new Mock<ISearchManager>();
-			Func<ISearchManager> searchManagerFactory = () => _searchManager.Object;
 			_folderManager = new Mock<IFolderManager>();
+
+			var searchManagerFactory = new Mock<ISearchManagerFactory>();
+			searchManagerFactory.Setup(x => x.CreateSearchManagerAsync())
+				.Returns(Task.FromResult(_searchManager.Object));
 
 			var adminServiceFactory = new Mock<ISourceServiceFactoryForAdmin>();
 
@@ -77,7 +80,7 @@ namespace Relativity.Sync.Tests.Integration
 			builder.RegisterInstance(_configuration).AsImplementedInterfaces();
 			builder.RegisterInstance(adminServiceFactory.Object).As<ISourceServiceFactoryForAdmin>();
 			builder.RegisterInstance(userServiceFactory.Object).As<ISourceServiceFactoryForUser>();
-			builder.RegisterInstance(searchManagerFactory).As<Func<ISearchManager>>();
+			builder.RegisterInstance(searchManagerFactory.Object).As<ISearchManagerFactory>();
 
 			// This is so we can resolve FieldManager directly. We would normally register it by its interface.
 			builder.RegisterType<FieldManager>().As<FieldManager>();
