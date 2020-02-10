@@ -118,6 +118,11 @@
             <Platform>x64</Platform>
           </Platforms>
         </Project>
+		  <Project path="Source\Relativity.IntegrationPoints.FieldsMapping\Relativity.IntegrationPoints.FieldsMapping.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
         <Project path="Source\Provider\Provider.csproj">
           <Platforms>
             <Platform>AnyCPU</Platform>
