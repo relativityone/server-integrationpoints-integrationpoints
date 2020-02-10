@@ -87,7 +87,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             HttpResponseMessage httpResponseMessage = _subjectUnderTest
                 .Post(_synchronizerSettings);
 
-            //// Assert
+            // Assert
             List<FieldClassificationResult> retValue;
             httpResponseMessage.TryGetContentValue(out retValue);
 
