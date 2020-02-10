@@ -235,7 +235,11 @@ task copy_dlls_to_lib_dir -depends create_lib_dir {
             "Source\kCura.ScheduleQueue.Core\bin\*.config",
             "Source\kCura.ScheduleQueue.Core\bin\*.pdb",
             "Source\kCura.ScheduleQueue.Core\bin\*.xml",
-            "packages\System.Reactive\lib\net46\System.Reactive.dll"
+			"packages\System.Reactive\lib\net46\System.Reactive.dll",
+			"Source\Relativity.IntegrationPoints.FieldsMapping\bin\*.dll",
+			"Source\Relativity.IntegrationPoints.FieldsMapping\bin\*.pdb",
+			"Source\Relativity.IntegrationPoints.FieldsMapping\bin\*.config",
+			"Source\Relativity.IntegrationPoints.FieldsMapping\bin\*.xml"
 
     foreach ($file in $files)
     {
