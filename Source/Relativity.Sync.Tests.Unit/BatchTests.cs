@@ -678,7 +678,9 @@ namespace Relativity.Sync.Tests.Unit
 					CreateObject(newConfigurationArtifactId, newBatchCreationDate)
 				}
 			};
-			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(queryResult);
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(request => request.ObjectType.Guid == ConfigurationObjectTypeGuid &&
+				request.Fields.Single().Name == "System Created On"),
+				It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(queryResult);
 
 			// ACT
 			await _batchRepository.DeleteAllOlderThanAsync(_WORKSPACE_ID, removeOlderThan).ConfigureAwait(false);
@@ -697,7 +699,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			return
 				request.ObjectIdentificationCriteria.ObjectType.Guid == BatchObjectTypeGuid &&
-				request.ObjectIdentificationCriteria.Condition == $"'{ConfigurationObjectTypeGuid}' == OBJECT {syncConfigurationArtifactId}";
+				request.ObjectIdentificationCriteria.Condition == $"'{SyncConfigurationRelationGuid}' == OBJECT {syncConfigurationArtifactId}";
 		}
 
 		private bool AssertQueryAllNewRequest(QueryRequest queryRequest)
