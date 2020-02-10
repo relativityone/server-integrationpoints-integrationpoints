@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
+using Castle.DynamicProxy;
+using kCura.WinEDDS.Api;
 using kCura.WinEDDS.Service;
 using kCura.WinEDDS.Service.Export;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Authentication;
-using kCura.WinEDDS.Api;
-using Castle.DynamicProxy;
 
 namespace Relativity.Sync.Transfer
 {

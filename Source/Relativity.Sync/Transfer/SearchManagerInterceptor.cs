@@ -1,14 +1,11 @@
-﻿using Castle.DynamicProxy;
-using kCura.WinEDDS.Service.Export;
-using Polly;
-using Polly.Retry;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web.Services.Protocols;
+using Polly;
+using Polly.Retry;
+using Castle.DynamicProxy;
+using kCura.WinEDDS.Service.Export;
 
 namespace Relativity.Sync.Transfer
 {
@@ -40,7 +37,7 @@ namespace Relativity.Sync.Transfer
 		private object HandleWithReLogin(IInvocation invocation)
 		{
 			RetryPolicy reLoginPolicy = Policy
-				.Handle<SoapException>(ex => ex.ToString().IndexOf("NeedToReLoginException", StringComparison.InvariantCultureIgnoreCase) != -1)
+				.Handle<SoapException>(ex => ex.ToString().Contains("NeedToReLoginException"))
 				.Retry(_MAX_NUMBER_OF_RELOGINS, 
 					(ex, retryCount, context) =>
 				{
