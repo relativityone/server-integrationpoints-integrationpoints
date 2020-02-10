@@ -411,8 +411,7 @@ namespace Relativity.Sync.Storage
 		private static async Task<IEnumerable<int>> GetConfigurationsOlderThanAsync(ISourceServiceFactoryForAdmin serviceFactory, IDateTime dateTime, int workspaceArtifactId, TimeSpan olderThan)
 		{
 			DateTime createdBeforeDate = dateTime.UtcNow - olderThan;
-			DateTime ParseObjectCreationDate(RelativityObject relativityObject) => 
-				DateTime.Parse(relativityObject.FieldValues.Single().Value.ToString(), CultureInfo.InvariantCulture);
+			DateTime GetObjectCreationDate(RelativityObject relativityObject) => (DateTime)relativityObject.FieldValues.Single().Value;
 
 			using (IObjectManager objectManager = await serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
@@ -433,7 +432,7 @@ namespace Relativity.Sync.Storage
 
 				QueryResult queryResult = await objectManager.QueryAsync(workspaceArtifactId, request, 0, int.MaxValue).ConfigureAwait(false);
 				IEnumerable<RelativityObject> oldConfigurations = queryResult.Objects.Where(configurationObject =>
-					ParseObjectCreationDate(configurationObject) < createdBeforeDate);
+					GetObjectCreationDate(configurationObject) < createdBeforeDate);
 				return oldConfigurations.Select(x => x.ArtifactID);
 			}
 		}
