@@ -580,7 +580,11 @@ ko.validation.insertValidationMessage = function (element) {
         var destinationPromise =
             (self.IsRelativityProvider()
                 ? getSyncDestinationFields()
-                : getWorkspaceFieldPromise());
+				: getWorkspaceFieldPromise()
+            )
+		    .fail(function (error) {
+                IP.message.error.raise("Could not load destination workspace fields");
+            });
 
         var destination = JSON.parse(model.destination);
 		root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('rdometa', destination.artifactTypeID) }).then(function (result) {
@@ -783,9 +787,9 @@ ko.validation.insertValidationMessage = function (element) {
 
 		root.data.deferred().all(promises).then(
 			function (result) {
-				var destinationFields = result[0],
+				var destinationFields = result[0] || [],
 					sourceFields = result[1] || [],
-					mapping = result[2];
+					mapping = result[2] || [];
 
 				self.nativeFilePathOption(sourceFields);
 				self.FolderPathImportProvider(sourceFields);
@@ -847,8 +851,8 @@ ko.validation.insertValidationMessage = function (element) {
                 for (var i = 0; i < mapping.length; i++) {
                     if (mapping[i].fieldMapType == mapTypes.identifier) {
                         var identifierFromMapping =
-                            self.overlay().find(x => x.name == mapping[i].destinationField.displayName) ||
-                                x.fieldIdentifier == mapping[i].destinationField.fieldIdentifier
+                            self.overlay().find(x => (x.name == mapping[i].destinationField.displayName) ||
+                                (x.fieldIdentifier == mapping[i].destinationField.fieldIdentifier))
                         if (identifierFromMapping) {
                             self.selectedUniqueId(identifierFromMapping.name);
                         }
