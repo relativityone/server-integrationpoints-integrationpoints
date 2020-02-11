@@ -52,6 +52,7 @@
     <Compile Include="Context\UserContext\RequestHeadersUserContextServiceTests.cs" />
     <Compile Include="Context\UserContext\SessionUserContextServiceTests.cs" />
     <Compile Include="Context\WorkspaceContext\NotFoundWorkspaceContextServiceTests.cs" />
+    <Compile Include="Controllers\API\FieldMappingsControllerTests.cs" />
     <Compile Include="Controllers\API\IntegrationPointProfilesAPIControllerTests.cs" />
     <Compile Include="Extensions\HttpConfigurationExtensionsTests.cs" />
     <Compile Include="Extensions\RequestExtensionsTests.cs" />
@@ -128,6 +129,10 @@
       <Project>{599d771d-2ae7-4321-9bac-be06f827ce0a}</Project>
       <Name>kCura.IntegrationPoints.Data</Name>
     </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.DocumentTransferProvider\kCura.IntegrationPoints.DocumentTransferProvider.csproj">
+      <Project>{CA3D5B8B-B99C-4BA5-BB8B-44A0BA9AA0F7}</Project>
+      <Name>kCura.IntegrationPoints.DocumentTransferProvider</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
       <Project>{5D5B52B4-8769-431A-9743-B96F15FED5FD}</Project>
       <Name>kCura.IntegrationPoints.Domain</Name>
@@ -168,6 +173,10 @@
       <Project>{05724e56-c325-4ca2-9122-50a41411b691}</Project>
       <Name>kCura.IntegrationPoints.Web</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Relativity.IntegrationPoints.FieldsMapping\Relativity.IntegrationPoints.FieldsMapping.csproj">
+      <Project>{FAFF9DBE-B607-45B3-8392-469B5EEC5259}</Project>
+      <Name>Relativity.IntegrationPoints.FieldsMapping</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config">
@@ -177,9 +186,6 @@
   <ItemGroup>
     <None Include="paket.references">
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

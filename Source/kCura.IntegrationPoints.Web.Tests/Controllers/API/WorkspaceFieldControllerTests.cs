@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
@@ -13,6 +14,7 @@ using kCura.IntegrationPoints.Web.Models;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.IntegrationPoints.Contracts.Models;
+using Relativity.IntegrationPoints.FieldsMapping;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
@@ -34,6 +36,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 	    private const int _DESTINATION_FOLDER_ARTIFACT_ID = 2;
 	    private const string _CREDENTIALS = "password";
 	    private const string _DISPLAY_NAME = "FieldName";
+	    private const string _IDENTIFIER = "Identifier";
 
         private readonly List<FieldEntry> _fields = new List<FieldEntry>()
         {
@@ -41,7 +44,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             {
                 DisplayName = _DISPLAY_NAME,
                 FieldType = FieldType.File,
-                IsIdentifier = true
+                IsIdentifier = true,
+				FieldIdentifier = _IDENTIFIER
             }
         };
 
@@ -83,12 +87,15 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             HttpResponseMessage httpResponseMessage = _subjectUnderTest
                 .Post(_synchronizerSettings);
 
-            //// Assert
-            List<FieldEntry> retValue;
+            // Assert
+            List<FieldClassificationResult> retValue;
             httpResponseMessage.TryGetContentValue(out retValue);
 
             Assert.That(httpResponseMessage.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-            CollectionAssert.AreEquivalent(_fields, retValue);
+
+            CollectionAssert.AreEqual(_fields.Select(x => x.IsIdentifier), retValue.Select(x => x.IsIdentifier));
+            CollectionAssert.AreEqual(_fields.Select(x => x.DisplayName), retValue.Select(x => x.Name));
+            CollectionAssert.AreEqual(_fields.Select(x => x.FieldIdentifier), retValue.Select(x => x.FieldIdentifier));
 
 		    _dataSynchronizerMock.Received(1).GetFields(Arg.Is<DataSourceProviderConfiguration>(x =>
 			    (_serializer.Deserialize<ImportSettings>(x.Configuration).ArtifactTypeId == _ARTIFACT_TYPE_ID) &&

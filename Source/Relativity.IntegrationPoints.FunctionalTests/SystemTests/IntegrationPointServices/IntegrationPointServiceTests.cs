@@ -7,14 +7,13 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
-using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using NUnit.Framework;
-using Relativity.IntegrationPoints.Contracts.Models;
+using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Services.Folder;
 using Relativity.Services.Interfaces.Field;
 using Relativity.Services.Interfaces.Field.Models;
@@ -23,6 +22,8 @@ using Relativity.Services.Search;
 using Relativity.Testing.Identification;
 using Rip.TestUtilities;
 using CoreConstants = kCura.IntegrationPoints.Core.Constants;
+using FieldEntry = Relativity.IntegrationPoints.Contracts.Models.FieldEntry;
+using IntegrationPointModel = kCura.IntegrationPoints.Core.Models.IntegrationPointModel;
 
 namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.IntegrationPointServices
 {

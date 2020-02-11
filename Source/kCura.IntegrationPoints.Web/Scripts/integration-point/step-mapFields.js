@@ -34,13 +34,15 @@ ko.validation.rules['identifierMustMappedWithAnotherIdentifier'] = {
 
 ko.validation.rules['uniqueIdIsMapped'] = {
 	validator: function (value, params) {
+		var selectedUniqueIdName = params[0]();
+		var rdoIdentifierName = params[1]();
 		var containsIdentifier = false;
 		var rdoIdentifierMapped = false;
 		$.each(value, function (index, item) {
 			if (item.isIdentifier === true) {
 				rdoIdentifierMapped = true;
 			}
-			if (item.name == params[1]()) {
+			if (item.name == rdoIdentifierName) {
 				containsIdentifier = true;
 			}
 		});
@@ -53,17 +55,17 @@ ko.validation.rules['uniqueIdIsMapped'] = {
 		if (!rdoIdentifierMapped || !containsIdentifier) {
 			var missingField = "";
 			if (!rdoIdentifierMapped && !containsIdentifier) {
-				if (params[1]() !== params[0]()) {
-					missingField = "The object identifier, " + params[1]() + ", and the unique identifier, " + params[0]();
+				if (rdoIdentifierName !== selectedUniqueIdName) {
+					missingField = "The object identifier, " + rdoIdentifierName + ", and the unique identifier, " + selectedUniqueIdName;
 				} else {
-					missingField = "The object identifier, " + params[1]();
+					missingField = "The object identifier, " + rdoIdentifierName;
 				}
 			}
 			if (!rdoIdentifierMapped && containsIdentifier) {
-				missingField = "The object identifier, " + params[1]();
+				missingField = "The object identifier, " + rdoIdentifierName;
 			}
 			if (rdoIdentifierMapped && !containsIdentifier) {
-				missingField = "The unique identifier, " + params[0]();
+				missingField = "The unique identifier, " + rdoIdentifierName;
 			}
 			IP.message.error.raise('<span id="uniquIdMissing"> ' + missingField + ', must be mapped.<span>');
 			return false;
@@ -129,28 +131,29 @@ ko.validation.insertValidationMessage = function (element) {
 
 
 (function (root, ko) {
-
-	function mapField(entry) {
-		var fieldDisplayName = entry.displayName;
-		if (!entry.isIdentifier && entry.type) {
-			fieldDisplayName = entry.displayName + " [" + entry.type + "]";
-		}
-
-		return {
-			name: entry.displayName,
-			displayName: fieldDisplayName,
-			type: entry.type,
-			identifer: entry.fieldIdentifier,
-			isIdentifier: entry.isIdentifier,
-			isRequired: entry.isRequired
-		};
-	}
+	
+	var objectIdentifierFieldSuffix = " [Object Identifier]";
 
 	var mapFields = function (result) {
-		return $.map(result, function (entry) {
-			return mapField(entry);
+		return $.map(result, function (field) {
+			var fieldDisplayName = field.name;
+			if (!field.isIdentifier && field.type) {
+				fieldDisplayName = field.name + " [" + field.type + "]";
+			}
+			else if (field.isIdentifier) {
+				fieldDisplayName = field.name + objectIdentifierFieldSuffix;
+			}
+			return {
+				name: field.name,
+				displayName: fieldDisplayName,
+				type: field.type,
+				identifer: field.fieldIdentifier,
+				isIdentifier: field.isIdentifier,
+				isRequired: field.isIdentifier
+			};
 		});
 	}
+
 	var viewModel = function (model) {
 		var self = this;
 
@@ -173,7 +176,7 @@ ko.validation.insertValidationMessage = function (element) {
 
 		this.AllowUserToMapNativeFileField = ko.observable(model.SourceProviderConfiguration.importSettingVisibility.allowUserToMapNativeFileField);
 
-		this.selectedUniqueId = ko.observable().extend({ required: true });
+		this.selectedUniqueId = ko.observable().extend({ required: {message: "Unique id required"} });
 		this.rdoIdentifier = ko.observable();
 		this.isAppendOverlay = ko.observable(true);
 		self.SecuredConfiguration = model.SecuredConfiguration;
@@ -302,7 +305,7 @@ ko.validation.insertValidationMessage = function (element) {
 				self.MoveExistingDocuments("false");
 				self.FolderPathSourceField(null);
 				self.autoFieldMapWithCustomOptions(function (identfier) {
-					var name = identfier.name.replace(" [Object Identifier]", "");
+					var name = identfier.name.replace(objectIdentifierFieldSuffix, "");
 					self.IdentifierField(name);
 				});
 			    self.ImportNativeFileCopyModeEnabled("false");
@@ -524,28 +527,66 @@ ko.validation.insertValidationMessage = function (element) {
 			type: 'GET', url: root.utils.generateWebAPIURL('Entity/' + artifactTypeId)
 		}).then(function (result) {
 			self.showManager(result);
-		});
+        });
 
-		var workspaceFieldPromise = root.data.ajax({
-			type: 'POST', url: root.utils.generateWebAPIURL('WorkspaceField'), data: JSON.stringify({
-				settings: model.destination,
-				credentials: self.SecuredConfiguration
-			})
-		}).then(function (result) {
-			return result;
-		});
+        function getCustomProviderSourceFields() {
+            return root.data.ajax({
+                type: 'Post',
+                url: root.utils.generateWebAPIURL('SourceFields'),
+                data: JSON.stringify({
+                    'options': model.sourceConfiguration,
+                    'type': model.source.selectedType,
+                    'credentials': self.SecuredConfiguration
+                })
+            })
+        }
 
-		var sourceFieldPromise = root.data.ajax({
-			type: 'Post', url: root.utils.generateWebAPIURL('SourceFields'), data: JSON.stringify({
-				'options': model.sourceConfiguration,
-				'type': model.source.selectedType,
-				'credentials': self.SecuredConfiguration
-			})
-		}).fail(function (error) {
-			IP.message.error.raise("No attributes were returned from the source provider.");
-		});
+        function getWorkspaceFieldPromise() {
+            return root.data.ajax({
+                type: 'POST',
+                url: root.utils.generateWebAPIURL('WorkspaceField'),
+                data: JSON.stringify({
+                    settings: model.destination,
+                    credentials: self.SecuredConfiguration
+                })
+            });
+        }
 
-		var destination = JSON.parse(model.destination);
+        function getSyncSourceFields() {
+            return root.data.ajax({
+                type: 'GET',
+                url: root.utils.generateWebAPIURL('FieldMappings/GetMappableFieldsFromSourceWorkspace')
+            });
+        }
+
+        function getSyncDestinationFields() {
+            return root.data.ajax({
+                type: 'GET',
+                url: root.utils.generateWebURL(JSON.parse(model.destination).CaseArtifactId +
+                    '/api/FieldMappings/GetMappableFieldsFromDestinationWorkspace')
+            }).then(function(result) {
+                return result;
+            });
+        }
+
+        var sourceFieldPromise =
+            (self.IsRelativityProvider()
+                    ? getSyncSourceFields()
+                    : getCustomProviderSourceFields())
+                .fail(function (error) {
+                    IP.message.error.raise("No attributes were returned from the source provider.");
+                });
+
+        var destinationPromise =
+            (self.IsRelativityProvider()
+                ? getSyncDestinationFields()
+				: getWorkspaceFieldPromise()
+            )
+		    .fail(function (error) {
+                IP.message.error.raise("Could not load destination workspace fields");
+            });
+
+        var destination = JSON.parse(model.destination);
 		root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('rdometa', destination.artifactTypeID) }).then(function (result) {
 			self.hasParent(result.hasParent);
 		});
@@ -558,17 +599,21 @@ ko.validation.insertValidationMessage = function (element) {
 			return {
 				exist: fieldFound,
 				type: fieldFound ? fields[0].type : null,
-				actualName: fieldFound ? fields[0].actualName : null,
-				displayName: fieldFound ? fields[0].displayName : null
+				name: fieldFound ? fields[0].name : null
 			};
 		};
 
 		self.updateFieldFromMapping = function(mappedField, fields) {
 			var field = self.findField(fields, mappedField);
 			if (field.exist) {
+				if (field.isIdentifier) {
+					mappedField.displayName = field.name + objectIdentifierFieldSuffix;
+				}
+				else {
+					mappedField.displayName = field.name + " [" + field.type + "]";
+				}
+				mappedField.name = field.name;
 				mappedField.type = field.type;
-				mappedField.actualName = field.actualName;
-				mappedField.displayName = field.displayName;
 				return mappedField;
 			}
 			return null;
@@ -585,13 +630,14 @@ ko.validation.insertValidationMessage = function (element) {
 			}
 		}
 
-		var promises = [workspaceFieldPromise, sourceFieldPromise, mappedSourcePromise];
+        var promises = [destinationPromise, sourceFieldPromise, mappedSourcePromise];
 
 		var mapTypes = {
 			identifier: 'Identifier',
 			parent: 'FolderPathInformation',
 			native: 'NativeFilePath'
-		};
+        };
+
 		var mapHelper = (function () {
 			function find(fields, fieldMapping, key, func) {
 				return $.grep(fields,
@@ -608,26 +654,36 @@ ko.validation.insertValidationMessage = function (element) {
 							});
 						return func(remove);
 					});
-			}
-
+            }
+            
 			function getNotMapped(fields, fieldMapping, key) {
 				return find(fields, fieldMapping, key, function (r) { return !r });
-			}
+            }
+
 			function getMapped(sourceFields, destinationFields, fieldMapping, sourceKey, destinationKey) {
 				var sourceMapped = [];
-				var destinationMapped = [];
+                var destinationMapped = [];
+
+                var sourceWithoutPair = [];
+                var destinationWithoutPair = [];
+
 				$.each(fieldMapping, function (_index, mapping) {
-					var sourceField = self.updateFieldFromMapping(mapping[sourceKey], sourceFields)
-					if (!!sourceField) {
-						sourceMapped.push(sourceField);
-					}
-					var destinationField = self.updateFieldFromMapping(mapping[destinationKey], destinationFields);
-					if (!!destinationField) {
-						destinationMapped.push(destinationField);
-					}
-				});
-				return [destinationMapped, sourceMapped];
-			}
+                    var sourceField = self.updateFieldFromMapping(mapping[sourceKey], sourceFields);
+                    var destinationField = self.updateFieldFromMapping(mapping[destinationKey], destinationFields);
+                    if (!!sourceField && !!destinationField) {
+                        sourceMapped.push(sourceField);
+                        destinationMapped.push(destinationField);
+                    } else {
+                        if (!destinationField) {
+                            sourceWithoutPair.push(sourceField);
+                        } else {
+                            destinationWithoutPair.push(destinationField);
+                        }
+                    }
+                });
+
+                return [sourceMapped, destinationMapped, sourceWithoutPair, destinationWithoutPair];
+            }
 
 			return {
 				getNotMapped: getNotMapped,
@@ -635,14 +691,111 @@ ko.validation.insertValidationMessage = function (element) {
 			};
 		})();
 
+        function confirmRemovingNotMappedFields(notMappedSourceFields,
+            notMappedDestinationFields,
+            successCallback,
+            cancelCallback) {
+         
+            var tableDiv = $('<div/>');
+
+            function addColumn(description, elements) {
+                var columnDiv = $('<div/>').css({ "float": "left", "width": "50%" });
+                $('<p/>').html(description).appendTo(columnDiv);
+
+                var list = $('<ul/>').appendTo(columnDiv);
+
+                $.each(elements,
+                    function() {
+                        $('<li/>').html(this).appendTo(list);
+                    });
+
+                $(columnDiv).appendTo(tableDiv);
+            }
+
+            if (notMappedSourceFields.length) {
+                addColumn("Source:", notMappedSourceFields.map(x => x.name));
+            }
+
+            if (notMappedDestinationFields.length) {
+                addColumn("Destination:", notMappedDestinationFields.map(x => x.name));
+            }
+
+            var dialogContent = $('<div/>')
+                .html('<p>The below fields were skipped from mapping.</p>');
+
+            tableDiv.appendTo(dialogContent);
+
+            $('<div/>')
+                .html('<p>Would you like to keep them in mapping anyway?</p>').appendTo(dialogContent)
+
+            return window.Dragon.dialogs.showConfirmWithCancelHandler({
+                message: dialogContent.html(),
+                title: "Integration Point Mapping",
+                width: 450,
+                okText: "Yes, keep them",
+                cancelText: "No, skip them",
+                showCancel: true,
+                messageAsHtml: true,
+                closeOnEscape: false,
+                success: function(calls) {
+                    calls.close();
+                    successCallback();
+                },
+                cancel: function(calls) {
+                    calls.close();
+                    cancelCallback();
+                }
+            });
+        }
+
+        this.applyMapping = function(mapping) {
+            var mapped = mapHelper.getMapped(self.sourceFields, self.destinationFields, mapping, 'sourceField', 'destinationField');
+            var sourceMapped  = mapped[0];
+            var destinationMapped = mapped[1];
+            var destinationNotMapped = mapHelper.getNotMapped(self.destinationFields, mapping, 'destinationField');
+            var sourceNotMapped = mapHelper.getNotMapped(self.sourceFields, mapping, 'sourceField');
+
+            var sourceWithoutPair = mapped[2];
+            var destinationWithoutPair = mapped[3];
+
+            return new Promise(function (resolve, reject) {
+                if (!sourceWithoutPair.length && !destinationWithoutPair.length) {
+                    resolve();
+                } else {
+                    confirmRemovingNotMappedFields(sourceWithoutPair,
+                        destinationWithoutPair,
+                        () => {
+                            sourceMapped = sourceMapped.concat(sourceWithoutPair);
+                            destinationMapped = destinationMapped.concat(destinationWithoutPair);
+                            resolve();
+                        },
+                        () => {
+                            sourceNotMapped = sourceNotMapped.concat(sourceWithoutPair);
+                            destinationNotMapped = destinationNotMapped.concat(destinationWithoutPair);
+                            resolve();
+                        });
+                }
+            }).then(() => {
+                self.workspaceFields(mapFields(destinationNotMapped));
+                self.mappedWorkspace(mapFields(destinationMapped));
+                self.sourceField(mapFields(sourceNotMapped));
+                self.sourceMapped(mapFields(sourceMapped));
+
+                self.populateExtractedText();
+            });
+        };
+
 		root.data.deferred().all(promises).then(
 			function (result) {
-				var destinationFields = result[0],
+				var destinationFields = result[0] || [],
 					sourceFields = result[1] || [],
-					mapping = result[2];
+					mapping = result[2] || [];
 
 				self.nativeFilePathOption(sourceFields);
 				self.FolderPathImportProvider(sourceFields);
+
+                self.destinationFields = destinationFields;
+                self.sourceFields = sourceFields;
 
 				// Setting the cached value for Non-Relativity Providers
 				self.FolderPathSourceField(model.FolderPathSourceField);
@@ -651,14 +804,14 @@ ko.validation.insertValidationMessage = function (element) {
 				self.overlay(destinationFields);
 				$.each(self.overlay(), function () {
 					if (this.isIdentifier) {
-						self.rdoIdentifier(this.displayName);
-						self.selectedUniqueId(this.displayName);
+						self.rdoIdentifier(this.name);
+						self.selectedUniqueId(this.name);
 					}
 				});
 
 				$.each(self.overlay(), function () {
-					if (model.identifer == this.displayName) {
-						self.selectedUniqueId(this.displayName);
+					if (model.identifer == this.name) {
+						self.selectedUniqueId(this.name);
 					}
 				});
 
@@ -695,13 +848,18 @@ ko.validation.insertValidationMessage = function (element) {
 							self.nativeFilePathValue(this.displayName);
 					});
 				}
-				for (var i = 0; i < mapping.length; i++) {
-					if (mapping[i].fieldMapType == mapTypes.identifier) {
-						self.selectedUniqueId(mapping[i].destinationField.displayName);
-					}
-				}
+                for (var i = 0; i < mapping.length; i++) {
+                    if (mapping[i].fieldMapType == mapTypes.identifier) {
+                        var identifierFromMapping =
+                            self.overlay().find(x => (x.name == mapping[i].destinationField.displayName) ||
+                                (x.fieldIdentifier == mapping[i].destinationField.fieldIdentifier))
+                        if (identifierFromMapping) {
+                            self.selectedUniqueId(identifierFromMapping.name);
+                        }
+                    }
+                }
 
-				mapping = $.map(mapping, function (value) {
+                mapping = $.map(mapping, function (value) {
 					// Drop auxiliary mapping entries that don't have destination field specified (such as FolderPathInformation or NativeFilePath) as they shouldn't be displayed in the UI
 					if (value.destinationField.fieldIdentifier === undefined && (value.fieldMapType === mapTypes.parent || value.fieldMapType === mapTypes.native)) {
 						return null;
@@ -710,17 +868,8 @@ ko.validation.insertValidationMessage = function (element) {
 				});
 
 
-				var mapped = mapHelper.getMapped(sourceFields, destinationFields, mapping, 'sourceField', 'destinationField');
-				var destinationMapped = mapped[0];
-				var sourceMapped = mapped[1];
-				var destinationNotMapped = mapHelper.getNotMapped(destinationFields, mapping, 'destinationField');
-				var sourceNotMapped = mapHelper.getNotMapped(sourceFields, mapping, 'sourceField');
-
-				self.workspaceFields(mapFields(destinationNotMapped));
-				self.mappedWorkspace(mapFields(destinationMapped));
-				self.sourceField(mapFields(sourceNotMapped));
-				self.sourceMapped(mapFields(sourceMapped));
-				self.populateExtractedText();
+                self.applyMapping(mapping);
+                
 				self.LongTextColumnThatContainsPathToFullText(model.LongTextColumnThatContainsPathToFullText);
 				self.ExtractedTextFileEncoding(model.ExtractedTextFileEncoding || "utf-16");
 
@@ -806,89 +955,21 @@ ko.validation.insertValidationMessage = function (element) {
 			self.addAlltoSourceField();
 			self.addAlltoWorkspaceField();
 
-			var isCatalogFieldMatch = function (wsFieldArtifactId, fieldName) {
-				for (var x = 0; x < self.CatalogField.length; x++) {
-					if (self.CatalogField[x].fieldArtifactId == wsFieldArtifactId &&
-						self.CatalogField[x].friendlyName === fieldName) {
-						return true;
-					}
-				}
-				return false;
-			};
+            var fieldForAutomap = function(field) {
+                return field.classificationLevel == 0;
+            };
 
-			var sourceFieldToAdd = ko.observableArray([]);
-			var wspaceFieldToAdd = ko.observableArray([]);
-            for (var i = 0; i < self.sourceField().length; i++) {
-                var currentSourceField = self.sourceField()[i];
-                var currentWorkspaceField;
-				var fieldAlreadyMatched = false;
-
-				if (matchOnlyIdentifierFields) {
-                    if (!currentSourceField.isIdentifier) {
-						continue;
-					}
-                    matchOnlyIdentifierFields(currentSourceField);
-				}
-
-                var objectIdentifierFieldSuffix = " [Object Identifier]";
-                var currentSourceFieldNameAsIdentifier = currentSourceField.name + objectIdentifierFieldSuffix;
-
-				//check for a match b/w the source and destination fields by identifier flag or name
-                for (var j = 0; j < self.workspaceFields().length; j++) {
-                    currentWorkspaceField = self.workspaceFields()[j];
-
-					//check to make sure that we ignore any workspace field that's already added
-                    if (wspaceFieldToAdd().indexOf(currentWorkspaceField) != -1) {
-						continue;
-					}
-
-                    if ((currentSourceField.isIdentifier && currentWorkspaceField.isIdentifier) 
-						|| 
-                        (currentSourceField.name === currentWorkspaceField.name)
-                        ||
-                        (currentSourceFieldNameAsIdentifier === currentWorkspaceField.name))
-					{
-                        sourceFieldToAdd.push(currentSourceField);
-                        wspaceFieldToAdd.push(currentWorkspaceField);
-						fieldAlreadyMatched = true;
-						break;
-					}
-				}
-
-				//if we haven't found a match for the current source field by name, now check the field catalog
-				if (!fieldAlreadyMatched) {
-                    for (var k = 0; k < self.workspaceFields().length; k++) {
-                        currentWorkspaceField = self.workspaceFields()[k];
-
-						//check to make sure that we ignore any workspace field that's already added
-                        if (wspaceFieldToAdd().indexOf(currentWorkspaceField) != -1) {
-							continue;
-						}
-
-						var isCatalogFieldMatchResult;
-						if (self.IsRelativityProvider()) {
-                            isCatalogFieldMatchResult = isCatalogFieldMatch(currentSourceField.identifer, currentWorkspaceField.name);
-						} else {
-                            isCatalogFieldMatchResult = isCatalogFieldMatch(currentWorkspaceField.identifer, currentSourceField.name);
-						}
-
-						if (isCatalogFieldMatchResult) {
-                            sourceFieldToAdd.push(currentSourceField);
-                            wspaceFieldToAdd.push(currentWorkspaceField);
-							break;
-						}
-					}
-				}
-			}
-
-			if (sourceFieldToAdd().length > 0) {
-				IP.workspaceFieldsControls.add(self.sourceField, sourceFieldToAdd, self.sourceMapped);
-				IP.workspaceFieldsControls.add(self.workspaceFields, wspaceFieldToAdd, self.mappedWorkspace);
-			}
-			else {
-				IP.message.error.raise("Unable to auto map. No matching fields found.");
-			}
-			self.populateExtractedText();
+            root.data.ajax({
+                type: 'POST', url: root.utils.generateWebURL('/api/FieldMappings/AutomapFields'),
+                data: JSON.stringify({
+                    SourceFields: this.sourceFields.filter(fieldForAutomap),
+                    DestinationFields: this.destinationFields.filter(fieldForAutomap),
+                    MatchOnlyIdentifiers: !!matchOnlyIdentifierFields
+                })
+            }).then(function (mapping) {
+                self.applyMapping(mapping);
+                return mapping;
+            });
 		};
 		/********** Tooltips  **********/
 		var settingsTooltipViewModel = new TooltipViewModel(TooltipDefs.RelativityProviderSettingsDetails, TooltipDefs.RelativityProviderSettingsDetailsTitle);
@@ -1055,7 +1136,8 @@ ko.validation.insertValidationMessage = function (element) {
 		this.submit = function () {
 			var d = root.data.deferred().defer();
 			this.model.submit();
-			if (this.model.errors().length === 0) {
+			var modelErrors = this.model.errors();
+			if (modelErrors.length === 0) {
 				var mapping = ko.toJS(self.model);
 				var map = [];
 			    var allSourceField = mapping.sourceField.concat(mapping.sourceMapped);

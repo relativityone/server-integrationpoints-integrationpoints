@@ -9,6 +9,7 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Api;
 using kCura.Apps.Common.Utils.Serializers;
+using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 {

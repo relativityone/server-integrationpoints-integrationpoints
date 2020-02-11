@@ -11,6 +11,7 @@ using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using System.Runtime.CompilerServices;
 using kCura.IntegrationPoints.ImportProvider.Parser.Helpers;
 using Relativity.DataExchange.Service;
+using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Logging;
 
 

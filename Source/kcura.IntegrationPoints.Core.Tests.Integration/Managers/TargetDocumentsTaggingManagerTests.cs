@@ -28,6 +28,7 @@ using Relativity.API;
 using Relativity.IntegrationPoints.Services;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Testing.Identification;
+using FieldMap = Relativity.IntegrationPoints.FieldsMapping.Models.FieldMap;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 {
@@ -94,7 +95,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 
 			SourceConfiguration sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(serializedSourceConfig);
 			string destinationConfig = AppendWebAPIPathToImportSettings(integrationPoint.DestinationConfiguration);
-			Domain.Models.FieldMap[] fieldMaps = ConvertFromServicesToDomainFieldMaps(_fieldMaps);
+			FieldMap[] fieldMaps = ConvertFromServicesToDomainFieldMaps(_fieldMaps);
 			var targetDocumentsTaggingManagerFactory = new TargetDocumentsTaggingManagerFactory(
 				_repositoryFactory,
 				_tagsCreator,
@@ -128,14 +129,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 				.ConfigureAwait(false);
 		}
 
-		private Domain.Models.FieldMap[] ConvertFromServicesToDomainFieldMaps(global::Relativity.IntegrationPoints.Services.FieldMap[] servicesFieldMaps)
+		private FieldMap[] ConvertFromServicesToDomainFieldMaps(global::Relativity.IntegrationPoints.Services.FieldMap[] servicesFieldMaps)
 		{
 			return servicesFieldMaps.Select(ConvertFromServicesToDomainFieldMap).ToArray();
 		}
 
-		private Domain.Models.FieldMap ConvertFromServicesToDomainFieldMap(global::Relativity.IntegrationPoints.Services.FieldMap servicesFieldMap)
+		private FieldMap ConvertFromServicesToDomainFieldMap(global::Relativity.IntegrationPoints.Services.FieldMap servicesFieldMap)
 		{
-			return new Domain.Models.FieldMap
+			return new FieldMap
 			{
 				DestinationField = ConvertFromServicesToDomainFieldEntry(servicesFieldMap.DestinationField),
 				FieldMapType = ConvertFromServicesToDomainFieldMapType(servicesFieldMap.FieldMapType),

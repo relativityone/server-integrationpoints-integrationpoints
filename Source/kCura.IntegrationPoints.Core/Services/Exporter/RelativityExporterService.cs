@@ -13,6 +13,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using Relativity;
 using Relativity.API;
+using Relativity.IntegrationPoints.FieldsMapping.Models;
 using ArtifactType = kCura.Relativity.Client.ArtifactType;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter

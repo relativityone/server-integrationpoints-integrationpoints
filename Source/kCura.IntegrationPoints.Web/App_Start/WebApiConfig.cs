@@ -232,6 +232,24 @@ namespace kCura.IntegrationPoints.Web
 			);
 
 			config.Routes.MapHttpRoute(
+				name: "GetMappableFieldsFromSourceWorkspace",
+				routeTemplate: "{workspaceID}/api/FieldMappings/GetMappableFieldsFromSourceWorkspace",
+				defaults: new { controller = "FieldMappings", action = "GetMappableFieldsFromSourceWorkspace" }
+			);
+
+			config.Routes.MapHttpRoute(
+				name: "GetMappableFieldsFromDestinationWorkspace",
+				routeTemplate: "{workspaceID}/api/FieldMappings/GetMappableFieldsFromDestinationWorkspace",
+				defaults: new { controller = "FieldMappings", action = "GetMappableFieldsFromDestinationWorkspace" }
+			);
+
+			config.Routes.MapHttpRoute(
+				name: "AutoMapFields",
+				routeTemplate: "api/FieldMappings/AutomapFields",
+				defaults: new { controller = "FieldMappings", action = "AutoMapFields" }
+			);
+			
+			config.Routes.MapHttpRoute(
 				name: "LoadFileHeaders",
 				routeTemplate: "{workspaceID}/api/ImportProviderDocument/LoadFileHeaders",
 				defaults: new {controller = "ImportProviderDocument", action = "LoadFileHeaders"}

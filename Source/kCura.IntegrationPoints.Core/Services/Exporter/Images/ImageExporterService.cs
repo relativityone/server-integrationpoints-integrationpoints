@@ -15,6 +15,7 @@ using kCura.Utility.Extensions;
 using kCura.WinEDDS.Service.Export;
 using LanguageExt;
 using Relativity.API;
+using Relativity.IntegrationPoints.FieldsMapping.Models;
 using ArtifactType = kCura.Relativity.Client.ArtifactType;
 using ExportSettings = kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportSettings;
 

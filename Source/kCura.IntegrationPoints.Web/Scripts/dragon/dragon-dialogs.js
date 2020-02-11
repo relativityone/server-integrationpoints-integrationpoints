@@ -114,7 +114,8 @@
 				width: 'auto',
 				height: 'auto',
 				showOk: true,
-				showCancel: true,
+                showCancel: true,
+                closeOnEscape: true,
 				hideTitlebarBorder: true
 			};
 
@@ -159,7 +160,8 @@
 					height: settings.height,
 					width: settings.width,
 					dialogClass: 'msg',
-					buttons: buttons,
+                    buttons: buttons,
+                    closeOnEscape: settings.closeOnEscape, 
 					beforeClose: function () {
 						$(this).remove();
 					},

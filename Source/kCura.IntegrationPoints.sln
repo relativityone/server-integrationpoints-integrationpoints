@@ -162,6 +162,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Version", "Version", "{1CDA
 		Version\AssemblyInfo.Custom.cs = Version\AssemblyInfo.Custom.cs
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.IntegrationPoints.FieldsMapping", "Relativity.IntegrationPoints.FieldsMapping\Relativity.IntegrationPoints.FieldsMapping.csproj", "{FAFF9DBE-B607-45B3-8392-469B5EEC5259}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.IntegrationPoints.FieldsMapping.Tests", "Relativity.IntegrationPoints.FieldsMapping.Tests\Relativity.IntegrationPoints.FieldsMapping.Tests.csproj", "{94473025-8D25-4B5A-928B-A8208C0C79B7}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.RelativitySync", "kCura.IntegrationPoints.RelativitySync\kCura.IntegrationPoints.RelativitySync.csproj", "{B606C8B4-D106-4A1F-A794-9DED7B02DE3E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.RelativitySync.Tests", "kCura.IntegrationPoints.RelativitySync.Tests\kCura.IntegrationPoints.RelativitySync.Tests.csproj", "{3941F1C1-84BB-4966-A16F-6B3446D1E4E0}"
@@ -430,6 +434,14 @@ Global
 		{C06A564D-5A92-4E12-AE32-ABBD197A45AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C06A564D-5A92-4E12-AE32-ABBD197A45AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C06A564D-5A92-4E12-AE32-ABBD197A45AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FAFF9DBE-B607-45B3-8392-469B5EEC5259}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FAFF9DBE-B607-45B3-8392-469B5EEC5259}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FAFF9DBE-B607-45B3-8392-469B5EEC5259}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FAFF9DBE-B607-45B3-8392-469B5EEC5259}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94473025-8D25-4B5A-928B-A8208C0C79B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94473025-8D25-4B5A-928B-A8208C0C79B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94473025-8D25-4B5A-928B-A8208C0C79B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94473025-8D25-4B5A-928B-A8208C0C79B7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B606C8B4-D106-4A1F-A794-9DED7B02DE3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B606C8B4-D106-4A1F-A794-9DED7B02DE3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B606C8B4-D106-4A1F-A794-9DED7B02DE3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -498,6 +510,7 @@ Global
 		{88F9B589-2AA4-4609-AF61-E0BADB5DE82E} = {0F6F16A2-C14A-412E-B399-3DCDF8DBEA96}
 		{92381E05-24E9-46F2-9D95-8B41518CD69C} = {1CF9A281-4FE6-4735-A66D-71C7E415EF69}
 		{C06A564D-5A92-4E12-AE32-ABBD197A45AD} = {0F6F16A2-C14A-412E-B399-3DCDF8DBEA96}
+		{94473025-8D25-4B5A-928B-A8208C0C79B7} = {1CF9A281-4FE6-4735-A66D-71C7E415EF69}
 		{3941F1C1-84BB-4966-A16F-6B3446D1E4E0} = {1CF9A281-4FE6-4735-A66D-71C7E415EF69}
 		{8F4C9360-81C6-45E8-BD34-BC0530EAC1E3} = {5E44277B-5C51-4367-874B-EFA44EB2B956}
 	EndGlobalSection

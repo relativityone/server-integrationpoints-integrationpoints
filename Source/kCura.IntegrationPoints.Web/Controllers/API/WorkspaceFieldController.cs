@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Models;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
+using Relativity.IntegrationPoints.FieldsMapping;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
@@ -39,7 +40,17 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 			IDataSynchronizer synchronizer = _appDomainRdoSynchronizerFactory.CreateSynchronizer(Guid.Empty, settings.Settings);
 			List<FieldEntry> fields = synchronizer.GetFields(new DataSourceProviderConfiguration(_serializer.Serialize(importSettings), settings.Credentials)).ToList();
-			return Request.CreateResponse(HttpStatusCode.OK, fields, Configuration.Formatters.JsonFormatter);
+
+			List<FieldClassificationResult> result = fields.Select(x => new FieldClassificationResult
+			{
+				ClassificationLevel = ClassificationLevel.AutoMap,
+				FieldIdentifier = x.FieldIdentifier,
+				IsIdentifier = x.IsIdentifier,
+				IsRequired = x.IsRequired,
+				Name = x.ActualName
+			}).ToList();
+
+			return Request.CreateResponse(HttpStatusCode.OK, result, Configuration.Formatters.JsonFormatter);
 		}
 
 		private void LogImportSettings(ImportSettings importSettings)
