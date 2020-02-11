@@ -4,9 +4,10 @@ using System.Linq;
 using System.Web;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity.IntegrationPoints.Contracts.Models;
+using Relativity.IntegrationPoints.FieldsMapping.Models;
 
-namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
-{
+namespace Relativity.IntegrationPoints.FieldsMapping
+{ 
 	public class AutomapRunner : IAutomapRunner
 	{
 		public IEnumerable<FieldMap> MapFields(IEnumerable<DocumentFieldInfo> sourceFields,

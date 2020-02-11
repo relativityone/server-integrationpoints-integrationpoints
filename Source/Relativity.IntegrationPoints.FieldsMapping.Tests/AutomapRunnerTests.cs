@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.Web.Controllers.API.FieldMappings;
 using NUnit.Framework;
+using Relativity.IntegrationPoints.FieldsMapping;
+
+using CategoryAttribute = NUnit.Framework.CategoryAttribute;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 {

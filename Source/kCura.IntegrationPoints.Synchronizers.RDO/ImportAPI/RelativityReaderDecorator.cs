@@ -5,6 +5,7 @@ using System.Linq;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.WinEDDS.Api;
+using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 {

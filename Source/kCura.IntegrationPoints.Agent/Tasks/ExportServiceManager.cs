@@ -35,6 +35,7 @@ using APMClient = Relativity.Telemetry.APM.Client;
 using kCura.IntegrationPoints.RelativitySync;
 using kCura.IntegrationPoints.RelativitySync.RipOverride;
 using Relativity;
+using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Agent.Tasks

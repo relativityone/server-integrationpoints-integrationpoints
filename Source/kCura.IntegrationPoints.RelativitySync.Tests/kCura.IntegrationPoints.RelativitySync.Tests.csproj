@@ -17,7 +17,7 @@
     <AssemblyName>kCura.IntegrationPoints.RelativitySync.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-	<TestProjectType>UnitTest</TestProjectType>
+    <TestProjectType>UnitTest</TestProjectType>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -76,6 +76,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.RelativitySync\kCura.IntegrationPoints.RelativitySync.csproj">
       <Project>{b606c8b4-d106-4a1f-a794-9ded7b02de3e}</Project>
       <Name>kCura.IntegrationPoints.RelativitySync</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Relativity.IntegrationPoints.FieldsMapping\Relativity.IntegrationPoints.FieldsMapping.csproj">
+      <Project>{faff9dbe-b607-45b3-8392-469b5eec5259}</Project>
+      <Name>Relativity.IntegrationPoints.FieldsMapping</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

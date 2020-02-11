@@ -19,7 +19,6 @@
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
-    <RestorePackages>true</RestorePackages>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Use64BitIISExpress />
     <IISExpressSSLPort />
@@ -85,21 +84,7 @@
     <Compile Include="..\Version\AssemblyInfo.Custom.cs">
       <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
-    <Compile Include="Controllers\API\FieldMappings\AutomapRequest.cs" />
-    <Compile Include="Controllers\API\FieldMappings\AutomapRunner.cs" />
-    <Compile Include="Controllers\API\FieldMappings\DocumentFieldInfo.cs" />
-    <Compile Include="Controllers\API\FieldMappings\FieldClassificationResult.cs" />
-    <Compile Include="Controllers\API\FieldMappings\FieldClassifiers\NestedParentObjectFieldsClassifier.cs" />
-    <Compile Include="Controllers\API\FieldMappings\FieldClassifiers\NotSupportedByIAPIFieldsClassifier.cs" />
-    <Compile Include="Controllers\API\FieldMappings\FieldClassifiers\OpenToAssociationsFieldsClassifier.cs" />
-    <Compile Include="Controllers\API\FieldMappings\FieldClassifiers\RipFieldsClassifier.cs" />
-    <Compile Include="Controllers\API\FieldMappings\FieldClassifiers\SystemFieldsClassifier.cs" />
     <Compile Include="Controllers\API\FieldMappings\FieldMappingsController.cs" />
-    <Compile Include="Controllers\API\FieldMappings\FieldClassifiers\IFieldsClassifier.cs" />
-    <Compile Include="Controllers\API\FieldMappings\ClassificationLevel.cs" />
-    <Compile Include="Controllers\API\FieldMappings\IAutomapRunner.cs" />
-    <Compile Include="Controllers\API\FieldMappings\IFieldsClassifierRunner.cs" />
-    <Compile Include="Controllers\API\FieldMappings\FieldsClassifierRunner.cs" />
     <Compile Include="IntegrationPointsServices\TextSanitizer.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
@@ -687,9 +672,6 @@
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="packages.config">
-      <SubType>Designer</SubType>
-    </Content>
     <Content Include="paket.references">
     </Content>
   </ItemGroup>
@@ -761,6 +743,10 @@
     <ProjectReference Include="..\kCura.ScheduleQueue.Core\kCura.ScheduleQueue.Core.csproj">
       <Project>{C831C856-E74F-48B4-AEBC-1CF15576E082}</Project>
       <Name>kCura.ScheduleQueue.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Relativity.IntegrationPoints.FieldsMapping\Relativity.IntegrationPoints.FieldsMapping.csproj">
+      <Project>{FAFF9DBE-B607-45B3-8392-469B5EEC5259}</Project>
+      <Name>Relativity.IntegrationPoints.FieldsMapping</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
@@ -1355,26 +1341,6 @@
         </Reference>
         <Reference Include="System.Data.SqlClient">
           <HintPath>..\..\packages\System.Data.SqlClient\lib\net461\System.Data.SqlClient.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="System.Windows">
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="System.Windows.Forms">
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="WindowsBase">
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="System.Reactive">
-          <HintPath>..\..\packages\System.Reactive\lib\net46\System.Reactive.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

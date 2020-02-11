@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using Newtonsoft.Json;
 using Relativity;
 using Relativity.IntegrationPoints.Contracts.Models;
+using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoint.Tests.Core.Templates
 {

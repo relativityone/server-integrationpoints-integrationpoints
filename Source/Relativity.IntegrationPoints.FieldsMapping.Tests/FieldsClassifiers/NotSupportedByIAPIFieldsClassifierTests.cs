@@ -4,13 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoints.DocumentTransferProvider;
-using kCura.IntegrationPoints.Web.Controllers.API.FieldMappings;
-using kCura.IntegrationPoints.Web.Controllers.API.FieldMappings.FieldClassifiers;
-using kCura.Relativity.Client;
 using kCura.Relativity.ImportAPI;
 using Moq;
-using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
+using Relativity;
+using Relativity.IntegrationPoints.FieldsMapping;
+using Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers;
 using Relativity.Services.Objects.DataContracts;
 using Field = kCura.Relativity.ImportAPI.Data.Field;
 
@@ -19,7 +18,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings.Fields
 	[TestFixture]
 	public class NotSupportedByIAPIFieldsClassifierTests
 	{
-		private Mock<IImportApiFactory> _importApiFactoryFake;
 		private Mock<IImportAPI> _importApiFake;
 		private NotSupportedByIAPIFieldsClassifier _sut;
 
@@ -27,9 +25,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings.Fields
 		public void SetUp()
 		{
 			_importApiFake = new Mock<IImportAPI>();
-			_importApiFactoryFake = new Mock<IImportApiFactory>();
-			_importApiFactoryFake.Setup(x => x.Create()).Returns(_importApiFake.Object);
-			_sut = new NotSupportedByIAPIFieldsClassifier(_importApiFactoryFake.Object);
+			_sut = new NotSupportedByIAPIFieldsClassifier(_importApiFake.Object);
 		}
 
 		[Test]

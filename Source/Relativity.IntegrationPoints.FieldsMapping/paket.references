@@ -1,0 +1,9 @@
+Relativity
+System.Reactive
+System.ValueTuple
+Relativity.Services.Interfaces
+Relativity.API
+Relativity.DataExchange.Client.SDK
+kCura.Relativity.Client
+
+Relativity.IntegrationPoints.Contracts

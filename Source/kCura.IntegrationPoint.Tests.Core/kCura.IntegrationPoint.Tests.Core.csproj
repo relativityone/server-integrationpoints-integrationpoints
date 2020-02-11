@@ -276,6 +276,10 @@
       <Project>{C831C856-E74F-48B4-AEBC-1CF15576E082}</Project>
       <Name>kCura.ScheduleQueue.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Relativity.IntegrationPoints.FieldsMapping\Relativity.IntegrationPoints.FieldsMapping.csproj">
+      <Project>{FAFF9DBE-B607-45B3-8392-469B5EEC5259}</Project>
+      <Name>Relativity.IntegrationPoints.FieldsMapping</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="ExternalDependencies\TransferConsole\Relativity.Transfer.Console.exe.config">
@@ -8014,6 +8018,17 @@
       <ItemGroup>
         <Reference Include="Relativity.Services.ServiceProxy">
           <HintPath>..\..\packages\Relativity.Kepler.Client\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Logging">
+          <HintPath>..\..\packages\Relativity.Logging\lib\net462\Relativity.Logging.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Web.Http;
 using kCura.IntegrationPoint.Tests.Core;
@@ -11,6 +12,7 @@ using NSubstitute;
 using NUnit.Framework;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.Contracts.Provider;
+using Relativity.IntegrationPoints.FieldsMapping;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
@@ -40,7 +42,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             _dataSourceProvider = Substitute.For<IDataSourceProvider>();
             _configuration = Substitute.For<HttpConfiguration>();
 
-            _fieldA = new FieldEntry() { FieldIdentifier = "AAA", DisplayName = "aaa" };
+            _fieldA = new FieldEntry() { FieldIdentifier = "AAA", DisplayName = "aaa", IsIdentifier = true};
             _fieldB = new FieldEntry() { FieldIdentifier = "BBB", DisplayName = "bbb" };
             _fieldC = new FieldEntry() { FieldIdentifier = "CCC", DisplayName = "ccc" };
             _fieldD = new FieldEntry() { FieldIdentifier = "DDD", DisplayName = "ddd" };
@@ -68,7 +70,13 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             var response = _instance.Get(new SourceOptions() { Options  = _options, Type = _dataType, Credentials = _credentials });
 
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-            CollectionAssert.AreEqual(new List<FieldEntry>() { _fieldA, _fieldB, _fieldC, _fieldD }, (List<FieldEntry>)((System.Net.Http.ObjectContent<List<FieldEntry>>)response.Content).Value);
+            var classificationResults = ((List<FieldClassificationResult>)((System.Net.Http.ObjectContent<List<FieldClassificationResult>>)response.Content).Value);
+            var fieldEntries = new List<FieldEntry>() { _fieldA, _fieldB, _fieldC, _fieldD };
+
+
+            CollectionAssert.AreEqual(fieldEntries.Select(x => x.FieldIdentifier), classificationResults.Select(x => x.FieldIdentifier));
+            CollectionAssert.AreEqual(fieldEntries.Select(x => x.DisplayName), classificationResults.Select(x => x.Name));
+            CollectionAssert.AreEqual(fieldEntries.Select(x => x.IsIdentifier), classificationResults.Select(x => x.IsIdentifier));
 
             _factory.Received().GetDataProvider(_appIdentifier, _dataType);
             _dataSourceProvider.Received(1).GetFields(Arg.Is<DataSourceProviderConfiguration>(x => x.Configuration.Equals(_options) && x.SecuredConfiguration.Equals(_credentials)));

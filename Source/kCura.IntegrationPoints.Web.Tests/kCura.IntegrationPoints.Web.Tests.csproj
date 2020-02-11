@@ -52,13 +52,7 @@
     <Compile Include="Context\UserContext\RequestHeadersUserContextServiceTests.cs" />
     <Compile Include="Context\UserContext\SessionUserContextServiceTests.cs" />
     <Compile Include="Context\WorkspaceContext\NotFoundWorkspaceContextServiceTests.cs" />
-    <Compile Include="Controllers\API\FieldMappings\AutomapRunnerTests.cs" />
-    <Compile Include="Controllers\API\FieldMappings\FieldMappingsControllerTests.cs" />
-    <Compile Include="Controllers\API\FieldMappings\FieldsClassifiers\RipFieldsClassifierTests.cs" />
-    <Compile Include="Controllers\API\FieldMappings\FieldsClassifiers\NotSupportedByIAPIFieldsClassifierTests.cs" />
-    <Compile Include="Controllers\API\FieldMappings\FieldsClassifiers\OpenToAssociationsFieldsClassifierTests.cs" />
-    <Compile Include="Controllers\API\FieldMappings\FieldsClassifiers\SystemFieldsClassifierTests.cs" />
-    <Compile Include="Controllers\API\FieldMappings\FieldsClassifierRunnerTests.cs" />
+    <Compile Include="Controllers\API\FieldMappingsControllerTests.cs" />
     <Compile Include="Controllers\API\IntegrationPointProfilesAPIControllerTests.cs" />
     <Compile Include="Extensions\HttpConfigurationExtensionsTests.cs" />
     <Compile Include="Extensions\RequestExtensionsTests.cs" />
@@ -178,6 +172,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Web\kCura.IntegrationPoints.Web.csproj">
       <Project>{05724e56-c325-4ca2-9122-50a41411b691}</Project>
       <Name>kCura.IntegrationPoints.Web</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Relativity.IntegrationPoints.FieldsMapping\Relativity.IntegrationPoints.FieldsMapping.csproj">
+      <Project>{FAFF9DBE-B607-45B3-8392-469B5EEC5259}</Project>
+      <Name>Relativity.IntegrationPoints.FieldsMapping</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

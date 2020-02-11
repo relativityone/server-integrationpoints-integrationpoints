@@ -2,6 +2,7 @@
 using Castle.Windsor;
 using kCura.IntegrationPoints.Web.Controllers.API.FieldMappings;
 using kCura.IntegrationPoints.Web.Helpers;
+using Relativity.IntegrationPoints.FieldsMapping;
 
 namespace kCura.IntegrationPoints.Web.Installers
 {

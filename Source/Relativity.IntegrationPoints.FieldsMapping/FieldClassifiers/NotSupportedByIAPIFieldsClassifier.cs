@@ -1,23 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.DocumentTransferProvider;
-using kCura.Relativity.Client;
 using kCura.Relativity.ImportAPI;
 using Relativity.Services.Objects.DataContracts;
 using Field = kCura.Relativity.ImportAPI.Data.Field;
 
-namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings.FieldClassifiers
+namespace Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers
 {
 	public class NotSupportedByIAPIFieldsClassifier : IFieldsClassifier
 	{
+		private readonly IImportAPI _importApi;
 		private const int DocumentArtifactTypeID = (int)ArtifactType.Document;
 
-		private readonly IImportApiFactory _importApiFactory;
 
-		public NotSupportedByIAPIFieldsClassifier(IImportApiFactory importApiFactory)
+		public NotSupportedByIAPIFieldsClassifier(IImportAPI importApi)
 		{
-			_importApiFactory = importApiFactory;
+			_importApi = importApi;
 		}
 
 		public Task<IEnumerable<FieldClassificationResult>> ClassifyAsync(ICollection<RelativityObject> fields, int workspaceID)
@@ -39,8 +37,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings.FieldClassif
 
 		private IEnumerable<Field> GetFieldsSupportedByIAPIAsync(int workspaceId)
 		{
-			IImportAPI iapi = _importApiFactory.Create();
-			IEnumerable<Field> workspaceFields = iapi.GetWorkspaceFields(workspaceId, DocumentArtifactTypeID);
+			IEnumerable<Field> workspaceFields = _importApi.GetWorkspaceFields(workspaceId, DocumentArtifactTypeID);
 			return workspaceFields;
 		}
 	}

@@ -14,6 +14,7 @@ using kCura.ScheduleQueue.Core;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Internals;
 using Relativity.IntegrationPoints.Contracts.Models;
+using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Core.Services.Keywords
 {
