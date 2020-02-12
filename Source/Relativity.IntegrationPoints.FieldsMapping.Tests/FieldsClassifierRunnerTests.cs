@@ -16,7 +16,7 @@ using QueryResult = Relativity.Services.Objects.DataContracts.QueryResult;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class FieldsClassifierRunnerTests
 	{
 		private FieldsClassifierRunner _sut;
@@ -167,6 +167,71 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 			_objectManagerMock.Verify(x => x.QueryAsync(It.IsAny<int>(), It.Is<QueryRequest>(req => ValidateQueryRequest(req)), It.IsAny<int>(), It.IsAny<int>()));
 		}
 
+
+		[Test]
+		public async Task GetFilteredFieldsAsync_ShouldUpdateOnlyClassificationLevelAndReasonFromClassifier()
+		{
+			// Arrange
+			const int count = 3;
+			SetupWorkspaceFields(Enumerable.Range(1, count).Select(x => CreateField(x.ToString(), x, "Some type")).ToList());
+
+			var classificationResult = new List<FieldClassificationResult>()
+			{
+				new FieldClassificationResult()
+				{
+					Name = "1",
+					ClassificationLevel = ClassificationLevel.AutoMap,
+					ClassificationReason = "Reason",
+					Type = "Changed type",
+					IsIdentifier = true,
+					IsRequired = true
+				},
+				new FieldClassificationResult()
+				{
+					Name = "2",
+					ClassificationLevel = ClassificationLevel.ShowToUser,
+					ClassificationReason = "Reason",
+					Type = "Changed type",
+					IsIdentifier = true,
+					IsRequired = true
+				},
+				new FieldClassificationResult()
+				{
+					Name = "3",
+					ClassificationLevel = ClassificationLevel.ShowToUser,
+					ClassificationReason = "Reason",
+					Type = "Changed type",
+					IsIdentifier = true,
+					IsRequired = true
+				}
+			};
+
+			var classifierFake = new Mock<IFieldsClassifier>();
+			classifierFake
+				.Setup(x => x.ClassifyAsync(It.IsAny<ICollection<RelativityObject>>(), It.IsAny<int>()))
+				.ReturnsAsync(classificationResult);
+
+
+			// Act
+			IList<FieldClassificationResult> filteredFields = await _sut.GetFilteredFieldsAsync(It.IsAny<int>(), new List<IFieldsClassifier> { classifierFake.Object }).ConfigureAwait(false);
+
+			// Assert
+			filteredFields.Count.Should().Be(count);
+
+			filteredFields.Select(x => x.IsIdentifier).Any(x => x).Should().BeFalse();
+			filteredFields.Select(x => x.IsRequired).Any(x => x).Should().BeFalse();
+			filteredFields.Select(x => x.Type).All(x => x == "Some type").Should().BeTrue();
+
+
+			filteredFields[0].FieldIdentifier.Should().Be("1");
+			filteredFields[1].FieldIdentifier.Should().Be("2");
+			filteredFields[2].FieldIdentifier.Should().Be("3");
+
+			filteredFields[0].ClassificationReason.Should().Be(null);
+			filteredFields[1].ClassificationReason.Should().Be("Reason");
+			filteredFields[2].ClassificationReason.Should().Be("Reason");
+		}
+
 		[Test]
 		public async Task GetFilteredFieldsAsync_ShouldSortByName()
 		{
@@ -192,7 +257,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 			classifier.Setup(x => x.ClassifyAsync(It.IsAny<ICollection<RelativityObject>>(), It.IsAny<int>())).ReturnsAsync(classificationResult);
 
 			// Act
-			IList<FieldClassificationResult> filteredFields = await _sut.GetFilteredFieldsAsync(0, new List<IFieldsClassifier>() {classifier.Object}).ConfigureAwait(false);
+			IList<FieldClassificationResult> filteredFields = await _sut.GetFilteredFieldsAsync(0, new List<IFieldsClassifier>() { classifier.Object }).ConfigureAwait(false);
 
 			// Assert
 			filteredFields.Select(x => x.Name).ShouldAllBeEquivalentTo(sortedFields.Select(x => x.Name));
