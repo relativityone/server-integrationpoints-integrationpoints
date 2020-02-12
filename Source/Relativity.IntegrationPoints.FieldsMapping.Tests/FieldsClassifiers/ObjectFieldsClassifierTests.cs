@@ -74,7 +74,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests.FieldsClassifiers
 			};
 
 			// Act
-			FieldClassificationResult[] classifications = (await _sut.ClassifyAsync(fields, 0)).ToArray();
+			FieldClassificationResult[] classifications = (await _sut.ClassifyAsync(fields, 0).ConfigureAwait(false)).ToArray();
 
 			// Assert
 			classifications.Length.Should().Be(2);
