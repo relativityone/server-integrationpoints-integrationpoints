@@ -100,7 +100,9 @@
     <Compile Include="Components\TreeSelect.cs" />
     <Compile Include="Configuration\Helpers\ApplicationInstallationHelper.cs" />
     <Compile Include="Configuration\Helpers\EntityObjectTypeHelper.cs" />
+    <Compile Include="Configuration\Helpers\FieldObject.cs" />
     <Compile Include="Configuration\Helpers\ImportDocumentsHelper.cs" />
+    <Compile Include="Configuration\Helpers\FieldMappingHelper.cs" />
     <Compile Include="Configuration\Helpers\ProductionHelper.cs" />
     <Compile Include="Configuration\Helpers\RelativityFolderPathScriptHelper.cs" />
     <Compile Include="Configuration\Helpers\UserHelper.cs" />
@@ -143,11 +145,12 @@
     <Compile Include="Pages\GeneralPage.cs" />
     <Compile Include="Pages\LoginPage.cs" />
     <Compile Include="Pages\PushToRelativitySecondPage.cs" />
-    <Compile Include="Pages\PushtoRelativityThirdPage.cs" />
+    <Compile Include="Pages\PushToRelativityThirdPage.cs" />
     <Compile Include="Tests\ExportToLoadFile\EntityExportToLoadFile.cs" />
     <Compile Include="Tests\ExportToLoadFile\DocumentExportToLoadFileTests.cs" />
     <Compile Include="Tests\ExportToLoadFile\ExportToLoadFileTests.cs" />
     <Compile Include="Tests\ExportToLoadFile\FolderExportToLoadFileTests.cs" />
+    <Compile Include="Tests\FieldMappings\FieldsMappingTests.cs" />
     <Compile Include="Tests\FTPProvider\ImportFromFtpTest.cs" />
     <Compile Include="Tests\ImportFromLoadFile\ImportFromLoadFileTest.cs" />
     <Compile Include="Tests\LDAPProvider\ImportLdapProviderTest.cs" />

@@ -1,4 +1,4 @@
-﻿using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.UITests.Logging;
 using NUnit.Framework;
 using Serilog;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Workspace = kCura.IntegrationPoint.Tests.Core.Workspace;
 
@@ -31,6 +32,8 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		private readonly Lazy<ImportDocumentsHelper> _importDocumentHelper;
 
 		private readonly Lazy<UserHelper> _userHelperLazy;
+		
+		private readonly Lazy<FieldMappingHelper> _workspaceFieldMappingHelperLazy;
 
 		private static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(TestContext));
 
@@ -49,12 +52,15 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		internal ImportDocumentsHelper ImportDocumentsHelper => _importDocumentHelper.Value;
 
 		internal UserHelper UserHelper => _userHelperLazy.Value;
+		internal FieldMappingHelper WorkspaceFieldMappingHelper => _workspaceFieldMappingHelperLazy.Value;
 
 		public int? WorkspaceId { get; set; }
 
 		public string WorkspaceName { get; set; }
 
 		public RelativityUser User { get; private set; }
+
+		public List<FieldObject> WorkspaceMappableFields;
 
 		public TestContext()
 		{
@@ -82,6 +88,9 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			);
 			_userHelperLazy = new Lazy<UserHelper>(
 				() => new UserHelper(this)
+			);
+			_workspaceFieldMappingHelperLazy = new Lazy<FieldMappingHelper>(
+				() => new FieldMappingHelper(this)
 			);
 		}
 
@@ -214,6 +223,12 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			{
 				_userHelperLazy.Value.DeleteUserIfWasCreated();
 			}
+			return this;
+		}
+
+		public async Task<TestContext> RetrieveMappableFields()
+		{
+			WorkspaceMappableFields = await WorkspaceFieldMappingHelper.RetrieveFilteredDocumentsFieldsFromWorkspaceAsync().ConfigureAwait(false);
 			return this;
 		}
 

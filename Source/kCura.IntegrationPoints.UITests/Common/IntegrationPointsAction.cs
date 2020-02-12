@@ -64,6 +64,17 @@ namespace kCura.IntegrationPoints.UITests.Common
 			return thirdPage.SaveIntegrationPoint();
 		}
 
+		public PushToRelativityThirdPage CreateNewRelativityProviderFieldMappingPage(RelativityProviderModel model)
+		{
+			GeneralPage generalPage = GoToWorkspacePage();
+
+			ExportFirstPage firstPage = SetupFirstIntegrationPointPage(generalPage, model);
+
+			PushToRelativitySecondPage secondPage = SetupPushToRelativitySecondPage(firstPage, model);
+
+			return secondPage.GoToNextPage();
+		}
+
 		public IntegrationPointDetailsPage CreateNewRelativityProviderIntegrationPointFromProfile(
 			IntegrationPointGeneralModel model)
 		{

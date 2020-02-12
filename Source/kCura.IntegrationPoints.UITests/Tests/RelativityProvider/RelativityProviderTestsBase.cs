@@ -1,7 +1,13 @@
-﻿using kCura.IntegrationPoint.Tests.Core;
+﻿using System;
+using System.Threading.Tasks;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.Relativity.Client;
+using Relativity.Services.Interfaces.Field;
+using Relativity.Services.Interfaces.Field.Models;
+using Relativity.Services.Interfaces.Shared.Models;
+using ArtifactType = Relativity.ArtifactType;
 
 namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 {
@@ -17,6 +23,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		protected TestContext DestinationContext { get; set; }
 		protected IntegrationPointsAction PointsAction { get; private set; }
 		protected IFolderManager FolderManager { get; set; }
+		protected IFieldManager SourceFieldManager { get; set; }
+		protected IFieldManager DestinationFieldManager { get; set; }
 		protected INativesService NativesService { get; set; }
 		protected IImagesService ImageService { get; set; }
 		protected IProductionImagesService ProductionImageService { get; set; }
@@ -27,18 +35,23 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		{
 			SourceContext.ExecuteRelativityFolderPathScript();
 			FolderManager = SourceContext.Helper.CreateProxy<IFolderManager>();
+			SourceFieldManager = SourceContext.Helper.CreateProxy<IFieldManager>();
 			NativesService = new NativesService(SourceContext.Helper);
 			ImageService = new ImagesService(SourceContext.Helper);
 			ProductionImageService = new ProductionImagesService(SourceContext.Helper);
 			ObjectManagerFactory = new RelativityObjectManagerFactory(SourceContext.Helper);
-		}
+            CreateFixedLengthFieldsWithSpecialCharacters(SourceContext.GetWorkspaceId(), SourceFieldManager);
+        }
 
 		[SetUp]
-		public virtual void SetUp()
+		public virtual async Task SetUp()
 		{
 			DestinationContext = new TestContext().CreateTestWorkspace();
+			await DestinationContext.RetrieveMappableFields().ConfigureAwait(false);
+			DestinationFieldManager = DestinationContext.Helper.CreateProxy<IFieldManager>();
+			CreateFixedLengthFieldsWithSpecialCharacters(DestinationContext.GetWorkspaceId(), DestinationFieldManager);
 			PointsAction = new IntegrationPointsAction(Driver, SourceContext);
-		}
+        }
 
 		[TearDown]
 		public void TearDownDestinationContext()
@@ -52,6 +65,31 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 				DestinationContext.TearDown();
 			}
+		}
+
+        protected async void CreateFixedLengthFieldsWithSpecialCharacters(int workspaceID, IFieldManager fieldManager)
+        {
+            char[] specialCharacters = @"!@#$%^&*()-_+= {}|\/;'<>,.?~`".ToCharArray();
+            for (int i = 0; i < specialCharacters.Length; i++)
+            {
+                char special = specialCharacters[i];
+                string generatedFieldName = $"aaaaa{special}{i}";
+                var fixedLengthTextFieldRequest = new FixedLengthFieldRequest
+                {
+                    ObjectType = new ObjectTypeIdentifier {ArtifactTypeID = (int) ArtifactType.Document},
+                    Name = $"{generatedFieldName} FLT",
+                    Length = 255
+				};
+
+                var longTextFieldRequest = new LongTextFieldRequest
+				{
+                    ObjectType = new ObjectTypeIdentifier { ArtifactTypeID = (int)ArtifactType.Document },
+                    Name = $"{generatedFieldName} LTF"
+                };
+
+                await fieldManager.CreateLongTextFieldAsync(workspaceID, longTextFieldRequest).ConfigureAwait(false);
+                await fieldManager.CreateFixedLengthFieldAsync(workspaceID, fixedLengthTextFieldRequest).ConfigureAwait(false);
+            }
 		}
 
 		protected DocumentsValidator CreateDocumentsEmptyValidator()

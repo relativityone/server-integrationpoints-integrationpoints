@@ -1,7 +1,10 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using kCura.IntegrationPoint.Tests.Core.Models;
+using kCura.IntegrationPoints.UITests.Components;
 using kCura.IntegrationPoints.UITests.Driver;
+using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
 using SeleniumExtras.PageObjects;
@@ -232,6 +235,36 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			}
 		}
 
+		private List<string> GetFieldsFromListBox(string boxId)
+		{
+			IWebElement elem = Driver.FindElement(By.Id(boxId));
+
+			SelectElement selectList = new SelectElement(elem);
+			IList<IWebElement> options = selectList.Options;
+			return options.Select(option => option.GetAttribute("title")).ToList();
+		}
+
+		public List<string> GetFieldsFromSourceWorkspaceListBox()
+		{
+			string sourceWorkspaceListBoxId = "source-fields";
+			return GetFieldsFromListBox(sourceWorkspaceListBoxId);
+		}
+		public List<string> GetFieldsFromSelectedSourceWorkspaceListBox()
+		{
+			string sourceWorkspaceListBoxId = "selected-source-fields";
+			return GetFieldsFromListBox(sourceWorkspaceListBoxId);
+		}
+		public List<string> GetFieldsFromDestinationWorkspaceListBox()
+		{
+			string sourceWorkspaceListBoxId = "workspace-fields";
+			return GetFieldsFromListBox(sourceWorkspaceListBoxId);
+		}
+		public List<string> GetFieldsFromSelectedDestinationWorkspaceListBox()
+		{
+			string sourceWorkspaceListBoxId = "selected-workspace-fields";
+			return GetFieldsFromListBox(sourceWorkspaceListBoxId);
+		}
+
 		public void SelectSourceField(string fieldName)
 		{
 			SelectField(SelectSourceFieldsElement, AddSourceFieldElement, fieldName);
@@ -259,6 +292,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		private static void SelectOption(SelectElement selectElement, string textToSearchFor)
 		{
 			IWebElement option = selectElement.WrappedElement.FindElement(By.XPath($".//option[starts-with(normalize-space(.), \"{textToSearchFor}\")]"));
+			
 			if (!option.Selected)
 			{
 				option.ClickEx();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Components;
@@ -47,9 +48,9 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 		}
 
 		[SetUp]
-		public override void SetUp()
+		public override async Task SetUp()
 		{
-			base.SetUp();
+			await base.SetUp().ConfigureAwait(false);
 			_profileAction = new IntegrationPointProfileAction(Driver, SourceContext);
 		}
 

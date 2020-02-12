@@ -11,6 +11,7 @@
 		public const string MISCELLANEOUS = "Miscellaneous";
 		public const string NOT_WORKING_ON_REGRESSION_ENVIRONMENT = "NotWorkingOnRegressionEnvironment";
 		public const string PROFILE= "Profile";
+		public const string FIELDS_MAPPING = "FieldMappings";
 		public const string PERFORMANCE_BASELINE = "PerformanceBaseline";
 		public const string WEB_IMPORT_EXPORT = "WebImportExport";
 		public const string NOT_WORKING_ON_TRIDENT = "NotWorkingOnTrident";
