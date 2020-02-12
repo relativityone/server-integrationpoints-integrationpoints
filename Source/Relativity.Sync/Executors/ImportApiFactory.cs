@@ -45,7 +45,7 @@ namespace Relativity.Sync.Executors
 		{
 			IRelativityTokenProvider relativityTokenProvider = new RelativityTokenProvider(_userContextConfiguration.ExecutingUserId, _tokenGenerator);
 
-			return Task.FromResult((IImportAPI)ExtendedImportAPI.CreateByTokenProvider(webServiceUrl.AbsoluteUri, relativityTokenProvider));
+			return Task.FromResult<IImportAPI>(ExtendedImportAPI.CreateByTokenProvider(webServiceUrl.AbsoluteUri, relativityTokenProvider));
 		}
 	}
 #pragma warning restore RG2002
