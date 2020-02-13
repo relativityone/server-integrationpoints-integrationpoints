@@ -23,7 +23,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests.FieldsClassifiers
 		}
 
 		[Test]
-		public async Task ClassifyAsync_ShouldProperlyClassifyObjectFields()
+		public async Task ClassifyAsync_ShouldProperlyClassifySingleObjectFields()
 		{
 			// Arrange 
 
@@ -42,7 +42,26 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests.FieldsClassifiers
 							Value = "Single Object"
 						}
 					}
-				},
+				}
+			};
+
+			// Act
+			FieldClassificationResult[] classifications = (await _sut.ClassifyAsync(fields, 0).ConfigureAwait(false)).ToArray();
+
+			// Assert
+			classifications.Length.Should().Be(1);
+
+			classifications[0].ClassificationLevel.Should().Be(ClassificationLevel.ShowToUser);
+			classifications[0].ClassificationReason.Should().Be(ApiDoesNotSupportAllObjectTypes);
+		}
+
+		[Test]
+		public async Task ClassifyAsync_ShouldProperlyClassifyMultiObjectFields()
+		{
+			// Arrange 
+
+			var fields = new List<RelativityObject>
+			{
 				new RelativityObject
 				{
 					FieldValues = new List<FieldValuePair>
@@ -56,7 +75,26 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests.FieldsClassifiers
 							Value = "Multiple Object"
 						}
 					}
-				},
+				}
+			};
+
+			// Act
+			FieldClassificationResult[] classifications = (await _sut.ClassifyAsync(fields, 0).ConfigureAwait(false)).ToArray();
+
+			// Assert
+			classifications.Length.Should().Be(1);
+
+			classifications[0].ClassificationLevel.Should().Be(ClassificationLevel.ShowToUser);
+			classifications[0].ClassificationReason.Should().Be(ApiDoesNotSupportAllObjectTypes);
+		}
+
+		[Test]
+		public async Task ClassifyAsync_ShouldProperlyClassifyNonObjectFields()
+		{
+			// Arrange 
+
+			var fields = new List<RelativityObject>
+			{
 				new RelativityObject
 				{
 					FieldValues = new List<FieldValuePair>
@@ -77,13 +115,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests.FieldsClassifiers
 			FieldClassificationResult[] classifications = (await _sut.ClassifyAsync(fields, 0).ConfigureAwait(false)).ToArray();
 
 			// Assert
-			classifications.Length.Should().Be(2);
-
-			classifications[0].ClassificationLevel.Should().Be(ClassificationLevel.ShowToUser);
-			classifications[0].ClassificationReason.Should().Be(ApiDoesNotSupportAllObjectTypes);
-
-			classifications[1].ClassificationLevel.Should().Be(ClassificationLevel.ShowToUser);
-			classifications[1].ClassificationReason.Should().Be(ApiDoesNotSupportAllObjectTypes);
+			classifications.Length.Should().Be(0);
 		}
 	}
 }
