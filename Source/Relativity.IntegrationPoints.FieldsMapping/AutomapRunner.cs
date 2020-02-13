@@ -7,82 +7,104 @@ using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace Relativity.IntegrationPoints.FieldsMapping
-{ 
+{
 	public class AutomapRunner : IAutomapRunner
 	{
 		public IEnumerable<FieldMap> MapFields(IEnumerable<DocumentFieldInfo> sourceFields,
 			IEnumerable<DocumentFieldInfo> destinationFields, bool matchOnlyIdentifiers = false)
 		{
-			if (matchOnlyIdentifiers)
+			AutomapBuilder mappingBuilder = new AutomapBuilder(sourceFields, destinationFields).MapByIsIdentifier();
+
+			if (!matchOnlyIdentifiers)
 			{
-				sourceFields = sourceFields.Where(x => x.IsIdentifier);
-				destinationFields = destinationFields.Where(x => x.IsIdentifier);
+				mappingBuilder = mappingBuilder.MapBy(x => x.FieldIdentifier).MapBy(x => x.Name);
 			}
 
-			List<FieldMap> mapping = sourceFields.Join(destinationFields, x => x.Name, x => x.Name, (SourceField, DestinationField) => new { SourceField, DestinationField })
-			.Where(x => TypesMatchTest(x.SourceField, x.DestinationField))
-			.Select(x => new FieldMap
-			{
-				SourceField = GetFieldEntry(x.SourceField),
-				DestinationField = GetFieldEntry(x.DestinationField),
-				FieldMapType = (x.SourceField.IsIdentifier && x.DestinationField.IsIdentifier) ? FieldMapTypeEnum.Identifier : FieldMapTypeEnum.None
-			}
-			).ToList();
-
-			EnsureIdentifiersMapped(mapping, sourceFields, destinationFields);
-
-			return mapping
-				.OrderByDescending(x => x.FieldMapType)
-				.ThenBy(x => x.SourceField.DisplayName)
-				.ToArray();
+			return mappingBuilder.Mapping.OrderByDescending(x => x.SourceField.IsIdentifier).ThenBy(x => x.SourceField.DisplayName);
 		}
 
-		private void EnsureIdentifiersMapped(List<FieldMap> mappings, IEnumerable<DocumentFieldInfo> sourceFields, IEnumerable<DocumentFieldInfo> destinationFields)
+		private class AutomapBuilder
 		{
-			FieldMap identifierMap =
-				mappings.FirstOrDefault(m => m.FieldMapType == FieldMapTypeEnum.Identifier);
+			public IEnumerable<FieldMap> Mapping { get; }
+			private readonly IEnumerable<DocumentFieldInfo> _sourceFields;
+			private readonly IEnumerable<DocumentFieldInfo> _destinationFields;
 
-			if (identifierMap == null)
+			public AutomapBuilder(IEnumerable<DocumentFieldInfo> sourceFields,
+				IEnumerable<DocumentFieldInfo> destinationFields, IEnumerable<FieldMap> mapping = null)
 			{
-				DocumentFieldInfo sourceIdentifier = sourceFields.FirstOrDefault(x => x.IsIdentifier);
-				DocumentFieldInfo destinationIdentifier = destinationFields.FirstOrDefault(x => x.IsIdentifier);
-				if (sourceIdentifier != null && destinationIdentifier != null)
-				{
-					mappings.RemoveAll(x =>
-					x.SourceField?.FieldIdentifier == sourceIdentifier?.FieldIdentifier ||
-					x.DestinationField?.FieldIdentifier == destinationIdentifier?.FieldIdentifier);
+				Mapping = mapping ?? new FieldMap[0];
+				_sourceFields = sourceFields;
+				_destinationFields = destinationFields;
+			}
 
-					mappings.Add(new FieldMap
+			public AutomapBuilder MapBy<T>(Func<DocumentFieldInfo, T> selector)
+			{
+				FieldMap[] newMappings = _sourceFields.Join(_destinationFields, selector, selector, (SourceField, DestinationField) => new { SourceField, DestinationField })
+					.Where(x => TypesMatchTest(x.SourceField, x.DestinationField))
+					.Select(x => new FieldMap
 					{
-						SourceField = GetFieldEntry(sourceIdentifier),
-						DestinationField = GetFieldEntry(destinationIdentifier),
-						FieldMapType = FieldMapTypeEnum.Identifier
-					});
-				}
+						SourceField = GetFieldEntry(x.SourceField),
+						DestinationField = GetFieldEntry(x.DestinationField),
+						FieldMapType = (x.SourceField.IsIdentifier && x.DestinationField.IsIdentifier) ? FieldMapTypeEnum.Identifier : FieldMapTypeEnum.None
+					}
+					).ToArray();
+
+				DocumentFieldInfo[] remainingSourceFields = _sourceFields.Where(x => !newMappings.Any(m => m.SourceField.FieldIdentifier == x.FieldIdentifier)).ToArray();
+				DocumentFieldInfo[] remainingDestinationFields = _destinationFields.Where(x => !newMappings.Any(m => m.DestinationField.FieldIdentifier == x.FieldIdentifier)).ToArray();
+
+				return new AutomapBuilder(
+					remainingSourceFields,
+					remainingDestinationFields,
+					Mapping.Concat(newMappings)
+					);
 			}
-		}
 
-		private bool TypesMatchTest(DocumentFieldInfo sourceField, DocumentFieldInfo destinationField)
-		{
-			const string fixedLengthText = "Fixed-Length Text";
-			const string longText = "Long Text";
-			return (sourceField.Type == destinationField.Type)
-				   || (sourceField.Type.StartsWith(fixedLengthText) &&
-					   (destinationField.Type.StartsWith(fixedLengthText) || destinationField.Type == longText)
-					   );
-		}
-
-		private FieldEntry GetFieldEntry(DocumentFieldInfo fieldInfo)
-		{
-			return new FieldEntry
+			public AutomapBuilder MapByIsIdentifier()
 			{
-				DisplayName = fieldInfo.Name,
-				FieldIdentifier = fieldInfo.FieldIdentifier,
-				FieldType = FieldType.String,
-				IsIdentifier = fieldInfo.IsIdentifier,
-				IsRequired = fieldInfo.IsRequired,
-				Type = fieldInfo.Type
-			};
+				DocumentFieldInfo sourceIdentifier = _sourceFields.FirstOrDefault(x => x.IsIdentifier);
+				DocumentFieldInfo destinationIdentifier = _destinationFields.FirstOrDefault(x => x.IsIdentifier);
+
+				if (sourceIdentifier == null || destinationIdentifier == null)
+				{
+					return new AutomapBuilder(_sourceFields.ToArray(), _destinationFields.ToArray(), Mapping.ToArray());
+				}
+
+				return new AutomapBuilder(_sourceFields.Where(x => x != sourceIdentifier).ToArray(),
+					_destinationFields.Where(x => x != destinationIdentifier).ToArray(),
+					Mapping.Concat(new FieldMap[]
+					{
+						new FieldMap
+						{
+							SourceField = GetFieldEntry(sourceIdentifier),
+							DestinationField = GetFieldEntry(destinationIdentifier),
+							FieldMapType = FieldMapTypeEnum.Identifier
+						}
+					})
+				);
+			}
+
+			private bool TypesMatchTest(DocumentFieldInfo sourceField, DocumentFieldInfo destinationField)
+			{
+				const string fixedLengthText = "Fixed-Length Text";
+				const string longText = "Long Text";
+				return (sourceField.Type == destinationField.Type)
+					   || (sourceField.Type.StartsWith(fixedLengthText) &&
+						   (destinationField.Type.StartsWith(fixedLengthText) || destinationField.Type == longText)
+					   );
+			}
+
+			private FieldEntry GetFieldEntry(DocumentFieldInfo fieldInfo)
+			{
+				return new FieldEntry
+				{
+					DisplayName = fieldInfo.Name,
+					FieldIdentifier = fieldInfo.FieldIdentifier,
+					FieldType = FieldType.String,
+					IsIdentifier = fieldInfo.IsIdentifier,
+					IsRequired = fieldInfo.IsRequired,
+					Type = fieldInfo.Type
+				};
+			}
 		}
 	}
 }
