@@ -55,6 +55,7 @@
     <Compile Include="ClassificationLevel.cs" />
     <Compile Include="DocumentFieldInfo.cs" />
     <Compile Include="FieldClassificationResult.cs" />
+    <Compile Include="FieldClassifiers\ObjectFieldsClassifier.cs" />
     <Compile Include="FieldClassifiers\IFieldsClassifier.cs" />
     <Compile Include="FieldClassifiers\NestedParentObjectFieldsClassifier.cs" />
     <Compile Include="FieldClassifiers\NotSupportedByIAPIFieldsClassifier.cs" />

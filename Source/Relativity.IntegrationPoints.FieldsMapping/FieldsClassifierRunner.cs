@@ -53,13 +53,16 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 						IsRequired = IsRequired(x),
 						Length = GetLength(x),
 						ClassificationLevel = ClassificationLevel.AutoMap
-					}), (accumulator, classificationResults) =>
+					}), (accumulator, classifierResults) =>
 					{
-						foreach (FieldClassificationResult classificationResult in classificationResults)
+						foreach (FieldClassificationResult classifierResult in classifierResults)
 						{
-							if (accumulator[classificationResult.Name].ClassificationLevel < classificationResult.ClassificationLevel)
+							var field = accumulator[classifierResult.Name];
+
+							if (field.ClassificationLevel < classifierResult.ClassificationLevel)
 							{
-								accumulator[classificationResult.Name] = classificationResult;
+								field.ClassificationLevel = classifierResult.ClassificationLevel;
+								field.ClassificationReason = classifierResult.ClassificationReason;
 							}
 						}
 

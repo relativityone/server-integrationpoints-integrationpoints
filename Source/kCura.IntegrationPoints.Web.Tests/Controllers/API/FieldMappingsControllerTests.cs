@@ -15,7 +15,7 @@ using Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class FieldMappingsControllerTests
 	{
 		private FieldMappingsController _sut;
@@ -49,7 +49,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 			{
 				typeof(RipFieldsClassifier),
 				typeof(SystemFieldsClassifier),
-				typeof(NotSupportedByIAPIFieldsClassifier)
+				typeof(NotSupportedByIAPIFieldsClassifier),
+				typeof(ObjectFieldsClassifier)
 			};
 
 			// Act
@@ -73,7 +74,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 				typeof(RipFieldsClassifier),
 				typeof(SystemFieldsClassifier),
 				typeof(NotSupportedByIAPIFieldsClassifier),
-				typeof(OpenToAssociationsFieldsClassifier)
+				typeof(OpenToAssociationsFieldsClassifier),
+				typeof(ObjectFieldsClassifier)
 			};
 
 			// Act

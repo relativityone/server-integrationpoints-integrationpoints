@@ -33,11 +33,13 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 			{
 				new DocumentFieldInfo
 				{
+					FieldIdentifier = "1",
 					Name = "Field 1",
-					Type = "Type 1"
+					Type = "Type 1",
 				},
 				new DocumentFieldInfo
 				{
+					FieldIdentifier = "2", 
 					Name = "Field 2",
 					Type = "Type 2"
 				}
@@ -47,11 +49,13 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 			{
 				new DocumentFieldInfo
 				{
+					FieldIdentifier = "3", 
 					Name = "Field 1",
 					Type = "Type 1"
 				},
 				new DocumentFieldInfo
 				{
+					FieldIdentifier = "4", 
 					Name = "Field 2",
 					Type = "Type 2"
 				}
@@ -73,18 +77,20 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 		}
 
 		[Test]
-		public void MapFields_ShouldNotMapFieldsWithTheSameNameButDifferentType()
+		public void MapFields_ShouldMapFieldsWithTheSameIdentifierAndDifferentName()
 		{
 			// Arrange
 			var sourceFields = new[]
 			{
 				new DocumentFieldInfo
 				{
+					FieldIdentifier = "1",
 					Name = "Field 1",
-					Type = "Type 1"
+					Type = "Type 1",
 				},
 				new DocumentFieldInfo
 				{
+					FieldIdentifier = "2",
 					Name = "Field 2",
 					Type = "Type 2"
 				}
@@ -94,11 +100,115 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 			{
 				new DocumentFieldInfo
 				{
+					FieldIdentifier = "1",
 					Name = "Field 3",
 					Type = "Type 1"
 				},
 				new DocumentFieldInfo
 				{
+					FieldIdentifier = "2",
+					Name = "Field 4",
+					Type = "Type 2"
+				}
+			};
+
+			// Act
+			var mappedFields = _sut.MapFields(sourceFields, destinationFields).ToArray();
+
+			// Assert
+			mappedFields.Count().Should().Be(2);
+
+			mappedFields[0].SourceField.FieldIdentifier.Should().Be(mappedFields[0].DestinationField.FieldIdentifier);
+			mappedFields[0].SourceField.Type.Should().Be(mappedFields[0].DestinationField.Type);
+			mappedFields[0].FieldMapType.Should().Be(FieldMapTypeEnum.None);
+
+			mappedFields[1].SourceField.FieldIdentifier.Should().Be(mappedFields[1].DestinationField.FieldIdentifier);
+			mappedFields[1].SourceField.Type.Should().Be(mappedFields[1].DestinationField.Type);
+			mappedFields[1].FieldMapType.Should().Be(FieldMapTypeEnum.None);
+		}
+
+		[Test]
+		public void MapFields_ShouldMapFieldsWithTheSameIdentifierBeforeName()
+		{
+			// Arrange
+			var sourceFields = new[]
+			{
+				new DocumentFieldInfo
+				{
+					FieldIdentifier = "1",
+					Name = "Field 1",
+					Type = "Type 1",
+				},
+				new DocumentFieldInfo
+				{
+					FieldIdentifier = "2",
+					Name = "Field 2",
+					Type = "Type 2"
+				}
+			};
+
+			var destinationFields = new[]
+			{
+				new DocumentFieldInfo
+				{
+					FieldIdentifier = "1",
+					Name = "Field 2",
+					Type = "Type 1"
+				},
+				new DocumentFieldInfo
+				{
+					FieldIdentifier = "2",
+					Name = "Field 1",
+					Type = "Type 2"
+				}
+			};
+
+			// Act
+			var mappedFields = _sut.MapFields(sourceFields, destinationFields).ToArray();
+
+			// Assert
+			mappedFields.Count().Should().Be(2);
+
+			mappedFields[0].SourceField.FieldIdentifier.Should().Be(mappedFields[0].DestinationField.FieldIdentifier);
+			mappedFields[0].SourceField.Type.Should().Be(mappedFields[0].DestinationField.Type);
+			mappedFields[0].FieldMapType.Should().Be(FieldMapTypeEnum.None);
+
+			mappedFields[1].SourceField.FieldIdentifier.Should().Be(mappedFields[1].DestinationField.FieldIdentifier);
+			mappedFields[1].SourceField.Type.Should().Be(mappedFields[1].DestinationField.Type);
+			mappedFields[1].FieldMapType.Should().Be(FieldMapTypeEnum.None);
+		}
+
+		[Test]
+		public void MapFields_ShouldNotMapFieldsWithTheSameNameButDifferentType()
+		{
+			// Arrange
+			var sourceFields = new[]
+			{
+				new DocumentFieldInfo
+				{
+					FieldIdentifier = "1", 
+					Name = "Field 1",
+					Type = "Type 1"
+				},
+				new DocumentFieldInfo
+				{
+					FieldIdentifier = "2", 
+					Name = "Field 2",
+					Type = "Type 2"
+				}
+			};
+
+			var destinationFields = new[]
+			{
+				new DocumentFieldInfo
+				{
+					FieldIdentifier = "3", 
+					Name = "Field 3",
+					Type = "Type 1"
+				},
+				new DocumentFieldInfo
+				{
+					FieldIdentifier = "4", 
 					Name = "Field 2",
 					Type = "Type 3"
 				}
@@ -119,6 +229,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 			{
 				new DocumentFieldInfo
 				{
+					FieldIdentifier = "1", 
 					Name = "Field 1",
 					Type = "Fixed-Length Text(250)"
 				}
@@ -128,6 +239,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 			{
 				new DocumentFieldInfo
 				{
+					FieldIdentifier = "2", 
 					Name = "Field 1",
 					Type = "Long Text"
 				}
@@ -153,6 +265,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 			{
 				new DocumentFieldInfo
 				{
+					FieldIdentifier = "1", 
 					Name = "Field 1",
 					Type = "Fixed-Length Text(250)"
 				}
@@ -162,6 +275,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 			{
 				new DocumentFieldInfo
 				{
+					FieldIdentifier = "2", 
 					Name = "Field 1",
 					Type = "Fixed-Length Text(50)"
 				}
@@ -186,6 +300,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 			{
 				new DocumentFieldInfo
 				{
+					FieldIdentifier = "1", 
 					Name = "Field 1",
 					Type = "Fixed-Length Text(250)",
 					IsIdentifier = true
@@ -196,12 +311,14 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 			{
 				new DocumentFieldInfo
 				{
+					FieldIdentifier = "2", 
 					Name = "Field 1",
 					Type = "Fixed-Length Text(50)",
 					IsIdentifier = false
 				},
 				new DocumentFieldInfo
 				{
+					FieldIdentifier = "3", 
 					Name = "Field 2",
 					Type = "Fixed-Length Text(50)",
 					IsIdentifier = true
@@ -226,12 +343,14 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 			{
 				new DocumentFieldInfo
 				{
+					FieldIdentifier = "1", 
 					Name = "Field 1",
 					Type = "Fixed-Length Text(250)",
 					IsIdentifier = true
 				},
 				new DocumentFieldInfo
 				{
+					FieldIdentifier = "2", 
 					Name = "Field 2",
 					Type = "Fixed-Length Text(250)",
 				}
@@ -241,12 +360,14 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 			{
 				new DocumentFieldInfo
 				{
+					FieldIdentifier = "3", 
 					Name = "Field 1",
 					Type = "Fixed-Length Text(50)",
 					IsIdentifier = true
 				},
 				new DocumentFieldInfo
 				{
+					FieldIdentifier = "4", 
 					Name = "Field 2",
 					Type = "Fixed-Length Text(50)",
 				}
@@ -270,15 +391,18 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 			{
 				new DocumentFieldInfo
 				{
+					FieldIdentifier = "1", 
 					Name = "Field 1",
 					Type = "Fixed-Length Text(250)"
 				},
 				new DocumentFieldInfo
 				{
+					FieldIdentifier = "2", 
 					Name = "Field 3",
 					Type = "Fixed-Length Text(250)"
 				},new DocumentFieldInfo
 				{
+					FieldIdentifier = "3", 
 					Name = "Field 2",
 					Type = "Fixed-Length Text(250)"
 				},
@@ -289,15 +413,18 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 			{
 				new DocumentFieldInfo
 				{
+					FieldIdentifier = "4", 
 					Name = "Field 3",
 					Type = "Fixed-Length Text(250)"
 				},
 				new DocumentFieldInfo
 				{
+					FieldIdentifier = "5", 
 					Name = "Field 2",
 					Type = "Fixed-Length Text(250)"
 				},new DocumentFieldInfo
 				{
+					FieldIdentifier = "6", 
 					Name = "Field 1",
 					Type = "Fixed-Length Text(250)"
 				},
@@ -311,7 +438,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 			mappedFields[0].SourceField.DisplayName.Should().Be("Field 1");
 			mappedFields[1].SourceField.DisplayName.Should().Be("Field 2");
 			mappedFields[2].SourceField.DisplayName.Should().Be("Field 3");
-		
+
 		}
 	}
 }
