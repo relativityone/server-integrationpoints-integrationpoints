@@ -22,7 +22,7 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 {
 	[TestFixture]
-	[Feature.DataTransfer.IntegrationPoints]
+	[Feature.DataTransfer.IntegrationPoints.WebImportExport.Import]
 	[Category(TestCategory.WEB_IMPORT_EXPORT)]
 	[Category(TestCategory.IMPORT_FROM_LOAD_FILE)]
 	[Category(TestCategory.NOT_WORKING_ON_TRIDENT)] //Remove when REL-391556

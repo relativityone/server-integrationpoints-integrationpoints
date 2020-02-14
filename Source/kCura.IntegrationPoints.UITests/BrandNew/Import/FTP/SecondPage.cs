@@ -10,7 +10,7 @@ namespace kCura.IntegrationPoints.UITests.BrandNew.Import.FTP
 		public SecondPage(RemoteWebDriver driver) : base(driver)
 		{
 			Driver.SwitchTo().DefaultContent()
-				.SwitchTo().Frame("externalPage")
+				.SwitchTo().Frame(_mainFrameNameOldUi)
 				.SwitchTo().Frame("configurationFrame");
 			WaitForPage();
 		}
