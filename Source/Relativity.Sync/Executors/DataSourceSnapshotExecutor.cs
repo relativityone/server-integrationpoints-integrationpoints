@@ -64,7 +64,7 @@ namespace Relativity.Sync.Executors
 				using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 				{
 					results = await objectManager.InitializeExportAsync(configuration.SourceWorkspaceArtifactId, queryRequest, 1).ConfigureAwait(false);
-					// TODO: Log results.RecordCount
+					_logger.LogInformation("Retrieved {documentsCount} documents from saved search.", results.RecordCount);
 
 					Task<long> calculateNativesTotalSizeTask = Task.Run(() => CalculateNativesTotalSizeAsync(configuration.SourceWorkspaceArtifactId, queryRequest, (int)results.RecordCount), token);
 					_jobStatisticsContainer.NativesBytesRequested = calculateNativesTotalSizeTask;
