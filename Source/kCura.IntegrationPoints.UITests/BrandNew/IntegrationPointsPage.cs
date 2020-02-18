@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.UITests.BrandNew
 			WaitForPage();
 			PageFactory.InitElements(driver, this);
 			Driver.SwitchTo().DefaultContent()
-				.SwitchTo().Frame("externalPage");
+				.SwitchTo().Frame(_mainFrameNameNewUi);
 		}
 
 		public void CreateNewIntegrationPoint()

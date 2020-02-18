@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		public ImportThirdPage<TModel> GoToNextPage(Func<ImportThirdPage<TModel>> funcThridPageCreator)
 		{
 			Driver.SwitchTo().DefaultContent();
-			Driver.SwitchTo().Frame("_externalPage");
+			Driver.SwitchTo().Frame(_mainFrameNameOldUi);
 			WaitForPage();
 
 			Driver.SwitchTo().ParentFrame();

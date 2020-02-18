@@ -11,7 +11,7 @@ namespace kCura.IntegrationPoints.UITests.BrandNew
 			get
 			{
 				Driver.SwitchTo().DefaultContent()
-					.SwitchTo().Frame("externalPage");
+					.SwitchTo().Frame(_mainFrameNameOldUi);
 				return new WizardPanel(Driver.FindElementById("progressButtons"));
 			}
 		}

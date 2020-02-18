@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		{
 			WaitForPage();
 			PageFactory.InitElements(driver, this);
-			Driver.SwitchTo().DefaultContent().SwitchTo().Frame("externalPage");
+			Driver.SwitchTo().DefaultContent().SwitchTo().Frame(_mainFrameNameNewUi);
 		}
 
 		public ExportFirstPage CreateNewIntegrationPointProfile()

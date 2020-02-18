@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		{
 			WaitForPage();
 			PageFactory.InitElements(driver, this);
-			Driver.SwitchTo().DefaultContent().SwitchTo().Frame("ListPage");
+			Driver.SwitchTo().DefaultContent().SwitchTo().Frame(_mainFrameNameNewUi);
 		}
 
 		public ExportFirstPage CreateNewExportIntegrationPoint()

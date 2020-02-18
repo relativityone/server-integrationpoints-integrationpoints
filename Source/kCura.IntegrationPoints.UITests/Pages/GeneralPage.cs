@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
@@ -14,6 +14,9 @@ namespace kCura.IntegrationPoints.UITests.Pages
 {
 	public class GeneralPage : Page
 	{
+        internal string _mainFrameNameNewUi = "ListPage";
+        internal string _mainFrameNameOldUi = "externalPage";
+
 		// TODO Move to some "SthBar", "Navigator" or something similar
 		[FindsBy(How = How.Id, Using = "GetNavigateHomeScript")]
 		protected IWebElement NavigateHome;
