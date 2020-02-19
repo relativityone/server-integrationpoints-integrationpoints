@@ -46,7 +46,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 
 		[IdentifiedTest("916e57ba-fb4d-42a4-be2a-4d17df17de57")]
 		[RetryOnError]
-		[Category(TestCategory.SMOKE)]
 		public void FieldMapping_ShouldDisplayMappableFieldsInCorrectOrderInSourceWorkspaceFieldList()
 		{
 			//Arrange
@@ -67,7 +66,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 
 		[IdentifiedTest("916e57ba-fb4d-42a4-be2a-4d17df17de58")]
 		[RetryOnError]
-		[Category(TestCategory.SMOKE)]
 		public void FieldMapping_ShouldDisplayMappableFieldsInCorrectOrderInDestinationWorkspaceFieldList()
 		{
 			//Arrange
@@ -87,13 +85,48 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 			fieldsFromDestinationWorkspaceListBox.Should().ContainInOrder(expectedDestinationMappableFields);
 		}
 
-        private List<string> CreateFieldMapListBoxFormatFromObjectManagerFetchedList(
+		[IdentifiedTest("916e57ba-fb4d-42a4-be2a-4d17df17de59")]
+		[RetryOnError]
+		[Category(TestCategory.SMOKE)]
+		public void FieldMapping_ShouldAutoMapAllValidFields_WhenMapFieldsButtonIsPressed()
+		{
+			//Arrange
+			RelativityProviderModel model = CreateRelativityProviderModel();
+			model.FieldMapping = null;
+			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOnly;
+			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.No;
+
+			PushToRelativityThirdPage fieldMappingPage =
+				PointsAction.CreateNewRelativityProviderFieldMappingPage(model);
+
+
+			List<string> expectedSelectedSourceMappableFields =
+				CreateFieldMapListBoxFormatFromObjectManagerFetchedList(SourceContext.WorkspaceAutoMapAllEnabledFields);
+			List<string> expectedSelectedDestinationMappableFields =
+				CreateFieldMapListBoxFormatFromObjectManagerFetchedList(DestinationContext.WorkspaceAutoMapAllEnabledFields);
+
+			//Act
+			fieldMappingPage = fieldMappingPage.MapAllFields();
+
+            //Assert
+			List<string> fieldsFromSelectedDestinationWorkspaceListBox =
+				fieldMappingPage.GetFieldsFromSelectedDestinationWorkspaceListBox();
+			List<string> fieldsFromSelectedSourceWorkspaceListBox =
+				fieldMappingPage.GetFieldsFromSelectedSourceWorkspaceListBox();
+
+			fieldsFromSelectedSourceWorkspaceListBox.Should().ContainInOrder(expectedSelectedSourceMappableFields);
+			fieldsFromSelectedDestinationWorkspaceListBox.Should().ContainInOrder(expectedSelectedDestinationMappableFields);
+		}
+
+		private List<string> CreateFieldMapListBoxFormatFromObjectManagerFetchedList(
 			List<FieldObject> mappableFieldsListFromObjectManager)
 		{
-			return mappableFieldsListFromObjectManager.OrderBy(f => f.Name)
+			return mappableFieldsListFromObjectManager
+                .OrderByDescending(f => f.IsIdentifier)
+				.ThenBy(f => f.Name)
 				.ThenBy(f => f.Type)
 				.Select(field =>
-					field.IsIdentifier ? $"{field.Name} [Object Identifier]" : $"{field.Name} [{field.Type}]").ToList();
+					field.IsIdentifier ? $"{field.Name} [Object Identifier]" : $"{field.Name} [{field.DisplayType}]").ToList();
 		}
 	}
 }

@@ -94,7 +94,6 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			Task agentSetupTask = Agent.CreateIntegrationPointAgentIfNotExistsAsync();
 			Task workspaceSetupTask = SetupWorkspaceAsync();
 			await Task.WhenAll(agentSetupTask, workspaceSetupTask).ConfigureAwait(false);
-			await SourceContext.RetrieveMappableFields().ConfigureAwait(false);
 		}
 
 		[SetUp]

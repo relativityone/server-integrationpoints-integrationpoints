@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		protected IRelativityObjectManagerFactory ObjectManagerFactory { get; set; }
 
 		[OneTimeSetUp]
-		public virtual void OneTimeSetUp()
+		public virtual async Task OneTimeSetUp()
 		{
 			SourceContext.ExecuteRelativityFolderPathScript();
 			FolderManager = SourceContext.Helper.CreateProxy<IFolderManager>();
@@ -40,16 +40,17 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ImageService = new ImagesService(SourceContext.Helper);
 			ProductionImageService = new ProductionImagesService(SourceContext.Helper);
 			ObjectManagerFactory = new RelativityObjectManagerFactory(SourceContext.Helper);
-            CreateFixedLengthFieldsWithSpecialCharacters(SourceContext.GetWorkspaceId(), SourceFieldManager);
-        }
+            await CreateFixedLengthFieldsWithSpecialCharacters(SourceContext.GetWorkspaceId(), SourceFieldManager).ConfigureAwait(false);
+			await SourceContext.RetrieveMappableFields().ConfigureAwait(false);
+		}
 
 		[SetUp]
 		public virtual async Task SetUp()
 		{
 			DestinationContext = new TestContext().CreateTestWorkspace();
-			await DestinationContext.RetrieveMappableFields().ConfigureAwait(false);
 			DestinationFieldManager = DestinationContext.Helper.CreateProxy<IFieldManager>();
-			CreateFixedLengthFieldsWithSpecialCharacters(DestinationContext.GetWorkspaceId(), DestinationFieldManager);
+			await CreateFixedLengthFieldsWithSpecialCharacters(DestinationContext.GetWorkspaceId(), DestinationFieldManager).ConfigureAwait(false);
+			await DestinationContext.RetrieveMappableFields().ConfigureAwait(false);
 			PointsAction = new IntegrationPointsAction(Driver, SourceContext);
         }
 
@@ -67,7 +68,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			}
 		}
 
-        protected async void CreateFixedLengthFieldsWithSpecialCharacters(int workspaceID, IFieldManager fieldManager)
+        protected async Task CreateFixedLengthFieldsWithSpecialCharacters(int workspaceID, IFieldManager fieldManager)
         {
             char[] specialCharacters = @"!@#$%^&*()-_+= {}|\/;'<>,.?~`".ToCharArray();
             for (int i = 0; i < specialCharacters.Length; i++)
