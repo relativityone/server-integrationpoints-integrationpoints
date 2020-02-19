@@ -37,6 +37,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 			int sourceWorkspaceArtifactId, int savedSearchArtifactId,
 			bool matchOnlyIdentifiers = false)
 		{
+			List<DocumentFieldInfo> sourceFieldsList = sourceFields.ToList();
 			List<DocumentFieldInfo> savedSearchFields;
 
 			using (IKeywordSearchManager keywordSearchManager = _servicesMgr.CreateProxy<IKeywordSearchManager>(ExecutionIdentity.CurrentUser))
@@ -44,10 +45,19 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 				KeywordSearch savedSearch = await keywordSearchManager.ReadSingleAsync(sourceWorkspaceArtifactId, savedSearchArtifactId)
 					.ConfigureAwait(false);
 
-				savedSearchFields = sourceFields
+				savedSearchFields = sourceFieldsList
 					.Where(sourceField => savedSearch.Fields.Exists(savedSearchField =>
 						savedSearchField.ArtifactID.ToString() == sourceField.FieldIdentifier))
 					.ToList();
+			}
+
+			if (!savedSearchFields.Exists(x => x.IsIdentifier))
+			{
+				DocumentFieldInfo identifierField = sourceFieldsList.SingleOrDefault(x => x.IsIdentifier);
+				if (identifierField != null)
+				{
+					savedSearchFields.Add(identifierField);
+				}
 			}
 
 			return MapFields(savedSearchFields, destinationFields, matchOnlyIdentifiers);
