@@ -5,12 +5,10 @@
         <span style="visibility: hidden;" id="forceRedraw"></span>
         <div class="map-field-title">
             <label class="list-title leftSide-field">Source</label>
-            <button class="button generic positive map-field-btn" id="mapFieldsBtn" data-bind="click: autoFieldMap">Map Fields</button>
-	        <button class="button generic positive map-field-btn" id="mapFieldsFromSavedSearchBtn" data-bind="click: autoFieldMap">Map Saved Search</button>
             <label class="list-title rightSide-field">Destination</label>
         </div>
         <div data-bind="validationMessage: sourceMapped" class="icon-error legal-hold field-validation-error pull-left-col-2"></div>
-        <div class="table" id="mapFields">
+        <div class="flex" id="mapFields">
             <div class="cell fixedColumn">
                 <select class="list-box" id="source-fields" multiple="multiple" data-bind="options: sourceField, selectedOptions: selectedSourceField, optionsText: 'displayName', doubleClick: addToMappedSource, optionsAfterRender: setTitle"></select>
             </div>
@@ -23,17 +21,25 @@
             <div class="cell fixedColumn">
                 <select class="list-box" id="selected-source-fields" multiple="multiple" data-bind="options: sourceMapped, selectedOptions: selectedMappedSource, optionsText: 'displayName', doubleClick: addToSourceField, optionsAfterRender: setTitle "></select>
             </div>
-            <div class="cell selection map-move">
-                <a href="#" id="attributeFieldTop" class="icon-move-to-top" data-bind="click: moveMappedSourceTop"></a>
-                <a href="#" id="attribute-field-up" class="icon-move-up" data-bind="click: moveMappedSourceUp"></a>
-                <a href="#" id="attribute-field-down" class="icon-move-down" data-bind="click: moveMappedSourceDown"></a>
-                <a href="#" id="attributeFieldBottom" class="icon-move-to-bottom" data-bind="click: moveMappedSourceBottom"></a>
-            </div>
-            <div class="cell selection map-move">
-                <a href="#" id="workspaceFieldTop" class="icon-move-to-top" data-bind="click: moveMappedWorkspaceTop"></a>
-                <a href="#" id="workspace-field-up" class="icon-move-up" data-bind="click: moveMappedWorkspaceUp"></a>
-                <a href="#" id="workspace-field-down" class="icon-move-down" data-bind="click: moveMappedWorkspaceDown"></a>
-                <a href="#" id="workspaceFieldBottom" class="icon-move-to-bottom" data-bind="click: moveMappedWorkspaceBottom"></a>
+            <div class="cell mappingColumn">
+                <div class="mapButtonsContainer">
+                    <button class="button generic positive map-field-btn" id="mapFieldsBtn" data-bind="click: autoFieldMap">Map all fields</button>
+                    <button class="button generic positive map-field-btn" id="mapFieldsFromSavedSearchBtn" data-bind="click: autoMapFieldsFromSavedSearch, visible: showMapSavedSearchButton">Map saved search</button>
+                </div>
+                <div class="moveMappedFieldsButtons">
+                    <div class="cell selection map-move">
+                        <a href="#" id="attributeFieldTop" class="icon-move-to-top" data-bind="click: moveMappedSourceTop"></a>
+                        <a href="#" id="attribute-field-up" class="icon-move-up" data-bind="click: moveMappedSourceUp"></a>
+                        <a href="#" id="attribute-field-down" class="icon-move-down" data-bind="click: moveMappedSourceDown"></a>
+                        <a href="#" id="attributeFieldBottom" class="icon-move-to-bottom" data-bind="click: moveMappedSourceBottom"></a>
+                    </div>
+                    <div class="cell selection map-move">
+                        <a href="#" id="workspaceFieldTop" class="icon-move-to-top" data-bind="click: moveMappedWorkspaceTop"></a>
+                        <a href="#" id="workspace-field-up" class="icon-move-up" data-bind="click: moveMappedWorkspaceUp"></a>
+                        <a href="#" id="workspace-field-down" class="icon-move-down" data-bind="click: moveMappedWorkspaceDown"></a>
+                        <a href="#" id="workspaceFieldBottom" class="icon-move-to-bottom" data-bind="click: moveMappedWorkspaceBottom"></a>
+                    </div>
+                </div>                
             </div>
             <div class="cell fixedColumn">
                 <select class="list-box" id="selected-workspace-fields" data-bind="options: mappedWorkspace, selectedOptions: selectedMappedWorkspace, optionsText: 'displayName', doubleClick: addToWorkspaceField, optionsAfterRender: setTitle" multiple="multiple"></select>

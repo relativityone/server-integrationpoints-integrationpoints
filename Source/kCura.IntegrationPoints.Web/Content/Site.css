@@ -28,6 +28,29 @@ h1
 	display: table;
 }
 
+.flex
+{
+	display: flex;
+	align-items: center;
+}
+
+.mapButtonsContainer
+{
+	display: grid;
+	height: 68px;
+}
+
+.mappingColumn
+{
+	height: 400px;
+	width: 110px;
+}
+
+.moveMappedFieldsButtons
+{
+	padding-top: 77px;
+}
+
 .full-width
 {
 	width: 100%;
@@ -303,28 +326,26 @@ ul li .day-select
 .map-field-title
 {
 	padding-top: 20px;
+	padding-bottom: 10px;
 	display: flex;
-	width: 1200px;
+	width: 1220px;
 }
 
 .map-field-btn
 {
-	margin-left: 44.398%;
-	min-width: 76px;
-	outline: none !important;
+	margin: 2px 4px;
 }
 
 .leftSide-field
 {
-	padding-bottom: 10px;
 	font-weight: bold;
 }
 
 .rightSide-field
 {
-	padding-bottom: 10px;
-	margin-left: 42%;
 	font-weight: bold;
+	text-align: right;
+	width: 100%;
 }
 .source-field, .rightSide-field.reverse
 {
