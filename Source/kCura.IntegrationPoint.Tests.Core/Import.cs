@@ -1,8 +1,10 @@
 ﻿using System.Data;
+using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
+using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations;
 using kCura.Relativity.Client;
@@ -20,7 +22,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 			IAPILog logger = Substitute.For<IAPILog>();
 			ISystemEventLoggingService systemEventLoggingService = Substitute.For<ISystemEventLoggingService>();
 
-			var factory = new ImportApiFactory(systemEventLoggingService, logger);
+			IAuthTokenGenerator authTokenGenerator = new ClaimsTokenGenerator();
+
+			var factory = new ImportApiFactory(authTokenGenerator, systemEventLoggingService, logger);
 			var jobFactory = new ImportJobFactory(Substitute.For<IMessageService>());
 			var setting = new ImportSettings
 			{

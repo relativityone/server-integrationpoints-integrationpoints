@@ -12,16 +12,15 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 	[TestFixture]
 	public class ImportApiFactoryTests : ImportApiFactory
 	{
-		private const string _LOCAL_INSTANCE_ADDRESS = "http://instance-address.relativity.com/Relativity";
-		private const int _FEDERATED_INSTANCE_ARTIFACTID = 666;
 		private bool _shouldThrowInvalidLoginException;
 		private bool _shouldThrowInvalidOperationException;
 
+		private const string _LOCAL_INSTANCE_ADDRESS = "http://instance-address.relativity.com/Relativity";
+		private const int _FEDERATED_INSTANCE_ARTIFACTID = 666;
+
 		public ImportApiFactoryTests()
-		{
-			_systemEventLoggingService = new Mock<ISystemEventLoggingService>().Object;
-			_logger = new Mock<IAPILog>().Object;
-		}
+			: base(null, new Mock<ISystemEventLoggingService>().Object, PrepareLoggerStub())
+		{ }
 
 		[Test]
 		public void GetImportAPI_ShouldThrowNotSupportedException_WhenInstanceToInstance()
@@ -78,6 +77,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			{
 				return new Mock<IImportAPI>().Object;
 			}
+		}
+
+		private static IAPILog PrepareLoggerStub()
+		{
+			Mock<IAPILog> loggerStub = new Mock<IAPILog>();
+			loggerStub.Setup(m => m.ForContext<ImportApiFactory>()).Returns(loggerStub.Object);
+
+			return loggerStub.Object;
 		}
 	}
 }
