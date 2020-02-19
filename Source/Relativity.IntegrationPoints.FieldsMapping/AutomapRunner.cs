@@ -1,15 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
+using System.Threading.Tasks;
 using kCura.IntegrationPoints.Domain.Models;
+using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
+using Relativity.Services.Search;
 
 namespace Relativity.IntegrationPoints.FieldsMapping
 {
 	public class AutomapRunner : IAutomapRunner
 	{
+		private readonly IServicesMgr _servicesMgr;
+
+		public AutomapRunner(IServicesMgr servicesMgr)
+		{
+			_servicesMgr = servicesMgr;
+		}
+
 		public IEnumerable<FieldMap> MapFields(IEnumerable<DocumentFieldInfo> sourceFields,
 			IEnumerable<DocumentFieldInfo> destinationFields, bool matchOnlyIdentifiers = false)
 		{
@@ -21,6 +30,27 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 			}
 
 			return mappingBuilder.Mapping.OrderByDescending(x => x.SourceField.IsIdentifier).ThenBy(x => x.SourceField.DisplayName);
+		}
+
+		public async Task<IEnumerable<FieldMap>> MapFieldsFromSavedSearchAsync(IEnumerable<DocumentFieldInfo> sourceFields,
+			IEnumerable<DocumentFieldInfo> destinationFields,
+			int sourceWorkspaceArtifactId, int savedSearchArtifactId,
+			bool matchOnlyIdentifiers = false)
+		{
+			List<DocumentFieldInfo> savedSearchFields;
+
+			using (IKeywordSearchManager keywordSearchManager = _servicesMgr.CreateProxy<IKeywordSearchManager>(ExecutionIdentity.CurrentUser))
+			{
+				KeywordSearch savedSearch = await keywordSearchManager.ReadSingleAsync(sourceWorkspaceArtifactId, savedSearchArtifactId)
+					.ConfigureAwait(false);
+
+				savedSearchFields = sourceFields
+					.Where(sourceField => savedSearch.Fields.Exists(savedSearchField =>
+						savedSearchField.ArtifactID.ToString() == sourceField.FieldIdentifier))
+					.ToList();
+			}
+
+			return MapFields(savedSearchFields, destinationFields, matchOnlyIdentifiers);
 		}
 
 		private class AutomapBuilder
