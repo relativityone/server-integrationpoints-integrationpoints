@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoints.Domain.Models;
+using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.IntegrationPoints.FieldsMapping;
 
 using CategoryAttribute = NUnit.Framework.CategoryAttribute;
@@ -17,12 +19,14 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 	[TestFixture, Category("Unit")]
 	public class AutomapRunnerTests
 	{
+		private Mock<IServicesMgr> _servicesMgrFake;
 		private AutomapRunner _sut;
 
 		[SetUp]
 		public void Setup()
 		{
-			_sut = new AutomapRunner();
+			_servicesMgrFake = new Mock<IServicesMgr>();
+			_sut = new AutomapRunner(_servicesMgrFake.Object);
 		}
 
 		[Test]
