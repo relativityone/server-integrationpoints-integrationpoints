@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 		[LogApiExceptionFilter(Message = "Error while retrieving fields from destination workspace.")]
 		public async Task<HttpResponseMessage> GetMappableFieldsFromDestinationWorkspace(int workspaceID)
 		{
-			IList<FieldClassificationResult> destinationWorkspaceFields = await GetMappableFieldsFromDestinationWorkspaceAsync(workspaceID);
+			IList<FieldClassificationResult> destinationWorkspaceFields = await GetMappableFieldsFromDestinationWorkspaceAsync(workspaceID).ConfigureAwait(false);
 			return Request.CreateResponse(HttpStatusCode.OK, destinationWorkspaceFields, Configuration.Formatters.JsonFormatter);
 		}
 
