@@ -1,31 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoints.Domain.Models;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.IntegrationPoints.FieldsMapping;
-
+using Relativity.Services.Field;
+using Relativity.Services.Search;
 using CategoryAttribute = NUnit.Framework.CategoryAttribute;
 
-namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
+namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 {
 	[TestFixture, Category("Unit")]
 	public class AutomapRunnerTests
 	{
+		private Mock<IKeywordSearchManager> _keywordSearchManagerFake;
 		private Mock<IServicesMgr> _servicesMgrFake;
 		private AutomapRunner _sut;
 
 		[SetUp]
 		public void Setup()
 		{
+			_keywordSearchManagerFake = new Mock<IKeywordSearchManager>();
 			_servicesMgrFake = new Mock<IServicesMgr>();
+			_servicesMgrFake.Setup(x => x.CreateProxy<IKeywordSearchManager>(It.IsAny<ExecutionIdentity>()))
+				.Returns(_keywordSearchManagerFake.Object);
 			_sut = new AutomapRunner(_servicesMgrFake.Object);
 		}
 
@@ -442,7 +442,144 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 			mappedFields[0].SourceField.DisplayName.Should().Be("Field 1");
 			mappedFields[1].SourceField.DisplayName.Should().Be("Field 2");
 			mappedFields[2].SourceField.DisplayName.Should().Be("Field 3");
-
 		}
+
+		[Test]
+		public async Task MapFieldsFromSavedSearch_ShouldMapFieldFromSavedSearch()
+		{
+			// Arrange
+
+			var savedSearchFields = new List<FieldRef>
+			{
+				new FieldRef()
+				{
+					ArtifactID = 2,
+					Name = "Field 2"
+				}
+			};
+
+			var sourceFields = new[]
+			{
+				new DocumentFieldInfo
+				{
+					FieldIdentifier = "1",
+					Name = "Field 1",
+					Type = "Fixed-Length Text(250)"
+				},
+				new DocumentFieldInfo
+				{
+					FieldIdentifier = "2",
+					Name = "Field 2",
+					Type = "Fixed-Length Text(250)"
+				}
+			};
+
+			var destinationFields = new[]
+			{
+				new DocumentFieldInfo
+				{
+					FieldIdentifier = "3",
+					Name = "Field 3",
+					Type = "Fixed-Length Text(250)"
+				},
+				new DocumentFieldInfo
+				{
+					FieldIdentifier = "4",
+					Name = "Field 2",
+					Type = "Fixed-Length Text(250)"
+				}
+			};
+			
+			_keywordSearchManagerFake.Setup(x => x.ReadSingleAsync(It.IsAny<int>(), It.IsAny<int>()))
+				.ReturnsAsync(new KeywordSearch()
+				{
+					Fields = savedSearchFields
+				});
+
+			// Act
+			var mappedFields = (await _sut.MapFieldsFromSavedSearchAsync(sourceFields, destinationFields, 1, 2)
+				.ConfigureAwait(false)).ToArray();
+
+			// Assert
+			mappedFields.Length.Should().Be(1);
+			mappedFields.Single().SourceField.DisplayName.Should().Be("Field 2");
+		}
+
+		[Test]
+		public async Task MapFieldsFromSavedSearch_ShouldMapAlsoObjectIdentifier()
+		{
+			// Arrange
+
+			var savedSearchFields = new List<FieldRef>
+			{
+				new FieldRef()
+				{
+					ArtifactID = 2,
+					Name = "Field 2"
+				}
+			};
+
+			var sourceFields = new[]
+			{
+				new DocumentFieldInfo
+				{
+					FieldIdentifier = "1",
+					Name = "ControlNumber",
+					Type = "Fixed-Length Text(250)",
+					IsIdentifier = true
+				},
+				new DocumentFieldInfo
+				{
+					FieldIdentifier = "2",
+					Name = "Field 2",
+					Type = "Fixed-Length Text(250)"
+				}
+			};
+
+			var destinationFields = new[]
+			{  
+				new DocumentFieldInfo
+				{
+					FieldIdentifier = "10",
+					Name = "ControlNumber",
+					Type = "Fixed-Length Text(250)",
+					IsIdentifier = true
+				},
+				new DocumentFieldInfo
+				{
+					FieldIdentifier = "3",
+					Name = "Field 3",
+					Type = "Fixed-Length Text(250)"
+				},
+				new DocumentFieldInfo
+				{
+					FieldIdentifier = "4",
+					Name = "Field 2",
+					Type = "Fixed-Length Text(250)"
+				},
+				new DocumentFieldInfo
+				{
+					FieldIdentifier = "5",
+					Name = "Field 5",
+					Type = "Fixed-Length Text(250)"
+				}
+			};
+
+			_keywordSearchManagerFake.Setup(x => x.ReadSingleAsync(It.IsAny<int>(), It.IsAny<int>()))
+				.ReturnsAsync(new KeywordSearch()
+				{
+					Fields = savedSearchFields
+				});
+
+			// Act
+			var mappedFields = (await _sut.MapFieldsFromSavedSearchAsync(sourceFields, destinationFields, 1, 2)
+				.ConfigureAwait(false)).ToArray();
+
+			// Assert
+			mappedFields.Length.Should().Be(2);
+			mappedFields[0].SourceField.DisplayName.Should().Be("ControlNumber");
+			mappedFields[1].SourceField.DisplayName.Should().Be("Field 2");
+		}
+		
 	}
 }
