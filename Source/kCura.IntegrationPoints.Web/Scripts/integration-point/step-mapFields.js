@@ -999,7 +999,6 @@ ko.validation.insertValidationMessage = function (element) {
                 data: JSON.stringify({
                     SourceFields: this.sourceFields.filter(fieldForAutomap),
                     DestinationFields: this.destinationFields.filter(fieldForAutomap),
-					MatchOnlyIdentifiers: !!matchOnlyIdentifierFields,
 					SourceWorkspaceArtifactID: sourceWorkspaceArtifactID,
 					SavedSearchArtifactID: savedSearchArtifactID
                 })
