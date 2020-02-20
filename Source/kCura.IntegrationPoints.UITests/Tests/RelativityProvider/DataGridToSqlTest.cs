@@ -12,6 +12,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints]
+	[Category(TestCategory.EXPORT_TO_RELATIVITY)]
 	[Category(TestCategory.DATA_GRID_RELATED)]
 	public class DataGridToSqlTest : RelativityProviderTestsBase
 	{
