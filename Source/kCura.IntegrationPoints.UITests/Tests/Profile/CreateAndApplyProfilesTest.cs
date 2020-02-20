@@ -12,7 +12,8 @@ using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.UITests.Tests.Profile
 {
-	[TestFixture]
+	[TestFixture]
+	[Category(TestCategory.EXPORT_TO_RELATIVITY)]
 	[Category(TestCategory.PROFILE)]
 	internal class CreateAndApplyProfilesTest : RelativityProviderTestsBase
 	{
