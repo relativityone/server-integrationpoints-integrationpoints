@@ -11,6 +11,6 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 
 		Task<IEnumerable<FieldMap>> MapFieldsFromSavedSearchAsync(
 			IEnumerable<DocumentFieldInfo> sourceFields, IEnumerable<DocumentFieldInfo> destinationFields, 
-			int sourceWorkspaceArtifactId, int savedSearchArtifactId, bool matchOnlyIdentifiers = false);
+			int sourceWorkspaceArtifactId, int savedSearchArtifactId);
 	}
 }

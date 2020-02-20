@@ -33,9 +33,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 		}
 
 		public async Task<IEnumerable<FieldMap>> MapFieldsFromSavedSearchAsync(IEnumerable<DocumentFieldInfo> sourceFields,
-			IEnumerable<DocumentFieldInfo> destinationFields,
-			int sourceWorkspaceArtifactId, int savedSearchArtifactId,
-			bool matchOnlyIdentifiers = false)
+			IEnumerable<DocumentFieldInfo> destinationFields, int sourceWorkspaceArtifactId, int savedSearchArtifactId)
 		{
 			List<DocumentFieldInfo> sourceFieldsList = sourceFields.ToList();
 			List<DocumentFieldInfo> savedSearchFields;
@@ -60,7 +58,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 				}
 			}
 
-			return MapFields(savedSearchFields, destinationFields, matchOnlyIdentifiers);
+			return MapFields(savedSearchFields, destinationFields);
 		}
 
 		private class AutomapBuilder

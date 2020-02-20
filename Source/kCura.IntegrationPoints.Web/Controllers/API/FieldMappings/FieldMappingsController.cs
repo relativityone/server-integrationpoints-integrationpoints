@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 		public async Task<HttpResponseMessage> AutoMapFieldsFromSavedSearch([FromBody] AutomapSavedSearchRequest request)
 		{
 			IEnumerable<FieldMap> fieldMap = await _automapRunner
-				.MapFieldsFromSavedSearchAsync(request.SourceFields, request.DestinationFields, request.SourceWorkspaceArtifactID, request.SavedSearchArtifactID, request.MatchOnlyIdentifiers)
+				.MapFieldsFromSavedSearchAsync(request.SourceFields, request.DestinationFields, request.SourceWorkspaceArtifactID, request.SavedSearchArtifactID)
 				.ConfigureAwait(false);
 			return Request.CreateResponse(HttpStatusCode.OK, fieldMap, Configuration.Formatters.JsonFormatter);
 		}
