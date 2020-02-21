@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data.UtilityDTO;
+using kCura.IntegrationPoint.Tests.Core;
 using Relativity;
 using Relativity.Services.Objects.DataContracts;
 
@@ -63,27 +64,13 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
 				ResultSet<RelativityObject> fieldsMapped =
 					await _testContext.ObjectManager.QueryAsync(fieldsRequest, fieldsFromWorkspace.Count,
 						_BATCH_SIZE).ConfigureAwait(false);
-				fieldsFromWorkspace.AddRange(fieldsMapped.Items.Select(i => new FieldObject()
-				{
-					ArtifactID = i.ArtifactID,
-					Name = i.FieldValues.First(fv => fv.Field.Name == "Name").Value.ToString(),
-					Type = i.FieldValues.First(fv => fv.Field.Name == "Field Type").Value.ToString(),
-                    Length = GetLength(i),
-					Keywords = i.FieldValues.First(fv => fv.Field.Name == "Keywords").Value.ToString(),
-					IsIdentifier = (bool) i.FieldValues.First(fv => fv.Field.Name == "Is Identifier").Value,
-					OpenToAssociations = (bool) i.FieldValues.First(fv => fv.Field.Name == "Open To Associations").Value
-                }));
+				fieldsFromWorkspace.AddRange(fieldsMapped.Items.Select(i => new FieldObject(i)));
 				totalCount = fieldsMapped.TotalCount;
 			} while (fieldsFromWorkspace.Count < totalCount);
 
             return fieldsFromWorkspace;
 		}
 
-        private int GetLength(RelativityObject fieldObject)
-        {
-            FieldValuePair lengthFieldValuePair = fieldObject.FieldValues.SingleOrDefault(x => x.Field.Name == "Length");
-            return (int?) lengthFieldValuePair.Value ?? 0;
-		}
         private List<FieldObject> RemoveSystemFieldObjects(List<FieldObject> fieldsFromWorkspace)
 		{
 			fieldsFromWorkspace.RemoveAll(fo => fo.Keywords == "System" && !_fieldMapWhiteList.Contains(fo.Name));
