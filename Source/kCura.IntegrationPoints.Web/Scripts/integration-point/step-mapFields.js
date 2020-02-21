@@ -990,21 +990,18 @@ ko.validation.insertValidationMessage = function (element) {
                 return field.classificationLevel == 0;
 			};
 			
-			const sourceConfig = JSON.parse(model.sourceConfiguration);
-			const sourceWorkspaceArtifactID = sourceConfig.SourceWorkspaceArtifactId;
-			const savedSearchArtifactID = sourceConfig.SavedSearchArtifactId;
+            const sourceConfig = JSON.parse(model.sourceConfiguration);
+            const savedSearchArtifactID = sourceConfig.SavedSearchArtifactId;
 
             root.data.ajax({
-                type: 'POST', url: root.utils.generateWebURL('/api/FieldMappings/AutomapFieldsFromSavedSearch'),
-                data: JSON.stringify({
-                    SourceFields: this.sourceFields.filter(fieldForAutomap),
-                    DestinationFields: this.destinationFields.filter(fieldForAutomap),
-					SourceWorkspaceArtifactID: sourceWorkspaceArtifactID,
-					SavedSearchArtifactID: savedSearchArtifactID
+                type: 'POST', url: root.utils.generateWebAPIURL('/FieldMappings/AutomapFieldsFromSavedSearch', savedSearchArtifactID),
+				data: JSON.stringify({
+					SourceFields: this.sourceFields.filter(fieldForAutomap),
+					DestinationFields: this.destinationFields.filter(fieldForAutomap)
                 })
-            }).then(function (mapping) {
-                self.applyMapping(mapping);
-                return mapping;
+			}).then(function (mapping) {
+				self.applyMapping(mapping);
+				return mapping;
             });
 		};
 		/********** Tooltips  **********/

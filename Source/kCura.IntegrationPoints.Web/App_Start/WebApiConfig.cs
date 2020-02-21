@@ -251,7 +251,7 @@ namespace kCura.IntegrationPoints.Web
 
 			config.Routes.MapHttpRoute(
 				name: "AutoMapFieldsFromSavedSearch",
-				routeTemplate: "api/FieldMappings/AutomapFieldsFromSavedSearch",
+				routeTemplate: "{sourceWorkspaceID}/api/FieldMappings/AutomapFieldsFromSavedSearch/{savedSearchID}",
 				defaults: new { controller = "FieldMappings", action = "AutoMapFieldsFromSavedSearch" }
 			);
 

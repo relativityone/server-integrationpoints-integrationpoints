@@ -49,10 +49,10 @@ namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 
 		[HttpPost]
 		[LogApiExceptionFilter(Message = "Error while auto mapping fields from saved search")]
-		public async Task<HttpResponseMessage> AutoMapFieldsFromSavedSearch([FromBody] AutomapSavedSearchRequest request)
+		public async Task<HttpResponseMessage> AutoMapFieldsFromSavedSearch([FromBody] AutomapRequest request, int sourceWorkspaceID, int savedSearchID)
 		{
 			IEnumerable<FieldMap> fieldMap = await _automapRunner
-				.MapFieldsFromSavedSearchAsync(request.SourceFields, request.DestinationFields, request.SourceWorkspaceArtifactID, request.SavedSearchArtifactID)
+				.MapFieldsFromSavedSearchAsync(request.SourceFields, request.DestinationFields, sourceWorkspaceID, savedSearchID)
 				.ConfigureAwait(false);
 			return Request.CreateResponse(HttpStatusCode.OK, fieldMap, Configuration.Formatters.JsonFormatter);
 		}
