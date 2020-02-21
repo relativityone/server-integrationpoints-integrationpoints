@@ -226,7 +226,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			return this;
 		}
 
-		public async Task<TestContext> RetrieveMappableFields()
+		public async Task<TestContext> RetrieveMappableFieldsAsync()
 		{
 			WorkspaceMappableFields = await WorkspaceFieldMappingHelper.RetrieveFilteredDocumentsFieldsFromWorkspaceAsync().ConfigureAwait(false);
 			return this;
