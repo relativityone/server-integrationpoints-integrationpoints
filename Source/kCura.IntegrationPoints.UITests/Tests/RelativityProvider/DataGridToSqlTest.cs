@@ -11,6 +11,7 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 {
 	[TestFixture]
+	[Category(TestCategory.EXPORT_TO_RELATIVITY)]
 	[Category(TestCategory.DATA_GRID_RELATED)]
 	public class DataGridToSqlTest : RelativityProviderTestsBase
 	{
