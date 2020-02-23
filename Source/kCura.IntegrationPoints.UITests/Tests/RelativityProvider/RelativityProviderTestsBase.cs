@@ -129,18 +129,25 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
         public async Task SetRandomNameToFLTFieldAsync(string fieldName, TestContext workspaceContext, IFieldManager workspaceFieldManager)
         {
-            int nameMaxLength = 49;
-            string randomName = $"{fieldName}" + Guid.NewGuid().ToString().Substring(0,nameMaxLength - fieldName.Length);
+            string newRandomFieldName = GetRandomName(fieldName);
+
             FieldObject fieldToBeChanged = await GetFieldObjectFromWorkspaceAsync(fieldName, workspaceContext).ConfigureAwait(false);
             var fixedLengthTextFieldUpdateRequest = new FixedLengthFieldRequest
             {
                 ObjectType = new ObjectTypeIdentifier { ArtifactTypeID = (int)ArtifactType.Document },
-                Name = $"{randomName}",
+                Name = $"{newRandomFieldName}",
                 Length = fieldToBeChanged.Length
             };
             await workspaceFieldManager
 				.UpdateFixedLengthFieldAsync(workspaceContext.GetWorkspaceId(), fieldToBeChanged.ArtifactID,
                     fixedLengthTextFieldUpdateRequest).ConfigureAwait(false);
+        }
+
+        private string GetRandomName(string fieldName)
+        {
+            const int _NAME_MAX_LENGTH = 49;
+            string randomName = $"{fieldName}" + Guid.NewGuid();
+            return randomName.Substring(0, randomName.Length <= _NAME_MAX_LENGTH ? randomName.Length : _NAME_MAX_LENGTH);
         }
 
 

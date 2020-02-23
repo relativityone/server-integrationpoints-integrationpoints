@@ -98,26 +98,27 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOnly;
 			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.No;
 
-			//mapping Identifiers with different names
-            List<string> fieldToChangeName = new List<string>{"Control Number", "FileName"};
-            foreach (var fieldName in fieldToChangeName)
+			//Identifier and another random field
+			List<string> fieldsToBeChanged = new List<string>{ "Control Number" , "File Name"};
+            
+            foreach (var fieldName in fieldsToBeChanged)
             {
 				await SetRandomNameToFLTFieldDestinationWorkspaceAsync(fieldName).ConfigureAwait(false);
                 await SetRandomNameToFLTFieldSourceWorkspaceAsync(fieldName).ConfigureAwait(false);
 			}
 
-            await SourceContext.RetrieveMappableFieldsAsync().ConfigureAwait(false);
+			await SourceContext.RetrieveMappableFieldsAsync().ConfigureAwait(false);
             await DestinationContext.RetrieveMappableFieldsAsync().ConfigureAwait(false);
+			SyncFieldMapResults mapAllFieldsUiTestEdition  = new SyncFieldMapResults(SourceContext.WorkspaceAutoMapAllEnabledFields, DestinationContext.WorkspaceAutoMapAllEnabledFields);
+			
+            List<string> expectedSelectedSourceMappableFields =
+                CreateFieldMapListBoxFormatFromObjectManagerFetchedList(mapAllFieldsUiTestEdition.sourceFieldMapping);
+            List<string> expectedSelectedDestinationMappableFields =
+                CreateFieldMapListBoxFormatFromObjectManagerFetchedList(mapAllFieldsUiTestEdition.destinationFieldMapping);
 
 			PushToRelativityThirdPage fieldMappingPage =
                 PointsAction.CreateNewRelativityProviderFieldMappingPage(model);
-
-            List<FieldObject> mapAllFieldsUiTestEdition = GetMapAllFieldsUiTestEdition(
-                SourceContext.WorkspaceAutoMapAllEnabledFields, DestinationContext.WorkspaceAutoMapAllEnabledFields);
-            List<string> expectedSelectedCommonMappableFields =
-                CreateFieldMapListBoxFormatFromObjectManagerFetchedList(mapAllFieldsUiTestEdition);
-
-            //Act
+			//Act
 			fieldMappingPage = fieldMappingPage.MapAllFields();
 
             //Assert
@@ -126,8 +127,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 			List<string> fieldsFromSelectedSourceWorkspaceListBox =
 				fieldMappingPage.GetFieldsFromSelectedSourceWorkspaceListBox();
 
-			fieldsFromSelectedSourceWorkspaceListBox.Should().ContainInOrder(expectedSelectedCommonMappableFields);
-			fieldsFromSelectedDestinationWorkspaceListBox.Should().ContainInOrder(expectedSelectedCommonMappableFields);
+			fieldsFromSelectedSourceWorkspaceListBox.Should().ContainInOrder(expectedSelectedSourceMappableFields);
+			fieldsFromSelectedDestinationWorkspaceListBox.Should().ContainInOrder(expectedSelectedDestinationMappableFields);
 		}
 
 		private List<string> CreateFieldMapListBoxFormatFromObjectManagerFetchedList(
@@ -140,27 +141,5 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 				.Select(field =>
 					field.IsIdentifier ? $"{field.Name} [Object Identifier]" : $"{field.Name} [{field.DisplayType}]").ToList();
 		}
-
-        private List<FieldObject> GetMapAllFieldsUiTestEdition(List<FieldObject> sourceWorkspaceFields,
-            List<FieldObject> destinationWorkspaceFields)
-        {   
-            var mapAllFieldList = new List<FieldObject>();
-			foreach (var swf in sourceWorkspaceFields)
-            {
-                foreach (var dwf in destinationWorkspaceFields)
-                {
-					if (swf.ArtifactID == dwf.ArtifactID)
-                    {
-						mapAllFieldList.Add(swf);
-                    }
-                    else if (swf.Name == dwf.Name)
-                    {
-                        mapAllFieldList.Add(swf);
-                    }
-				}
-            }
-
-            return mapAllFieldList;
-        }
 	}
 }

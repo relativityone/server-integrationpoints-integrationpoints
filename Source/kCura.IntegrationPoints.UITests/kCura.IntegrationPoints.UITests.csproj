@@ -105,6 +105,7 @@
     <Compile Include="Configuration\Helpers\FieldMappingHelper.cs" />
     <Compile Include="Configuration\Helpers\ProductionHelper.cs" />
     <Compile Include="Configuration\Helpers\RelativityFolderPathScriptHelper.cs" />
+    <Compile Include="Configuration\Helpers\SyncFieldMapResults.cs" />
     <Compile Include="Configuration\Helpers\UserHelper.cs" />
     <Compile Include="Configuration\RelativityUser.cs" />
     <Compile Include="Configuration\TestConfiguration.cs" />
