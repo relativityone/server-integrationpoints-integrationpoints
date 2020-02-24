@@ -74,7 +74,7 @@
 		destination.ProductionImport = viewModel.ProductionImport();
 		destination.ProductionArtifactId = viewModel.ProductionArtifactId();
 		destination.Provider = "relativity";
-		destination.DoNotUseFieldsMapCache = viewModel.WorkspaceHasChanged;
+		destination.WorkspaceHasChanged = viewModel.WorkspaceHasChanged;
 
 		destinationJson = JSON.stringify(destination);
 		stepModel.destination = destinationJson;
@@ -336,12 +336,17 @@
 						stateLocal.ProductionArtifactId = null;
 						self.ProductionArtifactId(null);
 					}
-					if (self.TargetWorkspaceArtifactId() !== value) {
+					if (self.TargetWorkspaceArtifactId() !== state.TargetWorkspaceArtifactId) {
 
 						self.getDestinationProductionSets(self.TargetWorkspaceArtifactId());
 						self.TargetWorkspaceArtifactId.isModified(false);
-						self.WorkspaceHasChanged = true;
-					}
+
+						// only set WorkspaceHasChanged when user changed  the workspace if it was set in the model
+                        if (state.TargetWorkspaceArtifactId)
+                        {
+							self.WorkspaceHasChanged = true;
+                        }
+                    }
 				});
 			});
 
