@@ -248,7 +248,13 @@ namespace kCura.IntegrationPoints.Web
 				routeTemplate: "api/FieldMappings/AutomapFields",
 				defaults: new { controller = "FieldMappings", action = "AutoMapFields" }
 			);
-			
+
+			config.Routes.MapHttpRoute(
+				name: "AutoMapFieldsFromSavedSearch",
+				routeTemplate: "{sourceWorkspaceID}/api/FieldMappings/AutomapFieldsFromSavedSearch/{savedSearchID}",
+				defaults: new { controller = "FieldMappings", action = "AutoMapFieldsFromSavedSearch" }
+			);
+
 			config.Routes.MapHttpRoute(
 				name: "LoadFileHeaders",
 				routeTemplate: "{workspaceID}/api/ImportProviderDocument/LoadFileHeaders",

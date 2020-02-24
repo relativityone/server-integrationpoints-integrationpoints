@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using kCura.IntegrationPoints.Domain.Models;
+using System.Threading.Tasks;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace Relativity.IntegrationPoints.FieldsMapping
@@ -8,5 +8,9 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 	{
 		IEnumerable<FieldMap> MapFields(IEnumerable<DocumentFieldInfo> sourceFields,
 			IEnumerable<DocumentFieldInfo> destinationFields, bool matchOnlyIdentifiers = false);
+
+		Task<IEnumerable<FieldMap>> MapFieldsFromSavedSearchAsync(
+			IEnumerable<DocumentFieldInfo> sourceFields, IEnumerable<DocumentFieldInfo> destinationFields, 
+			int sourceWorkspaceArtifactId, int savedSearchArtifactId);
 	}
 }

@@ -219,6 +219,7 @@ ko.validation.insertValidationMessage = function (element) {
 		this.selectedSourceField = ko.observableArray([]);
 		this.selectedMappedSource = ko.observableArray([]);
 		this.IdentifierField = ko.observable(model.IPDestinationSettings.IdentifierField);
+		this.showMapSavedSearchButton = ko.observable(false);
 
 		this.overlay = ko.observableArray([]);
 		this.nativeFilePathOption = ko.observableArray([]);
@@ -260,14 +261,20 @@ ko.validation.insertValidationMessage = function (element) {
 		var copyFileToRepositoryText = "Copy Files to Repository:";
 		this.copyNativeLabel = ko.observable(copyNativeFileText);
 		this.ImageImport = ko.observable(model.ImageImport || "false");
-		this.IsProductionExport = function () {
+		this.CheckRelativityProviderExportType = function (exportType) {
 		    if (this.IsRelativityProvider()) {
 		        var sourceModel = JSON.parse(model.sourceConfiguration);
-		        if (sourceModel.TypeOfExport && sourceModel.TypeOfExport === ExportEnums.SourceOptionsEnum.Production) {
+		        if (sourceModel.TypeOfExport && sourceModel.TypeOfExport === exportType) {
 		            return true;
 		        }
 		    }
 		    return false;
+		};
+		this.IsProductionExport = function () {
+			return this.CheckRelativityProviderExportType(ExportEnums.SourceOptionsEnum.Production);
+		};
+		this.IsSavedSearchExport = function () {
+			return this.CheckRelativityProviderExportType(ExportEnums.SourceOptionsEnum.SavedSearch);
 		};
 
         this.importNativeFile.subscribe(function (importNative) {
@@ -950,8 +957,13 @@ ko.validation.insertValidationMessage = function (element) {
 		this.autoFieldMap = function () {
 			self.autoFieldMapWithCustomOptions();
 		};
+		this.autoMapFieldsFromSavedSearch = function () {
+			self.autoMapFieldsFromSavedSearchWithCustomOptions();
+		};
 		this.autoFieldMapWithCustomOptions = function (matchOnlyIdentifierFields) {
 			//Remove current mappings first
+			const showErrors = self.showErrors();
+			self.showErrors(false);
 			self.addAlltoSourceField();
 			self.addAlltoWorkspaceField();
 
@@ -967,8 +979,39 @@ ko.validation.insertValidationMessage = function (element) {
                     MatchOnlyIdentifiers: !!matchOnlyIdentifierFields
                 })
             }).then(function (mapping) {
-                self.applyMapping(mapping);
+				self.applyMapping(mapping);
+				self.showErrors(showErrors);
                 return mapping;
+			}, function () {
+	            self.showErrors(showErrors);
+            });
+		};
+		this.autoMapFieldsFromSavedSearchWithCustomOptions = function (matchOnlyIdentifierFields) {
+			//Remove current mappings first
+			const showErrors = self.showErrors();
+			self.showErrors(false);
+			self.addAlltoSourceField();
+			self.addAlltoWorkspaceField();
+
+            var fieldForAutomap = function(field) {
+                return field.classificationLevel == 0;
+			};
+			
+            const sourceConfig = JSON.parse(model.sourceConfiguration);
+            const savedSearchArtifactID = sourceConfig.SavedSearchArtifactId;
+
+            root.data.ajax({
+                type: 'POST', url: root.utils.generateWebAPIURL('/FieldMappings/AutomapFieldsFromSavedSearch', savedSearchArtifactID),
+				data: JSON.stringify({
+					SourceFields: this.sourceFields.filter(fieldForAutomap),
+					DestinationFields: this.destinationFields.filter(fieldForAutomap)
+                })
+			}).then(function (mapping) {
+				self.applyMapping(mapping);
+				self.showErrors(showErrors);
+				return mapping;
+			}, function () {
+	            self.showErrors(showErrors);
             });
 		};
 		/********** Tooltips  **********/
@@ -1032,6 +1075,8 @@ ko.validation.insertValidationMessage = function (element) {
 			}
             this.model = new viewModel(this.returnModel);
 			this.model.errors = ko.validation.group(this.model, { deep: true });
+
+			self.model.showMapSavedSearchButton(self.model.IsSavedSearchExport());
 		};
 
 		var relativityImportType;
