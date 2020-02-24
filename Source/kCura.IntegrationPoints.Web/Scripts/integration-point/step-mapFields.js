@@ -962,6 +962,8 @@ ko.validation.insertValidationMessage = function (element) {
 		};
 		this.autoFieldMapWithCustomOptions = function (matchOnlyIdentifierFields) {
 			//Remove current mappings first
+			const showErrors = self.showErrors();
+			self.showErrors(false);
 			self.addAlltoSourceField();
 			self.addAlltoWorkspaceField();
 
@@ -977,12 +979,17 @@ ko.validation.insertValidationMessage = function (element) {
                     MatchOnlyIdentifiers: !!matchOnlyIdentifierFields
                 })
             }).then(function (mapping) {
-                self.applyMapping(mapping);
+				self.applyMapping(mapping);
+				self.showErrors(showErrors);
                 return mapping;
+			}, function () {
+	            self.showErrors(showErrors);
             });
 		};
 		this.autoMapFieldsFromSavedSearchWithCustomOptions = function (matchOnlyIdentifierFields) {
 			//Remove current mappings first
+			const showErrors = self.showErrors();
+			self.showErrors(false);
 			self.addAlltoSourceField();
 			self.addAlltoWorkspaceField();
 
@@ -1001,7 +1008,10 @@ ko.validation.insertValidationMessage = function (element) {
                 })
 			}).then(function (mapping) {
 				self.applyMapping(mapping);
+				self.showErrors(showErrors);
 				return mapping;
+			}, function () {
+	            self.showErrors(showErrors);
             });
 		};
 		/********** Tooltips  **********/
