@@ -12,7 +12,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 {
 	public class IntegrationPointProfilePage : GeneralPage
 	{
-		[FindsBy(How = How.XPath, Using = "//button[.='New Integration Point Profile']")]
+        [FindsBy(How = How.CssSelector, Using = "#dashboardPanel > div > div.dashboard-controls.new-item-button-wrapper > div > button-wgt > div > button")]
 		protected IWebElement NewIntegrationPointProfileButton;
 
 		public IntegrationPointProfilePage(RemoteWebDriver driver) : base(driver)
