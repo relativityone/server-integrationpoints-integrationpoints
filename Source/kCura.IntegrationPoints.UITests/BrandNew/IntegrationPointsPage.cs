@@ -7,9 +7,8 @@ using SeleniumExtras.PageObjects;
 namespace kCura.IntegrationPoints.UITests.BrandNew
 {
 	public class IntegrationPointsPage : GeneralPage
-	{
-
-		[FindsBy(How = How.XPath, Using = "//button[.='New Integration Point']")]
+	{   
+		[FindsBy(How = How.CssSelector, Using = "#dashboardPanel > div > div.dashboard-controls.new-item-button-wrapper > div > button-wgt > div > button")]
 		protected IWebElement NewIntegrationPointButton { get; set; }
 
 		public IntegrationPointsPage(RemoteWebDriver driver) : base(driver)

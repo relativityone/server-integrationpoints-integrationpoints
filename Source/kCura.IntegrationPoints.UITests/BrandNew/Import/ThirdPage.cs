@@ -12,7 +12,7 @@ namespace kCura.IntegrationPoints.UITests.BrandNew.Import
 		public ThirdPage(RemoteWebDriver driver) : base(driver)
 		{
 			Driver.SwitchTo().DefaultContent()
-				.SwitchTo().Frame("externalPage");
+				.SwitchTo().Frame(_mainFrameNameOldUi);
 			WaitForPage();
 
 			FieldMapping = new FieldMappingPanel(Driver.FindElementById("fieldMappings"));
