@@ -594,7 +594,7 @@ ko.validation.insertValidationMessage = function (element) {
 		this.destinationCaseArtifactID = destination.CaseArtifactId;
 
 		self.findField = function(array, field) {
-			const fields = $.grep(array, function (value, _index) { return value.fieldIdentifier === field.fieldIdentifier; });
+			const fields = $.grep(array, function (value, _index) { return value.fieldIdentifier === field.fieldIdentifier || value.name == field.displayName; });
 			const fieldFound = fields.length > 0;
 			return {
 				exist: fieldFound,
