@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.FtpProvider.Helpers.Interfaces;
 using kCura.IntegrationPoints.FtpProvider.Helpers.Models;
 using kCura.IntegrationPoints.Web.Models;
 using Relativity.IntegrationPoints.Contracts.Models;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.Controllers
 {
@@ -16,11 +17,17 @@ namespace kCura.IntegrationPoints.Web.Controllers
     {
         private readonly IConnectorFactory _connectorFactory;
 	    private readonly ISettingsManager _settingsManager;
+		private readonly ICPHelper _helper;
+		private readonly IAPILog _logger;
 
-	    public FtpProviderController(IConnectorFactory connectorFactory, ISettingsManager settingsManager)
+		public FtpProviderController(IConnectorFactory connectorFactory, ISettingsManager settingsManager, ICPHelper helper)
         {
             _connectorFactory = connectorFactory;
 	        _settingsManager = settingsManager;
+			_helper = helper;
+			_logger = _helper.GetLoggerFactory().GetLogger()
+				.ForContext<FtpProviderController>()
+				.ForContext("CorrelationId", Guid.NewGuid(), false);
         }
 
         public ActionResult GetDefaultFtpSettings()
@@ -37,9 +44,12 @@ namespace kCura.IntegrationPoints.Web.Controllers
         [System.Web.Mvc.HttpPost]
         public HttpStatusCodeResult ValidateHostConnection([FromBody] SynchronizerSettings synchronizerSettings)
         {
+			_logger.LogInformation("Host validation has been started...");
+
 			var response = new HttpStatusCodeResult(HttpStatusCode.NotImplemented, "Nothing happened");
 
 	        Settings settings = _settingsManager.DeserializeSettings(synchronizerSettings.Settings);
+			_logger.LogInformation("FTP Settings: {settings}", synchronizerSettings.Settings);
 	        SecuredConfiguration securedConfiguration = _settingsManager.DeserializeCredentials(synchronizerSettings.Credentials);
 
 			//immediately end if host value is non-standard
@@ -48,25 +58,33 @@ namespace kCura.IntegrationPoints.Web.Controllers
                 response = new HttpStatusCodeResult(HttpStatusCode.BadRequest, ErrorMessage.INVALID_HOST_NAME);
                 return response;
             }
+			_logger.LogInformation("Host has been validated");
 
             if (settings.ValidateCSVName() == false)
             {
                 response = new HttpStatusCodeResult(HttpStatusCode.BadRequest, ErrorMessage.MISSING_CSV_FILE_NAME);
                 return response;
             }
+			_logger.LogInformation("CSV file  has been validated");
+
             settings.UpdatePort();
+
             try
             {
+				_logger.LogInformation("Trying to establish {protocol} connection", settings.Protocol);
                 using (var client = _connectorFactory.GetConnector(settings.Protocol, settings.Host, settings.Port, securedConfiguration.Username, securedConfiguration.Password))
                 {
+					_logger.LogInformation("Test {protocol} connection", settings.Protocol);
                     if (client.TestConnection())
                     {
+						_logger.LogInformation("Connected.");
                         response = new HttpStatusCodeResult(HttpStatusCode.NoContent);
                     }
                 }
             }
             catch (Exception exception)
             {
+				_logger.LogError(exception, "Error occured during establishing the connection");
                 response = new HttpStatusCodeResult(HttpStatusCode.BadRequest, exception.Message);
             }
             return response;
