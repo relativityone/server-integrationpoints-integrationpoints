@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		protected IRelativityObjectManagerFactory ObjectManagerFactory { get; set; }
 
 		[OneTimeSetUp]
-		public virtual void OneTimeSetUp()
+		public virtual async Task OneTimeSetUp()
 		{
 			SourceContext.ExecuteRelativityFolderPathScript();
 			FolderManager = SourceContext.Helper.CreateProxy<IFolderManager>();
@@ -40,18 +40,19 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ImageService = new ImagesService(SourceContext.Helper);
 			ProductionImageService = new ProductionImagesService(SourceContext.Helper);
 			ObjectManagerFactory = new RelativityObjectManagerFactory(SourceContext.Helper);
-            CreateFixedLengthFieldsWithSpecialCharacters(SourceContext.GetWorkspaceId(), SourceFieldManager);
-        }
+			await CreateFixedLengthFieldsWithSpecialCharactersAsync(SourceContext.GetWorkspaceId(), SourceFieldManager).ConfigureAwait(false);
+			await SourceContext.RetrieveMappableFieldsAsync().ConfigureAwait(false);
+		}
 
 		[SetUp]
 		public virtual async Task SetUp()
 		{
 			DestinationContext = new TestContext().CreateTestWorkspace();
-			await DestinationContext.RetrieveMappableFields().ConfigureAwait(false);
 			DestinationFieldManager = DestinationContext.Helper.CreateProxy<IFieldManager>();
-			CreateFixedLengthFieldsWithSpecialCharacters(DestinationContext.GetWorkspaceId(), DestinationFieldManager);
+			await CreateFixedLengthFieldsWithSpecialCharactersAsync(DestinationContext.GetWorkspaceId(), DestinationFieldManager).ConfigureAwait(false);
+			await DestinationContext.RetrieveMappableFieldsAsync().ConfigureAwait(false);
 			PointsAction = new IntegrationPointsAction(Driver, SourceContext);
-        }
+		}
 
 		[TearDown]
 		public void TearDownDestinationContext()
@@ -67,29 +68,29 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			}
 		}
 
-        protected async void CreateFixedLengthFieldsWithSpecialCharacters(int workspaceID, IFieldManager fieldManager)
-        {
-            char[] specialCharacters = @"!@#$%^&*()-_+= {}|\/;'<>,.?~`".ToCharArray();
-            for (int i = 0; i < specialCharacters.Length; i++)
-            {
-                char special = specialCharacters[i];
-                string generatedFieldName = $"aaaaa{special}{i}";
-                var fixedLengthTextFieldRequest = new FixedLengthFieldRequest
-                {
-                    ObjectType = new ObjectTypeIdentifier {ArtifactTypeID = (int) ArtifactType.Document},
-                    Name = $"{generatedFieldName} FLT",
-                    Length = 255
+		protected async Task CreateFixedLengthFieldsWithSpecialCharactersAsync(int workspaceID, IFieldManager fieldManager)
+		{
+			char[] specialCharacters = @"!@#$%^&*()-_+= {}|\/;'<>,.?~`".ToCharArray();
+			for (int i = 0; i < specialCharacters.Length; i++)
+			{
+				char special = specialCharacters[i];
+				string generatedFieldName = $"aaaaa{special}{i}";
+				var fixedLengthTextFieldRequest = new FixedLengthFieldRequest
+				{
+					ObjectType = new ObjectTypeIdentifier { ArtifactTypeID = (int)ArtifactType.Document },
+					Name = $"{generatedFieldName} FLT",
+					Length = 255
 				};
 
-                var longTextFieldRequest = new LongTextFieldRequest
+				var longTextFieldRequest = new LongTextFieldRequest
 				{
-                    ObjectType = new ObjectTypeIdentifier { ArtifactTypeID = (int)ArtifactType.Document },
-                    Name = $"{generatedFieldName} LTF"
-                };
+					ObjectType = new ObjectTypeIdentifier { ArtifactTypeID = (int)ArtifactType.Document },
+					Name = $"{generatedFieldName} LTF"
+				};
 
-                await fieldManager.CreateLongTextFieldAsync(workspaceID, longTextFieldRequest).ConfigureAwait(false);
-                await fieldManager.CreateFixedLengthFieldAsync(workspaceID, fixedLengthTextFieldRequest).ConfigureAwait(false);
-            }
+				await fieldManager.CreateLongTextFieldAsync(workspaceID, longTextFieldRequest).ConfigureAwait(false);
+				await fieldManager.CreateFixedLengthFieldAsync(workspaceID, fixedLengthTextFieldRequest).ConfigureAwait(false);
+			}
 		}
 
 		protected DocumentsValidator CreateDocumentsEmptyValidator()

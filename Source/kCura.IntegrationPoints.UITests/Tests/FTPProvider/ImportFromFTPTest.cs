@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FTPProvider
 	{
 		private IRSAPIService _service;
 
-		private const string _CSV_FILEPATH = "ImportFromFtpTest.csv";
+		private const string _CSV_FILEPATH = "upload/ImportFromFtpTest.csv";
 
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
@@ -40,23 +40,19 @@ namespace kCura.IntegrationPoints.UITests.Tests.FTPProvider
 		public void ImportDocumentsFromFtp()
 		{
 			// Arrange
-			var model = new ImportFromFtpModel($"Import Documents from FTP ({Now})",
+			var model = new ImportFromFtpModel($"Import Documents from SFTP ({Now})",
 				TransferredObjectConstants.DOCUMENT)
 			{
 				ConnectionAndFileInfo =
 				{
 					Host = SharedVariables.FTPConnectionPath,
-					Protocol = FtpProtocolType.FTP,
-					Port = 21,
+					Protocol = FtpProtocolType.SFTP,
+					Port = 22,
 					Username = SharedVariables.FTPUsername,
 					Password = SharedVariables.FTPPassword,
 					CsvFilepath = _CSV_FILEPATH
 				},
-				FieldsMapping = new FieldsMappingModel(
-					"Control Number", "Control Number [Object Identifier]",
-					"Extracted Text", "Extracted Text [Long Text]"
-				),
-				Settings = new SettingsModel
+                Settings = new SettingsModel
 				{
 					Overwrite = OverwriteType.AppendOverlay,
 					MultiSelectFieldOverlayBehavior = MultiSelectFieldOverlayBehavior.UseFieldSettings,
