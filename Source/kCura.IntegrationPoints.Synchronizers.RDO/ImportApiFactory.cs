@@ -1,33 +1,43 @@
 ﻿using System;
 using System.Security.Authentication;
-using kCura.IntegrationPoints.Data.Logging;
-using kCura.IntegrationPoints.Domain.Exceptions;
-using kCura.IntegrationPoints.Synchronizers.RDO.Properties;
+using Relativity.API;
+using Relativity.DataExchange;
 using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Enumeration;
 using kCura.WinEDDS.Exceptions;
-using Newtonsoft.Json;
-using Relativity.API;
+using kCura.IntegrationPoints.Data.Logging;
+using kCura.IntegrationPoints.Domain.Exceptions;
+using kCura.IntegrationPoints.Domain.Authentication;
+using kCura.IntegrationPoints.Synchronizers.RDO.Properties;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
 	public class ImportApiFactory : IImportApiFactory
 	{
-		protected ISystemEventLoggingService _systemEventLoggingService;
-		protected IAPILog _logger;
+		private readonly ISystemEventLoggingService _systemEventLoggingService;
+		private readonly IAPILog _logger;
+		private readonly IAuthTokenGenerator _authTokenGenerator;
 
-		public ImportApiFactory(ISystemEventLoggingService systemEventLoggingService, IAPILog logger)
+		private class RelativityTokenProvider : IRelativityTokenProvider
 		{
-			_systemEventLoggingService = systemEventLoggingService;
-			_logger = logger.ForContext<ImportApiFactory>();
+			private readonly IAuthTokenGenerator _authTokenGenerator;
+
+			public RelativityTokenProvider(IAuthTokenGenerator authTokenGenerator)
+			{
+				_authTokenGenerator = authTokenGenerator;
+			}
+
+			public string GetToken()
+			{
+				return _authTokenGenerator.GetAuthToken();
+			}
 		}
 
-		/// <summary>
-		/// For testing.
-		/// </summary>
-		protected ImportApiFactory()
+		public ImportApiFactory(IAuthTokenGenerator authTokenGenerator, ISystemEventLoggingService systemEventLoggingService, IAPILog logger)
 		{
-
+			_authTokenGenerator = authTokenGenerator;
+			_systemEventLoggingService = systemEventLoggingService;
+			_logger = logger.ForContext<ImportApiFactory>();
 		}
 
 		public virtual IImportAPI GetImportAPI(ImportSettings settings)
@@ -71,7 +81,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		protected virtual IImportAPI CreateImportAPI(string webServiceUrl)
 		{
-			return Relativity.ImportAPI.ImportAPI.CreateByRsaBearerToken(webServiceUrl);
+			IRelativityTokenProvider relativityTokenProvider = new RelativityTokenProvider(_authTokenGenerator);
+
+			return ExtendedImportAPI.CreateByTokenProvider(webServiceUrl, relativityTokenProvider);
 		}
 
 		#region Logging

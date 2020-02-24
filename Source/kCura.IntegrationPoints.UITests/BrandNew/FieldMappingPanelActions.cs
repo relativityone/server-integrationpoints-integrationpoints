@@ -12,7 +12,14 @@ namespace kCura.IntegrationPoints.UITests.BrandNew
 
 		public void FillPanel(FieldMappingPanel panel, FieldsMappingModel model)
 		{
-			panel.MapFields(model.FieldsMapping);
+            if (model.FieldsMapping.Count > 0)
+            {
+                panel.MapFields(model.FieldsMapping);
+			}
+            else
+            {
+                panel.MapFields();
+            }
 		}
 	}
 }

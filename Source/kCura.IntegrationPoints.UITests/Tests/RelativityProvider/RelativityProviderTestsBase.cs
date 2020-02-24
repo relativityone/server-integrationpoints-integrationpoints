@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			await CreateFixedLengthFieldsWithSpecialCharactersAsync(DestinationContext.GetWorkspaceId(), DestinationFieldManager).ConfigureAwait(false);
 			await DestinationContext.RetrieveMappableFieldsAsync().ConfigureAwait(false);
 			PointsAction = new IntegrationPointsAction(Driver, SourceContext);
-        }
+		}
 
 		[TearDown]
 		public void TearDownDestinationContext()
@@ -86,11 +86,11 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
                     Length = 255
 				};
 
-                var longTextFieldRequest = new LongTextFieldRequest
+				var longTextFieldRequest = new LongTextFieldRequest
 				{
-                    ObjectType = new ObjectTypeIdentifier { ArtifactTypeID = (int)ArtifactType.Document },
-                    Name = $"{generatedFieldName} LTF"
-                };
+					ObjectType = new ObjectTypeIdentifier { ArtifactTypeID = (int)ArtifactType.Document },
+					Name = $"{generatedFieldName} LTF"
+				};
 
                 await fieldManager.CreateLongTextFieldAsync(workspaceID, longTextFieldRequest).ConfigureAwait(false);
                 await fieldManager.CreateFixedLengthFieldAsync(workspaceID, fixedLengthTextFieldRequest).ConfigureAwait(false);
