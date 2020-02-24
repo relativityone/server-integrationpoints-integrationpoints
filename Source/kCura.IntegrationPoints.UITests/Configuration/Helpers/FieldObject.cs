@@ -43,6 +43,10 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
             IsIdentifier = Fields.GetFieldValueBoolByFieldName(serializedObject, "Is Identifier");
             OpenToAssociations = Fields.GetFieldValueBoolByFieldName(serializedObject, "Open To Associations");
         }
+        public string GetNameInMapListBoxFormat()
+        {
+            return IsIdentifier ? $"{Name} [Object Identifier]" : $"{Name} [{DisplayType}]";
+        }
     }
     
 }

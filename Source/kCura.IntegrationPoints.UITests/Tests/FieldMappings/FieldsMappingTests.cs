@@ -111,10 +111,10 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
             await DestinationContext.RetrieveMappableFieldsAsync().ConfigureAwait(false);
 			SyncFieldMapResults mapAllFieldsUiTestEdition  = new SyncFieldMapResults(SourceContext.WorkspaceAutoMapAllEnabledFields, DestinationContext.WorkspaceAutoMapAllEnabledFields);
 			
-            List<string> expectedSelectedSourceMappableFields =
-                CreateFieldMapListBoxFormatFromObjectManagerFetchedList(mapAllFieldsUiTestEdition.sourceFieldMapping);
+            List<string> expectedSelectedSourceMappableFields = 
+                mapAllFieldsUiTestEdition.fieldMapSorted.Select(x => x.SourceFieldObject.GetNameInMapListBoxFormat()).ToList();
             List<string> expectedSelectedDestinationMappableFields =
-                CreateFieldMapListBoxFormatFromObjectManagerFetchedList(mapAllFieldsUiTestEdition.destinationFieldMapping);
+                mapAllFieldsUiTestEdition.fieldMapSorted.Select(x => x.DestinationFieldObject.GetNameInMapListBoxFormat()).ToList();
 
 			PushToRelativityThirdPage fieldMappingPage =
                 PointsAction.CreateNewRelativityProviderFieldMappingPage(model);
@@ -122,10 +122,10 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 			fieldMappingPage = fieldMappingPage.MapAllFields();
 
             //Assert
-			List<string> fieldsFromSelectedDestinationWorkspaceListBox =
-				fieldMappingPage.GetFieldsFromSelectedDestinationWorkspaceListBox();
 			List<string> fieldsFromSelectedSourceWorkspaceListBox =
 				fieldMappingPage.GetFieldsFromSelectedSourceWorkspaceListBox();
+            List<string> fieldsFromSelectedDestinationWorkspaceListBox =
+                fieldMappingPage.GetFieldsFromSelectedDestinationWorkspaceListBox();
 
 			fieldsFromSelectedSourceWorkspaceListBox.Should().ContainInOrder(expectedSelectedSourceMappableFields);
 			fieldsFromSelectedDestinationWorkspaceListBox.Should().ContainInOrder(expectedSelectedDestinationMappableFields);
@@ -134,12 +134,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 		private List<string> CreateFieldMapListBoxFormatFromObjectManagerFetchedList(
 			List<FieldObject> mappableFieldsListFromObjectManager)
 		{
-			return mappableFieldsListFromObjectManager
-                .OrderByDescending(f => f.IsIdentifier)
-				.ThenBy(f => f.Name)
-				.ThenBy(f => f.Type)
-				.Select(field =>
-					field.IsIdentifier ? $"{field.Name} [Object Identifier]" : $"{field.Name} [{field.DisplayType}]").ToList();
+			return SyncFieldMapResults.SortFieldObjects(mappableFieldsListFromObjectManager)
+				.Select(f => f.GetNameInMapListBoxFormat()).ToList();
 		}
-	}
+    }
 }
