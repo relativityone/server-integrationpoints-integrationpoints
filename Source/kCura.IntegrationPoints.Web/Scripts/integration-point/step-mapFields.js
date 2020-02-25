@@ -601,7 +601,7 @@ ko.validation.insertValidationMessage = function (element) {
 		this.destinationCaseArtifactID = destination.CaseArtifactId;
 
 		self.findField = function(array, field) {
-			const fields = $.grep(array, function (value, _index) { return value.fieldIdentifier === field.fieldIdentifier; });
+			const fields = $.grep(array, function (value, _index) { return value.fieldIdentifier === field.fieldIdentifier || value.name == field.displayName; });
 			const fieldFound = fields.length > 0;
 			return {
 				exist: fieldFound,
@@ -703,7 +703,7 @@ ko.validation.insertValidationMessage = function (element) {
             successCallback,
             cancelCallback) {
          
-            var tableDiv = $('<div/>');
+			var tableDiv = $('<div/>').css({"overflow-y": "auto", "max-height": "400px"});
 
             function addColumn(description, elements) {
                 var columnDiv = $('<div/>').css({ "float": "left", "width": "50%" });
@@ -786,7 +786,14 @@ ko.validation.insertValidationMessage = function (element) {
                 self.workspaceFields(mapFields(destinationNotMapped));
                 self.mappedWorkspace(mapFields(destinationMapped));
                 self.sourceField(mapFields(sourceNotMapped));
-                self.sourceMapped(mapFields(sourceMapped));
+				self.sourceMapped(mapFields(sourceMapped));
+
+                if (destinationModel.WorkspaceHasChanged) {
+					IP.message.notifyWithTimeout("We restored the fields mapping as destination workspace has changed", 5000);
+
+                    // mark change as handled
+                    destinationModel.WorkspaceHasChanged = false;
+                }
 
                 self.populateExtractedText();
             });
