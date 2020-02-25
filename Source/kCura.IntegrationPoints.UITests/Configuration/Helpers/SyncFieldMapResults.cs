@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
             
             fieldMapSorted = fieldMap
                 .OrderByDescending(x => x.SourceFieldObject.IsIdentifier)
-                .ThenBy(x =>x.SourceFieldObject.GetNameInMapListBoxFormat()).ToList();
+                .ThenBy(x =>x.SourceFieldObject.DisplayName).ToList();
         }
 
         public static List<FieldObject> SortFieldObjects(IEnumerable<FieldObject> fieldObjectsList)

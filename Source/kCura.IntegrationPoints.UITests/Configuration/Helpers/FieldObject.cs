@@ -11,28 +11,17 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
 {
 	public class FieldObject
 	{
-		public int ArtifactID { get; set; }
+        const string FixedLengthText = "Fixed-Length Text";
+        public int ArtifactID { get; set; }
 		public string Name { get; set; }
 		public string Type { get; set; }
         public string Keywords { get; set; }
 		public bool IsIdentifier { get; set; }
         public bool OpenToAssociations { get; set; }
         public int Length { get; set; }
-
-        public string DisplayType
-        {
-            get
-            {
-                string fixedLengthText = "Fixed-Length Text";
-                if (Type.Equals(fixedLengthText))
-                {
-                    return $"{Type}({Length})";
-                }
-
-                return Type;
-            }
-        }
-
+        public string DisplayType => Type.Equals(FixedLengthText) ? $"{Type}({Length})" : Type;
+        public string DisplayName => IsIdentifier ? $"{Name} [Object Identifier]" : $"{Name} [{DisplayType}]";
+        
         public FieldObject(RelativityObject serializedObject)
         {
             ArtifactID = serializedObject.ArtifactID;
@@ -43,11 +32,6 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
             IsIdentifier = Fields.GetFieldValueBoolByFieldName(serializedObject, "Is Identifier");
             OpenToAssociations = Fields.GetFieldValueBoolByFieldName(serializedObject, "Open To Associations");
         }
-        public string GetNameInMapListBoxFormat()
-        {
-            return IsIdentifier ? $"{Name} [Object Identifier]" : $"{Name} [{DisplayType}]";
-        }
     }
-    
 }
 

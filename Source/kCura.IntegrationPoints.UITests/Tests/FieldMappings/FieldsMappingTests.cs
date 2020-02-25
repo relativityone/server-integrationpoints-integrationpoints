@@ -112,9 +112,9 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 			SyncFieldMapResults mapAllFieldsUiTestEdition  = new SyncFieldMapResults(SourceContext.WorkspaceAutoMapAllEnabledFields, DestinationContext.WorkspaceAutoMapAllEnabledFields);
 			
             List<string> expectedSelectedSourceMappableFields = 
-                mapAllFieldsUiTestEdition.fieldMapSorted.Select(x => x.SourceFieldObject.GetNameInMapListBoxFormat()).ToList();
+                mapAllFieldsUiTestEdition.fieldMapSorted.Select(x => x.SourceFieldObject.DisplayName).ToList();
             List<string> expectedSelectedDestinationMappableFields =
-                mapAllFieldsUiTestEdition.fieldMapSorted.Select(x => x.DestinationFieldObject.GetNameInMapListBoxFormat()).ToList();
+                mapAllFieldsUiTestEdition.fieldMapSorted.Select(x => x.DestinationFieldObject.DisplayName).ToList();
 
 			PushToRelativityThirdPage fieldMappingPage =
                 PointsAction.CreateNewRelativityProviderFieldMappingPage(model);
@@ -135,7 +135,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 			List<FieldObject> mappableFieldsListFromObjectManager)
 		{
 			return SyncFieldMapResults.SortFieldObjects(mappableFieldsListFromObjectManager)
-				.Select(f => f.GetNameInMapListBoxFormat()).ToList();
+				.Select(f => f.DisplayName).ToList();
 		}
     }
 }
