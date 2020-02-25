@@ -1,12 +1,16 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
+using kCura.IntegrationPoints.Data.UtilityDTO;
+using kCura.IntegrationPoints.UITests.Configuration.Helpers;
 using kCura.Relativity.Client;
 using Relativity.Services.Interfaces.Field;
 using Relativity.Services.Interfaces.Field.Models;
 using Relativity.Services.Interfaces.Shared.Models;
+using Relativity.Services.Objects.DataContracts;
 using ArtifactType = Relativity.ArtifactType;
 
 namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
@@ -40,7 +44,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ImageService = new ImagesService(SourceContext.Helper);
 			ProductionImageService = new ProductionImagesService(SourceContext.Helper);
 			ObjectManagerFactory = new RelativityObjectManagerFactory(SourceContext.Helper);
-			await CreateFixedLengthFieldsWithSpecialCharactersAsync(SourceContext.GetWorkspaceId(), SourceFieldManager).ConfigureAwait(false);
+            await CreateFixedLengthFieldsWithSpecialCharactersAsync(SourceContext.GetWorkspaceId(), SourceFieldManager).ConfigureAwait(false);
 			await SourceContext.RetrieveMappableFieldsAsync().ConfigureAwait(false);
 		}
 
@@ -68,18 +72,18 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			}
 		}
 
-		protected async Task CreateFixedLengthFieldsWithSpecialCharactersAsync(int workspaceID, IFieldManager fieldManager)
-		{
-			char[] specialCharacters = @"!@#$%^&*()-_+= {}|\/;'<>,.?~`".ToCharArray();
-			for (int i = 0; i < specialCharacters.Length; i++)
-			{
-				char special = specialCharacters[i];
-				string generatedFieldName = $"aaaaa{special}{i}";
-				var fixedLengthTextFieldRequest = new FixedLengthFieldRequest
-				{
-					ObjectType = new ObjectTypeIdentifier { ArtifactTypeID = (int)ArtifactType.Document },
-					Name = $"{generatedFieldName} FLT",
-					Length = 255
+        protected async Task CreateFixedLengthFieldsWithSpecialCharactersAsync(int workspaceID, IFieldManager fieldManager)
+        {
+            char[] specialCharacters = @"!@#$%^&*()-_+= {}|\/;'<>,.?~`".ToCharArray();
+            for (int i = 0; i < specialCharacters.Length; i++)
+            {
+                char special = specialCharacters[i];
+                string generatedFieldName = $"aaaaa{special}{i}";
+                var fixedLengthTextFieldRequest = new FixedLengthFieldRequest
+                {
+                    ObjectType = new ObjectTypeIdentifier {ArtifactTypeID = (int) ArtifactType.Document},
+                    Name = $"{generatedFieldName} FLT",
+                    Length = 255
 				};
 
 				var longTextFieldRequest = new LongTextFieldRequest
@@ -88,10 +92,75 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 					Name = $"{generatedFieldName} LTF"
 				};
 
-				await fieldManager.CreateLongTextFieldAsync(workspaceID, longTextFieldRequest).ConfigureAwait(false);
-				await fieldManager.CreateFixedLengthFieldAsync(workspaceID, fixedLengthTextFieldRequest).ConfigureAwait(false);
-			}
+                await fieldManager.CreateLongTextFieldAsync(workspaceID, longTextFieldRequest).ConfigureAwait(false);
+                await fieldManager.CreateFixedLengthFieldAsync(workspaceID, fixedLengthTextFieldRequest).ConfigureAwait(false);
+            }
+            Guid randomNumber = Guid.NewGuid();
+			var longTextRandomNameFieldRequest = new LongTextFieldRequest
+			{
+				ObjectType = new ObjectTypeIdentifier { ArtifactTypeID = (int)ArtifactType.Document },
+                Name = $"{randomNumber} LTF"
+			};
+            await fieldManager.CreateLongTextFieldAsync(workspaceID, longTextRandomNameFieldRequest).ConfigureAwait(false);
 		}
+        public async Task<FieldObject> GetFieldObjectFromWorkspaceAsync(string fieldName, TestContext workspaceContext)//change name
+        {
+            QueryRequest fieldsRequest = new QueryRequest
+            {
+                ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Field },
+                Condition = $"'Object Type Artifact Type ID' == 10 AND 'Name' == '{fieldName}'",
+                Fields = new[]
+                {
+                    new FieldRef {Name = "Name"},
+                    new FieldRef {Name = "Field Type"},
+                    new FieldRef {Name = "Length"},
+                    new FieldRef {Name = "Keywords"},
+                    new FieldRef {Name = "Is Identifier"},
+                    new FieldRef {Name = "Open To Associations"}
+				}
+            };
+
+            ResultSet<RelativityObject> foundField =
+                await workspaceContext.ObjectManager.QueryAsync(fieldsRequest, 0, 50).ConfigureAwait(false);
+            RelativityObject firstFoundField = foundField.Items.First();
+            
+			return new FieldObject(firstFoundField);
+        }
+
+        public async Task SetRandomNameToFLTFieldAsync(string fieldName, TestContext workspaceContext, IFieldManager workspaceFieldManager)
+        {
+            string newRandomFieldName = GetRandomName(fieldName);
+
+            FieldObject fieldToBeChanged = await GetFieldObjectFromWorkspaceAsync(fieldName, workspaceContext).ConfigureAwait(false);
+            var fixedLengthTextFieldUpdateRequest = new FixedLengthFieldRequest
+            {
+                ObjectType = new ObjectTypeIdentifier { ArtifactTypeID = (int)ArtifactType.Document },
+                Name = $"{newRandomFieldName}",
+                Length = fieldToBeChanged.Length
+            };
+            await workspaceFieldManager
+				.UpdateFixedLengthFieldAsync(workspaceContext.GetWorkspaceId(), fieldToBeChanged.ArtifactID,
+                    fixedLengthTextFieldUpdateRequest).ConfigureAwait(false);
+        }
+
+        private string GetRandomName(string fieldName)
+        {
+            const int _NAME_MAX_LENGTH = 49;
+            string randomName = $"{fieldName}" + Guid.NewGuid();
+            return randomName.Substring(0, randomName.Length <= _NAME_MAX_LENGTH ? randomName.Length : _NAME_MAX_LENGTH);
+        }
+
+
+		public async Task SetRandomNameToFLTFieldSourceWorkspaceAsync(string fieldName)
+        {
+            await SetRandomNameToFLTFieldAsync(fieldName, SourceContext, SourceFieldManager).ConfigureAwait(false);
+        }
+
+        public async Task SetRandomNameToFLTFieldDestinationWorkspaceAsync(string fieldName)
+        {
+            await SetRandomNameToFLTFieldAsync(fieldName, DestinationContext, DestinationFieldManager).ConfigureAwait(false);
+        }
+
 
 		protected DocumentsValidator CreateDocumentsEmptyValidator()
 		{

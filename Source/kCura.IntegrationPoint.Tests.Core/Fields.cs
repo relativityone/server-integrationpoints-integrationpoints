@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
@@ -46,5 +48,20 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 			return fieldName;
 		}
+
+        public static int GetFieldObjectLength(RelativityObject fieldObject)
+        {
+            FieldValuePair lengthFieldValuePair = fieldObject.FieldValues.SingleOrDefault(x => x.Field.Name == "Length");
+            return (int?)lengthFieldValuePair.Value ?? 0;
+		}
+
+        public static string GetFieldValueStringByFieldName(RelativityObject fieldObject, string fieldName)//return based on type
+        {
+            return fieldObject.FieldValues.First(fv => fv.Field.Name == fieldName).Value.ToString();
+        }
+        public static bool GetFieldValueBoolByFieldName(RelativityObject fieldObject, string fieldName)//return based on type
+        {
+            return (bool) fieldObject.FieldValues.First(fv => fv.Field.Name == fieldName).Value;
+        }
 	}
 }

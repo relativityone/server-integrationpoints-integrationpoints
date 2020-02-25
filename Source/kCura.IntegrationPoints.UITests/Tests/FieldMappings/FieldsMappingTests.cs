@@ -53,7 +53,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 
 		[IdentifiedTest("916e57ba-fb4d-42a4-be2a-4d17df17de57")]
 		[RetryOnError]
-		[Category(TestCategory.SMOKE)]
 		public void FieldMapping_ShouldDisplayMappableFieldsInCorrectOrderInSourceWorkspaceFieldList()
 		{
 			//Arrange
@@ -74,7 +73,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 
 		[IdentifiedTest("916e57ba-fb4d-42a4-be2a-4d17df17de58")]
 		[RetryOnError]
-		[Category(TestCategory.SMOKE)]
 		public void FieldMapping_ShouldDisplayMappableFieldsInCorrectOrderInDestinationWorkspaceFieldList()
 		{
 			//Arrange
@@ -94,6 +92,51 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 			fieldsFromDestinationWorkspaceListBox.Should().ContainInOrder(expectedDestinationMappableFields);
 		}
 
+		[IdentifiedTest("916e57ba-fb4d-42a4-be2a-4d17df17de59")]
+		[RetryOnError]
+		[Category(TestCategory.SMOKE)]
+		public async Task FieldMapping_ShouldAutoMapAllValidFields_WhenMapFieldsButtonIsPressed()
+		{
+			//Arrange
+			RelativityProviderModel model = CreateRelativityProviderModel();
+			model.FieldMapping = null;
+			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOnly;
+			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.No;
+
+			//Identifier and another random field
+			List<string> fieldsToBeChanged = new List<string>{ "Control Number" , "File Name"};
+            
+            foreach (var fieldName in fieldsToBeChanged)
+            {
+				await SetRandomNameToFLTFieldDestinationWorkspaceAsync(fieldName).ConfigureAwait(false);
+                await SetRandomNameToFLTFieldSourceWorkspaceAsync(fieldName).ConfigureAwait(false);
+			}
+
+			await SourceContext.RetrieveMappableFieldsAsync().ConfigureAwait(false);
+            await DestinationContext.RetrieveMappableFieldsAsync().ConfigureAwait(false);
+			SyncFieldMapResults mapAllFieldsUiTestEdition  = new SyncFieldMapResults(SourceContext.WorkspaceAutoMapAllEnabledFields, DestinationContext.WorkspaceAutoMapAllEnabledFields);
+			
+            List<string> expectedSelectedSourceMappableFields = 
+                mapAllFieldsUiTestEdition.fieldMapSorted.Select(x => x.SourceFieldObject.DisplayName).ToList();
+            List<string> expectedSelectedDestinationMappableFields =
+                mapAllFieldsUiTestEdition.fieldMapSorted.Select(x => x.DestinationFieldObject.DisplayName).ToList();
+
+			PushToRelativityThirdPage fieldMappingPage =
+                PointsAction.CreateNewRelativityProviderFieldMappingPage(model);
+			//Act
+			fieldMappingPage = fieldMappingPage.MapAllFields();
+
+            //Assert
+			List<string> fieldsFromSelectedSourceWorkspaceListBox =
+				fieldMappingPage.GetFieldsFromSelectedSourceWorkspaceListBox();
+            List<string> fieldsFromSelectedDestinationWorkspaceListBox =
+                fieldMappingPage.GetFieldsFromSelectedDestinationWorkspaceListBox();
+
+			fieldsFromSelectedSourceWorkspaceListBox.Should().ContainInOrder(expectedSelectedSourceMappableFields);
+			fieldsFromSelectedDestinationWorkspaceListBox.Should().ContainInOrder(expectedSelectedDestinationMappableFields);
+		}
+
+		private List<string> CreateFieldMapListBoxFormatFromObjectManagerFetchedList(
 		[IdentifiedTest("65917e62-2387-4b1e-afee-721bac33b1c0")]
 		[RetryOnError]
 		[Category(TestCategory.SMOKE)]
@@ -171,11 +214,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 		private List<string> CreateFieldMapListBoxFormatFromObjectManagerFetchedList(
 			List<FieldObject> mappableFieldsListFromObjectManager)
 		{
-			return mappableFieldsListFromObjectManager.OrderBy(f => f.Name)
-				.ThenBy(f => f.Type)
-				.Select(field =>
-					field.IsIdentifier ? $"{field.Name} [Object Identifier]" : $"{field.Name} [{field.Type}]")
-				.ToList();
+			return SyncFieldMapResults.SortFieldObjects(mappableFieldsListFromObjectManager)
+				.Select(f => f.DisplayName).ToList();
 		}
-	}
+    }
 }

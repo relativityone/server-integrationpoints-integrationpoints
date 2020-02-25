@@ -100,11 +100,13 @@
     <Compile Include="Components\TreeSelect.cs" />
     <Compile Include="Configuration\Helpers\ApplicationInstallationHelper.cs" />
     <Compile Include="Configuration\Helpers\EntityObjectTypeHelper.cs" />
+    <Compile Include="Configuration\Helpers\FieldMapModel.cs" />
     <Compile Include="Configuration\Helpers\FieldObject.cs" />
     <Compile Include="Configuration\Helpers\ImportDocumentsHelper.cs" />
     <Compile Include="Configuration\Helpers\FieldMappingHelper.cs" />
     <Compile Include="Configuration\Helpers\ProductionHelper.cs" />
     <Compile Include="Configuration\Helpers\RelativityFolderPathScriptHelper.cs" />
+    <Compile Include="Configuration\Helpers\SyncFieldMapResults.cs" />
     <Compile Include="Configuration\Helpers\UserHelper.cs" />
     <Compile Include="Configuration\RelativityUser.cs" />
     <Compile Include="Configuration\TestConfiguration.cs" />

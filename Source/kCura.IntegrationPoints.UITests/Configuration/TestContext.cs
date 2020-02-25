@@ -61,6 +61,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		public RelativityUser User { get; private set; }
 
 		public List<FieldObject> WorkspaceMappableFields;
+        public List<FieldObject> WorkspaceAutoMapAllEnabledFields;
 
 		public TestContext()
 		{
@@ -228,7 +229,8 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 		public async Task<TestContext> RetrieveMappableFieldsAsync()
 		{
-			WorkspaceMappableFields = await WorkspaceFieldMappingHelper.RetrieveFilteredDocumentsFieldsFromWorkspaceAsync().ConfigureAwait(false);
+			WorkspaceMappableFields = await WorkspaceFieldMappingHelper.GetFilteredDocumentsFieldsFromWorkspaceAsync().ConfigureAwait(false);
+            WorkspaceAutoMapAllEnabledFields = await WorkspaceFieldMappingHelper.GetAutoMapAllEnabledFieldsAsync().ConfigureAwait(false);
 			return this;
 		}
 
