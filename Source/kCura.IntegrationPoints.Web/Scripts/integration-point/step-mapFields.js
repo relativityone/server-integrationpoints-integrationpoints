@@ -1112,7 +1112,8 @@ ko.validation.insertValidationMessage = function (element) {
 				displayName: field.name,
 				isIdentifier: field.isIdentifier,
 				fieldIdentifier: field.identifer,
-				isRequired: field.isRequired
+				isRequired: field.isRequired,
+				type: field.type
 			}
 		};
 
@@ -1301,16 +1302,31 @@ ko.validation.insertValidationMessage = function (element) {
 				this.returnModel.CreateSavedSearchForTagging = this.model.CreateSavedSearchForTagging;
 
 				if (this.model.IsRelativityProvider()) {
-					var mismatchedMappings = StepMapFieldsTypeValidator.validateMappedFieldTypes(mapping);
+					var validateMappedFields = root.data.ajax({
+						type: 'POST',
+						url: root.utils.generateWebAPIURL('FieldMappings/Validate', _destination.CaseArtifactId),
+						data: JSON.stringify(map)
+					});
 
-					if (mismatchedMappings.length > 0) {
-						var successCallback = function() {
+					const proceedConfirmation = function (invalidMappedFields) {
+						if (invalidMappedFields.length > 0) {
+							var proceedCallback = function () {
+								d.resolve(this.returnModel);
+							}.bind(this);
+
+							var clearAndProceedCallback = function () {
+								var filteredOutInvalidFields = map.filter(x => invalidMappedFields.findIndex(i => StepMapFieldsValidator.isFieldMapEqual(i, x)) == -1);
+								this.returnModel.map = JSON.stringify(filteredOutInvalidFields);
+								d.resolve(this.returnModel);
+							}.bind(this);
+
+							StepMapFieldsValidator.showProceedConfirmationPopup(invalidMappedFields, proceedCallback, clearAndProceedCallback);
+						} else {
 							d.resolve(this.returnModel);
-						}.bind(this);
-						StepMapFieldsTypeValidator.showWarningPopup(mismatchedMappings, successCallback);
-					} else {
-						d.resolve(this.returnModel);
+						}
 					}
+
+					validateMappedFields.then(proceedConfirmation.bind(this));
 				} else {
 					d.resolve(this.returnModel);
 				}

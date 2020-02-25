@@ -3,41 +3,45 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
-using kCura.IntegrationPoints.DocumentTransferProvider;
 using kCura.IntegrationPoints.Web.Attributes;
 using Relativity.IntegrationPoints.FieldsMapping;
-using Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 {
 	public class FieldMappingsController : ApiController
 	{
-		private readonly IFieldsClassifierRunner _fieldsClassifierRunner;
-		private readonly IImportApiFactory _importApiFactory;
+		private readonly IFieldsClassifyRunnerFactory _fieldsClassifyRunnerFactory;
 		private readonly IAutomapRunner _automapRunner;
+		private readonly IFieldsMappingValidator _fieldsMappingValidator;
 
-		public FieldMappingsController(IFieldsClassifierRunner fieldsClassifierRunner, IImportApiFactory importApiFactory, IAutomapRunner automapRunner)
+		public FieldMappingsController(IFieldsClassifyRunnerFactory fieldsClassifyRunnerFactory, IAutomapRunner automapRunner, IFieldsMappingValidator fieldsMappingValidator)
 		{
-			_fieldsClassifierRunner = fieldsClassifierRunner;
-			_importApiFactory = importApiFactory;
+			_fieldsClassifyRunnerFactory = fieldsClassifyRunnerFactory;
 			_automapRunner = automapRunner;
+			_fieldsMappingValidator = fieldsMappingValidator;
 		}
 
 		[HttpGet]
 		[LogApiExceptionFilter(Message = "Error while retrieving fields from source workspace.")]
 		public async Task<HttpResponseMessage> GetMappableFieldsFromSourceWorkspace(int workspaceID)
 		{
-			IList<FieldClassificationResult> sourceWorkspaceFields = await GetMappableFieldsFromSourceWorkspaceAsync(workspaceID).ConfigureAwait(false);
-			return Request.CreateResponse(HttpStatusCode.OK, sourceWorkspaceFields, Configuration.Formatters.JsonFormatter);
+			IFieldsClassifierRunner fieldsClassifierRunner = _fieldsClassifyRunnerFactory.CreateForSourceWorkspace();
+
+			IList<FieldClassificationResult> filteredFields = await fieldsClassifierRunner.GetFilteredFieldsAsync(workspaceID).ConfigureAwait(false);
+
+			return Request.CreateResponse(HttpStatusCode.OK, filteredFields, Configuration.Formatters.JsonFormatter);
 		}
 
 		[HttpGet]
 		[LogApiExceptionFilter(Message = "Error while retrieving fields from destination workspace.")]
 		public async Task<HttpResponseMessage> GetMappableFieldsFromDestinationWorkspace(int workspaceID)
 		{
-			IList<FieldClassificationResult> destinationWorkspaceFields = await GetMappableFieldsFromDestinationWorkspaceAsync(workspaceID).ConfigureAwait(false);
-			return Request.CreateResponse(HttpStatusCode.OK, destinationWorkspaceFields, Configuration.Formatters.JsonFormatter);
+			IFieldsClassifierRunner fieldsClassifierRunner = _fieldsClassifyRunnerFactory.CreateForDestinationWorkspace();
+
+			IList<FieldClassificationResult> filteredFields = await fieldsClassifierRunner.GetFilteredFieldsAsync(workspaceID).ConfigureAwait(false);
+
+			return Request.CreateResponse(HttpStatusCode.OK, filteredFields, Configuration.Formatters.JsonFormatter);
 		}
 
 		[HttpPost]
@@ -56,34 +60,14 @@ namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 				.ConfigureAwait(false);
 			return Request.CreateResponse(HttpStatusCode.OK, fieldMap, Configuration.Formatters.JsonFormatter);
 		}
-		
-		private async Task<IList<FieldClassificationResult>> GetMappableFieldsFromSourceWorkspaceAsync(int workspaceID)
+
+		[HttpPost]
+		[LogApiExceptionFilter(Message = "Error while validating mapped fields")]
+		public async Task<HttpResponseMessage> ValidateAsync([FromBody] IEnumerable<FieldMap> request, int workspaceID, int destinationWorkspaceID)
 		{
-			IList<IFieldsClassifier> sourceFieldsClassifiers = new List<IFieldsClassifier>
-			{
-				new RipFieldsClassifier(),
-				new SystemFieldsClassifier(),
-				new NotSupportedByIAPIFieldsClassifier(_importApiFactory.Create()),
-				new ObjectFieldsClassifier()
-			};
+			IEnumerable<FieldMap> invalidFieldMaps = await _fieldsMappingValidator.ValidateAsync(request, workspaceID, destinationWorkspaceID).ConfigureAwait(false);
 
-			IList<FieldClassificationResult> filteredFields = await _fieldsClassifierRunner.GetFilteredFieldsAsync(workspaceID, sourceFieldsClassifiers).ConfigureAwait(false);
-			return filteredFields;
-		}
-
-		private async Task<IList<FieldClassificationResult>> GetMappableFieldsFromDestinationWorkspaceAsync(int workspaceID)
-		{
-			IList<IFieldsClassifier> destinationFieldsClassifiers = new List<IFieldsClassifier>
-			{
-				new RipFieldsClassifier(),
-				new SystemFieldsClassifier(),
-				new NotSupportedByIAPIFieldsClassifier(_importApiFactory.Create()),
-				new OpenToAssociationsFieldsClassifier(),
-				new ObjectFieldsClassifier()
-			};
-
-			IList<FieldClassificationResult> filteredFields = await _fieldsClassifierRunner.GetFilteredFieldsAsync(workspaceID, destinationFieldsClassifiers).ConfigureAwait(false);
-			return filteredFields;
+			return Request.CreateResponse(HttpStatusCode.OK, invalidFieldMaps);
 		}
 	}
 }

@@ -4,7 +4,6 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Services.Interfaces.Field;
-using Relativity.Services.Interfaces.Field.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using QueryResult = Relativity.Services.Objects.DataContracts.QueryResult;
@@ -25,27 +24,33 @@ namespace Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers
 		// TODO
 		// FieldManager is painfully slow and ObjectManager has defect:
 		// https://jira.kcura.com/browse/REL-369204
-		public async Task<IEnumerable<FieldClassificationResult>> ClassifyAsync(ICollection<RelativityObject> fields, int workspaceID)
+		public async Task<IEnumerable<FieldClassificationResult>> ClassifyAsync(ICollection<DocumentFieldInfo> fields, int workspaceID)
 		{
-			List<RelativityObject> objectFields = fields
-				.Where(x => x.FieldValues.Exists(fieldValuePair =>
-								(fieldValuePair.Field.Name == "Field Type" &&
-								 (fieldValuePair.Value.ToString() == "Single Object" ||
-								  fieldValuePair.Value.ToString() == "Multiple Object"))) &&
-							x.FieldValues.Exists(fieldValuePair =>
-								fieldValuePair.Field.Name == "Associative Object Type" && fieldValuePair.Value != null))
+			List<DocumentFieldInfo> objectFields = fields
+				.Where(x => (x.Type == FieldTypeName.SINGLE_OBJECT || x.Type == FieldTypeName.MULTIPLE_OBJECT) && x.AssociativeObjectType != null)
 				.ToList();
 
-			var fieldsWithAssociativeObjectType = new List<FieldResponse>();
+			var fieldsWithAssociativeObjectType = new List<DocumentFieldInfo>();
 			using (var fieldManager = _servicesMgr.CreateProxy<IFieldManager>(ExecutionIdentity.System))
 			{
 				await objectFields.Select(x =>
-						Observable.FromAsync(() => fieldManager.ReadAsync(workspaceID, x.ArtifactID)))
+					{ 
+						int artifactId = 0;
+						int.TryParse(x.FieldIdentifier, out artifactId);
+						return Observable.FromAsync(() => fieldManager.ReadAsync(workspaceID, artifactId));
+					})
 					.ToObservable()
 					.Merge(10)
 					.Where(x => x.AssociativeObjectType != null)
 					.Synchronize()
-					.Do(x => fieldsWithAssociativeObjectType.Add(x))
+					.Do(x => fieldsWithAssociativeObjectType.Add(
+						new DocumentFieldInfo(x.ArtifactID.ToString(), x.Name, x.FieldType.ToString(), x.Length)
+						{
+							IsIdentifier = x.IsIdentifier,
+							IsRequired = x.IsRequired,
+							OpenToAssociations = x.OpenToAssociations,
+							AssociativeObjectType = x.AssociativeObjectType.Name
+						}))
 					.LastOrDefaultAsync();
 			}
 
@@ -58,7 +63,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers
 						ArtifactTypeID = (int)ArtifactType.ObjectType
 					},
 					Condition =
-						$"'Name' IN [{string.Join(",", fieldsWithAssociativeObjectType.Select(x => $"'{x.AssociativeObjectType.Name}'"))}]",
+						$"'Name' IN [{string.Join(",", fieldsWithAssociativeObjectType.Select(x => $"'{x.AssociativeObjectType}'"))}]",
 					Fields = new[]
 					{
 						new FieldRef()
@@ -75,11 +80,10 @@ namespace Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers
 
 				IEnumerable<FieldClassificationResult> filteredOutFields = fieldsWithAssociativeObjectType
 					.Where(x => queryResult.Objects.Exists(objectType =>
-						objectType.Name == x.AssociativeObjectType.Name &&
+						objectType.Name == x.AssociativeObjectType &&
 						(int)objectType.FieldValues.First().Value != WorkspaceArtifactTypeID))
-					.Select(x => new FieldClassificationResult()
+					.Select(x => new FieldClassificationResult(x)
 					{
-						Name = x.Name,
 						ClassificationReason = "Field has nested parent object type.",
 						ClassificationLevel = ClassificationLevel.ShowToUser
 					});

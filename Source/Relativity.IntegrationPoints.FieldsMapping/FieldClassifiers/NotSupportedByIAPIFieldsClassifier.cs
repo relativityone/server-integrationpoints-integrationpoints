@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.Relativity.ImportAPI;
-using Relativity.Services.Objects.DataContracts;
 using Field = kCura.Relativity.ImportAPI.Data.Field;
 
 namespace Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers
@@ -18,16 +17,14 @@ namespace Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers
 			_importApi = importApi;
 		}
 
-		public Task<IEnumerable<FieldClassificationResult>> ClassifyAsync(ICollection<RelativityObject> fields, int workspaceID)
+		public Task<IEnumerable<FieldClassificationResult>> ClassifyAsync(ICollection<DocumentFieldInfo> fields, int workspaceID)
 		{
 			HashSet<string> fieldsSupportedByIAPI = new HashSet<string>(GetFieldsSupportedByIAPIAsync(workspaceID).Select(x => x.Name));
 
 			IEnumerable<FieldClassificationResult> filteredOutFields = fields
 				.Where(field => !fieldsSupportedByIAPI.Contains(field.Name))
-				.Select(x => new FieldClassificationResult()
+				.Select(x => new FieldClassificationResult(x)
 				{
-					Name = x.Name,
-					FieldIdentifier = x.ArtifactID.ToString(),
 					ClassificationLevel = ClassificationLevel.HideFromUser,
 					ClassificationReason = "Field not supported by IAPI."
 				});

@@ -3,19 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using kCura.IntegrationPoints.DocumentTransferProvider;
 using kCura.Relativity.ImportAPI;
 using Moq;
 using NUnit.Framework;
-using Relativity;
-using Relativity.IntegrationPoints.FieldsMapping;
 using Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers;
-using Relativity.Services.Objects.DataContracts;
 using Field = kCura.Relativity.ImportAPI.Data.Field;
 
-namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings.FieldsClassifiers
+namespace Relativity.IntegrationPoints.FieldsMapping.Tests.FieldsClassifiers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class NotSupportedByIAPIFieldsClassifierTests
 	{
 		private Mock<IImportAPI> _importApiFake;
@@ -32,13 +28,12 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings.Fields
 		public async Task ClassifyAsync_ShouldProperlyClassifyFieldsNotSupportedByIAPI()
 		{
 			// Arrange
-			List<RelativityObject> allFields = Enumerable.Range(1, 2).Select(x => new RelativityObject()
-			{
-				ArtifactID = x,
-				Name = $"Field {x}"
-			}).ToList();
+			List<DocumentFieldInfo> allFields = Enumerable.Range(1, 2).Select(x => new DocumentFieldInfo(
+				fieldIdentifier: x.ToString(),
+				name: $"Field {x}",
+				type: "Fixed-Length Text(250)")).ToList();
 
-			IEnumerable<Field> iapiFields = allFields.Where(x => x.ArtifactID == 1).Select(x => CreateIAPIField(x.ArtifactID, x.Name));
+			IEnumerable<Field> iapiFields = allFields.Where(x => x.FieldIdentifier == "1").Select(x => CreateIAPIField(int.Parse(x.FieldIdentifier), x.Name));
 			_importApiFake.Setup(x => x.GetWorkspaceFields(It.IsAny<int>(), (int) ArtifactType.Document)).Returns(iapiFields);
 
 			// Act
@@ -68,7 +63,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings.Fields
 			_importApiFake.Setup(x => x.GetWorkspaceFields(It.IsAny<int>(), It.IsAny<int>())).Throws<InvalidOperationException>();
 
 			// Act
-			Func<Task> action = () => _sut.ClassifyAsync(Mock.Of<ICollection<RelativityObject>>(), 0);
+			Func<Task> action = () => _sut.ClassifyAsync(Mock.Of<ICollection<DocumentFieldInfo>>(), 0);
 
 			// Assert
 			action.ShouldThrow<InvalidOperationException>();

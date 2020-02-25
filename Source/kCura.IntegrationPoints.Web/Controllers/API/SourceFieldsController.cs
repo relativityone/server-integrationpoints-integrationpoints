@@ -7,9 +7,11 @@ using System.Web.Http;
 using kCura.IntegrationPoints.Core.Queries;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Web.Attributes;
+using kCura.IntegrationPoints.Web.Extensions;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.Contracts.Provider;
 using Relativity.IntegrationPoints.FieldsMapping;
+using Relativity.IntegrationPoints.FieldsMapping.Helpers;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
@@ -42,13 +44,9 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			IDataSourceProvider provider = _factory.GetDataProvider(applicationGuid, data.Type);
 			List<FieldEntry> fields = provider.GetFields(new DataSourceProviderConfiguration(data.Options.ToString(), data.Credentials)).OrderBy(x => x.DisplayName).ToList();
 
-			List<FieldClassificationResult> result = fields.Select(x => new FieldClassificationResult
+			List<FieldClassificationResult> result = fields.Select(x => new FieldClassificationResult(FieldConvert.ToDocumentFieldInfo(x))
 			{
 				ClassificationLevel = ClassificationLevel.AutoMap,
-				FieldIdentifier = x.FieldIdentifier,
-				IsIdentifier = x.IsIdentifier,
-				IsRequired = x.IsRequired,
-				Name = x.ActualName
 			}).ToList();
 
 			return Request.CreateResponse(HttpStatusCode.OK, result, Configuration.Formatters.JsonFormatter);
