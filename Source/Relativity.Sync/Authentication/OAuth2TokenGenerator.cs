@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using kCura.WinEDDS.Credentials;
 using Relativity.OAuth2Client.Interfaces;
 
 namespace Relativity.Sync.Authentication
@@ -42,6 +43,10 @@ namespace Relativity.Sync.Authentication
 		{
 			ITokenProviderFactory providerFactory = _tokenProviderFactoryFactory.Create(GetRelativityStsUri(), client.Id, client.Secret);
 			ITokenProvider tokenProvider = providerFactory.GetTokenProvider("WebApi", new List<string> { "UserInfoAccess" });
+
+			// REL-398505: Import API ignores IRelativityTokenProvider when it performs re login and requires below to be set.
+			RelativityWebApiCredentialsProvider.Instance().SetProvider(new OAuth2ClientCredentials(tokenProvider));
+
 			return tokenProvider;
 		}
 
