@@ -93,51 +93,79 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 			//Assert
 			fieldsFromDestinationWorkspaceListBox.Should().ContainInOrder(expectedDestinationMappableFields);
 		}
-		
+
 		[IdentifiedTest("65917e62-2387-4b1e-afee-721bac33b1c0")]
 		[RetryOnError]
 		[Category(TestCategory.SMOKE)]
 		public async Task FieldMapping_ShouldAutoMapFieldsFromSavedSearch()
 		{
 			//Arrange
+
+			const string savedSearchName = "Orzel 7 search";
+
+			const string controlNumberFieldName = "Control Number";
+			const string customFieldName = "Orzel 7";
+			const string systemFieldName = "File Name";
+
+			List<string> savedSearchMappableFields = new List<string>()
+			{
+				controlNumberFieldName,
+				customFieldName,
+				systemFieldName
+			};
+
+			var sourceMappableFields = (await SourceContext.WorkspaceFieldMappingHelper
+					.RetrieveFilteredDocumentsFieldsFromWorkspaceAsync().ConfigureAwait(false))
+				.Where(x => savedSearchMappableFields.Contains(x.Name))
+				.ToList();
+
+			var destinationMappableFields = (await DestinationContext.WorkspaceFieldMappingHelper
+					.RetrieveFilteredDocumentsFieldsFromWorkspaceAsync().ConfigureAwait(false))
+				.Where(x => savedSearchMappableFields.Contains(x.Name))
+				.ToList();
+
 			var createFieldRequest = new FixedLengthFieldRequest()
 			{
 				ObjectType = new ObjectTypeIdentifier()
 				{
 					ArtifactTypeID = (int) ArtifactType.Document
 				},
-				Name = "Orzel 7",
-				Length = 255,
-				
+				Name = customFieldName,
+				Length = 255
 			};
 
 			int sourceFieldID = await SourceFieldManager
 				.CreateFixedLengthFieldAsync(SourceContext.GetWorkspaceId(), createFieldRequest)
 				.ConfigureAwait(false);
-			int destinationFieldID = await DestinationFieldManager
+			await DestinationFieldManager
 				.CreateFixedLengthFieldAsync(DestinationContext.GetWorkspaceId(), createFieldRequest)
 				.ConfigureAwait(false);
 
-			int savedSearchID = await SavedSearch.CreateSavedSearchAsync(SourceContext.GetWorkspaceId(),
-				"Orzel 7 search", new[]
-				{
-					new FieldRef
-					{
-						ArtifactID = sourceFieldID
-					}
-				}).ConfigureAwait(false);
+			await SavedSearch.CreateSavedSearchAsync(SourceContext.GetWorkspaceId(), savedSearchName, new[]
+			{
+				new FieldRef(sourceFieldID),
+				new FieldRef(systemFieldName)
+			}).ConfigureAwait(false);
 
 			RelativityProviderModel model = CreateRelativityProviderModel();
+			model.FieldMapping = null;
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOnly;
 			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.No;
+			model.SavedSearch = savedSearchName;
+
+			PushToRelativityThirdPage fieldMappingPage = PointsAction.CreateNewRelativityProviderFieldMappingPage(model);
 
 			//Act
-			PushToRelativityThirdPage fieldMappingPage =
-				PointsAction.CreateNewRelativityProviderFieldMappingPage(model);
-			List<string> fieldsFromDestinationWorkspaceListBox =
-				fieldMappingPage.GetFieldsFromDestinationWorkspaceListBox();
-			List<string> expectedDestinationMappableFields =
-				CreateFieldMapListBoxFormatFromObjectManagerFetchedList(DestinationContext.WorkspaceMappableFields);
+			fieldMappingPage.MapFieldsFromSavedSearch();
+
+			//Assert
+			List<string> fieldsFromSelectedSourceWorkspaceListBox =
+				fieldMappingPage.GetFieldsFromSelectedSourceWorkspaceListBox();
+			List<string> fieldsFromSelectedDestinationWorkspaceListBox =
+				fieldMappingPage.GetFieldsFromSelectedDestinationWorkspaceListBox();
+
+			fieldsFromSelectedSourceWorkspaceListBox.Should().ContainInOrder(sourceMappableFields);
+			fieldsFromSelectedDestinationWorkspaceListBox.Should().ContainInOrder(expectedMappedFields);
 		}
 
 		private List<string> CreateFieldMapListBoxFormatFromObjectManagerFetchedList(
@@ -146,7 +174,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 			return mappableFieldsListFromObjectManager.OrderBy(f => f.Name)
 				.ThenBy(f => f.Type)
 				.Select(field =>
-					field.IsIdentifier ? $"{field.Name} [Object Identifier]" : $"{field.Name} [{field.Type}]").ToList();
+					field.IsIdentifier ? $"{field.Name} [Object Identifier]" : $"{field.Name} [{field.Type}]")
+				.ToList();
 		}
 	}
 }

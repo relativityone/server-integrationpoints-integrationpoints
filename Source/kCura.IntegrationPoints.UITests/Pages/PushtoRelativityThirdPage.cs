@@ -47,6 +47,9 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		[FindsBy(How = How.Id, Using = "mapFieldsBtn")]
 		protected IWebElement MapAllFieldsElement { get; set; }
 
+		[FindsBy(How = How.Id, Using = "mapFieldsFromSavedSearchBtn")]
+		protected IWebElement MapFieldsFromSavedSearchButton { get; set; }
+
 		[FindsBy(How = How.Id, Using = "overwrite")]
 		protected IWebElement OverwriteElement { get; set; }
 
@@ -146,6 +149,12 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		public PushToRelativityThirdPage MapAllFields()
 		{
 			MapAllFieldsElement.ClickEx();
+			return this;
+		}
+
+		public PushToRelativityThirdPage MapFieldsFromSavedSearch()
+		{
+			MapFieldsFromSavedSearchButton.ClickEx();
 			return this;
 		}
 
