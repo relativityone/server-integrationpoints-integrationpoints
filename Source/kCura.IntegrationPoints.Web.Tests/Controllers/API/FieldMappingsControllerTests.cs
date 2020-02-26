@@ -12,6 +12,7 @@ using Moq;
 using NUnit.Framework;
 using Relativity.IntegrationPoints.FieldsMapping;
 using Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers;
+using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 {
@@ -19,21 +20,26 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 	public class FieldMappingsControllerTests
 	{
 		private FieldMappingsController _sut;
-		private Mock<IFieldsClassifierRunner> _hideFromUserFieldsFilterMock;
+
+		private Mock<IFieldsClassifyRunnerFactory> _fieldsClassifyRunnerFactoryMock;
+		private Mock<IFieldsClassifierRunner> _fieldsClassifierRunner;
 		private Mock<IAutomapRunner> _automapRunnerMock;
+		private Mock<IFieldsMappingValidator> _fieldsMappingValidator;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_hideFromUserFieldsFilterMock = new Mock<IFieldsClassifierRunner>();
 			_automapRunnerMock = new Mock<IAutomapRunner>();
-			_hideFromUserFieldsFilterMock
-				.Setup(x => x.GetFilteredFieldsAsync(It.IsAny<int>(), It.IsAny<IList<IFieldsClassifier>>()))
-				.ReturnsAsync(new List<FieldClassificationResult>());
+			_fieldsMappingValidator = new Mock<IFieldsMappingValidator>();
 
-			var importApiFactoryStub = new Mock<IImportApiFactory>();
+			_fieldsClassifierRunner = new Mock<IFieldsClassifierRunner>();
+			_fieldsClassifierRunner.Setup(x => x.GetFilteredFieldsAsync(It.IsAny<int>())).ReturnsAsync(new List<FieldClassificationResult>());
 
-			_sut = new FieldMappingsController(_hideFromUserFieldsFilterMock.Object, importApiFactoryStub.Object, _automapRunnerMock.Object)
+			_fieldsClassifyRunnerFactoryMock = new Mock<IFieldsClassifyRunnerFactory>();
+			_fieldsClassifyRunnerFactoryMock.Setup(m => m.CreateForSourceWorkspace()).Returns(_fieldsClassifierRunner.Object);
+			_fieldsClassifyRunnerFactoryMock.Setup(m => m.CreateForDestinationWorkspace()).Returns(_fieldsClassifierRunner.Object);
+
+			_sut = new FieldMappingsController(_fieldsClassifyRunnerFactoryMock.Object, _automapRunnerMock.Object, _fieldsMappingValidator.Object)
 			{
 				Configuration = new HttpConfiguration(),
 				Request = new HttpRequestMessage()
@@ -45,13 +51,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 		{
 			// Arrange
 			const int workspaceId = 123456;
-			IList<Type> types = new List<Type>()
-			{
-				typeof(RipFieldsClassifier),
-				typeof(SystemFieldsClassifier),
-				typeof(NotSupportedByIAPIFieldsClassifier),
-				typeof(ObjectFieldsClassifier)
-			};
 
 			// Act
 			HttpResponseMessage responseMessage = await _sut.GetMappableFieldsFromSourceWorkspace(workspaceId).ConfigureAwait(false);
@@ -59,8 +58,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 			// Assert
 			responseMessage.StatusCode.Should().Be(HttpStatusCode.OK);
 
-			_hideFromUserFieldsFilterMock
-				.Verify(x => x.GetFilteredFieldsAsync(It.Is<int>(y => y == workspaceId), It.Is<IList<IFieldsClassifier>>(y => ShouldContainObjectOfTypes(y, types))),
+			_fieldsClassifierRunner
+				.Verify(x => x.GetFilteredFieldsAsync(workspaceId),
 					Times.Once);
 		}
 
@@ -69,14 +68,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 		{
 			// Arrange
 			const int workspaceId = 123456;
-			IList<Type> types = new List<Type>()
-			{
-				typeof(RipFieldsClassifier),
-				typeof(SystemFieldsClassifier),
-				typeof(NotSupportedByIAPIFieldsClassifier),
-				typeof(OpenToAssociationsFieldsClassifier),
-				typeof(ObjectFieldsClassifier)
-			};
 
 			// Act
 			HttpResponseMessage responseMessage = await _sut.GetMappableFieldsFromDestinationWorkspace(workspaceId).ConfigureAwait(false);
@@ -84,14 +75,28 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 			// Assert
 			responseMessage.StatusCode.Should().Be(HttpStatusCode.OK);
 
-			_hideFromUserFieldsFilterMock
-				.Verify(x => x.GetFilteredFieldsAsync(It.Is<int>(y => y == workspaceId), It.Is<IList<IFieldsClassifier>>(y => ShouldContainObjectOfTypes(y, types))),
+			_fieldsClassifierRunner
+				.Verify(x => x.GetFilteredFieldsAsync(workspaceId),
 					Times.Once);
 		}
 
-		private static bool ShouldContainObjectOfTypes(IList<IFieldsClassifier> list, IList<Type> types)
+		[Test]
+		public async Task ValidateAsync_ShouldValidateFieldsMap()
 		{
-			return types.ForAll(type => list.Any(type.IsInstanceOfType));
+			// Arrange
+			int sourceWorkspaceID = 1;
+			int destinationWorkspaceID = 2;
+			IEnumerable<FieldMap> fieldMap = new List<FieldMap>();
+
+			// Act
+			HttpResponseMessage responseMessage = await _sut.ValidateAsync(fieldMap, sourceWorkspaceID, destinationWorkspaceID).ConfigureAwait(false);
+
+			// Assert
+			responseMessage.StatusCode.Should().Be(HttpStatusCode.OK);
+
+			_fieldsMappingValidator
+				.Verify(x => x.ValidateAsync(fieldMap, sourceWorkspaceID, destinationWorkspaceID),
+					Times.Once);
 		}
 	}
 }

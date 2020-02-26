@@ -44,12 +44,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutomapRunnerTests.cs" />
+    <Compile Include="DocumentFieldInfoTests.cs" />
     <Compile Include="FieldsClassifierRunnerTests.cs" />
     <Compile Include="FieldsClassifiers\NotSupportedByIAPIFieldsClassifierTests.cs" />
     <Compile Include="FieldsClassifiers\ObjectFieldsClassifierTests.cs" />
     <Compile Include="FieldsClassifiers\OpenToAssociationsFieldsClassifierTests.cs" />
     <Compile Include="FieldsClassifiers\RipFieldsClassifierTests.cs" />
     <Compile Include="FieldsClassifiers\SystemFieldsClassifierTests.cs" />
+    <Compile Include="FieldsClassifyRunnerFactoryTests.cs" />
+    <Compile Include="FieldsMappingValidatorTests.cs" />
+    <Compile Include="FieldsRepositoryTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

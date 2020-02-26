@@ -219,6 +219,7 @@ ko.validation.insertValidationMessage = function (element) {
 		this.selectedSourceField = ko.observableArray([]);
 		this.selectedMappedSource = ko.observableArray([]);
 		this.IdentifierField = ko.observable(model.IPDestinationSettings.IdentifierField);
+		this.showMapSavedSearchButton = ko.observable(false);
 
 		this.overlay = ko.observableArray([]);
 		this.nativeFilePathOption = ko.observableArray([]);
@@ -260,14 +261,20 @@ ko.validation.insertValidationMessage = function (element) {
 		var copyFileToRepositoryText = "Copy Files to Repository:";
 		this.copyNativeLabel = ko.observable(copyNativeFileText);
 		this.ImageImport = ko.observable(model.ImageImport || "false");
-		this.IsProductionExport = function () {
+		this.CheckRelativityProviderExportType = function (exportType) {
 		    if (this.IsRelativityProvider()) {
 		        var sourceModel = JSON.parse(model.sourceConfiguration);
-		        if (sourceModel.TypeOfExport && sourceModel.TypeOfExport === ExportEnums.SourceOptionsEnum.Production) {
+		        if (sourceModel.TypeOfExport && sourceModel.TypeOfExport === exportType) {
 		            return true;
 		        }
 		    }
 		    return false;
+		};
+		this.IsProductionExport = function () {
+			return this.CheckRelativityProviderExportType(ExportEnums.SourceOptionsEnum.Production);
+		};
+		this.IsSavedSearchExport = function () {
+			return this.CheckRelativityProviderExportType(ExportEnums.SourceOptionsEnum.SavedSearch);
 		};
 
         this.importNativeFile.subscribe(function (importNative) {
@@ -594,7 +601,7 @@ ko.validation.insertValidationMessage = function (element) {
 		this.destinationCaseArtifactID = destination.CaseArtifactId;
 
 		self.findField = function(array, field) {
-			const fields = $.grep(array, function (value, _index) { return value.fieldIdentifier === field.fieldIdentifier; });
+			const fields = $.grep(array, function (value, _index) { return value.fieldIdentifier === field.fieldIdentifier || value.name == field.displayName; });
 			const fieldFound = fields.length > 0;
 			return {
 				exist: fieldFound,
@@ -696,7 +703,7 @@ ko.validation.insertValidationMessage = function (element) {
             successCallback,
             cancelCallback) {
          
-            var tableDiv = $('<div/>');
+			var tableDiv = $('<div/>').css({"overflow-y": "auto", "max-height": "400px"});
 
             function addColumn(description, elements) {
                 var columnDiv = $('<div/>').css({ "float": "left", "width": "50%" });
@@ -779,7 +786,14 @@ ko.validation.insertValidationMessage = function (element) {
                 self.workspaceFields(mapFields(destinationNotMapped));
                 self.mappedWorkspace(mapFields(destinationMapped));
                 self.sourceField(mapFields(sourceNotMapped));
-                self.sourceMapped(mapFields(sourceMapped));
+				self.sourceMapped(mapFields(sourceMapped));
+
+                if (destinationModel.WorkspaceHasChanged) {
+					IP.message.notifyWithTimeout("We restored the fields mapping as destination workspace has changed", 5000);
+
+                    // mark change as handled
+                    destinationModel.WorkspaceHasChanged = false;
+                }
 
                 self.populateExtractedText();
             });
@@ -950,8 +964,13 @@ ko.validation.insertValidationMessage = function (element) {
 		this.autoFieldMap = function () {
 			self.autoFieldMapWithCustomOptions();
 		};
+		this.autoMapFieldsFromSavedSearch = function () {
+			self.autoMapFieldsFromSavedSearchWithCustomOptions();
+		};
 		this.autoFieldMapWithCustomOptions = function (matchOnlyIdentifierFields) {
 			//Remove current mappings first
+			const showErrors = self.showErrors();
+			self.showErrors(false);
 			self.addAlltoSourceField();
 			self.addAlltoWorkspaceField();
 
@@ -967,8 +986,39 @@ ko.validation.insertValidationMessage = function (element) {
                     MatchOnlyIdentifiers: !!matchOnlyIdentifierFields
                 })
             }).then(function (mapping) {
-                self.applyMapping(mapping);
+				self.applyMapping(mapping);
+				self.showErrors(showErrors);
                 return mapping;
+			}, function () {
+	            self.showErrors(showErrors);
+            });
+		};
+		this.autoMapFieldsFromSavedSearchWithCustomOptions = function (matchOnlyIdentifierFields) {
+			//Remove current mappings first
+			const showErrors = self.showErrors();
+			self.showErrors(false);
+			self.addAlltoSourceField();
+			self.addAlltoWorkspaceField();
+
+            var fieldForAutomap = function(field) {
+                return field.classificationLevel == 0;
+			};
+			
+            const sourceConfig = JSON.parse(model.sourceConfiguration);
+            const savedSearchArtifactID = sourceConfig.SavedSearchArtifactId;
+
+            root.data.ajax({
+                type: 'POST', url: root.utils.generateWebAPIURL('/FieldMappings/AutomapFieldsFromSavedSearch', savedSearchArtifactID),
+				data: JSON.stringify({
+					SourceFields: this.sourceFields.filter(fieldForAutomap),
+					DestinationFields: this.destinationFields.filter(fieldForAutomap)
+                })
+			}).then(function (mapping) {
+				self.applyMapping(mapping);
+				self.showErrors(showErrors);
+				return mapping;
+			}, function () {
+	            self.showErrors(showErrors);
             });
 		};
 		/********** Tooltips  **********/
@@ -1032,6 +1082,8 @@ ko.validation.insertValidationMessage = function (element) {
 			}
             this.model = new viewModel(this.returnModel);
 			this.model.errors = ko.validation.group(this.model, { deep: true });
+
+			self.model.showMapSavedSearchButton(self.model.IsSavedSearchExport());
 		};
 
 		var relativityImportType;
@@ -1067,7 +1119,8 @@ ko.validation.insertValidationMessage = function (element) {
 				displayName: field.name,
 				isIdentifier: field.isIdentifier,
 				fieldIdentifier: field.identifer,
-				isRequired: field.isRequired
+				isRequired: field.isRequired,
+				type: field.type
 			}
 		};
 
@@ -1256,16 +1309,31 @@ ko.validation.insertValidationMessage = function (element) {
 				this.returnModel.CreateSavedSearchForTagging = this.model.CreateSavedSearchForTagging;
 
 				if (this.model.IsRelativityProvider()) {
-					var mismatchedMappings = StepMapFieldsTypeValidator.validateMappedFieldTypes(mapping);
+					var validateMappedFields = root.data.ajax({
+						type: 'POST',
+						url: root.utils.generateWebAPIURL('FieldMappings/Validate', _destination.CaseArtifactId),
+						data: JSON.stringify(map)
+					});
 
-					if (mismatchedMappings.length > 0) {
-						var successCallback = function() {
+					const proceedConfirmation = function (invalidMappedFields) {
+						if (invalidMappedFields.length > 0) {
+							var proceedCallback = function () {
+								d.resolve(this.returnModel);
+							}.bind(this);
+
+							var clearAndProceedCallback = function () {
+								var filteredOutInvalidFields = map.filter(x => invalidMappedFields.findIndex(i => StepMapFieldsValidator.isFieldMapEqual(i, x)) == -1);
+								this.returnModel.map = JSON.stringify(filteredOutInvalidFields);
+								d.resolve(this.returnModel);
+							}.bind(this);
+
+							StepMapFieldsValidator.showProceedConfirmationPopup(invalidMappedFields, proceedCallback, clearAndProceedCallback);
+						} else {
 							d.resolve(this.returnModel);
-						}.bind(this);
-						StepMapFieldsTypeValidator.showWarningPopup(mismatchedMappings, successCallback);
-					} else {
-						d.resolve(this.returnModel);
+						}
 					}
+
+					validateMappedFields.then(proceedConfirmation.bind(this));
 				} else {
 					d.resolve(this.returnModel);
 				}

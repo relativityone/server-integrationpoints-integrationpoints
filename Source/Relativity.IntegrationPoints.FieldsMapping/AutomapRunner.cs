@@ -1,15 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using kCura.IntegrationPoints.Domain.Models;
-using Relativity.IntegrationPoints.Contracts.Models;
+using Relativity.IntegrationPoints.FieldsMapping.Helpers;
+using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
+using Relativity.Services.Search;
 
 namespace Relativity.IntegrationPoints.FieldsMapping
 {
 	public class AutomapRunner : IAutomapRunner
 	{
+		private readonly IServicesMgr _servicesMgr;
+
+		public AutomapRunner(IServicesMgr servicesMgr)
+		{
+			_servicesMgr = servicesMgr;
+		}
+
 		public IEnumerable<FieldMap> MapFields(IEnumerable<DocumentFieldInfo> sourceFields,
 			IEnumerable<DocumentFieldInfo> destinationFields, bool matchOnlyIdentifiers = false)
 		{
@@ -21,6 +30,35 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 			}
 
 			return mappingBuilder.Mapping.OrderByDescending(x => x.SourceField.IsIdentifier).ThenBy(x => x.SourceField.DisplayName);
+		}
+
+		public async Task<IEnumerable<FieldMap>> MapFieldsFromSavedSearchAsync(IEnumerable<DocumentFieldInfo> sourceFields,
+			IEnumerable<DocumentFieldInfo> destinationFields, int sourceWorkspaceArtifactId, int savedSearchArtifactId)
+		{
+			List<DocumentFieldInfo> sourceFieldsList = sourceFields.ToList();
+			List<DocumentFieldInfo> savedSearchFields;
+
+			using (IKeywordSearchManager keywordSearchManager = _servicesMgr.CreateProxy<IKeywordSearchManager>(ExecutionIdentity.CurrentUser))
+			{
+				KeywordSearch savedSearch = await keywordSearchManager.ReadSingleAsync(sourceWorkspaceArtifactId, savedSearchArtifactId)
+					.ConfigureAwait(false);
+
+				savedSearchFields = sourceFieldsList
+					.Where(sourceField => savedSearch.Fields.Exists(savedSearchField =>
+						savedSearchField.ArtifactID.ToString() == sourceField.FieldIdentifier))
+					.ToList();
+			}
+
+			if (!savedSearchFields.Exists(x => x.IsIdentifier))
+			{
+				DocumentFieldInfo identifierField = sourceFieldsList.SingleOrDefault(x => x.IsIdentifier);
+				if (identifierField != null)
+				{
+					savedSearchFields.Add(identifierField);
+				}
+			}
+
+			return MapFields(savedSearchFields, destinationFields);
 		}
 
 		private class AutomapBuilder
@@ -40,17 +78,17 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 			public AutomapBuilder MapBy<T>(Func<DocumentFieldInfo, T> selector)
 			{
 				FieldMap[] newMappings = _sourceFields.Join(_destinationFields, selector, selector, (SourceField, DestinationField) => new { SourceField, DestinationField })
-					.Where(x => TypesMatchTest(x.SourceField, x.DestinationField))
+					.Where(x => x.SourceField.IsTypeCompatible(x.DestinationField))
 					.Select(x => new FieldMap
 					{
-						SourceField = GetFieldEntry(x.SourceField),
-						DestinationField = GetFieldEntry(x.DestinationField),
+						SourceField = FieldConvert.ToFieldEntry(x.SourceField),
+						DestinationField = FieldConvert.ToFieldEntry(x.DestinationField),
 						FieldMapType = (x.SourceField.IsIdentifier && x.DestinationField.IsIdentifier) ? FieldMapTypeEnum.Identifier : FieldMapTypeEnum.None
 					}
 					).ToArray();
 
-				DocumentFieldInfo[] remainingSourceFields = _sourceFields.Where(x => !newMappings.Any(m => m.SourceField.FieldIdentifier == x.FieldIdentifier)).ToArray();
-				DocumentFieldInfo[] remainingDestinationFields = _destinationFields.Where(x => !newMappings.Any(m => m.DestinationField.FieldIdentifier == x.FieldIdentifier)).ToArray();
+				DocumentFieldInfo[] remainingSourceFields = _sourceFields.Where(x => !newMappings.Any(m => m.SourceField.FieldIdentifier == x.FieldIdentifier.ToString())).ToArray();
+				DocumentFieldInfo[] remainingDestinationFields = _destinationFields.Where(x => !newMappings.Any(m => m.DestinationField.FieldIdentifier == x.FieldIdentifier.ToString())).ToArray();
 
 				return new AutomapBuilder(
 					remainingSourceFields,
@@ -64,7 +102,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 				DocumentFieldInfo sourceIdentifier = _sourceFields.FirstOrDefault(x => x.IsIdentifier);
 				DocumentFieldInfo destinationIdentifier = _destinationFields.FirstOrDefault(x => x.IsIdentifier);
 
-				if (sourceIdentifier == null || destinationIdentifier == null)
+				if (sourceIdentifier == null || destinationIdentifier == null || !sourceIdentifier.IsTypeCompatible(destinationIdentifier))
 				{
 					return new AutomapBuilder(_sourceFields.ToArray(), _destinationFields.ToArray(), Mapping.ToArray());
 				}
@@ -75,35 +113,12 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 					{
 						new FieldMap
 						{
-							SourceField = GetFieldEntry(sourceIdentifier),
-							DestinationField = GetFieldEntry(destinationIdentifier),
+							SourceField = FieldConvert.ToFieldEntry(sourceIdentifier),
+							DestinationField = FieldConvert.ToFieldEntry(destinationIdentifier),
 							FieldMapType = FieldMapTypeEnum.Identifier
 						}
 					})
 				);
-			}
-
-			private bool TypesMatchTest(DocumentFieldInfo sourceField, DocumentFieldInfo destinationField)
-			{
-				const string fixedLengthText = "Fixed-Length Text";
-				const string longText = "Long Text";
-				return (sourceField.Type == destinationField.Type)
-					   || (sourceField.Type.StartsWith(fixedLengthText) &&
-						   (destinationField.Type.StartsWith(fixedLengthText) || destinationField.Type == longText)
-					   );
-			}
-
-			private FieldEntry GetFieldEntry(DocumentFieldInfo fieldInfo)
-			{
-				return new FieldEntry
-				{
-					DisplayName = fieldInfo.Name,
-					FieldIdentifier = fieldInfo.FieldIdentifier,
-					FieldType = FieldType.String,
-					IsIdentifier = fieldInfo.IsIdentifier,
-					IsRequired = fieldInfo.IsRequired,
-					Type = fieldInfo.Type
-				};
 			}
 		}
 	}

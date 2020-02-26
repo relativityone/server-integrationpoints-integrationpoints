@@ -1,7 +1,9 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.Windsor;
+using kCura.IntegrationPoints.DocumentTransferProvider;
 using kCura.IntegrationPoints.Web.Controllers.API.FieldMappings;
 using kCura.IntegrationPoints.Web.Helpers;
+using kCura.Relativity.ImportAPI;
 using Relativity.IntegrationPoints.FieldsMapping;
 
 namespace kCura.IntegrationPoints.Web.Installers
@@ -19,13 +21,25 @@ namespace kCura.IntegrationPoints.Web.Installers
 					.For<SummaryPageSelector>()
 					.LifestyleSingleton(),
 				Component
-					.For<IFieldsClassifierRunner>()
-					.ImplementedBy<FieldsClassifierRunner>()
+					.For<IFieldsRepository>()
+					.ImplementedBy<FieldsRepository>()
+					.LifestyleTransient(),
+				Component
+					.For<IImportAPI>()
+					.UsingFactoryMethod(k => k.Resolve<IImportApiFactory>().Create())
+					.LifestyleTransient(),
+				Component
+					.For<IFieldsClassifyRunnerFactory>()
+					.ImplementedBy<FieldsClassifyRunnerFactory>()
 					.LifestyleTransient(),
 				Component
 					.For<IAutomapRunner>()
 					.ImplementedBy<AutomapRunner>()
-					.LifestyleSingleton()
+					.LifestyleSingleton(),
+				Component
+					.For<IFieldsMappingValidator>()
+					.ImplementedBy<FieldsMappingValidator>()
+					.LifestyleTransient()
 			);
 		}
 	}

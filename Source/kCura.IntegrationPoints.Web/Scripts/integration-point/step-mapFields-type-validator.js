@@ -1,54 +1,60 @@
-﻿var StepMapFieldsTypeValidator = (function() {
-
-	var validateMappedFieldTypes = function(mapping) {
-		var sourceMappedFields = mapping.sourceMapped;
-		var destinationMappedFields = mapping.mappedWorkspace;
-		var mismatchedMappings = [];
-
-		var length = sourceMappedFields.length;
-		for (var i = 0; i < length; i++) {
-			var sourceField = sourceMappedFields[i];
-			var destinationField = destinationMappedFields[i];
-			if (sourceField.type !== destinationField.type) {
-				var mappingEntry = {
-					source: sourceField.displayName,
-					destination: destinationField.displayName
-				}
-				mismatchedMappings.push(mappingEntry);
-			}
-		}
-
-		return mismatchedMappings;
-	};
-
-	var buildMismatchedFieldTypesMessage = function(mismatchedMappings) {
-		var message = "Data type mismatch for the following mapped field(s):<br />";
-		for (var i = 0; i < mismatchedMappings.length; ++i) {
-			var messagePart = " - " + mismatchedMappings[i].source + " : " + mismatchedMappings[i].destination + "<br />";
-			message += messagePart;
-		}
-		var messageSuffix = "Continue with this mapping?";
-		message += messageSuffix;
-		return message;
+﻿
+var StepMapFieldsValidator = (function () {
+	var isFieldMapEqual = function isFieldMapEqual(sourceFieldMap, destinationFieldMap) {
+		return sourceFieldMap.sourceField.displayName == destinationFieldMap.sourceField.displayName
+			&& sourceFieldMap.destinationField.displayName == destinationFieldMap.destinationField.displayName;
 	}
 
-	var showWarningPopup = function(mismatchedMappings, successCallback) {
-		var mismatchedMappingsMessage = buildMismatchedFieldTypesMessage(mismatchedMappings);
-		window.Dragon.dialogs.showConfirm({
-			message: mismatchedMappingsMessage,
-			title: "Integration Point Validation",
-			width: 450,
-			showCancel: true,
+	function getMissmatchedFieldsAsString(fieldMap) {
+		return fieldMap.sourceField.displayName + ' [' + fieldMap.sourceField.type + ']' + ' : ' + fieldMap.destinationField.displayName + ' [' + fieldMap.destinationField.type + ']';
+	}
+
+	var buildFieldsMapTableMessage = function (mappedFields) {
+		var mappedFieldsList = $('<div/>');
+
+		$('<ul/>').appendTo(mappedFieldsList);
+
+		mappedFields.forEach(
+			function (fieldMap) {
+				$('<li/>').text(getMissmatchedFieldsAsString(fieldMap)).appendTo(mappedFieldsList);
+			});
+
+		return mappedFieldsList;
+	}
+
+	var showProceedConfirmationPopup = function (invalidMappedFields, proceedCallback, clearAndProceedCallback) {
+		var content = $('<div/>')
+			.html('<p>The below mapped fields are invalid:</p>');
+
+		buildFieldsMapTableMessage(invalidMappedFields)
+			.appendTo(content);
+
+		$('<div/>').html(
+			'<p>' +
+			'Proceed: continue with current mapping <br/> ' +
+			'Clear and Proceed: filter out invalid fields and continue <br/>' +
+			'</p> ').appendTo(content);
+
+		window.Dragon.dialogs.showYesNoCancel({
+			title: "Field Map Validation",
+			message: content.html(),
 			messageAsHtml: true,
-			success: function(calls) {
+			yesText: "Proceed",
+			yesHandle: function (calls) {
 				calls.close();
-				successCallback();
-			}
+				proceedCallback();
+			},
+			noText: "Clear and Proceed",
+			noHandle: function (calls) {
+				calls.close();
+				clearAndProceedCallback()
+			},
+			closeOnEscape: false
 		});
 	}
 
 	return {
-		validateMappedFieldTypes: validateMappedFieldTypes,
-		showWarningPopup: showWarningPopup
+		showProceedConfirmationPopup: showProceedConfirmationPopup,
+		isFieldMapEqual: isFieldMapEqual
 	};
 })();

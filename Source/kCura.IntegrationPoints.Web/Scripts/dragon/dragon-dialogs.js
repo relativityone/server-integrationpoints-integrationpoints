@@ -173,6 +173,90 @@
 			return confirm;
 		})();
 
+		dialogs.showYesNoCancel = (function () {
+			var confirmDefaults = {
+				message: '',
+				title: 'Confirmation',
+				yesText: 'Yes',
+				noText: 'No',
+				cancelText: 'Cancel',
+				width: 'auto',
+				height: 'auto',
+				showYes: true,
+				showNo: true,
+				showCancel: true,
+				messageAsHtml: false
+			};
+
+			function confirm(options) {
+				var p = deferred.defer(),
+					settings,
+					$dialog = getDialog(),
+					enable,
+					buttons = [];
+
+				settings = $.extend(true, {}, confirmDefaults, options);
+				$dialog.html($('<label/>'));
+
+				if (settings.messageAsHtml === true) {
+					$dialog.html(settings.message);
+				} else {
+					$dialog.text(settings.message);
+				}
+
+				close = function () { $dialog.dialog('close'); };
+
+				if (settings.showYes) {
+					buttons.push({
+						text: settings.yesText,
+						click: function () {
+							handleSuccess.call($dialog, settings.yesHandle);
+						},
+						'class': 'button primary'
+					});
+				}
+
+				if (settings.showNo) {
+					buttons.push({
+						text: settings.noText,
+						click: function () {
+							handleSuccess.call($dialog, settings.noHandle);
+						},
+						'class': 'button primary'
+					});
+				}
+
+				if (settings.showCancel) {
+					buttons.push({
+						text: settings.cancelText,
+						click: function () {
+							$(this).dialog('close');
+						},
+						'class': 'button secondary'
+					});
+				}
+
+				$dialog.dialog({
+					autoOpen: true,
+					resizable: false,
+					draggable: false,
+					title: settings.title,
+					modal: true,
+					height: settings.height,
+					width: settings.width,
+					dialogClass: 'msg',
+					buttons: buttons,
+					beforeClose: function () {
+						$(this).remove();
+					},
+					dialogClass: 'prompt'
+				});
+				return p.promise;
+			};
+
+			return confirm;
+		})();
+
 		dialogs.showTextEntry = (function () {
 			var entryDefaults = {
 				okText: 'Send',

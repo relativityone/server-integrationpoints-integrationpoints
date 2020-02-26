@@ -9,10 +9,12 @@ using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web.Attributes;
+using kCura.IntegrationPoints.Web.Extensions;
 using kCura.IntegrationPoints.Web.Models;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.FieldsMapping;
+using Relativity.IntegrationPoints.FieldsMapping.Helpers;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
@@ -41,13 +43,9 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			IDataSynchronizer synchronizer = _appDomainRdoSynchronizerFactory.CreateSynchronizer(Guid.Empty, settings.Settings);
 			List<FieldEntry> fields = synchronizer.GetFields(new DataSourceProviderConfiguration(_serializer.Serialize(importSettings), settings.Credentials)).ToList();
 
-			List<FieldClassificationResult> result = fields.Select(x => new FieldClassificationResult
+			List<FieldClassificationResult> result = fields.Select(x => new FieldClassificationResult(FieldConvert.ToDocumentFieldInfo(x))
 			{
 				ClassificationLevel = ClassificationLevel.AutoMap,
-				FieldIdentifier = x.FieldIdentifier,
-				IsIdentifier = x.IsIdentifier,
-				IsRequired = x.IsRequired,
-				Name = x.ActualName
 			}).ToList();
 
 			return Request.CreateResponse(HttpStatusCode.OK, result, Configuration.Formatters.JsonFormatter);

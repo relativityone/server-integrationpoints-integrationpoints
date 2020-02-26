@@ -3,12 +3,15 @@ using System.IO;
 using System.Net;
 using System.Text;
 using kCura.IntegrationPoints.FtpProvider.Helpers;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.FtpProvider.Connection
 {
 	public class FtpConnector : Interfaces.IFtpConnector
     {
-        internal bool _disposed;
+		private readonly IAPILog _logger;
+
+		internal bool _disposed;
 	    internal FtpWebRequest _request;
 		internal FtpWebResponse _ftpClient;
         internal Stream _stream;
@@ -22,7 +25,13 @@ namespace kCura.IntegrationPoints.FtpProvider.Connection
         public int Timeout { get; set; }
         public int BufferSize { get; set; }
 
-        public FtpConnector(string host, int port, string username, string password)
+		private FtpConnector(IAPILog logger)
+		{
+			_logger = logger;
+		}
+
+        public FtpConnector(IAPILog logger, string host, int port, string username, string password)
+			: this(logger)
         {
             _host = host.Normalize();
             _port = port;
@@ -34,11 +43,15 @@ namespace kCura.IntegrationPoints.FtpProvider.Connection
 
         public bool TestConnection()
         {
+			_logger.LogInformation("Connection test has been started...");
 	        _request = CreateRequest(BuildBaseFtpUrl(_host, _port), _username, _password);
 	        _request.Method = WebRequestMethods.Ftp.ListDirectory;
+
+			_logger.LogInformation("Client is trying to connect");
             using (var connectionTest = (FtpWebResponse)_request.GetResponse())
             {
                 connectionTest.Close();
+				_logger.LogInformation("Connection test passed");
             }
             return true;
         }
@@ -47,16 +60,19 @@ namespace kCura.IntegrationPoints.FtpProvider.Connection
         {
 	        try
 	        {
-		        if (TestConnection())
+				_logger.LogInformation("Trying to download read stream from file... Attempts {retry}/{totalRetries}.", _streamRetryCount + 1, retryLimit);
+				if (TestConnection())
 				{
 					_request = CreateRequest(BuildDownloadUrl(remotePath, fileName), _username, _password);
 					_request.Method = WebRequestMethods.Ftp.DownloadFile;
 			        _ftpClient = (FtpWebResponse)_request.GetResponse();
 			        _stream = new FtpStream(_ftpClient.GetResponseStream(), _request);
-		        }
+					_logger.LogInformation("Stream downloaded successfully.");
+				}
 	        }
-	        catch (Exception)
+	        catch (Exception ex)
 	        {
+				_logger.LogInformation(ex, "Exception occured during downloading stream");
 		        _streamRetryCount++;
 		        if (_streamRetryCount < retryLimit)
 		        {
@@ -64,6 +80,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Connection
 		        }
 		        else
 		        {
+					_logger.LogError(ex, "No more retries. Exception has been thrown");
 			        throw;
 		        }
 	        }
@@ -75,7 +92,8 @@ namespace kCura.IntegrationPoints.FtpProvider.Connection
         {
             try
             {
-                if (TestConnection())
+				_logger.LogInformation("Trying to download file... Attempts {retry}/{totalRetries}.", _streamRetryCount + 1, retryLimit);
+				if (TestConnection())
                 {
 	                _request = CreateRequest(BuildDownloadUrl(remotePath, fileName), _username, _password);
 	                _request.Method = WebRequestMethods.Ftp.DownloadFile;
@@ -88,6 +106,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Connection
                             {
                                 using (var writer = new FileStream(localDownloadPath, FileMode.Create))
                                 {
+									_logger.LogInformation("FileStream has been created.");
                                     var buffer = new byte[BufferSize];
 
                                     var readCount = responseStream.Read(buffer, 0, BufferSize);
@@ -97,13 +116,15 @@ namespace kCura.IntegrationPoints.FtpProvider.Connection
                                         readCount = responseStream.Read(buffer, 0, BufferSize);
                                     }
                                 }
+								_logger.LogInformation("File has been sucessfully downloaded.");
                             }
                         }
                     }
                 }
-            }
-            catch (Exception)
+			}
+            catch (Exception ex)
             {
+				_logger.LogInformation(ex, "Exception occured during downloading file");
                 _downloadRetryCount++;
                 if (_downloadRetryCount < retryLimit)
                 {
@@ -111,6 +132,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Connection
                 }
                 else
                 {
+					_logger.LogError(ex, "No more retries. Exception has been thrown");
                     throw;
                 }
             }
