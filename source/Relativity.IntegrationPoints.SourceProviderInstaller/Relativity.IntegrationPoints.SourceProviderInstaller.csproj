@@ -9,6 +9,11 @@
     <IsPackable>true</IsPackable>
 	<NuspecFile>Relativity.IntegrationPoints.SDK.nuspec</NuspecFile>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net462|AnyCPU'">
+    <DocumentationFile>bin\Relativity.IntegrationPoints.SourceProviderInstaller.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
