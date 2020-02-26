@@ -136,35 +136,38 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 			fieldsFromSelectedDestinationWorkspaceListBox.Should().ContainInOrder(expectedSelectedDestinationMappableFields);
 		}
 
-		private List<string> CreateFieldMapListBoxFormatFromObjectManagerFetchedList(
 		[IdentifiedTest("65917e62-2387-4b1e-afee-721bac33b1c0")]
 		[RetryOnError]
 		[Category(TestCategory.SMOKE)]
-		public async Task FieldMapping_ShouldAutoMapFieldsFromSavedSearch()
+		public async Task FieldMapping_ShouldAutoMapFieldsFromSavedSearch_WhenAutoMapSavedSearchIsPressed()
 		{
 			//Arrange
 
 			const string savedSearchName = "Orzel 7 search";
 
 			const string controlNumberFieldName = "Control Number";
+			const string fileNameFieldName = "File Name";
 			const string customFieldName = "Orzel 7";
-			const string systemFieldName = "File Name";
 
 			List<string> savedSearchMappableFields = new List<string>()
 			{
 				controlNumberFieldName,
-				customFieldName,
-				systemFieldName
+				fileNameFieldName,
+				customFieldName
 			};
 
-			var sourceMappableFields = (await SourceContext.WorkspaceFieldMappingHelper
-					.RetrieveFilteredDocumentsFieldsFromWorkspaceAsync().ConfigureAwait(false))
-				.Where(x => savedSearchMappableFields.Contains(x.Name))
-				.ToList();
+			await SourceContext.RetrieveMappableFieldsAsync().ConfigureAwait(false);
+			await DestinationContext.RetrieveMappableFieldsAsync().ConfigureAwait(false);
 
-			var destinationMappableFields = (await DestinationContext.WorkspaceFieldMappingHelper
-					.RetrieveFilteredDocumentsFieldsFromWorkspaceAsync().ConfigureAwait(false))
-				.Where(x => savedSearchMappableFields.Contains(x.Name))
+			List<string> expectedSourceMappedFields = SourceContext
+				.WorkspaceMappableFields
+				.Where(x => savedSearchMappableFields.Exists(fieldName => fieldName == x.Name))
+				.Select(x => x.DisplayName)
+				.ToList();
+			List<string> expectedDestinationMappedFields = DestinationContext
+				.WorkspaceMappableFields
+				.Where(x => savedSearchMappableFields.Exists(fieldName => fieldName == x.Name))
+				.Select(x => x.DisplayName)
 				.ToList();
 
 			var createFieldRequest = new FixedLengthFieldRequest()
@@ -187,7 +190,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 			await SavedSearch.CreateSavedSearchAsync(SourceContext.GetWorkspaceId(), savedSearchName, new[]
 			{
 				new FieldRef(sourceFieldID),
-				new FieldRef(systemFieldName)
+				new FieldRef(fileNameFieldName)
 			}).ConfigureAwait(false);
 
 			RelativityProviderModel model = CreateRelativityProviderModel();
@@ -202,13 +205,11 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 			fieldMappingPage.MapFieldsFromSavedSearch();
 
 			//Assert
-			List<string> fieldsFromSelectedSourceWorkspaceListBox =
-				fieldMappingPage.GetFieldsFromSelectedSourceWorkspaceListBox();
-			List<string> fieldsFromSelectedDestinationWorkspaceListBox =
-				fieldMappingPage.GetFieldsFromSelectedDestinationWorkspaceListBox();
+			List<string> fieldsFromSelectedSourceWorkspaceListBox = fieldMappingPage.GetFieldsFromSelectedSourceWorkspaceListBox();
+			List<string> fieldsFromSelectedDestinationWorkspaceListBox = fieldMappingPage.GetFieldsFromSelectedDestinationWorkspaceListBox();
 
-			fieldsFromSelectedSourceWorkspaceListBox.Should().ContainInOrder(sourceMappableFields);
-			fieldsFromSelectedDestinationWorkspaceListBox.Should().ContainInOrder(expectedMappedFields);
+			fieldsFromSelectedSourceWorkspaceListBox.Should().ContainInOrder(expectedSourceMappedFields);
+			fieldsFromSelectedDestinationWorkspaceListBox.Should().ContainInOrder(expectedDestinationMappedFields);
 		}
 
 		private List<string> CreateFieldMapListBoxFormatFromObjectManagerFetchedList(
