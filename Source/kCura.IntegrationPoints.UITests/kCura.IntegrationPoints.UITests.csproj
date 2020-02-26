@@ -100,6 +100,7 @@
     <Compile Include="Components\TreeSelect.cs" />
     <Compile Include="Configuration\Helpers\ApplicationInstallationHelper.cs" />
     <Compile Include="Configuration\Helpers\EntityObjectTypeHelper.cs" />
+    <Compile Include="Configuration\Models\FieldDisplayNamePair.cs" />
     <Compile Include="Configuration\Models\FieldMapModel.cs" />
     <Compile Include="Configuration\Models\FieldObject.cs" />
     <Compile Include="Configuration\Helpers\ImportDocumentsHelper.cs" />
