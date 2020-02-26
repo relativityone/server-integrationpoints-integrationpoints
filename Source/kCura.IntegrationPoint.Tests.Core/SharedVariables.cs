@@ -3,7 +3,6 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -113,7 +112,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static double AppSettingDouble(string name)
 		{
-			return double.Parse(AppSettingString(name), CultureInfo.InvariantCulture);
+			return double.Parse(AppSettingString(name));
 		}
 
 		public static bool AppSettingBool(string name)
