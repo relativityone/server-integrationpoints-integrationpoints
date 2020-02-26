@@ -68,7 +68,7 @@ group TestPackages
 	nuget BenchmarkDotNet 0.10.12
 	nuget DotNetSeleniumExtras.PageObjects 3.11.0
 	nuget DotNetSeleniumExtras.WaitHelpers 3.11.0
-	nuget FluentAssertions 4.19.4
+	nuget FluentAssertions 5.6.0
 	nuget Moq 4.5.3
 	nuget netDumbster 2.0.0.4
 	nuget Newtonsoft.Json 8.0.1

@@ -9,6 +9,7 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.UITests.Configuration.Models;
 using Workspace = kCura.IntegrationPoint.Tests.Core.Workspace;
 
 namespace kCura.IntegrationPoints.UITests.Configuration
@@ -60,8 +61,8 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 		public RelativityUser User { get; private set; }
 
-		public List<FieldObject> WorkspaceMappableFields;
-        public List<FieldObject> WorkspaceAutoMapAllEnabledFields;
+		public List<FieldObject> WorkspaceMappableFields { get; set; }
+		public List<FieldObject> WorkspaceAutoMapAllEnabledFields { get; set; }
 
 		public TestContext()
 		{

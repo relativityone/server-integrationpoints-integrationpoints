@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.UtilityDTO;
 using kCura.IntegrationPoints.UITests.Configuration.Helpers;
+using kCura.IntegrationPoints.UITests.Configuration.Models;
 using kCura.Relativity.Client;
 using Relativity.Services.Interfaces.Field;
 using Relativity.Services.Interfaces.Field.Models;

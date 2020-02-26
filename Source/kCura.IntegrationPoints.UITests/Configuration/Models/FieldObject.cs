@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using kCura.IntegrationPoint.Tests.Core;
-using Relativity.Services;
+﻿using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using Relativity.Services.Objects.DataContracts;
 
-namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
+namespace kCura.IntegrationPoints.UITests.Configuration.Models
 {
 	public class FieldObject
 	{
-        const string FixedLengthText = "Fixed-Length Text";
         public int ArtifactID { get; set; }
 		public string Name { get; set; }
 		public string Type { get; set; }
@@ -19,7 +13,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
 		public bool IsIdentifier { get; set; }
         public bool OpenToAssociations { get; set; }
         public int Length { get; set; }
-        public string DisplayType => Type.Equals(FixedLengthText) ? $"{Type}({Length})" : Type;
+        public string DisplayType => Type.Equals(TestConstants.FieldTypeNames.FIXED_LENGTH_TEXT) ? $"{Type}({Length})" : Type;
         public string DisplayName => IsIdentifier ? $"{Name} [Object Identifier]" : $"{Name} [{DisplayType}]";
         
         public FieldObject(RelativityObject serializedObject)
