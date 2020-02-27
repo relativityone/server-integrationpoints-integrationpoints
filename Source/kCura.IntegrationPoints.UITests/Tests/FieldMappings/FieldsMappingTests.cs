@@ -142,9 +142,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 		public async Task FieldMapping_ShouldAutoMapFieldsFromSavedSearch_WhenAutoMapSavedSearchIsPressed()
 		{
 			//Arrange
-
 			const string savedSearchName = "Orzel 7 search";
-
 			const string controlNumberFieldName = "Control Number";
 			const string fileNameFieldName = "File Name";
 			const string customFieldName = "Orzel 7";
@@ -164,6 +162,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 				.Where(x => savedSearchMappableFields.Exists(fieldName => fieldName == x.Name))
 				.Select(x => x.DisplayName)
 				.ToList();
+
 			List<string> expectedDestinationMappedFields = DestinationContext
 				.WorkspaceMappableFields
 				.Where(x => savedSearchMappableFields.Exists(fieldName => fieldName == x.Name))
@@ -183,6 +182,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 			int sourceFieldID = await SourceFieldManager
 				.CreateFixedLengthFieldAsync(SourceContext.GetWorkspaceId(), createFieldRequest)
 				.ConfigureAwait(false);
+
 			await DestinationFieldManager
 				.CreateFixedLengthFieldAsync(DestinationContext.GetWorkspaceId(), createFieldRequest)
 				.ConfigureAwait(false);
