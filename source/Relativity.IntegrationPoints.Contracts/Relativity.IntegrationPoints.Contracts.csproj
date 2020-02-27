@@ -7,8 +7,13 @@
     <OutputPath>bin\</OutputPath>
     <IsTestProject>false</IsTestProject>
     <IsPackable>true</IsPackable>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 	<NuspecFile>Relativity.IntegrationPoints.Contracts.nuspec</NuspecFile>
 	<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net462|AnyCPU'">
+    <DocumentationFile>bin\Relativity.IntegrationPoints.Contracts.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
