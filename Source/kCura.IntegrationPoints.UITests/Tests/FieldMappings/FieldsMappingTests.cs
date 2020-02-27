@@ -113,12 +113,12 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 			await SourceContext.RetrieveMappableFieldsAsync().ConfigureAwait(false);
             await DestinationContext.RetrieveMappableFieldsAsync().ConfigureAwait(false);
 			SyncFieldMapResults mapAllFieldsUiTestEdition  = new SyncFieldMapResults(SourceContext.WorkspaceAutoMapAllEnabledFields, DestinationContext.WorkspaceAutoMapAllEnabledFields);
-
-            List<string> expectedInOrderSelectedSourceMappableFieldsList =
+            
+			List<string> expectedInOrderSelectedSourceMappableFieldsList =
                 mapAllFieldsUiTestEdition.FieldMapSorted.Select(x =>x.SourceFieldObject.DisplayName).ToList();
 
 			FieldMapModel expectedIdentifierMatchedField =
-                mapAllFieldsUiTestEdition.FieldMap.First(x =>
+                mapAllFieldsUiTestEdition.FieldMap.Single(x =>
                     x.AutoMapMatchType == TestConstants.FieldMapMatchType.IsIdentifier);
             var expectedFieldPairIsIdentifier = new FieldDisplayNamePair(expectedIdentifierMatchedField);
 

@@ -11,10 +11,10 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Models
         public string SourceDisplayName { get; set; }
         public string DestinationDisplayName { get; set; }
 
-        public FieldDisplayNamePair(string _sourceDisplayName, string _destinationDisplayName)
+        public FieldDisplayNamePair(string sourceDisplayName, string destinationDisplayName)
         {
-            SourceDisplayName = _sourceDisplayName;
-            DestinationDisplayName = _destinationDisplayName;
+            SourceDisplayName = sourceDisplayName;
+            DestinationDisplayName = destinationDisplayName;
         }
 
         public FieldDisplayNamePair(FieldMapModel fieldPair)

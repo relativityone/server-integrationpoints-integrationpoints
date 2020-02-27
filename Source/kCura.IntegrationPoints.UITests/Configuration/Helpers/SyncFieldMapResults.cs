@@ -8,10 +8,8 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
 {
     public class SyncFieldMapResults
     {
-        internal List<FieldObject> SourceFieldMapping { get; set;  } 
-        internal List<FieldObject> DestinationFieldMapping { get; set; }
-        public List<FieldMapModel> FieldMap = new List<FieldMapModel>();
-        public List<FieldMapModel> FieldMapSorted { get; set; }
+        public List<FieldMapModel> FieldMap { get; private set; } = new List<FieldMapModel>();
+        public List<FieldMapModel> FieldMapSorted { get; private set; }
 
         public SyncFieldMapResults(List<FieldObject> sourceWorkspaceFields,
             List<FieldObject> destinationWorkspaceFields)
