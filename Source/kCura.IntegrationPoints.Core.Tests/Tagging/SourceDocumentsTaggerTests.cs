@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 				massUpdateHelper: _massUpdateHelperMock.Object);
 
 			//assert
-			action.ShouldThrow<ArgumentNullException>();
+			action.Should().Throw<ArgumentNullException>();
 		}
 
 		[Test]
@@ -65,7 +65,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 				massUpdateHelper: _massUpdateHelperMock.Object);
 
 			//assert
-			action.ShouldThrow<ArgumentNullException>();
+			action.Should().Throw<ArgumentNullException>();
 		}
 
 		[Test]
@@ -78,7 +78,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 				massUpdateHelper: null);
 
 			//assert
-			action.ShouldThrow<ArgumentNullException>();
+			action.Should().Throw<ArgumentNullException>();
 		}
 
 		[Test]
@@ -101,7 +101,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 				_JOB_HISTORY_INSTANCE_ID);
 			
 			//assert
-			action.ShouldThrow<InvalidOperationException>().Which.Should().Be(massUpdateException);
+			action.Should().Throw<InvalidOperationException>().Which.Should().Be(massUpdateException);
 		}
 
 		[Test]
@@ -135,7 +135,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 				destinationWorkspaceInstanceID: _DESTINATION_WORKSPACE_INSTANCE_ID,
 				jobHistoryInstanceID: _JOB_HISTORY_INSTANCE_ID);
 			//assert
-			action.ShouldThrow<ArgumentNullException>();
+			action.Should().Throw<ArgumentNullException>();
 		}
 
 

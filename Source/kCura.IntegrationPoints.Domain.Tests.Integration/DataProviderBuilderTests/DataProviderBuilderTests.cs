@@ -63,7 +63,7 @@ namespace kCura.IntegrationPoints.Domain.Tests.Integration.DataProviderBuilderTe
 
 			// assert
 			getProviderAction
-				.ShouldThrow<IntegrationPointsException>("because provider with this Guid does not exists");
+				.Should().Throw<IntegrationPointsException>("because provider with this Guid does not exists");
 		}
 
 		[IdentifiedTest("984d08b9-3215-40be-8bd8-7b0c2af25daa")]
@@ -94,7 +94,7 @@ namespace kCura.IntegrationPoints.Domain.Tests.Integration.DataProviderBuilderTe
 
 			// act & assert
 			secondCallToDisposeAction
-				.ShouldNotThrow("because provider should be wrapped in safe disposing wrapper");
+				.Should().NotThrow("because provider should be wrapped in safe disposing wrapper");
 		}
 
 		[IdentifiedTest("af127aa7-4c0e-475c-be47-477de69505b5")]
@@ -114,7 +114,7 @@ namespace kCura.IntegrationPoints.Domain.Tests.Integration.DataProviderBuilderTe
 
 			// act & assert
 			secondCallToDisposeAction
-				.ShouldNotThrow("because DataReader returned by GetData should be wrapped in safe disposing wrapper");
+				.Should().NotThrow("because DataReader returned by GetData should be wrapped in safe disposing wrapper");
 		}
 
 		[IdentifiedTest("30ba2466-1160-456a-8304-77efd96aea46")]
@@ -133,7 +133,7 @@ namespace kCura.IntegrationPoints.Domain.Tests.Integration.DataProviderBuilderTe
 
 			// act & assert
 			secondCallToDisposeAction
-				.ShouldNotThrow("because DataReader returned by GetData should be wrapped in safe disposing wrapper");
+				.Should().NotThrow("because DataReader returned by GetData should be wrapped in safe disposing wrapper");
 		}
 	}
 }

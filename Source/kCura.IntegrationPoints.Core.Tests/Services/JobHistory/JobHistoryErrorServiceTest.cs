@@ -136,7 +136,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 
 
 			// act & assert
-			new Action(() => _instance.CommitErrors()).ShouldThrow<Exception>();
+			new Action(() => _instance.CommitErrors()).Should().Throw<Exception>();
 		}
 
 		[Test]

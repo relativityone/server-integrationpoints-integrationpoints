@@ -99,7 +99,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.JobHistory
 
 			allJobHistoryErrorsForJobHistory
 				.Select(x => x.ErrorStatus.Guids.Single())
-				.ShouldAllBeEquivalentTo(ErrorStatusChoices.JobHistoryErrorExpiredGuid);
+				.Should().AllBeEquivalentTo(ErrorStatusChoices.JobHistoryErrorExpiredGuid);
 		}
 
 		private void CreateJobHistoryErrorsForJobHistory(

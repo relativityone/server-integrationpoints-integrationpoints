@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Web.Tests.RelativityServices
 			Action act = () => new RetriableCPHelperProxy(baseCpHelper);
 
 			//assert
-			act.ShouldThrow<BaseCpHelperCannotBeTypeOfRetriableCpHelperException>();
+			act.Should().Throw<BaseCpHelperCannotBeTypeOfRetriableCpHelperException>();
 		}
 
 		[Test]

@@ -50,7 +50,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Extensions
 
 			//assert
 			action
-				.ShouldThrow<IntegrationPointsException>()
+				.Should().Throw<IntegrationPointsException>()
 				.WithMessage(
 					$"{errorMessage}, key: {expectedKey}, value: {expectedValue}"
 				);
@@ -73,7 +73,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Extensions
 			);
 
 			//assert
-			action.ShouldThrow<ArgumentException>();
+			action.Should().Throw<ArgumentException>();
 		}
 	}
 }

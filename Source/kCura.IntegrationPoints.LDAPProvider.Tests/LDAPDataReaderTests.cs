@@ -177,7 +177,7 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
         {
             // Act / Assert
             Action act = () => _reader.GetValue(13);
-            act.ShouldThrow<NullReferenceException>();
+            act.Should().Throw<NullReferenceException>();
         }
 
         [Test]

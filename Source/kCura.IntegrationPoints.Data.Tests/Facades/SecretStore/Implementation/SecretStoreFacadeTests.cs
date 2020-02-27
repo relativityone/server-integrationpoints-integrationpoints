@@ -84,7 +84,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.SecretStore.Implementation
 			Func<Task<Secret>> func = () => _sut.GetAsync(_TEST_SECRET_STORE_PATH);
 
 			//assert
-			func.ShouldThrow<InvalidOperationException>();
+			func.Should().Throw<InvalidOperationException>();
 		}
 
 		[Test]
@@ -100,7 +100,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.SecretStore.Implementation
 			Func<Task> func = () => _sut.SetAsync(_TEST_SECRET_STORE_PATH, new Secret());
 
 			//assert
-			func.ShouldThrow<InvalidOperationException>();
+			func.Should().Throw<InvalidOperationException>();
 		}
 
 		[Test]
@@ -116,7 +116,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.SecretStore.Implementation
 			Func<Task> func = () => _sut.DeleteAsync(_TEST_SECRET_STORE_PATH);
 
 			//assert
-			func.ShouldThrow<InvalidOperationException>();
+			func.Should().Throw<InvalidOperationException>();
 		}
 	}
 }

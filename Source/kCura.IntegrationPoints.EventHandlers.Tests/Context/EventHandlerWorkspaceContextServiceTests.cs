@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Context
 			Action action = () => sut.GetWorkspaceID();
 
 			//assert
-			action.ShouldThrow<NullReferenceException>();
+			action.Should().Throw<NullReferenceException>();
 		}
 
 		[Test]
@@ -64,7 +64,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Context
 			Action action = () => _sut.GetWorkspaceID();
 
 			//assert
-			action.ShouldThrow<Exception>().WithMessage(exception.Message);
+			action.Should().Throw<Exception>().WithMessage(exception.Message);
 		}
 	}
 }

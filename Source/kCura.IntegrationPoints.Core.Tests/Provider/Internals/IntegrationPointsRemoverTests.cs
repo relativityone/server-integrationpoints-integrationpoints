@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider.Internals
             Action deleteAction = () => sut.DeleteIntegrationPointsBySourceProvider(ids);
 
             // assert
-            deleteAction.ShouldThrow<NullReferenceException>();
+            deleteAction.Should().Throw<NullReferenceException>();
         }
 
         [TestCase(new int[] { })]

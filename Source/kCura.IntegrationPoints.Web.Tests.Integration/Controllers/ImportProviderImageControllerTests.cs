@@ -85,7 +85,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Controllers
 			Action action = () => _sut.GetDefaultFileRepo(zeroWorkspaceId);
 
 			// assert
-			action.ShouldThrow<SoapException>()
+			action.Should().Throw<SoapException>()
 				.WithMessage($"Could not retrieve ApplicationID #{zeroWorkspaceId}.");
 		}
 
@@ -100,7 +100,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Controllers
 			Action action = () => _sut.GetDefaultFileRepo(negativeWorkspaceId);
 
 			// assert
-			action.ShouldThrow<SoapException>()
+			action.Should().Throw<SoapException>()
 				.WithMessage($"Could not retrieve ApplicationID #{negativeWorkspaceId}.");
 		}
 

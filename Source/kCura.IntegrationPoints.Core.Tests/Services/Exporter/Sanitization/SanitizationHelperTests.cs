@@ -104,7 +104,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 			Action action = () => _sut.DeserializeAndValidateExportFieldValue<T>("bar", "baz", initialValue);
 
 			// Assert
-			action.ShouldThrow<InvalidExportFieldValueException>()
+			action.Should().Throw<InvalidExportFieldValueException>()
 				.Which.Message.Should()
 				.Contain(typeof(T).Name).And
 				.Contain(initialValue.GetType().Name);
@@ -116,7 +116,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 			Action action = () => _sut.DeserializeAndValidateExportFieldValue<T>("bar", "baz", initialValue);
 
 			// Assert
-			action.ShouldThrow<InvalidExportFieldValueException>()
+			action.Should().Throw<InvalidExportFieldValueException>()
 				.Which.InnerException.Should()
 				.Match(ex => ex is JsonReaderException || ex is JsonSerializationException);
 		}

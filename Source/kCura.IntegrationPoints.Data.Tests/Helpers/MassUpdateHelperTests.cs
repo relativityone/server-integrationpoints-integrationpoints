@@ -59,7 +59,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 				logger: _loggerMock.Object);
 
 			// assert
-			constructor.ShouldThrow<ArgumentNullException>();
+			constructor.Should().Throw<ArgumentNullException>();
 		}
 
 		[Test]
@@ -71,7 +71,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 				logger: null);
 
 			// assert
-			constructor.ShouldThrow<ArgumentNullException>();
+			constructor.Should().Throw<ArgumentNullException>();
 		}
 
 		[Test]
@@ -84,7 +84,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 					_massUpdateRepositoryMock.Object);
 
 			// assert
-			updateArtifactsFromScratchTableAction.ShouldThrow<ArgumentNullException>();
+			updateArtifactsFromScratchTableAction.Should().Throw<ArgumentNullException>();
 		}
 
 		[Test]
@@ -109,7 +109,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 
 			// assert
 			updateArtifactsAction
-				.ShouldThrow<IntegrationPointsException>()
+				.Should().Throw<IntegrationPointsException>()
 				.WithMessage(MassEditErrors.SCRATCH_TABLE_READ_ERROR);
 		}
 
@@ -183,7 +183,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 
 			// assert
 			updateDocumentsAction
-				.ShouldThrow<IntegrationPointsException>()
+				.Should().Throw<IntegrationPointsException>()
 				.WithMessage(expectedExceptionMessage);
 		}
 
@@ -263,7 +263,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 					_massUpdateRepositoryMock.Object);
 
 			// assert
-			updateArtifactsFromScratchTableAction.ShouldThrow<ArgumentNullException>();
+			updateArtifactsFromScratchTableAction.Should().Throw<ArgumentNullException>();
 		}
 
 		[TestCase(0)]
@@ -284,7 +284,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 
 			// assert
 			massUpdateAction
-				.ShouldThrow<IntegrationPointsException>()
+				.Should().Throw<IntegrationPointsException>()
 				.WithMessage(expectedExceptionMessage);
 		}
 
@@ -462,7 +462,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 			Func<Task> massUpdateAction)
 		{
 			massUpdateAction
-				.ShouldThrow<IntegrationPointsException>()
+				.Should().Throw<IntegrationPointsException>()
 				.WithMessage(MassEditErrors.OBJECT_MANAGER_ERROR);
 			for (int batchNumber = batchWithMassUpdateFailure + 1; batchNumber < artifactsIDsBatches.Count; batchNumber++)
 			{

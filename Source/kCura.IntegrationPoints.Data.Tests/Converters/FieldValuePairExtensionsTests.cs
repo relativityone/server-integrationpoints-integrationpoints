@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Converters
 			Action convertAction = () => input.ToArtifactFieldDTO();
 
 			// assert
-			convertAction.ShouldThrow<ArgumentException>();
+			convertAction.Should().Throw<ArgumentException>();
 		}
 
 		[Test]

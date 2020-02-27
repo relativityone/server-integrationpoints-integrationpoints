@@ -68,7 +68,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.SecretStore.Implementation
 			Func<Task> setAction = () => _sut.SetAsync(_TEST_SECRET_STORE_PATH, secret);
 
 			// assert
-			setAction.ShouldNotThrow();
+			setAction.Should().NotThrow();
 		}
 
 		[Test]
@@ -83,7 +83,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.SecretStore.Implementation
 			Func<Task> setAction = () => _sut.DeleteAsync(_TEST_SECRET_STORE_PATH);
 
 			// assert
-			setAction.ShouldNotThrow();
+			setAction.Should().NotThrow();
 		}
 	}
 }

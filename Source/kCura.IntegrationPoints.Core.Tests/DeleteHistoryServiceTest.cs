@@ -73,7 +73,7 @@ namespace kCura.IntegrationPoints.Core.Tests
             Action deleteAction = () => _sut.DeleteHistoriesAssociatedWithIPs(null);
 
             // assert
-            deleteAction.ShouldThrow<ArgumentNullException>("because input list was empty");
+            deleteAction.Should().Throw<ArgumentNullException>("because input list was empty");
         }
     }
 }

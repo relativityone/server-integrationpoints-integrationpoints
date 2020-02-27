@@ -57,7 +57,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 				.ConfigureAwait(false)).ToList();
 
 			// Assert
-			artifactIds.ShouldAllBeEquivalentTo(_RDO_STUB_ARTIFACT_ID);
+			artifactIds.Should().AllBeEquivalentTo(_RDO_STUB_ARTIFACT_ID);
 			artifactIds.Should().HaveCount(_OBJECT_COUNT);
 
 			VerifyQueryCall(Times.Once);

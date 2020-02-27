@@ -89,7 +89,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			Action action = () => GetTempTable(_tableName);
 			string expectedErrorMessage = $"An error occurred trying to query Temp Table:{ _tableName }. Exception: SQL Statement Failed";
 			//ACT && ASSERT
-			action.ShouldThrow<Exception>().Which.Message.Should().Be(expectedErrorMessage);
+			action.Should().Throw<Exception>().Which.Message.Should().Be(expectedErrorMessage);
 		}
 
 		[IdentifiedTestCase("fb180ba6-65ef-4d9f-b8aa-f5e11812a2e3", 5, 1)]

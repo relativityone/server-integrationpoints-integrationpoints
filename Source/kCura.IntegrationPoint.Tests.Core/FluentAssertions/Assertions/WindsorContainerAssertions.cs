@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoint.Tests.Core.FluentAssertions.Assertions
             Subject = instance;
         }
 
-        protected override string Context => nameof(IWindsorContainer);
+        //protected override string Context => nameof(IWindsorContainer);
 
         public AndConstraint<WindsorContainerAssertions> ResolveWithoutThrowing<T>(
             string because = "",
@@ -203,5 +203,7 @@ namespace kCura.IntegrationPoint.Tests.Core.FluentAssertions.Assertions
                 return null;
             }
         }
-	}
+
+        protected override string Identifier { get; }
+    }
 }

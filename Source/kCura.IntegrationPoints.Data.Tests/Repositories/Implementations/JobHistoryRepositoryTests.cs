@@ -69,7 +69,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			Action action = () =>_sut.MarkJobAsValidationFailed(_jobHistoryID, _integrationPointID, _jobEndTime);
 
 			//Assert
-			action.ShouldThrow<Exception>();
+			action.Should().Throw<Exception>();
 		}
 
 		[Test]
@@ -82,7 +82,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			Action action = () => _sut.MarkJobAsFailed(_jobHistoryID, _integrationPointID, _jobEndTime);
 
 			//Assert
-			action.ShouldThrow<Exception>();
+			action.Should().Throw<Exception>();
 		}
 	}
 }

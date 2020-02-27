@@ -89,7 +89,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Context
 			Action getUserIDAction = () => sut.GetUserID();
 
 			// assert
-			getUserIDAction.ShouldThrow<UserContextNotFoundException>(
+			getUserIDAction.Should().Throw<UserContextNotFoundException>(
 				"because user context is not present");
 		}
 
@@ -146,7 +146,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Context
 			Action getWorkspaceUserIDAction = () => sut.GetWorkspaceUserID();
 
 			// assert
-			getWorkspaceUserIDAction.ShouldThrow<UserContextNotFoundException>(
+			getWorkspaceUserIDAction.Should().Throw<UserContextNotFoundException>(
 				"because user context is not present");
 		}
 

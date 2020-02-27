@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			);
 
 			//assert
-			encryptAction.ShouldThrow<ArgumentException>().WithMessage("Secret path cannot be null");
+			encryptAction.Should().Throw<ArgumentException>().WithMessage("Secret path cannot be null");
 		}
 
 		[Test]
@@ -97,7 +97,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			Func<Task> encryptAction = () => _sut.EncryptAsync(_testSecretPath, expectedSecretData);
 
 			//assert
-			encryptAction.ShouldThrow<Exception>().Which.Should().Be(exception);
+			encryptAction.Should().Throw<Exception>().Which.Should().Be(exception);
 		}
 
 		[Test]
@@ -122,7 +122,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				.ConfigureAwait(false);
 
 			//assert
-			secretData.ShouldAllBeEquivalentTo(expectedSecretData);
+			secretData.Should().BeEquivalentTo(expectedSecretData);
 
 			_secretStoreMock.Verify(x => x.GetAsync(
 				It.Is<string>(secretPath => secretPath == _testSecretPath.ToString())
@@ -136,7 +136,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			Func<Task> decryptAction = () => _sut.DecryptAsync(secretPath: null);
 
 			//assert
-			decryptAction.ShouldThrow<ArgumentException>().WithMessage("Secret path cannot be null");
+			decryptAction.Should().Throw<ArgumentException>().WithMessage("Secret path cannot be null");
 		}
 
 		[Test]
@@ -177,7 +177,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			Func<Task> deleteAction = () => _sut.DeleteAsync(secretPath: null);
 
 			//assert
-			deleteAction.ShouldThrow<ArgumentException>().WithMessage("Secret path cannot be null");
+			deleteAction.Should().Throw<ArgumentException>().WithMessage("Secret path cannot be null");
 		}
 
 		[Test]
@@ -193,7 +193,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			Func<Task> deleteAction = () => _sut.DeleteAsync(_testSecretPath);
 
 			//assert
-			deleteAction.ShouldThrow<Exception>().Which.Should().Be(exception);
+			deleteAction.Should().Throw<Exception>().Which.Should().Be(exception);
 		}
 
 		[Test]
@@ -224,7 +224,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			Func<Task> deleteAction = () => _sut.DeleteAllRipSecretsFromAllWorkspacesAsync();
 
 			//assert
-			deleteAction.ShouldThrow<Exception>().Which.Should().Be(exception);
+			deleteAction.Should().Throw<Exception>().Which.Should().Be(exception);
 		}
 
 
@@ -257,7 +257,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			Func<Task> deleteAction = () => _sut.DeleteAllRipSecretsFromWorkspaceAsync(_WORKSPACE_ID);
 
 			//assert
-			deleteAction.ShouldThrow<Exception>().Which.Should().Be(exception);
+			deleteAction.Should().Throw<Exception>().Which.Should().Be(exception);
 		}
 
 		[Test]
@@ -294,7 +294,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			);
 
 			//assert
-			deleteAction.ShouldThrow<Exception>().Which.Should().Be(exception);
+			deleteAction.Should().Throw<Exception>().Which.Should().Be(exception);
 		}
 	}
 }

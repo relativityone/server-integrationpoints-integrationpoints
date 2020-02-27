@@ -58,7 +58,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 				await sut.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
 
 			// Assert
-			action.ShouldThrow<InvalidExportFieldValueException>()
+			action.Should().Throw<InvalidExportFieldValueException>()
 				.Which.Message.Should()
 				.Contain(typeof(RelativityObjectValue).Name);
 		}
@@ -73,7 +73,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 			Func<Task> action = async () => await sut.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
 
 			// Assert
-			action.ShouldThrow<IntegrationPointsException>()
+			action.Should().Throw<IntegrationPointsException>()
 				.Which.Message.Should().MatchRegex($" {expectedViolators}\\.$");
 		}
 

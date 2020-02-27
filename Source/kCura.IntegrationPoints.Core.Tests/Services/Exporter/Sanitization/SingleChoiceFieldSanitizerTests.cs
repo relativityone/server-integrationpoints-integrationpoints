@@ -67,7 +67,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 			Func<Task> action = async () => await sut.SanitizeAsync(0, "foo", "bar", "bang", initialValue).ConfigureAwait(false);
 
 			// Assert
-			action.ShouldThrow<InvalidExportFieldValueException>()
+			action.Should().Throw<InvalidExportFieldValueException>()
 				.Which.Message.Should()
 					.Contain(typeof(ChoiceDto).Name);
 		}

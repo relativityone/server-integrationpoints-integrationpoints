@@ -98,7 +98,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services.JobHistory
 			{
 				int[] docs = result.Documents;
 			};
-			getDocuments.ShouldThrow<FieldNotFoundException>();
+			getDocuments.Should().Throw<FieldNotFoundException>();
 
 			Action getOtherFields = () =>
 			{
@@ -119,12 +119,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services.JobHistory
 				string fileSize = result.FilesSize;
 				string overwrite = result.Overwrite;
 			};
-			getOtherFields.ShouldNotThrow<FieldNotFoundException>();
+			getOtherFields.Should().NotThrow<FieldNotFoundException>();
 
 			result.ArtifactId.Should().Be(jobHistoryWithAllFieldsFetched.ArtifactId);
 			result.Name.Should().Be(jobHistoryWithAllFieldsFetched.Name);
 			result.JobID.Should().Be(jobHistoryWithAllFieldsFetched.JobID);
-			result.IntegrationPoint.ShouldBeEquivalentTo(jobHistoryWithAllFieldsFetched.IntegrationPoint);
+			result.IntegrationPoint.Should().BeEquivalentTo(jobHistoryWithAllFieldsFetched.IntegrationPoint);
 			result.JobStatus.ArtifactID.Should().Be(jobHistoryWithAllFieldsFetched.JobStatus.ArtifactID);
 			result.JobStatus.Name.Should().Be(jobHistoryWithAllFieldsFetched.JobStatus.Name);
 			result.ItemsTransferred.Should().Be(jobHistoryWithAllFieldsFetched.ItemsTransferred);
@@ -134,7 +134,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services.JobHistory
 			result.BatchInstance.Should().Be(jobHistoryWithAllFieldsFetched.BatchInstance);
 			result.DestinationWorkspace.Should().Be(jobHistoryWithAllFieldsFetched.DestinationWorkspace);
 			result.TotalItems.Should().Be(jobHistoryWithAllFieldsFetched.TotalItems);
-			result.DestinationWorkspaceInformation.ShouldBeEquivalentTo(jobHistoryWithAllFieldsFetched.DestinationWorkspaceInformation);
+			result.DestinationWorkspaceInformation.Should().BeEquivalentTo(jobHistoryWithAllFieldsFetched.DestinationWorkspaceInformation);
 			result.DestinationInstance.Should().Be(jobHistoryWithAllFieldsFetched.DestinationInstance);
 			result.FilesSize.Should().Be(jobHistoryWithAllFieldsFetched.FilesSize);
 			result.Overwrite.Should().Be(jobHistoryWithAllFieldsFetched.Overwrite);

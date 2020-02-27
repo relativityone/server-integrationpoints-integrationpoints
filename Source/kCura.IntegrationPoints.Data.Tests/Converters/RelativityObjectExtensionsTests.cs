@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Converters
 
 			// assert
 			string expectedErrorMessage = $"{nameof(RelativityObject)} does not represent valid {nameof(WorkspaceDTO)} - missing fields values";
-			convertAction.ShouldThrow<ArgumentException>().WithMessage(expectedErrorMessage);
+			convertAction.Should().Throw<ArgumentException>().WithMessage(expectedErrorMessage);
 		}
 
 		[Test]
@@ -82,7 +82,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Converters
 			// assert
 			string expectedErrorMessage =
 				$"{nameof(RelativityObject)} does not represent valid {nameof(WorkspaceDTO)} - missing '{WorkspaceFieldsConstants.NAME_FIELD}' value";
-			convertAction.ShouldThrow<ArgumentException>().WithMessage(expectedErrorMessage);
+			convertAction.Should().Throw<ArgumentException>().WithMessage(expectedErrorMessage);
 		}
 
 		[Test]
@@ -104,7 +104,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Converters
 			// assert
 			string expectedErrorMessage =
 				$"{nameof(RelativityObject)} does not represent valid {nameof(WorkspaceDTO)} - wrong '{WorkspaceFieldsConstants.NAME_FIELD}' type";
-			convertAction.ShouldThrow<ArgumentException>().WithMessage(expectedErrorMessage);
+			convertAction.Should().Throw<ArgumentException>().WithMessage(expectedErrorMessage);
 		}
 
 		[Test]
@@ -131,7 +131,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Converters
 			// assert
 			string expectedErrorMessage =
 				$"{nameof(RelativityObject)} does not represent valid {nameof(WorkspaceDTO)} - duplicated '{WorkspaceFieldsConstants.NAME_FIELD}' field";
-			convertAction.ShouldThrow<ArgumentException>().WithMessage(expectedErrorMessage);
+			convertAction.Should().Throw<ArgumentException>().WithMessage(expectedErrorMessage);
 		}
 
 		[Test]
@@ -267,7 +267,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Converters
 			// assert
 			string expectedErrorMessage =
 				$"{nameof(RelativityObject)} does not represent valid {nameof(SavedSearchDTO)} - missing fields values";
-			convertAction.ShouldThrow<ArgumentException>().WithMessage(expectedErrorMessage);
+			convertAction.Should().Throw<ArgumentException>().WithMessage(expectedErrorMessage);
 		}
 
 		[Test]
@@ -296,7 +296,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Converters
 			// assert
 			string expectedErrorMessage =
 				$"{nameof(RelativityObject)} does not represent valid {nameof(SavedSearchDTO)} - missing '{SavedSearchFieldsConstants.NAME_FIELD}' value";
-			convertAction.ShouldThrow<ArgumentException>().WithMessage(expectedErrorMessage);
+			convertAction.Should().Throw<ArgumentException>().WithMessage(expectedErrorMessage);
 		}
 
 		[Test]
@@ -325,7 +325,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Converters
 			// assert
 			string expectedErrorMessage =
 				$"{nameof(RelativityObject)} does not represent valid {nameof(SavedSearchDTO)} - missing '{SavedSearchFieldsConstants.OWNER_FIELD}' value";
-			convertAction.ShouldThrow<ArgumentException>().WithMessage(expectedErrorMessage);
+			convertAction.Should().Throw<ArgumentException>().WithMessage(expectedErrorMessage);
 		}
 
 		[Test]
@@ -356,7 +356,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Converters
 			// assert
 			string expectedErrorMessage =
 				$"{nameof(RelativityObject)} does not represent valid {nameof(SavedSearchDTO)} - wrong '{SavedSearchFieldsConstants.NAME_FIELD}' type";
-			convertAction.ShouldThrow<ArgumentException>().WithMessage(expectedErrorMessage);
+			convertAction.Should().Throw<ArgumentException>().WithMessage(expectedErrorMessage);
 		}
 
 		[Test]
@@ -389,7 +389,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Converters
 			// assert
 			string expectedErrorMessage =
 				$"{nameof(RelativityObject)} does not represent valid {nameof(SavedSearchDTO)} - duplicated '{SavedSearchFieldsConstants.NAME_FIELD}' field";
-			convertAction.ShouldThrow<ArgumentException>().WithMessage(expectedErrorMessage);
+			convertAction.Should().Throw<ArgumentException>().WithMessage(expectedErrorMessage);
 		}
 
 		[Test]
@@ -420,7 +420,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Converters
 			// assert
 			string expectedErrorMessage =
 				$"{nameof(RelativityObject)} does not represent valid {nameof(SavedSearchDTO)} - wrong '{SavedSearchFieldsConstants.OWNER_FIELD}' type";
-			convertAction.ShouldThrow<ArgumentException>().WithMessage(expectedErrorMessage);
+			convertAction.Should().Throw<ArgumentException>().WithMessage(expectedErrorMessage);
 		}
 
 		[Test]
@@ -453,7 +453,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Converters
 			// assert
 			string expectedErrorMessage =
 				$"{nameof(RelativityObject)} does not represent valid {nameof(SavedSearchDTO)} - duplicated '{SavedSearchFieldsConstants.OWNER_FIELD}' field";
-			convertAction.ShouldThrow<ArgumentException>().WithMessage(expectedErrorMessage);
+			convertAction.Should().Throw<ArgumentException>().WithMessage(expectedErrorMessage);
 		}
 
 		[Test]
@@ -481,7 +481,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Converters
 			// assert
 			string expectedErrorMessage =
 				$"{nameof(RelativityObject)} does not represent valid {nameof(SavedSearchDTO)} - missing '{nameof(RelativityObject.ParentObject)}' value";
-			convertAction.ShouldThrow<ArgumentException>().WithMessage(expectedErrorMessage);
+			convertAction.Should().Throw<ArgumentException>().WithMessage(expectedErrorMessage);
 		}
 
 		[Test]
@@ -580,7 +580,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Converters
 			// assert
 			string expectedErrorMessage =
 				$"{nameof(RelativityObject)} does not represent valid {nameof(FederatedInstanceDto)} - missing fields values";
-			convertAction.ShouldThrow<ArgumentException>().WithMessage(expectedErrorMessage);
+			convertAction.Should().Throw<ArgumentException>().WithMessage(expectedErrorMessage);
 		}
 
 		[Test]
@@ -606,7 +606,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Converters
 			// assert
 			string expectedErrorMessage =
 				$"{nameof(RelativityObject)} does not represent valid {nameof(FederatedInstanceDto)} - wrong '{FederatedInstanceFieldsConstants.NAME_FIELD}' type";
-			convertAction.ShouldThrow<ArgumentException>().WithMessage(expectedErrorMessage);
+			convertAction.Should().Throw<ArgumentException>().WithMessage(expectedErrorMessage);
 		}
 
 		[Test]
@@ -631,7 +631,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Converters
 			// assert
 			string expectedErrorMessage =
 				$"{nameof(RelativityObject)} does not represent valid {nameof(FederatedInstanceDto)} - missing '{FederatedInstanceFieldsConstants.NAME_FIELD}' value";
-			convertAction.ShouldThrow<ArgumentException>().WithMessage(expectedErrorMessage);
+			convertAction.Should().Throw<ArgumentException>().WithMessage(expectedErrorMessage);
 		}
 
 		[Test]
@@ -659,7 +659,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Converters
 			// assert
 			string expectedErrorMessage =
 				$"{nameof(RelativityObject)} does not represent valid {nameof(FederatedInstanceDto)} - duplicated '{FederatedInstanceFieldsConstants.NAME_FIELD}' field";
-			convertAction.ShouldThrow<ArgumentException>().WithMessage(expectedErrorMessage);
+			convertAction.Should().Throw<ArgumentException>().WithMessage(expectedErrorMessage);
 		}
 
 		[Test]
@@ -685,7 +685,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Converters
 			// assert
 			string expectedErrorMessage =
 				$"{nameof(RelativityObject)} does not represent valid {nameof(FederatedInstanceDto)} - wrong '{FederatedInstanceFieldsConstants.INSTANCE_URL_FIELD}' type";
-			convertAction.ShouldThrow<ArgumentException>().WithMessage(expectedErrorMessage);
+			convertAction.Should().Throw<ArgumentException>().WithMessage(expectedErrorMessage);
 		}
 
 		[Test]
@@ -713,7 +713,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Converters
 			// assert
 			string expectedErrorMessage =
 				$"{nameof(RelativityObject)} does not represent valid {nameof(FederatedInstanceDto)} - duplicated '{FederatedInstanceFieldsConstants.INSTANCE_URL_FIELD}' field";
-			convertAction.ShouldThrow<ArgumentException>().WithMessage(expectedErrorMessage);
+			convertAction.Should().Throw<ArgumentException>().WithMessage(expectedErrorMessage);
 		}
 
 		[Test]
@@ -738,7 +738,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Converters
 			// assert
 			string expectedErrorMessage =
 				$"{nameof(RelativityObject)} does not represent valid {nameof(FederatedInstanceDto)} - missing '{FederatedInstanceFieldsConstants.INSTANCE_URL_FIELD}' value";
-			convertAction.ShouldThrow<ArgumentException>().WithMessage(expectedErrorMessage);
+			convertAction.Should().Throw<ArgumentException>().WithMessage(expectedErrorMessage);
 		}
 
 		[Test]

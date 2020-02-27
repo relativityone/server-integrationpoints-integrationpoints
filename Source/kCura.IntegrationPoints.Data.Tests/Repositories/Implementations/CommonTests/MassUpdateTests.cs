@@ -115,7 +115,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations.Common
 					Enumerable.Empty<FieldUpdateRequestDto>());
 
 			// assert
-			massUpdateAction.ShouldThrow<IntegrationPointsException>()
+			massUpdateAction.Should().Throw<IntegrationPointsException>()
 				.Which.Should().Be(exceptionToThrow);
 		}
 

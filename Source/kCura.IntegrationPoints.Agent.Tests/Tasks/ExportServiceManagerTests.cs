@@ -701,7 +701,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			Action action = () => _instance.Execute(_job);
 
 			// ASSERT
-			action.ShouldThrow<PermissionException>();
+			action.Should().Throw<PermissionException>();
 
 			_agentValidator.Received(1).Validate(_integrationPoint, _job.SubmittedBy);
 
@@ -722,7 +722,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			Action action = () =>_instance.Execute(_job);
 
 			// ASSERT
-			action.ShouldThrow<IntegrationPointValidationException>();
+			action.Should().Throw<IntegrationPointValidationException>();
 
 			_agentValidator.Received(1).Validate(_integrationPoint, _job.SubmittedBy);
 			_jobHistoryService.Received(2).UpdateRdo(Arg.Is<JobHistory>(x => x == _jobHistory));

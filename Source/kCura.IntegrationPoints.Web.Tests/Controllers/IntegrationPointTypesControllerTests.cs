@@ -90,7 +90,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
             Action act = () => controller.Get();
 
             // ASSERT
-            act.ShouldThrow<ArgumentNullException>();
+            act.Should().Throw<ArgumentNullException>();
         }
 
         [Test]
@@ -106,7 +106,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
             Action act = () => controller.Get();
 
             // ASSERT
-            act.ShouldThrow<Exception>();
+            act.Should().Throw<Exception>();
         }
 
         private static IntegrationPointTypesController CreateController(IIntegrationPointTypeService service)

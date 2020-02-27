@@ -205,7 +205,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			);
 
 			//assert
-			action.ShouldThrow<ArgumentNullException>().WithMessage("Value cannot be null.\r\nParameter name: documentIDs");
+			action.Should().Throw<ArgumentNullException>().WithMessage("Value cannot be null.\r\nParameter name: documentIDs");
 			VerifyIfInstrumentationHasNeverBeenCalled<ProductionDocumentImageResponse[]>(
 				operationName: nameof(ISearchManager.RetrieveImagesForProductionDocuments)
 			);
@@ -252,7 +252,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			);
 
 			//assert
-			action.ShouldThrow<InvalidOperationException>();
+			action.Should().Throw<InvalidOperationException>();
 		}
 
 		[Test]
@@ -293,7 +293,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			);
 
 			//assert
-			action.ShouldThrow<ArgumentNullException>().WithMessage("Value cannot be null.\r\nParameter name: documentIDs");
+			action.Should().Throw<ArgumentNullException>().WithMessage("Value cannot be null.\r\nParameter name: documentIDs");
 			VerifyIfInstrumentationHasNeverBeenCalled<DocumentImageResponse[]>(
 				operationName: nameof(ISearchManager.RetrieveImagesForDocuments)
 			);
@@ -331,7 +331,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			);
 
 			//assert
-			action.ShouldThrow<InvalidOperationException>();
+			action.Should().Throw<InvalidOperationException>();
 		}
 
 		[Test]
@@ -372,7 +372,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			);
 
 			// assert
-			action.ShouldThrow<ArgumentNullException>().WithMessage("Value cannot be null.\r\nParameter name: documentIDs");
+			action.Should().Throw<ArgumentNullException>().WithMessage("Value cannot be null.\r\nParameter name: documentIDs");
 			VerifyIfInstrumentationHasNeverBeenCalled<DocumentImageResponse[]>(
 				operationName: nameof(ISearchManager.RetrieveNativesForSearch)
 			);
@@ -413,7 +413,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			);
 
 			//assert
-			action.ShouldThrow<InvalidOperationException>();
+			action.Should().Throw<InvalidOperationException>();
 		}
 
 		private void AssertIfListsAreSameAsExpected(List<string> expectedDataSet, List<string> currentDataSet)

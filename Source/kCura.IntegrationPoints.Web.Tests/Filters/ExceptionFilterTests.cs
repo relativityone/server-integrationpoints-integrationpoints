@@ -64,7 +64,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Filters
 				loggerFactory: _loggerFactoryMock.Object);
 
 			// assert
-			constructor.ShouldThrow<ArgumentNullException>();
+			constructor.Should().Throw<ArgumentNullException>();
 		}
 
 		[Test]
@@ -77,7 +77,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Filters
 				loggerFactory: _loggerFactoryMock.Object);
 
 			// assert
-			constructor.ShouldThrow<ArgumentNullException>();
+			constructor.Should().Throw<ArgumentNullException>();
 		}
 
 		[Test]
@@ -90,7 +90,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Filters
 				loggerFactory: null);
 
 			// assert
-			constructor.ShouldThrow<ArgumentNullException>();
+			constructor.Should().Throw<ArgumentNullException>();
 		}
 
 		[Test]

@@ -60,7 +60,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			Func<Task<string>> functionToExecute = () => sut.ExecuteWithRetriesAsync(operationToExecute);
 
 			// assert
-			functionToExecute.ShouldThrow<InvalidOperationException>();
+			functionToExecute.Should().Throw<InvalidOperationException>();
 		}
 
 		[Test]
@@ -78,7 +78,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			Func<Task<string>> functionToExecute = () => sut.ExecuteWithRetriesAsync(operationToExecute);
 
 			// assert
-			functionToExecute.ShouldThrowExactly<Exception>()
+			functionToExecute.Should().ThrowExactly<Exception>()
 				.Where(ex => ex == expectedException);
 		}
 
@@ -130,7 +130,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			Func<Task> functionToExecute = () => sut.ExecuteWithRetriesAsync(operationToExecute);
 
 			// assert
-			functionToExecute.ShouldThrow<InvalidOperationException>();
+			functionToExecute.Should().Throw<InvalidOperationException>();
 		}
 
 		[Test]
@@ -173,7 +173,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			Func<Task> retryAction = () => sut.ExecuteWithRetriesAsync(operationToExecute);
 
 			// assert
-			retryAction.ShouldNotThrow();
+			retryAction.Should().NotThrow();
 		}
 
 		[TestCase(1, (ushort)0)]
@@ -193,7 +193,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			Func<Task> functionToExecute = () => sut.ExecuteWithRetriesAsync(operationToExecute);
 
 			// assert
-			functionToExecute.ShouldThrow<InvalidOperationException>();
+			functionToExecute.Should().Throw<InvalidOperationException>();
 		}
 
 		[Test]
@@ -211,7 +211,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			Func<Task> functionToExecute = () => sut.ExecuteWithRetriesAsync(operationToExecute);
 
 			// assert
-			functionToExecute.ShouldThrowExactly<Exception>()
+			functionToExecute.Should().ThrowExactly<Exception>()
 				.Where(ex => ex == expectedException);
 		}
 
@@ -229,7 +229,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			Func<Task> retryAction = () => sut.ExecuteWithRetriesAsync(operationToExecute);
 
 			// assert
-			retryAction.ShouldNotThrow();
+			retryAction.Should().NotThrow();
 		}
 
 		[Test]
@@ -246,7 +246,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			Func<Task> retryAction = () => sut.ExecuteWithRetriesAsync(operationToExecute);
 
 			// assert
-			retryAction.ShouldNotThrow();
+			retryAction.Should().NotThrow();
 		}
 
 		[Test]
@@ -263,7 +263,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			Func<Task> functionToExecute = () => sut.ExecuteWithRetriesAsync(operationToExecute);
 
 			// assert
-			functionToExecute.ShouldThrow<InvalidOperationException>();
+			functionToExecute.Should().Throw<InvalidOperationException>();
 		}
 
 		[Test]
@@ -323,7 +323,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			Func<Task<string>> functionToExecute = () => sut.ExecuteWithRetries(operationToExecute);
 
 			// assert
-			functionToExecute.ShouldThrow<InvalidOperationException>();
+			functionToExecute.Should().Throw<InvalidOperationException>();
 		}
 
 		[Test]
@@ -341,7 +341,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			Func<Task<string>> functionToExecute = () => sut.ExecuteWithRetries(operationToExecute);
 
 			// assert
-			functionToExecute.ShouldThrowExactly<Exception>()
+			functionToExecute.Should().ThrowExactly<Exception>()
 				.Where(ex => ex == expectedException);
 		}
 
@@ -393,7 +393,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			Func<Task> functionToExecute = () => sut.ExecuteWithRetries(operationToExecute);
 
 			// assert
-			functionToExecute.ShouldThrow<InvalidOperationException>();
+			functionToExecute.Should().Throw<InvalidOperationException>();
 		}
 
 		[Test]
@@ -436,7 +436,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			Action retryAction = () => sut.ExecuteWithRetries(operationToExecute);
 
 			// assert
-			retryAction.ShouldNotThrow();
+			retryAction.Should().NotThrow();
 		}
 
 		[TestCase(1, (ushort)0)]
@@ -456,7 +456,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			Action functionToExecute = () => sut.ExecuteWithRetries(operationToExecute);
 
 			// assert
-			functionToExecute.ShouldThrow<InvalidOperationException>();
+			functionToExecute.Should().Throw<InvalidOperationException>();
 		}
 
 		[Test]
@@ -474,7 +474,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			Action functionToExecute = () => sut.ExecuteWithRetries(operationToExecute);
 
 			// assert
-			functionToExecute.ShouldThrowExactly<Exception>()
+			functionToExecute.Should().ThrowExactly<Exception>()
 				.Where(ex => ex == expectedException);
 		}
 
@@ -492,7 +492,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			Action retryAction = () => sut.ExecuteWithRetries(operationToExecute);
 
 			// assert
-			retryAction.ShouldNotThrow();
+			retryAction.Should().NotThrow();
 		}
 
 		[Test]
@@ -509,7 +509,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			Action retryAction = () => sut.ExecuteWithRetries(operationToExecute);
 
 			// assert
-			retryAction.ShouldNotThrow();
+			retryAction.Should().NotThrow();
 		}
 
 		[Test]
@@ -526,7 +526,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			Action functionToExecute = () => sut.ExecuteWithRetries(operationToExecute);
 
 			// assert
-			functionToExecute.ShouldThrow<InvalidOperationException>();
+			functionToExecute.Should().Throw<InvalidOperationException>();
 		}
 
 		[Test]

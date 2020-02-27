@@ -125,7 +125,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 					docIdentifierValues: new[] { string.Empty });
 
 			// assert
-			retrieveAction.ShouldThrow<Exception>()
+			retrieveAction.Should().Throw<Exception>()
 				.Which.Should().Be(exceptionToThrow);
 		}
 
@@ -331,7 +331,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				.RetrieveDocumentsAsync(Enumerable.Empty<int>(), new HashSet<int>());
 
 			// assert
-			retrieveDocumentsAction.ShouldThrow<Exception>()
+			retrieveDocumentsAction.Should().Throw<Exception>()
 				.Which.Should().Be(exceptionToThrow);
 		}
 
@@ -351,7 +351,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				.RetrieveDocumentsAsync(Enumerable.Empty<int>(), new HashSet<string>());
 
 			// assert
-			retrieveDocumentsAction.ShouldThrow<Exception>()
+			retrieveDocumentsAction.Should().Throw<Exception>()
 				.Which.Should().Be(exceptionToThrow);
 		}
 
@@ -432,7 +432,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				.RetrieveDocumentByIdentifierPrefixAsync(string.Empty, string.Empty);
 
 			// assert
-			retrieveDocumentsAction.ShouldThrow<Exception>()
+			retrieveDocumentsAction.Should().Throw<Exception>()
 				.Which.Should().Be(exceptionToThrow);
 		}
 

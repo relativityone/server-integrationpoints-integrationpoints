@@ -111,7 +111,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Authentication
 
 			//Assert
 			action
-				.ShouldThrow<InvalidOperationException>()
+				.Should().Throw<InvalidOperationException>()
 				.WithMessage($"Failed to retrieve OAuth2Client for user with id: {_contextUserId}")
 				.WithInnerExceptionExactly<OutOfMemoryException>();
 			_loggerFake
@@ -132,7 +132,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Authentication
 
 			//Assert
 			action
-				.ShouldThrow<InvalidOperationException>()
+				.Should().Throw<InvalidOperationException>()
 				.WithMessage($"Failed to retrieve OAuth2Client for user with id: {_contextUserId}")
 				.WithInnerExceptionExactly<OutOfMemoryException>();
 			_loggerFake

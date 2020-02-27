@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.OldBatchesCleanup
 			Func<Task> action = () => _sut.TryToDeleteOldBatchesInWorkspaceAsync(WORKSPACE_ID);
 
 			// Assert
-			action.ShouldNotThrow();
+			action.Should().NotThrow();
 		}
 
 		[Test]

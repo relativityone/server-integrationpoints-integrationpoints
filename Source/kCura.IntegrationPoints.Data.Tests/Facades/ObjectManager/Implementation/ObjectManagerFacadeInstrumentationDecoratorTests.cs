@@ -441,7 +441,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 			Func<Task> executeMethodAction = () => compiledMethodToTest(_sut);
 
 			// assert
-			executeMethodAction.ShouldThrow<Exception>()
+			executeMethodAction.Should().Throw<Exception>()
 				.Which
 				.Should().Be(exception);
 		}
@@ -460,8 +460,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 			Func<Task> executeMethodAction = () => compiledMethodToTest(_sut);
 
 			// assert
-			executeMethodAction.ShouldThrow<IntegrationPointsException>()
-				.WithInnerException<ServiceNotFoundException>()
+			executeMethodAction.Should().Throw<IntegrationPointsException>()
 				.And.InnerException
 				.Should().Be(serviceNotFoundException);
 		}

@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.UserContext
 
 			// act & assert
 			getUserIDAction
-				.ShouldThrow<UserContextNotFoundException>("because user context was not found");
+				.Should().Throw<UserContextNotFoundException>("because user context was not found");
 			_loggerMock.Verify(x => x.LogWarning(It.IsAny<string>(), It.IsAny<object[]>()));
 		}
 
@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.UserContext
 
 			// act & assert
 			getWorkspaceUserIDAction
-				.ShouldThrow<UserContextNotFoundException>("because user context was not found");
+				.Should().Throw<UserContextNotFoundException>("because user context was not found");
 			_loggerMock.Verify(x => x.LogWarning(It.IsAny<string>(), It.IsAny<object[]>()));
 		}
 	}

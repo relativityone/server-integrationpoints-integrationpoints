@@ -142,7 +142,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			Action action = () => _sut.ReadWithFieldMappingAsync(_ARTIFACT_ID).GetAwaiter().GetResult();
 
 			// Assert
-			action.ShouldThrow<Exception>();
+			action.Should().Throw<Exception>();
 			_objectManagerMock.Verify(x => x.Read<IntegrationPoint>(_ARTIFACT_ID, ExecutionIdentity.CurrentUser), Times.Once);
 			_objectManagerMock.Verify(
 				x => x.StreamUnicodeLongText(
@@ -174,7 +174,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			Action action = () => _sut.ReadWithFieldMappingAsync(_ARTIFACT_ID).GetAwaiter().GetResult();
 
 			// Assert
-			action.ShouldThrow<Exception>();
+			action.Should().Throw<Exception>();
 			_objectManagerMock.Verify(x => x.Read<IntegrationPoint>(_ARTIFACT_ID, ExecutionIdentity.CurrentUser), Times.Once);
 			_objectManagerMock.Verify(
 				x => x.StreamUnicodeLongText(
@@ -292,7 +292,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			Action action = () => _sut.GetFieldMappingAsync(_ARTIFACT_ID).GetAwaiter().GetResult();
 
 			// Assert
-			action.ShouldThrow<Exception>();
+			action.Should().Throw<Exception>();
 			_objectManagerMock.Verify(
 				x => x.StreamUnicodeLongText(
 					_ARTIFACT_ID,
@@ -323,7 +323,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			Action action = () => _sut.GetFieldMappingAsync(_ARTIFACT_ID).GetAwaiter().GetResult();
 
 			// Assert
-			action.ShouldThrow<SerializationException>();
+			action.Should().Throw<SerializationException>();
 			_objectManagerMock.Verify(
 				x => x.StreamUnicodeLongText(
 					_ARTIFACT_ID,
@@ -350,7 +350,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				_loggerMock.Object);
 
 			// Assert
-			action.ShouldThrow<NullReferenceException>();
+			action.Should().Throw<NullReferenceException>();
 		}
 
 		[Test]
@@ -384,7 +384,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			Action action = () => _sut.GetSecuredConfiguration(_ARTIFACT_ID);
 
 			// Assert
-			action.ShouldThrow<Exception>();
+			action.Should().Throw<Exception>();
 			_internalLoggerMock.Verify(
 				x => x.LogError(
 					It.IsAny<Exception>(),
@@ -425,7 +425,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			Action action = () => _sut.GetName(_ARTIFACT_ID);
 
 			// Assert
-			action.ShouldThrow<Exception>();
+			action.Should().Throw<Exception>();
 			_objectManagerMock.Verify(x => x.Read<IntegrationPoint>(_ARTIFACT_ID, ExecutionIdentity.CurrentUser), Times.Once);
 			_internalLoggerMock.Verify(
 				x => x.LogError(
