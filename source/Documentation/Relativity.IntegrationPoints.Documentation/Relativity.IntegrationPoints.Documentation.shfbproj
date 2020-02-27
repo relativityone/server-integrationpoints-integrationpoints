@@ -34,7 +34,7 @@
     <RootNamespaceContainer>True</RootNamespaceContainer>
     <PresentationStyle>VS2010</PresentationStyle>
     <Preliminary>False</Preliminary>
-    <NamingMethod>Guid</NamingMethod>
+    <NamingMethod>MemberName</NamingMethod>
     <HelpTitle>Relativity Integration Points API</HelpTitle>
     <ContentPlacement>AboveNamespaces</ContentPlacement>
     <BuildAssemblerVerbosity>OnlyWarningsAndErrors</BuildAssemblerVerbosity>
@@ -71,6 +71,7 @@
       <NamespaceSummaryItem name="Relativity.IntegrationPoints.Contracts.Provider" isDocumented="True">The Relativity.IntegrationPoints.Contracts.Provider namespace includes interfaces for the batching and importing of unique identifiers on data fields, and the data stored in these fields.</NamespaceSummaryItem>
       <NamespaceSummaryItem name="Relativity.IntegrationPoints.SourceProviderInstaller" isDocumented="True">The Relativity.IntegrationPoints.SourceProviderInstaller namespace includes the classes and delegates used to register the provider with Relativity and uninstall the provider from a workspace.</NamespaceSummaryItem>
       <NamespaceSummaryItem name="Relativity.IntegrationPoints.Contracts.Synchronizer" isDocumented="True">The Relativity.IntegrationPoints.Contracts.Synchronizer namespace provides interfaces that define how data is handled during import.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Relativity.IntegrationPoints.Contracts.Internals" isDocumented="True">The Relativity.IntegrationPoints.Contracts.Internals provide internal interfaces, exceptions and settings classes.</NamespaceSummaryItem>
     </NamespaceSummaries>
     <WebsiteSdkLinkType>Msdn</WebsiteSdkLinkType>
     <HtmlSdkLinkType>Msdn</HtmlSdkLinkType>
