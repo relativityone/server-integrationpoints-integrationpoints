@@ -12,8 +12,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 	[TestFixture, Category("Unit")]
 	public class ImportApiFactoryTests : ImportApiFactory
 	{
-		private bool _ShouldThrowInvalidLoginException;
-		private bool _ShouldThrowInvalidOperationException;
+		private bool _shouldThrowInvalidLoginException;
+		private bool _shouldThrowInvalidOperationException;
 
 		private const string _LOCAL_INSTANCE_ADDRESS = "http://instance-address.relativity.com/Relativity";
 		private const int _FEDERATED_INSTANCE_ARTIFACTID = 666;
@@ -44,8 +44,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 		{
 			// arrange
 			ImportSettings settings = new ImportSettings();
-			_ShouldThrowInvalidLoginException = true;
-			_ShouldThrowInvalidOperationException = false;
+			_shouldThrowInvalidLoginException = true;
+			_shouldThrowInvalidOperationException = false;
 
 			// act & assert
 			Assert.Throws<IntegrationPointsException>(() => GetImportAPI(settings));
@@ -56,8 +56,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 		{
 			// arrange
 			ImportSettings settings = new ImportSettings();
-			_ShouldThrowInvalidLoginException = false;
-			_ShouldThrowInvalidOperationException = true;
+			_shouldThrowInvalidLoginException = false;
+			_shouldThrowInvalidOperationException = true;
 
 			// act & assert
 			Assert.Throws<InvalidOperationException>(() => GetImportAPI(settings));
@@ -65,11 +65,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 
 		protected override IImportAPI CreateImportAPI(string webServiceUrl)
 		{
-			if (_ShouldThrowInvalidLoginException)
+			if (_shouldThrowInvalidLoginException)
 			{
 				throw new InvalidLoginException("Login failed.");
 			}
-			else if (_ShouldThrowInvalidOperationException)
+			else if (_shouldThrowInvalidOperationException)
 			{
 				throw new InvalidOperationException();
 			}

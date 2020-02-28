@@ -16,8 +16,6 @@ namespace kCura.IntegrationPoint.Tests.Core.FluentAssertions.Assertions
 			Subject = subject;
 		}
 
-		//protected override string Context => nameof(IEnumerable<ComponentModel>);
-
 		public AndWhichConstraint<ComponentsModelAssertions, ComponentModel> OneOfThemWithImplementation<T>(
 			string because = "",
 			params object[] becauseArgs)

@@ -12,9 +12,7 @@ namespace kCura.IntegrationPoint.Tests.Core.FluentAssertions.Assertions
 		{
 			Subject = instance;
 		}
-
-		//protected override string Context => nameof(ComponentModel);
-
+		
 		public AndConstraint<ComponentModelAssertions> BeRegisteredWithLifestyle(
 			LifestyleType expectedLifestyle,
 			string because = "",
