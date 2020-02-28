@@ -11,6 +11,7 @@ Relativity.IntegrationPoints.Services.Interfaces.Private
 Relativity.Productions.Services.Interfaces
 Relativity.Services.DataContracts
 Relativity.Services.Interfaces
+Relativity.Services.Interfaces.Private
 Relativity.Telemetry.APM
 Relativity.Toggles
 System.ValueTuple
