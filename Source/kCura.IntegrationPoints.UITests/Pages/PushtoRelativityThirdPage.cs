@@ -86,6 +86,15 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		[FindsBy(How = How.Id, Using = "ok-button")]
 		protected IWebElement AvailableProductionOkBtn { get; set; }
 
+        [FindsBy(How = How.Id, Using = "proceedBtn")]
+        protected IWebElement ProceedBtn { get; set; }
+        
+        [FindsBy(How = How.Id, Using = "clearAndProceedBtn")]
+        protected IWebElement ClearAndProceedBtn { get; set; }
+        
+        [FindsBy(How = How.Id, Using = "cancelBtn")]
+        protected IWebElement CancelBtn { get; set; }
+
 		protected SelectElement SelectOverwriteElement => new SelectElement(OverwriteElement);
 
 		protected SelectElement SelectMultiSelectFieldOverlayBehaviorElement => new SelectElement(MultiSelectFieldOverlayBehaviorElement);
@@ -304,6 +313,15 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			SaveButton.ClickEx();
 			return new IntegrationPointDetailsPage(Driver);
 		}
-
+        public PushToRelativityThirdPage ClickSaveButtonExpectPopup()
+        {
+            SaveButton.ClickEx();
+            return this;
+        }
+        public IntegrationPointDetailsPage ClearAndProceedOnInvalidMapping()
+        {
+            ClearAndProceedBtn.ClickEx();
+            return new IntegrationPointDetailsPage(Driver);
+        }
 	}
 }

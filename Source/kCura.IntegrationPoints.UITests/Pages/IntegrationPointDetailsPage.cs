@@ -1,4 +1,4 @@
-﻿using kCura.IntegrationPoint.Tests.Core.Models;
+using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.UITests.Components;
 using kCura.IntegrationPoints.UITests.Driver;
 using OpenQA.Selenium;
@@ -15,6 +15,9 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		[FindsBy(How = How.LinkText, Using = "Save as a Profile")]
 		protected IWebElement SaveAsAProfileButton { get; set; }
+
+        [FindsBy(How = How.LinkText, Using = "Edit")]
+        protected IWebElement EditButton { get; set; }
 
 		[FindsBy(How = How.Id, Using = "profile-name")]
 		protected IWebElement ProfileNameInput { get; set; }
@@ -45,6 +48,12 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			return this;
 		}
 
+        public ExportFirstPage EditIntegrationPoint()
+        {
+            EditButton.ClickEx();
+			return new ExportFirstPage(Driver);
+        }
+
 		public PropertiesTable SelectGeneralPropertiesTable()
 		{
 			WaitForPage();
@@ -59,7 +68,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			return BuildLatestJobHistory(jobStatusTable);
 		}
 
-		private static JobHistoryModel BuildLatestJobHistory(JobStatusTable jobStatusTable)
+        private static JobHistoryModel BuildLatestJobHistory(JobStatusTable jobStatusTable)
 		{
 			var jobHistoryModel = new JobHistoryModel
 			{

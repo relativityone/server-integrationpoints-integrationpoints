@@ -88,7 +88,45 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 			fieldsFromDestinationWorkspaceListBox.Should().ContainInOrder(expectedDestinationMappableFields);
 		}
 
-        private List<string> CreateFieldMapListBoxFormatFromObjectManagerFetchedList(
+        [IdentifiedTest("916e57ba-fb4d-42a4-be2a-4d17df17de60")]
+        [RetryOnError]
+		public void FieldMapping_ShouldClearMapFromInvalidField_WhenClearButtonIsPressed()
+		{
+			//Arrange
+            List<Tuple<string, string>> FieldsMapping = new List<Tuple<string, string>>
+            {
+                new Tuple<string, string>("Control Number", "Control Number"),
+            };
+            List<Tuple<string, string>> InvalidFieldsMapping = new List<Tuple<string, string>>
+            {
+                new Tuple<string, string>("Alert", "Classification Index")
+            };
+            FieldsMapping.AddRange(InvalidFieldsMapping);
+
+			RelativityProviderModel model = CreateRelativityProviderModel();
+
+            PushToRelativityThirdPage fieldMappingPage =
+				PointsAction.CreateNewRelativityProviderFieldMappingPage(model);
+			PointsAction.MapWorkspaceFields(fieldMappingPage, FieldsMapping);
+			fieldMappingPage = fieldMappingPage.ClickSaveButtonExpectPopup();
+			
+            //Act
+            IntegrationPointDetailsPage detailsPage = fieldMappingPage.ClearAndProceedOnInvalidMapping();
+			
+			//Assert
+            PushToRelativityThirdPage clearedMappingPage = PointsAction.EditFieldMappingPage(detailsPage);
+			List<string> fieldsFromSelectedSourceWorkspaceListBox =
+                clearedMappingPage.GetFieldsFromSelectedSourceWorkspaceListBox();
+			List<string> fieldsFromSelectedDestinationWorkspaceListBox =
+                clearedMappingPage.GetFieldsFromSelectedDestinationWorkspaceListBox();
+
+            fieldsFromSelectedDestinationWorkspaceListBox.Should().NotContain(InvalidFieldsMapping.Select(x =>x.Item1));
+            fieldsFromSelectedSourceWorkspaceListBox.Should().NotContain(InvalidFieldsMapping.Select(x => x.Item2));
+
+        }
+
+
+		private List<string> CreateFieldMapListBoxFormatFromObjectManagerFetchedList(
 			List<FieldObject> mappableFieldsListFromObjectManager)
 		{
 			return mappableFieldsListFromObjectManager.OrderBy(f => f.Name)

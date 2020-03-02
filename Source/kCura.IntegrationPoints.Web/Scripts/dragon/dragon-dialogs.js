@@ -212,7 +212,8 @@
 						click: function () {
 							handleSuccess.call($dialog, settings.yesHandle);
 						},
-						'class': 'button primary'
+						'class': 'button primary',
+						id: 'proceedBtn'
 					});
 				}
 
@@ -222,7 +223,8 @@
 						click: function () {
 							handleSuccess.call($dialog, settings.noHandle);
 						},
-						'class': 'button primary'
+						'class': 'button primary',
+                        id: 'clearAndProceedBtn'
 					});
 				}
 
@@ -232,7 +234,8 @@
 						click: function () {
 							$(this).dialog('close');
 						},
-						'class': 'button secondary'
+						'class': 'button secondary',
+                        id: 'cancelBtn'
 					});
 				}
 
