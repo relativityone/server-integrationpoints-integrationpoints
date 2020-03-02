@@ -114,7 +114,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
             IntegrationPointDetailsPage detailsPage = fieldMappingPage.ClearAndProceedOnInvalidMapping();
 			
 			//Assert
-            PushToRelativityThirdPage clearedMappingPage = PointsAction.EditFieldMappingPage(detailsPage);
+            PushToRelativityThirdPage clearedMappingPage = PointsAction.EditGoToFieldMappingPage(detailsPage);
 			List<string> fieldsFromSelectedSourceWorkspaceListBox =
                 clearedMappingPage.GetFieldsFromSelectedSourceWorkspaceListBox();
 			List<string> fieldsFromSelectedDestinationWorkspaceListBox =
