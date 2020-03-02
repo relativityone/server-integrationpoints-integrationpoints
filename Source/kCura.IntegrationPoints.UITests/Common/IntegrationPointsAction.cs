@@ -200,7 +200,7 @@ namespace kCura.IntegrationPoints.UITests.Common
 
 			return thirdPage;
 		}
-        public PushToRelativityThirdPage EditFieldMappingPage(IntegrationPointDetailsPage detailsPage)
+        public PushToRelativityThirdPage EditGoToFieldMappingPage(IntegrationPointDetailsPage detailsPage)
         {
             ExportFirstPage firstPage = detailsPage.EditIntegrationPoint();
             return firstPage.GoToNextPagePush().GoToNextPage();
