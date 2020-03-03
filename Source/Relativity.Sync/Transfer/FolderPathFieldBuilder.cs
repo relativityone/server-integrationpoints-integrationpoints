@@ -30,11 +30,11 @@ namespace Relativity.Sync.Transfer
 
 		public async Task<ISpecialFieldRowValuesBuilder> GetRowValuesBuilderAsync(int sourceWorkspaceArtifactId, ICollection<int> documentArtifactIds)
 		{
-			IDictionary<int, string> folderPathsMap = await BuildFolderPathsMap(sourceWorkspaceArtifactId, documentArtifactIds).ConfigureAwait(false);
+			IDictionary<int, string> folderPathsMap = await BuildFolderPathsMapAsync(sourceWorkspaceArtifactId, documentArtifactIds).ConfigureAwait(false);
 			return new FolderPathRowValueBuilder(_fieldConfiguration.DestinationFolderStructureBehavior, folderPathsMap);
 		}
 
-		private async Task<IDictionary<int, string>> BuildFolderPathsMap(int sourceWorkspaceArtifactId, ICollection<int> documentArtifactIds)
+		private async Task<IDictionary<int, string>> BuildFolderPathsMapAsync(int sourceWorkspaceArtifactId, ICollection<int> documentArtifactIds)
 		{
 			IDictionary<int, string> folderPathsMap = null;
 			if (_fieldConfiguration.DestinationFolderStructureBehavior == DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure)

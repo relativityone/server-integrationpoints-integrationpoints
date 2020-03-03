@@ -51,7 +51,7 @@ namespace Relativity.Sync.Executors
 
 			try
 			{
-				EmailNotificationRequest emailRequest = await GetEmailNotificationRequest(configuration, token).ConfigureAwait(false);
+				EmailNotificationRequest emailRequest = await GetEmailNotificationRequestAsync(configuration, token).ConfigureAwait(false);
 				using (var emailManager = await _serviceFactory.CreateProxyAsync<IEmailNotificationsManager>().ConfigureAwait(false))
 				{
 					await emailManager.SendEmailNotificationAsync(emailRequest).ConfigureAwait(false);
@@ -68,7 +68,7 @@ namespace Relativity.Sync.Executors
 			}
 		}
 
-		private async Task<EmailNotificationRequest> GetEmailNotificationRequest(INotificationConfiguration configuration, CancellationToken token)
+		private async Task<EmailNotificationRequest> GetEmailNotificationRequestAsync(INotificationConfiguration configuration, CancellationToken token)
 		{
 			var emailRequest = new EmailNotificationRequest
 			{
@@ -83,22 +83,22 @@ namespace Relativity.Sync.Executors
 			{
 				jobStatus = progresses.OrderByDescending(x => x.Status).First().Status;
 			}
-			await FillEmailRequest(emailRequest, configuration, jobStatus, token).ConfigureAwait(false);
+			await FillEmailRequestAsync(emailRequest, configuration, jobStatus, token).ConfigureAwait(false);
 			return emailRequest;
 		}
 
-		private async Task FillEmailRequest(EmailNotificationRequest emailRequest, INotificationConfiguration configuration, SyncJobStatus jobStatus, CancellationToken token)
+		private async Task FillEmailRequestAsync(EmailNotificationRequest emailRequest, INotificationConfiguration configuration, SyncJobStatus jobStatus, CancellationToken token)
 		{
 			async Task FillSubjectAndBody(string subject, string message)
 			{
 				emailRequest.Subject = string.Format(CultureInfo.InvariantCulture, subject, configuration.GetJobName());
-				emailRequest.Body = await GenerateMessage(configuration, message, token).ConfigureAwait(false);
+				emailRequest.Body = await GenerateMessageAsync(configuration, message, token).ConfigureAwait(false);
 			}
 
 			async Task FillSubjectAndBodyForError(string subject)
 			{
 				emailRequest.Subject = string.Format(CultureInfo.InvariantCulture, subject, configuration.GetJobName());
-				emailRequest.Body = await GenerateErrorMessage(configuration, token).ConfigureAwait(false);
+				emailRequest.Body = await GenerateErrorMessageAsync(configuration, token).ConfigureAwait(false);
 			}
 
 			switch (jobStatus)
@@ -118,35 +118,35 @@ namespace Relativity.Sync.Executors
 			}
 		}
 
-		private async Task<string> GenerateErrorMessage(INotificationConfiguration configuration, CancellationToken token)
+		private async Task<string> GenerateErrorMessageAsync(INotificationConfiguration configuration, CancellationToken token)
 		{
-			string body = await GenerateMessage(configuration, _MESSAGE_FAILED, token).ConfigureAwait(false);
-			string errorBody = await GenerateErrorBody(configuration).ConfigureAwait(false);
+			string body = await GenerateMessageAsync(configuration, _MESSAGE_FAILED, token).ConfigureAwait(false);
+			string errorBody = await GenerateErrorBodyAsync(configuration).ConfigureAwait(false);
 
 			string fullErrorBody = string.Join($"{Environment.NewLine}{Environment.NewLine}", body, errorBody);
 			return fullErrorBody;
 		}
 
-		private async Task<string> GenerateMessage(INotificationConfiguration configuration, string headerMessage, CancellationToken token)
+		private async Task<string> GenerateMessageAsync(INotificationConfiguration configuration, string headerMessage, CancellationToken token)
 		{
-			string body = await GenerateJobInfoBody(configuration, token).ConfigureAwait(false);
+			string body = await GenerateJobInfoBodyAsync(configuration, token).ConfigureAwait(false);
 			string fullBody = string.Join($"{Environment.NewLine}{Environment.NewLine}", headerMessage, body);
 			return fullBody;
 		}
 
-		private async Task<string> GenerateJobInfoBody(INotificationConfiguration configuration, CancellationToken token)
+		private async Task<string> GenerateJobInfoBodyAsync(INotificationConfiguration configuration, CancellationToken token)
 		{
 			string nameBody = string.Format(CultureInfo.InvariantCulture, _BODY_NAME, configuration.GetJobName());
 			string sourceBody = string.Format(CultureInfo.InvariantCulture, _BODY_SOURCE, configuration.GetSourceWorkspaceTag());
 
-			string destinationInfo = await GetDestinationWorkspaceInformation(configuration, token).ConfigureAwait(false);
+			string destinationInfo = await GetDestinationWorkspaceInformationAsync(configuration, token).ConfigureAwait(false);
 			string destinationBody = string.Format(CultureInfo.InvariantCulture, _BODY_DESTINATION, destinationInfo);
 
 			string body = string.Join($"{Environment.NewLine}{Environment.NewLine}", nameBody, sourceBody, destinationBody);
 			return body;
 		}
 
-		private async Task<string> GetDestinationWorkspaceInformation(INotificationConfiguration configuration, CancellationToken token)
+		private async Task<string> GetDestinationWorkspaceInformationAsync(INotificationConfiguration configuration, CancellationToken token)
 		{
 			string destinationInfo = string.Empty;
 			try
@@ -165,14 +165,14 @@ namespace Relativity.Sync.Executors
 			return destinationInfo;
 		}
 
-		private async Task<string> GenerateErrorBody(INotificationConfiguration configuration)
+		private async Task<string> GenerateErrorBodyAsync(INotificationConfiguration configuration)
 		{
-			string errorMessage = await GetJobHistoryErrorInformation(configuration).ConfigureAwait(false);
+			string errorMessage = await GetJobHistoryErrorInformationAsync(configuration).ConfigureAwait(false);
 			string errorBody = string.Format(CultureInfo.InvariantCulture, _BODY_ERROR, errorMessage);
 			return errorBody;
 		}
 
-		private async Task<string> GetJobHistoryErrorInformation(INotificationConfiguration configuration)
+		private async Task<string> GetJobHistoryErrorInformationAsync(INotificationConfiguration configuration)
 		{
 			string errorMessage = string.Empty;
 			try
