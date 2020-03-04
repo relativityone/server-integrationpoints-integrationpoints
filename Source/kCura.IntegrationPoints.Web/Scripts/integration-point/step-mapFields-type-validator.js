@@ -24,7 +24,7 @@ var StepMapFieldsValidator = (function () {
 
 	var showProceedConfirmationPopup = function (invalidMappedFields, proceedCallback, clearAndProceedCallback) {
 		var content = $('<div/>')
-			.html('<p>The below mapped fields are invalid:</p>');
+			.html('<p>Your job may be unsuccessfully finished by those Source and Destination fields:</p>');
 
 		buildFieldsMapTableMessage(invalidMappedFields)
 			.appendTo(content);

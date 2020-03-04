@@ -56,7 +56,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Helpers
 		private static T GetValueOrDefault<T>(RelativityObject fieldObject, string name)
 		{
 			FieldValuePair fieldValuePair = fieldObject.FieldValues.SingleOrDefault(x => x.Field.Name == name);
-			return fieldValuePair?.Value is T length ? length : default(T);
+			return fieldValuePair?.Value is T value ? value : default(T);
 		}
 	}
 }

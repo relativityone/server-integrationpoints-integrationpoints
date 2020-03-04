@@ -7,6 +7,7 @@ kCura.Relativity.Client
 Relativity
 Relativity.API
 Relativity.Data
+Relativity.Services.Interfaces.Private
 Relativity.IntegrationPoints.Services.Interfaces.Private
 Relativity.Kepler
 Relativity.Productions.Services.Interfaces

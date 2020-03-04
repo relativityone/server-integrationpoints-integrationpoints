@@ -34,9 +34,9 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 		{
 			var result = new ValidationResult();
 
-			var sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(value.SourceConfiguration);
-			var destinationConfiguration = _serializer.Deserialize<IntegrationPointDestinationConfiguration>(value.DestinationConfiguration);
-			var fieldsMap = _serializer.Deserialize<List<FieldMap>>(value.FieldsMap);
+			SourceConfiguration sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(value.SourceConfiguration);
+			IntegrationPointDestinationConfiguration destinationConfiguration = _serializer.Deserialize<IntegrationPointDestinationConfiguration>(value.DestinationConfiguration);
+			List<FieldMap> fieldsMap = _serializer.Deserialize<List<FieldMap>>(value.FieldsMap);
 
 			List<ArtifactDTO> sourceWorkpaceFields = RetrieveAllFields(_sourcefieldManager, sourceConfiguration.SourceWorkspaceArtifactId);
 			List<ArtifactDTO> destinationWorkpaceFields = RetrieveAllFields(_targetfieldManager, sourceConfiguration.TargetWorkspaceArtifactId);

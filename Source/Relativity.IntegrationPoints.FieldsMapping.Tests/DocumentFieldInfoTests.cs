@@ -94,5 +94,18 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			// Assert
 			result.Should().Be(expected);
 		}
+
+		[Test]
+		public void DisplayType_ShouldReturnEmptyStringForNullType()
+		{
+			// Arrange 
+			var field = new DocumentFieldInfo("1", "Name", null);
+
+			// Act
+			var displayType = field.DisplayType;
+
+			// Assert
+			displayType.Should().Be("");
+		}
 	}
 }
