@@ -93,7 +93,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 		public void FieldMapping_ShouldClearMapFromInvalidField_WhenClearButtonIsPressed()
 		{
 			//Arrange
-            List<Tuple<string, string>> FieldsMapping = new List<Tuple<string, string>>
+            const string _INVALID_FIELD_MAPPING_MESSAGE_TEXT = "Your job may be unsuccessfully finished by those Source and Destination fields:";
+			List<Tuple<string, string>> FieldsMapping = new List<Tuple<string, string>>
             {
                 new Tuple<string, string>("Control Number", "Control Number"),
             };
@@ -109,20 +110,23 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 				PointsAction.CreateNewRelativityProviderFieldMappingPage(model);
 			PointsAction.MapWorkspaceFields(fieldMappingPage, FieldsMapping);
 			fieldMappingPage = fieldMappingPage.ClickSaveButtonExpectPopup();
+
 			
+			//Assert text on popup
+            fieldMappingPage.GetTextFromPopupBox().Should().Be(_INVALID_FIELD_MAPPING_MESSAGE_TEXT);
+            
             //Act
-            IntegrationPointDetailsPage detailsPage = fieldMappingPage.ClearAndProceedOnInvalidMapping();
+			IntegrationPointDetailsPage detailsPage = fieldMappingPage.ClearAndProceedOnInvalidMapping();
 			
-			//Assert
             PushToRelativityThirdPage clearedMappingPage = PointsAction.EditGoToFieldMappingPage(detailsPage);
 			List<string> fieldsFromSelectedSourceWorkspaceListBox =
                 clearedMappingPage.GetFieldsFromSelectedSourceWorkspaceListBox();
 			List<string> fieldsFromSelectedDestinationWorkspaceListBox =
                 clearedMappingPage.GetFieldsFromSelectedDestinationWorkspaceListBox();
-
-            fieldsFromSelectedDestinationWorkspaceListBox.Should().NotContain(InvalidFieldsMapping.Select(x =>x.Item1));
+            
+            //Assert if fields were removed from mapping
+			fieldsFromSelectedDestinationWorkspaceListBox.Should().NotContain(InvalidFieldsMapping.Select(x =>x.Item1));
             fieldsFromSelectedSourceWorkspaceListBox.Should().NotContain(InvalidFieldsMapping.Select(x => x.Item2));
-
         }
 
 
