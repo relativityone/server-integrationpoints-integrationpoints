@@ -96,7 +96,9 @@ namespace kCura.IntegrationPoints.UITests.Pages
         protected IWebElement CancelBtn { get; set; }
 
         [FindsBy(How = How.XPath, Using = "//*[@id='msgDiv']/p")]
-        protected IWebElement PopupText { get; set; }
+        protected IWebElement PopupTextElement { get; set; }
+
+        public string PopupText => PopupTextElement.Text;
 
 		protected SelectElement SelectOverwriteElement => new SelectElement(OverwriteElement);
 
@@ -255,13 +257,8 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			IList<IWebElement> options = selectList.Options;
 			return options.Select(option => option.GetAttribute("title")).ToList();
 		}
-
-        public string GetTextFromPopupBox()
-        {
-            return PopupText.Text;
-        }
-
-		public List<string> GetFieldsFromSourceWorkspaceListBox()
+		
+        public List<string> GetFieldsFromSourceWorkspaceListBox()
 		{
 			string sourceWorkspaceListBoxId = "source-fields";
 			return GetFieldsFromListBox(sourceWorkspaceListBoxId);
