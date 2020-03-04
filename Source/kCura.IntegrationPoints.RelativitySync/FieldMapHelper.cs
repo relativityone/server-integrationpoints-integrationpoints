@@ -15,15 +15,33 @@ namespace kCura.IntegrationPoints.RelativitySync
 			{
 				return fieldMappings;
 			}
+
+			fields = FixFolderPathMapping(fields);
 			fields = RemoveSpecialFieldMappings(fields);
 			fields = FixControlNumberFieldName(fields);
 
 			return serializer.Serialize(fields);
 		}
 
+		private static List<FieldMap> FixFolderPathMapping(List<FieldMap> fields)
+		{
+			FieldMap mappedFolderPathSpecialField = fields.SingleOrDefault(x => x.FieldMapType == FieldMapTypeEnum.FolderPathInformation);
+			if (mappedFolderPathSpecialField?.DestinationField?.ActualName != null)
+			{
+				fields.Add(new FieldMap()
+				{
+					SourceField = mappedFolderPathSpecialField.SourceField,
+					DestinationField = mappedFolderPathSpecialField.DestinationField,
+					FieldMapType = FieldMapTypeEnum.None
+				});
+			}
+
+			return fields;
+		}
+
 		private static List<FieldMap> RemoveSpecialFieldMappings(List<FieldMap> fields)
 		{
-			var redundantMapTypes = new[] { FieldMapTypeEnum.FolderPathInformation, FieldMapTypeEnum.NativeFilePath};
+			var redundantMapTypes = new[] { FieldMapTypeEnum.NativeFilePath, FieldMapTypeEnum.FolderPathInformation };
 			return fields.Where(f => !redundantMapTypes.Contains(f.FieldMapType)).ToList();
 		}
 

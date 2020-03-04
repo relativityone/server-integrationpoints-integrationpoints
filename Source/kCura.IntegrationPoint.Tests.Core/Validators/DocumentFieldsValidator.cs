@@ -28,7 +28,7 @@
 				FieldValue expectedFieldValue = sourceDocument[fieldName];
 
 				Assert.That(actualFieldValue.Value, Is.EqualTo(expectedFieldValue.Value),
-					"Actual field value is different than expected. Field name {0}. Document control number {1}.", actualFieldValue.Name, documentControlNumber);
+					"Actual field value is different than expected. Field name: '{0}'. Document control number: '{1}'.", actualFieldValue.Name, documentControlNumber);
 			}
 		}
 	}
