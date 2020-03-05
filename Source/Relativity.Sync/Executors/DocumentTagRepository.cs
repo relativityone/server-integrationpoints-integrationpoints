@@ -23,14 +23,14 @@ namespace Relativity.Sync.Executors
 			_jobHistoryErrorRepository = jobHistoryErrorRepository;
 		}
 
-		public async Task<ExecutionResult> TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(ISynchronizationConfiguration configuration, IEnumerable<string> documentIdentifiers, CancellationToken token)
+		public Task<ExecutionResult> TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(ISynchronizationConfiguration configuration, IEnumerable<string> documentIdentifiers, CancellationToken token)
 		{
-			return await TagDocumentsInWorkspaceWithInfoAsync(_sourceWorkspaceTagRepository.TagDocumentsAsync, configuration, documentIdentifiers, token).ConfigureAwait(false);
+			return TagDocumentsInWorkspaceWithInfoAsync(_sourceWorkspaceTagRepository.TagDocumentsAsync, configuration, documentIdentifiers, token);
 		}
 
-		public async Task<ExecutionResult> TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(ISynchronizationConfiguration configuration, IEnumerable<int> artifactIds, CancellationToken token)
+		public Task<ExecutionResult> TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(ISynchronizationConfiguration configuration, IEnumerable<int> artifactIds, CancellationToken token)
 		{
-			return await TagDocumentsInWorkspaceWithInfoAsync(_destinationWorkspaceTagRepository.TagDocumentsAsync, configuration, artifactIds, token).ConfigureAwait(false);
+			return TagDocumentsInWorkspaceWithInfoAsync(_destinationWorkspaceTagRepository.TagDocumentsAsync, configuration, artifactIds, token);
 		}
 
 		private async Task<ExecutionResult> TagDocumentsInWorkspaceWithInfoAsync<TIdentifier>(
@@ -75,14 +75,14 @@ namespace Relativity.Sync.Executors
 			return taggingResult;
 		}
 
-		private async Task GenerateDocumentTaggingJobHistoryErrorAsync(ExecutionResult taggingResult, ISynchronizationConfiguration configuration)
+		private Task GenerateDocumentTaggingJobHistoryErrorAsync(ExecutionResult taggingResult, ISynchronizationConfiguration configuration)
 		{
 			var jobHistoryError = new CreateJobHistoryErrorDto(ErrorType.Job)
 			{
 				ErrorMessage = taggingResult.Message,
 				StackTrace = taggingResult.Exception?.StackTrace
 			};
-			await _jobHistoryErrorRepository.CreateAsync(configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, jobHistoryError).ConfigureAwait(false);
+			return _jobHistoryErrorRepository.CreateAsync(configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, jobHistoryError);
 		}
 	}
 }

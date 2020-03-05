@@ -37,7 +37,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 		private SynchronizationExecutor _sut;
 
-		private const string _FOLDER_PATH_FROM_WORKSPACE_DISPLAY_NAME = "76B270CB-7CA9-4121-B9A1-BC0D655E5B2D";
+		private const string _FOLDER_PATH_FROM_WORKSPACE_DISPLAY_NAME = "FolderPath_76B270CB-7CA9-4121-B9A1-BC0D655E5B2D";
 		private const string _NATIVE_FILE_FILENAME_DISPLAY_NAME = "NativeFileFilename";
 		private const string _NATIVE_FILE_SIZE_DISPLAY_NAME = "NativeFileSize";
 		private const string _NATIVE_FILE_LOCATION_DISPLAY_NAME = "NativeFileLocation";
