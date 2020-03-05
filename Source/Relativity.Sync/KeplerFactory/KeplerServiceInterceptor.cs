@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Net.Sockets;
 using System.Reflection;
 using System.Threading.Tasks;
 using Castle.DynamicProxy;
@@ -21,7 +22,7 @@ namespace Relativity.Sync.KeplerFactory
 
 		private const string _AUTH_TOKEN_EXPIRATION_COUNT_METRIC_NAME = "AuthTokenRetries";
 		private const string _EXCEPTION_METRIC_NAME = "KeplerException";
-		private const string _HTTP_RETRIES_COUNT_METRIC_NAME = "KeplerRetries";
+		private const string _KEPLER_RETRIES_COUNT_METRIC_NAME = "KeplerRetries";
 		private readonly Func<IStopwatch> _stopwatch;
 		private readonly Func<Task<TService>> _keplerServiceFactory;
 		private readonly IRandom _random;
@@ -82,7 +83,7 @@ namespace Relativity.Sync.KeplerFactory
 		{
 			ExecutionStatus status = ExecutionStatus.Completed;
 			Exception exception = null;
-			int httpRetries = 0;
+			int keplerRetries = 0;
 			int authTokenRetries = 0;
 			IStopwatch stopwatch = _stopwatch();
 			stopwatch.Start();
@@ -91,6 +92,7 @@ namespace Relativity.Sync.KeplerFactory
 			{
 				RetryPolicy httpErrorsPolicy = Policy
 					.Handle<HttpRequestException>() // Thrown when remote endpoint cannot be resolved - connection error
+					.Or<SocketException>()
 					.WaitAndRetryAsync(_MAX_NUMBER_OF_HTTP_RETRIES, retryAttempt =>
 				{
 					const int maxJitter = 100;
@@ -98,8 +100,8 @@ namespace Relativity.Sync.KeplerFactory
 				},
 					(ex, waitTime, retryCount, context) =>
 				{
-					_logger.LogWarning(ex, "Encountered HTTP request transient error, attempting retry. Retry count: {retryCount} Wait time: {waitTimeMs} (ms)", retryCount, waitTime.TotalMilliseconds);
-					httpRetries = retryCount;
+					_logger.LogWarning(ex, "Encountered HTTP or socket connection transient error, attempting retry. Retry count: {retryCount} Wait time: {waitTimeMs} (ms)", retryCount, waitTime.TotalMilliseconds);
+					keplerRetries = retryCount;
 				});
 
 				RetryPolicy authTokenPolicy = Policy
@@ -156,7 +158,7 @@ namespace Relativity.Sync.KeplerFactory
 				stopwatch.Stop();
 				try
 				{
-					_syncMetrics.TimedOperation(GetMetricName(invocation), stopwatch.Elapsed, status, CreateCustomData(httpRetries, authTokenRetries, exception));
+					_syncMetrics.TimedOperation(GetMetricName(invocation), stopwatch.Elapsed, status, CreateCustomData(keplerRetries, authTokenRetries, exception));
 				}
 				catch (Exception e)
 				{
@@ -191,7 +193,7 @@ namespace Relativity.Sync.KeplerFactory
 		{
 			Dictionary<string, object> dictionary = new Dictionary<string, object>
 			{
-				{_HTTP_RETRIES_COUNT_METRIC_NAME, numberOfHttpRetries},
+				{_KEPLER_RETRIES_COUNT_METRIC_NAME, numberOfHttpRetries},
 				{_AUTH_TOKEN_EXPIRATION_COUNT_METRIC_NAME, authTokenExpirationCount}
 			};
 			if (exception != null)
