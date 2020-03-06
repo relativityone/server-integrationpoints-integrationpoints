@@ -12,8 +12,6 @@ namespace kCura.IntegrationPoint.Tests.Core.FluentAssertions.Assertions
 			Subject = instance;
 		}
 
-		protected override string Identifier { get; }
-
 		public AndConstraint<ComponentModelAssertions> BeRegisteredWithLifestyle(
 			LifestyleType expectedLifestyle,
 			string because = "",
@@ -47,5 +45,7 @@ namespace kCura.IntegrationPoint.Tests.Core.FluentAssertions.Assertions
 
 			return new AndConstraint<ComponentModelAssertions>(this);
 		}
+
+		protected override string Context => nameof(ComponentModel);
 	}
 }

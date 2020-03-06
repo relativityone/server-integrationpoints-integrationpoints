@@ -29,17 +29,17 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.Repositories
 		public async Task Delete_ShouldDeleteIntegrationPointWithJobHistory()
 		{
 			// ARRANGE
-			(int integrationPointID, int jobHistoryID, int jobHistoryErrorID) = CreateIntegrationPointWithJobHistoryAndJobHistoryError();
+			IntegrationPointModelSlim model = CreateIntegrationPointWithJobHistoryAndJobHistoryError();
 
 			// ACT
-			_sut.Delete(integrationPointID);
+			_sut.Delete(model.IntegrationPointID);
 
 			// ASSERT
-			bool integrationPointExists = await CheckIfIntegrationPointExistsAsync(integrationPointID).ConfigureAwait(false);
+			bool integrationPointExists = await CheckIfIntegrationPointExistsAsync(model.IntegrationPointID).ConfigureAwait(false);
 			integrationPointExists.Should().BeFalse("because integration points should be deleted");
 
 			// TEARDOWN
-			_objectManager.Delete(jobHistoryID);
+			_objectManager.Delete(model.JobHistoryID);
 		}
 
 		[IdentifiedTest("8c13cfb5-42d1-47de-91fb-6c7cc1858432")]
@@ -60,34 +60,34 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.Repositories
 		public void Delete_ShouldUnlinkJobHistoryButNotDeleteIt()
 		{
 			// ARRANGE
-			(int integrationPointID, int jobHistoryID, int jobHistoryErrorID) = CreateIntegrationPointWithJobHistoryAndJobHistoryError();
+			IntegrationPointModelSlim model = CreateIntegrationPointWithJobHistoryAndJobHistoryError();
 
 			// ACT
-			_sut.Delete(integrationPointID);
+			_sut.Delete(model.IntegrationPointID);
 
 			// ASSERT
-			kCura.IntegrationPoints.Data.JobHistory jobHistory = _objectManager.Read<kCura.IntegrationPoints.Data.JobHistory>(jobHistoryID);
+			kCura.IntegrationPoints.Data.JobHistory jobHistory = _objectManager.Read<kCura.IntegrationPoints.Data.JobHistory>(model.JobHistoryID);
 
 			jobHistory.Should().NotBeNull();
 			jobHistory.IntegrationPoint.Should().BeNullOrEmpty();
 
 			// TEARDOWN
-			_objectManager.Delete(jobHistoryID);
+			_objectManager.Delete(model.JobHistoryID);
 		}
 
 		[IdentifiedTest("d8447c19-db91-4d65-82d5-19f90e3a6d7b")]
 		public async Task Delete_ShouldLeaveJobHistoryErrors()
 		{
 			// ARRANGE
-			(int integrationPointID, int jobHistoryID, int jobHistoryErrorID) = CreateIntegrationPointWithJobHistoryAndJobHistoryError();
+			IntegrationPointModelSlim model = CreateIntegrationPointWithJobHistoryAndJobHistoryError();
 
 			// ACT
-			_sut.Delete(integrationPointID);
+			_sut.Delete(model.IntegrationPointID);
 
 			// ASSERT
 			var query = new QueryRequest
 			{
-				Condition = $"'{ArtifactQueryFieldNames.ArtifactID}' == {jobHistoryErrorID}"
+				Condition = $"'{ArtifactQueryFieldNames.ArtifactID}' == {model.JobHistoryErrorID}"
 			};
 			List<JobHistoryError> jobHistoryErrors = await _objectManager
 				.QueryAsync<JobHistoryError>(query)
@@ -96,16 +96,16 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.Repositories
 			jobHistoryErrors.Should().NotBeEmpty();
 
 			// TEARDOWN
-			_objectManager.Delete(jobHistoryID);
+			_objectManager.Delete(model.JobHistoryID);
 		}
 
-		private (int integrationPointID, int jobHistoryID, int jobHistoryErrorID) CreateIntegrationPointWithJobHistoryAndJobHistoryError()
+		private IntegrationPointModelSlim CreateIntegrationPointWithJobHistoryAndJobHistoryError()
 		{
 			int integrationPointID = CreateDummyIntegrationPoint();
 			int jobHistoryID = CreateDummyJobHistory(integrationPointID);
 			int jobHistoryErrorID = CreateDummyHistoryError(jobHistoryID);
 
-			return (integrationPointID, jobHistoryID, jobHistoryErrorID);
+			return new IntegrationPointModelSlim(integrationPointID, jobHistoryID, jobHistoryErrorID);
 		}
 
 		private int CreateDummyIntegrationPoint()
@@ -150,6 +150,20 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.Repositories
 				.QueryAsync<IntegrationPoint>(queryRequest, noFields: true)
 				.ConfigureAwait(false);
 			return integrationPoints.Any();
+		}
+
+		private class IntegrationPointModelSlim
+		{
+			public IntegrationPointModelSlim(int integrationPointId, int jobHistoryId, int jobHistoryErrorId)
+			{
+				IntegrationPointID = integrationPointId;
+				JobHistoryID = jobHistoryId;
+				JobHistoryErrorID = jobHistoryErrorId;
+			}
+
+			public int IntegrationPointID { get; set; }
+			public int JobHistoryID { get; set; }
+			public int JobHistoryErrorID { get; set; }
 		}
 	}
 }
