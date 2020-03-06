@@ -199,6 +199,11 @@
 			setTimeout(function () { root.message.info.clear($container); }, 3000);
 		}
 
+        message.notifyWithTimeout = function (message, timeout, $container) {
+            root.message.info.raise(message, $container);
+            setTimeout(function () { root.message.info.clear($container); }, timeout);
+        }
+
 		message.displayUnresolvedError = function (e, $container) {
 			//needs to be able to handle $container, webAPI fail, Web controller fail and maybe just a fail message as well!
 			var message = getMessage(e);

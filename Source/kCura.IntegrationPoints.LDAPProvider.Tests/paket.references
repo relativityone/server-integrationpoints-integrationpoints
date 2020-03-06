@@ -1,10 +1,7 @@
 CSharpGuidelineAnalyzer
 kCura.Apps.Common.Utils
-Newtonsoft.Json
 Relativity.API
 Relativity.IntegrationPoints.Contracts
-
-group TestPackages
-	FluentAssertions
-	NUnit
-	NSubstitute
+FluentAssertions
+NUnit
+NSubstitute

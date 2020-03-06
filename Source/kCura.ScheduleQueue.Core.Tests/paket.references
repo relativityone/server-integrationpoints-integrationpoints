@@ -3,6 +3,6 @@ kCura.Apps.Common.Utils
 Relativity.API
 Relativity.Logging.Interfaces
 
-group TestPackages
-	NUnit
-	NSubstitute
+
+NUnit
+NSubstitute

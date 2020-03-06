@@ -5,30 +5,23 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Relativity;
-using Relativity.API;
 using Relativity.IntegrationPoints.FieldsMapping;
 using Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers;
-using Relativity.Services.Objects;
+using Relativity.IntegrationPoints.FieldsMapping.Helpers;
 using Relativity.Services.Objects.DataContracts;
 using Field = Relativity.Services.Objects.DataContracts.Field;
-using QueryResult = Relativity.Services.Objects.DataContracts.QueryResult;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 {
 	[TestFixture, Category("Unit")]
 	public class FieldsClassifierRunnerTests
 	{
-		private FieldsClassifierRunner _sut;
-		private Mock<IObjectManager> _objectManagerMock;
+		private Mock<IFieldsRepository> _fieldsRepositoryFake;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_objectManagerMock = new Mock<IObjectManager>();
-			Mock<IServicesMgr> servicesMgrFake = new Mock<IServicesMgr>();
-			servicesMgrFake.Setup(x => x.CreateProxy<IObjectManager>(It.IsAny<ExecutionIdentity>())).Returns(_objectManagerMock.Object);
-			_sut = new FieldsClassifierRunner(servicesMgrFake.Object);
+			_fieldsRepositoryFake = new Mock<IFieldsRepository>();
 		}
 
 		[Test]
@@ -41,43 +34,35 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 			const string excludedFromAutoMapFieldName = "Excluded from auto-map field";
 			const string notVisibleToUserFieldName = "Field not visible to user";
 
-			SetupWorkspaceFields(new List<RelativityObject>()
+			var workspaceFields = new List<DocumentFieldInfo>()
 			{
 				CreateField(autoMappedFieldName, type: autoMappedFieldType, isIdentifier: true),
 				CreateField(excludedFromAutoMapFieldName),
 				CreateField(notVisibleToUserFieldName)
-			});
+			};
+
+			SetupWorkspaceFields(workspaceFields);
 
 			var classificationResult = new List<FieldClassificationResult>()
 			{
-				new FieldClassificationResult()
-				{
-					Name = autoMappedFieldName,
-					ClassificationLevel = ClassificationLevel.AutoMap
-				},
-				new FieldClassificationResult()
-				{
-					Name = excludedFromAutoMapFieldName,
-					ClassificationLevel = ClassificationLevel.ShowToUser
-				},
-				new FieldClassificationResult()
-				{
-					Name = notVisibleToUserFieldName,
-					ClassificationLevel = ClassificationLevel.HideFromUser
-				}
+				new FieldClassificationResult(workspaceFields[0]) { ClassificationLevel = ClassificationLevel.AutoMap },
+				new FieldClassificationResult(workspaceFields[1]) { ClassificationLevel = ClassificationLevel.ShowToUser },
+				new FieldClassificationResult(workspaceFields[2]) { ClassificationLevel = ClassificationLevel.HideFromUser }
 			};
 
 			var classifierFake = new Mock<IFieldsClassifier>();
 			classifierFake
-				.Setup(x => x.ClassifyAsync(It.IsAny<ICollection<RelativityObject>>(), It.IsAny<int>()))
+				.Setup(x => x.ClassifyAsync(It.IsAny<ICollection<DocumentFieldInfo>>(), It.IsAny<int>()))
 				.ReturnsAsync(classificationResult);
-			var fieldsClassifiers = new List<Mock<IFieldsClassifier>>()
+			var fieldsClassifiers = new List<IFieldsClassifier>()
 			{
-				classifierFake
+				classifierFake.Object
 			};
 
+			FieldsClassifierRunner sut = new FieldsClassifierRunner(_fieldsRepositoryFake.Object, fieldsClassifiers);
+
 			// Act
-			IList<FieldClassificationResult> filteredFields = await _sut.GetFilteredFieldsAsync(It.IsAny<int>(), fieldsClassifiers.Select(x => x.Object).ToList()).ConfigureAwait(false);
+			IList<FieldClassificationResult> filteredFields = await sut.GetFilteredFieldsAsync(It.IsAny<int>()).ConfigureAwait(false);
 
 			// Assert
 			filteredFields.Any(x => x.Name == autoMappedFieldName && x.Type == autoMappedFieldType && x.IsIdentifier).Should().BeTrue();
@@ -92,46 +77,14 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 			const int count = 3;
 			SetupWorkspaceFields(Enumerable.Range(1, count).Select(x => CreateField(x.ToString())).ToList());
 
+			FieldsClassifierRunner sut = new FieldsClassifierRunner(_fieldsRepositoryFake.Object);
+
 			// Act
-			IList<FieldClassificationResult> filteredFields = await _sut.GetFilteredFieldsAsync(It.IsAny<int>(), new List<IFieldsClassifier>()).ConfigureAwait(false);
+			IList<FieldClassificationResult> filteredFields = await sut.GetFilteredFieldsAsync(It.IsAny<int>()).ConfigureAwait(false);
 
 			// Assert
 			filteredFields.Count.Should().Be(count);
 			filteredFields.All(x => x.ClassificationLevel == ClassificationLevel.AutoMap).Should().BeTrue();
-		}
-
-		[Test]
-		public async Task GetFilteredFieldsAsync_ShouldUseBatching_WhenQueryingWithObjectManager()
-		{
-			// Arrange
-			MockSequence mockSequence = new MockSequence();
-			QueryResult firstQueryResult = CreateQueryResult(Enumerable.Range(1, 2).Select(x => CreateField(x.ToString())).ToList());
-			QueryResult secondQueryResult = CreateQueryResult(Enumerable.Range(3, 2).Select(x => CreateField(x.ToString())).ToList());
-			QueryResult thirdQueryResult = CreateQueryResult(new List<RelativityObject>());
-
-			_objectManagerMock
-				.InSequence(mockSequence)
-				.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), 1, 50))
-				.ReturnsAsync(firstQueryResult)
-				.Verifiable();
-
-			_objectManagerMock
-				.InSequence(mockSequence)
-				.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), 3, 50))
-				.ReturnsAsync(secondQueryResult)
-				.Verifiable();
-
-			_objectManagerMock
-				.InSequence(mockSequence)
-				.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), 5, 50))
-				.ReturnsAsync(thirdQueryResult)
-				.Verifiable();
-
-			// Act
-			await _sut.GetFilteredFieldsAsync(It.IsAny<int>(), new List<IFieldsClassifier>()).ConfigureAwait(false);
-
-			// Assert
-			_objectManagerMock.Verify();
 		}
 
 		[Test]
@@ -141,32 +94,22 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 			SetupWorkspaceFields(Enumerable.Range(1, 2).Select(x => CreateField(x.ToString())).ToList());
 
 			Mock<IFieldsClassifier> classifierMock = new Mock<IFieldsClassifier>();
-			classifierMock.Setup(x => x.ClassifyAsync(It.IsAny<ICollection<RelativityObject>>(), It.IsAny<int>())).Throws<InvalidOperationException>();
+			classifierMock.Setup(x => x.ClassifyAsync(It.IsAny<ICollection<DocumentFieldInfo>>(), It.IsAny<int>())).Throws<InvalidOperationException>();
 
-			// Act
-			Func<Task> action = () => _sut.GetFilteredFieldsAsync(0, new List<IFieldsClassifier>()
+			var fieldsClassifiers = new List<IFieldsClassifier>()
 			{
 				classifierMock.Object
-			});
+			};
+
+			FieldsClassifierRunner sut = new FieldsClassifierRunner(_fieldsRepositoryFake.Object, fieldsClassifiers);
+
+			// Act
+			Func<Task> action = () => sut.GetFilteredFieldsAsync(0);
 
 			// Assert
 			action.ShouldThrow<InvalidOperationException>();
-			classifierMock.Verify(x => x.ClassifyAsync(It.IsAny<ICollection<RelativityObject>>(), It.IsAny<int>()), Times.Exactly(2));
+			classifierMock.Verify(x => x.ClassifyAsync(It.IsAny<ICollection<DocumentFieldInfo>>(), It.IsAny<int>()), Times.Exactly(2));
 		}
-
-		[Test]
-		public async Task GetFilteredFieldsAsync_ShouldBuildProperQueryForObjectManager()
-		{
-			// Arrange
-			SetupWorkspaceFields(Enumerable.Range(1, 2).Select(x => CreateField(x.ToString())).ToList());
-
-			// Act
-			await _sut.GetFilteredFieldsAsync(It.IsAny<int>(), new List<IFieldsClassifier>()).ConfigureAwait(false);
-
-			// Assert
-			_objectManagerMock.Verify(x => x.QueryAsync(It.IsAny<int>(), It.Is<QueryRequest>(req => ValidateQueryRequest(req)), It.IsAny<int>(), It.IsAny<int>()));
-		}
-
 
 		[Test]
 		public async Task GetFilteredFieldsAsync_ShouldUpdateOnlyClassificationLevelAndReasonFromClassifier()
@@ -177,43 +120,38 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 
 			var classificationResult = new List<FieldClassificationResult>()
 			{
-				new FieldClassificationResult()
+				new FieldClassificationResult(CreateField(name: "1", type: "Changed type", isIdentifier: true))
 				{
-					Name = "1",
 					ClassificationLevel = ClassificationLevel.AutoMap,
-					ClassificationReason = "Reason",
-					Type = "Changed type",
-					IsIdentifier = true,
-					IsRequired = true
+					ClassificationReason = "Reason"
 				},
-				new FieldClassificationResult()
+				new FieldClassificationResult(CreateField(name: "2", type: "Changed type", isIdentifier: true))
 				{
-					Name = "2",
+					ClassificationLevel = ClassificationLevel.ShowToUser,
+					ClassificationReason = "Reason"
+				},
+				new FieldClassificationResult(CreateField(name: "3", type: "Changed type", isIdentifier: true))
+				{
 					ClassificationLevel = ClassificationLevel.ShowToUser,
 					ClassificationReason = "Reason",
-					Type = "Changed type",
-					IsIdentifier = true,
-					IsRequired = true
-				},
-				new FieldClassificationResult()
-				{
-					Name = "3",
-					ClassificationLevel = ClassificationLevel.ShowToUser,
-					ClassificationReason = "Reason",
-					Type = "Changed type",
-					IsIdentifier = true,
-					IsRequired = true
 				}
 			};
 
 			var classifierFake = new Mock<IFieldsClassifier>();
 			classifierFake
-				.Setup(x => x.ClassifyAsync(It.IsAny<ICollection<RelativityObject>>(), It.IsAny<int>()))
+				.Setup(x => x.ClassifyAsync(It.IsAny<ICollection<DocumentFieldInfo>>(), It.IsAny<int>()))
 				.ReturnsAsync(classificationResult);
+
+			var fieldsClassifiers = new List<IFieldsClassifier>()
+			{
+				classifierFake.Object
+			};
+
+			FieldsClassifierRunner sut = new FieldsClassifierRunner(_fieldsRepositoryFake.Object, fieldsClassifiers);
 
 
 			// Act
-			IList<FieldClassificationResult> filteredFields = await _sut.GetFilteredFieldsAsync(It.IsAny<int>(), new List<IFieldsClassifier> { classifierFake.Object }).ConfigureAwait(false);
+			IList<FieldClassificationResult> filteredFields = await sut.GetFilteredFieldsAsync(It.IsAny<int>()).ConfigureAwait(false);
 
 			// Assert
 			filteredFields.Count.Should().Be(count);
@@ -236,62 +174,46 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 		public async Task GetFilteredFieldsAsync_ShouldSortByName()
 		{
 			// Arrange
-			List<RelativityObject> unsortedFields = new List<RelativityObject>()
+			List<DocumentFieldInfo> unsortedFields = new List<DocumentFieldInfo>()
 			{
 				CreateField("Field C"),
 				CreateField("Field A"),
 				CreateField("Field B")
 			};
 
-			List<RelativityObject> sortedFields = unsortedFields.OrderBy(x => x.Name).ToList();
+			List<DocumentFieldInfo> sortedFields = unsortedFields.OrderBy(x => x.Name).ToList();
 
 			SetupWorkspaceFields(unsortedFields);
 
 			Mock<IFieldsClassifier> classifier = new Mock<IFieldsClassifier>();
-			IEnumerable<FieldClassificationResult> classificationResult = unsortedFields.Select(x => new FieldClassificationResult()
-			{
-				Name = x.Name,
-				Type = x.FieldValues.Single(valuePair => valuePair.Field.Name == "Field Type").Value.ToString()
-			});
+			IEnumerable<FieldClassificationResult> classificationResult = unsortedFields.Select(x => new FieldClassificationResult(x));
 
-			classifier.Setup(x => x.ClassifyAsync(It.IsAny<ICollection<RelativityObject>>(), It.IsAny<int>())).ReturnsAsync(classificationResult);
+			classifier.Setup(x => x.ClassifyAsync(It.IsAny<ICollection<DocumentFieldInfo>>(), It.IsAny<int>())).ReturnsAsync(classificationResult);
+
+			var fieldsClassifiers = new List<IFieldsClassifier>()
+			{
+				classifier.Object
+			};
+
+			FieldsClassifierRunner sut = new FieldsClassifierRunner(_fieldsRepositoryFake.Object, fieldsClassifiers);
 
 			// Act
-			IList<FieldClassificationResult> filteredFields = await _sut.GetFilteredFieldsAsync(0, new List<IFieldsClassifier>() { classifier.Object }).ConfigureAwait(false);
+			IList<FieldClassificationResult> filteredFields = await sut.GetFilteredFieldsAsync(0).ConfigureAwait(false);
 
 			// Assert
 			filteredFields.Select(x => x.Name).ShouldAllBeEquivalentTo(sortedFields.Select(x => x.Name));
 		}
 
-		private void SetupWorkspaceFields(List<RelativityObject> fields)
+		private void SetupWorkspaceFields(IEnumerable<DocumentFieldInfo> fields)
 		{
-			_objectManagerMock
-				.SetupSequence(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))
-				.ReturnsAsync(CreateQueryResult(fields))
-				.ReturnsAsync(CreateQueryResult(new List<RelativityObject>()));
+			_fieldsRepositoryFake
+				.Setup(x => x.GetAllDocumentFieldsAsync(It.IsAny<int>()))
+				.ReturnsAsync(fields);
 		}
 
-		private QueryResult CreateQueryResult(List<RelativityObject> fields)
+		private DocumentFieldInfo CreateField(string name, int artifactID = 0, string type = "", bool isIdentifier = false)
 		{
-			QueryResult queryResult = new QueryResult()
-			{
-				Objects = fields,
-				ResultCount = fields.Count
-			};
-			return queryResult;
-		}
-
-		private bool ValidateQueryRequest(QueryRequest request)
-		{
-			return request.ObjectType.ArtifactTypeID == (int)ArtifactType.Field &&
-				request.Condition == "'FieldArtifactTypeID' == 10" &&
-				request.Fields.Single().Name == "*" &&
-				request.IncludeNameInQueryResult == true;
-		}
-
-		private RelativityObject CreateField(string name, int artifactID = 0, string type = "", bool isIdentifier = false)
-		{
-			return new RelativityObject()
+			var fieldObject = new RelativityObject()
 			{
 				ArtifactID = artifactID,
 				Name = name,
@@ -315,6 +237,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 					}
 				}
 			};
+
+			return FieldConvert.ToDocumentFieldInfo(fieldObject);
 		}
 	}
 }

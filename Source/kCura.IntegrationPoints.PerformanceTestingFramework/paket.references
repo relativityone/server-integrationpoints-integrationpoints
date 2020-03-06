@@ -9,6 +9,6 @@ relativity.transfer.client
 Relativity.OAuth2Client
 Relativity.Services.Interfaces
 
-group TestPackages
-	NUnit
-	NSubstitute
+
+NUnit
+NSubstitute

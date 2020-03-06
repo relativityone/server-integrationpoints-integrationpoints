@@ -9,6 +9,3 @@ kCura.OutsideIn.FI.Win32
 group Sync
 	Relativity.IntegrationPoints.Contracts
 	Relativity.Sync
-	Autofac
-	Banzai
-	Banzai.Autofac

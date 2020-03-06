@@ -5,8 +5,8 @@ Relativity.Services.Interfaces
 Relativity.Logging.Interfaces
 Relativity.Logging
 
-group TestPackages
-	FluentAssertions
-	Moq
-	NUnit
-	NSubstitute
+
+FluentAssertions
+Moq
+NUnit
+NSubstitute

@@ -3,13 +3,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
-using Relativity.IntegrationPoints.FieldsMapping;
 using Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers;
-using Relativity.Services.Objects.DataContracts;
 
-namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings.FieldsClassifiers
+namespace Relativity.IntegrationPoints.FieldsMapping.Tests.FieldsClassifiers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class OpenToAssociationsFieldsClassifierTests
 	{
 		private OpenToAssociationsFieldsClassifier _sut;
@@ -24,49 +22,21 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings.Fields
 		public async Task ClassifyAsync_ShouldClassifyFieldsThatHaveOpenToAssociationsEnabled()
 		{
 			// Arrange
-			const string openToAssociations = "Open To Associations";
-
 			const string openToAssociationsEnabledFieldName = "Open to associations - enabled";
 			const string openToAssociationsDisabledFieldName = "Open to associations - disabled";
 			const string withoutOpenToAssociationsFieldName = "Without open to associations";
 
-			List<RelativityObject> allFields = new List<RelativityObject>()
+			List<DocumentFieldInfo> allFields = new List<DocumentFieldInfo>()
 			{
-				new RelativityObject()
+				new DocumentFieldInfo(fieldIdentifier: "1", name: openToAssociationsEnabledFieldName, type: "Fixed-Length Text(250)")
 				{
-					Name = openToAssociationsEnabledFieldName,
-					FieldValues = new List<FieldValuePair>()
-					{
-						new FieldValuePair()
-						{
-							Field = new Field()
-							{
-								Name = openToAssociations
-							},
-							Value = true
-						}
-					}
+					OpenToAssociations = true
 				},
-				new RelativityObject()
+				new DocumentFieldInfo(fieldIdentifier: "1", name: openToAssociationsDisabledFieldName, type: "Fixed-Length Text(250)")
 				{
-					Name = openToAssociationsDisabledFieldName,
-					FieldValues = new List<FieldValuePair>()
-					{
-						new FieldValuePair()
-						{
-							Field = new Field()
-							{
-								Name = openToAssociations
-							},
-							Value = false
-						}
-					}
+					OpenToAssociations = false
 				},
-				new RelativityObject()
-				{
-					Name = withoutOpenToAssociationsFieldName,
-					FieldValues = new List<FieldValuePair>()
-				}
+				new DocumentFieldInfo(fieldIdentifier: "1", name: withoutOpenToAssociationsFieldName, type: "Fixed-Length Text(250)")
 			};
 
 			// Act

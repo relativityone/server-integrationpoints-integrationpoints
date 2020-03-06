@@ -250,6 +250,12 @@ namespace kCura.IntegrationPoints.Web
 			);
 
 			config.Routes.MapHttpRoute(
+				name: "ValidateFieldsMapping",
+				routeTemplate: "{workspaceID}/api/FieldMappings/Validate/{destinationWorkspaceID}",
+				defaults: new { controller = "FieldMappings", action = "ValidateAsync" }
+			);
+			
+			config.Routes.MapHttpRoute(
 				name: "AutoMapFieldsFromSavedSearch",
 				routeTemplate: "{sourceWorkspaceID}/api/FieldMappings/AutomapFieldsFromSavedSearch/{savedSearchID}",
 				defaults: new { controller = "FieldMappings", action = "AutoMapFieldsFromSavedSearch" }

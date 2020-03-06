@@ -1,18 +1,13 @@
 Castle.Windsor
 CSharpGuidelineAnalyzer
-Newtonsoft.Json
 Polly
 Relativity.API
 Relativity.IntegrationPoints.Contracts
 Relativity.Kepler.Client
-Relativity.Telemetry.APM
 Relativity.OAuth2Client
 Relativity.Toggles
 Relativity.Logging.Interfaces
-
-group TestPackages
-	FluentAssertions
-	Moq
-	NUnit
-	NSubstitute
-	relativity.testing.identification
+FluentAssertions
+Moq
+NSubstitute
+relativity.testing.identification

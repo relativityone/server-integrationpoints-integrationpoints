@@ -11,6 +11,7 @@ using kCura.IntegrationPoints.Web.Models;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using NSubstitute;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers
 {
@@ -21,6 +22,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 	    private ISettingsManager _settingsManager;
 		private IConnectorFactory _connectorFactory = null;
         private IFtpConnector _ftpConnector = null;
+		private ICPHelper _helper = null;
+		private ILogFactory _logFactory = null;
+		private IAPILog _logger = null;
         private FtpProviderController _instance;
 
         public override void SetUp()
@@ -30,8 +34,13 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 	        _settingsManager = Substitute.For<ISettingsManager>();
 			_connectorFactory = Substitute.For<IConnectorFactory>();
             _connectorFactory.GetConnector("", "", 777, "", "").ReturnsForAnyArgs(_ftpConnector);
+			_logger = Substitute.For<IAPILog>();
+			_logFactory = Substitute.For<ILogFactory>();
+			_logFactory.GetLogger().Returns(_logger);
+			_helper = Substitute.For<ICPHelper>();
+			_helper.GetLoggerFactory().Returns(_logFactory);
 
-            _instance = new FtpProviderController(_connectorFactory, _settingsManager);
+			_instance = new FtpProviderController(_connectorFactory, _settingsManager, _helper);
         }
 
         [TestCase("", "test.host", "", "", "", 21, true, HttpStatusCode.BadRequest, ErrorMessage.MISSING_CSV_FILE_NAME)]

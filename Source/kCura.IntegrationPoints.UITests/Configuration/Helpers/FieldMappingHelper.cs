@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data.UtilityDTO;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.UITests.Configuration.Models;
 using Relativity;
 using Relativity.Services.Objects.DataContracts;
 

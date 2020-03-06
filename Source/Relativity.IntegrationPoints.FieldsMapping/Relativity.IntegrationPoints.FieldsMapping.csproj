@@ -53,6 +53,7 @@
     <Compile Include="AutomapRequest.cs" />
     <Compile Include="AutomapRunner.cs" />
     <Compile Include="ClassificationLevel.cs" />
+    <Compile Include="Const.cs" />
     <Compile Include="DocumentFieldInfo.cs" />
     <Compile Include="FieldClassificationResult.cs" />
     <Compile Include="FieldClassifiers\ObjectFieldsClassifier.cs" />
@@ -62,9 +63,16 @@
     <Compile Include="FieldClassifiers\OpenToAssociationsFieldsClassifier.cs" />
     <Compile Include="FieldClassifiers\RipFieldsClassifier.cs" />
     <Compile Include="FieldClassifiers\SystemFieldsClassifier.cs" />
+    <Compile Include="FieldsClassifierRunnerFactory.cs" />
     <Compile Include="FieldsClassifierRunner.cs" />
+    <Compile Include="FieldsMappingValidator.cs" />
+    <Compile Include="FieldsRepository.cs" />
+    <Compile Include="Helpers\FieldConvert.cs" />
     <Compile Include="IAutomapRunner.cs" />
+    <Compile Include="IFieldsClassifyRunnerFactory.cs" />
     <Compile Include="IFieldsClassifierRunner.cs" />
+    <Compile Include="IFieldsMappingValidator.cs" />
+    <Compile Include="IFieldsRepository.cs" />
     <Compile Include="Models\FieldMap.cs" />
     <Compile Include="Models\FieldMapTypeEnum.cs" />
   </ItemGroup>

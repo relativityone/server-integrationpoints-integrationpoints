@@ -10,14 +10,9 @@ Relativity.Data
 Relativity.DataExchange.Client.SDK
 Relativity.DataTransfer.MessageService
 Relativity.IntegrationPoints.Contracts
-Relativity.Telemetry.APM
 Relativity.Telemetry.MetricsCollection
-Relativity.Services.Interfaces
 Relativity.AutomatedWorkflows.Services.Interfaces
-Polly
-
-group TestPackages
-	FluentAssertions
-	Moq
-	NUnit
-	NSubstitute
+FluentAssertions
+Moq
+NUnit
+NSubstitute

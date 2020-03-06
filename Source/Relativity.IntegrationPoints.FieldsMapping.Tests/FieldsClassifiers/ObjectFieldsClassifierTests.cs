@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
 using Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers;
-using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.IntegrationPoints.FieldsMapping.Tests.FieldsClassifiers
 {
@@ -27,22 +24,9 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests.FieldsClassifiers
 		{
 			// Arrange 
 
-			var fields = new List<RelativityObject>
+			var fields = new List<DocumentFieldInfo>
 			{
-				new RelativityObject
-				{
-					FieldValues = new List<FieldValuePair>
-					{
-						new FieldValuePair
-						{
-							Field = new Field
-							{
-								Name = "Field Type"
-							},
-							Value = "Single Object"
-						}
-					}
-				}
+				new DocumentFieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Single Object")
 			};
 
 			// Act
@@ -60,22 +44,9 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests.FieldsClassifiers
 		{
 			// Arrange 
 
-			var fields = new List<RelativityObject>
+			var fields = new List<DocumentFieldInfo>
 			{
-				new RelativityObject
-				{
-					FieldValues = new List<FieldValuePair>
-					{
-						new FieldValuePair
-						{
-							Field = new Field
-							{
-								Name = "Field Type"
-							},
-							Value = "Multiple Object"
-						}
-					}
-				}
+				new DocumentFieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Multiple Object")
 			};
 
 			// Act
@@ -93,22 +64,9 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests.FieldsClassifiers
 		{
 			// Arrange 
 
-			var fields = new List<RelativityObject>
+			var fields = new List<DocumentFieldInfo>
 			{
-				new RelativityObject
-				{
-					FieldValues = new List<FieldValuePair>
-					{
-						new FieldValuePair
-						{
-							Field = new Field
-							{
-								Name = "Field Type"
-							},
-							Value = "Other type"
-						}
-					}
-				}
+				new DocumentFieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Other type")
 			};
 
 			// Act

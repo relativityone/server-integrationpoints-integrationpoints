@@ -5,5 +5,4 @@ kCura.Relativity.Client
 Relativity.Authentication
 Relativity.IntegrationPoints.Contracts
 Relativity.IntegrationPoints.Services.Interfaces.Private
-Relativity.Telemetry.APM
 Relativity.Services.Interfaces

@@ -3,13 +3,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
-using Relativity.IntegrationPoints.FieldsMapping;
 using Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers;
-using Relativity.Services.Objects.DataContracts;
 
-namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings.FieldsClassifiers
+namespace Relativity.IntegrationPoints.FieldsMapping.Tests.FieldsClassifiers
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class RipFieldsClassifierTests
 	{
 		private RipFieldsClassifier _sut;
@@ -40,7 +38,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings.Fields
 		public async Task ClassifyAsync_ShouldClassifyRipFieldsAsHideFromUser()
 		{
 			// Arrange
-			ICollection<RelativityObject> fields = CreateRelativityObjects(_ripFields).ToList();
+			ICollection<DocumentFieldInfo> fields = CreateFieldInfos(_ripFields).ToList();
 
 			// Act
 			List<FieldClassificationResult> classified = (await _sut.ClassifyAsync(fields, 0).ConfigureAwait(false)).ToList();
@@ -54,7 +52,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings.Fields
 		public async Task ClassifyAsync_ShouldNotClassifyOnlyRipFields()
 		{
 			// Arrange
-			ICollection<RelativityObject> fields = CreateRelativityObjects(_nonRipFields).ToList();
+			ICollection<DocumentFieldInfo> fields = CreateFieldInfos(_nonRipFields).ToList();
 
 			// Act
 			IEnumerable<FieldClassificationResult> classified = await _sut.ClassifyAsync(fields, 0).ConfigureAwait(false);
@@ -63,12 +61,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings.Fields
 			classified.Should().BeEmpty();
 		}
 
-		private IEnumerable<RelativityObject> CreateRelativityObjects(IEnumerable<string> fieldNames)
+		private IEnumerable<DocumentFieldInfo> CreateFieldInfos(IEnumerable<string> fieldNames)
 		{
-			return fieldNames.Select(x => new RelativityObject()
-			{
-				Name = x
-			});
+			return fieldNames.Select(x => new DocumentFieldInfo(fieldIdentifier: x, name: x, type: "Some Type"));
 		}
 	}
 }

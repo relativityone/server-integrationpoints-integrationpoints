@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers
 {
@@ -15,13 +14,12 @@ namespace Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers
 			"Job History"
 		};
 
-		public Task<IEnumerable<FieldClassificationResult>> ClassifyAsync(ICollection<RelativityObject> fields, int workspaceID)
+		public Task<IEnumerable<FieldClassificationResult>> ClassifyAsync(ICollection<DocumentFieldInfo> fields, int workspaceID)
 		{
 			IEnumerable<FieldClassificationResult> filteredOutFields = fields
 				.Where(x => _ripFieldNamesToIgnore.Contains(x.Name))
-				.Select(x => new FieldClassificationResult()
+				.Select(x => new FieldClassificationResult(x)
 				{
-					Name = x.Name,
 					ClassificationReason = "Field is populated by RIP.",
 					ClassificationLevel = ClassificationLevel.HideFromUser
 				});
