@@ -12,7 +12,6 @@ Relativity.IntegrationPoints.Services.Interfaces.Private
 Relativity.Kepler
 Relativity.Productions.Services.Interfaces
 Relativity.Services.Interfaces
-Relativity.Services.Interfaces.Private
 Relativity.Telemetry.APM
 relativity.transfer.client
 Relativity.OAuth2Client
