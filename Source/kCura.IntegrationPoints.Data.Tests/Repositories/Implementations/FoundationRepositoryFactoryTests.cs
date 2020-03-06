@@ -157,7 +157,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				Action sut = () => factory.GetRepository<T>(WORKSPACE_ID);
 
 				//assert
-				sut.Should().ThrowExactly<InvalidOperationException>();
+				sut.ShouldThrowExactly<InvalidOperationException>();
 				_instrumentationProvider.Received().CreateSimple(
 					API_FOUNDATION,
 					IWORKSPACE_GATEWAY,
@@ -183,7 +183,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				Action sut = () => factory.GetRepository<T>(WORKSPACE_ID);
 
 				//assert
-				sut.Should().ThrowExactly<InvalidOperationException>();
+				sut.ShouldThrowExactly<InvalidOperationException>();
 				_instrumentationProvider.Received().CreateSimple(
 					API_FOUNDATION,
 					IWORKSPACE_GATEWAY,
@@ -211,7 +211,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				Action sut = () => factory.GetRepository<T>(WORKSPACE_ID);
 
 				//assert
-				sut.Should().ThrowExactly<NullReferenceException>();
+				sut.ShouldThrowExactly<NullReferenceException>();
 				_instrumentationProvider.Received().CreateSimple(
 					API_FOUNDATION,
 					IWORKSPACE_GATEWAY,

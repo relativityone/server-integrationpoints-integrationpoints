@@ -101,21 +101,21 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 			int syncDestinationProviderArtifactID = await GetSyncDestinationProviderArtifactIDAsync(targetWorkspaceID)
 				.ConfigureAwait(false);
 			targetWorkspaceProfiles.Select(p => p.DestinationProvider)
-				.Should().AllBeEquivalentTo(syncDestinationProviderArtifactID);
+				.ShouldAllBeEquivalentTo(syncDestinationProviderArtifactID);
 
 			// verify source provider id
 			int syncSourceProviderArtifactID = await GetSyncSourceProviderArtifactIDAsync(targetWorkspaceID)
 				.ConfigureAwait(false);
 			targetWorkspaceProfiles.Select(p => p.SourceProvider)
-				.Should().AllBeEquivalentTo(syncSourceProviderArtifactID);
+				.ShouldAllBeEquivalentTo(syncSourceProviderArtifactID);
 
 			// verify integration point type id
 			int exportIntegrationPointTypeArtifactID = await GetTypeArtifactIDAsync(targetWorkspaceID, IntegrationPointTypes.ExportName)
 				.ConfigureAwait(false);
 			targetWorkspaceProfiles.Select(p => p.Type.HasValue)
-				.Should().AllBeEquivalentTo(true);
+				.ShouldAllBeEquivalentTo(true);
 			targetWorkspaceProfiles.Select(p => p.Type)
-				.Should().AllBeEquivalentTo(exportIntegrationPointTypeArtifactID);
+				.ShouldAllBeEquivalentTo(exportIntegrationPointTypeArtifactID);
 			
 			List<SourceConfiguration> sourceConfigurations = targetWorkspaceProfiles
 				.Select(profile => profile.SourceConfiguration)
@@ -129,30 +129,30 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 
 			// verify that source is saved search
 			sourceConfigurations.Select(config => config.TypeOfExport)
-				.Should().AllBeEquivalentTo(SourceConfiguration.ExportType.SavedSearch);
+				.ShouldAllBeEquivalentTo(SourceConfiguration.ExportType.SavedSearch);
 
 			// verify that destination is not production
 			destinationConfigurations.Select(config => config.ProductionImport)
-				.Should().AllBeEquivalentTo(false);
+				.ShouldAllBeEquivalentTo(false);
 
 			// verify source workspace id in source configuration
 			sourceConfigurations.Select(config => config.SourceWorkspaceArtifactId)
-				.Should().AllBeEquivalentTo(targetWorkspaceID);
+				.ShouldAllBeEquivalentTo(targetWorkspaceID);
 
 			// verify saved search id in source configuration
 			sourceConfigurations
 				.Select(config => config.SavedSearchArtifactId)
-				.Should().AllBeEquivalentTo(0);
+				.ShouldAllBeEquivalentTo(0);
 
 			// verify destination folder id in source configuration
 			targetWorkspaceProfiles
 				.Select(x => JObject.Parse(x.SourceConfiguration)["FolderArtifactId"].Type)
-				.Should().AllBeEquivalentTo(JTokenType.Null);
+				.ShouldAllBeEquivalentTo(JTokenType.Null);
 
 			// verify image precedence in destination configuration
 			targetWorkspaceProfiles
 				.Select(x => JObject.Parse(x.DestinationConfiguration)["ImagePrecedence"].Type)
-				.Should().AllBeEquivalentTo(JTokenType.Null);
+				.ShouldAllBeEquivalentTo(JTokenType.Null);
 		}
 
 		private async Task<List<IntegrationPointProfile>> GetProfilesAsync(IRelativityObjectManager objectManager)

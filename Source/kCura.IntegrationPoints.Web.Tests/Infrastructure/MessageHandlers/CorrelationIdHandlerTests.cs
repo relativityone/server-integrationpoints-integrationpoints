@@ -125,7 +125,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Infrastructure.MessageHandlers
 			Func<Task> sendAsyncAction = () => _sut.SendAsyncInternal(request, CancellationToken.None);
 
 			// act & assert
-			sendAsyncAction.Should().Throw<CorrelationContextCreationException>()
+			sendAsyncAction.ShouldThrow<CorrelationContextCreationException>()
 				.Which.InnerException.Should().Be(thrownException);
 		}
 
@@ -163,7 +163,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Infrastructure.MessageHandlers
 			Func<Task> sendAsyncAction = () => _sut.SendAsyncInternal(request, CancellationToken.None);
 
 			// act & assert
-			sendAsyncAction.Should().Throw<CorrelationContextCreationException>()
+			sendAsyncAction.ShouldThrow<CorrelationContextCreationException>()
 				.Which.InnerException.Should().Be(thrownException);
 		}
 

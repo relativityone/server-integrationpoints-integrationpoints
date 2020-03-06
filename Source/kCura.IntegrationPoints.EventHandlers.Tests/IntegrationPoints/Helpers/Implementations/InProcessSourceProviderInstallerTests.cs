@@ -100,7 +100,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
             Func<Task> installSourceProviderAction = () => _sut.InstallSourceProvidersAsync(_WORKSPACE_ID, _sourceProviders);
 
             // assert
-            installSourceProviderAction.Should().Throw<InvalidSourceProviderException>().WithMessage(expectedError);
+            installSourceProviderAction.ShouldThrow<InvalidSourceProviderException>().WithMessage(expectedError);
         }
 
         [Test]
@@ -122,7 +122,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
 
             // assert
             string expectedMessage = $"Error occured while creating instance of {nameof(IRipProviderInstaller)}.";
-            installSourceProviderAction.Should().Throw<InvalidSourceProviderException>()
+            installSourceProviderAction.ShouldThrow<InvalidSourceProviderException>()
                 .Which.Message.Should().Contain(expectedMessage);
         }
 

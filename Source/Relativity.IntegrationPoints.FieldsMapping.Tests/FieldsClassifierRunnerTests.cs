@@ -107,7 +107,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 			Func<Task> action = () => sut.GetFilteredFieldsAsync(0);
 
 			// Assert
-			action.Should().Throw<InvalidOperationException>();
+			action.ShouldThrow<InvalidOperationException>();
 			classifierMock.Verify(x => x.ClassifyAsync(It.IsAny<ICollection<DocumentFieldInfo>>(), It.IsAny<int>()), Times.Exactly(2));
 		}
 
@@ -201,7 +201,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 			IList<FieldClassificationResult> filteredFields = await sut.GetFilteredFieldsAsync(0).ConfigureAwait(false);
 
 			// Assert
-			filteredFields.Select(x => x.Name).Should().BeEquivalentTo(sortedFields.Select(x => x.Name));
+			filteredFields.Select(x => x.Name).ShouldAllBeEquivalentTo(sortedFields.Select(x => x.Name));
 		}
 
 		private void SetupWorkspaceFields(IEnumerable<DocumentFieldInfo> fields)

@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 			Action createFileDownloaderAction = () => sut.Create(exportFile);
 
 			// act
-			createFileDownloaderAction.Should().Throw<ArgumentNullException>();
+			createFileDownloaderAction.ShouldThrow<ArgumentNullException>();
 		}
 
 		[Test]
@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 			Action createFileDownloaderAction = () => sut.Create(exportFile);
 
 			// act
-			createFileDownloaderAction.Should().Throw<ArgumentException>();
+			createFileDownloaderAction.ShouldThrow<ArgumentException>();
 		}
 
 		[Test]
@@ -84,7 +84,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 			Action createFileDownloaderAction = () => sut.Create(exportFile);
 
 			// act
-			createFileDownloaderAction.Should().Throw<ArgumentException>();
+			createFileDownloaderAction.ShouldThrow<ArgumentException>();
 		}
 	}
 }

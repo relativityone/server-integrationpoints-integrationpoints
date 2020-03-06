@@ -66,7 +66,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests.FieldsClassifiers
 			Func<Task> action = () => _sut.ClassifyAsync(Mock.Of<ICollection<DocumentFieldInfo>>(), 0);
 
 			// Assert
-			action.Should().Throw<InvalidOperationException>();
+			action.ShouldThrow<InvalidOperationException>();
 		}
 	}
 }

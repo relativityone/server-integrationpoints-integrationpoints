@@ -181,7 +181,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 
 			// Assert
 			_destinationWorkspaceDto.DestinationWorkspaceArtifactID.Should().NotBeNull();
-			linkDestinationWorkspaceAction.Should().Throw<IntegrationPointsException>()
+			linkDestinationWorkspaceAction.ShouldThrow<IntegrationPointsException>()
 				.WithMessage("Unable to link Destination Workspace object to Job History object");
 		}
 
@@ -203,7 +203,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 
 			//Assert
 			string expectedExceptionMessagePart = "Cannot UPDATE object of type DestinationWorkspace with ObjectManager";
-			updateDestinationWorkspaceAction.Should().Throw<IntegrationPointsException>()
+			updateDestinationWorkspaceAction.ShouldThrow<IntegrationPointsException>()
 				.Which.Message.Should().Contain(expectedExceptionMessagePart);
 		}
 	}

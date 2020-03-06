@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Utilities
 			Action action = () => CommaSeparatedNumbersToArrayConverter.Convert(formatString);
 
 			//assert
-			action.Should().Throw<FormatException>();
+			action.ShouldThrow<FormatException>();
 		}
 
 		[Test]
@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Utilities
 				() => CommaSeparatedNumbersToArrayConverter.Convert(commaSeparatedNumbers: null);
 
 			//assert
-			action.Should().Throw<NullReferenceException>();
+			action.ShouldThrow<NullReferenceException>();
 		}
 	}
 }

@@ -97,7 +97,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceContext
 			Action getWorkspaceIdAction = () => sut.GetWorkspaceID();
 
 			// act & assert
-			getWorkspaceIdAction.Should().Throw<InvalidOperationException>()
+			getWorkspaceIdAction.ShouldThrow<InvalidOperationException>()
 				.Which.Should().Be(expectedException);
 		}
 

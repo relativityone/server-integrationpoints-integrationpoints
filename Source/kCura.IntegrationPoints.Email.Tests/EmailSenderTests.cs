@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoints.Email.Tests
 
 			// assert
 			act
-				.Should().Throw<SendEmailException>()
+				.ShouldThrow<SendEmailException>()
 				.WithMessage("SMTP configuration is empty");
 		}
 
@@ -79,7 +79,7 @@ namespace kCura.IntegrationPoints.Email.Tests
 
 			// assert
 			act
-				.Should().Throw<SendEmailException>()
+				.ShouldThrow<SendEmailException>()
 				.WithMessage("SMTP client configuration is invalid. Errors: The SMTP host was not specified.");
 		}
 
@@ -106,7 +106,7 @@ namespace kCura.IntegrationPoints.Email.Tests
 
 			// assert
 			act
-				.Should().Throw<SendEmailException>()
+				.ShouldThrow<SendEmailException>()
 				.WithMessage("SMTP email from address is invalid. Errors: Email address is invalid");
 		}
 

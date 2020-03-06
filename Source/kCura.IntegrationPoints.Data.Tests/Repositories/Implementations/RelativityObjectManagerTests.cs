@@ -67,7 +67,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 					ExecutionIdentity.System);
 
 			// assert
-			action.Should().Throw<IntegrationPointsException>();
+			action.ShouldThrow<IntegrationPointsException>();
 		}
 
 		[Test]
@@ -90,7 +90,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 					ExecutionIdentity.System);
 
 			// assert
-			action.Should().Throw<IntegrationPointsException>();
+			action.ShouldThrow<IntegrationPointsException>();
 		}
 
 		[Test]
@@ -113,7 +113,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 					ExecutionIdentity.System);
 
 			// assert
-			action.Should().Throw<IntegrationPointsException>();
+			action.ShouldThrow<IntegrationPointsException>();
 		}
 
 		[Test]
@@ -136,7 +136,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 					ExecutionIdentity.System);
 
 			// assert
-			action.Should().Throw<IntegrationPointsException>();
+			action.ShouldThrow<IntegrationPointsException>();
 		}
 
 		[Test]
@@ -215,7 +215,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			Func<Task> massDeleteAction = () => _sut.MassDeleteAsync(Enumerable.Empty<int>(), ExecutionIdentity.System);
 			
 			// assert
-			massDeleteAction.Should().Throw<IntegrationPointsException>()
+			massDeleteAction.ShouldThrow<IntegrationPointsException>()
 				.Which.Should().Be(expectedException);
 		}
 
@@ -232,7 +232,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			Func<Task> massDeleteAction = () => _sut.MassDeleteAsync(Enumerable.Empty<int>(), ExecutionIdentity.System);
 
 			// assert
-			massDeleteAction.Should().Throw<IntegrationPointsException>()
+			massDeleteAction.ShouldThrow<IntegrationPointsException>()
 				.Which.InnerException.Should().Be(expectedInnerException);
 		}
 
@@ -301,7 +301,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 					It.IsAny<ExecutionIdentity>());
 
 			// assert
-			massUpdateAction.Should().Throw<IntegrationPointsException>()
+			massUpdateAction.ShouldThrow<IntegrationPointsException>()
 				.Which.Should().Be(expectedException);
 		}
 
@@ -327,7 +327,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 					It.IsAny<ExecutionIdentity>());
 
 			// assert
-			massUpdateAction.Should().Throw<IntegrationPointsException>()
+			massUpdateAction.ShouldThrow<IntegrationPointsException>()
 				.Which.InnerException.Should().Be(expectedInnerException);
 		}
 
@@ -480,7 +480,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 					ExecutionIdentity.System);
 
 			// assert
-			action.Should().Throw<IntegrationPointsException>();
+			action.ShouldThrow<IntegrationPointsException>();
 		}
 
 		[Test]
@@ -505,7 +505,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 					ExecutionIdentity.System);
 
 			// assert
-			action.Should().Throw<IntegrationPointsException>();
+			action.ShouldThrow<IntegrationPointsException>();
 		}
 
 		[Test]
@@ -538,7 +538,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 					resultsBlockSize,
 					exportIndexID),
 				Times.Once);
-			actualResult.Should().BeEquivalentTo(expectedResult, options => options.WithStrictOrdering());
+			actualResult.ShouldBeEquivalentTo(expectedResult, options => options.WithStrictOrdering());
 		}
 
 		[Test]
@@ -579,7 +579,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 					It.IsAny<int>(),
 					It.IsAny<int>()),
 				Times.Exactly(expectedCallsCount));
-			actualResult.Should().BeEquivalentTo(expectedResult, options => options.WithStrictOrdering());
+			actualResult.ShouldBeEquivalentTo(expectedResult, options => options.WithStrictOrdering());
 		}
 
 		[Test]
@@ -629,7 +629,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 					It.IsAny<int>(),
 					It.IsAny<int>()),
 				Times.Exactly(expectedCallsCount));
-			actualResult.Should().BeEquivalentTo(expectedResult, options => options.WithStrictOrdering());
+			actualResult.ShouldBeEquivalentTo(expectedResult, options => options.WithStrictOrdering());
 		}
 
 		[Test]
@@ -654,7 +654,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 						exportIndexID,
 						ExecutionIdentity.System);
 
-			action.Should().Throw<IntegrationPointsException>();
+			action.ShouldThrow<IntegrationPointsException>();
 		}
 
 		[Test]
@@ -679,7 +679,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 						exportIndexID,
 						ExecutionIdentity.System);
 
-			action.Should().Throw<IntegrationPointsException>();
+			action.ShouldThrow<IntegrationPointsException>();
 		}
 
 		private static RelativityObjectSlim[] CreateTestRelativityObjectsSlim(int size)

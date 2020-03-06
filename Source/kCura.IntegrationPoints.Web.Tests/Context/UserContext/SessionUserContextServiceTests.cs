@@ -86,7 +86,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.UserContext
 			Action getUserIDAction = () => _sut.GetUserID();
 
 			// act & assert
-			getUserIDAction.Should().Throw<InvalidOperationException>()
+			getUserIDAction.ShouldThrow<InvalidOperationException>()
 				.Which.Should().Be(expectedException);
 		}
 
@@ -144,7 +144,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.UserContext
 			Action getWorkspaceUserIDAction = () => _sut.GetWorkspaceUserID();
 
 			// act & assert
-			getWorkspaceUserIDAction.Should().Throw<InvalidOperationException>()
+			getWorkspaceUserIDAction.ShouldThrow<InvalidOperationException>()
 				.Which.Should().Be(expectedException);
 		}
 	}

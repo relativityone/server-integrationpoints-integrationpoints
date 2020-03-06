@@ -155,7 +155,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.IntegrationPo
 
 			// assert
 			initializationResults.RecordCount.Should().Be((long) expectedDocumentCount);
-			initializationResults.FieldNames.Should().BeEquivalentTo(fieldNames, options => options.WithStrictOrdering());
+			initializationResults.FieldNames.ShouldBeEquivalentTo(fieldNames, options => options.WithStrictOrdering());
 
 			objects.Count.Should().Be(expectedDocumentCount);
 			AssertDocumentsAreIdenticalForSavedSearch(
@@ -198,7 +198,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.IntegrationPo
 			// assert
 			initializationResults.RecordCount
 				.Should().Be((long) expectedDocumentCount);
-			initializationResults.FieldNames.Should().BeEquivalentTo(fieldNames, options => options.WithStrictOrdering());
+			initializationResults.FieldNames.ShouldBeEquivalentTo(fieldNames, options => options.WithStrictOrdering());
 
 			objects.Count.Should().Be(expectedDocumentCount);
 			AssertDocumentsAreIdenticalForProduction(

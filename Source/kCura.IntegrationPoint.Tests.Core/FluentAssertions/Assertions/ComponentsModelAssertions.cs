@@ -85,7 +85,5 @@ namespace kCura.IntegrationPoint.Tests.Core.FluentAssertions.Assertions
 
 			return new AndConstraint<ComponentsModelAssertions>(this);
 		}
-
-        protected override string Identifier { get; }
-    }
+	}
 }

@@ -139,7 +139,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			Action action = () => _sut.RemoveErrorDocuments(documentControlNumbers: null);
 
 			//ACT & ASSERT
-			action.Should().NotThrow();
+			action.ShouldNotThrow();
 		}
 
 		[Test]
@@ -150,7 +150,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			Action action = () => _sut.RemoveErrorDocuments(documentControlNumbers: emptyArray);
 
 			//ACT & ASSERT
-			action.Should().NotThrow();
+			action.ShouldNotThrow();
 		}
 	}
 }

@@ -90,7 +90,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Context
 			Action getWorkspaceIDAction = () => sut.GetWorkspaceID();
 
 			// assert
-			getWorkspaceIDAction.Should().Throw<WorkspaceIdNotFoundException>(
+			getWorkspaceIDAction.ShouldThrow<WorkspaceIdNotFoundException>(
 				"because workspace context is not present");
 		}
 

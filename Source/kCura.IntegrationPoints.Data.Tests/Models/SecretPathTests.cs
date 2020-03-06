@@ -149,14 +149,14 @@ namespace kCura.IntegrationPoints.Data.Tests.Models
 
 			//assert
 			action
-				.Should().Throw<ArgumentException>()
+				.ShouldThrow<ArgumentException>()
 				.WithMessage("Invalid secret path. SecretID cannot be null or whitespace.");
 		}
 
 		private void AssertInvalidPathExceptionThrown(Action action, int workspaceID, int integrationPointID, string secretID)
 		{
 			action
-				.Should().Throw<ArgumentException>()
+				.ShouldThrow<ArgumentException>()
 				.WithMessage(
 					$"Invalid secret path. WorkspaceID: {workspaceID}, IntegrationPointID: {integrationPointID}, SecretID: {secretID}");
 		}

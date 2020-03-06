@@ -260,7 +260,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
             Func<Task> intallProviderAction = async () => await _providerManager.InstallProviderAsync(request).ConfigureAwait(false);
 
             // assert
-            intallProviderAction.Should().Throw<InsufficientPermissionException>();
+            intallProviderAction.ShouldThrow<InsufficientPermissionException>();
         }
 
         [TestCase(ArtifactPermission.Create)]
@@ -279,7 +279,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
             Func<Task> intallProviderAction = async () => await _providerManager.InstallProviderAsync(request).ConfigureAwait(false);
 
             // assert
-            intallProviderAction.Should().Throw<InsufficientPermissionException>();
+            intallProviderAction.ShouldThrow<InsufficientPermissionException>();
         }
 
         [Test]
@@ -350,7 +350,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
             Func<Task> uninstallProviderAction = async () => await _providerManager.UninstallProviderAsync(request).ConfigureAwait(false);
 
             // assert
-            uninstallProviderAction.Should().Throw<InsufficientPermissionException>();
+            uninstallProviderAction.ShouldThrow<InsufficientPermissionException>();
         }
 
         [TestCase(ObjectTypeGuids.IntegrationPoint, ArtifactPermission.Edit)]
@@ -371,7 +371,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
             Func<Task> uninstallProviderAction = async () => await _providerManager.UninstallProviderAsync(request).ConfigureAwait(false);
 
             // assert
-            uninstallProviderAction.Should().Throw<InsufficientPermissionException>();
+            uninstallProviderAction.ShouldThrow<InsufficientPermissionException>();
         }
 
         [Test]

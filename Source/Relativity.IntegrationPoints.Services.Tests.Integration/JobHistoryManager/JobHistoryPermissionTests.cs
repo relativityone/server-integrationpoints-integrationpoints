@@ -158,7 +158,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Integration.JobHistoryMana
 		private static void AssertPermissionErrorMessage(Func<Task> action)
 		{
 			action
-				.Should().Throw<InsufficientPermissionException>()
+				.ShouldThrow<InsufficientPermissionException>()
 				.WithMessage("You do not have permission to access this service.");
 		}
 	}

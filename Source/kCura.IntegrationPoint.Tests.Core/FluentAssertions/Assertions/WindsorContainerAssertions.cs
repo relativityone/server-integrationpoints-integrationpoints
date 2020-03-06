@@ -201,7 +201,5 @@ namespace kCura.IntegrationPoint.Tests.Core.FluentAssertions.Assertions
                 return null;
             }
         }
-
-        protected override string Identifier { get; }
-    }
+	}
 }

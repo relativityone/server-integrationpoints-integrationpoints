@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.Data.Tests.QueryOptions
 			JobHistoryQueryOptions sut = JobHistoryQueryOptions.All();
 
 			//assert
-			sut.FieldGuids.Should().BeEquivalentTo(_jobHistoryFieldsGuids.Values);
+			sut.FieldGuids.ShouldBeEquivalentTo(_jobHistoryFieldsGuids.Values);
 		}
 
 		[Test]
@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.Data.Tests.QueryOptions
 
 			//assert
 			sut.FieldGuids
-				.Should().BeEquivalentTo(
+				.ShouldBeEquivalentTo(
 					_jobHistoryFieldsGuids.Values.Except(new [] { exceptOne })
 				);
 		}
@@ -74,7 +74,7 @@ namespace kCura.IntegrationPoints.Data.Tests.QueryOptions
 
 			//assert
 			sut.FieldGuids
-				.Should().BeEquivalentTo(
+				.ShouldBeEquivalentTo(
 					_jobHistoryFieldsGuids.Values.Except(new[]
 					{
 						exceptOne,

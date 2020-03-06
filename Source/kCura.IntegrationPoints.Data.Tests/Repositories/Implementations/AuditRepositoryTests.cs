@@ -63,7 +63,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			Action action = () => auditRepository.AuditExport(exportStats, _USER_ID);
 
 			//assert
-			action.Should().Throw<Exception>();
+			action.ShouldThrow<Exception>();
 			_exportAuditRepository.Verify(x => x.CreateAuditForExport(exportStats, _USER_ID), Times.Once);
 			_instrumentationProvider.Verify(
 				x => x.CreateSimple(

@@ -93,7 +93,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			Action act = () => sut.Read(fieldId);
 
             //assert
-            act.Should().Throw<IntegrationPointsException>()
+            act.ShouldThrow<IntegrationPointsException>()
 	           .WithMessage($"An error occured while reading field {fieldId} from workspace {WORKSPACE_ID}")
 	           .WithInnerExceptionExactly<InvalidOperationException>();
 			_instrumentationProvider.Received()

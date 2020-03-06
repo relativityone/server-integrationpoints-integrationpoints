@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceContext
 
 			// act & assert
 			getWorkspaceIDAction
-				.Should().Throw<WorkspaceIdNotFoundException>("because workspace context was not found");
+				.ShouldThrow<WorkspaceIdNotFoundException>("because workspace context was not found");
 			_loggerMock.Verify(x=>x.LogWarning(It.IsAny<string>()));
 		}
 	}

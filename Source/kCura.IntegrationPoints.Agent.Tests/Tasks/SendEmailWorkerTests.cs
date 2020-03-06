@@ -91,7 +91,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			Action act = () => _sut.Execute(job);
 
 			//ASSERT
-			act.Should().ThrowExactly<AggregateException>().Where(x => x.InnerExceptions.Count == 1);
+			act.ShouldThrowExactly<AggregateException>().Where(x => x.InnerExceptions.Count == 1);
 			_emailSender.Verify(x => x.Send(It.Is<EmailMessageDto>(y => y.ToAddress == emailToPass)));
 		}
 
@@ -110,7 +110,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			Action act = () => _sut.Execute(job);
 
 			//ASSERT
-			act.Should().ThrowExactly<NullReferenceException>();
+			act.ShouldThrowExactly<NullReferenceException>();
 			_emailSender.Verify(x => x.Send(
 				It.IsAny<EmailMessageDto>()),
 				Times.Once,

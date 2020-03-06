@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.Web.Tests.IntegrationPointsServices
 			Action constructor = () => new TextSanitizer(internalSanitizer);
 
 			//
-			constructor.Should().Throw<ArgumentNullException>();
+			constructor.ShouldThrow<ArgumentNullException>();
 		}
 
 		[Test]

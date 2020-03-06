@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 			Action action = () => new ExportDataSanitizer(sanitizers);
 
 			// Assert
-			action.Should().Throw<IntegrationPointsException>()
+			action.ShouldThrow<IntegrationPointsException>()
 				.Which.Message.Should().Contain("sanitizers"); // To ensure that old Sync (and not an underlying type) is throwing this exception.
 		}
 
@@ -60,7 +60,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 					.ConfigureAwait(false);
 
 			// Assert
-			action.Should().Throw<InvalidOperationException>();
+			action.ShouldThrow<InvalidOperationException>();
 		}
 
 		[Test]
@@ -114,7 +114,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 					.ConfigureAwait(false);
 
 			// Assert
-			action.Should().Throw<IntegrationPointsException>();
+			action.ShouldThrow<IntegrationPointsException>();
 		}
 
 		private static IEnumerable<TestCaseData> CorrectlyCheckForDataTypesToSanitizeTestCases()

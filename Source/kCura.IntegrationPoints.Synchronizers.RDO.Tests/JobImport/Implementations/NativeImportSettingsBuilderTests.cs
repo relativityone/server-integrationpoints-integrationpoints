@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport.Implementati
 
 			// Assert
 			action
-				.Should().ThrowExactly<IntegrationPointsException>()
+				.ShouldThrowExactly<IntegrationPointsException>()
 				.Where(e => e.Message == $"No workspace (id: {caseArtifactId}) found among available workspaces.");
 		}
 	}

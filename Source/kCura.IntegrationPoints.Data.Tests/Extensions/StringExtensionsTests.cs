@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Extensions
 			Action escapeSingleQuoteAction = () => input.EscapeSingleQuote();
 
 			// assert
-			escapeSingleQuoteAction.Should().Throw<ArgumentNullException>();
+			escapeSingleQuoteAction.ShouldThrow<ArgumentNullException>();
 		}
 
 		[TestCase("'", @"\'")]

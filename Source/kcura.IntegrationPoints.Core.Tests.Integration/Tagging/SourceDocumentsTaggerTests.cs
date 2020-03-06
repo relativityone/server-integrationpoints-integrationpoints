@@ -135,7 +135,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Tagging
 
 			// assert
 			string expectedMessage = "Mass edit of artifacts failed - Object Manager failure.";
-			tagDocumentsAction.Should().Throw<IntegrationPointsException>().WithMessage(expectedMessage);
+			tagDocumentsAction.ShouldThrow<IntegrationPointsException>().WithMessage(expectedMessage);
 		}
 
 		private async Task VerifyDocumentTaggingAsync(int[] documentArtifactIDs, string expectedJobHistory)

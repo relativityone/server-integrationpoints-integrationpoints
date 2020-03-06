@@ -173,7 +173,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.SecretStore.Implementation
 			Func<Task> getAction = () => _sut.GetAsync(_TEST_SECRET_STORE_PATH);
 
 			// assert
-			getAction.Should().Throw<Exception>()
+			getAction.ShouldThrow<Exception>()
 				.Which
 				.Should().Be(exception);
 		}
@@ -192,7 +192,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.SecretStore.Implementation
 			Func<Task> setAction = () => _sut.SetAsync(_TEST_SECRET_STORE_PATH, secret);
 
 			// assert
-			setAction.Should().Throw<Exception>()
+			setAction.ShouldThrow<Exception>()
 				.Which
 				.Should().Be(exception);
 		}
@@ -210,7 +210,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.SecretStore.Implementation
 			Func<Task> deleteAction = () => _sut.DeleteAsync(_TEST_SECRET_STORE_PATH);
 
 			// assert
-			deleteAction.Should().Throw<Exception>()
+			deleteAction.ShouldThrow<Exception>()
 				.Which
 				.Should().Be(exception);
 		}

@@ -111,7 +111,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 			Action onJobStartAction = () => _sut.OnJobStart(_job);
 
 			// assert
-			onJobStartAction.Should().Throw<IntegrationPointsException>();
+			onJobStartAction.ShouldThrow<IntegrationPointsException>();
 		}
 
 		[Test]
@@ -161,7 +161,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 			Action onJobCompleteAction = () => _sut.OnJobComplete(_job);
 
 			//Assert
-			onJobCompleteAction.Should().Throw<IntegrationPointsException>();
+			onJobCompleteAction.ShouldThrow<IntegrationPointsException>();
 		}
 
 		[Test]

@@ -166,7 +166,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 				.DeleteAsync(_WORKSPACE_ID, request);
 
 			//assert
-			action.Should().Throw<NullReferenceException>();
+			action.ShouldThrow<NullReferenceException>();
 		}
 
 		[Test]
@@ -257,7 +257,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 				.ConfigureAwait(false);
 
 			//assert
-			action.Should().Throw<NullReferenceException>();
+			action.ShouldThrow<NullReferenceException>();
 		}
 
 		[Test]
@@ -274,7 +274,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 				.ConfigureAwait(false);
 
 			//assert
-			action.Should().Throw<NullReferenceException>();
+			action.ShouldThrow<NullReferenceException>();
 		}
 
 		[Test]
@@ -291,7 +291,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 				.ConfigureAwait(false);
 
 			//assert
-			action.Should().Throw<NullReferenceException>();
+			action.ShouldThrow<NullReferenceException>();
 		}
 
 		[Test]
@@ -310,7 +310,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 				.ConfigureAwait(false);
 
 			//assert
-			action.Should().Throw<NullReferenceException>();
+			action.ShouldThrow<NullReferenceException>();
 		}
 
 		[Test]
@@ -327,7 +327,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 				.ConfigureAwait(false);
 
 			//assert
-			action.Should().Throw<NullReferenceException>();
+			action.ShouldThrow<NullReferenceException>();
 		}
 
 		[Test]
@@ -345,7 +345,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 				.ConfigureAwait(false);
 
 			//assert
-			action.Should().Throw<NullReferenceException>();
+			action.ShouldThrow<NullReferenceException>();
 		}
 
 		[Test]
@@ -383,7 +383,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 				.InitializeExportAsync(_WORKSPACE_ID, queryRequest, start);
 
 			//assert
-			action.Should().Throw<NullReferenceException>();
+			action.ShouldThrow<NullReferenceException>();
 		}
 
 		[Test]
@@ -402,7 +402,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 			Func<Task> massUpdateAction = () => _sut.UpdateAsync(_WORKSPACE_ID, request, options);
 
 			//assert
-			massUpdateAction.Should().Throw<Exception>()
+			massUpdateAction.ShouldThrow<Exception>()
 				.Which.Should().Be(exceptionToThrow);
 		}
 		
@@ -421,7 +421,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 				.RetrieveResultsBlockFromExportAsync(_WORKSPACE_ID, runID, resultsBlockSize, exportIndexID);
 
 			//assert
-			action.Should().Throw<NullReferenceException>();
+			action.ShouldThrow<NullReferenceException>();
 		}
 
 		[Test]

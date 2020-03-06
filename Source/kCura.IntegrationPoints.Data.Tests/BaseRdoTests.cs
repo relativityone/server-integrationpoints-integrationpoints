@@ -216,7 +216,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 
 			//ASSERT
 			run
-				.Should().ThrowExactly<ArgumentException>()
+				.ShouldThrowExactly<ArgumentException>()
 				.And
 				.Message.Should().EndWith("refers to a method, not a property.");
 		}
@@ -229,7 +229,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 
 			//ASSERT
 			run
-				.Should().ThrowExactly<ArgumentException>()
+				.ShouldThrowExactly<ArgumentException>()
 				.And
 				.Message.Should().EndWith("refers to a field, not a property.");
 		}

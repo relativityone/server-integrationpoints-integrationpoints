@@ -133,7 +133,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 			Action action = () => _sut.Execute();
 
 			//ASSERT
-			action.Should().Throw<Exception>();
+			action.ShouldThrow<Exception>();
 			VerifyMigrateSecretHasNotBeenCalled();
 		}
 
@@ -162,7 +162,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 			Action action = () => _sut.Execute();
 
 			//ASSERT
-			action.Should().Throw<Exception>();
+			action.ShouldThrow<Exception>();
 		}
 
 		private void VerifyMigrateSecretHasBeenCalledWithProperIntegrationPointID(int integrationPointID)
