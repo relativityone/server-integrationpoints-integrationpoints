@@ -246,8 +246,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 			fieldsFromSelectedDestinationWorkspaceListBox.Should().ContainInOrder(expectedDestinationMappedFields);
 		}
 
-		private List<string> CreateFieldMapListBoxFormatFromObjectManagerFetchedList(
-			List<FieldObject> mappableFieldsListFromObjectManager)
 		private List<string> CreateFieldMapListBoxFormatFromObjectManagerFetchedList(List<FieldObject> mappableFieldsListFromObjectManager)
 		{
 			return SyncFieldMapResults
