@@ -204,6 +204,44 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 			filteredFields.Select(x => x.Name).ShouldAllBeEquivalentTo(sortedFields.Select(x => x.Name));
 		}
 
+		[Test]
+		public async Task ClassifyAsync_ShouldCallClassifier()
+		{
+			// Arrange
+			List<DocumentFieldInfo> fields = new List<DocumentFieldInfo>()
+			{
+				CreateField("Field C"),
+				CreateField("Field A"),
+				CreateField("Field B")
+			};
+
+			List<DocumentFieldInfo> sortedFields = fields.OrderBy(x => x.Name).ToList();
+			string[] artifactIDs = fields.Select(x => x.FieldIdentifier).ToArray();
+			
+			_fieldsRepositoryFake
+				.Setup(x => x.GetFieldsByArtifactsIdAsync(artifactIDs, 0))
+				.ReturnsAsync(fields);
+
+			Mock<IFieldsClassifier> classifier = new Mock<IFieldsClassifier>();
+			IEnumerable<FieldClassificationResult> fieldClassificationResults = fields.Select(x => new FieldClassificationResult(x)).ToArray();
+
+			classifier.Setup(x => x.ClassifyAsync(It.IsAny<ICollection<DocumentFieldInfo>>(), It.IsAny<int>())).ReturnsAsync(fieldClassificationResults);
+
+			var fieldsClassifiers = new List<IFieldsClassifier>()
+			{
+				classifier.Object
+			};
+
+			FieldsClassifierRunner sut = new FieldsClassifierRunner(_fieldsRepositoryFake.Object, fieldsClassifiers);
+
+			// Act
+			IEnumerable<FieldClassificationResult> filteredFields = await sut.ClassifyFieldsAsync(artifactIDs, 0).ConfigureAwait(false);
+
+			// Assert
+			classifier.Verify(x => x.ClassifyAsync(fields, 0), Times.Once);
+			filteredFields.ShouldAllBeEquivalentTo(fieldClassificationResults);
+		}
+
 		private void SetupWorkspaceFields(IEnumerable<DocumentFieldInfo> fields)
 		{
 			_fieldsRepositoryFake
