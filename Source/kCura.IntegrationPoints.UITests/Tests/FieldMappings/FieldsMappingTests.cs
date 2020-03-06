@@ -6,7 +6,6 @@ using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.UITests.Common;
-using kCura.IntegrationPoints.UITests.Components;
 using kCura.IntegrationPoints.UITests.Configuration.Helpers;
 using kCura.IntegrationPoints.UITests.Configuration.Models;
 using kCura.IntegrationPoints.UITests.NUnitExtensions;
@@ -66,7 +65,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 				CreateFieldMapListBoxFormatFromObjectManagerFetchedList(SourceContext.WorkspaceMappableFields);
 
 			//Assert
-			fieldsFromSourceWorkspaceListBox.Should().ContainInOrder(expectedSourceMappableFields);
+			CollectionAssert.AreEqual(fieldsFromSourceWorkspaceListBox, expectedSourceMappableFields);
 		}
 
 		[IdentifiedTest("916e57ba-fb4d-42a4-be2a-4d17df17de58")]
@@ -87,7 +86,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 				CreateFieldMapListBoxFormatFromObjectManagerFetchedList(DestinationContext.WorkspaceMappableFields);
 
 			//Assert
-			fieldsFromDestinationWorkspaceListBox.Should().ContainInOrder(expectedDestinationMappableFields);
+			CollectionAssert.AreEqual(fieldsFromDestinationWorkspaceListBox, expectedDestinationMappableFields);
 		}
 
 		[IdentifiedTest("916e57ba-fb4d-42a4-be2a-4d17df17de59")]
@@ -104,7 +103,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 			//Identifier and another random field
 			List<string> fieldsToBeChanged = new List<string>{ "Control Number" , "File Name"};
             
-            foreach (var fieldName in fieldsToBeChanged)
+            foreach (string fieldName in fieldsToBeChanged)
             {
 				await SetRandomNameToFLTFieldDestinationWorkspaceAsync(fieldName).ConfigureAwait(false);
                 await SetRandomNameToFLTFieldSourceWorkspaceAsync(fieldName).ConfigureAwait(false);
@@ -125,12 +124,12 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 			List<FieldMapModel> expectedArtifactIDMatchedFields =
                 mapAllFieldsUiTestEdition.FieldMap.Where(x =>
                     x.AutoMapMatchType == TestConstants.FieldMapMatchType.ArtifactID).ToList();
-            var expectedFieldPairsArtifactIDList = expectedArtifactIDMatchedFields.Select(fieldPair => new FieldDisplayNamePair(fieldPair)).ToList();
+            List<FieldDisplayNamePair> expectedFieldPairsArtifactIDList = expectedArtifactIDMatchedFields.Select(fieldPair => new FieldDisplayNamePair(fieldPair)).ToList();
 
 			List<FieldMapModel> expectedNameMatchedFields =
                 mapAllFieldsUiTestEdition.FieldMap.Where(x =>
                     x.AutoMapMatchType == TestConstants.FieldMapMatchType.Name).ToList();
-            var expectedFieldPairsNameList = expectedNameMatchedFields.Select(fieldPair => new FieldDisplayNamePair(fieldPair)).ToList();
+            List<FieldDisplayNamePair> expectedFieldPairsNameList = expectedNameMatchedFields.Select(fieldPair => new FieldDisplayNamePair(fieldPair)).ToList();
 
 			PushToRelativityThirdPage fieldMappingPage =
                 PointsAction.CreateNewRelativityProviderFieldMappingPage(model);
@@ -144,33 +143,40 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
                 fieldMappingPage.GetFieldsFromSelectedDestinationWorkspaceListBox();
 
             var fieldPairsFromSelectedListBox = new List<FieldDisplayNamePair>();
-            foreach (var sourceDisplayName in fieldsFromSelectedSourceWorkspaceListBox)
+            foreach (string sourceDisplayName in fieldsFromSelectedSourceWorkspaceListBox)
             {
                 int index = fieldsFromSelectedSourceWorkspaceListBox.IndexOf(sourceDisplayName);
                 string destinationDisplayName = fieldsFromSelectedDestinationWorkspaceListBox[index];
                 fieldPairsFromSelectedListBox.Add(new FieldDisplayNamePair(sourceDisplayName, destinationDisplayName));
             }
 
-            fieldsFromSelectedSourceWorkspaceListBox.Should()
-                .ContainInOrder(expectedInOrderSelectedSourceMappableFieldsList);
+			CollectionAssert.AreEqual(fieldsFromSelectedSourceWorkspaceListBox, expectedInOrderSelectedSourceMappableFieldsList);
+			
+			Assert.IsTrue(fieldPairsFromSelectedListBox.Exists(x => CompareFieldDisplayNamePair(x, expectedFieldPairIsIdentifier)));
 
-			fieldPairsFromSelectedListBox.Should().ContainEquivalentOf(expectedFieldPairIsIdentifier);
-            foreach (var fieldDisplayNamePair in expectedFieldPairsArtifactIDList)
+            foreach (FieldDisplayNamePair fieldDisplayNamePair in expectedFieldPairsArtifactIDList)
             {
-				fieldPairsFromSelectedListBox.Should().ContainEquivalentOf(fieldDisplayNamePair);
+				Assert.IsTrue(fieldPairsFromSelectedListBox.Exists(x => CompareFieldDisplayNamePair(x, fieldDisplayNamePair)));
 			}
 
-			foreach (var fieldDisplayNamePair in expectedFieldPairsNameList)
+			foreach (FieldDisplayNamePair fieldDisplayNamePair in expectedFieldPairsNameList)
             {
-                fieldPairsFromSelectedListBox.Should().ContainEquivalentOf(fieldDisplayNamePair);
-            }
+                Assert.IsTrue(fieldPairsFromSelectedListBox.Exists(x => CompareFieldDisplayNamePair(x, fieldDisplayNamePair)));
+			}
 		}
 
-		private List<string> CreateFieldMapListBoxFormatFromObjectManagerFetchedList(
-			List<FieldObject> mappableFieldsListFromObjectManager)
+		private List<string> CreateFieldMapListBoxFormatFromObjectManagerFetchedList(List<FieldObject> mappableFieldsListFromObjectManager)
 		{
-			return SyncFieldMapResults.SortFieldObjects(mappableFieldsListFromObjectManager)
+			return SyncFieldMapResults
+				.SortFieldObjects(mappableFieldsListFromObjectManager)
 				.Select(f => f.DisplayName).ToList();
+		}
+
+		private bool CompareFieldDisplayNamePair(FieldDisplayNamePair first, FieldDisplayNamePair second)
+		{
+			return
+				first.DestinationDisplayName == second.DestinationDisplayName &&
+				first.SourceDisplayName == second.SourceDisplayName;
 		}
     }
 }
