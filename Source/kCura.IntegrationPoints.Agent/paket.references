@@ -2,16 +2,11 @@ Castle.Windsor
 CSharpGuidelineAnalyzer
 kCura.Agent
 kCura.Apps.Common.Config
-kCura.Apps.Common.Data
-kCura.Apps.Common.Utils
 kCura.Relativity.Client
 Relativity.Authentication
 Relativity.DataExchange.Client.SDK
 Relativity.IntegrationPoints.Contracts
-Relativity.Telemetry.APM
 Relativity.Telemetry.MetricsCollection
 Relativity.Vfs.IO
-Relativity.Services.Interfaces
 Relativity.DataTransfer.MessageService
-Relativity.Toggles
 Relativity.AutomatedWorkflows.Services.Interfaces

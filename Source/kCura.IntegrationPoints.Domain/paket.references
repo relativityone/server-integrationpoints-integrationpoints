@@ -1,15 +1,7 @@
 CSharpGuidelineAnalyzer
 kCura.Relativity.Client
-Relativity.API
 Relativity.DataExchange.Client.SDK
 Relativity.IntegrationPoints.SDK
 Castle.Windsor
-Relativity.Services.Interfaces
 Relativity.DataGrid
-Polly
-Relativity.Logging.Interfaces
-Relativity.OAuth2Client.Implicit
-relativity.faspmanager
-Relativity.Transfer.Client
-Relativity.Telemetry.Services.Interface
 Relativity.DataTransfer.MessageService

@@ -7,13 +7,7 @@ Relativity.DataExchange.Client.SDK
 Relativity.DataTransfer.MessageService
 Relativity.API
 Relativity.IntegrationPoints.Contracts
-Relativity.Services.Interfaces
 Relativity.Toggles
 Relativity.Telemetry.MetricsCollection
 Relativity.Logging
-Relativity.Logging.Interfaces
 ZetaLongPaths
-Polly
-Relativity.OAuth2Client.Implicit
-relativity.faspmanager
-Relativity.Transfer.Client

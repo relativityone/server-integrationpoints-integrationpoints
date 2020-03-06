@@ -6,12 +6,8 @@ kCura.Relativity.Client
 Polly
 Relativity.Toggles
 kCura.OutsideIn.FI.Win32
-
-group TestPackages
-	Moq
-	NUnit
-	relativity.testing.identification
-	Serilog
-
+Moq
+relativity.testing.identification
+Serilog
 group Sync
-	Relativity.Sync
+Relativity.Sync

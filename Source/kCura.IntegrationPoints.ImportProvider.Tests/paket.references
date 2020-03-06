@@ -2,6 +2,6 @@ CSharpGuidelineAnalyzer
 kCura.Apps.Common.Utils
 Relativity.IntegrationPoints.Contracts
 
-group TestPackages
-	NUnit
-	NSubstitute
+
+NUnit
+NSubstitute

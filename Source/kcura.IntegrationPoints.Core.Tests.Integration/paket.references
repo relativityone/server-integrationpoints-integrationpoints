@@ -5,21 +5,15 @@ kCura.Apps.Common.Utils
 kCura.OutsideIn.FI.Win32
 kCura.Relativity.Client
 Relativity
-Relativity.API
 Relativity.IntegrationPoints.Contracts
 Relativity.IntegrationPoints.Services.Interfaces.Private
 Relativity.OAuth2Client
-Relativity.Telemetry.APM
 relativity.transfer.client
 Relativity.Services.Interfaces
 Relativity.Toggles
-Relativity.Kepler
 Relativity.Kepler.Client
 Relativity.Logging.Interfaces
-
-group TestPackages
-	FluentAssertions
-	Moq
-	NUnit
-	relativity.testing.identification
-	Selenium.WebDriver
+FluentAssertions
+Moq
+relativity.testing.identification
+Selenium.WebDriver

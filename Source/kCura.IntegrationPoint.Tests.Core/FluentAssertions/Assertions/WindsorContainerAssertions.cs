@@ -11,13 +11,14 @@ using Castle.Core.Internal;
 
 namespace kCura.IntegrationPoint.Tests.Core.FluentAssertions.Assertions
 {
-    public class WindsorContainerAssertions
-    : ReferenceTypeAssertions<IWindsorContainer, WindsorContainerAssertions>
+    public class WindsorContainerAssertions : ReferenceTypeAssertions<IWindsorContainer, WindsorContainerAssertions>
     {
         public WindsorContainerAssertions(IWindsorContainer instance)
         {
             Subject = instance;
         }
+
+        protected override string Identifier { get; }
 
         public AndConstraint<WindsorContainerAssertions> ResolveWithoutThrowing<T>(
             string because = "",

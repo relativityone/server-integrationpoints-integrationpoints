@@ -1,10 +1,7 @@
-﻿Relativity
+Relativity
 Relativity.API
 Relativity.DataExchange.Client.SDK
-Relativity.Services.Interfaces
 Relativity.IntegrationPoints.Contracts
-
-group TestPackages
-	NUnit
-	FluentAssertions
-	Moq
+NUnit
+FluentAssertions
+Moq

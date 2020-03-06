@@ -5,7 +5,6 @@ using Autofac;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using kCura.ScheduleQueue.Core;
-using kCura.WinEDDS.Service.Export;
 using Relativity.API;
 using Relativity.Sync;
 using Relativity.Sync.Executors.Validation;
@@ -46,7 +45,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 					metrics.MarkStartTime();
 					await MarkJobAsStartedAsync().ConfigureAwait(false);
 
-					ISyncJob syncJob = await CreateSyncJob(container).ConfigureAwait(false);
+					ISyncJob syncJob = await CreateSyncJobAsync(container).ConfigureAwait(false);
 					Progress progress = new Progress();
 					progress.SyncProgress += (sender, syncProgress) => UpdateJobStatusAsync(syncProgress.Id).ConfigureAwait(false).GetAwaiter().GetResult();
 					await syncJob.ExecuteAsync(progress, cancellationToken).ConfigureAwait(false);
@@ -164,7 +163,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 		}
 
-		private async Task<ISyncJob> CreateSyncJob(IContainer container)
+		private async Task<ISyncJob> CreateSyncJobAsync(IContainer container)
 		{
 			int syncConfigurationArtifactId;
 			try
