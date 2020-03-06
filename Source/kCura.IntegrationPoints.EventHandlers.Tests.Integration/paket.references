@@ -8,7 +8,6 @@ Relativity.Data
 Relativity.IntegrationPoints.SDK
 Relativity.OAuth2Client
 Relativity.Services.Interfaces.Private
-Relativity.Services.Interfaces.Private
 Relativity.Toggles
 Relativity.Kepler.Client
 FluentAssertions
