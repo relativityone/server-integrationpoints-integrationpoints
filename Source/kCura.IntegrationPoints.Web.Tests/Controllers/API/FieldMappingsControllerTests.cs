@@ -63,7 +63,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 		{
 			// Act
 			HttpResponseMessage responseMessage = await _sut.GetMappableFieldsFromSourceWorkspace(_SOURCE_WORKSPACE_ID).ConfigureAwait(false);
-			string jsonResponse = await responseMessage.Content.ReadAsStringAsync();
+			string jsonResponse = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
 
 			// Assert
 			responseMessage.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 		{
 			// Act
 			HttpResponseMessage responseMessage = await _sut.GetMappableFieldsFromDestinationWorkspace(_DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
-			string jsonResponse = await responseMessage.Content.ReadAsStringAsync();
+			string jsonResponse = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
 
 			// Assert
 			responseMessage.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -117,7 +117,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 
 			// Act
 			HttpResponseMessage responseMessage = await _sut.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
-			string jsonResponse = await responseMessage.Content.ReadAsStringAsync();
+			string jsonResponse = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
 
 			// Assert
 			responseMessage.StatusCode.Should().Be(HttpStatusCode.OK);
