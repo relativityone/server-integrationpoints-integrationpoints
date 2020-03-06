@@ -18,7 +18,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 		{
 			var invalidMappedFields = new List<FieldMap>();
 
-			if(map == null)
+			if (map == null)
 			{
 				return invalidMappedFields;
 			}
@@ -33,10 +33,14 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 			var destinationFields = (await destinationClassifierRunner.ClassifyFieldsAsync(destinationMappedArtifactsIDs, destinationWorkspaceID).ConfigureAwait(false))
 				.ToDictionary(f => f.FieldIdentifier, f => f);
 
-			foreach(var fieldMap in map)
+			foreach (var fieldMap in map)
 			{
-				var sourceField = sourceFields[fieldMap.SourceField.FieldIdentifier];
-				var destinationField = destinationFields[fieldMap.DestinationField.FieldIdentifier];
+				string sourceFieldFieldIdentifier = fieldMap.SourceField.FieldIdentifier;
+				string destinationFieldFieldIdentifier = fieldMap.DestinationField.FieldIdentifier;
+
+				var sourceField = sourceFields.ContainsKey(sourceFieldFieldIdentifier) ? sourceFields[sourceFieldFieldIdentifier] : null;
+				var destinationField = destinationFields.ContainsKey(destinationFieldFieldIdentifier) ? destinationFields[destinationFieldFieldIdentifier] : null;
+
 				if (!IsFieldMapValid(sourceField, destinationField))
 				{
 					invalidMappedFields.Add(fieldMap);
@@ -48,7 +52,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 
 		private bool IsFieldMapValid(FieldClassificationResult sourceField, FieldClassificationResult destinationField)
 		{
-			return (sourceField.ClassificationLevel == ClassificationLevel.AutoMap && destinationField.ClassificationLevel == ClassificationLevel.AutoMap)
+			return ((sourceField != null && destinationField != null) && sourceField.ClassificationLevel == ClassificationLevel.AutoMap && destinationField.ClassificationLevel == ClassificationLevel.AutoMap)
 				&& sourceField.GetFieldInfo().IsTypeCompatible(destinationField.GetFieldInfo());
 		}
 	}

@@ -3,6 +3,7 @@ kCura.Apps.Common.Utils
 kCura.EventHandler
 kCura.Relativity.Client
 LanguageExt.Core
+Relativity
 Relativity.IntegrationPoints.SDK
 Relativity.IntegrationPoints.Services.Interfaces.Private
 Relativity.Kepler

@@ -12,16 +12,15 @@
 		public bool? OpenToAssociations { get; set; }
 		public string AssociativeObjectType { get; set; }
 
-		public string DisplayType => Type.Equals(FieldTypeName.FIXED_LENGTH_TEXT) ? $"{Type}({Length})" : Type;
+		public string DisplayType => Type.Equals(FieldTypeName.FIXED_LENGTH_TEXT) && Length != 0 ? $"{Type}({Length})" : Type;
 
 		public DocumentFieldInfo(string fieldIdentifier, string name, string type, int length = 0)
 		{
 			FieldIdentifier = fieldIdentifier;
 			Name = name;
-			Type = type;
+			Type = type ?? string.Empty;
 
-			int extendedLength;
-			Length = TryGetLengthIfTypeExtendend(out extendedLength) ? extendedLength : length;
+			Length = TryGetLengthIfTypeExtendend(out int extendedLength) ? extendedLength : length;
 		}
 
 		public bool IsTypeCompatible(DocumentFieldInfo fieldInfo)
@@ -31,16 +30,26 @@
 				return false;
 			}
 
-			if(Type.StartsWith(FieldTypeName.FIXED_LENGTH_TEXT))
+			// this is here to support CustomProviders that do not feed field types
+			if (string.IsNullOrEmpty(Type) || string.IsNullOrEmpty(fieldInfo.Type))
 			{
-				if(fieldInfo.Type == FieldTypeName.LONG_TEXT || (fieldInfo.Type.StartsWith(FieldTypeName.FIXED_LENGTH_TEXT) && Length <= fieldInfo.Length))
+				return true;
+			}
+
+			if (Type.StartsWith(FieldTypeName.FIXED_LENGTH_TEXT))
+			{
+				if (fieldInfo.Type == FieldTypeName.LONG_TEXT ||
+				    (fieldInfo.Type.StartsWith(FieldTypeName.FIXED_LENGTH_TEXT) &&
+				     (Length <= fieldInfo.Length || fieldInfo.Length == 0))
+				)
 				{
 					return true;
 				}
 
 				return false;
 			}
-			else if(Type == fieldInfo.Type)
+
+			if (Type == fieldInfo.Type)
 			{
 				return true;
 			}
