@@ -327,6 +327,61 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 		}
 
 		[Test]
+		public async Task ValidateAsync_ShouldReturnFieldMapAsInvalid_IfMappedFieldsAreNotInWorkspaces()
+		{
+			// Arrange
+			List<string> IDs = new List<string> { "1", "2" };
+
+			var field1 = CreateWithSampleType(IDs[0]);
+			var field2 = CreateWithSampleType(IDs[1]);
+
+			var sourceClassifiedFields = new List<FieldClassificationResult>()
+			{
+				new FieldClassificationResult(field1)
+				{
+					ClassificationLevel = ClassificationLevel.AutoMap
+				}
+			};
+
+			var destinationClassifiedFields = new List<FieldClassificationResult>()
+			{
+				new FieldClassificationResult(field2)
+				{
+					ClassificationLevel = ClassificationLevel.AutoMap
+				},
+			};
+
+			LoadFieldClassifierRunnerWithData(sourceClassifiedFields, destinationClassifiedFields);
+
+			var fieldMap = new List<FieldMap>()
+			{
+				new FieldMap()
+				{
+					SourceField = FieldConvert.ToFieldEntry(field1),
+					DestinationField = FieldConvert.ToFieldEntry(field1)
+				},
+				new FieldMap()
+				{
+					SourceField = FieldConvert.ToFieldEntry(field2),
+					DestinationField = FieldConvert.ToFieldEntry(field2)
+				},
+				new FieldMap()
+				{
+					SourceField = FieldConvert.ToFieldEntry(field2),
+					DestinationField = FieldConvert.ToFieldEntry(field1)
+				}
+			};
+
+			// Act
+			var invalidMappedFields = await _sut.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
+
+			// Assert
+			invalidMappedFields.Should().NotBeEmpty()
+				.And.HaveCount(fieldMap.Count)
+				.And.Contain(fieldMap);
+		}
+
+		[Test]
 		public async Task ValidateAsync_ShouldReturnWholeFieldMapAsInvalid_WhenMappedFieldsDontMeetDestinationClassificationRestriction()
 		{
 			// Arrange

@@ -20,7 +20,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		{
 			new Tuple<string, string>("Control Number", "Control Number"),
 			new Tuple<string, string>("Extracted Text", "Extracted Text"),
-			new Tuple<string, string>("Title", "Title")
+			new Tuple<string, string>("Title", "Title"),
+			new Tuple<string, string>("Document Folder Path", "Document Folder Path"),
 		};
 
 		private RelativityProviderModel CreateRelativityProviderModelWithNatives()
@@ -59,6 +60,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
 			ValidateDocumentsForRoot();
+			ValidateDocumentsFolderPathField();
 		}
 
 		[IdentifiedTest("ac605017-d041-441e-8349-4b283c1aca2c")]
@@ -82,6 +84,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
 			ValidateDocumentsForField();
+			ValidateDocumentsFolderPathField();
 		}
 
 		[IdentifiedTest("4e91b8f4-1560-4580-928b-1fda7f25a497")]
@@ -104,6 +107,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
 			ValidateDocumentsForFolderTree();
+			ValidateDocumentsFolderPathField();
 		}
 
 		[IdentifiedTest("ed9dd678-45f0-426f-900b-f94177f46e77")]
@@ -128,6 +132,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
 			ValidateDocumentsForRootWithFolderName();
+			ValidateDocumentsFolderPathField();
 		}
 
 		[IdentifiedTest("34c420f0-2ce4-4d76-aabc-7431897fd02d")]
@@ -153,6 +158,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
 			ValidateDocumentsForRootWithFolderName();
+			ValidateDocumentsFolderPathField();
 		}
 
 		[IdentifiedTest("ee1f11dd-afa0-45bf-beeb-aeafa489766f")]
@@ -178,6 +184,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
 			ValidateDocumentsForRootWithFolderName();
+			ValidateDocumentsFolderPathField();
 		}
 
 		[IdentifiedTest("a0f1718e-a016-4312-827f-ce84967a4ad4")]
@@ -203,6 +210,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
 			ValidateDocumentsForField();
+			ValidateDocumentsFolderPathField();
 		}
 
 		[IdentifiedTest("9166f5c5-a66f-496a-9bac-6263b4d1934d")]
@@ -228,6 +236,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
 			ValidateDocumentsForFolderTree();
+			ValidateDocumentsFolderPathField();
 		}
 
 		[IdentifiedTest("cb25ba1e-7301-45dc-87e8-b2ccd2f126fe")]
@@ -252,6 +261,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
 			ValidateDocumentsForRootWithFolderName();
+			ValidateDocumentsFolderPathField();
 		}
 
 
@@ -278,6 +288,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
 			ValidateDocumentsForRootWithFolderName();
+			ValidateDocumentsFolderPathField();
 		}
 
 		[IdentifiedTest("39383c5d-79c1-44c1-9391-9e433de88574")]
@@ -303,6 +314,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
 			ValidateDocumentsForRootWithFolderName();
+			ValidateDocumentsFolderPathField();
 		}
 
 		[IdentifiedTest("d0dcf3c8-cf82-4644-8871-a6e5b7d67af0")]
@@ -328,6 +340,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
 			ValidateDocumentsForField();
+			ValidateDocumentsFolderPathField();
 		}
 
 
@@ -354,12 +367,13 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
 			ValidateDocumentsForFolderTree();
+			ValidateDocumentsFolderPathField();
 		}
 
 		private void ValidateDocumentsForField()
 		{
 			DocumentsValidator documentsValidator = CreateDocumentsForFieldValidator()
-				.ValidateWith(new DocumentHasNativesAndInRepositoryValidator(NativesService, SourceContext.GetWorkspaceId(), DestinationContext.GetWorkspaceId(), true, true));
+				.ValidateWith(CreateDocumentHasNativesAndInRepositoryValidator());
 
 			documentsValidator.Validate();
 		}
@@ -367,7 +381,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		private void ValidateDocumentsForFolderTree()
 		{
 			DocumentsValidator documentsValidator = CreateDocumentsForFolderTreeValidator()
-				.ValidateWith(new DocumentHasNativesAndInRepositoryValidator(NativesService, SourceContext.GetWorkspaceId(), DestinationContext.GetWorkspaceId(), true, true));
+				.ValidateWith(CreateDocumentHasNativesAndInRepositoryValidator());
 
 			documentsValidator.Validate();
 		}
@@ -375,7 +389,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		private void ValidateDocumentsForRootWithFolderName()
 		{
 			DocumentsValidator documentsValidator = CreateDocumentsForRootWithFolderNameValidator()
-				.ValidateWith(new DocumentHasNativesAndInRepositoryValidator(NativesService, SourceContext.GetWorkspaceId(), DestinationContext.GetWorkspaceId(), true, true));
+				.ValidateWith(CreateDocumentHasNativesAndInRepositoryValidator());
 
 			documentsValidator.Validate();
 		}
@@ -383,9 +397,23 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		private void ValidateDocumentsForRoot()
 		{
 			DocumentsValidator documentsValidator = CreateDocumentsForRootValidator()
-				.ValidateWith(new DocumentHasNativesAndInRepositoryValidator(NativesService, SourceContext.GetWorkspaceId(), DestinationContext.GetWorkspaceId(), true, true));
+				.ValidateWith(CreateDocumentHasNativesAndInRepositoryValidator());
 
 			documentsValidator.Validate();
 		}
+
+		private void ValidateDocumentsFolderPathField()
+		{
+			DocumentsValidator validator = new PushDocumentsValidator(SourceContext.GetWorkspaceId(), DestinationContext.GetWorkspaceId())
+				.ValidateWith(new DocumentFieldsValidator("Document Folder Path"));
+
+			validator.Validate();
+		}
+
+		private DocumentHasNativesAndInRepositoryValidator CreateDocumentHasNativesAndInRepositoryValidator()
+		{
+			return new DocumentHasNativesAndInRepositoryValidator(NativesService, SourceContext.GetWorkspaceId(), DestinationContext.GetWorkspaceId(), true, true);
+		}
+
 	}
 }

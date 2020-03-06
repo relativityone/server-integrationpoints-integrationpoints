@@ -14,6 +14,12 @@
 		public bool IsIdentifier => _fieldInfo.IsIdentifier;
 		public bool IsRequired => _fieldInfo.IsRequired;
 
+		// to be compatible with old JS code
+		public string DisplayName => Name;
+
+		// to be compatible with old JS code
+		public string ActualName => Name + (string.IsNullOrEmpty(Type) ? "" : $" [{_fieldInfo.DisplayType}]");
+
 		public DocumentFieldInfo GetFieldInfo() => _fieldInfo;
 
 		public FieldClassificationResult(DocumentFieldInfo fieldInfo)

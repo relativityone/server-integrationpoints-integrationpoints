@@ -29,6 +29,27 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			result.Should().BeTrue();
 		}
 
+		[TestCase("Long Text", null)]
+		[TestCase("Long Text", "")]
+		[TestCase(null, "Long Text")]
+		[TestCase("", "Long Text")]
+		[TestCase(null, null)]
+		[TestCase("", null)]
+		[TestCase("", "")]
+		[TestCase(null, "")]
+		public void IsTypeCompatible_ShouldReturnTrue_WhenOneOfTheTypesIsNull(string sourceType, string destinationType)
+		{
+			// Arrange
+			var sourceField = new DocumentFieldInfo("1", "Field1", sourceType);
+			var destinationField = new DocumentFieldInfo("2", "Field2", destinationType);
+
+
+			var result = sourceField.IsTypeCompatible(destinationField);
+
+			// Assert
+			result.Should().BeTrue();
+		}
+
 		[TestCase("Decimal", "Yest/No")]
 		public void IsTypeCompatible_ShouldReturnFalse_WhenTypeAreDifferent(string sourceType, string destinationType)
 		{
@@ -93,6 +114,19 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 
 			// Assert
 			result.Should().Be(expected);
+		}
+
+		[Test]
+		public void DisplayType_ShouldReturnEmptyStringForNullType()
+		{
+			// Arrange 
+			var field = new DocumentFieldInfo("1", "Name", null);
+
+			// Act
+			var displayType = field.DisplayType;
+
+			// Assert
+			displayType.Should().Be("");
 		}
 	}
 }
