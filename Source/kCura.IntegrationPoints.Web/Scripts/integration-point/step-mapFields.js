@@ -1313,6 +1313,9 @@ ko.validation.insertValidationMessage = function (element) {
 						type: 'POST',
 						url: root.utils.generateWebAPIURL('FieldMappings/Validate', _destination.CaseArtifactId),
 						data: JSON.stringify(map)
+					})
+					.fail(function (error) {
+						IP.message.error.raise("Could not validate mapped fields");
 					});
 
 					const proceedConfirmation = function (invalidMappedFields) {
