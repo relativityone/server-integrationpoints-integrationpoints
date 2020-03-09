@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Domain.Models;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace Relativity.IntegrationPoints.FieldsMapping
@@ -22,6 +23,8 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 			{
 				return invalidMappedFields;
 			}
+
+			map = map.Where(x => x.FieldMapType == FieldMapTypeEnum.None);
 
 			IList<string> sourceMappedArtifactsIDs = map.Select(x => x.SourceField.FieldIdentifier).ToList();
 			IFieldsClassifierRunner sourceClassifierRunner = _fieldsClassifyRunnerFactory.CreateForSourceWorkspace();

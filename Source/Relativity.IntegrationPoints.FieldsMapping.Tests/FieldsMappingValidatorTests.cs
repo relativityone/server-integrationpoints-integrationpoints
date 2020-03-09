@@ -12,6 +12,7 @@ using Relativity.IntegrationPoints.FieldsMapping.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Relativity.IntegrationPoints.Contracts.Models;
 
 namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 {
@@ -439,6 +440,174 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 				.And.Contain(fieldMap);
 		}
 
+		[Test]
+		public async Task ValidateAsync_ShouldHandleValidation_WhenFieldsMappingContainSpecialFieldAndIsMapped()
+		{
+			// Arrange
+			List<string> IDs = new List<string> { "1", "2" };
+
+			var field1 = CreateWithSampleType(IDs[0]);
+			var field2 = CreateWithType(IDs[1], "Long Text");
+
+			var sourceClassifiedFields = new List<FieldClassificationResult>()
+			{
+				new FieldClassificationResult(field1)
+				{
+					ClassificationLevel = ClassificationLevel.AutoMap
+				},
+				new FieldClassificationResult(field2)
+				{
+					ClassificationLevel = ClassificationLevel.AutoMap
+				},
+			};
+
+			var destinationClassifiedFields = new List<FieldClassificationResult>()
+			{
+				new FieldClassificationResult(field1)
+				{
+					ClassificationLevel = ClassificationLevel.AutoMap
+				},
+				new FieldClassificationResult(field2)
+				{
+					ClassificationLevel = ClassificationLevel.AutoMap
+				},
+			};
+
+			LoadFieldClassifierRunnerWithData(sourceClassifiedFields, destinationClassifiedFields);
+
+			var fieldMap = new List<FieldMap>()
+			{
+				new FieldMap()
+				{
+					SourceField = FieldConvert.ToFieldEntry(field1),
+					DestinationField = FieldConvert.ToFieldEntry(field1)
+				},
+				new FieldMap()
+				{
+					SourceField = FieldConvert.ToFieldEntry(field2),
+					DestinationField = FieldConvert.ToFieldEntry(field2)
+				},
+				new FieldMap()
+				{
+					SourceField = FieldConvert.ToFieldEntry(field2),
+					DestinationField = EmptyField(),
+					FieldMapType = kCura.IntegrationPoints.Domain.Models.FieldMapTypeEnum.FolderPathInformation
+				}
+			};
+
+			// Act
+			var invalidMappedFields = await _sut.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
+
+			// Assert
+			invalidMappedFields.Should().BeEmpty();
+		}
+
+		[Test]
+		public async Task ValidateAsync_ShouldHandleValidation_WhenSomeFieldInSourceClassificationIsMissing()
+		{
+			// Arrange
+			List<string> IDs = new List<string> { "1", "2" };
+
+			var field1 = CreateWithSampleType(IDs[0]);
+			var field2 = CreateWithSampleType(IDs[1]);
+
+			var sourceClassifiedFields = new List<FieldClassificationResult>()
+			{
+				new FieldClassificationResult(field1)
+				{
+					ClassificationLevel = ClassificationLevel.AutoMap
+				},
+			};
+
+			var destinationClassifiedFields = new List<FieldClassificationResult>()
+			{
+				new FieldClassificationResult(field1)
+				{
+					ClassificationLevel = ClassificationLevel.AutoMap
+				},
+				new FieldClassificationResult(field2)
+				{
+					ClassificationLevel = ClassificationLevel.AutoMap
+				},
+			};
+
+			LoadFieldClassifierRunnerWithData(sourceClassifiedFields, destinationClassifiedFields);
+
+			var fieldMap = new List<FieldMap>()
+			{
+				new FieldMap()
+				{
+					SourceField = FieldConvert.ToFieldEntry(field1),
+					DestinationField = FieldConvert.ToFieldEntry(field1)
+				},
+				new FieldMap()
+				{
+					SourceField = FieldConvert.ToFieldEntry(field2),
+					DestinationField = FieldConvert.ToFieldEntry(field2)
+				}
+			};
+
+			// Act
+			var invalidMappedFields = await _sut.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
+
+			// Assert
+			invalidMappedFields.Should().NotBeEmpty()
+				.And.Contain(f => f.DestinationField.FieldIdentifier == field2.FieldIdentifier);
+		}
+
+		[Test]
+		public async Task ValidateAsync_ShouldHandleValidation_WhenSomeFieldInDestinationClassificationIsMissing()
+		{
+			// Arrange
+			List<string> IDs = new List<string> { "1", "2" };
+
+			var field1 = CreateWithSampleType(IDs[0]);
+			var field2 = CreateWithSampleType(IDs[1]);
+
+			var sourceClassifiedFields = new List<FieldClassificationResult>()
+			{
+				new FieldClassificationResult(field1)
+				{
+					ClassificationLevel = ClassificationLevel.AutoMap
+				},
+				new FieldClassificationResult(field2)
+				{
+					ClassificationLevel = ClassificationLevel.AutoMap
+				},
+			};
+
+			var destinationClassifiedFields = new List<FieldClassificationResult>()
+			{
+				new FieldClassificationResult(field1)
+				{
+					ClassificationLevel = ClassificationLevel.AutoMap
+				}
+			};
+
+			LoadFieldClassifierRunnerWithData(sourceClassifiedFields, destinationClassifiedFields);
+
+			var fieldMap = new List<FieldMap>()
+			{
+				new FieldMap()
+				{
+					SourceField = FieldConvert.ToFieldEntry(field1),
+					DestinationField = FieldConvert.ToFieldEntry(field1)
+				},
+				new FieldMap()
+				{
+					SourceField = FieldConvert.ToFieldEntry(field2),
+					DestinationField = FieldConvert.ToFieldEntry(field2)
+				}
+			};
+
+			// Act
+			var invalidMappedFields = await _sut.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
+
+			// Assert
+			invalidMappedFields.Should().NotBeEmpty()
+				.And.Contain(f => f.DestinationField.FieldIdentifier == field2.FieldIdentifier);
+		}
+
 		private DocumentFieldInfo CreateWithSampleType(string id)
 		{
 			return new DocumentFieldInfo(id, $"Field {id}", "Sample Type");
@@ -448,6 +617,8 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 		{
 			return new DocumentFieldInfo(id, $"Field {id}", type);
 		}
+
+		private FieldEntry EmptyField() => new FieldEntry();
 
 		private void LoadFieldClassifierRunnerWithData(IEnumerable<FieldClassificationResult> sourceClassifiedFields, IEnumerable<FieldClassificationResult> destinationClassifiedFields)
 		{
