@@ -130,9 +130,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
             fieldsFromSelectedSourceWorkspaceListBox.Should().NotContain(InvalidFieldsMapping.Select(x => x.Item2));
         }
 
-
-		private List<string> CreateFieldMapListBoxFormatFromObjectManagerFetchedList(
-			List<FieldObject> mappableFieldsListFromObjectManager)
 		[IdentifiedTest("916e57ba-fb4d-42a4-be2a-4d17df17de59")]
 		[RetryOnError]
 		[Category(TestCategory.SMOKE)]
