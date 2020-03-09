@@ -80,6 +80,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		public override void SuiteTeardown()
 		{
 			Workspace.DeleteWorkspace(TargetWorkspaceArtifactID);
+
 			base.SuiteTeardown();
 		}
 
@@ -116,7 +117,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				TargetWorkspaceArtifactId = targetWorkspaceId,
 				TypeOfExport = exportType
 			};
-			return Container.Resolve<ISerializer>().Serialize(sourceConfiguration);
+			return Serializer.Serialize(sourceConfiguration);
 		}
 
 		protected string CreateDestinationConfig(ImportOverwriteModeEnum overwriteMode)
@@ -127,7 +128,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		protected string CreateSerializedDestinationConfigWithTargetWorkspace(ImportOverwriteModeEnum overwriteMode, int targetWorkspaceId)
 		{
 			ImportSettings destinationConfig = CreateDestinationConfigWithTargetWorkspace(overwriteMode, targetWorkspaceId);
-			return Container.Resolve<ISerializer>().Serialize(destinationConfig);
+			return Serializer.Serialize(destinationConfig);
 		}
 
 		protected ImportSettings CreateDestinationConfigWithTargetWorkspace(ImportOverwriteModeEnum overwriteMode, int targetWorkspaceId, int? federatedInstanceArtifactId = null)
@@ -152,7 +153,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		protected string CreateDefaultFieldMap()
 		{
 			global::Relativity.IntegrationPoints.Services.FieldMap[] map = GetDefaultFieldMap();
-			return Container.Resolve<ISerializer>().Serialize(map);
+			return Serializer.Serialize(map);
 		}
 
 		protected global::Relativity.IntegrationPoints.Services.FieldMap[] GetDefaultFieldMap()
@@ -228,7 +229,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			modelBase.PromoteEligible = promoteEligible;
 		}
 
-		private static int GetRootFolder(ITestHelper helper, int workspaceArtifactId)
+		protected static int GetRootFolder(ITestHelper helper, int workspaceArtifactId)
 		{
 			using (var folderManager = helper.CreateProxy<IFolderManager>())
 			{

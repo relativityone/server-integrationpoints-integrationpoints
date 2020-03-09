@@ -155,6 +155,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 			importJob.Settings.BatesNumberField = "Bates Beg";
 			//Indicates that the images must be copied to the document repository
 			importJob.Settings.CopyFilesToDocumentRepository = true;
+			//For testing purpose
+			importJob.Settings.DisableImageTypeValidation = true;
 
 			// Specifies the ArtifactID of a document identifier field, such as a control number.
 			importJob.Settings.IdentityFieldId = identifyFieldArtifactId;

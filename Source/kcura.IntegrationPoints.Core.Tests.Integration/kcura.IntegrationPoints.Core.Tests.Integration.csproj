@@ -35,6 +35,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Relativity.DataTransfer.MessageService\lib\Relativity.DataTransfer.MessageService.dll</HintPath>
     </Reference>
+    <Reference Include="Serilog, Version=1.5.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10" />
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
@@ -64,6 +65,7 @@
     <Compile Include="Services\IntegrationPointServiceTestsForOtherProviders.cs" />
     <Compile Include="Services\JobHistory\JobHistoryServiceTests.cs" />
     <Compile Include="Tagging\SourceDocumentsTaggerTests.cs" />
+    <Compile Include="TestCasesBilling\BillingFlagRelativityProviderTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">

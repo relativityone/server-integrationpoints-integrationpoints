@@ -37,6 +37,7 @@ using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.WinEDDS.Service.Export;
 using Relativity.Services.Folder;
 using Component = Castle.MicroKernel.Registration.Component;
+using kCura.Apps.Common.Utils.Serializers;
 
 namespace kCura.IntegrationPoint.Tests.Core.Templates
 {
@@ -52,6 +53,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		protected ICaseServiceContext CaseContext { get; private set; }
 		protected IRelativityObjectManager ObjectManager { get; private set; }
 		protected IIntegrationPointRepository IntegrationPointRepository { get; private set; }
+		protected ISerializer Serializer { get; private set; }
+
 		protected bool CreatingAgentEnabled { get; set; } = true;
 		protected bool CreatingWorkspaceEnabled { get; set; } = true;
 
@@ -94,6 +97,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			CaseContext = Container.Resolve<ICaseServiceContext>();
 			ObjectManager = CaseContext.RsapiService.RelativityObjectManager;
 			IntegrationPointRepository = Container.Resolve<IIntegrationPointRepository>();
+			Serializer = Container.Resolve<ISerializer>();
 
 			SourceProviders = GetSourceProviders();
 			RelativityDestinationProviderArtifactId = GetRelativityDestinationProviderArtifactId();
