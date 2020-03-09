@@ -233,7 +233,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 		public async Task FieldMapping_ShouldAutoMapFieldsFromSavedSearch_WhenAutoMapSavedSearchIsPressed()
 		{
 			//Arrange
-			const string savedSearchName = "Saved Search Orzeła 7";
+			const string savedSearchName = "Saved Search Orzela 7";
 			const string controlNumberFieldName = "Control Number";
 			const string fileNameFieldName = "File Name";
 
