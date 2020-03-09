@@ -147,67 +147,83 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.No;
 
 			//Identifier and another random field
-			List<string> fieldsToBeChanged = new List<string>{ "Control Number" , "File Name"};
+			List<Tuple<string, string>> fieldsToBeRenamed = new List<Tuple<string, string>>
+			{
+				new Tuple<string, string>("Control Number", FieldObject.GetRandomName("Control Number")),
+				new Tuple<string, string>("File Name", FieldObject.GetRandomName("File Name"))
+			};
             
-            foreach (string fieldName in fieldsToBeChanged)
-            {
-				await SetRandomNameToFLTFieldDestinationWorkspaceAsync(fieldName).ConfigureAwait(false);
-                await SetRandomNameToFLTFieldSourceWorkspaceAsync(fieldName).ConfigureAwait(false);
+            foreach (Tuple<string, string> field in fieldsToBeRenamed)
+			{
+				await RenameFieldInSourceWorkspaceAsync(field.Item1, field.Item2).ConfigureAwait(false);
+				await RenameFieldInDestinationWorkspaceAsync(field.Item1, field.Item2).ConfigureAwait(false);
 			}
-			
-			await SourceContext.RetrieveMappableFieldsAsync().ConfigureAwait(false);
-            await DestinationContext.RetrieveMappableFieldsAsync().ConfigureAwait(false);
-			SyncFieldMapResults mapAllFieldsUiTestEdition  = new SyncFieldMapResults(SourceContext.WorkspaceAutoMapAllEnabledFields, DestinationContext.WorkspaceAutoMapAllEnabledFields);
-            
-			List<string> expectedInOrderSelectedSourceMappableFieldsList =
-                mapAllFieldsUiTestEdition.FieldMapSorted.Select(x =>x.SourceFieldObject.DisplayName).ToList();
 
-			FieldMapModel expectedIdentifierMatchedField =
-                mapAllFieldsUiTestEdition.FieldMap.Single(x =>
-                    x.AutoMapMatchType == TestConstants.FieldMapMatchType.IsIdentifier);
-            var expectedFieldPairIsIdentifier = new FieldDisplayNamePair(expectedIdentifierMatchedField);
-
-			List<FieldMapModel> expectedArtifactIDMatchedFields =
-                mapAllFieldsUiTestEdition.FieldMap.Where(x =>
-                    x.AutoMapMatchType == TestConstants.FieldMapMatchType.ArtifactID).ToList();
-            List<FieldDisplayNamePair> expectedFieldPairsArtifactIDList = expectedArtifactIDMatchedFields.Select(fieldPair => new FieldDisplayNamePair(fieldPair)).ToList();
-
-			List<FieldMapModel> expectedNameMatchedFields =
-                mapAllFieldsUiTestEdition.FieldMap.Where(x =>
-                    x.AutoMapMatchType == TestConstants.FieldMapMatchType.Name).ToList();
-            List<FieldDisplayNamePair> expectedFieldPairsNameList = expectedNameMatchedFields.Select(fieldPair => new FieldDisplayNamePair(fieldPair)).ToList();
-
-			PushToRelativityThirdPage fieldMappingPage =
-                PointsAction.CreateNewRelativityProviderFieldMappingPage(model);
-			//Act
-			fieldMappingPage = fieldMappingPage.MapAllFields();
-
-			//Assert
-			List<string> fieldsFromSelectedSourceWorkspaceListBox =
-                fieldMappingPage.GetFieldsFromSelectedSourceWorkspaceListBox();
-            List<string> fieldsFromSelectedDestinationWorkspaceListBox =
-                fieldMappingPage.GetFieldsFromSelectedDestinationWorkspaceListBox();
-
-            var fieldPairsFromSelectedListBox = new List<FieldDisplayNamePair>();
-            foreach (string sourceDisplayName in fieldsFromSelectedSourceWorkspaceListBox)
+            try
             {
-                int index = fieldsFromSelectedSourceWorkspaceListBox.IndexOf(sourceDisplayName);
-                string destinationDisplayName = fieldsFromSelectedDestinationWorkspaceListBox[index];
-                fieldPairsFromSelectedListBox.Add(new FieldDisplayNamePair(sourceDisplayName, destinationDisplayName));
+	            await SourceContext.RetrieveMappableFieldsAsync().ConfigureAwait(false);
+	            await DestinationContext.RetrieveMappableFieldsAsync().ConfigureAwait(false);
+	            SyncFieldMapResults mapAllFieldsUiTestEdition  = new SyncFieldMapResults(SourceContext.WorkspaceAutoMapAllEnabledFields, DestinationContext.WorkspaceAutoMapAllEnabledFields);
+            
+	            List<string> expectedInOrderSelectedSourceMappableFieldsList =
+		            mapAllFieldsUiTestEdition.FieldMapSorted.Select(x =>x.SourceFieldObject.DisplayName).ToList();
+
+	            FieldMapModel expectedIdentifierMatchedField =
+		            mapAllFieldsUiTestEdition.FieldMap.Single(x =>
+			            x.AutoMapMatchType == TestConstants.FieldMapMatchType.IsIdentifier);
+	            var expectedFieldPairIsIdentifier = new FieldDisplayNamePair(expectedIdentifierMatchedField);
+
+	            List<FieldMapModel> expectedArtifactIDMatchedFields =
+		            mapAllFieldsUiTestEdition.FieldMap.Where(x =>
+			            x.AutoMapMatchType == TestConstants.FieldMapMatchType.ArtifactID).ToList();
+	            List<FieldDisplayNamePair> expectedFieldPairsArtifactIDList = expectedArtifactIDMatchedFields.Select(fieldPair => new FieldDisplayNamePair(fieldPair)).ToList();
+
+	            List<FieldMapModel> expectedNameMatchedFields =
+		            mapAllFieldsUiTestEdition.FieldMap.Where(x =>
+			            x.AutoMapMatchType == TestConstants.FieldMapMatchType.Name).ToList();
+	            List<FieldDisplayNamePair> expectedFieldPairsNameList = expectedNameMatchedFields.Select(fieldPair => new FieldDisplayNamePair(fieldPair)).ToList();
+
+	            PushToRelativityThirdPage fieldMappingPage =
+		            PointsAction.CreateNewRelativityProviderFieldMappingPage(model);
+	            //Act
+	            fieldMappingPage = fieldMappingPage.MapAllFields();
+
+	            //Assert
+	            List<string> fieldsFromSelectedSourceWorkspaceListBox =
+		            fieldMappingPage.GetFieldsFromSelectedSourceWorkspaceListBox();
+	            List<string> fieldsFromSelectedDestinationWorkspaceListBox =
+		            fieldMappingPage.GetFieldsFromSelectedDestinationWorkspaceListBox();
+
+	            var fieldPairsFromSelectedListBox = new List<FieldDisplayNamePair>();
+	            foreach (string sourceDisplayName in fieldsFromSelectedSourceWorkspaceListBox)
+	            {
+		            int index = fieldsFromSelectedSourceWorkspaceListBox.IndexOf(sourceDisplayName);
+		            string destinationDisplayName = fieldsFromSelectedDestinationWorkspaceListBox[index];
+		            fieldPairsFromSelectedListBox.Add(new FieldDisplayNamePair(sourceDisplayName, destinationDisplayName));
+	            }
+
+	            CollectionAssert.AreEqual(fieldsFromSelectedSourceWorkspaceListBox, expectedInOrderSelectedSourceMappableFieldsList);
+			
+	            Assert.IsTrue(fieldPairsFromSelectedListBox.Exists(x => CompareFieldDisplayNamePair(x, expectedFieldPairIsIdentifier)));
+
+	            foreach (FieldDisplayNamePair fieldDisplayNamePair in expectedFieldPairsArtifactIDList)
+	            {
+		            Assert.IsTrue(fieldPairsFromSelectedListBox.Exists(x => CompareFieldDisplayNamePair(x, fieldDisplayNamePair)));
+	            }
+
+	            foreach (FieldDisplayNamePair fieldDisplayNamePair in expectedFieldPairsNameList)
+	            {
+		            Assert.IsTrue(fieldPairsFromSelectedListBox.Exists(x => CompareFieldDisplayNamePair(x, fieldDisplayNamePair)));
+	            }
             }
-
-			CollectionAssert.AreEqual(fieldsFromSelectedSourceWorkspaceListBox, expectedInOrderSelectedSourceMappableFieldsList);
-			
-			Assert.IsTrue(fieldPairsFromSelectedListBox.Exists(x => CompareFieldDisplayNamePair(x, expectedFieldPairIsIdentifier)));
-
-            foreach (FieldDisplayNamePair fieldDisplayNamePair in expectedFieldPairsArtifactIDList)
+            finally
             {
-				Assert.IsTrue(fieldPairsFromSelectedListBox.Exists(x => CompareFieldDisplayNamePair(x, fieldDisplayNamePair)));
-			}
-
-			foreach (FieldDisplayNamePair fieldDisplayNamePair in expectedFieldPairsNameList)
-            {
-                Assert.IsTrue(fieldPairsFromSelectedListBox.Exists(x => CompareFieldDisplayNamePair(x, fieldDisplayNamePair)));
+				// Rename fields back to original names
+				foreach (Tuple<string, string> field in fieldsToBeRenamed)
+				{
+					await RenameFieldInDestinationWorkspaceAsync(field.Item2, field.Item1).ConfigureAwait(false);
+					await RenameFieldInSourceWorkspaceAsync(field.Item2, field.Item1).ConfigureAwait(false);
+				}
 			}
 		}
 

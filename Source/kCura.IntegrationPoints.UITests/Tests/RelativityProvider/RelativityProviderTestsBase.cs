@@ -1,18 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
-using kCura.IntegrationPoints.Data.UtilityDTO;
-using kCura.IntegrationPoints.UITests.Configuration.Helpers;
 using kCura.IntegrationPoints.UITests.Configuration.Models;
-using kCura.Relativity.Client;
 using Relativity.Services.Interfaces.Field;
-using Relativity.Services.Interfaces.Field.Models;
-using Relativity.Services.Interfaces.Shared.Models;
-using Relativity.Services.Objects.DataContracts;
-using ArtifactType = Relativity.ArtifactType;
 
 namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 {
@@ -72,17 +63,17 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 				DestinationContext.TearDown();
 			}
 		}
-		public async Task SetRandomNameToFLTFieldSourceWorkspaceAsync(string fieldName)
+
+		public Task RenameFieldInSourceWorkspaceAsync(string fieldName, string newFieldName)
+		{
+			return FieldObject.RenameFieldAsync(fieldName, newFieldName, SourceContext, SourceFieldManager);
+		}
+
+        public Task RenameFieldInDestinationWorkspaceAsync(string fieldName, string newFieldName)
         {
-            await FieldObject.SetRandomNameToFLTFieldAsync(fieldName, SourceContext, SourceFieldManager).ConfigureAwait(false);
+	        return FieldObject.RenameFieldAsync(fieldName, newFieldName, DestinationContext, DestinationFieldManager);
         }
-
-        public async Task SetRandomNameToFLTFieldDestinationWorkspaceAsync(string fieldName)
-        {
-            await FieldObject.SetRandomNameToFLTFieldAsync(fieldName, DestinationContext, DestinationFieldManager).ConfigureAwait(false);
-        }
-
-
+		
 		protected DocumentsValidator CreateDocumentsEmptyValidator()
 		{
 			return new PushDocumentsValidator(SourceContext.GetWorkspaceId(), DestinationContext.GetWorkspaceId());

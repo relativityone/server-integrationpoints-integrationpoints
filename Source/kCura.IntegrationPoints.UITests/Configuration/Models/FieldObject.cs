@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Models
             OpenToAssociations = Fields.GetFieldValueBoolByFieldName(serializedObject, "Open To Associations");
         }
 
-        private static string GetRandomName(string fieldName)
+        public static string GetRandomName(string fieldName)
         {
             const int nameMaxLength = 49;
             string randomName = $"{fieldName}" + Guid.NewGuid();
@@ -99,15 +99,13 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Models
             return new FieldObject(firstFoundField);
         }
 
-        public static async Task SetRandomNameToFLTFieldAsync(string fieldName, TestContext workspaceContext, IFieldManager workspaceFieldManager)
+        public static async Task RenameFieldAsync(string fieldName, string newFieldName, TestContext workspaceContext, IFieldManager workspaceFieldManager)
         {
-            string newRandomFieldName = GetRandomName(fieldName);
-
-            FieldObject fieldToBeChanged = await GetFieldObjectFromWorkspaceAsync(fieldName, workspaceContext).ConfigureAwait(false);
+	        FieldObject fieldToBeChanged = await GetFieldObjectFromWorkspaceAsync(fieldName, workspaceContext).ConfigureAwait(false);
             var fixedLengthTextFieldUpdateRequest = new FixedLengthFieldRequest
             {
                 ObjectType = new ObjectTypeIdentifier { ArtifactTypeID = (int)ArtifactType.Document },
-                Name = $"{newRandomFieldName}",
+                Name = $"{newFieldName}",
                 Length = fieldToBeChanged.Length
             };
             await workspaceFieldManager
