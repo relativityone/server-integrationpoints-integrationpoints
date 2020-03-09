@@ -89,6 +89,20 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		[FindsBy(How = How.Id, Using = "ok-button")]
 		protected IWebElement AvailableProductionOkBtn { get; set; }
 
+        [FindsBy(How = How.Id, Using = "proceedBtn")]
+        protected IWebElement ProceedBtn { get; set; }
+        
+        [FindsBy(How = How.Id, Using = "clearAndProceedBtn")]
+        protected IWebElement ClearAndProceedBtn { get; set; }
+        
+        [FindsBy(How = How.Id, Using = "cancelBtn")]
+        protected IWebElement CancelBtn { get; set; }
+
+        [FindsBy(How = How.XPath, Using = "//*[@id='msgDiv']/p")]
+        protected IWebElement PopupTextElement { get; set; }
+
+        public string PopupText => PopupTextElement.Text;
+
 		protected SelectElement SelectOverwriteElement => new SelectElement(OverwriteElement);
 
 		protected SelectElement SelectMultiSelectFieldOverlayBehaviorElement => new SelectElement(MultiSelectFieldOverlayBehaviorElement);
@@ -252,8 +266,8 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			IList<IWebElement> options = selectList.Options;
 			return options.Select(option => option.GetAttribute("title")).ToList();
 		}
-
-		public List<string> GetFieldsFromSourceWorkspaceListBox()
+		
+        public List<string> GetFieldsFromSourceWorkspaceListBox()
 		{
 			string sourceWorkspaceListBoxId = "source-fields";
 			return GetFieldsFromListBox(sourceWorkspaceListBoxId);
@@ -313,6 +327,15 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			SaveButton.ClickEx();
 			return new IntegrationPointDetailsPage(Driver);
 		}
-
+        public PushToRelativityThirdPage ClickSaveButtonExpectPopup()
+        {
+            SaveButton.ClickEx();
+            return this;
+        }
+        public IntegrationPointDetailsPage ClearAndProceedOnInvalidMapping()
+        {
+            ClearAndProceedBtn.ClickEx();
+            return new IntegrationPointDetailsPage(Driver);
+        }
 	}
 }
