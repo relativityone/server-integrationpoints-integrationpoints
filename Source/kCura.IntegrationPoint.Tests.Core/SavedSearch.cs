@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Data.Factories;
@@ -16,16 +17,21 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static int CreateSavedSearch(int workspaceID, string name)
 		{
+			return CreateSavedSearchAsync(workspaceID, name, new List<FieldRef> {new FieldRef("Control Number")}).GetAwaiter().GetResult();
+		}
+
+		public static async Task<int> CreateSavedSearchAsync(int workspaceID, string name, IEnumerable<FieldRef> fields)
+		{
 			var keywordSearch = new KeywordSearch
 			{
 				ArtifactTypeID = (int)ArtifactType.Document,
 				Name = name,
-				Fields = new List<FieldRef> { new FieldRef("Control Number") }
+				Fields = fields.ToList()
 			};
 
 			using (var proxy = Helper.CreateProxy<IKeywordSearchManager>())
 			{
-				return proxy.CreateSingleAsync(workspaceID, keywordSearch).GetAwaiter().GetResult();
+				return await proxy.CreateSingleAsync(workspaceID, keywordSearch).ConfigureAwait(false);
 			}
 		}
 
