@@ -89,6 +89,50 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 			CollectionAssert.AreEqual(fieldsFromDestinationWorkspaceListBox, expectedDestinationMappableFields);
 		}
 
+        [IdentifiedTest("916e57ba-fb4d-42a4-be2a-4d17df17de60")]
+        [RetryOnError]
+		public void FieldMapping_ShouldClearMapFromInvalidField_WhenClearButtonIsPressed()
+		{
+			//Arrange
+            const string invalidFieldMappingMessageText = "Your job may be unsuccessfully finished by those Source and Destination fields:";
+			List<Tuple<string, string>> FieldsMapping = new List<Tuple<string, string>>
+            {
+                new Tuple<string, string>("Control Number", "Control Number"),
+            };
+            List<Tuple<string, string>> InvalidFieldsMapping = new List<Tuple<string, string>>
+            {
+                new Tuple<string, string>("Alert", "Classification Index")
+            };
+            FieldsMapping.AddRange(InvalidFieldsMapping);
+
+			RelativityProviderModel model = CreateRelativityProviderModel();
+
+            PushToRelativityThirdPage fieldMappingPage =
+				PointsAction.CreateNewRelativityProviderFieldMappingPage(model);
+			PointsAction.MapWorkspaceFields(fieldMappingPage, FieldsMapping);
+			fieldMappingPage = fieldMappingPage.ClickSaveButtonExpectPopup();
+
+			
+			//Assert text on popup
+            fieldMappingPage.PopupText.Should().Be(invalidFieldMappingMessageText);
+            
+            //Act
+			IntegrationPointDetailsPage detailsPage = fieldMappingPage.ClearAndProceedOnInvalidMapping();
+			
+            PushToRelativityThirdPage clearedMappingPage = PointsAction.EditGoToFieldMappingPage(detailsPage);
+			List<string> fieldsFromSelectedSourceWorkspaceListBox =
+                clearedMappingPage.GetFieldsFromSelectedSourceWorkspaceListBox();
+			List<string> fieldsFromSelectedDestinationWorkspaceListBox =
+                clearedMappingPage.GetFieldsFromSelectedDestinationWorkspaceListBox();
+            
+            //Assert if fields were removed from mapping
+			fieldsFromSelectedDestinationWorkspaceListBox.Should().NotContain(InvalidFieldsMapping.Select(x =>x.Item1));
+            fieldsFromSelectedSourceWorkspaceListBox.Should().NotContain(InvalidFieldsMapping.Select(x => x.Item2));
+        }
+
+
+		private List<string> CreateFieldMapListBoxFormatFromObjectManagerFetchedList(
+			List<FieldObject> mappableFieldsListFromObjectManager)
 		[IdentifiedTest("916e57ba-fb4d-42a4-be2a-4d17df17de59")]
 		[RetryOnError]
 		[Category(TestCategory.SMOKE)]

@@ -200,6 +200,11 @@ namespace kCura.IntegrationPoints.UITests.Common
 
 			return thirdPage;
 		}
+        public PushToRelativityThirdPage EditGoToFieldMappingPage(IntegrationPointDetailsPage detailsPage)
+        {
+            ExportFirstPage firstPage = detailsPage.EditIntegrationPoint();
+            return firstPage.GoToNextPagePush().GoToNextPage();
+        }
 
 		private ExportFirstPage SetupFirstIntegrationPointPage(GeneralPage generalPage,
 			IntegrationPointGeneralModel model)
@@ -526,7 +531,7 @@ namespace kCura.IntegrationPoints.UITests.Common
 			}
 		}
 
-		private void MapWorkspaceFields(PushToRelativityThirdPage thirdPage, List<Tuple<string, string>> fieldMapping)
+		public void MapWorkspaceFields(PushToRelativityThirdPage thirdPage, List<Tuple<string, string>> fieldMapping)
 		{
 			if (fieldMapping == null)
 			{

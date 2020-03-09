@@ -67,7 +67,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 		{
 			IEnumerable<FieldMap> invalidFieldMaps = await _fieldsMappingValidator.ValidateAsync(request, workspaceID, destinationWorkspaceID).ConfigureAwait(false);
 
-			return Request.CreateResponse(HttpStatusCode.OK, invalidFieldMaps);
+			return Request.CreateResponse(HttpStatusCode.OK, invalidFieldMaps, Configuration.Formatters.JsonFormatter);
 		}
 	}
 }
