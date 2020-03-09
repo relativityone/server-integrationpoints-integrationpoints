@@ -4,25 +4,14 @@ kCura
 kCura.Apps.Common.Utils
 kCura.Relativity.Client
 LanguageExt.Core
-Relativity.API
 Relativity.DataExchange.Client.SDK
 Relativity.DataTransfer.MessageService
 Relativity.IntegrationPoints.SDK
-Relativity.OAuth2Client.Interfaces
 Relativity.Productions.Services.Interfaces
-Relativity.Services.Interfaces
 Relativity.Services.Interfaces.Private
-Relativity.Telemetry.APM
 Relativity.DataGrid
 SystemWrapper.Interfaces
-Polly
-Relativity.Logging.Interfaces
-Relativity.OAuth2Client.Implicit
-relativity.faspmanager
-Relativity.Transfer.Client
-
-group TestPackages
-	FluentAssertions
-	Moq
-	NUnit
-	NSubstitute
+FluentAssertions
+Moq
+NUnit
+NSubstitute

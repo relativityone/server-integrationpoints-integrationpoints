@@ -17,6 +17,7 @@ nuget Relativity.Authentication 11.1.52.1
 nuget Relativity.CustomPages 11.1.52.1
 nuget Relativity.Data 11.1.52.1
 nuget Relativity.DataExchange.Client.SDK 1.9.21
+nuget Relativity.Telemetry.DataContracts.Shared ~> 3000.0
 nuget Relativity.Services.Interfaces 11.1.52.1
 nuget Relativity.Services.Interfaces.Private 11.1.52.1
 nuget Relativity.API 12.0.1
@@ -61,31 +62,27 @@ nuget ZetaLongPaths 1.0.0.16
 //Analyzers
 nuget CSharpGuidelineAnalyzer 1.0.3.0
 
-group TestPackages
-	framework: net462
-	strategy: min
-	source https://proget.kcura.corp/nuget/NuGet
-	nuget BenchmarkDotNet 0.10.12
-	nuget DotNetSeleniumExtras.PageObjects 3.11.0
-	nuget DotNetSeleniumExtras.WaitHelpers 3.11.0
-	nuget FluentAssertions 4.19.4
-	nuget Moq 4.5.3
-	nuget netDumbster 2.0.0.4
-	nuget Newtonsoft.Json 8.0.1
-	nuget NUnit 3.11
-	nuget NSubstitute 1.10.0.0
-	nuget Relativity.Testing.Identification 1.6.0
-	nuget Selenium.Support 3.141.0
-	nuget Selenium.WebDriver.ChromeDriver 78.0.3904.1100-beta
-	nuget Selenium.WebDriver.GeckoDriver 0.24.0
-	nuget Serilog 1.5.14	
-	nuget Serilog.Sinks.Seq 1.5.36
+// Test Packages
+nuget BenchmarkDotNet 0.10.12
+nuget DotNetSeleniumExtras.PageObjects 3.11.0
+nuget DotNetSeleniumExtras.WaitHelpers 3.11.0
+nuget FluentAssertions 4.19.4
+nuget Moq 4.5.3
+nuget netDumbster 2.0.0.4
+nuget NUnit 3.11
+nuget NSubstitute 1.10.0.0
+nuget Relativity.Testing.Identification 1.6.0
+nuget Selenium.Support 3.141.0
+nuget Selenium.WebDriver.ChromeDriver 78.0.3904.1100-beta
+nuget Selenium.WebDriver.GeckoDriver 0.24.0
+nuget Serilog 1.5.14	
+nuget Serilog.Sinks.Seq 1.5.36
 	
 group Sync
 	framework: auto-detect
 	strategy: min
 	source https://proget.kcura.corp/nuget/NuGet
-	nuget Relativity.Sync ~> 0.1.27-dev017
+	nuget Relativity.Sync ~> 0.1.29-beta001
 	nuget Autofac 4.9.4
 	nuget Banzai ~> 3.0
 	nuget Banzai.Autofac ~> 3.0

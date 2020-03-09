@@ -5,12 +5,8 @@ kCura.Relativity.Client
 Relativity.API
 Relativity.IntegrationPoints.Contracts
 Relativity.Kepler.Client
-Relativity.Telemetry.APM
 relativity.transfer.client
 Relativity.Toggles
 Relativity.Logging.Interfaces
-
-group TestPackages
-	NUnit
-	NSubstitute
-	relativity.testing.identification
+NSubstitute
+relativity.testing.identification

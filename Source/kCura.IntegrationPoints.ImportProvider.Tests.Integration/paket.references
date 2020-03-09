@@ -4,17 +4,10 @@ kCura.Apps.Common.Utils
 kCura.Relativity.Client
 Relativity.API
 Relativity.Data
-Relativity.Kepler
-relativity.transfer.client
 kCura.FreeImage
 Relativity.DataTransfer.MessageService
 Relativity.IntegrationPoints.Contracts
-kCura.OutsideIn.FI.Win32
-Relativity.Logging.Interfaces
 Relativity.DataExchange.Client.SDK
-
-group TestPackages
-	NUnit
-	NSubstitute
-	relativity.testing.identification
-	Serilog
+NSubstitute
+relativity.testing.identification
+Serilog

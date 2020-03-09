@@ -4,23 +4,15 @@ kCura.Apps.Common.Data
 kCura.Apps.Common.Utils
 kCura.OutsideIn.FI.Win32
 kCura.Relativity.Client
-Relativity
-Relativity.API
 Relativity.Data
 Relativity.Services.Interfaces.Private
 Relativity.IntegrationPoints.Services.Interfaces.Private
-Relativity.Kepler
 Relativity.Productions.Services.Interfaces
-Relativity.Services.Interfaces
-Relativity.Telemetry.APM
 relativity.transfer.client
 Relativity.OAuth2Client
 Relativity.Toggles
 Relativity.Logging.Interfaces
 Relativity.Kepler.Client
-
-group TestPackages
-	FluentAssertions
-	NUnit
-	relativity.testing.identification
-	Serilog
+FluentAssertions
+relativity.testing.identification
+Serilog

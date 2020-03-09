@@ -2,8 +2,5 @@ CSharpGuidelineAnalyzer
 Relativity.API
 kCura
 Relativity.Logging.Interfaces
-
-group TestPackages
-	NUnit
-	NSubstitute
-	relativity.testing.identification
+NSubstitute
+relativity.testing.identification

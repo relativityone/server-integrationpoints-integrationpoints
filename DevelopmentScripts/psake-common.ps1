@@ -14,7 +14,7 @@ properties {
     $pdb_directory = [System.IO.Path]::Combine($root, 'PDBs')
     $doc_directory = [System.IO.Path]::Combine($root, 'Documentation')
     $nuget_packages_directory = [System.IO.Path]::Combine($root, 'packages')
-    $nuget_test_packages_directory = [System.IO.Path]::Combine($nuget_packages_directory, 'testpackages')
+    $nuget_test_packages_directory = [System.IO.Path]::Combine($nuget_packages_directory)
     $lib_directory = [System.IO.Path]::Combine($root, 'lib')
     $tests_directory = [System.IO.Path]::Combine($lib_directory, 'UnitTests')
     $artifacts_directory = [System.IO.Path]::Combine($root, 'Artifacts')

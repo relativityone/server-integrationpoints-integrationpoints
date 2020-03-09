@@ -4,10 +4,7 @@ kCura.Agent
 kCura.Relativity.Client
 Relativity.Authentication
 Relativity.IntegrationPoints.Contracts
-Relativity.Telemetry.APM
 Relativity.Services.Interfaces
-
-group TestPackages
-	NUnit
-	NSubstitute
-	FluentAssertions
+NUnit
+NSubstitute
+FluentAssertions

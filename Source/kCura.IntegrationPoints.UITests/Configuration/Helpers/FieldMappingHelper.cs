@@ -1,8 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data.UtilityDTO;
+using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.UITests.Configuration.Models;
 using Relativity;
 using Relativity.Services.Objects.DataContracts;
 
@@ -48,9 +50,11 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
 				Fields = new[]
 				{
 					new FieldRef {Name = "Name"},
-					new FieldRef {Name = "Field Type"},
+                    new FieldRef {Name = "Field Type"},
+                    new FieldRef {Name = "Length"},
 					new FieldRef {Name = "Keywords"},
-					new FieldRef {Name = "Is Identifier"}
+					new FieldRef {Name = "Is Identifier"},
+                    new FieldRef {Name = "Open To Associations"}
 				},
 			};
 
@@ -61,21 +65,14 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
 				ResultSet<RelativityObject> fieldsMapped =
 					await _testContext.ObjectManager.QueryAsync(fieldsRequest, fieldsFromWorkspace.Count,
 						_BATCH_SIZE).ConfigureAwait(false);
-				fieldsFromWorkspace.AddRange(fieldsMapped.Items.Select(i => new FieldObject()
-				{
-					ArtifactID = i.ArtifactID,
-					Name = i.FieldValues.First(fv => fv.Field.Name == "Name").Value.ToString(),
-					Type = i.FieldValues.First(fv => fv.Field.Name == "Field Type").Value.ToString(),
-					Keywords = i.FieldValues.First(fv => fv.Field.Name == "Keywords").Value.ToString(),
-					IsIdentifier = (bool) i.FieldValues.First(fv => fv.Field.Name == "Is Identifier").Value
-				}));
+				fieldsFromWorkspace.AddRange(fieldsMapped.Items.Select(i => new FieldObject(i)));
 				totalCount = fieldsMapped.TotalCount;
 			} while (fieldsFromWorkspace.Count < totalCount);
 
-			return fieldsFromWorkspace;
+            return fieldsFromWorkspace;
 		}
 
-		private List<FieldObject> RemoveSystemFieldObjects(List<FieldObject> fieldsFromWorkspace)
+        private List<FieldObject> RemoveSystemFieldObjects(List<FieldObject> fieldsFromWorkspace)
 		{
 			fieldsFromWorkspace.RemoveAll(fo => fo.Keywords == "System" && !_fieldMapWhiteList.Contains(fo.Name));
 			return fieldsFromWorkspace;
@@ -83,8 +80,8 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
 
 		private List<FieldObject> RemoveOpenToAssociationFieldObjects(List<FieldObject> fieldsFromWorkspace)
 		{
-			fieldsFromWorkspace.RemoveAll(fo =>
-				fo.Name.Contains("::") && !_fieldMapWhiteList.Contains(fo.Name));
+			fieldsFromWorkspace.RemoveAll(fo => fo.Name.Contains("::"));
+            fieldsFromWorkspace.RemoveAll(fo => fo.OpenToAssociations);
 			return fieldsFromWorkspace;
 		}
 
@@ -93,8 +90,13 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
 			fieldsFromWorkspace.RemoveAll(fo => _fieldMapBlackList.Contains(fo.Name));
 			return fieldsFromWorkspace;
 		}
+        private List<FieldObject> RemoveObjectTypeFieldObjects(List<FieldObject> fieldsFromWorkspace)
+        {
+            fieldsFromWorkspace.RemoveAll(fo => fo.Type.Contains("Object"));
+            return fieldsFromWorkspace;
+        }
 
-		public async Task<List<FieldObject>> RetrieveFilteredDocumentsFieldsFromWorkspaceAsync()
+		public async Task<List<FieldObject>> GetFilteredDocumentsFieldsFromWorkspaceAsync()
 		{
 			List<FieldObject> fieldsFromWorkspace =
 				await RetrieveAllDocumentsFieldsFromWorkspaceAsync().ConfigureAwait(false);
@@ -103,5 +105,13 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
 			fieldsFromWorkspace = RemoveBlackListedFieldObjects(fieldsFromWorkspace);
 			return fieldsFromWorkspace;
 		}
+
+        public async Task<List<FieldObject>> GetAutoMapAllEnabledFieldsAsync()
+        {
+            List<FieldObject> mappableFieldsFromWorkspace =
+                await GetFilteredDocumentsFieldsFromWorkspaceAsync().ConfigureAwait(false);
+            List<FieldObject> autoMapAllEnabledFields = RemoveObjectTypeFieldObjects(mappableFieldsFromWorkspace);
+            return autoMapAllEnabledFields;
+        }
 	}
 }

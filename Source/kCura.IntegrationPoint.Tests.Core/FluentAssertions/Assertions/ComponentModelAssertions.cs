@@ -5,15 +5,12 @@ using FluentAssertions.Primitives;
 
 namespace kCura.IntegrationPoint.Tests.Core.FluentAssertions.Assertions
 {
-	public class ComponentModelAssertions
-		: ReferenceTypeAssertions<ComponentModel, ComponentModelAssertions>
+	public class ComponentModelAssertions : ReferenceTypeAssertions<ComponentModel, ComponentModelAssertions>
 	{
 		public ComponentModelAssertions(ComponentModel instance)
 		{
 			Subject = instance;
 		}
-
-		protected override string Context => nameof(ComponentModel);
 
 		public AndConstraint<ComponentModelAssertions> BeRegisteredWithLifestyle(
 			LifestyleType expectedLifestyle,
@@ -48,5 +45,7 @@ namespace kCura.IntegrationPoint.Tests.Core.FluentAssertions.Assertions
 
 			return new AndConstraint<ComponentModelAssertions>(this);
 		}
+
+		protected override string Context => nameof(ComponentModel);
 	}
 }

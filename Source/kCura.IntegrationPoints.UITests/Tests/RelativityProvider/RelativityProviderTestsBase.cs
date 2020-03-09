@@ -1,12 +1,17 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
+using kCura.IntegrationPoints.Data.UtilityDTO;
+using kCura.IntegrationPoints.UITests.Configuration.Helpers;
+using kCura.IntegrationPoints.UITests.Configuration.Models;
 using kCura.Relativity.Client;
 using Relativity.Services.Interfaces.Field;
 using Relativity.Services.Interfaces.Field.Models;
 using Relativity.Services.Interfaces.Shared.Models;
+using Relativity.Services.Objects.DataContracts;
 using ArtifactType = Relativity.ArtifactType;
 
 namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
@@ -40,7 +45,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ImageService = new ImagesService(SourceContext.Helper);
 			ProductionImageService = new ProductionImagesService(SourceContext.Helper);
 			ObjectManagerFactory = new RelativityObjectManagerFactory(SourceContext.Helper);
-			await CreateFixedLengthFieldsWithSpecialCharactersAsync(SourceContext.GetWorkspaceId(), SourceFieldManager).ConfigureAwait(false);
+            await FieldObject.CreateFixedLengthFieldsWithSpecialCharactersAsync(SourceContext.GetWorkspaceId(), SourceFieldManager).ConfigureAwait(false);
 			await SourceContext.RetrieveMappableFieldsAsync().ConfigureAwait(false);
 		}
 
@@ -49,7 +54,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		{
 			DestinationContext = new TestContext().CreateTestWorkspace();
 			DestinationFieldManager = DestinationContext.Helper.CreateProxy<IFieldManager>();
-			await CreateFixedLengthFieldsWithSpecialCharactersAsync(DestinationContext.GetWorkspaceId(), DestinationFieldManager).ConfigureAwait(false);
+			await FieldObject.CreateFixedLengthFieldsWithSpecialCharactersAsync(DestinationContext.GetWorkspaceId(), DestinationFieldManager).ConfigureAwait(false);
 			await DestinationContext.RetrieveMappableFieldsAsync().ConfigureAwait(false);
 			PointsAction = new IntegrationPointsAction(Driver, SourceContext);
 		}
@@ -67,31 +72,16 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 				DestinationContext.TearDown();
 			}
 		}
+		public async Task SetRandomNameToFLTFieldSourceWorkspaceAsync(string fieldName)
+        {
+            await FieldObject.SetRandomNameToFLTFieldAsync(fieldName, SourceContext, SourceFieldManager).ConfigureAwait(false);
+        }
 
-		protected async Task CreateFixedLengthFieldsWithSpecialCharactersAsync(int workspaceID, IFieldManager fieldManager)
-		{
-			char[] specialCharacters = @"!@#$%^&*()-_+= {}|\/;'<>,.?~`".ToCharArray();
-			for (int i = 0; i < specialCharacters.Length; i++)
-			{
-				char special = specialCharacters[i];
-				string generatedFieldName = $"aaaaa{special}{i}";
-				var fixedLengthTextFieldRequest = new FixedLengthFieldRequest
-				{
-					ObjectType = new ObjectTypeIdentifier { ArtifactTypeID = (int)ArtifactType.Document },
-					Name = $"{generatedFieldName} FLT",
-					Length = 255
-				};
+        public async Task SetRandomNameToFLTFieldDestinationWorkspaceAsync(string fieldName)
+        {
+            await FieldObject.SetRandomNameToFLTFieldAsync(fieldName, DestinationContext, DestinationFieldManager).ConfigureAwait(false);
+        }
 
-				var longTextFieldRequest = new LongTextFieldRequest
-				{
-					ObjectType = new ObjectTypeIdentifier { ArtifactTypeID = (int)ArtifactType.Document },
-					Name = $"{generatedFieldName} LTF"
-				};
-
-				await fieldManager.CreateLongTextFieldAsync(workspaceID, longTextFieldRequest).ConfigureAwait(false);
-				await fieldManager.CreateFixedLengthFieldAsync(workspaceID, fixedLengthTextFieldRequest).ConfigureAwait(false);
-			}
-		}
 
 		protected DocumentsValidator CreateDocumentsEmptyValidator()
 		{
