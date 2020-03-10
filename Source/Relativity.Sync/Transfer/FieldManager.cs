@@ -38,7 +38,7 @@ namespace Relativity.Sync.Transfer
 		public async Task<IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder>> CreateSpecialFieldRowValueBuildersAsync(int sourceWorkspaceArtifactId, ICollection<int> documentArtifactIds)
 		{
 			IEnumerable<ISpecialFieldRowValuesBuilder> specialFieldRowValueBuilders = await _specialFieldBuilders
-				.SelectAsync(async b => await b.GetRowValuesBuilderAsync(sourceWorkspaceArtifactId, documentArtifactIds).ConfigureAwait(false))
+				.SelectAsync(specialFieldBuilder => specialFieldBuilder.GetRowValuesBuilderAsync(sourceWorkspaceArtifactId, documentArtifactIds))
 				.ConfigureAwait(false);
 
 			Dictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> specialFieldBuildersDictionary = new Dictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder>();
@@ -174,11 +174,10 @@ namespace Relativity.Sync.Transfer
 			return fields;
 		}
 		
-		private async Task<IDictionary<string, RelativityDataType>> GetRelativityDataTypesForFieldsAsync(IEnumerable<FieldInfoDto> fields, CancellationToken token)
+		private Task<IDictionary<string, RelativityDataType>> GetRelativityDataTypesForFieldsAsync(IEnumerable<FieldInfoDto> fields, CancellationToken token)
 		{
 			ICollection<string> fieldNames = fields.Select(f => f.SourceFieldName).ToArray();
-			return await _documentFieldRepository.GetRelativityDataTypesForFieldsByFieldNameAsync(_configuration.SourceWorkspaceArtifactId, fieldNames, token)
-				.ConfigureAwait(false);
+			return _documentFieldRepository.GetRelativityDataTypesForFieldsByFieldNameAsync(_configuration.SourceWorkspaceArtifactId, fieldNames, token);
 		}
 
 		private FieldInfoDto CreateFieldInfoFromFieldMap(FieldMap fieldMap)

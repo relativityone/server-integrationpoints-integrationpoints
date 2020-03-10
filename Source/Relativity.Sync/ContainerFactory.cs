@@ -29,11 +29,11 @@ namespace Relativity.Sync
 			containerBuilder.RegisterInstance(relativityServices).As<RelativityServices>();
 			containerBuilder.RegisterInstance(relativityServices.ServicesMgr).As<IServicesMgr>();
 			containerBuilder.RegisterInstance(relativityServices.APM).As<IAPM>();
-			containerBuilder.RegisterInstance(relativityServices.SearchManagerFactory).As<Func<ISearchManager>>();
 			containerBuilder.RegisterType<WorkspaceGuidService>().As<IWorkspaceGuidService>().SingleInstance();
 			containerBuilder.RegisterType<SyncExecutionContextFactory>().As<ISyncExecutionContextFactory>();
 			containerBuilder.RegisterType<AppDomainWrapper>().As<IAppDomain>();
 			containerBuilder.RegisterType<DateTimeWrapper>().As<IDateTime>();
+			containerBuilder.RegisterType<WrapperForRandom>().As<IRandom>();
 			containerBuilder.RegisterType<JSONSerializer>().As<ISerializer>();
 			containerBuilder.RegisterType<ProgressStateCounter>().As<IProgressStateCounter>();
 			containerBuilder.RegisterType<SyncJobProgress>().As<IProgress<SyncJobState>>();

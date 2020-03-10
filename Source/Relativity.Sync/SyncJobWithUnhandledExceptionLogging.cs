@@ -17,27 +17,27 @@ namespace Relativity.Sync
 			_logger = logger;
 		}
 
-		public async Task ExecuteAsync(CancellationToken token)
+		public Task ExecuteAsync(CancellationToken token)
 		{
-			await ExecuteWithUnhandledExceptionLogging(_syncJob.ExecuteAsync, token).ConfigureAwait(false);
+			return ExecuteWithUnhandledExceptionLoggingAsync(_syncJob.ExecuteAsync, token);
 		}
 
-		public async Task ExecuteAsync(IProgress<SyncJobState> progress, CancellationToken token)
+		public Task ExecuteAsync(IProgress<SyncJobState> progress, CancellationToken token)
 		{
-			await ExecuteWithUnhandledExceptionLogging(_syncJob.ExecuteAsync, progress, token).ConfigureAwait(false);
+			return ExecuteWithUnhandledExceptionLoggingAsync(_syncJob.ExecuteAsync, progress, token);
 		}
 
-		public async Task RetryAsync(CancellationToken token)
+		public Task RetryAsync(CancellationToken token)
 		{
-			await ExecuteWithUnhandledExceptionLogging(_syncJob.RetryAsync, token).ConfigureAwait(false);
+			return ExecuteWithUnhandledExceptionLoggingAsync(_syncJob.RetryAsync, token);
 		}
 
-		public async Task RetryAsync(IProgress<SyncJobState> progress, CancellationToken token)
+		public Task RetryAsync(IProgress<SyncJobState> progress, CancellationToken token)
 		{
-			await ExecuteWithUnhandledExceptionLogging(_syncJob.RetryAsync, progress, token).ConfigureAwait(false);
+			return ExecuteWithUnhandledExceptionLoggingAsync(_syncJob.RetryAsync, progress, token);
 		}
 
-		private async Task ExecuteWithUnhandledExceptionLogging(Func<CancellationToken, Task> action, CancellationToken token)
+		private async Task ExecuteWithUnhandledExceptionLoggingAsync(Func<CancellationToken, Task> action, CancellationToken token)
 		{
 			_appDomain.UnhandledException += OnUnhandledException;
 
@@ -51,7 +51,7 @@ namespace Relativity.Sync
 			}
 		}
 
-		private async Task ExecuteWithUnhandledExceptionLogging(Func<IProgress<SyncJobState>, CancellationToken, Task> action, IProgress<SyncJobState> progress, CancellationToken token)
+		private async Task ExecuteWithUnhandledExceptionLoggingAsync(Func<IProgress<SyncJobState>, CancellationToken, Task> action, IProgress<SyncJobState> progress, CancellationToken token)
 		{
 			_appDomain.UnhandledException += OnUnhandledException;
 

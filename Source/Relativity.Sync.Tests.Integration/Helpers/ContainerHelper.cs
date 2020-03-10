@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using Autofac;
 using Banzai;
 using kCura.WinEDDS.Service.Export;
@@ -12,6 +13,7 @@ using Relativity.Services.InstanceSetting;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Nodes;
+using Relativity.Sync.Transfer;
 using Relativity.Telemetry.APM;
 
 namespace Relativity.Sync.Tests.Integration.Helpers
@@ -61,6 +63,9 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 			RelativityServices relativityServices = CreateMockedRelativityServices();
 			containerFactory.RegisterSyncDependencies(containerBuilder, new SyncJobParameters(1, 1, 1, 1),
 				relativityServices, new SyncJobExecutionConfiguration(), new EmptyLogger());
+
+			MockSearchManagerFactory(containerBuilder);
+
 			return containerBuilder;
 		}
 
@@ -96,10 +101,18 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 			Mock<IServicesMgr> servicesMgr = new Mock<IServicesMgr>();
 			servicesMgr.Setup(x => x.CreateProxy<IInstanceSettingManager>(It.IsAny<ExecutionIdentity>())).Returns(instanceSettingManager.Object);
 
-			Mock<ISearchManager> searchManager = new Mock<ISearchManager>();
-
 			Uri authenticationUri = new Uri("https://localhost", UriKind.RelativeOrAbsolute);
-			return new RelativityServices(apm, servicesMgr.Object, () => searchManager.Object, authenticationUri);
+			return new RelativityServices(apm, servicesMgr.Object, authenticationUri);
+		}
+
+		public static void MockSearchManagerFactory(ContainerBuilder containerBuilder)
+		{
+			Mock<ISearchManager> searchManager = new Mock<ISearchManager>();
+			Mock<ISearchManagerFactory> searchManagerFactory = new Mock<ISearchManagerFactory>();
+			searchManagerFactory.Setup(x => x.CreateSearchManagerAsync())
+				.Returns(Task.FromResult(searchManager.Object));
+
+			containerBuilder.RegisterInstance(searchManagerFactory.Object).As<ISearchManagerFactory>().SingleInstance();
 		}
 	}
 }

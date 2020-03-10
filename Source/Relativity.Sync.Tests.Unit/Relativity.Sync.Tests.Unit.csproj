@@ -23,5 +23,8 @@
 		<ProjectReference Include="..\Relativity.Sync.Tests.Common\Relativity.Sync.Tests.Common.csproj" />
 		<ProjectReference Include="..\Relativity.Sync\Relativity.Sync.csproj" />
 	</ItemGroup>
+	<ItemGroup>
+	  <Reference Include="System.Web.Services" />
+	</ItemGroup>
 	<Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

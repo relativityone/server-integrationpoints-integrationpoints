@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Castle.Core.Internal;
 using FluentAssertions;
+using kCura.Vendor.Castle.Components.DictionaryAdapter.Xml;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.DataContracts.DTOs.Results;
@@ -73,17 +75,17 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				new NativeFile(2, string.Empty, string.Empty, 30)
 			};
 			_nativeFileRepository.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<ICollection<int>>())).ReturnsAsync(allNatives);
+
 			ExportInitializationResults exportResult = new ExportInitializationResults()
 			{
 				RecordCount = allNatives.Count
 			};
 			_objectManager.Setup(x => x.InitializeExportAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>())).ReturnsAsync(exportResult);
-			QueryResult queryResult = new QueryResult()
-			{
-				Objects = allNatives.Select(native => new RelativityObject() {ArtifactID = native.DocumentArtifactId}).ToList()
-			};
-			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(queryResult);
-			
+
+			RelativityObjectSlim[] resultsBlock = allNatives.Select(native => new RelativityObjectSlim() { ArtifactID = native.DocumentArtifactId }).ToArray();
+			_objectManager.Setup(x => x.RetrieveResultsBlockFromExportAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<int>()))
+				.Returns((int workspaceId, Guid runId, int resultsBlockSize, int exportIndexId) => Task.FromResult(resultsBlockSize > 0 ? resultsBlock : Array.Empty<RelativityObjectSlim>()));
+
 			// Act
 			await _instance.ExecuteAsync(_configuration.Object, CancellationToken.None).ConfigureAwait(false);
 			long nativesSize = await _jobStatisticsContainer.NativesBytesRequested.ConfigureAwait(false);
@@ -106,10 +108,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				RunID = runId
 			};
 			_objectManager.Setup(x => x.InitializeExportAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1)).ReturnsAsync(exportInitializationResults);
-			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(new QueryResult()
-			{
-				Objects = new List<RelativityObject>()
-			});
+			_objectManager.Setup(x => x.RetrieveResultsBlockFromExportAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(Array.Empty<RelativityObjectSlim>());
 			_nativeFileRepository.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<ICollection<int>>())).ReturnsAsync(Enumerable.Empty<INativeFile>());
 
 			// ACT
@@ -206,6 +205,11 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 		private bool AssertFieldMapping(QueryRequest queryRequest, string field1Name, string field2Name)
 		{
+			if (queryRequest.Fields.IsNullOrEmpty())
+			{
+				return false;
+			}
+
 			queryRequest.Fields.Should().Contain(x => x.Name == field1Name);
 			queryRequest.Fields.Should().Contain(x => x.Name == field2Name);
 			return true;

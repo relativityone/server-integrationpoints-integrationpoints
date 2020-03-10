@@ -34,5 +34,8 @@
 
 	<Import Project="..\..\scripts\Build.Sign.targets" />
 	<Import Project="..\..\.paket\Paket.Restore.targets" />
+	<ItemGroup>
+	  <Reference Include="System.Web.Services" />
+	</ItemGroup>
 
 </Project>

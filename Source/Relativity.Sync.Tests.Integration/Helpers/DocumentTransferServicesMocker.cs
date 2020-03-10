@@ -81,8 +81,12 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 		{
 			containerBuilder.RegisterInstance(SourceServiceFactoryForUser.Object).As<ISourceServiceFactoryForUser>();
 			containerBuilder.RegisterInstance(SourceServiceFactoryForAdmin.Object).As<ISourceServiceFactoryForAdmin>();
-			Func<ISearchManager> searchManagerFactory = () => SearchManager.Object;
-			containerBuilder.RegisterInstance(searchManagerFactory).As<Func<ISearchManager>>();
+
+			Mock<ISearchManagerFactory> searchManagerFactory = new Mock<ISearchManagerFactory>();
+			searchManagerFactory.Setup(x => x.CreateSearchManagerAsync())
+				.Returns(Task.FromResult(SearchManager.Object));
+
+			containerBuilder.RegisterInstance(searchManagerFactory.Object).As<ISearchManagerFactory>();
 		}
 
 		public void SetupLongTextStream(string fieldName, Encoding encoding, string streamContents)

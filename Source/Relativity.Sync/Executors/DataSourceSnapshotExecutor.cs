@@ -64,6 +64,8 @@ namespace Relativity.Sync.Executors
 				using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 				{
 					results = await objectManager.InitializeExportAsync(configuration.SourceWorkspaceArtifactId, queryRequest, 1).ConfigureAwait(false);
+					_logger.LogInformation("Retrieved {documentsCount} documents from saved search.", results.RecordCount);
+
 					Task<long> calculateNativesTotalSizeTask = Task.Run(() => CalculateNativesTotalSizeAsync(configuration.SourceWorkspaceArtifactId, queryRequest, (int)results.RecordCount), token);
 					_jobStatisticsContainer.NativesBytesRequested = calculateNativesTotalSizeTask;
 				}
@@ -101,15 +103,34 @@ namespace Relativity.Sync.Executors
 			return nativesTotalSize;
 		}
 
-		private static async Task<List<int>> GetAllDocumentsArtifactIds(int workspaceId, IObjectManager objectManager, QueryRequest request, int recordCount)
+		private static async Task<List<int>> GetAllDocumentsArtifactIds(int workspaceId, IObjectManager objectManager, QueryRequest allDocumentsQueryRequest, int recordCount)
 		{
-			var allDocumentsArtifactIds = new List<int>(recordCount);
-			for (int start = 1; start <= recordCount; start += _BATCH_SIZE_FOR_NATIVES_SIZE_QUERIES)
+			QueryRequest allDocumentsArtifactIdsQueryRequest = new QueryRequest
 			{
-				int[] batch = (await objectManager.QueryAsync(workspaceId, request, start, _BATCH_SIZE_FOR_NATIVES_SIZE_QUERIES).ConfigureAwait(false))
-					.Objects.Select(x => x.ArtifactID).ToArray();
-				allDocumentsArtifactIds.AddRange(batch);
+				ObjectType = allDocumentsQueryRequest.ObjectType,
+				Condition = allDocumentsQueryRequest.Condition
+			};
+
+			int retrievedRecordCount = 0;
+			List<int> allDocumentsArtifactIds = new List<int>(recordCount);
+
+			ExportInitializationResults allDocumentsArtifactIdsExportInitializationResults = await objectManager.InitializeExportAsync(workspaceId, allDocumentsArtifactIdsQueryRequest, 1).ConfigureAwait(false);
+
+			RelativityObjectSlim[] allDocumentsArtifactIdsExportResultsBlock = await objectManager
+				.RetrieveResultsBlockFromExportAsync(workspaceId, allDocumentsArtifactIdsExportInitializationResults.RunID, recordCount - retrievedRecordCount, retrievedRecordCount)
+				.ConfigureAwait(false);
+
+			while (allDocumentsArtifactIdsExportResultsBlock != null && allDocumentsArtifactIdsExportResultsBlock.Any())
+			{
+				allDocumentsArtifactIds.AddRange(allDocumentsArtifactIdsExportResultsBlock.Select(x => x.ArtifactID));
+
+				retrievedRecordCount += allDocumentsArtifactIdsExportResultsBlock.Length;
+
+				allDocumentsArtifactIdsExportResultsBlock = await objectManager
+					.RetrieveResultsBlockFromExportAsync(workspaceId, allDocumentsArtifactIdsExportInitializationResults.RunID, recordCount - retrievedRecordCount, retrievedRecordCount)
+					.ConfigureAwait(false);
 			}
+
 			return allDocumentsArtifactIds;
 		}
 	}

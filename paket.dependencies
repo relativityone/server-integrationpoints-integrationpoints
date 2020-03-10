@@ -4,7 +4,7 @@ source https://proget.kcura.corp/nuget/NuGet
 
 nuget Relativity ~> 11.1.0
 nuget Relativity.API 12.0.1
-nuget Relativity.DataExchange.Client.SDK 1.9.0
+nuget Relativity.DataExchange.Client.SDK 1.9.21
 nuget Relativity.Transfer.Client ~> 6.3
 nuget Relativity.Kepler 2.2.2
 nuget Relativity.Kepler.Client 2.2.2
@@ -17,13 +17,13 @@ nuget kCura.Apps.Common.Utils ~> 2.1.0
 nuget kCura.Relativity.Client ~> 11.1.0
 nuget Relativity.Telemetry.APM ~> 2019.1.0
 nuget Relativity.Telemetry.Services.Interface ~> 3000.0
-nuget Relativity.Testing.Identification 1.11.0
+nuget Relativity.Testing.Identification ~> 1.0
 nuget Relativity.AutomatedWorkflows.Services.Interfaces 0.1.1-pre-4
 
 nuget Microsoft.CodeAnalysis.FxCopAnalyzers 2.9.2
 nuget CSharpGuidelineAnalyzer ~> 2.3
 nuget Autofac ~> 4.9 redirects: force
-nuget Polly ~> 5.3.1
+nuget Polly ~> 5.7
 nuget Banzai ~> 3.0
 nuget Banzai.AUtofac ~> 3.0
 nuget Newtonsoft.Json ~> 6.0 redirects: force

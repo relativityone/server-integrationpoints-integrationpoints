@@ -27,7 +27,12 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public void SetUp()
 		{
 			_searchManager = new Mock<ISearchManager>();
-			_instance = new NativeFileRepository(() => _searchManager.Object, new EmptyLogger());
+
+			Mock<ISearchManagerFactory> searchManagerFactory = new Mock<ISearchManagerFactory>();
+			searchManagerFactory.Setup(x => x.CreateSearchManagerAsync())
+				.Returns(Task.FromResult(_searchManager.Object));
+
+			_instance = new NativeFileRepository(searchManagerFactory.Object, new EmptyLogger());
 		}
 
 		[Test]

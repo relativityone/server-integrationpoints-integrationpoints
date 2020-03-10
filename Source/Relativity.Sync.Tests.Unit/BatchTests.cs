@@ -35,6 +35,7 @@ namespace Relativity.Sync.Tests.Unit
 
 		private static readonly Guid LockedByGuid = new Guid("BEFC75D3-5825-4479-B499-58C6EF719DDB");
 		private static readonly Guid SyncConfigurationRelationGuid = new Guid("F673E67F-E606-4155-8E15-CA1C83931E16");
+		private static readonly Guid ConfigurationObjectTypeGuid = new Guid("3BE3DE56-839F-4F0E-8446-E1691ED5FD57");
 
 		[SetUp]
 		public void SetUp()
@@ -677,7 +678,9 @@ namespace Relativity.Sync.Tests.Unit
 					CreateObject(newConfigurationArtifactId, newBatchCreationDate)
 				}
 			};
-			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(queryResult);
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(request => request.ObjectType.Guid == ConfigurationObjectTypeGuid &&
+				request.Fields.Single().Name == "System Created On"),
+				It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(queryResult);
 
 			// ACT
 			await _batchRepository.DeleteAllOlderThanAsync(_WORKSPACE_ID, removeOlderThan).ConfigureAwait(false);

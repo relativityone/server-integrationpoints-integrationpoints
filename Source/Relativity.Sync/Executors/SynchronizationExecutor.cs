@@ -81,8 +81,7 @@ namespace Relativity.Sync.Executors
 						}
 
 						_logger.LogInformation("Processing batch ID: {batchId}", batchId);
-						IBatch batch = await _batchRepository.GetAsync(configuration.SourceWorkspaceArtifactId, batchId)
-							.ConfigureAwait(false);
+						IBatch batch = await _batchRepository.GetAsync(configuration.SourceWorkspaceArtifactId, batchId).ConfigureAwait(false);
 						using (IImportJob importJob = await _importJobFactory.CreateImportJobAsync(configuration, batch, token).ConfigureAwait(false))
 						{
 							using (progressHandler.AttachToImportJob(importJob.SyncImportBulkArtifactJob, batch.ArtifactId, batch.TotalItemsCount))
@@ -178,28 +177,38 @@ namespace Relativity.Sync.Executors
 			return importJobResult.ExecutionResult;
 		}
 
-		private async Task<ExecutionResult> TagDestinationDocumentsAsync(IImportJob importJob, ISynchronizationConfiguration configuration,
+		private async Task<ExecutionResult> TagDestinationDocumentsAsync(IImportJob importJob,
+			ISynchronizationConfiguration configuration,
 			CancellationToken token)
 		{
-			IEnumerable<string> pushedDocumentIdentifiers =
-				await importJob.GetPushedDocumentIdentifiersAsync().ConfigureAwait(false);
-			ExecutionResult sourceTaggingResult =
-				await _documentsTagRepository.TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(
-					configuration, pushedDocumentIdentifiers, token).ConfigureAwait(false);
+			_logger.LogInformation("Start tagging documents in destination workspace ArtifactID: {workspaceID}", configuration.DestinationWorkspaceArtifactId);
+			List<string> pushedDocumentIdentifiers = (await importJob.GetPushedDocumentIdentifiersAsync().ConfigureAwait(false)).ToList();
+			_logger.LogInformation("Number of pushed documents to tag: {numberOfDocuments}", pushedDocumentIdentifiers.Count);
 
-			return sourceTaggingResult;
+			ExecutionResult taggingResult =
+				await _documentsTagRepository.TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(configuration, pushedDocumentIdentifiers, token).ConfigureAwait(false);
+
+			_logger.LogInformation("Documents tagging in destination workspace ArtifactID: {workspaceID} Result: {result}", configuration.DestinationWorkspaceArtifactId, 
+				taggingResult.Status);
+
+			return taggingResult;
 		}
 
-		private async Task<ExecutionResult> TagSourceDocumentsAsync(IImportJob importJob, ISynchronizationConfiguration configuration,
+		private async Task<ExecutionResult> TagSourceDocumentsAsync(IImportJob importJob,
+			ISynchronizationConfiguration configuration,
 			CancellationToken token)
 		{
-			IEnumerable<int> pushedDocumentArtifactIds =
-				await importJob.GetPushedDocumentArtifactIdsAsync().ConfigureAwait(false);
-			ExecutionResult destinationTaggingResult =
-				await _documentsTagRepository.TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(
-					configuration, pushedDocumentArtifactIds, token).ConfigureAwait(false);
+			_logger.LogInformation("Start tagging documents in source workspace ArtifactID: {workspaceID}", configuration.DestinationWorkspaceArtifactId);
+			List<int> pushedDocumentArtifactIds = (await importJob.GetPushedDocumentArtifactIdsAsync().ConfigureAwait(false)).ToList();
+			_logger.LogInformation("Number of pushed documents to tag: {numberOfDocuments}", pushedDocumentArtifactIds.Count);
 
-			return destinationTaggingResult;
+			ExecutionResult taggingResult =
+				await _documentsTagRepository.TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(configuration, pushedDocumentArtifactIds, token).ConfigureAwait(false);
+
+			_logger.LogInformation("Documents tagging in source workspace ArtifactID: {workspaceID} Result: {result}", configuration.DestinationWorkspaceArtifactId, 
+				taggingResult.Status);
+
+			return taggingResult;
 		}
 
 		private static ExecutionResult AggregateBatchesCompletedWithErrorsResults(Dictionary<int, ExecutionResult> batchesCompletedWithErrorsResults)

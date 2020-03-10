@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using Relativity.Services.ArtifactGuid;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
@@ -28,6 +29,7 @@ namespace Relativity.Sync.Storage
 
 		private static readonly Guid LockedByGuid = new Guid("BEFC75D3-5825-4479-B499-58C6EF719DDB");
 		private static readonly Guid SyncConfigurationRelationGuid = new Guid("F673E67F-E606-4155-8E15-CA1C83931E16");
+		private static readonly Guid ConfigurationObjectTypeGuid = new Guid("3BE3DE56-839F-4F0E-8446-E1691ED5FD57");
 
 		private Batch(ISourceServiceFactoryForAdmin serviceFactory)
 		{
@@ -409,8 +411,7 @@ namespace Relativity.Sync.Storage
 		private static async Task<IEnumerable<int>> GetConfigurationsOlderThanAsync(ISourceServiceFactoryForAdmin serviceFactory, IDateTime dateTime, int workspaceArtifactId, TimeSpan olderThan)
 		{
 			DateTime createdBeforeDate = dateTime.UtcNow - olderThan;
-			DateTime ParseObjectCreationDate(RelativityObject relativityObject) => 
-				DateTime.Parse(relativityObject.FieldValues.Single().Value.ToString(), CultureInfo.InvariantCulture);
+			DateTime GetObjectCreationDate(RelativityObject relativityObject) => (DateTime)relativityObject.FieldValues.Single().Value;
 
 			using (IObjectManager objectManager = await serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
@@ -418,7 +419,7 @@ namespace Relativity.Sync.Storage
 				{
 					ObjectType = new ObjectTypeRef()
 					{
-						Guid = SyncConfigurationRelationGuid
+						Guid = ConfigurationObjectTypeGuid
 					},
 					Fields = new[]
 					{
@@ -431,7 +432,7 @@ namespace Relativity.Sync.Storage
 
 				QueryResult queryResult = await objectManager.QueryAsync(workspaceArtifactId, request, 0, int.MaxValue).ConfigureAwait(false);
 				IEnumerable<RelativityObject> oldConfigurations = queryResult.Objects.Where(configurationObject =>
-					ParseObjectCreationDate(configurationObject) < createdBeforeDate);
+					GetObjectCreationDate(configurationObject) < createdBeforeDate);
 				return oldConfigurations.Select(x => x.ArtifactID);
 			}
 		}
