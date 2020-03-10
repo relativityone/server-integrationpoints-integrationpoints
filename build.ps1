@@ -31,40 +31,39 @@ param(
 
 Set-StrictMode -Version 2.0
 
-$ToolsDir = Join-Path $PSScriptRoot "buildtools"
-$ReportGenerator = Join-Path $ToolsDir "reportgenerator.exe"
-$Nuget = Join-Path $ToolsDir "nuget.exe"
+$BaseDir = $PSScriptRoot
+$NugetUrl = "https://relativity.jfrog.io/relativity/nuget-download/v5.3.0/nuget.exe"
+$ToolsDir = Join-Path $BaseDir "buildtools"
+$NugetExe = Join-Path $ToolsDir "nuget.exe"
+
 $ToolsConfig = Join-Path $ToolsDir "packages.config"
 
-$NugetUrl = "https://relativity.jfrog.io/relativity/nuget-download/v5.3.0/nuget.exe"
-
-if (-not (Test-Path $Nuget -Verbose:$VerbosePreference))
-{
-    Invoke-WebRequest $NugetUrl -OutFile $Nuget -Verbose:$VerbosePreference -ErrorAction Stop
+Write-Progress "Checking for NuGet in tools path..."
+if (-Not (Test-Path $NugetExe -Verbose:$VerbosePreference)) {
+	Write-Progress "Installing NuGet from $NugetUrl..."
+	Invoke-WebRequest $NugetUrl -OutFile $NugetExe -Verbose:$VerbosePreference -ErrorAction Stop
 }
 
-& $Nuget install $ToolsConfig -OutputDirectory $ToolsDir
+Write-Progress "Restoring tools from NuGet..."
+$NuGetVerbosity = if ($VerbosePreference -gt "SilentlyContinue") { "normal" } else { "quiet" }
+& $NugetExe install $ToolsConfig -o $ToolsDir -ExcludeVersion -Verbosity $NuGetVerbosity
 
-$NUnit = Resolve-Path (Join-Path $ToolsDir "NUnit.ConsoleRunner.*\tools\nunit3-console.exe")
-$OpenCover = Resolve-Path (Join-Path $ToolsDir "opencover.*\tools\OpenCover.Console.exe")
-
-Import-Module -Force "$ToolsDir\BuildHelpers.psm1" -ErrorAction Stop
-Assert-Module -Name PSBuildTools -Version 0.7.0 -Path $ToolsDir
-Assert-Module -Name psake -Version 4.7.4 -Path $ToolsDir
-if (-not (Test-Path $ReportGenerator))
-{
-    & dotnet tool install dotnet-reportgenerator-globaltool --version 4.1.5 --tool-path $ToolsDir
-    if ($LASTEXITCODE -ne 0) { throw "An error occured while restoring build tools." }
+if ($LASTEXITCODE -ne 0) {
+	Throw "An error occured while restoring NuGet tools."
 }
+
+Write-Progress "Importing required Powershell modules..."
+$ToolsDir = Join-Path $PSScriptRoot "buildtools"
+Import-Module (Join-Path $ToolsDir "psake\tools\psake\psake.psd1") -ErrorAction Stop
+Import-Module (Join-Path $ToolsDir "kCura.PSBuildTools\PSBuildTools.psd1") -ErrorAction Stop
+Install-Module VSSetup -Scope CurrentUser -Force
 
 $Params = @{
     taskList = $TaskList
     nologo = $true
     parameters = @{	
         BuildConfig = $Configuration
-        ReportGenerator = $ReportGenerator
-        NUnit = $NUnit
-        OpenCover = $OpenCover
+        BuildToolsDir = $ToolsDir
     }
     Verbose = $VerbosePreference
     Debug = $DebugPreference
