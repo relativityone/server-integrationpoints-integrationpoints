@@ -7,26 +7,20 @@ properties {
     $LogsDir = Join-Path $ArtifactsDir "Logs"
     $LogFilePath = Join-Path $LogsDir "buildsummary.log"
     $ErrorLogFilePath = Join-Path $LogsDir "builderrors.log"
-    $ScriptsDir = Join-Path $PSScriptRoot "scripts"
-    $ToolsDir = Join-Path $PSScriptRoot "buildtools"
-    $PaketExec = Join-Path $PSScriptRoot ".paket/paket.exe"
+    $PaketExe = Join-Path $PSScriptRoot ".paket\paket.exe"
 }
 
 Task default -Depends Analyze, Compile, Test, Package -Description "Build and run unit tests. All the steps for a local build.";
 
-Task RestoreAnaylyzeTools -Description "Download tools for ConfigureAwaitChecker" {
-    Write-Host "ScriptsDir: " $ScriptsDir
-    $nugetExe = Join-Path $ToolsDir nuget.exe
-
-    Write-Host "nuget: " $nugetExe
-    & (Join-Path $ScriptsDir "restore-buildtools.ps1") -toolsDir $ToolsDir -nugetExe $nugetExe
+Task Analyze -Description "Run build analysis" {
+    # Leaving this blank until we are ready to add in analyzers later
 }
 
-Task Analyze -Description "Run build analysis" -depends RestoreAnaylyzeTools {
-    
+Task PaketRestore -Description "Restore the packages needed for this build" {
+    exec { & $PaketExe restore }
 }
 
-Task Compile -Description "Compile code for this repo" {
+Task Compile -Depends PaketRestore -Description "Compile code for this repo" {
     Initialize-Folder $ArtifactsDir -Safe
     Initialize-Folder $LogsDir -Safe
 
@@ -43,20 +37,13 @@ Task Compile -Description "Compile code for this repo" {
 }
 
 Task Test -Description "Run Unit and Integration Tests without coverage" {
-    Invoke-Tests -TestSuite Unit -NoCoverage
-    Invoke-Tests -TestSuite Integration -NoCoverage
+    $LogPath = Join-Path $LogsDir "TestResults.xml"
+    Invoke-Tests -WhereClause "namespace =~ Tests.Unit || namespace =~ Tests.Integration" -OutputFile $LogPath -WithCoverage
 }
 
-Task UnitTest -Description "Run Unit Tests" {
-    Invoke-Tests -TestSuite Unit
-}
-
-Task IntegrationTest -Description "Run Integration Tests" {
-    Invoke-Tests -TestSuite Integration
-}
-
-Task SystemTest -Description "Run System Tests" {
-    Invoke-Tests -TestSuite System
+Task FunctionalTest -Description "Run tests that require a deployed environment." {
+    $LogPath = Join-Path $LogsDir "SystemTestResults.xml"
+    Invoke-Tests -WhereClause "namespace =~ Tests.System" -OutputFile $LogPath
 }
 
 Task Sign -Description "Sign all files" {
@@ -77,14 +64,6 @@ Task Package -Description "Package up the build artifacts" {
             ("/maxcpucount"),
             ("/nologo"))
     }
-    Save-PDBs -SourceDir $SourceDir -ArtifactsDir $ArtifactsDir
-}
-
-Task PackagePaket -Description "Package up the build artifacts" {
-    Initialize-Folder $ArtifactsDir -Safe
-
-    & $PaketExec pack (Join-Path $ArtifactsDir "NuGet") --include-referenced-projects --symbols
-
     Save-PDBs -SourceDir $SourceDir -ArtifactsDir $ArtifactsDir
 }
 
@@ -122,38 +101,42 @@ Task Help -Alias ? -Description "Display task information" {
     WriteDocumentation
 }
 
-#Custom Functionas
-function Invoke-Tests ($TestSuite, [switch] $NoCoverage) {
-    $TestSettings = Join-Path $PSScriptRoot FunctionalTestSettings
-    $TestSettings = if(Test-Path $TestSettings) {"@$TestSettings"}
-    
-    $TestProject = (Get-ChildItem -Path $SourceDir -Filter "*Tests.$TestSuite.dll" -File -Recurse)[0].FullName
-    $TestResultsPath = Join-Path $LogsDir "$TestSuite.TestResults.xml"
+function Invoke-Tests
+{
+    param (
+        [Parameter(Mandatory=$true, Position=0)]
+        [String] $WhereClause,
+        [Parameter()]
+        [String] $OutputFile,
+        [Parameter()]
+        [String] $TestSettings,
+        [Parameter()]
+        [Switch]$WithCoverage
+    )
 
-    if($NoCoverage)
+    $NUnit = Resolve-Path (Join-Path $BuildToolsDir "NUnit.ConsoleRunner\tools\nunit3-console.exe")
+    $settings = if($TestSettings) { "@$TestSettings" }
+    Initialize-Folder $ArtifactsDir -Safe
+    Initialize-Folder $LogsDir -Safe
+    if($WithCoverage)
     {
-        exec { & $NUnit $TestProject `
-            "--config=$BuildConfig" `
-            "--result=$TestResultsPath" `
-            $TestSettings
-        }
+        $OpenCover = Join-Path $BuildToolsDir "opencover\tools\OpenCover.Console.exe"
+        $ReportGenerator = Join-Path $BuildToolsDir "reportgenerator\tools\net47\ReportGenerator.exe"
+        $CoveragePath = Join-Path $LogsDir "Coverage.xml"
+
+        exec { & $OpenCover -target:$NUnit -targetargs:"$Solution --where=\`"$WhereClause\`" --noheader --labels=On --skipnontestassemblies --result=$OutputFile $settings" -register:path64 -filter:"+[Relativity.Sync*]* -[Relativity.Sync.Tests*]**" -hideskipped:All -output:"$LogsDir\OpenCover.xml" -returntargetcode }
+        exec { & $ReportGenerator -reports:"$LogsDir\OpenCover.xml" -targetdir:$LogsDir -reporttypes:Cobertura }
+        Move-Item (Join-Path $LogsDir Cobertura.xml) $CoveragePath -Force
     }
     else
     {
-        exec { & $OpenCover -target:$NUnit `
-            -targetargs:"$TestProject --config=$BuildConfig --result=$TestResultsPath $TestSettings" `
-            -output:"$LogsDir\OpenCover.xml" `
-            -filter:"+[Relativity.Sync*]* -[Relativity.Sync.Tests*]*" `
-            -register:path64 `
-            -returntargetcode
+        exec { & $NUnit $Solution `
+            "--where=`"$WhereClause`"" `
+            "--noheader" `
+            "--labels=On" `
+            "--skipnontestassemblies" `
+            "--result=$OutputFile" `
+            $settings
         }
-        exec { & $ReportGenerator `
-                -reports:"$LogsDir\OpenCover.xml" `
-                -targetdir:$LogsDir `
-                -reporttypes:Cobertura
-        }
-
-        $CoveragePath = Join-Path $LogsDir "Coverage.xml"
-        Move-Item (Join-Path $LogsDir Cobertura.xml) $CoveragePath -Force
     }
 }

@@ -8,7 +8,7 @@
 		<CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
 		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
 		<ResolveNugetPackages>true</ResolveNugetPackages>
-		<IsTestProject>false</IsTestProject>
+		<IsTestProject>true</IsTestProject>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 		<OutputPath>bin\Debug\</OutputPath>

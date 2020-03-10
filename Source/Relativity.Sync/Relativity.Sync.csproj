@@ -2,6 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFramework>net462</TargetFramework>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<OutputPath>bin\</OutputPath>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 		<WarningLevel>4</WarningLevel>
