@@ -98,6 +98,9 @@ namespace kCura.IntegrationPoints.UITests.Pages
         [FindsBy(How = How.Id, Using = "cancelBtn")]
         protected IWebElement CancelBtn { get; set; }
 
+		[FindsBy(How = How.Id, Using = "page-info-message")]
+		protected IWebElement PageInfoMessage { get; set; }
+
         [FindsBy(How = How.XPath, Using = "//*[@id='msgDiv']/p")]
         protected IWebElement PopupTextElement { get; set; }
 
@@ -201,6 +204,8 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			get { return SelectImagePrecedenceElement.SelectedOption.Text; }
 			set { SelectImagePrecedenceElement.SelectByText(value); }
 		}
+
+		public string PageInfoMessageText => PageInfoMessage.Text;
 
 		public void SelectMoveExitstingDocuments(bool? mode)
 		{

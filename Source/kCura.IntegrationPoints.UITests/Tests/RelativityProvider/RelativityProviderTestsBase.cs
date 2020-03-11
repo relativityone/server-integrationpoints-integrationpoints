@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ImageService = new ImagesService(SourceContext.Helper);
 			ProductionImageService = new ProductionImagesService(SourceContext.Helper);
 			ObjectManagerFactory = new RelativityObjectManagerFactory(SourceContext.Helper);
-            await FieldObject.CreateFixedLengthFieldsWithSpecialCharactersAsync(SourceContext.GetWorkspaceId(), SourceFieldManager).ConfigureAwait(false);
+			await SuiteSpecificOneTimeSetup().ConfigureAwait(false);
 			await SourceContext.RetrieveMappableFieldsAsync().ConfigureAwait(false);
 		}
 
@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		{
 			DestinationContext = new TestContext().CreateTestWorkspace();
 			DestinationFieldManager = DestinationContext.Helper.CreateProxy<IFieldManager>();
-			await FieldObject.CreateFixedLengthFieldsWithSpecialCharactersAsync(DestinationContext.GetWorkspaceId(), DestinationFieldManager).ConfigureAwait(false);
+			await SuiteSpecificSetup().ConfigureAwait(false);
 			await DestinationContext.RetrieveMappableFieldsAsync().ConfigureAwait(false);
 			PointsAction = new IntegrationPointsAction(Driver, SourceContext);
 		}
@@ -63,6 +63,10 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 				DestinationContext.TearDown();
 			}
 		}
+		
+		protected virtual Task SuiteSpecificOneTimeSetup() => Task.CompletedTask;
+
+		protected virtual Task SuiteSpecificSetup() => Task.CompletedTask;
 
 		public Task RenameFieldInSourceWorkspaceAsync(string fieldName, string newFieldName)
 		{

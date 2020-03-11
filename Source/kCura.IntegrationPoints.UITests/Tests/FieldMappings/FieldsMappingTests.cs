@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -12,19 +13,22 @@ using kCura.IntegrationPoints.UITests.Configuration.Models;
 using kCura.IntegrationPoints.UITests.NUnitExtensions;
 using kCura.IntegrationPoints.UITests.Pages;
 using kCura.IntegrationPoints.UITests.Tests.RelativityProvider;
+using kCura.Relativity.Client;
 using NUnit.Framework;
 using Relativity;
+using Relativity.Services.Interfaces.Field;
 using Relativity.Services.Field;
 using Relativity.Services.Interfaces.Field.Models;
 using Relativity.Services.Interfaces.Shared.Models;
 using Relativity.Testing.Identification;
+using ArtifactType = kCura.Relativity.Client.ArtifactType;
 
 namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints]
-    [Category(TestCategory.EXPORT_TO_RELATIVITY)]
-	[Category(TestCategory.FIELDS_MAPPING)]
+	[NUnit.Framework.Category(TestCategory.EXPORT_TO_RELATIVITY)]
+	[NUnit.Framework.Category(TestCategory.FIELDS_MAPPING)]
 	public class FieldsMappingTests : RelativityProviderTestsBase
 	{
 		private static readonly List<Tuple<string, string>> DefaultFieldsMapping = new List<Tuple<string, string>>
@@ -33,6 +37,41 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 			new Tuple<string, string>("Extracted Text", "Extracted Text"),
 			new Tuple<string, string>("Title", "Title")
 		};
+
+		protected override Task SuiteSpecificOneTimeSetup()
+		{
+			return CreateFixedLengthFieldsWithSpecialCharactersAsync(SourceContext.GetWorkspaceId(), SourceFieldManager);
+		}
+
+		protected override Task SuiteSpecificSetup()
+		{
+			return CreateFixedLengthFieldsWithSpecialCharactersAsync(DestinationContext.GetWorkspaceId(), DestinationFieldManager);
+		}
+
+		protected async Task CreateFixedLengthFieldsWithSpecialCharactersAsync(int workspaceID, IFieldManager fieldManager)
+		{
+			char[] specialCharacters = @"!@#$%^&*()-_+= {}|\/;'<>,.?~`".ToCharArray();
+			for (int i = 0; i < specialCharacters.Length; i++)
+			{
+				char special = specialCharacters[i];
+				string generatedFieldName = $"aaaaa{special}{i}";
+				var fixedLengthTextFieldRequest = new FixedLengthFieldRequest
+				{
+					ObjectType = new ObjectTypeIdentifier { ArtifactTypeID = (int)global::Relativity.ArtifactType.Document },
+					Name = $"{generatedFieldName} FLT",
+					Length = 255
+				};
+
+				var longTextFieldRequest = new LongTextFieldRequest
+				{
+					ObjectType = new ObjectTypeIdentifier { ArtifactTypeID = (int)global::Relativity.ArtifactType.Document },
+					Name = $"{generatedFieldName} LTF"
+				};
+
+				await fieldManager.CreateLongTextFieldAsync(workspaceID, longTextFieldRequest).ConfigureAwait(false);
+				await fieldManager.CreateFixedLengthFieldAsync(workspaceID, fixedLengthTextFieldRequest).ConfigureAwait(false);
+			}
+		}
 
 		private RelativityProviderModel CreateRelativityProviderModel(string name)
 		{
@@ -94,50 +133,111 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 			CollectionAssert.AreEqual(fieldsFromDestinationWorkspaceListBox, expectedDestinationMappableFields);
 		}
 
-        [IdentifiedTest("916e57ba-fb4d-42a4-be2a-4d17df17de60")]
-        [RetryOnError]
+		[IdentifiedTest("916e57ba-fb4d-42a4-be2a-4d17df17de60")]
+		[RetryOnError]
 		public void FieldMapping_ShouldClearMapFromInvalidField_WhenClearButtonIsPressed()
 		{
 			//Arrange
-            const string invalidFieldMappingMessageText = "Your job may be unsuccessfully finished by those Source and Destination fields:";
+			const string invalidFieldMappingMessageText = "Your job may be unsuccessfully finished by those Source and Destination fields:";
 			List<Tuple<string, string>> FieldsMapping = new List<Tuple<string, string>>
-            {
-                new Tuple<string, string>("Control Number", "Control Number"),
-            };
-            List<Tuple<string, string>> InvalidFieldsMapping = new List<Tuple<string, string>>
-            {
-                new Tuple<string, string>("Alert", "Classification Index")
-            };
-            FieldsMapping.AddRange(InvalidFieldsMapping);
+			{
+				new Tuple<string, string>("Control Number", "Control Number"),
+			};
+			List<Tuple<string, string>> InvalidFieldsMapping = new List<Tuple<string, string>>
+			{
+				new Tuple<string, string>("Alert", "Classification Index")
+			};
+			FieldsMapping.AddRange(InvalidFieldsMapping);
 
 			RelativityProviderModel model = CreateRelativityProviderModel();
 
-            PushToRelativityThirdPage fieldMappingPage =
+			PushToRelativityThirdPage fieldMappingPage =
 				PointsAction.CreateNewRelativityProviderFieldMappingPage(model);
 			PointsAction.MapWorkspaceFields(fieldMappingPage, FieldsMapping);
 			fieldMappingPage = fieldMappingPage.ClickSaveButtonExpectPopup();
 
-			
+
 			//Assert text on popup
-            fieldMappingPage.PopupText.Should().Be(invalidFieldMappingMessageText);
-            
-            //Act
+			fieldMappingPage.PopupText.Should().Be(invalidFieldMappingMessageText);
+
+			//Act
 			IntegrationPointDetailsPage detailsPage = fieldMappingPage.ClearAndProceedOnInvalidMapping();
-			
-            PushToRelativityThirdPage clearedMappingPage = PointsAction.EditGoToFieldMappingPage(detailsPage);
+
+			PushToRelativityThirdPage clearedMappingPage = PointsAction.EditGoToFieldMappingPage(detailsPage);
 			List<string> fieldsFromSelectedSourceWorkspaceListBox =
-                clearedMappingPage.GetFieldsFromSelectedSourceWorkspaceListBox();
+				clearedMappingPage.GetFieldsFromSelectedSourceWorkspaceListBox();
 			List<string> fieldsFromSelectedDestinationWorkspaceListBox =
-                clearedMappingPage.GetFieldsFromSelectedDestinationWorkspaceListBox();
-            
-            //Assert if fields were removed from mapping
-			fieldsFromSelectedDestinationWorkspaceListBox.Should().NotContain(InvalidFieldsMapping.Select(x =>x.Item1));
-            fieldsFromSelectedSourceWorkspaceListBox.Should().NotContain(InvalidFieldsMapping.Select(x => x.Item2));
-        }
+				clearedMappingPage.GetFieldsFromSelectedDestinationWorkspaceListBox();
+
+			//Assert if fields were removed from mapping
+			fieldsFromSelectedDestinationWorkspaceListBox.Should().NotContain(InvalidFieldsMapping.Select(x => x.Item1));
+			fieldsFromSelectedSourceWorkspaceListBox.Should().NotContain(InvalidFieldsMapping.Select(x => x.Item2));
+		}
+
+		[Test]
+		[RetryOnError]
+		public async Task FieldMapping_ShouldRemapFields_WhenDestinationWorkspaceWasChanged()
+		{
+			//Arrange
+			const string addtionalFieldName = "Adler sieben";
+			const string newDestination = "New destination";
+			ObjectTypeIdentifier documentObjectType = new ObjectTypeIdentifier { ArtifactTypeID = (int)ArtifactType.Document };
+
+			int newWorkspaceID = await Workspace.CreateWorkspaceAsync(newDestination, DestinationContext.WorkspaceName, Log)
+				.ConfigureAwait(false);
+
+			await SourceFieldManager.CreateDecimalFieldAsync(SourceContext.WorkspaceId.Value, new DecimalFieldRequest { Name = addtionalFieldName, ObjectType = documentObjectType })
+				.ConfigureAwait(false);
+			await DestinationFieldManager.CreateDecimalFieldAsync(DestinationContext.WorkspaceId.Value, new DecimalFieldRequest { Name = addtionalFieldName, ObjectType = documentObjectType })
+				.ConfigureAwait(false);
+
+			await SourceFieldManager.CreateDecimalFieldAsync(newWorkspaceID, new DecimalFieldRequest { Name = addtionalFieldName, ObjectType = documentObjectType }).ConfigureAwait(false);
+
+			try
+			{
+				RelativityProviderModel model = CreateRelativityProviderModel();
+
+				PushToRelativityThirdPage fieldMappingPage =
+					PointsAction.CreateNewRelativityProviderFieldMappingPage(model);
+
+				fieldMappingPage.MapAllFields();
+
+				List<string> expectedDestinationMappedFields =
+					fieldMappingPage.GetFieldsFromSelectedDestinationWorkspaceListBox();
+				List<string> expectedSourceMappedFields =
+					fieldMappingPage.GetFieldsFromSelectedSourceWorkspaceListBox();
+
+				IntegrationPointDetailsPage detailsPage = fieldMappingPage.SaveIntegrationPoint();
+
+				//Act
+				PushToRelativitySecondPage destinationPage = detailsPage.EditIntegrationPoint().GoToNextPagePush();
+				destinationPage.DestinationWorkspace = $"{newDestination} - {newWorkspaceID}";
+
+				destinationPage.SelectFolderLocation();
+				destinationPage.WaitForPage();
+				destinationPage.FolderLocationSelect.ChooseRootElement();
+
+				fieldMappingPage = destinationPage.GoToNextPage();
+
+				//Assert
+				fieldMappingPage.GetFieldsFromSelectedSourceWorkspaceListBox()
+					.ShouldAllBeEquivalentTo(expectedSourceMappedFields);
+				fieldMappingPage.GetFieldsFromSelectedDestinationWorkspaceListBox()
+					.ShouldAllBeEquivalentTo(expectedDestinationMappedFields);
+
+				fieldMappingPage.PageInfoMessageText.Should()
+					.Be("We restored the fields mapping as destination workspace has changed");
+			}
+			finally
+			{
+				Workspace.DeleteWorkspace(newWorkspaceID);
+			}
+		}
+
 
 		[IdentifiedTest("916e57ba-fb4d-42a4-be2a-4d17df17de59")]
 		[RetryOnError]
-		[Category(TestCategory.SMOKE)]
+		[NUnit.Framework.Category(TestCategory.SMOKE)]
 		public async Task FieldMapping_ShouldAutoMapAllValidFields_WhenMapFieldsButtonIsPressed()
 		{
 			//Arrange
@@ -229,7 +329,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 
 		[IdentifiedTest("65917e62-2387-4b1e-afee-721bac33b1c0")]
 		[RetryOnError]
-		[Category(TestCategory.SMOKE)]
+		[NUnit.Framework.Category(TestCategory.SMOKE)]
 		public async Task FieldMapping_ShouldAutoMapFieldsFromSavedSearch_WhenAutoMapSavedSearchIsPressed()
 		{
 			//Arrange

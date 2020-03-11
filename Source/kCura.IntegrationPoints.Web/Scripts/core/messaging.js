@@ -174,7 +174,7 @@
 		message.info = (function () {
 			function raiseInfo(messageBody, $container) {
 				var $el = getElement($container, $main),
-					$error = $('<div class="page-message page-info"/>').append('<span class="legal-hold icon-step-complete"></span>').append($('<div/>').append(messageBody)).hide();
+					$error = $('<div class="page-message page-info" />').append('<span class="legal-hold icon-step-complete"></span>').append($('<div id="page-info-message"/>').append(messageBody)).hide();
 
 				clearInfo($el);
 				message.error.clear($container);
