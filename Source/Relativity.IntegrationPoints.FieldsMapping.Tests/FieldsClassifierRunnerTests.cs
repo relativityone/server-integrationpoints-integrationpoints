@@ -11,7 +11,7 @@ using Relativity.IntegrationPoints.FieldsMapping.Helpers;
 using Relativity.Services.Objects.DataContracts;
 using Field = Relativity.Services.Objects.DataContracts.Field;
 
-namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
+namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 {
 	[TestFixture, Category("Unit")]
 	public class FieldsClassifierRunnerTests

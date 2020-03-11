@@ -14,7 +14,7 @@ using Relativity.Services.Objects.DataContracts;
 using Field = Relativity.Services.Objects.DataContracts.Field;
 using QueryResult = Relativity.Services.Objects.DataContracts.QueryResult;
 
-namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
+namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 {
 	[TestFixture, Category("Unit")]
 	public class FieldsRepositoryTests
@@ -86,7 +86,27 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 		}
 
 		[Test]
-		public async Task GetAllDocumentFieldsAsync_ShouldReturnDocumentsFieldsByArtifactsForWorkspace()
+		public async Task GetFieldsByArtifactsIdAsync_ShouldReturnEmptyCollction_WhenArtifactsListIsNull()
+		{
+			// Act
+			IEnumerable<DocumentFieldInfo> fields = await _sut.GetFieldsByArtifactsIdAsync(null, It.IsAny<int>()).ConfigureAwait(false);
+
+			// Assert
+			fields.Should().BeEmpty();
+		}
+
+		[Test]
+		public async Task GetFieldsByArtifactsIdAsync_ShouldReturnEmptyCollction_WhenArtifactsListIsEmpty()
+		{
+			// Act
+			IEnumerable<DocumentFieldInfo> fields = await _sut.GetFieldsByArtifactsIdAsync(Enumerable.Empty<string>(), It.IsAny<int>()).ConfigureAwait(false);
+
+			// Assert
+			fields.Should().BeEmpty();
+		}
+
+		[Test]
+		public async Task GetFieldsByArtifactsIdAsync_ShouldReturnDocumentsFieldsByArtifactsForWorkspace()
 		{
 			// Arrange
 			const int count = 3;

@@ -49,6 +49,64 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 
 			// Assert
 			invalidMappedFields.Should().BeEmpty();
+
+			_fieldsClassifyRunnerFactoryFake.Verify(m => m.CreateForSourceWorkspace(), Times.Never);
+			_fieldsClassifyRunnerFactoryFake.Verify(m => m.CreateForDestinationWorkspace(), Times.Never);
+		}
+
+		[Test]
+		public async Task ValidateAsync_ShouldBeEmpty_WhenFieldMapIsEmpty()
+		{
+			// Act
+			var invalidMappedFields = await _sut.ValidateAsync(Enumerable.Empty<FieldMap>(), _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
+
+			// Assert
+			invalidMappedFields.Should().BeEmpty();
+
+			_fieldsClassifyRunnerFactoryFake.Verify(m => m.CreateForSourceWorkspace(), Times.Never);
+			_fieldsClassifyRunnerFactoryFake.Verify(m => m.CreateForDestinationWorkspace(), Times.Never);
+		}
+
+		[Test]
+		public async Task ValidateAsync_ShouldBeEmpty_WhenFieldMapDoesNotContainElementsToValidate()
+		{
+			// Arrange
+			var fieldMap = new List<FieldMap>()
+			{
+				new FieldMap()
+				{
+					SourceField = EmptyField(),
+					DestinationField = EmptyField(),
+					FieldMapType = kCura.IntegrationPoints.Domain.Models.FieldMapTypeEnum.Identifier
+				},
+				new FieldMap()
+				{
+					SourceField = EmptyField(),
+					DestinationField = EmptyField(),
+					FieldMapType = kCura.IntegrationPoints.Domain.Models.FieldMapTypeEnum.NativeFilePath
+				},
+				new FieldMap()
+				{
+					SourceField = EmptyField(),
+					DestinationField = EmptyField(),
+					FieldMapType = kCura.IntegrationPoints.Domain.Models.FieldMapTypeEnum.FolderPathInformation
+				},
+				new FieldMap()
+				{
+					SourceField = EmptyField(),
+					DestinationField = EmptyField(),
+					FieldMapType = kCura.IntegrationPoints.Domain.Models.FieldMapTypeEnum.Parent
+				},
+			};
+
+			// Act
+			var invalidMappedFields = await _sut.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
+
+			// Assert
+			invalidMappedFields.Should().BeEmpty();
+
+			_fieldsClassifyRunnerFactoryFake.Verify(m => m.CreateForSourceWorkspace(), Times.Never);
+			_fieldsClassifyRunnerFactoryFake.Verify(m => m.CreateForDestinationWorkspace(), Times.Never);
 		}
 
 		[Test]

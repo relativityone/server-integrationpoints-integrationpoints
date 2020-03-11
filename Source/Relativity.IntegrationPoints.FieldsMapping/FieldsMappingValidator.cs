@@ -17,14 +17,11 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 
 		public async Task<IEnumerable<FieldMap>> ValidateAsync(IEnumerable<FieldMap> map, int sourceWorkspaceID, int destinationWorkspaceID)
 		{
-			var invalidMappedFields = new List<FieldMap>();
-
-			if (map == null)
+			map = map?.Where(x => x.FieldMapType == FieldMapTypeEnum.None);
+			if (map == null || !map.Any())
 			{
-				return invalidMappedFields;
+				return Enumerable.Empty<FieldMap>();
 			}
-
-			map = map.Where(x => x.FieldMapType == FieldMapTypeEnum.None);
 
 			IList<string> sourceMappedArtifactsIDs = map.Select(x => x.SourceField.FieldIdentifier).ToList();
 			IFieldsClassifierRunner sourceClassifierRunner = _fieldsClassifyRunnerFactory.CreateForSourceWorkspace();
@@ -35,6 +32,8 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 			IFieldsClassifierRunner destinationClassifierRunner = _fieldsClassifyRunnerFactory.CreateForDestinationWorkspace();
 			var destinationFields = (await destinationClassifierRunner.ClassifyFieldsAsync(destinationMappedArtifactsIDs, destinationWorkspaceID).ConfigureAwait(false))
 				.ToDictionary(f => f.FieldIdentifier, f => f);
+
+			var invalidMappedFields = new List<FieldMap>();
 
 			foreach (var fieldMap in map)
 			{
