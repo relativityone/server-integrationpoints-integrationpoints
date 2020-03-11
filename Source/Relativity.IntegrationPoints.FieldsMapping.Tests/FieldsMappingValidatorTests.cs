@@ -68,48 +68,6 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 		}
 
 		[Test]
-		public async Task ValidateAsync_ShouldBeEmpty_WhenFieldMapDoesNotContainElementsToValidate()
-		{
-			// Arrange
-			var fieldMap = new List<FieldMap>()
-			{
-				new FieldMap()
-				{
-					SourceField = EmptyField(),
-					DestinationField = EmptyField(),
-					FieldMapType = kCura.IntegrationPoints.Domain.Models.FieldMapTypeEnum.Identifier
-				},
-				new FieldMap()
-				{
-					SourceField = EmptyField(),
-					DestinationField = EmptyField(),
-					FieldMapType = kCura.IntegrationPoints.Domain.Models.FieldMapTypeEnum.NativeFilePath
-				},
-				new FieldMap()
-				{
-					SourceField = EmptyField(),
-					DestinationField = EmptyField(),
-					FieldMapType = kCura.IntegrationPoints.Domain.Models.FieldMapTypeEnum.FolderPathInformation
-				},
-				new FieldMap()
-				{
-					SourceField = EmptyField(),
-					DestinationField = EmptyField(),
-					FieldMapType = kCura.IntegrationPoints.Domain.Models.FieldMapTypeEnum.Parent
-				},
-			};
-
-			// Act
-			var invalidMappedFields = await _sut.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
-
-			// Assert
-			invalidMappedFields.Should().BeEmpty();
-
-			_fieldsClassifyRunnerFactoryFake.Verify(m => m.CreateForSourceWorkspace(), Times.Never);
-			_fieldsClassifyRunnerFactoryFake.Verify(m => m.CreateForDestinationWorkspace(), Times.Never);
-		}
-
-		[Test]
 		public async Task ValidateAsync_ShouldAlwaysCallFieldClassificationForMappedFieldsOnly()
 		{
 			List<string> IDs = new List<string> { "1", "2", "3", "4","5"};
@@ -666,6 +624,157 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 				.And.Contain(f => f.DestinationField.FieldIdentifier == field2.FieldIdentifier);
 		}
 
+		[Test]
+		public async Task ValidateAsync_ShouldHandleValidation_WhenOnlyObjectIdentifierIsMapped()
+		{
+			// Arrange
+			List<string> IDs = new List<string> { "1" };
+
+			var field1 = CreateWithIdentifier(IDs[0]);
+
+			var sourceClassifiedFields = new List<FieldClassificationResult>()
+			{
+				new FieldClassificationResult(field1)
+				{
+					ClassificationLevel = ClassificationLevel.AutoMap
+				}
+			};
+
+			var destinationClassifiedFields = new List<FieldClassificationResult>()
+			{
+				new FieldClassificationResult(field1)
+				{
+					ClassificationLevel = ClassificationLevel.AutoMap
+				}
+			};
+
+			LoadFieldClassifierRunnerWithData(sourceClassifiedFields, destinationClassifiedFields);
+
+			var fieldMap = new List<FieldMap>()
+			{
+				new FieldMap()
+				{
+					SourceField = FieldConvert.ToFieldEntry(field1),
+					DestinationField = FieldConvert.ToFieldEntry(field1),
+					FieldMapType = kCura.IntegrationPoints.Domain.Models.FieldMapTypeEnum.Identifier
+				},
+			};
+
+			// Act
+			var invalidMappedFields = await _sut.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
+
+			// Assert
+			invalidMappedFields.Should().BeEmpty();
+		}
+
+		[Test]
+		public async Task ValidateAsync_ShouldHandleValidation_WhenOnlyObjectIdentifierIsMappedAndFolderPathInformationIsSet()
+		{
+			// Arrange
+			List<string> IDs = new List<string> { "1", "2" };
+
+			var field1 = CreateWithIdentifier(IDs[0]);
+			var field2 = CreateWithSampleType(IDs[1]);
+
+			var sourceClassifiedFields = new List<FieldClassificationResult>()
+			{
+				new FieldClassificationResult(field1)
+				{
+					ClassificationLevel = ClassificationLevel.AutoMap
+				},
+				new FieldClassificationResult(field2)
+				{
+					ClassificationLevel = ClassificationLevel.ShowToUser
+				}
+			};
+
+			var destinationClassifiedFields = new List<FieldClassificationResult>()
+			{
+				new FieldClassificationResult(field1)
+				{
+					ClassificationLevel = ClassificationLevel.AutoMap
+				}
+			};
+
+			LoadFieldClassifierRunnerWithData(sourceClassifiedFields, destinationClassifiedFields);
+
+			var fieldMap = new List<FieldMap>()
+			{
+				new FieldMap()
+				{
+					SourceField = FieldConvert.ToFieldEntry(field1),
+					DestinationField = FieldConvert.ToFieldEntry(field1),
+					FieldMapType = kCura.IntegrationPoints.Domain.Models.FieldMapTypeEnum.Identifier
+				},
+				new FieldMap()
+				{
+					SourceField = FieldConvert.ToFieldEntry(field2),
+					DestinationField = EmptyField(),
+					FieldMapType = kCura.IntegrationPoints.Domain.Models.FieldMapTypeEnum.FolderPathInformation
+				}
+			};
+
+			// Act
+			var invalidMappedFields = await _sut.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
+
+			// Assert
+			invalidMappedFields.Should().BeEmpty();
+		}
+
+		[Test]
+		public async Task ValidateAsync_ShouldHandleValidation_WhenFolderPathInformationIsSetAndSameFieldIsMapped()
+		{
+			// Arrange
+			List<string> IDs = new List<string> { "1", "2" };
+
+			var field1 = CreateWithIdentifier(IDs[0]);
+			var field2 = CreateWithSampleType(IDs[1]);
+
+			var sourceClassifiedFields = new List<FieldClassificationResult>()
+			{
+				new FieldClassificationResult(field1)
+				{
+					ClassificationLevel = ClassificationLevel.AutoMap
+				},
+				new FieldClassificationResult(field2)
+				{
+					ClassificationLevel = ClassificationLevel.ShowToUser
+				}
+			};
+
+			var destinationClassifiedFields = new List<FieldClassificationResult>()
+			{
+				new FieldClassificationResult(field1)
+				{
+					ClassificationLevel = ClassificationLevel.AutoMap
+				}
+			};
+
+			LoadFieldClassifierRunnerWithData(sourceClassifiedFields, destinationClassifiedFields);
+
+			var fieldMap = new List<FieldMap>()
+			{
+				new FieldMap()
+				{
+					SourceField = FieldConvert.ToFieldEntry(field1),
+					DestinationField = FieldConvert.ToFieldEntry(field1),
+					FieldMapType = kCura.IntegrationPoints.Domain.Models.FieldMapTypeEnum.Identifier
+				},
+				new FieldMap()
+				{
+					SourceField = FieldConvert.ToFieldEntry(field2),
+					DestinationField = FieldConvert.ToFieldEntry(field2),
+					FieldMapType = kCura.IntegrationPoints.Domain.Models.FieldMapTypeEnum.FolderPathInformation
+				}
+			};
+
+			// Act
+			var invalidMappedFields = await _sut.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
+
+			// Assert
+			invalidMappedFields.Should().BeEmpty();
+		}
+
 		private DocumentFieldInfo CreateWithSampleType(string id)
 		{
 			return new DocumentFieldInfo(id, $"Field {id}", "Sample Type");
@@ -674,6 +783,14 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 		private DocumentFieldInfo CreateWithType(string id, string type)
 		{
 			return new DocumentFieldInfo(id, $"Field {id}", type);
+		}
+
+		private DocumentFieldInfo CreateWithIdentifier(string id)
+		{
+			return new DocumentFieldInfo(id, $"Field {id}", "Sample Type")
+			{
+				IsIdentifier = true
+			};
 		}
 
 		private FieldEntry EmptyField() => new FieldEntry();
