@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
@@ -47,8 +48,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			int sourceProviderArtifactId = GetRelativitySourceProviderArtifactId();
 			int destinationProviderArtifactId = GetLoadFileDestinationProviderArtifactId();
 
-			IList<IntegrationPoint> integrationPoints = GetAllExportIntegrationPoints(sourceProviderArtifactId,
-				destinationProviderArtifactId);
+			IList<IntegrationPoint> integrationPoints = GetAllExportIntegrationPointsAsync(sourceProviderArtifactId,
+				destinationProviderArtifactId).GetAwaiter().GetResult();
 
 			MigrateDestinationLocationPaths(integrationPoints);
 		}
@@ -79,11 +80,11 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			}
 		}
 
-		private IList<IntegrationPoint> GetAllExportIntegrationPoints(int relativitySourceProviderArtifactId, int loadFileDestinationProviderArtifactId)
+		private Task<IList<IntegrationPoint>> GetAllExportIntegrationPointsAsync(int relativitySourceProviderArtifactId, int loadFileDestinationProviderArtifactId)
 		{
 			try
 			{
-				return _integrationPointRepository.GetAllBySourceAndDestinationProviderIDs(
+				return _integrationPointRepository.GetAllBySourceAndDestinationProviderIDsAsync(
 					relativitySourceProviderArtifactId,
 					loadFileDestinationProviderArtifactId
 				);

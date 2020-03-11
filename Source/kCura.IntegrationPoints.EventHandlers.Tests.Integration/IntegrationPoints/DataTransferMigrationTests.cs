@@ -188,7 +188,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 
 			IIntegrationPointRepository integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
 			integrationPointRepository
-				.GetAllBySourceAndDestinationProviderIDs(Arg.Any<int>(), Arg.Any<int>())
+				.GetAllBySourceAndDestinationProviderIDsAsync(Arg.Any<int>(), Arg.Any<int>())
 				.Throws(new Exception("SampleException"));
 
 			_dataTransferLocationMigration = CreteDataTransferLocationMigration(

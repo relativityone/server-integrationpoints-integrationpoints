@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data.Models;
 using kCura.IntegrationPoints.Data.QueryOptions;
@@ -11,6 +12,7 @@ using kCura.Relativity.Client;
 using Relativity.API;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Services.Objects.DataContracts;
+using Field = Relativity.Services.Objects.DataContracts.Field;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
@@ -24,7 +26,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private readonly IAPILog _logger;
 
 		private readonly Guid _securedConfigurationGuid = IntegrationPointFieldGuids.SecuredConfigurationGuid;
-		private readonly Guid _fieldMappingGuid = IntegrationPointFieldGuids.FieldMappingsGuid;
 
 		private readonly int _workspaceID;
 
@@ -65,7 +66,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				return fieldMapping;
 			}
 
-			string fieldMappingJson = await GetFieldMappingJsonAsync(integrationPointArtifactID).ConfigureAwait(false);
+			string fieldMappingJson = await GetFieldMappingsAsync(integrationPointArtifactID).ConfigureAwait(false);
 
 			if (string.IsNullOrEmpty(fieldMappingJson))
 			{
@@ -142,7 +143,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return Query(_workspaceID, request);
 		}
 
-		public IList<IntegrationPoint> GetAllBySourceAndDestinationProviderIDs(int sourceProviderArtifactID, int destinationProviderArtifactID)
+		public async Task<IList<IntegrationPoint>> GetAllBySourceAndDestinationProviderIDsAsync(int sourceProviderArtifactID, int destinationProviderArtifactID)
 		{
 			var query = new QueryRequest
 			{
@@ -150,9 +151,16 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					$"'{IntegrationPointFields.SourceProvider}' == {sourceProviderArtifactID} " +
 					$"AND " +
 					$"'{IntegrationPointFields.DestinationProvider}' == {destinationProviderArtifactID}",
-				Fields = new IntegrationPoint().ToFieldList()
+				Fields = new IntegrationPoint().ToFieldList().Where(field => field.Guid != IntegrationPointFieldGuids.FieldMappingsGuid)
 			};
-			return Query(_workspaceID, query);
+			IList<IntegrationPoint> integrationPoints = Query(_workspaceID, query);
+
+			foreach (IntegrationPoint integrationPoint in integrationPoints)
+			{
+				integrationPoint.FieldMappings = await GetFieldMappingsAsync(integrationPoint.ArtifactId).ConfigureAwait(false);
+			}
+
+			return integrationPoints;
 		}
 
 		public IList<IntegrationPoint> GetIntegrationPoints(List<int> sourceProviderIds)
@@ -233,7 +241,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			if (queryOptions.FieldMapping)
 			{
-				integrationPoint.FieldMappings = await GetFieldMappingJsonAsync(integrationPointArtifactID)
+				integrationPoint.FieldMappings = await GetFieldMappingsAsync(integrationPointArtifactID)
 					.ConfigureAwait(false);
 			}
 
@@ -248,15 +256,17 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				.ToList();
 		}
 
-		private async Task<string> GetFieldMappingJsonAsync(int integrationPointArtifactID)
+		private Task<string> GetFieldMappingsAsync(int integrationPointArtifactID)
 		{
-			var field = new FieldRef { Guid = _fieldMappingGuid };
-			Stream fieldMapStream = _objectManager.StreamUnicodeLongText(integrationPointArtifactID, field);
-			using (var fieldMapStreamReader = new StreamReader(fieldMapStream))
+			return GetUnicodeLongTextAsync(integrationPointArtifactID, new FieldRef {Guid = IntegrationPointFieldGuids.FieldMappingsGuid});
+		}
+
+		private  Task<string> GetUnicodeLongTextAsync(int integrationPointArtifactID, FieldRef field)
+		{
+			using (Stream unicodeLongTextStream = _objectManager.StreamUnicodeLongText(integrationPointArtifactID, field))
+			using (StreamReader unicodeLongTextStreamReader = new StreamReader(unicodeLongTextStream, Encoding.UTF8))
 			{
-				return await fieldMapStreamReader
-					.ReadToEndAsync()
-					.ConfigureAwait(false);
+				return unicodeLongTextStreamReader.ReadToEndAsync();
 			}
 		}
 
