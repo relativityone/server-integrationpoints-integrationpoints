@@ -7,12 +7,10 @@ using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data.Models;
 using kCura.IntegrationPoints.Data.QueryOptions;
 using kCura.IntegrationPoints.Data.Transformers;
-using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
 using Relativity.API;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Services.Objects.DataContracts;
-using Field = Relativity.Services.Objects.DataContracts.Field;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
@@ -263,8 +261,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		private  Task<string> GetUnicodeLongTextAsync(int integrationPointArtifactID, FieldRef field)
 		{
-			using (Stream unicodeLongTextStream = _objectManager.StreamUnicodeLongText(integrationPointArtifactID, field))
-			using (StreamReader unicodeLongTextStreamReader = new StreamReader(unicodeLongTextStream, Encoding.UTF8))
+			Stream unicodeLongTextStream = _objectManager.StreamUnicodeLongText(integrationPointArtifactID, field);
+			using (StreamReader unicodeLongTextStreamReader = new StreamReader(unicodeLongTextStream))
 			{
 				return unicodeLongTextStreamReader.ReadToEndAsync();
 			}
