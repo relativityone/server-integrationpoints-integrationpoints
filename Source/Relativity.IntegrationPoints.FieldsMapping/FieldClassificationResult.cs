@@ -1,4 +1,6 @@
-﻿namespace Relativity.IntegrationPoints.FieldsMapping
+﻿using System;
+
+namespace Relativity.IntegrationPoints.FieldsMapping
 {
 	public class FieldClassificationResult
 	{
@@ -9,7 +11,7 @@
 
 		public FieldClassificationResult(DocumentFieldInfo fieldInfo)
 		{
-			FieldInfo = fieldInfo;
+			FieldInfo = fieldInfo ?? throw new ArgumentNullException(nameof(fieldInfo));
 		}
 	}
 }
