@@ -74,9 +74,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             var fieldEntries = new List<FieldEntry>() { _fieldA, _fieldB, _fieldC, _fieldD };
 
 
-            CollectionAssert.AreEqual(fieldEntries.Select(x => x.FieldIdentifier), classificationResults.Select(x => x.FieldIdentifier));
-            CollectionAssert.AreEqual(fieldEntries.Select(x => x.DisplayName), classificationResults.Select(x => x.Name));
-            CollectionAssert.AreEqual(fieldEntries.Select(x => x.IsIdentifier), classificationResults.Select(x => x.IsIdentifier));
+            CollectionAssert.AreEqual(fieldEntries.Select(x => x.FieldIdentifier), classificationResults.Select(x => x.FieldInfo.FieldIdentifier));
+            CollectionAssert.AreEqual(fieldEntries.Select(x => x.DisplayName), classificationResults.Select(x => x.FieldInfo.Name));
+            CollectionAssert.AreEqual(fieldEntries.Select(x => x.IsIdentifier), classificationResults.Select(x => x.FieldInfo.IsIdentifier));
 
             _factory.Received().GetDataProvider(_appIdentifier, _dataType);
             _dataSourceProvider.Received(1).GetFields(Arg.Is<DataSourceProviderConfiguration>(x => x.Configuration.Equals(_options) && x.SecuredConfiguration.Equals(_credentials)));

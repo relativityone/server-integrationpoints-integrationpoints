@@ -9,6 +9,7 @@ using FluentAssertions;
 using kCura.IntegrationPoints.DocumentTransferProvider;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Controllers.API.FieldMappings;
+using kCura.IntegrationPoints.Web.Models;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -30,6 +31,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 		private Mock<IFieldsMappingValidator> _fieldsMappingValidator;
 		private List<FieldClassificationResult> _sourceFieldClassificationResults;
 		private List<FieldClassificationResult> _destinationFieldClassificationResults;
+		private IEnumerable<ClassifiedFieldDTO> _sourceClassifiedFieldDTOs;
+		private IEnumerable<ClassifiedFieldDTO> _destinationClassifiedFieldDTOs;
 
 		private const int _SOURCE_WORKSPACE_ID = 1;
 		private const int _DESTINATION_WORKSPACE_ID = 2;
@@ -43,6 +46,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 			_fieldsClassifierRunner = new Mock<IFieldsClassifierRunner>();
 			_sourceFieldClassificationResults = new List<FieldClassificationResult> { new FieldClassificationResult(new DocumentFieldInfo("1", "Name", "Type")) };
 			_destinationFieldClassificationResults = new List<FieldClassificationResult> { new FieldClassificationResult(new DocumentFieldInfo("2", "Name", "Type")) };
+
+			_sourceClassifiedFieldDTOs = _sourceFieldClassificationResults.Select(x => new ClassifiedFieldDTO(x));
+			_destinationClassifiedFieldDTOs = _destinationFieldClassificationResults.Select(x => new ClassifiedFieldDTO(x));
 
 			_fieldsClassifierRunner.Setup(x => x.GetFilteredFieldsAsync(_SOURCE_WORKSPACE_ID)).ReturnsAsync(_sourceFieldClassificationResults);
 			_fieldsClassifierRunner.Setup(x => x.GetFilteredFieldsAsync(_DESTINATION_WORKSPACE_ID)).ReturnsAsync(_destinationFieldClassificationResults);
@@ -72,7 +78,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 				.Verify(x => x.GetFilteredFieldsAsync(_SOURCE_WORKSPACE_ID),
 					Times.Once);
 
-			jsonResponse.Should().Be(JsonConvert.SerializeObject(_sourceFieldClassificationResults));
+			jsonResponse.Should().Be(JsonConvert.SerializeObject(_sourceClassifiedFieldDTOs));
 		}
 
 		[Test]
@@ -89,7 +95,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 				.Verify(x => x.GetFilteredFieldsAsync(_DESTINATION_WORKSPACE_ID),
 					Times.Once);
 
-			jsonResponse.Should().Be(JsonConvert.SerializeObject(_destinationFieldClassificationResults));
+			jsonResponse.Should().Be(JsonConvert.SerializeObject(_destinationClassifiedFieldDTOs));
 		}
 
 		[Test]

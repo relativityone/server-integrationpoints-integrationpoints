@@ -65,9 +65,9 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			IList<FieldClassificationResult> filteredFields = await sut.GetFilteredFieldsAsync(It.IsAny<int>()).ConfigureAwait(false);
 
 			// Assert
-			filteredFields.Any(x => x.Name == autoMappedFieldName && x.Type == autoMappedFieldType && x.IsIdentifier).Should().BeTrue();
-			filteredFields.Any(x => x.Name == excludedFromAutoMapFieldName).Should().BeTrue();
-			filteredFields.Any(x => x.Name == notVisibleToUserFieldName).Should().BeFalse();
+			filteredFields.Any(x => x.FieldInfo.Name == autoMappedFieldName && x.FieldInfo.Type == autoMappedFieldType && x.FieldInfo.IsIdentifier).Should().BeTrue();
+			filteredFields.Any(x => x.FieldInfo.Name == excludedFromAutoMapFieldName).Should().BeTrue();
+			filteredFields.Any(x => x.FieldInfo.Name == notVisibleToUserFieldName).Should().BeFalse();
 		}
 
 		[Test]
@@ -156,14 +156,14 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			// Assert
 			filteredFields.Count.Should().Be(count);
 
-			filteredFields.Select(x => x.IsIdentifier).Any(x => x).Should().BeFalse();
-			filteredFields.Select(x => x.IsRequired).Any(x => x).Should().BeFalse();
-			filteredFields.Select(x => x.Type).All(x => x == "Some type").Should().BeTrue();
+			filteredFields.Select(x => x.FieldInfo.IsIdentifier).Any(x => x).Should().BeFalse();
+			filteredFields.Select(x => x.FieldInfo.IsRequired).Any(x => x).Should().BeFalse();
+			filteredFields.Select(x => x.FieldInfo.Type).All(x => x == "Some type").Should().BeTrue();
 
 
-			filteredFields[0].FieldIdentifier.Should().Be("1");
-			filteredFields[1].FieldIdentifier.Should().Be("2");
-			filteredFields[2].FieldIdentifier.Should().Be("3");
+			filteredFields[0].FieldInfo.FieldIdentifier.Should().Be("1");
+			filteredFields[1].FieldInfo.FieldIdentifier.Should().Be("2");
+			filteredFields[2].FieldInfo.FieldIdentifier.Should().Be("3");
 
 			filteredFields[0].ClassificationReason.Should().Be(null);
 			filteredFields[1].ClassificationReason.Should().Be("Reason");
@@ -201,7 +201,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			IList<FieldClassificationResult> filteredFields = await sut.GetFilteredFieldsAsync(0).ConfigureAwait(false);
 
 			// Assert
-			filteredFields.Select(x => x.Name).ShouldAllBeEquivalentTo(sortedFields.Select(x => x.Name));
+			filteredFields.Select(x => x.FieldInfo.Name).ShouldAllBeEquivalentTo(sortedFields.Select(x => x.Name));
 		}
 
 		[Test]

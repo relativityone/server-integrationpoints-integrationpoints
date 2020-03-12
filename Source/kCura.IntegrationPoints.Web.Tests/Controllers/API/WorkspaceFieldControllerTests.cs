@@ -93,9 +93,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 
             Assert.That(httpResponseMessage.StatusCode, Is.EqualTo(HttpStatusCode.OK));
 
-            CollectionAssert.AreEqual(_fields.Select(x => x.IsIdentifier), retValue.Select(x => x.IsIdentifier));
-            CollectionAssert.AreEqual(_fields.Select(x => x.DisplayName), retValue.Select(x => x.Name));
-            CollectionAssert.AreEqual(_fields.Select(x => x.FieldIdentifier), retValue.Select(x => x.FieldIdentifier));
+            CollectionAssert.AreEqual(_fields.Select(x => x.IsIdentifier), retValue.Select(x => x.FieldInfo.IsIdentifier));
+            CollectionAssert.AreEqual(_fields.Select(x => x.DisplayName), retValue.Select(x => x.FieldInfo.Name));
+            CollectionAssert.AreEqual(_fields.Select(x => x.FieldIdentifier), retValue.Select(x => x.FieldInfo.FieldIdentifier));
 
 		    _dataSynchronizerMock.Received(1).GetFields(Arg.Is<DataSourceProviderConfiguration>(x =>
 			    (_serializer.Deserialize<ImportSettings>(x.Configuration).ArtifactTypeId == _ARTIFACT_TYPE_ID) &&

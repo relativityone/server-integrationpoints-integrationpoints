@@ -25,12 +25,12 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 			IList<string> sourceMappedArtifactsIDs = map.Select(x => x.SourceField?.FieldIdentifier).ToList();
 			IFieldsClassifierRunner sourceClassifierRunner = _fieldsClassifyRunnerFactory.CreateForSourceWorkspace();
 			var sourceFields = (await sourceClassifierRunner.ClassifyFieldsAsync(sourceMappedArtifactsIDs, sourceWorkspaceID).ConfigureAwait(false))
-				.ToDictionary(f => f.FieldIdentifier, f => f);
+				.ToDictionary(f => f.FieldInfo.FieldIdentifier, f => f);
 
 			IList<string> destinationMappedArtifactsIDs = map.Select(x => x.DestinationField?.FieldIdentifier).ToList();
 			IFieldsClassifierRunner destinationClassifierRunner = _fieldsClassifyRunnerFactory.CreateForDestinationWorkspace();
 			var destinationFields = (await destinationClassifierRunner.ClassifyFieldsAsync(destinationMappedArtifactsIDs, destinationWorkspaceID).ConfigureAwait(false))
-				.ToDictionary(f => f.FieldIdentifier, f => f);
+				.ToDictionary(f => f.FieldInfo.FieldIdentifier, f => f);
 
 			var invalidMappedFields = new List<FieldMap>();
 
@@ -56,7 +56,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 			switch(mapType)
 			{
 				case FieldMapTypeEnum.Identifier:
-					return sourceField.IsIdentifier && destinationField.IsIdentifier;
+					return sourceField.FieldInfo.IsIdentifier && destinationField.FieldInfo.IsIdentifier;
 				case FieldMapTypeEnum.FolderPathInformation:
 					return destinationField == null
 						|| CanBeMapped(sourceField, destinationField);
@@ -72,7 +72,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 		{
 			return sourceField.ClassificationLevel == ClassificationLevel.AutoMap
 				&& destinationField.ClassificationLevel == ClassificationLevel.AutoMap
-				&& sourceField.GetFieldInfo().IsTypeCompatible(destinationField.GetFieldInfo());
+				&& sourceField.FieldInfo.IsTypeCompatible(destinationField.FieldInfo);
 		}
 	}
 }

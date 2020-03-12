@@ -44,7 +44,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests.FieldsClassifiers
 			List<FieldClassificationResult> classified = (await _sut.ClassifyAsync(fields, 0).ConfigureAwait(false)).ToList();
 
 			// Assert
-			CollectionAssert.AreEquivalent(_ripFields, classified.Select(x => x.Name));
+			CollectionAssert.AreEquivalent(_ripFields, classified.Select(x => x.FieldInfo.Name));
 			classified.Should().OnlyContain(x => x.ClassificationLevel == ClassificationLevel.HideFromUser);
 		}
 

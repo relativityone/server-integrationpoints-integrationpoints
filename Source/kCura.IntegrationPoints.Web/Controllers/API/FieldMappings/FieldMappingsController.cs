@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using kCura.IntegrationPoints.Web.Attributes;
+using kCura.IntegrationPoints.Web.Models;
 using Relativity.IntegrationPoints.FieldsMapping;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 
@@ -28,7 +30,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 		{
 			IFieldsClassifierRunner fieldsClassifierRunner = _fieldsClassifyRunnerFactory.CreateForSourceWorkspace();
 
-			IList<FieldClassificationResult> filteredFields = await fieldsClassifierRunner.GetFilteredFieldsAsync(workspaceID).ConfigureAwait(false);
+			IEnumerable<ClassifiedFieldDTO> filteredFields = (await fieldsClassifierRunner.GetFilteredFieldsAsync(workspaceID).ConfigureAwait(false))
+				.Select(x => new ClassifiedFieldDTO(x));
 
 			return Request.CreateResponse(HttpStatusCode.OK, filteredFields, Configuration.Formatters.JsonFormatter);
 		}
@@ -39,7 +42,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 		{
 			IFieldsClassifierRunner fieldsClassifierRunner = _fieldsClassifyRunnerFactory.CreateForDestinationWorkspace();
 
-			IList<FieldClassificationResult> filteredFields = await fieldsClassifierRunner.GetFilteredFieldsAsync(workspaceID).ConfigureAwait(false);
+			IEnumerable<ClassifiedFieldDTO> filteredFields = (await fieldsClassifierRunner.GetFilteredFieldsAsync(workspaceID).ConfigureAwait(false))
+				.Select(x => new ClassifiedFieldDTO(x));
 
 			return Request.CreateResponse(HttpStatusCode.OK, filteredFields, Configuration.Formatters.JsonFormatter);
 		}

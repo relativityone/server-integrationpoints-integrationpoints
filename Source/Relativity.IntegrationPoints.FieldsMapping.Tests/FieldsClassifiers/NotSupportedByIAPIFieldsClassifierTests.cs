@@ -42,7 +42,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests.FieldsClassifiers
 			// Assert
 			fields.Count().Should().Be(1);
 			FieldClassificationResult fieldClassificationResult = fields.First();
-			fieldClassificationResult.FieldIdentifier.Should().Be("2");
+			fieldClassificationResult.FieldInfo.FieldIdentifier.Should().Be("2");
 			fieldClassificationResult.ClassificationLevel.Should().Be(ClassificationLevel.HideFromUser);
 			fieldClassificationResult.ClassificationReason.Should().Be("Field not supported by IAPI.");
 		}
