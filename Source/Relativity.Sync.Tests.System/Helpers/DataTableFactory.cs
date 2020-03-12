@@ -10,7 +10,7 @@ namespace Relativity.Sync.Tests.System.Helpers
 	{
 		public static ImportDataTableWrapper GenerateDocumentsWithExtractedText(int numDocuments, string controlNumberPrefix = "RND")
 		{
-			var documentData = new ImportDataTableWrapper(true, false);
+			var documentData = new ImportDataTableWrapper(true, false, false);
 
 			Func<string> generateExtractedText = () => Guid.NewGuid().ToString();
 			Func<int, string> getControlNumber = number => string.Format(CultureInfo.InvariantCulture, "{0}{1:D6}", controlNumberPrefix, number);
@@ -22,6 +22,17 @@ namespace Relativity.Sync.Tests.System.Helpers
 			Enumerable.Range(0, numDocuments)
 				.Select(number => new { ControlNumber = getControlNumber(number), ColumnToValueMap = buildColumnValuePair() })
 				.ForEach(document => documentData.AddDocument(document.ControlNumber, document.ColumnToValueMap));
+
+			return documentData;
+		}
+
+		public static ImportDataTableWrapper GenerateDocumentWithUserField(string controlNumberPrefix = "RND")
+		{
+			var documentData = new ImportDataTableWrapper(false, false, true);
+
+			documentData.AddDocument(
+				string.Format(CultureInfo.InvariantCulture, "{0}{1:D6}", controlNumberPrefix, 0),
+				new[] { Tuple.Create(ImportDataTableWrapper.RelativitySyncTestUser, AppSettings.RelativityUserName) });
 
 			return documentData;
 		}
@@ -57,7 +68,7 @@ namespace Relativity.Sync.Tests.System.Helpers
 
 			IEnumerable<string> validControlNumbers = GetIntersectionOfEnumerables(groupsOfControlNumbers);
 
-			ImportDataTableWrapper dataTableWrapper = new ImportDataTableWrapper(true, true);
+			ImportDataTableWrapper dataTableWrapper = new ImportDataTableWrapper(true, true, false);
 			foreach (string controlNumber in validControlNumbers)
 			{
 				var columnValuePairs = new List<Tuple<string, string>>();
