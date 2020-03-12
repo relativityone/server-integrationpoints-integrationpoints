@@ -24,6 +24,10 @@ namespace kCura.IntegrationPoints.Web.Models
 		// to be compatible with old JS code
 		public string ActualName => Name + (string.IsNullOrEmpty(Type) ? "" : $" [{Type}]");
 
+		public ClassifiedFieldDTO()
+		{
+		}
+
 		public ClassifiedFieldDTO(FieldClassificationResult result)
 		{
 			ClassificationLevel = result.ClassificationLevel;

@@ -20,18 +20,6 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Helpers
 			};
 		}
 
-		public static DocumentFieldInfo ToDocumentFieldInfo(FieldEntry fieldEntry)
-		{
-			return new DocumentFieldInfo(
-				fieldEntry.FieldIdentifier,
-				fieldEntry.ActualName,
-				fieldEntry.Type)
-			{
-				IsIdentifier = fieldEntry.IsIdentifier,
-				IsRequired = fieldEntry.IsRequired
-			};
-		}
-
 		public static DocumentFieldInfo ToDocumentFieldInfo(RelativityObject fieldObject)
 		{
 			return new DocumentFieldInfo(
