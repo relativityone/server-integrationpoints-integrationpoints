@@ -259,12 +259,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return GetUnicodeLongTextAsync(integrationPointArtifactID, new FieldRef {Guid = IntegrationPointFieldGuids.FieldMappingsGuid});
 		}
 
-		private  Task<string> GetUnicodeLongTextAsync(int integrationPointArtifactID, FieldRef field)
+		private async Task<string> GetUnicodeLongTextAsync(int integrationPointArtifactID, FieldRef field)
 		{
 			Stream unicodeLongTextStream = _objectManager.StreamUnicodeLongText(integrationPointArtifactID, field);
 			using (StreamReader unicodeLongTextStreamReader = new StreamReader(unicodeLongTextStream))
 			{
-				return unicodeLongTextStreamReader.ReadToEndAsync();
+				return await unicodeLongTextStreamReader.ReadToEndAsync().ConfigureAwait(false);
 			}
 		}
 

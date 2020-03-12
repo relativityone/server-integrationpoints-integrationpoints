@@ -526,11 +526,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			using (IObjectManagerFacade client = _objectManagerFacadeFactory.Create(executionIdentity))
 			{
 				var exportObject = new RelativityObjectRef() { ArtifactID = relativityObjectArtifactId };
-				IKeplerStream keplerStream = await client.StreamLongTextAsync(
+				IKeplerStream keplerStream = client.StreamLongTextAsync(
 						_workspaceArtifactId,
 						exportObject,
 						longTextFieldRef)
-					.ConfigureAwait(false);
+					.GetAwaiter()
+					.GetResult();
 				return await keplerStream.GetStreamAsync().ConfigureAwait(false);
 			}
 		}
