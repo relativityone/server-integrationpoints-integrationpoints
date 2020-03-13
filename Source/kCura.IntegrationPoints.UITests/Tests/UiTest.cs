@@ -81,6 +81,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		[OneTimeSetUp]
 		protected async Task SetupSuite()
 		{
+			LogTestStart();
 			// enable TLS 1.2 for R1 regression environments
 			ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
 
@@ -110,6 +111,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		{
 			if (string.IsNullOrEmpty(SharedVariables.UiUseThisExistingWorkspace))
 			{
+				Log.Information("Source context");
 				await CreateWorkspaceAsync().ConfigureAwait(false);
 			}
 			else
@@ -182,6 +184,12 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			{
 				Log.Error(ex, "Error during accessing browser logs.");
 			}
+		}
+
+		private static void LogTestStart()
+		{
+			NUnit.Framework.TestContext tc = NUnit.Framework.TestContext.CurrentContext;
+			Log.Information("Test {TestName} started.", tc.Test.FullName);
 		}
 
 		private static void LogTestStatus()

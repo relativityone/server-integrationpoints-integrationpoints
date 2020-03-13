@@ -2,18 +2,20 @@
 using System.Linq;
 using System.Threading;
 using kCura.IntegrationPoint.Tests.Core.Models;
-using kCura.IntegrationPoints.UITests.Components;
+using kCura.IntegrationPoints.UITests.Configuration;
 using kCura.IntegrationPoints.UITests.Driver;
-using NUnit.Framework;
+using kCura.IntegrationPoints.UITests.Logging;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
 using SeleniumExtras.PageObjects;
 using OpenQA.Selenium.Support.UI;
+using Serilog;
 
 namespace kCura.IntegrationPoints.UITests.Pages
 {
 	public class PushToRelativityThirdPage : GeneralPage
 	{
+		private static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(TestContext));
 		[FindsBy(How = How.Id, Using = "save")]
 		protected IWebElement SaveButton { get; set; }
 
@@ -330,6 +332,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		public IntegrationPointDetailsPage SaveIntegrationPoint()
 		{
 			SaveButton.ClickEx();
+			Log.Information("SaveIntegrationPoint");
 			return new IntegrationPointDetailsPage(Driver);
 		}
         public PushToRelativityThirdPage ClickSaveButtonExpectPopup()

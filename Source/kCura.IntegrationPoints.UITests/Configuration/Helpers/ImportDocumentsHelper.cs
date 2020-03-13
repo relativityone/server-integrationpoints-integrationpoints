@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
 
 		public void ImportDocuments(bool withNatives, DocumentTestDataBuilder.TestDataType testDataType)
 		{
-			Log.Information(@"Importing documents...");
+			Log.Information(@"Importing documents... {testDataType}", testDataType);
 			string testDir = NUnit.Framework.TestContext.CurrentContext.TestDirectory.Replace("kCura.IntegrationPoints.UITests",
 				"kCura.IntegrationPoint.Tests.Core");
 			Log.Information("TestDir for ImportDocuments '{testDir}'", testDir);
@@ -36,6 +36,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
 				string suffix = importHelper.Messages.Any() ? " Messages: " + string.Join("; ", importHelper.Messages) : " No messages.";
 				Log.Verbose(@"Documents imported." + suffix);
 			}
+			Log.Information("Documents imported.");
 		}
 	}
 }

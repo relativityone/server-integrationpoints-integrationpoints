@@ -4,8 +4,10 @@ using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Models.Constants.ExportToLoadFile;
 using kCura.IntegrationPoint.Tests.Core.Models.Shared;
 using kCura.IntegrationPoints.UITests.Configuration;
+using kCura.IntegrationPoints.UITests.Logging;
 using kCura.IntegrationPoints.UITests.Pages;
 using OpenQA.Selenium.Remote;
+using Serilog;
 
 namespace kCura.IntegrationPoints.UITests.Common
 {
@@ -16,6 +18,7 @@ namespace kCura.IntegrationPoints.UITests.Common
 	{
 		protected readonly RemoteWebDriver Driver;
 		protected readonly TestContext Context;
+		private static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(TestContext));
 
 		public IntegrationPointsAction(RemoteWebDriver driver, TestContext context)
 		{
@@ -87,6 +90,7 @@ namespace kCura.IntegrationPoints.UITests.Common
 
 		protected GeneralPage GoToWorkspacePage()
 		{
+			Log.Information("GoToWorkspacePage");
 			return new GeneralPage(Driver).PassWelcomeScreen().ChooseWorkspace(Context.WorkspaceName);
 		}
 
@@ -113,7 +117,7 @@ namespace kCura.IntegrationPoints.UITests.Common
 			RelativityProviderModel model)
 		{
 			PushToRelativitySecondPage secondPage = firstPage.GoToNextPagePush();
-
+			Log.Information("secondPage");
 			SelectSource(secondPage, model);
 
 			secondPage.DestinationWorkspace = model.DestinationWorkspace;
@@ -125,6 +129,7 @@ namespace kCura.IntegrationPoints.UITests.Common
 			RelativityProviderModel model)
 		{
 			PushToRelativityThirdPage thirdPage = secondPage.GoToNextPage();
+			Log.Information("thirdPage");
 
 			if (model.GetValueOrDefault(m => m.Source) != RelativityProviderModel.SourceTypeEnum.Production &&
 			    model.GetValueOrDefault(m => m.Location) != RelativityProviderModel.LocationEnum.ProductionSet)
@@ -211,12 +216,13 @@ namespace kCura.IntegrationPoints.UITests.Common
 		{
 			ExportFirstPage firstPage = GoToFirstPageIntegrationPoints(generalPage);
 			ExportFirstPage firstPageWithModelApplied = ApplyModelToFirstPage(firstPage, model);
-
+			Log.Information("firstPageWithModelApplied");
 			return firstPageWithModelApplied;
 		}
 
 		private ExportFirstPage GoToFirstPageIntegrationPoints(GeneralPage generalPage)
 		{
+			Log.Information("GoToFirstPageIntegrationPoints");
 			IntegrationPointsPage ipPage = generalPage.GoToIntegrationPointsPage();
 			return ipPage.CreateNewExportIntegrationPoint();
 		}
@@ -226,6 +232,7 @@ namespace kCura.IntegrationPoints.UITests.Common
 		{
 			ExportToFileSecondPage secondPage = firstPage.GoToNextPage();
 
+			Log.Information("ExportToFileSecondPage");
 			secondPage.Source = model.SourceInformationModel.Source;
 			if (model.SourceInformationModel.Source == ExportToLoadFileSourceConstants.SAVED_SEARCH)
 			{
@@ -254,8 +261,9 @@ namespace kCura.IntegrationPoints.UITests.Common
 					secondPage.SelectSourceField(field);
 				}
 			}
-
+			Log.Information("secondPage");
 			return secondPage;
+			
 		}
 
 		private void SetupExportToFileThirdPageExportDetails(ExportToFileThirdPageExportDetails thirdPageExportDetails,
@@ -390,7 +398,7 @@ namespace kCura.IntegrationPoints.UITests.Common
 			ExportToLoadFileProviderModel model)
 		{
 			ExportToFileThirdPage thirdPage = secondPage.GoToNextPage();
-
+			Log.Information("SetupExportToFileThirdPage");
 			ExportToLoadFileDetailsModel exportDetails = model.ExportDetails;
 			SetupExportToFileThirdPageExportDetails(thirdPage.ExportDetails, exportDetails);
 
@@ -427,7 +435,7 @@ namespace kCura.IntegrationPoints.UITests.Common
 				SetupExportToFileThirdPageVolumeSubdirectoryDetails(thirdPage.VolumeSubdirectoryDetails,
 					volumeSubdirectoryDetails);
 			}
-
+			Log.Information("return thirdPage");
 			return thirdPage;
 		}
 
@@ -479,6 +487,7 @@ namespace kCura.IntegrationPoints.UITests.Common
 		private ExportEntityToFileSecondPage SetupEntityExportToFileSecondPage(ExportFirstPage firstPage,
 			EntityExportToLoadFileModel model)
 		{
+			Log.Information("SetupEntityExportToFileSecondPage");
 			ExportEntityToFileSecondPage secondPage = firstPage.GotoNextPageEntity();
 			secondPage.View = model.ExportDetails.View;
 			Thread.Sleep(500);
@@ -486,7 +495,7 @@ namespace kCura.IntegrationPoints.UITests.Common
 			{
 				secondPage.SelectAllFields();
 			}
-
+			Log.Information("END SetupEntityExportToFileSecondPage");
 			return secondPage;
 		}
 
