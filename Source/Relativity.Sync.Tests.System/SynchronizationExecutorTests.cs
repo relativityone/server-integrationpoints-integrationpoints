@@ -42,10 +42,9 @@ namespace Relativity.Sync.Tests.System
 		private static readonly Guid TransferredItemsCountField = new Guid("B2D112CA-E81E-42C7-A6B2-C0E89F32F567");
 		private static readonly Guid SyncConfigurationRelation = new Guid("F673E67F-E606-4155-8E15-CA1C83931E16");
 
-		[IdentifiedTest("f9311c70-7094-4bed-a66e-90b1313fcd47")]
-		[TestCase(1000,1)]
-		[TestCase(1000,2000)]
-		[TestCase(1000,3500)]
+		[IdentifiedTestCase("edd705b0-5d9b-42df-a0a0-a801ba0a1b0d", 1000,1)]
+		[IdentifiedTestCase("3ad4d2b1-0edb-43d9-9ce2-78ab4e942c4a", 1000,2000)]
+		[IdentifiedTestCase("e1fa19e6-4a27-4ba2-bb5c-c924874ccb09", 1000,3500)]
 		public async Task ItShouldPassGoldFlow(int batchSize, int totalRecordsCount)
 		{
 			string sourceWorkspaceName = $"Source.{Guid.NewGuid()}";
@@ -338,7 +337,7 @@ namespace Relativity.Sync.Tests.System
 			return batchesTransferredItemsCount;
 		}
 
-		private void UpdateNativeFilePathToLocal(int sourceWorkspaceArtifactId)
+		private static void UpdateNativeFilePathToLocal(int sourceWorkspaceArtifactId)
 		{
 			using (SqlConnection connection = CreateConnectionFromAppConfig(sourceWorkspaceArtifactId))
 			{
