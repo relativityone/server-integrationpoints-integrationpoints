@@ -50,54 +50,13 @@ namespace Relativity.Sync.Tests.System
 		{
 			string sourceWorkspaceName = $"Source.{Guid.NewGuid()}";
 			string destinationWorkspaceName = $"Destination.{Guid.NewGuid()}";
-			string jobHistoryName = $"JobHistory.{Guid.NewGuid()}";
-
-			var fieldMap = new List<FieldMap>
-			{
-				new FieldMap
-				{
-					SourceField = new FieldEntry
-					{
-						DisplayName = _CONTROL_NUMBER_FIELD_DISPLAY_NAME,
-						FieldIdentifier = _CONTROL_NUMBER_FIELD_ID,
-						IsIdentifier = true
-					},
-					DestinationField = new FieldEntry()
-					{
-						DisplayName = _CONTROL_NUMBER_FIELD_DISPLAY_NAME,
-						FieldIdentifier = _CONTROL_NUMBER_FIELD_ID,
-						IsIdentifier = true
-					}
-				}
-			};
 
 			int sourceWorkspaceArtifactId = await CreateWorkspaceAsync(sourceWorkspaceName).ConfigureAwait(false);
 			int destinationWorkspaceArtifactId = await CreateWorkspaceAsync(destinationWorkspaceName).ConfigureAwait(false);
-			int allDocumentsSavedSearchArtifactId = await Rdos.GetSavedSearchInstance(ServiceFactory, sourceWorkspaceArtifactId).ConfigureAwait(false);
 
-			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, sourceWorkspaceArtifactId, jobHistoryName).ConfigureAwait(false);
-			int destinationFolderArtifactId = await Rdos.GetRootFolderInstance(ServiceFactory, destinationWorkspaceArtifactId).ConfigureAwait(false);
-			int syncConfigurationArtifactId = await Rdos.CreateSyncConfigurationInstance(ServiceFactory, sourceWorkspaceArtifactId, jobHistoryArtifactId, fieldMap).ConfigureAwait(false);
+			List<FieldMap> fieldMappings = CreateControlNumberFieldMapping();
 
-			ConfigurationStub configuration = new ConfigurationStub
-			{
-				SourceWorkspaceArtifactId = sourceWorkspaceArtifactId,
-				DestinationWorkspaceArtifactId = destinationWorkspaceArtifactId,
-				DataSourceArtifactId = allDocumentsSavedSearchArtifactId,
-				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure,
-
-				JobHistoryArtifactId = jobHistoryArtifactId,
-				DestinationFolderArtifactId = destinationFolderArtifactId,
-				SendEmails = false,
-
-				TotalRecordsCount = totalRecordsCount,
-				BatchSize = batchSize,
-				SyncConfigurationArtifactId = syncConfigurationArtifactId,
-				ImportOverwriteMode = ImportOverwriteMode.AppendOverlay,
-				FieldOverlayBehavior = FieldOverlayBehavior.UseFieldSettings,
-				ImportNativeFileCopyMode = ImportNativeFileCopyMode.CopyFiles,
-			};
-			configuration.SetFieldMappings(fieldMap);
+			ConfigurationStub configuration = await CreateConfigurationStubAsync(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, fieldMappings, batchSize, totalRecordsCount).ConfigureAwait(false);
 
 			// Import documents
 			var importHelper = new ImportHelper(ServiceFactory);
@@ -136,9 +95,10 @@ namespace Relativity.Sync.Tests.System
 			ExecutionResult syncResult = await syncExecutor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			Assert.AreEqual(ExecutionStatus.Completed, syncResult.Status, await AggregateJobHistoryErrorMessagesAsync(sourceWorkspaceArtifactId, jobHistoryArtifactId, syncResult).ConfigureAwait(false));
+			Assert.AreEqual(ExecutionStatus.Completed, syncResult.Status, await AggregateJobHistoryErrorMessagesAsync(sourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, syncResult)
+				.ConfigureAwait(false));
 
-			Assert.AreEqual(dataTableWrapper.Data.Rows.Count, await GetBatchesTransferredItemsCountAsync(sourceWorkspaceArtifactId, syncConfigurationArtifactId).ConfigureAwait(false));
+			Assert.AreEqual(dataTableWrapper.Data.Rows.Count, await GetBatchesTransferredItemsCountAsync(sourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId).ConfigureAwait(false));
 		}
 
 		[IdentifiedTest("0967e7fa-2607-48ba-bfc2-5ab6b786db86")]
@@ -157,62 +117,14 @@ namespace Relativity.Sync.Tests.System
 			ImportJobErrors importErrors = await ImportJobExecutor.ExecuteAsync(documentImportJob).ConfigureAwait(false);
 			Assert.IsTrue(importErrors.Success, $"{importErrors.Errors.Count} errors occurred during document upload: {importErrors}");
 
-			List<FieldMap> fieldMappings = new List<FieldMap>
+			List<FieldMap> fieldMappings = CreateControlNumberFieldMapping();
+			fieldMappings.Add(new FieldMap
 			{
-				new FieldMap
-				{
-					SourceField = new FieldEntry
-					{
-						DisplayName = _CONTROL_NUMBER_FIELD_DISPLAY_NAME,
-						FieldIdentifier = _CONTROL_NUMBER_FIELD_ID,
-						IsIdentifier = true
-					},
-					DestinationField = new FieldEntry
-					{
-						DisplayName = _CONTROL_NUMBER_FIELD_DISPLAY_NAME,
-						FieldIdentifier = _CONTROL_NUMBER_FIELD_ID,
-						IsIdentifier = true
-					}
-				},
-				new FieldMap
-				{
-					SourceField = new FieldEntry
-					{
-						DisplayName = _USER_FIELD_DISPLAY_NAME,
-						FieldIdentifier = _USER_FIELD_ID,
-						IsIdentifier = true
-					},
-					DestinationField = new FieldEntry
-					{
-						DisplayName = _USER_FIELD_DISPLAY_NAME,
-						FieldIdentifier = _USER_FIELD_ID,
-						IsIdentifier = true
-					}
-				}
-			};
+				SourceField = new FieldEntry { DisplayName = _USER_FIELD_DISPLAY_NAME, FieldIdentifier = _USER_FIELD_ID, IsIdentifier = false },
+				DestinationField = new FieldEntry { DisplayName = _USER_FIELD_DISPLAY_NAME, FieldIdentifier = _USER_FIELD_ID, IsIdentifier = false }
+			});
 
-			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, sourceWorkspaceArtifactId, $"JobHistory.{Guid.NewGuid()}").ConfigureAwait(false);
-			int syncConfigurationArtifactId = await Rdos.CreateSyncConfigurationInstance(ServiceFactory, sourceWorkspaceArtifactId, jobHistoryArtifactId, fieldMappings).ConfigureAwait(false);
-
-			ConfigurationStub configuration = new ConfigurationStub
-			{
-				SourceWorkspaceArtifactId = sourceWorkspaceArtifactId,
-				DestinationWorkspaceArtifactId = destinationWorkspaceArtifactId,
-				DataSourceArtifactId = await Rdos.GetSavedSearchInstance(ServiceFactory, sourceWorkspaceArtifactId).ConfigureAwait(false),
-				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure,
-				FieldMappings = fieldMappings,
-
-				JobHistoryArtifactId = jobHistoryArtifactId,
-				DestinationFolderArtifactId = await Rdos.GetRootFolderInstance(ServiceFactory, destinationWorkspaceArtifactId).ConfigureAwait(false),
-				SendEmails = false,
-
-				TotalRecordsCount = 1,
-				BatchSize = 1,
-				SyncConfigurationArtifactId = syncConfigurationArtifactId,
-				ImportOverwriteMode = ImportOverwriteMode.AppendOverlay,
-				FieldOverlayBehavior = FieldOverlayBehavior.UseFieldSettings,
-				ImportNativeFileCopyMode = ImportNativeFileCopyMode.CopyFiles,
-			};
+			ConfigurationStub configuration = await CreateConfigurationStubAsync(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, fieldMappings, 1, 1).ConfigureAwait(false);
 
 			IContainer container = ContainerHelper.Create(configuration,
 				containerBuilder => containerBuilder.RegisterInstance(new ImportApiFactoryStub()).As<IImportApiFactory>()
@@ -232,7 +144,8 @@ namespace Relativity.Sync.Tests.System
 			ExecutionResult syncResult = await syncExecutor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			Assert.AreEqual(ExecutionStatus.Completed, syncResult.Status, await AggregateJobHistoryErrorMessagesAsync(sourceWorkspaceArtifactId, jobHistoryArtifactId, syncResult).ConfigureAwait(false));
+			Assert.AreEqual(ExecutionStatus.Completed, syncResult.Status, await AggregateJobHistoryErrorMessagesAsync(sourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, syncResult)
+				.ConfigureAwait(false));
 		}
 
 		private async Task<int> CreateWorkspaceAsync(string workspaceName)
@@ -242,6 +155,60 @@ namespace Relativity.Sync.Tests.System
 				.ConfigureAwait(false);
 
 			return workspace.ArtifactID;
+		}
+
+		private static List<FieldMap> CreateControlNumberFieldMapping()
+		{
+			return new List<FieldMap>
+			{
+				new FieldMap
+				{
+					SourceField = new FieldEntry
+					{
+						DisplayName = _CONTROL_NUMBER_FIELD_DISPLAY_NAME,
+						FieldIdentifier = _CONTROL_NUMBER_FIELD_ID,
+						IsIdentifier = true
+					},
+					DestinationField = new FieldEntry
+					{
+						DisplayName = _CONTROL_NUMBER_FIELD_DISPLAY_NAME,
+						FieldIdentifier = _CONTROL_NUMBER_FIELD_ID,
+						IsIdentifier = true
+					}
+				}
+			};
+		}
+
+		private async Task<ConfigurationStub> CreateConfigurationStubAsync(
+			int sourceWorkspaceArtifactId,
+			int destinationWorkspaceArtifactId,
+			List<FieldMap> fieldMappings,
+			int batchSize,
+			int totalRecordsCount)
+		{
+			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, sourceWorkspaceArtifactId, $"JobHistory.{Guid.NewGuid()}").ConfigureAwait(false);
+
+			ConfigurationStub configuration = new ConfigurationStub
+			{
+				SourceWorkspaceArtifactId = sourceWorkspaceArtifactId,
+				DestinationWorkspaceArtifactId = destinationWorkspaceArtifactId,
+				DataSourceArtifactId = await Rdos.GetSavedSearchInstance(ServiceFactory, sourceWorkspaceArtifactId).ConfigureAwait(false),
+				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure,
+
+				JobHistoryArtifactId = jobHistoryArtifactId,
+				DestinationFolderArtifactId = await Rdos.GetRootFolderInstance(ServiceFactory, destinationWorkspaceArtifactId).ConfigureAwait(false),
+				SendEmails = false,
+
+				TotalRecordsCount = totalRecordsCount,
+				BatchSize = batchSize,
+				SyncConfigurationArtifactId = await Rdos.CreateSyncConfigurationInstance(ServiceFactory, sourceWorkspaceArtifactId, jobHistoryArtifactId, fieldMappings).ConfigureAwait(false),
+				ImportOverwriteMode = ImportOverwriteMode.AppendOverlay,
+				FieldOverlayBehavior = FieldOverlayBehavior.UseFieldSettings,
+				ImportNativeFileCopyMode = ImportNativeFileCopyMode.CopyFiles,
+			};
+			configuration.SetFieldMappings(fieldMappings);
+
+			return configuration;
 		}
 
 		private static async Task<int> GetDestinationWorkspaceTagArtifactIdAsync(IContainer container, int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId, string destinationWorkspaceName)
