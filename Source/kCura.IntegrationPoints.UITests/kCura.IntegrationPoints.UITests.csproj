@@ -192,6 +192,10 @@
     </None>
     <None Include="paket.references" />
     <None Include="Readme.md" />
+    <None Include="UiTestsConfig\Reg-Prod-Previous.config">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="UiTestsConfig\Regression-A.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

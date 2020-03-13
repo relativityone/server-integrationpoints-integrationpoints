@@ -29,6 +29,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		[OneTimeSetUp]
 		public virtual async Task OneTimeSetUp()
 		{
+			Log.Information("One TimeSetUp");
 			SourceContext.ExecuteRelativityFolderPathScript();
 			FolderManager = SourceContext.Helper.CreateProxy<IFolderManager>();
 			SourceFieldManager = SourceContext.Helper.CreateProxy<IFieldManager>();
@@ -43,16 +44,19 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		[SetUp]
 		public virtual async Task SetUp()
 		{
+			Log.Information("Suite SetUp");
 			DestinationContext = new TestContext().CreateTestWorkspace();
 			DestinationFieldManager = DestinationContext.Helper.CreateProxy<IFieldManager>();
 			await SuiteSpecificSetup().ConfigureAwait(false);
 			await DestinationContext.RetrieveMappableFieldsAsync().ConfigureAwait(false);
 			PointsAction = new IntegrationPointsAction(Driver, SourceContext);
+			Log.Information("End Suite SetUp");
 		}
 
 		[TearDown]
 		public void TearDownDestinationContext()
 		{
+			Log.Information("Tear Down");
 			if (DestinationContext != null)
 			{
 				if (string.IsNullOrEmpty(SharedVariables.UiUseThisExistingWorkspace))

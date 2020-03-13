@@ -26,11 +26,8 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		[FindsBy(How = How.Id, Using = "horizontal-tabstrip")]
 		protected IWebElement MainMenu;
-
-		[FindsBy(How = How.ClassName, Using = "quickNavIcon")]
-		protected IWebElement QuickNavigation;
-
-		[FindsBy(How = How.CssSelector, Using = ".quickNavTextbox")]
+		
+		[FindsBy(How = How.Id, Using = "qnTextBox")]
 		protected IWebElement QuickNavigationInput;
 
 		[FindsBy(How = How.CssSelector, Using = "span[title = 'User Dropdown Menu']")]
@@ -71,8 +68,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		public GeneralPage ChooseWorkspace(string name)
 		{
 			Driver.SwitchTo().DefaultContent();
-			IWebElement workspaceLink = GetWorkspaceLink(name);
-			workspaceLink.ClickEx();
+			GoToPage(name);
 			AcceptLeavingPage();
 			return this;
 		}
@@ -81,19 +77,6 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		{
 			IAlert alert = ExpectedConditions.AlertIsPresent().Invoke(Driver);
 			alert?.Accept();
-		}
-
-		private IWebElement GetWorkspaceLink(string workspaceName)
-		{
-			WaitForPage();
-			IWebElement quickSearchTextBox = Driver.FindElementById("qnTextBox");
-			quickSearchTextBox.SendKeys(Keys.Control + "a");
-			Thread.Sleep(500);
-			quickSearchTextBox.SetText(workspaceName);
-			IWebElement workspaceLink = Driver.FindElement(By.LinkText(workspaceName));
-			WebDriverWait wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(30));
-			wait.Until(ExpectedConditions.ElementToBeClickable(workspaceLink));
-			return workspaceLink;
 		}
 
 		public IntegrationPointsPage GoToIntegrationPointsPage()
@@ -111,13 +94,9 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		private void GoToPage(string pageName)
 		{
 			WaitForPage();
-			QuickNavigation.ClickEx();
 			QuickNavigationInput.SendKeys(pageName);
-			Sleep(300);
-			string resultLinkXPath =
-				$"//div[@class='quickNavOuterContainer']/ul/li[@class='quickNavResultItem ui-menu-item']/a[@title='{pageName}']";
-			IWebElement resultLink = Driver.FindElementByXPath(resultLinkXPath);
-			resultLink.ClickEx();
+			IWebElement resultLinkLinkName = Driver.FindElementByLinkText(pageName);
+			resultLinkLinkName.ClickEx();
 		}
 	}
 }
