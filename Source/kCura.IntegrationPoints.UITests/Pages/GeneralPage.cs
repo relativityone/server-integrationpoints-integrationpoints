@@ -67,6 +67,10 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public GeneralPage ChooseWorkspace(string name)
 		{
+			if (Driver.Title.Contains(name))
+			{
+				return this;
+			}
 			Driver.SwitchTo().DefaultContent();
 			GoToPage(name);
 			AcceptLeavingPage();
