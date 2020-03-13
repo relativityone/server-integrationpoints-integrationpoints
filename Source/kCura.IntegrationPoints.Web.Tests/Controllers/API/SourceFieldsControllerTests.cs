@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Core.Queries;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Web.Controllers.API;
+using kCura.IntegrationPoints.Web.Models;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.IntegrationPoints.Contracts.Models;
@@ -70,7 +71,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             var response = _instance.Get(new SourceOptions() { Options  = _options, Type = _dataType, Credentials = _credentials });
 
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-            var classificationResults = ((List<FieldClassificationResult>)((System.Net.Http.ObjectContent<List<FieldClassificationResult>>)response.Content).Value);
+            var classificationResults = ((List<ClassifiedFieldDTO>)((System.Net.Http.ObjectContent<List<ClassifiedFieldDTO>>)response.Content).Value);
             var fieldEntries = new List<FieldEntry>() { _fieldA, _fieldB, _fieldC, _fieldD };
 
 

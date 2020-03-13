@@ -172,6 +172,7 @@
     <Compile Include="IntegrationPointsServices\Logging\WebActionContext.cs" />
     <Compile Include="IntegrationPointsServices\Logging\WebActionContextProvider.cs" />
     <Compile Include="Infrastructure\MessageHandlers\CorrelationIdHandler.cs" />
+    <Compile Include="Models\ClassifiedFieldDTO.cs" />
     <Compile Include="Models\EditPoint.cs" />
     <Compile Include="Models\FtpProviderSummaryPageSettingsModel.cs" />
     <Compile Include="Models\IntegrationPointTypeModel.cs" />

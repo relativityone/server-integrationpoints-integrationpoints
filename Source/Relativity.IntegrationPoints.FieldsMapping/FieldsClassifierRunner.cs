@@ -26,8 +26,8 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 
 			IList<FieldClassificationResult> filteredFields = classifiedFields
 				.Where(x => x.ClassificationLevel < ClassificationLevel.HideFromUser)
-				.OrderByDescending(x => x.IsIdentifier)
-				.ThenBy(x => x.Name)
+				.OrderByDescending(x => x.FieldInfo.IsIdentifier)
+				.ThenBy(x => x.FieldInfo.Name)
 				.ToList();
 
 			return filteredFields;
@@ -56,7 +56,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 					{
 						foreach (FieldClassificationResult classifierResult in classifierResults)
 						{
-							var field = accumulator[classifierResult.Name];
+							var field = accumulator[classifierResult.FieldInfo.Name];
 
 							if (field.ClassificationLevel < classifierResult.ClassificationLevel)
 							{

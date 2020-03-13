@@ -88,7 +88,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
                 .Post(_synchronizerSettings);
 
             // Assert
-            List<FieldClassificationResult> retValue;
+            List<ClassifiedFieldDTO> retValue;
             httpResponseMessage.TryGetContentValue(out retValue);
 
             Assert.That(httpResponseMessage.StatusCode, Is.EqualTo(HttpStatusCode.OK));

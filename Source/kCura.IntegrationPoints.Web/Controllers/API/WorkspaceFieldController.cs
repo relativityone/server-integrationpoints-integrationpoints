@@ -43,9 +43,14 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			IDataSynchronizer synchronizer = _appDomainRdoSynchronizerFactory.CreateSynchronizer(Guid.Empty, settings.Settings);
 			List<FieldEntry> fields = synchronizer.GetFields(new DataSourceProviderConfiguration(_serializer.Serialize(importSettings), settings.Credentials)).ToList();
 
-			List<FieldClassificationResult> result = fields.Select(x => new FieldClassificationResult(FieldConvert.ToDocumentFieldInfo(x))
+			List<ClassifiedFieldDTO> result = fields.Select(x => new ClassifiedFieldDTO
 			{
 				ClassificationLevel = ClassificationLevel.AutoMap,
+				FieldIdentifier = x.FieldIdentifier,
+				Name = x.ActualName,
+				Type = x.Type,
+				IsIdentifier = x.IsIdentifier,
+				IsRequired = x.IsRequired
 			}).ToList();
 
 			return Request.CreateResponse(HttpStatusCode.OK, result, Configuration.Formatters.JsonFormatter);

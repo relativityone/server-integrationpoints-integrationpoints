@@ -17,34 +17,32 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 
 		public async Task<IEnumerable<FieldMap>> ValidateAsync(IEnumerable<FieldMap> map, int sourceWorkspaceID, int destinationWorkspaceID)
 		{
-			var invalidMappedFields = new List<FieldMap>();
-
-			if (map == null)
+			if (map == null || !map.Any())
 			{
-				return invalidMappedFields;
+				return Enumerable.Empty<FieldMap>();
 			}
 
-			map = map.Where(x => x.FieldMapType == FieldMapTypeEnum.None);
-
-			IList<string> sourceMappedArtifactsIDs = map.Select(x => x.SourceField.FieldIdentifier).ToList();
+			IList<string> sourceMappedArtifactsIDs = map.Select(x => x.SourceField?.FieldIdentifier).ToList();
 			IFieldsClassifierRunner sourceClassifierRunner = _fieldsClassifyRunnerFactory.CreateForSourceWorkspace();
 			var sourceFields = (await sourceClassifierRunner.ClassifyFieldsAsync(sourceMappedArtifactsIDs, sourceWorkspaceID).ConfigureAwait(false))
-				.ToDictionary(f => f.FieldIdentifier, f => f);
+				.ToDictionary(f => f.FieldInfo.FieldIdentifier, f => f);
 
-			IList<string> destinationMappedArtifactsIDs = map.Select(x => x.DestinationField.FieldIdentifier).ToList();
+			IList<string> destinationMappedArtifactsIDs = map.Select(x => x.DestinationField?.FieldIdentifier).ToList();
 			IFieldsClassifierRunner destinationClassifierRunner = _fieldsClassifyRunnerFactory.CreateForDestinationWorkspace();
 			var destinationFields = (await destinationClassifierRunner.ClassifyFieldsAsync(destinationMappedArtifactsIDs, destinationWorkspaceID).ConfigureAwait(false))
-				.ToDictionary(f => f.FieldIdentifier, f => f);
+				.ToDictionary(f => f.FieldInfo.FieldIdentifier, f => f);
+
+			var invalidMappedFields = new List<FieldMap>();
 
 			foreach (var fieldMap in map)
 			{
-				string sourceFieldFieldIdentifier = fieldMap.SourceField.FieldIdentifier;
-				string destinationFieldFieldIdentifier = fieldMap.DestinationField.FieldIdentifier;
+				string sourceFieldFieldIdentifier = fieldMap.SourceField.FieldIdentifier ?? string.Empty;
+				string destinationFieldFieldIdentifier = fieldMap.DestinationField.FieldIdentifier ?? string.Empty;
 
 				var sourceField = sourceFields.ContainsKey(sourceFieldFieldIdentifier) ? sourceFields[sourceFieldFieldIdentifier] : null;
 				var destinationField = destinationFields.ContainsKey(destinationFieldFieldIdentifier) ? destinationFields[destinationFieldFieldIdentifier] : null;
 
-				if (!IsFieldMapValid(sourceField, destinationField))
+				if (!IsFieldMapValid(sourceField, destinationField, fieldMap.FieldMapType))
 				{
 					invalidMappedFields.Add(fieldMap);
 				}
@@ -53,10 +51,28 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 			return invalidMappedFields;
 		}
 
-		private bool IsFieldMapValid(FieldClassificationResult sourceField, FieldClassificationResult destinationField)
+		private bool IsFieldMapValid(FieldClassificationResult sourceField, FieldClassificationResult destinationField, FieldMapTypeEnum mapType)
 		{
-			return ((sourceField != null && destinationField != null) && sourceField.ClassificationLevel == ClassificationLevel.AutoMap && destinationField.ClassificationLevel == ClassificationLevel.AutoMap)
-				&& sourceField.GetFieldInfo().IsTypeCompatible(destinationField.GetFieldInfo());
+			switch(mapType)
+			{
+				case FieldMapTypeEnum.Identifier:
+					return sourceField.FieldInfo.IsIdentifier && destinationField.FieldInfo.IsIdentifier;
+				case FieldMapTypeEnum.FolderPathInformation:
+					return destinationField == null
+						|| CanBeMapped(sourceField, destinationField);
+				case FieldMapTypeEnum.None:
+					return sourceField != null && destinationField != null
+						&& CanBeMapped(sourceField, destinationField);
+				default:
+					return true;
+			}
+		}
+
+		private bool CanBeMapped(FieldClassificationResult sourceField, FieldClassificationResult destinationField)
+		{
+			return sourceField.ClassificationLevel == ClassificationLevel.AutoMap
+				&& destinationField.ClassificationLevel == ClassificationLevel.AutoMap
+				&& sourceField.FieldInfo.IsTypeCompatible(destinationField.FieldInfo);
 		}
 	}
 }

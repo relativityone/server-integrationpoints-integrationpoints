@@ -45,7 +45,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests.FieldsClassifiers
 			// Assert
 			classifiedFields.Count.Should().Be(1);
 			FieldClassificationResult classifiedField = classifiedFields.First();
-			classifiedField.Name.Should().Be(openToAssociationsEnabledFieldName);
+			classifiedField.FieldInfo.Name.Should().Be(openToAssociationsEnabledFieldName);
 			classifiedField.ClassificationLevel.Should().Be(ClassificationLevel.ShowToUser);
 		}
 	}
