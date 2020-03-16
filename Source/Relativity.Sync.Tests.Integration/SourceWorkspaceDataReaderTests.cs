@@ -11,6 +11,8 @@ using FluentAssertions;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using Relativity.Services.Interfaces.UserInfo;
+using Relativity.Services.Interfaces.UserInfo.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
@@ -31,6 +33,10 @@ namespace Relativity.Sync.Tests.Integration
 
 		private const char _RECORD_SEPARATOR = (char)30;
 		private const string _DEFAULT_IDENTIFIER_COLUMN_NAME = "Control Number";
+		private const int _SINGLE_OBJECT_ARTIFACT_ID = 1;
+		private const int _USER_ARTIFACT_ID = 9;
+		private const string _USER_FULL_NAME = "Admin, Relativity";
+		private const string _USER_EMAIL = "relativity.admin@kcura.com";
 
 		public void SetUp(int batchSize)
 		{
@@ -47,6 +53,20 @@ namespace Relativity.Sync.Tests.Integration
 				_documentTransferServicesMocker.RegisterServiceMocks(cb);
 				cb.RegisterInstance(_configuration).AsImplementedInterfaces();
 			});
+
+			Mock<IUserInfoManager> userInfoManagerMock = new Mock<IUserInfoManager>();
+			userInfoManagerMock.Setup(m => m.RetrieveUsersBy(
+				It.Is<int>(workspaceId => workspaceId == -1),
+				It.Is<QueryRequest>(query => query.Condition == $@"('ArtifactID' == {_USER_ARTIFACT_ID})"),
+				It.Is<int>(start => start == 0),
+				It.Is<int>(length => length == 1)
+			)).ReturnsAsync(new UserInfoQueryResultSet()
+			{
+				ResultCount = 1,
+				DataResults = new[] { new UserInfo { ArtifactID = _USER_ARTIFACT_ID, Email = _USER_EMAIL } }
+			});
+			_documentTransferServicesMocker.SourceServiceFactoryForAdmin.Setup(x => x.CreateProxyAsync<IUserInfoManager>())
+				.ReturnsAsync(userInfoManagerMock.Object);
 
 			IFieldManager fieldManager = _container.Resolve<IFieldManager>();
 			_documentTransferServicesMocker.SetFieldManager(fieldManager);
@@ -117,8 +137,8 @@ namespace Relativity.Sync.Tests.Integration
 			yield return new TestCaseData(RelativityDataType.SingleObject, GenerateSingleObject("Cool Object"))
 				.Returns("Cool Object");
 
-			yield return new TestCaseData(RelativityDataType.User, "John Daw")
-				.Returns("John Daw");
+			yield return new TestCaseData(RelativityDataType.User, GenerateUser(_USER_FULL_NAME))
+				.Returns(_USER_EMAIL);
 
 			yield return new TestCaseData(RelativityDataType.WholeNumber, 15)
 				.Returns("15");
@@ -357,9 +377,14 @@ namespace Relativity.Sync.Tests.Integration
 			return RunThroughSerializer(new { Name = name });
 		}
 
+		private static object GenerateUser(string fullName)
+		{
+			return RunThroughSerializer(new { ArtifactID = _USER_ARTIFACT_ID, Name = fullName });
+		}
+
 		private static object GenerateSingleObject(string name)
 		{
-			return RunThroughSerializer(new { ArtifactID = 1, Name = name });
+			return RunThroughSerializer(new { ArtifactID = _SINGLE_OBJECT_ARTIFACT_ID, Name = name });
 		}
 
 		private static object GenerateMultipleObject(params string[] names)
