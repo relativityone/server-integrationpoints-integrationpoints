@@ -27,7 +27,7 @@ nuget Polly ~> 5.7
 nuget Banzai ~> 3.0
 nuget Banzai.AUtofac ~> 3.0
 nuget Newtonsoft.Json ~> 6.0 redirects: force
-nuget Castle.Core
+nuget Castle.Core 3.3.0
 nuget System.Reactive.Linq 4.0.0
 nuget System.Reactive 4.0.0
 
