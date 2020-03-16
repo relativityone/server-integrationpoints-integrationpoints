@@ -149,13 +149,18 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					$"'{IntegrationPointFields.SourceProvider}' == {sourceProviderArtifactID} " +
 					$"AND " +
 					$"'{IntegrationPointFields.DestinationProvider}' == {destinationProviderArtifactID}",
-				Fields = new IntegrationPoint().ToFieldList().Where(field => field.Guid != IntegrationPointFieldGuids.FieldMappingsGuid)
+				Fields = new IntegrationPoint().ToFieldList().Where(field => 
+					(field.Guid != IntegrationPointFieldGuids.FieldMappingsGuid)
+					&& (field.Guid != IntegrationPointFieldGuids.SourceConfigurationGuid)
+					&& (field.Guid != IntegrationPointFieldGuids.DestinationConfigurationGuid))
 			};
 			IList<IntegrationPoint> integrationPoints = Query(_workspaceID, query);
 
 			foreach (IntegrationPoint integrationPoint in integrationPoints)
 			{
 				integrationPoint.FieldMappings = await GetFieldMappingsAsync(integrationPoint.ArtifactId).ConfigureAwait(false);
+				integrationPoint.SourceConfiguration = await GetSourceConfigurationAsync(integrationPoint.ArtifactId).ConfigureAwait(false);
+				integrationPoint.DestinationConfiguration = await GetDestinationConfigurationAsync(integrationPoint.ArtifactId).ConfigureAwait(false);
 			}
 
 			return integrationPoints;
@@ -257,6 +262,16 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private Task<string> GetFieldMappingsAsync(int integrationPointArtifactID)
 		{
 			return GetUnicodeLongTextAsync(integrationPointArtifactID, new FieldRef {Guid = IntegrationPointFieldGuids.FieldMappingsGuid});
+		}
+
+		private Task<string> GetSourceConfigurationAsync(int integrationPointArtifactID)
+		{
+			return GetUnicodeLongTextAsync(integrationPointArtifactID, new FieldRef { Guid = IntegrationPointFieldGuids.SourceConfigurationGuid });
+		}
+
+		private Task<string> GetDestinationConfigurationAsync(int integrationPointArtifactID)
+		{
+			return GetUnicodeLongTextAsync(integrationPointArtifactID, new FieldRef { Guid = IntegrationPointFieldGuids.DestinationConfigurationGuid });
 		}
 
 		private async Task<string> GetUnicodeLongTextAsync(int integrationPointArtifactID, FieldRef field)
