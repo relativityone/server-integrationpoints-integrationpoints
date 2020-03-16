@@ -2,7 +2,24 @@
 {
 	public class JiraTicketInfo
 	{
-		public string Jira { get; set; }
-		public string SearchMatch { get; set; }
+		public Fields Fields { get; set; }
+	}
+
+	public class Fields
+	{
+		public string Summary { get; set; }
+		public string[] Labels { get; set; }
+		public IssueType IssueType { get; set; }
+		public Status Status { get; set; }
+	}
+
+	public class IssueType
+	{
+		public string Name { get; set; }
+	}
+
+	public class Status
+	{
+		public string Name { get; set; }
 	}
 }

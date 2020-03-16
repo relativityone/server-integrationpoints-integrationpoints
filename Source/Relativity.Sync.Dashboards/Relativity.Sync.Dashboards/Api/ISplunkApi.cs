@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Refit;
 
 namespace Relativity.Sync.Dashboards.Api
@@ -11,6 +10,6 @@ namespace Relativity.Sync.Dashboards.Api
 		Task ClearCollectionAsync(string collectionName);
 
 		[Post("/servicesNS/nobody/search/storage/collections/data/{collectionName}?output_mode=json")]
-		Task UpdateLookupTableAsync(string collectionName, [Body] string data);
+		Task UpdateLookupTableAsync(string collectionName, [Body] SplunkKVCollectionItem item);
 	}
 }

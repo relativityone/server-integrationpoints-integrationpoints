@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -50,6 +49,7 @@ namespace Relativity.Sync.Dashboards
 	            using TextReader reader = new StreamReader(stream);
 	            string body = await reader.ReadToEndAsync().ConfigureAwait(false);
 	            var syncIssues = JsonConvert.DeserializeObject<List<SyncIssueDTO>>(body);
+				log.LogInformation("Found {count} items in the request.", syncIssues.Count);
 	            return syncIssues;
             }
             catch (Exception ex)
@@ -64,12 +64,12 @@ namespace Relativity.Sync.Dashboards
             log.LogInformation("Creating JIRA Api for URL: {jiraUrl}", settings.JiraURL);
 	        try
 	        {
-		        HttpClient jiraHttpClient = RestService.CreateHttpClient(settings.JiraURL, new RefitSettings()
-		        {
+				HttpClient jiraHttpClient = RestService.CreateHttpClient(settings.JiraURL, new RefitSettings());
+				string authToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(settings.JiraUserName + ":" + settings.JiraUserPassword));
+		        string authHeader = $"Basic {authToken}";
+				jiraHttpClient.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(authHeader);
 
-		        });
-
-		        IJiraApi jiraApi = RestService.For<IJiraApi>(jiraHttpClient);
+				IJiraApi jiraApi = RestService.For<IJiraApi>(jiraHttpClient);
 		        return jiraApi;
 	        }
 	        catch (Exception ex)
