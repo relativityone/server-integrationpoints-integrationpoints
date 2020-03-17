@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -21,42 +23,61 @@ namespace Relativity.Sync.Dashboards
     {
 	    const string AppSettingsFileName = "appsettings.json";
 
-        [FunctionName("Function")]
-        public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
-            ILogger log)
-        {
-	        try
-	        {
-		        log.LogInformation("Loading configuration from {fileName}", AppSettingsFileName);
-		        string appSettingsJson = await File.ReadAllTextAsync(AppSettingsFileName).ConfigureAwait(false);
-		        AppSettings appSettings = JsonConvert.DeserializeObject<AppSettings>(appSettingsJson);
+	    [FunctionName("Function")]
+	    public static async Task<IActionResult> Run(
+		    [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)]
+		    HttpRequest req,
+		    ILogger log)
+	    {
+		    try
+		    {
+			    log.LogInformation("Loading configuration from {fileName}", AppSettingsFileName);
+			    string appSettingsJson = await File.ReadAllTextAsync(AppSettingsFileName).ConfigureAwait(false);
+			    AppSettings appSettings = JsonConvert.DeserializeObject<AppSettings>(appSettingsJson);
 
-		        List<SyncIssueDTO> syncIssues = await ReadSyncIssuesDTOAsync(log, req.Body).ConfigureAwait(false);
+			    List<SyncIssueDTO> syncIssues = await ReadSyncIssuesDTOAsync(log, req.Body).ConfigureAwait(false);
 
-		        IJiraApi jiraApi = CreateJiraApi(log, appSettings);
-		        ISplunkApi splunkApi = CreateSplunkApi(log, appSettings);
+			    if (!syncIssues.Any())
+			    {
+				    return new NoContentResult();
+			    }
 
-		        SplunkKVStoreUpdater splunkKvStoreUpdater = new SplunkKVStoreUpdater(appSettings, jiraApi, splunkApi, syncIssues, log);
-		        await splunkKvStoreUpdater.UpdateSplunkKVStoreAsync().ConfigureAwait(false);
-	        }
-	        catch (Exception ex)
-	        {
-				log.LogError(ex, "Exception thrown while executing function.");
-		        throw;
-	        }
+			    IJiraApi jiraApi = CreateJiraApi(log, appSettings);
+			    ISplunkApi splunkApi = CreateSplunkApi(log, appSettings);
 
-            return new OkResult();
-        }
+			    SplunkKVStoreUpdater splunkKvStoreUpdater =
+				    new SplunkKVStoreUpdater(appSettings, jiraApi, splunkApi, syncIssues, log);
+			    await splunkKvStoreUpdater.UpdateSplunkKVStoreAsync().ConfigureAwait(false);
+			    return new OkResult();
+		    }
+		    catch (JsonSerializationException ex)
+		    {
+			    return new BadRequestObjectResult(
+				    new ObjectResult(new
+				    {
+					    Exception = ex
+				    }));
+		    }
+		    catch (Exception ex)
+		    {
+			    var objectResult = new ObjectResult(new
+			    {
+				    Exception = ex
+			    });
+			    objectResult.StatusCode = 500;
+			    return objectResult;
+		    }
+	    }
 
-        private static async Task<List<SyncIssueDTO>> ReadSyncIssuesDTOAsync(ILogger log, Stream stream)
+	    private static async Task<List<SyncIssueDTO>> ReadSyncIssuesDTOAsync(ILogger log, Stream stream)
         {
             log.LogInformation("Reading request stream");
             try
             {
 	            using TextReader reader = new StreamReader(stream);
 	            string body = await reader.ReadToEndAsync().ConfigureAwait(false);
-	            var syncIssues = JsonConvert.DeserializeObject<List<SyncIssueDTO>>(body);
+
+	            var syncIssues = JsonConvert.DeserializeObject<List<SyncIssueDTO>>(body) ?? new List<SyncIssueDTO>();
 				log.LogInformation("Found {count} items in the request.", syncIssues.Count);
 	            return syncIssues;
             }
