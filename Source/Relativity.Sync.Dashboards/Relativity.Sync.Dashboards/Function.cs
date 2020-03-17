@@ -26,17 +26,25 @@ namespace Relativity.Sync.Dashboards
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
             ILogger log)
         {
-            log.LogInformation("Loading configuration from {fileName}", AppSettingsFileName);
-	        string appSettingsJson = await File.ReadAllTextAsync(AppSettingsFileName).ConfigureAwait(false);
-	        AppSettings appSettings = JsonConvert.DeserializeObject<AppSettings>(appSettingsJson);
+	        try
+	        {
+		        log.LogInformation("Loading configuration from {fileName}", AppSettingsFileName);
+		        string appSettingsJson = await File.ReadAllTextAsync(AppSettingsFileName).ConfigureAwait(false);
+		        AppSettings appSettings = JsonConvert.DeserializeObject<AppSettings>(appSettingsJson);
 
-            List<SyncIssueDTO> syncIssues = await ReadSyncIssuesDTOAsync(log, req.Body).ConfigureAwait(false);
+		        List<SyncIssueDTO> syncIssues = await ReadSyncIssuesDTOAsync(log, req.Body).ConfigureAwait(false);
 
-	        IJiraApi jiraApi = CreateJiraApi(log, appSettings);
-	        ISplunkApi splunkApi = CreateSplunkApi(log, appSettings);
+		        IJiraApi jiraApi = CreateJiraApi(log, appSettings);
+		        ISplunkApi splunkApi = CreateSplunkApi(log, appSettings);
 
-            SplunkKVStoreUpdater splunkKvStoreUpdater = new SplunkKVStoreUpdater(appSettings, jiraApi, splunkApi, syncIssues, log);
-            await splunkKvStoreUpdater.UpdateSplunkKVStoreAsync().ConfigureAwait(false);
+		        SplunkKVStoreUpdater splunkKvStoreUpdater = new SplunkKVStoreUpdater(appSettings, jiraApi, splunkApi, syncIssues, log);
+		        await splunkKvStoreUpdater.UpdateSplunkKVStoreAsync().ConfigureAwait(false);
+	        }
+	        catch (Exception ex)
+	        {
+				log.LogError(ex, "Exception thrown while executing function.");
+		        throw;
+	        }
 
             return new OkResult();
         }
