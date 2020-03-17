@@ -34,6 +34,10 @@ namespace kCura.IntegrationPoints.Core.Installers.Registrations
 					.ImplementedBy<MultipleChoiceFieldSanitizer>()
 					.LifestyleTransient(),
 				Component
+					.For<IExportFieldSanitizer>()
+					.ImplementedBy<UserFieldSanitizer>()
+					.LifestyleTransient(),
+				Component
 					.For<IExportDataSanitizer>()
 					.ImplementedBy<ExportDataSanitizer>()
 					.LifestyleTransient());
