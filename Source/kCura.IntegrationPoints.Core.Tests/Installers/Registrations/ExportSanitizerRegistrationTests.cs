@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Core.Installers.Registrations;
 using kCura.IntegrationPoints.Core.Services.Exporter.Sanitization;
 using kCura.IntegrationPoints.Data.Repositories;
 using NUnit.Framework;
+using Relativity.API;
 using static kCura.IntegrationPoint.Tests.Core.TestHelpers.WindsorContainerTestHelpers;
 
 namespace kCura.IntegrationPoints.Core.Tests.Installers.Registrations
@@ -55,7 +56,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Installers.Registrations
 				.And.OneOfThemWithImplementation<SingleObjectFieldSanitizer>()
 				.And.OneOfThemWithImplementation<MultipleObjectFieldSanitizer>()
 				.And.OneOfThemWithImplementation<SingleChoiceFieldSanitizer>()
-				.And.OneOfThemWithImplementation<MultipleChoiceFieldSanitizer>();
+				.And.OneOfThemWithImplementation<MultipleChoiceFieldSanitizer>()
+				.And.OneOfThemWithImplementation<UserFieldSanitizer>();
 			_sut.Should()
 				.HaveRegisteredProperImplementation<IExportDataSanitizer, ExportDataSanitizer>();
 		}
@@ -83,6 +85,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Installers.Registrations
 			{
 				CreateDummyObjectRegistration<IChoiceRepository>(),
 				CreateDummyObjectRegistration<ISerializer>(),
+				CreateDummyObjectRegistration<IHelper>()
 			};
 
 			container.Register(dependencies);
