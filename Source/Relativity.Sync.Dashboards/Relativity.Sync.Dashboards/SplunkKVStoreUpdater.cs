@@ -60,7 +60,7 @@ namespace Relativity.Sync.Dashboards
 			{
 				_logger.LogInformation("Clearing Splunk KV collection: '{collectionName}'",
 					_settings.SplunkKVCollectionName);
-				return _splunkApi.ClearCollectionAsync(_settings.SplunkKVCollectionName);
+				return _splunkApi.ClearKVStoreCollectionAsync(_settings.SplunkKVCollectionName);
 			}
 			catch (ApiException ex)
 			{
@@ -103,7 +103,7 @@ namespace Relativity.Sync.Dashboards
 			try
 			{
 				_logger.LogInformation("Creating new item in Splunk KV Store Collection for Jira: {jira}", item.Jira);
-				await _splunkApi.UpdateLookupTableAsync(_settings.SplunkKVCollectionName, item)
+				await _splunkApi.AddToKVStoreCollectionAsync(_settings.SplunkKVCollectionName, item)
 					.ConfigureAwait(false);
 			}
 			catch (ApiException ex)

@@ -7,9 +7,9 @@ namespace Relativity.Sync.Dashboards.Api
 	public interface ISplunkApi
 	{
 		[Delete("/servicesNS/nobody/search/storage/collections/data/{collectionName}?output_mode=json")]
-		Task ClearCollectionAsync(string collectionName);
+		Task ClearKVStoreCollectionAsync(string collectionName);
 
 		[Post("/servicesNS/nobody/search/storage/collections/data/{collectionName}?output_mode=json")]
-		Task UpdateLookupTableAsync(string collectionName, [Body] SplunkKVCollectionItem item);
+		Task AddToKVStoreCollectionAsync(string collectionName, [Body] SplunkKVCollectionItem item);
 	}
 }
