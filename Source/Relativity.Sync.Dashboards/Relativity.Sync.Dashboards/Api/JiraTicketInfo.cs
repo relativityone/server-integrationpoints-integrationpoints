@@ -2,15 +2,15 @@
 {
 	public class JiraTicketInfo
 	{
-		public Fields Fields { get; set; }
+		public Fields Fields { get; set; } = new Fields();
 	}
 
 	public class Fields
 	{
 		public string Summary { get; set; }
 		public string[] Labels { get; set; }
-		public IssueType IssueType { get; set; }
-		public Status Status { get; set; }
+		public IssueType IssueType { get; set; } = new IssueType();
+		public Status Status { get; set; } = new Status();
 		public FixVersion[] FixVersions { get; set; }
 	}
 

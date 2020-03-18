@@ -6,11 +6,11 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Refit;
@@ -31,10 +31,7 @@ namespace Relativity.Sync.Dashboards
 	    {
 		    try
 		    {
-			    log.LogInformation("Loading configuration from {fileName}", AppSettingsFileName);
-			    string appSettingsJson = await File.ReadAllTextAsync(AppSettingsFileName).ConfigureAwait(false);
-			    AppSettings appSettings = JsonConvert.DeserializeObject<AppSettings>(appSettingsJson);
-
+			    AppSettings appSettings = GetAppSettings(log);
 			    List<SyncIssueDTO> syncIssues = await ReadSyncIssuesDTOAsync(log, req.Body).ConfigureAwait(false);
 
 			    if (!syncIssues.Any())
@@ -69,7 +66,18 @@ namespace Relativity.Sync.Dashboards
 		    }
 	    }
 
-	    private static async Task<List<SyncIssueDTO>> ReadSyncIssuesDTOAsync(ILogger log, Stream stream)
+	    private static AppSettings GetAppSettings(ILogger log)
+	    {
+		    string settingsFilePath = Path.Combine(Environment.CurrentDirectory, AppSettingsFileName);
+			log.LogInformation("Loading configuration from file {path}", settingsFilePath);
+
+		    AppSettings settings = new AppSettings();
+		    new ConfigurationBuilder().AddJsonFile(settingsFilePath).Build().Bind(settings);
+
+		    return settings;
+	    }
+
+		private static async Task<List<SyncIssueDTO>> ReadSyncIssuesDTOAsync(ILogger log, Stream stream)
         {
             log.LogInformation("Reading request stream");
             try

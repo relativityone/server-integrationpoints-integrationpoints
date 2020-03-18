@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Refit;
@@ -29,29 +28,21 @@ namespace Relativity.Sync.Dashboards
 		public async Task UpdateSplunkKVStoreAsync()
 		{
 			await ClearKVCollectionAsync().ConfigureAwait(false);
-
-			List<SyncIssueDTO> syncIssues = _syncIssues.ToList();
-			List<SplunkKVCollectionItem> splunkKvCollectionItems = new List<SplunkKVCollectionItem>(syncIssues.Count);
-
-			foreach (SyncIssueDTO syncIssue in syncIssues)
+			
+			foreach (SyncIssueDTO syncIssue in _syncIssues)
 			{
 				JiraTicketInfo jiraTicket = await GetJiraTicketAsync(syncIssue.Jira).ConfigureAwait(false);
-
-				splunkKvCollectionItems.Add(new SplunkKVCollectionItem()
+				var kvCollectionItem = new SplunkKVCollectionItem()
 				{
 					Jira = syncIssue.Jira,
 					SearchMatch = syncIssue.SearchMatch,
-					IssueType = jiraTicket.Fields.IssueType?.Name,
-					Status = jiraTicket.Fields.Status?.Name,
+					IssueType = jiraTicket.Fields.IssueType.Name,
+					Status = jiraTicket.Fields.Status.Name,
 					Summary = jiraTicket.Fields.Summary,
 					Labels = jiraTicket.Fields.Labels,
 					FixVersions = jiraTicket.Fields.FixVersions
-				});
-			}
-
-			foreach (SplunkKVCollectionItem item in splunkKvCollectionItems)
-			{
-				await AddSplunkKVItemAsync(item).ConfigureAwait(false);
+				};
+				await AddSplunkKVItemAsync(kvCollectionItem).ConfigureAwait(false);
 			}
 		}
 
