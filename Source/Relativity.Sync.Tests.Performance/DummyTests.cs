@@ -11,11 +11,5 @@ namespace Relativity.Sync.Tests.Performance
 		{
 			ARMHelper.RestoreWorkspace(@"C:\_Work\_Temp\ARM_Test_Data\1014823_New_Case_Template_20200316110000.zip");
 		}
-
-		[Test]
-		public void Test2()
-		{
-
-		}
 	}
 }

@@ -92,6 +92,11 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 
 		public void CreateDirectory(string directory)
 		{
+			if (!Path.IsPathRooted(directory))
+			{
+				directory = Path.Combine(Path.GetPathRoot(Environment.SystemDirectory), directory);
+			}
+
 			using (var directoryManager = _component.ServiceFactory.GetAdminServiceProxy<IDirectoryManager>())
 			{
 				bool exists = directoryManager.DirectoryExists(directory).Result;

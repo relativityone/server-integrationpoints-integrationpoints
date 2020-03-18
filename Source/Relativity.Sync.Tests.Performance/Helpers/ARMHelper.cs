@@ -156,7 +156,7 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 			agentsOrchestrator.GetBasicAgent(agent, ensureNew);
 		}
 
-		private int CreateRestoreJob(string archivedWorkspacePath)
+		private static int CreateRestoreJob(string archivedWorkspacePath)
 		{
 			var request = new
 			{
