@@ -1,1 +1,1 @@
-powershell, script: '..\Scripts\updateSplunkDashboard.ps1'
+PowerShell(". '../Scripts/updateSplunkDashboard.ps1'")
