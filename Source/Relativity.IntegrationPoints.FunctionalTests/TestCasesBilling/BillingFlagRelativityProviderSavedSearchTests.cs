@@ -1,4 +1,8 @@
-﻿using FluentAssertions;
+﻿using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Threading.Tasks;
+using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoint.Tests.Core.Templates;
@@ -7,21 +11,16 @@ using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.Relativity.Client;
 using NUnit.Framework;
 using Relativity.Testing.Identification;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
 using static kCura.IntegrationPoints.Core.Constants.IntegrationPoints;
 
-namespace kCura.IntegrationPoints.Core.Tests.Integration.TestCasesBilling
+namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints]
 	[NotWorkingOnTrident]
-	public class BillingFlagRelativityProviderTests : RelativityProviderTemplate
+	public class BillingFlagRelativityProviderSavedSearchTests : RelativityProviderTemplate
 	{
 		private IIntegrationPointService _integrationPointService;
 		private int _targetWorkspaceArtifactID;
@@ -29,7 +28,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.TestCasesBilling
 		private const int _ADMIN_USER_ID = 9;
 		private const string _TARGET_WORKSPACE_NAME = "IntegrationPoints Billing - Destination";
 
-		public BillingFlagRelativityProviderTests()
+		public BillingFlagRelativityProviderSavedSearchTests()
 			: base(sourceWorkspaceName: "IntegrationPoints Billing - Source",
 				   targetWorkspaceName: null)
 		{
@@ -39,7 +38,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.TestCasesBilling
 		{
 			base.SuiteSetup();
 
-			IntegrationPoint.Tests.Core.Agent.EnableAllIntegrationPointsAgentsAsync().GetAwaiter().GetResult();
+			kCura.IntegrationPoint.Tests.Core.Agent.EnableAllIntegrationPointsAgentsAsync().GetAwaiter().GetResult();
 
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
 
@@ -309,7 +308,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.TestCasesBilling
 					EnableScheduler = false
 				},
 				Map = CreateDefaultFieldMap(),
-				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
+				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
 			};
 		}
 
@@ -317,7 +316,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.TestCasesBilling
 		{
 			ImportSettings destinationConfiguration = new ImportSettings()
 			{
-				ArtifactTypeId = (int)ArtifactType.Document,
+				ArtifactTypeId = (int)kCura.Relativity.Client.ArtifactType.Document,
 				DestinationProviderType = DestinationProviders.RELATIVITY,
 				CaseArtifactId = _targetWorkspaceArtifactID,
 				DestinationFolderArtifactId = GetRootFolder(Helper, _targetWorkspaceArtifactID),
@@ -336,7 +335,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.TestCasesBilling
 		{
 			ImportSettings destinationConfiguration = new ImportSettings()
 			{
-				ArtifactTypeId = (int)ArtifactType.Document,
+				ArtifactTypeId = (int)kCura.Relativity.Client.ArtifactType.Document,
 				DestinationProviderType = DestinationProviders.RELATIVITY,
 				CaseArtifactId = _targetWorkspaceArtifactID,
 				DestinationFolderArtifactId = GetRootFolder(Helper, _targetWorkspaceArtifactID),
