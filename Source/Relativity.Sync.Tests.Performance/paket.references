@@ -5,6 +5,8 @@ Relativity.Testing.Framework
 Relativity.Testing.Framework.Api
 ARMTestServices
 
+Microsoft.Azure.Storage.Blob
+
 Polly
 Autofac
 coverlet.msbuild

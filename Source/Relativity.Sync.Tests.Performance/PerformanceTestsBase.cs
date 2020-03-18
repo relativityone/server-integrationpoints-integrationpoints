@@ -1,4 +1,5 @@
-﻿using Relativity.Sync.Tests.Performance.Helpers;
+﻿using Relativity.Sync.Tests.Performance.ARM;
+using Relativity.Sync.Tests.Performance.Helpers;
 using Relativity.Testing.Framework;
 using Relativity.Testing.Framework.Api;
 
@@ -8,13 +9,18 @@ namespace Relativity.Sync.Tests.Performance
 	{
 		public ApiComponent Component { get; }
 		public ARMHelper ARMHelper { get; }
+		public AzureStorageHelper StorageHelper { get; }
 
 		public PerformanceTestsBase()
 		{
 			RelativityFacade.Instance.RelyOn<ApiComponent>();
 
 			Component = RelativityFacade.Instance.GetComponent<ApiComponent>();
-			
+
+			StorageHelper = new AzureStorageHelper(
+				TestSettingsConfig.AzureStorageConnection,
+				TestSettingsConfig.AzureStoragePerformanceContainer);
+
 			ARMHelper = ARMHelper.CreateInstance();
 
 			ARMHelper.EnableAgents();

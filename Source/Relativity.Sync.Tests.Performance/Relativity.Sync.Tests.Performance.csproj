@@ -13,10 +13,5 @@
 	<ItemGroup>
 		<None Remove="coverage.cobertura.xml" />
 	</ItemGroup>
-	<ItemGroup>
-	  <Reference Include="System.Net.Http">
-	    <HintPath>..\..\..\..\Program Files (x86)\Microsoft Visual Studio\2019\Professional\MSBuild\Microsoft\Microsoft.NET.Build.Extensions\net461\lib\System.Net.Http.dll</HintPath>
-	  </Reference>
-	</ItemGroup>
 	<Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

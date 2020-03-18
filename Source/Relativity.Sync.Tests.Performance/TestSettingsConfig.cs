@@ -30,6 +30,10 @@ namespace Relativity.Sync.Tests.Performance
 
 		public static string AdminPassword => GetConfigValue(nameof(AdminPassword));
 
+		public static string AzureStorageConnection => GetConfigValue(nameof(AzureStorageConnection));
+
+		public static string AzureStoragePerformanceContainer => GetConfigValue(nameof(AzureStoragePerformanceContainer));
+
 		public static string ARMRapPath => GetConfigValue(nameof(ARMRapPath));
 
 		public static string ARMTestServicesRapPath => GetConfigValue(nameof(ARMTestServicesRapPath));

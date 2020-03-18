@@ -6,10 +6,8 @@ namespace Relativity.Sync.Tests.Performance
 {
 	public static class RTFSubstitute
 	{
-		
-
 		public static async Task CreateInstanceSettingIfNotExist(IKeplerServiceFactory serviceFactory,
-			string name, string section, Services.InstanceSetting.ValueType valueType, string value)
+			string name, string section, ValueType valueType, string value)
 		{
 			using (IInstanceSettingManager settingManager = serviceFactory.GetAdminServiceProxy<IInstanceSettingManager>())
 			{

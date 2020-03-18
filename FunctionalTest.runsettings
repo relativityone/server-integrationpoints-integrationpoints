@@ -1,0 +1,18 @@
+<RunSettings>
+  <TestRunParameters>
+    <Parameter name="IsTrident" value="true" />
+    <Parameter name="AzureStorageConnection" value="DefaultEndpointsProtocol=https;AccountName=integrationpointsstorage;AccountKey=3zVjUzYEz5rlvTkj8mfTSRcJJR0TnLHuI19syy718wjj8JjizrT2KLLgtgf8/G30VQuCQDEf1KqVYxuX2igtsQ==;EndpointSuffix=core.windows.net" />
+    <Parameter name="AzureStoragePerformanceContainer" value="performance-tests" />
+    <Parameter name="ARMRapPath" value="C:\_Work\_Temp\ARM\ARM_11.1.0.71.rap" />
+    <Parameter name="ARMTestServicesRapPath" value="C:\_Work\_Temp\ARM\ARMTestServices.rap" />
+    <Parameter name="ServerBindingType" value="https" />
+    <Parameter name="SqlServer" value="h-a7c761b1b199485b81413fd3001f8287.hopper.relativity.com\EDDSINSTANCE001" />
+    <Parameter name="SqlUsername" value="eddsdbo" />
+    <Parameter name="SqlPassword" value="P@ssw0rd@1" />
+    <Parameter name="RelativityHostAddress" value="h-a7c761b1b199485b81413fd3001f8287.hopper.relativity.com" />
+    <Parameter name="RsapiServicesHostAddress" value="h-a7c761b1b199485b81413fd3001f8287.hopper.relativity.com" />
+    <Parameter name="AdminUsername" value="relativity.admin@kcura.com" />
+    <Parameter name="AdminPassword" value="Test1234!" />
+    <Parameter name="RAPDirectory" value="C:\_Work\RelativitySync\DevelopmentScripts\..\Artifacts" />
+  </TestRunParameters>
+</RunSettings>

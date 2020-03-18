@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using Relativity.Sync.Tests.Performance.Helpers;
+using System.IO;
 
 namespace Relativity.Sync.Tests.Performance
 {
@@ -9,7 +10,9 @@ namespace Relativity.Sync.Tests.Performance
 		[Test]
 		public void Test()
 		{
-			ARMHelper.RestoreWorkspace(@"C:\_Work\_Temp\ARM_Test_Data\1014823_New_Case_Template_20200316110000.zip");
+			string filePath = StorageHelper.DownloadFile("1014823_New_Case_Template_20200316110000.zip", Path.GetTempPath());
+
+			ARMHelper.RestoreWorkspace(filePath);
 		}
 	}
 }

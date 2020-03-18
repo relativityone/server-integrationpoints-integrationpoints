@@ -68,24 +68,20 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 			return isAppInstalled;
 		}
 
-		public void UploadFile(string filePath, string relativeDirectory)
+		public void UploadFile(string filePath, string directory)
 		{
-			if(Path.IsPathRooted(relativeDirectory))
+			if(!Path.IsPathRooted(directory))
 			{
-				throw new ArgumentException($"Directory {relativeDirectory} should be relative");
+				directory = Path.Combine(Path.GetPathRoot(Environment.SystemDirectory), directory);
 			}
 
-			string destinationPath = Path.Combine(
-				Path.GetPathRoot(Environment.SystemDirectory),
-				relativeDirectory,
-				Path.GetFileName(filePath));
+			string destinationFile = Path.Combine(directory, Path.GetFileName(filePath));
 
 			using (var fileShareManager = _component.ServiceFactory.GetAdminServiceProxy<IFileshareManager>())
 			{
 				using (Stream stream = File.OpenRead(filePath)) //Temp path if only name
 				{
-					fileShareManager.UploadStream(new KeplerStream(stream),
-						destinationPath).GetAwaiter().GetResult();
+					fileShareManager.UploadStream(new KeplerStream(stream), destinationFile).GetAwaiter().GetResult();
 				}
 			}
 		}

@@ -1,23 +1,24 @@
-﻿using Newtonsoft.Json;
-using Relativity.Services.Interfaces.LibraryApplication.Models;
+﻿using Relativity.Services.Interfaces.LibraryApplication.Models;
+using Relativity.Sync.Tests.Performance.ARM;
+using Relativity.Sync.Tests.Performance.Helpers;
 using Relativity.Testing.Framework;
 using Relativity.Testing.Framework.Api;
 using Relativity.Testing.Framework.Models;
 using Relativity.Testing.Framework.Orchestrators;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
 
-namespace Relativity.Sync.Tests.Performance.Helpers
+namespace Relativity.Sync.Tests.Performance.ARM
 {
 	public class ARMHelper
 	{
 		private bool _isInitialized;
 		private ApiComponent _component;
 		private readonly FileShareHelper _fileShare;
+		private readonly RequestProvider _requestProvider;
 
 		public const string RELATIVE_ARCHIVES_LOCATION = @"DefaultFileRepository\Archives"; //FileRepositoryID
 
@@ -25,7 +26,11 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 
 		private ARMHelper(FileShareHelper fileShare)
 		{
+			RelativityFacade.Instance.RelyOn<ApiComponent>();
+			_component = RelativityFacade.Instance.GetComponent<ApiComponent>();
+
 			_fileShare = fileShare;
+			_requestProvider = new RequestProvider(_component);
 		}
 
 		public static ARMHelper CreateInstance()
@@ -41,9 +46,6 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 		{
 			if(!_isInitialized)
 			{
-				RelativityFacade.Instance.RelyOn<ApiComponent>();
-				_component = RelativityFacade.Instance.GetComponent<ApiComponent>();
-
 				if (!IsInstalled())
 				{
 					InstallARM();
@@ -67,7 +69,6 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 
 		public void RestoreWorkspace(string armedWorkspace)
 		{
-			// Gather workspace from azure storage account
 			_fileShare.UploadFile(armedWorkspace, RELATIVE_ARCHIVES_LOCATION);
 
 			string remoteWorkspacePath = Path.Combine(REMOTE_ARCHIVES_LOCATION, Path.GetFileNameWithoutExtension(armedWorkspace));
@@ -115,23 +116,7 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 
 			_fileShare.CreateDirectory(RELATIVE_ARCHIVES_LOCATION);
 
-			var request = new
-			{
-				Contract = new
-				{
-					RelativityWebApiUrl = "https://emttest/RelativityWebAPI/",
-					ArmArchiveLocations = new List<object>
-					{
-						new
-						{
-							ArchiveLocationType = 1,
-							Location = REMOTE_ARCHIVES_LOCATION
-						}
-					},
-					EmailNotificationSettings = Enumerable.Empty<object>()
-				}
-			};
-
+			string request = _requestProvider.ConfigurationRequest(REMOTE_ARCHIVES_LOCATION);
 			SendAsync("Relativity.ARM/Configuration/SetConfigurationData", request);
 		}
 
@@ -156,48 +141,27 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 			agentsOrchestrator.GetBasicAgent(agent, ensureNew);
 		}
 
-		private static int CreateRestoreJob(string archivedWorkspacePath)
+		private int CreateRestoreJob(string archivedWorkspacePath)
 		{
-			var request = new
-			{
-				Contract = new
-				{
-					MatterId = RelativityConst.RELATIVITY_TEMPLATE_MATTER_ARTIFACT_ID,
-					ArchivePath = archivedWorkspacePath,
-					JobPriority = "Medium",
-					ResourcePoolId = RelativityConst.DEFAULT_RESOURCE_POOL_ID,
-					DatabaseServerId = RelativityConst.DATABASE_SERVER_ID,
-					FileRepositoryId = RelativityConst.DEFAULT_FILE_REPOSITORY_ID,
-					CacheLocationId = RelativityConst.DEFAULT_CACHE_LOCATION_ID,
-					StructuredAnalyticsServerId = RelativityConst.STRUCTURED_ANALYTICS_SERVER_ID,
-					ConceptualAnalyticsServerId = RelativityConst.CONCEPTUAL_ANALYTICS_SERVER_ID
-				}
-			};
-
+			string request = _requestProvider.RestoreJobRequest(archivedWorkspacePath);
 			SendAsync("Relativity.ARM/Jobs/Restore/Create", request);
 
-			return 0;
+			return 0; //TODO: Return proper Job ID
 		}
 
-		private static void RunJob(int jobID)
+		private void RunJob(int jobID)
 		{
-			var request = new
-			{
-				JobId = jobID
-			};
-
+			string request = _requestProvider.RunJobRequest(jobID);
 			SendAsync("Relativity.ARM/Jobs/Action/Run", request);
 		}
 
-		private static HttpResponseMessage SendAsync(string armUri, object request)
+		private static HttpResponseMessage SendAsync(string armUri, string request)
 		{
 			using (HttpClient client = GetARMClient())
 			{
-				string serializedRequest = JsonConvert.SerializeObject(request);
-
 				return client.PostAsync(
 					new Uri(TestSettingsConfig.RelativityRestUrl, armUri),
-					new StringContent(serializedRequest, Encoding.UTF8, "application/json")).Result;
+					new StringContent(request, Encoding.UTF8, "application/json")).Result;
 			}
 		}
 

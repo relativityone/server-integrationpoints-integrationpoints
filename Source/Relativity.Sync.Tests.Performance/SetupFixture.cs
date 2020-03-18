@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using Relativity.Sync.Tests.Performance.ARM;
 using Relativity.Sync.Tests.Performance.Helpers;
 
 namespace Relativity.Sync.Tests.Performance
