@@ -41,10 +41,11 @@ namespace Relativity.Sync.Dashboards
 				{
 					Jira = syncIssue.Jira,
 					SearchMatch = syncIssue.SearchMatch,
-					IssueType = jiraTicket.Fields.IssueType.Name,
-					Status = jiraTicket.Fields.Status.Name,
+					IssueType = jiraTicket.Fields.IssueType?.Name,
+					Status = jiraTicket.Fields.Status?.Name,
 					Summary = jiraTicket.Fields.Summary,
-					Labels = jiraTicket.Fields.Labels
+					Labels = jiraTicket.Fields.Labels,
+					FixVersions = jiraTicket.Fields.FixVersions
 				});
 			}
 

@@ -8,5 +8,6 @@
 		public string IssueType { get; set; }
 		public string[] Labels { get; set; }
 		public string SearchMatch { get; set; }
+		public FixVersion[] FixVersions { get; set; }
 	}
 }

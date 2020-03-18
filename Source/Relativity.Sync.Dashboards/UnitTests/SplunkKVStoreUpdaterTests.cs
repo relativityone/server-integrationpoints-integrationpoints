@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using Relativity.Sync.Dashboards;
 using Relativity.Sync.Dashboards.Api;
@@ -60,6 +63,14 @@ namespace UnitTests
 				Status = new Status()
 				{
 					Name = "In progress"
+				},
+				FixVersions = new[]
+				{
+					new FixVersion()
+					{
+						Name = "Release Name",
+						ReleaseDate = "2020-01-01"
+					}
 				}
 			};
 
@@ -90,6 +101,7 @@ namespace UnitTests
 		private bool VerifySplunkKVCollectionItem(string expectedJira, string expectedSearchMatch, Fields expectedFields, SplunkKVCollectionItem item)
 		{
 			CollectionAssert.AreEquivalent(item.Labels, expectedFields.Labels);
+			CollectionAssert.AreEquivalent(item.FixVersions, expectedFields.FixVersions);
 
 			return
 				item.Jira == expectedJira &&

@@ -11,6 +11,7 @@
 		public string[] Labels { get; set; }
 		public IssueType IssueType { get; set; }
 		public Status Status { get; set; }
+		public FixVersion[] FixVersions { get; set; }
 	}
 
 	public class IssueType
