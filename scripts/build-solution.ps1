@@ -33,7 +33,7 @@ param(
     [string]$signToolPath
 )
 
-Remove-Item (Join-Path (Get-Item $sourceDir).Parent.FullName "global.json") -Force
+Rename-Item -Path (Join-Path (Get-Item $sourceDir).Parent.FullName "global.json") -NewName "global.json.temp"
 
 Get-ChildItem -Path $sourceDir -Filter *.sln -File | ForEach-Object {
     & dotnet restore $_.FullName
@@ -45,3 +45,5 @@ Get-ChildItem -Path $sourceDir -Filter *.sln -File | ForEach-Object {
         Throw "An error occured while building solution $($_.FullName)."
     }
 }
+
+Rename-Item -Path (Join-Path (Get-Item $sourceDir).Parent.FullName "global.json.temp") -NewName "global.json"

@@ -8,7 +8,7 @@
 		<CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
 		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
 		<ResolveNugetPackages>true</ResolveNugetPackages>
-		<IsTestProject>false</IsTestProject>
+		<IsTestProject>true</IsTestProject>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 		<OutputPath>bin\Debug\</OutputPath>
@@ -54,8 +54,14 @@
 		<None Update="Data\NativesAndExtractedText\NATIVES\REL0000above.htm">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
+		<None Update="Data\NativesAndExtractedText\NATIVES\REL0000above.txt">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 		<None Update="Data\NativesAndExtractedText\NATIVES\REL0000below.htm">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Data\NativesAndExtractedText\NATIVES\REL0000below.txt">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 		<None Update="Data\NativesAndExtractedText\TEXT\AMEYERS_0000757.txt">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

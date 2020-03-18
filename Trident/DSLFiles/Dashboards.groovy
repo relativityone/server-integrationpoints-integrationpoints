@@ -4,10 +4,10 @@ folder('DataTransfer-Jobs') {
 folder('DataTransfer-Jobs/RelativitySync') {
 }
 
-multibranchPipelineJob('DataTransfer-Jobs/RelativitySync/Nightly') {
+multibranchPipelineJob('DataTransfer-Jobs/RelativitySync/UpdateSplunkDashboard') {
     factory {
         workflowBranchProjectFactory {
-            scriptPath('Trident/Jobs/Nightly.groovy')
+            scriptPath('Trident/Jobs/Dashboards.groovy')
         }
     }
     branchSources {
@@ -16,7 +16,7 @@ multibranchPipelineJob('DataTransfer-Jobs/RelativitySync/Nightly') {
                 git {
                     remote('ssh://git@git.kcura.com:7999/dtx/relativitysync.git')
                     credentialsId('bitbucket-repo-key')
-                    id('RelativitySync-Nightly')
+                    id('RelativitySync-Dashboards')
                 }
             }
         }

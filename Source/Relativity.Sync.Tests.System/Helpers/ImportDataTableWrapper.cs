@@ -17,6 +17,7 @@ namespace Relativity.Sync.Tests.System.Helpers
 		public static string FileName => "File Name";
 		public static string NativeFilePath => "Native File";
 		public static string FolderPath => "Document Folder Path";
+		public static string RelativitySyncTestUser => "Relativity Sync Test User";
 
 		private static IEnumerable<DataColumn> DefaultColumns => new[]
 		{
@@ -33,11 +34,16 @@ namespace Relativity.Sync.Tests.System.Helpers
 			new DataColumn(FileName, typeof(string)),
 			new DataColumn(NativeFilePath, typeof(string)),
 			new DataColumn(FolderPath, typeof(string))
-		}; 
+		};
+
+		private static IEnumerable<DataColumn> UserColumns => new[]
+		{
+			new DataColumn(RelativitySyncTestUser, typeof(string))
+		};
 
 		public IDataReader DataReader => Data.CreateDataReader();
 
-		public ImportDataTableWrapper(bool extractedText, bool natives)
+		public ImportDataTableWrapper(bool extractedText, bool natives, bool user)
 		{
 			ExtractedText = extractedText;
 			Natives = natives;
@@ -54,6 +60,11 @@ namespace Relativity.Sync.Tests.System.Helpers
 			if (natives)
 			{
 				dataColumns = dataColumns.Concat(NativesColumns);
+			}
+
+			if (user)
+			{
+				dataColumns = dataColumns.Concat(UserColumns);
 			}
 
 			Data.Columns.AddRange(dataColumns.ToArray());

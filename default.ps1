@@ -79,10 +79,6 @@ task runSystemTests {
     & (Join-Path $scriptsDir "run-tests.ps1") -projectName $projectName -testsType "System" -sourceDir $sourceDir -toolsDir $toolsDir -logsDir $logsDir -sutAddress $sutAddress
 }
 
-task runSonarScanner -depends restorePackages, findMsbuild {
-    & (Join-Path $scriptsDir "run-sonar-scanner.ps1") -projectName $projectName -branchName $branchName -sourceDir $sourceDir -toolsDir $toolsDir -logsDir $logsDir -version $version -coverageFileName $coverageFileName
-}
-
 task help -alias ? {
     WriteDocumentation
 }
