@@ -5,7 +5,7 @@ def body = '{}'
 post.setDoOutput(true)
 post.setRequestMethod("POST")
 post.setRequestProperty("x-functions-key", "key")
-post.getOutputStream().write(body.getBytes("UTF-8"))
+post.getOutputStream().write(body)
 def response = post.getResponseCode();
 
 println(response);
