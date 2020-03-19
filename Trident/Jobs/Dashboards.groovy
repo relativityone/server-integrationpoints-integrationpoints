@@ -6,6 +6,7 @@ node('role-build-agent')
     }
     catch (err)
     {
+        echo err.toString()
         currentBuild.result = "FAILED"
     }
     finally
