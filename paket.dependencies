@@ -46,6 +46,6 @@ nuget Moq ~> 4.10
 nuget System.Threading.Tasks.Extensions 4.5.1
 nuget Microsoft.Reactive.Testing 4.0.0
 
-nuget Relativity.Testing.Framework >= 11.2
-nuget Relativity.Testing.Framework.Api >= 11.2
+nuget Relativity.Automation.Utility ~> 11.2
+nuget Relativity.Automation.Utility.API 11.2.72.55-DEV
 nuget ARMTestServices 1.1.1

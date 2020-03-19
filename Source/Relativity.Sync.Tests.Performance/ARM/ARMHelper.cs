@@ -1,10 +1,9 @@
-﻿using Relativity.Services.Interfaces.LibraryApplication.Models;
-using Relativity.Sync.Tests.Performance.ARM;
+﻿using Relativity.Automation.Utility;
+using Relativity.Automation.Utility.Api;
+using Relativity.Automation.Utility.Models;
+using Relativity.Automation.Utility.Orchestrators;
+using Relativity.Services.Interfaces.LibraryApplication.Models;
 using Relativity.Sync.Tests.Performance.Helpers;
-using Relativity.Testing.Framework;
-using Relativity.Testing.Framework.Api;
-using Relativity.Testing.Framework.Models;
-using Relativity.Testing.Framework.Orchestrators;
 using System;
 using System.IO;
 using System.Linq;
@@ -122,8 +121,8 @@ namespace Relativity.Sync.Tests.Performance.ARM
 
 		private void ConfigureARM()
 		{
-			IOrchestrateInstanceSettings instanceSettings = _component.OrchestratorFactory.Create<IOrchestrateInstanceSettings>();
-			instanceSettings.SetInstanceSetting("BcpShareFolderName", @"\\emttest\BCPPath", "kCura.ARM");
+			_component.OrchestratorFactory.Create<IOrchestrateInstanceSettings>()
+				.SetInstanceSetting("BcpShareFolderName", @"\\emttest\BCPPath", "kCura.ARM", InstanceSettingValueTypeEnum.Text);
 
 			_fileShare.CreateDirectory(RELATIVE_ARCHIVES_LOCATION);
 

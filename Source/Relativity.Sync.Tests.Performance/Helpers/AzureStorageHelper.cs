@@ -26,11 +26,18 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 			return new AzureStorageHelper(TestSettingsConfig.AzureStorageConnection, TestSettingsConfig.AzureStoragePerformanceContainer);
 		}
 
-		public string DownloadFile(string filePath, string destinationPath)
+		public string DownloadFile(string filePath, string destinationPath, bool copySubfolders)
 		{
-			string outputFile = Path.Combine(destinationPath, Path.GetFileName(filePath));
-
 			CloudBlockBlob blob = _container.GetBlockBlobReference(filePath);
+			if(blob == null)
+			{
+				throw new FileNotFoundException();
+			}
+
+			string outputFile = copySubfolders
+				? Path.Combine(destinationPath, Path.GetFileName(filePath))
+				: Path.Combine(destinationPath, filePath);
+
 			blob.DownloadToFile(outputFile, FileMode.OpenOrCreate);
 
 			return outputFile;

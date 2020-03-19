@@ -1,8 +1,8 @@
 Microsoft.CodeAnalysis.FxCopAnalyzers
 CSharpGuidelineAnalyzer
 
-Relativity.Testing.Framework
-Relativity.Testing.Framework.Api
+Relativity.Automation.Utility
+Relativity.Automation.Utility.API
 ARMTestServices
 
 Microsoft.Azure.Storage.Blob

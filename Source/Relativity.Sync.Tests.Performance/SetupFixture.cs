@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
+using Relativity.Automation.Utility;
+using Relativity.Automation.Utility.Api;
 using Relativity.Sync.Tests.Performance.ARM;
-using Relativity.Testing.Framework;
-using Relativity.Testing.Framework.Api;
 
 namespace Relativity.Sync.Tests.Performance
 {

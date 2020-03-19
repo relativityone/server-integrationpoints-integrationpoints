@@ -1,5 +1,5 @@
-﻿using Relativity.Services.InstanceSetting;
-using Relativity.Testing.Framework;
+﻿using Relativity.Automation.Utility;
+using Relativity.Services.InstanceSetting;
 using System.Threading.Tasks;
 
 namespace Relativity.Sync.Tests.Performance

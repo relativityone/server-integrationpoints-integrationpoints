@@ -1,12 +1,12 @@
 ﻿using Relativity.Services.Interfaces.LibraryApplication.Models;
-using Relativity.Testing.Framework.Api;
-using Relativity.Testing.Framework.Models;
-using Relativity.Testing.Framework.Orchestrators;
 using System;
 using System.IO;
 using ARMTestServices.Services.Interfaces;
 using Relativity.Kepler.Transport;
-using Relativity.Testing.Framework;
+using Relativity.Automation.Utility.Api;
+using Relativity.Automation.Utility;
+using Relativity.Automation.Utility.Models;
+using Relativity.Automation.Utility.Orchestrators;
 
 namespace Relativity.Sync.Tests.Performance.Helpers
 {
@@ -14,7 +14,7 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 	{
 		private bool _isInitialized;
 		private readonly ApiComponent _component;
-		private AzureStorageHelper _storageHelper;
+		private readonly AzureStorageHelper _storageHelper;
 
 		private FileShareHelper(AzureStorageHelper storageHelper)
 		{
@@ -37,10 +37,8 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 		{
 			if(!_isInitialized)
 			{
-
-				//TODO: Replace with SetInstanceSetting from RTF
-				RTFSubstitute.CreateInstanceSettingIfNotExist(_component.ServiceFactory,
-					"DevelopmentMode", "kCura.ARM", Services.InstanceSetting.ValueType.TrueFalse, "True").Wait();
+				_component.OrchestratorFactory.Create<IOrchestrateInstanceSettings>()
+					.SetInstanceSetting("DevelopmentMode", "True", "kCura.ARM", InstanceSettingValueTypeEnum.TrueFalse);
 
 				if (!IsAppInstalled())
 				{

@@ -1,10 +1,7 @@
 ﻿using Newtonsoft.Json;
-using Relativity.Testing.Framework.Api;
-using System;
+using Relativity.Automation.Utility.Api;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Relativity.Sync.Tests.Performance.ARM
 {
