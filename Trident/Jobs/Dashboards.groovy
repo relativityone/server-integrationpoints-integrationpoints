@@ -1,1 +1,4 @@
-powershell returnStatus: true, script: './../Scripts/updateSplunkDashboard.ps1'
+node ('UpdateSplunkDashboard')
+{
+    powershell returnStatus: true, script: './../Scripts/updateSplunkDashboard.ps1'
+}
