@@ -3,6 +3,7 @@ node('role-build-agent')
     try
     {
         powershell "Write-Host (Get-Item -Path '.\').FullName"
+        powershell "Get-Location"
         powershell "Get-ChildItem"
         powershell returnStatus: true, script: './Trident/Scripts/updateSplunkDashboard.ps1'
     }
