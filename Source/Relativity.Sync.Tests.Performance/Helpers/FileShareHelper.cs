@@ -13,15 +13,21 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 	public class FileShareHelper
 	{
 		private bool _isInitialized;
-		private ApiComponent _component;
+		private readonly ApiComponent _component;
+		private AzureStorageHelper _storageHelper;
 
-		private FileShareHelper()
+		private FileShareHelper(AzureStorageHelper storageHelper)
 		{
+			_component = RelativityFacade.Instance.GetComponent<ApiComponent>();
+
+			_storageHelper = storageHelper;
 		}
 
 		public static FileShareHelper CreateInstance()
 		{
-			FileShareHelper instance = new FileShareHelper();
+			FileShareHelper instance = new FileShareHelper(
+				AzureStorageHelper.CreateFromTestConfig());
+			
 			instance.Initialize();
 
 			return instance;
@@ -31,8 +37,6 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 		{
 			if(!_isInitialized)
 			{
-				RelativityFacade.Instance.RelyOn<ApiComponent>();
-				_component = RelativityFacade.Instance.GetComponent<ApiComponent>();
 
 				//TODO: Replace with SetInstanceSetting from RTF
 				RTFSubstitute.CreateInstanceSettingIfNotExist(_component.ServiceFactory,
@@ -49,14 +53,22 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 
 		private void InstallARMTestServices()
 		{
-			if (!File.Exists(TestSettingsConfig.ARMTestServicesRapPath))
-			{
-				throw new FileNotFoundException(@"ARM Test Services RAP not found. To get latest release version run .\DevelopmentScripts\Get-ARM.ps1");
-			}
+			string rapPath = GetTestServicesRapPath();
 
 			LibraryApplicationRequestOptions options = new LibraryApplicationRequestOptions() { CreateIfMissing = true };
 			_component.OrchestratorFactory.Create<IOrchestrateRelativityApplications>()
-				.InstallRelativityApplicationToLibrary(TestSettingsConfig.ARMTestServicesRapPath, options);
+				.InstallRelativityApplicationToLibrary(rapPath, options);
+		}
+
+		private string GetTestServicesRapPath()
+		{
+			string rapPath = Path.Combine(Path.GetTempPath(), "ARMTestServices.rap");
+			if (!File.Exists(rapPath))
+			{
+				rapPath = _storageHelper.DownloadFile(@"ARM\ARMTestServices.rap", Path.GetTempPath());
+			}
+
+			return rapPath;
 		}
 
 		private bool IsAppInstalled()
@@ -68,14 +80,14 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 			return isAppInstalled;
 		}
 
-		public void UploadFile(string filePath, string directory)
+		public string UploadFile(string filePath, string directory)
 		{
 			if(!Path.IsPathRooted(directory))
 			{
 				directory = Path.Combine(Path.GetPathRoot(Environment.SystemDirectory), directory);
 			}
 
-			string destinationFile = Path.Combine(directory, Path.GetFileName(filePath));
+			string destinationFile = Path.Combine(directory, $"{Guid.NewGuid()}.zip");
 
 			using (var fileShareManager = _component.ServiceFactory.GetAdminServiceProxy<IFileshareManager>())
 			{
@@ -84,6 +96,8 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 					fileShareManager.UploadStream(new KeplerStream(stream), destinationFile).GetAwaiter().GetResult();
 				}
 			}
+
+			return destinationFile;
 		}
 
 		public void CreateDirectory(string directory)

@@ -16,27 +16,30 @@ namespace Relativity.Sync.Tests.Performance.ARM
 	public class ARMHelper
 	{
 		private bool _isInitialized;
-		private ApiComponent _component;
+		private readonly ApiComponent _component;
 		private readonly FileShareHelper _fileShare;
 		private readonly RequestProvider _requestProvider;
+		private readonly AzureStorageHelper _storageHelper;
 
 		public const string RELATIVE_ARCHIVES_LOCATION = @"DefaultFileRepository\Archives"; //FileRepositoryID
 
 		private static string REMOTE_ARCHIVES_LOCATION => Path.Combine(@"\\emttest\", RELATIVE_ARCHIVES_LOCATION);
 
-		private ARMHelper(FileShareHelper fileShare)
+		private ARMHelper(FileShareHelper fileShare, AzureStorageHelper storageHelper)
 		{
-			RelativityFacade.Instance.RelyOn<ApiComponent>();
 			_component = RelativityFacade.Instance.GetComponent<ApiComponent>();
 
 			_fileShare = fileShare;
+			_storageHelper = storageHelper;
 			_requestProvider = new RequestProvider(_component);
 		}
 
 		public static ARMHelper CreateInstance()
 		{
 			ARMHelper instance = new ARMHelper(
-				FileShareHelper.CreateInstance());
+				FileShareHelper.CreateInstance(),
+				AzureStorageHelper.CreateFromTestConfig());
+
 			instance.Initialize();
 
 			return instance;
@@ -61,19 +64,19 @@ namespace Relativity.Sync.Tests.Performance.ARM
 		{
 			CreateAgent("ARM Agent");
 			CreateAgent("ARM Metric Agent");
-			CreateAgent("Analytics Core ARM Manager Agent");
-			CreateAgent("Analytics Core ARM Worker Agent");
+			CreateAgent("Structured Analytics Manager");
+			CreateAgent("Structured Analytics Worker");
 
 			//Wait till all agents will be enabled
 		}
 
-		public void RestoreWorkspace(string armedWorkspace)
+		public void RestoreWorkspace(string archivedWorkspace)
 		{
-			_fileShare.UploadFile(armedWorkspace, RELATIVE_ARCHIVES_LOCATION);
+			string uploadedFile = _fileShare.UploadFile(archivedWorkspace, RELATIVE_ARCHIVES_LOCATION);
 
-			string remoteWorkspacePath = Path.Combine(REMOTE_ARCHIVES_LOCATION, Path.GetFileNameWithoutExtension(armedWorkspace));
+			string archivedWorkspacePath = Path.Combine(REMOTE_ARCHIVES_LOCATION, Path.GetFileNameWithoutExtension(uploadedFile));
 
-			int jobID = CreateRestoreJob(remoteWorkspacePath);
+			int jobID = CreateRestoreJob(archivedWorkspacePath);
 
 			RunJob(jobID);
 
@@ -99,14 +102,22 @@ namespace Relativity.Sync.Tests.Performance.ARM
 
 			if (!isAppInstalled)
 			{
-				if (!File.Exists(TestSettingsConfig.ARMRapPath))
-				{
-					throw new FileNotFoundException(@"ARM Rap not found. To get latest release version run .\DevelopmentScripts\Get-ARM.ps1");
-				}
+				string rapPath = GetARMRapPath();
 
 				LibraryApplicationRequestOptions options = new LibraryApplicationRequestOptions() { CreateIfMissing = true };
-				applicationsOrchestrator.InstallRelativityApplicationToLibrary(TestSettingsConfig.ARMRapPath, options);
+				applicationsOrchestrator.InstallRelativityApplicationToLibrary(rapPath, options);
 			}
+		}
+
+		private string GetARMRapPath()
+		{
+			string rapPath = Path.Combine(Path.GetTempPath(), "ARM.rap");
+			if(!File.Exists(rapPath))
+			{
+				rapPath = _storageHelper.DownloadFile(@"ARM\ARM.rap", Path.GetTempPath());
+			}
+
+			return rapPath;
 		}
 
 		private void ConfigureARM()

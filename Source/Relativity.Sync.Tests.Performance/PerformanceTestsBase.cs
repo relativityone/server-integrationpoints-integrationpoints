@@ -17,9 +17,7 @@ namespace Relativity.Sync.Tests.Performance
 
 			Component = RelativityFacade.Instance.GetComponent<ApiComponent>();
 
-			StorageHelper = new AzureStorageHelper(
-				TestSettingsConfig.AzureStorageConnection,
-				TestSettingsConfig.AzureStoragePerformanceContainer);
+			StorageHelper = AzureStorageHelper.CreateFromTestConfig();
 
 			ARMHelper = ARMHelper.CreateInstance();
 

@@ -21,6 +21,11 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 			_container = client.GetContainerReference(containerName);
 		}
 
+		public static AzureStorageHelper CreateFromTestConfig()
+		{
+			return new AzureStorageHelper(TestSettingsConfig.AzureStorageConnection, TestSettingsConfig.AzureStoragePerformanceContainer);
+		}
+
 		public string DownloadFile(string filePath, string destinationPath)
 		{
 			string outputFile = Path.Combine(destinationPath, Path.GetFileName(filePath));
