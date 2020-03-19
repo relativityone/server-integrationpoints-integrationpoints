@@ -1,1 +1,1 @@
-PowerShell(". '../Scripts/updateSplunkDashboard.ps1'")
+powershell returnStatus: true, script: './../Scripts/updateSplunkDashboard.ps1'
