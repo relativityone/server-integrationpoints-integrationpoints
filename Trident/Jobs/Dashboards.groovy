@@ -29,4 +29,9 @@ node('role-build-agent')
                 }
             }
         }
+        catch (err)
+        {
+            echo err.ToString()
+            currentBuild.result = 'FAILED'
+        }
     }
