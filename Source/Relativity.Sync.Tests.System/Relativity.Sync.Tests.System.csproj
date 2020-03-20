@@ -17,6 +17,9 @@
 		<OutputPath>bin\</OutputPath>
 	</PropertyGroup>
 	<ItemGroup>
+	  <None Include="..\Relativity.Sync.Tests.System.Core\app.config" Link="app.config" />
+	</ItemGroup>
+	<ItemGroup>
 		<ProjectReference Include="..\Relativity.Sync.Tests.Common\Relativity.Sync.Tests.Common.csproj" />
 		<ProjectReference Include="..\Relativity.Sync.Tests.System.Core\Relativity.Sync.Tests.System.Core.csproj" />
 		<ProjectReference Include="..\Relativity.Sync\Relativity.Sync.csproj" />
