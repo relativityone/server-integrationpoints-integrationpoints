@@ -1,3 +1,4 @@
+@Library('PipelineTools@master') _
 
 node('role-build-agent')
     {
