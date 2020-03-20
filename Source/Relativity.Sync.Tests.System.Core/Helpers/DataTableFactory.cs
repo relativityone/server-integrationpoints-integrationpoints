@@ -4,7 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 
-namespace Relativity.Sync.Tests.System.Helpers
+namespace Relativity.Sync.Tests.System.Core.Helpers
 {
 	internal sealed class DataTableFactory
 	{

@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 
-namespace Relativity.Sync.Tests.System.Helpers
+namespace Relativity.Sync.Tests.System.Core.Helpers
 {
 	internal sealed class ImportJobErrors
 	{

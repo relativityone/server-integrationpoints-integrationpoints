@@ -26,11 +26,11 @@ namespace Relativity.Sync.Tests.Integration
 			IntegrationTestsContainerBuilder.MockAllSteps(containerBuilder);
 			IntegrationTestsContainerBuilder.MockReporting(containerBuilder);
 
-			var servicesMgr = new Mock<IServicesMgr>();
+			var servicesMgr = new Mock<ISyncServiceManager>();
 			var serviceFactory = new Mock<IServiceFactory>();
 			var dynamicProxyFactory = new Mock<IDynamicProxyFactory>();
 
-			containerBuilder.RegisterInstance(servicesMgr.Object).As<IServicesMgr>();
+			containerBuilder.RegisterInstance(servicesMgr.Object).As<ISyncServiceManager>();
 			containerBuilder.Register(k => new ServiceFactoryForUser(serviceFactory.Object, dynamicProxyFactory.Object)).As<ISourceServiceFactoryForUser>();
 			containerBuilder.Register(k => new ServiceFactoryForUser(serviceFactory.Object, dynamicProxyFactory.Object)).As<IDestinationServiceFactoryForUser>();
 			containerBuilder.RegisterInstance(dynamicProxyFactory.Object).As<IDynamicProxyFactory>();

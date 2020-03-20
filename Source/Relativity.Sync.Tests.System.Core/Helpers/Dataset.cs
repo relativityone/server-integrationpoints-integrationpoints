@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Relativity.Sync.Tests.System.Helpers
+namespace Relativity.Sync.Tests.System.Core.Helpers
 {
 	internal class Dataset
 	{

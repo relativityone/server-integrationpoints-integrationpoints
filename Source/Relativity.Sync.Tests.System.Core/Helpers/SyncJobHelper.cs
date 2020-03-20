@@ -3,7 +3,7 @@ using Autofac;
 using Moq;
 using Relativity.Sync.Tests.Common;
 
-namespace Relativity.Sync.Tests.System.Helpers
+namespace Relativity.Sync.Tests.System.Core.Helpers
 {
 	internal static class SyncJobHelper
 	{

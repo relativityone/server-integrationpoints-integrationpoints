@@ -10,14 +10,14 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 {
 	public class TelemetryManagerTests
 	{
-		private Mock<IServicesMgr> _servicesManager;
+		private Mock<ISyncServiceManager> _servicesManager;
 		private Mock<ISyncLog> _logger;
 		private ITelemetryManager _telemetryManager;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_servicesManager = new Mock<IServicesMgr>();
+			_servicesManager = new Mock<ISyncServiceManager>();
 			_logger = new Mock<ISyncLog>();
 			_telemetryManager = new TelemetryMetricsInstaller(_servicesManager.Object, _logger.Object);
 		}

@@ -22,7 +22,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 		private Mock<ISourceServiceFactoryForUser> _sourceServiceFactory;
 
 		private const int _TEST_WORKSPACE_ARTIFACT_ID = 105789;
-		private const int _TEST_INTEGRATION_POINT_ARTIFACT_ID = 105684;
 		private const int _ALLOW_EXPORT_PERMISSION_ID = 159; // 159 is the artifact id of the "Allow Export" permission
 		private const int _EDIT_DOCUMENT_PERMISSION_ID = 45; // 45 is the artifact id of the "Edit Documents" permission
 		private const int _EXPECTED_VALUE_FOR_ALL_FAILED_VALIDATE = 8;
@@ -312,7 +311,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 		{
 			Mock<IPermissionsCheckConfiguration> configuration = new Mock<IPermissionsCheckConfiguration>();
 			configuration.Setup(x => x.SourceWorkspaceArtifactId).Returns(_TEST_WORKSPACE_ARTIFACT_ID);
-			configuration.Setup(x => x.IntegrationPointArtifactId).Returns(_TEST_INTEGRATION_POINT_ARTIFACT_ID);
 
 			return configuration;
 		}

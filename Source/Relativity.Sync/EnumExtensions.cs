@@ -25,12 +25,10 @@ namespace Relativity.Sync
 						return (T)field.GetValue(null);
 					}
 				}
-				else
+			
+				if (field.Name == description)
 				{
-					if (field.Name == description)
-					{
-						return (T)field.GetValue(null);
-					}
+					return (T)field.GetValue(null);
 				}
 			}
 

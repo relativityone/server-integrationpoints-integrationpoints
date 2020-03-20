@@ -9,9 +9,11 @@ using Relativity.Services.Workspace;
 using Relativity.Sync.Executors;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.Common;
-using Relativity.Sync.Tests.System.Helpers;
 using Relativity.Sync.Telemetry;
+using Relativity.Sync.Tests.System.Core;
+using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Testing.Identification;
+using ImportJobFactory = Relativity.Sync.Tests.System.Core.Helpers.ImportJobFactory;
 
 namespace Relativity.Sync.Tests.System
 {
@@ -54,7 +56,7 @@ namespace Relativity.Sync.Tests.System
 				new FederatedInstance(),
 				new TagNameFormatter(new EmptyLogger()),
 				new EmptyLogger(),
-				new SyncMetrics(Enumerable.Empty<ISyncMetricsSink>(), new SyncJobParameters(int.MaxValue, _sourceWorkspaceArtifactId, int.MaxValue, jobHistoryId)));
+				new SyncMetrics(Enumerable.Empty<ISyncMetricsSink>(), new SyncJobParameters(int.MaxValue, _sourceWorkspaceArtifactId, jobHistoryId)));
 
 			IList<TagDocumentsResult<int>> results = await repository.TagDocumentsAsync(configuration, documentsToTag, CancellationToken.None).ConfigureAwait(false);
 
@@ -79,7 +81,7 @@ namespace Relativity.Sync.Tests.System
 			int destinationFolderId = await Rdos.GetRootFolderInstance(ServiceFactory, _sourceWorkspaceArtifactId).ConfigureAwait(false);
 			ImportDataTableWrapper importDataTableWrapper = DataTableFactory.GenerateDocumentsWithExtractedText(numDocuments);
 
-			ImportBulkArtifactJob documentImportJob = Helpers.ImportJobFactory.CreateNonNativesDocumentImportJob(_sourceWorkspaceArtifactId, destinationFolderId, importDataTableWrapper);
+			ImportBulkArtifactJob documentImportJob = ImportJobFactory.CreateNonNativesDocumentImportJob(_sourceWorkspaceArtifactId, destinationFolderId, importDataTableWrapper);
 
 			ImportJobErrors importErrors = await ImportJobExecutor.ExecuteAsync(documentImportJob).ConfigureAwait(false);
 			Assert.IsTrue(importErrors.Success, $"{importErrors.Errors.Count} errors occurred during document upload: {importErrors}");

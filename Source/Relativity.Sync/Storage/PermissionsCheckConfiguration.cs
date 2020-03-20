@@ -24,7 +24,6 @@ namespace Relativity.Sync.Storage
 		{
 			_cache = cache;
 			SourceWorkspaceArtifactId = syncJobParameters.WorkspaceId;
-			IntegrationPointArtifactId = syncJobParameters.IntegrationPointArtifactId;
 			_sourceServiceFactory = sourceServiceFactory;
 			_sourceArtifactId = new Lazy<int>(() => GetSourceProviderArtifactIdAsync().ConfigureAwait(false).GetAwaiter()
 				.GetResult());
@@ -33,7 +32,6 @@ namespace Relativity.Sync.Storage
 		public int SourceWorkspaceArtifactId { get; }
 		public int DestinationWorkspaceArtifactId => _cache.GetFieldValue<int>(DestinationWorkspaceArtifactIdGuid);
 		public int DestinationFolderArtifactId => _cache.GetFieldValue<int>(DataDestinationArtifactIdGuid);
-		public int IntegrationPointArtifactId { get; }
 		public int SourceProviderArtifactId => _sourceArtifactId.Value;
 
 		private async Task<int> GetSourceProviderArtifactIdAsync()

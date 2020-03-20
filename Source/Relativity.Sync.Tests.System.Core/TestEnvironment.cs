@@ -15,7 +15,7 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.ServiceProxy;
 using Relativity.Services.Workspace;
 
-namespace Relativity.Sync.Tests.System
+namespace Relativity.Sync.Tests.System.Core
 {
 	public sealed class TestEnvironment : IDisposable
 	{
@@ -49,6 +49,24 @@ namespace Relativity.Sync.Tests.System
 				}
 				_workspaces.Add(newWorkspace);
 				return newWorkspace;
+			}
+		}
+
+		public async Task<WorkspaceRef> GetWorkspaceAsync(int workspaceId)
+		{
+			using (var workspaceManager = _serviceFactory.CreateProxy<IWorkspaceManager>())
+			{
+				IEnumerable<WorkspaceRef> workspaces = await workspaceManager.RetrieveAllActive().ConfigureAwait(false);
+				return workspaces.FirstOrDefault(x => x.ArtifactID == workspaceId);
+			}
+		}
+
+		public async Task<WorkspaceRef> GetWorkspaceAsync(string workspaceName)
+		{
+			using (var workspaceManager = _serviceFactory.CreateProxy<IWorkspaceManager>())
+			{
+				IEnumerable<WorkspaceRef> workspaces = await workspaceManager.RetrieveAllActive().ConfigureAwait(false);
+				return workspaces.FirstOrDefault(x => x.Name == workspaceName);
 			}
 		}
 
@@ -130,8 +148,7 @@ namespace Relativity.Sync.Tests.System
 
 		private async Task InstallHelperAppIfNeeded()
 		{
-			string appFilePath = GetHelperApplicationFilePath();
-			using (var fileStream = File.OpenRead(appFilePath))
+			using (var fileStream = GetHelperApplicationXml())
 			using (var applicationLibraryManager = _serviceFactory.CreateProxy<Services.Interfaces.LibraryApplication.ILibraryApplicationManager>())
 			{
 				List<LibraryApplicationResponse> apps = await applicationLibraryManager.ReadAllAsync(-1).ConfigureAwait(false);
@@ -159,7 +176,7 @@ namespace Relativity.Sync.Tests.System
 			}
 		}
 
-		private static async Task<MemoryStream> CreateRapFileInMemory(FileStream applicationXmlFileStream)
+		private static async Task<MemoryStream> CreateRapFileInMemory(Stream applicationXmlFileStream)
 		{
 			MemoryStream outStream = new MemoryStream();
 			using (var archive = new ZipArchive(outStream, ZipArchiveMode.Create, true))
@@ -176,7 +193,7 @@ namespace Relativity.Sync.Tests.System
 			return outStream;
 		}
 
-		private static Version GetVersionFromApplicationXmlStream(FileStream fileStream)
+		private static Version GetVersionFromApplicationXmlStream(Stream fileStream)
 		{
 			XmlDocument appXml = SafeLoadXml(fileStream);
 			string versionStringFromXml = appXml?.SelectSingleNode("//Version")?.InnerText;
@@ -195,7 +212,7 @@ namespace Relativity.Sync.Tests.System
 		/// </summary>
 		/// <param name="fileStream">Stream to be read</param>
 		/// <returns>XML document loaded from given stream</returns>
-		private static XmlDocument SafeLoadXml(FileStream fileStream)
+		private static XmlDocument SafeLoadXml(Stream fileStream)
 		{
 			var xmlReaderSettings = new XmlReaderSettings { XmlResolver = null };
 			XmlReader reader = XmlReader.Create(fileStream, xmlReaderSettings);
@@ -204,16 +221,11 @@ namespace Relativity.Sync.Tests.System
 			return appXml;
 		}
 
-		private static string GetHelperApplicationFilePath()
+		private static Stream GetHelperApplicationXml()
 		{
-			string dllDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-			if (string.IsNullOrWhiteSpace(dllDir))
-			{
-				throw new InvalidOperationException("Cannot locate executing dll folder.");
-			}
-
-			string appFilePath = Path.Combine(dllDir, "Resources", _RELATIVITY_SYNC_TEST_HELPER_RAP);
-			return appFilePath;
+			Assembly asm = Assembly.GetExecutingAssembly();
+			string resource = $"Relativity.Sync.Tests.System.Core.Resources.{_RELATIVITY_SYNC_TEST_HELPER_RAP}";
+			return asm.GetManifestResourceStream(resource);
 		}
 
 		public void Dispose()

@@ -18,9 +18,11 @@ using Relativity.Sync.Executors;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
-using Relativity.Sync.Tests.System.Helpers;
-using Relativity.Sync.Tests.System.Stubs;
+using Relativity.Sync.Tests.System.Core;
+using Relativity.Sync.Tests.System.Core.Helpers;
+using Relativity.Sync.Tests.System.Core.Stubs;
 using Relativity.Testing.Identification;
+using ImportJobFactory = Relativity.Sync.Tests.System.Core.Helpers.ImportJobFactory;
 
 namespace Relativity.Sync.Tests.System
 {
@@ -109,7 +111,7 @@ namespace Relativity.Sync.Tests.System
 			int destinationWorkspaceArtifactId = await CreateWorkspaceAsync(destinationWorkspaceName).ConfigureAwait(false);
 
 			// Import documents
-			ImportBulkArtifactJob documentImportJob = Helpers.ImportJobFactory.CreateNonNativesDocumentImportJob(
+			ImportBulkArtifactJob documentImportJob = ImportJobFactory.CreateNonNativesDocumentImportJob(
 				sourceWorkspaceArtifactId,
 				await Rdos.GetRootFolderInstance(ServiceFactory, sourceWorkspaceArtifactId).ConfigureAwait(false),
 				DataTableFactory.GenerateDocumentWithUserField());
@@ -215,34 +217,34 @@ namespace Relativity.Sync.Tests.System
 			IDestinationWorkspaceTagRepository destinationWorkspaceTagRepository = container.Resolve<IDestinationWorkspaceTagRepository>();
 			DestinationWorkspaceTag destinationWorkspaceTag = await destinationWorkspaceTagRepository.CreateAsync(sourceWorkspaceArtifactId,
 				destinationWorkspaceArtifactId, destinationWorkspaceName).ConfigureAwait(false);
-			
+
 			return destinationWorkspaceTag.ArtifactId;
 		}
 
 		private static async Task<ExecutionStatus> CreateSourceTagsInDestinationWorkspaceAsync(IContainer container, ConfigurationStub configuration)
 		{
 			IExecutor<IDestinationWorkspaceTagsCreationConfiguration> destinationWorkspaceTagsCreationExecutor = container.Resolve<IExecutor<IDestinationWorkspaceTagsCreationConfiguration>>();
-			
+
 			ExecutionResult sourceWorkspaceTagsCreationExecutorResult = await destinationWorkspaceTagsCreationExecutor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
-			
+
 			return sourceWorkspaceTagsCreationExecutorResult.Status;
 		}
 
 		private static async Task<ExecutionStatus> CreateDataSourceSnapshotAsync(IContainer container, ConfigurationStub configuration)
 		{
 			IExecutor<IDataSourceSnapshotConfiguration> dataSourceSnapshotExecutor = container.Resolve<IExecutor<IDataSourceSnapshotConfiguration>>();
-			
+
 			ExecutionResult dataSourceExecutorResult = await dataSourceSnapshotExecutor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
-			
+
 			return dataSourceExecutorResult.Status;
 		}
 
 		private static async Task<ExecutionStatus> PartitionDataSourceSnapshotAsync(IContainer container, ConfigurationStub configuration)
 		{
 			IExecutor<ISnapshotPartitionConfiguration> snapshotPartitionExecutor = container.Resolve<IExecutor<ISnapshotPartitionConfiguration>>();
-			
+
 			ExecutionResult snapshotPartitionExecutorResult = await snapshotPartitionExecutor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
-			
+
 			return snapshotPartitionExecutorResult.Status;
 		}
 

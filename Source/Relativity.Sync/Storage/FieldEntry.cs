@@ -6,7 +6,7 @@ namespace Relativity.Sync.Storage
 	/// Retrieves fields from the data source that users can map in the Relativity UI.
 	/// </summary>
 	[Serializable]
-	internal sealed class FieldEntry
+	public sealed class FieldEntry
 	{
 		/// <summary>
 		/// Gets or sets a user-friendly name for display in the Relativity UI.

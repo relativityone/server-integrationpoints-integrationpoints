@@ -1,8 +1,8 @@
-﻿using NUnit.Framework;
-using System;
+﻿using System;
 using System.Configuration;
+using NUnit.Framework;
 
-namespace Relativity.Sync.Tests.System
+namespace Relativity.Sync.Tests.System.Core
 {
 	public static class AppSettings
 	{

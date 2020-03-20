@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Linq;
+using System.Threading.Tasks;
 using kCura.Relativity.DataReaderClient;
 
-namespace Relativity.Sync.Tests.System.Helpers
+namespace Relativity.Sync.Tests.System.Core.Helpers
 {
 	internal static class ImportJobExecutor
 	{

@@ -66,7 +66,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			var configuration = new Mock<Sync.Storage.IConfiguration>();
 			setupConfigurationMockAction(configuration);
 
-			var syncJobParameters = new SyncJobParameters(syncConfigurationArtifactId, _WORKSPACE_ARTIFACT_ID, 1, 1);
+			var syncJobParameters = new SyncJobParameters(syncConfigurationArtifactId, _WORKSPACE_ARTIFACT_ID, 1);
 			var sut = new JobStatusConsolidationConfiguration(configuration.Object, syncJobParameters);
 			return sut;
 		}

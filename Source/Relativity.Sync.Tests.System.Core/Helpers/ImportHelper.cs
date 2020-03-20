@@ -5,7 +5,7 @@ using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
 using Relativity.Services.ServiceProxy;
 
-namespace Relativity.Sync.Tests.System.Helpers
+namespace Relativity.Sync.Tests.System.Core.Helpers
 {
 	internal sealed class ImportHelper
 	{

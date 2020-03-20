@@ -1,8 +1,7 @@
-﻿using kCura.Relativity.ImportAPI;
-using kCura.Relativity.DataReaderClient;
-using Relativity.Sync.Tests.System.Stubs;
+﻿using kCura.Relativity.DataReaderClient;
+using kCura.Relativity.ImportAPI;
 
-namespace Relativity.Sync.Tests.System.Helpers
+namespace Relativity.Sync.Tests.System.Core.Helpers
 {
 	internal static class ImportJobFactory
 	{

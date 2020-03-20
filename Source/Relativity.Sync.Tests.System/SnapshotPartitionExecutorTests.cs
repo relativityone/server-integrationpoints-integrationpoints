@@ -13,7 +13,8 @@ using Relativity.Sync.Executors;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
-using Relativity.Sync.Tests.System.Helpers;
+using Relativity.Sync.Tests.System.Core;
+using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Testing.Identification;
 
 namespace Relativity.Sync.Tests.System

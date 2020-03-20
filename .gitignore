@@ -348,3 +348,7 @@ buildtools/*
 coverage.cobertura.xml
 
 /nuget
+*/.ionide/*
+/.ionide/*
+/FunctionalTest.runsettings
+/FunctionalTestSettings

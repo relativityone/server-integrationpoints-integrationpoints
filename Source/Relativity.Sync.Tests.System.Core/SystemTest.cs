@@ -4,9 +4,9 @@ using kCura.Relativity.Client;
 using NUnit.Framework;
 using Relativity.Services.ServiceProxy;
 
-namespace Relativity.Sync.Tests.System
+namespace Relativity.Sync.Tests.System.Core
 {
-	public abstract class SystemTest : IDisposable 
+	public abstract class SystemTest : IDisposable
 	{
 		protected IRSAPIClient Client { get; private set; }
 		protected ServiceFactory ServiceFactory { get; private set; }
@@ -39,7 +39,7 @@ namespace Relativity.Sync.Tests.System
 		protected virtual void ChildSuiteTeardown()
 		{
 		}
-		
+
 		protected virtual void Dispose(bool disposing)
 		{
 			Client?.Dispose();

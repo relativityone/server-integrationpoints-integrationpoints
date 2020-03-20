@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Relativity.Sync.Tests.System
+namespace Relativity.Sync.Tests.System.Core
 {
 	internal sealed class ConsoleLogger : ISyncLog
 	{

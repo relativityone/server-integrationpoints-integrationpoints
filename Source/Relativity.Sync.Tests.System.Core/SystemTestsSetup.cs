@@ -6,7 +6,7 @@ using Relativity.Services.InstanceSetting;
 using Relativity.Services.ServiceProxy;
 using Relativity.Sync.Logging;
 
-namespace Relativity.Sync.Tests.System
+namespace Relativity.Sync.Tests.System.Core
 {
 	/// <summary>
 	///     This class sets up test environment for every test in this namespace

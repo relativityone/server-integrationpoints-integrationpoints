@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Relativity.Sync.Storage;
 
-namespace Relativity.Sync.Tests.System.Stubs
+namespace Relativity.Sync.Tests.System.Core.Stubs
 {
 	internal sealed class BatchStub : IBatch
 	{

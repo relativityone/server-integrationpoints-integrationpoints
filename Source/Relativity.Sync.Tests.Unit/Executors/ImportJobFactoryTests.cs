@@ -40,7 +40,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_jobHistoryErrorRepository = new Mock<IJobHistoryErrorRepository>();
 			_instanceSettings = new Mock<IInstanceSettings>();
 			_instanceSettings.Setup(x => x.GetWebApiPathAsync(default(string))).ReturnsAsync("http://fake.uri");
-			_syncJobParameters = new SyncJobParameters(0, 0, 0, 0)
+			_syncJobParameters = new SyncJobParameters(0, 0, 0)
 			{
 				SyncApplicationName = "Test App"
 			};

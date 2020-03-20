@@ -13,9 +13,10 @@ using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Tests.Common;
-using Relativity.Sync.Tests.System.Helpers;
-using Relativity.Sync.Tests.System.Stubs;
+using Relativity.Sync.Tests.System.Core;
+using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Testing.Identification;
+using ImportJobFactory = Relativity.Sync.Tests.System.Core.Helpers.ImportJobFactory;
 
 namespace Relativity.Sync.Tests.System
 {
@@ -99,7 +100,7 @@ namespace Relativity.Sync.Tests.System
 
 			// Act
 			var repository = new SourceWorkspaceTagRepository(serviceFactoryStub, logger,
-				new SyncMetrics(Enumerable.Empty<ISyncMetricsSink>(), new SyncJobParameters(int.MaxValue, testSourceCaseArtifactId, int.MaxValue, testJobHistoryArtifactId)),
+				new SyncMetrics(Enumerable.Empty<ISyncMetricsSink>(), new SyncJobParameters(int.MaxValue, testSourceCaseArtifactId, testJobHistoryArtifactId)),
 				fieldMappings.Object);
 
 			IList<TagDocumentsResult<string>> results = await repository.TagDocumentsAsync(configuration, documentsToTag, CancellationToken.None).ConfigureAwait(false);
@@ -125,7 +126,7 @@ namespace Relativity.Sync.Tests.System
 			int destinationFolderId = await Rdos.GetRootFolderInstance(ServiceFactory, _destinationWorkspaceArtifactId).ConfigureAwait(false);
 			ImportDataTableWrapper importDataTableWrapper = DataTableFactory.GenerateDocumentsWithExtractedText(numDocuments);
 
-			ImportBulkArtifactJob documentImportJob = Helpers.ImportJobFactory.CreateNonNativesDocumentImportJob(_destinationWorkspaceArtifactId, destinationFolderId, importDataTableWrapper);
+			ImportBulkArtifactJob documentImportJob = ImportJobFactory.CreateNonNativesDocumentImportJob(_destinationWorkspaceArtifactId, destinationFolderId, importDataTableWrapper);
 
 			ImportJobErrors importErrors = await ImportJobExecutor.ExecuteAsync(documentImportJob).ConfigureAwait(false);
 			Assert.IsTrue(importErrors.Success, $"{importErrors.Errors.Count} errors occurred during document upload: {importErrors}");

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using kCura.Relativity.ImportAPI;
 using Relativity.Sync.Executors;
 
-namespace Relativity.Sync.Tests.System.Stubs
+namespace Relativity.Sync.Tests.System.Core.Stubs
 {
 	internal sealed class ImportApiFactoryStub : IImportApiFactory
 	{

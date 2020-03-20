@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Relativity.Sync.Storage;
 
-namespace Relativity.Sync.Tests.System.Stubs
+namespace Relativity.Sync.Tests.System.Core.Stubs
 {
 	internal sealed class BatchRepositoryStub : IBatchRepository
 	{
