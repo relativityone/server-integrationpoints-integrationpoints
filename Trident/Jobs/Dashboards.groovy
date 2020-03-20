@@ -12,11 +12,11 @@ node('role-build-agent')
                     extensions: scm.extensions + [[$class: 'CloneOption', depth: 3, noTags: false, reference: '', shallow: false, timeout: 30], [$class: 'CleanBeforeCheckout']],
                     userRemoteConfigs: scm.userRemoteConfigs
                 ])
-
+            }
+            stage ('Update dashboard')
+            {
                 dir('\\Trident\\Scripts')
                 {
-                    jenkinsHelper = load pwd() + '/JenkinsHelpers.groovy'
-                    hopperHelper = load pwd() + '/HopperHelpers.groovy'
                     def secrets = [
                         [ secretType: 'Secret', name: 'FunctionAuthorizationKey', version: '', envVariable: 'FunctionAuthorizationKey' ]
                     ]
@@ -24,7 +24,7 @@ node('role-build-agent')
                     withAzureKeyvault(azureKeyVaultSecrets: secrets,
                         keyVaultURLOverride: 'https://relativitysynckv.vault.azure.net/')
                     {
-                        buildOwner = hopperHelper.getBuildOwner(bbUsername, bbPassword)
+                        powershell 'updateSplunkDashboard.ps1'
                     }
                 }
             }
