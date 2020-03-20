@@ -1,10 +1,7 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
-using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Newtonsoft.Json;
 using NUnit.Framework;
 using Relativity.Sync.Dashboards;
 using Relativity.Sync.Dashboards.Api;
@@ -55,7 +52,7 @@ namespace UnitTests
 			Fields fields = new Fields()
 			{
 				Summary = "summary",
-				Labels = new[] {"label1", "label2"},
+				Labels = new[] { "label1", "label2" },
 				IssueType = new IssueType()
 				{
 					Name = "Incident"
@@ -83,7 +80,7 @@ namespace UnitTests
 			await _sut.UpdateSplunkKVStoreAsync().ConfigureAwait(false);
 
 			// Assert
-			_splunkApiMock.Verify(x => x.ClearKVStoreCollectionAsync(It.Is<string>(name => name == _appSettingsFake.SplunkKVCollectionName)));
+			_splunkApiMock.Verify(x => x.ClearKVStoreCollectionAsync(It.Is<string>(name => name == _appSettingsFake.SplunkKVCollectionName)), Times.Once);
 
 			foreach (SyncIssueDTO dto in _syncIssuesFake)
 			{

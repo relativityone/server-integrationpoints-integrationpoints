@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -21,8 +20,6 @@ namespace Relativity.Sync.Dashboards
 {
     public static class Function
     {
-	    const string AppSettingsFileName = "appsettings.json";
-
 	    [FunctionName("Function")]
 	    public static async Task<IActionResult> Run(
 		    [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)]
@@ -32,21 +29,22 @@ namespace Relativity.Sync.Dashboards
 		    try
 		    {
 			    AppSettings appSettings = GetAppSettings(log);
-			    List<SyncIssueDTO> syncIssues = await ReadSyncIssuesDTOAsync(log, req.Body).ConfigureAwait(false);
+				List<SyncIssueDTO> syncIssues = await ReadSyncIssuesDTOAsync(log, req.Body).ConfigureAwait(false);
 
-			    if (!syncIssues.Any())
-			    {
-				    return new NoContentResult();
-			    }
+				if (!syncIssues.Any())
+				{
+					return new NoContentResult();
+				}
 
-			    IJiraApi jiraApi = CreateJiraApi(log, appSettings);
-			    ISplunkApi splunkApi = CreateSplunkApi(log, appSettings);
+				IAuthTokenGenerator authTokenGenerator = new BasicAuthTokenGenerator();
+				IJiraApi jiraApi = CreateJiraApi(log, appSettings, authTokenGenerator);
+				ISplunkApi splunkApi = CreateSplunkApi(log, appSettings, authTokenGenerator);
 
-			    SplunkKVStoreUpdater splunkKvStoreUpdater =
-				    new SplunkKVStoreUpdater(appSettings, jiraApi, splunkApi, syncIssues, log);
-			    await splunkKvStoreUpdater.UpdateSplunkKVStoreAsync().ConfigureAwait(false);
-			    return new OkResult();
-		    }
+				SplunkKVStoreUpdater splunkKvStoreUpdater =
+				 new SplunkKVStoreUpdater(appSettings, jiraApi, splunkApi, syncIssues, log);
+				await splunkKvStoreUpdater.UpdateSplunkKVStoreAsync().ConfigureAwait(false);
+				return new OkResult();
+			}
 		    catch (JsonSerializationException ex)
 		    {
 			    return new BadRequestObjectResult(
@@ -67,15 +65,18 @@ namespace Relativity.Sync.Dashboards
 	    }
 
 	    private static AppSettings GetAppSettings(ILogger log)
-	    {
-		    string settingsFilePath = Path.Combine(Environment.CurrentDirectory, AppSettingsFileName);
-			log.LogInformation("Loading configuration from file {path}", settingsFilePath);
+		{
+			log.LogInformation("Loading application settings");
 
-		    AppSettings settings = new AppSettings();
-		    new ConfigurationBuilder().AddJsonFile(settingsFilePath).Build().Bind(settings);
+			AppSettings settings = new AppSettings();
+			IConfigurationRoot configurationRoot = new ConfigurationBuilder()
+				.AddEnvironmentVariables() // load settings from Azure Key Vault as environment variables
+				.Build();
 
-		    return settings;
-	    }
+			configurationRoot.Bind(settings);
+
+			return settings;
+		}
 
 		private static async Task<List<SyncIssueDTO>> ReadSyncIssuesDTOAsync(ILogger log, Stream stream)
         {
@@ -96,15 +97,14 @@ namespace Relativity.Sync.Dashboards
             }
         }
 
-        private static IJiraApi CreateJiraApi(ILogger log, AppSettings settings)
+        private static IJiraApi CreateJiraApi(ILogger log, AppSettings settings, IAuthTokenGenerator authTokenGenerator)
         {
             log.LogInformation("Creating JIRA Api for URL: {jiraUrl}", settings.JiraURL);
 	        try
 	        {
 				HttpClient jiraHttpClient = RestService.CreateHttpClient(settings.JiraURL, new RefitSettings());
-				string authToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(settings.JiraUserName + ":" + settings.JiraUserPassword));
-		        string authHeader = $"Basic {authToken}";
-				jiraHttpClient.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(authHeader);
+		        string authToken = authTokenGenerator.GetAuthToken(settings.JiraUserName, settings.JiraUserPassword);
+				jiraHttpClient.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(authToken);
 
 				IJiraApi jiraApi = RestService.For<IJiraApi>(jiraHttpClient);
 		        return jiraApi;
@@ -116,7 +116,7 @@ namespace Relativity.Sync.Dashboards
 	        }
         }
 
-        private static ISplunkApi CreateSplunkApi(ILogger log, AppSettings settings)
+        private static ISplunkApi CreateSplunkApi(ILogger log, AppSettings settings, IAuthTokenGenerator authTokenGenerator)
         {
 			log.LogInformation("Creating Splunk API for URL: {splunkURL}", settings.SplunkURL);
 	        try
@@ -128,7 +128,8 @@ namespace Relativity.Sync.Dashboards
 				        ServerCertificateCustomValidationCallback = (message, certificate2, arg3, arg4) => true
 			        }
 		        });
-		        splunkHttpClient.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse($"Bearer {settings.SplunkAccessToken}");
+				string authToken = authTokenGenerator.GetAuthToken(settings.SplunkUser, settings.SplunkPassword);
+		        splunkHttpClient.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(authToken);
             
 		        ISplunkApi splunkApi = RestService.For<ISplunkApi>(splunkHttpClient);
 		        return splunkApi;

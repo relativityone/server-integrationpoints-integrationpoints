@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Refit;
@@ -74,6 +75,7 @@ namespace Relativity.Sync.Dashboards
 			{
 				_logger.LogInformation("Fetching Jira ticket information: {jira}", jira);
 				JiraTicketInfo jiraTicket = await _jiraApi.GetIssueAsync(jira).ConfigureAwait(false);
+				jiraTicket.Fields.Labels = jiraTicket.Fields.Labels.Where(x => x.StartsWith("sync-")).ToArray();
 				return jiraTicket;
 			}
 			catch (ApiException ex)
