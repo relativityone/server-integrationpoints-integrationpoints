@@ -1,4 +1,3 @@
-@Library('ProjectMayhem@v1')_
 
 node('role-build-agent')
     {
