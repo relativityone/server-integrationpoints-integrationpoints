@@ -8,13 +8,13 @@
 		<CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
 		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
 		<ResolveNugetPackages>true</ResolveNugetPackages>
-		<IsTestProject>false</IsTestProject>
+		<IsTestProject>true</IsTestProject>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-		<OutputPath>bin\Debug\</OutputPath>
+		<OutputPath>bin\</OutputPath>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-		<OutputPath>bin\Release\</OutputPath>
+		<OutputPath>bin\</OutputPath>
 	</PropertyGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Relativity.Sync.Tests.Common\Relativity.Sync.Tests.Common.csproj" />
@@ -54,8 +54,14 @@
 		<None Update="Data\NativesAndExtractedText\NATIVES\REL0000above.htm">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
+		<None Update="Data\NativesAndExtractedText\NATIVES\REL0000above.txt">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 		<None Update="Data\NativesAndExtractedText\NATIVES\REL0000below.htm">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Data\NativesAndExtractedText\NATIVES\REL0000below.txt">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 		<None Update="Data\NativesAndExtractedText\TEXT\AMEYERS_0000757.txt">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

@@ -10,8 +10,6 @@ function Invoke-Task ($Task) {
 
 Invoke-Task Compile
 
-Invoke-Task UnitTest
+Invoke-Task Test
 
-Invoke-Task IntegrationTest
-
-Invoke-Task SystemTest
+Invoke-Task FunctionalTest
