@@ -1,5 +1,3 @@
-@Library('PipelineTools@master') _
-
 node('role-build-agent')
     {
         try
@@ -21,8 +19,7 @@ node('role-build-agent')
                         [ secretType: 'Secret', name: 'FunctionAuthorizationKey', version: '', envVariable: 'FunctionAuthorizationKey' ]
                     ]
 
-                    withAzureKeyvault(azureKeyVaultSecrets: secrets,
-                        keyVaultURLOverride: 'https://relativitysynckv.vault.azure.net/')
+                    withAzureKeyvault(azureKeyVaultSecrets: secrets, keyVaultURLOverride: 'https://relativitysynckv.vault.azure.net/')
                     {
                         powershell './updateSplunkDashboard.ps1'
                     }
