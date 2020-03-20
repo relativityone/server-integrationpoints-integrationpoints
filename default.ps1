@@ -56,6 +56,7 @@ task buildAndSign -depends sign, build {
 }
 
 task packNuget {
+    & (Join-Path $scriptsDir "move-output.ps1") -Source (Join-Path $sourceDir "$projectName\bin") -Destination (Join-Path $sourceDir "$projectName\bin\net462")
     & (Join-Path $scriptsDir "pack-paket.ps1") -packageVersion $packageVersion -paketExe $paketExe -nugetOutput $nugetOutput
 }
 

@@ -43,7 +43,7 @@ Task Test -Description "Run Unit and Integration Tests without coverage" {
 
 Task FunctionalTest -Description "Run tests that require a deployed environment." {
     $LogPath = Join-Path $LogsDir "SystemTestResults.xml"
-    Invoke-Tests -WhereClause "namespace =~ Tests.System" -OutputFile $LogPath
+    Invoke-Tests -WhereClause "namespace =~ Tests.System" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
 }
 
 Task Sign -Description "Sign all files" {
@@ -57,13 +57,13 @@ Task Sign -Description "Sign all files" {
 
 Task Package -Description "Package up the build artifacts" {
     Initialize-Folder $ArtifactsDir -Safe
-    exec { dotnet @("pack", $Solution,
-            ("--no-build"),
-            ("/property:Configuration=$BuildConfig"),
-            ("/consoleloggerparameters:Summary"),
-            ("/maxcpucount"),
-            ("/nologo"))
-    }
+
+    # It has to be reconsidered
+    $syncBin = Join-Path $SourceDir "\Relativity.Sync\bin"
+    Move-Output -Source $syncBin -Destination "$syncBin\net462"
+    
+    & $paketExe pack $ArtifactsDir --include-referenced-projects --symbols
+
     Save-PDBs -SourceDir $SourceDir -ArtifactsDir $ArtifactsDir
 }
 
@@ -138,5 +138,25 @@ function Invoke-Tests
             "--result=$OutputFile" `
             $settings
         }
+    }
+}
+
+function Move-Output
+{
+    param (
+        [Parameter(Mandatory=$true)]
+        [String] $Source,
+        [Parameter(Mandatory=$true)]
+        [String] $Destination
+    )
+
+    $childItems = Get-ChildItem $Source
+
+    if(-not (Test-Path $Destination)) {
+        New-Item $Destination -ItemType Directory
+    }
+
+    $childItems | ForEach-Object {
+        Copy-Item -Path $_.FullName -Destination $Destination -Recurse -Force
     }
 }
