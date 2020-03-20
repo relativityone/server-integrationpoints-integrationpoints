@@ -150,17 +150,17 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					$"AND " +
 					$"'{IntegrationPointFields.DestinationProvider}' == {destinationProviderArtifactID}",
 				Fields = new IntegrationPoint().ToFieldList().Where(field => 
-					(field.Guid != IntegrationPointFieldGuids.FieldMappingsGuid)
-					&& (field.Guid != IntegrationPointFieldGuids.SourceConfigurationGuid)
-					&& (field.Guid != IntegrationPointFieldGuids.DestinationConfigurationGuid))
+					(field.Guid != IntegrationPointFieldGuids.SourceConfigurationGuid)
+					&& (field.Guid != IntegrationPointFieldGuids.DestinationConfigurationGuid)
+					&& (field.Guid != IntegrationPointFieldGuids.FieldMappingsGuid))
 			};
 			IList<IntegrationPoint> integrationPoints = Query(_workspaceID, query);
 
 			foreach (IntegrationPoint integrationPoint in integrationPoints)
 			{
-				integrationPoint.FieldMappings = await GetFieldMappingsAsync(integrationPoint.ArtifactId).ConfigureAwait(false);
 				integrationPoint.SourceConfiguration = await GetSourceConfigurationAsync(integrationPoint.ArtifactId).ConfigureAwait(false);
 				integrationPoint.DestinationConfiguration = await GetDestinationConfigurationAsync(integrationPoint.ArtifactId).ConfigureAwait(false);
+				integrationPoint.FieldMappings = await GetFieldMappingsAsync(integrationPoint.ArtifactId).ConfigureAwait(false);
 			}
 
 			return integrationPoints;
