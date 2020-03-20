@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
@@ -10,8 +12,11 @@ using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using NUnit.Framework;
+using Relativity.API;
+using Relativity.Productions.Services;
 using Relativity.Testing.Identification;
 using static kCura.IntegrationPoints.Core.Constants.IntegrationPoints;
 
@@ -82,7 +87,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 		}
 
 		[IdentifiedTest("d955fd5a-1cb3-4d0f-977a-5b4355f2bbb5")]
-		public void ProductionBillingTest_ShouldHaveBilledFilesInDestinationWorkspace_WhenUserPushesProductionWithCopyFilesTrue()
+		public void ProductionBillingTest_ShouldHaveBilledFilesInDestinationWorkspace_WhenUserPushesProductionToProductionWithCopyFilesTrue()
 		{
 			// Arrange
 			IntegrationPointModel integrationModel = GetRelativityProviderIntegrationPointModel(
@@ -101,7 +106,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 		}
 
 		[IdentifiedTest("d955fd5a-1cb3-4d0f-977a-5b4355f2bbb6")]
-		public void ProductionBillingTest_ShouldNotHaveBilledFilesInDestinationWorkspace_WhenUserPushesProductionWithCopyFilesFalse()
+		public void ProductionBillingTest_ShouldNotHaveBilledFilesInDestinationWorkspace_WhenUserPushesProductionToProductionWithCopyFilesFalse()
 		{
 			// Arrange
 			IntegrationPointModel integrationModel = GetRelativityProviderIntegrationPointModel(
@@ -140,37 +145,26 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(IntegrationPointTypes.ExportGuid).ArtifactId
 			};
 		}
-
-		private string GetImagesDestinationConfiguration(bool copyFilesToDocumentRepository, ImportOverwriteModeEnum overwriteMode = ImportOverwriteModeEnum.AppendOverlay)
-		{
-			ImportSettings destinationConfiguration = new ImportSettings()
-			{
-				ArtifactTypeId = (int)kCura.Relativity.Client.ArtifactType.Document,
-				DestinationProviderType = DestinationProviders.RELATIVITY,
-				CaseArtifactId = _targetWorkspaceArtifactID,
-				DestinationFolderArtifactId = GetRootFolder(Helper, _targetWorkspaceArtifactID),
-				Provider = RELATIVITY_PROVIDER_NAME,
-				FieldOverlayBehavior = "Use Field Settings",
-				ExtractedTextFileEncoding = "UTF-8",
-				ImageImport = true,
-				CopyFilesToDocumentRepository = copyFilesToDocumentRepository,
-				ImportNativeFileCopyMode = copyFilesToDocumentRepository ? ImportNativeFileCopyModeEnum.CopyFiles : ImportNativeFileCopyModeEnum.DoNotImportNativeFiles,
-				ImportOverwriteMode = overwriteMode,
-			};
-
-			return Serializer.Serialize(destinationConfiguration);
-		}
-
-		private string GetProductionDestinationConfiguration(bool copyFilesToDocumentRepository)
+		
+		private string GetProductionDestinationConfiguration(bool copyFilesToDocumentRepository, ImportOverwriteModeEnum overwriteMode = ImportOverwriteModeEnum.AppendOverlay)
 		{
 			ImportSettings destinationConfiguration = new ImportSettings()
 			{
 				ArtifactTypeId = (int)ArtifactType.Document,
+				DestinationProviderType = DestinationProviders.RELATIVITY,
+				CaseArtifactId = _targetWorkspaceArtifactID,
 				Provider = RELATIVITY_PROVIDER_NAME,
+				FieldOverlayBehavior = "Use Field Settings",
+				ExtractedTextFileEncoding = Encoding.Unicode.EncodingName,
+				ImportOverwriteMode = overwriteMode,
+				ImportNativeFile = copyFilesToDocumentRepository,
+				ImportNativeFileCopyMode = copyFilesToDocumentRepository ? ImportNativeFileCopyModeEnum.CopyFiles : ImportNativeFileCopyModeEnum.DoNotImportNativeFiles,
 				ProductionImport = true,
 				ProductionArtifactId = _targetProductionId,
+				IdentifierField = "Control Number",
+				ProductionPrecedence = "0",
 				ImageImport = true,
-				CopyFilesToDocumentRepository = copyFilesToDocumentRepository
+				ImagePrecedence = new List<ProductionDTO>(),
 			};
 
 			return Serializer.Serialize(destinationConfiguration);
