@@ -1,18 +1,26 @@
 ﻿using NUnit.Framework;
 using Relativity.Sync.Tests.Performance.Helpers;
+using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Relativity.Sync.Tests.Performance
 {
 	[TestFixture]
 	public class DummyTests : PerformanceTestsBase
 	{
-		[Test]
-		public void Test()
+		[SetUp]
+		public void SetUp()
 		{
-			string filePath = StorageHelper.DownloadFile("1014823_New_Case_Template_20200316110000.zip", Path.GetTempPath());
+			ARMHelper.EnableAgents();
+		}
 
-			ARMHelper.RestoreWorkspace(filePath);
+		[Test]
+		public async Task Test()
+		{
+			string filePath = await StorageHelper.DownloadFileAsync("TestWorkspace.zip", Path.GetTempPath()).ConfigureAwait(false);
+
+			await ARMHelper.RestoreWorkspaceAsync(filePath).ConfigureAwait(false);
 		}
 	}
 }

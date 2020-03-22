@@ -1,12 +1,13 @@
 ﻿using Relativity.Automation.Utility;
 using Relativity.Services.InstanceSetting;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Relativity.Sync.Tests.Performance
 {
 	public static class RTFSubstitute
 	{
-		public static async Task CreateInstanceSettingIfNotExist(IKeplerServiceFactory serviceFactory,
+		public static async Task CreateOrUpdateInstanceSetting(IKeplerServiceFactory serviceFactory,
 			string name, string section, ValueType valueType, string value)
 		{
 			using (IInstanceSettingManager settingManager = serviceFactory.GetAdminServiceProxy<IInstanceSettingManager>())
@@ -17,7 +18,13 @@ namespace Relativity.Sync.Tests.Performance
 				};
 				InstanceSettingQueryResultSet settingResult = await settingManager.QueryAsync(query).ConfigureAwait(false);
 
-				if (settingResult.TotalCount == 0)
+				if (settingResult.Results.Any())
+				{
+					Services.InstanceSetting.InstanceSetting setting = settingResult.Results.Single().Artifact;
+					setting.Value = value;
+					await settingManager.UpdateSingleAsync(setting).ConfigureAwait(false);
+				}
+				else
 				{
 					Services.InstanceSetting.InstanceSetting setting = new Services.InstanceSetting.InstanceSetting()
 					{

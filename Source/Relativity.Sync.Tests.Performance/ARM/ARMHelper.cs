@@ -1,41 +1,55 @@
-﻿using Relativity.Automation.Utility;
+﻿using Refit;
+using Relativity.Automation.Utility;
 using Relativity.Automation.Utility.Api;
 using Relativity.Automation.Utility.Models;
 using Relativity.Automation.Utility.Orchestrators;
 using Relativity.Services.Interfaces.LibraryApplication.Models;
+using Relativity.Sync.Tests.Performance.ARM.Contracts;
 using Relativity.Sync.Tests.Performance.Helpers;
+using Relativity.Sync.Tests.System;
 using System;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
+using System.Threading.Tasks;
+using SettingType = Relativity.Services.InstanceSetting.ValueType;
 
 namespace Relativity.Sync.Tests.Performance.ARM
 {
 	public class ARMHelper
 	{
-		private bool _isInitialized;
+		private static bool _isInitialized;
+
 		private readonly ApiComponent _component;
+		private readonly IARMApi _armApi;
 		private readonly FileShareHelper _fileShare;
-		private readonly RequestProvider _requestProvider;
-		private readonly AzureStorageHelper _storageHelper;
+		private readonly AzureStorageHelper _storage;
 
 		public const string RELATIVE_ARCHIVES_LOCATION = @"DefaultFileRepository\Archives"; //FileRepositoryID
 
 		private static string REMOTE_ARCHIVES_LOCATION => Path.Combine(@"\\emttest\", RELATIVE_ARCHIVES_LOCATION);
 
-		private ARMHelper(FileShareHelper fileShare, AzureStorageHelper storageHelper)
+		private ARMHelper(IARMApi armApi, FileShareHelper fileShare, AzureStorageHelper storage)
 		{
 			_component = RelativityFacade.Instance.GetComponent<ApiComponent>();
 
+			_armApi = armApi;
 			_fileShare = fileShare;
-			_storageHelper = storageHelper;
-			_requestProvider = new RequestProvider(_component);
+			_storage = storage;
 		}
 
 		public static ARMHelper CreateInstance()
 		{
+			HttpClient armClient = RestService.CreateHttpClient(
+				AppSettings.RelativityRestUrl.AbsoluteUri,
+				new RefitSettings());
+			armClient.DefaultRequestHeaders.Authorization = 
+				AuthenticationHeaderValue.Parse($"Basic {AppSettings.BasicAccessToken}");
+
 			ARMHelper instance = new ARMHelper(
+				RestService.For<IARMApi>(armClient),
 				FileShareHelper.CreateInstance(),
 				AzureStorageHelper.CreateFromTestConfig());
 
@@ -59,29 +73,6 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			}
 		}
 
-		public void EnableAgents()
-		{
-			CreateAgent("ARM Agent");
-			CreateAgent("ARM Metric Agent");
-			CreateAgent("Structured Analytics Manager");
-			CreateAgent("Structured Analytics Worker");
-
-			//Wait till all agents will be enabled
-		}
-
-		public void RestoreWorkspace(string archivedWorkspace)
-		{
-			string uploadedFile = _fileShare.UploadFile(archivedWorkspace, RELATIVE_ARCHIVES_LOCATION);
-
-			string archivedWorkspacePath = Path.Combine(REMOTE_ARCHIVES_LOCATION, Path.GetFileNameWithoutExtension(uploadedFile));
-
-			int jobID = CreateRestoreJob(archivedWorkspacePath);
-
-			RunJob(jobID);
-
-			//Wait till job end
-		}
-
 		private bool IsInstalled()
 		{
 			LibraryApplicationResponse app = new LibraryApplicationResponse() { Name = "ARM" };
@@ -96,24 +87,18 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			IOrchestrateRelativityApplications applicationsOrchestrator =
 				_component.OrchestratorFactory.Create<IOrchestrateRelativityApplications>();
 
-			LibraryApplicationResponse app = new LibraryApplicationResponse() { Name = "ARM" };
-			bool isAppInstalled = applicationsOrchestrator.IsApplicationInstalledInLibrary(app);
+			string rapPath = GetARMRapPath();
 
-			if (!isAppInstalled)
-			{
-				string rapPath = GetARMRapPath();
-
-				LibraryApplicationRequestOptions options = new LibraryApplicationRequestOptions() { CreateIfMissing = true };
-				applicationsOrchestrator.InstallRelativityApplicationToLibrary(rapPath, options);
-			}
+			LibraryApplicationRequestOptions options = new LibraryApplicationRequestOptions() { CreateIfMissing = true };
+			applicationsOrchestrator.InstallRelativityApplicationToLibrary(rapPath, options);
 		}
 
 		private string GetARMRapPath()
 		{
-			string rapPath = Path.Combine(Path.GetTempPath(), "ARM.rap");
-			if(!File.Exists(rapPath))
+			string rapPath = Path.Combine(Path.GetTempPath(), @"ARM.rap");
+			if (!File.Exists(rapPath))
 			{
-				rapPath = _storageHelper.DownloadFile(@"ARM\ARM.rap", Path.GetTempPath());
+				rapPath = _storage.DownloadFileAsync(@"ARM\ARM.rap", Path.GetTempPath()).Result;
 			}
 
 			return rapPath;
@@ -121,16 +106,24 @@ namespace Relativity.Sync.Tests.Performance.ARM
 
 		private void ConfigureARM()
 		{
-			_component.OrchestratorFactory.Create<IOrchestrateInstanceSettings>()
-				.SetInstanceSetting("BcpShareFolderName", @"\\emttest\BCPPath", "kCura.ARM", InstanceSettingValueTypeEnum.Text);
+			RTFSubstitute.CreateOrUpdateInstanceSetting(_component.ServiceFactory,
+				"BcpShareFolderName", "kCura.ARM", SettingType.Text, @"\\emttest\BCPPath").Wait();
+				
+			_fileShare.CreateDirectoryAsync(RELATIVE_ARCHIVES_LOCATION).Wait();
 
-			_fileShare.CreateDirectory(RELATIVE_ARCHIVES_LOCATION);
-
-			string request = _requestProvider.ConfigurationRequest(REMOTE_ARCHIVES_LOCATION);
-			SendAsync("Relativity.ARM/Configuration/SetConfigurationData", request);
+			ContractEnvelope<ArmConfiguration> request = ArmConfiguration.GetRequest(REMOTE_ARCHIVES_LOCATION);
+			_armApi.SetConfigurationAsync(request).Wait();
 		}
 
-		private void CreateAgent(string type, bool ensureNew = true)
+		public void EnableAgents(bool ensureNew = false)
+		{
+			EnableAgent("ARM Agent", ensureNew);
+			EnableAgent("ARM Metric Agent", ensureNew);
+			EnableAgent("Structured Analytics Manager", ensureNew);
+			EnableAgent("Structured Analytics Worker", ensureNew);
+		}
+
+		private void EnableAgent(string type, bool ensureNew = true)
 		{
 			IOrchestrateAgents agentsOrchestrator = _component.OrchestratorFactory.Create<IOrchestrateAgents>();
 
@@ -151,44 +144,45 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			agentsOrchestrator.GetBasicAgent(agent, ensureNew);
 		}
 
-		private int CreateRestoreJob(string archivedWorkspacePath)
+		public async Task RestoreWorkspaceAsync(string archivedWorkspace)
 		{
-			string request = _requestProvider.RestoreJobRequest(archivedWorkspacePath);
-			SendAsync("Relativity.ARM/Jobs/Restore/Create", request);
+			string uploadedFile = await _fileShare.UploadFileAsync(archivedWorkspace, RELATIVE_ARCHIVES_LOCATION).ConfigureAwait(false);
 
-			return 0; //TODO: Return proper Job ID
+			string archivedWorkspacePath = Path.Combine(REMOTE_ARCHIVES_LOCATION, Path.GetFileNameWithoutExtension(uploadedFile));
+
+			Job job = await CreateRestoreJobAsync(archivedWorkspacePath).ConfigureAwait(false);
+
+			await RunJobAsync(job).ConfigureAwait(false);
+
+			await WaitUntilJobIsCompleted(job).ConfigureAwait(false);
 		}
 
-		private void RunJob(int jobID)
+		private async Task<Job> CreateRestoreJobAsync(string archivedWorkspacePath)
 		{
-			string request = _requestProvider.RunJobRequest(jobID);
-			SendAsync("Relativity.ARM/Jobs/Action/Run", request);
+			ContractEnvelope<RestoreJob> request = RestoreJob.GetRequest(archivedWorkspacePath);
+			return await _armApi.CreateRestoreJobAsync(request).ConfigureAwait(false);
 		}
 
-		private static HttpResponseMessage SendAsync(string armUri, string request)
+		private async Task RunJobAsync(Job job)
 		{
-			using (HttpClient client = GetARMClient())
+			await _armApi.RunJobAsync(job).ConfigureAwait(false);
+		}
+
+		private async Task WaitUntilJobIsCompleted(Job job)
+		{
+			const int delay = 10000;
+			JobStatus jobStatus;
+			do
 			{
-				return client.PostAsync(
-					new Uri(TestSettingsConfig.RelativityRestUrl, armUri),
-					new StringContent(request, Encoding.UTF8, "application/json")).Result;
+				jobStatus = await _armApi.GetJobStatus(job).ConfigureAwait(false);
+				if(jobStatus.Status == "Errored")
+				{
+					throw new InvalidOperationException("Error occured during restoring workspace");
+				}
+
+				await Task.Delay(delay).ConfigureAwait(false);
 			}
-		}
-
-		private static HttpClient GetARMClient()
-		{
-			HttpClient client = new HttpClient();
-
-			client.BaseAddress = TestSettingsConfig.RelativityRestUrl;
-
-			string encodedUserAndPass = Convert.ToBase64String(
-				Encoding.ASCII.GetBytes($"{TestSettingsConfig.AdminUsername}:{TestSettingsConfig.AdminPassword}"));
-
-			client.DefaultRequestHeaders.Clear();
-			client.DefaultRequestHeaders.Add("X-CSRF-Header", "-");
-			client.DefaultRequestHeaders.Add("Authorization", $"Basic {encodedUserAndPass}");
-
-			return client;
+			while (jobStatus.Status != "Complete");
 		}
 	}
 }

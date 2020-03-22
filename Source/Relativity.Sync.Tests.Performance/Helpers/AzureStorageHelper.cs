@@ -1,5 +1,6 @@
 ﻿using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Blob;
+using Relativity.Sync.Tests.System;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,10 +24,10 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 
 		public static AzureStorageHelper CreateFromTestConfig()
 		{
-			return new AzureStorageHelper(TestSettingsConfig.AzureStorageConnection, TestSettingsConfig.AzureStoragePerformanceContainer);
+			return new AzureStorageHelper(AppSettings.AzureStorageConnection, AppSettings.AzureStoragePerformanceContainer);
 		}
 
-		public string DownloadFile(string filePath, string destinationPath, bool copySubfolders)
+		public async Task<string> DownloadFileAsync(string filePath, string destinationPath)
 		{
 			CloudBlockBlob blob = _container.GetBlockBlobReference(filePath);
 			if(blob == null)
@@ -34,11 +35,9 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 				throw new FileNotFoundException();
 			}
 
-			string outputFile = copySubfolders
-				? Path.Combine(destinationPath, Path.GetFileName(filePath))
-				: Path.Combine(destinationPath, filePath);
+			string outputFile = Path.Combine(destinationPath, Path.GetFileName(filePath));
 
-			blob.DownloadToFile(outputFile, FileMode.OpenOrCreate);
+			await blob.DownloadToFileAsync(outputFile, FileMode.OpenOrCreate).ConfigureAwait(false);
 
 			return outputFile;
 		}

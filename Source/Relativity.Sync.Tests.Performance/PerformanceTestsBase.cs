@@ -1,4 +1,5 @@
-﻿using Relativity.Automation.Utility;
+﻿using NUnit.Framework;
+using Relativity.Automation.Utility;
 using Relativity.Automation.Utility.Api;
 using Relativity.Sync.Tests.Performance.ARM;
 using Relativity.Sync.Tests.Performance.Helpers;
@@ -20,8 +21,6 @@ namespace Relativity.Sync.Tests.Performance
 			StorageHelper = AzureStorageHelper.CreateFromTestConfig();
 
 			ARMHelper = ARMHelper.CreateInstance();
-
-			ARMHelper.EnableAgents();
 		}
 	}
 }

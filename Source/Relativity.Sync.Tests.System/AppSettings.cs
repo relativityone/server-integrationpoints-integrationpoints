@@ -1,6 +1,8 @@
 ﻿using NUnit.Framework;
 using System;
 using System.Configuration;
+using System.Linq;
+using System.Text;
 
 namespace Relativity.Sync.Tests.System
 {
@@ -11,7 +13,7 @@ namespace Relativity.Sync.Tests.System
 		private static Uri _relativityWebApiUrl;
 		private static Uri _relativityUrl;
 
-		public static bool IsTrident => bool.Parse(GetConfigValue("IsTrident"));
+		public static bool IsSettingsFileSet => TestContext.Parameters.Names.Any();
 
 		public static string RelativityHostName => TestContext.Parameters.Exists("RelativityHostAddress")
 			? TestContext.Parameters["RelativityHostAddress"]
@@ -29,11 +31,17 @@ namespace Relativity.Sync.Tests.System
 
 		public static string RelativityUserPassword => GetConfigValue("AdminPassword");
 
+		public static string BasicAccessToken => Convert.ToBase64String(Encoding.ASCII.GetBytes($"{RelativityUserName}:{RelativityUserPassword}"));
+
 		public static string SqlServer => GetConfigValue("SqlServer");
 
 		public static string SqlUsername => GetConfigValue("SqlUsername");
 
 		public static string SqlPassword => GetConfigValue("SqlPassword");
+
+		public static string AzureStorageConnection => GetConfigValue(nameof(AzureStorageConnection));
+
+		public static string AzureStoragePerformanceContainer => GetConfigValue(nameof(AzureStoragePerformanceContainer));
 
 		public static bool SuppressCertificateCheck => bool.Parse(GetConfigValue("SuppressCertificateCheck"));
 

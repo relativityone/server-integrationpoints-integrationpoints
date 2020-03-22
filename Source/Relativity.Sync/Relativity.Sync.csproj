@@ -32,6 +32,9 @@
   </PropertyGroup>
   <Import Project="..\..\scripts\Build.Sign.targets" />
   <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="System.Web.Services" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />

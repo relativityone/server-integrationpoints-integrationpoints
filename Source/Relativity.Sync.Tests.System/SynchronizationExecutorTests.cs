@@ -110,7 +110,7 @@ namespace Relativity.Sync.Tests.System
 			ImportJobErrors importJobErrors = await importHelper.ImportDataAsync(sourceWorkspaceArtifactId, dataTableWrapper).ConfigureAwait(false);
 			Assert.IsTrue(importJobErrors.Success, $"IAPI errors: {string.Join(global::System.Environment.NewLine, importJobErrors.Errors)}");
 
-			if(AppSettings.IsTrident)
+			if(AppSettings.IsSettingsFileSet)
 			{
 				#region Hopper Instance workaround explanation
 				//This workaround was provided to omit Hopper Instance restrictions. IAPI which is executing on agent can't access file based on file location in database like '\\emttest\DefaultFileRepository\...'.

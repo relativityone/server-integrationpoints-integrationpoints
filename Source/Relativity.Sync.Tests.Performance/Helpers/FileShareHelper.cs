@@ -7,12 +7,14 @@ using Relativity.Automation.Utility.Api;
 using Relativity.Automation.Utility;
 using Relativity.Automation.Utility.Models;
 using Relativity.Automation.Utility.Orchestrators;
+using System.Threading.Tasks;
 
 namespace Relativity.Sync.Tests.Performance.Helpers
 {
 	public class FileShareHelper
 	{
-		private bool _isInitialized;
+		private static bool _isInitialized;
+
 		private readonly ApiComponent _component;
 		private readonly AzureStorageHelper _storageHelper;
 
@@ -27,7 +29,7 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 		{
 			FileShareHelper instance = new FileShareHelper(
 				AzureStorageHelper.CreateFromTestConfig());
-			
+
 			instance.Initialize();
 
 			return instance;
@@ -49,26 +51,6 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 			}
 		}
 
-		private void InstallARMTestServices()
-		{
-			string rapPath = GetTestServicesRapPath();
-
-			LibraryApplicationRequestOptions options = new LibraryApplicationRequestOptions() { CreateIfMissing = true };
-			_component.OrchestratorFactory.Create<IOrchestrateRelativityApplications>()
-				.InstallRelativityApplicationToLibrary(rapPath, options);
-		}
-
-		private string GetTestServicesRapPath()
-		{
-			string rapPath = Path.Combine(Path.GetTempPath(), "ARMTestServices.rap");
-			if (!File.Exists(rapPath))
-			{
-				rapPath = _storageHelper.DownloadFile(@"ARM\ARMTestServices.rap", Path.GetTempPath());
-			}
-
-			return rapPath;
-		}
-
 		private bool IsAppInstalled()
 		{
 			LibraryApplicationResponse app = new LibraryApplicationResponse() { Name = "ARM Test Services" };
@@ -78,27 +60,52 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 			return isAppInstalled;
 		}
 
-		public string UploadFile(string filePath, string directory)
+		private void InstallARMTestServices()
+		{
+			string rapPath = GetTestServicesRapPathAsync().Result;
+
+			LibraryApplicationRequestOptions options = new LibraryApplicationRequestOptions() { CreateIfMissing = true };
+			_component.OrchestratorFactory.Create<IOrchestrateRelativityApplications>()
+				.InstallRelativityApplicationToLibrary(rapPath, options);
+		}
+
+		private async Task<string> GetTestServicesRapPathAsync()
+		{
+			string rapPath = Path.Combine(Path.GetTempPath(), "ARMTestServices.rap");
+			if (!File.Exists(rapPath))
+			{
+				rapPath = await _storageHelper.DownloadFileAsync(@"ARM\ARMTestServices.rap", Path.GetTempPath()).ConfigureAwait(false);
+			}
+
+			return rapPath;
+		}
+
+		public async Task<string> UploadFileAsync(string filePath, string directory)
 		{
 			if(!Path.IsPathRooted(directory))
 			{
 				directory = Path.Combine(Path.GetPathRoot(Environment.SystemDirectory), directory);
 			}
 
-			string destinationFile = Path.Combine(directory, $"{Guid.NewGuid()}.zip");
+			string destinationFile = Path.Combine(directory, Path.GetFileName(filePath));
 
 			using (var fileShareManager = _component.ServiceFactory.GetAdminServiceProxy<IFileshareManager>())
+			using (var fileManager = _component.ServiceFactory.GetAdminServiceProxy<IFileManager>())
 			{
-				using (Stream stream = File.OpenRead(filePath)) //Temp path if only name
+				bool fileExists = await fileManager.FileExists(destinationFile).ConfigureAwait(false);
+				if (!fileExists)
 				{
-					fileShareManager.UploadStream(new KeplerStream(stream), destinationFile).GetAwaiter().GetResult();
+					using (Stream stream = File.OpenRead(filePath)) //Temp path if only name
+					{
+						await fileShareManager.UploadStream(new KeplerStream(stream), destinationFile).ConfigureAwait(false);
+					}
 				}
 			}
 
 			return destinationFile;
 		}
 
-		public void CreateDirectory(string directory)
+		public async Task CreateDirectoryAsync(string directory)
 		{
 			if (!Path.IsPathRooted(directory))
 			{
@@ -110,7 +117,7 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 				bool exists = directoryManager.DirectoryExists(directory).Result;
 				if(!exists)
 				{
-					directoryManager.DirectoryCreate(directory);
+					await directoryManager.DirectoryCreate(directory).ConfigureAwait(false);
 				}
 			}
 		}

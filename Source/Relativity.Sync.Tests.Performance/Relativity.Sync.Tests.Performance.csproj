@@ -9,9 +9,13 @@
 		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
 		<ResolveNugetPackages>true</ResolveNugetPackages>
 		<IsTestProject>true</IsTestProject>
+		<RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
 	</PropertyGroup>
 	<ItemGroup>
 		<None Remove="coverage.cobertura.xml" />
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\Relativity.Sync.Tests.System\Relativity.Sync.Tests.System.csproj" />
 	</ItemGroup>
 	<Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

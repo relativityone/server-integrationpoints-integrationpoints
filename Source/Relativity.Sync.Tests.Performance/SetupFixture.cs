@@ -2,6 +2,8 @@
 using Relativity.Automation.Utility;
 using Relativity.Automation.Utility.Api;
 using Relativity.Sync.Tests.Performance.ARM;
+using Relativity.Sync.Tests.System;
+using System.IO;
 
 namespace Relativity.Sync.Tests.Performance
 {
@@ -11,9 +13,9 @@ namespace Relativity.Sync.Tests.Performance
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
-			if (!TestSettingsConfig.IsSettingsFileSet)
+			if (!AppSettings.IsSettingsFileSet)
 			{
-				throw new System.IO.FileNotFoundException(
+				throw new FileNotFoundException(
 					@"*.runsettings File is not set. Set File in VS -> Test -> Select Settings File. If file doesn't exist generate it by .\Development Scripts\New-TestSettings.ps1.");
 			}
 

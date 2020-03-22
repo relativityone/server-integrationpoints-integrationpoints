@@ -60,6 +60,8 @@ NUGET
       NUnit (>= 3.7)
     NunitXml.TestLogger (2.1.41)
     Polly (5.9.0)
+    Refit (5.0.23)
+      Newtonsoft.Json (>= 12.0.3)
     Relativity (11.1.149.10)
     Relativity.API (12.0.1)
       System.Data.SqlClient (>= 4.6)

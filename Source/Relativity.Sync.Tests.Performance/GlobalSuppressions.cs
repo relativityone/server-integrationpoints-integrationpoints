@@ -9,7 +9,7 @@
 using System.Diagnostics.CodeAnalysis;
 
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:Identifiers should not contain underscores", Justification = "<Pending>", Scope = "module")]
-[assembly: SuppressMessage("Design", "CA1056:Uri properties should not be strings", Justification = "<Pending>", Scope = "member", Target = "~P:Relativity.Sync.Tests.Performance.ARM.Requests.ArmConfiguration.RelativityWebApiUrl")]
 [assembly: SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "<Pending>", Scope = "module")]
+[assembly: SuppressMessage("Design", "CA1056:Uri properties should not be strings", Justification = "<Pending>", Scope = "member", Target = "~P:Relativity.Sync.Tests.Performance.ARM.Contracts.ArmConfiguration.RelativityWebApiUrl")]
 
 #pragma warning restore RG2001 // Character Per Line
