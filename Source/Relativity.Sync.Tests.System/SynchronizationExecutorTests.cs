@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
+using kCura.Relativity.DataReaderClient;
 using NUnit.Framework;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -27,6 +28,12 @@ namespace Relativity.Sync.Tests.System
 	[Feature.DataTransfer.IntegrationPoints.Sync]
 	internal sealed class SynchronizationExecutorTests : SystemTest
 	{
+		private const int _CONTROL_NUMBER_FIELD_ID = 1003667;
+		private const string _CONTROL_NUMBER_FIELD_DISPLAY_NAME = "Control Number";
+
+		private const int _USER_FIELD_ID = 1039900;
+		private const string _USER_FIELD_DISPLAY_NAME = "Relativity Sync Test User";
+
 		private static readonly Dataset Dataset = Dataset.NativesAndExtractedText;
 		private static readonly Guid JobHistoryErrorObject = new Guid("17E7912D-4F57-4890-9A37-ABC2B8A37BDB");
 		private static readonly Guid ErrorMessageField = new Guid("4112B894-35B0-4E53-AB99-C9036D08269D");
@@ -35,74 +42,20 @@ namespace Relativity.Sync.Tests.System
 		private static readonly Guid TransferredItemsCountField = new Guid("B2D112CA-E81E-42C7-A6B2-C0E89F32F567");
 		private static readonly Guid SyncConfigurationRelation = new Guid("F673E67F-E606-4155-8E15-CA1C83931E16");
 
-		[IdentifiedTest("f9311c70-7094-4bed-a66e-90b1313fcd47")]
-		[TestCase(1000,1)]
-		[TestCase(1000,2000)]
-		[TestCase(1000,3500)]
+		[IdentifiedTestCase("edd705b0-5d9b-42df-a0a0-a801ba0a1b0d", 1000,1)]
+		[IdentifiedTestCase("3ad4d2b1-0edb-43d9-9ce2-78ab4e942c4a", 1000,2000)]
+		[IdentifiedTestCase("e1fa19e6-4a27-4ba2-bb5c-c924874ccb09", 1000,3500)]
 		public async Task ItShouldPassGoldFlow(int batchSize, int totalRecordsCount)
 		{
-			const int controlNumberFieldId = 1003667;
-
 			string sourceWorkspaceName = $"Source.{Guid.NewGuid()}";
 			string destinationWorkspaceName = $"Destination.{Guid.NewGuid()}";
-			string jobHistoryName = $"JobHistory.{Guid.NewGuid()}";
-
-			var fieldMap = new List<FieldMap>
-			{
-				new FieldMap
-				{
-					SourceField = new FieldEntry
-					{
-						DisplayName = "Control Number",
-						FieldIdentifier = controlNumberFieldId,
-						IsIdentifier = true
-					},
-					DestinationField = new FieldEntry()
-					{
-						DisplayName = "Control Number",
-						FieldIdentifier = controlNumberFieldId,
-						IsIdentifier = true
-					}
-				}
-			};
 
 			int sourceWorkspaceArtifactId = await CreateWorkspaceAsync(sourceWorkspaceName).ConfigureAwait(false);
 			int destinationWorkspaceArtifactId = await CreateWorkspaceAsync(destinationWorkspaceName).ConfigureAwait(false);
-			int allDocumentsSavedSearchArtifactId = await Rdos.GetSavedSearchInstance(ServiceFactory, sourceWorkspaceArtifactId).ConfigureAwait(false);
 
-			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, sourceWorkspaceArtifactId, jobHistoryName).ConfigureAwait(false);
-			int destinationFolderArtifactId = await Rdos.GetRootFolderInstance(ServiceFactory, destinationWorkspaceArtifactId).ConfigureAwait(false);
-			int syncConfigurationArtifactId = await Rdos.CreateSyncConfigurationInstance(ServiceFactory, sourceWorkspaceArtifactId, jobHistoryArtifactId, fieldMap).ConfigureAwait(false);
+			List<FieldMap> fieldMappings = CreateControlNumberFieldMapping();
 
-			ConfigurationStub configuration = new ConfigurationStub
-			{
-				SourceWorkspaceArtifactId = sourceWorkspaceArtifactId,
-				DestinationWorkspaceArtifactId = destinationWorkspaceArtifactId,
-				DataSourceArtifactId = allDocumentsSavedSearchArtifactId,
-				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure,
-
-				JobHistoryArtifactId = jobHistoryArtifactId,
-				DestinationFolderArtifactId = destinationFolderArtifactId,
-				SendEmails = false,
-
-				TotalRecordsCount = totalRecordsCount,
-				BatchSize = batchSize,
-				SyncConfigurationArtifactId = syncConfigurationArtifactId,
-				ImportOverwriteMode = ImportOverwriteMode.AppendOverlay,
-				FieldOverlayBehavior = FieldOverlayBehavior.UseFieldSettings,
-				ImportNativeFileCopyMode = ImportNativeFileCopyMode.CopyFiles,
-			};
-			configuration.SetFieldMappings(fieldMap);
-
-			IContainer container = ContainerHelper.Create(configuration,
-				containerBuilder => containerBuilder.RegisterInstance(new ImportApiFactoryStub()).As<IImportApiFactory>()
-			);
-
-			// Initialize configuration.DestinationWorkspaceTagArtifactId
-			IDestinationWorkspaceTagRepository destinationWorkspaceTagRepository = container.Resolve<IDestinationWorkspaceTagRepository>();
-			DestinationWorkspaceTag destinationWorkspaceTag = await destinationWorkspaceTagRepository.CreateAsync(sourceWorkspaceArtifactId,
-				destinationWorkspaceArtifactId, destinationWorkspaceName).ConfigureAwait(false);
-			configuration.DestinationWorkspaceTagArtifactId = destinationWorkspaceTag.ArtifactId;
+			ConfigurationStub configuration = await CreateConfigurationStubAsync(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, fieldMappings, batchSize, totalRecordsCount).ConfigureAwait(false);
 
 			// Import documents
 			var importHelper = new ImportHelper(ServiceFactory);
@@ -110,7 +63,7 @@ namespace Relativity.Sync.Tests.System
 			ImportJobErrors importJobErrors = await importHelper.ImportDataAsync(sourceWorkspaceArtifactId, dataTableWrapper).ConfigureAwait(false);
 			Assert.IsTrue(importJobErrors.Success, $"IAPI errors: {string.Join(global::System.Environment.NewLine, importJobErrors.Errors)}");
 
-			if(AppSettings.IsSettingsFileSet)
+			if(AppSettings.IsTrident)
 			{
 				#region Hopper Instance workaround explanation
 				//This workaround was provided to omit Hopper Instance restrictions. IAPI which is executing on agent can't access file based on file location in database like '\\emttest\DefaultFileRepository\...'.
@@ -121,20 +74,18 @@ namespace Relativity.Sync.Tests.System
 				UpdateNativeFilePathToLocal(sourceWorkspaceArtifactId);
 			}
 
-			// Source tags creation in destination workspace
-			IExecutor<IDestinationWorkspaceTagsCreationConfiguration> destinationWorkspaceTagsCreationExecutor = container.Resolve<IExecutor<IDestinationWorkspaceTagsCreationConfiguration>>();
-			ExecutionResult sourceWorkspaceTagsCreationExecutorResult = await destinationWorkspaceTagsCreationExecutor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
-			Assert.AreEqual(ExecutionStatus.Completed, sourceWorkspaceTagsCreationExecutorResult.Status);
+			IContainer container = ContainerHelper.Create(configuration,
+				containerBuilder => containerBuilder.RegisterInstance(new ImportApiFactoryStub()).As<IImportApiFactory>()
+			);
 
-			// Data source snapshot creation
-			IExecutor<IDataSourceSnapshotConfiguration> dataSourceSnapshotExecutor = container.Resolve<IExecutor<IDataSourceSnapshotConfiguration>>();
-			ExecutionResult dataSourceExecutorResult = await dataSourceSnapshotExecutor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
-			Assert.AreEqual(ExecutionStatus.Completed, dataSourceExecutorResult.Status);
+			configuration.DestinationWorkspaceTagArtifactId = await GetDestinationWorkspaceTagArtifactIdAsync(container, sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, destinationWorkspaceName)
+				.ConfigureAwait(false);
 
-			// Data partitioning
-			IExecutor<ISnapshotPartitionConfiguration> snapshotPartitionExecutor = container.Resolve<IExecutor<ISnapshotPartitionConfiguration>>();
-			ExecutionResult snapshotPartitionExecutorResult = await snapshotPartitionExecutor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
-			Assert.AreEqual(ExecutionStatus.Completed, snapshotPartitionExecutorResult.Status);
+			Assert.AreEqual(ExecutionStatus.Completed, await CreateSourceTagsInDestinationWorkspaceAsync(container, configuration).ConfigureAwait(false));
+
+			Assert.AreEqual(ExecutionStatus.Completed, await CreateDataSourceSnapshotAsync(container, configuration).ConfigureAwait(false));
+
+			Assert.AreEqual(ExecutionStatus.Completed, await PartitionDataSourceSnapshotAsync(container, configuration).ConfigureAwait(false));
 
 			// ImportAPI setup
 			IExecutor<ISynchronizationConfiguration> syncExecutor = container.Resolve<IExecutor<ISynchronizationConfiguration>>();
@@ -143,9 +94,57 @@ namespace Relativity.Sync.Tests.System
 			ExecutionResult syncResult = await syncExecutor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			Assert.AreEqual(ExecutionStatus.Completed, syncResult.Status, await AggregateJobHistoryErrorMessagesAsync(sourceWorkspaceArtifactId, jobHistoryArtifactId, syncResult).ConfigureAwait(false));
+			Assert.AreEqual(ExecutionStatus.Completed, syncResult.Status, await AggregateJobHistoryErrorMessagesAsync(sourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, syncResult)
+				.ConfigureAwait(false));
 
-			Assert.AreEqual(dataTableWrapper.Data.Rows.Count, await GetBatchesTransferredItemsCountAsync(sourceWorkspaceArtifactId, syncConfigurationArtifactId).ConfigureAwait(false));
+			Assert.AreEqual(dataTableWrapper.Data.Rows.Count, await GetBatchesTransferredItemsCountAsync(sourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId).ConfigureAwait(false));
+		}
+
+		[IdentifiedTest("0967e7fa-2607-48ba-bfc2-5ab6b786db86")]
+		public async Task ItShouldSyncUserField()
+		{
+			int sourceWorkspaceArtifactId = await CreateWorkspaceAsync($"Source.{Guid.NewGuid()}").ConfigureAwait(false);
+
+			string destinationWorkspaceName = $"Destination.{Guid.NewGuid()}";
+			int destinationWorkspaceArtifactId = await CreateWorkspaceAsync(destinationWorkspaceName).ConfigureAwait(false);
+
+			// Import documents
+			ImportBulkArtifactJob documentImportJob = Helpers.ImportJobFactory.CreateNonNativesDocumentImportJob(
+				sourceWorkspaceArtifactId,
+				await Rdos.GetRootFolderInstance(ServiceFactory, sourceWorkspaceArtifactId).ConfigureAwait(false),
+				DataTableFactory.GenerateDocumentWithUserField());
+			ImportJobErrors importErrors = await ImportJobExecutor.ExecuteAsync(documentImportJob).ConfigureAwait(false);
+			Assert.IsTrue(importErrors.Success, $"{importErrors.Errors.Count} errors occurred during document upload: {importErrors}");
+
+			List<FieldMap> fieldMappings = CreateControlNumberFieldMapping();
+			fieldMappings.Add(new FieldMap
+			{
+				SourceField = new FieldEntry { DisplayName = _USER_FIELD_DISPLAY_NAME, FieldIdentifier = _USER_FIELD_ID, IsIdentifier = false },
+				DestinationField = new FieldEntry { DisplayName = _USER_FIELD_DISPLAY_NAME, FieldIdentifier = _USER_FIELD_ID, IsIdentifier = false }
+			});
+
+			ConfigurationStub configuration = await CreateConfigurationStubAsync(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, fieldMappings, 1, 1).ConfigureAwait(false);
+
+			IContainer container = ContainerHelper.Create(configuration,
+				containerBuilder => containerBuilder.RegisterInstance(new ImportApiFactoryStub()).As<IImportApiFactory>()
+			);
+
+			configuration.DestinationWorkspaceTagArtifactId = await GetDestinationWorkspaceTagArtifactIdAsync(container,  sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, destinationWorkspaceName)
+				.ConfigureAwait(false);
+
+			await CreateSourceTagsInDestinationWorkspaceAsync(container, configuration).ConfigureAwait(false);
+
+			await CreateDataSourceSnapshotAsync(container, configuration).ConfigureAwait(false);
+
+			await PartitionDataSourceSnapshotAsync(container, configuration).ConfigureAwait(false);
+
+			// ACT
+			IExecutor<ISynchronizationConfiguration> syncExecutor = container.Resolve<IExecutor<ISynchronizationConfiguration>>();
+			ExecutionResult syncResult = await syncExecutor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+
+			// ASSERT
+			Assert.AreEqual(ExecutionStatus.Completed, syncResult.Status, await AggregateJobHistoryErrorMessagesAsync(sourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, syncResult)
+				.ConfigureAwait(false));
 		}
 
 		private async Task<int> CreateWorkspaceAsync(string workspaceName)
@@ -155,6 +154,96 @@ namespace Relativity.Sync.Tests.System
 				.ConfigureAwait(false);
 
 			return workspace.ArtifactID;
+		}
+
+		private static List<FieldMap> CreateControlNumberFieldMapping()
+		{
+			return new List<FieldMap>
+			{
+				new FieldMap
+				{
+					SourceField = new FieldEntry
+					{
+						DisplayName = _CONTROL_NUMBER_FIELD_DISPLAY_NAME,
+						FieldIdentifier = _CONTROL_NUMBER_FIELD_ID,
+						IsIdentifier = true
+					},
+					DestinationField = new FieldEntry
+					{
+						DisplayName = _CONTROL_NUMBER_FIELD_DISPLAY_NAME,
+						FieldIdentifier = _CONTROL_NUMBER_FIELD_ID,
+						IsIdentifier = true
+					}
+				}
+			};
+		}
+
+		private async Task<ConfigurationStub> CreateConfigurationStubAsync(
+			int sourceWorkspaceArtifactId,
+			int destinationWorkspaceArtifactId,
+			List<FieldMap> fieldMappings,
+			int batchSize,
+			int totalRecordsCount)
+		{
+			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, sourceWorkspaceArtifactId, $"JobHistory.{Guid.NewGuid()}").ConfigureAwait(false);
+
+			ConfigurationStub configuration = new ConfigurationStub
+			{
+				SourceWorkspaceArtifactId = sourceWorkspaceArtifactId,
+				DestinationWorkspaceArtifactId = destinationWorkspaceArtifactId,
+				DataSourceArtifactId = await Rdos.GetSavedSearchInstance(ServiceFactory, sourceWorkspaceArtifactId).ConfigureAwait(false),
+				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure,
+
+				JobHistoryArtifactId = jobHistoryArtifactId,
+				DestinationFolderArtifactId = await Rdos.GetRootFolderInstance(ServiceFactory, destinationWorkspaceArtifactId).ConfigureAwait(false),
+				SendEmails = false,
+
+				TotalRecordsCount = totalRecordsCount,
+				BatchSize = batchSize,
+				SyncConfigurationArtifactId = await Rdos.CreateSyncConfigurationInstance(ServiceFactory, sourceWorkspaceArtifactId, jobHistoryArtifactId, fieldMappings).ConfigureAwait(false),
+				ImportOverwriteMode = ImportOverwriteMode.AppendOverlay,
+				FieldOverlayBehavior = FieldOverlayBehavior.UseFieldSettings,
+				ImportNativeFileCopyMode = ImportNativeFileCopyMode.CopyFiles,
+			};
+			configuration.SetFieldMappings(fieldMappings);
+
+			return configuration;
+		}
+
+		private static async Task<int> GetDestinationWorkspaceTagArtifactIdAsync(IContainer container, int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId, string destinationWorkspaceName)
+		{
+			IDestinationWorkspaceTagRepository destinationWorkspaceTagRepository = container.Resolve<IDestinationWorkspaceTagRepository>();
+			DestinationWorkspaceTag destinationWorkspaceTag = await destinationWorkspaceTagRepository.CreateAsync(sourceWorkspaceArtifactId,
+				destinationWorkspaceArtifactId, destinationWorkspaceName).ConfigureAwait(false);
+			
+			return destinationWorkspaceTag.ArtifactId;
+		}
+
+		private static async Task<ExecutionStatus> CreateSourceTagsInDestinationWorkspaceAsync(IContainer container, ConfigurationStub configuration)
+		{
+			IExecutor<IDestinationWorkspaceTagsCreationConfiguration> destinationWorkspaceTagsCreationExecutor = container.Resolve<IExecutor<IDestinationWorkspaceTagsCreationConfiguration>>();
+			
+			ExecutionResult sourceWorkspaceTagsCreationExecutorResult = await destinationWorkspaceTagsCreationExecutor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+			
+			return sourceWorkspaceTagsCreationExecutorResult.Status;
+		}
+
+		private static async Task<ExecutionStatus> CreateDataSourceSnapshotAsync(IContainer container, ConfigurationStub configuration)
+		{
+			IExecutor<IDataSourceSnapshotConfiguration> dataSourceSnapshotExecutor = container.Resolve<IExecutor<IDataSourceSnapshotConfiguration>>();
+			
+			ExecutionResult dataSourceExecutorResult = await dataSourceSnapshotExecutor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+			
+			return dataSourceExecutorResult.Status;
+		}
+
+		private static async Task<ExecutionStatus> PartitionDataSourceSnapshotAsync(IContainer container, ConfigurationStub configuration)
+		{
+			IExecutor<ISnapshotPartitionConfiguration> snapshotPartitionExecutor = container.Resolve<IExecutor<ISnapshotPartitionConfiguration>>();
+			
+			ExecutionResult snapshotPartitionExecutorResult = await snapshotPartitionExecutor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+			
+			return snapshotPartitionExecutorResult.Status;
 		}
 
 		private async Task<string> AggregateJobHistoryErrorMessagesAsync(int sourceWorkspaceId, int jobHistoryId, ExecutionResult syncResult)
@@ -248,7 +337,7 @@ namespace Relativity.Sync.Tests.System
 			return batchesTransferredItemsCount;
 		}
 
-		private void UpdateNativeFilePathToLocal(int sourceWorkspaceArtifactId)
+		private static void UpdateNativeFilePathToLocal(int sourceWorkspaceArtifactId)
 		{
 			using (SqlConnection connection = CreateConnectionFromAppConfig(sourceWorkspaceArtifactId))
 			{
