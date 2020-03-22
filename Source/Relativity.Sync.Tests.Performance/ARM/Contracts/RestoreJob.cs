@@ -1,11 +1,4 @@
-﻿using Relativity.Automation.Utility.Api;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Relativity.Sync.Tests.Performance.ARM.Contracts
+﻿namespace Relativity.Sync.Tests.Performance.ARM.Contracts
 {
 	public class RestoreJob
 	{

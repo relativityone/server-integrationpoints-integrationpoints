@@ -8,6 +8,7 @@ using Relativity.Automation.Utility;
 using Relativity.Automation.Utility.Models;
 using Relativity.Automation.Utility.Orchestrators;
 using System.Threading.Tasks;
+using SettingType = Relativity.Services.InstanceSetting.ValueType;
 
 namespace Relativity.Sync.Tests.Performance.Helpers
 {
@@ -39,8 +40,8 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 		{
 			if(!_isInitialized)
 			{
-				_component.OrchestratorFactory.Create<IOrchestrateInstanceSettings>()
-					.SetInstanceSetting("DevelopmentMode", "True", "kCura.ARM", InstanceSettingValueTypeEnum.TrueFalse);
+				RTFSubstitute.CreateOrUpdateInstanceSetting(_component.ServiceFactory,
+					"DevelopmentMode", "kCura.ARM", SettingType.TrueFalse, "True").Wait();
 
 				if (!IsAppInstalled())
 				{

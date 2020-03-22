@@ -8,11 +8,11 @@ using Relativity.Sync.Tests.Performance.ARM.Contracts;
 using Relativity.Sync.Tests.Performance.Helpers;
 using Relativity.Sync.Tests.System;
 using System;
+using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
 using SettingType = Relativity.Services.InstanceSetting.ValueType;
 
@@ -22,14 +22,14 @@ namespace Relativity.Sync.Tests.Performance.ARM
 	{
 		private static bool _isInitialized;
 
+		private const string _RELATIVE_ARCHIVES_LOCATION = @"DefaultFileRepository\Archives";
+
 		private readonly ApiComponent _component;
 		private readonly IARMApi _armApi;
 		private readonly FileShareHelper _fileShare;
 		private readonly AzureStorageHelper _storage;
 
-		public const string RELATIVE_ARCHIVES_LOCATION = @"DefaultFileRepository\Archives"; //FileRepositoryID
-
-		private static string REMOTE_ARCHIVES_LOCATION => Path.Combine(@"\\emttest\", RELATIVE_ARCHIVES_LOCATION);
+		private static string REMOTE_ARCHIVES_LOCATION => Path.Combine(@"\\emttest\", _RELATIVE_ARCHIVES_LOCATION);
 
 		private ARMHelper(IARMApi armApi, FileShareHelper fileShare, AzureStorageHelper storage)
 		{
@@ -62,6 +62,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 		{
 			if(!_isInitialized)
 			{
+				Console.WriteLine("ARM is being initialized...");
 				if (!IsInstalled())
 				{
 					InstallARM();
@@ -70,6 +71,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 				ConfigureARM();
 
 				_isInitialized = true;
+				Console.WriteLine("ARM has been initialized.");
 			}
 		}
 
@@ -89,30 +91,49 @@ namespace Relativity.Sync.Tests.Performance.ARM
 
 			string rapPath = GetARMRapPath();
 
+			Console.WriteLine("Installing ARM...");
 			LibraryApplicationRequestOptions options = new LibraryApplicationRequestOptions() { CreateIfMissing = true };
 			applicationsOrchestrator.InstallRelativityApplicationToLibrary(rapPath, options);
+			Console.WriteLine("ARM has been successfully installed.");
 		}
 
 		private string GetARMRapPath()
 		{
+			Console.WriteLine("Trying to get ARM RAP path...");
 			string rapPath = Path.Combine(Path.GetTempPath(), @"ARM.rap");
 			if (!File.Exists(rapPath))
 			{
+				Console.WriteLine("ARM RAP doesn't exist. Trying to download ARM from AzureStorage...");
 				rapPath = _storage.DownloadFileAsync(@"ARM\ARM.rap", Path.GetTempPath()).Result;
+				Console.WriteLine("ARM has been downloaded.");
 			}
 
+			Console.WriteLine($"ARM Rap is located in path {rapPath}");
 			return rapPath;
 		}
 
 		private void ConfigureARM()
 		{
+			Console.WriteLine("ARM configuration has been started...");
 			RTFSubstitute.CreateOrUpdateInstanceSetting(_component.ServiceFactory,
 				"BcpShareFolderName", "kCura.ARM", SettingType.Text, @"\\emttest\BCPPath").Wait();
-				
-			_fileShare.CreateDirectoryAsync(RELATIVE_ARCHIVES_LOCATION).Wait();
+			Console.WriteLine(@"Instance Setting BcpShareFolderName has been updated.");
+			
+			_fileShare.CreateDirectoryAsync(_RELATIVE_ARCHIVES_LOCATION).Wait();
+			Console.WriteLine($"ARM Archive Location has been created on fileshare: {_RELATIVE_ARCHIVES_LOCATION}");
 
 			ContractEnvelope<ArmConfiguration> request = ArmConfiguration.GetRequest(REMOTE_ARCHIVES_LOCATION);
-			_armApi.SetConfigurationAsync(request).Wait();
+			try
+			{
+				_armApi.SetConfigurationAsync(request).Wait();
+			}
+			catch(ApiException)
+			{
+				Console.WriteLine("Error occured during ARM configuration via REST");
+				throw;
+			}
+
+			Console.WriteLine("ARM has been successfully configured.");
 		}
 
 		public void EnableAgents(bool ensureNew = false)
@@ -144,28 +165,50 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			agentsOrchestrator.GetBasicAgent(agent, ensureNew);
 		}
 
-		public async Task RestoreWorkspaceAsync(string archivedWorkspace)
+		public async Task<int> RestoreWorkspaceAsync(string archivedWorkspace)
 		{
-			string uploadedFile = await _fileShare.UploadFileAsync(archivedWorkspace, RELATIVE_ARCHIVES_LOCATION).ConfigureAwait(false);
+			string uploadedFile = await _fileShare.UploadFileAsync(archivedWorkspace, _RELATIVE_ARCHIVES_LOCATION).ConfigureAwait(false);
+			Console.WriteLine("Archived workspace has been uploaded to fileshare.");
 
 			string archivedWorkspacePath = Path.Combine(REMOTE_ARCHIVES_LOCATION, Path.GetFileNameWithoutExtension(uploadedFile));
 
 			Job job = await CreateRestoreJobAsync(archivedWorkspacePath).ConfigureAwait(false);
+			Console.WriteLine($"Restore job {job.JobId} has been created");
 
 			await RunJobAsync(job).ConfigureAwait(false);
+			Console.WriteLine($"Job {job.JobId} is running...");
 
 			await WaitUntilJobIsCompleted(job).ConfigureAwait(false);
+			Console.WriteLine("Restore job has been completed successfully.");
+
+			return await GetRestoredWorkspaceID(job.JobId).ConfigureAwait(false);
 		}
 
 		private async Task<Job> CreateRestoreJobAsync(string archivedWorkspacePath)
 		{
-			ContractEnvelope<RestoreJob> request = RestoreJob.GetRequest(archivedWorkspacePath);
-			return await _armApi.CreateRestoreJobAsync(request).ConfigureAwait(false);
+			try
+			{
+				ContractEnvelope<RestoreJob> request = RestoreJob.GetRequest(archivedWorkspacePath);
+				return await _armApi.CreateRestoreJobAsync(request).ConfigureAwait(false);
+			}
+			catch(ApiException)
+			{
+				Console.WriteLine("Error occured during restore job creation");
+				throw;
+			}
 		}
 
 		private async Task RunJobAsync(Job job)
 		{
-			await _armApi.RunJobAsync(job).ConfigureAwait(false);
+			try
+			{
+				await _armApi.RunJobAsync(job).ConfigureAwait(false);
+			}
+			catch (ApiException)
+			{
+				Console.WriteLine("Error occured during restore job run");
+				throw;
+			}
 		}
 
 		private async Task WaitUntilJobIsCompleted(Job job)
@@ -183,6 +226,22 @@ namespace Relativity.Sync.Tests.Performance.ARM
 				await Task.Delay(delay).ConfigureAwait(false);
 			}
 			while (jobStatus.Status != "Complete");
+		}
+
+		private async Task<int> GetRestoredWorkspaceID(int jobID)
+		{
+			using(SqlConnection connection = DbHelper.CreateConnectionFromAppConfig())
+			{
+				string sqlStatement = @"SELECT WorkspaceId
+				  FROM [EDDSArchiving].[eddsdbo].[JobLocation] 
+				  WHERE IsDestination = 1
+				   AND JobId = @jobId";
+				SqlCommand command = new SqlCommand(sqlStatement, connection);
+				command.Parameters.AddWithValue("jobId", jobID);
+
+				object result = await command.ExecuteScalarAsync().ConfigureAwait(false);
+				return (int)result;
+			}
 		}
 	}
 }
