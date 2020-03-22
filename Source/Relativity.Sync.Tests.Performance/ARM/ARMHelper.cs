@@ -228,7 +228,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			while (jobStatus.Status != "Complete");
 		}
 
-		private async Task<int> GetRestoredWorkspaceID(int jobID)
+		private static async Task<int> GetRestoredWorkspaceID(int jobID)
 		{
 			using(SqlConnection connection = DbHelper.CreateConnectionFromAppConfig())
 			{

@@ -7,6 +7,7 @@ namespace Relativity.Sync.Tests.Performance
 {
 	public static class RTFSubstitute
 	{
+		//TODO: Remove after https://jira.kcura.com/browse/RTF-327 closure
 		public static async Task CreateOrUpdateInstanceSetting(IKeplerServiceFactory serviceFactory,
 			string name, string section, ValueType valueType, string value)
 		{
