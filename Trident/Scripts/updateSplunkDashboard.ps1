@@ -12,12 +12,8 @@ try
     Write-Host Current location: $OriginalLocation.Path
 
     Write-Host Reading Function Authorizarion Key from environment variables
-    Set-Location Env:
-    $FunctionAuthorizationKey = (Get-ChildItem FunctionAuthorizationKey).Value
+    $FunctionAuthorizationKey = (Get-ChildItem Env:FunctionAuthorizationKey).Value
     Write-Host Function authorization key length: $FunctionAuthorizationKey.Length
-
-    Write-Host Changing current location back to: $OriginalLocation.Path
-    Set-Location $OriginalLocation.Path
 
     Write-Host Issues file path: $IssuesFilePath
     Write-Host Azure Function URL: $Uri

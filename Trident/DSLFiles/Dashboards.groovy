@@ -30,7 +30,7 @@ multibranchPipelineJob('DataTransfer-Jobs/RelativitySync/UpdateSplunkDashboard')
         def traits = it / sources / data / 'jenkins.branch.BranchSource' / source / traits
         traits << 'jenkins.plugins.git.traits.BranchDiscoveryTrait'()
         traits << 'jenkins.scm.impl.trait.WildcardSCMHeadFilterTrait' {
-            includes('*-test develop release-*')
+            includes('develop')
             excludes('')
         }
         traits << 'jenkins.plugins.git.traits.CleanAfterCheckoutTrait' {
