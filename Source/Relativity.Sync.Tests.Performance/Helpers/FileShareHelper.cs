@@ -40,8 +40,7 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 		{
 			if(!_isInitialized)
 			{
-				RTFSubstitute.CreateOrUpdateInstanceSetting(_component.ServiceFactory,
-					"DevelopmentMode", "kCura.ARM", SettingType.TrueFalse, "True").Wait();
+				Configure();
 
 				if (!IsAppInstalled())
 				{
@@ -50,6 +49,12 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 
 				_isInitialized = true;
 			}
+		}
+
+		private void Configure()
+		{
+			_component.OrchestratorFactory.Create<IOrchestrateInstanceSettings>()
+				.SetInstanceSetting("DevelopmentMode", "True", "kCura.ARM", InstanceSettingValueTypeEnum.TrueFalse);
 		}
 
 		private bool IsAppInstalled()

@@ -115,23 +115,15 @@ namespace Relativity.Sync.Tests.Performance.ARM
 		private void ConfigureARM()
 		{
 			Console.WriteLine("ARM configuration has been started...");
-			RTFSubstitute.CreateOrUpdateInstanceSetting(_component.ServiceFactory,
-				"BcpShareFolderName", "kCura.ARM", SettingType.Text, @"\\emttest\BCPPath").Wait();
-			Console.WriteLine(@"Instance Setting BcpShareFolderName has been updated.");
-			
+			_component.OrchestratorFactory.Create<IOrchestrateInstanceSettings>()
+				.SetInstanceSetting("BcpShareFolderName", @"\\emttest\BCPPath", "kCura.ARM", InstanceSettingValueTypeEnum.Text);
+
 			_fileShare.CreateDirectoryAsync(_RELATIVE_ARCHIVES_LOCATION).Wait();
 			Console.WriteLine($"ARM Archive Location has been created on fileshare: {_RELATIVE_ARCHIVES_LOCATION}");
 
 			ContractEnvelope<ArmConfiguration> request = ArmConfiguration.GetRequest(REMOTE_ARCHIVES_LOCATION);
-			try
-			{
-				_armApi.SetConfigurationAsync(request).Wait();
-			}
-			catch(ApiException)
-			{
-				Console.WriteLine("Error occured during ARM configuration via REST");
-				throw;
-			}
+
+			_armApi.SetConfigurationAsync(request).Wait();
 
 			Console.WriteLine("ARM has been successfully configured.");
 		}
@@ -186,29 +178,13 @@ namespace Relativity.Sync.Tests.Performance.ARM
 
 		private async Task<Job> CreateRestoreJobAsync(string archivedWorkspacePath)
 		{
-			try
-			{
-				ContractEnvelope<RestoreJob> request = RestoreJob.GetRequest(archivedWorkspacePath);
-				return await _armApi.CreateRestoreJobAsync(request).ConfigureAwait(false);
-			}
-			catch(ApiException)
-			{
-				Console.WriteLine("Error occured during restore job creation");
-				throw;
-			}
+			ContractEnvelope<RestoreJob> request = RestoreJob.GetRequest(archivedWorkspacePath);
+			return await _armApi.CreateRestoreJobAsync(request).ConfigureAwait(false);
 		}
 
 		private async Task RunJobAsync(Job job)
 		{
-			try
-			{
-				await _armApi.RunJobAsync(job).ConfigureAwait(false);
-			}
-			catch (ApiException)
-			{
-				Console.WriteLine("Error occured during restore job run");
-				throw;
-			}
+			await _armApi.RunJobAsync(job).ConfigureAwait(false);
 		}
 
 		private async Task WaitUntilJobIsCompleted(Job job)
@@ -218,6 +194,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			do
 			{
 				jobStatus = await _armApi.GetJobStatus(job).ConfigureAwait(false);
+				Console.WriteLine($"Job is still processing ({jobStatus.Status})...");
 				if(jobStatus.Status == "Errored")
 				{
 					throw new InvalidOperationException("Error occured during restoring workspace");
