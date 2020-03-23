@@ -21,11 +21,11 @@ namespace Relativity.Sync.Tests.System
 
 		public static Uri RelativityUrl => _relativityUrl ?? (_relativityUrl = BuildUri("Relativity"));
 
-		public static Uri RelativityServicesUrl => _relativityServicesUrl ?? (_relativityServicesUrl = BuildUri(GetConfigValue("RelativityServicesUrl")));
+		public static Uri RelativityServicesUrl => _relativityServicesUrl ?? (_relativityServicesUrl = BuildUri("/Relativity.Services"));
 
-		public static Uri RelativityRestUrl => _relativityRestUrl ?? (_relativityRestUrl = BuildUri(GetConfigValue("RelativityRestUrl")));
+		public static Uri RelativityRestUrl => _relativityRestUrl ?? (_relativityRestUrl = BuildUri("/Relativity.Rest/api"));
 
-		public static Uri RelativityWebApiUrl => _relativityWebApiUrl ?? (_relativityWebApiUrl = BuildUri(GetConfigValue("RelativityWebApiUrl")));
+		public static Uri RelativityWebApiUrl => _relativityWebApiUrl ?? (_relativityWebApiUrl = BuildUri("/RelativityWebAPI"));
 
 		public static string RelativityUserName => GetConfigValue("AdminUsername");
 
@@ -39,7 +39,16 @@ namespace Relativity.Sync.Tests.System
 
 		public static string SqlPassword => GetConfigValue("SqlPassword");
 
-		public static string AzureStorageConnection => GetConfigValue(nameof(AzureStorageConnection));
+		public static string ConnectionStringEDDS => string.Format("Data Source={0};Initial Catalog=EDDS", SqlServer);
+
+		public static string ConnectionStringWorkspace(int workspaceID) => string.Format("Data Source={0};Initial Catalog=EDDS{1}", SqlServer, workspaceID);
+
+		public static string AzureStorageAccount => GetConfigValue(nameof(AzureStorageAccount));
+		
+		public static string AzureStorageAuthorizationKey => GetConfigValue(nameof(AzureStorageAuthorizationKey));
+
+		public static string AzureStorageConnectionString
+			=> string.Format(@"DefaultEndpointsProtocol=https;AccountName={0};AccountKey={1};EndpointSuffix=core.windows.net", AzureStorageAccount, AzureStorageAuthorizationKey);
 
 		public static string AzureStoragePerformanceContainer => GetConfigValue(nameof(AzureStoragePerformanceContainer));
 

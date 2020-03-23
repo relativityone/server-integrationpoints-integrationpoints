@@ -10,9 +10,9 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 	{
 		private readonly CloudBlobContainer _container;
 
-		public AzureStorageHelper(string storageConnection, string containerName)
+		public AzureStorageHelper(string connectionString, string containerName)
 		{
-			CloudStorageAccount storageAccount = CloudStorageAccount.Parse(storageConnection);
+			CloudStorageAccount storageAccount = CloudStorageAccount.Parse(connectionString);
 			CloudBlobClient client = storageAccount.CreateCloudBlobClient();
 
 			_container = client.GetContainerReference(containerName);
@@ -20,7 +20,7 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 
 		public static AzureStorageHelper CreateFromTestConfig()
 		{
-			return new AzureStorageHelper(AppSettings.AzureStorageConnection, AppSettings.AzureStoragePerformanceContainer);
+			return new AzureStorageHelper(AppSettings.AzureStorageConnectionString, AppSettings.AzureStoragePerformanceContainer);
 		}
 
 		public async Task<string> DownloadFileAsync(string filePath, string destinationPath)

@@ -17,7 +17,7 @@ namespace Relativity.Sync.Tests.Performance
 		}
 
 		[Test]
-		public async Task Test()
+		public async Task Restore_SmallSaltPepperWorkspace()
 		{
 			// Arrange
 			string filePath = await StorageHelper.DownloadFileAsync("TestWorkspace.zip", Path.GetTempPath()).ConfigureAwait(false);

@@ -19,15 +19,15 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 			password.MakeReadOnly();
 			SqlCredential credential = new SqlCredential(AppSettings.SqlUsername, password);
 
+			string connectionString = workspaceArtifactID == -1 ? AppSettings.ConnectionStringEDDS : AppSettings.ConnectionStringWorkspace(workspaceArtifactID);
+
 			var connection =  new SqlConnection(
-				GetWorkspaceConnectionString(workspaceArtifactID),
+				connectionString,
 				credential);
 
 			connection.Open();
 			return connection;
 		}
-
-		private static string GetWorkspaceConnectionString(int workspaceArtifactID) => $"Data Source={AppSettings.SqlServer};Initial Catalog=EDDS{workspaceArtifactID}";
 
 	}
 }
