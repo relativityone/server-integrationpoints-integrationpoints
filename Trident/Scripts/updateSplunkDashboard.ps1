@@ -10,7 +10,6 @@ try
 
     $IssuesFilePath = "../../Source/Relativity.Sync.Dashboards/Relativity.Sync.Dashboards/issues.json"
     $Uri = "https://relativitysyncdashboards.azurewebsites.net/api/Function"
-    # $Uri = "http://localhost:7071/api/Function"
 
     Write-Host Reading Function Authorizarion Key from environment variables
     Set-Location Env:
