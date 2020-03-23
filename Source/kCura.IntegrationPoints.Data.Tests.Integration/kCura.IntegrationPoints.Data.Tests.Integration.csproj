@@ -39,6 +39,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Relativity.IntegrationPoints.Services.Interfaces.Private, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -59,6 +60,7 @@
     <Compile Include="JobHistoryErrorsBatchingTests.cs" />
     <Compile Include="Repositories\CaseRepositoryTest.cs" />
     <Compile Include="Repositories\DestinationWorkspaceRepositoryTests.cs" />
+    <Compile Include="Repositories\IntegrationPointRepositoryTests.cs" />
     <Compile Include="Repositories\RelativityObjectManager\StreamLongTextAsyncTests.cs" />
     <Compile Include="Repositories\JobHistoryErrorRepositoryTests.cs" />
     <Compile Include="Repositories\KeplerWorkspaceRepositoryTests.cs" />
@@ -103,9 +105,7 @@
       <Name>kCura.ScheduleQueue.Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="paket.references" />
   </ItemGroup>
