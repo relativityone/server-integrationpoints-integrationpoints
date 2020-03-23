@@ -27,6 +27,6 @@ $Body = Get-Content $IssuesFilePath
 Write-Host $Body.Length bytes has been read
 
 Write-Host Sending request
-$Response = (Invoke-RestMethod $Uri -Method POST -Headers @{'x-functions-key' = $FunctionAuthorizationKey} -ContentType "application/json" -Body $Body) | ConvertTo-Json
+$Response = (Invoke-RestMethod $Uri -Method POST -Headers @{'x-functions-key' = $FunctionAuthorizationKey} -ContentType "application/json" -Body $Body) | ConvertFrom-Json
 Write-Host $Response
 
