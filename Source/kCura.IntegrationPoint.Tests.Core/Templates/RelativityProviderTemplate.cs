@@ -174,6 +174,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 						FieldIdentifier = sourceDto.ArtifactId.ToString(),
 						DisplayName = sourceDto.Fields.First(field => field.Name == "Name").Value as string + " [Object Identifier]",
 						IsIdentifier = true,
+						IsRequired = true
 					},
 					FieldMapType = FieldMapType.Identifier,
 					DestinationField = new FieldEntry
@@ -181,6 +182,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 						FieldIdentifier = targetDto.ArtifactId.ToString(),
 						DisplayName = targetDto.Fields.First(field => field.Name == "Name").Value as string + " [Object Identifier]",
 						IsIdentifier = true,
+						IsRequired = true
 					},
 				}
 			};

@@ -1,5 +1,6 @@
 ﻿using System;
 using kCura.Relativity.Client;
+using kCura.WinEDDS.Service.Export;
 using NSubstitute;
 using Relativity.API;
 using Relativity.Data;
@@ -13,11 +14,11 @@ using Relativity.Services.Search;
 using Relativity.Services.Security;
 using Relativity.Services.ServiceProxy;
 using Relativity.Services.Workspace;
+using Relativity.Productions.Services;
 
 namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 {
 	using System.Net;
-	using WinEDDS.Service.Export;
 	using IFieldManager = global::Relativity.Services.FieldManager.IFieldManager;
 
 	public class TestHelper : ITestHelper
@@ -29,7 +30,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 		public string RelativityUserName { get; }
 
 		public string RelativityPassword { get; }
-
+		
 		public TestHelper()
 			: this(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword)
 		{ }
@@ -58,8 +59,10 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			RegisterProxyInServiceManagerMock<ISearchContainerManager>(ExecutionIdentity.CurrentUser);
 			RegisterProxyInServiceManagerMock<IOAuth2ClientManager>(ExecutionIdentity.System);
 			RegisterProxyInServiceManagerMock<IFolderManager>(ExecutionIdentity.CurrentUser);
+			RegisterProxyInServiceManagerMock<global:: Relativity.Productions.Services.IProductionManager>(ExecutionIdentity.CurrentUser);
 			_serviceManager.GetServicesURL().Returns(SharedVariables.RelativityRestUri);
 		}
+		
 
 		private void RegisterProxyInServiceManagerMock<T>(ExecutionIdentity executionIdentity) where T : IDisposable
 		{

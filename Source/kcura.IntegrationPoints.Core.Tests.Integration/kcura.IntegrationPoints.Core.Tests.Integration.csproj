@@ -65,7 +65,6 @@
     <Compile Include="Services\IntegrationPointServiceTestsForOtherProviders.cs" />
     <Compile Include="Services\JobHistory\JobHistoryServiceTests.cs" />
     <Compile Include="Tagging\SourceDocumentsTaggerTests.cs" />
-    <Compile Include="TestCasesBilling\BillingFlagRelativityProviderTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">

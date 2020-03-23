@@ -211,6 +211,7 @@
     <Compile Include="Validators\DocumentPropertyValidator.cs" />
     <Compile Include="Validators\DocumentSourceJobNameValidator.cs" />
     <Compile Include="Validators\DocumentsValidator.cs" />
+    <Compile Include="Validators\FileBillingFlagValidator.cs" />
     <Compile Include="Validators\FolderPathFromFieldStrategy.cs" />
     <Compile Include="Validators\FolderPathFromFolderTreeStrategy.cs" />
     <Compile Include="Validators\FolderPathIsRootStrategy.cs" />
