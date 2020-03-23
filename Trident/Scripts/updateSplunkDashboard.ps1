@@ -5,15 +5,14 @@ This script will be used by Trident pipeline to update Splunk dashboard
 
 try 
 {
-    $OriginalLocation = Get-Location
-    Write-Host Current location: $OriginalLocation.Path
-
     $IssuesFilePath = "../../Source/Relativity.Sync.Dashboards/Relativity.Sync.Dashboards/issues.json"
     $Uri = "https://relativitysyncdashboards.azurewebsites.net/api/Function"
 
+    $OriginalLocation = Get-Location
+    Write-Host Current location: $OriginalLocation.Path
+
     Write-Host Reading Function Authorizarion Key from environment variables
     Set-Location Env:
-    Set-Item -Path Env:FunctionAuthorizationKey -Value "zWL4b1k/EwpPnFIwshMddgYW0G/KApRg1XsAHgRpYHRgnGW4c4GTUg=="
     $FunctionAuthorizationKey = (Get-ChildItem FunctionAuthorizationKey).Value
     Write-Host Function authorization key length: $FunctionAuthorizationKey.Length
 
