@@ -7,6 +7,7 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
+using kCura.IntegrationPoint.Tests.Core.Validators;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
@@ -79,7 +80,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactID, integrationPoint.ArtifactID);
 
 			// Assert
-			AssertFiles(false);
+			FileBillingFlagValidator documentFlagValidator = new FileBillingFlagValidator(Helper, _targetWorkspaceArtifactID);
+			documentFlagValidator.AssertFiles(false);
 		}
 
 		[IdentifiedTest("84839955-de26-40d9-8e54-57af24454a31")]
@@ -98,7 +100,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactID, integrationPoint.ArtifactID);
 
 			// Assert
-			AssertFiles(true);
+			FileBillingFlagValidator documentFlagValidator = new FileBillingFlagValidator(Helper, _targetWorkspaceArtifactID);
+			documentFlagValidator.AssertFiles(true);
 		}
 
 		[IdentifiedTest("996eb28c-979b-4761-b98d-73c541652b7d")]
@@ -119,7 +122,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactID, integrationPointWithLinksOnly.ArtifactID);
 
 			// Assert
-			AssertFiles(false);
+			FileBillingFlagValidator documentFlagValidatorStep1 = new FileBillingFlagValidator(Helper, _targetWorkspaceArtifactID);
+			documentFlagValidatorStep1.AssertFiles(false);
 
 			//<--- Step 2 --->//
 
@@ -136,7 +140,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactID, integrationPointOverlayMetadata.ArtifactID);
 
 			// Assert
-			AssertFiles(false);
+			FileBillingFlagValidator documentFlagValidatorStep2 = new FileBillingFlagValidator(Helper, _targetWorkspaceArtifactID);
+			documentFlagValidatorStep2.AssertFiles(false);
 		}
 
 		[IdentifiedTest("d4152780-f863-4e49-b342-675d8dd4c9d8")]
@@ -157,7 +162,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactID, integrationPointWithCopyFiles.ArtifactID);
 
 			// Assert
-			AssertFiles(true);
+			FileBillingFlagValidator documentFlagValidatorStep1 = new FileBillingFlagValidator(Helper, _targetWorkspaceArtifactID);
+			documentFlagValidatorStep1.AssertFiles(true);
 
 			//<--- Step 2 --->//
 
@@ -174,7 +180,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactID, integrationPointOverlayMetadata.ArtifactID);
 
 			// Assert
-			AssertFiles(true);
+			FileBillingFlagValidator documentFlagValidatorStep2 = new FileBillingFlagValidator(Helper, _targetWorkspaceArtifactID);
+			documentFlagValidatorStep2.AssertFiles(true);
 		}
 
 		[IdentifiedTest("f23afa70-0ad7-46c3-95aa-af4e6b3d3389")]
@@ -195,7 +202,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactID, integrationPointWithCopyFiles.ArtifactID);
 
 			// Assert
-			AssertFiles(true);
+			FileBillingFlagValidator documentFlagValidatorStep1 = new FileBillingFlagValidator(Helper, _targetWorkspaceArtifactID);
+			documentFlagValidatorStep1.AssertFiles(true);
 
 			//<--- Step 2 --->//
 
@@ -212,7 +220,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactID, integrationPointOverlayMetadata.ArtifactID);
 
 			// Assert
-			AssertFiles(false);
+			FileBillingFlagValidator documentFlagValidatorStep2 = new FileBillingFlagValidator(Helper, _targetWorkspaceArtifactID);
+			documentFlagValidatorStep2.AssertFiles(false);
 		}
 
 		[IdentifiedTest("8a68f657-74e6-4a1a-91df-b34c5f80f765")]
@@ -231,7 +240,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactID, integrationPoint.ArtifactID);
 
 			// Assert
-			AssertFiles(true);
+			FileBillingFlagValidator documentFlagValidator = new FileBillingFlagValidator(Helper, _targetWorkspaceArtifactID);
+			documentFlagValidator.AssertFiles(true);
 		}
 
 		[IdentifiedTest("f3ac208e-0047-44df-b25f-58a5acd544bb")]
@@ -250,7 +260,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactID, integrationPoint.ArtifactID);
 
 			// Assert
-			AssertFiles(false);
+			FileBillingFlagValidator documentFlagValidator = new FileBillingFlagValidator(Helper, _targetWorkspaceArtifactID);
+			documentFlagValidator.AssertFiles(false);
 		}
 
 		[IdentifiedTest("317f66e9-8c03-46ee-bc38-9fb3510340e7")]
@@ -271,7 +282,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactID, integrationPointWithCopyFiles.ArtifactID);
 
 			// Assert
-			AssertFiles(true);
+			FileBillingFlagValidator documentFlagValidatorStep1 = new FileBillingFlagValidator(Helper, _targetWorkspaceArtifactID);
+			documentFlagValidatorStep1.AssertFiles(true);
 
 			//<--- Step 2 --->//
 
@@ -288,7 +300,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactID, integrationPointOverlayMetadata.ArtifactID);
 
 			// Assert
-			AssertFiles(false);
+			FileBillingFlagValidator documentFlagValidatorStep2 = new FileBillingFlagValidator(Helper, _targetWorkspaceArtifactID);
+			documentFlagValidatorStep2.AssertFiles(false);
 		}
 
 		#region Helper Methods
@@ -371,31 +384,6 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 			}
 
 			return Serializer.Serialize(sourceConfiguration);
-		}
-
-		private IEnumerable<FileRow> GetFiles()
-		{
-			DataTable fileDataTable = Helper.GetDBContext(_targetWorkspaceArtifactID)
-				.ExecuteSqlStatementAsDataTable("SELECT * FROM [File]");
-			return fileDataTable.Select().Select(x => new FileRow
-			{
-				InRepository = (bool)x["InRepository"],
-				Billable = (bool)x["Billable"]
-			});
-		}
-
-		private void AssertFiles(bool expectBillable)
-		{
-			IEnumerable<FileRow> fileRows = GetFiles();
-
-			fileRows.Should().NotBeEmpty()
-				.And.OnlyContain(x => x.InRepository == expectBillable && x.Billable == expectBillable);
-		}
-
-		private class FileRow
-		{
-			public bool InRepository { get; set; }
-			public bool Billable { get; set; }
 		}
 	}
 	#endregion

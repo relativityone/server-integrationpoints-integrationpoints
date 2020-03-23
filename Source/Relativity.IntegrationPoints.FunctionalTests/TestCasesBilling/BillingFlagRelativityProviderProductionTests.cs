@@ -9,6 +9,7 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
+using kCura.IntegrationPoint.Tests.Core.Validators;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
@@ -102,7 +103,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactID, integrationPoint.ArtifactID);
 
 			// Assert
-			AssertFiles(true);
+			FileBillingFlagValidator documentFlagValidator = new FileBillingFlagValidator(Helper,_targetWorkspaceArtifactID);
+			documentFlagValidator.AssertFiles(true);
 		}
 
 		[IdentifiedTest("d955fd5a-1cb3-4d0f-977a-5b4355f2bbb6")]
@@ -121,7 +123,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactID, integrationPoint.ArtifactID);
 
 			// Assert
-			AssertFiles(false);
+			FileBillingFlagValidator documentFlagValidator = new FileBillingFlagValidator(Helper, _targetWorkspaceArtifactID);
+			documentFlagValidator.AssertFiles(false);
 		}
 
 
@@ -191,31 +194,6 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 			}
 
 			return Serializer.Serialize(sourceConfiguration);
-		}
-
-		private IEnumerable<FileRow> GetFiles()
-		{
-			DataTable fileDataTable = Helper.GetDBContext(_targetWorkspaceArtifactID)
-				.ExecuteSqlStatementAsDataTable("SELECT * FROM [File]");
-			return fileDataTable.Select().Select(x => new FileRow
-			{
-				InRepository = (bool)x["InRepository"],
-				Billable = (bool)x["Billable"]
-			});
-		}
-
-		private void AssertFiles(bool expectBillable)
-		{
-			IEnumerable<FileRow> fileRows = GetFiles();
-
-			fileRows.Should().NotBeEmpty()
-				.And.OnlyContain(x => x.InRepository == expectBillable && x.Billable == expectBillable);
-		}
-
-		private class FileRow
-		{
-			public bool InRepository { get; set; }
-			public bool Billable { get; set; }
 		}
 	}
 	#endregion
