@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -33,12 +34,12 @@ namespace UnitTests
 				new SyncIssueDTO()
 				{
 					Jira = "REL-1234",
-					SearchMatch = "*UglyException*"
+					Exception = "*UglyException*"
 				},
 				new SyncIssueDTO()
 				{
 					Jira = "REL-5678",
-					SearchMatch = "*TerribleException*"
+					Exception = "*TerribleException*"
 				}
 			};
 			_loggerFake = new Mock<ILogger>();
@@ -65,8 +66,7 @@ namespace UnitTests
 				{
 					new FixVersion()
 					{
-						Name = "Release Name",
-						ReleaseDate = "2020-01-01"
+						Name = "Release Name"
 					}
 				}
 			};
@@ -90,7 +90,7 @@ namespace UnitTests
 
 				_splunkApiMock.Verify(x => x.AddToKVStoreCollectionAsync(
 						It.Is<string>(name => name == _appSettingsFake.SplunkKVCollectionName),
-						It.Is<SplunkKVCollectionItem>(item => VerifySplunkKVCollectionItem(dto.Jira, dto.SearchMatch, fields, item))),
+						It.Is<SplunkKVCollectionItem>(item => VerifySplunkKVCollectionItem(dto.Jira, dto.Exception, fields, item))),
 					Times.Once);
 			}
 		}
@@ -98,11 +98,11 @@ namespace UnitTests
 		private bool VerifySplunkKVCollectionItem(string expectedJira, string expectedSearchMatch, Fields expectedFields, SplunkKVCollectionItem item)
 		{
 			CollectionAssert.AreEquivalent(item.Labels, expectedFields.Labels);
-			CollectionAssert.AreEquivalent(item.FixVersions, expectedFields.FixVersions);
+			CollectionAssert.AreEquivalent(item.FixVersions, expectedFields.FixVersions.Select(x => x.Name));
 
 			return
 				item.Jira == expectedJira &&
-				item.SearchMatch == expectedSearchMatch &&
+				item.Exception == expectedSearchMatch &&
 				item.IssueType == expectedFields.IssueType.Name &&
 				item.Summary == expectedFields.Summary &&
 				item.Status == expectedFields.Status.Name;

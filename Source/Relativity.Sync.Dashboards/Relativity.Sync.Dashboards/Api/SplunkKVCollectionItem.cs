@@ -7,7 +7,7 @@
 		public string Status { get; set; }
 		public string IssueType { get; set; }
 		public string[] Labels { get; set; }
-		public string SearchMatch { get; set; }
-		public FixVersion[] FixVersions { get; set; }
+		public string[] FixVersions { get; set; }
+		public string Exception { get; set; }
 	}
 }

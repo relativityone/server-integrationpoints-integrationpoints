@@ -10,6 +10,6 @@
 		/// <summary>
 		/// Search term for Splunk. May include wildcard placeholders.
 		/// </summary>
-		public string SearchMatch { get; set; }
+		public string Exception { get; set; }
 	}
 }
