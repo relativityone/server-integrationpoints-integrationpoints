@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		void Delete(int integrationPointID);
 
 		IList<IntegrationPoint> GetAll(List<int> integrationPointIDs);
-		IList<IntegrationPoint> GetAllBySourceAndDestinationProviderIDs(
+		Task<IList<IntegrationPoint>> GetAllBySourceAndDestinationProviderIDsAsync(
 			int sourceProviderArtifactID,
 			int destinationProviderArtifactID);
 		IList<IntegrationPoint> GetIntegrationPoints(List<int> sourceProviderIds);

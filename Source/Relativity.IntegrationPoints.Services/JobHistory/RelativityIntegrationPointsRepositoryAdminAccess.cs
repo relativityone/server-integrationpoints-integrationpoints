@@ -49,7 +49,8 @@ namespace Relativity.IntegrationPoints.Services.JobHistory
 		private List<kCura.IntegrationPoints.Core.Models.IntegrationPointModel> RetrieveIntegrationPoints(IList<int> sourceProvider, IList<int> destinationProvider)
 		{
 			return _integrationPointRepository
-				.GetAllBySourceAndDestinationProviderIDs(sourceProvider[0], destinationProvider[0])
+				.GetAllBySourceAndDestinationProviderIDsAsync(sourceProvider[0], destinationProvider[0])
+				.GetAwaiter().GetResult()
 				.Select(kCura.IntegrationPoints.Core.Models.IntegrationPointModel.FromIntegrationPoint)
 				.ToList();
 		}

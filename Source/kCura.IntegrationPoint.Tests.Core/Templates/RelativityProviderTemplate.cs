@@ -228,7 +228,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			modelBase.PromoteEligible = promoteEligible;
 		}
 
-		private static int GetRootFolder(ITestHelper helper, int workspaceArtifactId)
+		protected static int GetRootFolder(ITestHelper helper, int workspaceArtifactId)
 		{
 			using (var folderManager = helper.CreateProxy<IFolderManager>())
 			{
