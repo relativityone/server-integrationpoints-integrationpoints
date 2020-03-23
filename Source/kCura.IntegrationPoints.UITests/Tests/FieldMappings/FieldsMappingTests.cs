@@ -138,7 +138,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 		public void FieldMapping_ShouldClearMapFromInvalidField_WhenClearButtonIsPressed()
 		{
 			//Arrange
-			const string invalidFieldMappingMessageText = "Your job may be unsuccessfully finished by those Source and Destination fields:";
+			const string invalidFieldMappingMessageText = "Mapping of the fields below may fail your job:";
 			List<Tuple<string, string>> FieldsMapping = new List<Tuple<string, string>>
 			{
 				new Tuple<string, string>("Control Number", "Control Number"),
