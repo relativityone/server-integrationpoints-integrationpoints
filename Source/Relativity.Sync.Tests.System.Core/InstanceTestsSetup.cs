@@ -12,10 +12,10 @@ namespace Relativity.Sync.Tests.System.Core
 	///     This class sets up test environment for every test in this namespace
 	/// </summary>
 	[SetUpFixture]
-	public sealed class SystemTestsSetup
+	public class InstanceTestsSetup
 	{
 		[OneTimeSetUp]
-		public async Task RunBeforeAnyTests()
+		public virtual async Task RunBeforeAnyTests()
 		{
 			SuppressCertificateCheckingIfConfigured();
 			await ConfigureRequiredInstanceSettings().ConfigureAwait(false);
