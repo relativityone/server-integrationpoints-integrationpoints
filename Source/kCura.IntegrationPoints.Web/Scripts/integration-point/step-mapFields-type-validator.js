@@ -24,7 +24,7 @@ var StepMapFieldsValidator = (function () {
 
 	var showProceedConfirmationPopup = function (invalidMappedFields, proceedCallback, clearAndProceedCallback) {
 		var content = $('<div/>')
-			.html('<p>Your job may be unsuccessfully finished by those Source and Destination fields:</p>');
+			.html('<p>Mapping of the fields below may fail your job:</p>');
 
 		buildFieldsMapTableMessage(invalidMappedFields)
 			.appendTo(content);
@@ -32,7 +32,7 @@ var StepMapFieldsValidator = (function () {
 		$('<div/>').html(
 			'<p>' +
 			'Proceed: continue with current mapping <br/> ' +
-			'Clear and Proceed: filter out invalid fields and continue <br/>' +
+			'Clear and Proceed: filter out the fields above and continue <br/>' +
 			'</p> ').appendTo(content);
 
 		window.Dragon.dialogs.showYesNoCancel({
