@@ -150,11 +150,13 @@ function Move-Output
         [String] $Destination
     )
 
+    if(Test-Path $Destination) {
+        Remove-Item $Destination -Force -Recurse
+    }
+
     $childItems = Get-ChildItem $Source
 
-    if(-not (Test-Path $Destination)) {
-        New-Item $Destination -ItemType Directory
-    }
+    New-Item $Destination -ItemType Directory
 
     $childItems | ForEach-Object {
         Copy-Item -Path $_.FullName -Destination $Destination -Recurse -Force

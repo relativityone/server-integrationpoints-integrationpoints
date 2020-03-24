@@ -1,27 +1,37 @@
-﻿using System;
-using System.Threading;
+﻿using System.IO;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using Relativity.Sync.Tests.Performance.Tests;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Sync.Tests.System.Core.Runner;
 using Relativity.Sync.Tests.System.Core.Stubs;
 using Relativity.Telemetry.APM;
 
-namespace Relativity.Sync.Tests.Performance.RunnerSetupTests
+namespace Relativity.Sync.Tests.Performance.Tests
 {
 	[TestFixture]
 	public class RunnerTests : PerformanceTestBase
 	{
+		[SetUp]
+		public void SetUp()
+		{
+			ARMHelper.EnableAgents();
+		}
+
 		[Test]
 		public async Task Runner_GoldFlow()
 		{
+				// Arrange
+			string filePath = await StorageHelper.DownloadFileAsync("SmallSaltPepperWorkspace.zip", Path.GetTempPath()).ConfigureAwait(false);
+
+			int workspaceID = await ARMHelper.RestoreWorkspaceAsync(filePath).ConfigureAwait(false);
+
+
 			SyncRunner agent = new SyncRunner(new ServicesManagerStub(), AppSettings.RelativityUrl,
 				new NullAPM(), new ConsoleLogger());
 
 
-			await SetupConfigurationAsync().ConfigureAwait(false);
+			await SetupConfigurationAsync(sourceWorkspaceId: workspaceID).ConfigureAwait(false);
 
 			int configurationRdoId = await
 				Rdos.CreateSyncConfigurationRDO(ServiceFactory, SourceWorkspace.ArtifactID, Configuration)
@@ -32,8 +42,10 @@ namespace Relativity.Sync.Tests.Performance.RunnerSetupTests
 
 			const int adminUserId = 9;
 
+			// Act
 			SyncJobState jobState = await agent.RunAsync(args, adminUserId).ConfigureAwait(false);
 
+			// Assert
 			Assert.True(jobState.Status == SyncJobStatus.Completed, message: jobState.Message);
 		}
 	}

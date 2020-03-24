@@ -6,8 +6,8 @@ nuget Relativity ~> 11.1.0
 nuget Relativity.API 12.0.1
 nuget Relativity.DataExchange.Client.SDK 1.9.21
 nuget Relativity.Transfer.Client ~> 6.3
-nuget Relativity.Kepler 2.2.2
-nuget Relativity.Kepler.Client 2.2.2
+nuget Relativity.Kepler 2.3.4
+nuget Relativity.Kepler.Client 2.3.4
 nuget Relativity.OAuth2Client ~> 1.0.0
 nuget Relativity.Platform.Keywords ~> 11.1.0
 nuget Relativity.Services.Interfaces ~> 11.1.0
@@ -26,11 +26,15 @@ nuget Autofac ~> 4.9 redirects: force
 nuget Polly ~> 5.7
 nuget Banzai ~> 3.0
 nuget Banzai.AUtofac ~> 3.0
-nuget Newtonsoft.Json ~> 6.0 redirects: force
+nuget Newtonsoft.Json >= 6.0 redirects: force
 nuget Castle.Core
+nuget Castle.Windsor redirects: force
+nuget Automapper >= 8.0 redirects: force
 nuget System.Reactive.Linq 4.0.0
 nuget System.Reactive 4.0.0
 
+nuget Microsoft.Azure.Storage.Blob 11.1.3 redirects: force
+nuget Microsoft.Azure.Storage.Common 11.1.3 redirects: force
 
 // Tests
 nuget NUnit 3.11
@@ -41,3 +45,8 @@ nuget FluentAssertions ~> 5.4
 nuget Moq ~> 4.10
 nuget System.Threading.Tasks.Extensions 4.5.1
 nuget Microsoft.Reactive.Testing 4.0.0
+
+nuget Relativity.Automation.Utility ~> 11.2
+nuget Relativity.Automation.Utility.API 11.2.77.17-DEV
+nuget ARMTestServices 1.1.1
+nuget Refit

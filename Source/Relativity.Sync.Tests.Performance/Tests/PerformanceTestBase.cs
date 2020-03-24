@@ -1,17 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using kCura.Apps.Common.Utils.Serializers;
-using Relativity.API.Foundation;
-using Relativity.Services.Credential;
-using Relativity.Services.FieldManager;
+using Relativity.Automation.Utility;
+using Relativity.Automation.Utility.Api;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Workspace;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Tests.Performance.ARM;
+using Relativity.Sync.Tests.Performance.Helpers;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Sync.Tests.System.Core.Runner;
@@ -23,9 +21,26 @@ namespace Relativity.Sync.Tests.Performance.Tests
 		private readonly string _CONTROL_NUMBER_NAME = "Control Number";
 		private readonly int _DOCUMENT_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
 
+		public ApiComponent Component { get; }
+		public ARMHelper ARMHelper { get; }
+		public AzureStorageHelper StorageHelper { get; }
+
+		public WorkspaceRef TargetWorkspace { get; set; }
+
+		public WorkspaceRef SourceWorkspace { get; set; }
+
+		public FullSyncJobConfiguration Configuration { get; set; }
 
 		public PerformanceTestBase()
 		{
+			RelativityFacade.Instance.RelyOn<ApiComponent>();
+
+			Component = RelativityFacade.Instance.GetComponent<ApiComponent>();
+
+			StorageHelper = AzureStorageHelper.CreateFromTestConfig();
+
+			ARMHelper = ARMHelper.CreateInstance();
+
 			Configuration = new FullSyncJobConfiguration()
 			{
 				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.None,
@@ -82,11 +97,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			}
 		}
 
-		public WorkspaceRef TargetWorkspace { get; set; }
 
-		public WorkspaceRef SourceWorkspace { get; set; }
-
-		public FullSyncJobConfiguration Configuration { get; set; }
 
 
 		private async Task<IEnumerable<FieldMap>> GetIdentifierMapping()

@@ -4,6 +4,8 @@
     <Parameter name="RelativityRestUrl" value="/Relativity.Rest/api" />
     <Parameter name="RelativityWebApiUrl" value="/RelativityWebAPI" />
     <Parameter name="SuppressCertificateCheck" value="true" />
-    <Parameter name="IsTrident" value="true" />
+    <Parameter name="AzureStorageAccount" value="relativitysyncstorage" />
+    <Parameter name="AzureStorageAuthorizationKey" value="HjBqFlighpywrOE+og8gtNA9GqCwcL/6hRH7wCKdvkqD2snOIvTJ3+zgRweVfeXPmCCUZB4clHgueoWVANSglw==" />    
+    <Parameter name="AzureStoragePerformanceContainer" value="performance-tests" />
   </TestRunParameters>
 </RunSettings>

@@ -1,6 +1,13 @@
 Microsoft.CodeAnalysis.FxCopAnalyzers
 CSharpGuidelineAnalyzer
 
+Relativity.Automation.Utility
+Relativity.Automation.Utility.API
+ARMTestServices
+
+Microsoft.Azure.Storage.Blob
+Refit
+
 Polly
 Autofac
 coverlet.msbuild

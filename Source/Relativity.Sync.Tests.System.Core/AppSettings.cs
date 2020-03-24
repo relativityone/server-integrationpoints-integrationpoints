@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Configuration;
+using System.Linq;
 using NUnit.Framework;
+using System.Text;
 
 namespace Relativity.Sync.Tests.System.Core
 {
@@ -11,7 +13,7 @@ namespace Relativity.Sync.Tests.System.Core
 		private static Uri _relativityWebApiUrl;
 		private static Uri _relativityUrl;
 
-		public static bool IsTrident => bool.Parse(GetConfigValue("IsTrident"));
+		public static bool IsSettingsFileSet => TestContext.Parameters.Names.Any();
 
 		public static string RelativityHostName => TestContext.Parameters.Exists("RelativityHostAddress")
 			? TestContext.Parameters["RelativityHostAddress"]
@@ -29,11 +31,26 @@ namespace Relativity.Sync.Tests.System.Core
 
 		public static string RelativityUserPassword => GetConfigValue("AdminPassword");
 
+		public static string BasicAccessToken => Convert.ToBase64String(Encoding.ASCII.GetBytes($"{RelativityUserName}:{RelativityUserPassword}"));
+
 		public static string SqlServer => GetConfigValue("SqlServer");
 
 		public static string SqlUsername => GetConfigValue("SqlUsername");
 
 		public static string SqlPassword => GetConfigValue("SqlPassword");
+
+		public static string ConnectionStringEDDS => string.Format("Data Source={0};Initial Catalog=EDDS", SqlServer);
+
+		public static string ConnectionStringWorkspace(int workspaceID) => string.Format("Data Source={0};Initial Catalog=EDDS{1}", SqlServer, workspaceID);
+
+		public static string AzureStorageAccount => GetConfigValue(nameof(AzureStorageAccount));
+
+		public static string AzureStorageAuthorizationKey => GetConfigValue(nameof(AzureStorageAuthorizationKey));
+
+		public static string AzureStorageConnectionString
+			=> string.Format(@"DefaultEndpointsProtocol=https;AccountName={0};AccountKey={1};EndpointSuffix=core.windows.net", AzureStorageAccount, AzureStorageAuthorizationKey);
+
+		public static string AzureStoragePerformanceContainer => GetConfigValue(nameof(AzureStoragePerformanceContainer));
 
 		public static bool SuppressCertificateCheck => bool.Parse(GetConfigValue("SuppressCertificateCheck"));
 

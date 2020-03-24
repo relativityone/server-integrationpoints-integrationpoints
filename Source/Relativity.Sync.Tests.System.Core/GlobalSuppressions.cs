@@ -5,4 +5,5 @@
 
 #pragma warning disable RG2001 // Character Per Line
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA5359:Do Not Disable Certificate Validation", Justification = "<Pending>", Scope = "member", Target = "~M:Relativity.Sync.Tests.System.Core.InstanceTestsSetup.SuppressCertificateCheckingIfConfigured")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1305:Specify IFormatProvider", Justification = "<Pending>", Scope = "module")]
 #pragma warning restore RG2001 // Character Per Line
