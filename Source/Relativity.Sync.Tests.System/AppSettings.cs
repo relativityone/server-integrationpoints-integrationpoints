@@ -21,11 +21,11 @@ namespace Relativity.Sync.Tests.System
 
 		public static Uri RelativityUrl => _relativityUrl ?? (_relativityUrl = BuildUri("Relativity"));
 
-		public static Uri RelativityServicesUrl => _relativityServicesUrl ?? (_relativityServicesUrl = BuildUri("/Relativity.Services"));
+		public static Uri RelativityServicesUrl => _relativityServicesUrl ?? (_relativityServicesUrl = BuildUri(GetConfigValue("RelativityServicesUrl")));
 
-		public static Uri RelativityRestUrl => _relativityRestUrl ?? (_relativityRestUrl = BuildUri("/Relativity.Rest/api"));
+		public static Uri RelativityRestUrl => _relativityRestUrl ?? (_relativityRestUrl = BuildUri(GetConfigValue("RelativityRestUrl")));
 
-		public static Uri RelativityWebApiUrl => _relativityWebApiUrl ?? (_relativityWebApiUrl = BuildUri("/RelativityWebAPI"));
+		public static Uri RelativityWebApiUrl => _relativityWebApiUrl ?? (_relativityWebApiUrl = BuildUri(GetConfigValue("RelativityWebApiUrl")));
 
 		public static string RelativityUserName => GetConfigValue("AdminUsername");
 

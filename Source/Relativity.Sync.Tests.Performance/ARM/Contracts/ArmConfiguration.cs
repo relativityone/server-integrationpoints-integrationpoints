@@ -9,19 +9,18 @@ namespace Relativity.Sync.Tests.Performance.ARM.Contracts
 		public IEnumerable<ArchiveLocation> ArmArchiveLocations { get; set; }
 		public IEnumerable<object> EmailNotificationSettings { get; set; }
 
-		public static ContractEnvelope<ArmConfiguration> GetRequest(string location)
+		public static ContractEnvelope<ArmConfiguration> GetRequest(string webAPIPath, string location)
 		{
 			return new ContractEnvelope<ArmConfiguration>
 			{
 				Contract = new ArmConfiguration
 				{
-					RelativityWebApiUrl = "https://emttest/RelativityWebAPI/",
+					RelativityWebApiUrl = webAPIPath,
 					ArmArchiveLocations = new List<ArchiveLocation>
 					{
 						new ArchiveLocation()
 						{
-							ArchiveLocationType = 1,
-							Location = location
+							Location = location				
 						}
 					},
 					EmailNotificationSettings = Enumerable.Empty<object>()

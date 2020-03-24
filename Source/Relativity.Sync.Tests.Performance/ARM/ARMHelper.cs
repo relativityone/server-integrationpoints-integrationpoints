@@ -14,7 +14,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using SettingType = Relativity.Services.InstanceSetting.ValueType;
 
 namespace Relativity.Sync.Tests.Performance.ARM
 {
@@ -115,13 +114,15 @@ namespace Relativity.Sync.Tests.Performance.ARM
 		private void ConfigureARM()
 		{
 			Console.WriteLine("ARM configuration has been started...");
-			_component.OrchestratorFactory.Create<IOrchestrateInstanceSettings>()
-				.SetInstanceSetting("BcpShareFolderName", @"\\emttest\BCPPath", "kCura.ARM", InstanceSettingValueTypeEnum.Text);
+
+			IOrchestrateInstanceSettings settingOrchestrator = _component.OrchestratorFactory.Create<IOrchestrateInstanceSettings>();
+			settingOrchestrator.SetInstanceSetting("BcpShareFolderName", @"\\emttest\BCPPath", "kCura.ARM", InstanceSettingValueTypeEnum.Text);
 
 			_fileShare.CreateDirectoryAsync(_RELATIVE_ARCHIVES_LOCATION).Wait();
 			Console.WriteLine($"ARM Archive Location has been created on fileshare: {_RELATIVE_ARCHIVES_LOCATION}");
 
-			ContractEnvelope<ArmConfiguration> request = ArmConfiguration.GetRequest(REMOTE_ARCHIVES_LOCATION);
+			string webApiPath = settingOrchestrator.GetInstanceSetting("RelativityWebApiUrl", "kCura.ARM").Value;
+			ContractEnvelope <ArmConfiguration> request = ArmConfiguration.GetRequest(webApiPath, REMOTE_ARCHIVES_LOCATION);
 
 			_armApi.SetConfigurationAsync(request).Wait();
 

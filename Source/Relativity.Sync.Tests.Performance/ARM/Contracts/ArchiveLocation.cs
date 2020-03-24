@@ -2,7 +2,7 @@
 {
 	public class ArchiveLocation
 	{
-		public int ArchiveLocationType { get; set; }
+		public int ArchiveLocationType { get; } = 1;
 		public string Location { get; set; }
 	}
 }
