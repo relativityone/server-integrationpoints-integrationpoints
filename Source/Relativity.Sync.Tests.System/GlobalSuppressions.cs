@@ -10,5 +10,6 @@
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA5359:Do Not Disable Certificate Validation", Justification = "OK for testing", Scope = "member", Target = "~M:Relativity.Sync.Tests.System.SystemTestsSetup.SuppressCertificateCheckingIfConfigured")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "CA1024:Use properties where appropriate", Justification = "Not important in stubs and mocks", Scope = "module")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:Identifiers should not contain underscores", Justification = "<Pending>", Scope = "module")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1305:Specify IFormatProvider", Justification = "<Pending>", Scope = "module")]
 
 #pragma warning restore RG2001 // Character Per Line
