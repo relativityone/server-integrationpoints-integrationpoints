@@ -17,5 +17,3 @@ FluentAssertions
 Moq
 netDumbster
 relativity.testing.identification
-group Sync
-Relativity.Sync
