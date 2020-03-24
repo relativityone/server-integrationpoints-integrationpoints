@@ -1,7 +1,7 @@
 <RunSettings>
   <TestRunParameters>
     <Parameter name="AzureStorageAccount" value="relativitysyncstorage" />
-    <Parameter name="AzureStorageAuthorizationKey" value="3zVjUzYEz5rlvTkj8mfTSRcJJR0TnLHuI19syy718wjj8JjizrT2KLLgtgf8/G30VQuCQDEf1KqVYxuX2igtsQ==" />    
+    <Parameter name="AzureStorageAuthorizationKey" value="HjBqFlighpywrOE+og8gtNA9GqCwcL/6hRH7wCKdvkqD2snOIvTJ3+zgRweVfeXPmCCUZB4clHgueoWVANSglw==" />    
     <Parameter name="AzureStoragePerformanceContainer" value="performance-tests" />
   </TestRunParameters>
 </RunSettings>
