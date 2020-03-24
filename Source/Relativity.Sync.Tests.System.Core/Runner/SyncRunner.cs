@@ -83,9 +83,11 @@ namespace Relativity.Sync.Tests.System.Core.Runner
 
 			containerBuilder.RegisterInstance(new SyncDataAndUserConfiguration(userId, 0)).AsImplementedInterfaces().SingleInstance();
 
-			containerBuilder.RegisterType<EmptyDataDestinationInitializationAndFinalization>()
+			containerBuilder.RegisterType<EmptyExecutorConfiguration<IDataDestinationInitializationConfiguration>>()
 				.As<IExecutor<IDataDestinationInitializationConfiguration>>()
-				.As<IExecutionConstrains<IDataDestinationInitializationConfiguration>>()
+				.As<IExecutionConstrains<IDataDestinationInitializationConfiguration>>();
+
+			containerBuilder.RegisterType<EmptyExecutorConfiguration<IDataDestinationFinalizationConfiguration>>()
 				.As<IExecutor<IDataDestinationFinalizationConfiguration>>()
 				.As<IExecutionConstrains<IDataDestinationFinalizationConfiguration>>();
 
