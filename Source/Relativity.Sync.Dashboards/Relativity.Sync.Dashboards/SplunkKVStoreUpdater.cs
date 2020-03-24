@@ -36,12 +36,12 @@ namespace Relativity.Sync.Dashboards
 				var kvCollectionItem = new SplunkKVCollectionItem()
 				{
 					Jira = syncIssue.Jira,
-					SearchMatch = syncIssue.SearchMatch,
+					Exception = syncIssue.Exception,
 					IssueType = jiraTicket.Fields.IssueType.Name,
 					Status = jiraTicket.Fields.Status.Name,
 					Summary = jiraTicket.Fields.Summary,
 					Labels = jiraTicket.Fields.Labels,
-					FixVersions = jiraTicket.Fields.FixVersions
+					FixVersions = jiraTicket.Fields.FixVersions.Select(x => x.Name).ToArray()
 				};
 				await AddSplunkKVItemAsync(kvCollectionItem).ConfigureAwait(false);
 			}
