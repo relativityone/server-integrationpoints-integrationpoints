@@ -2,7 +2,7 @@
 {
 	public class ArchiveLocation
 	{
-		public int ArchiveLocationType { get; } = 1;
+		public int ArchiveLocationType { get; } = 1; //Value representing a standard ARM Archive type
 		public string Location { get; set; }
 	}
 }
