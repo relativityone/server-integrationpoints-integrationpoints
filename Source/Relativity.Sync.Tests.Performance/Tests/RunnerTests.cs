@@ -17,39 +17,24 @@ namespace Relativity.Sync.Tests.Performance.RunnerSetupTests
 		[Test]
 		public async Task Runner_GoldFlow()
 		{
-			try
-			{
-				SyncJobState jobState = null;
-
-				SyncRunner agent = new SyncRunner(new ServicesManagerStub(), AppSettings.RelativityUrl,
-					new NullAPM(), new ConsoleLogger());
+			SyncRunner agent = new SyncRunner(new ServicesManagerStub(), AppSettings.RelativityUrl,
+				new NullAPM(), new ConsoleLogger());
 
 
-				await SetupConfigurationAsync().ConfigureAwait(false);
+			await SetupConfigurationAsync().ConfigureAwait(false);
 
-				int configurationRdoId = await
-					Rdos.CreateSyncConfigurationRDO(ServiceFactory, SourceWorkspace.ArtifactID, Configuration).ConfigureAwait(false);
+			int configurationRdoId = await
+				Rdos.CreateSyncConfigurationRDO(ServiceFactory, SourceWorkspace.ArtifactID, Configuration)
+					.ConfigureAwait(false);
 
-				SyncJobParameters args = new SyncJobParameters(configurationRdoId, SourceWorkspace.ArtifactID, Configuration.JobHistoryId);
+			SyncJobParameters args = new SyncJobParameters(configurationRdoId, SourceWorkspace.ArtifactID,
+				Configuration.JobHistoryId);
 
-				const int adminUserId = 9;
-				var progress = new Progress<SyncJobState>();
-				progress.ProgressChanged += (sender, state) =>
-				{
-					jobState = state;
-				};
+			const int adminUserId = 9;
 
-				await agent.RunAsync(args, progress, adminUserId, CancellationToken.None).ConfigureAwait(false);
+			SyncJobState jobState = await agent.RunAsync(args, adminUserId).ConfigureAwait(false);
 
-				Assert.True(jobState.Status == SyncJobStatus.Completed, message: jobState.Message);
-			}
-#pragma warning disable CA1031 // Do not catch general exception types
-			catch (Exception e)
-			{
-				Assert.Fail(e.Message);
-			}
-#pragma warning restore CA1031 // Do not catch general exception types
-
+			Assert.True(jobState.Status == SyncJobStatus.Completed, message: jobState.Message);
 		}
 	}
 }

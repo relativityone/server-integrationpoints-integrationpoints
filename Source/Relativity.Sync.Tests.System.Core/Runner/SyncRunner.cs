@@ -41,11 +41,40 @@ namespace Relativity.Sync.Tests.System.Core.Runner
 		/// <param name="userId">Id of user that submitted the job</param>
 		/// <param name="cancellationToken">Cancellation token</param>
 		/// <returns></returns>
-		public Task RunAsync(SyncJobParameters parameters, IProgress<SyncJobState> progress, int userId, CancellationToken cancellationToken)
+		public Task RunAsync(SyncJobParameters parameters, int userId, IProgress<SyncJobState> progress, CancellationToken cancellationToken)
 		{
 			ISyncJob syncJob = CreateSyncJobAsync(parameters, userId, _relativityUri);
 			return syncJob.ExecuteAsync(progress, cancellationToken);
 		}
+
+		/// <summary>
+		/// Run job with set parameters and returns final job state
+		/// </summary>
+		/// <param name="parameters">Job parameters</param>
+		/// <param name="userId">Id of user that submitted the job</param>
+		/// <param name="cancellationToken">Cancellation token</param>
+		/// <returns></returns>
+		public async Task<SyncJobState> RunAsync(SyncJobParameters parameters, int userId, CancellationToken cancellationToken)
+		{
+			SyncJobState result = null;
+			var progress = new Progress<SyncJobState>(state =>
+			{
+				result = state;
+			});
+
+			await RunAsync(parameters, userId, progress, cancellationToken).ConfigureAwait(false);
+
+			return result;
+		}
+
+		/// <summary>
+		/// Run job with set parameters and returns final job state
+		/// </summary>
+		/// <param name="parameters">Job parameters</param>
+		/// <param name="userId">Id of user that submitted the job</param>
+		/// <returns></returns>
+		public Task<SyncJobState> RunAsync(SyncJobParameters parameters, int userId) => RunAsync(parameters, userId, CancellationToken.None);
+
 
 		private ISyncJob CreateSyncJobAsync(SyncJobParameters parameters, int userId, Uri relativityUri)
 		{
