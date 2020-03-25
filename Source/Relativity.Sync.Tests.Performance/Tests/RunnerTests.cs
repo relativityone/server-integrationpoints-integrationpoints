@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using Relativity.Sync.Tests.System.Core;
@@ -21,32 +22,44 @@ namespace Relativity.Sync.Tests.Performance.Tests
 		[Test]
 		public async Task Runner_GoldFlow()
 		{
+			try
+			{
 				// Arrange
-			string filePath = await StorageHelper.DownloadFileAsync("SmallSaltPepperWorkspace.zip", Path.GetTempPath()).ConfigureAwait(false);
+				string filePath = await StorageHelper
+					.DownloadFileAsync("SmallSaltPepperWorkspace.zip", Path.GetTempPath()).ConfigureAwait(false);
 
-			int workspaceID = await ARMHelper.RestoreWorkspaceAsync(filePath).ConfigureAwait(false);
-
-
-			SyncRunner agent = new SyncRunner(new ServicesManagerStub(), AppSettings.RelativityUrl,
-				new NullAPM(), new ConsoleLogger());
+				int workspaceID = await ARMHelper.RestoreWorkspaceAsync(filePath).ConfigureAwait(false);
 
 
-			await SetupConfigurationAsync(sourceWorkspaceId: workspaceID).ConfigureAwait(false);
+				SyncRunner agent = new SyncRunner(new ServicesManagerStub(), AppSettings.RelativityUrl,
+					new NullAPM(), new ConsoleLogger());
 
-			int configurationRdoId = await
-				Rdos.CreateSyncConfigurationRDO(ServiceFactory, SourceWorkspace.ArtifactID, Configuration)
-					.ConfigureAwait(false);
 
-			SyncJobParameters args = new SyncJobParameters(configurationRdoId, SourceWorkspace.ArtifactID,
-				Configuration.JobHistoryId);
+				await SetupConfigurationAsync(sourceWorkspaceId: workspaceID).ConfigureAwait(false);
 
-			const int adminUserId = 9;
+				int configurationRdoId = await
+					Rdos.CreateSyncConfigurationRDO(ServiceFactory, SourceWorkspace.ArtifactID, Configuration)
+						.ConfigureAwait(false);
 
-			// Act
-			SyncJobState jobState = await agent.RunAsync(args, adminUserId).ConfigureAwait(false);
+				SyncJobParameters args = new SyncJobParameters(configurationRdoId, SourceWorkspace.ArtifactID,
+					Configuration.JobHistoryId);
+
+				const int adminUserId = 9;
+
+				// Act
+				SyncJobState jobState = await agent.RunAsync(args, adminUserId).ConfigureAwait(false);
+
+				Assert.True(jobState.Status == SyncJobStatus.Completed, message: jobState.Message);
+
+			}
+#pragma warning disable CA1031 // Do not catch general exception types
+			catch (Exception e)
+			{
+				Assert.Fail(e.Message);
+			}
+#pragma warning restore CA1031 // Do not catch general exception types
 
 			// Assert
-			Assert.True(jobState.Status == SyncJobStatus.Completed, message: jobState.Message);
 		}
 	}
 }

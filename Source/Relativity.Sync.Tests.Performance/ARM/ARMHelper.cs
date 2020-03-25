@@ -122,7 +122,14 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			_fileShare.CreateDirectoryAsync(_RELATIVE_ARCHIVES_LOCATION).GetAwaiter().GetResult();
 			Debug.WriteLine($"ARM Archive Location has been created on fileshare: {_RELATIVE_ARCHIVES_LOCATION}");
 
-			string webApiPath = settingOrchestrator.GetInstanceSetting("RelativityWebApiUrl", "kCura.ARM").Value;
+			string webApiPath = settingOrchestrator.GetInstanceSetting("RelativityWebApiUrl", "kCura.ARM")?.Value;
+
+			if (webApiPath == null)
+			{
+				Debug.WriteLine("kCura.ARM.RelativityWebApiUrl instance setting not found, reverting to AppSettings");
+				webApiPath = AppSettings.RelativityWebApiUrl.AbsoluteUri;
+			}
+
 			ContractEnvelope <ArmConfiguration> request = ArmConfiguration.GetRequest(webApiPath, REMOTE_ARCHIVES_LOCATION);
 
 			_armApi.SetConfigurationAsync(request).GetAwaiter().GetResult();

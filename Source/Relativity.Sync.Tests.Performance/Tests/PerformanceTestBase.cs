@@ -48,7 +48,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 				EmailNotificationRecipients = "",
 				FieldOverlayBehavior = FieldOverlayBehavior.UseFieldSettings,
 				FolderPathSourceFieldName = "Document Folder Path",
-				ImportNativeFileCopyMode = ImportNativeFileCopyMode.CopyFiles,
+				ImportNativeFileCopyMode = ImportNativeFileCopyMode.DoNotImportNativeFiles,
 				ImportOverwriteMode = ImportOverwriteMode.AppendOverlay,
 				MoveExistingDocuments = false,
 			};
