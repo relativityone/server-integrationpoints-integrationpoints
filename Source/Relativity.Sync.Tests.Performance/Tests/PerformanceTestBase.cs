@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Relativity.Automation.Utility;
@@ -68,6 +70,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			else
 			{
 				SourceWorkspace = await Environment.GetWorkspaceAsync(sourceWorkspaceId).ConfigureAwait(false);
+				await Environment.CreateFieldsInWorkspace(SourceWorkspace.ArtifactID).ConfigureAwait(false);
 			}
 
 			if (targetWorkspaceId == 0)
@@ -88,7 +91,8 @@ namespace Relativity.Sync.Tests.Performance.Tests
 				mapping ?? await GetIdentifierMapping().ConfigureAwait(false);
 
 			Configuration.JobHistoryId =
-				await Rdos.CreateJobHistoryInstance(ServiceFactory, SourceWorkspace.ArtifactID).ConfigureAwait(false);
+				await Rdos.CreateJobHistoryInstance(ServiceFactory, SourceWorkspace.ArtifactID)
+					.ConfigureAwait(false);
 
 			if (useRootWorkspaceFolder)
 			{

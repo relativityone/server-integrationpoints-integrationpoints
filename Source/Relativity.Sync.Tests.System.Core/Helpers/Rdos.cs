@@ -408,6 +408,33 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			}
 		}
 
+
+		public static async Task<RelativityObject> GetJobHistory(ServiceFactory serviceFactory, int workspaceId, int jobHistoryId)
+		{
+			using (IObjectManager objectManager = serviceFactory.CreateProxy<IObjectManager>())
+			{
+				QueryRequest request = new QueryRequest
+				{
+					ObjectType = new ObjectTypeRef
+					{
+						Guid = new Guid("08F4B1F7-9692-4A08-94AB-B5F3A88B6CC9")
+					},
+					Condition = $"ArtifactId = {jobHistoryId}",
+					Fields = new FieldRef[]
+					{
+						new FieldRef
+						{
+							Name = "*"
+						}
+					}
+				};
+
+				QueryResult result = await objectManager.QueryAsync(workspaceId, request, 1, 1).ConfigureAwait(false);
+
+				return result.Objects.FirstOrDefault();
+			}
+		}
+
 		private static CreateRequest PrepareSyncConfigurationCreateRequestAsync(FullSyncJobConfiguration configuration,
 			ISerializer serializer)
 		{
