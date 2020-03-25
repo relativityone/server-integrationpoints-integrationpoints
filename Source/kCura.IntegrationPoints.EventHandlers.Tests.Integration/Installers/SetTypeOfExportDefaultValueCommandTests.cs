@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 			_defaultIntegrationPointModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly,
 				"IntegrationPointWithSourceConfToBeCorrected", "Append Only");
 			_defaultIntegrationPointProfileModel = CreateDefaultIntegrationPointProfileModel(ImportOverwriteModeEnum.AppendOnly,
-				"IntegrationPointWithSourceConfToBeCorrected", "Append Only", true);
+				"IntegrationPointWithSourceConfToBeCorrected", "Append Only");
 			_setTypeOfExportCommand = SetTypeOfExportDefaultValueCommandFactory.Create(_ehHelper, WorkspaceArtifactId);
 		}
 

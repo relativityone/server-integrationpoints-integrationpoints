@@ -34,7 +34,6 @@ var loadData = function (ko, dataContainer) {
 		this.settings = dataContainer.sourceConfiguration;
 		this.transferredRdoTypeName = dataContainer.transferredRdoTypeName;
 		this.fileShareLocation = getDestinationDetails();
-		this.promoteEligible = dataContainer.promoteEligible;
 
 		this.sourceDetails = function () {
 			if (self.isRdoExportMode()) {

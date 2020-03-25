@@ -73,7 +73,6 @@ var loadData = function (ko, dataContainer) {
 		this.moveExistingDocs = formatToYesOrNo(dataContainer.destinationConfiguration.MoveExistingDocuments);
 		this.exportType = formatExportType(dataContainer.destinationConfiguration.importNativeFile, dataContainer.destinationConfiguration.ImageImport);
 		this.showInstanceInfo = dataContainer.destinationConfiguration.FederatedInstanceArtifactId !== null;
-		this.promoteEligible = dataContainer.promoteEligible;
 
 		this.importNativeFile = ko.observable(dataContainer.destinationConfiguration.importNativeFile == 'true');
 		this.importImageFile = ko.observable(dataContainer.destinationConfiguration.ImageImport == 'true' &&

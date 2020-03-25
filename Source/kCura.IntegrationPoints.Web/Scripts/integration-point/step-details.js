@@ -127,7 +127,6 @@ var IP = IP || {};
 		this.showErrors = ko.observable(false);
 		this.isTypeDisabled = ko.observable(false);
 		this.isExportType = ko.observable(true);
-		this.promoteEligible = ko.observable();
 		this.integrationPointTypes = ko.observableArray();
 		this.type = ko.observable().extend({ required: true });
 		this.isEdit = ko.observable(parseInt(settings.artifactID) > 0);
@@ -179,11 +178,6 @@ var IP = IP || {};
 					settings.logErrors = "true";
 				}
 				self.logErrors(settings.logErrors.toString());
-
-				if (typeof settings.promoteEligible === "undefined") {
-					settings.promoteEligible = "false";
-				}
-				self.promoteEligible(settings.promoteEligible.toString());
 			}
 		}
 

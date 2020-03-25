@@ -62,7 +62,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Validation
 				LastRuntimeUTC = DateTime.Now,
 				NextScheduledRuntimeUTC = DateTime.Now,
 				FieldMappings = string.Empty,
-				PromoteEligible = false,
 				SecuredConfiguration = string.Empty
 			};
 

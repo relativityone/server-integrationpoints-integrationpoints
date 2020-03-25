@@ -85,9 +85,9 @@ namespace Relativity.IntegrationPoints.Services.Tests.Integration.IntegrationPoi
 		private IList<kCura.IntegrationPoints.Core.Models.IntegrationPointModel> CreateEligibleToPromoteIntegrationPoints()
 		{
 			var eligibleToPromote1 = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly,
-				"Relativity_Provider_1", "Append Only", true);
+				"Relativity_Provider_1", "Append Only");
 			var eligibleToPromote2 = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly,
-				"Relativity_Provider_2", "Append Only", true);
+				"Relativity_Provider_2", "Append Only");
 
 			return new List<kCura.IntegrationPoints.Core.Models.IntegrationPointModel>() { eligibleToPromote1 , eligibleToPromote2};
 
@@ -97,9 +97,9 @@ namespace Relativity.IntegrationPoints.Services.Tests.Integration.IntegrationPoi
 		private IList<kCura.IntegrationPoints.Core.Models.IntegrationPointModel> CreateNotEligibleToPromoteIntegrationPoints()
 		{
 			var notEligibleToPromote1 = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly,
-				"Relativity_Provider_3", "Append Only", false);
+				"Relativity_Provider_3", "Append Only");
 			var notEligibleToPromoteLdap = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly,
-				"Relativity_Provider_4", "Append Only", false);
+				"Relativity_Provider_4", "Append Only");
 			notEligibleToPromoteLdap.SourceProvider = LdapProvider.ArtifactId;
 			notEligibleToPromoteLdap.Type = Container.Resolve<IIntegrationPointTypeService>()
 				.GetIntegrationPointType(kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ImportGuid)

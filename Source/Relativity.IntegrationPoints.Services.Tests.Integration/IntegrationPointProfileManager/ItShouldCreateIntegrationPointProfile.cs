@@ -36,13 +36,12 @@ namespace Relativity.IntegrationPoints.Services.Tests.Integration.IntegrationPoi
 		[IdentifiedTestCase("c844e131-e72f-45cb-b4aa-fa0f5688cd13", false, false, false, null, "Replace Values", "Append/Overlay", false)]
 		[IdentifiedTestCase("4fac46a5-2f24-48e2-b2e7-a33356077cf9", false, false, false, "a937467@relativity.com", "Merge Values", "Append/Overlay", false)]
 		public void ItShouldCreateRelativityIntegrationPoint(bool importNativeFile, bool logErrors, bool useFolderPathInformation, string emailNotificationRecipients,
-			string fieldOverlayBehavior, string overwriteFieldsChoices, bool promoteEligible)
+			string fieldOverlayBehavior, string overwriteFieldsChoices)
 		{
 			OverwriteFieldsModel overwriteFieldsModel = _client.GetOverwriteFieldsChoicesAsync(SourceWorkspaceArtifactID).Result.First(x => x.Name == overwriteFieldsChoices);
 
 			CreateIntegrationPointRequest createRequest = IntegrationPointBaseHelper.CreateCreateIntegrationPointRequest(Helper, RepositoryFactory, SourceWorkspaceArtifactID, SavedSearchArtifactID, TypeOfExport,
-				TargetWorkspaceArtifactID, importNativeFile, logErrors, useFolderPathInformation, emailNotificationRecipients, fieldOverlayBehavior, overwriteFieldsModel, GetDefaultFieldMap().ToList(),
-				promoteEligible);
+				TargetWorkspaceArtifactID, importNativeFile, logErrors, useFolderPathInformation, emailNotificationRecipients, fieldOverlayBehavior, overwriteFieldsModel, GetDefaultFieldMap().ToList());
 
 			IntegrationPointModel createdIntegrationPointProfile = _client.CreateIntegrationPointProfileAsync(createRequest).Result;
 
