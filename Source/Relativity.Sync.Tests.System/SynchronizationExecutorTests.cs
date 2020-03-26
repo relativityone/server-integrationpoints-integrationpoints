@@ -123,6 +123,7 @@ namespace Relativity.Sync.Tests.System
 		}
 
 		[IdentifiedTest("06cacb9a-4d8c-4cd2-8de6-2aa249925eb7")]
+		[Ignore("This scenario will be valid when REL-395735 will be resolved.")]
 		public async Task ItShouldCompleteWithErrors_WhenSupportedByViewerIsNull()
 		{
 			int sourceWorkspaceArtifactId = await CreateWorkspaceAsync($"Source.{Guid.NewGuid()}").ConfigureAwait(false);
