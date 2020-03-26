@@ -63,7 +63,6 @@
     <Compile Include="IntegrationPointManager\ItShouldCreateIntegrationPoint.cs" />
     <Compile Include="IntegrationPointManager\ItShouldeRetrieveOverwriteFieldsChoices.cs" />
     <Compile Include="IntegrationPointManager\ItShouldHandleRetrievingNoIntegrationPoints.cs" />
-    <Compile Include="IntegrationPointManager\ItShouldRetrieveEligibleToPromoteIntegrationPoints.cs" />
     <Compile Include="IntegrationPointManager\ItShouldRetrieveAllIntegrationPoints.cs" />
     <Compile Include="IntegrationPointManager\ItShouldRetrieveIntegrationPointArtifactTypeId.cs" />
     <Compile Include="IntegrationPointProfileManager\IntegrationPointProfilePermissionTests.cs" />
@@ -127,9 +126,7 @@
       <Name>kCura.IntegrationPoints.Synchronizers.RDO</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="oi\unmanaged\cmmap000.bin" />
     <None Include="paket.references" />
