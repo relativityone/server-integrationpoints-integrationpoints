@@ -15261,18 +15261,6 @@
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
-      <ArtifactId>1038971</ArtifactId>
-      <AssemblyArtifactId>1016759</AssemblyArtifactId>
-      <Name>kCura.IntegrationPoints.EventHandlers.Installers.SetPromoteEligibleFieldEventHandler</Name>
-      <Guid>6d9d621c-d873-47ed-a1d5-528b05184907</Guid>
-      <Guids>8570ab09-b80d-4f5b-9ee2-0ef23b67e117</Guids>
-      <ExecutionType>10</ExecutionType>
-      <Order>120</Order>
-      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.28</ApplicationVersion>
-      <RunTarget>0</RunTarget>
-    </InstallEventHandler>
-    <InstallEventHandler>
       <ArtifactId>1038972</ArtifactId>
       <AssemblyArtifactId>1016759</AssemblyArtifactId>
       <Name>kCura.IntegrationPoints.EventHandlers.Installers.UpdateDestinationWorkspaceEntriesEventHandler</Name>
