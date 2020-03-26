@@ -21,6 +21,8 @@ using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Sync.Tests.System.Core.Stubs;
+using Relativity.Sync.Tests.System.Helpers;
+using Relativity.Sync.Transfer;
 using Relativity.Testing.Identification;
 using ImportJobFactory = Relativity.Sync.Tests.System.Core.Helpers.ImportJobFactory;
 
@@ -35,7 +37,7 @@ namespace Relativity.Sync.Tests.System
 
 		private const int _USER_FIELD_ID = 1039900;
 		private const string _USER_FIELD_DISPLAY_NAME = "Relativity Sync Test User";
-
+		
 		private static readonly Dataset Dataset = Dataset.NativesAndExtractedText;
 		private static readonly Guid JobHistoryErrorObject = new Guid("17E7912D-4F57-4890-9A37-ABC2B8A37BDB");
 		private static readonly Guid ErrorMessageField = new Guid("4112B894-35B0-4E53-AB99-C9036D08269D");
@@ -65,20 +67,9 @@ namespace Relativity.Sync.Tests.System
 			ImportJobErrors importJobErrors = await importHelper.ImportDataAsync(sourceWorkspaceArtifactId, dataTableWrapper).ConfigureAwait(false);
 			Assert.IsTrue(importJobErrors.Success, $"IAPI errors: {string.Join(global::System.Environment.NewLine, importJobErrors.Errors)}");
 
-			if(AppSettings.IsSettingsFileSet)
-			{
-				#region Hopper Instance workaround explanation
-				//This workaround was provided to omit Hopper Instance restrictions. IAPI which is executing on agent can't access file based on file location in database like '\\emttest\DefaultFileRepository\...'.
-				//Hopper is closed for outside traffic so there is no possibility to access fileshare from Trident Agent. Jira related to this https://jira.kcura.com/browse/DEVOPS-70257.
-				//If we decouple Sync from RIP and move it to RAP problem probably disappears. Right now as workaround we change on database this relative Fileshare path to local,
-				//where out test data are stored. So we assume in testing that push is working correctly, but whole flow (metadata, etc.) is under tests.
-				#endregion
-				UpdateNativeFilePathToLocal(sourceWorkspaceArtifactId);
-			}
+			UpdateNativeFilePathToLocalIfNeeded(sourceWorkspaceArtifactId);
 
-			IContainer container = ContainerHelper.Create(configuration,
-				containerBuilder => containerBuilder.RegisterInstance(new ImportApiFactoryStub()).As<IImportApiFactory>()
-			);
+			IContainer container = CreateContainer(configuration);
 
 			configuration.DestinationWorkspaceTagArtifactId = await GetDestinationWorkspaceTagArtifactIdAsync(container, sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, destinationWorkspaceName)
 				.ConfigureAwait(false);
@@ -89,11 +80,8 @@ namespace Relativity.Sync.Tests.System
 
 			Assert.AreEqual(ExecutionStatus.Completed, await PartitionDataSourceSnapshotAsync(container, configuration).ConfigureAwait(false));
 
-			// ImportAPI setup
-			IExecutor<ISynchronizationConfiguration> syncExecutor = container.Resolve<IExecutor<ISynchronizationConfiguration>>();
-
 			// ACT
-			ExecutionResult syncResult = await syncExecutor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult syncResult = await ExecuteSynchronizationExecutorAsync(container, configuration).ConfigureAwait(false);
 
 			// ASSERT
 			Assert.AreEqual(ExecutionStatus.Completed, syncResult.Status, await AggregateJobHistoryErrorMessagesAsync(sourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, syncResult)
@@ -110,12 +98,7 @@ namespace Relativity.Sync.Tests.System
 			string destinationWorkspaceName = $"Destination.{Guid.NewGuid()}";
 			int destinationWorkspaceArtifactId = await CreateWorkspaceAsync(destinationWorkspaceName).ConfigureAwait(false);
 
-			// Import documents
-			ImportBulkArtifactJob documentImportJob = ImportJobFactory.CreateNonNativesDocumentImportJob(
-				sourceWorkspaceArtifactId,
-				await Rdos.GetRootFolderInstance(ServiceFactory, sourceWorkspaceArtifactId).ConfigureAwait(false),
-				DataTableFactory.GenerateDocumentWithUserField());
-			ImportJobErrors importErrors = await ImportJobExecutor.ExecuteAsync(documentImportJob).ConfigureAwait(false);
+			ImportJobErrors importErrors = await ImportDocumentsAsync(sourceWorkspaceArtifactId, DataTableFactory.GenerateDocumentWithUserField()).ConfigureAwait(false);
 			Assert.IsTrue(importErrors.Success, $"{importErrors.Errors.Count} errors occurred during document upload: {importErrors}");
 
 			List<FieldMap> fieldMappings = CreateControlNumberFieldMapping();
@@ -127,25 +110,57 @@ namespace Relativity.Sync.Tests.System
 
 			ConfigurationStub configuration = await CreateConfigurationStubAsync(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, fieldMappings, 1, 1).ConfigureAwait(false);
 
-			IContainer container = ContainerHelper.Create(configuration,
-				containerBuilder => containerBuilder.RegisterInstance(new ImportApiFactoryStub()).As<IImportApiFactory>()
-			);
+			IContainer container = CreateContainer(configuration);
 
-			configuration.DestinationWorkspaceTagArtifactId = await GetDestinationWorkspaceTagArtifactIdAsync(container,  sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, destinationWorkspaceName)
-				.ConfigureAwait(false);
-
-			await CreateSourceTagsInDestinationWorkspaceAsync(container, configuration).ConfigureAwait(false);
-
-			await CreateDataSourceSnapshotAsync(container, configuration).ConfigureAwait(false);
-
-			await PartitionDataSourceSnapshotAsync(container, configuration).ConfigureAwait(false);
+			await ExecutePreSynchronizationExecutorsAsync(container, configuration, sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, destinationWorkspaceName).ConfigureAwait(false);
 
 			// ACT
-			IExecutor<ISynchronizationConfiguration> syncExecutor = container.Resolve<IExecutor<ISynchronizationConfiguration>>();
-			ExecutionResult syncResult = await syncExecutor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult syncResult = await ExecuteSynchronizationExecutorAsync(container, configuration).ConfigureAwait(false);
 
 			// ASSERT
 			Assert.AreEqual(ExecutionStatus.Completed, syncResult.Status, await AggregateJobHistoryErrorMessagesAsync(sourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, syncResult)
+				.ConfigureAwait(false));
+		}
+
+		[IdentifiedTest("06cacb9a-4d8c-4cd2-8de6-2aa249925eb7")]
+		public async Task ItShouldCompleteWithErrors_WhenSupportedByViewerIsNull()
+		{
+			int sourceWorkspaceArtifactId = await CreateWorkspaceAsync($"Source.{Guid.NewGuid()}").ConfigureAwait(false);
+
+			string destinationWorkspaceName = $"Destination.{Guid.NewGuid()}";
+			int destinationWorkspaceArtifactId = await CreateWorkspaceAsync(destinationWorkspaceName).ConfigureAwait(false);
+
+			ImportDataTableWrapper dataTableWrapper = DataTableFactory.CreateImportDataTable(Dataset, extractedText: true, natives: true);
+			ImportJobErrors importErrors = await new ImportHelper(ServiceFactory).ImportDataAsync(
+				sourceWorkspaceArtifactId,
+				dataTableWrapper
+			).ConfigureAwait(false);
+			Assert.IsTrue(importErrors.Success, $"{importErrors.Errors.Count} errors occurred during document upload: {importErrors}");
+
+			UpdateNativeFilePathToLocalIfNeeded(sourceWorkspaceArtifactId);
+
+			List<FieldMap> fieldMappings = CreateControlNumberFieldMapping();
+
+			ConfigurationStub configuration = await CreateConfigurationStubAsync(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, fieldMappings, 
+				dataTableWrapper.Data.Rows.Count, dataTableWrapper.Data.Rows.Count).ConfigureAwait(false);
+
+			IContainer container = CreateContainer(configuration);
+
+			// Replacing FileInfoFieldsBuilder with NullSupportedByViewerFileInfoFieldsBuilder. Kids, don't do it in your code.
+			ContainerBuilder overrideContainerBuilder = new ContainerBuilder();
+			container.ComponentRegistry.Registrations.Where(cr => cr.Activator.LimitType != typeof(FileInfoFieldsBuilder)).ForEach(cr => overrideContainerBuilder.RegisterComponent(cr));
+			container.ComponentRegistry.Sources.ForEach(rs => overrideContainerBuilder.RegisterSource(rs));
+			overrideContainerBuilder.RegisterTypes(typeof(NullSupportedByViewerFileInfoFieldsBuilder)).As<ISpecialFieldBuilder>();
+
+			container = overrideContainerBuilder.Build();
+
+			await ExecutePreSynchronizationExecutorsAsync(container, configuration, sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, destinationWorkspaceName).ConfigureAwait(false);
+
+			// ACT
+			ExecutionResult syncResult = await ExecuteSynchronizationExecutorAsync(container, configuration).ConfigureAwait(false);
+
+			// ASSERT
+			Assert.AreEqual(ExecutionStatus.CompletedWithErrors, syncResult.Status, await AggregateJobHistoryErrorMessagesAsync(sourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, syncResult)
 				.ConfigureAwait(false));
 		}
 
@@ -156,6 +171,16 @@ namespace Relativity.Sync.Tests.System
 				.ConfigureAwait(false);
 
 			return workspace.ArtifactID;
+		}
+
+		private async Task<ImportJobErrors> ImportDocumentsAsync(int sourceWorkspaceArtifactId, ImportDataTableWrapper documents)
+		{
+			ImportBulkArtifactJob documentImportJob = ImportJobFactory.CreateNonNativesDocumentImportJob(
+				sourceWorkspaceArtifactId,
+				await Rdos.GetRootFolderInstance(ServiceFactory, sourceWorkspaceArtifactId).ConfigureAwait(false),
+				documents);
+
+			return await ImportJobExecutor.ExecuteAsync(documentImportJob).ConfigureAwait(false);
 		}
 
 		private static List<FieldMap> CreateControlNumberFieldMapping()
@@ -212,6 +237,27 @@ namespace Relativity.Sync.Tests.System
 			return configuration;
 		}
 
+		private static IContainer CreateContainer(ConfigurationStub configuration)
+		{
+			return ContainerHelper.Create(configuration, containerBuilder =>
+			{
+				containerBuilder.RegisterInstance(new ImportApiFactoryStub()).As<IImportApiFactory>();
+			});
+		}
+
+		private static async Task ExecutePreSynchronizationExecutorsAsync(IContainer container, ConfigurationStub configuration
+			, int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId, string destinationWorkspaceName)
+		{
+			configuration.DestinationWorkspaceTagArtifactId = await GetDestinationWorkspaceTagArtifactIdAsync(container, sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, destinationWorkspaceName)
+				.ConfigureAwait(false);
+
+			await CreateSourceTagsInDestinationWorkspaceAsync(container, configuration).ConfigureAwait(false);
+
+			await CreateDataSourceSnapshotAsync(container, configuration).ConfigureAwait(false);
+
+			await PartitionDataSourceSnapshotAsync(container, configuration).ConfigureAwait(false);
+		}
+
 		private static async Task<int> GetDestinationWorkspaceTagArtifactIdAsync(IContainer container, int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId, string destinationWorkspaceName)
 		{
 			IDestinationWorkspaceTagRepository destinationWorkspaceTagRepository = container.Resolve<IDestinationWorkspaceTagRepository>();
@@ -246,6 +292,12 @@ namespace Relativity.Sync.Tests.System
 			ExecutionResult snapshotPartitionExecutorResult = await snapshotPartitionExecutor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
 
 			return snapshotPartitionExecutorResult.Status;
+		}
+
+		private static Task<ExecutionResult> ExecuteSynchronizationExecutorAsync(IContainer container, ConfigurationStub configuration)
+		{
+			IExecutor<ISynchronizationConfiguration> syncExecutor = container.Resolve<IExecutor<ISynchronizationConfiguration>>();
+			return syncExecutor.ExecuteAsync(configuration, CancellationToken.None);
 		}
 
 		private async Task<string> AggregateJobHistoryErrorMessagesAsync(int sourceWorkspaceId, int jobHistoryId, ExecutionResult syncResult)
@@ -339,17 +391,29 @@ namespace Relativity.Sync.Tests.System
 			return batchesTransferredItemsCount;
 		}
 
-		private static void UpdateNativeFilePathToLocal(int sourceWorkspaceArtifactId)
+		private static void UpdateNativeFilePathToLocalIfNeeded(int sourceWorkspaceArtifactId)
 		{
-			using (SqlConnection connection = CreateConnectionFromAppConfig(sourceWorkspaceArtifactId))
+			if (AppSettings.IsSettingsFileSet)
 			{
-				connection.Open();
+				#region Hopper Instance workaround explanation
 
-				const string sqlStatement = @"UPDATE [File] SET Location = CONCAT(@LocalFilePath, '\NATIVES\',[Filename])";
-				SqlCommand command = new SqlCommand(sqlStatement, connection);
-				command.Parameters.AddWithValue("LocalFilePath", Dataset.FolderPath);
+				//This workaround was provided to omit Hopper Instance restrictions. IAPI which is executing on agent can't access file based on file location in database like '\\emttest\DefaultFileRepository\...'.
+				//Hopper is closed for outside traffic so there is no possibility to access fileshare from Trident Agent. Jira related to this https://jira.kcura.com/browse/DEVOPS-70257.
+				//If we decouple Sync from RIP and move it to RAP problem probably disappears. Right now as workaround we change on database this relative Fileshare path to local,
+				//where out test data are stored. So we assume in testing that push is working correctly, but whole flow (metadata, etc.) is under tests.
 
-				command.ExecuteNonQuery();
+				#endregion
+				using (SqlConnection connection = CreateConnectionFromAppConfig(sourceWorkspaceArtifactId))
+				{
+					connection.Open();
+
+					const string sqlStatement =
+						@"UPDATE [File] SET Location = CONCAT(@LocalFilePath, '\NATIVES\',[Filename])";
+					SqlCommand command = new SqlCommand(sqlStatement, connection);
+					command.Parameters.AddWithValue("LocalFilePath", Dataset.FolderPath);
+
+					command.ExecuteNonQuery();
+				}
 			}
 		}
 
