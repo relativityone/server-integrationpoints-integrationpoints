@@ -75,6 +75,7 @@ namespace Relativity.IntegrationPoints.Services
 		/// </summary>
 		/// <param name="workspaceArtifactId">An artifact id of the workspace.</param>
 		/// <returns>A list of integration point objects which are eligible to promote</returns>
+		[Obsolete("Method will be deprecated in next releases. ECA & Investigation Application has been sunset.")]
 		Task<IList<IntegrationPointModel>> GetEligibleToPromoteIntegrationPointsAsync(int workspaceArtifactId);
 
 		/// <summary>
