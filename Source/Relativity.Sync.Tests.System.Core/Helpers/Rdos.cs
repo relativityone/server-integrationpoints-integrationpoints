@@ -409,7 +409,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 		}
 
 
-		public static async Task<RelativityObject> GetJobHistory(ServiceFactory serviceFactory, int workspaceId, int jobHistoryId)
+		public static async Task<RelativityObject> GetJobHistoryAsync(ServiceFactory serviceFactory, int workspaceId, int jobHistoryId)
 		{
 			using (IObjectManager objectManager = serviceFactory.CreateProxy<IObjectManager>())
 			{

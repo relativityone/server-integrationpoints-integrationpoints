@@ -55,7 +55,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			// Act
 			SyncJobState jobState = await agent.RunAsync(args, adminUserId).ConfigureAwait(false);
 			RelativityObject jobHistory = await Rdos
-				.GetJobHistory(ServiceFactory, SourceWorkspace.ArtifactID, Configuration.JobHistoryId)
+				.GetJobHistoryAsync(ServiceFactory, SourceWorkspace.ArtifactID, Configuration.JobHistoryId)
 				.ConfigureAwait(false);
 
 			// Assert
