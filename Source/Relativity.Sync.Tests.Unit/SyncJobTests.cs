@@ -22,10 +22,9 @@ namespace Relativity.Sync.Tests.Unit
 		private SyncJobParameters _syncJobParameters;
 		private ExecutionOptions _executionOptions;
 
-		private const int _INTEGRATIONPOINT_ARTIFACT_ID = 111;
 		private const int _JOB_HISTORY_ARTIFACT_ID = 111;
-		
-		private readonly string _WORKFLOW_ID = $"{TelemetryConstants.PROVIDER_NAME}_{_INTEGRATIONPOINT_ARTIFACT_ID}_{_JOB_HISTORY_ARTIFACT_ID}";
+
+		private readonly string _WORKFLOW_ID = $"{TelemetryConstants.PROVIDER_NAME}_{_JOB_HISTORY_ARTIFACT_ID}";
 
 		[SetUp]
 		public void SetUp()
@@ -39,7 +38,7 @@ namespace Relativity.Sync.Tests.Unit
 				ThrowOnError = true
 			};
 
-			_syncJobParameters = new SyncJobParameters(1, 1, _INTEGRATIONPOINT_ARTIFACT_ID, _JOB_HISTORY_ARTIFACT_ID);
+			_syncJobParameters = new SyncJobParameters(1, 1, _JOB_HISTORY_ARTIFACT_ID);
 			_instance = new SyncJob(_pipeline, _executionContextFactory, _syncJobParameters, new EmptyProgress<SyncJobState>(), new EmptyLogger());
 		}
 

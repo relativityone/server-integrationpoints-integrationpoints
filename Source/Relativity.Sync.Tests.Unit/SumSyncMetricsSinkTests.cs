@@ -12,7 +12,7 @@ namespace Relativity.Sync.Tests.Unit
 	{
 		private Mock<ISyncLog> _logger;
 		private Mock<IMetricsManager> _metricsManager;
-		private Mock<IServicesMgr> _servicesManager;
+		private Mock<ISyncServiceManager> _servicesManager;
 		private Mock<IWorkspaceGuidService> _workspaceGuidService;
 		private SyncJobParameters _syncJobParameters;
 		private Guid _workspaceGuid;
@@ -43,11 +43,11 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			_logger = new Mock<ISyncLog>();
 			_metricsManager = new Mock<IMetricsManager>();
-			_servicesManager = new Mock<IServicesMgr>();
+			_servicesManager = new Mock<ISyncServiceManager>();
 			_workspaceGuidService = new Mock<IWorkspaceGuidService>();
 			_workspaceGuid = Guid.NewGuid();
 			_workspaceGuidService.Setup(x => x.GetWorkspaceGuidAsync(It.IsAny<int>())).ReturnsAsync(_workspaceGuid);
-			_syncJobParameters = new SyncJobParameters(0, 0, 0, 0);
+			_syncJobParameters = new SyncJobParameters(0, 0, 0);
 
 			_servicesManager.Setup(x => x.CreateProxy<IMetricsManager>(It.IsAny<ExecutionIdentity>()))
 				.Returns(_metricsManager.Object);

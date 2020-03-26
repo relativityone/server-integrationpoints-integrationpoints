@@ -14,13 +14,13 @@ namespace Relativity.Sync.Tests.Unit
 	{
 		private ServiceFactoryForAdmin _instance;
 
-		private Mock<IServicesMgr> _servicesMgr;
+		private Mock<ISyncServiceManager> _servicesMgr;
 		private Mock<IDynamicProxyFactory> _proxyFactory;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_servicesMgr = new Mock<IServicesMgr>();
+			_servicesMgr = new Mock<ISyncServiceManager>();
 			_proxyFactory = new Mock<IDynamicProxyFactory>();
 
 			_instance = new ServiceFactoryForAdmin(_servicesMgr.Object, _proxyFactory.Object);

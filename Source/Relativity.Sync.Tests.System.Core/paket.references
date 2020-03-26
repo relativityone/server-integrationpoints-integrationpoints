@@ -1,0 +1,16 @@
+Relativity.API
+Relativity.Kepler
+Relativity.Platform.Keywords
+Relativity.Services.Interfaces
+kCura.Relativity.Client
+Relativity.DataExchange.Client.SDK
+Microsoft.CodeAnalysis.FxCopAnalyzers
+CSharpGuidelineAnalyzer
+Polly
+Autofac
+Newtonsoft.Json
+NUnit
+NunitXml.TestLogger
+FluentAssertions
+Moq
+relativity.testing.identification

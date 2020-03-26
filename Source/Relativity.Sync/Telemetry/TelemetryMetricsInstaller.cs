@@ -9,11 +9,11 @@ namespace Relativity.Sync.Telemetry
 {
 	internal sealed class TelemetryMetricsInstaller : ITelemetryManager
 	{
-		private readonly IServicesMgr _servicesManager;
+		private readonly ISyncServiceManager _servicesManager;
 		private readonly ISyncLog _logger;
 		private readonly List<ITelemetryMetricProvider> _metricProviders;
 
-		public TelemetryMetricsInstaller(IServicesMgr servicesManager, ISyncLog logger)
+		public TelemetryMetricsInstaller(ISyncServiceManager servicesManager, ISyncLog logger)
 		{
 			_servicesManager = servicesManager;
 			_logger = logger;

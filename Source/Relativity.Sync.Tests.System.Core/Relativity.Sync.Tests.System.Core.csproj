@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+ 	<PropertyGroup>
+		<TargetFramework>net462</TargetFramework>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<WarningLevel>4</WarningLevel>
+		<CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
+		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+		<ResolveNugetPackages>true</ResolveNugetPackages>
+		<IsTestProject>false</IsTestProject>
+	</PropertyGroup>
+ 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+		<OutputPath>bin\</OutputPath>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+		<OutputPath>bin\</OutputPath>
+	</PropertyGroup>
+	<ItemGroup>
+	  <None Remove="Resources\Relativity_Sync_Test_Helper.xml" />
+	</ItemGroup>
+	<ItemGroup>
+	  <EmbeddedResource Include="Resources\Relativity_Sync_Test_Helper.xml">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\Relativity.Sync.Tests.Common\Relativity.Sync.Tests.Common.csproj" />
+	  <ProjectReference Include="..\Relativity.Sync\Relativity.Sync.csproj" />
+	</ItemGroup>
+		<ItemGroup>
+		<Reference Include="System.Web.Services" />
+	</ItemGroup>
+	<Import Project="..\..\.paket\Paket.Restore.targets" />
+</Project>

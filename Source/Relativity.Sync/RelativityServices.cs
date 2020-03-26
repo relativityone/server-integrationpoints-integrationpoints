@@ -12,7 +12,7 @@ namespace Relativity.Sync
 		/// <summary>
 		///     Constructor
 		/// </summary>
-		public RelativityServices(IAPM apm, IServicesMgr servicesMgr, Uri authenticationUri)
+		public RelativityServices(IAPM apm, ISyncServiceManager servicesMgr, Uri authenticationUri)
 		{
 			APM = apm;
 			ServicesMgr = servicesMgr;
@@ -27,7 +27,7 @@ namespace Relativity.Sync
 		/// <summary>
 		///     Used to create handles to Relativity Services
 		/// </summary>
-		public IServicesMgr ServicesMgr { get; }
+		public ISyncServiceManager ServicesMgr { get; }
 
 		/// <summary>
 		///     Relativity authentication endpoint address

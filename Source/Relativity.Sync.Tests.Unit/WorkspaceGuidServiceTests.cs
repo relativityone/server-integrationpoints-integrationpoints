@@ -15,14 +15,14 @@ namespace Relativity.Sync.Tests.Unit
 	internal sealed class WorkspaceGuidServiceTests
 	{
 		private Mock<IObjectManager> _objectManager;
-		private Mock<IServicesMgr> _servicesMgr;
+		private Mock<ISyncServiceManager> _servicesMgr;
 		private WorkspaceGuidService _instance;
 		private Guid _workspaceGuid;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_servicesMgr = new Mock<IServicesMgr>();
+			_servicesMgr = new Mock<ISyncServiceManager>();
 			_objectManager = new Mock<IObjectManager>();
 			_servicesMgr.Setup(x => x.CreateProxy<IObjectManager>(ExecutionIdentity.System)).Returns(_objectManager.Object);
 			_workspaceGuid = Guid.NewGuid();

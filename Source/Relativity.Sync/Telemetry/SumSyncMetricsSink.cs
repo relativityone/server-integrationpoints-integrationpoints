@@ -8,11 +8,11 @@ namespace Relativity.Sync.Telemetry
 	internal sealed class SumSyncMetricsSink : ISyncMetricsSink
 	{
 		private readonly ISyncLog _logger;
-		private readonly IServicesMgr _servicesManager;
+		private readonly ISyncServiceManager _servicesManager;
 		private readonly IWorkspaceGuidService _workspaceGuidService;
 		private readonly SyncJobParameters _syncJobParameters;
 
-		public SumSyncMetricsSink(IServicesMgr servicesManager, ISyncLog logger, IWorkspaceGuidService workspaceGuidService, SyncJobParameters syncJobParameters)
+		public SumSyncMetricsSink(ISyncServiceManager servicesManager, ISyncLog logger, IWorkspaceGuidService workspaceGuidService, SyncJobParameters syncJobParameters)
 		{
 			_logger = logger;
 			_workspaceGuidService = workspaceGuidService;

@@ -1,42 +1,39 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
-		<TargetFramework>net462</TargetFramework>
+  <PropertyGroup>
+    <TargetFramework>net462</TargetFramework>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-		<OutputPath>bin\</OutputPath>
-		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-		<WarningLevel>4</WarningLevel>
-		<CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
-		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-		<IsPackable>true</IsPackable>
-		<ResolveNugetPackages>true</ResolveNugetPackages>
-		<GenerateAssemblyInfo>true</GenerateAssemblyInfo>
-
-		<!-- Nuspec properties -->
-		<PackageId>Relativity.Sync</PackageId>
-		<Title>Relativity Sync</Title>
-		<Authors>Relativity ODA LLC</Authors>
-		<Company>Relativity ODA LLC</Company>
-		<Copyright>© Relativity</Copyright>
-		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-		<PackageDescription>Relativity Sync</PackageDescription>
-		<PackageTags>RelativitySync Relativity.Sync Sync</PackageTags>
-		<PackageReleaseNotes>https://platform.relativity.com</PackageReleaseNotes>
-		<PackageIconUrl>https://www.relativity.com/images/relativity-nuget-logo.png</PackageIconUrl>
-		<RepositoryUrl>https://platform.relativity.com</RepositoryUrl>
-		<PackageReleaseNotes>https://platform.relativity.com</PackageReleaseNotes>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-	  <CodeAnalysisRuleSet />
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-	  <CodeAnalysisRuleSet />
-	</PropertyGroup>
-
-	<Import Project="..\..\scripts\Build.Sign.targets" />
-	<Import Project="..\..\.paket\Paket.Restore.targets" />
-	<ItemGroup>
-	  <Reference Include="System.Web.Services" />
-	</ItemGroup>
-
+    <OutputPath>bin\</OutputPath>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IsPackable>true</IsPackable>
+    <ResolveNugetPackages>true</ResolveNugetPackages>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <!-- Nuspec properties -->
+    <PackageId>Relativity.Sync</PackageId>
+    <Title>Relativity Sync</Title>
+    <Authors>Relativity ODA LLC</Authors>
+    <Company>Relativity ODA LLC</Company>
+    <Copyright>© Relativity</Copyright>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageDescription>Relativity Sync</PackageDescription>
+    <PackageTags>RelativitySync Relativity.Sync Sync</PackageTags>
+    <PackageReleaseNotes>https://platform.relativity.com</PackageReleaseNotes>
+    <PackageIconUrl>https://www.relativity.com/images/relativity-nuget-logo.png</PackageIconUrl>
+    <RepositoryUrl>https://platform.relativity.com</RepositoryUrl>
+    <PackageReleaseNotes>https://platform.relativity.com</PackageReleaseNotes>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <CodeAnalysisRuleSet />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <CodeAnalysisRuleSet />
+  </PropertyGroup>
+  <Import Project="..\..\scripts\Build.Sign.targets" />
+  <ItemGroup>
+    <Reference Include="System.Web.Services" />
+  </ItemGroup>
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

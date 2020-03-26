@@ -75,7 +75,7 @@ namespace Relativity.Sync
 			return new SyncJobInLifetimeScope(_containerFactory, container, syncJobParameters, relativityServices, configuration, logger);
 		}
 
-		private void InstallSumMetrics(IServicesMgr servicesMgr, ISyncLog logger)
+		private void InstallSumMetrics(ISyncServiceManager servicesMgr, ISyncLog logger)
 		{
 			ITelemetryManager telemetryManager = new TelemetryMetricsInstaller(servicesMgr, logger);
 

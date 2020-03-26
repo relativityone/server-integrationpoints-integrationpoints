@@ -11,7 +11,7 @@ namespace Relativity.Sync.Tests.Unit
 		public void WorkflowId_ShouldNotBeEmpty()
 		{
 			// Arrange
-			SyncJobParameters syncJobParameters = new SyncJobParameters(1, 1, 1, 1);
+			SyncJobParameters syncJobParameters = new SyncJobParameters(1, 1, 1);
 
 			// Assert
 			syncJobParameters.WorkflowId.Value.Should().NotBeNullOrWhiteSpace();
@@ -21,9 +21,9 @@ namespace Relativity.Sync.Tests.Unit
 		public void WorkflowId_ShouldBeInitializedWithGivenValue()
 		{
 			// Arrange
-			string workflowId = $"{TelemetryConstants.PROVIDER_NAME}_1_1";
+			string workflowId = $"{TelemetryConstants.PROVIDER_NAME}_1";
 
-			SyncJobParameters syncJobParameters = new SyncJobParameters(1, 1, 1, 1);
+			SyncJobParameters syncJobParameters = new SyncJobParameters(1, 1, 1);
 
 			// Assert
 			syncJobParameters.WorkflowId.Value.Should().Be(workflowId);
@@ -35,7 +35,7 @@ namespace Relativity.Sync.Tests.Unit
 			// Arrange
 			const int jobId = 801314;
 
-			SyncJobParameters syncJobParameters = new SyncJobParameters(jobId, 1, 1, 1);
+			SyncJobParameters syncJobParameters = new SyncJobParameters(jobId, 1, 1);
 
 			// Assert
 			syncJobParameters.SyncConfigurationArtifactId.Should().Be(jobId);
@@ -47,7 +47,7 @@ namespace Relativity.Sync.Tests.Unit
 			// Arrange
 			const int workspaceId = 172320;
 
-			SyncJobParameters syncJobParameters = new SyncJobParameters(1, workspaceId, 1, 1);
+			SyncJobParameters syncJobParameters = new SyncJobParameters(1, workspaceId, 1);
 
 			// Assert
 			syncJobParameters.WorkspaceId.Should().Be(workspaceId);
@@ -57,19 +57,19 @@ namespace Relativity.Sync.Tests.Unit
 		public void WorkflowId_ShouldBeNonEmptyWorkflowId()
 		{
 			// Arrange
-			SyncJobParameters syncJobParameters = new SyncJobParameters(1, 1, 1, 1);
+			SyncJobParameters syncJobParameters = new SyncJobParameters(1, 1, 1);
 
 			// Assert
 			syncJobParameters.WorkflowId.Value.Should().NotBeNullOrWhiteSpace();
 		}
-		
+
 		[Test]
 		public void SyncJobParameters_ShouldCreateDifferentWorkflowIdsForDifferentJobs()
 		{
 			// Arrange
 #pragma warning disable RG2009 // Hardcoded Numeric Value
-			SyncJobParameters firstSyncJobParameters = new SyncJobParameters(1, 1, 1, 1);
-			SyncJobParameters secondSyncJobParameters = new SyncJobParameters(1, 1, 1, 2);
+			SyncJobParameters firstSyncJobParameters = new SyncJobParameters(1, 1, 1);
+			SyncJobParameters secondSyncJobParameters = new SyncJobParameters(1, 1, 2);
 
 			// Assert
 			firstSyncJobParameters.WorkflowId.Value.Should().NotBe(secondSyncJobParameters.WorkflowId.Value);
@@ -80,7 +80,7 @@ namespace Relativity.Sync.Tests.Unit
 		public void SyncApplicationName_ShouldHaveDefaultValue()
 		{
 			// Arrange
-			SyncJobParameters syncJobParameters = new SyncJobParameters(0, 0, 0, 0);
+			SyncJobParameters syncJobParameters = new SyncJobParameters(0, 0, 0);
 
 			// Assert
 			syncJobParameters.SyncApplicationName.Should().Be("Relativity.Sync");

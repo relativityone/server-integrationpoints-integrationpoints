@@ -1,8 +1,8 @@
 ﻿using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Blob;
-using Relativity.Sync.Tests.System;
 using System.IO;
 using System.Threading.Tasks;
+using Relativity.Sync.Tests.System.Core;
 
 namespace Relativity.Sync.Tests.Performance.Helpers
 {
