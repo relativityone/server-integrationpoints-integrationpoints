@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Executors
 {
@@ -18,8 +19,6 @@ namespace Relativity.Sync.Executors
 		private JobReport _importApiJobReport;
 
 		private const int _ITEMLEVEL_ERRORS_MASS_CREATE_SIZE = 10000;
-		private const string _IDENTIFIER_COLUMN = "Identifier";
-		private const string _MESSAGE_COLUMN = "Message";
 
 		private readonly object _lockObject;
 		private readonly int _jobHistoryArtifactId;
@@ -50,7 +49,7 @@ namespace Relativity.Sync.Executors
 
 			_syncImportBulkArtifactJob.OnComplete += HandleComplete;
 			_syncImportBulkArtifactJob.OnFatalException += HandleFatalException;
-			_syncImportBulkArtifactJob.OnError += HandleItemLevelError;
+			_syncImportBulkArtifactJob.OnItemLevelError += HandleItemLevelError;
 		}
 
 		private void HandleComplete(JobReport jobReport)
@@ -99,17 +98,14 @@ namespace Relativity.Sync.Executors
 			}
 		}
 
-		private void HandleItemLevelError(IDictionary row)
+		private void HandleItemLevelError(ItemLevelError itemLevelError)
 		{
 			_itemLevelErrorExists = true;
 
-			string errorMessage = $"IAPI {GetValueOrNull(row, _MESSAGE_COLUMN)}";
-			string sourceUniqueId = GetValueOrNull(row, _IDENTIFIER_COLUMN);
+			_logger.LogError("Item level error occurred. Source: {sourceUniqueId} Message: {errorMessage}", itemLevelError.Identifier, itemLevelError.Message);
 
-			_logger.LogError("Item level error occurred. Source: {sourceUniqueId} Message: {errorMessage}", sourceUniqueId, errorMessage);
-
-			_syncImportBulkArtifactJob.ItemStatusMonitor.MarkItemAsFailed(sourceUniqueId);
-			AddItemLevelError(sourceUniqueId, errorMessage);
+			_syncImportBulkArtifactJob.ItemStatusMonitor.MarkItemAsFailed(itemLevelError.Identifier);
+			AddItemLevelError(itemLevelError.Identifier, itemLevelError.Message);
 		}
 
 		private void AddItemLevelError(string sourceUniqueId, string errorMessage)
@@ -145,11 +141,6 @@ namespace Relativity.Sync.Executors
 		private void CreateJobHistoryError(CreateJobHistoryErrorDto jobError)
 		{
 			_jobHistoryErrorRepository.CreateAsync(_sourceWorkspaceArtifactId, _jobHistoryArtifactId, jobError).ConfigureAwait(false);
-		}
-
-		private static string GetValueOrNull(IDictionary row, string key)
-		{
-			return row.Contains(key) ? row[key].ToString() : null;
 		}
 
 		public async Task<ImportJobResult> RunAsync(CancellationToken token)

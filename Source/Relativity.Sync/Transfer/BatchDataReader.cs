@@ -10,6 +10,7 @@ namespace Relativity.Sync.Transfer
 	internal class BatchDataReader : IDataReader
 	{
 		private FieldInfoDto _identifierField;
+		private int _supportedByViewerValueIndex = 4;
 
 		private readonly DataTable _templateDataTable;
 
@@ -20,6 +21,8 @@ namespace Relativity.Sync.Transfer
 		private readonly IReadOnlyList<FieldInfoDto> _allFields;
 		private readonly IFieldManager _fieldManager;
 		private readonly IExportDataSanitizer _exportDataSanitizer;
+
+		private readonly Action<string, string> _itemLevelErrorHandler;
 
 		private readonly CancellationToken _cancellationToken;
 
@@ -66,6 +69,7 @@ namespace Relativity.Sync.Transfer
 			IReadOnlyList<FieldInfoDto> allFields,
 			IFieldManager fieldManager,
 			IExportDataSanitizer exportDataSanitizer,
+			Action<string, string> itemLevelErrorHandler,
 			CancellationToken cancellationToken)
 		{
 			_templateDataTable = templateDataTable;
@@ -77,6 +81,8 @@ namespace Relativity.Sync.Transfer
 			_allFields = allFields;
 			_fieldManager = fieldManager;
 			_exportDataSanitizer = exportDataSanitizer;
+
+			_itemLevelErrorHandler = itemLevelErrorHandler;
 
 			_cancellationToken = cancellationToken;
 		}

@@ -17,6 +17,8 @@ namespace Relativity.Sync.Tests.Unit.Stubs
 	{
 		private readonly FieldInfoDto _identifierField;
 
+		public Action<string, string> ItemLevelErrorHandler { get; set; }
+
 		public SimpleBatchDataReaderBuilder(FieldInfoDto identifierField)
 		{
 			_identifierField = identifierField;

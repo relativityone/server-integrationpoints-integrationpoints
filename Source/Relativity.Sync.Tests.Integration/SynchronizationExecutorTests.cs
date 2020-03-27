@@ -33,9 +33,7 @@ namespace Relativity.Sync.Tests.Integration
 		private Mock<ISyncImportBulkArtifactJob> _importBulkArtifactJob;
 
 		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 10001;
-		private const int _DESTINATION_WORKSPACE_ARTIFACT_ID = 20002;
-		private const string _IDENTIFIER_COLUMN = "Identifier";
-		private const string _MESSAGE_COLUMN = "Message";
+		private const int _DESTINATION_WORKSPACE_ARTIFACT_ID = 20002; 
 
 		private static readonly Guid BatchObjectTypeGuid = new Guid("18C766EB-EB71-49E4-983E-FFDE29B1A44E");
 		private static readonly Guid FailedItemsCountGuid = new Guid("DC3228E4-2765-4C3B-B3B1-A0F054E280F6");
@@ -182,11 +180,10 @@ namespace Relativity.Sync.Tests.Integration
 				foreach (RelativityObjectSlim document in failedDocuments)
 				{
 					dataReader.Read();
-					_importBulkArtifactJob.Raise(x => x.OnError += null, new Dictionary<string, string>()
-					{
-						{ _IDENTIFIER_COLUMN, document.Values[0].ToString() },
-						{ _MESSAGE_COLUMN, "Some weird error message." },
-					});
+					_importBulkArtifactJob.Raise(x => x.OnItemLevelError += null, new ItemLevelError(
+						document.Values[0].ToString(),
+						"Some weird error message."
+					));
 				}
 
 				for (int i = 0; i < completedItems; i++)
