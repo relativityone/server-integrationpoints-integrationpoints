@@ -10,7 +10,6 @@ namespace Relativity.Sync.Transfer
 	internal class BatchDataReader : IDataReader
 	{
 		private FieldInfoDto _identifierField;
-		private int _supportedByViewerValueIndex = 4;
 
 		private readonly DataTable _templateDataTable;
 
