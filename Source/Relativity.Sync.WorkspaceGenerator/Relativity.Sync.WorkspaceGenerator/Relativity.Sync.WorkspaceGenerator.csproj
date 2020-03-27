@@ -83,8 +83,10 @@
     <Compile Include="FileGenerator\FileExtensionProvider\TextFileExtensionProvider.cs" />
     <Compile Include="GeneratorSettings.cs" />
     <Compile Include="FileGenerator\SizeCalculator\ISizeCalculatorStrategy.cs" />
+    <Compile Include="GeneratorSettingsReader.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RelativityServices\RelativityServicesFactory.cs" />
     <Compile Include="RelativityServices\WorkspaceService.cs" />
     <Compile Include="FileGenerator\FileGenerator.cs" />
   </ItemGroup>

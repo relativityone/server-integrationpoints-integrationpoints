@@ -24,9 +24,9 @@ namespace Relativity.Sync.WorkspaceGenerator.FileGenerator
 			_destinationDirectory = destinationDirectory;
 		}
 
-		public Task<IEnumerable<FileInfo>> GenerateAsync(int count, long totalSizeInMB)
+		public Task<IEnumerable<FileInfo>> GenerateAsync(int filesCount, long totalSizeInMB)
 		{
-			if (count == 0)
+			if (filesCount == 0)
 			{
 				return Task.FromResult(Enumerable.Empty<FileInfo>());
 			}
@@ -36,8 +36,8 @@ namespace Relativity.Sync.WorkspaceGenerator.FileGenerator
 				_destinationDirectory.Create();
 			}
 
-			List<FileInfo> files = new List<FileInfo>(count);
-			IEnumerable<long> fileSizes = _fileSizeCalculatorStrategy.GetSizesInBytes(count, totalSizeInMB);
+			List<FileInfo> files = new List<FileInfo>(filesCount);
+			IEnumerable<long> fileSizes = _fileSizeCalculatorStrategy.GetSizesInBytes(filesCount, totalSizeInMB);
 
 			foreach (long size in fileSizes)
 			{

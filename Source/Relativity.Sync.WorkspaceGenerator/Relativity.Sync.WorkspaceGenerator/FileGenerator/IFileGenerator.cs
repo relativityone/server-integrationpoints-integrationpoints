@@ -6,6 +6,6 @@ namespace Relativity.Sync.WorkspaceGenerator.FileGenerator
 {
 	public interface IFileGenerator
 	{
-		Task<IEnumerable<FileInfo>> GenerateAsync(int count, long totalSizeInMB);
+		Task<IEnumerable<FileInfo>> GenerateAsync(int filesCount, long totalSizeInMB);
 	}
 }
