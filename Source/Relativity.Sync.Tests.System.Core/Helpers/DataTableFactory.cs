@@ -26,13 +26,26 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			return documentData;
 		}
 
+		public static ImportDataTableWrapper GenerateDocumentWithNoFields(string controlNumberPrefix = "RND", int documentsCount = 1)
+		{
+			var documentData = new ImportDataTableWrapper(false, false, true);
+
+			Enumerable.Range(0, documentsCount).ForEach(documentNumber => documentData.AddDocument(
+				string.Format(CultureInfo.InvariantCulture, "{0}{1:D6}", controlNumberPrefix, documentNumber),
+				Enumerable.Empty<Tuple<string, string>>()
+			));
+			
+			return documentData;
+		}
+
 		public static ImportDataTableWrapper GenerateDocumentWithUserField(string controlNumberPrefix = "RND")
 		{
 			var documentData = new ImportDataTableWrapper(false, false, true);
 
 			documentData.AddDocument(
 				string.Format(CultureInfo.InvariantCulture, "{0}{1:D6}", controlNumberPrefix, 0),
-				new[] { Tuple.Create(ImportDataTableWrapper.RelativitySyncTestUser, AppSettings.RelativityUserName) });
+				new[] { Tuple.Create(ImportDataTableWrapper.RelativitySyncTestUser, AppSettings.RelativityUserName) }
+			);
 
 			return documentData;
 		}
