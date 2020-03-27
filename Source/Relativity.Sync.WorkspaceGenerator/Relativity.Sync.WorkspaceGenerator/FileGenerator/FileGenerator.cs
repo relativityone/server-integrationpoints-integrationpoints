@@ -46,6 +46,8 @@ namespace Relativity.Sync.WorkspaceGenerator.FileGenerator
 				string fileName = $"{randomName}.{extension}";
 				FileInfo file = new FileInfo(Path.Combine(_destinationDirectory.FullName, fileName));
 				byte[] data = _fileContentProvider.GetContent(size);
+
+				Console.WriteLine($"Creating file: {fileName}\t\tSize: {size} bytes");
 				File.WriteAllBytes(file.FullName, data);
 
 				files.Add(file);

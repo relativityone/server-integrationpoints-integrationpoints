@@ -4,12 +4,21 @@ using System.Linq;
 using System.Threading.Tasks;
 using Relativity.Services.ServiceProxy;
 using Relativity.Services.Workspace;
+using Relativity.Services.Interfaces.Field;
+using Relativity.Services.Interfaces.Field.Models;
+using Relativity.Services.Interfaces.Shared.Models;
+using FieldType = Relativity.Services.FieldType;
 
 namespace Relativity.Sync.WorkspaceGenerator.RelativityServices
 {
 	public class WorkspaceService
 	{
 		private readonly IServiceFactory _serviceFactory;
+
+		private readonly ObjectTypeIdentifier _documentObjectTypeIdentifier = new ObjectTypeIdentifier()
+		{
+			ArtifactTypeID = (int) ArtifactType.Document
+		};
 
 		public WorkspaceService(IServiceFactory serviceFactory)
 		{
@@ -26,8 +35,10 @@ namespace Relativity.Sync.WorkspaceGenerator.RelativityServices
 
 		public async Task<WorkspaceRef> CreateWorkspaceAsync(string name, string templateWorkspaceName)
 		{
+			Console.WriteLine($"Creating workspace '{name}' from template '{templateWorkspaceName}'");
 			using (var workspaceManager = _serviceFactory.CreateProxy<IWorkspaceManager>())
 			{
+				Console.WriteLine($"Gathering all active workspaces");
 				IEnumerable<WorkspaceRef> activeWorkspaces = await GetAllActiveAsync().ConfigureAwait(false);
 				WorkspaceRef template = activeWorkspaces.FirstOrDefault(x => x.Name == templateWorkspaceName);
 
@@ -36,6 +47,9 @@ namespace Relativity.Sync.WorkspaceGenerator.RelativityServices
 					throw new Exception($"Cannot find workspace name: '{templateWorkspaceName}'");
 				}
 
+				Console.WriteLine($"Template workspace Artifact ID: {template.ArtifactID}");
+
+				Console.WriteLine($"Creating new workspace: '{name}'");
 				WorkspaceRef workspaceRef = await workspaceManager.CreateWorkspaceAsync(new WorkspaceSetttings()
 				{
 					Name = name,
@@ -44,6 +58,109 @@ namespace Relativity.Sync.WorkspaceGenerator.RelativityServices
 
 				return workspaceRef;
 			}
+		}
+
+		public async Task CreateFieldsAsync(int workspaceID, IEnumerable<CustomField> fields)
+		{
+			using (IFieldManager fieldManager = _serviceFactory.CreateProxy<IFieldManager>())
+			{
+				foreach (CustomField field in fields)
+				{
+					Console.WriteLine($"Creating field Name: '{field.Name}'\t\tType: '{field.Type}'");
+
+					switch (field.Type)
+					{
+						case FieldType.FixedLengthText:
+							await fieldManager
+								.CreateFixedLengthFieldAsync(workspaceID, CreateFixedLengthFieldRequest(field))
+								.ConfigureAwait(false);
+							break;
+						case FieldType.LongText:
+							await fieldManager
+								.CreateLongTextFieldAsync(workspaceID, CreateLongTextFieldRequest(field))
+								.ConfigureAwait(false);
+							break;
+						case FieldType.Decimal:
+							await fieldManager
+								.CreateDecimalFieldAsync(workspaceID, CreateDecimalFieldRequest(field))
+								.ConfigureAwait(false);
+							break;
+						case FieldType.Currency:
+							await fieldManager
+								.CreateCurrencyFieldAsync(workspaceID, CreateCurrencyFieldRequest(field))
+								.ConfigureAwait(false);
+							break;
+						case FieldType.WholeNumber:
+							await fieldManager
+								.CreateWholeNumberFieldAsync(workspaceID, CreateWholeNumberFieldRequest(field))
+								.ConfigureAwait(false);
+							break;
+						case FieldType.YesNo:
+							await fieldManager
+								.CreateYesNoFieldAsync(workspaceID, CreateYesNoFieldRequest(field))
+								.ConfigureAwait(false);
+							break;
+						default:
+							throw new Exception($"Field type is not supported by this tool: {field.Type}");
+					}
+				}
+			}
+		}
+
+		private FixedLengthFieldRequest CreateFixedLengthFieldRequest(CustomField field)
+		{
+			return new FixedLengthFieldRequest()
+			{
+				ObjectType = _documentObjectTypeIdentifier,
+				Name = field.Name,
+				Length = 255
+			};
+		}
+
+		private LongTextFieldRequest CreateLongTextFieldRequest(CustomField field)
+		{
+			return new LongTextFieldRequest()
+			{
+				ObjectType = _documentObjectTypeIdentifier,
+				Name = field.Name,
+				EnableDataGrid = false
+			};
+		}
+
+		private DecimalFieldRequest CreateDecimalFieldRequest(CustomField field)
+		{
+			return new DecimalFieldRequest()
+			{
+				ObjectType = _documentObjectTypeIdentifier,
+				Name = field.Name
+			};
+		}
+
+		private CurrencyFieldRequest CreateCurrencyFieldRequest(CustomField field)
+		{
+			return new CurrencyFieldRequest()
+			{
+				ObjectType = _documentObjectTypeIdentifier,
+				Name = field.Name
+			};
+		}
+
+		private WholeNumberFieldRequest CreateWholeNumberFieldRequest(CustomField field)
+		{
+			return new WholeNumberFieldRequest()
+			{
+				ObjectType = _documentObjectTypeIdentifier,
+				Name = field.Name
+			};
+		}
+
+		private YesNoFieldRequest CreateYesNoFieldRequest(CustomField field)
+		{
+			return new YesNoFieldRequest()
+			{
+				ObjectType = _documentObjectTypeIdentifier,
+				Name = field.Name
+			};
 		}
 	}
 }
