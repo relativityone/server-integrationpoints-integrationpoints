@@ -205,7 +205,7 @@
 	},
 	{
 		"Jira": "REL-410138",
-		"Exception": "Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API. ---> System.Net.WebException: The underlying connection was closed: *kCura.WinEDDS.BulkLoadFileImporter*"
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API. ---> System.Net.WebException: The underlying connection was closed: *kCura.WinEDDS.BulkLoadFileImporter*"
 	},
 	{
 		"Jira": "REL-410146",
@@ -238,5 +238,9 @@
 	{
 		"Jira": "REL-416380",
 		"Exception": "*Relativity.Services.Exceptions.ServiceException:*Failed to determine route*MassCreateItemLevelErrorsIfAny*"
-	}
+	},
+	{
+		"Jira": "REL-416542",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Failed to start executing import job.*System.Net.WebException: The operation has timed out*FieldQuery.RetrieveAllMappable*"
+	} 
 ]
