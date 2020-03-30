@@ -3,11 +3,13 @@ using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Executors
 {
+	internal delegate void OnSyncImportBulkArtifactJobItemLevelErrorEventHandler(ItemLevelError itemLevelError);
+
 	internal interface ISyncImportBulkArtifactJob : IImportNotifier
 	{
 		IItemStatusMonitor ItemStatusMonitor { get; }
 
-		event ImportBulkArtifactJob.OnErrorEventHandler OnError;
+		event OnSyncImportBulkArtifactJobItemLevelErrorEventHandler OnItemLevelError;
 
 		void Execute();
 	}

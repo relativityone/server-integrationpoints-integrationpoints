@@ -37,7 +37,7 @@ namespace Relativity.Sync.Executors
 		{
 			ISourceWorkspaceDataReader sourceWorkspaceDataReader = _dataReaderFactory.CreateSourceWorkspaceDataReader(batch, token);
 			ImportBulkArtifactJob importBulkArtifactJob = await CreateImportBulkArtifactJobAsync(configuration, sourceWorkspaceDataReader).ConfigureAwait(false);
-			var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importBulkArtifactJob, sourceWorkspaceDataReader.ItemStatusMonitor);
+			var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importBulkArtifactJob, sourceWorkspaceDataReader);
 
 			return new ImportJob(syncImportBulkArtifactJob, new SemaphoreSlimWrapper(new SemaphoreSlim(0, 1)), _jobHistoryErrorRepository,
 				configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, _logger);

@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 using kCura.Relativity.DataReaderClient;
 using Relativity.Sync.Transfer;
 
@@ -7,12 +8,19 @@ namespace Relativity.Sync.Executors
 	[ExcludeFromCodeCoverage]
 	internal sealed class SyncImportBulkArtifactJob : ISyncImportBulkArtifactJob
 	{
+		private const string _IAPI_IDENTIFIER_COLUMN = "Identifier";
+		private const string _IAPI_MESSAGE_COLUMN = "Message";
+
 		private readonly ImportBulkArtifactJob _importBulkArtifactJob;
 
-		public SyncImportBulkArtifactJob(ImportBulkArtifactJob importBulkArtifactJob, IItemStatusMonitor itemStatusMonitor)
+		public SyncImportBulkArtifactJob(ImportBulkArtifactJob importBulkArtifactJob, ISourceWorkspaceDataReader sourceWorkspaceDataReader)
 		{
 			_importBulkArtifactJob = importBulkArtifactJob;
-			ItemStatusMonitor = itemStatusMonitor;
+			_importBulkArtifactJob.OnProgress += RaiseOnProgress;
+			_importBulkArtifactJob.OnError += HandleIapiItemLevelError;
+
+			ItemStatusMonitor = sourceWorkspaceDataReader.ItemStatusMonitor;
+			sourceWorkspaceDataReader.OnItemReadError += HandleSourceWorkspaceDataItemReadError;
 		}
 
 		public IItemStatusMonitor ItemStatusMonitor { get; }
@@ -29,11 +37,7 @@ namespace Relativity.Sync.Executors
 			remove => _importBulkArtifactJob.OnFatalException -= value;
 		}
 
-		public event IImportNotifier.OnProgressEventHandler OnProgress
-		{
-			add => _importBulkArtifactJob.OnProgress += value;
-			remove => _importBulkArtifactJob.OnProgress -= value;
-		}
+		public event IImportNotifier.OnProgressEventHandler OnProgress;
 
 		public event IImportNotifier.OnProcessProgressEventHandler OnProcessProgress
 		{
@@ -41,15 +45,41 @@ namespace Relativity.Sync.Executors
 			remove => _importBulkArtifactJob.OnProcessProgress -= value;
 		}
 
-		public event ImportBulkArtifactJob.OnErrorEventHandler OnError
-		{
-			add => _importBulkArtifactJob.OnError += value;
-			remove => _importBulkArtifactJob.OnError -= value;
-		}
+		public event OnSyncImportBulkArtifactJobItemLevelErrorEventHandler OnItemLevelError;
 
 		public void Execute()
 		{
 			_importBulkArtifactJob.Execute();
+		}
+
+		private void RaiseOnProgress(long completedRow)
+		{
+			OnProgress?.Invoke(completedRow);
+		}
+
+		private void RaiseOnItemLevelError(ItemLevelError itemLevelError)
+		{
+			OnItemLevelError?.Invoke(itemLevelError);
+		}
+
+		private void HandleIapiItemLevelError(IDictionary row)
+		{
+			RaiseOnItemLevelError(new ItemLevelError(
+				GetValueOrNull(row, _IAPI_IDENTIFIER_COLUMN),
+				$"IAPI {GetValueOrNull(row, _IAPI_MESSAGE_COLUMN)}"
+				));
+		}
+
+		private void HandleSourceWorkspaceDataItemReadError(long completedItem, ItemLevelError itemLevelError)
+		{
+			RaiseOnProgress(completedItem);
+
+			RaiseOnItemLevelError(itemLevelError);
+		}
+
+		private static string GetValueOrNull(IDictionary row, string key)
+		{
+			return row.Contains(key) ? row[key].ToString() : null;
 		}
 	}
 }

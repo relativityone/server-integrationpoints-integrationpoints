@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +9,7 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using kCura.Relativity.DataReaderClient;
+using Relativity.Sync.Transfer;
 using Relativity.Sync.Executors;
 
 namespace Relativity.Sync
@@ -63,9 +63,9 @@ namespace Relativity.Sync
 				}).Subscribe();
 
 			IDisposable itemFailedSubscription = Observable
-				.FromEvent<ImportBulkArtifactJob.OnErrorEventHandler, IDictionary>(
-					 handler => job.OnError += handler,
-					 handler => job.OnError -= handler)
+				.FromEvent<OnSyncImportBulkArtifactJobItemLevelErrorEventHandler, ItemLevelError>(
+					 handler => job.OnItemLevelError += handler,
+					 handler => job.OnItemLevelError -= handler)
 					.Do(_ =>
 				{
 					// Explanation of how IAPI works:
