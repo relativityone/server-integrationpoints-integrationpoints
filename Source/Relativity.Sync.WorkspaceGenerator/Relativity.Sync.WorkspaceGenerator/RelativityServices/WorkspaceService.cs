@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Relativity.Services.Folder;
 using Relativity.Services.ServiceProxy;
 using Relativity.Services.Workspace;
 using Relativity.Services.Interfaces.Field;
@@ -17,7 +18,7 @@ namespace Relativity.Sync.WorkspaceGenerator.RelativityServices
 
 		private readonly ObjectTypeIdentifier _documentObjectTypeIdentifier = new ObjectTypeIdentifier()
 		{
-			ArtifactTypeID = (int) ArtifactType.Document
+			ArtifactTypeID = (int)ArtifactType.Document
 		};
 
 		public WorkspaceService(IServiceFactory serviceFactory)
@@ -33,9 +34,15 @@ namespace Relativity.Sync.WorkspaceGenerator.RelativityServices
 			}
 		}
 
+		public async Task<WorkspaceRef> GetWorkspaceAsync(int workspaceID)
+		{
+			Console.WriteLine($"Reading workspace {workspaceID}");
+			IEnumerable<WorkspaceRef> activeWorkspaces = await GetAllActiveAsync().ConfigureAwait(false);
+			return activeWorkspaces.Single(x => x.ArtifactID == workspaceID);
+		}
+
 		public async Task<WorkspaceRef> CreateWorkspaceAsync(string name, string templateWorkspaceName)
 		{
-			Console.WriteLine($"Creating workspace '{name}' from template '{templateWorkspaceName}'");
 			using (var workspaceManager = _serviceFactory.CreateProxy<IWorkspaceManager>())
 			{
 				Console.WriteLine($"Gathering all active workspaces");
@@ -57,6 +64,15 @@ namespace Relativity.Sync.WorkspaceGenerator.RelativityServices
 				}).ConfigureAwait(false);
 
 				return workspaceRef;
+			}
+		}
+
+		public async Task<int> GetRootFolderArtifactIDAsync(int workspaceID)
+		{
+			using (IFolderManager folderManager = _serviceFactory.CreateProxy<IFolderManager>())
+			{
+				Folder rootFolder = await folderManager.GetWorkspaceRootAsync(workspaceID).ConfigureAwait(false);
+				return rootFolder.ArtifactID;
 			}
 		}
 
