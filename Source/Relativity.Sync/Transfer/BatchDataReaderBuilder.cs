@@ -18,6 +18,8 @@ namespace Relativity.Sync.Transfer
 		private readonly IFieldManager _fieldManager;
 		private readonly IExportDataSanitizer _exportDataSanitizer;
 
+		public Action<string, string> ItemLevelErrorHandler { get; set; }
+
 		public BatchDataReaderBuilder(IFieldManager fieldManager, IExportDataSanitizer exportDataSanitizer)
 		{
 			_fieldManager = fieldManager;
@@ -33,7 +35,7 @@ namespace Relativity.Sync.Transfer
 
 			DataTable templateDataTable = GetTemplateDataTable(_allFields);
 
-			return new BatchDataReader(templateDataTable, sourceWorkspaceArtifactId, batch, _allFields, _fieldManager, _exportDataSanitizer, token);
+			return new BatchDataReader(templateDataTable, sourceWorkspaceArtifactId, batch, _allFields, _fieldManager, _exportDataSanitizer, ItemLevelErrorHandler, token);
 		}
 
 		private DataTable GetTemplateDataTable(IEnumerable<FieldInfoDto> allFields)

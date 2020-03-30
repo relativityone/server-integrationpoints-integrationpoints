@@ -25,8 +25,6 @@ namespace Relativity.Sync.Tests.Unit
 
 		private ImportJob _importJob;
 
-		private const string _IDENTIFIER_COLUMN = "Identifier";
-		private const string _MESSAGE_COLUMN = "Message";
 		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 1;
 		private const int _JOB_HISTORY_ARTIFACT_ID = 2;
 
@@ -51,11 +49,10 @@ namespace Relativity.Sync.Tests.Unit
 
 			_syncImportBulkArtifactJob.Setup(x => x.Execute()).Callback(() =>
 			{
-				_syncImportBulkArtifactJob.Raise(x => x.OnError += null, new Dictionary<string, string>()
-				{
-					{_IDENTIFIER_COLUMN, identifier},
-					{_MESSAGE_COLUMN, message}
-				});
+				_syncImportBulkArtifactJob.Raise(x => x.OnItemLevelError += null, new ItemLevelError(
+					identifier,
+					message
+				));
 				_syncImportBulkArtifactJob.Raise(x => x.OnComplete += null, CreateJobReport());
 			});
 

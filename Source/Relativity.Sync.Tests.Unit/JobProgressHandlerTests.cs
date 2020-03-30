@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Reactive.Concurrency;
 using kCura.Relativity.DataReaderClient;
 using Microsoft.Reactive.Testing;
 using Moq;
 using NUnit.Framework;
+using Relativity.Sync.Transfer;
 using Relativity.Sync.Executors;
 
 namespace Relativity.Sync.Tests.Unit
@@ -82,7 +82,7 @@ namespace Relativity.Sync.Tests.Unit
 
 				for (int i = 0; i < numberOfItemErrorEvents; i++)
 				{
-					_bulkImportJobStub.Raise(x => x.OnError += null, new Dictionary<int, int>());
+					_bulkImportJobStub.Raise(x => x.OnItemLevelError += null, new ItemLevelError());
 				}
 
 				_testScheduler.AdvanceBy(TimeSpan.FromSeconds(_THROTTLE_SECONDS).Ticks);
@@ -143,7 +143,7 @@ namespace Relativity.Sync.Tests.Unit
 					bulkImportJob.Raise(x => x.OnProgress += null, 0);
 
 					bulkImportJob.Raise(x => x.OnProgress += null, 0); // to cover for decrement in OnError handling
-					bulkImportJob.Raise(x => x.OnError += null, new Dictionary<int, int>());
+					bulkImportJob.Raise(x => x.OnItemLevelError += null, new ItemLevelError());
 				}
 			}
 
@@ -162,7 +162,7 @@ namespace Relativity.Sync.Tests.Unit
 				_bulkImportJobStub.Raise(x => x.OnProgress += null, 0);
 
 				_bulkImportJobStub.Raise(x => x.OnProgress += null, 0); // to cover for decrement in OnError handling
-				_bulkImportJobStub.Raise(x => x.OnError += null, new Dictionary<int, int>());
+				_bulkImportJobStub.Raise(x => x.OnItemLevelError += null, new ItemLevelError());
 
 				_bulkImportJobStub.Raise(x => x.OnComplete += null, CreateJobReport(1, 1));
 			}
@@ -188,7 +188,7 @@ namespace Relativity.Sync.Tests.Unit
 			var bulkImportJobMock = new Mock<ISyncImportBulkArtifactJob>();
 
 			bulkImportJobMock.SetupAdd(m => m.OnProgress += (i) => { });
-			bulkImportJobMock.SetupAdd(m => m.OnError += (i) => { });
+			bulkImportJobMock.SetupAdd(m => m.OnItemLevelError += (i) => { });
 			bulkImportJobMock.SetupAdd(m => m.OnComplete += (i) => { });
 			bulkImportJobMock.SetupAdd(m => m.OnFatalException += (i) => { });
 
@@ -210,7 +210,7 @@ namespace Relativity.Sync.Tests.Unit
 			foreach (var jobMock in bulkImportJobs)
 			{
 				jobMock.VerifyRemove(m => m.OnProgress -= It.IsAny<IImportNotifier.OnProgressEventHandler>(), Times.Exactly(batchCount));
-				jobMock.VerifyRemove(m => m.OnError -= It.IsAny<ImportBulkArtifactJob.OnErrorEventHandler>(), Times.Exactly(batchCount));
+				jobMock.VerifyRemove(m => m.OnItemLevelError -= It.IsAny<OnSyncImportBulkArtifactJobItemLevelErrorEventHandler>(), Times.Exactly(batchCount));
 				jobMock.VerifyRemove(m => m.OnComplete -= It.IsAny<IImportNotifier.OnCompleteEventHandler>(), Times.Exactly(batchCount));
 				jobMock.VerifyRemove(m => m.OnFatalException -= It.IsAny<IImportNotifier.OnFatalExceptionEventHandler>(), Times.Exactly(batchCount));
 			}
@@ -266,7 +266,7 @@ namespace Relativity.Sync.Tests.Unit
 			// act
 			using (_sut.AttachToImportJob(_bulkImportJobStub.Object, 0, 1))
 			{
-				_bulkImportJobStub.Raise(x => x.OnError += null, new Dictionary<int, int>());
+				_bulkImportJobStub.Raise(x => x.OnItemLevelError += null, new ItemLevelError());
 				_testScheduler.AdvanceBy(TimeSpan.FromSeconds(_THROTTLE_SECONDS).Ticks);
 			}
 
