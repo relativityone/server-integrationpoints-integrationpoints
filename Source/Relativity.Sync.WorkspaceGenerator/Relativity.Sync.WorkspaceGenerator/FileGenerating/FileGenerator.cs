@@ -1,12 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using Relativity.Sync.WorkspaceGenerator.FileGenerator.FileContentProvider;
-using Relativity.Sync.WorkspaceGenerator.FileGenerator.FileExtensionProvider;
+using Relativity.Sync.WorkspaceGenerator.FileGenerating.FileContentProvider;
+using Relativity.Sync.WorkspaceGenerator.FileGenerating.FileExtensionProvider;
 
-namespace Relativity.Sync.WorkspaceGenerator.FileGenerator
+namespace Relativity.Sync.WorkspaceGenerator.FileGenerating
 {
-	public class FileGenerator : IFileGenerator
+	public class FileGenerator
 	{
 		private readonly IFileExtensionProvider _fileExtensionProvider;
 		private readonly IFileContentProvider _fileContentProvider;

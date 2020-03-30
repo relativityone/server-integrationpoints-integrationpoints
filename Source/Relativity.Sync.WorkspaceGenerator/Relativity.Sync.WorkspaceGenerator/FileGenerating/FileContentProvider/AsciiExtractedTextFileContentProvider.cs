@@ -1,6 +1,4 @@
-﻿using System.Linq;
-
-namespace Relativity.Sync.WorkspaceGenerator.FileGenerator.FileContentProvider
+﻿namespace Relativity.Sync.WorkspaceGenerator.FileGenerating.FileContentProvider
 {
 	public class AsciiExtractedTextFileContentProvider : IFileContentProvider
 	{

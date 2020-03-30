@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using Relativity.Sync.WorkspaceGenerator.LoadFileGenerator;
 
 namespace Relativity.Sync.WorkspaceGenerator.Import
 {
@@ -78,8 +77,9 @@ namespace Relativity.Sync.WorkspaceGenerator.Import
 			DataTable.Rows.Add(dataRow);
 		}
 
-		public void AddDocumentRange(IEnumerable<Document> documents)
+		public void AddDocuments(List<Document> documents)
 		{
+			Console.WriteLine($"Adding {documents.Count} documents to data table");
 			foreach (Document document in documents)
 			{
 				AddDocument(document);

@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 
-namespace Relativity.Sync.WorkspaceGenerator.LoadFileGenerator
+namespace Relativity.Sync.WorkspaceGenerator.Import
 {
 	public class Document
 	{

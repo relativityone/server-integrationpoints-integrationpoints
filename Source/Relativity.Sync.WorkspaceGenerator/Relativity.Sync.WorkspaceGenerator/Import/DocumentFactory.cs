@@ -3,24 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Relativity.Services;
-using Relativity.Sync.WorkspaceGenerator.FileGenerator;
-using Relativity.Sync.WorkspaceGenerator.FileGenerator.SizeCalculator;
-using Relativity.Sync.WorkspaceGenerator.LoadFileGenerator;
+using Relativity.Sync.WorkspaceGenerator.FileGenerating;
+using Relativity.Sync.WorkspaceGenerator.FileGenerating.SizeCalculator;
 
 namespace Relativity.Sync.WorkspaceGenerator.Import
 {
 	class DocumentFactory
 	{
 		private readonly GeneratorSettings _settings;
-		private readonly IFileGenerator _nativeFileGenerator;
-		private readonly IFileGenerator _extractedTextFileGenerator;
+		private readonly FileGenerator _nativeFileGenerator;
+		private readonly FileGenerator _extractedTextFileGenerator;
 
 		private readonly List<long> _nativesSizes;
 		private readonly List<long> _extractedTextSizes;
 
 		private readonly Random _random;
 
-		public DocumentFactory(GeneratorSettings settings, IFileSizeCalculatorStrategy nativesSizeCalculatorStrategy, IFileSizeCalculatorStrategy extractedTextSizeCalculatorStrategy, IFileGenerator nativeFileGenerator, IFileGenerator extractedTextFileGenerator)
+		public DocumentFactory(GeneratorSettings settings, IFileSizeCalculatorStrategy nativesSizeCalculatorStrategy, IFileSizeCalculatorStrategy extractedTextSizeCalculatorStrategy, FileGenerator nativeFileGenerator, FileGenerator extractedTextFileGenerator)
 		{
 			_settings = settings;
 			_nativeFileGenerator = nativeFileGenerator;

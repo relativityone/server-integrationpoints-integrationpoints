@@ -1,4 +1,4 @@
-﻿namespace Relativity.Sync.WorkspaceGenerator.FileGenerator.FileContentProvider
+﻿namespace Relativity.Sync.WorkspaceGenerator.FileGenerating.FileContentProvider
 {
 	public class NativeFileContentProvider : IFileContentProvider
 	{

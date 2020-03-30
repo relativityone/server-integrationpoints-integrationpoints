@@ -141,16 +141,15 @@
     <Compile Include="Import\ColumnNames.cs" />
     <Compile Include="CustomField.cs" />
     <Compile Include="FieldsGenerator.cs" />
-    <Compile Include="FileGenerator\FileContentProvider\AsciiExtractedTextFileContentProvider.cs" />
-    <Compile Include="FileGenerator\FileContentProvider\IFileContentProvider.cs" />
-    <Compile Include="FileGenerator\FileContentProvider\NativeFileContentProvider.cs" />
-    <Compile Include="FileGenerator\FileExtensionProvider\IFileExtensionProvider.cs" />
-    <Compile Include="FileGenerator\FileExtensionProvider\RandomNativeFileExtensionProvider.cs" />
-    <Compile Include="FileGenerator\IFileGenerator.cs" />
-    <Compile Include="FileGenerator\SizeCalculator\EqualSizeCalculatorStrategy.cs" />
-    <Compile Include="FileGenerator\FileExtensionProvider\TextFileExtensionProvider.cs" />
+    <Compile Include="FileGenerating\FileContentProvider\AsciiExtractedTextFileContentProvider.cs" />
+    <Compile Include="FileGenerating\FileContentProvider\IFileContentProvider.cs" />
+    <Compile Include="FileGenerating\FileContentProvider\NativeFileContentProvider.cs" />
+    <Compile Include="FileGenerating\FileExtensionProvider\IFileExtensionProvider.cs" />
+    <Compile Include="FileGenerating\FileExtensionProvider\RandomNativeFileExtensionProvider.cs" />
+    <Compile Include="FileGenerating\SizeCalculator\EqualSizeCalculatorStrategy.cs" />
+    <Compile Include="FileGenerating\FileExtensionProvider\TextFileExtensionProvider.cs" />
     <Compile Include="GeneratorSettings.cs" />
-    <Compile Include="FileGenerator\SizeCalculator\ISizeCalculatorStrategy.cs" />
+    <Compile Include="FileGenerating\SizeCalculator\ISizeCalculatorStrategy.cs" />
     <Compile Include="GeneratorSettingsReader.cs" />
     <Compile Include="Import\DataTableBuilder.cs" />
     <Compile Include="Import\DocumentFactory.cs" />
@@ -162,7 +161,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RelativityServices\RelativityServicesFactory.cs" />
     <Compile Include="RelativityServices\WorkspaceService.cs" />
-    <Compile Include="FileGenerator\FileGenerator.cs" />
+    <Compile Include="FileGenerating\FileGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -1,4 +1,4 @@
-﻿namespace Relativity.Sync.WorkspaceGenerator.FileGenerator.FileExtensionProvider
+﻿namespace Relativity.Sync.WorkspaceGenerator.FileGenerating.FileExtensionProvider
 {
 	public class TextFileExtensionProvider : IFileExtensionProvider
 	{

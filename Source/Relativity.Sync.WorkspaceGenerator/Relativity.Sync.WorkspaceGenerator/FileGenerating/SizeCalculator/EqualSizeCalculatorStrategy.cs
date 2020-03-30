@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Relativity.Sync.WorkspaceGenerator.FileGenerator.SizeCalculator
+namespace Relativity.Sync.WorkspaceGenerator.FileGenerating.SizeCalculator
 {
 	public class EqualFileSizeCalculatorStrategy : IFileSizeCalculatorStrategy
 	{

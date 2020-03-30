@@ -7,12 +7,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Relativity.Services;
 using Relativity.Services.Workspace;
-using Relativity.Sync.WorkspaceGenerator.FileGenerator;
-using Relativity.Sync.WorkspaceGenerator.FileGenerator.FileContentProvider;
-using Relativity.Sync.WorkspaceGenerator.FileGenerator.FileExtensionProvider;
-using Relativity.Sync.WorkspaceGenerator.FileGenerator.SizeCalculator;
+using Relativity.Sync.WorkspaceGenerator.FileGenerating;
+using Relativity.Sync.WorkspaceGenerator.FileGenerating.FileContentProvider;
+using Relativity.Sync.WorkspaceGenerator.FileGenerating.FileExtensionProvider;
+using Relativity.Sync.WorkspaceGenerator.FileGenerating.SizeCalculator;
 using Relativity.Sync.WorkspaceGenerator.Import;
-using Relativity.Sync.WorkspaceGenerator.LoadFileGenerator;
 using Relativity.Sync.WorkspaceGenerator.RelativityServices;
 
 namespace Relativity.Sync.WorkspaceGenerator
@@ -28,14 +27,11 @@ namespace Relativity.Sync.WorkspaceGenerator
 			WorkspaceService workspaceService = relativityServicesFactory.CreateWorkspaceService();
 
 			List<CustomField> randomFields = new FieldsGenerator().GetRandomFields(settings.NumberOfFields).ToList();
-
-			List<CustomField> fieldsToCreate = new List<CustomField>()
+			List<CustomField> fieldsToCreate = new List<CustomField>(randomFields)
 			{
 				new CustomField(ColumnNames.NativeFilePath, FieldType.FixedLengthText)
 			};
-
-			fieldsToCreate.AddRange(randomFields);
-
+			
 			WorkspaceRef workspace = await workspaceService
 				.CreateWorkspaceAsync(settings.DesiredWorkspaceName, settings.TemplateWorkspaceName)
 				.ConfigureAwait(false);
@@ -47,13 +43,13 @@ namespace Relativity.Sync.WorkspaceGenerator
 			DirectoryInfo textDir = new DirectoryInfo(Path.Combine(dataDir.FullName, @"TEXT"));
 
 			IFileSizeCalculatorStrategy equalFileSizeCalculatorStrategy = new EqualFileSizeCalculatorStrategy();
-			IFileGenerator nativesGenerator = new FileGenerator.FileGenerator(new RandomNativeFileExtensionProvider(), new NativeFileContentProvider(), nativesDir);
-			IFileGenerator textGenerator = new FileGenerator.FileGenerator(new TextFileExtensionProvider(), new AsciiExtractedTextFileContentProvider(), textDir);
+			FileGenerator nativesGenerator = new FileGenerator(new RandomNativeFileExtensionProvider(), new NativeFileContentProvider(), nativesDir);
+			FileGenerator textGenerator = new FileGenerator(new TextFileExtensionProvider(), new AsciiExtractedTextFileContentProvider(), textDir);
 
 			DocumentFactory documentFactory = new DocumentFactory(settings, equalFileSizeCalculatorStrategy, equalFileSizeCalculatorStrategy, nativesGenerator, textGenerator);
 			IEnumerable<Document> documents = await documentFactory.GenerateDocumentsAsync(randomFields).ConfigureAwait(false);
 			DataTableBuilder dataTableBuilder = new DataTableBuilder(settings.GenerateNatives, settings.GenerateExtractedText, randomFields);
-			dataTableBuilder.AddDocumentRange(documents);
+			dataTableBuilder.AddDocuments(documents.ToList());
 
 			ImportHelper importHelper = new ImportHelper(workspaceService, settings);
 			ImportJobErrors errors = await importHelper.ImportDataAsync(workspace.ArtifactID, dataTableBuilder.DataTable.CreateDataReader()).ConfigureAwait(false);
