@@ -17,11 +17,12 @@
 		<OutputPath>bin\</OutputPath>
 	</PropertyGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\Relativity.Sync.Tests.Common\Relativity.Sync.Tests.Common.csproj" />
-		<ProjectReference Include="..\Relativity.Sync\Relativity.Sync.csproj" />
+	  <None Include="..\Relativity.Sync.Tests.System.Core\app.config" Link="app.config" />
 	</ItemGroup>
 	<ItemGroup>
-		<Folder Include="Resources\" />
+		<ProjectReference Include="..\Relativity.Sync.Tests.Common\Relativity.Sync.Tests.Common.csproj" />
+		<ProjectReference Include="..\Relativity.Sync.Tests.System.Core\Relativity.Sync.Tests.System.Core.csproj" />
+		<ProjectReference Include="..\Relativity.Sync\Relativity.Sync.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 		<Reference Include="System.Web.Services" />
@@ -80,9 +81,6 @@
 		</None>
 		<None Update="Data\NativesAndExtractedText\TEXT\REL0000below.txt">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Resources\Relativity_Sync_Test_Helper.xml">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
 	<Import Project="..\..\.paket\Paket.Restore.targets" />

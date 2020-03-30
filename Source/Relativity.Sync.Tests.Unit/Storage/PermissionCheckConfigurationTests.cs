@@ -21,7 +21,6 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		private SyncJobParameters _sycJobParameters;
 
 		private const int _WORKSPACE_ARTIFACT_ID = 101679;
-		private const int _INTEGRATION_POINT_ARTIFACT_ID = 102779;
 
 		private static readonly Guid RelativityProviderGuid = new Guid("423b4d43-eae9-4e14-b767-17d629de4bb2");
 
@@ -29,11 +28,11 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void SetUp()
 		{
 			const int jobId = 50;
-		
+
 			_sourceServiceFactory = new Mock<ISourceServiceFactoryForUser>();
 			_cache = new Mock<IConfiguration>();
 			_objectManager = new Mock<IObjectManager>();
-			_sycJobParameters = new SyncJobParameters(jobId, _WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, 1);
+			_sycJobParameters = new SyncJobParameters(jobId, _WORKSPACE_ARTIFACT_ID, 1);
 			_instance = new PermissionsCheckConfiguration(_cache.Object, _sycJobParameters,_sourceServiceFactory.Object);
 		}
 
@@ -62,7 +61,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 
 			// Act
 			int sourceArtifactId = _instance.SourceProviderArtifactId;
-			
+
 			//Assert
 			sourceArtifactId.Should().Be(_WORKSPACE_ARTIFACT_ID);
 		}

@@ -36,7 +36,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			_testFieldGuid = Guid.NewGuid();
 			_syncLog = new EmptyLogger();
-			_syncJobParameters = new SyncJobParameters(_TEST_CONFIG_ARTIFACT_ID, _TEST_WORKSPACE_ID, 1, 1);
+			_syncJobParameters = new SyncJobParameters(_TEST_CONFIG_ARTIFACT_ID, _TEST_WORKSPACE_ID, 1);
 		}
 
 		[SetUp]

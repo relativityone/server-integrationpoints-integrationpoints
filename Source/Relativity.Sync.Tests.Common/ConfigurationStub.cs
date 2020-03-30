@@ -81,9 +81,7 @@ namespace Relativity.Sync.Tests.Common
 		public int DestinationWorkspaceArtifactId { get; set; }
 		public int SavedSearchArtifactId { get; set; }
 		public int DestinationFolderArtifactId { get; set; }
-		public int IntegrationPointArtifactId { get; }
 		public int SourceProviderArtifactId { get; }
-
 		public string FolderPathSourceFieldName { get; set; }
 
 		public string GetFolderPathSourceFieldName() => FolderPathSourceFieldName;

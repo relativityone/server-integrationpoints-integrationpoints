@@ -6,14 +6,15 @@ using Relativity.Automation.Utility.Orchestrators;
 using Relativity.Services.Interfaces.LibraryApplication.Models;
 using Relativity.Sync.Tests.Performance.ARM.Contracts;
 using Relativity.Sync.Tests.Performance.Helpers;
-using Relativity.Sync.Tests.System;
 using System;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using Relativity.Sync.Tests.System.Core;
 
 namespace Relativity.Sync.Tests.Performance.ARM
 {
@@ -44,7 +45,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			HttpClient armClient = RestService.CreateHttpClient(
 				AppSettings.RelativityRestUrl.AbsoluteUri,
 				new RefitSettings());
-			armClient.DefaultRequestHeaders.Authorization = 
+			armClient.DefaultRequestHeaders.Authorization =
 				AuthenticationHeaderValue.Parse($"Basic {AppSettings.BasicAccessToken}");
 
 			ARMHelper instance = new ARMHelper(
@@ -61,7 +62,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 		{
 			if(!_isInitialized)
 			{
-				Console.WriteLine("ARM is being initialized...");
+				Debug.WriteLine("ARM is being initialized...");
 				if (!IsInstalled())
 				{
 					InstallARM();
@@ -70,7 +71,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 				ConfigureARM();
 
 				_isInitialized = true;
-				Console.WriteLine("ARM has been initialized.");
+				Debug.WriteLine("ARM has been initialized.");
 			}
 		}
 
@@ -90,43 +91,50 @@ namespace Relativity.Sync.Tests.Performance.ARM
 
 			string rapPath = GetARMRapPath();
 
-			Console.WriteLine("Installing ARM...");
+			Debug.WriteLine("Installing ARM...");
 			LibraryApplicationRequestOptions options = new LibraryApplicationRequestOptions() { CreateIfMissing = true };
 			applicationsOrchestrator.InstallRelativityApplicationToLibrary(rapPath, options);
-			Console.WriteLine("ARM has been successfully installed.");
+			Debug.WriteLine("ARM has been successfully installed.");
 		}
 
 		private string GetARMRapPath()
 		{
-			Console.WriteLine("Trying to get ARM RAP path...");
+			Debug.WriteLine("Trying to get ARM RAP path...");
 			string rapPath = Path.Combine(Path.GetTempPath(), @"ARM.rap");
 			if (!File.Exists(rapPath))
 			{
-				Console.WriteLine("ARM RAP doesn't exist. Trying to download ARM from AzureStorage...");
+				Debug.WriteLine("ARM RAP doesn't exist. Trying to download ARM from AzureStorage...");
 				rapPath = _storage.DownloadFileAsync(@"ARM\ARM.rap", Path.GetTempPath()).Result;
-				Console.WriteLine("ARM has been downloaded.");
+				Debug.WriteLine("ARM has been downloaded.");
 			}
 
-			Console.WriteLine($"ARM Rap is located in path {rapPath}");
+			Debug.WriteLine($"ARM Rap is located in path {rapPath}");
 			return rapPath;
 		}
 
 		private void ConfigureARM()
 		{
-			Console.WriteLine("ARM configuration has been started...");
+			Debug.WriteLine("ARM configuration has been started...");
 
 			IOrchestrateInstanceSettings settingOrchestrator = _component.OrchestratorFactory.Create<IOrchestrateInstanceSettings>();
 			settingOrchestrator.SetInstanceSetting("BcpShareFolderName", @"\\emttest\BCPPath", "kCura.ARM", InstanceSettingValueTypeEnum.Text);
 
-			_fileShare.CreateDirectoryAsync(_RELATIVE_ARCHIVES_LOCATION).Wait();
-			Console.WriteLine($"ARM Archive Location has been created on fileshare: {_RELATIVE_ARCHIVES_LOCATION}");
+			_fileShare.CreateDirectoryAsync(_RELATIVE_ARCHIVES_LOCATION).GetAwaiter().GetResult();
+			Debug.WriteLine($"ARM Archive Location has been created on fileshare: {_RELATIVE_ARCHIVES_LOCATION}");
 
-			string webApiPath = settingOrchestrator.GetInstanceSetting("RelativityWebApiUrl", "kCura.ARM").Value;
+			string webApiPath = settingOrchestrator.GetInstanceSetting("RelativityWebApiUrl", "kCura.ARM")?.Value;
+
+			if (webApiPath == null)
+			{
+				Debug.WriteLine("kCura.ARM.RelativityWebApiUrl instance setting not found, reverting to AppSettings");
+				webApiPath = AppSettings.RelativityWebApiUrl.AbsoluteUri;
+			}
+
 			ContractEnvelope <ArmConfiguration> request = ArmConfiguration.GetRequest(webApiPath, REMOTE_ARCHIVES_LOCATION);
 
-			_armApi.SetConfigurationAsync(request).Wait();
+			_armApi.SetConfigurationAsync(request).GetAwaiter().GetResult();
 
-			Console.WriteLine("ARM has been successfully configured.");
+			Debug.WriteLine("ARM has been successfully configured.");
 		}
 
 		public void EnableAgents(bool ensureNew = false)
@@ -161,18 +169,18 @@ namespace Relativity.Sync.Tests.Performance.ARM
 		public async Task<int> RestoreWorkspaceAsync(string archivedWorkspace)
 		{
 			string uploadedFile = await _fileShare.UploadFileAsync(archivedWorkspace, _RELATIVE_ARCHIVES_LOCATION).ConfigureAwait(false);
-			Console.WriteLine("Archived workspace has been uploaded to fileshare.");
+			Debug.WriteLine("Archived workspace has been uploaded to fileshare.");
 
 			string archivedWorkspacePath = Path.Combine(REMOTE_ARCHIVES_LOCATION, Path.GetFileNameWithoutExtension(uploadedFile));
 
 			Job job = await CreateRestoreJobAsync(archivedWorkspacePath).ConfigureAwait(false);
-			Console.WriteLine($"Restore job {job.JobId} has been created");
+			Debug.WriteLine($"Restore job {job.JobId} has been created");
 
 			await RunJobAsync(job).ConfigureAwait(false);
-			Console.WriteLine($"Job {job.JobId} is running...");
+			Debug.WriteLine($"Job {job.JobId} is running...");
 
 			await WaitUntilJobIsCompleted(job).ConfigureAwait(false);
-			Console.WriteLine("Restore job has been completed successfully.");
+			Debug.WriteLine("Restore job has been completed successfully.");
 
 			return await GetRestoredWorkspaceID(job.JobId).ConfigureAwait(false);
 		}
@@ -190,12 +198,13 @@ namespace Relativity.Sync.Tests.Performance.ARM
 
 		private async Task WaitUntilJobIsCompleted(Job job)
 		{
-			const int delay = 10000;
+			// restoring workspaces takes a long time
+			const int delay = 30000;
 			JobStatus jobStatus;
 			do
 			{
 				jobStatus = await _armApi.GetJobStatus(job).ConfigureAwait(false);
-				Console.WriteLine($"Job is still processing ({jobStatus.Status})...");
+				Debug.WriteLine($"Job is still processing ({jobStatus.Status})...");
 				if(jobStatus.Status == "Errored")
 				{
 					throw new InvalidOperationException("Error occured during restoring workspace");
@@ -211,7 +220,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			using(SqlConnection connection = DbHelper.CreateConnectionFromAppConfig())
 			{
 				string sqlStatement = @"SELECT WorkspaceId
-				  FROM [EDDSArchiving].[eddsdbo].[JobLocation] 
+				  FROM [EDDSArchiving].[eddsdbo].[JobLocation]
 				  WHERE IsDestination = 1
 				   AND JobId = @jobId";
 				SqlCommand command = new SqlCommand(sqlStatement, connection);

@@ -27,7 +27,7 @@ namespace Relativity.Sync.Tests.Unit
 			Mock<IUserContextConfiguration> userContextConfiguration = new Mock<IUserContextConfiguration>();
 			userContextConfiguration.Setup(x => x.ExecutingUserId).Returns(_USER_ID);
 
-			var servicesMgr = new Mock<IServicesMgr>();
+			var servicesMgr = new Mock<ISyncServiceManager>();
 			servicesMgr.Setup(x => x.GetRESTServiceUrl()).Returns(new Uri("", UriKind.Relative));
 			servicesMgr.Setup(x => x.GetServicesURL()).Returns(new Uri("", UriKind.Relative));
 

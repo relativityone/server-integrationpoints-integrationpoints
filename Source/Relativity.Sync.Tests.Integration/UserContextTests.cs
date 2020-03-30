@@ -73,8 +73,8 @@ namespace Relativity.Sync.Tests.Integration
 			};
 			oAuth2ClientManager.Setup(x => x.ReadAllAsync()).ReturnsAsync(clients);
 
-			Mock<IServicesMgr> serviceMgr = new Mock<IServicesMgr>();
-			_containerBuilder.RegisterInstance(serviceMgr.Object).As<IServicesMgr>();
+			Mock<ISyncServiceManager> serviceMgr = new Mock<ISyncServiceManager>();
+			_containerBuilder.RegisterInstance(serviceMgr.Object).As<ISyncServiceManager>();
 			serviceMgr.Setup(x => x.CreateProxy<IOAuth2ClientManager>(ExecutionIdentity.System)).Returns(oAuth2ClientManager.Object);
 			serviceMgr.Setup(x => x.GetRESTServiceUrl()).Returns(new Uri(_REST_URL));
 			serviceMgr.Setup(x => x.GetServicesURL()).Returns(new Uri(_SERVICES_URL));
@@ -83,7 +83,7 @@ namespace Relativity.Sync.Tests.Integration
 		private void MockProvideServiceUrisToProvideValidUris()
 		{
 			IAPM apm = Mock.Of<IAPM>();
-			IServicesMgr servicesMgr = Mock.Of<IServicesMgr>();
+			ISyncServiceManager servicesMgr = Mock.Of<ISyncServiceManager>();
 			Uri authenticationUri = new Uri(_INSTANCE_URL);
 			RelativityServices relativityServices = new RelativityServices(apm, servicesMgr, authenticationUri);
 			_containerBuilder.RegisterInstance(relativityServices).As<RelativityServices>();

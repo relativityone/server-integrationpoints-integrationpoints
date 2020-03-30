@@ -16,7 +16,7 @@ namespace Relativity.Sync.Tests.Unit.Authentication
 	[TestFixture]
 	public class OAuth2ClientFactoryTests
 	{
-		private Mock<IServicesMgr> _servicesMgr;
+		private Mock<ISyncServiceManager> _servicesMgr;
 		private OAuth2ClientFactory _sut;
 
 		private const string _OAUTH2_CLIENT_NAME_PREFIX = "F6B8C2B4B3E8465CA00775F699375D3C";
@@ -24,7 +24,7 @@ namespace Relativity.Sync.Tests.Unit.Authentication
 		[OneTimeSetUp]
 		public void SetUp()
 		{
-			_servicesMgr = new Mock<IServicesMgr>();
+			_servicesMgr = new Mock<ISyncServiceManager>();
 			_sut = new OAuth2ClientFactory(_servicesMgr.Object, new EmptyLogger());
 		}
 

@@ -12,7 +12,7 @@
 		"Exception": "*System.Data.DuplicateNameException: A column named '*' already belongs to this DataTable*"
 	},
 	{
-		"Jira": "REL-334848",
+		"Jira": "REL-402615",
 		"Exception": "*Fatal exception occurred in Import API.*The operation has timed out*"
 	},
 	{
@@ -21,7 +21,7 @@
 	},
 	{
 		"Jira": "REL-368548",
-		"Exception": "*Relativity.Sync.Executors.ImportFailedException: * Import API. *Maximum request length exceeded*"
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: * Import API. *Maximum request length exceeded*kCura.WinEDDS.BulkLoadFileImporter.WaitOnPushBatchTask*"
 	},
 	{
 		"Jira": "REL-368549",
@@ -221,7 +221,7 @@
 	},
 	{
 		"Jira": "REL-411766",
-		"Exception": "Relativity.Sync.Executors.ImportFailedException: *Request Entity Too Large - Maximum request length exceeded.*"
+		"Exception": "Relativity.Sync.Executors.ImportFailedException: *Request Entity Too Large - Maximum request length exceeded.*JobHistoryErrorRepository.<MassCreateAsync>*"
 	}
 
 ]

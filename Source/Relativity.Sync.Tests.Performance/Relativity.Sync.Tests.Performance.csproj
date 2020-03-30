@@ -20,7 +20,8 @@
 		<None Remove="coverage.cobertura.xml" />
 	</ItemGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\Relativity.Sync.Tests.System\Relativity.Sync.Tests.System.csproj" />
+	  <ProjectReference Include="..\Relativity.Sync.Tests.Common\Relativity.Sync.Tests.Common.csproj" />
+	  <ProjectReference Include="..\Relativity.Sync.Tests.System.Core\Relativity.Sync.Tests.System.Core.csproj" />
 	</ItemGroup>
 	<Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

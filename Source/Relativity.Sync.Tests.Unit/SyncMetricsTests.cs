@@ -16,9 +16,8 @@ namespace Relativity.Sync.Tests.Unit
 		private Mock<ISyncMetricsSink> _sink2;
 
 		private const string _NAME = "name";
-		private const int _INTEGRATION_POINT_ID = 111;
 		private const int _JOB_HISTORY_ID = 222;
-		private readonly string _workflowId = $"{TelemetryConstants.PROVIDER_NAME}_{_INTEGRATION_POINT_ID}_{_JOB_HISTORY_ID}";
+		private readonly string _workflowId = $"{TelemetryConstants.PROVIDER_NAME}_{_JOB_HISTORY_ID}";
 
 		[SetUp]
 		public void SetUp()
@@ -31,7 +30,7 @@ namespace Relativity.Sync.Tests.Unit
 				_sink1.Object,
 				_sink2.Object
 			};
-			_instance = new SyncMetrics(sinks, new SyncJobParameters(1, 1, _INTEGRATION_POINT_ID, _JOB_HISTORY_ID));
+			_instance = new SyncMetrics(sinks, new SyncJobParameters(1, 1, _JOB_HISTORY_ID));
 		}
 
 		[Test]

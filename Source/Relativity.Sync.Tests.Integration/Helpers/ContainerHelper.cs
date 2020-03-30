@@ -61,7 +61,7 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 			ContainerBuilder containerBuilder = new ContainerBuilder();
 			ContainerFactory containerFactory = new ContainerFactory();
 			RelativityServices relativityServices = CreateMockedRelativityServices();
-			containerFactory.RegisterSyncDependencies(containerBuilder, new SyncJobParameters(1, 1, 1, 1),
+			containerFactory.RegisterSyncDependencies(containerBuilder, new SyncJobParameters(1, 1, 1),
 				relativityServices, new SyncJobExecutionConfiguration(), new EmptyLogger());
 
 			MockSearchManagerFactory(containerBuilder);
@@ -98,7 +98,7 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 			});
 			instanceSettingManager.Setup(x => x.QueryAsync(It.IsAny<Services.Query>())).ReturnsAsync(resultSet);
 
-			Mock<IServicesMgr> servicesMgr = new Mock<IServicesMgr>();
+			Mock<ISyncServiceManager> servicesMgr = new Mock<ISyncServiceManager>();
 			servicesMgr.Setup(x => x.CreateProxy<IInstanceSettingManager>(It.IsAny<ExecutionIdentity>())).Returns(instanceSettingManager.Object);
 
 			Uri authenticationUri = new Uri("https://localhost", UriKind.RelativeOrAbsolute);

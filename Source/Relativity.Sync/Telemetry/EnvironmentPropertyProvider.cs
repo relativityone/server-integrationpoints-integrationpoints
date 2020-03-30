@@ -21,7 +21,7 @@ namespace Relativity.Sync.Telemetry
 		/// <param name="helper">API helper used to create the instance, if necessary</param>
 		/// <param name="logger">Logger used to log any events related to the creation of this instance</param>
 		/// <returns>New instance of <see cref="IEnvironmentPropertyProvider"/></returns>
-		public static IEnvironmentPropertyProvider Create(IServicesMgr helper, ISyncLog logger)
+		public static IEnvironmentPropertyProvider Create(ISyncServiceManager helper, ISyncLog logger)
 		{
 			return CreateAsync(helper, logger).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
@@ -32,7 +32,7 @@ namespace Relativity.Sync.Telemetry
 		/// <param name="helper">API helper used to create the instance, if necessary</param>
 		/// <param name="logger">Logger used to log any events related to the creation of this instance</param>
 		/// <returns>New instance of <see cref="IEnvironmentPropertyProvider"/></returns>
-		public static async Task<IEnvironmentPropertyProvider> CreateAsync(IServicesMgr helper, ISyncLog logger)
+		public static async Task<IEnvironmentPropertyProvider> CreateAsync(ISyncServiceManager helper, ISyncLog logger)
 		{
 			using (IInstanceSettingManager instanceSettingManager = helper.CreateProxy<IInstanceSettingManager>(ExecutionIdentity.System))
 			{

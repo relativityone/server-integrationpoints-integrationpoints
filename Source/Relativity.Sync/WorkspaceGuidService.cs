@@ -12,10 +12,10 @@ namespace Relativity.Sync
 {
 	internal sealed class WorkspaceGuidService : IWorkspaceGuidService
 	{
-		private readonly IServicesMgr _servicesManager;
+		private readonly ISyncServiceManager _servicesManager;
 		private readonly IDictionary<int, Guid> _cache;
 
-		public WorkspaceGuidService(IServicesMgr servicesManager)
+		public WorkspaceGuidService(ISyncServiceManager servicesManager)
 		{
 			_servicesManager = servicesManager;
 			_cache = new ConcurrentDictionary<int, Guid>();

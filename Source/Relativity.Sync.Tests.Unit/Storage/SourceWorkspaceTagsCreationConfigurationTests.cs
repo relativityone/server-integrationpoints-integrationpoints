@@ -25,7 +25,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void SetUp()
 		{
 			_cache = new Mock<Sync.Storage.IConfiguration>();
-			SyncJobParameters syncJobParameters = new SyncJobParameters(_JOB_ID, _SOURCE_WORKSPACE_ARTIFACT_ID, 1, 1);
+			SyncJobParameters syncJobParameters = new SyncJobParameters(_JOB_ID, _SOURCE_WORKSPACE_ARTIFACT_ID, 1);
 			_config = new SourceWorkspaceTagsCreationConfiguration(_cache.Object, syncJobParameters);
 		}
 

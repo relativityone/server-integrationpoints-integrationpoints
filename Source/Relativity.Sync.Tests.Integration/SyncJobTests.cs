@@ -63,7 +63,7 @@ namespace Relativity.Sync.Tests.Integration
 			IContainer container = containerBuilder.Build();
 			return new SyncJob(container.Resolve<INode<SyncExecutionContext>>(),
 				container.Resolve<ISyncExecutionContextFactory>(),
-				new SyncJobParameters(1, 1, 1, 1), 
+				new SyncJobParameters(1, 1, 1), 
 				Mock.Of<IProgress<SyncJobState>>(),
 				Mock.Of<ISyncLog>());
 		}

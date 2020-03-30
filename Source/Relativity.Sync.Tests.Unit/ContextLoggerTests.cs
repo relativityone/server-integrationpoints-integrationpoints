@@ -11,14 +11,13 @@ namespace Relativity.Sync.Tests.Unit
 	public sealed class ContextLoggerTests
 	{
 		private Mock<ISyncLog> _logger;
-		
+
 		private ContextLogger _instance;
 		private object[] _expectedParams;
 
 		private SyncJobParameters _syncJobParameters;
 		private const int _JOB_ID = 234;
 		private const int _WORKSPACE_ID = 123;
-		private const int _INTEGRATION_POINT_ID = 435;
 		private const int _JOB_HISTORY_ID = 45645;
 		private const int _PARAM1 = 1;
 
@@ -35,7 +34,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			_logger = new Mock<ISyncLog>();
 
-			_syncJobParameters = new SyncJobParameters(_JOB_ID, _WORKSPACE_ID, _INTEGRATION_POINT_ID, _JOB_HISTORY_ID);
+			_syncJobParameters = new SyncJobParameters(_JOB_ID, _WORKSPACE_ID, _JOB_HISTORY_ID);
 
 			_expectedParams = new object[]
 			{

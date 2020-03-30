@@ -2,7 +2,7 @@
 using System.Data;
 using System.Linq;
 using NUnit.Framework;
-using Relativity.Sync.Tests.System.Helpers;
+using Relativity.Sync.Tests.System.Core.Helpers;
 
 namespace Relativity.Sync.Tests.System
 {
