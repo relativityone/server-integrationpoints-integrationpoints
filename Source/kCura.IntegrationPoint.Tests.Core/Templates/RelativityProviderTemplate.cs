@@ -220,6 +220,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			modelBase.SourceProvider = RelativityProvider.ArtifactId;
 			modelBase.SourceConfiguration = CreateDefaultSourceConfig();
 			modelBase.LogErrors = true;
+			modelBase.NotificationEmails = "test@relativity.com";
 			modelBase.Name = $"{name}{DateTime.Now:yy-MM-dd HH-mm-ss}";
 			modelBase.SelectedOverwrite = overwrite;
 			modelBase.Scheduler = new Scheduler() { EnableScheduler = false };
