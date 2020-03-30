@@ -222,6 +222,21 @@
 	{
 		"Jira": "REL-411766",
 		"Exception": "Relativity.Sync.Executors.ImportFailedException: *Request Entity Too Large - Maximum request length exceeded.*JobHistoryErrorRepository.<MassCreateAsync>*"
+	},
+	{
+		"Jira": "REL-416319",
+		"Exception": "Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API. *kCura.WinEDDS.Service.BulkImportManager+BulkImportSqlException: Error: SQL Statement Failed*Error: String or binary data would be truncated.*"
+	},
+	{
+		"Jira": "REL-416356",
+		"Exception": "Relativity.Sync.Transfer.InvalidExportFieldValueException*Could not retrieve info for user with ArtifactID*"
+	},
+	{
+		"Jira": "REL-416376",
+		"Exception": "*Relativity.Services.Exceptions.ServiceException:*Failed to determine route*FolderPathRetriever*"
+	},
+	{
+		"Jira": "REL-416380",
+		"Exception": "*Relativity.Services.Exceptions.ServiceException:*Failed to determine route*MassCreateItemLevelErrorsIfAny*"
 	}
-
 ]
