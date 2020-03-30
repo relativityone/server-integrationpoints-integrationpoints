@@ -23,7 +23,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Integration.Helpers
 
 			Assert.That(integrationPointBaseRdo.GetField<int?>(new Guid(guidsConstants.SourceProvider)), Is.EqualTo(expectedIntegrationPointModel.SourceProvider));
 			Assert.That(integrationPointBaseRdo.GetField<int?>(new Guid(guidsConstants.DestinationProvider)), Is.EqualTo(expectedIntegrationPointModel.DestinationProvider));
-			Assert.That(integrationPointBaseRdo.GetField<string>(new Guid(guidsConstants.EmailNotificationRecipients)), Is.EqualTo(expectedIntegrationPointModel.EmailNotificationRecipients ?? string.Empty));
+			Assert.That(integrationPointBaseRdo.GetField<string>(new Guid(guidsConstants.EmailNotificationRecipients)) ?? string.Empty, Is.EqualTo(expectedIntegrationPointModel.EmailNotificationRecipients ?? string.Empty));
 			Assert.That(integrationPointBaseRdo.GetField<bool>(new Guid(guidsConstants.EnableScheduler)), Is.EqualTo(expectedIntegrationPointModel.ScheduleRule.EnableScheduler));
 			Assert.That(integrationPointBaseRdo.GetField<bool>(new Guid(guidsConstants.LogErrors)), Is.EqualTo(expectedIntegrationPointModel.LogErrors));
 			Assert.That(integrationPointBaseRdo.GetField<string>(new Guid(guidsConstants.Name)), Is.EqualTo(expectedIntegrationPointModel.Name));
