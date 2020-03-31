@@ -205,7 +205,7 @@
 	},
 	{
 		"Jira": "REL-410138",
-		"Exception": "Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API. ---> System.Net.WebException: The underlying connection was closed: *kCura.WinEDDS.BulkLoadFileImporter*"
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API. ---> System.Net.WebException: The underlying connection was closed: *kCura.WinEDDS.BulkLoadFileImporter*"
 	},
 	{
 		"Jira": "REL-410146",
@@ -222,6 +222,45 @@
 	{
 		"Jira": "REL-411766",
 		"Exception": "Relativity.Sync.Executors.ImportFailedException: *Request Entity Too Large - Maximum request length exceeded.*JobHistoryErrorRepository.<MassCreateAsync>*"
+	},
+	{
+		"Jira": "REL-416319",
+		"Exception": "Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API. *kCura.WinEDDS.Service.BulkImportManager+BulkImportSqlException: Error: SQL Statement Failed*Error: String or binary data would be truncated.*"
+	},
+	{
+		"Jira": "REL-416356",
+		"Exception": "Relativity.Sync.Transfer.InvalidExportFieldValueException*Could not retrieve info for user with ArtifactID*"
+	},
+	{
+		"Jira": "REL-416376",
+		"Exception": "*Relativity.Services.Exceptions.ServiceException:*Failed to determine route*FolderPathRetriever*"
+	},
+	{
+		"Jira": "REL-416380",
+		"Exception": "*Relativity.Services.Exceptions.ServiceException:*Failed to determine route*MassCreateItemLevelErrorsIfAny*"
+	},
+	{
+		"Jira": "REL-416542",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Failed to start executing import job.*System.Net.WebException: The operation has timed out*FieldQuery.RetrieveAllMappable*"	
+	},
+	{
+		"Jira": "REL-416645",
+		"Exception": "Relativity.Services.Exceptions.TemporarilyUnavailableException: Create Failed*at Relativity.Sync.Storage.Batch.*UpdateFieldValueAsync*"
+	},
+	{
+		"Jira": "REL-416651",
+		"Exception": "Relativity.Sync.Executors.ImportFailedException: * Import API. *Relativity.Sync.Transfer.InvalidExportFieldValueException: Unable to parse data from Relativity Export API in field 'Entity Participant'*"
+	},
+	{
+		"Jira": "REL-416658",
+		"Exception": "Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API. *kCura.WinEDDS.Service.BulkImportManager+BulkImportSqlException: Error: SQL Statement Failed*Error: Bad or inaccessible location specified in external data source*"
+	},
+	{
+		"Jira": "REL-416659",
+		"Exception": "Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API. *System.ApplicationException: Error Downloading File*the file associated with the guid*cannot be found*"
+	},
+	{
+		"Jira": "REL-416663",
+		"Exception": "Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API. *System.Exception: A Serious Error Occurred Transferring the Requested Files*"
 	}
-
 ]
