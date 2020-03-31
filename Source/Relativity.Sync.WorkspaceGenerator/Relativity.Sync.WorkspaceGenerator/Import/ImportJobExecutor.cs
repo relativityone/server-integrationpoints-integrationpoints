@@ -7,7 +7,7 @@ namespace Relativity.Sync.WorkspaceGenerator.Import
 {
 	internal static class ImportJobExecutor
 	{
-		public static async Task<ImportJobErrors> ExecuteAsync<T>(T job) where T : IImportNotifier, IImportBulkArtifactJob
+		public static async Task<ImportJobResult> ExecuteAsync<T>(T job) where T : IImportNotifier, IImportBulkArtifactJob
 		{
 			var errorMessages = new List<string>();
 			job.OnComplete += report =>
@@ -21,7 +21,7 @@ namespace Relativity.Sync.WorkspaceGenerator.Import
 
 			await Task.Run(job.Execute).ConfigureAwait(false);
 
-			var jobResult = new ImportJobErrors(errorMessages);
+			var jobResult = new ImportJobResult(errorMessages);
 			return jobResult;
 		}
 	}

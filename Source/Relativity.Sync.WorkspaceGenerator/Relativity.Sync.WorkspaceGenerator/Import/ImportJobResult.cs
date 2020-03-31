@@ -5,14 +5,14 @@ using System.Text;
 
 namespace Relativity.Sync.WorkspaceGenerator.Import
 {
-	internal sealed class ImportJobErrors
+	internal sealed class ImportJobResult
 	{
 		private readonly List<string> _errors;
 
 		public IReadOnlyList<string> Errors => _errors.AsReadOnly();
 		public bool Success => !Errors.Any();
 
-		public ImportJobErrors(List<string> errors)
+		public ImportJobResult(List<string> errors)
 		{
 			_errors = errors;
 		}

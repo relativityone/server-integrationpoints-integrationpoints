@@ -4,7 +4,7 @@ using Relativity.Services;
 
 namespace Relativity.Sync.WorkspaceGenerator
 {
-	public class FieldsGenerator
+	public class RandomFieldsGenerator
 	{
 		private static readonly FieldType[] SupportedTypes = new[]
 		{
@@ -17,7 +17,7 @@ namespace Relativity.Sync.WorkspaceGenerator
 
 		private readonly Random _random;
 
-		public FieldsGenerator()
+		public RandomFieldsGenerator()
 		{
 			_random = new Random();
 		}

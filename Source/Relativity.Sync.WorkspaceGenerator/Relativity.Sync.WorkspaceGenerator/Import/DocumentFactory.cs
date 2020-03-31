@@ -8,22 +8,26 @@ using Relativity.Sync.WorkspaceGenerator.FileGenerating.SizeCalculator;
 
 namespace Relativity.Sync.WorkspaceGenerator.Import
 {
-	class DocumentFactory
+	public class DocumentFactory : IDocumentFactory
 	{
 		private readonly GeneratorSettings _settings;
 		private readonly FileGenerator _nativeFileGenerator;
 		private readonly FileGenerator _extractedTextFileGenerator;
+		private readonly List<CustomField> _customFields;
 
 		private readonly List<long> _nativesSizes;
 		private readonly List<long> _extractedTextSizes;
 
 		private readonly Random _random;
 
-		public DocumentFactory(GeneratorSettings settings, IFileSizeCalculatorStrategy nativesSizeCalculatorStrategy, IFileSizeCalculatorStrategy extractedTextSizeCalculatorStrategy, FileGenerator nativeFileGenerator, FileGenerator extractedTextFileGenerator)
+		private int _currentDocumentIndex = 0;
+
+		public DocumentFactory(GeneratorSettings settings, IFileSizeCalculatorStrategy nativesSizeCalculatorStrategy, IFileSizeCalculatorStrategy extractedTextSizeCalculatorStrategy, FileGenerator nativeFileGenerator, FileGenerator extractedTextFileGenerator, List<CustomField> customFields)
 		{
 			_settings = settings;
 			_nativeFileGenerator = nativeFileGenerator;
 			_extractedTextFileGenerator = extractedTextFileGenerator;
+			_customFields = customFields;
 
 			_nativesSizes = nativesSizeCalculatorStrategy.GetSizesInBytes(settings.NumberOfDocuments, settings.TotalNativesSizeInMB).ToList();
 			_extractedTextSizes = extractedTextSizeCalculatorStrategy.GetSizesInBytes(settings.NumberOfDocuments, settings.TotalExtractedTextSizeInMB).ToList();
@@ -31,38 +35,38 @@ namespace Relativity.Sync.WorkspaceGenerator.Import
 			_random = new Random();
 		}
 
-		public async Task<IEnumerable<Document>> GenerateDocumentsAsync(List<CustomField> fields)
+		public async Task<Document> GetNextDocumentAsync()
 		{
-			List<Document> documents = new List<Document>();
-
-			for (int i = 0; i < _settings.NumberOfDocuments; i++)
+			if (_currentDocumentIndex >= _settings.NumberOfDocuments)
 			{
-				Document document = new Document();
-				Console.WriteLine($"Generating document: {document.Identifier}");
-
-				if (_settings.GenerateNatives)
-				{
-					document.NativeFile = await _nativeFileGenerator
-						.GenerateAsync(document.Identifier, _nativesSizes[i])
-						.ConfigureAwait(false);
-				}
-
-				if (_settings.GenerateExtractedText)
-				{
-					document.ExtractedTextFile = await _extractedTextFileGenerator
-						.GenerateAsync(document.Identifier, _extractedTextSizes[i])
-						.ConfigureAwait(false);
-				}
-
-				foreach (CustomField field in fields)
-				{
-					document.CustomFields.Add(new Tuple<string, string>(field.Name, GetFieldValue(field)));
-				}
-
-				documents.Add(document);
+				return null;
 			}
 
-			return documents;
+			Document document = new Document(Guid.NewGuid().ToString());
+			Console.WriteLine($"Generating document: {document.Identifier}");
+
+			if (_settings.GenerateNatives)
+			{
+				document.NativeFile = await _nativeFileGenerator
+					.GenerateAsync(document.Identifier, _nativesSizes[_currentDocumentIndex])
+					.ConfigureAwait(false);
+			}
+
+			if (_settings.GenerateExtractedText)
+			{
+				document.ExtractedTextFile = await _extractedTextFileGenerator
+					.GenerateAsync(document.Identifier, _extractedTextSizes[_currentDocumentIndex])
+					.ConfigureAwait(false);
+			}
+
+			foreach (CustomField field in _customFields)
+			{
+				document.CustomFields.Add(new Tuple<string, string>(field.Name, GetFieldValue(field)));
+			}
+
+			_currentDocumentIndex++;
+
+			return document;
 		}
 
 		private string GetFieldValue(CustomField field)
@@ -102,12 +106,12 @@ namespace Relativity.Sync.WorkspaceGenerator.Import
 
 		private string GetCurrency()
 		{
-			return _random.NextDouble().ToString();
+			return Math.Round(_random.NextDouble(), 2).ToString();
 		}
 
 		private string GetDecimal()
 		{
-			return _random.NextDouble().ToString();
+			return Math.Round(_random.NextDouble(), 4).ToString();
 		}
 	}
 }

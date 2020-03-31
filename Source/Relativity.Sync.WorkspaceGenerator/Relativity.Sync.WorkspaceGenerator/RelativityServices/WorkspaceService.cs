@@ -82,7 +82,7 @@ namespace Relativity.Sync.WorkspaceGenerator.RelativityServices
 			{
 				foreach (CustomField field in fields)
 				{
-					Console.WriteLine($"Creating field Name: '{field.Name}'\t\tType: '{field.Type}'");
+					Console.WriteLine($"Creating field in workspace. Field name: '{field.Name}'\t\tType: '{field.Type}'");
 
 					switch (field.Type)
 					{

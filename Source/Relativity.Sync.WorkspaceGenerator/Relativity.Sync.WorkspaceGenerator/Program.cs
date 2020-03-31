@@ -22,16 +22,16 @@ namespace Relativity.Sync.WorkspaceGenerator
 		{
 			Console.Title = "Workspace Generator";
 
-			GeneratorSettings settings = new GeneratorSettingsReader().DefaultSettings();
+			GeneratorSettings settings = new GeneratorSettingsReader().ReadFromConsole();
 			RelativityServicesFactory relativityServicesFactory = new RelativityServicesFactory(settings);
 			WorkspaceService workspaceService = relativityServicesFactory.CreateWorkspaceService();
 
-			List<CustomField> randomFields = new FieldsGenerator().GetRandomFields(settings.NumberOfFields).ToList();
+			List<CustomField> randomFields = new RandomFieldsGenerator().GetRandomFields(settings.NumberOfFields).ToList();
 			List<CustomField> fieldsToCreate = new List<CustomField>(randomFields)
 			{
 				new CustomField(ColumnNames.NativeFilePath, FieldType.FixedLengthText)
 			};
-			
+
 			WorkspaceRef workspace = await workspaceService
 				.CreateWorkspaceAsync(settings.DesiredWorkspaceName, settings.TemplateWorkspaceName)
 				.ConfigureAwait(false);
@@ -46,21 +46,19 @@ namespace Relativity.Sync.WorkspaceGenerator
 			FileGenerator nativesGenerator = new FileGenerator(new RandomNativeFileExtensionProvider(), new NativeFileContentProvider(), nativesDir);
 			FileGenerator textGenerator = new FileGenerator(new TextFileExtensionProvider(), new AsciiExtractedTextFileContentProvider(), textDir);
 
-			DocumentFactory documentFactory = new DocumentFactory(settings, equalFileSizeCalculatorStrategy, equalFileSizeCalculatorStrategy, nativesGenerator, textGenerator);
-			IEnumerable<Document> documents = await documentFactory.GenerateDocumentsAsync(randomFields).ConfigureAwait(false);
-			DataTableBuilder dataTableBuilder = new DataTableBuilder(settings.GenerateNatives, settings.GenerateExtractedText, randomFields);
-			dataTableBuilder.AddDocuments(documents.ToList());
+			IDocumentFactory documentFactory = new DocumentFactory(settings, equalFileSizeCalculatorStrategy, equalFileSizeCalculatorStrategy, nativesGenerator, textGenerator, randomFields);
+			DataReaderWrapper dataReader = new DataReaderWrapper(documentFactory, settings.NumberOfDocuments, settings.GenerateNatives, settings.GenerateExtractedText, randomFields);
 
 			ImportHelper importHelper = new ImportHelper(workspaceService, settings);
-			ImportJobErrors errors = await importHelper.ImportDataAsync(workspace.ArtifactID, dataTableBuilder.DataTable.CreateDataReader()).ConfigureAwait(false);
+			ImportJobResult result = await importHelper.ImportDataAsync(workspace.ArtifactID, dataReader).ConfigureAwait(false);
 
-			if (errors.Success)
+			if (result.Success)
 			{
 				Console.WriteLine("Completed!");
 			}
 			else
 			{
-				foreach (string error in errors.Errors)
+				foreach (string error in result.Errors)
 				{
 					Console.WriteLine($"Import API error: {error}");
 				}

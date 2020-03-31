@@ -140,7 +140,7 @@
   <ItemGroup>
     <Compile Include="Import\ColumnNames.cs" />
     <Compile Include="CustomField.cs" />
-    <Compile Include="FieldsGenerator.cs" />
+    <Compile Include="RandomFieldsGenerator.cs" />
     <Compile Include="FileGenerating\FileContentProvider\AsciiExtractedTextFileContentProvider.cs" />
     <Compile Include="FileGenerating\FileContentProvider\IFileContentProvider.cs" />
     <Compile Include="FileGenerating\FileContentProvider\NativeFileContentProvider.cs" />
@@ -151,10 +151,11 @@
     <Compile Include="GeneratorSettings.cs" />
     <Compile Include="FileGenerating\SizeCalculator\ISizeCalculatorStrategy.cs" />
     <Compile Include="GeneratorSettingsReader.cs" />
-    <Compile Include="Import\DataTableBuilder.cs" />
+    <Compile Include="Import\DataReaderWrapper.cs" />
     <Compile Include="Import\DocumentFactory.cs" />
+    <Compile Include="Import\IDocumentFactory.cs" />
     <Compile Include="Import\ImportHelper.cs" />
-    <Compile Include="Import\ImportJobErrors.cs" />
+    <Compile Include="Import\ImportJobResult.cs" />
     <Compile Include="Import\ImportJobExecutor.cs" />
     <Compile Include="Import\Document.cs" />
     <Compile Include="Program.cs" />

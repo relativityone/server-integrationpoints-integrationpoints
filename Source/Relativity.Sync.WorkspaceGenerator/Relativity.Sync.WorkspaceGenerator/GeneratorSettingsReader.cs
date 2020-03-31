@@ -23,23 +23,6 @@ namespace Relativity.Sync.WorkspaceGenerator
 			return settings;
 		}
 
-		public GeneratorSettings DefaultSettings()
-		{
-			return new GeneratorSettings()
-			{
-				RelativityUri = new Uri("https://tvmdev/Relativity"),
-				RelativityUserName = "relativity.admin@kcura.com",
-				RelativityPassword = "Test1234!",
-				TemplateWorkspaceName = "Functional Tests Template",
-				DesiredWorkspaceName = "Test",
-				TestDataDirectoryPath = @"C:\Data\WorkspaceGenerator",
-				NumberOfDocuments = 20,
-				NumberOfFields = 10,
-				TotalNativesSizeInMB = 10,
-				TotalExtractedTextSizeInMB = 5
-			};
-		}
-
 		private Uri ReadUri(string paramName)
 		{
 			Uri value = new Uri("http://initial");

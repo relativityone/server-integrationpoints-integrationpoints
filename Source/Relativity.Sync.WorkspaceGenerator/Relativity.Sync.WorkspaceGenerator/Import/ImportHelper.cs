@@ -22,7 +22,7 @@ namespace Relativity.Sync.WorkspaceGenerator.Import
 			_settings = settings;
 		}
 
-		public async Task<ImportJobErrors> ImportDataAsync(int workspaceArtifactId, IDataReader dataReader)
+		public async Task<ImportJobResult> ImportDataAsync(int workspaceArtifactId, IDataReader dataReader)
 		{
 			kCura.WinEDDS.Config.ConfigSettings[nameof(kCura.WinEDDS.Config.TapiForceHttpClient)] = true.ToString(CultureInfo.InvariantCulture);
 			kCura.WinEDDS.Config.ConfigSettings[nameof(kCura.WinEDDS.Config.TapiForceBcpHttpClient)] = true.ToString(CultureInfo.InvariantCulture);
@@ -35,12 +35,12 @@ namespace Relativity.Sync.WorkspaceGenerator.Import
 					_settings.RelativityWebApiUri.ToString());
 
 			Console.WriteLine("Importing documents");
-			ImportJobErrors errors = await ConfigureAndRunImportApiJobAsync(workspaceArtifactId, dataReader, importApi).ConfigureAwait(false);
+			ImportJobResult result = await ConfigureAndRunImportApiJobAsync(workspaceArtifactId, dataReader, importApi).ConfigureAwait(false);
 
-			return errors;
+			return result;
 		}
 
-		private async Task<ImportJobErrors> ConfigureAndRunImportApiJobAsync(int workspaceArtifactId, IDataReader dataReader, ImportAPI importApi)
+		private async Task<ImportJobResult> ConfigureAndRunImportApiJobAsync(int workspaceArtifactId, IDataReader dataReader, ImportAPI importApi)
 		{
 			ImportBulkArtifactJob importJob = importApi.NewNativeDocumentImportJob();
 			importJob.Settings.CaseArtifactId = workspaceArtifactId;
