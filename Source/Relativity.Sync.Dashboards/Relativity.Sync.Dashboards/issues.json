@@ -241,6 +241,10 @@
 	},
 	{
 		"Jira": "REL-416542",
-		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Failed to start executing import job.*System.Net.WebException: The operation has timed out*FieldQuery.RetrieveAllMappable*"
-	} 
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Failed to start executing import job.*System.Net.WebException: The operation has timed out*FieldQuery.RetrieveAllMappable*"	
+	},
+	{
+		"Jira": "REL-416645",
+		"Exception": "Relativity.Services.Exceptions.TemporarilyUnavailableException: Create Failed*at Relativity.Sync.Storage.Batch.*UpdateFieldValueAsync*"
+	}
 ]
