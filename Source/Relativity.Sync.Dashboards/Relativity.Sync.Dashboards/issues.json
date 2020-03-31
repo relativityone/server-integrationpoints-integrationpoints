@@ -246,5 +246,21 @@
 	{
 		"Jira": "REL-416645",
 		"Exception": "Relativity.Services.Exceptions.TemporarilyUnavailableException: Create Failed*at Relativity.Sync.Storage.Batch.*UpdateFieldValueAsync*"
+	},
+	{
+		"Jira": "REL-416651",
+		"Exception": "Relativity.Sync.Executors.ImportFailedException: * Import API. *Relativity.Sync.Transfer.InvalidExportFieldValueException: Unable to parse data from Relativity Export API in field 'Entity Participant'*"
+	},
+	{
+		"Jira": "REL-416658",
+		"Exception": "Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API. *kCura.WinEDDS.Service.BulkImportManager+BulkImportSqlException: Error: SQL Statement Failed*Error: Bad or inaccessible location specified in external data source*"
+	},
+	{
+		"Jira": "REL-416659",
+		"Exception": "Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API. *System.ApplicationException: Error Downloading File*the file associated with the guid*cannot be found*"
+	},
+	{
+		"Jira": "REL-416663",
+		"Exception": "Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API. *System.Exception: A Serious Error Occurred Transferring the Requested Files*"
 	}
 ]
