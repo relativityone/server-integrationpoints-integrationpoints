@@ -132,7 +132,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands.RenameCustodianTo
 				LastRuntimeUTC = DateTime.UtcNow,
 				NextScheduledRuntimeUTC = DateTime.UtcNow,
 				SecuredConfiguration = string.Empty,
-				PromoteEligible = false,
 				ScheduleRule = string.Empty
 			};
 		}

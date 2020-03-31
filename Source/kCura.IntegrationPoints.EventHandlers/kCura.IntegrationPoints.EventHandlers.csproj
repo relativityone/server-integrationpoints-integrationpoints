@@ -60,7 +60,6 @@
     <Compile Include="Commands\Context\EHContext.cs" />
     <Compile Include="Commands\EventHandlerExecutorExHandler.cs" />
     <Compile Include="Commands\EventHandlerExecutor.cs" />
-    <Compile Include="Commands\Factories\SetPromoteEligibleFieldCommandFactory.cs" />
     <Compile Include="Commands\Factories\SetTypeOfExportDefaultValueCommandFactory.cs" />
     <Compile Include="Commands\Helpers\ArtifactsToDelete.cs" />
     <Compile Include="Commands\Helpers\CommandExecutionException.cs" />
@@ -94,7 +93,6 @@
     <Compile Include="Commands\RestoreJobHistoryParser\ParseFederatedInstanceName.cs" />
     <Compile Include="Commands\RestoreJobHistoryParser\ParserStateEnum.cs" />
     <Compile Include="Commands\SetImportNativeFileCopyModeCommand.cs" />
-    <Compile Include="Commands\SetPromoteEligibleFieldCommand.cs" />
     <Compile Include="Commands\SetTypeOfExportDefaultValueCommand.cs" />
     <Compile Include="Commands\SourceConfigurationTypeOfExportUpdater.cs" />
     <Compile Include="Commands\SplitJsonObjectService.cs" />
@@ -123,7 +121,6 @@
     <Compile Include="Installers\SecretStoreUninstaller.cs" />
     <Compile Include="Installers\SetImportNativeFileCopyMode.cs" />
     <Compile Include="Installers\SetIntegrationPointType.cs" />
-    <Compile Include="Installers\SetPromoteEligibleFieldEventHandler.cs" />
     <Compile Include="Installers\SetTypeOfExportDefaultValue.cs" />
     <Compile Include="Installers\UpdateDestinationWorkspaceEntriesEventHandler.cs" />
     <Compile Include="Installers\UpdateFtpSecuredConfiguration.cs" />

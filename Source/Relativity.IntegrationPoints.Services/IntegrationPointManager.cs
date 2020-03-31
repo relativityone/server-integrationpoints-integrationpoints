@@ -142,23 +142,9 @@ namespace Relativity.IntegrationPoints.Services
 			}
 		}
 
-		public async Task<IList<IntegrationPointModel>> GetEligibleToPromoteIntegrationPointsAsync(int workspaceArtifactId)
+		public Task<IList<IntegrationPointModel>> GetEligibleToPromoteIntegrationPointsAsync(int workspaceArtifactId)
 		{
-			CheckPermissions(nameof(GetEligibleToPromoteIntegrationPointsAsync), workspaceArtifactId,
-				new[] { new PermissionModel(ObjectTypeGuids.IntegrationPointGuid, ObjectTypes.IntegrationPoint, ArtifactPermission.View) });
-			try
-			{
-				using (var container = GetDependenciesContainer(workspaceArtifactId))
-				{
-					IIntegrationPointRepository integrationPointRepository = container.Resolve<IIntegrationPointRepository>();
-					return await Task.Run(() => integrationPointRepository.GetEligibleToPromoteIntegrationPoints()).ConfigureAwait(false);
-				}
-			}
-			catch (Exception e)
-			{
-				LogException(nameof(GetEligibleToPromoteIntegrationPointsAsync), e);
-				throw CreateInternalServerErrorException();
-			}
+			return Task.FromResult<IList<IntegrationPointModel>>(new List<IntegrationPointModel>());
 		}
 
 		public async Task<IList<OverwriteFieldsModel>> GetOverwriteFieldsChoicesAsync(int workspaceArtifactId)

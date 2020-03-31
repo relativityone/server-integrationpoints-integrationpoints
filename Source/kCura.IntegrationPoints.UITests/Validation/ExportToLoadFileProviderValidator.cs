@@ -26,7 +26,6 @@ namespace kCura.IntegrationPoints.UITests.Validation
 			StringAssert.AreEqualIgnoringCase(integrationPointModel.GetValueOrDefault(model => model.DestinationProvider), generalPropertiesTable["Export Type:"]);
 			Assert.AreEqual(integrationPointModel.GetValueOrDefault(model => model.LogErrors).AsHtmlString(), generalPropertiesTable["Log Errors:"]);
 			Assert.AreEqual(integrationPointModel.GetValueOrDefault(model => model.EmailNotifications), generalPropertiesTable["Email Notification Recipients:"]);
-			Assert.AreEqual(integrationPointModel.GetValueOrDefault(model => model.IncludeInEcaPromote).AsHtmlString(), generalPropertiesTable["Included in ECA Promote List:"]);
 
 			StringAssert.StartsWith("FileShare", generalPropertiesTable["Destination details:"]);   //TODO: check destination folder
 

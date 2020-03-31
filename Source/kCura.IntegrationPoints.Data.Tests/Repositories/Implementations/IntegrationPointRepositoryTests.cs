@@ -485,7 +485,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				EnableScheduler = true,
 				HasErrors = false,
 				LogErrors = true,
-				PromoteEligible = false,
 				OverwriteFields = null,
 				JobHistory = new[] { _JOB_HISTORY_1, _JOB_HISTORY_2 },
 				NextScheduledRuntimeUTC = _nextScheduledRuntime,
@@ -519,7 +518,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				   integrationPoint1.EnableScheduler == integrationPoint2.EnableScheduler &&
 				   integrationPoint1.HasErrors == integrationPoint2.HasErrors &&
 				   integrationPoint1.LogErrors == integrationPoint2.LogErrors &&
-				   integrationPoint1.PromoteEligible == integrationPoint2.PromoteEligible &&
 				   integrationPoint1.OverwriteFields == integrationPoint2.OverwriteFields &&
 				   integrationPoint1.JobHistory.SequenceEqual(integrationPoint2.JobHistory) &&
 				   Equals(integrationPoint1.NextScheduledRuntimeUTC, integrationPoint2.NextScheduledRuntimeUTC) &&
