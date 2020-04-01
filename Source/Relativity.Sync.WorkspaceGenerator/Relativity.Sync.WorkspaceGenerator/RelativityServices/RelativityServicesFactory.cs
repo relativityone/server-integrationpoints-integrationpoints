@@ -1,5 +1,6 @@
 ﻿using System;
 using Relativity.Services.ServiceProxy;
+using Relativity.Sync.WorkspaceGenerator.Settings;
 
 namespace Relativity.Sync.WorkspaceGenerator.RelativityServices
 {

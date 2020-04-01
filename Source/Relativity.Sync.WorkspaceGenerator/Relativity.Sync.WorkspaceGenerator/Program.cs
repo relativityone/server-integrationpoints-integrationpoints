@@ -1,71 +1,60 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using Relativity.Services;
-using Relativity.Services.Workspace;
-using Relativity.Sync.WorkspaceGenerator.FileGenerating;
-using Relativity.Sync.WorkspaceGenerator.FileGenerating.FileContentProvider;
-using Relativity.Sync.WorkspaceGenerator.FileGenerating.FileExtensionProvider;
-using Relativity.Sync.WorkspaceGenerator.FileGenerating.SizeCalculator;
-using Relativity.Sync.WorkspaceGenerator.Import;
-using Relativity.Sync.WorkspaceGenerator.RelativityServices;
+using CommandLine;
+using Relativity.Sync.WorkspaceGenerator.Settings;
 
 namespace Relativity.Sync.WorkspaceGenerator
 {
 	public class Program
 	{
-		public static async Task Main(string[] args)
+		public static async Task<int> Main(string[] args)
 		{
 			Console.Title = "Workspace Generator";
 
-			GeneratorSettings settings = new GeneratorSettingsReader().ReadFromConsole();
-			RelativityServicesFactory relativityServicesFactory = new RelativityServicesFactory(settings);
-			WorkspaceService workspaceService = relativityServicesFactory.CreateWorkspaceService();
+			object settings = null;
+			Parser
+				.Default
+				.ParseArguments<GenerateDefaultSettingsFile, LoadFromSettingsFileOptions, GeneratorSettings>(args)
+				.WithParsed(parsedSettings => { settings = parsedSettings; });
 
-			List<CustomField> randomFields = new RandomFieldsGenerator().GetRandomFields(settings.NumberOfFields).ToList();
-			List<CustomField> fieldsToCreate = new List<CustomField>(randomFields)
+			GeneratorSettings generatorSettings = null;
+
+			if (settings is GenerateDefaultSettingsFile generateDefaultSettings)
 			{
-				new CustomField(ColumnNames.NativeFilePath, FieldType.FixedLengthText)
-			};
+				GeneratorSettings defaultSettings = new GeneratorSettings()
+				{
+					RelativityUri = new Uri("http://example.uri"),
+					RelativityUserName = "user.name",
+					RelativityPassword = "passwd",
+					DesiredWorkspaceName = "My Test Workspace",
+					TemplateWorkspaceName = "Functional Tests Template",
+					TestDataDirectoryPath = @"C:\Data\WorkspaceGenerator",
+					NumberOfDocuments = 100,
+					NumberOfFields = 15,
+					TotalNativesSizeInMB = 20,
+					TotalExtractedTextSizeInMB = 10
+				};
+				defaultSettings.WriteToJsonFile(generateDefaultSettings.OutputSettingsFile);
+				Console.WriteLine($"Default settings saved to file: {generateDefaultSettings.OutputSettingsFile}");
+				return (int) ExitCodes.OK;
 
-			WorkspaceRef workspace = await workspaceService
-				.CreateWorkspaceAsync(settings.DesiredWorkspaceName, settings.TemplateWorkspaceName)
-				.ConfigureAwait(false);
-			await workspaceService
-				.CreateFieldsAsync(workspace.ArtifactID, fieldsToCreate).ConfigureAwait(false);
-
-			DirectoryInfo dataDir = new DirectoryInfo(settings.TestDataDirectoryPath);
-			DirectoryInfo nativesDir = new DirectoryInfo(Path.Combine(dataDir.FullName, @"NATIVES"));
-			DirectoryInfo textDir = new DirectoryInfo(Path.Combine(dataDir.FullName, @"TEXT"));
-
-			IFileSizeCalculatorStrategy equalFileSizeCalculatorStrategy = new EqualFileSizeCalculatorStrategy();
-			FileGenerator nativesGenerator = new FileGenerator(new RandomNativeFileExtensionProvider(), new NativeFileContentProvider(), nativesDir);
-			FileGenerator textGenerator = new FileGenerator(new TextFileExtensionProvider(), new AsciiExtractedTextFileContentProvider(), textDir);
-
-			IDocumentFactory documentFactory = new DocumentFactory(settings, equalFileSizeCalculatorStrategy, equalFileSizeCalculatorStrategy, nativesGenerator, textGenerator, randomFields);
-			DataReaderWrapper dataReader = new DataReaderWrapper(documentFactory, settings.NumberOfDocuments, settings.GenerateNatives, settings.GenerateExtractedText, randomFields);
-
-			ImportHelper importHelper = new ImportHelper(workspaceService, settings);
-			ImportJobResult result = await importHelper.ImportDataAsync(workspace.ArtifactID, dataReader).ConfigureAwait(false);
-
-			if (result.Success)
+			}
+			else if (settings is LoadFromSettingsFileOptions loadSettingsFromFileOptions)
 			{
-				Console.WriteLine("Completed!");
+				generatorSettings = GeneratorSettings.FromJsonFile(loadSettingsFromFileOptions.InputSettingsFile);
+			}
+			else if (settings is GeneratorSettings)
+			{
+				generatorSettings = settings as GeneratorSettings;
 			}
 			else
 			{
-				foreach (string error in result.Errors)
-				{
-					Console.WriteLine($"Import API error: {error}");
-				}
+				Console.WriteLine("Please provide valid command line arguments.");
+				return (int)ExitCodes.InvalidCommandLineArgs;
 			}
 
-			Console.WriteLine("\n\nPress [Enter] to exit");
-			Console.ReadLine();
+			WorkspaceGeneratorRunner workspaceGeneratorRunner = new WorkspaceGeneratorRunner(generatorSettings);
+			return await workspaceGeneratorRunner.RunAsync().ConfigureAwait(false);
 		}
 	}
 }

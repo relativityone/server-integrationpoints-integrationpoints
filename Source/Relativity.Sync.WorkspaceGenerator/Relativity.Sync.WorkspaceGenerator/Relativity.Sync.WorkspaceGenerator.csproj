@@ -35,6 +35,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CommandLine, Version=2.7.82.0, Culture=neutral, PublicKeyToken=5a870481e358d379, processorArchitecture=MSIL">
+      <HintPath>..\packages\CommandLineParser.2.7.82\lib\net461\CommandLine.dll</HintPath>
+    </Reference>
     <Reference Include="FaspManager, Version=3.7.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\relativity.faspmanager.3.7.2.0\lib\net40\FaspManager.dll</HintPath>
     </Reference>
@@ -138,6 +141,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ExitCodes.cs" />
     <Compile Include="Import\ColumnNames.cs" />
     <Compile Include="CustomField.cs" />
     <Compile Include="RandomFieldsGenerator.cs" />
@@ -148,9 +152,9 @@
     <Compile Include="FileGenerating\FileExtensionProvider\RandomNativeFileExtensionProvider.cs" />
     <Compile Include="FileGenerating\SizeCalculator\EqualSizeCalculatorStrategy.cs" />
     <Compile Include="FileGenerating\FileExtensionProvider\TextFileExtensionProvider.cs" />
-    <Compile Include="GeneratorSettings.cs" />
+    <Compile Include="Settings\GenerateDefaultSettingsFile.cs" />
+    <Compile Include="Settings\GeneratorSettings.cs" />
     <Compile Include="FileGenerating\SizeCalculator\ISizeCalculatorStrategy.cs" />
-    <Compile Include="GeneratorSettingsReader.cs" />
     <Compile Include="Import\DataReaderWrapper.cs" />
     <Compile Include="Import\DocumentFactory.cs" />
     <Compile Include="Import\IDocumentFactory.cs" />
@@ -163,6 +167,8 @@
     <Compile Include="RelativityServices\RelativityServicesFactory.cs" />
     <Compile Include="RelativityServices\WorkspaceService.cs" />
     <Compile Include="FileGenerating\FileGenerator.cs" />
+    <Compile Include="Settings\LoadFromSettingsFileOptions.cs" />
+    <Compile Include="WorkspaceGeneratorRunner.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

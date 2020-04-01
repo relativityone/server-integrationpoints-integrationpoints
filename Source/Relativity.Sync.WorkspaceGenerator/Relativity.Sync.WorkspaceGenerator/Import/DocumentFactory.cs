@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Relativity.Services;
 using Relativity.Sync.WorkspaceGenerator.FileGenerating;
 using Relativity.Sync.WorkspaceGenerator.FileGenerating.SizeCalculator;
+using Relativity.Sync.WorkspaceGenerator.Settings;
 
 namespace Relativity.Sync.WorkspaceGenerator.Import
 {

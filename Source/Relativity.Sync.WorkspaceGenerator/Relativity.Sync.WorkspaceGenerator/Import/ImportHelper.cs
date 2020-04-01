@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
 using Relativity.Sync.WorkspaceGenerator.RelativityServices;
+using Relativity.Sync.WorkspaceGenerator.Settings;
 
 namespace Relativity.Sync.WorkspaceGenerator.Import
 {
