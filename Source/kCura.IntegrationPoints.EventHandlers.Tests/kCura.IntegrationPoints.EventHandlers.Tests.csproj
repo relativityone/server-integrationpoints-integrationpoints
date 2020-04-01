@@ -67,7 +67,6 @@
     <Compile Include="Commands\RenameCustodianToEntity\RenameCustodianToEntityForSourceProviderCommandTests.cs" />
     <Compile Include="Commands\RenameCustodianToEntity\RenameCustodianToEntityInIntegrationPointConfigurationCommandTests.cs" />
     <Compile Include="Commands\RestoreJobHistoryDestinationWorkspaceCommandTests.cs" />
-    <Compile Include="Commands\SetPromoteEligibleFieldCommandTests.cs" />
     <Compile Include="Commands\SetTypeOfExportDefaultValueCommandTests.cs" />
     <Compile Include="Commands\SourceConfigurationTypeOfExportUpdaterTests.cs" />
     <Compile Include="Commands\SplitJsonObjectServiceTests.cs" />

@@ -23,12 +23,11 @@ namespace Relativity.IntegrationPoints.Services.Tests.Integration.Helpers
 
 			Assert.That(integrationPointBaseRdo.GetField<int?>(new Guid(guidsConstants.SourceProvider)), Is.EqualTo(expectedIntegrationPointModel.SourceProvider));
 			Assert.That(integrationPointBaseRdo.GetField<int?>(new Guid(guidsConstants.DestinationProvider)), Is.EqualTo(expectedIntegrationPointModel.DestinationProvider));
-			Assert.That(integrationPointBaseRdo.GetField<string>(new Guid(guidsConstants.EmailNotificationRecipients)), Is.EqualTo(expectedIntegrationPointModel.EmailNotificationRecipients ?? string.Empty));
+			Assert.That(integrationPointBaseRdo.GetField<string>(new Guid(guidsConstants.EmailNotificationRecipients)) ?? string.Empty, Is.EqualTo(expectedIntegrationPointModel.EmailNotificationRecipients ?? string.Empty));
 			Assert.That(integrationPointBaseRdo.GetField<bool>(new Guid(guidsConstants.EnableScheduler)), Is.EqualTo(expectedIntegrationPointModel.ScheduleRule.EnableScheduler));
 			Assert.That(integrationPointBaseRdo.GetField<bool>(new Guid(guidsConstants.LogErrors)), Is.EqualTo(expectedIntegrationPointModel.LogErrors));
 			Assert.That(integrationPointBaseRdo.GetField<string>(new Guid(guidsConstants.Name)), Is.EqualTo(expectedIntegrationPointModel.Name));
 			Assert.That(integrationPointBaseRdo.GetField<int?>(new Guid(guidsConstants.Type)), Is.EqualTo(expectedIntegrationPointModel.Type));
-			Assert.That(integrationPointBaseRdo.GetField<bool>(new Guid(guidsConstants.PromoteEligible)), Is.EqualTo(expectedIntegrationPointModel.PromoteEligible));
 			Assert.That(integrationPointBaseRdo.GetField<Choice>(new Guid(guidsConstants.OverwriteFields)).ArtifactID, Is.EqualTo(expectedIntegrationPointModel.OverwriteFieldsChoiceId));
 
 
@@ -49,7 +48,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Integration.Helpers
 
 		public static CreateIntegrationPointRequest CreateCreateIntegrationPointRequest(ITestHelper helper, IRepositoryFactory repositoryFactory, int workspaceArtifactId,
 			int savedSearchArtifactId, int typeOfExport, int targetWorkspaceArtifactId, bool importNativeFile, bool logErrors, bool useFolderPathInformation, string emailNotificationRecipients,
-			string fieldOverlayBehavior, OverwriteFieldsModel overwriteFieldsModel, List<FieldMap> fieldMappings, bool promoteEligible)
+			string fieldOverlayBehavior, OverwriteFieldsModel overwriteFieldsModel, List<FieldMap> fieldMappings)
 		{
 			var folderPathSourceField = 0;
 			if (useFolderPathInformation)
@@ -90,8 +89,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Integration.Helpers
 				ScheduleRule = new ScheduleModel
 				{
 					EnableScheduler = false
-				},
-				PromoteEligible = promoteEligible
+				}
 			};
 
 			return new CreateIntegrationPointRequest

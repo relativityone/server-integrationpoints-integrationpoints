@@ -171,7 +171,7 @@ NUGET
       Relativity.IntegrationPoints.Services.Interfaces.Private (>= 1.0.2)
       Relativity.Kepler (>= 2.0.7)
       Relativity.Telemetry.APM (>= 2019.1.1)
-    Relativity.IntegrationPoints.Services.Interfaces.Private (1.0.2)
+    Relativity.IntegrationPoints.Services.Interfaces.Private (1.0.4)
       Relativity.API (>= 12.0)
       Relativity.Kepler (>= 2.0.7)
       Relativity.Telemetry.APM (>= 2019.1.1)

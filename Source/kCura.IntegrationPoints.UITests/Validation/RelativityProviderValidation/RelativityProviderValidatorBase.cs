@@ -32,7 +32,6 @@ namespace kCura.IntegrationPoints.UITests.Validation.RelativityProviderValidatio
 			Assert.AreEqual(UseFolderPathInformationEnumToString(model.GetValueOrDefault(x => x.UseFolderPathInformation)), propertiesTableDictionary["Use Folder Path Info:"]);
 			Assert.AreEqual(model.GetValueOrDefault(x => x.LogErrors).AsHtmlString(), propertiesTableDictionary["Log Errors:"]);
 			Assert.AreEqual(model.GetValueOrDefault(x => x.EmailNotifications), propertiesTableDictionary["Email Notification Recipients:"]);
-			Assert.AreEqual(model.GetValueOrDefault(x => x.IncludeInEcaPromote).AsHtmlString(), propertiesTableDictionary["Included in ECA Promote List:"]);
 			// todo total of docs
 			// todo total of imgs
 			Assert.AreEqual(model.GetValueOrDefault(x => x.CreateSavedSearch).AsHtmlString(), propertiesTableDictionary["Create Saved Search:"]);

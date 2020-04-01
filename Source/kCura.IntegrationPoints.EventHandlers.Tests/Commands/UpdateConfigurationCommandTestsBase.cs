@@ -44,7 +44,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 				LastRuntimeUTC = DateTime.UtcNow,
 				NextScheduledRuntimeUTC = DateTime.UtcNow,
 				SecuredConfiguration = "",
-				PromoteEligible = true,
 				ScheduleRule = ""
 			};
 
@@ -67,7 +66,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 					LastRuntimeUTC = DateTime.UtcNow,
 					NextScheduledRuntimeUTC = DateTime.UtcNow,
 					SecuredConfiguration = "securedConfiguration",
-					PromoteEligible = true,
 					ScheduleRule = ""
 				};
 		}

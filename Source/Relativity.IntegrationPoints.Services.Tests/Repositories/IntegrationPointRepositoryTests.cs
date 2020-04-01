@@ -169,7 +169,6 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 				OverwriteFields = new Choice(overwriteFieldsChoiceId) {Name = overwriteFieldsChoiceName},
 				ScheduleRule = String.Empty,
 				Type = null,
-				PromoteEligible = false,
 				SecuredConfiguration = string.Empty
 			};
 		}
@@ -221,32 +220,6 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 
 			var result = _integrationPointRepository.GetAllIntegrationPoints();
 
-			_integrationPointLocalService.Received(1).GetAllRDOs();
-
-			Assert.That(result, Is.EquivalentTo(expectedResult).
-				Using(new Func<IntegrationPointModel, IntegrationPoint, bool>(
-					(actual, expected) => (actual.Name == expected.Name) && (actual.SourceProvider == expected.SourceProvider.Value) && (actual.ArtifactId == expected.ArtifactId)
-										&& (actual.DestinationProvider == expected.DestinationProvider.Value))));
-		}
-
-		[Test]
-		public void ItShouldGetEligibleToPromoteIntegrationPoints()
-		{
-			// Arrange
-			var integrationPoint1 = CreateRdo(263);
-			integrationPoint1.PromoteEligible = true;
-
-			var integrationPoint2 = CreateRdo(204); 
-
-			var actualResult = new List<IntegrationPoint> { integrationPoint1, integrationPoint2 };
-			var expectedResult = new List<IntegrationPoint> { integrationPoint1 };
-
-			_integrationPointLocalService.GetAllRDOs().Returns(actualResult);
-
-			// Act
-			var result = _integrationPointRepository.GetEligibleToPromoteIntegrationPoints();
-
-			// Assert
 			_integrationPointLocalService.Received(1).GetAllRDOs();
 
 			Assert.That(result, Is.EquivalentTo(expectedResult).
@@ -318,8 +291,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 				LogErrors = false,
 				NextScheduledRuntimeUTC = DateTime.MaxValue,
 				FieldMappings = "266304",
-				Name = "ip_159",
-				PromoteEligible = true
+				Name = "ip_159"
 			};
 
 			_integrationPointProfileService.ReadIntegrationPointProfile(profileArtifactId).Returns(profile);

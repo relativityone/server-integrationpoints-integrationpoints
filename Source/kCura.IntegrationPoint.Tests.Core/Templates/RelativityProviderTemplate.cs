@@ -196,27 +196,28 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			TypeOfExport = (int)SourceConfiguration.ExportType.SavedSearch;
 		}
 
-		protected IntegrationPoints.Core.Models.IntegrationPointModel CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum overwriteMode, string name, string overwrite, bool promoteEligible = true)
+		protected IntegrationPoints.Core.Models.IntegrationPointModel CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum overwriteMode, string name, string overwrite)
 		{
 			IntegrationPoints.Core.Models.IntegrationPointModel integrationModel = new IntegrationPoints.Core.Models.IntegrationPointModel();
-			SetIntegrationPointBaseModelProperties(integrationModel, overwriteMode, name, overwrite, promoteEligible);
+			SetIntegrationPointBaseModelProperties(integrationModel, overwriteMode, name, overwrite);
 			return integrationModel;
 		}
 
-		protected IntegrationPointProfileModel CreateDefaultIntegrationPointProfileModel(ImportOverwriteModeEnum overwriteMode, string name, string overwrite, bool promoteEligible)
+		protected IntegrationPointProfileModel CreateDefaultIntegrationPointProfileModel(ImportOverwriteModeEnum overwriteMode, string name, string overwrite)
 		{
 			IntegrationPointProfileModel integrationModel = new IntegrationPointProfileModel();
-			SetIntegrationPointBaseModelProperties(integrationModel, overwriteMode, name, overwrite, promoteEligible);
+			SetIntegrationPointBaseModelProperties(integrationModel, overwriteMode, name, overwrite);
 			return integrationModel;
 		}
 
-		private void SetIntegrationPointBaseModelProperties(IntegrationPointModelBase modelBase, ImportOverwriteModeEnum overwriteMode, string name, string overwrite, bool promoteEligible)
+		private void SetIntegrationPointBaseModelProperties(IntegrationPointModelBase modelBase, ImportOverwriteModeEnum overwriteMode, string name, string overwrite)
 		{
 			modelBase.Destination = CreateDestinationConfig(overwriteMode);
 			modelBase.DestinationProvider = RelativityDestinationProviderArtifactId;
 			modelBase.SourceProvider = RelativityProvider.ArtifactId;
 			modelBase.SourceConfiguration = CreateDefaultSourceConfig();
 			modelBase.LogErrors = true;
+			modelBase.NotificationEmails = "test@relativity.com";
 			modelBase.Name = $"{name}{DateTime.Now:yy-MM-dd HH-mm-ss}";
 			modelBase.SelectedOverwrite = overwrite;
 			modelBase.Scheduler = new Scheduler() { EnableScheduler = false };
@@ -225,7 +226,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				Container.Resolve<IIntegrationPointTypeService>()
 					.GetIntegrationPointType(IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid)
 					.ArtifactId;
-			modelBase.PromoteEligible = promoteEligible;
 		}
 
 		protected static int GetRootFolder(ITestHelper helper, int workspaceArtifactId)

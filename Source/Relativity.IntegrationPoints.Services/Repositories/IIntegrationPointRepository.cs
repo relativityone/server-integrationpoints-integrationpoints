@@ -9,7 +9,6 @@ namespace Relativity.IntegrationPoints.Services.Repositories
 		IntegrationPointModel GetIntegrationPoint(int integrationPointArtifactId);
 		object RunIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId);
 		IList<IntegrationPointModel> GetAllIntegrationPoints();
-		IList<IntegrationPointModel> GetEligibleToPromoteIntegrationPoints();
 		int GetIntegrationPointArtifactTypeId();
 		IList<OverwriteFieldsModel> GetOverwriteFieldChoices();
 		IntegrationPointModel CreateIntegrationPointFromProfile(int profileArtifactId, string integrationPointName);

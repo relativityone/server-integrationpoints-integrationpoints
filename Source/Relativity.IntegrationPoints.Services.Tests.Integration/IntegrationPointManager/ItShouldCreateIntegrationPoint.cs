@@ -100,8 +100,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Integration.IntegrationPoi
 				ScheduleRule = new ScheduleModel
 				{
 					EnableScheduler = false
-				},
-				PromoteEligible = false
+				}
 			};
 			var createRequest = new CreateIntegrationPointRequest
 			{
@@ -128,7 +127,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Integration.IntegrationPoi
 			const string integrationPointName = "ip_name_234";
 
 			IntegrationPointProfileModel profile = CreateOrUpdateIntegrationPointProfile(
-				CreateDefaultIntegrationPointProfileModel(ImportOverwriteModeEnum.AppendOnly, "profile_name", "Append Only", true));
+				CreateDefaultIntegrationPointProfileModel(ImportOverwriteModeEnum.AppendOnly, "profile_name", "Append Only"));
 
 			IntegrationPointModel integrationPointModel = _client
 				.CreateIntegrationPointFromProfileAsync(SourceWorkspaceArtifactID, profile.ArtifactID, integrationPointName).Result;
@@ -146,7 +145,6 @@ namespace Relativity.IntegrationPoints.Services.Tests.Integration.IntegrationPoi
 			Assert.That(actualIntegrationPoint.FieldMappings, Is.EqualTo(profile.Map));
 			Assert.That(actualIntegrationPoint.Type, Is.EqualTo(profile.Type));
 			Assert.That(actualIntegrationPoint.LogErrors, Is.EqualTo(profile.LogErrors));
-			Assert.That(actualIntegrationPoint.PromoteEligible, Is.EqualTo(profile.PromoteEligible));
 		}
 
 		[IdentifiedTest("09d2a68e-879e-431a-889e-5059b2f76b82")]
@@ -175,8 +173,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Integration.IntegrationPoi
 				string.Empty, 
 				"Use Field Settings", 
 				overwriteFieldsModel,
-				GetDefaultFieldMap().ToList(), 
-				false
+				GetDefaultFieldMap().ToList()
 			);
 
 			createRequest.IntegrationPoint.SecuredConfiguration = new Credentials
@@ -198,18 +195,17 @@ namespace Relativity.IntegrationPoints.Services.Tests.Integration.IntegrationPoi
 			Assert.That(actualSecret, Is.EqualTo(expectedSecret));
 		}
 
-		[IdentifiedTestCase("68b4d5e2-5b3c-4d3d-ab88-5a0e8ab62f92", false, false, false, "a421248620@relativity.com", "Use Field Settings", "Overlay Only", true)]
-		[IdentifiedTestCase("ca67dbfb-8272-4010-b084-d9ba689b28dc", true, true, true, "", "Use Field Settings", "Append Only", false)]
-		[IdentifiedTestCase("0e1847bd-e140-42f8-adb4-ee6d7ed46f8c", false, false, false, null, "Replace Values", "Append/Overlay", false)]
-		[IdentifiedTestCase("596cf427-9fb2-499b-b5fa-d00469c26df6", false, false, false, "a937467@relativity.com", "Merge Values", "Append/Overlay", false)]
+		[IdentifiedTestCase("68b4d5e2-5b3c-4d3d-ab88-5a0e8ab62f92", false, false, false, "a421248620@relativity.com", "Use Field Settings", "Overlay Only")]
+		[IdentifiedTestCase("ca67dbfb-8272-4010-b084-d9ba689b28dc", true, true, true, "", "Use Field Settings", "Append Only")]
+		[IdentifiedTestCase("0e1847bd-e140-42f8-adb4-ee6d7ed46f8c", false, false, false, null, "Replace Values", "Append/Overlay")]
+		[IdentifiedTestCase("596cf427-9fb2-499b-b5fa-d00469c26df6", false, false, false, "a937467@relativity.com", "Merge Values", "Append/Overlay")]
 		public async Task ItShouldCreateRelativityIntegrationPoint(
 			bool importNativeFile, 
 			bool logErrors, 
 			bool useFolderPathInformation, 
 			string emailNotificationRecipients,
 			string fieldOverlayBehavior, 
-			string overwriteFieldsChoices, 
-			bool promoteEligible)
+			string overwriteFieldsChoices)
 		{
 			IList<OverwriteFieldsModel> overwriteFieldsModels = await _client
 				.GetOverwriteFieldsChoicesAsync(SourceWorkspaceArtifactID)
@@ -231,8 +227,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Integration.IntegrationPoi
 				emailNotificationRecipients, 
 				fieldOverlayBehavior, 
 				overwriteFieldsModel, 
-				GetDefaultFieldMap().ToList(), 
-				promoteEligible
+				GetDefaultFieldMap().ToList()
 			);
 
 			IntegrationPointModel createdIntegrationPoint = await _client.CreateIntegrationPointAsync(createRequest)
