@@ -21,10 +21,7 @@ namespace Relativity.Sync.WorkspaceGenerator.FileGenerating
 
 		public Task<FileInfo> GenerateAsync(string name, long sizeInBytes)
 		{
-			if (!_destinationDirectory.Exists)
-			{
-				_destinationDirectory.Create();
-			}
+			_destinationDirectory.Create();
 
 			string extension = _fileExtensionProvider.GetFileExtension();
 			string fileName = $"{name}.{extension}";
