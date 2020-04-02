@@ -50,9 +50,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 			const string configFileName = "app.jeeves-ci.config";
 			try
 			{
-				string assemblyDir = Path.GetDirectoryName(System.Reflection.Assembly.GetCallingAssembly().CodeBase);
+				string assemblyDir = Path.GetDirectoryName(System.Reflection.Assembly.GetCallingAssembly().Location);
 				string jeevesConfigPath = Path.Combine(assemblyDir, configFileName);
-				if (File.Exists(jeevesConfigPath.Replace(@"file:\", "")))
+				if (File.Exists(jeevesConfigPath))
 				{
 					Console.WriteLine(@"Jeeves config found: " + jeevesConfigPath);
 					MergeConfigurationWithAppConfig(configFileName);

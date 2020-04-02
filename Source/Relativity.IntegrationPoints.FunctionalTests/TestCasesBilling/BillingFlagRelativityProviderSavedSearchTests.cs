@@ -19,7 +19,7 @@ using static kCura.IntegrationPoints.Core.Constants.IntegrationPoints;
 namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 {
 	[TestFixture]
-	[Feature.DataTransfer.IntegrationPoints]
+	[Feature.DataTransfer.IntegrationPoints.Sync.FieldMapping]
 	[NotWorkingOnTrident]
 	public class BillingFlagRelativityProviderSavedSearchTests : RelativityProviderTemplate
 	{

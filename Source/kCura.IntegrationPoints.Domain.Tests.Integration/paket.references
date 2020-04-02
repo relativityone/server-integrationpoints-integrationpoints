@@ -2,4 +2,4 @@ CSharpGuidelineAnalyzer
 Relativity.IntegrationPoints.SDK
 FluentAssertions
 Moq
-relativity.testing.identification
+NUnit

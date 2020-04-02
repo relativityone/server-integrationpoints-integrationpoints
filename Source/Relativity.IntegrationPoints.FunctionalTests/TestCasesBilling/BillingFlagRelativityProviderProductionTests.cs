@@ -71,8 +71,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 		{
 			base.TestSetup();
 
-			_targetWorkspaceArtifactID = Task.Run(async ()
-				=> await Workspace.CreateWorkspaceAsync(_TARGET_WORKSPACE_NAME, WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME).ConfigureAwait(false)).Result;
+			_targetWorkspaceArtifactID = Workspace.CreateWorkspaceAsync(_TARGET_WORKSPACE_NAME, WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME).GetAwaiter().GetResult();
 			var workspaceService = new WorkspaceService(new ImportHelper());
 			_targetProductionId = workspaceService
 				.CreateProductionSet(

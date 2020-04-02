@@ -7,7 +7,7 @@ using Relativity.Testing.Identification;
 
 namespace Relativity.IntegrationPoints.Services.Tests.Integration.IntegrationPointProfileManager
 {
-	[Feature.DataTransfer.IntegrationPoints]
+	[Feature.DataTransfer.IntegrationPoints.Profiles]
 	public class IntegrationPointProfilePermissionTests : KeplerServicePermissionsTestsBase
 	{
 		[IdentifiedTest("fadbee98-d1ba-4228-bd02-6e9ff1d2dca1")]

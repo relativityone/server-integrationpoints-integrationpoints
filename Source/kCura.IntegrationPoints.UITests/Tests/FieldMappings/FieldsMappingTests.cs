@@ -26,7 +26,7 @@ using ArtifactType = kCura.Relativity.Client.ArtifactType;
 namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 {
 	[TestFixture]
-	[Feature.DataTransfer.IntegrationPoints]
+	[Feature.DataTransfer.IntegrationPoints.Sync.FieldMapping]
 	[NUnit.Framework.Category(TestCategory.EXPORT_TO_RELATIVITY)]
 	[NUnit.Framework.Category(TestCategory.FIELDS_MAPPING)]
 	public class FieldsMappingTests : RelativityProviderTestsBase

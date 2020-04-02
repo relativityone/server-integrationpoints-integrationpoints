@@ -2,13 +2,11 @@
 using System.Data;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core.Exceptions;
-using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoints.Core.Services.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Tests.Integration.DataProviderBuilderTests.Mocks;
 using NUnit.Framework;
 using Relativity.IntegrationPoints.Contracts.Provider;
-using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.Domain.Tests.Integration.DataProviderBuilderTests
 {
@@ -21,7 +19,6 @@ namespace kCura.IntegrationPoints.Domain.Tests.Integration.DataProviderBuilderTe
 	/// <see cref="IDataSourceProvider"/> and <see cref="IDataReader"/>;
 	/// </summary>
 	[TestFixture]
-	[Feature.DataTransfer.IntegrationPoints]
 	public class DataProviderBuilderTests
 	{
 		private DataProviderBuilder _sut;
@@ -39,8 +36,7 @@ namespace kCura.IntegrationPoints.Domain.Tests.Integration.DataProviderBuilderTe
 			_sut = new DataProviderBuilder(providerFactoryVendor);
 		}
 
-		[IdentifiedTest("58e1a8ae-2f28-40dc-985c-793576a660f1")]
-		[SmokeTest]
+		[Test]
 		public void ShouldReturnDataProviderWhenExists()
 		{
 			// act
@@ -51,8 +47,7 @@ namespace kCura.IntegrationPoints.Domain.Tests.Integration.DataProviderBuilderTe
 				.NotBeNull("because provider with this Guid exists");
 		}
 
-		[IdentifiedTest("35d86ea1-a2c6-483c-b464-6a34e2a8fb39")]
-		[SmokeTest]
+		[Test]
 		public void ShouldThrowExceptionWhenProviderNotExists()
 		{
 			// arrange
@@ -66,8 +61,7 @@ namespace kCura.IntegrationPoints.Domain.Tests.Integration.DataProviderBuilderTe
 				.ShouldThrow<IntegrationPointsException>("because provider with this Guid does not exists");
 		}
 
-		[IdentifiedTest("984d08b9-3215-40be-8bd8-7b0c2af25daa")]
-		[SmokeTest]
+		[Test]
 		public void ShouldReturnDisposableProvider()
 		{
 			// act
@@ -77,8 +71,7 @@ namespace kCura.IntegrationPoints.Domain.Tests.Integration.DataProviderBuilderTe
 			dataProvider.Should().BeAssignableTo<IDisposable>("becasue it should return disposable wrapper");
 		}
 
-		[IdentifiedTest("54d57a0a-222c-44d6-8e59-abb10e7a9941")]
-		[SmokeTest]
+		[Test]
 		public void ShouldReturnSafeDisposingProvider()
 		{
 			// arrange
@@ -97,8 +90,7 @@ namespace kCura.IntegrationPoints.Domain.Tests.Integration.DataProviderBuilderTe
 				.ShouldNotThrow("because provider should be wrapped in safe disposing wrapper");
 		}
 
-		[IdentifiedTest("af127aa7-4c0e-475c-be47-477de69505b5")]
-		[SmokeTest]
+		[Test]
 		public void DataReaderReturnedByProvidersGetDataShouldBeSafeDisposing()
 		{
 			// arrange
@@ -117,8 +109,7 @@ namespace kCura.IntegrationPoints.Domain.Tests.Integration.DataProviderBuilderTe
 				.ShouldNotThrow("because DataReader returned by GetData should be wrapped in safe disposing wrapper");
 		}
 
-		[IdentifiedTest("30ba2466-1160-456a-8304-77efd96aea46")]
-		[SmokeTest]
+		[Test]
 		public void DataReaderReturnedByProvidersGetBatchableIdsShouldBeSafeDisposing()
 		{
 			// arrange

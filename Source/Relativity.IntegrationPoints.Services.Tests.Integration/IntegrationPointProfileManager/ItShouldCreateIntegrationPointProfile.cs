@@ -10,7 +10,7 @@ using Relativity.Testing.Identification;
 namespace Relativity.IntegrationPoints.Services.Tests.Integration.IntegrationPointProfileManager
 {
 	[TestFixture]
-	[Feature.DataTransfer.IntegrationPoints]
+	[Feature.DataTransfer.IntegrationPoints.Profiles]
 	public class ItShouldCreateIntegrationPointProfile : RelativityProviderTemplate
 	{
 		public ItShouldCreateIntegrationPointProfile() : base($"create_s_{Utils.FormattedDateTimeNow}", $"create_d_{Utils.FormattedDateTimeNow}")

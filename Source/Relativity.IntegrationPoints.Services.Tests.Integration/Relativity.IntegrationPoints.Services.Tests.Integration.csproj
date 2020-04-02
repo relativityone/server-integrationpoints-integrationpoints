@@ -126,7 +126,6 @@
       <Name>kCura.IntegrationPoints.Synchronizers.RDO</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <None Include="oi\unmanaged\cmmap000.bin" />
     <None Include="paket.references" />
