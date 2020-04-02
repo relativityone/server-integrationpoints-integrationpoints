@@ -27,6 +27,7 @@ namespace Relativity.Sync.Tests.Unit
 		private Mock<IStubForInterception> _stubForInterceptionMock;
 		private Mock<Func<Task<IStubForInterception>>> _stubForInterceptionFactoryFake;
 		private Mock<ISyncMetrics> _syncMetricsMock;
+		private Mock<ISyncLog> _syncLogMock;
 		private Mock<IRandom> _randomFake;
 
 		private readonly TimeSpan _executionTime = TimeSpan.FromMinutes(1);
@@ -46,20 +47,21 @@ namespace Relativity.Sync.Tests.Unit
 			_stubForInterceptionFactoryFake.Setup(x => x.Invoke()).Returns(Task.FromResult(_stubForInterceptionMock.Object));
 			
 			_syncMetricsMock = new Mock<ISyncMetrics>();
+			_syncLogMock = new Mock<ISyncLog>();
 			_randomFake = new Mock<IRandom>();
 
 			Mock<IStopwatch> stopwatchFake = new Mock<IStopwatch>();
 			stopwatchFake.Setup(x => x.Elapsed).Returns(_executionTime);
 			Func<IStopwatch> stopwatchFactory = new Func<IStopwatch>(() => stopwatchFake.Object);
 
-			IDynamicProxyFactory dynamicProxyFactory = new DynamicProxyFactory(_syncMetricsMock.Object, stopwatchFactory, _randomFake.Object, new EmptyLogger());
+			IDynamicProxyFactory dynamicProxyFactory = new DynamicProxyFactory(_syncMetricsMock.Object, stopwatchFactory, _randomFake.Object, _syncLogMock.Object);
 			_sut = dynamicProxyFactory.WrapKeplerService(_stubForInterceptionMock.Object, _stubForInterceptionFactoryFake.Object);
 			const int delayBaseMs = 1;
 			SetMillisecondsDelayBetweenHttpRetriesBase(_sut, delayBaseMs);
 		}
 
 		[Test]
-		public async Task Execute_ShouldReportSuccessfulExecution()
+		public async Task Execute_ShouldReportMetricWithCompletedExecutionStatus_WhenExecutionSucceeds()
 		{
 			// ACT
 			await _sut.ExecuteAsync().ConfigureAwait(false);
@@ -72,7 +74,7 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public async Task Execute_ShouldReturnValueFromExecution()
+		public async Task Execute_ShouldReturnValue_WhenExecutionSucceeds()
 		{
 			// ARRANGE
 			const int expectedValue = 123;
@@ -87,7 +89,7 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public void Execute_ShouldReportFailedExecution()
+		public void Execute_ShouldReportMetricWithFailedExecutionStatus_WhenExecutionFails()
 		{
 			// ARRANGE
 			_stubForInterceptionMock.Setup(x => x.ExecuteAsync()).Throws<Exception>();
@@ -102,7 +104,7 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public void Execute_ShouldNotFailWhenMetricsFails()
+		public void Execute_ShouldNotFail_WhenMetricsFails()
 		{
 			// ARRANGE
 			_syncMetricsMock.Setup(x => x.TimedOperation(It.IsAny<string>(), It.IsAny<TimeSpan>(), It.IsAny<ExecutionStatus>(), It.IsAny<Dictionary<string, object>>())).Throws<Exception>();
@@ -115,7 +117,7 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public void Execute_ShouldNotReportDisposeMethod()
+		public void Execute_ShouldNotReportMetric_WhenDisposeIsCalled()
 		{
 			// ACT
 			_sut.Dispose();
@@ -126,7 +128,7 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public void Execute_ShouldNotRetryDisposeMethod()
+		public void Execute_ShouldNotRetry_WhenDisposeIsCalled()
 		{
 			// ARRANGE
 			_stubForInterceptionMock.Setup(x => x.Dispose()).Throws<Exception>();
@@ -174,7 +176,7 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		[TestCaseSource(nameof(AuthTokenExceptionToRetry))]
 		[TestCaseSource(nameof(ConnectionExceptionsToRetry))]
-		public void Execute_ShouldStopRetryingAfterSuccess(Type exceptionType)
+		public void Execute_ShouldStopRetrying_WhenExecutionSucceeds(Type exceptionType)
 		{
 			// ARRANGE
 			const int executionAndRetry = 2;
@@ -192,7 +194,7 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		[TestCaseSource(nameof(AuthTokenExceptionToRetry))]
 		[TestCaseSource(nameof(ConnectionExceptionsToRetry))]
-		public void Execute_ShouldAddExceptionToMetrics(Type exceptionType)
+		public void Execute_ShouldAddExceptionToMetrics_WhenExecutionFails(Type exceptionType)
 		{
 			// ARRANGE
 			Exception exception = (Exception) Activator.CreateInstance(exceptionType);
@@ -211,7 +213,7 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		[TestCaseSource(nameof(AuthTokenExceptionToRetry))]
 		[TestCaseSource(nameof(ConnectionExceptionsToRetry))]
-		public void Execute_ShouldAddNumberOfRetriesToMetrics(Type exceptionType)
+		public void Execute_ShouldAddNumberOfRetriesToMetrics_WhenRetried(Type exceptionType)
 		{
 			// ARRANGE
 			const int expectedRetries = 2;
@@ -231,7 +233,65 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public void Execute_ShouldChangeInvocationTarget()
+		[TestCaseSource(nameof(AuthTokenExceptionToRetry))]
+		[TestCaseSource(nameof(ConnectionExceptionsToRetry))]
+		public async Task Execute_ShouldLogWarning_WhenRetried(Type exceptionType)
+		{
+			// ARRANGE
+			const int expectedRetries = 2;
+
+			Exception exception = (Exception)Activator.CreateInstance(exceptionType);
+			_stubForInterceptionMock.SetupSequence(x => x.ExecuteAsync()).Throws(exception).Throws(exception).Returns(Task.CompletedTask);
+
+			// ACT
+			await _sut.ExecuteAsync().ConfigureAwait(false);
+
+			// ASSERT
+			_syncLogMock.Verify(m => m.LogWarning(exception, It.IsNotNull<string>(), It.IsAny<object[]>()), Times.Exactly(expectedRetries));
+		}
+
+		[Test]
+		[TestCaseSource(nameof(AuthTokenExceptionToRetry))]
+		[TestCaseSource(nameof(ConnectionExceptionsToRetry))]
+		public async Task Execute_ShouldLogInformation_WhenExecutionSucceedsAfterRetries(Type exceptionType)
+		{
+			// ARRANGE
+			Exception exception = (Exception)Activator.CreateInstance(exceptionType);
+			_stubForInterceptionMock.SetupSequence(x => x.ExecuteAsync()).Throws(exception).Throws(exception).Returns(Task.CompletedTask);
+
+			// ACT
+			await _sut.ExecuteAsync().ConfigureAwait(false);
+
+			// ASSERT
+			_syncLogMock.Verify(m => m.LogInformation(It.IsNotNull<string>(), It.IsAny<object[]>()), Times.Once);
+		}
+
+		[Test]
+		public async Task Execute_ShouldNotLogInformation_WhenExecutionSucceedsWithoutRetries()
+		{
+			// ACT
+			await _sut.ExecuteAsync().ConfigureAwait(false);
+
+			// ASSERT
+			_syncLogMock.Verify(m => m.LogInformation(It.IsNotNull<string>(), It.IsAny<object[]>()), Times.Never);
+		}
+
+		[Test]
+		public void Execute_ShouldNotLogInformation_WhenExecutionFails()
+		{
+			// ARRANGE
+			_stubForInterceptionMock.Setup(x => x.ExecuteAsync()).Throws<Exception>();
+
+			// ACT
+			Func<Task> action = () => _sut.ExecuteAsync();
+
+			// ASSERT
+			action.Should().Throw<Exception>();
+			_syncLogMock.Verify(m => m.LogInformation(It.IsNotNull<string>(), It.IsAny<object[]>()), Times.Never);
+		}
+
+		[Test]
+		public void Execute_ShouldChangeInvocationTarget_WhenNotAuthorizedExceptionIsThrown()
 		{
 			// ARRANGE
 			Mock<IStubForInterception> badService = new Mock<IStubForInterception>();
@@ -292,7 +352,7 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public void InvocationObjectHasRequiredField()
+		public void InvocationObject_ShouldHaveRequiredField()
 		{
 			// act
 			System.Reflection.FieldInfo field = typeof(AbstractInvocation).GetField("currentInterceptorIndex", BindingFlags.NonPublic | BindingFlags.Instance);

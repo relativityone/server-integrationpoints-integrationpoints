@@ -135,6 +135,7 @@ namespace Relativity.Sync.KeplerFactory
 						invocation.Proceed();
 						await ((Task)invocation.ReturnValue).ConfigureAwait(false);
 					}).ConfigureAwait(false);
+
 					return default(TResult);
 				}
 				else
@@ -156,6 +157,9 @@ namespace Relativity.Sync.KeplerFactory
 			finally
 			{
 				stopwatch.Stop();
+
+				LogSuccessfulRetry(status, keplerRetries, authTokenRetries);
+
 				try
 				{
 					_syncMetrics.TimedOperation(GetMetricName(invocation), stopwatch.Elapsed, status, CreateCustomData(keplerRetries, authTokenRetries, exception));
@@ -207,6 +211,22 @@ namespace Relativity.Sync.KeplerFactory
 		private static string GetMetricName(IInvocation invocation)
 		{
 			return $"{invocation.Method.ReflectedType?.FullName}.{invocation.Method.Name}";
+		}
+
+		private void LogSuccessfulRetry(ExecutionStatus status, int numberOfHttpRetries, int authTokenExpirationCount)
+		{
+			if (status == ExecutionStatus.Completed)
+			{
+				if (numberOfHttpRetries > 0)
+				{
+					_logger.LogInformation("HTTP or socket connection transient error has been successfully retried. Error retry count: {retryCount}", numberOfHttpRetries);
+				}
+
+				if (authTokenExpirationCount > 0)
+				{
+					_logger.LogInformation("Auth token has expiration has been successfully retried. Auth token retry count: {retryCount}", authTokenExpirationCount);
+				}
+			}
 		}
 	}
 }
