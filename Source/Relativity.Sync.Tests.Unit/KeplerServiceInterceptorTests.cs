@@ -30,14 +30,14 @@ namespace Relativity.Sync.Tests.Unit
 		private Mock<ISyncLog> _syncLogMock;
 		private Mock<IRandom> _randomFake;
 
-		private readonly TimeSpan _executionTime = TimeSpan.FromMinutes(1);
+		private const int _MAX_NUMBER_OF_HTTP_RETRIES = 4;
 
-		private readonly IDictionary<Type, string> _exceptionTypeToMetricNameDictionary = new Dictionary<Type, string>()
-		{
-			{typeof(HttpRequestException), "KeplerRetries"},
-			{typeof(SocketException), "KeplerRetries"},
-			{typeof(NotAuthorizedException), "AuthTokenRetries"}
-		};
+		private readonly string _durationMetricName = $"Relativity.Sync.KeplerServiceInterceptor.{nameof(IStubForInterception)}.Duration";
+		private readonly string _successMetricName = $"Relativity.Sync.KeplerServiceInterceptor.{nameof(IStubForInterception)}.Success";
+		private readonly string _failedMetricName = $"Relativity.Sync.KeplerServiceInterceptor.{nameof(IStubForInterception)}.Failed";
+		private readonly string _authRefreshMetricName = $"Relativity.Sync.KeplerServiceInterceptor.{nameof(IStubForInterception)}.AuthRefresh";
+
+		private readonly TimeSpan _executionTime = TimeSpan.FromMinutes(1);
 
 		[SetUp]
 		public void SetUp()
@@ -61,19 +61,6 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public async Task Execute_ShouldReportMetricWithCompletedExecutionStatus_WhenExecutionSucceeds()
-		{
-			// ACT
-			await _sut.ExecuteAsync().ConfigureAwait(false);
-
-			// ASSERT
-			_stubForInterceptionMock.Verify(x => x.ExecuteAsync(), Times.Once);
-			_syncMetricsMock.Verify(
-				x => x.TimedOperation(GetMetricName(nameof(IStubForInterception.ExecuteAsync)), _executionTime, ExecutionStatus.Completed,
-					It.Is<Dictionary<string, object>>(dict => !dict.ContainsKey("KeplerException"))), Times.Once);
-		}
-
-		[Test]
 		public async Task Execute_ShouldReturnValue_WhenExecutionSucceeds()
 		{
 			// ARRANGE
@@ -89,7 +76,18 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public void Execute_ShouldReportMetricWithFailedExecutionStatus_WhenExecutionFails()
+		public async Task Execute_ShouldReportDurationMetricWithCompletedExecutionStatus_WhenExecutionSucceeds()
+		{
+			// ACT
+			await _sut.ExecuteAsync().ConfigureAwait(false);
+
+			// ASSERT
+			_stubForInterceptionMock.Verify(x => x.ExecuteAsync(), Times.Once);
+			_syncMetricsMock.Verify(x => x.TimedOperation(_durationMetricName, _executionTime, ExecutionStatus.Completed), Times.Once);
+		}
+
+		[Test]
+		public void Execute_ShouldReportDurationMetricWithFailedExecutionStatus_WhenExecutionFails()
 		{
 			// ARRANGE
 			_stubForInterceptionMock.Setup(x => x.ExecuteAsync()).Throws<Exception>();
@@ -99,8 +97,32 @@ namespace Relativity.Sync.Tests.Unit
 
 			// ASSERT
 			action.Should().Throw<Exception>();
-			_syncMetricsMock.Verify(x => x.TimedOperation(GetMetricName(nameof(IStubForInterception.ExecuteAsync)), _executionTime, ExecutionStatus.Failed, It.IsAny<Dictionary<string, object>>()),
-				Times.Once);
+			_syncMetricsMock.Verify(x => x.TimedOperation(_durationMetricName, _executionTime, ExecutionStatus.Failed), Times.Once);
+		}
+
+		[Test]
+		public async Task Execute_ShouldReportSuccessMetric_WhenExecutionSucceeds()
+		{
+			// ACT
+			await _sut.ExecuteAsync().ConfigureAwait(false);
+
+			// ASSERT
+			_stubForInterceptionMock.Verify(x => x.ExecuteAsync(), Times.Once);
+			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(_successMetricName, 0), Times.Once);
+		}
+
+		[Test]
+		public void Execute_ShouldReportFailedMetric_WhenExecutionFails()
+		{
+			// ARRANGE
+			_stubForInterceptionMock.Setup(x => x.ExecuteAsync()).Throws<Exception>();
+
+			// ACT
+			Func<Task> action = () => _sut.ExecuteAsync();
+
+			// ASSERT
+			action.Should().Throw<Exception>();
+			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(_failedMetricName, 0), Times.Once);
 		}
 
 		[Test]
@@ -117,7 +139,7 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public void Execute_ShouldNotReportMetric_WhenDisposeIsCalled()
+		public void Execute_ShouldNotReportMetrics_WhenDisposeIsCalled()
 		{
 			// ACT
 			_sut.Dispose();
@@ -192,25 +214,6 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		[TestCaseSource(nameof(AuthTokenExceptionToRetry))]
-		[TestCaseSource(nameof(ConnectionExceptionsToRetry))]
-		public void Execute_ShouldAddExceptionToMetrics_WhenExecutionFails(Type exceptionType)
-		{
-			// ARRANGE
-			Exception exception = (Exception) Activator.CreateInstance(exceptionType);
-			_stubForInterceptionMock.Setup(x => x.ExecuteAsync()).Throws(exception);
-
-			// ACT
-			Func<Task> action = () => _sut.ExecuteAsync();
-
-			// ASSERT
-			action.Should().Throw<Exception>();
-			_syncMetricsMock.Verify(
-				x => x.TimedOperation(GetMetricName(nameof(IStubForInterception.ExecuteAsync)), _executionTime, ExecutionStatus.Failed,
-					It.Is<Dictionary<string, object>>(dict => dict["KeplerException"] == exception)), Times.Once);
-		}
-
-		[Test]
 		[TestCaseSource(nameof(ConnectionExceptionsToRetry))]
 		public void Execute_ShouldThrowSyncMaxKeplerRetriesException_WhenExecutionFailsAfterRetriesDueToConnectionException(Type exceptionType)
 		{
@@ -226,25 +229,53 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		[TestCaseSource(nameof(AuthTokenExceptionToRetry))]
 		[TestCaseSource(nameof(ConnectionExceptionsToRetry))]
-		public void Execute_ShouldAddNumberOfRetriesToMetrics_WhenRetried(Type exceptionType)
+		public void Execute_ShouldReportFailedMetricWithNumberOfRetries_WhenExecutionFailsAfterRetriesDueToConnectionException(Type exceptionType)
 		{
 			// ARRANGE
-			const int expectedRetries = 2;
-
-			Exception exception = (Exception) Activator.CreateInstance(exceptionType);
-			_stubForInterceptionMock.SetupSequence(x => x.ExecuteAsync()).Throws(exception).Throws(exception).Returns(Task.CompletedTask);
+			Exception exception = (Exception)Activator.CreateInstance(exceptionType);
+			_stubForInterceptionMock.Setup(x => x.ExecuteAsync()).Throws(exception);
 
 			// ACT
 			Func<Task> action = () => _sut.ExecuteAsync();
 
 			// ASSERT
-			string metricName = _exceptionTypeToMetricNameDictionary[exceptionType];
-			action.Should().NotThrow();
-			_syncMetricsMock.Verify(
-				x => x.TimedOperation(GetMetricName(nameof(IStubForInterception.ExecuteAsync)), _executionTime, ExecutionStatus.Completed,
-					It.Is<Dictionary<string, object>>(dict => dict[metricName].Equals(expectedRetries))), Times.Once);
+			action.Should().Throw<SyncMaxKeplerRetriesException>();
+			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(_failedMetricName, _MAX_NUMBER_OF_HTTP_RETRIES), Times.Once);
+		}
+
+		[Test]
+		[TestCaseSource(nameof(AuthTokenExceptionToRetry))]
+		public async Task Execute_ShouldReportAuthRefreshMetricWithNumberOfRefreshes_WhenAuthRefreshed(Type exceptionType)
+		{
+			// ARRANGE
+			const int expectedRefreshes = 2;
+
+			Exception exception = (Exception)Activator.CreateInstance(exceptionType);
+			_stubForInterceptionMock.SetupSequence(x => x.ExecuteAsync()).Throws(exception).Throws(exception).Returns(Task.CompletedTask);
+
+			// ACT
+			await _sut.ExecuteAsync().ConfigureAwait(false);
+
+			// ASSERT
+			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(_authRefreshMetricName, expectedRefreshes), Times.Once);
+		}
+
+		[Test]
+		[TestCaseSource(nameof(ConnectionExceptionsToRetry))]
+		public async Task Execute_ShouldReportSuccessMetricWithNumberOfRetries_WhenRetried(Type exceptionType)
+		{
+			// ARRANGE
+			const int expectedRetries = 2;
+
+			Exception exception = (Exception)Activator.CreateInstance(exceptionType);
+			_stubForInterceptionMock.SetupSequence(x => x.ExecuteAsync()).Throws(exception).Throws(exception).Returns(Task.CompletedTask);
+
+			// ACT
+			await _sut.ExecuteAsync().ConfigureAwait(false);
+
+			// ASSERT
+			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(_successMetricName, expectedRetries), Times.Once);
 		}
 
 		[Test]
