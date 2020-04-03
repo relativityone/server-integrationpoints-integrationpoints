@@ -224,20 +224,21 @@ namespace Relativity.Sync.KeplerFactory
 
 		private void ReportMetrics(string invocationKepler, ExecutionStatus status, TimeSpan duration, int numberOfHttpRetries, int authTokenExpirationCount)
 		{
-			_syncMetrics.TimedOperation($"Relativity.Sync.KeplerServiceInterceptor.{invocationKepler}.Duration", duration, status);
+			_syncMetrics.TimedOperation(
+				$"{TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_PREFIX}.{invocationKepler}.{TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_DURATION_SUFFIX}", 
+				duration, status);
 
-			if (status == ExecutionStatus.Completed)
-			{
-				_syncMetrics.LogPointInTimeLong($"Relativity.Sync.KeplerServiceInterceptor.{invocationKepler}.Success", numberOfHttpRetries);
-			}
-			else
-			{
-				_syncMetrics.LogPointInTimeLong($"Relativity.Sync.KeplerServiceInterceptor.{invocationKepler}.Failed", numberOfHttpRetries);
-			}
+			_syncMetrics.LogPointInTimeLong(
+				status == ExecutionStatus.Completed
+					? $"{TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_PREFIX}.{invocationKepler}.{TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_SUCCESS_SUFFIX}"
+					: $"{TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_PREFIX}.{invocationKepler}.{TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_FAILED_SUFFIX}", 
+					numberOfHttpRetries);
 
 			if (authTokenExpirationCount > 0)
 			{
-				_syncMetrics.LogPointInTimeLong($"Relativity.Sync.KeplerServiceInterceptor.{invocationKepler}.AuthRefresh", authTokenExpirationCount);
+				_syncMetrics.LogPointInTimeLong(
+					$"{TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_PREFIX}.{invocationKepler}.{TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_AUTH_REFRESH_SUFFIX}",
+					authTokenExpirationCount);
 			}
 		}
 	}
