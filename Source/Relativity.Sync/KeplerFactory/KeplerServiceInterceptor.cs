@@ -81,10 +81,12 @@ namespace Relativity.Sync.KeplerFactory
 
 		private async Task<TResult> HandleExceptionsAsync<TResult>(IInvocation invocation)
 		{
-			ExecutionStatus status = ExecutionStatus.Completed;
-			Exception exception = null;
-			int keplerRetries = 0;
+			ExecutionStatus invocationStatus = ExecutionStatus.Completed;
+			Exception invocationException = null;
+
+			int httpRetries = 0;
 			int authTokenRetries = 0;
+
 			IStopwatch stopwatch = _stopwatch();
 			stopwatch.Start();
 
@@ -103,7 +105,7 @@ namespace Relativity.Sync.KeplerFactory
 					_logger.LogWarning(ex, "Encountered HTTP or socket connection transient error for {IKepler}, attempting retry. Retry count: {retryCount} Wait time: {waitTimeMs} (ms)", 
 						invocation.Method.ReflectedType?.Name, retryCount, waitTime.TotalMilliseconds);
 
-					keplerRetries = retryCount;
+					httpRetries = retryCount;
 				});
 
 				RetryPolicy authTokenPolicy = Policy
@@ -155,19 +157,27 @@ namespace Relativity.Sync.KeplerFactory
 			}
 			catch (Exception e)
 			{
-				status = ExecutionStatus.Failed;
-				exception = e;
-				throw;
+				invocationStatus = ExecutionStatus.Failed;
+				invocationException = e;
+
+				if (httpRetries == _MAX_NUMBER_OF_HTTP_RETRIES)
+				{
+					throw new SyncMaxKeplerRetriesException(invocation.Method.ReflectedType?.Name, httpRetries);
+				}
+				else
+				{
+					throw;
+				}
 			}
 			finally
 			{
 				stopwatch.Stop();
 
-				LogSuccessfulRetry(invocation, status, keplerRetries, authTokenRetries);
+				LogSuccessfulRetry(invocation, invocationStatus, httpRetries, authTokenRetries);
 
 				try
 				{
-					_syncMetrics.TimedOperation(GetMetricName(invocation), stopwatch.Elapsed, status, CreateCustomData(keplerRetries, authTokenRetries, exception));
+					_syncMetrics.TimedOperation(GetMetricName(invocation), stopwatch.Elapsed, invocationStatus, CreateCustomData(httpRetries, authTokenRetries, invocationException));
 				}
 				catch (Exception e)
 				{

@@ -211,6 +211,21 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
+		[TestCaseSource(nameof(ConnectionExceptionsToRetry))]
+		public void Execute_ShouldThrowSyncMaxKeplerRetriesException_WhenExecutionFailsAfterRetriesDueToConnectionException(Type exceptionType)
+		{
+			// ARRANGE
+			Exception exception = (Exception)Activator.CreateInstance(exceptionType);
+			_stubForInterceptionMock.Setup(x => x.ExecuteAsync()).Throws(exception);
+
+			// ACT
+			Func<Task> action = () => _sut.ExecuteAsync();
+
+			// ASSERT
+			action.Should().Throw<SyncMaxKeplerRetriesException>();
+		}
+
+		[Test]
 		[TestCaseSource(nameof(AuthTokenExceptionToRetry))]
 		[TestCaseSource(nameof(ConnectionExceptionsToRetry))]
 		public void Execute_ShouldAddNumberOfRetriesToMetrics_WhenRetried(Type exceptionType)
