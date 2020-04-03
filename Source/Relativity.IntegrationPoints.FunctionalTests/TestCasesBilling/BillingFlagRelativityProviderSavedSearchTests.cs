@@ -1,9 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
-using FluentAssertions;
-using kCura.IntegrationPoint.Tests.Core;
+﻿using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
@@ -19,7 +14,7 @@ using static kCura.IntegrationPoints.Core.Constants.IntegrationPoints;
 namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 {
 	[TestFixture]
-	[Feature.DataTransfer.IntegrationPoints.Sync.FieldMapping]
+	[Feature.DataTransfer.IntegrationPoints]
 	[NotWorkingOnTrident]
 	public class BillingFlagRelativityProviderSavedSearchTests : RelativityProviderTemplate
 	{
@@ -53,8 +48,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 		{
 			base.TestSetup();
 
-			_targetWorkspaceArtifactID = Task.Run(async ()
-				=> await Workspace.CreateWorkspaceAsync(_TARGET_WORKSPACE_NAME, WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME).ConfigureAwait(false)).Result;
+			_targetWorkspaceArtifactID = Workspace.CreateWorkspaceAsync(_TARGET_WORKSPACE_NAME, WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME).GetAwaiter().GetResult();
 		}
 
 		public override void TestTeardown()

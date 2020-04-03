@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -13,9 +12,7 @@ using kCura.IntegrationPoints.UITests.Configuration.Models;
 using kCura.IntegrationPoints.UITests.NUnitExtensions;
 using kCura.IntegrationPoints.UITests.Pages;
 using kCura.IntegrationPoints.UITests.Tests.RelativityProvider;
-using kCura.Relativity.Client;
 using NUnit.Framework;
-using Relativity;
 using Relativity.Services.Interfaces.Field;
 using Relativity.Services.Field;
 using Relativity.Services.Interfaces.Field.Models;
@@ -27,8 +24,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints.Sync.FieldMapping]
-	[NUnit.Framework.Category(TestCategory.EXPORT_TO_RELATIVITY)]
-	[NUnit.Framework.Category(TestCategory.FIELDS_MAPPING)]
+	[Category(TestCategory.EXPORT_TO_RELATIVITY)]
+	[Category(TestCategory.FIELDS_MAPPING)]
 	public class FieldsMappingTests : RelativityProviderTestsBase
 	{
 		private static readonly List<Tuple<string, string>> DefaultFieldsMapping = new List<Tuple<string, string>>

@@ -1,10 +1,5 @@
-using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoint.Tests.Core.Templates;
@@ -16,8 +11,6 @@ using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using NUnit.Framework;
-using Relativity.API;
-using Relativity.Productions.Services;
 using Relativity.Testing.Identification;
 using static kCura.IntegrationPoints.Core.Constants.IntegrationPoints;
 
