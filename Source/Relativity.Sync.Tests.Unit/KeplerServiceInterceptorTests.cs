@@ -253,6 +253,27 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		[TestCaseSource(nameof(AuthTokenExceptionToRetry))]
 		[TestCaseSource(nameof(ConnectionExceptionsToRetry))]
+		public async Task Execute_ShouldPutKeplerInWarning_WhenRetried(Type exceptionType)
+		{
+			// ARRANGE
+			const int expectedRetries = 2;
+
+			Exception exception = (Exception)Activator.CreateInstance(exceptionType);
+			_stubForInterceptionMock.SetupSequence(x => x.ExecuteAsync()).Throws(exception).Throws(exception).Returns(Task.CompletedTask);
+
+			// ACT
+			await _sut.ExecuteAsync().ConfigureAwait(false);
+
+			// ASSERT
+			_syncLogMock.Verify(m => m.LogWarning(exception, 
+				It.Is<string>(messageTemplate => messageTemplate.Contains("{IKepler}")), 
+				It.Is<object[]>(propertyValues => propertyValues.Contains(nameof(IStubForInterception))))
+				, Times.Exactly(expectedRetries));
+		}
+
+		[Test]
+		[TestCaseSource(nameof(AuthTokenExceptionToRetry))]
+		[TestCaseSource(nameof(ConnectionExceptionsToRetry))]
 		public async Task Execute_ShouldLogInformation_WhenExecutionSucceedsAfterRetries(Type exceptionType)
 		{
 			// ARRANGE
@@ -264,6 +285,25 @@ namespace Relativity.Sync.Tests.Unit
 
 			// ASSERT
 			_syncLogMock.Verify(m => m.LogInformation(It.IsNotNull<string>(), It.IsAny<object[]>()), Times.Once);
+		}
+
+		[Test]
+		[TestCaseSource(nameof(AuthTokenExceptionToRetry))]
+		[TestCaseSource(nameof(ConnectionExceptionsToRetry))]
+		public async Task Execute_ShouldPutKeplerInInformation_WhenExecutionSucceedsAfterRetries(Type exceptionType)
+		{
+			// ARRANGE
+			Exception exception = (Exception)Activator.CreateInstance(exceptionType);
+			_stubForInterceptionMock.SetupSequence(x => x.ExecuteAsync()).Throws(exception).Throws(exception).Returns(Task.CompletedTask);
+
+			// ACT
+			await _sut.ExecuteAsync().ConfigureAwait(false);
+
+			// ASSERT
+			_syncLogMock.Verify(m => m.LogInformation(
+				It.Is<string>(messageTemplate => messageTemplate.Contains("{IKepler}")),
+				It.Is<object[]>(propertyValues => propertyValues.Contains(nameof(IStubForInterception))))
+				, Times.Once);
 		}
 
 		[Test]

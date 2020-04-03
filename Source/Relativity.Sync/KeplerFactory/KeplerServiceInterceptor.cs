@@ -100,7 +100,9 @@ namespace Relativity.Sync.KeplerFactory
 				},
 					(ex, waitTime, retryCount, context) =>
 				{
-					_logger.LogWarning(ex, "Encountered HTTP or socket connection transient error, attempting retry. Retry count: {retryCount} Wait time: {waitTimeMs} (ms)", retryCount, waitTime.TotalMilliseconds);
+					_logger.LogWarning(ex, "Encountered HTTP or socket connection transient error for {IKepler}, attempting retry. Retry count: {retryCount} Wait time: {waitTimeMs} (ms)", 
+						invocation.Method.ReflectedType?.Name, retryCount, waitTime.TotalMilliseconds);
+
 					keplerRetries = retryCount;
 				});
 
@@ -109,8 +111,11 @@ namespace Relativity.Sync.KeplerFactory
 					.RetryAsync(_MAX_NUMBER_OF_AUTH_TOKEN_RETRIES,
 						async (ex, retryCount, context) =>
 					{
-						_logger.LogWarning(ex, "Auth token has expired, attempting to generate new token and retry. Retry count: {retryCount}", retryCount);
+						_logger.LogWarning(ex, "Auth token has expired for {IKepler}, attempting to generate new token and retry. Retry count: {retryCount}",
+							invocation.Method.ReflectedType?.Name, retryCount);
+						
 						authTokenRetries = retryCount;
+
 						IChangeProxyTarget changeProxyTarget = invocation as IChangeProxyTarget;
 						if (changeProxyTarget != null)
 						{
@@ -158,7 +163,7 @@ namespace Relativity.Sync.KeplerFactory
 			{
 				stopwatch.Stop();
 
-				LogSuccessfulRetry(status, keplerRetries, authTokenRetries);
+				LogSuccessfulRetry(invocation, status, keplerRetries, authTokenRetries);
 
 				try
 				{
@@ -213,18 +218,20 @@ namespace Relativity.Sync.KeplerFactory
 			return $"{invocation.Method.ReflectedType?.FullName}.{invocation.Method.Name}";
 		}
 
-		private void LogSuccessfulRetry(ExecutionStatus status, int numberOfHttpRetries, int authTokenExpirationCount)
+		private void LogSuccessfulRetry(IInvocation invocation, ExecutionStatus status, int numberOfHttpRetries, int authTokenExpirationCount)
 		{
 			if (status == ExecutionStatus.Completed)
 			{
 				if (numberOfHttpRetries > 0)
 				{
-					_logger.LogInformation("HTTP or socket connection transient error has been successfully retried. Error retry count: {retryCount}", numberOfHttpRetries);
+					_logger.LogInformation("HTTP or socket connection transient error for {IKepler} has been successfully retried. Error retry count: {retryCount}",
+						invocation.Method.ReflectedType?.Name, numberOfHttpRetries);
 				}
 
 				if (authTokenExpirationCount > 0)
 				{
-					_logger.LogInformation("Auth token has expiration has been successfully retried. Auth token retry count: {retryCount}", authTokenExpirationCount);
+					_logger.LogInformation("Auth token expiration for {IKepler} has been successfully retried. Auth token retry count: {retryCount}",
+						invocation.Method.ReflectedType?.Name, authTokenExpirationCount);
 				}
 			}
 		}
