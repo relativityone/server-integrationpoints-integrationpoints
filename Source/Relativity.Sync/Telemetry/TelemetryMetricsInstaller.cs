@@ -37,9 +37,10 @@ namespace Relativity.Sync.Telemetry
 		{
 			try
 			{
-				CategoryRef category = await CreateAndEnableMetricCategoryIfNotExistAsync(TelemetryConstants.TELEMETRY_CATEGORY).ConfigureAwait(false);
+				IDictionary<string, CategoryRef> categories = await CreateAndEnableMetricCategoriesIfNotExistAsync(_metricProviders.Select(item => item.CategoryName))
+					.ConfigureAwait(false);
 
-				AddMetricsForCategory(category);
+				AddMetricsForCategories(categories);
 			}
 			catch (Exception e)
 			{
@@ -47,44 +48,53 @@ namespace Relativity.Sync.Telemetry
 			}
 		}
 
-		private void AddMetricsForCategory(CategoryRef category)
+		private void AddMetricsForCategories(IDictionary<string, CategoryRef> categories)
 		{
 			using (var manager = _servicesManager.CreateProxy<IInternalMetricsCollectionManager>(ExecutionIdentity.System))
 			{
-				_metricProviders.ForEach(item => item.AddMetricsForCategory(manager, category).GetAwaiter().GetResult());
+				_metricProviders.ForEach(item => item.AddMetricsForCategory(manager, categories[item.CategoryName]).GetAwaiter().GetResult());
 			}
 		}
 
-		private async Task<CategoryRef> CreateAndEnableMetricCategoryIfNotExistAsync(string categoryName)
+		private async Task<IDictionary<string, CategoryRef>> CreateAndEnableMetricCategoriesIfNotExistAsync(IEnumerable<string> categoriesNames)
 		{
+			IDictionary<string, CategoryRef> categories = new Dictionary<string, CategoryRef>();
+
 			using (var manager = _servicesManager.CreateProxy<IInternalMetricsCollectionManager>(ExecutionIdentity.System))
 			{
-				List<CategoryTarget> categories = await manager.GetCategoryTargetsAsync().ConfigureAwait(false);
-				CategoryTarget newCategory = categories.FirstOrDefault(categoryTarget => categoryTarget.Category.Name.Equals(categoryName, StringComparison.OrdinalIgnoreCase));
-				CategoryRef categoryRef = newCategory?.Category;
+				List<CategoryTarget> categoryTargets = await manager.GetCategoryTargetsAsync().ConfigureAwait(false);
 
-				if (categoryRef == null)
+				foreach (string categoryName in categoriesNames)
 				{
-					categoryRef = await AddCategoryAsync(categoryName, manager).ConfigureAwait(false);
-					await EnableMetricsForCategoryAsync(categoryRef, manager).ConfigureAwait(false);
+					CategoryRef categoryRef = categoryTargets.FirstOrDefault(categoryTarget => categoryTarget.Category.Name.Equals(categoryName, StringComparison.OrdinalIgnoreCase))?.Category;
+
+					if (categoryRef is null)
+					{
+						categoryRef = await AddCategoryAsync(categoryName, manager).ConfigureAwait(false);
+					}
+
+					categories.Add(categoryName, categoryRef);
 				}
 
-				return categoryRef;
+				return categories;
 			}
 		}
 
 		private static async Task<CategoryRef> AddCategoryAsync(string categoryName, IInternalMetricsCollectionManager manager)
 		{
-			var category = new Category
+			var categoryRef = new Category
 			{
 				Name = categoryName
 			};
 
-			category.ID = await manager.CreateCategoryAsync(category, false).ConfigureAwait(false);
-			return category;
+			categoryRef.ID = await manager.CreateCategoryAsync(categoryRef, false).ConfigureAwait(false);
+
+			await EnableSumMetricTargetForCategoryAsync(categoryRef, manager).ConfigureAwait(false);
+
+			return categoryRef;
 		}
 
-		private static async Task EnableMetricsForCategoryAsync(CategoryRef category, IInternalMetricsCollectionManager manager)
+		private static async Task EnableSumMetricTargetForCategoryAsync(CategoryRef category, IInternalMetricsCollectionManager manager)
 		{
 			CategoryTarget categoryTarget = new CategoryTarget
 			{
