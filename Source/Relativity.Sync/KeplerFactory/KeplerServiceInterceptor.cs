@@ -169,7 +169,7 @@ namespace Relativity.Sync.KeplerFactory
 			{
 				stopwatch.Stop();
 
-				LogSuccessfulRetry(invocationKepler, invocationStatus, httpRetries, authTokenRetries);
+				LogIfExecutionSuccessfullyRetried(invocationKepler, invocationStatus, httpRetries, authTokenRetries);
 
 				try
 				{
@@ -204,7 +204,7 @@ namespace Relativity.Sync.KeplerFactory
 			AsyncFunction
 		}
 
-		private void LogSuccessfulRetry(string invocationKepler, ExecutionStatus status, int numberOfHttpRetries, int authTokenExpirationCount)
+		private void LogIfExecutionSuccessfullyRetried(string invocationKepler, ExecutionStatus status, int numberOfHttpRetries, int authTokenExpirationCount)
 		{
 			if (status == ExecutionStatus.Completed)
 			{

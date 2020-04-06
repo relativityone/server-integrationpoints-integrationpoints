@@ -37,7 +37,7 @@ namespace Relativity.Sync.Telemetry
 		{
 			try
 			{
-				IDictionary<string, CategoryRef> categories = await CreateAndEnableMetricCategoryIfNotExistAsync(_metricProviders.Select(item => item.CategoryName))
+				IDictionary<string, CategoryRef> categories = await CreateAndEnableMetricCategoriesIfNotExistAsync(_metricProviders.Select(item => item.CategoryName))
 					.ConfigureAwait(false);
 
 				AddMetricsForCategories(categories);
@@ -56,7 +56,7 @@ namespace Relativity.Sync.Telemetry
 			}
 		}
 
-		private async Task<IDictionary<string, CategoryRef>> CreateAndEnableMetricCategoryIfNotExistAsync(IEnumerable<string> categoriesNames)
+		private async Task<IDictionary<string, CategoryRef>> CreateAndEnableMetricCategoriesIfNotExistAsync(IEnumerable<string> categoriesNames)
 		{
 			IDictionary<string, CategoryRef> categories = new Dictionary<string, CategoryRef>();
 
@@ -71,7 +71,6 @@ namespace Relativity.Sync.Telemetry
 					if (categoryRef is null)
 					{
 						categoryRef = await AddCategoryAsync(categoryName, manager).ConfigureAwait(false);
-						await EnableMetricsForCategoryAsync(categoryRef, manager).ConfigureAwait(false);
 					}
 
 					categories.Add(categoryName, categoryRef);
@@ -83,16 +82,19 @@ namespace Relativity.Sync.Telemetry
 
 		private static async Task<CategoryRef> AddCategoryAsync(string categoryName, IInternalMetricsCollectionManager manager)
 		{
-			var category = new Category
+			var categoryRef = new Category
 			{
 				Name = categoryName
 			};
 
-			category.ID = await manager.CreateCategoryAsync(category, false).ConfigureAwait(false);
-			return category;
+			categoryRef.ID = await manager.CreateCategoryAsync(categoryRef, false).ConfigureAwait(false);
+
+			await EnableSumMetricTargetForCategoryAsync(categoryRef, manager).ConfigureAwait(false);
+
+			return categoryRef;
 		}
 
-		private static async Task EnableMetricsForCategoryAsync(CategoryRef category, IInternalMetricsCollectionManager manager)
+		private static async Task EnableSumMetricTargetForCategoryAsync(CategoryRef category, IInternalMetricsCollectionManager manager)
 		{
 			CategoryTarget categoryTarget = new CategoryTarget
 			{
