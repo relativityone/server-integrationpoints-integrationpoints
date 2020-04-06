@@ -37,7 +37,7 @@ namespace Relativity.Sync.Telemetry
 		{
 			try
 			{
-				IDictionary<string, CategoryRef> categories = await CreateAndEnableMetricCategoryIfNotExistAsync(_metricProviders.Select(item => item.CategoryName).ToArray())
+				IDictionary<string, CategoryRef> categories = await CreateAndEnableMetricCategoryIfNotExistAsync(_metricProviders.Select(item => item.CategoryName))
 					.ConfigureAwait(false);
 
 				AddMetricsForCategories(categories);
@@ -56,7 +56,7 @@ namespace Relativity.Sync.Telemetry
 			}
 		}
 
-		private async Task<IDictionary<string, CategoryRef>> CreateAndEnableMetricCategoryIfNotExistAsync(string[] categoriesNames)
+		private async Task<IDictionary<string, CategoryRef>> CreateAndEnableMetricCategoryIfNotExistAsync(IEnumerable<string> categoriesNames)
 		{
 			IDictionary<string, CategoryRef> categories = new Dictionary<string, CategoryRef>();
 
@@ -64,9 +64,8 @@ namespace Relativity.Sync.Telemetry
 			{
 				List<CategoryTarget> categoryTargets = await manager.GetCategoryTargetsAsync().ConfigureAwait(false);
 
-				for (int categoryIndex = 0; categoryIndex < categoriesNames.Length; categoryIndex++)
+				foreach (string categoryName in categoriesNames)
 				{
-					string categoryName = categoriesNames[categoryIndex];
 					CategoryRef categoryRef = categoryTargets.FirstOrDefault(categoryTarget => categoryTarget.Category.Name.Equals(categoryName, StringComparison.OrdinalIgnoreCase))?.Category;
 
 					if (categoryRef is null)
