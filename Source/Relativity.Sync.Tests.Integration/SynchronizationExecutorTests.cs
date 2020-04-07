@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using FluentAssertions;
-using kCura.Relativity.DataReaderClient;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.Folder;
@@ -20,6 +19,7 @@ using Relativity.Sync.Telemetry;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.Integration.Helpers;
 using Relativity.Sync.Transfer;
+using Relativity.Sync.Transfer.ImportAPI;
 
 namespace Relativity.Sync.Tests.Integration
 {
@@ -138,7 +138,7 @@ namespace Relativity.Sync.Tests.Integration
 				{
 					dataReader.Read();
 				}
-				_importBulkArtifactJob.Raise(x => ((IImportNotifier) x).OnComplete += null, CreateJobReport());
+				_importBulkArtifactJob.Raise(x => x.OnComplete += null, new ImportApiJobStatistics());
 			});
 
 			SetupFieldQueryResult();
@@ -192,7 +192,7 @@ namespace Relativity.Sync.Tests.Integration
 					dataReader.Read();
 				}
 
-				_importBulkArtifactJob.Raise(x => ((IImportNotifier) x).OnComplete += null, CreateJobReport());
+				_importBulkArtifactJob.Raise(x => x.OnComplete += null, new ImportApiJobStatistics());
 			});
 
 			SetupFieldQueryResult();
@@ -235,8 +235,8 @@ namespace Relativity.Sync.Tests.Integration
 			
 			_importBulkArtifactJob.Setup(x => x.Execute()).Callback(() =>
 			{
-				_importBulkArtifactJob.Raise(x => x.OnFatalException += null, CreateJobReport());
-				_importBulkArtifactJob.Raise(x => ((IImportNotifier) x).OnComplete += null, CreateJobReport());
+				_importBulkArtifactJob.Raise(x => x.OnFatalException += null, new ImportApiJobStatistics());
+				_importBulkArtifactJob.Raise(x => x.OnComplete += null, new ImportApiJobStatistics());
 			});
 
 			MassCreateResult massCreateResult = new MassCreateResult()
@@ -455,12 +455,6 @@ namespace Relativity.Sync.Tests.Integration
 				},
 				Value = value
 			};
-		}
-
-		private static JobReport CreateJobReport()
-		{
-			JobReport jobReport = (JobReport)Activator.CreateInstance(typeof(JobReport), true);
-			return jobReport;
 		}
 	}
 }
