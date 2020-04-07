@@ -11,6 +11,8 @@ namespace Relativity.Sync.Telemetry
 
 		protected abstract string ProviderName { get; }
 
+		public abstract string CategoryName { get; }
+
 		protected TelemetryMetricsProviderBase(ISyncLog logger)
 		{
 			_logger = logger;

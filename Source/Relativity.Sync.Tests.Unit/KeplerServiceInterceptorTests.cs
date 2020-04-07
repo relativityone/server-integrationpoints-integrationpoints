@@ -27,16 +27,17 @@ namespace Relativity.Sync.Tests.Unit
 		private Mock<IStubForInterception> _stubForInterceptionMock;
 		private Mock<Func<Task<IStubForInterception>>> _stubForInterceptionFactoryFake;
 		private Mock<ISyncMetrics> _syncMetricsMock;
+		private Mock<ISyncLog> _syncLogMock;
 		private Mock<IRandom> _randomFake;
 
-		private readonly TimeSpan _executionTime = TimeSpan.FromMinutes(1);
+		private const int _MAX_NUMBER_OF_HTTP_RETRIES = 4;
 
-		private readonly IDictionary<Type, string> _exceptionTypeToMetricNameDictionary = new Dictionary<Type, string>()
-		{
-			{typeof(HttpRequestException), "KeplerRetries"},
-			{typeof(SocketException), "KeplerRetries"},
-			{typeof(NotAuthorizedException), "AuthTokenRetries"}
-		};
+		private readonly string _durationMetricName = $"Relativity.Sync.KeplerServiceInterceptor.{nameof(IStubForInterception)}.Duration";
+		private readonly string _successMetricName = $"Relativity.Sync.KeplerServiceInterceptor.{nameof(IStubForInterception)}.Success";
+		private readonly string _failedMetricName = $"Relativity.Sync.KeplerServiceInterceptor.{nameof(IStubForInterception)}.Failed";
+		private readonly string _authRefreshMetricName = $"Relativity.Sync.KeplerServiceInterceptor.{nameof(IStubForInterception)}.AuthRefresh";
+
+		private readonly TimeSpan _executionTime = TimeSpan.FromMinutes(1);
 
 		[SetUp]
 		public void SetUp()
@@ -46,33 +47,21 @@ namespace Relativity.Sync.Tests.Unit
 			_stubForInterceptionFactoryFake.Setup(x => x.Invoke()).Returns(Task.FromResult(_stubForInterceptionMock.Object));
 			
 			_syncMetricsMock = new Mock<ISyncMetrics>();
+			_syncLogMock = new Mock<ISyncLog>();
 			_randomFake = new Mock<IRandom>();
 
 			Mock<IStopwatch> stopwatchFake = new Mock<IStopwatch>();
 			stopwatchFake.Setup(x => x.Elapsed).Returns(_executionTime);
 			Func<IStopwatch> stopwatchFactory = new Func<IStopwatch>(() => stopwatchFake.Object);
 
-			IDynamicProxyFactory dynamicProxyFactory = new DynamicProxyFactory(_syncMetricsMock.Object, stopwatchFactory, _randomFake.Object, new EmptyLogger());
+			IDynamicProxyFactory dynamicProxyFactory = new DynamicProxyFactory(_syncMetricsMock.Object, stopwatchFactory, _randomFake.Object, _syncLogMock.Object);
 			_sut = dynamicProxyFactory.WrapKeplerService(_stubForInterceptionMock.Object, _stubForInterceptionFactoryFake.Object);
 			const int delayBaseMs = 1;
 			SetMillisecondsDelayBetweenHttpRetriesBase(_sut, delayBaseMs);
 		}
 
 		[Test]
-		public async Task Execute_ShouldReportSuccessfulExecution()
-		{
-			// ACT
-			await _sut.ExecuteAsync().ConfigureAwait(false);
-
-			// ASSERT
-			_stubForInterceptionMock.Verify(x => x.ExecuteAsync(), Times.Once);
-			_syncMetricsMock.Verify(
-				x => x.TimedOperation(GetMetricName(nameof(IStubForInterception.ExecuteAsync)), _executionTime, ExecutionStatus.Completed,
-					It.Is<Dictionary<string, object>>(dict => !dict.ContainsKey("KeplerException"))), Times.Once);
-		}
-
-		[Test]
-		public async Task Execute_ShouldReturnValueFromExecution()
+		public async Task Execute_ShouldReturnValue_WhenExecutionSucceeds()
 		{
 			// ARRANGE
 			const int expectedValue = 123;
@@ -87,7 +76,18 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public void Execute_ShouldReportFailedExecution()
+		public async Task Execute_ShouldReportDurationMetricWithCompletedExecutionStatus_WhenExecutionSucceeds()
+		{
+			// ACT
+			await _sut.ExecuteAsync().ConfigureAwait(false);
+
+			// ASSERT
+			_stubForInterceptionMock.Verify(x => x.ExecuteAsync(), Times.Once);
+			_syncMetricsMock.Verify(x => x.TimedOperation(_durationMetricName, _executionTime, ExecutionStatus.Completed), Times.Once);
+		}
+
+		[Test]
+		public void Execute_ShouldReportDurationMetricWithFailedExecutionStatus_WhenExecutionFails()
 		{
 			// ARRANGE
 			_stubForInterceptionMock.Setup(x => x.ExecuteAsync()).Throws<Exception>();
@@ -97,12 +97,36 @@ namespace Relativity.Sync.Tests.Unit
 
 			// ASSERT
 			action.Should().Throw<Exception>();
-			_syncMetricsMock.Verify(x => x.TimedOperation(GetMetricName(nameof(IStubForInterception.ExecuteAsync)), _executionTime, ExecutionStatus.Failed, It.IsAny<Dictionary<string, object>>()),
-				Times.Once);
+			_syncMetricsMock.Verify(x => x.TimedOperation(_durationMetricName, _executionTime, ExecutionStatus.Failed), Times.Once);
 		}
 
 		[Test]
-		public void Execute_ShouldNotFailWhenMetricsFails()
+		public async Task Execute_ShouldReportSuccessMetric_WhenExecutionSucceeds()
+		{
+			// ACT
+			await _sut.ExecuteAsync().ConfigureAwait(false);
+
+			// ASSERT
+			_stubForInterceptionMock.Verify(x => x.ExecuteAsync(), Times.Once);
+			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(_successMetricName, 0), Times.Once);
+		}
+
+		[Test]
+		public void Execute_ShouldReportFailedMetric_WhenExecutionFails()
+		{
+			// ARRANGE
+			_stubForInterceptionMock.Setup(x => x.ExecuteAsync()).Throws<Exception>();
+
+			// ACT
+			Func<Task> action = () => _sut.ExecuteAsync();
+
+			// ASSERT
+			action.Should().Throw<Exception>();
+			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(_failedMetricName, 0), Times.Once);
+		}
+
+		[Test]
+		public void Execute_ShouldNotFail_WhenMetricsFails()
 		{
 			// ARRANGE
 			_syncMetricsMock.Setup(x => x.TimedOperation(It.IsAny<string>(), It.IsAny<TimeSpan>(), It.IsAny<ExecutionStatus>(), It.IsAny<Dictionary<string, object>>())).Throws<Exception>();
@@ -115,7 +139,7 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public void Execute_ShouldNotReportDisposeMethod()
+		public void Execute_ShouldNotReportMetrics_WhenDisposeIsCalled()
 		{
 			// ACT
 			_sut.Dispose();
@@ -126,7 +150,7 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public void Execute_ShouldNotRetryDisposeMethod()
+		public void Execute_ShouldNotRetry_WhenDisposeIsCalled()
 		{
 			// ARRANGE
 			_stubForInterceptionMock.Setup(x => x.Dispose()).Throws<Exception>();
@@ -174,7 +198,7 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		[TestCaseSource(nameof(AuthTokenExceptionToRetry))]
 		[TestCaseSource(nameof(ConnectionExceptionsToRetry))]
-		public void Execute_ShouldStopRetryingAfterSuccess(Type exceptionType)
+		public void Execute_ShouldStopRetrying_WhenExecutionSucceeds(Type exceptionType)
 		{
 			// ARRANGE
 			const int executionAndRetry = 2;
@@ -190,48 +214,170 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		[TestCaseSource(nameof(AuthTokenExceptionToRetry))]
 		[TestCaseSource(nameof(ConnectionExceptionsToRetry))]
-		public void Execute_ShouldAddExceptionToMetrics(Type exceptionType)
+		public void Execute_ShouldThrowSyncMaxKeplerRetriesException_WhenExecutionFailsAfterRetriesDueToConnectionException(Type exceptionType)
 		{
 			// ARRANGE
-			Exception exception = (Exception) Activator.CreateInstance(exceptionType);
+			Exception exception = (Exception)Activator.CreateInstance(exceptionType);
 			_stubForInterceptionMock.Setup(x => x.ExecuteAsync()).Throws(exception);
 
 			// ACT
 			Func<Task> action = () => _sut.ExecuteAsync();
 
 			// ASSERT
-			action.Should().Throw<Exception>();
-			_syncMetricsMock.Verify(
-				x => x.TimedOperation(GetMetricName(nameof(IStubForInterception.ExecuteAsync)), _executionTime, ExecutionStatus.Failed,
-					It.Is<Dictionary<string, object>>(dict => dict["KeplerException"] == exception)), Times.Once);
+			action.Should().Throw<SyncMaxKeplerRetriesException>();
 		}
 
 		[Test]
-		[TestCaseSource(nameof(AuthTokenExceptionToRetry))]
 		[TestCaseSource(nameof(ConnectionExceptionsToRetry))]
-		public void Execute_ShouldAddNumberOfRetriesToMetrics(Type exceptionType)
+		public void Execute_ShouldReportFailedMetricWithNumberOfRetries_WhenExecutionFailsAfterRetriesDueToConnectionException(Type exceptionType)
 		{
 			// ARRANGE
-			const int expectedRetries = 2;
-
-			Exception exception = (Exception) Activator.CreateInstance(exceptionType);
-			_stubForInterceptionMock.SetupSequence(x => x.ExecuteAsync()).Throws(exception).Throws(exception).Returns(Task.CompletedTask);
+			Exception exception = (Exception)Activator.CreateInstance(exceptionType);
+			_stubForInterceptionMock.Setup(x => x.ExecuteAsync()).Throws(exception);
 
 			// ACT
 			Func<Task> action = () => _sut.ExecuteAsync();
 
 			// ASSERT
-			string metricName = _exceptionTypeToMetricNameDictionary[exceptionType];
-			action.Should().NotThrow();
-			_syncMetricsMock.Verify(
-				x => x.TimedOperation(GetMetricName(nameof(IStubForInterception.ExecuteAsync)), _executionTime, ExecutionStatus.Completed,
-					It.Is<Dictionary<string, object>>(dict => dict[metricName].Equals(expectedRetries))), Times.Once);
+			action.Should().Throw<SyncMaxKeplerRetriesException>();
+			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(_failedMetricName, _MAX_NUMBER_OF_HTTP_RETRIES), Times.Once);
 		}
 
 		[Test]
-		public void Execute_ShouldChangeInvocationTarget()
+		[TestCaseSource(nameof(AuthTokenExceptionToRetry))]
+		public async Task Execute_ShouldReportAuthRefreshMetricWithNumberOfRefreshes_WhenAuthRefreshed(Type exceptionType)
+		{
+			// ARRANGE
+			const int expectedRefreshes = 2;
+
+			Exception exception = (Exception)Activator.CreateInstance(exceptionType);
+			_stubForInterceptionMock.SetupSequence(x => x.ExecuteAsync()).Throws(exception).Throws(exception).Returns(Task.CompletedTask);
+
+			// ACT
+			await _sut.ExecuteAsync().ConfigureAwait(false);
+
+			// ASSERT
+			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(_authRefreshMetricName, expectedRefreshes), Times.Once);
+		}
+
+		[Test]
+		[TestCaseSource(nameof(ConnectionExceptionsToRetry))]
+		public async Task Execute_ShouldReportSuccessMetricWithNumberOfRetries_WhenRetried(Type exceptionType)
+		{
+			// ARRANGE
+			const int expectedRetries = 2;
+
+			Exception exception = (Exception)Activator.CreateInstance(exceptionType);
+			_stubForInterceptionMock.SetupSequence(x => x.ExecuteAsync()).Throws(exception).Throws(exception).Returns(Task.CompletedTask);
+
+			// ACT
+			await _sut.ExecuteAsync().ConfigureAwait(false);
+
+			// ASSERT
+			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(_successMetricName, expectedRetries), Times.Once);
+		}
+
+		[Test]
+		[TestCaseSource(nameof(AuthTokenExceptionToRetry))]
+		[TestCaseSource(nameof(ConnectionExceptionsToRetry))]
+		public async Task Execute_ShouldLogWarning_WhenRetried(Type exceptionType)
+		{
+			// ARRANGE
+			const int expectedRetries = 2;
+
+			Exception exception = (Exception)Activator.CreateInstance(exceptionType);
+			_stubForInterceptionMock.SetupSequence(x => x.ExecuteAsync()).Throws(exception).Throws(exception).Returns(Task.CompletedTask);
+
+			// ACT
+			await _sut.ExecuteAsync().ConfigureAwait(false);
+
+			// ASSERT
+			_syncLogMock.Verify(m => m.LogWarning(exception, It.IsNotNull<string>(), It.IsAny<object[]>()), Times.Exactly(expectedRetries));
+		}
+
+		[Test]
+		[TestCaseSource(nameof(AuthTokenExceptionToRetry))]
+		[TestCaseSource(nameof(ConnectionExceptionsToRetry))]
+		public async Task Execute_ShouldPutKeplerInWarning_WhenRetried(Type exceptionType)
+		{
+			// ARRANGE
+			const int expectedRetries = 2;
+
+			Exception exception = (Exception)Activator.CreateInstance(exceptionType);
+			_stubForInterceptionMock.SetupSequence(x => x.ExecuteAsync()).Throws(exception).Throws(exception).Returns(Task.CompletedTask);
+
+			// ACT
+			await _sut.ExecuteAsync().ConfigureAwait(false);
+
+			// ASSERT
+			_syncLogMock.Verify(m => m.LogWarning(exception, 
+				It.Is<string>(messageTemplate => messageTemplate.Contains("{IKepler}")), 
+				It.Is<object[]>(propertyValues => propertyValues.Contains(nameof(IStubForInterception))))
+				, Times.Exactly(expectedRetries));
+		}
+
+		[Test]
+		[TestCaseSource(nameof(AuthTokenExceptionToRetry))]
+		[TestCaseSource(nameof(ConnectionExceptionsToRetry))]
+		public async Task Execute_ShouldLogInformation_WhenExecutionSucceedsAfterRetries(Type exceptionType)
+		{
+			// ARRANGE
+			Exception exception = (Exception)Activator.CreateInstance(exceptionType);
+			_stubForInterceptionMock.SetupSequence(x => x.ExecuteAsync()).Throws(exception).Throws(exception).Returns(Task.CompletedTask);
+
+			// ACT
+			await _sut.ExecuteAsync().ConfigureAwait(false);
+
+			// ASSERT
+			_syncLogMock.Verify(m => m.LogInformation(It.IsNotNull<string>(), It.IsAny<object[]>()), Times.Once);
+		}
+
+		[Test]
+		[TestCaseSource(nameof(AuthTokenExceptionToRetry))]
+		[TestCaseSource(nameof(ConnectionExceptionsToRetry))]
+		public async Task Execute_ShouldPutKeplerInInformation_WhenExecutionSucceedsAfterRetries(Type exceptionType)
+		{
+			// ARRANGE
+			Exception exception = (Exception)Activator.CreateInstance(exceptionType);
+			_stubForInterceptionMock.SetupSequence(x => x.ExecuteAsync()).Throws(exception).Throws(exception).Returns(Task.CompletedTask);
+
+			// ACT
+			await _sut.ExecuteAsync().ConfigureAwait(false);
+
+			// ASSERT
+			_syncLogMock.Verify(m => m.LogInformation(
+				It.Is<string>(messageTemplate => messageTemplate.Contains("{IKepler}")),
+				It.Is<object[]>(propertyValues => propertyValues.Contains(nameof(IStubForInterception))))
+				, Times.Once);
+		}
+
+		[Test]
+		public async Task Execute_ShouldNotLogInformation_WhenExecutionSucceedsWithoutRetries()
+		{
+			// ACT
+			await _sut.ExecuteAsync().ConfigureAwait(false);
+
+			// ASSERT
+			_syncLogMock.Verify(m => m.LogInformation(It.IsNotNull<string>(), It.IsAny<object[]>()), Times.Never);
+		}
+
+		[Test]
+		public void Execute_ShouldNotLogInformation_WhenExecutionFails()
+		{
+			// ARRANGE
+			_stubForInterceptionMock.Setup(x => x.ExecuteAsync()).Throws<Exception>();
+
+			// ACT
+			Func<Task> action = () => _sut.ExecuteAsync();
+
+			// ASSERT
+			action.Should().Throw<Exception>();
+			_syncLogMock.Verify(m => m.LogInformation(It.IsNotNull<string>(), It.IsAny<object[]>()), Times.Never);
+		}
+
+		[Test]
+		public void Execute_ShouldChangeInvocationTarget_WhenNotAuthorizedExceptionIsThrown()
 		{
 			// ARRANGE
 			Mock<IStubForInterception> badService = new Mock<IStubForInterception>();
@@ -292,7 +438,7 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public void InvocationObjectHasRequiredField()
+		public void InvocationObject_ShouldHaveRequiredField()
 		{
 			// act
 			System.Reflection.FieldInfo field = typeof(AbstractInvocation).GetField("currentInterceptorIndex", BindingFlags.NonPublic | BindingFlags.Instance);

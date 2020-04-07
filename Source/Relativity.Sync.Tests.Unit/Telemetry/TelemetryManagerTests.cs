@@ -37,7 +37,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 		{
 			// ARRANGE
 			var metricsCollectionManager = new Mock<IInternalMetricsCollectionManager>();
-			var categoryTargetList = new List<CategoryTarget> { new CategoryTarget { Category = new CategoryRef { Name = TelemetryConstants.TELEMETRY_CATEGORY } } };
+			var categoryTargetList = new List<CategoryTarget> { new CategoryTarget { Category = new CategoryRef { Name = TelemetryConstants.INTEGRATION_POINTS_TELEMETRY_CATEGORY } } };
 
 			metricsCollectionManager.Setup(x => x.GetCategoryTargetsAsync())
 				.ReturnsAsync(categoryTargetList);
@@ -68,6 +68,10 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 
 			_servicesManager.Setup(x => x.CreateProxy<IInternalMetricsCollectionManager>(It.IsAny<ExecutionIdentity>()))
 				.Returns(metricsCollectionManager.Object);
+
+			Mock<ITelemetryMetricProvider> telemetryProvider = new Mock<ITelemetryMetricProvider>();
+			telemetryProvider.SetupGet(m => m.CategoryName).Returns(nameof(TelemetryManagerTests));
+			_telemetryManager.AddMetricProvider(telemetryProvider.Object);
 
 			// ACT
 			_telemetryManager.InstallMetrics();

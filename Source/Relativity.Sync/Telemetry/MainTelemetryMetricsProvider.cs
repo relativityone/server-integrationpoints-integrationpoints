@@ -53,7 +53,9 @@ namespace Relativity.Sync.Telemetry
 		{
 		}
 
-		protected override string ProviderName => nameof(MainTelemetryMetricsProvider);
+		public override string CategoryName { get; } = TelemetryConstants.INTEGRATION_POINTS_TELEMETRY_CATEGORY;
+
+		protected override string ProviderName { get; } = nameof(MainTelemetryMetricsProvider);
 
 		protected override IEnumerable<MetricIdentifier> GetMetricIdentifiers()
 		{
