@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using System.Collections.Generic;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.System.Helpers
@@ -10,7 +11,7 @@ namespace Relativity.Sync.Tests.System.Helpers
 
 		public NullSupportedByViewerFileInfoFieldsBuilder(INativeFileRepository nativeFileRepository)
 		{
-			_fileInfoFieldsBuilder = new FileInfoFieldsBuilder(nativeFileRepository);
+			_fileInfoFieldsBuilder = new FileInfoFieldsBuilder(nativeFileRepository, new EmptyLogger());
 		}
 
 		public IEnumerable<FieldInfoDto> BuildColumns()
