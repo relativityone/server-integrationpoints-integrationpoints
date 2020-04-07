@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.Unit.Transfer
@@ -22,7 +23,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		{
 			_nativeFileRepositoryMock = new Mock<INativeFileRepository>();
 
-			_sut = new FileInfoFieldsBuilder(_nativeFileRepositoryMock.Object);
+			_sut = new FileInfoFieldsBuilder(_nativeFileRepositoryMock.Object, new EmptyLogger());
 		}
 
 		[Test]

@@ -105,14 +105,7 @@ namespace Relativity.Sync.Transfer
 
 		public object GetValue(int i)
 		{
-			object[] currentBatchEnumerator = _batchEnumerator.Current;
-
-			if (currentBatchEnumerator == null)
-			{
-				return null;
-			}
-
-			object value = currentBatchEnumerator[i];
+			object value = _batchEnumerator.Current[i];
 
 			if (value != null && GetFieldType(i) == _typeOfString)
 			{

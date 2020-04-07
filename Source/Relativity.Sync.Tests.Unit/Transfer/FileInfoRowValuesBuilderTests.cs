@@ -115,7 +115,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			// Assert
 			action
 				.Should().Throw<SyncException>()
-				.Which.Message.Should().Contain($"has more than one native file");
+				.Which.Message.Should().Contain("has more than one native file");
 		}
 	}
 }
