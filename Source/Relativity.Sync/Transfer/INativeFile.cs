@@ -6,5 +6,6 @@
 		string Location { get; }
 		string Filename { get; }
 		long Size { get; }
+		bool IsDuplicated { get; set; }
 	}
 }

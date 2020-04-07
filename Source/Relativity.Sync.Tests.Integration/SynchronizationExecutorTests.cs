@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using FluentAssertions;
+using kCura.Relativity.DataReaderClient;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.Folder;
@@ -137,7 +138,7 @@ namespace Relativity.Sync.Tests.Integration
 				{
 					dataReader.Read();
 				}
-				_importBulkArtifactJob.Raise(x => x.OnComplete += null, CreateJobReport());
+				_importBulkArtifactJob.Raise(x => ((IImportNotifier) x).OnComplete += null, CreateJobReport());
 			});
 
 			SetupFieldQueryResult();
@@ -191,7 +192,7 @@ namespace Relativity.Sync.Tests.Integration
 					dataReader.Read();
 				}
 
-				_importBulkArtifactJob.Raise(x => x.OnComplete += null, CreateJobReport());
+				_importBulkArtifactJob.Raise(x => ((IImportNotifier) x).OnComplete += null, CreateJobReport());
 			});
 
 			SetupFieldQueryResult();
@@ -235,7 +236,7 @@ namespace Relativity.Sync.Tests.Integration
 			_importBulkArtifactJob.Setup(x => x.Execute()).Callback(() =>
 			{
 				_importBulkArtifactJob.Raise(x => x.OnFatalException += null, CreateJobReport());
-				_importBulkArtifactJob.Raise(x => x.OnComplete += null, CreateJobReport());
+				_importBulkArtifactJob.Raise(x => ((IImportNotifier) x).OnComplete += null, CreateJobReport());
 			});
 
 			MassCreateResult massCreateResult = new MassCreateResult()

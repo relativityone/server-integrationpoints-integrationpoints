@@ -42,14 +42,13 @@ namespace Relativity.Sync.Executors
 			return new ImportJob(syncImportBulkArtifactJob, new SemaphoreSlimWrapper(new SemaphoreSlim(0, 1)), _jobHistoryErrorRepository,
 				configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, _logger);
 		}
-
-	
+		
 		private async Task<ImportBulkArtifactJob> CreateImportBulkArtifactJobAsync(ISynchronizationConfiguration configuration, ISourceWorkspaceDataReader dataReader, int startingIndex = 0)
 		{
 			IImportAPI importApi = await GetImportApiAsync().ConfigureAwait(false);
 			ImportBulkArtifactJob importJob = await Task.Run(() => importApi.NewNativeDocumentImportJob()).ConfigureAwait(false);
 
-			importJob.SourceData.SourceData = dataReader;
+			importJob.SourceData.SourceData = dataReader; // This assignment invokes IDataReader.Read immediately!
 			importJob.Settings.ApplicationName = _syncJobParameters.SyncApplicationName;
 			importJob.Settings.MaximumErrorCount = int.MaxValue - 1; // From IAPI docs: This must be greater than 0 and less than Int32.MaxValue.
 			importJob.Settings.StartRecordNumber = startingIndex;

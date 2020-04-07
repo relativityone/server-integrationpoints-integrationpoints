@@ -102,7 +102,7 @@ namespace Relativity.Sync.Tests.Unit
 			// act
 			using (_sut.AttachToImportJob(_bulkImportJobStub.Object, 1, 1))
 			{
-				_bulkImportJobStub.Raise(x => x.OnComplete += null, CreateJobReport(itemsProcessed, itemsWithErrors));
+				_bulkImportJobStub.Raise(x => ((IImportNotifier) x).OnComplete += null, CreateJobReport(itemsProcessed, itemsWithErrors));
 			}
 
 			// assert
@@ -164,7 +164,7 @@ namespace Relativity.Sync.Tests.Unit
 				_bulkImportJobStub.Raise(x => x.OnProgress += null, 0); // to cover for decrement in OnError handling
 				_bulkImportJobStub.Raise(x => x.OnItemLevelError += null, new ItemLevelError());
 
-				_bulkImportJobStub.Raise(x => x.OnComplete += null, CreateJobReport(1, 1));
+				_bulkImportJobStub.Raise(x => ((IImportNotifier) x).OnComplete += null, CreateJobReport(1, 1));
 			}
 
 			using (_sut.AttachToImportJob(_bulkImportJobStub.Object, 1, 1))
@@ -189,7 +189,7 @@ namespace Relativity.Sync.Tests.Unit
 
 			bulkImportJobMock.SetupAdd(m => m.OnProgress += (i) => { });
 			bulkImportJobMock.SetupAdd(m => m.OnItemLevelError += (i) => { });
-			bulkImportJobMock.SetupAdd(m => m.OnComplete += (i) => { });
+			bulkImportJobMock.SetupAdd(m => ((IImportNotifier) m).OnComplete += (i) => { });
 			bulkImportJobMock.SetupAdd(m => m.OnFatalException += (i) => { });
 
 			Mock<ISyncImportBulkArtifactJob>[] bulkImportJobs =
@@ -211,7 +211,7 @@ namespace Relativity.Sync.Tests.Unit
 			{
 				jobMock.VerifyRemove(m => m.OnProgress -= It.IsAny<IImportNotifier.OnProgressEventHandler>(), Times.Exactly(batchCount));
 				jobMock.VerifyRemove(m => m.OnItemLevelError -= It.IsAny<OnSyncImportBulkArtifactJobItemLevelErrorEventHandler>(), Times.Exactly(batchCount));
-				jobMock.VerifyRemove(m => m.OnComplete -= It.IsAny<IImportNotifier.OnCompleteEventHandler>(), Times.Exactly(batchCount));
+				jobMock.VerifyRemove(m => ((IImportNotifier) m).OnComplete -= It.IsAny<IImportNotifier.OnCompleteEventHandler>(), Times.Exactly(batchCount));
 				jobMock.VerifyRemove(m => m.OnFatalException -= It.IsAny<IImportNotifier.OnFatalExceptionEventHandler>(), Times.Exactly(batchCount));
 			}
 		}

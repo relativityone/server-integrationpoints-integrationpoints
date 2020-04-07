@@ -3,6 +3,7 @@ using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Collections.Generic;
+using System.Globalization;
 using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.Sync.Transfer
@@ -40,15 +41,9 @@ namespace Relativity.Sync.Transfer
 			}
 		}
 
-		public object this[int i]
-		{
-			get { return GetValue(i); }
-		}
+		public object this[int i] => GetValue(i);
 
-		public object this[string name]
-		{
-			get { return GetValue(GetOrdinal(name)); }
-		}
+		public object this[string name] => GetValue(GetOrdinal(name));
 
 		public int Depth { get; } = 0;
 
@@ -56,10 +51,7 @@ namespace Relativity.Sync.Transfer
 
 		public int RecordsAffected { get; } = 0;
 
-		public int FieldCount
-		{
-			get { return _templateDataTable.Columns.Count; }
-		}
+		public int FieldCount => _templateDataTable.Columns.Count;
 
 		public BatchDataReader(
 			DataTable templateDataTable,
@@ -113,7 +105,14 @@ namespace Relativity.Sync.Transfer
 
 		public object GetValue(int i)
 		{
-			object value = _batchEnumerator.Current[i];
+			object[] currentBatchEnumerator = _batchEnumerator.Current;
+
+			if (currentBatchEnumerator == null)
+			{
+				return null;
+			}
+
+			object value = currentBatchEnumerator[i];
 
 			if (value != null && GetFieldType(i) == _typeOfString)
 			{
@@ -175,7 +174,17 @@ namespace Relativity.Sync.Transfer
 
 				foreach (RelativityObjectSlim batchItem in _batch)
 				{
-					yield return BuildRow(specialFieldBuildersDictionary, batchItem);
+					object[] row;
+					try
+					{
+						row = BuildRow(specialFieldBuildersDictionary, batchItem);
+					}
+					catch (SyncException ex)
+					{
+						_itemLevelErrorHandler(batchItem.ArtifactID.ToString(CultureInfo.InvariantCulture), ex.Message);
+						continue;
+					}
+					yield return row;
 				}
 			}
 		}

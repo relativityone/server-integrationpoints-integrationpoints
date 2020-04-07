@@ -14,6 +14,7 @@
 		public string Location { get; }
 		public string Filename { get; }
 		public long Size { get; }
+		public bool IsDuplicated { get; set; } = false;
 
 		public static INativeFile Empty { get; } = new NativeFile(0, string.Empty, string.Empty, 0);
 	}

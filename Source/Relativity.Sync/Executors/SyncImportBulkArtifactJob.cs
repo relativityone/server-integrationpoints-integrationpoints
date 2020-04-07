@@ -1,13 +1,17 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using kCura.Relativity.DataReaderClient;
 using Relativity.Sync.Transfer;
+using Relativity.Sync.Transfer.ImportAPI;
 
 namespace Relativity.Sync.Executors
 {
 	[ExcludeFromCodeCoverage]
 	internal sealed class SyncImportBulkArtifactJob : ISyncImportBulkArtifactJob
 	{
+		private int _sourceWorkspaceErrorItemsCount = 0;
+
 		private const string _IAPI_IDENTIFIER_COLUMN = "Identifier";
 		private const string _IAPI_MESSAGE_COLUMN = "Message";
 
@@ -18,6 +22,8 @@ namespace Relativity.Sync.Executors
 			_importBulkArtifactJob = importBulkArtifactJob;
 			_importBulkArtifactJob.OnProgress += RaiseOnProgress;
 			_importBulkArtifactJob.OnError += HandleIapiItemLevelError;
+			_importBulkArtifactJob.OnComplete += HandleIapiJobComplete;
+			_importBulkArtifactJob.OnFatalException += HandleIapiFatalException;
 
 			ItemStatusMonitor = sourceWorkspaceDataReader.ItemStatusMonitor;
 			sourceWorkspaceDataReader.OnItemReadError += HandleSourceWorkspaceDataItemReadError;
@@ -25,27 +31,10 @@ namespace Relativity.Sync.Executors
 
 		public IItemStatusMonitor ItemStatusMonitor { get; }
 
-		public event IImportNotifier.OnCompleteEventHandler OnComplete
-		{
-			add => _importBulkArtifactJob.OnComplete += value;
-			remove => _importBulkArtifactJob.OnComplete -= value;
-		}
-
-		public event IImportNotifier.OnFatalExceptionEventHandler OnFatalException
-		{
-			add => _importBulkArtifactJob.OnFatalException += value;
-			remove => _importBulkArtifactJob.OnFatalException -= value;
-		}
-
-		public event IImportNotifier.OnProgressEventHandler OnProgress;
-
-		public event IImportNotifier.OnProcessProgressEventHandler OnProcessProgress
-		{
-			add => _importBulkArtifactJob.OnProcessProgress += value;
-			remove => _importBulkArtifactJob.OnProcessProgress -= value;
-		}
-
-		public event OnSyncImportBulkArtifactJobItemLevelErrorEventHandler OnItemLevelError;
+		public event SyncJobEventHandler<ItemLevelError> OnItemLevelError;
+		public event SyncJobEventHandler<ImportApiJobProgress> OnProgress;
+		public event SyncJobEventHandler<ImportApiJobStatistics> OnComplete;
+		public event SyncJobEventHandler<ImportApiJobStatistics> OnFatalException;
 
 		public void Execute()
 		{
@@ -54,12 +43,7 @@ namespace Relativity.Sync.Executors
 
 		private void RaiseOnProgress(long completedRow)
 		{
-			OnProgress?.Invoke(completedRow);
-		}
-
-		private void RaiseOnItemLevelError(ItemLevelError itemLevelError)
-		{
-			OnItemLevelError?.Invoke(itemLevelError);
+			OnProgress?.Invoke(new ImportApiJobProgress(completedRow));
 		}
 
 		private void HandleIapiItemLevelError(IDictionary row)
@@ -67,14 +51,40 @@ namespace Relativity.Sync.Executors
 			RaiseOnItemLevelError(new ItemLevelError(
 				GetValueOrNull(row, _IAPI_IDENTIFIER_COLUMN),
 				$"IAPI {GetValueOrNull(row, _IAPI_MESSAGE_COLUMN)}"
-				));
+			));
+		}
+
+		private void HandleIapiJobComplete(JobReport jobReport)
+		{
+			OnComplete?.Invoke(CreateJobStatistics(jobReport));
+		}
+
+		private void HandleIapiFatalException(JobReport jobReport)
+		{
+			OnFatalException?.Invoke(CreateJobStatistics(jobReport));
+		}
+
+		private void RaiseOnItemLevelError(ItemLevelError itemLevelError)
+		{
+			OnItemLevelError?.Invoke(itemLevelError);
 		}
 
 		private void HandleSourceWorkspaceDataItemReadError(long completedItem, ItemLevelError itemLevelError)
 		{
-			RaiseOnProgress(completedItem);
+			_sourceWorkspaceErrorItemsCount++;
 
+			RaiseOnProgress(completedItem);
 			RaiseOnItemLevelError(itemLevelError);
+		}
+
+		private ImportApiJobStatistics CreateJobStatistics(JobReport jobReport)
+		{
+			ImportApiJobStatistics statistics = ImportApiJobStatistics.FromJobReport(jobReport);
+
+			statistics.TotalItemsCount += _sourceWorkspaceErrorItemsCount;
+			statistics.ErrorItemsCount += _sourceWorkspaceErrorItemsCount;
+
+			return statistics;
 		}
 
 		private static string GetValueOrNull(IDictionary row, string key)

@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
+using kCura.Relativity.DataReaderClient;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Executors;
@@ -53,7 +54,7 @@ namespace Relativity.Sync.Tests.Unit
 					identifier,
 					message
 				));
-				_syncImportBulkArtifactJob.Raise(x => x.OnComplete += null, CreateJobReport());
+				_syncImportBulkArtifactJob.Raise(x => ((IImportNotifier) x).OnComplete += null, CreateJobReport());
 			});
 
 			// act
@@ -114,7 +115,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			_syncImportBulkArtifactJob.Setup(x => x.Execute()).Callback(() =>
 			{
-				_syncImportBulkArtifactJob.Raise(x => x.OnComplete += null, CreateJobReport());
+				_syncImportBulkArtifactJob.Raise(x => ((IImportNotifier) x).OnComplete += null, CreateJobReport());
 			});
 
 			// act
@@ -130,7 +131,7 @@ namespace Relativity.Sync.Tests.Unit
 			_syncImportBulkArtifactJob.Setup(x => x.Execute()).Callback(() =>
 			{
 				_syncImportBulkArtifactJob.Raise(x => x.OnFatalException += null, CreateJobReport());
-				_syncImportBulkArtifactJob.Raise(x => x.OnComplete += null, CreateJobReport());
+				_syncImportBulkArtifactJob.Raise(x => ((IImportNotifier) x).OnComplete += null, CreateJobReport());
 			});
 
 			// act
@@ -143,7 +144,7 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public void ItShouldHandleOnComplete()
 		{
-			_syncImportBulkArtifactJob.Setup(x => x.Execute()).Raises(x => x.OnComplete += null, CreateJobReport());
+			_syncImportBulkArtifactJob.Setup(x => x.Execute()).Raises(x => ((IImportNotifier) x).OnComplete += null, CreateJobReport());
 
 			// act
 			Func<Task<ImportJobResult>> action = async () => await _importJob.RunAsync(CancellationToken.None).ConfigureAwait(false);

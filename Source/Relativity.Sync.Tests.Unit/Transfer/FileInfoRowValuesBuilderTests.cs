@@ -28,7 +28,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 		[Test]
 		[TestCaseSource(nameof(FieldInfoDtos))]
-		public void ItShouldReturnInitialValueIfFieldInfoDtoIsDocumentField(FieldInfoDto fieldInfoDto, Type expectedType, object expectedValue)
+		public void BuildRowValue_ShouldReturnInitialValue_WhenFieldInfoDtoIsDocumentField(FieldInfoDto fieldInfoDto, Type expectedType, object expectedValue)
 		{
 			// ARRANGE
 			RelativityObjectSlim document = new RelativityObjectSlim() { ArtifactID = _DOCUMENT_ARTIFACT_ID };
@@ -54,7 +54,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 		[Test]
 		[TestCaseSource(nameof(UnsupportedNonDocumentFieldInfoDtos))]
-		public void ItShouldThrowExceptionOnNotSupportedNonDocumentSpecialField(FieldInfoDto fieldInfoDto)
+		public void BuildRowValue_ShouldThrowException_WhenNotSupportedNonDocumentSpecialField(FieldInfoDto fieldInfoDto)
 		{
 			// ARRANGE
 			RelativityObjectSlim document = new RelativityObjectSlim() { ArtifactID = _DOCUMENT_ARTIFACT_ID };
@@ -73,7 +73,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		}
 
 		[Test]
-		public void ItShouldThrowSyncExceptionOnDocumentArtifactIdNotPresentInDictionary()
+		public void BuildRowValue_ShouldThrowSyncException_WhenDocumentArtifactIdNotPresentInDictionary()
 		{
 			// ARRANGE
 			FieldInfoDto fieldInfoDto = FieldInfoDto.NativeFileSizeField();
@@ -87,6 +87,35 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			// ASSERT
 			action.Should().Throw<SyncException>();
+		}
+
+		[Test]
+		public void BuildRowValue_ShouldThrowSyncException_WhenNativesAreDuplicated()
+		{
+			// Arrange
+
+			FieldInfoDto fieldInfoDto = FieldInfoDto.NativeFileSizeField();
+#pragma warning disable RG2009 // Hardcoded Numeric Value
+			IDictionary<int, INativeFile> artifactIdToNativeFileMap = new Dictionary<int, INativeFile>()
+			{
+				{
+					_DOCUMENT_ARTIFACT_ID, new NativeFile(2, string.Empty, string.Empty, 3)
+					{
+						IsDuplicated = true
+					}
+				}
+			};
+#pragma warning restore RG2009 // Hardcoded Numeric Value
+			RelativityObjectSlim document = new RelativityObjectSlim() {ArtifactID = _DOCUMENT_ARTIFACT_ID };
+			FileInfoRowValuesBuilder instance = new FileInfoRowValuesBuilder(artifactIdToNativeFileMap);
+
+			// Act
+			Action action = () => instance.BuildRowValue(fieldInfoDto, document, _INITIAL_VALUE);
+
+			// Assert
+			action
+				.Should().Throw<SyncException>()
+				.Which.Message.Should().Contain($"has more than one native file");
 		}
 	}
 }
