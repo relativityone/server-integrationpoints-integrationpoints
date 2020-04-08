@@ -7,8 +7,6 @@ Relativity.Kepler.Client
 Relativity.Telemetry.APM
 Relativity.AutomatedWorkflows.Services.Interfaces
 
-kCura.Apps.Common.Utils
-
 Microsoft.CodeAnalysis.FxCopAnalyzers
 CSharpGuidelineAnalyzer
 System.Reactive.Linq

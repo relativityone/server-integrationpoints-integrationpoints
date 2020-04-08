@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using kCura.Apps.Common.Utils.Serializers;
+using Relativity.Sync.Utils;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Interfaces.UserInfo;

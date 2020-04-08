@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using kCura.Apps.Common.Utils.Serializers;
+using Relativity.Sync.Utils;
 using kCura.Relativity.DataReaderClient;
 using Moq;
 using NUnit.Framework;

@@ -13,7 +13,6 @@ nuget Relativity.Platform.Keywords ~> 11.2.0
 nuget Relativity.Services.Interfaces ~> 11.2.0
 nuget Relativity.Services.Interfaces.Private ~> 11.2.0
 nuget Relativity.Services.DataContracts ~> 11.2.0
-nuget kCura.Apps.Common.Utils ~> 2.1.0
 nuget kCura.Relativity.Client ~> 11.2.0
 nuget Relativity.Telemetry.APM ~> 2019.1.0
 nuget Relativity.Telemetry.Services.Interface ~> 3000.0

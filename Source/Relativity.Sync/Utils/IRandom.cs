@@ -1,4 +1,4 @@
-﻿namespace Relativity.Sync
+﻿namespace Relativity.Sync.Utils
 {
 	internal interface IRandom
 	{

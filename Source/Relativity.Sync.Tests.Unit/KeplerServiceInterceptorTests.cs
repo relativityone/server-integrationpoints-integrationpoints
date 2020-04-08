@@ -16,6 +16,7 @@ using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Tests.Unit.Stubs;
+using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Tests.Unit
 {

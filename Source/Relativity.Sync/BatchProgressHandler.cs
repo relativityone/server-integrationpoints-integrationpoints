@@ -1,6 +1,7 @@
 ﻿using System;
 using kCura.Relativity.DataReaderClient;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Utils;
 
 namespace Relativity.Sync
 {

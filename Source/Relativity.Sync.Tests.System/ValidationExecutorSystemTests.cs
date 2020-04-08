@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using kCura.Apps.Common.Utils.Serializers;
+using Relativity.Sync.Utils;
 using NUnit.Framework;
 using Relativity.Services.Workspace;
 using Relativity.Sync.Configuration;
