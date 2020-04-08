@@ -79,6 +79,11 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			FieldInfoDto fieldInfoDto = FieldInfoDto.NativeFileSizeField();
 			RelativityObjectSlim document = new RelativityObjectSlim() { ArtifactID = _DOCUMENT_ARTIFACT_ID };
 			IDictionary<int, INativeFile> artifactIdToNativeFileMap = new Dictionary<int, INativeFile>();
+			artifactIdToNativeFileMap.Add(_DOCUMENT_ARTIFACT_ID, new NativeFile(_DOCUMENT_ARTIFACT_ID, string.Empty,
+				string.Empty, 0)
+			{
+				IsDuplicated = true
+			});
 
 			FileInfoRowValuesBuilder instance = new FileInfoRowValuesBuilder(artifactIdToNativeFileMap);
 
@@ -86,7 +91,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			Action action = () => instance.BuildRowValue(fieldInfoDto, document, _INITIAL_VALUE);
 
 			// ASSERT
-			action.Should().Throw<SyncException>();
+			action.Should().Throw<SyncItemLevelErrorException>();
 		}
 
 		[Test]
