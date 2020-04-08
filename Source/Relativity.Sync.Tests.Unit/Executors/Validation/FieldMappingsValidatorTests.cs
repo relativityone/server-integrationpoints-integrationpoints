@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using kCura.Apps.Common.Utils.Serializers;
+using Relativity.Sync.Utils;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.DataContracts.DTOs;

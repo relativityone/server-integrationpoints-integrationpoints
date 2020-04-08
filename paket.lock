@@ -17,8 +17,6 @@ NUGET
     kCura (13.1.0)
       BCrypt.Net-Core (>= 1.6)
       kCura.Injection (>= 13.1)
-    kCura.Apps.Common.Utils (2.1.11)
-      Newtonsoft.Json (>= 6.0)
     kCura.Injection (13.1.0)
     kCura.NUnit.Integration (11.2.87.1)
       NUnit (>= 3.11)

@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Autofac;
-using kCura.Apps.Common.Utils.Serializers;
-using kCura.WinEDDS.Service.Export;
 using Relativity.API;
 using Relativity.Sync.Executors.SumReporting;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Telemetry;
+using Relativity.Sync.Utils;
 using Relativity.Telemetry.APM;
 
 namespace Relativity.Sync

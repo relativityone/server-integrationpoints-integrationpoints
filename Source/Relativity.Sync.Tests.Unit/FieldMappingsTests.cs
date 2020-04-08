@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using FluentAssertions;
-using kCura.Apps.Common.Utils.Serializers;
+using Relativity.Sync.Utils;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Logging;

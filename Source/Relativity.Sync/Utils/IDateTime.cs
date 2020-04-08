@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Relativity.Sync
+namespace Relativity.Sync.Utils
 {
 	/// <summary>
 	/// Interface for <see cref="System.DateTime"/>

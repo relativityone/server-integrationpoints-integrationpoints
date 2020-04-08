@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Relativity.Sync
+namespace Relativity.Sync.Utils
 {
 	internal class WrapperForRandom : IRandom
 	{

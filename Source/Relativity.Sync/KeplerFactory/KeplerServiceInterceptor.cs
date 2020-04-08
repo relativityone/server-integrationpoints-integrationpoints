@@ -10,6 +10,7 @@ using Polly.Retry;
 using Polly.Wrap;
 using Relativity.Services.Exceptions;
 using Relativity.Sync.Telemetry;
+using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.KeplerFactory
 {

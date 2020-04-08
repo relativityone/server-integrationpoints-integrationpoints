@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using kCura.Apps.Common.Utils.Serializers;
+using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Storage
 {

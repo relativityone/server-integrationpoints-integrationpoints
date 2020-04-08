@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using kCura.Apps.Common.Utils.Serializers;
+using Relativity.Sync.Utils;
 using Newtonsoft.Json;
 using Relativity.Services.Objects.DataContracts;
 
