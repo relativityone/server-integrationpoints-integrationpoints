@@ -44,8 +44,11 @@ namespace Relativity.Sync.Transfer
 					artifactIdToNativeFile.Add(nativeFile.DocumentArtifactId, nativeFile);
 				}
 			}
-			
-			_logger.LogWarning("There are {count} documents with duplicated native files in current batch.", documentsWithDuplicatedNativesCount);
+
+			if (documentsWithDuplicatedNativesCount > 0)
+			{
+				_logger.LogWarning("There are {count} documents with duplicated native files in current batch.", documentsWithDuplicatedNativesCount);
+			}
 
 			return new FileInfoRowValuesBuilder(artifactIdToNativeFile);
 		}
