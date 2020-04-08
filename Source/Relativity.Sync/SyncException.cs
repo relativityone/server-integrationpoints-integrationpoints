@@ -8,7 +8,7 @@ namespace Relativity.Sync
 	///     Represents Sync exception
 	/// </summary>
 	[Serializable]
-	public sealed class SyncException : Exception
+	public class SyncException : Exception
 	{
 		/// <summary>
 		///     Sync job workflow ID
@@ -21,7 +21,7 @@ namespace Relativity.Sync
 		}
 
 		/// <inheritdoc />
-		private SyncException(SerializationInfo info, StreamingContext context) : base(info, context)
+		protected SyncException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 			WorkflowId = info.GetString(nameof(WorkflowId));
 		}

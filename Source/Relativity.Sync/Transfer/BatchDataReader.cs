@@ -172,7 +172,7 @@ namespace Relativity.Sync.Transfer
 					{
 						row = BuildRow(specialFieldBuildersDictionary, batchItem);
 					}
-					catch (SyncException ex)
+					catch (SyncItemLevelErrorException ex)
 					{
 						_itemLevelErrorHandler(batchItem.ArtifactID.ToString(CultureInfo.InvariantCulture), ex.Message);
 						continue;

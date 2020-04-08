@@ -185,7 +185,7 @@ namespace Relativity.Sync.Tests.Unit
 
 		private static ImportApiJobStatistics CreateJobReport()
 		{
-			return new ImportApiJobStatistics();
+			return new ImportApiJobStatistics(0, 0, 0, 0);
 		}
 	}
 }

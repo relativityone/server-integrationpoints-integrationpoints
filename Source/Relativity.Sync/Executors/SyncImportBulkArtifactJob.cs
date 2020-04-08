@@ -79,10 +79,13 @@ namespace Relativity.Sync.Executors
 
 		private ImportApiJobStatistics CreateJobStatistics(JobReport jobReport)
 		{
-			ImportApiJobStatistics statistics = ImportApiJobStatistics.FromJobReport(jobReport);
-
-			statistics.TotalItemsCount += _sourceWorkspaceErrorItemsCount;
-			statistics.ErrorItemsCount += _sourceWorkspaceErrorItemsCount;
+			ImportApiJobStatistics statistics = new ImportApiJobStatistics(
+				jobReport.TotalRows + _sourceWorkspaceErrorItemsCount,
+				jobReport.ErrorRowCount + _sourceWorkspaceErrorItemsCount,
+				jobReport.MetadataBytes,
+				jobReport.FileBytes,
+				jobReport.FatalException
+			);
 
 			return statistics;
 		}

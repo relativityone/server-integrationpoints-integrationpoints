@@ -30,16 +30,14 @@ namespace Relativity.Sync.Transfer
 				return initialValue;
 			}
 
-			if (!ArtifactIdToNativeFile.ContainsKey(document.ArtifactID))
+			if (!ArtifactIdToNativeFile.TryGetValue(document.ArtifactID, out INativeFile nativeFile))
 			{
-				throw new SyncException($"Mapping from document artifact ID: {document.ArtifactID} to native file was not found.");
+				nativeFile = NativeFile.Empty;
 			}
-
-			INativeFile nativeFile = ArtifactIdToNativeFile[document.ArtifactID];
 
 			if (nativeFile.IsDuplicated)
 			{
-				throw new SyncException($"Database is corrupted - document Artifact ID: {document.ArtifactID} has more than one native file associated with it.");
+				throw new SyncItemLevelErrorException($"Database is corrupted - document Artifact ID: {document.ArtifactID} has more than one native file associated with it.");
 			}
 
 			switch (fieldInfoDto.SpecialFieldType)

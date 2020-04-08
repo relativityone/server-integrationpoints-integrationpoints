@@ -7,6 +7,6 @@
 			CompletedItem = completedItem;
 		}
 
-		public long CompletedItem { get; set; }
+		public long CompletedItem { get; }
 	}
 }

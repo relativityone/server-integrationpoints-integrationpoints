@@ -280,11 +280,7 @@ namespace Relativity.Sync.Tests.Unit
 
 		private static ImportApiJobStatistics CreateJobReport(int itemsProcessed, int itemsWithErrors)
 		{
-			return new ImportApiJobStatistics()
-			{
-				TotalItemsCount = itemsProcessed + itemsWithErrors,
-				ErrorItemsCount = itemsWithErrors
-			};
+			return new ImportApiJobStatistics(itemsProcessed + itemsWithErrors, itemsWithErrors, 0, 0);
 		}
 		
 		public void Dispose()
