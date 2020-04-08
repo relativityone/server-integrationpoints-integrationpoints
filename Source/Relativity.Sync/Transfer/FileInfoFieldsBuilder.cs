@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Relativity.Sync.Transfer
@@ -30,24 +31,18 @@ namespace Relativity.Sync.Transfer
 				.ConfigureAwait(false);
 
 			IDictionary<int, INativeFile> artifactIdToNativeFile = new Dictionary<int, INativeFile>(documentArtifactIds.Count);
-			int documentsWithDuplicatedNativesCount = 0;
 
 			foreach (INativeFile nativeFile in nativeFileInfo)
 			{
 				if (artifactIdToNativeFile.ContainsKey(nativeFile.DocumentArtifactId))
 				{
-					documentsWithDuplicatedNativesCount++;
 					artifactIdToNativeFile[nativeFile.DocumentArtifactId].IsDuplicated = true;
+					_logger.LogWarning("Duplicated native file detected for document Artifact ID: {artifactId}", nativeFile.DocumentArtifactId);
 				}
 				else
 				{
 					artifactIdToNativeFile.Add(nativeFile.DocumentArtifactId, nativeFile);
 				}
-			}
-
-			if (documentsWithDuplicatedNativesCount > 0)
-			{
-				_logger.LogWarning("There are {count} documents with duplicated native files in current batch.", documentsWithDuplicatedNativesCount);
 			}
 
 			return new FileInfoRowValuesBuilder(artifactIdToNativeFile);
