@@ -606,49 +606,5 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 					x => x.Count() == 1
 						 && x.First().PermissionID == permissionId));
 		}
-
-		[Test]
-		public void UserBelongsToGroup_ShouldReturnsTrue_WhenUserBelongsToGroup()
-		{
-			//arrange
-			GroupRef group = new GroupRef(100);
-			List<UserRef> usersInGroup = new List<UserRef>()
-			{
-				new UserRef(1),
-				new UserRef(2),
-				new UserRef(3)
-			};
-
-			_permissionManager.GetWorkspaceGroupUsersAsync(_WORKSPACE_ID, Arg.Any<GroupRef>())
-				.Returns(usersInGroup);
-
-			//act
-			var result = _sut.UserBelongsToGroup(2, 100);
-
-			//assert
-			Assert.IsTrue(result);
-		}
-
-		[Test]
-		public void UserBelongsToGroup_ShouldReturnsFalse_WhenUserDoesNotBelongToGroup()
-		{
-			//arrange
-			GroupRef group = new GroupRef(100);
-			List<UserRef> usersInGroup = new List<UserRef>()
-			{
-				new UserRef(1),
-				new UserRef(2),
-				new UserRef(3)
-			};
-
-			_permissionManager.GetWorkspaceGroupUsersAsync(_WORKSPACE_ID, Arg.Any<GroupRef>())
-				.Returns(usersInGroup);
-
-			//act
-			var result = _sut.UserBelongsToGroup(5, 100);
-
-			//assert
-			Assert.IsFalse(result);
-		}
 	}
 }
