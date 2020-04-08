@@ -3,7 +3,7 @@ FormatTaskName "------- Executing Task: {0} -------"
 properties {
     $SourceDir = Join-Path $PSScriptRoot "source"
     $Solution = ((Get-ChildItem -Path $SourceDir -Filter *.sln -File)[0].FullName)
-    $ArtifactsDir = Join-Path $PSScriptRoot "Artifacts"
+    $ArtifactsDir = Join-Path $PSScriptRoot "Artifacts\NuGet"
     $LogsDir = Join-Path $ArtifactsDir "Logs"
     $LogFilePath = Join-Path $LogsDir "buildsummary.log"
     $ErrorLogFilePath = Join-Path $LogsDir "builderrors.log"
