@@ -25,9 +25,6 @@ namespace Relativity.Sync.WorkspaceGenerator.Import
 
 		public async Task<ImportJobResult> ImportDataAsync(int workspaceArtifactId, IDataReader dataReader)
 		{
-			kCura.WinEDDS.Config.ConfigSettings[nameof(kCura.WinEDDS.Config.TapiForceHttpClient)] = true.ToString(CultureInfo.InvariantCulture);
-			kCura.WinEDDS.Config.ConfigSettings[nameof(kCura.WinEDDS.Config.TapiForceBcpHttpClient)] = true.ToString(CultureInfo.InvariantCulture);
-
 			Console.WriteLine("Creating ImportAPI client");
 			var importApi =
 				new ImportAPI(
