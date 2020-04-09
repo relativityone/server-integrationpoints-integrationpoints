@@ -1,20 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Net.Sockets;
 using System.Reflection;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using Castle.DynamicProxy;
 using Castle.DynamicProxy.Internal;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.Kepler.Exceptions;
 using Relativity.Services.Exceptions;
-using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Telemetry;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Tests.Unit.Stubs;
 using Relativity.Sync.Utils;
 
@@ -165,12 +164,13 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public void Execute_ShouldRetryFailedExecution_WhenHttpExceptionIsThrown()
+		[TestCaseSource(nameof(ConnectionExceptionsToRetry))]
+		public void Execute_ShouldRetryFailedExecution_WhenConnectionExceptionIsThrown(Exception exception)
 		{
 			// ARRANGE
 			const int expectedInvocations = 5;
 
-			_stubForInterceptionMock.Setup(x => x.ExecuteAsync()).Throws<HttpRequestException>();
+			_stubForInterceptionMock.Setup(x => x.ExecuteAsync()).Throws(exception);
 
 			// ACT
 			Func<Task> action = () => _sut.ExecuteAsync();
@@ -199,12 +199,12 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		[TestCaseSource(nameof(AuthTokenExceptionToRetry))]
 		[TestCaseSource(nameof(ConnectionExceptionsToRetry))]
-		public void Execute_ShouldStopRetrying_WhenExecutionSucceeds(Type exceptionType)
+		public void Execute_ShouldStopRetrying_WhenExecutionSucceeds(Exception exception)
 		{
 			// ARRANGE
 			const int executionAndRetry = 2;
 
-			_stubForInterceptionMock.SetupSequence(x => x.ExecuteAsync()).Throws((Exception) Activator.CreateInstance(exceptionType)).Returns(Task.CompletedTask);
+			_stubForInterceptionMock.SetupSequence(x => x.ExecuteAsync()).Throws(exception).Returns(Task.CompletedTask);
 
 			// ACT
 			Func<Task> action = () => _sut.ExecuteAsync();
@@ -216,10 +216,9 @@ namespace Relativity.Sync.Tests.Unit
 
 		[Test]
 		[TestCaseSource(nameof(ConnectionExceptionsToRetry))]
-		public void Execute_ShouldThrowSyncMaxKeplerRetriesException_WhenExecutionFailsAfterRetriesDueToConnectionException(Type exceptionType)
+		public void Execute_ShouldThrowSyncMaxKeplerRetriesException_WhenExecutionFailsAfterRetriesDueToConnectionException(Exception exception)
 		{
 			// ARRANGE
-			Exception exception = (Exception)Activator.CreateInstance(exceptionType);
 			_stubForInterceptionMock.Setup(x => x.ExecuteAsync()).Throws(exception);
 
 			// ACT
@@ -231,10 +230,9 @@ namespace Relativity.Sync.Tests.Unit
 
 		[Test]
 		[TestCaseSource(nameof(ConnectionExceptionsToRetry))]
-		public void Execute_ShouldReportFailedMetricWithNumberOfRetries_WhenExecutionFailsAfterRetriesDueToConnectionException(Type exceptionType)
+		public void Execute_ShouldReportFailedMetricWithNumberOfRetries_WhenExecutionFailsAfterRetriesDueToConnectionException(Exception exception)
 		{
 			// ARRANGE
-			Exception exception = (Exception)Activator.CreateInstance(exceptionType);
 			_stubForInterceptionMock.Setup(x => x.ExecuteAsync()).Throws(exception);
 
 			// ACT
@@ -247,12 +245,11 @@ namespace Relativity.Sync.Tests.Unit
 
 		[Test]
 		[TestCaseSource(nameof(AuthTokenExceptionToRetry))]
-		public async Task Execute_ShouldReportAuthRefreshMetricWithNumberOfRefreshes_WhenAuthRefreshed(Type exceptionType)
+		public async Task Execute_ShouldReportAuthRefreshMetricWithNumberOfRefreshes_WhenAuthRefreshed(Exception exception)
 		{
 			// ARRANGE
 			const int expectedRefreshes = 2;
 
-			Exception exception = (Exception)Activator.CreateInstance(exceptionType);
 			_stubForInterceptionMock.SetupSequence(x => x.ExecuteAsync()).Throws(exception).Throws(exception).Returns(Task.CompletedTask);
 
 			// ACT
@@ -264,12 +261,11 @@ namespace Relativity.Sync.Tests.Unit
 
 		[Test]
 		[TestCaseSource(nameof(ConnectionExceptionsToRetry))]
-		public async Task Execute_ShouldReportSuccessMetricWithNumberOfRetries_WhenRetried(Type exceptionType)
+		public async Task Execute_ShouldReportSuccessMetricWithNumberOfRetries_WhenRetried(Exception exception)
 		{
 			// ARRANGE
 			const int expectedRetries = 2;
 
-			Exception exception = (Exception)Activator.CreateInstance(exceptionType);
 			_stubForInterceptionMock.SetupSequence(x => x.ExecuteAsync()).Throws(exception).Throws(exception).Returns(Task.CompletedTask);
 
 			// ACT
@@ -282,12 +278,11 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		[TestCaseSource(nameof(AuthTokenExceptionToRetry))]
 		[TestCaseSource(nameof(ConnectionExceptionsToRetry))]
-		public async Task Execute_ShouldLogWarning_WhenRetried(Type exceptionType)
+		public async Task Execute_ShouldLogWarning_WhenRetried(Exception exception)
 		{
 			// ARRANGE
 			const int expectedRetries = 2;
 
-			Exception exception = (Exception)Activator.CreateInstance(exceptionType);
 			_stubForInterceptionMock.SetupSequence(x => x.ExecuteAsync()).Throws(exception).Throws(exception).Returns(Task.CompletedTask);
 
 			// ACT
@@ -300,12 +295,11 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		[TestCaseSource(nameof(AuthTokenExceptionToRetry))]
 		[TestCaseSource(nameof(ConnectionExceptionsToRetry))]
-		public async Task Execute_ShouldPutKeplerInWarning_WhenRetried(Type exceptionType)
+		public async Task Execute_ShouldPutKeplerInWarning_WhenRetried(Exception exception)
 		{
 			// ARRANGE
 			const int expectedRetries = 2;
 
-			Exception exception = (Exception)Activator.CreateInstance(exceptionType);
 			_stubForInterceptionMock.SetupSequence(x => x.ExecuteAsync()).Throws(exception).Throws(exception).Returns(Task.CompletedTask);
 
 			// ACT
@@ -321,10 +315,9 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		[TestCaseSource(nameof(AuthTokenExceptionToRetry))]
 		[TestCaseSource(nameof(ConnectionExceptionsToRetry))]
-		public async Task Execute_ShouldLogInformation_WhenExecutionSucceedsAfterRetries(Type exceptionType)
+		public async Task Execute_ShouldLogInformation_WhenExecutionSucceedsAfterRetries(Exception exception)
 		{
 			// ARRANGE
-			Exception exception = (Exception)Activator.CreateInstance(exceptionType);
 			_stubForInterceptionMock.SetupSequence(x => x.ExecuteAsync()).Throws(exception).Throws(exception).Returns(Task.CompletedTask);
 
 			// ACT
@@ -337,10 +330,9 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		[TestCaseSource(nameof(AuthTokenExceptionToRetry))]
 		[TestCaseSource(nameof(ConnectionExceptionsToRetry))]
-		public async Task Execute_ShouldPutKeplerInInformation_WhenExecutionSucceedsAfterRetries(Type exceptionType)
+		public async Task Execute_ShouldPutKeplerInInformation_WhenExecutionSucceedsAfterRetries(Exception exception)
 		{
 			// ARRANGE
-			Exception exception = (Exception)Activator.CreateInstance(exceptionType);
 			_stubForInterceptionMock.SetupSequence(x => x.ExecuteAsync()).Throws(exception).Throws(exception).Returns(Task.CompletedTask);
 
 			// ACT
@@ -404,10 +396,9 @@ namespace Relativity.Sync.Tests.Unit
 
 		[Test]
 		[TestCaseSource(nameof(ConnectionExceptionsToRetry))]
-		public void Execute_ShouldRetryConnectionErrorsAndFail_WhenRetried4Times(Type exceptionType)
+		public void Execute_ShouldRetryConnectionErrorsAndFail_WhenRetried4Times(Exception exception)
 		{
 			// ARRANGE
-			Exception exception = (Exception)Activator.CreateInstance(exceptionType);
 			const int expectedInvocations = 5; // 1 invocation + 4 retries
 			_stubForInterceptionMock.Setup(x => x.ExecuteAsync()).Throws(exception);
 
@@ -421,10 +412,9 @@ namespace Relativity.Sync.Tests.Unit
 
 		[Test]
 		[TestCaseSource(nameof(ConnectionExceptionsToRetry))]
-		public void Execute_ShouldRetryConnectionErrorsAndSucceed_WhenRetried1Time(Type exceptionType)
+		public void Execute_ShouldRetryConnectionErrorsAndSucceed_WhenRetried1Time(Exception exception)
 		{
 			// ARRANGE
-			Exception exception = (Exception)Activator.CreateInstance(exceptionType);
 			const int expectedInvocations = 2; // 1 invocation + 1 retries
 			MockSequence seq = new MockSequence();
 			_stubForInterceptionMock.InSequence(seq).Setup(x => x.ExecuteAsync()).Throws(exception);
@@ -457,15 +447,17 @@ namespace Relativity.Sync.Tests.Unit
 			millisecondsBetweenHttpRetriesBaseField.SetValue(interceptor, delayBaseMs);
 		}
 
-		private static IEnumerable<Type> AuthTokenExceptionToRetry()
+		private static IEnumerable<Exception> AuthTokenExceptionToRetry()
 		{
-			yield return typeof(NotAuthorizedException);
+			yield return new NotAuthorizedException();
 		}
 
-		private static IEnumerable<Type> ConnectionExceptionsToRetry()
+		private static IEnumerable<Exception> ConnectionExceptionsToRetry()
 		{
-			yield return typeof(SocketException);
-			yield return typeof(HttpRequestException);
+			yield return new ServiceNotFoundException();
+			yield return new TemporarilyUnavailableException();
+			yield return new ServiceException("Failed to determine route");
+			yield return new TimeoutException();
 		}
 
 		private static string GetMetricName(string methodName)
